@@ -1,0 +1,8 @@
+EO-Management
+EO-Network
+SHS-CRS-ADS
+SHS-CRS-Amadeus-DCX
+SHS-CRS-ARI
+SHS-CRS-Booking-Center
+SHS-CRS-BUS-Services
+SHS-CRS-Cassandra

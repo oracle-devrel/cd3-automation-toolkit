@@ -1,0 +1,15 @@
+#name,subnet-cidr,availabilty-domain(AD1|AD2|AD3),private|public,dhcp-options (from dhcp.ini file)
+prod-dmz-lb-ext,10.89.69.0/24,AD2,public,dhcp-external
+prod-dmz-lb-ext,10.89.70.0/24,AD3,public,dhcp-external
+prod-dmz-lb-int,10.89.71.0/24,AD3,private,dhcp-internal
+prod-dmz,10.89.72.0/22,AD3,public,dhcp-external
+prod-app,10.89.76.0/22,AD3,private,dhcp-internal
+prod-db-clnt,10.89.80.0/24,AD3,private,dhcp-internal
+prod-mgt-app,10.89.81.0/24,AD3,public,dhcp-external
+prod-db-sql,10.89.82.0/24,AD3,private,dhcp-internal
+prod-3rdpty,10.89.83.0/24,AD3,private,dhcp-internal
+prod-db-bkup,10.89.84.0/24,AD3,public,dhcp-external
+prod-app-lb,10.89.85.0/24,AD3,private,dhcp-internal
+prod-proxy,10.89.86.0/24,AD3,public,dhcp-external
+prod-mgt-ops,10.89.230.0/24,AD3,private,dhcp-internal
+prod-mgt-ops,10.89.231.0/24,AD2,private,dhcp-internal
