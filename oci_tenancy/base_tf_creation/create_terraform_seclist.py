@@ -1,7 +1,7 @@
 #!/bin/python
-#Author: Murali Nagulakonda
-#Oracle Consulting
-#murali.nagulakonda.venkata@oracle.com
+##### Author : Murali Nagulakonda Venkata ###
+##### Oracle Consulting ####
+##### v0.1a #####
 
 
 
