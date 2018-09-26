@@ -1,6 +1,11 @@
 #!/bin/python
 
 ## This Script Takes the Uploaded vmdk from Object Storage and creates an Image that can be used to launch an instance ###
+#Author: Murali Nagulakonda
+#Oracle Consulting
+#murali.nagulakonda.venkata@oracle.com
+
+
 
 import sys
 import oci

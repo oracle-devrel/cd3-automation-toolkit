@@ -1,5 +1,10 @@
 #!/bin/bash
 
+#Author: Murali Nagulakonda
+#Oracle Consulting
+#murali.nagulakonda.venkata@oracle.com
+
+
 yum install qemu-img
 yum install python27
 scl enable python27 'python --version'

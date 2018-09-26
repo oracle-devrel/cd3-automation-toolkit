@@ -1,5 +1,6 @@
 
-## Make sure the oci python environment has already been setup using the create_oci_python_env.sh (and follow the associated readme)
+## Make sure the oci python environment has already been setup using the create_oci_python_env.sh
+(and follow the associated readme)
 
 1.  Unpack OVA and upload to Object Store
 	b.  Disk-1 is normally the C drive or root partition and will be a vmdk.
