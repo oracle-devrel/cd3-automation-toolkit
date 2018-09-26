@@ -1,5 +1,10 @@
 #!/bin/bash
 
+#Author: Murali Nagulakonda
+#Oracle Consulting
+#murali.nagulakonda.venkata@oracle.com
+
+
 if [ $# -eq 0 ]
   then
     echo "No arguments supplied"

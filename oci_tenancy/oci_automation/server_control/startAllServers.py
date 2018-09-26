@@ -1,4 +1,9 @@
 #!/bin/python
+
+#Author: Amit Shah
+#Oracle Consulting
+#amit.a.shah@oracle.com
+
 import csv  
 import shutil
 import sys

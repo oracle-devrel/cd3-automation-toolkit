@@ -2,7 +2,9 @@
 #######################################
 # This script uses the OCI Python Package
 # to upload a vmdk to object storage
-# 
+# #Author: Murali Nagulakonda
+# #Oracle Consulting
+# #murali.nagulakonda.venkata@oracle.com
 
 import sys
 import oci
