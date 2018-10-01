@@ -1,7 +1,7 @@
 #!/bin/python
-#Author: Murali Nagulakonda
-#Oracle Consulting
-#murali.nagulakonda.venkata@oracle.com
+##### Author : Murali Nagulakonda Venkata ###
+##### Oracle Consulting ####
+##### v0.1a #####
 
 
 
@@ -106,7 +106,7 @@ for line in fname:
 		tempStr = """
 	resource "oci_core_route_table" \"""" + name +  """"{
 		compartment_id = "${var.""" + ntk_comp_var + """}"
-		vcn_id = "${oci_core_virtual_network.""" + vcn_var + """.id}"
+		vcn_id = "${oci_core_vcn.""" + vcn_var + """.id}"
 		display_name = \""""  + display_name.strip() + """\" """
 
 		rname.seek(0,0)
@@ -115,10 +115,13 @@ for line in fname:
 				cidr_block = route.split(":")[0]
 				ntk_ent_id = route.split(":")[1]
 				ntk_ent_id = ntk_ent_id.strip()
+				dest_type = route.split(":")[2]
+				dest_type = dest_type.strip()
 				tempStr = tempStr + """ 
 	route_rules { 
-	     cidr_block = \"""" + cidr_block + """\"
+	     destination = \"""" + cidr_block + """\"
 	     network_entity_id = \"""" + ntk_ent_id + """\"
+	     destination_type = \"""" + dest_type + """\"
 	}
 	"""
 		tempStr = tempStr + """

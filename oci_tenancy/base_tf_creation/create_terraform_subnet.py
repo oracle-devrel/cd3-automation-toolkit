@@ -102,11 +102,11 @@ resource "oci_core_subnet" \"""" + name + """" {
 	compartment_id = "${var.""" + ntk_comp_var + """}"
 	availability_domain = "${data.oci_identity_availability_domains.ADs.availability_domains.""" + str(ad) + """.name}"
 	route_table_id      = "${oci_core_route_table.""" + name + """.id}"
-	vcn_id = "${oci_core_virtual_network.""" + str(vcn_var) + """.id}" """
+	vcn_id = "${oci_core_vcn.""" + str(vcn_var) + """.id}" """
 		
 		seclist_ids = ""
 		if vcn_add == "true" :
-			seclist_ids = """\"${oci_core_virtual_network.""" + vcn_var + """.default_security_list_id}","""	
+			seclist_ids = """\"${oci_core_vcn.""" + vcn_var + """.default_security_list_id}","""	
 		i = 1
 		while i < seclists_per_subnet :
 			seclist_ids  = seclist_ids + """\"${oci_core_security_list.""" + name + "-" + str(i) + """.id}","""

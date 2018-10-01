@@ -65,10 +65,14 @@ drg_display_name = config.get('Default','drg_display_name').strip()
 igw_var = config.get('Default','igw_var').strip()
 igw_display_name = config.get('Default','igw_display_name').strip()
 
+lpg_var = config.get('Default','lpg_var').strip()
+lpg_display_name = config.get('Default','lpg_display_name').strip()
+
+
 
 
 tempStr = """
-resource "oci_core_virtual_network" \"""" + vcn_var + """" {
+resource "oci_core_vcn" \"""" + vcn_var + """" {
 	cidr_block = \"""" + vcn_cidr + """"
 	compartment_id = "${var.""" + ntk_comp_var + """}"
 
@@ -79,13 +83,20 @@ resource "oci_core_virtual_network" \"""" + vcn_var + """" {
 resource "oci_core_internet_gateway" \"""" + igw_var + """" {
 	compartment_id = "${var.""" + ntk_comp_var + """}"
 	display_name = \"""" + igw_display_name + """"
-	vcn_id = "${oci_core_virtual_network.""" + vcn_var + """.id}"
+	vcn_id = "${oci_core_vcn.""" + vcn_var + """.id}"
 }
 
 resource "oci_core_drg" \"""" + drg_var + """" {
 	compartment_id = "${var.""" + ntk_comp_var + """}"
         #Optional
 	display_name = \"""" + drg_display_name + """"
+}
+
+resource "oci_core_local_peering_gateway"  \"""" + lpg_var + """" {
+        #Required
+        display_name = \"""" + lpg_display_name + """"
+        vcn_id = "${oci_core_vcn.""" + vcn_var + """.id}"
+        compartment_id = "${var.ntk_compartment_ocid}"
 }
 
 

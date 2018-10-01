@@ -11,7 +11,7 @@ def print_by_field(row):
 	
 def copy_template_file(hostname,operatingsystem):
 	print('template/'+operatingsystem+'template.tf')
-	shutil.copyfile('template/'+operatingsystem+'template.tf', 'terraformfiles/'+hostname+'.tf')  
+	shutil.copyfile('template/'+operatingsystem+'template.tf', '/root/dll-group/oci_tenancy/terraform_files/'+hostname+'.tf')  
 
 #def readPublicKey(filename):
 #	with open(filename, 'r') as f:
@@ -87,7 +87,7 @@ with open(cvsfilename) as csvfile:
 		copy_template_file(row['Hostname'],row['OS'])
 		for column in columns:
 			# print(column)
-			replaceAllplaceholders('terraformfiles/'+row['Hostname']+'.tf','##'+column+'##',row[column])
+			replaceAllplaceholders('/root/dll-group/oci_tenancy/terraform_files/'+row['Hostname']+'.tf','##'+column+'##',row[column])
 
 		
 
