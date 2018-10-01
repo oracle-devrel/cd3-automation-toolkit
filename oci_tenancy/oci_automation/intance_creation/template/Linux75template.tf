@@ -3,6 +3,7 @@ resource "oci_core_instance" "##Hostname##" {
         #availability_domain = "##Availability Domain##"
         availability_domain = "${data.oci_identity_availability_domains.ADs.availability_domains.##Availability Domain##.name}"
         compartment_id = "${var.compartment_ocid}"
+### windows image id - oci image ###
         source_details {
 		        source_id  = "${var.linux75_gen1_ocid}"
                 source_type = "image"
@@ -14,7 +15,8 @@ resource "oci_core_instance" "##Hostname##" {
         create_vnic_details {
                 #Required
                 subnet_id = "${oci_core_subnet.##subnet name##.id}"
-                assign_public_ip = ##Pub Address##
+               #subnet_id = "##subnet name##" 
+		assign_public_ip = ##Pub Address##
 
                 #Optional
                 display_name = "##Hostname##"
@@ -30,4 +32,5 @@ resource "oci_core_instance" "##Hostname##" {
         }
 
         subnet_id = "${oci_core_subnet.##subnet name##.id}"
+	#subnet_id = "##subnet name##"
 }

@@ -2,6 +2,10 @@
 ##### Author : Murali Nagulakonda Venkata ###
 ##### Oracle Consulting ####
 ##### v0.1a #####
+<<<<<<< HEAD
+
+=======
+>>>>>>> 2414f754d8393ba81b31f6e9b517289173b28340
 
 
 import sys
@@ -106,6 +110,20 @@ for line in fname:
         tempStr = """
 	resource "oci_core_route_table" \"""" + name + """"{
 		compartment_id = "${var.""" + ntk_comp_var + """}"
+<<<<<<< HEAD
+		vcn_id = "${oci_core_vcn.""" + vcn_var + """.id}"
+		display_name = \""""  + display_name.strip() + """\" """
+
+		rname.seek(0,0)
+		for route in rname:
+			if not route.startswith('#'):
+				cidr_block = route.split(":")[0]
+				ntk_ent_id = route.split(":")[1]
+				ntk_ent_id = ntk_ent_id.strip()
+				dest_type = route.split(":")[2]
+				dest_type = dest_type.strip()
+				tempStr = tempStr + """ 
+=======
 		vcn_id = "${oci_core_virtual_network.""" + vcn_var + """.id}"
 		display_name = \"""" + display_name.strip() + """\" """
 
@@ -118,6 +136,7 @@ for line in fname:
                 dest_type = route.split(":")[2]
                 dest_type = dest_type.strip()
                 tempStr = tempStr + """ 
+>>>>>>> 2414f754d8393ba81b31f6e9b517289173b28340
 	route_rules { 
 	     destination = \"""" + cidr_block + """\"
 	     network_entity_id = \"""" + ntk_ent_id + """\"

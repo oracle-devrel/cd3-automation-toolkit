@@ -95,7 +95,7 @@ resource "oci_core_dhcp_options" \"""" + section + """" {
 		search_domain_names = [ \"""" + search_domain + """" ]
 	}
 	
-	vcn_id = "${oci_core_virtual_network.""" + vcn_var + """.id}"
+	vcn_id = "${oci_core_vcn.""" + vcn_var + """.id}"
 
 	#Optional
 	display_name = \""""  + display_name.strip() + """"
