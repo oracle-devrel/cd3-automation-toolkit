@@ -1,15 +1,6 @@
 # Format
 #CIDR:Route Destination Object #
 # Can use a variable name or the ocid itself
-10.26.76.0/23:${oci_core_drg.drg01.id}
-10.26.78.0/23:${oci_core_drg.drg01.id}
-10.26.80.0/24:${oci_core_drg.drg01.id}
-10.26.81.0/24:${oci_core_drg.drg01.id}
-10.26.82.0/23:${oci_core_drg.drg01.id}
-10.26.84.0/24:${oci_core_drg.drg01.id}
-10.26.85.0/24:${oci_core_drg.drg01.id}
-10.26.86.0/23:${oci_core_drg.drg01.id}
-10.26.88.0/23:${oci_core_drg.drg01.id}
-10.26.230.0/24:${oci_core_drg.drg01.id}
-0.0.0.0/0:${oci_core_internet_gateway.igw01.id}
-10.26.6.0/24:ocid1.localpeeringgateway.oc1.phx.aaaaaaaak6vg3rralkuahrjwt74mvheihwbfjqa5yd6sm2pabcy7ovs5bsbq
+0.0.0.0/0:${oci_core_internet_gateway.igw01.id}:CIDR_BLOCK
+10.26.6.0/24:${oci_core_local_peering_gateway.lpg01.id}:CIDR_BLOCK
+10.100.0.0/16:${oci_core_drg.drg01.id}:CIDR_BLOCK
