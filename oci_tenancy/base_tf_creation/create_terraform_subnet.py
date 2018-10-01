@@ -120,7 +120,7 @@ resource "oci_core_subnet" \"""" + name + """" {
 	dhcp_options_id     = "${oci_core_dhcp_options.""" + dhcp.strip() + """.id}"
 	display_name               = \"""" + display_name + """"
 	cidr_block                 = \"""" + subnet + """\" """
-		if pubpvt == "public":
+		if pubpvt.lower() == "public":
 			tempStr = tempStr + """
 	prohibit_public_ip_on_vnic = false """
 		else:
