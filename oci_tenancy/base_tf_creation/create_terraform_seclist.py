@@ -84,7 +84,7 @@ for line in fname:
                         tempStr = """
                 resource "oci_core_security_list" \"""" + seclistname +  """"{
                     compartment_id = "${var.""" + ntk_comp_var + """}"
-                    vcn_id = "${oci_core_virtual_network.""" + vcn_var + """.id}"
+                    vcn_id = "${oci_core_vcn.""" + vcn_var + """.id}"
                     display_name = \""""  + display_name.strip() + "\""
 
 
