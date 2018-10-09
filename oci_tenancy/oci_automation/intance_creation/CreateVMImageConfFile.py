@@ -87,7 +87,7 @@ with open(cvsfilename) as csvfile:
 		copy_template_file(row['Hostname'],row['OS'])
 		for column in columns:
 			# print(column)
-			replaceAllplaceholders('/root/dll-group/oci_tenancy/terraform_files/'+row['Hostname']+'.tf','##'+column+'##',row[column])
+			replaceAllplaceholders('/path-to-terraform/'+row['Hostname']+'.tf','##'+column+'##',row[column])
 
 		
 
