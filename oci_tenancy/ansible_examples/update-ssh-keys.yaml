@@ -1,0 +1,12 @@
+- hosts: all
+  become: true
+  tasks:
+   - name: Set up multiple authorized keys
+     authorized_key:
+        user: opc
+        state: present
+        key: "{{ item }}"
+     with_file:
+        - public_keys/murali
+        - public_keys/suruchi
+        - public_keys/sri
