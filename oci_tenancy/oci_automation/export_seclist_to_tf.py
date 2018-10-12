@@ -13,13 +13,22 @@ def is_empty(myList):
         return False
 
 
+def checkStateless (stateless):
+    print (stateless)
+    if stateless is None:
+        #myString is not None AND myString is not empty or blank
+        return False
+    #myString is None OR myString is empty or blank
+    return stateless
+
+
 def create_ingress_rule_string(rule):
     options = ""
     temp_rule = """
           ingress_security_rules {
                 protocol = \"""" + rule.protocol + """\"
                 source = \"""" + rule.source + """\"
-                stateless = """ + str(rule.is_stateless).lower() + "\n"
+                stateless = """ + str(checkStateless(rule.is_stateless)).lower() + "\n"
     # print(rule.icmp_options)
     if not is_empty(rule.icmp_options):
         options = """
@@ -31,7 +40,7 @@ def create_ingress_rule_string(rule):
     source_range = ""
     tcp_option = ""
     if not is_empty(rule.tcp_options):
-        tcp_option = " tcp_options {"
+        tcp_option = "\t\t tcp_options {"
 
         if not is_empty(rule.tcp_options.destination_port_range):
             dest_range = """
@@ -40,16 +49,16 @@ def create_ingress_rule_string(rule):
                           """
         elif not is_empty(rule.tcp_options.source_port_range):
             source_range = """
-                        source_port_range {
+                        \tsource_port_range {
                         "max" = """ + str(rule.tcp_options.source_port_range.max) + """
                         "min" =  """ + str(rule.tcp_options.source_port_range.min) + """
-                        }  """
+                      \t\t  }  """
         # tcp_option = tcp_option
-        options = tcp_option + dest_range + source_range + "\n   }"
+        options = tcp_option + dest_range + source_range + "\n  \t\t\t }"
 
     udp_option = ""
     if not is_empty(rule.udp_options):
-        udp_option = " udp_options {"
+        udp_option = " \t\t udp_options {"
 
         if not is_empty(rule.udp_options.destination_port_range):
             dest_range = """
@@ -61,8 +70,8 @@ def create_ingress_rule_string(rule):
                         source_port_range {
                         "max" = """ + str(rule.udp_options.source_port_range.max) + """
                         "min" =  """ + str(rule.udp_options.source_port_range.min) + """
-                        }  """
-        options = udp_option + dest_range + source_range + "\n   }"
+                        \t\t }  """
+        options = udp_option + dest_range + source_range + "\n  \t\t\t }"
 
     close_bracket = "\n \t\t}"
 
@@ -76,7 +85,7 @@ def create_egress_rule_string(rule):
           egress_security_rules {
                 protocol = \"""" + rule.protocol + """\"
                 destination = \"""" + rule.destination + """\"
-                stateless = """ + str(rule.is_stateless).lower() + "\n"
+                stateless = """ + str(checkStateless(rule.is_stateless)).lower() + "\n"
     # print(rule.icmp_options)
     if not is_empty(rule.icmp_options):
         options = """
@@ -88,7 +97,7 @@ def create_egress_rule_string(rule):
     source_range = ""
     tcp_option = ""
     if not is_empty(rule.tcp_options):
-        tcp_option = " tcp_options {"
+        tcp_option = "\t\t tcp_options {"
 
         if not is_empty(rule.tcp_options.destination_port_range):
             dest_range = """
@@ -100,13 +109,13 @@ def create_egress_rule_string(rule):
                   source_port_range {
                     "max" = """ + str(rule.tcp_options.source_port_range.max) + """
                     "min" =  """ + str(rule.tcp_options.source_port_range.min) + """
-                  }  """
+                /t/t  }  """
         # tcp_option = tcp_option
-        options = tcp_option + dest_range + source_range + "\n  }"
+        options = tcp_option + dest_range + source_range + "\n \t\t\t }"
 
     udp_option = ""
     if not is_empty(rule.udp_options):
-        udp_option = " udp_options {"
+        udp_option = "\t\t udp_options {"
 
         if not is_empty(rule.udp_options.destination_port_range):
             dest_range = """
@@ -118,8 +127,8 @@ def create_egress_rule_string(rule):
                   source_port_range {
                    "max" = """ + str(rule.udp_options.source_port_range.max) + """
                    "min" =  """ + str(rule.udp_options.source_port_range.min) + """
-                  }  """
-        options = udp_option + dest_range + source_range + "\n  }"
+                  /t/t}  """
+        options = udp_option + dest_range + source_range + "\n  \t\t\t}"
 
     close_bracket = "\n \t\t}"
 
@@ -127,16 +136,12 @@ def create_egress_rule_string(rule):
     return egress_rule
 
 
-def create_seclist_tf_file(subnetid):
-    config = oci.config.from_file()
-    vnc = VirtualNetworkClient(config)
+def create_seclist_tf_file(subnetid,create_def_file):
     response = vnc.get_subnet(subnetid)
-    vcn_var = config.get('Default', 'vcn_var')
-    ntk_comp_var = config.get('Default', 'ntk_comp_var')
 
     print ("Seclist file name : " + response.data.display_name.rsplit("-", 1)[0].strip() + "_seclist.tf")
     outFilename = open(response.data.display_name.rsplit("-", 1)[0].strip() + "_seclist.tf", "a")
-    create_def_file = True
+    #create_def_file = True
     for seclist_id in response.data.security_list_ids:
         seclistdata = vnc.get_security_list(seclist_id).data
         seclistname = vnc.get_security_list(seclist_id).data.display_name
@@ -158,7 +163,7 @@ def create_seclist_tf_file(subnetid):
                         tempStr = tempStr + create_egress_rule_string(rule) + "\n"
 
             tempStr = tempStr + """
-                \n \t\t ####ADD_NEW_SEC_RULES####
+                \n \t\t ####ADD_NEW_SEC_RULES####""" + seclistname.rsplit("-", 1)[0].rsplit("-",1)[1] + """
               } \n       """
             outFilename.write(tempStr)
         elif create_def_file:
@@ -179,7 +184,8 @@ def create_seclist_tf_file(subnetid):
                         tempStr = tempStr + create_egress_rule_string(rule) + "\n"
 
             tempStr = tempStr + """
-              }  \n     """
+                \n \t\t ####ADD_NEW_SEC_RULES####""" + str(1) + """
+              } \n  """
             defFilename.write(tempStr)
             defFilename.close()
             create_def_file = False
@@ -204,4 +210,4 @@ subnet_list = response = vnc.list_subnets(ntk_comp_id, vcn_id)
 
 create_def_file = True
 for subnet in subnet_list.data:
-    create_seclist_tf_file(subnet.id)
+    create_seclist_tf_file(subnet.id,True)
