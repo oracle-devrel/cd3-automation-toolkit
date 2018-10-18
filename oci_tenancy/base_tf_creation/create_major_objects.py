@@ -71,6 +71,9 @@ lpg_display_name = config.get('Default','lpg_display_name').strip()
 sgw_var = config.get('Default','sgw_var').strip()
 sgw_display_name = config.get('Default','sgw_display_name').strip()
 
+ngw_var = config.get('Default','ngw_var').strip()
+ngw_display_name = config.get('Default','ngw_display_name').strip()
+
 
 
 tempStr = """
@@ -112,6 +115,15 @@ resource "oci_core_service_gateway"  \"""" + sgw_var + """" {
         vcn_id = "${oci_core_vcn.""" + vcn_var + """.id}"
         compartment_id = "${var.ntk_compartment_ocid}"
 }
+
+resource "oci_core_nat_gateway" \"""" + ngw_var + """" {
+        display_name = \"""" + ngw_display_name + """"
+        vcn_id = "${oci_core_vcn.""" + vcn_var + """.id}"
+        compartment_id = "${var.ntk_compartment_ocid}"
+}
+
+
+
 
 """
 oname.write(tempStr)
