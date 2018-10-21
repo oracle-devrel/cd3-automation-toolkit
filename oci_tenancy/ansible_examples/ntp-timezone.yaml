@@ -1,0 +1,41 @@
+# ntp playbook - first attempt
+
+- hosts: all
+  become: yes
+  become_user: root
+  tasks:
+  - name: set timezone
+    shell: timedatectl set-timezone America/Los_Angeles
+
+  - name: allow ntp through firewall
+    shell: firewall-cmd --add-service=ntp --permanent
+
+  - name: firewall reload
+    shell: firewall-cmd --reload
+
+  - name: Install NTP
+    yum: name=ntp state=installed 
+    tags: ntp
+
+  - name: Copy over the NTP configuration
+    template: src=./templates/ntp.template.conf dest=/etc/ntp.conf
+    notify:
+    - restart ntpd
+    tags: ntp
+ 
+  - name: Make sure NTP is stopped
+    service: name=ntpd state=stopped enabled=yes
+    tags: ntp
+ 
+  - name: Sync time initialy
+    shell: ntpdate 169.254.169.254
+    tags: ntp
+
+  - name: Make sure NTP is started up
+    service: name=ntpd state=started enabled=yes
+    tags: ntp
+
+  - name: Make sure Chrony is disabled
+    service: name=chronyd state=stopped enabled=no
+    tags: chrony
+

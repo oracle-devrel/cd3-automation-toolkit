@@ -14,7 +14,9 @@ import ConfigParser
 # Also required is the "oci-tf.properties"
 # List of Subnets - Each Subnet will get its route table.
 # The subnets file can be the same one that is used for creating the sec rules and subnets
-# List of cidr_block:network_entity_id 
+# List of destination:network_entity_id:destination_type
+# destination example: Examples: 10.12.0.0/16 oci-phx-objectstorage
+# destination_type example: Type of destination for the route rule. SERVICE_CIDR_BLOCK should be used if destination is a service cidrBlock. CIDR_BLOCK should be used if destination is IP address range in CIDR notation. It must be provided along with destination
 # Example: 10.26.76.0/23:${oci_core_drg.drg01.id}
 # Outfile
 ######
@@ -112,13 +114,15 @@ for line in fname:
 		rname.seek(0,0)
 		for route in rname:
 			if not route.startswith('#'):
-				cidr_block = route.split(":")[0]
+				dest = route.split(":")[0]
 				ntk_ent_id = route.split(":")[1]
-				ntk_ent_id = ntk_ent_id.strip()
+				dest_type = route.split(":")[2]
+				dest_type = dest_type.strip()
 				tempStr = tempStr + """ 
 	route_rules { 
-	     cidr_block = \"""" + cidr_block + """\"
+	     destination = \"""" + dest + """\"
 	     network_entity_id = \"""" + ntk_ent_id + """\"
+	     destination_type = \"""" + dest_type + """\"
 	}
 	"""
 		tempStr = tempStr + """

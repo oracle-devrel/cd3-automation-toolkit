@@ -1,6 +1,6 @@
 # Format
-#CIDR:Route Destination Object #
+#CIDR:Route Destination Object:destination_type #
 # Can use a variable name or the ocid itself
-0.0.0.0/0:${oci_core_internet_gateway.igw01.id}:CIDR_BLOCK
+0.0.0.0/0:${oci_core_nat_gateway.ngw01.id}:CIDR_BLOCK
 10.26.6.0/24:${oci_core_local_peering_gateway.lpg01.id}:CIDR_BLOCK
-10.100.0.0/16:${oci_core_drg.drg01.id}:CIDR_BLOCK
+oci-phx-objectstorage:${oci_core_service_gateway.sgw01.id}:SERVICE_CIDR_BLOCK
