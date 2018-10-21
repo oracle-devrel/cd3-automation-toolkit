@@ -203,6 +203,7 @@ def getReplacementStr(sec_rule_per_seclist,subnet_name):
 
 
 parser = argparse.ArgumentParser(description="Takes in a list of subnet names with format \"prod-mt03-129.147.5.0/26\".  It will then create a terraform sec list resource with name \"prod-mt03-129.147.5.0/26.\"  and subnet of \"129.147.5.0/26\" ")
+parser.add_argument("--outdir",help="directory path for output tf files ",required=True)
 parser.add_argument("--secrulesfile",help="csv file with secrules for Security List of a given subnet")
 #parser.add_argument("outfile",help="Output Filename")
 
@@ -212,6 +213,7 @@ if len(sys.argv)==1:
 
 args = parser.parse_args()
 
+outdir = args.outdir
 secrulesfilename = args.secrulesfile
 totalRowCount = sum(1 for row in csv.DictReader(skipCommentedLine(open(secrulesfilename))))
 
@@ -255,6 +257,6 @@ with open(secrulesfilename) as secrulesfile:
         print("secrule count " + str(seclist_rule_count[subnetName]))
         text_to_replace = getReplacementStr(sec_rule_per_seclist,subnetName)
         new_sec_rule = new_sec_rule + "\n" + text_to_replace
-        updateSecRules(sec_list_file, text_to_replace, new_sec_rule, 0)
+        updateSecRules(outdir + "/" + sec_list_file, text_to_replace, new_sec_rule, 0)
         incrementRuleCount(subnetName)
         ####ADD_NEW_SEC_RULES####
