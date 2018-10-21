@@ -1,0 +1,3 @@
+#blockname,size in gb,AD,attachedToInstance,attachType
+np-mgmt01_disk2,200,AD1,np-mgmt01,iscsi
+no-mgmt01_disk3,100,AD1,np-mgmt01,paravirtualized

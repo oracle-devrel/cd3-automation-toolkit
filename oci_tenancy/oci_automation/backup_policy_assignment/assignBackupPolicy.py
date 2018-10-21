@@ -12,15 +12,6 @@ from oci.core.compute_client import ComputeClient
 from oci.core import BlockstorageClient
 from oci.core.models import Volume
 
-#parser = argparse.ArgumentParser(description="add tags to existing tag namespace")
-#parser.add_argument("tag_name_space",help="The namespace for which you want all these tags to be added.  Case Sensitive!")
-
-
-#if len(sys.argv)<2:
-#        parser.print_help()
-#        sys.exit(1)
-#
-
 
 config = oci.config.from_file()
 compartment_id = config["compartment_id"]
@@ -43,7 +34,7 @@ print pol_list
 	
 
 vols = bsc.list_volumes(compartment_id=compartment_id,lifecycle_state=Volume.LIFECYCLE_STATE_AVAILABLE)
-i = 0
+
 
 for vol in vols.data:
 	print vol.display_name
