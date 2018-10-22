@@ -48,7 +48,7 @@ i = 0
 for vol in vols.data:
 	print vol.display_name
 	print vol.id
-	pol_id = pol_list["bronze"]
+	pol_id = pol_list["silver"]
 	print "Bronze id:  " +  pol_id
 	cba = oci.core.models.CreateVolumeBackupPolicyAssignmentDetails(asset_id=vol.id,policy_id=pol_id)
 	resp = bsc.create_volume_backup_policy_assignment(cba)
