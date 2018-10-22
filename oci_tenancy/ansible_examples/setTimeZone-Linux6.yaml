@@ -1,0 +1,8 @@
+- hosts: appservers
+  user: opc
+  become: true
+  become_user: root
+  tasks:
+   - name: Set TZ to US/Pacific
+     file: src=/usr/share/zoneinfo/US/Pacific  dest=/etc/localtime state=link force=yes
+

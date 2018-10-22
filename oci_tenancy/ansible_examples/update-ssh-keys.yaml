@@ -1,4 +1,4 @@
-- hosts: all
+- hosts: appservers
   become: true
   tasks:
    - name: Set up multiple authorized keys
@@ -8,5 +8,8 @@
         key: "{{ item }}"
      with_file:
         - public_keys/murali
-        - public_keys/suruchi
-        - public_keys/sri
+        - public_keys/sudhir
+        - public_keys/karen
+        - public_keys/expedia-ocs-work
+        - public_keys/opc-user
+        - public_keys/amit
