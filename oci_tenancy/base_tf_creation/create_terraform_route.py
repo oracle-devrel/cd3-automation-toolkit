@@ -82,7 +82,7 @@ if configure_lpg == 'true':
     		}
     		"""
 
-# Read inpit subnet file
+# Read input subnet file
 for line in fname:
     if not line.startswith('#'):
         # print "processing : " + line
