@@ -56,13 +56,13 @@ for line in fname:
                 # print "While " + str(i)
                 # print "line = " + line
                 if args.omcs :
-                        name_sub,AD,pubpvt,dhcp = line.split(',')
+                        name_sub,AD,pubpvt,dhcp,SGW,NGW,IGW = line.split(',')
                         # line = line.split(",",1)[0]
                         subnet = name_sub.rsplit("-",1)[1].strip()
                         name = name_sub.rsplit("-",1)[0].strip()
 
                 else :
-                        [name,sub,AD,pubpvt,dhcp] = line.split(',')
+                        [name,sub,AD,pubpvt,dhcp,SGW,NGW,IGW] = line.split(',')
                         linearr = line.split(",")
                         name = linearr[0].strip()
                         subnet = linearr[1].strip()
