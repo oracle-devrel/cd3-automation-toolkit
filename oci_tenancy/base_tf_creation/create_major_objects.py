@@ -67,6 +67,7 @@ igw_display_name = config.get('Default','igw_display_name').strip()
 
 lpg_var = config.get('Default','lpg_var').strip()
 lpg_display_name = config.get('Default','lpg_display_name').strip()
+lpg_ocs_ocid = config.get('Default','lpg_ocs_ocid').strip()
 
 sgw_var = config.get('Default','sgw_var').strip()
 sgw_display_name = config.get('Default','sgw_display_name').strip()
@@ -102,6 +103,7 @@ resource "oci_core_local_peering_gateway"  \"""" + lpg_var + """" {
         display_name = \"""" + lpg_display_name + """"
         vcn_id = "${oci_core_vcn.""" + vcn_var + """.id}"
         compartment_id = "${var.ntk_compartment_ocid}"
+        peer_id = \"""" + lpg_ocs_ocid + """" 
 }
 
 data "oci_core_services" "oci_services" {
@@ -127,7 +129,5 @@ resource "oci_core_nat_gateway" \"""" + ngw_var + """" {
 
 """
 oname.write(tempStr)
-
-
 oname.close()
 
