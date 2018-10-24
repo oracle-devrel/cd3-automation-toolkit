@@ -10,8 +10,8 @@ import ConfigParser
 
 
 parser = argparse.ArgumentParser(description="Create a terraform sec list resource with name \"name-cidr\" for each subnet identified in the subnet input file.  This creates open egress (0.0.0.0/0) and All protocols within subnet ingress rules.  Any other rules should be put in manually.")
-parser.add_argument("file",help="Full Path to the Subnet file. See readme for format example ")
-#parser.add_argument("outfile",help="Output Filename")
+parser.add_argument("--file",help="Full Path to the Subnet file. See readme for format example ")
+parser.add_argument("--outdir",help="Output directory")
 parser.add_argument("--omcs",help="Input Fileis of pattern \"name-cidr\" ",action="store_true")
 
 if len(sys.argv)==1:
@@ -29,7 +29,7 @@ config.read('oci-tf.properties')
 
 filename = args.file
 
-#outfile = args.outfile
+outdir = args.outdir
 
 fname = open(filename,"r")
 
@@ -71,7 +71,7 @@ for line in fname:
                 while i < seclists_per_subnet :
 
 
-                        oname = open(name+"_seclist.tf","a")
+                        oname = open(outdir +"/" +name+"_seclist.tf","a")
 
                         ad = ADS.index(AD)
                         ad_name = ad + 1
