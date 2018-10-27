@@ -7,7 +7,13 @@ import sys
 import os
 import argparse
 import ConfigParser
+import re
 
+def purge(dir, pattern):
+    for f in os.listdir(dir):
+        if re.search(pattern, f):
+            print("Purge ....." +  os.path.join(dir, f))
+            os.remove(os.path.join(dir, f))
 
 parser = argparse.ArgumentParser(description="Create a terraform sec list resource with name \"name-cidr\" for each subnet identified in the subnet input file.  This creates open egress (0.0.0.0/0) and All protocols within subnet ingress rules.  Any other rules should be put in manually.")
 parser.add_argument("--file",help="Full Path to the Subnet file. See readme for format example ")
@@ -47,6 +53,7 @@ comp_var = config.get('Default','comp_var')
 sps = config.get('Default','sec_list_per_subnet')
 seclists_per_subnet = int(sps)
 
+purge(outdir, "_seclist.tf")
 
 for line in fname:
         i = 0
