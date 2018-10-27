@@ -63,7 +63,7 @@ ruleStr = ""
 
 ADS = ["AD1", "AD2", "AD3"]
 
-if configure_drg == 'true':
+if configure_drg.strip() == 'true':
     ruleStr = ruleStr + """
 
         	route_rules { 
@@ -72,7 +72,7 @@ if configure_drg == 'true':
     	    destination_type = "CIDR_BLOCK"
     		}
     		"""
-if configure_lpg == 'true':
+if configure_lpg.strip() == 'true':
     ruleStr = ruleStr + """
 
         	route_rules { 
@@ -110,7 +110,7 @@ for line in fname:
 			vcn_id = "${oci_core_vcn.""" + vcn_var + """.id}"
 			display_name = \"""" + display_name.strip() + """\" """ + ruleStr
 
-        if configure_sgw == 'true':
+        if configure_sgw.strip() == 'true':
             tempStr = tempStr + """
 
 			route_rules { 
@@ -119,7 +119,7 @@ for line in fname:
 	     	destination_type = "SERVICE_CIDR_BLOCK"
 			}
 			"""
-        if configure_ngw == 'true':
+        if configure_ngw.strip() == 'true':
             tempStr = tempStr + """ 
 
 			route_rules { 

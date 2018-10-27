@@ -11,7 +11,7 @@ def print_by_field(row):
 	
 def copy_template_file(hostname,operatingsystem):
 	print('template/'+operatingsystem+'template.tf')
-	shutil.copyfile('template/'+operatingsystem+'template.tf', '/root/dll-group/oci_tenancy/terraform_files/'+hostname+'.tf')  
+	shutil.copyfile('template/'+operatingsystem+'template.tf', outdir+'/'+hostname+'.tf')
 
 #def readPublicKey(filename):
 #	with open(filename, 'r') as f:
@@ -71,14 +71,16 @@ def skipCommentedLine(lines):
 
 parser = argparse.ArgumentParser(description="CSV file name ")
 parser.add_argument("cvsfilename",help="CSV file with required details with following columns [Hostname,Availability Domain,subnet name,Pub Address,IP Address,OS,Shape,SSH-key-filepath]")
+parser.add_argument("outdir",help="output directory where host tf files will be generated")
 
-if len(sys.argv)==1:
+if len(sys.argv)==2:
         parser.print_help()
         sys.exit(1)
 
 args = parser.parse_args()
 cvsfilename = args.cvsfilename
-	
+outdir = args.outdir
+
 with open(cvsfilename) as csvfile:  
 	#reader = csv.DictReader(csvfile)
         reader = csv.DictReader(skipCommentedLine(csvfile))
@@ -87,7 +89,7 @@ with open(cvsfilename) as csvfile:
 		copy_template_file(row['Hostname'],row['OS'])
 		for column in columns:
 			# print(column)
-			replaceAllplaceholders('/path-to-terraform/'+row['Hostname']+'.tf','##'+column+'##',row[column])
+			replaceAllplaceholders(outdir+'/'+row['Hostname']+'.tf','##'+column+'##',row[column])
 
 		
 
