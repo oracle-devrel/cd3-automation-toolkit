@@ -1,0 +1,11 @@
+#Name,AD[1,2,3],path,sourceCIDR,access[READ_ONLY,READ_WRITE],GID,UID,IDSquash[NONE,ALL,ROOT],require_ps_port[true,false]
+Name = row[0]
+ad = row[1]
+AD = int(ad) - 1 --- adjust values to actual values, add str(AD) as VAR in script
+path = row[2]
+sourceCIDR = row[4]
+access = row[5] - if blank or wrong, set to default of READ_ONLY
+gid = row[6] - if blank, set to default of 65534
+uid = row[7] - if blank, set to default of 65534
+IDSquash = row[8] - if blank or wrong, set to NONE
+require_ps_port = row[9] - if blank or wrong, set to false
