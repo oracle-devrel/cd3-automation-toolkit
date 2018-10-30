@@ -1,9 +1,11 @@
 #!/bin/python
 
 import oci
+
 from oci.core.compute_client import ComputeClient
 from oci.object_storage import ObjectStorageClient
 from oci.object_storage.models import CreateBucketDetails
+
 
 
 config = oci.config.from_file()
