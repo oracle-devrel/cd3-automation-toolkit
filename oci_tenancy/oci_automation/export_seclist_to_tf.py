@@ -214,15 +214,11 @@ def create_seclist_tf_file(subnetid,create_def_file,importFlag,search_subnet_nam
         #importCommands.close()
 
 
-config = oci.config.from_file()
-
-ociprops = ConfigParser.RawConfigParser()
-ociprops.read('oci-tf.properties')
-
 parser = argparse.ArgumentParser(description="CSV filename")
 parser.add_argument("--outdir",help="directory path for output tf files ",required=True)
 parser.add_argument("--gen_tf_import", help="generate import TF command for given subnet", required=False)
 parser.add_argument("--subnet_name", help="name of subnet ", required=False)
+parser.add_argument("--configFileName", help="Config file name" , required=False)
 
 if len(sys.argv) < 1:
         parser.print_help()
@@ -238,6 +234,17 @@ if ( args.gen_tf_import != None):
 #outdir = args.outdir
 
 search_subnet_name = args.subnet_name
+configFileName = args.configFileName
+
+if args.configFileName is not None:
+    configFileName = args.configFileName
+    config = oci.config.from_file(file_location=configFileName)
+else:
+    config = oci.config.from_file()
+
+ociprops = ConfigParser.RawConfigParser()
+ociprops.read('oci-tf.properties')
+
 
 vnc = VirtualNetworkClient(config)
 vcn_id = ociprops.get('Default', 'vcn_id')
