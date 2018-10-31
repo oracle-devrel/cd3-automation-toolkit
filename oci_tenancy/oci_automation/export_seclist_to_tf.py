@@ -138,7 +138,7 @@ def create_egress_rule_string(rule):
     return egress_rule
 
 
-def create_seclist_tf_file(subnetid,create_def_file,importFlag,search_subnet_name):
+def create_seclist_tf_file(subnetid,create_def_file,importFlag,search_subnet_name,overwrite):
     response = vnc.get_subnet(subnetid)
     if(importFlag is "False"):
         print ("Seclist file name : " + response.data.display_name.rsplit("-", 1)[0].strip() + "_seclist.tf")
@@ -154,14 +154,16 @@ def create_seclist_tf_file(subnetid,create_def_file,importFlag,search_subnet_nam
                     compartment_id = "${var.ntk_compartment_ocid}"
                     vcn_id = "${oci_core_virtual_network.vcn01.id}"
                     display_name = \"""" + display_name.strip() + "\"\n"
+                if(overwrite == "False"):
+                    ingressRules = vnc.get_security_list(seclist_id).data.ingress_security_rules
+                    for rule in ingressRules:
+                                tempStr = tempStr + create_ingress_rule_string(rule) + "\n"
 
-                ingressRules = vnc.get_security_list(seclist_id).data.ingress_security_rules
-                for rule in ingressRules:
-                            tempStr = tempStr + create_ingress_rule_string(rule) + "\n"
-
-                egressRules = vnc.get_security_list(seclist_id).data.egress_security_rules
-                for rule in egressRules:
-                            tempStr = tempStr + create_egress_rule_string(rule) + "\n"
+                    egressRules = vnc.get_security_list(seclist_id).data.egress_security_rules
+                    for rule in egressRules:
+                                tempStr = tempStr + create_egress_rule_string(rule) + "\n"
+                #else:
+                #    print("Will create dummy files for overwitting exiting secrules")
 
                 tempStr = tempStr + """
                     \n \t\t ####ADD_NEW_SEC_RULES####""" + seclistname.rsplit("-", 1)[0].rsplit("-",1)[1] + """
@@ -175,14 +177,16 @@ def create_seclist_tf_file(subnetid,create_def_file,importFlag,search_subnet_nam
                     compartment_id = "${var.ntk_compartment_ocid}"
                     vcn_id = "${oci_core_virtual_network.vcn01.id}"
                     display_name = \"""" + display_name.strip() + "\""
+                if (overwrite == "False"):
+                    ingressRules = vnc.get_security_list(seclist_id).data.ingress_security_rules
+                    for rule in ingressRules:
+                                tempStr = tempStr + create_ingress_rule_string(rule) + "\n"
 
-                ingressRules = vnc.get_security_list(seclist_id).data.ingress_security_rules
-                for rule in ingressRules:
-                            tempStr = tempStr + create_ingress_rule_string(rule) + "\n"
-
-                egressRules = vnc.get_security_list(seclist_id).data.egress_security_rules
-                for rule in egressRules:
-                            tempStr = tempStr + create_egress_rule_string(rule) + "\n"
+                    egressRules = vnc.get_security_list(seclist_id).data.egress_security_rules
+                    for rule in egressRules:
+                                tempStr = tempStr + create_egress_rule_string(rule) + "\n"
+                #else:
+                #    print("Will create dummy files for overwitting exiting secrules")
 
                 tempStr = tempStr + """
                     \n \t\t ####ADD_NEW_SEC_RULES####""" + str(1) + """
@@ -219,6 +223,7 @@ parser.add_argument("--outdir",help="directory path for output tf files ",requir
 parser.add_argument("--gen_tf_import", help="generate import TF command for given subnet", required=False)
 parser.add_argument("--subnet_name", help="name of subnet ", required=False)
 parser.add_argument("--configFileName", help="Config file name" , required=False)
+parser.add_argument("--overwrite",help="Export files to overwrite existing subnet rules. ")
 
 if len(sys.argv) < 1:
         parser.print_help()
@@ -242,6 +247,11 @@ if args.configFileName is not None:
 else:
     config = oci.config.from_file()
 
+if args.overwrite is not None:
+    overwrite = args.overwrite
+else:
+    overwrite = "False"
+
 ociprops = ConfigParser.RawConfigParser()
 ociprops.read('oci-tf.properties')
 
@@ -257,7 +267,7 @@ subnet_list = response = vnc.list_subnets(ntk_comp_id, vcn_id)
 create_def_file = True
 #print("subnet_name ::: " + search_subnet_name)
 for subnet in subnet_list.data:
-     create_seclist_tf_file(subnet.id,True,importFlag,search_subnet_name)
+     create_seclist_tf_file(subnet.id,True,importFlag,search_subnet_name,overwrite)
 
 
 #importCommands.close()
