@@ -102,7 +102,7 @@ resource "oci_core_local_peering_gateway"  \"""" + lpg_var + """" {
         #Required
         display_name = \"""" + lpg_display_name + """"
         vcn_id = "${oci_core_vcn.""" + vcn_var + """.id}"
-        compartment_id = "${var.ntk_compartment_ocid}"
+        compartment_id = "${var.""" + ntk_comp_var + """}"
         peer_id = \"""" + lpg_ocs_ocid + """" 
 }
 
@@ -115,13 +115,13 @@ resource "oci_core_service_gateway"  \"""" + sgw_var + """" {
         }
         display_name = \"""" + sgw_display_name + """"
         vcn_id = "${oci_core_vcn.""" + vcn_var + """.id}"
-        compartment_id = "${var.ntk_compartment_ocid}"
+        compartment_id = "${var.""" + ntk_comp_var + """}"
 }
 
 resource "oci_core_nat_gateway" \"""" + ngw_var + """" {
         display_name = \"""" + ngw_display_name + """"
         vcn_id = "${oci_core_vcn.""" + vcn_var + """.id}"
-        compartment_id = "${var.ntk_compartment_ocid}"
+        compartment_id = "${var.""" + ntk_comp_var + """}"
 }
 
 

@@ -52,7 +52,7 @@ oname = open(outdir +"/" +mt+"_FSS_MT.tf","a")
 mt_body = """
 resource "oci_file_storage_mount_target" \"""" + mt + """" {
     availability_domain = "${lookup(data.oci_identity_availability_domains.ADs.availability_domains[""" + str(AD) + """],"name")}"
-    compartment_id = "${""" + compartment_ocid + """}"
+    compartment_id = "${var.""" + compartment_ocid + """}"
     subnet_id = "${"""  + network + """}"
     display_name = \""""  + mt + """"
     ip_address = \"""" + ip + """"

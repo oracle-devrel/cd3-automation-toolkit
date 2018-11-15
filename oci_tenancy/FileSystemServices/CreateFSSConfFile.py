@@ -95,7 +95,7 @@ with open(csvfilename) as csvfile:
         fss_body = """
         resource "oci_file_storage_file_system" \"""" + Name + """" {
             availability_domain = "${lookup(data.oci_identity_availability_domains.ADs.availability_domains[""" + str(AD) + """],"name")}"
-            compartment_id = "${""" + compartment_ocid + """}"
+            compartment_id = "${var.""" + compartment_ocid + """}"
             display_name = \""""  + Name + """"
         }
 
