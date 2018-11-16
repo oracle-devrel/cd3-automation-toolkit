@@ -85,14 +85,17 @@ resource "oci_core_vcn" \"""" + vcn_var + """" {
 	display_name = \"""" + vcn_display_name + """"
 	dns_label = \"""" + vcn_dns_label + """"
 }
+"""
 
+if igw_var.lower() != "":
+        tempStr = tempStr + """
 resource "oci_core_internet_gateway" \"""" + igw_var + """" {
 	compartment_id = "${var.""" + ntk_comp_var + """}"
 	display_name = \"""" + igw_display_name + """"
 	vcn_id = "${oci_core_vcn.""" + vcn_var + """.id}"
 }
 """
-print (drg_var)
+
 if drg_var.lower() != "":
         tempStr = tempStr + """
 resource "oci_core_drg" \"""" + drg_var + """" {
@@ -101,8 +104,8 @@ resource "oci_core_drg" \"""" + drg_var + """" {
 	display_name = \"""" + drg_display_name + """"
 }
 """
-
-tempStr = tempStr + """
+if lpg_var.lower() != "":
+        tempStr = tempStr + """
 resource "oci_core_local_peering_gateway"  \"""" + lpg_var + """" {
         #Required
         display_name = \"""" + lpg_display_name + """"
@@ -110,7 +113,9 @@ resource "oci_core_local_peering_gateway"  \"""" + lpg_var + """" {
         compartment_id = "${var.""" + ntk_comp_var + """}"
         peer_id = \"""" + lpg_ocs_ocid + """" 
 }
-
+"""
+if sgw_var.lower() != "":
+        tempStr = tempStr + """
 data "oci_core_services" "oci_services" {
 }
 resource "oci_core_service_gateway"  \"""" + sgw_var + """" {
@@ -122,17 +127,16 @@ resource "oci_core_service_gateway"  \"""" + sgw_var + """" {
         vcn_id = "${oci_core_vcn.""" + vcn_var + """.id}"
         compartment_id = "${var.""" + ntk_comp_var + """}"
 }
-
+"""
+if ngw_var.lower() != "":
+        tempStr = tempStr + """
 resource "oci_core_nat_gateway" \"""" + ngw_var + """" {
         display_name = \"""" + ngw_display_name + """"
         vcn_id = "${oci_core_vcn.""" + vcn_var + """.id}"
         compartment_id = "${var.""" + ntk_comp_var + """}"
 }
-
-
-
-
 """
+
 oname.write(tempStr)
 oname.close()
 

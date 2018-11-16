@@ -74,7 +74,7 @@ if (drg_var !="" and configure_drg.strip() == 'true'):
     		}
     		"""
 
-if configure_lpg.strip() == 'true':
+if (lpg_var !="" and configure_lpg.strip() == 'true'):
     ruleStr = ruleStr + """
 
         	route_rules { 
