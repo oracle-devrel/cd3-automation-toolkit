@@ -91,13 +91,18 @@ resource "oci_core_internet_gateway" \"""" + igw_var + """" {
 	display_name = \"""" + igw_display_name + """"
 	vcn_id = "${oci_core_vcn.""" + vcn_var + """.id}"
 }
-
+"""
+print (drg_var)
+if drg_var.lower() != "":
+        tempStr = tempStr + """
 resource "oci_core_drg" \"""" + drg_var + """" {
 	compartment_id = "${var.""" + ntk_comp_var + """}"
         #Optional
 	display_name = \"""" + drg_display_name + """"
 }
+"""
 
+tempStr = tempStr + """
 resource "oci_core_local_peering_gateway"  \"""" + lpg_var + """" {
         #Required
         display_name = \"""" + lpg_display_name + """"
