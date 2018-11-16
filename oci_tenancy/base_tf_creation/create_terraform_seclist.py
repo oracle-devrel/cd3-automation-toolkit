@@ -97,7 +97,9 @@ for line in fname:
 
                         if i+1 > 1 :
                                 tempStr  = tempStr + """
-                        }
+                        
+                        ####ADD_NEW_SEC_RULES####""" + str(i+1) + """
+                }
         """
                         else :
                                 tempStr = tempStr + """
@@ -109,6 +111,8 @@ for line in fname:
                                 protocol = "all"
                                 source = \"""" + subnet + """"
                         }
+                        #------------------------------------------------------------
+                        ####ADD_NEW_SEC_RULES####""" + str(i+1) + """
                 }
 
 """
