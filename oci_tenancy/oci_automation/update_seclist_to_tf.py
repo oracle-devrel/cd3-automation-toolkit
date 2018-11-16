@@ -36,8 +36,8 @@ def create_ingress_rule_string(row):
     options = ""
     temp_rule = """
           ingress_security_rules {
-                protocol = \"""" + row['Protocol'] + """\"
-                destination = \"""" + row['Destination'] + """\"
+                protocol = \"""" + get_protocol(row['Protocol']) + """\"
+                source = \"""" + row['Source'] + """\"
                 stateless = """ + str(row['isStateless'].lower()) + "\n"
     # print(rule.icmp_options)
     if row['Protocol'] == 'icmp':
@@ -92,7 +92,7 @@ def create_egress_rule_string(row):
     options = ""
     egress_rule = """
           egress_security_rules {
-                protocol = \"""" + row['Protocol'] + """\"
+                protocol = \"""" + get_protocol(row['Protocol']) + """\"
                 destination = \"""" + row['Destination'] + """\"
                 stateless = """ + str(row['isStateless'].lower()) + "\n"
     if row['Protocol'] == 'icmp':
@@ -142,7 +142,7 @@ def create_egress_rule_string(row):
     return egress_rule
 
 
-def init_subnet_details(subnetid):
+def init_subnet_details(subnetid , overwrite):
     global create_def_file
     response = vnc.get_subnet(subnetid)
     seclist_file = response.data.display_name.rsplit("-", 1)[0].strip() + "_seclist.tf"
@@ -161,7 +161,10 @@ def init_subnet_details(subnetid):
             egressRules = vnc.get_security_list(seclist_id).data.egress_security_rules
             #print("egresscount " + str(len(egressRules)))
             rule_count = rule_count + len(ingressRules)+len(egressRules)
-            seclist_rule_count[response.data.display_name.rsplit("-", 1)[0].strip()] = rule_count
+            if (overwrite.lower() != "true"):
+                seclist_rule_count[response.data.display_name.rsplit("-", 1)[0].strip()] = rule_count
+            else:
+                seclist_rule_count[response.data.display_name.rsplit("-", 1)[0].strip()] = 0
         elif create_def_file:
             print("Default list Should be taken care ")
             seclist_files["def-vcn_seclist"] = "def-vcn_seclist_generated.tf"
@@ -170,7 +173,11 @@ def init_subnet_details(subnetid):
             egressRules = vnc.get_security_list(seclist_id).data.egress_security_rules
             #print("egresscount default " + str(len(egressRules)))
             rule_count = rule_count + len(ingressRules)+len(egressRules)
-            seclist_rule_count["def-vcn_seclist"] = rule_count
+
+            if (overwrite.lower() != "true"):
+                seclist_rule_count["def-vcn_seclist"] = rule_count
+            else:
+                seclist_rule_count["def-vcn_seclist"] = 0
             create_def_file = False
         else:
             print("default seclist already created :def-vcn_seclist_generated.tf")
@@ -202,9 +209,25 @@ def getReplacementStr(sec_rule_per_seclist,subnet_name):
     return replaceString + str(list_no)
 
 
+
+def get_protocol(strprotocol):
+    # print myList
+    if str(strprotocol).lower() == "tcp":
+        return "6"
+    elif str(strprotocol).lower() == "icmp":
+        return "1"
+    elif str(strprotocol).lower() == "udp":
+        return "17"
+    elif str(strprotocol).lower() == "all":
+        return "all"
+    else:
+        return strprotocol
+
+
 parser = argparse.ArgumentParser(description="Takes in a list of subnet names with format \"prod-mt03-129.147.5.0/26\".  It will then create a terraform sec list resource with name \"prod-mt03-129.147.5.0/26.\"  and subnet of \"129.147.5.0/26\" ")
 parser.add_argument("--outdir",help="directory path for output tf files ",required=True)
 parser.add_argument("--secrulesfile",help="csv file with secrules for Security List of a given subnet")
+parser.add_argument("--overwrite",help="Overwite subnet files. When this flag is used, script expect new seclist files created using create_terraform_seclist.py   ")
 #parser.add_argument("outfile",help="Output Filename")
 
 if len(sys.argv)==1:
@@ -216,6 +239,12 @@ args = parser.parse_args()
 outdir = args.outdir
 secrulesfilename = args.secrulesfile
 totalRowCount = sum(1 for row in csv.DictReader(skipCommentedLine(open(secrulesfilename))))
+#overwrite = args.overwrite
+
+if args.overwrite is not None:
+    overwrite = str(args.overwrite)
+else:
+    overwrite = "false"
 
 seclist_files = {}
 seclist_rule_count = {}
@@ -231,7 +260,7 @@ sec_rule_per_seclist = ociprops.get('Default', 'sec_rule_per_seclist')
 subnet_list = response = vnc.list_subnets(ntk_comp_id, vcn_id)
 create_def_file = True
 for subnet in subnet_list.data:
-    init_subnet_details(subnet.id)
+    init_subnet_details(subnet.id,overwrite)
 
 print(seclist_rule_count)
 with open(secrulesfilename) as secrulesfile:

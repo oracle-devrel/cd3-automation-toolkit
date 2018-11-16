@@ -11,6 +11,7 @@ from oci.object_storage import UploadManager
 from oci.object_storage.transfer.constants import MEBIBYTE
 
 
+
 config = oci.config.from_file()
 compartment_id = config["compartment_id"]
 ad = config["ad_1"]
