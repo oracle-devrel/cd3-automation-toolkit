@@ -53,6 +53,7 @@ sgw_var = config.get('Default', 'sgw_var')
 ngw_var = config.get('Default', 'ngw_var')
 igw_var = config.get('Default', 'igw_var')
 
+
 configure_drg = config.get('Default', 'add_drg_route')
 configure_lpg = config.get('Default', 'add_lpg_route')
 drg_destination = config.get('Default', 'drg_subnet')
@@ -63,7 +64,7 @@ ruleStr = ""
 
 ADS = ["AD1", "AD2", "AD3"]
 
-if configure_drg.strip() == 'true':
+if (drg_var !="" and configure_drg.strip() == 'true'):
     ruleStr = ruleStr + """
 
         	route_rules { 
@@ -72,6 +73,7 @@ if configure_drg.strip() == 'true':
     	    destination_type = "CIDR_BLOCK"
     		}
     		"""
+
 if configure_lpg.strip() == 'true':
     ruleStr = ruleStr + """
 
