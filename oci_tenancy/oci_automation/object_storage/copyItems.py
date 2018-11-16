@@ -1,5 +1,9 @@
 #!/bin/python
 
+## Copies items from one bucket to another.
+## If items are in a subdirectory - direct copy fails, so have to download and re-upload
+## Thats what this does.
+
 import oci
 
 from oci.core.compute_client import ComputeClient
