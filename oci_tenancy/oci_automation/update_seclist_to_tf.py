@@ -5,7 +5,6 @@ import argparse
 import csv
 import re
 import sys
-import in_place
 import oci
 from oci.core.virtual_network_client import VirtualNetworkClient
 
@@ -33,6 +32,7 @@ def is_empty(myList):
 
 
 def create_ingress_rule_string(row):
+    print("row['SPortMin'] " + row['SPortMin'])
     options = ""
     temp_rule = """
           ingress_security_rules {
@@ -49,40 +49,48 @@ def create_ingress_rule_string(row):
     dest_range = ""
     source_range = ""
     if row['Protocol'] == 'tcp':
-        tcp_option = " tcp_options {"
+        tcp_option = " \t\ttcp_options {"
 
-        if not is_empty(row['Destination']):
-            dest_range = """
-                 "max" = """ + str(row['DPortMax']) + """
-                 "min" =  """ + str(row['DPortMin']) + """
-              """
-        elif not is_empty(row['Source']):
+        #if not is_empty(row['Destination']):
+        dest_range = """
+            "max" = """ + str(row['DPortMax']) + """
+            "min" =  """ + str(row['DPortMin']) + """
+         """
+        if str(row['SPortMax']) or str(row['SPortMin']):
             source_range = """
-                  source_port_range {
-                    "max" = """ + str(row['SPortMax']) + """
-                    "min" =  """ + str(row['SPortMin']) + """
-                  }  """
-        # tcp_option = tcp_option
-        options = tcp_option + dest_range + source_range + "\n   }"
+                source_port_range {"""
+            if str(row['SPortMax']):
+                source_range = source_range + """
+                \t\t"max" = """ + str(row['SPortMax']) + ""
+            if str(row['SPortMin']):
+                source_range = source_range + """
+                \t\t"min" =  """ + str(row['SPortMin']) + ""
+            source_range = source_range + " \n\t\t\t\t}  """
+
+        options = tcp_option + dest_range + source_range + "\n\t\t   }"
 
     udp_option = ""
     if row['Protocol'] == 'udp':
-        udp_option = " udp_options {"
+        udp_option = " \t\tudp_options {"
 
-        if not is_empty(row['Destination']):
-            dest_range = """
-                 "max" = """ + str(row['DPortMax']) + """
-                 "min" =  """ + str(row['DPortMin']) + """
-              """
-        elif not is_empty(row['Source']):
+        dest_range = """
+                    "max" = """ + str(row['DPortMax']) + """
+                    "min" =  """ + str(row['DPortMin']) + """
+                 """
+        if str(row['SPortMax']) or str(row['SPortMin']):
             source_range = """
-                  source_port_range {
-                    "max" = """ + str(row['SPortMax']) + """
-                    "min" =  """ + str(row['SPortMin']) + """
-                  }  """
-        options = udp_option + dest_range + source_range + "\n  }"
+                          source_port_range {"""
+            if str(row['SPortMax']):
+                source_range = source_range + """
+                        "max" = """ + str(row['SPortMax']) + ""
+            if str(row['SPortMin']):
+                source_range = source_range + """
+                        "min" =  """ + str(row['SPortMin']) + ""
+            source_range = source_range + " \n\t\t\t }  """
 
-    close_bracket = "\n \t\t}"
+        options = udp_option + dest_range + source_range + "\n\t\t   }"
+
+    close_bracket = "\n \t}"
 
     temp_rule = temp_rule + options + close_bracket
     return temp_rule
@@ -106,36 +114,42 @@ def create_egress_rule_string(row):
     if row['Protocol'] == 'tcp':
         tcp_option = " tcp_options {"
 
-        if not is_empty(row['Destination']):
-            dest_range = """
-                 "max" = """ + str(row['DPortMax']) + """
-                 "min" =  """ + str(row['DPortMin']) + """
-              """
-        elif not is_empty(row['Source']):
-            source_range = """
-                  source_port_range {
-                    "max" = """ + str(row['SPortMax']) + """
-                    "min" =  """ + str(row['SPortMin']) + """
-                  }  """
         # tcp_option = tcp_option
+        dest_range = """
+                    "max" = """ + str(row['DPortMax']) + """
+                    "min" =  """ + str(row['DPortMin']) + """
+                 """
+        if str(row['SPortMax']) or str(row['SPortMin']):
+            source_range = """
+                        source_port_range {"""
+            if str(row['SPortMax']):
+                source_range = source_range + """
+                        "max" = """ + str(row['SPortMax']) + ""
+            if str(row['SPortMin']):
+                source_range = source_range + """
+                        "min" =  """ + str(row['SPortMin']) + ""
+            source_range = source_range + " \n\t\t\t }  """
         options = tcp_option + dest_range + source_range + "\n  }"
 
     if row['Protocol'] == 'udp':
         udp_option = " udp_options {"
 
-        if not is_empty(row['Destination']):
-            dest_range = """
-                 "max" = """ + str(row['DPortMax']) + """
-                 "min" =  """ + str(row['DPortMin']) + """
-              """
-        elif not is_empty(row['Source']):
+        dest_range = """
+                            "max" = """ + str(row['DPortMax']) + """
+                            "min" =  """ + str(row['DPortMin']) + """
+                         """
+        if str(row['SPortMax']) or str(row['SPortMin']):
             source_range = """
-                  source_port_range {
-                    "max" = """ + str(row['SPortMax']) + """
-                    "min" =  """ + str(row['SPortMin']) + """
-                  }  """
-        options = udp_option + dest_range + source_range + "\n  }"
+                                  source_port_range {"""
+            if str(row['SPortMax']):
+                source_range = source_range + """
+                                "max" = """ + str(row['SPortMax']) + ""
+            if str(row['SPortMin']):
+                source_range = source_range + """
+                                "min" =  """ + str(row['SPortMin']) + ""
+            source_range = source_range + " \n\t\t\t }  """
 
+        options = udp_option + dest_range + source_range + "\n\t\t\t   }"
     close_bracket = "\n \t\t}"
 
     egress_rule = egress_rule + options + close_bracket
@@ -166,7 +180,7 @@ def init_subnet_details(subnetid , overwrite):
             else:
                 seclist_rule_count[response.data.display_name.rsplit("-", 1)[0].strip()] = 0
         elif create_def_file:
-            print("Default list Should be taken care ")
+            print("updating Seclist  ")
             seclist_files["def-vcn_seclist"] = "def-vcn_seclist_generated.tf"
             ingressRules = vnc.get_security_list(seclist_id).data.ingress_security_rules
             #print("ingresscount default " + str(len(ingressRules)))
@@ -180,7 +194,7 @@ def init_subnet_details(subnetid , overwrite):
                 seclist_rule_count["def-vcn_seclist"] = 0
             create_def_file = False
         else:
-            print("default seclist already created :def-vcn_seclist_generated.tf")
+            print("......................")
 
 
 def updateSecRules(seclistfile, text_to_replace, new_sec_rule, flags=0):
@@ -283,9 +297,10 @@ with open(secrulesfilename) as secrulesfile:
 
         sec_list_file = seclist_files[subnetName]
         print("file to modify ::::: "+ sec_list_file )
-        print("secrule count " + str(seclist_rule_count[subnetName]))
+        #print("secrule count " + str(seclist_rule_count[subnetName]))
         text_to_replace = getReplacementStr(sec_rule_per_seclist,subnetName)
         new_sec_rule = new_sec_rule + "\n" + text_to_replace
         updateSecRules(outdir + "/" + sec_list_file, text_to_replace, new_sec_rule, 0)
         incrementRuleCount(subnetName)
         ####ADD_NEW_SEC_RULES####
+
