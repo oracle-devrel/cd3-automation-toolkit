@@ -74,14 +74,13 @@ for line in fname:
                         name = linearr[0].strip()
                         subnet = linearr[1].strip()
 
-                print(' seclist file name  ************************** '+name+'_seclist.tf')
+                ad = ADS.index(AD)
+                ad_name = ad + 1
+                print(' seclist file name  ************************** '+name+str(ad_name)+'_seclist.tf')
                 while i < seclists_per_subnet :
 
 
-                        oname = open(outdir +"/" +name+"_seclist.tf","a")
-
-                        ad = ADS.index(AD)
-                        ad_name = ad + 1
+                        oname = open(outdir +"/" +name+str(ad_name)+"_seclist.tf","a")
                         seclistname = name + str(ad_name) + "-" +  str(i+1)
 
                         display_name = seclistname +  "-" + subnet
@@ -97,7 +96,9 @@ for line in fname:
 
                         if i+1 > 1 :
                                 tempStr  = tempStr + """
-                        }
+                        
+                        ####ADD_NEW_SEC_RULES####""" + str(i+1) + """
+                }
         """
                         else :
                                 tempStr = tempStr + """
@@ -109,6 +110,8 @@ for line in fname:
                                 protocol = "all"
                                 source = \"""" + subnet + """"
                         }
+                        #------------------------------------------------------------
+                        ####ADD_NEW_SEC_RULES####""" + str(i+1) + """
                 }
 
 """
