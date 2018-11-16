@@ -76,11 +76,11 @@ for line in fname:
 
                 ad = ADS.index(AD)
                 ad_name = ad + 1
-                print(' seclist file name  ************************** '+name+str(ad)+'_seclist.tf')
+                print(' seclist file name  ************************** '+name+str(ad_name)+'_seclist.tf')
                 while i < seclists_per_subnet :
 
 
-                        oname = open(outdir +"/" +name+str(ad)+"_seclist.tf","a")
+                        oname = open(outdir +"/" +name+str(ad_name)+"_seclist.tf","a")
                         seclistname = name + str(ad_name) + "-" +  str(i+1)
 
                         display_name = seclistname +  "-" + subnet
