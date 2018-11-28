@@ -3,10 +3,20 @@
 import ConfigParser
 import argparse
 import csv
+import os
+import shutil
 import re
 import sys
 import oci
 from oci.core.virtual_network_client import VirtualNetworkClient
+
+def backup_file(dir, pattern):
+    print("backing up tf files ")
+    for f in os.listdir(dir):
+        if f.endswith(pattern):
+            print(("backing up ....." +  os.path.join(dir, f)))
+            path = os.path.join(dir, f)
+            shutil.copy(path, path + "_backup")
 
 
 def skipCommentedLine(lines):
@@ -254,6 +264,7 @@ outdir = args.outdir
 secrulesfilename = args.secrulesfile
 totalRowCount = sum(1 for row in csv.DictReader(skipCommentedLine(open(secrulesfilename))))
 #overwrite = args.overwrite
+backup_file(outdir, "_seclist.tf")
 
 if args.overwrite is not None:
     overwrite = str(args.overwrite)
