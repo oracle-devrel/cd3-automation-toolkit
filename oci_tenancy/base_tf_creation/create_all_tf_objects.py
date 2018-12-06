@@ -4,7 +4,7 @@ import argparse
 import sys
 
 
-parser = argparse.ArgumentParser(description="create terraform files based given inputs")
+parser = argparse.ArgumentParser(description="create terraform files for network resources based on given inputs; This also requires oci-tf.properties in the current folder. See example folder for sample input files")
 parser.add_argument("subnetfile", help="Full Path of sec list file. See readme for format example ")
 parser.add_argument("dhcpfile", help="Full Path of DHCP file ( .ini format). See readme for format example ")
 parser.add_argument("outdir", help="Output directory for creation of TF files")
