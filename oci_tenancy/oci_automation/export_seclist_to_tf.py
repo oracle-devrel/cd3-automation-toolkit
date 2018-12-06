@@ -5,6 +5,7 @@ import argparse
 import sys
 import oci
 from oci.core.virtual_network_client import VirtualNetworkClient
+from oci.identity import IdentityClient
 
 
 def is_empty(myList):
@@ -138,7 +139,7 @@ def create_egress_rule_string(rule):
     return egress_rule
 
 
-def create_seclist_tf_file(subnetid,create_def_file,importFlag,search_subnet_name,overwrite):
+def create_seclist_tf_file(vcn_display_name,subnetid,create_def_file,importFlag,search_subnet_name,overwrite):
     response = vnc.get_subnet(subnetid)
     if(importFlag is "False"):
         print ("Seclist file name : " + response.data.display_name.rsplit("-", 1)[0].strip() + "_seclist.tf")
@@ -148,7 +149,7 @@ def create_seclist_tf_file(subnetid,create_def_file,importFlag,search_subnet_nam
             seclistname = vnc.get_security_list(seclist_id).data.display_name
             # print vnc.get_security_list(seclist_id).data.ingress_security_rules
             display_name = seclistname  # +  "-" + subnet
-            if (seclistname != "Default Security List for VCN01"):
+            if (seclistname != "Default Security List for "+vcn_display_name):
                 tempStr = """
             resource "oci_core_security_list" \"""" + seclistname.rsplit("-", 1)[0] + """"{
                     compartment_id = "${var.ntk_compartment_ocid}"
@@ -218,6 +219,24 @@ def create_seclist_tf_file(subnetid,create_def_file,importFlag,search_subnet_nam
         #importCommands.close()
 
 
+def get_network_compartment_id(config, compartment_name):
+    identity = IdentityClient(config)
+    comp_list = identity.list_compartments(compartment_id=config["tenancy"])
+    compartment_list = comp_list.data
+    for compartment in compartment_list:
+        if compartment.name == compartment_name:
+            return compartment.id
+
+def get_vcn_id(config,compartment_id,vcn_display_name):
+    vcn = VirtualNetworkClient(config)
+    vcns = vcn.list_vcns(compartment_id=compartment_id)
+    vcn_list = vcns.data
+    for vcn in vcn_list:
+        #print(vcn.display_name)
+        #print(vcn_display_name)
+        if vcn.display_name == vcn_display_name:
+            return vcn.id
+
 parser = argparse.ArgumentParser(description="CSV filename")
 parser.add_argument("--outdir",help="directory path for output tf files ",required=True)
 parser.add_argument("--gen_tf_import", help="generate import TF command for given subnet", required=False)
@@ -230,6 +249,10 @@ if len(sys.argv) < 1:
         sys.exit(1)
 
 args = parser.parse_args()
+
+question = 'Input Name of Network compartment where VCN exist : '
+print (question)
+ntk_comp_name = raw_input()
 
 outdir = args.outdir
 importFlag = "False"
@@ -252,13 +275,18 @@ if args.overwrite is not None:
 else:
     overwrite = "False"
 
+
+ntk_comp_id = get_network_compartment_id(config, ntk_comp_name)
+
 ociprops = ConfigParser.RawConfigParser()
-ociprops.read('oci-tf.properties')
+ociprops.read('../base_tf_creation/oci-tf.properties')
 
 
 vnc = VirtualNetworkClient(config)
-vcn_id = ociprops.get('Default', 'vcn_id')
-ntk_comp_id = ociprops.get('Default', 'ntk_comp_id')
+vcn_display_name = ociprops.get('Default', 'vcn_display_name')
+vcn_id = get_vcn_id(config, ntk_comp_id , vcn_display_name)
+#vcn_id = ociprops.get('Default', 'vcn_id')
+#ntk_comp_id = ociprops.get('Default', 'ntk_comp_id')
 
 print(ntk_comp_id)
 print(vcn_id)
@@ -267,7 +295,7 @@ subnet_list = response = vnc.list_subnets(ntk_comp_id, vcn_id)
 create_def_file = True
 #print("subnet_name ::: " + search_subnet_name)
 for subnet in subnet_list.data:
-     create_seclist_tf_file(subnet.id,True,importFlag,search_subnet_name,overwrite)
+     create_seclist_tf_file(vcn_display_name,subnet.id,True,importFlag,search_subnet_name,overwrite)
 
 
 #importCommands.close()
