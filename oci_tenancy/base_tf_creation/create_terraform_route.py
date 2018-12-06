@@ -19,7 +19,7 @@ import ConfigParser
 
 
 parser = argparse.ArgumentParser(
-    description="Creates a routelist for each subnet. Every route in the routeslist file will be created for each of the subnets.")
+    description="Creates route tables containing default routes for each subnet based on inputs given in oci-tf.properties.")
 parser.add_argument("subnetfile", help="Full Path to the Subnet file. See readme for format example ")
 parser.add_argument("outfile", help="Output Filename")
 parser.add_argument("--omcs", help="If the File is of OMCS format: \"prod-dmz-lb-ext2-10.89.69.0/24,AD2\"",

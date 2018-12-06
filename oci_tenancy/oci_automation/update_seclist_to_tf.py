@@ -3,10 +3,20 @@
 import ConfigParser
 import argparse
 import csv
+import os
+import shutil
 import re
 import sys
 import oci
 from oci.core.virtual_network_client import VirtualNetworkClient
+
+def backup_file(dir, pattern):
+    print("backing up tf files ")
+    for f in os.listdir(dir):
+        if f.endswith(pattern):
+            print(("backing up ....." +  os.path.join(dir, f)))
+            path = os.path.join(dir, f)
+            shutil.copy(path, path + "_backup")
 
 
 def skipCommentedLine(lines):
@@ -156,7 +166,7 @@ def create_egress_rule_string(row):
     return egress_rule
 
 
-def init_subnet_details(subnetid , overwrite):
+def init_subnet_details(subnetid ,vcn_display_name, overwrite):
     global create_def_file
     response = vnc.get_subnet(subnetid)
     seclist_file = response.data.display_name.rsplit("-", 1)[0].strip() + "_seclist.tf"
@@ -169,7 +179,7 @@ def init_subnet_details(subnetid , overwrite):
         # print vnc.get_security_list(seclist_id).data.ingress_security_rules
         display_name = seclistname  # +  "-" + subnet
 
-        if (seclistname != "Default Security List for VCN01"):
+        if (seclistname != "Default Security List for "+vcn_display_name):
             ingressRules = vnc.get_security_list(seclist_id).data.ingress_security_rules
             #print("ingresscount " + str(len(ingressRules)))
             egressRules = vnc.get_security_list(seclist_id).data.egress_security_rules
@@ -254,6 +264,7 @@ outdir = args.outdir
 secrulesfilename = args.secrulesfile
 totalRowCount = sum(1 for row in csv.DictReader(skipCommentedLine(open(secrulesfilename))))
 #overwrite = args.overwrite
+backup_file(outdir, "_seclist.tf")
 
 if args.overwrite is not None:
     overwrite = str(args.overwrite)
@@ -270,11 +281,12 @@ vnc = VirtualNetworkClient(config)
 vcn_id = ociprops.get('Default', 'vcn_id')
 ntk_comp_id = ociprops.get('Default', 'ntk_comp_id')
 sec_rule_per_seclist = ociprops.get('Default', 'sec_rule_per_seclist')
+vcn_display_name = ociprops.get('Default', 'vcn_display_name')
 
 subnet_list = response = vnc.list_subnets(ntk_comp_id, vcn_id)
 create_def_file = True
 for subnet in subnet_list.data:
-    init_subnet_details(subnet.id,overwrite)
+    init_subnet_details(subnet.id,vcn_display_name,overwrite)
 
 print(seclist_rule_count)
 with open(secrulesfilename) as secrulesfile:
