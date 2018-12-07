@@ -1,0 +1,3 @@
+LBName,LBSize,LBSubnet1,LBSubnet2,LB_BES_Name,LBURL,LBHostName,LBListener,BEServerpattren
+Direct Connect,400,prod-dmz-lb-ext2,prod-dmz-lb-ext3,SDX,gdc.synxis.com,gdc.synxis.com,SDiX_Listener,SHPROP3CRSDX
+Travelport Direct Connect,400,prod-dmz-lb-ext2,prod-dmz-lb-ext3,TDX,travelport-gds.synxis.com,travelport-gds.synxis.com,TDX_Listerner,SHPROP3CRTDX
