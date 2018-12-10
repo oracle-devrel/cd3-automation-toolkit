@@ -11,21 +11,19 @@ import ConfigParser
 
 ######
 # Required Files
-# Also required is the "oci-tf.properties"
-# List of Subnets - Each Subnet will get its route table.
-# The subnets file can be the same one that is used for creating the sec rules and subnets
+# Properties File: oci-tf.properties"
+# Code will read input subnet file name from properties file
+# Subnets file will contain info about each subnet and which component(SGW, NGW, IGW) is required for which subnet
 # Outfile
 ######
 
-
-parser = argparse.ArgumentParser(
-    description="Creates route tables containing default routes for each subnet based on inputs given in oci-tf.properties.")
-parser.add_argument("subnetfile", help="Full Path to the Subnet file. See readme for format example ")
+parser = argparse.ArgumentParser(description="Creates route tables containing default routes for each subnet based on inputs given in oci-tf.properties.")
+parser.add_argument("propsfile", help="Full Path of properties file. eg oci-tf.properties in example folder")
 parser.add_argument("outfile", help="Output Filename")
 parser.add_argument("--omcs", help="If the File is of OMCS format: \"prod-dmz-lb-ext2-10.89.69.0/24,AD2\"",
                     action="store_true")
 
-if len(sys.argv) == 1:
+if len(sys.argv) == 2:
     parser.print_help()
     sys.exit(1)
 if len(sys.argv) < 3:
@@ -35,9 +33,9 @@ if len(sys.argv) < 3:
 args = parser.parse_args()
 
 config = ConfigParser.RawConfigParser()
-config.read('oci-tf.properties')
+config.read(args.propsfile)
 
-subnet_file = args.subnetfile
+subnet_file = config.get('Default','subnet_file')
 outfile = args.outfile
 
 fname = open(subnet_file, "r")
@@ -140,6 +138,7 @@ for line in fname:
 			}
 			"""
         tempStr = tempStr + """
+            ##Add More rules for subnet """ + name + """##
 	}
 	"""
         oname.write(tempStr)
