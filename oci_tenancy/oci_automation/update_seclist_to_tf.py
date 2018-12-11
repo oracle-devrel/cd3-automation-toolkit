@@ -248,7 +248,8 @@ def get_protocol(strprotocol):
         return strprotocol
 
 
-parser = argparse.ArgumentParser(description="Takes in a list of subnet names with format \"prod-mt03-129.147.5.0/26\".  It will then create a terraform sec list resource with name \"prod-mt03-129.147.5.0/26.\"  and subnet of \"129.147.5.0/26\" ")
+parser = argparse.ArgumentParser(description="Takes in a csv file mentioning sec rules to be added for the subnet. See update_seclist-example.csv for format under example folder. It will then take backup of all existing sec list files and create new one with modified rules; Required Arguements: propsfile, outdir and secrulesfile")
+parser.add_argument("--propsfile",help="Full Path of properties file. eg oci-tf.properties in example folder",required=True)
 parser.add_argument("--outdir",help="directory path for output tf files ",required=True)
 parser.add_argument("--secrulesfile",help="csv file with secrules for Security List of a given subnet")
 parser.add_argument("--overwrite",help="Overwite subnet files. When this flag is used, script expect new seclist files created using create_terraform_seclist.py   ")
@@ -276,7 +277,7 @@ seclist_rule_count = {}
 
 config = oci.config.from_file()
 ociprops = ConfigParser.RawConfigParser()
-ociprops.read('oci-tf.properties')
+ociprops.read(args.propsfile)
 vnc = VirtualNetworkClient(config)
 vcn_id = ociprops.get('Default', 'vcn_id')
 ntk_comp_id = ociprops.get('Default', 'ntk_comp_id')
