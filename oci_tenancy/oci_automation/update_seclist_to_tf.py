@@ -247,6 +247,23 @@ def get_protocol(strprotocol):
     else:
         return strprotocol
 
+def get_network_compartment_id(config, compartment_name):
+    identity = IdentityClient(config)
+    comp_list = identity.list_compartments(compartment_id=config["tenancy"])
+    compartment_list = comp_list.data
+    for compartment in compartment_list:
+        if compartment.name == compartment_name:
+            return compartment.id
+
+def get_vcn_id(config,compartment_id,vcn_display_name):
+    vcn = VirtualNetworkClient(config)
+    vcns = vcn.list_vcns(compartment_id=compartment_id)
+    vcn_list = vcns.data
+    for vcn in vcn_list:
+        #print(vcn.display_name)
+        #print(vcn_display_name)
+        if vcn.display_name == vcn_display_name:
+            return vcn.id
 
 parser = argparse.ArgumentParser(description="Takes in a csv file mentioning sec rules to be added for the subnet. See update_seclist-example.csv for format under example folder. It will then take backup of all existing sec list files and create new one with modified rules; Required Arguements: propsfile, outdir and secrulesfile")
 parser.add_argument("--propsfile",help="Full Path of properties file. eg oci-tf.properties in example folder",required=True)
@@ -275,14 +292,24 @@ else:
 seclist_files = {}
 seclist_rule_count = {}
 
+question = 'Input Name of Network compartment where VCN exist : '
+print (question)
+ntk_comp_name = raw_input()
+
 config = oci.config.from_file()
 ociprops = ConfigParser.RawConfigParser()
 ociprops.read(args.propsfile)
+
+ntk_comp_id = get_network_compartment_id(config, ntk_comp_name)
+
 vnc = VirtualNetworkClient(config)
-vcn_id = ociprops.get('Default', 'vcn_id')
-ntk_comp_id = ociprops.get('Default', 'ntk_comp_id')
+
 sec_rule_per_seclist = ociprops.get('Default', 'sec_rule_per_seclist')
 vcn_display_name = ociprops.get('Default', 'vcn_display_name')
+vcn_id = get_vcn_id(config, ntk_comp_id , vcn_display_name)
+
+#vcn_id = ociprops.get('Default', 'vcn_id')
+#ntk_comp_id = ociprops.get('Default', 'ntk_comp_id')
 
 subnet_list = response = vnc.list_subnets(ntk_comp_id, vcn_id)
 create_def_file = True
