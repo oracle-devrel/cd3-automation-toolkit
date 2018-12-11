@@ -239,7 +239,7 @@ def get_vcn_id(config,compartment_id,vcn_display_name):
 
 parser = argparse.ArgumentParser(description="Exports existing seclists to tf files; Required Arguements: propsfile and outdir")
 parser.add_argument("--propsfile",help="Full Path of properties file. eg oci-tf.properties in example folder",required=True)
-parser.add_argument("--outdir",help="directory path for output tf files",required=True")
+parser.add_argument("--outdir",help="directory path for output tf files",required=True)
 parser.add_argument("--gen_tf_import", help="generate import TF command for given subnet", required=False)
 parser.add_argument("--subnet_name", help="name of subnet ", required=False)
 parser.add_argument("--configFileName", help="Config file name" , required=False)
