@@ -10,7 +10,7 @@ import re
 
 
 
-parser = argparse.ArgumentParser(description="Updates routelist for subnet. It accepts input csv which contains new rules to be added to the subnet. See .")
+parser = argparse.ArgumentParser(description="Updates routelist for subnet. It accepts input file which contains new rules to be added to the existing rule list of the subnet.")
 parser.add_argument("inputcsv", help="Required; Full Path to input route file containing rules to be updated; See example folder for sample format: add_routes-example.txt")
 parser.add_argument("routefile", help= "Required: Full path of routes tf file which will be modified. This should ideally be the tf file which was created using create_all_tf_objects.py script.")
 
