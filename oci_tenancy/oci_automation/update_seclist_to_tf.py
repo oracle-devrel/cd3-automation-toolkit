@@ -9,6 +9,7 @@ import re
 import sys
 import oci
 from oci.core.virtual_network_client import VirtualNetworkClient
+from oci.identity import IdentityClient
 
 def backup_file(dir, pattern):
     print("backing up tf files ")
