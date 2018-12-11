@@ -34,8 +34,8 @@ for route in fname:
     if not route.startswith('#'):
         print "processing : " + route
         subnet_name = route.split(":")[0]
-        dest = route.split(":")[1]
-        ntk_ent_id = route.split(":")[2]
+        dest_cidr = route.split(":")[1]
+        dest_obj = route.split(":")[2]
         dest_type = route.split(":")[3]
         dest_type = dest_type.strip()
 
