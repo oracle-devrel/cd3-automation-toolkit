@@ -271,6 +271,7 @@ parser.add_argument("--propsfile",help="Full Path of properties file. eg oci-tf.
 parser.add_argument("--outdir",help="directory path for output tf files ",required=True)
 parser.add_argument("--secrulesfile",help="csv file with secrules for Security List of a given subnet")
 parser.add_argument("--overwrite",help="Overwite subnet files. When this flag is used, script expect new seclist files created using create_terraform_seclist.py   ")
+parser.add_argument("--configFileName", help="Config file name" , required=False)
 #parser.add_argument("outfile",help="Output Filename")
 
 if len(sys.argv)==1:
@@ -297,7 +298,14 @@ question = 'Input Name of Network compartment where VCN exist : '
 print (question)
 ntk_comp_name = raw_input()
 
-config = oci.config.from_file()
+configFileName = args.configFileName
+
+if args.configFileName is not None:
+    configFileName = args.configFileName
+    config = oci.config.from_file(file_location=configFileName)
+else:
+    config = oci.config.from_file()
+
 ociprops = ConfigParser.RawConfigParser()
 ociprops.read(args.propsfile)
 
