@@ -36,9 +36,10 @@ The "ntk_compartment_ocid" is the name of the network compartment ocid variable.
 
 
 ### Setup of the Scripts ###
+## See example folder for sample format of the files
 A.  Setup the oci-tf.properties file with the correct IDs for network compartment, compartment etc.  If the Network objects compartment and the rest of the objects compartment are the same - then put the same variable name for it (look at variables.tf). 
 B.  Create a dhcp file - The section headings is what is used as the name of the dhcp-options.  An example is provided for both.
-C.  Create a subnet file with the format "#name,subnet-cidr,availabilty-domain(AD1|AD2|AD3),private|public,dhcp-options-name
+C.  Create a subnet file - Create file mentioning info about the subnets like name, AD, public/private, network gateway components required or not etc
 
 
 
@@ -54,6 +55,6 @@ C.  Create a subnet file with the format "#name,subnet-cidr,availabilty-domain(A
 
 ---- Creating the Objects ---
 
-1.  Move each of the files that are created to your terraform directory (I create a terraform_files directory for all my .tf files)
+1. Move each of the files that are created to your terraform directory (I create a terraform_files directory for all my .tf files)
 2. Run terraform plan & then terraform apply if things look right.  This should create the objects.
 

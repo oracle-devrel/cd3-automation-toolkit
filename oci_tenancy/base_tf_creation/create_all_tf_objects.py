@@ -4,9 +4,8 @@ import argparse
 import sys
 
 
-parser = argparse.ArgumentParser(description="create terraform files for network resources based on given inputs; This also requires oci-tf.properties in the current folder. See example folder for sample input files")
-parser.add_argument("subnetfile", help="Full Path of sec list file. See readme for format example ")
-parser.add_argument("dhcpfile", help="Full Path of DHCP file ( .ini format). See readme for format example ")
+parser = argparse.ArgumentParser(description="Creates terraform files for network resources based on given inputs; See example folder for sample input files")
+parser.add_argument("propsfile", help="Full Path of properties file. eg oci-tf.properties in example folder")
 parser.add_argument("outdir", help="Output directory for creation of TF files")
 parser.add_argument("prefix", help="customer name/prefix for all file names")
 
@@ -16,28 +15,30 @@ if len(sys.argv) < 4:
 
 args = parser.parse_args()
 print (args)
-subnetfile = args.subnetfile
-dhcpfile = args.dhcpfile
+propsfile = args.propsfile
 outdir = args.outdir
 prefix = args.prefix
 
+if not os.path.exists(outdir):
+    os.makedirs(outdir)
+
 
 print (" Creating Major TF Objects ")
-command = 'python create_major_objects.py ' + outdir+"/"+prefix+'-major-objs.tf'
+command = 'python create_major_objects.py ' + propsfile + ' ' + outdir+"/"+prefix+'-major-objs.tf'
 os.system(command)
 
 print (" Creating DHCP options ")
-command = 'python create_terraform_dhcp_options.py ' + dhcpfile + ' ' + outdir+"/"+prefix+'-dhcp.tf'
+command = 'python create_terraform_dhcp_options.py ' + propsfile + ' ' + outdir+"/"+prefix+'-dhcp.tf'
 os.system(command)
 
 print (" Creating Route")
-command = 'python create_terraform_route.py ' + subnetfile + ' ' + outdir+"/"+prefix+'-route.tf'
+command = 'python create_terraform_route.py ' + propsfile + ' ' + outdir+"/"+prefix+'-routes.tf'
 os.system(command)
 
 print (" Creating Seclist  ")
-command = 'python create_terraform_seclist.py  --file=' + subnetfile + ' --outdir=' + outdir
+command = 'python create_terraform_seclist.py  --propsfile=' + propsfile + ' --outdir=' + outdir
 os.system(command)
 
 print (" Creating Subnet ")
-command = 'python create_terraform_subnet.py ' + subnetfile + ' ' + outdir+"/"+prefix+'-subnets.tf'
+command = 'python create_terraform_subnet.py ' + propsfile + ' ' + outdir+"/"+prefix+'-subnets.tf'
 os.system(command)

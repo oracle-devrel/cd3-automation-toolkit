@@ -9,16 +9,20 @@ import re
 def print_by_field(row):
     print(row)
 	
-def copy_template_file(hostname,operatingsystem):
-	print('template/'+operatingsystem+'template.tf')
-	shutil.copyfile('template/'+operatingsystem+'template.tf', outdir+'/'+hostname+'.tf')
+#def copy_template_file(hostname,operatingsystem):
+#	print('template/'+operatingsystem+'template.tf')
+#	shutil.copyfile('template/'+operatingsystem+'template.tf', outdir+'/'+hostname+'.tf')
 
-#def readPublicKey(filename):
-#	with open(filename, 'r') as f:
-#		key = f.read()
-#		#result = key.index('== ')
-#		#key=key[0:result+2]
-#		return (key.strip())
+
+def copy_template_file(hostname, operatingsystem, faultDomainName):
+	print(faultDomainName)
+	if (faultDomainName == '' or faultDomainName == 'NA'):
+		print('template/' + operatingsystem + 'template.tf')
+		shutil.copyfile('template/' + operatingsystem + 'template.tf', outdir + '/' + hostname + '.tf')
+	else:
+		print('template/' + operatingsystem + 'FDtemplate.tf')
+		shutil.copyfile('template/' + operatingsystem + 'FDtemplate.tf', outdir + '/' + hostname + '.tf')
+
 
 def findQuotes(string, substring):
    return string.find(substring, string.find(substring) + 1)
@@ -86,7 +90,7 @@ with open(cvsfilename) as csvfile:
         reader = csv.DictReader(skipCommentedLine(csvfile))
 	columns = reader.fieldnames
 	for row in reader:
-		copy_template_file(row['Hostname'],row['OS'])
+		copy_template_file(row['Hostname'],row['OS'],row['Fault Domain'])
 		for column in columns:
 			# print(column)
 			replaceAllplaceholders(outdir+'/'+row['Hostname']+'.tf','##'+column+'##',row[column])

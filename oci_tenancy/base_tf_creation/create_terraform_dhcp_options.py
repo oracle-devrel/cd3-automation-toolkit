@@ -11,23 +11,21 @@ import argparse
 import ConfigParser
 ######
 # Required Files
-# "oci-tf.properties"
+# "properties file- oci-tf.properties"
+# Code will read input dhcp file name from properties file
 # Dhcp options defined in "ini" format.
 # the Section name of the ini file becomes the "dhcp rule name"
 # The script expects a "default" section.
 # Optionally - name the dhcp section the same as the subnet name - and when creating subnets - the subnet will point to this dhcp option.
-# The subnets file can be the same one that is used for creating the sec rules and subnets
-# List of cidr_block:network_entity_id 
-# Example: 10.26.76.0/23:${oci_core_drg.drg01.id}
 # Outfile
 ######
 
 
 parser = argparse.ArgumentParser(description="Create DHCP options terraform file")
-parser.add_argument("file",help="path to dhcp file in \"ini\" format. ")
+parser.add_argument("propsfile", help="Full Path of properties file. eg oci-tf.properties in example folder")
 parser.add_argument("outfile",help="Output Filename")
 
-if len(sys.argv)==1:
+if len(sys.argv)==2:
         parser.print_help()
         sys.exit(1)
 if len(sys.argv)<3:
@@ -35,40 +33,26 @@ if len(sys.argv)<3:
         sys.exit(1)
 
 args = parser.parse_args()
-
 config = ConfigParser.RawConfigParser()
-config.read('oci-tf.properties')
+config.read(args.propsfile)
 
-filename = args.file
 outfile = args.outfile
-
-# print "filename = " + filename + " routefiles  = " + routesfile + " outfile = " + outfile 
-
 oname = open(outfile,"w")
-
-
-####
-#ntk_comp_var=ntk_compartment_ocid
-#comp_var=compartment_ocid
-#vcn_var=vcn01
-#####
 
 vcn_var = config.get('Default','vcn_var')
 ntk_comp_var = config.get('Default','ntk_comp_var')
 comp_var = config.get('Default','comp_var')
 
-### Read the Routes file
+### Read the DHCP file
 
+dhcpfile = ConfigParser.RawConfigParser()
+dhcp_file = config.get('Default','dhcp_file')
+dhcpfile.read(dhcp_file)
 
 tempStr = ""
-dhcpfile = ConfigParser.RawConfigParser()
-dhcpfile.read(filename)
-
 sections = dhcpfile.sections()
 
 for section in sections :
-
-
 	display_name = section
 	serverType = dhcpfile.get(section,'serverType')
 	search_domain = dhcpfile.get(section,'search_domain')
@@ -102,7 +86,6 @@ resource "oci_core_dhcp_options" \"""" + section + """" {
 }
 """
 	oname.write(tempStr)
-
 
 oname.close()
 

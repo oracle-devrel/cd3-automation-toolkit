@@ -9,6 +9,7 @@ import re
 import sys
 import oci
 from oci.core.virtual_network_client import VirtualNetworkClient
+from oci.identity import IdentityClient
 
 def backup_file(dir, pattern):
     print("backing up tf files ")
@@ -247,11 +248,30 @@ def get_protocol(strprotocol):
     else:
         return strprotocol
 
+def get_network_compartment_id(config, compartment_name):
+    identity = IdentityClient(config)
+    comp_list = identity.list_compartments(compartment_id=config["tenancy"])
+    compartment_list = comp_list.data
+    for compartment in compartment_list:
+        if compartment.name == compartment_name:
+            return compartment.id
 
-parser = argparse.ArgumentParser(description="Takes in a list of subnet names with format \"prod-mt03-129.147.5.0/26\".  It will then create a terraform sec list resource with name \"prod-mt03-129.147.5.0/26.\"  and subnet of \"129.147.5.0/26\" ")
+def get_vcn_id(config,compartment_id,vcn_display_name):
+    vcn = VirtualNetworkClient(config)
+    vcns = vcn.list_vcns(compartment_id=compartment_id)
+    vcn_list = vcns.data
+    for vcn in vcn_list:
+        #print(vcn.display_name)
+        #print(vcn_display_name)
+        if vcn.display_name == vcn_display_name:
+            return vcn.id
+
+parser = argparse.ArgumentParser(description="Takes in a csv file mentioning sec rules to be added for the subnet. See update_seclist-example.csv for format under example folder. It will then take backup of all existing sec list files and create new one with modified rules; Required Arguements: propsfile, outdir and secrulesfile")
+parser.add_argument("--propsfile",help="Full Path of properties file. eg oci-tf.properties in example folder",required=True)
 parser.add_argument("--outdir",help="directory path for output tf files ",required=True)
 parser.add_argument("--secrulesfile",help="csv file with secrules for Security List of a given subnet")
 parser.add_argument("--overwrite",help="Overwite subnet files. When this flag is used, script expect new seclist files created using create_terraform_seclist.py   ")
+parser.add_argument("--configFileName", help="Config file name" , required=False)
 #parser.add_argument("outfile",help="Output Filename")
 
 if len(sys.argv)==1:
@@ -274,14 +294,31 @@ else:
 seclist_files = {}
 seclist_rule_count = {}
 
-config = oci.config.from_file()
+question = 'Input Name of Network compartment where VCN exist : '
+print (question)
+ntk_comp_name = raw_input()
+
+configFileName = args.configFileName
+
+if args.configFileName is not None:
+    configFileName = args.configFileName
+    config = oci.config.from_file(file_location=configFileName)
+else:
+    config = oci.config.from_file()
+
 ociprops = ConfigParser.RawConfigParser()
-ociprops.read('oci-tf.properties')
+ociprops.read(args.propsfile)
+
+ntk_comp_id = get_network_compartment_id(config, ntk_comp_name)
+
 vnc = VirtualNetworkClient(config)
-vcn_id = ociprops.get('Default', 'vcn_id')
-ntk_comp_id = ociprops.get('Default', 'ntk_comp_id')
+
 sec_rule_per_seclist = ociprops.get('Default', 'sec_rule_per_seclist')
 vcn_display_name = ociprops.get('Default', 'vcn_display_name')
+vcn_id = get_vcn_id(config, ntk_comp_id , vcn_display_name)
+
+#vcn_id = ociprops.get('Default', 'vcn_id')
+#ntk_comp_id = ociprops.get('Default', 'ntk_comp_id')
 
 subnet_list = response = vnc.list_subnets(ntk_comp_id, vcn_id)
 create_def_file = True

@@ -11,44 +11,30 @@ import argparse
 import ConfigParser
 ######
 # Required Files
-# "oci-tf.properties"
+# "properties file- oci-tf.properties"
 # Create the major terraform objects - DRG, VCN & IGW for the VCN 
 # Outfile
 ######
 
 
 parser = argparse.ArgumentParser(description="Create major-objects (VCN, IGW for the VCN & DRG ) terraform file")
+parser.add_argument("propsfile", help="Full Path of properties file. eg oci-tf.properties in example folder ")
 parser.add_argument("outfile",help="Output Filename")
 
-if len(sys.argv)==1:
+if len(sys.argv)==2:
         parser.print_help()
         sys.exit(1)
-if len(sys.argv)<2:
+if len(sys.argv)<3:
         parser.print_help()
         sys.exit(1)
 
 args = parser.parse_args()
 
-if not os.path.exists('oci-tf.properties'):
-	print "Cant find the file 'oci-tf.properties.\nMake sure to create the file and try again."
-	exit(-1)
-
-
 config = ConfigParser.RawConfigParser()
-config.read('oci-tf.properties')
+config.read(args.propsfile)
 
 outfile = args.outfile
-
-# print "filename = " + filename + " routefiles  = " + routesfile + " outfile = " + outfile 
-
 oname = open(outfile,"w")
-
-
-####
-#ntk_comp_var=ntk_compartment_ocid
-#comp_var=compartment_ocid
-#vcn_var=vcn01
-#####
 
 ntk_comp_var = config.get('Default','ntk_comp_var')
 comp_var = config.get('Default','comp_var')

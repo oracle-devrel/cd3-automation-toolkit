@@ -139,7 +139,7 @@ def create_egress_rule_string(rule):
     return egress_rule
 
 
-def create_seclist_tf_file(vcn_display_name,subnetid,create_def_file,importFlag,search_subnet_name,overwrite):
+def create_seclist_tf_file(vcn_var, vcn_display_name, subnetid, create_def_file, importFlag, search_subnet_name, overwrite):
     response = vnc.get_subnet(subnetid)
     if(importFlag is "False"):
         print ("Seclist file name : " + response.data.display_name.rsplit("-", 1)[0].strip() + "_seclist.tf")
@@ -153,7 +153,7 @@ def create_seclist_tf_file(vcn_display_name,subnetid,create_def_file,importFlag,
                 tempStr = """
             resource "oci_core_security_list" \"""" + seclistname.rsplit("-", 1)[0] + """"{
                     compartment_id = "${var.ntk_compartment_ocid}"
-                    vcn_id = "${oci_core_virtual_network.vcn01.id}"
+                    vcn_id = "${oci_core_virtual_network.""" + vcn_var.strip() + """.id}"
                     display_name = \"""" + display_name.strip() + "\"\n"
                 if(overwrite == "False"):
                     ingressRules = vnc.get_security_list(seclist_id).data.ingress_security_rules
@@ -174,9 +174,9 @@ def create_seclist_tf_file(vcn_display_name,subnetid,create_def_file,importFlag,
                 # print("Default list Should be taken care " )
                 defFilename = open(outdir + "/" + "def-vcn_seclist_generated.tf", "w")
                 tempStr = """
-                    resource "oci_core_security_list" \"""" + "vcn01" + """"{
+                    resource "oci_core_security_list" \"""" + vcn_var.strip() + """"{
                     compartment_id = "${var.ntk_compartment_ocid}"
-                    vcn_id = "${oci_core_virtual_network.vcn01.id}"
+                    vcn_id = "${oci_core_virtual_network.""" + vcn_var.strip() + """.id}"
                     display_name = \"""" + display_name.strip() + "\""
                 if (overwrite == "False"):
                     ingressRules = vnc.get_security_list(seclist_id).data.ingress_security_rules
@@ -237,14 +237,15 @@ def get_vcn_id(config,compartment_id,vcn_display_name):
         if vcn.display_name == vcn_display_name:
             return vcn.id
 
-parser = argparse.ArgumentParser(description="CSV filename")
-parser.add_argument("--outdir",help="directory path for output tf files ",required=True)
+parser = argparse.ArgumentParser(description="Exports existing seclists to tf files; Required Arguements: propsfile and outdir")
+parser.add_argument("--propsfile",help="Full Path of properties file. eg oci-tf.properties in example folder",required=True)
+parser.add_argument("--outdir",help="directory path for output tf files",required=True)
 parser.add_argument("--gen_tf_import", help="generate import TF command for given subnet", required=False)
 parser.add_argument("--subnet_name", help="name of subnet ", required=False)
 parser.add_argument("--configFileName", help="Config file name" , required=False)
 parser.add_argument("--overwrite",help="Export files to overwrite existing subnet rules. ")
 
-if len(sys.argv) < 1:
+if len(sys.argv) < 2:
         parser.print_help()
         sys.exit(1)
 
@@ -279,12 +280,13 @@ else:
 ntk_comp_id = get_network_compartment_id(config, ntk_comp_name)
 
 ociprops = ConfigParser.RawConfigParser()
-ociprops.read('../base_tf_creation/oci-tf.properties')
+ociprops.read(args.propsfile)
 
 
 vnc = VirtualNetworkClient(config)
 vcn_display_name = ociprops.get('Default', 'vcn_display_name')
 vcn_id = get_vcn_id(config, ntk_comp_id , vcn_display_name)
+vcn_var = ociprops.get('Default', 'vcn_var')
 #vcn_id = ociprops.get('Default', 'vcn_id')
 #ntk_comp_id = ociprops.get('Default', 'ntk_comp_id')
 
@@ -295,7 +297,7 @@ subnet_list = response = vnc.list_subnets(ntk_comp_id, vcn_id)
 create_def_file = True
 #print("subnet_name ::: " + search_subnet_name)
 for subnet in subnet_list.data:
-     create_seclist_tf_file(vcn_display_name,subnet.id,True,importFlag,search_subnet_name,overwrite)
+     create_seclist_tf_file(vcn_var,vcn_display_name,subnet.id,True,importFlag,search_subnet_name,overwrite)
 
 
 #importCommands.close()

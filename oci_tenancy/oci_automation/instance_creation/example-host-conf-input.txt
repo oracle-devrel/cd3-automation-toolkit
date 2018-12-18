@@ -1,4 +1,4 @@
-Hostname,Availability domain,subneT name,Pub address,IP Address,OS,Shape,SSH-Key
-#MytestVM1,2,prod-app3,false,10.89.76.125,Linux74,VM.Standard1.4,${var.ssh_public_key}
-MytestVM2,2,prod-mgt-app3,true,10.89.81.124,Windows2012,VM.Standard1.4,${var.ssh_public_key}
-#MytestVM3,2,prod-mgt-app3,true,10.89.81.125,Windows2008,VM.Standard1.8,${var.ssh_public_key}
+Hostname,Availability domain,Fault Domain,subnet name,Pub address,IP Address,OS,Shape,SSH-Key
+MytestVM1,2,FAULT-DOMAIN-3,prod-app3,false,10.89.76.125,Linux74,VM.Standard1.4,${var.ssh_public_key}
+MytestVM2,2,FAULT-DOMAIN-3,prod-mgt-app3,true,10.89.81.124,Windows2012,VM.Standard1.4,${var.ssh_public_key}
+MytestVM3,2,,prod-mgt-app3,true,10.89.81.125,Windows2008,VM.Standard1.8,${var.ssh_public_key}

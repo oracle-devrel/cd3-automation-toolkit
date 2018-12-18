@@ -3,6 +3,15 @@
 ##### Oracle Consulting ####
 ##### v0.1a #####
 
+
+######
+# Required Files
+# Properties File: oci-tf.properties"
+# Code will read input subnet file name from properties file
+# Subnets file will contain info about each subnet. Seclists will be created based on the inputs in properties file
+# Outfile
+######
+
 import sys
 import os
 import argparse
@@ -15,37 +24,30 @@ def purge(dir, pattern):
             print("Purge ....." +  os.path.join(dir, f))
             os.remove(os.path.join(dir, f))
 
-parser = argparse.ArgumentParser(description="Create a terraform sec list resource with name \"name-cidr\" for each subnet identified in the subnet input file.  This creates open egress (0.0.0.0/0) and All protocols within subnet ingress rules.  Any other rules should be put in manually.")
-parser.add_argument("--file",help="Full Path to the Subnet file. See readme for format example ")
+parser = argparse.ArgumentParser(description="Creates a terraform sec list resource with name \"name-cidr\" for each subnet identified in the subnet input file.  This creates open egress (0.0.0.0/0) and All protocols within subnet ingress rules.  Any other rules should be put in manually.")
+parser.add_argument("--propsfile", help="Full Path of properties file. eg oci-tf.properties in example folder")
 parser.add_argument("--outdir",help="Output directory")
 parser.add_argument("--omcs",help="Input Fileis of pattern \"name-cidr\" ",action="store_true")
 
-if len(sys.argv)==1:
+if len(sys.argv)==2:
         parser.print_help()
         sys.exit(1)
 
-if len(sys.argv)<2:
+if len(sys.argv)<3:
         parser.print_help()
         sys.exit(1)
 
 args = parser.parse_args()
 
 config = ConfigParser.RawConfigParser()
-config.read('oci-tf.properties')
+config.read(args.propsfile)
 
-filename = args.file
-
+subnet_file = config.get('Default','subnet_file')
 outdir = args.outdir
 
-fname = open(filename,"r")
+fname = open(subnet_file,"r")
 
 ADS = ["AD1","AD2","AD3"]
-
-####
-#ntk_comp_var=ntk_compartment_ocid
-#comp_var=compartment_ocid
-#vcn_var=vcn01
-#####
 
 vcn_var = config.get('Default','vcn_var')
 ntk_comp_var = config.get('Default','ntk_comp_var')
@@ -53,8 +55,10 @@ comp_var = config.get('Default','comp_var')
 sps = config.get('Default','sec_list_per_subnet')
 seclists_per_subnet = int(sps)
 
+# Purge existing sec list files
 purge(outdir, "_seclist.tf")
 
+#Read subnet file
 for line in fname:
         i = 0
         # print "before while "
