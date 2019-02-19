@@ -88,7 +88,7 @@ for line in fname:
 		tempStr = """
 resource "oci_core_subnet" \"""" + name + """" {
 	compartment_id = "${var.""" + ntk_comp_var + """}"
-	availability_domain = "${data.oci_identity_availability_domains.ADs.availability_domains.""" + str(ad) + """.name}"
+	availability_domain = ""
 	route_table_id      = "${oci_core_route_table.""" + name + """.id}"
 	vcn_id = "${oci_core_vcn.""" + str(vcn_var) + """.id}" """
 		
