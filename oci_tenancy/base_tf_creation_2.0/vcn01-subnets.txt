@@ -1,0 +1,3 @@
+#name,subnet-cidr,availabilty-domain(AD1|AD2|AD3|Regional),private|public,dhcp-options,SGW,NGW,IGW
+prod-mgt-ops,10.89.230.0/24,AD3,private,dhcp-internal,false,false,false
+prod-mgt-wrk,10.89.231.0/24,Regional,private,dhcp-internal,false,true,false
