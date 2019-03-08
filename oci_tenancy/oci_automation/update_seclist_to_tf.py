@@ -51,11 +51,11 @@ def create_ingress_rule_string(row):
                 source = \"""" + row['Source'] + """\"
                 stateless = """ + str(row['isStateless'].lower()) + "\n"
     # print(rule.icmp_options)
-    if row['Protocol'] == 'icmp':
+    if row['Protocol'] == 'icmp' and row['ICMPCode']!='' and row['ICMPType']!='':
         options = """
                icmp_options {
-                  "code" = """ + row['ICMPCode'] + """
-                  "type" =  """ + row['ICMPType'] + """
+                  code = """ + row['ICMPCode'] + """
+                  type =  """ + row['ICMPType'] + """
                }  """
     dest_range = ""
     source_range = ""
@@ -114,11 +114,11 @@ def create_egress_rule_string(row):
                 protocol = \"""" + get_protocol(row['Protocol']) + """\"
                 destination = \"""" + row['Destination'] + """\"
                 stateless = """ + str(row['isStateless'].lower()) + "\n"
-    if row['Protocol'] == 'icmp':
+    if row['Protocol'] == 'icmp' and row['ICMPCode']!='' and row['ICMPType']!='':
         options = """
                icmp_options {
-                  "code" = """ + row['ICMPCode'] + """
-                  "type" =  """ + row['ICMPType'] + """
+                  code = """ + row['ICMPCode'] + """
+                  type =  """ + row['ICMPType'] + """
                }  """
     dest_range = ""
     source_range = ""
