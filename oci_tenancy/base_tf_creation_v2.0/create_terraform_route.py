@@ -1,7 +1,7 @@
 #!/bin/python
-# Author: Murali Nagulakonda
+# Author: Suruchi Singla
 # Oracle Consulting
-# murali.nagulakonda.venkata@oracle.com
+# suruchi.singla@oracle.com
 
 
 import sys
@@ -11,14 +11,14 @@ import configparser
 
 ######
 # Required Files
-# Properties File: oci-tf.properties"
-# Code will read input subnet file name from properties file
+# Properties File: vcn-info.properties"
+# Code will read input subnet file name for each vcn from properties file
 # Subnets file will contain info about each subnet and which component(SGW, NGW, IGW) is required for which subnet
 # Outfile
 ######
 
 parser = argparse.ArgumentParser(description="Creates route tables containing default routes for each subnet based on inputs given in oci-tf.properties.")
-parser.add_argument("propsfile", help="Full Path of properties file. eg oci-tf.properties in example folder")
+parser.add_argument("propsfile", help="Full Path of properties file. eg vcn-info.properties in example folder")
 parser.add_argument("outfile", help="Output Filename")
 parser.add_argument("--omcs", help="If the File is of OMCS format: \"prod-dmz-lb-ext2-10.89.69.0/24,AD2\"",
                     action="store_true")
@@ -40,9 +40,9 @@ config.read(args.propsfile)
 sections=config.sections()
 
 #Get Global Properties from Default Section
-ntk_comp_var = config.get(sections[0],'ntk_comp_var')
-comp_var = config.get(sections[0],'comp_var')
-drg_destinations = config.get(sections[0], 'drg_subnet')
+ntk_comp_var = config.get('Default','ntk_comp_var')
+comp_var = config.get('Default','comp_var')
+drg_destinations = config.get('Default', 'drg_subnet')
 drg_destinations=drg_destinations.split(",")
 
 tempStr = ""
@@ -50,11 +50,11 @@ ADS = ["AD1", "AD2", "AD3"]
 
 #Create route rules for LPGs as per Section VCN_PEERING
 vcn_lpg_rules = {}
-vcns=config.options(sections[1])
+vcns=config.options('VCN_INFO')
 for vcn_name in vcns:
     vcn_lpg_rules.setdefault(vcn_name, '')
 
-peering_dict = dict(config.items(sections[2]))
+peering_dict = dict(config.items('VCN_PEERING'))
 ocs_vcn_cidr=peering_dict['ocs_vcn_cidr']
 peering_dict.pop('ocs_vcn_lpg_ocid')
 peering_dict.pop('ocs_vcn_cidr')
@@ -102,13 +102,13 @@ for left_vcn,value in peering_dict.items():
 
 
 #Get vcn and subnet file info from VCN_INFO section
-vcns=config.options(sections[1])
+vcns=config.options('VCN_INFO')
 
 #Get Hub VCN name
 hub_vcn_name=''
 vcn_transit_route_mapping=dict()
 for vcn_name in vcns:
-    vcn_data = config.get(sections[1], vcn_name)
+    vcn_data = config.get('VCN_INFO', vcn_name)
     vcn_data = vcn_data.split(',')
     hub_spoke_none = vcn_data[5].strip().lower()
     if(hub_spoke_none=='hub'):
@@ -129,7 +129,7 @@ resource "oci_core_route_table" \"""" + rt_var + """"{
 
     #Create Route Table Associated with each LPG in Hub VCN peered with Spoke VCN
     for vcn_name in vcns:
-        vcn_data = config.get(sections[1], vcn_name)
+        vcn_data = config.get('VCN_INFO', vcn_name)
         vcn_data = vcn_data.split(',')
         hub_spoke_none = vcn_data[5].strip().lower()
         if(hub_spoke_none=='spoke'):
@@ -156,7 +156,7 @@ resource "oci_core_route_table" \"""" + rt_var + """"{
 
 #Start processing as per vcn and subnet file info from VCN_INFO section
 for vcn_name in vcns:
-    vcn_data = config.get(sections[1], vcn_name)
+    vcn_data = config.get('VCN_INFO', vcn_name)
     vcn_data = vcn_data.split(',')
 
     vcn_cidr = vcn_data[0].strip().lower()

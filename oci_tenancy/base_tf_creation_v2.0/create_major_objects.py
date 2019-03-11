@@ -14,11 +14,11 @@ import configparser
 ######
 # Required Files
 # "csv file- vcn_info.properties"
-# Create the major terraform objects - DRG, VCN & IGW for the VCN 
+# Create the major terraform objects - DRG, IGW, NGW, SGW, LPGs for the VCN
 # Outfile
 ######
 
-parser = argparse.ArgumentParser(description="Create major-objects (VCN, IGW for the VCN & DRG ) terraform file")
+parser = argparse.ArgumentParser(description="Create major-objects (VCN, IGW, NGW, DRG, LPGs etc for the VCN) terraform file")
 parser.add_argument("propsfile", help="Full Path of props file. eg vcn_info.properties in example folder ")
 parser.add_argument("outfile",help="Output Filename")
 
@@ -39,8 +39,8 @@ config.read(args.propsfile)
 sections=config.sections()
 
 #Get Global Properties from Default Section
-ntk_comp_var = config.get(sections[0],'ntk_comp_var')
-comp_var = config.get(sections[0],'comp_var')
+ntk_comp_var = config.get('Default','ntk_comp_var')
+comp_var = config.get('Default','comp_var')
 
 tempStr = ""
 tempStr = tempStr + """
@@ -48,13 +48,13 @@ data "oci_core_services" "oci_services" {
 }"""
 
 #Get VCN Info from VCN_INFO section
-vcns=config.options(sections[1])
+vcns=config.options('VCN_INFO')
 
 #Create VCN transit routing mapping based on Hub-Spoke
 vcn_transit_route_mapping=dict()
 hub_vcn_name=''
 for vcn_name in vcns:
-    vcn_data = config.get(sections[1], vcn_name)
+    vcn_data = config.get('VCN_INFO', vcn_name)
     vcn_data = vcn_data.split(',')
     hub_spoke_none = vcn_data[5].strip().lower()
     if(hub_spoke_none=='hub'):
@@ -62,7 +62,7 @@ for vcn_name in vcns:
         hub_vcn_name=vcn_name
 
 for vcn_name in vcns:
-    vcn_data = config.get(sections[1], vcn_name)
+    vcn_data = config.get('VCN_INFO', vcn_name)
     vcn_data = vcn_data.split(',')
     hub_spoke_none = vcn_data[5].strip().lower()
     if(hub_spoke_none=='spoke'):
@@ -70,7 +70,7 @@ for vcn_name in vcns:
 
 hub_count=0
 for vcn_name in vcns:
-        vcn_data=config.get(sections[1],vcn_name)
+        vcn_data=config.get('VCN_INFO',vcn_name)
         vcn_data=vcn_data.split(',')
 
         vcn_cidr=vcn_data[0].strip().lower()
@@ -151,7 +151,7 @@ resource "oci_core_nat_gateway" \"""" + ngw_name + """" {
 }
 """
 #Create LPGs as per Section VCN_PEERING
-peering_dict = dict(config.items(sections[2]))
+peering_dict = dict(config.items('VCN_PEERING'))
 ocs_vcn_lpg_ocids=peering_dict['ocs_vcn_lpg_ocid']
 ocs_vcn_lpg_ocids=ocs_vcn_lpg_ocids.split(",")
 peering_dict.pop('ocs_vcn_lpg_ocid')

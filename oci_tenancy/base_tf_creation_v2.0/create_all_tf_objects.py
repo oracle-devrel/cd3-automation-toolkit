@@ -5,7 +5,7 @@ import sys
 
 
 parser = argparse.ArgumentParser(description="Creates terraform files for network resources based on given inputs; See example folder for sample input files")
-parser.add_argument("propsfile", help="Full Path of properties file. eg oci-tf.properties in example folder")
+parser.add_argument("propsfile", help="Full Path of properties file. eg vcn-info.properties in example folder")
 parser.add_argument("outdir", help="Output directory for creation of TF files")
 parser.add_argument("prefix", help="customer name/prefix for all file names")
 

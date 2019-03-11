@@ -10,7 +10,7 @@ The set of scripts creates the baseline terraform objects to use.
 ##### You can use the below script or follow the steps below to create your terraform environment ####
 #!/bin/bash
 
-echo "Download terraform.zio from terraform.io for your platform"
+echo "Download terraform.zip from terraform.io for your platform"
 echo "Example: wget <URL> -O terraform.zip"
 echo "Unzip it and move it over to /usr/local/bin.  Make sure /usr/local/bin is in your path"
 echo "This will download the v2.1.0 OCI terraform provider"

@@ -10,10 +10,10 @@ import argparse
 import configparser
 ######
 # Required Files
-# "properties file- oci-tf.properties"
+# "properties file- vcn-info.properties"
 # Code will read input dhcp file name from properties file
 # Dhcp options defined in "ini" format.
-# the Section name of the ini file becomes the "dhcp rule name"
+# the Section name of the ini file becomes the "dhcp rule name" with vcn_name as the prefix
 # The script expects a "default" section.
 # Optionally - name the dhcp section the same as the subnet name - and when creating subnets - the subnet will point to this dhcp option.
 # Outfile
@@ -21,7 +21,7 @@ import configparser
 
 
 parser = argparse.ArgumentParser(description="Create DHCP options terraform file")
-parser.add_argument("propsfile", help="Full Path of properties file. eg oci-tf.properties in example folder")
+parser.add_argument("propsfile", help="Full Path of properties file. eg vcn-info.properties in example folder")
 parser.add_argument("outfile",help="Output Filename")
 
 if len(sys.argv)==2:
@@ -41,14 +41,14 @@ config.read(args.propsfile)
 sections=config.sections()
 
 #Get Global Properties from Default Section
-ntk_comp_var = config.get(sections[0],'ntk_comp_var')
-comp_var = config.get(sections[0],'comp_var')
+ntk_comp_var = config.get('Default','ntk_comp_var')
+comp_var = config.get('Default','comp_var')
 
 tempStr = ""
 #Get VCN and DHCP file info from VCN_INFO section
-vcns=config.options(sections[1])
+vcns=config.options('VCN_INFO')
 for vcn in vcns:
-	vcn_data = config.get(sections[1], vcn)
+	vcn_data = config.get('VCN_INFO', vcn)
 	vcn_data = vcn_data.split(',')
 	vcn_name = vcn
 	vcn_dhcp_file = vcn_data[7].strip().lower()
@@ -71,7 +71,7 @@ resource "oci_core_dhcp_options" \"""" + vcn_dhcp + """" {
         type = "DomainNameServer"
 		server_type = \"""" + serverType  + "\""
 
-	# print serverType
+		# print serverType
 		if serverType  == "CustomDnsServer" :
 			dns_servers = dhcpfile.get(dhcp_sec,'custom_dns_servers').strip().replace(',','","')
 			dns_servers = '"' + dns_servers + '"'

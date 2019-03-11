@@ -1,12 +1,12 @@
 #!/bin/python
-#Author: Murali Nagulakonda
+#Author: Suruchi
 #Oracle Consulting
-#murali.nagulakonda.venkata@oracle.com
+#suruchi.singla@oracle.com
 
 ######
 # Required Files
-# Properties File: oci-tf.properties"
-# Code will read input subnet file name from properties file
+# Properties File: vcn-info.properties"
+# Code will read input subnet file name for each vcn from properties file
 # Subnets file will contain info about each subnet
 # Outfile
 ######
@@ -18,8 +18,9 @@ import argparse
 import configparser
 
 
-parser = argparse.ArgumentParser(description="Takes in a list of subnet names with format \"name,subnet CIDR,Availability Domain, Public|Private subnet,dhcp-options\".  Create terraform files for subnets.")
-parser.add_argument("propsfile", help="Full Path of properties file. eg oci-tf.properties in example folder")
+parser = argparse.ArgumentParser(description="Takes in a list of subnet names with format \"name,subnet CIDR,Availability Domain, Public|Private subnet,dhcp-options\". "
+											 "Create terraform files for subnets.")
+parser.add_argument("propsfile", help="Full Path of properties file. eg vcn-info.properties in example folder")
 parser.add_argument("outfile",help="Output Filename")
 parser.add_argument("--omcs",help="If the File is of OMCS format: \"prod-dmz-lb-ext2-10.89.69.0/24,AD2\"",action="store_true")
 
@@ -41,8 +42,8 @@ config.read(args.propsfile)
 sections=config.sections()
 
 #Get Global Properties from Default Section
-ntk_comp_var = config.get(sections[0],'ntk_comp_var')
-comp_var = config.get(sections[0],'comp_var')
+ntk_comp_var = config.get('Default','ntk_comp_var')
+comp_var = config.get('Default','comp_var')
 
 
 tempStr = ""
@@ -53,9 +54,9 @@ data "oci_identity_availability_domains" "ADs" {
 ADS = ["AD1", "AD2", "AD3"]
 
 #Get vcn and subnet file info from VCN_INFO section
-vcns=config.options(sections[1])
+vcns=config.options('VCN_INFO')
 for vcn_name in vcns:
-	vcn_data = config.get(sections[1], vcn_name)
+	vcn_data = config.get('VCN_INFO', vcn_name)
 	vcn_data = vcn_data.split(',')
 
 	vcn_cidr = vcn_data[0].strip().lower()

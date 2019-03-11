@@ -1,13 +1,13 @@
 #!/bin/python
-##### Author : Murali Nagulakonda Venkata ###
+##### Author : Suruchi ###
 ##### Oracle Consulting ####
-##### v0.1a #####
+
 
 
 ######
 # Required Files
-# Properties File: oci-tf.properties"
-# Code will read input subnet file name from properties file
+# Properties File: vcn-info.properties"
+# Code will read input subnet file name for each vcn from properties file
 # Subnets file will contain info about each subnet. Seclists will be created based on the inputs in properties file
 # Outfile
 ######
@@ -24,8 +24,12 @@ def purge(dir, pattern):
             print("Purge ....." +  os.path.join(dir, f))
             os.remove(os.path.join(dir, f))
 
-parser = argparse.ArgumentParser(description="Creates a terraform sec list resource with name \"name-cidr\" for each subnet identified in the subnet input file.  This creates open egress (0.0.0.0/0) and All protocols within subnet ingress rules.  Any other rules should be put in manually.")
-parser.add_argument("--propsfile", help="Full Path of properties file. eg oci-tf.properties in example folder")
+parser = argparse.ArgumentParser(description="Creates a terraform sec list resource with name \"name-cidr\" for each subnet"
+                                             "identified in the subnet input file.  This creates open egress (0.0.0.0/0) and "
+                                             "All protocols within subnet ingress rules.  This also opens ping between peered VCNs"
+                                             " and ping from On-Prem to hub VCN based on the input property add_sec_rules_ping."
+                                             "Any other rules should be put in manually.")
+parser.add_argument("--propsfile", help="Full Path of properties file. eg vcn-info.properties in example folder")
 parser.add_argument("--outdir",help="Output directory")
 parser.add_argument("--omcs",help="Input Fileis of pattern \"name-cidr\" ",action="store_true")
 
@@ -50,20 +54,20 @@ outdir = args.outdir
 purge(outdir, "_seclist.tf")
 
 #Get Global Properties from Default Section
-ntk_comp_var = config.get(sections[0],'ntk_comp_var')
-comp_var = config.get(sections[0],'comp_var')
-drg_destinations = config.get(sections[0], 'drg_subnet')
+ntk_comp_var = config.get('Default','ntk_comp_var')
+comp_var = config.get('Default','comp_var')
+drg_destinations = config.get('Default', 'drg_subnet')
 drg_destinations=drg_destinations.split(",")
 
 #Get VCN  info from VCN_INFO section
-vcns=config.options(sections[1])
+vcns=config.options('VCN_INFO')
 
 #Create sec rules as per Section VCN_PEERING
 vcn_lpg_rules = {}
 for vcn_name in vcns:
     vcn_lpg_rules.setdefault(vcn_name, '')
 
-peering_dict = dict(config.items(sections[2]))
+peering_dict = dict(config.items('VCN_PEERING'))
 ocs_vcn_cidr=peering_dict['ocs_vcn_cidr']
 peering_dict.pop('ocs_vcn_lpg_ocid')
 add_sec_rules_ping=peering_dict['add_sec_rules_ping']
@@ -110,7 +114,7 @@ ADS = ["AD1", "AD2", "AD3"]
 
 #Start processing as per vcn and subnet file info from VCN_INFO section
 for vcn_name in vcns:
-        vcn_data = config.get(sections[1], vcn_name)
+        vcn_data = config.get('VCN_INFO', vcn_name)
         vcn_data = vcn_data.split(',')
         vcn_drg=vcn_data[1].strip().lower()
         hub_spoke_none = vcn_data[5].strip().lower()
