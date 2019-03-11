@@ -35,7 +35,11 @@ oname = open(outfile,"w")
 
 config = configparser.RawConfigParser()
 config.optionxform = str
-config.read(args.propsfile)
+file_read=config.read(args.propsfile)
+
+if(len(file_read)!=1):
+        print(args.propsfile +" doesn't not exist or it could not be opened. Please check input params and try again..")
+        exit(1)
 sections=config.sections()
 
 #Get Global Properties from Default Section

@@ -17,7 +17,7 @@ import configparser
 # Outfile
 ######
 
-parser = argparse.ArgumentParser(description="Creates route tables containing default routes for each subnet based on inputs given in oci-tf.properties.")
+parser = argparse.ArgumentParser(description="Creates route tables containing default routes for each subnet based on inputs given in vcn-info.properties.")
 parser.add_argument("propsfile", help="Full Path of properties file. eg vcn-info.properties in example folder")
 parser.add_argument("outfile", help="Output Filename")
 parser.add_argument("--omcs", help="If the File is of OMCS format: \"prod-dmz-lb-ext2-10.89.69.0/24,AD2\"",
@@ -33,6 +33,7 @@ if len(sys.argv) < 3:
 args = parser.parse_args()
 outfile = args.outfile
 oname = open(outfile,"w")
+fname = None
 
 config = configparser.RawConfigParser()
 config.optionxform = str
@@ -171,6 +172,9 @@ for vcn_name in vcns:
     hub_spoke_none = vcn_data[5].strip().lower()
 
     vcn_subnet_file = vcn_data[6].strip().lower()
+    if os.path.isfile(vcn_subnet_file)==False:
+        print("input subnet file " + vcn_subnet_file + " for VCN " + vcn_name + " does not exist. Skipping Route TF creation for this VCN.")
+        continue
     fname = open(vcn_subnet_file, "r")
 
     #Add Rules for each spoke VCN to Route Table associated with DRG of Hub VCN
@@ -287,6 +291,7 @@ if(lpgStr!=''):
     tempStr=tempStr+lpgStr
 
 oname.write(tempStr)
-fname.close()
+if(fname!=None):
+    fname.close()
 oname.close()
 

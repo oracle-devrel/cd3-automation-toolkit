@@ -49,6 +49,8 @@ config.read(args.propsfile)
 sections=config.sections()
 
 outdir = args.outdir
+fname = None
+oname = None
 
 # Purge existing sec list files
 purge(outdir, "_seclist.tf")
@@ -119,6 +121,9 @@ for vcn_name in vcns:
         vcn_drg=vcn_data[1].strip().lower()
         hub_spoke_none = vcn_data[5].strip().lower()
         vcn_subnet_file = vcn_data[6].strip().lower()
+        if os.path.isfile(vcn_subnet_file) == False:
+            print("input subnet file " + vcn_subnet_file + " for VCN " + vcn_name + " does not exist. Skipping SecList TF creation for this VCN.")
+            continue
         sps = vcn_data[8].strip().lower()
         seclists_per_subnet = int(sps)
 
@@ -192,6 +197,7 @@ resource "oci_core_security_list" \"""" + seclistname +  """"{
 """
                                 oname.write(tempStr)
                                 i = i + 1
-
-fname.close()
-oname.close()
+if(fname!=None):
+    fname.close()
+if(oname!=None):
+    oname.close()

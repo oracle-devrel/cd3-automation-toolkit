@@ -13,7 +13,7 @@
 
 import sys
 import re
-
+import os
 import argparse
 import configparser
 
@@ -35,6 +35,7 @@ if len(sys.argv)<3:
 args = parser.parse_args()
 outfile = args.outfile
 oname = open(outfile,"w")
+fname = None
 
 config = configparser.RawConfigParser()
 config.optionxform = str
@@ -63,6 +64,9 @@ for vcn_name in vcns:
 	sps = vcn_data[8].strip().lower()
 	vcn_add_defaul_seclist = vcn_data[9].strip().lower()
 	vcn_subnet_file = vcn_data[6].strip().lower()
+	if os.path.isfile(vcn_subnet_file) == False:
+		print("input subnet file " + vcn_subnet_file + " for VCN " + vcn_name + " does not exist. Skipping Subnet TF creation for this VCN.")
+		continue
 
 	fname = open(vcn_subnet_file,"r")
 	seclists_per_subnet = int(sps)
@@ -134,6 +138,7 @@ resource "oci_core_subnet" \"""" + name + """" {
 """
 oname.write(tempStr)
 
-fname.close()
+if fname != None:
+	fname.close()
 oname.close()
 

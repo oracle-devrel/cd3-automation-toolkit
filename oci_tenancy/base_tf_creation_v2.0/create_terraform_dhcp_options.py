@@ -54,8 +54,10 @@ for vcn in vcns:
 	vcn_dhcp_file = vcn_data[7].strip().lower()
 	### Read the DHCP file
 	dhcpfile = configparser.RawConfigParser()
-	dhcpfile.read(vcn_dhcp_file)
-
+	file_read=dhcpfile.read(vcn_dhcp_file)
+	if(len(file_read)!=1):
+		print("input dhcp file "+vcn_dhcp_file +" for VCN "+vcn_name +" could not be opened. Please check if it exists. Skipping DHCP TF creation for this VCN.")
+		continue
 	dhcp_sections = dhcpfile.sections()
 	for dhcp_sec in dhcp_sections :
 		vcn_dhcp = vcn_name+"_"+dhcp_sec
