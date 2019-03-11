@@ -1,6 +1,9 @@
-##### Author : Murali Nagulakonda Venkata ###
+##### Author : Suruchi ###
 ##### Oracle Consulting ####
-##### v0.1a #####
+##### v2.0 #####
+
+# This is v2.0 for base_tf_creations scripts. It supports multiple VCNs and hub spoke model implementation.
+
 The set of scripts creates the baseline terraform objects to use.
 ## Pre Reqs ##
 1.  Create the terraform keys, setup the OCI tenancy with the API key.
@@ -29,15 +32,20 @@ This should show you that terraform oci provider is initialized.
 Now ready for the below scripts
 ######
 
+############### Ideally above configuration should be done using createOCSWork script #############
 
 
-The scripts assume that you have two compartments - one for Networking Objects, One for all the other objects.  If you have only one compartment, set the compartment_ocid's to the same value.
-The "ntk_compartment_ocid" is the name of the network compartment ocid variable.  MAKE SURE TO LOOK AT ALL THE REQUIRED VARIABLES FOR TERRAFORM in the variables-example.tf provided.
+The scripts assume that you have two compartments - one for Networking Objects, One for all the other objects.  If you have only one compartment,
+set the compartment_ocid's to the same value.
+The "ntk_compartment_ocid" is the name of the network compartment ocid variable.  MAKE SURE TO LOOK AT ALL THE REQUIRED VARIABLES FOR TERRAFORM
+in the variables-example.tf provided.
 
 
 ### Setup of the Scripts ###
 ## See example folder for sample format of the files
-A.  Setup the oci-tf.properties file with the correct IDs for network compartment, compartment etc.  If the Network objects compartment and the rest of the objects compartment are the same - then put the same variable name for it (look at variables.tf). 
+A.  Setup the vcn-info.properties file with the correct IDs for network compartment, compartment etc. If the Network objects
+    compartment and the rest of the objects compartment are the same - then put the same variable name for it (look at variables.tf).
+    Enter the informtaion correctly. Make sure to use unique names for VCN names.
 B.  Create a dhcp file - The section headings is what is used as the name of the dhcp-options.  An example is provided for both.
 C.  Create a subnet file - Create file mentioning info about the subnets like name, AD, public/private, network gateway components required or not etc
 
