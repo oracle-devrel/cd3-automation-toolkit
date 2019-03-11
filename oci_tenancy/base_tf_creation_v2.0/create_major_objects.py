@@ -13,13 +13,13 @@ import configparser
 
 ######
 # Required Files
-# "csv file- vcn_info.properties"
+# "csv file- vcn-info.properties"
 # Create the major terraform objects - DRG, IGW, NGW, SGW, LPGs for the VCN
 # Outfile
 ######
 
 parser = argparse.ArgumentParser(description="Create major-objects (VCN, IGW, NGW, DRG, LPGs etc for the VCN) terraform file")
-parser.add_argument("propsfile", help="Full Path of props file. eg vcn_info.properties in example folder ")
+parser.add_argument("propsfile", help="Full Path of props file. eg vcn-info.properties in example folder ")
 parser.add_argument("outfile",help="Output Filename")
 
 if len(sys.argv)==2:
