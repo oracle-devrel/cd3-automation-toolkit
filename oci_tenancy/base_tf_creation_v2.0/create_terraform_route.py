@@ -43,6 +43,7 @@ sections=config.sections()
 #Get Global Properties from Default Section
 ntk_comp_var = config.get('Default','ntk_comp_var')
 comp_var = config.get('Default','comp_var')
+drg_ocid = config.get('Default','drg_ocid')
 drg_destinations = config.get('Default', 'drg_subnet')
 drg_destinations=drg_destinations.split(",")
 
@@ -142,16 +143,28 @@ resource "oci_core_route_table" \"""" + rt_var + """"{
     vcn_id = "${oci_core_vcn.""" + hub_vcn_name + """.id}"
     display_name = "Route Table associated with LPG """+lpg_name +""""
 """
-            drg_name=hub_vcn_name+"_drg"
-            for drg_destination in drg_destinations:
-                if (drg_destination != ''):
-                    lpgStr = lpgStr + """
+            if (drg_ocid == ''):
+                drg_name=hub_vcn_name+"_drg"
+                for drg_destination in drg_destinations:
+                    if (drg_destination != ''):
+                        lpgStr = lpgStr + """
     route_rules { 
             destination = \"""" + drg_destination + """\"
             network_entity_id = "${oci_core_drg.""" + drg_name + """.id}"
             destination_type = "CIDR_BLOCK"
             }
 """
+            if (drg_ocid != ''):
+                for drg_destination in drg_destinations:
+                    if (drg_destination != ''):
+                        lpgStr = lpgStr + """
+    route_rules { 
+            destination = \"""" + drg_destination + """\"
+            network_entity_id =  \"""" + drg_ocid + """"
+            destination_type = "CIDR_BLOCK"
+            }
+"""
+
             lpgStr=lpgStr+"""
 }"""
 
@@ -191,15 +204,26 @@ for vcn_name in vcns:
     ruleStr = ""
     #Add DRG rules (this will add rules to hub vcn since for hub vcn drg_required is set to y
     if (vcn_drg =="y" and drg_destinations!=''):
-        for drg_destination in drg_destinations:
-            if(drg_destination!=''):
-                ruleStr = ruleStr + """
+        if(drg_ocid==''):
+            for drg_destination in drg_destinations:
+                if(drg_destination!=''):
+                    ruleStr = ruleStr + """
     route_rules { 
             destination = \"""" + drg_destination + """\"
     	    network_entity_id = "${oci_core_drg.""" + drg_name + """.id}"
     	    destination_type = "CIDR_BLOCK"
     		}
     		"""
+        if(drg_ocid!=''):
+            for drg_destination in drg_destinations:
+                if (drg_destination != ''):
+                    ruleStr = ruleStr + """
+    route_rules { 
+            destination = \"""" + drg_destination + """\"
+            network_entity_id =  \"""" + drg_ocid + """"
+            destination_type = "CIDR_BLOCK"
+            }
+            """
 
     #Add DRG rules to each Spoke VCN
     if (hub_spoke_none=='spoke' and drg_destinations!=''):

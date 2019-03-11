@@ -54,12 +54,13 @@ C.  Create a subnet file - Create file mentioning info about the subnets like na
 ### Use of the Scripts ###
 ### Make sure to have the extension .tf for the terraform files that are created below.
 
-1.  create_terraform_major_objects.py -- This creates the VCN, IGW mapped to the VCN and DRG.  All the in the Network Compartment.
-2.  create_terraform_seclist.py  -- Creates security lists for every subnet defined in the subnet file (D above).  
-3.  create_terraform_dhcp_options.py -- Creates DHCP options for the subnets.  It supports both the CustomDnsServer serverType and VcnLocalPlusInternet type.  Both have different requirements. Look at the example.  The "section heading" will be the dhcp option name, that will be specified in the subnets file (D above) for each of the subnets.  DO not leave it blank.
-4.  create_terraform_route.py -- Creates the routes for each subnet.  Every route defined in the routes file (see example) will be created for every subnet. If you need a different combination - create the baseline and then delete what you dont need (or create multiple subnet and route files) -- Thsi si not required anymore as we are creatign default routes based on inouts in oci-tf.prooperties
-5.  create_terraform_subnet.py -- Creates the subnet with the Security list, routes and dhcp options based on the subnet file.  The names are generated based on all the previous scripts run.  Do not change any of the resource object names.  If the Default VCN Security list needs to be attached to the subnet - set "add_vcn_to_all_sec_lists=true" in the oci-tf.properties file.  If not - set it to false.
-6.  create_all_tf_objects.py -- This is the wrapper script that calls all above scripts so you should run only this script with required input variables. See Description for its usage.
+1.  create_all_tf_objects.py -- This is the wrapper script that calls all below scripts so you should run only this script with required input variables.
+    See Description for its usage.
+2.  create_terraform_major_objects.py -- This creates the VCN, IGW mapped to the VCN and DRG.  All the in the Network Compartment.
+3.  create_terraform_seclist.py  -- Creates security lists for every subnet defined in the subnet file (D above).
+4.  create_terraform_dhcp_options.py -- Creates DHCP options for the subnets.  It supports both the CustomDnsServer serverType and VcnLocalPlusInternet type.  Both have different requirements. Look at the example.  The "section heading" will be the dhcp option name, that will be specified in the subnets file (D above) for each of the subnets.  DO not leave it blank.
+5.  create_terraform_route.py -- Creates the routes for each subnet.  Every route defined in the routes file (see example) will be created for every subnet. If you need a different combination - create the baseline and then delete what you dont need (or create multiple subnet and route files) -- Thsi si not required anymore as we are creatign default routes based on inouts in oci-tf.prooperties
+6.  create_terraform_subnet.py -- Creates the subnet with the Security list, routes and dhcp options based on the subnet file.  The names are generated based on all the previous scripts run.  Do not change any of the resource object names.  If the Default VCN Security list needs to be attached to the subnet - set "add_vcn_to_all_sec_lists=true" in the oci-tf.properties file.  If not - set it to false.
 
 ---- Creating the Objects ---
 

@@ -45,6 +45,7 @@ sections=config.sections()
 #Get Global Properties from Default Section
 ntk_comp_var = config.get('Default','ntk_comp_var')
 comp_var = config.get('Default','comp_var')
+drg_ocid = config.get('Default','drg_ocid')
 
 tempStr = ""
 tempStr = tempStr + """
@@ -116,13 +117,23 @@ resource "oci_core_internet_gateway" \"""" + igw_name + """" {
         if vcn_drg == "y":
                 drg_name=vcn_name+"_drg"
                 rt_var=drg_name+"_rt"
-                tempStr = tempStr + """
+
+                #Create new DRG
+                if(drg_ocid==''):
+                        tempStr = tempStr + """
 resource "oci_core_drg" \"""" + drg_name + """" {
         compartment_id = "${var.""" + ntk_comp_var + """}"
         display_name = \"""" + drg_name + """"
 }
 resource "oci_core_drg_attachment" "drg_attachment" {
         drg_id = "${oci_core_drg.""" + drg_name + """.id}"
+        vcn_id = "${oci_core_vcn.""" + vcn_name + """.id}"
+"""
+                #Use existing DRG
+                if(drg_ocid!=''):
+                        tempStr=tempStr+"""
+resource "oci_core_drg_attachment" "drg_attachment" {
+        drg_id = \"""" + drg_ocid + """"
         vcn_id = "${oci_core_vcn.""" + vcn_name + """.id}"
 """
                 if(hub_spoke_none=='hub'):
