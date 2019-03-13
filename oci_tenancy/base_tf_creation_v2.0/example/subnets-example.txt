@@ -1,4 +1,4 @@
-#name,subnet-cidr,availabilty-domain(AD1|AD2|AD3),private|public,dhcp-options,SGW,NGW,IGW
+#name(should not contain underscore),subnet-cidr,availabilty-domain(AD1|AD2|AD3|Regional),private|public,dhcp-options,SGW,NGW,IGW
 prod-dmz-lb-ext,10.89.69.0/24,AD2,public,dhcp-external,true,false,true
 prod-dmz-lb-ext,10.89.70.0/24,AD3,public,dhcp-external,false,false,true
 prod-mgt-ops,10.89.230.0/24,AD3,private,dhcp-internal,true,true,false

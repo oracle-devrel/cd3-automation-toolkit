@@ -116,6 +116,7 @@ resource "oci_core_internet_gateway" \"""" + igw_name + """" {
 
         if vcn_drg == "y":
                 drg_name=vcn_name+"_drg"
+                drg_display="DRG"
                 rt_var=drg_name+"_rt"
 
                 #Create new DRG
@@ -123,7 +124,7 @@ resource "oci_core_internet_gateway" \"""" + igw_name + """" {
                         tempStr = tempStr + """
 resource "oci_core_drg" \"""" + drg_name + """" {
         compartment_id = "${var.""" + ntk_comp_var + """}"
-        display_name = \"""" + drg_name + """"
+        display_name = \"""" + drg_display + """"
 }
 resource "oci_core_drg_attachment" "drg_attachment" {
         drg_id = "${oci_core_drg.""" + drg_name + """.id}"

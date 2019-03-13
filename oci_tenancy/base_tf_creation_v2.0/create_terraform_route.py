@@ -264,7 +264,7 @@ for vcn_name in vcns:
                 ad_name_int = ad + 1
                 ad_name = str(ad_name_int)
             else:
-                ad_name = "R"
+                ad_name = ""
             name = name + str(ad_name)
             display_name = name + "-" + subnet
 

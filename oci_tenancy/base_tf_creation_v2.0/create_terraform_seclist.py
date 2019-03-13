@@ -148,7 +148,7 @@ for vcn_name in vcns:
                                 ad_name_int = ad + 1
                                 ad_name = str(ad_name_int)
                         else:
-                                ad_name = "R"
+                                ad_name = ""
                         print(' seclist file name  ************************** '+name+str(ad_name)+'_seclist.tf')
                         while i < seclists_per_subnet :
                                 oname = open(outdir +"/" +name+str(ad_name)+"_seclist.tf","a")

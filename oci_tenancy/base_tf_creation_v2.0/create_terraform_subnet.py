@@ -95,7 +95,7 @@ for vcn_name in vcns:
 				ad_name=str(ad_name_int)
 				adString="""availability_domain = "${data.oci_identity_availability_domains.ADs.availability_domains.""" + str(ad) + """.name}" """
 			else:
-				ad_name="R"
+				ad_name=""
 				adString="""availability_domain = "" """
 
 			name = name + ad_name
