@@ -174,10 +174,11 @@ resource "oci_core_security_list" \"""" + seclistname +  """"{
                                 else :
                                         if(vcn_lpg_rules[vcn_name]!=""):
                                             tempStr=tempStr+vcn_lpg_rules[vcn_name]
-                                        if(add_ping_sec_rules_onprem=='y' and hub_spoke_none=='hub' or vcn_drg=='y' or hub_spoke_none=='spoke'):
-                                            for drg_destination in drg_destinations:
-                                                if(drg_destination!=''):
-                                                    tempStr=tempStr+"""
+                                        if(add_ping_sec_rules_onprem=='y'):
+                                            if(hub_spoke_none=='hub' or vcn_drg=='y' or hub_spoke_none=='spoke'):
+                                                for drg_destination in drg_destinations:
+                                                    if(drg_destination!=''):
+                                                        tempStr=tempStr+"""
                 ingress_security_rules {
                 protocol = "1"
                 source = \"""" + drg_destination + """"
