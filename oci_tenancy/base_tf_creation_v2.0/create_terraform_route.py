@@ -70,7 +70,8 @@ peering_dict = dict(config.items('VCN_PEERING'))
 ocs_vcn_cidr=peering_dict['ocs_vcn_cidr']
 peering_dict.pop('ocs_vcn_lpg_ocid')
 peering_dict.pop('ocs_vcn_cidr')
-peering_dict.pop('add_sec_rules_ping')
+peering_dict.pop('add_ping_sec_rules_onprem')
+peering_dict.pop('add_ping_sec_rules_vcnpeering')
 
 ruleStr=""
 for left_vcn,value in peering_dict.items():

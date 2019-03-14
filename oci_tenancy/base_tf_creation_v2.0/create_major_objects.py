@@ -172,7 +172,8 @@ ocs_vcn_lpg_ocids=peering_dict['ocs_vcn_lpg_ocid']
 ocs_vcn_lpg_ocids=ocs_vcn_lpg_ocids.split(",")
 peering_dict.pop('ocs_vcn_lpg_ocid')
 peering_dict.pop('ocs_vcn_cidr')
-peering_dict.pop('add_sec_rules_ping')
+peering_dict.pop('add_ping_sec_rules_onprem')
+peering_dict.pop('add_ping_sec_rules_vcnpeering')
 
 for left_vcn,value in peering_dict.items():
         right_vcns=value.split(",")
