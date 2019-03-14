@@ -27,8 +27,8 @@ def purge(dir, pattern):
 parser = argparse.ArgumentParser(description="Creates a terraform sec list resource with name \"name-cidr\" for each subnet"
                                              "identified in the subnet input file.  This creates open egress (0.0.0.0/0) and "
                                              "All protocols within subnet ingress rules.  This also opens ping between peered VCNs"
-                                             " and ping from On-Prem to hub VCN based on the input property add_sec_rules_ping."
-                                             "Any other rules should be put in manually.")
+                                             " and ping from On-Prem to hub VCN based on the input property add_ping_sec_rules_vcnpeering "
+                                             "and add_ping_sec_rules_onprem respectively. Any other rules should be put in manually.")
 parser.add_argument("--propsfile", help="Full Path of properties file. eg vcn-info.properties in example folder")
 parser.add_argument("--outdir",help="Output directory")
 parser.add_argument("--omcs",help="Input Fileis of pattern \"name-cidr\" ",action="store_true")
