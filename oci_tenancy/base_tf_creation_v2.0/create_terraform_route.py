@@ -47,6 +47,16 @@ drg_ocid = config.get('Default','drg_ocid')
 drg_destinations = config.get('Default', 'drg_subnet')
 drg_destinations=drg_destinations.split(",")
 
+ngw_destinations = config.get('Default', 'ngw_destination')
+if(ngw_destinations==''):
+    ngw_destinations='0.0.0.0/0'
+ngw_destinations=drg_destinations.split(",")
+
+igw_destinations = config.get('Default', 'igw_destination')
+if(igw_destinations==''):
+    igw_destinations='0.0.0.0/0'
+igw_destinations=drg_destinations.split(",")
+
 tempStr = ""
 ADS = ["AD1", "AD2", "AD3"]
 
@@ -284,19 +294,23 @@ resource "oci_core_route_table" \"""" + name + """"{
 			}
 			"""
             if configure_ngw.strip() == 'true' and vcn_sgw == 'y':
-                tempStr = tempStr + """ 
+                for ngw_destination in ngw_destinations:
+                    if (ngw_destination != ''):
+                        tempStr = tempStr + """ 
 
 	route_rules { 
-		   	destination = "0.0.0.0/0"
+		   	destination = \"""" + ngw_destination + """\"
 		   	network_entity_id = "${oci_core_nat_gateway.""" + ngw_name + """.id}"
 		   	destination_type = "CIDR_BLOCK"
 			}
 			"""
             if configure_igw.strip() == 'true' and vcn_igw == 'y':
-                tempStr = tempStr + """
+                for igw_destination in igw_destinations:
+                    if (igw_destination != ''):
+                        tempStr = tempStr + """
 
 	route_rules { 
-		   	destination = "0.0.0.0/0"
+		   	destination = \"""" + igw_destination + """\"
 		   	network_entity_id = "${oci_core_internet_gateway.""" + igw_name + """.id}"
 		   	destination_type = "CIDR_BLOCK"
 			}

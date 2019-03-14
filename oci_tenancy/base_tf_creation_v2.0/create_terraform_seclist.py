@@ -72,11 +72,13 @@ for vcn_name in vcns:
 peering_dict = dict(config.items('VCN_PEERING'))
 ocs_vcn_cidr=peering_dict['ocs_vcn_cidr']
 peering_dict.pop('ocs_vcn_lpg_ocid')
-add_sec_rules_ping=peering_dict['add_sec_rules_ping']
-peering_dict.pop('add_sec_rules_ping')
+add_ping_sec_rules_vcnpeering=peering_dict['add_ping_sec_rules_vcnpeering']
+add_ping_sec_rules_onprem=peering_dict['add_ping_sec_rules_onprem']
+peering_dict.pop('add_ping_sec_rules_vcnpeering')
+peering_dict.pop('add_ping_sec_rules_onprem')
 peering_dict.pop('ocs_vcn_cidr')
 
-if(add_sec_rules_ping.strip().lower()=='y'):
+if(add_ping_sec_rules_vcnpeering.strip().lower()=='y'):
     ruleStr=""
     for left_vcn,value in peering_dict.items():
         right_vcns=value.split(",")
@@ -172,7 +174,7 @@ resource "oci_core_security_list" \"""" + seclistname +  """"{
                                 else :
                                         if(vcn_lpg_rules[vcn_name]!=""):
                                             tempStr=tempStr+vcn_lpg_rules[vcn_name]
-                                        if(add_sec_rules_ping=='y' and hub_spoke_none=='hub' or vcn_drg=='y' or hub_spoke_none=='spoke'):
+                                        if(add_ping_sec_rules_onprem=='y' and hub_spoke_none=='hub' or vcn_drg=='y' or hub_spoke_none=='spoke'):
                                             for drg_destination in drg_destinations:
                                                 if(drg_destination!=''):
                                                     tempStr=tempStr+"""
