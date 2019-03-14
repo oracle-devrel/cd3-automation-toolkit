@@ -50,12 +50,12 @@ drg_destinations=drg_destinations.split(",")
 ngw_destinations = config.get('Default', 'ngw_destination')
 if(ngw_destinations==''):
     ngw_destinations='0.0.0.0/0'
-ngw_destinations=drg_destinations.split(",")
+ngw_destinations=ngw_destinations.split(",")
 
 igw_destinations = config.get('Default', 'igw_destination')
 if(igw_destinations==''):
     igw_destinations='0.0.0.0/0'
-igw_destinations=drg_destinations.split(",")
+igw_destinations=igw_destinations.split(",")
 
 tempStr = ""
 ADS = ["AD1", "AD2", "AD3"]
