@@ -294,7 +294,7 @@ resource "oci_core_route_table" \"""" + name + """"{
 	     	destination_type = "SERVICE_CIDR_BLOCK"
 			}
 			"""
-            if configure_ngw.strip() == 'true' and vcn_sgw == 'y':
+            if configure_ngw.strip() == 'true' and vcn_ngw == 'y':
                 for ngw_destination in ngw_destinations:
                     if (ngw_destination != ''):
                         tempStr = tempStr + """ 
