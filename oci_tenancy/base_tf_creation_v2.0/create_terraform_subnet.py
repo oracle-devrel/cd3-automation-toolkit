@@ -62,7 +62,7 @@ for vcn_name in vcns:
 
 	vcn_cidr = vcn_data[0].strip().lower()
 	sps = vcn_data[8].strip().lower()
-	vcn_add_defaul_seclist = vcn_data[9].strip().lower()
+	vcn_add_defaul_seclist = vcn_data[10].strip().lower()
 	vcn_subnet_file = vcn_data[6].strip().lower()
 	if os.path.isfile(vcn_subnet_file) == False:
 		print("input subnet file " + vcn_subnet_file + " for VCN " + vcn_name + " does not exist. Skipping Subnet TF creation for this VCN.")

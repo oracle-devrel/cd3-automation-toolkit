@@ -6,7 +6,6 @@
 
 
 import sys
-import csv
 import argparse
 import re
 import configparser
