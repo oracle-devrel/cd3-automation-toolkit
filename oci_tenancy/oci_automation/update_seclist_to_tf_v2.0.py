@@ -250,7 +250,8 @@ def get_protocol(strprotocol):
 
 def get_network_compartment_id(config, compartment_name):
     identity = IdentityClient(config)
-    comp_list = identity.list_compartments(compartment_id=config["tenancy"])
+    # comp_list = identity.list_compartments(compartment_id=config["tenancy"])
+    comp_list = oci.pagination.list_call_get_all_results(identity.list_compartments,config["tenancy"])
     compartment_list = comp_list.data
     for compartment in compartment_list:
         if compartment.name == compartment_name:
@@ -258,12 +259,13 @@ def get_network_compartment_id(config, compartment_name):
 
 def get_vcn_id(config,compartment_id,vcn_display_name):
     vcn = VirtualNetworkClient(config)
-    vcns = vcn.list_vcns(compartment_id=compartment_id)
+   # vcns = vcn.list_vcns(compartment_id=compartment_id)
+    vcns = oci.pagination.list_call_get_all_results(vcn.list_vcns, compartment_id)
     vcn_list = vcns.data
     for vcn in vcn_list:
         #print(vcn.display_name)
         #print(vcn_display_name)
-        if vcn.display_name == vcn_display_name:
+        if vcn.display_name.upper() == vcn_display_name.upper():
             return vcn.id
 
 parser = argparse.ArgumentParser(description="Takes in a csv file mentioning sec rules to be added for the subnet. See update_seclist-example.csv for format under example folder. It will then take backup of all existing sec list files and create new one with modified rules; Required Arguements: propsfile, outdir and secrulesfile")
