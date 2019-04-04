@@ -41,6 +41,7 @@ for line in fname:
         AD = linearr[2].strip()
         attachedToInstance = linearr[3].strip()
         attachType = linearr[4].strip()
+        compartmentVarName = linearr[5].strip()
         # print "Name: " + name + " Subnet: " + subnet + "\n"
         ad = ADS.index(AD)
         display_name = blockname
@@ -48,7 +49,7 @@ for line in fname:
         tempStr = """resource "oci_core_volume"  \"""" + blockname + """"  {
         #Required
         availability_domain = "${data.oci_identity_availability_domains.ADs.availability_domains.""" + str(ad) + """.name}"
-        compartment_id = "${var.compartment_ocid}"
+        compartment_id = "${var.""" + compartmentVarName + """}"
 
         #Optional
         display_name = \"""" + blockname + """"
