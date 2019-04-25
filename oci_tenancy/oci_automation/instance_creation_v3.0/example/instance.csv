@@ -1,0 +1,3 @@
+#availability_domain(AD1|AD2|AD3), compartment_var_name,imag_var_name, shape, subnet_name, display_name, host_name, private_Ip_address, skip_source_dest_check,public_address(true|false),fault_domain(FAULT-DOMAIN-1| FAULT-DOMAIN-2|FAULT-DOMAIN-3),source_type,ssh_public_key
+AD1,ntk_compartment_ocid,Windows2012R2,VM.Standard2.2,HubPublicSub1,shruthi,shruthi,10.50.1.5,	false,true,FAULT-DOMAIN-1,image,ssh_public_key
+AD1,ntk_compartment_ocid,Windows2012R2,VM.Standard2.2,HubPublicSub1,lakshmi,lakshmi,10.50.1.6,	false,true,FAULT-DOMAIN-1,image,ssh_public_key
