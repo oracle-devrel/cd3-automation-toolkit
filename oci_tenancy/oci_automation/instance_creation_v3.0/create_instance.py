@@ -80,6 +80,7 @@ if('.xlsx' in filename):
         subnet_name = df.iat[i, 4]
         assign_public_ip = df.iat[i, 5]
         assign_public_ip=str(assign_public_ip)
+        assign_public_ip=assign_public_ip.lower()
         private_ip = df.iat[i, 6]
         source_name = df.iat[i, 7]
         shape = df.iat[i, 8]
@@ -134,8 +135,8 @@ if('.csv' in filename):
             display_name = linearr[5].strip()
             hostname_label = linearr[6].strip()
             private_ip = linearr[7].strip()
-            skip_source_dest_check = linearr[8].strip()
-            assign_public_ip = linearr[9].strip()
+            skip_source_dest_check = linearr[8].strip().lower()
+            assign_public_ip = linearr[9].strip().lower()
             fault_domain = linearr[10].strip()
             source_type = linearr[11].strip()
             ssh_public_key = linearr[12].strip()
