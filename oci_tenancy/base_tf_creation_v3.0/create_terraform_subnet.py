@@ -108,10 +108,10 @@ resource "oci_core_subnet" \"""" + name + """" {
 			seclist_ids = """\"${oci_core_vcn.""" + vcn_name + """.default_security_list_id}","""
 		j = 1
 		while j < seclists_per_subnet:
-			seclist_ids = seclist_ids + """\"${oci_core_security_list.""" + name + "-" + str(i) + """.id}","""
+			seclist_ids = seclist_ids + """\"${oci_core_security_list.""" + name + "-" + str(j) + """.id}","""
 			j = j + 1
 		while j <= seclists_per_subnet:
-			seclist_ids = seclist_ids + """\"${oci_core_security_list.""" + name + "-" + str(i) + """.id}" """
+			seclist_ids = seclist_ids + """\"${oci_core_security_list.""" + name + "-" + str(j) + """.id}" """
 			j = j + 1
 		tempStr = tempStr + """
 	security_list_ids   = [ """ + seclist_ids + """ ] 
