@@ -154,6 +154,7 @@ if(excel!=''):
             compartment_var_name = df.iat[i, 0]
 
             seclists_per_subnet = int(sps)
+            j=0
             if (AD.strip() != 'Regional'):
                 ad = ADS.index(AD)
                 ad_name_int = ad + 1
@@ -161,9 +162,9 @@ if(excel!=''):
             else:
                 ad_name = ""
             print(' seclist file name  ************************** ' + name + str(ad_name) + '_seclist.tf')
-            while i < seclists_per_subnet:
+            while j < seclists_per_subnet:
                 oname = open(outdir + "/" + name + str(ad_name) + "_seclist.tf", "a")
-                seclistname = name + str(ad_name) + "-" + str(i + 1)
+                seclistname = name + str(ad_name) + "-" + str(j + 1)
 
                 display_name = seclistname + "-" + subnet
 
@@ -173,10 +174,10 @@ resource "oci_core_security_list" \"""" + seclistname + """"{
     vcn_id = "${oci_core_vcn.""" + vcn_name + """.id}"
     display_name = \"""" + display_name.strip() + "\""
 
-                if i + 1 > 1:
+                if j + 1 > 1:
                     tempStr = tempStr + """
 
-                ####ADD_NEW_SEC_RULES####""" + str(i + 1) + """
+                ####ADD_NEW_SEC_RULES####""" + str(j + 1) + """
 }
 """
                 else:
@@ -203,14 +204,14 @@ resource "oci_core_security_list" \"""" + seclistname + """"{
                     protocol = "all"
                 }
                 #------------------------------------------------------------
-                ####ADD_NEW_SEC_RULES####""" + str(i + 1) + """
+                ####ADD_NEW_SEC_RULES####""" + str(j + 1) + """
             }
             """
                 oname.write(tempStr)
-                i = i + 1
+                j = j + 1
 
 
-# If CD3 excel file is given as input
+# If CD3 excel file is not given as input
 else:
     for vcn_name in vcns:
         vcn_data = config.get('VCN_INFO', vcn_name)

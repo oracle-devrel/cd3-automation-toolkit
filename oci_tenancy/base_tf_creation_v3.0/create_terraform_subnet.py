@@ -106,13 +106,13 @@ resource "oci_core_subnet" \"""" + name + """" {
 		seclist_ids = ""
 		if vcn_add_defaul_seclist == "y":
 			seclist_ids = """\"${oci_core_vcn.""" + vcn_name + """.default_security_list_id}","""
-		i = 1
-		while i < seclists_per_subnet:
+		j = 1
+		while j < seclists_per_subnet:
 			seclist_ids = seclist_ids + """\"${oci_core_security_list.""" + name + "-" + str(i) + """.id}","""
-			i = i + 1
-		while i <= seclists_per_subnet:
+			j = j + 1
+		while j <= seclists_per_subnet:
 			seclist_ids = seclist_ids + """\"${oci_core_security_list.""" + name + "-" + str(i) + """.id}" """
-			i = i + 1
+			j = j + 1
 		tempStr = tempStr + """
 	security_list_ids   = [ """ + seclist_ids + """ ] 
 	dhcp_options_id     = "${oci_core_dhcp_options.""" + dhcp.strip() + """.id}"

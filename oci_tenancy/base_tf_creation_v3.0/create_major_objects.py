@@ -199,7 +199,7 @@ resource "oci_core_nat_gateway" \"""" + ngw_name + """" {
 }
 """
 
-# If CD3 excel file is given as input
+# If CD3 excel file is not given as input
 else:
         for vcn_name in vcns:
                 vcn_data=config.get('VCN_INFO',vcn_name)
