@@ -213,7 +213,6 @@ else:
                 vcn_ngw = vcn_data[3].strip().lower()
                 vcn_sgw = vcn_data[4].strip().lower()
                 hub_spoke_none = vcn_data[5].strip().lower()
-
                 if(hub_spoke_none=='hub' and vcn_drg!='y'):
                         print("VCN marked as Hub should have DRG configured..Modify the input file and try again")
                         exit(1)
@@ -231,24 +230,24 @@ resource "oci_core_vcn" \"""" + vcn_name + """" {
 	dns_label = \"""" + vcn_dns_label + """"
 }
 """
-        if vcn_igw == "y":
-                igw_name=vcn_name+"_igw"
-                tempStr = tempStr + """
+                if vcn_igw == "y":
+                        igw_name=vcn_name+"_igw"
+                        tempStr = tempStr + """
 resource "oci_core_internet_gateway" \"""" + igw_name + """" {
-	    compartment_id = "${var.""" + ntk_comp_var + """}"
-	    display_name = \"""" + igw_name + """"
-	    vcn_id = "${oci_core_vcn.""" + vcn_name + """.id}"
+        compartment_id = "${var.""" + ntk_comp_var + """}"
+        display_name = \"""" + igw_name + """"
+        vcn_id = "${oci_core_vcn.""" + vcn_name + """.id}"
 }
 """
 
-        if vcn_drg == "y":
-                drg_name=vcn_name+"_drg"
-                drg_display="DRG"
-                rt_var=drg_name+"_rt"
+                if vcn_drg == "y":
+                        drg_name=vcn_name+"_drg"
+                        drg_display="DRG"
+                        rt_var=drg_name+"_rt"
 
-                #Create new DRG
-                if(drg_ocid==''):
-                        tempStr = tempStr + """
+                        #Create new DRG
+                        if(drg_ocid==''):
+                                tempStr = tempStr + """
 resource "oci_core_drg" \"""" + drg_name + """" {
         compartment_id = "${var.""" + ntk_comp_var + """}"
         display_name = \"""" + drg_display + """"
@@ -257,24 +256,24 @@ resource "oci_core_drg_attachment" "drg_attachment" {
         drg_id = "${oci_core_drg.""" + drg_name + """.id}"
         vcn_id = "${oci_core_vcn.""" + vcn_name + """.id}"
 """
-                #Use existing DRG
-                if(drg_ocid!=''):
-                        tempStr=tempStr+"""
+                        #Use existing DRG
+                        if(drg_ocid!=''):
+                                tempStr=tempStr+"""
 resource "oci_core_drg_attachment" "drg_attachment" {
         drg_id = \"""" + drg_ocid + """"
         vcn_id = "${oci_core_vcn.""" + vcn_name + """.id}"
 """
-                if(hub_spoke_none=='hub'):
-                    tempStr=tempStr+"""
+                        if(hub_spoke_none=='hub'):
+                            tempStr=tempStr+"""
         route_table_id = "${oci_core_route_table.""" + rt_var + """.id}"
 }
 """
-                else:
-                        tempStr=tempStr+"""
-}"""
-        if vcn_sgw == "y":
-                sgw_name = vcn_name + "_sgw"
-                tempStr = tempStr + """
+                        else:
+                                tempStr=tempStr+"""
+        }"""
+                if vcn_sgw == "y":
+                        sgw_name = vcn_name + "_sgw"
+                        tempStr = tempStr + """
 resource "oci_core_service_gateway"  \"""" + sgw_name + """" {
         services {
         service_id = "${data.oci_core_services.oci_services.services.0.id}"
@@ -284,9 +283,9 @@ resource "oci_core_service_gateway"  \"""" + sgw_name + """" {
         compartment_id = "${var.""" + ntk_comp_var + """}"
 }
 """
-        if vcn_ngw == 'y':
-                ngw_name = vcn_name + "_ngw"
-                tempStr = tempStr + """
+                if vcn_ngw == 'y':
+                        ngw_name = vcn_name + "_ngw"
+                        tempStr = tempStr + """
 resource "oci_core_nat_gateway" \"""" + ngw_name + """" {
         display_name = \"""" + ngw_name + """"
         vcn_id = "${oci_core_vcn.""" + vcn_name + """.id}"
