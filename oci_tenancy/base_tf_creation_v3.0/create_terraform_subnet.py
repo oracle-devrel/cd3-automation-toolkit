@@ -80,7 +80,8 @@ if(excel!=''):
 		AD = df.iat[i, 4]
 		pubpvt = df.iat[i, 5]
 		dhcp=df.iat[i,6]
-		dhcp = vcn_name + "_" + dhcp
+		if(str(dhcp) !='nan'):
+			dhcp = vcn_name + "_" + dhcp
 		compartment_var_name = df.iat[i,0]
 
 		if (AD.strip() != 'Regional'):
@@ -114,8 +115,11 @@ resource "oci_core_subnet" \"""" + name + """" {
 			seclist_ids = seclist_ids + """\"${oci_core_security_list.""" + name + "-" + str(j) + """.id}" """
 			j = j + 1
 		tempStr = tempStr + """
-	security_list_ids   = [ """ + seclist_ids + """ ] 
-	dhcp_options_id     = "${oci_core_dhcp_options.""" + dhcp.strip() + """.id}"
+	security_list_ids   = [ """ + seclist_ids + """ ]"""
+		if (str(dhcp) != 'nan'):
+			tempStr=tempStr+ """
+	dhcp_options_id     = "${oci_core_dhcp_options.""" + dhcp.strip() + """.id}" """
+		tempStr=tempStr+ """
 	display_name               = \"""" + display_name + """"
 	cidr_block                 = \"""" + subnet + """\" """
 		if pubpvt.lower() == "public":
