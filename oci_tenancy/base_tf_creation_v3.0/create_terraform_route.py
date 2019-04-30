@@ -47,8 +47,9 @@ config.read(args.propsfile)
 sections=config.sections()
 
 #Get Global Properties from Default Section
-ntk_comp_var = config.get('Default','ntk_comp_var')
-comp_var = config.get('Default','comp_var')
+#ntk_comp_var = config.get('Default','ntk_comp_var')
+#comp_var = config.get('Default','comp_var')
+
 drg_ocid = config.get('Default','drg_ocid')
 drg_destinations = config.get('Default', 'drg_subnet')
 drg_destinations=drg_destinations.split(",")
@@ -204,12 +205,14 @@ resource "oci_core_route_table" \"""" + rt_var + """"{
             vcn_data = config.get('VCN_INFO', vcn_name)
             vcn_data = vcn_data.split(',')
             hub_spoke_none = vcn_data[5].strip().lower()
+            compartment_var_name = vcn_data[11].strip().lower()
+
             if(hub_spoke_none=='spoke'):
                 lpg_name=hub_vcn_name+"_"+vcn_name+"_lpg"
                 rt_var=lpg_name+"_rt"
                 lpgStr = lpgStr+""" 
 resource "oci_core_route_table" \"""" + rt_var + """"{
-    compartment_id = "${var.""" + ntk_comp_var + """}"
+    compartment_id = "${var.""" + compartment_var_name + """}"
     vcn_id = "${oci_core_vcn.""" + hub_vcn_name + """.id}"
     display_name = "Route Table associated with LPG """+lpg_name +""""
 """
@@ -461,11 +464,13 @@ else:
                     subnet = name_sub.rsplit("-", 1)[1].strip()
                     name = name_sub.rsplit("-", 1)[0].strip()
 
+
                 else:
-                    [name, sub, AD, pubpvt, dhcp, configure_sgw, configure_ngw, configure_igw] = line.split(',')
+                    [compartment_var_name, name, sub, AD, pubpvt, dhcp, SGW, NGW, IGW] = line.split(',')
                     linearr = line.split(",")
-                    name = linearr[0].strip()
-                    subnet = linearr[1].strip()
+                    compartment_var_name = linearr[0].strip()
+                    name = linearr[1].strip()
+                    subnet = linearr[2].strip()
 
                 if (AD.strip() != 'Regional'):
                     ad = ADS.index(AD)
@@ -478,7 +483,7 @@ else:
 
                 tempStr = tempStr + """ 
 resource "oci_core_route_table" \"""" + name + """"{
-    compartment_id = "${var.""" + ntk_comp_var + """}"
+    compartment_id = "${var.""" + compartment_var_name + """}"
 	vcn_id = "${oci_core_vcn.""" + vcn_name + """.id}"
 	display_name = \"""" + display_name.strip() + """\" """ + ruleStr
 

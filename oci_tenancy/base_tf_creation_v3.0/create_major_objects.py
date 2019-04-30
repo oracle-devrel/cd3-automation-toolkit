@@ -49,8 +49,8 @@ if(len(file_read)!=1):
 sections=config.sections()
 
 #Get Global Properties from Default Section
-ntk_comp_var = config.get('Default','ntk_comp_var')
-comp_var = config.get('Default','comp_var')
+#ntk_comp_var = config.get('Default','ntk_comp_var')
+#comp_var = config.get('Default','comp_var')
 drg_ocid = config.get('Default','drg_ocid')
 
 tempStr = ""
@@ -119,6 +119,7 @@ if(excel!=''):
                 sec_list_per_subnet = df['sec_list_per_subnet'][i]
                 sec_rule_per_seclist = df['sec_rule_per_seclist'][i]
                 add_default_seclist = df['add_default_seclist'][i]
+                compartment_var_name = df['compartment_var_name'][i]
                 if (hub_spoke_none == 'hub' and vcn_drg != 'y'):
                         print("VCN marked as Hub should have DRG configured..Modify the input file and try again")
                         exit(1)
@@ -131,7 +132,7 @@ if(excel!=''):
                 tempStr = tempStr + """
 resource "oci_core_vcn" \"""" + vcn_name + """" {
         cidr_block = \"""" + vcn_cidr + """"
-        compartment_id = "${var.""" + ntk_comp_var + """}"
+        compartment_id = "${var.""" + compartment_var_name + """}"
         display_name = \"""" + vcn_name + """"
         dns_label = \"""" + vcn_dns_label + """"
 }
@@ -140,7 +141,7 @@ resource "oci_core_vcn" \"""" + vcn_name + """" {
                         igw_name = vcn_name + "_igw"
                         tempStr = tempStr + """
 resource "oci_core_internet_gateway" \"""" + igw_name + """" {
-        compartment_id = "${var.""" + ntk_comp_var + """}"
+        compartment_id = "${var.""" + compartment_var_name + """}"
         display_name = \"""" + igw_name + """"
         vcn_id = "${oci_core_vcn.""" + vcn_name + """.id}"
 }
@@ -155,7 +156,7 @@ resource "oci_core_internet_gateway" \"""" + igw_name + """" {
                         if (drg_ocid == ''):
                                 tempStr = tempStr + """
 resource "oci_core_drg" \"""" + drg_name + """" {
-        compartment_id = "${var.""" + ntk_comp_var + """}"
+        compartment_id = "${var.""" + compartment_var_name + """}"
         display_name = \"""" + drg_display + """"
 }
 resource "oci_core_drg_attachment" "drg_attachment" {
@@ -186,7 +187,7 @@ resource "oci_core_service_gateway"  \"""" + sgw_name + """" {
         }
         display_name = \"""" + sgw_name + """"
         vcn_id = "${oci_core_vcn.""" + vcn_name + """.id}"
-        compartment_id = "${var.""" + ntk_comp_var + """}"
+        compartment_id = "${var.""" + compartment_var_name + """}"
 }
 """
                 if vcn_ngw == 'y':
@@ -195,7 +196,7 @@ resource "oci_core_service_gateway"  \"""" + sgw_name + """" {
 resource "oci_core_nat_gateway" \"""" + ngw_name + """" {
         display_name = \"""" + ngw_name + """"
         vcn_id = "${oci_core_vcn.""" + vcn_name + """.id}"
-        compartment_id = "${var.""" + ntk_comp_var + """}"
+        compartment_id = "${var.""" + compartment_var_name + """}"
 }
 """
 
@@ -213,6 +214,8 @@ else:
                 vcn_ngw = vcn_data[3].strip().lower()
                 vcn_sgw = vcn_data[4].strip().lower()
                 hub_spoke_none = vcn_data[5].strip().lower()
+                compartment_var_name = vcn_data[11].strip().lower()
+
                 if(hub_spoke_none=='hub' and vcn_drg!='y'):
                         print("VCN marked as Hub should have DRG configured..Modify the input file and try again")
                         exit(1)
@@ -225,7 +228,7 @@ else:
                 tempStr = tempStr + """
 resource "oci_core_vcn" \"""" + vcn_name + """" {
 	cidr_block = \"""" + vcn_cidr + """"
-	compartment_id = "${var.""" + ntk_comp_var + """}"
+	compartment_id = "${var.""" + compartment_var_name + """}"
 	display_name = \"""" + vcn_name + """"
 	dns_label = \"""" + vcn_dns_label + """"
 }
@@ -234,7 +237,7 @@ resource "oci_core_vcn" \"""" + vcn_name + """" {
                         igw_name=vcn_name+"_igw"
                         tempStr = tempStr + """
 resource "oci_core_internet_gateway" \"""" + igw_name + """" {
-        compartment_id = "${var.""" + ntk_comp_var + """}"
+        compartment_id = "${var.""" + compartment_var_name + """}"
         display_name = \"""" + igw_name + """"
         vcn_id = "${oci_core_vcn.""" + vcn_name + """.id}"
 }
@@ -249,7 +252,7 @@ resource "oci_core_internet_gateway" \"""" + igw_name + """" {
                         if(drg_ocid==''):
                                 tempStr = tempStr + """
 resource "oci_core_drg" \"""" + drg_name + """" {
-        compartment_id = "${var.""" + ntk_comp_var + """}"
+        compartment_id = "${var.""" + compartment_var_name + """}"
         display_name = \"""" + drg_display + """"
 }
 resource "oci_core_drg_attachment" "drg_attachment" {
@@ -280,7 +283,7 @@ resource "oci_core_service_gateway"  \"""" + sgw_name + """" {
         }
         display_name = \"""" + sgw_name + """"
         vcn_id = "${oci_core_vcn.""" + vcn_name + """.id}"
-        compartment_id = "${var.""" + ntk_comp_var + """}"
+        compartment_id = "${var.""" + compartment_var_name + """}"
 }
 """
                 if vcn_ngw == 'y':
@@ -289,7 +292,7 @@ resource "oci_core_service_gateway"  \"""" + sgw_name + """" {
 resource "oci_core_nat_gateway" \"""" + ngw_name + """" {
         display_name = \"""" + ngw_name + """"
         vcn_id = "${oci_core_vcn.""" + vcn_name + """.id}"
-        compartment_id = "${var.""" + ntk_comp_var + """}"
+        compartment_id = "${var.""" + compartment_var_name + """}"
 }
 """
 #Create LPGs as per Section VCN_PEERING
@@ -311,7 +314,7 @@ for left_vcn,value in peering_dict.items():
 resource "oci_core_local_peering_gateway"  \"""" + lpg_name + """" {
         display_name = \"""" + lpg_name + """"
         vcn_id = "${oci_core_vcn.""" + left_vcn + """.id}"
-        compartment_id = "${var.""" + ntk_comp_var + """}"
+        compartment_id = "${var.""" + compartment_var_name + """}"
 """
                         if(ocs_vcn_lpg_ocids[0]!=''):
                                 tempStr=tempStr+"""
@@ -330,7 +333,7 @@ resource "oci_core_local_peering_gateway"  \"""" + lpg_name + """" {
 resource "oci_core_local_peering_gateway"  \"""" + lpg_name + """" {
         display_name = \"""" + lpg_name + """"
         vcn_id = "${oci_core_vcn.""" + right_vcn + """.id}"
-        compartment_id = "${var.""" + ntk_comp_var + """}"
+        compartment_id = "${var.""" + compartment_var_name + """}"
 """
                         if(right_vcn==hub_vcn_name and left_vcn in vcn_transit_route_mapping[hub_vcn_name]):
                                 rt_var=lpg_name+"_rt"
@@ -349,7 +352,7 @@ resource "oci_core_local_peering_gateway"  \"""" + lpg_name + """" {
 resource "oci_core_local_peering_gateway"  \"""" + lpg_name + """" {
         display_name = \"""" + lpg_name+ """"
         vcn_id = "${oci_core_vcn.""" + left_vcn + """.id}"
-        compartment_id = "${var.""" + ntk_comp_var + """}"
+        compartment_id = "${var.""" + compartment_var_name + """}"
         peer_id = "${oci_core_local_peering_gateway.""" + peer_lpg_name + """.id}"
 """
                         if (left_vcn == hub_vcn_name and right_vcn in vcn_transit_route_mapping[hub_vcn_name]):

@@ -50,8 +50,8 @@ config.read(args.propsfile)
 sections=config.sections()
 
 #Get Global Properties from Default Section
-ntk_comp_var = config.get('Default','ntk_comp_var')
-comp_var = config.get('Default','comp_var')
+#ntk_comp_var = config.get('Default','ntk_comp_var')
+#comp_var = config.get('Default','comp_var')
 
 
 tempStr = ""
@@ -83,6 +83,7 @@ if(excel!=''):
 		if(str(dhcp) !='nan'):
 			dhcp = vcn_name + "_" + dhcp
 		compartment_var_name = df.iat[i,0]
+
 
 		if (AD.strip() != 'Regional'):
 			ad = ADS.index(AD)
@@ -161,13 +162,14 @@ else:
 					name = name_sub.rsplit("-", 1)[0].strip()
 
 				else:
-
-					[name, sub, AD, pubpvt, dhcp, SGW, NGW, IGW] = line.split(',')
+					[compartment_var_name,name, sub, AD, pubpvt, dhcp, SGW, NGW, IGW] = line.split(',')
 					linearr = line.split(",")
-					name = linearr[0].strip()
-					subnet = linearr[1].strip()
+					compartment_var_name = linearr[0].strip()
+					name = linearr[1].strip()
+					subnet = linearr[2].strip()
 
-				dhcp=vcn_name+"_"+dhcp
+				if(dhcp!=''):
+					dhcp=vcn_name+"_"+dhcp
 
 				if(AD.strip()!='Regional'):
 					ad = ADS.index(AD)
@@ -185,7 +187,7 @@ else:
 
 				tempStr = tempStr+"""
 resource "oci_core_subnet" \"""" + name + """" {
-	compartment_id = "${var.""" + ntk_comp_var + """}" 
+	compartment_id = "${var.""" + compartment_var_name + """}" 
 	"""+adString+"""			
 	route_table_id      = "${oci_core_route_table.""" + name + """.id}"
 	vcn_id = "${oci_core_vcn.""" + str(vcn_name) + """.id}" """
@@ -201,8 +203,11 @@ resource "oci_core_subnet" \"""" + name + """" {
 					seclist_ids  = seclist_ids + """\"${oci_core_security_list.""" + name + "-" + str(i) + """.id}" """
 					i = i + 1
 				tempStr = tempStr + """
-	security_list_ids   = [ """ + seclist_ids + """ ] 
-	dhcp_options_id     = "${oci_core_dhcp_options.""" + dhcp.strip() + """.id}"
+	security_list_ids   = [ """ + seclist_ids + """ ] """
+				if (dhcp != ''):
+					tempStr=tempStr + """
+	dhcp_options_id     = "${oci_core_dhcp_options.""" + dhcp.strip() + """.id}" """
+				tempStr = tempStr + """
 	display_name               = \"""" + display_name + """"
 	cidr_block                 = \"""" + subnet + """\" """
 				if pubpvt.lower() == "public":
