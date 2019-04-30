@@ -49,8 +49,6 @@ if(len(file_read)!=1):
 sections=config.sections()
 
 #Get Global Properties from Default Section
-#ntk_comp_var = config.get('Default','ntk_comp_var')
-#comp_var = config.get('Default','comp_var')
 drg_ocid = config.get('Default','drg_ocid')
 
 tempStr = ""
@@ -60,6 +58,7 @@ data "oci_core_services" "oci_services" {
 
 # Create VCN transit routing mapping based on Hub-Spoke
 vcn_transit_route_mapping=dict()
+vcn_compartment={}
 hub_vcn_name=''
 
 # If CD3 exceel file is given as input
@@ -120,6 +119,8 @@ if(excel!=''):
                 sec_rule_per_seclist = df['sec_rule_per_seclist'][i]
                 add_default_seclist = df['add_default_seclist'][i]
                 compartment_var_name = df['compartment_var_name'][i]
+                vcn_compartment[vcn_name]=compartment_var_name
+
                 if (hub_spoke_none == 'hub' and vcn_drg != 'y'):
                         print("VCN marked as Hub should have DRG configured..Modify the input file and try again")
                         exit(1)
@@ -215,6 +216,8 @@ else:
                 vcn_sgw = vcn_data[4].strip().lower()
                 hub_spoke_none = vcn_data[5].strip().lower()
                 compartment_var_name = vcn_data[11].strip().lower()
+                vcn_compartment[vcn_name]=compartment_var_name
+
 
                 if(hub_spoke_none=='hub' and vcn_drg!='y'):
                         print("VCN marked as Hub should have DRG configured..Modify the input file and try again")
@@ -310,6 +313,7 @@ for left_vcn,value in peering_dict.items():
                 #Create LPG for VCN on left and peer with OCS VCN
                 if(right_vcn=='ocs_vcn'):
                         lpg_name = left_vcn + "_ocs_lpg"
+                        compartment_var_name=vcn_compartment[left_vcn]
                         tempStr = tempStr + """
 resource "oci_core_local_peering_gateway"  \"""" + lpg_name + """" {
         display_name = \"""" + lpg_name + """"
@@ -329,6 +333,7 @@ resource "oci_core_local_peering_gateway"  \"""" + lpg_name + """" {
                 else:
                         #create LPG for VCNs on right
                         lpg_name=right_vcn+"_"+left_vcn+"_lpg"
+                        compartment_var_name=vcn_compartment[right_vcn]
                         tempStr = tempStr + """
 resource "oci_core_local_peering_gateway"  \"""" + lpg_name + """" {
         display_name = \"""" + lpg_name + """"
@@ -348,6 +353,7 @@ resource "oci_core_local_peering_gateway"  \"""" + lpg_name + """" {
                         #create LPG for VCN on left corresponding to above and establish peering
                         lpg_name=left_vcn+"_"+right_vcn+"_lpg"
                         peer_lpg_name=right_vcn+"_"+left_vcn+"_lpg"
+                        compartment_var_name=vcn_compartment[left_vcn]
                         tempStr = tempStr + """
 resource "oci_core_local_peering_gateway"  \"""" + lpg_name + """" {
         display_name = \"""" + lpg_name+ """"

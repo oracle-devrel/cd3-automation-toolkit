@@ -62,9 +62,7 @@ sections=config.sections()
 purge(outdir, "_seclist.tf")
 
 #Get Global Properties from Default Section
-#ntk_comp_var = config.get('Default','ntk_comp_var')
-#comp_var = config.get('Default','comp_var')
-
+subnet_name_attach_cidr = config.get('Default','subnet_name_attach_cidr')
 drg_destinations = config.get('Default', 'drg_subnet')
 drg_destinations=drg_destinations.split(",")
 
@@ -167,7 +165,10 @@ if(excel!=''):
                 oname = open(outdir + "/" + name + str(ad_name) + "_seclist.tf", "a")
                 seclistname = name + str(ad_name) + "-" + str(j + 1)
 
-                display_name = seclistname + "-" + subnet
+                if (subnet_name_attach_cidr == 'y'):
+                    display_name = seclistname + "-" + subnet
+                else:
+                    display_name = name + "-" + str(j + 1)
 
                 tempStr = """
 resource "oci_core_security_list" \"""" + seclistname + """"{
@@ -253,7 +254,10 @@ else:
                                 oname = open(outdir +"/" +name+str(ad_name)+"_seclist.tf","a")
                                 seclistname = name + str(ad_name) + "-" +  str(i+1)
 
-                                display_name = seclistname +  "-" + subnet
+                                if (subnet_name_attach_cidr == 'y'):
+                                    display_name = seclistname + "-" + subnet
+                                else:
+                                    display_name = name + "-" + str(j + 1)
 
                                 tempStr = """
 resource "oci_core_security_list" \"""" + seclistname +  """"{

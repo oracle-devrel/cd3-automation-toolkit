@@ -47,9 +47,7 @@ config.read(args.propsfile)
 sections=config.sections()
 
 #Get Global Properties from Default Section
-#ntk_comp_var = config.get('Default','ntk_comp_var')
-#comp_var = config.get('Default','comp_var')
-
+subnet_name_attach_cidr = config.get('Default','subnet_name_attach_cidr')
 drg_ocid = config.get('Default','drg_ocid')
 drg_destinations = config.get('Default', 'drg_subnet')
 drg_destinations=drg_destinations.split(",")
@@ -70,6 +68,7 @@ ADS = ["AD1", "AD2", "AD3"]
 #Get Hub VCN name and create route rules for LPGs as per Section VCN_PEERING
 hub_vcn_name=''
 vcn_lpg_rules = {}
+vcn_compartment = {}
 
 # If CD3 excel file is given as input
 if(excel!=''):
@@ -78,10 +77,13 @@ if(excel!=''):
         # Get VCN names from vcn_name column in VCNs sheet of CD3 excel
         for i in df_vcn.index:
                 vcn_name=df_vcn['vcn_name'][i]
+                compartment_var_name = df_vcn['compartment_var_name'][i]
+                vcn_compartment[vcn_name]=compartment_var_name
                 vcn_lpg_rules.setdefault(vcn_name, '')
                 hub_spoke_none=df_vcn['hub_spoke_none'][i]
                 if (hub_spoke_none == 'hub'):
                     hub_vcn_name = vcn_name
+
 
 # If CD3 excel file is not given as input
 else:
@@ -92,6 +94,9 @@ else:
                 vcn_data = config.get('VCN_INFO', vcn_name)
                 vcn_data = vcn_data.split(',')
                 hub_spoke_none = vcn_data[5].strip().lower()
+                compartment_var_name = vcn_data[11].strip().lower()
+                vcn_compartment[vcn_name]=compartment_var_name
+
                 if (hub_spoke_none == 'hub'):
                         hub_vcn_name = vcn_name
 
@@ -150,15 +155,16 @@ lpgStr=""
 if(hub_vcn_name!=''):
     # Create Route Table associated with DRG for Hub VCN
     rt_var=hub_vcn_name+"_drg_rt"
+    compartment_var_name = vcn_compartment[hub_vcn_name]
     drgStr = """ 
 resource "oci_core_route_table" \"""" + rt_var + """"{
-    compartment_id = "${var.""" + ntk_comp_var + """}"
+    compartment_id = "${var.""" + compartment_var_name + """}"
     vcn_id = "${oci_core_vcn.""" + hub_vcn_name + """.id}"
     display_name = "Route Table associated with DRG"
     """
 
     #Create Route Table Associated with each LPG in Hub VCN peered with Spoke VCN
-    # If CD3 excel file is not given as input
+    # If CD3 excel file is given as input
     if (excel != ''):
         # Get VCN names from vcn_name column in VCNs sheet of CD3 excel
         for i in df_vcn.index:
@@ -169,7 +175,7 @@ resource "oci_core_route_table" \"""" + rt_var + """"{
                 rt_var = lpg_name + "_rt"
                 lpgStr = lpgStr + """ 
 resource "oci_core_route_table" \"""" + rt_var + """"{
-    compartment_id = "${var.""" + ntk_comp_var + """}"
+    compartment_id = "${var.""" + compartment_var_name + """}"
     vcn_id = "${oci_core_vcn.""" + hub_vcn_name + """.id}"
     display_name = "Route Table associated with LPG """ + lpg_name + """"
 """
@@ -205,7 +211,6 @@ resource "oci_core_route_table" \"""" + rt_var + """"{
             vcn_data = config.get('VCN_INFO', vcn_name)
             vcn_data = vcn_data.split(',')
             hub_spoke_none = vcn_data[5].strip().lower()
-            compartment_var_name = vcn_data[11].strip().lower()
 
             if(hub_spoke_none=='spoke'):
                 lpg_name=hub_vcn_name+"_"+vcn_name+"_lpg"
@@ -332,9 +337,15 @@ if(excel!=''):
                 ad_name = str(ad_name_int)
             else:
                 ad_name = ""
-            name = name + str(ad_name)
-            display_name = name + "-" + subnet
 
+            name1 = name + str(ad_name)
+
+            if(subnet_name_attach_cidr=='y'):
+                display_name = name1 + "-" + subnet
+            else:
+                display_name = name
+
+            name=name1
             tempStr = tempStr + """ 
 resource "oci_core_route_table" \"""" + name + """"{
     compartment_id = "${var.""" + compartment_var_name + """}"
@@ -478,8 +489,13 @@ else:
                     ad_name = str(ad_name_int)
                 else:
                     ad_name = ""
-                name = name + str(ad_name)
-                display_name = name + "-" + subnet
+
+                name1 = name + str(ad_name)
+                if (subnet_name_attach_cidr == 'y'):
+                    display_name = name1 + "-" + subnet
+                else:
+                    display_name = name
+                name = name1
 
                 tempStr = tempStr + """ 
 resource "oci_core_route_table" \"""" + name + """"{

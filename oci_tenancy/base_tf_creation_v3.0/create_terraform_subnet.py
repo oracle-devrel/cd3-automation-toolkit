@@ -50,9 +50,7 @@ config.read(args.propsfile)
 sections=config.sections()
 
 #Get Global Properties from Default Section
-#ntk_comp_var = config.get('Default','ntk_comp_var')
-#comp_var = config.get('Default','comp_var')
-
+subnet_name_attach_cidr = config.get('Default','subnet_name_attach_cidr')
 
 tempStr = ""
 tempStr = tempStr + """
@@ -94,10 +92,14 @@ if(excel!=''):
 			ad_name = ""
 			adString = """availability_domain = "" """
 
-		name = name + ad_name
-		display_name = name + "-" + subnet
-		dnslabel = re.sub('-', '', name)
+		name1 = name + ad_name
+		if (subnet_name_attach_cidr == 'y'):
+			display_name = name1 + "-" + subnet
+		else:
+			display_name = name
 
+		name = name1
+		dnslabel = re.sub('-', '', name)
 		tempStr = tempStr + """
 resource "oci_core_subnet" \"""" + name + """" {
 	compartment_id = "${var.""" + compartment_var_name + """}" 
@@ -180,8 +182,12 @@ else:
 					ad_name=""
 					adString="""availability_domain = "" """
 
-				name = name + ad_name
-				display_name = name +  "-" + subnet
+				name1 = name + ad_name
+				if (subnet_name_attach_cidr == 'y'):
+					display_name = name1 + "-" + subnet
+				else:
+					display_name = name
+
 				dnslabel = re.sub('-','',name)
 
 
