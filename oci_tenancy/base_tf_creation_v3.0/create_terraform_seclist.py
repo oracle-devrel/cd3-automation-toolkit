@@ -257,7 +257,7 @@ else:
                                 if (subnet_name_attach_cidr == 'y'):
                                     display_name = seclistname + "-" + subnet
                                 else:
-                                    display_name = name + "-" + str(j + 1)
+                                    display_name = name + "-" + str(i + 1)
 
                                 tempStr = """
 resource "oci_core_security_list" \"""" + seclistname +  """"{
