@@ -32,7 +32,7 @@ fname = open(inputcsv, "r")
 # Read the input csv file
 for route in fname:
     if not route.startswith('#'):
-        print "processing : " + route
+        print ("processing : " + route)
         subnet_name = route.split(":")[0]
         dest_cidr = route.split(":")[1]
         dest_obj = route.split(":")[2]
