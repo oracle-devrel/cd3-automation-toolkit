@@ -2,7 +2,7 @@ resource "oci_core_instance" "##Hostname##" {
         #Required
         #availability_domain = "##Availability Domain##"
         availability_domain = "${data.oci_identity_availability_domains.ADs.availability_domains.##Availability Domain##.name}"
-        compartment_id = "##Compartment Var Name##"
+        compartment_id = "${var.##Compartment Var Name##}"
         fault_domain = "##Fault Domain##"
         ### windows image id - oci image ###
         source_details {
@@ -28,7 +28,7 @@ resource "oci_core_instance" "##Hostname##" {
         hostname_label = "##Hostname##"
         metadata {
 
-				ssh_authorized_keys = "##SSH-key##"
+				ssh_authorized_keys = "${var.##SSH-key##}"
         }
 
         subnet_id = "${oci_core_subnet.##subnet name##.id}"

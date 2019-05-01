@@ -14,6 +14,8 @@ update_seclist_to_tf_v2.0.py
 ------------------------------
 This script takes in a csv file mentioning sec rules as the input. See update_seclist-example.csv under example folder.
 Usage:
-./update_seclist_to_tf_v2.0.py --propsfile <path to vcn-info.properties> --outdir <output dir name being used for tf files> --secrulesfile <path to input csv containing rules>
+./update_seclist_to_tf_v2.0.py --inputfile <path to vcn-info.properties or CD3 excel file> --outdir <output dir name being used for tf files> --secrulesfile <path to input csv containing rules>
 eg
-./update_seclist_to_tf_v2.0.py --propsfile vcn-info.properties --outdir /root/ocswork/terraform_files --secrulesfile update_seclist-adrules.csv
+./update_seclist_to_tf_v2.0.py --inputfile vcn-info.properties --outdir /root/ocswork/terraform_files --secrulesfile update_seclist-adrules.csv
+or
+./update_seclist_to_tf_v2.0.py --inputfile CD3-template.properties --outdir /root/ocswork/terraform_files --secrulesfile update_seclist-adrules.csv

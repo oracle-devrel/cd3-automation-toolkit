@@ -1,7 +1,7 @@
 resource "oci_core_instance" "##Hostname##" {
         #Required
         availability_domain = "${data.oci_identity_availability_domains.ADs.availability_domains.##Availability Domain##.name}"
-        compartment_id = "##Compartment Var Name##"
+        compartment_id = "${var.##Compartment Var Name##}"
         fault_domain = "##Fault Domain##"
         ### windows image id - oci image ###
         #image = "${var.windows2012_image_ocid}"
