@@ -338,8 +338,8 @@ if(excel!=''):
             else:
                 ad_name = ""
 
+            subnet_res_name = name
             name1 = name + str(ad_name)
-
             if(subnet_name_attach_cidr=='y'):
                 display_name = name1 + "-" + subnet
             else:
@@ -384,7 +384,7 @@ resource "oci_core_route_table" \"""" + name + """"{
             }
             """
             tempStr = tempStr + """
-            ##Add More rules for subnet """ + name + """##
+            ##Add More rules for subnet """ + subnet_res_name + """##
     }
     """
 
@@ -489,6 +489,7 @@ else:
                 else:
                     ad_name = ""
 
+                subnet_res_name = name
                 name1 = name + str(ad_name)
                 if (subnet_name_attach_cidr == 'y'):
                     display_name = name1 + "-" + subnet
@@ -535,7 +536,7 @@ resource "oci_core_route_table" \"""" + name + """"{
 			"""
                 tempStr = tempStr + """
             
-                ##Add More rules for subnet """ + name + """##
+                ##Add More rules for subnet """ + subnet_res_name + """##
 	}
 	"""
 
