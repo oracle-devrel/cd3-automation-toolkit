@@ -40,6 +40,9 @@ oname = open(outfile,"w")
 tempStr = ""
 
 if('.xls' in args.inputfile):
+	df_vcn = pd.read_excel(args.inputfile, sheet_name='VCNs')
+	df_vcn.set_index("vcn_name", inplace=True)
+	df_vcn.head()
 	df = pd.read_excel(args.inputfile, sheet_name='DHCP')
 	for i in df.index:
 		vcn_name = df.iat[i,0]
@@ -47,9 +50,11 @@ if('.xls' in args.inputfile):
 		serverType = df.iat[i,2]
 		search_domain = df.iat[i,3]
 		custom_dns_servers = df.iat[i,4]
-		compartment_var_name = df.iat[i,5]
 		vcn_dhcp = vcn_name + "_" + dhcp_option_name
 		vcn_dhcp.strip().lower()
+
+		vcn_data = df_vcn.loc[vcn_name]
+		compartment_var_name = vcn_data['compartment_var_name']
 
 		tempStr = tempStr + """
 resource "oci_core_dhcp_options" \"""" + vcn_dhcp + """" {
@@ -86,9 +91,6 @@ if('.properties' in args.inputfile):
 	config.read(args.inputfile)
 	sections=config.sections()
 
-	#Get Global Properties from Default Section
-	ntk_comp_var = config.get('Default','ntk_comp_var')
-	comp_var = config.get('Default','comp_var')
 
 	#Get VCN and DHCP file info from VCN_INFO section
 	vcns=config.options('VCN_INFO')
@@ -96,6 +98,7 @@ if('.properties' in args.inputfile):
 		vcn_data = config.get('VCN_INFO', vcn)
 		vcn_data = vcn_data.split(',')
 		vcn_name = vcn
+		compartment_var_name = vcn_data[11].strip()
 		vcn_dhcp_file = vcn_data[7].strip().lower()
 		### Read the DHCP file
 		dhcpfile = configparser.RawConfigParser()
@@ -113,7 +116,7 @@ if('.properties' in args.inputfile):
 	
 			tempStr = tempStr+"""
 resource "oci_core_dhcp_options" \"""" + vcn_dhcp + """" {
-	compartment_id = "${var.""" + ntk_comp_var + """}"
+	compartment_id = "${var.""" + compartment_var_name + """}"
 	options {
         type = "DomainNameServer"
 		server_type = \"""" + serverType  + "\""
