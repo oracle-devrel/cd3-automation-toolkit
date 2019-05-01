@@ -477,7 +477,7 @@ else:
 
 
                 else:
-                    [compartment_var_name, name, sub, AD, pubpvt, dhcp, configure_ngw, configure_igw] = line.split(',')
+                    [compartment_var_name, name, sub, AD, pubpvt, dhcp, configure_sgw, configure_ngw, configure_igw] = line.split(',')
                     linearr = line.split(",")
                     compartment_var_name = linearr[0].strip()
                     name = linearr[1].strip()
