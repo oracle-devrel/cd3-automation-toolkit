@@ -65,7 +65,8 @@ if('.xlsx' in filename):
 #If input is a csv file
 if('.csv' in filename):
     with open(filename) as csvfile:
-        reader = csv.DictReader(skipCommentedLine(csvfile))
+        #reader = csv.DictReader(skipCommentedLine(csvfile))
+        reader = csv.DictReader()
         columns = reader.fieldnames
         for row in reader:
             copy_template_file(row['Hostname'], row['OS'])
