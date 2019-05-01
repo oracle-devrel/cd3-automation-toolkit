@@ -232,7 +232,7 @@ else:
         #Read subnet file
         for line in fname:
                 i = 0
-                if not line.startswith('#') :
+                if not line.startswith('#') and line !='\n':
                         if args.omcs :
                                 name_sub,AD,pubpvt,dhcp,SGW,NGW,IGW = line.split(',')
                                 subnet = name_sub.rsplit("-",1)[1].strip()

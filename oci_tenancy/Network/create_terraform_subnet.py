@@ -156,7 +156,7 @@ else:
 
 		# Read subnet file
 		for line in fname:
-			if not line.startswith('#'):
+			if not line.startswith('#') and line !='\n':
 				if args.omcs:
 
 					name_sub, AD, pubpvt, dhcp = line.split(',')
