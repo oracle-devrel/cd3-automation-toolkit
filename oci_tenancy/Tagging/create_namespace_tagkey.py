@@ -4,8 +4,10 @@
 import sys
 import argparse
 import pandas as pd
-import os
 import datetime
+import os
+from os import path
+
 
 x = datetime.datetime.now()
 date = x.strftime("%f").strip()
@@ -26,16 +28,17 @@ args = parser.parse_args()
 filename = args.file
 outdir = args.outdir
 
-src = outdir+'/tag.tf'
-dst = outdir+'/tag_backup'+date
 
-print dst
+src = outdir+'/tag.tf'
+if path.exists(src):
+    dst = outdir+'/tag_backup'+date
+    os.rename(src, dst)
+
 
 src1 = outdir+'/tagkeys.tf'
-dst1 = outdir+'/tagkeys_backup'+date
-
-os.rename(src,dst)
-os.rename(src1,dst1)
+if path.exists(src1):
+    dst1 = outdir+'/tagkeys_backup'+date
+    os.rename(src1, dst1)
 
 # Creates the namespaces
 if ('.xlsx' in filename):
