@@ -60,7 +60,17 @@ if('.xlsx' in filename):
         copy_template_file(df['Hostname'][row], df['OS'][row])
     for i in df.keys():
         for j in df.index:
-            replaceAllplaceholders(outdir + '/' + df['Hostname'][j] + '.tf', '##' + i + '##', str(df[i][j]))
+            if (re.match('Availability domain', i, flags=re.IGNORECASE)):
+                if ('AD1' in df[i][j]):
+                    df[i][j] = '0'
+                if ('AD2' in df[i][j]):
+                    df[i][j] = '1'
+                if ('AD3' in df[i][j]):
+                    df[i][j] = '2'
+            if (str(df[i][j]) != 'nan'):
+                if (df[i][j] == 'True' or df[i][j] == 'False'):
+                    df[i][j] = str(df[i][j]).lower()
+                replaceAllplaceholders(outdir + '/' + df['Hostname'][j] + '.tf', '##' + i + '##', str(df[i][j]))
 
 #If input is a csv file
 if('.csv' in filename):
@@ -79,6 +89,7 @@ if('.csv' in filename):
                         row[column] = '2'
                 if(row[column]!=''):
                     replaceAllplaceholders(outdir + '/' + row['Hostname'] + '.tf', '##' + column + '##', row[column])
+
 
 
 
