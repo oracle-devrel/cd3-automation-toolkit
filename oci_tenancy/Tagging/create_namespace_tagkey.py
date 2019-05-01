@@ -70,12 +70,10 @@ if ('.xlsx' in filename):
     df
     for i in df.keys():
         print("\n")
-        print
-        i
+        print (i)
         key = i
 
-        print
-        "----------------------"
+        print ("----------------------")
         for j in df.index:
             if (str(df[i][j]) == 'nan'):
                 continue
