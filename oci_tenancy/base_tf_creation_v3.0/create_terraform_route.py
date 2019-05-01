@@ -94,7 +94,7 @@ else:
                 vcn_data = config.get('VCN_INFO', vcn_name)
                 vcn_data = vcn_data.split(',')
                 hub_spoke_none = vcn_data[5].strip().lower()
-                compartment_var_name = vcn_data[11].strip().lower()
+                compartment_var_name = vcn_data[11].strip()
                 vcn_compartment[vcn_name]=compartment_var_name
 
                 if (hub_spoke_none == 'hub'):
