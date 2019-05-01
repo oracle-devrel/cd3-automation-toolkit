@@ -190,7 +190,7 @@ else:
 
 				dnslabel = re.sub('-','',name)
 
-
+				name=name1
 				tempStr = tempStr+"""
 resource "oci_core_subnet" \"""" + name + """" {
 	compartment_id = "${var.""" + compartment_var_name + """}" 

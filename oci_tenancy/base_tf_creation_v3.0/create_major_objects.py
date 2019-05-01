@@ -215,7 +215,7 @@ else:
                 vcn_ngw = vcn_data[3].strip().lower()
                 vcn_sgw = vcn_data[4].strip().lower()
                 hub_spoke_none = vcn_data[5].strip().lower()
-                compartment_var_name = vcn_data[11].strip().lower()
+                compartment_var_name = vcn_data[11].strip()
                 vcn_compartment[vcn_name]=compartment_var_name
 
 
