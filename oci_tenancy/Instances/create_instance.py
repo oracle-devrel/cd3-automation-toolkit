@@ -70,10 +70,13 @@ if('.xlsx' in filename):
                 if ('AD3' in df[i][j]):
                     replaceAllplaceholders(outdir + '/' + df['Hostname'][j] + '.tf', '##' + i + '##', '2')
                     continue
-            if (str(df[i][j]) != 'nan'):
-                if (str(df[i][j]) == 'True' or str(df[i][j]) == 'False'):
-                    replaceAllplaceholders(outdir + '/' + df['Hostname'][j] + '.tf', '##' + i + '##', str(df[i][j]).lower())
-                replaceAllplaceholders(outdir + '/' + df['Hostname'][j] + '.tf', '##' + i + '##', str(df[i][j]))
+            if (str(df[i][j]) == 'nan'):
+                replaceAllplaceholders(outdir + '/' + df['Hostname'][j] + '.tf', '##' + i + '##', "")
+                continue
+            if (str(df[i][j]) == 'True' or str(df[i][j]) == 'False'):
+                replaceAllplaceholders(outdir + '/' + df['Hostname'][j] + '.tf', '##' + i + '##', str(df[i][j]).lower())
+                continue
+            replaceAllplaceholders(outdir + '/' + df['Hostname'][j] + '.tf', '##' + i + '##', str(df[i][j]))
 
 #If input is a csv file
 if('.csv' in filename):
@@ -90,8 +93,7 @@ if('.csv' in filename):
                         row[column] = '1'
                     if ('AD3' in row[column]):
                         row[column] = '2'
-                if(row[column]!=''):
-                    replaceAllplaceholders(outdir + '/' + row['Hostname'] + '.tf', '##' + column + '##', row[column])
+                replaceAllplaceholders(outdir + '/' + row['Hostname'] + '.tf', '##' + column + '##', row[column])
 
 
 
