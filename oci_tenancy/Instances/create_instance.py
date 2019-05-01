@@ -70,7 +70,15 @@ if('.csv' in filename):
         for row in reader:
             copy_template_file(row['Hostname'], row['OS'])
             for column in columns:
+                if(re.match('Availability domain',column,flags=re.IGNORECASE)):
+                    if ('AD1' in row[column]):
+                        row[column]='0'
+                    if ('AD2' in row[column]):
+                        row[column] = '1'
+                    if ('AD3' in row[column]):
+                        row[column] = '2'
                 replaceAllplaceholders(outdir + '/' + row['Hostname'] + '.tf', '##' + column + '##', row[column])
+
 
 
 
