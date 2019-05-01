@@ -27,5 +27,6 @@ resource "oci_core_instance" "##Hostname##" {
         display_name = "##Hostname##"
         hostname_label = "##Hostname##"
         subnet_id = "${oci_core_subnet.##subnet name##.id}"
+        ## Defined Tag Info ##
 }
 

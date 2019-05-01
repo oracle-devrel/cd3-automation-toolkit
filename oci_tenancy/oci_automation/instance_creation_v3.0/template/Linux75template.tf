@@ -32,5 +32,5 @@ resource "oci_core_instance" "##Hostname##" {
         }
 
         subnet_id = "${oci_core_subnet.##subnet name##.id}"
-	#subnet_id = "##subnet name##"
+        ## Defined Tag Info ##
 }
