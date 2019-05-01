@@ -1,0 +1,2 @@
+SubnetName,RuleType,Protocol,isStateless,Source,SPortMin,SPortMax,Destination,DPortMin,DPortMax,ICMPType,ICMPCode
+prod-lb2,ingress,tcp,FALSE,10.89.0.0/16,,,,123,234,,
