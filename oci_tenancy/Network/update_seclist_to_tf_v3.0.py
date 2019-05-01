@@ -316,7 +316,7 @@ vnc = VirtualNetworkClient(config)
 
 if('.properties' in args.inputfile):
     ociprops = configparser.RawConfigParser()
-    ociprops.read(args.propsfile)
+    ociprops.read(args.inputfile)
     #Get VCN  info from VCN_INFO section
     vcns=ociprops.options('VCN_INFO')
 
