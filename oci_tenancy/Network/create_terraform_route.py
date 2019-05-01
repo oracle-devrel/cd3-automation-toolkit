@@ -388,7 +388,7 @@ resource "oci_core_route_table" \"""" + name + """"{
     }
     """
 
-# If CD3 exceel file is not given as input
+# If CD3 excel file is not given as input
 else:
 
     for vcn_name in vcns:
@@ -466,7 +466,7 @@ else:
 
         # Read input subnet file
         for line in fname:
-            if not line.startswith('#'):
+            if not line.startswith('#') and line !='\n':
                 # print "processing : " + line
                 subnet = ""
                 name = ""
@@ -474,7 +474,6 @@ else:
                     name_sub, AD, pubpvt, dhcp, configure_sgw, configure_ngw, configure_igw = line.split(',')
                     subnet = name_sub.rsplit("-", 1)[1].strip()
                     name = name_sub.rsplit("-", 1)[0].strip()
-
 
                 else:
                     [compartment_var_name, name, sub, AD, pubpvt, dhcp, configure_sgw, configure_ngw, configure_igw] = line.split(',')
