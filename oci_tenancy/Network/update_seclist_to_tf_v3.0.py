@@ -1,13 +1,14 @@
 #!/bin/python
 
-import ConfigParser
 import argparse
+import configparser
 import csv
 import os
 import shutil
 import re
 import sys
 import oci
+import pandas as pd
 from oci.core.virtual_network_client import VirtualNetworkClient
 from oci.identity import IdentityClient
 
@@ -269,7 +270,7 @@ def get_vcn_id(config,compartment_id,vcn_display_name):
             return vcn.id
 
 parser = argparse.ArgumentParser(description="Takes in a csv file mentioning sec rules to be added for the subnet. See update_seclist-example.csv for format under example folder. It will then take backup of all existing sec list files and create new one with modified rules; Required Arguements: propsfile, outdir and secrulesfile")
-parser.add_argument("--propsfile",help="Full Path of properties file. eg vcn-info.properties in example folder",required=True)
+parser.add_argument("--inputfile",help="Full Path of info file: It could be either the properties file eg vcn-info.properties or CD3 excel file",required=True)
 parser.add_argument("--outdir",help="directory path for output tf files ",required=True)
 parser.add_argument("--secrulesfile",help="csv file with secrules for Security List of a given subnet")
 parser.add_argument("--overwrite",help="Overwite subnet files. When this flag is used, script expect new seclist files created using create_terraform_seclist.py   ")
@@ -296,9 +297,11 @@ else:
 seclist_files = {}
 seclist_rule_count = {}
 
-question = 'Input Name of Network compartment where VCN exist : '
-print (question)
-ntk_comp_name = raw_input()
+#question = 'Input Name of Network compartment where VCN exist : '
+#print (question)
+#ntk_comp_name = raw_input()
+
+ntk_comp_name = input('Input Name of Network compartment where VCN exist : ')
 
 configFileName = args.configFileName
 
@@ -308,37 +311,42 @@ if args.configFileName is not None:
 else:
     config = oci.config.from_file()
 
-ociprops = ConfigParser.RawConfigParser()
-ociprops.read(args.propsfile)
-
-#Get Global Properties from Default Section
-ntk_comp_var = ociprops.get('Default','ntk_comp_var')
-comp_var = ociprops.get('Default','comp_var')
-
-
 ntk_comp_id = get_network_compartment_id(config, ntk_comp_name)
-
-
-#Get VCN  info from VCN_INFO section
-vcns=ociprops.options('VCN_INFO')
-
-
 vnc = VirtualNetworkClient(config)
 
-for vcn_name in vcns:
-    vcn_data = ociprops.get('VCN_INFO', vcn_name)
-    vcn_data = vcn_data.split(',')
-    #sps = vcn_data[8].strip().lower()
-    #seclists_per_subnet = int(sps)
-    sec_rule_per_seclist = vcn_data[9].strip().lower()
+if('.properties' in args.inputfile):
+    ociprops = configparser.RawConfigParser()
+    ociprops.read(args.propsfile)
+    #Get VCN  info from VCN_INFO section
+    vcns=ociprops.options('VCN_INFO')
 
-    vcn_id = get_vcn_id(config, ntk_comp_id , vcn_name)
+    for vcn_name in vcns:
+        vcn_data = ociprops.get('VCN_INFO', vcn_name)
+        vcn_data = vcn_data.split(',')
+        sec_rule_per_seclist = vcn_data[9].strip().lower()
 
-    subnet_list = response = vnc.list_subnets(ntk_comp_id, vcn_id)
-    create_def_file = True
-    for subnet in subnet_list.data:
-        init_subnet_details(subnet.id,vcn_name,overwrite)
-    print(seclist_rule_count)
+        vcn_id = get_vcn_id(config, ntk_comp_id , vcn_name)
+
+        subnet_list = response = vnc.list_subnets(ntk_comp_id, vcn_id)
+        create_def_file = True
+        for subnet in subnet_list.data:
+            init_subnet_details(subnet.id,vcn_name,overwrite)
+        print(seclist_rule_count)
+
+if('.xls' in args.inputfile):
+    df = pd.read_excel(args.inputfile, sheet_name='VCNs')
+    for i in df.index:
+        vcn_name = df.iat[i, 0]
+        sec_rule_per_seclist = df.iat[i,8]
+
+        vcn_id = get_vcn_id(config, ntk_comp_id, vcn_name)
+
+        subnet_list = response = vnc.list_subnets(ntk_comp_id, vcn_id)
+        create_def_file = True
+        for subnet in subnet_list.data:
+            init_subnet_details(subnet.id, vcn_name, overwrite)
+        print(seclist_rule_count)
+
 
 with open(secrulesfilename) as secrulesfile:
     reader = csv.DictReader(skipCommentedLine(secrulesfile))
