@@ -63,13 +63,16 @@ if('.xlsx' in filename):
             if (re.match('Availability domain', i, flags=re.IGNORECASE)):
                 if ('AD1' in df[i][j]):
                     replaceAllplaceholders(outdir + '/' + df['Hostname'][j] + '.tf', '##' + i + '##', '0')
+                    break
                 if ('AD2' in df[i][j]):
                     replaceAllplaceholders(outdir + '/' + df['Hostname'][j] + '.tf', '##' + i + '##', '1')
+                    break
                 if ('AD3' in df[i][j]):
                     replaceAllplaceholders(outdir + '/' + df['Hostname'][j] + '.tf', '##' + i + '##', '2')
-                if (str(df[i][j]) != 'nan'):
-                    if (df[i][j] == 'True' or df[i][j] == 'False'):
-                        df[i][j] = str(df[i][j]).lower()
+                    break
+            if (str(df[i][j]) != 'nan'):
+                if (str(df[i][j]) == 'True' or str(df[i][j]) == 'False'):
+                    replaceAllplaceholders(outdir + '/' + df['Hostname'][j] + '.tf', '##' + i + '##', str(df[i][j]).lower())
                 replaceAllplaceholders(outdir + '/' + df['Hostname'][j] + '.tf', '##' + i + '##', str(df[i][j]))
 
 #If input is a csv file
