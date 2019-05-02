@@ -44,7 +44,6 @@ def is_empty(myList):
 
 
 def create_ingress_rule_string(row):
-    print("row['SPortMin'] " + row['SPortMin'])
     options = ""
     temp_rule = """
           ingress_security_rules {
@@ -229,7 +228,7 @@ def incrementRuleCount(subnet_name):
 def getReplacementStr(sec_rule_per_seclist,subnet_name):
     replaceString = "####ADD_NEW_SEC_RULES####"
     if subnet_name != 'def-vcn_seclist':
-        list_no = (int(seclist_rule_count[subnet_name])/int(sec_rule_per_seclist) +1)
+        list_no = (int(seclist_rule_count[subnet_name])//int(sec_rule_per_seclist) +1)
     else:
         list_no=1
     return replaceString + str(list_no)
@@ -314,6 +313,7 @@ else:
 ntk_comp_id = get_network_compartment_id(config, ntk_comp_name)
 vnc = VirtualNetworkClient(config)
 
+
 if('.properties' in args.inputfile):
     ociprops = configparser.RawConfigParser()
     ociprops.read(args.inputfile)
@@ -338,14 +338,13 @@ if('.xls' in args.inputfile):
     for i in df.index:
         vcn_name = df.iat[i, 0]
         sec_rule_per_seclist = df.iat[i,8]
-
         vcn_id = get_vcn_id(config, ntk_comp_id, vcn_name)
-
-        subnet_list = response = vnc.list_subnets(ntk_comp_id, vcn_id)
-        create_def_file = True
-        for subnet in subnet_list.data:
-            init_subnet_details(subnet.id, vcn_name, overwrite)
-        print(seclist_rule_count)
+        if(vcn_id!=None):
+            subnet_list = response = vnc.list_subnets(ntk_comp_id, vcn_id)
+            create_def_file = True
+            for subnet in subnet_list.data:
+                init_subnet_details(subnet.id, vcn_name, overwrite)
+            print(seclist_rule_count)
 
 
 with open(secrulesfilename) as secrulesfile:
@@ -353,7 +352,6 @@ with open(secrulesfilename) as secrulesfile:
     columns = reader.fieldnames
     print(totalRowCount)
     rowCount = 0
-    maxRulesPerFile = 4
     for row in reader:
         #print(row)
         protocol = row['Protocol']

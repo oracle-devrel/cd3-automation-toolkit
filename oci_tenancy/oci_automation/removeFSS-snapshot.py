@@ -8,7 +8,7 @@ import datetime
 from datetime import timedelta
 import logging
 
-parser = argparse.ArgumentParser(description="Takes in a csv file mentioning sec rules to be added for the subnet. See update_seclist-example.csv for format under example folder. It will then take backup of all existing sec list files and create new one with modified rules; Required Arguements: propsfile, outdir and secrulesfile")
+parser = argparse.ArgumentParser(description="Takes in arg mntioning Env name and retention days for FSS and removes the snapshots created before specified no of retention days for all mount points in that Env")
 parser.add_argument("--env", help="Env to delete snapshot for: Dev | QA | DR" , required=True)
 parser.add_argument("--retentionDays", help="No of days to retain snapshot" , required=True)
 parser.add_argument("--configFileName", help="Config file name" , required=False)

@@ -160,9 +160,9 @@ if(excel!=''):
                 ad_name = str(ad_name_int)
             else:
                 ad_name = ""
-            print(' seclist file name  ************************** ' + name + str(ad_name) + '_seclist.tf')
+            print(' seclist file name  ************************** ' + name + '_seclist.tf')
             while j < seclists_per_subnet:
-                oname = open(outdir + "/" + name + str(ad_name) + "_seclist.tf", "a")
+                oname = open(outdir + "/" + name + "_seclist.tf", "a")
                 seclistname = name + str(ad_name) + "-" + str(j + 1)
 
                 if (subnet_name_attach_cidr == 'y'):
@@ -249,9 +249,9 @@ else:
                                 ad_name = str(ad_name_int)
                         else:
                                 ad_name = ""
-                        print(' seclist file name  ************************** '+name+str(ad_name)+'_seclist.tf')
+                        print(' seclist file name  ************************** '+name+'_seclist.tf')
                         while i < seclists_per_subnet :
-                                oname = open(outdir +"/" +name+str(ad_name)+"_seclist.tf","a")
+                                oname = open(outdir +"/" +name+"_seclist.tf","a")
                                 seclistname = name + str(ad_name) + "-" +  str(i+1)
 
                                 if (subnet_name_attach_cidr == 'y'):
