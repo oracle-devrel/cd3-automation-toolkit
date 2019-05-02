@@ -27,9 +27,9 @@ args = parser.parse_args()
 filename = args.file
 outdir = args.outdir
 
-src = outdir + '/tag.tf'
+src = outdir + '/tagnamespaces.tf'
 if path.exists(src):
-    dst = outdir + '/tag_backup' + date
+    dst = outdir + '/tagnamespaces_backup' + date
     os.rename(src, dst)
 
 src1 = outdir + '/tagkeys.tf'
@@ -42,22 +42,31 @@ if ('.xlsx' in filename):
     df = pd.read_excel(filename, sheet_name='Tags')
     print(df.keys())
     for i in df.keys():
+        if (i == 'compartment_var_name'):
+            for j in df.index:
+                if (str(df[i][j]) == 'nan'):
+                    continue
+                else:
+                    print df[i][j]
+                    compartment_var_name = df[i][j]
+                    continue
         if (i == 'TagNamespace'):
-            continue;
+            continue
+        elif (i == 'compartment_var_name'):
+            continue
         else:
-            print
-            i
+            print i
             tagnamespace = i
             tmpstr = """
             resource "oci_identity_tag_namespace" \"""" + tagnamespace + """\" {
                 #Required
-                compartment_id = "${var.tenancy_ocid}"
+                compartment_id = "${var."""+compartment_var_name+"""}"
                 description = "Create Tag Namespace for """ + tagnamespace + """\"
                 name = \"""" + tagnamespace + """\"
                 is_retired = false
             }
             """
-            outfile = outdir + "/tag.tf"
+            outfile = outdir + "/tagnamespaces.tf"
             oname = open(outfile, "a+")
             oname.write(tmpstr)
             oname.close()
@@ -66,36 +75,38 @@ if ('.xlsx' in filename):
 if ('.xlsx' in filename):
     df1 = pd.read_excel(filename, sheet_name='Tags')
     df = df1.dropna(how='all')
-    print
-    df
+    print df
     for i in df.keys():
         print("\n")
         print (i)
-        key = i
+        if (i == 'compartment_var_name'):
+            continue
+        else:
+            key = i
 
-        print ("----------------------")
-        for j in df.index:
-            if (str(df[i][j]) == 'nan'):
-                continue
-            else:
-                print df[i][j]
-                tagkey = df[i][j]
-
-                if (tagkey == 'Keys') and (key == 'TagNamespace'):
+            print ("----------------------")
+            for j in df.index:
+                if (str(df[i][j]) == 'nan'):
                     continue
                 else:
-                    tmpstr = """
+                    print df[i][j]
+                    tagkey = df[i][j]
 
-                    resource "oci_identity_tag" \"""" + tagkey + """\" {
-                    #Required
-                    description = "Creating """ + tagkey + """ in Namespace """ + key + """\"
-                    name = \"""" + tagkey + """\"
-                    tag_namespace_id = \"${oci_identity_tag_namespace.""" + key + """.id}\"
-                    is_retired = false
-                }
-                """
-                outfile = outdir + "/tagkeys.tf"
-                oname = open(outfile, "a+")
-                oname.write(tmpstr)
-                oname.close()
+                    if (tagkey == 'Keys') and (key == 'TagNamespace'):
+                        continue
+                    else:
+                        tmpstr = """
+    
+                        resource "oci_identity_tag" \"""" + tagkey + """\" {
+                        #Required
+                        description = "Creating """ + tagkey + """ in Namespace """ + key + """\"
+                        name = \"""" + tagkey + """\"
+                        tag_namespace_id = \"${oci_identity_tag_namespace.""" + key + """.id}\"
+                        is_retired = false
+                    }
+                    """
+                    outfile = outdir + "/tagkeys.tf"
+                    oname = open(outfile, "a+")
+                    oname.write(tmpstr)
+                    oname.close()
 
