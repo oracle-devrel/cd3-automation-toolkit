@@ -77,7 +77,7 @@ for line in fname:
             ## Defined Tag Info ##
             """
             testToSearch="## Defined Tag Info ##"
-            terrafile = volume+".tf"
+            terrafile = outdir+"/"+ volume + ".tf"
             print terrafile
 
             with open(terrafile, 'r') as file:

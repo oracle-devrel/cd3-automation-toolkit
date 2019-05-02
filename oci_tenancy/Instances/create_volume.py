@@ -48,6 +48,7 @@ if('.xls' in filename):
         #Optional
         display_name = \"""" + blockname + """"
         size_in_gbs = \"""" + size + """"
+        ## Defined Tag Info ##
         }
 
 resource "oci_core_volume_attachment" \"""" + blockname + """_volume_attachment" {
@@ -57,7 +58,7 @@ resource "oci_core_volume_attachment" \"""" + blockname + """_volume_attachment"
         volume_id = "${oci_core_volume.""" + blockname + """.id}"
 
         }
-        ## Defined Tag Info ##
+        
         """
         outfile = outdir+"/"+blockname+".tf"
         oname = open(outfile,"w")

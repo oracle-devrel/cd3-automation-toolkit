@@ -5,7 +5,7 @@ import sys
 import argparse
 
 parser = argparse.ArgumentParser(description="Create vars files for the each row in csv file.")
-parser.add_argument("file", help="Full Path of CSV file.Ex:tag_server-csv-example.csv in example folder")
+parser.add_argument("file", help="Full Path of CSV file.Ex:tag_server.csv in example folder")
 parser.add_argument("outdir", help="directory path for output tf files ")
 
 if len(sys.argv) == 1:
@@ -76,7 +76,7 @@ for line in fname:
             ## Defined Tag Info ##
             """
             testToSearch = "## Defined Tag Info ##"
-            terrafile = hostname + ".tf"
+            terrafile = outdir+"/"+ hostname + ".tf"
             print terrafile
 
             with open(terrafile, 'r') as file:

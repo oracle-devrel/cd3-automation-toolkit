@@ -1,6 +1,6 @@
 #Name,AD[1,2,3],path,sourceCIDR,access[READ_ONLY,READ_WRITE],GID,UID,IDSquash[NONE,ALL,ROOT],require_ps_port[true,false]
 Name = row[0]
-ad = row[1]
+ad = row[1
 AD = int(ad) - 1 --- adjust values to actual values, add str(AD) as VAR in script
 path = row[2]
 sourceCIDR = row[4]

@@ -78,8 +78,7 @@ if ('.xlsx' in filename):
             if (str(df[i][j]) == 'nan'):
                 continue
             else:
-                print
-                df[i][j]
+                print df[i][j]
                 tagkey = df[i][j]
 
                 if (tagkey == 'Keys') and (key == 'TagNamespace'):
