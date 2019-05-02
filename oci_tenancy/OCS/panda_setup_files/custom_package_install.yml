@@ -1,0 +1,16 @@
+- hosts: all
+  become: true
+  become_user: root
+  tasks:
+  - name: install the latest version of Rsync
+    yum:
+       name: rsync
+       state: latest
+
+  - name: Install the python packages required for the rsync
+    pip:
+      name: "{{ packages_for_pip }}"
+    vars:
+      packages_for_pip:
+      - python-crontab
+      - scp

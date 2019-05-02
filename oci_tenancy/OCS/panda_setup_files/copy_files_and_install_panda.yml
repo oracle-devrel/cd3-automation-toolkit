@@ -1,0 +1,36 @@
+- hosts: all
+
+  tasks:
+  - name: Copying the generated Secrets & hosts files
+    copy:
+     src: /root/ocswork/ocic2oci_work/tmp/
+     dest: /home/opc/ansible/
+
+  - name: Copy the ssh-pvt-key-openssh.ppk to the Panda host. This is to make testing easier (Murali's private key on Murali's test Server)
+    copy:
+      src: /root/ocswork/keys/ssh-pvt-key-openssh.ppk
+      dest: /home/opc/.ssh/id_rsa
+      mode: 0400
+
+  - name: Copy the oci_pem_key to Panda host.  This is to allow the connection for ctlt creation.
+    copy:
+      src: /root/ocswork/keys/oci_api_key.pem
+      dest: /home/opc/.oci/oci_api_key.pem
+
+  - name: Copy configure_vnic2 script.  This script needs to be copied to source VMs to instantiate VNIC2 on target VMs
+    copy:
+      src: /root/ocswork/ocic2oci_work/configure_vnic2.sh
+      dest: /home/opc/configure_vnic2.sh
+
+  - name: Copy script to create cron on source VM for running configure_vnic2.sh every 15 mins. Also install rsync on Souce VM so that it is available on target VM also
+    copy:
+      src: /root/ocswork/ocic2oci_work/create_cron_vnic2_install_rsync.yml
+      dest: /home/opc/create_cron_vnic2_install_rsync.yml
+
+  - name:  Install mig
+    command: /home/opc/mig install
+
+  - name: Remove old migr util
+    file:
+      state: absent
+      path: "/home/opc/migr"

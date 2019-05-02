@@ -1,0 +1,55 @@
+
+The script createPEMKeys.py creates public/private key pair in PEM format required for Python APIs to communicate with OCI
+
+The script createOCSWork.py accepts ocswork.properties as the input arguement.
+The variables are defined in the properties file along with their description in comments
+
+createOCSWork.py python script creates compartments for OCS related work, VMs and Network components. Further it creates VCN, subnet, route table and the VM
+which will be used for OCS work. It also copies over the required files to the VM using Python SCP module. As part of cloud-init, a script is executed on
+the VM.
+
+---------------------------------------------
+Files copied to VM using createOCSWork.py python script:
+---------------------------------------------
+Python Config File - config
+Private key File used for python APIs - oci_api_key.pem
+Terraform files - provider.rf and variables.tf which will be used for Terraform to communicate to OCI
+Git download expect script
+Panda specific files - ftmcli.properties, ftmcli-v2.4.3.zip, panda.tf, upload panda expect script
+Koala specific files - config file, run koala discover expect script
+shell_script script file
+
+---------------------------------------------------------
+Files required for execution createOCSWork.py Python script:
+----------------------------------------------------------
+ocswork.properties - properties file; This would be accepted as arguement from the user
+config             - Python config file to interact with OCI using API
+cloud_init_script  - script which will be run as part of cloud init (ie on VM first instantiation)
+                     This script checks if shell_script is copied over to the VM and if yes starts execution of the script.
+shell_script       - This is the script which configures the VM
+                        -- Installs utilities like terraform, ansible
+                        -- Installs required packages
+                        -- Copying python config file to ~/.oci folder
+                        -- Copying private key of the user to be used for python APIs
+                        -- Downloads GIT repo
+                        -- Accepts input from user in the properties file about whether to configure Koala and Panda also as part of initial setup.
+
+----------------
+Pre-Requisites
+----------------
+-- Python on your local system. PyCharm having oci, scp, paramiko, pycrypto,puttykeys modules installed.
+   When you import the code if you see any other error regarding any package install that also
+-- All above files mentioned with proper data
+-- Set of public/private key pair in PEM format generated using openssl. Use createPEMKeys.py to generate public/private key pair in PEM format
+-- Set of public/private key pair generated using puttygen which will be used to login to the VM
+
+
+
+Note -
+-- We are creating shell_script which will be copied to VM after all other files are copied and is executed as cloud-init once Python script finishes execution.
+   This is to ensure that required files are first copied over to the VM and then only we should start the configure process to avoid any conflicts.
+-- There are few sleep statements added in between the cmds so that execution happens properly and as required
+-- Using Python 2.7 to compile the code as createPEMKeys.py rquires pycrypto module which did not get installed with Python3.7. Also to install this package,
+   you might need to install Microsoft Visual C++ Compiler. Download it from here: http://aka.ms/vcpython27
+-- ocswork.properties is accepting 3 keys that can be pushed at a time to the VM. OCI VM accespts null or empty values if you dont want to pass 3 at a time.
+   But Only the first key (ssh_key1) would be pushed to the Panda VM on OCIC. OCIC doesnt accept null values for keys.

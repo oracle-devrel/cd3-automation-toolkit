@@ -297,11 +297,11 @@ else:
 seclist_files = {}
 seclist_rule_count = {}
 
-#question = 'Input Name of Network compartment where VCN exist : '
+#question = 'Input Name of Networking compartment where VCN exist : '
 #print (question)
 #ntk_comp_name = raw_input()
 
-ntk_comp_name = input('Input Name of Network compartment where VCN exist : ')
+ntk_comp_name = input('Input Name of Networking compartment where VCN exist : ')
 
 configFileName = args.configFileName
 
