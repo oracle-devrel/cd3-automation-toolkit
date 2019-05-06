@@ -8,7 +8,7 @@ import datetime
 from datetime import timedelta
 import logging
 
-parser = argparse.ArgumentParser(description="Takes in arg mntioning Env name and retention days for FSS and removes the snapshots created before specified no of retention days for all mount points in that Env")
+parser = argparse.ArgumentParser(description="Takes in arg mentioning Env name and retention days for FSS and removes the snapshots created before specified no of retention days for all mount points in that Env")
 parser.add_argument("--env", help="Env to delete snapshot for: Dev | QA | DR" , required=True)
 parser.add_argument("--retentionDays", help="No of days to retain snapshot" , required=True)
 parser.add_argument("--configFileName", help="Config file name" , required=False)

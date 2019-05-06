@@ -8,7 +8,7 @@ import datetime
 import logging
 
 
-parser = argparse.ArgumentParser(description="Takes in arg mntioning Env name for FSS and creates the snapshot for all mount points in that Env")
+parser = argparse.ArgumentParser(description="Takes in arg mentioning Env name for FSS and creates the snapshot for all mount points in that Env")
 parser.add_argument("--env", help="Env to create snapshot for: Dev | QA | DR" , required=True)
 parser.add_argument("--configFileName", help="Config file name" , required=False)
 
