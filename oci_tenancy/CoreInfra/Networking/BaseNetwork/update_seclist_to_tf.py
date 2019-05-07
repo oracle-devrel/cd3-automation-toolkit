@@ -62,12 +62,13 @@ def create_ingress_rule_string(row):
     if row['Protocol'] == 'tcp':
         tcp_option = " \t\ttcp_options {"
 
-        #if not is_empty(row['Destination']):
-        dest_range = """
+        if not is_empty(row['Destination']):
+         dest_range = """
             "max" = """ + str(row['DPortMax']) + """
             "min" =  """ + str(row['DPortMin']) + """
-         """
-        if str(row['SPortMax']) or str(row['SPortMin']):
+          """
+        if not is_empty(row['Source']):
+         if str(row['SPortMax']) or str(row['SPortMin']):
             source_range = """
                 source_port_range {"""
             if str(row['SPortMax']):
@@ -79,7 +80,8 @@ def create_ingress_rule_string(row):
             source_range = source_range + " \n\t\t\t\t}  """
 
         options = tcp_option + dest_range + source_range + "\n\t\t   }"
-
+        if dest_range == '' and source_range == '':
+            options = ''
     udp_option = ""
     if row['Protocol'] == 'udp':
         udp_option = " \t\tudp_options {"
@@ -251,7 +253,7 @@ def get_protocol(strprotocol):
 def get_network_compartment_id(config, compartment_name):
     identity = IdentityClient(config)
     # comp_list = identity.list_compartments(compartment_id=config["tenancy"])
-    comp_list = oci.pagination.list_call_get_all_results(identity.list_compartments,config["tenancy"])
+    comp_list = oci.pagination.list_call_get_all_results(identity.list_compartments,config["tenancy"],compartment_id_in_subtree=True)
     compartment_list = comp_list.data
     for compartment in compartment_list:
         if compartment.name == compartment_name:
