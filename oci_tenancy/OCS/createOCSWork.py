@@ -185,7 +185,7 @@ ocs_compartment_found=0
 vm_compartment_found=0
 ntk_compartment_found=0
 
-for compartment in paginate(identity_client.list_compartments, compartment_id=tenancy_id):
+for compartment in paginate(identity_client.list_compartments, compartment_id=tenancy_id, compartment_id_in_subtree=True ):
     if(compartment.name== input_ocs_compartment_name):
         ocs_compartment_found=1
         ocs_compartment_ocid=compartment.id
