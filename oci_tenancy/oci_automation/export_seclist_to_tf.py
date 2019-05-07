@@ -221,7 +221,7 @@ def create_seclist_tf_file(vcn_var, vcn_display_name, subnetid, create_def_file,
 
 def get_network_compartment_id(config, compartment_name):
     identity = IdentityClient(config)
-    comp_list = identity.list_compartments(compartment_id=config["tenancy"])
+    comp_list = identity.list_compartments(compartment_id=config["tenancy"],compartment_id_in_subtree=True)
     compartment_list = comp_list.data
     for compartment in compartment_list:
         if compartment.name == compartment_name:

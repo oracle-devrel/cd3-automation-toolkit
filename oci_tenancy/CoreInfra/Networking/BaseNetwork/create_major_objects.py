@@ -184,7 +184,7 @@ resource "oci_core_drg_attachment" "drg_attachment" {
                         tempStr = tempStr + """
 resource "oci_core_service_gateway"  \"""" + sgw_name + """" {
         services {
-        service_id = "${data.oci_core_services.oci_services.services.0.id}"
+        service_id = "${data.oci_core_services.oci_services.services.1.id}"
         }
         display_name = \"""" + sgw_name + """"
         vcn_id = "${oci_core_vcn.""" + vcn_name + """.id}"

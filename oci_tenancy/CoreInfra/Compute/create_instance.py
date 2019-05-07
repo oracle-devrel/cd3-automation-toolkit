@@ -93,6 +93,11 @@ if('.csv' in filename):
                         row[column] = '1'
                     if ('AD3' in row[column]):
                         row[column] = '2'
+                if(re.match('Pub Address',column,flags=re.IGNORECASE)):
+                    if (row[column].lower() == "true"):
+                        row[column] = 'true'
+                    if (row[column].lower() == "false"):
+                        row[column] = 'false'
                 replaceAllplaceholders(outdir + '/' + row['Hostname'] + '.tf', '##' + column + '##', row[column])
 
 

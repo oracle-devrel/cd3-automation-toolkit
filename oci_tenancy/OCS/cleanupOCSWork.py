@@ -41,9 +41,9 @@ python_config = oci.config.from_file(file_location=input_config_file)
 ocs_compartment_ocid = python_config['ocs_compartment_ocid']
 input_vcn_ocid = python_config['vcn_ocid']
 input_igw_ocid = python_config['igw_ocid']
-input_ngw_ocid = python_config['ngw_ocid']
-input_lpg_to_orig_ocid = python_config['lpg_to_orig_ocid']
 try:
+    input_ngw_ocid = python_config['ngw_ocid']
+    input_lpg_to_orig_ocid = python_config['lpg_to_orig_ocid']
     input_lpg_to_mirror_ocid = python_config['lpg_to_mirror_ocid']
     input_lpg_to_rsync_ocid = python_config['lpg_to_rsync_ocid']
 except Exception as e:
@@ -84,7 +84,7 @@ f = open(del_file_path+"\\openSSHpvtKeyFile", "w+")
 f.write(puttykeys.ppkraw_to_openssh(putty_pvtkey_contents))
 f.close()
 
-dont_ssh = 1
+dont_ssh = 0
 
 if dont_ssh == 1:
 
@@ -136,9 +136,16 @@ network_client.update_route_table(rt_id=input_route_table_id,update_route_table_
 
 
 print "Deleting IGW of VCN"
-network_client.delete_internet_gateway(input_igw_ocid)
+try :
+    network_client.delete_internet_gateway(input_igw_ocid)
+except Exception as e:
+    print e
 print "Deleting NGW of VCN"
-network_client.delete_nat_gateway(input_ngw_ocid)
+try :
+    network_client.delete_nat_gateway(input_ngw_ocid)
+except Exception as e:
+    print e
+
 #get_ntk_response = oci.wait_until(network_client,network_client.get_internet_gateway(input_igw_ocid),'lifecycle_state', 'TERMINATED')
 print "Deleting LPGs"
 

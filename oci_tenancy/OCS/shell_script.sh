@@ -78,7 +78,9 @@ then
     ./download_git_expect1.sh
     sleep 5s
     find /root/ocswork/git_oci -type f -iname "*.py" -exec chmod +x {} \;
-
+fi
+if [ -e /home/opc/download_git_expect2.sh ]
+then
     cd /home/opc
     dos2unix download_git_expect2.sh download_git_expect2.sh
     chmod +x download_git_expect2.sh
