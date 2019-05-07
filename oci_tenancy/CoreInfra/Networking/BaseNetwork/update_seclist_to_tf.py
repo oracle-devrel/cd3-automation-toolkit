@@ -268,7 +268,7 @@ def get_vcn_id(config,compartment_id,vcn_display_name):
         if vcn.display_name.upper() == vcn_display_name.upper():
             return vcn.id
 
-parser = argparse.ArgumentParser(description="Takes in a csv file mentioning sec rules to be added for the subnet. See update_seclist-example.csv for format under example folder. It will then take backup of all existing sec list files and create new one with modified rules; Required Arguements: propsfile, outdir and secrulesfile")
+parser = argparse.ArgumentParser(description="Takes in a csv file mentioning sec rules to be added for the subnet. See update_seclist-example.csv for format under example folder. It will then take backup of all existing sec list files and create new one with modified rules; Required Arguements: propsfile/cd3 excel file, outdir and secrulesfile")
 parser.add_argument("--inputfile",help="Full Path of info file: It could be either the properties file eg vcn-info.properties or CD3 excel file",required=True)
 parser.add_argument("--outdir",help="directory path for output tf files ",required=True)
 parser.add_argument("--secrulesfile",help="csv file with secrules for Security List of a given subnet")
