@@ -99,6 +99,19 @@ try:
                     if(snapshot_createTime < retaindays_ago):
                         logger.info("removing snapshot "+snapshot_name)
                         fss_client.delete_snapshot(snapshot_id)
+        if (env == 'Prod'):
+            if ('prod' in fss.display_name):
+                fss_id=fss.id
+                snapshots=fss_client.list_snapshots(fss_id)
+                for snapshot in snapshots.data:
+                    snapshot_createTime=snapshot.time_created
+                    snapshot_createTime=snapshot_createTime.replace(tzinfo=None)
+                    snapshot_id=snapshot.id
+                    snapshot_name=snapshot.name
+
+                    if(snapshot_createTime < retaindays_ago):
+                        logger.info("removing snapshot "+snapshot_name)
+                        fss_client.delete_snapshot(snapshot_id)
 except Exception as e:
     logger.error("Error occured during execution "+ str(e))
 

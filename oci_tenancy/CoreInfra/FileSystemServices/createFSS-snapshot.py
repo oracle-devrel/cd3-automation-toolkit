@@ -55,23 +55,28 @@ try:
     for fss in all_fss.data:
         if(env=='Dev'):
             if('dev' in fss.display_name):
-                logger.info('Creating snapshot for '+fss.display_name + ' with name snaphot_'+fss.display_name+"_"+str(datetime.datetime.today()))
+                logger.info('Creating snapshot for '+fss.display_name + ' with name snaphot_'+fss.display_name+"_"+str(datetime.date.today()))
                 fss_id=fss.id
-                createSnapshotDetails = oci.file_storage.models.CreateSnapshotDetails(file_system_id=fss_id,name="snapshot_"+fss.display_name+"_"+str(datetime.datetime.today()))
+                createSnapshotDetails = oci.file_storage.models.CreateSnapshotDetails(file_system_id=fss_id,name="snapshot_"+fss.display_name+"_"+str(datetime.date.today()))
                 fss_client.create_snapshot(create_snapshot_details=createSnapshotDetails)
         if(env=='QA'):
             if('qa' in fss.display_name):
-                logger.info('Creating snapshot for '+fss.display_name + ' with name snaphot_'+fss.display_name+"_"+str(datetime.datetime.today()))
+                logger.info('Creating snapshot for '+fss.display_name + ' with name snaphot_'+fss.display_name+"_"+str(datetime.date.today()))
                 fss_id = fss.id
-                createSnapshotDetails = oci.file_storage.models.CreateSnapshotDetails(file_system_id=fss_id,name="snapshot_"+fss.display_name+"_"+str(datetime.datetime.today()))
+                createSnapshotDetails = oci.file_storage.models.CreateSnapshotDetails(file_system_id=fss_id,name="snapshot_"+fss.display_name+"_"+str(datetime.date.today()))
                 fss_client.create_snapshot(create_snapshot_details=createSnapshotDetails)
         if (env == 'DR'):
             if ('dr' in fss.display_name):
-                logger.info('Creating snapshot for ' + fss.display_name + ' with name snaphot_'+fss.display_name+"_"+ str(datetime.datetime.today()))
+                logger.info('Creating snapshot for ' + fss.display_name + ' with name snaphot_'+fss.display_name+"_"+ str(datetime.date.today()))
                 fss_id = fss.id
-                createSnapshotDetails = oci.file_storage.models.CreateSnapshotDetails(file_system_id=fss_id,name="snapshot_"+fss.display_name+"_"+str(datetime.datetime.today()))
+                createSnapshotDetails = oci.file_storage.models.CreateSnapshotDetails(file_system_id=fss_id,name="snapshot_"+fss.display_name+"_"+str(datetime.date.today()))
                 fss_client.create_snapshot(create_snapshot_details=createSnapshotDetails)
-
+        if (env == 'Prod'):
+            if ('prod' in fss.display_name):
+                logger.info('Creating snapshot for ' + fss.display_name + ' with name snaphot_'+fss.display_name+"_"+ str(datetime.date.today()))
+                fss_id = fss.id
+                createSnapshotDetails = oci.file_storage.models.CreateSnapshotDetails(file_system_id=fss_id,name="snapshot_"+fss.display_name+"_"+str(datetime.date.today()))
+                fss_client.create_snapshot(create_snapshot_details=createSnapshotDetails)
 except Exception as e:
     logger.error("Error occured during execution "+ str(e))
 

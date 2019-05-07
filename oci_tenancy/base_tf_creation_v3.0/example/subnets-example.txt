@@ -1,5 +1,0 @@
-#compartment_var_name,name(should not contain underscore),subnet-cidr,availabilty-domain(AD1|AD2|AD3|Regional),private|public,dhcp-options(leave blank if default dhcp option needs to be used),SGW,NGW,IGW
-ntk_compartment,prod-dmz-lb-ext,10.89.69.0/24,AD2,public,dhcp-external,y,n,y
-ntk_compartment,prod-dmz-lb-ext,10.89.70.0/24,AD3,public,dhcp-external,n,n,y
-ntk_compartment,prod-mgt-ops,10.89.230.0/24,AD3,private,dhcp-internal,y,y,n
-ntk_compartment,prod-mgt-ops,10.89.231.0/24,AD2,private,dhcp-internal,n,y,n

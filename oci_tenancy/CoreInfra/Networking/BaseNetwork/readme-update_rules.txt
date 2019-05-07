@@ -3,7 +3,7 @@ add_routes_to_tf.py and update_seclist_to_tf_v2.0.py are the scripts to add new 
 add_routes_to_tf.py
 --------------------
 This script takes in a csv file mentioning route rules as the input. See add_routes-example.txt under example folder.
-Note- This woild only add new rules to the route table. It wont check for existing rules.
+Note- This would only add new rules to the route table. It wont check for existing rules.
 Usage:
 
 ./add_routes_to_tf.py <path to input csv containing rules> <path to routes tf file created earlier using create_all_tf_objects.py>
