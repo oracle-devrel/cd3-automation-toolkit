@@ -1,4 +1,4 @@
- #!/bin/python
+#!/bin/python
 
 import configparser
 import argparse
