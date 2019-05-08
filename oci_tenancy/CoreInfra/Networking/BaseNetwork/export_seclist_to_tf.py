@@ -149,6 +149,9 @@ def create_seclist_tf_file(vcn_var, vcn_display_name, subnetid, create_def_file,
         print ("Seclist file name : " + response.data.display_name.rsplit("-", 1)[0].strip() + "_seclist.tf")
         outFilename = open(outdir+"/"+ response.data.display_name.rsplit("-", 1)[0].strip() + "_seclist.tf", "a+")
         for seclist_id in response.data.security_list_ids:
+            if seclist_id in completed_seclist_ocids:
+              continue
+
             seclistdata = vnc.get_security_list(seclist_id).data
 
             seclistname = vnc.get_security_list(seclist_id).data.display_name
@@ -176,6 +179,9 @@ def create_seclist_tf_file(vcn_var, vcn_display_name, subnetid, create_def_file,
                   } \n       """
                 outFilename.write(tempStr)
             elif create_def_file:
+                if seclist_id in completed_seclist_ocids:
+                    continue
+                completed_seclist_ocids.append(seclist_id)
                 # print("Default list Should be taken care " )
                 defseclistvarname=vcn_var.strip()+"_def_seclist"
                 defFilename = open(outdir + "/" + "def-vcn_seclist_generated.tf", "a+")
@@ -287,7 +293,7 @@ else:
 
 ntk_comp_id = get_network_compartment_id(config, ntk_comp_name)
 vnc = VirtualNetworkClient(config)
-
+completed_seclist_ocids = []
 
 if('.properties' in args.inputfile):
     ociprops = configparser.RawConfigParser()
