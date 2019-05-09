@@ -8,6 +8,9 @@ createOCSWork.py python script creates compartments for OCS related work, VMs an
 which will be used for OCS work. It also copies over the required files to the VM using Python SCP module. As part of cloud-init, a script is executed on
 the VM.
 
+The script will also setup the configuration to "cleanup" the work VM before you leave the customer.
+Do not delete this configuration, unless you want to manually cleanup.
+
 ---------------------------------------------
 Files copied to VM using createOCSWork.py python script:
 ---------------------------------------------
@@ -24,9 +27,11 @@ Files required for execution createOCSWork.py Python script:
 ----------------------------------------------------------
 ocswork.properties - properties file; This would be accepted as arguement from the user
 config             - Python config file to interact with OCI using API
-cloud_init_script  - script which will be run as part of cloud init (ie on VM first instantiation)
+cloud_init_script  - DO NOT CHANGE THIS UNLESS YOU KNOW WHAT YOU ARE DOING.
+                     This script which will be run as part of cloud init (ie on VM first instantiation)
                      This script checks if shell_script is copied over to the VM and if yes starts execution of the script.
-shell_script       - This is the script which configures the VM
+shell_script       - DO NOT CHANGE THIS UNLESS YOU KNOW WHAT YOU ARE DOING.
+                     This is the script which configures the VM
                         -- Installs utilities like terraform, ansible
                         -- Installs required packages
                         -- Copying python config file to ~/.oci folder
