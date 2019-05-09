@@ -1,4 +1,4 @@
-###################### OCI Automation ##################
+OCI Automation
 
 When entering a new customer - to create the OCS Work VCN & VM - start at:
 "oci_tenancy/OCSWorkVM".
