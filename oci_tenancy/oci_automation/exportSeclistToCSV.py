@@ -45,8 +45,6 @@ def print_secrules(seclists):
 
     #print "SubnetName,RuleType,Protocol,isStateless,Source,Destination,MaxOption,MinOption"
     print "SubnetName, RuleType, Protocol, isStateless, Source, SPortMin, SPortMax, Destination, DPortMin, DPortMax, ICMPType, ICMPCode"
-
-
     for seclist in seclists.data:
     #    print seclist
         isec_rules = seclist.ingress_security_rules
@@ -60,7 +58,8 @@ def print_secrules(seclists):
             dn = seclist.display_name
         for rule in isec_rules:
             print rule
-            exit(0)
+           # exit(0)
+
             if rule.protocol == "6":
                 if rule.tcp_options is None:
                     ##				print "TCP," + rule.source + ",,"
