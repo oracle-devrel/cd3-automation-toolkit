@@ -15,6 +15,7 @@ import pandas as pd
 # Required Files
 # "csv file- vcn-info.properties"
 # Create the major terraform objects - DRG, IGW, NGW, SGW, LPGs for the VCN
+# Optional input - CD3 excel file
 # Outfile
 ######
 

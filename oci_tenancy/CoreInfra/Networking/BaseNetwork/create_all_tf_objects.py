@@ -29,6 +29,9 @@ if not os.path.exists(outdir):
 
 if (excel == ''):
     print("CD3 Excel file not provided, using properties file and csv files to generate terraform files")
+    print("-----------Creating Compartments-----------")
+    command = 'python create_terraform_compartments.py ' + propsfile + ' ' + outdir + "/" + prefix + '-compartments.tf'
+
     print ("-----------Creating Major TF Objects-----------")
     command = 'python create_major_objects.py ' + propsfile + ' ' + outdir+"/"+prefix+'-major-objs.tf'
     exitVal=os.system(command)
@@ -53,6 +56,9 @@ if (excel == ''):
 
 else:
     print("CD3 Excel file has been provided")
+    print("-----------Creating Compartments-----------")
+    command = 'python create_terraform_compartments.py ' + excel + ' ' + outdir + "/" + prefix + '-compartments.tf'
+
     print("-----------Creating Major TF Objects-----------")
     command = 'python create_major_objects.py ' + propsfile + ' ' + outdir + "/" + prefix + '-major-objs.tf  --inputCD3='+excel
     exitVal = os.system(command)
