@@ -54,7 +54,7 @@ if('.xls' in args.inputfile):
 		vcn_dhcp.strip().lower()
 
 		vcn_data = df_vcn.loc[vcn_name]
-		compartment_var_name = vcn_data['compartment_var_name']
+		compartment_var_name = vcn_data['compartment_name']
 
 		tempStr = tempStr + """
 resource "oci_core_dhcp_options" \"""" + vcn_dhcp + """" {
