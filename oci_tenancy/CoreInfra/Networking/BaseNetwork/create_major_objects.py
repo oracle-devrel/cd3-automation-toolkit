@@ -119,7 +119,7 @@ if(excel!=''):
                 sec_list_per_subnet = df['sec_list_per_subnet'][i]
                 sec_rule_per_seclist = df['sec_rule_per_seclist'][i]
                 add_default_seclist = df['add_default_seclist'][i]
-                compartment_var_name = df['compartment_var_name'][i]
+                compartment_var_name = df['compartment_name'][i]
                 vcn_compartment[vcn_name]=compartment_var_name
 
                 if (hub_spoke_none == 'hub' and vcn_drg != 'y'):

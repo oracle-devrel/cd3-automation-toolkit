@@ -55,7 +55,6 @@ if('.xls' in args.inputfile):
             break
 
         if(compartment_name!='Name' and str(compartment_name).lower()!= NaNstr.lower()):
-            #compartments.append(compartment_name)
             if (str(compartment_desc).lower() == NaNstr.lower()):
                 compartment_desc = compartment_name
 

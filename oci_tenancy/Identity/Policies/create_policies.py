@@ -94,7 +94,7 @@ if('.xls' in args.inputfile):
                 tempStr = tempStr + """, 
                     \"""" + actual_policy_statement + """" """
 
-tempStr = tempStr + """ ]
+    tempStr = tempStr + """ ]
         }
     """
 
@@ -106,8 +106,8 @@ if('.properties' in args.inputfile):
     sections = config.sections()
 
     # Get Global Properties from Default Section
-    group_file_name = config.get('Default', 'groups_file_name')
-    fname = open(group_file_name, "r")
+    policy_file_name = config.get('Default', 'policies_file_name')
+    fname = open(policy_file_name, "r")
 
     # Read compartment file
     for line in fname:
