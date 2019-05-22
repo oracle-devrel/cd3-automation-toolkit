@@ -1,4 +1,4 @@
-# Leave Parent Compartment empty if it is under root; Rows after <END> or <end> will not be processed;Compartment Name is mandatory field
+# Leave Parent Compartment empty or mention root if it is under root; Rows after <END> or <end> will not be processed;Compartment Name is mandatory field
 #Name,Description,Parent Compartment
 Networking,Compartment for Networking Objects,
 ,,

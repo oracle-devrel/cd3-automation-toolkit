@@ -18,7 +18,7 @@ import pandas as pd
 ######
 
 parser = argparse.ArgumentParser(description="Create Compartments terraform file")
-parser.add_argument("inputfile", help="Full Path of input file. It could be either the properties file eg vcn-info.properties or CD3 excel file")
+parser.add_argument("inputfile", help="Full Path of input file. It could be either the csv file or CD3 excel file")
 parser.add_argument("outfile",help="Output Filename")
 
 if len(sys.argv)==2:
@@ -59,16 +59,22 @@ if('.xls' in args.inputfile):
                 policy_desc = policy_name
 
             policy_statement = df.iat[i,3]
-            policy_statement_grp = df.iat[i, 4]
-            grp_tf='${oci_identity_group.' + policy_statement_grp + '.name}'
-
+            policy_statement_grps = df.iat[i, 4]
+            policy_statement_grps = policy_statement_grps.split(",")
+            grp_tf=""
+            k = 0
+            for policy_statement_grp in policy_statement_grps:
+                k=k+1
+                if(k==1):
+                    grp_tf = grp_tf +'${oci_identity_group.' + policy_statement_grp + '.name}'
+                if(k!=1):
+                    grp_tf=grp_tf+","+'${oci_identity_group.' + policy_statement_grp + '.name}'
 
             actual_policy_statement=policy_statement.replace('$', grp_tf)
             if('*' in policy_statement):
                 policy_statement_comp = df.iat[i, 5]
                 comp_tf = '${oci_identity_compartment.' + policy_statement_comp + '.name}'
                 actual_policy_statement=actual_policy_statement.replace('*', comp_tf)
-
             if(count!=1):
                 tempStr = tempStr + """ ]
         }"""
@@ -82,10 +88,19 @@ if('.xls' in args.inputfile):
         if(str(policy_name).lower() == NaNstr.lower()):
             policy_statement = df.iat[i, 3]
             if(str(policy_statement).lower() != NaNstr.lower()):
-                policy_statement_grp = df.iat[i, 4]
-                grp_tf = '${oci_identity_group.' + policy_statement_grp + '.name}'
+                policy_statement_grps = df.iat[i, 4]
+                policy_statement_grps= policy_statement_grps.split(",")
+                grp_tf = ""
+                j = 0
+                for policy_statement_grp in policy_statement_grps:
+                    j = j + 1
+                    if (j == 1):
+                        grp_tf = grp_tf + '${oci_identity_group.' + policy_statement_grp + '.name}'
+                    if (j != 1):
+                        grp_tf = grp_tf + "," + '${oci_identity_group.' + policy_statement_grp + '.name}'
 
                 actual_policy_statement = policy_statement.replace('$', grp_tf)
+
                 if ('*' in policy_statement):
                     policy_statement_comp = df.iat[i, 5]
                     comp_tf = '${oci_identity_compartment.' + policy_statement_comp + '.name}'
@@ -99,14 +114,9 @@ if('.xls' in args.inputfile):
     """
 
 
-if('.properties' in args.inputfile):
-    config = configparser.RawConfigParser()
-    config.optionxform = str
-    config.read(args.inputfile)
-    sections = config.sections()
-
-    # Get Global Properties from Default Section
-    policy_file_name = config.get('Default', 'policies_file_name')
+#If input is a csv file
+if('.csv' in args.inputfile):
+    policy_file_name = args.inputfile
     fname = open(policy_file_name, "r")
 
     # Read compartment file
@@ -116,15 +126,6 @@ if('.properties' in args.inputfile):
             break
         if not line.startswith('#') and line != '\n':
             [group_name, group_desc] = line.split(',')
-            if(group_name.strip()!='Name' and group_name.strip()!=''):
-                if (group_desc.strip() == ''):
-                    group_desc = group_name
-                tempStr=tempStr + """
-resource "oci_identity_group" \"""" + group_name.strip() + """" {
-	    compartment_id = "${var.tenancy_ocid}"
-	    description = \"""" + group_desc.strip() + """"
-	    name = \"""" + group_name.strip() + """"
-	} """
 
 
 oname.write(tempStr)
