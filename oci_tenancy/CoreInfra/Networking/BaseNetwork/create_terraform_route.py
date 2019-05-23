@@ -77,7 +77,7 @@ if(excel!=''):
         # Get VCN names from vcn_name column in VCNs sheet of CD3 excel
         for i in df_vcn.index:
                 vcn_name=df_vcn['vcn_name'][i]
-                compartment_var_name = df_vcn['compartment_var_name'][i]
+                compartment_var_name = df_vcn['compartment_name'][i]
                 vcn_compartment[vcn_name]=compartment_var_name
                 vcn_lpg_rules.setdefault(vcn_name, '')
                 hub_spoke_none=df_vcn['hub_spoke_none'][i]

@@ -7,7 +7,6 @@
 
 import sys
 import argparse
-import configparser
 import pandas as pd
 
 ######
@@ -17,8 +16,8 @@ import pandas as pd
 # outfile is the name of output terraform file generated
 ######
 
-parser = argparse.ArgumentParser(description="Create Compartments terraform file")
-parser.add_argument("inputfile", help="Full Path of input file. It could be either the properties file eg vcn-info.properties or CD3 excel file")
+parser = argparse.ArgumentParser(description="Create Groups terraform file")
+parser.add_argument("inputfile", help="Full Path of input file. It could be either the csv file or CD3 excel file")
 parser.add_argument("outfile",help="Output Filename")
 
 if len(sys.argv)==2:
@@ -36,19 +35,20 @@ tempStr = ""
 
 if('.xls' in args.inputfile):
     df = pd.read_excel(args.inputfile, sheet_name='Groups')
+
+    NaNstr = 'NaN'
+    endNames = {'<END>', '<end>'}
+
     for i in df.index:
         group_name = df.iat[i, 0]
         group_desc = df.iat[i, 1]
 
-        NaNstr = 'NaN'
-        if (str(group_desc).lower()== NaNstr.lower()):
-            group_desc=''
-
-        endNames = {'<END>', '<end>'}
         if (group_name in endNames):
             break
 
         if(group_name!='Name' and str(group_name).lower()!= NaNstr.lower()):
+            if (str(group_desc).lower() == NaNstr.lower()):
+                group_desc = group_name
             tempStr=tempStr + """
 resource "oci_identity_group" \"""" + group_name + """" {
 	    compartment_id = "${var.tenancy_ocid}"
@@ -56,29 +56,22 @@ resource "oci_identity_group" \"""" + group_name + """" {
 	    name = \"""" + group_name + """"
 	} """
 
-if('.properties' in args.inputfile):
-    config = configparser.RawConfigParser()
-    config.optionxform = str
-    config.read(args.inputfile)
-    sections = config.sections()
-
-    # Get Global Properties from Default Section
-    group_file_name = config.get('Default', 'groups_file_name')
+#If input is a csv file
+if('.csv' in args.inputfile):
+    group_file_name = args.inputfile
     fname = open(group_file_name, "r")
+
+    endNames = {'<END>', '<end>'}
 
     # Read compartment file
     for line in fname:
-        endNames = {'<END>', '<end>'}
         if(line.strip() in endNames):
             break
         if not line.startswith('#') and line != '\n':
             [group_name, group_desc] = line.split(',')
-
-            if (group_desc.strip() == ''):
-                group_desc=''
-
-
             if(group_name.strip()!='Name' and group_name.strip()!=''):
+                if (group_desc.strip() == ''):
+                    group_desc = group_name
                 tempStr=tempStr + """
 resource "oci_identity_group" \"""" + group_name.strip() + """" {
 	    compartment_id = "${var.tenancy_ocid}"
