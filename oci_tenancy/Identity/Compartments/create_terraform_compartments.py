@@ -31,7 +31,7 @@ if len(sys.argv)<3:
 
 args = parser.parse_args()
 outfile = args.outfile
-oname = open(outfile,"w")
+oname = open(outfile,"w+")
 
 #compartments=[]
 tempStr = ""
@@ -97,18 +97,9 @@ resource "oci_identity_compartment" \"""" + compartment_name.strip() + """" {
   	    name = \"""" + compartment_name.strip() + """"
 
     } """
+else:
+    print("Invalid input file format")
+
 
 oname.write(tempStr)
 oname.close()
-
-#print (compartments)
-#outdir=outfile.rsplit('\\',1)[0]
-#variables_file=outdir+"\\variables.tf"
-#vname = open('variables.tf',"a")
-#compStr=""
-#for comp in compartments:
-#    compStr=compStr+ """
-#    variable \"""" + comp + """" {
-#        type = "string"
-#        default = "${data.oci_identity_compartments.com.services.1.id}"
-#    """

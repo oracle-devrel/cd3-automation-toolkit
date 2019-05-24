@@ -95,12 +95,12 @@ with open(csvfilename) as csvfile:
         fss_body = """
         resource "oci_file_storage_file_system" \"""" + Name + """" {
             availability_domain = "${lookup(data.oci_identity_availability_domains.ADs.availability_domains[""" + str(AD) + """],"name")}"
-            compartment_id = "${var.""" + compartment_ocid + """}"
+            compartment_id = \"""" + compartment_ocid + """"
             display_name = \""""  + Name + """"
         }
 
         resource "oci_file_storage_export" \"""" + Name + "-FS1" """" {
-            export_set_id = "${oci_file_storage_export_set.""" + mt + """-ES1".id}"
+            export_set_id = "${oci_file_storage_export_set.""" + mt + """-ES1.id}"
             file_system_id = "${oci_file_storage_file_system.""" + Name + """.id}"
             path = \"""" + path + """"
             export_options = [

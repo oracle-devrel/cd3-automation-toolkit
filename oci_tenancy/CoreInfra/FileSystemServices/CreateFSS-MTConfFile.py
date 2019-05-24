@@ -52,8 +52,8 @@ oname = open(outdir +"/" +mt+"_FSS_MT.tf","a")
 mt_body = """
 resource "oci_file_storage_mount_target" \"""" + mt + """" {
     availability_domain = "${lookup(data.oci_identity_availability_domains.ADs.availability_domains[""" + str(AD) + """],"name")}"
-    compartment_id = "${var.""" + compartment_ocid + """}"
-    subnet_id = "${"""  + network + """}"
+    compartment_id = \"""" + compartment_ocid + """"
+    subnet_id = \""""  + network + """"
     display_name = \""""  + mt + """"
     ip_address = \"""" + ip + """"
 }
@@ -61,7 +61,7 @@ resource "oci_file_storage_mount_target" \"""" + mt + """" {
 resource "oci_file_storage_export_set" \"""" + mt + "-ES1" """" {
        mount_target_id = "${oci_file_storage_mount_target.""" + mt + """.id}"
        display_name = \"""" + mt + "-ES1" """"
-       max_fs_stat_bytes = "${var.FSS_1G_byte * """ + fssize + """}"
+       max_fs_stat_bytes = \"""" + fssize + """"
        max_fs_stat_files = \"""" + fscount + """"
 }
 """

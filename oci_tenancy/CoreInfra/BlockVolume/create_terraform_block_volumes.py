@@ -109,4 +109,6 @@ resource "oci_core_volume_attachment" \"""" + blockname + """_volume_attachment"
             oname.write(tempStr)
             oname.close()
     fname.close()
+else:
+    print("Invalid input file format")
 

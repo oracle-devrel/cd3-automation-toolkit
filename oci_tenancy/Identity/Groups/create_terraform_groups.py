@@ -79,6 +79,8 @@ resource "oci_identity_group" \"""" + group_name.strip() + """" {
 	    name = \"""" + group_name.strip() + """"
 	} """
 
+else:
+    print("Invalid input file format")
 
 oname.write(tempStr)
 oname.close()

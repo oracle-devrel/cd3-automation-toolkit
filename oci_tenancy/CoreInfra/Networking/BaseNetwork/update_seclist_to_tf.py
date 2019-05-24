@@ -304,7 +304,6 @@ seclist_rule_count = {}
 
 ntk_comp_name = input('Input Name of Networking compartment where VCN exist : ')
 
-configFileName = args.configFileName
 
 if args.configFileName is not None:
     configFileName = args.configFileName
