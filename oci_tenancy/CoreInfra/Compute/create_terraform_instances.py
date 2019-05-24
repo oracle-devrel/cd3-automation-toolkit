@@ -100,7 +100,8 @@ if('.csv' in filename):
                         row[column] = 'false'
                 replaceAllplaceholders(outdir + '/' + row['Hostname'] + '.tf', '##' + column + '##', row[column])
 
-
+else:
+    print("Invalid input file format")
 
 
 
