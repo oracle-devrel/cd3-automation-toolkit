@@ -13,9 +13,11 @@ print("9.  Add Security Rules to existing Security List")
 print("10. Export Security List to CSV")
 
 print("\nSee example folder for sample input files")
-userInput = input('Enter your choice: ')
+userInput = input('Enter your choice eg 1 if you want to create only Compartments; 1,2,3 if you want to create Compartments, Groups, Policies ')
 
-if(userInput == '1'):
+#userInput=userInput.split(',')
+
+if(userInput=='1'):
     inputfile = input("Enter full path to input CD3 excel file or csv file containing Compartments info: ")
     outdir = input("Enter full path to output directory where you want to create terraform files: ")
     prefix = input("Enter prefix for output files: ")
@@ -28,7 +30,7 @@ if(userInput == '1'):
     command = 'python create_terraform_compartments.py '+inputfile + ' ' + outfile
     os.system(command)
 
-elif(userInput == '2'):
+if(userInput=='2'):
     inputfile = input("Enter full path to input CD3 excel file or csv file containing Groups info: ")
     outdir = input("Enter full path to output directory where you want to create terraform files: ")
     prefix = input("Enter prefix for output files: ")
@@ -41,7 +43,7 @@ elif(userInput == '2'):
     command = 'python create_terraform_groups.py '+inputfile + ' ' + outfile
     os.system(command)
 
-elif(userInput == '3'):
+if(userInput=='3'):
     inputfile = input("Enter full path to input CD3 excel file: ")
     outdir = input("Enter full path to output directory where you want to create terraform files: ")
     prefix = input("Enter prefix for output files: ")

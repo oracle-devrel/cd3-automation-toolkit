@@ -67,7 +67,7 @@ resource "oci_identity_compartment" \"""" + compartment_name + """" {
 	} """
 
 #If input is a csv file
-if('.csv' in args.inputfile):
+elif('.csv' in args.inputfile):
     compartment_file_name = args.inputfile
     fname = open(compartment_file_name, "r")
 
