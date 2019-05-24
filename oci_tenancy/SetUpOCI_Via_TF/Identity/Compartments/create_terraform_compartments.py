@@ -85,7 +85,7 @@ elif('.csv' in args.inputfile):
             else:
                 parent_compartment = '${oci_identity_compartment.' + parent_compartment_name + '.id}'
 
-            if(compartment_name.strip()!='Name' and compartment_name.strp()!=''):
+            if(compartment_name.strip()!='Name' and compartment_name.strip()!=''):
                 #compartments.append(compartment_name)
                 if (compartment_desc.strip() == ''):
                     compartment_desc = compartment_name
