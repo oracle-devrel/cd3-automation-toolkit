@@ -1,0 +1,48 @@
+-----------------------------------------------------------------------------------------------------
+Set Up Terraform ENV
+-----------------------------------------------------------------------------------------------------
+The set of scripts creates the baseline terraform objects to use.
+## Pre Reqs ##
+1.  Create the terraform keys, setup the OCI tenancy with the API key.
+2.  Initialize Terraform with the required variables.  A copy of variables.tf is included for reference in this package.
+3.  provider.tf has also been provided - which will use the variables in variables.tf and initialize the oci provider when you run terraform init.  You can use the provider.tf file as is  - unless you've made changes to variables.tf resource names (changes not recommmended)
+
+##### You can use the below script or follow the steps below to create your terraform environment ####
+#!/bin/bash
+
+echo "Download terraform.zip from terraform.io for your platform"
+echo "Example: wget <URL> -O terraform.zip"
+echo "Unzip it and move it over to /usr/local/bin.  Make sure /usr/local/bin is in your path"
+echo "This will download the v2.1.0 OCI terraform provider"
+
+
+wget https://github.com/oracle/terraform-provider-oci/releases/download/v2.1.0-beta/linux.tar.gz
+tar -xvzf linux.tar.gz linux_amd64
+mkdir ~/.terraform.d/plugins/
+mv linux_amd64/terraform-provider-oci_v2.1.0-beta ~/.terraform.d/plugins/
+rmdir linux_amd64
+
+Once complete with setting up terraform and changing variables.tf - initialize Terraform
+terraform init
+
+This should show you that terraform oci provider is initialized.
+Now ready for the below scripts
+######
+
+############### Ideally above configuration should be done using createOCSWork script #############
+
+-----------------------------------------------------------------------------------------------------
+fetch_compartments_to_variablesTF.py
+-----------------------------------------------------------------------------------------------------
+This script will fetch compartments which have already been created in the tenancy(either manually or through any script)
+and update their OCID info to variables.tf file.
+
+This will be used later by terraform files to create OCI objects.
+
+This script should be run prior to running setUpOCI.py
+
+-----------------------------------------------------------------------------------------------------
+setUpOCI.py
+-----------------------------------------------------------------------------------------------------
+This is the wrapper script to do various tasks in OCI. It displays the utilities that can be performed as options to the user and accepts the user input.
+
