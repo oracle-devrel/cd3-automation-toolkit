@@ -100,7 +100,7 @@ with open(csvfilename) as csvfile:
         }
 
         resource "oci_file_storage_export" \"""" + Name + "-FS1" """" {
-            export_set_id = "${oci_file_storage_export_set.""" + mt + """-ES1".id}"
+            export_set_id = "${oci_file_storage_export_set.""" + mt + """-ES1.id}"
             file_system_id = "${oci_file_storage_file_system.""" + Name + """.id}"
             path = \"""" + path + """"
             export_options = [
