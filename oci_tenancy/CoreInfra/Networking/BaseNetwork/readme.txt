@@ -5,41 +5,7 @@
 # This is v3.0 for base_tf_creations scripts. It supports multiple VCNs and hub spoke model implementation.
 This would also accept CD3 excel file as input for creation of Networking objects
 
-The set of scripts creates the baseline terraform objects to use.
-## Pre Reqs ##
-1.  Create the terraform keys, setup the OCI tenancy with the API key.
-2.  Initialize Terraform with the required variables.  A copy of variables.tf is included for reference in this package.
-3.  provider.tf has also been provided - which will use the variables in variables.tf and initialize the oci provider when you run terraform init.  You can use the provider.tf file as is  - unless you've made changes to variables.tf resource names (changes not recommmended)
-
-##### You can use the below script or follow the steps below to create your terraform environment ####
-#!/bin/bash
-
-echo "Download terraform.zip from terraform.io for your platform"
-echo "Example: wget <URL> -O terraform.zip"
-echo "Unzip it and move it over to /usr/local/bin.  Make sure /usr/local/bin is in your path"
-echo "This will download the v2.1.0 OCI terraform provider"
-
-
-wget https://github.com/oracle/terraform-provider-oci/releases/download/v2.1.0-beta/linux.tar.gz
-tar -xvzf linux.tar.gz linux_amd64
-mkdir ~/.terraform.d/plugins/
-mv linux_amd64/terraform-provider-oci_v2.1.0-beta ~/.terraform.d/plugins/
-rmdir linux_amd64
-
-Once complete with setting up terraform and changing variables.tf - initialize Terraform 
-terraform init
-
-This should show you that terraform oci provider is initialized.
-Now ready for the below scripts
-######
-
-############### Ideally above configuration should be done using createOCSWork script #############
-
-
-The scripts assume that you have two compartments - one for Networking Objects, One for all the other objects.  If you have only one compartment,
-set the compartment_ocid's to the same value.
-The "ntk_compartment_ocid" is the name of the network compartment ocid variable.  MAKE SURE TO LOOK AT ALL THE REQUIRED VARIABLES FOR TERRAFORM
-in the variables-example.tf provided.
+MAKE SURE TO LOOK AT ALL THE REQUIRED VARIABLES FOR TERRAFORM in the variables-example.tf provided.
 
 
 ### Setup of the Scripts ###

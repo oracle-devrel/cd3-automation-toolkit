@@ -1,5 +1,4 @@
 
-The script createPEMKeys.py creates public/private key pair in PEM format required for Python APIs to communicate with OCI
 
 The script createOCSWork.py accepts ocswork.properties as the input arguement.
 The variables are defined in the properties file along with their description in comments
