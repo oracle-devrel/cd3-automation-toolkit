@@ -15,6 +15,8 @@ output: oci_api_private.pem and oci_api_public.pem
 
 -- Used Python 2.7 to compile this code as createPEMKeys.py rquires pycrypto module which did not get installed with Python3.7. Also to install this package,
    you might need to install Microsoft Visual C++ Compiler. Download it from here: http://aka.ms/vcpython27
+-- Rest of the code is compiled with Pythin3.7
+
 -----------------------------------------------------------------------------------------------------
 2. OCSWorkVM/Setup from other work station eg your laptop
 -----------------------------------------------------------------------------------------------------
