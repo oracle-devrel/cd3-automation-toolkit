@@ -115,17 +115,6 @@ if('.xls' in args.inputfile):
 
 
 #If input is a csv file
-if('.csv' in args.inputfile):
-    policy_file_name = args.inputfile
-    fname = open(policy_file_name, "r")
-
-    # Read compartment file
-    for line in fname:
-        endNames = {'<END>', '<end>'}
-        if(line.strip() in endNames):
-            break
-        if not line.startswith('#') and line != '\n':
-            [group_name, group_desc] = line.split(',')
 
 
 oname.write(tempStr)

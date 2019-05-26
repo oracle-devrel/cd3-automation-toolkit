@@ -79,7 +79,7 @@ if('.xlsx' in filename):
             replaceAllplaceholders(outdir + '/' + df['Hostname'][j] + '.tf', '##' + i + '##', str(df[i][j]))
 
 #If input is a csv file
-if('.csv' in filename):
+elif('.csv' in filename):
     with open(filename) as csvfile:
         reader = csv.DictReader(skipCommentedLine(csvfile))
         columns = reader.fieldnames

@@ -13,9 +13,11 @@ print("9.  Add Security Rules to existing Security List")
 print("10. Export Security List to CSV")
 
 print("\nSee example folder for sample input files")
-userInput = input('Enter your choice: ')
+userInput = input('Enter your choice eg 1 if you want to create only Compartments; 1,2,3 if you want to create Compartments, Groups, Policies ')
 
-if(userInput == '1'):
+#userInput=userInput.split(',')
+
+if(userInput=='1'):
     inputfile = input("Enter full path to input CD3 excel file or csv file containing Compartments info: ")
     outdir = input("Enter full path to output directory where you want to create terraform files: ")
     prefix = input("Enter prefix for output files: ")
@@ -24,11 +26,11 @@ if(userInput == '1'):
     if not os.path.exists(outdir):
         os.makedirs(outdir)
 
-    os.chdir('../Identity/Compartments')
+    os.chdir('Identity/Compartments')
     command = 'python create_terraform_compartments.py '+inputfile + ' ' + outfile
     os.system(command)
 
-elif(userInput == '2'):
+if(userInput=='2'):
     inputfile = input("Enter full path to input CD3 excel file or csv file containing Groups info: ")
     outdir = input("Enter full path to output directory where you want to create terraform files: ")
     prefix = input("Enter prefix for output files: ")
@@ -37,11 +39,11 @@ elif(userInput == '2'):
     if not os.path.exists(outdir):
         os.makedirs(outdir)
 
-    os.chdir('../Identity/Groups')
+    os.chdir('Identity/Groups')
     command = 'python create_terraform_groups.py '+inputfile + ' ' + outfile
     os.system(command)
 
-elif(userInput == '3'):
+if(userInput=='3'):
     inputfile = input("Enter full path to input CD3 excel file: ")
     outdir = input("Enter full path to output directory where you want to create terraform files: ")
     prefix = input("Enter prefix for output files: ")
@@ -50,7 +52,7 @@ elif(userInput == '3'):
     if not os.path.exists(outdir):
         os.makedirs(outdir)
 
-    os.chdir('../Identity/Groups')
+    os.chdir('Identity/Policies')
     command = 'python create_terraform_policies.py '+inputfile + ' ' + outfile
     os.system(command)
 
@@ -64,7 +66,7 @@ elif(userInput == '4'):
     if not os.path.exists(outdir):
         os.makedirs(outdir)
 
-    os.chdir('../CoreInfra/Networking/BaseNetwork')
+    os.chdir('CoreInfra/Networking/BaseNetwork')
     if(inputCD3=='' or inputCD3 == ' '):
         command = 'python create_all_tf_objects.py ' + inputfile + ' ' + outdir + ' ' + prefix
     else:
@@ -80,7 +82,7 @@ elif(userInput == '5'):
     if not os.path.exists(outdir):
         os.makedirs(outdir)
 
-    os.chdir('../CoreInfra/Compute')
+    os.chdir('CoreInfra/Compute')
     command = 'python create_terraform_instances.py '+inputfile + ' ' + outdir
     os.system(command)
 
@@ -93,7 +95,7 @@ elif(userInput == '6'):
     if not os.path.exists(outdir):
         os.makedirs(outdir)
 
-    os.chdir('../CoreInfra/BlockVolume')
+    os.chdir('CoreInfra/BlockVolume')
     command = 'python create_terraform_block_volumes.py '+inputfile + ' ' + outdir
     os.system(command)
 
@@ -110,7 +112,7 @@ elif(userInput == '7'):
         if not os.path.exists(outdir):
             os.makedirs(outdir)
 
-        os.chdir('../Governance/Tagging')
+        os.chdir('Governance/Tagging')
         command = 'python create_namespace_tagkey.py '+inputfile + ' ' + outdir
         os.system(command)
 
@@ -121,7 +123,7 @@ elif(userInput == '7'):
         if not os.path.exists(outdir):
             os.makedirs(outdir)
 
-        os.chdir('../Governance/Tagging')
+        os.chdir('Governance/Tagging')
         command = 'python attach_tag_server.py ' + inputfile + ' ' + outdir
         os.system(command)
 
@@ -132,7 +134,7 @@ elif(userInput == '7'):
         if not os.path.exists(outdir):
             os.makedirs(outdir)
 
-        os.chdir('../Governance/Tagging')
+        os.chdir('Governance/Tagging')
         command = 'python attach_tag_volume.py ' + inputfile + ' ' + outdir
         os.system(command)
 
@@ -140,7 +142,7 @@ elif(userInput == '8'):
     inputfile = input("Enter full path to input csv file containing route rules info eg example/BaseNetwork/add_routes-example.csv: ")
     outfile = input("Enter full path to routes terraform file created earlier while setting up Base Network Objects: ")
 
-    os.chdir('../CoreInfra/Networking/BaseNetwork')
+    os.chdir('CoreInfra/Networking/BaseNetwork')
     command = 'python add_routerules_to_tf.py ' + inputfile + ' ' + outfile
     os.system(command)
 
@@ -149,7 +151,7 @@ elif(userInput == '9'):
     inputcsv = input("Enter full path to input csv file containing security rules info eg example/BaseNetwork/update_seclist-example.csv: ")
     outdir = input("Enter full path to output directory created while setting up Base Network Objects: ")
 
-    os.chdir('../CoreInfra/Networking/BaseNetwork')
+    os.chdir('CoreInfra/Networking/BaseNetwork')
     command = 'python update_seclist_to_tf.py --inputfile ' + inputfile + ' --outdir ' + outdir + ' --secrulesfile '+inputcsv
     os.system(command)
 
@@ -157,7 +159,7 @@ elif(userInput == '10'):
     inputComp = input("Enter Compartment Name of Networking Components: ")
     outdir = input("Enter full path to output directory: ")
 
-    os.chdir('../CoreInfra/Networking/BaseNetwork')
+    os.chdir('CoreInfra/Networking/BaseNetwork')
     command = 'python exportSeclistToCSV.py ' + inputComp + ' ' + outdir
     os.system(command)
 

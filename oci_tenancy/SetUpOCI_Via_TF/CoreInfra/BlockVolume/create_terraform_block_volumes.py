@@ -69,7 +69,7 @@ resource "oci_core_volume_attachment" \"""" + blockname + """_volume_attachment"
 
 
 #If input is a csv file
-if('.csv' in filename):
+elif('.csv' in filename):
     fname = open(filename, "r")
 
     for line in fname:

@@ -57,7 +57,7 @@ resource "oci_identity_group" \"""" + group_name + """" {
 	} """
 
 #If input is a csv file
-if('.csv' in args.inputfile):
+elif('.csv' in args.inputfile):
     group_file_name = args.inputfile
     fname = open(group_file_name, "r")
 
@@ -84,3 +84,4 @@ else:
 
 oname.write(tempStr)
 oname.close()
+

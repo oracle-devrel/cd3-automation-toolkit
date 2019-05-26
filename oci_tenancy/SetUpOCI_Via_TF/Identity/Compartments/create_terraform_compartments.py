@@ -67,7 +67,7 @@ resource "oci_identity_compartment" \"""" + compartment_name + """" {
 	} """
 
 #If input is a csv file
-if('.csv' in args.inputfile):
+elif('.csv' in args.inputfile):
     compartment_file_name = args.inputfile
     fname = open(compartment_file_name, "r")
 
@@ -85,7 +85,7 @@ if('.csv' in args.inputfile):
             else:
                 parent_compartment = '${oci_identity_compartment.' + parent_compartment_name + '.id}'
 
-            if(compartment_name.strip()!='Name' and compartment_name.strp()!=''):
+            if(compartment_name.strip()!='Name' and compartment_name.strip()!=''):
                 #compartments.append(compartment_name)
                 if (compartment_desc.strip() == ''):
                     compartment_desc = compartment_name
