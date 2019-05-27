@@ -13,8 +13,8 @@ def paginate(operation, *args, **kwargs):
         if not response.has_next_page:
             break
 
-parser = argparse.ArgumentParser(description="Takes in config file as optional input. This is used eg in case script is not run from OCS VM")
-parser.add_argument("variablesTF", help="Path to variables.tf file used by TerraForm")
+parser = argparse.ArgumentParser(description="Fetched Compartment name/ocid infor from OCI and pushes to variables.tf file used by TF")
+parser.add_argument("variablesTF", help="Path to variables.tf file that will be used by TerraForm to communicate with OCI; mostly present in your outdir")
 parser.add_argument("--configFileName", help="Config file name" , required=False)
 
 args = parser.parse_args()
@@ -26,17 +26,22 @@ else:
     config = oci.config.from_file()
 
 variablesFile=args.variablesTF
-
 identityClient = IdentityClient(config)
-
 tenancy_id = config['tenancy']
+tempStr = ""
 
-compartments={}
 for compartment in paginate(identityClient.list_compartments, compartment_id=tenancy_id,compartment_id_in_subtree =True):
     if(compartment.lifecycle_state=='ACTIVE'):
         compartment_name=compartment.name
         compartment_ocid=compartment.id
-        compartments[compartment_name]=compartment_ocid
+        tempStr=tempStr+"""
+variable \"""" + compartment_name + """" {
+        type = "string"
+        default = \"""" + compartment_ocid + """"
+}
+"""
 
-print(compartments)
-
+vname = open(variablesFile,"a")
+vname.write(tempStr)
+print("Comaprtment info written to variables file")
+vname.close()

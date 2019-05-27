@@ -58,11 +58,9 @@ This should show you that terraform oci provider is initialized.
 3. fetch_compartments_to_variablesTF.py
 -----------------------------------------------------------------------------------------------------
 This script will fetch compartments which have already been created in the tenancy(either manually or through any script)
-and update their OCID info to variables.tf file.
+and update their OCID info to variables.tf file. This will be used later by terraform files to create OCI objects.
 
-This will be used later by terraform files to create OCI objects.
-
-This script should be run prior to running setUpOCI.py
+This script should be run prior to running setUpOCI.py and should be run only once else it will append compartment variables with same name multiple times.
 
 Usage:
 ./fetch_compartments_to_variablesTF.py <path to variables.tf>
@@ -70,8 +68,8 @@ Usage:
 If running from OCS VM:
 ./fetch_compartments_to_variablesTF.py /root/ocswork/terrafor_files/variables.tf
 
-If running from other workstation like your laptop, specify path to variables.tf undr your 'outdir' and 'config' file for Python OCI
-./fetch_compartments_to_variablesTF.py outdir/variables.tf --configFileName config
+If running from other workstation like your laptop, specify path to variables.tf under your 'outdir' and path of 'config' file for Python OCI
+./fetch_compartments_to_variablesTF.py <outdir>/variables.tf --configFileName config
 
 -----------------------------------------------------------------------------------------------------
 4. setUpOCI.py
