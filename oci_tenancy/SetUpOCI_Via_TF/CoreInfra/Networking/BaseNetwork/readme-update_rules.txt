@@ -2,7 +2,7 @@ add_routes_to_tf.py and update_seclist_to_tf_v2.0.py are the scripts to add new 
 
 add_routes_to_tf.py
 --------------------
-This script takes in a csv file mentioning route rules as the input. See add_routes-example.txt under example folder.
+This script takes in either a csv file or CD3 excel file mentioning new route rules to be added as the input. See add_routes-example.csv under example folder.
 Note- This would only add new rules to the route table. It wont check for existing rules.
 Usage:
 
@@ -13,8 +13,8 @@ eg
 
 update_seclist_to_tf_v2.0.py
 ------------------------------
-This script takes in a csv file mentioning sec rules as the input. See update_seclist-example.csv under example folder.
-Note- This script as of now would work if specified subnets to be modified are in same compartment.
+This script takes in either a csv file or CD3 excel file mentioning sec rules as the input. See update_seclist-example.csv under example folder.
+Note- This script as of now works for VCNs which exist in the compartment passed as the input.
 
 Usage:
 ./update_seclist_to_tf_v2.0.py --inputfile <path to vcn-info.properties or CD3 excel file> --outdir <output dir name being used for tf files> --secrulesfile <path to input csv containing rules>

@@ -181,7 +181,6 @@ def init_subnet_details(subnetid ,vcn_display_name, overwrite):
         seclistname = vnc.get_security_list(seclist_id).data.display_name
         # print vnc.get_security_list(seclist_id).data.ingress_security_rules
         display_name = seclistname  # +  "-" + subnet
-
         if (seclistname != "Default Security List for "+vcn_display_name):
             ingressRules = vnc.get_security_list(seclist_id).data.ingress_security_rules
             #print("ingresscount " + str(len(ingressRules)))
@@ -193,8 +192,7 @@ def init_subnet_details(subnetid ,vcn_display_name, overwrite):
             else:
                 seclist_rule_count[response.data.display_name.rsplit("-", 1)[0].strip()] = 0
         elif create_def_file:
-            print("updating Seclist  ")
-            seclist_files["def-vcn_seclist"] = "def-vcn_seclist_generated.tf"
+            seclist_files["def-vcn_seclist_"+vcn_display_name] = "def-vcn_seclist_generated.tf"
             ingressRules = vnc.get_security_list(seclist_id).data.ingress_security_rules
             #print("ingresscount default " + str(len(ingressRules)))
             egressRules = vnc.get_security_list(seclist_id).data.egress_security_rules
@@ -202,12 +200,10 @@ def init_subnet_details(subnetid ,vcn_display_name, overwrite):
             rule_count = rule_count + len(ingressRules)+len(egressRules)
 
             if (overwrite.lower() != "true"):
-                seclist_rule_count["def-vcn_seclist"] = rule_count
+                seclist_rule_count["def-vcn_seclist_"+vcn_display_name] = rule_count
             else:
-                seclist_rule_count["def-vcn_seclist"] = 0
+                seclist_rule_count["def-vcn_seclist_"+vcn_display_name] = 0
             create_def_file = False
-        else:
-            print("......................")
 
 
 def updateSecRules(seclistfile, text_to_replace, new_sec_rule, flags=0):
@@ -270,13 +266,13 @@ def get_vcn_id(config,compartment_id,vcn_display_name):
         if vcn.display_name.upper() == vcn_display_name.upper():
             return vcn.id
 
-parser = argparse.ArgumentParser(description="Takes in a csv file mentioning sec rules to be added for the subnet. See update_seclist-example.csv for format under example folder. It will then take backup of all existing sec list files and create new one with modified rules; Required Arguements: propsfile/cd3 excel file, outdir and secrulesfile")
-parser.add_argument("--inputfile",help="Full Path of info file: It could be either the properties file eg vcn-info.properties or CD3 excel file",required=True)
+parser = argparse.ArgumentParser(description="Takes in a csv file mentioning sec rules to be added for the subnet. See update_seclist-example.csv for format under example folder. It will then take backup of all existing sec list files in outdir and create new one with modified rules; Required Arguements: propsfile/cd3 excel file, outdir and secrulesfile")
+parser.add_argument("--inputfile",help="Full Path of vcn info file: It could be either the properties file eg vcn-info.properties or CD3 excel file",required=True)
 parser.add_argument("--outdir",help="directory path for output tf files ",required=True)
-parser.add_argument("--secrulesfile",help="csv file with secrules for Security List of a given subnet")
-parser.add_argument("--overwrite",help="Overwite subnet files. When this flag is used, script expect new seclist files created using create_terraform_seclist.py   ")
+parser.add_argument("--secrulesfile",help="csv file with input file(either csv or CD3 excel) containing new secrules to be added for Security List of a given subnet", required=True)
+parser.add_argument("--overwrite",help="Overwite subnet files. When this flag is used, script expect new seclist files created using create_terraform_seclist.py   ",required=False)
 parser.add_argument("--configFileName", help="Config file name" , required=False)
-#parser.add_argument("outfile",help="Output Filename")
+
 
 if len(sys.argv)==1:
         parser.print_help()
@@ -286,7 +282,7 @@ args = parser.parse_args()
 
 outdir = args.outdir
 secrulesfilename = args.secrulesfile
-totalRowCount = sum(1 for row in csv.DictReader(skipCommentedLine(open(secrulesfilename))))
+
 #overwrite = args.overwrite
 backup_file(outdir, "_seclist.tf")
 
@@ -302,7 +298,7 @@ seclist_rule_count = {}
 #print (question)
 #ntk_comp_name = raw_input()
 
-ntk_comp_name = input('Input Name of Networking compartment where VCN exist : ')
+ntk_comp_name = input('Input Name of Networking compartment where VCN exists : ')
 
 
 if args.configFileName is not None:
@@ -314,6 +310,7 @@ else:
 ntk_comp_id = get_network_compartment_id(config, ntk_comp_name)
 vnc = VirtualNetworkClient(config)
 
+# Read vcn info file and get subnet info
 
 if('.properties' in args.inputfile):
     ociprops = configparser.RawConfigParser()
@@ -332,9 +329,10 @@ if('.properties' in args.inputfile):
         create_def_file = True
         for subnet in subnet_list.data:
             init_subnet_details(subnet.id,vcn_name,overwrite)
+        print("seclist rule count: ")
         print(seclist_rule_count)
 
-if('.xls' in args.inputfile):
+elif('.xls' in args.inputfile):
     df = pd.read_excel(args.inputfile, sheet_name='VCNs')
     for i in df.index:
         vcn_name = df.iat[i, 0]
@@ -345,32 +343,76 @@ if('.xls' in args.inputfile):
             create_def_file = True
             for subnet in subnet_list.data:
                 init_subnet_details(subnet.id, vcn_name, overwrite)
-            print(seclist_rule_count)
+        print("seclist rule count: ")
+        print(seclist_rule_count)
 
+else:
+    print("Invalid input vcn info file format; Acceptable formats: .xls, .xlsx, .properties")
+    exit()
 
-with open(secrulesfilename) as secrulesfile:
-    reader = csv.DictReader(skipCommentedLine(secrulesfile))
-    columns = reader.fieldnames
-    print(totalRowCount)
-    rowCount = 0
-    for row in reader:
-        #print(row)
-        protocol = row['Protocol']
-        ruleType = row['RuleType']
-        subnetName = row['SubnetName']
-        new_sec_rule =""
-        if ruleType == 'ingress':
+# Read input file containing new sec rules to be added
+
+#If input is CD3 excel file
+if('.xls' in secrulesfilename):
+    endNames = {'<END>', '<end>'}
+    data = pd.read_excel(secrulesfilename, sheet_name='AddSecRules',skiprows=1).to_csv('out.csv')
+    totalRowCount = sum(1 for row in csv.DictReader(skipCommentedLine(open('out.csv'))))
+    with open('out.csv') as secrulesfile:
+        reader = csv.DictReader(skipCommentedLine(secrulesfile))
+        columns = reader.fieldnames
+        rowCount = 0
+        for row in reader:
+            subnetName = row['SubnetName']
+            if(subnetName=='<END>' or subnetName=='<end>'):
+                break
+
+            protocol = row['Protocol']
+            ruleType = row['RuleType']
+            new_sec_rule = ""
+
+            if ruleType == 'ingress':
                 new_sec_rule = create_ingress_rule_string(row)
-        if ruleType == 'egress':
+            if ruleType == 'egress':
                 new_sec_rule = create_egress_rule_string(row)
 
+            sec_list_file = seclist_files[subnetName]
+            print("file to modify ::::: " + sec_list_file)
+            # print("secrule count " + str(seclist_rule_count[subnetName]))
+            text_to_replace = getReplacementStr(sec_rule_per_seclist, subnetName)
+            new_sec_rule = new_sec_rule + "\n" + text_to_replace
+            updateSecRules(outdir + "/" + sec_list_file, text_to_replace, new_sec_rule, 0)
+            incrementRuleCount(subnetName)
+            ####ADD_NEW_SEC_RULES####
 
-        sec_list_file = seclist_files[subnetName]
-        print("file to modify ::::: "+ sec_list_file )
-        #print("secrule count " + str(seclist_rule_count[subnetName]))
-        text_to_replace = getReplacementStr(sec_rule_per_seclist,subnetName)
-        new_sec_rule = new_sec_rule + "\n" + text_to_replace
-        updateSecRules(outdir + "/" + sec_list_file, text_to_replace, new_sec_rule, 0)
-        incrementRuleCount(subnetName)
-        ####ADD_NEW_SEC_RULES####
+# If input is a csv file
+elif ('.csv' in secrulesfilename):
+    totalRowCount = sum(1 for row in csv.DictReader(skipCommentedLine(open(secrulesfilename))))
+    with open(secrulesfilename) as secrulesfile:
+        reader = csv.DictReader(skipCommentedLine(secrulesfile))
+        columns = reader.fieldnames
+        rowCount = 0
+        for row in reader:
+            subnetName = row['SubnetName']
+            if(subnetName=='<END>' or subnetName=='<end>'):
+                break
 
+            ruleType = row['RuleType']
+            protocol = row['Protocol']
+            new_sec_rule =""
+            if ruleType == 'ingress':
+                    new_sec_rule = create_ingress_rule_string(row)
+            if ruleType == 'egress':
+                    new_sec_rule = create_egress_rule_string(row)
+
+
+            sec_list_file = seclist_files[subnetName]
+            print("file to modify ::::: "+ sec_list_file )
+            #print("secrule count " + str(seclist_rule_count[subnetName]))
+            text_to_replace = getReplacementStr(sec_rule_per_seclist,subnetName)
+            new_sec_rule = new_sec_rule + "\n" + text_to_replace
+            updateSecRules(outdir + "/" + sec_list_file, text_to_replace, new_sec_rule, 0)
+            incrementRuleCount(subnetName)
+            ####ADD_NEW_SEC_RULES####
+
+else:
+    print("Invalid input file format; Acceptable formats: .xls, .xlsx, .csv")
