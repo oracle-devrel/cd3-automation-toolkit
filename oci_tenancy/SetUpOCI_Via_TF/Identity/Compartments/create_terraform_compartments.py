@@ -90,7 +90,7 @@ elif('.csv' in args.inputfile):
                 if (compartment_desc.strip() == ''):
                     compartment_desc = compartment_name
 
-                tempStr=tempStr + """`
+                tempStr=tempStr + """
 resource "oci_identity_compartment" \"""" + compartment_name.strip() + """" {
         compartment_id = \"""" + parent_compartment + """"
         description = \"""" + compartment_desc.strip() + """"
@@ -98,8 +98,9 @@ resource "oci_identity_compartment" \"""" + compartment_name.strip() + """" {
 
     } """
 else:
-    print("Invalid input file format")
+    print("Invalid input file format; Acceptable formats: .xls, .xlsx, .csv")
 
 
 oname.write(tempStr)
 oname.close()
+print(outfile +" containing TF for compartments has been created")

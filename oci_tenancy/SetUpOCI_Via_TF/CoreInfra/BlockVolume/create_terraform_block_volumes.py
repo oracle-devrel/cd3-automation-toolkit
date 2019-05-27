@@ -110,5 +110,5 @@ resource "oci_core_volume_attachment" \"""" + blockname + """_volume_attachment"
             oname.close()
     fname.close()
 else:
-    print("Invalid input file format")
+    print("Invalid input file format; Acceptable formats: .xls, .xlsx, .csv")
 

@@ -80,8 +80,9 @@ resource "oci_identity_group" \"""" + group_name.strip() + """" {
 	} """
 
 else:
-    print("Invalid input file format")
+    print("Invalid input file format; Acceptable formats: .xls, .xlsx, .csv")
 
 oname.write(tempStr)
 oname.close()
+print(outfile +" containing TF for groups has been created")
 

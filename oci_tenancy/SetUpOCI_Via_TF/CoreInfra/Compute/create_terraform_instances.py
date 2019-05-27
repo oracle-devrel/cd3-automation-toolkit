@@ -101,7 +101,7 @@ elif('.csv' in filename):
                 replaceAllplaceholders(outdir + '/' + row['Hostname'] + '.tf', '##' + column + '##', row[column])
 
 else:
-    print("Invalid input file format")
+    print("Invalid input file format; Acceptable formats: .xls, .xlsx, .csv")
 
 
 
