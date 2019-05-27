@@ -47,16 +47,15 @@ if('.xls' in args.inputfile):
             break
 
         group_desc = df.iat[i, 1]
-        group_desc = group_desc.strip()
 
         if(group_name!='Name' and str(group_name).lower()!= NaNstr.lower()):
             if (str(group_desc).lower() == NaNstr.lower()):
                 group_desc = group_name
             tempStr=tempStr + """
-resource "oci_identity_group" \"""" + group_name + """" {
+resource "oci_identity_group" \"""" + group_name.strip() + """" {
 	    compartment_id = "${var.tenancy_ocid}"
-	    description = \"""" + group_desc + """"
-	    name = \"""" + group_name + """"
+	    description = \"""" + group_desc.strip() + """"
+	    name = \"""" + group_name.strip() + """"
 	} """
 
 #If input is a csv file

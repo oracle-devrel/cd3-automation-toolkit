@@ -109,4 +109,5 @@ elif ('.csv' in inputfile):
 else:
     print("Invalid input file format; Acceptable formats: .xls, .xlsx, .csv")
 
+print("Route Rules added to the file successfully. Please run terraform plan from your outdir to see the changes")
 f.close()

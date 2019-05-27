@@ -50,23 +50,22 @@ if('.xls' in args.inputfile):
 
         compartment_desc = df.iat[i, 1]
         parent_compartment_name = df.iat[i, 2]
-        compartment_desc = compartment_desc.strip()
-        parent_compartment_name = parent_compartment_name.strip()
+
 
         if (str(parent_compartment_name).lower()== NaNstr.lower() or parent_compartment_name.lower() == 'root'):
             parent_compartment='${var.tenancy_ocid}'
         else:
-            parent_compartment='${oci_identity_compartment.'+parent_compartment_name+'.id}'
+            parent_compartment='${oci_identity_compartment.'+parent_compartment_name.strip()+'.id}'
 
         if(compartment_name!='Name' and str(compartment_name).lower()!= NaNstr.lower()):
             if (str(compartment_desc).lower() == NaNstr.lower()):
                 compartment_desc = compartment_name
 
             tempStr=tempStr + """
-resource "oci_identity_compartment" \"""" + compartment_name + """" {
+resource "oci_identity_compartment" \"""" + compartment_name.strip() + """" {
 	    compartment_id = \"""" + parent_compartment + """"
-	    description = \"""" + compartment_desc + """"
-  	    name = \"""" + compartment_name + """"
+	    description = \"""" + compartment_desc.strip() + """"
+  	    name = \"""" + compartment_name.strip() + """"
 
 	} """
 
