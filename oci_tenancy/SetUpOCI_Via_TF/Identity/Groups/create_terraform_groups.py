@@ -41,12 +41,13 @@ if('.xls' in args.inputfile):
 
     for i in df.index:
         group_name = df.iat[i, 0]
-        group_desc = df.iat[i, 1]
         group_name = group_name.strip()
-        group_desc = group_desc.strip()
 
         if (group_name in endNames):
             break
+
+        group_desc = df.iat[i, 1]
+        group_desc = group_desc.strip()
 
         if(group_name!='Name' and str(group_name).lower()!= NaNstr.lower()):
             if (str(group_desc).lower() == NaNstr.lower()):

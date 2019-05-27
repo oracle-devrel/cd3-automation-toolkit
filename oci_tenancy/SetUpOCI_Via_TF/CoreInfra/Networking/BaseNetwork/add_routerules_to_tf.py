@@ -33,7 +33,11 @@ if('.xls' in inputfile):
     df = pd.read_excel(inputfile, sheet_name='AddRouteRules')
     for i in df.index:
         subnet_name = df.iat[i, 0]
-        subnet_name=subnet_name.strip()
+        subnet_name = subnet_name.strip()
+
+        if (subnet_name in endNames):
+            break
+
         dest_cidr = df.iat[i, 1]
         dest_cidr=dest_cidr.strip()
         dest_obj = df.iat[i, 2]
@@ -41,8 +45,7 @@ if('.xls' in inputfile):
         dest_type = df.iat[i, 3]
         dest_type=dest_type.strip()
 
-        if (subnet_name in endNames):
-            break
+
         searchString = "##Add More rules for subnet " + subnet_name + "##"
         strRule = ""
         strRule = strRule + """
@@ -101,9 +104,9 @@ elif ('.csv' in inputfile):
             with open(routefile, 'w') as f:
                 updated_data = re.sub(searchString, strRule, data)
                 f.write(updated_data)
+    fname.close()
 
 else:
     print("Invalid input file format; Acceptable formats: .xls, .xlsx, .csv")
 
-fname.close()
 f.close()

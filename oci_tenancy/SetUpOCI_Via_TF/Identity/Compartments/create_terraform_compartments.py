@@ -43,9 +43,13 @@ if('.xls' in args.inputfile):
 
     for i in df.index:
         compartment_name = df.iat[i, 0]
+        compartment_name = compartment_name.strip()
+
+        if (compartment_name in endNames):
+            break
+
         compartment_desc = df.iat[i, 1]
         parent_compartment_name = df.iat[i, 2]
-        compartment_name = compartment_name.strip()
         compartment_desc = compartment_desc.strip()
         parent_compartment_name = parent_compartment_name.strip()
 
@@ -53,9 +57,6 @@ if('.xls' in args.inputfile):
             parent_compartment='${var.tenancy_ocid}'
         else:
             parent_compartment='${oci_identity_compartment.'+parent_compartment_name+'.id}'
-
-        if (compartment_name in endNames):
-            break
 
         if(compartment_name!='Name' and str(compartment_name).lower()!= NaNstr.lower()):
             if (str(compartment_desc).lower() == NaNstr.lower()):
