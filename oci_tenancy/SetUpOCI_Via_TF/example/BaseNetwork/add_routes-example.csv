@@ -1,5 +1,6 @@
-# Format
-#SubnetName:CIDR:Route Destination Object:destination_type #
+# Rows after <END> or <end> will no be processed
+#Subnet Name:Destination CIDR:Route Destination Object:Destination Type
 # Can use a variable name or the ocid itself
-prod-mgt-ops:20.20.30.30/32:${oci_core_internet_gateway.igw01.id}:CIDR_BLOCK
-prod-dmz-lb-ext:10.10.20.20/32:${oci_core_nat_gateway.ngw01.id}:CIDR_BLOCK
+qa-dmz:20.20.30.30/32:${oci_core_internet_gateway.PHXHub-VCN_igw.id}:CIDR_BLOCK
+qa-app:10.10.20.20/32:ocid1.natgateway.oc1.phx.aaaaaaaakuonwsamojrjwyt5xlezkup7k4rtdpjrajfzgzjfmvcq5gtwgkba:CIDR_BLOCK
+<END>

@@ -45,6 +45,9 @@ if('.xls' in args.inputfile):
         compartment_name = df.iat[i, 0]
         compartment_desc = df.iat[i, 1]
         parent_compartment_name = df.iat[i, 2]
+        compartment_name = compartment_name.strip()
+        compartment_desc = compartment_desc.strip()
+        parent_compartment_name = parent_compartment_name.strip()
 
         if (str(parent_compartment_name).lower()== NaNstr.lower() or parent_compartment_name.lower() == 'root'):
             parent_compartment='${var.tenancy_ocid}'
@@ -79,6 +82,9 @@ elif('.csv' in args.inputfile):
             break
         if not line.startswith('#') and line != '\n':
             [compartment_name, compartment_desc, parent_compartment_name] = line.split(',')
+            compartment_name=compartment_name.strip()
+            compartment_desc=compartment_desc.strip()
+            parent_compartment_name=parent_compartment_name.strip()
 
             if (parent_compartment_name.strip() == '' or parent_compartment_name.lower() == 'root'):
                 parent_compartment = '${var.tenancy_ocid}'

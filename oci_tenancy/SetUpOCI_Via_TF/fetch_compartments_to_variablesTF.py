@@ -13,7 +13,7 @@ def paginate(operation, *args, **kwargs):
         if not response.has_next_page:
             break
 
-parser = argparse.ArgumentParser(description="Fetched Compartment name/ocid infor from OCI and pushes to variables.tf file used by TF")
+parser = argparse.ArgumentParser(description="Fetches Compartment name/ocid info from OCI and pushes to variables.tf file used by TF")
 parser.add_argument("variablesTF", help="Path to variables.tf file that will be used by TerraForm to communicate with OCI; mostly present in your outdir")
 parser.add_argument("--configFileName", help="Config file name" , required=False)
 

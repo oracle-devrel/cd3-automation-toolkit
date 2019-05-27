@@ -42,6 +42,8 @@ if('.xls' in args.inputfile):
     for i in df.index:
         group_name = df.iat[i, 0]
         group_desc = df.iat[i, 1]
+        group_name = group_name.strip()
+        group_desc = group_desc.strip()
 
         if (group_name in endNames):
             break
@@ -69,14 +71,17 @@ elif('.csv' in args.inputfile):
             break
         if not line.startswith('#') and line != '\n':
             [group_name, group_desc] = line.split(',')
-            if(group_name.strip()!='Name' and group_name.strip()!=''):
+            group_name=group_name.strip()
+            group_desc=group_desc.strip()
+
+            if(group_name!='Name' and group_name!=''):
                 if (group_desc.strip() == ''):
                     group_desc = group_name
                 tempStr=tempStr + """
-resource "oci_identity_group" \"""" + group_name.strip() + """" {
+resource "oci_identity_group" \"""" + group_name + """" {
 	    compartment_id = "${var.tenancy_ocid}"
-	    description = \"""" + group_desc.strip() + """"
-	    name = \"""" + group_name.strip() + """"
+	    description = \"""" + group_desc + """"
+	    name = \"""" + group_name + """"
 	} """
 
 else:

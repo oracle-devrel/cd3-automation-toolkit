@@ -9,7 +9,7 @@ import argparse
 import pandas as pd
 
 
-parser = argparse.ArgumentParser(description="CSV filename")
+parser = argparse.ArgumentParser(description="Creates TF files for Block Volumes")
 parser.add_argument("file",help="Full Path to the CSV file for creating block volume or CD3 excel file. eg instance.csv or CD3-template.xlsx in example folder")
 parser.add_argument("outdir",help="directory path for output tf files ")
 
