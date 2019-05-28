@@ -2,7 +2,7 @@ resource "oci_core_instance" "##Hostname##" {
         #Required
         #availability_domain = "##Availability Domain##"
         availability_domain = "${data.oci_identity_availability_domains.ADs.availability_domains.##Availability Domain##.name}"
-        compartment_id = "##Compartment Var Name##"
+        compartment_id = "##Compartment Name##"
 ### windows image id - oci image ###
        # image = "${var.windows2008_image_ocid}"
         source_details {
