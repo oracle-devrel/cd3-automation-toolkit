@@ -62,14 +62,14 @@ def create_ingress_rule_string(row):
     if row['Protocol'] == 'tcp':
         tcp_option = " \t\ttcp_options {"
 
-        if not is_empty(row['Destination']):
-         dest_range = """
+        #if not is_empty(row['Destination']):
+        dest_range = """
             "max" = """ + str(row['DPortMax']) + """
             "min" =  """ + str(row['DPortMin']) + """
           """
-        if not is_empty(row['Source']):
-         if str(row['SPortMax']) or str(row['SPortMin']):
-            source_range = """
+        #if not is_empty(row['Source']):
+        if str(row['SPortMax']) or str(row['SPortMin']):
+            source_rang= """
                 source_port_range {"""
             if str(row['SPortMax']):
                 source_range = source_range + """
@@ -355,8 +355,10 @@ else:
 #If input is CD3 excel file
 if('.xls' in secrulesfilename):
     endNames = {'<END>', '<end>'}
-    data = pd.read_excel(secrulesfilename, sheet_name='AddSecRules',skiprows=1).to_csv('out.csv')
+    df = pd.read_excel(secrulesfilename, sheet_name='AddSecRules',skiprows=1,dtype=object).to_csv('out.csv')
+
     totalRowCount = sum(1 for row in csv.DictReader(skipCommentedLine(open('out.csv'))))
+
     with open('out.csv') as secrulesfile:
         reader = csv.DictReader(skipCommentedLine(secrulesfile))
         columns = reader.fieldnames
