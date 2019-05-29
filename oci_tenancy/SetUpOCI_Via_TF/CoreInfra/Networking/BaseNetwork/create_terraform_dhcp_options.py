@@ -83,7 +83,7 @@ resource "oci_core_dhcp_options" \"""" + vcn_dhcp + """" {
 
 
 
-if('.properties' in args.inputfile):
+elif('.properties' in args.inputfile):
 	print("Input is vcn-info.properties")
 
 	config = configparser.RawConfigParser()
@@ -138,6 +138,9 @@ resource "oci_core_dhcp_options" \"""" + vcn_dhcp + """" {
 	display_name = \""""  + vcn_dhcp + """"
 }
 """
+else:
+    print("Invalid input file format; Acceptable formats: .xls, .xlsx, .properties")
+
 oname.write(tempStr)
 oname.close()
 

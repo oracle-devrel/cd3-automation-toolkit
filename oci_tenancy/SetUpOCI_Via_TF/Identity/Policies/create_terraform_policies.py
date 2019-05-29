@@ -116,6 +116,9 @@ if('.xls' in args.inputfile):
 
 #If input is a csv file
 
+else:
+    print("Invalid input file format; Acceptable formats: .xls, .xlsx, .csv")
 
 oname.write(tempStr)
 oname.close()
+print(outfile +" containing TF for policies has been created")

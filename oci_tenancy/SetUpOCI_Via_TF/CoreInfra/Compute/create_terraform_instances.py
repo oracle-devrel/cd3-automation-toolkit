@@ -37,7 +37,7 @@ def skipCommentedLine(lines):
             yield line
 
 
-parser = argparse.ArgumentParser(description="Create vars files for the each row in csv file.")
+parser = argparse.ArgumentParser(description="Creates Instances TF file")
 parser.add_argument("file", help="Full Path of csv file or CD3 excel file. eg instance.csv or CD3-template.xlsx in example folder")
 parser.add_argument("outdir", help="directory path for output tf files ")
 
@@ -101,7 +101,7 @@ elif('.csv' in filename):
                 replaceAllplaceholders(outdir + '/' + row['Hostname'] + '.tf', '##' + column + '##', row[column])
 
 else:
-    print("Invalid input file format")
+    print("Invalid input file format; Acceptable formats: .xls, .xlsx, .csv")
 
 
 

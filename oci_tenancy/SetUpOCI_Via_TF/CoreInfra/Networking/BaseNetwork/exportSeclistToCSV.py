@@ -1,6 +1,6 @@
 #!/bin/python
 
-import ConfigParser
+
 import argparse
 import sys
 import oci
@@ -37,14 +37,14 @@ def get_vcns(config,compartment_id):
     vcncient = VirtualNetworkClient(config)
     vcnlist = vcncient.list_vcns(compartment_id=compartment_id,lifecycle_state="AVAILABLE")
     for vcn in vcnlist.data:
-        print vcn.id
+        print (vcn.id)
     return vcnlist
 
 
 def print_secrules(seclists):
 
     #print "SubnetName,RuleType,Protocol,isStateless,Source,Destination,MaxOption,MinOption"
-    print "SubnetName, RuleType, Protocol, isStateless, Source, SPortMin, SPortMax, Destination, DPortMin, DPortMax, ICMPType, ICMPCode"
+    print ("SubnetName, RuleType, Protocol, isStateless, Source, SPortMin, SPortMax, Destination, DPortMin, DPortMax, ICMPType, ICMPCode")
     for seclist in seclists.data:
     #    print seclist
         isec_rules = seclist.ingress_security_rules
@@ -57,43 +57,43 @@ def print_secrules(seclists):
         else:
             dn = seclist.display_name
         for rule in isec_rules:
-            print rule
+            print (rule)
            # exit(0)
 
             if rule.protocol == "6":
                 if rule.tcp_options is None:
                     ##				print "TCP," + rule.source + ",,"
-                    print dn + ",ingress,tcp," + str(rule.is_stateless) + "," + rule.source + ",,,"
+                    print (dn + ",ingress,tcp," + str(rule.is_stateless) + "," + rule.source + ",,,")
                 else:
                     min = convertNullToNothing(rule.tcp_options.destination_port_range.min)
                     max = convertNullToNothing(rule.tcp_options.destination_port_range.max)
 #"SubnetName, RuleType, Protocol, isStateless, Source, SPortMin, SPortMax, Destination, DPortMin, DPortMax, ICMPType, ICMPCode"
-                    print dn + ",ingress,tcp," + str(rule.is_stateless) + "," + rule.source + "," + min + "," + max
+                    print (dn + ",ingress,tcp," + str(rule.is_stateless) + "," + rule.source + "," + min + "," + max)
 
             if rule.protocol == "1":
                 if rule.icmp_options is None:
                     # print "ICMP," + rule.source + ",,"
-                    print dn + ",ingress,icmp," + str(rule.is_stateless) + "," + rule.source + ",~,,"
+                    print (dn + ",ingress,icmp," + str(rule.is_stateless) + "," + rule.source + ",~,,")
                 # print "ICMP " + rule.protocol + """      """  + rule.source + """        None    """ + """       None """
                 else:
                     min = convertNullToNothing(rule.icmp_options.code)
                     max = convertNullToNothing(rule.icmp_options.type)
-                    print dn + ",ingress,icmp," + str(rule.is_stateless) + "," + rule.source + ",~," + min + "," + max
+                    print (dn + ",ingress,icmp," + str(rule.is_stateless) + "," + rule.source + ",~," + min + "," + max)
                 # print "ICMP," + rule.source + ","+ min + "," + max
 
             if rule.protocol == "17":
                 if rule.udp_options is None:
                     #				print "UDP," + rule.source + ",,"
-                    print dn + ",ingress,udp," + str(rule.is_stateless) + "," + rule.source + ",~,,"
+                    print (dn + ",ingress,udp," + str(rule.is_stateless) + "," + rule.source + ",~,,")
                     # print "UDP " + rule.protocol + """      """  + rule.source + """        None    """ + """       None """
                 else:
                     min = convertNullToNothing(rule.udp_options.destination_port_range.min)
                     max = convertNullToNothing(rule.udp_options.destination_port_range.max)
                     # print "UDP " + rule.protocol + """      """  + rule.source + """                """ + min + """ """ + max
-                    print dn + ",ingress,udp," + str(rule.is_stateless) + "," + rule.source + ",~," + min + "," + max
+                    print (dn + ",ingress,udp," + str(rule.is_stateless) + "," + rule.source + ",~," + min + "," + max)
 
             if rule.protocol == "all":
-                print dn + ",ingress,all," + str(rule.is_stateless) + "," + rule.source + ",~,,"
+                print (dn + ",ingress,all," + str(rule.is_stateless) + "," + rule.source + ",~,,")
 
 
 

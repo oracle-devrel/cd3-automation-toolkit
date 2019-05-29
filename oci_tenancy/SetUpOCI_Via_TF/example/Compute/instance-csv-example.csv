@@ -1,4 +1,4 @@
-Hostname,Availability domain,Fault Domain,subnet name,Pub Address,IP Address,OS,Shape,SSH-key-var-name,Compartment Var Name
+Hostname,Availability domain,Fault Domain,subnet name,Pub Address,IP Address,OS,Shape,SSH-key-var-name,Compartment Name
 MytestVM1,AD1,FAULT-DOMAIN-3,prod-app,false,10.89.76.125,Linux75,VM.Standard1.4,ssh_public_key,dev-compartment
 MytestVM2,AD2,FAULT-DOMAIN-3,prod-mgt-app,true,10.89.81.124,Windows2012,VM.Standard1.4,ssh_public_key,qa-compartment
 MytestVM3,AD3,,prod-mgt-app,true,10.89.81.125,Windows2008,VM.Standard1.8,ssh_public_key,dev-compartment

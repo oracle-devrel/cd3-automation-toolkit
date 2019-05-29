@@ -42,7 +42,7 @@ if ('.xlsx' in filename):
     df = pd.read_excel(filename, sheet_name='Tags')
     print(df.keys())
     for i in df.keys():
-        if (i == 'compartment_var_name'):
+        if (i == 'compartment_name'):
             for j in df.index:
                 if (str(df[i][j]) == 'nan'):
                     continue
@@ -52,7 +52,7 @@ if ('.xlsx' in filename):
                     continue
         if (i == 'TagNamespace'):
             continue
-        elif (i == 'compartment_var_name'):
+        elif (i == 'compartment_name'):
             continue
         else:
             print i
@@ -75,11 +75,10 @@ if ('.xlsx' in filename):
 if ('.xlsx' in filename):
     df1 = pd.read_excel(filename, sheet_name='Tags')
     df = df1.dropna(how='all')
-    print df
     for i in df.keys():
         print("\n")
         print (i)
-        if (i == 'compartment_var_name'):
+        if (i == 'compartment_name'):
             continue
         else:
             key = i
