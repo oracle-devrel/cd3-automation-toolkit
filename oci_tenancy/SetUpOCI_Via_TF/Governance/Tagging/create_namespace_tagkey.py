@@ -40,14 +40,14 @@ if path.exists(src1):
 # Creates the namespaces
 if ('.xlsx' in filename):
     df = pd.read_excel(filename, sheet_name='Tags')
-    print(df.keys())
+
     for i in df.keys():
         if (i == 'compartment_name'):
             for j in df.index:
                 if (str(df[i][j]) == 'nan'):
                     continue
                 else:
-                    print df[i][j]
+
                     compartment_var_name = df[i][j]
                     continue
         if (i == 'TagNamespace'):
@@ -55,7 +55,7 @@ if ('.xlsx' in filename):
         elif (i == 'compartment_name'):
             continue
         else:
-            print i
+
             tagnamespace = i
             tmpstr = """
             resource "oci_identity_tag_namespace" \"""" + tagnamespace + """\" {
@@ -76,19 +76,17 @@ if ('.xlsx' in filename):
     df1 = pd.read_excel(filename, sheet_name='Tags')
     df = df1.dropna(how='all')
     for i in df.keys():
-        print("\n")
-        print (i)
+
         if (i == 'compartment_name'):
             continue
         else:
             key = i
 
-            print ("----------------------")
             for j in df.index:
                 if (str(df[i][j]) == 'nan'):
                     continue
                 else:
-                    print df[i][j]
+
                     tagkey = df[i][j]
 
                     if (tagkey == 'Keys') and (key == 'TagNamespace'):

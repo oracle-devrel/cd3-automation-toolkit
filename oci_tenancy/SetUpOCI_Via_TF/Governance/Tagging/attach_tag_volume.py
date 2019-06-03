@@ -41,20 +41,14 @@ if('.csv' in filename):
         reader = csv.DictReader(skipCommentedLine(csvfile))
         columns = reader.fieldnames
         for row in reader:
-            print row
-            print "\n"
+            print(row)
             volume = row['VolumeName']
-            print volume
-            print "=================================="
-            print ("Printing namespaces of host "+volume)
-            print "=================================="
             string = ""
             for column in columns:
                 if column == 'VolumeName':
                     continue
                 else:
                     namespace = column
-                    print namespace+" --> "+row[column]
                     tmp = row[column]
                     if tmp == "":
                         tag_key = ""
@@ -70,8 +64,6 @@ if('.csv' in filename):
 
                         k = string.rfind(",")
                         new_string = string[:k] + " " + string[k + 1:]
-                        print(new_string)
-                    print new_string
 
             tmpstr = """
             defined_tags = {
@@ -82,7 +74,6 @@ if('.csv' in filename):
 
             testToSearch = "## Defined Tag Info ##"
             terrafile = outdir + "/" + volume + ".tf"
-            print terrafile
 
             with open(terrafile, 'r+') as file:
                 filedata = file.read()

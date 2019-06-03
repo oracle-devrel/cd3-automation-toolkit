@@ -61,7 +61,7 @@ resource "oci_core_volume_attachment" \"""" + blockname + """_volume_attachment"
         
         """
         outfile = outdir+"/"+blockname+".tf"
-        print "Writing " + outfile
+        print("Writing " + outfile)
         oname = open(outfile,"w")
         oname.write(tempStr)
         oname.close()
