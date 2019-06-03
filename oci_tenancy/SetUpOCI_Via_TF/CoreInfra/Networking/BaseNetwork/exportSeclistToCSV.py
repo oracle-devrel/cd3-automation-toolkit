@@ -57,18 +57,18 @@ def print_secrules(seclists):
         else:
             dn = seclist.display_name
         for rule in isec_rules:
-            print (rule)
+          #  print (rule)
            # exit(0)
 
             if rule.protocol == "6":
                 if rule.tcp_options is None:
                     ##				print "TCP," + rule.source + ",,"
-                    print (dn + ",ingress,tcp," + str(rule.is_stateless) + "," + rule.source + ",,,")
+                    print (dn + ",ingress,tcp," + str(rule.is_stateless) + "," + rule.source + ",~,,")
                 else:
                     min = convertNullToNothing(rule.tcp_options.destination_port_range.min)
                     max = convertNullToNothing(rule.tcp_options.destination_port_range.max)
 #"SubnetName, RuleType, Protocol, isStateless, Source, SPortMin, SPortMax, Destination, DPortMin, DPortMax, ICMPType, ICMPCode"
-                    print (dn + ",ingress,tcp," + str(rule.is_stateless) + "," + rule.source + "," + min + "," + max)
+                    print (dn + ",ingress,tcp," + str(rule.is_stateless) + "," + rule.source + ",~," + min + "," + max)
 
             if rule.protocol == "1":
                 if rule.icmp_options is None:

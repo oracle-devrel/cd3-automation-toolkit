@@ -93,6 +93,7 @@ elif('.csv' in filename):
         #Optional
         display_name = \"""" + blockname + """"
         size_in_gbs = \"""" + size + """"
+        ## Defined Tag Info ##
         }
 
 resource "oci_core_volume_attachment" \"""" + blockname + """_volume_attachment" {
