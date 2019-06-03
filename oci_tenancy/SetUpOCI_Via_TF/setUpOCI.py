@@ -187,11 +187,16 @@ if('9' in userInput):
 
 if('10' in userInput):
     print("---------------------------Exporting Security Rules--------------------------")
-    inputComp = input("Enter Compartment Name of Networking Components: ")
-    outdir = input("Enter full path to output directory: ")
+    inputComp = input("Enter Compartment Name of VCN for which you want to export Security Lists: ")
+    outdir = input("Enter full path to output directory where csv will be generated: ")
+    inputConfigFile = input("Enter path to pyhton config file This is required when you are executing the code from some other workstation rather than OCS VM"
+                            " else leave it empty: ")
 
     os.chdir('CoreInfra/Networking/BaseNetwork')
-    command = 'python exportSeclistToCSV.py ' + inputComp + ' ' + outdir
+    if(inputConfigFile==''):
+        command = 'python exportSeclistToCSV.py ' + inputComp + ' ' + outdir
+    else:
+        command = 'python exportSeclistToCSV.py ' + inputComp + ' ' + outdir + ' --configFileName '+inputConfigFile
     os.system(command)
     os.chdir("../../..")
     print("--------------------------------------------------------------------------")
