@@ -86,6 +86,7 @@ resource "oci_identity_group" \"""" + group_name + """" {
 
 else:
     print("Invalid input file format; Acceptable formats: .xls, .xlsx, .csv")
+    exit()
 
 oname.write(tempStr)
 oname.close()

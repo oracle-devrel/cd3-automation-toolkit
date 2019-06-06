@@ -84,5 +84,6 @@ if('.csv' in filename):
             # Write the file out again
             with open(terrafile, 'w+') as file:
                 file.write(filedata)
-
-
+else:
+    print("Invalid input file format; Acceptable formats: .csv")
+    exit()
