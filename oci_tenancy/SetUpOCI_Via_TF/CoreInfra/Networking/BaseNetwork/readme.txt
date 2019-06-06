@@ -26,14 +26,16 @@ F.  Scripts provide capability to have different compartments for different VCNs
     See Description for its usage.
     Note- specify the optional parameter --inputCD3 for code to create tf files based on CD3 excel file
 
-2.  create_terraform_major_objects.py -- This creates the VCN, IGW mapped to the VCN and DRG. DHCP Options, IGW, NGW, SGW, LPG and DRG for each VCN are created
+2.  create_terraform_major_objects.py -- This creates the VCN and other components. DHCP Options, IGW, NGW, SGW, LPG and DRG for each VCN are created
     in the same compartment as the VCN.
-3.  create_terraform_seclist.py  -- Creates security lists for every subnet defined in the subnet file.
+3.  create_terraform_seclist.py  -- Creates security lists with default rules for every subnet defined in the subnet file. Egress allow everything to 0.0.0.0/0
+    along with default ingress rules, creates ping rules for VCN peering based on property: add_ping_sec_rules_onprem and  defined in vcn-info.properties.
 4.  create_terraform_dhcp_options.py -- Creates DHCP options for the subnets.  It supports both the CustomDnsServer serverType and VcnLocalPlusInternet type.
     Both have different requirements. Look at the example.
-5.  create_terraform_route.py -- Creates the routes for each subnet.  Every route defined in the routes file (see example) will be created for every subnet. If you need a different combination - create the baseline and then delete what you dont need (or create multiple subnet and route files) -- Thsi si not required anymore as we are creatign default routes based on inouts in oci-tf.prooperties
+5.  create_terraform_route.py -- Creates the routes for each subnet.  It creates default routes as per information given for each subnet(in subnet file) and
+    based upon VCN peering.
 6.  create_terraform_subnet.py -- Creates the subnet with the Security list, routes and dhcp options based on the subnet file.
-    The names are generated based on all the previous scripts run.  Do not change any of the resource object names.
+    The names are generated based on all the previous scripts run.
     If the Default VCN Security list needs to be attached to the subnet - set "add_default_seclist=y".
 
 
