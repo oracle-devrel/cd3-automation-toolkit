@@ -135,20 +135,11 @@ if [ -e /home/opc/default ]
 then
     echo "Koala Config START"
 
-    # Don't use 1.0
-    #wget https://objectstorage.us-ashburn-1.oraclecloud.com/p/E6ucg47gNtt4OWulJYmOHEgXzx1lthALaY6MeW3JoKA/n/intocimig/b/ocic-oci-test-migration/o/opcmigrate-1.0.0.zip
-
-    cd /root/ocswork/downloads
-    #wget https://objectstorage.us-ashburn-1.oraclecloud.com/p/q_WoaL7oyTQXuStOkNgaz4eKZjCf1tJCNMjqqUgd_64/n/intocimig/b/ocic-oci-test-migration/o/opcmigrate-1.1.0.zip -O opcmigrate.zip
-    wget https://objectstorage.us-ashburn-1.oraclecloud.com/p/YiJ9tqrZ0IBQJzCHMK6iKh5J8M7CWDhGHlkkWlalL40/n/intocimig/b/ocic-oci-test-migration/o/opcmigrate-1.2.0.zip -O opcmigrate.zip
-
-    mkdir -p /root/ocswork/opcmigrate
+    cp /root/ocswork/ocic2oci_work/opcmigrate-1.4.0.zip /root/ocswork/downloads/opcmigrate.zip
     cd /root/ocswork/downloads
     unzip opcmigrate.zip -d /root/ocswork/opcmigrate
     cd /root/ocswork/opcmigrate
 
-    #python36 -m pip install ./opcmigrate-1.1.0_dev_20190118.232119.87-py3-none-any.whl
-    #python36 -m pip install ./opcmigrate-1.1.0_20190128.221621.93-py3-none-any.whl
     python36 -m pip install ./opcmigrate-*.whl
 
     mkdir -p /root/.opc/profiles
