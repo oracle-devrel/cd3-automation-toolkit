@@ -135,7 +135,7 @@ def updatePropsFile(file_name,key, update_value):
     parser.read(file_name)
     parser.set('DEFAULT', key, update_value)
 
-    with open(file_name, 'wb+') as file:
+    with open(file_name, 'w+') as file:
         parser.write(file)
 
 def paginate(operation, *args, **kwargs):
@@ -148,6 +148,7 @@ def paginate(operation, *args, **kwargs):
             break
 
 def create_compartment(compartment_name,compartment_desc):
+    compartment_ocid=''
     create_comp_detail = oci.identity.models.CreateCompartmentDetails(compartment_id=tenancy_id,description=compartment_desc,name=compartment_name)
     try:
         compartment = identity_client.create_compartment(create_comp_detail)
@@ -180,6 +181,7 @@ for ad in paginate(identity_client.list_availability_domains,compartment_id = te
 		conf_file.write("ad_" + str(i) + "=" + ad.name + "\n")
 	i = i + 1
 conf_file.close()
+
 
 ocs_compartment_found=0
 vm_compartment_found=0

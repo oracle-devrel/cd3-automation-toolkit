@@ -105,6 +105,7 @@ resource "oci_identity_compartment" \"""" + compartment_name.strip() + """" {
     } """
 else:
     print("Invalid input file format; Acceptable formats: .xls, .xlsx, .csv")
+    exit()
 
 
 oname.write(tempStr)

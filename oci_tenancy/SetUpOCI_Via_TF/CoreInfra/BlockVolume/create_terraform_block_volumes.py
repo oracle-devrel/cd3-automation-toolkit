@@ -61,7 +61,7 @@ resource "oci_core_volume_attachment" \"""" + blockname + """_volume_attachment"
         
         """
         outfile = outdir+"/"+blockname+".tf"
-        print "Writing " + outfile
+        print("Writing " + outfile)
         oname = open(outfile,"w")
         oname.write(tempStr)
         oname.close()
@@ -93,6 +93,7 @@ elif('.csv' in filename):
         #Optional
         display_name = \"""" + blockname + """"
         size_in_gbs = \"""" + size + """"
+        ## Defined Tag Info ##
         }
 
 resource "oci_core_volume_attachment" \"""" + blockname + """_volume_attachment" {
@@ -111,4 +112,5 @@ resource "oci_core_volume_attachment" \"""" + blockname + """_volume_attachment"
     fname.close()
 else:
     print("Invalid input file format; Acceptable formats: .xls, .xlsx, .csv")
+    exit()
 

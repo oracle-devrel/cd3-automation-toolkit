@@ -1,4 +1,5 @@
 #!/bin/bash
+#!/bin/bash
 # Create Tag Namespace from CD3 file
 import sys
 import argparse
@@ -41,20 +42,15 @@ if('.csv' in filename):
         reader = csv.DictReader(skipCommentedLine(csvfile))
         columns = reader.fieldnames
         for row in reader:
-            print row
-            print "\n"
+            print(row)
+
             hostname = row['Hostname']
-            print hostname
-            print "=================================="
-            print ("Printing namespaces of host "+hostname)
-            print "=================================="
             string = ""
             for column in columns:
                 if column == 'Hostname':
                     continue
                 else:
                     namespace = column
-                    print namespace+" --> "+row[column]
                     tmp = row[column]
                     if tmp == "":
                         tag_key = ""
@@ -70,8 +66,6 @@ if('.csv' in filename):
 
                         k = string.rfind(",")
                         new_string = string[:k] + " " + string[k + 1:]
-                        print(new_string)
-                    print new_string
 
             tmpstr = """
             defined_tags = {
@@ -82,7 +76,6 @@ if('.csv' in filename):
 
             testToSearch = "## Defined Tag Info ##"
             terrafile = outdir + "/" + hostname + ".tf"
-            print terrafile
 
             with open(terrafile, 'r+') as file:
                 filedata = file.read()
@@ -94,4 +87,6 @@ if('.csv' in filename):
             with open(terrafile, 'w+') as file:
                 file.write(filedata)
 
-
+else:
+    print("Invalid input file format; Acceptable formats: .csv")
+    exit()

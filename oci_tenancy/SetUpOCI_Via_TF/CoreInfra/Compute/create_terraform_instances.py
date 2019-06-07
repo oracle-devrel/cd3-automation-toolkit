@@ -102,6 +102,7 @@ elif('.csv' in filename):
 
 else:
     print("Invalid input file format; Acceptable formats: .xls, .xlsx, .csv")
+    exit()
 
 
 

@@ -17,12 +17,18 @@ userInput = input('Enter your choice; multiple choices allowed as comma separate
                   '\neg 1 if you want to create only Compartments; 1,2,3 if you want to create Compartments, Groups, Policies at one go ')
 
 userInput=userInput.split(',')
+inputfile=''
+outdir=''
+prefix=''
 
 if('1' in userInput):
     print('-----------------------------Creating Compartments----------------------')
-    inputfile = input("Enter full path to input CD3 excel file or csv file containing Compartments info: ")
-    outdir = input("Enter full path to output directory where you want to create terraform files: ")
-    prefix = input("Enter prefix for output files: ")
+    if(inputfile==''  or '.xls' not in inputfile):
+        inputfile = input("Enter full path to input CD3 excel file or csv file containing Compartments info: ")
+    if(outdir==''):
+        outdir = input("Enter full path to output directory where you want to create terraform files: ")
+    if(prefix==''):
+        prefix = input("Enter prefix for output files: ")
     outfile = outdir + "/" + prefix + '-compartments.tf'
 
     if not os.path.exists(outdir):
@@ -36,9 +42,18 @@ if('1' in userInput):
 
 if('2' in userInput):
     print("---------------------------Creating Groups--------------------------------")
-    inputfile = input("Enter full path to input CD3 excel file or csv file containing Groups info: ")
-    outdir = input("Enter full path to output directory where you want to create terraform files: ")
-    prefix = input("Enter prefix for output files: ")
+    if(inputfile=='' or '.xls' not in inputfile):
+        inputfile = input("Enter full path to input CD3 excel file or csv file containing Groups info: ")
+    else:
+        print("using already provided CD3 file: "+inputfile)
+    if(outdir==''):
+        outdir = input("Enter full path to output directory where you want to create terraform files: ")
+    else:
+        print("using already provided outdir: "+outdir)
+    if(prefix==''):
+        prefix = input("Enter prefix for output files: ")
+    else:
+        print("using already provided prefix: "+prefix)
     outfile = outdir + "/" + prefix + '-groups.tf'
 
     if not os.path.exists(outdir):
@@ -52,9 +67,18 @@ if('2' in userInput):
 
 if('3' in userInput):
     print("----------------------Creating Policies----------------------------------")
-    inputfile = input("Enter full path to input CD3 excel file: ")
-    outdir = input("Enter full path to output directory where you want to create terraform files: ")
-    prefix = input("Enter prefix for output files: ")
+    if (inputfile == '' or '.xls' not in inputfile):
+        inputfile = input("Enter full path to input CD3 excel file or csv file containing Policies info: ")
+    else:
+        print("using already provided CD3 file: " + inputfile)
+    if (outdir == ''):
+        outdir = input("Enter full path to output directory where you want to create terraform files: ")
+    else:
+        print("using already provided outdir: " + outdir)
+    if (prefix == ''):
+        prefix = input("Enter prefix for output files: ")
+    else:
+        print("using already provided prefix: " + prefix)
     outfile = outdir + "/" + prefix + '-policies.tf'
 
     if not os.path.exists(outdir):
@@ -69,9 +93,17 @@ if('3' in userInput):
 if('4' in userInput):
     print("---------------------Creating Base Network----------------------------------")
     inputfile = input("Enter full path to properties file eg example\vcn-info.properties: ")
-    outdir = input("Enter full path to output directory where you want to create terraform files: ")
-    prefix = input("Enter prefix for output files: ")
-    inputCD3 = input("Enter full path to CD3 excel file. Leave blank if don't want wnt to specify CD3 input..")
+    if (outdir == ''):
+        outdir = input("Enter full path to output directory where you want to create terraform files: ")
+    else:
+        print("using already provided outdir: " + outdir)
+    if (prefix == ''):
+        prefix = input("Enter prefix for output files: ")
+    else:
+        print("using already provided prefix: " + prefix)
+
+    outfile = outdir + "/" + prefix + '-policies.tf'
+    inputCD3 = input("Enter full path to CD3 excel file. Leave blank if don't want want to specify CD3 input..")
 
     if not os.path.exists(outdir):
         os.makedirs(outdir)
@@ -87,8 +119,14 @@ if('4' in userInput):
 
 if('5' in userInput):
     print("--------------------Creating Instances------------------------------------")
-    inputfile = input("Enter full path to input CD3 excel file or csv file containing Instances info: ")
-    outdir = input("Enter full path to output directory where you want to create terraform files: ")
+    if (inputfile == ''  or '.xls' not in inputfile):
+        inputfile = input("Enter full path to input CD3 excel file or csv file containing Instances info: ")
+    else:
+        print("using already provided CD3 file: " + inputfile)
+    if (outdir == ''):
+        outdir = input("Enter full path to output directory where you want to create terraform files: ")
+    else:
+        print("using already provided outdir: " + outdir)
 
     if not os.path.exists(outdir):
         os.makedirs(outdir)
@@ -101,8 +139,14 @@ if('5' in userInput):
 
 if('6' in userInput):
     print("------------------------Creating BlockVolumes---------------------------")
-    inputfile = input("Enter full path to input CD3 excel file or csv file containing Block Volumes info: ")
-    outdir = input("Enter full path to output directory where you want to create terraform files: ")
+    if (inputfile == ''  or '.xls' not in inputfile):
+        inputfile = input("Enter full path to input CD3 excel file or csv file containing Block Volumet info: ")
+    else:
+        print("using already provided CD3 file: " + inputfile)
+    if (outdir == ''):
+        outdir = input("Enter full path to output directory where you want to create terraform files: ")
+    else:
+        print("using already provided outdir: " + outdir)
 
     if not os.path.exists(outdir):
         os.makedirs(outdir)
@@ -124,7 +168,10 @@ if('7' in userInput):
     tag_choice=tag_choice.split(",")
     if('1' in tag_choice):
         inputfile = input("Enter full path to input CD3 excel file: ")
-        outdir = input("Enter full path to output directory where you `want to create terraform files: ")
+        if (outdir == ''):
+            outdir = input("Enter full path to output directory where you want to create terraform files: ")
+        else:
+            print("using already provided outdir: " + outdir)
 
         if not os.path.exists(outdir):
             os.makedirs(outdir)
@@ -136,7 +183,10 @@ if('7' in userInput):
 
     if ('2' in tag_choice):
         inputfile = input("Enter full path to input csv file containing tag information eg example\Tagging\tag_server-csv-example.csv: ")
-        outdir = input("Enter full path to output directory where you `want to create terraform files: ")
+        if (outdir == ''):
+            outdir = input("Enter full path to output directory where you want to create terraform files: ")
+        else:
+            print("using already provided outdir: " + outdir)
 
         if not os.path.exists(outdir):
             os.makedirs(outdir)
@@ -149,7 +199,10 @@ if('7' in userInput):
 
     if ('3' in tag_choice):
         inputfile = input("Enter full path to input csv file containing tag information eg example\Tagging\tag_volume-csv-example.csv: ")
-        outdir = input("Enter full path to output directory where you `want to create terraform files: ")
+        if (outdir == ''):
+            outdir = input("Enter full path to output directory where you want to create terraform files: ")
+        else:
+            print("using already provided outdir: " + outdir)
 
         if not os.path.exists(outdir):
             os.makedirs(outdir)
@@ -177,7 +230,7 @@ if('9' in userInput):
     print("------------------------Adding Security Rules--------------------------------")
     inputfile = input("Enter full path to either properties file eg example/vcn-info.properties or CD3 excel file: ")
     inputcsv = input("Enter full path to input csv file containing security rules info eg example/BaseNetwork/update_seclist-example.csv: ")
-    outdir = input("Enter full path to output directory created while setting up Base Network Objects: ")
+    outdir = input("Enter full path to output directory used while setting up Base Network Objects: ")
 
     os.chdir('CoreInfra/Networking/BaseNetwork')
     command = 'python update_seclist_to_tf.py --inputfile ' + inputfile + ' --outdir ' + outdir + ' --secrulesfile '+inputcsv
@@ -187,11 +240,16 @@ if('9' in userInput):
 
 if('10' in userInput):
     print("---------------------------Exporting Security Rules--------------------------")
-    inputComp = input("Enter Compartment Name of Networking Components: ")
-    outdir = input("Enter full path to output directory: ")
+    inputComp = input("Enter Compartment Name of VCN for which you want to export Security Lists: ")
+    outdir = input("Enter full path to output directory where csv will be generated: ")
+    inputConfigFile = input("Enter path to pyhton config file This is required when you are executing the code from some other workstation rather than OCS VM"
+                            " else leave it empty: ")
 
     os.chdir('CoreInfra/Networking/BaseNetwork')
-    command = 'python exportSeclistToCSV.py ' + inputComp + ' ' + outdir
+    if(inputConfigFile==''):
+        command = 'python exportSeclistToCSV.py ' + inputComp + ' ' + outdir
+    else:
+        command = 'python exportSeclistToCSV.py ' + inputComp + ' ' + outdir + ' --configFileName '+inputConfigFile
     os.system(command)
     os.chdir("../../..")
     print("--------------------------------------------------------------------------")

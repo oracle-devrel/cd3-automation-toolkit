@@ -118,6 +118,7 @@ if('.xls' in args.inputfile):
 
 else:
     print("Invalid input file format; Acceptable formats: .xls, .xlsx, .csv")
+    exit()
 
 oname.write(tempStr)
 oname.close()
