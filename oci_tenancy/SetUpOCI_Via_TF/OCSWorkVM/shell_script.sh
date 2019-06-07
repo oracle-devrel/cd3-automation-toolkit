@@ -93,32 +93,15 @@ then
 fi
 
 #Configure Panda
-if [ -e /home/opc/ftmcli.properties ]
+if [ -e /home/opc/panda.tf ]
 then
     echo "Panda Config START"
-    cd /root/ocswork/downloads
-    #wget https://objectstorage.us-ashburn-1.oraclecloud.com/p/Cj0Z_QotMh9JnGiIQGYuMDTq5h26PhrMq_Xcl0XhE94/n/intocimig/b/ctls_images/o/OCIC_OCI_Migration_List_panda_1_2_0.tar.gz
-    #wget https://objectstorage.us-ashburn-1.oraclecloud.com/p/tWsO9aLhPmJhHKZzG7SPz6ToammwV26-tsg8blOf7cw/n/intocimig/b/ctls_images/o/OCIC_OCI_Migration_List_panda_1_3_0.tar.gz -O OCIC_OCI_Migration_List_panda.tar.gz
-    wget https://objectstorage.us-ashburn-1.oraclecloud.com/p/bkknXW6XCyTG59y8aiH_9HK6PSUiHXwbzlsO3thtfu8/n/intocimig/b/ctls_images/o/OCIC_OCI_Migration_List_panda_1_4_0.tar.gz -O OCIC_OCI_Migration_List_panda.tar.gz
-
     mkdir -p /root/ocswork/ocic2oci_work
-    cp /root/ocswork/git_ocic2oci/OCS/panda_setup_files/* /root/ocswork/ocic2oci_work/
+    cp /root/ocswork/git_oci/oci_tenancy/SetUpOCI_Via_TF/OCSWorkVM/panda_setup_files/* /root/ocswork/ocic2oci_work/
     chmod +x /root/ocswork/ocic2oci_work/*.py
     chmod +x /root/ocswork/ocic2oci_work/*.sh
 
     cd /root/ocswork/ocic2oci_work/
-    unzip ftmcli-v2.4.3.zip
-    cd ftmcli-v2.4.3
-    mv ftmcli.properties ftmcli.properties_ORIG
-    mv /home/opc/ftmcli.properties .
-    mv /root/ocswork/downloads/OCIC_OCI_Migration_List_panda.tar.gz /root/ocswork/ocic2oci_work/ftmcli-v2.4.3/
-    chown root:root ftmcli.properties
-
-    cd /home/opc
-    dos2unix upload_panda_expect.sh upload_panda_expect.sh
-    chmod +x upload_panda_expect.sh
-    ./upload_panda_expect.sh
-    sleep 10s
 
     ## Copy files generated using createOCSWork
     mv /home/opc/panda.tf /root/ocswork/ocic2oci_work/
@@ -152,20 +135,11 @@ if [ -e /home/opc/default ]
 then
     echo "Koala Config START"
 
-    # Don't use 1.0
-    #wget https://objectstorage.us-ashburn-1.oraclecloud.com/p/E6ucg47gNtt4OWulJYmOHEgXzx1lthALaY6MeW3JoKA/n/intocimig/b/ocic-oci-test-migration/o/opcmigrate-1.0.0.zip
-
-    cd /root/ocswork/downloads
-    #wget https://objectstorage.us-ashburn-1.oraclecloud.com/p/q_WoaL7oyTQXuStOkNgaz4eKZjCf1tJCNMjqqUgd_64/n/intocimig/b/ocic-oci-test-migration/o/opcmigrate-1.1.0.zip -O opcmigrate.zip
-    wget https://objectstorage.us-ashburn-1.oraclecloud.com/p/YiJ9tqrZ0IBQJzCHMK6iKh5J8M7CWDhGHlkkWlalL40/n/intocimig/b/ocic-oci-test-migration/o/opcmigrate-1.2.0.zip -O opcmigrate.zip
-
-    mkdir -p /root/ocswork/opcmigrate
+    cp /root/ocswork/ocic2oci_work/opcmigrate-1.4.0.zip /root/ocswork/downloads/opcmigrate.zip
     cd /root/ocswork/downloads
     unzip opcmigrate.zip -d /root/ocswork/opcmigrate
     cd /root/ocswork/opcmigrate
 
-    #python36 -m pip install ./opcmigrate-1.1.0_dev_20190118.232119.87-py3-none-any.whl
-    #python36 -m pip install ./opcmigrate-1.1.0_20190128.221621.93-py3-none-any.whl
     python36 -m pip install ./opcmigrate-*.whl
 
     mkdir -p /root/.opc/profiles
