@@ -93,32 +93,15 @@ then
 fi
 
 #Configure Panda
-if [ -e /home/opc/ftmcli.properties ]
+if [ -e /home/opc/panda.tf ]
 then
     echo "Panda Config START"
-    cd /root/ocswork/downloads
-    #wget https://objectstorage.us-ashburn-1.oraclecloud.com/p/Cj0Z_QotMh9JnGiIQGYuMDTq5h26PhrMq_Xcl0XhE94/n/intocimig/b/ctls_images/o/OCIC_OCI_Migration_List_panda_1_2_0.tar.gz
-    #wget https://objectstorage.us-ashburn-1.oraclecloud.com/p/tWsO9aLhPmJhHKZzG7SPz6ToammwV26-tsg8blOf7cw/n/intocimig/b/ctls_images/o/OCIC_OCI_Migration_List_panda_1_3_0.tar.gz -O OCIC_OCI_Migration_List_panda.tar.gz
-    wget https://objectstorage.us-ashburn-1.oraclecloud.com/p/bkknXW6XCyTG59y8aiH_9HK6PSUiHXwbzlsO3thtfu8/n/intocimig/b/ctls_images/o/OCIC_OCI_Migration_List_panda_1_4_0.tar.gz -O OCIC_OCI_Migration_List_panda.tar.gz
-
     mkdir -p /root/ocswork/ocic2oci_work
-    cp /root/ocswork/git_ocic2oci/OCS/panda_setup_files/* /root/ocswork/ocic2oci_work/
+    cp /root/ocswork/git_oci/oci_tenancy/SetUpOCI_Via_TF/OCSWorkVM/panda_setup_files/* /root/ocswork/ocic2oci_work/
     chmod +x /root/ocswork/ocic2oci_work/*.py
     chmod +x /root/ocswork/ocic2oci_work/*.sh
 
     cd /root/ocswork/ocic2oci_work/
-    unzip ftmcli-v2.4.3.zip
-    cd ftmcli-v2.4.3
-    mv ftmcli.properties ftmcli.properties_ORIG
-    mv /home/opc/ftmcli.properties .
-    mv /root/ocswork/downloads/OCIC_OCI_Migration_List_panda.tar.gz /root/ocswork/ocic2oci_work/ftmcli-v2.4.3/
-    chown root:root ftmcli.properties
-
-    cd /home/opc
-    dos2unix upload_panda_expect.sh upload_panda_expect.sh
-    chmod +x upload_panda_expect.sh
-    ./upload_panda_expect.sh
-    sleep 10s
 
     ## Copy files generated using createOCSWork
     mv /home/opc/panda.tf /root/ocswork/ocic2oci_work/

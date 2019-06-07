@@ -327,21 +327,6 @@ if (input_configure_git_ocictooci == "1"):
 
 #write Panda specific files
 if (input_configure_panda=="1"):
-    # write FTM properties file for Panda upload
-    ftm_data = """user=""" + input_ocic_username + """
-    rest-endpoint=""" + input_ocic_rest_endpoint + """
-    """
-    write_file("tmp\\ftmcli.properties", ftm_data)
-    #expect script to run ftm to uplaod panda
-    script_data="""#!/usr/bin/expect
-    set password """+input_ocic_password+"""
-    cd /root/ocswork/ocic2oci_work/ftmcli-v2.4.3
-    spawn java -jar ftmcli.jar upload compute_images OCIC_OCI_Migration_List_panda.tar.gz
-    expect "Enter your password: " {send "$password\\r"}
-    sleep 50
-    expect eof
-    """
-    write_file("tmp\\upload_panda_expect.sh",script_data)
 
     #write TF file for OCIC TF Provider
     provider_panda_data = """provider "opc" {
@@ -374,24 +359,7 @@ variable "domain" {
     write_file("tmp\\ocic-variables.tf",variables_panda_data)
 
     # write TF file for Panda instance creation in OCIC
-    tf_data = """ resource "opc_compute_machine_image" "panda_new" {
- account     = "/Compute-${var.domain}/cloud_storage"
- name        = \"""" + input_ocic_tf_prefix_for_panda + """_OCIC_OCI_Migration_List_panda-TF"
- file        = "OCIC_OCI_Migration_List_panda.tar.gz"
- description = "Panda_From_Tf"
-}
-
-resource "opc_compute_image_list" "panda_new" {
- name        = "${opc_compute_machine_image.panda_new.name}"
- description = "OCIC2OCI_Panda-1_3_0"
- default     = 1
-}
-resource "opc_compute_image_list_entry" "panda_image_list_entry_new" {
- name           = "${opc_compute_image_list.panda_new.name}"
- machine_images =  ["/Compute-${var.domain}/${var.user}/${opc_compute_machine_image.panda_new.id}"]
- version        = 1
-}
-
+    tf_data = """ 
 resource "opc_compute_storage_volume" "panda_boot_vol" {
   name = \"""" + input_ocic_tf_prefix_for_panda + """_Panda-Boot_Vol"
   size = 12
@@ -401,7 +369,7 @@ resource "opc_compute_instance" "panda_new" {
  name       = \"""" + input_ocic_tf_prefix_for_panda + """_Panda-OCIC2OCI"
  label      = "Terraform Provisioned Panda-WithAPI"
  shape      = "oc7"
- image_list = "/Compute-${var.domain}/${var.user}/${opc_compute_image_list.panda_new.id}"
+ image_list = "/oracle/public/OL_7.5_UEKR4_x86_64_MIGRATION"
 
   storage {
     volume = "${opc_compute_storage_volume.panda_boot_vol.name}"
@@ -777,11 +745,8 @@ if(input_create_vm=="1"):
 
     provider='tmp\\provider.tf'
     variables='tmp\\variables.tf'
-    ftm='tmp\\ftmcli.properties'
-    panda_tf='tmp\\panda.tf'
     koala='tmp\\default'
     script_file=input_shell_script
-    upload_panda_script='tmp\\upload_panda_expect.sh'
     upload_git_script1='tmp\\download_git_expect1.sh'
     upload_git_script2='tmp\\download_git_expect2.sh'
     discover_koala_script='tmp\\discover_koala_expect.sh'
@@ -801,13 +766,10 @@ if(input_create_vm=="1"):
     sftp.put(provider, '/home/opc/provider.tf')
     sftp.put(variables, '/home/opc/variables.tf')
     if(input_configure_panda=="1"):
-        print('Copying ftmcli.properties File..')
-        sftp.put(ftm, '/home/opc/ftmcli.properties')
         print('Copying generated files for Panda Server Creation..')
-        sftp.put(panda_tf,'/home/opc/panda.tf')
+        sftp.put('tmp\\panda.tf','/home/opc/panda.tf')
         sftp.put('tmp\\ocic-provider.tf','/home/opc/ocic-provider.tf')
         sftp.put('tmp\\ocic-variables.tf','/home/opc/ocic-variables.tf')
-        sftp.put(upload_panda_script, '/home/opc/upload_panda_expect.sh')
         sftp.put('tmp\\variables.yml','/home/opc/variables.yml')
     if(input_configure_koala=="1"):
         print('Copying Koala files..')
