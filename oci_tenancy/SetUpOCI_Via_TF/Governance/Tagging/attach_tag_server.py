@@ -42,7 +42,6 @@ if('.csv' in filename):
         reader = csv.DictReader(skipCommentedLine(csvfile))
         columns = reader.fieldnames
         for row in reader:
-            print(row)
 
             hostname = row['Hostname']
             string = ""

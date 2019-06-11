@@ -94,7 +94,7 @@ if('3' in userInput):
 
 if('4' in userInput):
     print("---------------------Creating Base Network----------------------------------")
-    inputfile = input("Enter full path to properties file eg example\vcn-info.properties: ")
+    inputfile = input("Enter full path to properties file eg example vcn-info.properties: ")
     if (outdir == ''):
         outdir = input("Enter full path to output directory where you want to create terraform files: ")
     else:
