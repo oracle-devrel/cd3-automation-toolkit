@@ -103,13 +103,13 @@ if dont_ssh == 1:
     destroy_file = del_file_path + "\\tf_destroy.sh"
     sftp = ssh.open_sftp()
     sftp.put(destroy_file,"/home/opc/tf_destroy.sh")
-    print "Pushed tf_destroy.sh"
+    print ("Pushed tf_destroy.sh")
     ## dos2unix
     cmd_to_execute = "dos2unix /home/opc/tf_destroy.sh /home/opc_tf_destroy.sh"
 
     ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command(cmd_to_execute)
     ## destroy tf
-    print "Running tf_destroy.sh"
+    print( "Running tf_destroy.sh")
     cmd_to_execute = "chmod +x /home/opc/tf_destroy.sh; sudo -S /home/opc/tf_destroy.sh"
     ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command(cmd_to_execute)
 
@@ -124,7 +124,7 @@ compute_client = oci.core.ComputeClient(python_config)
 
 ## Delete VM
 compute_client.terminate_instance(input_instance_ocid)
-print "Deleting Instance"
+print ("Deleting Instance")
 get_instance_response=oci.wait_until(compute_client,compute_client.get_instance(input_instance_ocid),'lifecycle_state', 'TERMINATED')
 print (get_instance_response.data)
 
@@ -135,19 +135,19 @@ update_route_details=oci.core.models.UpdateRouteTableDetails(route_rules=route_r
 network_client.update_route_table(rt_id=input_route_table_id,update_route_table_details=update_route_details)
 
 
-print "Deleting IGW of VCN"
+print ("Deleting IGW of VCN")
 try :
     network_client.delete_internet_gateway(input_igw_ocid)
 except Exception as e:
-    print e
-print "Deleting NGW of VCN"
+    print (e)
+print ("Deleting NGW of VCN")
 try :
     network_client.delete_nat_gateway(input_ngw_ocid)
 except Exception as e:
-    print e
+    print (e)
 
 #get_ntk_response = oci.wait_until(network_client,network_client.get_internet_gateway(input_igw_ocid),'lifecycle_state', 'TERMINATED')
-print "Deleting LPGs"
+print ("Deleting LPGs")
 
 lpg_list= network_client.list_local_peering_gateways(compartment_id=ocs_compartment_ocid, vcn_id=input_vcn_ocid)
 for lpg in lpg_list.data:
@@ -156,10 +156,10 @@ for lpg in lpg_list.data:
     time.sleep(5)
 
 
-print "Deleting Subnet"
+print ("Deleting Subnet")
 response = network_client.delete_subnet(input_subnet_ocid)
 
-print "Deleting VCN"
+print ("Deleting VCN")
 response = network_client.delete_vcn(input_vcn_ocid)
 
 #empty the file

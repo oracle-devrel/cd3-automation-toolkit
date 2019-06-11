@@ -30,5 +30,5 @@ par_list_response = object_stg_client.list_preauthenticated_requests(namespace, 
 for par in par_list_response.data:
     name = par.name
     if name == "OCIC2OIC":
-        print "Deleting Par with Par ID: " + par.id
+        print ("Deleting Par with Par ID: " + par.id)
         object_stg_client.delete_preauthenticated_request(namespace,stg_object_store_bucket,par.id)
