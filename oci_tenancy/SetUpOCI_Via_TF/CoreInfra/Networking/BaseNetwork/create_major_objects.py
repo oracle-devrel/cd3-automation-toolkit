@@ -64,6 +64,7 @@ hub_vcn_name=''
 
 # If CD3 exceel file is given as input
 if(excel!=''):
+        NaNstr = 'NaN'
         df = pd.read_excel(excel, sheet_name='VCNs')
 
         # Get VCN names from vcn_name column in VCNs sheet of CD3 excel
@@ -71,6 +72,13 @@ if(excel!=''):
 
         for i in df.index:
                 vcn_name=df['vcn_name'][i]
+
+                # Cheeck to see if vcn_name is empty in Subnets Sheet
+                if (str(vcn_name).lower() == NaNstr.lower()):
+                        print("vcn_name cannot be left empty in VCNs sheet in CD3..exiting...")
+                        exit()
+
+
                 hub_spoke_none=df['hub_spoke_none'][i]
                 if (hub_spoke_none == 'hub'):
                         vcn_transit_route_mapping.setdefault(vcn_name, [])
@@ -106,6 +114,7 @@ hub_count=0
 
 # If CD3 excel file is given as input
 if(excel!=''):
+        NaNstr = 'NaN'
         for i in df.index:
                 vcn_name = df['vcn_name'][i]
                 regex = re.compile('[^a-zA-Z0-9]')
@@ -121,6 +130,16 @@ if(excel!=''):
                 add_default_seclist = df['add_default_seclist'][i]
                 compartment_var_name = df['compartment_name'][i]
                 vcn_compartment[vcn_name]=compartment_var_name
+
+                # Check to see if any column is empty in Subnets Sheet
+                if (str(vcn_name).lower() == NaNstr.lower() or str(vcn_cidr).lower() == NaNstr.lower() or
+                        str(vcn_drg).lower() == NaNstr.lower() or str(vcn_igw).lower() == NaNstr.lower()
+                        or str(vcn_ngw).lower() == NaNstr.lower() or str(vcn_sgw).lower() == NaNstr.lower()
+                        or str(hub_spoke_none).lower() == NaNstr.lower() or str(sec_list_per_subnet).lower() == NaNstr.lower()
+                        or str(sec_rule_per_seclist).lower() == NaNstr.lower() or str(add_default_seclist).lower() == NaNstr.lower()
+                        or str(compartment_var_name).lower() == NaNstr.lower()):
+                        print("Column Values or Rows cannot be left empty in VCNs sheet in CD3..exiting...")
+                        exit()
 
                 if (hub_spoke_none == 'hub' and vcn_drg != 'y'):
                         print("VCN marked as Hub should have DRG configured..Modify the input file and try again")

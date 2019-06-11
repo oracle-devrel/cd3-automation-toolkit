@@ -11,6 +11,8 @@ print("7.  Tagging Resources")
 print("8.  Add Route Rules to existing Route Table")
 print("9.  Add Security Rules to existing Security List")
 print("10. Export Security List to CSV")
+print("11. Attach Back up policy to Boot Volumes")
+print("12. Attach Back up policy to Block Volumes")
 
 print("\nSee example folder for sample input files\n")
 userInput = input('Enter your choice; multiple choices allowed as comma separated'
@@ -252,4 +254,44 @@ if('10' in userInput):
         command = 'python exportSeclistToCSV.py ' + inputComp + ' ' + outdir + ' --configFileName '+inputConfigFile
     os.system(command)
     os.chdir("../../..")
+    print("--------------------------------------------------------------------------")
+
+if('11' in userInput):
+    print("------------------------Attaching Backup Policy to Boot Volumes---------------------------")
+    if (inputfile == ''  or '.xls' not in inputfile):
+        inputfile = input("Enter full path to input CD3 excel file: ")
+    else:
+        print("using already provided CD3 file: " + inputfile)
+    if (outdir == ''):
+        outdir = input("Enter full path to output directory where you want to create terraform files: ")
+    else:
+        print("using already provided outdir: " + outdir)
+
+    if not os.path.exists(outdir):
+        os.makedirs(outdir)
+
+    os.chdir('CoreInfra/Compute')
+    command = 'python boot_backups_policy.py '+inputfile + ' ' + outdir
+    os.system(command)
+    os.chdir("../..")
+    print("--------------------------------------------------------------------------")
+
+if('12' in userInput):
+    print("------------------------Attaching Backup Policy to Block Volumes---------------------------")
+    if (inputfile == ''  or '.xls' not in inputfile):
+        inputfile = input("Enter full path to input CD3 excel file: ")
+    else:
+        print("using already provided CD3 file: " + inputfile)
+    if (outdir == ''):
+        outdir = input("Enter full path to output directory where you want to create terraform files: ")
+    else:
+        print("using already provided outdir: " + outdir)
+
+    if not os.path.exists(outdir):
+        os.makedirs(outdir)
+
+    os.chdir('CoreInfra/BlockVolume')
+    command = 'python block_backups_policy.py '+inputfile + ' ' + outdir
+    os.system(command)
+    os.chdir("../..")
     print("--------------------------------------------------------------------------")

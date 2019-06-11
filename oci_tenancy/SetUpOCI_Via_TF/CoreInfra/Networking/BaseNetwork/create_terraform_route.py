@@ -252,12 +252,35 @@ resource "oci_core_route_table" \"""" + rt_var + """"{
 
 # If CD3 excel file is given as input
 if(excel!=''):
+    NaNstr = 'NaN'
     df_vcn.set_index("vcn_name", inplace=True)
     df_vcn.head()
     df = pd.read_excel(excel, sheet_name='Subnets')
     for i in df.index:
             #Get VCN data
             vcn_name=df['vcn_name'][i]
+
+            # Get subnet data
+            compartment_var_name = df.iat[i, 0]
+            name = df.iat[i, 2]
+            subnet = df.iat[i, 3]
+            AD = df.iat[i, 4]
+            pubpvt = df.iat[i, 5]
+            dhcp = df.iat[i, 6]
+            configure_sgw = df.iat[i, 7]
+            configure_ngw = df.iat[i, 8]
+            configure_igw = df.iat[i, 9]
+
+            #Cheeck to see if any column is empty in Subnets Sheet
+            if(str(compartment_var_name).lower()== NaNstr.lower() or str(vcn_name).lower()== NaNstr.lower() or
+                    str(name).lower()== NaNstr.lower()  or str(subnet).lower()== NaNstr.lower()
+                    or str(AD).lower()== NaNstr.lower() or str(pubpvt).lower()== NaNstr.lower()
+                    or str(configure_sgw).lower()== NaNstr.lower() or str(configure_ngw).lower()== NaNstr.lower()
+                    or str(configure_igw).lower() == NaNstr.lower()):
+                print("Column Values or Rows cannot be left empty in Subnets sheet in CD3..exiting...")
+                exit()
+
+
             vcn_data = df_vcn.loc[vcn_name]
             vcn_drg = vcn_data['drg_required(y|n)']
             drg_name = vcn_name + "_drg"
@@ -268,17 +291,10 @@ if(excel!=''):
             vcn_sgw = vcn_data['sgw_required(y|n)']
             sgw_name = vcn_name + "_sgw"
             hub_spoke_none=vcn_data['hub_spoke_none']
-            #Get subnet data
-            compartment_var_name = df.iat[i, 0]
-            name=df.iat[i,2]
-            subnet=df.iat[i,3]
-            AD=df.iat[i,4]
-            pubpvt=df.iat[i,5]
-            dhcp=df.iat[i,6]
-            configure_sgw = df.iat[i,7]
-            configure_ngw = df.iat[i, 8]
-            configure_igw = df.iat[i, 9]
+
             # Add Rules for each spoke VCN to Route Table associated with DRG of Hub VCN
+
+
             if (hub_spoke_none == 'spoke'):
                 lpg_name = hub_vcn_name + "_" + vcn_name + "_lpg"
                 drgStr = drgStr + """

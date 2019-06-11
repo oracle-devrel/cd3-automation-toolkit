@@ -64,8 +64,8 @@ def create_ingress_rule_string(row):
 
         #if not is_empty(row['Destination']):
         dest_range = """
-            "max" = """ + str(row['DPortMax']) + """
-            "min" =  """ + str(row['DPortMin']) + """
+            max = """ + str(row['DPortMax']) + """
+            min =  """ + str(row['DPortMin']) + """
           """
         #if not is_empty(row['Source']):
         if str(row['SPortMax']) or str(row['SPortMin']):
@@ -73,10 +73,10 @@ def create_ingress_rule_string(row):
                 source_port_range {"""
             if str(row['SPortMax']):
                 source_range = source_range + """
-                \t\t"max" = """ + str(row['SPortMax']) + ""
+                \t\tmax = """ + str(row['SPortMax']) + ""
             if str(row['SPortMin']):
                 source_range = source_range + """
-                \t\t"min" =  """ + str(row['SPortMin']) + ""
+                \t\tmin =  """ + str(row['SPortMin']) + ""
             source_range = source_range + " \n\t\t\t\t}  """
 
         options = tcp_option + dest_range + source_range + "\n\t\t   }"
@@ -87,18 +87,18 @@ def create_ingress_rule_string(row):
         udp_option = " \t\tudp_options {"
 
         dest_range = """
-                    "max" = """ + str(row['DPortMax']) + """
-                    "min" =  """ + str(row['DPortMin']) + """
+                    max = """ + str(row['DPortMax']) + """
+                    min =  """ + str(row['DPortMin']) + """
                  """
         if str(row['SPortMax']) or str(row['SPortMin']):
             source_range = """
                           source_port_range {"""
             if str(row['SPortMax']):
                 source_range = source_range + """
-                        "max" = """ + str(row['SPortMax']) + ""
+                        max = """ + str(row['SPortMax']) + ""
             if str(row['SPortMin']):
                 source_range = source_range + """
-                        "min" =  """ + str(row['SPortMin']) + ""
+                        min =  """ + str(row['SPortMin']) + ""
             source_range = source_range + " \n\t\t\t }  """
 
         options = udp_option + dest_range + source_range + "\n\t\t   }"
@@ -129,18 +129,18 @@ def create_egress_rule_string(row):
 
         # tcp_option = tcp_option
         dest_range = """
-                    "max" = """ + str(row['DPortMax']) + """
-                    "min" =  """ + str(row['DPortMin']) + """
+                    max = """ + str(row['DPortMax']) + """
+                    min =  """ + str(row['DPortMin']) + """
                  """
         if str(row['SPortMax']) or str(row['SPortMin']):
             source_range = """
                         source_port_range {"""
             if str(row['SPortMax']):
                 source_range = source_range + """
-                        "max" = """ + str(row['SPortMax']) + ""
+                        max = """ + str(row['SPortMax']) + ""
             if str(row['SPortMin']):
                 source_range = source_range + """
-                        "min" =  """ + str(row['SPortMin']) + ""
+                        min =  """ + str(row['SPortMin']) + ""
             source_range = source_range + " \n\t\t\t }  """
         options = tcp_option + dest_range + source_range + "\n  }"
 
@@ -148,18 +148,18 @@ def create_egress_rule_string(row):
         udp_option = " udp_options {"
 
         dest_range = """
-                            "max" = """ + str(row['DPortMax']) + """
-                            "min" =  """ + str(row['DPortMin']) + """
+                            max = """ + str(row['DPortMax']) + """
+                            min =  """ + str(row['DPortMin']) + """
                          """
         if str(row['SPortMax']) or str(row['SPortMin']):
             source_range = """
                                   source_port_range {"""
             if str(row['SPortMax']):
                 source_range = source_range + """
-                                "max" = """ + str(row['SPortMax']) + ""
+                                max = """ + str(row['SPortMax']) + ""
             if str(row['SPortMin']):
                 source_range = source_range + """
-                                "min" =  """ + str(row['SPortMin']) + ""
+                                min =  """ + str(row['SPortMin']) + ""
             source_range = source_range + " \n\t\t\t }  """
 
         options = udp_option + dest_range + source_range + "\n\t\t\t   }"

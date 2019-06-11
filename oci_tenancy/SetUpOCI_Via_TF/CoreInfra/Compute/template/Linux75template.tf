@@ -6,7 +6,7 @@ resource "oci_core_instance" "##Hostname##" {
         fault_domain = "##Fault Domain##"
         ### windows image id - oci image ###
         source_details {
-		        source_id  = "${var.linux75_gen1_ocid}"
+		        source_id  = "${var.linux_ocid}"
                 source_type = "image"
         }
         shape = "##Shape##"
@@ -26,7 +26,7 @@ resource "oci_core_instance" "##Hostname##" {
         }
         display_name = "##Hostname##"
         hostname_label = "##Hostname##"
-        metadata {
+        metadata = {
 
 				ssh_authorized_keys = "${var.##SSH-key-var-name##}"
         }
