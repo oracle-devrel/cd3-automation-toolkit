@@ -303,7 +303,8 @@ variable "private_key_path" {
 variable "region" {
         type = "string"
         default = \"""" + python_config['region'] + """"
-}"""
+}
+"""
 if(windows_image_id!=''):
     variables_data=variables_data + """
 variable "windows_latest_ocid" {
@@ -315,7 +316,6 @@ if(linux_image_id!=''):
 variable "linux_latest_ocid"{
         type = "string"
         default = \"""" + linux_image_id + """"
-}
 }"""
 write_file("tmp\\variables.tf",variables_data)
 
