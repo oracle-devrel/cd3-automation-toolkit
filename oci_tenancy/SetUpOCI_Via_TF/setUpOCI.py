@@ -218,7 +218,7 @@ if('7' in userInput):
 
 if('8' in userInput):
     print("------------------------Adding Route Rules--------------------------------")
-    inputfile = input("Enter full path to input csv file containing route rules info eg example/BaseNetwork/add_routes-example.csv: ")
+    inputfile = input("Enter full path to input file containing route rules to be added eg example/BaseNetwork/add_routes-example.csv or CD3 excel file: ")
     outfile = input("Enter full path to routes terraform file created earlier while setting up Base Network Objects: ")
 
     os.chdir('CoreInfra/Networking/BaseNetwork')
@@ -230,12 +230,12 @@ if('8' in userInput):
 
 if('9' in userInput):
     print("------------------------Adding Security Rules--------------------------------")
-    inputfile = input("Enter full path to either properties file eg example/vcn-info.properties or CD3 excel file: ")
-    inputcsv = input("Enter full path to input csv file containing security rules info eg example/BaseNetwork/update_seclist-example.csv: ")
+    inputfile = input("Enter full path to input file having VCN info either properties file eg example/vcn-info.properties or CD3 excel file whcih was used to create Base Network: ")
+    inputcsv = input("Enter full path to input file containing security rules info eg example/BaseNetwork/update_seclist-example.csv or CD3 excel file: ")
     outdir = input("Enter full path to output directory used while setting up Base Network Objects: ")
 
     os.chdir('CoreInfra/Networking/BaseNetwork')
-    command = 'python update_seclist_to_tf.py --inputfile ' + inputfile + ' --outdir ' + outdir + ' --secrulesfile '+inputcsv
+    command = 'python add_secrules_to_tf.py --inputfile ' + inputfile + ' --outdir ' + outdir + ' --secrulesfile '+inputcsv
     os.system(command)
     os.chdir("../../..")
     print("--------------------------------------------------------------------------")
