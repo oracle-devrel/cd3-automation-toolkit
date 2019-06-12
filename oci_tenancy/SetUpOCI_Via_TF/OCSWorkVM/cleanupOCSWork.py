@@ -183,7 +183,7 @@ config2.remove_option("DEFAULT",'ad_2')
 config2.remove_option("DEFAULT",'ad_3')
 
 
-with open(config_file, 'wb') as file:
+with open(config_file, 'w') as file:
     config2.write(file)
 
 print("Done")

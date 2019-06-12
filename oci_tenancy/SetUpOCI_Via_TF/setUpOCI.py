@@ -169,7 +169,11 @@ if('7' in userInput):
     tag_choice = input("Enter your choice; multiple choices allowed as comma separated ")
     tag_choice=tag_choice.split(",")
     if('1' in tag_choice):
-        inputfile = input("Enter full path to input CD3 excel file: ")
+        if (inputfile == '' or '.xls' not in inputfile):
+            inputfile = input("Enter full path to input CD3 excel file: ")
+        else:
+            print("using already provided CD3 file: " + inputfile)
+
         if (outdir == ''):
             outdir = input("Enter full path to output directory where you want to create terraform files: ")
         else:
@@ -184,7 +188,11 @@ if('7' in userInput):
         os.chdir("../..")
 
     if ('2' in tag_choice):
-        inputfile = input("Enter full path to input csv file containing tag information eg example\Tagging\tag_server-csv-example.csv: ")
+        if (inputfile == '' or '.xls' not in inputfile):
+            inputfile = input("Enter full path to input csv file containing tag information eg example\Tagging\\tag_server-csv-example.csv or CD3 excel: ")
+        else:
+            print("using already provided CD3 file: " + inputfile)
+
         if (outdir == ''):
             outdir = input("Enter full path to output directory where you want to create terraform files: ")
         else:
@@ -200,7 +208,11 @@ if('7' in userInput):
 
 
     if ('3' in tag_choice):
-        inputfile = input("Enter full path to input csv file containing tag information eg example\Tagging\tag_volume-csv-example.csv: ")
+        if (inputfile == '' or '.xls' not in inputfile):
+            inputfile = input("Enter full path to input csv file containing tag information eg example\Tagging\\tag_volume-csv-example.csv or CD3 excel: ")
+        else:
+            print("using already provided CD3 file: " + inputfile)
+
         if (outdir == ''):
             outdir = input("Enter full path to output directory where you want to create terraform files: ")
         else:
