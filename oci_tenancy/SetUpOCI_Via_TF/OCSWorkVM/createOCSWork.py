@@ -244,7 +244,7 @@ for image in paginate(compute_client.list_images,compartment_id=tenancy_id,opera
         windows_image_id=image.id
         break
 
-exit()
+
 
 #Writing public keys to a file
 public_key_data=input_ssh_key1
