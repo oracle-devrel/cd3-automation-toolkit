@@ -1,10 +1,11 @@
 #!/bin/bash
-#!/bin/bash
-# Create Tag Namespace from CD3 file
+# Author: Shruthi Subramanian
+# Attach tags and key value to the servers
 import sys
 import argparse
 import csv
 import re
+import pandas as pd
 
 def skipCommentedLine(lines):
     for line in lines:
@@ -13,8 +14,8 @@ def skipCommentedLine(lines):
         if line:
             yield line
 
-parser = argparse.ArgumentParser(description="Create vars files for the each row in csv file.")
-parser.add_argument("file", help="Full Path of CSV file.Ex:tag_server.csv in example folder")
+parser = argparse.ArgumentParser(description="Updates tf file for instances to attach tag info")
+parser.add_argument("file", help="Full Path of CSV file.Ex:tag_server-csv-example.csv.csv or CD3 excel file in example folder")
 parser.add_argument("outdir", help="directory path for output tf files ")
 
 if len(sys.argv) == 1:
@@ -35,9 +36,58 @@ args = parser.parse_args()
 string = ""
 new_string = ""
 
+# If the input is CD3
+if ('.xlsx' in filename):
+    df = pd.read_excel(filename, sheet_name='TagServer')
+
+    for i in df.index:
+        string = ""
+        new_string = ""
+        for j in df.keys():
+            if (str(df[j][i]) == 'nan'):
+                continue
+            elif (j == 'Hostname'):
+                Host_name = df['Hostname'][i]
+
+            else:
+                namespace = j
+                key_value = df[j][i]
+                if key_value == "":
+                    key = ""
+                    value = ""
+                    dt = """ """
+                else:
+                    key_value_tmp = key_value.split("=")
+                    key = key_value_tmp[0].strip()
+                    value = key_value_tmp[1].strip()
+                    dt = """\"""" + namespace + """.""" + key + """\"=\"""" + value + """\",\n
+                                        """
+                    string += dt
+                    k = string.rfind(",")
+                    new_string = string[:k] + " " + string[k + 1:]
+
+        tmpstr = """
+        defined_tags = {
+        """+new_string+"""
+        }
+        ## Defined Tag Info ##
+        """
+
+        testToSearch = "## Defined Tag Info ##"
+        terrafile = outdir + "/" + Host_name + ".tf"
+
+        with open(terrafile, 'r+') as file:
+            filedata = file.read()
+
+        # Replace the target string
+        filedata = filedata.replace(testToSearch, tmpstr)
+
+        # Write the file out again
+        with open(terrafile, 'w+') as file:
+            file.write(filedata)
 
 #If input is a csv file
-if('.csv' in filename):
+elif('.csv' in filename):
     with open(filename) as csvfile:
         reader = csv.DictReader(skipCommentedLine(csvfile))
         columns = reader.fieldnames
@@ -87,5 +137,5 @@ if('.csv' in filename):
                 file.write(filedata)
 
 else:
-    print("Invalid input file format; Acceptable formats: .csv")
+    print("Invalid input file format; Acceptable formats: .csv, CD3")
     exit()
