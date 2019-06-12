@@ -231,6 +231,21 @@ if(input_image_id==''):
             input_image_id=image.id
             break
 
+#Get latest imaged ocids for the region to put in variables.tf
+linux_image_id=''
+windows_image_id=''
+
+for image in paginate(compute_client.list_images,compartment_id=tenancy_id,operating_system ='Oracle Linux',sort_by='TIMECREATED'):
+    if ("Gen2-GPU" not in image.display_name):
+        linux_image_id=image.id
+        break
+for image in paginate(compute_client.list_images,compartment_id=tenancy_id,operating_system ='Windows',sort_by='TIMECREATED'):
+    if ("Gen2-GPU" not in image.display_name):
+        windows_image_id=image.id
+        break
+
+exit()
+
 #Writing public keys to a file
 public_key_data=input_ssh_key1
 if(input_ssh_key2!=''):
@@ -288,18 +303,19 @@ variable "private_key_path" {
 variable "region" {
         type = "string"
         default = \"""" + python_config['region'] + """"
-}
-variable "linux75_gen1_ocid" {
+}"""
+if(windows_image_id!=''):
+    variables_data=variables_data + """
+variable "windows_latest_ocid" {
         type = "string"
-        default = "ocid1.image.oc1.iad.aaaaaaaaiu73xa6afjzskjwvt3j5shpmboxtlo7yw4xpeqpdz5czpde7px2a"
-}
-variable "windows2012_image_ocid"{
+        default = \"""" + windows_image_id + """"
+}"""
+if(linux_image_id!=''):
+    variables_data=variables_data + """
+variable "linux_latest_ocid"{
         type = "string"
-        default = "ocid1.image.oc1.iad.aaaaaaaanhy6ll23jvme3mnzijksog5ilng3gzurwhhlkzflvqzwwg7swyua"
+        default = \"""" + linux_image_id + """"
 }
-variable "custom_image_ocid"{
-        type = "string"
-        default = "ocid1.image.oc1.iad.aaaaaaaa6szii67ljvzurretoy3mhw7t4r4a2fqpmkv55jpenk64f3nv2gkq"
 }"""
 write_file("tmp\\variables.tf",variables_data)
 
