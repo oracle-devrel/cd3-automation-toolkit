@@ -65,6 +65,7 @@ if(excel!=''):
 	df_vcn.set_index("vcn_name", inplace=True)
 	df_vcn.head()
 	df = pd.read_excel(excel, sheet_name='Subnets')
+	NaNstr = 'NaN'
 	for i in df.index:
 		#Get VCN data
 		vcn_name=df['vcn_name'][i]
@@ -82,7 +83,6 @@ if(excel!=''):
 			dhcp = vcn_name + "_" + dhcp
 		compartment_var_name = df.iat[i,0]
 
-
 		if (AD.strip() != 'Regional'):
 			ad = ADS.index(AD)
 			ad_name_int = ad + 1
@@ -99,7 +99,16 @@ if(excel!=''):
 			display_name = name
 
 		name = name1
-		dnslabel = re.sub('-', '', name)
+		#dnslabel = re.sub('-', '', name)
+
+		dnslabel = df.iat[i, 10]
+		# check if subnet_dns_label is not given by user in input use subnet name
+		if (str(dnslabel).lower() == NaNstr.lower()):
+			regex = re.compile('[^a-zA-Z0-9]')
+			subnet_dns = regex.sub('', name)
+			dnslabel = (subnet_dns[:15]) if len(subnet_dns) > 15 else subnet_dns
+
+
 		tempStr = tempStr + """
 resource "oci_core_subnet" \"""" + subnet_res_name + """" {
 	compartment_id = "${var.""" + compartment_var_name + """}" 
@@ -164,11 +173,12 @@ else:
 					name = name_sub.rsplit("-", 1)[0].strip()
 
 				else:
-					[compartment_var_name,name, sub, AD, pubpvt, dhcp, SGW, NGW, IGW] = line.split(',')
+					[compartment_var_name,name, sub, AD, pubpvt, dhcp, SGW, NGW, IGW,dnslabel] = line.split(',')
 					linearr = line.split(",")
 					compartment_var_name = linearr[0].strip()
 					name = linearr[1].strip()
 					subnet = linearr[2].strip()
+					dnslabel = linearr[9].strip()
 
 				if(dhcp!=''):
 					dhcp=vcn_name+"_"+dhcp
@@ -189,7 +199,14 @@ else:
 				else:
 					display_name = name
 
-				dnslabel = re.sub('-','',name)
+				#dnslabel = re.sub('-','',name)
+
+				# check if vcn_dns_label is not given by user in input use vcn name
+				if (dnslabel == ''):
+					regex = re.compile('[^a-zA-Z0-9]')
+					subnet_dns = regex.sub('', name)
+					dnslabel = (subnet_dns[:15]) if len(subnet_dns) > 15 else subnet_dns
+
 
 				name=name1
 				tempStr = tempStr+"""

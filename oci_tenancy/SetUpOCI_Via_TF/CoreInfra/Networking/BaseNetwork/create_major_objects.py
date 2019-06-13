@@ -73,7 +73,7 @@ if(excel!=''):
         for i in df.index:
                 vcn_name=df['vcn_name'][i]
 
-                # Cheeck to see if vcn_name is empty in Subnets Sheet
+                # Check to see if vcn_name is empty in Subnets Sheet
                 if (str(vcn_name).lower() == NaNstr.lower()):
                         print("vcn_name cannot be left empty in VCNs sheet in CD3..exiting...")
                         exit()
@@ -117,8 +117,7 @@ if(excel!=''):
         NaNstr = 'NaN'
         for i in df.index:
                 vcn_name = df['vcn_name'][i]
-                regex = re.compile('[^a-zA-Z0-9]')
-                vcn_dns_label = regex.sub('', vcn_name)
+
                 vcn_cidr = df['vcn_cidr'][i]
                 vcn_drg = df['drg_required(y|n)'][i]
                 vcn_igw = df['igw_required(y|n)'][i]
@@ -130,7 +129,12 @@ if(excel!=''):
                 add_default_seclist = df['add_default_seclist'][i]
                 compartment_var_name = df['compartment_name'][i]
                 vcn_compartment[vcn_name]=compartment_var_name
-
+                vcn_dns_label = df['dns_label'][i]
+                #check if vcn_dns_label is not given by user in input use vcn name
+                if (str(vcn_dns_label).lower() == NaNstr.lower()):
+                        regex = re.compile('[^a-zA-Z0-9]')
+                        vcn_dns = regex.sub('', vcn_name)
+                        vcn_dns_label = (vcn_dns[:15]) if len(vcn_dns) > 15 else vcn_dns
                 # Check to see if any column is empty in Subnets Sheet
                 if (str(vcn_name).lower() == NaNstr.lower() or str(vcn_cidr).lower() == NaNstr.lower() or
                         str(vcn_drg).lower() == NaNstr.lower() or str(vcn_igw).lower() == NaNstr.lower()
@@ -238,6 +242,12 @@ else:
                 compartment_var_name = vcn_data[11].strip()
                 vcn_compartment[vcn_name]=compartment_var_name
 
+                vcn_dns_label = vcn_data[12].strip()
+                # check if vcn_dns_label is not given by user in input use vcn name
+                if (vcn_dns_label==''):
+                        regex = re.compile('[^a-zA-Z0-9]')
+                        vcn_dns = regex.sub('', vcn_name)
+                        vcn_dns_label = (vcn_dns[:15]) if len(vcn_dns) > 15 else vcn_dns
 
                 if(hub_spoke_none=='hub' and vcn_drg!='y'):
                         print("VCN marked as Hub should have DRG configured..Modify the input file and try again")

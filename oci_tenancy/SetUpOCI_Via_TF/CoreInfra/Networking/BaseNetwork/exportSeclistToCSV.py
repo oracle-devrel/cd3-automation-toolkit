@@ -40,7 +40,7 @@ def get_vcns(config,compartment_id):
 
 def print_secrules(seclists):
     print ("SubnetName, RuleType, Protocol, isStateless, Source, SPortMin, SPortMax, Destination, DPortMin, DPortMax, ICMPType, ICMPCode")
-    oname.write("SubnetName, RuleType, Protocol, isStateless, Source, SourcePortRange, DPortMin, DPortMax, ICMPType, ICMPCode\n")
+    oname.write("SubnetName, RuleType, Protocol, isStateless, Source, SPortMin, SPortMax, Destination, DPortMin, DPortMax, ICMPType, ICMPCode\n")
     for seclist in seclists.data:
         isec_rules = seclist.ingress_security_rules
         esec_rules = seclist.egress_security_rules
