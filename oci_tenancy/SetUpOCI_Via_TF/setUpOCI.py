@@ -10,10 +10,10 @@ print("6.  Create and Attach Block Volumes")
 print("7.  Tagging Resources")
 print("8.  Add Route Rules to existing Route Table")
 print("9.  Add Security Rules to existing Security List")
-print("10. Export Security List to CSV")
-print("11. Attach Back up policy to Boot Volumes")
-print("12. Attach Back up policy to Block Volumes")
-
+print("10. Attach Back up policy to Boot Volumes")
+print("10. Attach Back up policy to Block Volumes")
+print("12. Export Security Lists to CD3")
+print("13. Export Route Tables to CD3")
 print("\nSee example folder for sample input files\n")
 userInput = input('Enter your choice; multiple choices allowed as comma separated'
                   '\neg 1 if you want to create only Compartments; 1,2,3 if you want to create Compartments, Groups, Policies at one go ')
@@ -245,30 +245,20 @@ if('9' in userInput):
     inputfile = input("Enter full path to input file having VCN info either properties file eg example/vcn-info.properties or CD3 excel file whcih was used to create Base Network: ")
     inputcsv = input("Enter full path to input file containing security rules info eg example/BaseNetwork/update_seclist-example.csv or CD3 excel file: ")
     outdir = input("Enter full path to output directory used while setting up Base Network Objects: ")
+    inputConfigFile = input("Enter path to pyhton config file This is required when you are executing the code from some other workstation rather than OCS VM"
+        " else leave it empty: ")
 
     os.chdir('CoreInfra/Networking/BaseNetwork')
-    command = 'python add_secrules_to_tf.py --inputfile ' + inputfile + ' --outdir ' + outdir + ' --secrulesfile '+inputcsv
+    if(inputConfigFile==''):
+        command = 'python add_secrules_to_tf.py --inputfile ' + inputfile + ' --outdir ' + outdir + ' --secrulesfile '+inputcsv
+    else:
+        command = 'python add_secrules_to_tf.py --inputfile ' + inputfile + ' --outdir ' + outdir + ' --secrulesfile '+inputcsv+' --configFileName '+inputConfigFile
+
     os.system(command)
     os.chdir("../../..")
     print("--------------------------------------------------------------------------")
 
 if('10' in userInput):
-    print("---------------------------Exporting Security Rules--------------------------")
-    inputComp = input("Enter Compartment Name of VCN for which you want to export Security Lists: ")
-    outdir = input("Enter full path to output directory where csv will be generated: ")
-    inputConfigFile = input("Enter path to pyhton config file This is required when you are executing the code from some other workstation rather than OCS VM"
-                            " else leave it empty: ")
-
-    os.chdir('CoreInfra/Networking/BaseNetwork')
-    if(inputConfigFile==''):
-        command = 'python exportSeclistToCSV.py ' + inputComp + ' ' + outdir
-    else:
-        command = 'python exportSeclistToCSV.py ' + inputComp + ' ' + outdir + ' --configFileName '+inputConfigFile
-    os.system(command)
-    os.chdir("../../..")
-    print("--------------------------------------------------------------------------")
-
-if('11' in userInput):
     print("------------------------Attaching Backup Policy to Boot Volumes---------------------------")
     if (inputfile == ''  or '.xls' not in inputfile):
         inputfile = input("Enter full path to input CD3 excel file: ")
@@ -288,7 +278,7 @@ if('11' in userInput):
     os.chdir("../..")
     print("--------------------------------------------------------------------------")
 
-if('12' in userInput):
+if('11' in userInput):
     print("------------------------Attaching Backup Policy to Block Volumes---------------------------")
     if (inputfile == ''  or '.xls' not in inputfile):
         inputfile = input("Enter full path to input CD3 excel file: ")
@@ -306,4 +296,37 @@ if('12' in userInput):
     command = 'python block_backups_policy.py '+inputfile + ' ' + outdir
     os.system(command)
     os.chdir("../..")
+    print("--------------------------------------------------------------------------")
+
+if('12' in userInput):
+    print("---------------------------Exporting Security Rules--------------------------")
+    inputComp = input("Enter Compartment Name of VCN for which you want to export Route Tables: ")
+    outfile = input("Enter full path to CD3 excel file where security rules info will be written: ")
+    inputConfigFile = input(
+        "Enter path to pyhton config file This is required when you are executing the code from some other workstation rather than OCS VM"
+        " else leave it empty: ")
+
+    os.chdir('CoreInfra/Networking/BaseNetwork')
+    if(inputConfigFile==''):
+        command = 'python exportSeclist.py ' + inputComp + ' ' + outdir
+    else:
+        command = 'python exportSeclist.py ' + inputComp + ' ' + outdir + ' --configFileName '+inputConfigFile
+    os.system(command)
+    os.chdir("../../..")
+    print("--------------------------------------------------------------------------")
+
+if('13' in userInput):
+    print("---------------------------Exporting Route Rules--------------------------")
+    inputComp = input("Enter Compartment Name of VCN for which you want to export Route Tables: ")
+    outfile = input("Enter full path to CD3 excel file where route rules info will be written: ")
+    inputConfigFile = input("Enter path to pyhton config file This is required when you are executing the code from some other workstation rather than OCS VM"
+                            " else leave it empty: ")
+
+    os.chdir('CoreInfra/Networking/BaseNetwork')
+    if(inputConfigFile==''):
+        command = 'python exportRoutetable.py ' + inputComp + ' ' + outfile
+    else:
+        command = 'python exportRoutetable.py ' + inputComp + ' ' + outfile + ' --configFileName '+inputConfigFile
+    os.system(command)
+    os.chdir("../../..")
     print("--------------------------------------------------------------------------")

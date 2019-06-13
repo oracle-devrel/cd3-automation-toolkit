@@ -190,3 +190,5 @@ python36 -m pip install oci
 python36 -m pip install pycrypto
 python36 -m pip install regex
 python36 -m pip install pandas
+python36 -m pip install openpyxl
+python36 -m pip install xlrd
