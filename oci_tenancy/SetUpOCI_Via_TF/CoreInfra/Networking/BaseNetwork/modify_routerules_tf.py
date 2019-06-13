@@ -14,6 +14,8 @@ import pandas as pd
 parser = argparse.ArgumentParser(description="Updates routelist for subnet. It accepts input file which contains new rules to be added to the existing rule list of the subnet.")
 parser.add_argument("inputfile", help="Required; Full Path to input route file (either csv or CD3 excel file) containing rules to be updated; See example folder for sample format: add_routes-example.txt")
 parser.add_argument("routefile", help= "Required: Full path of routes tf file which will be modified. This should ideally be the tf file which was created using create_all_tf_objects.py script.")
+parser.add_argument("--overwrite",help="This will overwrite all sec rules in OCI with whatever is specified in cd3 excel file sheet- SecRulesinOCI (true or false) ",required=False)
+
 
 if len(sys.argv) == 1:
     parser.print_help()
@@ -27,10 +29,20 @@ inputfile = args.inputfile
 # Backup the existing Routes tf file
 shutil.copy(routefile, routefile + "_backup")
 
+if args.overwrite is not None:
+    overwrite = str(args.overwrite)
+else:
+    overwrite = "false"
+
 #If input is CD3 excel file
 if('.xls' in inputfile):
     endNames = {'<END>', '<end>'}
-    df = pd.read_excel(inputfile, sheet_name='AddRouteRules')
+    if (overwrite == 'true'):
+        print("Reading RouteRulesinOCI sheet of cd3")
+        df = pd.read_excel(inputfile, sheet_name='RouteRulesinOCI')
+    elif(overwrite=='false'):
+        print("Reading AddRouteRules sheet of cd3")
+        df = pd.read_excel(inputfile, sheet_name='AddRouteRules')
     for i in df.index:
         subnet_name = df.iat[i, 0]
         subnet_name = subnet_name.strip()

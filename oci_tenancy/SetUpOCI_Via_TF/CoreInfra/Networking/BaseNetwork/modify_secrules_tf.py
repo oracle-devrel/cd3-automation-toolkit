@@ -270,7 +270,7 @@ parser = argparse.ArgumentParser(description="Takes in a csv file mentioning sec
 parser.add_argument("--inputfile",help="Full Path of vcn info file: It could be either the properties file eg vcn-info.properties or CD3 excel file",required=True)
 parser.add_argument("--outdir",help="directory path for output tf files ",required=True)
 parser.add_argument("--secrulesfile",help="Input file(either csv or CD3 excel) containing new secrules to be added for Security List of a given subnet", required=True)
-parser.add_argument("--overwrite",help="Overwite subnet files. When this flag is used, script expect new seclist files created using create_terraform_seclist.py   ",required=False)
+parser.add_argument("--overwrite",help="This will overwrite all sec rules in OCI with whatever is specified in cd3 excel file sheet- SecRulesinOCI (true or false) ",required=False)
 parser.add_argument("--configFileName", help="Config file name" , required=False)
 
 
@@ -361,7 +361,12 @@ else:
 #If input is CD3 excel file
 if('.xls' in secrulesfilename):
     endNames = {'<END>', '<end>'}
-    df = pd.read_excel(secrulesfilename, sheet_name='AddSecRules',skiprows=1,dtype=object).to_csv('out.csv')
+    if(overwrite=='true'):
+        print("Reading SecRulesinOCI sheet of cd3")
+        df = pd.read_excel(secrulesfilename, sheet_name='SecRulesinOCI', skiprows=0, dtype=object).to_csv('out.csv')
+    elif(overwrite=='false'):
+        print("Reading AddSecRules sheet of cd3")
+        df = pd.read_excel(secrulesfilename, sheet_name='AddSecRules',skiprows=1,dtype=object).to_csv('out.csv')
 
     totalRowCount = sum(1 for row in csv.DictReader(skipCommentedLine(open('out.csv'))))
 

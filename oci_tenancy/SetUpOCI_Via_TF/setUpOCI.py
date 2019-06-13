@@ -232,9 +232,13 @@ if('8' in userInput):
     print("------------------------Adding Route Rules--------------------------------")
     inputfile = input("Enter full path to input file containing route rules to be added eg example/BaseNetwork/add_routes-example.csv or CD3 excel file: ")
     outfile = input("Enter full path to routes terraform file created earlier while setting up Base Network Objects: ")
+    overwrite = input("Do you want to overwrite rules in OCI. Enter true if Yes else false or Leave empty")
 
     os.chdir('CoreInfra/Networking/BaseNetwork')
-    command = 'python add_routerules_to_tf.py ' + inputfile + ' ' + outfile
+    if(overwrite=='' or overwrite=='false'):
+        command = 'python modify_routerules_tf.py ' + inputfile + ' ' + outfile
+    if(overwrite=='true'):
+        command = 'python modify_routerules_tf.py ' + inputfile + ' ' + outfile + ' --overwrite true'
     os.system(command)
     os.chdir("../../..")
     print("--------------------------------------------------------------------------")
@@ -243,16 +247,28 @@ if('8' in userInput):
 if('9' in userInput):
     print("------------------------Adding Security Rules--------------------------------")
     inputfile = input("Enter full path to input file having VCN info either properties file eg example/vcn-info.properties or CD3 excel file whcih was used to create Base Network: ")
-    inputcsv = input("Enter full path to input file containing security rules info eg example/BaseNetwork/update_seclist-example.csv or CD3 excel file: ")
+
     outdir = input("Enter full path to output directory used while setting up Base Network Objects: ")
     inputConfigFile = input("Enter path to pyhton config file This is required when you are executing the code from some other workstation rather than OCS VM"
         " else leave it empty: ")
+    overwrite = input("Do you want to overwrite rules in OCI. Enter true if Yes else false or Leave empty")
+    if (overwrite == '' or overwrite == 'false'):
+        inputcsv = input("Enter full path to input file containing security rules info eg example/BaseNetwork/update_seclist-example.csv or CD3 excel file: ")
+    else:
+        inputcsv=inputfile
 
     os.chdir('CoreInfra/Networking/BaseNetwork')
-    if(inputConfigFile==''):
-        command = 'python add_secrules_to_tf.py --inputfile ' + inputfile + ' --outdir ' + outdir + ' --secrulesfile '+inputcsv
-    else:
-        command = 'python add_secrules_to_tf.py --inputfile ' + inputfile + ' --outdir ' + outdir + ' --secrulesfile '+inputcsv+' --configFileName '+inputConfigFile
+
+    if (overwrite == '' or overwrite == 'false'):
+        if(inputConfigFile==''):
+            command = 'python modify_secrules_tf.py --inputfile ' + inputfile + ' --outdir ' + outdir + ' --secrulesfile '+inputcsv
+        else:
+            command = 'python modify_secrules_tf.py --inputfile ' + inputfile + ' --outdir ' + outdir + ' --secrulesfile '+inputcsv+' --configFileName '+inputConfigFile
+    if(overwrite=='true'):
+        if (inputConfigFile == ''):
+            command = 'python modify_secrules_tf.py --inputfile ' + inputfile + ' --outdir ' + outdir + ' --secrulesfile ' + inputcsv + ' --overwrite true'
+        else:
+            command = 'python modify_secrules_tf.py --inputfile ' + inputfile + ' --outdir ' + outdir + ' --secrulesfile ' + inputcsv + ' --configFileName ' + inputConfigFile +' --overwrite true'
 
     os.system(command)
     os.chdir("../../..")
