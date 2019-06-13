@@ -39,8 +39,8 @@ def get_vcns(config,compartment_id):
 
 
 def print_secrules(seclists):
-    print ("SecListName(Destination), RuleType, Protocol, isStateless, Source, SourcePortRange, DPortMin, DPortMax, ICMPType, ICMPCode")
-    oname.write("SecListName(Destination), RuleType, Protocol, isStateless, Source, SourcePortRange, DPortMin, DPortMax, ICMPType, ICMPCode\n")
+    print ("SubnetName, RuleType, Protocol, isStateless, Source, SPortMin, SPortMax, Destination, DPortMin, DPortMax, ICMPType, ICMPCode")
+    oname.write("SubnetName, RuleType, Protocol, isStateless, Source, SourcePortRange, DPortMin, DPortMax, ICMPType, ICMPCode\n")
     for seclist in seclists.data:
         isec_rules = seclist.ingress_security_rules
         esec_rules = seclist.egress_security_rules
@@ -55,36 +55,36 @@ def print_secrules(seclists):
           #  print (rule)
             if rule.protocol == "6":
                 if rule.tcp_options is None:
-                    print (dn + ",ingress,tcp," + str(rule.is_stateless) + "," + rule.source + ",~,,,,")
-                    oname.write(dn + ",ingress,tcp," + str(rule.is_stateless) + "," + rule.source + ",~,,,,\n")
+                    print (dn + ",ingress,tcp," + str(rule.is_stateless) + "," + rule.source + ",,,,,,,")
+                    oname.write(dn + ",ingress,tcp," + str(rule.is_stateless) + "," + rule.source + ",,,,,,,\n")
                 else:
                     min = convertNullToNothing(rule.tcp_options.destination_port_range.min)
                     max = convertNullToNothing(rule.tcp_options.destination_port_range.max)
-                    print (dn + ",ingress,tcp," + str(rule.is_stateless) + "," + rule.source + ",~," + min + "," + max+",,")
-                    oname.write(dn + ",ingress,tcp," + str(rule.is_stateless) + "," + rule.source + ",~," + min + "," + max+",,\n")
+                    print (dn + ",ingress,tcp," + str(rule.is_stateless) + "," + rule.source + ",,,," + min + "," + max+",,")
+                    oname.write(dn + ",ingress,tcp," + str(rule.is_stateless) + "," + rule.source + ",,,," + min + "," + max+",,\n")
 
             if rule.protocol == "1":
                 if rule.icmp_options is None:
-                    print (dn + ",ingress,icmp," + str(rule.is_stateless) + "," + rule.source + ",~,,,,")
-                    oname.write(dn + ",ingress,icmp," + str(rule.is_stateless) + "," + rule.source + ",~,,,,\n")
+                    print (dn + ",ingress,icmp," + str(rule.is_stateless) + "," + rule.source + ",,,,,,,")
+                    oname.write(dn + ",ingress,icmp," + str(rule.is_stateless) + "," + rule.source + ",,,,,,,\n")
                 else:
                     code = convertNullToNothing(rule.icmp_options.code)
                     type = convertNullToNothing(rule.icmp_options.type)
-                    print (dn + ",ingress,icmp," + str(rule.is_stateless) + "," + rule.source + ",~,,," + type + "," + code)
-                    oname.write(dn + ",ingress,icmp," + str(rule.is_stateless) + "," + rule.source + ",~,,," + type + "," + code+"\n")
+                    print (dn + ",ingress,icmp," + str(rule.is_stateless) + "," + rule.source + ",,,,,," + type + "," + code)
+                    oname.write(dn + ",ingress,icmp," + str(rule.is_stateless) + "," + rule.source + ",,,,,," + type + "," + code+"\n")
             if rule.protocol == "17":
                 if rule.udp_options is None:
-                    print (dn + ",ingress,udp," + str(rule.is_stateless) + "," + rule.source + ",~,,,,")
-                    oname.write(dn + ",ingress,udp," + str(rule.is_stateless) + "," + rule.source + ",~,,,,\n")
+                    print (dn + ",ingress,udp," + str(rule.is_stateless) + "," + rule.source + ",,,,,,,")
+                    oname.write(dn + ",ingress,udp," + str(rule.is_stateless) + "," + rule.source + ",,,,,,,\n")
                 else:
                     min = convertNullToNothing(rule.udp_options.destination_port_range.min)
                     max = convertNullToNothing(rule.udp_options.destination_port_range.max)
-                    print (dn + ",ingress,udp," + str(rule.is_stateless) + "," + rule.source + ",~," + min + "," + max+",,")
-                    oname.write(dn + ",ingress,udp," + str(rule.is_stateless) + "," + rule.source + ",~," + min + "," + max+",,\n")
+                    print (dn + ",ingress,udp," + str(rule.is_stateless) + "," + rule.source + ",,,," + min + "," + max+",,")
+                    oname.write(dn + ",ingress,udp," + str(rule.is_stateless) + "," + rule.source + ",,,," + min + "," + max+",,\n")
 
             if rule.protocol == "all":
-                print (dn + ",ingress,all," + str(rule.is_stateless) + "," + rule.source + ",~,,")
-                oname.write(dn + ",ingress,all," + str(rule.is_stateless) + "," + rule.source + ",~,,\n")
+                print (dn + ",ingress,all," + str(rule.is_stateless) + "," + rule.source + ",,,,,,,")
+                oname.write(dn + ",ingress,all," + str(rule.is_stateless) + "," + rule.source + ",,,,,,,\n")
 
 parser = argparse.ArgumentParser(description="Export Security list on OCI to CSV")
 parser.add_argument("networkCompartment", help="Compartment where VCN resides")
