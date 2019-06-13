@@ -94,12 +94,12 @@ except oci.exceptions.ServiceError as e:
 ocic_values = {}
 
 with open(tf_file,'r') as json_file:
-    data = json.load(json_file)
-    for d in data['modules']:
-        for o in d['outputs']:
-            if DEBUG.lower() == "debug":
-                print o + " = " + d['outputs'][o]['value']
-            ocic_values[o] = d['outputs'][o]['value'].strip()
+   data = json.load(json_file)
+   #for d in data['modules']:
+   for o in data['outputs']:
+       if DEBUG.lower() == "debug":
+            print o + " = " + data['outputs'][o]['value']
+       ocic_values[o] = data['outputs'][o]['value'].strip()
 
 json_file.close()
 

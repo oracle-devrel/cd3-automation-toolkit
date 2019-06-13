@@ -1,0 +1,133 @@
+puttykeys
+=========
+
+A module to convert SSH keys from the Putty format to the OpenSSH format. Supports RSA and ED25519 keys.
+Implements one method, ``ppkraw_to_openssh(ppk_text_contents[, password])`` which decodes the supplied putty key if a password is provided, converts to OpenSSH format and returns it as a string.
+The returned output string is not encrypted or password protected.
+
+Usage in python code::
+
+	import puttykeys
+	putty_key_contents = open("rsa_no_password.ppk","r").read()
+	print(puttykeys.ppkraw_to_openssh(putty_key_contents))
+
+::
+
+	password_ppk_contents = open("rsa_with_password.ppk","r").read()
+	print(puttykeys.ppkraw_to_openssh(password_ppk_contents, "password"))
+
+
+Usage via command line::
+
+	> python -m puttykeys rsa_no_password.ppk
+	-----BEGIN RSA PRIVATE KEY-----
+	MIIEqAIBAAKCAQEAhoafrxc4mPVaq7mMsKh+prcptxN2tQYIKeinhdgDYV2xI6/Q
+	HgueLyR0+FLOy3jDDjh9/BGACFT+YN/J6HuqcpYwdj8hBS7nhApd+NDAFitDBbg8
+	+aY80SVpNGS6NAb+upTEvwGYYbV5VDLqlnV1Ib8kPmrIbR90U0pXJ8XBdzHgeqez
+	1MT+coqdobpBL4aLMP62v4bj2Q4D1WP+86Evc/XkQAggTMdYYDEk4KJ+rEPZ98G7
+	M09O6byY4IGJ1PubAq3OnzhIr2WWUW0EKnTq02XjWNYGW9Ew8vqD2gjpR+ovbBL+
+	IoAfZqojTlG8ulHcqhCKDQDw5QzZlfP+CgQ05wKCAAElAoIBAEFx7NG4RQwkVZ+m
+	YB6XKNt7s23SHhLgVv+hnZsPJD00f7B/C0zjDq8mfhfw7vsz1IN1bbjl60JS3J3U
+	p2ouUuujAtG92LZp2Gm/2rBljeFFeo0pMmuc+v32hjUqFWVrL9BkDK/y8C+It5C+
+	0v0WjAKUVtJByUnX82bKODzcvvu2sCUD1FSlQHKgXcTzH3McbTr2L/5e9uSg2VyK
+	xP/pKxET+F7zDCd1JRe33MDHZX1sNZQHIig4mYxsieN4sYx0jXiNm9jkhCJlGchI
+	NsNKhxH+dDFkQ5z+105UPQrgdi/QvkUBsD25A0mUVaLJkTudlcefj7YjkOmyeQBM
+	d2q/8V0CggCBANPRpPC96gZOMMI55Kr7lvxU2fx1KjGSUXDT2vxbeoNRQZ/2OSSy
+	TUbKhKlQTUVbkwi03PbRQyjVcNX1E2+ILesdPPibqpz2RJdAZPeg3TM1Dmw4/uaf
+	rDR6+AGAnUGkpgjrHK9Y16p22J+cW/kAFagK+JRd30UshvmhC/om/M6TAoIAgQCi
+	ldA5TGrXOLrhxMVjx1GR4vHJaie2xhybUYg0wwBFYyepTb7w15d+OkDEBBCvzuCc
+	BGRTgSYG5Wyne2fJyIjF+9v5N38N5DS72OVjFJr3Tq/6D6V4TsPQHhx2pp5C66VK
+	D49IEeUKn67TqnPgTeoO9ojcf9iQEQjKyaAq3O6g3QKCAIB5RhQhzL4no/y4mMRj
+	XJeS9p3ELVnIIxyG88Q81RLk12/419kqFkSW2pVVjyw4MEBpTwET4RFan3sRIWpF
+	m8045lIe5vTgvyBPXcZnA8Qf6VA/v5m0YuLFem4M42pbzyoN65co3KHFmFwwArbY
+	XaKemVx0GppHdNxESwKZggxZegKCAIB5RhQhzL4no/y4mMRjXJeS9p3ELVnIIxyG
+	88Q81RLk12/419kqFkSW2pVVjyw4MEBpTwET4RFan3sRIWpFm8045lIe5vTgvyBP
+	XcZnA8Qf6VA/v5m0YuLFem4M42pbzyoN65co3KHFmFwwArbYXaKemVx0GppHdNxE
+	SwKZggxZegKCAIEAxS76gOvcwPa07qKqPJKa4a0Z4qnVcsyxYCs37rRKdI2zSkjO
+	ll62nAfcdEMiqhHFY95jmtJAvtM7EduATOOIjkvSSX0ajx9T6HII9b1h0VZdWXHE
+	pggJZXMqGZfuWnHK6nDwQftWT0dbw2iI/0Gcr9CqET3TvhfnVGq6mEoxjQw=
+	-----END RSA PRIVATE KEY-----
+	> python -m puttykeys rsa_with_password.ppk password
+	-----BEGIN RSA PRIVATE KEY-----
+	MIIEpwIBAAKCAQEAzu7N8bHsE/YcprVuQPYA1+u+blTbsfGqsHqtcQ0jq8cVYno7
+	sdO9t2/Z67fo0TqlPXYrhbihbNlmCIwY+Zfu+vQmfTI1M1PX/l93oMo9HhSmpHHM
+	N0fuAsbqoHFvbS3zTZqMfJ9FEbMZPGmZd7hFv7P3szI1DnSvqSKK4MQBm1XD5uPm
+	nbV5P7uUnY3izN+tu64RGu/xGQJJubc5V50tOVSUSkJav35DLsJAL7KGxTptFh+4
+	VkT1BzFxFLP15OHFWeYBrGSCwxtRkmi27441ZjbF9puCZSYRdvq1j99iszq/vndE
+	4HFto/OlgIzIntn+QqzxEErSmNm4y+E36nSmrwKCAAElAoIBACcmQqNZAyZe/oBn
+	g4+/1qVj85hVPlIY9sdxJ7txMEMX050CXlITTWfkuoaKk9SOjfbfAVCmY7qlq4UT
+	lgW09dxzYTpHxOAydPjF9AmpuIkmgGRM4XI+Cm86Y719Ppgdczgx/uclDREvuKqQ
+	hNF1466lgeOhtwK8ITusltCTyPPfc/T4EmMuBbOnoOJg3PgQXAsfVyy4oYc83nSH
+	ZgAGD3fBGRmyIgiZ0/0DjTwByyVwRKdghx/cuIqWT3f2XNxXGTPxnr0NmRosuA48
+	FZZt6V+C8Zdd8Bnl1CUjuz7A3UyDb/Rxya/goSqL6I7OKP32bNa4s9CPScJnmnr2
+	qrX+sJ0CggCBAO+nrDmC2Q0nZOz87ZgVcMei32Lqj2R2b52ZZhL/qNSJKo62uafq
+	LJQ5iQ4s3tuIM+Gu2rrFGLw9T2njz5e5kBH2ywtWK0F8XPpJ9/MFw9VAwKFJh9yf
+	KBfC74mCnQU42LMShuntZ19EmtQnAPVpI39bmifQxCmqjAAwXCbgJ6R5AoIAgQDd
+	C89L6g27q+CeYcTfTxhtS7tPH2wSRXWCAYV46h10pOQ3wpH+8QAFTiZsDsowUpCO
+	O7R8ewtEyMeHts4qMPMJmbAdATqFvGRBRle/hYVqCAsnsZDVPRqYXXLgnP3LwWIq
+	n+AMUWa6fnVNQiWM0sSIwUKAg2y1WHM+7P+KtgrKZwKCAIADhUV5DxG1eDugKzE3
+	ttJx9M95XchpfuM1pxynh4kSJESoqrtlKDjcxL+iIV3bM6lHI59zkXgrWzxNYnXk
+	Skc47wUYVUJNCKStYY0C0xK6VtY5mUppLjnnq2qcfngRyn41fXmD3z5kXNaq0Vnx
+	MTSPhPvTiyw4mekB9/zDmUO6jgKCAIADhUV5DxG1eDugKzE3ttJx9M95XchpfuM1
+	pxynh4kSJESoqrtlKDjcxL+iIV3bM6lHI59zkXgrWzxNYnXkSkc47wUYVUJNCKSt
+	YY0C0xK6VtY5mUppLjnnq2qcfngRyn41fXmD3z5kXNaq0VnxMTSPhPvTiyw4mekB
+	9/zDmUO6jgKCAIB+9XKigQiI9pSdihSOn8C2SWf5WeqmkudaH3k60wXKc1FDMI70
+	fMQRSVichrCStw40Ihs8ftEwC5slBpQHMoJsRaP27xBauI082NFysZ1fQY9dArf9
+	c/1qM8bpx5uaUfgkQCOIoI9/Eo2ao3jnhyTtU4YPih1GaiwgC4QYAkKgng==
+	> cat rsa_with_password.ppk 
+	PuTTY-User-Key-File-2: ssh-rsa
+	Encryption: aes256-cbc
+	Comment: rsa-key-20170919
+	Public-Lines: 6
+	AAAAB3NzaC1yc2EAAAABJQAAAQEAzu7N8bHsE/YcprVuQPYA1+u+blTbsfGqsHqt
+	cQ0jq8cVYno7sdO9t2/Z67fo0TqlPXYrhbihbNlmCIwY+Zfu+vQmfTI1M1PX/l93
+	oMo9HhSmpHHMN0fuAsbqoHFvbS3zTZqMfJ9FEbMZPGmZd7hFv7P3szI1DnSvqSKK
+	4MQBm1XD5uPmnbV5P7uUnY3izN+tu64RGu/xGQJJubc5V50tOVSUSkJav35DLsJA
+	L7KGxTptFh+4VkT1BzFxFLP15OHFWeYBrGSCwxtRkmi27441ZjbF9puCZSYRdvq1
+	j99iszq/vndE4HFto/OlgIzIntn+QqzxEErSmNm4y+E36nSmrw==
+	Private-Lines: 14
+	hyI46OuJkTN5nWU3DPLpvWqjHzyPdBM4jn7ewMa3B1+JCMt9CGhC4743+hZyOoOU
+	07hszeUDeqphMqwWn7kEwP4oxKtF+CvZwBLiJQgE11hjZzodP8xpxMJFvlJPK+i4
+	SBVSwIg8ZeAMon5GcmG/Z+FNIFPXyOvp7TI3HtRa7pOI3yQC6j9XSwZtXNzcUero
+	j61bzaN6L1W4OKn8iWqMGEMsGPqhrqjeCWT4WcbsB51FOzc5z6Ag8HsBVW2Phsmo
+	8MXJMd5BsFaFN60z6H59pSVc3/kxO8eLL8ZE1S/4vo1DtDfuYyAgqQnPqrkhdlPl
+	fUpUWe0nv4UNRJfVkcSvNWsI36J1xbDEk31d5+punoH7UMm5+aVJ1yF0bjj8e7YR
+	2tAxGqC9krgjWBrR2+4wuRnzrx58fRUZ3wwJeC8MZaxluXBogJaPCnval5iysYPf
+	kWkH741+WfxspVCt5kXds3Za8ZySjxhXeBFyhQPe2USUhUnGmxoHEMB5951xklsP
+	UW03DWDLwC8eepboFr4yZDjBmNxO5USaLMRiHCb/HcVOi0knUb1diMzMWVn0vJun
+	mmzsMu5Ubs58GPZ9FNP9kEX09EV9ZZyM4g9uxvrQLwyFLRtBqyvRB6yd2+bodrnF
+	rNbvWg7L7og9gN1BRQeNVhQuY4MEq9eXKQVrqcfnglYSQZbq25/aRDbclUat5Cxb
+	+voLf+ABYVBPFAlaNHaembU7aZ3yL2ot6O7QkF+zqhk0PdEx6PnPQ9pFdMJDTvVR
+	r+GfWwQVb3Et+UvYyGrRGJz1NtJjr+ijuc1QbRUAB7M18jvw1HAU6macRSDiOPC9
+	lYTXT74BiBH3gXgixu6uzoZ0Qe5pmDQB/RDRi7ka84kmP1lPoQvIPo4KUXhQVo98
+	Private-MAC: d3bc43c3b1ade94c79d33ccc867a7e5a154e569a
+	> cat rsa_no_password.ppk
+	PuTTY-User-Key-File-2: ssh-rsa
+	Encryption: none
+	Comment: rsa-key-20170709
+	Public-Lines: 6
+	AAAAB3NzaC1yc2EAAAABJQAAAQEAhoafrxc4mPVaq7mMsKh+prcptxN2tQYIKein
+	hdgDYV2xI6/QHgueLyR0+FLOy3jDDjh9/BGACFT+YN/J6HuqcpYwdj8hBS7nhApd
+	+NDAFitDBbg8+aY80SVpNGS6NAb+upTEvwGYYbV5VDLqlnV1Ib8kPmrIbR90U0pX
+	J8XBdzHgeqez1MT+coqdobpBL4aLMP62v4bj2Q4D1WP+86Evc/XkQAggTMdYYDEk
+	4KJ+rEPZ98G7M09O6byY4IGJ1PubAq3OnzhIr2WWUW0EKnTq02XjWNYGW9Ew8vqD
+	2gjpR+ovbBL+IoAfZqojTlG8ulHcqhCKDQDw5QzZlfP+CgQ05w==
+	Private-Lines: 14
+	AAABAEFx7NG4RQwkVZ+mYB6XKNt7s23SHhLgVv+hnZsPJD00f7B/C0zjDq8mfhfw
+	7vsz1IN1bbjl60JS3J3Up2ouUuujAtG92LZp2Gm/2rBljeFFeo0pMmuc+v32hjUq
+	FWVrL9BkDK/y8C+It5C+0v0WjAKUVtJByUnX82bKODzcvvu2sCUD1FSlQHKgXcTz
+	H3McbTr2L/5e9uSg2VyKxP/pKxET+F7zDCd1JRe33MDHZX1sNZQHIig4mYxsieN4
+	sYx0jXiNm9jkhCJlGchINsNKhxH+dDFkQ5z+105UPQrgdi/QvkUBsD25A0mUVaLJ
+	kTudlcefj7YjkOmyeQBMd2q/8V0AAACBANPRpPC96gZOMMI55Kr7lvxU2fx1KjGS
+	UXDT2vxbeoNRQZ/2OSSyTUbKhKlQTUVbkwi03PbRQyjVcNX1E2+ILesdPPibqpz2
+	RJdAZPeg3TM1Dmw4/uafrDR6+AGAnUGkpgjrHK9Y16p22J+cW/kAFagK+JRd30Us
+	hvmhC/om/M6TAAAAgQCildA5TGrXOLrhxMVjx1GR4vHJaie2xhybUYg0wwBFYyep
+	Tb7w15d+OkDEBBCvzuCcBGRTgSYG5Wyne2fJyIjF+9v5N38N5DS72OVjFJr3Tq/6
+	D6V4TsPQHhx2pp5C66VKD49IEeUKn67TqnPgTeoO9ojcf9iQEQjKyaAq3O6g3QAA
+	AIEAxS76gOvcwPa07qKqPJKa4a0Z4qnVcsyxYCs37rRKdI2zSkjOll62nAfcdEMi
+	qhHFY95jmtJAvtM7EduATOOIjkvSSX0ajx9T6HII9b1h0VZdWXHEpggJZXMqGZfu
+	WnHK6nDwQftWT0dbw2iI/0Gcr9CqET3TvhfnVGq6mEoxjQw=
+	Private-MAC: 28d9082a12e6bdadbddf336ea052ece653aec163
+	-----END RSA PRIVATE KEY-----
+
+

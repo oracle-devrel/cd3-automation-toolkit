@@ -43,5 +43,5 @@ variable \"""" + compartment_name + """" {
 
 vname = open(variablesFile,"a")
 vname.write(tempStr)
-print("Comaprtment info written to variables file")
+print("Compartment info written to variables file")
 vname.close()
