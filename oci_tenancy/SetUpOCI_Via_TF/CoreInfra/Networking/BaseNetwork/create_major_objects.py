@@ -73,7 +73,7 @@ if(excel!=''):
         for i in df.index:
                 vcn_name=df['vcn_name'][i]
 
-                # Cheeck to see if vcn_name is empty in Sheet
+                # Cheeck to see if vcn_name is empty in Subnets Sheet
                 if (str(vcn_name).lower() == NaNstr.lower()):
                         print("vcn_name cannot be left empty in VCNs sheet in CD3..exiting...")
                         exit()
