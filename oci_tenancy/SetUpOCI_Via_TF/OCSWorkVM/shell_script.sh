@@ -192,3 +192,7 @@ python36 -m pip install regex
 python36 -m pip install pandas
 python36 -m pip install openpyxl
 python36 -m pip install xlrd
+
+sudo cd /usr/bin
+sudo rm -f python
+sudo ln -s /usr/bin/python36 python
