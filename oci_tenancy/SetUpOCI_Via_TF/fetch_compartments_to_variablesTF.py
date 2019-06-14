@@ -1,7 +1,7 @@
 #!/bin/python
 import argparse
 import oci
-from oci.core.virtual_network_client import VirtualNetworkClient
+import shutil
 from oci.identity import IdentityClient
 
 def paginate(operation, *args, **kwargs):
@@ -29,6 +29,9 @@ variablesFile=args.variablesTF
 identityClient = IdentityClient(config)
 tenancy_id = config['tenancy']
 tempStr = ""
+
+# Backup the existing Routes tf file
+shutil.copy(variablesFile, variablesFile + "_backup")
 
 for compartment in paginate(identityClient.list_compartments, compartment_id=tenancy_id,compartment_id_in_subtree =True):
     if(compartment.lifecycle_state=='ACTIVE'):

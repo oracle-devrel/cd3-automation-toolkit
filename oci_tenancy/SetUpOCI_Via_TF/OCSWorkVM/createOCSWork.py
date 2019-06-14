@@ -326,7 +326,7 @@ if (input_configure_git_oci=="1"):
     cd /root/ocswork/git_oci
     spawn git pull  https://"""+input_git_username.replace('@','%40')+"""@developer.em2.oraclecloud.com/developer14539-usoraocips16001/s/developer14539-usoraocips16001_oci_9900/scm/oci.git
     expect "Password for 'https://"""+input_git_username+"""@developer.em2.oraclecloud.com':" {send "$password\\r"}
-    sleep 20
+    sleep 60
     expect eof
     """
     write_file("tmp\\download_git_expect1.sh",script_data)
@@ -336,7 +336,7 @@ if (input_configure_git_ocictooci == "1"):
     cd /root/ocswork/git_ocic2oci
     spawn git pull https://"""+input_git_username.replace('@','%40')+"""@developer.em2.oraclecloud.com/developer14539-usoraocips16001/s/developer14539-usoraocips16001_ocictooci_10075/scm/ocictooci.git
     expect "Password for 'https://"""+input_git_username+"""@developer.em2.oraclecloud.com':" {send "$password\\r"}
-    sleep 20
+    sleep 60
     expect eof
     """
     write_file("tmp\\download_git_expect2.sh",script_data)
