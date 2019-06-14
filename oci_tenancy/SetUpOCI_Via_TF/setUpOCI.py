@@ -94,7 +94,7 @@ if('3' in userInput):
 
 if('4' in userInput):
     print("---------------------Creating Base Network----------------------------------")
-    inputfile = input("Enter full path to properties file eg example vcn-info.properties: ")
+    vcnfile = input("Enter full path to properties file eg example vcn-info.properties: ")
     if (outdir == ''):
         outdir = input("Enter full path to output directory where you want to create terraform files: ")
     else:
@@ -112,9 +112,9 @@ if('4' in userInput):
 
     os.chdir('CoreInfra/Networking/BaseNetwork')
     if(inputCD3=='' or inputCD3 == ' '):
-        command = 'python create_all_tf_objects.py ' + inputfile + ' ' + outdir + ' ' + prefix
+        command = 'python create_all_tf_objects.py ' + vcnfile + ' ' + outdir + ' ' + prefix
     else:
-        command = 'python create_all_tf_objects.py ' + inputfile + ' ' + outdir + ' ' + prefix + ' --inputCD3 ' +inputCD3
+        command = 'python create_all_tf_objects.py ' + vcnfile + ' ' + outdir + ' ' + prefix + ' --inputCD3 ' +inputCD3
     os.system(command)
     os.chdir("../../..")
     print("--------------------------------------------------------------------------")
