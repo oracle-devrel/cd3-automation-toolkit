@@ -26,6 +26,12 @@ output: oci_api_private.pem and oci_api_public.pem
 
 -- Rest of the code is compiled with Python.7
 
+Setup OCI Communication using API
+----------------------------------
+Upload public key generated abovve to OCI console
+Copy config file from example folder and modify details as per your environment.
+
+
 -----------------------------------------------------------------------------------------------------
 2. OCSWorkVM/Setup from other work station eg your laptop
 -----------------------------------------------------------------------------------------------------
@@ -93,3 +99,8 @@ files of all scripts.
 
 Usage:
 ./setUpOCI.py
+
+
+
+Note-
+If you are running all scritps from your laptop you would need to install few more packages like pandas, openpyxl, xlrd etc
