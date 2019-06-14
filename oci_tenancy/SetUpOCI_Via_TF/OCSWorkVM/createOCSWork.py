@@ -111,6 +111,7 @@ if(input_shell_script==''):
 #Read Python config file
 python_config = oci.config.from_file(file_location=input_config_file)#,profile_name=input_region_name)
 
+
 network_client = oci.core.VirtualNetworkClient(python_config)
 identity_client = oci.identity.IdentityClient(python_config)
 compute_client = oci.core.ComputeClient(python_config)
@@ -161,12 +162,32 @@ def create_compartment(compartment_name,compartment_desc):
         if (e.message == error_msg):
             print('This compartment already exists')
             for compartment in paginate(identity_client.list_compartments, compartment_id=tenancy_id):
-                if compartment_name == compartment.name:
+                if compartment_name == identity_client.name:
                     compartment_ocid = compartment.id
                     break
+
+        elif ("home region" in e.message):
+            print ("Home Region " + e.message)
+            message = e.message
+            if ("IAD" in message):
+                new_config = python_config
+                new_config.__setitem__("region","us-ashburn-1")
+            if ("PHX" in message):
+                new_config = python_config
+                new_config.__setitem__("region", "us-phoenix-1")
+            new_id_client = oci.identity.IdentityClient(new_config)
+            print(new_config)
+            try:
+                compartment = new_id_client.create_compartment(create_comp_detail)
+                compartment_ocid = compartment.data.id
+            except oci.exceptions.ServiceError as e:
+                print('some error occurred while trying to create compartment; exiting...')
+                print(e.message)
+                compartment_ocid = "-1"
         else:
             print('some error occurred while trying to create compartment; exiting...')
-            exit
+            print (e.message)
+            compartment_ocid = "-1"
     return compartment_ocid
 
 
@@ -206,15 +227,24 @@ for compartment in paginate(identity_client.list_compartments, compartment_id=te
 if(ocs_compartment_found==0):
     print('Creating Compartment for OCS related work: ' +input_ocs_compartment_name + ' under root compartment')
     ocs_compartment_ocid = create_compartment(input_ocs_compartment_name,"compartment for OCS related work")
+    if ocs_compartment_ocid == "-1":
+        print ("Exiting due to compartment error : " )
+        exit(-1)
     updatePropsFile(input_config_file, "ocs_compartment_ocid", ocs_compartment_ocid)
 if(vm_compartment_found==0):
     print('Creating Compartment for VMs: ' +input_vm_compartment_name + ' under root compartment')
     vm_compartment_ocid = create_compartment(input_vm_compartment_name,"compartment for VMs")
+    if vm_compartment_ocid == "-1":
+        print ("Exiting due to compartment error : " )
+        exit(-1)
     updatePropsFile(input_config_file, "vm_compartment_ocid", vm_compartment_ocid)
 
 if(ntk_compartment_found==0):
     print('Creating Compartment for Network components: ' +input_ntk_compartment_name + ' under root compartment')
     ntk_compartment_ocid = create_compartment(input_ntk_compartment_name,"compartment for Network components")
+    if ntk_compartment_ocid == "-1":
+        print ("Exiting due to compartment error : " )
+        exit(-1)
     updatePropsFile(input_config_file, "ntk_compartment_ocid", ntk_compartment_ocid)
 
 #Read Python config file again
