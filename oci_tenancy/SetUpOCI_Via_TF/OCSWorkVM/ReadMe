@@ -17,7 +17,7 @@ Python Config File - config
 Private key File used for python APIs - oci_api_key.pem
 Terraform files - provider.rf and variables.tf which will be used for Terraform to communicate to OCI
 Git download expect script
-Panda specific files - ftmcli.properties, ftmcli-v2.4.3.zip, panda.tf, upload panda expect script
+Panda specific files - panda.tf, setupPanda files
 Koala specific files - config file, run koala discover expect script
 shell_script script file
 

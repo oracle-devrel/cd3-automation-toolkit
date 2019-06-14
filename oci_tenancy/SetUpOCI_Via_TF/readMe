@@ -21,6 +21,12 @@ output: oci_api_private.pem and oci_api_public.pem
    you might need to install Microsoft Visual C++ Compiler. Download it from here: http://aka.ms/vcpython27
 -- Rest of the code is compiled with Pythin3.7
 
+Setup OCI Communication using API
+----------------------------------
+Upload public key generated abovve to OCI console
+Copy config file from example folder and modify details as per your environment.
+
+
 -----------------------------------------------------------------------------------------------------
 2. OCSWorkVM/Setup from other work station eg your laptop
 -----------------------------------------------------------------------------------------------------
