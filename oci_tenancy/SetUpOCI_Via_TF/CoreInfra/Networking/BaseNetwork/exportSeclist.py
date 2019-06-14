@@ -140,7 +140,7 @@ parser.add_argument("--configFileName", help="Config file name" , required=False
 
 
 
-if len(sys.argv) < 3:
+if len(sys.argv) < 2:
     parser.print_help()
     sys.exit(1)
 
