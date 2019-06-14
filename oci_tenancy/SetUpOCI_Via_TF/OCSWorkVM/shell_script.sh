@@ -193,6 +193,6 @@ python36 -m pip install pandas
 python36 -m pip install openpyxl
 python36 -m pip install xlrd
 
-sudo cd /usr/bin
-sudo rm -f python
-sudo ln -s /usr/bin/python36 python
+#Use Default python as python36 on OCS VM
+sudo rm -f /bin/python
+sudo ln -s /bin/python36 /bin/python
