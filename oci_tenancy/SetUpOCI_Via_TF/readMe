@@ -17,7 +17,7 @@ Usage:
 output: oci_api_private.pem and oci_api_public.pem
 
 
--- Install the pycryptodome package using pip / Pycharm.
+-- Install the pycryptodome & pycryptodomex package using pip / Pycharm.
    you might need to install Microsoft Visual C++ Compiler. Download it from here: http://aka.ms/vcpython27
 -- Rest of the code is compiled with Pythin3.7
 
