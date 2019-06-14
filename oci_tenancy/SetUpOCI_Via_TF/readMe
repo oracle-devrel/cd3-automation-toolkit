@@ -88,3 +88,8 @@ files of all scripts.
 
 Usage:
 ./setUpOCI.py
+
+
+
+Note-
+If you are running all scritps from your laptop you would need to install few more packages like pandas, openpyxl, xlrd etc
