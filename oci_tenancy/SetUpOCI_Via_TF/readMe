@@ -1,6 +1,10 @@
 Note- All Sample input files under example folder.
 Everything now works with Python 3.7.
-Please
+Install the following:
+1.  Install VC++ tools from https://visualstudio.microsoft.com/downloads/
+    "Microsoft Visual C++ Redistributable for Visual Studio 2019"
+2.  pycryptodome and pycryptodomex via pip (pip3)
+
 
 -----------------------------------------------------------------------------------------------------
 1. createPEMKeys.py
