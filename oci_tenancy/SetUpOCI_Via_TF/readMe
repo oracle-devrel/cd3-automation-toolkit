@@ -7,13 +7,17 @@ The script createPEMKeys.py creates public/private key pair in PEM format requir
 Set up the OCI tenancy. The public key is copied to the user profile in OCI console. And private key and fingerprint is used as input in config file for python API
 and vairables.tf for Terraform.
 
+Install VC++ tools from https://visualstudio.microsoft.com/downloads/
+"Microsoft Visual C++ Redistributable for Visual Studio 2019"
+
+
 Usage:
 ./createPEMKeys.py
 
 output: oci_api_private.pem and oci_api_public.pem
 
 
--- Used Python 2.7 to compile this code as createPEMKeys.py rquires pycrypto module which did not get installed with Python3.7. Also to install this package,
+-- Install the pycryptodome package using pip / Pycharm.
    you might need to install Microsoft Visual C++ Compiler. Download it from here: http://aka.ms/vcpython27
 -- Rest of the code is compiled with Pythin3.7
 

@@ -1,4 +1,5 @@
-from Crypto.PublicKey import RSA
+from Cryptodome.PublicKey import RSA
+
 key = RSA.generate(2048)
 f = open("oci_api_private.pem", "wb")
 f.write(key.exportKey('PEM'))
