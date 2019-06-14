@@ -1,4 +1,6 @@
-Note- All Sample input files under example folder
+Note- All Sample input files under example folder.
+Everything now works with Python 3.7.
+Please
 
 -----------------------------------------------------------------------------------------------------
 1. createPEMKeys.py
@@ -18,8 +20,11 @@ output: oci_api_private.pem and oci_api_public.pem
 
 
 -- Install the pycryptodome & pycryptodomex package using pip / Pycharm.
-   you might need to install Microsoft Visual C++ Compiler. Download it from here: http://aka.ms/vcpython27
--- Rest of the code is compiled with Pythin3.7
+   you need to install Microsoft Visual C++ Compiler. Download it from :
+   https://www.visualstudio.com/en-us/downloads/download-visual-studio-vs.aspx
+   Download MS Visual Studio 2015 (Community Edition) and install the C/C++ compilers and the redistributable only.
+
+-- Rest of the code is compiled with Python.7
 
 -----------------------------------------------------------------------------------------------------
 2. OCSWorkVM/Setup from other work station eg your laptop
