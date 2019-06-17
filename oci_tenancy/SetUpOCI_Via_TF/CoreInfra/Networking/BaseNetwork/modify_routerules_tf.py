@@ -34,48 +34,126 @@ if args.overwrite is not None:
 else:
     overwrite = "false"
 
+ruleStr=""
 #If input is CD3 excel file
 if('.xls' in inputfile):
     endNames = {'<END>', '<end>'}
     if (overwrite == 'true'):
         print("Reading RouteRulesinOCI sheet of cd3")
         df = pd.read_excel(inputfile, sheet_name='RouteRulesinOCI')
+        for i in df.index:
+            subnet_name = df.iat[i, 0]
+            subnet_name = subnet_name.strip()
+            dest_cidr = df.iat[i, 1]
+            dest_cidr = str(dest_cidr).strip()
+            dest_obj = df.iat[i, 2]
+            dest_obj = str(dest_obj).strip()
+            dest_type = df.iat[i, 3]
+            dest_type = str(dest_type).strip()
+            vcn_name = df.iat[i,4]
+            vcn_name = vcn_name.strip()
+            comp_name = df.iat[i,5]
+            comp_name = comp_name.strip()
+            if('in-oracle-services-network' in dest_cidr):
+                dest_cidr="${data.oci_core_services.oci_services.services.0.cidr_block}"
+            if(subnet_name=='Route Table associated with DRG'):
+                rt_var = vcn_name + "_drg_rt"
+            elif('Default Route Table for' in subnet_name):
+                continue;
+            elif('Route Table associated with LPG' in subnet_name):
+                lpg_name= subnet_name.split('LPG')
+                rt_var = lpg_name[1].strip() + "_rt"
+            elif ('-1-10.' in subnet_name or '-2-10.' in subnet_name or '-3-10.' in subnet_name):
+                rt_var=subnet_name.rsplit("-",2)[0]
+            elif('-10.' in subnet_name):
+                rt_var=subnet_name.rsplit("-",1)[0]
+            else:
+                rt_var=subnet_name
+
+            if(i==0 and df.iat[i-1,0]!=df.iat[i,0]):
+                ruleStr = ruleStr + """
+resource "oci_core_route_table" \"""" + rt_var + """"{
+    compartment_id = "${var.""" + comp_name + """}"
+    vcn_id = "${oci_core_vcn.""" + vcn_name + """.id}"
+    display_name = \"""" + subnet_name.strip() + """\" 
+    
+    ##Add More rules for subnet """ + rt_var+ """##
+    
+    route_rules
+        {
+            destination =\"""" + dest_cidr + """\"
+            network_entity_id = \"""" + dest_obj + """\"
+            destination_type = \"""" + dest_type + """\"
+        }
+        """
+            elif (i != 0 and df.iat[i - 1, 0] != df.iat[i, 0]):
+                ruleStr = ruleStr + """
+}
+resource "oci_core_route_table" \"""" + rt_var + """"{
+    compartment_id = "${var.""" + comp_name + """}"
+    vcn_id = "${oci_core_vcn.""" + vcn_name + """.id}"
+    display_name = \"""" + subnet_name.strip() + """\" 
+    
+    ##Add More rules for subnet """ + rt_var+ """##
+    
+        route_rules
+        {
+            destination =\"""" + dest_cidr + """\"
+            network_entity_id = \"""" + dest_obj + """\"
+            destination_type = \"""" + dest_type + """\"
+        }
+        """
+
+            else:
+                ruleStr=ruleStr+"""
+        route_rules
+        {
+            destination =\"""" + dest_cidr + """\"
+            network_entity_id = \"""" + dest_obj + """\"
+            destination_type = \"""" + dest_type + """\"
+        }
+        """
+        ruleStr=ruleStr+"""
+}"""
+        with open(routefile, 'w') as f:
+            f.write(ruleStr)
+
     elif(overwrite=='false'):
         print("Reading AddRouteRules sheet of cd3")
         df = pd.read_excel(inputfile, sheet_name='AddRouteRules')
-    for i in df.index:
-        subnet_name = df.iat[i, 0]
-        subnet_name = subnet_name.strip()
+        for i in df.index:
+            subnet_name = df.iat[i, 0]
+            subnet_name = subnet_name.strip()
 
-        if (subnet_name in endNames):
-            break
+            if (subnet_name in endNames):
+                break
 
-        dest_cidr = df.iat[i, 1]
-        dest_cidr=dest_cidr.strip()
-        dest_obj = df.iat[i, 2]
-        dest_obj=dest_obj.strip()
-        dest_type = df.iat[i, 3]
-        dest_type=dest_type.strip()
+            dest_cidr = df.iat[i, 1]
+            dest_cidr=dest_cidr.strip()
+            dest_obj = df.iat[i, 2]
+            dest_obj=dest_obj.strip()
+            dest_type = df.iat[i, 3]
+            dest_type=dest_type.strip()
 
 
-        searchString = "##Add More rules for subnet " + subnet_name + "##"
-        strRule = ""
-        strRule = strRule + """
-            route_rules {
+            searchString = "##Add More rules for subnet " + subnet_name + "##"
+            strRule = ""
+            strRule = strRule + """
+        route_rules {
             destination = \"""" + dest_cidr + """\"
             network_entity_id = \"""" + dest_obj + """\"
             destination_type = \"""" + dest_type + """\"
-            }
-            """
-        strRule = strRule + "##Add More rules for subnet " + subnet_name + "##"
+        }
+        """
+            strRule = strRule + "##Add More rules for subnet " + subnet_name + "##"
 
-        # Update file contents
-        with open(routefile) as f:
-            data = f.read()
+            # Update file contents
+            with open(routefile) as f:
+                data = f.read()
 
-        with open(routefile, 'w') as f:
-            updated_data = re.sub(searchString, strRule, data)
-            f.write(updated_data)
+            with open(routefile, 'w') as f:
+                updated_data = re.sub(searchString, strRule, data)
+                f.write(updated_data)
 
 
 # If input is a csv file

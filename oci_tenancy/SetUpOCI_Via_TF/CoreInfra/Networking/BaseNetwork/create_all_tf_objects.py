@@ -67,7 +67,9 @@ else:
 
     print("-----------------Creating Route----------------")
     command = 'python create_terraform_route.py ' + propsfile + ' ' + outdir + "/" + prefix + '-routes.tf --inputCD3='+excel
-    os.system(command)
+    exitVal=os.system(command)
+    if (exitVal == 1):
+        exit()
 
     print("---------------Creating Seclist ---------------")
     command = 'python create_terraform_seclist.py  --propsfile=' + propsfile + ' --outdir=' + outdir +' --inputCD3='+excel

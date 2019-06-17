@@ -278,7 +278,7 @@ if(excel!=''):
                     or str(configure_sgw).lower()== NaNstr.lower() or str(configure_ngw).lower()== NaNstr.lower()
                     or str(configure_igw).lower() == NaNstr.lower()):
                 print("Column Values or Rows cannot be left empty in Subnets sheet in CD3..exiting...")
-                exit()
+                exit(1)
 
 
             vcn_data = df_vcn.loc[vcn_name]
@@ -355,13 +355,15 @@ if(excel!=''):
                 ad_name = ""
 
             subnet_res_name = name
-            name1 = name + str(ad_name)
+            if(str(ad_name)!=''):
+                name1 = name + "-"+str(ad_name)
+            else: name1=name
             if(subnet_name_attach_cidr=='y'):
                 display_name = name1 + "-" + subnet
             else:
                 display_name = name
 
-            name=name1
+            #name=name1
             tempStr = tempStr + """ 
 resource "oci_core_route_table" \"""" + name + """"{
     compartment_id = "${var.""" + compartment_var_name + """}"
@@ -506,12 +508,16 @@ else:
                     ad_name = ""
 
                 subnet_res_name = name
-                name1 = name + str(ad_name)
+                if (str(ad_name) != ''):
+                    name1 = name + "-" + str(ad_name)
+                else:
+                    name1 = name
+
                 if (subnet_name_attach_cidr == 'y'):
                     display_name = name1 + "-" + subnet
                 else:
                     display_name = name
-                name = name1
+                #name = name1
 
                 tempStr = tempStr + """ 
 resource "oci_core_route_table" \"""" + name + """"{

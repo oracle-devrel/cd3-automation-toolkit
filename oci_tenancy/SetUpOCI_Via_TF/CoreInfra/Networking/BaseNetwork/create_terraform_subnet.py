@@ -92,13 +92,16 @@ if(excel!=''):
 			ad_name = ""
 			adString = """availability_domain = "" """
 		subnet_res_name=name
-		name1 = name + ad_name
+		if (str(ad_name) != ''):
+			name1 = name + "-" + str(ad_name)
+		else:
+			name1 = name
 		if (subnet_name_attach_cidr == 'y'):
 			display_name = name1 + "-" + subnet
 		else:
 			display_name = name
 
-		name = name1
+		#name = name1
 		#dnslabel = re.sub('-', '', name)
 
 		dnslabel = df.iat[i, 10]
@@ -193,7 +196,10 @@ else:
 					adString="""availability_domain = "" """
 
 				subnet_res_name=name
-				name1 = name + ad_name
+				if (str(ad_name) != ''):
+					name1 = name + "-" + str(ad_name)
+				else:
+					name1 = name
 				if (subnet_name_attach_cidr == 'y'):
 					display_name = name1 + "-" + subnet
 				else:
@@ -208,7 +214,7 @@ else:
 					dnslabel = (subnet_dns[:15]) if len(subnet_dns) > 15 else subnet_dns
 
 
-				name=name1
+				#name=name1
 				tempStr = tempStr+"""
 resource "oci_core_subnet" \"""" + subnet_res_name + """" {
 	compartment_id = "${var.""" + compartment_var_name + """}" 

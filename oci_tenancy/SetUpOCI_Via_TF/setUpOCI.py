@@ -232,7 +232,7 @@ if('8' in userInput):
     print("------------------------Adding Route Rules--------------------------------")
     inputfile = input("Enter full path to input file containing route rules to be added eg example/BaseNetwork/add_routes-example.csv or CD3 excel file: ")
     outfile = input("Enter full path to routes terraform file created earlier while setting up Base Network Objects: ")
-    overwrite = input("Do you want to overwrite rules in OCI. Enter true or false")
+    overwrite = input("Do you want to overwrite rules in OCI. Enter true or false: ")
 
     os.chdir('CoreInfra/Networking/BaseNetwork')
     if(overwrite=='' or overwrite=='false'):
@@ -251,7 +251,7 @@ if('9' in userInput):
     outdir = input("Enter full path to output directory used while setting up Base Network Objects: ")
     inputConfigFile = input("Enter path to pyhton config file This is required when you are executing the code from some other workstation rather than OCS VM"
         " else leave it empty: ")
-    overwrite = input("Do you want to overwrite rules in OCI. Enter true or false")
+    overwrite = input("Do you want to overwrite rules in OCI. Enter true or false: ")
     if (overwrite == '' or overwrite == 'false'):
         inputcsv = input("Enter full path to input file containing security rules info eg example/BaseNetwork/update_seclist-example.csv or CD3 excel file: ")
     else:

@@ -38,36 +38,34 @@ def get_vcns(config,compartment_id):
     vcnlist = vcncient.list_vcns(compartment_id=compartment_id,lifecycle_state="AVAILABLE")
     return vcnlist
 
-subnets = []
-destinations = []
-entity_ids = []
-dest_types = []
-def print_routetables(routetables):
+def print_routetables(routetables,vcn_name,comp_name):
     print ("SubnetName, Destination CIDR, Route Destination Object, Destination Type")
     #oname.write("SubnetName, Destination CIDR, Route Destination Object, Destination Type\n")
     global i
     global df
     for routetable in routetables.data:
-
+        print(routetable.display_name)
         rules = routetable.route_rules
         display_name = routetable.display_name
         dn = ""
-        if "10" in display_name:
-            dn = display_name.split("10")
-            dn = dn[0][:-1]
-        else:
-            dn = routetable.display_name
-        for rule in rules:
-            i = i + 1
+        #if "10" in display_name:
+            #dn = display_name.split("10")
+            #dn = dn[0][:-1]
+        #else:
+        dn = routetable.display_name
+        if(not rules):
+            i=i+1
             print(i)
-
-            subnets.append(dn)
-            destinations.append(str(rule.destination))
-            entity_ids.append(str(rule.network_entity_id))
-            dest_types.append(str(rule.destination_type))
+            new_row = pd.DataFrame({'SubnetName': dn, 'Destination CIDR': '',
+                                    'Route Destination Object': '',
+                                    'Destination Type': '', 'VCN Name':vcn_name,'Compartment Name':comp_name}, index=[i])
+            df = df.append(new_row, ignore_index=True)
+        for rule in rules:
+            i=i+1
+            print(i)
             print(dn + "," + str(rule.destination) + "," + str(rule.network_entity_id)+","+ str(rule.destination_type))
             #oname.write(dn + "," + str(rule.destination) + "," +str(rule.network_entity_id)+","+ str(rule.destination_type)+"\n")
-            new_row = pd.DataFrame({'SubnetName': dn, 'Destination CIDR': str(rule.destination), 'Route Destination Object': str(rule.network_entity_id), 'Destination Type': str(rule.destination_type)}, index=[i])
+            new_row = pd.DataFrame({'SubnetName': dn, 'Destination CIDR': str(rule.destination), 'Route Destination Object': str(rule.network_entity_id), 'Destination Type': str(rule.destination_type),'VCN Name':vcn_name,'Compartment Name':comp_name}, index=[i])
             df = df.append(new_row, ignore_index=True)
     # Create a Pandas dataframe from some data.
     #df1 = pd.DataFrame({'SubnetName': subnets,'Destination CIDR': destinations,'Route Destination Object': entity_ids,'Destination Type': dest_types})
@@ -125,13 +123,14 @@ df=pd.DataFrame()
 if vcn_name is not None:
     vcn_ocid = get_vcn_id(config,ntk_compartment_id,vcn_name)
     routetables = vcn.list_route_tables(compartment_id=ntk_compartment_id, vcn_id=vcn_ocid, lifecycle_state='AVAILABLE')
-    print_routetables(routetables)
+    print_routetables(routetables,vcn_name,ntk_comp_name)
 else:
     vcns = get_vcns(config,ntk_compartment_id)
     for v in vcns.data:
         vcn_id = v.id
+        vcn_name=v.display_name
         routetables = vcn.list_route_tables(compartment_id=ntk_compartment_id, vcn_id=vcn_id, lifecycle_state='AVAILABLE')
-        print_routetables(routetables)
+        print_routetables(routetables,vcn_name,ntk_comp_name)
 #oname.close()
 
 book = load_workbook(cd3file)
