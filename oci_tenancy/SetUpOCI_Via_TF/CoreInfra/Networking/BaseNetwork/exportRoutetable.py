@@ -16,13 +16,24 @@ def convertNullToNothing(input):
     else:
         return str(input)
 
+compartment_ids={}
 def get_network_compartment_id(config, compartment_name):
     identity = IdentityClient(config)
     comp_list = oci.pagination.list_call_get_all_results(identity.list_compartments,config["tenancy"],compartment_id_in_subtree=True)
     compartment_list = comp_list.data
-    for compartment in compartment_list:
-        if compartment.name == compartment_name:
-            return compartment.id
+
+    if(compartment_name=='root'):
+        for compartment in compartment_list:
+            if(compartment.lifecycle_state == 'ACTIVE'):
+                compartment_ids[compartment.name]=compartment.id
+        return compartment_ids
+
+    else:
+        for compartment in compartment_list:
+            if compartment.name == compartment_name:
+                compartment_ids[compartment.name]=compartment.id
+                return compartment_ids
+
 
 def get_vcn_id(config,compartment_id,vname):
     vcncient = VirtualNetworkClient(config)
@@ -101,13 +112,14 @@ if('.xls' not in cd3file):
     exit()
 vcn_name = args.vcnName
 ntk_comp_name = args.networkCompartment
+
 if args.configFileName is not None:
     configFileName = args.configFileName
     config = oci.config.from_file(file_location=configFileName)
 else:
     config = oci.config.from_file()
 
-ntk_compartment_id = get_network_compartment_id(config, ntk_comp_name)
+ntk_compartment_ids = get_network_compartment_id(config, ntk_comp_name)
 vcn = VirtualNetworkClient(config)
 
 #if(vcn_name is not None):
@@ -121,16 +133,17 @@ i=0
 df=pd.DataFrame()
 
 if vcn_name is not None:
-    vcn_ocid = get_vcn_id(config,ntk_compartment_id,vcn_name)
-    routetables = vcn.list_route_tables(compartment_id=ntk_compartment_id, vcn_id=vcn_ocid, lifecycle_state='AVAILABLE')
+    vcn_ocid = get_vcn_id(config,ntk_compartment_ids[ntk_comp_name],vcn_name)
+    routetables = vcn.list_route_tables(compartment_id=ntk_compartment_ids[0], vcn_id=vcn_ocid, lifecycle_state='AVAILABLE')
     print_routetables(routetables,vcn_name,ntk_comp_name)
 else:
-    vcns = get_vcns(config,ntk_compartment_id)
-    for v in vcns.data:
-        vcn_id = v.id
-        vcn_name=v.display_name
-        routetables = vcn.list_route_tables(compartment_id=ntk_compartment_id, vcn_id=vcn_id, lifecycle_state='AVAILABLE')
-        print_routetables(routetables,vcn_name,ntk_comp_name)
+    for ntk_compartment_name in ntk_compartment_ids:
+        vcns = get_vcns(config,ntk_compartment_ids[ntk_compartment_name])
+        for v in vcns.data:
+            vcn_id = v.id
+            vcn_name=v.display_name
+            routetables = vcn.list_route_tables(compartment_id=ntk_compartment_ids[ntk_compartment_name], vcn_id=vcn_id, lifecycle_state='AVAILABLE')
+            print_routetables(routetables,vcn_name,ntk_compartment_name)
 #oname.close()
 
 book = load_workbook(cd3file)
