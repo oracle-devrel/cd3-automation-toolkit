@@ -40,10 +40,10 @@ oname = open(outfile,"w")
 tempStr = ""
 
 if('.xls' in args.inputfile):
-	df_vcn = pd.read_excel(args.inputfile, sheet_name='VCNs')
+	df_vcn = pd.read_excel(args.inputfile, sheet_name='VCNs',skiprows=1)
 	df_vcn.set_index("vcn_name", inplace=True)
 	df_vcn.head()
-	df = pd.read_excel(args.inputfile, sheet_name='DHCP')
+	df = pd.read_excel(args.inputfile, sheet_name='DHCP',skiprows=1)
 	for i in df.index:
 		vcn_name = df.iat[i,0]
 		dhcp_option_name = df.iat[i,1]

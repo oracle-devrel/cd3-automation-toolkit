@@ -28,7 +28,7 @@ ADS = ["AD1", "AD2", "AD3"]
 #If input is CD3 excel file
 if('.xls' in filename):
 
-    df = pd.read_excel(filename, sheet_name='BlockVols')
+    df = pd.read_excel(filename, sheet_name='BlockVols',skiprows=1)
     for i in df.index:
         blockname = df.iat[i, 0]
         size = df.iat[i, 1]

@@ -38,7 +38,7 @@ new_string = ""
 
 # If the input is CD3
 if ('.xlsx' in filename):
-    df = pd.read_excel(filename, sheet_name='TagServer')
+    df = pd.read_excel(filename, sheet_name='TagServer',skiprows=1)
 
     for i in df.index:
         string = ""

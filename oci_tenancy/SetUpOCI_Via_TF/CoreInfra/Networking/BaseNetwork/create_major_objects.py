@@ -65,7 +65,7 @@ hub_vcn_name=''
 # If CD3 exceel file is given as input
 if(excel!=''):
         NaNstr = 'NaN'
-        df = pd.read_excel(excel, sheet_name='VCNs')
+        df = pd.read_excel(excel, sheet_name='VCNs',skiprows=1)
 
         # Get VCN names from vcn_name column in VCNs sheet of CD3 excel
         vcns = df['vcn_name']

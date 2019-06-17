@@ -72,7 +72,7 @@ vcn_compartment = {}
 
 # If CD3 excel file is given as input
 if(excel!=''):
-        df_vcn = pd.read_excel(excel, sheet_name='VCNs')
+        df_vcn = pd.read_excel(excel, sheet_name='VCNs',skiprows=1)
 
         # Get VCN names from vcn_name column in VCNs sheet of CD3 excel
         for i in df_vcn.index:
@@ -255,7 +255,7 @@ if(excel!=''):
     NaNstr = 'NaN'
     df_vcn.set_index("vcn_name", inplace=True)
     df_vcn.head()
-    df = pd.read_excel(excel, sheet_name='Subnets')
+    df = pd.read_excel(excel, sheet_name='Subnets',skiprows=1)
     for i in df.index:
             #Get VCN data
             vcn_name=df['vcn_name'][i]

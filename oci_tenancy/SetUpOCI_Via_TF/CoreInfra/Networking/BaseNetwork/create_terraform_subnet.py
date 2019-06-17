@@ -61,10 +61,10 @@ ADS = ["AD1", "AD2", "AD3"]
 
 # If CD3 excel file is given as input
 if(excel!=''):
-	df_vcn = pd.read_excel(excel, sheet_name='VCNs')
+	df_vcn = pd.read_excel(excel, sheet_name='VCNs',skiprows=1)
 	df_vcn.set_index("vcn_name", inplace=True)
 	df_vcn.head()
-	df = pd.read_excel(excel, sheet_name='Subnets')
+	df = pd.read_excel(excel, sheet_name='Subnets',skiprows=1)
 	NaNstr = 'NaN'
 	for i in df.index:
 		#Get VCN data

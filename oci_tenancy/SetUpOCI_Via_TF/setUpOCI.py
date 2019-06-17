@@ -105,7 +105,7 @@ if('4' in userInput):
         print("using already provided prefix: " + prefix)
 
     outfile = outdir + "/" + prefix + '-policies.tf'
-    inputCD3 = input("Enter full path to CD3 excel file. Leave blank if don't want want to specify CD3 input..")
+    inputCD3 = input("Enter full path to CD3 excel file. Leave blank if don't want want to specify CD3 input: ")
 
     if not os.path.exists(outdir):
         os.makedirs(outdir)

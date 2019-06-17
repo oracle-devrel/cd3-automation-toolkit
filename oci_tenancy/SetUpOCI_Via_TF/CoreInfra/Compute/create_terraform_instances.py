@@ -55,7 +55,7 @@ outdir = args.outdir
 
 #If input is CD3 excel file
 if('.xlsx' in filename):
-    df = pd.read_excel(filename, sheet_name='Instances')
+    df = pd.read_excel(filename, sheet_name='Instances',skiprows=1)
     for row in df.index:
         copy_template_file(df['Hostname'][row], df['OS'][row])
     for i in df.keys():

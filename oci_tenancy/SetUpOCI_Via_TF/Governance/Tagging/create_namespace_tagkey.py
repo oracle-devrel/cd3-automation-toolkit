@@ -39,7 +39,7 @@ if path.exists(src1):
 
 # Creates the namespaces
 if ('.xlsx' in filename):
-    df = pd.read_excel(filename, sheet_name='Tags')
+    df = pd.read_excel(filename, sheet_name='Tags',skiprows=1)
 
     for i in df.keys():
         if (i == 'compartment_name'):
@@ -73,7 +73,7 @@ if ('.xlsx' in filename):
 
 # Adds the tag to the namespaces created
 if ('.xlsx' in filename):
-    df1 = pd.read_excel(filename, sheet_name='Tags')
+    df1 = pd.read_excel(filename, sheet_name='Tags',skiprows=1)
     df = df1.dropna(how='all')
     for i in df.keys():
 
