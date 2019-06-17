@@ -333,7 +333,7 @@ if('12' in userInput):
 
 if('13' in userInput):
     print("---------------------------Exporting Route Rules--------------------------")
-    inputComp = input("Enter Compartment Name of VCN for which you want to export Route Tables: ")
+    inputComp = input("Enter Compartment Name of VCN for which you want to export Route Tables; Enter root if you have networking components in multiple compartments: ")
     outfile = input("Enter full path to CD3 excel file where route rules info will be written: ")
     inputConfigFile = input("Enter path to pyhton config file This is required when you are executing the code from some other workstation rather than OCS VM"
                             " else leave it empty: ")
