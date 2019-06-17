@@ -65,8 +65,10 @@ if('.xls' in inputfile):
             elif('Route Table associated with LPG' in subnet_name):
                 lpg_name= subnet_name.split('LPG')
                 rt_var = lpg_name[1].strip() + "_rt"
+            # display name contaoin AD1, AD2 or AD3 and CIDR
             elif ('-1-10.' in subnet_name or '-2-10.' in subnet_name or '-3-10.' in subnet_name):
                 rt_var=subnet_name.rsplit("-",2)[0]
+            #display name contains CIDR
             elif('-10.' in subnet_name):
                 rt_var=subnet_name.rsplit("-",1)[0]
             else:
@@ -77,7 +79,6 @@ if('.xls' in inputfile):
 resource "oci_core_route_table" \"""" + rt_var + """"{
     compartment_id = "${var.""" + comp_name + """}"
     vcn_id = "${oci_core_vcn.""" + vcn_name + """.id}"
-    display_name = \"""" + subnet_name.strip() + """\" 
     
     ##Add More rules for subnet """ + rt_var+ """##
     
@@ -94,7 +95,6 @@ resource "oci_core_route_table" \"""" + rt_var + """"{
 resource "oci_core_route_table" \"""" + rt_var + """"{
     compartment_id = "${var.""" + comp_name + """}"
     vcn_id = "${oci_core_vcn.""" + vcn_name + """.id}"
-    display_name = \"""" + subnet_name.strip() + """\" 
     
     ##Add More rules for subnet """ + rt_var+ """##
     

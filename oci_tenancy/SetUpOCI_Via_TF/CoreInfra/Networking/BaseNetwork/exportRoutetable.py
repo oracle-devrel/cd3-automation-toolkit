@@ -58,12 +58,18 @@ def print_routetables(routetables,vcn_name,comp_name):
         print(routetable.display_name)
         rules = routetable.route_rules
         display_name = routetable.display_name
-        dn = ""
-        #if "10" in display_name:
-            #dn = display_name.split("10")
-            #dn = dn[0][:-1]
-        #else:
-        dn = routetable.display_name
+
+        # display name contaoin AD1, AD2 or AD3 and CIDR
+        if ('-1-10.' in display_name or '-2-10.' in display_name or '-3-10.' in display_name):
+            dn = display_name.rsplit("-", 2)[0]
+
+        # display name contains CIDR
+        elif ('-10.' in display_name):
+            dn = display_name.rsplit("-", 1)[0]
+        else:
+            dn=display_name
+
+        #dn = routetable.display_name
         if(not rules):
             i=i+1
             print(i)
@@ -92,7 +98,7 @@ def print_routetables(routetables,vcn_name,comp_name):
      # Close the Pandas Excel writer and output the Excel file.
 
 
-parser = argparse.ArgumentParser(description="Export Route Table on OCI to CSV")
+parser = argparse.ArgumentParser(description="Export Route Table on OCI to CD3")
 parser.add_argument("networkCompartment", help="Compartment where VCN resides")
 parser.add_argument("cd3file", help="path of CD3 excel file to export rules to")
 parser.add_argument("--vcnName", help="VCN from which to export the sec list", required=False)
