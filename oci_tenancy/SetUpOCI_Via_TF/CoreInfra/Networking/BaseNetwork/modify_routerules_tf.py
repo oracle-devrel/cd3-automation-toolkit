@@ -35,6 +35,7 @@ else:
     overwrite = "false"
 
 ruleStr=""
+subnets_done=[]
 #If input is CD3 excel file
 if('.xls' in inputfile):
     endNames = {'<END>', '<end>'}
@@ -74,7 +75,11 @@ if('.xls' in inputfile):
             else:
                 rt_var=subnet_name
 
-            if(i==0 and df.iat[i-1,0]!=df.iat[i,0]):
+            if(subnet_name not in subnets_done):
+                if(len(subnets_done)!=0):
+                    ruleStr=ruleStr+"""
+}"""
+
                 ruleStr = ruleStr + """
 resource "oci_core_route_table" \"""" + rt_var + """"{
     compartment_id = "${var.""" + comp_name + """}"
@@ -82,34 +87,18 @@ resource "oci_core_route_table" \"""" + rt_var + """"{
     
     ##Add More rules for subnet """ + rt_var+ """##
     
-    route_rules
-        {
+    route_rules {
+        
             destination =\"""" + dest_cidr + """\"
             network_entity_id = \"""" + dest_obj + """\"
             destination_type = \"""" + dest_type + """\"
         }
         """
-            elif (i != 0 and df.iat[i - 1, 0] != df.iat[i, 0]):
-                ruleStr = ruleStr + """
-}
-resource "oci_core_route_table" \"""" + rt_var + """"{
-    compartment_id = "${var.""" + comp_name + """}"
-    vcn_id = "${oci_core_vcn.""" + vcn_name + """.id}"
-    
-    ##Add More rules for subnet """ + rt_var+ """##
-    
-        route_rules
-        {
-            destination =\"""" + dest_cidr + """\"
-            network_entity_id = \"""" + dest_obj + """\"
-            destination_type = \"""" + dest_type + """\"
-        }
-        """
+                subnets_done.append(subnet_name)
 
             else:
                 ruleStr=ruleStr+"""
-        route_rules
-        {
+        route_rules {
             destination =\"""" + dest_cidr + """\"
             network_entity_id = \"""" + dest_obj + """\"
             destination_type = \"""" + dest_type + """\"
