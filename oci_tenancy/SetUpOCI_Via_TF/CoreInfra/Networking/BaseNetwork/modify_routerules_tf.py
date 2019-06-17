@@ -38,12 +38,14 @@ ruleStr=""
 #If input is CD3 excel file
 if('.xls' in inputfile):
     endNames = {'<END>', '<end>'}
+    NaNstr = 'NaN'
     if (overwrite == 'true'):
         print("Reading RouteRulesinOCI sheet of cd3")
         df = pd.read_excel(inputfile, sheet_name='RouteRulesinOCI')
         for i in df.index:
             subnet_name = df.iat[i, 0]
-            subnet_name = subnet_name.strip()
+            if (str(subnet_name).lower() == NaNstr.lower()):
+                continue
             dest_cidr = df.iat[i, 1]
             dest_cidr = str(dest_cidr).strip()
             dest_obj = df.iat[i, 2]
