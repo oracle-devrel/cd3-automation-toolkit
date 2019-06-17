@@ -32,12 +32,19 @@ tempStr = ""
 
 # Backup the existing Routes tf file
 shutil.copy(variablesFile, variablesFile + "_backup")
+with open(variablesFile, 'r') as file:
+    vardata = file.read()
+
 
 for compartment in paginate(identityClient.list_compartments, compartment_id=tenancy_id,compartment_id_in_subtree =True):
     if(compartment.lifecycle_state=='ACTIVE'):
+
+
         compartment_name=compartment.name
         compartment_ocid=compartment.id
-        tempStr=tempStr+"""
+        searchstr = "variable \"" + compartment_name + ""
+        if(searchstr not in vardata):
+            tempStr=tempStr+"""
 variable \"""" + compartment_name + """" {
         type = "string"
         default = \"""" + compartment_ocid + """"
