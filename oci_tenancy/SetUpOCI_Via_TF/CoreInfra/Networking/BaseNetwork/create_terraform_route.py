@@ -356,7 +356,7 @@ if(excel!=''):
 
             subnet_res_name = name
             if(str(ad_name)!=''):
-                name1 = name + "-"+str(ad_name)
+                name1 = name + "-ad"+str(ad_name)
             else: name1=name
             if(subnet_name_attach_cidr=='y'):
                 display_name = name1 + "-" + subnet
@@ -509,7 +509,7 @@ else:
 
                 subnet_res_name = name
                 if (str(ad_name) != ''):
-                    name1 = name + "-" + str(ad_name)
+                    name1 = name + "-ad" + str(ad_name)
                 else:
                     name1 = name
 

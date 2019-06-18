@@ -67,11 +67,11 @@ if('.xls' in inputfile):
                 lpg_name= subnet_name.split('LPG')
                 rt_var = lpg_name[1].strip() + "_rt"
             # display name contaoin AD1, AD2 or AD3 and CIDR
-            elif ('-1-10.' in subnet_name or '-2-10.' in subnet_name or '-3-10.' in subnet_name):
-                rt_var=subnet_name.rsplit("-",2)[0]
+            #elif ('-1-10.' in subnet_name or '-2-10.' in subnet_name or '-3-10.' in subnet_name):
+            #    rt_var=subnet_name.rsplit("-",2)[0]
             #display name contains CIDR
-            elif('-10.' in subnet_name):
-                rt_var=subnet_name.rsplit("-",1)[0]
+            #elif('-10.' in subnet_name):
+            #    rt_var=subnet_name.rsplit("-",1)[0]
             else:
                 rt_var=subnet_name
 

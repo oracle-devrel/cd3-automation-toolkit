@@ -93,7 +93,7 @@ if(excel!=''):
 			adString = """availability_domain = "" """
 		subnet_res_name=name
 		if (str(ad_name) != ''):
-			name1 = name + "-" + str(ad_name)
+			name1 = name + "-ad" + str(ad_name)
 		else:
 			name1 = name
 		if (subnet_name_attach_cidr == 'y'):
@@ -197,7 +197,7 @@ else:
 
 				subnet_res_name=name
 				if (str(ad_name) != ''):
-					name1 = name + "-" + str(ad_name)
+					name1 = name + "-ad" + str(ad_name)
 				else:
 					name1 = name
 				if (subnet_name_attach_cidr == 'y'):

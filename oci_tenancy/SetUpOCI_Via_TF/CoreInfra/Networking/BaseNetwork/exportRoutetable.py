@@ -60,13 +60,13 @@ def print_routetables(routetables,vcn_name,comp_name):
         display_name = routetable.display_name
 
         # display name contains AD1, AD2 or AD3 and CIDR
-        if ('-1-10.' in display_name or '-2-10.' in display_name or '-3-10.' in display_name or '-1-172.' in display_name
-                or '-2-172.' in display_name or '-3-172.' in display_name or '-1-192.' in display_name or '-2-192.' in display_name
-                or '-3-192.' in display_name):
+        if ('-ad1-10.' in display_name or '-ad2-10.' in display_name or '-ad3-10.' in display_name or '-ad1-172.' in display_name
+                or '-ad2-172.' in display_name or '-ad3-172.' in display_name or '-ad1-192.' in display_name or '-ad2-192.' in display_name
+                or '-ad3-192.' in display_name):
             dn = display_name.rsplit("-", 2)[0]
 
         # display name contains CIDR
-        elif ('-10.' in display_name):
+        elif ('-10.' in display_name or '-172.' in display_name or '192.' in display_name):
             dn = display_name.rsplit("-", 1)[0]
         else:
             dn=display_name
