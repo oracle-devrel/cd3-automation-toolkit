@@ -4,7 +4,8 @@
 mkdir ~/.oci
 mkdir -p /root/ocswork/keys
 mkdir -p /root/ocswork/downloads
-mkdir -p /root/ocswork/terraform_files
+mkdir -p /root/ocswork/terraform_files/ashburn
+mkdir -p /root/ocswork/terraform_files/phoenix
 mkdir -p /root/ocswork/git_oci
 mkdir -p /root/ocswork/git_ocic2oci
 mkdir -p /root/ocswork/ocic2oci_work
@@ -50,9 +51,16 @@ chown root:root /root/ocswork/keys/oci_api_key.pem
 chmod 400 ~/.oci/config
 chmod 400 /root/ocswork/keys/oci_api_key.pem
 sed -i 's#key_file.*#key_file=/root/ocswork/keys/oci_api_key.pem#' ~/.oci/config
-mv /home/opc/provider.tf /root/ocswork/terraform_files
-mv /home/opc/variables.tf /root/ocswork/terraform_files
-chown root:root /root/ocswork/terraform_files/*
+cp /home/opc/provider.tf /root/ocswork/terraform_files
+cp /home/opc/variables.tf /root/ocswork/terraform_files
+cp /home/opc/provider.tf /root/ocswork/terraform_files/phoenix
+cp /home/opc/variables.tf /root/ocswork/terraform_files/phoenix
+mv /home/opc/provider.tf /root/ocswork/terraform_files/ashburn
+mv /home/opc/variables.tf /root/ocswork/terraform_files/ashburn
+cd /root/ocswork/terraform_files/ashburn
+sed -i 's/-phoenix-/-ashburn-/' variables.tf
+
+chown -R root:root /root/ocswork/terraform_files/*
 
 # Move the pvt key to the /root/ocswork directory
 mv /home/opc/ssh-pvt-key.ppk /root/ocswork/keys/ssh-pvt-key.ppk

@@ -46,11 +46,12 @@ try:
     input_lpg_to_orig_ocid = python_config['lpg_to_orig_ocid']
     input_lpg_to_mirror_ocid = python_config['lpg_to_mirror_ocid']
     input_lpg_to_rsync_ocid = python_config['lpg_to_rsync_ocid']
+    input_route_table_id = python_config['def_rt_table_ocid']
+
 except Exception as e:
     print(e)
 input_instance_ocid = python_config['ocswork_instance_ocid']
 input_public_ip = python_config['public_ip']
-input_route_table_id = python_config['def_rt_table_ocid']
 input_subnet_ocid = python_config['subnet_ocid']
 ## First create file to destroy the Panda Instance
 ## SSH To the VM, run terraform destroy by running terraform destroy -auto-approve

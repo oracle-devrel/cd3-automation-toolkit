@@ -325,7 +325,7 @@ variable "compartment_id" {
 }
 variable "fingerprint" {
         type = "string"
-        default = \"""" + python_config['fingerprint'] + """"
+        default = "us-phoenix-1"
 }
 variable "private_key_path" {
         type = "string"
