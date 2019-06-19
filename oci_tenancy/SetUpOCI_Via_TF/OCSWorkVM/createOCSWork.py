@@ -227,11 +227,12 @@ for compartment in paginate(identity_client.list_compartments, compartment_id=te
 if(ocs_compartment_found==0):
     print('Creating Compartment for OCS related work: ' +input_ocs_compartment_name + ' under root compartment')
     ocs_compartment_ocid = create_compartment(input_ocs_compartment_name,"compartment for OCS related work")
+
     if ocs_compartment_ocid == "-1":
         print ("Exiting due to compartment error : " )
         exit(-1)
     updatePropsFile(input_config_file, "ocs_compartment_ocid", ocs_compartment_ocid)
-if(vm_compartment_found==0):
+if(vm_compartment_found==0 and input_vm_compartment_name!=input_ocs_compartment_name):
     print('Creating Compartment for VMs: ' +input_vm_compartment_name + ' under root compartment')
     vm_compartment_ocid = create_compartment(input_vm_compartment_name,"compartment for VMs")
     if vm_compartment_ocid == "-1":
@@ -239,7 +240,7 @@ if(vm_compartment_found==0):
         exit(-1)
     updatePropsFile(input_config_file, "vm_compartment_ocid", vm_compartment_ocid)
 
-if(ntk_compartment_found==0):
+if(ntk_compartment_found==0 and ntk_compartment_ocid!=ocs_compartment_ocid and ntk_compartment_ocid!=vm_compartment_ocid):
     print('Creating Compartment for Network components: ' +input_ntk_compartment_name + ' under root compartment')
     ntk_compartment_ocid = create_compartment(input_ntk_compartment_name,"compartment for Network components")
     if ntk_compartment_ocid == "-1":
