@@ -86,19 +86,6 @@ def print_routetables(routetables,vcn_name,comp_name):
             #oname.write(dn + "," + str(rule.destination) + "," +str(rule.network_entity_id)+","+ str(rule.destination_type)+"\n")
             new_row = pd.DataFrame({'SubnetName': dn, 'Destination CIDR': str(rule.destination), 'Route Destination Object': str(rule.network_entity_id), 'Destination Type': str(rule.destination_type),'VCN Name':vcn_name,'Compartment Name':comp_name}, index=[i])
             df = df.append(new_row, ignore_index=True)
-    # Create a Pandas dataframe from some data.
-    #df1 = pd.DataFrame({'SubnetName': subnets,'Destination CIDR': destinations,'Route Destination Object': entity_ids,'Destination Type': dest_types})
-
-#    book = load_workbook(cd3file)
-#    writer = pd.ExcelWriter(cd3file, engine='openpyxl')
-#    writer.book = book
-#    writer.sheets = dict((ws.title, ws) for ws in book.worksheets)
-
-#    df1.to_excel(writer, sheet_name='RouteRulesinOCI', index=False)
-
-#    writer.save()
-     # Close the Pandas Excel writer and output the Excel file.
-
 
 parser = argparse.ArgumentParser(description="Export Route Table on OCI to CD3")
 parser.add_argument("networkCompartment", help="Compartment where VCN resides")
@@ -136,8 +123,8 @@ vcn = VirtualNetworkClient(config)
 #    outfile = outdir+"/"+ntk_comp_name+"_RouteRules.csv"
 #print("Writing sec rules to "+outfile)
 #oname = open(outfile,"w")
+
 i=0
-#df = pd.read_excel(cd3file, sheet_name='RouteRulesinOCI').head(0)
 df=pd.DataFrame()
 
 if vcn_name is not None:
@@ -155,7 +142,8 @@ else:
 #oname.close()
 
 book = load_workbook(cd3file)
-book.remove(book['RouteRulesinOCI'])
+if('RouteRulesinOCI' in book.sheetnames):
+    book.remove(book['RouteRulesinOCI'])
 writer = pd.ExcelWriter(cd3file, engine='openpyxl')
 writer.book = book
 writer.save()

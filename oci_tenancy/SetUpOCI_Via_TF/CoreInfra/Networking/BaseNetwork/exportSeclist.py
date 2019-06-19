@@ -219,7 +219,9 @@ else:
 #oname.close()
 
 book = load_workbook(cd3file)
-book.remove(book['SecRulesinOCI'])
+if('SecRulesinOCI' in book.sheetnames):
+    book.remove(book['SecRulesinOCI'])
+
 writer = pd.ExcelWriter(cd3file, engine='openpyxl')
 writer.book = book
 writer.save()
