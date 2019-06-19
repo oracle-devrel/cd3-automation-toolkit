@@ -344,7 +344,7 @@ elif('.xls' in args.inputfile):
     print("seclist rule existing data  : ")
     print(seclist_rule_count)
     print(seclist_rule_count_limit)
-    print(seclist_files)
+    #print(seclist_files)
 
 else:
     print("Invalid input vcn info file format; Acceptable formats: .xls, .xlsx, .properties")
@@ -368,13 +368,44 @@ if('.xls' in secrulesfilename):
             reader = csv.DictReader(skipCommentedLine(secrulesfile))
             columns = reader.fieldnames
             rowCount = 0
-
+            defaultname = open(outdir + "/" + "VCNs_Default_SecList.tf", "w")
+            default_ruleStr=''
+            default_seclists_done=[]
             for row in reader:
-
                 seclistName = row['SubnetName']
 
-                if (seclistName.lower() == '' or 'Default Security List for' in seclistName):
+                if (seclistName.lower() == ''):# or 'Default Security List for' in seclistName):
                     continue
+
+                vcn_name = row['VCN Name']
+                protocol = row['Protocol']
+                ruleType = row['RuleType']
+
+                #Process Default SecLists-- Create new file containign default ecurity lists for all VCNs
+                if('Default Security List for' in seclistName):
+                    if (seclistName not in default_seclists_done):
+                        if(len(default_seclists_done)==0):
+                            default_ruleStr=default_ruleStr+"""
+resource "oci_core_default_security_list" "default-security_list_""" + vcn_name + """" {
+    manage_default_resource_id  = "${oci_core_vcn.""" + vcn_name + """.default_security_list_id}"
+"""
+                        else:
+                            default_ruleStr = default_ruleStr + """
+}
+resource "oci_core_default_security_list" "default-security_list_""" + vcn_name + """" {
+    manage_default_resource_id  = "${oci_core_vcn.""" + vcn_name + """.default_security_list_id}"
+"""
+                        default_seclists_done.append(seclistName)
+
+                    new_sec_rule = ""
+                    if ruleType == 'ingress':
+                        new_sec_rule = create_ingress_rule_string(row)
+                    if ruleType == 'egress':
+                        new_sec_rule = create_egress_rule_string(row)
+                    default_ruleStr = default_ruleStr + new_sec_rule
+                    continue
+
+                #Process other seclists
                 subnetName = row['SubnetName'].rsplit('-',1)[0]
                 if(subnetName not in subnets_done or len(subnets_done)==0):
                     print('opening file '+outdir + "/" + subnetName + "_seclist.tf")
@@ -388,9 +419,6 @@ if('.xls' in secrulesfilename):
                         oname.close()
                     oname = open(outdir + "/" + subnetName + "_seclist.tf", "w")
 
-                vcn_name = row['VCN Name']
-                protocol = row['Protocol']
-                ruleType = row['RuleType']
 
                 if(seclistName not in seclists_done):
                     if(len(seclists_done)!=0):
@@ -414,6 +442,11 @@ vcn_id = "${oci_core_vcn.""" + vcn_name + """.id}"
 }"""
         oname.write(ruleStr)
         oname.close()
+        default_ruleStr=default_ruleStr+"""
+}"""
+        defaultname.write(default_ruleStr)
+        defaultname.close()
+
 
     elif(overwrite=='false'):
         print("Reading AddSecRules sheet of cd3")

@@ -41,7 +41,7 @@ if('.xls' in inputfile):
     endNames = {'<END>', '<end>'}
     NaNstr = 'NaN'
     if (overwrite == 'true'):
-        print("Reading RouteRulesinOCI sheet of cd3")
+        print("\nReading RouteRulesinOCI sheet of cd3")
         df = pd.read_excel(inputfile, sheet_name='RouteRulesinOCI')
         for i in df.index:
             subnet_name = df.iat[i, 0]
@@ -57,8 +57,8 @@ if('.xls' in inputfile):
             vcn_name = vcn_name.strip()
             comp_name = df.iat[i,5]
             comp_name = comp_name.strip()
-            if('in-oracle-services-network' in dest_cidr):
-                dest_cidr="${data.oci_core_services.oci_services.services.0.cidr_block}"
+            #if('in-oracle-services-network' in dest_cidr):
+            #    dest_cidr="${data.oci_core_services.oci_services.services.0.cidr_block}"
             if(subnet_name=='Route Table associated with DRG'):
                 rt_var = vcn_name + "_drg_rt"
             elif('Default Route Table for' in subnet_name):
@@ -66,13 +66,7 @@ if('.xls' in inputfile):
             elif('Route Table associated with LPG' in subnet_name):
                 lpg_name= subnet_name.split('LPG')
                 rt_var = lpg_name[1].strip() + "_rt"
-            # display name contaoin AD1, AD2 or AD3 and CIDR
-            #elif ('-1-10.' in subnet_name or '-2-10.' in subnet_name or '-3-10.' in subnet_name):
-            #    rt_var=subnet_name.rsplit("-",2)[0]
-            #display name contains CIDR
-            #elif('-10.' in subnet_name):
-            #    rt_var=subnet_name.rsplit("-",1)[0]
-            else:
+             else:
                 rt_var=subnet_name
 
             if(subnet_name not in subnets_done):
