@@ -166,10 +166,18 @@ if(excel!=''):
                 oname = open(outdir + "/" + name + "_seclist.tf", "a")
                 #seclistname = name + str(ad_name) + "-" + str(j + 1)
                 seclistname = name  + "-" + str(j + 1)
-                if (subnet_name_attach_cidr == 'y'):
-                    display_name = seclistname + "-" + subnet
+
+                if (str(ad_name) != ''):
+                    name1 = seclistname + "-ad" + str(ad_name)
                 else:
-                    display_name = name + "-" + str(j + 1)
+                    name1 = seclistname
+
+                if (subnet_name_attach_cidr == 'y'):
+                    #display_name = seclistname + "-" + subnet
+                    display_name = name1 + "-" + subnet
+                else:
+                    #display_name = name + "-" + str(j + 1)
+                    display_name = seclistname
 
                 tempStr = """
 resource "oci_core_security_list" \"""" + seclistname + """"{
@@ -206,7 +214,7 @@ resource "oci_core_security_list" \"""" + seclistname + """"{
                     destination = "0.0.0.0/0"
                     protocol = "all"
                 }
-                #------------------------------------------------------------
+             
                 ####ADD_NEW_SEC_RULES####""" + str(j + 1) + """
             }
             """
@@ -253,12 +261,20 @@ else:
                         print(' seclist file name  ************************** '+name+'_seclist.tf')
                         while i < seclists_per_subnet :
                                 oname = open(outdir +"/" +name+"_seclist.tf","a")
-                                seclistname = name + str(ad_name) + "-" +  str(i+1)
+                                #seclistname = name + str(ad_name) + "-" +  str(i+1)
+                                seclistname = name  + "-" + str(i + 1)
+
+                                if (str(ad_name) != ''):
+                                    name1 = seclistname + "-ad" + str(ad_name)
+                                else:
+                                    name1 = seclistname
 
                                 if (subnet_name_attach_cidr == 'y'):
-                                    display_name = seclistname + "-" + subnet
+                                    #display_name = seclistname + "-" + subnet
+                                    display_name = name1 + "-" + subnet
                                 else:
-                                    display_name = name + "-" + str(i + 1)
+                                    #display_name = name + "-" + str(i + 1)
+                                    display_name=seclistname
 
                                 tempStr = """
 resource "oci_core_security_list" \"""" + seclistname +  """"{
@@ -296,7 +312,6 @@ resource "oci_core_security_list" \"""" + seclistname +  """"{
                     destination = "0.0.0.0/0"
                     protocol = "all"
         }
-                #------------------------------------------------------------
                 ####ADD_NEW_SEC_RULES####""" + str(i+1) + """
 }
 """

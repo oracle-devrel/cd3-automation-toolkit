@@ -16,13 +16,23 @@ def convertNullToNothing(input):
     else:
         return str(input)
 
+compartment_ids={}
 def get_network_compartment_id(config, compartment_name):
     identity = IdentityClient(config)
     comp_list = oci.pagination.list_call_get_all_results(identity.list_compartments,config["tenancy"],compartment_id_in_subtree=True)
     compartment_list = comp_list.data
-    for compartment in compartment_list:
-        if compartment.name == compartment_name:
-            return compartment.id
+
+    if(compartment_name=='root'):
+        for compartment in compartment_list:
+            if(compartment.lifecycle_state == 'ACTIVE'):
+                compartment_ids[compartment.name]=compartment.id
+        return compartment_ids
+
+    else:
+        for compartment in compartment_list:
+            if compartment.name == compartment_name:
+                compartment_ids[compartment.name]=compartment.id
+                return compartment_ids
 
 def get_vcn_id(config,compartment_id,vname):
     vcncient = VirtualNetworkClient(config)
@@ -39,7 +49,7 @@ def get_vcns(config,compartment_id):
     return vcnlist
 
 
-def print_secrules(seclists):
+def print_secrules(seclists,vcn_name,comp_name):
     print ("SubnetName, RuleType, Protocol, isStateless, Source, SPortMin, SPortMax, Destination, DPortMin, DPortMax, ICMPType, ICMPCode")
     #oname.write("SubnetName, RuleType, Protocol, isStateless, Source, SPortMin, SPortMax, Destination, DPortMin, DPortMax, ICMPType, ICMPCode\n")
 
@@ -49,12 +59,35 @@ def print_secrules(seclists):
         isec_rules = seclist.ingress_security_rules
         esec_rules = seclist.egress_security_rules
         display_name = seclist.display_name
-        dn = ""
-        if "10" in display_name:
-            dn = display_name.split("10")
-            dn = dn[0][:-1]
+
+        # display name contaoin AD1, AD2 or AD3 and CIDR
+        if ('-ad1-10.' in display_name or '-ad2-10.' in display_name or '-ad3-10.' in display_name or '-ad1-172.' in display_name
+                or '-ad2-172.' in display_name or '-ad3-172.' in display_name or '-ad1-192.' in display_name or '-ad2-192.' in display_name
+                or '-ad3-192.' in display_name):
+            dn = display_name.rsplit("-", 2)[0]
+
+        # display name contains CIDR
+        elif ('-10.' in display_name or '-172.' in display_name or '192.' in display_name):
+            dn = display_name.rsplit("-", 1)[0]
         else:
-            dn = seclist.display_name
+            dn = display_name#.rsplit("-", 1)[0]
+        if(len(isec_rules)==0 and len(esec_rules)==0):
+            new_row = pd.DataFrame(
+                {'SubnetName': dn, 'RuleType': '', 'Protocol': '', 'isStateless':'',
+                 'Source': '', 'SPortMin': '', 'SPortMax': '', 'Destination': '', 'DPortMin': '',
+                 'DPortMax': '',
+                 'ICMPType': '', 'ICMPCode': '', 'VCN Name': vcn_name, 'Compartment Name': comp_name}, index=[i])
+            df = df.append(new_row, ignore_index=True)
+        for rule in esec_rules:
+            if rule.protocol == "all":
+                print(dn + ",egress,all," + str(rule.is_stateless) + "," + rule.destination + ",,,,,,,")
+                new_row = pd.DataFrame(
+                    {'SubnetName': dn, 'RuleType': 'egress', 'Protocol': 'all', 'isStateless': str(rule.is_stateless),
+                     'Source': '', 'SPortMin': '', 'SPortMax': '', 'Destination': rule.destination, 'DPortMin': '',
+                     'DPortMax': '',
+                     'ICMPType': '', 'ICMPCode': '', 'VCN Name': vcn_name, 'Compartment Name': comp_name}, index=[i])
+                df = df.append(new_row, ignore_index=True)
+
         for rule in isec_rules:
           #  print (rule)
             i+=1
@@ -66,7 +99,7 @@ def print_secrules(seclists):
 
                     new_row = pd.DataFrame({'SubnetName':dn,'RuleType':'ingress','Protocol':'tcp','isStateless':str(rule.is_stateless),
                                             'Source':rule.source,'SPortMin':'','SPortMax':'','Destination':'','DPortMin':'','DPortMax':'',
-                                            'ICMPType':'','ICMPCode':''},index =[i])
+                                            'ICMPType':'','ICMPCode':'','VCN Name':vcn_name,'Compartment Name':comp_name},index =[i])
                 else:
                     min = convertNullToNothing(rule.tcp_options.destination_port_range.min)
                     max = convertNullToNothing(rule.tcp_options.destination_port_range.max)
@@ -76,7 +109,7 @@ def print_secrules(seclists):
                                             'isStateless': str(rule.is_stateless),
                                             'Source': rule.source, 'SPortMin': '', 'SPortMax': '', 'Destination': '',
                                             'DPortMin': min, 'DPortMax': max,
-                                            'ICMPType': '', 'ICMPCode': ''},index =[i])
+                                            'ICMPType': '', 'ICMPCode': '','VCN Name':vcn_name,'Compartment Name':comp_name},index =[i])
 
             if rule.protocol == "1":
                 if rule.icmp_options is None:
@@ -86,7 +119,7 @@ def print_secrules(seclists):
                                             'isStateless': str(rule.is_stateless),
                                             'Source': rule.source, 'SPortMin': '', 'SPortMax': '', 'Destination': '',
                                             'DPortMin': '', 'DPortMax': '',
-                                            'ICMPType': '', 'ICMPCode': ''},index =[i])
+                                            'ICMPType': '', 'ICMPCode': '','VCN Name':vcn_name,'Compartment Name':comp_name},index =[i])
                 else:
                     code = convertNullToNothing(rule.icmp_options.code)
                     type = convertNullToNothing(rule.icmp_options.type)
@@ -96,7 +129,7 @@ def print_secrules(seclists):
                     {'SubnetName': dn, 'RuleType': 'ingress', 'Protocol': 'icmp', 'isStateless': str(rule.is_stateless),
                      'Source': rule.source, 'SPortMin': '', 'SPortMax': '', 'Destination': '', 'DPortMin': '',
                      'DPortMax': '',
-                     'ICMPType': type, 'ICMPCode': code},index =[i])
+                     'ICMPType': type, 'ICMPCode': code,'VCN Name':vcn_name,'Compartment Name':comp_name},index =[i])
             if rule.protocol == "17":
                 if rule.udp_options is None:
                     print (dn + ",ingress,udp," + str(rule.is_stateless) + "," + rule.source + ",,,,,,,")
@@ -105,7 +138,7 @@ def print_secrules(seclists):
                                             'isStateless': str(rule.is_stateless),
                                             'Source': rule.source, 'SPortMin': '', 'SPortMax': '', 'Destination': '',
                                             'DPortMin': '', 'DPortMax': '',
-                                            'ICMPType': '', 'ICMPCode': ''},index =[i])
+                                            'ICMPType': '', 'ICMPCode': '','VCN Name':vcn_name,'Compartment Name':comp_name},index =[i])
                 else:
                     min = convertNullToNothing(rule.udp_options.destination_port_range.min)
                     max = convertNullToNothing(rule.udp_options.destination_port_range.max)
@@ -115,7 +148,7 @@ def print_secrules(seclists):
                                             'isStateless': str(rule.is_stateless),
                                             'Source': rule.source, 'SPortMin': '', 'SPortMax': '', 'Destination': '',
                                             'DPortMin': min, 'DPortMax': max,
-                                            'ICMPType': '', 'ICMPCode': ''},index =[i])
+                                            'ICMPType': '', 'ICMPCode': '','VCN Name':vcn_name,'Compartment Name':comp_name},index =[i])
 
             if rule.protocol == "all":
                 print (dn + ",ingress,all," + str(rule.is_stateless) + "," + rule.source + ",,,,,,,")
@@ -124,14 +157,14 @@ def print_secrules(seclists):
                     {'SubnetName': dn, 'RuleType': 'ingress', 'Protocol': 'all', 'isStateless': str(rule.is_stateless),
                      'Source': rule.source, 'SPortMin': '', 'SPortMax': '', 'Destination': '', 'DPortMin': '',
                      'DPortMax': '',
-                     'ICMPType': '', 'ICMPCode': ''},index =[i])
+                     'ICMPType': '', 'ICMPCode': '','VCN Name':vcn_name,'Compartment Name':comp_name},index =[i])
             #df = pd.concat([new_row, df],ignore_index =True)
 
             df=df.append(new_row,ignore_index =True)
         print("----------------------------------------------")
 
 
-parser = argparse.ArgumentParser(description="Export Security list on OCI to CSV")
+parser = argparse.ArgumentParser(description="Export Security list on OCI to CD3")
 parser.add_argument("networkCompartment", help="Compartment where VCN resides")
 #parser.add_argument("outdir", help="directory path for output csv file ")
 parser.add_argument("cd3file", help="path of CD3 excel file to export rules to")
@@ -159,7 +192,7 @@ if args.configFileName is not None:
 else:
     config = oci.config.from_file()
 
-ntk_compartment_id = get_network_compartment_id(config, ntk_comp_name)
+ntk_compartment_ids = get_network_compartment_id(config, ntk_comp_name)
 vcn = VirtualNetworkClient(config)
 
 #outfile = outdir+"/"+ntk_comp_name+"_SecRules.csv"
@@ -171,15 +204,17 @@ i=0
 df=pd.DataFrame()
 
 if vcn_name is not None:
-    vcn_ocid = get_vcn_id(config,ntk_compartment_id,vcn_name)
-    seclists = vcn.list_security_lists(compartment_id=ntk_compartment_id, vcn_id=vcn_ocid, lifecycle_state='AVAILABLE')
-    print_secrules(seclists)
+    vcn_ocid = get_vcn_id(config,ntk_compartment_ids[ntk_comp_name],vcn_name)
+    seclists = vcn.list_security_lists(compartment_id=ntk_compartment_ids[ntk_comp_name], vcn_id=vcn_ocid, lifecycle_state='AVAILABLE')
+    print_secrules(seclists,vcn_name,ntk_comp_name)
 else:
-    vcns = get_vcns(config,ntk_compartment_id)
-    for v in vcns.data:
-        vcn_id = v.id
-        seclists = vcn.list_security_lists(compartment_id=ntk_compartment_id, vcn_id=vcn_id, lifecycle_state='AVAILABLE')
-        print_secrules(seclists)
+    for ntk_compartment_name in ntk_compartment_ids:
+        vcns = get_vcns(config,ntk_compartment_ids[ntk_comp_name])
+        for v in vcns.data:
+            vcn_id = v.id
+            vcn_name=v.display_name
+            seclists = vcn.list_security_lists(compartment_id=ntk_compartment_ids[ntk_comp_name], vcn_id=vcn_id, lifecycle_state='AVAILABLE')
+            print_secrules(seclists,vcn_name,ntk_compartment_name)
 
 #oname.close()
 
