@@ -17,23 +17,23 @@ def convertNullToNothing(input):
         return str(input)
 
 compartment_ids={}
-def get_network_compartment_id(config, compartment_name):
+def get_network_compartment_id(config):#, compartment_name):
     identity = IdentityClient(config)
     comp_list = oci.pagination.list_call_get_all_results(identity.list_compartments,config["tenancy"],compartment_id_in_subtree=True)
     compartment_list = comp_list.data
 
-    if(compartment_name=='root'):
-        for compartment in compartment_list:
-            if(compartment.lifecycle_state == 'ACTIVE'):
-                compartment_ids[compartment.name]=compartment.id
-        return compartment_ids
+    #if(compartment_name=='root'):
+    for compartment in compartment_list:
+        if(compartment.lifecycle_state == 'ACTIVE'):
+            compartment_ids[compartment.name]=compartment.id
+    return compartment_ids
 
-    else:
+    '''else:
         for compartment in compartment_list:
             if compartment.name == compartment_name:
                 compartment_ids[compartment.name]=compartment.id
                 return compartment_ids
-
+'''
 def get_vcn_id(config,compartment_id,vname):
     vcncient = VirtualNetworkClient(config)
     vcnlist = vcncient.list_vcns(compartment_id=compartment_id,lifecycle_state="AVAILABLE")
@@ -84,8 +84,7 @@ def print_secrules(seclists,vcn_name,comp_name):
                 new_row = pd.DataFrame(
                     {'SubnetName': dn, 'RuleType': 'egress', 'Protocol': 'all', 'isStateless': str(rule.is_stateless),
                      'Source': '', 'SPortMin': '', 'SPortMax': '', 'Destination': rule.destination, 'DPortMin': '',
-                     'DPortMax': '',
-                     'ICMPType': '', 'ICMPCode': '', 'VCN Name': vcn_name, 'Compartment Name': comp_name}, index=[i])
+                     'DPortMax': '','ICMPType': '', 'ICMPCode': '', 'VCN Name': vcn_name, 'Compartment Name': comp_name}, index=[i])
                 df = df.append(new_row, ignore_index=True)
 
         for rule in isec_rules:
@@ -165,10 +164,9 @@ def print_secrules(seclists,vcn_name,comp_name):
 
 
 parser = argparse.ArgumentParser(description="Export Security list on OCI to CD3")
-parser.add_argument("networkCompartment", help="Compartment where VCN resides")
-#parser.add_argument("outdir", help="directory path for output csv file ")
 parser.add_argument("cd3file", help="path of CD3 excel file to export rules to")
 parser.add_argument("--vcnName", help="VCN from which to export the sec list", required=False)
+parser.add_argument("--networkCompartment", help="Compartment where VCN resides", required=False)
 parser.add_argument("--configFileName", help="Config file name" , required=False)
 
 
@@ -178,42 +176,45 @@ if len(sys.argv) < 2:
     sys.exit(1)
 
 args = parser.parse_args()
-#outdir = args.outdir
 cd3file=args.cd3file
+
 if('.xls' not in cd3file):
-    print("acceptable cd3 format: .xlsx")
+    print("\nAcceptable cd3 format: .xlsx")
     exit()
 
 vcn_name = args.vcnName
-ntk_comp_name = args.networkCompartment
+
 if args.configFileName is not None:
     configFileName = args.configFileName
     config = oci.config.from_file(file_location=configFileName)
 else:
     config = oci.config.from_file()
 
-ntk_compartment_ids = get_network_compartment_id(config, ntk_comp_name)
+ntk_compartment_ids = get_network_compartment_id(config)#, ntk_comp_name)
 vcn = VirtualNetworkClient(config)
 
-#outfile = outdir+"/"+ntk_comp_name+"_SecRules.csv"
-#print("Writing sec rules to "+outfile)
-#oname = open(outfile,"w")
-
 i=0
-#df = pd.read_excel(cd3file, sheet_name='SecRulesinOCI').head(0)
 df=pd.DataFrame()
 
 if vcn_name is not None:
+    ntk_comp_name = args.networkCompartment
+    if(ntk_comp_name=='' or ntk_comp_name is None):
+        print("\nEnter a valid name for the compartment weher VCN resides...")
+        exit(1)
     vcn_ocid = get_vcn_id(config,ntk_compartment_ids[ntk_comp_name],vcn_name)
+    if(vcn_ocid=='' or vcn_ocid is None):
+        print('\nCould not find vcn in this compartment...')
+        exit(1)
     seclists = vcn.list_security_lists(compartment_id=ntk_compartment_ids[ntk_comp_name], vcn_id=vcn_ocid, lifecycle_state='AVAILABLE')
     print_secrules(seclists,vcn_name,ntk_comp_name)
 else:
+    print("\nFetching for all VCNs in tenancy...")
     for ntk_compartment_name in ntk_compartment_ids:
-        vcns = get_vcns(config,ntk_compartment_ids[ntk_comp_name])
+        vcns = get_vcns(config,ntk_compartment_ids[ntk_compartment_name])
         for v in vcns.data:
             vcn_id = v.id
             vcn_name=v.display_name
-            seclists = vcn.list_security_lists(compartment_id=ntk_compartment_ids[ntk_comp_name], vcn_id=vcn_id, lifecycle_state='AVAILABLE')
+            seclists = vcn.list_security_lists(compartment_id=ntk_compartment_ids[ntk_compartment_name], vcn_id=vcn_id, lifecycle_state='AVAILABLE')
             print_secrules(seclists,vcn_name,ntk_compartment_name)
 
 #oname.close()

@@ -321,33 +321,56 @@ if('11' in userInput):
 
 if('12' in userInput):
     print("---------------------------Exporting Security Rules--------------------------")
-    inputComp = input("Enter Compartment Name of VCN for which you want to export Security Lists: ")
-    outfile = input("Enter full path to CD3 excel file where security rules info will be written: ")
-    inputConfigFile = input(
-        "Enter path to pyhton config file This is required when you are executing the code from some other workstation rather than OCS VM"
+    cd3outfile = input("Enter full path to CD3 excel file where security rules info will be written: ")
+    input_vcn = input("Enter name of VCN for which you want to export security rules; Leave blank if want to export for all VCNs: ")
+    if (input_vcn != ''):
+        input_Comp = input("Enter Compartment Name where this VCN resides: ")
+
+    inputConfigFile = input("Enter path to pyhton config file This is required when you are executing the code from some other workstation rather than OCS VM"
         " else leave it empty: ")
 
     os.chdir('CoreInfra/Networking/BaseNetwork')
-    if(inputConfigFile==''):
-        command = 'python exportSeclist.py ' + inputComp + ' ' + outfile
+
+    if (input_vcn == ''):
+        if (inputConfigFile == ''):
+            command = 'python exportSeclist.py ' + cd3outfile
+        else:
+            command = 'python exportSeclist.py ' + cd3outfile + ' --configFileName ' + inputConfigFile
     else:
-        command = 'python exportSeclist.py ' + inputComp + ' ' + outfile + ' --configFileName '+inputConfigFile
+        if (inputConfigFile == ''):
+            command = 'python exportSeclist.py ' + cd3outfile + ' --vcnName ' + input_vcn + ' --networkCompartment ' + input_Comp
+        else:
+            command = 'python exportSeclist.py ' + cd3outfile + ' --vcnName ' + input_vcn + ' --networkCompartment ' + input_Comp + ' --configFileName ' + inputConfigFile
+
+
     os.system(command)
     os.chdir("../../..")
     print("--------------------------------------------------------------------------")
 
 if('13' in userInput):
     print("---------------------------Exporting Route Rules--------------------------")
-    inputComp = input("Enter Compartment Name of VCN for which you want to export Route Tables; Enter root if you have networking components in multiple compartments: ")
-    outfile = input("Enter full path to CD3 excel file where route rules info will be written: ")
+    if(cd3outfile==''):
+        cd3outfile = input("Enter full path to CD3 excel file where route rules info will be written: ")
+    else:
+        print('Using already provided  CD3 output file location')
+    input_vcn=input("Enter name of VCN for which you want to export route rules; Leave blank if want to export for all VCNs: ")
+    if(input_vcn!=''):
+        input_Comp = input("Enter Compartment Name where this VCN resides: ")
+
     inputConfigFile = input("Enter path to pyhton config file This is required when you are executing the code from some other workstation rather than OCS VM"
                             " else leave it empty: ")
 
     os.chdir('CoreInfra/Networking/BaseNetwork')
-    if(inputConfigFile==''):
-        command = 'python exportRoutetable.py ' + inputComp + ' ' + outfile
+    if(input_vcn==''):
+        if(inputConfigFile==''):
+            command = 'python exportRoutetable.py ' +  cd3outfile
+        else:
+            command = 'python exportRoutetable.py ' + cd3outfile + ' --configFileName '+inputConfigFile
     else:
-        command = 'python exportRoutetable.py ' + inputComp + ' ' + outfile + ' --configFileName '+inputConfigFile
+        if (inputConfigFile == ''):
+            command = 'python exportRoutetable.py '+cd3outfile+' --vcnName '+input_vcn + ' --networkCompartment '+input_Comp
+        else:
+            command = 'python exportRoutetable.py '+cd3outfile+' --vcnName '+input_vcn + ' --networkCompartment '+input_Comp+ ' --configFileName ' + inputConfigFile
     os.system(command)
     os.chdir("../../..")
     print("--------------------------------------------------------------------------")
