@@ -1,0 +1,7 @@
+#### This process is to setup the OCSWork VM, Panda VM & & Koala Configurations.
+
+## Run the createOCSWork.py from your laptop following the instructions in the README.
+## Next setup Panda - if the terraform didn't complete properly (because of multi-disk setup for /images in Panda)
+## Next, run the setupPandaHost.sh script to configure the Panda host with all the disks for the /images partition
+## Run createPandaInputs.py from the OCSWork VM.  This will take a number of inputs.  Make sure to follow the docs / help
+### This file will generate a number of generated-hosts-<hostname>.yml & generated-secrets-<hostname>.yml files.

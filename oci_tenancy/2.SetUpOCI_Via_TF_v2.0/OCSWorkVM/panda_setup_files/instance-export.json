@@ -1,0 +1,227 @@
+{
+  "version": "1",
+  "instances": [
+    {
+      "name": "/Compute-606666461/ruchi.s.sharma@oracle.com/Ruchi-dbscript2-check-test-server/864362e0-a053-49ab-877e-80e18227c447",
+      "os": "linux",
+      "osSku": "",
+      "attached_only": false
+    },
+    {
+      "name": "/Compute-606666461/nilesh.kolhapure@oracle.com/Shruthi_NewServer/94936cf7-82a8-4b10-a614-077dafa35c29",
+      "os": "linux",
+      "osSku": "",
+      "attached_only": false
+    },
+    {
+      "name": "/Compute-606666461/murali.nagulakonda.venkata@oracle.com/My_14_Panda-OCIC2OCI/24069d89-36fd-4594-9222-e2e4b2858144",
+      "os": "linux",
+      "osSku": "",
+      "attached_only": false
+    },
+    {
+      "name": "/Compute-606666461/ruchi.s.sharma@oracle.com/Ruchi-instance-DB-script-check/5987e236-ef09-4b63-90d4-966a93cb75f6",
+      "os": "linux",
+      "osSku": "",
+      "attached_only": false
+    },
+    {
+      "name": "/Compute-606666461/murali.nagulakonda.venkata@oracle.com/nvmk_Panda-OCIC2OCI/3374b801-c5e1-4058-84b6-8561b5f20700",
+      "os": "linux",
+      "osSku": "",
+      "attached_only": false
+    },
+    {
+      "name": "/Compute-606666461/srinivas.surapaneni@oracle.com/SiebelIP2017CRMMidTier_20190109160514/99c84799-c075-498b-ab4f-60b7c605dfef",
+      "os": "linux",
+      "osSku": "",
+      "attached_only": false
+    },
+    {
+      "name": "/Compute-606666461/murali.nagulakonda.venkata@oracle.com/Murali_Test_Mig/111b5658-df2b-4b71-b1a6-a7479aee5d91",
+      "os": "linux",
+      "osSku": "",
+      "attached_only": false
+    },
+    {
+      "name": "/Compute-606666461/shruthi.subramanian@oracle.com/shruthi-panda-ipnetwork/79ab0169-ff6f-41b1-a9c8-e2a7fb861b48",
+      "os": "linux",
+      "osSku": "",
+      "attached_only": false
+    },
+    {
+      "name": "/Compute-606666461/suruchi.singla@oracle.com/test_network/87461e30-8720-4dc1-8faf-0ebc30629a52",
+      "os": "linux",
+      "osSku": "",
+      "attached_only": false
+    },
+    {
+      "name": "/Compute-606666461/john.saleh@oracle.com/psftwindows01/59ce8de2-2247-4d63-a8c9-dd939eed33cc",
+      "os": "windows",
+      "osSku": "Server 2012 R2 Standard",
+      "attached_only": false
+    },
+    {
+      "name": "/Compute-606666461/murali.nagulakonda.venkata@oracle.com/new_13_Panda-OCIC2OCI/085e7e06-98e9-46ef-aff0-5716eb1d3cd5",
+      "os": "",
+      "osSku": "",
+      "attached_only": false
+    },
+    {
+      "name": "/Compute-606666461/srinivas.surapaneni@oracle.com/OPC_OL6_9_EBS_1227_FRESH_INSTALL_20190103_Srini/828115dd-260f-41d9-a6e9-b810cdd0f521",
+      "os": "linux",
+      "osSku": "",
+      "attached_only": false
+    },
+    {
+      "name": "/Compute-606666461/amit.a.shah@oracle.com/Amit_SourceInstance/abcbe370-7012-4f8f-a40d-80a15b7c7560",
+      "os": "linux",
+      "osSku": "",
+      "attached_only": false
+    },
+    {
+      "name": "/Compute-606666461/aneesh.vs@oracle.com/aneesh_test_multivnic/fe8320b6-e983-44a1-8919-d5e6582e1a5f",
+      "os": "linux",
+      "osSku": "",
+      "attached_only": false
+    },
+    {
+      "name": "/Compute-606666461/roman.muzykin@oracle.com/OSCSA-CD-v163141_20180824215531/0558186c-0f07-49dd-b908-af64069ee618",
+      "os": "",
+      "osSku": "",
+      "attached_only": false
+    },
+    {
+      "name": "/Compute-606666461/mark.laird@oracle.com/MLaird_TestVM/dcd2798d-f5df-4f1e-9e46-14283b5aa91e",
+      "os": "linux",
+      "osSku": "",
+      "attached_only": false
+    },
+    {
+      "name": "/Compute-606666461/meredith.ngo@oracle.com/meredith_test_db/a1ae9aac-e533-4efd-893b-61f24e53401a",
+      "os": "linux",
+      "osSku": "",
+      "attached_only": false
+    },
+    {
+      "name": "/Compute-606666461/shruthi.subramanian@oracle.com/Instance_201902111742/4ac2618d-1972-4abc-ae91-960dd8ec0219",
+      "os": "linux",
+      "osSku": "",
+      "attached_only": false
+    },
+    {
+      "name": "/Compute-606666461/ninad.adhav@oracle.com/EBS-Fresh-Ninad/cdeab879-ebd1-4afc-8aee-80b5fc9f54e6",
+      "os": "linux",
+      "osSku": "",
+      "attached_only": false
+    },
+    {
+      "name": "/Compute-606666461/srinivas.surapaneni@oracle.com/SiebelIP2017BaseDBDR_20190109134125/75f55335-7b2d-4c43-bf6f-130a8c41f584",
+      "os": "linux",
+      "osSku": "",
+      "attached_only": false
+    },
+    {
+      "name": "/Compute-606666461/Sathesh.Ramasamy@oracle.com/OCIC_Test/b99b5594-4a91-4159-aee1-3928a52576dc",
+      "os": "linux",
+      "osSku": "",
+      "attached_only": false
+    },
+    {
+      "name": "/Compute-606666461/suruchi.singla@oracle.com/my_instance/7c44c844-860d-45f1-b84d-84bced611536",
+      "os": "linux",
+      "osSku": "",
+      "attached_only": false
+    },
+    {
+      "name": "/Compute-606666461/ninad.adhav@oracle.com/A-N-Demo-Instance/9e49c578-6c0c-4e6f-a5ba-397464961fa5",
+      "os": "linux",
+      "osSku": "",
+      "attached_only": false
+    },
+    {
+      "name": "/Compute-606666461/ruchi.s.sharma@oracle.com/Instance_201902131515/1ede5535-04dd-4a56-bab7-e681e721086a",
+      "os": "linux",
+      "osSku": "",
+      "attached_only": false
+    },
+    {
+      "name": "/Compute-606666461/john.saleh@oracle.com/psft_fscm_demo30/8e381c6e-3507-44b2-8c0a-29ed64555ecd",
+      "os": "linux",
+      "osSku": "",
+      "attached_only": false
+    },
+    {
+      "name": "/Compute-606666461/ron.guieb@oracle.com/JDE_OCProv_9230_APOL75_18339_73G_20190109112603/6c638f54-48a0-49ee-80d8-d2bad3d1584a",
+      "os": "linux",
+      "osSku": "",
+      "attached_only": false
+    },
+    {
+      "name": "/Compute-606666461/john.saleh@oracle.com/ebslinux01/cda42b14-1700-46dd-8b29-9667cc35b124",
+      "os": "linux",
+      "osSku": "",
+      "attached_only": false
+    },
+    {
+      "name": "/Compute-606666461/murali.nagulakonda.venkata@oracle.com/aneesh_test_panda_Panda-OCIC2OCI/57a9a6b0-946b-480b-a4d3-65b87d1e1fdb",
+      "os": "linux",
+      "osSku": "",
+      "attached_only": false
+    },
+    {
+      "name": "/Compute-606666461/ninad.adhav@oracle.com/N_99th_Panda-OCIC2OCI/2668a5c2-93dc-4712-94f7-8412b36c6fb1",
+      "os": "linux",
+      "osSku": "",
+      "attached_only": false
+    },
+    {
+      "name": "/Compute-606666461/Sathesh.Ramasamy@oracle.com/nfs-test/d57f56d4-90ef-4fcf-9dd8-9d43a7e37387",
+      "os": "linux",
+      "osSku": "",
+      "attached_only": false
+    },
+    {
+      "name": "/Compute-606666461/john.saleh@oracle.com/ebswindows01/784d8426-4260-4c52-af00-5fe3d2aa6cdc",
+      "os": "windows",
+      "osSku": "Server 2012 R2 Standard",
+      "attached_only": false
+    },
+    {
+      "name": "/Compute-606666461/john.saleh@oracle.com/psftlinux01/e18efef4-4bfa-47b2-a2f1-306c7c953278",
+      "os": "linux",
+      "osSku": "",
+      "attached_only": false
+    },
+    {
+      "name": "/Compute-606666461/john.saleh@oracle.com/psftwindows02/1105a9bd-c43e-45af-a434-cefe6403604c",
+      "os": "windows",
+      "osSku": "Server 2012 R2 Standard",
+      "attached_only": false
+    },
+    {
+      "name": "/Compute-606666461/ninad.adhav@oracle.com/A-NINAD-TEST-INSTANCE/7e340f6b-5f8a-4f92-b8a8-8c418f718116",
+      "os": "linux",
+      "osSku": "",
+      "attached_only": false
+    },
+    {
+      "name": "/Compute-606666461/nilesh.kolhapure@oracle.com/Shruthi_RunBook_Test/c6bfe96a-b8b3-45d5-b0d7-2214b956591e",
+      "os": "linux",
+      "osSku": "",
+      "attached_only": false
+    },
+    {
+      "name": "/Compute-606666461/Sathesh.Ramasamy@oracle.com/satheshtestcompute1/a285318c-ca6f-463f-9162-e5cf1ce6853c",
+      "os": "linux",
+      "osSku": "",
+      "attached_only": false
+    },
+    {
+      "name": "/Compute-606666461/shruthi.subramanian@oracle.com/Shruthi_TestInstance_For_Nilesh/1f51d434-1e27-4e4b-9213-462e4625ea01",
+      "os": "linux",
+      "osSku": "",
+      "attached_only": false
+    }
+  ]
+}

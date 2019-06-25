@@ -1,0 +1,8 @@
+#All the lines that starts with '#' are excluded
+#Fields as given below
+#VolumeName,Namespace1,Namespace2,Namespace3,Namespace4
+#testvol,TagKey=Value,TagKey1=Value1,TagKey2=Value2,TagKey3=Value3
+#Note: if the value is null then specify it as tagkey=, example as given below
+#Dev_Server,TagKey=,TagKey1=,TagKey2=,TagKey3=
+VolumeName,Application,OS,Subnet,Environment
+Shruthi_disk2,Demo=true,Windows2012R2=true,HubPublicSub=true,dev=true
