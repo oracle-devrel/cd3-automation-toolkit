@@ -246,19 +246,18 @@ if vcn_name is not None:
         vcn = VirtualNetworkClient(config)
         region = 'Phoenix'
 
-    seclists = vcn.list_security_lists(compartment_id=ntk_compartment_ids[ntk_comp_name], vcn_id=vcn_ocid, lifecycle_state='AVAILABLE')
+    seclists = vcn.list_security_lists(compartment_id=ntk_compartment_ids[ntk_comp_name], vcn_id=vcn_ocid, lifecycle_state='AVAILABLE',sort_by='DISPLAYNAME')
     print_secrules(seclists,region,vcn_name,ntk_comp_name)
 else:
     print("\nFetching for all VCNs in tenancy...")
     for ntk_compartment_name in ntk_compartment_ids:
-        print(ntk_compartment_name)
         config.__setitem__("region", "us-ashburn-1")
         vcn = VirtualNetworkClient(config)
         vcns_ash = get_vcns(config, ntk_compartment_ids[ntk_compartment_name])
         for v in vcns_ash.data:
             vcn_id = v.id
             vcn_name=v.display_name
-            seclists = vcn.list_security_lists(compartment_id=ntk_compartment_ids[ntk_compartment_name], vcn_id=vcn_id, lifecycle_state='AVAILABLE')
+            seclists = vcn.list_security_lists(compartment_id=ntk_compartment_ids[ntk_compartment_name], vcn_id=vcn_id, lifecycle_state='AVAILABLE',sort_by='DISPLAYNAME')
             print_secrules(seclists,'Ashburn',vcn_name,ntk_compartment_name)
 
         config.__setitem__("region", "us-phoenix-1")
@@ -267,8 +266,7 @@ else:
         for v in vcns_phx.data:
             vcn_id = v.id
             vcn_name = v.display_name
-            seclists = vcn.list_security_lists(compartment_id=ntk_compartment_ids[ntk_compartment_name], vcn_id=vcn_id,
-                                               lifecycle_state='AVAILABLE')
+            seclists = vcn.list_security_lists(compartment_id=ntk_compartment_ids[ntk_compartment_name], vcn_id=vcn_id,lifecycle_state='AVAILABLE',sort_by='DISPLAYNAME')
             print_secrules(seclists, 'Phoenix', vcn_name, ntk_compartment_name)
 
 #oname.close()
