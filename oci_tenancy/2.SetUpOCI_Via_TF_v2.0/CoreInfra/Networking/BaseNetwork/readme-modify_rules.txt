@@ -7,7 +7,9 @@ new rules or the cd3 (sheets: AddRouteRules and AddSecRules) and generate terraf
 
 Instead if you want to run in Overwrite mode then that means all rules in OCI would be replced by whatever you have in cd3 excel file
 (sheets: RouteRulesinOCI and SecRulesinOCI)
+
 Please note that overwrite option requires cd3 excel as the inputfile rathern than csv
+Please note that outdir specified as the input expects 2 subdirectories- ashburn and phoenix already existing in the outdir; they will contain tf files
 
 modify_routes_tf.py
 --------------------
@@ -31,9 +33,9 @@ This script takes in either a csv file or CD3 excel file mentioning new sec rule
 Usage:
 ./modify_secrules_tf.py --inputfile <path to vcn-info.properties or CD3 excel file> --outdir <output dir name being used for tf files> --secrulesfile <path to input csv or cd3 containing rules to be added>
 eg
-./modify_secrules_tf.py --inputfile vcn-info.properties --outdir /root/ocswork/terraform_files --secrulesfile update_seclist-adrules.csv
+./modify_secrules_tf.py --inputfile vcn-info.properties --outdir /root/ocswork/terraform_files --secrulesfile update_seclist-rules.csv
 or
-./modify_secrules_tf.py --inputfile CD3-template --outdir /root/ocswork/terraform_files --secrulesfile update_seclist-adrules.csv
+./modify_secrules_tf.py --inputfile CD3-template --outdir /root/ocswork/terraform_files --secrulesfile update_seclist-rules.csv
 
 Overwrite Mode:
 ./modify_secrules_tf.py --inputfile CD3-template --outdir /root/ocswork/terraform_files --overwrite yes
