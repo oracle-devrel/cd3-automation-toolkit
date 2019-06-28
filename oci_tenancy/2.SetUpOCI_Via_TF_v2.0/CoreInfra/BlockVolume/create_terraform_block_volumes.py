@@ -30,13 +30,15 @@ if('.xls' in filename):
 
     df = pd.read_excel(filename, sheet_name='BlockVols',skiprows=1)
     for i in df.index:
-        blockname = df.iat[i, 0]
-        size = df.iat[i, 1]
+        region=df.iat[i,0]
+        region=region.strip().lower()
+        blockname = df.iat[i, 1]
+        size = df.iat[i, 2]
         size=str(size)
-        AD = df.iat[i, 2]
-        attacheToInstanceName = df.iat[i, 3]
-        attachType = df.iat[i, 4]
-        compartmentVarName = df.iat[i, 5]
+        AD = df.iat[i, 3]
+        attacheToInstanceName = df.iat[i, 4]
+        attachType = df.iat[i, 5]
+        compartmentVarName = df.iat[i, 6]
         ad = ADS.index(AD)
         display_name = blockname
 
@@ -60,7 +62,7 @@ resource "oci_core_volume_attachment" \"""" + blockname + """_volume_attachment"
         }
         
         """
-        outfile = outdir+"/"+blockname+".tf"
+        outfile = outdir+"/"+region+"/"+blockname+".tf"
         print("Writing " + outfile)
         oname = open(outfile,"w")
         oname.write(tempStr)
@@ -76,12 +78,13 @@ elif('.csv' in filename):
         if not line.startswith('#'):
             #[block_name,size_in_gb,availability_domain(AD1|AD2|AD3),attached_to_instance,attach_type(iscsi|paravirtualized,compartment_var_name] = line.split(',')
             linearr = line.split(",")
-            blockname = linearr[0].strip()
-            size = linearr[1].strip()
-            AD = linearr[2].strip()
-            attacheToInstanceName = linearr[3].strip()
-            attachType = linearr[4].strip()
-            compartmentVarName = linearr[5].strip()
+            region=linearr[0].strip().lower()
+            blockname = linearr[1].strip()
+            size = linearr[2].strip()
+            AD = linearr[3].strip()
+            attacheToInstanceName = linearr[4].strip()
+            attachType = linearr[5].strip()
+            compartmentVarName = linearr[6].strip()
             ad = ADS.index(AD)
             display_name = blockname
 
@@ -104,7 +107,7 @@ resource "oci_core_volume_attachment" \"""" + blockname + """_volume_attachment"
 
         }
         """
-            outfile = outdir+"/"+blockname+".tf"
+            outfile = outdir+"/"+region+"/"+blockname+".tf"
             oname = open(outfile,"w")
             oname.write(tempStr)
             oname.close()

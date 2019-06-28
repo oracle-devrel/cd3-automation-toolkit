@@ -7,14 +7,14 @@ import re
 import pandas as pd
 
 
-def print_by_field(row):
-    print(row)
+def copy_template_file(hostname, operatingsystem,region):
+        region=region.strip().lower()
 
-
-
-def copy_template_file(hostname, operatingsystem):
         print('Using template file - template/' + operatingsystem + 'template.tf')
-        shutil.copyfile('template/' + operatingsystem + 'template.tf', outdir + '/' + hostname + '.tf')
+        if(region=='ashburn'):
+            shutil.copyfile('template/' + operatingsystem + 'template.tf', outdir + '/ashburn/' + hostname + '.tf')
+        if (region == 'phoenix'):
+            shutil.copyfile('template/' + operatingsystem + 'template.tf', outdir + '/phoenix/' + hostname + '.tf')
 
 
 def replaceAllplaceholders(fileToSearch, textToSearch, textToReplace):
@@ -53,30 +53,31 @@ args = parser.parse_args()
 filename = args.file
 outdir = args.outdir
 
+
 #If input is CD3 excel file
 if('.xlsx' in filename):
     df = pd.read_excel(filename, sheet_name='Instances',skiprows=1)
     for row in df.index:
-        copy_template_file(df['Hostname'][row], df['OS'][row])
+        copy_template_file(df['Hostname'][row], df['OS'][row],df['Region'][row])
     for i in df.keys():
         for j in df.index:
             if (re.match('Availability domain', i, flags=re.IGNORECASE)):
                 if ('AD1' in df[i][j]):
-                    replaceAllplaceholders(outdir + '/' + df['Hostname'][j] + '.tf', '##' + i + '##', '0')
+                    replaceAllplaceholders(outdir + '/' + df['Region'][j].strip().lower()+'/'+df['Hostname'][j] + '.tf', '##' + i + '##', '0')
                     continue
                 if ('AD2' in df[i][j]):
-                    replaceAllplaceholders(outdir + '/' + df['Hostname'][j] + '.tf', '##' + i + '##', '1')
+                    replaceAllplaceholders(outdir + '/' + df['Region'][j].strip().lower()+ '/'+df['Hostname'][j] + '.tf', '##' + i + '##', '1')
                     continue
                 if ('AD3' in df[i][j]):
-                    replaceAllplaceholders(outdir + '/' + df['Hostname'][j] + '.tf', '##' + i + '##', '2')
+                    replaceAllplaceholders(outdir + '/' + df['Region'][j].strip().lower()+ '/'+df['Hostname'][j] + '.tf', '##' + i + '##', '2')
                     continue
             if (str(df[i][j]) == 'nan'):
-                replaceAllplaceholders(outdir + '/' + df['Hostname'][j] + '.tf', '##' + i + '##', "")
+                replaceAllplaceholders(outdir + '/' + df['Region'][j].strip().lower()+ '/'+df['Hostname'][j] + '.tf', '##' + i + '##', "")
                 continue
             if (str(df[i][j]) == 'True' or str(df[i][j]) == 'False'):
-                replaceAllplaceholders(outdir + '/' + df['Hostname'][j] + '.tf', '##' + i + '##', str(df[i][j]).lower())
+                replaceAllplaceholders(outdir + '/' + df['Region'][j].strip().lower()+ '/'+df['Hostname'][j] + '.tf', '##' + i + '##', str(df[i][j]).lower())
                 continue
-            replaceAllplaceholders(outdir + '/' + df['Hostname'][j] + '.tf', '##' + i + '##', str(df[i][j]))
+            replaceAllplaceholders(outdir + '/' + df['Region'][j].strip().lower()+ '/'+df['Hostname'][j] + '.tf', '##' + i + '##', str(df[i][j]))
 
 #If input is a csv file
 elif('.csv' in filename):
@@ -84,7 +85,7 @@ elif('.csv' in filename):
         reader = csv.DictReader(skipCommentedLine(csvfile))
         columns = reader.fieldnames
         for row in reader:
-            copy_template_file(row['Hostname'], row['OS'])
+            copy_template_file(row['Hostname'], row['OS'],row['Region'])
             for column in columns:
                 if(re.match('Availability domain',column,flags=re.IGNORECASE)):
                     if ('AD1' in row[column]):
@@ -98,7 +99,7 @@ elif('.csv' in filename):
                         row[column] = 'true'
                     if (row[column].lower() == "false"):
                         row[column] = 'false'
-                replaceAllplaceholders(outdir + '/' + row['Hostname'] + '.tf', '##' + column + '##', row[column])
+                replaceAllplaceholders(outdir + '/' + row['Region'].strip().lower()+'/'+row['Hostname'] + '.tf', '##' + column + '##', row[column])
 
 else:
     print("Invalid input file format; Acceptable formats: .xls, .xlsx, .csv")
