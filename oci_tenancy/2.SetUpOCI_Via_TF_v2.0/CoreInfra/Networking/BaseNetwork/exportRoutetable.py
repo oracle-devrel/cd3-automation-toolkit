@@ -49,8 +49,8 @@ def get_vcns(config,compartment_id):
     vcnlist = vcncient.list_vcns(compartment_id=compartment_id,lifecycle_state="AVAILABLE")
     return vcnlist
 
-def print_routetables(routetables,vcn_name,comp_name):
-    print ("SubnetName, Destination CIDR, Route Destination Object, Destination Type")
+def print_routetables(routetables,region,vcn_name,comp_name):
+
     #oname.write("SubnetName, Destination CIDR, Route Destination Object, Destination Type\n")
     global i
     global df
@@ -77,19 +77,19 @@ def print_routetables(routetables,vcn_name,comp_name):
             print(i)
             new_row = pd.DataFrame({'SubnetName': dn, 'Destination CIDR': '',
                                     'Route Destination Object': '',
-                                    'Destination Type': '', 'VCN Name':vcn_name,'Compartment Name':comp_name}, index=[i])
+                                    'Destination Type': '', 'VCN Name':vcn_name,'Compartment Name':comp_name,'Region':region}, index=[i])
             df = df.append(new_row, ignore_index=True)
         for rule in rules:
             i=i+1
             print(i)
             print(dn + "," + str(rule.destination) + "," + str(rule.network_entity_id)+","+ str(rule.destination_type))
             #oname.write(dn + "," + str(rule.destination) + "," +str(rule.network_entity_id)+","+ str(rule.destination_type)+"\n")
-            new_row = pd.DataFrame({'SubnetName': dn, 'Destination CIDR': str(rule.destination), 'Route Destination Object': str(rule.network_entity_id), 'Destination Type': str(rule.destination_type),'VCN Name':vcn_name,'Compartment Name':comp_name}, index=[i])
+            new_row = pd.DataFrame({'SubnetName': dn, 'Destination CIDR': str(rule.destination), 'Route Destination Object': str(rule.network_entity_id), 'Destination Type': str(rule.destination_type),'VCN Name':vcn_name,'Compartment Name':comp_name,'Region':region}, index=[i])
             df = df.append(new_row, ignore_index=True)
 
 parser = argparse.ArgumentParser(description="Export Route Table on OCI to CD3")
 parser.add_argument("cd3file", help="path of CD3 excel file to export rules to")
-parser.add_argument("--vcnName", help="VCN from which to export the sec list; Leave blank if need export from all VCNs", required=False)
+parser.add_argument("--vcnName", help="VCN from which to export the sec list; Leave blank if need to export from all VCNs", required=False)
 parser.add_argument("--networkCompartment", help="Compartment where VCN resides", required=False)
 parser.add_argument("--configFileName", help="Config file name" , required=False)
 
@@ -108,16 +108,14 @@ if('.xls' not in cd3file):
 
 vcn_name = args.vcnName
 
-
 if args.configFileName is not None:
     configFileName = args.configFileName
     config = oci.config.from_file(file_location=configFileName)
 else:
     config = oci.config.from_file()
 
-ntk_compartment_ids = get_network_compartment_id(config)#, ntk_comp_name)
-vcn = VirtualNetworkClient(config)
 
+ntk_compartment_ids = get_network_compartment_id(config)#, ntk_comp_name)
 
 i=0
 df=pd.DataFrame()
@@ -125,23 +123,61 @@ df=pd.DataFrame()
 if vcn_name is not None:
     ntk_comp_name = args.networkCompartment
     if(ntk_comp_name=='' or ntk_comp_name is None):
-        print("\nEnter a valid name for the compartment weher VCN resides...")
+        print("\nEnter a valid name for the compartment where VCN resides...")
         exit(1)
+
+    found = ''
+    print("\nSearching for VCN in ASH region...")
+    config.__setitem__("region", "us-ashburn-1")
     vcn_ocid = get_vcn_id(config,ntk_compartment_ids[ntk_comp_name],vcn_name)
+
     if(vcn_ocid=='' or vcn_ocid is None):
-        print('\nCould not find vcn in this compartment...')
-        exit(1)
+        print('\nCould not find vcn in this compartment in ASH region...Searching in PHX region...')
+        config.__setitem__("region", "us-phoenix-1")
+        vcn_ocid = get_vcn_id(config, ntk_compartment_ids[ntk_comp_name], vcn_name)
+        if (vcn_ocid == '' or vcn_ocid is None):
+            print('\nCould not find vcn in this compartment in PHX region also..verify the vcn name and compartment name where vcn resides and try again...')
+            exit(1)
+        else:
+            print("\nFound in Phoenix...")
+            found='phx'
+    else:
+        print("\nFound in Ashburn...")
+        found='ash'
+
+    if(found=='ash'):
+        config.__setitem__("region", "us-ashburn-1")
+        vcn = VirtualNetworkClient(config)
+        region='Ashburn'
+    if(found=='phx'):
+        config.__setitem__("region", "us-phoenix-1")
+        vcn = VirtualNetworkClient(config)
+        region='Phoenix'
+
     routetables = vcn.list_route_tables(compartment_id=ntk_compartment_ids[ntk_comp_name], vcn_id=vcn_ocid, lifecycle_state='AVAILABLE')
-    print_routetables(routetables,vcn_name,ntk_comp_name)
+    print_routetables(routetables,region, vcn_name,ntk_comp_name)
 else:
     print("\nFetching for all VCNs in tenancy...")
     for ntk_compartment_name in ntk_compartment_ids:
-        vcns = get_vcns(config,ntk_compartment_ids[ntk_compartment_name])
-        for v in vcns.data:
+        config.__setitem__("region", "us-ashburn-1")
+        vcn = VirtualNetworkClient(config)
+        vcns_ash = get_vcns(config,ntk_compartment_ids[ntk_compartment_name])
+        for v in vcns_ash.data:
             vcn_id = v.id
             vcn_name=v.display_name
             routetables = vcn.list_route_tables(compartment_id=ntk_compartment_ids[ntk_compartment_name], vcn_id=vcn_id, lifecycle_state='AVAILABLE')
-            print_routetables(routetables,vcn_name,ntk_compartment_name)
+            print_routetables(routetables,'Ashburn',vcn_name,ntk_compartment_name)
+
+        config.__setitem__("region", "us-phoenix-1")
+        vcn = VirtualNetworkClient(config)
+        vcns_phx = get_vcns(config, ntk_compartment_ids[ntk_compartment_name])
+        for v in vcns_phx.data:
+            vcn_id = v.id
+            vcn_name = v.display_name
+            routetables = vcn.list_route_tables(compartment_id=ntk_compartment_ids[ntk_compartment_name], vcn_id=vcn_id,
+                                                lifecycle_state='AVAILABLE')
+            print_routetables(routetables,'Phoenix',vcn_name, ntk_compartment_name)
+
 #oname.close()
 
 book = load_workbook(cd3file)

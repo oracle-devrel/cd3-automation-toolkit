@@ -24,16 +24,16 @@ if not os.path.exists(outdir):
 
 
 print("-----------Creating Major TF Objects-----------")
-command = 'python create_major_objects.py ' + propsfile + ' ' + outdir + "/" + prefix + '-major-objs.tf'
+command = 'python create_major_objects.py ' + propsfile + ' ' + outdir + ' '+prefix
 exitVal = os.system(command)
 if (exitVal == 1):
     exit()
 print("--------------Creating DHCP options------------")
-command = 'python create_terraform_dhcp_options.py ' + propsfile + ' ' + outdir + "/" + prefix + '-dhcp.tf'
+command = 'python create_terraform_dhcp_options.py ' + propsfile + ' ' + outdir + ' '+prefix
 os.system(command)
 
 print("-----------------Creating Route----------------")
-command = 'python create_terraform_route.py ' + propsfile + ' ' + outdir + "/" + prefix + '-routes.tf'
+command = 'python create_terraform_route.py ' + propsfile + ' ' + outdir + ' '+prefix
 exitVal=os.system(command)
 if (exitVal == 1):
     exit()
@@ -43,5 +43,5 @@ command = 'python create_terraform_seclist.py  '+ propsfile + ' ' + outdir
 os.system(command)
 
 print("----------------Creating Subnet----------------")
-command = 'python create_terraform_subnet.py ' + propsfile + ' ' + outdir + "/" + prefix + '-subnets.tf'
+command = 'python create_terraform_subnet.py ' + propsfile + ' ' + outdir + ' ' + prefix
 os.system(command)

@@ -8,36 +8,93 @@
 import sys
 import argparse
 import configparser
+import os
 import pandas as pd
 
 ######
 # Required Files
-# "properties file- vcn-info.properties"
-# Code will read input dhcp file name from properties file
+# input file is cd3 or vcn-info.properties; if vcn-info.properties then Code will read input dhcp file name from properties file
 # Dhcp options defined in "ini" format.
 # the Section name of the ini file becomes the "dhcp rule name" with vcn_name as the prefix
 # The script expects a "default" section.
 # Optionally - name the dhcp section the same as the subnet name - and when creating subnets - the subnet will point to this dhcp option.
-# Outfile
+# Outdir
 ######
 
 
 parser = argparse.ArgumentParser(description="Create DHCP options terraform file")
 parser.add_argument("inputfile", help="Full Path of input file. It could be either the properties file eg vcn-info.properties or CD3 excel file")
-parser.add_argument("outfile",help="Output Filename")
+parser.add_argument("outdir", help="Output directory for creation of TF files")
+parser.add_argument("prefix", help="customer name/prefix for all file names")
 
-if len(sys.argv)==2:
-        parser.print_help()
-        sys.exit(1)
 if len(sys.argv)<3:
         parser.print_help()
         sys.exit(1)
 
 args = parser.parse_args()
-outfile = args.outfile
-oname = open(outfile,"w")
+filename=args.inputfile
+outdir = args.outdir
+prefix=args.prefix
 
-tempStr = ""
+ash_dir=outdir+"/ashburn"
+phx_dir=outdir+"/phoenix"
+
+if not os.path.exists(ash_dir):
+        os.makedirs(ash_dir)
+
+if not os.path.exists(phx_dir):
+        os.makedirs(phx_dir)
+
+outfile_ash=ash_dir + "/" + prefix + '-dhcp.tf'
+outfile_phx=phx_dir + "/" + prefix + '-dhcp.tf'
+
+oname_ash = open(outfile_ash,"w")
+oname_phx = open(outfile_phx,"w")
+
+tempStrASH = ""
+tempStrPHX = ""
+
+def processDHCP(region,vcn_name,dhcp_option_name,compartment_var_name,serverType,custom_dns_servers,search_domain):
+	global tempStrASH
+	global tempStrPHX
+
+	region = region.lower().strip()
+	compartment_var_name=compartment_var_name.strip()
+	serverType=serverType.strip()
+	search_domain=search_domain.strip()
+	vcn_name=vcn_name.strip()
+	dhcp_option_name=dhcp_option_name.strip()
+	vcn_dhcp = vcn_name + "_" + dhcp_option_name
+
+	data = """
+	resource "oci_core_dhcp_options" \"""" + vcn_dhcp + """" {
+			compartment_id = "${var.""" + compartment_var_name.strip() + """}"
+			options {
+				type = "DomainNameServer"
+				server_type = \"""" + serverType.strip() + "\""
+
+	# print serverType
+	if serverType == "CustomDnsServer":
+		dns_servers = custom_dns_servers.strip().replace(',', '","')
+		dns_servers = '"' + dns_servers + '"'
+		data = data + """
+				custom_dns_servers = [ """ + dns_servers + """ ] """
+
+	data = data + """
+			}
+			options {
+				type = "SearchDomain"
+				search_domain_names = [ \"""" + search_domain + """" ]
+			}
+			vcn_id = "${oci_core_vcn.""" + vcn_name.strip() + """.id}"
+			display_name = \"""" + vcn_dhcp + """"
+	}
+	"""
+
+	if (region == 'ashburn'):
+		tempStrASH = tempStrASH + data
+	elif (region == 'phoenix'):
+		tempStrPHX = tempStrPHX + data
 
 if('.xls' in args.inputfile):
 	df_vcn = pd.read_excel(args.inputfile, sheet_name='VCNs',skiprows=1)
@@ -50,36 +107,12 @@ if('.xls' in args.inputfile):
 		serverType = df.iat[i,2]
 		search_domain = df.iat[i,3]
 		custom_dns_servers = df.iat[i,4]
-		vcn_dhcp = vcn_name + "_" + dhcp_option_name
-		vcn_dhcp.strip().lower()
 
 		vcn_data = df_vcn.loc[vcn_name]
 		compartment_var_name = vcn_data['compartment_name']
+		region=vcn_data['Region']
 
-		tempStr = tempStr + """
-resource "oci_core_dhcp_options" \"""" + vcn_dhcp + """" {
-		compartment_id = "${var.""" + compartment_var_name + """}"
-		options {
-			type = "DomainNameServer"
-			server_type = \"""" + serverType + "\""
-
-		# print serverType
-		if serverType == "CustomDnsServer":
-			dns_servers = custom_dns_servers.strip().replace(',', '","')
-			dns_servers = '"' + dns_servers + '"'
-			tempStr = tempStr + """
-			custom_dns_servers = [ """ + dns_servers + """ ] """
-
-		tempStr = tempStr + """
-		}
-		options {
-			type = "SearchDomain"
-			search_domain_names = [ \"""" + search_domain + """" ]
-		}
-		vcn_id = "${oci_core_vcn.""" + vcn_name + """.id}"
-		display_name = \"""" + vcn_dhcp + """"
-}
-"""
+		processDHCP(region,vcn_name,dhcp_option_name,compartment_var_name,serverType,custom_dns_servers,search_domain)
 
 
 
@@ -98,8 +131,9 @@ elif('.properties' in args.inputfile):
 		vcn_data = config.get('VCN_INFO', vcn)
 		vcn_data = vcn_data.split(',')
 		vcn_name = vcn
-		compartment_var_name = vcn_data[11].strip()
-		vcn_dhcp_file = vcn_data[7].strip().lower()
+		region=vcn_data[0].strip()
+		compartment_var_name = vcn_data[12].strip()
+		vcn_dhcp_file = vcn_data[8].strip().lower()
 		### Read the DHCP file
 		dhcpfile = configparser.RawConfigParser()
 		file_read=dhcpfile.read(vcn_dhcp_file)
@@ -108,39 +142,21 @@ elif('.properties' in args.inputfile):
 			continue
 		dhcp_sections = dhcpfile.sections()
 		for dhcp_sec in dhcp_sections :
-			vcn_dhcp = vcn_name+"_"+dhcp_sec
-			vcn_dhcp.strip().lower()
+			#vcn_dhcp = vcn_name+"_"+dhcp_sec
+			#vcn_dhcp.strip().lower()
 			serverType = dhcpfile.get(dhcp_sec,'serverType')
 			search_domain = dhcpfile.get(dhcp_sec,'search_domain')
-			dns_servers = ""
-	
-			tempStr = tempStr+"""
-resource "oci_core_dhcp_options" \"""" + vcn_dhcp + """" {
-	compartment_id = "${var.""" + compartment_var_name + """}"
-	options {
-        type = "DomainNameServer"
-		server_type = \"""" + serverType  + "\""
+			custom_dns_servers = dhcpfile.get(dhcp_sec, 'custom_dns_servers')
 
-		# print serverType
-			if serverType  == "CustomDnsServer" :
-				dns_servers = dhcpfile.get(dhcp_sec,'custom_dns_servers').strip().replace(',','","')
-				dns_servers = '"' + dns_servers + '"'
-				tempStr = tempStr + """
-		custom_dns_servers = [ """ + dns_servers + """ ] """
-	
-			tempStr = tempStr + """
-	}
-	options {
-		type = "SearchDomain"
-		search_domain_names = [ \"""" + search_domain + """" ]
-	}
-	vcn_id = "${oci_core_vcn.""" + vcn_name + """.id}"
-	display_name = \""""  + vcn_dhcp + """"
-}
-"""
+			processDHCP(region, vcn_name, dhcp_sec, compartment_var_name, serverType, custom_dns_servers,search_domain)
+
 else:
     print("Invalid input file format; Acceptable formats: .xls, .xlsx, .properties")
 
-oname.write(tempStr)
-oname.close()
+
+oname_ash.write(tempStrASH)
+oname_phx.write(tempStrPHX)
+oname_ash.close()
+oname_phx.close()
+
 

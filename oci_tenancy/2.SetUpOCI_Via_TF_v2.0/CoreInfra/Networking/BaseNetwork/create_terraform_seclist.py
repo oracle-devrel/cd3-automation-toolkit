@@ -48,8 +48,20 @@ outdir = args.outdir
 fname = None
 oname = None
 
+ash_dir=outdir+"/ashburn"
+phx_dir=outdir+"/phoenix"
+
+if not os.path.exists(ash_dir):
+        os.makedirs(ash_dir)
+
+if not os.path.exists(phx_dir):
+        os.makedirs(phx_dir)
+
+
+
 # Purge existing sec list files
-purge(outdir, "_seclist.tf")
+purge(ash_dir, "_seclist.tf")
+purge(phx_dir, "_seclist.tf")
 
 #create VCN LPG rules
 vcn_lpg_rules = {}
@@ -91,6 +103,82 @@ def createLPGSecRules(peering_dict):
                 }
         """
                     vcn_lpg_rules[right_vcn] = vcn_lpg_rules[right_vcn] + ruleStr
+
+
+def processSubnet(region,vcn_name,AD,seclists_per_subnet,name,subnet_name_attach_cidr,compartment_var_name):
+
+    j = 0
+    if (AD.strip() != 'Regional' and  AD.strip() != 'regional'):
+        ad = ADS.index(AD)
+        ad_name_int = ad + 1
+        ad_name = str(ad_name_int)
+    else:
+        ad_name = ""
+
+    print(' seclist file name  ************************** ' + name + '_seclist.tf')
+    while j < seclists_per_subnet:
+        if(region=='ashburn'):
+            oname = open(ash_dir + "/" + name + "_seclist.tf", "a")
+        elif(region=='phoenix'):
+            oname = open(phx_dir + "/" + name + "_seclist.tf", "a")
+
+        # seclistname = name + str(ad_name) + "-" + str(j + 1)
+        seclistname = name + "-" + str(j + 1)
+
+        if (str(ad_name) != ''):
+            name1 = seclistname + "-ad" + str(ad_name)
+        else:
+            name1 = seclistname
+
+        if (subnet_name_attach_cidr == 'y'):
+            # display_name = seclistname + "-" + subnet
+            display_name = name1 + "-" + subnet
+        else:
+            # display_name = name + "-" + str(j + 1)
+            display_name = seclistname
+
+        tempStr = """
+        resource "oci_core_security_list" \"""" + seclistname + """"{
+            compartment_id = "${var.""" + compartment_var_name + """}"
+            vcn_id = "${oci_core_vcn.""" + vcn_name + """.id}"
+            display_name = \"""" + display_name.strip() + "\""
+
+        if j + 1 > 1:
+            tempStr = tempStr + """
+
+                        ####ADD_NEW_SEC_RULES####""" + str(j + 1) + """
+        }
+        """
+        else:
+            if (vcn_lpg_rules[vcn_name] != ""):
+                tempStr = tempStr + vcn_lpg_rules[vcn_name]
+            if (add_ping_sec_rules_onprem == 'y'):
+                if (hub_spoke_none == 'hub' or vcn_drg == 'y' or hub_spoke_none == 'spoke'):
+                    for drg_destination in drg_destinations:
+                        if (drg_destination != ''):
+                            tempStr = tempStr + """
+                        ingress_security_rules {
+                            protocol = "1"
+                            source = \"""" + drg_destination + """"
+                        }
+                        """
+
+            tempStr = tempStr + """
+                        ingress_security_rules {
+                            protocol = "all"
+                            source = \"""" + subnet + """"
+                        }
+                        egress_security_rules {
+                            destination = "0.0.0.0/0"
+                            protocol = "all"
+                        }
+
+                        ####ADD_NEW_SEC_RULES####""" + str(j + 1) + """
+                    }
+                    """
+        oname.write(tempStr)
+        j = j + 1
+
 
 
 #If input is CD3 excel file
@@ -143,6 +231,8 @@ if('.xlsx' in filename):
             # Get VCN data
             vcn_name = df['vcn_name'][i]
             vcn_data = df_vcn.loc[vcn_name]
+            region=vcn_data['Region']
+            region=region.strip().lower()
             vcn_drg = vcn_data['drg_required(y|n)']
             hub_spoke_none = vcn_data['hub_spoke_none']
             sps = vcn_data['sec_list_per_subnet']
@@ -158,73 +248,8 @@ if('.xlsx' in filename):
             compartment_var_name=compartment_var_name.strip()
 
             seclists_per_subnet = int(sps)
-            j = 0
-            if (AD.strip() != 'Regional' and  AD.strip() != 'regional'):
-                ad = ADS.index(AD)
-                ad_name_int = ad + 1
-                ad_name = str(ad_name_int)
-            else:
-                ad_name = ""
 
-            print(' seclist file name  ************************** ' + name + '_seclist.tf')
-            while j < seclists_per_subnet:
-                oname = open(outdir + "/" + name + "_seclist.tf", "a")
-                # seclistname = name + str(ad_name) + "-" + str(j + 1)
-                seclistname = name + "-" + str(j + 1)
-
-                if (str(ad_name) != ''):
-                    name1 = seclistname + "-ad" + str(ad_name)
-                else:
-                    name1 = seclistname
-
-                if (subnet_name_attach_cidr == 'y'):
-                    # display_name = seclistname + "-" + subnet
-                    display_name = name1 + "-" + subnet
-                else:
-                    # display_name = name + "-" + str(j + 1)
-                    display_name = seclistname
-
-                tempStr = """
-        resource "oci_core_security_list" \"""" + seclistname + """"{
-            compartment_id = "${var.""" + compartment_var_name + """}"
-            vcn_id = "${oci_core_vcn.""" + vcn_name + """.id}"
-            display_name = \"""" + display_name.strip() + "\""
-
-                if j + 1 > 1:
-                    tempStr = tempStr + """
-
-                        ####ADD_NEW_SEC_RULES####""" + str(j + 1) + """
-        }
-        """
-                else:
-                    if (vcn_lpg_rules[vcn_name] != ""):
-                        tempStr = tempStr + vcn_lpg_rules[vcn_name]
-                    if (add_ping_sec_rules_onprem == 'y'):
-                        if (hub_spoke_none == 'hub' or vcn_drg == 'y' or hub_spoke_none == 'spoke'):
-                            for drg_destination in drg_destinations:
-                                if (drg_destination != ''):
-                                    tempStr = tempStr + """
-                        ingress_security_rules {
-                            protocol = "1"
-                            source = \"""" + drg_destination + """"
-                        }
-                        """
-
-                    tempStr = tempStr + """
-                        ingress_security_rules {
-                            protocol = "all"
-                            source = \"""" + subnet + """"
-                        }
-                        egress_security_rules {
-                            destination = "0.0.0.0/0"
-                            protocol = "all"
-                        }
-
-                        ####ADD_NEW_SEC_RULES####""" + str(j + 1) + """
-                    }
-                    """
-                oname.write(tempStr)
-                j = j + 1
+            processSubnet(region,vcn_name,AD,seclists_per_subnet,name,subnet_name_attach_cidr,compartment_var_name)
 
 # If CD3 excel file is not given as input
 elif('.csv' in filename):
@@ -260,13 +285,15 @@ elif('.csv' in filename):
         for vcn_name in vcns:
             vcn_data = config.get('VCN_INFO', vcn_name)
             vcn_data = vcn_data.split(',')
-            vcn_drg=vcn_data[1].strip().lower()
-            hub_spoke_none = vcn_data[5].strip().lower()
-            vcn_subnet_file = vcn_data[6].strip().lower()
+            region = vcn_data[0].strip().lower()
+            region=region.strip().lower()
+            vcn_drg=vcn_data[2].strip().lower()
+            hub_spoke_none = vcn_data[6].strip().lower()
+            vcn_subnet_file = vcn_data[7].strip().lower()
             if os.path.isfile(vcn_subnet_file) == False:
                 print("input subnet file " + vcn_subnet_file + " for VCN " + vcn_name + " does not exist. Skipping SecList TF creation for this VCN.")
                 continue
-            sps = vcn_data[8].strip().lower()
+            sps = vcn_data[9].strip().lower()
             seclists_per_subnet = int(sps)
 
             fname = open(vcn_subnet_file,"r")
@@ -280,71 +307,7 @@ elif('.csv' in filename):
                             compartment_var_name = linearr[0].strip()
                             name = linearr[1].strip()
                             subnet = linearr[2].strip()
-                            if (AD.strip() != 'Regional' and  AD.strip() != 'regional'):
-                                    ad = ADS.index(AD)
-                                    ad_name_int = ad + 1
-                                    ad_name = str(ad_name_int)
-                            else:
-                                    ad_name = ""
-                            print(' seclist file name  ************************** '+name+'_seclist.tf')
-                            while i < seclists_per_subnet :
-                                    oname = open(outdir +"/" +name+"_seclist.tf","a")
-                                    #seclistname = name + str(ad_name) + "-" +  str(i+1)
-                                    seclistname = name  + "-" + str(i + 1)
-
-                                    if (str(ad_name) != ''):
-                                        name1 = seclistname + "-ad" + str(ad_name)
-                                    else:
-                                        name1 = seclistname
-
-                                    if (subnet_name_attach_cidr == 'y'):
-                                        #display_name = seclistname + "-" + subnet
-                                        display_name = name1 + "-" + subnet
-                                    else:
-                                        #display_name = name + "-" + str(i + 1)
-                                        display_name=seclistname
-
-                                    tempStr = """
-    resource "oci_core_security_list" \"""" + seclistname +  """"{
-        compartment_id = "${var.""" + compartment_var_name + """}"
-        vcn_id = "${oci_core_vcn.""" + vcn_name + """.id}"
-        display_name = \""""  + display_name.strip() + "\""
-
-
-                                    if i+1 > 1 :
-                                            tempStr  = tempStr + """
-           
-            ####ADD_NEW_SEC_RULES####""" + str(i+1) + """
-            }
-            """
-                                    else :
-                                            if(vcn_lpg_rules[vcn_name]!=""):
-                                                tempStr=tempStr+vcn_lpg_rules[vcn_name]
-                                            if(add_ping_sec_rules_onprem=='y'):
-                                                if(hub_spoke_none=='hub' or vcn_drg=='y' or hub_spoke_none=='spoke'):
-                                                    for drg_destination in drg_destinations:
-                                                        if(drg_destination!=''):
-                                                            tempStr=tempStr+"""
-                    ingress_security_rules {
-                        protocol = "1"
-                        source = \"""" + drg_destination + """"
-            }
-            """
-
-                                            tempStr = tempStr + """
-                    ingress_security_rules {
-                        protocol = "all"
-                        source = \"""" + subnet + """"
-            }
-                    egress_security_rules {
-                        destination = "0.0.0.0/0"
-                        protocol = "all"
-            }
-                    ####ADD_NEW_SEC_RULES####""" + str(i+1) + """
-    }
-    """
-                                    oname.write(tempStr)
-                                    i = i + 1
+                            processSubnet(region, vcn_name, AD, seclists_per_subnet, name, subnet_name_attach_cidr,compartment_var_name)
 
 else:
     print("Invalid input file format; Acceptable formats: .xls, .xlsx, .csv")

@@ -49,8 +49,8 @@ def get_vcns(config,compartment_id):
     return vcnlist
 
 
-def print_secrules(seclists,vcn_name,comp_name):
-    print ("SubnetName, RuleType, Protocol, isStateless, Source, SPortMin, SPortMax, Destination, DPortMin, DPortMax, ICMPType, ICMPCode")
+def print_secrules(seclists,region,vcn_name,comp_name):
+    #print ("SubnetName, RuleType, Protocol, isStateless, Source, SPortMin, SPortMax, Destination, DPortMin, DPortMax, ICMPType, ICMPCode")
     #oname.write("SubnetName, RuleType, Protocol, isStateless, Source, SPortMin, SPortMax, Destination, DPortMin, DPortMax, ICMPType, ICMPCode\n")
 
     global i
@@ -76,7 +76,7 @@ def print_secrules(seclists,vcn_name,comp_name):
                 {'SubnetName': dn, 'RuleType': '', 'Protocol': '', 'isStateless':'',
                  'Source': '', 'SPortMin': '', 'SPortMax': '', 'Destination': '', 'DPortMin': '',
                  'DPortMax': '',
-                 'ICMPType': '', 'ICMPCode': '', 'VCN Name': vcn_name, 'Compartment Name': comp_name}, index=[i])
+                 'ICMPType': '', 'ICMPCode': '', 'VCN Name': vcn_name, 'Compartment Name': comp_name,'Region':region}, index=[i])
             df = df.append(new_row, ignore_index=True)
         for rule in esec_rules:
             if rule.protocol == "all":
@@ -84,7 +84,7 @@ def print_secrules(seclists,vcn_name,comp_name):
                 new_row = pd.DataFrame(
                     {'SubnetName': dn, 'RuleType': 'egress', 'Protocol': 'all', 'isStateless': str(rule.is_stateless),
                      'Source': '', 'SPortMin': '', 'SPortMax': '', 'Destination': rule.destination, 'DPortMin': '',
-                     'DPortMax': '','ICMPType': '', 'ICMPCode': '', 'VCN Name': vcn_name, 'Compartment Name': comp_name}, index=[i])
+                     'DPortMax': '','ICMPType': '', 'ICMPCode': '', 'VCN Name': vcn_name, 'Compartment Name': comp_name,'Region':region}, index=[i])
                 df = df.append(new_row, ignore_index=True)
 
         for rule in isec_rules:
@@ -98,8 +98,10 @@ def print_secrules(seclists,vcn_name,comp_name):
 
                     new_row = pd.DataFrame({'SubnetName':dn,'RuleType':'ingress','Protocol':'tcp','isStateless':str(rule.is_stateless),
                                             'Source':rule.source,'SPortMin':'','SPortMax':'','Destination':'','DPortMin':'','DPortMax':'',
-                                            'ICMPType':'','ICMPCode':'','VCN Name':vcn_name,'Compartment Name':comp_name},index =[i])
-                else:
+                                            'ICMPType':'','ICMPCode':'','VCN Name':vcn_name,'Compartment Name':comp_name,'Region':region},index =[i])
+                #else:
+                #    print(rule.tcp_options.destination_port_range)
+                elif rule.tcp_options.destination_port_range is not None:
                     min = convertNullToNothing(rule.tcp_options.destination_port_range.min)
                     max = convertNullToNothing(rule.tcp_options.destination_port_range.max)
                     print (dn + ",ingress,tcp," + str(rule.is_stateless) + "," + rule.source + ",,,," + min + "," + max+",,")
@@ -108,7 +110,15 @@ def print_secrules(seclists,vcn_name,comp_name):
                                             'isStateless': str(rule.is_stateless),
                                             'Source': rule.source, 'SPortMin': '', 'SPortMax': '', 'Destination': '',
                                             'DPortMin': min, 'DPortMax': max,
-                                            'ICMPType': '', 'ICMPCode': '','VCN Name':vcn_name,'Compartment Name':comp_name},index =[i])
+                                            'ICMPType': '', 'ICMPCode': '','VCN Name':vcn_name,'Compartment Name':comp_name,'Region':region},index =[i])
+                else:
+                    new_row = pd.DataFrame({'SubnetName': dn, 'RuleType': 'ingress', 'Protocol': 'tcp',
+                                            'isStateless': str(rule.is_stateless),
+                                            'Source': rule.source, 'SPortMin': '', 'SPortMax': '', 'Destination': '',
+                                            'DPortMin': '', 'DPortMax': '',
+                                            'ICMPType': '', 'ICMPCode': '', 'VCN Name': vcn_name,
+                                            'Compartment Name': comp_name, 'Region': region}, index=[i])
+
 
             if rule.protocol == "1":
                 if rule.icmp_options is None:
@@ -118,7 +128,7 @@ def print_secrules(seclists,vcn_name,comp_name):
                                             'isStateless': str(rule.is_stateless),
                                             'Source': rule.source, 'SPortMin': '', 'SPortMax': '', 'Destination': '',
                                             'DPortMin': '', 'DPortMax': '',
-                                            'ICMPType': '', 'ICMPCode': '','VCN Name':vcn_name,'Compartment Name':comp_name},index =[i])
+                                            'ICMPType': '', 'ICMPCode': '','VCN Name':vcn_name,'Compartment Name':comp_name,'Region':region},index =[i])
                 else:
                     code = convertNullToNothing(rule.icmp_options.code)
                     type = convertNullToNothing(rule.icmp_options.type)
@@ -128,7 +138,8 @@ def print_secrules(seclists,vcn_name,comp_name):
                     {'SubnetName': dn, 'RuleType': 'ingress', 'Protocol': 'icmp', 'isStateless': str(rule.is_stateless),
                      'Source': rule.source, 'SPortMin': '', 'SPortMax': '', 'Destination': '', 'DPortMin': '',
                      'DPortMax': '',
-                     'ICMPType': type, 'ICMPCode': code,'VCN Name':vcn_name,'Compartment Name':comp_name},index =[i])
+                     'ICMPType': type, 'ICMPCode': code,'VCN Name':vcn_name,'Compartment Name':comp_name,'Region':region},index =[i])
+
             if rule.protocol == "17":
                 if rule.udp_options is None:
                     print (dn + ",ingress,udp," + str(rule.is_stateless) + "," + rule.source + ",,,,,,,")
@@ -137,8 +148,8 @@ def print_secrules(seclists,vcn_name,comp_name):
                                             'isStateless': str(rule.is_stateless),
                                             'Source': rule.source, 'SPortMin': '', 'SPortMax': '', 'Destination': '',
                                             'DPortMin': '', 'DPortMax': '',
-                                            'ICMPType': '', 'ICMPCode': '','VCN Name':vcn_name,'Compartment Name':comp_name},index =[i])
-                else:
+                                            'ICMPType': '', 'ICMPCode': '','VCN Name':vcn_name,'Compartment Name':comp_name,'Region':region},index =[i])
+                elif rule.udp_options.destination_port_range is not None:
                     min = convertNullToNothing(rule.udp_options.destination_port_range.min)
                     max = convertNullToNothing(rule.udp_options.destination_port_range.max)
                     print (dn + ",ingress,udp," + str(rule.is_stateless) + "," + rule.source + ",,,," + min + "," + max+",,")
@@ -147,8 +158,14 @@ def print_secrules(seclists,vcn_name,comp_name):
                                             'isStateless': str(rule.is_stateless),
                                             'Source': rule.source, 'SPortMin': '', 'SPortMax': '', 'Destination': '',
                                             'DPortMin': min, 'DPortMax': max,
-                                            'ICMPType': '', 'ICMPCode': '','VCN Name':vcn_name,'Compartment Name':comp_name},index =[i])
-
+                                            'ICMPType': '', 'ICMPCode': '','VCN Name':vcn_name,'Compartment Name':comp_name,'Region':region},index =[i])
+                else:
+                    new_row = pd.DataFrame({'SubnetName': dn, 'RuleType': 'ingress', 'Protocol': 'udp',
+                                            'isStateless': str(rule.is_stateless),
+                                            'Source': rule.source, 'SPortMin': '', 'SPortMax': '', 'Destination': '',
+                                            'DPortMin': '', 'DPortMax': '',
+                                            'ICMPType': '', 'ICMPCode': '', 'VCN Name': vcn_name,
+                                            'Compartment Name': comp_name, 'Region': region}, index=[i])
             if rule.protocol == "all":
                 print (dn + ",ingress,all," + str(rule.is_stateless) + "," + rule.source + ",,,,,,,")
                 #oname.write(dn + ",ingress,all," + str(rule.is_stateless) + "," + rule.source + ",,,,,,,\n")
@@ -156,7 +173,7 @@ def print_secrules(seclists,vcn_name,comp_name):
                     {'SubnetName': dn, 'RuleType': 'ingress', 'Protocol': 'all', 'isStateless': str(rule.is_stateless),
                      'Source': rule.source, 'SPortMin': '', 'SPortMax': '', 'Destination': '', 'DPortMin': '',
                      'DPortMax': '',
-                     'ICMPType': '', 'ICMPCode': '','VCN Name':vcn_name,'Compartment Name':comp_name},index =[i])
+                     'ICMPType': '', 'ICMPCode': '','VCN Name':vcn_name,'Compartment Name':comp_name,'Region':region},index =[i])
             #df = pd.concat([new_row, df],ignore_index =True)
 
             df=df.append(new_row,ignore_index =True)
@@ -191,7 +208,6 @@ else:
     config = oci.config.from_file()
 
 ntk_compartment_ids = get_network_compartment_id(config)#, ntk_comp_name)
-vcn = VirtualNetworkClient(config)
 
 i=0
 df=pd.DataFrame()
@@ -201,21 +217,59 @@ if vcn_name is not None:
     if(ntk_comp_name=='' or ntk_comp_name is None):
         print("\nEnter a valid name for the compartment weher VCN resides...")
         exit(1)
-    vcn_ocid = get_vcn_id(config,ntk_compartment_ids[ntk_comp_name],vcn_name)
-    if(vcn_ocid=='' or vcn_ocid is None):
-        print('\nCould not find vcn in this compartment...')
-        exit(1)
+
+    found = ''
+    print("\nSearching for VCN in ASH region...")
+    config.__setitem__("region", "us-ashburn-1")
+    vcn_ocid = get_vcn_id(config, ntk_compartment_ids[ntk_comp_name], vcn_name)
+
+    if (vcn_ocid == '' or vcn_ocid is None):
+        print('\nCould not find vcn in this compartment in ASH region...Searching in PHX region...')
+        config.__setitem__("region", "us-phoenix-1")
+        vcn_ocid = get_vcn_id(config, ntk_compartment_ids[ntk_comp_name], vcn_name)
+        if (vcn_ocid == '' or vcn_ocid is None):
+            print('\nCould not find vcn in this compartment in PHX region also..verify the vcn name and compartment name where vcn resides and try again...')
+            exit(1)
+        else:
+            print("\nFound in Phoenix...")
+            found = 'phx'
+    else:
+        print("\nFound in Ashburn...")
+        found = 'ash'
+
+    if (found == 'ash'):
+        config.__setitem__("region", "us-ashburn-1")
+        vcn = VirtualNetworkClient(config)
+        region = 'Ashburn'
+    if (found == 'phx'):
+        config.__setitem__("region", "us-phoenix-1")
+        vcn = VirtualNetworkClient(config)
+        region = 'Phoenix'
+
     seclists = vcn.list_security_lists(compartment_id=ntk_compartment_ids[ntk_comp_name], vcn_id=vcn_ocid, lifecycle_state='AVAILABLE')
-    print_secrules(seclists,vcn_name,ntk_comp_name)
+    print_secrules(seclists,region,vcn_name,ntk_comp_name)
 else:
     print("\nFetching for all VCNs in tenancy...")
     for ntk_compartment_name in ntk_compartment_ids:
-        vcns = get_vcns(config,ntk_compartment_ids[ntk_compartment_name])
-        for v in vcns.data:
+        print(ntk_compartment_name)
+        config.__setitem__("region", "us-ashburn-1")
+        vcn = VirtualNetworkClient(config)
+        vcns_ash = get_vcns(config, ntk_compartment_ids[ntk_compartment_name])
+        for v in vcns_ash.data:
             vcn_id = v.id
             vcn_name=v.display_name
             seclists = vcn.list_security_lists(compartment_id=ntk_compartment_ids[ntk_compartment_name], vcn_id=vcn_id, lifecycle_state='AVAILABLE')
-            print_secrules(seclists,vcn_name,ntk_compartment_name)
+            print_secrules(seclists,'Ashburn',vcn_name,ntk_compartment_name)
+
+        config.__setitem__("region", "us-phoenix-1")
+        vcn = VirtualNetworkClient(config)
+        vcns_phx = get_vcns(config, ntk_compartment_ids[ntk_compartment_name])
+        for v in vcns_phx.data:
+            vcn_id = v.id
+            vcn_name = v.display_name
+            seclists = vcn.list_security_lists(compartment_id=ntk_compartment_ids[ntk_compartment_name], vcn_id=vcn_id,
+                                               lifecycle_state='AVAILABLE')
+            print_secrules(seclists, 'Phoenix', vcn_name, ntk_compartment_name)
 
 #oname.close()
 

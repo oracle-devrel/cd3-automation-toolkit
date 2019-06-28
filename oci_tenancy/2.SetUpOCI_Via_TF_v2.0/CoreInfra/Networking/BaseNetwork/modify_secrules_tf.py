@@ -268,7 +268,7 @@ parser = argparse.ArgumentParser(description="Takes in a csv file mentioning sec
 parser.add_argument("inputfile",help="Full Path of vcn info file: It could be either the properties file eg vcn-info.properties or CD3 excel file")
 parser.add_argument("outdir",help="directory path for output tf files ")
 parser.add_argument("secrulesfile",help="Input file(either csv or CD3 excel) containing new secrules to be added for Security List of a given subnet")
-parser.add_argument("--overwrite",help="This will overwrite all sec rules in OCI with whatever is specified in cd3 excel file sheet- SecRulesinOCI (true or false) ",required=False)
+parser.add_argument("--overwrite",help="This will overwrite all sec rules in OCI with whatever is specified in cd3 excel file sheet- SecRulesinOCI (yes or no) ",required=False)
 parser.add_argument("--configFileName", help="Config file name" , required=False)
 
 
@@ -278,15 +278,27 @@ if len(sys.argv)==1:
 
 args = parser.parse_args()
 
-outdir = args.outdir
 secrulesfilename = args.secrulesfile
+outdir = args.outdir
 
-backup_file(outdir, "_seclist.tf")
+ash_dir=outdir+"/ashburn"
+phx_dir=outdir+"/phoenix"
+
+#Backup existing seclist files in ash and phx dir
+backup_file(ash_dir, "_seclist.tf")
+backup_file(phx_dir, "_seclist.tf")
+
+tempStrASH = ""
+tempStrPHX = ""
+oname_ash=None
+oname_phx=None
+subnets_done_ash=[]
+subnets_done_phx=[]
 
 if args.overwrite is not None:
     overwrite = str(args.overwrite)
 else:
-    overwrite = "false"
+    overwrite = "no"
 
 
 if args.configFileName is not None:
@@ -300,7 +312,7 @@ seclist_rule_count = {}
 seclist_rule_count_limit = {}
 seclist_per_subnet_limit ={}
 
-vnc = VirtualNetworkClient(config)
+
 
 # Read vcn info file and get subnet info
 if('.properties' in args.inputfile):
@@ -313,10 +325,18 @@ if('.properties' in args.inputfile):
         vcn_data = ociprops.get('VCN_INFO', vcn_name)
         vcn_data = vcn_data.split(',')
 
-        sec_rule_per_seclist = vcn_data[9].strip().lower()
-        compartment_name = vcn_data[11].strip()
+        region=vcn_data[0].strip().lower()
+        sec_rule_per_seclist = vcn_data[10].strip().lower()
+        compartment_name = vcn_data[12].strip()
 
         ntk_comp_id = get_network_compartment_id(config, compartment_name)
+        if(region=='ashburn'):
+            config.__setitem__("region", "us-ashburn-1")
+            vnc = VirtualNetworkClient(config)
+        elif(region=='phoenix'):
+            config.__setitem__("region", "us-phoenix-1")
+            vnc = VirtualNetworkClient(config)
+
         vcn_id = get_vcn_id(config, ntk_comp_id , vcn_name)
 
         subnet_list =  vnc.list_subnets(ntk_comp_id, vcn_id)
@@ -328,13 +348,21 @@ if('.properties' in args.inputfile):
 elif('.xls' in args.inputfile):
     df = pd.read_excel(args.inputfile, sheet_name='VCNs',skiprows=1)
     for i in df.index:
-        vcn_name = df.iat[i, 0]
-
-        seclist_per_subnet = df.iat[i,7]
-        sec_rule_per_seclist = df.iat[i,8]
+        vcn_name = df['vcn_name'][i]
+        region=df['Region'][i]
+        region=region.strip().lower()
+        seclist_per_subnet = df['sec_list_per_subnet'][i]
+        sec_rule_per_seclist = df['sec_rule_per_seclist'][i]
         compartment_name = df['compartment_name'][i]
 
         ntk_comp_id = get_network_compartment_id(config, compartment_name)
+        if (region == 'ashburn'):
+            config.__setitem__("region", "us-ashburn-1")
+            vnc = VirtualNetworkClient(config)
+        elif (region == 'phoenix'):
+            config.__setitem__("region", "us-phoenix-1")
+            vnc = VirtualNetworkClient(config)
+
         vcn_id = get_vcn_id(config, ntk_comp_id, vcn_name)
 
         if(vcn_id!=None):
@@ -350,16 +378,17 @@ else:
     print("Invalid input vcn info file format; Acceptable formats: .xls, .xlsx, .properties")
     exit()
 
-# Read input file containing new sec rules to be added
-subnets_done=[]
-ruleStr=''
-seclists_done=[]
+subnets_done_ash=[]
+subnets_done_phx=[]
+seclists_done_ash=[]
+seclists_done_phx=[]
 
+# Read input file containing new sec rules to be added
 #If input is CD3 excel file
 if('.xls' in secrulesfilename):
 
     NaNstr = 'NaN'
-    if(overwrite=='true'):
+    if(overwrite=='yes'):
         print("\nReading SecRulesinOCI sheet of cd3 for overwrite option")
         df = pd.read_excel(secrulesfilename, sheet_name='SecRulesinOCI', skiprows=0, dtype=object).to_csv('out.csv')
         totalRowCount = sum(1 for row in csv.DictReader(skipCommentedLine(open('out.csv'))))
@@ -368,9 +397,12 @@ if('.xls' in secrulesfilename):
             reader = csv.DictReader(skipCommentedLine(secrulesfile))
             columns = reader.fieldnames
             rowCount = 0
-            defaultname = open(outdir + "/" + "VCNs_Default_SecList.tf", "w")
-            default_ruleStr=''
-            default_seclists_done=[]
+            defaultname_ash = open(ash_dir + "/" + "VCNs_Default_SecList.tf", "w")
+            defaultname_phx = open(phx_dir + "/" + "VCNs_Default_SecList.tf", "w")
+            default_ruleStr_ash=''
+            default_ruleStr_phx = ''
+            default_seclists_done_ash=[]
+            default_seclists_done_phx = []
             for row in reader:
                 seclistName = row['SubnetName']
 
@@ -378,77 +410,155 @@ if('.xls' in secrulesfilename):
                     continue
 
                 vcn_name = row['VCN Name']
+                compartment_name = row['Compartment Name']
                 protocol = row['Protocol']
                 ruleType = row['RuleType']
+                region = row['Region']
+                region=region.strip().lower()
 
-                #Process Default SecLists-- Create new file containign default ecurity lists for all VCNs
-                if('Default Security List for' in seclistName):
-                    if (seclistName not in default_seclists_done):
-                        if(len(default_seclists_done)==0):
-                            default_ruleStr=default_ruleStr+"""
-resource "oci_core_default_security_list" "default-security_list_""" + vcn_name + """" {
-    manage_default_resource_id  = "${oci_core_vcn.""" + vcn_name + """.default_security_list_id}"
-"""
-                        else:
-                            default_ruleStr = default_ruleStr + """
-}
-resource "oci_core_default_security_list" "default-security_list_""" + vcn_name + """" {
-    manage_default_resource_id  = "${oci_core_vcn.""" + vcn_name + """.default_security_list_id}"
-"""
-                        default_seclists_done.append(seclistName)
+                if(region=='ashburn'):
+                    #Process Default SecLists-- Create new file containign default ecurity lists for all VCNs
+                    if('Default Security List for' in seclistName):
+                        if (seclistName not in default_seclists_done_ash):
+                            if(len(default_seclists_done_ash)==0):
+                                default_ruleStr_ash=default_ruleStr_ash+"""
+    resource "oci_core_default_security_list" "default-security_list_""" + vcn_name + """" {
+        manage_default_resource_id  = "${oci_core_vcn.""" + vcn_name + """.default_security_list_id}"
+    """
+                            else:
+                                default_ruleStr_ash = default_ruleStr_ash + """
+    }
+    resource "oci_core_default_security_list" "default-security_list_""" + vcn_name + """" {
+        manage_default_resource_id  = "${oci_core_vcn.""" + vcn_name + """.default_security_list_id}"
+    """
+                            default_seclists_done_ash.append(seclistName)
+
+                        new_sec_rule = ""
+                        if ruleType == 'ingress':
+                            new_sec_rule = create_ingress_rule_string(row)
+                        if ruleType == 'egress':
+                            new_sec_rule = create_egress_rule_string(row)
+                        default_ruleStr_ash = default_ruleStr_ash + new_sec_rule
+                        continue
+
+                    #Process other seclists
+                    subnetName = row['SubnetName'].rsplit('-',1)[0]
+
+                    if(subnetName not in subnets_done_ash or len(subnets_done_ash)==0):
+                        print('opening file '+ash_dir + "/" + subnetName + "_seclist.tf")
+                        subnets_done_ash.append(subnetName)
+                        if(tempStrASH!=''):
+                            tempStrASH=tempStrASH+"""
+    }"""
+                            print(tempStrASH)
+                            oname_ash.write(tempStrASH)
+                            tempStrASH = ''
+                            seclists_done_ash = []
+                            oname_ash.close()
+                        oname_ash = open(ash_dir + "/" + subnetName + "_seclist.tf", "w")
+
+
+                    if(seclistName not in seclists_done_ash):
+                        if(len(seclists_done_ash)!=0):
+                            tempStrASH=tempStrASH+"""
+    }"""
+                        tempStrASH=tempStrASH+"""
+    resource "oci_core_security_list" \"""" + seclistName +  """"{
+    compartment_id = "${var.""" + compartment_name + """}"
+    vcn_id = "${oci_core_vcn.""" + vcn_name + """.id}"
+    ####ADD_NEW_SEC_RULES####""" + row['SubnetName'].rsplit('-',1)[1] + """
+    """
+                        seclists_done_ash.append(seclistName)
 
                     new_sec_rule = ""
                     if ruleType == 'ingress':
                         new_sec_rule = create_ingress_rule_string(row)
                     if ruleType == 'egress':
                         new_sec_rule = create_egress_rule_string(row)
-                    default_ruleStr = default_ruleStr + new_sec_rule
-                    continue
+                    tempStrASH = tempStrASH + new_sec_rule
 
-                #Process other seclists
-                subnetName = row['SubnetName'].rsplit('-',1)[0]
-                if(subnetName not in subnets_done or len(subnets_done)==0):
-                    print('opening file '+outdir + "/" + subnetName + "_seclist.tf")
-                    subnets_done.append(subnetName)
-                    if(ruleStr!=''):
-                        ruleStr=ruleStr+"""
+                if(region=='phoenix'):
+                    # Process Default SecLists-- Create new file containign default ecurity lists for all VCNs
+                    if ('Default Security List for' in seclistName):
+                        if (seclistName not in default_seclists_done_phx):
+                            if (len(default_seclists_done_phx) == 0):
+                                default_ruleStr_phx = default_ruleStr_phx + """
+                        resource "oci_core_default_security_list" "default-security_list_""" + vcn_name + """" {
+                            manage_default_resource_id  = "${oci_core_vcn.""" + vcn_name + """.default_security_list_id}"
+                        """
+                            else:
+                                default_ruleStr_phx = default_ruleStr_phx + """
+                        }
+                        resource "oci_core_default_security_list" "default-security_list_""" + vcn_name + """" {
+                            manage_default_resource_id  = "${oci_core_vcn.""" + vcn_name + """.default_security_list_id}"
+                        """
+                            default_seclists_done_phx.append(seclistName)
+
+                        new_sec_rule = ""
+                        if ruleType == 'ingress':
+                            new_sec_rule = create_ingress_rule_string(row)
+                        if ruleType == 'egress':
+                            new_sec_rule = create_egress_rule_string(row)
+                        default_ruleStr_phx = default_ruleStr_phx + new_sec_rule
+                        continue
+
+                    # Process other seclists
+                    subnetName = row['SubnetName'].rsplit('-', 1)[0]
+                    if (subnetName not in subnets_done_phx or len(subnets_done_phx) == 0):
+                        print('opening file ' + phx_dir + "/" + subnetName + "_seclist.tf")
+                        subnets_done_phx.append(subnetName)
+                        if (tempStrPHX != ''):
+                            tempStrPHX = tempStrPHX + """
+                        }"""
+                            oname_phx.write(tempStrPHX)
+                            tempStrPHX = ''
+                            seclists_done_phx = []
+                            oname_phx.close()
+                        oname_phx = open(phx_dir + "/" + subnetName + "_seclist.tf", "w")
+
+                    if (seclistName not in seclists_done_phx):
+                        if (len(seclists_done_phx) != 0):
+                            tempStrPHX = tempStrPHX + """
+                        }"""
+                        tempStrPHX = tempStrPHX + """
+                        resource "oci_core_security_list" \"""" + seclistName + """"{
+                        compartment_id = "${var.""" + compartment_name + """}"
+                        vcn_id = "${oci_core_vcn.""" + vcn_name + """.id}"
+                        ####ADD_NEW_SEC_RULES####""" + row['SubnetName'].rsplit('-', 1)[1] + """
+                        """
+                        seclists_done_phx.append(seclistName)
+
+                    new_sec_rule = ""
+                    if ruleType == 'ingress':
+                        new_sec_rule = create_ingress_rule_string(row)
+                    if ruleType == 'egress':
+                        new_sec_rule = create_egress_rule_string(row)
+                    tempStrPHX = tempStrPHX + new_sec_rule
+
+        tempStrASH=tempStrASH+"""
 }"""
-                        oname.write(ruleStr)
-                        ruleStr = ''
-                        seclists_done = []
-                        oname.close()
-                    oname = open(outdir + "/" + subnetName + "_seclist.tf", "w")
-
-
-                if(seclistName not in seclists_done):
-                    if(len(seclists_done)!=0):
-                        ruleStr=ruleStr+"""
+        tempStrPHX = tempStrPHX + """
 }"""
-                    ruleStr=ruleStr+"""
-resource "oci_core_security_list" \"""" + seclistName +  """"{
-compartment_id = "${var.""" + compartment_name + """}"
-vcn_id = "${oci_core_vcn.""" + vcn_name + """.id}"
-####ADD_NEW_SEC_RULES####""" + row['SubnetName'].rsplit('-',1)[1] + """
-"""
-                    seclists_done.append(seclistName)
 
-                new_sec_rule = ""
-                if ruleType == 'ingress':
-                    new_sec_rule = create_ingress_rule_string(row)
-                if ruleType == 'egress':
-                    new_sec_rule = create_egress_rule_string(row)
-                ruleStr = ruleStr + new_sec_rule
-        ruleStr=ruleStr+"""
+        oname_ash.write(tempStrASH)
+        oname_ash.close()
+
+        oname_phx.write(tempStrPHX)
+        oname_phx.close()
+
+
+        default_ruleStr_ash=default_ruleStr_ash+"""
 }"""
-        oname.write(ruleStr)
-        oname.close()
-        default_ruleStr=default_ruleStr+"""
+        default_ruleStr_phx = default_ruleStr_phx + """
 }"""
-        defaultname.write(default_ruleStr)
-        defaultname.close()
+        defaultname_ash.write(default_ruleStr_ash)
+        defaultname_ash.close()
+
+        defaultname_phx.write(default_ruleStr_phx)
+        defaultname_phx.close()
 
 
-    elif(overwrite=='false'):
+    elif(overwrite=='no'):
         print("Reading AddSecRules sheet of cd3")
         df = pd.read_excel(secrulesfilename, sheet_name='AddSecRules',skiprows=1,dtype=object).to_csv('out.csv')
 
@@ -465,6 +575,9 @@ vcn_id = "${oci_core_vcn.""" + vcn_name + """.id}"
 
                 protocol = row['Protocol']
                 ruleType = row['RuleType']
+                region = row['Region']
+                region = region.strip().lower()
+
                 new_sec_rule = ""
 
                 if ruleType == 'ingress':
@@ -477,7 +590,12 @@ vcn_id = "${oci_core_vcn.""" + vcn_name + """.id}"
                 # print("secrule count " + str(seclist_rule_count[subnetName]))
                 text_to_replace = getReplacementStr(sec_rule_per_seclist, subnetName)
                 new_sec_rule = new_sec_rule + "\n" + text_to_replace
-                updateSecRules(outdir + "/" + sec_list_file, text_to_replace, new_sec_rule, 0)
+
+                if(region=='ashburn'):
+                    updateSecRules(ash_dir + "/" + sec_list_file, text_to_replace, new_sec_rule, 0)
+                if (region == 'phoenix'):
+                    updateSecRules(phx_dir + "/" + sec_list_file, text_to_replace, new_sec_rule, 0)
+
                 incrementRuleCount(subnetName)
                 ####ADD_NEW_SEC_RULES####
 
@@ -495,6 +613,9 @@ elif ('.csv' in secrulesfilename):
 
             ruleType = row['RuleType']
             protocol = row['Protocol']
+            region = row['Region']
+            region = region.strip().lower()
+
             new_sec_rule =""
             if ruleType == 'ingress':
                     new_sec_rule = create_ingress_rule_string(row)
@@ -507,7 +628,11 @@ elif ('.csv' in secrulesfilename):
             #print("secrule count " + str(seclist_rule_count[subnetName]))
             text_to_replace = getReplacementStr(sec_rule_per_seclist,subnetName)
             new_sec_rule = new_sec_rule + "\n" + text_to_replace
-            updateSecRules(outdir + "/" + sec_list_file, text_to_replace, new_sec_rule, 0)
+            if (region == 'ashburn'):
+                updateSecRules(ash_dir + "/" + sec_list_file, text_to_replace, new_sec_rule, 0)
+            if (region == 'phoenix'):
+                updateSecRules(phx_dir + "/" + sec_list_file, text_to_replace, new_sec_rule, 0)
+
             incrementRuleCount(subnetName)
             ####ADD_NEW_SEC_RULES####
 

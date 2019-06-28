@@ -22,6 +22,7 @@ userInput=userInput.split(',')
 inputfile=''
 outdir=''
 prefix=''
+cd3outfile=''
 
 if('1' in userInput):
     print('-----------------------------Creating Compartments----------------------')
@@ -235,14 +236,14 @@ if('7' in userInput):
 if('8' in userInput):
     print("------------------------Adding Route Rules--------------------------------")
     inputfile = input("Enter full path to input file containing route rules to be added eg example/BaseNetwork/add_routes-example.csv or CD3 excel file: ")
-    outfile = input("Enter full path to routes terraform file created earlier while setting up Base Network Objects: ")
-    overwrite = input("Do you want to overwrite rules in OCI. Enter yes or no: ")
+    outdir = input("Enter full path to output directory used while setting up Base Network Objects; it contains routes tf file:  ")
+    overwrite = input("Do you want to overwrite rules in OCI or add more rules to existing ones. Enter yes for overwrite or no for addition: ")
 
     os.chdir('CoreInfra/Networking/BaseNetwork')
     if(overwrite=='' or overwrite=='no'):
-        command = 'python modify_routerules_tf.py ' + inputfile + ' ' + outfile
+        command = 'python modify_routerules_tf.py ' + inputfile + ' ' + outdir
     if(overwrite=='yes'):
-        command = 'python modify_routerules_tf.py ' + inputfile + ' ' + outfile + ' --overwrite true'
+        command = 'python modify_routerules_tf.py ' + inputfile + ' ' + outdir + ' --overwrite yes'
     os.system(command)
     os.chdir("../../..")
     print("--------------------------------------------------------------------------")
@@ -250,15 +251,14 @@ if('8' in userInput):
 
 if('9' in userInput):
     print("------------------------Adding Security Rules--------------------------------")
-    inputfile = input("Enter full path to input file having VCN info either properties file eg example/vcn-info.properties or CD3 excel file whcih was used to create Base Network: ")
-
-    outdir = input("Enter full path to output directory used while setting up Base Network Objects: ")
+    inputfile = input("Enter full path to file having VCN info either properties file eg example/vcn-info.properties or CD3 excel file whcih was used to create Base Network: ")
+    outdir = input("Enter full path to output directory used while setting up Base Network Objects; it contains seclist tf files:  ")
     inputConfigFile = input("Enter path to pyhton config file This is required when you are executing the code from some other workstation rather than OCS VM"
         " else leave it empty: ")
-    overwrite = input("Do you want to overwrite rules in OCI. Enter yes or no: ")
+    overwrite = input("Do you want to overwrite rules in OCI or add more rules to existing ones. Enter yes for overwrite or no for addition: ")
 
-    if (overwrite == '' or overwrite == 'no'):
-        inputcsv = input("Enter full path to input file containing security rules info eg example/BaseNetwork/update_seclist-example.csv or CD3 excel file: ")
+    if (overwrite=='' or overwrite == 'no'):
+        inputcsv = input("Enter full path to input file containing security rules to be added eg example/BaseNetwork/update_seclist-example.csv or CD3 excel file: ")
     else:
         inputcsv=inputfile
 
@@ -266,14 +266,14 @@ if('9' in userInput):
 
     if (overwrite == '' or overwrite == 'no'):
         if(inputConfigFile==''):
-            command = 'python modify_secrules_tf.py --inputfile ' + inputfile + ' --outdir ' + outdir + ' --secrulesfile '+inputcsv
+            command = 'python modify_secrules_tf.py ' + inputfile + ' ' + outdir + ' '+inputcsv
         else:
-            command = 'python modify_secrules_tf.py --inputfile ' + inputfile + ' --outdir ' + outdir + ' --secrulesfile '+inputcsv+' --configFileName '+inputConfigFile
+            command = 'python modify_secrules_tf.py ' + inputfile + ' ' + outdir + ' '+inputcsv+' --configFileName '+inputConfigFile
     if(overwrite=='yes'):
         if (inputConfigFile == ''):
-            command = 'python modify_secrules_tf.py --inputfile ' + inputfile + ' --outdir ' + outdir + ' --secrulesfile ' + inputcsv + ' --overwrite true'
+            command = 'python modify_secrules_tf.py ' + inputfile + ' ' + outdir + ' ' + inputcsv + ' --overwrite yes'
         else:
-            command = 'python modify_secrules_tf.py --inputfile ' + inputfile + ' --outdir ' + outdir + ' --secrulesfile ' + inputcsv + ' --configFileName ' + inputConfigFile +' --overwrite true'
+            command = 'python modify_secrules_tf.py ' + inputfile + ' ' + outdir + ' ' + inputcsv + ' --configFileName ' + inputConfigFile +' --overwrite yes'
 
     os.system(command)
     os.chdir("../../..")

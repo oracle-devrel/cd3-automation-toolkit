@@ -1,4 +1,4 @@
 # Rows after <END> or <end> will not be processed;
-SubnetName,RuleType,Protocol,isStateless,Source,SPortMin,SPortMax,Destination,DPortMin,DPortMax,ICMPType,ICMPCode
-qa-app,ingress,tcp,FALSE,10.89.0.0/16,,,,123,234,,
+SubnetName,RuleType,Protocol,isStateless,Source,SPortMin,SPortMax,Destination,DPortMin,DPortMax,ICMPType,ICMPCode,Region
+qa-app,ingress,tcp,FALSE,10.89.0.0/16,,,,123,234,,Ashburn
 <END>
