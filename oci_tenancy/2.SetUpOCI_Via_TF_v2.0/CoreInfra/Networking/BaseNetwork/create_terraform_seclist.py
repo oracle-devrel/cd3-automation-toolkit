@@ -108,7 +108,8 @@ def createLPGSecRules(peering_dict):
 def processSubnet(region,vcn_name,AD,seclists_per_subnet,name,subnet_name_attach_cidr,compartment_var_name):
 
     j = 0
-    if (AD.strip() != 'Regional' and  AD.strip() != 'regional'):
+    if (AD.strip().lower() != 'regional'):
+        AD = AD.strip().upper()
         ad = ADS.index(AD)
         ad_name_int = ad + 1
         ad_name = str(ad_name_int)

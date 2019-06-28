@@ -114,7 +114,8 @@ def processSubnet(region,vcn_name,name,ruleStr,AD,configure_sgw,configure_ngw,co
 
 
     # process each subnet row for ngw, igw, sgw
-    if (AD.strip() != 'Regional' and AD.strip() != 'regional'):
+    if (AD.strip().lower() != 'regional'):
+        AD=AD.strip().upper()
         ad = ADS.index(AD)
         ad_name_int = ad + 1
         ad_name = str(ad_name_int)
@@ -308,23 +309,15 @@ if('.xlsx' in filename):
 
             # Get subnet data
             compartment_var_name = df.iat[i, 0]
-            compartment_var_name=compartment_var_name.strip()
             name = df.iat[i, 2]
-            name=name.strip()
             subnet = df.iat[i, 3]
-            subnet=subnet.strip()
             AD = df.iat[i, 4]
-            AD=AD.strip()
             pubpvt = df.iat[i, 5]
-            pubpvt=pubpvt.strip()
             dhcp = df.iat[i, 6]
 
             configure_sgw = df.iat[i, 7]
-            configure_sgw=configure_sgw.strip()
             configure_ngw = df.iat[i, 8]
-            configure_ngw = configure_ngw.strip()
             configure_igw = df.iat[i, 9]
-            configure_igw = configure_igw.strip()
 
             # Check to see if any column is empty in Subnets Sheet
             if (str(compartment_var_name).lower() == NaNstr.lower() or str(vcn_name).lower() == NaNstr.lower() or
@@ -334,6 +327,15 @@ if('.xlsx' in filename):
                     or str(configure_igw).lower() == NaNstr.lower()):
                 print("Column Values (except dhcp_option_name or dns_label) or Rows cannot be left empty in Subnets sheet in CD3..exiting...")
                 exit(1)
+
+            compartment_var_name=compartment_var_name.strip()
+            configure_sgw=configure_sgw.strip()
+            configure_ngw = configure_ngw.strip()
+            configure_igw = configure_igw.strip()
+            pubpvt=pubpvt.strip()
+            subnet=subnet.strip()
+            name=name.strip()
+
 
             vcn_data = df_vcn.loc[vcn_name]
             region = vcn_data['Region']

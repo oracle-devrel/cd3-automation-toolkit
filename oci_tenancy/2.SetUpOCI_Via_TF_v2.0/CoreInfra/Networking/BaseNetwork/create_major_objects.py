@@ -233,8 +233,8 @@ if('.xlsx' in filename):
         NaNstr = 'NaN'
         df = pd.read_excel(filename, sheet_name='VCNs',skiprows=1)
         df_info = pd.read_excel(filename, sheet_name='VCN Info',skiprows=1)
-        # Get Property Values
 
+        # Get Property Values
         properties=df_info['Property']
         values=df_info['Value']
 

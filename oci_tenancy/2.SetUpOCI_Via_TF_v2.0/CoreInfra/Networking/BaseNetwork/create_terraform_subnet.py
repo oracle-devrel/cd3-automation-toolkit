@@ -65,8 +65,8 @@ def processSubnet(region,vcn_name,name,subnet,AD,dnslabel,pubpvt,compartment_var
 	global tempStrASH
 	global tempStrPHX
 
-
-	if (AD.strip() != 'Regional' and AD.strip() != 'regional'):
+	if (AD.strip().lower() != 'regional'):
+		AD = AD.strip().upper()
 		ad = ADS.index(AD)
 		ad_name_int = ad + 1
 		ad_name = str(ad_name_int)
