@@ -50,12 +50,13 @@ oname_ash = open(outfile_ash,"w")
 oname_phx = open(outfile_phx,"w")
 
 # Create VCN transit routing mapping based on Hub-Spoke
-vcn_transit_route_mapping=dict()
+#vcn_transit_route_mapping=dict()
 peering_dict=dict()
 vcn_compartment={}
 vcn_region={}
-hub_vcn_name=''
-hub_count=0
+hub_vcn_names=[]
+spoke_vcn_names=[]
+
 tempStrASH = ""
 tempStrPHX = ""
 datastr = """
@@ -102,16 +103,17 @@ def createLPGs(peering_dict):
             vcn_id = "${oci_core_vcn.""" + right_vcn + """.id}"
             compartment_id = "${var.""" + compartment_var_name + """}"
     """
-                                if (right_vcn == hub_vcn_name and left_vcn in vcn_transit_route_mapping[hub_vcn_name]):
+                                if (right_vcn in hub_vcn_names and left_vcn in spoke_vcn_names):
                                         rt_var = lpg_name + "_rt"
-                                        data = data + """
-            route_table_id = "${oci_core_route_table.""" + rt_var + """.id}"
-    }
-    """
+                                        tempStr = tempStr + """
+                                        route_table_id = "${oci_core_route_table.""" + rt_var + """.id}"
+                                }
+                                """
                                 else:
-                                        data = data + """
-    }
-    """
+                                        tempStr = tempStr + """
+}
+"""
+
                                 # create LPG for VCN on left corresponding to above and establish peering
                                 lpg_name = left_vcn + "_" + right_vcn + "_lpg"
                                 peer_lpg_name = right_vcn + "_" + left_vcn + "_lpg"
@@ -123,7 +125,7 @@ def createLPGs(peering_dict):
             compartment_id = "${var.""" + compartment_var_name + """}"
             peer_id = "${oci_core_local_peering_gateway.""" + peer_lpg_name + """.id}"
     """
-                                if (left_vcn == hub_vcn_name and right_vcn in vcn_transit_route_mapping[hub_vcn_name]):
+                                if (left_vcn in hub_vcn_names and right_vcn in spoke_vcn_names):
                                         rt_var = lpg_name + "_rt"
                                         data = data + """
             route_table_id = "${oci_core_route_table.""" + rt_var + """.id}"
@@ -173,7 +175,7 @@ def processVCN(region,vcn_name,vcn_cidr,vcn_drg,vcn_igw,vcn_ngw,vcn_sgw,hub_spok
 
         if vcn_drg == "y":
                 drg_name = vcn_name + "_drg"
-                drg_display = "DRG"
+                drg_display = vcn_name +"_DRG"
                 rt_var = drg_name + "_rt"
 
                 # Create new DRG
@@ -207,7 +209,7 @@ def processVCN(region,vcn_name,vcn_cidr,vcn_drg,vcn_igw,vcn_ngw,vcn_sgw,hub_spok
                 data = data + """
             resource "oci_core_service_gateway"  \"""" + sgw_name + """" {
                     services {
-                    service_id = "${data.oci_core_services.oci_services.services.1.id}"
+                    service_id = "${data.oci_core_services.oci_services.services.0.id}"
                     }
                     display_name = \"""" + sgw_name + """"
                     vcn_id = "${oci_core_vcn.""" + vcn_name + """.id}"
@@ -242,7 +244,7 @@ if('.xlsx' in filename):
         if (drg_ocid.lower() == NaNstr.lower()):
                 drg_ocid = ''
 
-
+        #Get VCN Peering info in dict
         for j in df_info.index:
                 if(j>7):
                         peering_dict[properties[j]]=values[j]
@@ -258,16 +260,11 @@ if('.xlsx' in filename):
 
                 hub_spoke_none=df['hub_spoke_none'][i]
                 if (hub_spoke_none == 'hub'):
-                        vcn_transit_route_mapping.setdefault(vcn_name, [])
-                        hub_vcn_name = vcn_name
-
-        for i in df.index:
-                vcn_name=df['vcn_name'][i]
-                hub_spoke_none=df['hub_spoke_none'][i]
+                        hub_vcn_names.append(vcn_name)
                 if (hub_spoke_none == 'spoke'):
-                        vcn_transit_route_mapping[hub_vcn_name].append(vcn_name)
-        # Process VCNs
+                    spoke_vcn_names.append(vcn_name)
 
+        # Process VCNs
         NaNstr = 'NaN'
         for i in df.index:
                 region = df['Region'][i]
@@ -306,12 +303,6 @@ if('.xlsx' in filename):
                 if (hub_spoke_none == 'hub' and vcn_drg != 'y'):
                         print("VCN marked as Hub should have DRG configured..Modify the input file and try again")
                         exit(1)
-                if (hub_spoke_none == 'hub'):
-                        hub_count = hub_count + 1
-                if (hub_count > 1):
-                        print("Ideally there should be only one Hub VCN in a region. Modify the input file and try again")
-                        exit(1)
-
 
                 processVCN(region,vcn_name,vcn_cidr,vcn_drg,vcn_igw,vcn_ngw,vcn_sgw,hub_spoke_none,compartment_var_name,vcn_dns_label)
 
@@ -340,14 +331,9 @@ elif('.csv' in filename):
                 vcn_data = vcn_data.split(',')
                 hub_spoke_none = vcn_data[5].strip().lower()
                 if (hub_spoke_none == 'hub'):
-                        vcn_transit_route_mapping.setdefault(vcn_name, [])
-                        hub_vcn_name = vcn_name
-        for vcn_name in vcns:
-            vcn_data = config.get('VCN_INFO', vcn_name)
-            vcn_data = vcn_data.split(',')
-            hub_spoke_none = vcn_data[5].strip().lower()
-            if(hub_spoke_none=='spoke'):
-                vcn_transit_route_mapping[hub_vcn_name].append(vcn_name)
+                        hub_vcn_names.append(vcn_name)
+                if (hub_spoke_none == 'spoke'):
+                    spoke_vcn_names.append(vcn_name)
 
         for vcn_name in vcns:
                 vcn_data=config.get('VCN_INFO',vcn_name)
@@ -373,15 +359,10 @@ elif('.csv' in filename):
                         vcn_dns_label = (vcn_dns[:15]) if len(vcn_dns) > 15 else vcn_dns
 
                 if(hub_spoke_none=='hub' and vcn_drg!='y'):
-                        print("VCN marked as Hub should have DRG configured..Modify the input file and try again")
-                        exit(1)
-                if(hub_spoke_none=='hub'):
-                        hub_count=hub_count+1
-                if(hub_count>1):
-                        print("Ideally there should be only one Hub VCN in a region. Modify the input file and try again")
+                        print("\nVCN marked as Hub should have DRG configured..Modify the input file and try again")
                         exit(1)
 
-                        processVCN(region, vcn_name, vcn_cidr, vcn_drg, vcn_igw, vcn_ngw, vcn_sgw, hub_spoke_none,
+                processVCN(region, vcn_name, vcn_cidr, vcn_drg, vcn_igw, vcn_ngw, vcn_sgw, hub_spoke_none,
                               compartment_var_name, vcn_dns_label)
 
         #Create LPGs as per Section VCN_PEERING

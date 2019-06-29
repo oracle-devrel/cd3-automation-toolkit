@@ -28,6 +28,7 @@ command = 'python create_major_objects.py ' + propsfile + ' ' + outdir + ' '+pre
 exitVal = os.system(command)
 if (exitVal == 1):
     exit()
+
 print("--------------Creating DHCP options------------")
 command = 'python create_terraform_dhcp_options.py ' + propsfile + ' ' + outdir + ' '+prefix
 os.system(command)

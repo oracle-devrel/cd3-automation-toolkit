@@ -46,6 +46,9 @@ if ('.xlsx' in filename):
                 continue
             elif (j == 'VolumeName'):
                 Volume_name = df['VolumeName'][i]
+            elif (j == 'Region'):
+                Region = df['Region'][i].strip().lower()
+                print (Region)
             else:
                 namespace = j
                 key_value = df[j][i]
@@ -71,7 +74,7 @@ if ('.xlsx' in filename):
         """
 
         testToSearch = "## Defined Tag Info ##"
-        terrafile = outdir + "/" + Volume_name + ".tf"
+        terrafile = outdir + "/" + Region + "/" + Volume_name + ".tf"
 
         with open(terrafile, 'r+') as file:
             filedata = file.read()
@@ -95,6 +98,9 @@ elif('.csv' in filename):
             for column in columns:
                 if column == 'VolumeName':
                     continue
+                elif column == 'Region':
+                    Region = row[column].strip().lower()
+
                 else:
                     namespace = column
                     tmp = row[column]
@@ -121,7 +127,7 @@ elif('.csv' in filename):
             """
 
             testToSearch = "## Defined Tag Info ##"
-            terrafile = outdir + "/" + volume + ".tf"
+            terrafile = outdir + "/" + Region + "/" + volume + ".tf"
 
             with open(terrafile, 'r+') as file:
                 filedata = file.read()

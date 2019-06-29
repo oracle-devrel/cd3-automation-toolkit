@@ -48,7 +48,9 @@ if ('.xlsx' in filename):
                 continue
             elif (j == 'Hostname'):
                 Host_name = df['Hostname'][i]
-
+            elif (j == 'Region'):
+                Region = df['Region'][i].strip().lower()
+                print (Region)
             else:
                 namespace = j
                 key_value = df[j][i]
@@ -60,6 +62,7 @@ if ('.xlsx' in filename):
                     key_value_tmp = key_value.split("=")
                     key = key_value_tmp[0].strip()
                     value = key_value_tmp[1].strip()
+                    print(key, value)
                     dt = """\"""" + namespace + """.""" + key + """\"=\"""" + value + """\",\n
                                         """
                     string += dt
@@ -74,7 +77,7 @@ if ('.xlsx' in filename):
         """
 
         testToSearch = "## Defined Tag Info ##"
-        terrafile = outdir + "/" + Host_name + ".tf"
+        terrafile = outdir + "/" + Region + "/" + Host_name + ".tf"
 
         with open(terrafile, 'r+') as file:
             filedata = file.read()
@@ -98,6 +101,9 @@ elif('.csv' in filename):
             for column in columns:
                 if column == 'Hostname':
                     continue
+                elif column == 'Region':
+                    Region = row[column].strip().lower()
+                    print (Region)
                 else:
                     namespace = column
                     tmp = row[column]
@@ -124,7 +130,7 @@ elif('.csv' in filename):
             """
 
             testToSearch = "## Defined Tag Info ##"
-            terrafile = outdir + "/" + hostname + ".tf"
+            terrafile = outdir + "/" + Region + "/" + hostname + ".tf"
 
             with open(terrafile, 'r+') as file:
                 filedata = file.read()

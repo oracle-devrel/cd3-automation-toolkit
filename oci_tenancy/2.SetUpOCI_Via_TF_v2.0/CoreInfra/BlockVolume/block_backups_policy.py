@@ -9,9 +9,9 @@ import datetime
 from os import path
 
 x = datetime.datetime.now()
-date = x.strftime("%f").strip()
+date = x.strftime("%S").strip()
 
-parser = argparse.ArgumentParser(description="Atatches back up policy to Block Volumes")
+parser = argparse.ArgumentParser(description="Attaches back up policy to Block Volumes")
 parser.add_argument("file", help="Full Path of CD3 excel file. eg CD3-template.xlsx in example folder")
 parser.add_argument("outdir", help="directory path for output tf file ")
 
@@ -27,7 +27,7 @@ args = parser.parse_args()
 filename = args.file
 outdir = args.outdir
 
-tmpstr="""
+tmpstr = """
 data "oci_core_volume_backup_policies" "block_gold" {
 	filter {
 		name = "display_name"
@@ -51,46 +51,84 @@ data "oci_core_volume_backup_policies" "block_bronze" {
 
 ## Add policy attachment ##
 """
-outfile = outdir + "/attach_block_backups_policy.tf"
-src = outfile
+
+ashburn = outdir + "/ashburn/attach_block_backups_policy.tf"
+src = ashburn
 
 if path.exists(src):
-    dst = outdir + '/attach_block_backups_policy_backup' + date
+    dst = outdir + "/ashburn/attach_block_backups_policy_backup" + date
     os.rename(src, dst)
 
+ashname = open(ashburn, "a+")
+ashname.write(tmpstr)
+ashname.close()
 
-oname = open(outfile, "a+")
-oname.write(tmpstr)
-oname.close()
+phoenix = outdir + "/phoenix/attach_block_backups_policy.tf"
+src = phoenix
+
+if path.exists(src):
+    dst = outdir + "/phoenix/attach_block_backups_policy_backup" + date
+    os.rename(src, dst)
+
+phename = open(phoenix, "a+")
+phename.write(tmpstr)
+phename.close()
 
 if ('.xlsx' in filename):
-    df = pd.read_excel(filename, sheet_name='BlockVols')
+    df = pd.read_excel(filename, sheet_name='BlockVols',skiprows=1)
     for i in df.index:
         for j in df.keys():
             if (str(df[j][i]) == 'nan'):
                 continue
-            else:
+
+            elif (j == 'Region'):
+                Region = df['Region'][i].strip().lower()
+
+
+            elif (j == 'block_name'):
                 block_name = df['block_name'][i]
                 policy = df['Backup Policy'][i].lower().strip()
+                if (Region == 'ashburn'):
+                    res_name=block_name+"_bkupPolicy"
+                    tmpstr = """resource "oci_core_volume_backup_policy_assignment" \"""" + res_name + """\"{
+                    #Required
+                    asset_id = "${oci_core_volume.""" + block_name + """.id}"
+                    policy_id = "${data.oci_core_volume_backup_policies.block_""" + policy + """.volume_backup_policies.0.id}"
+                    }
+                    ## Add policy attachment ##
+                    """
 
-        res_name=block_name+"_bkupPolicy"
-        tmpstr = """resource "oci_core_volume_backup_policy_assignment" \"""" + res_name + """\"{
-        #Required
-        asset_id = "${oci_core_volume.""" + block_name + """.id}"
-        policy_id = "${data.oci_core_volume_backup_policies.block_""" + policy + """.volume_backup_policies.0.id}"
-}
-## Add policy attachment ##
-    """
+                    textToSearch = "## Add policy attachment ##"
 
-        testToSearch = "## Add policy attachment ##"
+                    with open(ashburn, 'r+') as file:
+                        filedata = file.read()
+                    file.close()
+                    # Replace the target string
+                    filedata = filedata.replace(textToSearch, tmpstr)
 
-        with open(outfile, 'r+') as file:
-            filedata = file.read()
-        file.close()
-        # Replace the target string
-        filedata = filedata.replace(testToSearch, tmpstr)
+                    # Write the file out again
+                    with open(ashburn, 'w+') as file:
+                        file.write(filedata)
+                    file.close()
+                elif (Region == 'phoenix'):
+                    res_name = block_name + "_bkupPolicy"
+                    tmpstr = """resource "oci_core_volume_backup_policy_assignment" \"""" + res_name + """\"{
+                    #Required
+                    asset_id = "${oci_core_volume.""" + block_name + """.id}"
+                    policy_id = "${data.oci_core_volume_backup_policies.block_""" + policy + """.volume_backup_policies.0.id}"
+                    }
+                    ## Add policy attachment ##
+                    """
 
-        # Write the file out again
-        with open(outfile, 'w+') as file:
-            file.write(filedata)
-        file.close()
+                    textToSearch = "## Add policy attachment ##"
+
+                    with open(phoenix, 'r+') as file:
+                        filedata = file.read()
+                    file.close()
+                    # Replace the target string
+                    filedata = filedata.replace(textToSearch, tmpstr)
+
+                    # Write the file out again
+                    with open(phoenix, 'w+') as file:
+                        file.write(filedata)
+                    file.close()

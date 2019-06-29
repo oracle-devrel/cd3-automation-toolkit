@@ -153,6 +153,7 @@ def processSubnet(region,vcn_name,AD,seclists_per_subnet,name,subnet_name_attach
         else:
             if (vcn_lpg_rules[vcn_name] != ""):
                 tempStr = tempStr + vcn_lpg_rules[vcn_name]
+
             if (add_ping_sec_rules_onprem == 'y'):
                 if (hub_spoke_none == 'hub' or vcn_drg == 'y' or hub_spoke_none == 'spoke'):
                     for drg_destination in drg_destinations:
@@ -195,7 +196,7 @@ if('.xlsx' in filename):
 
         drg_destinations = str(values[0]).strip()
         if (drg_destinations.lower() == NaNstr.lower()):
-            print("drg_subnet should not be left empty.. It will create empty route tables")
+            print("\ndrg_subnet should not be left empty.. It will create empty route tables")
             drg_destinations = ''
         drg_destinations = drg_destinations.split(",")
 
@@ -263,7 +264,11 @@ elif('.csv' in filename):
         # Get Global Properties from Default Section
         subnet_name_attach_cidr = config.get('Default', 'subnet_name_attach_cidr')
         drg_destinations = config.get('Default', 'drg_subnet')
-        drg_destinations = drg_destinations.split(",")
+        if(drg_destinations==''):
+            print("\ndrg_subnet should not be left empty.. It will create empty route tables")
+        else:
+            drg_destinations = drg_destinations.split(",")
+
 
         vcns = config.options('VCN_INFO')
         for vcn_name in vcns:

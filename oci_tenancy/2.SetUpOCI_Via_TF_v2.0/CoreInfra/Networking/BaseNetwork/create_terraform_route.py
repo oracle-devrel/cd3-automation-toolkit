@@ -55,15 +55,14 @@ tempStrPHX = ""
 ADS = ["AD1", "AD2", "AD3"]
 
 #Get Hub VCN name and create route rules for LPGs as per Section VCN_PEERING
-hub_vcn_name=''
+hub_vcn_names=[]
+spoke_vcn_names=[]
 vcn_lpg_rules = {}
 vcn_compartment = {}
 vcn_region = {}
 peering_dict = dict()
 ruleStr=""
 
-drgStr=""
-lpgStr=""
 
 def createLPGRouteRules(peering_dict):
     global vcn_lpg_rules
@@ -107,6 +106,71 @@ def createLPGRouteRules(peering_dict):
             """
                 vcn_lpg_rules[right_vcn] = vcn_lpg_rules[right_vcn] + ruleStr
 
+def createDRGRtTableString(compartment_var_name,hub_vcn_name,peering_dict):
+    drgStr=""
+    rt_var = hub_vcn_name + "_drg_rt"
+    drg_name = hub_vcn_name + "_DRG"
+    drgStr = """ 
+        resource "oci_core_route_table" \"""" + rt_var + """"{
+                compartment_id = "${var.""" + compartment_var_name + """}"
+                vcn_id = "${oci_core_vcn.""" + hub_vcn_name + """.id}"
+                display_name = "Route Table associated with DRG """ + drg_name + """"
+                """
+    right_vcns = peering_dict[hub_vcn_name]
+    right_vcns = right_vcns.split(",")
+    for right_vcn in right_vcns:
+        if right_vcn in spoke_vcn_names:
+            lpg_name = hub_vcn_name + "_" + right_vcn + "_lpg"
+            drgStr = drgStr + """
+                route_rules { 
+                    destination = "${oci_core_vcn.""" + right_vcn + """.cidr_block}"
+                    network_entity_id = "${oci_core_local_peering_gateway.""" + lpg_name + """.id}"
+                    destination_type = "CIDR_BLOCK"
+                    }
+                """
+    drgStr = drgStr + """
+        }"""
+    return drgStr
+
+def createLPGRtTableString(compartment_var_name,hub_vcn_name,peering_dict):
+    right_vcns = peering_dict[hub_vcn_name]
+    right_vcns = right_vcns.split(",")
+    lpgStr=""
+    for right_vcn in right_vcns:
+        if(right_vcn in spoke_vcn_names):
+            lpg_name = hub_vcn_name + "_" + right_vcn + "_lpg"
+            rt_var = lpg_name + "_rt"
+            lpgStr = lpgStr + """ 
+            resource "oci_core_route_table" \"""" + rt_var + """"{
+                    compartment_id = "${var.""" + compartment_var_name + """}"
+                    vcn_id = "${oci_core_vcn.""" + hub_vcn_name + """.id}"
+                    display_name = "Route Table associated with LPG """ + lpg_name + """"
+                """
+            if (drg_ocid == ''):
+                drg_name = hub_vcn_name + "_drg"
+                for drg_destination in drg_destinations:
+                    if (drg_destination != ''):
+                        lpgStr = lpgStr + """
+                    route_rules { 
+                        destination = \"""" + drg_destination + """\"
+                        network_entity_id = "${oci_core_drg.""" + drg_name + """.id}"
+                        destination_type = "CIDR_BLOCK"
+                        }
+                """
+            if (drg_ocid != ''):
+                for drg_destination in drg_destinations:
+                    if (drg_destination != ''):
+                        lpgStr = lpgStr + """
+                    route_rules { 
+                            destination = \"""" + drg_destination + """\"
+                            network_entity_id =  \"""" + drg_ocid + """"
+                            destination_type = "CIDR_BLOCK"
+                            }
+                """
+
+        lpgStr = lpgStr + """
+        }"""
+    return lpgStr
 
 def processSubnet(region,vcn_name,name,ruleStr,AD,configure_sgw,configure_ngw,configure_igw,vcn_sgw,vcn_ngw,vcn_igw):
     global tempStrASH
@@ -192,7 +256,7 @@ if('.xlsx' in filename):
 
         drg_destinations = str(values[0]).strip()
         if (drg_destinations.lower() == NaNstr.lower()):
-            print("drg_subnet should not be left empty.. It will create empty route tables")
+            print("\ndrg_subnet should not be left empty.. It will create empty route tables")
             drg_destinations = ''
         drg_destinations=drg_destinations.split(",")
 
@@ -232,71 +296,37 @@ if('.xlsx' in filename):
                 vcn_lpg_rules.setdefault(vcn_name, '')
                 hub_spoke_none=df_vcn['hub_spoke_none'][i]
                 if (hub_spoke_none == 'hub'):
-                    hub_vcn_name = vcn_name
+                    hub_vcn_names.append(vcn_name)
+                if (hub_spoke_none == 'spoke'):
+                    spoke_vcn_names.append(vcn_name)
+
 
         # Create LPG Rules
         createLPGRouteRules(peering_dict)
 
-        # Create Route Table associated with DRG for Hub VCN
-        if (hub_vcn_name != ''):
-            rt_var = hub_vcn_name + "_drg_rt"
+        # Create Route Table associated with DRG for Hub VCN and route rules for its each spoke VCN
+        for hub_vcn_name in hub_vcn_names:
             compartment_var_name = vcn_compartment[hub_vcn_name]
-            drgStr = """ 
-        resource "oci_core_route_table" \"""" + rt_var + """"{
-            compartment_id = "${var.""" + compartment_var_name + """}"
-            vcn_id = "${oci_core_vcn.""" + hub_vcn_name + """.id}"
-            display_name = "Route Table associated with DRG"
-            """
+
+            #String for Route Table Assocaited with DRG
+            drgStr1=createDRGRtTableString(compartment_var_name,hub_vcn_name,peering_dict)
+            if(vcn_region[hub_vcn_name]=='ashburn'):
+                tempStrASH=tempStrASH+drgStr1
+            elif(vcn_region[hub_vcn_name]=='phoenix'):
+                tempStrPHX=tempStrPHX+drgStr1
 
 
-        # Create Route Table Associated with each LPG in Hub VCN peered with Spoke VCN
-        # Get VCN names from vcn_name column in VCNs sheet of CD3 excel
-        for i in df_vcn.index:
-            vcn_name = df_vcn['vcn_name'][i]
-            hub_spoke_none = df_vcn['hub_spoke_none'][i]
-            if (hub_spoke_none == 'spoke'):
-                lpg_name = hub_vcn_name + "_" + vcn_name + "_lpg"
-                rt_var = lpg_name + "_rt"
-                lpgStr = lpgStr + """ 
-        resource "oci_core_route_table" \"""" + rt_var + """"{
-            compartment_id = "${var.""" + compartment_var_name + """}"
-            vcn_id = "${oci_core_vcn.""" + hub_vcn_name + """.id}"
-            display_name = "Route Table associated with LPG """ + lpg_name + """"
-        """
-                if (drg_ocid == ''):
-                    drg_name = hub_vcn_name + "_drg"
-                    for drg_destination in drg_destinations:
-                        if (drg_destination != ''):
-                            lpgStr = lpgStr + """
-                route_rules { 
-                    destination = \"""" + drg_destination + """\"
-                    network_entity_id = "${oci_core_drg.""" + drg_name + """.id}"
-                    destination_type = "CIDR_BLOCK"
-                    }
-        """
-                if (drg_ocid != ''):
-                    for drg_destination in drg_destinations:
-                        if (drg_destination != ''):
-                            lpgStr = lpgStr + """
-                route_rules { 
-                    destination = \"""" + drg_destination + """\"
-                    network_entity_id =  \"""" + drg_ocid + """"
-                    destination_type = "CIDR_BLOCK"
-                    }
-        """
+        # Create Route Table associated with LPGs in Hub VCN peered with spoke VCNs
+        for hub_vcn_name in hub_vcn_names:
+            compartment_var_name = vcn_compartment[hub_vcn_name]
 
-                lpgStr = lpgStr + """
-        }"""
-                # Add Rules for each spoke VCN to Route Table associated with DRG of Hub VCN
-                if (hub_spoke_none == 'spoke'):
-                    lpg_name = hub_vcn_name + "_" + vcn_name + "_lpg"
-                    drgStr = drgStr + """
-                            route_rules { 
-                                destination = "${oci_core_vcn.""" + vcn_name + """.cidr_block}"
-                                network_entity_id = "${oci_core_local_peering_gateway.""" + lpg_name + """.id}"
-                                destination_type = "CIDR_BLOCK"
-                                }
-                                """
+            #String for Route Tavle Associated with each LPG in hub VCN peered with Spoke VCN
+            lpgStr1=createLPGRtTableString(compartment_var_name,hub_vcn_name,peering_dict)
+            if (vcn_region[hub_vcn_name] == 'ashburn'):
+                tempStrASH = tempStrASH + lpgStr1
+            elif (vcn_region[hub_vcn_name] == 'phoenix'):
+                tempStrPHX = tempStrPHX + lpgStr1
+
 
         # Start processing for each subnet
         NaNstr = 'NaN'
@@ -357,35 +387,42 @@ if('.xlsx' in filename):
                     for drg_destination in drg_destinations:
                         if (drg_destination != ''):
                             ruleStr = ruleStr + """
-                                route_rules { 
-                                    destination = \"""" + drg_destination + """\"
-                                    network_entity_id = "${oci_core_drg.""" + drg_name + """.id}"
-                                    destination_type = "CIDR_BLOCK"
-                                    }
-                                    """
+                        route_rules { 
+                            destination = \"""" + drg_destination + """\"
+                            network_entity_id = "${oci_core_drg.""" + drg_name + """.id}"
+                            destination_type = "CIDR_BLOCK"
+                            }
+                            """
                 if (drg_ocid != ''):
                     for drg_destination in drg_destinations:
                         if (drg_destination != ''):
                             ruleStr = ruleStr + """
-                                route_rules { 
-                                    destination = \"""" + drg_destination + """\"
-                                    network_entity_id =  \"""" + drg_ocid + """"
-                                    destination_type = "CIDR_BLOCK"
-                                    }
-                                    """
+                        route_rules { 
+                            destination = \"""" + drg_destination + """\"
+                            network_entity_id =  \"""" + drg_ocid + """"
+                            destination_type = "CIDR_BLOCK"
+                            }
+                            """
 
             # Add DRG rules to each Spoke VCN
             if (hub_spoke_none == 'spoke' and drg_destinations != ''):
+                for left_vcn, value in peering_dict.items():
+                    right_vcns = value.split(",")
+                    for right_vcn in right_vcns:
+                        if(right_vcn==vcn_name):
+                            hub_vcn_name=left_vcn
+                            break
+
                 lpg_name = vcn_name + "_" + hub_vcn_name + "_lpg"
                 for drg_destination in drg_destinations:
                     if (drg_destination != ''):
                         ruleStr = ruleStr + """
-                                route_rules { 
-                                    destination = \"""" + drg_destination + """\"
-                                    network_entity_id = "${oci_core_local_peering_gateway.""" + lpg_name + """.id}"
-                                    destination_type = "CIDR_BLOCK"
-                                    }
-                                    """
+                        route_rules { 
+                            destination = \"""" + drg_destination + """\"
+                            network_entity_id = "${oci_core_local_peering_gateway.""" + lpg_name + """.id}"
+                            destination_type = "CIDR_BLOCK"
+                            }
+                            """
 
             # Add LPG rules
             if (vcn_lpg_rules[vcn_name] != ''):
@@ -407,6 +444,10 @@ elif('.csv' in filename):
     drg_ocid = config.get('Default', 'drg_ocid')
     drg_destinations = config.get('Default', 'drg_subnet')
     drg_destinations = drg_destinations.split(",")
+    if (drg_destinations == ''):
+        print("\ndrg_subnet should not be left empty.. It will create empty route tables")
+    else:
+        drg_destinations = drg_destinations.split(",")
 
     ngw_destinations = config.get('Default', 'ngw_destination')
     if (ngw_destinations == ''):
@@ -431,8 +472,9 @@ elif('.csv' in filename):
         vcn_region[vcn_name]=region
 
         if (hub_spoke_none == 'hub'):
-            hub_vcn_name = vcn_name
-
+            hub_vcn_names.append(vcn_name)
+        if (hub_spoke_none == 'spoke'):
+            spoke_vcn_names.append(vcn_name)
 
     # Creating route rules for LPGs as per Section VCN_PEERING
     peering_dict = dict(config.items('VCN_PEERING'))
@@ -444,69 +486,29 @@ elif('.csv' in filename):
 
     createLPGRouteRules(peering_dict)
 
-
-    if(hub_vcn_name!=''):
-        # Create Route Table associated with DRG for Hub VCN
-        rt_var=hub_vcn_name+"_drg_rt"
+    # Create Route Table associated with DRG for Hub VCN and route rules for its each spoke VCN
+    for hub_vcn_name in hub_vcn_names:
         compartment_var_name = vcn_compartment[hub_vcn_name]
-        drgStr = """ 
-        resource "oci_core_route_table" \"""" + rt_var + """"{
-            compartment_id = "${var.""" + compartment_var_name + """}"
-            vcn_id = "${oci_core_vcn.""" + hub_vcn_name + """.id}"
-            display_name = "Route Table associated with DRG"
-            """
 
-    # Create Route Table Associated with each LPG in Hub VCN peered with Spoke VCN
-    for vcn_name in vcns:
-        vcn_data = config.get('VCN_INFO', vcn_name)
-        vcn_data = vcn_data.split(',')
-        hub_spoke_none = vcn_data[5].strip().lower()
+        # String for Route Table Assocaited with DRG
+        drgStr1 = createDRGRtTableString(compartment_var_name, hub_vcn_name, peering_dict)
+        if (vcn_region[hub_vcn_name] == 'ashburn'):
+            tempStrASH = tempStrASH + drgStr1
+        elif (vcn_region[hub_vcn_name] == 'phoenix'):
+            tempStrPHX = tempStrPHX + drgStr1
 
-        if(hub_spoke_none=='spoke'):
-            lpg_name=hub_vcn_name+"_"+vcn_name+"_lpg"
-            rt_var=lpg_name+"_rt"
-            lpgStr = lpgStr+""" 
-resource "oci_core_route_table" \"""" + rt_var + """"{
-    compartment_id = "${var.""" + compartment_var_name + """}"
-    vcn_id = "${oci_core_vcn.""" + hub_vcn_name + """.id}"
-    display_name = "Route Table associated with LPG """+lpg_name +""""
-"""
-            if (drg_ocid == ''):
-                drg_name=hub_vcn_name+"_drg"
-                for drg_destination in drg_destinations:
-                    if (drg_destination != ''):
-                        lpgStr = lpgStr + """
-        route_rules { 
-            destination = \"""" + drg_destination + """\"
-            network_entity_id = "${oci_core_drg.""" + drg_name + """.id}"
-            destination_type = "CIDR_BLOCK"
-            }
-"""
-            if (drg_ocid != ''):
-                for drg_destination in drg_destinations:
-                    if (drg_destination != ''):
-                        lpgStr = lpgStr + """
-        route_rules { 
-            destination = \"""" + drg_destination + """\"
-            network_entity_id =  \"""" + drg_ocid + """"
-            destination_type = "CIDR_BLOCK"
-            }
-"""
+    # Create Route Table associated with LPGs in Hub VCN peered with spoke VCNs
+    for hub_vcn_name in hub_vcn_names:
+        compartment_var_name = vcn_compartment[hub_vcn_name]
 
-            lpgStr=lpgStr+"""
-}"""
+        # String for Route Tavle Associated with each LPG in hub VCN peered with Spoke VCN
+        lpgStr1 = createLPGRtTableString(compartment_var_name, hub_vcn_name, peering_dict)
+        if (vcn_region[hub_vcn_name] == 'ashburn'):
+            tempStrASH = tempStrASH + lpgStr1
+        elif (vcn_region[hub_vcn_name] == 'phoenix'):
+            tempStrPHX = tempStrPHX + lpgStr1
 
-            # Add Rules for each spoke VCN to Route Table associated with DRG of Hub VCN
-            if (hub_spoke_none == 'spoke'):
-                lpg_name = hub_vcn_name + "_" + vcn_name + "_lpg"
-                drgStr = drgStr + """
-                    route_rules { 
-                        destination = "${oci_core_vcn.""" + vcn_name + """.cidr_block}"
-                        network_entity_id = "${oci_core_local_peering_gateway.""" + lpg_name + """.id}"
-                        destination_type = "CIDR_BLOCK"
-                        }
-                """
-
+    #Start processing each VCN
     for vcn_name in vcns:
         vcn_data = config.get('VCN_INFO', vcn_name)
         vcn_data = vcn_data.split(',')
@@ -556,6 +558,13 @@ resource "oci_core_route_table" \"""" + rt_var + """"{
 
         #Add DRG rules to each Spoke VCN
         if (hub_spoke_none=='spoke' and drg_destinations!=''):
+            for left_vcn, value in peering_dict.items():
+                right_vcns = value.split(",")
+                for right_vcn in right_vcns:
+                    if (right_vcn == vcn_name):
+                        hub_vcn_name = left_vcn
+                        break
+
             lpg_name=vcn_name+"_"+hub_vcn_name+"_lpg"
             for drg_destination in drg_destinations:
                 if(drg_destination!=''):
@@ -592,25 +601,6 @@ else:
     exit()
 
 
-if(vcn_region[hub_vcn_name]=='ashburn'):
-    if drgStr!='':
-        drgStr=drgStr+"""
-    }"""
-
-        tempStrASH = tempStrASH + drgStr
-
-    if(lpgStr!=''):
-        tempStrASH=tempStrASH+lpgStr
-
-if (vcn_region[hub_vcn_name] == 'phoenix'):
-    if drgStr != '':
-        drgStr = drgStr + """
-    }"""
-
-        tempStrPHX = tempStrPHX + drgStr
-
-    if (lpgStr != ''):
-        tempStrPHX = tempStrPHX + lpgStr
 
 
 if(fname!=None):
