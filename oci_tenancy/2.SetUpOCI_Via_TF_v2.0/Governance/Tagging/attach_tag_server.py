@@ -50,7 +50,6 @@ if ('.xlsx' in filename):
                 Host_name = df['Hostname'][i]
             elif (j == 'Region'):
                 Region = df['Region'][i].strip().lower()
-                print (Region)
             else:
                 namespace = j
                 key_value = df[j][i]
@@ -62,7 +61,6 @@ if ('.xlsx' in filename):
                     key_value_tmp = key_value.split("=")
                     key = key_value_tmp[0].strip()
                     value = key_value_tmp[1].strip()
-                    print(key, value)
                     dt = """\"""" + namespace + """.""" + key + """\"=\"""" + value + """\",\n
                                         """
                     string += dt

@@ -48,7 +48,6 @@ if ('.xlsx' in filename):
                 Volume_name = df['VolumeName'][i]
             elif (j == 'Region'):
                 Region = df['Region'][i].strip().lower()
-                print (Region)
             else:
                 namespace = j
                 key_value = df[j][i]
