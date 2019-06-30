@@ -36,6 +36,7 @@ if('.xls' in filename):
         size = df.iat[i, 2]
         size=str(size)
         AD = df.iat[i, 3]
+        AD=AD.upper()
         attacheToInstanceName = df.iat[i, 4]
         attachType = df.iat[i, 5]
         compartmentVarName = df.iat[i, 6]

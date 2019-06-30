@@ -200,7 +200,7 @@ if('7' in userInput):
             print("using already provided CD3 file: " + inputfile)
 
         if (outdir == ''):
-            outdir = input("Enter full path to output directory where you want to create terraform files: ")
+            outdir = input("Enter full path to output directory containing output terraform files: ")
         else:
             print("using already provided outdir: " + outdir)
 
@@ -220,7 +220,7 @@ if('7' in userInput):
             print("using already provided CD3 file: " + inputfile)
 
         if (outdir == ''):
-            outdir = input("Enter full path to output directory where you want to create terraform files: ")
+            outdir = input("Enter full path to output directory containing output terraform files: ")
         else:
             print("using already provided outdir: " + outdir)
 
@@ -292,7 +292,7 @@ if('10' in userInput):
     else:
         print("using already provided CD3 file: " + inputfile)
     if (outdir == ''):
-        outdir = input("Enter full path to output directory where you want to create terraform files: ")
+        outdir = input("Enter full path to output directory containing output terraform files: ")
     else:
         print("using already provided outdir: " + outdir)
 
@@ -312,7 +312,7 @@ if('11' in userInput):
     else:
         print("using already provided CD3 file: " + inputfile)
     if (outdir == ''):
-        outdir = input("Enter full path to output directory where you want to create terraform files: ")
+        outdir = input("Enter full path to output directory containing output terraform files: ")
     else:
         print("using already provided outdir: " + outdir)
 

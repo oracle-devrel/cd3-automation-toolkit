@@ -62,13 +62,13 @@ if('.xlsx' in filename):
     for i in df.keys():
         for j in df.index:
             if (re.match('Availability domain', i, flags=re.IGNORECASE)):
-                if ('AD1' in df[i][j]):
+                if ('AD1' in df[i][j] or 'ad1' in df[i][j]):
                     replaceAllplaceholders(outdir + '/' + df['Region'][j].strip().lower()+'/'+df['Hostname'][j] + '.tf', '##' + i + '##', '0')
                     continue
-                if ('AD2' in df[i][j]):
+                if ('AD2' in df[i][j] or 'ad2' in df[i][j]):
                     replaceAllplaceholders(outdir + '/' + df['Region'][j].strip().lower()+ '/'+df['Hostname'][j] + '.tf', '##' + i + '##', '1')
                     continue
-                if ('AD3' in df[i][j]):
+                if ('AD3' in df[i][j] or 'ad3' in df[i][j]):
                     replaceAllplaceholders(outdir + '/' + df['Region'][j].strip().lower()+ '/'+df['Hostname'][j] + '.tf', '##' + i + '##', '2')
                     continue
             if (str(df[i][j]) == 'nan'):
