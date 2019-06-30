@@ -249,7 +249,7 @@ if vcn_name is not None:
     seclists = vcn.list_security_lists(compartment_id=ntk_compartment_ids[ntk_comp_name], vcn_id=vcn_ocid, lifecycle_state='AVAILABLE',sort_by='DISPLAYNAME')
     print_secrules(seclists,region,vcn_name,ntk_comp_name)
 else:
-    print("\nFetching for all VCNs in tenancy...")
+    print("\nFetching Security Rules for all VCNs in tenancy...")
     for ntk_compartment_name in ntk_compartment_ids:
         config.__setitem__("region", "us-ashburn-1")
         vcn = VirtualNetworkClient(config)

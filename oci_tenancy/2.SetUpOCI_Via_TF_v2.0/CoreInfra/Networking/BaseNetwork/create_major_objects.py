@@ -105,12 +105,12 @@ def createLPGs(peering_dict):
     """
                                 if (right_vcn in hub_vcn_names and left_vcn in spoke_vcn_names):
                                         rt_var = lpg_name + "_rt"
-                                        tempStr = tempStr + """
+                                        data = data + """
                                         route_table_id = "${oci_core_route_table.""" + rt_var + """.id}"
                                 }
                                 """
                                 else:
-                                        tempStr = tempStr + """
+                                        data = data + """
 }
 """
 
@@ -174,6 +174,7 @@ def processVCN(region,vcn_name,vcn_cidr,vcn_drg,vcn_igw,vcn_ngw,vcn_sgw,hub_spok
             """
 
         if vcn_drg == "y":
+                drg_attach_name=vcn_name+"_drg_attach"
                 drg_name = vcn_name + "_drg"
                 drg_display = vcn_name +"_DRG"
                 rt_var = drg_name + "_rt"
@@ -185,14 +186,14 @@ def processVCN(region,vcn_name,vcn_cidr,vcn_drg,vcn_igw,vcn_ngw,vcn_sgw,hub_spok
                     compartment_id = "${var.""" + compartment_var_name + """}"
                     display_name = \"""" + drg_display + """"
             }
-            resource "oci_core_drg_attachment" "drg_attachment" {
+            resource "oci_core_drg_attachment" \"""" + drg_attach_name + """" {
                     drg_id = "${oci_core_drg.""" + drg_name + """.id}"
                     vcn_id = "${oci_core_vcn.""" + vcn_name + """.id}"
             """
                 # Use existing DRG
                 if (drg_ocid != ''):
                         data = data + """
-            resource "oci_core_drg_attachment" "drg_attachment" {
+            resource "oci_core_drg_attachment" \"""" + drg_attach_name + """" {
                     drg_id = \"""" + drg_ocid + """"
                     vcn_id = "${oci_core_vcn.""" + vcn_name + """.id}"
             """

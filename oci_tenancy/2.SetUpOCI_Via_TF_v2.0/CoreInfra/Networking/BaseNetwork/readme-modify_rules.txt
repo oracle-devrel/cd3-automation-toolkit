@@ -8,7 +8,7 @@ new rules or the cd3 (sheets: AddRouteRules and AddSecRules) and generate terraf
 Instead if you want to run in Overwrite mode then that means all rules in OCI would be replced by whatever you have in cd3 excel file
 (sheets: RouteRulesinOCI and SecRulesinOCI)
 
-Please note that overwrite option requires cd3 excel as the inputfile rathern than csv
+Please note that overwrite option works with only cd3 excel file as the input file for secrules/route rules to be overwritten
 Please note that outdir specified as the input expects 2 subdirectories- ashburn and phoenix already existing in the outdir; they will contain tf files
 
 modify_routes_tf.py
@@ -39,3 +39,9 @@ or
 
 Overwrite Mode:
 ./modify_secrules_tf.py --inputfile CD3-template --outdir /root/ocswork/terraform_files --overwrite yes
+
+
+Note - You can first use export option for both route rules and sec rules (Option 12 and 13 in setUpOCI). This will give you all sec rules and route rules
+in cd3.
+Now when you use modify option (8 an d9 in setUpOCI), it will import Defacult Security Lists also to terraform. Then you use the script to modidy default securoty list for
+a VCN

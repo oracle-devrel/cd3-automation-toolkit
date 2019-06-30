@@ -59,18 +59,19 @@ def create_ingress_rule_string(row):
                }  """
     dest_range = ""
     source_range = ""
-    if row['Protocol'] == 'tcp':
-        tcp_option = " \t\ttcp_options {"
 
-        #if not is_empty(row['Destination']):
-        dest_range = """
+    if row['Protocol'] == 'tcp' and str(row['DPortMax']) and str(row['DPortMin']):
+        tcp_option = " \t\ttcp_options {"
+        if str(row['DPortMax']):
+            dest_range = dest_range  + """
             max = """ + str(row['DPortMax']) + """
-            min =  """ + str(row['DPortMin']) + """
-          """
+            min = """ + str(row['DPortMin']) + """
+            """
+
         #if not is_empty(row['Source']):
         if str(row['SPortMax']) or str(row['SPortMin']):
             source_rang= """
-                source_port_range {"""
+            source_port_range {"""
             if str(row['SPortMax']):
                 source_range = source_range + """
                 \t\tmax = """ + str(row['SPortMax']) + ""
@@ -83,22 +84,23 @@ def create_ingress_rule_string(row):
         if dest_range == '' and source_range == '':
             options = ''
     udp_option = ""
-    if row['Protocol'] == 'udp':
+    if row['Protocol'] == 'udp' and str(row['DPortMax']) and str(row['DPortMin']):
         udp_option = " \t\tudp_options {"
 
         dest_range = """
-                    max = """ + str(row['DPortMax']) + """
-                    min =  """ + str(row['DPortMin']) + """
-                 """
+            max = """ + str(row['DPortMax']) + """
+            min =  """ + str(row['DPortMin']) + """
+            """
+
         if str(row['SPortMax']) or str(row['SPortMin']):
             source_range = """
-                          source_port_range {"""
+            source_port_range {"""
             if str(row['SPortMax']):
                 source_range = source_range + """
-                        max = """ + str(row['SPortMax']) + ""
+                    max = """ + str(row['SPortMax']) + ""
             if str(row['SPortMin']):
                 source_range = source_range + """
-                        min =  """ + str(row['SPortMin']) + ""
+                    min =  """ + str(row['SPortMin']) + ""
             source_range = source_range + " \n\t\t\t }  """
 
         options = udp_option + dest_range + source_range + "\n\t\t   }"
@@ -370,7 +372,9 @@ elif('.xls' in args.inputfile):
             for subnet in subnet_list.data:
                 init_subnet_details(subnet.id, vcn_name, seclist_per_subnet, sec_rule_per_seclist, overwrite)
     print("seclist rule existing data  : ")
+    print("Current total SecRules count in each subnet:")
     print(seclist_rule_count)
+    print("Secrules limit defined as per sec_rule_per_seclist parameter in VCNs sheet")
     print(seclist_rule_count_limit)
     #print(seclist_files)
 
@@ -424,12 +428,14 @@ if('.xls' in secrulesfilename):
                                 default_ruleStr_ash=default_ruleStr_ash+"""
     resource "oci_core_default_security_list" "default-security_list_""" + vcn_name + """" {
         manage_default_resource_id  = "${oci_core_vcn.""" + vcn_name + """.default_security_list_id}"
+        ##Add More rules for """ + vcn_name + """##
     """
                             else:
                                 default_ruleStr_ash = default_ruleStr_ash + """
     }
     resource "oci_core_default_security_list" "default-security_list_""" + vcn_name + """" {
         manage_default_resource_id  = "${oci_core_vcn.""" + vcn_name + """.default_security_list_id}"
+        ##Add More rules for """ + vcn_name + """##
     """
                             default_seclists_done_ash.append(seclistName)
 
@@ -445,12 +451,10 @@ if('.xls' in secrulesfilename):
                     subnetName = row['SubnetName'].rsplit('-',1)[0]
 
                     if(subnetName not in subnets_done_ash or len(subnets_done_ash)==0):
-                        print('opening file '+ash_dir + "/" + subnetName + "_seclist.tf")
                         subnets_done_ash.append(subnetName)
                         if(tempStrASH!=''):
                             tempStrASH=tempStrASH+"""
     }"""
-                            print(tempStrASH)
                             oname_ash.write(tempStrASH)
                             tempStrASH = ''
                             seclists_done_ash = []
@@ -483,15 +487,17 @@ if('.xls' in secrulesfilename):
                         if (seclistName not in default_seclists_done_phx):
                             if (len(default_seclists_done_phx) == 0):
                                 default_ruleStr_phx = default_ruleStr_phx + """
-                        resource "oci_core_default_security_list" "default-security_list_""" + vcn_name + """" {
-                            manage_default_resource_id  = "${oci_core_vcn.""" + vcn_name + """.default_security_list_id}"
-                        """
+    resource "oci_core_default_security_list" "default-security_list_""" + vcn_name + """" {
+        manage_default_resource_id  = "${oci_core_vcn.""" + vcn_name + """.default_security_list_id}"
+        ##Add More rules for """ + vcn_name + """##
+    """
                             else:
                                 default_ruleStr_phx = default_ruleStr_phx + """
                         }
-                        resource "oci_core_default_security_list" "default-security_list_""" + vcn_name + """" {
-                            manage_default_resource_id  = "${oci_core_vcn.""" + vcn_name + """.default_security_list_id}"
-                        """
+    resource "oci_core_default_security_list" "default-security_list_""" + vcn_name + """" {
+        manage_default_resource_id  = "${oci_core_vcn.""" + vcn_name + """.default_security_list_id}"
+        ##Add More rules for """ + vcn_name + """##
+    """
                             default_seclists_done_phx.append(seclistName)
 
                         new_sec_rule = ""
@@ -585,18 +591,33 @@ if('.xls' in secrulesfilename):
                 if ruleType == 'egress':
                     new_sec_rule = create_egress_rule_string(row)
 
-                sec_list_file = seclist_files[subnetName]
-                print("file to modify ::::: " + sec_list_file)
-                # print("secrule count " + str(seclist_rule_count[subnetName]))
-                text_to_replace = getReplacementStr(sec_rule_per_seclist, subnetName)
-                new_sec_rule = new_sec_rule + "\n" + text_to_replace
+                strDefault='Default Security List for'
+                if(strDefault.lower() in subnetName.lower()):
+                    print("file to modify :: VCNs_Default_SecList.tf")
+                    sec_list_file="VCNs_Default_SecList.tf"
+                    vcn_name=subnetName.split('for')[1].strip()
+                    text_to_replace="##Add More rules for " + vcn_name + "##"
+                    new_sec_rule = new_sec_rule + "\n" + text_to_replace
+                    if (region == 'ashburn'):
+                        updateSecRules(ash_dir + "/" + sec_list_file, text_to_replace, new_sec_rule, 0)
+                    if (region == 'phoenix'):
+                        updateSecRules(phx_dir + "/" + sec_list_file, text_to_replace, new_sec_rule, 0)
 
-                if(region=='ashburn'):
-                    updateSecRules(ash_dir + "/" + sec_list_file, text_to_replace, new_sec_rule, 0)
-                if (region == 'phoenix'):
-                    updateSecRules(phx_dir + "/" + sec_list_file, text_to_replace, new_sec_rule, 0)
 
-                incrementRuleCount(subnetName)
+                else:
+
+                    sec_list_file = seclist_files[subnetName]
+                    print("file to modify ::::: " + sec_list_file)
+                    # print("secrule count " + str(seclist_rule_count[subnetName]))
+                    text_to_replace = getReplacementStr(sec_rule_per_seclist, subnetName)
+                    new_sec_rule = new_sec_rule + "\n" + text_to_replace
+
+                    if(region=='ashburn'):
+                        updateSecRules(ash_dir + "/" + sec_list_file, text_to_replace, new_sec_rule, 0)
+                    if (region == 'phoenix'):
+                        updateSecRules(phx_dir + "/" + sec_list_file, text_to_replace, new_sec_rule, 0)
+
+                    incrementRuleCount(subnetName)
                 ####ADD_NEW_SEC_RULES####
 
 # If input is a csv file

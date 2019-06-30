@@ -157,7 +157,7 @@ if vcn_name is not None:
     routetables = vcn.list_route_tables(compartment_id=ntk_compartment_ids[ntk_comp_name], vcn_id=vcn_ocid, lifecycle_state='AVAILABLE')
     print_routetables(routetables,region, vcn_name,ntk_comp_name)
 else:
-    print("\nFetching for all VCNs in tenancy...")
+    print("\nFetching Route Rules for all VCNs in tenancy...")
     for ntk_compartment_name in ntk_compartment_ids:
         config.__setitem__("region", "us-ashburn-1")
         vcn = VirtualNetworkClient(config)

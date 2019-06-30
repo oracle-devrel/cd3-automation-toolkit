@@ -78,7 +78,7 @@ if('.xls' in inputfile):
             region = region.strip().lower()
             #if('in-oracle-services-network' in dest_cidr):
             #    dest_cidr="${data.oci_core_services.oci_services.services.0.cidr_block}"
-            if(subnet_name=='Route Table associated with DRG'):
+            if('Route Table associated with DRG' in subnet_name):
                 rt_var = vcn_name + "_drg_rt"
             elif('Default Route Table for' in subnet_name):
                 continue;

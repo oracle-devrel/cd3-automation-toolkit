@@ -23,6 +23,7 @@ inputfile=''
 outdir=''
 prefix=''
 cd3outfile=''
+inputConfigFile=''
 
 if('1' in userInput):
     print('-----------------------------Creating Compartments----------------------')
@@ -257,11 +258,16 @@ if('9' in userInput):
         " else leave it empty: ")
     overwrite = input("Do you want to overwrite rules in OCI or add more rules to existing ones. Enter yes for overwrite or no for addition: ")
 
-    if (overwrite=='' or overwrite == 'no'):
+    """if (overwrite=='' or overwrite == 'no'):
         inputcsv = input("Enter full path to input file containing security rules to be added eg example/BaseNetwork/update_seclist-example.csv or CD3 excel file: ")
     else:
         inputcsv=inputfile
-
+    """
+    if('.xls' not in inputfile):
+        inputcsv = input("Enter full path to input file containing security rules to be added eg example/BaseNetwork/update_seclist-example.csv or CD3 excel file: ")
+    else:
+        print("using same cd3 file path provided above as input file containing sec rules to be added")
+        inputcsv = inputfile
     os.chdir('CoreInfra/Networking/BaseNetwork')
 
     if (overwrite == '' or overwrite == 'no'):
@@ -357,8 +363,11 @@ if('13' in userInput):
     if(input_vcn!=''):
         input_Comp = input("Enter Compartment Name where this VCN resides: ")
 
-    inputConfigFile = input("Enter path to pyhton config file This is required when you are executing the code from some other workstation rather than OCS VM"
+    if (inputConfigFile == ''):
+        inputConfigFile = input("Enter path to pyhton config file This is required when you are executing the code from some other workstation rather than OCS VM"
                             " else leave it empty: ")
+    else:
+        print('Using already provided config file location')
 
     os.chdir('CoreInfra/Networking/BaseNetwork')
     if(input_vcn==''):
