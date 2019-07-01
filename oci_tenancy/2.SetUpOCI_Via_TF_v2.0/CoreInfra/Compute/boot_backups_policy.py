@@ -77,7 +77,7 @@ phename.write(tmpstr)
 phename.close()
 
 # If the input is CD3
-if ('.xlsx' in filename):
+if ('.xls' in filename):
     df = pd.read_excel(filename, sheet_name='Instances',skiprows=1)
     for i in df.index:
         for j in df.keys():
@@ -136,3 +136,6 @@ if ('.xlsx' in filename):
                         file.write(filedata)
                     file.close()
 
+else:
+    print("Invalid input file format; Acceptable formats: .xls, .xlsx")
+    exit()

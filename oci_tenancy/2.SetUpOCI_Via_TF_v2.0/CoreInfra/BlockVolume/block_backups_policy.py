@@ -74,7 +74,7 @@ phename = open(phoenix, "a+")
 phename.write(tmpstr)
 phename.close()
 
-if ('.xlsx' in filename):
+if ('.xls' in filename):
     df = pd.read_excel(filename, sheet_name='BlockVols',skiprows=1)
     for i in df.index:
         for j in df.keys():
@@ -132,3 +132,6 @@ if ('.xlsx' in filename):
                     with open(phoenix, 'w+') as file:
                         file.write(filedata)
                     file.close()
+else:
+    print("Invalid input file format; Acceptable formats: .xls, .xlsx")
+    exit()

@@ -51,14 +51,13 @@ chown root:root /root/ocswork/keys/oci_api_key.pem
 chmod 400 ~/.oci/config
 chmod 400 /root/ocswork/keys/oci_api_key.pem
 sed -i 's#key_file.*#key_file=/root/ocswork/keys/oci_api_key.pem#' ~/.oci/config
-cp /home/opc/provider.tf /root/ocswork/terraform_files
-cp /home/opc/variables.tf /root/ocswork/terraform_files
+
 cp /home/opc/provider.tf /root/ocswork/terraform_files/phoenix
-cp /home/opc/variables.tf /root/ocswork/terraform_files/phoenix
+mv /home/opc/variables_phx.tf /root/ocswork/terraform_files/phoenix/variables.tf
 mv /home/opc/provider.tf /root/ocswork/terraform_files/ashburn
-mv /home/opc/variables.tf /root/ocswork/terraform_files/ashburn
-cd /root/ocswork/terraform_files/ashburn
-sed -i 's/-phoenix-/-ashburn-/' variables.tf
+mv /home/opc/variables_ash.tf /root/ocswork/terraform_files/ashburn/varaiables.tf
+#cd /root/ocswork/terraform_files/ashburn
+#sed -i 's/-phoenix-/-ashburn-/' variables.tf
 
 chown -R root:root /root/ocswork/terraform_files/*
 

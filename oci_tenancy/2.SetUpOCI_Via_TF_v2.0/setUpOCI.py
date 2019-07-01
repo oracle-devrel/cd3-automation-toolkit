@@ -253,7 +253,11 @@ if('8' in userInput):
 if('9' in userInput):
     print("------------------------Adding Security Rules--------------------------------")
     inputfile = input("Enter full path to file having VCN info either properties file eg example/vcn-info.properties or CD3 excel file whcih was used to create Base Network: ")
-    outdir = input("Enter full path to output directory used while setting up Base Network Objects; it contains seclist tf files:  ")
+
+    if(outdir==''):
+        print("using already provided outdir ")
+    else:
+        outdir = input("Enter full path to output directory used while setting up Base Network Objects; it contains seclist tf files:  ")
     inputConfigFile = input("Enter path to pyhton config file This is required when you are executing the code from some other workstation rather than OCS VM"
         " else leave it empty: ")
     overwrite = input("Do you want to overwrite rules in OCI or add more rules to existing ones. Enter yes for overwrite or no for addition: ")

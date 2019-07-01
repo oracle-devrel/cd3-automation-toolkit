@@ -263,18 +263,37 @@ if(input_image_id==''):
             break
 
 #Get latest imaged ocids for the region to put in variables.tf
-linux_image_id=''
-windows_image_id=''
+linux_ash_image_id=''
+windows_ash_image_id=''
+
+linux_phx_image_id=''
+windows_phx_image_id=''
+
+new_config=python_config
+new_config.__setitem__("region","us-ashburn-1")
+compute_client = oci.core.ComputeClient(new_config)
 
 for image in paginate(compute_client.list_images,compartment_id=tenancy_id,operating_system ='Oracle Linux',sort_by='TIMECREATED'):
     if ("Gen2-GPU" not in image.display_name):
-        linux_image_id=image.id
+        linux_ash_image_id=image.id
         break
 for image in paginate(compute_client.list_images,compartment_id=tenancy_id,operating_system ='Windows',sort_by='TIMECREATED'):
     if ("Gen2-GPU" not in image.display_name):
-        windows_image_id=image.id
+        windows_ash_image_id=image.id
         break
 
+
+new_config.__setitem__("region","us-phoenix-1")
+compute_client = oci.core.ComputeClient(new_config)
+
+for image in paginate(compute_client.list_images,compartment_id=tenancy_id,operating_system ='Oracle Linux',sort_by='TIMECREATED'):
+    if ("Gen2-GPU" not in image.display_name):
+        linux_phx_image_id=image.id
+        break
+for image in paginate(compute_client.list_images,compartment_id=tenancy_id,operating_system ='Windows',sort_by='TIMECREATED'):
+    if ("Gen2-GPU" not in image.display_name):
+        windows_phx_image_id=image.id
+        break
 
 
 #Writing public keys to a file
@@ -298,7 +317,7 @@ provider_data="""provider "oci" {
 }"""
 write_file("tmp\provider.tf",provider_data)
 
-variables_data="""variable "ssh_public_key" {
+variables_ash_data="""variable "ssh_public_key" {
         type = "string"
         default = \"""" + input_ssh_key1 + """"
 }
@@ -325,7 +344,7 @@ variable "compartment_id" {
 }
 variable "fingerprint" {
         type = "string"
-        default = "us-phoenix-1"
+        default = \"""" + python_config['fingerprint'] + """"
 }
 variable "private_key_path" {
         type = "string"
@@ -333,22 +352,77 @@ variable "private_key_path" {
 }
 variable "region" {
         type = "string"
-        default = \"""" + python_config['region'] + """"
+        default = "us-ashburn-1"
 }
 """
-if(windows_image_id!=''):
-    variables_data=variables_data + """
+if(windows_ash_image_id!=''):
+    variables_ash_data=variables_ash_data + """
 variable "windows_latest_ocid" {
         type = "string"
-        default = \"""" + windows_image_id + """"
+        default = \"""" + windows_ash_image_id + """"
 }"""
-if(linux_image_id!=''):
-    variables_data=variables_data + """
+if(linux_ash_image_id!=''):
+    variables_ash_data=variables_ash_data + """
 variable "linux_latest_ocid"{
         type = "string"
-        default = \"""" + linux_image_id + """"
+        default = \"""" + linux_ash_image_id + """"
 }"""
-write_file("tmp\\variables.tf",variables_data)
+write_file("tmp\\variables_ash.tf",variables_ash_data)
+
+
+variables_phx_data="""variable "ssh_public_key" {
+        type = "string"
+        default = \"""" + input_ssh_key1 + """"
+}
+variable "tenancy_ocid" {
+        type = "string"
+        default = \"""" + tenancy_id + """"
+}
+variable "user_ocid" {
+        type = "string"
+        default = \"""" + python_config['user'] + """"
+}
+variable "compartment_ocid" {
+        type = "string"
+        default = \"""" + vm_compartment_ocid + """"
+}
+variable "ntk_compartment_ocid" {
+        type = "string"
+        default = \"""" + ntk_compartment_ocid + """"
+}
+#Added below variable because tf file generated through Koala uses this variable for network components
+variable "compartment_id" {
+        type = "string"
+        default = \"""" + ntk_compartment_ocid + """"
+}
+variable "fingerprint" {
+        type = "string"
+        default = \"""" + python_config['fingerprint'] + """"
+}
+variable "private_key_path" {
+        type = "string"
+        default = "/root/ocswork/keys/oci_api_key.pem"
+}
+variable "region" {
+        type = "string"
+        default = "us-phoenix-1"
+}
+"""
+if(windows_phx_image_id!=''):
+    variables_phx_data=variables_phx_data + """
+variable "windows_latest_ocid" {
+        type = "string"
+        default = \"""" + windows_phx_image_id + """"
+}"""
+if(linux_phx_image_id!=''):
+    variables_phx_data=variables_phx_data + """
+variable "linux_latest_ocid"{
+        type = "string"
+        default = \"""" + linux_phx_image_id + """"
+}"""
+write_file("tmp\\variables_phx.tf",variables_phx_data)
+
+
 
 #write git expect script to download python code
 if (input_configure_git_oci=="1"):
@@ -791,7 +865,8 @@ if(input_create_vm=="1"):
             time.sleep(2)
 
     provider='tmp\\provider.tf'
-    variables='tmp\\variables.tf'
+    variables_ash='tmp\\variables_ash.tf'
+    variables_phx = 'tmp\\variables_phx.tf'
     koala='tmp\\default'
     script_file=input_shell_script
     upload_git_script1='tmp\\download_git_expect1.sh'
@@ -811,7 +886,8 @@ if(input_create_vm=="1"):
     sftp.put('tmp\\ocs_public_keys.txt', '/home/opc/ocs_public_keys.txt')
     print('Copying OCI Terraform files..')
     sftp.put(provider, '/home/opc/provider.tf')
-    sftp.put(variables, '/home/opc/variables.tf')
+    sftp.put(variables_ash, '/home/opc/variables_ash.tf')
+    sftp.put(variables_phx, '/home/opc/variables_phx.tf')
     if(input_configure_panda=="1"):
         print('Copying generated files for Panda Server Creation..')
         sftp.put('tmp\\panda.tf','/home/opc/panda.tf')
