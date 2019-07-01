@@ -128,7 +128,7 @@ def processSubnet(region,vcn_name,name,subnet,AD,dnslabel,pubpvt,compartment_var
 	elif (region == 'phoenix'):
 		tempStrPHX = tempStrPHX + data
 
-
+endNames = {'<END>', '<end>'}
 #If input is CD3 excel file
 if('.xlsx' in filename):
 	NaNstr = 'NaN'
@@ -149,6 +149,9 @@ if('.xlsx' in filename):
 
 	for i in df.index:
 		#Get VCN data
+		compartment_var_name = df.iat[i, 0]
+		if (compartment_var_name in endNames):
+			break
 		vcn_name=df['vcn_name'][i]
 		vcn_data = df_vcn.loc[vcn_name]
 		region=vcn_data['Region']
@@ -169,7 +172,6 @@ if('.xlsx' in filename):
 
 		if(str(dhcp).lower() !='nan'):
 			dhcp = vcn_name + "_" + dhcp
-		compartment_var_name = df.iat[i,0]
 		compartment_var_name=compartment_var_name.strip()
 
 		dnslabel = df.iat[i, 10]

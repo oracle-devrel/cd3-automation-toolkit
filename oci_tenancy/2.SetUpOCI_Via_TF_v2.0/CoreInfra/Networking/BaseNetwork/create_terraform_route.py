@@ -243,7 +243,7 @@ def processSubnet(region,vcn_name,name,ruleStr,AD,configure_sgw,configure_ngw,co
     elif (region == 'phoenix'):
         tempStrPHX = tempStrPHX + data
 
-
+endNames = {'<END>', '<end>'}
 #If input is CD3 excel file
 if('.xlsx' in filename):
         NaNstr = 'NaN'
@@ -288,6 +288,8 @@ if('.xlsx' in filename):
         # Get VCN names from vcn_name column in VCNs sheet of CD3 excel
         for i in df_vcn.index:
                 region = df_vcn['Region'][i]
+                if (region in endNames):
+                    break
                 region = region.strip().lower()
                 vcn_name=df_vcn['vcn_name'][i]
                 compartment_var_name = df_vcn['compartment_name'][i]
@@ -334,11 +336,13 @@ if('.xlsx' in filename):
         df_vcn.head()
         df = pd.read_excel(filename, sheet_name='Subnets', skiprows=1)
         for i in df.index:
-            # Get VCN data
-            vcn_name = df['vcn_name'][i]
 
             # Get subnet data
             compartment_var_name = df.iat[i, 0]
+            if (compartment_var_name in endNames):
+                break
+            vcn_name = df['vcn_name'][i]
+
             name = df.iat[i, 2]
             subnet = df.iat[i, 3]
             AD = df.iat[i, 4]

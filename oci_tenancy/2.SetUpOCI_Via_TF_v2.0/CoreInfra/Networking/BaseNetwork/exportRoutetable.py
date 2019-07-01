@@ -75,16 +75,15 @@ def print_routetables(routetables,region,vcn_name,comp_name):
         if(not rules):
             i=i+1
             print(i)
-            new_row = pd.DataFrame({'SubnetName': dn, 'Destination CIDR': '',
-                                    'Route Destination Object': '',
-                                    'Destination Type': '', 'VCN Name':vcn_name,'Compartment Name':comp_name,'Region':region}, index=[i])
+            new_row = pd.DataFrame({'Region':region,'Compartment Name':comp_name, 'VCN Name':vcn_name, 'SubnetName': dn, 'Destination CIDR': '',
+                                    'Route Destination Object': '','Destination Type': ''}, index=[i])
             df = df.append(new_row, ignore_index=True)
         for rule in rules:
             i=i+1
             print(i)
             print(dn + "," + str(rule.destination) + "," + str(rule.network_entity_id)+","+ str(rule.destination_type))
             #oname.write(dn + "," + str(rule.destination) + "," +str(rule.network_entity_id)+","+ str(rule.destination_type)+"\n")
-            new_row = pd.DataFrame({'SubnetName': dn, 'Destination CIDR': str(rule.destination), 'Route Destination Object': str(rule.network_entity_id), 'Destination Type': str(rule.destination_type),'VCN Name':vcn_name,'Compartment Name':comp_name,'Region':region}, index=[i])
+            new_row = pd.DataFrame({'Region':region,'Compartment Name':comp_name, 'VCN Name':vcn_name,'SubnetName': dn, 'Destination CIDR': str(rule.destination), 'Route Destination Object': str(rule.network_entity_id), 'Destination Type': str(rule.destination_type)}, index=[i])
             df = df.append(new_row, ignore_index=True)
 
 parser = argparse.ArgumentParser(description="Export Route Table on OCI to CD3")

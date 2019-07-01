@@ -63,7 +63,7 @@ datastr = """
 data "oci_core_services" "oci_services" {
 }"""
 
-
+endNames = {'<END>', '<end>'}
 
 def createLPGs(peering_dict):
         global tempStrASH
@@ -241,7 +241,9 @@ if('.xlsx' in filename):
         properties=df_info['Property']
         values=df_info['Value']
 
+
         drg_ocid=str(values[1]).strip()
+
         if (drg_ocid.lower() == NaNstr.lower()):
                 drg_ocid = ''
 
@@ -250,9 +252,13 @@ if('.xlsx' in filename):
                 if(j>7):
                         peering_dict[properties[j]]=values[j]
 
-        #Get VCN transit Routing Map
+        #Get Hub and Spoke VCN Names
         for i in df.index:
-                vcn_name=df['vcn_name'][i]
+
+                region = df['Region'][i]
+                if (region in endNames):
+                    break
+                vcn_name = df['vcn_name'][i]
 
                 # Check to see if vcn_name is empty in Subnets Sheet
                 if (str(vcn_name).lower() == NaNstr.lower()):
@@ -269,6 +275,8 @@ if('.xlsx' in filename):
         NaNstr = 'NaN'
         for i in df.index:
                 region = df['Region'][i]
+                if (region in endNames):
+                    break
                 region= region.strip().lower()
 
                 vcn_name = df['vcn_name'][i]
@@ -301,9 +309,10 @@ if('.xlsx' in filename):
                         print("Column Values(except dns_label) or Rows cannot be left empty in VCNs sheet in CD3..exiting...")
                         exit()
 
-                if (hub_spoke_none == 'hub' and vcn_drg != 'y'):
-                        print("VCN marked as Hub should have DRG configured..Modify the input file and try again")
-                        exit(1)
+                #if (hub_spoke_none == 'hub' and vcn_drg != 'y'):
+
+                #        print("VCN marked as Hub should have DRG configured..Modify the input file and try again")
+                #        exit(1)
 
                 processVCN(region,vcn_name,vcn_cidr,vcn_drg,vcn_igw,vcn_ngw,vcn_sgw,hub_spoke_none,compartment_var_name,vcn_dns_label)
 
@@ -359,9 +368,9 @@ elif('.csv' in filename):
                         vcn_dns = regex.sub('', vcn_name)
                         vcn_dns_label = (vcn_dns[:15]) if len(vcn_dns) > 15 else vcn_dns
 
-                if(hub_spoke_none=='hub' and vcn_drg!='y'):
-                        print("\nVCN marked as Hub should have DRG configured..Modify the input file and try again")
-                        exit(1)
+                #if(hub_spoke_none=='hub' and vcn_drg!='y'):
+                #        print("\nVCN marked as Hub should have DRG configured..Modify the input file and try again")
+                #        exit(1)
 
                 processVCN(region, vcn_name, vcn_cidr, vcn_drg, vcn_igw, vcn_ngw, vcn_sgw, hub_spoke_none,
                               compartment_var_name, vcn_dns_label)

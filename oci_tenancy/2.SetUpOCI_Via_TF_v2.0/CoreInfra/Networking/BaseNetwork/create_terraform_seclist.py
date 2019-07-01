@@ -182,7 +182,7 @@ def processSubnet(region,vcn_name,AD,seclists_per_subnet,name,subnet_name_attach
         j = j + 1
 
 
-
+endNames = {'<END>', '<end>'}
 #If input is CD3 excel file
 if('.xlsx' in filename):
         NaNstr = 'NaN'
@@ -219,6 +219,9 @@ if('.xlsx' in filename):
 
         # Get VCN names from vcn_name column in VCNs sheet of CD3 excel
         for i in df_vcn.index:
+                region = df_vcn['Region'][i]
+                if (region in endNames):
+                    break
                 vcn_name=df_vcn['vcn_name'][i]
                 vcn_lpg_rules.setdefault(vcn_name, '')
 
@@ -231,6 +234,9 @@ if('.xlsx' in filename):
         df = pd.read_excel(filename, sheet_name='Subnets', skiprows=1)
         for i in df.index:
             # Get VCN data
+            compartment_var_name = df.iat[i, 0]
+            if (compartment_var_name in endNames):
+                break
             vcn_name = df['vcn_name'][i]
             vcn_data = df_vcn.loc[vcn_name]
             region=vcn_data['Region']
@@ -246,7 +252,6 @@ if('.xlsx' in filename):
             subnet=subnet.strip()
             AD = df.iat[i, 4]
             AD=AD.strip()
-            compartment_var_name = df.iat[i, 0]
             compartment_var_name=compartment_var_name.strip()
 
             seclists_per_subnet = int(sps)

@@ -575,14 +575,17 @@ if('.xls' in secrulesfilename):
             columns = reader.fieldnames
             rowCount = 0
             for row in reader:
-                subnetName = row['SubnetName']
-                if(subnetName=='<END>' or subnetName=='<end>'):
-                    break
+                region = str(row['Region']).lower()
 
+                if(region=='<END>' or region=='<end>'):
+                    break
+                #if(region==NaNstr.lower()):
+                #    continue
+
+                subnetName = row['SubnetName']
                 protocol = row['Protocol']
                 ruleType = row['RuleType']
-                region = row['Region']
-                region = region.strip().lower()
+                region = region.strip()
 
                 new_sec_rule = ""
 
@@ -604,7 +607,7 @@ if('.xls' in secrulesfilename):
                         updateSecRules(phx_dir + "/" + sec_list_file, text_to_replace, new_sec_rule, 0)
 
 
-                else:
+                elif(subnetName!=''):
 
                     sec_list_file = seclist_files[subnetName]
                     print("file to modify ::::: " + sec_list_file)

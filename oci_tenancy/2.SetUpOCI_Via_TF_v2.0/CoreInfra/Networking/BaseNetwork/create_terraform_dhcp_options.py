@@ -96,6 +96,7 @@ def processDHCP(region,vcn_name,dhcp_option_name,compartment_var_name,serverType
 	elif (region == 'phoenix'):
 		tempStrPHX = tempStrPHX + data
 
+endNames = {'<END>', '<end>'}
 if('.xls' in args.inputfile):
 	df_vcn = pd.read_excel(args.inputfile, sheet_name='VCNs',skiprows=1)
 	df_vcn.set_index("vcn_name", inplace=True)
@@ -103,6 +104,8 @@ if('.xls' in args.inputfile):
 	df = pd.read_excel(args.inputfile, sheet_name='DHCP',skiprows=1)
 	for i in df.index:
 		vcn_name = df.iat[i,0]
+		if (vcn_name in endNames):
+			break
 		dhcp_option_name = df.iat[i,1]
 		serverType = df.iat[i,2]
 		search_domain = df.iat[i,3]

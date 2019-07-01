@@ -61,21 +61,23 @@ if('.xls' in inputfile):
         print("\nReading RouteRulesinOCI sheet of cd3")
         df = pd.read_excel(inputfile, sheet_name='RouteRulesinOCI')
         for i in df.index:
-            subnet_name = df.iat[i, 0]
+
+            region = df.iat[i, 0]
+            region = region.strip().lower()
+            comp_name = df.iat[i, 1]
+            comp_name = comp_name.strip()
+            vcn_name = df.iat[i, 2]
+            vcn_name = vcn_name.strip()
+
+            subnet_name = df.iat[i, 3]
             if (str(subnet_name).lower() == NaNstr.lower()):
                 continue
-            dest_cidr = df.iat[i, 1]
+            dest_cidr = df.iat[i, 4]
             dest_cidr = str(dest_cidr).strip()
-            dest_obj = df.iat[i, 2]
+            dest_obj = df.iat[i, 5]
             dest_obj = str(dest_obj).strip()
-            dest_type = df.iat[i, 3]
+            dest_type = df.iat[i, 6]
             dest_type = str(dest_type).strip()
-            vcn_name = df.iat[i,4]
-            vcn_name = vcn_name.strip()
-            comp_name = df.iat[i,5]
-            comp_name = comp_name.strip()
-            region = df.iat[i,6]
-            region = region.strip().lower()
             #if('in-oracle-services-network' in dest_cidr):
             #    dest_cidr="${data.oci_core_services.oci_services.services.0.cidr_block}"
             if('Route Table associated with DRG' in subnet_name):
@@ -161,20 +163,25 @@ if('.xls' in inputfile):
         print("Reading AddRouteRules sheet of cd3")
         df = pd.read_excel(inputfile, sheet_name='AddRouteRules')
         for i in df.index:
-            subnet_name = df.iat[i, 0]
-            subnet_name = subnet_name.strip()
+            region = df.iat[i, 0]
+            region = str(region).lower()
 
-            if (subnet_name in endNames):
+            if (region in endNames):
                 break
+            if(region==NaNstr.lower()):
+                continue
+            region=region.strip()
+            comp_name = df.iat[i, 1]
+            vcn_name = df.iat[i, 2]
+            dest_cidr = df.iat[i, 4]
+            dest_cidr = str(dest_cidr).strip()
+            dest_obj = df.iat[i, 5]
+            dest_obj = str(dest_obj).strip()
+            dest_type = df.iat[i, 6]
+            dest_type = str(dest_type).strip()
 
-            dest_cidr = df.iat[i, 1]
-            dest_cidr=dest_cidr.strip()
-            dest_obj = df.iat[i, 2]
-            dest_obj=dest_obj.strip()
-            dest_type = df.iat[i, 3]
-            dest_type=dest_type.strip()
-            region = df.iat[i, 6]
-            region = region.strip().lower()
+            subnet_name = df.iat[i, 3]
+            subnet_name = subnet_name.strip()
 
             searchString = "##Add More rules for subnet " + subnet_name + "##"
             strRule = ""
@@ -215,7 +222,6 @@ elif ('.csv' in inputfile):
         if (route.strip() in endNames):
             break
         if not route.startswith('#') and route != '\n':
-            print ("processing : " + route)
             subnet_name = route.split(":")[0]
             subnet_name=subnet_name.strip()
             dest_cidr = route.split(":")[1]
