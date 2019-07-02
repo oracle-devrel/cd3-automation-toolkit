@@ -55,24 +55,24 @@ if oci_conf_file == None:
 else:
     config = oci.config.from_file(file_location=oci_conf_file)
 compartment_id = config['vm_compartment_ocid']
-print "Compartment_Id " + compartment_id
+print ("Compartment_Id " + compartment_id)
 stg_object_store_bucket = "ocic-oci-sig"
 object_stg_client = ObjectStorageClient(config)
 bucket_details = oci.object_storage.models.CreateBucketDetails(name=stg_object_store_bucket,compartment_id=compartment_id)
 bucket = None
 namespace = object_stg_client.get_namespace().data
-print "Namespace " + str(namespace)
+print ("Namespace " + str(namespace))
 try:
 
         bucket = object_stg_client.create_bucket(namespace_name=namespace,create_bucket_details=bucket_details)
-        print "Creating Bucket - " + stg_object_store_bucket
+        print ("Creating Bucket - " + stg_object_store_bucket)
 #       print bucket.data
 except oci.exceptions.ServiceError as e:
         if e.code == "BucketAlreadyExists":
-                print "Bucket " + stg_object_store_bucket + " already exists - not creating it"
+                print ("Bucket " + stg_object_store_bucket + " already exists - not creating it")
         else:
-                print "############## ERRROR CREATING BUCKET #####################"
-                print e.args[0]
+                print ("############## ERRROR CREATING BUCKET #####################")
+                print (e.args[0])
 par_uri = ""
 try:
 
@@ -85,7 +85,7 @@ try:
     par_uri = response.data.access_uri
 
 except oci.exceptions.ServiceError as e:
-    print e.args[0]
+    print (e.args[0])
 
 
 
@@ -98,7 +98,7 @@ with open(tf_file,'r') as json_file:
 #    for d in data['modules']:
     for o in data['outputs']:
         if DEBUG.lower() == "debug":
-            print o + " = " + data['outputs'][o]['value']
+            print (o + " = " + data['outputs'][o]['value'])
         ocic_values[o] = data['outputs'][o]['value'].strip()
 
 json_file.close()
@@ -114,7 +114,7 @@ with open(opc_migrate_instance_export, 'r') as js_file:
     for i in data['instances']:
         hostname = i['name'].rsplit("/")[-2]
         if DEBUG.lower() == "debug":
-            print i['name']
+            print (i['name'])
         if inst_name != None:
             if inst_name in hostname:
                 data = """  - {name: \"""" + i['name'] + "\", os: \"" + i['os'] + "\", osSku: \"" + i['osSku'] + """\", attached_only: "false" }""" + "\n"
@@ -131,8 +131,8 @@ js_file.close()
 # print "Count from instance export " + str(count)
 
 if DEBUG.lower() == "debug":
-    print "OCIC Keys " + str(ocic_values.keys())
-    print "OCIC Values" + str(ocic_values.values())
+    print ("OCIC Keys " + str(ocic_values.keys()))
+    print ("OCIC Values" + str(ocic_values.values()))
 
 
 ## Read the OCI Config file @ ~/.oci/config
@@ -146,7 +146,7 @@ i = 0
 write = 1
 secrets_file_prefix = "tmp/generated-secrets"
 if write == 1:
-    print "Generating Secrets file in tmp directory \n"
+    print ("Generating Secrets file in tmp directory \n")
     for ins in instance_export_host_map:
         secrets_file = secrets_file_prefix + "-" + ins + ".yml"
 
@@ -234,19 +234,19 @@ for j in js:
     except Exception as e:
 
         if ("Mapping" in e.__doc__):
-            print "both nimbula and oracle_metadata not found. Ignoring"
+            print ("both nimbula and oracle_metadata not found. Ignoring")
             #print "Mapping Key not found - ignoring\n"
         else:
-            print e.__doc__
-            print e.message
-            print j
+            print (e.__doc__)
+            print (e.message)
+            print (j)
         continue
 # print "Total Count of Instances from XL sheet: " + str(count)
 ## We now have the data from two sources, the Koala file and the XL sheet.  Put it together
 ## for generating hosts.yml.
 ## instance_export_host_map & xl_host_ip_map should match up to give us the right data.
 
-print "Generating hosts file in tmp directory "
+print ("Generating hosts file in tmp directory ")
 hosts_yml_file_prefix = "tmp/generated-hosts-"
 hosts_yml_file_single = "tmp/generated-all-hosts.yml"
 write_file(hosts_yml_file_single,"##OCIC Info\n\n")
@@ -266,6 +266,3 @@ for i in instance_export_host_map:
     hosts_yml_file = hosts_yml_file_prefix + "-" + i + ".yml"
     write_file(hosts_yml_file, hosts_data)
     append_file(hosts_yml_file_single,hosts_data)
-
-
-
