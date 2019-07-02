@@ -613,7 +613,7 @@ if (input_configure_koala=="1"):
     cd /root/ocswork/ocic2oci_work
     spawn /usr/local/bin/opcmigrate discover
     expect "Compute Classic Password" {send "$password\\r"}
-    sleep 10
+    sleep 60
     expect eof
     """
     write_file("tmp\\discover_koala_expect.sh",script_data)
