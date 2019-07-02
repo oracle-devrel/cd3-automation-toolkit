@@ -167,7 +167,9 @@ then
             /usr/local/bin/opcmigrate generate --with-security-rule-union -o ocic2oci_network.tf
             cp ocic2oci_network.tf /root/ocswork/terraform_files
             mv ocic2oci_network.tf ocic2oci_network.tf_Orig
-            /usr/local/bin/opcmigrate instances-export > instance-export.json
+            #/usr/local/bin/opcmigrate instances-export > instance-export.json
+            /usr/local/bin/opcmigrate plan create --output migration-plan.json
+            /usr/local/bin/opcmigrate instances-export --plan migration-plan.json --format json > instance-export.json
             /usr/local/bin/opcmigrate report
             sleep 5s
             mv *.xlsx report_ocic.xlsx
