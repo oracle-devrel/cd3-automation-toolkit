@@ -314,7 +314,7 @@ seclist_rule_count = {}
 seclist_rule_count_limit = {}
 seclist_per_subnet_limit ={}
 
-
+endNames = {'<END>', '<end>'}
 
 # Read vcn info file and get subnet info
 if('.properties' in args.inputfile):
@@ -352,6 +352,8 @@ elif('.xls' in args.inputfile):
     for i in df.index:
         vcn_name = df['vcn_name'][i]
         region=df['Region'][i]
+        if (region in endNames):
+            break
         region=region.strip().lower()
         seclist_per_subnet = df['sec_list_per_subnet'][i]
         sec_rule_per_seclist = df['sec_rule_per_seclist'][i]

@@ -101,7 +101,7 @@ if('.xls' in inputfile):
         compartment_id = "${var.""" + comp_name + """}"
         vcn_id = "${oci_core_vcn.""" + vcn_name + """.id}"
         
-        ##Add More rules for subnet """ + rt_var+ """##
+        ##Add More rules for subnet """ + subnet_name+ """##
         
         route_rules {
             
@@ -131,7 +131,7 @@ if('.xls' in inputfile):
                     compartment_id = "${var.""" + comp_name + """}"
                     vcn_id = "${oci_core_vcn.""" + vcn_name + """.id}"
 
-                    ##Add More rules for subnet """ + rt_var + """##
+                    ##Add More rules for subnet """ + subnet_name + """##
 
                     route_rules {
 
