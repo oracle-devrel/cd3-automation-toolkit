@@ -30,7 +30,7 @@ if('1' in userInput):
     if(inputfile==''  or '.xls' not in inputfile):
         inputfile = input("Enter full path to input CD3 excel file or csv file containing Compartments info: ")
     if(outdir==''):
-        outdir = input("Enter full path to output directory where you want to create terraform files: ")
+        outdir = input("Enter full path to output directory where you want to create terraform files: Mention the complete path till home region directory ")
     if(prefix==''):
         prefix = input("Enter prefix for output files: ")
     outfile = outdir + "/" + prefix + '-compartments.tf'
@@ -51,7 +51,7 @@ if('2' in userInput):
     else:
         print("using already provided CD3 file: "+inputfile)
     if(outdir==''):
-        outdir = input("Enter full path to output directory where you want to create terraform files: ")
+        outdir = input("Enter full path to output directory where you want to create terraform files: Mention the complete path till home region directory ")
     else:
         print("using already provided outdir: "+outdir)
     if(prefix==''):
@@ -76,7 +76,7 @@ if('3' in userInput):
     else:
         print("using already provided CD3 file: " + inputfile)
     if (outdir == ''):
-        outdir = input("Enter full path to output directory where you want to create terraform files: ")
+        outdir = input("Enter full path to output directory where you want to create terraform files: Mention the complete path till home region directory ")
     else:
         print("using already provided outdir: " + outdir)
     if (prefix == ''):
