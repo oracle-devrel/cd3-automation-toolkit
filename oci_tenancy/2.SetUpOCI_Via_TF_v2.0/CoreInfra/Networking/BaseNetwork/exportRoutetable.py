@@ -49,6 +49,29 @@ def get_vcns(config,compartment_id):
     vcnlist = vcncient.list_vcns(compartment_id=compartment_id,lifecycle_state="AVAILABLE")
     return vcnlist
 
+def get_network_entity_name(network_identity_id):
+
+    if('internetgateway' in network_identity_id):
+        igw=vcn.get_internet_gateway(network_identity_id)
+        network_identity_name="${oci_core_internet_gateway."+igw.data.dislay_name+".id}"
+        return  network_identity_name
+
+    if ('natgateway' in network_identity_id):
+        ngw = vcn.get_nat_gateway(network_identity_id)
+        network_identity_name = "${oci_core_nat_gateway." + ngw.data.dislay_name + ".id}"
+        return network_identity_name
+
+    if ('localpeeringgateway' in network_identity_id):
+        lpg = vcn.get_local_peering_gateway(network_identity_id)
+        network_identity_name = "${oci_core_local_peering_gateway." + lpg.data.dislay_name + ".id}"
+        return network_identity_name
+
+    if ('drg' in network_identity_id):
+        drg = vcn.get_drg(network_identity_id)
+        network_identity_name = "${oci_core_drg." + drg.data.display_name + ".id}"
+        return network_identity_name
+
+
 def print_routetables(routetables,region,vcn_name,comp_name):
 
     #oname.write("SubnetName, Destination CIDR, Route Destination Object, Destination Type\n")
@@ -81,9 +104,17 @@ def print_routetables(routetables,region,vcn_name,comp_name):
         for rule in rules:
             i=i+1
             print(i)
-            print(dn + "," + str(rule.destination) + "," + str(rule.network_entity_id)+","+ str(rule.destination_type))
+            network_entity_id=rule.network_entity_id
+            network_entity_name=get_network_entity_name(network_entity_id)
+
+
+            print(dn + "," + str(rule.destination) + "," + str(network_entity_name)+","+ str(rule.destination_type))
             #oname.write(dn + "," + str(rule.destination) + "," +str(rule.network_entity_id)+","+ str(rule.destination_type)+"\n")
-            new_row = pd.DataFrame({'Region':region,'Compartment Name':comp_name, 'VCN Name':vcn_name,'SubnetName': dn, 'Destination CIDR': str(rule.destination), 'Route Destination Object': str(rule.network_entity_id), 'Destination Type': str(rule.destination_type)}, index=[i])
+            #new_row = pd.DataFrame({'Region':region,'Compartment Name':comp_name, 'VCN Name':vcn_name,'SubnetName': dn, 'Destination CIDR': str(rule.destination), 'Route Destination Object': str(rule.network_entity_id), 'Destination Type': str(rule.destination_type)}, index=[i])
+            new_row = pd.DataFrame(
+                {'Region': region, 'Compartment Name': comp_name, 'VCN Name': vcn_name, 'SubnetName': dn,
+                 'Destination CIDR': str(rule.destination), 'Route Destination Object': str(network_entity_name),
+                 'Destination Type': str(rule.destination_type)}, index=[i])
             df = df.append(new_row, ignore_index=True)
 
 parser = argparse.ArgumentParser(description="Export Route Table on OCI to CD3")
