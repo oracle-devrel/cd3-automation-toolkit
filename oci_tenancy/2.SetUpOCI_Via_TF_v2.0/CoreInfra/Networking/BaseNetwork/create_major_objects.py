@@ -262,8 +262,8 @@ if('.xlsx' in filename):
 
                 # Check to see if vcn_name is empty in Subnets Sheet
                 if (str(vcn_name).lower() == NaNstr.lower()):
-                        print("vcn_name cannot be left empty in VCNs sheet in CD3..exiting...")
-                        exit()
+                        print("vcn_name/row cannot be left empty in VCNs sheet in CD3..exiting...")
+                        exit(1)
 
                 hub_spoke_none=df['hub_spoke_none'][i]
                 if (hub_spoke_none == 'hub'):
@@ -307,7 +307,7 @@ if('.xlsx' in filename):
                                 or str(sec_rule_per_seclist).lower() == NaNstr.lower() or str(add_default_seclist).lower() == NaNstr.lower()
                                 or str(compartment_var_name).lower() == NaNstr.lower()):
                         print("Column Values(except dns_label) or Rows cannot be left empty in VCNs sheet in CD3..exiting...")
-                        exit()
+                        exit(1)
 
                 #if (hub_spoke_none == 'hub' and vcn_drg != 'y'):
 
@@ -387,7 +387,7 @@ elif('.csv' in filename):
         createLPGs(peering_dict)
 else:
     print("Invalid input file format; Acceptable formats: .xls, .xlsx, .csv")
-    exit()
+    exit(1)
 
 tempStrASH=datastr+tempStrASH
 tempStrPHX=datastr+tempStrPHX
