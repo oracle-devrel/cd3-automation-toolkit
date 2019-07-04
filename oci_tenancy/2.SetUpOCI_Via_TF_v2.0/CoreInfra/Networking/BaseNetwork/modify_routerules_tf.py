@@ -6,6 +6,7 @@ import shutil
 import re
 import pandas as pd
 import glob
+import datetime
 ######
 # Takes in input csv or CD3 excel which contains routerules to be updated for the subnet and updates the routes tf file created using BaseNetwork TF generation.
 # ######
@@ -38,9 +39,12 @@ for file in glob.glob(ash_dir+'/*routes.tf'):
 for file in glob.glob(phx_dir+'/*routes.tf'):
     routefile_phx=file
 
+x = datetime.datetime.now()
+date = x.strftime("%f").strip()
+
 # Backup the existing Routes tf file
-shutil.copy(routefile_ash, routefile_ash + "_backup")
-shutil.copy(routefile_phx, routefile_phx + "_backup")
+shutil.copy(routefile_ash, routefile_ash + "_backup"+date)
+shutil.copy(routefile_phx, routefile_phx + "_backup"+date)
 
 if args.overwrite is not None:
     overwrite = str(args.overwrite)
