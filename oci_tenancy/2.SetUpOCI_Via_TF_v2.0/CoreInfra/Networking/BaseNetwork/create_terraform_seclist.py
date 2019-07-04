@@ -161,7 +161,7 @@ def processSubnet(region,vcn_name,AD,seclists_per_subnet,name,subnet_name_attach
                             tempStr = tempStr + """
                         ingress_security_rules {
                             protocol = "1"
-                            source = \"""" + drg_destination + """"
+                            source = \"""" + drg_destination.strip() + """"
                         }
                         """
 

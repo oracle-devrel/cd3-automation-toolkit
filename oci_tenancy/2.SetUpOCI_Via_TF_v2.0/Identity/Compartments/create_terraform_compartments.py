@@ -7,7 +7,7 @@
 
 import sys
 import argparse
-import configparser
+import os
 import pandas as pd
 
 ######
@@ -20,54 +20,75 @@ import pandas as pd
 
 parser = argparse.ArgumentParser(description="Create Compartments terraform file")
 parser.add_argument("inputfile", help="Full Path of input file. It could be either the csv file or CD3 excel file")
-parser.add_argument("outfile",help="Output Filename")
+parser.add_argument("outdir", help="Output directory for creation of TF files")
+parser.add_argument("prefix", help="customer name/prefix for all file names")
 
-if len(sys.argv)==2:
-        parser.print_help()
-        sys.exit(1)
+
 if len(sys.argv)<3:
         parser.print_help()
         sys.exit(1)
 
 args = parser.parse_args()
-outfile = args.outfile
-oname = open(outfile,"w+")
+filename=args.inputfile
+outdir=args.outdir
+prefix=args.prefix
 
-#compartments=[]
-tempStr = ""
+ash_dir=outdir+"/ashburn"
+phx_dir=outdir+"/phoenix"
+
+if not os.path.exists(ash_dir):
+        os.makedirs(ash_dir)
+
+if not os.path.exists(phx_dir):
+        os.makedirs(phx_dir)
+outfile_ash=ash_dir + "/" + prefix + '-compartments.tf'
+outfile_phx=phx_dir + "/" + prefix + '-compartments.tf'
+
+tempStrASH = ""
+tempStrPHX = ""
 
 if('.xls' in args.inputfile):
-    df = pd.read_excel(args.inputfile, sheet_name='Compartments')
+    df = pd.read_excel(args.inputfile, sheet_name='Compartments',skiprows=1)
+    df.dropna(how='all')
     NaNstr = 'NaN'
     endNames = {'<END>', '<end>'}
 
     for i in df.index:
-        compartment_name = df.iat[i, 0]
-        compartment_name = compartment_name.strip()
+        region = df.iat[i,0]
 
-        if (compartment_name in endNames):
+        if (region in endNames):
             break
 
-        compartment_desc = df.iat[i, 1]
-        parent_compartment_name = df.iat[i, 2]
+        compartment_name = df.iat[i, 1]
 
 
+        compartment_desc = df.iat[i, 2]
+        parent_compartment_name = df.iat[i, 3]
         if (str(parent_compartment_name).lower()== NaNstr.lower() or parent_compartment_name.lower() == 'root'):
             parent_compartment='${var.tenancy_ocid}'
         else:
             parent_compartment='${oci_identity_compartment.'+parent_compartment_name.strip()+'.id}'
+        if (str(compartment_name).lower() != NaNstr.lower()):
+            region = region.strip().lower()
 
-        if(compartment_name!='Name' and str(compartment_name).lower()!= NaNstr.lower()):
+            compartment_name = compartment_name.strip()
             if (str(compartment_desc).lower() == NaNstr.lower()):
                 compartment_desc = compartment_name
-
-            tempStr=tempStr + """
+            if(region=='ashburn'):
+                tempStrASH=tempStrASH + """
 resource "oci_identity_compartment" \"""" + compartment_name.strip() + """" {
 	    compartment_id = \"""" + parent_compartment + """"
 	    description = \"""" + compartment_desc.strip() + """"
   	    name = \"""" + compartment_name.strip() + """"
+} """
+            if (region == 'phoenix'):
+                tempStrPHX = tempStrPHX + """
+            resource "oci_identity_compartment" \"""" + compartment_name.strip() + """" {
+            	    compartment_id = \"""" + parent_compartment + """"
+            	    description = \"""" + compartment_desc.strip() + """"
+              	    name = \"""" + compartment_name.strip() + """"
 
-	} """
+            	} """
 
 #If input is a csv file
 elif('.csv' in args.inputfile):
@@ -81,7 +102,8 @@ elif('.csv' in args.inputfile):
         if(line.strip() in endNames):
             break
         if not line.startswith('#') and line != '\n':
-            [compartment_name, compartment_desc, parent_compartment_name] = line.split(',')
+            [region,compartment_name, compartment_desc, parent_compartment_name] = line.split(',')
+            region=region.strip().lower()
             compartment_name=compartment_name.strip()
             compartment_desc=compartment_desc.strip()
             parent_compartment_name=parent_compartment_name.strip()
@@ -92,22 +114,37 @@ elif('.csv' in args.inputfile):
                 parent_compartment = '${oci_identity_compartment.' + parent_compartment_name + '.id}'
 
             if(compartment_name.strip()!='Name' and compartment_name.strip()!=''):
-                #compartments.append(compartment_name)
                 if (compartment_desc.strip() == ''):
                     compartment_desc = compartment_name
-
-                tempStr=tempStr + """
+                if(region=='ashburn'):
+                    tempStrASH=tempStrASH + """
 resource "oci_identity_compartment" \"""" + compartment_name.strip() + """" {
         compartment_id = \"""" + parent_compartment + """"
         description = \"""" + compartment_desc.strip() + """"
   	    name = \"""" + compartment_name.strip() + """"
+} """
+                if (region == 'phoenix'):
+                    tempStrPHX = tempStrPHX + """
+                resource "oci_identity_compartment" \"""" + compartment_name.strip() + """" {
+                        compartment_id = \"""" + parent_compartment + """"
+                        description = \"""" + compartment_desc.strip() + """"
+                  	    name = \"""" + compartment_name.strip() + """"
 
-    } """
+                    } """
 else:
     print("Invalid input file format; Acceptable formats: .xls, .xlsx, .csv")
     exit()
 
+if(tempStrASH!=''):
+    oname_ash = open(outfile_ash, "w")
+    oname_ash.write(tempStrASH)
+    oname_ash.close()
+    print(outfile_ash + " containing TF for compartments has been created")
 
-oname.write(tempStr)
-oname.close()
-print(outfile +" containing TF for compartments has been created")
+if(tempStrPHX!=''):
+    oname_phx = open(outfile_phx, "w")
+    oname_phx.write(tempStrASH)
+    oname_phx.close()
+    print(outfile_phx + " containing TF for compartments has been created")
+
+

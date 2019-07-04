@@ -152,7 +152,7 @@ def createLPGRtTableString(compartment_var_name,hub_vcn_name,peering_dict):
                     if (drg_destination != ''):
                         lpgStr = lpgStr + """
                     route_rules { 
-                        destination = \"""" + drg_destination + """\"
+                        destination = \"""" + drg_destination.strip() + """\"
                         network_entity_id = "${oci_core_drg.""" + drg_name + """.id}"
                         destination_type = "CIDR_BLOCK"
                         }
@@ -162,7 +162,7 @@ def createLPGRtTableString(compartment_var_name,hub_vcn_name,peering_dict):
                     if (drg_destination != ''):
                         lpgStr = lpgStr + """
                     route_rules { 
-                            destination = \"""" + drg_destination + """\"
+                            destination = \"""" + drg_destination.strip() + """\"
                             network_entity_id =  \"""" + drg_ocid + """"
                             destination_type = "CIDR_BLOCK"
                             }
@@ -392,7 +392,7 @@ if('.xlsx' in filename):
                         if (drg_destination != ''):
                             ruleStr = ruleStr + """
                         route_rules { 
-                            destination = \"""" + drg_destination + """\"
+                            destination = \"""" + drg_destination.strip() + """\"
                             network_entity_id = "${oci_core_drg.""" + drg_name + """.id}"
                             destination_type = "CIDR_BLOCK"
                             }
@@ -402,7 +402,7 @@ if('.xlsx' in filename):
                         if (drg_destination != ''):
                             ruleStr = ruleStr + """
                         route_rules { 
-                            destination = \"""" + drg_destination + """\"
+                            destination = \"""" + drg_destination.strip() + """\"
                             network_entity_id =  \"""" + drg_ocid + """"
                             destination_type = "CIDR_BLOCK"
                             }
@@ -422,7 +422,7 @@ if('.xlsx' in filename):
                     if (drg_destination != ''):
                         ruleStr = ruleStr + """
                         route_rules { 
-                            destination = \"""" + drg_destination + """\"
+                            destination = \"""" + drg_destination.strip() + """\"
                             network_entity_id = "${oci_core_local_peering_gateway.""" + lpg_name + """.id}"
                             destination_type = "CIDR_BLOCK"
                             }
@@ -544,7 +544,7 @@ elif('.csv' in filename):
                     if(drg_destination!=''):
                         ruleStr = ruleStr + """
             route_rules { 
-                destination = \"""" + drg_destination + """\"
+                destination = \"""" + drg_destination.strip() + """\"
                 network_entity_id = "${oci_core_drg.""" + drg_name + """.id}"
                 destination_type = "CIDR_BLOCK"
                 }
@@ -554,7 +554,7 @@ elif('.csv' in filename):
                     if (drg_destination != ''):
                         ruleStr = ruleStr + """
             route_rules { 
-                destination = \"""" + drg_destination + """\"
+                destination = \"""" + drg_destination.strip() + """\"
                 network_entity_id =  \"""" + drg_ocid + """"
                 destination_type = "CIDR_BLOCK"
                 }
@@ -574,7 +574,7 @@ elif('.csv' in filename):
                 if(drg_destination!=''):
                     ruleStr = ruleStr + """
             route_rules { 
-                destination = \"""" + drg_destination + """\"
+                destination = \"""" + drg_destination.strip() + """\"
                 network_entity_id = "${oci_core_local_peering_gateway.""" + lpg_name + """.id}"
                 destination_type = "CIDR_BLOCK"
                 }

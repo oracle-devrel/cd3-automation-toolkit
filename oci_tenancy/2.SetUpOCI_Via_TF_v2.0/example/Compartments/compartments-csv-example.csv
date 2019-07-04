@@ -1,7 +1,8 @@
 # Leave Parent Compartment empty or mention root if it is under root; Rows after <END> or <end> will not be processed;Compartment Name is mandatory field
-#Name,Description,Parent Compartment
-Networking,Compartment for Networking Objects,
-RyderVM-Dev,Compartment for VMs in Dev,RyderVM
-RyderVM-Prod,,RyderVM
+# Mention Region value as home region for compartment creation
+#Region,Name,Description,Parent Compartment
+Ashburn,Networking,Compartment for Networking Objects,
+Ashburn,RyderVM-Dev,Compartment for VMs in Dev,RyderVM
+Ashburn,RyderVM-Prod,,RyderVM
 <END>
 

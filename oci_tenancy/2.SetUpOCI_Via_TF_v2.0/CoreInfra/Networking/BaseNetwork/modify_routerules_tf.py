@@ -76,12 +76,25 @@ if('.xls' in inputfile):
             dest_cidr = str(dest_cidr).strip()
             dest_obj = df.iat[i, 5]
             dest_obj = str(dest_obj).strip()
+            if('_ngw' in dest_obj.lower()):
+                dest_obj="${oci_core_nat_gateway." + dest_obj + ".id}"
+
+            if ('_igw' in dest_obj.lower()):
+                dest_obj = "${oci_core_internet_gateway." + dest_obj + ".id}"
+
+            if ('_lpg' in dest_obj.lower()):
+                dest_obj = "${oci_core_local_peering_gateway." + dest_obj + ".id}"
+
+            if ('_drg' in dest_obj.lower()):
+                dest_obj = "${oci_core_drg." + dest_obj + ".id}"
+
+
             dest_type = df.iat[i, 6]
             dest_type = str(dest_type).strip()
             #if('in-oracle-services-network' in dest_cidr):
             #    dest_cidr="${data.oci_core_services.oci_services.services.0.cidr_block}"
             if('Route Table associated with DRG' in subnet_name):
-                rt_var = vcn_name + "_drg_rt"
+                rt_var =1 vcn_name + "_drg_rt"
             elif('Default Route Table for' in subnet_name):
                 continue;
             elif('Route Table associated with LPG' in subnet_name):
