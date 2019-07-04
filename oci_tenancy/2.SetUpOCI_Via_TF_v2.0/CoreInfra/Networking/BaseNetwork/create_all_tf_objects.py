@@ -46,3 +46,5 @@ os.system(command)
 print("----------------Creating Subnet----------------")
 command = 'python create_terraform_subnet.py ' + propsfile + ' ' + outdir + ' ' + prefix
 os.system(command)
+
+print("\n\n Use options 12,13 to export all Route Rules and Sec Rules that have got created in OCI")
