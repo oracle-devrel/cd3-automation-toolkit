@@ -58,12 +58,12 @@ def get_network_entity_name(network_identity_id):
 
     if ('natgateway' in network_identity_id):
         ngw = vcn.get_nat_gateway(network_identity_id)
-        network_identity_name = "${oci_core_nat_gateway." + ngw.data.dislay_name + ".id}"
+        network_identity_name = "${oci_core_nat_gateway." + ngw.data.display_name + ".id}"
         return network_identity_name
 
     if ('localpeeringgateway' in network_identity_id):
         lpg = vcn.get_local_peering_gateway(network_identity_id)
-        network_identity_name = "${oci_core_local_peering_gateway." + lpg.data.dislay_name + ".id}"
+        network_identity_name = "${oci_core_local_peering_gateway." + lpg.data.display_name + ".id}"
         return network_identity_name
 
     if ('drg' in network_identity_id):
