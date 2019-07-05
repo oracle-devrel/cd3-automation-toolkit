@@ -36,6 +36,6 @@ for vm in vmdks:
         if "-disk1" not in vm:
                 ova_pos = vm.rfind(".")
                 raw_file_name = vm[0:ova_pos] + ".raw"
-                print raw_file_name
-                print "Converting " + vm + " to raw format " + raw_file_name
+                print ("raw_file_name")
+                print ("Converting " + vm + " to raw format " + raw_file_name)
                 subprocess.call(['qemu-img','convert', '-f','vmdk', '-O','raw' ,vm,raw_file_name])
