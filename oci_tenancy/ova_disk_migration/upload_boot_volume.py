@@ -26,7 +26,7 @@ args = parser.parse_args()
 
 
 config = oci.config.from_file()
-print validate_config(config)
+print ( validate_config(config))
 
 identity = oci.identity.IdentityClient(config)
 compartment_id = config["compartment_id"]
@@ -49,7 +49,7 @@ bucket = oci.object_storage.models.Bucket(namespace=namespace,compartment_id=com
 ## Full File Path
 filename = args.disk
 disk_name = filename.split('/')[-1]
-print "Disk to be uploaded :  " + disk_name + " Full Path: " + filename + " to bucket " + bucket_name
+print ("Disk to be uploaded :  " + disk_name + " Full Path: " + filename + " to bucket " + bucket_name)
 
 
 print("Uploading new object {!r}".format(disk_name))
