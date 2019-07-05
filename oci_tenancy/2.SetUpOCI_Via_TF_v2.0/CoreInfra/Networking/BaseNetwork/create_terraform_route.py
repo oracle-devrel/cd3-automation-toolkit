@@ -109,7 +109,7 @@ def createLPGRouteRules(peering_dict):
 def createDRGRtTableString(compartment_var_name,hub_vcn_name,peering_dict):
     drgStr=""
     rt_var = hub_vcn_name + "_drg_rt"
-    drg_name = hub_vcn_name + "_DRG"
+    drg_name = hub_vcn_name + "_drg"
     drgStr = """ 
         resource "oci_core_route_table" \"""" + rt_var + """"{
                 compartment_id = "${var.""" + compartment_var_name + """}"

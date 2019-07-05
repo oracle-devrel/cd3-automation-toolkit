@@ -84,6 +84,9 @@ if('.xls' in inputfile):
             if('_ngw' in dest_obj.lower()):
                 dest_obj="${oci_core_nat_gateway." + dest_obj + ".id}"
 
+            if ('_sgw' in dest_obj.lower()):
+                dest_obj = "${oci_core_service_gateway." + dest_obj + ".id}"
+
             if ('_igw' in dest_obj.lower()):
                 dest_obj = "${oci_core_internet_gateway." + dest_obj + ".id}"
 
@@ -198,6 +201,9 @@ if('.xls' in inputfile):
             dest_obj = str(dest_obj).strip()
             if ('_ngw' in dest_obj.lower()):
                 dest_obj = "${oci_core_nat_gateway." + dest_obj + ".id}"
+
+            if ('_sgw' in dest_obj.lower()):
+                dest_obj = "${oci_core_service_gateway." + dest_obj + ".id}"
 
             if ('_igw' in dest_obj.lower()):
                 dest_obj = "${oci_core_internet_gateway." + dest_obj + ".id}"

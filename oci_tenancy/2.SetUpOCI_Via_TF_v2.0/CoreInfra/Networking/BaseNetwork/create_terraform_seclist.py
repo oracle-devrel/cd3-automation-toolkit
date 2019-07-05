@@ -116,7 +116,7 @@ def processSubnet(region,vcn_name,AD,seclists_per_subnet,name,subnet_name_attach
     else:
         ad_name = ""
 
-    print(' seclist file name  ************************** ' + name + '_seclist.tf')
+    #print(' seclist file name  ************************** ' + name + '_seclist.tf')
     while j < seclists_per_subnet:
         if(region=='ashburn'):
             oname = open(ash_dir + "/" + name + "_seclist.tf", "a")

@@ -59,8 +59,9 @@ if('.xls' in args.inputfile):
     check_diff_region=[]
 
     for j in regions.index:
-        if(regions[j] not in check_diff_region and regions[j] not in endNames):
+        if(regions[j] not in check_diff_region and regions[j] not in endNames and str(regions[j]).lower() != NaNstr.lower()):
             check_diff_region.append(regions[j])
+
     if(len(check_diff_region)>1):
         print("Policies can be created only in Home Region; You have specified different regions for different policies...Exiting...")
         exit(1)

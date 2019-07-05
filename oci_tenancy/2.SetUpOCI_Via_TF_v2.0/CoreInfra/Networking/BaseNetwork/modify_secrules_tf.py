@@ -513,7 +513,6 @@ if('.xls' in secrulesfilename):
                     # Process other seclists
                     subnetName = row['SubnetName'].rsplit('-', 1)[0]
                     if (subnetName not in subnets_done_phx or len(subnets_done_phx) == 0):
-                        print('opening file ' + phx_dir + "/" + subnetName + "_seclist.tf")
                         subnets_done_phx.append(subnetName)
                         if (tempStrPHX != ''):
                             tempStrPHX = tempStrPHX + """

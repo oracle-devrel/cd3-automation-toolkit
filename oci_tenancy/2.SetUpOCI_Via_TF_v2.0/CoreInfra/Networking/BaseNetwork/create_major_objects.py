@@ -176,7 +176,7 @@ def processVCN(region,vcn_name,vcn_cidr,vcn_drg,vcn_igw,vcn_ngw,vcn_sgw,hub_spok
         if vcn_drg == "y":
                 drg_attach_name=vcn_name+"_drg_attach"
                 drg_name = vcn_name + "_drg"
-                drg_display = vcn_name +"_DRG"
+                drg_display = vcn_name +"_drg"
                 rt_var = drg_name + "_rt"
 
                 # Create new DRG

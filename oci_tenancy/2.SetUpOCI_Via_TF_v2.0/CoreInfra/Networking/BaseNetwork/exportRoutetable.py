@@ -57,6 +57,13 @@ def get_network_entity_name(network_identity_id):
         network_identity_name = igw.data.display_name
         return  network_identity_name
 
+    if ('servicegateway' in network_identity_id):
+        sgw = vcn.get_service_gateway(network_identity_id)
+        # network_identity_name="${oci_core_internet_gateway."+igw.data.dislay_name+".id}"
+        network_identity_name = sgw.data.display_name
+        return network_identity_name
+
+
     if ('natgateway' in network_identity_id):
         ngw = vcn.get_nat_gateway(network_identity_id)
         #network_identity_name = "${oci_core_nat_gateway." + ngw.data.display_name + ".id}"
