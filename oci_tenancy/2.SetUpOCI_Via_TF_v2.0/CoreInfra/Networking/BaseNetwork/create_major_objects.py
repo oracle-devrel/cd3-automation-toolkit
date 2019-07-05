@@ -235,9 +235,11 @@ def processVCN(region,vcn_name,vcn_cidr,vcn_drg,vcn_igw,vcn_ngw,vcn_sgw,hub_spok
 if('.xlsx' in filename):
         NaNstr = 'NaN'
         df = pd.read_excel(filename, sheet_name='VCNs',skiprows=1)
+        df.dropna(how='all')
         df_info = pd.read_excel(filename, sheet_name='VCN Info',skiprows=1)
 
         # Get Property Values
+
         properties=df_info['Property']
         values=df_info['Value']
 

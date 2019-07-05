@@ -31,8 +31,8 @@ tenancy_id = config['tenancy']
 tempStrASH = ""
 tempStrPHX=""
 
-ash_var_file=outdir+'/ashburn/variables.tf'
-phx_var_file=outdir+'/phoenix/variables.tf'
+ash_var_file=outdir+'/ashburn/variables_ash.tf'
+phx_var_file=outdir+'/phoenix/variables_phx.tf'
 
 # Backup the existing Routes tf file
 shutil.copy(ash_var_file, ash_var_file + "_backup")

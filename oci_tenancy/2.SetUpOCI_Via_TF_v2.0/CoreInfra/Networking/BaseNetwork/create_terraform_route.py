@@ -152,7 +152,7 @@ def createLPGRtTableString(compartment_var_name,hub_vcn_name,peering_dict):
                     if (drg_destination != ''):
                         lpgStr = lpgStr + """
                     route_rules { 
-                        destination = \"""" + drg_destination + """\"
+                        destination = \"""" + drg_destination.strip() + """\"
                         network_entity_id = "${oci_core_drg.""" + drg_name + """.id}"
                         destination_type = "CIDR_BLOCK"
                         }
@@ -162,7 +162,7 @@ def createLPGRtTableString(compartment_var_name,hub_vcn_name,peering_dict):
                     if (drg_destination != ''):
                         lpgStr = lpgStr + """
                     route_rules { 
-                            destination = \"""" + drg_destination + """\"
+                            destination = \"""" + drg_destination.strip() + """\"
                             network_entity_id =  \"""" + drg_ocid + """"
                             destination_type = "CIDR_BLOCK"
                             }
@@ -248,6 +248,7 @@ endNames = {'<END>', '<end>'}
 if('.xlsx' in filename):
         NaNstr = 'NaN'
         df_vcn = pd.read_excel(filename, sheet_name='VCNs',skiprows=1)
+        df_vcn.dropna(how='all')
         df_info = pd.read_excel(filename, sheet_name='VCN Info', skiprows=1)
 
         # Get Property Values
@@ -335,6 +336,7 @@ if('.xlsx' in filename):
         df_vcn.set_index("vcn_name", inplace=True)
         df_vcn.head()
         df = pd.read_excel(filename, sheet_name='Subnets', skiprows=1)
+        df.dropna(how='all')
         for i in df.index:
 
             # Get subnet data
@@ -392,7 +394,7 @@ if('.xlsx' in filename):
                         if (drg_destination != ''):
                             ruleStr = ruleStr + """
                         route_rules { 
-                            destination = \"""" + drg_destination + """\"
+                            destination = \"""" + drg_destination.strip() + """\"
                             network_entity_id = "${oci_core_drg.""" + drg_name + """.id}"
                             destination_type = "CIDR_BLOCK"
                             }
@@ -402,7 +404,7 @@ if('.xlsx' in filename):
                         if (drg_destination != ''):
                             ruleStr = ruleStr + """
                         route_rules { 
-                            destination = \"""" + drg_destination + """\"
+                            destination = \"""" + drg_destination.strip() + """\"
                             network_entity_id =  \"""" + drg_ocid + """"
                             destination_type = "CIDR_BLOCK"
                             }
@@ -422,7 +424,7 @@ if('.xlsx' in filename):
                     if (drg_destination != ''):
                         ruleStr = ruleStr + """
                         route_rules { 
-                            destination = \"""" + drg_destination + """\"
+                            destination = \"""" + drg_destination.strip() + """\"
                             network_entity_id = "${oci_core_local_peering_gateway.""" + lpg_name + """.id}"
                             destination_type = "CIDR_BLOCK"
                             }
@@ -544,7 +546,7 @@ elif('.csv' in filename):
                     if(drg_destination!=''):
                         ruleStr = ruleStr + """
             route_rules { 
-                destination = \"""" + drg_destination + """\"
+                destination = \"""" + drg_destination.strip() + """\"
                 network_entity_id = "${oci_core_drg.""" + drg_name + """.id}"
                 destination_type = "CIDR_BLOCK"
                 }
@@ -554,7 +556,7 @@ elif('.csv' in filename):
                     if (drg_destination != ''):
                         ruleStr = ruleStr + """
             route_rules { 
-                destination = \"""" + drg_destination + """\"
+                destination = \"""" + drg_destination.strip() + """\"
                 network_entity_id =  \"""" + drg_ocid + """"
                 destination_type = "CIDR_BLOCK"
                 }
@@ -574,7 +576,7 @@ elif('.csv' in filename):
                 if(drg_destination!=''):
                     ruleStr = ruleStr + """
             route_rules { 
-                destination = \"""" + drg_destination + """\"
+                destination = \"""" + drg_destination.strip() + """\"
                 network_entity_id = "${oci_core_local_peering_gateway.""" + lpg_name + """.id}"
                 destination_type = "CIDR_BLOCK"
                 }

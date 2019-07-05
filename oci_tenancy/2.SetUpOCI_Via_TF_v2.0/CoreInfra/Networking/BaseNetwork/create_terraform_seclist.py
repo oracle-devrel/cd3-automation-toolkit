@@ -161,7 +161,7 @@ def processSubnet(region,vcn_name,AD,seclists_per_subnet,name,subnet_name_attach
                             tempStr = tempStr + """
                         ingress_security_rules {
                             protocol = "1"
-                            source = \"""" + drg_destination + """"
+                            source = \"""" + drg_destination.strip() + """"
                         }
                         """
 
@@ -187,6 +187,7 @@ endNames = {'<END>', '<end>'}
 if('.xlsx' in filename):
         NaNstr = 'NaN'
         df_vcn = pd.read_excel(filename, sheet_name='VCNs',skiprows=1)
+        df_vcn.dropna(how='all')
 
         df_info = pd.read_excel(filename, sheet_name='VCN Info', skiprows=1)
         # Get Property Values
@@ -232,6 +233,7 @@ if('.xlsx' in filename):
         df_vcn.set_index("vcn_name", inplace=True)
         df_vcn.head()
         df = pd.read_excel(filename, sheet_name='Subnets', skiprows=1)
+        df.dropna(how='all')
         for i in df.index:
             # Get VCN data
             compartment_var_name = df.iat[i, 0]

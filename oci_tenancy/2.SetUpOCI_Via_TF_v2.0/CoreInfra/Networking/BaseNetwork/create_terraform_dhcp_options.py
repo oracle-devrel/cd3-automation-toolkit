@@ -99,9 +99,11 @@ def processDHCP(region,vcn_name,dhcp_option_name,compartment_var_name,serverType
 endNames = {'<END>', '<end>'}
 if('.xls' in args.inputfile):
 	df_vcn = pd.read_excel(args.inputfile, sheet_name='VCNs',skiprows=1)
+	df_vcn.dropna(how='all')
 	df_vcn.set_index("vcn_name", inplace=True)
 	df_vcn.head()
 	df = pd.read_excel(args.inputfile, sheet_name='DHCP',skiprows=1)
+	df.dropna(how='all')
 	for i in df.index:
 		vcn_name = df.iat[i,0]
 		if (vcn_name in endNames):

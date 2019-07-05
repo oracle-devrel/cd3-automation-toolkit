@@ -15,8 +15,7 @@ print("11. Attach Back up policy to Block Volumes")
 print("12. Export Security Lists to CD3")
 print("13. Export Route Tables to CD3")
 print("\nSee example folder for sample input files\n")
-userInput = input('Enter your choice; multiple choices allowed as comma separated'
-                  '\neg 1 if you want to create only Compartments; 1,2,3 if you want to create Compartments, Groups, Policies at one go ')
+userInput = input('Enter your choice; multiple choices allowed as comma separated: ')
 
 userInput=userInput.split(',')
 inputfile=''
@@ -33,13 +32,12 @@ if('1' in userInput):
         outdir = input("Enter full path to output directory where you want to create terraform files: Mention the complete path till home region directory ")
     if(prefix==''):
         prefix = input("Enter prefix for output files: ")
-    outfile = outdir + "/" + prefix + '-compartments.tf'
 
     if not os.path.exists(outdir):
         os.makedirs(outdir)
 
     os.chdir('Identity/Compartments')
-    command = 'python create_terraform_compartments.py '+inputfile + ' ' + outfile
+    command = 'python create_terraform_compartments.py '+inputfile + ' ' + outdir+ ' '+prefix
     os.system(command)
     os.chdir("../..")
     print("--------------------------------------------------------------------------")
@@ -58,13 +56,13 @@ if('2' in userInput):
         prefix = input("Enter prefix for output files: ")
     else:
         print("using already provided prefix: "+prefix)
-    outfile = outdir + "/" + prefix + '-groups.tf'
+
 
     if not os.path.exists(outdir):
         os.makedirs(outdir)
 
     os.chdir('Identity/Groups')
-    command = 'python create_terraform_groups.py '+inputfile + ' ' + outfile
+    command = 'python create_terraform_groups.py '+inputfile + ' ' + outdir+ ' '+prefix
     os.system(command)
     os.chdir("../..")
     print("--------------------------------------------------------------------------")
@@ -83,13 +81,13 @@ if('3' in userInput):
         prefix = input("Enter prefix for output files: ")
     else:
         print("using already provided prefix: " + prefix)
-    outfile = outdir + "/" + prefix + '-policies.tf'
+
 
     if not os.path.exists(outdir):
         os.makedirs(outdir)
 
     os.chdir('Identity/Policies')
-    command = 'python create_terraform_policies.py '+inputfile + ' ' + outfile
+    command = 'python create_terraform_policies.py '+inputfile + ' ' +  outdir+ ' '+prefix
     os.system(command)
     os.chdir("../..")
     print("--------------------------------------------------------------------------")

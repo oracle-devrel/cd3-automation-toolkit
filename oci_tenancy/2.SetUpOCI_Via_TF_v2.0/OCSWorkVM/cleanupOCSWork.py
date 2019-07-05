@@ -43,13 +43,25 @@ input_vcn_ocid = python_config['vcn_ocid']
 input_igw_ocid = python_config['igw_ocid']
 try:
     input_ngw_ocid = python_config['ngw_ocid']
-    input_lpg_to_orig_ocid = python_config['lpg_to_orig_ocid']
-    input_lpg_to_mirror_ocid = python_config['lpg_to_mirror_ocid']
-    input_lpg_to_rsync_ocid = python_config['lpg_to_rsync_ocid']
-    input_route_table_id = python_config['def_rt_table_ocid']
-
 except Exception as e:
     print(e)
+try:
+    input_lpg_to_orig_ocid = python_config['lpg_to_orig_ocid']
+except Exception as e:
+    print(e)
+try:
+    input_lpg_to_mirror_ocid = python_config['lpg_to_mirror_ocid']
+except Exception as e:
+    print(e)
+try:
+    input_lpg_to_rsync_ocid = python_config['lpg_to_rsync_ocid']
+except Exception as e:
+    print(e)
+try:
+    input_route_table_id = python_config['def_rt_table_ocid']
+except Exception as e:
+    print(e)
+
 input_instance_ocid = python_config['ocswork_instance_ocid']
 input_public_ip = python_config['public_ip']
 input_subnet_ocid = python_config['subnet_ocid']

@@ -6,6 +6,7 @@ import shutil
 import re
 import pandas as pd
 import glob
+import datetime
 ######
 # Takes in input csv or CD3 excel which contains routerules to be updated for the subnet and updates the routes tf file created using BaseNetwork TF generation.
 # ######
@@ -38,9 +39,12 @@ for file in glob.glob(ash_dir+'/*routes.tf'):
 for file in glob.glob(phx_dir+'/*routes.tf'):
     routefile_phx=file
 
+x = datetime.datetime.now()
+date = x.strftime("%f").strip()
+
 # Backup the existing Routes tf file
-shutil.copy(routefile_ash, routefile_ash + "_backup")
-shutil.copy(routefile_phx, routefile_phx + "_backup")
+shutil.copy(routefile_ash, routefile_ash + "_backup"+date)
+shutil.copy(routefile_phx, routefile_phx + "_backup"+date)
 
 if args.overwrite is not None:
     overwrite = str(args.overwrite)
@@ -60,6 +64,7 @@ if('.xls' in inputfile):
     if (overwrite == 'yes'):
         print("\nReading RouteRulesinOCI sheet of cd3")
         df = pd.read_excel(inputfile, sheet_name='RouteRulesinOCI')
+        df.dropna(how='all')
         for i in df.index:
 
             region = df.iat[i, 0]
@@ -76,6 +81,19 @@ if('.xls' in inputfile):
             dest_cidr = str(dest_cidr).strip()
             dest_obj = df.iat[i, 5]
             dest_obj = str(dest_obj).strip()
+            if('_ngw' in dest_obj.lower()):
+                dest_obj="${oci_core_nat_gateway." + dest_obj + ".id}"
+
+            if ('_igw' in dest_obj.lower()):
+                dest_obj = "${oci_core_internet_gateway." + dest_obj + ".id}"
+
+            if ('_lpg' in dest_obj.lower()):
+                dest_obj = "${oci_core_local_peering_gateway." + dest_obj + ".id}"
+
+            if ('_drg' in dest_obj.lower()):
+                dest_obj = "${oci_core_drg." + dest_obj + ".id}"
+
+
             dest_type = df.iat[i, 6]
             dest_type = str(dest_type).strip()
             #if('in-oracle-services-network' in dest_cidr):
@@ -162,6 +180,7 @@ if('.xls' in inputfile):
     elif(overwrite=='no'):
         print("Reading AddRouteRules sheet of cd3")
         df = pd.read_excel(inputfile, sheet_name='AddRouteRules')
+        df.dropna(how='all')
         for i in df.index:
             region = df.iat[i, 0]
             region = str(region).lower()
@@ -177,6 +196,19 @@ if('.xls' in inputfile):
             dest_cidr = str(dest_cidr).strip()
             dest_obj = df.iat[i, 5]
             dest_obj = str(dest_obj).strip()
+            if ('_ngw' in dest_obj.lower()):
+                dest_obj = "${oci_core_nat_gateway." + dest_obj + ".id}"
+
+            if ('_igw' in dest_obj.lower()):
+                dest_obj = "${oci_core_internet_gateway." + dest_obj + ".id}"
+
+            if ('_lpg' in dest_obj.lower()):
+                dest_obj = "${oci_core_local_peering_gateway." + dest_obj + ".id}"
+
+            if ('_drg' in dest_obj.lower()):
+                dest_obj = "${oci_core_drg." + dest_obj + ".id}"
+
+
             dest_type = df.iat[i, 6]
             dest_type = str(dest_type).strip()
 
