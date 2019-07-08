@@ -27,19 +27,19 @@ args = parser.parse_args()
 filename = args.file
 outdir = args.outdir
 
-src = outdir + '/tagnamespaces.tf'
+src = outdir + "/ashburn/tagnamespaces.tf"
 if path.exists(src):
-    dst = outdir + '/tagnamespaces_backup' + date
+    dst = outdir + "/ashburn/tagnamespaces_backup" + date
     os.rename(src, dst)
 
-src1 = outdir + '/tagkeys.tf'
-if path.exists(src1):
-    dst1 = outdir + '/tagkeys_backup' + date
-    os.rename(src1, dst1)
+src2 = outdir + "/phoenix/tagnamespaces.tf"
+if path.exists(src2):
+    dst2 = outdir + "/phoenix/tagnamespaces_backup" + date
+    os.rename(src2, dst2)
 
 # Creates the namespaces
 if ('.xlsx' in filename):
-    df = pd.read_excel(filename, sheet_name='Tags',skiprows=1)
+    df = pd.read_excel(filename, sheet_name='Tags', skiprows=1)
 
     for i in df.keys():
         if (i == 'compartment_name'):
@@ -47,37 +47,52 @@ if ('.xlsx' in filename):
                 if (str(df[i][j]) == 'nan'):
                     continue
                 else:
-
                     compartment_var_name = df[i][j]
                     continue
         if (i == 'TagNamespace'):
             continue
         elif (i == 'compartment_name'):
             continue
-        else:
+        elif (i == 'Region'):
+            for j in df.index:
+                if (str(df[i][j]) == 'nan'):
+                    continue
+                else:
+                    Region = df[i][j].strip().lower()
+                    print(Region)
 
+        else:
             tagnamespace = i
             tmpstr = """
             resource "oci_identity_tag_namespace" \"""" + tagnamespace + """\" {
                 #Required
-                compartment_id = "${var."""+compartment_var_name+"""}"
+                compartment_id = "${var.""" + compartment_var_name + """}"
                 description = "Create Tag Namespace for """ + tagnamespace + """\"
                 name = \"""" + tagnamespace + """\"
                 is_retired = false
             }
             """
-            outfile = outdir + "/tagnamespaces.tf"
+
+            outfile = outdir + "/" + Region + "/tagnamespaces.tf"
             oname = open(outfile, "a+")
             oname.write(tmpstr)
             oname.close()
 
 # Adds the tag to the namespaces created
 if ('.xlsx' in filename):
-    df1 = pd.read_excel(filename, sheet_name='Tags',skiprows=1)
+    df1 = pd.read_excel(filename, sheet_name='Tags', skiprows=1)
     df = df1.dropna(how='all')
     for i in df.keys():
 
-        if (i == 'compartment_name'):
+        if (i == 'Region'):
+            for j in df.index:
+                if (str(df[i][j]) == 'nan'):
+                    continue
+                else:
+                    Region = df[i][j].strip().lower()
+                    print(Region)
+
+        elif (i == 'compartment_name'):
             continue
         else:
             key = i
@@ -93,7 +108,7 @@ if ('.xlsx' in filename):
                         continue
                     else:
                         tmpstr = """
-    
+
                         resource "oci_identity_tag" \"""" + tagkey + """\" {
                         #Required
                         description = "Creating """ + tagkey + """ in Namespace """ + key + """\"
@@ -102,7 +117,7 @@ if ('.xlsx' in filename):
                         is_retired = false
                     }
                     """
-                    outfile = outdir + "/tagkeys.tf"
+                    outfile = outdir + "/" + Region + "/tagkeys.tf"
                     oname = open(outfile, "a+")
                     oname.write(tmpstr)
                     oname.close()
