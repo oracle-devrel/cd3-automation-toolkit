@@ -176,7 +176,6 @@ def create_compartment(compartment_name,compartment_desc):
                 new_config = python_config
                 new_config.__setitem__("region", "us-phoenix-1")
             new_id_client = oci.identity.IdentityClient(new_config)
-            print(new_config)
             try:
                 compartment = new_id_client.create_compartment(create_comp_detail)
                 compartment_ocid = compartment.data.id
@@ -271,26 +270,26 @@ windows_phx_image_id=''
 
 new_config=python_config
 new_config.__setitem__("region","us-ashburn-1")
-compute_client = oci.core.ComputeClient(new_config)
+cc = oci.core.ComputeClient(new_config)
 
-for image in paginate(compute_client.list_images,compartment_id=tenancy_id,operating_system ='Oracle Linux',sort_by='TIMECREATED'):
+for image in paginate(cc.list_images,compartment_id=tenancy_id,operating_system ='Oracle Linux',sort_by='TIMECREATED'):
     if ("Gen2-GPU" not in image.display_name):
         linux_ash_image_id=image.id
         break
-for image in paginate(compute_client.list_images,compartment_id=tenancy_id,operating_system ='Windows',sort_by='TIMECREATED'):
+for image in paginate(cc.list_images,compartment_id=tenancy_id,operating_system ='Windows',sort_by='TIMECREATED'):
     if ("Gen2-GPU" not in image.display_name):
         windows_ash_image_id=image.id
         break
 
 
 new_config.__setitem__("region","us-phoenix-1")
-compute_client = oci.core.ComputeClient(new_config)
+cc = oci.core.ComputeClient(new_config)
 
-for image in paginate(compute_client.list_images,compartment_id=tenancy_id,operating_system ='Oracle Linux',sort_by='TIMECREATED'):
+for image in paginate(cc.list_images,compartment_id=tenancy_id,operating_system ='Oracle Linux',sort_by='TIMECREATED'):
     if ("Gen2-GPU" not in image.display_name):
         linux_phx_image_id=image.id
         break
-for image in paginate(compute_client.list_images,compartment_id=tenancy_id,operating_system ='Windows',sort_by='TIMECREATED'):
+for image in paginate(cc.list_images,compartment_id=tenancy_id,operating_system ='Windows',sort_by='TIMECREATED'):
     if ("Gen2-GPU" not in image.display_name):
         windows_phx_image_id=image.id
         break
@@ -621,7 +620,6 @@ if (input_configure_koala=="1"):
 
 if(input_create_vm=="1"):
     ad_name = python_config[input_ad_name]
-
     vcn_found=0
     igw_found=0
     ngw_found=0
