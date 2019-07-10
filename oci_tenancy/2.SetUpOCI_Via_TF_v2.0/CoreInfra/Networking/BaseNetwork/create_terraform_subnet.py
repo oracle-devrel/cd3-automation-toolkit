@@ -130,7 +130,7 @@ def processSubnet(region,vcn_name,name,subnet,AD,dnslabel,pubpvt,compartment_var
 
 endNames = {'<END>', '<end>'}
 #If input is CD3 excel file
-if('.xlsx' in filename):
+if('.xls' in filename):
 	NaNstr = 'NaN'
 	df_vcn = pd.read_excel(filename, sheet_name='VCNs',skiprows=1)
 	df_vcn.dropna(how='all')
@@ -186,7 +186,7 @@ if('.xlsx' in filename):
 		processSubnet(region,vcn_name,name,subnet,AD,dnslabel,pubpvt,compartment_var_name,vcn_add_defaul_seclist,seclists_per_subnet)
 
 # If CD3 excel file is not given as input
-elif('.csv' in filename):
+elif('.properties' in filename):
 	config = configparser.RawConfigParser()
 	config.optionxform = str
 	config.read(args.propsfile)
@@ -233,7 +233,7 @@ elif('.csv' in filename):
 
 					processSubnet(region, vcn_name, name, subnet, AD, dnslabel, pubpvt, compartment_var_name,vcn_add_defaul_seclist, seclists_per_subnet)
 else:
-    print("Invalid input file format; Acceptable formats: .xls, .xlsx, .csv")
+    print("Invalid input file format; Acceptable formats: .xls, .xlsx, .properties")
     exit()
 
 tempStrASH=tempStr+tempStrASH

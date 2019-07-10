@@ -388,7 +388,7 @@ elif('.properties' in filename):
 
         createLPGs(peering_dict)
 else:
-    print("Invalid input file format; Acceptable formats: .xls, .xlsx, .csv")
+    print("Invalid input file format; Acceptable formats: .xls, .xlsx, .properties")
     exit(1)
 
 tempStrASH=datastr+tempStrASH
