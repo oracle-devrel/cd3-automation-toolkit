@@ -232,7 +232,7 @@ def processVCN(region,vcn_name,vcn_cidr,vcn_drg,vcn_igw,vcn_ngw,vcn_sgw,hub_spok
                 tempStrPHX=tempStrPHX+data
 
 #If input is CD3 excel file
-if('.xlsx' in filename):
+if('.xls' in filename):
         NaNstr = 'NaN'
         df = pd.read_excel(filename, sheet_name='VCNs',skiprows=1)
         df.dropna(how='all')
@@ -322,7 +322,7 @@ if('.xlsx' in filename):
         createLPGs(peering_dict)
 
 # If CD3 excel file is not given as input
-elif('.csv' in filename):
+elif('.properties' in filename):
         config = configparser.RawConfigParser()
         config.optionxform = str
         file_read = config.read(args.inputfile)
