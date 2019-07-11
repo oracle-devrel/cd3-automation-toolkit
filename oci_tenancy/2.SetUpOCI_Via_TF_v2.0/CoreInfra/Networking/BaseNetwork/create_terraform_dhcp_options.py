@@ -127,7 +127,7 @@ elif('.properties' in args.inputfile):
 	config = configparser.RawConfigParser()
 	config.optionxform = str
 	config.read(args.inputfile)
-	sections=config.sections()
+	#sections=config.sections()
 
 
 	#Get VCN and DHCP file info from VCN_INFO section
@@ -151,7 +151,11 @@ elif('.properties' in args.inputfile):
 			#vcn_dhcp.strip().lower()
 			serverType = dhcpfile.get(dhcp_sec,'serverType')
 			search_domain = dhcpfile.get(dhcp_sec,'search_domain')
-			custom_dns_servers = dhcpfile.get(dhcp_sec, 'custom_dns_servers')
+			custom_dns_servers=""
+			try:
+				custom_dns_servers = dhcpfile.get(dhcp_sec, 'custom_dns_servers')
+			except Exception as e:
+				print()
 
 			processDHCP(region, vcn_name, dhcp_sec, compartment_var_name, serverType, custom_dns_servers,search_domain)
 

@@ -265,7 +265,7 @@ elif('.properties' in filename):
         # Get VCN Info from VCN_INFO section
         config = configparser.RawConfigParser()
         config.optionxform = str
-        config.read(args.propsfile)
+        config.read(args.inputfile)
         sections = config.sections()
 
         # Get Global Properties from Default Section

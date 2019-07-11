@@ -442,7 +442,7 @@ if('.xls' in filename):
 elif('.properties' in filename):
     config = configparser.RawConfigParser()
     config.optionxform = str
-    config.read(args.propsfile)
+    config.read(args.inputfile)
     sections = config.sections()
 
     # Get Global Properties from Default Section
