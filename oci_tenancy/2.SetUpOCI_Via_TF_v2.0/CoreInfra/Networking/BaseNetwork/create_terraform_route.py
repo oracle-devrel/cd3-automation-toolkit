@@ -449,7 +449,7 @@ elif('.properties' in filename):
     subnet_name_attach_cidr = config.get('Default', 'subnet_name_attach_cidr')
     drg_ocid = config.get('Default', 'drg_ocid')
     drg_destinations = config.get('Default', 'drg_subnet')
-    drg_destinations = drg_destinations.split(",")
+    #drg_destinations = drg_destinations.split(",")
     if (drg_destinations == ''):
         print("\ndrg_subnet should not be left empty.. It will create empty route tables")
     else:
