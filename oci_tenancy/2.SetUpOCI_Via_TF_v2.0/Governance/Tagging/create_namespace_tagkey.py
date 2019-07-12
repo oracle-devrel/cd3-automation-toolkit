@@ -37,6 +37,16 @@ if path.exists(src2):
     dst2 = outdir + "/phoenix/tagnamespaces_backup" + date
     os.rename(src2, dst2)
 
+src = outdir + "/ashburn/tagkeys.tf"
+if path.exists(src):
+    dst = outdir + "/ashburn/tagkeys_backup" + date
+    os.rename(src, dst)
+
+src2 = outdir + "/phoenix/tagkeys.tf"
+if path.exists(src2):
+    dst2 = outdir + "/phoenix/tagkeys_backup" + date
+    os.rename(src2, dst2)
+
 # Creates the namespaces
 if ('.xlsx' in filename):
     df = pd.read_excel(filename, sheet_name='Tags', skiprows=1)
@@ -59,7 +69,6 @@ if ('.xlsx' in filename):
                     continue
                 else:
                     Region = df[i][j].strip().lower()
-                    print(Region)
 
         else:
             tagnamespace = i
@@ -90,7 +99,6 @@ if ('.xlsx' in filename):
                     continue
                 else:
                     Region = df[i][j].strip().lower()
-                    print(Region)
 
         elif (i == 'compartment_name'):
             continue

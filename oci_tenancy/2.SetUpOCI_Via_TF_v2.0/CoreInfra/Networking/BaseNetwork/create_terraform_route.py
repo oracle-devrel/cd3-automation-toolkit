@@ -474,7 +474,7 @@ elif('.properties' in filename):
         hub_spoke_none = vcn_data[6].strip().lower()
         compartment_var_name = vcn_data[12].strip()
         vcn_compartment[vcn_name]=compartment_var_name
-        region=vcn_data[0].strip.lower()
+        region=vcn_data[0].strip().lower()
         vcn_region[vcn_name]=region
 
         if (hub_spoke_none == 'hub'):

@@ -6,6 +6,13 @@ import argparse
 import csv
 import re
 import pandas as pd
+import datetime
+import shutil
+
+x = datetime.datetime.now()
+date = x.strftime("%f").strip()
+
+
 def skipCommentedLine(lines):
     for line in lines:
         comment_pattern = re.compile(r'\s*#.*$')
@@ -75,6 +82,8 @@ if ('.xlsx' in filename):
         testToSearch = "## Defined Tag Info ##"
         terrafile = outdir + "/" + Region + "/" + Volume_name + ".tf"
 
+        shutil.copy(terrafile, terrafile + "_backup" + date)
+
         with open(terrafile, 'r+') as file:
             filedata = file.read()
 
@@ -127,6 +136,8 @@ elif('.csv' in filename):
 
             testToSearch = "## Defined Tag Info ##"
             terrafile = outdir + "/" + Region + "/" + volume + ".tf"
+
+            shutil.copy(terrafile, terrafile + "_backup" + date)
 
             with open(terrafile, 'r+') as file:
                 filedata = file.read()
