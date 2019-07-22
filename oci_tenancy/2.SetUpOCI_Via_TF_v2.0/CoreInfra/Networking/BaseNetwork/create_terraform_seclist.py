@@ -315,7 +315,7 @@ elif('.properties' in filename):
             for line in fname:
                     i = 0
                     if not line.startswith('#') and line !='\n':
-                            [compartment_var_name, name, sub, AD, pubpvt, dhcp, SGW, NGW, IGW] = line.split(',')
+                            [compartment_var_name, name, sub, AD, pubpvt, dhcp, SGW, NGW, IGW,dns_label] = line.split(',')
                             linearr = line.split(",")
                             compartment_var_name = linearr[0].strip()
                             name = linearr[1].strip()

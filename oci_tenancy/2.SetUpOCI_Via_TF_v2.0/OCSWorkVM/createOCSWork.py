@@ -481,12 +481,12 @@ variable "domain" {
     # write TF file for Panda instance creation in OCIC
     tf_data = """ 
 resource "opc_compute_storage_volume" "panda_boot_vol" {
-  name = \"""" + input_ocic_tf_prefix_for_panda + """_Panda-Boot_Vol"
+  name = \"oraclemigration/""" + input_ocic_tf_prefix_for_panda + """_Panda-Boot_Vol"
   size = 12
 }
 
 resource "opc_compute_instance" "panda_new" {
- name       = \"""" + input_ocic_tf_prefix_for_panda + """_Panda-OCIC2OCI"
+ name       = \"oraclemigration/""" + input_ocic_tf_prefix_for_panda + """_Panda-OCIC2OCI"
  label      = "Terraform Provisioned Panda-WithAPI"
  shape      = "oc7"
  image_list = "/oracle/public/OL_7.5_UEKR4_x86_64_MIGRATION"
