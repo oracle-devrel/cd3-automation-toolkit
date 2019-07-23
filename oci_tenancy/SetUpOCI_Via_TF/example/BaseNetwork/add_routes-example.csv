@@ -1,8 +1,0 @@
-# Rows after <END> or <end> will no be processed
-# While adding more rules, you should move previous ones to the below and insert new  rows at the beginning and Enter <END>
-# so that old rules already added don’t get added again
-#Subnet Name:Destination CIDR:Route Destination Object:Destination Type
-#Can use a variable name or the ocid itself
-qa-dmz:20.20.30.30/32:${oci_core_internet_gateway.PHXHub-VCN_igw.id}:CIDR_BLOCK
-qa-app:10.10.20.20/32:ocid1.natgateway.oc1.phx.aaaaaaaakuonwsamojrjwyt5xlezkup7k4rtdpjrajfzgzjfmvcq5gtwgkba:CIDR_BLOCK
-<END>

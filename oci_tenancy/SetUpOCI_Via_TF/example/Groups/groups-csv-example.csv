@@ -1,7 +1,0 @@
-# Rows after <END> or <end> will not be processed; Group Name is mandatory field
-#Name,Description
-OCI_Admins,Admin Group
-Network_Admins,Network Administrators
-VM_Admins,
-<END>
-test
