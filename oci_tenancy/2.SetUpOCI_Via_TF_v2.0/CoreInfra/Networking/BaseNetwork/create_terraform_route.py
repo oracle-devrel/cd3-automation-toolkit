@@ -600,7 +600,7 @@ elif('.properties' in filename):
                 subnet = linearr[2].strip()
 
 
-                processSubnet(region, vcn_name, ruleStr, AD, configure_sgw, configure_ngw, configure_igw, vcn_sgw,vcn_ngw, vcn_igw)
+                processSubnet(region,vcn_name,name,ruleStr,AD,configure_sgw,configure_ngw,configure_igw,vcn_sgw,vcn_ngw,vcn_igw)
 
 else:
     print("Invalid input file format; Acceptable formats: .xls, .xlsx, .properties")
