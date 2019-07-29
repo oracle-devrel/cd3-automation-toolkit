@@ -104,7 +104,7 @@ if [ -e /home/opc/panda.tf ]
 then
     echo "Panda Config START"
     mkdir -p /root/ocswork/ocic2oci_work
-    cp /root/ocswork/git_oci/oci_tenancy/SetUpOCI_Via_TF/OCSWorkVM/panda_setup_files/* /root/ocswork/ocic2oci_work/
+    cp /root/ocswork/git_oci/oci_tenancy/2.SetUpOCI_Via_TF_v2.0/OCSWorkVM/panda_setup_files/* /root/ocswork/ocic2oci_work/
     chmod +x /root/ocswork/ocic2oci_work/*.py
     chmod +x /root/ocswork/ocic2oci_work/*.sh
 
