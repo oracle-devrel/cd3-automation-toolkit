@@ -104,9 +104,7 @@ if [ -e /home/opc/panda.tf ]
 then
     echo "Panda Config START"
     mkdir -p /root/ocswork/ocic2oci_work
-    cp /root/ocswork/git_oci/oci_tenancy/SetUpOCI_Via_TF/OCSWorkVM/panda_setup_files/* /root/ocswork/ocic2oci_work/
-    chmod +x /root/ocswork/ocic2oci_work/*.py
-    chmod +x /root/ocswork/ocic2oci_work/*.sh
+    /root/ocswork/git_oci/oci_tenancy/2.SetUpOCI_Via_TF_v2.0/OCSWorkVM/panda_setup_files/* /root/ocswork/ocic2oci_work/
 
     cd /root/ocswork/ocic2oci_work/
 
@@ -114,16 +112,22 @@ then
     mv /home/opc/panda.tf /root/ocswork/ocic2oci_work/
     mv /home/opc/ocic-provider.tf /root/ocswork/ocic2oci_work/
     mv /home/opc/ocic-variables.tf /root/ocswork/ocic2oci_work/
+    mv /home/opc/upgrade_terraform_expect_script.sh /root/ocswork/ocic2oci_work/
     mv /home/opc/variables.yml /root/ocswork/ocic2oci_work/
     chown root:root /root/ocswork/ocic2oci_work/*.tf
     chown root:root /root/ocswork/ocic2oci_work/variables.yml
+    chown root:root /root/ocswork/ocic2oci_work/*.sh
 
-    cd /root/ocswork/ocic2oci_work
+    chmod +x /root/ocswork/ocic2oci_work/*.py
+    chmod +x /root/ocswork/ocic2oci_work/*.sh
+
     ## The unfortunate side effect of running so many things through shell.  The kernel seems to be throwing irq messages.
     ## Sleep to see if this helps.
     sleep 3s
     terraform init
-    sleep 3s
+	./update_terraform_expect.sh
+    sleep 5s
+
 
    # terraform apply -auto-approve
    ## Writing some retry logic to TF

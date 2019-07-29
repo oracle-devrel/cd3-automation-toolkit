@@ -478,6 +478,17 @@ variable "domain" {
 """
     write_file("tmp\\ocic-variables.tf",variables_panda_data)
 
+    terraform_upgrade_expect_data="""
+#!/usr/bin/expect
+set answer yes
+cd /root/ocswork/ocic2oci_work
+spawn terraform 0.12upgrade
+expect "Enter a value:" {send "$answer\\r"}
+sleep 20
+expect eof
+"""
+    write_file("tmp\\upgrade_terraform_expect_script.sh",terraform_upgrade_expect_data)
+
     # write TF file for Panda instance creation in OCIC
     tf_data = """ 
 resource "opc_compute_storage_volume" "panda_boot_vol" {
@@ -870,6 +881,7 @@ if(input_create_vm=="1"):
     upload_git_script1='tmp\\download_git_expect1.sh'
     upload_git_script2='tmp\\download_git_expect2.sh'
     discover_koala_script='tmp\\discover_koala_expect.sh'
+    upgrade_terraform_script="tmp\\upgrade_terraform_expect_script.sh"
     public_key_file='tmp\\ocs_public_keys.txt'
 
 
@@ -891,6 +903,7 @@ if(input_create_vm=="1"):
         sftp.put('tmp\\panda.tf','/home/opc/panda.tf')
         sftp.put('tmp\\ocic-provider.tf','/home/opc/ocic-provider.tf')
         sftp.put('tmp\\ocic-variables.tf','/home/opc/ocic-variables.tf')
+        sftp.put('tmp\\upgrade_terraform_expect_script.sh', '/home/opc/upgrade_terraform_expect_script.sh')
         sftp.put('tmp\\variables.yml','/home/opc/variables.yml')
     if(input_configure_koala=="1"):
         print('Copying Koala files..')
