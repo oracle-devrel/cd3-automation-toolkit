@@ -478,8 +478,7 @@ variable "domain" {
 """
     write_file("tmp\\ocic-variables.tf",variables_panda_data)
 
-    terraform_upgrade_expect_data="""
-#!/usr/bin/expect
+    terraform_upgrade_expect_data="""#!/usr/bin/expect
 set answer yes
 cd /root/ocswork/ocic2oci_work
 spawn terraform 0.12upgrade
