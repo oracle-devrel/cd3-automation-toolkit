@@ -1,0 +1,2 @@
+#Region,block_name,size_in_gb,availability_domain(AD1|AD2|AD3),attached_to_instance,attach_type(iscsi|paravirtualized),compartment_name
+Ashburn,shruthi_volume,250,AD1,shruthi,paravirtualized,ntk_compartment_ocid

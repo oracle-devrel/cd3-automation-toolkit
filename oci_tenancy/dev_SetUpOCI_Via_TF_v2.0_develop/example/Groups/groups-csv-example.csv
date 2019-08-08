@@ -1,0 +1,8 @@
+# Rows after <END> or <end> will not be processed; Group Name is mandatory field
+# Mention Region as your Home Region fpr groups creation
+#Region,Name,Description
+Ashburn,OCI_Admins,Admin Group
+Ashburn,Network_Admins,Network Administrators
+Ashburn,VM_Admins,
+<END>
+test
