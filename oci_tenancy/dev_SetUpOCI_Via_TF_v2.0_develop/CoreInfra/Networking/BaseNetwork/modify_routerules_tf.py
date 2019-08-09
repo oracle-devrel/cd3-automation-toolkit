@@ -220,7 +220,7 @@ if('.xls' in inputfile):
                 shutil.copy(routefile[region], routefile[region] + "_backup" + date)
                 with open(routefile[region], 'w') as f:
                     f.write(updated_data)
-                    f.close()
+                f.close()
                 print("Route Rules added to the file "+routefile[region]+ " successfully. Please run terraform plan from your outdir to see the changes")
             else:
                 print("Nothing to add")
