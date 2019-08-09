@@ -7,6 +7,7 @@ import re
 import pandas as pd
 import glob
 import datetime
+import os
 ######
 # Takes in input csv or CD3 excel which contains routerules to be updated for the subnet and updates the routes tf file created using BaseNetwork TF generation.
 # ######
@@ -15,7 +16,6 @@ import datetime
 
 parser = argparse.ArgumentParser(description="Updates routelist for subnet. It accepts input file which contains new rules to be added to the existing rule list of the subnet.")
 parser.add_argument("inputfile", help="Required; Full Path to input route file (either csv or CD3 excel file) containing rules to be updated; See example folder for sample format: add_routes-example.txt")
-#parser.add_argument("routefile", help= "Required: Full path of routes tf file which will be modified. This should ideally be the tf file which was created using create_all_tf_objects.py script.")
 parser.add_argument("outdir",help="directory path for output tf files ")
 parser.add_argument("--overwrite",help="This will overwrite all sec rules in OCI with whatever is specified in cd3 excel file sheet- SecRulesinOCI (yes or no) ",required=False)
 
@@ -54,9 +54,6 @@ if('.xls' in inputfile):
         subnets_done[reg]=[]
         for file in glob.glob(outdir+'/'+reg + '/*routes.tf'):
             routefile[reg] = file
-
-        x = datetime.datetime.now()
-        date = x.strftime("%f").strip()
 
 
     endNames = {'<END>', '<end>'}
@@ -144,6 +141,8 @@ if('.xls' in inputfile):
                 tfStr[reg]=tfStr[reg]+"""
 }"""
                 # Backup the existing Routes tf file
+                x = datetime.datetime.now()
+                date = x.strftime("%f").strip()
                 shutil.copy(routefile[reg], routefile[reg] + "_backup" + date)
                 with open(routefile[reg], 'w') as f:
                     f.write(tfStr[reg])
@@ -206,7 +205,6 @@ if('.xls' in inputfile):
             strRule1 = strRule + "##Add More rules for subnet " + subnet_name + "##"
 
             # Update file contents
-
             with open(routefile[region]) as f:
                 data = f.read()
             f.close()
@@ -230,6 +228,12 @@ elif ('.csv' in inputfile):
     fname = open(inputfile, "r")
     # Read the input csv file
     endNames = {'<END>', '<end>'}
+    all_regions=os.listdir(outdir)
+    for reg in all_regions:
+        tfStr[reg] = ''
+        subnets_done[reg] = []
+        for file in glob.glob(outdir + '/' + reg + '/*routes.tf'):
+            routefile[reg] = file
 
     for route in fname:
         if (route.strip() in endNames):
@@ -244,6 +248,10 @@ elif ('.csv' in inputfile):
             dest_type = route.split(":")[3]
             dest_type = dest_type.strip()
             region=route.split(":")[4]
+            region=region.strip().lower()
+            if region not in all_regions:
+                print("Invalid Region")
+                continue
 
             searchString = "##Add More rules for subnet "+subnet_name+"##"
             strRule = ""
@@ -254,19 +262,31 @@ elif ('.csv' in inputfile):
                 destination_type = \"""" + dest_type + """\"
                 }
                 """
-            strRule = strRule + "##Add More rules for subnet " +subnet_name+"##"
+            strRule1 = strRule + "##Add More rules for subnet " +subnet_name+"##"
 
             # Update file contents
-            if (region == 'phoenix'):
-                with open(routefile_phx) as f:
-                    data = f.read()
+            with open(routefile[region]) as f:
+                data = f.read()
+            f.close()
+            if(strRule not in data):
+                updated_data = re.sub(searchString, strRule1, data)
+            else:
+                updated_data=data
 
-                with open(routefile_phx, 'w') as f:
-                    updated_data = re.sub(searchString, strRule, data)
+            if(data!=updated_data):
+                #Back Up Existing file
+                x = datetime.datetime.now()
+                date = x.strftime("%f").strip()
+
+                shutil.copy(routefile[region], routefile[region] + "_backup" + date)
+                with open(routefile[region], 'w') as f:
                     f.write(updated_data)
+                f.close()
+                print("Route Rules added to the file "+routefile[region]+ " successfully. Please run terraform plan from your outdir to see the changes")
+            else:
+                print("Nothing to add")
 
     fname.close()
 
 else:
     print("Invalid input file format; Acceptable formats: .xls, .xlsx, .csv")
-

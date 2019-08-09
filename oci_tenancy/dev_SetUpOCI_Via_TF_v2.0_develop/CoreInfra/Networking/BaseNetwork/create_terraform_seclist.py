@@ -25,7 +25,7 @@ def purge(dir, pattern):
             print("Purge ....." +  os.path.join(dir, f))
             os.remove(os.path.join(dir, f))
 
-parser = argparse.ArgumentParser(description="Creates a terraform sec list resource with name \"name-cidr\" for each subnet"
+parser = argparse.ArgumentParser(description="Creates a terraform sec list resource with name for each subnet"
                                              "identified in the subnet input file.  This creates open egress (0.0.0.0/0) and "
                                              "All protocols within subnet ingress rules.  This also opens ping between peered VCNs"
                                              " and ping from On-Prem to hub VCN based on the input property add_ping_sec_rules_vcnpeering "
@@ -276,6 +276,12 @@ elif('.properties' in filename):
         sections = config.sections()
 
         # Get Global Properties from Default Section
+        all_regions = config.get('Default', 'regions')
+        all_regions = all_regions.split(",")
+        all_regions = [x.strip().lower() for x in all_regions]
+        if (subnet_add == 'false'):
+            for reg in all_regions:
+                purge(outdir + "/" + reg, "_seclist.tf")
         subnet_name_attach_cidr = config.get('Default', 'subnet_name_attach_cidr')
         drg_destinations = config.get('Default', 'drg_subnet')
         if(drg_destinations==''):
@@ -306,7 +312,9 @@ elif('.properties' in filename):
             vcn_data = config.get('VCN_INFO', vcn_name)
             vcn_data = vcn_data.split(',')
             region = vcn_data[0].strip().lower()
-            region=region.strip().lower()
+            if region not in all_regions:
+                print("Invalid Region")
+                exit(1)
             vcn_drg=vcn_data[2].strip().lower()
             hub_spoke_none = vcn_data[6].strip().lower()
             vcn_subnet_file = vcn_data[7].strip().lower()

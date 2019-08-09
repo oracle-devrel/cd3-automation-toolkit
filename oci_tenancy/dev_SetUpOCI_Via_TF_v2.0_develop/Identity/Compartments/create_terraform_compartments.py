@@ -89,6 +89,9 @@ resource "oci_identity_compartment" \"""" + compartment_name.strip() + """" {
 
 #If input is a csv file
 elif('.csv' in args.inputfile):
+    all_regions = os.listdir(outdir)
+    for reg in all_regions:
+        tfStr[reg] = ''
     compartment_file_name = args.inputfile
     fname = open(compartment_file_name, "r")
 
@@ -101,6 +104,9 @@ elif('.csv' in args.inputfile):
         if not line.startswith('#') and line != '\n':
             [region,compartment_name, compartment_desc, parent_compartment_name] = line.split(',')
             region=region.strip().lower()
+            if region not in all_regions:
+                print("Invalid Region")
+                exit(1)
             compartment_name=compartment_name.strip()
             compartment_desc=compartment_desc.strip()
             parent_compartment_name=parent_compartment_name.strip()
@@ -113,21 +119,13 @@ elif('.csv' in args.inputfile):
             if(compartment_name.strip()!='Name' and compartment_name.strip()!=''):
                 if (compartment_desc.strip() == ''):
                     compartment_desc = compartment_name
-                if(region=='ashburn'):
-                    tempStrASH=tempStrASH + """
+                tfStr[region]=tfStr[region] + """
 resource "oci_identity_compartment" \"""" + compartment_name.strip() + """" {
         compartment_id = \"""" + parent_compartment + """"
         description = \"""" + compartment_desc.strip() + """"
   	    name = \"""" + compartment_name.strip() + """"
 } """
-                if (region == 'phoenix'):
-                    tempStrPHX = tempStrPHX + """
-                resource "oci_identity_compartment" \"""" + compartment_name.strip() + """" {
-                        compartment_id = \"""" + parent_compartment + """"
-                        description = \"""" + compartment_desc.strip() + """"
-                  	    name = \"""" + compartment_name.strip() + """"
 
-                    } """
 else:
     print("Invalid input file format; Acceptable formats: .xls, .xlsx, .csv")
     exit()
@@ -145,16 +143,4 @@ for reg in all_regions:
         oname[reg].close()
         print(outfile[reg] + " containing TF for compartments has been created for region "+reg)
 
-"""if(tempStrASH!=''):
-    oname_ash = open(outfile_ash, "w")
-    oname_ash.write(tempStrASH)
-    oname_ash.close()
-    print(outfile_ash + " containing TF for compartments has been created")
-
-if(tempStrPHX!=''):
-    oname_phx = open(outfile_phx, "w")
-    oname_phx.write(tempStrASH)
-    oname_phx.close()
-    print(outfile_phx + " containing TF for compartments has been created")
-"""
 

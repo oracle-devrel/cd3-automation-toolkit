@@ -192,6 +192,12 @@ elif('.properties' in filename):
 	sections=config.sections()
 
 	#Get Global Properties from Default Section
+	all_regions = config.get('Default', 'regions')
+	all_regions = all_regions.split(",")
+	all_regions = [x.strip().lower() for x in all_regions]
+	for reg in all_regions:
+		tfStr[reg] = ''
+
 	subnet_name_attach_cidr = config.get('Default','subnet_name_attach_cidr')
 
 	#Get vcn and subnet file info from VCN_INFO section
@@ -201,6 +207,9 @@ elif('.properties' in filename):
 		vcn_data = vcn_data.split(',')
 
 		region=vcn_data[0].strip.lower()
+		if region not in all_regions:
+			print("Invalid Region")
+			exit(1)
 		sps = vcn_data[9].strip().lower()
 		vcn_add_defaul_seclist = vcn_data[11].strip().lower()
 		vcn_subnet_file = vcn_data[7].strip().lower()

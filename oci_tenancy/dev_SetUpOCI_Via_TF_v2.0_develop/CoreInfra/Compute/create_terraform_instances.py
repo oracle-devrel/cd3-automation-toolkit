@@ -5,6 +5,7 @@ import sys
 import argparse
 import re
 import pandas as pd
+import os
 
 
 def copy_template_file(hostname, operatingsystem,region):
@@ -91,9 +92,16 @@ if('.xls' in filename):
 
 #If input is a csv file
 elif('.csv' in filename):
+    all_regions = os.listdir(outdir)
     with open(filename) as csvfile:
         reader = csv.DictReader(skipCommentedLine(csvfile))
         columns = reader.fieldnames
+        for row in reader:
+            region = row['Region']
+            region = region.strip().lower()
+            if region not in all_regions:
+                print("Invalid Region")
+                exit(1)
         for row in reader:
             copy_template_file(row['Hostname'], row['OS'],row['Region'])
             for column in columns:

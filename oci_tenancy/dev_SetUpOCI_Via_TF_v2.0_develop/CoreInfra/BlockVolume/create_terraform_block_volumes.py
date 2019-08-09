@@ -7,6 +7,7 @@
 import sys
 import argparse
 import pandas as pd
+import os
 
 
 parser = argparse.ArgumentParser(description="Creates TF files for Block Volumes")
@@ -85,12 +86,16 @@ resource "oci_core_volume_attachment" \"""" + blockname + """_volume_attachment"
 #If input is a csv file
 elif('.csv' in filename):
     fname = open(filename, "r")
-
+    all_regions = os.listdir(outdir)
     for line in fname:
         if not line.startswith('#'):
             #[block_name,size_in_gb,availability_domain(AD1|AD2|AD3),attached_to_instance,attach_type(iscsi|paravirtualized,compartment_var_name] = line.split(',')
             linearr = line.split(",")
             region=linearr[0].strip().lower()
+            if region not in all_regions:
+                print("Invalid Region")
+                continue
+
             blockname = linearr[1].strip()
             size = linearr[2].strip()
             AD = linearr[3].strip()

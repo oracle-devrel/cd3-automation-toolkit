@@ -133,14 +133,23 @@ elif('.properties' in args.inputfile):
 	config.read(args.inputfile)
 	#sections=config.sections()
 
+	all_regions = config.get('Default', 'regions')
+	all_regions = all_regions.split(",")
+	all_regions = [x.strip().lower() for x in all_regions]
+	for reg in all_regions:
+		tfStr[reg] = ''
 
 	#Get VCN and DHCP file info from VCN_INFO section
 	vcns=config.options('VCN_INFO')
+
 	for vcn in vcns:
 		vcn_data = config.get('VCN_INFO', vcn)
 		vcn_data = vcn_data.split(',')
 		vcn_name = vcn
-		region=vcn_data[0].strip()
+		region=vcn_data[0].strip().lower()
+		if region not in all_regions:
+			print("Invalid Region")
+			exit(1)
 		compartment_var_name = vcn_data[12].strip()
 		vcn_dhcp_file = vcn_data[8].strip().lower()
 		### Read the DHCP file
@@ -151,8 +160,6 @@ elif('.properties' in args.inputfile):
 			continue
 		dhcp_sections = dhcpfile.sections()
 		for dhcp_sec in dhcp_sections :
-			#vcn_dhcp = vcn_name+"_"+dhcp_sec
-			#vcn_dhcp.strip().lower()
 			serverType = dhcpfile.get(dhcp_sec,'serverType')
 			search_domain = dhcpfile.get(dhcp_sec,'search_domain')
 			custom_dns_servers=""

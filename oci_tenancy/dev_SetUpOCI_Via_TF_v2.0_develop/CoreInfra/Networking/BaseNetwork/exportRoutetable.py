@@ -149,7 +149,7 @@ else:
     config = oci.config.from_file()
 
 
-ntk_compartment_ids = get_network_compartment_id(config)#, ntk_comp_name)
+ntk_compartment_ids = get_network_compartment_id(config)
 df_info = pd.read_excel(cd3file, sheet_name='VCN Info', skiprows=1)
 properties = df_info['Property']
 values = df_info['Value']

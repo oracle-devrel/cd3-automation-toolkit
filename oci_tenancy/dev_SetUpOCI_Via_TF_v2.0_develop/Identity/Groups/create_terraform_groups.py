@@ -78,6 +78,10 @@ resource "oci_identity_group" \"""" + group_name.strip() + """" {
 
 #If input is a csv file
 elif('.csv' in args.inputfile):
+    all_regions = os.listdir(outdir)
+    for reg in all_regions:
+        tfStr[reg] = ''
+
     group_file_name = args.inputfile
     fname = open(group_file_name, "r")
 
@@ -90,26 +94,22 @@ elif('.csv' in args.inputfile):
         if not line.startswith('#') and line != '\n':
             [region,group_name, group_desc] = line.split(',')
             region=region.strip().lower()
+            if region not in all_regions:
+                print("Invalid Region")
+                exit(1)
             group_name=group_name.strip()
             group_desc=group_desc.strip()
 
             if(group_name!='Name' and group_name!=''):
                 if (group_desc.strip() == ''):
                     group_desc = group_name
-                if(region=='ashburn'):
-                    tempStrASH=tempStrASH + """
+                tfStr[region]=tfStr[region] + """
 resource "oci_identity_group" \"""" + group_name + """" {
 	    compartment_id = "${var.tenancy_ocid}"
 	    description = \"""" + group_desc + """"
 	    name = \"""" + group_name + """"
 	} """
-                if (region == 'phoenix'):
-                    tempStrPHX = tempStrPHX + """
-                resource "oci_identity_group" \"""" + group_name + """" {
-                	    compartment_id = "${var.tenancy_ocid}"
-                	    description = \"""" + group_desc + """"
-                	    name = \"""" + group_name + """"
-                	} """
+
 else:
     print("Invalid input file format; Acceptable formats: .xls, .xlsx, .csv")
     exit()

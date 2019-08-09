@@ -141,11 +141,8 @@ if('.xls' in args.inputfile):
         }
     """
 
-
-#If input is a csv file
-
 else:
-    print("Invalid input file format; Acceptable formats: .xls, .xlsx, .csv")
+    print("Invalid input file format; Acceptable formats: .xls, .xlsx")
     exit()
 
 reg=check_diff_region[0].strip().lower()
@@ -160,15 +157,3 @@ oname[reg].write(tempStr)
 oname[reg].close()
 print(outfile[reg] + " containing TF for policies has been created for region "+reg)
 
-"""if('ashburn' == check_diff_region[0].strip().lower()):
-    oname_ash = open(outfile_ash, "w")
-    oname_ash.write(tempStr)
-    oname_ash.close()
-    print(outfile_ash + " containing TF for policies has been created")
-
-if('phoenix' == check_diff_region[0].strip().lower()):
-    oname_phx = open(outfile_phx, "w")
-    oname_phx.write(tempStr)
-    oname_phx.close()
-    print(outfile_ash + " containing TF for policies has been created")
-"""

@@ -47,8 +47,7 @@ vcn_region={}
 hub_vcn_names=[]
 spoke_vcn_names=[]
 
-tempStrASH = ""
-tempStrPHX = ""
+
 datastr = """
 data "oci_core_services" "oci_services" {
 }"""
@@ -56,8 +55,6 @@ data "oci_core_services" "oci_services" {
 endNames = {'<END>', '<end>'}
 
 def createLPGs(peering_dict):
-        global tempStrASH
-        global tempStrPHX
         for left_vcn, value in peering_dict.items():
                 region=vcn_region[left_vcn]
                 data=""
@@ -237,7 +234,6 @@ if('.xls' in filename):
         for reg in all_regions:
                 tfStr[reg] = ''
 
-
         #Get VCN Peering info in dict
         for j in df_info.index:
                 if(j>8):
@@ -330,13 +326,9 @@ elif('.properties' in filename):
         drg_ocid = config.get('Default', 'drg_ocid')
         all_regions=config.get('Default','regions')
         all_regions = all_regions.split(",")
+        all_regions = [x.strip().lower() for x in all_regions]
         for reg in all_regions:
-                reg = reg.strip().lower()
                 tfStr[reg] = ''
-                reg_out_dir = outdir + "/" + reg
-                if not os.path.exists(reg_out_dir):
-                        os.makedirs(reg_out_dir)
-                outfile[reg] = reg_out_dir + "/" + prefix + '-major-objs.tf'
 
         # Get VCN Info from VCN_INFO section
         vcns = config.options('VCN_INFO')
@@ -344,6 +336,10 @@ elif('.properties' in filename):
         for vcn_name in vcns:
                 vcn_data = config.get('VCN_INFO', vcn_name)
                 vcn_data = vcn_data.split(',')
+                region=vcn_data[0].strip().lower()
+                if region not in all_regions:
+                        print("Invalid Region")
+                        exit(1)
                 hub_spoke_none = vcn_data[5].strip().lower()
                 if (hub_spoke_none == 'hub'):
                         hub_vcn_names.append(vcn_name)

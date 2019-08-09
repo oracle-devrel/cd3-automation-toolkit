@@ -308,6 +308,10 @@ endNames = {'<END>', '<end>'}
 if('.properties' in args.inputfile):
     ociprops = configparser.RawConfigParser()
     ociprops.read(args.inputfile)
+
+    all_regions = config.get('Default', 'regions')
+    all_regions = all_regions.split(",")
+    all_regions = [x.strip().lower() for x in all_regions]
     #Get VCN  info from VCN_INFO section
     vcns=ociprops.options('VCN_INFO')
 
@@ -316,16 +320,15 @@ if('.properties' in args.inputfile):
         vcn_data = vcn_data.split(',')
 
         region=vcn_data[0].strip().lower()
+        if region not in all_regions:
+            print("Invalid Region")
+            exit(1)
         sec_rule_per_seclist = vcn_data[10].strip().lower()
         compartment_name = vcn_data[12].strip()
 
         ntk_comp_id = get_network_compartment_id(config, compartment_name)
-        if(region=='ashburn'):
-            config.__setitem__("region", "us-ashburn-1")
-            vnc = VirtualNetworkClient(config)
-        elif(region=='phoenix'):
-            config.__setitem__("region", "us-phoenix-1")
-            vnc = VirtualNetworkClient(config)
+        config.__setitem__("region", region_dict[region])
+        vnc = VirtualNetworkClient(config)
 
         vcn_id = get_vcn_id(config, ntk_comp_id , vcn_name)
 
@@ -543,14 +546,11 @@ if('.xls' in secrulesfilename):
                 elif(subnetName!=''):
                     sec_list_file = seclist_files[subnetName]
                     print("file to modify ::::: " + sec_list_file)
-                    # print("secrule count " + str(seclist_rule_count[subnetName]))
                     text_to_replace = getReplacementStr(sec_rule_per_seclist, subnetName)
                     new_sec_rule = new_sec_rule + "\n" + text_to_replace
-
                     updateSecRules(outdir +"/"+region+ "/" + sec_list_file, text_to_replace, new_sec_rule, 0)
-
                     incrementRuleCount(subnetName)
-                ####ADD_NEW_SEC_RULES####
+
 
 # If input is a csv file
 elif ('.csv' in secrulesfilename):
@@ -578,16 +578,10 @@ elif ('.csv' in secrulesfilename):
 
             sec_list_file = seclist_files[subnetName]
             print("file to modify ::::: "+ sec_list_file )
-            #print("secrule count " + str(seclist_rule_count[subnetName]))
             text_to_replace = getReplacementStr(sec_rule_per_seclist,subnetName)
             new_sec_rule = new_sec_rule + "\n" + text_to_replace
-            if (region == 'ashburn'):
-                updateSecRules(ash_dir + "/" + sec_list_file, text_to_replace, new_sec_rule, 0)
-            if (region == 'phoenix'):
-                updateSecRules(phx_dir + "/" + sec_list_file, text_to_replace, new_sec_rule, 0)
-
+            updateSecRules(outdir +"/"+region+ "/" + sec_list_file, text_to_replace, new_sec_rule, 0)
             incrementRuleCount(subnetName)
-            ####ADD_NEW_SEC_RULES####
 
 else:
     print("Invalid input file format; Acceptable formats: .xls, .xlsx, .csv")

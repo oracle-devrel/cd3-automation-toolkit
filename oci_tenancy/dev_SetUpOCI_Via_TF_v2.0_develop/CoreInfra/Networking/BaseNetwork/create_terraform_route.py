@@ -456,6 +456,12 @@ elif('.properties' in filename):
         igw_destinations = '0.0.0.0/0'
     igw_destinations = igw_destinations.split(",")
 
+    all_regions = config.get('Default', 'regions')
+    all_regions = all_regions.split(",")
+    all_regions = [x.strip().lower() for x in all_regions]
+    for reg in all_regions:
+        tfStr[reg] = ''
+
     # Get VCN Info from VCN_INFO section
     vcns = config.options('VCN_INFO')
     for vcn_name in vcns:
@@ -466,6 +472,9 @@ elif('.properties' in filename):
         compartment_var_name = vcn_data[12].strip()
         vcn_compartment[vcn_name]=compartment_var_name
         region=vcn_data[0].strip().lower()
+        if region not in all_regions:
+            print("Invalid Region")
+            exit(1)
         vcn_region[vcn_name]=region
 
         if (hub_spoke_none == 'hub'):
@@ -484,26 +493,23 @@ elif('.properties' in filename):
     createLPGRouteRules(peering_dict)
 
     # Create Route Table associated with DRG for Hub VCN and route rules for its each spoke VCN
-    for hub_vcn_name in hub_vcn_names:
-        compartment_var_name = vcn_compartment[hub_vcn_name]
+    if (subnet_add == 'false'):
+        for hub_vcn_name in hub_vcn_names:
+            compartment_var_name = vcn_compartment[hub_vcn_name]
 
-        # String for Route Table Assocaited with DRG
-        drgStr1 = createDRGRtTableString(compartment_var_name, hub_vcn_name, peering_dict)
-        if (vcn_region[hub_vcn_name] == 'ashburn'):
-            tempStrASH = tempStrASH + drgStr1
-        elif (vcn_region[hub_vcn_name] == 'phoenix'):
-            tempStrPHX = tempStrPHX + drgStr1
+            # String for Route Table Assocaited with DRG
+            drgStr1 = createDRGRtTableString(compartment_var_name, hub_vcn_name, peering_dict)
+            r = vcn_region[hub_vcn_name].strip().lower()
+            tfStr[r] = tfStr[r] + drgStr1
 
-    # Create Route Table associated with LPGs in Hub VCN peered with spoke VCNs
-    for hub_vcn_name in hub_vcn_names:
-        compartment_var_name = vcn_compartment[hub_vcn_name]
+        # Create Route Table associated with LPGs in Hub VCN peered with spoke VCNs
+        for hub_vcn_name in hub_vcn_names:
+            compartment_var_name = vcn_compartment[hub_vcn_name]
 
-        # String for Route Tavle Associated with each LPG in hub VCN peered with Spoke VCN
-        lpgStr1 = createLPGRtTableString(compartment_var_name, hub_vcn_name, peering_dict)
-        if (vcn_region[hub_vcn_name] == 'ashburn'):
-            tempStrASH = tempStrASH + lpgStr1
-        elif (vcn_region[hub_vcn_name] == 'phoenix'):
-            tempStrPHX = tempStrPHX + lpgStr1
+            # String for Route Tavle Associated with each LPG in hub VCN peered with Spoke VCN
+            lpgStr1 = createLPGRtTableString(compartment_var_name, hub_vcn_name, peering_dict)
+            r = vcn_region[hub_vcn_name].strip().lower()
+            tfStr[r] = tfStr[r] + lpgStr1
 
     #Start processing each VCN
     for vcn_name in vcns:
