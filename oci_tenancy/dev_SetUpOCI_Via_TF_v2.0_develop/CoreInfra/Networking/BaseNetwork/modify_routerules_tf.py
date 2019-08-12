@@ -215,6 +215,9 @@ if('.xls' in inputfile):
 
             if(data!=updated_data):
                 #Back Up Existing file
+                x = datetime.datetime.now()
+                date = x.strftime("%f").strip()
+
                 shutil.copy(routefile[region], routefile[region] + "_backup" + date)
                 with open(routefile[region], 'w') as f:
                     f.write(updated_data)

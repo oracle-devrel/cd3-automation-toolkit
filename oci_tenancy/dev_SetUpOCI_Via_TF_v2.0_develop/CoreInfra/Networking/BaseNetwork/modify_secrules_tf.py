@@ -430,8 +430,6 @@ if('.xls' in secrulesfilename):
                 region = row['Region']
                 region=region.strip().lower()
 
-                #if(region=='ashburn'):
-                #Process Default SecLists-- Create new file containign default ecurity lists for all VCNs
                 if('Default Security List for' in seclistName):
                     if (seclistName not in default_seclists_done[region]):
                         if(len(default_seclists_done[region])==0):
@@ -492,17 +490,18 @@ if('.xls' in secrulesfilename):
                 tfStr[region] = tfStr[region] + new_sec_rule
 
 
-        tfStr[region]=tfStr[region]+"""
+        for reg in all_regions:
+            tfStr[reg]=tfStr[reg]+"""
 }"""
 
-        oname[region].write(tfStr[region])
-        oname[region].close()
+            oname[reg].write(tfStr[reg])
+            oname[reg].close()
 
-        default_ruleStr[region]=default_ruleStr[region]+"""
+            default_ruleStr[reg]=default_ruleStr[reg]+"""
 }"""
 
-        defaultname[region].write(default_ruleStr[region])
-        defaultname[region].close()
+            defaultname[reg].write(default_ruleStr[reg])
+            defaultname[reg].close()
 
 
     elif(overwrite=='no'):
