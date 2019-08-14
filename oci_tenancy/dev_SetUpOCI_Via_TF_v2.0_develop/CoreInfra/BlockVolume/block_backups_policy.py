@@ -51,30 +51,26 @@ data "oci_core_volume_backup_policies" "block_bronze" {
 
 ## Add policy attachment ##
 """
-
-ashburn = outdir + "/ashburn/attach_block_backups_policy.tf"
-src = ashburn
-
-if path.exists(src):
-    dst = outdir + "/ashburn/attach_block_backups_policy_backup" + date
-    os.rename(src, dst)
-
-ashname = open(ashburn, "a+")
-ashname.write(tmpstr)
-ashname.close()
-
-phoenix = outdir + "/phoenix/attach_block_backups_policy.tf"
-src = phoenix
-
-if path.exists(src):
-    dst = outdir + "/phoenix/attach_block_backups_policy_backup" + date
-    os.rename(src, dst)
-
-phename = open(phoenix, "a+")
-phename.write(tmpstr)
-phename.close()
+policy_file={}
 
 if ('.xls' in filename):
+    df_info = pd.read_excel(filename, sheet_name='VCN Info', skiprows=1)
+    properties = df_info['Property']
+    values = df_info['Value']
+
+    all_regions = str(values[7]).strip()
+    all_regions = all_regions.split(",")
+    all_regions = [x.strip().lower() for x in all_regions]
+    for reg in all_regions:
+        policy_file[reg] = outdir + "/"+reg+"/attach_block_backups_policy.tf"
+        src=policy_file[reg]
+        if path.exists(src):
+            dst = outdir + "/"+reg+"/attach_block_backups_policy_backup" + date
+            os.rename(src, dst)
+        fname=open(policy_file[reg],"a+")
+        fname.write(tmpstr)
+        fname.close()
+
     df = pd.read_excel(filename, sheet_name='BlockVols',skiprows=1)
     for i in df.index:
         for j in df.keys():
@@ -84,13 +80,12 @@ if ('.xls' in filename):
             elif (j == 'Region'):
                 Region = df['Region'][i].strip().lower()
 
-
             elif (j == 'block_name'):
                 block_name = df['block_name'][i]
                 policy = df['Backup Policy'][i].lower().strip()
-                if (Region == 'ashburn'):
-                    res_name=block_name+"_bkupPolicy"
-                    tmpstr = """resource "oci_core_volume_backup_policy_assignment" \"""" + res_name + """\"{
+
+                res_name=block_name+"_bkupPolicy"
+                tmpstr = """resource "oci_core_volume_backup_policy_assignment" \"""" + res_name + """\"{
                     #Required
                     asset_id = "${oci_core_volume.""" + block_name + """.id}"
                     policy_id = "${data.oci_core_volume_backup_policies.block_""" + policy + """.volume_backup_policies.0.id}"
@@ -98,40 +93,19 @@ if ('.xls' in filename):
                     ## Add policy attachment ##
                     """
 
-                    textToSearch = "## Add policy attachment ##"
+                textToSearch = "## Add policy attachment ##"
 
-                    with open(ashburn, 'r+') as file:
-                        filedata = file.read()
-                    file.close()
-                    # Replace the target string
-                    filedata = filedata.replace(textToSearch, tmpstr)
+                with open(policy_file[Region], 'r+') as file:
+                    filedata = file.read()
+                file.close()
+                # Replace the target string
+                filedata = filedata.replace(textToSearch, tmpstr)
 
-                    # Write the file out again
-                    with open(ashburn, 'w+') as file:
-                        file.write(filedata)
-                    file.close()
-                elif (Region == 'phoenix'):
-                    res_name = block_name + "_bkupPolicy"
-                    tmpstr = """resource "oci_core_volume_backup_policy_assignment" \"""" + res_name + """\"{
-                    #Required
-                    asset_id = "${oci_core_volume.""" + block_name + """.id}"
-                    policy_id = "${data.oci_core_volume_backup_policies.block_""" + policy + """.volume_backup_policies.0.id}"
-                    }
-                    ## Add policy attachment ##
-                    """
+                # Write the file out again
+                with open(policy_file[Region], 'w+') as file:
+                    file.write(filedata)
+                file.close()
 
-                    textToSearch = "## Add policy attachment ##"
-
-                    with open(phoenix, 'r+') as file:
-                        filedata = file.read()
-                    file.close()
-                    # Replace the target string
-                    filedata = filedata.replace(textToSearch, tmpstr)
-
-                    # Write the file out again
-                    with open(phoenix, 'w+') as file:
-                        file.write(filedata)
-                    file.close()
 else:
     print("Invalid input file format; Acceptable formats: .xls, .xlsx")
     exit()
