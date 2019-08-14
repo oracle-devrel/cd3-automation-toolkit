@@ -7,9 +7,8 @@ import pandas as pd
 import datetime
 import os
 from os import path
+import glob
 
-x = datetime.datetime.now()
-date = x.strftime("%f").strip()
 
 parser = argparse.ArgumentParser(description="Create vars files for the each row in csv file.")
 parser.add_argument("file", help="Full Path of CD3 excel file. eg CD3-template.xlsx in example folder")
@@ -27,30 +26,29 @@ args = parser.parse_args()
 filename = args.file
 outdir = args.outdir
 
-src = outdir + "/ashburn/tagnamespaces.tf"
-if path.exists(src):
-    dst = outdir + "/ashburn/tagnamespaces_backup" + date
-    os.rename(src, dst)
-
-src2 = outdir + "/phoenix/tagnamespaces.tf"
-if path.exists(src2):
-    dst2 = outdir + "/phoenix/tagnamespaces_backup" + date
-    os.rename(src2, dst2)
-
-src = outdir + "/ashburn/tagkeys.tf"
-if path.exists(src):
-    dst = outdir + "/ashburn/tagkeys_backup" + date
-    os.rename(src, dst)
-
-src2 = outdir + "/phoenix/tagkeys.tf"
-if path.exists(src2):
-    dst2 = outdir + "/phoenix/tagkeys_backup" + date
-    os.rename(src2, dst2)
+x = datetime.datetime.now()
+date = x.strftime("%f").strip()
 
 # Creates the namespaces
 if ('.xlsx' in filename):
-    df = pd.read_excel(filename, sheet_name='Tags', skiprows=1)
+    df_info = pd.read_excel(filename, sheet_name='VCN Info', skiprows=1)
+    properties = df_info['Property']
+    values = df_info['Value']
 
+    all_regions = str(values[7]).strip()
+    all_regions = all_regions.split(",")
+    all_regions = [x.strip().lower() for x in all_regions]
+    for reg in all_regions:
+        namespace_src=outdir + "/"+reg+"/tagnamespaces.tf"
+        if path.exists(namespace_src):
+            namespace_dst = outdir + "/"+reg+ "/tagnamespaces_backup" + date
+            os.rename(namespace_src, namespace_dst)
+        keys_src=outdir + "/"+reg+"/tagkeys.tf"
+        if path.exists(keys_src):
+            key_dst = outdir + "/"+reg+"/tagkeys_backup" + date
+            os.rename(keys_src, key_dst)
+
+    df = pd.read_excel(filename, sheet_name='Tags', skiprows=1)
     for i in df.keys():
         if (i == 'compartment_name'):
             for j in df.index:
