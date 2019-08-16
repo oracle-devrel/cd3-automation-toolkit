@@ -25,13 +25,15 @@ def purge(dir, pattern):
             print("Purge ....." +  os.path.join(dir, f))
             os.remove(os.path.join(dir, f))
 
-parser = argparse.ArgumentParser(description="Creates a terraform sec list resource with name \"name-cidr\" for each subnet"
+parser = argparse.ArgumentParser(description="Creates a terraform sec list resource with name for each subnet"
                                              "identified in the subnet input file.  This creates open egress (0.0.0.0/0) and "
                                              "All protocols within subnet ingress rules.  This also opens ping between peered VCNs"
                                              " and ping from On-Prem to hub VCN based on the input property add_ping_sec_rules_vcnpeering "
                                              "and add_ping_sec_rules_onprem respectively. Any other rules should be put in manually.")
 parser.add_argument("inputfile", help="Full Path of input file. eg vcn-info.properties or cd3 excel file")
 parser.add_argument("outdir",help="Output directory")
+parser.add_argument("--subnet_add", help="Add new subnet: true or false", required=False)
+
 
 if len(sys.argv)==1:
         parser.print_help()
@@ -45,23 +47,14 @@ args = parser.parse_args()
 
 filename=args.inputfile
 outdir = args.outdir
+if args.subnet_add is not None:
+    subnet_add = str(args.subnet_add)
+else:
+    subnet_add = "false"
+
+
 fname = None
-oname = None
-
-ash_dir=outdir+"/ashburn"
-phx_dir=outdir+"/phoenix"
-
-if not os.path.exists(ash_dir):
-        os.makedirs(ash_dir)
-
-if not os.path.exists(phx_dir):
-        os.makedirs(phx_dir)
-
-
-
-# Purge existing sec list files
-purge(ash_dir, "_seclist.tf")
-purge(phx_dir, "_seclist.tf")
+oname={}
 
 #create VCN LPG rules
 vcn_lpg_rules = {}
@@ -115,15 +108,15 @@ def processSubnet(region,vcn_name,AD,seclists_per_subnet,name,subnet_name_attach
         ad_name = str(ad_name_int)
     else:
         ad_name = ""
-
-    #print(' seclist file name  ************************** ' + name + '_seclist.tf')
+    outfile=outdir+"/"+region+"/"+name+ "_seclist.tf"
+    oname[region]=open(outfile, "w")
+    print(outfile+" containing TF for seclist has been created for region " + region)
+    """if (region == 'ashburn'):
+        oname = open(ash_dir + "/" + name + "_seclist.tf", "w")
+    elif (region == 'phoenix'):
+        oname = open(phx_dir + "/" + name + "_seclist.tf", "w")
+    """
     while j < seclists_per_subnet:
-        if(region=='ashburn'):
-            oname = open(ash_dir + "/" + name + "_seclist.tf", "a")
-        elif(region=='phoenix'):
-            oname = open(phx_dir + "/" + name + "_seclist.tf", "a")
-
-        # seclistname = name + str(ad_name) + "-" + str(j + 1)
         seclistname = name + "-" + str(j + 1)
 
         if (str(ad_name) != ''):
@@ -178,7 +171,7 @@ def processSubnet(region,vcn_name,AD,seclists_per_subnet,name,subnet_name_attach
                         ####ADD_NEW_SEC_RULES####""" + str(j + 1) + """
                     }
                     """
-        oname.write(tempStr)
+        oname[region].write(tempStr)
         j = j + 1
 
 
@@ -194,6 +187,15 @@ if('.xls' in filename):
 
         properties = df_info['Property']
         values = df_info['Value']
+
+        all_regions = str(values[7]).strip()
+        all_regions = all_regions.split(",")
+        all_regions = [x.strip().lower() for x in all_regions]
+
+        # Purge existing sec list files
+        if (subnet_add == 'false'):
+            for reg in all_regions:
+                purge(outdir+"/"+reg, "_seclist.tf")
 
         drg_destinations = str(values[0]).strip()
         if (drg_destinations.lower() == NaNstr.lower()):
@@ -214,7 +216,7 @@ if('.xls' in filename):
             subnet_name_attach_cidr = 'n'
 
         for j in df_info.index:
-            if (j > 7):
+            if (j > 8):
                 peering_dict[properties[j]] = values[j]
 
 
@@ -223,6 +225,11 @@ if('.xls' in filename):
                 region = df_vcn['Region'][i]
                 if (region in endNames):
                     break
+                region = region.strip().lower()
+                if region not in all_regions:
+                    print("Invalid Region; It should be one of the values mentioned in VCN Info tab")
+                    exit(1)
+
                 vcn_name=df_vcn['vcn_name'][i]
                 vcn_lpg_rules.setdefault(vcn_name, '')
 
@@ -269,6 +276,12 @@ elif('.properties' in filename):
         sections = config.sections()
 
         # Get Global Properties from Default Section
+        all_regions = config.get('Default', 'regions')
+        all_regions = all_regions.split(",")
+        all_regions = [x.strip().lower() for x in all_regions]
+        if (subnet_add == 'false'):
+            for reg in all_regions:
+                purge(outdir + "/" + reg, "_seclist.tf")
         subnet_name_attach_cidr = config.get('Default', 'subnet_name_attach_cidr')
         drg_destinations = config.get('Default', 'drg_subnet')
         if(drg_destinations==''):
@@ -299,7 +312,9 @@ elif('.properties' in filename):
             vcn_data = config.get('VCN_INFO', vcn_name)
             vcn_data = vcn_data.split(',')
             region = vcn_data[0].strip().lower()
-            region=region.strip().lower()
+            if region not in all_regions:
+                print("Invalid Region")
+                exit(1)
             vcn_drg=vcn_data[2].strip().lower()
             hub_spoke_none = vcn_data[6].strip().lower()
             vcn_subnet_file = vcn_data[7].strip().lower()
@@ -329,5 +344,3 @@ else:
 
 if(fname!=None):
     fname.close()
-if(oname!=None):
-    oname.close()

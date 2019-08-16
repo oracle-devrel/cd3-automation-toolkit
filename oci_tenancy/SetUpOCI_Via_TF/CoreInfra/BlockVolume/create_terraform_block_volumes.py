@@ -7,6 +7,7 @@
 import sys
 import argparse
 import pandas as pd
+import os
 
 
 parser = argparse.ArgumentParser(description="Creates TF files for Block Volumes")
@@ -27,11 +28,22 @@ ADS = ["AD1", "AD2", "AD3"]
 
 #If input is CD3 excel file
 if('.xls' in filename):
+    df_info = pd.read_excel(filename, sheet_name='VCN Info', skiprows=1)
+    properties = df_info['Property']
+    values = df_info['Value']
+
+    all_regions = str(values[7]).strip()
+    all_regions = all_regions.split(",")
+    all_regions = [x.strip().lower() for x in all_regions]
+
 
     df = pd.read_excel(filename, sheet_name='BlockVols',skiprows=1)
     for i in df.index:
         region=df.iat[i,0]
         region=region.strip().lower()
+        if region not in all_regions:
+            print("Invalid Region; It should be one of the values mentioned in VCN Info tab")
+            continue
         blockname = df.iat[i, 1]
         size = df.iat[i, 2]
         size=str(size)
@@ -74,12 +86,16 @@ resource "oci_core_volume_attachment" \"""" + blockname + """_volume_attachment"
 #If input is a csv file
 elif('.csv' in filename):
     fname = open(filename, "r")
-
+    all_regions = os.listdir(outdir)
     for line in fname:
         if not line.startswith('#'):
             #[block_name,size_in_gb,availability_domain(AD1|AD2|AD3),attached_to_instance,attach_type(iscsi|paravirtualized,compartment_var_name] = line.split(',')
             linearr = line.split(",")
             region=linearr[0].strip().lower()
+            if region not in all_regions:
+                print("Invalid Region")
+                continue
+
             blockname = linearr[1].strip()
             size = linearr[2].strip()
             AD = linearr[3].strip()

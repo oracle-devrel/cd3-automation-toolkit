@@ -31,24 +31,22 @@ filename=args.inputfile
 outdir=args.outdir
 prefix=args.prefix
 
-ash_dir=outdir+"/ashburn"
-phx_dir=outdir+"/phoenix"
-
-if not os.path.exists(ash_dir):
-        os.makedirs(ash_dir)
-
-if not os.path.exists(phx_dir):
-        os.makedirs(phx_dir)
-
-outfile_ash=ash_dir + "/" + prefix + '-policies.tf'
-outfile_phx=phx_dir + "/" + prefix + '-policies.tf'
-
-tempStr = ""
+outfile={}
+oname={}
+tempStr=''
 
 
 if('.xls' in args.inputfile):
     df = pd.read_excel(args.inputfile, sheet_name='Policies',skiprows=1)
     df.dropna(how='all')
+    df_info = pd.read_excel(filename, sheet_name='VCN Info', skiprows=1)
+    # Get Property Values
+    properties = df_info['Property']
+    values = df_info['Value']
+
+    all_regions = str(values[7]).strip()
+    all_regions = all_regions.split(",")
+    all_regions = [x.strip().lower() for x in all_regions]
 
     NaNstr = 'NaN'
     endNames = {'<END>', '<end>'}
@@ -69,6 +67,9 @@ if('.xls' in args.inputfile):
         region=df.iat[i,0]
         if (region in endNames):
             break
+        if check_diff_region[0].strip().lower() not in all_regions:
+            print("Invalid Region; It should be one of the values mentioned in VCN Info tab")
+            exit(1)
         policy_name = df.iat[i, 1]
 
         if (str(policy_name).lower() != NaNstr.lower()):
@@ -140,21 +141,19 @@ if('.xls' in args.inputfile):
         }
     """
 
-
-#If input is a csv file
-
 else:
-    print("Invalid input file format; Acceptable formats: .xls, .xlsx, .csv")
+    print("Invalid input file format; Acceptable formats: .xls, .xlsx")
     exit()
 
-if('ashburn' == check_diff_region[0].strip().lower()):
-    oname_ash = open(outfile_ash, "w")
-    oname_ash.write(tempStr)
-    oname_ash.close()
-    print(outfile_ash + " containing TF for policies has been created")
+reg=check_diff_region[0].strip().lower()
 
-if('phoenix' == check_diff_region[0].strip().lower()):
-    oname_phx = open(outfile_phx, "w")
-    oname_phx.write(tempStr)
-    oname_phx.close()
-    print(outfile_ash + " containing TF for policies has been created")
+reg_out_dir = outdir + "/" + reg
+if not os.path.exists(reg_out_dir):
+    os.makedirs(reg_out_dir)
+outfile[reg] = reg_out_dir + "/" + prefix + '-policies.tf'
+
+oname[reg]=open(outfile[reg],'w')
+oname[reg].write(tempStr)
+oname[reg].close()
+print(outfile[reg] + " containing TF for policies has been created for region "+reg)
+

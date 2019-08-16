@@ -14,6 +14,8 @@ print("10. Attach Back up policy to Boot Volumes")
 print("11. Attach Back up policy to Block Volumes")
 print("12. Export Security Lists to CD3")
 print("13. Export Route Tables to CD3")
+print("14. Update Base Network Objects; Use this option only if you have already made changes/updates "
+      "to the configurations after initial Base Network Creation.\n     Else you should use Option 4 again with required changes to CD3 - It will overwrite all objects.")
 print("\nSee example folder for sample input files\n")
 userInput = input('Enter your choice; multiple choices allowed as comma separated: ')
 
@@ -122,6 +124,44 @@ if('4' in userInput):
     os.system(command)
     os.chdir("../../..")
     print("--------------------------------------------------------------------------")
+
+if('14' in userInput):
+    print("---------------------Updating Base Network----------------------------------")
+    print("1.  Add new DHCP Option; Move existing DHCP options to below <END> tag in cd3")
+    print("2.  Add New Subnet; Move existing subnets to below <END> tag in cd3")
+
+    update_choice = input("Enter your choice; multiple choices allowed as comma separated ")
+    update_choice = update_choice.split(",")
+
+    if ('1' in update_choice):
+        inputfile = input("Enter full path to input cd3 excel file: ")
+        outdir = input("Enter full path to output directory where you want to create terraform files: ")
+        prefix = input("Enter prefix for output files: ")
+
+        if not os.path.exists(outdir):
+            print("out dir doesnot exist; please enter a valid directory")
+            exit(1)
+
+        os.chdir('CoreInfra/Networking/BaseNetwork')
+        command = 'python update_terraform_network.py ' + inputfile + ' ' + outdir + ' ' + prefix +' 1'
+        os.system(command)
+        os.chdir("../../..")
+        print("--------------------------------------------------------------------------")
+
+    if ('2' in update_choice):
+        inputfile = input("Enter full path to input file eg example vcn-info.properties or cd3 excel file: ")
+        outdir = input("Enter full path to output directory where you want to create terraform files: ")
+        prefix = input("Enter prefix for output files: ")
+        if not os.path.exists(outdir):
+            print("out dir doesnot exist; please enter a valid directory")
+            exit(1)
+
+        os.chdir('CoreInfra/Networking/BaseNetwork')
+        command = 'python update_terraform_network.py ' + inputfile + ' ' + outdir + ' ' + prefix +' 2'
+        os.system(command)
+        os.chdir("../../..")
+        print("--------------------------------------------------------------------------")
+
 
 if('5' in userInput):
     print("--------------------Creating Instances------------------------------------")

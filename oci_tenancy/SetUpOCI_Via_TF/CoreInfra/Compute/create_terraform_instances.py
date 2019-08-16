@@ -5,16 +5,13 @@ import sys
 import argparse
 import re
 import pandas as pd
+import os
 
 
 def copy_template_file(hostname, operatingsystem,region):
         region=region.strip().lower()
-
         print('Using template file - template/' + operatingsystem + 'template.tf')
-        if(region=='ashburn'):
-            shutil.copyfile('template/' + operatingsystem + 'template.tf', outdir + '/ashburn/' + hostname + '.tf')
-        if (region == 'phoenix'):
-            shutil.copyfile('template/' + operatingsystem + 'template.tf', outdir + '/phoenix/' + hostname + '.tf')
+        shutil.copyfile('template/' + operatingsystem + 'template.tf', outdir + '/'+region+'/' + hostname + '.tf')
 
 
 def replaceAllplaceholders(fileToSearch, textToSearch, textToReplace):
@@ -23,7 +20,6 @@ def replaceAllplaceholders(fileToSearch, textToSearch, textToReplace):
 
     # Replace the target string
     filedata = re.sub(textToSearch, textToReplace, filedata, flags=re.IGNORECASE)
-    #filedata = filedata.replace(textToSearch, textToReplace)
 
     # Write the file out again
     with open(fileToSearch, 'w') as file:
@@ -56,7 +52,22 @@ outdir = args.outdir
 
 #If input is CD3 excel file
 if('.xls' in filename):
+    df_info = pd.read_excel(filename, sheet_name='VCN Info', skiprows=1)
+    properties = df_info['Property']
+    values = df_info['Value']
+
+    all_regions = str(values[7]).strip()
+    all_regions = all_regions.split(",")
+    all_regions = [x.strip().lower() for x in all_regions]
+
     df = pd.read_excel(filename, sheet_name='Instances',skiprows=1)
+    for row in df.index:
+        region=df['Region'][row]
+        region=region.strip().lower()
+        if region not in all_regions:
+            print("Invalid Region; It should be one of the values mentioned in VCN Info tab")
+            exit(1)
+
     for row in df.index:
         copy_template_file(df['Hostname'][row], df['OS'][row],df['Region'][row])
     for i in df.keys():
@@ -81,9 +92,16 @@ if('.xls' in filename):
 
 #If input is a csv file
 elif('.csv' in filename):
+    all_regions = os.listdir(outdir)
     with open(filename) as csvfile:
         reader = csv.DictReader(skipCommentedLine(csvfile))
         columns = reader.fieldnames
+        for row in reader:
+            region = row['Region']
+            region = region.strip().lower()
+            if region not in all_regions:
+                print("Invalid Region")
+                exit(1)
         for row in reader:
             copy_template_file(row['Hostname'], row['OS'],row['Region'])
             for column in columns:

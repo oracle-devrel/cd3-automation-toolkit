@@ -9,6 +9,9 @@ import os
 import argparse
 import configparser
 import pandas as pd
+import glob
+import datetime
+import shutil
 
 ######
 # Required Files
@@ -22,6 +25,7 @@ parser = argparse.ArgumentParser(description="Creates route tables containing de
 parser.add_argument("inputfile", help="Full Path of properties file. eg vcn-info.properties or cd3 excel file")
 parser.add_argument("outdir", help="Output directory for creation of TF files")
 parser.add_argument("prefix", help="customer name/prefix for all file names")
+parser.add_argument("--subnet_add", help="Add new subnet: true or false", required=False)
 
 if len(sys.argv)<3:
         parser.print_help()
@@ -31,29 +35,17 @@ args = parser.parse_args()
 filename=args.inputfile
 outdir = args.outdir
 prefix=args.prefix
+if args.subnet_add is not None:
+    subnet_add = str(args.subnet_add)
+else:
+    subnet_add = "false"
 
-ash_dir=outdir+"/ashburn"
-phx_dir=outdir+"/phoenix"
-
-if not os.path.exists(ash_dir):
-        os.makedirs(ash_dir)
-
-if not os.path.exists(phx_dir):
-        os.makedirs(phx_dir)
-
-outfile_ash=ash_dir + "/" + prefix + '-routes.tf'
-outfile_phx=phx_dir + "/" + prefix + '-routes.tf'
-
-oname_ash = open(outfile_ash,"w")
-oname_phx = open(outfile_phx,"w")
-
-fname = None
-
-tempStrASH = ""
-tempStrPHX = ""
+outfile={}
+oname={}
+tfStr={}
 
 ADS = ["AD1", "AD2", "AD3"]
-
+fname = None
 #Get Hub VCN name and create route rules for LPGs as per Section VCN_PEERING
 hub_vcn_names=[]
 spoke_vcn_names=[]
@@ -173,10 +165,6 @@ def createLPGRtTableString(compartment_var_name,hub_vcn_name,peering_dict):
     return lpgStr
 
 def processSubnet(region,vcn_name,name,ruleStr,AD,configure_sgw,configure_ngw,configure_igw,vcn_sgw,vcn_ngw,vcn_igw):
-    global tempStrASH
-    global tempStrPHX
-
-
     # process each subnet row for ngw, igw, sgw
     if (AD.strip().lower() != 'regional'):
         AD=AD.strip().upper()
@@ -238,10 +226,7 @@ def processSubnet(region,vcn_name,name,ruleStr,AD,configure_sgw,configure_ngw,co
                 }
                 """
 
-    if (region == 'ashburn'):
-        tempStrASH = tempStrASH + data
-    elif (region == 'phoenix'):
-        tempStrPHX = tempStrPHX + data
+    tfStr[region] = tfStr[region] + data
 
 endNames = {'<END>', '<end>'}
 #If input is CD3 excel file
@@ -266,6 +251,12 @@ if('.xls' in filename):
         if (drg_ocid.lower() == NaNstr.lower()):
             drg_ocid = ''
 
+        all_regions = str(values[7]).strip()
+        all_regions = all_regions.split(",")
+        all_regions = [x.strip().lower() for x in all_regions]
+        for reg in all_regions:
+            tfStr[reg] = ''
+
         ngw_destinations = str(values[2]).strip()
         if (ngw_destinations.lower() == NaNstr.lower()):
             ngw_destinations = '0.0.0.0/0'
@@ -282,9 +273,8 @@ if('.xls' in filename):
 
 
         for j in df_info.index:
-            if (j > 7):
+            if (j > 8):
                 peering_dict[properties[j]] = values[j]
-
 
         # Get VCN names from vcn_name column in VCNs sheet of CD3 excel
         for i in df_vcn.index:
@@ -292,6 +282,10 @@ if('.xls' in filename):
                 if (region in endNames):
                     break
                 region = region.strip().lower()
+
+                if region not in all_regions:
+                    print("Invalid Region; It should be one of the values mentioned in VCN Info tab")
+                    exit(1)
                 vcn_name=df_vcn['vcn_name'][i]
                 compartment_var_name = df_vcn['compartment_name'][i]
                 vcn_compartment[vcn_name]=compartment_var_name
@@ -307,28 +301,25 @@ if('.xls' in filename):
         # Create LPG Rules
         createLPGRouteRules(peering_dict)
 
-        # Create Route Table associated with DRG for Hub VCN and route rules for its each spoke VCN
-        for hub_vcn_name in hub_vcn_names:
-            compartment_var_name = vcn_compartment[hub_vcn_name]
+        if(subnet_add=='false'):
+            # Create Route Table associated with DRG for Hub VCN and route rules for its each spoke VCN
+            for hub_vcn_name in hub_vcn_names:
+                compartment_var_name = vcn_compartment[hub_vcn_name]
 
-            #String for Route Table Assocaited with DRG
-            drgStr1=createDRGRtTableString(compartment_var_name,hub_vcn_name,peering_dict)
-            if(vcn_region[hub_vcn_name]=='ashburn'):
-                tempStrASH=tempStrASH+drgStr1
-            elif(vcn_region[hub_vcn_name]=='phoenix'):
-                tempStrPHX=tempStrPHX+drgStr1
+                #String for Route Table Assocaited with DRG
+                drgStr1=createDRGRtTableString(compartment_var_name,hub_vcn_name,peering_dict)
+                r=vcn_region[hub_vcn_name].strip().lower()
+                tfStr[r] = tfStr[r] + drgStr1
 
 
-        # Create Route Table associated with LPGs in Hub VCN peered with spoke VCNs
-        for hub_vcn_name in hub_vcn_names:
-            compartment_var_name = vcn_compartment[hub_vcn_name]
+            # Create Route Table associated with LPGs in Hub VCN peered with spoke VCNs
+            for hub_vcn_name in hub_vcn_names:
+                compartment_var_name = vcn_compartment[hub_vcn_name]
 
-            #String for Route Tavle Associated with each LPG in hub VCN peered with Spoke VCN
-            lpgStr1=createLPGRtTableString(compartment_var_name,hub_vcn_name,peering_dict)
-            if (vcn_region[hub_vcn_name] == 'ashburn'):
-                tempStrASH = tempStrASH + lpgStr1
-            elif (vcn_region[hub_vcn_name] == 'phoenix'):
-                tempStrPHX = tempStrPHX + lpgStr1
+                #String for Route Tavle Associated with each LPG in hub VCN peered with Spoke VCN
+                lpgStr1=createLPGRtTableString(compartment_var_name,hub_vcn_name,peering_dict)
+                r = vcn_region[hub_vcn_name].strip().lower()
+                tfStr[r] = tfStr[r] + lpgStr1
 
 
         # Start processing for each subnet
@@ -465,6 +456,12 @@ elif('.properties' in filename):
         igw_destinations = '0.0.0.0/0'
     igw_destinations = igw_destinations.split(",")
 
+    all_regions = config.get('Default', 'regions')
+    all_regions = all_regions.split(",")
+    all_regions = [x.strip().lower() for x in all_regions]
+    for reg in all_regions:
+        tfStr[reg] = ''
+
     # Get VCN Info from VCN_INFO section
     vcns = config.options('VCN_INFO')
     for vcn_name in vcns:
@@ -475,6 +472,9 @@ elif('.properties' in filename):
         compartment_var_name = vcn_data[12].strip()
         vcn_compartment[vcn_name]=compartment_var_name
         region=vcn_data[0].strip().lower()
+        if region not in all_regions:
+            print("Invalid Region")
+            exit(1)
         vcn_region[vcn_name]=region
 
         if (hub_spoke_none == 'hub'):
@@ -493,26 +493,23 @@ elif('.properties' in filename):
     createLPGRouteRules(peering_dict)
 
     # Create Route Table associated with DRG for Hub VCN and route rules for its each spoke VCN
-    for hub_vcn_name in hub_vcn_names:
-        compartment_var_name = vcn_compartment[hub_vcn_name]
+    if (subnet_add == 'false'):
+        for hub_vcn_name in hub_vcn_names:
+            compartment_var_name = vcn_compartment[hub_vcn_name]
 
-        # String for Route Table Assocaited with DRG
-        drgStr1 = createDRGRtTableString(compartment_var_name, hub_vcn_name, peering_dict)
-        if (vcn_region[hub_vcn_name] == 'ashburn'):
-            tempStrASH = tempStrASH + drgStr1
-        elif (vcn_region[hub_vcn_name] == 'phoenix'):
-            tempStrPHX = tempStrPHX + drgStr1
+            # String for Route Table Assocaited with DRG
+            drgStr1 = createDRGRtTableString(compartment_var_name, hub_vcn_name, peering_dict)
+            r = vcn_region[hub_vcn_name].strip().lower()
+            tfStr[r] = tfStr[r] + drgStr1
 
-    # Create Route Table associated with LPGs in Hub VCN peered with spoke VCNs
-    for hub_vcn_name in hub_vcn_names:
-        compartment_var_name = vcn_compartment[hub_vcn_name]
+        # Create Route Table associated with LPGs in Hub VCN peered with spoke VCNs
+        for hub_vcn_name in hub_vcn_names:
+            compartment_var_name = vcn_compartment[hub_vcn_name]
 
-        # String for Route Tavle Associated with each LPG in hub VCN peered with Spoke VCN
-        lpgStr1 = createLPGRtTableString(compartment_var_name, hub_vcn_name, peering_dict)
-        if (vcn_region[hub_vcn_name] == 'ashburn'):
-            tempStrASH = tempStrASH + lpgStr1
-        elif (vcn_region[hub_vcn_name] == 'phoenix'):
-            tempStrPHX = tempStrPHX + lpgStr1
+            # String for Route Tavle Associated with each LPG in hub VCN peered with Spoke VCN
+            lpgStr1 = createLPGRtTableString(compartment_var_name, hub_vcn_name, peering_dict)
+            r = vcn_region[hub_vcn_name].strip().lower()
+            tfStr[r] = tfStr[r] + lpgStr1
 
     #Start processing each VCN
     for vcn_name in vcns:
@@ -608,12 +605,40 @@ else:
 
 
 
-
 if(fname!=None):
     fname.close()
-oname_ash.write(tempStrASH)
-oname_phx.write(tempStrPHX)
-oname_ash.close()
-oname_phx.close()
 
+routedata={}
 
+if(subnet_add=='true'):
+    for reg in all_regions:
+        reg_out_dir = outdir + "/" + reg
+        if not os.path.exists(reg_out_dir):
+            os.makedirs(reg_out_dir)
+        outfile[reg] = reg_out_dir + "/" + prefix + '-routes.tf'
+
+        x = datetime.datetime.now()
+        date = x.strftime("%f").strip()
+
+        # Backup the existing Routes tf file
+        with open(outfile[reg], 'r') as file:
+            routedata[reg] = file.read()
+        file.close()
+        oname[reg] = open(outfile[reg], "a")
+        if (tfStr[reg] != '' and tfStr[reg] not in routedata[reg]):
+            shutil.copy(outfile[reg], outfile[reg] + "_beforeSubnetAdd" + date)
+            oname[reg].write(tfStr[reg])
+            oname[reg].close()
+            print(outfile[reg] + " containing TF for Routes has been updated for region " + reg)
+elif (subnet_add == 'false'):
+    for reg in all_regions:
+        reg = reg.strip().lower()
+        reg_out_dir = outdir + "/" + reg
+        if not os.path.exists(reg_out_dir):
+            os.makedirs(reg_out_dir)
+        outfile[reg] = reg_out_dir + "/" + prefix + '-routes.tf'
+        if (tfStr[reg] != ''):
+            oname[reg] = open(outfile[reg], 'w')
+            oname[reg].write(tfStr[reg])
+            oname[reg].close()
+            print(outfile[reg] + " containing TF for Routes has been created for region " + reg)

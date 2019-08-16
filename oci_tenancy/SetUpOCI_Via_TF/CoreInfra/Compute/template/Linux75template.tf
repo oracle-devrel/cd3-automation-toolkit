@@ -28,7 +28,7 @@ resource "oci_core_instance" "##Hostname##" {
         hostname_label = "##Hostname##"
         metadata = {
 
-				ssh_authorized_keys = "${var.##SSH-key-var-name##}"
+				ssh_authorized_keys = "##SSH-key-var-name##"
         }
 
         subnet_id = "${oci_core_subnet.##subnet name##.id}"

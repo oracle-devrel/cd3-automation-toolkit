@@ -3,6 +3,8 @@ import argparse
 import oci
 import shutil
 from oci.identity import IdentityClient
+import glob
+
 
 def paginate(operation, *args, **kwargs):
     while True:
@@ -28,47 +30,37 @@ else:
 outdir=args.outdir
 identityClient = IdentityClient(config)
 tenancy_id = config['tenancy']
-tempStrASH = ""
-tempStrPHX=""
+tempStr = {}
+var_files={}
+all_regions=[]
+var_data={}
 
-ash_var_file=outdir+'/ashburn/variables_ash.tf'
-phx_var_file=outdir+'/phoenix/variables_phx.tf'
-
-# Backup the existing Routes tf file
-shutil.copy(ash_var_file, ash_var_file + "_backup")
-shutil.copy(phx_var_file, phx_var_file + "_backup")
-
-with open(ash_var_file, 'r') as file:
-    ash_vardata = file.read()
-
-with open(phx_var_file, 'r') as file:
-    phx_vardata = file.read()
+for file in glob.glob(outdir + '/*/' +'variables_*.tf', recursive=True):
+    region=file.split("variables_")[1].split(".tf")[0]
+    all_regions.append(region)
+    var_files[region]=file
+    tempStr[region]=''
+    with open(file, 'r') as f:
+        var_data[region] = f.read()
+    f.close()
+    # Backup the existing Routes tf file
+    shutil.copy(file, file + "_backup")
 
 for compartment in paginate(identityClient.list_compartments, compartment_id=tenancy_id,compartment_id_in_subtree =True):
     if(compartment.lifecycle_state=='ACTIVE'):
-
-
         compartment_name=compartment.name
         compartment_ocid=compartment.id
         searchstr = "variable \"" + compartment_name + ""
-        if(searchstr not in ash_vardata):
-            tempStrASH=tempStrASH+"""
+        for reg in all_regions:
+            if(searchstr not in var_data[reg]):
+                tempStr[reg]=tempStr[reg]+"""
 variable \"""" + compartment_name + """" {
         type = "string"
         default = \"""" + compartment_ocid + """"
 }
 """
-        if (searchstr not in phx_vardata):
-            tempStrPHX = tempStrPHX + """
-        variable \"""" + compartment_name + """" {
-                type = "string"
-                default = \"""" + compartment_ocid + """"
-        }
-        """
-ash_vname = open(ash_var_file,"a")
-phx_vname = open(phx_var_file,"a")
-ash_vname.write(tempStrASH)
-phx_vname.write(tempStrPHX)
-print("Compartment info written to variables file")
-ash_vname.close()
-phx_vname.close()
+for reg in all_regions:
+    vname = open(var_files[reg],"a")
+    vname.write(tempStr[reg])
+    vname.close()
+print("Compartment info written to variables file under terrafor_files folder")

@@ -28,13 +28,6 @@ def get_network_compartment_id(config):#, compartment_name):
             compartment_ids[compartment.name]=compartment.id
     return compartment_ids
 
-    '''else:
-        for compartment in compartment_list:
-            if compartment.name == compartment_name:
-                compartment_ids[compartment.name]=compartment.id
-                return compartment_ids
-
-'''
 def get_vcn_id(config,compartment_id,vname):
     vcncient = VirtualNetworkClient(config)
     vcnlist = vcncient.list_vcns(compartment_id=compartment_id,lifecycle_state="AVAILABLE")
@@ -156,7 +149,15 @@ else:
     config = oci.config.from_file()
 
 
-ntk_compartment_ids = get_network_compartment_id(config)#, ntk_comp_name)
+ntk_compartment_ids = get_network_compartment_id(config)
+df_info = pd.read_excel(cd3file, sheet_name='VCN Info', skiprows=1)
+properties = df_info['Property']
+values = df_info['Value']
+all_regions = str(values[7]).strip()
+all_regions = all_regions.split(",")
+all_regions = [x.strip().lower() for x in all_regions]
+
+region_dict = {'ashburn':'us-ashburn-1','phoenix':'us-phoenix-1','london':'uk-london-1','frankfurt':'eu-frankfurt-1','toronto':'ca-toronto-1','tokyo':'ap-tokyo-1','seoul':'ap-seoul-1','mumbai':'ap-mumbai-1'}
 
 i=0
 df=pd.DataFrame()
@@ -167,59 +168,40 @@ if vcn_name is not None:
         print("\nEnter a valid name for the compartment where VCN resides...")
         exit(1)
 
-    found = ''
-    print("\nSearching for VCN in ASH region...")
-    config.__setitem__("region", "us-ashburn-1")
-    vcn_ocid = get_vcn_id(config,ntk_compartment_ids[ntk_comp_name],vcn_name)
+    found_region = ''
+    for reg in all_regions:
+        print("\nSearching for VCN in region..."+reg)
+        config.__setitem__("region", region_dict[reg])
+        vcn_ocid = get_vcn_id(config,ntk_compartment_ids[ntk_comp_name],vcn_name)
 
-    if(vcn_ocid=='' or vcn_ocid is None):
-        print('\nCould not find vcn in this compartment in ASH region...Searching in PHX region...')
-        config.__setitem__("region", "us-phoenix-1")
-        vcn_ocid = get_vcn_id(config, ntk_compartment_ids[ntk_comp_name], vcn_name)
-        if (vcn_ocid == '' or vcn_ocid is None):
-            print('\nCould not find vcn in this compartment in PHX region also..verify the vcn name and compartment name where vcn resides and try again...')
-            exit(1)
+        if(vcn_ocid=='' or vcn_ocid is None):
+            print('\nCould not find vcn in compartment '+ntk_comp_name+' in region...'+reg)
         else:
-            print("\nFound in Phoenix...")
-            found='phx'
-    else:
-        print("\nFound in Ashburn...")
-        found='ash'
+            print("\nFound in Region..."+reg)
+            found_region=reg
+            break
 
-    if(found=='ash'):
-        config.__setitem__("region", "us-ashburn-1")
-        vcn = VirtualNetworkClient(config)
-        region='Ashburn'
-    if(found=='phx'):
-        config.__setitem__("region", "us-phoenix-1")
-        vcn = VirtualNetworkClient(config)
-        region='Phoenix'
+    config.__setitem__("region", region_dict[found_region])
+    vcn = VirtualNetworkClient(config)
+    region=found_region.capitalize()
 
     routetables = vcn.list_route_tables(compartment_id=ntk_compartment_ids[ntk_comp_name], vcn_id=vcn_ocid, lifecycle_state='AVAILABLE')
     print_routetables(routetables,region, vcn_name,ntk_comp_name)
 else:
     print("\nFetching Route Rules for all VCNs in tenancy...")
-    for ntk_compartment_name in ntk_compartment_ids:
-        config.__setitem__("region", "us-ashburn-1")
-        vcn = VirtualNetworkClient(config)
-        vcns_ash = get_vcns(config,ntk_compartment_ids[ntk_compartment_name])
-        for v in vcns_ash.data:
-            vcn_id = v.id
-            vcn_name=v.display_name
-            routetables = vcn.list_route_tables(compartment_id=ntk_compartment_ids[ntk_compartment_name], vcn_id=vcn_id, lifecycle_state='AVAILABLE')
-            print_routetables(routetables,'Ashburn',vcn_name,ntk_compartment_name)
+    for reg in all_regions:
+        for ntk_compartment_name in ntk_compartment_ids:
+            config.__setitem__("region", region_dict[reg])
+            vcn = VirtualNetworkClient(config)
+            region = reg.capitalize()
+            vcns = get_vcns(config,ntk_compartment_ids[ntk_compartment_name])
 
-        config.__setitem__("region", "us-phoenix-1")
-        vcn = VirtualNetworkClient(config)
-        vcns_phx = get_vcns(config, ntk_compartment_ids[ntk_compartment_name])
-        for v in vcns_phx.data:
-            vcn_id = v.id
-            vcn_name = v.display_name
-            routetables = vcn.list_route_tables(compartment_id=ntk_compartment_ids[ntk_compartment_name], vcn_id=vcn_id,
-                                                lifecycle_state='AVAILABLE')
-            print_routetables(routetables,'Phoenix',vcn_name, ntk_compartment_name)
+            for v in vcns.data:
+                vcn_id = v.id
+                vcn_name=v.display_name
+                routetables = vcn.list_route_tables(compartment_id=ntk_compartment_ids[ntk_compartment_name], vcn_id=vcn_id, lifecycle_state='AVAILABLE')
+                print_routetables(routetables,region,vcn_name,ntk_compartment_name)
 
-#oname.close()
 
 book = load_workbook(cd3file)
 if('RouteRulesinOCI' in book.sheetnames):

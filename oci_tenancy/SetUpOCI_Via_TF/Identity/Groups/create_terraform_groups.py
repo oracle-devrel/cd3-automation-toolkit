@@ -32,24 +32,24 @@ filename=args.inputfile
 outdir=args.outdir
 prefix=args.prefix
 
-ash_dir=outdir+"/ashburn"
-phx_dir=outdir+"/phoenix"
-
-if not os.path.exists(ash_dir):
-        os.makedirs(ash_dir)
-
-if not os.path.exists(phx_dir):
-        os.makedirs(phx_dir)
-
-outfile_ash=ash_dir + "/" + prefix + '-groups.tf'
-outfile_phx=phx_dir + "/" + prefix + '-groups.tf'
-
-tempStrASH = ""
-tempStrPHX = ""
+outfile={}
+oname={}
+tfStr={}
 
 if('.xls' in args.inputfile):
     df = pd.read_excel(args.inputfile, sheet_name='Groups',skiprows=1)
     df.dropna(how='all')
+    df_info = pd.read_excel(filename, sheet_name='VCN Info', skiprows=1)
+    # Get Property Values
+    properties = df_info['Property']
+    values = df_info['Value']
+
+    all_regions = str(values[7]).strip()
+    all_regions = all_regions.split(",")
+    all_regions = [x.strip().lower() for x in all_regions]
+    for reg in all_regions:
+        tfStr[reg] = ''
+
     NaNstr = 'NaN'
     endNames = {'<END>', '<end>'}
 
@@ -57,6 +57,11 @@ if('.xls' in args.inputfile):
         region=df.iat[i,0]
         if (region in endNames):
             break
+        region=region.strip().lower()
+        if region not in all_regions:
+            print("Invalid Region; It should be one of the values mentioned in VCN Info tab")
+            exit(1)
+
         group_name = df.iat[i, 1]
         group_desc = df.iat[i, 2]
         if(str(group_name).lower()!= NaNstr.lower()):
@@ -64,23 +69,19 @@ if('.xls' in args.inputfile):
             group_name = group_name.strip()
             if (str(group_desc).lower() == NaNstr.lower()):
                 group_desc = group_name
-            if(region=='ashburn'):
-                tempStrASH=tempStrASH + """
+            tfStr[region]=tfStr[region] + """
 resource "oci_identity_group" \"""" + group_name.strip() + """" {
 	    compartment_id = "${var.tenancy_ocid}"
 	    description = \"""" + group_desc.strip() + """"
 	    name = \"""" + group_name.strip() + """"
 	} """
-            if (region == 'phoenix'):
-                tempStrPHX = tempStrPHX + """
-            resource "oci_identity_group" \"""" + group_name.strip() + """" {
-            	    compartment_id = "${var.tenancy_ocid}"
-            	    description = \"""" + group_desc.strip() + """"
-            	    name = \"""" + group_name.strip() + """"
-            	} """
 
 #If input is a csv file
 elif('.csv' in args.inputfile):
+    all_regions = os.listdir(outdir)
+    for reg in all_regions:
+        tfStr[reg] = ''
+
     group_file_name = args.inputfile
     fname = open(group_file_name, "r")
 
@@ -93,39 +94,35 @@ elif('.csv' in args.inputfile):
         if not line.startswith('#') and line != '\n':
             [region,group_name, group_desc] = line.split(',')
             region=region.strip().lower()
+            if region not in all_regions:
+                print("Invalid Region")
+                exit(1)
             group_name=group_name.strip()
             group_desc=group_desc.strip()
 
             if(group_name!='Name' and group_name!=''):
                 if (group_desc.strip() == ''):
                     group_desc = group_name
-                if(region=='ashburn'):
-                    tempStrASH=tempStrASH + """
+                tfStr[region]=tfStr[region] + """
 resource "oci_identity_group" \"""" + group_name + """" {
 	    compartment_id = "${var.tenancy_ocid}"
 	    description = \"""" + group_desc + """"
 	    name = \"""" + group_name + """"
 	} """
-                if (region == 'phoenix'):
-                    tempStrPHX = tempStrPHX + """
-                resource "oci_identity_group" \"""" + group_name + """" {
-                	    compartment_id = "${var.tenancy_ocid}"
-                	    description = \"""" + group_desc + """"
-                	    name = \"""" + group_name + """"
-                	} """
+
 else:
     print("Invalid input file format; Acceptable formats: .xls, .xlsx, .csv")
     exit()
 
-if(tempStrASH!=''):
-    oname_ash = open(outfile_ash, "w")
-    oname_ash.write(tempStrASH)
-    oname_ash.close()
-    print(outfile_ash + " containing TF for groups has been created")
+for reg in all_regions:
+    reg_out_dir = outdir + "/" + reg
+    if not os.path.exists(reg_out_dir):
+        os.makedirs(reg_out_dir)
+    outfile[reg] = reg_out_dir + "/" + prefix + '-groups.tf'
 
-if(tempStrPHX!=''):
-    oname_phx = open(outfile_phx, "w")
-    oname_phx.write(tempStrASH)
-    oname_phx.close()
-    print(outfile_phx + " containing TF for groups has been created")
+    if(tfStr[reg]!=''):
+        oname[reg]=open(outfile[reg],'w')
+        oname[reg].write(tfStr[reg])
+        oname[reg].close()
+        print(outfile[reg] + " containing TF for groups has been created for region "+reg)
 

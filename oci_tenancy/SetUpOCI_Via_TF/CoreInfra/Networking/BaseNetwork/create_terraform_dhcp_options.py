@@ -10,6 +10,9 @@ import argparse
 import configparser
 import os
 import pandas as pd
+import glob
+import shutil
+import datetime
 
 ######
 # Required Files
@@ -26,6 +29,8 @@ parser = argparse.ArgumentParser(description="Create DHCP options terraform file
 parser.add_argument("inputfile", help="Full Path of input file. It could be either the properties file eg vcn-info.properties or CD3 excel file")
 parser.add_argument("outdir", help="Output directory for creation of TF files")
 parser.add_argument("prefix", help="customer name/prefix for all file names")
+parser.add_argument("--dhcp_add", help="Add new dhcp option: true or false", required=False)
+
 
 if len(sys.argv)<3:
         parser.print_help()
@@ -35,28 +40,16 @@ args = parser.parse_args()
 filename=args.inputfile
 outdir = args.outdir
 prefix=args.prefix
+if args.dhcp_add is not None:
+    dhcp_add = str(args.dhcp_add)
+else:
+    dhcp_add = "false"
 
-ash_dir=outdir+"/ashburn"
-phx_dir=outdir+"/phoenix"
-
-if not os.path.exists(ash_dir):
-        os.makedirs(ash_dir)
-
-if not os.path.exists(phx_dir):
-        os.makedirs(phx_dir)
-
-outfile_ash=ash_dir + "/" + prefix + '-dhcp.tf'
-outfile_phx=phx_dir + "/" + prefix + '-dhcp.tf'
-
-oname_ash = open(outfile_ash,"w")
-oname_phx = open(outfile_phx,"w")
-
-tempStrASH = ""
-tempStrPHX = ""
+outfile={}
+oname={}
+tfStr={}
 
 def processDHCP(region,vcn_name,dhcp_option_name,compartment_var_name,serverType,custom_dns_servers,search_domain):
-	global tempStrASH
-	global tempStrPHX
 
 	region = region.lower().strip()
 	compartment_var_name=compartment_var_name.strip()
@@ -90,16 +83,24 @@ def processDHCP(region,vcn_name,dhcp_option_name,compartment_var_name,serverType
 			display_name = \"""" + vcn_dhcp + """"
 	}
 	"""
+	tfStr[region] = tfStr[region] + data
 
-	if (region == 'ashburn'):
-		tempStrASH = tempStrASH + data
-	elif (region == 'phoenix'):
-		tempStrPHX = tempStrPHX + data
 
 endNames = {'<END>', '<end>'}
 if('.xls' in args.inputfile):
 	df_vcn = pd.read_excel(args.inputfile, sheet_name='VCNs',skiprows=1)
 	df_vcn.dropna(how='all')
+
+	df_info = pd.read_excel(filename, sheet_name='VCN Info', skiprows=1)
+	properties = df_info['Property']
+	values = df_info['Value']
+
+	all_regions = str(values[7]).strip()
+	all_regions = all_regions.split(",")
+	all_regions = [x.strip().lower() for x in all_regions]
+	for reg in all_regions:
+		tfStr[reg] = ''
+
 	df_vcn.set_index("vcn_name", inplace=True)
 	df_vcn.head()
 	df = pd.read_excel(args.inputfile, sheet_name='DHCP',skiprows=1)
@@ -116,7 +117,10 @@ if('.xls' in args.inputfile):
 		vcn_data = df_vcn.loc[vcn_name]
 		compartment_var_name = vcn_data['compartment_name']
 		region=vcn_data['Region']
-
+		region=region.strip().lower()
+		if region not in all_regions:
+			print("Invalid Region; It should be one of the values mentioned in VCN Info tab")
+			exit(1)
 		processDHCP(region,vcn_name,dhcp_option_name,compartment_var_name,serverType,custom_dns_servers,search_domain)
 
 
@@ -129,14 +133,23 @@ elif('.properties' in args.inputfile):
 	config.read(args.inputfile)
 	#sections=config.sections()
 
+	all_regions = config.get('Default', 'regions')
+	all_regions = all_regions.split(",")
+	all_regions = [x.strip().lower() for x in all_regions]
+	for reg in all_regions:
+		tfStr[reg] = ''
 
 	#Get VCN and DHCP file info from VCN_INFO section
 	vcns=config.options('VCN_INFO')
+
 	for vcn in vcns:
 		vcn_data = config.get('VCN_INFO', vcn)
 		vcn_data = vcn_data.split(',')
 		vcn_name = vcn
-		region=vcn_data[0].strip()
+		region=vcn_data[0].strip().lower()
+		if region not in all_regions:
+			print("Invalid Region")
+			exit(1)
 		compartment_var_name = vcn_data[12].strip()
 		vcn_dhcp_file = vcn_data[8].strip().lower()
 		### Read the DHCP file
@@ -147,8 +160,6 @@ elif('.properties' in args.inputfile):
 			continue
 		dhcp_sections = dhcpfile.sections()
 		for dhcp_sec in dhcp_sections :
-			#vcn_dhcp = vcn_name+"_"+dhcp_sec
-			#vcn_dhcp.strip().lower()
 			serverType = dhcpfile.get(dhcp_sec,'serverType')
 			search_domain = dhcpfile.get(dhcp_sec,'search_domain')
 			custom_dns_servers=""
@@ -162,10 +173,35 @@ elif('.properties' in args.inputfile):
 else:
     print("Invalid input file format; Acceptable formats: .xls, .xlsx, .properties")
 
+dhcpdata={}
+if(dhcp_add=='true'):
+	for reg in all_regions:
+		reg_out_dir = outdir + "/" + reg
+		if not os.path.exists(reg_out_dir):
+			os.makedirs(reg_out_dir)
+		outfile[reg] = reg_out_dir + "/" + prefix + '-dhcp.tf'
 
-oname_ash.write(tempStrASH)
-oname_phx.write(tempStrPHX)
-oname_ash.close()
-oname_phx.close()
+		x = datetime.datetime.now()
+		date = x.strftime("%f").strip()
 
+		with open(outfile[reg], 'r') as file:
+			dhcpdata[reg] = file.read()
+		file.close()
+		if(tfStr[reg]!='' and tfStr[reg] not in dhcpdata[reg]):
+			shutil.copy(outfile[reg], outfile[reg] + "_beforeDHCPAdd" + date)
+			oname[reg] = open(outfile[reg], "a")
+			oname[reg].write(tfStr[reg])
+			oname[reg].close()
+			print(outfile[reg] + " containing TF for DHCP Options has been updated for region " + reg)
 
+elif(dhcp_add == 'false'):
+	for reg in all_regions:
+		reg_out_dir = outdir + "/" + reg
+		if not os.path.exists(reg_out_dir):
+			os.makedirs(reg_out_dir)
+		outfile[reg] = reg_out_dir + "/" + prefix + '-dhcp.tf'
+		if (tfStr[reg] != ''):
+			oname[reg] = open(outfile[reg], 'w')
+			oname[reg].write(tfStr[reg])
+			oname[reg].close()
+			print(outfile[reg] + " containing TF for DHCP Options has been created for region " + reg)

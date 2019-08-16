@@ -34,20 +34,10 @@ filename=args.inputfile
 outdir = args.outdir
 prefix=args.prefix
 
-ash_dir=outdir+"/ashburn"
-phx_dir=outdir+"/phoenix"
+outfile={}
+oname={}
+tfStr={}
 
-if not os.path.exists(ash_dir):
-        os.makedirs(ash_dir)
-
-if not os.path.exists(phx_dir):
-        os.makedirs(phx_dir)
-
-outfile_ash=ash_dir + "/" + prefix + '-major-objs.tf'
-outfile_phx=phx_dir + "/" + prefix + '-major-objs.tf'
-
-oname_ash = open(outfile_ash,"w")
-oname_phx = open(outfile_phx,"w")
 
 # Create VCN transit routing mapping based on Hub-Spoke
 #vcn_transit_route_mapping=dict()
@@ -57,8 +47,7 @@ vcn_region={}
 hub_vcn_names=[]
 spoke_vcn_names=[]
 
-tempStrASH = ""
-tempStrPHX = ""
+
 datastr = """
 data "oci_core_services" "oci_services" {
 }"""
@@ -66,8 +55,6 @@ data "oci_core_services" "oci_services" {
 endNames = {'<END>', '<end>'}
 
 def createLPGs(peering_dict):
-        global tempStrASH
-        global tempStrPHX
         for left_vcn, value in peering_dict.items():
                 region=vcn_region[left_vcn]
                 data=""
@@ -135,15 +122,11 @@ def createLPGs(peering_dict):
                                         data = data + """
     }
     """
-                if(region=='ashburn'):
-                        tempStrASH=tempStrASH+data
-                elif(region=='phoenix'):
-                        tempStrPHX=tempStrPHX+data
+                tfStr[region] = tfStr[region] + data
 
 
 def processVCN(region,vcn_name,vcn_cidr,vcn_drg,vcn_igw,vcn_ngw,vcn_sgw,hub_spoke_none,compartment_var_name,vcn_dns_label):
-        global tempStrASH
-        global tempStrPHX
+
         region=region.lower().strip()
         vcn_name=vcn_name.strip()
         vcn_cidr=vcn_cidr.strip()
@@ -226,10 +209,7 @@ def processVCN(region,vcn_name,vcn_cidr,vcn_drg,vcn_igw,vcn_ngw,vcn_sgw,hub_spok
                     compartment_id = "${var.""" + compartment_var_name + """}"
             }
             """
-        if(region=='ashburn'):
-                tempStrASH=tempStrASH+data
-        elif(region=='phoenix'):
-                tempStrPHX=tempStrPHX+data
+        tfStr[region]=tfStr[region]+data
 
 #If input is CD3 excel file
 if('.xls' in filename):
@@ -243,23 +223,33 @@ if('.xls' in filename):
         properties=df_info['Property']
         values=df_info['Value']
 
-
         drg_ocid=str(values[1]).strip()
 
         if (drg_ocid.lower() == NaNstr.lower()):
                 drg_ocid = ''
 
+        all_regions = str(values[7]).strip()
+        all_regions = all_regions.split(",")
+        all_regions = [x.strip().lower() for x in all_regions]
+        for reg in all_regions:
+                tfStr[reg] = ''
+
         #Get VCN Peering info in dict
         for j in df_info.index:
-                if(j>7):
+                if(j>8):
                         peering_dict[properties[j]]=values[j]
 
         #Get Hub and Spoke VCN Names
         for i in df.index:
 
                 region = df['Region'][i]
+
                 if (region in endNames):
                     break
+                region = region.strip().lower()
+                if region not in all_regions:
+                        print("Invalid Region; It should be one of the values mentioned in VCN Info tab")
+                        exit(1)
                 vcn_name = df['vcn_name'][i]
 
                 # Check to see if vcn_name is empty in Subnets Sheet
@@ -334,6 +324,11 @@ elif('.properties' in filename):
 
         # Get Global Properties from Default Section
         drg_ocid = config.get('Default', 'drg_ocid')
+        all_regions=config.get('Default','regions')
+        all_regions = all_regions.split(",")
+        all_regions = [x.strip().lower() for x in all_regions]
+        for reg in all_regions:
+                tfStr[reg] = ''
 
         # Get VCN Info from VCN_INFO section
         vcns = config.options('VCN_INFO')
@@ -341,6 +336,10 @@ elif('.properties' in filename):
         for vcn_name in vcns:
                 vcn_data = config.get('VCN_INFO', vcn_name)
                 vcn_data = vcn_data.split(',')
+                region=vcn_data[0].strip().lower()
+                if region not in all_regions:
+                        print("Invalid Region")
+                        exit(1)
                 hub_spoke_none = vcn_data[5].strip().lower()
                 if (hub_spoke_none == 'hub'):
                         hub_vcn_names.append(vcn_name)
@@ -391,11 +390,14 @@ else:
     print("Invalid input file format; Acceptable formats: .xls, .xlsx, .properties")
     exit(1)
 
-tempStrASH=datastr+tempStrASH
-tempStrPHX=datastr+tempStrPHX
-
-oname_ash.write(tempStrASH)
-oname_phx.write(tempStrPHX)
-oname_ash.close()
-oname_phx.close()
-
+for reg in all_regions:
+    reg_out_dir = outdir + "/" + reg
+    if not os.path.exists(reg_out_dir):
+        os.makedirs(reg_out_dir)
+    outfile[reg] = reg_out_dir + "/" + prefix + '-major-objs.tf'
+    if(tfStr[reg]!=''):
+        tfStr[reg]=tfStr[reg]+datastr
+        oname[reg]=open(outfile[reg],'w')
+        oname[reg].write(tfStr[reg])
+        oname[reg].close()
+        print(outfile[reg] + " containing TF for VCN major objects has been created for region " + reg)

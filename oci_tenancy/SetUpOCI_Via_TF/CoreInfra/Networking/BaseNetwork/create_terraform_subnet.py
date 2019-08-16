@@ -17,6 +17,9 @@ import os
 import argparse
 import configparser
 import pandas as pd
+import glob
+import shutil
+import datetime
 
 
 parser = argparse.ArgumentParser(description="Takes in a list of subnet names with format \"name,subnet CIDR,Availability Domain, Public|Private subnet,dhcp-options\". "
@@ -24,6 +27,7 @@ parser = argparse.ArgumentParser(description="Takes in a list of subnet names wi
 parser.add_argument("inputfile", help="Full Path of input file. eg vcn-info.properties or cd3 excel file")
 parser.add_argument("outdir", help="Output directory for creation of TF files")
 parser.add_argument("prefix", help="customer name/prefix for all file names")
+parser.add_argument("--subnet_add", help="Add new subnet: true or false", required=False)
 
 
 if len(sys.argv)<3:
@@ -34,26 +38,17 @@ args = parser.parse_args()
 filename=args.inputfile
 outdir = args.outdir
 prefix=args.prefix
+if args.subnet_add is not None:
+    subnet_add = str(args.subnet_add)
+else:
+    subnet_add = "false"
 
-ash_dir=outdir+"/ashburn"
-phx_dir=outdir+"/phoenix"
-
-if not os.path.exists(ash_dir):
-        os.makedirs(ash_dir)
-
-if not os.path.exists(phx_dir):
-        os.makedirs(phx_dir)
-
-outfile_ash=ash_dir + "/" + prefix + '-subnets.tf'
-outfile_phx=phx_dir + "/" + prefix + '-subnets.tf'
-
-oname_ash = open(outfile_ash,"w")
-oname_phx = open(outfile_phx,"w")
 
 fname = None
+outfile={}
+oname={}
+tfStr={}
 
-tempStrASH=""
-tempStrPHX=""
 tempStr ="""
 data "oci_identity_availability_domains" "ADs" {
 	  compartment_id = "${var.tenancy_ocid}"
@@ -62,9 +57,6 @@ data "oci_identity_availability_domains" "ADs" {
 ADS = ["AD1", "AD2", "AD3"]
 
 def processSubnet(region,vcn_name,name,subnet,AD,dnslabel,pubpvt,compartment_var_name,vcn_add_defaul_seclist,seclists_per_subnet):
-	global tempStrASH
-	global tempStrPHX
-
 	if (AD.strip().lower() != 'regional'):
 		AD = AD.strip().upper()
 		ad = ADS.index(AD)
@@ -123,10 +115,7 @@ def processSubnet(region,vcn_name,name,subnet,AD,dnslabel,pubpvt,compartment_var
     	dns_label           =  \"""" + dnslabel + """"
     }
     """
-	if (region == 'ashburn'):
-		tempStrASH = tempStrASH + data
-	elif (region == 'phoenix'):
-		tempStrPHX = tempStrPHX + data
+	tfStr[region]=tfStr[region]+data
 
 endNames = {'<END>', '<end>'}
 #If input is CD3 excel file
@@ -145,6 +134,12 @@ if('.xls' in filename):
 	properties = df_info['Property']
 	values = df_info['Value']
 
+	all_regions = str(values[7]).strip()
+	all_regions = all_regions.split(",")
+	all_regions = [x.strip().lower() for x in all_regions]
+	for reg in all_regions:
+		tfStr[reg] = ''
+
 	subnet_name_attach_cidr = str(values[4]).strip()
 	if (subnet_name_attach_cidr.lower() == NaNstr.lower()):
 		subnet_name_attach_cidr = 'n'
@@ -158,6 +153,10 @@ if('.xls' in filename):
 		vcn_data = df_vcn.loc[vcn_name]
 		region=vcn_data['Region']
 		region=region.strip().lower()
+		if region not in all_regions:
+			print("Invalid Region; It should be one of the values mentioned in VCN Info tab")
+			exit(1)
+
 		sps=vcn_data['sec_list_per_subnet']
 		seclists_per_subnet = int(sps)
 		vcn_add_defaul_seclist=vcn_data['add_default_seclist']
@@ -193,6 +192,12 @@ elif('.properties' in filename):
 	sections=config.sections()
 
 	#Get Global Properties from Default Section
+	all_regions = config.get('Default', 'regions')
+	all_regions = all_regions.split(",")
+	all_regions = [x.strip().lower() for x in all_regions]
+	for reg in all_regions:
+		tfStr[reg] = ''
+
 	subnet_name_attach_cidr = config.get('Default','subnet_name_attach_cidr')
 
 	#Get vcn and subnet file info from VCN_INFO section
@@ -202,6 +207,9 @@ elif('.properties' in filename):
 		vcn_data = vcn_data.split(',')
 
 		region=vcn_data[0].strip.lower()
+		if region not in all_regions:
+			print("Invalid Region")
+			exit(1)
 		sps = vcn_data[9].strip().lower()
 		vcn_add_defaul_seclist = vcn_data[11].strip().lower()
 		vcn_subnet_file = vcn_data[7].strip().lower()
@@ -236,13 +244,42 @@ else:
     print("Invalid input file format; Acceptable formats: .xls, .xlsx, .properties")
     exit()
 
-tempStrASH=tempStr+tempStrASH
-tempStrPHX=tempStr+tempStrPHX
 
 if fname != None:
 	fname.close()
-oname_ash.write(tempStrASH)
-oname_phx.write(tempStrPHX)
-oname_ash.close()
-oname_phx.close()
+
+subnetdata={}
+if(subnet_add=='true'):
+	for reg in all_regions:
+		reg_out_dir = outdir + "/" + reg
+		if not os.path.exists(reg_out_dir):
+			os.makedirs(reg_out_dir)
+		outfile[reg] = reg_out_dir + "/" + prefix + '-subnets.tf'
+
+		x = datetime.datetime.now()
+		date = x.strftime("%f").strip()
+
+		with open(outfile[reg], 'r') as file:
+			subnetdata[reg] = file.read()
+		file.close()
+
+		if (tfStr[reg] != '' and tfStr[reg] not in subnetdata[reg]):
+			shutil.copy(outfile[reg], outfile[reg] + "_beforeSubnetAdd" + date)
+			oname[reg] = open(outfile[reg], "a")
+			oname[reg].write(tfStr[reg])
+			oname[reg].close()
+			print(outfile[reg] + " containing TF for Subnets has been updated for region " + reg)
+
+elif(subnet_add == 'false'):
+	for reg in all_regions:
+		reg_out_dir = outdir + "/" + reg
+		if not os.path.exists(reg_out_dir):
+			os.makedirs(reg_out_dir)
+		outfile[reg] = reg_out_dir + "/" + prefix + '-subnets.tf'
+		if (tfStr[reg] != ''):
+			oname[reg] = open(outfile[reg], 'w')
+			tfStr[reg]=tfStr[reg]+tempStr
+			oname[reg].write(tfStr[reg])
+			oname[reg].close()
+			print(outfile[reg] + " containing TF for Subnets has been created for region " + reg)
 

@@ -4,8 +4,8 @@
 mkdir ~/.oci
 mkdir -p /root/ocswork/keys
 mkdir -p /root/ocswork/downloads
-mkdir -p /root/ocswork/terraform_files/ashburn
-mkdir -p /root/ocswork/terraform_files/phoenix
+#mkdir -p /root/ocswork/terraform_files/ashburn
+#mkdir -p /root/ocswork/terraform_files/phoenix
 mkdir -p /root/ocswork/git_oci
 mkdir -p /root/ocswork/git_ocic2oci
 mkdir -p /root/ocswork/ocic2oci_work
@@ -52,12 +52,6 @@ chmod 400 ~/.oci/config
 chmod 400 /root/ocswork/keys/oci_api_key.pem
 sed -i 's#key_file.*#key_file=/root/ocswork/keys/oci_api_key.pem#' ~/.oci/config
 
-cp /home/opc/provider.tf /root/ocswork/terraform_files/phoenix
-mv /home/opc/variables_phx.tf /root/ocswork/terraform_files/phoenix
-mv /home/opc/provider.tf /root/ocswork/terraform_files/ashburn
-mv /home/opc/variables_ash.tf /root/ocswork/terraform_files/ashburn
-#cd /root/ocswork/terraform_files/ashburn
-#sed -i 's/-phoenix-/-ashburn-/' variables.tf
 
 chown -R root:root /root/ocswork/terraform_files/*
 
@@ -116,6 +110,7 @@ then
     mv /home/opc/ocic-variables.tf /root/ocswork/ocic2oci_work/
     mv /home/opc/variables.yml /root/ocswork/ocic2oci_work/
     mv /home/opc/upgrade_terraform_expect_script.sh /root/ocswork/ocic2oci_work/
+
     chown root:root /root/ocswork/ocic2oci_work/*.tf
     chown root:root /root/ocswork/ocic2oci_work/variables.yml
 
@@ -130,6 +125,10 @@ then
     chmod +x upgrade_terraform_expect_script.sh
     ./upgrade_terraform_expect_script.sh
 
+    sleep 1s
+    terraform init
+    sleep 1s
+
    ## Writing some retry logic to TF
     n=0
     until [ $n -ge 5 ]
@@ -138,7 +137,6 @@ then
       n=$[$n+1]
       sleep 3
     done
-    rm -f /root/ocswork/ocic2oci_work/upgrade_terraform_expect_script.sh
     echo "Panda Config END"
 fi
 
@@ -192,6 +190,8 @@ rm -f /home/opc/download_git_expect1.sh
 rm -f /home/opc/download_git_expect2.sh
 rm -f /home/opc/upload_panda_expect.sh
 rm -f /home/opc/discover_koala_expect.sh
+rm -f /home/opc/provider.tf
+
 
 #Installing python36-devel and gcc for pip install
 timeout 60 yum install python36-devel gcc -y
