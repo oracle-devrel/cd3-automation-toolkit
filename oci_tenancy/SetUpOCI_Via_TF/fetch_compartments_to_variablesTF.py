@@ -16,7 +16,7 @@ def paginate(operation, *args, **kwargs):
             break
 
 parser = argparse.ArgumentParser(description="Fetches Compartment name/ocid info from OCI and pushes to variables.tf file of each region used by TF")
-parser.add_argument("outdir", help="Path to outdir containing variables.tf file that will be used by TerraForm to communicate with OCI")
+parser.add_argument("outdir", help="Path   to outdir containing variables.tf file that will be used by TerraForm to communicate with OCI")
 parser.add_argument("--configFileName", help="Config file name" , required=False)
 
 args = parser.parse_args()
