@@ -206,7 +206,7 @@ elif('.properties' in filename):
 		vcn_data = config.get('VCN_INFO', vcn_name)
 		vcn_data = vcn_data.split(',')
 
-		region=vcn_data[0].strip.lower()
+		region=vcn_data[0].strip().lower()
 		if region not in all_regions:
 			print("Invalid Region")
 			exit(1)

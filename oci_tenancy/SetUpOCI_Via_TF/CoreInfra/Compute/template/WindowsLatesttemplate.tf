@@ -23,6 +23,7 @@ resource "oci_core_instance" "##Hostname##" {
                 hostname_label = "##Hostname##"
                 private_ip = "##IP Address##"
                 skip_source_dest_check = false
+                ## NSG Info ##
         }
         display_name = "##Hostname##"
         hostname_label = "##Hostname##"

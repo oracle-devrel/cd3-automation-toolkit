@@ -72,6 +72,22 @@ if('.xls' in filename):
         copy_template_file(df['Hostname'][row], df['OS'][row],df['Region'][row])
     for i in df.keys():
         for j in df.index:
+            if (re.match('NSGs', i, flags=re.IGNORECASE)):
+                NSG_col = str(df[i][j])
+                if NSG_col != 'nan':
+                    nsg_ids = "nsg_ids=""[ "
+                    NSGs = NSG_col.split(",")
+                    k = 0
+                    while k < len(NSGs):
+                        nsg_ids = nsg_ids + """"${oci_core_network_security_group.""" + NSGs[k].strip() + """.id}" """
+                        if (k != len(NSGs) - 1):
+                            nsg_ids = nsg_ids + ","
+                        else:
+                            nsg_ids = nsg_ids + " ]"
+                        k += 1
+                    replaceAllplaceholders(outdir + '/' + df['Region'][j].strip().lower() + '/' + df['Hostname'][j] + '.tf','## NSG Info ##', nsg_ids)
+                continue
+
             if (re.match('Availability domain', i, flags=re.IGNORECASE)):
                 if ('AD1' in df[i][j] or 'ad1' in df[i][j]):
                     replaceAllplaceholders(outdir + '/' + df['Region'][j].strip().lower()+'/'+df['Hostname'][j] + '.tf', '##' + i + '##', '0')
