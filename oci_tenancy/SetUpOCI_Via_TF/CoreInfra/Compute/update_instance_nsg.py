@@ -11,7 +11,7 @@ x = datetime.datetime.now()
 date = x.strftime("%S").strip()
 
 parser = argparse.ArgumentParser(description="Attaches back up policy to Boot Volumes")
-parser.add_argument("file", help="Full Path of CD3 excel file. eg CD3-template.xlsx in example folder")
+parser.add_argument("file", help="Full Path of CD3 excel file or CSV containing instance info eg CD3-template.xlsx or instace-csv-example.csv in example folder")
 parser.add_argument("outdir", help="directory path for output tf file ")
 
 if len(sys.argv) == 1:
@@ -25,6 +25,12 @@ if len(sys.argv) < 2:
 args = parser.parse_args()
 filename = args.file
 outdir = args.outdir
+if('.csv' in filename):
+    df = pd.read_csv(filename)
+    excel_writer = pd.ExcelWriter('tmp_to_excel.xlsx', engine='xlsxwriter')
+    df.to_excel(excel_writer, 'Instances')
+    excel_writer.save()
+    filename='tmp_to_excel.xlsx'
 
 if ('.xls' in filename):
 
@@ -73,3 +79,6 @@ if ('.xls' in filename):
                     file_w.close()
                     file_r.close()
                     print("NSG info updated in "+outdir + "/" + Region + "/" + Host_name + ".tf")
+
+if('tmp_' in filename):
+    os.remove(filename)

@@ -53,6 +53,7 @@ if(input_format=='csv'):
         input_tag_volumes_csv = config.get('Default', 'tag_volumes_csv').strip()
         input_add_routes_csv = config.get('Default', 'add_routes_csv').strip()
         input_add_secrules_csv = config.get('Default', 'add_secrules_csv').strip()
+        input_nsgs_csv = config.get('Default', 'nsgs_csv').strip()
     except Exception as e:
         print(e)
         print('Check if input properties exist and try again..exiting...`    ')
@@ -77,13 +78,7 @@ print("14. Update Base Network Objects; Use this option only if you have already
 print("15. Network Security Groups")
 print("\nSee example folder for sample input files\n")
 userInput = input('Enter your choice; multiple choices allowed as comma separated: ')
-
 userInput=userInput.split(',')
-inputfile=''
-outdir=''
-prefix=''
-cd3outfile=''
-inputConfigFile=''
 
 if('1' in userInput):
     print('-----------------------------Creating Compartments----------------------')
@@ -475,6 +470,11 @@ if('15' in userInput):
         print("---------------------Creating NSGs----------------------------------")
         if (input_format == 'cd3'):
             inputfile = input_cd3file
+        elif (input_format == 'csv'):
+            if (input_nsgs_csv == ''):
+                print("input nsgs_csv location cannot be left blank. Exiting... ")
+                exit(1)
+            inputfile = input_nsgs_csv
         outdir = input_outdir
 
         if not os.path.exists(outdir):
@@ -492,6 +492,11 @@ if('15' in userInput):
         print("---------------------Updating Instances to have NSG----------------------------------")
         if (input_format == 'cd3'):
             inputfile = input_cd3file
+        elif (input_format == 'csv'):
+            if (input_instances_csv == ''):
+                print("input instances_csv location cannot be left blank. Exiting... ")
+                exit(1)
+            inputfile = input_instances_csv
         outdir = input_outdir
 
         if not os.path.exists(outdir):

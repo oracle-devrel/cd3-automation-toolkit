@@ -121,6 +121,22 @@ elif('.csv' in filename):
         for row in reader:
             copy_template_file(row['Hostname'], row['OS'],row['Region'])
             for column in columns:
+                if (re.match('NSGs', column, flags=re.IGNORECASE)):
+                    NSG_col = row[column]
+                    if NSG_col != '':
+                        nsg_ids = "nsg_ids=""[ "
+                        NSGs = NSG_col.split(":")
+                        k = 0
+                        while k < len(NSGs):
+                            nsg_ids = nsg_ids + """"${oci_core_network_security_group.""" + NSGs[
+                                k].strip() + """.id}" """
+                            if (k != len(NSGs) - 1):
+                                nsg_ids = nsg_ids + ","
+                            else:
+                                nsg_ids = nsg_ids + " ]"
+                            k += 1
+                        replaceAllplaceholders(outdir + '/' + row['Region'].strip().lower() + '/' + row['Hostname'] + '.tf','## NSG Info ##', nsg_ids)
+
                 if(re.match('Availability domain',column,flags=re.IGNORECASE)):
                     if ('AD1' in row[column]):
                         row[column]='0'
