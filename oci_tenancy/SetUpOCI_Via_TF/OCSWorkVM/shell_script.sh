@@ -205,6 +205,7 @@ python36 -m pip install regex
 python36 -m pip install pandas
 python36 -m pip install openpyxl
 python36 -m pip install xlrd
+python36 -m pip install xlsxwriter
 
 #Use Default python as python36 on OCS VM
 sudo rm -f /bin/python

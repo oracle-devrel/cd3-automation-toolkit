@@ -95,15 +95,16 @@ If running from other workstation like your laptop, specify path to variables.tf
 -----------------------------------------------------------------------------------------------------
 This is the wrapper script to do various tasks in OCI. It displays the utilities that can be performed as options to the user and accepts the user input.
 
-Idealy you should create a 'in_dir' where you should place your input files required by various scripts. Sample input files are available under example folder
+Ideally you should create a 'in_dir' where you should place your input files required by various scripts. Sample input files are available under example folder
 inside respective directories.
 If you are running the script from OCSVM then '/root/ocswork/terraform_files' is your output directory where you should generate output of all scripts.
 If you are not running the script from OCSVM then you should create 'outdir' where you should copy provider.tf and variables.tf file and generate output
 files of all scripts.
 
 Usage:
-./setUpOCI.py
+./setUpOCI.py setUpOCI.properties
 
+where setUpOCI.properties is the input file which contains various input paths required by script execution.
 
 
 Note-

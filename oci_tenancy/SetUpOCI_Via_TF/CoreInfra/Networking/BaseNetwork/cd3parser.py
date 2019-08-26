@@ -34,27 +34,26 @@ class CD3Parser(object):
         try:
             """ Assuming that all CD3 .xlsx sheet names are correctly spelled and cased, will raise 
             exception otherwise and relist the CD3 .xlsx sheet names """
-            self.compartment = self.excel_CD3.parse("Compartments", skiprows=1)  # another one
-            self.group = self.excel_CD3.parse("Groups")
-            self.policies = self.excel_CD3.parse("Policies")
-            self.vcn = self.excel_CD3.parse("VCNs", skiprows=1)  # another one
-            self.vcn_info = self.excel_CD3.parse("VCN Info", skiprows=1)  # parser
-            self.subnets = self.excel_CD3.parse("Subnets")
-            self.dhcp = self.excel_CD3.parse("DHCP")
-            self.instances = self.excel_CD3.parse("Instances")
-            self.blockvols = self.excel_CD3.parse("BlockVols")
-            self.tags = self.excel_CD3.parse("Tags")
-            self.tagserver = self.excel_CD3.parse("TagServer")
-            self.tagvolume = self.excel_CD3.parse("TagVolume")
-            self.addrouterules = self.excel_CD3.parse("AddRouteRules")
-            self.addsecrules = self.excel_CD3.parse("AddSecRules")
-            self.routerules = self.excel_CD3.parse("RouteRulesinOCI")
-            self.secrules = self.excel_CD3.parse("SecRulesinOCI")
+            #self.compartment = self.excel_CD3.parse("Compartments", skiprows=1)  # another one
+            #self.group = self.excel_CD3.parse("Groups")
+            #self.policies = self.excel_CD3.parse("Policies")
+            #self.vcn = self.excel_CD3.parse("VCNs", skiprows=1)  # another one
+            #self.vcn_info = self.excel_CD3.parse("VCN Info", skiprows=1)  # parser
+            #self.subnets = self.excel_CD3.parse("Subnets")
+            #self.dhcp = self.excel_CD3.parse("DHCP")
+            #self.instances = self.excel_CD3.parse("Instances")
+            #self.blockvols = self.excel_CD3.parse("BlockVols")
+            #self.tags = self.excel_CD3.parse("Tags")
+            #self.tagserver = self.excel_CD3.parse("TagServer")
+            #self.tagvolume = self.excel_CD3.parse("TagVolume")
+            #self.addrouterules = self.excel_CD3.parse("AddRouteRules")
+            #self.addsecrules = self.excel_CD3.parse("AddSecRules")
+            #self.routerules = self.excel_CD3.parse("RouteRulesinOCI")
+            #self.secrules = self.excel_CD3.parse("SecRulesinOCI")
             self.nsg = self.excel_CD3.parse("NSGs", skiprows=1)
         except Exception as e:
             raise NameError(("More information: Check that sheet_names are correct and exact on"
                              "CD3 .xls file.\n{}\n"
-                             "Recently included a new sheet called SecGroup, please ensure your CD3 is updated.\n" \
                              ).format(self.excel_CD3.sheet_names))
 
     def getNSG(self):

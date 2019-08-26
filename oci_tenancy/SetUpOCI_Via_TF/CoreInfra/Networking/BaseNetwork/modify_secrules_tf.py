@@ -507,7 +507,7 @@ if('.xls' in secrulesfilename):
             defaultname[reg].write(default_ruleStr[reg])
             defaultname[reg].close()
 
-
+        os.remove('out.csv')
     elif(overwrite=='no'):
         print("Reading AddSecRules sheet of cd3")
         df = pd.read_excel(secrulesfilename, sheet_name='AddSecRules',skiprows=1,dtype=object).to_csv('out.csv')
@@ -556,7 +556,7 @@ if('.xls' in secrulesfilename):
                     updateSecRules(outdir +"/"+region+ "/" + sec_list_file, text_to_replace, new_sec_rule, 0)
                     incrementRuleCount(subnetName)
 
-
+        os.remove('out.csv')
 # If input is a csv file
 elif ('.csv' in secrulesfilename):
     totalRowCount = sum(1 for row in csv.DictReader(skipCommentedLine(open(secrulesfilename))))

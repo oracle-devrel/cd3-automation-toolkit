@@ -31,8 +31,7 @@ Run through the list of relevant classes and perform factory action on them to w
 import argparse
 from cd3parser import CD3Parser as cd3parser
 import os
-import re
-import math
+import pandas as pd
 
 DEBUG = False
 
@@ -173,11 +172,21 @@ factory methods
 def main():
     parser = argparse.ArgumentParser(description="Create NSG and its NSG rules based on\
         inputs given in vcn-info.properties, separated by regions.")
-    parser.add_argument("inputfile", help="Full Path of cd3 excel file")
+    parser.add_argument("inputfile", help="Full Path of cd3 excel file or csv containing NSG info")
     parser.add_argument("outdir", help="Output directory")
     args = parser.parse_args()
+
+    if('.csv' in args.inputfile):
+        df = pd.read_csv(args.inputfile)
+        excel_writer = pd.ExcelWriter('tmp_to_excel.xlsx', engine='xlsxwriter')
+        df.to_excel(excel_writer, 'NSGs')
+        excel_writer.save()
+        args.inputfile='tmp_to_excel.xlsx'
+
     # tested path allows for space, full or relative path acceptable
     nsgParser = cd3parser(os.path.realpath(args.inputfile)).getNSG()
+    if('tmp_' in args.inputfile):
+        os.remove(args.inputfile)
     outdir = args.outdir
     regionDict = nsgParser.getRegionDict()
     listOfRegions = nsgParser.regions
