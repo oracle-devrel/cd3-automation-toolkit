@@ -1,4 +1,5 @@
-Region,Hostname,Availability domain,Fault Domain,subnet name,Pub Address,IP Address,OS,Shape,SSH-key-var-name,Compartment Name
-Ashburn,MytestVM1,AD1,FAULT-DOMAIN-3,prod-app,false,10.89.76.125,Linux75,VM.Standard1.4,ssh_public_key,dev-compartment
-Ashburn,MytestVM2,AD2,FAULT-DOMAIN-3,prod-mgt-app,true,10.89.81.124,Windows2012,VM.Standard1.4,ssh_public_key,qa-compartment
-Phoenix,MytestVM3,AD3,,prod-mgt-app,true,10.89.81.125,Windows2008,VM.Standard1.8,ssh_public_key,dev-compartment
+#Instance Info
+Region,Hostname,Availability domain,Fault Domain,subnet name,Pub Address,IP Address,OS,Shape,SSH-key-var-name,Compartment Name,Backup Policy,NSGs
+Ashburn,MytestVM1,AD1,FAULT-DOMAIN-3,prod-app,false,10.89.76.125,Linux75,VM.Standard1.4,ssh_public_key,dev-compartment,Gold,
+Ashburn,MytestVM2,AD2,FAULT-DOMAIN-3,prod-mgt-app,true,10.89.81.124,Windows2012,VM.Standard1.4,ssh_public_key,qa-compartment,Gold,
+Phoenix,MytestVM3,AD3,,prod-mgt-app,true,10.89.81.125,Windows2008,VM.Standard1.8,ssh_public_key,dev-compartment,Gold,nsg1:nsg2

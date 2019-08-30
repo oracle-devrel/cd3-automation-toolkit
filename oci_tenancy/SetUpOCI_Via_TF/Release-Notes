@@ -1,0 +1,41 @@
+------------------------
+SetUPOCI_Via_TF Tag 1.0
+------------------------
+Python Version used 3.7
+Packages required on your local system: oci, scp, paramiko, puttykeys, numpy, pycryptodome and pycryptodomex via pip (pip3)
+
+
+This contains Python code to create terraform files for OCI setup. It includes below functionality:
+Creating Compartments, Groups, Policies
+Creating Network Objects
+Creating Instances
+Creating and Attaching Block Volumes
+Tagging Resources
+Modify Route Rules/Security Rules
+Back Up Policy for Boot and Block Volumes
+Export Security Rules/Route Rules
+
+It also offers functionality to create OCS Work VM into customer's OCI tenancy using which all other tasks can be carried out.
+Please go through readMe under SetUpOCI_ViaTF for details on how to use the automation.
+
+It works for 2 regions currently: Ashburn and Phoenix ie it works for customer tenancy subscribed to Ashburn and Phoenix
+
+------------------------
+SetUPOCI_Via_TF Tag 2.0
+------------------------
+New Features Added:
+1. New Property is added in VCN-Info sheet which will accept regions that OCI tenancy is subscribed to. So Now the automation would
+   work for any region rather than just Ashburn and Phoenix.
+2. You can add a new subnet and DHCP option to the existing network. say eg after creating initial network, you have done customizations to the
+   network or created few instances. So now if you want to add a new subnet or a new DHCP option (without altering existing network), a new option (no 14)
+   has been introduced.
+
+------------------------
+SetUPOCI_Via_TF Tag 3.0
+------------------------
+New Features Added:
+1. Added support for Network Security Groups. A new sheet has been introduced in cd3 which contains information about NSGs to be created
+   and a new column added in Instances sheet which will define instance as part of NSG name.
+2. setUpOCI.py script now accepts setUpOCI.properties which contains input params. So you can use this properties file to specify input param paths
+   rather than giving at command prompt.
+

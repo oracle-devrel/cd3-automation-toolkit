@@ -62,28 +62,28 @@ def create_ingress_rule_string(row):
 
     if row['Protocol'] == 'tcp' and str(row['DPortMax']) and str(row['DPortMin']):
         tcp_option = " \t\ttcp_options {"
-        if str(row['DPortMax']):
-            dest_range = dest_range  + """
+
+        dest_range = dest_range  + """
             max = """ + str(row['DPortMax']) + """
             min = """ + str(row['DPortMin']) + """
             """
 
         #if not is_empty(row['Source']):
-        if str(row['SPortMax']) or str(row['SPortMin']):
-            source_rang= """
-            source_port_range {"""
-            if str(row['SPortMax']):
-                source_range = source_range + """
-                \t\tmax = """ + str(row['SPortMax']) + ""
-            if str(row['SPortMin']):
-                source_range = source_range + """
-                \t\tmin =  """ + str(row['SPortMin']) + ""
-            source_range = source_range + " \n\t\t\t\t}  """
+        #if str(row['SPortMax']) or str(row['SPortMin']):
+        #    source_rang= """
+        #    source_port_range {"""
+        #    if str(row['SPortMax']):
+        #        source_range = source_range + """
+        #        \t\tmax = """ + str(row['SPortMax']) + ""
+        #    if str(row['SPortMin']):
+        #        source_range = source_range + """
+        #        \t\tmin =  """ + str(row['SPortMin']) + ""
+        #    source_range = source_range + " \n\t\t\t\t}  """
 
-        options = tcp_option + dest_range + source_range + "\n\t\t   }"
+        #options = tcp_option + dest_range + source_range + "\n\t\t   }"
+        options = tcp_option + dest_range+ "\n\t\t   }"
         if dest_range == '' and source_range == '':
             options = ''
-    udp_option = ""
     if row['Protocol'] == 'udp' and str(row['DPortMax']) and str(row['DPortMin']):
         udp_option = " \t\tudp_options {"
 
@@ -92,18 +92,22 @@ def create_ingress_rule_string(row):
             min =  """ + str(row['DPortMin']) + """
             """
 
-        if str(row['SPortMax']) or str(row['SPortMin']):
-            source_range = """
-            source_port_range {"""
-            if str(row['SPortMax']):
-                source_range = source_range + """
-                    max = """ + str(row['SPortMax']) + ""
-            if str(row['SPortMin']):
-                source_range = source_range + """
-                    min =  """ + str(row['SPortMin']) + ""
-            source_range = source_range + " \n\t\t\t }  """
+        #if str(row['SPortMax']) or str(row['SPortMin']):
 
-        options = udp_option + dest_range + source_range + "\n\t\t   }"
+        #    source_range = """
+        #    source_port_range {"""
+        #    if str(row['SPortMax']):
+        #        source_range = source_range + """
+        #            max = """ + str(row['SPortMax']) + ""
+        #    if str(row['SPortMin']):
+        #        source_range = source_range + """
+        #            min =  """ + str(row['SPortMin']) + ""
+        #    source_range = source_range + " \n\t\t\t }  """
+
+        #options = udp_option + dest_range + source_range + "\n\t\t   }"
+        options = udp_option + dest_range + "\n\t\t   }"
+        if dest_range == '' and source_range == '':
+            options = ''
 
     close_bracket = "\n \t}"
 
@@ -503,7 +507,7 @@ if('.xls' in secrulesfilename):
             defaultname[reg].write(default_ruleStr[reg])
             defaultname[reg].close()
 
-
+        os.remove('out.csv')
     elif(overwrite=='no'):
         print("Reading AddSecRules sheet of cd3")
         df = pd.read_excel(secrulesfilename, sheet_name='AddSecRules',skiprows=1,dtype=object).to_csv('out.csv')
@@ -539,6 +543,7 @@ if('.xls' in secrulesfilename):
                     vcn_name=subnetName.split('for')[1].strip()
                     text_to_replace="##Add More rules for " + vcn_name + "##"
                     new_sec_rule = new_sec_rule + "\n" + text_to_replace
+                    backup_file(outdir +"/"+region,  sec_list_file)
                     updateSecRules(outdir +"/"+region+ "/" + sec_list_file, text_to_replace, new_sec_rule, 0)
 
 
@@ -547,10 +552,11 @@ if('.xls' in secrulesfilename):
                     print("file to modify ::::: " + sec_list_file)
                     text_to_replace = getReplacementStr(sec_rule_per_seclist, subnetName)
                     new_sec_rule = new_sec_rule + "\n" + text_to_replace
+                    backup_file(outdir +"/"+region, sec_list_file)
                     updateSecRules(outdir +"/"+region+ "/" + sec_list_file, text_to_replace, new_sec_rule, 0)
                     incrementRuleCount(subnetName)
 
-
+        os.remove('out.csv')
 # If input is a csv file
 elif ('.csv' in secrulesfilename):
     totalRowCount = sum(1 for row in csv.DictReader(skipCommentedLine(open(secrulesfilename))))
