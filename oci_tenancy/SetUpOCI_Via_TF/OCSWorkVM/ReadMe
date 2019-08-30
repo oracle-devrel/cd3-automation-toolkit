@@ -53,7 +53,5 @@ Note -
 -- We are creating shell_script which will be copied to VM after all other files are copied and is executed as cloud-init once Python script finishes execution.
    This is to ensure that required files are first copied over to the VM and then only we should start the configure process to avoid any conflicts.
 -- There are few sleep statements added in between the cmds so that execution happens properly and as required
--- Using Python 2.7 to compile the code as createPEMKeys.py rquires pycrypto module which did not get installed with Python3.7. Also to install this package,
-   you might need to install Microsoft Visual C++ Compiler. Download it from here: http://aka.ms/vcpython27
 -- ocswork.properties is accepting 3 keys that can be pushed at a time to the VM. OCI VM accespts null or empty values if you dont want to pass 3 at a time.
    But Only the first key (ssh_key1) would be pushed to the Panda VM on OCIC. OCIC doesnt accept null values for keys.

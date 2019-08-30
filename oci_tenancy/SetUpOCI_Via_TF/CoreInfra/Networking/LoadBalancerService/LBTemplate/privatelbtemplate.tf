@@ -1,4 +1,4 @@
-resource "oci_load_balancer" "##LBName##" {
+resource "oci_load_balancer_load_balancer" "##LBName##" {
   shape          = "##LBSize##Mbps"
   compartment_id = "${var.ntk_compartment_ocid}"
   subnet_ids     = [
@@ -6,6 +6,7 @@ resource "oci_load_balancer" "##LBName##" {
   ]
   display_name   = "##LBName##"
   is_private = true
+  ## NSG Info ##
 }
 
 resource "oci_load_balancer_backend_set" "##LB_BES_Name##" {

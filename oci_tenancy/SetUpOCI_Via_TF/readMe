@@ -11,7 +11,7 @@ Install the following:
 -----------------------------------------------------------------------------------------------------
 The script createPEMKeys.py creates public/private key pair in PEM format required for Terraform and Python APIs to communicate with OCI.
 Set up the OCI tenancy. The public key is copied to the user profile in OCI console. And private key and fingerprint is used as input in config file for python API
-and vairables.tf for Terraform.
+and variables.tf for Terraform.
 
 Install VC++ tools from https://visualstudio.microsoft.com/downloads/
 "Microsoft Visual C++ Redistributable for Visual Studio 2019"
@@ -28,7 +28,6 @@ output: oci_api_private.pem and oci_api_public.pem
    https://www.visualstudio.com/en-us/downloads/download-visual-studio-vs.aspx
    Download MS Visual Studio 2015 (Community Edition) and install the C/C++ compilers and the redistributable only.
 
--- Rest of the code is compiled with Python.7
 
 Setup OCI Communication using API
 ----------------------------------
@@ -108,4 +107,4 @@ where setUpOCI.properties is the input file which contains various input paths r
 
 
 Note-
-If you are running all scritps from your laptop you would need to install few more packages like pandas, openpyxl, xlrd etc
+If you are running all scripts from your laptop you would need to install few more packages like pandas, openpyxl, xlrd etc
