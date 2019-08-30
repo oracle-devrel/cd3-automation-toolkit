@@ -334,6 +334,11 @@ if('10' in userInput):
     print("------------------------Attaching Backup Policy to Boot Volumes---------------------------")
     if (input_format == 'cd3'):
         inputfile = input_cd3file
+    elif (input_format == 'csv'):
+        if (input_instances_csv == ''):
+            print("input instances_csv location cannot be left blank. Exiting... ")
+            exit(1)
+        inputfile = input_instances_csv
     outdir = input_outdir
 
     if not os.path.exists(outdir):
@@ -350,6 +355,11 @@ if('11' in userInput):
     print("------------------------Attaching Backup Policy to Block Volumes---------------------------")
     if (input_format == 'cd3'):
         inputfile = input_cd3file
+    elif (input_format == 'csv'):
+        if (input_blocks_csv == ''):
+            print("input blocks_csv location cannot be left blank. Exiting... ")
+            exit(1)
+        inputfile = input_blocks_csv
     outdir = input_outdir
 
     if not os.path.exists(outdir):
