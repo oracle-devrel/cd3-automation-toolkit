@@ -1,5 +1,5 @@
 ------------------------
-SetUPOCI_Via_TF Tag 1.0
+SetUPOCI_Via_TF Tag v1.0
 ------------------------
 Python Version used 3.7
 Packages required on your local system: oci, scp, paramiko, puttykeys, numpy, pycryptodome and pycryptodomex via pip (pip3)
@@ -21,7 +21,7 @@ Please go through readMe under SetUpOCI_ViaTF for details on how to use the auto
 It works for 2 regions currently: Ashburn and Phoenix ie it works for customer tenancy subscribed to Ashburn and Phoenix
 
 ------------------------
-SetUPOCI_Via_TF Tag 2.0
+SetUPOCI_Via_TF Tag v2.0
 ------------------------
 New Features Added:
 1. New Property is added in VCN-Info sheet which will accept regions that OCI tenancy is subscribed to. So Now the automation would
@@ -31,7 +31,7 @@ New Features Added:
    has been introduced.
 
 ------------------------
-SetUPOCI_Via_TF Tag 3.0
+SetUPOCI_Via_TF Tag v3.0
 ------------------------
 New Features Added:
 1. Added support for Network Security Groups. A new sheet has been introduced in cd3 which contains information about NSGs to be created
