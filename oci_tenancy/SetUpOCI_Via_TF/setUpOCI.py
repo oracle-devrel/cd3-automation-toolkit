@@ -74,7 +74,7 @@ print("11. Attach Back up policy to Block Volumes")
 print("12. Export Security Lists to CD3")
 print("13. Export Route Tables to CD3")
 print("14. Update Base Network Objects; Use this option only if you have already made changes/updates "
-      "to the configurations after initial Base Network Creation.\n    Else you should use Option 4 again with required changes to CD3 - It will overwrite all objects.")
+      "to the configurations after initial Base Network Creation.\n    Else you should use Option 4 again with required changes to CD3 - It will overwrite all network objects.")
 print("15. Network Security Groups")
 print("\nSee example folder for sample input files\n")
 userInput = input('Enter your choice; multiple choices allowed as comma separated: ')

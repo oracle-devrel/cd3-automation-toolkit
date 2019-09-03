@@ -77,28 +77,32 @@ if('.xls' in inputfile):
                 continue
             dest_cidr = df.iat[i, 4]
             dest_cidr = str(dest_cidr).strip()
-            dest_obj = df.iat[i, 5]
-            dest_obj = str(dest_obj).strip()
-            if('_ngw' in dest_obj.lower()):
-                dest_obj="${oci_core_nat_gateway." + dest_obj + ".id}"
+            dest_objs = df.iat[i, 5]
+            dest_objs = str(dest_objs).strip().split(":")
 
-            if ('_sgw' in dest_obj.lower()):
-                dest_obj = "${oci_core_service_gateway." + dest_obj + ".id}"
+            if ('ngw' in dest_objs[0].lower()):
+                dest_obj = "${oci_core_nat_gateway." + dest_objs[1] + ".id}"
 
-            if ('_igw' in dest_obj.lower()):
-                dest_obj = "${oci_core_internet_gateway." + dest_obj + ".id}"
+            elif ('sgw' in dest_objs[0].lower()):
+                dest_obj = "${oci_core_service_gateway." + dest_objs[1] + ".id}"
 
-            if ('_lpg' in dest_obj.lower()):
-                dest_obj = "${oci_core_local_peering_gateway." + dest_obj + ".id}"
+            elif ('igw' in dest_objs[0].lower()):
+                dest_obj = "${oci_core_internet_gateway." + dest_objs[1] + ".id}"
 
-            if ('_drg' in dest_obj.lower()):
-                dest_obj = "${oci_core_drg." + dest_obj + ".id}"
+            elif ('lpg' in dest_objs[0].lower()):
+                dest_obj = "${oci_core_local_peering_gateway." + dest_objs[1] + ".id}"
+            elif ('drg' in dest_objs[0].lower()):
+                dest_obj = "${oci_core_drg." + dest_objs[1] + ".id}"
+            else:
+                dest_obj = dest_objs[0]
 
 
             dest_type = df.iat[i, 6]
             dest_type = str(dest_type).strip()
             if('Route Table associated with DRG' in subnet_name):
-                rt_var = vcn_name + "_drg_rt"
+                drg_name = subnet_name.split('DRG ')[1].strip()
+                #rt_var = vcn_name + "_drg_rt"
+                rt_var = drg_name + "_rt"
             elif('Default Route Table for' in subnet_name):
                 continue;
             elif('Route Table associated with LPG' in subnet_name):
@@ -169,22 +173,23 @@ if('.xls' in inputfile):
             vcn_name = df.iat[i, 2]
             dest_cidr = df.iat[i, 4]
             dest_cidr = str(dest_cidr).strip()
-            dest_obj = df.iat[i, 5]
-            dest_obj = str(dest_obj).strip()
-            if ('_ngw' in dest_obj.lower()):
-                dest_obj = "${oci_core_nat_gateway." + dest_obj + ".id}"
+            dest_objs = df.iat[i, 5]
+            dest_objs = str(dest_objs).strip().split(":")
+            if ('ngw' in dest_objs[0].lower()):
+                dest_obj = "${oci_core_nat_gateway." + dest_objs[1] + ".id}"
 
-            if ('_sgw' in dest_obj.lower()):
-                dest_obj = "${oci_core_service_gateway." + dest_obj + ".id}"
+            elif ('sgw' in dest_objs[0].lower()):
+                dest_obj = "${oci_core_service_gateway." + dest_objs[1] + ".id}"
 
-            if ('_igw' in dest_obj.lower()):
-                dest_obj = "${oci_core_internet_gateway." + dest_obj + ".id}"
+            elif ('igw' in dest_objs[0].lower()):
+                dest_obj = "${oci_core_internet_gateway." + dest_objs[1] + ".id}"
 
-            if ('_lpg' in dest_obj.lower()):
-                dest_obj = "${oci_core_local_peering_gateway." + dest_obj + ".id}"
-
-            if ('_drg' in dest_obj.lower()):
-                dest_obj = "${oci_core_drg." + dest_obj + ".id}"
+            elif ('lpg' in dest_objs[0].lower()):
+                dest_obj = "${oci_core_local_peering_gateway." + dest_objs[1] + ".id}"
+            elif ('drg' in dest_objs[0].lower() and 'ocid1' not in dest_objs[0].lower()):
+                dest_obj = "${oci_core_drg." + dest_objs[1] + ".id}"
+            else:
+                dest_obj = dest_objs[0]
 
 
             dest_type = df.iat[i, 6]
@@ -242,15 +247,28 @@ elif ('.csv' in inputfile):
         if (route.strip() in endNames):
             break
         if not route.startswith('#') and route != '\n':
-            subnet_name = route.split(":")[0]
+            subnet_name = route.split(",")[0]
             subnet_name=subnet_name.strip()
-            dest_cidr = route.split(":")[1]
+            dest_cidr = route.split(",")[1]
             dest_cidr=dest_cidr.strip()
-            dest_obj = route.split(":")[2]
-            dest_obj=dest_obj.strip()
-            dest_type = route.split(":")[3]
+            dest_objs = route.split(",")[2]
+            dest_objs = dest_objs.strip().split(":")
+
+            if ('ngw' in dest_objs[0].lower()):
+                dest_obj = "${oci_core_nat_gateway." + dest_objs[1] + ".id}"
+            elif ('sgw' in dest_objs[0].lower()):
+                dest_obj = "${oci_core_service_gateway." + dest_objs[1] + ".id}"
+            elif ('igw' in dest_objs[0].lower()):
+                dest_obj = "${oci_core_internet_gateway." + dest_objs[1] + ".id}"
+            elif ('lpg' in dest_objs[0].lower()):
+                dest_obj = "${oci_core_local_peering_gateway." + dest_objs[1] + ".id}"
+            elif ('drg' in dest_objs[0].lower()):
+                dest_obj = "${oci_core_drg." + dest_objs[1] + ".id}"
+            else:
+                dest_obj = dest_objs[0]
+            dest_type = route.split(",")[3]
             dest_type = dest_type.strip()
-            region=route.split(":")[4]
+            region=route.split(",")[4]
             region=region.strip().lower()
             if region not in all_regions:
                 print("Invalid Region")
