@@ -80,7 +80,7 @@ def processDHCP(region,vcn_name,dhcp_option_name,compartment_var_name,serverType
 				search_domain_names = [ \"""" + search_domain + """" ]
 			}
 			vcn_id = "${oci_core_vcn.""" + vcn_name.strip() + """.id}"
-			display_name = \"""" + vcn_dhcp + """"
+			display_name = \"""" + dhcp_option_name + """"
 	}
 	"""
 	tfStr[region] = tfStr[region] + data
