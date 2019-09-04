@@ -47,6 +47,7 @@ if(input_format=='csv'):
         input_vcninfo=config.get('Default','vcn_info_file').strip()
         input_compartments_csv = config.get('Default', 'compartments_csv').strip()
         input_groups_csv = config.get('Default', 'groups_csv').strip()
+        input_dedicatedhosts_csv = config.get('Default', 'dedicatedhosts_csv').strip()
         input_instances_csv = config.get('Default', 'instances_csv').strip()
         input_blocks_csv = config.get('Default', 'blocks_csv').strip()
         input_tag_servers_csv = config.get('Default', 'tag_servers_csv').strip()
@@ -54,6 +55,7 @@ if(input_format=='csv'):
         input_add_routes_csv = config.get('Default', 'add_routes_csv').strip()
         input_add_secrules_csv = config.get('Default', 'add_secrules_csv').strip()
         input_nsgs_csv = config.get('Default', 'nsgs_csv').strip()
+
     except Exception as e:
         print(e)
         print('Check if input properties exist and try again..exiting...`    ')
@@ -64,7 +66,7 @@ print("1.  Create Compartments")
 print("2.  Create Groups")
 print("3.  Create Policies")
 print("4.  Create Base Network Objects")
-print("5.  Create Instances")
+print("5.  Create Instances/Dedicated VM Hosts")
 print("6.  Create and Attach Block Volumes")
 print("7.  Tagging Resources")
 print("8.  Modify Route Rules in existing Route Table")
@@ -164,26 +166,50 @@ if('4' in userInput):
     print("--------------------------------------------------------------------------")
 
 if('5' in userInput):
-    print("--------------------Creating Instances------------------------------------")
-    if (input_format=='cd3'):
-        inputfile=input_cd3file
-    elif(input_format=='csv'):
-        if (input_instances_csv == ''):
-            print("input instances_csv location cannot be left blank. Exiting... ")
-            exit(1)
-        inputfile=input_instances_csv
-    outdir = input_outdir
-    prefix = input_prefix
+    print("--------------------Creating Instances/Dedicated VM Hosts------------------------------------")
+    print("1.  Create Dedicated VM Hosts")
+    print("2.  Create Instances")
 
-    if not os.path.exists(outdir):
-        os.makedirs(outdir)
+    choice = input("Enter your choice; multiple choices allowed as comma separated ")
+    choice = choice.split(",")
+    if ('1' in choice):
+        if (input_format=='cd3'):
+            inputfile=input_cd3file
+        elif(input_format=='csv'):
+            if (input_dedicatedhosts_csv == ''):
+                print("input instances_csv location cannot be left blank. Exiting... ")
+                exit(1)
+            inputfile=input_dedicatedhosts_csv
+        outdir = input_outdir
 
-    os.chdir('CoreInfra/Compute')
-    command = 'python create_terraform_instances.py '+inputfile + ' ' + outdir
-    print("Executing Command: " + command)
-    os.system(command)
-    os.chdir("../..")
-    print("--------------------------------------------------------------------------")
+        if not os.path.exists(outdir):
+            os.makedirs(outdir)
+
+        os.chdir('CoreInfra/Compute')
+        command = 'python create_terraform_dedicatedhosts.py '+inputfile + ' ' + outdir
+        print("Executing Command: " + command)
+        os.system(command)
+        os.chdir("../..")
+        print("--------------------------------------------------------------------------")
+    if ('2' in choice):
+        if (input_format == 'cd3'):
+            inputfile = input_cd3file
+        elif (input_format == 'csv'):
+            if (input_instances_csv == ''):
+                print("input instances_csv location cannot be left blank. Exiting... ")
+                exit(1)
+            inputfile = input_instances_csv
+        outdir = input_outdir
+
+        if not os.path.exists(outdir):
+            os.makedirs(outdir)
+
+        os.chdir('CoreInfra/Compute')
+        command = 'python create_terraform_instances.py ' + inputfile + ' ' + outdir
+        print("Executing Command: " + command)
+        os.system(command)
+        os.chdir("../..")
+        print("--------------------------------------------------------------------------")
 
 if('6' in userInput):
     print("------------------------Creating BlockVolumes---------------------------")
