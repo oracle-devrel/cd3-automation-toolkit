@@ -48,17 +48,18 @@ if len(sys.argv) < 2:
 args = parser.parse_args()
 filename = args.file
 outdir = args.outdir
-
+endNames = {'<END>', '<end>'}
 
 #If input is CD3 excel file
 if('.xls' in filename):
-    df_info = pd.read_excel(filename, sheet_name='VCN Info', skiprows=1)
-    properties = df_info['Property']
-    values = df_info['Value']
+    #df_info = pd.read_excel(filename, sheet_name='VCN Info', skiprows=1)
+    #properties = df_info['Property']
+    #values = df_info['Value']
 
-    all_regions = str(values[7]).strip()
-    all_regions = all_regions.split(",")
-    all_regions = [x.strip().lower() for x in all_regions]
+    #all_regions = str(values[7]).strip()
+    #all_regions = all_regions.split(",")
+    #all_regions = [x.strip().lower() for x in all_regions]
+    all_regions = os.listdir(outdir)
 
     df = pd.read_excel(filename, sheet_name='Instances',skiprows=1)
     for row in df.index:
@@ -70,32 +71,42 @@ if('.xls' in filename):
 
     for row in df.index:
         copy_template_file(df['Hostname'][row], df['OS'][row],df['Region'][row])
-    for i in df.keys():
-        for j in df.index:
+    #for i in df.keys():
+    #    for j in df.index:
+    for j in df.index:
+        for i in df.keys():
+            if(str(df[i][j]) in endNames):
+                exit()
+            if (re.match('DedicatedVMHost', i, flags=re.IGNORECASE)):
+                dedicated_host=str(df[i][j])
+                if(dedicated_host!='nan'):
+                    dedicated_host_str="""dedicated_vm_host_id = "${oci_core_dedicated_vm_host."""+dedicated_host+""".id}" """
+                    replaceAllplaceholders(outdir + '/' + df['Region'][j].strip().lower() + '/' + df['Hostname'][j] + '.tf','##' + i + '##', dedicated_host_str)
+                continue
             if (re.match('NSGs', i, flags=re.IGNORECASE)):
                 NSG_col = str(df[i][j])
                 if NSG_col != 'nan':
-                    nsg_ids = "nsg_ids=""[ "
+                    nsg_str = "nsg_ids=""[ "
                     NSGs = NSG_col.split(",")
                     k = 0
                     while k < len(NSGs):
-                        nsg_ids = nsg_ids + """"${oci_core_network_security_group.""" + NSGs[k].strip() + """.id}" """
+                        nsg_str = nsg_str + """"${oci_core_network_security_group.""" + NSGs[k].strip() + """.id}" """
                         if (k != len(NSGs) - 1):
-                            nsg_ids = nsg_ids + ","
+                            nsg_str = nsg_str + ","
                         else:
-                            nsg_ids = nsg_ids + " ]"
+                            nsg_str = nsg_str + " ]"
                         k += 1
-                    replaceAllplaceholders(outdir + '/' + df['Region'][j].strip().lower() + '/' + df['Hostname'][j] + '.tf','## NSG Info ##', nsg_ids)
+                    replaceAllplaceholders(outdir + '/' + df['Region'][j].strip().lower() + '/' + df['Hostname'][j] + '.tf','##' + i + '##', nsg_str)
                 continue
 
             if (re.match('Availability domain', i, flags=re.IGNORECASE)):
-                if ('AD1' in df[i][j] or 'ad1' in df[i][j]):
+                if ('ad1' in str(df[i][j]).lower()):
                     replaceAllplaceholders(outdir + '/' + df['Region'][j].strip().lower()+'/'+df['Hostname'][j] + '.tf', '##' + i + '##', '0')
                     continue
-                if ('AD2' in df[i][j] or 'ad2' in df[i][j]):
+                if ('ad2' in str(df[i][j]).lower()):
                     replaceAllplaceholders(outdir + '/' + df['Region'][j].strip().lower()+ '/'+df['Hostname'][j] + '.tf', '##' + i + '##', '1')
                     continue
-                if ('AD3' in df[i][j] or 'ad3' in df[i][j]):
+                if ('ad3' in str(df[i][j]).lower()):
                     replaceAllplaceholders(outdir + '/' + df['Region'][j].strip().lower()+ '/'+df['Hostname'][j] + '.tf', '##' + i + '##', '2')
                     continue
             if (str(df[i][j]) == 'nan'):
@@ -121,21 +132,31 @@ elif('.csv' in filename):
         for row in reader:
             copy_template_file(row['Hostname'], row['OS'],row['Region'])
             for column in columns:
+                if (row['Region'] in endNames):
+                    exit()
+
+                if (re.match('DedicatedVMHost', column, flags=re.IGNORECASE)):
+                    dedicated_host = row[column]
+                    if (dedicated_host != 'nan'):
+                        dedicated_host_str = """dedicated_vm_host_id = "${oci_core_dedicated_vm_host.""" + dedicated_host + """.id}" """
+                        replaceAllplaceholders(outdir + '/' + row['Region'].strip().lower() + '/' + row['Hostname'] + '.tf','##' + column + '##', dedicated_host_str)
+                    continue
+
                 if (re.match('NSGs', column, flags=re.IGNORECASE)):
                     NSG_col = row[column]
                     if NSG_col != '':
-                        nsg_ids = "nsg_ids=""[ "
+                        nsg_str = "nsg_ids=""[ "
                         NSGs = NSG_col.split(":")
                         k = 0
                         while k < len(NSGs):
-                            nsg_ids = nsg_ids + """"${oci_core_network_security_group.""" + NSGs[
+                            nsg_str = nsg_str + """"${oci_core_network_security_group.""" + NSGs[
                                 k].strip() + """.id}" """
                             if (k != len(NSGs) - 1):
-                                nsg_ids = nsg_ids + ","
+                                nsg_str = nsg_str + ","
                             else:
-                                nsg_ids = nsg_ids + " ]"
+                                nsg_str = nsg_str + " ]"
                             k += 1
-                        replaceAllplaceholders(outdir + '/' + row['Region'].strip().lower() + '/' + row['Hostname'] + '.tf','## NSG Info ##', nsg_ids)
+                        replaceAllplaceholders(outdir + '/' + row['Region'].strip().lower() + '/' + row['Hostname'] + '.tf','##' + column + '##', nsg_str)
 
                 if(re.match('Availability domain',column,flags=re.IGNORECASE)):
                     if ('AD1' in row[column]):

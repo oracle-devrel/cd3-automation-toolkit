@@ -59,7 +59,7 @@ if ('.xls' in filename):
                         else:
                             nsg_ids=nsg_ids+" ]"
                         i+=1
-                textToSearch1 = "## NSG Info ##"
+                textToSearch1 = "##NSGs##"
                 textToSearch2 = "nsg_ids="
 
                 if(nsg_exist==1):

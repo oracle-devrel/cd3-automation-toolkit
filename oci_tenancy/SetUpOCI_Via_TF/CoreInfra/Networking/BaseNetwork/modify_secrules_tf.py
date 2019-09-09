@@ -178,41 +178,52 @@ def create_egress_rule_string(row):
 def init_subnet_details(subnetid ,vcn_display_name, seclist_per_subnet, sec_rule_per_seclist, overwrite):
     global create_def_file
     subnet = vnc.get_subnet(subnetid)
-    #seclist_file = subnet.data.display_name.rsplit("-", 1)[0].strip() + "_seclist.tf"
-    #seclist_files[subnet.data.display_name.rsplit("-", 1)[0].strip()] = seclist_file
+    """
     display_name=subnet.data.display_name
-#    print("subnet -------------------------------------"+display_name)
+    
     if ('-ad1-10.' in display_name or '-ad2-10.' in display_name or '-ad3-10.' in display_name or '-ad1-172.' in display_name
             or '-ad2-172.' in display_name or '-ad3-172.' in display_name or '-ad1-192.' in display_name or '-ad2-192.' in display_name
             or '-ad3-192.' in display_name):
         subnet_name= display_name.rsplit("-", 2)[0]
-        seclist_file = subnet_name+'_seclist.tf'
-        seclist_files[display_name.rsplit("-", 2)[0]]=seclist_file
+        #seclist_file = subnet_name+'_seclist.tf'
+        #seclist_files[display_name.rsplit("-", 2)[0]]=seclist_file
 
 
     # display name contains CIDR
     elif ('-10.' in display_name or '-172.' in display_name or '192.' in display_name):
         subnet_name = display_name.rsplit("-", 1)[0]
-        seclist_file = subnet_name+'_seclist.tf'
-        seclist_files[subnet_name] = seclist_file
- #       print('subnet seclist_file===12'+seclist_file)
+        #seclist_file = subnet_name+'_seclist.tf'
+        #seclist_files[subnet_name] = seclist_file
     else:
         subnet_name = display_name
-        seclist_file = subnet_name+'_seclist.tf'
-        seclist_files[subnet_name] = seclist_file
-  #      print('subnet seclist_file===13'+seclist_file)
+        #seclist_file = subnet_name+'_seclist.tf'
+        #seclist_files[subnet_name] = seclist_file
 
-    seclist_rule_count_limit[subnet_name] = sec_rule_per_seclist
 
+    #seclist_rule_count_limit[subnet_name] = sec_rule_per_seclist
+    """
     rule_count = 0
     for seclist_id in subnet.data.security_list_ids:
-
         seclistname_display_name = vnc.get_security_list(seclist_id).data.display_name
         if (seclistname_display_name != "Default Security List for "+vcn_display_name):
             ingressRules = vnc.get_security_list(seclist_id).data.ingress_security_rules
             egressRules = vnc.get_security_list(seclist_id).data.egress_security_rules
             rule_count = rule_count + len(ingressRules)+len(egressRules)
-            seclist_rule_count[subnet_name] = rule_count
+            #seclist_rule_count[subnet_name] = rule_count
+            if ('-ad1-10.' in seclistname_display_name or '-ad2-10.' in seclistname_display_name or '-ad3-10.' in seclistname_display_name or '-ad1-172.' in seclistname_display_name
+                    or '-ad2-172.' in seclistname_display_name or '-ad3-172.' in seclistname_display_name or '-ad1-192.' in seclistname_display_name or '-ad2-192.' in seclistname_display_name
+                    or '-ad3-192.' in seclistname_display_name):
+                secname = seclistname_display_name.rsplit("-", 3)[0]
+
+            # display name contains CIDR
+            elif ('-10.' in seclistname_display_name or '-172.' in seclistname_display_name or '192.' in seclistname_display_name):
+                secname = seclistname_display_name.rsplit("-", 2)[0]
+
+            else:
+                secname = seclistname_display_name.rsplit("-",1)[0]
+
+            seclist_rule_count[secname] = rule_count
+            seclist_rule_count_limit[secname] = sec_rule_per_seclist
 
 def updateSecRules(seclistfile, text_to_replace, new_sec_rule, flags=0):
         with open(seclistfile, "r+") as file:
@@ -309,6 +320,7 @@ seclist_per_subnet_limit ={}
 endNames = {'<END>', '<end>'}
 
 # Read vcn info file and get subnet info
+
 if('.properties' in args.inputfile):
     ociprops = configparser.RawConfigParser()
     ociprops.read(args.inputfile)
@@ -524,7 +536,7 @@ if('.xls' in secrulesfilename):
                 if(region=='<END>' or region=='<end>'):
                     break
 
-                subnetName = row['SubnetName']
+                subnetName = row['SubnetName/SecurityListName']
                 protocol = row['Protocol']
                 ruleType = row['RuleType']
                 region = region.strip().lower()
@@ -548,9 +560,11 @@ if('.xls' in secrulesfilename):
 
 
                 elif(subnetName!=''):
-                    sec_list_file = seclist_files[subnetName]
+                    #sec_list_file = seclist_files[subnetName]
+                    sec_list_file=subnetName+"_seclist.tf"
                     print("file to modify ::::: " + sec_list_file)
-                    text_to_replace = getReplacementStr(sec_rule_per_seclist, subnetName)
+                    #text_to_replace = getReplacementStr(sec_rule_per_seclist, subnetName)
+                    text_to_replace = getReplacementStr(seclist_rule_count_limit[subnetName], subnetName)
                     new_sec_rule = new_sec_rule + "\n" + text_to_replace
                     backup_file(outdir +"/"+region, sec_list_file)
                     updateSecRules(outdir +"/"+region+ "/" + sec_list_file, text_to_replace, new_sec_rule, 0)
@@ -565,7 +579,7 @@ elif ('.csv' in secrulesfilename):
         columns = reader.fieldnames
         rowCount = 0
         for row in reader:
-            subnetName = row['SubnetName']
+            subnetName = row['SubnetName/SecurityListName']
             if(subnetName=='<END>' or subnetName=='<end>'):
                 break
 
@@ -581,9 +595,11 @@ elif ('.csv' in secrulesfilename):
                     new_sec_rule = create_egress_rule_string(row)
 
 
-            sec_list_file = seclist_files[subnetName]
+            #sec_list_file = seclist_files[subnetName]
+            sec_list_file = subnetName + "_seclist.tf"
             print("file to modify ::::: "+ sec_list_file )
-            text_to_replace = getReplacementStr(sec_rule_per_seclist,subnetName)
+            #text_to_replace = getReplacementStr(sec_rule_per_seclist,subnetName)
+            text_to_replace = getReplacementStr(seclist_rule_count_limit[subnetName], subnetName)
             new_sec_rule = new_sec_rule + "\n" + text_to_replace
             updateSecRules(outdir +"/"+region+ "/" + sec_list_file, text_to_replace, new_sec_rule, 0)
             incrementRuleCount(subnetName)

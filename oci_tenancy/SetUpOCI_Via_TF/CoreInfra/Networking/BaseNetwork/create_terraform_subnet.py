@@ -56,7 +56,7 @@ data "oci_identity_availability_domains" "ADs" {
 
 ADS = ["AD1", "AD2", "AD3"]
 
-def processSubnet(region,vcn_name,name,subnet,AD,dnslabel,pubpvt,compartment_var_name,vcn_add_defaul_seclist,seclists_per_subnet):
+def processSubnet(region,vcn_name,name,rt_name,seclist_name,subnet,AD,dnslabel,pubpvt,compartment_var_name,vcn_add_defaul_seclist,seclists_per_subnet):
 	if (AD.strip().lower() != 'regional'):
 		AD = AD.strip().upper()
 		ad = ADS.index(AD)
@@ -67,6 +67,7 @@ def processSubnet(region,vcn_name,name,subnet,AD,dnslabel,pubpvt,compartment_var
 	else:
 		ad_name = ""
 		adString = """availability_domain = "" """
+
 	subnet_res_name = name
 	if (str(ad_name) != ''):
 		name1 = name + "-ad" + str(ad_name)
@@ -77,28 +78,38 @@ def processSubnet(region,vcn_name,name,subnet,AD,dnslabel,pubpvt,compartment_var
 	else:
 		display_name = name
 
-	# name = name1
-	# dnslabel = re.sub('-', '', name)
 
 	data = """
     resource "oci_core_subnet" \"""" + subnet_res_name + """" {
     	compartment_id = "${var.""" + compartment_var_name + """}" 
     	""" + adString + """			
-    	route_table_id      = "${oci_core_route_table.""" + name + """.id}"
     	vcn_id = "${oci_core_vcn.""" + str(vcn_name) + """.id}" """
+
+	if(rt_name==''):
+		rt=name
+	else:
+		rt=rt_name
+	data = data + """
+		route_table_id   = "${oci_core_route_table.""" + rt + """.id}" """
+
+	if(seclist_name==''):
+		sec_name=name
+	else:
+		sec_name=seclist_name
 
 	seclist_ids = ""
 	if vcn_add_defaul_seclist == "y":
 		seclist_ids = """\"${oci_core_vcn.""" + vcn_name + """.default_security_list_id}","""
 	j = 1
 	while j < seclists_per_subnet:
-		seclist_ids = seclist_ids + """\"${oci_core_security_list.""" + name + "-" + str(j) + """.id}","""
+		seclist_ids = seclist_ids + """\"${oci_core_security_list.""" + sec_name + "-" + str(j) + """.id}","""
 		j = j + 1
 	while j <= seclists_per_subnet:
-		seclist_ids = seclist_ids + """\"${oci_core_security_list.""" + name + "-" + str(j) + """.id}" """
+		seclist_ids = seclist_ids + """\"${oci_core_security_list.""" + sec_name + "-" + str(j) + """.id}" """
 		j = j + 1
 	data = data + """
     	security_list_ids   = [ """ + seclist_ids + """ ]"""
+
 	if (str(dhcp).lower() != 'nan' and str(dhcp)!=''):
 		data = data + """
     	dhcp_options_id     = "${oci_core_dhcp_options.""" + str(dhcp).strip() + """.id}" """
@@ -170,19 +181,32 @@ if('.xls' in filename):
 		pubpvt = df.iat[i, 5]
 		pubpvt=pubpvt.strip()
 		dhcp=df.iat[i,6]
+		rt_name=df.iat[i,7]
+		seclist_name=df.iat[i,8]
 
 		if(str(dhcp).lower() !='nan'):
 			dhcp = vcn_name + "_" + dhcp
+
 		compartment_var_name=compartment_var_name.strip()
 
-		dnslabel = df.iat[i, 10]
+		dnslabel = df.iat[i, 12]
 		# check if subnet_dns_label is not given by user in input use subnet name
 		if (str(dnslabel).lower() == NaNstr.lower()):
 			regex = re.compile('[^a-zA-Z0-9]')
 			subnet_dns = regex.sub('', name)
 			dnslabel = (subnet_dns[:15]) if len(subnet_dns) > 15 else subnet_dns
 
-		processSubnet(region,vcn_name,name,subnet,AD,dnslabel,pubpvt,compartment_var_name,vcn_add_defaul_seclist,seclists_per_subnet)
+		if (str(rt_name).lower() != 'nan'):
+			rt_name = rt_name.strip()
+		else:
+			rt_name = ''
+
+		if (str(seclist_name).lower() != 'nan'):
+			seclist_name = seclist_name.strip()
+		else:
+			seclist_name = ''
+
+		processSubnet(region,vcn_name,name,rt_name,seclist_name,subnet,AD,dnslabel,pubpvt,compartment_var_name,vcn_add_defaul_seclist,seclists_per_subnet)
 
 # If CD3 excel file is not given as input
 elif('.properties' in filename):
@@ -223,7 +247,7 @@ elif('.properties' in filename):
 		# Read subnet file
 		for line in fname:
 			if not line.startswith('#') and line !='\n':
-				[compartment_var_name,name, sub, AD, pubpvt, dhcp, SGW, NGW, IGW,dnslabel] = line.split(',')
+				[compartment_var_name,name, sub, AD, pubpvt, dhcp, rt_name,seclist_name,SGW, NGW, IGW,dnslabel] = line.split(',')
 				linearr = line.split(",")
 				compartment_var_name = linearr[0].strip()
 				name = linearr[1].strip()
@@ -239,7 +263,7 @@ elif('.properties' in filename):
 					subnet_dns = regex.sub('', name)
 					dnslabel = (subnet_dns[:15]) if len(subnet_dns) > 15 else subnet_dns
 
-					processSubnet(region, vcn_name, name, subnet, AD, dnslabel, pubpvt, compartment_var_name,vcn_add_defaul_seclist, seclists_per_subnet)
+					processSubnet(region, vcn_name, name, rt_name.strip(),seclist_name.strip(),subnet, AD, dnslabel, pubpvt, compartment_var_name,vcn_add_defaul_seclist, seclists_per_subnet)
 else:
     print("Invalid input file format; Acceptable formats: .xls, .xlsx, .properties")
     exit()

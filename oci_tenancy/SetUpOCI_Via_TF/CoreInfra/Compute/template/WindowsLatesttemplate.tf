@@ -2,14 +2,14 @@ resource "oci_core_instance" "##Hostname##" {
         #Required
         availability_domain = "${data.oci_identity_availability_domains.ADs.availability_domains.##Availability Domain##.name}"
         compartment_id = "${var.##Compartment Name##}"
+        shape = "##Shape##"
+
+        #Optional
         fault_domain = "##Fault Domain##"
-        ### windows image id - oci image ###
-        #image = "${var.windows2012_image_ocid}"
         source_details {
 	        source_id  = "${var.windows_latest_ocid}"
             source_type = "image"
         }
-	    shape = "##Shape##"
 
 
         #Optional
@@ -23,11 +23,16 @@ resource "oci_core_instance" "##Hostname##" {
                 hostname_label = "##Hostname##"
                 private_ip = "##IP Address##"
                 skip_source_dest_check = false
-                ## NSG Info ##
+
+                ##NSGs##
         }
+
+        ##DedicatedVMHost##
+
         display_name = "##Hostname##"
         hostname_label = "##Hostname##"
         subnet_id = "${oci_core_subnet.##subnet name##.id}"
+
         ## Defined Tag Info ##
 }
 

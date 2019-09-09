@@ -54,7 +54,7 @@ else:
 
 
 fname = None
-oname={}
+oname=None
 
 #create VCN LPG rules
 vcn_lpg_rules = {}
@@ -98,7 +98,7 @@ def createLPGSecRules(peering_dict):
                     vcn_lpg_rules[right_vcn] = vcn_lpg_rules[right_vcn] + ruleStr
 
 
-def processSubnet(region,vcn_name,AD,seclists_per_subnet,name,subnet_name_attach_cidr,compartment_var_name):
+def processSubnet(region,vcn_name,AD,seclists_per_subnet,name,seclist_name,subnet_name_attach_cidr,compartment_var_name):
 
     j = 0
     if (AD.strip().lower() != 'regional'):
@@ -108,28 +108,55 @@ def processSubnet(region,vcn_name,AD,seclists_per_subnet,name,subnet_name_attach
         ad_name = str(ad_name_int)
     else:
         ad_name = ""
-    outfile=outdir+"/"+region+"/"+name+ "_seclist.tf"
-    oname[region]=open(outfile, "w")
-    print(outfile+" containing TF for seclist has been created for region " + region)
-    """if (region == 'ashburn'):
-        oname = open(ash_dir + "/" + name + "_seclist.tf", "w")
-    elif (region == 'phoenix'):
-        oname = open(phx_dir + "/" + name + "_seclist.tf", "w")
-    """
+
+    if(seclist_name==''):
+        outfile=outdir+"/"+region+"/"+name+ "_seclist.tf"
+    else:
+        outfile = outdir + "/" + region + "/" + seclist_name + "_seclist.tf"
+
+    #Same seclist used for subnets
+    if(os.path.exists(outfile)):
+        Str= """
+                        ingress_security_rules {
+                            protocol = "all"
+                            source = \"""" + subnet + """"
+                        }
+                        
+                        ####ADD_NEW_SEC_RULES####1
+                    """
+        with open(outfile, 'r+') as file:
+            filedata = file.read()
+        file.close()
+        # Replace the target string
+        textToSearch="####ADD_NEW_SEC_RULES####1"
+        filedata = filedata.replace(textToSearch, Str)
+        oname = open(outfile, "w")
+        oname.write(filedata)
+        oname.close()
+        return
+
+    #New Seclist
+    oname = open(outfile, "w")
     while j < seclists_per_subnet:
-        seclistname = name + "-" + str(j + 1)
+        #seclist name not provided; use subnetname as seclistname
+        if(seclist_name==''):
+            seclistname = name + "-" + str(j + 1)
+            if (str(ad_name) != ''):
+                name1 = seclistname + "-ad" + str(ad_name)
+            else:
+                name1 = seclistname
 
-        if (str(ad_name) != ''):
-            name1 = seclistname + "-ad" + str(ad_name)
+            #check if subnet codr needs to be attached
+            if (subnet_name_attach_cidr == 'y'):
+                display_name = name1 + "-" + subnet
+            else:
+                display_name = seclistname
+        #seclist name provided
         else:
-            name1 = seclistname
+            seclistname = seclist_name + "-" + str(j + 1)
+            #no need to attach subnet cidr to display name
+            display_name=seclistname
 
-        if (subnet_name_attach_cidr == 'y'):
-            # display_name = seclistname + "-" + subnet
-            display_name = name1 + "-" + subnet
-        else:
-            # display_name = name + "-" + str(j + 1)
-            display_name = seclistname
 
         tempStr = """
         resource "oci_core_security_list" \"""" + seclistname + """"{
@@ -148,7 +175,7 @@ def processSubnet(region,vcn_name,AD,seclists_per_subnet,name,subnet_name_attach
                 tempStr = tempStr + vcn_lpg_rules[vcn_name]
 
             if (add_ping_sec_rules_onprem == 'y'):
-                if (hub_spoke_none == 'hub' or vcn_drg == 'y' or hub_spoke_none == 'spoke'):
+                if (hub_spoke_none == 'hub' or vcn_drg != 'n' or hub_spoke_none == 'spoke'):
                     for drg_destination in drg_destinations:
                         if (drg_destination != ''):
                             tempStr = tempStr + """
@@ -171,9 +198,10 @@ def processSubnet(region,vcn_name,AD,seclists_per_subnet,name,subnet_name_attach
                         ####ADD_NEW_SEC_RULES####""" + str(j + 1) + """
                     }
                     """
-        oname[region].write(tempStr)
+        oname.write(tempStr)
         j = j + 1
-
+    oname.close()
+    print(outfile + " containing TF for seclist has been created for region " + region)
 
 endNames = {'<END>', '<end>'}
 #If input is CD3 excel file
@@ -250,7 +278,7 @@ if('.xls' in filename):
             vcn_data = df_vcn.loc[vcn_name]
             region=vcn_data['Region']
             region=region.strip().lower()
-            vcn_drg = vcn_data['drg_required(y|n)']
+            vcn_drg = vcn_data['drg_required']
             hub_spoke_none = vcn_data['hub_spoke_none']
             sps = vcn_data['sec_list_per_subnet']
 
@@ -261,11 +289,16 @@ if('.xls' in filename):
             subnet=subnet.strip()
             AD = df.iat[i, 4]
             AD=AD.strip()
+            seclist_name = df.iat[i, 8]
+            if (str(seclist_name).lower() != 'nan'):
+                seclist_name=seclist_name.strip()
+            else:
+                seclist_name=''
             compartment_var_name=compartment_var_name.strip()
 
             seclists_per_subnet = int(sps)
 
-            processSubnet(region,vcn_name,AD,seclists_per_subnet,name,subnet_name_attach_cidr,compartment_var_name)
+            processSubnet(region,vcn_name,AD,seclists_per_subnet,name,seclist_name,subnet_name_attach_cidr,compartment_var_name)
 
 # If CD3 excel file is not given as input
 elif('.properties' in filename):
@@ -330,12 +363,12 @@ elif('.properties' in filename):
             for line in fname:
                     i = 0
                     if not line.startswith('#') and line !='\n':
-                            [compartment_var_name, name, sub, AD, pubpvt, dhcp, SGW, NGW, IGW,dns_label] = line.split(',')
+                            [compartment_var_name, name, sub, AD, pubpvt, dhcp, rt_name,seclist_name,SGW, NGW, IGW,dns_label] = line.split(',')
                             linearr = line.split(",")
                             compartment_var_name = linearr[0].strip()
                             name = linearr[1].strip()
                             subnet = linearr[2].strip()
-                            processSubnet(region, vcn_name, AD, seclists_per_subnet, name, subnet_name_attach_cidr,compartment_var_name)
+                            processSubnet(region, vcn_name, AD, seclists_per_subnet, name, seclist_name.strip(),subnet_name_attach_cidr,compartment_var_name)
 
 else:
     print("Invalid input file format; Acceptable formats: .xls, .xlsx, .properties")

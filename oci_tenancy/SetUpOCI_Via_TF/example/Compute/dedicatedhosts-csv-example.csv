@@ -1,0 +1,5 @@
+#Dedicated VM Hosts
+#All fields mandatory except Fault Domain
+#Region,Compartment Name,Hostname,Availability domain,Fault Domain,Shape
+Phoenix,OCICtoOCI,VM3,AD1,,DVH.Standard2.52
+Ashburn,Demo,VM2,AD2,FAULT-DOMAIN-3,DVH.Standard2.52

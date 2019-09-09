@@ -39,3 +39,23 @@ New Features Added:
 2. setUpOCI.py script now accepts setUpOCI.properties which contains input params. So you can use this properties file to specify input param paths
    rather than giving at command prompt.
 
+------------------------
+SetUPOCI_Via_TF Tag v3.1
+------------------------
+1. Added Support to enter names for VCN components- IGW, NGW, DRG and SGW. And also for route table and seclist attached to the subnets.
+   This helps with customers who prefer to chose specific naming convention for all the components.
+   How To Specify:
+   -----------------
+   a.) In VCNs Tab, under each column for the component like for drg_required, it accepts 3 values: y, n or component name.
+   n means the component is not to be configured for the VCN, y means component would be configured with default name eg <vcn name>_DRG
+   and if you specify some other text, the component will be configured with that text as the name of that component eg ashprodNGW in sample
+   cd3 in example folder
+
+   b.) For SecList Name and Route Table name, 2 columns have been created in Subnets Tab. If the column is left empty, default naming(same as subnet name) would
+   be used for that route table or seclist name attached to that subnet. If you specify some name for seclist eg devqa_seclist then that many number of
+   security lists as defined in VCNs tab would be created for the subnet with naming as eg devqa_seclist-1, devqa_seclist-2, devqa_seclist-3
+   Also you can specify same route table name or seclist name for multiple subnets, it would attach same route table or seclists to those subnets.
+
+2. Added Support for Dedicated VM Hosts.
+   New sheet to specify Dedicated VM Host details has been introduced and a new column has been added in th Instances sheet if the instance needs to be launched
+   in that dedicated VM Host

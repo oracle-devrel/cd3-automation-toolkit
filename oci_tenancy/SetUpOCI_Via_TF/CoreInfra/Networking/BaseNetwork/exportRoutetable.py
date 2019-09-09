@@ -42,37 +42,32 @@ def get_vcns(config,compartment_id):
     vcnlist = vcncient.list_vcns(compartment_id=compartment_id,lifecycle_state="AVAILABLE")
     return vcnlist
 
-def get_network_entity_name(network_identity_id):
-
+def get_network_entity_name(config,network_identity_id):
+    vcn1 = VirtualNetworkClient(config)
     if('internetgateway' in network_identity_id):
-        igw=vcn.get_internet_gateway(network_identity_id)
-        #network_identity_name="${oci_core_internet_gateway."+igw.data.dislay_name+".id}"
-        network_identity_name = igw.data.display_name
+        igw=vcn1.get_internet_gateway(network_identity_id)
+        network_identity_name = "igw:"+igw.data.display_name
         return  network_identity_name
 
     if ('servicegateway' in network_identity_id):
-        sgw = vcn.get_service_gateway(network_identity_id)
-        # network_identity_name="${oci_core_internet_gateway."+igw.data.dislay_name+".id}"
-        network_identity_name = sgw.data.display_name
+        sgw = vcn1.get_service_gateway(network_identity_id)
+        network_identity_name = "sgw:"+sgw.data.display_name
         return network_identity_name
 
 
     if ('natgateway' in network_identity_id):
-        ngw = vcn.get_nat_gateway(network_identity_id)
-        #network_identity_name = "${oci_core_nat_gateway." + ngw.data.display_name + ".id}"
-        network_identity_name = ngw.data.display_name
+        ngw = vcn1.get_nat_gateway(network_identity_id)
+        network_identity_name = "ngw:"+ngw.data.display_name
         return network_identity_name
 
     if ('localpeeringgateway' in network_identity_id):
-        lpg = vcn.get_local_peering_gateway(network_identity_id)
-        #network_identity_name = "${oci_core_local_peering_gateway." + lpg.data.display_name + ".id}"
-        network_identity_name = lpg.data.display_name
+        lpg = vcn1.get_local_peering_gateway(network_identity_id)
+        network_identity_name = "lpg:"+lpg.data.display_name
         return network_identity_name
 
     if ('drg' in network_identity_id):
-        drg = vcn.get_drg(network_identity_id)
-        #network_identity_name = "${oci_core_drg." + drg.data.display_name + ".id}"
-        network_identity_name = drg.data.display_name
+        drg = vcn1.get_drg(network_identity_id)
+        network_identity_name = "drg:"+drg.data.display_name
         return network_identity_name
 
 
@@ -109,7 +104,7 @@ def print_routetables(routetables,region,vcn_name,comp_name):
             i=i+1
             print(i)
             network_entity_id=rule.network_entity_id
-            network_entity_name=get_network_entity_name(network_entity_id)
+            network_entity_name=get_network_entity_name(config,network_entity_id)
 
 
             print(dn + "," + str(rule.destination) + "," + str(network_entity_name)+","+ str(rule.destination_type))

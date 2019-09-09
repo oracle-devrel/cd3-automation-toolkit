@@ -55,13 +55,15 @@ first_tmpstr = tmpstr
 policy_file={}
 
 if ('.xls' in filename):
-    df_info = pd.read_excel(filename, sheet_name='VCN Info', skiprows=1)
-    properties = df_info['Property']
-    values = df_info['Value']
+    #df_info = pd.read_excel(filename, sheet_name='VCN Info', skiprows=1)
+    #properties = df_info['Property']
+    #values = df_info['Value']
 
-    all_regions = str(values[7]).strip()
-    all_regions = all_regions.split(",")
-    all_regions = [x.strip().lower() for x in all_regions]
+    #all_regions = str(values[7]).strip()
+    #all_regions = all_regions.split(",")
+    #all_regions = [x.strip().lower() for x in all_regions]
+    all_regions = os.listdir(outdir)
+
     for reg in all_regions:
         policy_file[reg] = outdir + "/"+reg+"/attach_block_backups_policy.tf"
         src=policy_file[reg]

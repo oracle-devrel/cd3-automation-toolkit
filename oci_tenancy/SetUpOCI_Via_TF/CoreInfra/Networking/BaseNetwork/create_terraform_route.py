@@ -52,6 +52,7 @@ spoke_vcn_names=[]
 vcn_lpg_rules = {}
 vcn_compartment = {}
 vcn_region = {}
+vcn_drgs= {}
 peering_dict = dict()
 ruleStr=""
 
@@ -100,8 +101,12 @@ def createLPGRouteRules(peering_dict):
 
 def createDRGRtTableString(compartment_var_name,hub_vcn_name,peering_dict):
     drgStr=""
-    rt_var = hub_vcn_name + "_drg_rt"
-    drg_name = hub_vcn_name + "_drg"
+    if(vcn_drgs[hub_vcn_name]=='y'):
+        rt_var = hub_vcn_name + "_drg_rt"
+        drg_name = hub_vcn_name + "_drg"
+    elif(vcn_drgs[hub_vcn_name]!='n'):
+        rt_var=vcn_drgs[hub_vcn_name]+"_rt"
+        drg_name=vcn_drgs[hub_vcn_name]
     drgStr = """ 
         resource "oci_core_route_table" \"""" + rt_var + """"{
                 compartment_id = "${var.""" + compartment_var_name + """}"
@@ -139,7 +144,11 @@ def createLPGRtTableString(compartment_var_name,hub_vcn_name,peering_dict):
                     display_name = "Route Table associated with LPG """ + lpg_name + """"
                 """
             if (drg_ocid == ''):
-                drg_name = hub_vcn_name + "_drg"
+                if (vcn_drgs[hub_vcn_name] == 'y'):
+                    drg_name = hub_vcn_name + "_drg"
+                elif (vcn_drgs[hub_vcn_name] != 'n'):
+                    drg_name = vcn_drgs[hub_vcn_name]
+
                 for drg_destination in drg_destinations:
                     if (drg_destination != ''):
                         lpgStr = lpgStr + """
@@ -164,7 +173,7 @@ def createLPGRtTableString(compartment_var_name,hub_vcn_name,peering_dict):
         }"""
     return lpgStr
 
-def processSubnet(region,vcn_name,name,ruleStr,AD,configure_sgw,configure_ngw,configure_igw,vcn_sgw,vcn_ngw,vcn_igw):
+def processSubnet(region,vcn_name,name,rt_name,ruleStr,AD,configure_sgw,configure_ngw,configure_igw,vcn_sgw,vcn_ngw,vcn_igw):
     # process each subnet row for ngw, igw, sgw
     if (AD.strip().lower() != 'regional'):
         AD=AD.strip().upper()
@@ -174,32 +183,41 @@ def processSubnet(region,vcn_name,name,ruleStr,AD,configure_sgw,configure_ngw,co
     else:
         ad_name = ""
 
-    subnet_res_name = name
-    if (str(ad_name) != ''):
-        name1 = name + "-ad" + str(ad_name)
-    else:
-        name1 = name
-    if (subnet_name_attach_cidr == 'y'):
-        display_name = name1 + "-" + subnet
-    else:
-        display_name = name
+    #route table not provided; use subnet name as route table name
+    if(rt_name==''):
+        subnet_res_name = name
+        if (str(ad_name) != ''):
+            name1 = subnet_res_name + "-ad" + str(ad_name)
+        else:
+            name1 = subnet_res_name
 
-    # name=name1
-    data = """ 
-            resource "oci_core_route_table" \"""" + name + """"{
+        #check if subnet codr needs to be attached
+        if (subnet_name_attach_cidr == 'y'):
+            display_name = name1 + "-" + subnet
+        else:
+            display_name = subnet_res_name
+
+    # route table name provided
+    else:
+        subnet_res_name=rt_name
+        # no need to attach subnet cidr to display name
+        display_name = subnet_res_name
+
+    data_res = """ 
+            resource "oci_core_route_table" \"""" + subnet_res_name + """"{
                 compartment_id = "${var.""" + compartment_var_name + """}"
                 vcn_id = "${oci_core_vcn.""" + vcn_name + """.id}"
-                display_name = \"""" + display_name.strip() + """\" """ + ruleStr
-
-    if configure_sgw.strip() == 'y' and vcn_sgw == 'y':
-        data = data + """
+                display_name = \"""" + display_name.strip() + """\" """
+    data=""
+    if configure_sgw.strip() == 'y' and vcn_sgw != 'n':
+        data = """
                     route_rules { 
                         destination = "${data.oci_core_services.oci_services.services.0.cidr_block}"
                         network_entity_id = "${oci_core_service_gateway.""" + sgw_name + """.id}"
                         destination_type = "SERVICE_CIDR_BLOCK"
                         }
                         """
-    if configure_ngw.strip() == 'y' and vcn_ngw == 'y':
+    if configure_ngw.strip() == 'y' and vcn_ngw != 'n':
         for ngw_destination in ngw_destinations:
             if (ngw_destination != ''):
                 data = data + """ 
@@ -210,7 +228,7 @@ def processSubnet(region,vcn_name,name,ruleStr,AD,configure_sgw,configure_ngw,co
                         destination_type = "CIDR_BLOCK"
                         }
                         """
-    if configure_igw.strip() == 'y' and vcn_igw == 'y':
+    if configure_igw.strip() == 'y' and vcn_igw != 'n':
         for igw_destination in igw_destinations:
             if (igw_destination != ''):
                 data = data + """
@@ -221,14 +239,26 @@ def processSubnet(region,vcn_name,name,ruleStr,AD,configure_sgw,configure_ngw,co
                         destination_type = "CIDR_BLOCK"
                         }
                         """
-    data = data + """
+    end="""
                         ##Add More rules for subnet """ + subnet_res_name + """##
                 }
                 """
+    #route table name is not same
+    if(data_res not in tfStr[region]):
+        tfStr[region] = tfStr[region] + data_res+ruleStr+data+end
 
-    tfStr[region] = tfStr[region] + data
+    #route table name shared between subnets; Add only new rules
+    else:
+        tt=data_res+ruleStr+data+end
+        textToSearch="""##Add More rules for subnet """ + subnet_res_name + """##"""
+        if(ruleStr not in tt):
+            tfStr[region] = tfStr[region].replace(textToSearch, ruleStr+data)
+        else:
+            tfStr[region] = tfStr[region].replace(textToSearch, data)
+
 
 endNames = {'<END>', '<end>'}
+
 #If input is CD3 excel file
 if('.xls' in filename):
         NaNstr = 'NaN'
@@ -287,6 +317,9 @@ if('.xls' in filename):
                     print("Invalid Region; It should be one of the values mentioned in VCN Info tab")
                     exit(1)
                 vcn_name=df_vcn['vcn_name'][i]
+                if(df_vcn['drg_required'][i]!='n'):
+                    vcn_drgs[vcn_name]=df_vcn['drg_required'][i]
+
                 compartment_var_name = df_vcn['compartment_name'][i]
                 vcn_compartment[vcn_name]=compartment_var_name
                 vcn_region[vcn_name]=region
@@ -341,10 +374,11 @@ if('.xls' in filename):
             AD = df.iat[i, 4]
             pubpvt = df.iat[i, 5]
             dhcp = df.iat[i, 6]
+            rt_name=df.iat[i,7]
 
-            configure_sgw = df.iat[i, 7]
-            configure_ngw = df.iat[i, 8]
-            configure_igw = df.iat[i, 9]
+            configure_sgw = df.iat[i, 9]
+            configure_ngw = df.iat[i, 10]
+            configure_igw = df.iat[i, 11]
 
             # Check to see if any column is empty in Subnets Sheet
             if (str(compartment_var_name).lower() == NaNstr.lower() or str(vcn_name).lower() == NaNstr.lower() or
@@ -352,7 +386,7 @@ if('.xls' in filename):
                     or str(AD).lower() == NaNstr.lower() or str(pubpvt).lower() == NaNstr.lower()
                     or str(configure_sgw).lower() == NaNstr.lower() or str(configure_ngw).lower() == NaNstr.lower()
                     or str(configure_igw).lower() == NaNstr.lower()):
-                print("Column Values (except dhcp_option_name or dns_label) or Rows cannot be left empty in Subnets sheet in CD3..exiting...")
+                print("Column Values (except dhcp_option_name, route_table_name, seclist_name or dns_label) or Rows cannot be left empty in Subnets sheet in CD3..exiting...")
                 exit(1)
 
             compartment_var_name=compartment_var_name.strip()
@@ -362,24 +396,45 @@ if('.xls' in filename):
             pubpvt=pubpvt.strip()
             subnet=subnet.strip()
             name=name.strip()
-
+            if (str(rt_name).lower() != 'nan'):
+                rt_name=rt_name.strip()
+            else:
+                rt_name=''
 
             vcn_data = df_vcn.loc[vcn_name]
             region = vcn_data['Region']
             region = region.strip().lower()
-            vcn_drg = vcn_data['drg_required(y|n)']
-            drg_name = vcn_name + "_drg"
-            vcn_igw = vcn_data['igw_required(y|n)']
-            igw_name = vcn_name + "_igw"
-            vcn_ngw = vcn_data['ngw_required(y|n)']
-            ngw_name = vcn_name + "_ngw"
-            vcn_sgw = vcn_data['sgw_required(y|n)']
-            sgw_name = vcn_name + "_sgw"
+
+            vcn_drg = vcn_data['drg_required']
+            if(vcn_drg=="y"):
+                drg_name = vcn_name + "_drg"
+            elif(vcn_drg!="n"):
+                drg_name=vcn_drg
+
+            vcn_igw = vcn_data['igw_required']
+            if(vcn_igw=="y"):
+                igw_name = vcn_name + "_igw"
+            elif (vcn_igw != "n"):
+                igw_name = vcn_igw
+
+            vcn_ngw = vcn_data['ngw_required']
+            if (vcn_ngw == "y"):
+                ngw_name = vcn_name + "_ngw"
+            elif (vcn_ngw != "n"):
+                ngw_name = vcn_ngw
+
+            vcn_sgw = vcn_data['sgw_required']
+            if (vcn_sgw == "y"):
+                sgw_name = vcn_name + "_sgw"
+            elif (vcn_sgw != "n"):
+                sgw_name = vcn_sgw
+
+
             hub_spoke_none = vcn_data['hub_spoke_none']
 
             ruleStr = ""
             # Add DRG rules (this will add rules to hub vcn since for hub vcn drg_required is set to y
-            if (vcn_drg == "y" and drg_destinations != ''):
+            if (vcn_drg != "n" and drg_destinations != ''):
                 if (drg_ocid == ''):
                     for drg_destination in drg_destinations:
                         if (drg_destination != ''):
@@ -425,7 +480,7 @@ if('.xls' in filename):
             if (vcn_lpg_rules[vcn_name] != ''):
                 ruleStr = ruleStr + vcn_lpg_rules[vcn_name]
 
-            processSubnet(region, vcn_name, name,ruleStr,AD,configure_sgw, configure_ngw, configure_igw, vcn_sgw, vcn_ngw, vcn_igw)
+            processSubnet(region, vcn_name, name,rt_name,ruleStr,AD,configure_sgw, configure_ngw, configure_igw, vcn_sgw, vcn_ngw, vcn_igw)
 
 
 
@@ -519,13 +574,29 @@ elif('.properties' in filename):
         region = vcn_data[0].strip().lower()
         vcn_cidr = vcn_data[1].strip().lower()
         vcn_drg = vcn_data[2].strip().lower()
-        drg_name=vcn_name+"_drg"
+        if (vcn_drg == "y"):
+            drg_name = vcn_name + "_drg"
+        elif (vcn_drg != "n"):
+            drg_name = vcn_drg
+
         vcn_igw = vcn_data[3].strip().lower()
-        igw_name=vcn_name+"_igw"
+        if (vcn_igw == "y"):
+            igw_name = vcn_name + "_igw"
+        elif (vcn_igw != "n"):
+            igw_name = vcn_igw
+
         vcn_ngw = vcn_data[4].strip().lower()
-        ngw_name=vcn_name+"_ngw"
+        if (vcn_ngw == "y"):
+            ngw_name = vcn_name + "_ngw"
+        elif (vcn_ngw != "n"):
+            ngw_name = vcn_ngw
+
         vcn_sgw = vcn_data[5].strip().lower()
-        sgw_name=vcn_name+"_sgw"
+        if (vcn_sgw == "y"):
+            sgw_name = vcn_name + "_sgw"
+        elif (vcn_sgw != "n"):
+            sgw_name = vcn_sgw
+
         hub_spoke_none = vcn_data[6].strip().lower()
 
         vcn_subnet_file = vcn_data[7].strip().lower()
@@ -590,20 +661,18 @@ elif('.properties' in filename):
                 subnet = ""
                 name = ""
 
-                [compartment_var_name, name, sub, AD, pubpvt, dhcp, configure_sgw, configure_ngw, configure_igw,dns_label] = line.split(',')
+                [compartment_var_name, name, sub, AD, pubpvt, dhcp, rt_name,seclist_name,configure_sgw, configure_ngw, configure_igw,dns_label] = line.split(',')
                 linearr = line.split(",")
                 compartment_var_name = linearr[0].strip()
                 name = linearr[1].strip()
                 subnet = linearr[2].strip()
 
 
-                processSubnet(region,vcn_name,name,ruleStr,AD,configure_sgw,configure_ngw,configure_igw,vcn_sgw,vcn_ngw,vcn_igw)
+                processSubnet(region,vcn_name,name,rt_name.strip(),ruleStr,AD,configure_sgw,configure_ngw,configure_igw,vcn_sgw,vcn_ngw,vcn_igw)
 
 else:
     print("Invalid input file format; Acceptable formats: .xls, .xlsx, .properties")
     exit()
-
-
 
 if(fname!=None):
     fname.close()
