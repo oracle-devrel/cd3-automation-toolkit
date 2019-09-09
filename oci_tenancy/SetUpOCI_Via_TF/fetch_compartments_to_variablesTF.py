@@ -16,7 +16,7 @@ def paginate(operation, *args, **kwargs):
             break
 
 parser = argparse.ArgumentParser(description="Fetches Compartment name/ocid info from OCI and pushes to variables.tf file of each region used by TF")
-parser.add_argument("outdir", help="Path   to outdir containing variables.tf file that will be used by TerraForm to communicate with OCI")
+parser.add_argument("outdir", help="Path  to outdir containing region directories having variables_<region>.tf file that will be used by TerraForm to communicate with OCI")
 parser.add_argument("--configFileName", help="Config file name" , required=False)
 
 args = parser.parse_args()
@@ -35,6 +35,7 @@ var_files={}
 all_regions=[]
 var_data={}
 
+print("outdir should contain region directories and then variables_<region>.tf file inside the region directories.")
 for file in glob.glob(outdir + '/*/' +'variables_*.tf', recursive=True):
     region=file.split("variables_")[1].split(".tf")[0]
     all_regions.append(region)
@@ -63,4 +64,4 @@ for reg in all_regions:
     vname = open(var_files[reg],"a")
     vname.write(tempStr[reg])
     vname.close()
-print("Compartment info written to variables file under terrafor_files folder")
+print("Compartment info written to all region specific variables files under terraform_files folder")
