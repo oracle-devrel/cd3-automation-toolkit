@@ -4,8 +4,6 @@
 mkdir ~/.oci
 mkdir -p /root/ocswork/keys
 mkdir -p /root/ocswork/downloads
-#mkdir -p /root/ocswork/terraform_files/ashburn
-#mkdir -p /root/ocswork/terraform_files/phoenix
 mkdir -p /root/ocswork/git_oci
 mkdir -p /root/ocswork/git_ocic2oci
 mkdir -p /root/ocswork/ocic2oci_work
@@ -150,7 +148,7 @@ then
     unzip opcmigrate.zip -d /root/ocswork/opcmigrate
     cd /root/ocswork/opcmigrate
 
-    python36 -m pip install ./opcmigrate-*.whl
+    python3.6 -m pip install ./opcmigrate-*.whl
 
     mkdir -p /root/.opc/profiles
     mv /home/opc/default /root/.opc/profiles
@@ -179,6 +177,8 @@ then
             n=$[$n+1]
             break
         else
+            echo "koala discover not done, retrying"
+            n=$[$n+1]
             sleep 3s
         fi
     done
@@ -198,15 +198,15 @@ timeout 60 yum install python36-devel gcc -y
 
 #Configuring DB specific packages in python36
 echo "Installing packages for python36 required for DB migration...this would keep running in background and you can start your work"
-python36 -m pip install --upgrade pip
-python36 -m pip install oci
-python36 -m pip install pycrypto
-python36 -m pip install regex
-python36 -m pip install pandas
-python36 -m pip install openpyxl
-python36 -m pip install xlrd
-python36 -m pip install xlsxwriter
+python3.6 -m pip install --upgrade pip
+python3.6 -m pip install oci
+python3.6 -m pip install pycrypto
+python3.6 -m pip install regex
+python3.6 -m pip install pandas
+python3.6 -m pip install openpyxl
+python3.6 -m pip install xlrd
+python3.6 -m pip install xlsxwriter
 
 #Use Default python as python36 on OCS VM
 sudo rm -f /bin/python
-sudo ln -s /bin/python36 /bin/python
+sudo ln -s /bin/python3.6 /bin/python
