@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 import os
 import configparser
 import argparse
@@ -98,7 +98,7 @@ if('1' in userInput):
         os.makedirs(outdir)
 
     os.chdir('Identity/Compartments')
-    command = 'python create_terraform_compartments.py '+inputfile + ' ' + outdir+ ' '+prefix
+    command = './create_terraform_compartments.py '+inputfile + ' ' + outdir+ ' '+prefix
     print("Executing Command: "+command)
     os.system(command)
     os.chdir("../..")
@@ -120,7 +120,7 @@ if('2' in userInput):
         os.makedirs(outdir)
 
     os.chdir('Identity/Groups')
-    command = 'python create_terraform_groups.py '+inputfile + ' ' + outdir+ ' '+prefix
+    command = './create_terraform_groups.py '+inputfile + ' ' + outdir+ ' '+prefix
     print("Executing Command: " + command)
     os.system(command)
     os.chdir("../..")
@@ -137,7 +137,7 @@ if('3' in userInput):
         os.makedirs(outdir)
 
     os.chdir('Identity/Policies')
-    command = 'python create_terraform_policies.py '+inputfile + ' ' +  outdir+ ' '+prefix
+    command = './create_terraform_policies.py '+inputfile + ' ' +  outdir+ ' '+prefix
     print("Executing Command: " + command)
     os.system(command)
     os.chdir("../..")
@@ -159,7 +159,7 @@ if('4' in userInput):
         os.makedirs(outdir)
 
     os.chdir('CoreInfra/Networking/BaseNetwork')
-    command = 'python create_all_tf_objects.py ' + inputfile + ' ' + outdir + ' ' + prefix
+    command = './create_all_tf_objects.py ' + inputfile + ' ' + outdir + ' ' + prefix
     print("Executing Command: " + command)
     os.system(command)
     os.chdir("../../..")
@@ -186,7 +186,7 @@ if('5' in userInput):
             os.makedirs(outdir)
 
         os.chdir('CoreInfra/Compute')
-        command = 'python create_terraform_dedicatedhosts.py '+inputfile + ' ' + outdir
+        command = './create_terraform_dedicatedhosts.py '+inputfile + ' ' + outdir
         print("Executing Command: " + command)
         os.system(command)
         os.chdir("../..")
@@ -205,7 +205,7 @@ if('5' in userInput):
             os.makedirs(outdir)
 
         os.chdir('CoreInfra/Compute')
-        command = 'python create_terraform_instances.py ' + inputfile + ' ' + outdir
+        command = './create_terraform_instances.py ' + inputfile + ' ' + outdir
         print("Executing Command: " + command)
         os.system(command)
         os.chdir("../..")
@@ -226,7 +226,7 @@ if('6' in userInput):
         os.makedirs(outdir)
 
     os.chdir('CoreInfra/BlockVolume')
-    command = 'python create_terraform_block_volumes.py '+inputfile + ' ' + outdir
+    command = './create_terraform_block_volumes.py '+inputfile + ' ' + outdir
     print("Executing Command: " + command)
     os.system(command)
     os.chdir("../..")
@@ -251,7 +251,7 @@ if('7' in userInput):
             os.makedirs(outdir)
 
         os.chdir('Governance/Tagging')
-        command = 'python create_namespace_tagkey.py '+inputfile + ' ' + outdir
+        command = './create_namespace_tagkey.py '+inputfile + ' ' + outdir
         print("Executing Command: " + command)
         os.system(command)
         os.chdir("../..")
@@ -270,7 +270,7 @@ if('7' in userInput):
             os.makedirs(outdir)
 
         os.chdir('Governance/Tagging')
-        command = 'python attach_tag_server.py ' + inputfile + ' ' + outdir
+        command = './attach_tag_server.py ' + inputfile + ' ' + outdir
         print("Executing Command: " + command)
         os.system(command)
         os.chdir("../..")
@@ -290,7 +290,7 @@ if('7' in userInput):
             os.makedirs(outdir)
 
         os.chdir('Governance/Tagging')
-        command = 'python attach_tag_volume.py ' + inputfile + ' ' + outdir
+        command = './attach_tag_volume.py ' + inputfile + ' ' + outdir
         print("Executing Command: " + command)
         os.system(command)
         os.chdir("../..")
@@ -311,9 +311,9 @@ if('8' in userInput):
 
     os.chdir('CoreInfra/Networking/BaseNetwork')
     if(overwrite=='' or overwrite=='no'):
-        command = 'python modify_routerules_tf.py ' + inputfile + ' ' + outdir
+        command = './modify_routerules_tf.py ' + inputfile + ' ' + outdir
     if(overwrite=='yes'):
-        command = 'python modify_routerules_tf.py ' + inputfile + ' ' + outdir + ' --overwrite yes'
+        command = './modify_routerules_tf.py ' + inputfile + ' ' + outdir + ' --overwrite yes'
     print("Executing Command: " + command)
     os.system(command)
     os.chdir("../../..")
@@ -343,14 +343,14 @@ if('9' in userInput):
 
     if (overwrite == '' or overwrite == 'no'):
         if(inputConfigFile==''):
-            command = 'python modify_secrules_tf.py ' + inputfile + ' ' + outdir + ' '+inputcsv
+            command = './modify_secrules_tf.py ' + inputfile + ' ' + outdir + ' '+inputcsv
         else:
-            command = 'python modify_secrules_tf.py ' + inputfile + ' ' + outdir + ' '+inputcsv+' --configFileName '+inputConfigFile
+            command = './modify_secrules_tf.py ' + inputfile + ' ' + outdir + ' '+inputcsv+' --configFileName '+inputConfigFile
     if(overwrite=='yes'):
         if (inputConfigFile == ''):
-            command = 'python modify_secrules_tf.py ' + inputfile + ' ' + outdir + ' ' + inputcsv + ' --overwrite yes'
+            command = './modify_secrules_tf.py ' + inputfile + ' ' + outdir + ' ' + inputcsv + ' --overwrite yes'
         else:
-            command = 'python modify_secrules_tf.py ' + inputfile + ' ' + outdir + ' ' + inputcsv + ' --configFileName ' + inputConfigFile +' --overwrite yes'
+            command = './modify_secrules_tf.py ' + inputfile + ' ' + outdir + ' ' + inputcsv + ' --configFileName ' + inputConfigFile +' --overwrite yes'
     print("Executing Command: " + command)
     os.system(command)
     os.chdir("../../..")
@@ -371,7 +371,7 @@ if('10' in userInput):
         os.makedirs(outdir)
 
     os.chdir('CoreInfra/Compute')
-    command = 'python boot_backups_policy.py '+inputfile + ' ' + outdir
+    command = './boot_backups_policy.py '+inputfile + ' ' + outdir
     print("Executing Command: " + command)
     os.system(command)
     os.chdir("../..")
@@ -393,7 +393,7 @@ if('11' in userInput):
 
     os.chdir('CoreInfra/BlockVolume')
     print("Executing Command: " + command)
-    command = 'python block_backups_policy.py '+inputfile + ' ' + outdir
+    command = './block_backups_policy.py '+inputfile + ' ' + outdir
     os.system(command)
     os.chdir("../..")
     print("--------------------------------------------------------------------------")
@@ -411,14 +411,14 @@ if('12' in userInput):
 
     if (input_vcn == ''):
         if (inputConfigFile == ''):
-            command = 'python exportSeclist.py ' + cd3outfile
+            command = './exportSeclist.py ' + cd3outfile
         else:
-            command = 'python exportSeclist.py ' + cd3outfile + ' --configFileName ' + inputConfigFile
+            command = './exportSeclist.py ' + cd3outfile + ' --configFileName ' + inputConfigFile
     else:
         if (inputConfigFile == ''):
-            command = 'python exportSeclist.py ' + cd3outfile + ' --vcnName ' + input_vcn + ' --networkCompartment ' + input_Comp
+            command = './exportSeclist.py ' + cd3outfile + ' --vcnName ' + input_vcn + ' --networkCompartment ' + input_Comp
         else:
-            command = 'python exportSeclist.py ' + cd3outfile + ' --vcnName ' + input_vcn + ' --networkCompartment ' + input_Comp + ' --configFileName ' + inputConfigFile
+            command = './exportSeclist.py ' + cd3outfile + ' --vcnName ' + input_vcn + ' --networkCompartment ' + input_Comp + ' --configFileName ' + inputConfigFile
 
     print("Executing Command: " + command)
     os.system(command)
@@ -438,14 +438,14 @@ if('13' in userInput):
     os.chdir('CoreInfra/Networking/BaseNetwork')
     if(input_vcn==''):
         if(inputConfigFile==''):
-            command = 'python exportRoutetable.py ' +  cd3outfile
+            command = './exportRoutetable.py ' +  cd3outfile
         else:
-            command = 'python exportRoutetable.py ' + cd3outfile + ' --configFileName '+inputConfigFile
+            command = './exportRoutetable.py ' + cd3outfile + ' --configFileName '+inputConfigFile
     else:
         if (inputConfigFile == ''):
-            command = 'python exportRoutetable.py '+cd3outfile+' --vcnName '+input_vcn + ' --networkCompartment '+input_Comp
+            command = './exportRoutetable.py '+cd3outfile+' --vcnName '+input_vcn + ' --networkCompartment '+input_Comp
         else:
-            command = 'python exportRoutetable.py '+cd3outfile+' --vcnName '+input_vcn + ' --networkCompartment '+input_Comp+ ' --configFileName ' + inputConfigFile
+            command = './exportRoutetable.py '+cd3outfile+' --vcnName '+input_vcn + ' --networkCompartment '+input_Comp+ ' --configFileName ' + inputConfigFile
     print("Executing Command: " + command)
     os.system(command)
     os.chdir("../../..")
@@ -470,7 +470,7 @@ if('14' in userInput):
             exit(1)
 
         os.chdir('CoreInfra/Networking/BaseNetwork')
-        command = 'python update_terraform_network.py ' + inputfile + ' ' + outdir + ' ' + prefix +' 1'
+        command = './update_terraform_network.py ' + inputfile + ' ' + outdir + ' ' + prefix +' 1'
         print("Executing Command: " + command)
         os.system(command)
         os.chdir("../../..")
@@ -487,7 +487,7 @@ if('14' in userInput):
             exit(1)
 
         os.chdir('CoreInfra/Networking/BaseNetwork')
-        command = 'python update_terraform_network.py ' + inputfile + ' ' + outdir + ' ' + prefix +' 2'
+        command = './update_terraform_network.py ' + inputfile + ' ' + outdir + ' ' + prefix +' 2'
         print("Executing Command: " + command)
         os.system(command)
         os.chdir("../../..")
@@ -518,7 +518,7 @@ if('15' in userInput):
             exit(1)
 
         os.chdir('CoreInfra/Networking/BaseNetwork')
-        command = 'python create_terraform_nsg.py ' + inputfile + ' ' + outdir
+        command = './create_terraform_nsg.py ' + inputfile + ' ' + outdir
         print("Executing Command: " + command)
         os.system(command)
         os.chdir("../../..")
@@ -540,7 +540,7 @@ if('15' in userInput):
             exit(1)
 
         os.chdir('CoreInfra/Compute')
-        command = 'python update_instance_nsg.py ' + inputfile + ' ' + outdir
+        command = './update_instance_nsg.py ' + inputfile + ' ' + outdir
         print("Executing Command: " + command)
         os.system(command)
         os.chdir("../..")

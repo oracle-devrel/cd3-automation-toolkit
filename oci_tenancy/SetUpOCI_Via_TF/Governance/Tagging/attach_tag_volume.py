@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/python3
 # Author: Shruthi Subramanian
 # Attach the tag and key values to the Volumes
 import sys

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/python3
 # Author: Suruchi
 import sys
 import argparse

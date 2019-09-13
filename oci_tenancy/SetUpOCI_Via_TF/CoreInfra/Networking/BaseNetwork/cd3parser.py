@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python3
 # Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 # CD3 Parser

@@ -16,7 +16,7 @@ sudo yum -y install python-pip
 #pip install pip==9.0.3
 pip install oci
 pip install oci-cli
-pip install pandas
+#pip install pandas
 pip install xlrd
 pip install puttykeys
 pip install netaddr
@@ -115,9 +115,9 @@ then
     cd /root/ocswork/ocic2oci_work
     ## The unfortunate side effect of running so many things through shell.  The kernel seems to be throwing irq messages.
     ## Sleep to see if this helps.
-    sleep 3s
+    sleep 1s
     terraform init
-    sleep 3s
+    sleep 1s
 
     dos2unix upgrade_terraform_expect_script.sh upgrade_terraform_expect_script.sh
     chmod +x upgrade_terraform_expect_script.sh
@@ -148,7 +148,7 @@ then
     unzip opcmigrate.zip -d /root/ocswork/opcmigrate
     cd /root/ocswork/opcmigrate
 
-    python3.6 -m pip install ./opcmigrate-*.whl
+    /usr/bin/python3 -m pip install ./opcmigrate-*.whl
 
     mkdir -p /root/.opc/profiles
     mv /home/opc/default /root/.opc/profiles
@@ -163,7 +163,7 @@ then
     do
         if [ -e /root/ocswork/ocic2oci_work/resources-default.json ]
         then
-            echo "koala discover completed..proceeding"
+            echo "Koala discover completed..Proceeding"
             cd /root/ocswork/ocic2oci_work
             /usr/local/bin/opcmigrate generate --with-security-rule-union -o ocic2oci_network.tf
             cp ocic2oci_network.tf /root/ocswork/terraform_files
@@ -177,7 +177,7 @@ then
             n=$[$n+1]
             break
         else
-            echo "koala discover not done, retrying"
+            echo "Koala discover failed..Retrying"
             n=$[$n+1]
             sleep 3s
         fi
@@ -197,16 +197,16 @@ rm -f /home/opc/provider.tf
 timeout 60 yum install python36-devel gcc -y
 
 #Configuring DB specific packages in python36
-echo "Installing packages for python36 required for DB migration...this would keep running in background and you can start your work"
-python3.6 -m pip install --upgrade pip
-python3.6 -m pip install oci
-python3.6 -m pip install pycrypto
-python3.6 -m pip install regex
-python3.6 -m pip install pandas
-python3.6 -m pip install openpyxl
-python3.6 -m pip install xlrd
-python3.6 -m pip install xlsxwriter
+echo "Installing packages for python36..This would keep running in background and you can start your work"
+/usr/bin/python3 -m pip install --upgrade pip
+/usr/bin/python3 -m pip install oci
+/usr/bin/python3 -m pip install pycrypto
+/usr/bin/python3 -m pip install regex
+/usr/bin/python3 -m pip install pandas
+/usr/bin/python3 -m pip install openpyxl
+/usr/bin/python3 -m pip install xlrd
+/usr/bin/python3 -m pip install xlsxwriter
 
 #Use Default python as python36 on OCS VM
-sudo rm -f /bin/python
-sudo ln -s /bin/python3.6 /bin/python
+#sudo rm -f /bin/python
+#sudo ln -s /bin/python3.6 /bin/python

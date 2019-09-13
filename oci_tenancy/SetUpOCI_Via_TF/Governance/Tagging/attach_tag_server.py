@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/python3
 # Author: Shruthi Subramanian
 # Attach tags and key value to the servers
 import sys
