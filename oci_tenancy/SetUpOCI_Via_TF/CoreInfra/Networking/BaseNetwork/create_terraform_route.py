@@ -1,4 +1,4 @@
-#!/bin/python
+#!/usr/bin/python3
 # Author: Suruchi Singla
 # Oracle Consulting
 # suruchi.singla@oracle.com

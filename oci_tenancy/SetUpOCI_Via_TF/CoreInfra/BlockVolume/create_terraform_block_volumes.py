@@ -1,4 +1,4 @@
-#!/bin/python
+#!/usr/bin/python3
 #Author: Murali Nagulakonda
 #Oracle Consulting
 #murali.nagulakonda.venkata@oracle.com

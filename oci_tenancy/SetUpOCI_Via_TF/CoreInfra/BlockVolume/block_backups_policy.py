@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/python3
 # Author: Shruthi Subramanian
 #shruthi.subramanian@oracle.com
 import sys

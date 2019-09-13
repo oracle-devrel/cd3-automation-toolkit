@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/python3
 # Author: Shruthi Subramanian
 # Create Tag Namespace and TagKeys from CD3 file
 import sys
