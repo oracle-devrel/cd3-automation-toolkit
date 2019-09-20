@@ -214,5 +214,5 @@ echo "Installing packages for python36..This would keep running in background an
 /usr/bin/python3 -m pip install xlsxwriter
 
 #Use Default python as python36 on OCS VM
-#sudo rm -f /bin/python
-#sudo ln -s /bin/python3.6 /bin/python
+sudo rm -f /bin/python
+sudo ln -s /bin/python3.6 /bin/python
