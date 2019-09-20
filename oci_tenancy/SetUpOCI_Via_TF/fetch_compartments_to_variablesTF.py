@@ -36,7 +36,7 @@ all_regions=[]
 var_data={}
 
 print("outdir should contain region directories and then variables_<region>.tf file inside the region directories.")
-for file in glob.glob(outdir + '/*/' +'variables_*.tf', recursive=True):
+for file in glob.glob(outdir + '/*/' +'variables_*.tf'):#, recursive=True):
     region=file.split("variables_")[1].split(".tf")[0]
     all_regions.append(region)
     var_files[region]=file

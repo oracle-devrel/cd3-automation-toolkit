@@ -148,7 +148,8 @@ def create_egress_rule_string(row):
                     min =  """ + str(row['SPortMin']) + """
                     }
                  """
-        options = tcp_option + dest_range + source_range + "\n  }"
+        if(dest_range!='' or source_range!=''):
+            options = tcp_option + dest_range + source_range + "\n  }"
 
     if row['Protocol'] == 'udp':
         udp_option = " udp_options {"
@@ -166,7 +167,8 @@ def create_egress_rule_string(row):
                     min =  """ + str(row['SPortMin']) + """
                     }
                  """
-        options = udp_option + dest_range + source_range + "\n\t\t\t   }"
+        if (dest_range != '' or source_range != ''):
+            options = udp_option + dest_range + source_range + "\n\t\t\t   }"
     close_bracket = "\n \t\t}"
 
     egress_rule = egress_rule + options + close_bracket
