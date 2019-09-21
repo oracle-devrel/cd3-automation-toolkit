@@ -159,9 +159,10 @@ def create_compartment(compartment_name,compartment_desc):
     try:
         compartment = identity_client.create_compartment(create_comp_detail)
         compartment_ocid = compartment.data.id
-       # if("OCS" in compartment_desc):
-        #    print('Waiting till OCS compartment becomes ACTIVE...')
-         #   oci.wait_until(identity_client, identity_client.get_compartment(compartment_ocid), 'lifecycle_state','ACTIVE')
+        if("OCS" in compartment_desc):
+            time.sleep(10)
+            print('Waiting till OCS compartment becomes ACTIVE...')
+            oci.wait_until(identity_client, identity_client.get_compartment(compartment_ocid), 'lifecycle_state','ACTIVE')
     except oci.exceptions.ServiceError as e:
         error_msg = "Compartment '" + compartment_name + "' already exists"
         if (e.message == error_msg):

@@ -55,6 +55,7 @@ if(input_format=='csv'):
         input_add_routes_csv = config.get('Default', 'add_routes_csv').strip()
         input_add_secrules_csv = config.get('Default', 'add_secrules_csv').strip()
         input_nsgs_csv = config.get('Default', 'nsgs_csv').strip()
+        input_fss_csv = config.get('Default', 'fss_csv').strip()
 
     except Exception as e:
         print(e)
@@ -78,6 +79,7 @@ print("13. Export Route Tables to CD3")
 print("14. Update Base Network Objects; Use this option only if you have already made changes/updates "
       "to the configurations after initial Base Network Creation.\n    Else you should use Option 4 again with required changes to CD3 - It will overwrite all network objects.")
 print("15. Network Security Groups")
+print("16. File Storage Services")
 print("\nSee example folder for sample input files\n")
 userInput = input('Enter your choice; multiple choices allowed as comma separated: ')
 userInput=userInput.split(',')
@@ -98,7 +100,7 @@ if('1' in userInput):
         os.makedirs(outdir)
 
     os.chdir('Identity/Compartments')
-    command = './create_terraform_compartments.py '+inputfile + ' ' + outdir+ ' '+prefix
+    command = 'python create_terraform_compartments.py '+inputfile + ' ' + outdir+ ' '+prefix
     print("Executing Command: "+command)
     os.system(command)
     os.chdir("../..")
@@ -120,7 +122,7 @@ if('2' in userInput):
         os.makedirs(outdir)
 
     os.chdir('Identity/Groups')
-    command = './create_terraform_groups.py '+inputfile + ' ' + outdir+ ' '+prefix
+    command = 'python create_terraform_groups.py '+inputfile + ' ' + outdir+ ' '+prefix
     print("Executing Command: " + command)
     os.system(command)
     os.chdir("../..")
@@ -137,7 +139,7 @@ if('3' in userInput):
         os.makedirs(outdir)
 
     os.chdir('Identity/Policies')
-    command = './create_terraform_policies.py '+inputfile + ' ' +  outdir+ ' '+prefix
+    command = 'python create_terraform_policies.py '+inputfile + ' ' +  outdir+ ' '+prefix
     print("Executing Command: " + command)
     os.system(command)
     os.chdir("../..")
@@ -159,7 +161,7 @@ if('4' in userInput):
         os.makedirs(outdir)
 
     os.chdir('CoreInfra/Networking/BaseNetwork')
-    command = './create_all_tf_objects.py ' + inputfile + ' ' + outdir + ' ' + prefix
+    command = 'python create_all_tf_objects.py ' + inputfile + ' ' + outdir + ' ' + prefix
     print("Executing Command: " + command)
     os.system(command)
     os.chdir("../../..")
@@ -186,7 +188,7 @@ if('5' in userInput):
             os.makedirs(outdir)
 
         os.chdir('CoreInfra/Compute')
-        command = './create_terraform_dedicatedhosts.py '+inputfile + ' ' + outdir
+        command = 'python create_terraform_dedicatedhosts.py '+inputfile + ' ' + outdir
         print("Executing Command: " + command)
         os.system(command)
         os.chdir("../..")
@@ -205,7 +207,7 @@ if('5' in userInput):
             os.makedirs(outdir)
 
         os.chdir('CoreInfra/Compute')
-        command = './create_terraform_instances.py ' + inputfile + ' ' + outdir
+        command = 'python create_terraform_instances.py ' + inputfile + ' ' + outdir
         print("Executing Command: " + command)
         os.system(command)
         os.chdir("../..")
@@ -226,7 +228,7 @@ if('6' in userInput):
         os.makedirs(outdir)
 
     os.chdir('CoreInfra/BlockVolume')
-    command = './create_terraform_block_volumes.py '+inputfile + ' ' + outdir
+    command = 'python create_terraform_block_volumes.py '+inputfile + ' ' + outdir
     print("Executing Command: " + command)
     os.system(command)
     os.chdir("../..")
@@ -251,7 +253,7 @@ if('7' in userInput):
             os.makedirs(outdir)
 
         os.chdir('Governance/Tagging')
-        command = './create_namespace_tagkey.py '+inputfile + ' ' + outdir
+        command = 'python create_namespace_tagkey.py '+inputfile + ' ' + outdir
         print("Executing Command: " + command)
         os.system(command)
         os.chdir("../..")
@@ -270,7 +272,7 @@ if('7' in userInput):
             os.makedirs(outdir)
 
         os.chdir('Governance/Tagging')
-        command = './attach_tag_server.py ' + inputfile + ' ' + outdir
+        command = 'python attach_tag_server.py ' + inputfile + ' ' + outdir
         print("Executing Command: " + command)
         os.system(command)
         os.chdir("../..")
@@ -290,7 +292,7 @@ if('7' in userInput):
             os.makedirs(outdir)
 
         os.chdir('Governance/Tagging')
-        command = './attach_tag_volume.py ' + inputfile + ' ' + outdir
+        command = 'python attach_tag_volume.py ' + inputfile + ' ' + outdir
         print("Executing Command: " + command)
         os.system(command)
         os.chdir("../..")
@@ -311,9 +313,9 @@ if('8' in userInput):
 
     os.chdir('CoreInfra/Networking/BaseNetwork')
     if(overwrite=='' or overwrite=='no'):
-        command = './modify_routerules_tf.py ' + inputfile + ' ' + outdir
+        command = 'python modify_routerules_tf.py ' + inputfile + ' ' + outdir
     if(overwrite=='yes'):
-        command = './modify_routerules_tf.py ' + inputfile + ' ' + outdir + ' --overwrite yes'
+        command = 'python modify_routerules_tf.py ' + inputfile + ' ' + outdir + ' --overwrite yes'
     print("Executing Command: " + command)
     os.system(command)
     os.chdir("../../..")
@@ -343,14 +345,14 @@ if('9' in userInput):
 
     if (overwrite == '' or overwrite == 'no'):
         if(inputConfigFile==''):
-            command = './modify_secrules_tf.py ' + inputfile + ' ' + outdir + ' '+inputcsv
+            command = 'python modify_secrules_tf.py ' + inputfile + ' ' + outdir + ' '+inputcsv
         else:
-            command = './modify_secrules_tf.py ' + inputfile + ' ' + outdir + ' '+inputcsv+' --configFileName '+inputConfigFile
+            command = 'python modify_secrules_tf.py ' + inputfile + ' ' + outdir + ' '+inputcsv+' --configFileName '+inputConfigFile
     if(overwrite=='yes'):
         if (inputConfigFile == ''):
-            command = './modify_secrules_tf.py ' + inputfile + ' ' + outdir + ' ' + inputcsv + ' --overwrite yes'
+            command = 'python modify_secrules_tf.py ' + inputfile + ' ' + outdir + ' ' + inputcsv + ' --overwrite yes'
         else:
-            command = './modify_secrules_tf.py ' + inputfile + ' ' + outdir + ' ' + inputcsv + ' --configFileName ' + inputConfigFile +' --overwrite yes'
+            command = 'python modify_secrules_tf.py ' + inputfile + ' ' + outdir + ' ' + inputcsv + ' --configFileName ' + inputConfigFile +' --overwrite yes'
     print("Executing Command: " + command)
     os.system(command)
     os.chdir("../../..")
@@ -371,7 +373,7 @@ if('10' in userInput):
         os.makedirs(outdir)
 
     os.chdir('CoreInfra/Compute')
-    command = './boot_backups_policy.py '+inputfile + ' ' + outdir
+    command = 'python boot_backups_policy.py '+inputfile + ' ' + outdir
     print("Executing Command: " + command)
     os.system(command)
     os.chdir("../..")
@@ -393,7 +395,7 @@ if('11' in userInput):
 
     os.chdir('CoreInfra/BlockVolume')
     print("Executing Command: " + command)
-    command = './block_backups_policy.py '+inputfile + ' ' + outdir
+    command = 'python block_backups_policy.py '+inputfile + ' ' + outdir
     os.system(command)
     os.chdir("../..")
     print("--------------------------------------------------------------------------")
@@ -411,14 +413,14 @@ if('12' in userInput):
 
     if (input_vcn == ''):
         if (inputConfigFile == ''):
-            command = './exportSeclist.py ' + cd3outfile
+            command = 'python exportSeclist.py ' + cd3outfile
         else:
-            command = './exportSeclist.py ' + cd3outfile + ' --configFileName ' + inputConfigFile
+            command = 'python exportSeclist.py ' + cd3outfile + ' --configFileName ' + inputConfigFile
     else:
         if (inputConfigFile == ''):
-            command = './exportSeclist.py ' + cd3outfile + ' --vcnName ' + input_vcn + ' --networkCompartment ' + input_Comp
+            command = 'python exportSeclist.py ' + cd3outfile + ' --vcnName ' + input_vcn + ' --networkCompartment ' + input_Comp
         else:
-            command = './exportSeclist.py ' + cd3outfile + ' --vcnName ' + input_vcn + ' --networkCompartment ' + input_Comp + ' --configFileName ' + inputConfigFile
+            command = 'python exportSeclist.py ' + cd3outfile + ' --vcnName ' + input_vcn + ' --networkCompartment ' + input_Comp + ' --configFileName ' + inputConfigFile
 
     print("Executing Command: " + command)
     os.system(command)
@@ -438,14 +440,14 @@ if('13' in userInput):
     os.chdir('CoreInfra/Networking/BaseNetwork')
     if(input_vcn==''):
         if(inputConfigFile==''):
-            command = './exportRoutetable.py ' +  cd3outfile
+            command = 'python exportRoutetable.py ' +  cd3outfile
         else:
-            command = './exportRoutetable.py ' + cd3outfile + ' --configFileName '+inputConfigFile
+            command = 'python exportRoutetable.py ' + cd3outfile + ' --configFileName '+inputConfigFile
     else:
         if (inputConfigFile == ''):
-            command = './exportRoutetable.py '+cd3outfile+' --vcnName '+input_vcn + ' --networkCompartment '+input_Comp
+            command = 'python exportRoutetable.py '+cd3outfile+' --vcnName '+input_vcn + ' --networkCompartment '+input_Comp
         else:
-            command = './exportRoutetable.py '+cd3outfile+' --vcnName '+input_vcn + ' --networkCompartment '+input_Comp+ ' --configFileName ' + inputConfigFile
+            command = 'python exportRoutetable.py '+cd3outfile+' --vcnName '+input_vcn + ' --networkCompartment '+input_Comp+ ' --configFileName ' + inputConfigFile
     print("Executing Command: " + command)
     os.system(command)
     os.chdir("../../..")
@@ -470,7 +472,7 @@ if('14' in userInput):
             exit(1)
 
         os.chdir('CoreInfra/Networking/BaseNetwork')
-        command = './update_terraform_network.py ' + inputfile + ' ' + outdir + ' ' + prefix +' 1'
+        command = 'python update_terraform_network.py ' + inputfile + ' ' + outdir + ' ' + prefix +' 1'
         print("Executing Command: " + command)
         os.system(command)
         os.chdir("../../..")
@@ -487,7 +489,7 @@ if('14' in userInput):
             exit(1)
 
         os.chdir('CoreInfra/Networking/BaseNetwork')
-        command = './update_terraform_network.py ' + inputfile + ' ' + outdir + ' ' + prefix +' 2'
+        command = 'python update_terraform_network.py ' + inputfile + ' ' + outdir + ' ' + prefix +' 2'
         print("Executing Command: " + command)
         os.system(command)
         os.chdir("../../..")
@@ -518,7 +520,7 @@ if('15' in userInput):
             exit(1)
 
         os.chdir('CoreInfra/Networking/BaseNetwork')
-        command = './create_terraform_nsg.py ' + inputfile + ' ' + outdir
+        command = 'python create_terraform_nsg.py ' + inputfile + ' ' + outdir
         print("Executing Command: " + command)
         os.system(command)
         os.chdir("../../..")
@@ -540,9 +542,30 @@ if('15' in userInput):
             exit(1)
 
         os.chdir('CoreInfra/Compute')
-        command = './update_instance_nsg.py ' + inputfile + ' ' + outdir
+        command = 'python update_instance_nsg.py ' + inputfile + ' ' + outdir
         print("Executing Command: " + command)
         os.system(command)
         os.chdir("../..")
         print("--------------------------------------------------------------------------")
+
+if('16' in userInput):
+    print("------------------------Setting up FSS---------------------------")
+    if (input_format=='cd3'):
+        inputfile=input_cd3file
+    elif(input_format=='csv'):
+        if (input_fss_csv == ''):
+            print("input fss_csv location cannot be left blank. Exiting... ")
+            exit(1)
+        inputfile=input_fss_csv
+    outdir = input_outdir
+
+    if not os.path.exists(outdir):
+        os.makedirs(outdir)
+
+    os.chdir('CoreInfra/FileStorage')
+    command = 'python create_terraform_fss.py '+inputfile + ' ' + outdir
+    print("Executing Command: " + command)
+    os.system(command)
+    os.chdir("../..")
+    print("--------------------------------------------------------------------------")
 

@@ -79,8 +79,97 @@ def print_secrules(seclists,region,vcn_name,comp_name):
                     {'Region':region,'Compartment Name':comp_name, 'VCN Name':vcn_name,'SubnetName': dn, 'RuleType': 'egress', 'Protocol': 'all', 'isStateless': str(rule.is_stateless),
                      'Source': '', 'SPortMin': '', 'SPortMax': '', 'Destination': rule.destination, 'DPortMin': '',
                      'DPortMax': '','ICMPType': '', 'ICMPCode': ''}, index=[i])
-                df = df.append(new_row, ignore_index=True)
+                #df = df.append(new_row, ignore_index=True)
+            if rule.protocol == "1":
+                if rule.icmp_options is None:
+                    print(dn + ",egress,all," + str(rule.is_stateless) + "," + rule.destination + ",,,,,,,")
 
+                    new_row = pd.DataFrame({'Region':region,'Compartment Name':comp_name, 'VCN Name':vcn_name,'SubnetName': dn, 'RuleType': 'egress', 'Protocol': 'icmp',
+                                            'isStateless': str(rule.is_stateless),
+                                            'Source': '', 'SPortMin': '', 'SPortMax': '', 'Destination': rule.destination,
+                                            'DPortMin': '', 'DPortMax': '',
+                                            'ICMPType': '', 'ICMPCode': ''},index =[i])
+                else:
+                    code = convertNullToNothing(rule.icmp_options.code)
+                    type = convertNullToNothing(rule.icmp_options.type)
+                    print(dn + ",egress,all," + str(rule.is_stateless) + "," + rule.destination + ",,,,,"+type+","+code)
+                    new_row = pd.DataFrame(
+                    {'Region':region,'Compartment Name':comp_name, 'VCN Name':vcn_name,'SubnetName': dn, 'RuleType': 'egress', 'Protocol': 'icmp', 'isStateless': str(rule.is_stateless),
+                     'Source': '', 'SPortMin': '', 'SPortMax': '', 'Destination': rule.destination, 'DPortMin': '',
+                     'DPortMax': '',
+                     'ICMPType': type, 'ICMPCode': code},index =[i])
+
+            if rule.protocol == "6":
+                if rule.tcp_options is None:
+                    print(dn + ",egress,tcp," + str(rule.is_stateless) + ",,,," + rule.destination+",,,,")
+                    new_row = pd.DataFrame(
+                    {'Region': region, 'Compartment Name': comp_name, 'VCN Name': vcn_name, 'SubnetName': dn,
+                     'RuleType': 'egress', 'Protocol': 'tcp', 'isStateless': str(rule.is_stateless),
+                     'Source': '', 'SPortMin': '', 'SPortMax': '', 'Destination': rule.destination, 'DPortMin': '',
+                     'DPortMax': '',
+                     'ICMPType': '', 'ICMPCode': ''}, index=[i])
+            # else:
+            #    print(rule.tcp_options.destination_port_range)
+                elif rule.tcp_options.source_port_range is not None:
+                    min = convertNullToNothing(rule.tcp_options.source_port_range.min)
+                    max = convertNullToNothing(rule.tcp_options.source_port_range.max)
+                    print(dn + ",egress,tcp," + str(rule.is_stateless) + ",,,," + rule.destination + ",," + min + "," + max + ",,")
+                # oname.write(dn + ",ingress,tcp," + str(rule.is_stateless) + "," + rule.source + ",,,," + min + "," + max+",,\n")
+                    new_row = pd.DataFrame(
+                    {'Region': region, 'Compartment Name': comp_name, 'VCN Name': vcn_name, 'SubnetName': dn,
+                     'RuleType': 'egress', 'Protocol': 'tcp',
+                     'isStateless': str(rule.is_stateless),
+                     'Source': '', 'SPortMin': min, 'SPortMax': max, 'Destination': rule.destination,
+                     'DPortMin': '', 'DPortMax': '',
+                     'ICMPType': '', 'ICMPCode': ''}, index=[i])
+                elif rule.tcp_options.destination_port_range is not None:
+                    min = convertNullToNothing(rule.tcp_options.destination_port_range.min)
+                    max = convertNullToNothing(rule.tcp_options.destination_port_range.max)
+                    print(dn + ",egress,tcp," + str(rule.is_stateless) + ",,,," + rule.destination + ",," + min + "," + max + ",,")
+                # oname.write(dn + ",ingress,tcp," + str(rule.is_stateless) + "," + rule.source + ",,,," + min + "," + max+",,\n")
+                    new_row = pd.DataFrame(
+                    {'Region': region, 'Compartment Name': comp_name, 'VCN Name': vcn_name, 'SubnetName': dn,
+                     'RuleType': 'egress', 'Protocol': 'tcp',
+                     'isStateless': str(rule.is_stateless),
+                     'Source': '', 'SPortMin': '', 'SPortMax': '', 'Destination': rule.destination,
+                     'DPortMin': min, 'DPortMax': max,
+                     'ICMPType': '', 'ICMPCode': ''}, index=[i])
+            if rule.protocol == "17":
+                if rule.udp_options is None:
+                    print(dn + ",egress,udp," + str(rule.is_stateless) + ",,,," + rule.destination+",,,,")
+                    new_row = pd.DataFrame(
+                    {'Region': region, 'Compartment Name': comp_name, 'VCN Name': vcn_name, 'SubnetName': dn,
+                     'RuleType': 'egress', 'Protocol': 'udp', 'isStateless': str(rule.is_stateless),
+                     'Source': '', 'SPortMin': '', 'SPortMax': '', 'Destination': rule.destination, 'DPortMin': '',
+                     'DPortMax': '',
+                     'ICMPType': '', 'ICMPCode': ''}, index=[i])
+            # else:
+            #    print(rule.tcp_options.destination_port_range)
+                elif rule.udp_options.source_port_range is not None:
+                    min = convertNullToNothing(rule.udp_options.source_port_range.min)
+                    max = convertNullToNothing(rule.udp_options.source_port_range.max)
+                    print(dn + ",egress,tcp," + str(rule.is_stateless) + ",,,," + rule.destination + ",," + min + "," + max + ",,")
+                # oname.write(dn + ",ingress,tcp," + str(rule.is_stateless) + "," + rule.source + ",,,," + min + "," + max+",,\n")
+                    new_row = pd.DataFrame(
+                    {'Region': region, 'Compartment Name': comp_name, 'VCN Name': vcn_name, 'SubnetName': dn,
+                     'RuleType': 'egress', 'Protocol': 'udp',
+                     'isStateless': str(rule.is_stateless),
+                     'Source': '', 'SPortMin': min, 'SPortMax': max, 'Destination': rule.destination,
+                     'DPortMin': '', 'DPortMax': '',
+                     'ICMPType': '', 'ICMPCode': ''}, index=[i])
+                elif rule.udp_options.destination_port_range is not None:
+                    min = convertNullToNothing(rule.udp_options.destination_port_range.min)
+                    max = convertNullToNothing(rule.udp_options.destination_port_range.max)
+                    print(dn + ",egress,tcp," + str(rule.is_stateless) + ",,,," + rule.destination + ",," + min + "," + max + ",,")
+                # oname.write(dn + ",ingress,tcp," + str(rule.is_stateless) + "," + rule.source + ",,,," + min + "," + max+",,\n")
+                    new_row = pd.DataFrame(
+                    {'Region': region, 'Compartment Name': comp_name, 'VCN Name': vcn_name, 'SubnetName': dn,
+                     'RuleType': 'egress', 'Protocol': 'udp',
+                     'isStateless': str(rule.is_stateless),
+                     'Source': '', 'SPortMin': '', 'SPortMax': '', 'Destination': rule.destination,
+                     'DPortMin': min, 'DPortMax': max,
+                     'ICMPType': '', 'ICMPCode': ''}, index=[i])
+            df = df.append(new_row, ignore_index=True)
         for rule in isec_rules:
           #  print (rule)
             i+=1
