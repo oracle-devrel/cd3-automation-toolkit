@@ -9,8 +9,12 @@ import re
 import sys
 import oci
 import pandas as pd
+import datetime
 from oci.core.virtual_network_client import VirtualNetworkClient
 from oci.identity import IdentityClient
+
+x = datetime.datetime.now()
+date = x.strftime("%f").strip()
 
 def backup_file(dir, pattern):
     print("backing up tf files ")
@@ -18,7 +22,7 @@ def backup_file(dir, pattern):
         if f.endswith(pattern):
             print(("backing up ....." +  os.path.join(dir, f)))
             path = os.path.join(dir, f)
-            shutil.copy(path, path + "_backup")
+            shutil.copy(path, path + "_backup"+date)
 
 
 def skipCommentedLine(lines):
@@ -136,10 +140,8 @@ def create_egress_rule_string(row):
         # tcp_option = tcp_option
         if str(row['DPortMax']) and str(row['DPortMin']):
             dest_range = """
-            destination_port_range{
                     max = """ + str(row['DPortMax']) + """
                     min =  """ + str(row['DPortMin']) + """
-                    }
                  """
         if str(row['SPortMax']) and str(row['SPortMin']):
             source_range = """
@@ -155,10 +157,8 @@ def create_egress_rule_string(row):
         udp_option = " udp_options {"
         if str(row['DPortMax']) and str(row['DPortMin']):
             dest_range = """
-            destination_port_range{
                     max = """ + str(row['DPortMax']) + """
                     min =  """ + str(row['DPortMin']) + """
-                    }
                  """
         if str(row['SPortMax']) and str(row['SPortMin']):
             source_range = """
