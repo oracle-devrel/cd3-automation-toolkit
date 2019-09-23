@@ -59,3 +59,11 @@ SetUPOCI_Via_TF Tag v3.1
 2. Added Support for Dedicated VM Hosts.
    New sheet to specify Dedicated VM Host details has been introduced and a new column has been added in th Instances sheet if the instance needs to be launched
    in that dedicated VM Host
+
+------------------------
+SetUPOCI_Via_TF Tag v3.2
+------------------------
+1. Added Support for FSS via cd3 excel as well as csv. New sheet called 'FSS' has been added to the cd3. Please look
+    in example folder for sample file.
+2. Fixed minor issues related to egress rules in modify and export security lists. Specific egress rules could not be
+    added earlier. Was allowing only egress all open.
