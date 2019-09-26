@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 import configparser
 import argparse
 import oci
@@ -651,7 +652,9 @@ if(input_create_vm=="1"):
         print('Creating VCN: '+input_vcn_name)
         #Converting vcn name to alphanumeric string
         regex = re.compile('[^a-zA-Z0-9]')
-        vcn_dns_label=regex.sub('', input_vcn_name)
+        vcn_dns = regex.sub('', input_vcn_name)
+        vcn_dns_label = (vcn_dns[:15]) if len(vcn_dns) > 15 else vcn_dns
+
         create_vcn_details=oci.core.models.CreateVcnDetails(cidr_block=input_vcn_cidr,dns_label=vcn_dns_label,compartment_id=ocs_compartment_ocid, display_name=input_vcn_name)
         vcn=network_client.create_vcn(create_vcn_details)
         vcn_ocid=vcn.data.id
@@ -661,7 +664,9 @@ if(input_create_vm=="1"):
         print('Creating public SUBNET: ' + input_subnet_name + ' with default route table, security list and dhcp options')
         # Converting subnet name to alphanumeric string
         regex = re.compile('[^a-zA-Z0-9]')
-        subnet_dns_label = regex.sub('', input_subnet_name)
+        subnet_dns = regex.sub('', input_subnet_name)
+        subnet_dns_label = (subnet_dns[:15]) if len(subnet_dns) > 15 else subnet_dns
+
         create_subnet_details = oci.core.models.CreateSubnetDetails(availability_domain=ad_name,
                                                                     cidr_block=input_subnet_cidr,
                                                                     dns_label=subnet_dns_label,

@@ -39,6 +39,8 @@ data=""
 tfStr={}
 subnets_done={}
 routefile={}
+x = datetime.datetime.now()
+date = x.strftime("%f").strip()
 
 #If input is CD3 excel file
 if('.xls' in inputfile):
@@ -54,6 +56,9 @@ if('.xls' in inputfile):
         subnets_done[reg]=[]
         for file in glob.glob(outdir+'/'+reg + '/*routes.tf'):
             routefile[reg] = file
+            # Backup the existing Routes tf file
+            print("Backing Up "+routefile[reg])
+            shutil.copy(routefile[reg], routefile[reg] + "_backup" + date)
 
 
     endNames = {'<END>', '<end>'}
@@ -144,10 +149,6 @@ if('.xls' in inputfile):
             if(tfStr[reg]!=''):
                 tfStr[reg]=tfStr[reg]+"""
 }"""
-                # Backup the existing Routes tf file
-                x = datetime.datetime.now()
-                date = x.strftime("%f").strip()
-                shutil.copy(routefile[reg], routefile[reg] + "_backup" + date)
                 with open(routefile[reg], 'w') as f:
                     f.write(tfStr[reg])
                 print("Route Rules added to the file "+routefile[reg]+" successfully. Please run terraform plan from your outdir to see the changes")
@@ -156,6 +157,7 @@ if('.xls' in inputfile):
         print("Reading AddRouteRules sheet of cd3")
         df = pd.read_excel(inputfile, sheet_name='AddRouteRules')
         df.dropna(how='all')
+        df.drop_duplicates()
         for i in df.index:
             region = df.iat[i, 0]
             region = str(region).lower()
@@ -213,23 +215,18 @@ if('.xls' in inputfile):
             with open(routefile[region]) as f:
                 data = f.read()
             f.close()
-            if(strRule not in data):
-                updated_data = re.sub(searchString, strRule1, data)
-            else:
-                updated_data=data
+            #if(strRule not in data):
+            updated_data = re.sub(searchString, strRule1, data)
+            #else:
+            #    updated_data=data
 
-            if(data!=updated_data):
-                #Back Up Existing file
-                x = datetime.datetime.now()
-                date = x.strftime("%f").strip()
-
-                shutil.copy(routefile[region], routefile[region] + "_backup" + date)
-                with open(routefile[region], 'w') as f:
-                    f.write(updated_data)
-                f.close()
-                print("Route Rules added to the file "+routefile[region]+ " successfully. Please run terraform plan from your outdir to see the changes")
-            else:
-                print("Nothing to add")
+            #if(data!=updated_data):
+            with open(routefile[region], 'w') as f:
+                f.write(updated_data)
+            f.close()
+        print("Route Rules added successfully. Please run terraform plan from your outdir to see the changes")
+            #else:
+            #    print("Nothing to add")
 
 # If input is a csv file
 elif ('.csv' in inputfile):
@@ -289,23 +286,18 @@ elif ('.csv' in inputfile):
             with open(routefile[region]) as f:
                 data = f.read()
             f.close()
-            if(strRule not in data):
-                updated_data = re.sub(searchString, strRule1, data)
-            else:
-                updated_data=data
+            #if(strRule not in data):
+            updated_data = re.sub(searchString, strRule1, data)
+            #else:
+            #    updated_data=data
 
-            if(data!=updated_data):
-                #Back Up Existing file
-                x = datetime.datetime.now()
-                date = x.strftime("%f").strip()
-
-                shutil.copy(routefile[region], routefile[region] + "_backup" + date)
-                with open(routefile[region], 'w') as f:
-                    f.write(updated_data)
-                f.close()
-                print("Route Rules added to the file "+routefile[region]+ " successfully. Please run terraform plan from your outdir to see the changes")
-            else:
-                print("Nothing to add")
+            #if(data!=updated_data):
+            with open(routefile[region], 'w') as f:
+                f.write(updated_data)
+            f.close()
+    print("Route Rules added to the file successfully. Please run terraform plan from your outdir to see the changes")
+            #else:
+            #    print("Nothing to add")
 
     fname.close()
 
