@@ -424,6 +424,7 @@ if('.xls' in secrulesfilename):
             default_ruleStr[reg]=''
             default_seclists_done[reg] = []
             tfStr[reg]=''
+            oname[reg]=None
             subnets_done[reg]=[]
             seclists_done[reg]=[]
             # Backup existing seclist files in ash and phx dir
@@ -509,9 +510,9 @@ if('.xls' in secrulesfilename):
         for reg in all_regions:
             tfStr[reg]=tfStr[reg]+"""
 }"""
-
-            oname[reg].write(tfStr[reg])
-            oname[reg].close()
+            if(oname[reg]!=None):
+                oname[reg].write(tfStr[reg])
+                oname[reg].close()
 
             default_ruleStr[reg]=default_ruleStr[reg]+"""
 }"""
