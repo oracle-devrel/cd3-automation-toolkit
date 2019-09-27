@@ -534,7 +534,7 @@ resource "opc_compute_ip_network" "panda_new" {
             disk_list_for_ansible = disk_list_for_ansible + ",/dev/xvd" + letter_mapping[j]
         tf_data = tf_data + """
     resource "opc_compute_storage_volume" "panda_disk""" + str(j) + """" {
-    name = \"""" + input_ocic_tf_prefix_for_panda + """_panda_disk""" + str(j) + """"
+    name = \"oraclemigration/"""+ input_ocic_tf_prefix_for_panda + """_panda_disk""" + str(j) + """"
     size = """ + str(input_ocic_panda_storage_volume_size) + """
     storage_type = "/oracle/public/storage/latency"
 }
