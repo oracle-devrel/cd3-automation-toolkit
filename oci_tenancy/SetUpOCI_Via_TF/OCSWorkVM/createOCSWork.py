@@ -520,7 +520,9 @@ output "endpoint" {
 resource "opc_compute_ip_network" "panda_new" {
  name                = \"""" + input_ocic_tf_prefix_for_panda + """_Panda-OCIC2OCI--IP-Network"
  """
-    tf_data = tf_data +  "ip_address_prefix   = \"" + input_ocic_ip_network_for_panda + "\" } "
+    tf_data = tf_data +  "ip_address_prefix   = \"""" + input_ocic_ip_network_for_panda + """"
+}
+"""
 
 
     write_file("tmp\\panda.tf",tf_data)
@@ -771,7 +773,7 @@ if(input_create_vm=="1"):
 
     if (default_route_table_id == ''):
         default_route_table_id=subnet_route_table_id
-        append_file(del_config_file, "def_rt_table_ocid=" + default_route_table_id)
+    append_file(del_config_file, "def_rt_table_ocid=" + default_route_table_id)
 
     append_file(del_config_file, "subnet_ocid=" + subnet_ocid)
 

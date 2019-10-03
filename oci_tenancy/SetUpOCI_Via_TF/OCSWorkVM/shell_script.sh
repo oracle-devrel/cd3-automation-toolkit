@@ -112,7 +112,7 @@ then
     mv /home/opc/panda.tf /root/ocswork/ocic2oci_work/
     mv /home/opc/ocic-provider.tf /root/ocswork/ocic2oci_work/
     mv /home/opc/ocic-variables.tf /root/ocswork/ocic2oci_work/
-    mv /home/opc/variables.yml /root/ocswork/ocic2oci_work/
+    #mv /home/opc/variables.yml /root/ocswork/ocic2oci_work/
     mv /home/opc/upgrade_terraform_expect_script.sh /root/ocswork/ocic2oci_work/
 
     chown root:root /root/ocswork/ocic2oci_work/*.tf

@@ -7,10 +7,3 @@
        name: rsync
        state: latest
 
-  - name: Install the python packages required for the rsync
-    pip:
-      name: "{{ packages_for_pip }}"
-    vars:
-      packages_for_pip:
-      - python-crontab
-      - scp
