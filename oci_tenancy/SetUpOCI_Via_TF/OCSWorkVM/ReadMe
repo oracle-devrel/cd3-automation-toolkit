@@ -1,7 +1,7 @@
-
-
 The script createOCSWork.py accepts ocswork.properties as the input arguement.
 The variables are defined in the properties file along with their description in comments
+
+This script has been tested to run from either a Windows Machine or a Linux Machine.
 
 createOCSWork.py python script creates compartments for OCS related work, VMs and Network components. Further it creates VCN, subnet, route table and the VM
 which will be used for OCS work. It also copies over the required files to the VM using Python SCP module. As part of cloud-init, a script is executed on
