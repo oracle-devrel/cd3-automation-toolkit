@@ -102,11 +102,11 @@ then
 
     cd /root/ocswork/ocic2oci_work/
     ## Download older version of terraform
-    wget https://releases.hashicorp.com/terraform/0.11.14/terraform_0.11.14_linux_amd64.zip
-    sleep 2s
-    unzip terraform_0.11.14_linux_amd64.zip
-    sleep 2s
-    mv terraform terraform0.11
+    #wget https://releases.hashicorp.com/terraform/0.11.14/terraform_0.11.14_linux_amd64.zip
+    #sleep 2s
+    #unzip terraform_0.11.14_linux_amd64.zip
+    #sleep 2s
+    #mv terraform terraform0.11
 
     ## Copy files generated using createOCSWork
     mv /home/opc/panda.tf /root/ocswork/ocic2oci_work/
@@ -116,28 +116,28 @@ then
     mv /home/opc/upgrade_terraform_expect_script.sh /root/ocswork/ocic2oci_work/
 
     chown root:root /root/ocswork/ocic2oci_work/*.tf
-    chown root:root /root/ocswork/ocic2oci_work/variables.yml
+    #chown root:root /root/ocswork/ocic2oci_work/variables.yml
 
     cd /root/ocswork/ocic2oci_work
     ## The unfortunate side effect of running so many things through shell.  The kernel seems to be throwing irq messages.
     ## Sleep to see if this helps.
     #sleep 1s
-    ./terraform0.11 init
+    #./terraform0.11 init
+    #sleep 1s
+
+    dos2unix upgrade_terraform_expect_script.sh upgrade_terraform_expect_script.sh
+    chmod +x upgrade_terraform_expect_script.sh
+    ./upgrade_terraform_expect_script.sh
+
     sleep 1s
-
-    #dos2unix upgrade_terraform_expect_script.sh upgrade_terraform_expect_script.sh
-    #chmod +x upgrade_terraform_expect_script.sh
-    #./upgrade_terraform_expect_script.sh
-
-    #sleep 1s
-    #terraform init
-    #sleep 1s
+    terraform init
+    sleep 1s
 
    ## Writing some retry logic to TF
     n=0
     until [ $n -ge 5 ]
     do
-      ./terraform0.11 apply -auto-approve && break
+      terraform apply -auto-approve && break
       n=$[$n+1]
       sleep 3
     done

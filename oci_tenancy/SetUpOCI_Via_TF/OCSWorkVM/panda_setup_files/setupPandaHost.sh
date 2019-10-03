@@ -14,15 +14,16 @@ sed -i 's/#host_key_checking = False/host_key_checking = False/g' /etc/ansible/a
 
 rm -rf /root/.ansible/cp/*
 ANSIBLE_HOST_KEY_CHECKING=False
-timeout 30  ansible-playbook -u opc --private-key /root/ocswork/keys/ssh-pvt-key-openssh.ppk -i  $PANDA_PUB_IP, lvm-setup.yml ctls_ssh_fix.yml
-
+#timeout 30  ansible-playbook -u opc --private-key /root/ocswork/keys/ssh-pvt-key-openssh.ppk -i  $PANDA_PUB_IP, lvm-setup.yml ctls_ssh_fix.yml
+timeout 30  ansible-playbook -u opc --private-key /root/ocswork/keys/ssh-pvt-key-openssh.ppk -i  $PANDA_PUB_IP, ctls_ssh_fix.yml
 retVal=$?
 
 if [ $retVal -eq 124 ]; then
         echo " Ansible timed out - running again after deleting the /root/.ansible/cp/* directory "
         rm -rf /root/.ansible/cp/*
         ANSIBLE_HOST_KEY_CHECKING=False
-        timeout 30  ansible-playbook -u opc --private-key /root/ocswork/keys/ssh-pvt-key-openssh.ppk -i  $PANDA_PUB_IP, lvm-setup.yml ctls_ssh_fix.yml
+        #timeout 30  ansible-playbook -u opc --private-key /root/ocswork/keys/ssh-pvt-key-openssh.ppk -i  $PANDA_PUB_IP, lvm-setup.yml ctls_ssh_fix.yml
+        timeout 30  ansible-playbook -u opc --private-key /root/ocswork/keys/ssh-pvt-key-openssh.ppk -i  $PANDA_PUB_IP, ctls_ssh_fix.yml
 fi
 
 

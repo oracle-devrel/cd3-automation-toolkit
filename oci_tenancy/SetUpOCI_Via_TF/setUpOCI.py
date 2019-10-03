@@ -56,7 +56,9 @@ if(input_format=='csv'):
         input_add_secrules_csv = config.get('Default', 'add_secrules_csv').strip()
         input_nsgs_csv = config.get('Default', 'nsgs_csv').strip()
         input_fss_csv = config.get('Default', 'fss_csv').strip()
-
+        input_lbr_csv = config.get('Default', 'lbr_csv').strip()
+        input_adw_atp_csv = config.get('Default', 'adw_atp_csv').strip()
+        input_dbsystem_csv = config.get('Default', 'dbsystem_csv').strip()
     except Exception as e:
         print(e)
         print('Check if input properties exist and try again..exiting...`    ')
@@ -79,8 +81,12 @@ print("13. Export Route Tables to CD3")
 print("14. Update Base Network Objects; Use this option only if you have already made changes/updates "
       "to the configurations after initial Base Network Creation.\n    Else you should use Option 4 again with required changes to CD3 - It will overwrite all network objects.")
 print("15. Network Security Groups")
-print("16. File Storage Services")
+print("16. File Storage Service")
+print("17. Load Balancer Service")
+print("18. Create ADW/ADT")
+print("19. Create Database")
 print("\nSee example folder for sample input files\n")
+
 userInput = input('Enter your choice; multiple choices allowed as comma separated: ')
 userInput=userInput.split(',')
 
@@ -569,3 +575,63 @@ if('16' in userInput):
     os.chdir("../..")
     print("--------------------------------------------------------------------------")
 
+if('17' in userInput):
+    print("------------------------Setting up LBR---------------------------")
+    if (input_format=='cd3'):
+        inputfile=input_cd3file
+    elif(input_format=='csv'):
+        if (input_lbr_csv == ''):
+            print("input lbr_csv location cannot be left blank. Exiting... ")
+            exit(1)
+        inputfile=input_lbr_csv
+    outdir = input_outdir
+
+    if not os.path.exists(outdir):
+        os.makedirs(outdir)
+
+    os.chdir('CoreInfra/Networking/LoadBalancers')
+    command = 'python create_terraform_lbr.py '+inputfile + ' ' + outdir
+    print("Executing Command: " + command)
+    os.system(command)
+    os.chdir("../..")
+    print("--------------------------------------------------------------------------")
+
+if('18' in userInput):
+    print("------------------------Creating ADW/ATP---------------------------")
+    if (input_format == 'cd3'):
+        inputfile = input_cd3file
+    elif (input_format == 'csv'):
+        if (input_adw_atp_csv == ''):
+            print("input adw_atp_csv location cannot be left blank. Exiting... ")
+            exit(1)
+        inputfile = input_adw_atp_csv
+    outdir = input_outdir
+    prefix = input_prefix
+    if not os.path.exists(outdir):
+        os.makedirs(outdir)
+    os.chdir('Database')
+    command = 'python create_terraform_adw_atp.py ' + inputfile + ' ' + outdir + ' ' + prefix
+    print("Executing Command: " + command)
+    os.system(command)
+    os.chdir("../")
+    print("--------------------------------------------------------------------------")
+if('19' in userInput):
+    print("---------------------------Create DB_System--------------------------")
+    if (input_format == 'cd3'):
+        inputfile = input_cd3file
+    elif (input_format == 'csv'):
+        if (input_dbsystem_csv == ''):
+            print("input dbsystem_csv location cannot be left blank. Exiting... ")
+            exit(1)
+        inputfile = input_dbsystem_csv
+        # print(f"{inputfile}")
+    outdir = input_outdir
+    prefix = input_prefix
+    if not os.path.exists(outdir):
+        os.makedirs(outdir)
+    os.chdir('Database')
+    command = 'python create_terraform_database.py ' + inputfile + ' ' + outdir + ' ' + prefix
+    print("Executing Command: " + command)
+    os.system(command)
+    os.chdir("../")
+    print("--------------------------------------------------------------------------")

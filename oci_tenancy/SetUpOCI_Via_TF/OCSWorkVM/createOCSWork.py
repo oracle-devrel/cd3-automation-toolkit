@@ -12,6 +12,7 @@ from paramiko import SSHClient
 import puttykeys
 from string import ascii_lowercase
 from itertools import count as letter_count
+import sys
 
 parser = argparse.ArgumentParser(description="Creates OCS Work related components")
 parser.add_argument("propsfile",help="Full Path of properties file. eg ocswork.properties")
@@ -447,13 +448,13 @@ expect eof
     tf_data = """ 
 resource "opc_compute_storage_volume" "panda_boot_vol" {
   name = \"oraclemigration/""" + input_ocic_tf_prefix_for_panda + """_Panda-Boot_Vol"
-  size = 12
+  size = 1536
 }
 
 resource "opc_compute_instance" "panda_new" {
- name       = \"oraclemigration/""" + input_ocic_tf_prefix_for_panda + """_Panda-OCIC2OCI"
+ name       = \""""  + input_ocic_tf_prefix_for_panda + """_Panda-OCIC2OCI"
  label      = "Terraform Provisioned Panda-WithAPI"
- shape      = "oc7"
+ shape      = "oc3"
  image_list = "/oracle/public/OL_7.5_UEKR4_x86_64_MIGRATION"
 
   storage {
@@ -521,38 +522,9 @@ resource "opc_compute_ip_network" "panda_new" {
  """
     tf_data = tf_data +  "ip_address_prefix   = \"" + input_ocic_ip_network_for_panda + "\" } "
 
-### Add the storage work here
-    ## Generate number to letters mapping
-    letter_mapping = dict(zip(letter_count(0),ascii_lowercase))
-    disk_list_for_ansible = ""
-    for i in range(1,input_ocic_panda_storage_volume_disks+1):
-        j=i+1
-        #print ("Disk would be: /dev/xvd" + letter_mapping[j])
-        if i == 1:
-            disk_list_for_ansible = "/dev/xvd" + letter_mapping[j]
-        else:
-            disk_list_for_ansible = disk_list_for_ansible + ",/dev/xvd" + letter_mapping[j]
-        tf_data = tf_data + """
-    resource "opc_compute_storage_volume" "panda_disk""" + str(j) + """" {
-    name = \"oraclemigration/"""+ input_ocic_tf_prefix_for_panda + """_panda_disk""" + str(j) + """"
-    size = """ + str(input_ocic_panda_storage_volume_size) + """
-    storage_type = "/oracle/public/storage/latency"
-}
-    resource "opc_compute_storage_attachment" "panda_disk""" + str(j) + """_attachment"
-    {
-    instance = "${opc_compute_instance.panda_new.name}"
-    storage_volume = "${opc_compute_storage_volume.panda_disk""" + str(i+1) + """.name}"
-    index = """ + str(j) + """
-    }"""
 
     write_file("tmp\\panda.tf",tf_data)
     ### Have to write the ansible files to create the storage disk.
-    ansible_var_data = """
-volume: 
-   pvs: """ + disk_list_for_ansible + """
-   create_lvsize: '100%FREE'
-"""
-    write_file("tmp\\variables.yml",ansible_var_data)
 
 #write Koala specific files
 if (input_configure_koala=="1"):
@@ -718,19 +690,26 @@ if(input_create_vm=="1"):
         lpg = network_client.create_local_peering_gateway(create_lpg_details)
         lpg_to_rsync_ocid = lpg.data.id
 
-
-    output=subprocess.Popen(("certutil.exe -encode "+ input_user_data_file + " tmp\\output.txt"),stdout=subprocess.PIPE).stdout
-    output.close()
-    time.sleep(5)
-
     encoded_user_data=""
-    with open('tmp\\output.txt', 'r') as f:
-        for line in f:
-            if not (line.__contains__("CERTIFICATE")):
-                encoded_user_data=encoded_user_data+line
+    if("win" in sys.platform):
+        output=subprocess.Popen(("certutil.exe -encode "+ input_user_data_file + " tmp\\output.txt"),stdout=subprocess.PIPE).stdout
+        output.close()
+        time.sleep(5)
+
+    elif("linux" in sys.platform):
+        out = subprocess.Popen(["/bin/base64", input_user_data_file], stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+        stdout, stderr = out.communicate()
+        write_file("tmp\\output.txt", stdout.decode("utf-8") )
+        time.sleep(5)
+
+    f = open('tmp\\output.txt', 'r')
+    for line in f:
+        if not (line.__contains__("CERTIFICATE")):
+            encoded_user_data=encoded_user_data+line
     f.close()
 
     encoded_user_data=encoded_user_data.replace('\n','')
+
     print('Creating VM: '+input_vm_name)
     multiple_ssh_keys=input_ssh_key1
     if(input_ssh_key2!=''):
@@ -870,7 +849,7 @@ if(input_create_vm=="1"):
         sftp.put('tmp\\ocic-provider.tf','/home/opc/ocic-provider.tf')
         sftp.put('tmp\\ocic-variables.tf','/home/opc/ocic-variables.tf')
         sftp.put('tmp\\upgrade_terraform_expect_script.sh', '/home/opc/upgrade_terraform_expect_script.sh')
-        sftp.put('tmp\\variables.yml','/home/opc/variables.yml')
+
     if(input_configure_koala=="1"):
         print('Copying Koala files..')
         sftp.put(koala, '/home/opc/default')

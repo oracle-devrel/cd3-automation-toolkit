@@ -9,8 +9,8 @@ Set up the OCI tenancy. The public key is copied to the user profile in OCI cons
 and variables.tf for Terraform.
 
 PreRequisite:
-Install the following packages:
-pycryptodome and pycryptodomex via pip (pip3)
+Install the following packages in your PyCharm:
+pycryptodome and pycryptodomex
 
 Usage:
 ./createPEMKeys.py
@@ -34,7 +34,7 @@ API to communicate with OCI.
 
 ### Use URL: https://learn.hashicorp.com/terraform/getting-started/install.html to setup terraform on your work station ###
 
-##### You can use the below script or follow the steps below to create your terraform environment ####
+##### You can use the below script or follow the steps below to create your terraform environment (on a linux machine)####
 #!/bin/bash
 
 echo "Download terraform.zip from terraform.io for your platform"
