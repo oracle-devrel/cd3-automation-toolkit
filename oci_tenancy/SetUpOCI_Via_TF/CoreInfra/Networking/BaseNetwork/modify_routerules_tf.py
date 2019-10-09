@@ -41,6 +41,7 @@ subnets_done={}
 routefile={}
 x = datetime.datetime.now()
 date = x.strftime("%f").strip()
+cd3_tf_vcns=[]
 
 #If input is CD3 excel file
 if('.xls' in inputfile):
@@ -63,6 +64,15 @@ if('.xls' in inputfile):
 
     endNames = {'<END>', '<end>'}
     NaNstr = 'NaN'
+
+    # Get VCNs in cd3 (created via TF)
+    df_vcns = pd.read_excel(args.inputfile, sheet_name='VCNs', skiprows=1)
+    for i in df_vcns.index:
+        region = df_vcns['Region'][i]
+        if (region in endNames):
+            break
+        cd3_tf_vcns.append(df_vcns['vcn_name'][i])
+
     if (overwrite == 'yes'):
         print("\nReading RouteRulesinOCI sheet of cd3")
         df = pd.read_excel(inputfile, sheet_name='RouteRulesinOCI')
@@ -77,6 +87,9 @@ if('.xls' in inputfile):
             comp_name = comp_name.strip()
             vcn_name = df.iat[i, 2]
             vcn_name = vcn_name.strip()
+            # Process only those VCNs which are present in cd3(and have been created via TF)
+            if (vcn_name not in cd3_tf_vcns):
+                continue
             subnet_name = df.iat[i, 3]
             if (str(subnet_name).lower() == NaNstr.lower()):
                 continue
@@ -173,6 +186,9 @@ if('.xls' in inputfile):
                 exit(1)
             comp_name = df.iat[i, 1]
             vcn_name = df.iat[i, 2]
+            # Process only those VCNs which are present in cd3(and have been created via TF)
+            if (vcn_name not in cd3_tf_vcns):
+                continue
             dest_cidr = df.iat[i, 4]
             dest_cidr = str(dest_cidr).strip()
             dest_objs = df.iat[i, 5]

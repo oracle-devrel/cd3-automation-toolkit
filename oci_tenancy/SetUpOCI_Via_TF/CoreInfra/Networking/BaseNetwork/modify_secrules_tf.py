@@ -407,10 +407,18 @@ oname={}
 default_ruleStr={}
 default_seclists_done={}
 defaultname={}
+cd3_tf_vcns=[]
 
 # Read input file containing new sec rules to be added
 #If input is CD3 excel file
 if('.xls' in secrulesfilename):
+    #Get VCNs in cd3 (created via TF)
+    df_vcns = pd.read_excel(args.inputfile, sheet_name='VCNs', skiprows=1)
+    for i in df_vcns.index:
+        region = df_vcns['Region'][i]
+        if (region in endNames):
+            break
+        cd3_tf_vcns.append(df_vcns['vcn_name'][i])
 
     NaNstr = 'NaN'
     if(overwrite=='yes'):
@@ -441,6 +449,9 @@ if('.xls' in secrulesfilename):
                     continue
 
                 vcn_name = row['VCN Name']
+                # Process only those VCNs which are present in cd3(and have been created via TF)
+                if(vcn_name not in cd3_tf_vcns):
+                    continue
                 compartment_name = row['Compartment Name']
                 protocol = row['Protocol']
                 ruleType = row['RuleType']
@@ -536,6 +547,11 @@ if('.xls' in secrulesfilename):
 
                 if(region=='<END>' or region=='<end>'):
                     break
+
+                vcn_name = row['VCN Name']
+                #Process only those VCNs which are present in cd3(and have been created via TF)
+                if (vcn_name not in cd3_tf_vcns):
+                    continue
 
                 subnetName = row['SubnetName/SecurityListName']
                 protocol = row['Protocol']
