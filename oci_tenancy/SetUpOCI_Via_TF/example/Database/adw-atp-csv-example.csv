@@ -1,0 +1,7 @@
+#Region,Name,DB_Name,Compartment_Name,Admin_Password,CPU_Count,Size_in_TB,ADW or ATP
+Ashburn,ADW_23_9_CSV,ADWAcv,OCICtoOCI,Rajvilla#6330,1,1,ADW
+Ashburn,ATP_23_9_CSV,ATPAcv,OCICtoOCI,Rajvilla#6330,1,1,ATP
+Phoenix,ADW_23_9_CSV_P,ADWPcv,OCICtoOCI,Rajvilla#6330,1,1,ADW
+Phoenix,ATP_23_9_CSV_p,ATPPcv,OCICtoOCI,Rajvilla#6330,1,1,ATP
+Toronto,ATP_23_9_CSV_p,ATPPcv,OCICtoOCI,Rajvilla#6330,1,1,ATP
+Mumbai,ATP_23_9_CSV_p,ATPPcv,OCICtoOCI,Rajvilla#6330,1,1,ATP
