@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/bin/bash
 # Author: Kartikey Rajput
 # kartikey.rajput@oracle.com
 #Autonomous DataWarehouse | Autonomous Transaction
@@ -8,11 +8,7 @@ import argparse
 import pandas as pd
 import os
 import datetime
-import array as arr
-from os import path
 import csv
-
-import array
 
 x = datetime.datetime.now()
 date = x.strftime("%S").strip()
@@ -46,50 +42,38 @@ if ('.xls' in filename):
     #all_regions_v = str(values[7]).strip()
     #all_regions_v = all_regions_v.split(",")
     #all_regions_v = [x.strip().lower() for x in all_regions_v]
-    # print(f"REGIONs in VCN info---------------------> {all_regions_v}")
 
     all_regions_f = os.listdir(outdir)
-    # print(f"REGIONs folders---------------------> {all_regions_f}")
 
     df = pd.read_excel(filename, sheet_name='ADW_ATP', skiprows=1)
     for i in df.index:
-        for j in df.keys():
-            if (str(df[j][i]) == 'nan'):
-                continue
-
-            elif (j == 'Region'):
-                Region = df['Region'][i].strip().lower()
-                # print("Region----------------> "+Region)
-                # print(f"Value of i --------> {i} and Value of j --------> {j}")
-
-            if Region not in all_regions_f:
+        Region = df.iat[i, 0]
+        Region = Region.strip().lower()
+        if Region not in all_regions_f:
+            if Region == '<end>' and '<END>':
+                print('This is the end of the file')
+                break
+            else:
                 print("Invalid Region -> " + Region + "; It should be one of the values mentioned in VCN Info tab and directory with region name in Output directory")
                 continue
 
-            name = df['Display Name'][i].strip()
-            # print("Hostname-----------------------------> "+name)
+        name = df['Display Name'][i].strip()
 
-            autonomous_data_warehouse_db_name = df['DB Name'][i].strip()
-            # print("Hostname-----------------------------> " + autonomous_data_warehouse_db_name)
+        autonomous_data_warehouse_db_name = df['DB Name'][i].strip()
 
-            compartment_var_name = df['Compartment Name'][i].strip()
-            # print("Compartment---------------------------> "+compartment_var_name)
+        compartment_var_name = df['Compartment Name'][i].strip()
 
-            autonomous_data_warehouse_admin_password = df['Admin Password'][i].strip()
-            # print("AdminPassword-------------------------> "+autonomous_data_warehouse_admin_password)
+        autonomous_data_warehouse_admin_password = df['Admin Password'][i].strip()
 
-            autonomous_data_warehouse_cpu_core_count = int(df['CPU Count'][i])
-            # print(f"CPU Count-------------------------> {autonomous_data_warehouse_cpu_core_count}")
+        autonomous_data_warehouse_cpu_core_count = int(df['CPU Count'][i])
 
-            autonomous_data_warehouse_data_storage_size_in_tbs = int(df['Size in TB'][i])
-            # print(f"Size in TB-------------------------> {autonomous_data_warehouse_data_storage_size_in_tbs}")
+        autonomous_data_warehouse_data_storage_size_in_tbs = int(df['Size in TB'][i])
 
-            adw_atp = df['ADW or ATP'][i].strip()
-            # print("ADW or ATP -----------------> "+adw_atp)
+        adw_atp = df['ADW or ATP'][i].strip()
 
-            if adw_atp == 'ADW':
+        if adw_atp == 'ADW':
                 # print("-------------------Inside ADW--------------------")
-                tmpstr = """resource "oci_database_autonomous_data_warehouse" \"""" + name + """\"{
+            tmpstr = """resource "oci_database_autonomous_data_warehouse" \"""" + name + """\"{
 			                            display_name = \"""" + name + """\"
                                         compartment_id = "${var.""" + compartment_var_name + """}"
                     					admin_password = \"""" + autonomous_data_warehouse_admin_password + """\"
@@ -97,15 +81,14 @@ if ('.xls' in filename):
                     					data_storage_size_in_tbs = \"""" + str(autonomous_data_warehouse_data_storage_size_in_tbs) + """\"
                     					db_name = \"""" + autonomous_data_warehouse_db_name + """\"
                     				}\n"""
-                reg = Region[:1].upper()
-                outfile = outdir + "/" + Region + "/" + reg + '_' + prefix + "_ADW_CD3_" + name + ".tf"
-                print("Writing " + outfile)
-                oname = open(outfile, "w")
-                oname.write(tmpstr)
-                oname.close()
-            elif adw_atp == 'ATP':
-                # print("-------------------Inside ATP--------------------")
-                tmpstr = """resource "oci_database_autonomous_database" \"""" + name + """\"{
+            reg = Region[:1].upper()
+            outfile = outdir + "/" + Region + "/" + reg + '_' + prefix + "_ADW_CD3_" + name + ".tf"
+            print("Writing " + outfile)
+            oname = open(outfile, "w")
+            oname.write(tmpstr)
+            oname.close()
+        elif adw_atp == 'ATP':
+            tmpstr = """resource "oci_database_autonomous_database" \"""" + name + """\"{
                 			                            display_name = \"""" + name + """\"
                                                         compartment_id = "${var.""" + compartment_var_name + """}"
                                     					admin_password = \"""" + autonomous_data_warehouse_admin_password + """\"
@@ -113,53 +96,42 @@ if ('.xls' in filename):
                                     					data_storage_size_in_tbs = \"""" + str(autonomous_data_warehouse_data_storage_size_in_tbs) + """\"
                                     					db_name = \"""" + autonomous_data_warehouse_db_name + """\"
                                     				}\n"""
-                reg = Region[:1].upper()
-                outfile = outdir + "/" + Region + "/" + reg + '_' + prefix + "_ATP_CD3_" + name + ".tf"
-                print("Writing " + outfile)
-                oname = open(outfile, "w")
-                oname.write(tmpstr)
-                oname.close()
-            else:
-                print("--Enter Valid Database type in ADW or ATP tab--")
+            reg = Region[:1].upper()
+            outfile = outdir + "/" + Region + "/" + reg + '_' + prefix + "_ATP_CD3_" + name + ".tf"
+            print("Writing " + outfile)
+            oname = open(outfile, "w")
+            oname.write(tmpstr)
+            oname.close()
+        else:
+            print("--Enter Valid Database type in ADW or ATP tab--")
 
-
+# If the input is CSV
 elif ('.csv' in filename):
     fname = open(filename, "r")
     all_regions = os.listdir(outdir)
-    # print(f"REGION---------------------> {all_regions}")
     for line in fname:
         if not line.startswith('#'):
             linearr = line.split(",")
             region = linearr[0].strip().lower()
-            # print("Region-------------------------------> "+region)
-            # #print("---------------INSIDE LOOP------------")
             if region not in all_regions:
                 print("Invalid Region -> " + region + "; It should be one of the values mentioned in VCN Info tab and directory with region name in Output directory")
                 continue
 
             name = linearr[1].strip()
-            # print("Hostname-----------------------------> " + name)
 
             autonomous_data_warehouse_db_name = linearr[2].strip()
-            # print("DB name-----------------------------> " + autonomous_data_warehouse_db_name)
 
             compartment_var_name = linearr[3].strip()
-            # print("Compartment---------------------------> " + compartment_var_name)
 
             autonomous_data_warehouse_admin_password = linearr[4].strip()
-            # print("AdminPassword-------------------------> " + autonomous_data_warehouse_admin_password)
 
             autonomous_data_warehouse_cpu_core_count = int(linearr[5])
-            # print(f"CPU Count-------------------------> {autonomous_data_warehouse_cpu_core_count}")
 
             autonomous_data_warehouse_data_storage_size_in_tbs = int(linearr[6])
-            # print(f"Size in TB-------------------------> {autonomous_data_warehouse_data_storage_size_in_tbs}")
 
             adw_atp = linearr[7].strip()
-            # print("ADW or ATP--------------> "+adw_atp)
 
             if adw_atp == 'ADW':
-                # print("-------------------Inside ADW--------------------")
                 tmpstr = """resource "oci_database_autonomous_data_warehouse" \"""" + name + """\"{
                                                     display_name = \"""" + name + """\"
                                                     compartment_id = "${var.""" + compartment_var_name + """}"
@@ -176,7 +148,6 @@ elif ('.csv' in filename):
                 oname.write(tmpstr)
                 oname.close()
             elif adw_atp == 'ATP':
-                # print("-------------------Inside ATP--------------------")
                 tmpstr = """resource "oci_database_autonomous_database" \"""" + name + """\"{
                                                                     display_name = \"""" + name + """\"
                                                                     compartment_id = "${var.""" + compartment_var_name + """}"
