@@ -122,12 +122,14 @@ for i in df.index:
             display_name = \"""" + mount_target_name.strip() + "-ES1" """"
             """
     if(str(fss_capacity).lower()!=NaNstr.lower()):
+        fss_capacity=int(fss_capacity)
         tempstr = tempstr +"""
-            max_fs_stat_bytes = \"""" + str(fss_capacity).strip() + """"
+            max_fs_stat_bytes = \"""" + str(fss_capacity)+ """"
             """
     if(str(fss_size).lower()!=NaNstr.lower()):
+        fss_size=int(fss_size)
         tempstr = tempstr + """
-            max_fs_stat_files = \"""" + str(fss_size).strip() + """"
+            max_fs_stat_files = \"""" + str(fss_size) + """"
             """
     tempstr = tempstr +"""
         }

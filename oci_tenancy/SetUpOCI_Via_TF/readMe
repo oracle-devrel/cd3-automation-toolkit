@@ -32,6 +32,8 @@ already created for you which are required by execution of all further scripts. 
 If you don't need OCS VM and want to continue from your laptop then you would need to setup terraform as below and also setup config file required for Python
 API to communicate with OCI.
 
+Recommended way for oc3 factory- Use OCS VM
+
 ### Use URL: https://learn.hashicorp.com/terraform/getting-started/install.html to setup terraform on your work station ###
 
 ##### You can use the below script or follow the steps below to create your terraform environment (on a linux machine)####

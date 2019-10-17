@@ -6,8 +6,6 @@ export PANDA_PUB_IP=`terraform output panda_pub_ip`
 # Remove any errant ansible files
 echo "Starting Ansible work"
 rm -rf /root/.ansible/cp/*
-#mv /home/opc/*.yml /root/ocswork/ocic2oci_work/
-#chown root:root /root/ocswork/ocic2oci_work/*.yml
 cd /root/ocswork/ocic2oci_work
 cp /etc/ansible/ansible.cfg /etc/ansible/ansible.cfg.orig
 sed -i 's/#host_key_checking = False/host_key_checking = False/g' /etc/ansible/ansible.cfg
@@ -28,12 +26,6 @@ fi
 
 
 ./createPandaInputs.py terraform.tfstate instance-export.json resources-default.json report_ocic.xlsx
-
-#echo "Copy over the files like below"
-#.echo "scp  -o StrictHostKeyChecking=no -i /root/ocswork/keys/ssh-pvt-key-openssh.ppk tmp/** opc@$PANDA_PUB_IP:/home/opc/ansible/"
-#.echo "scp  -o StrictHostKeyChecking=no -i /root/ocswork/keys/ssh-pvt-key-openssh.ppk /root/ocswork/keys/oci_api_key.pem opc@$PANDA_PUB_IP:/home/opc/.oci/"
-#echo "scp  -o StrictHostKeyChecking=no -i /root/ocswork/keys/ssh-pvt-key-openssh.ppk /root/ocswork/keys/ssh-pvt-key-openssh.ppk opc@$PANDA_PUB_IP:/home/opc/.ssh/host_key_rsa"
-
 
 rm -rf /root/.ansible/cp/*
 timeout 300   ansible-playbook -u opc --private-key /root/ocswork/keys/ssh-pvt-key-openssh.ppk -i  $PANDA_PUB_IP, copy_files_and_install_panda.yml
