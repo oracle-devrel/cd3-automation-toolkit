@@ -146,7 +146,7 @@ i = 0
 write = 1
 secrets_file_prefix = "tmp/generated-secrets"
 if write == 1:
-    print ("Generating Secrets file in tmp directory \n")
+    print ("Generating Secrets file in tmp directory... \n")
     for ins in instance_export_host_map:
         secrets_file = secrets_file_prefix + "-" + ins + ".yml"
 
@@ -191,13 +191,14 @@ workerThreadCount: 10 # The number of worker threads working on volume migration
         append_file(secrets_file,"# List of Instances\n")
         append_file(secrets_file,"instances: ")
         append_file(secrets_file,instance_export_host_map[ins])
-
+    print("Secret files generated under tmp folder in current directory\n")
 
 
 ### TO generate the hosts.yml file - need to get the Public IP / Private IP of each of the hosts
 ### For this phase lets consider just the public IP.
 ### Also need to find out what IP Address is associated with the instance and go from there - so it is a bit of craziness.
 
+print("Fetching Network Info of Instances...\n")
 instance_sheet = xlfile.parse("instance")
 js = instance_sheet.get("attributes")
 count = 0
@@ -234,7 +235,8 @@ for j in js:
     except Exception as e:
 
         if ("Mapping" in e.__doc__):
-            print ("both nimbula and oracle_metadata not found. Ignoring")
+            print ("both nimbula and oracle_metadata not found for "+j)
+            print("Ignoring...\n")
             #print "Mapping Key not found - ignoring\n"
         else:
             print (e.__doc__)
@@ -246,23 +248,27 @@ for j in js:
 ## for generating hosts.yml.
 ## instance_export_host_map & xl_host_ip_map should match up to give us the right data.
 
-print ("Generating hosts file in tmp directory ")
+print ("Generating hosts file in tmp directory...\n ")
 hosts_yml_file_prefix = "tmp/generated-hosts-"
 hosts_yml_file_single = "tmp/generated-all-hosts.yml"
 write_file(hosts_yml_file_single,"##OCIC Info\n\n")
 
 for i in instance_export_host_map:
-    hosts_data = """source:
-  hosts:
-    """ + xl_host_ip_map[i]["ip"] + """: 
-      label: """ + i
-    data = instance_export_host_map[i]
-    if "linux" in data:
-        hosts_data = hosts_data + """
-      remote_user: opc
-      ansible_ssh_private_key_file: ~/.ssh/id_rsa
-      ansible_python_interpreter: /usr/bin/python
-"""
-    hosts_yml_file = hosts_yml_file_prefix + "-" + i + ".yml"
-    write_file(hosts_yml_file, hosts_data)
-    append_file(hosts_yml_file_single,hosts_data)
+    if(i in xl_host_ip_map.keys()):
+        hosts_data = """source:
+      hosts:
+        """ + xl_host_ip_map[i]["ip"] + """: 
+          label: """ + i
+        data = instance_export_host_map[i]
+        if "linux" in data:
+            hosts_data = hosts_data + """
+          remote_user: opc
+          ansible_ssh_private_key_file: ~/.ssh/id_rsa
+          ansible_python_interpreter: /usr/bin/python
+    """
+        hosts_yml_file = hosts_yml_file_prefix + "-" + i + ".yml"
+        write_file(hosts_yml_file, hosts_data)
+        append_file(hosts_yml_file_single,hosts_data)
+    else:
+        print("skipping host "+i +" as it's network info could not be found\n")
+print("Hosts files generated under tmp folder in current directory")
