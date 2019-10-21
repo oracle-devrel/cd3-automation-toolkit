@@ -8,7 +8,8 @@ import sys
 import argparse
 import pandas as pd
 import os
-
+import shutil
+import datetime
 
 parser = argparse.ArgumentParser(description="Creates TF files for FSS")
 parser.add_argument("inputfile",help="Full Path to the CSV file for creating fss or CD3 excel file. eg fss.csv or CD3-template.xlsx in example folder")
@@ -24,7 +25,13 @@ filename = args.inputfile
 outdir = args.outdir
 all_regions = os.listdir(outdir)
 
+x = datetime.datetime.now()
+date = x.strftime("%f").strip()
+
 ADS = ["AD1", "AD2", "AD3"]
+tempStr={}
+FSS_names={}
+MT_names={}
 
 #If input is csv file; convert to excel
 if('.csv' in filename):
@@ -39,6 +46,13 @@ df.dropna(how='all')
 
 endNames = {'<END>', '<end>'}
 NaNstr = 'NaN'
+
+for r in all_regions:
+    tempStr[r]=""
+    MT_names[r]=[]
+    FSS_names[r]=[]
+
+
 for i in df.index:
     region=df.iat[i,0]
     region=region.strip().lower()
@@ -99,50 +113,62 @@ for i in df.index:
     elif str(require_ps_port).lower() != "true":
         require_ps_port = "false"
 
-    tempstr = """
+    if(mount_target_name.strip() not in MT_names[region]):
+        MT_names[region].append(mount_target_name.strip())
+        data_mt = """
         resource "oci_file_storage_mount_target" \"""" + mount_target_name.strip() + """" {
             availability_domain = "${data.oci_identity_availability_domains.ADs.availability_domains.""" + str(ad) + """.name}"
             compartment_id = "${var.""" + compartment_name.strip() + """}"
             subnet_id = "${oci_core_subnet.""" + mount_target_subnet.strip() + """.id}"
             display_name = \"""" + mount_target_name.strip() + """"
             """
-    if(str(mount_target_ip).lower()!=NaNstr.lower()):
-        tempstr = tempstr + """
+        if(str(mount_target_ip).lower()!=NaNstr.lower()):
+            data_mt = data_mt + """
             ip_address = \"""" + mount_target_ip.strip() + """"
             """
-    if(str(mount_target_hostname).lower()!=NaNstr.lower()):
-        tempstr = tempstr+"""
+        if(str(mount_target_hostname).lower()!=NaNstr.lower()):
+            data_mt = data_mt+"""
             hostname_label = \"""" + mount_target_hostname.strip() + """"
             """
-    tempstr = tempstr + """
+        data_mt = data_mt + """
         }
-        
-        resource "oci_file_storage_export_set" \"""" + mount_target_name.strip() + "-ES1" """" {
+        resource "oci_file_storage_export_set" \"""" + mount_target_name.strip() + "-ES" """" {
             mount_target_id = "${oci_file_storage_mount_target.""" + mount_target_name.strip() + """.id}"
             display_name = \"""" + mount_target_name.strip() + "-ES1" """"
             """
-    if(str(fss_capacity).lower()!=NaNstr.lower()):
-        fss_capacity=int(fss_capacity)
-        tempstr = tempstr +"""
+        if(str(fss_capacity).lower()!=NaNstr.lower()):
+            fss_capacity=int(fss_capacity)
+            data_mt = data_mt +"""
             max_fs_stat_bytes = \"""" + str(fss_capacity)+ """"
             """
-    if(str(fss_size).lower()!=NaNstr.lower()):
-        fss_size=int(fss_size)
-        tempstr = tempstr + """
+        if(str(fss_size).lower()!=NaNstr.lower()):
+            fss_size=int(fss_size)
+            data_mt = data_mt + """
             max_fs_stat_files = \"""" + str(fss_size) + """"
             """
-    tempstr = tempstr +"""
+        data_mt = data_mt +"""
         }
         """
-    tempstr = tempstr +"""
+
+        tempStr[region]=tempStr[region]+data_mt
+
+    if(fss_name.strip() not in FSS_names[region]):
+        FSS_names[region].append(fss_name.strip())
+        data_fs = """
         resource "oci_file_storage_file_system" \"""" + fss_name.strip() + """" {
             availability_domain = "${data.oci_identity_availability_domains.ADs.availability_domains.""" + str(ad) + """.name}"
             compartment_id = "${var.""" + compartment_name.strip() + """}"
             display_name = \"""" + fss_name.strip() + """"
-        }
+        }"""
 
-        resource "oci_file_storage_export" \"""" + fss_name.strip() + "-FS1" """" {
-            export_set_id = "${oci_file_storage_export_set.""" + mount_target_name.strip() + """-ES1.id}"
+
+        tempStr[region]=tempStr[region]+data_fs
+
+    FSE_name="FSE-"+mount_target_name.strip()+"-"+fss_name.strip()
+
+    data_fs_es="""
+        resource "oci_file_storage_export" \"""" + FSE_name+ """" {
+            export_set_id = "${oci_file_storage_export_set.""" + mount_target_name.strip() + """-ES.id}"
             file_system_id = "${oci_file_storage_file_system.""" + fss_name.strip() + """.id}"
             path = \"""" + path + """"
             export_options {
@@ -155,11 +181,17 @@ for i in df.index:
                 }
         }
         """
-    outfile = outdir + "/" + region + "/" + fss_name.strip() + "_fss.tf"
-    oname = open(outfile, "w")
-    print("Writing " + outfile)
-    oname.write(tempstr)
-    oname.close()
+    tempStr[region] = tempStr[region] + data_fs_es
+
+for r in all_regions:
+    if(tempStr[r]!=""):
+        outfile = outdir + "/" + r + "/FSS.tf"
+        if(os.path.exists(outfile)):
+            shutil.copy(outfile, outfile + "_backUp" + date)
+        oname = open(outfile, "w")
+        print("Writing " + outfile)
+        oname.write(tempStr[r])
+        oname.close()
 
 #Remove temporary file created
 if('tmp_to_excel.xlsx' in filename):
