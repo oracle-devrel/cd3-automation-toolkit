@@ -67,3 +67,14 @@ SetUPOCI_Via_TF Tag v3.2
     in example folder for sample file.
 2. Fixed minor issues related to egress rules in modify and export security lists. Specific egress rules could not be
     added earlier. Was allowing only egress all open.
+
+------------------------
+SetUPOCI_Via_TF Tag v3.3
+------------------------
+1. Added Support for LBR via cd3 excel as well as csv. New sheet called 'LBR' has been added to the cd3. Please look
+    in example folder for sample file.
+2. Added Support for DB systems, ADW/ADT via cd3 excel as well as csv. New sheets called 'DataBase' and 'ADW/ADT' have been added to the cd3.
+    Please look in example folder for sample file.
+3. Fixed issues related to Panda initialization via OCSWork VM, Added support to run OCSWork VM via Linux system.
+4. Updated FSS creation code to include Multi FSS-1MT and 1FSS-multi MT
+5. Updated modify_secrules_tf.py and modify_routerules_tf.py to process rows/vcns in the excel tabs which are part of cd3 only.
