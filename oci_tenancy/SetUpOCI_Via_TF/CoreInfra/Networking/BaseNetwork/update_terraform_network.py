@@ -39,11 +39,11 @@ outdir = args.outdir
 prefix=args.prefix
 inputfile=args.inputfile
 update_choice=args.option
-#If input is CD3 excel file
+
 
 if(update_choice=='1'):
-		cmd='python create_terraform_dhcp_options.py ' + inputfile + ' ' + outdir + ' '+prefix + ' --dhcp_add true'
-		os.system(cmd)
+        cmd='python create_terraform_dhcp_options.py ' + inputfile + ' ' + outdir + ' '+prefix + ' --dhcp_add true'
+        os.system(cmd)
 if(update_choice=='2'):
 		cmd='python create_terraform_route.py ' + inputfile + ' ' + outdir + ' '+prefix + ' --subnet_add true'
 		os.system(cmd)
@@ -51,3 +51,15 @@ if(update_choice=='2'):
 		os.system(cmd)
 		cmd = 'python create_terraform_subnet.py ' + inputfile + ' ' + outdir + ' ' + prefix + ' --subnet_add true'
 		os.system(cmd)
+if(update_choice=='3'):
+		cmd = 'python create_major_objects.py ' + inputfile + ' ' + outdir + ' ' + prefix
+		os.system(cmd)
+		cmd = 'python create_terraform_dhcp_options.py ' + inputfile + ' ' + outdir + ' ' + prefix + ' --dhcp_add true'
+		os.system(cmd)
+		cmd='python create_terraform_route.py ' + inputfile + ' ' + outdir + ' '+prefix + ' --subnet_add true'
+		os.system(cmd)
+		cmd = 'python create_terraform_seclist.py ' + inputfile + ' ' + outdir + ' ' +  ' --subnet_add true'
+		os.system(cmd)
+		cmd = 'python create_terraform_subnet.py ' + inputfile + ' ' + outdir + ' ' + prefix + ' --subnet_add true'
+		os.system(cmd)
+		print("Make sure to run modify rules with overwrite option")

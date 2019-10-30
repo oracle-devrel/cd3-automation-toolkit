@@ -1,16 +1,12 @@
 import configparser
 import argparse
 import oci
-import re
-import subprocess
 import time
 import os
 import paramiko
-import shutil
 from paramiko import SSHClient
 import puttykeys
-from string import ascii_lowercase
-from itertools import count as letter_count
+
 
 parser = argparse.ArgumentParser(description="Destroys Panda & OCS Work related components")
 parser.add_argument("propsfile",help="Full Path of properties file. eg ocswork.properties")

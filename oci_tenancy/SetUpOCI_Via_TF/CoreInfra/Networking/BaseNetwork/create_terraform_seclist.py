@@ -52,7 +52,7 @@ if args.subnet_add is not None:
 else:
     subnet_add = "false"
 
-
+common_seclist_names=[]
 fname = None
 oname=None
 
@@ -264,11 +264,12 @@ if('.xls' in filename):
         if (add_ping_sec_rules_vcnpeering.strip().lower() == 'y'):
             createLPGSecRules(peering_dict)
 
-        # Start processing as per vcn and subnet file info from VCN_INFO section
         df_vcn.set_index("vcn_name", inplace=True)
         df_vcn.head()
         df = pd.read_excel(filename, sheet_name='Subnets', skiprows=1)
         df.dropna(how='all')
+
+        #Start processing each subnet
         for i in df.index:
             # Get VCN data
             compartment_var_name = df.iat[i, 0]
@@ -297,6 +298,22 @@ if('.xls' in filename):
             compartment_var_name=compartment_var_name.strip()
 
             seclists_per_subnet = int(sps)
+            common_seclist_name=df.iat[i,9]
+            if(str(common_seclist_name).lower() !=NaNstr.lower() and common_seclist_name not in common_seclist_names):
+                common_seclist_names.append(common_seclist_name)
+                out_common_file=outdir+"/"+region+"/"+common_seclist_name+"_seclist.tf"
+                oname_common=open(out_common_file,"w")
+                data="""
+        resource "oci_core_security_list" \"""" + common_seclist_name.strip() + """"{
+            compartment_id = "${var.""" + compartment_var_name + """}"
+            vcn_id = "${oci_core_vcn.""" + vcn_name + """.id}"
+            display_name = \"""" + common_seclist_name.strip() + """"
+            ####ADD_NEW_SEC_RULES####1
+        }
+        """
+                oname_common.write(data)
+                print(out_common_file + " containing TF for seclist has been created for region " + region)
+                oname_common.close()
 
             processSubnet(region,vcn_name,AD,seclists_per_subnet,name,seclist_name,subnet_name_attach_cidr,compartment_var_name)
 
@@ -357,17 +374,35 @@ elif('.properties' in filename):
             sps = vcn_data[9].strip().lower()
             seclists_per_subnet = int(sps)
 
+
             fname = open(vcn_subnet_file,"r")
 
             #Read subnet file
             for line in fname:
                     i = 0
                     if not line.startswith('#') and line !='\n':
-                            [compartment_var_name, name, sub, AD, pubpvt, dhcp, rt_name,seclist_name,SGW, NGW, IGW,dns_label] = line.split(',')
+                            [compartment_var_name, name, sub, AD, pubpvt, dhcp, rt_name,seclist_name,common_seclist_name,SGW, NGW, IGW,dns_label] = line.split(',')
                             linearr = line.split(",")
                             compartment_var_name = linearr[0].strip()
                             name = linearr[1].strip()
                             subnet = linearr[2].strip()
+                            if (common_seclist_name.strip().lower() != '' and common_seclist_name not in common_seclist_names):
+                                common_seclist_names.append(common_seclist_name)
+                                out_common_file = outdir + "/" + region + "/" + common_seclist_name + "_seclist.tf"
+                                oname_common = open(out_common_file, "w")
+                                data = """
+                                                resource "oci_core_security_list" \"""" + common_seclist_name.strip() + """"{
+                                                    compartment_id = "${var.""" + compartment_var_name + """}"
+                                                    vcn_id = "${oci_core_vcn.""" + vcn_name + """.id}"
+                                                    display_name = \"""" + common_seclist_name.strip() + """"
+                                                    ####ADD_NEW_SEC_RULES####1
+                                                }
+                                                """
+                                oname_common.write(data)
+                                print(
+                                    out_common_file + " containing TF for seclist has been created for region " + region)
+                                oname_common.close()
+
                             processSubnet(region, vcn_name, AD, seclists_per_subnet, name, seclist_name.strip(),subnet_name_attach_cidr,compartment_var_name)
 
 else:

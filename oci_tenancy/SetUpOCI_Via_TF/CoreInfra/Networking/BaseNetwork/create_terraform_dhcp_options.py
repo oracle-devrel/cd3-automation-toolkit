@@ -184,12 +184,11 @@ if(dhcp_add=='true'):
 		x = datetime.datetime.now()
 		date = x.strftime("%f").strip()
 
-		with open(outfile[reg], 'r') as file:
-			dhcpdata[reg] = file.read()
-		file.close()
-		if(tfStr[reg]!='' and tfStr[reg] not in dhcpdata[reg]):
-			shutil.copy(outfile[reg], outfile[reg] + "_beforeDHCPAdd" + date)
-			oname[reg] = open(outfile[reg], "a")
+		if(tfStr[reg]!=''):
+			if (os.path.exists(outfile[reg])):
+				print("creating backup file " + outfile[reg] + "_backup" + date)
+				shutil.copy(outfile[reg], outfile[reg] + "_backup" + date)
+			oname[reg] = open(outfile[reg], "w")
 			oname[reg].write(tfStr[reg])
 			oname[reg].close()
 			print(outfile[reg] + " containing TF for DHCP Options has been updated for region " + reg)

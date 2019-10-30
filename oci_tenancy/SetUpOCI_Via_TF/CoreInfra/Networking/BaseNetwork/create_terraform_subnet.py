@@ -56,7 +56,7 @@ data "oci_identity_availability_domains" "ADs" {
 
 ADS = ["AD1", "AD2", "AD3"]
 
-def processSubnet(region,vcn_name,name,rt_name,seclist_name,subnet,AD,dnslabel,pubpvt,compartment_var_name,vcn_add_defaul_seclist,seclists_per_subnet):
+def processSubnet(region,vcn_name,name,rt_name,seclist_name,common_seclist_name,subnet,AD,dnslabel,pubpvt,compartment_var_name,vcn_add_defaul_seclist,seclists_per_subnet):
 	if (AD.strip().lower() != 'regional'):
 		AD = AD.strip().upper()
 		ad = ADS.index(AD)
@@ -98,8 +98,15 @@ def processSubnet(region,vcn_name,name,rt_name,seclist_name,subnet,AD,dnslabel,p
 		sec_name=seclist_name
 
 	seclist_ids = ""
+	#Attach Default Secuoity List
 	if vcn_add_defaul_seclist == "y":
 		seclist_ids = """\"${oci_core_vcn.""" + vcn_name + """.default_security_list_id}","""
+
+	#Attach common Security List
+	if (str(common_seclist_name).lower() != 'nan' and str(common_seclist_name)!=''):
+		seclist_ids = seclist_ids + """\"${oci_core_security_list.""" + common_seclist_name.strip() + """.id}","""
+
+	#Attach individual Security lists
 	j = 1
 	while j < seclists_per_subnet:
 		seclist_ids = seclist_ids + """\"${oci_core_security_list.""" + sec_name + "-" + str(j) + """.id}","""
@@ -183,13 +190,14 @@ if('.xls' in filename):
 		dhcp=df.iat[i,6]
 		rt_name=df.iat[i,7]
 		seclist_name=df.iat[i,8]
+		common_seclist_name = df.iat[i, 9]
 
 		if(str(dhcp).lower() !='nan'):
 			dhcp = vcn_name + "_" + dhcp
 
 		compartment_var_name=compartment_var_name.strip()
 
-		dnslabel = df.iat[i, 12]
+		dnslabel = df.iat[i, 13]
 		# check if subnet_dns_label is not given by user in input use subnet name
 		if (str(dnslabel).lower() == NaNstr.lower()):
 			regex = re.compile('[^a-zA-Z0-9]')
@@ -206,7 +214,7 @@ if('.xls' in filename):
 		else:
 			seclist_name = ''
 
-		processSubnet(region,vcn_name,name,rt_name,seclist_name,subnet,AD,dnslabel,pubpvt,compartment_var_name,vcn_add_defaul_seclist,seclists_per_subnet)
+		processSubnet(region,vcn_name,name,rt_name,seclist_name,common_seclist_name,subnet,AD,dnslabel,pubpvt,compartment_var_name,vcn_add_defaul_seclist,seclists_per_subnet)
 
 # If CD3 excel file is not given as input
 elif('.properties' in filename):
@@ -237,6 +245,7 @@ elif('.properties' in filename):
 		sps = vcn_data[9].strip().lower()
 		vcn_add_defaul_seclist = vcn_data[11].strip().lower()
 		vcn_subnet_file = vcn_data[7].strip().lower()
+
 		if os.path.isfile(vcn_subnet_file) == False:
 			print("input subnet file " + vcn_subnet_file + " for VCN " + vcn_name + " does not exist. Skipping Subnet TF creation for this VCN.")
 			continue
@@ -247,23 +256,23 @@ elif('.properties' in filename):
 		# Read subnet file
 		for line in fname:
 			if not line.startswith('#') and line !='\n':
-				[compartment_var_name,name, sub, AD, pubpvt, dhcp, rt_name,seclist_name,SGW, NGW, IGW,dnslabel] = line.split(',')
+				[compartment_var_name,name, sub, AD, pubpvt, dhcp, rt_name,seclist_name,common_seclist_name,SGW, NGW, IGW,dnslabel] = line.split(',')
 				linearr = line.split(",")
 				compartment_var_name = linearr[0].strip()
 				name = linearr[1].strip()
 				subnet = linearr[2].strip()
-				dnslabel = linearr[9].strip()
+				#dnslabel = linearr[9].strip()
 
 				if(dhcp!=''):
 					dhcp=vcn_name+"_"+dhcp
 
 				# check if vcn_dns_label is not given by user in input use vcn name
-				if (dnslabel == ''):
+				if (dnslabel.strip() == ''):
 					regex = re.compile('[^a-zA-Z0-9]')
 					subnet_dns = regex.sub('', name)
 					dnslabel = (subnet_dns[:15]) if len(subnet_dns) > 15 else subnet_dns
 
-					processSubnet(region, vcn_name, name, rt_name.strip(),seclist_name.strip(),subnet, AD, dnslabel, pubpvt, compartment_var_name,vcn_add_defaul_seclist, seclists_per_subnet)
+					processSubnet(region, vcn_name, name, rt_name.strip(),seclist_name.strip(),common_seclist_name.strip(),subnet, AD, dnslabel, pubpvt, compartment_var_name,vcn_add_defaul_seclist, seclists_per_subnet)
 else:
     print("Invalid input file format; Acceptable formats: .xls, .xlsx, .properties")
     exit()
@@ -283,16 +292,16 @@ if(subnet_add=='true'):
 		x = datetime.datetime.now()
 		date = x.strftime("%f").strip()
 
-		with open(outfile[reg], 'r') as file:
-			subnetdata[reg] = file.read()
-		file.close()
-
-		if (tfStr[reg] != '' and tfStr[reg] not in subnetdata[reg]):
-			shutil.copy(outfile[reg], outfile[reg] + "_beforeSubnetAdd" + date)
-			oname[reg] = open(outfile[reg], "a")
-			oname[reg].write(tfStr[reg])
-			oname[reg].close()
-			print(outfile[reg] + " containing TF for Subnets has been updated for region " + reg)
+		if (tfStr[reg] != ''):
+			with open(outfile[reg], 'r') as file:
+				subnetdata[reg] = file.read()
+			file.close()
+			if(tfStr[reg] not in subnetdata[reg]):
+				shutil.copy(outfile[reg], outfile[reg] + "_backup" + date)
+				oname[reg] = open(outfile[reg], "a")
+				oname[reg].write(tfStr[reg])
+				oname[reg].close()
+				print(outfile[reg] + " containing TF for Subnets has been updated for region " + reg)
 
 elif(subnet_add == 'false'):
 	for reg in all_regions:

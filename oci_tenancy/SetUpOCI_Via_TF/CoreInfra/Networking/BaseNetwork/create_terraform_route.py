@@ -9,7 +9,7 @@ import os
 import argparse
 import configparser
 import pandas as pd
-import glob
+import re
 import datetime
 import shutil
 
@@ -42,7 +42,7 @@ else:
 
 outfile={}
 oname={}
-tfStr={}
+
 
 ADS = ["AD1", "AD2", "AD3"]
 fname = None
@@ -56,6 +56,11 @@ vcn_drgs= {}
 peering_dict = dict()
 ruleStr=""
 
+def purge(dir, pattern):
+    for f in os.listdir(dir):
+        if re.search(pattern, f):
+            print("Purge ....." +  os.path.join(dir, f))
+            os.remove(os.path.join(dir, f))
 
 def createLPGRouteRules(peering_dict):
     global vcn_lpg_rules
@@ -99,19 +104,23 @@ def createLPGRouteRules(peering_dict):
             """
                 vcn_lpg_rules[right_vcn] = vcn_lpg_rules[right_vcn] + ruleStr
 
-def createDRGRtTableString(compartment_var_name,hub_vcn_name,peering_dict):
-    drgStr=""
+def createDRGRtTableString(compartment_var_name,hub_vcn_name,peering_dict,region):
     if(vcn_drgs[hub_vcn_name]=='y'):
         rt_var = hub_vcn_name + "_drg_rt"
         drg_name = hub_vcn_name + "_drg"
     elif(vcn_drgs[hub_vcn_name]!='n'):
         rt_var=vcn_drgs[hub_vcn_name]+"_rt"
         drg_name=vcn_drgs[hub_vcn_name]
+
+    outfile = outdir + "/" + region + "/" + rt_var + "_routetable.tf"
+    oname = open(outfile, "w")
     drgStr = """ 
         resource "oci_core_route_table" \"""" + rt_var + """"{
                 compartment_id = "${var.""" + compartment_var_name + """}"
                 vcn_id = "${oci_core_vcn.""" + hub_vcn_name + """.id}"
                 display_name = "Route Table associated with DRG """ + drg_name + """"
+                
+                ##Add More rules for subnet """ + rt_var + """##
                 """
     right_vcns = peering_dict[hub_vcn_name]
     right_vcns = right_vcns.split(",")
@@ -127,21 +136,26 @@ def createDRGRtTableString(compartment_var_name,hub_vcn_name,peering_dict):
                 """
     drgStr = drgStr + """
         }"""
-    return drgStr
+    oname.write(drgStr)
+    oname.close()
 
-def createLPGRtTableString(compartment_var_name,hub_vcn_name,peering_dict):
+def createLPGRtTableString(compartment_var_name,hub_vcn_name,peering_dict,region):
     right_vcns = peering_dict[hub_vcn_name]
     right_vcns = right_vcns.split(",")
-    lpgStr=""
+
     for right_vcn in right_vcns:
         if(right_vcn in spoke_vcn_names):
             lpg_name = hub_vcn_name + "_" + right_vcn + "_lpg"
             rt_var = lpg_name + "_rt"
-            lpgStr = lpgStr + """ 
+            outfile = outdir + "/" + region + "/" + rt_var + "_routetable.tf"
+            oname = open(outfile, "w")
+            lpgStr = """ 
             resource "oci_core_route_table" \"""" + rt_var + """"{
                     compartment_id = "${var.""" + compartment_var_name + """}"
                     vcn_id = "${oci_core_vcn.""" + hub_vcn_name + """.id}"
                     display_name = "Route Table associated with LPG """ + lpg_name + """"
+                    
+                    ##Add More rules for subnet """ + rt_var + """##
                 """
             if (drg_ocid == ''):
                 if (vcn_drgs[hub_vcn_name] == 'y'):
@@ -169,9 +183,10 @@ def createLPGRtTableString(compartment_var_name,hub_vcn_name,peering_dict):
                             }
                 """
 
-        lpgStr = lpgStr + """
+            lpgStr = lpgStr + """
         }"""
-    return lpgStr
+            oname.write(lpgStr)
+            oname.close()
 
 def processSubnet(region,vcn_name,name,rt_name,ruleStr,AD,configure_sgw,configure_ngw,configure_igw,vcn_sgw,vcn_ngw,vcn_igw):
     # process each subnet row for ngw, igw, sgw
@@ -202,6 +217,58 @@ def processSubnet(region,vcn_name,name,rt_name,ruleStr,AD,configure_sgw,configur
         subnet_res_name=rt_name
         # no need to attach subnet cidr to display name
         display_name = subnet_res_name
+
+    outfile = outdir + "/" + region + "/" + subnet_res_name + "_routetable.tf"
+    # Same routetable used for subnets
+    if (os.path.exists(outfile)):
+        data=""
+        if configure_sgw.strip() == 'y' and vcn_sgw != 'n':
+            data = """
+                        route_rules { 
+                            destination = "${data.oci_core_services.oci_services.services.0.cidr_block}"
+                            network_entity_id = "${oci_core_service_gateway.""" + sgw_name + """.id}"
+                            destination_type = "SERVICE_CIDR_BLOCK"
+                            }
+                            """
+        if configure_ngw.strip() == 'y' and vcn_ngw != 'n':
+            for ngw_destination in ngw_destinations:
+                if (ngw_destination != ''):
+                    data = data + """ 
+
+                        route_rules { 
+                            destination = \"""" + ngw_destination + """\"
+                            network_entity_id = "${oci_core_nat_gateway.""" + ngw_name + """.id}"
+                            destination_type = "CIDR_BLOCK"
+                            }
+                            """
+        if configure_igw.strip() == 'y' and vcn_igw != 'n':
+            for igw_destination in igw_destinations:
+                if (igw_destination != ''):
+                    data = data + """
+
+                        route_rules { 
+                            destination = \"""" + igw_destination + """\"
+                            network_entity_id = "${oci_core_internet_gateway.""" + igw_name + """.id}"
+                            destination_type = "CIDR_BLOCK"
+                            }
+                            """
+        end = """
+                            ##Add More rules for subnet """ + subnet_res_name + """##
+                    """
+
+        with open(outfile, 'r+') as file:
+            filedata = file.read()
+        file.close()
+        # Replace the target string
+        textToSearch = """##Add More rules for subnet """ + subnet_res_name + """##"""
+        filedata = filedata.replace(textToSearch, data+end)
+        oname = open(outfile, "w")
+        oname.write(filedata)
+        oname.close()
+        return
+
+    #New routetable
+    oname = open(outfile, "w")
 
     data_res = """ 
             resource "oci_core_route_table" \"""" + subnet_res_name + """"{
@@ -243,18 +310,11 @@ def processSubnet(region,vcn_name,name,rt_name,ruleStr,AD,configure_sgw,configur
                         ##Add More rules for subnet """ + subnet_res_name + """##
                 }
                 """
-    #route table name is not same
-    if(data_res not in tfStr[region]):
-        tfStr[region] = tfStr[region] + data_res+ruleStr+data+end
+    tempStr=data_res+ruleStr+data+end
+    oname.write(tempStr)
+    oname.close()
+    print(outfile + " containing TF for routerules has been created for region " + region)
 
-    #route table name shared between subnets; Add only new rules
-    else:
-        tt=data_res+ruleStr+data+end
-        textToSearch="""##Add More rules for subnet """ + subnet_res_name + """##"""
-        if(ruleStr not in tt):
-            tfStr[region] = tfStr[region].replace(textToSearch, ruleStr+data)
-        else:
-            tfStr[region] = tfStr[region].replace(textToSearch, data)
 
 
 endNames = {'<END>', '<end>'}
@@ -284,8 +344,11 @@ if('.xls' in filename):
         all_regions = str(values[7]).strip()
         all_regions = all_regions.split(",")
         all_regions = [x.strip().lower() for x in all_regions]
-        for reg in all_regions:
-            tfStr[reg] = ''
+
+        # Purge existing routetable files
+        if (subnet_add == 'false'):
+            for reg in all_regions:
+                purge(outdir + "/" + reg, "_routetable.tf")
 
         ngw_destinations = str(values[2]).strip()
         if (ngw_destinations.lower() == NaNstr.lower()):
@@ -334,25 +397,22 @@ if('.xls' in filename):
         # Create LPG Rules
         createLPGRouteRules(peering_dict)
 
-        if(subnet_add=='false'):
-            # Create Route Table associated with DRG for Hub VCN and route rules for its each spoke VCN
-            for hub_vcn_name in hub_vcn_names:
-                compartment_var_name = vcn_compartment[hub_vcn_name]
+        #if(subnet_add=='false'):
+        # Create Route Table associated with DRG for Hub VCN and route rules for its each spoke VCN
+        for hub_vcn_name in hub_vcn_names:
+            compartment_var_name = vcn_compartment[hub_vcn_name]
 
-                #String for Route Table Assocaited with DRG
-                drgStr1=createDRGRtTableString(compartment_var_name,hub_vcn_name,peering_dict)
-                r=vcn_region[hub_vcn_name].strip().lower()
-                tfStr[r] = tfStr[r] + drgStr1
+            #String for Route Table Assocaited with DRG
+            r = vcn_region[hub_vcn_name].strip().lower()
+            createDRGRtTableString(compartment_var_name,hub_vcn_name,peering_dict,r)
 
 
-            # Create Route Table associated with LPGs in Hub VCN peered with spoke VCNs
-            for hub_vcn_name in hub_vcn_names:
-                compartment_var_name = vcn_compartment[hub_vcn_name]
-
-                #String for Route Tavle Associated with each LPG in hub VCN peered with Spoke VCN
-                lpgStr1=createLPGRtTableString(compartment_var_name,hub_vcn_name,peering_dict)
-                r = vcn_region[hub_vcn_name].strip().lower()
-                tfStr[r] = tfStr[r] + lpgStr1
+        # Create Route Table associated with LPGs in Hub VCN peered with spoke VCNs
+        for hub_vcn_name in hub_vcn_names:
+            compartment_var_name = vcn_compartment[hub_vcn_name]
+            r = vcn_region[hub_vcn_name].strip().lower()
+            #String for Route Tavle Associated with each LPG in hub VCN peered with Spoke VCN
+            createLPGRtTableString(compartment_var_name,hub_vcn_name,peering_dict,r)
 
 
         # Start processing for each subnet
@@ -376,9 +436,9 @@ if('.xls' in filename):
             dhcp = df.iat[i, 6]
             rt_name=df.iat[i,7]
 
-            configure_sgw = df.iat[i, 9]
-            configure_ngw = df.iat[i, 10]
-            configure_igw = df.iat[i, 11]
+            configure_sgw = df.iat[i, 10]
+            configure_ngw = df.iat[i, 11]
+            configure_igw = df.iat[i, 12]
 
             # Check to see if any column is empty in Subnets Sheet
             if (str(compartment_var_name).lower() == NaNstr.lower() or str(vcn_name).lower() == NaNstr.lower() or
@@ -514,8 +574,12 @@ elif('.properties' in filename):
     all_regions = config.get('Default', 'regions')
     all_regions = all_regions.split(",")
     all_regions = [x.strip().lower() for x in all_regions]
-    for reg in all_regions:
-        tfStr[reg] = ''
+
+
+    # Purge existing routetable files
+    if (subnet_add == 'false'):
+        for reg in all_regions:
+            purge(outdir + "/" + reg, "routetable.tf")
 
     # Get VCN Info from VCN_INFO section
     vcns = config.options('VCN_INFO')
@@ -531,6 +595,9 @@ elif('.properties' in filename):
             print("Invalid Region")
             exit(1)
         vcn_region[vcn_name]=region
+
+        if (vcn_data[2].strip().lower() != 'n'):
+            vcn_drgs[vcn_name] = vcn_data[2].strip().lower()
 
         if (hub_spoke_none == 'hub'):
             hub_vcn_names.append(vcn_name)
@@ -548,23 +615,23 @@ elif('.properties' in filename):
     createLPGRouteRules(peering_dict)
 
     # Create Route Table associated with DRG for Hub VCN and route rules for its each spoke VCN
-    if (subnet_add == 'false'):
-        for hub_vcn_name in hub_vcn_names:
-            compartment_var_name = vcn_compartment[hub_vcn_name]
+    #if (subnet_add == 'false'):
+    for hub_vcn_name in hub_vcn_names:
+        compartment_var_name = vcn_compartment[hub_vcn_name]
 
             # String for Route Table Assocaited with DRG
-            drgStr1 = createDRGRtTableString(compartment_var_name, hub_vcn_name, peering_dict)
-            r = vcn_region[hub_vcn_name].strip().lower()
-            tfStr[r] = tfStr[r] + drgStr1
+        r = vcn_region[hub_vcn_name].strip().lower()
+        createDRGRtTableString(compartment_var_name, hub_vcn_name, peering_dict,r)
+
 
         # Create Route Table associated with LPGs in Hub VCN peered with spoke VCNs
-        for hub_vcn_name in hub_vcn_names:
-            compartment_var_name = vcn_compartment[hub_vcn_name]
+    for hub_vcn_name in hub_vcn_names:
+        compartment_var_name = vcn_compartment[hub_vcn_name]
+        r = vcn_region[hub_vcn_name].strip().lower()
 
             # String for Route Tavle Associated with each LPG in hub VCN peered with Spoke VCN
-            lpgStr1 = createLPGRtTableString(compartment_var_name, hub_vcn_name, peering_dict)
-            r = vcn_region[hub_vcn_name].strip().lower()
-            tfStr[r] = tfStr[r] + lpgStr1
+        createLPGRtTableString(compartment_var_name, hub_vcn_name, peering_dict,r)
+
 
     #Start processing each VCN
     for vcn_name in vcns:
@@ -661,7 +728,7 @@ elif('.properties' in filename):
                 subnet = ""
                 name = ""
 
-                [compartment_var_name, name, sub, AD, pubpvt, dhcp, rt_name,seclist_name,configure_sgw, configure_ngw, configure_igw,dns_label] = line.split(',')
+                [compartment_var_name, name, sub, AD, pubpvt, dhcp, rt_name,seclist_name,common_seclist_name,configure_sgw, configure_ngw, configure_igw,dns_label] = line.split(',')
                 linearr = line.split(",")
                 compartment_var_name = linearr[0].strip()
                 name = linearr[1].strip()
@@ -679,35 +746,3 @@ if(fname!=None):
 
 routedata={}
 
-if(subnet_add=='true'):
-    for reg in all_regions:
-        reg_out_dir = outdir + "/" + reg
-        if not os.path.exists(reg_out_dir):
-            os.makedirs(reg_out_dir)
-        outfile[reg] = reg_out_dir + "/" + prefix + '-routes.tf'
-
-        x = datetime.datetime.now()
-        date = x.strftime("%f").strip()
-
-        # Backup the existing Routes tf file
-        with open(outfile[reg], 'r') as file:
-            routedata[reg] = file.read()
-        file.close()
-        oname[reg] = open(outfile[reg], "a")
-        if (tfStr[reg] != '' and tfStr[reg] not in routedata[reg]):
-            shutil.copy(outfile[reg], outfile[reg] + "_beforeSubnetAdd" + date)
-            oname[reg].write(tfStr[reg])
-            oname[reg].close()
-            print(outfile[reg] + " containing TF for Routes has been updated for region " + reg)
-elif (subnet_add == 'false'):
-    for reg in all_regions:
-        reg = reg.strip().lower()
-        reg_out_dir = outdir + "/" + reg
-        if not os.path.exists(reg_out_dir):
-            os.makedirs(reg_out_dir)
-        outfile[reg] = reg_out_dir + "/" + prefix + '-routes.tf'
-        if (tfStr[reg] != ''):
-            oname[reg] = open(outfile[reg], 'w')
-            oname[reg].write(tfStr[reg])
-            oname[reg].close()
-            print(outfile[reg] + " containing TF for Routes has been created for region " + reg)

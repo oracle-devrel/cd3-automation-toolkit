@@ -16,13 +16,21 @@ from oci.identity import IdentityClient
 x = datetime.datetime.now()
 date = x.strftime("%f").strip()
 
-def backup_file(dir, pattern):
-    print("backing up tf files ")
-    for f in os.listdir(dir):
+def backup_file(src_dir, pattern,overwrite):
+    dest_dir = src_dir + "/backup_SLs_" + date
+    for f in os.listdir(src_dir):
         if f.endswith(pattern):
-            print(("backing up ....." +  os.path.join(dir, f)))
-            path = os.path.join(dir, f)
-            shutil.copy(path, path + "_backup"+date)
+            if not os.path.exists(dest_dir):
+                print("\nCreating backup dir " + dest_dir +"\n")
+                os.makedirs(dest_dir)
+
+            src = os.path.join(src_dir, f)
+            print("backing up ....." +  src)
+            dest=os.path.join(dest_dir,f)
+            if (overwrite == 'yes'):
+                shutil.move(src, dest_dir)
+            elif (overwrite == 'no'):
+                shutil.copyfile(src, dest)
 
 
 def skipCommentedLine(lines):
@@ -220,7 +228,11 @@ def init_subnet_details(subnetid ,vcn_display_name, seclist_per_subnet, sec_rule
                 secname = seclistname_display_name.rsplit("-", 2)[0]
 
             else:
-                secname = seclistname_display_name.rsplit("-",1)[0]
+                last_content = seclistname_display_name.rsplit("-",1)[1]
+                if(str(last_content).isdigit()):
+                    secname = seclistname_display_name.rsplit("-",1)[0]
+                else:
+                    secname=seclistname_display_name
 
             seclist_rule_count[secname] = rule_count
             seclist_rule_count_limit[secname] = sec_rule_per_seclist
@@ -436,7 +448,8 @@ if('.xls' in secrulesfilename):
             subnets_done[reg]=[]
             seclists_done[reg]=[]
             # Backup existing seclist files in ash and phx dir
-            backup_file(outdir + "/" + reg, "_seclist.tf")
+            print("backing up tf files for region " + reg)
+            backup_file(outdir + "/" + reg, "_seclist.tf",overwrite)
 
         with open('out.csv') as secrulesfile:
             reader = csv.DictReader(skipCommentedLine(secrulesfile))
@@ -451,6 +464,7 @@ if('.xls' in secrulesfilename):
                 vcn_name = row['VCN Name']
                 # Process only those VCNs which are present in cd3(and have been created via TF)
                 if(vcn_name not in cd3_tf_vcns):
+                    print("skipping seclist: "+seclistName + " as its VCN is not part of VCNs tab in cd3")
                     continue
                 compartment_name = row['Compartment Name']
                 protocol = row['Protocol']
@@ -548,12 +562,14 @@ if('.xls' in secrulesfilename):
                 if(region=='<END>' or region=='<end>'):
                     break
 
+                subnetName = row['SubnetName/SecurityListName']
                 vcn_name = row['VCN Name']
                 #Process only those VCNs which are present in cd3(and have been created via TF)
                 if (vcn_name not in cd3_tf_vcns):
+                    print("skipping seclist: " + subnetName + " as its VCN is not part of VCNs tab in cd3")
                     continue
 
-                subnetName = row['SubnetName/SecurityListName']
+
                 protocol = row['Protocol']
                 ruleType = row['RuleType']
                 region = region.strip().lower()
@@ -572,7 +588,7 @@ if('.xls' in secrulesfilename):
                     vcn_name=subnetName.split('for')[1].strip()
                     text_to_replace="##Add More rules for " + vcn_name + "##"
                     new_sec_rule = new_sec_rule + "\n" + text_to_replace
-                    backup_file(outdir +"/"+region,  sec_list_file)
+                    backup_file(outdir +"/"+region,  sec_list_file,overwrite)
                     updateSecRules(outdir +"/"+region+ "/" + sec_list_file, text_to_replace, new_sec_rule, 0)
 
 
@@ -583,7 +599,7 @@ if('.xls' in secrulesfilename):
                     #text_to_replace = getReplacementStr(sec_rule_per_seclist, subnetName)
                     text_to_replace = getReplacementStr(seclist_rule_count_limit[subnetName], subnetName)
                     new_sec_rule = new_sec_rule + "\n" + text_to_replace
-                    backup_file(outdir +"/"+region, sec_list_file)
+                    backup_file(outdir +"/"+region, sec_list_file,overwrite)
                     updateSecRules(outdir +"/"+region+ "/" + sec_list_file, text_to_replace, new_sec_rule, 0)
                     incrementRuleCount(subnetName)
 
@@ -611,15 +627,27 @@ elif ('.csv' in secrulesfilename):
             if ruleType == 'egress':
                     new_sec_rule = create_egress_rule_string(row)
 
+            strDefault = 'Default Security List for'
+            if (strDefault.lower() in subnetName.lower()):
+                print("file to modify :: VCNs_Default_SecList.tf")
+                sec_list_file = "VCNs_Default_SecList.tf"
+                vcn_name = subnetName.split('for')[1].strip()
+                text_to_replace = "##Add More rules for " + vcn_name + "##"
+                new_sec_rule = new_sec_rule + "\n" + text_to_replace
+                backup_file(outdir + "/" + region, sec_list_file, overwrite)
+                updateSecRules(outdir + "/" + region + "/" + sec_list_file, text_to_replace, new_sec_rule, 0)
 
-            #sec_list_file = seclist_files[subnetName]
-            sec_list_file = subnetName + "_seclist.tf"
-            print("file to modify ::::: "+ sec_list_file )
-            #text_to_replace = getReplacementStr(sec_rule_per_seclist,subnetName)
-            text_to_replace = getReplacementStr(seclist_rule_count_limit[subnetName], subnetName)
-            new_sec_rule = new_sec_rule + "\n" + text_to_replace
-            updateSecRules(outdir +"/"+region+ "/" + sec_list_file, text_to_replace, new_sec_rule, 0)
-            incrementRuleCount(subnetName)
+
+            elif (subnetName != ''):
+                # sec_list_file = seclist_files[subnetName]
+                sec_list_file = subnetName + "_seclist.tf"
+                print("file to modify ::::: " + sec_list_file)
+                # text_to_replace = getReplacementStr(sec_rule_per_seclist, subnetName)
+                text_to_replace = getReplacementStr(seclist_rule_count_limit[subnetName], subnetName)
+                new_sec_rule = new_sec_rule + "\n" + text_to_replace
+                backup_file(outdir + "/" + region, sec_list_file, overwrite)
+                updateSecRules(outdir + "/" + region + "/" + sec_list_file, text_to_replace, new_sec_rule, 0)
+                incrementRuleCount(subnetName)
 
 else:
     print("Invalid input file format; Acceptable formats: .xls, .xlsx, .csv")

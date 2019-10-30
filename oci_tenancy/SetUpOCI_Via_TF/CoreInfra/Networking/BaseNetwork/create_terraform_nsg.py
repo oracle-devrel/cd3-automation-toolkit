@@ -142,12 +142,15 @@ def NSGtemplate(nsgParser, key, value, outdir):
 
 
 def NSGrulesTemplate(nsgParser, rule, index):
+    if(str(rule[14]).lower()=='nan'):
+        rule[14]=""
     resource_group_rule = ( \
         "resource \"oci_core_network_security_group_security_rule\" \"{}_security_rule{}\" {{\n"
         "    network_security_group_id = \"${{oci_core_network_security_group.{}.id}}\"\n"
+        "    description = \"{}\"\n"
         "    direction = \"{}\"\n"
         "    protocol = \"{}\""
-    ).format(rule[0], index, rule[0], rule[1].upper(), getProtocolNumber(rule[2]))
+    ).format(rule[0], index, rule[0], rule[14],rule[1].upper(), getProtocolNumber(rule[2]))
     return resource_group_rule
 
 

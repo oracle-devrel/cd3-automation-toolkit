@@ -1,3 +1,3 @@
-#compartment_name,name(should not contain underscore),subnet-cidr,availabilty-domain(AD1|AD2|AD3|Regional),private|public,dhcp-options(leave blank if default dhcp option needs to be used),route-table-name(Leave Blank if same as subnet name),seclist-name(Leave blank if same as subnet name),SGW,NGW,IGW,dns_label
+#compartment_name,name(should not contain underscore),subnet-cidr,availabilty-domain(AD1|AD2|AD3|Regional),private|public,dhcp-options(leave blank if default dhcp option needs to be used),route-table-name(Leave Blank if same as subnet name),seclist-name(Leave blank if same as subnet name),common_seclist_name,SGW,NGW,IGW,dns_label
 ntk_compartment,prod-dmz-lb-ext,10.89.69.0/24,AD2,public,dhcp-external,dmz-rttable,dmz-seclist,y,n,y,proddmz
 ntk_compartment,prod-mgt-ops,10.89.230.0/24,AD3,private,dhcp-internal,,,y,y,n,

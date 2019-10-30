@@ -10,8 +10,7 @@ import paramiko
 import shutil
 from paramiko import SSHClient
 import puttykeys
-from string import ascii_lowercase
-from itertools import count as letter_count
+from pathlib import Path
 import sys
 
 parser = argparse.ArgumentParser(description="Creates OCS Work related components")
@@ -125,7 +124,8 @@ regions=input_regions.split(",")
 region_dict = {'ashburn':'us-ashburn-1','phoenix':'us-phoenix-1','london':'uk-london-1','frankfurt':'eu-frankfurt-1','toronto':'ca-toronto-1','tokyo':'ap-tokyo-1','seoul':'ap-seoul-1','mumbai':'ap-mumbai-1'}
 
 def write_file(file_name,file_data):
-    f=open(file_name,"w+")
+    file_to_open = tmp_folder / file_name
+    f=open(file_to_open,"w+")
     f.write(file_data)
     f.close()
 
@@ -273,6 +273,7 @@ python_config = oci.config.from_file(file_location=input_config_file)
 #Create tmp folder for files to be SCPd
 if not os.path.exists('tmp'):
     os.makedirs('tmp')
+tmp_folder = Path("tmp")
 
 #If image OICD provided is null in properties value, pick the latest image of OS Oracle Linux
 if(input_image_id==''):
@@ -356,7 +357,7 @@ for region in regions:
             type = "string"
             default = \"""" + linux_image_id[region] + """"
     }"""
-    write_file("tmp\\variables_"+region+".tf", variables_data[region])
+    write_file("variables_"+region+".tf", variables_data[region])
 
 #Writing public keys to a file
 public_key_data=input_ssh_key1
@@ -366,7 +367,7 @@ if (input_ssh_key3 != ''):
     public_key_data = public_key_data + "\n" + input_ssh_key3
 
 
-write_file("tmp\ocs_public_keys.txt",public_key_data)
+write_file("ocs_public_keys.txt",public_key_data)
 
 #Writing Terraform config files provider.tf and variables.tf
 provider_data="""provider "oci" {
@@ -377,7 +378,7 @@ provider_data="""provider "oci" {
   private_key_path = "${var.private_key_path}"
   region           = "${var.region}"
 }"""
-write_file("tmp\provider.tf",provider_data)
+write_file("provider.tf",provider_data)
 
 #write git expect script to download python code
 if (input_configure_git_oci=="1"):
@@ -389,7 +390,7 @@ if (input_configure_git_oci=="1"):
     sleep 60
     expect eof
     """
-    write_file("tmp\\download_git_expect1.sh",script_data)
+    write_file("download_git_expect1.sh",script_data)
 if (input_configure_git_ocictooci == "1"):
     script_data="""#!/usr/bin/expect
     set password """+input_git_password+"""
@@ -399,7 +400,7 @@ if (input_configure_git_ocictooci == "1"):
     sleep 30
     expect eof
     """
-    write_file("tmp\\download_git_expect2.sh",script_data)
+    write_file("download_git_expect2.sh",script_data)
 
 #write Panda specific files
 if (input_configure_panda=="1"):
@@ -411,7 +412,7 @@ password        = "${var.password}"
 identity_domain = \"""" + input_ocic_identity_domain + """"
 endpoint        = "${var.endpoint}"
 }"""
-    write_file("tmp\\ocic-provider.tf", provider_panda_data)
+    write_file("ocic-provider.tf", provider_panda_data)
 
     # write TF file for for OCIC TF Variables
     variables_panda_data="""
@@ -432,7 +433,7 @@ variable "domain" {
        default = \"""" + input_ocic_identity_domain + """"
 }
 """
-    write_file("tmp\\ocic-variables.tf",variables_panda_data)
+    write_file("ocic-variables.tf",variables_panda_data)
 
     terraform_upgrade_expect_data="""#!/usr/bin/expect
 set answer yes
@@ -442,7 +443,7 @@ expect "Enter a value:" {send "$answer\\r"}
 sleep 20
 expect eof
 """
-    write_file("tmp\\upgrade_terraform_expect_script.sh",terraform_upgrade_expect_data)
+    write_file("upgrade_terraform_expect_script.sh",terraform_upgrade_expect_data)
 
     # write TF file for Panda instance creation in OCIC
     tf_data = """ 
@@ -525,7 +526,7 @@ resource "opc_compute_ip_network" "panda_new" {
 """
 
 
-    write_file("tmp\\panda.tf",tf_data)
+    write_file("panda.tf",tf_data)
     ### Have to write the ansible files to create the storage disk.
 
 #write Koala specific files
@@ -544,7 +545,7 @@ if (input_configure_koala=="1"):
     }
     }
     """
-    write_file("tmp\\default",file_data)
+    write_file("default",file_data)
     #expect script to run koala discover
     script_data="""#!/usr/bin/expect
     set password """+input_ocic_password+"""
@@ -554,7 +555,7 @@ if (input_configure_koala=="1"):
     sleep 60
     expect eof
     """
-    write_file("tmp\\discover_koala_expect.sh",script_data)
+    write_file("discover_koala_expect.sh",script_data)
 #Creating VM
 
 if(input_create_vm=="1"):
@@ -673,10 +674,19 @@ if(input_create_vm=="1"):
         update_route_details = oci.core.models.UpdateRouteTableDetails(route_rules=existing_rules_list)
         network_client.update_route_table(rt_id=subnet_route_table_id, update_route_table_details=update_route_details)
 
+    lpg_found=0
     print('Creating LPG')
-    create_lpg_details=oci.core.models.CreateLocalPeeringGatewayDetails(compartment_id=ocs_compartment_ocid, display_name=input_lpg_to_orig_name,vcn_id=vcn_ocid)
-    lpg=network_client.create_local_peering_gateway(create_lpg_details)
-    lpg_to_orig_ocid = lpg.data.id
+    for lpg in paginate(network_client.list_local_peering_gateways, compartment_id=ocs_compartment_ocid, vcn_id=vcn.id):
+        if(lpg.display_name==input_lpg_to_orig_name):
+            lpg_ocid = lpg.id
+            print("LPG with same name exists for this VCN..Reusing same for OCSWork")
+            lpg_to_orig_ocid=lpg_ocid
+            lpg_found = 1
+            break
+    if(lpg_found==0):
+        create_lpg_details=oci.core.models.CreateLocalPeeringGatewayDetails(compartment_id=ocs_compartment_ocid, display_name=input_lpg_to_orig_name,vcn_id=vcn_ocid)
+        lpg=network_client.create_local_peering_gateway(create_lpg_details)
+        lpg_to_orig_ocid = lpg.data.id
 
     lpg_to_mirror_ocid = ''
     lpg_to_rsync_ocid = ''
@@ -693,7 +703,13 @@ if(input_create_vm=="1"):
         lpg_to_rsync_ocid = lpg.data.id
 
     encoded_user_data=""
-    if("win" in sys.platform):
+    if ("darwin" in sys.platform):
+        out = subprocess.Popen(["/usr/bin/base64", input_user_data_file], stdout=subprocess.PIPE,
+                               stderr=subprocess.STDOUT)
+        stdout, stderr = out.communicate()
+        write_file("output.txt", stdout.decode("utf-8"))
+        time.sleep(5)
+    elif("win" in sys.platform):
         output=subprocess.Popen(("certutil.exe -encode "+ input_user_data_file + " tmp\\output.txt"),stdout=subprocess.PIPE).stdout
         output.close()
         time.sleep(5)
@@ -701,10 +717,11 @@ if(input_create_vm=="1"):
     elif("linux" in sys.platform):
         out = subprocess.Popen(["/bin/base64", input_user_data_file], stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
         stdout, stderr = out.communicate()
-        write_file("tmp\\output.txt", stdout.decode("utf-8") )
+        write_file("output.txt", stdout.decode("utf-8") )
         time.sleep(5)
 
-    f = open('tmp\\output.txt', 'r')
+    file = tmp_folder / 'output.txt'
+    f = open(file, 'r')
     for line in f:
         if not (line.__contains__("CERTIFICATE")):
             encoded_user_data=encoded_user_data+line
@@ -796,7 +813,8 @@ if(input_create_vm=="1"):
     f=open(input_pvt_key_file,"r")
     putty_pvtkey_contents = f.read()
     f.close()
-    f = open("tmp\\openSSHpvtKeyFile","w+")
+    openSSHpvtKeyFile = str(tmp_folder / "openSSHpvtKeyFile")
+    f = open(openSSHpvtKeyFile, "w+")
     f.write(puttykeys.ppkraw_to_openssh(putty_pvtkey_contents))
     f.close()
 
@@ -804,7 +822,7 @@ if(input_create_vm=="1"):
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     for x in range(10):
         try:
-            ssh.connect(ip, username='opc', key_filename='tmp\\openSSHpvtKeyFile')
+            ssh.connect(ip, username='opc', key_filename=openSSHpvtKeyFile)
             print('Connected to VM for file transfer')
             break
         except Exception as e:
@@ -812,14 +830,14 @@ if(input_create_vm=="1"):
             print('Trying again..')
             time.sleep(2)
 
-    provider='tmp\\provider.tf'
-    koala='tmp\\default'
-    script_file=input_shell_script
-    upload_git_script1='tmp\\download_git_expect1.sh'
-    upload_git_script2='tmp\\download_git_expect2.sh'
-    discover_koala_script='tmp\\discover_koala_expect.sh'
-    upgrade_terraform_script="tmp\\upgrade_terraform_expect_script.sh"
-    public_key_file='tmp\\ocs_public_keys.txt'
+    provider=str(tmp_folder / 'provider.tf')
+    koala = str(tmp_folder / 'default')
+    script_file = input_shell_script
+    upload_git_script1 = str(tmp_folder / 'download_git_expect1.sh')
+    upload_git_script2 = str(tmp_folder / 'download_git_expect2.sh')
+    discover_koala_script = str(tmp_folder / 'discover_koala_expect.sh')
+    upgrade_terraform_script = str(tmp_folder / 'upgrade_terraform_expect_script.sh')
+    public_key_file = str(tmp_folder / 'ocs_public_keys.txt')
 
 
     sftp = ssh.open_sftp()
@@ -830,14 +848,14 @@ if(input_create_vm=="1"):
     print('Copying private key to login to VM..')
     sftp.put(input_pvt_key_file, '/home/opc/ssh-pvt-key.ppk')
     print('Copying file containing OCS public keys..')
-    sftp.put('tmp\\ocs_public_keys.txt', '/home/opc/ocs_public_keys.txt')
+    sftp.put(public_key_file, '/home/opc/ocs_public_keys.txt')
     print('Copying OCI Terraform files..')
     sftp.put(provider, '/home/opc/provider.tf')
     for region in regions:
         region=region.strip().lower()
         ssh.exec_command("sudo mkdir -p /root/ocswork/terraform_files/"+region)
-        file="tmp\\variables_"+region+".tf"
-        sftp.put(file, '/home/opc/variables_'+region+'.tf')
+        file="variables_"+region+".tf"
+        sftp.put(str(tmp_folder / file), '/home/opc/variables_'+region+'.tf')
         mv_variables_cmd="sudo mv /home/opc/variables_"+region+".tf /root/ocswork/terraform_files/"+region
         mv_provider_cmd = "sudo cp /home/opc/provider.tf /root/ocswork/terraform_files/" + region
         ssh.exec_command(mv_variables_cmd)
@@ -847,10 +865,10 @@ if(input_create_vm=="1"):
 
     if(input_configure_panda=="1"):
         print('Copying generated files for Panda Server Creation..')
-        sftp.put('tmp\\panda.tf','/home/opc/panda.tf')
-        sftp.put('tmp\\ocic-provider.tf','/home/opc/ocic-provider.tf')
-        sftp.put('tmp\\ocic-variables.tf','/home/opc/ocic-variables.tf')
-        sftp.put('tmp\\upgrade_terraform_expect_script.sh', '/home/opc/upgrade_terraform_expect_script.sh')
+        sftp.put(str(tmp_folder / 'panda.tf'), '/home/opc/panda.tf')
+        sftp.put(str(tmp_folder / 'ocic-provider.tf'), '/home/opc/ocic-provider.tf')
+        sftp.put(str(tmp_folder / 'ocic-variables.tf'), '/home/opc/ocic-variables.tf')
+        sftp.put(str(tmp_folder / 'upgrade_terraform_expect_script.sh'), '/home/opc/upgrade_terraform_expect_script.sh')
 
     if(input_configure_koala=="1"):
         print('Copying Koala files..')
