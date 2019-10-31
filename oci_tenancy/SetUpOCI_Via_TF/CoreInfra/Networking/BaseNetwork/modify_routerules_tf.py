@@ -77,7 +77,7 @@ if('.xls' in inputfile):
         shutil.copy(routefile[reg], routefile[reg] + "_backup" + date)
     """
 
-    endNames = {'<END>', '<end>'}
+    endNames = {'<END>', '<end>', '<End>'}
     NaNstr = 'NaN'
 
     # Get VCNs in cd3 (created via TF)
@@ -281,7 +281,7 @@ if('.xls' in inputfile):
 elif ('.csv' in inputfile):
     fname = open(inputfile, "r")
     # Read the input csv file
-    endNames = {'<END>', '<end>'}
+    endNames = {'<END>', '<end>', '<End>'}
     all_regions=os.listdir(outdir)
     for reg in all_regions:
         tfStr[reg] = ''

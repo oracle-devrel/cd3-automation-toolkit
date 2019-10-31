@@ -329,7 +329,7 @@ seclist_files = {}
 seclist_rule_count = {}
 seclist_rule_count_limit = {}
 seclist_per_subnet_limit ={}
-endNames = {'<END>', '<end>'}
+endNames = {'<END>', '<end>','<End>'}
 
 # Read vcn info file and get subnet info
 

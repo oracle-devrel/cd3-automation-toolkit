@@ -203,7 +203,7 @@ def processSubnet(region,vcn_name,AD,seclists_per_subnet,name,seclist_name,subne
     oname.close()
     print(outfile + " containing TF for seclist has been created for region " + region)
 
-endNames = {'<END>', '<end>'}
+endNames = {'<END>', '<end>','<End>'}
 #If input is CD3 excel file
 if('.xls' in filename):
         NaNstr = 'NaN'

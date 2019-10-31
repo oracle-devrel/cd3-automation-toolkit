@@ -49,7 +49,7 @@ if('.xls' in args.inputfile):
     all_regions = [x.strip().lower() for x in all_regions]
 
     NaNstr = 'NaN'
-    endNames = {'<END>', '<end>'}
+    endNames = {'<END>', '<end>', '<End>'}
     count = 0
     regions=df['Region']
     regions.dropna()

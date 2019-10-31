@@ -37,7 +37,7 @@ if('.csv' in filename):
 df = pd.read_excel(filename, sheet_name='LBR',skiprows=1)
 df.dropna(how='all')
 
-endNames = {'<END>', '<end>'}
+endNames = {'<END>', '<end>','<End>'}
 NaNstr = 'NaN'
 for i in df.index:
     region=df.iat[i,0]

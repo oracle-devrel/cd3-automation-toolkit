@@ -25,6 +25,7 @@ outdir = args.outdir
 
 
 ADS = ["AD1", "AD2", "AD3"]
+endNames = {'<END>', '<end>','<End>'}
 
 #If input is CD3 excel file
 if('.xls' in filename):
@@ -41,9 +42,13 @@ if('.xls' in filename):
     for i in df.index:
         region=df.iat[i,0]
         region=region.strip().lower()
+        if region in endNames:
+            break
         if region not in all_regions:
             print("Invalid Region; It should be one of the values mentioned in VCN Info tab")
             continue
+        if region in endNames:
+            break
         blockname = df.iat[i, 1]
         size = df.iat[i, 2]
         size=str(size)

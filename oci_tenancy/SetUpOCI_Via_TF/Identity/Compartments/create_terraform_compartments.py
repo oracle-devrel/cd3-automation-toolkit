@@ -53,7 +53,7 @@ if('.xls' in args.inputfile):
         tfStr[reg] = ''
 
     NaNstr = 'NaN'
-    endNames = {'<END>', '<end>'}
+    endNames = {'<END>', '<end>', '<End>'}
 
     for i in df.index:
         region = df.iat[i,0]
@@ -95,7 +95,7 @@ elif('.csv' in args.inputfile):
     compartment_file_name = args.inputfile
     fname = open(compartment_file_name, "r")
 
-    endNames = {'<END>', '<end>'}
+    endNames = {'<END>', '<end>', '<End>'}
 
     # Read compartment file
     for line in fname:

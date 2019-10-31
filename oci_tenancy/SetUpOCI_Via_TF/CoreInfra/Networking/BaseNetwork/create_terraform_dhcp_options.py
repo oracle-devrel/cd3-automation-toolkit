@@ -86,7 +86,7 @@ def processDHCP(region,vcn_name,dhcp_option_name,compartment_var_name,serverType
 	tfStr[region] = tfStr[region] + data
 
 
-endNames = {'<END>', '<end>'}
+endNames = {'<END>', '<end>','<End>'}
 if('.xls' in args.inputfile):
 	df_vcn = pd.read_excel(args.inputfile, sheet_name='VCNs',skiprows=1)
 	df_vcn.dropna(how='all')

@@ -31,6 +31,7 @@ tfStr={}
 x = datetime.datetime.now()
 date = x.strftime("%S").strip()
 
+
 if('.xls' in args.inputfile):
     df = pd.read_excel(args.inputfile, sheet_name='DedicatedVMHosts',skiprows=1)
     df.dropna(how='all')
@@ -44,7 +45,7 @@ if('.xls' in args.inputfile):
         tfStr[reg] = ''
 
     NaNstr = 'NaN'
-    endNames = {'<END>', '<end>'}
+    endNames = {'<END>', '<end>', '<End>'}
 
     for i in df.index:
         region = df.iat[i,0]
@@ -101,7 +102,7 @@ elif('.csv' in args.inputfile):
     dedicated_host_file_name = args.inputfile
     fname = open(dedicated_host_file_name, "r")
 
-    endNames = {'<END>', '<end>'}
+    endNames = {'<END>', '<end>', '<End>'}
 
     # Read compartment file
     for line in fname:

@@ -48,7 +48,7 @@ if len(sys.argv) < 2:
 args = parser.parse_args()
 filename = args.file
 outdir = args.outdir
-endNames = {'<END>', '<end>'}
+endNames = {'<END>', '<end>','<End>'}
 
 #If input is CD3 excel file
 if('.xls' in filename):
@@ -62,21 +62,34 @@ if('.xls' in filename):
     all_regions = os.listdir(outdir)
 
     df = pd.read_excel(filename, sheet_name='Instances',skiprows=1)
-    for row in df.index:
+    """for row in df.index:
         region=df['Region'][row]
         region=region.strip().lower()
-        if region not in all_regions:
+        if region not in all_regions and region not in endNames:
             print("Invalid Region; It should be one of the values mentioned in VCN Info tab")
             exit(1)
-
+    """
     for row in df.index:
-        copy_template_file(df['Hostname'][row], df['OS'][row],df['Region'][row])
+        region = df['Region'][row]
+        region = region.strip().lower()
+        if region in all_regions:
+            copy_template_file(df['Hostname'][row], df['OS'][row],df['Region'][row])
+        elif region in endNames:
+            break
+        else:
+            print("Skipping row "+ region + " as invalid region")
     #for i in df.keys():
     #    for j in df.index:
     for j in df.index:
         for i in df.keys():
             if(str(df[i][j]) in endNames):
                 exit()
+            if(re.match('Region', i, flags=re.IGNORECASE)):
+                region = str(df[i][j])
+                region = region.strip().lower()
+                if (region not in all_regions):
+                    break
+
             if (re.match('DedicatedVMHost', i, flags=re.IGNORECASE)):
                 dedicated_host=str(df[i][j])
                 if(dedicated_host!='nan'):

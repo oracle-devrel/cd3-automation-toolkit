@@ -50,8 +50,7 @@ datastr = """
 data "oci_core_services" "oci_services" {
 }"""
 
-endNames = {'<END>', '<end>'}
-
+endNames = {'<END>', '<end>','<End>'}
 
 def createLPGs(peering_dict):
     for left_vcn, value in peering_dict.items():
