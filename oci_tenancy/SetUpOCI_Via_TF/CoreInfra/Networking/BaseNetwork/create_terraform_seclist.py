@@ -300,11 +300,12 @@ if('.xls' in filename):
 
             seclists_per_subnet = int(sps)
             common_seclist_name=df.iat[i,9]
-            if(str(common_seclist_name).lower() !=NaNstr.lower() and common_seclist_name not in common_seclist_names):
-                common_seclist_names[region].append(common_seclist_name)
-                out_common_file=outdir+"/"+region+"/"+common_seclist_name+"_seclist.tf"
-                oname_common=open(out_common_file,"w")
-                data="""
+            if(str(common_seclist_name).lower() !=NaNstr.lower()):
+                if (common_seclist_name not in common_seclist_names[region]):
+                    common_seclist_names[region].append(common_seclist_name)
+                    out_common_file=outdir+"/"+region+"/"+common_seclist_name+"_seclist.tf"
+                    oname_common=open(out_common_file,"w")
+                    data="""
         resource "oci_core_security_list" \"""" + common_seclist_name.strip() + """"{
             compartment_id = "${var.""" + compartment_var_name + """}"
             vcn_id = "${oci_core_vcn.""" + vcn_name + """.id}"
@@ -312,9 +313,11 @@ if('.xls' in filename):
             ####ADD_NEW_SEC_RULES####1
         }
         """
-                oname_common.write(data)
-                print(out_common_file + " containing TF for seclist has been created for region " + region)
-                oname_common.close()
+                    oname_common.write(data)
+                    print(out_common_file + " containing TF for seclist has been created for region " + region)
+                    oname_common.close()
+                else:
+                    print("\nKeep different names for common sec lists across VCNs. Skipping creation of common seclist for "+name +" in VCN "+vcn_name   )
 
             processSubnet(region,vcn_name,AD,seclists_per_subnet,name,seclist_name,subnet_name_attach_cidr,compartment_var_name)
 
