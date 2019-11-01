@@ -37,6 +37,7 @@ prefix = args.prefix
 outfile = {}
 oname = {}
 tfStr = {}
+oname_def_dhcp = {}
 
 # Create VCN transit routing mapping based on Hub-Spoke
 # vcn_transit_route_mapping=dict()
@@ -125,6 +126,7 @@ def createLPGs(peering_dict):
 
 def processVCN(region, vcn_name, vcn_cidr, vcn_drg, vcn_igw, vcn_ngw, vcn_sgw, hub_spoke_none, compartment_var_name,
                vcn_dns_label):
+
     region = region.lower().strip()
     vcn_name = vcn_name.strip()
     vcn_cidr = vcn_cidr.strip()
@@ -136,6 +138,20 @@ def processVCN(region, vcn_name, vcn_cidr, vcn_drg, vcn_igw, vcn_ngw, vcn_sgw, h
     compartment_var_name = compartment_var_name.strip()
     vcn_dns_label = vcn_dns_label.strip()
 
+    #Create TF object for default DHCP options
+
+    dhcp_data= """
+    resource "oci_core_default_dhcp_options" "default-dhcp-options_""" + vcn_name + """" {
+        manage_default_resource_id  = "${oci_core_vcn.""" + vcn_name + """.default_dhcp_options_id}"
+        options {
+            type = "DomainNameServer"
+            server_type = "VcnLocalPlusInternet"
+        }
+    }
+    """
+    oname_def_dhcp[region].write(dhcp_data)
+
+    #Wite major objects data
     data = """
           resource "oci_core_vcn" \"""" + vcn_name + """" {
                     cidr_block = \"""" + vcn_cidr + """"
@@ -257,6 +273,7 @@ if ('.xls' in filename):
     all_regions = [x.strip().lower() for x in all_regions]
     for reg in all_regions:
         tfStr[reg] = ''
+        oname_def_dhcp[reg] = open(outdir + "/" + reg + "/VCNs_Default_DHCP.tf", "w")
 
     # Get VCN Peering info in dict
     for j in df_info.index:
@@ -410,6 +427,8 @@ else:
     exit(1)
 
 for reg in all_regions:
+    oname_def_dhcp[reg].close()
+    print("VCNs_Default_DHCP.tf containing TF for default DHCP options for VCNs has been created for region " + reg)
     reg_out_dir = outdir + "/" + reg
     if not os.path.exists(reg_out_dir):
         os.makedirs(reg_out_dir)

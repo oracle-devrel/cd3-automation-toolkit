@@ -120,6 +120,9 @@ def processSubnet(region,vcn_name,name,rt_name,seclist_name,common_seclist_name,
 	if (str(dhcp).lower() != 'nan' and str(dhcp)!=''):
 		data = data + """
     	dhcp_options_id     = "${oci_core_dhcp_options.""" + str(dhcp).strip() + """.id}" """
+	else:
+		data = data + """
+		dhcp_options_id = "${oci_core_vcn.""" + vcn_name + """.default_dhcp_options_id}" """
 	data = data + """
     	display_name               = \"""" + display_name + """"
     	cidr_block                 = \"""" + subnet + """\" """

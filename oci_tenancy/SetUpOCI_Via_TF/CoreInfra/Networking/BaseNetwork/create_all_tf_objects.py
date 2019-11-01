@@ -41,7 +41,9 @@ if (exitVal == 1):
 
 print("---------------Creating Seclist ---------------")
 command = 'python create_terraform_seclist.py  '+ propsfile + ' ' + outdir
-os.system(command)
+exitVal=os.system(command)
+if (exitVal == 1):
+    exit()
 
 print("----------------Creating Subnet----------------")
 command = 'python create_terraform_subnet.py ' + propsfile + ' ' + outdir + ' ' + prefix

@@ -317,7 +317,9 @@ if('.xls' in filename):
                     print(out_common_file + " containing TF for seclist has been created for region " + region)
                     oname_common.close()
                 else:
-                    print("\nKeep different names for common sec lists across VCNs. Skipping creation of common seclist for "+name +" in VCN "+vcn_name   )
+                    print("\n\nKeep different names for common sec lists across VCNs. Skipping creation of common seclist for "+name +" in VCN "+vcn_name   )
+                    print("\nPlease rerun after modifying the Excel sheet.. Exiting...\n ")
+                    exit(1)
 
             processSubnet(region,vcn_name,AD,seclists_per_subnet,name,seclist_name,subnet_name_attach_cidr,compartment_var_name)
 

@@ -446,7 +446,7 @@ if('.xls' in filename):
                     or str(AD).lower() == NaNstr.lower() or str(pubpvt).lower() == NaNstr.lower()
                     or str(configure_sgw).lower() == NaNstr.lower() or str(configure_ngw).lower() == NaNstr.lower()
                     or str(configure_igw).lower() == NaNstr.lower()):
-                print("Column Values (except dhcp_option_name, route_table_name, seclist_name or dns_label) or Rows cannot be left empty in Subnets sheet in CD3..exiting...")
+                print("Column Values (except dhcp_option_name, route_table_name, seclist_name, common_seclist_name or dns_label) or Rows cannot be left empty in Subnets sheet in CD3..exiting...")
                 exit(1)
 
             compartment_var_name=compartment_var_name.strip()

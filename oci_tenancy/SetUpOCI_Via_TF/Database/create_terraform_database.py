@@ -90,8 +90,10 @@ if ('.xls' in filename):
         database_host_user_name = df['Database username'][i].strip()
 
         database_workload_type = df['Select workload type'][i].strip()
-
-        database_PDB_name = df['PDB name (Optional)'][i].strip()
+        if(str(df['PDB name (Optional)'][i]).lower()!='nan'):
+            database_PDB_name = df['PDB name (Optional)'][i].strip()
+        else:
+            database_PDB_name=""
 
         database_storage = int(df['Database Size (GB)'][i])
 
