@@ -52,7 +52,7 @@ if args.subnet_add is not None:
 else:
     subnet_add = "false"
 
-common_seclist_names=[]
+common_seclist_names={}
 fname = None
 oname=None
 
@@ -219,7 +219,8 @@ if('.xls' in filename):
         all_regions = str(values[7]).strip()
         all_regions = all_regions.split(",")
         all_regions = [x.strip().lower() for x in all_regions]
-
+        for reg in all_regions:
+            common_seclist_names[reg]=[]
         # Purge existing sec list files
         if (subnet_add == 'false'):
             for reg in all_regions:
@@ -300,7 +301,7 @@ if('.xls' in filename):
             seclists_per_subnet = int(sps)
             common_seclist_name=df.iat[i,9]
             if(str(common_seclist_name).lower() !=NaNstr.lower() and common_seclist_name not in common_seclist_names):
-                common_seclist_names.append(common_seclist_name)
+                common_seclist_names[region].append(common_seclist_name)
                 out_common_file=outdir+"/"+region+"/"+common_seclist_name+"_seclist.tf"
                 oname_common=open(out_common_file,"w")
                 data="""
@@ -387,7 +388,7 @@ elif('.properties' in filename):
                             name = linearr[1].strip()
                             subnet = linearr[2].strip()
                             if (common_seclist_name.strip().lower() != '' and common_seclist_name not in common_seclist_names):
-                                common_seclist_names.append(common_seclist_name)
+                                common_seclist_names[region].append(common_seclist_name)
                                 out_common_file = outdir + "/" + region + "/" + common_seclist_name + "_seclist.tf"
                                 oname_common = open(out_common_file, "w")
                                 data = """

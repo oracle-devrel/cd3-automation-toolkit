@@ -400,8 +400,8 @@ if('11' in userInput):
         os.makedirs(outdir)
 
     os.chdir('CoreInfra/BlockVolume')
-    print("Executing Command: " + command)
     command = 'python block_backups_policy.py '+inputfile + ' ' + outdir
+    print("Executing Command: " + command)
     os.system(command)
     os.chdir("../..")
     print("--------------------------------------------------------------------------")
