@@ -97,9 +97,13 @@ for i in df.index:
 
     if str(gid).lower() == NaNstr.lower():
         gid = "65534"
+    else:
+        gid=int(gid)
 
     if str(uid).lower() == NaNstr.lower():
         uid = "65534"
+    else:
+        uid=int(uid)
 
     if str(idsquash).lower() == NaNstr.lower():
         idsquash = "NONE"
@@ -174,8 +178,8 @@ for i in df.index:
             export_options {
                 source = \"""" +str(sourceCIDR).strip() + """"
                 access = \"""" + access.strip() + """"
-                anonymous_gid = \"""" + str(gid).strip() + """"
-                anonymous_uid = \"""" + str(uid).strip() + """"
+                anonymous_gid = \"""" + str(gid) + """"
+                anonymous_uid = \"""" + str(uid) + """"
                 identity_squash = \"""" + idsquash.strip() + """"
                 require_privileged_source_port = \"""" + str(require_ps_port).strip().lower() + """"
                 }
