@@ -74,12 +74,15 @@ def protocolOptionals(nsgParser, options):
     elif protocol == "icmp":
         code = "" if nsgParser.checkOptionalEmpty(options[13]) \
             else "        code = \"{}\"\n".format(int(options[13]))
-        return ("\n" \
-                "    icmp_options {{\n" \
-                "        type = \"{}\"\n" \
-                "{}"
-                "    }}" \
-                ).format(int(options[12]), code)
+        if nsgParser.checkOptionalEmpty(options[12]):
+            return (" ")
+        else:
+            return ("\n" \
+                    "    icmp_options {{\n" \
+                    "        type = \"{}\"\n" \
+                    "{}"
+                    "    }}" \
+                    ).format(int(options[12]), code)
     elif protocol == "tcp":
         protocolHeader = protocol
     elif protocol == "udp":
