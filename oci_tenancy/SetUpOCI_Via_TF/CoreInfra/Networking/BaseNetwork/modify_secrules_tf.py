@@ -539,11 +539,12 @@ if('.xls' in secrulesfilename):
                 oname[reg].write(tfStr[reg])
                 oname[reg].close()
 
-            default_ruleStr[reg]=default_ruleStr[reg]+"""
+            if(default_ruleStr[reg]!=''):
+                default_ruleStr[reg]=default_ruleStr[reg]+"""
 }"""
 
-            defaultname[reg].write(default_ruleStr[reg])
-            defaultname[reg].close()
+                defaultname[reg].write(default_ruleStr[reg])
+                defaultname[reg].close()
 
         os.remove('out.csv')
     elif(overwrite=='no'):
