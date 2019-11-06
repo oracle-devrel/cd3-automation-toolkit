@@ -21,15 +21,14 @@ import argparse
 
 parser = argparse.ArgumentParser(description = "Create bootvolume from uploaded vmdk in Object store")
 parser.add_argument("disk", help="Name of vmdk object (disk) already uploaded to object store")
+parser.add_argument("osType", help="OS type")
+parser.add_argument("osVersion", help="OS Version")
 
 if len(sys.argv)==1:
         parser.print_help()
         sys.exit(1)
 
 args = parser.parse_args()
-
-
-
 
 
 config = oci.config.from_file()
@@ -63,7 +62,7 @@ access_url =  "https://objectstorage." + config["region"] + ".oraclecloud.com" +
 
 #imgObjSrc = ImageSourceViaObjectStorageTupleDetails(source_image_type="VMDK",source_type="bootVolume",bucket_name=bucket_name,namespace_name=namespace,object_name=object_name)
 
-imgObjSrc = oci.core.models.ImageSourceViaObjectStorageUriDetails (source_image_type="VMDK",source_type="objectStorageUri",source_uri=access_url)
+imgObjSrc = oci.core.models.ImageSourceViaObjectStorageUriDetails (operating_system=args.osType,operating_system_version=args.osVersion,source_image_type="VMDK",source_type="objectStorageUri",source_uri=access_url)
 print (imgObjSrc)
 
 createImgDet = CreateImageDetails(compartment_id=compartment_id, display_name=object_name,image_source_details=imgObjSrc,launch_mode="EMULATED")
