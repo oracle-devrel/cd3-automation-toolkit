@@ -62,4 +62,3 @@ if(update_choice=='3'):
 		os.system(cmd)
 		cmd = 'python create_terraform_subnet.py ' + inputfile + ' ' + outdir + ' ' + prefix + ' --subnet_add true'
 		os.system(cmd)
-		print("Make sure to run modify rules with overwrite option")

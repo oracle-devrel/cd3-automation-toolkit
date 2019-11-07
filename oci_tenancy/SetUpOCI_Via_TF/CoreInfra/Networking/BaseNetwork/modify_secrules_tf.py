@@ -221,18 +221,14 @@ def init_subnet_details(subnetid ,vcn_display_name, seclist_per_subnet, sec_rule
             if ('-ad1-10.' in seclistname_display_name or '-ad2-10.' in seclistname_display_name or '-ad3-10.' in seclistname_display_name or '-ad1-172.' in seclistname_display_name
                     or '-ad2-172.' in seclistname_display_name or '-ad3-172.' in seclistname_display_name or '-ad1-192.' in seclistname_display_name or '-ad2-192.' in seclistname_display_name
                     or '-ad3-192.' in seclistname_display_name):
-                secname = seclistname_display_name.rsplit("-", 3)[0]
+                secname = vcn_display_name+"_"+seclistname_display_name.rsplit("-", 3)[0]
 
             # display name contains CIDR
             elif ('-10.' in seclistname_display_name or '-172.' in seclistname_display_name or '192.' in seclistname_display_name):
-                secname = seclistname_display_name.rsplit("-", 2)[0]
+                secname = vcn_display_name+"_"+seclistname_display_name.rsplit("-", 2)[0]
 
             else:
-                last_content = seclistname_display_name.rsplit("-",1)[1]
-                if(str(last_content).isdigit()):
-                    secname = seclistname_display_name.rsplit("-",1)[0]
-                else:
-                    secname=seclistname_display_name
+                secname = vcn_display_name+"_"+seclistname_display_name.rsplit("-", 1)[0]
 
             seclist_rule_count[secname] = rule_count
             seclist_rule_count_limit[secname] = sec_rule_per_seclist
@@ -473,21 +469,21 @@ if('.xls' in secrulesfilename):
                 region=region.strip().lower()
 
                 if('Default Security List for' in seclistName):
-                    if (seclistName not in default_seclists_done[region]):
+                    if (vcn_name+"_"+seclistName not in default_seclists_done[region]):
                         if(len(default_seclists_done[region])==0):
                             default_ruleStr[region]=default_ruleStr[region]+"""
-    resource "oci_core_default_security_list" "default-security_list_""" + vcn_name + """" {
+    resource "oci_core_default_security_list" \"""" +vcn_name+"_default-security_list" """" {
         manage_default_resource_id  = "${oci_core_vcn.""" + vcn_name + """.default_security_list_id}"
         ##Add More rules for """ + vcn_name + """##
     """
                         else:
                             default_ruleStr[region] = default_ruleStr[region] + """
     }
-    resource "oci_core_default_security_list" "default-security_list_""" + vcn_name + """" {
+    resource "oci_core_default_security_list" \"""" +vcn_name+"_default-security_list" """" {
         manage_default_resource_id  = "${oci_core_vcn.""" + vcn_name + """.default_security_list_id}"
         ##Add More rules for """ + vcn_name + """##
     """
-                        default_seclists_done[region].append(seclistName)
+                        default_seclists_done[region].append(vcn_name+"_"+seclistName)
 
                     new_sec_rule = ""
                     if ruleType == 'ingress':
@@ -498,10 +494,11 @@ if('.xls' in secrulesfilename):
                     continue
 
                 #Process other seclists
-                subnetName = row['SubnetName'].rsplit('-',1)[0]
+                subnetName = row['SubnetName'].rsplit('-', 1)[0]
 
-                if(subnetName not in subnets_done[region] or len(subnets_done[region])==0):
-                    subnets_done[region].append(subnetName)
+
+                if(vcn_name+"_"+subnetName not in subnets_done[region] or len(subnets_done[region])==0):
+                    subnets_done[region].append(vcn_name+"_"+subnetName)
                     if(tfStr[region]!=''):
                         tfStr[region]=tfStr[region]+"""
     }"""
@@ -509,20 +506,20 @@ if('.xls' in secrulesfilename):
                         tfStr[region] = ''
                         seclists_done[region] = []
                         oname[region].close()
-                    oname[region] = open(outdir + "/" +region+"/"+ subnetName + "_seclist.tf", "w")
+                    oname[region] = open(outdir + "/" +region+"/"+ vcn_name+"_"+subnetName + "_seclist.tf", "w")
 
 
-                if(seclistName not in seclists_done[region]):
+                if(vcn_name+"_"+seclistName not in seclists_done[region]):
                     if(len(seclists_done[region])!=0):
                         tfStr[region]=tfStr[region]+"""
     }"""
                     tfStr[region]=tfStr[region]+"""
-    resource "oci_core_security_list" \"""" + seclistName +  """"{
+    resource "oci_core_security_list" \"""" + vcn_name+"_"+seclistName +  """"{
     compartment_id = "${var.""" + compartment_name + """}"
     vcn_id = "${oci_core_vcn.""" + vcn_name + """.id}"
     ####ADD_NEW_SEC_RULES####""" + row['SubnetName'].rsplit('-',1)[1] + """
     """
-                    seclists_done[region].append(seclistName)
+                    seclists_done[region].append(vcn_name+"_"+seclistName)
 
                 new_sec_rule = ""
                 if ruleType == 'ingress':
@@ -595,14 +592,14 @@ if('.xls' in secrulesfilename):
 
                 elif(subnetName!=''):
                     #sec_list_file = seclist_files[subnetName]
-                    sec_list_file=subnetName+"_seclist.tf"
+                    sec_list_file=vcn_name+"_"+subnetName+"_seclist.tf"
                     print("file to modify ::::: " + sec_list_file)
                     #text_to_replace = getReplacementStr(sec_rule_per_seclist, subnetName)
-                    text_to_replace = getReplacementStr(seclist_rule_count_limit[subnetName], subnetName)
+                    text_to_replace = getReplacementStr(seclist_rule_count_limit[vcn_name+"_"+subnetName], vcn_name+"_"+subnetName)
                     new_sec_rule = new_sec_rule + "\n" + text_to_replace
                     backup_file(outdir +"/"+region, sec_list_file,overwrite)
                     updateSecRules(outdir +"/"+region+ "/" + sec_list_file, text_to_replace, new_sec_rule, 0)
-                    incrementRuleCount(subnetName)
+                    incrementRuleCount(vcn_name+"_"+subnetName)
 
         os.remove('out.csv')
 # If input is a csv file
@@ -641,14 +638,14 @@ elif ('.csv' in secrulesfilename):
 
             elif (subnetName != ''):
                 # sec_list_file = seclist_files[subnetName]
-                sec_list_file = subnetName + "_seclist.tf"
+                sec_list_file = vcn_name+"_"+subnetName + "_seclist.tf"
                 print("file to modify ::::: " + sec_list_file)
                 # text_to_replace = getReplacementStr(sec_rule_per_seclist, subnetName)
-                text_to_replace = getReplacementStr(seclist_rule_count_limit[subnetName], subnetName)
+                text_to_replace = getReplacementStr(seclist_rule_count_limit[vcn_name+"_"+subnetName], vcn_name+"_"+subnetName)
                 new_sec_rule = new_sec_rule + "\n" + text_to_replace
                 backup_file(outdir + "/" + region, sec_list_file, overwrite)
                 updateSecRules(outdir + "/" + region + "/" + sec_list_file, text_to_replace, new_sec_rule, 0)
-                incrementRuleCount(subnetName)
+                incrementRuleCount(vcn_name+"_"+subnetName)
 
 else:
     print("Invalid input file format; Acceptable formats: .xls, .xlsx, .csv")

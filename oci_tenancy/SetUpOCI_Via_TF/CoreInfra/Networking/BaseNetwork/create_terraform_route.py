@@ -218,7 +218,7 @@ def processSubnet(region,vcn_name,name,rt_name,ruleStr,AD,configure_sgw,configur
         # no need to attach subnet cidr to display name
         display_name = subnet_res_name
 
-    outfile = outdir + "/" + region + "/" + subnet_res_name + "_routetable.tf"
+    outfile = outdir + "/" + region + "/" + vcn_name+"_"+subnet_res_name + "_routetable.tf"
     # Same routetable used for subnets
     if (os.path.exists(outfile)):
         data=""
@@ -253,14 +253,14 @@ def processSubnet(region,vcn_name,name,rt_name,ruleStr,AD,configure_sgw,configur
                             }
                             """
         end = """
-                            ##Add More rules for subnet """ + subnet_res_name + """##
+                            ##Add More rules for subnet """ + vcn_name+"_"+subnet_res_name + """##
                     """
 
         with open(outfile, 'r+') as file:
             filedata = file.read()
         file.close()
         # Replace the target string
-        textToSearch = """##Add More rules for subnet """ + subnet_res_name + """##"""
+        textToSearch = """##Add More rules for subnet """ + vcn_name+"_"+subnet_res_name + """##"""
         filedata = filedata.replace(textToSearch, data+end)
         oname = open(outfile, "w")
         oname.write(filedata)
@@ -271,7 +271,7 @@ def processSubnet(region,vcn_name,name,rt_name,ruleStr,AD,configure_sgw,configur
     oname = open(outfile, "w")
 
     data_res = """ 
-            resource "oci_core_route_table" \"""" + subnet_res_name + """"{
+            resource "oci_core_route_table" \"""" +vcn_name+"_"+ subnet_res_name + """"{
                 compartment_id = "${var.""" + compartment_var_name + """}"
                 vcn_id = "${oci_core_vcn.""" + vcn_name + """.id}"
                 display_name = \"""" + display_name.strip() + """\" """
@@ -307,7 +307,7 @@ def processSubnet(region,vcn_name,name,rt_name,ruleStr,AD,configure_sgw,configur
                         }
                         """
     end="""
-                        ##Add More rules for subnet """ + subnet_res_name + """##
+                        ##Add More rules for subnet """ + vcn_name+"_"+subnet_res_name + """##
                 }
                 """
     tempStr=data_res+ruleStr+data+end

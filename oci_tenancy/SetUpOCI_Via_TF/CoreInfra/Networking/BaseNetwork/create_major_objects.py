@@ -428,8 +428,9 @@ else:
 
 for reg in all_regions:
     oname_def_dhcp[reg].close()
-    print("VCNs_Default_DHCP.tf containing TF for default DHCP options for VCNs has been created for region " + reg)
     reg_out_dir = outdir + "/" + reg
+    print(reg_out_dir + "/VCNs_Default_DHCP.tf containing TF for default DHCP options for VCNs has been created for region " + reg)
+
     if not os.path.exists(reg_out_dir):
         os.makedirs(reg_out_dir)
     outfile[reg] = reg_out_dir + "/" + prefix + '-major-objs.tf'

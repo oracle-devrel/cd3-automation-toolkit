@@ -119,8 +119,15 @@ if('.xls' in inputfile):
             if (str(subnet_name).lower() == NaNstr.lower()):
                 continue
             dest_cidr = df.iat[i, 4]
-            dest_cidr = str(dest_cidr).strip()
+            if(str(dest_cidr).lower()=='nan'):
+                dest_cidr=""
+            else:
+                dest_cidr = str(dest_cidr).strip()
+
             dest_objs = df.iat[i, 5]
+            if(str(dest_objs).lower()=="nan"):
+                dest_objs=""
+
             dest_objs = str(dest_objs).strip().split(":")
 
             if ('ngw' in dest_objs[0].lower()):
@@ -140,7 +147,11 @@ if('.xls' in inputfile):
                 dest_obj = dest_objs[0]
 
             dest_type = df.iat[i, 6]
-            dest_type = str(dest_type).strip()
+            if(str(dest_type).lower()=="nan"):
+                dest_type=""
+            else:
+                dest_type = str(dest_type).strip()
+
             if('Route Table associated with DRG' in subnet_name):
                 drg_name = subnet_name.split('DRG ')[1].strip()
                 rt_var = drg_name + "_rt"
@@ -150,10 +161,11 @@ if('.xls' in inputfile):
                 lpg_name= subnet_name.split('LPG')
                 rt_var = lpg_name[1].strip() + "_rt"
             else:
-                rt_var=subnet_name
+                rt_var=vcn_name+"_"+subnet_name
+            print(rt_var)
             outfile = outdir + "/" + region + "/"+rt_var+"_routetable.tf"
 
-            if(subnet_name not in subnets_done[region] or len(subnets_done[region])==0):
+            if(vcn_name+"_"+subnet_name not in subnets_done[region] or len(subnets_done[region])==0):
                 if (tfStr!= ''):
                     tfStr = tfStr + """
         }"""
@@ -168,6 +180,9 @@ if('.xls' in inputfile):
         vcn_id = "${oci_core_vcn.""" + vcn_name + """.id}"
         
         ##Add More rules for subnet """ + rt_var+ """##
+        """
+                if(dest_cidr!=""):
+                    tfStr=tfStr+"""
         
         route_rules {
             
@@ -176,7 +191,7 @@ if('.xls' in inputfile):
                 destination_type = \"""" + dest_type + """\"
             }
             """
-                subnets_done[region].append(subnet_name)
+                subnets_done[region].append(vcn_name+"_"+subnet_name)
 
             else:
                 tfStr=tfStr+"""
@@ -251,7 +266,7 @@ if('.xls' in inputfile):
                 lpg_name = subnet_name.split('LPG')
                 rt_var = lpg_name[1].strip() + "_rt"
             else:
-                rt_var = subnet_name
+                rt_var = vcn_name+"_"+subnet_name
 
             searchString = "##Add More rules for subnet " + rt_var + "##"
             strRule = ""
@@ -315,6 +330,9 @@ elif ('.csv' in inputfile):
             dest_type = dest_type.strip()
             region=route.split(",")[4]
             region=region.strip().lower()
+            vcn_name = route.split(",")[5]
+            vcn_name= vcn_name.strip().lower()
+
             if region not in all_regions:
                 print("Invalid Region")
                 continue
@@ -328,9 +346,9 @@ elif ('.csv' in inputfile):
                 lpg_name = subnet_name.split('LPG')
                 rt_var = lpg_name[1].strip() + "_rt"
             else:
-                rt_var = subnet_name
+                rt_var = vcn_name+"_"+subnet_name
 
-            searchString = "##Add More rules for subnet "+subnet_name+"##"
+            searchString = "##Add More rules for subnet "+rt_var+"##"
             strRule = ""
             strRule = strRule+"""
                 route_rules {
@@ -339,7 +357,7 @@ elif ('.csv' in inputfile):
                 destination_type = \"""" + dest_type + """\"
                 }
                 """
-            strRule1 = strRule + "##Add More rules for subnet " +subnet_name+"##"
+            strRule1 = strRule + "##Add More rules for subnet " +rt_var+"##"
 
             outfile = outdir + "/" + region + "/" + rt_var + "_routetable.tf"
             backup_file(outdir + "/" + region, rt_var + "_routetable.tf", overwrite)

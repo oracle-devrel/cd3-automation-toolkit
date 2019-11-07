@@ -110,9 +110,9 @@ def processSubnet(region,vcn_name,AD,seclists_per_subnet,name,seclist_name,subne
         ad_name = ""
 
     if(seclist_name==''):
-        outfile=outdir+"/"+region+"/"+name+ "_seclist.tf"
+        outfile=outdir+"/"+region+"/"+vcn_name+"_"+name+ "_seclist.tf"
     else:
-        outfile = outdir + "/" + region + "/" + seclist_name + "_seclist.tf"
+        outfile = outdir + "/" + region + "/" +vcn_name+"_"+ seclist_name + "_seclist.tf"
 
     #Same seclist used for subnets
     if(os.path.exists(outfile)):
@@ -159,7 +159,7 @@ def processSubnet(region,vcn_name,AD,seclists_per_subnet,name,seclist_name,subne
 
 
         tempStr = """
-        resource "oci_core_security_list" \"""" + seclistname + """"{
+        resource "oci_core_security_list" \"""" + vcn_name+"_"+seclistname + """"{
             compartment_id = "${var.""" + compartment_var_name + """}"
             vcn_id = "${oci_core_vcn.""" + vcn_name + """.id}"
             display_name = \"""" + display_name.strip() + "\""
@@ -301,25 +301,21 @@ if('.xls' in filename):
             seclists_per_subnet = int(sps)
             common_seclist_name=df.iat[i,9]
             if(str(common_seclist_name).lower() !=NaNstr.lower()):
-                if (common_seclist_name not in common_seclist_names[region]):
-                    common_seclist_names[region].append(common_seclist_name)
-                    out_common_file=outdir+"/"+region+"/"+common_seclist_name+"_seclist.tf"
+                if (vcn_name+"_"+common_seclist_name not in common_seclist_names[region]):
+                    common_seclist_names[region].append(vcn_name+"_"+common_seclist_name)
+                    out_common_file=outdir+"/"+region+"/"+vcn_name+"_"+common_seclist_name+"_seclist.tf"
                     oname_common=open(out_common_file,"w")
                     data="""
-        resource "oci_core_security_list" \"""" + common_seclist_name.strip() + """"{
+        resource "oci_core_security_list" \"""" + vcn_name+"_"+common_seclist_name.strip() + "-1" """"{
             compartment_id = "${var.""" + compartment_var_name + """}"
             vcn_id = "${oci_core_vcn.""" + vcn_name + """.id}"
-            display_name = \"""" + common_seclist_name.strip() + """"
+            display_name = \"""" + common_seclist_name.strip() + "-1" """"
             ####ADD_NEW_SEC_RULES####1
         }
         """
                     oname_common.write(data)
                     print(out_common_file + " containing TF for seclist has been created for region " + region)
                     oname_common.close()
-                else:
-                    print("\n\nKeep different names for common sec lists across VCNs. Skipping creation of common seclist for "+name +" in VCN "+vcn_name   )
-                    print("\nPlease rerun after modifying the Excel sheet.. Exiting...\n ")
-                    exit(1)
 
             processSubnet(region,vcn_name,AD,seclists_per_subnet,name,seclist_name,subnet_name_attach_cidr,compartment_var_name)
 
@@ -392,15 +388,15 @@ elif('.properties' in filename):
                             compartment_var_name = linearr[0].strip()
                             name = linearr[1].strip()
                             subnet = linearr[2].strip()
-                            if (common_seclist_name.strip().lower() != '' and common_seclist_name not in common_seclist_names):
-                                common_seclist_names[region].append(common_seclist_name)
-                                out_common_file = outdir + "/" + region + "/" + common_seclist_name + "_seclist.tf"
+                            if (vcn_name+"_"+common_seclist_name.strip().lower() != '' and common_seclist_name not in common_seclist_names):
+                                common_seclist_names[region].append(vcn_name+"_"+common_seclist_name)
+                                out_common_file = outdir + "/" + region + "/" + vcn_name+"_"+common_seclist_name + "_seclist.tf"
                                 oname_common = open(out_common_file, "w")
                                 data = """
-                                                resource "oci_core_security_list" \"""" + common_seclist_name.strip() + """"{
+                                                resource "oci_core_security_list" \"""" + vcn_name+"_"+common_seclist_name.strip() + "-1" """"{
                                                     compartment_id = "${var.""" + compartment_var_name + """}"
                                                     vcn_id = "${oci_core_vcn.""" + vcn_name + """.id}"
-                                                    display_name = \"""" + common_seclist_name.strip() + """"
+                                                    display_name = \"""" + common_seclist_name.strip() + "-1" """"
                                                     ####ADD_NEW_SEC_RULES####1
                                                 }
                                                 """
@@ -413,7 +409,7 @@ elif('.properties' in filename):
 
 else:
     print("Invalid input file format; Acceptable formats: .xls, .xlsx, .properties")
-    exit()
+    exit(1)
 
 
 if(fname!=None):

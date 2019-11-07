@@ -90,7 +90,7 @@ def processSubnet(region,vcn_name,name,rt_name,seclist_name,common_seclist_name,
 	else:
 		rt=rt_name
 	data = data + """
-		route_table_id   = "${oci_core_route_table.""" + rt + """.id}" """
+		route_table_id   = "${oci_core_route_table.""" +vcn_name+"_"+ rt + """.id}" """
 
 	if(seclist_name==''):
 		sec_name=name
@@ -104,15 +104,15 @@ def processSubnet(region,vcn_name,name,rt_name,seclist_name,common_seclist_name,
 
 	#Attach common Security List
 	if (str(common_seclist_name).lower() != 'nan' and str(common_seclist_name)!=''):
-		seclist_ids = seclist_ids + """\"${oci_core_security_list.""" + common_seclist_name.strip() + """.id}","""
+		seclist_ids = seclist_ids + """\"${oci_core_security_list.""" +vcn_name+"_"+ common_seclist_name.strip() + """-1.id}","""
 
 	#Attach individual Security lists
 	j = 1
 	while j < seclists_per_subnet:
-		seclist_ids = seclist_ids + """\"${oci_core_security_list.""" + sec_name + "-" + str(j) + """.id}","""
+		seclist_ids = seclist_ids + """\"${oci_core_security_list.""" +vcn_name+"_"+ sec_name + "-" + str(j) + """.id}","""
 		j = j + 1
 	while j <= seclists_per_subnet:
-		seclist_ids = seclist_ids + """\"${oci_core_security_list.""" + sec_name + "-" + str(j) + """.id}" """
+		seclist_ids = seclist_ids + """\"${oci_core_security_list.""" +vcn_name+"_"+ sec_name + "-" + str(j) + """.id}" """
 		j = j + 1
 	data = data + """
     	security_list_ids   = [ """ + seclist_ids + """ ]"""
