@@ -80,7 +80,7 @@ def processSubnet(region,vcn_name,name,rt_name,seclist_name,common_seclist_name,
 
 
 	data = """
-    resource "oci_core_subnet" \"""" + subnet_res_name + """" {
+    resource "oci_core_subnet"  \"""" + vcn_name+"_"+subnet_res_name + """" {
     	compartment_id = "${var.""" + compartment_var_name + """}" 
     	""" + adString + """			
     	vcn_id = "${oci_core_vcn.""" + str(vcn_name) + """.id}" """
