@@ -517,6 +517,7 @@ if('.xls' in secrulesfilename):
     resource "oci_core_security_list" \"""" + vcn_name+"_"+seclistName +  """"{
     compartment_id = "${var.""" + compartment_name + """}"
     vcn_id = "${oci_core_vcn.""" + vcn_name + """.id}"
+    display_name = \"""" +seclistName +  """"
     ####ADD_NEW_SEC_RULES####""" + row['SubnetName'].rsplit('-',1)[1] + """
     """
                     seclists_done[region].append(vcn_name+"_"+seclistName)

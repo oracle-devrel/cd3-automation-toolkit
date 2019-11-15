@@ -462,7 +462,7 @@ if('13' in userInput):
 if('14' in userInput):
     print("---------------------Updating Base Network----------------------------------")
     print("1.  Add/Modify DHCP Options in existing VCNs")
-    print("2.  Add new Subnets to exiting VCNs; Move existing subnets to below <END> tag in cd3")
+    print("2.  Add new Subnets (along with its security lists/route tables) to exiting VCNs; Move existing subnets to below <END> tag in cd3")
     print("3.  Add New VCN along with its subnets and DHCP options if any; Move existing subnets to below <END> tag in cd3 Subnets sheet")
 
     update_choice = input("Enter your choice; multiple choices allowed as comma separated ")

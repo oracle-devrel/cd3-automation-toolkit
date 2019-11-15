@@ -178,6 +178,7 @@ if('.xls' in inputfile):
     resource "oci_core_route_table" \"""" + rt_var + """"{
         compartment_id = "${var.""" + comp_name + """}"
         vcn_id = "${oci_core_vcn.""" + vcn_name + """.id}"
+        display_name = \"""" +subnet_name +  """"
         
         ##Add More rules for subnet """ + rt_var+ """##
         """
