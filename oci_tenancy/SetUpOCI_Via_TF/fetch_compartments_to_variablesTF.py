@@ -1,5 +1,7 @@
 #!/bin/python
 import argparse
+import os
+import sys
 import oci
 import shutil
 from oci.identity import IdentityClient
@@ -64,4 +66,6 @@ for reg in all_regions:
     vname = open(var_files[reg],"a")
     vname.write(tempStr[reg])
     vname.close()
+    if ("linux" in sys.platform):
+        os.system("dos2unix "+var_files[reg])
 print("Compartment info written to all region specific variables files under terraform_files folder")
