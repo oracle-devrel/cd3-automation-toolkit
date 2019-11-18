@@ -58,7 +58,9 @@ if(input_format=='csv'):
         input_fss_csv = config.get('Default', 'fss_csv').strip()
         input_lbr_csv = config.get('Default', 'lbr_csv').strip()
         input_adw_atp_csv = config.get('Default', 'adw_atp_csv').strip()
-        input_dbsystem_csv = config.get('Default', 'dbsystem_csv').strip()
+        dbsystem_VM_csv_example_csv = config.get('Default', 'dbsystem_VM_csv').strip()
+        dbsystem_BM_csv_example_csv = config.get('Default', 'dbsystem_BM_csv').strip()
+        dbsystem_EXA_csv_example_csv = config.get('Default', 'dbsystem_EXA_csv').strip()
     except Exception as e:
         print(e)
         print('Check if input properties exist and try again..exiting...`    ')
@@ -633,22 +635,71 @@ if('18' in userInput):
     os.chdir("../")
     print("--------------------------------------------------------------------------")
 if('19' in userInput):
-    print("---------------------------Create DB_System--------------------------")
-    if (input_format == 'cd3'):
-        inputfile = input_cd3file
-    elif (input_format == 'csv'):
-        if (input_dbsystem_csv == ''):
-            print("input dbsystem_csv location cannot be left blank. Exiting... ")
-            exit(1)
-        inputfile = input_dbsystem_csv
-        # print(f"{inputfile}")
-    outdir = input_outdir
-    prefix = input_prefix
-    if not os.path.exists(outdir):
-        os.makedirs(outdir)
-    os.chdir('Database')
-    command = 'python create_terraform_database.py ' + inputfile + ' ' + outdir + ' ' + prefix
-    print("Executing Command: " + command)
-    os.system(command)
-    os.chdir("../")
-    print("--------------------------------------------------------------------------")
+    print("---------------------Create DB System----------------------------------")
+    print("1.  Virtual Machine")
+    print("2.  Bare Metal")
+    print("3.  ExaData")
+
+    update_choice = input("Enter your choice; multiple choices allowed as comma separated ")
+    update_choice = update_choice.split(",")
+
+    if ('1' in update_choice):
+        print("---------------------------Create DB_System_VM--------------------------")
+        if (input_format == 'cd3'):
+            inputfile = input_cd3file
+        elif (input_format == 'csv'):
+            if (dbsystem_VM_csv_example_csv == ''):
+                print("input dbsystem_VM_csv location cannot be left blank. Exiting... ")
+                exit(1)
+            inputfile = dbsystem_VM_csv_example_csv
+            # print(f"{inputfile}")
+        outdir = input_outdir
+        prefix = input_prefix
+        if not os.path.exists(outdir):
+            os.makedirs(outdir)
+        os.chdir('Database')
+        command = 'python create_terraform_database_VM.py ' + inputfile + ' ' + outdir + ' ' + prefix
+        print("Executing Command: " + command)
+        os.system(command)
+        os.chdir("../")
+        print("--------------------------------------------------------------------------")
+    if ('2' in update_choice):
+        print("---------------------------Create DB_System_BM--------------------------")
+        if (input_format == 'cd3'):
+            inputfile = input_cd3file
+        elif (input_format == 'csv'):
+            if (dbsystem_BM_csv_example_csv == ''):
+                print("input dbsystem_BM_csv location cannot be left blank. Exiting... ")
+                exit(1)
+            inputfile = dbsystem_BM_csv_example_csv
+            # print(f"{inputfile}")
+        outdir = input_outdir
+        prefix = input_prefix
+        if not os.path.exists(outdir):
+            os.makedirs(outdir)
+        os.chdir('Database')
+        command = 'python create_terraform_database_BM.py ' + inputfile + ' ' + outdir + ' ' + prefix
+        print("Executing Command: " + command)
+        os.system(command)
+        os.chdir("../")
+        print("--------------------------------------------------------------------------")
+    if ('3' in update_choice):
+        print("---------------------------Create DB_System_EXA--------------------------")
+        if (input_format == 'cd3'):
+            inputfile = input_cd3file
+        elif (input_format == 'csv'):
+            if (dbsystem_EXA_csv_example_csv == ''):
+                print("input dbsystem_EXA_csv location cannot be left blank. Exiting... ")
+                exit(1)
+            inputfile = dbsystem_EXA_csv_example_csv
+            # print(f"{inputfile}")
+        outdir = input_outdir
+        prefix = input_prefix
+        if not os.path.exists(outdir):
+            os.makedirs(outdir)
+        os.chdir('Database')
+        command = 'python create_terraform_database_EXA.py ' + inputfile + ' ' + outdir + ' ' + prefix
+        print("Executing Command: " + command)
+        os.system(command)
+        os.chdir("../")
+        print("--------------------------------------------------------------------------")
