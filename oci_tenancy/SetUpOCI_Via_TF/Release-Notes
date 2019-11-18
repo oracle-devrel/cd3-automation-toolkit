@@ -93,4 +93,5 @@ Note- This version would require you to change your excel file and use the lates
 3. Introduced option to create new VCN under Update Network
 4. Added Default DHCP options also to TF like for Default Security List
 5. Added support to include Description for a rule in NSGs. Added new column for this
-6. Fixed some minor issues with existing code
+6. Modified DB Systems creation code. Separated tabs for DB system - VM, BM and Exa
+7. Fixed some minor issues with existing code
