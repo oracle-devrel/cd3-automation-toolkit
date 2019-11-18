@@ -74,8 +74,8 @@ def create_ingress_rule_string(row):
 
     if row['Protocol'] == 'tcp' and str(row['DPortMax']) and str(row['DPortMin']):
         tcp_option = " \t\ttcp_options {"
-
-        dest_range = dest_range  + """
+        if str(row['DPortMax']).lower() != 'all' and str(row['DPortMin']).lower() != 'all':
+            dest_range = dest_range  + """
             max = """ + str(row['DPortMax']) + """
             min = """ + str(row['DPortMin']) + """
             """
@@ -98,8 +98,8 @@ def create_ingress_rule_string(row):
             options = ''
     if row['Protocol'] == 'udp' and str(row['DPortMax']) and str(row['DPortMin']):
         udp_option = " \t\tudp_options {"
-
-        dest_range = """
+        if str(row['DPortMax']).lower() != 'all' and str(row['DPortMin']).lower() != 'all':
+            dest_range = """
             max = """ + str(row['DPortMax']) + """
             min =  """ + str(row['DPortMin']) + """
             """
@@ -134,6 +134,10 @@ def create_egress_rule_string(row):
                 protocol = \"""" + get_protocol(row['Protocol']) + """\"
                 destination = \"""" + row['Destination'] + """\"
                 stateless = """ + str(row['isStateless'].lower()) + "\n"
+    if ("services-in-oracle-services-network" in row['Destination']):
+        egress_rule = egress_rule + """
+                destination_type = "SERVICE_CIDR_BLOCK"
+        """
     if row['Protocol'] == 'icmp' and row['ICMPCode']!='' and row['ICMPType']!='':
         options = """
                icmp_options {
@@ -147,7 +151,8 @@ def create_egress_rule_string(row):
 
         # tcp_option = tcp_option
         if str(row['DPortMax']) and str(row['DPortMin']):
-            dest_range = """
+            if str(row['DPortMax']).lower()!='all' and str(row['DPortMin']).lower()!='all':
+                dest_range = """
                     max = """ + str(row['DPortMax']) + """
                     min =  """ + str(row['DPortMin']) + """
                  """
@@ -164,7 +169,8 @@ def create_egress_rule_string(row):
     if row['Protocol'] == 'udp':
         udp_option = " udp_options {"
         if str(row['DPortMax']) and str(row['DPortMin']):
-            dest_range = """
+            if str(row['DPortMax']).lower() != 'all' and str(row['DPortMin']).lower() != 'all':
+                dest_range = """
                     max = """ + str(row['DPortMax']) + """
                     min =  """ + str(row['DPortMin']) + """
                  """
