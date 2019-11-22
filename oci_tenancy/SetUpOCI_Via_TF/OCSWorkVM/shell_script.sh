@@ -25,7 +25,10 @@ pip install in_place
 
 #sudo yum -y install screen
 sudo yum -y install git
-sudo yum -y install terraform
+#Don't install latest version of TF as there are lot of syntax changes
+#sudo yum -y install terraform
+sudo yum -y install terraform-0.12.13-1.el7
+
 sudo yum -y install expect
 
 

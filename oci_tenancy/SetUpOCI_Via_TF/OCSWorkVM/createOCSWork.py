@@ -676,7 +676,7 @@ if(input_create_vm=="1"):
 
     lpg_found=0
     print('Creating LPG')
-    for lpg in paginate(network_client.list_local_peering_gateways, compartment_id=ocs_compartment_ocid, vcn_id=vcn.id):
+    for lpg in paginate(network_client.list_local_peering_gateways, compartment_id=ocs_compartment_ocid, vcn_id=vcn_ocid):
         if(lpg.display_name==input_lpg_to_orig_name):
             lpg_ocid = lpg.id
             print("LPG with same name exists for this VCN..Reusing same for OCSWork")
