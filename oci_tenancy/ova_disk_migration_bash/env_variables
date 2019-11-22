@@ -1,0 +1,6 @@
+CUSTOM_IMAGE_COMPARTMENT_ID="ocid1.compartment.oc1..aaaaaaaa4kpeedbbgsl2e7fomko3tdhairtaedxqti3fabedwjezpqb3hdsq"
+STG_INSTANCE_ID="ocid1.instance.oc1.iad.anuwcljtcu7guwqcyjvpth33h6e3rjdaz6ygmj2qidromtixat2m5w6cezba"
+OVA_PROCESS_DIR=/processova
+OBJECT_NS=idx6wmd9igsz
+OBJECT_BUCKET_NAME=OCI-Toolkit-Obj-Store
+REGION=ashburn

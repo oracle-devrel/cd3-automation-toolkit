@@ -1,0 +1,133 @@
+#!/bin/bash
+
+# Version: 1.0.1
+# Usage:
+# oci-curl <host> <method> [file-to-send-as-body] <request-target> [extra-curl-args]
+#
+# ex:
+# oci-curl iaas.us-ashburn-1.oraclecloud.com get "/20160918/instances?compartmentId=some-compartment-ocid"
+# oci-curl iaas.us-ashburn-1.oraclecloud.com post ./request.json "/20160918/vcns"
+
+# url encode all special characters except "/", "?", "=", and "&"
+function rawurlencode {
+  local string="${1}"
+  local strlen=${#string}
+  local encoded=""
+  local pos c o
+
+  for (( pos=0 ; pos<strlen ; pos++ )); do
+     c=${string:$pos:1}
+     case "$c" in
+        [-_.~a-zA-Z0-9] | "/" | "?" | "=" | "&" ) o="${c}" ;;
+        * )               printf -v o '%%%02x' "'$c"
+     esac
+     encoded+="${o}"
+  done
+
+  echo "${encoded}"
+}
+
+# -------------------------------------------
+# UPDATE THESE TO WHAT IS FOR TENANCY & USER
+# -------------------------------------------
+
+# ---  TRIBUNE PUBLISHING ---------  #
+tenancyId="ocid1.tenancy.oc1..aaaaaaaa5unm3suey7izmqmgzuwyu2jbgj6juk6rblhhyoc4ic4tnzotu7lq";
+authUserId="ocid1.user.oc1..aaaaaaaaxe5njhajiyneuwiyy4l736jzg5jlty6vufcj4ehmc5j6okohmfvq";
+keyFingerprint="4a:d4:16:e2:cf:19:d1:b3:93:b2:f7:53:7c:f7:43:b2";
+privateKeyPath="/root/ocswork/keys/oci_api_key.pem";
+# ---  TRIBUNE PUBLISHING ---------  #
+
+# -------------------------------------------
+
+alg=rsa-sha256
+sigVersion="1"
+now="$(LC_ALL=C \date -u "+%a, %d %h %Y %H:%M:%S GMT")"
+host=$1
+method=$2
+extra_args=$5
+keyId="$tenancyId/$authUserId/$keyFingerprint"
+
+case $method in
+
+   "get" | "GET")
+      target=$3
+      extra_args=("${@: 4}")
+      curl_method="GET";
+      request_method="get";
+      ;;
+
+   "delete" | "DELETE")
+      target=$3
+      extra_args=("${@: 4}")
+      curl_method="DELETE";
+      request_method="delete";
+      ;;
+
+   "head" | "HEAD")
+      target=$3
+      extra_args=("${@: 4}")
+      curl_method="HEAD";
+      request_method="head";
+      ;;
+
+   "post" | "POST")
+      body=$3
+      target=$4
+      extra_args=("${@: 5}")
+      curl_method="POST";
+      request_method="post";
+      content_sha256="$(openssl dgst -binary -sha256 < $body | openssl enc -e -base64)";
+      content_type="application/json";
+      content_length="$(wc -c < $body | xargs)";
+            ;;
+
+    "put" | "PUT")
+       body=$3
+       target=$4
+       extra_args=("${@: 5}")
+       curl_method="PUT"
+       request_method="put"
+       content_sha256="$(openssl dgst -binary -sha256 < $body | openssl enc -e -base64)";
+       content_type="application/json";
+       content_length="$(wc -c < $body | xargs)";
+       ;;
+
+    *) echo "invalid method";
+       return;;
+
+esac
+
+# This line will url encode all special characters in the request target except "/", "?", "=", and "&", since those characters are used
+# in the request target to indicate path and query string structure. If you need to encode any of "/", "?", "=", or "&", such as when
+# used as part of a path value or query string key or value, you will need to do that yourself in the request target you pass in.
+escaped_target="$(echo $( rawurlencode "$target" ))"
+
+request_target="(request-target): $request_method $escaped_target"
+date_header="date: $now"
+host_header="host: $host"
+content_sha256_header="x-content-sha256: $content_sha256"
+content_type_header="content-type: $content_type"
+content_length_header="content-length: $content_length"
+signing_string="$request_target\n$date_header\n$host_header"
+headers="(request-target) date host"
+curl_header_args=(-H "$date_header")
+body_arg=()
+
+if [ "$curl_method" = "PUT" -o "$curl_method" = "POST" ]; then
+    signing_string="$signing_string\n$content_sha256_header\n$content_type_header\n$content_length_header"
+    headers=$headers" x-content-sha256 content-type content-length"
+    curl_header_args=("${curl_header_args[@]}" -H "$content_sha256_header" -H "$content_type_header" -H "$content_length_header")
+    body_arg=(--data-binary @${body})
+fi
+
+sig=$(printf '%b' "$signing_string" | \
+     openssl dgst -sha256 -sign $privateKeyPath | \
+     openssl enc -e -base64 | tr -d '\n')
+
+response=$(curl "${extra_args[@]}" "${body_arg[@]}" -X $curl_method -sS https://${host}${escaped_target} "${curl_header_args[@]}" \
+           -H "Authorization: Signature version=\"$sigVersion\",keyId=\"$keyId\",algorithm=\"$alg\",headers=\"${headers}\",signature=\"$sig\"")
+
+
+echo "$response"
+

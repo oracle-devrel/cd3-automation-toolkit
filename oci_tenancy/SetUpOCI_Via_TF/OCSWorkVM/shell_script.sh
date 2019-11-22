@@ -80,6 +80,7 @@ then
     ./download_git_expect1.sh
     sleep 5s
     find /root/ocswork/git_oci -type f -iname "*.py" -exec chmod +x {} \;
+    dos2unix /root/ocswork/git_oci/ova_disk_migration_bash/*.sh
 fi
 if [ -e /home/opc/download_git_expect2.sh ]
 then
