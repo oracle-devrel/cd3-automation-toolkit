@@ -1,3 +1,2 @@
 #ova_file_name/dirname,display_name,shape,subnet_id,private_ip,compartment_id,availability_domain,fault_domain,launch_mode,os_type,os_version,disk_attachment_type,(nsg ocids/names)
-/vm_migrate/vms/ocwpnewsrip11/ocwpnewsrip11.ova,ocwpnewsrip11,VM.Standard2.1,sub-dlv-prd-app-a,,Prod,MUyI:US-ASHBURN-AD-1,FAULT-DOMAIN-1,paravirtualized,Windows,Server 2016 Standard,,(sgp-dlv-prd-win-common)
 /vm_migrate/vms/ocwpnewsink11/ocwpnewsink11.ova,ocwpnewsink11,VM.Standard2.2,sub-dlv-prd-app-a,,Prod,MUyI:US-ASHBURN-AD-1,FAULT-DOMAIN-1,paravirtualized,Windows,Server 2016 Standard,,(sgp-dlv-prd-win-common)

@@ -115,7 +115,7 @@ echo -e "\n--------- Mandatory configuration and files check -----------"
 
 if [[ -f "$SCRIPT_DIR/env_variables" ]] ;then
 	CUSTOM_IMAGE_COMPARTMENT_ID=`cat "$SCRIPT_DIR/env_variables" |grep -w  ^CUSTOM_IMAGE_COMPARTMENT_ID|cut -d "=" -f2`
-	STG_INSTANCE_ID=`cat "$SCRIPT_DIR/env_variables" |grep -w  ^STG_INSTANCE_ID|cut -d "=" -f2`
+	STG_INSTANCE_ID=`cat "$SCRIPT_DIR/env_variables" |grep -w  ^STG_INSTANCE_ID|cut -d "=" -f2|sed -e 's/^"//' -e 's/"$//'`
 	OVA_PROCESS_DIR=`cat "$SCRIPT_DIR/env_variables" |grep -w  ^OVA_PROCESS_DIR|cut -d "=" -f2`
 	OBJECT_NS=`cat "$SCRIPT_DIR/env_variables" |grep -w  ^OBJECT_NS|cut -d "=" -f2`
 	OBJECT_BUCKET_NAME=`cat "$SCRIPT_DIR/env_variables"| grep -w  ^OBJECT_BUCKET_NAME|cut -d "=" -f2`
@@ -170,6 +170,21 @@ if [[ -f "$SCRIPT_DIR/env_variables" ]] ;then
 	if [[ -z $STG_INSTANCE_ID ]];then
 		echo -e "FAILED: STG_INSTANCE_ID in $SCRIPT_DIR/env_variables is empty. Please fill it"
 		check_failed=1
+	else
+		echo -e "Checking if STG_INSTANCE_ID is matching with ocid of the instance from where you are running this code"
+		if [[ -e /bin/oci-metadata ]];then
+			
+			local_instance_id=`/bin/oci-metadata --get ID|grep OCID |sed  -e 's/^  OCID: //g'`
+			if [[ $STG_INSTANCE_ID == $local_instance_id ]];then
+				echo -e "STG_INSTANCE_ID is matching with local instance ocid"
+			else
+				echo -e "FAILED: STG_INSTANCE_ID is not matching with local instance ocid"
+				echo -e "Please make sure to verify env_variable file and check STG_INSTANCE_ID. You might need to change it to $local_instance_id ." 
+				check_failed=1
+			fi
+		else
+			echo -e "/bin/oci-metadata not found and cannot do STG_INSTANCE_ID matching with local instance ID. Please do it manually"
+		fi  	
 	fi
 
 	if [[ -z $OVA_PROCESS_DIR  ]];then

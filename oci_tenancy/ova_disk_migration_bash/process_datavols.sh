@@ -35,8 +35,9 @@ if [[ $retval -ne 0 ]];then
         echo -e "compartment_id in input file is not ocids. Trying to fetch its ocid"
         INSTANCE_COMPARTMENT_ID_TMP=`oci iam compartment list --all --compartment-id-in-subtree true|grep -w -B4 \"$INSTANCE_COMPARTMENT_ID\"|grep -w id|cut -d":" -f2`
         INSTANCE_COMPARTMENT_ID=`echo -e "$INSTANCE_COMPARTMENT_ID_TMP" |sed -e 's/^ "//' -e 's/",$//'`
-        echo -e "Instance compartment ID is : "$INSTANCE_COMPARTMENT_ID"" >> $vm_dir/log
-        echo $INSTANCE_COMPARTMENT_ID|grep ^ocid &>/dev/null && echo "Successfully fetched ocid of compartment" >>$vm_dir/log || { echo "Couldn't find ocid of compartment.Please mention ocid of compartment in input csv and resume script from process_datavols.sh"  >>$vm_dir/log; exit 1 ; }
+	echo -e "Instance compartment ID is : "$INSTANCE_COMPARTMENT_ID"" >> $vm_dir/log
+	echo $INSTANCE_COMPARTMENT_ID|grep ^ocid &>/dev/null && echo "Successfully fetched ocid of compartment" >>$vm_dir/log || { echo "Couldn't find ocid of compartment.Please mention ocid of compartment in input csv and resume script from process_datavols.sh"  >>$vm_dir/log; exit 1 ; }
+	
 fi
 
 
@@ -92,10 +93,15 @@ block_volume_create(){
         echo -e "processing $disk_raw\n">>$vm_dir/log
 	
 	disk_to_process=$2
+	echo -e "disk to process is $disk_to_process" >> $vm_dir/log
 	disk_display_name=`echo $disk_to_process |sed -e 's/.vmdk//g'`
+	echo -e "disk display name : $disk_display_name" >> $vm_dir/log
+	echo -e " disk AD is $BLOCK_VOL_AD \n disk compartment is $INSTANCE_COMPARTMENT_ID \n disk size in gb is : $disk_raw_size \n" $vm_dir/log
         #oci commands for create BV
-	block_volume_json=`oci bv volume create --availability-domain $BLOCK_VOL_AD --compartment-id $INSTANCE_COMPARTMENT_ID --size-in-gbs $disk_raw_size --display-name $disk_display_name  --wait-for-state AVAILABLE`
+	block_volume_json=`oci bv volume create --availability-domain "$BLOCK_VOL_AD" --compartment-id "$INSTANCE_COMPARTMENT_ID" --size-in-gbs "$disk_raw_size" --display-name "$disk_display_name"  --wait-for-state AVAILABLE`
+	echo -e "Disk json is : $block_volume_json" >> $vm_dir/log
 	block_volume_uuid=`echo $block_volume_json|grep -zoP '"id":\s*\K[^\s,]*(?=\s*,)'`	
+	echo -e "block vol uuid is : $block_volume_uuid \n" >> $vm_dir/log
 	if [ -z $block_volume_uuid ];then
 		echo "There is some issues when trying to create Block volume $disk_display_name. Please check manually.Exiting"  >>$vm_dir/log
 		exit 1 
@@ -223,13 +229,16 @@ if [ $from_parent -eq 1 ];then
 
 	#CODE WHICH WAIT FOR CUSTOm IMAGE TO BE AVAILABLE
 	echo -e "Checking if image you uploaded is AVAILABLE. Script will wait in infinite loop till its available. If you want to interrupt this, you will have to kill the script pid manually">>$vm_dir/log
-	image_exist_check=`oci compute image list --compartment-id=$CUSTOM_IMAGE_COMPARTMENT_ID  --display-name $customimage_display_name |grep lifecycle-state|grep AVAILABLE`
-	retval=$?
 	while true
 	do
+		image_exist_check=`oci compute image list --compartment-id=$CUSTOM_IMAGE_COMPARTMENT_ID  --display-name $customimage_display_name |grep lifecycle-state|grep AVAILABLE`
+		retval=$?
 		if [ $retval -eq 0 ];then
 			echo  -e "The custom image state is now AVAILABLE. Exiting the inifinte loop and proceeding with terraform creation" >>$vm_dir/log
 			break
+		else 
+			sleep 300	
+			
 		fi
 	done
 

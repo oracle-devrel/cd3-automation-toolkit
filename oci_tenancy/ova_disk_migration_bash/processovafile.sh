@@ -67,11 +67,11 @@ if [ -z "$ova_full_string" ];then
 	exit 1
 fi
 
-if [ $notova == "directory" ];then
+if [[ "$notova" == "directory" ]];then
 	vm_dir=`echo -e "$ova_full_string" |cut -d "," -f1`
 	cd $vm_dir
 	process_disks
-elif [ $notova == "bootdisk" ];then
+elif [[ "$notova" == "bootdisk" ]];then
 	fullpath_boot_disk_name=`echo -e "$ova_full_string" |cut -d "," -f1`
 	boot_disk_name=`basename $fullpath_boot_disk_name`
 	vm_dir=`dirname $fullpath_boot_disk_name`	
