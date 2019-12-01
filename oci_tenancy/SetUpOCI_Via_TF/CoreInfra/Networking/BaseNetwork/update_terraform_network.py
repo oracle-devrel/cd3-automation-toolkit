@@ -52,6 +52,10 @@ if(update_choice=='2'):
 		cmd = 'python create_terraform_subnet.py ' + inputfile + ' ' + outdir + ' ' + prefix + ' --subnet_add true'
 		os.system(cmd)
 if(update_choice=='3'):
+        cmd='python create_terraform_subnet.py ' + inputfile + ' ' + outdir + ' '+prefix + ' --subnet_add false'
+        os.system(cmd)
+
+if(update_choice=='4'):
 		cmd = 'python create_major_objects.py ' + inputfile + ' ' + outdir + ' ' + prefix
 		os.system(cmd)
 		cmd = 'python create_terraform_dhcp_options.py ' + inputfile + ' ' + outdir + ' ' + prefix + ' --dhcp_add true'

@@ -453,7 +453,7 @@ resource "opc_compute_storage_volume" "panda_boot_vol" {
 }
 
 resource "opc_compute_instance" "panda_new" {
- name       = \""""  + input_ocic_tf_prefix_for_panda + """_Panda-OCIC2OCI"
+ name       = \"oraclemigration/""" +input_ocic_tf_prefix_for_panda + """_Panda-OCIC2OCI"
  label      = "Terraform Provisioned Panda-WithAPI"
  shape      = "oc3"
  image_list = "/oracle/public/OL_7.5_UEKR4_x86_64_MIGRATION"
@@ -528,6 +528,43 @@ resource "opc_compute_ip_network" "panda_new" {
 
     write_file("panda.tf",tf_data)
     ### Have to write the ansible files to create the storage disk.
+    # write profile file required for opc cli
+    username_full = "/Compute-" + input_ocic_identity_domain + '/' + input_ocic_username
+    # config file for koala
+    file_data = """{
+        "global": {
+        "format": "text",
+        "debug-request": false
+        },
+        \
+        "compute": {
+        "user": \"""" + username_full + """",
+        "endpoint": \"""" + input_ocic_compute_endpoint.replace("https://", "") + """",
+        "password-file": "/root/.opc/profiles/password"
+        }
+        }
+        """
+    write_file("compute", file_data)
+    write_file("password",input_ocic_password)
+
+    script_data="""
+    container=\"""" + username_full + """"
+    password=\"""" + input_ocic_password + """"
+    endpoint=\"""" + input_ocic_compute_endpoint + """"
+    
+    targetControllerName=`opc -p compute compute instance list \"""" + username_full + """" | grep Panda-OCIC2OCI`
+    ctlsInstanceName=`opc -p compute compute instance list \"""" + username_full + """" | grep Panda-OCIC2OCI | awk -F"oraclemigration/" '{print $NF}'`
+    
+    vc_id_tmp=`opc -p compute -F vcable_id compute instance get $targetControllerName | sed -e "s/vcable_id//"`
+    vc_id=${vc_id_tmp//[[:blank:]]/}
+
+    ip_as_list=`opc -p compute compute ip-association list \"""" + username_full + """" --vcable $vc_id | sed -e "s/NAME//"`
+    
+    panda_pub_ip_tmp=`opc -p compute -F ip compute ip-association get $ip_as_list | sed -e "s/ip//"`
+    panda_pub_ip=${panda_pub_ip_tmp//[[:blank:]]/}
+    """
+    write_file("fetch_panda_details.sh",script_data)
+
 
 #write Koala specific files
 if (input_configure_koala=="1"):
@@ -869,6 +906,9 @@ if(input_create_vm=="1"):
         sftp.put(str(tmp_folder / 'ocic-provider.tf'), '/home/opc/ocic-provider.tf')
         sftp.put(str(tmp_folder / 'ocic-variables.tf'), '/home/opc/ocic-variables.tf')
         sftp.put(str(tmp_folder / 'upgrade_terraform_expect_script.sh'), '/home/opc/upgrade_terraform_expect_script.sh')
+        sftp.put(str(tmp_folder / 'compute'), '/home/opc/compute')
+        sftp.put(str(tmp_folder / 'password'), '/home/opc/password')
+        sftp.put(str(tmp_folder / 'fetch_panda_details.sh'), '/home/opc/fetch_panda_details.sh')
 
     if(input_configure_koala=="1"):
         print('Copying Koala files..')

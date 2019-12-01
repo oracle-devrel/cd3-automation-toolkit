@@ -1,7 +1,22 @@
 #!/bin/bash
 
-echo "This must be run only after the Terraform to install and configure panda has been sucessfully run."
-export PANDA_PUB_IP=`terraform output panda_pub_ip`
+#echo "This must be run only after the Terraform to install and configure panda has been sucessfully run."
+#export PANDA_PUB_IP=`terraform output panda_pub_ip`
+
+. ./fetch_panda_details.sh
+if [ -e panda_inputs.txt ]
+then
+        rm -f panda_inputs.txt
+fi
+echo "container=$container" >> panda_inputs.txt
+echo "password=$password" >> panda_inputs.txt
+echo "endpoint=$endpoint" >> panda_inputs.txt
+echo "targetControllerName=$targetControllerName" >> panda_inputs.txt
+echo "ctlsInstanceName=$ctlsInstanceName" >> panda_inputs.txt
+echo "panda_pub_ip=$panda_pub_ip" >> panda_inputs.txt
+cat panda_inputs.txt
+export PANDA_PUB_IP=$panda_pub_ip
+
 ## now configure Panda using ansible
 # Remove any errant ansible files
 echo "Starting Ansible work"
@@ -25,7 +40,10 @@ if [ $retVal -eq 124 ]; then
 fi
 
 
-./createPandaInputs.py terraform.tfstate instance-export.json resources-default.json report_ocic.xlsx
+#./createPandaInputs.py terraform.tfstate instance-export.json resources-default.json report_ocic.xlsx
+./createPandaInputs.py panda_inputs.txt instance-export.json resources-default.json report_ocic.xlsx
+
+rm -f panda_inputs.txt
 
 rm -rf /root/.ansible/cp/*
 timeout 300   ansible-playbook -u opc --private-key /root/ocswork/keys/ssh-pvt-key-openssh.ppk -i  $PANDA_PUB_IP, copy_files_and_install_panda.yml

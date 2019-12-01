@@ -93,7 +93,7 @@ except oci.exceptions.ServiceError as e:
 
 ocic_values = {}
 
-with open(tf_file,'r') as json_file:
+"""with open(tf_file,'r') as json_file:
     data = json.load(json_file)
 #    for d in data['modules']:
     for o in data['outputs']:
@@ -102,6 +102,13 @@ with open(tf_file,'r') as json_file:
         ocic_values[o] = data['outputs'][o]['value'].strip()
 
 json_file.close()
+"""
+
+fname = open(tf_file,"r")
+for line in fname:
+    linearr=line.split("=")
+    ocic_values[linearr[0].strip()]=linearr[1].strip()
+
 
 ocic_hosts = ""
 instance_export_host_map = {}

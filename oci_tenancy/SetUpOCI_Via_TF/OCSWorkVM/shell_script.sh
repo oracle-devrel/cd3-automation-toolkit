@@ -78,9 +78,9 @@ then
     git init
     cd  /home/opc
     ./download_git_expect1.sh
-    sleep 5s
+    sleep 15s
     find /root/ocswork/git_oci -type f -iname "*.py" -exec chmod +x {} \;
-    dos2unix /root/ocswork/git_oci/ova_disk_migration_bash/*.sh
+    dos2unix /root/ocswork/git_oci/oci_tenancy/ova_disk_migration_bash/*.sh
 fi
 if [ -e /home/opc/download_git_expect2.sh ]
 then
@@ -100,6 +100,7 @@ if [ -e /home/opc/panda.tf ]
 then
     echo "Panda Config START"
     mkdir -p /root/ocswork/ocic2oci_work
+    mv /root/ocswork/git_oci/oci_tenancy/SetUpOCI_Via_TF/OCSWorkVM/panda_setup_files/opc-cli-18.1.2.zip /root/ocswork/downloads/
     cp /root/ocswork/git_oci/oci_tenancy/SetUpOCI_Via_TF/OCSWorkVM/panda_setup_files/* /root/ocswork/ocic2oci_work/
     chmod +x /root/ocswork/ocic2oci_work/*.py
     chmod +x /root/ocswork/ocic2oci_work/*.sh
@@ -145,6 +146,27 @@ then
       n=$[$n+1]
       sleep 3
     done
+    # Get Panda details using OPC CLI; this is used because there is bug in terraform while using oraclemigration for panda instance
+    if [ -e /root/ocswork/downloads/opc-cli-18.1.2.zip ]
+    then
+      cd /root/ocswork/downloads
+      unzip opc-cli-18.1.2.zip
+      sleep 1
+      sudo cp ./linux/opc /usr/bin
+      mkdir -p /root/.opc/profiles
+      mv /home/opc/compute /root/.opc/profiles
+      mv /home/opc/password /root/.opc/profiles
+      chown root:root /root/.opc/profiles/compute
+      chown root:root /root/.opc/profiles/password
+      chmod 600 /root/.opc/profiles/compute
+      chmod 600 /root/.opc/profiles/password
+
+      mv /home/opc/fetch_panda_details.sh /root/ocswork/ocic2oci_work/
+      cd /root/ocswork/ocic2oci_work/
+      dos2unix fetch_panda_details.sh fetch_panda_details.sh
+      chmod +x fetch_panda_details.sh
+      #./fetch_panda_details.sh
+    fi
     echo "Panda Config END"
 fi
 

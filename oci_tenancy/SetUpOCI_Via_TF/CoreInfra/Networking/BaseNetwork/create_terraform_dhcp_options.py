@@ -66,19 +66,25 @@ def processDHCP(region,vcn_name,dhcp_option_name,compartment_var_name,serverType
 				type = "DomainNameServer"
 				server_type = \"""" + serverType.strip() + "\""
 
+
 	# print serverType
 	if serverType == "CustomDnsServer":
 		dns_servers = custom_dns_servers.strip().replace(',', '","')
 		dns_servers = '"' + dns_servers + '"'
 		data = data + """
-				custom_dns_servers = [ """ + dns_servers + """ ] """
-
-	data = data + """
-			}
+				custom_dns_servers = [ """ + dns_servers + """ ] 
+				}"""
+	else:
+		data=data+"""
+		}"""
+	if(search_domain!=""):
+		data = data + """
+			
 			options {
 				type = "SearchDomain"
 				search_domain_names = [ \"""" + search_domain + """" ]
-			}
+			}"""
+	data=data+"""
 			vcn_id = "${oci_core_vcn.""" + vcn_name.strip() + """.id}"
 			display_name = \"""" + dhcp_option_name + """"
 	}
@@ -112,6 +118,8 @@ if('.xls' in args.inputfile):
 		dhcp_option_name = df.iat[i,1]
 		serverType = df.iat[i,2]
 		search_domain = df.iat[i,3]
+		if(str(search_domain).lower()=='nan'):
+			search_domain=""
 		custom_dns_servers = df.iat[i,4]
 
 		vcn_data = df_vcn.loc[vcn_name]

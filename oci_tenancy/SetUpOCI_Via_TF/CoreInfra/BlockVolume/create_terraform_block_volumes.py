@@ -51,7 +51,8 @@ if('.xls' in filename):
             break
         blockname = df.iat[i, 1]
         size = df.iat[i, 2]
-        size=str(size)
+        s=int(size)
+        size=str(s)
         AD = df.iat[i, 3]
         AD=AD.upper()
         attacheToInstanceName = df.iat[i, 4]

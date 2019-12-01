@@ -355,4 +355,21 @@ book = load_workbook(cd3file)
 writer = pd.ExcelWriter(cd3file, engine='openpyxl')
 writer.book = book
 df.to_excel(writer, sheet_name='SecRulesinOCI', index=False)
+
+#Adjust column widths
+ws=writer.sheets['SecRulesinOCI']
+from openpyxl.utils import get_column_letter
+dims = {}
+for row in ws.rows:
+    for cell in row:
+        if cell.value:
+            dims[cell.column] = max((dims.get(cell.column, 0), len(str(cell.value))))
+for col, value in dims.items():
+    ws.column_dimensions[get_column_letter(col)].width = value+1
+
+#Move the sheet near Networking sheets
+book._sheets.remove(ws)
+book._sheets.insert(10,ws)
+
+
 writer.save()

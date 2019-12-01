@@ -465,7 +465,8 @@ if('14' in userInput):
     print("---------------------Updating Base Network----------------------------------")
     print("1.  Add/Modify DHCP Options in existing VCNs")
     print("2.  Add new Subnets (along with its security lists/route tables) to exiting VCNs; Move existing subnets to below <END> tag in cd3")
-    print("3.  Add New VCN along with its subnets and DHCP options if any; Move existing subnets to below <END> tag in cd3 Subnets sheet")
+    print("3.  Modify existing subnets properties(subnet name, cidr, AD, type, dhcp_option_name")
+    print("4.  Add New VCN along with its subnets and DHCP options if any; Move existing subnets to below <END> tag in cd3 Subnets sheet")
 
     update_choice = input("Enter your choice; multiple choices allowed as comma separated ")
     update_choice = update_choice.split(",")
@@ -515,6 +516,23 @@ if('14' in userInput):
 
         os.chdir('CoreInfra/Networking/BaseNetwork')
         command = 'python update_terraform_network.py ' + inputfile + ' ' + outdir + ' ' + prefix +' 3'
+        print("Executing Command: " + command)
+        os.system(command)
+        os.chdir("../../..")
+        print("--------------------------------------------------------------------------")
+
+    if ('4' in update_choice):
+        if (input_format == 'cd3'):
+            inputfile = input_cd3file
+        outdir = input_outdir
+        prefix = input_prefix
+
+        if not os.path.exists(outdir):
+            print("out dir doesnot exist; please enter a valid directory")
+            exit(1)
+
+        os.chdir('CoreInfra/Networking/BaseNetwork')
+        command = 'python update_terraform_network.py ' + inputfile + ' ' + outdir + ' ' + prefix +' 4'
         print("Executing Command: " + command)
         os.system(command)
         os.chdir("../../..")

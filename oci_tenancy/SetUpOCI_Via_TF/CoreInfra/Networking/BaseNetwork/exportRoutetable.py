@@ -205,8 +205,43 @@ writer = pd.ExcelWriter(cd3file, engine='openpyxl')
 writer.book = book
 writer.save()
 
+
 book = load_workbook(cd3file)
 writer = pd.ExcelWriter(cd3file, engine='openpyxl')
 writer.book = book
 df.to_excel(writer, sheet_name='RouteRulesinOCI', index=False)
+
+#Adjust column widths
+ws=writer.sheets['RouteRulesinOCI']
+from openpyxl.utils import get_column_letter
+dims = {}
+for row in ws.rows:
+    for cell in row:
+        if cell.value:
+            dims[cell.column] = max((dims.get(cell.column, 0), len(str(cell.value))))
+for col, value in dims.items():
+    ws.column_dimensions[get_column_letter(col)].width = value+1
+
+#Move the sheet near Networking sheets
+book._sheets.remove(ws)
+book._sheets.insert(9,ws)
+
 writer.save()
+
+"""column_widths = []
+for row in df.iterrows():
+    print (row)
+    print("------------")
+    for i, cell in enumerate(row):
+        print(i,cell)
+        print("==========")
+        if len(column_widths) > i:
+            if len(str(cell)) > column_widths[i]:
+                column_widths[i] = len(str(cell))
+        else:
+            column_widths += [len(str(cell))]
+
+for i, column_width in enumerate(column_widths):
+    ws.column_dimensions[get_column_letter(i+1)].width = column_width
+"""
+
