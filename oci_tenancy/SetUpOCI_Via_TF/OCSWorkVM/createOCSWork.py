@@ -553,7 +553,7 @@ resource "opc_compute_ip_network" "panda_new" {
     endpoint=\"""" + input_ocic_compute_endpoint + """"
     
     targetControllerName=`opc -p compute compute instance list \"""" + username_full + """" | grep Panda-OCIC2OCI`
-    ctlsInstanceName=`opc -p compute compute instance list \"""" + username_full + """" | grep Panda-OCIC2OCI | awk -F"oraclemigration/" '{print $NF}'`
+    ctlsInstanceName=`opc -p compute compute instance list \"""" + username_full + """" | grep Panda-OCIC2OCI | awk -F"$container/" '{print $NF}'`
     
     vc_id_tmp=`opc -p compute -F vcable_id compute instance get $targetControllerName | sed -e "s/vcable_id//"`
     vc_id=${vc_id_tmp//[[:blank:]]/}
