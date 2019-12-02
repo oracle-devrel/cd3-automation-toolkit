@@ -95,3 +95,14 @@ Note- This version would require you to change your excel file and use the lates
 5. Added support to include Description for a rule in NSGs. Added new column for this
 6. Modified DB Systems creation code. Separated tabs for DB system - VM, BM and Exa
 7. Fixed some minor issues with existing code
+
+------------------------
+SetUPOCI_Via_TF Tag v4.1
+------------------------
+
+1. Modified export rules code to add appropriate formatting to the sheets: 'SecRulesinOCI' and 'RouteRulesinOCI' and also the
+    sheets would be added along with other Networking sheets now instead of at the end.
+2. Added new opton to modify existing subnet properties.
+3. Added OVA DISK Migration code via Bash- developed by Aneesh
+4. Modified panda creation to launch in oraclemigration container and then fetch details using OPC CLI as terraform state fails
+5. Added few more fixes like making search domain optional in create_terraform_dhcp.py
