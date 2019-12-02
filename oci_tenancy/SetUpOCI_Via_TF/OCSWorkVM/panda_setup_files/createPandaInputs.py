@@ -170,7 +170,7 @@ if write == 1:
         ctlt_vers_shape_data = """
 # version and shape used to the Control-T instance
 # 'Oracle Linux' is the only supported operating_system
-oracle_linux_version: '7.6'
+oracle_linux_version: '7.7'
 shape: 'VM.Standard2.1'
 """
         append_file(secrets_file,ctlt_vers_shape_data)
