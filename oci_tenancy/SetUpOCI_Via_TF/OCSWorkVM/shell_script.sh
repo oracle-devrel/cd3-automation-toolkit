@@ -101,7 +101,7 @@ then
     echo "Panda Config START"
     mkdir -p /root/ocswork/ocic2oci_work
     mv /root/ocswork/git_oci/oci_tenancy/SetUpOCI_Via_TF/OCSWorkVM/panda_setup_files/opc-cli-18.1.2.zip /root/ocswork/downloads/
-    cp /root/ocswork/git_oci/oci_tenancy/SetUpOCI_Via_TF/OCSWorkVM/panda_setup_files/* /root/ocswork/ocic2oci_work/
+    mv /root/ocswork/git_oci/oci_tenancy/SetUpOCI_Via_TF/OCSWorkVM/panda_setup_files/* /root/ocswork/ocic2oci_work/
     chmod +x /root/ocswork/ocic2oci_work/*.py
     chmod +x /root/ocswork/ocic2oci_work/*.sh
 
