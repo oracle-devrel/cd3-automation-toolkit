@@ -13,6 +13,9 @@ from oci.resource_manager.models import UpdateStackDetails
 from oci.resource_manager.models import UpdateConfigSourceDetails
 from oci.resource_manager.models import CreateZipUploadConfigSourceDetails
 from oci.resource_manager.models import UpdateZipUploadConfigSourceDetails
+from oci.resource_manager.models import CreateImportTfStateJobOperationDetails
+from oci.resource_manager.models import CreateJobOperationDetails
+from oci.resource_manager.models import CreateJobDetails
 
 
 def paginate(operation, *args, **kwargs):
@@ -101,6 +104,19 @@ for region in paginate(identityClient.list_region_subscriptions, tenancy_id=tena
                         if not any(skip_var in line for skip_var in skip_vars):
                             newfile.write(line)
                 skipline = False
+
+                if os.path.exists('terraform.tfstate'):
+                    with open('terraform.tfstate') as origfile, open(tmpFolder+'/terraform.tfstate', 'w') as newfile:
+                        for line in origfile:
+                            if "0.12.13" in line:
+                                line = line.replace("0.12.13","0.12.6")
+                            newfile.write(line)
+
+                if not os.path.exists('variables_'+myregion+'.tf'):
+                    print("File - variables_"+myregion+".tf"+" does not exits")
+                    print("Quitting...")
+                    exit(1)
+
                 with open('variables_'+myregion+'.tf') as origfile, open(tmpFolder+'/variables_'+myregion+'.tf', 'w') as newfile:
                     for line in origfile:
                         if any(skip_var in line for skip_var in skip_vars):
@@ -146,9 +162,6 @@ for region in paginate(identityClient.list_region_subscriptions, tenancy_id=tena
                 if options.exportState:
                    check_stack_status = "Export"
 
-                if options.importState:
-                   check_stack_status = "Import"
-
                 if ( check_stack_status == "Create" ) or ( check_stack_status == "Update" ):
                     with open( stack_file_name,'rb' ) as file:
                         zipContents = file.read()
@@ -168,7 +181,8 @@ for region in paginate(identityClient.list_region_subscriptions, tenancy_id=tena
                     request.config_source = zipConfigSource
                     request.terraform_version = "0.12.x"
                     mstack = ocs_stack.create_stack(create_stack_details=request)
-
+                    #print(mstack.data) 
+                    stack_ocid = mstack.data.id
 
                 if ( check_stack_status == "Update" ):
                     print("Updating Resource Manager Stack - "+stack_name);
@@ -211,18 +225,26 @@ for region in paginate(identityClient.list_region_subscriptions, tenancy_id=tena
                                 #print('Exporting terraform state')
 
 
-                    #if (stackjobs.display_name == stack_name):
-                    #    if ( rmstack.lifecycle_state in [ "CREATING","ACTIVE" ]):
-                    #        check_stack_status = "Update"
-                    #        stack_ocid = rmstack.id
-                    #    else:
-                    #        check_stack_status = "Create"
-                    #    print(rmstack.display_name)
+                if options.importState:
+                   check_stack_status = "Import"
 
-                #TODO
                 if ( check_stack_status == "Import" ):
-                    print("Importing terraform state into Resource Manager Stack - "+stack_name);
+                    os.chdir(os.path.join(outDir, subfolder, tmpFolder))
+                    if not os.path.exists('terraform.tfstate'):
+                        print("File - terraform.tfstate does not exit in folder - "+os.path.join(outDir, subfolder))
+                        print("Quitting...")
+                        exit(1)
+                    with open( 'terraform.tfstate' ,'rb' ) as file:
+                        tfszipContents = file.read()
+                        tfsencodedZip = base64.b64encode(tfszipContents).decode('ascii')
 
+                    print("Importing terraform state into Resource Manager Stack - "+stack_name);
+                    importTFStateOpsDetail = CreateImportTfStateJobOperationDetails()
+                    importTFStateOpsDetail.operation = 'IMPORT_TF_STATE'
+                    importTFStateOpsDetail.tf_state_base64_encoded = tfsencodedZip
+
+                    jobDetails = CreateJobDetails(stack_id = stack_ocid, display_name = "Import TFState", job_operation_details = importTFStateOpsDetail)
+                    mimport = ocs_stack.create_job(create_job_details = jobDetails)
 
         if not foundRegion:
             print("Region folder not found -"+ os.path.join(outDir, subfolder))
