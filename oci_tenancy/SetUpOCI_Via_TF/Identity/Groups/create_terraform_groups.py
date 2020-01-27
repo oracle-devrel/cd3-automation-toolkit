@@ -9,6 +9,9 @@ import sys
 import argparse
 import pandas as pd
 import os
+sys.path.append(os.getcwd()+"/..")
+from commonTools import *
+
 
 ######
 # Required Inputs- Either properties file: vcn-info.properties or CD3 excel file AND Outfile
@@ -37,37 +40,27 @@ oname={}
 tfStr={}
 
 if('.xls' in args.inputfile):
+    vcnInfo = parseVCNInfo(args.inputfile)
     df = pd.read_excel(args.inputfile, sheet_name='Groups',skiprows=1)
     df.dropna(how='all')
-    df_info = pd.read_excel(filename, sheet_name='VCN Info', skiprows=1)
-    # Get Property Values
-    properties = df_info['Property']
-    values = df_info['Value']
-
-    all_regions = str(values[7]).strip()
-    all_regions = all_regions.split(",")
-    all_regions = [x.strip().lower() for x in all_regions]
-    for reg in all_regions:
+    for reg in vcnInfo.all_regions:
         tfStr[reg] = ''
-
-    NaNstr = 'NaN'
-    endNames = {'<END>', '<end>', '<End>'}
 
     for i in df.index:
         region=df.iat[i,0]
-        if (region in endNames):
+        if (region in commonTools.endNames):
             break
         region=region.strip().lower()
-        if region not in all_regions:
+        if region not in vcnInfo.all_regions:
             print("Invalid Region; It should be one of the values mentioned in VCN Info tab")
             exit(1)
 
         group_name = df.iat[i, 1]
         group_desc = df.iat[i, 2]
-        if(str(group_name).lower()!= NaNstr.lower()):
+        if(str(group_name).lower()!= "nan"):
             region = region.strip().lower()
             group_name = group_name.strip()
-            if (str(group_desc).lower() == NaNstr.lower()):
+            if (str(group_desc).lower() == "nan"):
                 group_desc = group_name
             tfStr[region]=tfStr[region] + """
 resource "oci_identity_group" \"""" + group_name.strip() + """" {
@@ -114,7 +107,7 @@ else:
     print("Invalid input file format; Acceptable formats: .xls, .xlsx, .csv")
     exit()
 
-for reg in all_regions:
+for reg in vcnInfo.all_regions:
     reg_out_dir = outdir + "/" + reg
     if not os.path.exists(reg_out_dir):
         os.makedirs(reg_out_dir)

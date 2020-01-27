@@ -4,10 +4,18 @@
 import argparse
 import sys
 import oci
+import os
 from oci.core.virtual_network_client import VirtualNetworkClient
 from oci.identity import IdentityClient
 import pandas as pd
 from openpyxl import load_workbook
+from openpyxl.styles import PatternFill
+from openpyxl.styles import Font
+from openpyxl.styles import Border
+from openpyxl.styles import Side
+import os
+sys.path.append(os.getcwd()+"/../../..")
+from commonTools import *
 
 def convertNullToNothing(input):
     EMPTY_STRING = ""
@@ -53,21 +61,11 @@ def print_secrules(seclists,region,vcn_name,comp_name):
         isec_rules = seclist.ingress_security_rules
         esec_rules = seclist.egress_security_rules
         display_name = seclist.display_name
+        dn=display_name
 
-        # display name contaoin AD1, AD2 or AD3 and CIDR
-        if ('-ad1-10.' in display_name or '-ad2-10.' in display_name or '-ad3-10.' in display_name or '-ad1-172.' in display_name
-                or '-ad2-172.' in display_name or '-ad3-172.' in display_name or '-ad1-192.' in display_name or '-ad2-192.' in display_name
-                or '-ad3-192.' in display_name):
-            dn = display_name.rsplit("-", 2)[0]
-
-        # display name contains CIDR
-        elif ('-10.' in display_name or '-172.' in display_name or '192.' in display_name):
-            dn = display_name.rsplit("-", 1)[0]
-        else:
-            dn = display_name#.rsplit("-", 1)[0]
         if(len(isec_rules)==0 and len(esec_rules)==0):
             new_row = pd.DataFrame(
-                {'Region':region,'Compartment Name':comp_name, 'VCN Name':vcn_name,'SubnetName': dn, 'RuleType': '', 'Protocol': '', 'isStateless':'',
+                {'Region':region,'Compartment Name':comp_name, 'VCN Name':vcn_name,'SecListName': dn, 'RuleType': '', 'Protocol': '', 'isStateless':'',
                  'Source': '', 'SPortMin': '', 'SPortMax': '', 'Destination': '', 'DPortMin': '',
                  'DPortMax': '',
                  'ICMPType': '', 'ICMPCode': ''}, index=[i])
@@ -76,7 +74,7 @@ def print_secrules(seclists,region,vcn_name,comp_name):
             if rule.protocol == "all":
                 print(dn + ",egress,all," + str(rule.is_stateless) + "," + rule.destination + ",,,,,,,")
                 new_row = pd.DataFrame(
-                    {'Region':region,'Compartment Name':comp_name, 'VCN Name':vcn_name,'SubnetName': dn, 'RuleType': 'egress', 'Protocol': 'all', 'isStateless': str(rule.is_stateless),
+                    {'Region':region,'Compartment Name':comp_name, 'VCN Name':vcn_name,'SecListName': dn, 'RuleType': 'egress', 'Protocol': 'all', 'isStateless': str(rule.is_stateless),
                      'Source': '', 'SPortMin': '', 'SPortMax': '', 'Destination': rule.destination, 'DPortMin': '',
                      'DPortMax': '','ICMPType': '', 'ICMPCode': ''}, index=[i])
                 #df = df.append(new_row, ignore_index=True)
@@ -84,7 +82,7 @@ def print_secrules(seclists,region,vcn_name,comp_name):
                 if rule.icmp_options is None:
                     print(dn + ",egress,all," + str(rule.is_stateless) + "," + rule.destination + ",,,,,,,")
 
-                    new_row = pd.DataFrame({'Region':region,'Compartment Name':comp_name, 'VCN Name':vcn_name,'SubnetName': dn, 'RuleType': 'egress', 'Protocol': 'icmp',
+                    new_row = pd.DataFrame({'Region':region,'Compartment Name':comp_name, 'VCN Name':vcn_name,'SecListName': dn, 'RuleType': 'egress', 'Protocol': 'icmp',
                                             'isStateless': str(rule.is_stateless),
                                             'Source': '', 'SPortMin': '', 'SPortMax': '', 'Destination': rule.destination,
                                             'DPortMin': '', 'DPortMax': '',
@@ -94,7 +92,7 @@ def print_secrules(seclists,region,vcn_name,comp_name):
                     type = convertNullToNothing(rule.icmp_options.type)
                     print(dn + ",egress,all," + str(rule.is_stateless) + "," + rule.destination + ",,,,,"+type+","+code)
                     new_row = pd.DataFrame(
-                    {'Region':region,'Compartment Name':comp_name, 'VCN Name':vcn_name,'SubnetName': dn, 'RuleType': 'egress', 'Protocol': 'icmp', 'isStateless': str(rule.is_stateless),
+                    {'Region':region,'Compartment Name':comp_name, 'VCN Name':vcn_name,'SecListName': dn, 'RuleType': 'egress', 'Protocol': 'icmp', 'isStateless': str(rule.is_stateless),
                      'Source': '', 'SPortMin': '', 'SPortMax': '', 'Destination': rule.destination, 'DPortMin': '',
                      'DPortMax': '',
                      'ICMPType': type, 'ICMPCode': code},index =[i])
@@ -103,7 +101,7 @@ def print_secrules(seclists,region,vcn_name,comp_name):
                 if rule.tcp_options is None:
                     print(dn + ",egress,tcp," + str(rule.is_stateless) + ",,,," + rule.destination+",,,,")
                     new_row = pd.DataFrame(
-                    {'Region': region, 'Compartment Name': comp_name, 'VCN Name': vcn_name, 'SubnetName': dn,
+                    {'Region': region, 'Compartment Name': comp_name, 'VCN Name': vcn_name, 'SecListName': dn,
                      'RuleType': 'egress', 'Protocol': 'tcp', 'isStateless': str(rule.is_stateless),
                      'Source': '', 'SPortMin': '', 'SPortMax': '', 'Destination': rule.destination, 'DPortMin': '',
                      'DPortMax': '',
@@ -116,7 +114,7 @@ def print_secrules(seclists,region,vcn_name,comp_name):
                     print(dn + ",egress,tcp," + str(rule.is_stateless) + ",,,," + rule.destination + ",," + min + "," + max + ",,")
                 # oname.write(dn + ",ingress,tcp," + str(rule.is_stateless) + "," + rule.source + ",,,," + min + "," + max+",,\n")
                     new_row = pd.DataFrame(
-                    {'Region': region, 'Compartment Name': comp_name, 'VCN Name': vcn_name, 'SubnetName': dn,
+                    {'Region': region, 'Compartment Name': comp_name, 'VCN Name': vcn_name, 'SecListName': dn,
                      'RuleType': 'egress', 'Protocol': 'tcp',
                      'isStateless': str(rule.is_stateless),
                      'Source': '', 'SPortMin': min, 'SPortMax': max, 'Destination': rule.destination,
@@ -128,7 +126,7 @@ def print_secrules(seclists,region,vcn_name,comp_name):
                     print(dn + ",egress,tcp," + str(rule.is_stateless) + ",,,," + rule.destination + ",," + min + "," + max + ",,")
                 # oname.write(dn + ",ingress,tcp," + str(rule.is_stateless) + "," + rule.source + ",,,," + min + "," + max+",,\n")
                     new_row = pd.DataFrame(
-                    {'Region': region, 'Compartment Name': comp_name, 'VCN Name': vcn_name, 'SubnetName': dn,
+                    {'Region': region, 'Compartment Name': comp_name, 'VCN Name': vcn_name, 'SecListName': dn,
                      'RuleType': 'egress', 'Protocol': 'tcp',
                      'isStateless': str(rule.is_stateless),
                      'Source': '', 'SPortMin': '', 'SPortMax': '', 'Destination': rule.destination,
@@ -138,7 +136,7 @@ def print_secrules(seclists,region,vcn_name,comp_name):
                 if rule.udp_options is None:
                     print(dn + ",egress,udp," + str(rule.is_stateless) + ",,,," + rule.destination+",,,,")
                     new_row = pd.DataFrame(
-                    {'Region': region, 'Compartment Name': comp_name, 'VCN Name': vcn_name, 'SubnetName': dn,
+                    {'Region': region, 'Compartment Name': comp_name, 'VCN Name': vcn_name, 'SecListName': dn,
                      'RuleType': 'egress', 'Protocol': 'udp', 'isStateless': str(rule.is_stateless),
                      'Source': '', 'SPortMin': '', 'SPortMax': '', 'Destination': rule.destination, 'DPortMin': '',
                      'DPortMax': '',
@@ -151,7 +149,7 @@ def print_secrules(seclists,region,vcn_name,comp_name):
                     print(dn + ",egress,tcp," + str(rule.is_stateless) + ",,,," + rule.destination + ",," + min + "," + max + ",,")
                 # oname.write(dn + ",ingress,tcp," + str(rule.is_stateless) + "," + rule.source + ",,,," + min + "," + max+",,\n")
                     new_row = pd.DataFrame(
-                    {'Region': region, 'Compartment Name': comp_name, 'VCN Name': vcn_name, 'SubnetName': dn,
+                    {'Region': region, 'Compartment Name': comp_name, 'VCN Name': vcn_name, 'SecListName': dn,
                      'RuleType': 'egress', 'Protocol': 'udp',
                      'isStateless': str(rule.is_stateless),
                      'Source': '', 'SPortMin': min, 'SPortMax': max, 'Destination': rule.destination,
@@ -163,7 +161,7 @@ def print_secrules(seclists,region,vcn_name,comp_name):
                     print(dn + ",egress,tcp," + str(rule.is_stateless) + ",,,," + rule.destination + ",," + min + "," + max + ",,")
                 # oname.write(dn + ",ingress,tcp," + str(rule.is_stateless) + "," + rule.source + ",,,," + min + "," + max+",,\n")
                     new_row = pd.DataFrame(
-                    {'Region': region, 'Compartment Name': comp_name, 'VCN Name': vcn_name, 'SubnetName': dn,
+                    {'Region': region, 'Compartment Name': comp_name, 'VCN Name': vcn_name, 'SecListName': dn,
                      'RuleType': 'egress', 'Protocol': 'udp',
                      'isStateless': str(rule.is_stateless),
                      'Source': '', 'SPortMin': '', 'SPortMax': '', 'Destination': rule.destination,
@@ -179,7 +177,7 @@ def print_secrules(seclists,region,vcn_name,comp_name):
                     print (dn + ",ingress,tcp," + str(rule.is_stateless) + "," + rule.source + ",,,,,,,")
                     #oname.write(dn + ",ingress,tcp," + str(rule.is_stateless) + "," + rule.source + ",,,,,,,\n")
 
-                    new_row = pd.DataFrame({'Region':region,'Compartment Name':comp_name, 'VCN Name':vcn_name,'SubnetName':dn,'RuleType':'ingress','Protocol':'tcp','isStateless':str(rule.is_stateless),
+                    new_row = pd.DataFrame({'Region':region,'Compartment Name':comp_name, 'VCN Name':vcn_name,'SecListName':dn,'RuleType':'ingress','Protocol':'tcp','isStateless':str(rule.is_stateless),
                                             'Source':rule.source,'SPortMin':'','SPortMax':'','Destination':'','DPortMin':'','DPortMax':'',
                                             'ICMPType':'','ICMPCode':''},index =[i])
                 #else:
@@ -189,13 +187,13 @@ def print_secrules(seclists,region,vcn_name,comp_name):
                     max = convertNullToNothing(rule.tcp_options.destination_port_range.max)
                     print (dn + ",ingress,tcp," + str(rule.is_stateless) + "," + rule.source + ",,,," + min + "," + max+",,")
                     #oname.write(dn + ",ingress,tcp," + str(rule.is_stateless) + "," + rule.source + ",,,," + min + "," + max+",,\n")
-                    new_row = pd.DataFrame({'Region':region,'Compartment Name':comp_name, 'VCN Name':vcn_name,'SubnetName': dn, 'RuleType': 'ingress', 'Protocol': 'tcp',
+                    new_row = pd.DataFrame({'Region':region,'Compartment Name':comp_name, 'VCN Name':vcn_name,'SecListName': dn, 'RuleType': 'ingress', 'Protocol': 'tcp',
                                             'isStateless': str(rule.is_stateless),
                                             'Source': rule.source, 'SPortMin': '', 'SPortMax': '', 'Destination': '',
                                             'DPortMin': min, 'DPortMax': max,
                                             'ICMPType': '', 'ICMPCode': ''},index =[i])
                 else:
-                    new_row = pd.DataFrame({'Region':region,'Compartment Name':comp_name, 'VCN Name':vcn_name,'SubnetName': dn, 'RuleType': 'ingress', 'Protocol': 'tcp',
+                    new_row = pd.DataFrame({'Region':region,'Compartment Name':comp_name, 'VCN Name':vcn_name,'SecListName': dn, 'RuleType': 'ingress', 'Protocol': 'tcp',
                                             'isStateless': str(rule.is_stateless),
                                             'Source': rule.source, 'SPortMin': '', 'SPortMax': '', 'Destination': '',
                                             'DPortMin': '', 'DPortMax': '',
@@ -206,7 +204,7 @@ def print_secrules(seclists,region,vcn_name,comp_name):
                 if rule.icmp_options is None:
                     print (dn + ",ingress,icmp," + str(rule.is_stateless) + "," + rule.source + ",,,,,,,")
                     #oname.write(dn + ",ingress,icmp," + str(rule.is_stateless) + "," + rule.source + ",,,,,,,\n")
-                    new_row = pd.DataFrame({'Region':region,'Compartment Name':comp_name, 'VCN Name':vcn_name,'SubnetName': dn, 'RuleType': 'ingress', 'Protocol': 'icmp',
+                    new_row = pd.DataFrame({'Region':region,'Compartment Name':comp_name, 'VCN Name':vcn_name,'SecListName': dn, 'RuleType': 'ingress', 'Protocol': 'icmp',
                                             'isStateless': str(rule.is_stateless),
                                             'Source': rule.source, 'SPortMin': '', 'SPortMax': '', 'Destination': '',
                                             'DPortMin': '', 'DPortMax': '',
@@ -217,7 +215,7 @@ def print_secrules(seclists,region,vcn_name,comp_name):
                     print (dn + ",ingress,icmp," + str(rule.is_stateless) + "," + rule.source + ",,,,,," + type + "," + code)
                     #oname.write(dn + ",ingress,icmp," + str(rule.is_stateless) + "," + rule.source + ",,,,,," + type + "," + code+"\n")
                     new_row = pd.DataFrame(
-                    {'Region':region,'Compartment Name':comp_name, 'VCN Name':vcn_name,'SubnetName': dn, 'RuleType': 'ingress', 'Protocol': 'icmp', 'isStateless': str(rule.is_stateless),
+                    {'Region':region,'Compartment Name':comp_name, 'VCN Name':vcn_name,'SecListName': dn, 'RuleType': 'ingress', 'Protocol': 'icmp', 'isStateless': str(rule.is_stateless),
                      'Source': rule.source, 'SPortMin': '', 'SPortMax': '', 'Destination': '', 'DPortMin': '',
                      'DPortMax': '',
                      'ICMPType': type, 'ICMPCode': code},index =[i])
@@ -226,7 +224,7 @@ def print_secrules(seclists,region,vcn_name,comp_name):
                 if rule.udp_options is None:
                     print (dn + ",ingress,udp," + str(rule.is_stateless) + "," + rule.source + ",,,,,,,")
                     #oname.write(dn + ",ingress,udp," + str(rule.is_stateless) + "," + rule.source + ",,,,,,,\n")
-                    new_row = pd.DataFrame({'Region':region,'Compartment Name':comp_name, 'VCN Name':vcn_name,'SubnetName': dn, 'RuleType': 'ingress', 'Protocol': 'udp',
+                    new_row = pd.DataFrame({'Region':region,'Compartment Name':comp_name, 'VCN Name':vcn_name,'SecListName': dn, 'RuleType': 'ingress', 'Protocol': 'udp',
                                             'isStateless': str(rule.is_stateless),
                                             'Source': rule.source, 'SPortMin': '', 'SPortMax': '', 'Destination': '',
                                             'DPortMin': '', 'DPortMax': '',
@@ -236,13 +234,13 @@ def print_secrules(seclists,region,vcn_name,comp_name):
                     max = convertNullToNothing(rule.udp_options.destination_port_range.max)
                     print (dn + ",ingress,udp," + str(rule.is_stateless) + "," + rule.source + ",,,," + min + "," + max+",,")
                     #oname.write(dn + ",ingress,udp," + str(rule.is_stateless) + "," + rule.source + ",,,," + min + "," + max+",,\n")
-                    new_row = pd.DataFrame({'Region':region,'Compartment Name':comp_name, 'VCN Name':vcn_name,'SubnetName': dn, 'RuleType': 'ingress', 'Protocol': 'udp',
+                    new_row = pd.DataFrame({'Region':region,'Compartment Name':comp_name, 'VCN Name':vcn_name,'SecListName': dn, 'RuleType': 'ingress', 'Protocol': 'udp',
                                             'isStateless': str(rule.is_stateless),
                                             'Source': rule.source, 'SPortMin': '', 'SPortMax': '', 'Destination': '',
                                             'DPortMin': min, 'DPortMax': max,
                                             'ICMPType': '', 'ICMPCode': ''},index =[i])
                 else:
-                    new_row = pd.DataFrame({'Region':region,'Compartment Name':comp_name, 'VCN Name':vcn_name,'SubnetName': dn, 'RuleType': 'ingress', 'Protocol': 'udp',
+                    new_row = pd.DataFrame({'Region':region,'Compartment Name':comp_name, 'VCN Name':vcn_name,'SecListName': dn, 'RuleType': 'ingress', 'Protocol': 'udp',
                                             'isStateless': str(rule.is_stateless),
                                             'Source': rule.source, 'SPortMin': '', 'SPortMax': '', 'Destination': '',
                                             'DPortMin': '', 'DPortMax': '',
@@ -251,7 +249,7 @@ def print_secrules(seclists,region,vcn_name,comp_name):
                 print (dn + ",ingress,all," + str(rule.is_stateless) + "," + rule.source + ",,,,,,,")
                 #oname.write(dn + ",ingress,all," + str(rule.is_stateless) + "," + rule.source + ",,,,,,,\n")
                 new_row = pd.DataFrame(
-                    {'Region':region,'Compartment Name':comp_name, 'VCN Name':vcn_name,'SubnetName': dn, 'RuleType': 'ingress', 'Protocol': 'all', 'isStateless': str(rule.is_stateless),
+                    {'Region':region,'Compartment Name':comp_name, 'VCN Name':vcn_name,'SecListName': dn, 'RuleType': 'ingress', 'Protocol': 'all', 'isStateless': str(rule.is_stateless),
                      'Source': rule.source, 'SPortMin': '', 'SPortMax': '', 'Destination': '', 'DPortMin': '',
                      'DPortMax': '',
                      'ICMPType': '', 'ICMPCode': ''},index =[i])
@@ -289,17 +287,9 @@ else:
     config = oci.config.from_file()
 
 ntk_compartment_ids = get_network_compartment_id(config)#, ntk_comp_name)
-df_info = pd.read_excel(cd3file, sheet_name='VCN Info', skiprows=1)
-properties = df_info['Property']
-values = df_info['Value']
-all_regions = str(values[7]).strip()
-all_regions = all_regions.split(",")
-all_regions = [x.strip().lower() for x in all_regions]
-
-region_dict = {'ashburn':'us-ashburn-1','phoenix':'us-phoenix-1','london':'uk-london-1','frankfurt':'eu-frankfurt-1','toronto':'ca-toronto-1','tokyo':'ap-tokyo-1','seoul':'ap-seoul-1','mumbai':'ap-mumbai-1'}
-
 i=0
 df=pd.DataFrame()
+vcnInfo = parseVCNInfo(cd3file)
 
 if vcn_name is not None:
     ntk_comp_name = args.networkCompartment
@@ -308,9 +298,9 @@ if vcn_name is not None:
         exit(1)
 
     found_region = ''
-    for reg in all_regions:
+    for reg in vcnInfo.all_regions:
         print("\nSearching for VCN in region..." + reg)
-        config.__setitem__("region", region_dict[reg])
+        config.__setitem__("region", commonTools.region_dict[reg])
         vcn_ocid = get_vcn_id(config, ntk_compartment_ids[ntk_comp_name], vcn_name)
 
         if (vcn_ocid == '' or vcn_ocid is None):
@@ -320,7 +310,7 @@ if vcn_name is not None:
             found_region = reg
             break
 
-    config.__setitem__("region", region_dict[found_region])
+    config.__setitem__("region", commonTools.region_dict[found_region])
     vcn = VirtualNetworkClient(config)
     region = found_region.capitalize()
 
@@ -328,9 +318,9 @@ if vcn_name is not None:
     print_secrules(seclists,region,vcn_name,ntk_comp_name)
 else:
     print("\nFetching Security Rules for all VCNs in tenancy...")
-    for reg in all_regions:
+    for reg in vcnInfo.all_regions:
         for ntk_compartment_name in ntk_compartment_ids:
-            config.__setitem__("region", region_dict[reg])
+            config.__setitem__("region", commonTools.region_dict[reg])
             vcn = VirtualNetworkClient(config)
             vcns = get_vcns(config, ntk_compartment_ids[ntk_compartment_name])
             region = reg.capitalize()
@@ -359,17 +349,71 @@ df.to_excel(writer, sheet_name='SecRulesinOCI', index=False)
 #Adjust column widths
 ws=writer.sheets['SecRulesinOCI']
 from openpyxl.utils import get_column_letter
-dims = {}
+"""dims = {}
 for row in ws.rows:
     for cell in row:
         if cell.value:
             dims[cell.column] = max((dims.get(cell.column, 0), len(str(cell.value))))
 for col, value in dims.items():
     ws.column_dimensions[get_column_letter(col)].width = value+1
+"""
+column_widths = []
+for row in ws.rows:
+    for i, cell in enumerate(row):
+        if len(column_widths) > i:
+            if len(str(cell.value)) > column_widths[i]:
+                column_widths[i] = len(str(cell.value))
+        else:
+            column_widths += [len(str(cell.value))]
+
+for i, column_width in enumerate(column_widths):
+    ws.column_dimensions[get_column_letter(i+1)].width = column_width
+
+for row in ws.iter_rows(min_row=1, max_row=1, min_col=1):
+    for cell in row:
+      cell.fill = PatternFill(start_color="FFFF00", end_color="FFFF00", fill_type = "solid")
+      cell.font = Font(bold=True)
+
+names=[]
+brdr=Border(left=Side(style='thin'),
+            right=Side(style='thin'),
+            top=Side(style='thin'),
+            bottom=Side(style='thin'),
+        )
+for row in ws.iter_rows(min_row=2):
+    c=0
+    region=""
+    name=""
+    for cell in row:
+        c=c+1
+        if(c==1):
+            region=cell.value
+            continue
+        elif(c==4):
+            name= cell.value
+            break
+
+    vcn_name=region+"_"+name
+    if(vcn_name not in names):
+        names.append(vcn_name)
+        for cellnew in row:
+            if(len(names) % 2==0):
+                cellnew.fill=PatternFill(start_color="FABEBE", end_color="FABEBE", fill_type = "solid")
+                cellnew.border=brdr
+            else:
+                cellnew.fill = PatternFill(start_color="46F0F0", end_color="46F0F0", fill_type="solid")
+                cellnew.border=brdr
+    else:
+        for cellnew in row:
+            if (len(names) % 2 == 0):
+                cellnew.fill = PatternFill(start_color="FABEBE", end_color="FABEBE", fill_type="solid")
+                cellnew.border=brdr
+            else:
+                cellnew.fill = PatternFill(start_color="46F0F0", end_color="46F0F0", fill_type="solid")
+                cellnew.border=brdr
 
 #Move the sheet near Networking sheets
 book._sheets.remove(ws)
-book._sheets.insert(10,ws)
-
+book._sheets.insert(8,ws)
 
 writer.save()

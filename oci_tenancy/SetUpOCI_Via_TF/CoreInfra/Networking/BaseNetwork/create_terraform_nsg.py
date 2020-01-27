@@ -40,6 +40,7 @@ DEBUG = False
 def directionOptionals(nsgParser, options):
     srcdestType = ""
     srcdest = ""
+
     ingressegressStrTemplate = "source" if options[1].lower() == "ingress" else "destination"
     if options[1].lower() == "ingress":  # check source option 4,5
         srcdestType = options[4]
@@ -67,6 +68,7 @@ def directionOptionals(nsgParser, options):
 
 
 def protocolOptionals(nsgParser, options):
+
     protocol = options[2].lower()
     protocolHeader = ""
     if protocol == "all":
@@ -132,16 +134,26 @@ def NSGtemplate(nsgParser, key, value, outdir):
         "    vcn_id = \"${{oci_core_vcn.{}.id}}\"\n"
         "}}\n" \
         ).format("{}".format(key[2]), key[2],key[0], key[1])
-    with open(outdir + "/{}_nsg.tf".format(key[2]), 'a+') as f:
+    with open(outdir + "/{}_nsg.tf".format(key[2]), 'w') as f:
         f.write(resource_group)
         ruleindex = 1
         for rule in value:
+            null_rule = 0
+            for i in range(1,3):
+                if(str(rule[i]).lower()=='nan'):
+                    #print("Creating Empty NSG: "+rule[0])
+                    null_rule=1
+                    break
+            if(null_rule==1):
+                continue
+
             f.write("{}{}{}{}\n}}\n".format(NSGrulesTemplate(nsgParser, rule, ruleindex), \
                                             statelessOptional(nsgParser, rule), directionOptionals(nsgParser, rule), \
                                             protocolOptionals(nsgParser, rule)))
 
             ruleindex += 1
         f.close()
+        print(outdir + "/{}_nsg.tf".format(key[2]) + " containing TF for NSG has been created")
 
 
 def NSGrulesTemplate(nsgParser, rule, index):
@@ -170,7 +182,6 @@ def getProtocolNumber(protocol):
 
 """
 The rules should be further organized with ingress or egress as a parent level to the optional fts.
-
 factory methods
 """
 
@@ -191,20 +202,25 @@ def main():
 
     # tested path allows for space, full or relative path acceptable
     nsgParser = cd3parser(os.path.realpath(args.inputfile)).getNSG()
-    if('tmp_' in args.inputfile):
+
+    if('tmp_to_excel' in args.inputfile):
         os.remove(args.inputfile)
     outdir = args.outdir
+
     regionDict = nsgParser.getRegionDict()
     listOfRegions = nsgParser.regions
 
     # creates all region directories in specified out directory
+    # creates all region directories in specified out directory
     for region in listOfRegions:
         regionDirPath = outdir + "/{}".format(region)
-        if os.path.exists(regionDirPath):
+        """if os.path.exists(regionDirPath):
             nsgParser.purge(regionDirPath, "nsg.tf")
         else:
             os.makedirs(regionDirPath)
-
+        """
+        if not os.path.exists(regionDirPath):
+            os.makedirs(regionDirPath)
     # Stage 2 using the dictionary of unique_id:rules, use factory method to produces resources and
     # rules
     for region in listOfRegions:
@@ -213,7 +229,7 @@ def main():
         [NSGtemplate(nsgParser, k, v, reg_outdir) for k, v in
          nsgParser.getRegionSpecificDict(regionDict, region).items()]
         #   f.close()
-    print("\nTerraform files write out to respective {}/[region]/[NSG Name]_nsg.tf".format(outdir))
+    #print("\nTerraform files write out to respective {}/[region]/[NSG Name]_nsg.tf".format(outdir))
 
     if DEBUG:
         nsgParser.debug()

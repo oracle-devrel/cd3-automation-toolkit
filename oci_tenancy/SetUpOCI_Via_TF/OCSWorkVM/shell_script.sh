@@ -8,29 +8,45 @@ mkdir -p /root/ocswork/git_oci
 mkdir -p /root/ocswork/git_ocic2oci
 mkdir -p /root/ocswork/ocic2oci_work
 
+sudo yum -y install scl-utils
+sudo yum -y install rh-python36
+#scl enable rh-python36 bash
+sudo echo "source scl_source enable rh-python36" >> /root/.bashrc
+source /root/.bashrc
+sudo yum -y groupinstall 'Development Tools'
+#pip3 install --upgrade pip
+pip3 install oci
+pip3 install oci-cli
+pip3 install pycrypto
+pip3 install regex
+pip3 install pandas
+pip3 install openpyxl
+pip3 install xlrd
+pip3 install xlsxwriter
+pip3 install puttykeys
+pip3 install netaddr
+pip3 install cfgparse
+
+
 ## Needed for conversion from putty ppk to openssh
 sudo yum install -y putty
 
 #Install Required Packages
-sudo yum -y install python-pip
+#sudo yum -y install python-pip
 #pip install pip==9.0.3
-pip install oci
-pip install oci-cli
+#pip install oci
+#pip install oci-cli
 #pip install pandas
-pip install xlrd
-pip install puttykeys
-pip install netaddr
-pip install cfgparse
-pip install in_place
+#pip install xlrd
+#pip install in_place
 
-#sudo yum -y install screen
+
 sudo yum -y install git
 #Don't install latest version of TF as there are lot of syntax changes
 #sudo yum -y install terraform
 sudo yum -y install terraform-0.12.13-1.el7
-
 sudo yum -y install expect
-
+sudo yum -y install telnet
 
 sudo yum -y install ansible
 cd /root/ocswork/downloads
@@ -41,8 +57,8 @@ cd oci-ansible-modules
 sudo yum -y install java
 sudo yum -y install wget
 
-sudo yum -y install python36 python36-setuptools graphviz
-sudo easy_install-3.6 pip
+#sudo yum -y install python36 python36-setuptools graphviz
+#sudo easy_install-3.6 pip
 
 #Copy files to respective locations and do required configurations
 mv /home/opc/config ~/.oci
@@ -174,13 +190,13 @@ fi
 if [ -e /home/opc/default ]
 then
     echo "Koala Config START"
-
+    mv /root/ocswork/git_oci/oci_tenancy/SetUpOCI_Via_TF/OCSWorkVM/panda_setup_files/opcmigrate-1.4.0.zip /root/ocswork/ocic2oci_work/
     cp /root/ocswork/ocic2oci_work/opcmigrate-1.4.0.zip /root/ocswork/downloads/opcmigrate.zip
     cd /root/ocswork/downloads
     unzip opcmigrate.zip -d /root/ocswork/opcmigrate
     cd /root/ocswork/opcmigrate
 
-    /usr/bin/python3 -m pip install ./opcmigrate-*.whl
+    pip3 install ./opcmigrate-*.whl
 
     mkdir -p /root/.opc/profiles
     mv /home/opc/default /root/.opc/profiles
@@ -226,19 +242,22 @@ rm -f /home/opc/provider.tf
 
 
 #Installing python36-devel and gcc for pip install
-timeout 60 yum install python36-devel gcc -y
+#timeout 60 yum install python36-devel gcc -y
 
 #Configuring DB specific packages in python36
-echo "Installing packages for python36..This would keep running in background and you can start your work"
-/usr/bin/python3 -m pip install --upgrade pip
-/usr/bin/python3 -m pip install oci
-/usr/bin/python3 -m pip install pycrypto
-/usr/bin/python3 -m pip install regex
-/usr/bin/python3 -m pip install pandas
-/usr/bin/python3 -m pip install openpyxl
-/usr/bin/python3 -m pip install xlrd
-/usr/bin/python3 -m pip install xlsxwriter
+#echo "Installing packages for python36..This would keep running in background and you can start your work"
+#/usr/bin/python3 -m pip install --upgrade pip
+#/usr/bin/python3 -m pip install oci
+#/usr/bin/python3 -m pip install pycrypto
+#/usr/bin/python3 -m pip install regex
+#/usr/bin/python3 -m pip install pandas
+#/usr/bin/python3 -m pip install openpyxl
+#/usr/bin/python3 -m pip install xlrd
+#/usr/bin/python3 -m pip install xlsxwriter
 
 #Use Default python as python36 on OCS VM
-sudo rm -f /bin/python
-sudo ln -s /bin/python3.6 /bin/python
+#sudo rm -f /bin/python
+#sudo ln -s /bin/python3.6 /bin/python
+
+#sudo echo "source scl_source enable rh-python36" >> /root/.bashrc
+#sudo source /root/.bashrc

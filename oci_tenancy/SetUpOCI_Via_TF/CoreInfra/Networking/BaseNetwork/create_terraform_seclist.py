@@ -13,11 +13,13 @@
 ######
 
 import sys
-import os
 import argparse
 import configparser
 import re
 import pandas as pd
+import os
+sys.path.append(os.getcwd()+"/../../..")
+from commonTools import *
 
 def purge(dir, pattern):
     for f in os.listdir(dir):
@@ -32,7 +34,7 @@ parser = argparse.ArgumentParser(description="Creates a terraform sec list resou
                                              "and add_ping_sec_rules_onprem respectively. Any other rules should be put in manually.")
 parser.add_argument("inputfile", help="Full Path of input file. eg vcn-info.properties or cd3 excel file")
 parser.add_argument("outdir",help="Output directory")
-parser.add_argument("--subnet_add", help="Add new subnet: true or false", required=False)
+parser.add_argument("--modify_network", help="modify: true or false", required=False)
 
 
 if len(sys.argv)==1:
@@ -47,58 +49,19 @@ args = parser.parse_args()
 
 filename=args.inputfile
 outdir = args.outdir
-if args.subnet_add is not None:
-    subnet_add = str(args.subnet_add)
+if args.modify_network is not None:
+    modify_network = str(args.modify_network)
 else:
-    subnet_add = "false"
+    modify_network = "false"
 
 common_seclist_names={}
 fname = None
 oname=None
-
-#create VCN LPG rules
-vcn_lpg_rules = {}
-peering_dict = dict()
-
+secrulefiles={}
 tempStr = ""
 ADS = ["AD1", "AD2", "AD3"]
 
-def createLPGSecRules(peering_dict):
-    global vcn_lpg_rules
-    for left_vcn,value in peering_dict.items():
-        right_vcns=value.split(",")
-        for right_vcn in right_vcns:
-                if(right_vcn=='ocs_vcn'):
-                    # Build rule for VCN on left for OCS VCN on right
-                    ruleStr = """
-        ingress_security_rules {
-                protocol = "1"
-                source = \"""" + ocs_vcn_cidr + """"
-                }
-        """
-                    vcn_lpg_rules[left_vcn] = vcn_lpg_rules[left_vcn] + ruleStr
-
-                else:
-                    #Build rule for VCN on left
-                    ruleStr = """
-        ingress_security_rules {
-                protocol = "1"
-                source = "${oci_core_vcn.""" + right_vcn + """.cidr_block}"
-                }
-        """
-                    vcn_lpg_rules[left_vcn]=vcn_lpg_rules[left_vcn]+ruleStr
-
-                    #Build rule for VCNs on right
-                    ruleStr = """
-        ingress_security_rules {
-                protocol = "1"
-                source = "${oci_core_vcn.""" + left_vcn + """.cidr_block}"
-                }
-        """
-                    vcn_lpg_rules[right_vcn] = vcn_lpg_rules[right_vcn] + ruleStr
-
-
-def processSubnet(region,vcn_name,AD,seclists_per_subnet,name,seclist_name,subnet_name_attach_cidr,compartment_var_name):
+def processSubnet(region,vcn_name,AD,seclists_per_subnet,name,seclist_name,compartment_var_name):
 
     j = 0
     if (AD.strip().lower() != 'regional'):
@@ -110,12 +73,21 @@ def processSubnet(region,vcn_name,AD,seclists_per_subnet,name,seclist_name,subne
         ad_name = ""
 
     if(seclist_name==''):
-        outfile=outdir+"/"+region+"/"+vcn_name+"_"+name+ "_seclist.tf"
+        slname=vcn_name+"_"+name+ "_seclist.tf"
     else:
-        outfile = outdir + "/" + region + "/" +vcn_name+"_"+ seclist_name + "_seclist.tf"
+        slname = vcn_name+"_"+ seclist_name + "_seclist.tf"
 
-    #Same seclist used for subnets
-    if(os.path.exists(outfile)):
+    if (slname in secrulefiles[region]):
+        secrulefiles[region].remove(slname)
+
+    outfile = outdir + "/" + region + "/" + slname
+
+    # If Modify Network is set to true
+    if (os.path.exists(outfile) and modify_network == 'true'):
+        return
+
+    # If same seclist name is used for subsequent subnets
+    if(os.path.exists(outfile) and modify_network == 'false'):
         Str= """
                         ingress_security_rules {
                             protocol = "all"
@@ -146,8 +118,8 @@ def processSubnet(region,vcn_name,AD,seclists_per_subnet,name,seclist_name,subne
             else:
                 name1 = seclistname
 
-            #check if subnet codr needs to be attached
-            if (subnet_name_attach_cidr == 'y'):
+            #check if subnet cidr needs to be attached
+            if (vcnInfo.subnet_name_attach_cidr == 'y'):
                 display_name = name1 + "-" + subnet
             else:
                 display_name = seclistname
@@ -171,20 +143,6 @@ def processSubnet(region,vcn_name,AD,seclists_per_subnet,name,seclist_name,subne
         }
         """
         else:
-            if (vcn_lpg_rules[vcn_name] != ""):
-                tempStr = tempStr + vcn_lpg_rules[vcn_name]
-
-            if (add_ping_sec_rules_onprem == 'y'):
-                if (hub_spoke_none == 'hub' or vcn_drg != 'n' or hub_spoke_none == 'spoke'):
-                    for drg_destination in drg_destinations:
-                        if (drg_destination != ''):
-                            tempStr = tempStr + """
-                        ingress_security_rules {
-                            protocol = "1"
-                            source = \"""" + drg_destination.strip() + """"
-                        }
-                        """
-
             tempStr = tempStr + """
                         ingress_security_rules {
                             protocol = "all"
@@ -203,109 +161,68 @@ def processSubnet(region,vcn_name,AD,seclists_per_subnet,name,seclist_name,subne
     oname.close()
     print(outfile + " containing TF for seclist has been created for region " + region)
 
-endNames = {'<END>', '<end>','<End>'}
 #If input is CD3 excel file
 if('.xls' in filename):
-        NaNstr = 'NaN'
-        df_vcn = pd.read_excel(filename, sheet_name='VCNs',skiprows=1)
-        df_vcn.dropna(how='all')
+    vcnInfo = parseVCNInfo(filename)
+    vcns = parseVCNs(filename)
+    for reg in vcnInfo.all_regions:
+        common_seclist_names[reg] = []
 
-        df_info = pd.read_excel(filename, sheet_name='VCN Info', skiprows=1)
-        # Get Property Values
+    # Purge existing routetable files
+    if (modify_network == 'false'):
+        for reg in vcnInfo.all_regions:
+            purge(outdir+"/"+reg, "_seclist.tf")
+            secrulefiles.setdefault(reg, [])
 
-        properties = df_info['Property']
-        values = df_info['Value']
-
-        all_regions = str(values[7]).strip()
-        all_regions = all_regions.split(",")
-        all_regions = [x.strip().lower() for x in all_regions]
-        for reg in all_regions:
-            common_seclist_names[reg]=[]
-        # Purge existing sec list files
-        if (subnet_add == 'false'):
-            for reg in all_regions:
-                purge(outdir+"/"+reg, "_seclist.tf")
-
-        drg_destinations = str(values[0]).strip()
-        if (drg_destinations.lower() == NaNstr.lower()):
-            print("\ndrg_subnet should not be left empty.. It will create empty route tables")
-            drg_destinations = ''
-        drg_destinations = drg_destinations.split(",")
-
-        add_ping_sec_rules_onprem = str(values[5]).strip()
-        if (add_ping_sec_rules_onprem.lower() == NaNstr.lower()):
-            add_ping_sec_rules_onprem = 'n'
-
-        add_ping_sec_rules_vcnpeering = str(values[6]).strip()
-        if (add_ping_sec_rules_vcnpeering.lower() == NaNstr.lower()):
-            add_ping_sec_rules_vcnpeering = 'n'
-
-        subnet_name_attach_cidr = str(values[4]).strip()
-        if (subnet_name_attach_cidr.lower() == NaNstr.lower()):
-            subnet_name_attach_cidr = 'n'
-
-        for j in df_info.index:
-            if (j > 8):
-                peering_dict[properties[j]] = values[j]
+    # Get existing list of secrule table files
+    if (modify_network == 'true'):
+        for reg in vcnInfo.all_regions:
+            secrulefiles.setdefault(reg, [])
+            lisoffiles = os.listdir(outdir + "/" + reg)
+            for file in lisoffiles:
+                if "_seclist.tf" in file:
+                    secrulefiles[reg].append(file)
 
 
-        # Get VCN names from vcn_name column in VCNs sheet of CD3 excel
-        for i in df_vcn.index:
-                region = df_vcn['Region'][i]
-                if (region in endNames):
-                    break
-                region = region.strip().lower()
-                if region not in all_regions:
-                    print("Invalid Region; It should be one of the values mentioned in VCN Info tab")
-                    exit(1)
+    df = pd.read_excel(filename, sheet_name='Subnets', skiprows=1)
+    df.dropna(how='all')
 
-                vcn_name=df_vcn['vcn_name'][i]
-                vcn_lpg_rules.setdefault(vcn_name, '')
+    #Start processing each subnet
+    for i in df.index:
+        region = df.iat[i, 0]
+        if (region in commonTools.endNames):
+            break
+        compartment_var_name = df.iat[i, 1]
+        vcn_name = str(df['vcn_name'][i]).strip()
+        if (vcn_name.strip() not in vcns.vcn_names):
+            print("\nERROR!!! " + vcn_name + " specified in Subnets tab has not been declared in VCNs tab..Exiting!")
+            exit(1)
+        region = region.strip().lower()
 
-        if (add_ping_sec_rules_vcnpeering.strip().lower() == 'y'):
-            createLPGSecRules(peering_dict)
 
-        df_vcn.set_index("vcn_name", inplace=True)
-        df_vcn.head()
-        df = pd.read_excel(filename, sheet_name='Subnets', skiprows=1)
-        df.dropna(how='all')
+        # Get subnet data
+        name = df.iat[i, 3]
+        name=name.strip()
+        subnet = df.iat[i, 4]
+        subnet=subnet.strip()
+        AD = df.iat[i, 5]
+        AD=AD.strip()
+        seclist_name = df.iat[i, 9]
+        if (str(seclist_name).lower() != 'nan'):
+            seclist_name=seclist_name.strip()
+        else:
+            seclist_name=''
+        compartment_var_name=compartment_var_name.strip()
 
-        #Start processing each subnet
-        for i in df.index:
-            # Get VCN data
-            compartment_var_name = df.iat[i, 0]
-            if (compartment_var_name in endNames):
-                break
-            vcn_name = df['vcn_name'][i]
-            vcn_data = df_vcn.loc[vcn_name]
-            region=vcn_data['Region']
-            region=region.strip().lower()
-            vcn_drg = vcn_data['drg_required']
-            hub_spoke_none = vcn_data['hub_spoke_none']
-            sps = vcn_data['sec_list_per_subnet']
-
-            # Get subnet data
-            name = df.iat[i, 2]
-            name=name.strip()
-            subnet = df.iat[i, 3]
-            subnet=subnet.strip()
-            AD = df.iat[i, 4]
-            AD=AD.strip()
-            seclist_name = df.iat[i, 8]
-            if (str(seclist_name).lower() != 'nan'):
-                seclist_name=seclist_name.strip()
-            else:
-                seclist_name=''
-            compartment_var_name=compartment_var_name.strip()
-
-            seclists_per_subnet = int(sps)
-            common_seclist_name=df.iat[i,9]
-            if(str(common_seclist_name).lower() !=NaNstr.lower()):
-                if (vcn_name+"_"+common_seclist_name not in common_seclist_names[region]):
-                    common_seclist_names[region].append(vcn_name+"_"+common_seclist_name)
-                    out_common_file=outdir+"/"+region+"/"+vcn_name+"_"+common_seclist_name+"_seclist.tf"
-                    oname_common=open(out_common_file,"w")
-                    data="""
+        common_seclist_name=df.iat[i,10]
+        if(str(common_seclist_name).lower() !='nan'):
+            if (vcn_name+"_"+common_seclist_name not in common_seclist_names[region]):
+                common_seclist_names[region].append(vcn_name+"_"+common_seclist_name)
+                out_common_file=outdir+"/"+region+"/"+vcn_name+"_"+common_seclist_name+"_seclist.tf"
+                if(vcn_name+"_"+common_seclist_name+"_seclist.tf" in secrulefiles[region]):
+                    secrulefiles[region].remove(vcn_name+"_"+common_seclist_name+"_seclist.tf")
+                oname_common=open(out_common_file,"w")
+                data="""
         resource "oci_core_security_list" \"""" + vcn_name+"_"+common_seclist_name.strip() + "-1" """"{
             compartment_id = "${var.""" + compartment_var_name + """}"
             vcn_id = "${oci_core_vcn.""" + vcn_name + """.id}"
@@ -313,11 +230,29 @@ if('.xls' in filename):
             ####ADD_NEW_SEC_RULES####1
         }
         """
-                    oname_common.write(data)
-                    print(out_common_file + " containing TF for seclist has been created for region " + region)
-                    oname_common.close()
+                oname_common.write(data)
 
-            processSubnet(region,vcn_name,AD,seclists_per_subnet,name,seclist_name,subnet_name_attach_cidr,compartment_var_name)
+                print(out_common_file + " containing TF for seclist has been created for region " + region)
+                oname_common.close()
+
+        seclists_per_subnet = df.iat[i, 11]
+        if (str(seclists_per_subnet).lower() == 'nan'):
+            seclists_per_subnet = '1'
+        try:
+            seclists_per_subnet = int(seclists_per_subnet)
+        except:
+            print("\nERROR!!! Make sure to enter numeric value(without any extra spaces) in sec_list_per_subnet column of Subnets tab..Exiting!")
+            exit(1)
+
+        processSubnet(region,vcn_name,AD,seclists_per_subnet,name,seclist_name,compartment_var_name)
+
+
+    # remove any extra route table files (not part of latest cd3)
+    for reg in vcnInfo.all_regions:
+        for remaining_sl_file in secrulefiles[reg]:
+            print("\nRemoving "+outdir + "/" + reg + "/"+remaining_sl_file)
+            os.remove(outdir + "/" + reg + "/"+remaining_sl_file)
+            secrulefiles[reg].remove(remaining_sl_file)
 
 # If CD3 excel file is not given as input
 elif('.properties' in filename):

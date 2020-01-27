@@ -1,7 +1,6 @@
-#!/usr/bin/python3
-import os
-import configparser
 import argparse
+import configparser
+import os
 
 parser = argparse.ArgumentParser(description="Sets Up OCI via TF")
 parser.add_argument("propsfile",help="Full Path of properties file containing input variables. eg setUpOCI.properties")
@@ -66,95 +65,83 @@ if(input_format=='csv'):
         print('Check if input properties exist and try again..exiting...`    ')
         exit()
 
-
-print("1.  Create Compartments")
-print("2.  Create Groups")
-print("3.  Create Policies")
-print("4.  Create Base Network Objects")
-print("5.  Create Instances/Dedicated VM Hosts")
-print("6.  Create and Attach Block Volumes")
-print("7.  Tagging Resources")
-print("8.  Modify Route Rules in existing Route Table")
-print("9.  Modify Security Rules in existing Security List")
-print("10. Attach Back up policy to Boot Volumes")
-print("11. Attach Back up policy to Block Volumes")
-print("12. Export Security Lists to CD3")
-print("13. Export Route Tables to CD3")
-print("14. Update Base Network Objects; Use this option only if you have already made changes/updates "
-      "to the configurations after initial Base Network Creation.\n    Else you should use Option 4 again with required changes to CD3 - It will overwrite all network objects.")
-print("15. Network Security Groups")
-print("16. File Storage Service")
-print("17. Load Balancer Service")
-print("18. Create ADW/ADT")
-print("19. Create Database")
+print("1.  Identity")
+print("2.  Networking")
+print("3.  Instances/Dedicated VM Hosts")
+print("4.  Create and Attach Block Volumes")
+print("5.  Tagging Resources")
+print("6.  BackUp Policy")
+print("7.  File Storage Service")
+print("8.  Load Balancer Service")
+print("9.  Create ADW/ADT")
+print("10. Create Database")
 print("\nSee example folder for sample input files\n")
 
 userInput = input('Enter your choice; multiple choices allowed as comma separated: ')
 userInput=userInput.split(',')
 
 if('1' in userInput):
-    print('-----------------------------Creating Compartments----------------------')
-    if (input_format=='cd3'):
-        inputfile=input_cd3file
-    elif(input_format=='csv'):
-        if (input_compartments_csv == ''):
-            print("input compartments_csv location cannot be left blank. Exiting... ")
-            exit(1)
-        inputfile=input_compartments_csv
+    print('-----------------------------Identity----------------------')
     outdir = input_outdir
     prefix = input_prefix
 
     if not os.path.exists(outdir):
         os.makedirs(outdir)
 
-    os.chdir('Identity/Compartments')
-    command = 'python create_terraform_compartments.py '+inputfile + ' ' + outdir+ ' '+prefix
-    print("Executing Command: "+command)
-    os.system(command)
-    os.chdir("../..")
-    print("--------------------------------------------------------------------------")
+    print("1.  Create Compartments")
+    print("2.  Create Groups")
+    print("3.  Create Policies")
+    choice = input("Enter your choice; multiple choices allowed as comma separated ")
+    choice = choice.split(",")
+    if ('1' in choice):
+        print("---------------------------Creating Compartments--------------------------------")
+        if (input_format == 'cd3'):
+            inputfile = input_cd3file
+        elif (input_format == 'csv'):
+            if (input_compartments_csv == ''):
+                print("input compartments_csv location cannot be left blank. Exiting... ")
+                exit(1)
+            inputfile = input_compartments_csv
+
+        os.chdir('Identity/Compartments')
+        command = 'python create_terraform_compartments.py '+inputfile + ' ' + outdir+ ' '+prefix
+        print("Executing Command: "+command)
+        os.system(command)
+        os.chdir("../..")
+        print("--------------------------------------------------------------------------")
+
+    if('2' in choice):
+        print("---------------------------Creating Groups--------------------------------")
+        if (input_format=='cd3'):
+            inputfile=input_cd3file
+        elif(input_format=='csv'):
+            if (input_groups_csv == ''):
+                print("input groups_csv location cannot be left blank. Exiting... ")
+                exit(1)
+            inputfile=input_groups_csv
+        outdir = input_outdir
+
+        os.chdir('Identity/Groups')
+        command = 'python create_terraform_groups.py '+inputfile + ' ' + outdir+ ' '+prefix
+        print("Executing Command: " + command)
+        os.system(command)
+        os.chdir("../..")
+        print("--------------------------------------------------------------------------")
+
+    if('3' in choice):
+        print("----------------------Creating Policies----------------------------------")
+        if (input_format=='cd3'):
+            inputfile=input_cd3file
+
+        os.chdir('Identity/Policies')
+        command = 'python create_terraform_policies.py '+inputfile + ' ' +  outdir+ ' '+prefix
+        print("Executing Command: " + command)
+        os.system(command)
+        os.chdir("../..")
+        print("--------------------------------------------------------------------------")
 
 if('2' in userInput):
-    print("---------------------------Creating Groups--------------------------------")
-    if (input_format=='cd3'):
-        inputfile=input_cd3file
-    elif(input_format=='csv'):
-        if (input_groups_csv == ''):
-            print("input groups_csv location cannot be left blank. Exiting... ")
-            exit(1)
-        inputfile=input_groups_csv
-    outdir = input_outdir
-    prefix = input_prefix
-
-    if not os.path.exists(outdir):
-        os.makedirs(outdir)
-
-    os.chdir('Identity/Groups')
-    command = 'python create_terraform_groups.py '+inputfile + ' ' + outdir+ ' '+prefix
-    print("Executing Command: " + command)
-    os.system(command)
-    os.chdir("../..")
-    print("--------------------------------------------------------------------------")
-
-if('3' in userInput):
-    print("----------------------Creating Policies----------------------------------")
-    if (input_format=='cd3'):
-        inputfile=input_cd3file
-    outdir = input_outdir
-    prefix = input_prefix
-
-    if not os.path.exists(outdir):
-        os.makedirs(outdir)
-
-    os.chdir('Identity/Policies')
-    command = 'python create_terraform_policies.py '+inputfile + ' ' +  outdir+ ' '+prefix
-    print("Executing Command: " + command)
-    os.system(command)
-    os.chdir("../..")
-    print("--------------------------------------------------------------------------")
-
-if('4' in userInput):
-    print("---------------------Creating Base Network----------------------------------")
+    print("---------------------Networking----------------------------------")
     if (input_format=='cd3'):
         inputfile=input_cd3file
     elif(input_format=='csv'):
@@ -162,46 +149,155 @@ if('4' in userInput):
             print("input vcn_info_file location cannot be left blank. Exiting... ")
             exit(1)
         inputfile=input_vcninfo
+
     outdir = input_outdir
     prefix = input_prefix
 
     if not os.path.exists(outdir):
         os.makedirs(outdir)
-
     os.chdir('CoreInfra/Networking/BaseNetwork')
-    command = 'python create_all_tf_objects.py ' + inputfile + ' ' + outdir + ' ' + prefix
-    print("Executing Command: " + command)
-    os.system(command)
-    os.chdir("../../..")
-    print("--------------------------------------------------------------------------")
 
-if('5' in userInput):
+    print("1.  Create Network- overwrites all TF files; reverts all SecLists and RouteTables to original rules")
+    print("2.  Modify Network- Add/Remove/Modify any network object; updates TF files with changes; this option should be used after modifications have been done to SecRules or RouteRules")
+    print("3.  Export SecRules and RouteRules to cd3")
+    print("4.  Modify SecRules")
+    print("5.  Modify RouteRules")
+    print("6.  Create Network Security Groups")
+    choice = input("Enter one choice ")
+
+    if (choice=='1'):
+        command = 'python create_all_tf_objects.py ' + inputfile + ' ' + outdir + ' ' + prefix
+        print("Executing Command: " + command)
+        os.system(command)
+        os.chdir("../../..")
+        print("--------------------------------------------------------------------------")
+
+    elif (choice=='2'):
+        command = 'python create_all_tf_objects.py ' + inputfile + ' ' + outdir + ' ' + prefix + ' --modify_network true'
+        print("Executing Command: " + command)
+        os.system(command)
+        os.chdir("../../..")
+        print("--------------------------------------------------------------------------")
+
+    elif(choice == '3'):
+        print("---------------------------Exporting Rules--------------------------")
+        if (input_format == 'cd3'):
+            cd3outfile = input_cd3file
+        inputConfigFile = input_config_file
+        input_vcn = input("Enter name of VCN for which you want to export security rules and route rules; Leave blank if want to export for all VCNs: ")
+        if (input_vcn != ''):
+            input_Comp = input("Enter Compartment Name where this VCN resides: ")
+
+        if (input_vcn == ''):
+            if (inputConfigFile == ''):
+                command_sl = 'python exportSeclist.py ' + cd3outfile
+                command_rt = 'python exportRoutetable.py ' + cd3outfile
+            else:
+                command_sl = 'python exportSeclist.py ' + cd3outfile + ' --configFileName ' + inputConfigFile
+                command_rt = 'python exportRoutetable.py ' + cd3outfile + ' --configFileName ' + inputConfigFile
+        else:
+            if (inputConfigFile == ''):
+                command_sl = 'python exportSeclist.py ' + cd3outfile + ' --vcnName ' + input_vcn + ' --networkCompartment ' + input_Comp
+                command_rt = 'python exportRoutetable.py ' + cd3outfile + ' --vcnName ' + input_vcn + ' --networkCompartment ' + input_Comp
+            else:
+                command_sl = 'python exportSeclist.py ' + cd3outfile + ' --vcnName ' + input_vcn + ' --networkCompartment ' + input_Comp + ' --configFileName ' + inputConfigFile
+                command_rt = 'python exportRoutetable.py ' + cd3outfile + ' --vcnName ' + input_vcn + ' --networkCompartment ' + input_Comp + ' --configFileName ' + inputConfigFile
+
+        print("Executing Command: " + command_sl)
+        os.system(command_sl)
+        print("-----------------------------------------------------------------------------")
+        print("Executing Command: " + command_rt)
+        os.system(command_rt)
+        os.chdir("../../..")
+        print("--------------------------------------------------------------------------")
+
+    elif(choice == '4'):
+        print("------------------------Modifying Security Rules--------------------------------")
+        if (input_format == 'cd3'):
+            inputfile = input_cd3file
+            inputcsv = inputfile
+        elif (input_format == 'csv'):
+            if (input_vcninfo == ''):
+                print("input vcn_info_file location cannot be left blank. Exiting... ")
+                exit(1)
+            if (input_add_secrules_csv == ''):
+                print("input add_secrules_csv location cannot be left blank. Exiting... ")
+                exit(1)
+            inputfile = input_vcninfo
+            inputcsv = input_add_secrules_csv
+
+
+#        if (inputConfigFile == ''):
+        command = 'python modify_secrules_tf.py ' + inputfile + ' ' + outdir + ' ' + inputcsv
+ #       else:
+ #           command = 'python modify_secrules_tf.py ' + inputfile + ' ' + outdir + ' ' + inputcsv + ' --configFileName ' + inputConfigFile
+        print("Executing Command: " + command)
+        os.system(command)
+        os.chdir("../../..")
+        print("--------------------------------------------------------------------------")
+
+    elif(choice == '5'):
+        print("------------------------Modifying Route Rules--------------------------------")
+        if (input_format == 'cd3'):
+            inputfile = input_cd3file
+        elif (input_format == 'csv'):
+            if (input_add_routes_csv == ''):
+                print("input add_routes_csv location cannot be left blank. Exiting... ")
+                exit(1)
+            inputfile = input_add_routes_csv
+
+
+        command = 'python modify_routerules_tf.py ' + inputfile + ' ' + outdir
+        print("Executing Command: " + command)
+        os.system(command)
+        os.chdir("../../..")
+        print("--------------------------------------------------------------------------")
+
+    elif(choice=='6'):
+        print("---------------------Creating NSGs----------------------------------")
+        if (input_format == 'cd3'):
+            inputfile = input_cd3file
+        elif (input_format == 'csv'):
+            if (input_nsgs_csv == ''):
+                print("input nsgs_csv location cannot be left blank. Exiting... ")
+                exit(1)
+            inputfile = input_nsgs_csv
+
+        command = 'python create_terraform_nsg.py ' + inputfile + ' ' + outdir
+        print("Executing Command: " + command)
+        os.system(command)
+        os.chdir("../../..")
+        print("--------------------------------------------------------------------------")
+    else:
+        print("Invalid Choice")
+if('3' in userInput):
     print("--------------------Creating Instances/Dedicated VM Hosts------------------------------------")
     print("1.  Create Dedicated VM Hosts")
     print("2.  Create Instances")
+    print("3.  Update existing instance to be part of NSG")
 
-    choice = input("Enter your choice; multiple choices allowed as comma separated ")
-    choice = choice.split(",")
-    if ('1' in choice):
-        if (input_format=='cd3'):
-            inputfile=input_cd3file
+    choice = input("Enter one choice ")
+    outdir = input_outdir
+    if not os.path.exists(outdir):
+        os.makedirs(outdir)
+
+    os.chdir('CoreInfra/Compute')
+
+    if (choice=='1'):
+        if (input_format == 'cd3'):
+            inputfile = input_cd3file
         elif(input_format=='csv'):
             if (input_dedicatedhosts_csv == ''):
                 print("input instances_csv location cannot be left blank. Exiting... ")
                 exit(1)
             inputfile=input_dedicatedhosts_csv
-        outdir = input_outdir
 
-        if not os.path.exists(outdir):
-            os.makedirs(outdir)
-
-        os.chdir('CoreInfra/Compute')
         command = 'python create_terraform_dedicatedhosts.py '+inputfile + ' ' + outdir
         print("Executing Command: " + command)
         os.system(command)
         os.chdir("../..")
         print("--------------------------------------------------------------------------")
-    if ('2' in choice):
+    elif (choice=='2'):
         if (input_format == 'cd3'):
             inputfile = input_cd3file
         elif (input_format == 'csv'):
@@ -209,19 +305,33 @@ if('5' in userInput):
                 print("input instances_csv location cannot be left blank. Exiting... ")
                 exit(1)
             inputfile = input_instances_csv
-        outdir = input_outdir
 
-        if not os.path.exists(outdir):
-            os.makedirs(outdir)
-
-        os.chdir('CoreInfra/Compute')
         command = 'python create_terraform_instances.py ' + inputfile + ' ' + outdir
         print("Executing Command: " + command)
         os.system(command)
         os.chdir("../..")
         print("--------------------------------------------------------------------------")
 
-if('6' in userInput):
+    elif (choice=='3'):
+        print("---------------------Updating Instances to have NSG----------------------------------")
+        if (input_format == 'cd3'):
+            inputfile = input_cd3file
+        elif (input_format == 'csv'):
+            if (input_instances_csv == ''):
+                print("input instances_csv location cannot be left blank. Exiting... ")
+                exit(1)
+            inputfile = input_instances_csv
+
+        command = 'python update_instance_nsg.py ' + inputfile + ' ' + outdir
+        print("Executing Command: " + command)
+        os.system(command)
+        os.chdir("../..")
+        print("--------------------------------------------------------------------------")
+    else:
+        print("Invalid Choice")
+
+
+if('4' in userInput):
     print("------------------------Creating BlockVolumes---------------------------")
     if (input_format=='cd3'):
         inputfile=input_cd3file
@@ -243,7 +353,7 @@ if('6' in userInput):
     print("--------------------------------------------------------------------------")
 
 
-if('7' in userInput):
+if('5' in userInput):
     print("---------------------Creating Tags------------------------------")
     print("1.  Create Tags and Tag Namespaces")
     print("2.  Attach Tags to Servers")
@@ -306,271 +416,18 @@ if('7' in userInput):
         os.chdir("../..")
     print("--------------------------------------------------------------------------")
 
-
-if('8' in userInput):
-    print("------------------------Adding Route Rules--------------------------------")
-    if (input_format=='cd3'):
-        inputfile=input_cd3file
-    elif(input_format=='csv'):
-        if (input_add_routes_csv == ''):
-            print("input add_routes_csv location cannot be left blank. Exiting... ")
-            exit(1)
-        inputfile=input_add_routes_csv
-    outdir = input_outdir
-    overwrite = input("Do you want to overwrite rules in OCI or add more rules to existing ones. Enter yes for overwrite or no for addition: ")
-
-    os.chdir('CoreInfra/Networking/BaseNetwork')
-    if(overwrite=='' or overwrite=='no'):
-        command = 'python modify_routerules_tf.py ' + inputfile + ' ' + outdir
-    if(overwrite=='yes'):
-        command = 'python modify_routerules_tf.py ' + inputfile + ' ' + outdir + ' --overwrite yes'
-    print("Executing Command: " + command)
-    os.system(command)
-    os.chdir("../../..")
-    print("--------------------------------------------------------------------------")
-
-
-if('9' in userInput):
-    print("------------------------Adding Security Rules--------------------------------")
-    if (input_format=='cd3'):
-        inputfile=input_cd3file
-        inputcsv=inputfile
-    elif(input_format=='csv'):
-        if (input_vcninfo == ''):
-            print("input vcn_info_file location cannot be left blank. Exiting... ")
-            exit(1)
-        if (input_add_secrules_csv == ''):
-            print("input add_secrules_csv location cannot be left blank. Exiting... ")
-            exit(1)
-        inputfile=input_vcninfo
-        inputcsv=input_add_secrules_csv
+if('6' in userInput):
+    print("------------------------Attaching Backup Policy---------------------------")
 
     outdir = input_outdir
-    inputConfigFile = input_config_file
-    overwrite = input("Do you want to overwrite rules in OCI or add more rules to existing ones. Enter yes for overwrite or no for addition: ")
-
-    os.chdir('CoreInfra/Networking/BaseNetwork')
-
-    if (overwrite == '' or overwrite == 'no'):
-        if(inputConfigFile==''):
-            command = 'python modify_secrules_tf.py ' + inputfile + ' ' + outdir + ' '+inputcsv
-        else:
-            command = 'python modify_secrules_tf.py ' + inputfile + ' ' + outdir + ' '+inputcsv+' --configFileName '+inputConfigFile
-    if(overwrite=='yes'):
-        if (inputConfigFile == ''):
-            command = 'python modify_secrules_tf.py ' + inputfile + ' ' + outdir + ' ' + inputcsv + ' --overwrite yes'
-        else:
-            command = 'python modify_secrules_tf.py ' + inputfile + ' ' + outdir + ' ' + inputcsv + ' --configFileName ' + inputConfigFile +' --overwrite yes'
-    print("Executing Command: " + command)
-    os.system(command)
-    os.chdir("../../..")
-    print("--------------------------------------------------------------------------")
-
-if('10' in userInput):
-    print("------------------------Attaching Backup Policy to Boot Volumes---------------------------")
-    if (input_format == 'cd3'):
-        inputfile = input_cd3file
-    elif (input_format == 'csv'):
-        if (input_instances_csv == ''):
-            print("input instances_csv location cannot be left blank. Exiting... ")
-            exit(1)
-        inputfile = input_instances_csv
-    outdir = input_outdir
-
     if not os.path.exists(outdir):
         os.makedirs(outdir)
 
-    os.chdir('CoreInfra/Compute')
-    command = 'python boot_backups_policy.py '+inputfile + ' ' + outdir
-    print("Executing Command: " + command)
-    os.system(command)
-    os.chdir("../..")
-    print("--------------------------------------------------------------------------")
-
-if('11' in userInput):
-    print("------------------------Attaching Backup Policy to Block Volumes---------------------------")
-    if (input_format == 'cd3'):
-        inputfile = input_cd3file
-    elif (input_format == 'csv'):
-        if (input_blocks_csv == ''):
-            print("input blocks_csv location cannot be left blank. Exiting... ")
-            exit(1)
-        inputfile = input_blocks_csv
-    outdir = input_outdir
-
-    if not os.path.exists(outdir):
-        os.makedirs(outdir)
-
-    os.chdir('CoreInfra/BlockVolume')
-    command = 'python block_backups_policy.py '+inputfile + ' ' + outdir
-    print("Executing Command: " + command)
-    os.system(command)
-    os.chdir("../..")
-    print("--------------------------------------------------------------------------")
-
-if('12' in userInput):
-    print("---------------------------Exporting Security Rules--------------------------")
-    if (input_format == 'cd3'):
-        cd3outfile = input_cd3file
-    inputConfigFile = input_config_file
-    input_vcn = input("Enter name of VCN for which you want to export security rules; Leave blank if want to export for all VCNs: ")
-    if (input_vcn != ''):
-        input_Comp = input("Enter Compartment Name where this VCN resides: ")
-
-    os.chdir('CoreInfra/Networking/BaseNetwork')
-
-    if (input_vcn == ''):
-        if (inputConfigFile == ''):
-            command = 'python exportSeclist.py ' + cd3outfile
-        else:
-            command = 'python exportSeclist.py ' + cd3outfile + ' --configFileName ' + inputConfigFile
-    else:
-        if (inputConfigFile == ''):
-            command = 'python exportSeclist.py ' + cd3outfile + ' --vcnName ' + input_vcn + ' --networkCompartment ' + input_Comp
-        else:
-            command = 'python exportSeclist.py ' + cd3outfile + ' --vcnName ' + input_vcn + ' --networkCompartment ' + input_Comp + ' --configFileName ' + inputConfigFile
-
-    print("Executing Command: " + command)
-    os.system(command)
-    os.chdir("../../..")
-    print("--------------------------------------------------------------------------")
-
-if('13' in userInput):
-    print("---------------------------Exporting Route Rules--------------------------")
-    if (input_format == 'cd3'):
-        cd3outfile = input_cd3file
-    inputConfigFile = input_config_file
-
-    input_vcn=input("Enter name of VCN for which you want to export route rules; Leave blank if want to export for all VCNs: ")
-    if(input_vcn!=''):
-        input_Comp = input("Enter Compartment Name where this VCN resides: ")
-
-    os.chdir('CoreInfra/Networking/BaseNetwork')
-    if(input_vcn==''):
-        if(inputConfigFile==''):
-            command = 'python exportRoutetable.py ' +  cd3outfile
-        else:
-            command = 'python exportRoutetable.py ' + cd3outfile + ' --configFileName '+inputConfigFile
-    else:
-        if (inputConfigFile == ''):
-            command = 'python exportRoutetable.py '+cd3outfile+' --vcnName '+input_vcn + ' --networkCompartment '+input_Comp
-        else:
-            command = 'python exportRoutetable.py '+cd3outfile+' --vcnName '+input_vcn + ' --networkCompartment '+input_Comp+ ' --configFileName ' + inputConfigFile
-    print("Executing Command: " + command)
-    os.system(command)
-    os.chdir("../../..")
-    print("--------------------------------------------------------------------------")
-
-if('14' in userInput):
-    print("---------------------Updating Base Network----------------------------------")
-    print("1.  Add/Modify DHCP Options in existing VCNs")
-    print("2.  Add new Subnets (along with its security lists/route tables) to exiting VCNs; Move existing subnets to below <END> tag in cd3")
-    print("3.  Modify existing subnets properties(subnet name, cidr, AD, type, dhcp_option_name")
-    print("4.  Add New VCN along with its subnets and DHCP options if any; Move existing subnets to below <END> tag in cd3 Subnets sheet")
-
-    update_choice = input("Enter your choice; multiple choices allowed as comma separated ")
-    update_choice = update_choice.split(",")
-
-    if ('1' in update_choice):
-        if (input_format == 'cd3'):
-            inputfile = input_cd3file
-        outdir = input_outdir
-        prefix = input_prefix
-
-        if not os.path.exists(outdir):
-            print("out dir doesnot exist; please enter a valid directory")
-            exit(1)
-
-        os.chdir('CoreInfra/Networking/BaseNetwork')
-        command = 'python update_terraform_network.py ' + inputfile + ' ' + outdir + ' ' + prefix +' 1'
-        print("Executing Command: " + command)
-        os.system(command)
-        os.chdir("../../..")
-        print("--------------------------------------------------------------------------")
-
-    if ('2' in update_choice):
-        if (input_format == 'cd3'):
-            inputfile = input_cd3file
-        outdir = input_outdir
-        prefix = input_prefix
-
-        if not os.path.exists(outdir):
-            print("out dir doesnot exist; please enter a valid directory")
-            exit(1)
-
-        os.chdir('CoreInfra/Networking/BaseNetwork')
-        command = 'python update_terraform_network.py ' + inputfile + ' ' + outdir + ' ' + prefix +' 2'
-        print("Executing Command: " + command)
-        os.system(command)
-        os.chdir("../../..")
-        print("--------------------------------------------------------------------------")
-    if ('3' in update_choice):
-        if (input_format == 'cd3'):
-            inputfile = input_cd3file
-        outdir = input_outdir
-        prefix = input_prefix
-
-        if not os.path.exists(outdir):
-            print("out dir doesnot exist; please enter a valid directory")
-            exit(1)
-
-        os.chdir('CoreInfra/Networking/BaseNetwork')
-        command = 'python update_terraform_network.py ' + inputfile + ' ' + outdir + ' ' + prefix +' 3'
-        print("Executing Command: " + command)
-        os.system(command)
-        os.chdir("../../..")
-        print("--------------------------------------------------------------------------")
-
-    if ('4' in update_choice):
-        if (input_format == 'cd3'):
-            inputfile = input_cd3file
-        outdir = input_outdir
-        prefix = input_prefix
-
-        if not os.path.exists(outdir):
-            print("out dir doesnot exist; please enter a valid directory")
-            exit(1)
-
-        os.chdir('CoreInfra/Networking/BaseNetwork')
-        command = 'python update_terraform_network.py ' + inputfile + ' ' + outdir + ' ' + prefix +' 4'
-        print("Executing Command: " + command)
-        os.system(command)
-        os.chdir("../../..")
-        print("--------------------------------------------------------------------------")
-
-if('15' in userInput):
-    print("---------------------Setting up Network Security Groups----------------------------------")
-    print("1.  Create NSGs")
-    print("2.  Update existing instance to be part of NSG")
-    print("Note: Use option 5(Create Instances) to create new instance and make part of NSG after creation of NSGs")
-
-    update_choice = input("\nEnter your choice; multiple choices allowed as comma separated ")
-    update_choice = update_choice.split(",")
-
-    if ('1' in update_choice):
-        print("---------------------Creating NSGs----------------------------------")
-        if (input_format == 'cd3'):
-            inputfile = input_cd3file
-        elif (input_format == 'csv'):
-            if (input_nsgs_csv == ''):
-                print("input nsgs_csv location cannot be left blank. Exiting... ")
-                exit(1)
-            inputfile = input_nsgs_csv
-        outdir = input_outdir
-
-        if not os.path.exists(outdir):
-            print("out dir doesnot exist; please enter a valid directory")
-            exit(1)
-
-        os.chdir('CoreInfra/Networking/BaseNetwork')
-        command = 'python create_terraform_nsg.py ' + inputfile + ' ' + outdir
-        print("Executing Command: " + command)
-        os.system(command)
-        os.chdir("../../..")
-        print("--------------------------------------------------------------------------")
-
-    if ('2' in update_choice):
-        print("---------------------Updating Instances to have NSG----------------------------------")
+    print("1. Attach BackupPolicy to Boot Volumes")
+    print("2. Attach BackupPolicy to Block Volumes")
+    backup_choice = input("Enter your choice; multiple choices allowed as comma separated ")
+    backup_choice = backup_choice.split(",")
+    if ('1' in backup_choice):
         if (input_format == 'cd3'):
             inputfile = input_cd3file
         elif (input_format == 'csv'):
@@ -578,20 +435,31 @@ if('15' in userInput):
                 print("input instances_csv location cannot be left blank. Exiting... ")
                 exit(1)
             inputfile = input_instances_csv
-        outdir = input_outdir
-
-        if not os.path.exists(outdir):
-            print("out dir doesnot exist; please enter a valid directory")
-            exit(1)
 
         os.chdir('CoreInfra/Compute')
-        command = 'python update_instance_nsg.py ' + inputfile + ' ' + outdir
+        command = 'python boot_backups_policy.py '+inputfile + ' ' + outdir
+        print("Executing Command: " + command)
+        os.system(command)
+        os.chdir("../..")
+        print("--------------------------------------------------------------------------")
+    if ('2' in backup_choice):
+        print("------------------------Attaching Backup Policy to Block Volumes---------------------------")
+        if (input_format == 'cd3'):
+            inputfile = input_cd3file
+        elif (input_format == 'csv'):
+            if (input_blocks_csv == ''):
+                print("input blocks_csv location cannot be left blank. Exiting... ")
+                exit(1)
+            inputfile = input_blocks_csv
+
+        os.chdir('CoreInfra/BlockVolume')
+        command = 'python block_backups_policy.py '+inputfile + ' ' + outdir
         print("Executing Command: " + command)
         os.system(command)
         os.chdir("../..")
         print("--------------------------------------------------------------------------")
 
-if('16' in userInput):
+if('7' in userInput):
     print("------------------------Setting up FSS---------------------------")
     if (input_format=='cd3'):
         inputfile=input_cd3file
@@ -612,7 +480,7 @@ if('16' in userInput):
     os.chdir("../..")
     print("--------------------------------------------------------------------------")
 
-if('17' in userInput):
+if('8' in userInput):
     print("------------------------Setting up LBR---------------------------")
     if (input_format=='cd3'):
         inputfile=input_cd3file
@@ -633,7 +501,7 @@ if('17' in userInput):
     os.chdir("../..")
     print("--------------------------------------------------------------------------")
 
-if('18' in userInput):
+if('9' in userInput):
     print("------------------------Creating ADW/ATP---------------------------")
     if (input_format == 'cd3'):
         inputfile = input_cd3file
@@ -652,7 +520,7 @@ if('18' in userInput):
     os.system(command)
     os.chdir("../")
     print("--------------------------------------------------------------------------")
-if('19' in userInput):
+if('10' in userInput):
     print("---------------------Create DB System----------------------------------")
     print("1.  Virtual Machine")
     print("2.  Bare Metal")

@@ -8,9 +8,13 @@
 #
 
 import math
-import os
 import pandas as pd
 import re
+import os
+import sys
+sys.path.append(os.getcwd()+"/../../..")
+from commonTools import *
+
 
 """
 Design strategy
@@ -132,8 +136,15 @@ class CD3Parser(object):
             self.nsg = nsg
             self.nsg_numpy = nsg.to_numpy()  # makes a list of list
             self.regions = sorted(list(set(nsg.Region)))
+            self.regions = [x.strip().lower() for x in self.regions]
+            for x in self.regions:
+                if x in commonTools.endNames:
+                    self.regions.remove(x)
             self.regionDict = dict((region.lower(), {}) for region in self.regions)  # robust
             for index in self.nsg_numpy:  # each row on excel
+                region = str(index[0]).strip().lower()
+                if region in commonTools.endNames:# or region not in parseVCNInfo(filename).all_regions:
+                    break
                 unique_id = tuple(index[1:4])  # column BCD
                 workingdict = self.regionDict[index[0].lower()]
                 if unique_id in workingdict.keys():
@@ -189,7 +200,7 @@ class CD3Parser(object):
             self.vcn_numpy = vcn.to_numpy()
             self.regions = []
             self.regionDict = {}
-            for index in self.vcn_numpy:
+            for index    in self.vcn_numpy:
                 region = index[0].lower()
                 if self.checkOptionalEmpty(region) or region.lower() == "<end>":
                     break

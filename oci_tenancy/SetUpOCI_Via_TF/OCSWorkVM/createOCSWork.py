@@ -5,13 +5,17 @@ import oci
 import re
 import subprocess
 import time
-import os
 import paramiko
 import shutil
 from paramiko import SSHClient
 import puttykeys
 from pathlib import Path
 import sys
+import os
+sys.path.append(os.getcwd()+"/..")
+from commonTools import *
+
+cTools = commonTools()
 
 parser = argparse.ArgumentParser(description="Creates OCS Work related components")
 parser.add_argument("propsfile",help="Full Path of properties file. eg ocswork.properties")
@@ -32,7 +36,6 @@ try:
     input_ssh_key3=config.get('Default', 'ssh_key3').strip()
     input_ocic_username=config.get('Default','ocic_username').strip()
     input_ocic_password=config.get('Default','ocic_password').strip()
-    input_ocic_rest_endpoint=config.get('Default','ocic_rest_endpoint').strip()
     input_ocic_identity_domain=config.get('Default','ocic_identity_domain').strip()
     input_ocic_compute_endpoint=config.get('Default','ocic_compute_endpoint').strip()
     input_git_username=config.get('Default','git_username').strip()
@@ -121,7 +124,7 @@ network_client = oci.core.VirtualNetworkClient(python_config)
 identity_client = oci.identity.IdentityClient(python_config)
 compute_client = oci.core.ComputeClient(python_config)
 regions=input_regions.split(",")
-region_dict = {'ashburn':'us-ashburn-1','phoenix':'us-phoenix-1','london':'uk-london-1','frankfurt':'eu-frankfurt-1','toronto':'ca-toronto-1','tokyo':'ap-tokyo-1','seoul':'ap-seoul-1','mumbai':'ap-mumbai-1'}
+#region_dict = {'ashburn':'us-ashburn-1','phoenix':'us-phoenix-1','london':'uk-london-1','frankfurt':'eu-frankfurt-1','toronto':'ca-toronto-1','tokyo':'ap-tokyo-1','seoul':'ap-seoul-1','mumbai':'ap-mumbai-1','sydney':'ap-sydney-1','saopaulo':'sa-saopaulo-1','zurich':'eu-zurich-1'}
 
 def write_file(file_name,file_data):
     file_to_open = tmp_folder / file_name
@@ -179,21 +182,21 @@ def create_compartment(compartment_name,compartment_desc):
             new_config = python_config
             message = e.message
             if ("IAD" in message):
-                new_config.__setitem__("region",region_dict['ashburn'])
+                new_config.__setitem__("region",cTools.region_dict['ashburn'])
             if ("PHX" in message):
-                new_config.__setitem__("region", region_dict['phoenix'])
+                new_config.__setitem__("region", cTools.region_dict['phoenix'])
             if ("YYZ" in message):
-                new_config.__setitem__("region", region_dict['toronto'])
+                new_config.__setitem__("region", cTools.region_dict['toronto'])
             if ("FRA" in message):
-                new_config.__setitem__("region", region_dict['frankfurt'])
+                new_config.__setitem__("region", cTools.region_dict['frankfurt'])
             if ("LHR" in message):
-                new_config.__setitem__("region", region_dict['london'])
+                new_config.__setitem__("region", cTools.region_dict['london'])
             if ("BOM" in message):
-                new_config.__setitem__("region", region_dict['mumbai'])
+                new_config.__setitem__("region", cTools.region_dict['mumbai'])
             if ("ICN" in message):
-                new_config.__setitem__("region", region_dict['seoul'])
+                new_config.__setitem__("region", cTools.region_dict['seoul'])
             if ("NRT" in message):
-                new_config.__setitem__("region", region_dict['tokyo'])
+                new_config.__setitem__("region", cTools.region_dict['tokyo'])
 
             new_id_client = oci.identity.IdentityClient(new_config)
             try:
@@ -286,7 +289,7 @@ if(input_image_id==''):
 linux_image_id={}
 windows_image_id={}
 variables_data={}
-for key in region_dict:
+for key in cTools.region_dict:
     linux_image_id.setdefault(key,'')
     windows_image_id.setdefault(key,'')
     variables_data.setdefault(key,'')
@@ -294,7 +297,7 @@ for key in region_dict:
 new_config=python_config
 for region in regions:
     region=region.strip().lower()
-    new_config.__setitem__("region",region_dict[region])
+    new_config.__setitem__("region",cTools.region_dict[region])
     cc = oci.core.ComputeClient(new_config)
     #fetch latest image ocids
     for image in paginate(cc.list_images,compartment_id=tenancy_id,operating_system ='Oracle Linux',sort_by='TIMECREATED'):
@@ -342,7 +345,7 @@ for region in regions:
     }
     variable "region" {
             type = "string"
-            default = \"""" + region_dict[region] + """"
+            default = \"""" + cTools.region_dict[region] + """"
     }
     """
     if (windows_image_id[region] != ''):
@@ -494,30 +497,6 @@ resource "opc_compute_ip_reservation" "panda_new" {
   permanent   = true
 }
 
-output "panda_pub_ip" {
-        value = "${opc_compute_ip_reservation.panda_new.ip}"
-}
-
-output "ctlsInstanceName" {
-        value = "${opc_compute_instance.panda_new.name}/${opc_compute_instance.panda_new.id}"
-}
-
-output "container"{
-        value = "/Compute-${var.domain}/${var.user}"
-}
-
-output "targetControllerName"{
-        value = "/Compute-${var.domain}/${var.user}/${opc_compute_instance.panda_new.name}/${opc_compute_instance.panda_new.id}"
-}
-
-output "password" {
-        value = "${var.password}"
-}
-
-output "endpoint" {
-        value = "${var.endpoint}"
-}
-
 resource "opc_compute_ip_network" "panda_new" {
  name                = \"""" + input_ocic_tf_prefix_for_panda + """_Panda-OCIC2OCI--IP-Network"
  """
@@ -587,7 +566,8 @@ if (input_configure_koala=="1"):
     script_data="""#!/usr/bin/expect
     set password """+input_ocic_password+"""
     cd /root/ocswork/ocic2oci_work
-    spawn /usr/local/bin/opcmigrate discover
+    #spawn /usr/local/bin/opcmigrate discover
+    spawn /opt/rh/rh-python36/root/usr/bin/opcmigrate discover
     expect "Compute Classic Password" {send "$password\\r"}
     sleep 60
     expect eof

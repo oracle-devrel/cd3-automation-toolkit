@@ -8,11 +8,12 @@
 import sys
 import argparse
 import configparser
-import os
 import pandas as pd
-import glob
 import shutil
 import datetime
+import os
+sys.path.append(os.getcwd()+"/../../..")
+from commonTools import *
 
 ######
 # Required Files
@@ -29,7 +30,7 @@ parser = argparse.ArgumentParser(description="Create DHCP options terraform file
 parser.add_argument("inputfile", help="Full Path of input file. It could be either the properties file eg vcn-info.properties or CD3 excel file")
 parser.add_argument("outdir", help="Output directory for creation of TF files")
 parser.add_argument("prefix", help="customer name/prefix for all file names")
-parser.add_argument("--dhcp_add", help="Add new dhcp option: true or false", required=False)
+parser.add_argument("--modify_network", help="Modify: true or false", required=False)
 
 
 if len(sys.argv)<3:
@@ -40,10 +41,10 @@ args = parser.parse_args()
 filename=args.inputfile
 outdir = args.outdir
 prefix=args.prefix
-if args.dhcp_add is not None:
-    dhcp_add = str(args.dhcp_add)
+if args.modify_network is not None:
+    modify_network = str(args.modify_network)
 else:
-    dhcp_add = "false"
+    modify_network = "false"
 
 outfile={}
 oname={}
@@ -92,42 +93,34 @@ def processDHCP(region,vcn_name,dhcp_option_name,compartment_var_name,serverType
 	tfStr[region] = tfStr[region] + data
 
 
-endNames = {'<END>', '<end>','<End>'}
 if('.xls' in args.inputfile):
-	df_vcn = pd.read_excel(args.inputfile, sheet_name='VCNs',skiprows=1)
-	df_vcn.dropna(how='all')
-
-	df_info = pd.read_excel(filename, sheet_name='VCN Info', skiprows=1)
-	properties = df_info['Property']
-	values = df_info['Value']
-
-	all_regions = str(values[7]).strip()
-	all_regions = all_regions.split(",")
-	all_regions = [x.strip().lower() for x in all_regions]
-	for reg in all_regions:
+	vcnInfo = parseVCNInfo(filename)
+	vcns = parseVCNs(filename)
+	for reg in vcnInfo.all_regions:
 		tfStr[reg] = ''
 
-	df_vcn.set_index("vcn_name", inplace=True)
-	df_vcn.head()
 	df = pd.read_excel(args.inputfile, sheet_name='DHCP',skiprows=1)
 	df.dropna(how='all')
 	for i in df.index:
-		vcn_name = df.iat[i,0]
-		if (vcn_name in endNames):
+		region = df.iat[i,0]
+		if (region in commonTools.endNames):
 			break
-		dhcp_option_name = df.iat[i,1]
-		serverType = df.iat[i,2]
-		search_domain = df.iat[i,3]
+		region=region.strip().lower()
+		compartment_var_name = df.iat[i,1]
+		vcn_name = df.iat[i,2]
+		if(vcn_name.strip() not in vcns.vcn_names):
+			print("\nERROR!!! "+vcn_name+" specified in DHCP tab has not been declared in VCNs tab..Exiting!")
+			exit(1)
+		dhcp_option_name = df.iat[i,3]
+		serverType = df.iat[i,4]
+		search_domain = df.iat[i,5]
 		if(str(search_domain).lower()=='nan'):
 			search_domain=""
-		custom_dns_servers = df.iat[i,4]
 
-		vcn_data = df_vcn.loc[vcn_name]
-		compartment_var_name = vcn_data['compartment_name']
-		region=vcn_data['Region']
-		region=region.strip().lower()
-		if region not in all_regions:
-			print("Invalid Region; It should be one of the values mentioned in VCN Info tab")
+		custom_dns_servers = df.iat[i,6]
+
+		if region not in vcnInfo.all_regions:
+			print("\nERROR!!! Invalid Region; It should be one of the values mentioned in VCN Info tab..Exiting!")
 			exit(1)
 		processDHCP(region,vcn_name,dhcp_option_name,compartment_var_name,serverType,custom_dns_servers,search_domain)
 
@@ -182,8 +175,8 @@ else:
     print("Invalid input file format; Acceptable formats: .xls, .xlsx, .properties")
 
 dhcpdata={}
-if(dhcp_add=='true'):
-	for reg in all_regions:
+if(modify_network=='true'):
+	for reg in vcnInfo.all_regions:
 		reg_out_dir = outdir + "/" + reg
 		if not os.path.exists(reg_out_dir):
 			os.makedirs(reg_out_dir)
@@ -201,8 +194,8 @@ if(dhcp_add=='true'):
 			oname[reg].close()
 			print(outfile[reg] + " containing TF for DHCP Options has been updated for region " + reg)
 
-elif(dhcp_add == 'false'):
-	for reg in all_regions:
+elif(modify_network == 'false'):
+	for reg in vcnInfo.all_regions:
 		reg_out_dir = outdir + "/" + reg
 		if not os.path.exists(reg_out_dir):
 			os.makedirs(reg_out_dir)

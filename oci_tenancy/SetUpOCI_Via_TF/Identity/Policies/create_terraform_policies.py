@@ -7,8 +7,11 @@
 
 import sys
 import argparse
-import os
 import pandas as pd
+import os
+sys.path.append(os.getcwd()+"/..")
+from commonTools import *
+
 
 ######
 # Required Inputs- Either properties file: vcn-info.properties or CD3 excel file AND Outfile
@@ -37,19 +40,10 @@ tempStr=''
 
 
 if('.xls' in args.inputfile):
+    vcnInfo = parseVCNInfo(args.inputfile)
     df = pd.read_excel(args.inputfile, sheet_name='Policies',skiprows=1)
     df.dropna(how='all')
-    df_info = pd.read_excel(filename, sheet_name='VCN Info', skiprows=1)
-    # Get Property Values
-    properties = df_info['Property']
-    values = df_info['Value']
 
-    all_regions = str(values[7]).strip()
-    all_regions = all_regions.split(",")
-    all_regions = [x.strip().lower() for x in all_regions]
-
-    NaNstr = 'NaN'
-    endNames = {'<END>', '<end>', '<End>'}
     count = 0
     regions=df['Region']
     regions.dropna()
@@ -57,7 +51,7 @@ if('.xls' in args.inputfile):
     check_diff_region=[]
 
     for j in regions.index:
-        if(regions[j] not in check_diff_region and regions[j] not in endNames and str(regions[j]).lower() != NaNstr.lower()):
+        if(regions[j] not in check_diff_region and regions[j] not in commonTools.endNames and str(regions[j]).lower() != "nan"):
             check_diff_region.append(regions[j])
 
     if(len(check_diff_region)>1):
@@ -65,25 +59,25 @@ if('.xls' in args.inputfile):
         exit(1)
     for i in df.index:
         region=df.iat[i,0]
-        if (region in endNames):
+        if (region in commonTools.endNames):
             break
-        if check_diff_region[0].strip().lower() not in all_regions:
+        if check_diff_region[0].strip().lower() not in vcnInfo.all_regions:
             print("Invalid Region; It should be one of the values mentioned in VCN Info tab")
             exit(1)
         policy_name = df.iat[i, 1]
 
-        if (str(policy_name).lower() != NaNstr.lower()):
+        if (str(policy_name).lower() != "nan"):
 
             count=count +1
             policy_compartment_name = df.iat[i, 2]
-            if (str(policy_compartment_name).lower() == NaNstr.lower() or policy_compartment_name.lower() == 'root'):
+            if (str(policy_compartment_name).lower() == "nan" or policy_compartment_name.lower() == 'root'):
                 policy_compartment = '${var.tenancy_ocid}'
             else:
                 policy_compartment = '${oci_identity_compartment.' + policy_compartment_name + '.id}'
 
 
             policy_desc = df.iat[i, 3]
-            if (str(policy_desc).lower() == NaNstr.lower()):
+            if (str(policy_desc).lower() == "nan"):
                 policy_desc = policy_name
 
             policy_statement = df.iat[i,4]
@@ -113,9 +107,9 @@ if('.xls' in args.inputfile):
             name = \"""" + policy_name + """"
             statements = [ \"""" + actual_policy_statement + """" """
 
-        if(str(policy_name).lower() == NaNstr.lower()):
+        if(str(policy_name).lower() == "nan"):
             policy_statement = df.iat[i, 4]
-            if(str(policy_statement).lower() != NaNstr.lower()):
+            if(str(policy_statement).lower() != "nan"):
                 policy_statement_grps = df.iat[i, 5]
                 policy_statement_grps= policy_statement_grps.split(",")
                 grp_tf = ""
