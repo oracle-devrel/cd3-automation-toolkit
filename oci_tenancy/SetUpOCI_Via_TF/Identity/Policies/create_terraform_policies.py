@@ -9,7 +9,7 @@ import sys
 import argparse
 import pandas as pd
 import os
-sys.path.append(os.getcwd()+"/..")
+sys.path.append(os.getcwd()+"/../..")
 from commonTools import *
 
 

@@ -110,6 +110,7 @@ def processVCN(region, vcn_name, vcn_cidr, vcn_drg, vcn_igw, vcn_ngw, vcn_sgw, v
     vcn_igw = vcn_igw.strip()
     vcn_ngw = vcn_ngw.strip()
     vcn_sgw = vcn_sgw.strip()
+    vcn_lpg = vcn_lpg.strip()
     hub_spoke_none = hub_spoke_none.strip()
     compartment_var_name = compartment_var_name.strip()
     vcn_dns_label = vcn_dns_label.strip()
@@ -216,22 +217,22 @@ def processVCN(region, vcn_name, vcn_cidr, vcn_drg, vcn_igw, vcn_ngw, vcn_sgw, v
                     compartment_id = "${var.""" + compartment_var_name + """}"
             }
             """
-
-    for lpg_name in vcns.vcn_lpg_names[vcn_name]:
-        data = data + """
+    if(vcn_lpg!='n'):
+        for lpg_name in vcns.vcn_lpg_names[vcn_name]:
+            data = data + """
             resource "oci_core_local_peering_gateway" \"""" + vcn_name+"_"+lpg_name + """" {
                     display_name = \"""" + lpg_name + """"
                     vcn_id = "${oci_core_vcn.""" + vcn_name + """.id}"
                     compartment_id = "${var.""" + compartment_var_name + """}"
                     #peer_id for lpg """ + vcn_name+"_"+lpg_name
-        if(hub_spoke_none == 'hub'):
-            rt_var = vcn_name+"_"+lpg_name + "_rt"
-            data = data + """
+            if(hub_spoke_none == 'hub'):
+                rt_var = vcn_name+"_"+lpg_name + "_rt"
+                data = data + """
                     route_table_id = "${oci_core_route_table.""" + rt_var + """.id}"
                 }
                 """
-        else:
-            data=data+"""
+            else:
+                data=data+"""
             }
             """
 

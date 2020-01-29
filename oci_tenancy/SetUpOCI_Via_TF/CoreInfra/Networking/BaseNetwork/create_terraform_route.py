@@ -65,12 +65,12 @@ def createLPGRouteRules(peering_dict):
             lpg_name=left_vcn+"_"+lpg_name
             vcns.vcn_lpg_names1[left_vcn].pop(0)
             ruleStr = """
-            route_rules { 
-                destination = "${oci_core_vcn.""" + right_vcn + """.cidr_block}"
-                network_entity_id = "${oci_core_local_peering_gateway.""" + lpg_name + """.id}"
-                destination_type = "CIDR_BLOCK"
-                }
-            """
+                    route_rules { 
+                        destination = "${oci_core_vcn.""" + right_vcn + """.cidr_block}"
+                        network_entity_id = "${oci_core_local_peering_gateway.""" + lpg_name + """.id}"
+                        destination_type = "CIDR_BLOCK"
+                        }
+                        """
             vcns.vcn_lpg_rules[left_vcn] = vcns.vcn_lpg_rules[left_vcn] + ruleStr
 
             # Build rule for VCNs on right
@@ -80,12 +80,12 @@ def createLPGRouteRules(peering_dict):
             vcns.vcn_lpg_names1[right_vcn].pop(0)
 
             ruleStr = """
-            route_rules { 
-                destination = "${oci_core_vcn.""" + left_vcn + """.cidr_block}"
-                network_entity_id = "${oci_core_local_peering_gateway.""" + lpg_name + """.id}"
-                destination_type = "CIDR_BLOCK"
-            }
-            """
+                    route_rules { 
+                        destination = "${oci_core_vcn.""" + left_vcn + """.cidr_block}"
+                        network_entity_id = "${oci_core_local_peering_gateway.""" + lpg_name + """.id}"
+                        destination_type = "CIDR_BLOCK"
+                        }
+                        """
             vcns.vcn_lpg_rules[right_vcn] = vcns.vcn_lpg_rules[right_vcn] + ruleStr
 
 
@@ -118,12 +118,12 @@ def createDRGRtTableString(compartment_var_name,hub_vcn_name,peering_dict,region
             lpg_name=hub_vcn_name+"_"+lpg_name
             vcns.vcn_lpg_names2[hub_vcn_name].pop(0)
             drgStr = drgStr + """
-                route_rules { 
-                    destination = "${oci_core_vcn.""" + right_vcn + """.cidr_block}"
-                    network_entity_id = "${oci_core_local_peering_gateway.""" + lpg_name + """.id}"
-                    destination_type = "CIDR_BLOCK"
-                    }
-                """
+                    route_rules { 
+                        destination = "${oci_core_vcn.""" + right_vcn + """.cidr_block}"
+                        network_entity_id = "${oci_core_local_peering_gateway.""" + lpg_name + """.id}"
+                        destination_type = "CIDR_BLOCK"
+                        }
+                        """
     drgStr = drgStr + """
         }"""
     oname.write(drgStr)
@@ -161,11 +161,11 @@ def createLPGRtTableString(compartment_var_name,hub_vcn_name,peering_dict,region
                 for drg_destination in vcnInfo.onprem_destinations:
                     if (drg_destination != ''):
                         lpgStr = lpgStr + """
-                        route_rules { 
-                            destination = \"""" + drg_destination.strip() + """\"
-                            network_entity_id = "${oci_core_drg.""" + hub_vcn_name+"_"+drg_name + """.id}"
-                            destination_type = "CIDR_BLOCK"
-                            }
+                    route_rules { 
+                        destination = \"""" + drg_destination.strip() + """\"
+                        network_entity_id = "${oci_core_drg.""" + hub_vcn_name+"_"+drg_name + """.id}"
+                        destination_type = "CIDR_BLOCK"
+                        }
                     """
 
             lpgStr = lpgStr + """
@@ -179,21 +179,21 @@ def prepareSGWRuleStr(sgw_name,configure_sgw):
     data=""
     if(configure_sgw=="all_services"):
         data = data+ """
-                        route_rules { 
-                            destination = contains(split("-","${data.oci_core_services.oci_services.services.0.cidr_block}"),"all") == true ? "${data.oci_core_services.oci_services.services.0.cidr_block}" : "${data.oci_core_services.oci_services.services.1.cidr_block}"
-                            network_entity_id = "${oci_core_service_gateway.""" + vcn_name+"_"+sgw_name + """.id}"
-                            destination_type = "SERVICE_CIDR_BLOCK"
-                            }
-                            """
+                    route_rules { 
+                        destination = contains(split("-","${data.oci_core_services.oci_services.services.0.cidr_block}"),"all") == true ? "${data.oci_core_services.oci_services.services.0.cidr_block}" : "${data.oci_core_services.oci_services.services.1.cidr_block}"
+                        network_entity_id = "${oci_core_service_gateway.""" + vcn_name+"_"+sgw_name + """.id}"
+                        destination_type = "SERVICE_CIDR_BLOCK"
+                        }
+                        """
 
     elif(configure_sgw=="object_storage"):
         data = data + """
-                        route_rules { 
-                            destination = contains(split("-","${data.oci_core_services.oci_services.services.0.cidr_block}"),"objectstorage") == true ? "${data.oci_core_services.oci_services.services.0.cidr_block}" : "${data.oci_core_services.oci_services.services.1.cidr_block}"
-                            network_entity_id = "${oci_core_service_gateway.""" + vcn_name + "_" + sgw_name + """.id}"
-                            destination_type = "SERVICE_CIDR_BLOCK"
-                            }
-                            """
+                    route_rules { 
+                        destination = contains(split("-","${data.oci_core_services.oci_services.services.0.cidr_block}"),"objectstorage") == true ? "${data.oci_core_services.oci_services.services.0.cidr_block}" : "${data.oci_core_services.oci_services.services.1.cidr_block}"
+                        network_entity_id = "${oci_core_service_gateway.""" + vcn_name + "_" + sgw_name + """.id}"
+                        destination_type = "SERVICE_CIDR_BLOCK"
+                        }
+                        """
     return data
 
 def prepareNGWRuleStr(ngw_name):
@@ -206,8 +206,7 @@ def prepareNGWRuleStr(ngw_name):
                         network_entity_id = "${oci_core_nat_gateway.""" + vcn_name+"_"+ngw_name + """.id}"
                         destination_type = "CIDR_BLOCK"
                         }
-           
-                 """
+                        """
     return data
 
 def prepareIGWRuleStr(igw_name):
@@ -250,12 +249,12 @@ def prepareOnpremRuleStr(drg_name):
         for drg_destination in vcnInfo.onprem_destinations:
             if (drg_destination != ''):
                 data = data + """
-                        route_rules { 
-                            destination = \"""" + drg_destination.strip() + """\"
-                            network_entity_id = "${oci_core_local_peering_gateway.""" + lpg_name + """.id}"
-                            destination_type = "CIDR_BLOCK"
-                            }
-                            """
+                    route_rules { 
+                        destination = \"""" + drg_destination.strip() + """\"
+                        network_entity_id = "${oci_core_local_peering_gateway.""" + lpg_name + """.id}"
+                        destination_type = "CIDR_BLOCK"
+                        }
+                        """
     return data
 
 def prepareVCNPeerRuleStr():
@@ -333,83 +332,58 @@ def processSubnet(region,vcn_name,name,rt_name,AD,configure_sgw,configure_ngw,co
     data_igw = prepareIGWRuleStr(igw_name)
     data_onprem = prepareOnpremRuleStr(drg_name)
     data_vcnpeer = prepareVCNPeerRuleStr()
-    textToSearch = """##Add More rules for subnet """ + vcn_name + "_" + subnet_res_name + """##"""
-    end = """
-            ##Add More rules for subnet """ + vcn_name+"_"+subnet_res_name + """##
-            """
+
+    dataStr = """
+                #SubnetRules Start"""
+    if configure_sgw.strip() == 'all_services' or configure_sgw.strip() == 'object_storage' and vcn_sgw != 'n':
+        dataStr = dataStr + data_sgw
+    if configure_ngw.strip() == 'y' and vcn_ngw != 'n':
+        dataStr = dataStr + data_ngw
+    if configure_igw.strip() == 'y' and vcn_igw != 'n':
+        dataStr = dataStr + data_igw
+    if configure_onprem.strip() == 'y':
+        if (vcn_name in vcns.hub_vcn_names or vcn_name in vcns.spoke_vcn_names):
+            dataStr = dataStr + data_onprem
+    if (configure_vcnpeering.strip() == 'y' and vcns.vcn_lpg_rules[vcn_name] != ''):
+        dataStr = dataStr + data_vcnpeer
+    dataStr = dataStr + """
+                #SubnetRules End
+                """
 
     # Either same route table name is used for subsequent subnets or Modify Network is set to true - Add rules modified to y
     # and remove rules modified to n
     if (os.path.exists(outfile)):# and modify_network == 'true'):
-        with open(outfile, 'r+') as file:
-            filedata = file.read()
-        file.close()
-        orig_data = filedata
-        if configure_sgw.strip() =='all_services' or configure_sgw.strip() =='object_storage' and vcn_sgw != 'n':
-            if(data_sgw not in filedata):
-                filedata = filedata.replace(textToSearch, data_sgw+end)
-        elif configure_sgw.strip() == 'n':
-            filedata = filedata.replace(data_sgw,"")
-
-        if configure_ngw.strip() == 'y' and vcn_ngw != 'n':
-            if (data_ngw not in filedata):
-                filedata = filedata.replace(textToSearch, data_ngw + end)
-        elif configure_ngw.strip() == 'n':
-            filedata = filedata.replace(data_ngw,"")
-
-        if configure_igw.strip() == 'y' and vcn_igw != 'n':
-            if (data_igw not in filedata):
-                filedata = filedata.replace(textToSearch, data_igw + end)
-        elif configure_igw == 'n':
-            filedata = filedata.replace(data_igw,"")
-
-        if(configure_onprem.strip() == 'y'):
-            if (vcn_name in vcns.hub_vcn_names or vcn_name in vcns.spoke_vcn_names):
-                if (data_onprem not in filedata):
-                    filedata = filedata.replace(textToSearch, data_onprem + end)
-        elif configure_onprem.strip() == 'n':
-            filedata = filedata.replace(data_onprem,"")
-
-        if configure_vcnpeering.strip() == 'y' and vcns.vcn_lpg_rules[vcn_name] != '':
-            if (data_vcnpeer not in filedata):
-                filedata = filedata.replace(textToSearch, data_vcnpeer + end)
-        elif configure_vcnpeering.strip()=='n':
-            filedata=filedata.replace(data_vcnpeer,"")
-
-        if(orig_data!=filedata):
-            commonTools.backup_file(outdir+"/"+region,vcn_name+"_"+subnet_res_name + "_routetable.tf")
-            oname = open(outfile, "w")
-            oname.write(filedata)
-            oname.close()
-            return
-        else:
-            return
+        newlines=[]
+        with open(outfile, 'r') as file:
+            copy=True
+            for line in file:
+                if line.strip() == "#SubnetRules Start":
+                    copy=False
+                    newlines.append(dataStr)
+                    continue
+                elif(line.strip() == "#SubnetRules End"):
+                    copy=True
+                    continue
+                elif copy:
+                    newlines.append(line)
+            file.close()
+        with open(outfile, 'w') as file:
+            file.writelines(newlines)
+            file.close()
+        return
 
     #New routetable
     oname = open(outfile, "w")
-
     data_res = """ 
             resource "oci_core_route_table" \"""" +vcn_name+"_"+ subnet_res_name + """"{
                 compartment_id = "${var.""" + compartment_var_name + """}"
                 vcn_id = "${oci_core_vcn.""" + vcn_name + """.id}"
                 display_name = \"""" + display_name.strip() + """\" """
-    dataStr=""
-    if configure_sgw.strip() =='all_services' or configure_sgw.strip() =='object_storage' and vcn_sgw != 'n':
-        dataStr = dataStr+data_sgw
-    if configure_ngw.strip() == 'y' and vcn_ngw != 'n':
-        dataStr = dataStr+ data_ngw
-    if configure_igw.strip() == 'y' and vcn_igw != 'n':
-        dataStr=dataStr+data_igw
-    if configure_onprem.strip() == 'y':
-        if(vcn_name in vcns.hub_vcn_names or vcn_name in vcns.spoke_vcn_names):
-            dataStr=dataStr+data_onprem
-    if(configure_vcnpeering.strip()=='y' and vcns.vcn_lpg_rules[vcn_name] != ''):
-        dataStr=dataStr+data_vcnpeer
 
     end="""
-                        ##Add More rules for subnet """ + vcn_name+"_"+subnet_res_name + """##
-                }
-                """
+            ##Add More rules for subnet """ + vcn_name+"_"+subnet_res_name + """##
+            }
+            """
     tempStr=data_res+dataStr+end
     oname.write(tempStr)
     oname.close()
