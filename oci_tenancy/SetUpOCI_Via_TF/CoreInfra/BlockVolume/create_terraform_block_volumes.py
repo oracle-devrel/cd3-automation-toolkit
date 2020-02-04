@@ -47,8 +47,7 @@ if('.xls' in filename):
         if region not in all_regions:
             print("Invalid Region; It should be one of the values mentioned in VCN Info tab")
             continue
-        if region in endNames:
-            break
+
         blockname = df.iat[i, 1]
         size = df.iat[i, 2]
         s=int(size)

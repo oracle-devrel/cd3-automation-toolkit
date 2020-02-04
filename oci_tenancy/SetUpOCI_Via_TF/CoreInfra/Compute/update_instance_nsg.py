@@ -25,6 +25,8 @@ if len(sys.argv) < 2:
 args = parser.parse_args()
 filename = args.file
 outdir = args.outdir
+endnames= ['<end>','<END>','<End>']
+
 if('.csv' in filename):
     df = pd.read_csv(filename)
     excel_writer = pd.ExcelWriter('tmp_to_excel.xlsx', engine='xlsxwriter')
@@ -37,6 +39,8 @@ if ('.xls' in filename):
     df = pd.read_excel(filename, sheet_name='Instances',skiprows=1)
     for i in df.index:
         for j in df.keys():
+            if(str(df[j][i]) in endnames):
+                exit()
             if (str(df[j][i]) == 'nan'):
                 continue
 

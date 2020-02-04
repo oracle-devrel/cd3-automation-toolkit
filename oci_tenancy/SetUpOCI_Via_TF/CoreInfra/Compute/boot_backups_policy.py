@@ -53,6 +53,7 @@ data "oci_core_volume_backup_policies" "bronze" {
 """
 first_tmpstr = tmpstr
 policy_file={}
+endnames= ['<end>','<END>','<End>']
 
 # If the input is CD3
 if ('.xls' in filename):
@@ -78,6 +79,8 @@ if ('.xls' in filename):
     df = pd.read_excel(filename, sheet_name='Instances',skiprows=1)
     for i in df.index:
         for j in df.keys():
+            if (str(df[j][i]) in endnames):
+                exit()
             if (str(df[j][i]) == 'nan'):
                 continue
 

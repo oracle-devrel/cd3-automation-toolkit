@@ -77,7 +77,7 @@ print("9.  Create ADW/ADT")
 print("10. Create Database")
 print("\nSee example folder for sample input files\n")
 
-userInput = input('Enter your choice; multiple choices allowed as comma separated: ')
+userInput = input('Enter your choice: ')
 userInput=userInput.split(',')
 
 if('1' in userInput):
@@ -155,31 +155,33 @@ if('2' in userInput):
 
     if not os.path.exists(outdir):
         os.makedirs(outdir)
-    os.chdir('CoreInfra/Networking/BaseNetwork')
 
     print("1.  Create Network- overwrites all TF files; reverts all SecLists and RouteTables to original rules")
     print("2.  Modify Network- Add/Remove/Modify any network object; updates TF files with changes; this option should be used after modifications have been done to SecRules or RouteRules")
-    print("3.  Export SecRules and RouteRules to cd3")
+    print("3.  Export existing SecRules and RouteRules to cd3")
     print("4.  Modify SecRules")
     print("5.  Modify RouteRules")
     print("6.  Create Network Security Groups")
-    choice = input("Enter one choice ")
+    choice = input("Enter your choice ")
+    choice = choice.split(",")
 
-    if (choice=='1'):
+    if ('1' in choice):
         command = 'python create_all_tf_objects.py ' + inputfile + ' ' + outdir + ' ' + prefix
         print("Executing Command: " + command)
+        os.chdir('CoreInfra/Networking/BaseNetwork')
         os.system(command)
         os.chdir("../../..")
         print("--------------------------------------------------------------------------")
 
-    elif (choice=='2'):
+    if ('2' in choice):
         command = 'python create_all_tf_objects.py ' + inputfile + ' ' + outdir + ' ' + prefix + ' --modify_network true'
         print("Executing Command: " + command)
+        os.chdir('CoreInfra/Networking/BaseNetwork')
         os.system(command)
         os.chdir("../../..")
         print("--------------------------------------------------------------------------")
 
-    elif(choice == '3'):
+    if('3' in choice):
         print("---------------------------Exporting Rules--------------------------")
         if (input_format == 'cd3'):
             cd3outfile = input_cd3file
@@ -204,6 +206,7 @@ if('2' in userInput):
                 command_rt = 'python exportRoutetable.py ' + cd3outfile + ' --vcnName ' + input_vcn + ' --networkCompartment ' + input_Comp + ' --configFileName ' + inputConfigFile
 
         print("Executing Command: " + command_sl)
+        os.chdir('CoreInfra/Networking/BaseNetwork')
         os.system(command_sl)
         print("-----------------------------------------------------------------------------")
         print("Executing Command: " + command_rt)
@@ -211,7 +214,7 @@ if('2' in userInput):
         os.chdir("../../..")
         print("--------------------------------------------------------------------------")
 
-    elif(choice == '4'):
+    if('4' in choice):
         print("------------------------Modifying Security Rules--------------------------------")
         if (input_format == 'cd3'):
             inputfile = input_cd3file
@@ -232,11 +235,12 @@ if('2' in userInput):
  #       else:
  #           command = 'python modify_secrules_tf.py ' + inputfile + ' ' + outdir + ' ' + inputcsv + ' --configFileName ' + inputConfigFile
         print("Executing Command: " + command)
+        os.chdir('CoreInfra/Networking/BaseNetwork')
         os.system(command)
         os.chdir("../../..")
         print("--------------------------------------------------------------------------")
 
-    elif(choice == '5'):
+    if('5' in choice):
         print("------------------------Modifying Route Rules--------------------------------")
         if (input_format == 'cd3'):
             inputfile = input_cd3file
@@ -249,11 +253,12 @@ if('2' in userInput):
 
         command = 'python modify_routerules_tf.py ' + inputfile + ' ' + outdir
         print("Executing Command: " + command)
+        os.chdir('CoreInfra/Networking/BaseNetwork')
         os.system(command)
         os.chdir("../../..")
         print("--------------------------------------------------------------------------")
 
-    elif(choice=='6'):
+    if('6' in choice):
         print("---------------------Creating NSGs----------------------------------")
         if (input_format == 'cd3'):
             inputfile = input_cd3file
@@ -265,11 +270,11 @@ if('2' in userInput):
 
         command = 'python create_terraform_nsg.py ' + inputfile + ' ' + outdir
         print("Executing Command: " + command)
+        os.chdir('CoreInfra/Networking/BaseNetwork')
         os.system(command)
         os.chdir("../../..")
         print("--------------------------------------------------------------------------")
-    else:
-        print("Invalid Choice")
+
 if('3' in userInput):
     print("--------------------Creating Instances/Dedicated VM Hosts------------------------------------")
     print("1.  Create Dedicated VM Hosts")

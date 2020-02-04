@@ -53,6 +53,7 @@ data "oci_core_volume_backup_policies" "block_bronze" {
 """
 first_tmpstr = tmpstr
 policy_file={}
+endnames= ['<end>','<END>','<End>']
 
 if ('.xls' in filename):
     #df_info = pd.read_excel(filename, sheet_name='VCN Info', skiprows=1)
@@ -77,6 +78,8 @@ if ('.xls' in filename):
     df = pd.read_excel(filename, sheet_name='BlockVols',skiprows=1)
     for i in df.index:
         for j in df.keys():
+            if (str(df[j][i]) in endnames):
+                exit()
             if (str(df[j][i]) == 'nan'):
                 continue
 

@@ -398,18 +398,18 @@ for row in ws.iter_rows(min_row=2):
         names.append(vcn_name)
         for cellnew in row:
             if(len(names) % 2==0):
-                cellnew.fill=PatternFill(start_color="FABEBE", end_color="FABEBE", fill_type = "solid")
+                cellnew.fill=PatternFill(start_color="94AFAF", end_color="94AFAF", fill_type = "solid")
                 cellnew.border=brdr
             else:
-                cellnew.fill = PatternFill(start_color="46F0F0", end_color="46F0F0", fill_type="solid")
+                cellnew.fill = PatternFill(start_color="E5DBBE", end_color="E5DBBE", fill_type="solid")
                 cellnew.border=brdr
     else:
         for cellnew in row:
             if (len(names) % 2 == 0):
-                cellnew.fill = PatternFill(start_color="FABEBE", end_color="FABEBE", fill_type="solid")
+                cellnew.fill = PatternFill(start_color="94AFAF", end_color="94AFAF", fill_type="solid")
                 cellnew.border=brdr
             else:
-                cellnew.fill = PatternFill(start_color="46F0F0", end_color="46F0F0", fill_type="solid")
+                cellnew.fill = PatternFill(start_color="E5DBBE", end_color="E5DBBE", fill_type="solid")
                 cellnew.border=brdr
 
 #Move the sheet near Networking sheets
