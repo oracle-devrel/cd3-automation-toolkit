@@ -90,28 +90,31 @@ if ('.xls' in filename):
 
             elif (j == 'Hostname'):
                 Host_name = df['Hostname'][i]
-                policy = df['Backup Policy'][i].lower().strip()
-                res_name = Host_name + "_bkupPolicy"
-                tmpstr = """resource "oci_core_volume_backup_policy_assignment" \"""" + res_name + """\"{
-                            #Required
-                            asset_id = "${oci_core_instance.""" + Host_name + """.boot_volume_id}"
-                            policy_id = "${data.oci_core_volume_backup_policies.""" + policy + """.volume_backup_policies.0.id}"
-                    }
-                    ## Add policy attachment ##
-                        """
+                if (str(df['Backup Policy'][i]) == 'nan'):
+                    continue
+                else:
+                    policy = df['Backup Policy'][i].lower().strip()
+                    res_name = Host_name + "_bkupPolicy"
+                    tmpstr = """resource "oci_core_volume_backup_policy_assignment" \"""" + res_name + """\"{
+                                #Required
+                                asset_id = "${oci_core_instance.""" + Host_name + """.boot_volume_id}"
+                                policy_id = "${data.oci_core_volume_backup_policies.""" + policy + """.volume_backup_policies.0.id}"
+                        }
+                        ## Add policy attachment ##
+                            """
 
-                textToSearch = "## Add policy attachment ##"
+                    textToSearch = "## Add policy attachment ##"
 
-                with open(policy_file[Region], 'r+') as file:
-                    filedata = file.read()
-                file.close()
-                # Replace the target string
-                filedata = filedata.replace(textToSearch, tmpstr)
+                    with open(policy_file[Region], 'r+') as file:
+                        filedata = file.read()
+                    file.close()
+                    # Replace the target string
+                    filedata = filedata.replace(textToSearch, tmpstr)
 
-                # Write the file out again
-                with open(policy_file[Region], 'w+') as file:
-                    file.write(filedata)
-                file.close()
+                    # Write the file out again
+                    with open(policy_file[Region], 'w+') as file:
+                        file.write(filedata)
+                    file.close()
 
 elif('.csv' in filename):
     fname = open(filename, "r")

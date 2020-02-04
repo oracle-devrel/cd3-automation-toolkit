@@ -128,6 +128,13 @@ if('.xls' in filename):
             if (str(df[i][j]) == 'True' or str(df[i][j]) == 'False'):
                 replaceAllplaceholders(outdir + '/' + df['Region'][j].strip().lower()+ '/'+df['Hostname'][j] + '.tf', '##' + i + '##', str(df[i][j]).lower())
                 continue
+            if (str(df[i][j]) == '0.0'):
+                replaceAllplaceholders(outdir + '/' + df['Region'][j].strip().lower()+ '/'+df['Hostname'][j] + '.tf', '##' + i + '##', "false")
+                continue
+            if (str(df[i][j]) == '1.0'):
+                replaceAllplaceholders(outdir + '/' + df['Region'][j].strip().lower() + '/' + df['Hostname'][j] + '.tf','##' + i + '##', "true")
+                continue
+
             replaceAllplaceholders(outdir + '/' + df['Region'][j].strip().lower()+ '/'+df['Hostname'][j] + '.tf', '##' + i + '##', str(df[i][j]))
 
 #If input is a csv file

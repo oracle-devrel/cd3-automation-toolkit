@@ -88,29 +88,33 @@ if ('.xls' in filename):
 
             elif (j == 'block_name'):
                 block_name = df['block_name'][i]
-                policy = df['Backup Policy'][i].lower().strip()
+                if (str(df['Backup Policy'][i]) == 'nan'):
+                    continue
+                else:
 
-                res_name=block_name+"_bkupPolicy"
-                tmpstr = """resource "oci_core_volume_backup_policy_assignment" \"""" + res_name + """\"{
-                    #Required
-                    asset_id = "${oci_core_volume.""" + block_name + """.id}"
-                    policy_id = "${data.oci_core_volume_backup_policies.block_""" + policy + """.volume_backup_policies.0.id}"
-                    }
-                    ## Add policy attachment ##
-                    """
+                    policy = df['Backup Policy'][i].lower().strip()
 
-                textToSearch = "## Add policy attachment ##"
+                    res_name=block_name+"_bkupPolicy"
+                    tmpstr = """resource "oci_core_volume_backup_policy_assignment" \"""" + res_name + """\"{
+                        #Required
+                        asset_id = "${oci_core_volume.""" + block_name + """.id}"
+                        policy_id = "${data.oci_core_volume_backup_policies.block_""" + policy + """.volume_backup_policies.0.id}"
+                        }
+                        ## Add policy attachment ##
+                        """
 
-                with open(policy_file[Region], 'r+') as file:
-                    filedata = file.read()
-                file.close()
-                # Replace the target string
-                filedata = filedata.replace(textToSearch, tmpstr)
+                    textToSearch = "## Add policy attachment ##"
 
-                # Write the file out again
-                with open(policy_file[Region], 'w+') as file:
-                    file.write(filedata)
-                file.close()
+                    with open(policy_file[Region], 'r+') as file:
+                        filedata = file.read()
+                    file.close()
+                    # Replace the target string
+                    filedata = filedata.replace(textToSearch, tmpstr)
+
+                    # Write the file out again
+                    with open(policy_file[Region], 'w+') as file:
+                        file.write(filedata)
+                    file.close()
 
 elif('.csv' in filename):
     fname = open(filename, "r")
