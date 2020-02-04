@@ -221,8 +221,9 @@ if('.xls' in filename):
                 out_common_file=outdir+"/"+region+"/"+vcn_name+"_"+common_seclist_name+"_seclist.tf"
                 if(vcn_name+"_"+common_seclist_name+"_seclist.tf" in secrulefiles[region]):
                     secrulefiles[region].remove(vcn_name+"_"+common_seclist_name+"_seclist.tf")
-                oname_common=open(out_common_file,"w")
-                data="""
+                if (not os.path.exists(out_common_file) or modify_network == 'false'):
+                    oname_common=open(out_common_file,"w")
+                    data="""
         resource "oci_core_security_list" \"""" + vcn_name+"_"+common_seclist_name.strip() + "-1" """"{
             compartment_id = "${var.""" + compartment_var_name + """}"
             vcn_id = "${oci_core_vcn.""" + vcn_name + """.id}"
@@ -230,10 +231,10 @@ if('.xls' in filename):
             ####ADD_NEW_SEC_RULES####1
         }
         """
-                oname_common.write(data)
+                    oname_common.write(data)
 
-                print(out_common_file + " containing TF for seclist has been created for region " + region)
-                oname_common.close()
+                    print(out_common_file + " containing TF for seclist has been created for region " + region)
+                    oname_common.close()
 
         seclists_per_subnet = df.iat[i, 11]
         if (str(seclists_per_subnet).lower() == 'nan'):

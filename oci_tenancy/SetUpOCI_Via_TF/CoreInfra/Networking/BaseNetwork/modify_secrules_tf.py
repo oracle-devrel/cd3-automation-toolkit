@@ -392,8 +392,7 @@ if('.xls' in secrulesfilename):
             display_name = row['SecListName']
             seclistName=""
             # display name contains AD1, AD2 or AD3 and CIDR
-            if (
-                    '-ad1-10.' in display_name or '-ad2-10.' in display_name or '-ad3-10.' in display_name or '-ad1-172.' in display_name
+            if ('-ad1-10.' in display_name or '-ad2-10.' in display_name or '-ad3-10.' in display_name or '-ad1-172.' in display_name
                     or '-ad2-172.' in display_name or '-ad3-172.' in display_name or '-ad1-192.' in display_name or '-ad2-192.' in display_name
                     or '-ad3-192.' in display_name):
                 seclistName = display_name.rsplit("-", 2)[0]
@@ -444,8 +443,8 @@ if('.xls' in secrulesfilename):
                 continue
 
             #Process other seclists
-            subnetName = row['SecListName'].rsplit('-', 1)[0]
-
+            #subnetName = row['SecListName'].rsplit('-', 1)[0]
+            subnetName = seclistName.rsplit('-', 1)[0]
 
             if(vcn_name+"_"+subnetName not in subnets_done[region] or len(subnets_done[region])==0):
                 subnets_done[region].append(vcn_name+"_"+subnetName)
