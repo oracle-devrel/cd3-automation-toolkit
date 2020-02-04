@@ -6,7 +6,7 @@ resource "oci_core_instance" "##Hostname##" {
 ### windows image id - oci image ###
        # image = "${var.windows2008_image_ocid}"
         source_details {
-	        source_id  = "${var.sabre-windows2008_image_ocid}"
+	        source_id  = "${var.windows2016_image_ocid}"
                 source_type = "image"
         }
 	shape = "##Shape##"
@@ -25,6 +25,5 @@ resource "oci_core_instance" "##Hostname##" {
                 skip_source_dest_check = false
         }
         display_name = "##Hostname##"
-        hostname_label = "##Hostname##"
         subnet_id = "${oci_core_subnet.##subnet name##.id}"
 }

@@ -28,7 +28,6 @@ resource "oci_core_instance" "##Hostname##" {
         ##DedicatedVMHost##
 
         display_name = "##Hostname##"
-        hostname_label = "##Hostname##"
         metadata = {
 
 				ssh_authorized_keys = "##SSH-key-var-name##"

@@ -17,7 +17,6 @@ resource "oci_core_instance" "##Hostname##" {
                 #Optional
                 assign_public_ip = ##Pub Address##
                 display_name = "##Hostname##"
-                hostname_label = "##Hostname##"
                 private_ip = "##IP Address##"
                 skip_source_dest_check = false
 
