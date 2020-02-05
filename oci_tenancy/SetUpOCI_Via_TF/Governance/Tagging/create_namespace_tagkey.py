@@ -51,6 +51,9 @@ if ('.xlsx' in filename):
             os.rename(keys_src, key_dst)
 
     df = pd.read_excel(filename, sheet_name='Tags', skiprows=1)
+    df = df.dropna(how='all')
+    df = df.reset_index(drop=True)
+
     for i in df.keys():
         if (i == 'compartment_name'):
             for j in df.index:
@@ -89,8 +92,9 @@ if ('.xlsx' in filename):
 
 # Adds the tag to the namespaces created
 if ('.xlsx' in filename):
-    df1 = pd.read_excel(filename, sheet_name='Tags', skiprows=1)
-    df = df1.dropna(how='all')
+    df = pd.read_excel(filename, sheet_name='Tags', skiprows=1)
+    df = df.dropna(how='all')
+    df = df.reset_index(drop=True)
     for i in df.keys():
 
         if (i == 'Region'):

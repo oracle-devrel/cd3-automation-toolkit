@@ -41,7 +41,8 @@ if('.xls' in inputfile):
 
     print("\nReading RouteRulesinOCI sheet of cd3")
     df = pd.read_excel(inputfile, sheet_name='RouteRulesinOCI')
-    df.dropna(how='all')
+    df = df.dropna(how='all')
+    df = df.reset_index(drop=True)
 
     for reg in vcnInfo.all_regions:
         subnets_done[reg] = []

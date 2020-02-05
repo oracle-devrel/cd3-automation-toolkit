@@ -250,7 +250,8 @@ if ('.xls' in filename):
         dhcpStr[reg] = ''
 
     df = pd.read_excel(filename, sheet_name='VCNs', skiprows=1)
-    df.dropna(how='all')
+    df = df.dropna(how='all')
+    df = df.reset_index(drop=True)
 
     # Process VCNs
     for i in df.index:

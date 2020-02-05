@@ -34,7 +34,9 @@ date = x.strftime("%S").strip()
 
 if('.xls' in args.inputfile):
     df = pd.read_excel(args.inputfile, sheet_name='DedicatedVMHosts',skiprows=1)
-    df.dropna(how='all')
+    df = df.dropna(how='all')
+    df = df.reset_index(drop=True)
+
     all_regions = os.listdir(outdir)
     for reg in all_regions:
         src = outdir + "/" + reg + "/dedicated_vm_hosts.tf"

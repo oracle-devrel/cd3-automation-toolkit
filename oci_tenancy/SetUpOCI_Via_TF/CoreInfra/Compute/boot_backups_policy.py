@@ -77,6 +77,9 @@ if ('.xls' in filename):
         fname.close()
 
     df = pd.read_excel(filename, sheet_name='Instances',skiprows=1)
+    df = df.dropna(how='all')
+    df = df.reset_index(drop=True)
+
     for i in df.index:
         for j in df.keys():
             if (str(df[j][i]) in endnames):

@@ -100,8 +100,10 @@ if('.xls' in args.inputfile):
 		tfStr[reg] = ''
 
 	df = pd.read_excel(args.inputfile, sheet_name='DHCP',skiprows=1)
-	df.dropna(how='all')
-	for i in df.index:
+	df = df.dropna(how='all')
+	df = df.reset_index(drop=True)
+
+for i in df.index:
 		region = df.iat[i,0]
 		if (region in commonTools.endNames):
 			break

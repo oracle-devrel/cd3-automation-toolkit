@@ -62,6 +62,9 @@ if('.xls' in filename):
     all_regions = os.listdir(outdir)
 
     df = pd.read_excel(filename, sheet_name='Instances',skiprows=1)
+    df = df.dropna(how='all')
+    df = df.reset_index(drop=True)
+
     """for row in df.index:
         region=df['Region'][row]
         region=region.strip().lower()

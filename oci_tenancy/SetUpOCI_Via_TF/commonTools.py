@@ -56,7 +56,8 @@ class parseVCNs():
     def __init__(self, filename):
         if(".xls" in filename):
             df_vcn = pd.read_excel(filename, sheet_name='VCNs', skiprows=1)
-            df_vcn.dropna(how='all')
+            df_vcn = df_vcn.dropna(how='all')
+            df_vcn = df_vcn.reset_index(drop=True)
 
             # Create VCN details Dicts and Hub and Spoke VCN Names
             for i in df_vcn.index:
@@ -153,6 +154,7 @@ class parseVCNInfo():
     def __init__(self,filename):
 
         df_info = pd.read_excel(filename, sheet_name='VCN Info', skiprows=1)
+
         # Get Property Values
         values = df_info['Value']
 

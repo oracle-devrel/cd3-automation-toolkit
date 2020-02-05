@@ -39,6 +39,8 @@ if('.xls' in filename):
     all_regions = os.listdir(outdir)
 
     df = pd.read_excel(filename, sheet_name='BlockVols',skiprows=1)
+    df = df.dropna(how='all')
+    df = df.reset_index(drop=True)
     for i in df.index:
         region=df.iat[i,0]
         region=region.strip().lower()

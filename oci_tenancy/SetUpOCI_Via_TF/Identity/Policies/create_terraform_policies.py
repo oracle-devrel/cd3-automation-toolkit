@@ -42,7 +42,8 @@ tempStr=''
 if('.xls' in args.inputfile):
     vcnInfo = parseVCNInfo(args.inputfile)
     df = pd.read_excel(args.inputfile, sheet_name='Policies',skiprows=1)
-    df.dropna(how='all')
+    df = df.dropna(how='all')
+    df = df.reset_index(drop=True)
 
     count = 0
     regions=df['Region']

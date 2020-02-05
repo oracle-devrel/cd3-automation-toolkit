@@ -42,7 +42,8 @@ if('.csv' in filename):
         filename='tmp_to_excel.xlsx'
 
 df = pd.read_excel(filename, sheet_name='FSS',skiprows=1)
-df.dropna(how='all')
+df = df.dropna(how='all')
+df = df.reset_index(drop=True)
 
 endNames = {'<END>', '<end>','<End>'}
 NaNstr = 'NaN'

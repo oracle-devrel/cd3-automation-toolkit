@@ -139,7 +139,8 @@ if('.xls' in filename):
 	vcns = parseVCNs(filename)
 
 	df = pd.read_excel(filename, sheet_name='Subnets',skiprows=1)
-	df.dropna(how='all')
+	df = df.dropna(how='all')
+	df = df.reset_index(drop=True)
 
 	for reg in vcnInfo.all_regions:
 		tfStr[reg] = ''

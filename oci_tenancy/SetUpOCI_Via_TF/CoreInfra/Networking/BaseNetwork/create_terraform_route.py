@@ -429,7 +429,8 @@ if('.xls' in filename):
 
     # Start processing for each subnet
     df = pd.read_excel(filename, sheet_name='Subnets', skiprows=1)
-    df.dropna(how='all')
+    df = df.dropna(how='all')
+    df = df.reset_index(drop=True)
     for i in df.index:
         # Get subnet data
         region = df.iat[i,0]

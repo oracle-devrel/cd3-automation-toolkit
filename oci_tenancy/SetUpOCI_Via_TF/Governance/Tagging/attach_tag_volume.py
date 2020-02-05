@@ -45,6 +45,9 @@ new_string = ""
 # If the input is CD3
 if ('.xlsx' in filename):
     df = pd.read_excel(filename, sheet_name='TagVolume',skiprows=1)
+    df = df.dropna(how='all')
+    df = df.reset_index(drop=True)
+
     for i in df.index:
         string = ""
         new_string = ""
