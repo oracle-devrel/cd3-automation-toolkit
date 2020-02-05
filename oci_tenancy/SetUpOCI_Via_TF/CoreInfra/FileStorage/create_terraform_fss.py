@@ -55,9 +55,9 @@ for r in all_regions:
 
 for i in df.index:
     region=df.iat[i,0]
-    region=region.strip().lower()
     if region in endNames:
         break
+    region=region.strip().lower()
 
     if region not in all_regions:
         print("Invalid Region; It should be one of the values mentioned in VCN Info tab")

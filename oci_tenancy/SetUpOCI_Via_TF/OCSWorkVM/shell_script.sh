@@ -156,7 +156,7 @@ then
 
    ## Writing some retry logic to TF
     n=0
-    until [ $n -ge 5 ]
+    until [ $n -ge 3 ]
     do
       terraform apply -auto-approve && break
       n=$[$n+1]

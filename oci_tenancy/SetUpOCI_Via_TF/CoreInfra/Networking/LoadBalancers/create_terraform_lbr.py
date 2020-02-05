@@ -79,9 +79,9 @@ for i in df.index:
     lbr_private_key_file = df.iat[i, 17]
     lbr_passphrase = df.iat[i,18]
 
-    if (str(lbr_use_ssl == 'y')):
+    if (str(lbr_use_ssl).lower() == 'y'):
         if (str(lbr_private_key_file).lower() == NaNstr.lower() or str(lbr_public_cert_file).lower() == NaNstr.lower()):
-            print("if use SSL is y then Public Cert and Private Key fields are manadatory...exiting")
+            print("\nERROR!!! if use SSL is y then Public Cert and Private Key fields are manadatory..Exiting")
             exit()
     if (str(lbr_ca_cert_file).lower() == NaNstr.lower()):
         lbr_ca_cert_file = lbr_public_cert_file
