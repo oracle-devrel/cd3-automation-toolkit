@@ -91,7 +91,7 @@ if('1' in userInput):
     print("1.  Create Compartments")
     print("2.  Create Groups")
     print("3.  Create Policies")
-    choice = input("Enter your choice; multiple choices allowed as comma separated ")
+    choice = input("Enter your choice ")
     choice = choice.split(",")
     if ('1' in choice):
         print("---------------------------Creating Compartments--------------------------------")
@@ -281,7 +281,7 @@ if('3' in userInput):
     print("2.  Create Instances")
     print("3.  Update existing instance to be part of NSG")
 
-    choice = input("Enter one choice ")
+    choice = input("Enter your choice ")
     outdir = input_outdir
     if not os.path.exists(outdir):
         os.makedirs(outdir)
@@ -364,7 +364,7 @@ if('5' in userInput):
     print("2.  Attach Tags to Servers")
     print("3.  Attach Tags to Block Volumes")
 
-    tag_choice = input("Enter your choice; multiple choices allowed as comma separated ")
+    tag_choice = input("Enter your choice ")
     tag_choice=tag_choice.split(",")
     if('1' in tag_choice):
         if (input_format == 'cd3'):
@@ -430,7 +430,7 @@ if('6' in userInput):
 
     print("1. Attach BackupPolicy to Boot Volumes")
     print("2. Attach BackupPolicy to Block Volumes")
-    backup_choice = input("Enter your choice; multiple choices allowed as comma separated ")
+    backup_choice = input("Enter your choice ")
     backup_choice = backup_choice.split(",")
     if ('1' in backup_choice):
         if (input_format == 'cd3'):
@@ -531,7 +531,7 @@ if('10' in userInput):
     print("2.  Bare Metal")
     print("3.  ExaData")
 
-    update_choice = input("Enter your choice; multiple choices allowed as comma separated ")
+    update_choice = input("Enter your choice ")
     update_choice = update_choice.split(",")
 
     if ('1' in update_choice):
