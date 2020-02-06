@@ -121,7 +121,11 @@ class parseVCNs():
                 if (self.vcn_hub_spoke_peer_none[vcn_name][0].lower() == 'spoke'):
                     hub_name=self.vcn_hub_spoke_peer_none[vcn_name][1]
                     self.spoke_vcn_names.append(vcn_name)
-                    self.peering_dict[hub_name] = self.peering_dict[hub_name]+vcn_name+","
+                    try:
+                        self.peering_dict[hub_name] = self.peering_dict[hub_name]+vcn_name+","
+                    except KeyError:
+                        print("ERROR!!! "+hub_name +" not marked as Hub. Verify hub_spoke_peer_none column again..Exiting!")
+                        exit(1)
 
                 if (self.vcn_hub_spoke_peer_none[vcn_name][0].lower() == 'peer'):
                     self.peering_dict[vcn_name]=self.vcn_hub_spoke_peer_none[vcn_name][1]
