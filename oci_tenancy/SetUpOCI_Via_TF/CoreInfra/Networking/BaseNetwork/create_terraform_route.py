@@ -275,21 +275,20 @@ def processSubnet(region,vcn_name,name,rt_name,AD,configure_sgw,configure_ngw,co
     #route table not provided; use subnet name as route table name
     if(rt_name==''):
         subnet_res_name = name
-        if (str(ad_name) != ''):
-            name1 = subnet_res_name + "-ad" + str(ad_name)
-        else:
-            name1 = subnet_res_name
-
-        #check if subnet codr needs to be attached
-        if (vcnInfo.subnet_name_attach_cidr == 'y'):
-            display_name = name1 + "-" + subnet
-        else:
-            display_name = subnet_res_name
-
     # route table name provided
     else:
         subnet_res_name=rt_name
-        # no need to attach subnet cidr to display name
+
+    # Attach CIDR
+    if (str(ad_name) != ''):
+        name1 = subnet_res_name + "-ad" + str(ad_name)
+    else:
+        name1 = subnet_res_name
+
+    # check if subnet codr needs to be attached
+    if (vcnInfo.subnet_name_attach_cidr == 'y'):
+        display_name = name1 + "-" + subnet
+    else:
         display_name = subnet_res_name
 
     #Create Route Table File Name

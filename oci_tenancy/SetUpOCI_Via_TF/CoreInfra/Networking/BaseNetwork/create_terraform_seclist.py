@@ -113,22 +113,22 @@ def processSubnet(region,vcn_name,AD,seclists_per_subnet,name,seclist_name,compa
         #seclist name not provided; use subnetname as seclistname
         if(seclist_name==''):
             seclistname = name + "-" + str(j + 1)
-            if (str(ad_name) != ''):
-                name1 = seclistname + "-ad" + str(ad_name)
-            else:
-                name1 = seclistname
 
-            #check if subnet cidr needs to be attached
-            if (vcnInfo.subnet_name_attach_cidr == 'y'):
-                display_name = name1 + "-" + subnet
-            else:
-                display_name = seclistname
         #seclist name provided
         else:
             seclistname = seclist_name + "-" + str(j + 1)
-            #no need to attach subnet cidr to display name
-            display_name=seclistname
 
+        #Attach CIDR
+        if (str(ad_name) != ''):
+            name1 = seclistname + "-ad" + str(ad_name)
+        else:
+            name1 = seclistname
+
+        # check if subnet cidr needs to be attached
+        if (vcnInfo.subnet_name_attach_cidr == 'y'):
+            display_name = name1 + "-" + subnet
+        else:
+            display_name = seclistname
 
         tempStr = """
         resource "oci_core_security_list" \"""" + vcn_name+"_"+seclistname + """"{
