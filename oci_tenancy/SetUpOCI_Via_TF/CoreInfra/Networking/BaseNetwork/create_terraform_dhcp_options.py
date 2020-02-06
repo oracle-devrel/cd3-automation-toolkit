@@ -103,7 +103,7 @@ if('.xls' in args.inputfile):
 	df = df.dropna(how='all')
 	df = df.reset_index(drop=True)
 
-for i in df.index:
+	for i in df.index:
 		region = df.iat[i,0]
 		if (region in commonTools.endNames):
 			break
@@ -125,7 +125,6 @@ for i in df.index:
 			print("\nERROR!!! Invalid Region; It should be one of the values mentioned in VCN Info tab..Exiting!")
 			exit(1)
 		processDHCP(region,vcn_name,dhcp_option_name,compartment_var_name,serverType,custom_dns_servers,search_domain)
-
 
 
 elif('.properties' in args.inputfile):
