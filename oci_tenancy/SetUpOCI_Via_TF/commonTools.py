@@ -76,6 +76,8 @@ class parseVCNs():
                 self.vcn_region[vcn_name] = region
 
                 self.vcn_lpg_names[vcn_name] = str(df_vcn['lpg_required'][i]).strip().split(",")
+                self.vcn_lpg_names[vcn_name] = [x.strip() for x in self.vcn_lpg_names[vcn_name]]
+
                 j=0
                 for lpg in self.vcn_lpg_names[vcn_name]:
                     if lpg=='y':
@@ -83,6 +85,8 @@ class parseVCNs():
                         j=j+1
 
                 self.vcn_lpg_names1[vcn_name] = str(df_vcn['lpg_required'][i]).strip().split(",")
+                self.vcn_lpg_names1[vcn_name] = [x.strip() for x in self.vcn_lpg_names1[vcn_name]]
+
                 j = 0
                 for lpg in self.vcn_lpg_names1[vcn_name]:
                     if lpg == 'y':
@@ -90,6 +94,8 @@ class parseVCNs():
                         j = j + 1
 
                 self.vcn_lpg_names2[vcn_name] = str(df_vcn['lpg_required'][i]).strip().split(",")
+                self.vcn_lpg_names2[vcn_name] = [x.strip() for x in self.vcn_lpg_names2[vcn_name]]
+
                 j = 0
                 for lpg in self.vcn_lpg_names2[vcn_name]:
                     if lpg == 'y':
@@ -97,6 +103,8 @@ class parseVCNs():
                         j = j + 1
 
                 self.vcn_lpg_names3[vcn_name] = str(df_vcn['lpg_required'][i]).strip().split(",")
+                self.vcn_lpg_names3[vcn_name] = [x.strip() for x in self.vcn_lpg_names3[vcn_name]]
+
                 j = 0
                 for lpg in self.vcn_lpg_names3[vcn_name]:
                     if lpg == 'y':
@@ -113,13 +121,13 @@ class parseVCNs():
                 self.vcn_lpg_rules.setdefault(vcn_name, '')
 
 
-                if (self.vcn_hub_spoke_peer_none[vcn_name][0].lower() == 'hub'):
+                if (self.vcn_hub_spoke_peer_none[vcn_name][0].strip().lower() == 'hub'):
                     self.hub_vcn_names.append(vcn_name)
                     self.peering_dict[vcn_name]=''
 
 
-                if (self.vcn_hub_spoke_peer_none[vcn_name][0].lower() == 'spoke'):
-                    hub_name=self.vcn_hub_spoke_peer_none[vcn_name][1]
+                if (self.vcn_hub_spoke_peer_none[vcn_name][0].strip().lower() == 'spoke'):
+                    hub_name=self.vcn_hub_spoke_peer_none[vcn_name][1].strip()
                     self.spoke_vcn_names.append(vcn_name)
                     try:
                         self.peering_dict[hub_name] = self.peering_dict[hub_name]+vcn_name+","
@@ -127,8 +135,8 @@ class parseVCNs():
                         print("ERROR!!! "+hub_name +" not marked as Hub. Verify hub_spoke_peer_none column again..Exiting!")
                         exit(1)
 
-                if (self.vcn_hub_spoke_peer_none[vcn_name][0].lower() == 'peer'):
-                    self.peering_dict[vcn_name]=self.vcn_hub_spoke_peer_none[vcn_name][1]
+                if (self.vcn_hub_spoke_peer_none[vcn_name][0].strip().lower() == 'peer'):
+                    self.peering_dict[vcn_name]=self.vcn_hub_spoke_peer_none[vcn_name][1].strip()
 
             for k,v in self.peering_dict.items():
                 if(v[-1]==','):
@@ -188,6 +196,9 @@ class parseVCNInfo():
             self.subnet_name_attach_cidr=self.subnet_name_attach_cidr.strip().lower()
 
         all_regions_excel = str(values[4]).strip()
+        if(all_regions_excel.lower()=="nan"):
+            print("ERROR!!! Regions field in VCN Info tab cannot be left empty..Exiting!!")
+            exit(1)
         all_regions_excel = all_regions_excel.split(",")
         self.all_regions = [x.strip().lower() for x in all_regions_excel]
 
