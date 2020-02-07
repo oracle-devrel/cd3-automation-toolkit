@@ -197,7 +197,7 @@ class parseVCNInfo():
 
         all_regions_excel = str(values[4]).strip()
         if(all_regions_excel.lower()=="nan"):
-            print("ERROR!!! Regions field in VCN Info tab cannot be left empty..Exiting!!")
+            print("\nERROR!!! regions field in VCN Info tab cannot be left empty..Exiting!!")
             exit(1)
         all_regions_excel = all_regions_excel.split(",")
         self.all_regions = [x.strip().lower() for x in all_regions_excel]
