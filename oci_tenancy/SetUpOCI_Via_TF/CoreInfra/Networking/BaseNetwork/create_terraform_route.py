@@ -59,6 +59,7 @@ def createLPGRouteRules(peering_dict):
         right_vcns = value.split(",")
 
         for right_vcn in right_vcns:
+            right_vcn = right_vcn.strip()
             # Build rule for VCN on left
             #lpg_name = left_vcn + "_" + right_vcn + "_lpg"
             lpg_name = vcns.vcn_lpg_names1[left_vcn][0]

@@ -111,8 +111,10 @@ SetUPOCI_Via_TF Tag v4.1
 SetUPOCI_Via_TF Tag v5.0
 ------------------------
 
-1. Modified CD3 Networking sheets/code eg added/modified columns, removed VCN Peering section from VCN Info tab
-2. Added support to specify LPG names
+1. Modified CD3 Networking sheets/code - added/modified columns, removed VCN Peering section from VCN Info tab
+2. Added support to specify LPG names.
+3. Peering will be handled by column hub_spoke_peer_none in VCNs tab. Please see CD3-template.xlsx downloaded with example folder.
 3. Added color coding for exported SecRules and RouteRules
 4. Added support to specify SGW target in route rules
 5. Added support for PrivateIP in route rules
+6. Enabled python 3.6 using SCL on PCS Work VM.

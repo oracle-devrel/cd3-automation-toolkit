@@ -77,6 +77,7 @@ def establishPeering(peering_dict):
         right_vcns = value.split(",")
 
         for right_vcn in right_vcns:
+            right_vcn=right_vcn.strip()
             try:
                 if(vcns.vcn_lpg_names[left_vcn][0].lower()=='n' or vcns.vcn_lpg_names[right_vcn][0].lower()=='n'):
                     print("\nERROR!!! Cannot specify n for lpg_required field of VCN if it is part of VCN peering..Exiting!")
