@@ -10,6 +10,7 @@ mkdir -p /root/ocswork/ocic2oci_work
 
 sudo yum -y install scl-utils
 sudo yum -y install rh-python36
+sudo yum -y install gcc
 #scl enable rh-python36 bash
 sudo echo "source scl_source enable rh-python36" >> /root/.bashrc
 source /root/.bashrc

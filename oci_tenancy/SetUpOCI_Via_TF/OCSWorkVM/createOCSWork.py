@@ -388,9 +388,10 @@ if (input_configure_git_oci=="1"):
     script_data="""#!/usr/bin/expect
     set password """+input_git_password+"""
     cd /root/ocswork/git_oci
+    set timeout -1
     spawn git pull  https://"""+input_git_username.replace('@','%40')+"""@developer.em2.oraclecloud.com/developer14539-usoraocips16001/s/developer14539-usoraocips16001_oci_9900/scm/oci.git
     expect "Password for 'https://"""+input_git_username+"""@developer.em2.oraclecloud.com':" {send "$password\\r"}
-    sleep 60
+    #sleep 60
     expect eof
     """
     write_file("download_git_expect1.sh",script_data)
@@ -398,9 +399,10 @@ if (input_configure_git_ocictooci == "1"):
     script_data="""#!/usr/bin/expect
     set password """+input_git_password+"""
     cd /root/ocswork/git_ocic2oci
+    set timeout -1
     spawn git pull https://"""+input_git_username.replace('@','%40')+"""@developer.em2.oraclecloud.com/developer14539-usoraocips16001/s/developer14539-usoraocips16001_ocictooci_10075/scm/ocictooci.git
     expect "Password for 'https://"""+input_git_username+"""@developer.em2.oraclecloud.com':" {send "$password\\r"}
-    sleep 30
+    #sleep 30
     expect eof
     """
     write_file("download_git_expect2.sh",script_data)
@@ -566,10 +568,11 @@ if (input_configure_koala=="1"):
     script_data="""#!/usr/bin/expect
     set password """+input_ocic_password+"""
     cd /root/ocswork/ocic2oci_work
+    set timeout -1
     #spawn /usr/local/bin/opcmigrate discover
     spawn /opt/rh/rh-python36/root/usr/bin/opcmigrate discover
     expect "Compute Classic Password" {send "$password\\r"}
-    sleep 60
+    #sleep 60
     expect eof
     """
     write_file("discover_koala_expect.sh",script_data)
