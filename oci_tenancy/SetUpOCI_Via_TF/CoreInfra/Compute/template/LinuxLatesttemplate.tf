@@ -13,7 +13,7 @@ resource "oci_core_instance" "##Hostname##" {
         create_vnic_details {
                 #Required
                 subnet_id = "${oci_core_subnet.##subnet name##.id}"
-
+                hostname_label = "##Hostname##"
                 #Optional
                 assign_public_ip = ##Pub Address##
                 display_name = "##Hostname##"
@@ -26,7 +26,7 @@ resource "oci_core_instance" "##Hostname##" {
         ##DedicatedVMHost##
 
         display_name = "##Hostname##"
-        hostname_label = "##Hostname##"
+
         metadata = {
 
 				ssh_authorized_keys = "${var.##SSH-key-var-name##}"
