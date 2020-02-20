@@ -88,7 +88,7 @@ Note- This version would require you to change your excel file and use the lates
 1. Added support to add a common security List across subnets apart from just Default Security List. This is done by adding
     a new column in Subnets tab "common_seclist_name" which specifies name of common seclist to be created and used for each subnet.
     If left blank  for a particular subnet that means the common seclist doesnt not need to be assigned to that subnet.
-2. Modified output files created for routes. Earlier tool used to create one TF file for al route tables. Now it would generate
+2. Modified output files created for routes. Earlier tool used to create one TF file for all route tables. Now it would generate
     separate file for each Route Table like it does for Security List.
 3. Introduced option to create new VCN under Update Network
 4. Added Default DHCP options also to TF like for Default Security List

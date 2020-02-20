@@ -77,6 +77,7 @@ def establishPeering(peering_dict):
         right_vcns = value.split(",")
 
         for right_vcn in right_vcns:
+            print(right_vcn)
             right_vcn=right_vcn.strip()
             try:
                 if(vcns.vcn_lpg_names[left_vcn][0].lower()=='n' or vcns.vcn_lpg_names[right_vcn][0].lower()=='n'):
@@ -85,9 +86,11 @@ def establishPeering(peering_dict):
             except IndexError:
                 print("\nERROR!!! Insufficient LPGs declared for either "+left_vcn + " or "+right_vcn + ". Check lpg_required column in VCNs tab..Exiting!")
                 exit(1)
-            searchString = """#peer_id for lpg """ + left_vcn+"_"+vcns.vcn_lpg_names[left_vcn][0]
+            searchString = """##peer_id for lpg """ + left_vcn+"_"+vcns.vcn_lpg_names[left_vcn][0]+"##"
+            print(searchString)
             vcns.vcn_lpg_names[left_vcn].pop(0)
             peerStr = """peer_id = "${oci_core_local_peering_gateway.""" + right_vcn+"_"+vcns.vcn_lpg_names[right_vcn][0] + """.id}" """
+            print(peerStr)
             vcns.vcn_lpg_names[right_vcn].pop(0)
 
             # Update file contents
@@ -97,6 +100,7 @@ def establishPeering(peering_dict):
             updated_data = re.sub(searchString, peerStr, data)
             with open(outfile, 'w') as f:
                 f.write(updated_data)
+            print("--------------------")
             f.close()
     print("VCN Peering Done")
 
@@ -225,7 +229,7 @@ def processVCN(region, vcn_name, vcn_cidr, vcn_drg, vcn_igw, vcn_ngw, vcn_sgw, v
                     display_name = \"""" + lpg_name + """"
                     vcn_id = "${oci_core_vcn.""" + vcn_name + """.id}"
                     compartment_id = "${var.""" + compartment_var_name + """}"
-                    #peer_id for lpg """ + vcn_name+"_"+lpg_name
+                    ##peer_id for lpg """ + vcn_name+"_"+lpg_name+"##"
             if(hub_spoke_none == 'hub'):
                 rt_var = vcn_name+"_"+lpg_name + "_rt"
                 data = data + """
@@ -438,4 +442,5 @@ elif(modify_network == 'false'):
             oname[reg].close()
             print(outfile[reg] + " containing TF for VCN major objects has been created for region " + reg)
 
+print(vcns.peering_dict)
 establishPeering(vcns.peering_dict)
