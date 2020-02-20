@@ -119,3 +119,9 @@ CD3 format has been changed. Please use CD3-template.xlsx downloaded with exampl
 4. Added support to specify SGW target in route rules
 5. Added support for PrivateIP in route rules
 6. Enabled python 3.6 using SCL on PCS Work VM.
+
+------------------------
+SetUPOCI_Via_TF Tag v5.0.1
+------------------------
+This is a minor release. There was a bug in create_major_objects.py while establishing VCN peering
+Peer string was not getting replaced properly.
