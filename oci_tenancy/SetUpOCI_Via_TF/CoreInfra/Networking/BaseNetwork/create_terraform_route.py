@@ -25,6 +25,8 @@ parser = argparse.ArgumentParser(description="Creates route tables containing de
 parser.add_argument("inputfile", help="Full Path of properties file. eg vcn-info.properties or cd3 excel file")
 parser.add_argument("outdir", help="Output directory for creation of TF files")
 parser.add_argument("--modify_network", help="Modify: true or false", required=False)
+parser.add_argument("--nongf_tenancy", help="non greenfield tenancy: true or false", required=False)
+
 
 if len(sys.argv)<3:
         parser.print_help()
@@ -33,6 +35,7 @@ if len(sys.argv)<3:
 args = parser.parse_args()
 filename=args.inputfile
 outdir = args.outdir
+nongf_tenancy = args.nongf_tenancy
 if args.modify_network is not None:
     modify_network = str(args.modify_network)
 else:
@@ -57,18 +60,23 @@ def purge(dir, pattern):
 def createLPGRouteRules(peering_dict):
     for left_vcn, value in peering_dict.items():
         right_vcns = value.split(",")
+        left_vcn_tf_name = commonTools.tfname.sub("-", left_vcn)
 
         for right_vcn in right_vcns:
             right_vcn = right_vcn.strip()
+            right_vcn_tf_name = commonTools.tfname.sub("-", right_vcn)
+
             # Build rule for VCN on left
             #lpg_name = left_vcn + "_" + right_vcn + "_lpg"
             lpg_name = vcns.vcn_lpg_names1[left_vcn][0]
             lpg_name=left_vcn+"_"+lpg_name
+            lpg_name_tf_name = commonTools.tfname.sub("-", lpg_name)
+
             vcns.vcn_lpg_names1[left_vcn].pop(0)
             ruleStr = """
                     route_rules { 
-                        destination = "${oci_core_vcn.""" + right_vcn + """.cidr_block}"
-                        network_entity_id = "${oci_core_local_peering_gateway.""" + lpg_name + """.id}"
+                        destination = "${oci_core_vcn.""" + right_vcn_tf_name + """.cidr_block}"
+                        network_entity_id = "${oci_core_local_peering_gateway.""" + lpg_name_tf_name + """.id}"
                         destination_type = "CIDR_BLOCK"
                         }
                         """
@@ -78,12 +86,14 @@ def createLPGRouteRules(peering_dict):
             #lpg_name = right_vcn + "_" + left_vcn + "_lpg"
             lpg_name=vcns.vcn_lpg_names1[right_vcn][0]
             lpg_name=right_vcn+"_"+lpg_name
+            lpg_name_tf_name = commonTools.tfname.sub("-", lpg_name)
+
             vcns.vcn_lpg_names1[right_vcn].pop(0)
 
             ruleStr = """
                     route_rules { 
-                        destination = "${oci_core_vcn.""" + left_vcn + """.cidr_block}"
-                        network_entity_id = "${oci_core_local_peering_gateway.""" + lpg_name + """.id}"
+                        destination = "${oci_core_vcn.""" + left_vcn_tf_name + """.cidr_block}"
+                        network_entity_id = "${oci_core_local_peering_gateway.""" + lpg_name_tf_name + """.id}"
                         destination_type = "CIDR_BLOCK"
                         }
                         """
@@ -92,65 +102,116 @@ def createLPGRouteRules(peering_dict):
 
 def createDRGRtTableString(compartment_var_name,hub_vcn_name,peering_dict,region):
     if(vcns.vcn_drgs[hub_vcn_name]=='y'):
-        rt_var = hub_vcn_name+"_"+hub_vcn_name + "_drg_rt"
+        #rt_tmp = hub_vcn_name+"_"+hub_vcn_name + "_drg_rt"
         drg_name = hub_vcn_name + "_drg"
     elif(vcns.vcn_drgs[hub_vcn_name]!='n'):
-        rt_var=hub_vcn_name+"_"+vcns.vcn_drgs[hub_vcn_name]+"_rt"
+        #rt_tmp=hub_vcn_name+"_"+vcns.vcn_drgs[hub_vcn_name]+"_rt"
         drg_name=vcns.vcn_drgs[hub_vcn_name]
     elif(vcns.vcn_drgs[hub_vcn_name]=='n'):
+        print("drg_required column for VCN "+hub_vcn_name +" marked as Hub should not be set to n!!\n")
         return
-    outfile = outdir + "/" + region + "/" + rt_var + "_routetable.tf"
-    oname = open(outfile, "w")
-    drgStr = """ 
-        resource "oci_core_route_table" \"""" + rt_var + """"{
-                compartment_id = "${var.""" + compartment_var_name + """}"
-                vcn_id = "${oci_core_vcn.""" + hub_vcn_name + """.id}"
-                display_name = "Route Table associated with DRG """ + drg_name + """"
-                
-                ##Add More rules for subnet """ + rt_var + """##
-                """
+
+    drg_rt_name=""
+    #if (nongf_tenancy == "true"):
+    if (os.path.exists(outdir + "/" + region + "/obj_names.safe")):
+        with open(outdir + "/" + region + "/obj_names.safe") as f:
+            for line in f:
+                if ("drginfo::::" + hub_vcn_name + "::::" + drg_name in line):
+                    drg_rt_name = line.split("::::")[3].strip()
+
+    if(drg_rt_name==""):
+        #rt_var=rt_tmp
+        rt_display="Route Table associated with DRG-""" + drg_name
+        rt_var=hub_vcn_name+"_"+rt_display
+    else:
+        rt_var = hub_vcn_name + "_" + drg_rt_name
+        rt_display=drg_rt_name
+
+    rt_tf_name=commonTools.tfname.sub("-",rt_var)
+    hub_vcn_tf_name=commonTools.tfname.sub("-",hub_vcn_name)
+
+    outfile = outdir + "/" + region + "/" + rt_tf_name + "_routetable.tf"
     right_vcns = peering_dict[hub_vcn_name]
     right_vcns = right_vcns.split(",")
 
+    drgRuleStr=""
     for right_vcn in right_vcns:
         if right_vcn in vcns.spoke_vcn_names:
-            #lpg_name = hub_vcn_name + "_" + right_vcn + "_lpg"
-            lpg_name=vcns.vcn_lpg_names2[hub_vcn_name][0]
-            lpg_name=hub_vcn_name+"_"+lpg_name
+            right_vcn_tf_name = commonTools.tfname.sub("-", right_vcn)
+            # lpg_name = hub_vcn_name + "_" + right_vcn + "_lpg"
+            lpg_name = vcns.vcn_lpg_names2[hub_vcn_name][0]
+            lpg_name = hub_vcn_name + "_" + lpg_name
+            lpg_tf_name = commonTools.tfname.sub("-", lpg_name)
             vcns.vcn_lpg_names2[hub_vcn_name].pop(0)
-            drgStr = drgStr + """
-                    route_rules { 
-                        destination = "${oci_core_vcn.""" + right_vcn + """.cidr_block}"
-                        network_entity_id = "${oci_core_local_peering_gateway.""" + lpg_name + """.id}"
-                        destination_type = "CIDR_BLOCK"
-                        }
-                        """
-    drgStr = drgStr + """
+            tempstr ="""
+        route_rules {
+                destination ="${oci_core_vcn.""" + right_vcn_tf_name + """.cidr_block}"
+                network_entity_id = "${oci_core_local_peering_gateway.""" + lpg_tf_name + """.id}"
+                destination_type = "CIDR_BLOCK"
+            }
+            """
+            if (os.path.exists(outfile)):
+                filedata = open(outfile, "r").read()
+                if tempstr not in filedata:
+                    srcStr="##Add More rules for subnet " + rt_tf_name + "##"
+                    tempstr = tempstr + srcStr
+                    filedata=filedata.replace(srcStr,tempstr)
+                    oname=open(outfile, "w")
+                    oname.write(filedata)
+                    oname.close()
+
+            else:
+                oname = open(outfile, "w")
+                drgStr = """ 
+        resource "oci_core_route_table" \"""" + rt_tf_name + """"{
+                compartment_id = "${var.""" + compartment_var_name + """}"
+                vcn_id = "${oci_core_vcn.""" + hub_vcn_tf_name + """.id}"
+                display_name =\"""" + rt_display + """"
+                
+                ##Add More rules for subnet """ + rt_tf_name + """##
+                """+tempstr+ """
         }"""
-    oname.write(drgStr)
-    oname.close()
-    if (rt_var + "_routetable.tf" in routetablefiles[region]):
-        routetablefiles[region].remove(rt_var + "_routetable.tf")
+                oname.write(drgStr)
+                oname.close()
+
+    if (rt_tf_name + "_routetable.tf" in routetablefiles[region]):
+        routetablefiles[region].remove(rt_tf_name + "_routetable.tf")
 
 def createLPGRtTableString(compartment_var_name,hub_vcn_name,peering_dict,region):
+    #Retain exported route tables associated with exported LPGs
+    # if (nongf_tenancy == "true"):
+    if (os.path.exists(outdir + "/" + region + "/obj_names.safe")):
+        with open(outdir + "/" + region + "/obj_names.safe") as f:
+            for line in f:
+                if ("lpginfo::::" + hub_vcn_name in line):
+                    lpg_rt_name = line.split("::::")[3].strip()
+                    rt_var = hub_vcn_name + "_" + lpg_rt_name
+                    rt_tf_name = commonTools.tfname.sub("-", rt_var)
+                    if (rt_tf_name + "_routetable.tf" in routetablefiles[region]):
+                        routetablefiles[region].remove(rt_tf_name + "_routetable.tf")
+
+    #Create Rt table String for new spoke VCNs
     right_vcns = peering_dict[hub_vcn_name]
     right_vcns = right_vcns.split(",")
-
     for right_vcn in right_vcns:
         if(right_vcn in vcns.spoke_vcn_names):
-            #lpg_name = hub_vcn_name + "_" + right_vcn + "_lpg"
             lpg_name = vcns.vcn_lpg_names3[hub_vcn_name][0]
             vcns.vcn_lpg_names3[hub_vcn_name].pop(0)
-            rt_var = hub_vcn_name+"_"+lpg_name + "_rt"
-            outfile = outdir + "/" + region + "/" + rt_var + "_routetable.tf"
+            #rt_var = hub_vcn_name + "_" + lpg_name + "_rt"
+            rt_display = "Route Table associated with LPG-""" + lpg_name
+            rt_var=hub_vcn_name+"_"+rt_display
+            rt_tf_name = commonTools.tfname.sub("-", rt_var)
+            hub_vcn_tf_name = commonTools.tfname.sub("-", hub_vcn_name)
+
+            outfile = outdir + "/" + region + "/" + rt_tf_name + "_routetable.tf"
             oname = open(outfile, "w")
             lpgStr = """ 
-            resource "oci_core_route_table" \"""" + rt_var + """"{
+            resource "oci_core_route_table" \"""" + rt_tf_name + """"{
                     compartment_id = "${var.""" + compartment_var_name + """}"
-                    vcn_id = "${oci_core_vcn.""" + hub_vcn_name + """.id}"
-                    display_name = "Route Table associated with LPG """ + lpg_name + """"
+                    vcn_id = "${oci_core_vcn.""" + hub_vcn_tf_name + """.id}"
+                    display_name =\"""" + rt_display + """"
                     
-                    ##Add More rules for subnet """ + rt_var + """##
+                    ##Add More rules for subnet """ + rt_tf_name + """##
                 """
             drg_name=""
             if (vcns.vcn_drgs[hub_vcn_name] == 'y'):
@@ -159,12 +220,13 @@ def createLPGRtTableString(compartment_var_name,hub_vcn_name,peering_dict,region
                 drg_name = vcns.vcn_drgs[hub_vcn_name]
 
             if(drg_name!=""):
+                drg_tf_name = commonTools.tfname.sub("-", drg_name)
                 for drg_destination in vcnInfo.onprem_destinations:
                     if (drg_destination != ''):
                         lpgStr = lpgStr + """
                     route_rules { 
                         destination = \"""" + drg_destination.strip() + """\"
-                        network_entity_id = "${oci_core_drg.""" + hub_vcn_name+"_"+drg_name + """.id}"
+                        network_entity_id = "${oci_core_drg.""" + hub_vcn_tf_name+"_"+drg_tf_name + """.id}"
                         destination_type = "CIDR_BLOCK"
                         }
                     """
@@ -173,16 +235,18 @@ def createLPGRtTableString(compartment_var_name,hub_vcn_name,peering_dict,region
         }"""
             oname.write(lpgStr)
             oname.close()
-            if(rt_var + "_routetable.tf" in routetablefiles[region]):
-                routetablefiles[region].remove(rt_var + "_routetable.tf")
+            if(rt_tf_name + "_routetable.tf" in routetablefiles[region]):
+                routetablefiles[region].remove(rt_tf_name + "_routetable.tf")
 
 def prepareSGWRuleStr(sgw_name,configure_sgw):
+    vcn_tf_name = commonTools.tfname.sub("-", vcn_name)
+    sgw_tf_name = commonTools.tfname.sub("-", sgw_name)
     data=""
     if(configure_sgw=="all_services"):
         data = data+ """
                     route_rules { 
                         destination = contains(split("-","${data.oci_core_services.oci_services.services.0.cidr_block}"),"all") == true ? "${data.oci_core_services.oci_services.services.0.cidr_block}" : "${data.oci_core_services.oci_services.services.1.cidr_block}"
-                        network_entity_id = "${oci_core_service_gateway.""" + vcn_name+"_"+sgw_name + """.id}"
+                        network_entity_id = "${oci_core_service_gateway.""" + vcn_tf_name+"_"+sgw_tf_name + """.id}"
                         destination_type = "SERVICE_CIDR_BLOCK"
                         }
                         """
@@ -191,33 +255,38 @@ def prepareSGWRuleStr(sgw_name,configure_sgw):
         data = data + """
                     route_rules { 
                         destination = contains(split("-","${data.oci_core_services.oci_services.services.0.cidr_block}"),"objectstorage") == true ? "${data.oci_core_services.oci_services.services.0.cidr_block}" : "${data.oci_core_services.oci_services.services.1.cidr_block}"
-                        network_entity_id = "${oci_core_service_gateway.""" + vcn_name + "_" + sgw_name + """.id}"
+                        network_entity_id = "${oci_core_service_gateway.""" + vcn_tf_name + "_" + sgw_tf_name + """.id}"
                         destination_type = "SERVICE_CIDR_BLOCK"
                         }
                         """
     return data
 
 def prepareNGWRuleStr(ngw_name):
+    vcn_tf_name = commonTools.tfname.sub("-", vcn_name)
+    ngw_tf_name = commonTools.tfname.sub("-", ngw_name)
     data=""
     for ngw_destination in vcnInfo.ngw_destinations:
             if (ngw_destination != ''):
                 data = data+""" 
                     route_rules { 
                         destination = \"""" + ngw_destination + """\"
-                        network_entity_id = "${oci_core_nat_gateway.""" + vcn_name+"_"+ngw_name + """.id}"
+                        network_entity_id = "${oci_core_nat_gateway.""" + vcn_tf_name+"_"+ngw_tf_name + """.id}"
                         destination_type = "CIDR_BLOCK"
                         }
                         """
     return data
 
 def prepareIGWRuleStr(igw_name):
+    vcn_tf_name = commonTools.tfname.sub("-", vcn_name)
+    igw_tf_name = commonTools.tfname.sub("-", igw_name)
+
     data=""
     for igw_destination in vcnInfo.igw_destinations:
             if (igw_destination != ''):
                 data = data + """
                     route_rules { 
                         destination = \"""" + igw_destination + """\"
-                        network_entity_id = "${oci_core_internet_gateway.""" + vcn_name+"_"+igw_name + """.id}"
+                        network_entity_id = "${oci_core_internet_gateway.""" + vcn_tf_name+"_"+igw_tf_name + """.id}"
                         destination_type = "CIDR_BLOCK"
                         }
                         """
@@ -226,12 +295,14 @@ def prepareIGWRuleStr(igw_name):
 def prepareOnpremRuleStr(drg_name):
     data=""
     if vcns.vcn_hub_spoke_peer_none[vcn_name][0].lower() == 'hub':
+        vcn_tf_name = commonTools.tfname.sub("-", vcn_name)
+        drg_tf_name = commonTools.tfname.sub("-", drg_name)
         for drg_destination in vcnInfo.onprem_destinations:
             if (drg_destination != ''):
                 data = data + """
                     route_rules { 
                         destination = \"""" + drg_destination.strip() + """\"
-                        network_entity_id = "${oci_core_drg.""" + vcn_name+"_"+drg_name + """.id}"
+                        network_entity_id = "${oci_core_drg.""" + vcn_tf_name+"_"+drg_tf_name + """.id}"
                         destination_type = "CIDR_BLOCK"
                         }
                         """
@@ -247,12 +318,13 @@ def prepareOnpremRuleStr(drg_name):
         lpg_name = vcn_name + "_" + hub_vcn_name + "_lpg"""""
         lpg_name = vcns.vcn_lpg_names[vcn_name][0]
         lpg_name=vcn_name+"_"+lpg_name
+        lpg_tf_name = commonTools.tfname.sub("-", lpg_name)
         for drg_destination in vcnInfo.onprem_destinations:
             if (drg_destination != ''):
                 data = data + """
                     route_rules { 
                         destination = \"""" + drg_destination.strip() + """\"
-                        network_entity_id = "${oci_core_local_peering_gateway.""" + lpg_name + """.id}"
+                        network_entity_id = "${oci_core_local_peering_gateway.""" + lpg_tf_name + """.id}"
                         destination_type = "CIDR_BLOCK"
                         }
                         """
@@ -264,7 +336,11 @@ def prepareVCNPeerRuleStr():
     return data
 
 
-def processSubnet(region,vcn_name,name,rt_name,AD,configure_sgw,configure_ngw,configure_igw,configure_onprem,configure_vcnpeering):
+def processSubnet(region,vcn_name,rt_name,AD,configure_sgw,configure_ngw,configure_igw,configure_onprem,configure_vcnpeering):
+    # Route Table name specifiied as 'n' - dont create any routetable
+    if (rt_name == "n"):
+        return
+
     if (AD.strip().lower() != 'regional'):
         AD=AD.strip().upper()
         ad = ADS.index(AD)
@@ -273,29 +349,23 @@ def processSubnet(region,vcn_name,name,rt_name,AD,configure_sgw,configure_ngw,co
     else:
         ad_name = ""
 
-    #route table not provided; use subnet name as route table name
-    if(rt_name==''):
-        subnet_res_name = name
-    # route table name provided
-    else:
-        subnet_res_name=rt_name
-
-    # Attach CIDR
-    if (str(ad_name) != ''):
-        name1 = subnet_res_name + "-ad" + str(ad_name)
-    else:
-        name1 = subnet_res_name
-
     # check if subnet codr needs to be attached
     if (vcnInfo.subnet_name_attach_cidr == 'y'):
+        if (str(ad_name) != ''):
+            name1 = rt_name + "-ad" + str(ad_name)
+        else:
+            name1 = rt_name
         display_name = name1 + "-" + subnet
     else:
-        display_name = subnet_res_name
+        display_name = rt_name
+
+    vcn_tf_name=commonTools.tfname.sub("-",vcn_name)
+    subnet_tf_name=commonTools.tfname.sub("-",display_name)
 
     #Create Route Table File Name
-    outfile = outdir + "/" + region + "/" + vcn_name+"_"+subnet_res_name + "_routetable.tf"
-    if (vcn_name + "_" + subnet_res_name + "_routetable.tf" in routetablefiles[region]):
-        routetablefiles[region].remove(vcn_name + "_" + subnet_res_name + "_routetable.tf")
+    outfile = outdir + "/" + region + "/" + vcn_tf_name+"_"+subnet_tf_name + "_routetable.tf"
+    if (vcn_tf_name + "_" + subnet_tf_name + "_routetable.tf" in routetablefiles[region]):
+        routetablefiles[region].remove(vcn_tf_name + "_" + subnet_tf_name + "_routetable.tf")
 
     #Get VCN component names
     vcn_drg = vcns.vcn_drgs[vcn_name]
@@ -375,13 +445,13 @@ def processSubnet(region,vcn_name,name,rt_name,AD,configure_sgw,configure_ngw,co
     #New routetable
     oname = open(outfile, "w")
     data_res = """ 
-            resource "oci_core_route_table" \"""" +vcn_name+"_"+ subnet_res_name + """"{
+            resource "oci_core_route_table" \"""" +vcn_tf_name+"_"+ subnet_tf_name + """"{
                 compartment_id = "${var.""" + compartment_var_name + """}"
-                vcn_id = "${oci_core_vcn.""" + vcn_name + """.id}"
+                vcn_id = "${oci_core_vcn.""" + vcn_tf_name + """.id}"
                 display_name = \"""" + display_name.strip() + """\" """
 
     end="""
-            ##Add More rules for subnet """ + vcn_name+"_"+subnet_res_name + """##
+            ##Add More rules for subnet """ + vcn_tf_name+"_"+subnet_tf_name + """##
             }
             """
     tempStr=data_res+dataStr+end
@@ -400,6 +470,7 @@ if('.xls' in filename):
             routetablefiles.setdefault(reg, [])
             purge(outdir + "/" + reg, "_routetable.tf")
 
+
     # Get existing list of route table files
     if(modify_network == 'true'):
         for reg in vcnInfo.all_regions:
@@ -408,7 +479,6 @@ if('.xls' in filename):
             for file in lisoffiles:
                 if "_routetable.tf" in file:
                     routetablefiles[reg].append(file)
-
 
     # Create LPG Rules
     createLPGRouteRules(vcns.peering_dict)
@@ -452,11 +522,11 @@ if('.xls' in filename):
         dhcp = df.iat[i, 7]
         rt_name=df.iat[i,8]
 
-        configure_sgw = df.iat[i, 13]
-        configure_ngw = df.iat[i, 14]
-        configure_igw = df.iat[i, 15]
-        configure_onprem = df.iat[i, 16]
-        configure_vcnpeering = df.iat[i,17]
+        configure_sgw = df.iat[i, 11]
+        configure_ngw = df.iat[i, 12]
+        configure_igw = df.iat[i, 13]
+        configure_onprem = df.iat[i, 14]
+        configure_vcnpeering = df.iat[i,15]
 
         # Check to see if any column is empty in Subnets Sheet
         if (str(compartment_var_name).lower() == 'nan' or str(vcn_name).lower() == 'nan' or
@@ -478,16 +548,17 @@ if('.xls' in filename):
         if (str(rt_name).lower() != 'nan'):
             rt_name=rt_name.strip()
         else:
-            rt_name=''
+            # route table not provided; use subnet name as route table name
+            rt_name=name
 
-        processSubnet(region, vcn_name, name,rt_name,AD,configure_sgw, configure_ngw, configure_igw, configure_onprem, configure_vcnpeering)
+        processSubnet(region, vcn_name, rt_name,AD,configure_sgw, configure_ngw, configure_igw, configure_onprem, configure_vcnpeering)
 
     #remove any extra route table files (not part of latest cd3)
     for reg in vcnInfo.all_regions:
         for remaining_rt_file in routetablefiles[reg]:
             print("Removing "+outdir+"/"+reg+"/"+remaining_rt_file)
             os.remove(outdir+"/"+reg+"/"+remaining_rt_file)
-            routetablefiles[reg].remove(remaining_rt_file)
+            #routetablefiles[reg].remove(remaining_rt_file)
 
 
 # If CD3 excel file is not given as input

@@ -9,6 +9,7 @@ parser.add_argument("inputfile", help="Full Path of input file either props file
 parser.add_argument("outdir", help="Output directory for creation of TF files")
 parser.add_argument("prefix", help="customer name/prefix for all file names")
 parser.add_argument("--modify_network", help="modify network: true or false", required=False)
+parser.add_argument("--nongf_tenancy", help="non greenfield tenancy: true or false", required=False)
 
 
 if len(sys.argv) < 3:
@@ -27,35 +28,44 @@ if args.modify_network is not None:
 else:
     modify_network = "false"
 
+if args.nongf_tenancy is not None:
+    nongf_tenancy = "true"
+else:
+    nongf_tenancy = "false"
+
+
 
 print("-----------Process VCNs tab-----------")
-command = 'python create_major_objects.py ' + propsfile + ' ' + outdir + ' '+prefix +' --modify_network '+modify_network
+command = 'python create_major_objects.py ' + propsfile + ' ' + outdir + ' '+prefix +' --modify_network '+modify_network #+' --nongf_tenancy '+nongf_tenancy
 exitVal = os.system(command)
 if (exitVal == 1):
-    exit()
+    exit(1)
 
-print("--------------\nProcess DHCP tab------------")
+print("\n--------------Process DHCP tab------------")
 command = 'python create_terraform_dhcp_options.py ' + propsfile + ' ' + outdir + ' '+prefix +' --modify_network '+modify_network
 exitVal=os.system(command)
 if (exitVal == 1):
-    exit()
+    exit(1)
 
-print("-----------------\nProcess Subnets tab for Routes creation----------------")
-command = 'python create_terraform_route.py ' + propsfile + ' ' + outdir + ' '+' --modify_network '+modify_network
+print("\n------------------Process Subnets tab for Routes creation----------------")
+command = 'python create_terraform_route.py ' + propsfile + ' ' + outdir + ' '+' --modify_network '+modify_network #+' --nongf_tenancy '+nongf_tenancy
 exitVal=os.system(command)
 if (exitVal == 1):
-    exit()
+    exit(1)
 
-print("---------------\nProcess Subnets tab for Seclists creation---------------")
+print("\n---------------Process Subnets tab for Seclists creation---------------")
 command = 'python create_terraform_seclist.py  '+ propsfile + ' ' + outdir + ' '+' --modify_network '+modify_network
 exitVal=os.system(command)
 if (exitVal == 1):
-    exit()
+    exit(1)
 
-print("----------------\nProcess Subnets tab for Subnets creation----------------")
+print("\n----------------Process Subnets tab for Subnets creation----------------")
 command = 'python create_terraform_subnet.py ' + propsfile + ' ' + outdir + ' ' + prefix +' --modify_network '+modify_network
 exitVal=os.system(command)
 if (exitVal == 1):
-    exit()
+    exit(1)
 
-print("\n\n Make sure to export all SecRules and RouteRules to CD3. Use sub-option 3 under option 2(Networking) of Main Menu for the same.")
+if(nongf_tenancy=="false"):
+    print("\n\n Make sure to export all SecRules and RouteRules to CD3. Use sub-option 3 under option 2(Networking) of Main Menu for the same.")
+else:
+    print("\n\nRunning Modify Rules")

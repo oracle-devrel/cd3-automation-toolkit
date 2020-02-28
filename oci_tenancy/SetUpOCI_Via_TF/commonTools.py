@@ -3,11 +3,210 @@ import os
 import shutil
 import datetime
 import configparser
-
+from openpyxl import load_workbook
+from openpyxl.styles import PatternFill
+from openpyxl.styles import Alignment
+from openpyxl.styles import Font
+from openpyxl.styles import Border
+from openpyxl.styles import Side
+import re
 
 class commonTools():
     region_dict = {'ashburn':'us-ashburn-1','phoenix':'us-phoenix-1','london':'uk-london-1','frankfurt':'eu-frankfurt-1','toronto':'ca-toronto-1','tokyo':'ap-tokyo-1','seoul':'ap-seoul-1','mumbai':'ap-mumbai-1','sydney':'ap-sydney-1','saopaulo':'sa-saopaulo-1','zurich':'eu-zurich-1'}
     endNames = {'<END>', '<end>', '<End>'}
+    tfname = re.compile('[^a-zA-Z0-9_-]')
+
+    #Write exported  rows to cd3
+    def write_to_cd3(rows, cd3file, sheet_name):
+        book = load_workbook(cd3file)
+        sheet = book[sheet_name]
+        if(sheet_name=="VCN Info"):
+            onprem_destinations=""
+            ngw_destinations = ""
+            igw_destinations = ""
+            for destination in rows[0]:
+                onprem_destinations=destination+","+onprem_destinations
+            for destination in rows[1]:
+                ngw_destinations = destination + "," + ngw_destinations
+            for destination in rows[2]:
+                igw_destinations = destination + "," + igw_destinations
+            #regions is not empty (from export_network_nonGreenField)
+            if(len(rows)==4):
+                regions = ""
+                for r in rows[3]:
+                    regions=r+","+regions
+                if (regions != "" and regions[-1] == ','):
+                    regions = regions[:-1]
+                sheet.cell(7, 2).value = regions
+
+            if (onprem_destinations != "" and onprem_destinations[-1] == ','):
+                onprem_destinations = onprem_destinations[:-1]
+            if (ngw_destinations != "" and ngw_destinations[-1] == ','):
+                ngw_destinations = ngw_destinations[:-1]
+            if (igw_destinations != "" and igw_destinations[-1] == ','):
+                igw_destinations = igw_destinations[:-1]
+
+            sheet.cell(3,2).value=onprem_destinations
+            sheet.cell(4,2).value = ngw_destinations
+            sheet.cell(5,2).value = igw_destinations
+            book.save(cd3file)
+            book.close()
+            return
+
+
+        rows_len=len(rows)
+        sheet_max_rows=sheet.max_row
+
+        if(rows_len > sheet_max_rows):
+            large=rows_len
+        else:
+            large=sheet_max_rows
+        #Put Data
+        for i in range(0,large):
+            for j in range(0,len(rows[0])):
+                if(i>=rows_len):
+                    sheet.cell(row=i+3, column=j+1).value = ""
+                else:
+                    sheet.cell(row=i+3, column=j+1).value = rows[i][j]
+                sheet.cell(row=i+3, column=j+1).alignment = Alignment(wrap_text=True)
+
+        #Add color for exported sec rules and route rules
+        if (sheet_name == "RouteRulesinOCI" or sheet_name == "SecRulesinOCI"):
+            names = []
+            brdr = Border(left=Side(style='thin'),
+                          right=Side(style='thin'),
+                          top=Side(style='thin'),
+                          bottom=Side(style='thin'),
+                          )
+            # Add color coding to exported rules
+            for row in sheet.iter_rows(min_row=3):
+                c = 0
+                region = ""
+                name = ""
+                for cell in row:
+                    c = c + 1
+                    if (c == 1):
+                        region = cell.value
+                        continue
+                    elif (c == 4):
+                        name = cell.value
+                        break
+
+                vcn_name = region + "_" + name
+                if (vcn_name not in names):
+                    names.append(vcn_name)
+                    for cellnew in row:
+                        if (len(names) % 2 == 0):
+                            cellnew.fill = PatternFill(start_color="94AFAF", end_color="94AFAF", fill_type="solid")
+                            cellnew.border = brdr
+                        else:
+                            cellnew.fill = PatternFill(start_color="E5DBBE", end_color="E5DBBE", fill_type="solid")
+                            cellnew.border = brdr
+                else:
+                    for cellnew in row:
+                        if (len(names) % 2 == 0):
+                            cellnew.fill = PatternFill(start_color="94AFAF", end_color="94AFAF", fill_type="solid")
+                            cellnew.border = brdr
+                        else:
+                            cellnew.fill = PatternFill(start_color="E5DBBE", end_color="E5DBBE", fill_type="solid")
+                            cellnew.border = brdr
+
+        book.save(cd3file)
+        book.close()
+
+    """def write_to_cd3_old(df, cd3file,sheet_name):
+        book = load_workbook(cd3file)
+        if (sheet_name in book.sheetnames):
+            book.remove(book[sheet_name])
+
+        writer = pd.ExcelWriter(cd3file, engine='openpyxl')
+        writer.book = book
+        writer.save()
+
+        book = load_workbook(cd3file)
+        writer = pd.ExcelWriter(cd3file, engine='openpyxl')
+        writer.book = book
+        df.to_excel(writer, sheet_name=sheet_name, index=False)
+
+        # Adjust column widths
+        ws = writer.sheets[sheet_name]
+        from openpyxl.utils import get_column_letter
+
+        column_widths = []
+        for row in ws.iter_rows(min_row=2):
+            for i, cell in enumerate(row):
+                if len(column_widths) > i:
+                    if len(str(cell.value)) > column_widths[i]:
+                        column_widths[i] = len(str(cell.value))
+                else:
+                    column_widths += [len(str(cell.value))]
+
+        for i, column_width in enumerate(column_widths):
+            ws.column_dimensions[get_column_letter(i + 1)].width = column_width
+
+        # Header Row
+        for row in ws.iter_rows(min_row=1, max_row=1):
+            for cell in row:
+                cell.fill = PatternFill(start_color="FFFF00", end_color="FFFF00", fill_type="solid")
+                cell.font = Font(bold=True)
+                cell.alignment = Alignment(wrap_text=True)
+
+        # Move the sheet near Networking sheets
+        book._sheets.remove(ws)
+        if (sheet_name == "VCNs"):
+            book._sheets.insert(5, ws)
+        elif (sheet_name == "DHCP"):
+            book._sheets.insert(6, ws)
+        elif (sheet_name == "Subnets"):
+            book._sheets.insert(7, ws)
+
+        elif(sheet_name == "RouteRulesinOCI" or sheet_name == "SecRulesinOCI"):
+            names = []
+            brdr = Border(left=Side(style='thin'),
+                          right=Side(style='thin'),
+                          top=Side(style='thin'),
+                          bottom=Side(style='thin'),
+                          )
+            # Add color coding to exported rules
+            for row in ws.iter_rows(min_row=2):
+                c = 0
+                region = ""
+                name = ""
+                for cell in row:
+                    c = c + 1
+                    if (c == 1):
+                        region = cell.value
+                        continue
+                    elif (c == 4):
+                        name = cell.value
+                        break
+
+                vcn_name = region + "_" + name
+                if (vcn_name not in names):
+                    names.append(vcn_name)
+                    for cellnew in row:
+                        if (len(names) % 2 == 0):
+                            cellnew.fill = PatternFill(start_color="94AFAF", end_color="94AFAF", fill_type="solid")
+                            cellnew.border = brdr
+                        else:
+                            cellnew.fill = PatternFill(start_color="E5DBBE", end_color="E5DBBE", fill_type="solid")
+                            cellnew.border = brdr
+                else:
+                    for cellnew in row:
+                        if (len(names) % 2 == 0):
+                            cellnew.fill = PatternFill(start_color="94AFAF", end_color="94AFAF", fill_type="solid")
+                            cellnew.border = brdr
+                        else:
+                            cellnew.fill = PatternFill(start_color="E5DBBE", end_color="E5DBBE", fill_type="solid")
+                            cellnew.border = brdr
+
+            # Move the sheet near Networking sheets
+            if(sheet_name=="RouteRulesinOCI"):
+                book._sheets.insert(9, ws)
+            elif(sheet_name=="SecRulesinOCI"):
+                book._sheets.insert(8, ws)
+
+        writer.save()"""
 
     #def backup_file(src_dir, pattern, overwrite):
     def backup_file(src_dir, pattern):
@@ -17,7 +216,8 @@ class commonTools():
             dest_dir = src_dir + "/backup_RTs_" + date
         elif("_seclist.tf" in pattern):
             dest_dir = src_dir + "/backup_SLs_" + date
-
+        else:
+            dest_dir = src_dir + "/backup_"+date
         for f in os.listdir(src_dir):
             if f.endswith(pattern):
                 if not os.path.exists(dest_dir):
@@ -36,6 +236,7 @@ class commonTools():
 
 class parseVCNs():
     peering_dict = dict()
+    objs_peering_dict = dict()
 
     vcn_region = {}
     vcn_drgs = {}
@@ -62,6 +263,23 @@ class parseVCNs():
             # Create VCN details Dicts and Hub and Spoke VCN Names
             for i in df_vcn.index:
                 region = df_vcn['Region'][i]
+                if (region in commonTools.endNames or str(region).lower() == 'nan'):
+                    break
+                vcn_name = df_vcn['vcn_name'][i]
+                self.vcn_names.append(vcn_name)
+
+                # Check to see if vcn_name is empty in VCNs Sheet
+                if (str(vcn_name).lower() == 'nan'):
+                    print("ERROR!!! vcn_name/row cannot be left empty in VCNs sheet in CD3..exiting...")
+                    exit(1)
+                vcn_name = vcn_name.strip()
+                if str(df_vcn['hub_spoke_peer_none'][i]).strip().split(":")[0].strip().lower() == 'hub':
+                    self.peering_dict[vcn_name]=""
+                    self.objs_peering_dict[vcn_name]=""
+
+
+            for i in df_vcn.index:
+                region = df_vcn['Region'][i]
                 if (region in commonTools.endNames or str(region).lower()=='nan'):
                     break
                 vcn_name = df_vcn['vcn_name'][i]
@@ -83,7 +301,6 @@ class parseVCNs():
                     if lpg=='y':
                         self.vcn_lpg_names[vcn_name][j]=vcn_name+"_lpg"+str(j)
                         j=j+1
-
                 self.vcn_lpg_names1[vcn_name] = str(df_vcn['lpg_required'][i]).strip().split(",")
                 self.vcn_lpg_names1[vcn_name] = [x.strip() for x in self.vcn_lpg_names1[vcn_name]]
 
@@ -120,13 +337,12 @@ class parseVCNs():
 
                 self.vcn_lpg_rules.setdefault(vcn_name, '')
 
-
                 if (self.vcn_hub_spoke_peer_none[vcn_name][0].strip().lower() == 'hub'):
                     self.hub_vcn_names.append(vcn_name)
-                    self.peering_dict[vcn_name]=''
+                    #self.peering_dict[vcn_name]=''
 
 
-                if (self.vcn_hub_spoke_peer_none[vcn_name][0].strip().lower() == 'spoke'):
+                if (self.vcn_hub_spoke_peer_none[vcn_name][0].strip().lower() == 'spoke' or self.vcn_hub_spoke_peer_none[vcn_name][0].strip().lower() == 'exportedspoke'):
                     hub_name=self.vcn_hub_spoke_peer_none[vcn_name][1].strip()
                     self.spoke_vcn_names.append(vcn_name)
                     try:
@@ -134,14 +350,28 @@ class parseVCNs():
                     except KeyError:
                         print("ERROR!!! "+hub_name +" not marked as Hub. Verify hub_spoke_peer_none column again..Exiting!")
                         exit(1)
+                #prepare seperate peering dict for establishing peering between LPGs
+                if (self.vcn_hub_spoke_peer_none[vcn_name][0].strip().lower() == 'spoke'):
+                    hub_name=self.vcn_hub_spoke_peer_none[vcn_name][1].strip()
+                    try:
+                        self.objs_peering_dict[hub_name] = self.objs_peering_dict[hub_name]+vcn_name+","
+                    except KeyError:
+                        print("ERROR!!! "+hub_name +" not marked as Hub. Verify hub_spoke_peer_none column again..Exiting!")
+                        exit(1)
+
 
                 if (self.vcn_hub_spoke_peer_none[vcn_name][0].strip().lower() == 'peer'):
                     self.peering_dict[vcn_name]=self.vcn_hub_spoke_peer_none[vcn_name][1].strip()
+                    self.objs_peering_dict[vcn_name] = self.vcn_hub_spoke_peer_none[vcn_name][1].strip()
 
             for k,v in self.peering_dict.items():
-                if(v[-1]==','):
+                if(v!="" and v[-1]==','):
                     v=v[:-1]
                     self.peering_dict[k]=v
+            for k,v in self.objs_peering_dict.items():
+                if(v!="" and v[-1]==','):
+                    v=v[:-1]
+                    self.objs_peering_dict[k]=v
         if(".csv" in filename):
             config = configparser.RawConfigParser()
             config.optionxform = str

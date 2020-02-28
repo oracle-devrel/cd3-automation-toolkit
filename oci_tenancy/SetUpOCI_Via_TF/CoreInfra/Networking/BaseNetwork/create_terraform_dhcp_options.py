@@ -57,11 +57,13 @@ def processDHCP(region,vcn_name,dhcp_option_name,compartment_var_name,serverType
 	serverType=serverType.strip()
 	search_domain=search_domain.strip()
 	vcn_name=vcn_name.strip()
+	vcn_tf_name = commonTools.tfname.sub("-", vcn_name)
 	dhcp_option_name=dhcp_option_name.strip()
 	vcn_dhcp = vcn_name + "_" + dhcp_option_name
+	vcn_dhcp_tf_name = commonTools.tfname.sub("-", vcn_dhcp)
 
 	data = """
-	resource "oci_core_dhcp_options" \"""" + vcn_dhcp + """" {
+	resource "oci_core_dhcp_options" \"""" + vcn_dhcp_tf_name + """" {
 			compartment_id = "${var.""" + compartment_var_name.strip() + """}"
 			options {
 				type = "DomainNameServer"
@@ -86,7 +88,7 @@ def processDHCP(region,vcn_name,dhcp_option_name,compartment_var_name,serverType
 				search_domain_names = [ \"""" + search_domain + """" ]
 			}"""
 	data=data+"""
-			vcn_id = "${oci_core_vcn.""" + vcn_name.strip() + """.id}"
+			vcn_id = "${oci_core_vcn.""" + vcn_tf_name + """.id}"
 			display_name = \"""" + dhcp_option_name + """"
 	}
 	"""
