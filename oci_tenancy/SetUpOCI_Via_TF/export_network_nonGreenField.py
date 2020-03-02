@@ -312,14 +312,14 @@ for reg in all_regions:
 rows=[]
 os.chdir('CoreInfra/Networking/BaseNetwork')
 if(input_compartment_list is None):
-    if (input_config_file == ''):
+    if (input_config_file is None):
         command_sl = 'python exportSeclist.py ' + cd3file + " --tf_import_cmd true --outdir "+outdir
         command_rt = 'python exportRoutetable.py ' + cd3file + " --tf_import_cmd true --outdir "+outdir
     else:
         command_sl = 'python exportSeclist.py ' + cd3file + ' --tf_import_cmd true --outdir '+outdir+' --configFileName ' + input_config_file
         command_rt = 'python exportRoutetable.py ' + cd3file + ' --tf_import_cmd true --outdir '+outdir +' --configFileName ' + input_config_file
 else:
-    if (input_config_file == ''):
+    if (input_config_file is None):
         command_sl = 'python exportSeclist.py ' + cd3file + " --tf_import_cmd true --outdir "+outdir + " --networkCompartment "+input_compartment_list
         command_rt = 'python exportRoutetable.py ' + cd3file + " --tf_import_cmd true --outdir "+outdir + " --networkCompartment "+input_compartment_list
     else:
