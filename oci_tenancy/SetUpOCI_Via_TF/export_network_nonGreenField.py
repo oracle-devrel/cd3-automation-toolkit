@@ -121,6 +121,26 @@ if args.configFileName is not None:
 else:
     config = oci.config.from_file()
 
+
+ntk_compartment_ids = get_network_compartment_id(config)
+#Check Compartments
+remove_comps=[]
+if(input_compartment_names is not None):
+    for x in range(0,len(input_compartment_names)):
+        if(input_compartment_names[x] not in ntk_compartment_ids.keys()):
+            print("Input compartment: "+ input_compartment_names[x]+" doesn't exist in OCI")
+            remove_comps.append(input_compartment_names[x])
+
+    input_compartment_names = [x for x in input_compartment_names if x not in remove_comps]
+    if(len(input_compartment_names)==0):
+        print("None of the input compartments specified exist in OCI..Exiting!!!")
+        exit(1)
+    else:
+        print("Fetching for Compartments... "+str(input_compartment_names))
+else:
+    print("Fetching for all Compartments...")
+print("\nCD3 excel file should not be opened during export process!!!")
+#Fetch Regions
 idc=IdentityClient(config)
 all_regions=[]
 regionsubscriptions = idc.list_region_subscriptions(tenancy_id=config['tenancy'])
@@ -132,6 +152,7 @@ for rs in regionsubscriptions.data:
 rows=([],[],[],all_regions)
 commonTools.write_to_cd3(rows,cd3file,"VCN Info")
 
+# Create backups
 for reg in all_regions:
     commonTools.backup_file(outdir + "/" + reg,"tf_import_commands_nonGF.sh")
     commonTools.backup_file(outdir + "/" + reg, "obj_names.safe")
@@ -140,7 +161,6 @@ for reg in all_regions:
     importCommands[reg].write("\n")
     oci_obj_names[reg] = open(outdir + "/" + reg+"/obj_names.safe", "w")
 
-ntk_compartment_ids = get_network_compartment_id(config)
 
 #Fetch VCNs
 print("\nFetchig VCNs...")

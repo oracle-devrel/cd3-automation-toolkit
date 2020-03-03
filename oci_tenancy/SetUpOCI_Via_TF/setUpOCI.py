@@ -92,7 +92,6 @@ if (input_nongf_tenancy.lower() == 'true'):
                 command = "python export_network_nonGreenField.py "+input_cd3file + ' ' + input_outdir +" --networkCompartment "+input_comp
             else:
                 command = "python export_network_nonGreenField.py " + input_cd3file + ' ' + input_outdir +" --networkCompartment "+input_comp+" --configFileName " + input_config_file
-        print("\nCD3 excel file should not be opened during export process!!!")
         print("\nExecuting command "+command)
         exitval =os.system(command)
         if (exitval==0):
