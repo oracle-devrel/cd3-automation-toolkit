@@ -55,6 +55,9 @@ class commonTools():
 
 
         rows_len=len(rows)
+        if(rows_len == 0):
+            print("0 rows exported; Nothing to write to CD3 excel; Sheet "+sheet_name +" will remain as is in input CD3 excel!!")
+            return
         sheet_max_rows=sheet.max_row
 
         if(rows_len > sheet_max_rows):

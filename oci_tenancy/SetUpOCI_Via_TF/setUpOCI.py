@@ -96,7 +96,7 @@ if (input_nongf_tenancy.lower() == 'true'):
         print("\nExecuting command "+command)
         exitval =os.system(command)
         if (exitval==0):
-            print("\nNetwork Objects exported to cd3 "+ input_cd3file+".\nPlease verify and proceed to create TF files; option No 2")
+            print("\nNetwork Objects export completed.\nPlease verify CD3 excel "+ input_cd3file+" and proceed to create TF files; option No 2")
         else:
             print("Error Occured. Please try again!!!")
     elif(userInput=="2"):
@@ -122,15 +122,6 @@ if (input_nongf_tenancy.lower() == 'true'):
         if (exitVal == 1):
             exit(1)
 
-
-        """command = 'python create_all_tf_objects.py ' + input_cd3file + ' ' + input_outdir + ' ' + input_prefix + ' --nongf_tenancy true'
-        print("Executing Command: " + command)
-        os.chdir('CoreInfra/Networking/BaseNetwork')
-        exitval=os.system(command)
-        os.chdir("../../..")
-        if(exitval==1):
-            exit()
-        """
         print("\n----------------Process SecRulesinOCI tab for SecList creation----------------")
         command = 'python modify_secrules_tf.py ' + input_cd3file + ' ' + input_outdir + ' '+input_cd3file +' --nongf_tenancy true'
         print("Executing Command: " + command)
@@ -162,6 +153,8 @@ if (input_nongf_tenancy.lower() == 'true'):
                 os.system("chmod +x tf_import_commands_nonGF.sh")
                 os.system("./tf_import_commands_nonGF.sh")
 
+    else:
+        print("Invalid Choice!!")
     exit()
 
 print("1.  Identity")
