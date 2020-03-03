@@ -75,6 +75,8 @@ def establishPeering(peering_dict):
         right_vcns = value.split(",")
 
         for right_vcn in right_vcns:
+            if(right_vcn==""):
+                continue
             right_vcn=right_vcn.strip()
             right_vcn_tf_name = commonTools.tfname.sub("-", right_vcn)
 

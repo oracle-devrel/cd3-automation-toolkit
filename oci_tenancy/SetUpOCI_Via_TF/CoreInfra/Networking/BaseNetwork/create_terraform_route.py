@@ -63,6 +63,8 @@ def createLPGRouteRules(peering_dict):
         left_vcn_tf_name = commonTools.tfname.sub("-", left_vcn)
 
         for right_vcn in right_vcns:
+            if (right_vcn == ""):
+                continue
             right_vcn = right_vcn.strip()
             right_vcn_tf_name = commonTools.tfname.sub("-", right_vcn)
 
@@ -136,6 +138,8 @@ def createDRGRtTableString(compartment_var_name,hub_vcn_name,peering_dict,region
 
     drgRuleStr=""
     for right_vcn in right_vcns:
+        if (right_vcn == ""):
+            continue
         if right_vcn in vcns.spoke_vcn_names:
             right_vcn_tf_name = commonTools.tfname.sub("-", right_vcn)
             # lpg_name = hub_vcn_name + "_" + right_vcn + "_lpg"
@@ -194,6 +198,8 @@ def createLPGRtTableString(compartment_var_name,hub_vcn_name,peering_dict,region
     right_vcns = peering_dict[hub_vcn_name]
     right_vcns = right_vcns.split(",")
     for right_vcn in right_vcns:
+        if (right_vcn == ""):
+            continue
         if(right_vcn in vcns.spoke_vcn_names):
             lpg_name = vcns.vcn_lpg_names3[hub_vcn_name][0]
             vcns.vcn_lpg_names3[hub_vcn_name].pop(0)
