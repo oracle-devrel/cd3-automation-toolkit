@@ -139,9 +139,14 @@ def processVCN(region, vcn_name, vcn_cidr, vcn_drg, vcn_igw, vcn_ngw, vcn_sgw, v
                     cidr_block = \"""" + vcn_cidr + """"
                     compartment_id = "${var.""" + compartment_var_name + """}"
                     display_name = \"""" + vcn_name + """"
-                    dns_label = \"""" + vcn_dns_label + """"
-            }
             """
+    if(vcn_dns_label.lower()!="n"):
+        data=data+ """
+                    dns_label = \"""" + vcn_dns_label + """"
+        """
+    data=data+"""
+        }
+        """
     if vcn_igw != "n":
         # use default name
         if (vcn_igw == "y"):
@@ -256,7 +261,6 @@ def processVCN(region, vcn_name, vcn_cidr, vcn_drg, vcn_igw, vcn_ngw, vcn_sgw, v
             """
     if(vcn_lpg!='n'):
         for lpg_name in vcns.vcn_lpg_names[vcn_name]:
-            print(lpg_name)
             lpg_tf_name = commonTools.tfname.sub("-", lpg_name)
             lpg_rt_name = ""
             #if (nongf_tenancy == "true"):

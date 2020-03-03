@@ -28,7 +28,13 @@ def get_network_compartment_id(config):#, compartment_name):
 def print_vcns(region, comp_name, vcn,drg_display_name,igw_display_name,ngw_display_name,sgw_display_name,lpg_display_names):
     global rows
 
-    new_row=(region,comp_name,vcn.display_name,vcn.cidr_block,drg_display_name,igw_display_name,ngw_display_name,sgw_display_name,lpg_display_names,'exported',vcn.dns_label)
+    #Check to see if DNS is enabled for this VCN
+    if(vcn.dns_label is None):
+        dns_label="n"
+    else:
+        dns_label=vcn.dns_label
+
+    new_row=(region,comp_name,vcn.display_name,vcn.cidr_block,drg_display_name,igw_display_name,ngw_display_name,sgw_display_name,lpg_display_names,'exported',dns_label)
     rows.append(new_row)
     tf_name =  commonTools.tfname.sub("-",vcn.display_name)
     importCommands[region.lower()].write("\nterraform import oci_core_vcn." + tf_name+ " "+str(vcn.id))
@@ -66,6 +72,7 @@ def print_dhcp(region, comp_name, vcn_name, dhcp):
 def print_subnets(region, comp_name, vcn_name, subnet,dhcp_name,rt_name,sl_names,add_def_seclist):
     global rows
 
+    #Get AD
     availability_domain = subnet.availability_domain
     ad=""
     if(availability_domain == None):
@@ -77,6 +84,7 @@ def print_subnets(region, comp_name, vcn_name, subnet,dhcp_name,rt_name,sl_names
     elif ("AD-3" in availability_domain):
         ad="AD3"
 
+    #Get public or private
     pvt_pub=subnet.prohibit_public_ip_on_vnic
     access=""
     if(pvt_pub==True):
@@ -84,7 +92,13 @@ def print_subnets(region, comp_name, vcn_name, subnet,dhcp_name,rt_name,sl_names
     elif(pvt_pub==False):
         access="public"
 
-    new_row=(region,comp_name,vcn_name,subnet.display_name,subnet.cidr_block,ad,access,dhcp_name,rt_name,sl_names,add_def_seclist,'-','-','-','-','-',subnet.dns_label)
+    # Check to see if DNS is enabled for this Subnet
+    if(subnet.dns_label is None):
+        dns_label="n"
+    else:
+        dns_label=subnet.dns_label
+
+    new_row=(region,comp_name,vcn_name,subnet.display_name,subnet.cidr_block,ad,access,dhcp_name,rt_name,sl_names,add_def_seclist,'-','-','-','-','-',dns_label)
     rows.append(new_row)
     tf_name = commonTools.tfname.sub("-",vcn_name+"_" +str(subnet.display_name))
     importCommands[region.lower()].write("\nterraform import oci_core_subnet." + tf_name+" "+str(subnet.id))
@@ -140,6 +154,7 @@ if(input_compartment_names is not None):
 else:
     print("Fetching for all Compartments...")
 print("\nCD3 excel file should not be opened during export process!!!")
+
 #Fetch Regions
 idc=IdentityClient(config)
 all_regions=[]

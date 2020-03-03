@@ -139,8 +139,11 @@ def processSubnet(region,vcn_name,name,rt_name,seclist_names,subnet,AD,dnslabel,
 	else:
 		data = data + """
     	prohibit_public_ip_on_vnic = true """
-	data = data + """
+	if(dnslabel.lower()!="n"):
+		data = data + """
     	dns_label           =  \"""" + dnslabel + """"
+    """
+	data=data+"""
     }
     """
 	tfStr[region]=tfStr[region]+data

@@ -20,6 +20,7 @@ class commonTools():
     def write_to_cd3(rows, cd3file, sheet_name):
         book = load_workbook(cd3file)
         sheet = book[sheet_name]
+
         if(sheet_name=="VCN Info"):
             onprem_destinations=""
             ngw_destinations = ""
@@ -53,17 +54,25 @@ class commonTools():
             book.close()
             return
 
-
         rows_len=len(rows)
-        if(rows_len == 0):
-            print("0 rows exported; Nothing to write to CD3 excel; Sheet "+sheet_name +" will remain as is in input CD3 excel!!")
-            return
-        sheet_max_rows=sheet.max_row
 
-        if(rows_len > sheet_max_rows):
-            large=rows_len
+        #If no rows exported from OCI, remove the sample data as well
+        if(rows_len == 0):
+            print("0 rows exported; Nothing to write to CD3 excel; Sheet "+sheet_name +" will be empty in CD3 excel!!")
+            for i in range(0, sheet.max_row):
+                for j in range(0, sheet.max_column):
+                    sheet.cell(row=i + 3, column=j + 1).value = ""
+
+            book.save(cd3file)
+            book.close()
+            return
+
+        sheet_max_rows = sheet.max_row
+        if (rows_len > sheet_max_rows):
+            large = rows_len
         else:
-            large=sheet_max_rows
+            large = sheet_max_rows
+
         #Put Data
         for i in range(0,large):
             for j in range(0,len(rows[0])):
