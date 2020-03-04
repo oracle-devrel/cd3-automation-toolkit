@@ -212,10 +212,13 @@ if('.xls' in filename):
 
 
     # remove any extra sec list files (not part of latest cd3)
+    print("\nSecLists not attached to any subnet; If you want to delete any of them, remove the TF file")
+    print("--------------------------------------------------------------------------------------------")
     for reg in vcnInfo.all_regions:
         for remaining_sl_file in secrulefiles[reg]:
-            print("\nRemoving "+outdir + "/" + reg + "/"+remaining_sl_file)
-            os.remove(outdir + "/" + reg + "/"+remaining_sl_file)
+            print(outdir + "/" + reg + "/"+remaining_sl_file)
+            #print("\nRemoving "+outdir + "/" + reg + "/"+remaining_sl_file)
+            #os.remove(outdir + "/" + reg + "/"+remaining_sl_file)
             #secrulefiles[reg].remove(remaining_sl_file)
 
 # If CD3 excel file is not given as input

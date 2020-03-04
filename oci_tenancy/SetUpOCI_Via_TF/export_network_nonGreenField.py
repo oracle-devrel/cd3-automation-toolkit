@@ -250,7 +250,7 @@ for reg in all_regions:
                 if (lpg_route_table_id is not None):
                     oci_obj_names[region.lower()].write("\nlpginfo::::" + vcn_info.display_name + "::::" + lpg_info.display_name + "::::" + vnc.get_route_table(lpg_route_table_id).data.display_name)
 
-                tf_name = tf_name = commonTools.tfname.sub("-",vcn_info.display_name+"_"+lpg_info.display_name)
+                tf_name = commonTools.tfname.sub("-",vcn_info.display_name+"_"+lpg_info.display_name)
                 importCommands[reg].write("\nterraform import oci_core_local_peering_gateway." + tf_name + " " + lpg_info.id)
 
             if(lpg_display_names==""):

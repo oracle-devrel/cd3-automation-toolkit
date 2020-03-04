@@ -177,6 +177,7 @@ def createDRGRtTableString(compartment_var_name,hub_vcn_name,peering_dict,region
         }"""
                 oname.write(drgStr)
                 oname.close()
+                print(outfile + " containing TF for DRG Route Table has been created for region " + region)
 
     if (rt_tf_name + "_routetable.tf" in routetablefiles[region]):
         routetablefiles[region].remove(rt_tf_name + "_routetable.tf")
@@ -241,6 +242,7 @@ def createLPGRtTableString(compartment_var_name,hub_vcn_name,peering_dict,region
         }"""
             oname.write(lpgStr)
             oname.close()
+            print(outfile + " containing TF for LPG Route Table has been created for region " + region)
             if(rt_tf_name + "_routetable.tf" in routetablefiles[region]):
                 routetablefiles[region].remove(rt_tf_name + "_routetable.tf")
 
@@ -559,11 +561,14 @@ if('.xls' in filename):
 
         processSubnet(region, vcn_name, rt_name,AD,configure_sgw, configure_ngw, configure_igw, configure_onprem, configure_vcnpeering)
 
+    print("\nRouteTables not attached to any subnet or DRG and LPG; If you want to delete any of them, remove the TF file")
+    print("--------------------------------------------------------------------------------------------------------------")
     #remove any extra route table files (not part of latest cd3)
     for reg in vcnInfo.all_regions:
         for remaining_rt_file in routetablefiles[reg]:
-            print("Removing "+outdir+"/"+reg+"/"+remaining_rt_file)
-            os.remove(outdir+"/"+reg+"/"+remaining_rt_file)
+            print(outdir+"/"+reg+"/"+remaining_rt_file)
+            #print("Removing "+outdir+"/"+reg+"/"+remaining_rt_file)
+            #os.remove(outdir+"/"+reg+"/"+remaining_rt_file)
             #routetablefiles[reg].remove(remaining_rt_file)
 
 
