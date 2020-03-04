@@ -262,12 +262,7 @@ elif ('.csv' in inputfile):
             searchString = "##Add More rules for subnet "+rt_var+"##"
             strRule = ""
             strRule = strRule+"""
-"""             route_rules {
-                destination = \"""" + dest_cidr + """\"
-                network_entity_id = \"""" + dest_obj + """\"
-                destination_type = \"""" + dest_type + """\"
-                }
-                """
+"""       ##missing content##      """
 """             strRule1 = strRule + "##Add More rules for subnet " +rt_var+"##"
 
             outfile = outdir + "/" + region + "/" + rt_var + "_routetable.tf"
