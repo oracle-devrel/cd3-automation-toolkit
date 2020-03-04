@@ -186,8 +186,6 @@ for reg in all_regions:
             for ntk_compartment_name_again in ntk_compartment_ids:
                 if (input_compartment_names is not None and ntk_compartment_name_again not in input_compartment_names):
                     continue
-
-                routetables = oci.pagination.list_call_get_all_results(vcn.list_route_tables, compartment_id=ntk_compartment_ids[ntk_compartment_name_again], vcn_id=vcn_id, lifecycle_state='AVAILABLE')
                 routetables = oci.pagination.list_call_get_all_results(vcn.list_route_tables, compartment_id=ntk_compartment_ids[ntk_compartment_name_again], vcn_id=vcn_id, lifecycle_state='AVAILABLE')
                 print_routetables(routetables,region,vcn_name,ntk_compartment_name)
 
