@@ -44,15 +44,13 @@ def print_dhcp(region, comp_name, vcn_name, dhcp):
 
     tf_name = commonTools.tfname.sub("-", vcn_name + "_" + str(dhcp.display_name))
     #Dont write Default DHCP option to cd3, jst write TF import command
-    if("Default DHCP Options for "in dhcp.display_name):
-        importCommands[region.lower()].write("\nterraform import oci_core_default_dhcp_options." + tf_name + " " + str(dhcp.id))
-        return
+
 
     options=dhcp.options
+    server_type = ""
+    custom_dns_servers_str = ""
+    search_domain_names_str = ""
     for option in options:
-        server_type=""
-        custom_dns_servers_str=""
-        search_domain_names_str=""
         if(option.type=="DomainNameServer"):
             server_type=option.server_type
             custom_dns_servers=option.custom_dns_servers
@@ -67,7 +65,10 @@ def print_dhcp(region, comp_name, vcn_name, dhcp):
 
     new_row=(region,comp_name,vcn_name,dhcp.display_name,server_type,search_domain_names_str,custom_dns_servers_str)
     rows.append(new_row)
-    importCommands[region.lower()].write("\nterraform import oci_core_dhcp_options." + tf_name + " "+str(dhcp.id))
+    if ("Default DHCP Options for " in dhcp.display_name):
+        importCommands[region.lower()].write("\nterraform import oci_core_default_dhcp_options." + tf_name + " " + str(dhcp.id))
+    else:
+        importCommands[region.lower()].write("\nterraform import oci_core_dhcp_options." + tf_name + " "+str(dhcp.id))
 
 def print_subnets(region, comp_name, vcn_name, subnet,dhcp_name,rt_name,sl_names,add_def_seclist):
     global rows

@@ -212,9 +212,9 @@ if('.xls' in filename):
 
 
     # remove any extra sec list files (not part of latest cd3)
-    print("\nSecLists not attached to any subnet; If you want to delete any of them, remove the TF file")
-    print("--------------------------------------------------------------------------------------------")
     for reg in vcnInfo.all_regions:
+        if(len(secrulefiles[reg])!=0):
+            print("\nATTENION!!! Below SecLists are not attached to any subnet; If you want to delete any of them, remove the TF file!!!")
         for remaining_sl_file in secrulefiles[reg]:
             print(outdir + "/" + reg + "/"+remaining_sl_file)
             #print("\nRemoving "+outdir + "/" + reg + "/"+remaining_sl_file)

@@ -277,7 +277,6 @@ def processVCN(region, vcn_name, vcn_cidr, vcn_drg, vcn_igw, vcn_ngw, vcn_sgw, v
                 rt_var = vcn_name+"_Route Table associated with LPG-"+lpg_name
             else:
                 rt_var = vcn_name + "_" + lpg_rt_name
-            print(rt_var)
             rt_tf_name = commonTools.tfname.sub("-", rt_var)
             data = data + """
             resource "oci_core_local_peering_gateway" \"""" + vcn_tf_name+"_"+lpg_tf_name + """" {
