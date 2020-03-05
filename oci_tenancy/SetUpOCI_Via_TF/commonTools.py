@@ -38,6 +38,9 @@ class commonTools():
                     regions=r+","+regions
                 if (regions != "" and regions[-1] == ','):
                     regions = regions[:-1]
+                #Put n for subnet_name_attach_cidr
+                sheet.cell(6,2).value = 'n'
+                #Put regions value
                 sheet.cell(7, 2).value = regions
 
             if (onprem_destinations != "" and onprem_destinations[-1] == ','):
