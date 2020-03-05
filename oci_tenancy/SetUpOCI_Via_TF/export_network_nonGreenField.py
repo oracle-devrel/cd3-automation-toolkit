@@ -195,7 +195,6 @@ for reg in all_regions:
         vcns = oci.pagination.list_call_get_all_results(vnc.list_vcns,compartment_id=ntk_compartment_ids[ntk_compartment_name],lifecycle_state="AVAILABLE")
         for vcn in vcns.data:
             vcn_info=vcn
-
             #Fetch VCN components assuming components are in same comp as VCN
             drg_display_name = "n"
             DRG_Attachments = oci.pagination.list_call_get_all_results(vnc.list_drg_attachments,compartment_id=ntk_compartment_ids[ntk_compartment_name],vcn_id=vcn.id)

@@ -94,32 +94,43 @@ if (input_nongf_tenancy.lower() == 'true'):
         print("\nExecuting command "+command)
         exitval =os.system(command)
         if (exitval==0):
-            print("\nNetwork Objects export completed for CD3 excel "+ input_cd3file+"\nProceeding to create TF files...\n\n")
+            print("\nNetwork Objects export completed for CD3 excel "+ input_cd3file)
         else:
-            print("Error Occured. Please try again!!!")
+            print("\nError Occured. Please try again!!!")
             exit()
 
+        print("\nFetching Compartment Info to variables files...")
+        if (input_config_file == ''):
+            command = "python fetch_compartments_to_variablesTF.py " + input_outdir
+        else:
+            command = "python fetch_compartments_to_variablesTF.py " + input_outdir + " --configFileName " + input_config_file
+
+        print("Executing Command: " + command)
+        exitVal = os.system(command)
+        if (exitVal == 1):
+            exit()
+        print("\nProceeding to create TF files...\n\n")
         print("\n-----------Process VCNs tab-----------")
         command = 'python create_major_objects.py ' + input_cd3file + ' ' + input_outdir + ' ' + input_prefix
         os.chdir('CoreInfra/Networking/BaseNetwork')
         print("Executing Command: " + command)
         exitVal = os.system(command)
         if (exitVal == 1):
-            exit(1)
+            exit()
 
         print("\n--------------Process DHCP tab------------")
         command = 'python create_terraform_dhcp_options.py ' + input_cd3file + ' ' + input_outdir + ' ' + input_prefix
         print("Executing Command: " + command)
         exitVal = os.system(command)
         if (exitVal == 1):
-            exit(1)
+            exit()
 
         print("\n----------------Process Subnets tab for Subnets creation----------------")
         command = 'python create_terraform_subnet.py ' + input_cd3file + ' ' + input_outdir + ' ' + input_prefix
         print("Executing Command: " + command)
         exitVal = os.system(command)
         if (exitVal == 1):
-            exit(1)
+            exit()
 
         print("\n----------------Process SecRulesinOCI tab for SecList creation----------------")
         command = 'python modify_secrules_tf.py ' + input_cd3file + ' ' + input_outdir + ' '+input_cd3file +' --nongf_tenancy true'
@@ -130,10 +141,11 @@ if (input_nongf_tenancy.lower() == 'true'):
         print("\n----------------Process RouteRulesinOCI tab for RouteRule creation----------------")
         command = 'python modify_routerules_tf.py ' + input_cd3file + ' ' + input_outdir + ' --nongf_tenancy true'
         print("Executing Command: " + command)
-        os.system(command)
+        exitval=os.system(command)
         if (exitval == 1):
             exit()
         print("\n\nExecute tf_import_commands_nonGF.sh script created under each region directory to synch TF with OCI objects; option No 2")
+
     elif (userInput == "2"):
         all_regions=[]
         for name in os.listdir(input_outdir):

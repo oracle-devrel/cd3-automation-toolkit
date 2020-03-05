@@ -229,10 +229,10 @@ class commonTools():
         date = x.strftime("%f").strip()
         if("_routetable.tf" in pattern):
             dest_dir = src_dir + "/backup_RTs_" + date
-            print("Back up Directory: " + dest_dir)
+            print("back up Directory: " + dest_dir)
         elif("_seclist.tf" in pattern):
             dest_dir = src_dir + "/backup_SLs_" + date
-            print("Back up Directory: " + dest_dir)
+            print("back up Directory: " + dest_dir)
         else:
             dest_dir = src_dir + "/backup_"+date
             print("Backing up existing "+pattern + " to "+ dest_dir)
