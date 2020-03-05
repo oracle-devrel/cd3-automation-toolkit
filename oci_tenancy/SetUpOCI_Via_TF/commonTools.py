@@ -6,7 +6,7 @@ import configparser
 from openpyxl import load_workbook
 from openpyxl.styles import PatternFill
 from openpyxl.styles import Alignment
-from openpyxl.styles import Font
+#from openpyxl.styles import Font
 from openpyxl.styles import Border
 from openpyxl.styles import Side
 import re
