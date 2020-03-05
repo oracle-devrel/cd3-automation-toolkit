@@ -276,8 +276,6 @@ if('.xls' in secrulesfilename):
     vcns = parseVCNs(secrulesfilename)
     vcnInfo = parseVCNInfo(secrulesfilename)
 
-
-    print("\nReading SecRulesinOCI sheet of cd3 for overwrite option")
     df = pd.read_excel(secrulesfilename, sheet_name='SecRulesinOCI', skiprows=1, dtype=object).to_csv('out.csv')
     totalRowCount = sum(1 for row in csv.DictReader(skipCommentedLine(open('out.csv'))))
     i=0
@@ -288,7 +286,7 @@ if('.xls' in secrulesfilename):
         default_seclists_done[reg] = []
         seclists_done[reg]=[]
         # Backup existing seclist files in ash and phx dir
-        print("backing up tf files for region " + reg)
+        print("Backing up all existing SL TF files for region to" + reg)
         commonTools.backup_file(outdir + "/" + reg, "_seclist.tf")
 
     with open('out.csv') as secrulesfile:

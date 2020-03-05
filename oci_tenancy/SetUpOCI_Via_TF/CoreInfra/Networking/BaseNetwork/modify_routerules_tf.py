@@ -47,7 +47,6 @@ if('.xls' in inputfile):
     vcns=parseVCNs(inputfile)
     vcnInfo=parseVCNInfo(inputfile)
 
-    print("\nReading RouteRulesinOCI sheet of cd3")
     df = pd.read_excel(inputfile, sheet_name='RouteRulesinOCI', skiprows=1)
     df = df.dropna(how='all')
     df = df.reset_index(drop=True)
@@ -58,7 +57,7 @@ if('.xls' in inputfile):
         default_rtables_done[reg]=[]
         subnets_done[reg] = []
         # Backup existing seclist files in ash and phx dir
-        print("backing up tf files for region " + reg)
+        print("Backing up all existing RT TF files for region to" + reg)
         commonTools.backup_file(outdir + "/" + reg, "_routetable.tf")
 
     for i in df.index:

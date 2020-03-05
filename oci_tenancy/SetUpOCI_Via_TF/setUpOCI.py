@@ -133,7 +133,7 @@ if (input_nongf_tenancy.lower() == 'true'):
         os.system(command)
         if (exitval == 1):
             exit()
-        print("\n\nExecute tf_import_commands_nonGF.sh script created under each region directory to synch TF with OCI objects; option No 3")
+        print("\n\nExecute tf_import_commands_nonGF.sh script created under each region directory to synch TF with OCI objects; option No 2")
     elif (userInput == "2"):
         all_regions=[]
         for name in os.listdir(input_outdir):

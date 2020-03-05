@@ -229,19 +229,22 @@ class commonTools():
         date = x.strftime("%f").strip()
         if("_routetable.tf" in pattern):
             dest_dir = src_dir + "/backup_RTs_" + date
+            print("Back up Directory: " + dest_dir)
         elif("_seclist.tf" in pattern):
             dest_dir = src_dir + "/backup_SLs_" + date
+            print("Back up Directory: " + dest_dir)
         else:
             dest_dir = src_dir + "/backup_"+date
+            print("Backing up existing "+pattern + " to "+ dest_dir)
         for f in os.listdir(src_dir):
             if f.endswith(pattern):
                 if not os.path.exists(dest_dir):
-                    print("\nCreating backup dir " + dest_dir + "\n")
+                    #print("\nCreating backup dir " + dest_dir + "\n")
                     os.makedirs(dest_dir)
 
                 src = os.path.join(src_dir, f)
-                print("backing up ....." + src)
                 dest = os.path.join(dest_dir, f)
+                #print("backing up ....." + src +"   to  "+dest)
                 shutil.move(src, dest_dir)
                 """if (overwrite == 'yes'):
                     shutil.move(src, dest_dir)
