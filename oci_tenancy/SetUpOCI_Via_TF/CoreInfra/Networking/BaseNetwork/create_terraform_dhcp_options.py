@@ -204,23 +204,23 @@ if(modify_network=='true'):
 
 		x = datetime.datetime.now()
 		date = x.strftime("%f").strip()
-		if(tfStr[reg]!=''):
-			if (os.path.exists(outfile[reg])):
-				print("creating backup file " + outfile[reg] + "_backup" + date)
-				shutil.copy(outfile[reg], outfile[reg] + "_backup" + date)
-			oname[reg] = open(outfile[reg], "w")
-			oname[reg].write(tfStr[reg])
-			oname[reg].close()
-			print(outfile[reg] + " containing TF for DHCP Options has been updated for region " + reg)
+		#if(tfStr[reg]!=''):
+		if (os.path.exists(outfile[reg])):
+			print("creating backup file " + outfile[reg] + "_backup" + date)
+			shutil.copy(outfile[reg], outfile[reg] + "_backup" + date)
+		oname[reg] = open(outfile[reg], "w")
+		oname[reg].write(tfStr[reg])
+		oname[reg].close()
+		print(outfile[reg] + " containing TF for DHCP Options has been updated for region " + reg)
 
-		if (defStr[reg] != ''):
-			if (os.path.exists(deffile[reg])):
-				print("creating backup file " + deffile[reg] + "_backup" + date)
-				shutil.copy(outfile[reg], deffile[reg] + "_backup" + date)
-			defname[reg] = open(deffile[reg], "w")
-			defname[reg].write(defStr[reg])
-			defname[reg].close()
-			print(deffile[reg] + " containing TF for Default DHCP Options has been updated for region " + reg)
+		#if (defStr[reg] != ''):
+		if (os.path.exists(deffile[reg])):
+			print("creating backup file " + deffile[reg] + "_backup" + date)
+			shutil.copy(outfile[reg], deffile[reg] + "_backup" + date)
+		defname[reg] = open(deffile[reg], "w")
+		defname[reg].write(defStr[reg])
+		defname[reg].close()
+		print(deffile[reg] + " containing TF for Default DHCP Options has been updated for region " + reg)
 
 
 elif(modify_network == 'false'):
