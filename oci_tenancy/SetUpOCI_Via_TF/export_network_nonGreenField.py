@@ -155,6 +155,7 @@ if(input_compartment_names is not None):
 else:
     print("Fetching for all Compartments...")
 print("\nCD3 excel file should not be opened during export process!!!")
+print("Tabs- VCNs, VCN Info, Subnets, DHCP, SecRulesinOCI and RouteRulesinOCI would be overwritten during export process!!!")
 
 #Fetch Regions
 idc=IdentityClient(config)

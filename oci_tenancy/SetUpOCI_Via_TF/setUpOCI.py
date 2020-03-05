@@ -74,9 +74,8 @@ if(input_format=='csv'):
 
 if (input_nongf_tenancy.lower() == 'true'):
     print("\nnon_gf_tenancy in properties files is set to true..Export existing Network objects and Synch with TF\n")
-    print("1. Export Network Objects")
-    print("2. Export Done; Create TF files")
-    print("3. Run bash script to import objects to TF state")
+    print("1. Export Network Objects to CD3 and create TF Files")
+    print("2. Run bash script to import objects to TF state")
     userInput = input('Enter one option: ')
 
     if(userInput=="1"):
@@ -95,11 +94,12 @@ if (input_nongf_tenancy.lower() == 'true'):
         print("\nExecuting command "+command)
         exitval =os.system(command)
         if (exitval==0):
-            print("\nNetwork Objects export completed.\nPlease verify CD3 excel "+ input_cd3file+" and proceed to create TF files; option No 2")
+            print("\nNetwork Objects export completed for CD3 excel "+ input_cd3file+"\nProceeding to create TF files...\n\n")
         else:
             print("Error Occured. Please try again!!!")
-    elif(userInput=="2"):
-        print("-----------Process VCNs tab-----------")
+            exit()
+
+        print("\n-----------Process VCNs tab-----------")
         command = 'python create_major_objects.py ' + input_cd3file + ' ' + input_outdir + ' ' + input_prefix
         os.chdir('CoreInfra/Networking/BaseNetwork')
         print("Executing Command: " + command)
@@ -134,7 +134,7 @@ if (input_nongf_tenancy.lower() == 'true'):
         if (exitval == 1):
             exit()
         print("\n\nExecute tf_import_commands_nonGF.sh script created under each region directory to synch TF with OCI objects; option No 3")
-    elif (userInput == "3"):
+    elif (userInput == "2"):
         all_regions=[]
         for name in os.listdir(input_outdir):
             if os.path.isdir(os.path.join(input_outdir, name)):
