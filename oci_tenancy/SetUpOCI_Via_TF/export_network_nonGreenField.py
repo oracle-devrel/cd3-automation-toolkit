@@ -175,6 +175,7 @@ for reg in all_regions:
     importCommands[reg] = open(outdir + "/" + reg+"/tf_import_commands_nonGF.sh", "w")
     importCommands[reg].write("#!/bin/bash")
     importCommands[reg].write("\n")
+    importCommands[reg].write("terraform init")
     oci_obj_names[reg] = open(outdir + "/" + reg+"/obj_names.safe", "w")
 
 
@@ -371,3 +372,8 @@ print("RouteRules exported to CD3\n")
 
 os.chdir("../../..")
 
+for reg in all_regions:
+    importCommands[reg] = open(outdir + "/" + reg + "/tf_import_commands_nonGF.sh", "a")
+    importCommands[reg].write("\n\nterraform plan")
+    importCommands[reg].write("\n")
+    importCommands[reg].close()
