@@ -41,7 +41,7 @@ shell_script       - DO NOT CHANGE THIS UNLESS YOU KNOW WHAT YOU ARE DOING.
 ----------------
 Pre-Requisites
 ----------------
--- Python on your local system. PyCharm having oci, scp, paramiko, puttykeys modules installed.
+-- Python on your local system. PyCharm having oci, scp, paramiko, puttykeys, openpyxl modules installed.
    When you import the code if you see any other error regarding any package install that also
 -- All above files mentioned with proper data
 -- Set of public/private key pair in PEM format generated using openssl. Use createPEMKeys.py to generate public/private key pair in PEM format
