@@ -109,7 +109,7 @@ if (input_nongf_tenancy.lower() == 'true'):
         exitVal = os.system(command)
         if (exitVal == 1):
             exit()
-        print("\nProceeding to create TF files...\n\n")
+        print("\nProceeding to create TF files...\n")
         print("\n-----------Process VCNs tab-----------")
         command = 'python create_major_objects.py ' + input_cd3file + ' ' + input_outdir + ' ' + input_prefix
         os.chdir('CoreInfra/Networking/BaseNetwork')

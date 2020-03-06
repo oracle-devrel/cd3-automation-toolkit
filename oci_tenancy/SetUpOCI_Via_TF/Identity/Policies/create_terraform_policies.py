@@ -74,7 +74,8 @@ if('.xls' in args.inputfile):
             if (str(policy_compartment_name).lower() == "nan" or policy_compartment_name.lower() == 'root'):
                 policy_compartment = '${var.tenancy_ocid}'
             else:
-                policy_compartment = '${oci_identity_compartment.' + policy_compartment_name + '.id}'
+                #policy_compartment = '${oci_identity_compartment.' + policy_compartment_name + '.id}'
+                policy_compartment = '${var.' + policy_compartment_name + '}'
 
 
             policy_desc = df.iat[i, 3]

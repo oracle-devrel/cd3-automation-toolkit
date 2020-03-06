@@ -211,7 +211,7 @@ for reg in all_regions:
                 drgattach_route_table_id = drg_attachment_info.route_table_id
                 if (drgattach_route_table_id is not None):
                     oci_obj_names[reg].write("\ndrginfo::::"+vcn_info.display_name+"::::"+drg_display_name+"::::"+vnc.get_route_table(drgattach_route_table_id).data.display_name)
-                tf_name=commonTools.tfname.sub("-",vcn_info.display_name+"_"+drg_display_name)
+                tf_name=commonTools.tfname.sub("-",drg_display_name)
                 importCommands[reg].write("\nterraform import oci_core_drg."+ tf_name+" "+drg_info.id)
 
                 tf_name=commonTools.tfname.sub("-",vcn_info.display_name+"_"+drg_attachment_name)
@@ -272,7 +272,7 @@ print("VCNs exported to CD3\n")
 
 # Fetch DHCP
 rows=[]
-print("\nFetchig DHCP...")
+print("\nFetching DHCP...")
 for reg in all_regions:
     importCommands[reg].write("\n\n######### Writing import for DHCP #########\n\n")
     config.__setitem__("region", commonTools.region_dict[reg])

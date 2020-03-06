@@ -105,7 +105,8 @@ def createLPGRouteRules(peering_dict):
 def createDRGRtTableString(compartment_var_name,hub_vcn_name,peering_dict,region):
     if(vcns.vcn_drgs[hub_vcn_name]=='y'):
         #rt_tmp = hub_vcn_name+"_"+hub_vcn_name + "_drg_rt"
-        drg_name = hub_vcn_name + "_drg"
+        #drg_name = hub_vcn_name + "_drg"
+        drg_name = region + "_drg"
     elif(vcns.vcn_drgs[hub_vcn_name]!='n'):
         #rt_tmp=hub_vcn_name+"_"+vcns.vcn_drgs[hub_vcn_name]+"_rt"
         drg_name=vcns.vcn_drgs[hub_vcn_name]
@@ -222,7 +223,8 @@ def createLPGRtTableString(compartment_var_name,hub_vcn_name,peering_dict,region
                 """
             drg_name=""
             if (vcns.vcn_drgs[hub_vcn_name] == 'y'):
-                drg_name = hub_vcn_name + "_drg"
+                #drg_name = hub_vcn_name + "_drg"
+                drg_name = region + "_drg"
             elif (vcns.vcn_drgs[hub_vcn_name] != 'n'):
                 drg_name = vcns.vcn_drgs[hub_vcn_name]
 
@@ -233,7 +235,7 @@ def createLPGRtTableString(compartment_var_name,hub_vcn_name,peering_dict,region
                         lpgStr = lpgStr + """
                     route_rules { 
                         destination = \"""" + drg_destination.strip() + """\"
-                        network_entity_id = "${oci_core_drg.""" + hub_vcn_tf_name+"_"+drg_tf_name + """.id}"
+                        network_entity_id = "${oci_core_drg.""" + drg_tf_name + """.id}"
                         destination_type = "CIDR_BLOCK"
                         }
                     """
@@ -310,7 +312,7 @@ def prepareOnpremRuleStr(drg_name):
                 data = data + """
                     route_rules { 
                         destination = \"""" + drg_destination.strip() + """\"
-                        network_entity_id = "${oci_core_drg.""" + vcn_tf_name+"_"+drg_tf_name + """.id}"
+                        network_entity_id = "${oci_core_drg.""" + drg_tf_name + """.id}"
                         destination_type = "CIDR_BLOCK"
                         }
                         """
@@ -379,7 +381,8 @@ def processSubnet(region,vcn_name,rt_name,AD,configure_sgw,configure_ngw,configu
     vcn_drg = vcns.vcn_drgs[vcn_name]
     drg_name=""
     if (vcn_drg == "y"):
-        drg_name = vcn_name + "_drg"
+        #drg_name = vcn_name + "_drg"
+        drg_name = region + "_drg"
     elif (vcn_drg != "n"):
         drg_name = vcn_drg
 
@@ -670,7 +673,8 @@ elif('.properties' in filename):
         vcn_cidr = vcn_data[1].strip().lower()
         vcn_drg = vcn_data[2].strip().lower()
         if (vcn_drg == "y"):
-            drg_name = vcn_name + "_drg"
+            #drg_name = vcn_name + "_drg"
+            drg_name = region + "_drg"
         elif (vcn_drg != "n"):
             drg_name = vcn_drg
 

@@ -103,7 +103,8 @@ if('.xls' in inputfile):
         elif ('lpg' in dest_objs[0].lower().strip()):
             dest_obj = "${oci_core_local_peering_gateway." + vcn_tf_name+"_"+obj_tf_name + ".id}"
         elif ('drg' in dest_objs[0].lower().strip()):
-            dest_obj = "${oci_core_drg." + vcn_tf_name+"_"+obj_tf_name + ".id}"
+            #dest_obj = "${oci_core_drg." + vcn_tf_name+"_"+obj_tf_name + ".id}"
+            dest_obj = "${oci_core_drg." + obj_tf_name + ".id}"
 #        elif ('privateip' in dest_objs[0].lower()):
         #direct OCID is provided
         else:

@@ -169,8 +169,10 @@ def processVCN(region, vcn_name, vcn_cidr, vcn_drg, vcn_igw, vcn_ngw, vcn_sgw, v
     if vcn_drg != "n":
         # use default name
         if (vcn_drg == "y"):
-            drg_name = vcn_name + "_drg"
-            drg_display = vcn_name + "_drg"
+            #drg_name = vcn_name + "_drg"
+            drg_name = region + "_drg"
+            #drg_display = vcn_name + "_drg"
+            drg_display = region + "_drg"
         # use name provided in input
         else:
             drg_name = vcn_drg
@@ -208,12 +210,12 @@ def processVCN(region, vcn_name, vcn_cidr, vcn_drg, vcn_igw, vcn_ngw, vcn_sgw, v
         # Create new DRG
         #if (drg_ocid == ''):
         data = data + """
-            resource "oci_core_drg" \"""" + vcn_tf_name+"_"+drg_tf_name + """" {
+            resource "oci_core_drg" \"""" + drg_tf_name + """" {
                     compartment_id = "${var.""" + compartment_var_name + """}"
                     display_name = \"""" + drg_display + """"
             }
             resource "oci_core_drg_attachment" \"""" + vcn_tf_name+"_"+drg_attach_tf_name + """" {
-                    drg_id = "${oci_core_drg.""" + vcn_tf_name+"_"+drg_tf_name + """.id}"
+                    drg_id = "${oci_core_drg.""" + drg_tf_name + """.id}"
                     vcn_id = "${oci_core_vcn.""" + vcn_tf_name + """.id}"
                     display_name = \"""" + drg_attach_name + """"
             """
