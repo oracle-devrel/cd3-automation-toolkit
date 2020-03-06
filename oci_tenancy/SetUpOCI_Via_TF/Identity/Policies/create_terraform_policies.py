@@ -97,7 +97,9 @@ if('.xls' in args.inputfile):
             actual_policy_statement=policy_statement.replace('$', grp_tf)
             if('*' in policy_statement):
                 policy_statement_comp = df.iat[i, 6]
-                comp_tf = '${oci_identity_compartment.' + policy_statement_comp + '.name}'
+                #comp_tf = '${oci_identity_compartment.' + policy_statement_comp + '.name}'
+                comp_tf = '${var.' + policy_statement_comp + '}'
+
                 actual_policy_statement=actual_policy_statement.replace('*', comp_tf)
             if(count!=1):
                 tempStr = tempStr + """ ]
@@ -127,7 +129,8 @@ if('.xls' in args.inputfile):
 
                 if ('*' in policy_statement):
                     policy_statement_comp = df.iat[i, 6]
-                    comp_tf = '${oci_identity_compartment.' + policy_statement_comp + '.name}'
+                    #comp_tf = '${oci_identity_compartment.' + policy_statement_comp + '.name}'
+                    comp_tf = '${var.' + policy_statement_comp + '}'
                     actual_policy_statement = actual_policy_statement.replace('*', comp_tf)
 
                 tempStr = tempStr + """, 
