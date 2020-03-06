@@ -171,9 +171,9 @@ commonTools.write_to_cd3(rows,cd3file,"VCN Info")
 
 # Create backups
 for reg in all_regions:
-    if(os.path.exists(outdir + "/" + reg,"tf_import_commands_nonGF.sh")):
+    if(os.path.exists(outdir + "/" + reg+"/tf_import_commands_nonGF.sh")):
         commonTools.backup_file(outdir + "/" + reg,"tf_import_commands_nonGF.sh")
-    if (os.path.exists(outdir + "/" + reg, "obj_names.safe")):
+    if (os.path.exists(outdir + "/" + reg+ "/obj_names.safe")):
         commonTools.backup_file(outdir + "/" + reg, "obj_names.safe")
     importCommands[reg] = open(outdir + "/" + reg+"/tf_import_commands_nonGF.sh", "w")
     importCommands[reg].write("#!/bin/bash")
