@@ -74,11 +74,72 @@ if(input_format=='csv'):
 
 if (input_nongf_tenancy.lower() == 'true'):
     print("\nnon_gf_tenancy in properties files is set to true..Export existing Network objects and Synch with TF\n")
-    print("1. Export Network Objects to CD3 and create TF Files")
-    print("2. Run bash script to import objects to TF state")
-    userInput = input('Enter one option: ')
+    print("1. Export Identity Objects(Comaprtments, Groups, Policies) to CD3 and create TF Files")
+    print("2. Export Network Objects(VCNs, Subnets, Security Lists, Route Tables) to CD3 and create TF Files")
+    print("3. Run bash script to import objects to TF state")
+    userInput = input('Enter multiple choices: ')
+    if ("1" in userInput):
+        input_comp = input("Enter name of Compartment as it appears in OCI (comma seperated without spaces if multiple)for which you want to export network objects;\nLeave blank if want to export for all Compartments: ")
 
-    if(userInput=="1"):
+        if (input_comp == ''):
+            if (input_config_file == ''):
+                command = "python export_identity_nonGreenField.py " + input_cd3file + ' ' + input_outdir
+            else:
+                command = "python export_identity_nonGreenField.py " + input_cd3file + ' ' + input_outdir + " --configFileName " + input_config_file
+        else:
+            if (input_config_file == ''):
+                command = "python export_identity_nonGreenField.py " + input_cd3file + ' ' + input_outdir + " --networkCompartment " + input_comp
+            else:
+                command = "python export_identity_nonGreenField.py " + input_cd3file + ' ' + input_outdir + " --networkCompartment " + input_comp + " --configFileName " + input_config_file
+        print("\nExecuting command " + command)
+        exitval = os.system(command)
+        if (exitval == 0):
+            print("\nIdentity Objects export completed for CD3 excel " + input_cd3file)
+        else:
+            print("\nError Occured. Please try again!!!")
+            exit()
+
+        print("\nFetching Compartment Info to variables files...")
+        if (input_config_file == ''):
+            command = "python fetch_compartments_to_variablesTF.py " + input_outdir
+        else:
+            command = "python fetch_compartments_to_variablesTF.py " + input_outdir + " --configFileName " + input_config_file
+
+        print("Executing Command: " + command)
+        exitVal = os.system(command)
+        if (exitVal == 1):
+            exit()
+        print("\nProceeding to create TF files...\n")
+        print("\n-----------Process Compartments tab-----------")
+        command = 'python create_terraform_compartments.py ' + input_cd3file + ' ' + input_outdir + ' ' + input_prefix
+        os.chdir('Identity/Compartments')
+        print("Executing Command: " + command)
+        exitVal = os.system(command)
+        if (exitVal == 1):
+            exit()
+
+        print("\n-----------Process Groups tab-----------")
+        command = 'python create_terraform_groups.py ' + input_cd3file + ' ' + input_outdir + ' ' + input_prefix
+        os.chdir("../..")
+        os.chdir('Identity/Groups')
+        print("Executing Command: " + command)
+        exitVal = os.system(command)
+        if (exitVal == 1):
+            exit()
+
+        print("\n-----------Process Policies tab-----------")
+        command = 'python create_terraform_policies.py ' + input_cd3file + ' ' + input_outdir + ' ' + input_prefix
+        os.chdir("../..")
+        os.chdir('Identity/Policies')
+        print("Executing Command: " + command)
+        exitVal = os.system(command)
+        if (exitVal == 1):
+            exit()
+
+        os.chdir("../..")
+        print("\n\nExecute tf_import_commands_identity_nonGF.sh script created under home region directory to synch TF with OCI objects; option No 3\n")
+
+    if("2" in userInput):
         input_comp = input("Enter name of Compartment as it appears in OCI (comma seperated without spaces if multiple)for which you want to export network objects;\nLeave blank if want to export for all Compartments: ")
 
         if(input_comp==''):
@@ -144,9 +205,9 @@ if (input_nongf_tenancy.lower() == 'true'):
         exitval=os.system(command)
         if (exitval == 1):
             exit()
-        print("\n\nExecute tf_import_commands_nonGF.sh script created under each region directory to synch TF with OCI objects; option No 2\n")
+        print("\n\nExecute tf_import_commands_network_nonGF.sh script created under each region directory to synch TF with OCI objects; option No 3\n")
 
-    elif (userInput == "2"):
+    if ("3" in userInput):
         all_regions=[]
         for name in os.listdir(input_outdir):
             if os.path.isdir(os.path.join(input_outdir, name)):
@@ -156,16 +217,26 @@ if (input_nongf_tenancy.lower() == 'true'):
             print("You are not using Linux system. Please proceed with manual execution of TF import cmds")
             print("scripts are in files: ")
             for reg in all_regions:
-                print(input_outdir+ "/" + reg+"/tf_import_commands_nonGF.sh")
+                if (os.path.exists(input_outdir + "/" + reg + "/tf_import_commands_network_nonGF.sh")):
+                    print(input_outdir+ "/" + reg+"/tf_import_commands_network_nonGF.sh")
+                if (os.path.exists(input_outdir + "/" + reg + "/tf_import_commands_identity_nonGF.sh")):
+                    print(input_outdir + "/" + reg + "/tf_import_commands_identity_nonGF.sh")
         else:
             for reg in all_regions:
                 os.chdir(input_outdir+ "/" + reg)
-                print("Executing "+input_outdir+ "/" + reg + "/tf_import_commands_nonGF.sh")
-                os.system("chmod +x tf_import_commands_nonGF.sh")
-                os.system("./tf_import_commands_nonGF.sh")
+                if(os.path.exists(input_outdir+ "/" + reg + "/tf_import_commands_identity_nonGF.sh")):
+                    print("Executing " + input_outdir + "/" + reg + "/tf_import_commands_identity_nonGF.sh")
+                    os.system("chmod +x tf_import_commands_identity_nonGF.sh")
+                    os.system("./tf_import_commands_identity_nonGF.sh")
 
-    else:
-        print("Invalid Choice!!")
+                if (os.path.exists(input_outdir + "/" + reg + "/tf_import_commands_network_nonGF.sh")):
+                    print("Executing " + input_outdir + "/" + reg + "/tf_import_commands_network_nonGF.sh")
+                    os.system("chmod +x tf_import_commands_network_nonGF.sh")
+                    os.system("./tf_import_commands_network_nonGF.sh")
+
+
+    #else:
+    #    print("Invalid Choice!!")
     exit()
 
 print("1.  Identity")

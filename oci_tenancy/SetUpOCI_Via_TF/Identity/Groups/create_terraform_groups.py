@@ -61,10 +61,12 @@ if('.xls' in args.inputfile):
         if(str(group_name).lower()!= "nan"):
             region = region.strip().lower()
             group_name = group_name.strip()
+            group_tf_name = commonTools.tfname.sub("-", group_name)
+
             if (str(group_desc).lower() == "nan"):
                 group_desc = group_name
             tfStr[region]=tfStr[region] + """
-resource "oci_identity_group" \"""" + group_name.strip() + """" {
+resource "oci_identity_group" \"""" +group_tf_name + """" {
 	    compartment_id = "${var.tenancy_ocid}"
 	    description = \"""" + group_desc.strip() + """"
 	    name = \"""" + group_name.strip() + """"

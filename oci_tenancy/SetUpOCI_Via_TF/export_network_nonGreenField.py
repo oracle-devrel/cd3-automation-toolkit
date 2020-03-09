@@ -23,6 +23,7 @@ def get_network_compartment_id(config):#, compartment_name):
     for compartment in compartment_list:
         if(compartment.lifecycle_state == 'ACTIVE'):
             compartment_ids[compartment.name]=compartment.id
+    compartment_ids['root']=config['tenancy']
     return compartment_ids
 
 def print_vcns(region, comp_name, vcn,drg_display_name,igw_display_name,ngw_display_name,sgw_display_name,lpg_display_names):
@@ -171,11 +172,11 @@ commonTools.write_to_cd3(rows,cd3file,"VCN Info")
 
 # Create backups
 for reg in all_regions:
-    if(os.path.exists(outdir + "/" + reg+"/tf_import_commands_nonGF.sh")):
-        commonTools.backup_file(outdir + "/" + reg,"tf_import_commands_nonGF.sh")
+    if(os.path.exists(outdir + "/" + reg+"/tf_import_commands_network_nonGF.sh")):
+        commonTools.backup_file(outdir + "/" + reg,"tf_import_commands_network_nonGF.sh")
     if (os.path.exists(outdir + "/" + reg+ "/obj_names.safe")):
         commonTools.backup_file(outdir + "/" + reg, "obj_names.safe")
-    importCommands[reg] = open(outdir + "/" + reg+"/tf_import_commands_nonGF.sh", "w")
+    importCommands[reg] = open(outdir + "/" + reg+"/tf_import_commands_network_nonGF.sh", "w")
     importCommands[reg].write("#!/bin/bash")
     importCommands[reg].write("\n")
     importCommands[reg].write("terraform init")
@@ -375,7 +376,7 @@ print("RouteRules exported to CD3\n")
 os.chdir("../../..")
 
 for reg in all_regions:
-    importCommands[reg] = open(outdir + "/" + reg + "/tf_import_commands_nonGF.sh", "a")
+    importCommands[reg] = open(outdir + "/" + reg + "/tf_import_commands_network_nonGF.sh", "a")
     importCommands[reg].write("\n\nterraform plan")
     importCommands[reg].write("\n")
     importCommands[reg].close()

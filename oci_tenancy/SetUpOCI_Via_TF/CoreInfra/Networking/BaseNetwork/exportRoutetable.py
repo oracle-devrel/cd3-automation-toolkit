@@ -31,6 +31,7 @@ def get_network_compartment_id(config):#, compartment_name):
     for compartment in compartment_list:
         if(compartment.lifecycle_state == 'ACTIVE'):
             compartment_ids[compartment.name]=compartment.id
+    compartment_ids['root'] = config['tenancy']
     return compartment_ids
 
 def get_network_entity_name(config,network_identity_id):
@@ -163,7 +164,7 @@ if(tf_import_cmd=="true"):
             if (rs.region_name == v):
                 all_regions.append(k)
     for reg in all_regions:
-        importCommands[reg] = open(outdir + "/" + reg + "/tf_import_commands_nonGF.sh", "a")
+        importCommands[reg] = open(outdir + "/" + reg + "/tf_import_commands_network_nonGF.sh", "a")
         importCommands[reg].write("\n\n######### Writing import for Route Tables #########\n\n")
 else:
     vcnInfo = parseVCNInfo(cd3file)
