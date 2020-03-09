@@ -264,22 +264,14 @@ def processVCN(region, vcn_name, vcn_cidr, vcn_drg, vcn_igw, vcn_ngw, vcn_sgw, v
             }
             """
     if(vcn_lpg!='n'):
-        for lpg_name in vcns.vcn_lpg_names[vcn_name]:
-            lpg_tf_name = commonTools.tfname.sub("-", lpg_name)
-            lpg_rt_name = ""
-            #if (nongf_tenancy == "true"):
-            if (os.path.exists(outdir + "/" + region + "/obj_names.safe")):
-                with open(outdir + "/" + region + "/obj_names.safe") as f:
-                    for line in f:
-                        if ("lpginfo::::" + vcn_name + "::::" + lpg_name in line):
-                            lpg_rt_name = line.split("::::")[3].strip()
+        count_lpg =0
+        if (hub_spoke_none == 'hub'):
+            spoke_vcns = vcns.peering_dict[vcn_name].split(",")
+            count_spokes = len(spoke_vcns)
 
-            if (lpg_rt_name == ""):
-                #rt_var = vcn_name + "_" + lpg_name + "_rt"
-                rt_var = vcn_name+"_Route Table associated with LPG-"+lpg_name
-            else:
-                rt_var = vcn_name + "_" + lpg_rt_name
-            rt_tf_name = commonTools.tfname.sub("-", rt_var)
+        for lpg_name in vcns.vcn_lpg_names[vcn_name]:
+            count_lpg=count_lpg+1
+            lpg_tf_name = commonTools.tfname.sub("-", lpg_name)
             data = data + """
             resource "oci_core_local_peering_gateway" \"""" + vcn_tf_name+"_"+lpg_tf_name + """" {
                     display_name = \"""" + lpg_name + """"
@@ -287,12 +279,26 @@ def processVCN(region, vcn_name, vcn_cidr, vcn_drg, vcn_igw, vcn_ngw, vcn_sgw, v
                     compartment_id = "${var.""" + compartment_var_name + """}"
                     ##peer_id for lpg """ + vcn_name+"_"+lpg_name+"##"
             if(hub_spoke_none == 'hub'):
-                data = data + """
+                lpg_rt_name = ""
+                if (os.path.exists(outdir + "/" + region + "/obj_names.safe")):
+                    with open(outdir + "/" + region + "/obj_names.safe") as f:
+                        for line in f:
+                            if ("lpginfo::::" + vcn_name + "::::" + lpg_name in line):
+                                lpg_rt_name = line.split("::::")[3].strip()
+
+                if (lpg_rt_name != ""):
+                    rt_var = vcn_name + "_" + lpg_rt_name
+                elif (count_lpg<=count_spokes):
+                    rt_var = vcn_name + "_Route Table associated with LPG-" + lpg_name
+                else:
+                    rt_var=""
+                rt_tf_name = commonTools.tfname.sub("-", rt_var)
+                if(rt_var!=""):
+                    data = data + """
                     route_table_id = "${oci_core_route_table.""" + rt_tf_name + """.id}"
-                }
                 """
-            else:
-                data=data+"""
+
+            data=data+"""
             }
             """
 
