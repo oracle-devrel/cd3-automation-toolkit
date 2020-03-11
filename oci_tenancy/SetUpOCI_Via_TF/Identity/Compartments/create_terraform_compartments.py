@@ -45,6 +45,8 @@ if('.xls' in args.inputfile):
     df = pd.read_excel(args.inputfile, sheet_name='Compartments',skiprows=1)
     df = df.dropna(how='all')
     df = df.reset_index(drop=True)
+    #To handle duplicates during export process
+    df=df.drop_duplicates()
     for reg in vcnInfo.all_regions:
         tfStr[reg] = ''
 
