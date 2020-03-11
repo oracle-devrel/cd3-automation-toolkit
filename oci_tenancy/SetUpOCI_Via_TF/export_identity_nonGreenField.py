@@ -73,7 +73,6 @@ if(input_compartment_names is not None):
         exit(1)
     else:
         print("Fetching for Compartments... "+str(input_compartment_names))
-        print("Note that it will fetch only first -level compartments in the parent compartment specified")
 else:
     print("Fetching for all Compartments...")
 print("\nCD3 excel file should not be opened during export process!!!")
@@ -109,16 +108,22 @@ if (input_compartment_names is not None):
     for input_comp_name in input_compartment_names:
         if(input_comp_name=='root'):
             continue
-        input_comp_id = ntk_compartment_ids[input_comp_name]
-        input_comp_info = idc.get_compartment(compartment_id=input_comp_id).data
-        for k, v in ntk_compartment_ids.items():
-            if (v == input_comp_info.compartment_id):
-                parent_input_comp_name = k
+        parent_input_comp_name=""
+        while parent_input_comp_name!="root":
+            input_comp_id = ntk_compartment_ids[input_comp_name]
+            input_comp_info = idc.get_compartment(compartment_id=input_comp_id).data
+            for k, v in ntk_compartment_ids.items():
+                if (v == input_comp_info.compartment_id):
+                    parent_input_comp_name = k
+            tf_name = commonTools.tfname.sub("-", input_comp_name)
+            importCommands[home_region].write("\nterraform import oci_identity_compartment." + tf_name + " " + input_comp_id)
+            new_row = (home_region.capitalize(), input_comp_name, input_comp_info.description, parent_input_comp_name)
+            rows.append(new_row)
+            if(parent_input_comp_name=='root'):
+                break
+            else:
+                input_comp_name=parent_input_comp_name
 
-        tf_name = commonTools.tfname.sub("-", input_comp_name)
-        importCommands[home_region].write("\nterraform import oci_identity_compartment." + tf_name + " " + input_comp_id)
-        new_row = (home_region.capitalize(), input_comp_name, input_comp_info.description, parent_input_comp_name)
-        rows.append(new_row)
 
 else:
     comps = oci.pagination.list_call_get_all_results(idc.list_compartments,compartment_id=config['tenancy'],compartment_id_in_subtree=True)
@@ -182,7 +187,6 @@ for ntk_compartment_name in ntk_compartment_ids:
         for stmt in policy_statements:
             if(" compartment " in stmt):
                 policy_compartment_name=stmt.split(" compartment ")[1].split()[0]
-                #stmt=stmt.replace(policy_compartment_name,'*')
                 stmt=re.sub(r'%s([\s]|$)'%policy_compartment_name, r'* ', stmt)
             elif(" tenancy" in stmt):
                 policy_compartment_name=''
