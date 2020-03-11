@@ -281,7 +281,8 @@ if('.xls' in secrulesfilename):
     i=0
 
     for reg in vcnInfo.all_regions:
-        defaultname[reg] = open(outdir + "/" +reg+ "/VCNs_Default_SecList.tf", "w")
+        if(os.path.exists(outdir + "/" +reg)):
+            defaultname[reg] = open(outdir + "/" +reg+ "/VCNs_Default_SecList.tf", "w")
         default_ruleStr[reg]=''
         default_seclists_done[reg] = []
         seclists_done[reg]=[]

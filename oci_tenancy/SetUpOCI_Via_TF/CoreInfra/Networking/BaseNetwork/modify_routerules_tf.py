@@ -52,7 +52,8 @@ if('.xls' in inputfile):
     df = df.reset_index(drop=True)
 
     for reg in vcnInfo.all_regions:
-        defaultname[reg] = open(outdir + "/" + reg + "/VCNs_Default_RouteTable.tf", "w")
+        if(os.path.exists(outdir + "/" +reg)):
+            defaultname[reg] = open(outdir + "/" + reg + "/VCNs_Default_RouteTable.tf", "w")
         default_ruleStr[reg] = ''
         default_rtables_done[reg]=[]
         subnets_done[reg] = []
