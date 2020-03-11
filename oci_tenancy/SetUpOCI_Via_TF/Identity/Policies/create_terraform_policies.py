@@ -152,7 +152,8 @@ else:
     print("Invalid input file format; Acceptable formats: .xls, .xlsx")
     exit()
 
-reg=check_diff_region[0].strip().lower()
+if(len(check_diff_region)!=0):
+    reg=check_diff_region[0].strip().lower()
 
 reg_out_dir = outdir + "/" + reg
 if not os.path.exists(reg_out_dir):
