@@ -212,7 +212,7 @@ if (input_nongf_tenancy.lower() == 'true'):
         for name in os.listdir(input_outdir):
             if os.path.isdir(os.path.join(input_outdir, name)):
                 all_regions.append(name)
-
+        print("\nterraform tfstate file should not be existing while doing fresh export/import!!\n")
         if ("linux" not in sys.platform):
             print("You are not using Linux system. Please proceed with manual execution of TF import cmds")
             print("scripts are in files: ")
@@ -262,9 +262,9 @@ if('1' in userInput):
     if not os.path.exists(outdir):
         os.makedirs(outdir)
 
-    print("1.  Create Compartments")
-    print("2.  Create Groups")
-    print("3.  Create Policies")
+    print("1.  Add/Modify/Delete Compartments")
+    print("2.  Add/Modify/Delete Groups")
+    print("3.  Add/Modify/Delete Policies")
     choice = input("Enter your choice ")
     choice = choice.split(",")
     if ('1' in choice):
