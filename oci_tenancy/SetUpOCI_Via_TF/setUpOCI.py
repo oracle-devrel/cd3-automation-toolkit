@@ -268,7 +268,7 @@ if('1' in userInput):
     choice = input("Enter your choice ")
     choice = choice.split(",")
     if ('1' in choice):
-        print("---------------------------Creating Compartments--------------------------------")
+        print("--------------------------Processing Compartments Tab--------------------------------")
         if (input_format == 'cd3'):
             inputfile = input_cd3file
         elif (input_format == 'csv'):
@@ -285,7 +285,7 @@ if('1' in userInput):
         print("--------------------------------------------------------------------------")
 
     if('2' in choice):
-        print("---------------------------Creating Groups--------------------------------")
+        print("---------------------------Processing Groups Tab--------------------------------")
         if (input_format=='cd3'):
             inputfile=input_cd3file
         elif(input_format=='csv'):
@@ -303,7 +303,7 @@ if('1' in userInput):
         print("--------------------------------------------------------------------------")
 
     if('3' in choice):
-        print("----------------------Creating Policies----------------------------------")
+        print("----------------------Processing Policies Tab----------------------------------")
         if (input_format=='cd3'):
             inputfile=input_cd3file
 
@@ -335,7 +335,7 @@ if('2' in userInput):
     print("3.  Export existing SecRules and RouteRules to cd3")
     print("4.  Modify SecRules")
     print("5.  Modify RouteRules")
-    print("6.  Create Network Security Groups")
+    print("6.  Add/Modify/Delete Network Security Groups")
     choice = input("Enter your choice ")
     choice = choice.split(",")
 
@@ -431,7 +431,7 @@ if('2' in userInput):
         print("--------------------------------------------------------------------------")
 
     if('6' in choice):
-        print("---------------------Creating NSGs----------------------------------")
+        print("---------------------Processing NSGs Tab----------------------------------")
         if (input_format == 'cd3'):
             inputfile = input_cd3file
         elif (input_format == 'csv'):
@@ -448,7 +448,7 @@ if('2' in userInput):
         print("--------------------------------------------------------------------------")
 
 if('3' in userInput):
-    print("--------------------Creating Instances/Dedicated VM Hosts------------------------------------")
+    print("--------------------Instances/Dedicated VM Hosts------------------------------------")
     print("1.  Create Dedicated VM Hosts")
     print("2.  Create Instances")
     print("3.  Update existing instance to be part of NSG")
@@ -461,6 +461,7 @@ if('3' in userInput):
     os.chdir('CoreInfra/Compute')
 
     if (choice=='1'):
+        print("---------------------Processing DedicatedVMHosts Tab----------------------------------")
         if (input_format == 'cd3'):
             inputfile = input_cd3file
         elif(input_format=='csv'):
@@ -475,6 +476,7 @@ if('3' in userInput):
         os.chdir("../..")
         print("--------------------------------------------------------------------------")
     elif (choice=='2'):
+        print("---------------------Processing Instances Tab----------------------------------")
         if (input_format == 'cd3'):
             inputfile = input_cd3file
         elif (input_format == 'csv'):
@@ -490,7 +492,7 @@ if('3' in userInput):
         print("--------------------------------------------------------------------------")
 
     elif (choice=='3'):
-        print("---------------------Updating Instances to have NSG----------------------------------")
+        print("---------------------Processing Instances Tab----------------------------------")
         if (input_format == 'cd3'):
             inputfile = input_cd3file
         elif (input_format == 'csv'):
