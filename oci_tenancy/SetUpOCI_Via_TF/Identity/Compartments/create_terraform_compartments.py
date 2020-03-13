@@ -45,6 +45,8 @@ if('.xls' in args.inputfile):
     df = pd.read_excel(args.inputfile, sheet_name='Compartments',skiprows=1)
     df = df.dropna(how='all')
     df = df.reset_index(drop=True)
+    #To handle duplicates during export process
+    df=df.drop_duplicates()
     for reg in vcnInfo.all_regions:
         tfStr[reg] = ''
 
@@ -59,7 +61,7 @@ if('.xls' in args.inputfile):
             print("Invalid Region; It should be one of the values mentioned in VCN Info tab")
             exit(1)
         compartment_name = df.iat[i, 1]
-
+        comp_tf_name = commonTools.tfname.sub("-", compartment_name)
 
         compartment_desc = df.iat[i, 2]
         parent_compartment_name = df.iat[i, 3]
@@ -74,7 +76,7 @@ if('.xls' in args.inputfile):
             if (str(compartment_desc).lower() == "nan"):
                 compartment_desc = compartment_name
             tfStr[region]=tfStr[region] + """
-resource "oci_identity_compartment" \"""" + compartment_name.strip() + """" {
+resource "oci_identity_compartment" \"""" +comp_tf_name + """" {
 	    compartment_id = \"""" + parent_compartment + """"
 	    description = \"""" + compartment_desc.strip() + """"
   	    name = \"""" + compartment_name.strip() + """"

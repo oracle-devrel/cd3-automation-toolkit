@@ -13,9 +13,7 @@ from pathlib import Path
 import sys
 import os
 sys.path.append(os.getcwd()+"/..")
-from commonTools import *
-
-cTools = commonTools()
+from commonTools import commonTools
 
 parser = argparse.ArgumentParser(description="Creates OCS Work related components")
 parser.add_argument("propsfile",help="Full Path of properties file. eg ocswork.properties")
@@ -182,21 +180,21 @@ def create_compartment(compartment_name,compartment_desc):
             new_config = python_config
             message = e.message
             if ("IAD" in message):
-                new_config.__setitem__("region",cTools.region_dict['ashburn'])
+                new_config.__setitem__("region",commonTools.region_dict['ashburn'])
             if ("PHX" in message):
-                new_config.__setitem__("region", cTools.region_dict['phoenix'])
+                new_config.__setitem__("region", commonTools.region_dict['phoenix'])
             if ("YYZ" in message):
-                new_config.__setitem__("region", cTools.region_dict['toronto'])
+                new_config.__setitem__("region", commonTools.region_dict['toronto'])
             if ("FRA" in message):
-                new_config.__setitem__("region", cTools.region_dict['frankfurt'])
+                new_config.__setitem__("region", commonTools.region_dict['frankfurt'])
             if ("LHR" in message):
-                new_config.__setitem__("region", cTools.region_dict['london'])
+                new_config.__setitem__("region", commonTools.region_dict['london'])
             if ("BOM" in message):
-                new_config.__setitem__("region", cTools.region_dict['mumbai'])
+                new_config.__setitem__("region", commonTools.region_dict['mumbai'])
             if ("ICN" in message):
-                new_config.__setitem__("region", cTools.region_dict['seoul'])
+                new_config.__setitem__("region", commonTools.region_dict['seoul'])
             if ("NRT" in message):
-                new_config.__setitem__("region", cTools.region_dict['tokyo'])
+                new_config.__setitem__("region", commonTools.region_dict['tokyo'])
 
             new_id_client = oci.identity.IdentityClient(new_config)
             try:
@@ -289,7 +287,7 @@ if(input_image_id==''):
 linux_image_id={}
 windows_image_id={}
 variables_data={}
-for key in cTools.region_dict:
+for key in commonTools.region_dict:
     linux_image_id.setdefault(key,'')
     windows_image_id.setdefault(key,'')
     variables_data.setdefault(key,'')
@@ -297,7 +295,7 @@ for key in cTools.region_dict:
 new_config=python_config
 for region in regions:
     region=region.strip().lower()
-    new_config.__setitem__("region",cTools.region_dict[region])
+    new_config.__setitem__("region",commonTools.region_dict[region])
     cc = oci.core.ComputeClient(new_config)
     #fetch latest image ocids
     for image in paginate(cc.list_images,compartment_id=tenancy_id,operating_system ='Oracle Linux',sort_by='TIMECREATED'):
@@ -345,7 +343,7 @@ for region in regions:
     }
     variable "region" {
             type = "string"
-            default = \"""" + cTools.region_dict[region] + """"
+            default = \"""" + commonTools.region_dict[region] + """"
     }
     """
     if (windows_image_id[region] != ''):

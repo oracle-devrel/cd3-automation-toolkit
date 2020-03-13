@@ -1,6 +1,7 @@
 import argparse
 import configparser
 import os
+import sys
 
 parser = argparse.ArgumentParser(description="Sets Up OCI via TF")
 parser.add_argument("propsfile",help="Full Path of properties file containing input variables. eg setUpOCI.properties")
@@ -12,23 +13,29 @@ config.read(args.propsfile)
 #Read Config file Variables
 try:
     input_format=config.get('Default','input').strip()
+    input_nongf_tenancy = config.get('Default', 'non_gf_tenancy').strip()
+
     input_outdir = config.get('Default', 'outdir').strip()
     if(input_outdir==''):
         print("input outdir location cannot be left blank. Exiting... ")
         exit(1)
+
     input_prefix = config.get('Default', 'prefix').strip()
     if(input_prefix==''):
         print("input prefix value cannot be left blank. Exiting... ")
         exit(1)
+
     input_config_file=config.get('Default', 'config_file').strip()
 except Exception as e:
     print(e)
     print('Check if input properties exist and try again..exiting...`    ')
     exit()
 
-#Set Default Value as cd3
+#Set Default Value as cd3 and non-greenfield tenancy as false
 if(input_format==''):
     input_format='cd3'
+if (input_nongf_tenancy == ''):
+    input_nongf_tenancy="false"
 
 if(input_format=='cd3'):
     try:
@@ -65,6 +72,173 @@ if(input_format=='csv'):
         print('Check if input properties exist and try again..exiting...`    ')
         exit()
 
+if (input_nongf_tenancy.lower() == 'true'):
+    print("\nnon_gf_tenancy in properties files is set to true..Export existing Network objects and Synch with TF\n")
+    print("1. Export Identity Objects(Compartments, Groups, Policies) to CD3 and create TF Files")
+    print("2. Export Network Objects(VCNs, Subnets, Security Lists, Route Tables) to CD3 and create TF Files")
+    print("3. Run bash script to import objects to TF state")
+    userInput = input('Enter your choice: multiple allowed ')
+    if ("1" in userInput):
+        input_comp = input("Enter name of Compartment as it appears in OCI (comma seperated without spaces if multiple)for which you want to export network objects;\nLeave blank if want to export for all Compartments: ")
+
+        if (input_comp == ''):
+            if (input_config_file == ''):
+                command = "python export_identity_nonGreenField.py " + input_cd3file + ' ' + input_outdir
+            else:
+                command = "python export_identity_nonGreenField.py " + input_cd3file + ' ' + input_outdir + " --configFileName " + input_config_file
+        else:
+            if (input_config_file == ''):
+                command = "python export_identity_nonGreenField.py " + input_cd3file + ' ' + input_outdir + " --networkCompartment " + input_comp
+            else:
+                command = "python export_identity_nonGreenField.py " + input_cd3file + ' ' + input_outdir + " --networkCompartment " + input_comp + " --configFileName " + input_config_file
+        print("\nExecuting command " + command)
+        exitval = os.system(command)
+        if (exitval == 0):
+            print("\nIdentity Objects export completed for CD3 excel " + input_cd3file)
+        else:
+            print("\nError Occured. Please try again!!!")
+            exit()
+
+        print("\nFetching Compartment Info to variables files...")
+        if (input_config_file == ''):
+            command = "python fetch_compartments_to_variablesTF.py " + input_outdir
+        else:
+            command = "python fetch_compartments_to_variablesTF.py " + input_outdir + " --configFileName " + input_config_file
+
+        print("Executing Command: " + command)
+        exitVal = os.system(command)
+        if (exitVal == 1):
+            exit()
+        print("\nProceeding to create TF files...\n")
+        print("\n-----------Process Compartments tab-----------")
+        command = 'python create_terraform_compartments.py ' + input_cd3file + ' ' + input_outdir + ' ' + input_prefix
+        os.chdir('Identity/Compartments')
+        print("Executing Command: " + command)
+        exitVal = os.system(command)
+        if (exitVal == 1):
+            exit()
+
+        print("\n-----------Process Groups tab-----------")
+        command = 'python create_terraform_groups.py ' + input_cd3file + ' ' + input_outdir + ' ' + input_prefix
+        os.chdir("../..")
+        os.chdir('Identity/Groups')
+        print("Executing Command: " + command)
+        exitVal = os.system(command)
+        if (exitVal == 1):
+            exit()
+
+        print("\n-----------Process Policies tab-----------")
+        command = 'python create_terraform_policies.py ' + input_cd3file + ' ' + input_outdir + ' ' + input_prefix
+        os.chdir("../..")
+        os.chdir('Identity/Policies')
+        print("Executing Command: " + command)
+        exitVal = os.system(command)
+        if (exitVal == 1):
+            exit()
+
+        os.chdir("../..")
+        print("\n\nExecute tf_import_commands_identity_nonGF.sh script created under home region directory to synch TF with OCI objects; option No 3\n")
+
+    if("2" in userInput):
+        input_comp = input("Enter name of Compartment as it appears in OCI (comma seperated without spaces if multiple)for which you want to export network objects;\nLeave blank if want to export for all Compartments: ")
+
+        if(input_comp==''):
+            if (input_config_file == ''):
+                command = "python export_network_nonGreenField.py "+input_cd3file + ' ' + input_outdir
+            else:
+                command = "python export_network_nonGreenField.py " + input_cd3file + ' ' + input_outdir +" --configFileName " + input_config_file
+        else:
+            if (input_config_file == ''):
+                command = "python export_network_nonGreenField.py "+input_cd3file + ' ' + input_outdir +" --networkCompartment "+input_comp
+            else:
+                command = "python export_network_nonGreenField.py " + input_cd3file + ' ' + input_outdir +" --networkCompartment "+input_comp+" --configFileName " + input_config_file
+        print("\nExecuting command "+command)
+        exitval =os.system(command)
+        if (exitval==0):
+            print("\nNetwork Objects export completed for CD3 excel "+ input_cd3file)
+        else:
+            print("\nError Occured. Please try again!!!")
+            exit()
+
+        print("\nFetching Compartment Info to variables files...")
+        if (input_config_file == ''):
+            command = "python fetch_compartments_to_variablesTF.py " + input_outdir
+        else:
+            command = "python fetch_compartments_to_variablesTF.py " + input_outdir + " --configFileName " + input_config_file
+
+        print("Executing Command: " + command)
+        exitVal = os.system(command)
+        if (exitVal == 1):
+            exit()
+        print("\nProceeding to create TF files...\n")
+        print("\n-----------Process VCNs tab-----------")
+        command = 'python create_major_objects.py ' + input_cd3file + ' ' + input_outdir + ' ' + input_prefix
+        os.chdir('CoreInfra/Networking/BaseNetwork')
+        print("Executing Command: " + command)
+        exitVal = os.system(command)
+        if (exitVal == 1):
+            exit()
+
+        print("\n--------------Process DHCP tab------------")
+        command = 'python create_terraform_dhcp_options.py ' + input_cd3file + ' ' + input_outdir + ' ' + input_prefix
+        print("Executing Command: " + command)
+        exitVal = os.system(command)
+        if (exitVal == 1):
+            exit()
+
+        print("\n----------------Process Subnets tab for Subnets creation----------------")
+        command = 'python create_terraform_subnet.py ' + input_cd3file + ' ' + input_outdir + ' ' + input_prefix
+        print("Executing Command: " + command)
+        exitVal = os.system(command)
+        if (exitVal == 1):
+            exit()
+
+        print("\n----------------Process SecRulesinOCI tab for SecList creation----------------")
+        command = 'python modify_secrules_tf.py ' + input_cd3file + ' ' + input_outdir + ' '+input_cd3file +' --nongf_tenancy true'
+        print("Executing Command: " + command)
+        exitval=os.system(command)
+        if (exitval == 1):
+            exit()
+        print("\n----------------Process RouteRulesinOCI tab for RouteRule creation----------------")
+        command = 'python modify_routerules_tf.py ' + input_cd3file + ' ' + input_outdir + ' --nongf_tenancy true'
+        print("Executing Command: " + command)
+        exitval=os.system(command)
+        if (exitval == 1):
+            exit()
+        print("\n\nExecute tf_import_commands_network_nonGF.sh script created under each region directory to synch TF with OCI objects; option No 3\n")
+
+    if ("3" in userInput):
+        all_regions=[]
+        for name in os.listdir(input_outdir):
+            if os.path.isdir(os.path.join(input_outdir, name)):
+                all_regions.append(name)
+        print("\nterraform tfstate file should not be existing while doing fresh export/import!!\n")
+        if ("linux" not in sys.platform):
+            print("You are not using Linux system. Please proceed with manual execution of TF import cmds")
+            print("scripts are in files: ")
+            for reg in all_regions:
+                if (os.path.exists(input_outdir + "/" + reg + "/tf_import_commands_network_nonGF.sh")):
+                    print(input_outdir+ "/" + reg+"/tf_import_commands_network_nonGF.sh")
+                if (os.path.exists(input_outdir + "/" + reg + "/tf_import_commands_identity_nonGF.sh")):
+                    print(input_outdir + "/" + reg + "/tf_import_commands_identity_nonGF.sh")
+        else:
+            for reg in all_regions:
+                os.chdir(input_outdir+ "/" + reg)
+                if(os.path.exists(input_outdir+ "/" + reg + "/tf_import_commands_identity_nonGF.sh")):
+                    print("Executing " + input_outdir + "/" + reg + "/tf_import_commands_identity_nonGF.sh")
+                    os.system("chmod +x tf_import_commands_identity_nonGF.sh")
+                    os.system("./tf_import_commands_identity_nonGF.sh")
+
+                if (os.path.exists(input_outdir + "/" + reg + "/tf_import_commands_network_nonGF.sh")):
+                    print("Executing " + input_outdir + "/" + reg + "/tf_import_commands_network_nonGF.sh")
+                    os.system("chmod +x tf_import_commands_network_nonGF.sh")
+                    os.system("./tf_import_commands_network_nonGF.sh")
+
+
+    #else:
+    #    print("Invalid Choice!!")
+    exit()
+
 print("1.  Identity")
 print("2.  Networking")
 print("3.  Instances/Dedicated VM Hosts")
@@ -88,13 +262,13 @@ if('1' in userInput):
     if not os.path.exists(outdir):
         os.makedirs(outdir)
 
-    print("1.  Create Compartments")
-    print("2.  Create Groups")
-    print("3.  Create Policies")
+    print("1.  Add/Modify/Delete Compartments")
+    print("2.  Add/Modify/Delete Groups")
+    print("3.  Add/Modify/Delete Policies")
     choice = input("Enter your choice ")
     choice = choice.split(",")
     if ('1' in choice):
-        print("---------------------------Creating Compartments--------------------------------")
+        print("--------------------------Processing Compartments Tab--------------------------------")
         if (input_format == 'cd3'):
             inputfile = input_cd3file
         elif (input_format == 'csv'):
@@ -111,7 +285,7 @@ if('1' in userInput):
         print("--------------------------------------------------------------------------")
 
     if('2' in choice):
-        print("---------------------------Creating Groups--------------------------------")
+        print("---------------------------Processing Groups Tab--------------------------------")
         if (input_format=='cd3'):
             inputfile=input_cd3file
         elif(input_format=='csv'):
@@ -129,7 +303,7 @@ if('1' in userInput):
         print("--------------------------------------------------------------------------")
 
     if('3' in choice):
-        print("----------------------Creating Policies----------------------------------")
+        print("----------------------Processing Policies Tab----------------------------------")
         if (input_format=='cd3'):
             inputfile=input_cd3file
 
@@ -161,7 +335,7 @@ if('2' in userInput):
     print("3.  Export existing SecRules and RouteRules to cd3")
     print("4.  Modify SecRules")
     print("5.  Modify RouteRules")
-    print("6.  Create Network Security Groups")
+    print("6.  Add/Modify/Delete Network Security Groups")
     choice = input("Enter your choice ")
     choice = choice.split(",")
 
@@ -186,24 +360,22 @@ if('2' in userInput):
         if (input_format == 'cd3'):
             cd3outfile = input_cd3file
         inputConfigFile = input_config_file
-        input_vcn = input("Enter name of VCN for which you want to export security rules and route rules; Leave blank if want to export for all VCNs: ")
-        if (input_vcn != ''):
-            input_Comp = input("Enter Compartment Name where this VCN resides: ")
+        input_comp = input("Enter name of Compartment as it appears in OCI (comma seperated without spaces if multiple) for which you want to export rules; Leave blank if want to export for all Compartments: ")
 
-        if (input_vcn == ''):
-            if (inputConfigFile == ''):
+        if (input_comp is ""):
+            if (input_config_file == ''):
                 command_sl = 'python exportSeclist.py ' + cd3outfile
                 command_rt = 'python exportRoutetable.py ' + cd3outfile
             else:
-                command_sl = 'python exportSeclist.py ' + cd3outfile + ' --configFileName ' + inputConfigFile
-                command_rt = 'python exportRoutetable.py ' + cd3outfile + ' --configFileName ' + inputConfigFile
+                command_sl = 'python exportSeclist.py ' + cd3outfile + ' --configFileName ' + input_config_file
+                command_rt = 'python exportRoutetable.py ' + cd3outfile+ ' --configFileName ' + input_config_file
         else:
-            if (inputConfigFile == ''):
-                command_sl = 'python exportSeclist.py ' + cd3outfile + ' --vcnName ' + input_vcn + ' --networkCompartment ' + input_Comp
-                command_rt = 'python exportRoutetable.py ' + cd3outfile + ' --vcnName ' + input_vcn + ' --networkCompartment ' + input_Comp
+            if (input_config_file == ''):
+                command_sl = 'python exportSeclist.py ' + cd3outfile +" --networkCompartment " + input_comp
+                command_rt = 'python exportRoutetable.py ' + cd3outfile + " --networkCompartment " + input_comp
             else:
-                command_sl = 'python exportSeclist.py ' + cd3outfile + ' --vcnName ' + input_vcn + ' --networkCompartment ' + input_Comp + ' --configFileName ' + inputConfigFile
-                command_rt = 'python exportRoutetable.py ' + cd3outfile + ' --vcnName ' + input_vcn + ' --networkCompartment ' + input_Comp + ' --configFileName ' + inputConfigFile
+                command_sl = 'python exportSeclist.py ' + cd3outfile + ' --configFileName ' + input_config_file + " --networkCompartment " + input_comp
+                command_rt = 'python exportRoutetable.py ' + cd3outfile +' --configFileName ' + input_config_file + " --networkCompartment " + input_comp
 
         print("Executing Command: " + command_sl)
         os.chdir('CoreInfra/Networking/BaseNetwork')
@@ -259,7 +431,7 @@ if('2' in userInput):
         print("--------------------------------------------------------------------------")
 
     if('6' in choice):
-        print("---------------------Creating NSGs----------------------------------")
+        print("---------------------Processing NSGs Tab----------------------------------")
         if (input_format == 'cd3'):
             inputfile = input_cd3file
         elif (input_format == 'csv'):
@@ -276,7 +448,7 @@ if('2' in userInput):
         print("--------------------------------------------------------------------------")
 
 if('3' in userInput):
-    print("--------------------Creating Instances/Dedicated VM Hosts------------------------------------")
+    print("--------------------Instances/Dedicated VM Hosts------------------------------------")
     print("1.  Create Dedicated VM Hosts")
     print("2.  Create Instances")
     print("3.  Update existing instance to be part of NSG")
@@ -289,6 +461,7 @@ if('3' in userInput):
     os.chdir('CoreInfra/Compute')
 
     if (choice=='1'):
+        print("---------------------Processing DedicatedVMHosts Tab----------------------------------")
         if (input_format == 'cd3'):
             inputfile = input_cd3file
         elif(input_format=='csv'):
@@ -303,6 +476,7 @@ if('3' in userInput):
         os.chdir("../..")
         print("--------------------------------------------------------------------------")
     elif (choice=='2'):
+        print("---------------------Processing Instances Tab----------------------------------")
         if (input_format == 'cd3'):
             inputfile = input_cd3file
         elif (input_format == 'csv'):
@@ -318,7 +492,7 @@ if('3' in userInput):
         print("--------------------------------------------------------------------------")
 
     elif (choice=='3'):
-        print("---------------------Updating Instances to have NSG----------------------------------")
+        print("---------------------Processing Instances Tab----------------------------------")
         if (input_format == 'cd3'):
             inputfile = input_cd3file
         elif (input_format == 'csv'):

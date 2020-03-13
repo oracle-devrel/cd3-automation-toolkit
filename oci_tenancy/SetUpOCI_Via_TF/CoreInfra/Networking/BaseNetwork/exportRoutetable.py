@@ -6,12 +6,6 @@ import sys
 import oci
 from oci.core.virtual_network_client import VirtualNetworkClient
 from oci.identity import IdentityClient
-import pandas as pd
-from openpyxl import load_workbook
-from openpyxl.styles import PatternFill
-from openpyxl.styles import Font
-from openpyxl.styles import Border
-from openpyxl.styles import Side
 import os
 sys.path.append(os.getcwd()+"/../../..")
 from commonTools import *
@@ -24,6 +18,10 @@ def convertNullToNothing(input):
         return str(input)
 
 compartment_ids={}
+onprem_destinations=[]
+igw_destinations=[]
+ngw_destinations=[]
+
 def get_network_compartment_id(config):#, compartment_name):
     identity = IdentityClient(config)
     comp_list = oci.pagination.list_call_get_all_results(identity.list_compartments,config["tenancy"],compartment_id_in_subtree=True)
@@ -33,21 +31,8 @@ def get_network_compartment_id(config):#, compartment_name):
     for compartment in compartment_list:
         if(compartment.lifecycle_state == 'ACTIVE'):
             compartment_ids[compartment.name]=compartment.id
+    compartment_ids['root'] = config['tenancy']
     return compartment_ids
-
-def get_vcn_id(config,compartment_id,vname):
-    vcncient = VirtualNetworkClient(config)
-    vcnlist = vcncient.list_vcns(compartment_id=compartment_id,lifecycle_state="AVAILABLE")
-    vcn_name = vname.lower()
-    for v in vcnlist.data:
-        name = v.display_name
-        if name.lower() == vcn_name:
-            return v.id
-
-def get_vcns(config,compartment_id):
-    vcncient = VirtualNetworkClient(config)
-    vcnlist = vcncient.list_vcns(compartment_id=compartment_id,lifecycle_state="AVAILABLE")
-    return vcnlist
 
 def get_network_entity_name(config,network_identity_id):
     vcn1 = VirtualNetworkClient(config)
@@ -87,46 +72,48 @@ def get_network_entity_name(config,network_identity_id):
         return network_identity_id
 
 def print_routetables(routetables,region,vcn_name,comp_name):
+    global rows
 
-    #oname.write("SubnetName, Destination CIDR, Route Destination Object, Destination Type\n")
-    global i
-    global df
     for routetable in routetables.data:
-        print(routetable.display_name)
         rules = routetable.route_rules
         display_name = routetable.display_name
-
         dn=display_name
+        if (tf_import_cmd == "true"):
+            tf_name = commonTools.tfname.sub("-",vcn_name + "_" + dn)
+            if ("Default Route Table for " in dn):
+                importCommands[region.lower()].write("\nterraform import oci_core_default_route_table." + tf_name + " " + str(routetable.id))
+            else:
+                importCommands[region.lower()].write("\nterraform import oci_core_route_table." + tf_name + " " + str(routetable.id))
 
-        #dn = routetable.display_name
         if(not rules):
-            i=i+1
-            print(i)
-            new_row = pd.DataFrame({'Region':region,'Compartment Name':comp_name, 'VCN Name':vcn_name, 'RouteTableName': dn, 'Destination CIDR': '',
-                                    'Route Destination Object': '','Destination Type': ''}, index=[i])
-            df = df.append(new_row, ignore_index=True)
+            new_row=(region,comp_name,vcn_name,dn,'','','')
+            rows.append(new_row)
+
         for rule in rules:
-            i=i+1
-            print(i)
             network_entity_id=rule.network_entity_id
             network_entity_name=get_network_entity_name(config,network_entity_id)
+            if ('internetgateway' in network_entity_id):
+                if (rule.destination not in igw_destinations):
+                    igw_destinations.append(rule.destination)
+            elif ('natgateway' in network_entity_id):
+                if (rule.destination not in ngw_destinations):
+                    ngw_destinations.append(rule.destination)
+            elif('drg' in network_entity_id):
+                if(rule.destination not in onprem_destinations):
+                    onprem_destinations.append(rule.destination)
 
+            new_row=(region,comp_name,vcn_name,dn,rule.destination,str(network_entity_name),str(rule.destination_type))
+            rows.append(new_row)
+            if(tf_import_cmd=="false"):
+                print(dn + "," + str(rule.destination) + "," + str(network_entity_name)+","+ str(rule.destination_type))
 
-            print(dn + "," + str(rule.destination) + "," + str(network_entity_name)+","+ str(rule.destination_type))
-            #oname.write(dn + "," + str(rule.destination) + "," +str(rule.network_entity_id)+","+ str(rule.destination_type)+"\n")
-            new_row = pd.DataFrame(
-                {'Region': region, 'Compartment Name': comp_name, 'VCN Name': vcn_name, 'RouteTableName': dn,
-                 'Destination CIDR': str(rule.destination), 'Route Destination Object': str(network_entity_name),
-                 'Destination Type': str(rule.destination_type)}, index=[i])
-            df = df.append(new_row, ignore_index=True)
 
 parser = argparse.ArgumentParser(description="Export Route Table on OCI to CD3")
 parser.add_argument("cd3file", help="path of CD3 excel file to export rules to")
-parser.add_argument("--vcnName", help="VCN from which to export the sec list; Leave blank if need to export from all VCNs", required=False)
-parser.add_argument("--networkCompartment", help="Compartment where VCN resides", required=False)
+parser.add_argument("--networkCompartment", help="comma seperated Compartments for which to export Networking Objects", required=False)
 parser.add_argument("--configFileName", help="Config file name" , required=False)
-
-
+parser.add_argument("--tf_import_cmd", help="write tf import commands" , required=False)
+parser.add_argument("--outdir", help="outdir for TF import commands script" , required=False)
 
 if len(sys.argv) < 2:
     parser.print_help()
@@ -139,7 +126,9 @@ if('.xls' not in cd3file):
     print("\nAcceptable cd3 format: .xlsx")
     exit()
 
-vcn_name = args.vcnName
+tf_import_cmd = args.tf_import_cmd
+outdir = args.outdir
+
 
 if args.configFileName is not None:
     configFileName = args.configFileName
@@ -147,137 +136,67 @@ if args.configFileName is not None:
 else:
     config = oci.config.from_file()
 
+input_compartment_list = args.networkCompartment
+if(input_compartment_list is not None):
+    input_compartment_names = input_compartment_list.split(",")
+else:
+    input_compartment_names = None
+
+if tf_import_cmd is not None:
+    tf_import_cmd="true"
+    if(outdir is None):
+        print("out directory is a mandatory arguement to write tf import commands ")
+        exit(1)
+else:
+    tf_import_cmd = "false"
 
 ntk_compartment_ids = get_network_compartment_id(config)
 
-i=0
-df=pd.DataFrame()
-vcnInfo = parseVCNInfo(cd3file)
+rows=[]
+all_regions = []
 
-if vcn_name is not None:
-    ntk_comp_name = args.networkCompartment
-    if(ntk_comp_name=='' or ntk_comp_name is None):
-        print("\nEnter a valid name for the compartment where VCN resides...")
-        exit(1)
-
-    found_region = ''
-    for reg in vcnInfo.all_regions:
-        print("\nSearching for VCN in region..."+reg)
-        config.__setitem__("region", commonTools.region_dict[reg])
-        vcn_ocid = get_vcn_id(config,ntk_compartment_ids[ntk_comp_name],vcn_name)
-
-        if(vcn_ocid=='' or vcn_ocid is None):
-            print('\nCould not find vcn in compartment '+ntk_comp_name+' in region...'+reg)
-        else:
-            print("\nFound in Region..."+reg)
-            found_region=reg
-            break
-
-    config.__setitem__("region", commonTools.region_dict[found_region])
-    vcn = VirtualNetworkClient(config)
-    region=found_region.capitalize()
-
-    routetables = vcn.list_route_tables(compartment_id=ntk_compartment_ids[ntk_comp_name], vcn_id=vcn_ocid, lifecycle_state='AVAILABLE')
-    print_routetables(routetables,region, vcn_name,ntk_comp_name)
+if(tf_import_cmd=="true"):
+    importCommands={}
+    idc = IdentityClient(config)
+    regionsubscriptions = idc.list_region_subscriptions(tenancy_id=config['tenancy'])
+    for rs in regionsubscriptions.data:
+        for k, v in commonTools.region_dict.items():
+            if (rs.region_name == v):
+                all_regions.append(k)
+    for reg in all_regions:
+        importCommands[reg] = open(outdir + "/" + reg + "/tf_import_commands_network_nonGF.sh", "a")
+        importCommands[reg].write("\n\n######### Writing import for Route Tables #########\n\n")
 else:
-    print("\nFetching Route Rules for all VCNs in tenancy...")
-    for reg in vcnInfo.all_regions:
-        for ntk_compartment_name in ntk_compartment_ids:
-            config.__setitem__("region", commonTools.region_dict[reg])
-            vcn = VirtualNetworkClient(config)
-            region = reg.capitalize()
-            vcns = get_vcns(config,ntk_compartment_ids[ntk_compartment_name])
+    vcnInfo = parseVCNInfo(cd3file)
+    all_regions=vcnInfo.all_regions
 
-            for v in vcns.data:
-                vcn_id = v.id
-                vcn_name=v.display_name
-                routetables = vcn.list_route_tables(compartment_id=ntk_compartment_ids[ntk_compartment_name], vcn_id=vcn_id, lifecycle_state='AVAILABLE')
+print("\nFetching Route Rules...")
+
+for reg in all_regions:
+    config.__setitem__("region", commonTools.region_dict[reg])
+    vcn = VirtualNetworkClient(config)
+    region = reg.capitalize()
+    for ntk_compartment_name in ntk_compartment_ids:
+        if (input_compartment_names is not None and ntk_compartment_name not in input_compartment_names):
+            continue
+
+        vcns = oci.pagination.list_call_get_all_results(vcn.list_vcns,compartment_id=ntk_compartment_ids[ntk_compartment_name],lifecycle_state="AVAILABLE")
+        for v in vcns.data:
+            vcn_id = v.id
+            vcn_name=v.display_name
+            for ntk_compartment_name_again in ntk_compartment_ids:
+                if (input_compartment_names is not None and ntk_compartment_name_again not in input_compartment_names):
+                    continue
+                routetables = oci.pagination.list_call_get_all_results(vcn.list_route_tables, compartment_id=ntk_compartment_ids[ntk_compartment_name_again], vcn_id=vcn_id, lifecycle_state='AVAILABLE')
                 print_routetables(routetables,region,vcn_name,ntk_compartment_name)
 
+commonTools.write_to_cd3(rows,cd3file,"RouteRulesinOCI")
 
-book = load_workbook(cd3file)
-if('RouteRulesinOCI' in book.sheetnames):
-    book.remove(book['RouteRulesinOCI'])
-writer = pd.ExcelWriter(cd3file, engine='openpyxl')
-writer.book = book
-writer.save()
+vcninfo_rows=(onprem_destinations,ngw_destinations,igw_destinations)
+commonTools.write_to_cd3(vcninfo_rows,cd3file,"VCN Info")
 
-
-book = load_workbook(cd3file)
-writer = pd.ExcelWriter(cd3file, engine='openpyxl')
-writer.book = book
-df.to_excel(writer, sheet_name='RouteRulesinOCI', index=False)
-
-#Adjust column widths
-ws=writer.sheets['RouteRulesinOCI']
-from openpyxl.utils import get_column_letter
-"""dims = {}
-for row in ws.rows:
-    for cell in row:
-        if cell.value:
-            dims[cell.column] = max((dims.get(cell.column, 0), len(str(cell.value))))
-for col, value in dims.items():
-    ws.column_dimensions[get_column_letter(col)].width = value+1
-"""
-
-column_widths = []
-for row in ws.rows:
-    for i, cell in enumerate(row):
-        if len(column_widths) > i:
-            if len(str(cell.value)) > column_widths[i]:
-                column_widths[i] = len(str(cell.value))
-        else:
-            column_widths += [len(str(cell.value))]
-
-for i, column_width in enumerate(column_widths):
-    ws.column_dimensions[get_column_letter(i+1)].width = column_width
-
-for row in ws.iter_rows(min_row=1, max_row=1, min_col=1):
-    for cell in row:
-      cell.fill = PatternFill(start_color="FFFF00", end_color="FFFF00", fill_type = "solid")
-      cell.font = Font(bold=True)
-
-names=[]
-brdr=Border(left=Side(style='thin'),
-            right=Side(style='thin'),
-            top=Side(style='thin'),
-            bottom=Side(style='thin'),
-        )
-for row in ws.iter_rows(min_row=2):
-    c=0
-    region=""
-    name=""
-    for cell in row:
-        c=c+1
-        if(c==1):
-            region=cell.value
-            continue
-        elif(c==4):
-            name= cell.value
-            break
-
-    vcn_name=region+"_"+name
-    if(vcn_name not in names):
-        names.append(vcn_name)
-        for cellnew in row:
-            if(len(names) % 2==0):
-                cellnew.fill=PatternFill(start_color="94AFAF", end_color="94AFAF", fill_type = "solid")
-                cellnew.border=brdr
-            else:
-                cellnew.fill = PatternFill(start_color="E5DBBE", end_color="E5DBBE", fill_type="solid")
-                cellnew.border=brdr
-    else:
-        for cellnew in row:
-            if (len(names) % 2 == 0):
-                cellnew.fill = PatternFill(start_color="94AFAF", end_color="94AFAF", fill_type="solid")
-                cellnew.border=brdr
-            else:
-                cellnew.fill = PatternFill(start_color="E5DBBE", end_color="E5DBBE", fill_type="solid")
-                cellnew.border=brdr
+if (tf_import_cmd == "true"):
+    for reg in all_regions:
+        importCommands[reg].close()
 
 
-#Move the sheet near Networking sheets
-book._sheets.remove(ws)
-book._sheets.insert(9,ws)
-
-writer.save()

@@ -47,8 +47,11 @@ else:
     modify_network = "false"
 
 outfile={}
+deffile={}
 oname={}
+defname={}
 tfStr={}
+defStr={}
 
 def processDHCP(region,vcn_name,dhcp_option_name,compartment_var_name,serverType,custom_dns_servers,search_domain):
 
@@ -57,40 +60,54 @@ def processDHCP(region,vcn_name,dhcp_option_name,compartment_var_name,serverType
 	serverType=serverType.strip()
 	search_domain=search_domain.strip()
 	vcn_name=vcn_name.strip()
+	vcn_tf_name = commonTools.tfname.sub("-", vcn_name)
 	dhcp_option_name=dhcp_option_name.strip()
 	vcn_dhcp = vcn_name + "_" + dhcp_option_name
-
-	data = """
-	resource "oci_core_dhcp_options" \"""" + vcn_dhcp + """" {
-			compartment_id = "${var.""" + compartment_var_name.strip() + """}"
-			options {
+	vcn_dhcp_tf_name = commonTools.tfname.sub("-", vcn_dhcp)
+	if("Default DHCP Options for " in dhcp_option_name):
+		dhcp_res = """
+	resource "oci_core_default_dhcp_options" \"""" + vcn_dhcp_tf_name + """" {
+	    manage_default_resource_id  = "${oci_core_vcn.""" + vcn_tf_name + """.default_dhcp_options_id}"
+	    options {
 				type = "DomainNameServer"
 				server_type = \"""" + serverType.strip() + "\""
 
+	else:
+		dhcp_res = """
+	resource "oci_core_dhcp_options" \"""" + vcn_dhcp_tf_name + """" {
+		compartment_id = "${var.""" + compartment_var_name.strip() + """}"
+		options {
+				type = "DomainNameServer"
+				server_type = \"""" + serverType.strip() + "\""
 
 	# print serverType
 	if serverType == "CustomDnsServer":
 		dns_servers = custom_dns_servers.strip().replace(',', '","')
 		dns_servers = '"' + dns_servers + '"'
-		data = data + """
+		data = dhcp_res + """
 				custom_dns_servers = [ """ + dns_servers + """ ] 
 				}"""
 	else:
-		data=data+"""
-		}"""
+		data=dhcp_res+"""
+				}"""
 	if(search_domain!=""):
 		data = data + """
-			
-			options {
+		options {
 				type = "SearchDomain"
 				search_domain_names = [ \"""" + search_domain + """" ]
-			}"""
-	data=data+"""
-			vcn_id = "${oci_core_vcn.""" + vcn_name.strip() + """.id}"
+				}"""
+
+	if("Default DHCP Options for " in dhcp_option_name):
+		data=data+"""
+	}"""
+		defStr[region] = defStr[region] + data
+	else:
+		data=data+"""
+			vcn_id = "${oci_core_vcn.""" + vcn_tf_name + """.id}"
 			display_name = \"""" + dhcp_option_name + """"
 	}
 	"""
-	tfStr[region] = tfStr[region] + data
+		tfStr[region] = tfStr[region] + data
 
 
 if('.xls' in args.inputfile):
@@ -98,6 +115,7 @@ if('.xls' in args.inputfile):
 	vcns = parseVCNs(filename)
 	for reg in vcnInfo.all_regions:
 		tfStr[reg] = ''
+		defStr[reg] = ''
 
 	df = pd.read_excel(args.inputfile, sheet_name='DHCP',skiprows=1)
 	df = df.dropna(how='all')
@@ -182,18 +200,28 @@ if(modify_network=='true'):
 		if not os.path.exists(reg_out_dir):
 			os.makedirs(reg_out_dir)
 		outfile[reg] = reg_out_dir + "/" + prefix + '-dhcp.tf'
+		deffile[reg] = reg_out_dir + "/VCNs_Default_DHCP.tf"
 
 		x = datetime.datetime.now()
 		date = x.strftime("%f").strip()
+		#if(tfStr[reg]!=''):
+		if (os.path.exists(outfile[reg])):
+			print("creating backup file " + outfile[reg] + "_backup" + date)
+			shutil.copy(outfile[reg], outfile[reg] + "_backup" + date)
+		oname[reg] = open(outfile[reg], "w")
+		oname[reg].write(tfStr[reg])
+		oname[reg].close()
+		print(outfile[reg] + " containing TF for DHCP Options has been updated for region " + reg)
 
-		if(tfStr[reg]!=''):
-			if (os.path.exists(outfile[reg])):
-				print("creating backup file " + outfile[reg] + "_backup" + date)
-				shutil.copy(outfile[reg], outfile[reg] + "_backup" + date)
-			oname[reg] = open(outfile[reg], "w")
-			oname[reg].write(tfStr[reg])
-			oname[reg].close()
-			print(outfile[reg] + " containing TF for DHCP Options has been updated for region " + reg)
+		#if (defStr[reg] != ''):
+		if (os.path.exists(deffile[reg])):
+			print("creating backup file " + deffile[reg] + "_backup" + date)
+			shutil.copy(outfile[reg], deffile[reg] + "_backup" + date)
+		defname[reg] = open(deffile[reg], "w")
+		defname[reg].write(defStr[reg])
+		defname[reg].close()
+		print(deffile[reg] + " containing TF for Default DHCP Options has been updated for region " + reg)
+
 
 elif(modify_network == 'false'):
 	for reg in vcnInfo.all_regions:
@@ -201,8 +229,16 @@ elif(modify_network == 'false'):
 		if not os.path.exists(reg_out_dir):
 			os.makedirs(reg_out_dir)
 		outfile[reg] = reg_out_dir + "/" + prefix + '-dhcp.tf'
+		deffile[reg] = reg_out_dir + "/VCNs_Default_DHCP.tf"
+
 		if (tfStr[reg] != ''):
 			oname[reg] = open(outfile[reg], 'w')
 			oname[reg].write(tfStr[reg])
 			oname[reg].close()
 			print(outfile[reg] + " containing TF for DHCP Options has been created for region " + reg)
+
+		if (defStr[reg] != ''):
+			defname[reg] = open(deffile[reg], "w")
+			defname[reg].write(defStr[reg])
+			defname[reg].close()
+			print(deffile[reg] + " containing TF for Default DHCP Options has been created for region " + reg)

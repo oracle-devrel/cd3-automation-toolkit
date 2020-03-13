@@ -24,14 +24,6 @@ def skipCommentedLine(lines):
             yield line
 
 
-def is_empty(myList):
-    # print myList
-    if not myList:
-        return True
-    else:
-        return False
-
-
 def create_ingress_rule_string(row):
     options = ""
     ingress_rule = """
@@ -43,13 +35,18 @@ def create_ingress_rule_string(row):
         ingress_rule = ingress_rule + """
                 source_type = "SERVICE_CIDR_BLOCK"
         """
-    if row['Protocol'] == 'icmp' and row['ICMPCode']!='' and row['ICMPType']!='':
-        options = """
+    if row['Protocol'] == 'icmp' and row['ICMPType']!='':
+        if row['ICMPCode']!='':
+            options = """
                icmp_options {
                   code = """ + row['ICMPCode'] + """
                   type =  """ + row['ICMPType'] + """
                }  """
-
+        else:
+            options = """
+            icmp_options {
+                type =  """ + row['ICMPType'] + """
+            }  """
     dest_range = ""
     source_range = ""
     if row['Protocol'] == 'tcp':
@@ -95,32 +92,6 @@ def create_ingress_rule_string(row):
 
     close_bracket = "\n \t\t}"
     ingress_rule = ingress_rule + options + close_bracket
-
-
-#    if row['Protocol'] == 'tcp' and str(row['DPortMax']) and str(row['DPortMin']):
-#        tcp_option = " \t\ttcp_options {"
-#        if str(row['DPortMax']).lower() != 'all' and str(row['DPortMin']).lower() != 'all':
-#            dest_range = dest_range  + """
-#            max = """ + str(row['DPortMax']) + """
-#            min = """ + str(row['DPortMin']) + """
-#            """
-#        options = tcp_option + dest_range+ "\n\t\t   }"
-#        if dest_range == '' and source_range == '':
-#            options = ''
-#    if row['Protocol'] == 'udp' and str(row['DPortMax']) and str(row['DPortMin']):
-#        udp_option = " \t\tudp_options {"
-#        if str(row['DPortMax']).lower() != 'all' and str(row['DPortMin']).lower() != 'all':
-#            dest_range = """
-#            max = """ + str(row['DPortMax']) + """
-#            min =  """ + str(row['DPortMin']) + """
-#            """
-#        options = udp_option + dest_range + "\n\t\t   }"
-#        if dest_range == '' and source_range == '':
-#            options = ''
-
-#    close_bracket = "\n \t}"
-
-#    temp_rule = temp_rule + options + close_bracket
     return ingress_rule
 
 
@@ -135,12 +106,18 @@ def create_egress_rule_string(row):
         egress_rule = egress_rule + """
                 destination_type = "SERVICE_CIDR_BLOCK"
         """
-    if row['Protocol'] == 'icmp' and row['ICMPCode']!='' and row['ICMPType']!='':
-        options = """
+    if row['Protocol'] == 'icmp' and row['ICMPType']!='':
+        if row['ICMPCode']!='':
+            options = """
                icmp_options {
                   code = """ + row['ICMPCode'] + """
                   type =  """ + row['ICMPType'] + """
                }  """
+        else:
+            options = """
+                icmp_options {
+                    type =  """ + row['ICMPType'] + """
+                }  """
     dest_range = ""
     source_range = ""
     if row['Protocol'] == 'tcp':
@@ -271,6 +248,8 @@ parser = argparse.ArgumentParser(description="Takes in an input file mentioning 
 parser.add_argument("inputfile",help="Full Path of vcn info file: It could be either the properties file eg vcn-info.properties or CD3 excel file")
 parser.add_argument("outdir",help="directory path for output tf files ")
 parser.add_argument("secrulesfile",help="Input file(either csv or CD3 excel) containing new secrules to be added for Security List of a given subnet")
+parser.add_argument("--nongf_tenancy", help="non greenfield tenancy: true or false", required=False)
+
 
 if len(sys.argv)==1:
         parser.print_help()
@@ -280,82 +259,13 @@ args = parser.parse_args()
 
 secrulesfilename = args.secrulesfile
 outdir = args.outdir
-
-
-seclist_files = {}
-seclist_rule_count = {}
-seclist_rule_count_limit = {}
-seclist_per_subnet_limit ={}
-
-# Read vcn info file and get subnet info
-"""
-if('.properties' in args.inputfile):
-    ociprops = configparser.RawConfigParser()
-    ociprops.read(args.inputfile)
-
-    all_regions = config.get('Default', 'regions')
-    all_regions = all_regions.split(",")
-    all_regions = [x.strip().lower() for x in all_regions]
-    #Get VCN  info from VCN_INFO section
-    vcns=ociprops.options('VCN_INFO')
-
-    for vcn_name in vcns:
-        vcn_data = ociprops.get('VCN_INFO', vcn_name)
-        vcn_data = vcn_data.split(',')
-
-        region=vcn_data[0].strip().lower()
-        if region not in all_regions:
-            print("Invalid Region")
-            exit(1)
-        sec_rule_per_seclist = vcn_data[10].strip().lower()
-        compartment_name = vcn_data[12].strip()
-
-        ntk_comp_id = get_network_compartment_id(config, compartment_name)
-        config.__setitem__("region", cTools.region_dict[region])
-        vnc = VirtualNetworkClient(config)
-
-        vcn_id = get_vcn_id(config, ntk_comp_id , vcn_name)
-
-        subnet_list =  vnc.list_subnets(ntk_comp_id, vcn_id)
-        for subnet in subnet_list.data:
-            init_subnet_details(subnet.id,vcn_name)
-        print("seclist rule count: ")
-        print(seclist_rule_count)
-
-elif('.xls' in args.inputfile):
-    vcnInfo = parseVCNInfo(args.inputfile)
-    vcns = parseVCNs(args.inputfile)
-    sec_rule_per_seclist=vcnInfo.secrule_per_seclist
-
-    for vcn_name in vcns.vcn_names:
-        compartment_name = vcns.vcn_compartment[vcn_name]
-        region=vcns.vcn_region[vcn_name]
-
-        ntk_comp_id = get_network_compartment_id(config, compartment_name)
-        config.__setitem__("region", commonTools.region_dict[region])
-        vnc = VirtualNetworkClient(config)
-
-        vcn_id = get_vcn_id(config, ntk_comp_id, vcn_name)
-
-        if(vcn_id!=None):
-            subnet_list = vnc.list_subnets(ntk_comp_id, vcn_id)
-            for subnet in subnet_list.data:
-                init_subnet_details(subnet.id, vcn_name, sec_rule_per_seclist)
-    print("seclist rule existing data  : ")
-    print("Current total SecRules count in each subnet:")
-    print(seclist_rule_count)
-    print("Secrules limit defined as per sec_rule_per_seclist parameter in VCNs sheet")
-    print(seclist_rule_count_limit)
-    #print(seclist_files)
-
+if args.nongf_tenancy is not None:
+    nongf_tenancy = "true"
 else:
-    print("Invalid input vcn info file format; Acceptable formats: .xls, .xlsx, .properties")
-    exit()
-"""
-subnets_done={}
+    nongf_tenancy = "false"
+
+
 seclists_done={}
-tfStr = {}
-oname={}
 default_ruleStr={}
 default_seclists_done={}
 defaultname={}
@@ -366,73 +276,63 @@ if('.xls' in secrulesfilename):
     vcns = parseVCNs(secrulesfilename)
     vcnInfo = parseVCNInfo(secrulesfilename)
 
-
-    print("\nReading SecRulesinOCI sheet of cd3 for overwrite option")
-    df = pd.read_excel(secrulesfilename, sheet_name='SecRulesinOCI', skiprows=0, dtype=object).to_csv('out.csv')
+    df = pd.read_excel(secrulesfilename, sheet_name='SecRulesinOCI', skiprows=1, dtype=object).to_csv('out.csv')
     totalRowCount = sum(1 for row in csv.DictReader(skipCommentedLine(open('out.csv'))))
     i=0
 
     for reg in vcnInfo.all_regions:
-        defaultname[reg] = open(outdir + "/" +reg+ "/VCNs_Default_SecList.tf", "w")
+        if(os.path.exists(outdir + "/" +reg)):
+            defaultname[reg] = open(outdir + "/" +reg+ "/VCNs_Default_SecList.tf", "w")
         default_ruleStr[reg]=''
         default_seclists_done[reg] = []
-        tfStr[reg]=''
-        oname[reg]=None
-        subnets_done[reg]=[]
         seclists_done[reg]=[]
         # Backup existing seclist files in ash and phx dir
-        print("backing up tf files for region " + reg)
+        print("Backing up all existing SL TF files for region " + reg+" to")
         commonTools.backup_file(outdir + "/" + reg, "_seclist.tf")
 
     with open('out.csv') as secrulesfile:
         reader = csv.DictReader(skipCommentedLine(secrulesfile))
         columns = reader.fieldnames
         rowCount = 0
+        tfStr=""
+        oname=None
         for row in reader:
             display_name = row['SecListName']
-            seclistName=""
-            # display name contains AD1, AD2 or AD3 and CIDR
-            if ('-ad1-10.' in display_name or '-ad2-10.' in display_name or '-ad3-10.' in display_name or '-ad1-172.' in display_name
-                    or '-ad2-172.' in display_name or '-ad3-172.' in display_name or '-ad1-192.' in display_name or '-ad2-192.' in display_name
-                    or '-ad3-192.' in display_name):
-                seclistName = display_name.rsplit("-", 2)[0]
-
-            # display name contains CIDR
-            elif ('-10.' in display_name or '-172.' in display_name or '192.' in display_name):
-                seclistName = display_name.rsplit("-", 1)[0]
-            else:
-                seclistName = display_name
-
-            if (seclistName.lower() == ''):# or 'Default Security List for' in seclistName):
-                continue
-
             vcn_name = row['VCN Name']
+            vcn_tf_name = commonTools.tfname.sub("-", vcn_name)
+            rt_var = vcn_name + "_" + display_name
+            seclist_tf_name = commonTools.tfname.sub("-", rt_var)
+
             # Process only those VCNs which are present in cd3(and have been created via TF)
             if(vcn_name not in vcns.vcn_names):
-                print("skipping seclist: "+seclistName + " as its VCN is not part of VCNs tab in cd3")
+                print("skipping seclist: "+display_name + " as its VCN is not part of VCNs tab in cd3")
                 continue
+
+            if (str(display_name).lower() == "nan"):
+                continue
+
             compartment_name = row['Compartment Name']
             protocol = row['Protocol']
             ruleType = row['RuleType']
             region = row['Region']
             region=region.strip().lower()
 
-            if('Default Security List for' in seclistName):
-                if (vcn_name+"_"+seclistName not in default_seclists_done[region]):
+            if('Default Security List for' in display_name):
+                if (seclist_tf_name not in default_seclists_done[region]):
                     if(len(default_seclists_done[region])==0):
                         default_ruleStr[region]=default_ruleStr[region]+"""
-    resource "oci_core_default_security_list" \"""" +vcn_name+"_default-security_list" """" {
-        manage_default_resource_id  = "${oci_core_vcn.""" + vcn_name + """.default_security_list_id}"
-        ##Add More rules for """ + vcn_name + """##
+    resource "oci_core_default_security_list" \"""" +seclist_tf_name+ """" {
+        manage_default_resource_id  = "${oci_core_vcn.""" + vcn_tf_name + """.default_security_list_id}"
+        ##Add More rules for """ + vcn_tf_name + """##
     """
                     else:
                         default_ruleStr[region] = default_ruleStr[region] + """
     }
-    resource "oci_core_default_security_list" \"""" +vcn_name+"_default-security_list" """" {
-        manage_default_resource_id  = "${oci_core_vcn.""" + vcn_name + """.default_security_list_id}"
-        ##Add More rules for """ + vcn_name + """##
+    resource "oci_core_default_security_list" \"""" +seclist_tf_name+ """" {
+        manage_default_resource_id  = "${oci_core_vcn.""" + vcn_tf_name + """.default_security_list_id}"
+        ##Add More rules for """ + vcn_tf_name + """##
     """
-                    default_seclists_done[region].append(vcn_name+"_"+seclistName)
+                    default_seclists_done[region].append(seclist_tf_name)
 
                 new_sec_rule = ""
                 if ruleType == 'ingress':
@@ -443,55 +343,44 @@ if('.xls' in secrulesfilename):
                 continue
 
             #Process other seclists
-            #subnetName = row['SecListName'].rsplit('-', 1)[0]
-            subnetName = seclistName.rsplit('-', 1)[0]
+            if (seclist_tf_name not in seclists_done[region]):
+                if(tfStr!=""):
+                    tfStr = tfStr + """
+            }"""
+                    oname.write(tfStr)
+                    oname.close()
+                    tfStr=""
 
-            if(vcn_name+"_"+subnetName not in subnets_done[region] or len(subnets_done[region])==0):
-                subnets_done[region].append(vcn_name+"_"+subnetName)
-                if(tfStr[region]!=''):
-                    tfStr[region]=tfStr[region]+"""
-    }"""
-                    oname[region].write(tfStr[region])
-                    tfStr[region] = ''
-                    seclists_done[region] = []
-                    oname[region].close()
-                oname[region] = open(outdir + "/" +region+"/"+ vcn_name+"_"+subnetName + "_seclist.tf", "w")
-
-
-            if(vcn_name+"_"+seclistName not in seclists_done[region]):
-                if(len(seclists_done[region])!=0):
-                    tfStr[region]=tfStr[region]+"""
-    }"""
-                tfStr[region]=tfStr[region]+"""
-    resource "oci_core_security_list" \"""" + vcn_name+"_"+seclistName +  """"{
-    compartment_id = "${var.""" + compartment_name + """}"
-    vcn_id = "${oci_core_vcn.""" + vcn_name + """.id}"
-    display_name = \"""" +display_name +  """"
-    ####ADD_NEW_SEC_RULES####""" + row['SecListName'].rsplit('-',1)[1] + """
+                oname = open(outdir + "/" + region + "/" + seclist_tf_name + "_seclist.tf","w")
+                tfStr= """
+    resource "oci_core_security_list" \"""" + seclist_tf_name +  """"{
+        compartment_id = "${var.""" + compartment_name + """}"
+        vcn_id = "${oci_core_vcn.""" + vcn_tf_name + """.id}"
+        display_name = \"""" +display_name +  """"
+        
+        ####ADD_NEW_SEC_RULES####""" + seclist_tf_name + """
     """
-                seclists_done[region].append(vcn_name+"_"+seclistName)
+                seclists_done[region].append(seclist_tf_name)
 
             new_sec_rule = ""
             if ruleType == 'ingress':
                 new_sec_rule = create_ingress_rule_string(row)
             if ruleType == 'egress':
                 new_sec_rule = create_egress_rule_string(row)
-            tfStr[region] = tfStr[region] + new_sec_rule
+            tfStr = tfStr+ new_sec_rule
 
 
-    for reg in vcnInfo.all_regions:
-        tfStr[reg]=tfStr[reg]+"""
-}"""
-        if(oname[reg]!=None):
-            oname[reg].write(tfStr[reg])
-            oname[reg].close()
-
-        if(default_ruleStr[reg]!=''):
-            default_ruleStr[reg]=default_ruleStr[reg]+"""
-}"""
-
-            defaultname[reg].write(default_ruleStr[reg])
-            defaultname[reg].close()
+        if (tfStr != ''):
+                tfStr=tfStr + """
+        }"""
+                oname.write(tfStr)
+                oname.close()
+        for reg in vcnInfo.all_regions:
+            if(default_ruleStr[reg]!=''):
+                default_ruleStr[reg]=default_ruleStr[reg]+"""
+        }"""
+                defaultname[reg].write(default_ruleStr[reg])
+                defaultname[reg].close()
 
     os.remove('out.csv')
 # If input is a csv file

@@ -15,10 +15,6 @@ import shutil
 import os
 sys.path.append(os.getcwd()+"/../../..")
 from commonTools import *
-"""from oci_tenancy.SetUpOCI_Via_TF.commonTools import commonTools
-from oci_tenancy.SetUpOCI_Via_TF.commonTools import parseVCNInfo
-from oci_tenancy.SetUpOCI_Via_TF.commonTools import parseVCNs
-"""
 
 ######
 # Required Files
@@ -33,6 +29,7 @@ parser.add_argument("inputfile",help="Full Path of input file either props file.
 parser.add_argument("outdir", help="Output directory for creation of TF files")
 parser.add_argument("prefix", help="customer name/prefix for all file names")
 parser.add_argument("--modify_network", help="modify network: true or false", required=False)
+parser.add_argument("--nongf_tenancy", help="non greenfield tenancy: true or false", required=False)
 
 if len(sys.argv) < 3:
     parser.print_help()
@@ -46,6 +43,7 @@ if args.modify_network is not None:
     modify_network = str(args.modify_network)
 else:
     modify_network = "false"
+nongf_tenancy = args.nongf_tenancy
 
 
 outfile = {}
@@ -77,8 +75,11 @@ def establishPeering(peering_dict):
         right_vcns = value.split(",")
 
         for right_vcn in right_vcns:
-            print(right_vcn)
+            if(right_vcn==""):
+                continue
             right_vcn=right_vcn.strip()
+            right_vcn_tf_name = commonTools.tfname.sub("-", right_vcn)
+
             try:
                 if(vcns.vcn_lpg_names[left_vcn][0].lower()=='n' or vcns.vcn_lpg_names[right_vcn][0].lower()=='n'):
                     print("\nERROR!!! Cannot specify n for lpg_required field of VCN if it is part of VCN peering..Exiting!")
@@ -87,10 +88,11 @@ def establishPeering(peering_dict):
                 print("\nERROR!!! Insufficient LPGs declared for either "+left_vcn + " or "+right_vcn + ". Check lpg_required column in VCNs tab..Exiting!")
                 exit(1)
             searchString = """##peer_id for lpg """ + left_vcn+"_"+vcns.vcn_lpg_names[left_vcn][0]+"##"
-            print(searchString)
             vcns.vcn_lpg_names[left_vcn].pop(0)
-            peerStr = """peer_id = "${oci_core_local_peering_gateway.""" + right_vcn+"_"+vcns.vcn_lpg_names[right_vcn][0] + """.id}" """
-            print(peerStr)
+            lpg_name=vcns.vcn_lpg_names[right_vcn][0]
+            lpg_tf_name = commonTools.tfname.sub("-", lpg_name)
+
+            peerStr = """peer_id = "${oci_core_local_peering_gateway.""" + right_vcn_tf_name+"_"+lpg_tf_name + """.id}" """
             vcns.vcn_lpg_names[right_vcn].pop(0)
 
             # Update file contents
@@ -100,16 +102,15 @@ def establishPeering(peering_dict):
             updated_data = re.sub(searchString, peerStr, data)
             with open(outfile, 'w') as f:
                 f.write(updated_data)
-            print("--------------------")
             f.close()
-    print("VCN Peering Done")
+    #print("VCN Peering Done")
 
 
 def processVCN(region, vcn_name, vcn_cidr, vcn_drg, vcn_igw, vcn_ngw, vcn_sgw, vcn_lpg, hub_spoke_none, compartment_var_name,
                vcn_dns_label,dhcp_data):
-
     region = region.lower().strip()
     vcn_name = vcn_name.strip()
+    vcn_tf_name=commonTools.tfname.sub("-",vcn_name)
     vcn_cidr = vcn_cidr.strip()
     vcn_drg = vcn_drg.strip()
     vcn_igw = vcn_igw.strip()
@@ -121,9 +122,12 @@ def processVCN(region, vcn_name, vcn_cidr, vcn_drg, vcn_igw, vcn_ngw, vcn_sgw, v
     vcn_dns_label = vcn_dns_label.strip()
 
     #Create TF object for default DHCP options
+    dhcpname= vcn_name+"_Default DHCP Options for "+vcn_name
+    dhcp_tf_name = commonTools.tfname.sub("-", dhcpname)
+
     dhcp_data = dhcp_data + """
-    resource "oci_core_default_dhcp_options" "default-dhcp-options_""" + vcn_name + """" {
-        manage_default_resource_id  = "${oci_core_vcn.""" + vcn_name + """.default_dhcp_options_id}"
+    resource "oci_core_default_dhcp_options" \"""" + dhcp_tf_name + """" {
+        manage_default_resource_id  = "${oci_core_vcn.""" + vcn_tf_name + """.default_dhcp_options_id}"
         options {
             type = "DomainNameServer"
             server_type = "VcnLocalPlusInternet"
@@ -133,13 +137,18 @@ def processVCN(region, vcn_name, vcn_cidr, vcn_drg, vcn_igw, vcn_ngw, vcn_sgw, v
 
     #Wite major objects data
     data = """
-          resource "oci_core_vcn" \"""" + vcn_name + """" {
+          resource "oci_core_vcn" \"""" + vcn_tf_name + """" {
                     cidr_block = \"""" + vcn_cidr + """"
                     compartment_id = "${var.""" + compartment_var_name + """}"
                     display_name = \"""" + vcn_name + """"
-                    dns_label = \"""" + vcn_dns_label + """"
-            }
             """
+    if(vcn_dns_label.lower()!="n"):
+        data=data+ """
+                    dns_label = \"""" + vcn_dns_label + """"
+        """
+    data=data+"""
+        }
+        """
     if vcn_igw != "n":
         # use default name
         if (vcn_igw == "y"):
@@ -147,42 +156,72 @@ def processVCN(region, vcn_name, vcn_cidr, vcn_drg, vcn_igw, vcn_ngw, vcn_sgw, v
         # use name provided in input
         else:
             igw_name = vcn_igw
+        igw_tf_name = commonTools.tfname.sub("-", igw_name)
+
         data = data + """
-            resource "oci_core_internet_gateway" \"""" + vcn_name+"_"+igw_name + """" {
+            resource "oci_core_internet_gateway" \"""" + vcn_tf_name+"_"+igw_tf_name + """" {
                     compartment_id = "${var.""" + compartment_var_name + """}"
                     display_name = \"""" + igw_name + """"
-                    vcn_id = "${oci_core_vcn.""" + vcn_name + """.id}"
+                    vcn_id = "${oci_core_vcn.""" + vcn_tf_name + """.id}"
             }
             """
 
     if vcn_drg != "n":
         # use default name
         if (vcn_drg == "y"):
-            drg_attach_name = vcn_name + "_drg_attach"
-            drg_name = vcn_name + "_drg"
-            drg_display = vcn_name + "_drg"
+            #drg_name = vcn_name + "_drg"
+            drg_name = region + "_drg"
+            #drg_display = vcn_name + "_drg"
+            drg_display = region + "_drg"
         # use name provided in input
         else:
-            drg_attach_name = vcn_drg + "_attach"
             drg_name = vcn_drg
             drg_display = vcn_drg
+        drg_tf_name = commonTools.tfname.sub("-", drg_name)
 
-        rt_var = vcn_name+"_"+drg_name + "_rt"
+        drg_rt_name=""
+        #if(nongf_tenancy=="true"):
+        if (os.path.exists(outdir + "/" + region + "/obj_names.safe")):
+            with open(outdir + "/" + region + "/obj_names.safe") as f:
+                for line in f:
+                    if("drginfo::::"+vcn_name+"::::"+drg_display in line):
+                        drg_rt_name = line.split("::::")[3].strip()
+                        break
+        if(drg_rt_name==""):
+            #rt_var = vcn_name+"_"+drg_name + "_rt"
+            rt_var =vcn_name+"_Route Table associated with DRG-"+drg_name
+        else:
+            rt_var = vcn_name + "_" + drg_rt_name
 
+        drg_attach_name = ""
+        #if (nongf_tenancy == "true"):
+        if(os.path.exists(outdir + "/" + region + "/obj_names.safe")):
+            with open(outdir + "/" + region + "/obj_names.safe") as f:
+                for line in f:
+                    if ("drgattachinfo::::" + vcn_name + "::::" + drg_display in line):
+                        drg_attach_name = line.split("::::")[3].strip()
+                        break
+        if (drg_attach_name == ""):
+            # rt_var = vcn_name+"_"+drg_name + "_rt"
+            drg_attach_name = drg_name + "_attach"
+
+        drg_attach_tf_name = commonTools.tfname.sub("-", drg_attach_name)
+        rt_tf_name = commonTools.tfname.sub("-", rt_var)
         # Create new DRG
         #if (drg_ocid == ''):
         data = data + """
-            resource "oci_core_drg" \"""" + vcn_name+"_"+drg_name + """" {
+            resource "oci_core_drg" \"""" + drg_tf_name + """" {
                     compartment_id = "${var.""" + compartment_var_name + """}"
                     display_name = \"""" + drg_display + """"
             }
-            resource "oci_core_drg_attachment" \"""" + drg_attach_name + """" {
-                    drg_id = "${oci_core_drg.""" + vcn_name+"_"+drg_name + """.id}"
-                    vcn_id = "${oci_core_vcn.""" + vcn_name + """.id}"
+            resource "oci_core_drg_attachment" \"""" + vcn_tf_name+"_"+drg_attach_tf_name + """" {
+                    drg_id = "${oci_core_drg.""" + drg_tf_name + """.id}"
+                    vcn_id = "${oci_core_vcn.""" + vcn_tf_name + """.id}"
+                    display_name = \"""" + drg_attach_name + """"
             """
         if (hub_spoke_none == 'hub'):
             data = data + """
-                    route_table_id = "${oci_core_route_table.""" + rt_var + """.id}"
+                    route_table_id = "${oci_core_route_table.""" + rt_tf_name + """.id}"
             }
                             """
         else:
@@ -195,15 +234,16 @@ def processVCN(region, vcn_name, vcn_cidr, vcn_drg, vcn_igw, vcn_ngw, vcn_sgw, v
         # use name provided in input
         else:
             sgw_name = vcn_sgw
+        sgw_tf_name = commonTools.tfname.sub("-", sgw_name)
 
         data = data + """
-            resource "oci_core_service_gateway"  \"""" + vcn_name+"_"+sgw_name + """" {
+            resource "oci_core_service_gateway"  \"""" + vcn_tf_name+"_"+sgw_tf_name + """" {
                     services {
                     #service_id = "${data.oci_core_services.oci_services.services.0.id}"
                     service_id =  contains(split("-","${data.oci_core_services.oci_services.services.0.cidr_block}"),"all") == true ? "${data.oci_core_services.oci_services.services.0.id}" : "${data.oci_core_services.oci_services.services.1.id}"
                     }
                     display_name = \"""" + sgw_name + """"
-                    vcn_id = "${oci_core_vcn.""" + vcn_name + """.id}"
+                    vcn_id = "${oci_core_vcn.""" + vcn_tf_name + """.id}"
                     compartment_id = "${var.""" + compartment_var_name + """}"
             }
             """
@@ -214,30 +254,51 @@ def processVCN(region, vcn_name, vcn_cidr, vcn_drg, vcn_igw, vcn_ngw, vcn_sgw, v
         # use name provided in input
         else:
             ngw_name = vcn_ngw
+        ngw_tf_name = commonTools.tfname.sub("-", ngw_name)
 
         data = data + """
-            resource "oci_core_nat_gateway" \"""" + vcn_name+"_"+ngw_name + """" {
+            resource "oci_core_nat_gateway" \"""" + vcn_tf_name+"_"+ngw_tf_name + """" {
                     display_name = \"""" + ngw_name + """"
-                    vcn_id = "${oci_core_vcn.""" + vcn_name + """.id}"
+                    vcn_id = "${oci_core_vcn.""" + vcn_tf_name + """.id}"
                     compartment_id = "${var.""" + compartment_var_name + """}"
             }
             """
     if(vcn_lpg!='n'):
+        count_lpg =0
+        if (hub_spoke_none == 'hub'):
+            spoke_vcns = vcns.peering_dict[vcn_name].split(",")
+            count_spokes = len(spoke_vcns)
+
         for lpg_name in vcns.vcn_lpg_names[vcn_name]:
+            count_lpg=count_lpg+1
+            lpg_tf_name = commonTools.tfname.sub("-", lpg_name)
             data = data + """
-            resource "oci_core_local_peering_gateway" \"""" + vcn_name+"_"+lpg_name + """" {
+            resource "oci_core_local_peering_gateway" \"""" + vcn_tf_name+"_"+lpg_tf_name + """" {
                     display_name = \"""" + lpg_name + """"
-                    vcn_id = "${oci_core_vcn.""" + vcn_name + """.id}"
+                    vcn_id = "${oci_core_vcn.""" + vcn_tf_name + """.id}"
                     compartment_id = "${var.""" + compartment_var_name + """}"
                     ##peer_id for lpg """ + vcn_name+"_"+lpg_name+"##"
             if(hub_spoke_none == 'hub'):
-                rt_var = vcn_name+"_"+lpg_name + "_rt"
-                data = data + """
-                    route_table_id = "${oci_core_route_table.""" + rt_var + """.id}"
-                }
+                lpg_rt_name = ""
+                if (os.path.exists(outdir + "/" + region + "/obj_names.safe")):
+                    with open(outdir + "/" + region + "/obj_names.safe") as f:
+                        for line in f:
+                            if ("lpginfo::::" + vcn_name + "::::" + lpg_name in line):
+                                lpg_rt_name = line.split("::::")[3].strip()
+
+                if (lpg_rt_name != ""):
+                    rt_var = vcn_name + "_" + lpg_rt_name
+                elif (count_lpg<=count_spokes):
+                    rt_var = vcn_name + "_Route Table associated with LPG-" + lpg_name
+                else:
+                    rt_var=""
+                rt_tf_name = commonTools.tfname.sub("-", rt_var)
+                if(rt_var!=""):
+                    data = data + """
+                    route_table_id = "${oci_core_route_table.""" + rt_tf_name + """.id}"
                 """
-            else:
-                data=data+"""
+
+            data=data+"""
             }
             """
 
@@ -272,6 +333,8 @@ if ('.xls' in filename):
         vcn_name = df['vcn_name'][i]
         vcn_cidr = df['vcn_cidr'][i]
         vcn_drg = df['drg_required'][i]
+        #drg_var_name = tfname.sub('', vcn_drg)
+
         vcn_igw = df['igw_required'][i]
         vcn_ngw = df['ngw_required'][i]
         vcn_sgw = df['sgw_required'][i]
@@ -442,5 +505,5 @@ elif(modify_network == 'false'):
             oname[reg].close()
             print(outfile[reg] + " containing TF for VCN major objects has been created for region " + reg)
 
-print(vcns.peering_dict)
+#if(nongf_tenancy=="false"):
 establishPeering(vcns.peering_dict)

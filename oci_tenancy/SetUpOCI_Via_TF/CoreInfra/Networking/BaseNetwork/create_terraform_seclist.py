@@ -54,16 +54,17 @@ if args.modify_network is not None:
 else:
     modify_network = "false"
 
-common_seclist_names={}
 fname = None
 oname=None
 secrulefiles={}
 tempStr = ""
 ADS = ["AD1", "AD2", "AD3"]
 
-def processSubnet(region,vcn_name,AD,seclists_per_subnet,name,seclist_name,compartment_var_name):
+def processSubnet(region,vcn_name,AD,seclist_names,compartment_var_name):
+    #Seclist name specifiied as 'n' - dont create any seclist
+    if(seclist_names[0]=="n"):
+        return
 
-    j = 0
     if (AD.strip().lower() != 'regional'):
         AD = AD.strip().upper()
         ad = ADS.index(AD)
@@ -72,77 +73,68 @@ def processSubnet(region,vcn_name,AD,seclists_per_subnet,name,seclist_name,compa
     else:
         ad_name = ""
 
-    if(seclist_name==''):
-        slname=vcn_name+"_"+name+ "_seclist.tf"
-    else:
-        slname = vcn_name+"_"+ seclist_name + "_seclist.tf"
+    vcn_tf_name=commonTools.tfname.sub("-",vcn_name)
 
-    if (slname in secrulefiles[region]):
-        secrulefiles[region].remove(slname)
-
-    outfile = outdir + "/" + region + "/" + slname
-
-    # If Modify Network is set to true
-    if (os.path.exists(outfile) and modify_network == 'true'):
-        return
-
-    # If same seclist name is used for subsequent subnets
-    if(os.path.exists(outfile) and modify_network == 'false'):
-        Str= """
-                        ingress_security_rules {
-                            protocol = "all"
-                            source = \"""" + subnet + """"
-                        }
-                        
-                        ####ADD_NEW_SEC_RULES####1
-                    """
-        with open(outfile, 'r+') as file:
-            filedata = file.read()
-        file.close()
-        # Replace the target string
-        textToSearch="####ADD_NEW_SEC_RULES####1"
-        filedata = filedata.replace(textToSearch, Str)
-        oname = open(outfile, "w")
-        oname.write(filedata)
-        oname.close()
-        return
-
-    #New Seclist
-    oname = open(outfile, "w")
-    while j < seclists_per_subnet:
-        #seclist name not provided; use subnetname as seclistname
-        if(seclist_name==''):
-            seclistname = name + "-" + str(j + 1)
-
-        #seclist name provided
-        else:
-            seclistname = seclist_name + "-" + str(j + 1)
-
-        #Attach CIDR
-        if (str(ad_name) != ''):
-            name1 = seclistname + "-ad" + str(ad_name)
-        else:
-            name1 = seclistname
+    index=0
+    for sl_name in seclist_names:
+        sl_name=sl_name.strip()
 
         # check if subnet cidr needs to be attached
         if (vcnInfo.subnet_name_attach_cidr == 'y'):
+            if (str(ad_name) != ''):
+                name1 = sl_name + "-ad" + str(ad_name)
+            else:
+                name1 = sl_name
             display_name = name1 + "-" + subnet
         else:
-            display_name = seclistname
+            display_name = sl_name
+
+        sl_tf_name = commonTools.tfname.sub("-",display_name)
+
+        if (vcn_tf_name +"_"+sl_tf_name+"_seclist.tf" in secrulefiles[region]):
+            secrulefiles[region].remove(vcn_tf_name +"_"+sl_tf_name+"_seclist.tf")
+        outfile = outdir + "/" + region + "/" + vcn_tf_name +"_"+sl_tf_name+"_seclist.tf"
+
+        # If Modify Network is set to true
+        if (os.path.exists(outfile) and modify_network == 'true'):
+            continue
+
+        # If same seclist name is used for subsequent subnets
+        if(index==0 and os.path.exists(outfile) and modify_network == 'false'):
+            Str= """
+                            ingress_security_rules {
+                                protocol = "all"
+                                source = \"""" + subnet + """"
+                            }
+                            
+                        ####ADD_NEW_SEC_RULES####"""+vcn_tf_name+"_"+sl_tf_name
+
+            with open(outfile, 'r+') as file:
+                filedata = file.read()
+            file.close()
+            # Replace the target string
+            textToSearch="####ADD_NEW_SEC_RULES####"+vcn_tf_name+"_"+sl_tf_name
+            filedata = filedata.replace(textToSearch, Str)
+            oname = open(outfile, "w")
+            oname.write(filedata)
+            oname.close()
+            continue
+
+        #New Seclist
+        oname = open(outfile, "w")
 
         tempStr = """
-        resource "oci_core_security_list" \"""" + vcn_name+"_"+seclistname + """"{
+        resource "oci_core_security_list" \"""" + vcn_tf_name+"_"+sl_tf_name + """"{
             compartment_id = "${var.""" + compartment_var_name + """}"
-            vcn_id = "${oci_core_vcn.""" + vcn_name + """.id}"
+            vcn_id = "${oci_core_vcn.""" + vcn_tf_name + """.id}"
             display_name = \"""" + display_name.strip() + "\""
 
-        if j + 1 > 1:
+        if index!=0:
             tempStr = tempStr + """
-
-                        ####ADD_NEW_SEC_RULES####""" + str(j + 1) + """
+            ####ADD_NEW_SEC_RULES####""" + vcn_tf_name+"_"+sl_tf_name  + """
         }
         """
-        else:
+        elif(index==0):
             tempStr = tempStr + """
                         ingress_security_rules {
                             protocol = "all"
@@ -153,20 +145,18 @@ def processSubnet(region,vcn_name,AD,seclists_per_subnet,name,seclist_name,compa
                             protocol = "all"
                         }
 
-                        ####ADD_NEW_SEC_RULES####""" + str(j + 1) + """
+                        ####ADD_NEW_SEC_RULES####""" + vcn_tf_name+"_"+sl_tf_name + """
                     }
                     """
         oname.write(tempStr)
-        j = j + 1
-    oname.close()
-    print(outfile + " containing TF for seclist has been created for region " + region)
+        oname.close()
+        print(outfile + " containing TF for seclist has been created for region " + region)
+        index=index+1
 
 #If input is CD3 excel file
 if('.xls' in filename):
     vcnInfo = parseVCNInfo(filename)
     vcns = parseVCNs(filename)
-    for reg in vcnInfo.all_regions:
-        common_seclist_names[reg] = []
 
     # Purge existing routetable files
     if (modify_network == 'false'):
@@ -208,53 +198,28 @@ if('.xls' in filename):
         subnet=subnet.strip()
         AD = df.iat[i, 5]
         AD=AD.strip()
-        seclist_name = df.iat[i, 9]
-        if (str(seclist_name).lower() != 'nan'):
-            seclist_name=seclist_name.strip()
+        seclist_names = df.iat[i, 9]
+        sl_names=[]
+        if (str(seclist_names).lower() != 'nan'):
+            sl_names=seclist_names.split(",")
         else:
-            seclist_name=''
+            # seclist not provided; use subnet name as seclist name
+            sl_names.append(name)
         compartment_var_name=compartment_var_name.strip()
 
-        common_seclist_name=df.iat[i,10]
-        if(str(common_seclist_name).lower() !='nan'):
-            if (vcn_name+"_"+common_seclist_name not in common_seclist_names[region]):
-                common_seclist_names[region].append(vcn_name+"_"+common_seclist_name)
-                out_common_file=outdir+"/"+region+"/"+vcn_name+"_"+common_seclist_name+"_seclist.tf"
-                if(vcn_name+"_"+common_seclist_name+"_seclist.tf" in secrulefiles[region]):
-                    secrulefiles[region].remove(vcn_name+"_"+common_seclist_name+"_seclist.tf")
-                if (not os.path.exists(out_common_file) or modify_network == 'false'):
-                    oname_common=open(out_common_file,"w")
-                    data="""
-        resource "oci_core_security_list" \"""" + vcn_name+"_"+common_seclist_name.strip() + "-1" """"{
-            compartment_id = "${var.""" + compartment_var_name + """}"
-            vcn_id = "${oci_core_vcn.""" + vcn_name + """.id}"
-            display_name = \"""" + common_seclist_name.strip() + "-1" """"
-            ####ADD_NEW_SEC_RULES####1
-        }
-        """
-                    oname_common.write(data)
 
-                    print(out_common_file + " containing TF for seclist has been created for region " + region)
-                    oname_common.close()
-
-        seclists_per_subnet = df.iat[i, 11]
-        if (str(seclists_per_subnet).lower() == 'nan'):
-            seclists_per_subnet = '1'
-        try:
-            seclists_per_subnet = int(seclists_per_subnet)
-        except:
-            print("\nERROR!!! Make sure to enter numeric value(without any extra spaces) in sec_list_per_subnet column of Subnets tab..Exiting!")
-            exit(1)
-
-        processSubnet(region,vcn_name,AD,seclists_per_subnet,name,seclist_name,compartment_var_name)
+        processSubnet(region,vcn_name,AD,sl_names,compartment_var_name)
 
 
-    # remove any extra route table files (not part of latest cd3)
+    # remove any extra sec list files (not part of latest cd3)
     for reg in vcnInfo.all_regions:
+        if(len(secrulefiles[reg])!=0):
+            print("\nATTENION!!! Below SecLists are not attached to any subnet; If you want to delete any of them, remove the TF file!!!")
         for remaining_sl_file in secrulefiles[reg]:
-            print("\nRemoving "+outdir + "/" + reg + "/"+remaining_sl_file)
-            os.remove(outdir + "/" + reg + "/"+remaining_sl_file)
-            secrulefiles[reg].remove(remaining_sl_file)
+            print(outdir + "/" + reg + "/"+remaining_sl_file)
+            #print("\nRemoving "+outdir + "/" + reg + "/"+remaining_sl_file)
+            #os.remove(outdir + "/" + reg + "/"+remaining_sl_file)
+            #secrulefiles[reg].remove(remaining_sl_file)
 
 # If CD3 excel file is not given as input
 elif('.properties' in filename):

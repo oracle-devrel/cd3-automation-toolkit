@@ -68,13 +68,14 @@ if('.xls' in args.inputfile):
         policy_name = df.iat[i, 1]
 
         if (str(policy_name).lower() != "nan"):
-
+            policy_tf_name = commonTools.tfname.sub("-", policy_name)
             count=count +1
             policy_compartment_name = df.iat[i, 2]
             if (str(policy_compartment_name).lower() == "nan" or policy_compartment_name.lower() == 'root'):
                 policy_compartment = '${var.tenancy_ocid}'
             else:
-                policy_compartment = '${oci_identity_compartment.' + policy_compartment_name + '.id}'
+                #policy_compartment = '${oci_identity_compartment.' + policy_compartment_name + '.id}'
+                policy_compartment = '${var.' + policy_compartment_name + '}'
 
 
             policy_desc = df.iat[i, 3]
@@ -82,55 +83,66 @@ if('.xls' in args.inputfile):
                 policy_desc = policy_name
 
             policy_statement = df.iat[i,4]
-            policy_statement_grps = df.iat[i, 5]
-            policy_statement_grps = policy_statement_grps.split(",")
-            grp_tf=""
-            k = 0
-            for policy_statement_grp in policy_statement_grps:
-                k=k+1
-                if(k==1):
-                    grp_tf = grp_tf +'${oci_identity_group.' + policy_statement_grp + '.name}'
-                if(k!=1):
-                    grp_tf=grp_tf+","+'${oci_identity_group.' + policy_statement_grp + '.name}'
+            actual_policy_statement = policy_statement
+            if ('$' in policy_statement):
+                policy_statement_grps = df.iat[i, 5]
 
-            actual_policy_statement=policy_statement.replace('$', grp_tf)
-            if('*' in policy_statement):
+                """policy_statement_grps = policy_statement_grps.split(",")
+                grp_tf=""
+                k = 0
+                for policy_statement_grp in policy_statement_grps:
+                    k=k+1
+                    if(k==1):
+                        grp_tf = grp_tf +'${oci_identity_group.' + policy_statement_grp + '.name}'
+                    if(k!=1):
+                        grp_tf=grp_tf+","+'${oci_identity_group.' + policy_statement_grp + '.name}'
+                actual_policy_statement=policy_statement.replace('$', grp_tf)
+                """
+                actual_policy_statement=policy_statement.replace('$', policy_statement_grps)
+            if('compartment *' in policy_statement):
                 policy_statement_comp = df.iat[i, 6]
-                comp_tf = '${oci_identity_compartment.' + policy_statement_comp + '.name}'
-                actual_policy_statement=actual_policy_statement.replace('*', comp_tf)
+                #comp_tf = '${oci_identity_compartment.' + policy_statement_comp + '.name}'
+                #comp_tf = '${var.' + policy_statement_comp + '}'
+                comp_tf = policy_statement_comp
+                actual_policy_statement=actual_policy_statement.replace('compartment *', 'compartment '+comp_tf)
             if(count!=1):
                 tempStr = tempStr + """ ]
         }"""
             tempStr=tempStr + """
-    resource "oci_identity_policy" \"""" + policy_name + """" {
+    resource "oci_identity_policy" \"""" + policy_tf_name + """" {
             compartment_id = \"""" + policy_compartment + """" 
-            description = \"""" + policy_desc + """"
-            name = \"""" + policy_name + """"
-            statements = [ \"""" + actual_policy_statement + """" """
+            description = \"""" + policy_desc.strip() + """"
+            name = \"""" + policy_name.strip() + """"
+            statements = [ \"""" + actual_policy_statement.strip() + """" """
 
         if(str(policy_name).lower() == "nan"):
             policy_statement = df.iat[i, 4]
             if(str(policy_statement).lower() != "nan"):
-                policy_statement_grps = df.iat[i, 5]
-                policy_statement_grps= policy_statement_grps.split(",")
-                grp_tf = ""
-                j = 0
-                for policy_statement_grp in policy_statement_grps:
-                    j = j + 1
-                    if (j == 1):
-                        grp_tf = grp_tf + '${oci_identity_group.' + policy_statement_grp + '.name}'
-                    if (j != 1):
-                        grp_tf = grp_tf + "," + '${oci_identity_group.' + policy_statement_grp + '.name}'
+                actual_policy_statement = policy_statement
+                if ('$' in policy_statement):
+                    policy_statement_grps = df.iat[i, 5]
+                    """policy_statement_grps= policy_statement_grps.split(",")
+                    grp_tf = ""
+                    j = 0
+                    for policy_statement_grp in policy_statement_grps:
+                        j = j + 1
+                        if (j == 1):
+                            grp_tf = grp_tf + '${oci_identity_group.' + policy_statement_grp + '.name}'
+                        if (j != 1):
+                            grp_tf = grp_tf + "," + '${oci_identity_group.' + policy_statement_grp + '.name}'
 
-                actual_policy_statement = policy_statement.replace('$', grp_tf)
-
-                if ('*' in policy_statement):
+                    actual_policy_statement = policy_statement.replace('$', grp_tf)
+                    """
+                    actual_policy_statement = policy_statement.replace('$', policy_statement_grps)
+                if ('compartment *' in policy_statement):
                     policy_statement_comp = df.iat[i, 6]
-                    comp_tf = '${oci_identity_compartment.' + policy_statement_comp + '.name}'
-                    actual_policy_statement = actual_policy_statement.replace('*', comp_tf)
+                    #comp_tf = '${oci_identity_compartment.' + policy_statement_comp + '.name}'
+                    #comp_tf = '${var.' + policy_statement_comp + '}'
+                    comp_tf = policy_statement_comp
+                    actual_policy_statement = actual_policy_statement.replace('compartment *', 'compartment '+comp_tf)
 
                 tempStr = tempStr + """, 
-                    \"""" + actual_policy_statement + """" """
+                    \"""" + actual_policy_statement.strip() + "\""""
 
     tempStr = tempStr + """ ]
         }
@@ -140,15 +152,15 @@ else:
     print("Invalid input file format; Acceptable formats: .xls, .xlsx")
     exit()
 
-reg=check_diff_region[0].strip().lower()
+if(len(check_diff_region)!=0):
+    reg=check_diff_region[0].strip().lower()
+    reg_out_dir = outdir + "/" + reg
+    if not os.path.exists(reg_out_dir):
+        os.makedirs(reg_out_dir)
+    outfile[reg] = reg_out_dir + "/" + prefix + '-policies.tf'
 
-reg_out_dir = outdir + "/" + reg
-if not os.path.exists(reg_out_dir):
-    os.makedirs(reg_out_dir)
-outfile[reg] = reg_out_dir + "/" + prefix + '-policies.tf'
-
-oname[reg]=open(outfile[reg],'w')
-oname[reg].write(tempStr)
-oname[reg].close()
-print(outfile[reg] + " containing TF for policies has been created for region "+reg)
+    oname[reg]=open(outfile[reg],'w')
+    oname[reg].write(tempStr)
+    oname[reg].close()
+    print(outfile[reg] + " containing TF for policies has been created for region "+reg)
 

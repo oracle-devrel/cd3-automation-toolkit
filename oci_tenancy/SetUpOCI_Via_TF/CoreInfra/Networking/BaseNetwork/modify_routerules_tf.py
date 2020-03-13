@@ -16,6 +16,7 @@ from commonTools import *
 parser = argparse.ArgumentParser(description="Updates routelist for subnet. It accepts input file which contains new rules to be added to the existing rule list of the subnet.")
 parser.add_argument("inputfile", help="Required; Full Path to input route file (either csv or CD3 excel file) containing rules to be updated; See example folder for sample format: add_routes-example.txt")
 parser.add_argument("outdir",help="directory path for output tf files ")
+parser.add_argument("--nongf_tenancy", help="non greenfield tenancy: true or false", required=False)
 
 
 if len(sys.argv) == 1:
@@ -27,27 +28,37 @@ args = parser.parse_args()
 inputfile = args.inputfile
 outdir=args.outdir
 
+if args.nongf_tenancy is not None:
+    nongf_tenancy = "true"
+else:
+    nongf_tenancy = "false"
+
 data=""
 tfStr=''
 subnets_done={}
 routefile={}
 oname = None
-
+default_ruleStr={}
+defaultname={}
+default_rtables_done={}
 
 #If input is CD3 excel file
 if('.xls' in inputfile):
     vcns=parseVCNs(inputfile)
     vcnInfo=parseVCNInfo(inputfile)
 
-    print("\nReading RouteRulesinOCI sheet of cd3")
-    df = pd.read_excel(inputfile, sheet_name='RouteRulesinOCI')
+    df = pd.read_excel(inputfile, sheet_name='RouteRulesinOCI', skiprows=1)
     df = df.dropna(how='all')
     df = df.reset_index(drop=True)
 
     for reg in vcnInfo.all_regions:
+        if(os.path.exists(outdir + "/" +reg)):
+            defaultname[reg] = open(outdir + "/" + reg + "/VCNs_Default_RouteTable.tf", "w")
+        default_ruleStr[reg] = ''
+        default_rtables_done[reg]=[]
         subnets_done[reg] = []
         # Backup existing seclist files in ash and phx dir
-        print("backing up tf files for region " + reg)
+        print("Backing up all existing RT TF files for region " + reg+ " to")
         commonTools.backup_file(outdir + "/" + reg, "_routetable.tf")
 
     for i in df.index:
@@ -66,6 +77,7 @@ if('.xls' in inputfile):
         if (vcn_name not in vcns.vcn_names):
             print("skipping route table: " + display_name + " as its VCN is not part of VCNs tab in cd3")
             continue
+        vcn_tf_name = commonTools.tfname.sub("-", vcn_name)
 
         if (str(display_name).lower() == "nan"):
             continue
@@ -80,18 +92,22 @@ if('.xls' in inputfile):
             dest_objs=""
 
         dest_objs = str(dest_objs).strip().split(":")
+        if(len(dest_objs)==2):
+            obj_tf_name=commonTools.tfname.sub("-",dest_objs[1].strip())
 
         if ('ngw' in dest_objs[0].lower().strip()):
-            dest_obj = "${oci_core_nat_gateway." + vcn_name+"_"+dest_objs[1].strip() + ".id}"
+            dest_obj = "${oci_core_nat_gateway." + vcn_tf_name+"_"+obj_tf_name + ".id}"
         elif ('sgw' in dest_objs[0].lower().strip()):
-            dest_obj = "${oci_core_service_gateway." + vcn_name+"_"+dest_objs[1].strip() + ".id}"
+            dest_obj = "${oci_core_service_gateway." + vcn_tf_name+"_"+obj_tf_name+ ".id}"
         elif ('igw' in dest_objs[0].lower().strip()):
-            dest_obj = "${oci_core_internet_gateway." + vcn_name+"_"+dest_objs[1].strip() + ".id}"
+            dest_obj = "${oci_core_internet_gateway." + vcn_tf_name+"_"+obj_tf_name + ".id}"
         elif ('lpg' in dest_objs[0].lower().strip()):
-            dest_obj = "${oci_core_local_peering_gateway." + vcn_name+"_"+dest_objs[1].strip() + ".id}"
+            dest_obj = "${oci_core_local_peering_gateway." + vcn_tf_name+"_"+obj_tf_name + ".id}"
         elif ('drg' in dest_objs[0].lower().strip()):
-            dest_obj = "${oci_core_drg." + vcn_name+"_"+dest_objs[1].strip() + ".id}"
+            #dest_obj = "${oci_core_drg." + vcn_tf_name+"_"+obj_tf_name + ".id}"
+            dest_obj = "${oci_core_drg." + obj_tf_name + ".id}"
 #        elif ('privateip' in dest_objs[0].lower()):
+        #direct OCID is provided
         else:
             dest_obj = dest_objs[0].strip()
 
@@ -100,21 +116,9 @@ if('.xls' in inputfile):
             dest_type=""
         else:
             dest_type = str(dest_type).strip()
-        subnet_name=""
-        # subnet_name/RouteTable contains AD1, AD2 or AD3 and CIDR
-        if ('-ad1-10.' in display_name or '-ad2-10.' in display_name or '-ad3-10.' in display_name or '-ad1-172.' in display_name
-                    or '-ad2-172.' in display_name or '-ad3-172.' in display_name or '-ad1-192.' in display_name or '-ad2-192.' in display_name
-                    or '-ad3-192.' in display_name):
 
-            subnet_name = display_name.rsplit("-", 2)[0]
 
-        # display name contains CIDR
-        elif ('-10.' in display_name or '-172.' in display_name or '192.' in display_name):
-            subnet_name = display_name.rsplit("-", 1)[0]
-        else:
-            subnet_name = display_name
-
-        if('Route Table associated with DRG' in subnet_name):
+        """if('Route Table associated with DRG' in subnet_name):
             drg_name = subnet_name.split('DRG ')[1].strip()
             rt_var = vcn_name+"_"+drg_name + "_rt"
         elif('Default Route Table for' in subnet_name):
@@ -124,9 +128,34 @@ if('.xls' in inputfile):
             rt_var = vcn_name+"_"+lpg_name[1].strip() + "_rt"
         else:
             rt_var=vcn_name+"_"+subnet_name
-        outfile = outdir + "/" + region + "/"+rt_var+"_routetable.tf"
+        """
+        rt_var = vcn_name + "_" + display_name
+        rt_tf_name = commonTools.tfname.sub("-", rt_var)
 
-        if(vcn_name+"_"+subnet_name not in subnets_done[region] or len(subnets_done[region])==0):
+        if("Default Route Table for " in display_name):
+            if(rt_tf_name not in default_rtables_done[region]):
+                if (len(default_rtables_done[region]) != 0):
+                    default_ruleStr[region] = default_ruleStr[region] + """
+                }"""
+                default_ruleStr[region] = default_ruleStr[region] + """
+                resource "oci_core_default_route_table" \"""" + rt_tf_name + """" {
+                    manage_default_resource_id  = "${oci_core_vcn.""" + vcn_tf_name + """.default_route_table_id}"
+                    ##Add More rules for """ + vcn_tf_name + """##
+                """
+                default_rtables_done[region].append(rt_tf_name)
+            if(dest_objs[0]!=""):
+                default_ruleStr[region]=default_ruleStr[region]+"""
+                    route_rules {
+                        destination =\"""" + dest_cidr + """\"
+                        network_entity_id = \"""" + dest_obj + """\"
+                        destination_type = \"""" + dest_type + """\"
+                    }
+                    """
+            continue
+
+        #Process other route tables
+        outfile = outdir + "/" + region + "/"+rt_tf_name+"_routetable.tf"
+        if(rt_tf_name not in subnets_done[region] or len(subnets_done[region])==0):
             if (tfStr!= ''):
                 tfStr = tfStr + """
         }"""
@@ -136,25 +165,22 @@ if('.xls' in inputfile):
             oname=open(outfile,'w')
 
             tfStr= tfStr + """
-    resource "oci_core_route_table" \"""" + rt_var + """"{
+    resource "oci_core_route_table" \"""" + rt_tf_name + """"{
         compartment_id = "${var.""" + comp_name + """}"
-        vcn_id = "${oci_core_vcn.""" + vcn_name + """.id}"
+        vcn_id = "${oci_core_vcn.""" + vcn_tf_name + """.id}"
         display_name = \"""" +display_name +  """"
         
-        ##Add More rules for subnet """ + rt_var+ """##
+        ##Add More rules for subnet """ + rt_tf_name+ """##
         """
             if(dest_objs[0]!=""):
                 tfStr=tfStr+"""
-        
         route_rules {
-            
                 destination =\"""" + dest_cidr + """\"
                 network_entity_id = \"""" + dest_obj + """\"
                 destination_type = \"""" + dest_type + """\"
             }
             """
-            subnets_done[region].append(vcn_name+"_"+subnet_name)
-
+            subnets_done[region].append(rt_tf_name)
         else:
             if (dest_objs[0] != ""):
                 tfStr=tfStr+"""
@@ -164,11 +190,18 @@ if('.xls' in inputfile):
                 destination_type = \"""" + dest_type + """\"
             }
             """
+
     tfStr = tfStr + """
         }"""
     if (oname != None):
         oname.write(tfStr)
         oname.close()
+    for reg in vcnInfo.all_regions:
+        if (default_ruleStr[reg] != ''):
+            default_ruleStr[reg] = default_ruleStr[reg] + """
+        }"""
+            defaultname[reg].write(default_ruleStr[reg])
+            defaultname[reg].close()
 
 # If input is a csv file
 """
@@ -230,12 +263,7 @@ elif ('.csv' in inputfile):
             searchString = "##Add More rules for subnet "+rt_var+"##"
             strRule = ""
             strRule = strRule+"""
-"""             route_rules {
-                destination = \"""" + dest_cidr + """\"
-                network_entity_id = \"""" + dest_obj + """\"
-                destination_type = \"""" + dest_type + """\"
-                }
-                """
+"""       ##missing content##      """
 """             strRule1 = strRule + "##Add More rules for subnet " +rt_var+"##"
 
             outfile = outdir + "/" + region + "/" + rt_var + "_routetable.tf"
