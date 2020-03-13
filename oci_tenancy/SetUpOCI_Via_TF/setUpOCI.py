@@ -74,10 +74,10 @@ if(input_format=='csv'):
 
 if (input_nongf_tenancy.lower() == 'true'):
     print("\nnon_gf_tenancy in properties files is set to true..Export existing Network objects and Synch with TF\n")
-    print("1. Export Identity Objects(Comaprtments, Groups, Policies) to CD3 and create TF Files")
+    print("1. Export Identity Objects(Compartments, Groups, Policies) to CD3 and create TF Files")
     print("2. Export Network Objects(VCNs, Subnets, Security Lists, Route Tables) to CD3 and create TF Files")
     print("3. Run bash script to import objects to TF state")
-    userInput = input('Enter multiple choices: ')
+    userInput = input('Enter your choice: multiple allowed ')
     if ("1" in userInput):
         input_comp = input("Enter name of Compartment as it appears in OCI (comma seperated without spaces if multiple)for which you want to export network objects;\nLeave blank if want to export for all Compartments: ")
 
