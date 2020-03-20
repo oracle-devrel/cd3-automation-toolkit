@@ -6,6 +6,8 @@ import argparse
 import re
 import pandas as pd
 import os
+sys.path.append(os.getcwd()+"/../..")
+from commonTools import *
 
 
 def copy_template_file(hostname, operatingsystem,region):
@@ -87,6 +89,12 @@ if('.xls' in filename):
         for i in df.keys():
             if(str(df[i][j]) in endNames):
                 exit()
+            if (re.match('subnet name', i, flags=re.IGNORECASE)):
+                subnet_name = str(df[i][j])
+                subnet_name_tf = commonTools.tfname.sub("-", subnet_name)
+                replaceAllplaceholders(outdir + '/' + df['Region'][j].strip().lower() + '/' + df['Hostname'][j] + '.tf','##' + i + '##', subnet_name_tf)
+
+
             if(re.match('Region', i, flags=re.IGNORECASE)):
                 region = str(df[i][j])
                 region = region.strip().lower()

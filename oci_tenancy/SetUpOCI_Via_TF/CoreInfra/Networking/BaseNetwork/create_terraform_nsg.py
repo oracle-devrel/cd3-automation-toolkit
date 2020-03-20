@@ -32,6 +32,10 @@ import argparse
 from cd3parser import CD3Parser as cd3parser
 import os
 import pandas as pd
+import sys
+sys.path.append(os.getcwd()+"/../../..")
+from commonTools import *
+
 
 DEBUG = False
 
@@ -125,7 +129,6 @@ DestType': 6, 'Destination': 7, 'SPortMin': 8, 'SPortMax': 9, 'DPortMin': 10, 'D
 # templates to build NSG and NSG_Sec_Rules Terraform
 def NSGtemplate(nsgParser, key, value, outdir):
     """Required: compartment_id and vcn_id"""
-    region = key[0]
 
     resource_group = ( \
         "resource \"oci_core_network_security_group\" \"{}\" {{\n"
@@ -133,7 +136,7 @@ def NSGtemplate(nsgParser, key, value, outdir):
         "    compartment_id = \"${{var.{}}}\"\n"
         "    vcn_id = \"${{oci_core_vcn.{}.id}}\"\n"
         "}}\n" \
-        ).format("{}".format(key[2]), key[2],key[0], key[1])
+        ).format("{}".format(key[2]), key[2],key[0], commonTools.tfname.sub("-", key[1]))
     with open(outdir + "/{}_nsg.tf".format(key[2]), 'w') as f:
         f.write(resource_group)
         ruleindex = 1

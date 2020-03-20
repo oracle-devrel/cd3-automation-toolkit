@@ -8,6 +8,8 @@ import sys
 import argparse
 import pandas as pd
 import os
+sys.path.append(os.getcwd()+"/../../..")
+from commonTools import *
 
 
 parser = argparse.ArgumentParser(description="Creates TF files for LBR")
@@ -56,9 +58,9 @@ for i in df.index:
     lbr_subnets= lbr_subnets.split(",")
     subnet_ids=""
     if(len(lbr_subnets)==1):
-        subnet_ids="oci_core_subnet."+lbr_subnets[0].strip()+".id"
+        subnet_ids="oci_core_subnet."+commonTools.tfname.sub("-", lbr_subnets[0].strip())+".id"
     elif(len(lbr_subnets)==2):
-        subnet_ids="oci_core_subnet."+lbr_subnets[0].strip()+".id,oci_core_subnet."+lbr_subnets[1].strip()+".id"
+        subnet_ids="oci_core_subnet."+commonTools.tfname.sub("-", lbr_subnets[0].strip())+".id,oci_core_subnet."+commonTools.tfname.sub("-", lbr_subnets[1].strip())+".id"
 
     lbr_is_private = df.iat[i, 5]
     lbr_be_servers = df.iat[i, 6].strip()
@@ -99,6 +101,10 @@ for i in df.index:
     lbr_bs_name=lbr_name.strip()+"_bs"
     lbr_listner_name = lbr_name.strip() + "_listner"
 
+    if(lbr_is_private==0.0):
+        lbr_is_private="false"
+    elif(lbr_is_private==1.0):
+        lbr_is_private="true"
     tempStr= """
     #Create LBR
     resource "oci_load_balancer_load_balancer" \"""" + lbr_name.strip() + """" {
@@ -217,11 +223,11 @@ for i in df.index:
 }
 """
 
-outfile = outdir + "/" + region + "/" + lbr_name.strip() + "_lbr.tf"
-oname = open(outfile, "w")
-print("Writing " + outfile)
-oname.write(tempStr)
-oname.close()
+    outfile = outdir + "/" + region + "/" + lbr_name.strip() + "_lbr.tf"
+    oname = open(outfile, "w")
+    print("Writing " + outfile)
+    oname.write(tempStr)
+    oname.close()
 
 #Remove temporary file created
 if('tmp_to_excel.xlsx' in filename):

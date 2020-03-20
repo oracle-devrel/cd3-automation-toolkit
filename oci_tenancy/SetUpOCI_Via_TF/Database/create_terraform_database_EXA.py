@@ -8,7 +8,8 @@ import argparse
 import pandas as pd
 import os
 import datetime
-import csv
+sys.path.append(os.getcwd()+"/..")
+from commonTools import *
 
 x = datetime.datetime.now()
 date = x.strftime("%S").strip()
@@ -225,8 +226,10 @@ elif ('.csv' in filename):
             database_auto_backup_option = linearr[19].strip()
 
             database_subnet_name = linearr[2].strip()
+            database_subnet_name = commonTools.tfname.sub("-", database_subnet_name.strip())
 
             database_ssh_key = linearr[20].strip()
+
 
             database_character_set = linearr[21].strip()
 
@@ -237,6 +240,7 @@ elif ('.csv' in filename):
             Recovery_Windows_in_days = str(Recovery_Windows_in_days_int)
 
             database_backup_subnet_name = linearr[24].strip()
+            database_backup_subnet_name = commonTools.tfname.sub("-", database_backup_subnet_name.strip())
 
             if (database_auto_backup_option.lower() == 'yes'):
                 database_auto_backup_option = "true"
