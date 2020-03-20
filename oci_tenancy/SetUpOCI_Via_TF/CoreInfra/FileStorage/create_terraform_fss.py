@@ -10,6 +10,9 @@ import pandas as pd
 import os
 import shutil
 import datetime
+sys.path.append(os.getcwd()+"/../..")
+from commonTools import *
+
 
 parser = argparse.ArgumentParser(description="Creates TF files for FSS")
 parser.add_argument("inputfile",help="Full Path to the CSV file for creating fss or CD3 excel file. eg fss.csv or CD3-template.xlsx in example folder")
@@ -85,7 +88,7 @@ for i in df.index:
             or str(mount_target_subnet).lower()==NaNstr.lower() or str(fss_name).lower()==NaNstr.lower() or str(path).lower()==NaNstr.lower()):
         print("Columns Compartment Name, Availability Domain, MountTarget Name, MountTarget Subnet, Max FSS Capacity, Max FSS Inodes, FSS Name and path cannot be left blank..exiting...")
         exit(1)
-
+    mount_target_subnet = commonTools.tfname.sub("-", mount_target_subnet.strip())
     AD = str(AD).strip().upper()
     ad = ADS.index(AD)
     if(str(sourceCIDR).lower()==NaNstr.lower()):
@@ -124,7 +127,7 @@ for i in df.index:
         resource "oci_file_storage_mount_target" \"""" + mount_target_name.strip() + """" {
             availability_domain = "${data.oci_identity_availability_domains.ADs.availability_domains.""" + str(ad) + """.name}"
             compartment_id = "${var.""" + compartment_name.strip() + """}"
-            subnet_id = "${oci_core_subnet.""" + mount_target_subnet.strip() + """.id}"
+            subnet_id = "${oci_core_subnet.""" + mount_target_subnet + """.id}"
             display_name = \"""" + mount_target_name.strip() + """"
             """
         if(str(mount_target_ip).lower()!=NaNstr.lower()):

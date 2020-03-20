@@ -43,6 +43,10 @@ if(input_format=='cd3'):
         if(input_cd3file==''):
             print("input cd3file location cannot be left blank. Exiting... ")
             exit(1)
+        elif(".xls" not in input_cd3file):
+            print("valid formats for input cd3file are either .xls or .xlsx")
+            exit(1)
+
     except Exception as e:
         print(e)
         print('Check if input properties exist and try again..exiting...`    ')

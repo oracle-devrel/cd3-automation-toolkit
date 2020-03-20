@@ -56,9 +56,9 @@ def print_dhcp(region, comp_name, vcn_name, dhcp):
             server_type=option.server_type
             custom_dns_servers=option.custom_dns_servers
             for custom_dns_server in custom_dns_servers:
-                custom_dns_servers_str = custom_dns_server +","+custom_dns_servers_str
-            if (custom_dns_servers_str!="" and custom_dns_servers_str[-1] == ','):
-                custom_dns_servers_str = custom_dns_servers_str[:-1]
+                custom_dns_servers_str = custom_dns_servers_str+","+custom_dns_server
+            if (custom_dns_servers_str!="" and custom_dns_servers_str[0] == ','):
+                custom_dns_servers_str = custom_dns_servers_str[1:]
         if(option.type=="SearchDomain"):
             search_domain_names=option.search_domain_names
             search_domain_names_str=search_domain_names[0]
