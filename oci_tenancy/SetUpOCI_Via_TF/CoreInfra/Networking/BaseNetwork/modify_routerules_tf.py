@@ -16,7 +16,6 @@ from commonTools import *
 parser = argparse.ArgumentParser(description="Updates routelist for subnet. It accepts input file which contains new rules to be added to the existing rule list of the subnet.")
 parser.add_argument("inputfile", help="Required; Full Path to input route file (either csv or CD3 excel file) containing rules to be updated; See example folder for sample format: add_routes-example.txt")
 parser.add_argument("outdir",help="directory path for output tf files ")
-parser.add_argument("--nongf_tenancy", help="non greenfield tenancy: true or false", required=False)
 
 
 if len(sys.argv) == 1:
@@ -27,11 +26,6 @@ if len(sys.argv) == 1:
 args = parser.parse_args()
 inputfile = args.inputfile
 outdir=args.outdir
-
-if args.nongf_tenancy is not None:
-    nongf_tenancy = "true"
-else:
-    nongf_tenancy = "false"
 
 data=""
 tfStr=''

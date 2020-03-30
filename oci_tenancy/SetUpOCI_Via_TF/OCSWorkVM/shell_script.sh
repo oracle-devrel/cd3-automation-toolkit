@@ -27,7 +27,8 @@ pip3 install xlsxwriter
 pip3 install puttykeys
 pip3 install netaddr
 pip3 install cfgparse
-
+pip3 install ipaddr
+pip3 install paramiko
 
 ## Needed for conversion from putty ppk to openssh
 sudo yum install -y putty

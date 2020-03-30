@@ -245,10 +245,10 @@ def get_vcn_id(config,compartment_id,vcn_display_name):
             return vcn.id
 """
 parser = argparse.ArgumentParser(description="Takes in an input file mentioning sec rules to be added for the subnet. See update_seclist-example.csv/CD3 for format under example folder. It will then take backup of all existing sec list files in outdir and create new one with modified rules")
-parser.add_argument("inputfile",help="Full Path of vcn info file: It could be either the properties file eg vcn-info.properties or CD3 excel file")
+parser.add_argument("inputfile",help="Full Path of input file: It could be either the properties file eg vcn-info.properties or CD3 excel file")
 parser.add_argument("outdir",help="directory path for output tf files ")
 parser.add_argument("secrulesfile",help="Input file(either csv or CD3 excel) containing new secrules to be added for Security List of a given subnet")
-parser.add_argument("--nongf_tenancy", help="non greenfield tenancy: true or false", required=False)
+
 
 
 if len(sys.argv)==1:
@@ -259,10 +259,6 @@ args = parser.parse_args()
 
 secrulesfilename = args.secrulesfile
 outdir = args.outdir
-if args.nongf_tenancy is not None:
-    nongf_tenancy = "true"
-else:
-    nongf_tenancy = "false"
 
 
 seclists_done={}

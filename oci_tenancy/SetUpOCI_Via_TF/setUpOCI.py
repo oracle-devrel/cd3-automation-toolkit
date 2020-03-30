@@ -242,6 +242,30 @@ if (input_nongf_tenancy.lower() == 'true'):
     #else:
     #    print("Invalid Choice!!")
     exit()
+if (input_format == 'cd3'):
+    inputfile = input_cd3file
+
+    cd3validate = input("Do you want to verify CD3 for any wrong inputs before proceeding. Enter y or n: ")
+    if(cd3validate=='y'):
+        print("It will verify tabs: VCNs, DHCP and Subnets in excel sheet\n")
+        if (input_config_file == ''):
+            command = 'python cd3Validator.py ' + inputfile
+            print("Executing Command: " + command)
+            exitval=os.system(command)
+        else:
+            command = 'python cd3Validator.py ' + inputfile + ' --configFileName ' + input_config_file
+            print("Executing Command: " + command)
+            exitval=os.system(command)
+        print("\n")
+        if(exitval==1):
+            print("Exiting...")
+            exit()
+    elif(cd3validate=='n'):
+        pass
+    else:
+        print("wrong input")
+        exit(1)
+
 
 print("1.  Identity")
 print("2.  Networking")

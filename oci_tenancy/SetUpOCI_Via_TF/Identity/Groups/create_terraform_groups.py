@@ -20,6 +20,8 @@ from commonTools import *
 # outfile is the name of output terraform file generated
 ######
 
+## Start Processing
+
 parser = argparse.ArgumentParser(description="Create Groups terraform file")
 parser.add_argument("inputfile", help="Full Path of input file. It could be either the csv file or CD3 excel file")
 parser.add_argument("outdir", help="Output directory for creation of TF files")
@@ -30,32 +32,46 @@ if len(sys.argv)<3:
         parser.print_help()
         sys.exit(1)
 
+#Declare variables
 args = parser.parse_args()
 filename=args.inputfile
 outdir=args.outdir
 prefix=args.prefix
-
 outfile={}
 oname={}
 tfStr={}
 
+#If input is cd3 file
 if('.xls' in args.inputfile):
+    # Get vcnInfo object from commonTools
     vcnInfo = parseVCNInfo(args.inputfile)
+
+    # Read cd3 using pandas dataframe
     df = pd.read_excel(args.inputfile, sheet_name='Groups',skiprows=1)
+
+    #Remove empty rows
     df = df.dropna(how='all')
     df = df.reset_index(drop=True)
+
+    # Initialise empty TF string for each region
     for reg in vcnInfo.all_regions:
         tfStr[reg] = ''
 
+    # Iterate over rows
     for i in df.index:
         region=df.iat[i,0]
+
+        # Encountered <End>
         if (region in commonTools.endNames):
             break
         region=region.strip().lower()
+
+        # If some invalid region is specified in a row which is not part of VCN Info Tab
         if region not in vcnInfo.all_regions:
             print("Invalid Region; It should be one of the values mentioned in VCN Info tab")
             exit(1)
 
+        # Fetch column values for each row
         group_name = df.iat[i, 1]
         group_desc = df.iat[i, 2]
         if(str(group_name).lower()!= "nan"):
@@ -63,8 +79,11 @@ if('.xls' in args.inputfile):
             group_name = group_name.strip()
             group_tf_name = commonTools.tfname.sub("-", group_name)
 
+            # If description field is empty; put name as description
             if (str(group_desc).lower() == "nan"):
                 group_desc = group_name
+
+            # Write all info to TF string
             tfStr[region]=tfStr[region] + """
 resource "oci_identity_group" \"""" +group_tf_name + """" {
 	    compartment_id = "${var.tenancy_ocid}"
@@ -110,6 +129,7 @@ else:
     print("Invalid input file format; Acceptable formats: .xls, .xlsx, .csv")
     exit()
 
+#Write TF string to the file in respective region directory
 for reg in vcnInfo.all_regions:
     reg_out_dir = outdir + "/" + reg
     if not os.path.exists(reg_out_dir):
