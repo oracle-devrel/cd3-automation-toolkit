@@ -286,10 +286,10 @@ class parseVCNs():
                 self.vcn_names.append(vcn_name)
 
                 # Check to see if vcn_name is empty in VCNs Sheet
-                if (str(vcn_name).lower() == 'nan'):
-                    print("ERROR!!! vcn_name/row cannot be left empty in VCNs sheet in CD3..exiting...")
-                    exit(1)
-                vcn_name = vcn_name.strip()
+                #if (str(vcn_name).lower() == 'nan'):
+                #    print("ERROR!!! vcn_name/row cannot be left empty in VCNs sheet in CD3..exiting...")
+                #    exit(1)
+                vcn_name = str(vcn_name).strip()
                 if str(df_vcn['hub_spoke_peer_none'][i]).strip().split(":")[0].strip().lower() == 'hub':
                     self.peering_dict[vcn_name]=""
 
@@ -302,10 +302,10 @@ class parseVCNs():
                 self.vcn_names.append(vcn_name)
 
                 # Check to see if vcn_name is empty in VCNs Sheet
-                if (str(vcn_name).lower() == 'nan'):
-                    print("ERROR!!! vcn_name/row cannot be left empty in VCNs sheet in CD3..exiting...")
-                    exit(1)
-                vcn_name=vcn_name.strip()
+                #if (str(vcn_name).lower() == 'nan'):
+                #    print("ERROR!!! vcn_name/row cannot be left empty in VCNs sheet in CD3..exiting...")
+                #    exit(1)
+                vcn_name=str(vcn_name).strip()
 
                 region = str(region).strip().lower()
                 self.vcn_region[vcn_name] = region
