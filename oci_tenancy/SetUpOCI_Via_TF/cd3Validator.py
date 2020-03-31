@@ -321,7 +321,7 @@ def validate_vcn_names(filename,present):
     return present
 
 #Check if subnets tab is compliant
-def subnets(filename,present):
+def subnets(filename,present,comp_ids):
 
     # Read the Subnets tab from excel
     df = pd.read_excel(filename, sheet_name='Subnets', skiprows=1)
@@ -339,6 +339,12 @@ def subnets(filename,present):
     #Loop through each row
     for i in df.index:
         count = count + 1
+        comp_name = str(df[df.columns[1]][i])
+        try:
+            comp_id = comp_ids[comp_name]
+        except KeyError:
+            print("Compartment with name \"" + comp_name + "\" specified at row " + str(i+3) + " doesnot exist. Make sure it exists in OCI and fetch_compartments_to_variablesTF.py has been run.")
+            continue
         #print("ROW  " + str(count)+":")
         for j in df.keys():
 
@@ -400,7 +406,7 @@ def vcns(filename,present,comp_ids,vcn_ids,vcn_cidrs,vcn_compartment_ids):
         try:
             comp_id=comp_ids[comp_name]
         except KeyError:
-            print("Compartment with name \"" + comp_name + "\" does not exist. Make sure it exists in OCI and fetch_compartments_to_variablesTF.py has been run.")
+            print("Compartment with name \"" + comp_name + "\" specified at row "+ str(i+3) +" doesnot exist. Make sure it exists in OCI and fetch_compartments_to_variablesTF.py has been run.")
             continue
         try:
             vcn_id=vcn_ids[vcn_name]
@@ -507,7 +513,7 @@ def vcns(filename,present,comp_ids,vcn_ids,vcn_cidrs,vcn_compartment_ids):
     return present
 
 #Checks if the fields in DHCP tab are compliant
-def dhcp(filename,present):
+def dhcp(filename,present,comp_ids):
     #Read DHCP tab from excel
     df = pd.read_excel(filename, sheet_name='DHCP', skiprows=1)
     #Drop null values
@@ -523,6 +529,13 @@ def dhcp(filename,present):
     print("\n-------------------------Start Checking for null or wrong values in each row----------------")
     for i in df.index:
         count = count + 1
+        comp_name = str(df[df.columns[1]][i])
+        try:
+            comp_id = comp_ids[comp_name]
+        except KeyError:
+            print("Compartment with name \"" + comp_name + "\" specified at row " + str(i+3) + " doesnot exist. Make sure it exists in OCI and fetch_compartments_to_variablesTF.py has been run.")
+            continue
+
         #print("ROW  " + str(count) + ":")
         for j in df.keys():
 
@@ -562,11 +575,11 @@ def main():
     vcnprescidr = validate_vcn_names(filename, present)
 
     print("\n============================= Verifying Subnets Tab ==========================================")
-    subpres = subnets(filename,present)
+    subpres = subnets(filename,present,comp_ids)
     subprescidr = validate_subnet_cidr(filename,present)
 
     print("\n============================= Verifying DHCP Tab ==========================================")
-    dhcps = dhcp(filename,present)
+    dhcps = dhcp(filename,present,comp_ids)
     #Prints the final result; once the validation is complete
     if subprescidr == True or subpres == True or vcnpres == True  or vcnprescidr == True or vcn == True or dhcps == True:
         print("\n")
