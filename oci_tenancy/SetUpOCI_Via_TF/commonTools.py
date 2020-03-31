@@ -280,7 +280,7 @@ class parseVCNs():
             # Create VCN details Dicts and Hub and Spoke VCN Names
             for i in df_vcn.index:
                 region = df_vcn['Region'][i]
-                if (region in commonTools.endNames or str(region).lower() == 'nan'):
+                if (region in commonTools.endNames):# or str(region).lower() == 'nan'):
                     break
                 vcn_name = df_vcn['vcn_name'][i]
                 self.vcn_names.append(vcn_name)
@@ -296,7 +296,7 @@ class parseVCNs():
 
             for i in df_vcn.index:
                 region = df_vcn['Region'][i]
-                if (region in commonTools.endNames or str(region).lower()=='nan'):
+                if (region in commonTools.endNames):# or str(region).lower()=='nan'):
                     break
                 vcn_name = df_vcn['vcn_name'][i]
                 self.vcn_names.append(vcn_name)
@@ -306,7 +306,8 @@ class parseVCNs():
                     print("ERROR!!! vcn_name/row cannot be left empty in VCNs sheet in CD3..exiting...")
                     exit(1)
                 vcn_name=vcn_name.strip()
-                region = region.strip().lower()
+
+                region = str(region).strip().lower()
                 self.vcn_region[vcn_name] = region
 
                 self.vcn_lpg_names[vcn_name] = str(df_vcn['lpg_required'][i]).strip().split(",")

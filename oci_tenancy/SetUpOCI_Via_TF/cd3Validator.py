@@ -112,8 +112,6 @@ def showPeering(vcnsob,oci_vcn_lpgs):
                 logging.log(60,"ERROR!!! " + right_vcn_lpg + " for vcn "+right_vcn+"  already exists in OCI. Use another name")
                 present =True
 
-
-
     return present
 
 # Checks for duplicates
@@ -238,7 +236,7 @@ def validate_subnet_cidr(filename):
         return False
 
 #Check if subnets tab is compliant
-def validate_subnets(filename,comp_ids,vcnobj):
+def validate_subnets(filename,comp_ids,vcnobj,vcnInfoobj):
 
     # Read the Subnets tab from excel
     df = pd.read_excel(filename, sheet_name='Subnets', skiprows=1)
@@ -254,6 +252,7 @@ def validate_subnets(filename,comp_ids,vcnobj):
     subnet_empty_check=False
     subnet_wrong_check=False
     subnet_comp_check=False
+    subnet_reg_check=False
     subnet_vcn_check=False
     subnet_dns=[]
 
@@ -266,6 +265,12 @@ def validate_subnets(filename,comp_ids,vcnobj):
             logging.log(60,"Reached <END> Tag. Validation ends here, any data beyond this tag will not be checked for errors !!!")
             break
 
+        # Check for invalid Region
+        region = str(df[df.columns[0]][i])
+        if (region.lower()!="nan" and region.lower() not in vcnInfoobj.all_regions):
+            logging.log(60, "ROW " + str(i + 3) + " : Region " + region + " not declared in VCN Info Tab")
+            subnet_reg_check = True
+
         #Check for invalid compartment name
         comp_name = str(df[df.columns[1]][i])
         try:
@@ -276,7 +281,7 @@ def validate_subnets(filename,comp_ids,vcnobj):
 
         #Check for invalid VCN name
         vcn_name=str(df[df.columns[2]][i])
-        if(vcn_name not in vcnobj.vcn_names):
+        if(vcn_name.lower()!="nan" and vcn_name not in vcnobj.vcn_names):
             logging.log(60,"ROW "+str(i+3) + " : VCN "+vcn_name+" not part of VCNs Tab")
             subnet_vcn_check=True
 
@@ -305,11 +310,11 @@ def validate_subnets(filename,comp_ids,vcnobj):
                 if j == str(df.columns[16]) or j == str(df.columns[7]):
                     pass
                 else:
-                    logging.log(60,"ROW  " + str(count+2) + " : Empty value at column " +j)
+                    logging.log(60,"ROW " + str(count+2) + " : Empty value at column " +j)
                     subnet_empty_check = True
 
     logging.log(60,"End Null or Wrong value Check in each row------------------\n")
-    if(subnet_vcn_check==True or subnet_comp_check==True or subnet_empty_check==True or subnet_dnswrong_check==True or subnet_wrong_check==True or subnet_dnsdup_check==True):
+    if(subnet_reg_check==True or subnet_vcn_check==True or subnet_comp_check==True or subnet_empty_check==True or subnet_dnswrong_check==True or subnet_wrong_check==True or subnet_dnsdup_check==True):
         print("Null or Wrong value Check failed!!")
         return True
     else:
@@ -317,7 +322,7 @@ def validate_subnets(filename,comp_ids,vcnobj):
 
 
 #Check if VCNs tab is compliant
-def validate_vcns(filename,comp_ids,vcn_ids,vcnobj):#,vcn_cidrs,vcn_compartment_ids):
+def validate_vcns(filename,comp_ids,vcn_ids,vcnobj,vcnInfoobj):#,vcn_cidrs,vcn_compartment_ids):
     #Read the VCNs tab from excel
     df = pd.read_excel(filename, sheet_name='VCNs', skiprows=1)
     # Drop null values
@@ -331,9 +336,9 @@ def validate_vcns(filename,comp_ids,vcn_ids,vcnobj):#,vcn_cidrs,vcn_compartment_
     vcn_dnswrong_check=False
     vcn_dnsdup_check=False
     vcn_comp_check=False
+    vcn_reg_check=False
 
     vcn_check=False
-    vcn_peer_check=False
 
     #Check if the column dns_label has duplicate values
     #present = checkduplicatednslabel(df,str(df.columns[10]), "VCNs",present)
@@ -348,6 +353,12 @@ def validate_vcns(filename,comp_ids,vcn_ids,vcnobj):#,vcn_cidrs,vcn_compartment_
             logging.log(60,"Reached <END> Tag. Validation ends here, any data beyond this tag will not be checked for errors !!!")
             break
 
+        # Check for invalid Region
+        region=str(df[df.columns[0]][i])
+        if(region.lower()!="nan" and region.lower() not in vcnInfoobj.all_regions):
+            logging.log(60, "ROW " + str(i + 3) + " : Region " + region + " not declared in VCN Info Tab")
+            vcn_reg_check=True
+
         #Check for invalid Compartment Name
         comp_name = str(df[df.columns[1]][i])
         try:
@@ -355,6 +366,7 @@ def validate_vcns(filename,comp_ids,vcn_ids,vcnobj):#,vcn_cidrs,vcn_compartment_
         except KeyError:
             logging.log(60,"ROW "+str(i+3)+" : Compartment " + comp_name + " doesnot exist in OCI")
             vcn_comp_check=True
+
 
         # Check if the dns_label field has special characters
         dns_value = str(df[str(df.columns[10])][i])
@@ -375,7 +387,7 @@ def validate_vcns(filename,comp_ids,vcn_ids,vcnobj):#,vcn_cidrs,vcn_compartment_
                     logging.log(60,"ROW " + str(count+2) + " : Empty value at column " + j)
                     vcn_empty_check = True
 
-    if (vcn_comp_check==True or vcn_empty_check == True or vcn_dnswrong_check ==True or vcn_dnsdup_check==True):
+    if (vcn_reg_check==True or vcn_comp_check==True or vcn_empty_check == True or vcn_dnswrong_check ==True or vcn_dnsdup_check==True):
         print("Null or Wrong value Check failed!!")
         vcn_check=True
     logging.log(60,"End Null or Wrong value Check in each row---------------\n")
@@ -388,7 +400,6 @@ def validate_vcns(filename,comp_ids,vcn_ids,vcnobj):#,vcn_cidrs,vcn_compartment_
     for i in df.index:
         # Check for <END> in the inputs; if found the validation ends there and return the status of flag
         if str(df[df.columns[0]][i]) in commonTools.endNames:
-            logging.log(60,"Reached <END> Tag. Validation ends here, any data beyond this tag will not be checked for errors !!!")
             break
 
         #Fetches current LPGs for each VCN and show its status
@@ -433,7 +444,7 @@ def validate_vcns(filename,comp_ids,vcn_ids,vcnobj):#,vcn_cidrs,vcn_compartment_
     return vcn_check,vcn_peer_check
 
 #Checks if the fields in DHCP tab are compliant
-def validate_dhcp(filename,comp_ids,vcnobj):
+def validate_dhcp(filename,comp_ids,vcnobj,vcnInfoobj):
     #Read DHCP tab from excel
     df = pd.read_excel(filename, sheet_name='DHCP', skiprows=1)
     #Drop null values
@@ -446,6 +457,7 @@ def validate_dhcp(filename,comp_ids,vcnobj):
     dhcp_wrong_check=False
     dhcp_comp_check=False
     dhcp_vcn_check=False
+    dhcp_reg_check=False
     # Counter to fetch the row number
     count = 0
 
@@ -458,6 +470,13 @@ def validate_dhcp(filename,comp_ids,vcnobj):
             logging.log(60,"Reached <END> Tag. Validation ends here, any data beyond this tag will not be checked for errors !!!")
             break
 
+        # Check for invalid Region
+        region = str(df[df.columns[0]][i])
+
+        if (region.lower()!="nan" and region.lower() not in vcnInfoobj.all_regions):
+            logging.log(60, "ROW " + str(i + 3) + " : Region " + region + " not declared in VCN Info Tab")
+            dhcp_reg_check = True
+
         #Check for invalid compartment name
         comp_name = str(df[df.columns[1]][i])
         try:
@@ -468,7 +487,7 @@ def validate_dhcp(filename,comp_ids,vcnobj):
 
         # Check for invalid VCN name
         vcn_name = str(df[df.columns[2]][i])
-        if (vcn_name not in vcnobj.vcn_names):
+        if (vcn_name.lower()!="nan" and vcn_name not in vcnobj.vcn_names):
             logging.log(60, "ROW " + str(i + 3) + " : VCN "+vcn_name+" not part of VCNs Tab")
             dhcp_vcn_check = True
 
@@ -487,7 +506,7 @@ def validate_dhcp(filename,comp_ids,vcnobj):
                     logging.log(60,"ROW " + str(count+2) + " : Empty value at column " + j)
                     dhcp_empty_check = True
     logging.log(60,"End Null or Wrong value Check in each row-----------------\n")
-    if (dhcp_vcn_check==True or dhcp_wrong_check == True or dhcp_comp_check==True or dhcp_empty_check==True):
+    if (dhcp_reg_check==True or dhcp_vcn_check==True or dhcp_wrong_check == True or dhcp_comp_check==True or dhcp_empty_check==True):
         print("Null or Wrong value Check failed!!")
         return True
     else:
@@ -497,22 +516,23 @@ def main():
     #CD3 Validation begins here for Sunbnets, VCNs and DHCP tabs
     #Flag to check if for errors
     vcnobj = parseVCNs(filename)
+    vcnInfoobj = parseVCNInfo(filename)
 
     logging.log(60,"============================= Verifying VCNs Tab ==========================================\n")
     print("\nProcessing VCNs Tab..")
     comp_ids = get_network_compartment_id(config)
     vcn_ids = get_vcn_ids(comp_ids, config)
-    vcn_check,vcn_peer_check = validate_vcns(filename, comp_ids, vcn_ids,vcnobj)
+    vcn_check,vcn_peer_check = validate_vcns(filename, comp_ids, vcn_ids,vcnobj,vcnInfoobj)
     vcn_cidr_check = validate_vcn_cidr(filename)
 
     logging.log(60,"============================= Verifying Subnets Tab ==========================================\n")
     print("\nProcessing Subnets Tab..")
-    subnet_check = validate_subnets(filename,comp_ids,vcnobj)
+    subnet_check = validate_subnets(filename,comp_ids,vcnobj,vcnInfoobj)
     subnet_cidr_check = validate_subnet_cidr(filename)
 
     logging.log(60,"============================= Verifying DHCP Tab ==========================================\n")
     print("\nProcessing DHCP Tab..")
-    dhcp_check = validate_dhcp(filename,comp_ids,vcnobj)
+    dhcp_check = validate_dhcp(filename,comp_ids,vcnobj,vcnInfoobj)
 
     #Prints the final result; once the validation is complete
     if vcn_check == True or vcn_peer_check == True or vcn_cidr_check == True  or subnet_check == True or subnet_cidr_check == True or dhcp_check == True:
