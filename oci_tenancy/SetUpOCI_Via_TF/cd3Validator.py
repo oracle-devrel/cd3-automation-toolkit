@@ -400,11 +400,7 @@ def vcns(filename,present,comp_ids,vcn_ids,vcn_cidrs,vcn_compartment_ids):
         try:
             comp_id=comp_ids[comp_name]
         except KeyError:
-            lpg=vcnsob.vcn_lpg_names[vcn_name][0]
-            if(lpg!='n'):
-                print("Compartment with name \"" + comp_name + "\" does not exist. So the VCN " + vcn_name + " and its LPGs: "+str(vcnsob.vcn_lpg_names[vcn_name]) +" will be created new")
-            else:
-                print("Compartment with name \"" + comp_name + "\" does not exist. So the VCN " + vcn_name+" will be created new")
+            print("Compartment with name \"" + comp_name + "\" does not exist. Make sure it exists in OCI and fetch_compartments_to_variablesTF.py has been run.")
             continue
         try:
             vcn_id=vcn_ids[vcn_name]
