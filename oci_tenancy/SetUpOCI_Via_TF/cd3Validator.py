@@ -42,12 +42,6 @@ logging.addLevelName(60,"custom")
 logging.basicConfig(filename="cd3Validator.log",filemode="w",format="%(asctime)s - %(message)s",level=60)
 logger=logging.getLogger("cd3Validator")
 
-#logger.setLevel(logging.INFO)
-#formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-#logFile=logging.FileHandler("cd3Validator.log")
-#logFile.setFormatter(formatter)
-#logger.addHandler(logFile)
-
 
 #Prepares dictionery containing compartments names and its OCIDs
 def get_network_compartment_id(config):
@@ -62,19 +56,6 @@ def get_network_compartment_id(config):
     compartment_ids['root']=config['tenancy']
     return compartment_ids
 
-#Prepares dictionery containing VCN names and its OCIDs
-"""def get_vcn_details(compartment_ids,config):
-    #Fetch the VCN ID
-    vnc = VirtualNetworkClient(config)
-    for comp_id in compartment_ids.values():
-        vcn_list = oci.pagination.list_call_get_all_results(vnc.list_vcns,compartment_id=comp_id)
-        for vcn in vcn_list.data:
-            #if(vcn.lifecycle_state == 'ACTIVE'):
-            vcn_ids[vcn.display_name]=vcn.id
-            vcn_cidrs[vcn.cidr_block]=vcn.display_name
-            vcn_compartment_ids[vcn.display_name]=comp_id
-    return vcn_ids,vcn_cidrs,vcn_compartment_ids
-"""
 def get_vcn_ids(compartment_ids,config):
     #Fetch the VCN ID
     vnc = VirtualNetworkClient(config)
@@ -85,7 +66,7 @@ def get_vcn_ids(compartment_ids,config):
             vcn_ids[vcn.display_name]=vcn.id
     return vcn_ids
 
-#Chceks for special characters in dns_label name
+#Checks for special characters in dns_label name
 def checklabel(lable,count):
     present=False
     lable = str(lable)
@@ -99,19 +80,7 @@ def checklabel(lable,count):
             logging.log(60,"ROW " + str(count+2) + " : dns_label value has special characters")
             present = True
     return present
-#Checks if duplicates are present in dns_label names
-"""def checkduplicatednslabel(df,subset,name,present):
-    df = df.dropna(subset=[subset])
-    duplicateRowsDF = df[df.duplicated([subset],keep=False)]
-    logging.log(60,("Start Checking for Duplicates in DNS Label column--------------------------")
-    if len(duplicateRowsDF[subset]) > 0:
-        rows = list(duplicateRowsDF[subset].index)
-        for row in rows:
-            logging.log(60,"ROW "+str(row+3)+ ": Duplicate dns_label Value "+duplicateRowsDF[subset][row])
-            present = True
-    logging.log(60,"End Checking for Duplicates in DNS Label column---------------------------")
-    return present
-"""
+
 #Shows LPG Peering that will be established based on hub_spoke_peer_none column
 def showPeering(vcnsob,oci_vcn_lpgs):
     present=False
@@ -267,73 +236,6 @@ def validate_subnet_cidr(filename):
         return True
     else:
         return False
-
-#Compare 2 lists for difference in their elements
-def check_item(List1, List2, name):
-    present=False
-    list = []
-    for element in List2:
-        if element not in List1:
-            if element == "nan" or element == "NaN" or element == "Nan":
-                continue
-            else:
-                list.append(element)
-    if len(list)>=1:
-        logging.log(60,"The below VCN names are not present in VCNs tab.Please check the VCN name in " + name + " Tab and try again")
-        logging.log(60,*list, sep = "\n")
-        present = True
-    return present
-
-#Check if the VCN names present in Subnets and DHCP Tabs are present in VCN Tab
-def validate_vcn_names(filename,present):
-    subnet_list = []
-    vcn_list = []
-    dhcp_list = []
-
-    #Read the excel sheets - Subnets, VCNs and DHCP
-    df = pd.read_excel(filename, sheet_name='Subnets', skiprows=1)
-    df = df.dropna(how='all')
-    df = df.reset_index(drop=True)
-
-    dfv = pd.read_excel(filename, sheet_name='VCNs', skiprows=1)
-    dfv = dfv.dropna(how='all')
-    dfv = dfv.reset_index(drop=True)
-
-    dfh = pd.read_excel(filename, sheet_name='DHCP', skiprows=1)
-    dfh = dfh.dropna(how='all')
-    dfh = dfh.reset_index(drop=True)
-    logging.log(60,"Start Validating VCN Names mentioned in the Subnets and DHCP Tabs-------------")
-    #Store the VCN names in each of these sheets in separate lists to compare later
-    for i in dfv.index:
-        if str(dfv[dfv.columns[0]][i]) not in commonTools.endNames:
-            if str(dfv[dfv.columns[2]][i]) == "Nan" or str(dfv[dfv.columns[2]][i]) == "NAN" or str(dfv[dfv.columns[2]][i]) == "nan":
-                continue
-            else:
-                vcn_list.append(str(dfv[dfv.columns[2]][i]))
-
-
-    for i in df.index:
-        if str(df[df.columns[0]][i]) not in commonTools.endNames:
-            if str(df[df.columns[2]][i]) == "Nan" or str(df[df.columns[2]][i]) == "NAN" or str(df[df.columns[2]][i]) == "nan":
-                continue
-            else:
-                subnet_list.append(str(df[df.columns[2]][i]))
-
-
-    for i in dfh.index:
-        if str(dfh[dfh.columns[0]][i]) not in commonTools.endNames:
-            if str(dfh[dfh.columns[2]][i]) == "Nan" or str(dfh[dfh.columns[2]][i]) == "NAN" or str(dfh[dfh.columns[2]][i]) == "nan":
-                continue
-        else:
-            dhcp_list.append(str(dfh[dfh.columns[2]][i]))
-
-    #Check if the vcn names mentioned in Subnets and DHCP Tabs are present in VCN tab as well
-    statevcn = check_item(vcn_list,subnet_list,"Subnets")
-    statedhcp = check_item(vcn_list,dhcp_list,"DHCP")
-    logging.log(60,"End Validating VCN Names mentioned in the Subnets and DHCP Tabs---------------")
-    if statevcn == True or statedhcp == True:
-        return True
-    return present
 
 #Check if subnets tab is compliant
 def validate_subnets(filename,comp_ids,vcnobj):
@@ -595,10 +497,10 @@ def main():
     #CD3 Validation begins here for Sunbnets, VCNs and DHCP tabs
     #Flag to check if for errors
     vcnobj = parseVCNs(filename)
+
     logging.log(60,"============================= Verifying VCNs Tab ==========================================\n")
     print("\nProcessing VCNs Tab..")
     comp_ids = get_network_compartment_id(config)
-    #vcn_ids, vcn_cidrs, vcn_compartment_ids = get_vcn_details(comp_ids, config)
     vcn_ids = get_vcn_ids(comp_ids, config)
     vcn_check,vcn_peer_check = validate_vcns(filename, comp_ids, vcn_ids,vcnobj)
     vcn_cidr_check = validate_vcn_cidr(filename)
@@ -611,6 +513,7 @@ def main():
     logging.log(60,"============================= Verifying DHCP Tab ==========================================\n")
     print("\nProcessing DHCP Tab..")
     dhcp_check = validate_dhcp(filename,comp_ids,vcnobj)
+
     #Prints the final result; once the validation is complete
     if vcn_check == True or vcn_peer_check == True or vcn_cidr_check == True  or subnet_check == True or subnet_cidr_check == True or dhcp_check == True:
         logging.log(60,"=======")
@@ -619,7 +522,7 @@ def main():
         logging.log(60,"ERROR: Make appropriate changes to CD3 Values as per above Errors and try again !!!")
         print("\n\nSummary:")
         print("=======")
-        print("Errors Found!!! Please check cd3Validator.log for details")
+        print("Errors Found!!! Please check cd3Validator.log for details!!")
         exit(1)
     elif vcn_check == False and vcn_peer_check == False and vcn_cidr_check == False  and subnet_check == False and subnet_cidr_check == False and dhcp_check == False:
         logging.log(60,"=======")
@@ -628,7 +531,7 @@ def main():
         logging.log(60,"There are no errors in CD3. Just verify the LPG's Status section for any overlapping LPG declaration. Otherwise You are good to proceed !!!")
         print("\n\nSummary:")
         print("=======")
-        print("There are no errors in CD3. Please check cd3Validator.log for details")
+        print("There are no errors in CD3. Please check cd3Validator.log for details!!")
         exit(0)
 
 if __name__ == '__main__':
