@@ -344,7 +344,6 @@ def subnets(filename,present,comp_ids):
             comp_id = comp_ids[comp_name]
         except KeyError:
             print("Compartment with name \"" + comp_name + "\" specified at row " + str(i+3) + " doesnot exist. Make sure it exists in OCI and fetch_compartments_to_variablesTF.py has been run.")
-            continue
         #print("ROW  " + str(count)+":")
         for j in df.keys():
 
@@ -534,7 +533,6 @@ def dhcp(filename,present,comp_ids):
             comp_id = comp_ids[comp_name]
         except KeyError:
             print("Compartment with name \"" + comp_name + "\" specified at row " + str(i+3) + " doesnot exist. Make sure it exists in OCI and fetch_compartments_to_variablesTF.py has been run.")
-            continue
 
         #print("ROW  " + str(count) + ":")
         for j in df.keys():
