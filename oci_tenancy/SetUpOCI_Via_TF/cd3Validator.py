@@ -8,6 +8,7 @@ import os
 import sys
 import ipaddr
 import oci
+import logging
 from oci.core.virtual_network_client import VirtualNetworkClient
 from oci.identity import IdentityClient
 sys.path.append(os.getcwd()+"/../../..")
@@ -36,6 +37,16 @@ compartment_ids={}
 vcn_ids = {}
 vcn_cidrs = {}
 vcn_compartment_ids = {}
+
+logging.addLevelName(60,"custom")
+logging.basicConfig(filename="cd3Validator.log",filemode="w",format="%(asctime)s - %(message)s",level=60)
+logger=logging.getLogger("cd3Validator")
+
+#logger.setLevel(logging.INFO)
+#formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+#logFile=logging.FileHandler("cd3Validator.log")
+#logFile.setFormatter(formatter)
+#logger.addHandler(logFile)
 
 
 #Prepares dictionery containing compartments names and its OCIDs
@@ -75,7 +86,8 @@ def get_vcn_ids(compartment_ids,config):
     return vcn_ids
 
 #Chceks for special characters in dns_label name
-def checklabel(lable,count,present):
+def checklabel(lable,count):
+    present=False
     lable = str(lable)
     if (lable == "Nan") or (lable == "") or (lable == "NaN") or (lable == "nan"):
         pass
@@ -84,24 +96,25 @@ def checklabel(lable,count,present):
         if (regex.search(lable) == None):
             pass
         else:
-            print("ROW  " + str(count+2) + ": Error: Label name is not accepted as it has special characters")
+            logging.log(60,"ROW " + str(count+2) + " : dns_label value has special characters")
             present = True
     return present
 #Checks if duplicates are present in dns_label names
-def checkduplicatednslabel(df,subset,name,present):
+"""def checkduplicatednslabel(df,subset,name,present):
     df = df.dropna(subset=[subset])
     duplicateRowsDF = df[df.duplicated([subset],keep=False)]
-    print("\n-----------------Start Checking for Duplicates in DNS Label column--------------------------")
+    logging.log(60,("Start Checking for Duplicates in DNS Label column--------------------------")
     if len(duplicateRowsDF[subset]) > 0:
         rows = list(duplicateRowsDF[subset].index)
         for row in rows:
-            print("Duplicate Value "+duplicateRowsDF[subset][row]+" found at Row: " + str(row+3))
+            logging.log(60,"ROW "+str(row+3)+ ": Duplicate dns_label Value "+duplicateRowsDF[subset][row])
             present = True
-    print("------------------End Checking for Duplicates in DNS Label column---------------------------")
+    logging.log(60,"End Checking for Duplicates in DNS Label column---------------------------")
     return present
-
+"""
 #Shows LPG Peering that will be established based on hub_spoke_peer_none column
-def showPeering(vcnsob,present):
+def showPeering(vcnsob,oci_vcn_lpgs):
+    present=False
     #Check if the LPGs are sufficient for creating the peers.
     for left_vcn, value in vcnsob.peering_dict.items():
         right_vcns = value.split(",")
@@ -111,41 +124,29 @@ def showPeering(vcnsob,present):
             right_vcn=right_vcn.strip()
             try:
                 if(vcnsob.vcn_lpg_names[left_vcn][0].lower()=='n' or vcnsob.vcn_lpg_names[right_vcn][0].lower()=='n'):
-                    print("ERROR!!! Cannot specify n for lpg_required field for either "+left_vcn +" or "+ right_vcn+ "; Since they are part of VCN peering")
+                    logging.log(60,"ERROR!!! Cannot specify n for lpg_required field for either "+left_vcn +" or "+ right_vcn+ "; Since they are part of VCN peering")
                     present = True
                     continue
-
             except IndexError:
-                print("ERROR!!! Insufficient LPGs declared for either "+left_vcn + " or "+right_vcn + ". Check lpg_required column for both VCNs in VCNs tab")
+                logging.log(60,"ERROR!!! Insufficient LPGs declared for either "+left_vcn + " or "+right_vcn + ". Check lpg_required column for both VCNs in VCNs tab")
                 present = True
                 continue
             left_vcn_lpg=vcnsob.vcn_lpg_names[left_vcn][0]
             vcnsob.vcn_lpg_names[left_vcn].pop(0)
             right_vcn_lpg=vcnsob.vcn_lpg_names[right_vcn][0]
             vcnsob.vcn_lpg_names[right_vcn].pop(0)
-            print(left_vcn_lpg +" of VCN "+ left_vcn+ " will be peered with "+right_vcn_lpg +" of VCN "+right_vcn)
+            logging.log(60,left_vcn_lpg + " of VCN " + left_vcn + " will be peered with " + right_vcn_lpg + " of VCN " + right_vcn)
+            if(left_vcn_lpg in oci_vcn_lpgs[left_vcn]):
+                logging.log(60,"ERROR!!! "+left_vcn_lpg +" for vcn "+left_vcn+" already exists in OCI. Use another name")
+                present=True
+            elif(right_vcn_lpg in oci_vcn_lpgs[right_vcn]):
+                logging.log(60,"ERROR!!! " + right_vcn_lpg + " for vcn "+right_vcn+"  already exists in OCI. Use another name")
+                present =True
+
+
+
     return present
 
-#Checks the state of each LPG in OCI and display the details
-"""def lpg_details(comp_id,vcn_id,lpg_name,vcn_list,vcn_name):
-    vnc = VirtualNetworkClient(config)
-    lpg_list = oci.pagination.list_call_get_all_results(vnc.list_local_peering_gateways,comp_id,vcn_id)
-    lpg_list = lpg_list.data
-    for lpg in lpg_list:
-        print("here  "+lpg.display_name)
-        if lpg.display_name == lpg_name:
-            print("---- "+lpg_name)
-            if lpg.lifecycle_state == "AVAILABLE":
-                 if lpg.peering_status == "PEERED":
-                    for vcn in vcn_list:
-                        if lpg.peer_advertised_cidr == vcn.cidr_block:
-                            lpg_peers = oci.pagination.list_call_get_all_results(vnc.list_local_peering_gateways,comp_id, vcn.id)
-                            lpg_peers = lpg_peers.data
-                            for lpg_peer in lpg_peers:
-                                print("LPG with name \""+ lpg_name + "\" exists for VCN \""+vcn_name+"\" and is peered with LPG - \""+lpg_peer.display_name+"\" of VCN - \""+vcn.display_name+"\"  currently.")
-                 else:
-                    print("LPG with name \""+ lpg_name + "\" exists for VCN \""+vcn_name+"\" and is in "+lpg.peering_status+" state currently.")
-"""
 # Checks for duplicates
 def checkIfDuplicates(listOfElems):
     setOfElems = set()
@@ -157,15 +158,17 @@ def checkIfDuplicates(listOfElems):
     return False
 
 # Checks if the CIDRs overlap for each VCN mentioned in excelsheet
-def validate_vcn_cidr(filename,present):
+def validate_vcn_cidr(filename):
     cidr_list = []
     duplicate = []
     count = 0
+    vcn_cidroverlap_check=False
+    vcn_cidrdup_check=False
 
     df = pd.read_excel(filename, sheet_name='VCNs', skiprows=1)
     df = df.dropna(how='all')
     df = df.reset_index(drop=True)
-    print("\n----------------------------Start Validating VCN CIDRs--------------------------------------")
+    logging.log(60,"Start VCN CIDRs Check--------------------------------------")
     for i in df.index:
         if str(df[df.columns[3]][i]) == "Nan" or str(df[df.columns[3]][i]) == "NAN" or str(df[df.columns[3]][i]) == "nan":
             continue
@@ -177,7 +180,6 @@ def validate_vcn_cidr(filename,present):
             cidr_left = x[1]
             for y in enumerate(cidr_list):
                 if y[0] != None and y[0] + 1 != None:
-
                     cidr_right = y[1]
                     cidr_left = ipaddr.IPNetwork(cidr_left)
                     cidr_right = ipaddr.IPNetwork(cidr_right)
@@ -191,29 +193,38 @@ def validate_vcn_cidr(filename,present):
                             duplicate = set(duplicate)
                             duplicate = list(duplicate)
                             if count == 0:
-                                print("The below CIDR Ranges overlap. Please change the values !!!")
+                                logging.log(60,"The below CIDR Ranges overlap. Please change the values !!!")
                                 count = count + 1
-                            print(str(cidr_right) + " of " + df[df.columns[2]][y[0]] + " overlaps with CIDR of " +
+                            logging.log(60,str(cidr_right) + " of " + df[df.columns[2]][y[0]] + " overlaps with CIDR of " +
                                   df[df.columns[2]][x[0]])
-                            present = True
+                            vcn_cidroverlap_check = True
+
     #Checks if the CIDRs have duplicates
     result = checkIfDuplicates(cidr_list)
     if result:
-        print('VCN CIDR ' + result + ' is duplicated. Please check !!!')
-        present = True
-    print("------------------------------End Validating VCN CIDRs-------------------------------------")
-    return present
+        logging.log(60,'VCN CIDR ' + result + ' is duplicated. Please check !!!')
+        vcn_cidrdup_check = True
+    logging.log(60,"End VCN CIDRs Check-------------------------------------\n")
+
+    if(vcn_cidroverlap_check==True or vcn_cidrdup_check==True):
+        print("VCN CIDRs Check failed!!")
+        return True
+    else:
+        return False
+
 
 #Checks if the CIDRs overlap for each Subnet mentioned in excelsheet
-def validate_subnet_cidr(filename,present):
+def validate_subnet_cidr(filename):
     cidr_list = []
     duplicate = []
     count = 0
+    subnet_cidroverlap_check=False
+    subnet_cidrdup_check=False
 
     df = pd.read_excel(filename, sheet_name='Subnets', skiprows=1)
     df = df.dropna(how='all')
     df = df.reset_index(drop=True)
-    print("\n-----------------------------Start Validating Subnet CIDRs---------------------------------")
+    logging.log(60,"Start Subnet CIDRs Check---------------------------------")
     for i in df.index:
         if str(df[df.columns[4]][i]) == "Nan" or str(df[df.columns[4]][i]) == "NAN" or str(df[df.columns[4]][i]) == "nan":
             continue
@@ -239,23 +250,27 @@ def validate_subnet_cidr(filename,present):
                             duplicate = set(duplicate)
                             duplicate = list(duplicate)
                             if count == 0:
-                                print("The below CIDR Ranges overlap. Please change the values !!!")
+                                logging.log(60,"The below CIDR Ranges overlap. Please change the values !!!")
                                 count = count + 1
-                            print(str(cidr_right) + " of " + df[df.columns[3]][y[0]] + " overlaps with CIDR of " +
+                            logging.log(60,str(cidr_right) + " of " + df[df.columns[3]][y[0]] + " overlaps with CIDR of " +
                                   df[df.columns[3]][x[0]])
-                            present = True
+                            subnet_cidroverlap_check = True
+
     # Checks if the CIDRs have duplicates
     result = checkIfDuplicates(cidr_list)
     if result:
-        print('Subnet CIDR ' + result + ' is duplicated. Please check !!!')
-        present = True
-    print("------------------------------End Validating Subnet CIDRs----------------------------------")
-
-
-    return present
+        logging.log(60,'Subnet CIDR ' + result + ' is duplicated. Please check !!!')
+        subnet_cidrdup_check = True
+    logging.log(60,"End Subnet CIDRs Check----------------------------------\n")
+    if (subnet_cidroverlap_check == True or subnet_cidrdup_check==True):
+        print("Subnet CIDRs Check failed!!")
+        return True
+    else:
+        return False
 
 #Compare 2 lists for difference in their elements
-def check_item(List1, List2, name,present):
+def check_item(List1, List2, name):
+    present=False
     list = []
     for element in List2:
         if element not in List1:
@@ -264,8 +279,8 @@ def check_item(List1, List2, name,present):
             else:
                 list.append(element)
     if len(list)>=1:
-        print("The below VCN names are not present in VCNs tab.Please check the VCN name in " + name + " Tab and try again")
-        print(*list, sep = "\n")
+        logging.log(60,"The below VCN names are not present in VCNs tab.Please check the VCN name in " + name + " Tab and try again")
+        logging.log(60,*list, sep = "\n")
         present = True
     return present
 
@@ -287,7 +302,7 @@ def validate_vcn_names(filename,present):
     dfh = pd.read_excel(filename, sheet_name='DHCP', skiprows=1)
     dfh = dfh.dropna(how='all')
     dfh = dfh.reset_index(drop=True)
-    print("\n--------------Start Validating VCN Names mentioned in the Subnets and DHCP Tabs-------------")
+    logging.log(60,"Start Validating VCN Names mentioned in the Subnets and DHCP Tabs-------------")
     #Store the VCN names in each of these sheets in separate lists to compare later
     for i in dfv.index:
         if str(dfv[dfv.columns[0]][i]) not in commonTools.endNames:
@@ -313,15 +328,15 @@ def validate_vcn_names(filename,present):
             dhcp_list.append(str(dfh[dfh.columns[2]][i]))
 
     #Check if the vcn names mentioned in Subnets and DHCP Tabs are present in VCN tab as well
-    statevcn = check_item(vcn_list,subnet_list,"Subnets",present)
-    statedhcp = check_item(vcn_list,dhcp_list,"DHCP",present)
-    print("---------------End Validating VCN Names mentioned in the Subnets and DHCP Tabs---------------")
+    statevcn = check_item(vcn_list,subnet_list,"Subnets")
+    statedhcp = check_item(vcn_list,dhcp_list,"DHCP")
+    logging.log(60,"End Validating VCN Names mentioned in the Subnets and DHCP Tabs---------------")
     if statevcn == True or statedhcp == True:
         return True
     return present
 
 #Check if subnets tab is compliant
-def subnets(filename,present,comp_ids):
+def validate_subnets(filename,comp_ids,vcnobj):
 
     # Read the Subnets tab from excel
     df = pd.read_excel(filename, sheet_name='Subnets', skiprows=1)
@@ -332,56 +347,75 @@ def subnets(filename,present,comp_ids):
 
     # Counter to fetch the row number
     count = 0
+    subnet_dnsdup_check=False
+    subnet_dnswrong_check=False
+    subnet_empty_check=False
+    subnet_wrong_check=False
+    subnet_comp_check=False
+    subnet_vcn_check=False
+    subnet_dns=[]
 
-    # Check if the column dns_label has duplicate values
-    present = checkduplicatednslabel(df,str(df.columns[16]), "Subnets",present)
-    print("\n------------------------Start Checking for null or wrong values in each row-----------------")
+    logging.log(60,"Start Null or Wrong value check in each row-----------------")
     #Loop through each row
     for i in df.index:
         count = count + 1
+        # Check for <END> in the inputs; if found the validation ends there and return the status of flag
+        if (str(df[df.columns[0]][i]) in commonTools.endNames):
+            logging.log(60,"Reached <END> Tag. Validation ends here, any data beyond this tag will not be checked for errors !!!")
+            break
+
+        #Check for invalid compartment name
         comp_name = str(df[df.columns[1]][i])
         try:
             comp_id = comp_ids[comp_name]
         except KeyError:
-            print("Compartment with name \"" + comp_name + "\" specified at row " + str(i+3) + " doesnot exist. Make sure it exists in OCI and fetch_compartments_to_variablesTF.py has been run.")
-        #print("ROW  " + str(count)+":")
-        for j in df.keys():
+            logging.log(60,"ROW "+str(i+3) + " : Compartment " + comp_name + " doesnot exist in OCI")
+            subnet_comp_check=True
 
-            # Check for <END> in the inputs; if found the validation ends there and return the status of flag
-            if (str(df[j][i]) in commonTools.endNames):
-                print("Reached <END> Tag. Validation ends here, any data beyond this tag will not be checked for errors !!!")
-                print("--------------------------End Checking for null or wrong values in each row------------------\n")
-                return present
+        #Check for invalid VCN name
+        vcn_name=str(df[df.columns[2]][i])
+        if(vcn_name not in vcnobj.vcn_names):
+            logging.log(60,"ROW "+str(i+3) + " : VCN "+vcn_name+" not part of VCNs Tab")
+            subnet_vcn_check=True
+
+        # Check if the dns_label field has special characters
+        dns_value=str(df[str(df.columns[16])][i])
+        if(dns_value.lower()!="nan"):
+            if (dns_value not in subnet_dns):
+                subnet_dns.append(dns_value)
             else:
-                # Check if the dns_label field has special characters
-                if j == str(df.columns[16]):
-                    present = checklabel(df[j][i],count,present)
+                logging.log(60, "ROW " + str(i + 3) + " : Duplicate dns_label value " + dns_value)
+                subnet_dnsdup_check = True
+            subnet_dnswrong_check = checklabel(dns_value, count)
 
-                # Check for null values and display appropriate message
-                if (str(df[j][i]) == "NaN" or str(df[j][i]) == "nan" or str(df[j][i]) == ""):
-                    if j == str(df.columns[16]) or j == str(df.columns[7]):
-                        pass
-                    else:
-                        print("ROW  " + str(count+2) + ": Empty value at column = " +j)
-                        present = True
+        # Check if the Service and Internet gateways are set appropriately; if not display the message;
+        sgw_value=str(df[str(df.columns[11])][i])
+        igw_value = str(df[str(df.columns[13])][i])
+        if(igw_value.lower()!="nan" and sgw_value.lower()!="nan"):
+            if (igw_value.lower() == "y" and sgw_value.lower() == "all_services"):
+                logging.log(60,"ROW " + str(count+2) + " : Internet Gateway target cannot be used together with Service Gateway target for All Services in the same routing table. Change either the value of SGW or IGW configure route !!")
+                subnet_wrong_check = True
 
-                #Check if the Service and Internet gateways are set appropriately; if not display the message;
-                if j == str(df.columns[11]):
-                    if str(df[j][i]) == "-"  or str(df[j][i]) == "n" or str(df[j][i]) == "all_services" or str(df[j][i]) == "object_storage":
-                        if (str(df.columns[13])[i] == "y" and str(str(df.columns[11])[i]) == "all_services"):
-                            print("ROW  " + str(count+2) + ": Internet Gateway target cannot be used together with Service Gateway target for All Services in the same routing table. Change either the value of SGW or IGW configure route !!")
-                            present = True
-                    else:
-                        print("The value entered for configure SGW route should be either '-' ,'n' or 'object_storage' or 'all_services' and cannot be "+df[j][i])
-                        present = True
-    print("-------------------------End Checking for null or wrong values in each row------------------")
-    return present
+        # Check for null values and display appropriate message
+        for j in df.keys():
+            if (str(df[j][i]) == "NaN" or str(df[j][i]) == "nan" or str(df[j][i]) == ""):
+                #only dhcp_option_name and dns_label columns can be empty
+                if j == str(df.columns[16]) or j == str(df.columns[7]):
+                    pass
+                else:
+                    logging.log(60,"ROW  " + str(count+2) + " : Empty value at column " +j)
+                    subnet_empty_check = True
+
+    logging.log(60,"End Null or Wrong value Check in each row------------------\n")
+    if(subnet_vcn_check==True or subnet_comp_check==True or subnet_empty_check==True or subnet_dnswrong_check==True or subnet_wrong_check==True or subnet_dnsdup_check==True):
+        print("Null or Wrong value Check failed!!")
+        return True
+    else:
+        return False
+
 
 #Check if VCNs tab is compliant
-def vcns(filename,present,comp_ids,vcn_ids,vcn_cidrs,vcn_compartment_ids):
-    vcnsob = parseVCNs(filename)
-    print("------------------------------Show LPGs Status---------------------------------------------")
-    print("Current Status of LPGs for each VCN listed in VCNs tab:")
+def validate_vcns(filename,comp_ids,vcn_ids,vcnobj):#,vcn_cidrs,vcn_compartment_ids):
     #Read the VCNs tab from excel
     df = pd.read_excel(filename, sheet_name='VCNs', skiprows=1)
     # Drop null values
@@ -389,130 +423,115 @@ def vcns(filename,present,comp_ids,vcn_ids,vcn_cidrs,vcn_compartment_ids):
     # Reset index
     df = df.reset_index(drop=True)
 
+    #Counter to fetch the row number
+    count = 0
+    vcn_empty_check=False
+    vcn_dnswrong_check=False
+    vcn_dnsdup_check=False
+    vcn_comp_check=False
+
+    vcn_check=False
+    vcn_peer_check=False
+
+    #Check if the column dns_label has duplicate values
+    #present = checkduplicatednslabel(df,str(df.columns[10]), "VCNs",present)
+    logging.log(60,"Start Null or Wrong value Check in each row---------------")
+    vcn_dns=[]
+    #Loop through each row
+    for i in df.index:
+        count = count + 1
+
+        # Check for <END> in the inputs; if found the validation ends there and return the status of flag
+        if str(df[df.columns[0]][i]) in commonTools.endNames:
+            logging.log(60,"Reached <END> Tag. Validation ends here, any data beyond this tag will not be checked for errors !!!")
+            break
+
+        #Check for invalid Compartment Name
+        comp_name = str(df[df.columns[1]][i])
+        try:
+            comp_id=comp_ids[comp_name]
+        except KeyError:
+            logging.log(60,"ROW "+str(i+3)+" : Compartment " + comp_name + " doesnot exist in OCI")
+            vcn_comp_check=True
+
+        # Check if the dns_label field has special characters
+        dns_value = str(df[str(df.columns[10])][i])
+        if (dns_value.lower() != "nan"):
+            if (dns_value not in vcn_dns):
+                vcn_dns.append(dns_value)
+            else:
+                logging.log(60, "ROW " + str(i + 3) + " : Duplicate dns_label value " + dns_value)
+                vcn_dnsdup_check = True
+            vcn_dnswrong_check = checklabel(dns_value, count)
+
+        #Check for null values and display appropriate message
+        for j in df.keys():
+            if (str(df[j][i]) == "NaN" or str(df[j][i]) == "nan" or str(df[j][i]) == ""):
+                if j == str(df.columns[10]):
+                    continue
+                else:
+                    logging.log(60,"ROW " + str(count+2) + " : Empty value at column " + j)
+                    vcn_empty_check = True
+
+    if (vcn_comp_check==True or vcn_empty_check == True or vcn_dnswrong_check ==True or vcn_dnsdup_check==True):
+        print("Null or Wrong value Check failed!!")
+        vcn_check=True
+    logging.log(60,"End Null or Wrong value Check in each row---------------\n")
+    
+    logging.log(60,"Start LPG Peering Check---------------------------------------------")
+    logging.log(60,"Current Status of LPGs in OCI for each VCN listed in VCNs tab:")
+    oci_vcn_lpgs={}
+
     #Loop through each row
     for i in df.index:
         # Check for <END> in the inputs; if found the validation ends there and return the status of flag
         if str(df[df.columns[0]][i]) in commonTools.endNames:
-            print("Reached <END> Tag. Validation ends here, any data beyond this tag will not be checked for errors !!!")
+            logging.log(60,"Reached <END> Tag. Validation ends here, any data beyond this tag will not be checked for errors !!!")
             break
 
-        #Fetches current LPGs for eac VCN and show its status
+        #Fetches current LPGs for each VCN and show its status
         comp_name = str(df[df.columns[1]][i])
         vcn_name = str(df[df.columns[2]][i])
-        #vcn_cidr= str(df[df.columns[3]][i])
         vnc = VirtualNetworkClient(config)
 
         try:
             comp_id=comp_ids[comp_name]
         except KeyError:
-            print("Compartment with name \"" + comp_name + "\" specified at row "+ str(i+3) +" doesnot exist. Make sure it exists in OCI and fetch_compartments_to_variablesTF.py has been run.")
             continue
         try:
             vcn_id=vcn_ids[vcn_name]
         except KeyError:
-            lpg = vcnsob.vcn_lpg_names[vcn_name][0]
+            lpg = vcnobj.vcn_lpg_names[vcn_name][0]
             if (lpg != 'n'):
-                print("VCN with name \"" + vcn_name + "\" does not exist. So the VCN " + vcn_name + " and its LPGs: "+str(vcnsob.vcn_lpg_names[vcn_name]) +" will be created new")
+                logging.log(60,"ROW "+str(i+3)+" : VCN " + vcn_name + " doesnot exist in OCI. VCN and its LPGs "+str(vcnobj.vcn_lpg_names[vcn_name]) +" will be created new")
             else:
-                print("VCN with name \"" + vcn_name + "\" does not exist. So the VCN " + vcn_name + " will be created new")
+                logging.log(60,"ROW "+str(i+3)+" : VCN " + vcn_name + "doesnot exist in OCI. VCN will be created new")
             continue
+
+        oci_vcn_lpgs[vcn_name]=[]
+        vcn_lpg_str=""
+
         lpg_list=oci.pagination.list_call_get_all_results(vnc.list_local_peering_gateways,compartment_id=comp_id,vcn_id=vcn_id)
         if(len(lpg_list.data)==0):
-            print("LPGs for VCN "+vcn_name+ ":\nNone")
+            logging.log(60,"ROW "+str(i+3)+" : LPGs for VCN "+vcn_name+ " in OCI-  None")
         else:
-            print("LPGs for VCN " + vcn_name + ":")
             for lpg in lpg_list.data:
-                print(lpg.display_name + " : " + lpg.peering_status)
-                """if(lpg.peering_status=="PEERED"):
-                    lpg_peer_vcn_cidr=lpg.peer_advertised_cidr
-                    print(lpg_peer_vcn_cidr)
-                    lpg_peer_vcn_name=vcn_cidrs[lpg_peer_vcn_cidr]
-                    print(lpg_peer_vcn_name)
-                    lpg_peer_vcn_id=vcn_ids[lpg_peer_vcn_name]
-                    print(lpg_peer_vcn_id)
-                    lpg_peer_vcn_comp_id=vcn_compartment_ids[lpg_peer_vcn_name]
-                    lpg_peer_vcn_lpgs_list = oci.pagination.list_call_get_all_results(vnc.list_local_peering_gateways,compartment_id=lpg_peer_vcn_comp_id, vcn_id=lpg_peer_vcn_id)
-                    for lpg_peer_vcn_lpg in lpg_peer_vcn_lpgs_list.data:
-                        if(lpg_peer_vcn_lpg.peering_status=="PEERED"):
-                            print("peers")
-                            print(lpg_peer_vcn_lpg.display_name)
-                            print(lpg_peer_vcn_lpg.peer_advertised_cidr)
-                            print(vcn_cidr)
-                            if(lpg_peer_vcn_lpg.peer_advertised_cidr==vcn_cidr):
+                oci_vcn_lpgs[vcn_name].append(lpg.display_name)
+                vcn_lpg_str=lpg.display_name + " : " + lpg.peering_status+", "+vcn_lpg_str
+            logging.log(60,"ROW "+str(i+3)+" : LPGs for VCN " + vcn_name + " in OCI-  "+vcn_lpg_str)
 
-                                print(lpg.display_name + " : " + lpg.peering_status + " with "+lpg_peer_vcn_lpg.display_name)
-                else:
-                    print(lpg.display_name + " : " + lpg.peering_status)
-                """
 
-        """#Check if the Compartment,VCN and lpg exists in OCI console for each of the lpgs mentioned in the excel
-        for lpg in vcnsob.vcn_lpg_names[str(df[df.columns[2]][i])]:
-            if(lpg!='n'):
-                comp_name = str(df[df.columns[1]][i])
-                vcn_name = str(df[df.columns[2]][i])
-                try:
-                    vnc = VirtualNetworkClient(config)
-                    vcn_list = oci.pagination.list_call_get_all_results(vnc.list_vcns, comp_ids[comp_name])
-                    vcn_list = vcn_list.data
-
-                    #Check if the lpg is present and is Available; if so check its peering status; else display appropriate message
-                    for vcn in vcn_list:
-                        if (vcn.lifecycle_state == 'AVAILABLE'):
-                            vcn_ids[vcn.display_name] = vcn.id
-                    try:
-                        vcn_id = vcn_ids[vcn_name]
-                        print("calling----lpg_details for "+vcn_name+",,"+lpg)
-                        lpg_details(comp_ids[comp_name], vcn_id, lpg, vcn_list, vcn_name)
-
-                    except KeyError:
-                        print("VCN with name \"" + vcn_name + "\" does not exist. So this VCN and LPG - \"" + lpg + "\" will be created new.")
-                        pass
-                except KeyError:
-                    print("Compartment with name \"" + comp_name + "\" does not exist. So the VCN(" + vcn_name + ") and LPG(" + lpg + ") will be created new once the compartment is created..")
-                    pass
-        """
-    print("\nBelow LPG peering would be established new; Make sure that none of the LPGs listed below as part of peering already exist for the VCN as shown above!\n")
+    logging.log(60,"Below LPG peering would be established new;\nMake sure that none of the LPGs listed below as part of peering already exist for the VCN as shown above!")
     #Show the peering details of each lpg in Hub,Spoke or Peer VCNs
-    present = showPeering(vcnsob, present)
-    print("\nPlease verify if the LPGs status is as you desire otherwise please correct the order of LPGs!!!")
-    print("\n--------------------------------End LPGs Status---------------------------------------------\n")
-
-    #Counter to fetch the row number
-    count = 0
-
-    #Check if the column dns_label has duplicate values
-    present = checkduplicatednslabel(df,str(df.columns[10]), "VCNs",present)
-    print("\n-------------------------Start Checking for null or wrong values in each row---------------")
-
-    #Loop through each row
-    for i in df.index:
-        count = count + 1
-        #print("ROW  " + str(count)+":")
-
-        # Check for <END> in the inputs; if found the validation ends there and return the status of flag
-        if str(df[df.columns[0]][i]) in commonTools.endNames:
-            print("Reached <END> Tag. Validation ends here, any data beyond this tag will not be checked for errors !!!")
-            print("-----------------------------End Checking for null or wrong values in each row---------------\n")
-            return present
-
-        for j in df.keys():
-            if (str(df[j][i]) not in commonTools.endNames):
-                #Check if the dns_label field has special characters
-                if j == str(df.columns[10]):
-                    checklabel(df[j][i], count,present)
-
-            #Check for null values and display appropriate message
-            if (str(df[j][i]) == "NaN" or str(df[j][i]) == "nan" or str(df[j][i]) == ""):
-                if j == str(df.columns[10]):
-                    continue
-                else:
-                    print("ROW  " + str(count+2) + ": Empty value at column = " + j)
-                    present = True
-    print("---------------------------End Checking for null or wrong values in each row---------------\n")
-    return present
+    vcn_peer_check = showPeering(vcnobj,oci_vcn_lpgs)
+    if (vcn_peer_check == True):
+        print("LPG Peering Check failed!!")
+    logging.log(60,"Please verify if the LPGs status is as you desire otherwise please correct the order of LPGs!!!")
+    logging.log(60,"End LPG Peering Check---------------------------------------------\n")
+    return vcn_check,vcn_peer_check
 
 #Checks if the fields in DHCP tab are compliant
-def dhcp(filename,present,comp_ids):
+def validate_dhcp(filename,comp_ids,vcnobj):
     #Read DHCP tab from excel
     df = pd.read_excel(filename, sheet_name='DHCP', skiprows=1)
     #Drop null values
@@ -521,75 +540,95 @@ def dhcp(filename,present,comp_ids):
     df = df.reset_index(drop=True)
 
     empty = ['', 'Nan', 'NaN', 'nan']
-
+    dhcp_empty_check=False
+    dhcp_wrong_check=False
+    dhcp_comp_check=False
+    dhcp_vcn_check=False
     # Counter to fetch the row number
     count = 0
 
-    print("\n-------------------------Start Checking for null or wrong values in each row----------------")
+    logging.log(60,"Start Null or Wrong value Check in each row----------------")
     for i in df.index:
         count = count + 1
+
+        # Check for <END> in the inputs; if found the validation ends there and return the status of flag
+        if str(df[df.columns[0]][i]) in commonTools.endNames:
+            logging.log(60,"Reached <END> Tag. Validation ends here, any data beyond this tag will not be checked for errors !!!")
+            break
+
+        #Check for invalid compartment name
         comp_name = str(df[df.columns[1]][i])
         try:
             comp_id = comp_ids[comp_name]
         except KeyError:
-            print("Compartment with name \"" + comp_name + "\" specified at row " + str(i+3) + " doesnot exist. Make sure it exists in OCI and fetch_compartments_to_variablesTF.py has been run.")
+            logging.log(60,"ROW "+str(i+3) + " : Compartment " + comp_name + " doesnot exist in OCI")
+            dhcp_comp_check=True
 
-        #print("ROW  " + str(count) + ":")
+        # Check for invalid VCN name
+        vcn_name = str(df[df.columns[2]][i])
+        if (vcn_name not in vcnobj.vcn_names):
+            logging.log(60, "ROW " + str(i + 3) + " : VCN "+vcn_name+" not part of VCNs Tab")
+            dhcp_vcn_check = True
+
         for j in df.keys():
-
-            #Check for <END> in the inputs; if found the validation ends there and return the status of flag
-            if str(df[df.columns[0]][i]) in commonTools.endNames:
-                print("Reached <END> Tag. Validation ends here, any data beyond this tag will not be checked for errors !!!")
-                print("-------------------------End Checking for null or wrong values in each row----------------")
-
-                return present
-
             #Check the customer_dns_servers column; if empty return error based on the value in server_type column
             if j == str(df.columns[6]):
                 if str(df[df.columns[6]][i]) in empty:
                     if str(df[df.columns[4]][i]) == "CustomDnsServer":
-                        print("ROW  " + str(count+2) + ": 'custom_dns_servers' column cannot be empty if server type is 'CustomDnsServer'. Please make sure you have a value and try again!")
-                        present = True
+                        logging.log(60,"ROW  " + str(count+2) + ": 'custom_dns_servers' column cannot be empty if server type is 'CustomDnsServer'")
+                        dhcp_wrong_check = True
                     elif str(df[df.columns[4]][i]) == "VcnLocalPlusInternet":
                         continue
             else:
                 #Check if there are any field that is empty; display appropriate message
                 if str(df[j][i]) in empty and j != str(df.columns[5]):
-                    print("ROW  " + str(count+2) + ": Empty value at column = " + j)
-                    present = True
-    print("--------------------------End Checking for null or wrong values in each row-----------------")
-    return present
+                    logging.log(60,"ROW " + str(count+2) + " : Empty value at column " + j)
+                    dhcp_empty_check = True
+    logging.log(60,"End Null or Wrong value Check in each row-----------------\n")
+    if (dhcp_vcn_check==True or dhcp_wrong_check == True or dhcp_comp_check==True or dhcp_empty_check==True):
+        print("Null or Wrong value Check failed!!")
+        return True
+    else:
+        return False
 
 def main():
     #CD3 Validation begins here for Sunbnets, VCNs and DHCP tabs
     #Flag to check if for errors
-    present = False
-    print("\n============================= Verifying VCNs Tab ==========================================\n")
+    vcnobj = parseVCNs(filename)
+    logging.log(60,"============================= Verifying VCNs Tab ==========================================\n")
+    print("\nProcessing VCNs Tab..")
     comp_ids = get_network_compartment_id(config)
     #vcn_ids, vcn_cidrs, vcn_compartment_ids = get_vcn_details(comp_ids, config)
     vcn_ids = get_vcn_ids(comp_ids, config)
-    vcn = vcns(filename, present, comp_ids, vcn_ids, vcn_cidrs, vcn_compartment_ids)
-    vcnpres = validate_vcn_cidr(filename, present)
-    vcnprescidr = validate_vcn_names(filename, present)
+    vcn_check,vcn_peer_check = validate_vcns(filename, comp_ids, vcn_ids,vcnobj)
+    vcn_cidr_check = validate_vcn_cidr(filename)
 
-    print("\n============================= Verifying Subnets Tab ==========================================")
-    subpres = subnets(filename,present,comp_ids)
-    subprescidr = validate_subnet_cidr(filename,present)
+    logging.log(60,"============================= Verifying Subnets Tab ==========================================\n")
+    print("\nProcessing Subnets Tab..")
+    subnet_check = validate_subnets(filename,comp_ids,vcnobj)
+    subnet_cidr_check = validate_subnet_cidr(filename)
 
-    print("\n============================= Verifying DHCP Tab ==========================================")
-    dhcps = dhcp(filename,present,comp_ids)
+    logging.log(60,"============================= Verifying DHCP Tab ==========================================\n")
+    print("\nProcessing DHCP Tab..")
+    dhcp_check = validate_dhcp(filename,comp_ids,vcnobj)
     #Prints the final result; once the validation is complete
-    if subprescidr == True or subpres == True or vcnpres == True  or vcnprescidr == True or vcn == True or dhcps == True:
-        print("\n")
-        print("Summary:")
-        print("--------")
-        print("ERROR: Make appropriate changes to CD3 Values as per above Errors and try again !!!")
+    if vcn_check == True or vcn_peer_check == True or vcn_cidr_check == True  or subnet_check == True or subnet_cidr_check == True or dhcp_check == True:
+        logging.log(60,"=======")
+        logging.log(60,"Summary:")
+        logging.log(60,"=======")
+        logging.log(60,"ERROR: Make appropriate changes to CD3 Values as per above Errors and try again !!!")
+        print("\n\nSummary:")
+        print("=======")
+        print("Errors Found!!! Please check cd3Validator.log for details")
         exit(1)
-    elif subprescidr == False and subpres == False and vcnpres == False  and vcnprescidr == False and vcn == False and dhcps == False:
-        print("\n")
-        print("Summary:")
-        print("--------")
-        print("There are no errors in CD3. Just verify the LPG's Status section for any overlapping LPG declaration. Otherwise You are good to proceed !!!")
+    elif vcn_check == False and vcn_peer_check == False and vcn_cidr_check == False  and subnet_check == False and subnet_cidr_check == False and dhcp_check == False:
+        logging.log(60,"=======")
+        logging.log(60,"Summary:")
+        logging.log(60,"=======")
+        logging.log(60,"There are no errors in CD3. Just verify the LPG's Status section for any overlapping LPG declaration. Otherwise You are good to proceed !!!")
+        print("\n\nSummary:")
+        print("=======")
+        print("There are no errors in CD3. Please check cd3Validator.log for details")
         exit(0)
 
 if __name__ == '__main__':

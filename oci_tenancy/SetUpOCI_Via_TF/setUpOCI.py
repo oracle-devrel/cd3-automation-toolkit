@@ -245,7 +245,7 @@ if (input_nongf_tenancy.lower() == 'true'):
 if (input_format == 'cd3'):
     inputfile = input_cd3file
 
-    cd3validate = input("Do you want to verify CD3 for any wrong inputs before proceeding. Enter y or n: ")
+    cd3validate = input("Do you want to verify CD3. Enter y or n: ")
     if(cd3validate=='y'):
         print("It will verify tabs: VCNs, DHCP and Subnets in excel sheet\n")
         if (input_config_file == ''):
