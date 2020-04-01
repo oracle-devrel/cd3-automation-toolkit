@@ -126,11 +126,24 @@ def checkIfDuplicates(listOfElems):
 
 
 #Checks if the CIDRs overlap for each VCN and Subnet mentioned in excelsheet
-def validate_cidr(cidr_list, cidrs_dict,tab):
+def validate_cidr(cidr_list, cidrs_dict):
+
     duplicate = []
     count = 0
-    subnet_cidroverlap_check=False
-    subnet_cidrdup_check=False
+    cidroverlap_check=False
+    cidrdup_check=False
+
+    #Check for duplicate CIDRs
+    temp_list=[]
+    i=0
+    for cidr in cidr_list:
+        if(cidr not in temp_list):
+            temp_list.append(cidr)
+        else:
+            logging.log(60, "ROW " + str(i + 3) + " : Duplicate CIDR value "+cidr +" with ROW "+str(cidr_list.index(cidr)+3))
+            cidrdup_check=True
+        i=i+1
+
 
     for x in enumerate(cidr_list):
         if x[0] != None and x[0] + 1 != None:
@@ -150,20 +163,12 @@ def validate_cidr(cidr_list, cidrs_dict,tab):
                             duplicate = set(duplicate)
                             duplicate = list(duplicate)
                             if count == 0:
-                                logging.log(60,"The below CIDR Ranges overlap. Please change the values !!!")
                                 count = count + 1
-                            logging.log(60,"ROW "+ str(x[0]) +": "+str(cidr_right) + " of " + cidrs_dict[str(cidr_right)] + " overlaps with CIDR - "+ str(cidr_left)+" of " +
+                            logging.log(60,"ROW "+ str(x[0]+2) +" : "+str(cidr_right) + " of " + cidrs_dict[str(cidr_right)] + " overlaps with CIDR - "+ str(cidr_left)+" of " +
                                   cidrs_dict[str(cidr_left)])
-                            subnet_cidroverlap_check = True
+                            cidroverlap_check = True
 
-    # Checks if the CIDRs have duplicates
-    result = checkIfDuplicates(cidr_list)
-    if result:
-        logging.log(60,tab+' CIDR ' + result + " is duplicated. Please check !!!")
-        subnet_cidrdup_check = True
-    logging.log(60,"End of "+tab+" CIDRs Check----------------------------------\n")
-    if (subnet_cidroverlap_check == True or subnet_cidrdup_check==True):
-        print(tab+" CIDRs Check failed!!")
+    if (cidroverlap_check == True or cidrdup_check==True):
         return True
     else:
         return False
@@ -191,6 +196,7 @@ def validate_subnets(filename,comp_ids,vcnobj,vcnInfoobj):
     subnet_comp_check=False
     subnet_reg_check=False
     subnet_vcn_check=False
+    subnet_check=False
     subnet_dns=[]
 
     logging.log(60,"Start Null or Wrong value check in each row-----------------")
@@ -228,7 +234,7 @@ def validate_subnets(filename,comp_ids,vcnobj,vcnInfoobj):
             if (dns_value not in subnet_dns):
                 subnet_dns.append(dns_value)
             else:
-                logging.log(60, "ROW " + str(i + 3) + " : Duplicate dns_label value " + dns_value)
+                logging.log(60, "ROW " + str(i + 3) + " : Duplicate dns_label value " + dns_value +" with ROW "+str(subnet_dns.index(dns_value)+3))
                 subnet_dnsdup_check = True
             subnet_dnswrong_check = checklabel(dns_value, count)
 
@@ -240,6 +246,13 @@ def validate_subnets(filename,comp_ids,vcnobj,vcnInfoobj):
                 logging.log(60,"ROW " + str(count+2) + " : Internet Gateway target cannot be used together with Service Gateway target for All Services in the same routing table. Change either the value of SGW or IGW configure route !!")
                 subnet_wrong_check = True
 
+        # Collect CIDR List for validating
+        if str(df[df.columns[4]][i]).lower() == "nan":
+            continue
+        else:
+            cidr_list.append(str(df[df.columns[4]][i]))
+            cidrs_dict.update({str(df[df.columns[4]][i]): str(df[df.columns[3]][i])})
+
         # Check for null values and display appropriate message
         for j in df.keys():
             if (str(df[j][i]) == "NaN" or str(df[j][i]) == "nan" or str(df[j][i]) == ""):
@@ -250,22 +263,22 @@ def validate_subnets(filename,comp_ids,vcnobj,vcnInfoobj):
                     logging.log(60,"ROW " + str(count+2) + " : Empty value at column " +j)
                     subnet_empty_check = True
 
-    logging.log(60,"End Null or Wrong value Check in each row------------------\n")
+
+    if (subnet_reg_check == True or subnet_vcn_check == True or subnet_comp_check == True or subnet_empty_check == True or subnet_dnswrong_check == True or subnet_wrong_check == True or subnet_dnsdup_check == True):
+        print("Null or Wrong value Check failed!!")
+        subnet_check=True
+    else:
+        subnet_check=False
+    logging.log(60, "End Null or Wrong value Check in each row------------------\n")
 
     logging.log(60,"Start Subnet CIDRs Check---------------------------------")
-    for i in df.index:
-        if str(df[df.columns[4]][i]) == "Nan" or str(df[df.columns[4]][i]) == "NAN" or str(df[df.columns[4]][i]) == "nan":
-            continue
-        else:
-            cidr_list.append(str(df[df.columns[4]][i]))
-            cidrs_dict.update({str(df[df.columns[4]][i]):str(df[df.columns[3]][i])})
-    subnet_cidr_check = validate_cidr(cidr_list,cidrs_dict,tab)
+    subnet_cidr_check = validate_cidr(cidr_list,cidrs_dict)
+    if (subnet_cidr_check == True):
+        print("Subnet CIDRs Check failed!!")
 
-    if(subnet_reg_check==True or subnet_vcn_check==True or subnet_comp_check==True or subnet_empty_check==True or subnet_dnswrong_check==True or subnet_wrong_check==True or subnet_dnsdup_check==True or subnet_cidr_check==True):
-        print("Null or Wrong value Check failed!!")
-        return True
-    else:
-        return False
+    logging.log(60, "End Subnet CIDRs Check---------------------------------\n")
+
+    return subnet_check,subnet_cidr_check
 
 
 #Check if VCNs tab is compliant
@@ -291,8 +304,6 @@ def validate_vcns(filename,comp_ids,vcn_ids,vcnobj,vcnInfoobj):#,vcn_cidrs,vcn_c
 
     vcn_check=False
 
-    #Check if the column dns_label has duplicate values
-    #present = checkduplicatednslabel(df,str(df.columns[10]), "VCNs",present)
     logging.log(60,"Start Null or Wrong value Check in each row---------------")
     vcn_dns=[]
     #Loop through each row
@@ -325,9 +336,16 @@ def validate_vcns(filename,comp_ids,vcn_ids,vcnobj,vcnInfoobj):#,vcn_cidrs,vcn_c
             if (dns_value not in vcn_dns):
                 vcn_dns.append(dns_value)
             else:
-                logging.log(60, "ROW " + str(i + 3) + " : Duplicate dns_label value " + dns_value)
+                logging.log(60, "ROW " + str(i + 3) + " : Duplicate dns_label value " + dns_value +" with ROW "+str(vcn_dns.index(dns_value)+3))
                 vcn_dnsdup_check = True
             vcn_dnswrong_check = checklabel(dns_value, count)
+
+        # Collect CIDR List for validating
+        if str(df[df.columns[3]][i]).lower() == "nan":
+            continue
+        else:
+            cidr_list.append(str(df[df.columns[3]][i]))
+            cidrs_dict.update({str(df[df.columns[3]][i]): str(df[df.columns[2]][i])})
 
         #Check for null values and display appropriate message
         for j in df.keys():
@@ -338,20 +356,18 @@ def validate_vcns(filename,comp_ids,vcn_ids,vcnobj,vcnInfoobj):#,vcn_cidrs,vcn_c
                     logging.log(60,"ROW " + str(count+2) + " : Empty value at column " + j)
                     vcn_empty_check = True
 
-    logging.log(60,"Start VCN CIDRs Check--------------------------------------")
-    for i in df.index:
-        if str(df[df.columns[3]][i]) == "Nan" or str(df[df.columns[3]][i]) == "NAN" or str(df[df.columns[3]][i]) == "nan":
-            continue
-        else:
-            cidr_list.append(str(df[df.columns[3]][i]))
-            cidrs_dict.update({str(df[df.columns[3]][i]): str(df[df.columns[2]][i])})
-    vcn_cidr_check = validate_cidr(cidr_list, cidrs_dict,tab)
 
-    if (vcn_reg_check==True or vcn_comp_check==True or vcn_empty_check == True or vcn_dnswrong_check ==True or vcn_dnsdup_check==True or vcn_cidr_check==True):
+    if (vcn_reg_check == True or vcn_comp_check == True or vcn_empty_check == True or vcn_dnswrong_check == True or vcn_dnsdup_check == True or vcn_cidr_check == True):
         print("Null or Wrong value Check failed!!")
-        vcn_check=True
-    logging.log(60,"End Null or Wrong value Check in each row---------------\n")
-    
+        vcn_check = True
+    logging.log(60, "End Null or Wrong value Check in each row---------------\n")
+
+    logging.log(60,"Start VCN CIDRs Check--------------------------------------")
+    vcn_cidr_check = validate_cidr(cidr_list, cidrs_dict)
+    if(vcn_cidr_check==True):
+        print("VCN CIDRs Check failed!!")
+    logging.log(60, "End VCN CIDRs Check--------------------------------------\n")
+
     logging.log(60,"Start LPG Peering Check---------------------------------------------")
     logging.log(60,"Current Status of LPGs in OCI for each VCN listed in VCNs tab:")
     oci_vcn_lpgs={}
@@ -401,7 +417,7 @@ def validate_vcns(filename,comp_ids,vcn_ids,vcnobj,vcnInfoobj):#,vcn_cidrs,vcn_c
         print("LPG Peering Check failed!!")
     logging.log(60,"Please verify if the LPGs status is as you desire otherwise please correct the order of LPGs!!!")
     logging.log(60,"End LPG Peering Check---------------------------------------------\n")
-    return vcn_check,vcn_peer_check
+    return vcn_check,vcn_cidr_check,vcn_peer_check
 
 #Checks if the fields in DHCP tab are compliant
 def validate_dhcp(filename,comp_ids,vcnobj,vcnInfoobj):
@@ -482,19 +498,19 @@ def main():
     print("\nProcessing VCNs Tab..")
     comp_ids = get_network_compartment_id(config)
     vcn_ids = get_vcn_ids(comp_ids, config)
-    vcn_check,vcn_peer_check = validate_vcns(filename, comp_ids, vcn_ids,vcnobj,vcnInfoobj)
+    vcn_check,vcn_cidr_check,vcn_peer_check = validate_vcns(filename, comp_ids, vcn_ids,vcnobj,vcnInfoobj)
 
 
     logging.log(60,"============================= Verifying Subnets Tab ==========================================\n")
     print("\nProcessing Subnets Tab..")
-    subnet_check = validate_subnets(filename,comp_ids,vcnobj,vcnInfoobj)
+    subnet_check,subnet_cidr_check = validate_subnets(filename,comp_ids,vcnobj,vcnInfoobj)
 
     logging.log(60,"============================= Verifying DHCP Tab ==========================================\n")
     print("\nProcessing DHCP Tab..")
     dhcp_check = validate_dhcp(filename,comp_ids,vcnobj,vcnInfoobj)
 
     #Prints the final result; once the validation is complete
-    if vcn_check == True or vcn_peer_check == True  or subnet_check == True or dhcp_check == True:
+    if vcn_check == True or vcn_cidr_check == True or vcn_peer_check == True  or subnet_check == True or subnet_cidr_check == True or dhcp_check == True:
         logging.log(60,"=======")
         logging.log(60,"Summary:")
         logging.log(60,"=======")
@@ -503,7 +519,7 @@ def main():
         print("=======")
         print("Errors Found!!! Please check cd3Validator.log for details!!")
         exit(1)
-    elif vcn_check == False and vcn_peer_check == False  and subnet_check == False and dhcp_check == False:
+    elif vcn_check == False and vcn_cidr_check == False and vcn_peer_check == False  and subnet_check == False and subnet_cidr_check == False and dhcp_check == False:
         logging.log(60,"=======")
         logging.log(60,"Summary:")
         logging.log(60,"=======")
