@@ -124,87 +124,19 @@ def checkIfDuplicates(listOfElems):
             setOfElems.add(elem)
     return False
 
-# Checks if the CIDRs overlap for each VCN mentioned in excelsheet
-def validate_vcn_cidr(filename):
-    cidr_list = []
-    duplicate = []
-    count = 0
-    vcn_cidroverlap_check=False
-    vcn_cidrdup_check=False
 
-    df = pd.read_excel(filename, sheet_name='VCNs', skiprows=1)
-    df = df.dropna(how='all')
-    df = df.reset_index(drop=True)
-    logging.log(60,"Start VCN CIDRs Check--------------------------------------")
-    for i in df.index:
-        if str(df[df.columns[3]][i]) == "Nan" or str(df[df.columns[3]][i]) == "NAN" or str(df[df.columns[3]][i]) == "nan":
-            continue
-        else:
-            cidr_list.append(str(df[df.columns[3]][i]))
-
-    for x in enumerate(cidr_list):
-        if x[0] != None and x[0] + 1 != None:
-            cidr_left = x[1]
-            for y in enumerate(cidr_list):
-                if y[0] != None and y[0] + 1 != None:
-                    cidr_right = y[1]
-                    cidr_left = ipaddr.IPNetwork(cidr_left)
-                    cidr_right = ipaddr.IPNetwork(cidr_right)
-
-                    if str(cidr_left) == str(cidr_right):
-                        break
-                    else:
-                        bool = cidr_right.overlaps(cidr_left)
-                        if bool == True:
-                            duplicate.append(df[df.columns[2]][x[0]])
-                            duplicate = set(duplicate)
-                            duplicate = list(duplicate)
-                            if count == 0:
-                                logging.log(60,"The below CIDR Ranges overlap. Please change the values !!!")
-                                count = count + 1
-                            logging.log(60,str(cidr_right) + " of " + df[df.columns[2]][y[0]] + " overlaps with CIDR - "+ df[df.columns[3]][x[0]]+" of " +
-                                  df[df.columns[2]][x[0]])
-                            vcn_cidroverlap_check = True
-
-
-    #Checks if the CIDRs have duplicates
-    result = checkIfDuplicates(cidr_list)
-    if result:
-        logging.log(60,'VCN CIDR ' + result + ' is duplicated. Please check !!!')
-        vcn_cidrdup_check = True
-    logging.log(60,"End VCN CIDRs Check-------------------------------------\n")
-
-    if(vcn_cidroverlap_check==True or vcn_cidrdup_check==True):
-        print("VCN CIDRs Check failed!!")
-        return True
-    else:
-        return False
-
-
-#Checks if the CIDRs overlap for each Subnet mentioned in excelsheet
-def validate_subnet_cidr(filename):
-    cidr_list = []
+#Checks if the CIDRs overlap for each VCN and Subnet mentioned in excelsheet
+def validate_cidr(cidr_list, cidrs_dict,tab):
     duplicate = []
     count = 0
     subnet_cidroverlap_check=False
     subnet_cidrdup_check=False
 
-    df = pd.read_excel(filename, sheet_name='Subnets', skiprows=1)
-    df = df.dropna(how='all')
-    df = df.reset_index(drop=True)
-    logging.log(60,"Start Subnet CIDRs Check---------------------------------")
-    for i in df.index:
-        if str(df[df.columns[4]][i]) == "Nan" or str(df[df.columns[4]][i]) == "NAN" or str(df[df.columns[4]][i]) == "nan":
-            continue
-        else:
-            cidr_list.append(str(df[df.columns[4]][i]))
-
     for x in enumerate(cidr_list):
         if x[0] != None and x[0] + 1 != None:
             cidr_left = x[1]
             for y in enumerate(cidr_list):
                 if y[0] != None and y[0] + 1 != None:
-
                     cidr_right = y[1]
                     cidr_left = ipaddr.IPNetwork(cidr_left)
                     cidr_right = ipaddr.IPNetwork(cidr_right)
@@ -214,24 +146,24 @@ def validate_subnet_cidr(filename):
                     else:
                         bool = cidr_right.overlaps(cidr_left)
                         if bool == True:
-                            duplicate.append(df[df.columns[3]][x[0]])
+                            duplicate.append(cidrs_dict[str(cidr_left)])
                             duplicate = set(duplicate)
                             duplicate = list(duplicate)
                             if count == 0:
                                 logging.log(60,"The below CIDR Ranges overlap. Please change the values !!!")
                                 count = count + 1
-                            logging.log(60,str(cidr_right) + " of " + df[df.columns[3]][y[0]] + " overlaps with CIDR of " +
-                                  df[df.columns[3]][x[0]])
+                            logging.log(60,"ROW "+ str(x[0]) +": "+str(cidr_right) + " of " + cidrs_dict[str(cidr_right)] + " overlaps with CIDR - "+ str(cidr_left)+" of " +
+                                  cidrs_dict[str(cidr_left)])
                             subnet_cidroverlap_check = True
 
     # Checks if the CIDRs have duplicates
     result = checkIfDuplicates(cidr_list)
     if result:
-        logging.log(60,'Subnet CIDR ' + result + ' is duplicated. Please check !!!')
+        logging.log(60,tab+' CIDR ' + result + " is duplicated. Please check !!!")
         subnet_cidrdup_check = True
-    logging.log(60,"End Subnet CIDRs Check----------------------------------\n")
+    logging.log(60,"End of "+tab+" CIDRs Check----------------------------------\n")
     if (subnet_cidroverlap_check == True or subnet_cidrdup_check==True):
-        print("Subnet CIDRs Check failed!!")
+        print(tab+" CIDRs Check failed!!")
         return True
     else:
         return False
@@ -248,6 +180,10 @@ def validate_subnets(filename,comp_ids,vcnobj,vcnInfoobj):
 
     # Counter to fetch the row number
     count = 0
+
+    cidr_list = []
+    cidrs_dict = {}
+    tab = "Subnet"
     subnet_dnsdup_check=False
     subnet_dnswrong_check=False
     subnet_empty_check=False
@@ -315,7 +251,17 @@ def validate_subnets(filename,comp_ids,vcnobj,vcnInfoobj):
                     subnet_empty_check = True
 
     logging.log(60,"End Null or Wrong value Check in each row------------------\n")
-    if(subnet_reg_check==True or subnet_vcn_check==True or subnet_comp_check==True or subnet_empty_check==True or subnet_dnswrong_check==True or subnet_wrong_check==True or subnet_dnsdup_check==True):
+
+    logging.log(60,"Start Subnet CIDRs Check---------------------------------")
+    for i in df.index:
+        if str(df[df.columns[4]][i]) == "Nan" or str(df[df.columns[4]][i]) == "NAN" or str(df[df.columns[4]][i]) == "nan":
+            continue
+        else:
+            cidr_list.append(str(df[df.columns[4]][i]))
+            cidrs_dict.update({str(df[df.columns[4]][i]):str(df[df.columns[3]][i])})
+    subnet_cidr_check = validate_cidr(cidr_list,cidrs_dict,tab)
+
+    if(subnet_reg_check==True or subnet_vcn_check==True or subnet_comp_check==True or subnet_empty_check==True or subnet_dnswrong_check==True or subnet_wrong_check==True or subnet_dnsdup_check==True or subnet_cidr_check==True):
         print("Null or Wrong value Check failed!!")
         return True
     else:
@@ -333,6 +279,10 @@ def validate_vcns(filename,comp_ids,vcn_ids,vcnobj,vcnInfoobj):#,vcn_cidrs,vcn_c
 
     #Counter to fetch the row number
     count = 0
+    cidr_list = []
+    cidrs_dict = {}
+
+    tab = "VCN"
     vcn_empty_check=False
     vcn_dnswrong_check=False
     vcn_dnsdup_check=False
@@ -388,7 +338,16 @@ def validate_vcns(filename,comp_ids,vcn_ids,vcnobj,vcnInfoobj):#,vcn_cidrs,vcn_c
                     logging.log(60,"ROW " + str(count+2) + " : Empty value at column " + j)
                     vcn_empty_check = True
 
-    if (vcn_reg_check==True or vcn_comp_check==True or vcn_empty_check == True or vcn_dnswrong_check ==True or vcn_dnsdup_check==True):
+    logging.log(60,"Start VCN CIDRs Check--------------------------------------")
+    for i in df.index:
+        if str(df[df.columns[3]][i]) == "Nan" or str(df[df.columns[3]][i]) == "NAN" or str(df[df.columns[3]][i]) == "nan":
+            continue
+        else:
+            cidr_list.append(str(df[df.columns[3]][i]))
+            cidrs_dict.update({str(df[df.columns[3]][i]): str(df[df.columns[2]][i])})
+    vcn_cidr_check = validate_cidr(cidr_list, cidrs_dict,tab)
+
+    if (vcn_reg_check==True or vcn_comp_check==True or vcn_empty_check == True or vcn_dnswrong_check ==True or vcn_dnsdup_check==True or vcn_cidr_check==True):
         print("Null or Wrong value Check failed!!")
         vcn_check=True
     logging.log(60,"End Null or Wrong value Check in each row---------------\n")
@@ -524,19 +483,18 @@ def main():
     comp_ids = get_network_compartment_id(config)
     vcn_ids = get_vcn_ids(comp_ids, config)
     vcn_check,vcn_peer_check = validate_vcns(filename, comp_ids, vcn_ids,vcnobj,vcnInfoobj)
-    vcn_cidr_check = validate_vcn_cidr(filename)
+
 
     logging.log(60,"============================= Verifying Subnets Tab ==========================================\n")
     print("\nProcessing Subnets Tab..")
     subnet_check = validate_subnets(filename,comp_ids,vcnobj,vcnInfoobj)
-    subnet_cidr_check = validate_subnet_cidr(filename)
 
     logging.log(60,"============================= Verifying DHCP Tab ==========================================\n")
     print("\nProcessing DHCP Tab..")
     dhcp_check = validate_dhcp(filename,comp_ids,vcnobj,vcnInfoobj)
 
     #Prints the final result; once the validation is complete
-    if vcn_check == True or vcn_peer_check == True or vcn_cidr_check == True  or subnet_check == True or subnet_cidr_check == True or dhcp_check == True:
+    if vcn_check == True or vcn_peer_check == True  or subnet_check == True or dhcp_check == True:
         logging.log(60,"=======")
         logging.log(60,"Summary:")
         logging.log(60,"=======")
@@ -545,7 +503,7 @@ def main():
         print("=======")
         print("Errors Found!!! Please check cd3Validator.log for details!!")
         exit(1)
-    elif vcn_check == False and vcn_peer_check == False and vcn_cidr_check == False  and subnet_check == False and subnet_cidr_check == False and dhcp_check == False:
+    elif vcn_check == False and vcn_peer_check == False  and subnet_check == False and dhcp_check == False:
         logging.log(60,"=======")
         logging.log(60,"Summary:")
         logging.log(60,"=======")
