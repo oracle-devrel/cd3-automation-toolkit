@@ -162,9 +162,10 @@ def validate_vcn_cidr(filename):
                             if count == 0:
                                 logging.log(60,"The below CIDR Ranges overlap. Please change the values !!!")
                                 count = count + 1
-                            logging.log(60,str(cidr_right) + " of " + df[df.columns[2]][y[0]] + " overlaps with CIDR of " +
+                            logging.log(60,str(cidr_right) + " of " + df[df.columns[2]][y[0]] + " overlaps with CIDR - "+ df[df.columns[3]][x[0]]+" of " +
                                   df[df.columns[2]][x[0]])
                             vcn_cidroverlap_check = True
+
 
     #Checks if the CIDRs have duplicates
     result = checkIfDuplicates(cidr_list)
