@@ -136,7 +136,7 @@ def validate_cidr(cidr_list, cidrs_dict):
             cidr2 = ipaddr.IPNetwork(cidr_list[j])
 
             # Check for Duplicate CIDRs
-            if(cidr1==cidr2):
+            if(str(cidr1)==str(cidr2)):
                 logging.log(60, "ROW " + str(j + 3) + " : Duplicate CIDR value " + str(cidr2) + " with ROW " + str(i + 3))
                 cidrdup_check = True
                 continue
@@ -144,7 +144,7 @@ def validate_cidr(cidr_list, cidrs_dict):
             # Check for Overlapping CIDRs
             bool=cidr1.overlaps(cidr2)
             if(bool==True):
-                logging.log(60, "ROW " + str(j+3) + " : CIDR value "+str(cidr2) +" overlaps with ROW "+str(i+3)+ " CIDR value "+str(cidr1))
+                logging.log(60, "ROW " + str(j+3) + " : Overlapping CIDR value " + str(cidr2) + " with ROW " + str(i + 3)+ " CIDR value "+str(cidr1))
                 cidroverlap_check=True
 
     if (cidroverlap_check == True or cidrdup_check==True):
