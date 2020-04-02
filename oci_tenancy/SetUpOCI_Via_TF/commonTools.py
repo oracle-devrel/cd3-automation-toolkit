@@ -254,7 +254,6 @@ class commonTools():
 
 class parseVCNs():
     peering_dict = dict()
-    objs_peering_dict = dict()
 
     vcn_region = {}
     vcn_drgs = {}
@@ -281,34 +280,34 @@ class parseVCNs():
             # Create VCN details Dicts and Hub and Spoke VCN Names
             for i in df_vcn.index:
                 region = df_vcn['Region'][i]
-                if (region in commonTools.endNames or str(region).lower() == 'nan'):
+                if (region in commonTools.endNames):# or str(region).lower() == 'nan'):
                     break
                 vcn_name = df_vcn['vcn_name'][i]
                 self.vcn_names.append(vcn_name)
 
                 # Check to see if vcn_name is empty in VCNs Sheet
-                if (str(vcn_name).lower() == 'nan'):
-                    print("ERROR!!! vcn_name/row cannot be left empty in VCNs sheet in CD3..exiting...")
-                    exit(1)
-                vcn_name = vcn_name.strip()
+                #if (str(vcn_name).lower() == 'nan'):
+                #    print("ERROR!!! vcn_name/row cannot be left empty in VCNs sheet in CD3..exiting...")
+                #    exit(1)
+                vcn_name = str(vcn_name).strip()
                 if str(df_vcn['hub_spoke_peer_none'][i]).strip().split(":")[0].strip().lower() == 'hub':
                     self.peering_dict[vcn_name]=""
-                    self.objs_peering_dict[vcn_name]=""
 
 
             for i in df_vcn.index:
                 region = df_vcn['Region'][i]
-                if (region in commonTools.endNames or str(region).lower()=='nan'):
+                if (region in commonTools.endNames):# or str(region).lower()=='nan'):
                     break
                 vcn_name = df_vcn['vcn_name'][i]
                 self.vcn_names.append(vcn_name)
 
                 # Check to see if vcn_name is empty in VCNs Sheet
-                if (str(vcn_name).lower() == 'nan'):
-                    print("ERROR!!! vcn_name/row cannot be left empty in VCNs sheet in CD3..exiting...")
-                    exit(1)
-                vcn_name=vcn_name.strip()
-                region = region.strip().lower()
+                #if (str(vcn_name).lower() == 'nan'):
+                #    print("ERROR!!! vcn_name/row cannot be left empty in VCNs sheet in CD3..exiting...")
+                #    exit(1)
+                vcn_name=str(vcn_name).strip()
+
+                region = str(region).strip().lower()
                 self.vcn_region[vcn_name] = region
 
                 self.vcn_lpg_names[vcn_name] = str(df_vcn['lpg_required'][i]).strip().split(",")
@@ -360,7 +359,7 @@ class parseVCNs():
                     #self.peering_dict[vcn_name]=''
 
 
-                if (self.vcn_hub_spoke_peer_none[vcn_name][0].strip().lower() == 'spoke' or self.vcn_hub_spoke_peer_none[vcn_name][0].strip().lower() == 'exportedspoke'):
+                if (self.vcn_hub_spoke_peer_none[vcn_name][0].strip().lower() == 'spoke'):
                     hub_name=self.vcn_hub_spoke_peer_none[vcn_name][1].strip()
                     self.spoke_vcn_names.append(vcn_name)
                     try:
@@ -368,28 +367,16 @@ class parseVCNs():
                     except KeyError:
                         print("ERROR!!! "+hub_name +" not marked as Hub. Verify hub_spoke_peer_none column again..Exiting!")
                         exit(1)
-                #prepare seperate peering dict for establishing peering between LPGs
-                if (self.vcn_hub_spoke_peer_none[vcn_name][0].strip().lower() == 'spoke'):
-                    hub_name=self.vcn_hub_spoke_peer_none[vcn_name][1].strip()
-                    try:
-                        self.objs_peering_dict[hub_name] = self.objs_peering_dict[hub_name]+vcn_name+","
-                    except KeyError:
-                        print("ERROR!!! "+hub_name +" not marked as Hub. Verify hub_spoke_peer_none column again..Exiting!")
-                        exit(1)
 
 
                 if (self.vcn_hub_spoke_peer_none[vcn_name][0].strip().lower() == 'peer'):
                     self.peering_dict[vcn_name]=self.vcn_hub_spoke_peer_none[vcn_name][1].strip()
-                    self.objs_peering_dict[vcn_name] = self.vcn_hub_spoke_peer_none[vcn_name][1].strip()
 
             for k,v in self.peering_dict.items():
                 if(v!="" and v[-1]==','):
                     v=v[:-1]
                     self.peering_dict[k]=v
-            for k,v in self.objs_peering_dict.items():
-                if(v!="" and v[-1]==','):
-                    v=v[:-1]
-                    self.objs_peering_dict[k]=v
+
         if(".csv" in filename):
             config = configparser.RawConfigParser()
             config.optionxform = str
@@ -404,8 +391,6 @@ class parseVCNs():
 class parseVCNInfo():
     all_regions = []
     subnet_name_attach_cidr = ''
-    add_ping_secrules_onprem=''
-    add_ping_secrules_vcnpeering=''
     onprem_destinations = []
     ngw_destinations = []
     igw_destinations = []

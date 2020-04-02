@@ -19,6 +19,7 @@ from commonTools import *
 # outfile is the name of output terraform file generated
 ######
 
+## Start Processing
 
 parser = argparse.ArgumentParser(description="Create Compartments terraform file")
 parser.add_argument("inputfile", help="Full Path of input file. It could be either the csv file or CD3 excel file")
@@ -31,50 +32,70 @@ if len(sys.argv)<3:
         sys.exit(1)
 
 args = parser.parse_args()
+
+#Declare variables
 filename=args.inputfile
 outdir=args.outdir
 prefix=args.prefix
-
 outfile={}
 oname={}
 tfStr={}
 
-
+#If input in cd3 file
 if('.xls' in args.inputfile):
+    # Get vcnInfo object from commonTools
     vcnInfo = parseVCNInfo(args.inputfile)
+
+    #Read cd3 using pandas dataframe
     df = pd.read_excel(args.inputfile, sheet_name='Compartments',skiprows=1)
+
+    #Remove empty rows
     df = df.dropna(how='all')
     df = df.reset_index(drop=True)
+
     #To handle duplicates during export process
     df=df.drop_duplicates()
+
+    #Initialise empty TF string for each region
     for reg in vcnInfo.all_regions:
         tfStr[reg] = ''
 
+    #Iterate over rows
     for i in df.index:
         region = df.iat[i,0]
 
+        #Encountered <End>
         if (region in commonTools.endNames):
             break
 
         region=region.strip().lower()
+
+        #If some invalid region is specified in a row which is not part of VCN Info Tab
         if region not in vcnInfo.all_regions:
             print("Invalid Region; It should be one of the values mentioned in VCN Info tab")
             exit(1)
+
+        #Fetch column values for each row
         compartment_name = df.iat[i, 1]
         comp_tf_name = commonTools.tfname.sub("-", compartment_name)
 
         compartment_desc = df.iat[i, 2]
         parent_compartment_name = df.iat[i, 3]
+
+        # If parent compartment name is either empty or root; put tenancy ocid as parent compartment id
         if (str(parent_compartment_name).lower()== "nan" or parent_compartment_name.lower() == 'root'):
             parent_compartment='${var.tenancy_ocid}'
         else:
             parent_compartment='${oci_identity_compartment.'+parent_compartment_name.strip()+'.id}'
+
         if (str(compartment_name).lower() != "nan"):
             region = region.strip().lower()
-
             compartment_name = compartment_name.strip()
+            #If description field is empty; put name as description
             if (str(compartment_desc).lower() == "nan"):
                 compartment_desc = compartment_name
+
+            #Write all info to TF string
             tfStr[region]=tfStr[region] + """
 resource "oci_identity_compartment" \"""" +comp_tf_name + """" {
 	    compartment_id = \"""" + parent_compartment + """"
@@ -125,7 +146,7 @@ else:
     print("Invalid input file format; Acceptable formats: .xls, .xlsx, .csv")
     exit()
 
-
+#Write TF string to the file in respective region directory
 for reg in vcnInfo.all_regions:
     reg_out_dir = outdir + "/" + reg
     if not os.path.exists(reg_out_dir):
@@ -137,5 +158,3 @@ for reg in vcnInfo.all_regions:
         oname[reg].write(tfStr[reg])
         oname[reg].close()
         print(outfile[reg] + " containing TF for compartments has been created for region "+reg)
-
-

@@ -141,3 +141,8 @@ Below are the highlights of this release:
     ATTENION!!! Below RouteTables are not attached to any subnet or DRG and LPG; If you want to delete any of them, remove the TF file!!!")
 
     ATTENION!!! Below SecLists are not attached to any subnet; If you want to delete any of them, remove the TF file!!!")
+
+------------------------
+SetUPOCI_Via_TF Tag v6.0.1
+------------------------
+Bug fix for Instance, FSS, LBR and DB creation using subnet name

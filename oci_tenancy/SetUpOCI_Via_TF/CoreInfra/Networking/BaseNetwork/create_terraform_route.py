@@ -25,7 +25,6 @@ parser = argparse.ArgumentParser(description="Creates route tables containing de
 parser.add_argument("inputfile", help="Full Path of properties file. eg vcn-info.properties or cd3 excel file")
 parser.add_argument("outdir", help="Output directory for creation of TF files")
 parser.add_argument("--modify_network", help="Modify: true or false", required=False)
-parser.add_argument("--nongf_tenancy", help="non greenfield tenancy: true or false", required=False)
 
 
 if len(sys.argv)<3:
@@ -35,7 +34,6 @@ if len(sys.argv)<3:
 args = parser.parse_args()
 filename=args.inputfile
 outdir = args.outdir
-nongf_tenancy = args.nongf_tenancy
 if args.modify_network is not None:
     modify_network = str(args.modify_network)
 else:
@@ -115,7 +113,6 @@ def createDRGRtTableString(compartment_var_name,hub_vcn_name,peering_dict,region
         return
 
     drg_rt_name=""
-    #if (nongf_tenancy == "true"):
     if (os.path.exists(outdir + "/" + region + "/obj_names.safe")):
         with open(outdir + "/" + region + "/obj_names.safe") as f:
             for line in f:
@@ -185,7 +182,6 @@ def createDRGRtTableString(compartment_var_name,hub_vcn_name,peering_dict,region
 
 def createLPGRtTableString(compartment_var_name,hub_vcn_name,peering_dict,region):
     #Retain exported route tables associated with exported LPGs
-    # if (nongf_tenancy == "true"):
     if (os.path.exists(outdir + "/" + region + "/obj_names.safe")):
         with open(outdir + "/" + region + "/obj_names.safe") as f:
             for line in f:

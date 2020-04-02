@@ -24,18 +24,21 @@ from commonTools import *
 # prefix
 ######
 
+## Start Processing
+
 parser = argparse.ArgumentParser(description="Create major-objects (VCN, IGW, NGW, DRG, LPGs etc for the VCN) terraform file")
 parser.add_argument("inputfile",help="Full Path of input file either props file. eg vcn-info.properties or cd3 excel file")
 parser.add_argument("outdir", help="Output directory for creation of TF files")
 parser.add_argument("prefix", help="customer name/prefix for all file names")
 parser.add_argument("--modify_network", help="modify network: true or false", required=False)
-parser.add_argument("--nongf_tenancy", help="non greenfield tenancy: true or false", required=False)
 
 if len(sys.argv) < 3:
     parser.print_help()
     sys.exit(1)
 
 args = parser.parse_args()
+
+#Declare Variables
 filename = args.inputfile
 outdir = args.outdir
 prefix = args.prefix
@@ -43,7 +46,6 @@ if args.modify_network is not None:
     modify_network = str(args.modify_network)
 else:
     modify_network = "false"
-nongf_tenancy = args.nongf_tenancy
 
 
 outfile = {}
@@ -66,7 +68,7 @@ data "oci_identity_availability_domains" "ADs" {
 }"""
 
 
-
+# Function to establish peering between LPGs
 def establishPeering(peering_dict):
     for left_vcn, value in peering_dict.items():
         region = vcns.vcn_region[left_vcn]
@@ -132,7 +134,7 @@ def processVCN(region, vcn_name, vcn_cidr, vcn_drg, vcn_igw, vcn_ngw, vcn_sgw, v
             type = "DomainNameServer"
             server_type = "VcnLocalPlusInternet"
         }
-    }
+    }   
     """
 
     #Wite major objects data
@@ -180,7 +182,6 @@ def processVCN(region, vcn_name, vcn_cidr, vcn_drg, vcn_igw, vcn_ngw, vcn_sgw, v
         drg_tf_name = commonTools.tfname.sub("-", drg_name)
 
         drg_rt_name=""
-        #if(nongf_tenancy=="true"):
         if (os.path.exists(outdir + "/" + region + "/obj_names.safe")):
             with open(outdir + "/" + region + "/obj_names.safe") as f:
                 for line in f:
@@ -194,7 +195,6 @@ def processVCN(region, vcn_name, vcn_cidr, vcn_drg, vcn_igw, vcn_ngw, vcn_sgw, v
             rt_var = vcn_name + "_" + drg_rt_name
 
         drg_attach_name = ""
-        #if (nongf_tenancy == "true"):
         if(os.path.exists(outdir + "/" + region + "/obj_names.safe")):
             with open(outdir + "/" + region + "/obj_names.safe") as f:
                 for line in f:
@@ -308,6 +308,7 @@ def processVCN(region, vcn_name, vcn_cidr, vcn_drg, vcn_igw, vcn_ngw, vcn_sgw, v
 
 # If input is CD3 excel file
 if ('.xls' in filename):
+    # Get vcnInfo and vcns object from commonTools
     vcnInfo = parseVCNInfo(filename)
     vcns = parseVCNs(filename)
 
@@ -315,7 +316,10 @@ if ('.xls' in filename):
         tfStr[reg] = ''
         dhcpStr[reg] = ''
 
+    # Read cd3 using pandas dataframe
     df = pd.read_excel(filename, sheet_name='VCNs', skiprows=1)
+
+    # Remove empty rows
     df = df.dropna(how='all')
     df = df.reset_index(drop=True)
 
@@ -505,5 +509,4 @@ elif(modify_network == 'false'):
             oname[reg].close()
             print(outfile[reg] + " containing TF for VCN major objects has been created for region " + reg)
 
-#if(nongf_tenancy=="false"):
 establishPeering(vcns.peering_dict)

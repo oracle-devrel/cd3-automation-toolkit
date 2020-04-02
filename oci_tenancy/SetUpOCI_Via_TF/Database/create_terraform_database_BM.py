@@ -8,7 +8,9 @@ import argparse
 import pandas as pd
 import os
 import datetime
-import csv
+sys.path.append(os.getcwd()+"/..")
+from commonTools import *
+
 
 x = datetime.datetime.now()
 date = x.strftime("%S").strip()
@@ -108,6 +110,7 @@ if ('.xls' in filename):
         database_auto_backup_option = df['Enable Automatic Backups'][i].strip()
 
         database_subnet_name = df['Subnet name'][i].strip()
+        database_subnet_name = commonTools.tfname.sub("-", database_subnet_name.strip())
 
         database_ssh_key = df['SSH Key'][i].strip()
 

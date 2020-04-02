@@ -43,6 +43,10 @@ if(input_format=='cd3'):
         if(input_cd3file==''):
             print("input cd3file location cannot be left blank. Exiting... ")
             exit(1)
+        elif(".xls" not in input_cd3file):
+            print("valid formats for input cd3file are either .xls or .xlsx")
+            exit(1)
+
     except Exception as e:
         print(e)
         print('Check if input properties exist and try again..exiting...`    ')
@@ -238,6 +242,33 @@ if (input_nongf_tenancy.lower() == 'true'):
     #else:
     #    print("Invalid Choice!!")
     exit()
+if (input_format == 'cd3'):
+    inputfile = input_cd3file
+
+    cd3validate = input("Do you want to verify CD3? Enter y or n: ")
+    if(cd3validate.lower()=='y'):
+        print("It will verify tabs: VCNs, DHCP and Subnets in excel sheet\n")
+        if (input_config_file == ''):
+            command = 'python cd3Validator.py ' + inputfile
+            print("Executing Command: " + command)
+            exitval=os.system(command)
+        else:
+            command = 'python cd3Validator.py ' + inputfile + ' --configFileName ' + input_config_file
+            print("Executing Command: " + command)
+            exitval=os.system(command)
+        print("\n")
+        if(exitval==1):
+            prcd_input = input("Do you still want to proceed with setUpOCI? Enter y or n: ")
+            if(prcd_input.lower()=='y'):
+                pass
+            else:
+                print("Exiting...")
+                exit()
+    elif(cd3validate.lower()=='n'):
+        pass
+    else:
+        print("wrong input")
+        exit()
 
 print("1.  Identity")
 print("2.  Networking")
