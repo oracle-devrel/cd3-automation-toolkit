@@ -105,12 +105,14 @@ def showPeering(vcnsob,oci_vcn_lpgs):
             right_vcn_lpg=vcnsob.vcn_lpg_names[right_vcn][0]
             vcnsob.vcn_lpg_names[right_vcn].pop(0)
             logging.log(60,left_vcn_lpg + " of VCN " + left_vcn + " will be peered with " + right_vcn_lpg + " of VCN " + right_vcn)
-            if(left_vcn_lpg in oci_vcn_lpgs[left_vcn]):
-                logging.log(60,"ERROR!!! "+left_vcn_lpg +" for vcn "+left_vcn+" already exists in OCI. Use another name")
-                present=True
-            elif(right_vcn_lpg in oci_vcn_lpgs[right_vcn]):
-                logging.log(60,"ERROR!!! " + right_vcn_lpg + " for vcn "+right_vcn+"  already exists in OCI. Use another name")
-                present =True
+            if(left_vcn in oci_vcn_lpgs.keys()):
+                if(left_vcn_lpg in oci_vcn_lpgs[left_vcn]):
+                    logging.log(60,"ERROR!!! "+left_vcn_lpg +" for vcn "+left_vcn+" already exists in OCI. Use another name")
+                    present=True
+            if(right_vcn in oci_vcn_lpgs.keys()):
+                if(right_vcn_lpg in oci_vcn_lpgs[right_vcn]):
+                    logging.log(60,"ERROR!!! " + right_vcn_lpg + " for vcn "+right_vcn+"  already exists in OCI. Use another name")
+                    present =True
 
     return present
 
