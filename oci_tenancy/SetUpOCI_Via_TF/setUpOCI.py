@@ -245,8 +245,8 @@ if (input_nongf_tenancy.lower() == 'true'):
 if (input_format == 'cd3'):
     inputfile = input_cd3file
 
-    cd3validate = input("Do you want to verify CD3. Enter y or n: ")
-    if(cd3validate=='y'):
+    cd3validate = input("Do you want to verify CD3? Enter y or n: ")
+    if(cd3validate.lower()=='y'):
         print("It will verify tabs: VCNs, DHCP and Subnets in excel sheet\n")
         if (input_config_file == ''):
             command = 'python cd3Validator.py ' + inputfile
@@ -258,14 +258,17 @@ if (input_format == 'cd3'):
             exitval=os.system(command)
         print("\n")
         if(exitval==1):
-            print("Exiting...")
-            exit()
-    elif(cd3validate=='n'):
+            prcd_input = input("Do you still want to proceed with setUpOCI? Enter y or n: ")
+            if(prcd_input.lower()=='y'):
+                pass
+            else:
+                print("Exiting...")
+                exit()
+    elif(cd3validate.lower()=='n'):
         pass
     else:
         print("wrong input")
-        exit(1)
-
+        exit()
 
 print("1.  Identity")
 print("2.  Networking")

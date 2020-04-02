@@ -519,16 +519,16 @@ def main():
         logging.log(60,"ERROR: Make appropriate changes to CD3 Values as per above Errors and try again !!!")
         print("\n\nSummary:")
         print("=======")
-        print("Errors Found!!! Please check cd3Validator.log for details!!")
+        print("Errors Found!!! Please check cd3Validator.log for details before proceeding!!")
         exit(1)
     elif vcn_check == False and vcn_cidr_check == False and vcn_peer_check == False  and subnet_check == False and subnet_cidr_check == False and dhcp_check == False:
         logging.log(60,"=======")
         logging.log(60,"Summary:")
         logging.log(60,"=======")
-        logging.log(60,"There are no errors in CD3. Just verify the LPG's Status section for any overlapping LPG declaration. Otherwise You are good to proceed !!!")
+        logging.log(60,"There are no errors in CD3. Verify LPG's Peering Check Status once. Otherwise You are good to proceed !!!")
         print("\n\nSummary:")
         print("=======")
-        print("There are no errors in CD3. Please check cd3Validator.log for details!!")
+        print("There are no errors in CD3. Verify LPG's Peering Check Status once. Otherwise You are good to proceed !!!")
         exit(0)
 
 if __name__ == '__main__':
