@@ -127,46 +127,25 @@ def checkIfDuplicates(listOfElems):
 
 #Checks if the CIDRs overlap for each VCN and Subnet mentioned in excelsheet
 def validate_cidr(cidr_list, cidrs_dict):
-
-    duplicate = []
-    count = 0
     cidroverlap_check=False
     cidrdup_check=False
 
-    #Check for duplicate CIDRs
-    temp_list=[]
-    i=0
-    for cidr in cidr_list:
-        if(cidr not in temp_list):
-            temp_list.append(cidr)
-        else:
-            logging.log(60, "ROW " + str(i + 3) + " : Duplicate CIDR value "+cidr +" with ROW "+str(cidr_list.index(cidr)+3))
-            cidrdup_check=True
-        i=i+1
+    for i in range(0,len(cidr_list)):
+        cidr1 = ipaddr.IPNetwork(cidr_list[i])
+        for j in range(i+1,len(cidr_list)):
+            cidr2 = ipaddr.IPNetwork(cidr_list[j])
 
+            # Check for Duplicate CIDRs
+            if(cidr1==cidr2):
+                logging.log(60, "ROW " + str(j + 3) + " : Duplicate CIDR value " + str(cidr2) + " with ROW " + str(i + 3))
+                cidrdup_check = True
+                continue
 
-    for x in enumerate(cidr_list):
-        if x[0] != None and x[0] + 1 != None:
-            cidr_left = x[1]
-            for y in enumerate(cidr_list):
-                if y[0] != None and y[0] + 1 != None:
-                    cidr_right = y[1]
-                    cidr_left = ipaddr.IPNetwork(cidr_left)
-                    cidr_right = ipaddr.IPNetwork(cidr_right)
-
-                    if str(cidr_left) == str(cidr_right):
-                        break
-                    else:
-                        bool = cidr_right.overlaps(cidr_left)
-                        if bool == True:
-                            duplicate.append(cidrs_dict[str(cidr_left)])
-                            duplicate = set(duplicate)
-                            duplicate = list(duplicate)
-                            if count == 0:
-                                count = count + 1
-                            logging.log(60,"ROW "+ str(x[0]+2) +" : "+str(cidr_right) + " of " + cidrs_dict[str(cidr_right)] + " overlaps with CIDR - "+ str(cidr_left)+" of " +
-                                  cidrs_dict[str(cidr_left)])
-                            cidroverlap_check = True
+            # Check for Overlapping CIDRs
+            bool=cidr1.overlaps(cidr2)
+            if(bool==True):
+                logging.log(60, "ROW " + str(j+3) + " : CIDR "+str(cidr2) +" overlaps with ROW "+str(i+3))
+                cidroverlap_check=True
 
     if (cidroverlap_check == True or cidrdup_check==True):
         return True
