@@ -131,10 +131,15 @@ def validate_cidr(cidr_list, cidrs_dict):
     cidrdup_check=False
 
     for i in range(0,len(cidr_list)):
+        if (cidr_list[i] == ""):
+            continue
         cidr1 = ipaddr.IPNetwork(cidr_list[i])
-        for j in range(i+1,len(cidr_list)):
-            cidr2 = ipaddr.IPNetwork(cidr_list[j])
 
+        for j in range(i+1,len(cidr_list)):
+            if (cidr_list[j] == ""):
+                continue
+
+            cidr2 = ipaddr.IPNetwork(cidr_list[j])
             # Check for Duplicate CIDRs
             if(str(cidr1)==str(cidr2)):
                 logging.log(60, "ROW " + str(j + 3) + " : Duplicate CIDR value " + str(cidr2) + " with ROW " + str(i + 3))
@@ -167,7 +172,6 @@ def validate_subnets(filename,comp_ids,vcnobj,vcnInfoobj):
 
     cidr_list = []
     cidrs_dict = {}
-    tab = "Subnet"
     subnet_dnsdup_check=False
     subnet_dnswrong_check=False
     subnet_empty_check=False
@@ -175,7 +179,6 @@ def validate_subnets(filename,comp_ids,vcnobj,vcnInfoobj):
     subnet_comp_check=False
     subnet_reg_check=False
     subnet_vcn_check=False
-    subnet_check=False
     subnet_dns=[]
 
     logging.log(60,"Start Null or Wrong value check in each row-----------------")
@@ -207,13 +210,16 @@ def validate_subnets(filename,comp_ids,vcnobj,vcnInfoobj):
             logging.log(60,"ROW "+str(i+3) + " : VCN "+vcn_name+" not part of VCNs Tab")
             subnet_vcn_check=True
 
-        # Check if the dns_label field has special characters
+        # Check if the dns_label field has special characters or is duplicate
         dns_value=str(df[str(df.columns[16])][i])
-        if(dns_value.lower()!="nan"):
+        if (dns_value.lower() == "nan"):
+            subnet_dns.append("")
+        else:
             if (dns_value not in subnet_dns):
                 subnet_dns.append(dns_value)
             else:
                 logging.log(60, "ROW " + str(i + 3) + " : Duplicate dns_label value " + dns_value +" with ROW "+str(subnet_dns.index(dns_value)+3))
+                subnet_dns.append(dns_value)
                 subnet_dnsdup_check = True
             subnet_dnswrong_check = checklabel(dns_value, count)
 
@@ -227,10 +233,10 @@ def validate_subnets(filename,comp_ids,vcnobj,vcnInfoobj):
 
         # Collect CIDR List for validating
         if str(df[df.columns[4]][i]).lower() == "nan":
+            cidr_list.append("")
             continue
         else:
             cidr_list.append(str(df[df.columns[4]][i]))
-            cidrs_dict.update({str(df[df.columns[4]][i]): str(df[df.columns[3]][i])})
 
         # Check for null values and display appropriate message
         for j in df.keys():
@@ -254,7 +260,6 @@ def validate_subnets(filename,comp_ids,vcnobj,vcnInfoobj):
     subnet_cidr_check = validate_cidr(cidr_list,cidrs_dict)
     if (subnet_cidr_check == True):
         print("Subnet CIDRs Check failed!!")
-
     logging.log(60, "End Subnet CIDRs Check---------------------------------\n")
 
     return subnet_check,subnet_cidr_check
@@ -274,17 +279,18 @@ def validate_vcns(filename,comp_ids,vcn_ids,vcnobj,vcnInfoobj):#,vcn_cidrs,vcn_c
     cidr_list = []
     cidrs_dict = {}
 
-    tab = "VCN"
     vcn_empty_check=False
     vcn_dnswrong_check=False
     vcn_dnsdup_check=False
     vcn_comp_check=False
     vcn_reg_check=False
+    vcn_vcnname_check=False
 
     vcn_check=False
 
     logging.log(60,"Start Null or Wrong value Check in each row---------------")
     vcn_dns=[]
+    vcn_names=[]
     #Loop through each row
     for i in df.index:
         count = count + 1
@@ -308,20 +314,35 @@ def validate_vcns(filename,comp_ids,vcn_ids,vcnobj,vcnInfoobj):#,vcn_cidrs,vcn_c
             logging.log(60,"ROW "+str(i+3)+" : Compartment " + comp_name + " doesnot exist in OCI")
             vcn_comp_check=True
 
+        #Check for invalid(duplicate) vcn name
+        vcn_name=str(df[str(df.columns[2])][i])
+        if(vcn_name.lower()=='nan'):
+            vcn_names.append("")
+        else:
+            if(vcn_name not in vcn_names):
+                vcn_names.append(vcn_name)
+            else:
+                logging.log(60, "ROW " + str(i + 3) + " : Duplicate vcn_name value " + vcn_name + " with ROW " + str(vcn_names.index(vcn_name) + 3))
+                vcn_names.append(vcn_name)
+                vcn_vcnname_check=True
 
-        # Check if the dns_label field has special characters
+
+        # Check if the dns_label field has special characters or is duplicate
         dns_value = str(df[str(df.columns[10])][i])
-        if (dns_value.lower() != "nan"):
+        if (dns_value.lower() == "nan"):
+            vcn_dns.append("")
+        else:
             if (dns_value not in vcn_dns):
                 vcn_dns.append(dns_value)
             else:
                 logging.log(60, "ROW " + str(i + 3) + " : Duplicate dns_label value " + dns_value +" with ROW "+str(vcn_dns.index(dns_value)+3))
+                vcn_dns.append(dns_value)
                 vcn_dnsdup_check = True
             vcn_dnswrong_check = checklabel(dns_value, count)
 
         # Collect CIDR List for validating
         if str(df[df.columns[3]][i]).lower() == "nan":
-            continue
+            cidr_list.append("")
         else:
             cidr_list.append(str(df[df.columns[3]][i]))
             cidrs_dict.update({str(df[df.columns[3]][i]): str(df[df.columns[2]][i])})
@@ -336,7 +357,7 @@ def validate_vcns(filename,comp_ids,vcn_ids,vcnobj,vcnInfoobj):#,vcn_cidrs,vcn_c
                     vcn_empty_check = True
 
 
-    if (vcn_reg_check == True or vcn_comp_check == True or vcn_empty_check == True or vcn_dnswrong_check == True or vcn_dnsdup_check == True or vcn_cidr_check == True):
+    if (vcn_vcnname_check==True or vcn_reg_check == True or vcn_comp_check == True or vcn_empty_check == True or vcn_dnswrong_check == True or vcn_dnsdup_check == True or vcn_cidr_check == True):
         print("Null or Wrong value Check failed!!")
         vcn_check = True
     logging.log(60, "End Null or Wrong value Check in each row---------------\n")
