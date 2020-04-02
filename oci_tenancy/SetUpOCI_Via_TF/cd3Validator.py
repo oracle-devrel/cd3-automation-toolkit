@@ -357,7 +357,7 @@ def validate_vcns(filename,comp_ids,vcn_ids,vcnobj,vcnInfoobj):#,vcn_cidrs,vcn_c
                     vcn_empty_check = True
 
 
-    if (vcn_vcnname_check==True or vcn_reg_check == True or vcn_comp_check == True or vcn_empty_check == True or vcn_dnswrong_check == True or vcn_dnsdup_check == True or vcn_cidr_check == True):
+    if (vcn_vcnname_check==True or vcn_reg_check == True or vcn_comp_check == True or vcn_empty_check == True or vcn_dnswrong_check == True or vcn_dnsdup_check == True):
         print("Null or Wrong value Check failed!!")
         vcn_check = True
     logging.log(60, "End Null or Wrong value Check in each row---------------\n")
