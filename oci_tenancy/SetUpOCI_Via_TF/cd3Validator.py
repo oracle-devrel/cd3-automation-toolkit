@@ -144,7 +144,7 @@ def validate_cidr(cidr_list, cidrs_dict):
             # Check for Overlapping CIDRs
             bool=cidr1.overlaps(cidr2)
             if(bool==True):
-                logging.log(60, "ROW " + str(j+3) + " : CIDR "+str(cidr2) +" overlaps with ROW "+str(i+3))
+                logging.log(60, "ROW " + str(j+3) + " : CIDR value "+str(cidr2) +" overlaps with ROW "+str(i+3)+ " CIDR value "+str(cidr1))
                 cidroverlap_check=True
 
     if (cidroverlap_check == True or cidrdup_check==True):
