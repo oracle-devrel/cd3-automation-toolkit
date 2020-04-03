@@ -56,14 +56,16 @@ def get_network_compartment_id(config):
     compartment_ids['root']=config['tenancy']
     return compartment_ids
 
-def get_vcn_ids(compartment_ids,config):
+def get_vcn_ids(compartment_ids,vcnInfoobj,config):
     #Fetch the VCN ID
-    vnc = VirtualNetworkClient(config)
-    for comp_id in compartment_ids.values():
-        vcn_list = oci.pagination.list_call_get_all_results(vnc.list_vcns,compartment_id=comp_id)
-        for vcn in vcn_list.data:
-            #if(vcn.lifecycle_state == 'ACTIVE'):
-            vcn_ids[vcn.display_name]=vcn.id
+    for region in vcnInfoobj.all_regions:
+        config.__setitem__("region", commonTools.region_dict[region])
+        vnc = VirtualNetworkClient(config)
+        for comp_id in compartment_ids.values():
+            vcn_list = oci.pagination.list_call_get_all_results(vnc.list_vcns,compartment_id=comp_id)
+            for vcn in vcn_list.data:
+                #if(vcn.lifecycle_state == 'ACTIVE'):
+                vcn_ids[vcn.display_name]=vcn.id
     return vcn_ids
 
 #Checks for special characters in dns_label name
@@ -269,6 +271,9 @@ def validate_subnets(filename,comp_ids,vcnobj,vcnInfoobj):
 
 #Check if VCNs tab is compliant
 def validate_vcns(filename,comp_ids,vcn_ids,vcnobj,vcnInfoobj):#,vcn_cidrs,vcn_compartment_ids):
+
+    vcn_ids = get_vcn_ids(comp_ids, vcnInfoobj, config)
+
     #Read the VCNs tab from excel
     df = pd.read_excel(filename, sheet_name='VCNs', skiprows=1)
     # Drop null values
@@ -499,7 +504,6 @@ def main():
     logging.log(60,"============================= Verifying VCNs Tab ==========================================\n")
     print("\nProcessing VCNs Tab..")
     comp_ids = get_network_compartment_id(config)
-    vcn_ids = get_vcn_ids(comp_ids, config)
     vcn_check,vcn_cidr_check,vcn_peer_check = validate_vcns(filename, comp_ids, vcn_ids,vcnobj,vcnInfoobj)
 
 
