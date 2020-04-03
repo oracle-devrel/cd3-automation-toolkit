@@ -516,7 +516,7 @@ def main():
     dhcp_check = validate_dhcp(filename,comp_ids,vcnobj,vcnInfoobj)
 
     #Prints the final result; once the validation is complete
-    if vcn_check == True or vcn_cidr_check == True or vcn_peer_check == True  or subnet_check == True or subnet_cidr_check == True or dhcp_check == True:
+    if vcn_check == True or vcn_cidr_check == True or vcn_peer_check == True or subnet_check == True or subnet_cidr_check == True or dhcp_check == True:
         logging.log(60,"=======")
         logging.log(60,"Summary:")
         logging.log(60,"=======")
@@ -525,14 +525,14 @@ def main():
         print("=======")
         print("Errors Found!!! Please check cd3Validator.log for details before proceeding!!")
         exit(1)
-    elif vcn_check == False and vcn_cidr_check == False and vcn_peer_check == False  and subnet_check == False and subnet_cidr_check == False and dhcp_check == False:
+    elif vcn_check == False and vcn_cidr_check == False and vcn_peer_check == False and subnet_check == False and subnet_cidr_check == False and dhcp_check == False:
         logging.log(60,"=======")
         logging.log(60,"Summary:")
         logging.log(60,"=======")
-        logging.log(60,"There are no errors in CD3. Verify LPG's Peering Check Status once. Otherwise You are good to proceed !!!")
+        logging.log(60,"There are no errors in CD3. Verify LPG's Peering Check Status once in the log file. Otherwise You are good to proceed !!!")
         print("\n\nSummary:")
         print("=======")
-        print("There are no errors in CD3. Verify LPG's Peering Check Status once. Otherwise You are good to proceed !!!")
+        print("There are no errors in CD3. Verify LPG's Peering Check Status once in the log file. Otherwise You are good to proceed !!!")
         exit(0)
 
 if __name__ == '__main__':
