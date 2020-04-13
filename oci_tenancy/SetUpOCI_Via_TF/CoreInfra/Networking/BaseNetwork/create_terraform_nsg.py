@@ -33,9 +33,9 @@ from cd3parser import CD3Parser as cd3parser
 import os
 import pandas as pd
 import sys
-sys.path.append(os.getcwd()+"/../../..")
-from commonTools import *
 
+sys.path.append(os.getcwd() + "/../../..")
+from commonTools import *
 
 DEBUG = False
 
@@ -54,11 +54,11 @@ def directionOptionals(nsgParser, options):
         srcdest = options[7]
     # processing becomes the same from this point
     # if srcType or destType is not empty, respective src/dest req.
-    if(srcdestType.lower()=='cidr'):
-        srcdestType="CIDR_BLOCK"
+    if (srcdestType.lower() == 'cidr'):
+        srcdestType = "CIDR_BLOCK"
     if (srcdestType.lower() == 'nsg'):
         srcdestType = "NETWORK_SECURITY_GROUP"
-        srcdest="${oci_core_network_security_group."+srcdest+".id}"
+        srcdest = "${oci_core_network_security_group." + srcdest + ".id}"
     if (srcdestType.lower() == 'service'):
         srcdestType = "SERVICE_CIDR_BLOCK"
 
@@ -72,12 +72,11 @@ def directionOptionals(nsgParser, options):
 
 
 def protocolOptionals(nsgParser, options):
-
     protocol = options[2].lower()
     protocolHeader = ""
     if protocol == "all":
         return ""
-    elif protocol == "icmp":
+    elif protocol == "1":
         code = "" if nsgParser.checkOptionalEmpty(options[13]) \
             else "        code = \"{}\"\n".format(int(options[13]))
         if nsgParser.checkOptionalEmpty(options[12]):
@@ -89,10 +88,10 @@ def protocolOptionals(nsgParser, options):
                     "{}"
                     "    }}" \
                     ).format(int(options[12]), code)
-    elif protocol == "tcp":
-        protocolHeader = protocol
-    elif protocol == "udp":
-        protocolHeader = protocol
+    elif protocol == "6":
+        protocolHeader = "tcp"
+    elif protocol == "17":
+        protocolHeader = "udp"
     else:
         return "SELECTION UNCOMMON and NOT HANDLED, please use TCP instead and specify ports"
     dPort = "" if nsgParser.checkOptionalEmpty(options[10]) \
@@ -136,18 +135,18 @@ def NSGtemplate(nsgParser, key, value, outdir):
         "    compartment_id = \"${{var.{}}}\"\n"
         "    vcn_id = \"${{oci_core_vcn.{}.id}}\"\n"
         "}}\n" \
-        ).format("{}".format(key[2]), key[2],key[0], commonTools.tfname.sub("-", key[1]))
+        ).format("{}".format(key[2]), key[2], key[0], commonTools.tfname.sub("-", key[1]))
     with open(outdir + "/{}_nsg.tf".format(key[2]), 'w') as f:
         f.write(resource_group)
         ruleindex = 1
         for rule in value:
             null_rule = 0
-            for i in range(1,3):
-                if(str(rule[i]).lower()=='nan'):
-                    #print("Creating Empty NSG: "+rule[0])
-                    null_rule=1
+            for i in range(1, 3):
+                if (str(rule[i]).lower() == 'nan'):
+                    # print("Creating Empty NSG: "+rule[0])
+                    null_rule = 1
                     break
-            if(null_rule==1):
+            if (null_rule == 1):
                 continue
 
             f.write("{}{}{}{}\n}}\n".format(NSGrulesTemplate(nsgParser, rule, ruleindex), \
@@ -160,26 +159,26 @@ def NSGtemplate(nsgParser, key, value, outdir):
 
 
 def NSGrulesTemplate(nsgParser, rule, index):
-    if(str(rule[14]).lower()=='nan'):
-        rule[14]=""
+    if (str(rule[14]).lower() == 'nan'):
+        rule[14] = ""
     resource_group_rule = ( \
         "resource \"oci_core_network_security_group_security_rule\" \"{}_security_rule{}\" {{\n"
         "    network_security_group_id = \"${{oci_core_network_security_group.{}.id}}\"\n"
         "    description = \"{}\"\n"
         "    direction = \"{}\"\n"
         "    protocol = \"{}\""
-    ).format(rule[0], index, rule[0], rule[14],rule[1].upper(), getProtocolNumber(rule[2]))
+    ).format(rule[0], index, rule[0], rule[14], rule[1].upper(), getProtocolNumber(rule[2]))
     return resource_group_rule
 
 
 def getProtocolNumber(protocol):
     if protocol.lower() == 'all':
         return "all"
-    if protocol.lower() == 'tcp':
+    if protocol == '6':
         return "6"
-    if protocol.lower() == 'udp':
+    if protocol == '17':
         return "17"
-    if protocol.lower() == 'icmp':
+    if protocol == '1':
         return "1"
 
 
@@ -196,17 +195,17 @@ def main():
     parser.add_argument("outdir", help="Output directory")
     args = parser.parse_args()
 
-    if('.csv' in args.inputfile):
+    if ('.csv' in args.inputfile):
         df = pd.read_csv(args.inputfile)
         excel_writer = pd.ExcelWriter('tmp_to_excel.xlsx', engine='xlsxwriter')
         df.to_excel(excel_writer, 'NSGs')
         excel_writer.save()
-        args.inputfile='tmp_to_excel.xlsx'
+        args.inputfile = 'tmp_to_excel.xlsx'
 
     # tested path allows for space, full or relative path acceptable
     nsgParser = cd3parser(os.path.realpath(args.inputfile)).getNSG()
 
-    if('tmp_to_excel' in args.inputfile):
+    if ('tmp_to_excel' in args.inputfile):
         os.remove(args.inputfile)
     outdir = args.outdir
 
@@ -232,7 +231,7 @@ def main():
         [NSGtemplate(nsgParser, k, v, reg_outdir) for k, v in
          nsgParser.getRegionSpecificDict(regionDict, region).items()]
         #   f.close()
-    #print("\nTerraform files write out to respective {}/[region]/[NSG Name]_nsg.tf".format(outdir))
+    # print("\nTerraform files write out to respective {}/[region]/[NSG Name]_nsg.tf".format(outdir))
 
     if DEBUG:
         nsgParser.debug()
