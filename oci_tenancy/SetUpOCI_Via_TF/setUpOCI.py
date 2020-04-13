@@ -257,7 +257,7 @@ if (input_format == 'cd3'):
             print("Executing Command: " + command)
             exitval=os.system(command)
         print("\n")
-        if(exitval==1):
+        if(exitval==1 or exitval==256):
             prcd_input = input("Do you still want to proceed with setUpOCI? Enter y or n: ")
             if(prcd_input.lower()=='y'):
                 pass
