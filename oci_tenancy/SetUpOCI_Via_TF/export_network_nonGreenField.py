@@ -39,7 +39,30 @@ def print_nsgsl(region, comp_name, vcn_name, nsg, nsgsl):
     dportmax = ""
     icmptype = ""
     icmpcode = ""
+    nsgname = ""
+    nsgsourcetype = nsgsl.source_type
+    nsgdestinationtype = nsgsl.destination_type
+    nsgdestination = nsgsl.destination
+    nsgsource = nsgsl.source
 
+    if (nsgsl.destination_type == "CIDR_BLOCK"):
+        nsgdestinationtype = "cidr"
+    if (nsgsl.source_type == "CIDR_BLOCK"):
+        nsgsourcetype = "cidr"
+    if (nsgsl.destination_type == "SERVICE_CIDR_BLOCK"):
+        nsgdestinationtype = "service"
+    if (nsgsl.source_type == "SERVICE_CIDR_BLOCK"):
+        nsgsourcetype = "service"
+    if (nsgsl.destination is not None):
+        if ("networksecuritygroup" in nsgsl.destination):
+            nsgdestinationtype = "nsg"
+            nsgname = vnc.get_network_security_group(nsgsl.destination).data
+            nsgdestination = nsgname.display_name
+    if (nsgsl.source is not None):
+        if ("networksecuritygroup" in nsgsl.source):
+            nsgsourcetype = "nsg"
+            nsgname = vnc.get_network_security_group(nsgsl.source).data
+            nsgsource = nsgname.display_name
     if (nsgsl.tcp_options is not None):
         if (nsgsl.tcp_options.source_port_range is not None):
             sportmin = nsgsl.tcp_options.source_port_range.min
@@ -62,9 +85,9 @@ def print_nsgsl(region, comp_name, vcn_name, nsg, nsgsl):
 
     protocol = commonTools().protocol_dict[nsgsl.protocol].lower()
     # print (region,comp_name,vcn_name,nsg.display_name, nsgsl.direction, nsgsl.protocol, nsgsl.is_stateless, nsgsl.source_type, nsgsl.source, nsgsl.destination_type, nsgsl.destination,sportmin,sportmax,dportmin,dportmax,icmptype,icmpcode,nsgsl.description)
-    new_row = (region, comp_name, vcn_name, nsg.display_name, nsgsl.direction, protocol, nsgsl.is_stateless,
-               nsgsl.source_type, nsgsl.source, nsgsl.destination_type, nsgsl.destination, sportmin, sportmax, dportmin,
-               dportmax, icmptype, icmpcode, nsgsl.description)
+    new_row = (region, comp_name, vcn_name, nsg.display_name, nsgsl.direction, protocol, nsgsl.is_stateless, nsgsourcetype,nsgsource, nsgdestinationtype, nsgdestination, sportmin, sportmax, dportmin, dportmax, icmptype, icmpcode,nsgsl.description)
+
+    #new_row = (region, comp_name, vcn_name, nsg.display_name, nsgsl.direction, protocol, nsgsl.is_stateless,nsgsl.source_type, nsgsl.source, nsgsl.destination_type, nsgsl.destination, sportmin, sportmax, dportmin,dportmax, icmptype, icmpcode, nsgsl.description)
     rows.append(new_row)
 
 
