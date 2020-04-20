@@ -198,13 +198,13 @@ if (input_nongf_tenancy.lower() == 'true'):
             exit()
 
         print("\n----------------Process SecRulesinOCI tab for SecList creation----------------")
-        command = 'python modify_secrules_tf.py ' + input_cd3file + ' ' + input_outdir + ' '+input_cd3file +' --nongf_tenancy true'
+        command = 'python modify_secrules_tf.py ' + input_cd3file + ' ' + input_outdir + ' '+input_cd3file
         print("Executing Command: " + command)
         exitval=os.system(command)
         if (exitval == 1):
             exit()
         print("\n----------------Process RouteRulesinOCI tab for RouteRule creation----------------")
-        command = 'python modify_routerules_tf.py ' + input_cd3file + ' ' + input_outdir + ' --nongf_tenancy true'
+        command = 'python modify_routerules_tf.py ' + input_cd3file + ' ' + input_outdir
         print("Executing Command: " + command)
         exitval=os.system(command)
         if (exitval == 1):
