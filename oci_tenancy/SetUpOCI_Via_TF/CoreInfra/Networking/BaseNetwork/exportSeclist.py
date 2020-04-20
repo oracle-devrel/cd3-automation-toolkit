@@ -57,7 +57,7 @@ def print_secrules(seclists,region,vcn_name,comp_name):
             if rule.protocol == "all":
                 printstr = (dn + ",egress,all," + str(rule.is_stateless) + "," + rule.destination + ",,,,,,,")
                 new_row=(region,comp_name,vcn_name,dn,'egress','all',str(rule.is_stateless),'','','',rule.destination,'','','','')
-            if rule.protocol == "1":
+            elif rule.protocol == "1":
                 if rule.icmp_options is None:
                     printstr = (dn + ",egress,icmp," + str(rule.is_stateless) + "," + rule.destination + ",,,,,,,")
                     new_row = (region,comp_name,vcn_name,dn,'egress','icmp',str(rule.is_stateless),'','','',rule.destination,'','','','')
@@ -66,7 +66,7 @@ def print_secrules(seclists,region,vcn_name,comp_name):
                     type = convertNullToNothing(rule.icmp_options.type)
                     printstr = (dn + ",egress,icmp," + str(rule.is_stateless) + "," + rule.destination + ",,,,,"+type+","+code)
                     new_row=(region,comp_name,vcn_name,dn,'egress','icmp',str(rule.is_stateless),'','','',rule.destination,'','',type,code)
-            if rule.protocol == "6":
+            elif rule.protocol == "6":
                 if rule.tcp_options is None:
                     printstr = (dn + ",egress,tcp," + str(rule.is_stateless) + ",,,," + rule.destination+",,,,")
                     new_row=(region,comp_name,vcn_name,dn,'egress','tcp',str(rule.is_stateless),'','','',rule.destination,'','','','')
@@ -80,7 +80,7 @@ def print_secrules(seclists,region,vcn_name,comp_name):
                     max = convertNullToNothing(rule.tcp_options.destination_port_range.max)
                     printstr = (dn + ",egress,tcp," + str(rule.is_stateless) + ",,,," + rule.destination + ",," + min + "," + max + ",,")
                     new_row = (region, comp_name, vcn_name, dn, 'egress', 'tcp', str(rule.is_stateless), '', '', '',rule.destination, min, max, '', '')
-            if rule.protocol == "17":
+            elif rule.protocol == "17":
                 if rule.udp_options is None:
                     printstr = (dn + ",egress,udp," + str(rule.is_stateless) + ",,,," + rule.destination+",,,,")
                     new_row = (region, comp_name, vcn_name, dn, 'egress', 'udp', str(rule.is_stateless), '', '', '',rule.destination, '', '', '', '')
@@ -95,6 +95,11 @@ def print_secrules(seclists,region,vcn_name,comp_name):
                     max = convertNullToNothing(rule.udp_options.destination_port_range.max)
                     printstr=(dn + ",egress,udp," + str(rule.is_stateless) + ",,,," + rule.destination + ",," + min + "," + max + ",,")
                     new_row = (region, comp_name, vcn_name, dn, 'egress', 'udp', str(rule.is_stateless), '', '', '',rule.destination, min, max, '', '')
+            #Any Other protocol
+            else:
+                protocol=commonTools().protocol_dict[rule.protocol].lower()
+                new_row= (region, comp_name, vcn_name, dn, 'egress', protocol, str(rule.is_stateless), '', '', '',rule.destination, '', '', '', '')
+
             rows.append(new_row)
             if(tf_import_cmd=="false"):
                 print(printstr)
@@ -111,7 +116,7 @@ def print_secrules(seclists,region,vcn_name,comp_name):
                 else:
                     new_row = (region, comp_name, vcn_name, dn, 'ingress', 'tcp', str(rule.is_stateless), rule.source, '', '', '','', '', '', '')
 
-            if rule.protocol == "1":
+            elif rule.protocol == "1":
                 if rule.icmp_options is None:
                     printstr= (dn + ",ingress,icmp," + str(rule.is_stateless) + "," + rule.source + ",,,,,,,")
                     new_row = (region, comp_name, vcn_name, dn, 'ingress', 'icmp', str(rule.is_stateless), rule.source, '', '', '','', '', '', '')
@@ -121,7 +126,7 @@ def print_secrules(seclists,region,vcn_name,comp_name):
                     printstr= (dn + ",ingress,icmp," + str(rule.is_stateless) + "," + rule.source + ",,,,,," + type + "," + code)
                     new_row = (region, comp_name, vcn_name, dn, 'ingress', 'icmp', str(rule.is_stateless), rule.source, '', '', '','', '', type, code)
 
-            if rule.protocol == "17":
+            elif rule.protocol == "17":
                 if rule.udp_options is None:
                     printstr= (dn + ",ingress,udp," + str(rule.is_stateless) + "," + rule.source + ",,,,,,,")
                     new_row = (region, comp_name, vcn_name, dn, 'ingress', 'udp', str(rule.is_stateless), rule.source, '', '', '','', '', '', '')
@@ -133,9 +138,14 @@ def print_secrules(seclists,region,vcn_name,comp_name):
                 else:
                     new_row = (region, comp_name, vcn_name, dn, 'ingress', 'udp', str(rule.is_stateless), rule.source, '', '', '','', '', '', '')
 
-            if rule.protocol == "all":
+            elif rule.protocol == "all":
                 printstr= (dn + ",ingress,all," + str(rule.is_stateless) + "," + rule.source + ",,,,,,,")
                 new_row=(region, comp_name, vcn_name, dn, 'ingress', 'all', str(rule.is_stateless), rule.source, '', '', '','', '', '', '')
+            #Any Other protocol
+            else:
+                protocol=commonTools().protocol_dict[rule.protocol].lower()
+                new_row= (region, comp_name, vcn_name, dn, 'ingress', protocol, str(rule.is_stateless), rule.source, '', '','', '', '', '', '')
+
             rows.append(new_row)
             if (tf_import_cmd == "false"):
                 print(printstr)
@@ -194,7 +204,7 @@ if(tf_import_cmd=="true"):
     idc = IdentityClient(config)
     regionsubscriptions = idc.list_region_subscriptions(tenancy_id=config['tenancy'])
     for rs in regionsubscriptions.data:
-        for k, v in commonTools.region_dict.items():
+        for k, v in commonTools().region_dict.items():
             if (rs.region_name == v):
                 all_regions.append(k)
     for reg in all_regions:
@@ -208,7 +218,7 @@ else:
 print("\nFetching Security Rules...")
 
 for reg in all_regions:
-    config.__setitem__("region", commonTools.region_dict[reg])
+    config.__setitem__("region", commonTools().region_dict[reg])
     vcn = VirtualNetworkClient(config)
     region = reg.capitalize()
     for ntk_compartment_name in ntk_compartment_ids:

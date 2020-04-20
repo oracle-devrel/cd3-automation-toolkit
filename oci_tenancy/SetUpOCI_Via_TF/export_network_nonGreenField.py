@@ -59,8 +59,10 @@ def print_nsgsl(region, comp_name, vcn_name, nsg, nsgsl):
             icmptype = nsgsl.icmp_options.type
         if (nsgsl.icmp_options.code is not None):
             icmpcode = nsgsl.icmp_options.code
+
+    protocol = commonTools().protocol_dict[nsgsl.protocol].lower()
     # print (region,comp_name,vcn_name,nsg.display_name, nsgsl.direction, nsgsl.protocol, nsgsl.is_stateless, nsgsl.source_type, nsgsl.source, nsgsl.destination_type, nsgsl.destination,sportmin,sportmax,dportmin,dportmax,icmptype,icmpcode,nsgsl.description)
-    new_row = (region, comp_name, vcn_name, nsg.display_name, nsgsl.direction, nsgsl.protocol, nsgsl.is_stateless,
+    new_row = (region, comp_name, vcn_name, nsg.display_name, nsgsl.direction, protocol, nsgsl.is_stateless,
                nsgsl.source_type, nsgsl.source, nsgsl.destination_type, nsgsl.destination, sportmin, sportmax, dportmin,
                dportmax, icmptype, icmpcode, nsgsl.description)
     rows.append(new_row)

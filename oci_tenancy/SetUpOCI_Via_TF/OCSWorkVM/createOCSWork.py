@@ -122,7 +122,7 @@ network_client = oci.core.VirtualNetworkClient(python_config)
 identity_client = oci.identity.IdentityClient(python_config)
 compute_client = oci.core.ComputeClient(python_config)
 regions=input_regions.split(",")
-#region_dict = {'ashburn':'us-ashburn-1','phoenix':'us-phoenix-1','london':'uk-london-1','frankfurt':'eu-frankfurt-1','toronto':'ca-toronto-1','tokyo':'ap-tokyo-1','seoul':'ap-seoul-1','mumbai':'ap-mumbai-1','sydney':'ap-sydney-1','saopaulo':'sa-saopaulo-1','zurich':'eu-zurich-1'}
+ct=commonTools()
 
 def write_file(file_name,file_data):
     file_to_open = tmp_folder / file_name
@@ -180,21 +180,21 @@ def create_compartment(compartment_name,compartment_desc):
             new_config = python_config
             message = e.message
             if ("IAD" in message):
-                new_config.__setitem__("region",commonTools.region_dict['ashburn'])
+                new_config.__setitem__("region",ct.region_dict['ashburn'])
             if ("PHX" in message):
-                new_config.__setitem__("region", commonTools.region_dict['phoenix'])
+                new_config.__setitem__("region", ct.region_dict['phoenix'])
             if ("YYZ" in message):
-                new_config.__setitem__("region", commonTools.region_dict['toronto'])
+                new_config.__setitem__("region", ct.region_dict['toronto'])
             if ("FRA" in message):
-                new_config.__setitem__("region", commonTools.region_dict['frankfurt'])
+                new_config.__setitem__("region", ct.region_dict['frankfurt'])
             if ("LHR" in message):
-                new_config.__setitem__("region", commonTools.region_dict['london'])
+                new_config.__setitem__("region", ct.region_dict['london'])
             if ("BOM" in message):
-                new_config.__setitem__("region", commonTools.region_dict['mumbai'])
+                new_config.__setitem__("region", ct.region_dict['mumbai'])
             if ("ICN" in message):
-                new_config.__setitem__("region", commonTools.region_dict['seoul'])
+                new_config.__setitem__("region", ct.region_dict['seoul'])
             if ("NRT" in message):
-                new_config.__setitem__("region", commonTools.region_dict['tokyo'])
+                new_config.__setitem__("region", ct.region_dict['tokyo'])
 
             new_id_client = oci.identity.IdentityClient(new_config)
             try:
@@ -287,7 +287,7 @@ if(input_image_id==''):
 linux_image_id={}
 windows_image_id={}
 variables_data={}
-for key in commonTools.region_dict:
+for key in ct.region_dict:
     linux_image_id.setdefault(key,'')
     windows_image_id.setdefault(key,'')
     variables_data.setdefault(key,'')
@@ -295,7 +295,7 @@ for key in commonTools.region_dict:
 new_config=python_config
 for region in regions:
     region=region.strip().lower()
-    new_config.__setitem__("region",commonTools.region_dict[region])
+    new_config.__setitem__("region",ct.region_dict[region])
     cc = oci.core.ComputeClient(new_config)
     #fetch latest image ocids
     for image in paginate(cc.list_images,compartment_id=tenancy_id,operating_system ='Oracle Linux',sort_by='TIMECREATED'):
@@ -343,7 +343,7 @@ for region in regions:
     }
     variable "region" {
             type = "string"
-            default = \"""" + commonTools.region_dict[region] + """"
+            default = \"""" + ct.region_dict[region] + """"
     }
     """
     if (windows_image_id[region] != ''):

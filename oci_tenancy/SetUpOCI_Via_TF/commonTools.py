@@ -6,15 +6,41 @@ import configparser
 from openpyxl import load_workbook
 from openpyxl.styles import PatternFill
 from openpyxl.styles import Alignment
-#from openpyxl.styles import Font
 from openpyxl.styles import Border
 from openpyxl.styles import Side
 import re
 
 class commonTools():
-    region_dict = {'ashburn':'us-ashburn-1','phoenix':'us-phoenix-1','london':'uk-london-1','frankfurt':'eu-frankfurt-1','toronto':'ca-toronto-1','tokyo':'ap-tokyo-1','seoul':'ap-seoul-1','mumbai':'ap-mumbai-1','sydney':'ap-sydney-1','saopaulo':'sa-saopaulo-1','zurich':'eu-zurich-1'}
+    region_dict={}
+    protocol_dict={}
     endNames = {'<END>', '<end>', '<End>'}
     tfname = re.compile('[^a-zA-Z0-9_-]')
+
+    #Read Regions and Protocols Files and create dicts
+    def __init__(self):
+        #When called from wthin BaseNetwork
+        dir=os.getcwd()
+        if("BaseNetwork" in dir):
+            os.chdir("../../..")
+        elif("OCSWorkVM" in dir):
+            os.chdir("../")
+        regionFileName="OCI_Regions"
+        protocolFileName="OCI_Protocols"
+        with open (regionFileName) as f:
+            for line in f:
+                key=line.split(":")[0].strip()
+                val=line.split(":")[1].strip()
+                self.region_dict[key]=val
+
+        with open (protocolFileName) as f:
+            for line in f:
+                key=line.split(":")[0].strip()
+                val=line.split(":")[1].strip()
+                self.protocol_dict[key]=val
+
+        #Change ack to Initial
+        os.chdir(dir)
+
 
     #Write exported  rows to cd3
     def write_to_cd3(rows, cd3file, sheet_name):

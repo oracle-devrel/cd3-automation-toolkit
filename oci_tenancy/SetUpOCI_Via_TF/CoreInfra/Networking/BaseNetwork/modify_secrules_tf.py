@@ -165,8 +165,15 @@ def create_egress_rule_string(row):
     return egress_rule
 
 def get_protocol(strprotocol):
-    # print myList
-    if str(strprotocol).lower() == "tcp":
+    if str(strprotocol).lower() == "all":
+        return "all"
+    else:
+        protocol_dict=commonTools().protocol_dict
+        for k, v in protocol_dict.items():
+            if (strprotocol).lower() == v.lower():
+                return k
+
+"""    if str(strprotocol).lower() == "tcp":
         return "6"
     elif str(strprotocol).lower() == "icmp":
         return "1"
@@ -176,79 +183,11 @@ def get_protocol(strprotocol):
         return "all"
     else:
         return strprotocol
-
-"""def init_subnet_details(subnetid ,vcn_display_name, sec_rule_per_seclist):
-    global create_def_file
-    subnet = vnc.get_subnet(subnetid)
-    rule_count = 0
-    for seclist_id in subnet.data.security_list_ids:
-        seclistname_display_name = vnc.get_security_list(seclist_id).data.display_name
-        if (seclistname_display_name != "Default Security List for "+vcn_display_name):
-            ingressRules = vnc.get_security_list(seclist_id).data.ingress_security_rules
-            egressRules = vnc.get_security_list(seclist_id).data.egress_security_rules
-            rule_count = rule_count + len(ingressRules)+len(egressRules)
-            #seclist_rule_count[subnet_name] = rule_count
-            if ('-ad1-10.' in seclistname_display_name or '-ad2-10.' in seclistname_display_name or '-ad3-10.' in seclistname_display_name or '-ad1-172.' in seclistname_display_name
-                    or '-ad2-172.' in seclistname_display_name or '-ad3-172.' in seclistname_display_name or '-ad1-192.' in seclistname_display_name or '-ad2-192.' in seclistname_display_name
-                    or '-ad3-192.' in seclistname_display_name):
-                secname = vcn_display_name+"_"+seclistname_display_name.rsplit("-", 3)[0]
-
-            # display name contains CIDR
-            elif ('-10.' in seclistname_display_name or '-172.' in seclistname_display_name or '192.' in seclistname_display_name):
-                secname = vcn_display_name+"_"+seclistname_display_name.rsplit("-", 2)[0]
-
-            else:
-                secname = vcn_display_name+"_"+seclistname_display_name.rsplit("-", 1)[0]
-
-            seclist_rule_count[secname] = rule_count
-            seclist_rule_count_limit[secname] = sec_rule_per_seclist
-
-def updateSecRules(seclistfile, text_to_replace, new_sec_rule, flags=0):
-        with open(seclistfile, "r+") as file:
-            fileContents = file.read()
-            textPattern = re.compile(re.escape(text_to_replace), flags)
-            fileContents = textPattern.sub(new_sec_rule, fileContents)
-            file.seek(0)
-            file.truncate()
-            file.write(fileContents)
-        file.close()
-
-
-def incrementRuleCount(subnet_name):
-        currentSecRuleCount = seclist_rule_count[subnet_name]
-        seclist_rule_count[subnet_name] = currentSecRuleCount+1
-
-
-def getReplacementStr(sec_rule_per_seclist,subnet_name):
-    replaceString = "####ADD_NEW_SEC_RULES####"
-    if subnet_name != 'def-vcn_seclist':
-        list_no = (int(seclist_rule_count[subnet_name])//int(sec_rule_per_seclist) +1)
-    else:
-        list_no=1
-    return replaceString + str(list_no)
-
-def get_network_compartment_id(config, compartment_name):
-    identity = IdentityClient(config)
-    comp_list = oci.pagination.list_call_get_all_results(identity.list_compartments,config["tenancy"],compartment_id_in_subtree=True)
-    compartment_list = comp_list.data
-    for compartment in compartment_list:
-        if compartment.name == compartment_name:
-            return compartment.id
-
-def get_vcn_id(config,compartment_id,vcn_display_name):
-    vcn = VirtualNetworkClient(config)
-    vcns = oci.pagination.list_call_get_all_results(vcn.list_vcns, compartment_id)
-    vcn_list = vcns.data
-    for vcn in vcn_list:
-
-        if vcn.display_name.upper() == vcn_display_name.upper():
-            return vcn.id
 """
 parser = argparse.ArgumentParser(description="Takes in an input file mentioning sec rules to be added for the subnet. See update_seclist-example.csv/CD3 for format under example folder. It will then take backup of all existing sec list files in outdir and create new one with modified rules")
 parser.add_argument("inputfile",help="Full Path of input file: It could be either the properties file eg vcn-info.properties or CD3 excel file")
 parser.add_argument("outdir",help="directory path for output tf files ")
 parser.add_argument("secrulesfile",help="Input file(either csv or CD3 excel) containing new secrules to be added for Security List of a given subnet")
-
 
 
 if len(sys.argv)==1:

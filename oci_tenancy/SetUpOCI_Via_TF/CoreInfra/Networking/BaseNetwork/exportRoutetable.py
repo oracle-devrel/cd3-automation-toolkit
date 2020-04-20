@@ -160,7 +160,7 @@ if(tf_import_cmd=="true"):
     idc = IdentityClient(config)
     regionsubscriptions = idc.list_region_subscriptions(tenancy_id=config['tenancy'])
     for rs in regionsubscriptions.data:
-        for k, v in commonTools.region_dict.items():
+        for k, v in commonTools().region_dict.items():
             if (rs.region_name == v):
                 all_regions.append(k)
     for reg in all_regions:
@@ -173,7 +173,7 @@ else:
 print("\nFetching Route Rules...")
 
 for reg in all_regions:
-    config.__setitem__("region", commonTools.region_dict[reg])
+    config.__setitem__("region", commonTools().region_dict[reg])
     vcn = VirtualNetworkClient(config)
     region = reg.capitalize()
     for ntk_compartment_name in ntk_compartment_ids:
