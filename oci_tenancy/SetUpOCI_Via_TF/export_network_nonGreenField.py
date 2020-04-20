@@ -14,7 +14,7 @@ from commonTools import *
 compartment_ids = {}
 importCommands = {}
 oci_obj_names = {}
-
+ct =commonTools()
 
 def get_network_compartment_id(config):  # , compartment_name):
     identity = IdentityClient(config)
@@ -223,7 +223,7 @@ idc = IdentityClient(config)
 all_regions = []
 regionsubscriptions = idc.list_region_subscriptions(tenancy_id=config['tenancy'])
 for rs in regionsubscriptions.data:
-    for k, v in commonTools.region_dict.items():
+    for k, v in ct.region_dict.items():
         if (rs.region_name == v):
             all_regions.append(k)
 
@@ -247,7 +247,7 @@ print("\nFetching VCNs...")
 rows = []
 for reg in all_regions:
     importCommands[reg].write("\n######### Writing import for VCNs #########\n")
-    config.__setitem__("region", commonTools.region_dict[reg])
+    config.__setitem__("region", ct.region_dict[reg])
     vnc = VirtualNetworkClient(config)
     region = reg.capitalize()
     for ntk_compartment_name in ntk_compartment_ids:
@@ -354,7 +354,7 @@ rows = []
 print("\nFetching NSG...")
 for reg in all_regions:
     importCommands[reg].write("\n\n######### Writing import for NSG #########\n\n")
-    config.__setitem__("region", commonTools.region_dict[reg])
+    config.__setitem__("region", ct.region_dict[reg])
     vnc = VirtualNetworkClient(config)
     region = reg.capitalize()
     for ntk_compartment_name in ntk_compartment_ids:
@@ -386,7 +386,7 @@ rows = []
 print("\nFetching DHCP...")
 for reg in all_regions:
     importCommands[reg].write("\n\n######### Writing import for DHCP #########\n\n")
-    config.__setitem__("region", commonTools.region_dict[reg])
+    config.__setitem__("region", ct.region_dict[reg])
     vnc = VirtualNetworkClient(config)
     region = reg.capitalize()
     for ntk_compartment_name in ntk_compartment_ids:
@@ -414,7 +414,7 @@ rows = []
 print("\nFetching Subnets...")
 for reg in all_regions:
     importCommands[reg].write("\n\n######### Writing import for Subnets #########\n\n")
-    config.__setitem__("region", commonTools.region_dict[reg])
+    config.__setitem__("region", ct.region_dict[reg])
     vnc = VirtualNetworkClient(config)
     region = reg.capitalize()
     for ntk_compartment_name in ntk_compartment_ids:

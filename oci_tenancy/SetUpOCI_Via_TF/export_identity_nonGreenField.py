@@ -13,6 +13,7 @@ from commonTools import *
 
 compartment_ids={}
 importCommands={}
+ct=commonTools()
 
 def get_network_compartment_id(config):#, compartment_name):
     identity = IdentityClient(config)
@@ -85,7 +86,7 @@ regionsubscriptions = idc.list_region_subscriptions(tenancy_id=config['tenancy']
 for rs in regionsubscriptions.data:
     if(rs.is_home_region==True):
         region=rs.region_name
-        for k,v in commonTools.region_dict.items():
+        for k,v in ct.region_dict.items():
             if(v==region):
                 home_region=k
 # Create backup
@@ -96,14 +97,14 @@ importCommands[home_region].write("#!/bin/bash")
 importCommands[home_region].write("\n")
 importCommands[home_region].write("terraform init")
 
-config.__setitem__("region", commonTools.region_dict[home_region])
+config.__setitem__("region", ct.region_dict[home_region])
 idc=IdentityClient(config)
 
 #Fetch Compartments
 print("\nFetching Compartments...")
 rows=[]
 importCommands[home_region].write("\n######### Writing import for Compartments #########\n")
-config.__setitem__("region", commonTools.region_dict[home_region])
+config.__setitem__("region", ct.region_dict[home_region])
 if (input_compartment_names is not None):
     for input_comp_name in input_compartment_names:
         if(input_comp_name=='root'):
