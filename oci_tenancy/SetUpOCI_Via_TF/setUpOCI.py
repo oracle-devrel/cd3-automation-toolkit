@@ -83,7 +83,7 @@ if (input_nongf_tenancy.lower() == 'true'):
     print("3. Run bash script to import objects to TF state")
     userInput = input('Enter your choice: multiple allowed ')
     if ("1" in userInput):
-        input_comp = input("Enter name of Compartment as it appears in OCI (comma seperated without spaces if multiple)for which you want to export network objects;\nLeave blank if want to export for all Compartments: ")
+        input_comp = input("Enter name of Compartment as it appears in OCI (comma seperated without spaces if multiple)for which you want to export identity objects;\nLeave blank if want to export for all Compartments: ")
 
         if (input_comp == ''):
             if (input_config_file == ''):
