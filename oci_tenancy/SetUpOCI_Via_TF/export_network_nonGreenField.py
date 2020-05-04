@@ -83,7 +83,10 @@ def print_nsgsl(region, comp_name, vcn_name, nsg, nsgsl):
         if (nsgsl.icmp_options.code is not None):
             icmpcode = nsgsl.icmp_options.code
 
-    protocol = commonTools().protocol_dict[nsgsl.protocol].lower()
+    if nsgsl.protocol.lower()!="all":
+        protocol = commonTools().protocol_dict[nsgsl.protocol].lower()
+    else:
+        protocol="all"
     # print (region,comp_name,vcn_name,nsg.display_name, nsgsl.direction, nsgsl.protocol, nsgsl.is_stateless, nsgsl.source_type, nsgsl.source, nsgsl.destination_type, nsgsl.destination,sportmin,sportmax,dportmin,dportmax,icmptype,icmpcode,nsgsl.description)
     new_row = (region, comp_name, vcn_name, nsg.display_name, nsgsl.direction, protocol, nsgsl.is_stateless, nsgsourcetype,nsgsource, nsgdestinationtype, nsgdestination, sportmin, sportmax, dportmin, dportmax, icmptype, icmpcode,nsgsl.description)
 

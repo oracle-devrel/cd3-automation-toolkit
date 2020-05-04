@@ -561,10 +561,22 @@ if('.xls' in filename):
         processSubnet(region, vcn_name, rt_name,AD,configure_sgw, configure_ngw, configure_igw, configure_onprem, configure_vcnpeering)
 
     #remove any extra route table files (not part of latest cd3)
+    RTs_in_objnames=[]
     for reg in vcnInfo.all_regions:
+        #Get any route tables from objnames.safe
+        if (os.path.exists(outdir + "/" + reg + "/obj_names.safe")):
+            with open(outdir + "/" + reg + "/obj_names.safe") as f:
+                for line in f:
+                    if(line!="\n"):
+                        names = line.split("::::")
+                        file_name = names[1] + "_" + commonTools.tfname.sub("-", names[3].strip())+"_routetable.tf"
+                        RTs_in_objnames.append(file_name)
+
         if(len(routetablefiles[reg])!=0):
             print("\nATTENION!!! Below RouteTables are not attached to any subnet or DRG and LPG; If you want to delete any of them, remove the TF file!!!")
         for remaining_rt_file in routetablefiles[reg]:
+            if(remaining_rt_file in RTs_in_objnames):
+                continue
             print(outdir+"/"+reg+"/"+remaining_rt_file)
             #print("Removing "+outdir+"/"+reg+"/"+remaining_rt_file)
             #os.remove(outdir+"/"+reg+"/"+remaining_rt_file)
