@@ -14,6 +14,7 @@ from oci.identity import IdentityClient
 sys.path.append(os.getcwd()+"/../../..")
 from commonTools import *
 
+ct =commonTools()
 parser = argparse.ArgumentParser(description="CD3 Validator")
 parser.add_argument("cd3file", help="Full Path of CD3 file")
 parser.add_argument("--configFileName", help="Path to config file")
@@ -59,7 +60,7 @@ def get_network_compartment_id(config):
 def get_vcn_ids(compartment_ids,vcnInfoobj,config):
     #Fetch the VCN ID
     for region in vcnInfoobj.all_regions:
-        config.__setitem__("region", commonTools.region_dict[region])
+        config.__setitem__("region", ct.region_dict[region])
         vnc = VirtualNetworkClient(config)
         for comp_id in compartment_ids.values():
             vcn_list = oci.pagination.list_call_get_all_results(vnc.list_vcns,compartment_id=comp_id)
