@@ -59,6 +59,7 @@ except Exception as e:
     print(e)
 
 input_instance_ocid = python_config['ocswork_instance_ocid']
+input_reserved_public_ocid=python_config['ocswork_reservedpublic_ocid']
 input_public_ip = python_config['public_ip']
 input_subnet_ocid = python_config['subnet_ocid']
 ## First create file to destroy the Panda Instance
@@ -136,6 +137,12 @@ compute_client.terminate_instance(input_instance_ocid)
 print ("Deleting Instance")
 get_instance_response=oci.wait_until(compute_client,compute_client.get_instance(input_instance_ocid),'lifecycle_state', 'TERMINATED')
 print (get_instance_response.data)
+
+print ("Deleting Reserved Public IP")
+try :
+    network_client.delete_public_ip(input_reserved_public_ocid)
+except Exception as e:
+    print (e)
 
 
 ## Remove route rules

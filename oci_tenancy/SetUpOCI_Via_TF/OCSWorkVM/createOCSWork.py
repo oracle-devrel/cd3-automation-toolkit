@@ -654,6 +654,7 @@ if(input_create_vm=="1"):
 
     # Creating subnet
     if (subnet_found == 0):
+        subnet_private=False
         print('Creating public SUBNET: ' + input_subnet_name + ' with default route table, security list and dhcp options')
         # Converting subnet name to alphanumeric string
         regex = re.compile('[^a-zA-Z0-9]')
@@ -756,7 +757,11 @@ if(input_create_vm=="1"):
 
     create_source_details=oci.core.models.InstanceSourceViaImageDetails(source_type="image",image_id=input_image_id)
     metadata= {"ssh_authorized_keys" : multiple_ssh_keys, "user_data" : encoded_user_data}
-    launch_instance_details=oci.core.models.LaunchInstanceDetails(availability_domain=ad_name,compartment_id=ocs_compartment_ocid,display_name=input_vm_name,shape=input_vm_shape,source_details=create_source_details,metadata=metadata,subnet_id=subnet_ocid)
+    create_vnic_details = oci.core.models.CreateVnicDetails(subnet_id=subnet_ocid, assign_public_ip=False)
+    launch_instance_details=oci.core.models.LaunchInstanceDetails(availability_domain=ad_name,compartment_id=ocs_compartment_ocid,
+                                                                  display_name=input_vm_name,shape=input_vm_shape,
+                                                                  source_details=create_source_details,metadata=metadata,
+                                                                  create_vnic_details=create_vnic_details)
     instance=compute_client.launch_instance(launch_instance_details)
 
     #wait till Instance comes to RUNNING state
@@ -771,15 +776,33 @@ if(input_create_vm=="1"):
     vnic=network_client.get_vnic(vnic_ocid)
 
     ip=''
-    public_ip=vnic.data.public_ip
+    """public_ip=vnic.data.public_ip
     if(public_ip!=None):
         print('Public IP of VM: '+public_ip)
         ip=public_ip
-
+    """
     private_ip = vnic.data.private_ip
     print('Private IP of VM: ' + private_ip)
-    if(ip==''):
-        ip=private_ip
+    ip = private_ip
+
+    #Attach Reserved Public IP is subnet os public subnet
+    if(subnet_private==False):
+        private_ip_ids=network_client.list_private_ips(vnic_id=vnic_ocid)
+        for pvtipid in private_ip_ids.data:
+            pvtip_ocid=pvtipid.id
+
+    #if(ip==''):
+    #    ip=private_ip
+    # create Reserved Public IP
+        create_public_ip_details = oci.core.models.CreatePublicIpDetails(display_name=input_vm_name,compartment_id=ocs_compartment_ocid,lifetime="RESERVED", private_ip_id=pvtip_ocid)
+        public_ip_id=network_client.create_public_ip(create_public_ip_details=create_public_ip_details)
+        #Get public IP
+        public_ip_id=public_ip_id.data
+        public_ip_ocid=public_ip_id.id
+        public_ip = public_ip_id.ip_address
+        if (public_ip != None):
+            print('Reserved Public IP of VM: ' + public_ip)
+            ip = public_ip
 
     #Write to config file for cleanup
     with open(input_config_file, 'r') as file:
@@ -803,6 +826,7 @@ if(input_create_vm=="1"):
 
     if(public_ip!=None):
         append_file(del_config_file, "public_ip=" + public_ip)
+        append_file(del_config_file, "ocswork_reservedpublic_ocid=" + public_ip_ocid)
 
     append_file(del_config_file, "private_ip=" + private_ip)
 
