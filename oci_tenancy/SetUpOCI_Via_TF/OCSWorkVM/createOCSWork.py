@@ -28,7 +28,6 @@ try:
     input_ocs_compartment_name=config.get('Default','ocs_compartment_name').strip()
     input_vm_compartment_name=config.get('Default','vm_compartment_name').strip()
     input_ntk_compartment_name=config.get('Default','ntk_compartment_name').strip()
-    input_regions = config.get('Default', 'regions').strip()
     input_ssh_key1=config.get('Default','ssh_key1').strip()
     input_ssh_key2=config.get('Default', 'ssh_key2').strip()
     input_ssh_key3=config.get('Default', 'ssh_key3').strip()
@@ -83,9 +82,7 @@ if(input_ntk_compartment_name=='' or input_vm_compartment_name=='' or input_ocs_
 if(input_ssh_key1==''):
     print("ssh_key1 cannot be left blank. Exiting...")
     exit()
-if(input_regions==''):
-    print("regions cannot be left blank. Exiting...")
-    exit()
+
 if os.path.isfile(input_pvt_key_file)==False:
         print("input private key file corresponding to ssh_key1 does not exist. Exiting....")
         exit()
@@ -121,8 +118,15 @@ python_config = oci.config.from_file(file_location=input_config_file)#,profile_n
 network_client = oci.core.VirtualNetworkClient(python_config)
 identity_client = oci.identity.IdentityClient(python_config)
 compute_client = oci.core.ComputeClient(python_config)
-regions=input_regions.split(",")
+
 ct=commonTools()
+regions=[]
+regionsubscriptions = identity_client.list_region_subscriptions(tenancy_id=python_config['tenancy'])
+for rs in regionsubscriptions.data:
+    for k,v in ct.region_dict.items():
+        if (rs.region_name==v):
+            regions.append(k)
+
 
 def write_file(file_name,file_data):
     file_to_open = tmp_folder / file_name

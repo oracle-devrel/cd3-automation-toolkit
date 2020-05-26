@@ -18,7 +18,7 @@ def paginate(operation, *args, **kwargs):
             break
 
 parser = argparse.ArgumentParser(description="Fetches Compartment name/ocid info from OCI and pushes to variables.tf file of each region used by TF")
-parser.add_argument("outdir", help="Path  to outdir containing region directories having variables_<region>.tf file that will be used by TerraForm to communicate with OCI")
+parser.add_argument("outdir", help="Path  to outdir(on OCSVM: /root/ocswork/terraform_files) containing region directories having variables_<region>.tf file that will be used by TerraForm to communicate with OCI")
 parser.add_argument("--configFileName", help="Config file name" , required=False)
 
 args = parser.parse_args()
@@ -38,12 +38,13 @@ var_data={}
 print("outdir should contain region directories and then variables_<region>.tf file inside the region directories.")
 idc=IdentityClient(config)
 all_regions=[]
+ct=commonTools()
+
 regionsubscriptions = idc.list_region_subscriptions(tenancy_id=tenancy_id)
 for rs in regionsubscriptions.data:
-    for k,v in commonTools.region_dict.items():
+    for k,v in ct.region_dict.items():
         if (rs.region_name==v):
             all_regions.append(k)
-
 """for file in glob.glob(outdir + '/*/' +'variables_*.tf'):#, recursive=True):
     region=file.split("variables_")[1].split(".tf")[0]
     all_regions.append(region)
