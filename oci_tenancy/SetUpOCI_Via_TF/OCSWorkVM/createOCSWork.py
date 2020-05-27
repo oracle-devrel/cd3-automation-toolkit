@@ -689,7 +689,7 @@ if(input_create_vm=="1"):
     add_rule=1
     for rule in existing_rules_list:
         if (route_rule.destination == rule.destination):
-            print("Route Rule with 0.0.0.0/0 destination already exists in the route table. Not adding anything. Internet Access might not work for the VM")
+            print("Route Rule with 0.0.0.0/0 destination already exists in the route table. Not adding any new route rule now. Please verify internet access for OCS VM")
             add_rule=0
 
     if(add_rule==1):
