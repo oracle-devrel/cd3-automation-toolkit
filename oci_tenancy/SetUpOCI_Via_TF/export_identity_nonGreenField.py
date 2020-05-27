@@ -186,14 +186,16 @@ for ntk_compartment_name in ntk_compartment_ids:
         importCommands[home_region].write("\nterraform import oci_identity_policy." + tf_name + " " + policy.id)
         count=1
         for stmt in policy_statements:
-            if(" compartment " in stmt):
-                policy_compartment_name=stmt.split(" compartment ")[1].split()[0]
-                stmt=re.sub(r'%s([\s]|$)'%policy_compartment_name, r'* ', stmt)
-            elif(" tenancy" in stmt):
+            if(" compartment " in stmt.lower()):
+                policy_compartment_name=stmt.lower().split(" compartment ")[1].split()[0]
+                stmt=re.sub(r'%s([\s]|$)'%policy_compartment_name, r'* ', stmt.lower())
+            elif(" tenancy" in stmt.lower()):
                 policy_compartment_name=''
-            if(" group " in stmt):
-                policy_grp_name=stmt.split(" group ")[1].split()[0]
-                stmt=re.sub(r'%s([\s]|$)'%policy_grp_name, r'$ ', stmt)
+            else:
+                policy_compartment_name=""
+            if(" group " in stmt.lower()):
+                policy_grp_name=stmt.lower().split(" group ")[1].split()[0]
+                stmt=re.sub(r'%s([\s]|$)'%policy_grp_name, r'$ ', stmt.lower())
             else:
                 policy_grp_name=""
             if(count==1):
