@@ -789,7 +789,7 @@ if(input_create_vm=="1"):
     print('Private IP of VM: ' + private_ip)
     ip = private_ip
 
-    #Attach Reserved Public IP is subnet os public subnet
+    #Attach Reserved Public IP if subnet is public subnet
     if(subnet_private==False):
         private_ip_ids=network_client.list_private_ips(vnic_id=vnic_ocid)
         for pvtipid in private_ip_ids.data:
@@ -798,8 +798,19 @@ if(input_create_vm=="1"):
     #if(ip==''):
     #    ip=private_ip
     # create Reserved Public IP
-        create_public_ip_details = oci.core.models.CreatePublicIpDetails(display_name=input_vm_name,compartment_id=ocs_compartment_ocid,lifetime="RESERVED", private_ip_id=pvtip_ocid)
-        public_ip_id=network_client.create_public_ip(create_public_ip_details=create_public_ip_details)
+        reserved_ip_exists= False
+        tenancy_public_ips = network_client. list_public_ips(scope="REGION", compartment_id=ocs_compartment_ocid, lifetime ="RESERVED")
+        for tenancy_public_ip in tenancy_public_ips.data:
+            if(tenancy_public_ip.display_name==input_vm_name and tenancy_public_ip.private_ip_id == None):
+                reserved_ip_exists=True
+                update_public_ip_details = oci.core.models.UpdatePublicIpDetails(private_ip_id=pvtip_ocid)
+                public_ip_id=network_client.update_public_ip(public_ip_id =tenancy_public_ip.id, update_public_ip_details=update_public_ip_details)
+
+
+        if(reserved_ip_exists==False):
+            create_public_ip_details = oci.core.models.CreatePublicIpDetails(display_name=input_vm_name,compartment_id=ocs_compartment_ocid,lifetime="RESERVED", private_ip_id=pvtip_ocid)
+            public_ip_id=network_client.create_public_ip(create_public_ip_details=create_public_ip_details)
+
         #Get public IP
         public_ip_id=public_ip_id.data
         public_ip_ocid=public_ip_id.id

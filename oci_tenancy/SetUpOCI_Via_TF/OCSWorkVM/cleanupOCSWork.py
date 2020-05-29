@@ -138,11 +138,15 @@ print ("Deleting Instance")
 get_instance_response=oci.wait_until(compute_client,compute_client.get_instance(input_instance_ocid),'lifecycle_state', 'TERMINATED')
 print (get_instance_response.data)
 
-print ("Deleting Reserved Public IP")
-try :
-    network_client.delete_public_ip(input_reserved_public_ocid)
-except Exception as e:
-    print (e)
+print("Delete the Reserved Public IP if it is end of OCS enagagement with client or Retain it if intend to rebuild OCSWork VM")
+delete_ip = input("Delete Reserved public IP(y) or Retain(n): ")
+
+if(delete_ip.lower()=='y'):
+    print ("Deleting Reserved Public IP")
+    try :
+        network_client.delete_public_ip(input_reserved_public_ocid)
+    except Exception as e:
+        print (e)
 
 
 ## Remove route rules
