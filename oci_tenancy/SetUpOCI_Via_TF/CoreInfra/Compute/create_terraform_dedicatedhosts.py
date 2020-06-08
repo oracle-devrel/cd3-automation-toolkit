@@ -77,9 +77,15 @@ if('.xls' in args.inputfile):
         if('ad3' in dedicated_host_ad.lower()):
             ad='2'
 
+        dedicated_host_name = dedicated_host_name.strip()
+        dedicated_host_name = commonTools.check_tf_variable(dedicated_host_name)
+
+        compartment_name = compartment_name.strip()
+        compartment_name = commonTools.check_tf_variable(compartment_name)
+
         tfStr[region] = tfStr[region] + """
-        resource "oci_core_dedicated_vm_host" \"""" + dedicated_host_name.strip() + """" {
-        	    compartment_id = "${var.""" + compartment_name.strip() + """}"
+        resource "oci_core_dedicated_vm_host" \"""" + dedicated_host_name + """" {
+        	    compartment_id = "${var.""" + compartment_name + """}"
         	    availability_domain = "${data.oci_identity_availability_domains.ADs.availability_domains."""+ad+""".name}"
           	    dedicated_vm_host_shape = \"""" + dedicated_host_shape.strip() + """"
           	    display_name = \"""" + dedicated_host_name.strip() + """"

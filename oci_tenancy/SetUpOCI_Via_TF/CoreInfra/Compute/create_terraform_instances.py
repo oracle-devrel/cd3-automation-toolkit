@@ -91,9 +91,15 @@ if('.xls' in filename):
                 exit()
             if (re.match('subnet name', i, flags=re.IGNORECASE)):
                 subnet_name = str(df[i][j])
-                subnet_name_tf = commonTools.tfname.sub("-", subnet_name)
+                subnet_name_tf = commonTools.check_tf_variable(subnet_name)
                 replaceAllplaceholders(outdir + '/' + df['Region'][j].strip().lower() + '/' + df['Hostname'][j] + '.tf','##' + i + '##', subnet_name_tf)
 
+            if (re.match('Compartment Name', i, flags=re.IGNORECASE)):
+                compartment_name=str(df[i][j]).strip()
+                if(compartment_name!='nan'):
+                    compartment_name=commonTools.check_tf_variable(compartment_name)
+                    replaceAllplaceholders(outdir + '/' + df['Region'][j].strip().lower() + '/' + df['Hostname'][j] + '.tf','##' + i + '##', compartment_name)
+                continue
 
             if(re.match('Region', i, flags=re.IGNORECASE)):
                 region = str(df[i][j])
@@ -104,7 +110,7 @@ if('.xls' in filename):
             if (re.match('DedicatedVMHost', i, flags=re.IGNORECASE)):
                 dedicated_host=str(df[i][j])
                 if(dedicated_host!='nan'):
-                    dedicated_host_str="""dedicated_vm_host_id = "${oci_core_dedicated_vm_host."""+dedicated_host+""".id}" """
+                    dedicated_host_str="""dedicated_vm_host_id = "${oci_core_dedicated_vm_host."""+commonTools.check_tf_variable(dedicated_host)+""".id}" """
                     replaceAllplaceholders(outdir + '/' + df['Region'][j].strip().lower() + '/' + df['Hostname'][j] + '.tf','##' + i + '##', dedicated_host_str)
                 continue
             if (re.match('NSGs', i, flags=re.IGNORECASE)):
@@ -114,7 +120,7 @@ if('.xls' in filename):
                     NSGs = NSG_col.split(",")
                     k = 0
                     while k < len(NSGs):
-                        nsg_str = nsg_str + """"${oci_core_network_security_group.""" + NSGs[k].strip() + """.id}" """
+                        nsg_str = nsg_str + """"${oci_core_network_security_group.""" + commonTools.check_tf_variable(NSGs[k].strip()) + """.id}" """
                         if (k != len(NSGs) - 1):
                             nsg_str = nsg_str + ","
                         else:

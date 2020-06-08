@@ -110,7 +110,7 @@ if ('.xls' in filename):
         database_auto_backup_option = df['Enable Automatic Backups'][i].strip()
 
         database_subnet_name = df['Subnet name'][i].strip()
-        database_subnet_name = commonTools.tfname.sub("-", database_subnet_name.strip())
+        database_subnet_name = commonTools.check_tf_variable(database_subnet_name.strip())
 
         database_ssh_key = df['SSH Key'][i].strip()
 
@@ -128,8 +128,11 @@ if ('.xls' in filename):
         else:
             database_auto_backup_option = "false"
 
+        database_system_display_name_tf=commonTools.check_tf_variable(database_system_display_name)
+        compartment_var_name = commonTools.check_tf_variable(compartment_var_name)
+
         resources_content = """
-                resource "oci_database_db_system" \"""" + database_system_display_name + """\" {
+                resource "oci_database_db_system" \"""" + database_system_display_name_tf + """\" {
                   availability_domain = "${data.oci_identity_availability_domains.ADs.availability_domains.""" + str(ad) + """.name}"
                   compartment_id = "${var.""" + compartment_var_name + """}"
                   cpu_core_count      = \"""" + str(database_cpu_core) + """\"

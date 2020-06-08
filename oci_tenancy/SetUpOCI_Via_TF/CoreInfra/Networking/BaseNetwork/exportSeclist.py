@@ -18,8 +18,28 @@ def convertNullToNothing(input):
     else:
         return str(input)
 
-compartment_ids={}
-def get_network_compartment_id(config):#, compartment_name):
+compartment_ids = {}
+
+global ntk_compartment_ids
+ntk_compartment_ids = {}
+
+def get_network_compartment_ids(c_id,c_name):
+    compartments = idc.list_compartments(compartment_id=c_id,compartment_id_in_subtree =False)
+    for c in compartments.data:
+        if c.lifecycle_state =="ACTIVE" :
+            if(c_name!="root"):
+                name=c_name+"::"+c.name
+            else:
+                name=c.name
+            ntk_compartment_ids[name]=c.id
+
+            # Put individual compartment names also in the dictionary
+            if (name != c.name and c.name not in ntk_compartment_ids.keys()):
+                ntk_compartment_ids[c.name] = c.id
+
+            get_network_compartment_ids(c.id,name)
+
+"""def get_network_compartment_id(config):#, compartment_name):
     identity = IdentityClient(config)
     comp_list = oci.pagination.list_call_get_all_results(identity.list_compartments,config["tenancy"],compartment_id_in_subtree=True)
     compartment_list = comp_list.data
@@ -31,7 +51,7 @@ def get_network_compartment_id(config):#, compartment_name):
 
     compartment_ids['root']=config['tenancy']
     return compartment_ids
-
+"""
 
 def print_secrules(seclists,region,vcn_name,comp_name):
     global rows
@@ -43,62 +63,63 @@ def print_secrules(seclists,region,vcn_name,comp_name):
         dn=display_name
 
         if (tf_import_cmd == "true"):
-            tf_name = commonTools.tfname.sub("-",vcn_name + "_" + dn)
+            tf_name = vcn_name + "_" + dn
+            tf_name=commonTools.check_tf_variable(tf_name)
             if("Default Security List for " in dn):
                 importCommands[region.lower()].write("\nterraform import oci_core_default_security_list." + tf_name + " " + str(seclist.id))
             else:
                 importCommands[region.lower()].write("\nterraform import oci_core_security_list." + tf_name + " " + str(seclist.id))
 
         if(len(isec_rules)==0 and len(esec_rules)==0):
-            new_row=(region,comp_name,vcn_name,dn,'','','','','','','','','','','')
+            new_row=(region,comp_name,vcn_name,dn,'','','','','','','','','','','','')
             rows.append(new_row)
 
         for rule in esec_rules:
             if rule.protocol == "all":
-                printstr = (dn + ",egress,all," + str(rule.is_stateless) + "," + rule.destination + ",,,,,,,")
-                new_row=(region,comp_name,vcn_name,dn,'egress','all',str(rule.is_stateless),'','','',rule.destination,'','','','')
+                printstr = (dn + ",egress,all," + str(rule.is_stateless) + "," + rule.destination + ",,,,,,,,"+str(rule.description))
+                new_row=(region,comp_name,vcn_name,dn,'egress','all',str(rule.is_stateless),'','','',rule.destination,'','','','',str(rule.description))
             elif rule.protocol == "1":
                 if rule.icmp_options is None:
-                    printstr = (dn + ",egress,icmp," + str(rule.is_stateless) + "," + rule.destination + ",,,,,,,")
-                    new_row = (region,comp_name,vcn_name,dn,'egress','icmp',str(rule.is_stateless),'','','',rule.destination,'','','','')
+                    printstr = (dn + ",egress,icmp," + str(rule.is_stateless) + "," + rule.destination + ",,,,,,,."+str(rule.description))
+                    new_row = (region,comp_name,vcn_name,dn,'egress','icmp',str(rule.is_stateless),'','','',rule.destination,'','','','',str(rule.description))
                 else:
                     code = convertNullToNothing(rule.icmp_options.code)
                     type = convertNullToNothing(rule.icmp_options.type)
-                    printstr = (dn + ",egress,icmp," + str(rule.is_stateless) + "," + rule.destination + ",,,,,"+type+","+code)
-                    new_row=(region,comp_name,vcn_name,dn,'egress','icmp',str(rule.is_stateless),'','','',rule.destination,'','',type,code)
+                    printstr = (dn + ",egress,icmp," + str(rule.is_stateless) + "," + rule.destination + ",,,,,"+type+","+code,+","+str(rule.description))
+                    new_row=(region,comp_name,vcn_name,dn,'egress','icmp',str(rule.is_stateless),'','','',rule.destination,'','',type,code,str(rule.description))
             elif rule.protocol == "6":
                 if rule.tcp_options is None:
-                    printstr = (dn + ",egress,tcp," + str(rule.is_stateless) + ",,,," + rule.destination+",,,,")
-                    new_row=(region,comp_name,vcn_name,dn,'egress','tcp',str(rule.is_stateless),'','','',rule.destination,'','','','')
+                    printstr = (dn + ",egress,tcp," + str(rule.is_stateless) + ",,,," + rule.destination+",,,,,"+str(rule.description))
+                    new_row=(region,comp_name,vcn_name,dn,'egress','tcp',str(rule.is_stateless),'','','',rule.destination,'','','','',str(rule.description))
                 elif rule.tcp_options.source_port_range is not None:
                     min = convertNullToNothing(rule.tcp_options.source_port_range.min)
                     max = convertNullToNothing(rule.tcp_options.source_port_range.max)
-                    printstr = (dn + ",egress,tcp," + str(rule.is_stateless) + ",,,," + rule.destination + ",," + min + "," + max + ",,")
-                    new_row=(region,comp_name,vcn_name,dn,'egress','tcp',str(rule.is_stateless),'',min,max,rule.destination,'','','','')
+                    printstr = (dn + ",egress,tcp," + str(rule.is_stateless) + ",,,," + rule.destination + ",," + min + "," + max + ",,,"+str(rule.description))
+                    new_row=(region,comp_name,vcn_name,dn,'egress','tcp',str(rule.is_stateless),'',min,max,rule.destination,'','','','',str(rule.description))
                 elif rule.tcp_options.destination_port_range is not None:
                     min = convertNullToNothing(rule.tcp_options.destination_port_range.min)
                     max = convertNullToNothing(rule.tcp_options.destination_port_range.max)
-                    printstr = (dn + ",egress,tcp," + str(rule.is_stateless) + ",,,," + rule.destination + ",," + min + "," + max + ",,")
-                    new_row = (region, comp_name, vcn_name, dn, 'egress', 'tcp', str(rule.is_stateless), '', '', '',rule.destination, min, max, '', '')
+                    printstr = (dn + ",egress,tcp," + str(rule.is_stateless) + ",,,," + rule.destination + ",," + min + "," + max + ",,,"+str(rule.description))
+                    new_row = (region, comp_name, vcn_name, dn, 'egress', 'tcp', str(rule.is_stateless), '', '', '',rule.destination, min, max, '', '',str(rule.description))
             elif rule.protocol == "17":
                 if rule.udp_options is None:
-                    printstr = (dn + ",egress,udp," + str(rule.is_stateless) + ",,,," + rule.destination+",,,,")
-                    new_row = (region, comp_name, vcn_name, dn, 'egress', 'udp', str(rule.is_stateless), '', '', '',rule.destination, '', '', '', '')
+                    printstr = (dn + ",egress,udp," + str(rule.is_stateless) + ",,,," + rule.destination+",,,,,"+str(rule.description))
+                    new_row = (region, comp_name, vcn_name, dn, 'egress', 'udp', str(rule.is_stateless), '', '', '',rule.destination, '', '', '', '',str(rule.description))
                 elif rule.udp_options.source_port_range is not None:
                     min = convertNullToNothing(rule.udp_options.source_port_range.min)
                     max = convertNullToNothing(rule.udp_options.source_port_range.max)
-                    printstr = (dn + ",egress,udp," + str(rule.is_stateless) + ",,,," + rule.destination + ",," + min + "," + max + ",,")
-                    new_row = (region, comp_name, vcn_name, dn, 'egress', 'udp', str(rule.is_stateless), '', min, max,rule.destination, '', '', '', '')
+                    printstr = (dn + ",egress,udp," + str(rule.is_stateless) + ",,,," + rule.destination + ",," + min + "," + max + ",,,"+str(rule.description))
+                    new_row = (region, comp_name, vcn_name, dn, 'egress', 'udp', str(rule.is_stateless), '', min, max,rule.destination, '', '', '', '',str(rule.description))
 
                 elif rule.udp_options.destination_port_range is not None:
                     min = convertNullToNothing(rule.udp_options.destination_port_range.min)
                     max = convertNullToNothing(rule.udp_options.destination_port_range.max)
-                    printstr=(dn + ",egress,udp," + str(rule.is_stateless) + ",,,," + rule.destination + ",," + min + "," + max + ",,")
-                    new_row = (region, comp_name, vcn_name, dn, 'egress', 'udp', str(rule.is_stateless), '', '', '',rule.destination, min, max, '', '')
+                    printstr=(dn + ",egress,udp," + str(rule.is_stateless) + ",,,," + rule.destination + ",," + min + "," + max + ",,,"+str(rule.description))
+                    new_row = (region, comp_name, vcn_name, dn, 'egress', 'udp', str(rule.is_stateless), '', '', '',rule.destination, min, max, '', '',str(rule.description))
             #Any Other protocol
             else:
                 protocol=commonTools().protocol_dict[rule.protocol].lower()
-                new_row= (region, comp_name, vcn_name, dn, 'egress', protocol, str(rule.is_stateless), '', '', '',rule.destination, '', '', '', '')
+                new_row= (region, comp_name, vcn_name, dn, 'egress', protocol, str(rule.is_stateless), '', '', '',rule.destination, '', '', '', '',str(rule.description))
 
             rows.append(new_row)
             if(tf_import_cmd=="false"):
@@ -106,50 +127,49 @@ def print_secrules(seclists,region,vcn_name,comp_name):
         for rule in isec_rules:
             if rule.protocol == "6":
                 if rule.tcp_options is None:
-                    printstr= (dn + ",ingress,tcp," + str(rule.is_stateless) + "," + rule.source + ",,,,,,,")
-                    new_row = (region, comp_name, vcn_name, dn, 'ingress','tcp',str(rule.is_stateless),rule.source,'','','','','','','')
+                    printstr= (dn + ",ingress,tcp," + str(rule.is_stateless) + "," + rule.source + ",,,,,,,,"+str(rule.description))
+                    new_row = (region, comp_name, vcn_name, dn, 'ingress','tcp',str(rule.is_stateless),rule.source,'','','','','','','',str(rule.description))
                 elif rule.tcp_options.destination_port_range is not None:
                     min = convertNullToNothing(rule.tcp_options.destination_port_range.min)
                     max = convertNullToNothing(rule.tcp_options.destination_port_range.max)
-                    printstr= (dn + ",ingress,tcp," + str(rule.is_stateless) + "," + rule.source + ",,,," + min + "," + max+",,")
-                    new_row = (region, comp_name, vcn_name, dn, 'ingress', 'tcp', str(rule.is_stateless), rule.source, '', '', '',min, max, '', '')
+                    printstr= (dn + ",ingress,tcp," + str(rule.is_stateless) + "," + rule.source + ",,,," + min + "," + max+",,,"+str(rule.description))
+                    new_row = (region, comp_name, vcn_name, dn, 'ingress', 'tcp', str(rule.is_stateless), rule.source, '', '', '',min, max, '', '',str(rule.description))
                 else:
-                    new_row = (region, comp_name, vcn_name, dn, 'ingress', 'tcp', str(rule.is_stateless), rule.source, '', '', '','', '', '', '')
+                    new_row = (region, comp_name, vcn_name, dn, 'ingress', 'tcp', str(rule.is_stateless), rule.source, '', '', '','', '', '', '',str(rule.description))
 
             elif rule.protocol == "1":
                 if rule.icmp_options is None:
-                    printstr= (dn + ",ingress,icmp," + str(rule.is_stateless) + "," + rule.source + ",,,,,,,")
-                    new_row = (region, comp_name, vcn_name, dn, 'ingress', 'icmp', str(rule.is_stateless), rule.source, '', '', '','', '', '', '')
+                    printstr= (dn + ",ingress,icmp," + str(rule.is_stateless) + "," + rule.source + ",,,,,,,,"+str(rule.description))
+                    new_row = (region, comp_name, vcn_name, dn, 'ingress', 'icmp', str(rule.is_stateless), rule.source, '', '', '','', '', '', '',str(rule.description))
                 else:
                     code = convertNullToNothing(rule.icmp_options.code)
                     type = convertNullToNothing(rule.icmp_options.type)
-                    printstr= (dn + ",ingress,icmp," + str(rule.is_stateless) + "," + rule.source + ",,,,,," + type + "," + code)
-                    new_row = (region, comp_name, vcn_name, dn, 'ingress', 'icmp', str(rule.is_stateless), rule.source, '', '', '','', '', type, code)
+                    printstr= (dn + ",ingress,icmp," + str(rule.is_stateless) + "," + rule.source + ",,,,,," + type + "," + code+","+str(rule.description))
+                    new_row = (region, comp_name, vcn_name, dn, 'ingress', 'icmp', str(rule.is_stateless), rule.source, '', '', '','', '', type, code,str(rule.description))
 
             elif rule.protocol == "17":
                 if rule.udp_options is None:
-                    printstr= (dn + ",ingress,udp," + str(rule.is_stateless) + "," + rule.source + ",,,,,,,")
-                    new_row = (region, comp_name, vcn_name, dn, 'ingress', 'udp', str(rule.is_stateless), rule.source, '', '', '','', '', '', '')
+                    printstr= (dn + ",ingress,udp," + str(rule.is_stateless) + "," + rule.source + ",,,,,,,,"+str(rule.description))
+                    new_row = (region, comp_name, vcn_name, dn, 'ingress', 'udp', str(rule.is_stateless), rule.source, '', '', '','', '', '', '',str(rule.description))
                 elif rule.udp_options.destination_port_range is not None:
                     min = convertNullToNothing(rule.udp_options.destination_port_range.min)
                     max = convertNullToNothing(rule.udp_options.destination_port_range.max)
-                    printstr= (dn + ",ingress,udp," + str(rule.is_stateless) + "," + rule.source + ",,,," + min + "," + max+",,")
-                    new_row = (region, comp_name, vcn_name, dn, 'ingress', 'udp', str(rule.is_stateless), rule.source, '', '', '',min, max, '', '')
+                    printstr= (dn + ",ingress,udp," + str(rule.is_stateless) + "," + rule.source + ",,,," + min + "," + max+",,,"+str(rule.description))
+                    new_row = (region, comp_name, vcn_name, dn, 'ingress', 'udp', str(rule.is_stateless), rule.source, '', '', '',min, max, '', '',str(rule.description))
                 else:
-                    new_row = (region, comp_name, vcn_name, dn, 'ingress', 'udp', str(rule.is_stateless), rule.source, '', '', '','', '', '', '')
+                    new_row = (region, comp_name, vcn_name, dn, 'ingress', 'udp', str(rule.is_stateless), rule.source, '', '', '','', '', '', '',str(rule.description))
 
             elif rule.protocol == "all":
-                printstr= (dn + ",ingress,all," + str(rule.is_stateless) + "," + rule.source + ",,,,,,,")
-                new_row=(region, comp_name, vcn_name, dn, 'ingress', 'all', str(rule.is_stateless), rule.source, '', '', '','', '', '', '')
+                printstr= (dn + ",ingress,all," + str(rule.is_stateless) + "," + rule.source + ",,,,,,,,"+str(rule.description))
+                new_row=(region, comp_name, vcn_name, dn, 'ingress', 'all', str(rule.is_stateless), rule.source, '', '', '','', '', '', '',str(rule.description))
             #Any Other protocol
             else:
                 protocol=commonTools().protocol_dict[rule.protocol].lower()
-                new_row= (region, comp_name, vcn_name, dn, 'ingress', protocol, str(rule.is_stateless), rule.source, '', '','', '', '', '', '')
+                new_row= (region, comp_name, vcn_name, dn, 'ingress', protocol, str(rule.is_stateless), rule.source, '', '','', '', '', '', '',str(rule.description))
 
             rows.append(new_row)
             if (tf_import_cmd == "false"):
                 print(printstr)
-
 
 
 parser = argparse.ArgumentParser(description="Export Security list on OCI to CD3")
@@ -195,13 +215,15 @@ if tf_import_cmd is not None:
 else:
     tf_import_cmd = "false"
 
-ntk_compartment_ids = get_network_compartment_id(config)#, ntk_comp_name)
+idc = IdentityClient(config)
+ntk_compartment_ids["root"] = config['tenancy']
+get_network_compartment_ids(config['tenancy'],"root")
+
 rows=[]
 all_regions=[]
 
 if(tf_import_cmd=="true"):
     importCommands={}
-    idc = IdentityClient(config)
     regionsubscriptions = idc.list_region_subscriptions(tenancy_id=config['tenancy'])
     for rs in regionsubscriptions.data:
         for k, v in commonTools().region_dict.items():
@@ -221,19 +243,24 @@ for reg in all_regions:
     config.__setitem__("region", commonTools().region_dict[reg])
     vcn = VirtualNetworkClient(config)
     region = reg.capitalize()
+    comp_ocid_done = []
     for ntk_compartment_name in ntk_compartment_ids:
-        if (input_compartment_names is not None and ntk_compartment_name not in input_compartment_names):
-            continue
-        vcns = oci.pagination.list_call_get_all_results(vcn.list_vcns,compartment_id=ntk_compartment_ids[ntk_compartment_name],lifecycle_state="AVAILABLE")
-        for v in vcns.data:
-            vcn_id = v.id
-            vcn_name=v.display_name
-            for ntk_compartment_name_again in ntk_compartment_ids:
-                if (input_compartment_names is not None and ntk_compartment_name_again not in input_compartment_names):
-                    continue
-
-                seclists = oci.pagination.list_call_get_all_results(vcn.list_security_lists,compartment_id=ntk_compartment_ids[ntk_compartment_name_again], vcn_id=vcn_id, lifecycle_state='AVAILABLE',sort_by='DISPLAYNAME')
-                print_secrules(seclists,region,vcn_name,ntk_compartment_name)
+        if ntk_compartment_ids[ntk_compartment_name] not in comp_ocid_done:
+            if (input_compartment_names is not None and ntk_compartment_name not in input_compartment_names):
+                continue
+            comp_ocid_done.append(ntk_compartment_ids[ntk_compartment_name])
+            vcns = oci.pagination.list_call_get_all_results(vcn.list_vcns,compartment_id=ntk_compartment_ids[ntk_compartment_name],lifecycle_state="AVAILABLE")
+            for v in vcns.data:
+                vcn_id = v.id
+                vcn_name=v.display_name
+                comp_ocid_done_again = []
+                for ntk_compartment_name_again in ntk_compartment_ids:
+                    if ntk_compartment_ids[ntk_compartment_name_again] not in comp_ocid_done_again:
+                        if (input_compartment_names is not None and ntk_compartment_name_again not in input_compartment_names):
+                            continue
+                        comp_ocid_done_again.append(ntk_compartment_ids[ntk_compartment_name_again])
+                        seclists = oci.pagination.list_call_get_all_results(vcn.list_security_lists,compartment_id=ntk_compartment_ids[ntk_compartment_name_again], vcn_id=vcn_id, lifecycle_state='AVAILABLE',sort_by='DISPLAYNAME')
+                        print_secrules(seclists,region,vcn_name,ntk_compartment_name)
 
 
 commonTools.write_to_cd3(rows,cd3file,"SecRulesinOCI")

@@ -97,10 +97,11 @@ if ('.xls' in filename):
 
                     policy = df['Backup Policy'][i].lower().strip()
 
-                    res_name=block_name+"_bkupPolicy"
+                    block_name_tf=commonTools.check_tf_variable(block_name)
+                    res_name=block_name_tf+"_bkupPolicy"
                     tmpstr = """resource "oci_core_volume_backup_policy_assignment" \"""" + res_name + """\"{
                         #Required
-                        asset_id = "${oci_core_volume.""" + block_name + """.id}"
+                        asset_id = "${oci_core_volume.""" + block_name_tf + """.id}"
                         policy_id = "${data.oci_core_volume_backup_policies.block_""" + policy + """.volume_backup_policies.0.id}"
                         }
                         ## Add policy attachment ##

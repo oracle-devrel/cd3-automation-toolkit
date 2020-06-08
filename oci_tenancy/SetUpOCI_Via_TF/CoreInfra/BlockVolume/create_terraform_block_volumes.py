@@ -23,7 +23,6 @@ args = parser.parse_args()
 filename = args.file
 outdir = args.outdir
 
-
 ADS = ["AD1", "AD2", "AD3"]
 endNames = {'<END>', '<end>','<End>'}
 
@@ -62,7 +61,12 @@ if('.xls' in filename):
         ad = ADS.index(AD)
         display_name = blockname
 
-        tempStr = """resource "oci_core_volume"  \"""" + blockname + """"  {
+        blockname=blockname.strip()
+        blockname_tf=commonTools.check_tf_variable(blockname)
+        compartmentVarName=compartmentVarName.strip()
+        compartmentVarName = commonTools.check_tf_variable(compartmentVarName)
+
+        tempStr = """resource "oci_core_volume"  \"""" + blockname_tf + """"  {
         #Required
         availability_domain = "${data.oci_identity_availability_domains.ADs.availability_domains.""" + str(ad) + """.name}"
         compartment_id = "${var.""" + compartmentVarName + """}"
@@ -73,11 +77,11 @@ if('.xls' in filename):
         ## Defined Tag Info ##
         }
 
-resource "oci_core_volume_attachment" \"""" + blockname + """_volume_attachment" {
+resource "oci_core_volume_attachment" \"""" + blockname_tf + """_volume_attachment" {
         #Required
         instance_id = "${oci_core_instance.""" + attacheToInstanceName + """.id}"
         attachment_type = \"""" + attachType + """"
-        volume_id = "${oci_core_volume.""" + blockname + """.id}"
+        volume_id = "${oci_core_volume.""" + blockname_tf + """.id}"
 
         }
         

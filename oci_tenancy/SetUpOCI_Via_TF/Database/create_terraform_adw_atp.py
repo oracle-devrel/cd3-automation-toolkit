@@ -74,9 +74,12 @@ if ('.xls' in filename):
 
         adw_atp = df['ADW or ATP'][i].strip()
 
+        name_tf = commonTools.check_tf_variable(name)
+        compartment_var_name = commonTools.check_tf_variable(compartment_var_name)
+
         if adw_atp == 'ADW':
-                # print("-------------------Inside ADW--------------------")
-            tmpstr = """resource "oci_database_autonomous_data_warehouse" \"""" + name + """\"{
+            # print("-------------------Inside ADW--------------------")
+            tmpstr = """resource "oci_database_autonomous_data_warehouse" \"""" + name_tf + """\"{
 			                            display_name = \"""" + name + """\"
                                         compartment_id = "${var.""" + compartment_var_name + """}"
                     					admin_password = \"""" + autonomous_data_warehouse_admin_password + """\"
@@ -91,7 +94,7 @@ if ('.xls' in filename):
             oname.write(tmpstr)
             oname.close()
         elif adw_atp == 'ATP':
-            tmpstr = """resource "oci_database_autonomous_database" \"""" + name + """\"{
+            tmpstr = """resource "oci_database_autonomous_database" \"""" + name_tf + """\"{
                 			                            display_name = \"""" + name + """\"
                                                         compartment_id = "${var.""" + compartment_var_name + """}"
                                     					admin_password = \"""" + autonomous_data_warehouse_admin_password + """\"

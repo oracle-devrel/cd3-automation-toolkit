@@ -73,7 +73,7 @@ def processSubnet(region,vcn_name,AD,seclist_names,compartment_var_name):
     else:
         ad_name = ""
 
-    vcn_tf_name=commonTools.tfname.sub("-",vcn_name)
+    vcn_tf_name=commonTools.check_tf_variable(vcn_name)
 
     index=0
     for sl_name in seclist_names:
@@ -89,11 +89,12 @@ def processSubnet(region,vcn_name,AD,seclist_names,compartment_var_name):
         else:
             display_name = sl_name
 
-        sl_tf_name = commonTools.tfname.sub("-",display_name)
+        sl_tf_name=vcn_name+"_"+display_name
+        sl_tf_name = commonTools.check_tf_variable(sl_tf_name)
 
-        if (vcn_tf_name +"_"+sl_tf_name+"_seclist.tf" in secrulefiles[region]):
-            secrulefiles[region].remove(vcn_tf_name +"_"+sl_tf_name+"_seclist.tf")
-        outfile = outdir + "/" + region + "/" + vcn_tf_name +"_"+sl_tf_name+"_seclist.tf"
+        if (sl_tf_name+"_seclist.tf" in secrulefiles[region]):
+            secrulefiles[region].remove(sl_tf_name+"_seclist.tf")
+        outfile = outdir + "/" + region + "/" + sl_tf_name+"_seclist.tf"
 
         # If Modify Network is set to true
         if (os.path.exists(outfile) and modify_network == 'true'):
@@ -124,7 +125,7 @@ def processSubnet(region,vcn_name,AD,seclist_names,compartment_var_name):
         oname = open(outfile, "w")
 
         tempStr = """
-        resource "oci_core_security_list" \"""" + vcn_tf_name+"_"+sl_tf_name + """"{
+        resource "oci_core_security_list" \"""" + sl_tf_name + """"{
             compartment_id = "${var.""" + compartment_var_name + """}"
             vcn_id = "${oci_core_vcn.""" + vcn_tf_name + """.id}"
             display_name = \"""" + display_name.strip() + "\""
@@ -207,6 +208,8 @@ if('.xls' in filename):
             sl_names.append(name)
         compartment_var_name=compartment_var_name.strip()
 
+        # Added to check if compartment name is compatible with TF variable name syntax
+        compartment_var_name = commonTools.check_tf_variable(compartment_var_name)
 
         processSubnet(region,vcn_name,AD,sl_names,compartment_var_name)
 

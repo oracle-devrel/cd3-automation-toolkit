@@ -15,16 +15,24 @@ compartment_ids={}
 importCommands={}
 ct=commonTools()
 
-def get_network_compartment_id(config):#, compartment_name):
-    identity = IdentityClient(config)
-    comp_list = oci.pagination.list_call_get_all_results(identity.list_compartments,config["tenancy"],compartment_id_in_subtree=True)
-    compartment_list = comp_list.data
+global ntk_compartment_ids
+ntk_compartment_ids = {}
 
-    for compartment in compartment_list:
-        if(compartment.lifecycle_state == 'ACTIVE'):
-            compartment_ids[compartment.name]=compartment.id
-    compartment_ids['root']=config['tenancy']
-    return compartment_ids
+def get_network_compartment_ids(c_id,c_name):
+
+    compartments = idc.list_compartments(compartment_id=c_id,compartment_id_in_subtree =False)
+    for c in compartments.data:
+        if c.lifecycle_state =="ACTIVE" :
+            if(c_name!="root"):
+                name=c_name+"::"+c.name
+            else:
+                name=c.name
+            ntk_compartment_ids[name]=c.id
+            # Put individual compartment names also in the dictionary
+            if (name != c.name and c.name not in ntk_compartment_ids.keys()):
+                ntk_compartment_ids[c.name] = c.id
+
+            get_network_compartment_ids(c.id,name)
 
 parser = argparse.ArgumentParser(description="Export Route Table on OCI to CD3")
 parser.add_argument("cd3file", help="path of CD3 excel file to export network objects to")
@@ -57,8 +65,9 @@ if args.configFileName is not None:
 else:
     config = oci.config.from_file()
 
-
-ntk_compartment_ids = get_network_compartment_id(config)
+idc=IdentityClient(config)
+ntk_compartment_ids["root"] = config['tenancy']
+get_network_compartment_ids(config['tenancy'],"root")
 
 #Check Compartments
 remove_comps=[]
@@ -80,7 +89,6 @@ print("\nCD3 excel file should not be opened during export process!!!")
 print("Tabs- Compartments, Groups, Policies would be overwritten during export process!!!\n")
 
 #Fetch Home Region
-idc=IdentityClient(config)
 home_region=None
 regionsubscriptions = idc.list_region_subscriptions(tenancy_id=config['tenancy'])
 for rs in regionsubscriptions.data:
@@ -116,7 +124,7 @@ if (input_compartment_names is not None):
             for k, v in ntk_compartment_ids.items():
                 if (v == input_comp_info.compartment_id):
                     parent_input_comp_name = k
-            tf_name = commonTools.tfname.sub("-", input_comp_name)
+            tf_name = commonTools.check_tf_variable(input_comp_name)
             importCommands[home_region].write("\nterraform import oci_identity_compartment." + tf_name + " " + input_comp_id)
             new_row = (home_region.capitalize(), input_comp_name, input_comp_info.description, parent_input_comp_name)
             rows.append(new_row)
@@ -138,7 +146,7 @@ else:
                 if(v==parent_comp_id):
                     parent_comp_name=k
 
-            tf_name = commonTools.tfname.sub("-", comp_display_name)
+            tf_name = commonTools.check_tf_variable(comp_display_name)
             importCommands[home_region].write("\nterraform import oci_identity_compartment." + tf_name + " " + comp_info.id)
             new_row = (home_region.capitalize(), comp_display_name, comp_desc, parent_comp_name)
             rows.append(new_row)
@@ -156,7 +164,7 @@ for group in groups.data:
     if(grp_info.lifecycle_state == "ACTIVE"):
         grp_display_name=grp_info.name
         grp_desc=grp_info.description
-        tf_name=commonTools.tfname.sub("-",grp_display_name)
+        tf_name=commonTools.check_tf_variable(grp_display_name)
         importCommands[home_region].write("\nterraform import oci_identity_group."+ tf_name+" "+grp_info.id)
         new_row = (home_region.capitalize(), grp_display_name, grp_desc)
         rows.append(new_row)
@@ -182,7 +190,7 @@ for ntk_compartment_name in ntk_compartment_ids:
             policy_comp=idc.get_compartment(policy.compartment_id).data.name
 
         policy_statements=policy.statements
-        tf_name = commonTools.tfname.sub("-", policy_name)
+        tf_name = commonTools.check_tf_variable(policy_name)
         importCommands[home_region].write("\nterraform import oci_identity_policy." + tf_name + " " + policy.id)
         count=1
         for stmt in policy_statements:

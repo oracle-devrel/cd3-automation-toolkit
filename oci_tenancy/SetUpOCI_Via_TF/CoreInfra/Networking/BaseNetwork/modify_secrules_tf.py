@@ -25,10 +25,16 @@ def skipCommentedLine(lines):
 
 
 def create_ingress_rule_string(row):
+    rule_desc = row['RuleDescription']
+    if (str(rule_desc).lower() == "nan"):
+        rule_desc = ""
+    else:
+        rule_desc = str(rule_desc).strip()
     options = ""
     ingress_rule = """
           ingress_security_rules {
                 protocol = \"""" + get_protocol(row['Protocol']) + """\"
+                description = \"""" + rule_desc + """\"
                 source = \"""" + row['Source'] + """\"
                 stateless = """ + str(row['isStateless'].lower()) + "\n"
     if ("services-in-oracle-services-network" in row['Source'] or "objectstorage" in row['Source']):
@@ -96,10 +102,16 @@ def create_ingress_rule_string(row):
 
 
 def create_egress_rule_string(row):
+    rule_desc = row['RuleDescription']
+    if (str(rule_desc).lower() == "nan"):
+        rule_desc = ""
+    else:
+        rule_desc = str(rule_desc).strip()
     options = ""
     egress_rule = """
           egress_security_rules {
                 protocol = \"""" + get_protocol(row['Protocol']) + """\"
+                description = \"""" + rule_desc+ """\"
                 destination = \"""" + row['Destination'] + """\"
                 stateless = """ + str(row['isStateless'].lower()) + "\n"
     if ("services-in-oracle-services-network" in row['Destination'] or "objectstorage" in row['Destination']):
@@ -234,9 +246,9 @@ if('.xls' in secrulesfilename):
         for row in reader:
             display_name = row['SecListName']
             vcn_name = row['VCN Name']
-            vcn_tf_name = commonTools.tfname.sub("-", vcn_name)
+            vcn_tf_name = commonTools.check_tf_variable(vcn_name)
             rt_var = vcn_name + "_" + display_name
-            seclist_tf_name = commonTools.tfname.sub("-", rt_var)
+            seclist_tf_name = commonTools.check_tf_variable(rt_var)
 
             # Process only those VCNs which are present in cd3(and have been created via TF)
             if(vcn_name not in vcns.vcn_names):
@@ -247,6 +259,9 @@ if('.xls' in secrulesfilename):
                 continue
 
             compartment_name = row['Compartment Name']
+            # Added to check if compartment name is compatible with TF variable name syntax
+            compartment_name = commonTools.check_tf_variable(compartment_name)
+
             protocol = row['Protocol']
             ruleType = row['RuleType']
             region = row['Region']

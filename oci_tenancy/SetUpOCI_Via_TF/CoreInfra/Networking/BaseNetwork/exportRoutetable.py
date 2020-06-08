@@ -17,22 +17,27 @@ def convertNullToNothing(input):
     else:
         return str(input)
 
-compartment_ids={}
 onprem_destinations=[]
 igw_destinations=[]
 ngw_destinations=[]
 
-def get_network_compartment_id(config):#, compartment_name):
-    identity = IdentityClient(config)
-    comp_list = oci.pagination.list_call_get_all_results(identity.list_compartments,config["tenancy"],compartment_id_in_subtree=True)
-    compartment_list = comp_list.data
+global ntk_compartment_ids
+ntk_compartment_ids = {}
 
-    #if(compartment_name=='root'):
-    for compartment in compartment_list:
-        if(compartment.lifecycle_state == 'ACTIVE'):
-            compartment_ids[compartment.name]=compartment.id
-    compartment_ids['root'] = config['tenancy']
-    return compartment_ids
+def get_network_compartment_ids(c_id,c_name):
+    compartments = idc.list_compartments(compartment_id=c_id,compartment_id_in_subtree =False)
+    for c in compartments.data:
+        if c.lifecycle_state =="ACTIVE" :
+            if(c_name!="root"):
+                name=c_name+"::"+c.name
+            else:
+                name=c.name
+            ntk_compartment_ids[name]=c.id
+            #Put individual compartment names also in the dictionary
+            if(name!=c.name and c.name not in ntk_compartment_ids.keys()):
+                ntk_compartment_ids[c.name]=c.id
+
+            get_network_compartment_ids(c.id,name)
 
 def get_network_entity_name(config,network_identity_id):
     vcn1 = VirtualNetworkClient(config)
@@ -79,14 +84,16 @@ def print_routetables(routetables,region,vcn_name,comp_name):
         display_name = routetable.display_name
         dn=display_name
         if (tf_import_cmd == "true"):
-            tf_name = commonTools.tfname.sub("-",vcn_name + "_" + dn)
+            tf_name = vcn_name + "_" + dn
+            tf_name = commonTools.check_tf_variable(tf_name)
+
             if ("Default Route Table for " in dn):
                 importCommands[region.lower()].write("\nterraform import oci_core_default_route_table." + tf_name + " " + str(routetable.id))
             else:
                 importCommands[region.lower()].write("\nterraform import oci_core_route_table." + tf_name + " " + str(routetable.id))
 
         if(not rules):
-            new_row=(region,comp_name,vcn_name,dn,'','','')
+            new_row=(region,comp_name,vcn_name,dn,'','','','')
             rows.append(new_row)
 
         for rule in rules:
@@ -102,10 +109,10 @@ def print_routetables(routetables,region,vcn_name,comp_name):
                 if(rule.destination not in onprem_destinations):
                     onprem_destinations.append(rule.destination)
 
-            new_row=(region,comp_name,vcn_name,dn,rule.destination,str(network_entity_name),str(rule.destination_type))
+            new_row=(region,comp_name,vcn_name,dn,rule.destination,str(network_entity_name),str(rule.destination_type),str(rule.description))
             rows.append(new_row)
             if(tf_import_cmd=="false"):
-                print(dn + "," + str(rule.destination) + "," + str(network_entity_name)+","+ str(rule.destination_type))
+                print(dn + "," + str(rule.destination) + "," + str(network_entity_name)+","+ str(rule.destination_type),str(rule.description))
 
 
 parser = argparse.ArgumentParser(description="Export Route Table on OCI to CD3")
@@ -150,14 +157,14 @@ if tf_import_cmd is not None:
 else:
     tf_import_cmd = "false"
 
-ntk_compartment_ids = get_network_compartment_id(config)
-
+idc = IdentityClient(config)
+ntk_compartment_ids["root"] = config['tenancy']
+get_network_compartment_ids(config['tenancy'],"root")
 rows=[]
 all_regions = []
 
 if(tf_import_cmd=="true"):
     importCommands={}
-    idc = IdentityClient(config)
     regionsubscriptions = idc.list_region_subscriptions(tenancy_id=config['tenancy'])
     for rs in regionsubscriptions.data:
         for k, v in commonTools().region_dict.items():
@@ -176,19 +183,24 @@ for reg in all_regions:
     config.__setitem__("region", commonTools().region_dict[reg])
     vcn = VirtualNetworkClient(config)
     region = reg.capitalize()
+    comp_ocid_done = []
     for ntk_compartment_name in ntk_compartment_ids:
-        if (input_compartment_names is not None and ntk_compartment_name not in input_compartment_names):
-            continue
-
-        vcns = oci.pagination.list_call_get_all_results(vcn.list_vcns,compartment_id=ntk_compartment_ids[ntk_compartment_name],lifecycle_state="AVAILABLE")
-        for v in vcns.data:
-            vcn_id = v.id
-            vcn_name=v.display_name
-            for ntk_compartment_name_again in ntk_compartment_ids:
-                if (input_compartment_names is not None and ntk_compartment_name_again not in input_compartment_names):
-                    continue
-                routetables = oci.pagination.list_call_get_all_results(vcn.list_route_tables, compartment_id=ntk_compartment_ids[ntk_compartment_name_again], vcn_id=vcn_id, lifecycle_state='AVAILABLE')
-                print_routetables(routetables,region,vcn_name,ntk_compartment_name)
+        if ntk_compartment_ids[ntk_compartment_name] not in comp_ocid_done:
+            if (input_compartment_names is not None and ntk_compartment_name not in input_compartment_names):
+                continue
+            comp_ocid_done.append(ntk_compartment_ids[ntk_compartment_name])
+            vcns = oci.pagination.list_call_get_all_results(vcn.list_vcns,compartment_id=ntk_compartment_ids[ntk_compartment_name],lifecycle_state="AVAILABLE")
+            for v in vcns.data:
+                vcn_id = v.id
+                vcn_name=v.display_name
+                comp_ocid_done_again = []
+                for ntk_compartment_name_again in ntk_compartment_ids:
+                    if ntk_compartment_ids[ntk_compartment_name_again] not in comp_ocid_done_again:
+                        if (input_compartment_names is not None and ntk_compartment_name_again not in input_compartment_names):
+                            continue
+                        comp_ocid_done_again.append(ntk_compartment_ids[ntk_compartment_name_again])
+                        routetables = oci.pagination.list_call_get_all_results(vcn.list_route_tables, compartment_id=ntk_compartment_ids[ntk_compartment_name_again], vcn_id=vcn_id, lifecycle_state='AVAILABLE')
+                        print_routetables(routetables,region,vcn_name,ntk_compartment_name)
 
 commonTools.write_to_cd3(rows,cd3file,"RouteRulesinOCI")
 

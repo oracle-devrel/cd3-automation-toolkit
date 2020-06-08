@@ -14,7 +14,6 @@ class commonTools():
     region_dict={}
     protocol_dict={}
     endNames = {'<END>', '<end>', '<End>'}
-    tfname = re.compile('[^a-zA-Z0-9_-]')
 
     #Read Regions and Protocols Files and create dicts
     def __init__(self):
@@ -41,6 +40,17 @@ class commonTools():
         #Change ack to Initial
         os.chdir(dir)
 
+    #Check TF variable Name
+    def check_tf_variable(var_name):
+        tfname = re.compile('[^a-zA-Z0-9_-]')
+        tfnamestart = re.compile('[A-Za-z]')
+
+        var_name = tfname.sub("-", var_name)
+        x = tfnamestart.match(var_name)
+        # variable name doesnot start with letter; append with c
+        if (x == None):
+            var_name = "c" + var_name
+        return var_name
 
     #Write exported  rows to cd3
     def write_to_cd3(rows, cd3file, sheet_name):

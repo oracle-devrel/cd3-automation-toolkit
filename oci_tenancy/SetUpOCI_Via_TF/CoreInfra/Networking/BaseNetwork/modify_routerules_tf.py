@@ -63,6 +63,9 @@ if('.xls' in inputfile):
             exit(1)
         comp_name = df.iat[i, 1]
         comp_name = comp_name.strip()
+        # Added to check if compartment name is compatible with TF variable name syntax
+        comp_name = commonTools.check_tf_variable(comp_name)
+
         vcn_name = df.iat[i, 2]
         vcn_name = vcn_name.strip()
         display_name = df.iat[i, 3]
@@ -71,7 +74,7 @@ if('.xls' in inputfile):
         if (vcn_name not in vcns.vcn_names):
             print("skipping route table: " + display_name + " as its VCN is not part of VCNs tab in cd3")
             continue
-        vcn_tf_name = commonTools.tfname.sub("-", vcn_name)
+        vcn_tf_name = commonTools.check_tf_variable(vcn_name)
 
         if (str(display_name).lower() == "nan"):
             continue
@@ -87,19 +90,20 @@ if('.xls' in inputfile):
 
         dest_objs = str(dest_objs).strip().split(":")
         if(len(dest_objs)==2):
-            obj_tf_name=commonTools.tfname.sub("-",dest_objs[1].strip())
+            obj_tf_name = vcn_name+"_"+dest_objs[1].strip()
+            obj_tf_name=commonTools.check_tf_variable(obj_tf_name)
 
         if ('ngw' in dest_objs[0].lower().strip()):
-            dest_obj = "${oci_core_nat_gateway." + vcn_tf_name+"_"+obj_tf_name + ".id}"
+            dest_obj = "${oci_core_nat_gateway." + obj_tf_name + ".id}"
         elif ('sgw' in dest_objs[0].lower().strip()):
-            dest_obj = "${oci_core_service_gateway." + vcn_tf_name+"_"+obj_tf_name+ ".id}"
+            dest_obj = "${oci_core_service_gateway." + obj_tf_name+ ".id}"
         elif ('igw' in dest_objs[0].lower().strip()):
-            dest_obj = "${oci_core_internet_gateway." + vcn_tf_name+"_"+obj_tf_name + ".id}"
+            dest_obj = "${oci_core_internet_gateway." + obj_tf_name + ".id}"
         elif ('lpg' in dest_objs[0].lower().strip()):
-            dest_obj = "${oci_core_local_peering_gateway." + vcn_tf_name+"_"+obj_tf_name + ".id}"
+            dest_obj = "${oci_core_local_peering_gateway." + obj_tf_name + ".id}"
         elif ('drg' in dest_objs[0].lower().strip()):
             #dest_obj = "${oci_core_drg." + vcn_tf_name+"_"+obj_tf_name + ".id}"
-            dest_obj = "${oci_core_drg." + obj_tf_name + ".id}"
+            dest_obj = "${oci_core_drg." + commonTools.check_tf_variable(dest_objs[1].strip()) + ".id}"
 #        elif ('privateip' in dest_objs[0].lower()):
         #direct OCID is provided
         else:
@@ -111,6 +115,11 @@ if('.xls' in inputfile):
         else:
             dest_type = str(dest_type).strip()
 
+        rule_desc = df.iat[i, 7]
+        if (str(rule_desc).lower() == "nan"):
+            rule_desc = ""
+        else:
+            rule_desc = str(rule_desc).strip()
 
         """if('Route Table associated with DRG' in subnet_name):
             drg_name = subnet_name.split('DRG ')[1].strip()
@@ -124,7 +133,7 @@ if('.xls' in inputfile):
             rt_var=vcn_name+"_"+subnet_name
         """
         rt_var = vcn_name + "_" + display_name
-        rt_tf_name = commonTools.tfname.sub("-", rt_var)
+        rt_tf_name = commonTools.check_tf_variable(rt_var)
 
         if("Default Route Table for " in display_name):
             if(rt_tf_name not in default_rtables_done[region]):
@@ -141,6 +150,7 @@ if('.xls' in inputfile):
                 default_ruleStr[region]=default_ruleStr[region]+"""
                     route_rules {
                         destination =\"""" + dest_cidr + """\"
+                        description =\"""" + rule_desc + """\"
                         network_entity_id = \"""" + dest_obj + """\"
                         destination_type = \"""" + dest_type + """\"
                     }

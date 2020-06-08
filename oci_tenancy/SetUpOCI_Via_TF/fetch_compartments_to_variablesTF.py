@@ -59,19 +59,45 @@ for region in all_regions:
     # Backup the existing Routes tf file
     shutil.copy(file, file + "_backup")
 
-for compartment in paginate(idc.list_compartments, compartment_id=tenancy_id,compartment_id_in_subtree =True):
-    if(compartment.lifecycle_state=='ACTIVE'):
-        compartment_name=compartment.name
-        compartment_ocid=compartment.id
-        searchstr = "variable \"" + compartment_name + ""
-        for reg in all_regions:
-            if(searchstr not in var_data[reg]):
-                tempStr[reg]=tempStr[reg]+"""
-variable \"""" + compartment_name + """" {
-        type = "string"
-        default = \"""" + compartment_ocid + """"
-}
-"""
+def get_compartments(c_id,c_name):
+    compartments = idc.list_compartments(compartment_id=c_id,compartment_id_in_subtree =False)
+    for c in compartments.data:
+        if c.lifecycle_state =="ACTIVE" :
+            if(c_name!="root"):
+                name=c_name+"::"+c.name
+            else:
+                name=c.name
+
+            full_compartment_name = commonTools.check_tf_variable(name)
+            searchstr = "variable \"" + full_compartment_name + ""
+            for reg in all_regions:
+                if (searchstr not in var_data[reg]):
+                    tempStr[reg] = tempStr[reg] + """
+            variable \"""" + full_compartment_name + """" {
+                    type = "string"
+                    default = \"""" + c.id + """"
+            }
+            """
+            # Included to support just the compartment names(rather than complete hierarchy)
+            if(name!=c.name):
+                compartment_name = commonTools.check_tf_variable(c.name)
+                searchstr = "variable \"" + compartment_name + ""
+                for reg in all_regions:
+                    if (searchstr not in var_data[reg]):
+                        if (searchstr not in tempStr[reg]):
+                            tempStr[reg] = tempStr[reg] + """
+            variable \"""" + compartment_name + """" {
+                    type = "string"
+                    default = \"""" + c.id + """"
+            }
+            """
+                        else:
+                            print("Compartment with same name "+c.name +" has already been fetched. Make sure to use it with complete hierarchy rather than just the name")
+
+            get_compartments(c.id,name)
+
+get_compartments(tenancy_id,"root")
+
 for reg in all_regions:
     vname = open(var_files[reg],"a")
     vname.write(tempStr[reg])

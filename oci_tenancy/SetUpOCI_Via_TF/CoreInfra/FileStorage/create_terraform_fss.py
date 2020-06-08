@@ -88,7 +88,7 @@ for i in df.index:
             or str(mount_target_subnet).lower()==NaNstr.lower() or str(fss_name).lower()==NaNstr.lower() or str(path).lower()==NaNstr.lower()):
         print("Columns Compartment Name, Availability Domain, MountTarget Name, MountTarget Subnet, Max FSS Capacity, Max FSS Inodes, FSS Name and path cannot be left blank..exiting...")
         exit(1)
-    mount_target_subnet = commonTools.tfname.sub("-", mount_target_subnet.strip())
+    mount_target_subnet = commonTools.check_tf_variable(mount_target_subnet.strip())
     AD = str(AD).strip().upper()
     ad = ADS.index(AD)
     if(str(sourceCIDR).lower()==NaNstr.lower()):
@@ -120,13 +120,16 @@ for i in df.index:
         require_ps_port = "false"
     elif str(require_ps_port).lower() != "true":
         require_ps_port = "false"
+    compartment_name = compartment_name.strip()
+    compartment_name = commonTools.check_tf_variable(compartment_name)
 
     if(mount_target_name.strip() not in MT_names[region]):
         MT_names[region].append(mount_target_name.strip())
+        mount_target_tf_name = commonTools.check_tf_variable(mount_target_name.strip())
         data_mt = """
-        resource "oci_file_storage_mount_target" \"""" + mount_target_name.strip() + """" {
+            resource "oci_file_storage_mount_target" \"""" + mount_target_tf_name + """" {
             availability_domain = "${data.oci_identity_availability_domains.ADs.availability_domains.""" + str(ad) + """.name}"
-            compartment_id = "${var.""" + compartment_name.strip() + """}"
+            compartment_id = "${var.""" + compartment_name + """}"
             subnet_id = "${oci_core_subnet.""" + mount_target_subnet + """.id}"
             display_name = \"""" + mount_target_name.strip() + """"
             """
@@ -140,8 +143,8 @@ for i in df.index:
             """
         data_mt = data_mt + """
         }
-        resource "oci_file_storage_export_set" \"""" + mount_target_name.strip() + "-ES" """" {
-            mount_target_id = "${oci_file_storage_mount_target.""" + mount_target_name.strip() + """.id}"
+        resource "oci_file_storage_export_set" \"""" + mount_target_tf_name + "-ES" """" {
+            mount_target_id = "${oci_file_storage_mount_target.""" + mount_target_tf_name + """.id}"
             display_name = \"""" + mount_target_name.strip() + "-ES1" """"
             """
         if(str(fss_capacity).lower()!=NaNstr.lower()):
@@ -162,22 +165,24 @@ for i in df.index:
 
     if(fss_name.strip() not in FSS_names[region]):
         FSS_names[region].append(fss_name.strip())
+        fss_tf_name=commonTools.check_tf_variable(fss_name.strip())
         data_fs = """
-        resource "oci_file_storage_file_system" \"""" + fss_name.strip() + """" {
+        resource "oci_file_storage_file_system" \"""" + fss_tf_name + """" {
             availability_domain = "${data.oci_identity_availability_domains.ADs.availability_domains.""" + str(ad) + """.name}"
-            compartment_id = "${var.""" + compartment_name.strip() + """}"
+            compartment_id = "${var.""" + compartment_name + """}"
             display_name = \"""" + fss_name.strip() + """"
         }"""
 
 
         tempStr[region]=tempStr[region]+data_fs
 
-    FSE_name="FSE-"+mount_target_name.strip()+"-"+fss_name.strip()
+    FSE_tf_name="FSE-"+mount_target_tf_name+"-"+fss_tf_name
+    #FSE_tf_name=commonTools.check_tf_variable(FSE_name)
 
     data_fs_es="""
-        resource "oci_file_storage_export" \"""" + FSE_name+ """" {
-            export_set_id = "${oci_file_storage_export_set.""" + mount_target_name.strip() + """-ES.id}"
-            file_system_id = "${oci_file_storage_file_system.""" + fss_name.strip() + """.id}"
+        resource "oci_file_storage_export" \"""" + FSE_tf_name+ """" {
+            export_set_id = "${oci_file_storage_export_set.""" + mount_target_tf_name + """-ES.id}"
+            file_system_id = "${oci_file_storage_file_system.""" + fss_tf_name + """.id}"
             path = \"""" + path + """"
             export_options {
                 source = \"""" +str(sourceCIDR).strip() + """"

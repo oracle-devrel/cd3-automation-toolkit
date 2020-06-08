@@ -58,9 +58,9 @@ for i in df.index:
     lbr_subnets= lbr_subnets.split(",")
     subnet_ids=""
     if(len(lbr_subnets)==1):
-        subnet_ids="oci_core_subnet."+commonTools.tfname.sub("-", lbr_subnets[0].strip())+".id"
+        subnet_ids="oci_core_subnet."+commonTools.check_tf_variable(lbr_subnets[0].strip())+".id"
     elif(len(lbr_subnets)==2):
-        subnet_ids="oci_core_subnet."+commonTools.tfname.sub("-", lbr_subnets[0].strip())+".id,oci_core_subnet."+commonTools.tfname.sub("-", lbr_subnets[1].strip())+".id"
+        subnet_ids="oci_core_subnet."+commonTools.check_tf_variable(lbr_subnets[0].strip())+".id,oci_core_subnet."+commonTools.check_tf_variable(lbr_subnets[1].strip())+".id"
 
     lbr_is_private = df.iat[i, 5]
     lbr_be_servers = df.iat[i, 6].strip()
@@ -98,8 +98,14 @@ for i in df.index:
         print("All columns except LBR Hostname, Cert Details are mandatory..exiting...")
         exit(1)
 
-    lbr_bs_name=lbr_name.strip()+"_bs"
-    lbr_listner_name = lbr_name.strip() + "_listner"
+
+
+    compartment_name = compartment_name.strip()
+    lbr_name = lbr_name.strip()
+    compartment_name = commonTools.check_tf_variable(compartment_name)
+    lbr_tf_name = commonTools.check_tf_variable(lbr_name)
+    lbr_bs_name = lbr_tf_name + "_bs"
+    lbr_listner_name = lbr_tf_name + "_listener"
 
     if(lbr_is_private==0.0):
         lbr_is_private="false"
@@ -107,10 +113,10 @@ for i in df.index:
         lbr_is_private="true"
     tempStr= """
     #Create LBR
-    resource "oci_load_balancer_load_balancer" \"""" + lbr_name.strip() + """" {
+    resource "oci_load_balancer_load_balancer" \"""" + lbr_tf_name + """" {
     #Required
-    compartment_id = "${var.""" + compartment_name.strip() + """}" 
-    display_name = \"""" + lbr_name.strip() + """" 
+    compartment_id = "${var.""" + compartment_name + """}" 
+    display_name = \"""" + lbr_name + """" 
     shape = \"""" + lbr_shape.strip() + """" 
     subnet_ids = [ """ + subnet_ids + """ ]
     is_private = """+ str(lbr_is_private).lower().strip() + """ 
@@ -126,7 +132,7 @@ for i in df.index:
         port =  \"""" + str(lbr_be_hc_port).strip() + """" 
         url_path = \"""" + lbr_be_hc_url.strip() + """"
     }
-    load_balancer_id = "${oci_load_balancer_load_balancer."""+lbr_name.strip()+""".id}"
+    load_balancer_id = "${oci_load_balancer_load_balancer."""+lbr_tf_name+""".id}"
     name = \"""" + lbr_bs_name.strip() + """"
     policy = \"""" + lbr_be_policy.upper().strip() + """"
     }
@@ -151,29 +157,29 @@ for i in df.index:
     #Required
     backendset_name = "${oci_load_balancer_backend_set."""+lbr_bs_name.strip()+""".name}"
     ip_address = \"""" + be_server_ip_address + """" 
-    load_balancer_id = "${oci_load_balancer_load_balancer."""+lbr_name.strip()+""".id}"
+    load_balancer_id = "${oci_load_balancer_load_balancer."""+lbr_tf_name+""".id}"
     port = \"""" + serverport.strip() + """" 
 }"""
     tempStr=tempStr+tempStr_be_server
 
     if (str(lbr_hostname).lower() != NaNstr.lower()):
-        lbr_host_name = lbr_name + "_hostname"
+        lbr_host_name = lbr_tf_name + "_hostname"
         tempStr = tempStr + """
     #Create LBR hostname
     resource "oci_load_balancer_hostname" \"""" + lbr_host_name.strip() + """"  {
     #Required
     hostname = \"""" + lbr_hostname.strip() + """" 
-    load_balancer_id = "${oci_load_balancer_load_balancer.""" + lbr_name.strip() + """.id}"
+    load_balancer_id = "${oci_load_balancer_load_balancer.""" + lbr_tf_name + """.id}"
     name = \"""" + lbr_host_name.strip() + """" 
 }
     """
     if (lbr_use_ssl.lower() == 'y'):
-        lbr_cert_name = lbr_name.strip() + "_cert"
+        lbr_cert_name = lbr_tf_name + "_cert"
         tempStr = tempStr + """
     resource "oci_load_balancer_certificate" \"""" + lbr_cert_name.strip() + """"  {
     # Required
     certificate_name = \"""" + lbr_cert_name.strip() + """" 
-    load_balancer_id = "${oci_load_balancer_load_balancer.""" + lbr_name.strip() + """.id}"
+    load_balancer_id = "${oci_load_balancer_load_balancer.""" + lbr_tf_name + """.id}"
     # Optional
 """
         if(str(lbr_ca_cert_file).lower()!=NaNstr.lower()):
@@ -204,7 +210,7 @@ for i in df.index:
     resource "oci_load_balancer_listener" \"""" + lbr_listner_name.strip() + """"   {
     #Required
     default_backend_set_name = "${oci_load_balancer_backend_set."""+lbr_bs_name+""".name}"
-    load_balancer_id = "${oci_load_balancer_load_balancer."""+lbr_name+""".id}"
+    load_balancer_id = "${oci_load_balancer_load_balancer."""+lbr_tf_name+""".id}"
     name = \"""" + lbr_listner_name.strip() + """"
     port = \"""" + str(lbr_listner_port).strip() + """"
     protocol = \"""" + lbr_listner_protocol.upper().strip() + """"

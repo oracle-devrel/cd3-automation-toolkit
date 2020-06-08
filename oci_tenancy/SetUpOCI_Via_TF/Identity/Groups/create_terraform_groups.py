@@ -77,7 +77,7 @@ if('.xls' in args.inputfile):
         if(str(group_name).lower()!= "nan"):
             region = region.strip().lower()
             group_name = group_name.strip()
-            group_tf_name = commonTools.tfname.sub("-", group_name)
+            group_tf_name = commonTools.check_tf_variable(group_name)
 
             # If description field is empty; put name as description
             if (str(group_desc).lower() == "nan"):

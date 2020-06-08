@@ -57,13 +57,17 @@ def processDHCP(region,vcn_name,dhcp_option_name,compartment_var_name,serverType
 
 	region = region.lower().strip()
 	compartment_var_name=compartment_var_name.strip()
+
+	# Added to check if compartment name is compatible with TF variable name syntax
+	compartment_var_name = commonTools.check_tf_variable(compartment_var_name)
+
 	serverType=serverType.strip()
 	search_domain=search_domain.strip()
 	vcn_name=vcn_name.strip()
-	vcn_tf_name = commonTools.tfname.sub("-", vcn_name)
+	vcn_tf_name = commonTools.check_tf_variable(vcn_name)
 	dhcp_option_name=dhcp_option_name.strip()
 	vcn_dhcp = vcn_name + "_" + dhcp_option_name
-	vcn_dhcp_tf_name = commonTools.tfname.sub("-", vcn_dhcp)
+	vcn_dhcp_tf_name = commonTools.check_tf_variable(vcn_dhcp)
 	if("Default DHCP Options for " in dhcp_option_name):
 		dhcp_res = """
 	resource "oci_core_default_dhcp_options" \"""" + vcn_dhcp_tf_name + """" {

@@ -84,13 +84,13 @@ if('.xls' in args.inputfile):
         policy_name = df.iat[i, 1]
 
         if (str(policy_name).lower() != "nan"):
-            policy_tf_name = commonTools.tfname.sub("-", policy_name)
+            policy_tf_name = commonTools.check_tf_variable(policy_name)
             count=count +1
             policy_compartment_name = df.iat[i, 2]
             if (str(policy_compartment_name).lower() == "nan" or policy_compartment_name.lower() == 'root'):
                 policy_compartment = '${var.tenancy_ocid}'
             else:
-                #policy_compartment = '${oci_identity_compartment.' + policy_compartment_name + '.id}'
+                policy_compartment_name = commonTools.check_tf_variable(policy_compartment_name)
                 policy_compartment = '${var.' + policy_compartment_name + '}'
 
 
@@ -104,24 +104,11 @@ if('.xls' in args.inputfile):
             # assign groups in policy statements
             if ('$' in policy_statement):
                 policy_statement_grps = df.iat[i, 5]
-
-                """policy_statement_grps = policy_statement_grps.split(",")
-                grp_tf=""
-                k = 0
-                for policy_statement_grp in policy_statement_grps:
-                    k=k+1
-                    if(k==1):
-                        grp_tf = grp_tf +'${oci_identity_group.' + policy_statement_grp + '.name}'
-                    if(k!=1):
-                        grp_tf=grp_tf+","+'${oci_identity_group.' + policy_statement_grp + '.name}'
-                actual_policy_statement=policy_statement.replace('$', grp_tf)
-                """
                 actual_policy_statement=policy_statement.replace('$', policy_statement_grps)
 
             # assign compartment in policy statements
             if('compartment *' in policy_statement):
                 policy_statement_comp = df.iat[i, 6]
-                #comp_tf = '${oci_identity_compartment.' + policy_statement_comp + '.name}'
                 #comp_tf = '${var.' + policy_statement_comp + '}'
                 comp_tf = policy_statement_comp
                 actual_policy_statement=actual_policy_statement.replace('compartment *', 'compartment '+comp_tf)

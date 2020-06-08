@@ -131,13 +131,17 @@ DestType': 6, 'Destination': 7, 'SPortMin': 8, 'SPortMax': 9, 'DPortMin': 10, 'D
 def NSGtemplate(nsgParser, key, value, outdir):
     """Required: compartment_id and vcn_id"""
 
+    compartment_var_name = key[0].strip()
+    # Added to check if compartment name is compatible with TF variable name syntax
+    compartment_var_name = commonTools.check_tf_variable(compartment_var_name)
+
     resource_group = ( \
         "resource \"oci_core_network_security_group\" \"{}\" {{\n"
         "    display_name = \"{}\" \n"
         "    compartment_id = \"${{var.{}}}\"\n"
         "    vcn_id = \"${{oci_core_vcn.{}.id}}\"\n"
         "}}\n" \
-        ).format("{}".format(key[2]), key[2],key[0], commonTools.tfname.sub("-", key[1]))
+        ).format("{}".format(commonTools.check_tf_variable(key[2])), key[2],compartment_var_name, commonTools.check_tf_variable(key[1]))
     with open(outdir + "/{}_nsg.tf".format(key[2]), 'w') as f:
         f.write(resource_group)
         ruleindex = 1
@@ -169,7 +173,7 @@ def NSGrulesTemplate(nsgParser, rule, index):
         "    description = \"{}\"\n"
         "    direction = \"{}\"\n"
         "    protocol = \"{}\""
-    ).format(rule[0], index, rule[0], rule[14],rule[1].upper(), getProtocolNumber(rule[2]))
+    ).format(commonTools.check_tf_variable(rule[0]), index, commonTools.check_tf_variable(rule[0]), rule[14],rule[1].upper(), getProtocolNumber(rule[2]))
     return resource_group_rule
 
 
