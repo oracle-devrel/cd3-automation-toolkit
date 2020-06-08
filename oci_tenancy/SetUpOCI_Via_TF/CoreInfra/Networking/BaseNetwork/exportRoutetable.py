@@ -97,6 +97,10 @@ def print_routetables(routetables,region,vcn_name,comp_name):
             rows.append(new_row)
 
         for rule in rules:
+            desc = str(rule.description)
+            if (desc == "None"):
+                desc = ""
+
             network_entity_id=rule.network_entity_id
             network_entity_name=get_network_entity_name(config,network_entity_id)
             if ('internetgateway' in network_entity_id):
@@ -109,10 +113,10 @@ def print_routetables(routetables,region,vcn_name,comp_name):
                 if(rule.destination not in onprem_destinations):
                     onprem_destinations.append(rule.destination)
 
-            new_row=(region,comp_name,vcn_name,dn,rule.destination,str(network_entity_name),str(rule.destination_type),str(rule.description))
+            new_row=(region,comp_name,vcn_name,dn,rule.destination,str(network_entity_name),str(rule.destination_type),desc)
             rows.append(new_row)
             if(tf_import_cmd=="false"):
-                print(dn + "," + str(rule.destination) + "," + str(network_entity_name)+","+ str(rule.destination_type),str(rule.description))
+                print(dn + "," + str(rule.destination) + "," + str(network_entity_name)+","+ str(rule.destination_type),desc)
 
 
 parser = argparse.ArgumentParser(description="Export Route Table on OCI to CD3")

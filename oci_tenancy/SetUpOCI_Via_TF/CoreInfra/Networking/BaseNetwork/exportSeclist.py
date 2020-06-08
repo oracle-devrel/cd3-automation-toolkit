@@ -75,97 +75,104 @@ def print_secrules(seclists,region,vcn_name,comp_name):
             rows.append(new_row)
 
         for rule in esec_rules:
+            desc=str(rule.description)
+            if(desc=="None"):
+                desc=""
             if rule.protocol == "all":
-                printstr = (dn + ",egress,all," + str(rule.is_stateless) + "," + rule.destination + ",,,,,,,,"+str(rule.description))
-                new_row=(region,comp_name,vcn_name,dn,'egress','all',str(rule.is_stateless),'','','',rule.destination,'','','','',str(rule.description))
+                printstr = (dn + ",egress,all," + str(rule.is_stateless) + "," + rule.destination + ",,,,,,,,"+desc)
+                new_row=(region,comp_name,vcn_name,dn,'egress','all',str(rule.is_stateless),'','','',rule.destination,'','','','',desc)
             elif rule.protocol == "1":
                 if rule.icmp_options is None:
-                    printstr = (dn + ",egress,icmp," + str(rule.is_stateless) + "," + rule.destination + ",,,,,,,."+str(rule.description))
-                    new_row = (region,comp_name,vcn_name,dn,'egress','icmp',str(rule.is_stateless),'','','',rule.destination,'','','','',str(rule.description))
+                    printstr = (dn + ",egress,icmp," + str(rule.is_stateless) + "," + rule.destination + ",,,,,,,."+desc)
+                    new_row = (region,comp_name,vcn_name,dn,'egress','icmp',str(rule.is_stateless),'','','',rule.destination,'','','','',desc)
                 else:
                     code = convertNullToNothing(rule.icmp_options.code)
                     type = convertNullToNothing(rule.icmp_options.type)
-                    printstr = (dn + ",egress,icmp," + str(rule.is_stateless) + "," + rule.destination + ",,,,,"+type+","+code,+","+str(rule.description))
-                    new_row=(region,comp_name,vcn_name,dn,'egress','icmp',str(rule.is_stateless),'','','',rule.destination,'','',type,code,str(rule.description))
+                    printstr = (dn + ",egress,icmp," + str(rule.is_stateless) + "," + rule.destination + ",,,,,"+type+","+code,+","+desc)
+                    new_row=(region,comp_name,vcn_name,dn,'egress','icmp',str(rule.is_stateless),'','','',rule.destination,'','',type,code,desc)
             elif rule.protocol == "6":
                 if rule.tcp_options is None:
-                    printstr = (dn + ",egress,tcp," + str(rule.is_stateless) + ",,,," + rule.destination+",,,,,"+str(rule.description))
-                    new_row=(region,comp_name,vcn_name,dn,'egress','tcp',str(rule.is_stateless),'','','',rule.destination,'','','','',str(rule.description))
+                    printstr = (dn + ",egress,tcp," + str(rule.is_stateless) + ",,,," + rule.destination+",,,,,"+desc)
+                    new_row=(region,comp_name,vcn_name,dn,'egress','tcp',str(rule.is_stateless),'','','',rule.destination,'','','','',desc)
                 elif rule.tcp_options.source_port_range is not None:
                     min = convertNullToNothing(rule.tcp_options.source_port_range.min)
                     max = convertNullToNothing(rule.tcp_options.source_port_range.max)
-                    printstr = (dn + ",egress,tcp," + str(rule.is_stateless) + ",,,," + rule.destination + ",," + min + "," + max + ",,,"+str(rule.description))
-                    new_row=(region,comp_name,vcn_name,dn,'egress','tcp',str(rule.is_stateless),'',min,max,rule.destination,'','','','',str(rule.description))
+                    printstr = (dn + ",egress,tcp," + str(rule.is_stateless) + ",,,," + rule.destination + ",," + min + "," + max + ",,,"+desc)
+                    new_row=(region,comp_name,vcn_name,dn,'egress','tcp',str(rule.is_stateless),'',min,max,rule.destination,'','','','',desc)
                 elif rule.tcp_options.destination_port_range is not None:
                     min = convertNullToNothing(rule.tcp_options.destination_port_range.min)
                     max = convertNullToNothing(rule.tcp_options.destination_port_range.max)
-                    printstr = (dn + ",egress,tcp," + str(rule.is_stateless) + ",,,," + rule.destination + ",," + min + "," + max + ",,,"+str(rule.description))
-                    new_row = (region, comp_name, vcn_name, dn, 'egress', 'tcp', str(rule.is_stateless), '', '', '',rule.destination, min, max, '', '',str(rule.description))
+                    printstr = (dn + ",egress,tcp," + str(rule.is_stateless) + ",,,," + rule.destination + ",," + min + "," + max + ",,,"+desc)
+                    new_row = (region, comp_name, vcn_name, dn, 'egress', 'tcp', str(rule.is_stateless), '', '', '',rule.destination, min, max, '', '',desc)
             elif rule.protocol == "17":
                 if rule.udp_options is None:
-                    printstr = (dn + ",egress,udp," + str(rule.is_stateless) + ",,,," + rule.destination+",,,,,"+str(rule.description))
-                    new_row = (region, comp_name, vcn_name, dn, 'egress', 'udp', str(rule.is_stateless), '', '', '',rule.destination, '', '', '', '',str(rule.description))
+                    printstr = (dn + ",egress,udp," + str(rule.is_stateless) + ",,,," + rule.destination+",,,,,"+desc)
+                    new_row = (region, comp_name, vcn_name, dn, 'egress', 'udp', str(rule.is_stateless), '', '', '',rule.destination, '', '', '', '',desc)
                 elif rule.udp_options.source_port_range is not None:
                     min = convertNullToNothing(rule.udp_options.source_port_range.min)
                     max = convertNullToNothing(rule.udp_options.source_port_range.max)
-                    printstr = (dn + ",egress,udp," + str(rule.is_stateless) + ",,,," + rule.destination + ",," + min + "," + max + ",,,"+str(rule.description))
-                    new_row = (region, comp_name, vcn_name, dn, 'egress', 'udp', str(rule.is_stateless), '', min, max,rule.destination, '', '', '', '',str(rule.description))
+                    printstr = (dn + ",egress,udp," + str(rule.is_stateless) + ",,,," + rule.destination + ",," + min + "," + max + ",,,"+desc)
+                    new_row = (region, comp_name, vcn_name, dn, 'egress', 'udp', str(rule.is_stateless), '', min, max,rule.destination, '', '', '', '',desc)
 
                 elif rule.udp_options.destination_port_range is not None:
                     min = convertNullToNothing(rule.udp_options.destination_port_range.min)
                     max = convertNullToNothing(rule.udp_options.destination_port_range.max)
-                    printstr=(dn + ",egress,udp," + str(rule.is_stateless) + ",,,," + rule.destination + ",," + min + "," + max + ",,,"+str(rule.description))
-                    new_row = (region, comp_name, vcn_name, dn, 'egress', 'udp', str(rule.is_stateless), '', '', '',rule.destination, min, max, '', '',str(rule.description))
+                    printstr=(dn + ",egress,udp," + str(rule.is_stateless) + ",,,," + rule.destination + ",," + min + "," + max + ",,,"+desc)
+                    new_row = (region, comp_name, vcn_name, dn, 'egress', 'udp', str(rule.is_stateless), '', '', '',rule.destination, min, max, '', '',desc)
             #Any Other protocol
             else:
                 protocol=commonTools().protocol_dict[rule.protocol].lower()
-                new_row= (region, comp_name, vcn_name, dn, 'egress', protocol, str(rule.is_stateless), '', '', '',rule.destination, '', '', '', '',str(rule.description))
+                new_row= (region, comp_name, vcn_name, dn, 'egress', protocol, str(rule.is_stateless), '', '', '',rule.destination, '', '', '', '',desc)
 
             rows.append(new_row)
             if(tf_import_cmd=="false"):
                 print(printstr)
         for rule in isec_rules:
+            desc = str(rule.description)
+            if (desc == "None"):
+                desc = ""
+
             if rule.protocol == "6":
                 if rule.tcp_options is None:
-                    printstr= (dn + ",ingress,tcp," + str(rule.is_stateless) + "," + rule.source + ",,,,,,,,"+str(rule.description))
-                    new_row = (region, comp_name, vcn_name, dn, 'ingress','tcp',str(rule.is_stateless),rule.source,'','','','','','','',str(rule.description))
+                    printstr= (dn + ",ingress,tcp," + str(rule.is_stateless) + "," + rule.source + ",,,,,,,,"+desc)
+                    new_row = (region, comp_name, vcn_name, dn, 'ingress','tcp',str(rule.is_stateless),rule.source,'','','','','','','',desc)
                 elif rule.tcp_options.destination_port_range is not None:
                     min = convertNullToNothing(rule.tcp_options.destination_port_range.min)
                     max = convertNullToNothing(rule.tcp_options.destination_port_range.max)
-                    printstr= (dn + ",ingress,tcp," + str(rule.is_stateless) + "," + rule.source + ",,,," + min + "," + max+",,,"+str(rule.description))
-                    new_row = (region, comp_name, vcn_name, dn, 'ingress', 'tcp', str(rule.is_stateless), rule.source, '', '', '',min, max, '', '',str(rule.description))
+                    printstr= (dn + ",ingress,tcp," + str(rule.is_stateless) + "," + rule.source + ",,,," + min + "," + max+",,,"+desc)
+                    new_row = (region, comp_name, vcn_name, dn, 'ingress', 'tcp', str(rule.is_stateless), rule.source, '', '', '',min, max, '', '',desc)
                 else:
-                    new_row = (region, comp_name, vcn_name, dn, 'ingress', 'tcp', str(rule.is_stateless), rule.source, '', '', '','', '', '', '',str(rule.description))
+                    new_row = (region, comp_name, vcn_name, dn, 'ingress', 'tcp', str(rule.is_stateless), rule.source, '', '', '','', '', '', '',desc)
 
             elif rule.protocol == "1":
                 if rule.icmp_options is None:
-                    printstr= (dn + ",ingress,icmp," + str(rule.is_stateless) + "," + rule.source + ",,,,,,,,"+str(rule.description))
-                    new_row = (region, comp_name, vcn_name, dn, 'ingress', 'icmp', str(rule.is_stateless), rule.source, '', '', '','', '', '', '',str(rule.description))
+                    printstr= (dn + ",ingress,icmp," + str(rule.is_stateless) + "," + rule.source + ",,,,,,,,"+desc)
+                    new_row = (region, comp_name, vcn_name, dn, 'ingress', 'icmp', str(rule.is_stateless), rule.source, '', '', '','', '', '', '',desc)
                 else:
                     code = convertNullToNothing(rule.icmp_options.code)
                     type = convertNullToNothing(rule.icmp_options.type)
-                    printstr= (dn + ",ingress,icmp," + str(rule.is_stateless) + "," + rule.source + ",,,,,," + type + "," + code+","+str(rule.description))
-                    new_row = (region, comp_name, vcn_name, dn, 'ingress', 'icmp', str(rule.is_stateless), rule.source, '', '', '','', '', type, code,str(rule.description))
+                    printstr= (dn + ",ingress,icmp," + str(rule.is_stateless) + "," + rule.source + ",,,,,," + type + "," + code+","+desc)
+                    new_row = (region, comp_name, vcn_name, dn, 'ingress', 'icmp', str(rule.is_stateless), rule.source, '', '', '','', '', type, code,desc)
 
             elif rule.protocol == "17":
                 if rule.udp_options is None:
-                    printstr= (dn + ",ingress,udp," + str(rule.is_stateless) + "," + rule.source + ",,,,,,,,"+str(rule.description))
-                    new_row = (region, comp_name, vcn_name, dn, 'ingress', 'udp', str(rule.is_stateless), rule.source, '', '', '','', '', '', '',str(rule.description))
+                    printstr= (dn + ",ingress,udp," + str(rule.is_stateless) + "," + rule.source + ",,,,,,,,"+desc)
+                    new_row = (region, comp_name, vcn_name, dn, 'ingress', 'udp', str(rule.is_stateless), rule.source, '', '', '','', '', '', '',desc)
                 elif rule.udp_options.destination_port_range is not None:
                     min = convertNullToNothing(rule.udp_options.destination_port_range.min)
                     max = convertNullToNothing(rule.udp_options.destination_port_range.max)
-                    printstr= (dn + ",ingress,udp," + str(rule.is_stateless) + "," + rule.source + ",,,," + min + "," + max+",,,"+str(rule.description))
-                    new_row = (region, comp_name, vcn_name, dn, 'ingress', 'udp', str(rule.is_stateless), rule.source, '', '', '',min, max, '', '',str(rule.description))
+                    printstr= (dn + ",ingress,udp," + str(rule.is_stateless) + "," + rule.source + ",,,," + min + "," + max+",,,"+desc)
+                    new_row = (region, comp_name, vcn_name, dn, 'ingress', 'udp', str(rule.is_stateless), rule.source, '', '', '',min, max, '', '',desc)
                 else:
-                    new_row = (region, comp_name, vcn_name, dn, 'ingress', 'udp', str(rule.is_stateless), rule.source, '', '', '','', '', '', '',str(rule.description))
+                    new_row = (region, comp_name, vcn_name, dn, 'ingress', 'udp', str(rule.is_stateless), rule.source, '', '', '','', '', '', '',desc)
 
             elif rule.protocol == "all":
-                printstr= (dn + ",ingress,all," + str(rule.is_stateless) + "," + rule.source + ",,,,,,,,"+str(rule.description))
-                new_row=(region, comp_name, vcn_name, dn, 'ingress', 'all', str(rule.is_stateless), rule.source, '', '', '','', '', '', '',str(rule.description))
+                printstr= (dn + ",ingress,all," + str(rule.is_stateless) + "," + rule.source + ",,,,,,,,"+desc)
+                new_row=(region, comp_name, vcn_name, dn, 'ingress', 'all', str(rule.is_stateless), rule.source, '', '', '','', '', '', '',desc)
             #Any Other protocol
             else:
                 protocol=commonTools().protocol_dict[rule.protocol].lower()
-                new_row= (region, comp_name, vcn_name, dn, 'ingress', protocol, str(rule.is_stateless), rule.source, '', '','', '', '', '', '',str(rule.description))
+                new_row= (region, comp_name, vcn_name, dn, 'ingress', protocol, str(rule.is_stateless), rule.source, '', '','', '', '', '', '',desc)
 
             rows.append(new_row)
             if (tf_import_cmd == "false"):
