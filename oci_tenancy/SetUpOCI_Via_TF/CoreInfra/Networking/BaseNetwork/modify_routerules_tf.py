@@ -180,6 +180,7 @@ if('.xls' in inputfile):
                 tfStr=tfStr+"""
         route_rules {
                 destination =\"""" + dest_cidr + """\"
+                description =\"""" + rule_desc + """\"
                 network_entity_id = \"""" + dest_obj + """\"
                 destination_type = \"""" + dest_type + """\"
             }
