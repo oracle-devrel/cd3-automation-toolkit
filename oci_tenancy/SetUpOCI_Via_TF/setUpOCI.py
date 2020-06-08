@@ -278,7 +278,7 @@ print("5.  Tagging Resources")
 print("6.  BackUp Policy")
 print("7.  File Storage Service")
 print("8.  Load Balancer Service")
-print("9.  Create ADW/ADT")
+print("9.  Create ADW/ATP")
 print("10. Create Database")
 print("\nSee example folder for sample input files\n")
 

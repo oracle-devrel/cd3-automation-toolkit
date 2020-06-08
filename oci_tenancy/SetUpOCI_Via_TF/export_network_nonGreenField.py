@@ -447,7 +447,7 @@ for reg in all_regions:
                 vcn_info = vnc.get_vcn(vcn.id).data
                 comp_ocid_done_again = []
                 for ntk_compartment_name_again in ntk_compartment_ids:
-                    if ntk_compartment_ids[ntk_compartment_name] not in comp_ocid_done_again:
+                    if ntk_compartment_ids[ntk_compartment_name_again] not in comp_ocid_done_again:
                         if (input_compartment_names is not None and ntk_compartment_name_again not in input_compartment_names):
                             continue
                         comp_ocid_done_again.append(ntk_compartment_ids[ntk_compartment_name_again])
