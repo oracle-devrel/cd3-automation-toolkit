@@ -7,6 +7,9 @@ import pandas as pd
 import os
 import datetime
 from os import path
+sys.path.append(os.getcwd()+"/../..")
+from commonTools import *
+
 
 x = datetime.datetime.now()
 date = x.strftime("%S").strip()

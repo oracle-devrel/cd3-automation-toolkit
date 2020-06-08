@@ -8,7 +8,9 @@ import argparse
 import pandas as pd
 import os
 import datetime
-import csv
+sys.path.append(os.getcwd()+"/../..")
+from commonTools import *
+
 
 x = datetime.datetime.now()
 date = x.strftime("%S").strip()

@@ -5,6 +5,9 @@ import argparse
 import pandas as pd
 import os
 import datetime
+sys.path.append(os.getcwd()+"/../..")
+from commonTools import *
+
 
 
 x = datetime.datetime.now()
