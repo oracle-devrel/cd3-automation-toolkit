@@ -38,24 +38,29 @@ compartment_ids={}
 vcn_ids = {}
 vcn_cidrs = {}
 vcn_compartment_ids = {}
+idc = IdentityClient(config)
 
 logging.addLevelName(60,"custom")
 logging.basicConfig(filename="cd3Validator.log",filemode="w",format="%(asctime)s - %(message)s",level=60)
 logger=logging.getLogger("cd3Validator")
 
-
+global ntk_compartment_ids
+ntk_compartment_ids = {}
 #Prepares dictionery containing compartments names and its OCIDs
-def get_network_compartment_id(config):
-    #Fetch the compartment ID
-    identity = IdentityClient(config)
-    comp_list = oci.pagination.list_call_get_all_results(identity.list_compartments,config["tenancy"],compartment_id_in_subtree=True)
-    compartment_list = comp_list.data
-    for compartment in compartment_list:
-        if(compartment.lifecycle_state == 'ACTIVE'):
-            compartment_ids[compartment.name]=compartment.id
+def get_network_compartment_ids(c_id,c_name):
+    compartments = idc.list_compartments(compartment_id=c_id,compartment_id_in_subtree =False)
+    for c in compartments.data:
+        if c.lifecycle_state =="ACTIVE" :
+            if(c_name!="root"):
+                name=c_name+"::"+c.name
+            else:
+                name=c.name
+            ntk_compartment_ids[name]=c.id
+            # Put individual compartment names also in the dictionary
+            if (name != c.name and c.name not in ntk_compartment_ids.keys()):
+                ntk_compartment_ids[c.name] = c.id
 
-    compartment_ids['root']=config['tenancy']
-    return compartment_ids
+            get_network_compartment_ids(c.id,name)
 
 def get_vcn_ids(compartment_ids,vcnInfoobj,config):
     #Fetch the VCN ID
@@ -246,8 +251,8 @@ def validate_subnets(filename,comp_ids,vcnobj,vcnInfoobj):
         # Check for null values and display appropriate message
         for j in df.keys():
             if (str(df[j][i]) == "NaN" or str(df[j][i]) == "nan" or str(df[j][i]) == ""):
-                #only dhcp_option_name and dns_label columns can be empty
-                if j == str(df.columns[16]) or j == str(df.columns[7]):
+                #only dhcp_option_name, route table name, seclist_names and dns_label columns can be empty
+                if j == str(df.columns[16]) or j == str(df.columns[7]) or j == str(df.columns[8]) or j == str(df.columns[9]):
                     pass
                 else:
                     logging.log(60,"ROW " + str(count+2) + " : Empty value at column " +j)
@@ -289,7 +294,7 @@ def validate_vcns(filename,comp_ids,vcn_ids,vcnobj,vcnInfoobj):#,vcn_cidrs,vcn_c
 
     vcn_empty_check=False
     vcn_dnswrong_check=False
-    vcn_dnsdup_check=False
+    #vcn_dnsdup_check=False
     vcn_comp_check=False
     vcn_reg_check=False
     vcn_vcnname_check=False
@@ -340,12 +345,13 @@ def validate_vcns(filename,comp_ids,vcn_ids,vcnobj,vcnInfoobj):#,vcn_cidrs,vcn_c
         if (dns_value.lower() == "nan"):
             vcn_dns.append("")
         else:
-            if (dns_value not in vcn_dns):
+            """if (dns_value not in vcn_dns):
                 vcn_dns.append(dns_value)
             else:
                 logging.log(60, "ROW " + str(i + 3) + " : Duplicate dns_label value " + dns_value +" with ROW "+str(vcn_dns.index(dns_value)+3))
                 vcn_dns.append(dns_value)
                 vcn_dnsdup_check = True
+            """
             vcn_dnswrong_check = checklabel(dns_value, count)
 
         # Collect CIDR List for validating
@@ -365,7 +371,7 @@ def validate_vcns(filename,comp_ids,vcn_ids,vcnobj,vcnInfoobj):#,vcn_cidrs,vcn_c
                     vcn_empty_check = True
 
 
-    if (vcn_vcnname_check==True or vcn_reg_check == True or vcn_comp_check == True or vcn_empty_check == True or vcn_dnswrong_check == True or vcn_dnsdup_check == True):
+    if (vcn_vcnname_check==True or vcn_reg_check == True or vcn_comp_check == True or vcn_empty_check == True or vcn_dnswrong_check == True): # or vcn_dnsdup_check == True):
         print("Null or Wrong value Check failed!!")
         vcn_check = True
     logging.log(60, "End Null or Wrong value Check in each row---------------\n")
@@ -504,17 +510,18 @@ def main():
 
     logging.log(60,"============================= Verifying VCNs Tab ==========================================\n")
     print("\nProcessing VCNs Tab..")
-    comp_ids = get_network_compartment_id(config)
-    vcn_check,vcn_cidr_check,vcn_peer_check = validate_vcns(filename, comp_ids, vcn_ids,vcnobj,vcnInfoobj)
+    ntk_compartment_ids["root"] = config['tenancy']
+    get_network_compartment_ids(config['tenancy'], "root")
+    vcn_check,vcn_cidr_check,vcn_peer_check = validate_vcns(filename, ntk_compartment_ids, vcn_ids,vcnobj,vcnInfoobj)
 
 
     logging.log(60,"============================= Verifying Subnets Tab ==========================================\n")
     print("\nProcessing Subnets Tab..")
-    subnet_check,subnet_cidr_check = validate_subnets(filename,comp_ids,vcnobj,vcnInfoobj)
+    subnet_check,subnet_cidr_check = validate_subnets(filename,ntk_compartment_ids,vcnobj,vcnInfoobj)
 
     logging.log(60,"============================= Verifying DHCP Tab ==========================================\n")
     print("\nProcessing DHCP Tab..")
-    dhcp_check = validate_dhcp(filename,comp_ids,vcnobj,vcnInfoobj)
+    dhcp_check = validate_dhcp(filename,ntk_compartment_ids,vcnobj,vcnInfoobj)
 
     #Prints the final result; once the validation is complete
     if vcn_check == True or vcn_cidr_check == True or vcn_peer_check == True or subnet_check == True or subnet_cidr_check == True or dhcp_check == True:

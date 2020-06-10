@@ -204,7 +204,7 @@ for reg in all_regions:
                             continue
                         comp_ocid_done_again.append(ntk_compartment_ids[ntk_compartment_name_again])
                         routetables = oci.pagination.list_call_get_all_results(vcn.list_route_tables, compartment_id=ntk_compartment_ids[ntk_compartment_name_again], vcn_id=vcn_id, lifecycle_state='AVAILABLE')
-                        print_routetables(routetables,region,vcn_name,ntk_compartment_name)
+                        print_routetables(routetables,region,vcn_name,ntk_compartment_name_again)
 
 commonTools.write_to_cd3(rows,cd3file,"RouteRulesinOCI")
 

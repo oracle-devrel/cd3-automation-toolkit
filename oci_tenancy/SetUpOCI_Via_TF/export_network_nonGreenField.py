@@ -399,6 +399,8 @@ for reg in all_regions:
     comp_ocid_done = []
     for ntk_compartment_name in ntk_compartment_ids:
         if ntk_compartment_ids[ntk_compartment_name] not in comp_ocid_done:
+            if (input_compartment_names is not None and ntk_compartment_name not in input_compartment_names):
+                continue
             comp_ocid_done.append(ntk_compartment_ids[ntk_compartment_name])
             vcns = oci.pagination.list_call_get_all_results(vnc.list_vcns,
                                                             compartment_id=ntk_compartment_ids[ntk_compartment_name],
@@ -439,6 +441,8 @@ for reg in all_regions:
     comp_ocid_done = []
     for ntk_compartment_name in ntk_compartment_ids:
         if ntk_compartment_ids[ntk_compartment_name] not in comp_ocid_done:
+            if (input_compartment_names is not None and ntk_compartment_name not in input_compartment_names):
+                continue
             comp_ocid_done.append(ntk_compartment_ids[ntk_compartment_name])
             vcns = oci.pagination.list_call_get_all_results(vnc.list_vcns,
                                                             compartment_id=ntk_compartment_ids[ntk_compartment_name],
@@ -473,6 +477,8 @@ for reg in all_regions:
     comp_ocid_done = []
     for ntk_compartment_name in ntk_compartment_ids:
         if ntk_compartment_ids[ntk_compartment_name] not in comp_ocid_done:
+            if (input_compartment_names is not None and ntk_compartment_name not in input_compartment_names):
+                continue
             comp_ocid_done.append(ntk_compartment_ids[ntk_compartment_name])
             vcns = oci.pagination.list_call_get_all_results(vnc.list_vcns,
                                                             compartment_id=ntk_compartment_ids[ntk_compartment_name],

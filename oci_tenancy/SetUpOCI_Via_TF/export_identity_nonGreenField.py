@@ -70,7 +70,7 @@ ntk_compartment_ids["root"] = config['tenancy']
 get_network_compartment_ids(config['tenancy'],"root")
 
 #Check Compartments
-remove_comps=[]
+"""remove_comps=[]
 if(input_compartment_names is not None):
     for x in range(0,len(input_compartment_names)):
         if(input_compartment_names[x] not in ntk_compartment_ids.keys()):
@@ -85,6 +85,8 @@ if(input_compartment_names is not None):
         print("Fetching for Compartments... "+str(input_compartment_names))
 else:
     print("Fetching for all Compartments...")
+"""
+print("Fetching for all Compartments...")
 print("\nCD3 excel file should not be opened during export process!!!")
 print("Tabs- Compartments, Groups, Policies would be overwritten during export process!!!\n")
 
@@ -112,19 +114,25 @@ idc=IdentityClient(config)
 print("\nFetching Compartments...")
 rows=[]
 importCommands[home_region].write("\n######### Writing import for Compartments #########\n")
-config.__setitem__("region", ct.region_dict[home_region])
-if (input_compartment_names is not None):
+"""if (input_compartment_names is not None):
     for input_comp_name in input_compartment_names:
         if(input_comp_name=='root'):
             continue
         parent_input_comp_name=""
+    
         while parent_input_comp_name!="root":
             input_comp_id = ntk_compartment_ids[input_comp_name]
             input_comp_info = idc.get_compartment(compartment_id=input_comp_id).data
+
             for k, v in ntk_compartment_ids.items():
                 if (v == input_comp_info.compartment_id):
-                    parent_input_comp_name = k
-            tf_name = commonTools.check_tf_variable(input_comp_name)
+                        parent_input_comp_name = k
+                        
+            if(parent_input_comp_name!="root"):
+                tf_name = parent_input_comp_name+"::"+input_comp_info.name
+            else:
+                tf_name=input_comp_info.name
+            tf_name= commonTools.check_tf_variable(tf_name)
             importCommands[home_region].write("\nterraform import oci_identity_compartment." + tf_name + " " + input_comp_id)
             new_row = (home_region.capitalize(), input_comp_name, input_comp_info.description, parent_input_comp_name)
             rows.append(new_row)
@@ -135,21 +143,35 @@ if (input_compartment_names is not None):
 
 
 else:
-    comps = oci.pagination.list_call_get_all_results(idc.list_compartments,compartment_id=config['tenancy'],compartment_id_in_subtree=True)
-    for comp in comps.data:
-        comp_info = comp
-        if (comp_info.lifecycle_state == "ACTIVE"):
-            comp_display_name = comp_info.name
-            comp_desc = comp_info.description
-            parent_comp_id = comp_info.compartment_id
-            for k,v in ntk_compartment_ids.items():
-                if(v==parent_comp_id):
-                    parent_comp_name=k
+"""
+comps = oci.pagination.list_call_get_all_results(idc.list_compartments,compartment_id=config['tenancy'],compartment_id_in_subtree=True)
+for comp in comps.data:
+    comp_info = comp
+    if (comp_info.lifecycle_state == "ACTIVE"):
+        comp_display_name = comp_info.name
+        comp_desc = comp_info.description
+        parent_comp_id = comp_info.compartment_id
 
-            tf_name = commonTools.check_tf_variable(comp_display_name)
-            importCommands[home_region].write("\nterraform import oci_identity_compartment." + tf_name + " " + comp_info.id)
-            new_row = (home_region.capitalize(), comp_display_name, comp_desc, parent_comp_name)
-            rows.append(new_row)
+        keys = []
+        for k,v in ntk_compartment_ids.items():
+            if(v==parent_comp_id):
+                keys.append(k)
+        if(len(keys)>1):
+            for key in keys:
+                if("::" in key):
+                    parent_comp_name=key
+        else:
+            parent_comp_name=keys[0]
+
+        if (parent_comp_name != "root"):
+            tf_name=parent_comp_name+"::"+comp_display_name
+        else:
+            tf_name=comp_display_name
+
+        tf_name = commonTools.check_tf_variable(tf_name)
+        importCommands[home_region].write("\nterraform import oci_identity_compartment." + tf_name + " " + comp_info.id)
+        new_row = (home_region.capitalize(), comp_display_name, comp_desc, parent_comp_name)
+        rows.append(new_row)
 
 commonTools.write_to_cd3(rows,cd3file,"Compartments")
 print("Compartments exported to CD3\n")
@@ -176,45 +198,67 @@ print("Groups exported to CD3\n")
 rows=[]
 print("\nFetchig Policies...")
 importCommands[home_region].write("\n\n######### Writing import for Policies #########\n\n")
+comp_ocid_done = []
 for ntk_compartment_name in ntk_compartment_ids:
-    if(input_compartment_names is not None and ntk_compartment_name not in input_compartment_names):
-        continue
-    policies = oci.pagination.list_call_get_all_results(idc.list_policies, compartment_id=ntk_compartment_ids[ntk_compartment_name])
-    for policy in policies.data:
-        policy_name=policy.name
-        policy_desc=policy.description
-        policy_comp_id=policy.compartment_id
-        if (policy_comp_id == config['tenancy']):
-            policy_comp = 'root'
-        else:
-            policy_comp=idc.get_compartment(policy.compartment_id).data.name
-
-        policy_statements=policy.statements
-        tf_name = commonTools.check_tf_variable(policy_name)
-        importCommands[home_region].write("\nterraform import oci_identity_policy." + tf_name + " " + policy.id)
-        count=1
-        for stmt in policy_statements:
-            #Commented as statement case was changing
-            """if(" compartment " in stmt.lower()):
-                policy_compartment_name=stmt.lower().split(" compartment ")[1].split()[0]
-                stmt=re.sub(r'%s([\s]|$)'%policy_compartment_name, r'* ', stmt.lower())
-            elif(" tenancy" in stmt.lower()):
-                policy_compartment_name=''
-
-            if(" group " in stmt.lower()):
-                policy_grp_name=stmt.lower().split(" group ")[1].split()[0]
-                stmt=re.sub(r'%s([\s]|$)'%policy_grp_name, r'$ ', stmt.lower())
+    if ntk_compartment_ids[ntk_compartment_name] not in comp_ocid_done:
+        comp_ocid_done.append(ntk_compartment_ids[ntk_compartment_name])
+    #if(input_compartment_names is not None and ntk_compartment_name not in input_compartment_names):
+    #    continue
+        policies = oci.pagination.list_call_get_all_results(idc.list_policies, compartment_id=ntk_compartment_ids[ntk_compartment_name])
+        for policy in policies.data:
+            policy_name=policy.name
+            policy_desc=policy.description
+            policy_comp_id=policy.compartment_id
+            if (policy_comp_id == config['tenancy']):
+                policy_comp = 'root'
             else:
-                policy_grp_name=""
-            """
-            if(count==1):
-                #new_row = (home_region.capitalize(), policy_name, policy_comp,policy_desc,stmt,policy_grp_name,policy_compartment_name)
-                new_row = (home_region.capitalize(), policy_name, policy_comp, policy_desc, stmt, '','')
+                keys = []
+                for k, v in ntk_compartment_ids.items():
+                    if (v == policy_comp_id):
+                        keys.append(k)
+
+                if (len(keys) > 1):
+                    for key in keys:
+                        if ("::" in key):
+                            policy_comp = key
+                else:
+                    policy_comp = keys[0]
+
+            if (policy_comp != "root"):
+                tf_name = policy_comp+"_"+policy_name
             else:
-                #new_row = ('', '','', '', stmt, policy_grp_name, policy_compartment_name)
-                new_row = ('', '', '', '', stmt, '', '')
-            count=count+1
-            rows.append(new_row)
+                tf_name = policy_name
+
+                #policy_comp=idc.get_compartment(policy.compartment_id).data.name
+
+
+            tf_name = commonTools.check_tf_variable(tf_name)
+            importCommands[home_region].write("\nterraform import oci_identity_policy." + tf_name + " " + policy.id)
+
+            count=1
+            policy_statements = policy.statements
+            for stmt in policy_statements:
+                #Commented as statement case was changing
+                """if(" compartment " in stmt.lower()):
+                    policy_compartment_name=stmt.lower().split(" compartment ")[1].split()[0]
+                    stmt=re.sub(r'%s([\s]|$)'%policy_compartment_name, r'* ', stmt.lower())
+                elif(" tenancy" in stmt.lower()):
+                    policy_compartment_name=''
+    
+                if(" group " in stmt.lower()):
+                    policy_grp_name=stmt.lower().split(" group ")[1].split()[0]
+                    stmt=re.sub(r'%s([\s]|$)'%policy_grp_name, r'$ ', stmt.lower())
+                else:
+                    policy_grp_name=""
+                """
+                if(count==1):
+                    #new_row = (home_region.capitalize(), policy_name, policy_comp,policy_desc,stmt,policy_grp_name,policy_compartment_name)
+                    new_row = (home_region.capitalize(), policy_name, policy_comp, policy_desc, stmt, '','')
+                else:
+                    #new_row = ('', '','', '', stmt, policy_grp_name, policy_compartment_name)
+                    new_row = ('', '', '', '', stmt, '', '')
+                count=count+1
+                rows.append(new_row)
 
 commonTools.write_to_cd3(rows,cd3file,"Policies")
 print("Policies exported to CD3\n")

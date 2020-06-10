@@ -40,7 +40,7 @@ prefix=args.prefix
 outfile={}
 oname={}
 tfStr={}
-comp_parentcomp={}
+
 #If input in cd3 file
 if('.xls' in args.inputfile):
     # Get vcnInfo object from commonTools
@@ -54,32 +54,11 @@ if('.xls' in args.inputfile):
     df = df.reset_index(drop=True)
 
     #To handle duplicates during export process
-    df=df.drop_duplicates()
+    df=df.drop_duplicates(ignore_index=True)
 
     #Initialise empty TF string for each region
     for reg in vcnInfo.all_regions:
         tfStr[reg] = ''
-
-    #Iterate over rows
-    for i in df.index:
-            region = df.iat[i, 0]
-
-            # Encountered <End>
-            if (region in commonTools.endNames):
-                break
-
-            region = region.strip().lower()
-
-            # If some invalid region is specified in a row which is not part of VCN Info Tab
-            if region not in vcnInfo.all_regions:
-                print("Invalid Region; It should be one of the values mentioned in VCN Info tab")
-                exit(1)
-
-            # Fetch column values for each row
-            compartment_name = df.iat[i, 1]
-            parent_compartment_name = df.iat[i, 3]
-            comp_parentcomp[compartment_name] = parent_compartment_name
-
 
     #Iterate over rows
     for i in df.index:
@@ -97,34 +76,19 @@ if('.xls' in args.inputfile):
             exit(1)
 
         #Fetch column values for each row
-        compartment_name = df.iat[i, 1]
-        compartment_desc = df.iat[i, 2]
-        parent_compartment_name = df.iat[i, 3]
+        compartment_name = str(df.iat[i, 1]).strip()
+        compartment_desc = str(df.iat[i, 2]).strip()
+        parent_compartment_name = str(df.iat[i, 3]).strip()
 
-        # comp_parentcomp[compartment_name]=parent_compartment_name
-
-        var_c_name = compartment_name
         if (str(parent_compartment_name).lower() != "nan" and str(parent_compartment_name).lower() != 'root'):
-            var_c_name = parent_compartment_name + "::" + compartment_name
-            while (1):
-                if parent_compartment_name in comp_parentcomp.keys():
-                    pc = comp_parentcomp[parent_compartment_name]
-                    if (str(pc).lower() != 'root' and str(pc).lower() != 'nan'):
-                        var_c_name = pc + "::" + var_c_name
-                        parent_compartment_name = pc
-                    else:
-                        break
-
-        comp_tf_name = commonTools.check_tf_variable(var_c_name)
-
-        # If parent compartment name is either empty or root; put tenancy ocid as parent compartment id
-        if (str(parent_compartment_name).lower()== "nan" or parent_compartment_name.lower() == 'root'):
-            parent_compartment='${var.tenancy_ocid}'
-        else:
-            parent_compartment_name = var_c_name.rsplit("::", 1)[0]
+            var_c_name=parent_compartment_name+"::"+compartment_name
             parentcomp_tf_name = commonTools.check_tf_variable(parent_compartment_name)
+            parent_compartment = '${oci_identity_compartment.' + parentcomp_tf_name + '.id}'
+        else:
+            var_c_name=compartment_name
+            parent_compartment = '${var.tenancy_ocid}'
 
-            parent_compartment='${oci_identity_compartment.'+parentcomp_tf_name.strip()+'.id}'
+        comp_tf_name=commonTools.check_tf_variable(var_c_name)
 
         if (str(compartment_name).lower() != "nan"):
             region = region.strip().lower()

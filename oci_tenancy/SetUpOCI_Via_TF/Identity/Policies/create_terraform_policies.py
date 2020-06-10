@@ -84,12 +84,13 @@ if('.xls' in args.inputfile):
         policy_name = df.iat[i, 1]
 
         if (str(policy_name).lower() != "nan"):
-            policy_tf_name = commonTools.check_tf_variable(policy_name)
             count=count +1
             policy_compartment_name = df.iat[i, 2]
             if (str(policy_compartment_name).lower() == "nan" or policy_compartment_name.lower() == 'root'):
+                policy_comp=""
                 policy_compartment = '${var.tenancy_ocid}'
             else:
+                policy_comp=policy_compartment_name
                 policy_compartment_name = commonTools.check_tf_variable(policy_compartment_name)
                 policy_compartment = '${var.' + policy_compartment_name + '}'
 
@@ -115,6 +116,12 @@ if('.xls' in args.inputfile):
             if(count!=1):
                 tempStr = tempStr + """ ]
         }"""
+            if(policy_comp!=""):
+                policy_tf_name=policy_comp+"_"+policy_name
+            else:
+                policy_tf_name=policy_name
+            policy_tf_name = commonTools.check_tf_variable(policy_tf_name)
+
             #Write info to TF string
             tempStr=tempStr + """
     resource "oci_identity_policy" \"""" + policy_tf_name + """" {

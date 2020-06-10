@@ -267,7 +267,7 @@ for reg in all_regions:
                             continue
                         comp_ocid_done_again.append(ntk_compartment_ids[ntk_compartment_name_again])
                         seclists = oci.pagination.list_call_get_all_results(vcn.list_security_lists,compartment_id=ntk_compartment_ids[ntk_compartment_name_again], vcn_id=vcn_id, lifecycle_state='AVAILABLE',sort_by='DISPLAYNAME')
-                        print_secrules(seclists,region,vcn_name,ntk_compartment_name)
+                        print_secrules(seclists,region,vcn_name,ntk_compartment_name_again)
 
 
 commonTools.write_to_cd3(rows,cd3file,"SecRulesinOCI")
