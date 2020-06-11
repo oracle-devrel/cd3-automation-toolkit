@@ -26,23 +26,23 @@ config.read(args.propsfile)
 try:
     input_config_file=config.get('Default','python_config_file').strip()
     input_ocs_compartment_name=config.get('Default','ocs_compartment_name').strip()
-    input_vm_compartment_name=config.get('Default','vm_compartment_name').strip()
-    input_ntk_compartment_name=config.get('Default','ntk_compartment_name').strip()
+    #input_vm_compartment_name=config.get('Default','vm_compartment_name').strip()
+    #input_ntk_compartment_name=config.get('Default','ntk_compartment_name').strip()
     input_ssh_key1=config.get('Default','ssh_key1').strip()
     input_ssh_key2=config.get('Default', 'ssh_key2').strip()
     input_ssh_key3=config.get('Default', 'ssh_key3').strip()
-    input_ocic_username=config.get('Default','ocic_username').strip()
-    input_ocic_password=config.get('Default','ocic_password').strip()
-    input_ocic_identity_domain=config.get('Default','ocic_identity_domain').strip()
-    input_ocic_compute_endpoint=config.get('Default','ocic_compute_endpoint').strip()
+    #input_ocic_username=config.get('Default','ocic_username').strip()
+    #input_ocic_password=config.get('Default','ocic_password').strip()
+    #input_ocic_identity_domain=config.get('Default','ocic_identity_domain').strip()
+    #input_ocic_compute_endpoint=config.get('Default','ocic_compute_endpoint').strip()
     input_git_username=config.get('Default','git_username').strip()
     input_git_password=config.get('Default','git_password').strip()
     input_vcn_name=config.get('Default','ocs_vcn_name').strip()
     input_vcn_cidr=config.get('Default','ocs_vcn_cidr').strip()
     input_igw_name=config.get('Default','ocs_igw_name').strip()
-    input_lpg_to_orig_name=config.get('Default','ocs_lpg_to_orig_name').strip()
-    input_lpg_to_mirror_name = config.get('Default', 'ocs_lpg_to_mirror_name').strip()
-    input_lpg_to_rsync_name = config.get('Default', 'ocs_lpg_to_rsync_name').strip()
+    input_lpg_to_orig_name=config.get('Default','ocs_lpg_name').strip()
+    #input_lpg_to_mirror_name = config.get('Default', 'ocs_lpg_to_mirror_name').strip()
+    #input_lpg_to_rsync_name = config.get('Default', 'ocs_lpg_to_rsync_name').strip()
     input_subnet_name=config.get('Default','ocs_subnet_name').strip()
     input_subnet_cidr=config.get('Default','ocs_subnet_cidr').strip()
     input_ad_name=config.get('Default','ocs_input_ad').strip()
@@ -53,25 +53,102 @@ try:
     input_pvt_key_file=config.get('Default','pvt_key_file').strip()
     input_shell_script=config.get('Default','shell_script_name')
 
-    input_configure_panda = config.get('Default', 'configure_panda').strip()
-    input_configure_koala = config.get('Default', 'configure_koala').strip()
-    input_configure_git_oci = config.get('Default', 'configure_git_oci').strip()
-    input_configure_git_ocictooci = config.get('Default', 'configure_git_ocictooci').strip()
+    #input_configure_panda = config.get('Default', 'configure_panda').strip()
+    #input_configure_koala = config.get('Default', 'configure_koala').strip()
+    #input_configure_git_oci = config.get('Default', 'configure_git_oci').strip()
+    #input_configure_git_ocictooci = config.get('Default', 'configure_git_ocictooci').strip()
 
-    input_ocic_ip_network_for_panda = config.get('Default','ocic_ip_network_for_panda').strip()
-    input_ocic_vnicset_for_panda = config.get('Default','ocic_vnicset_for_panda').strip()
-    input_ocic_tf_prefix_for_panda = config.get('Default','ocic_tf_prefix_for_panda').strip()
-    input_ocic_panda_storage_volume_size = int(config.get('Default','ocic_panda_storage_volume_size').strip())
-    input_ocic_panda_storage_volume_disks = int(config.get('Default','ocic_panda_storage_volume_disks').strip())
-    input_ocic_panda_storage_pvlv_name = config.get('Default','ocic_panda_storage_pvlv_name').strip()
+    #input_ocic_ip_network_for_panda = config.get('Default','ocic_ip_network_for_panda').strip()
+    #input_ocic_vnicset_for_panda = config.get('Default','ocic_vnicset_for_panda').strip()
+    #input_ocic_tf_prefix_for_panda = config.get('Default','ocic_tf_prefix_for_panda').strip()
+    #input_ocic_panda_storage_volume_size = int(config.get('Default','ocic_panda_storage_volume_size').strip())
+    #input_ocic_panda_storage_volume_disks = int(config.get('Default','ocic_panda_storage_volume_disks').strip())
+    #input_ocic_panda_storage_pvlv_name = config.get('Default','ocic_panda_storage_pvlv_name').strip()
 
     input_create_vm = config.get('Default','create_vm').strip()
     input_cleanup = config.get('Default','cleanup').strip()
+    input_run_shell_script = config.get('Default', 'run_shell_script')
 
 except Exception as e:
     print(e)
-    print('Check if all property values exist and try again..exiting...`    ')
+    print('Check if property values exist and try again..exiting...`    ')
     exit()
+
+#Put default values for properties related to OCIC to OCI when using for automation
+try:
+    input_vm_compartment_name = config.get('Default', 'vm_compartment_name').strip()
+except Exception as e:
+    input_vm_compartment_name = input_ocs_compartment_name
+try:
+    input_ntk_compartment_name = config.get('Default', 'ntk_compartment_name').strip()
+except Exception as e:
+    input_ntk_compartment_name = input_ocs_compartment_name
+try:
+    input_configure_panda = config.get('Default', 'configure_panda').strip()
+except Exception as e:
+    input_configure_panda = "0"
+try:
+    input_configure_koala = config.get('Default', 'configure_koala').strip()
+except Exception as e:
+    input_configure_koala = "0"
+try:
+    input_configure_git_ocictooci = config.get('Default', 'configure_git_ocictooci').strip()
+except Exception as e:
+    input_configure_git_ocictooci = "1"
+try:
+    input_configure_git_oci = config.get('Default', 'configure_git_oci').strip()
+except Exception as e:
+    input_configure_git_oci = "1"
+try:
+    input_ocic_username = config.get('Default', 'ocic_username').strip()
+except Exception as e:
+    input_ocic_username = ""
+try:
+    input_ocic_password=config.get('Default','ocic_password').strip()
+except Exception as e:
+    input_ocic_password = ""
+try:
+    input_ocic_identity_domain=config.get('Default','ocic_identity_domain').strip()
+except Exception as e:
+    input_ocic_identity_domain = ""
+try:
+    input_ocic_compute_endpoint=config.get('Default','ocic_compute_endpoint').strip()
+except Exception as e:
+    input_ocic_compute_endpoint = ""
+try:
+    input_lpg_to_mirror_name = config.get('Default', 'ocs_lpg_to_mirror_name').strip()
+except Exception as e:
+    input_lpg_to_mirror_name = ""
+try:
+    input_lpg_to_rsync_name = config.get('Default', 'ocs_lpg_to_rsync_name').strip()
+except Exception as e:
+    input_lpg_to_rsync_name = ""
+try:
+    input_ocic_ip_network_for_panda = config.get('Default', 'ocic_ip_network_for_panda').strip()
+except Exception as e:
+    input_ocic_ip_network_for_panda = ""
+try:
+    input_ocic_vnicset_for_panda = config.get('Default', 'ocic_vnicset_for_panda').strip()
+except Exception as e:
+    input_ocic_vnicset_for_panda = ""
+try:
+    input_ocic_tf_prefix_for_panda = config.get('Default','ocic_tf_prefix_for_panda').strip()
+except Exception as e:
+    input_ocic_tf_prefix_for_panda = ""
+try:
+    input_ocic_panda_storage_volume_size = int(config.get('Default','ocic_panda_storage_volume_size').strip())
+except Exception as e:
+    input_ocic_panda_storage_volume_size = int("1536")
+try:
+    input_ocic_panda_storage_volume_disks = int(config.get('Default','ocic_panda_storage_volume_disks').strip())
+except Exception as e:
+    input_ocic_panda_storage_volume_disks = ""
+try:
+    input_ocic_panda_storage_pvlv_name = config.get('Default', 'ocic_panda_storage_pvlv_name').strip()
+except Exception as e:
+    input_ocic_panda_storage_pvlv_name = ""
+
+
 
 if input_ocic_panda_storage_volume_size > 2048:
     print ("Storage volume in OCIC cannot be greater than 2Tb. Setting to 1.5T ")
@@ -84,7 +161,7 @@ if(input_ssh_key1==''):
     exit()
 
 if os.path.isfile(input_pvt_key_file)==False:
-        print("input private key file corresponding to ssh_key1 does not exist. Exiting....")
+        print("input private key file corresponding to ssh_key1 does not exist at the specified path. Exiting....")
         exit()
 
 if(input_vcn_name==''):
@@ -942,7 +1019,7 @@ if(input_create_vm=="1"):
         sftp.put(upload_git_script2, '/home/opc/download_git_expect2.sh')
 
     print('Copying shell script file to setup the VM..')
-    input_run_shell_script = config.get('Default','run_shell_script')
+
     if input_run_shell_script == "1":
         sftp.put(script_file, '/home/opc/shell_script.sh')
     else:
