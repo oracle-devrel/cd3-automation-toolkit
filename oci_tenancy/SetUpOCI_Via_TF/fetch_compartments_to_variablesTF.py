@@ -35,7 +35,7 @@ tempStr = {}
 var_files={}
 var_data={}
 
-print("outdir should contain region directories and then variables_<region>.tf file inside the region directories.")
+print("outdir specified should contain region directories and then variables_<region>.tf file inside the region directories eg /root/ocswork/terraform_files")
 idc=IdentityClient(config)
 all_regions=[]
 ct=commonTools()
@@ -71,6 +71,7 @@ def get_compartments(c_id,c_name):
             full_compartment_name = commonTools.check_tf_variable(name)
             searchstr = "variable \"" + full_compartment_name + ""
             for reg in all_regions:
+                print("Preparing variables string for region "+reg+"...")
                 if (searchstr not in var_data[reg]):
                     tempStr[reg] = tempStr[reg] + """
             variable \"""" + full_compartment_name + """" {
