@@ -71,7 +71,6 @@ def get_compartments(c_id,c_name):
             full_compartment_name = commonTools.check_tf_variable(name)
             searchstr = "variable \"" + full_compartment_name + ""
             for reg in all_regions:
-                print("Preparing variables string for region "+reg+"...")
                 if (searchstr not in var_data[reg]):
                     tempStr[reg] = tempStr[reg] + """
             variable \"""" + full_compartment_name + """" {
@@ -93,7 +92,7 @@ def get_compartments(c_id,c_name):
             }
             """
                         else:
-                            print("Compartment with same name "+c.name +" has already been fetched. Make sure to use it with complete hierarchy rather than just the name")
+                            print("Compartment with same name "+c.name +" has already been fetched for region "+reg+" . Make sure to use it with complete hierarchy rather than just the name")
 
             get_compartments(c.id,name)
 
