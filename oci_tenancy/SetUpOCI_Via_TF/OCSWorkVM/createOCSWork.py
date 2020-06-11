@@ -12,6 +12,7 @@ import puttykeys
 from pathlib import Path
 import sys
 import os
+import datetime
 sys.path.append(os.getcwd()+"/..")
 from commonTools import commonTools
 
@@ -49,6 +50,7 @@ try:
     input_vm_name=config.get('Default','ocs_vm_name').strip()
     input_vm_shape=config.get('Default','ocs_vm_shape').strip()
     input_image_id=config.get('Default','ocs_vm_source_image_ocid').strip()
+    input_cleanup_script_file=config.get('Default','cleanup_script_file').strip()
     input_user_data_file=config.get('Default','ocs_user_data_file').strip()
     input_pvt_key_file=config.get('Default','pvt_key_file').strip()
     input_shell_script=config.get('Default','shell_script_name')
@@ -159,10 +161,13 @@ if(input_ntk_compartment_name=='' or input_vm_compartment_name=='' or input_ocs_
 if(input_ssh_key1==''):
     print("ssh_key1 cannot be left blank. Exiting...")
     exit()
+if(input_cleanup_script_file==''):
+    print("cleanup_script_file cannot be empty. Please specify file name which will be used by cleanup script later. Exiting...")
+    exit()
 
 if os.path.isfile(input_pvt_key_file)==False:
-        print("input private key file corresponding to ssh_key1 does not exist at the specified path. Exiting....")
-        exit()
+    print("input private key file corresponding to ssh_key1 does not exist at the specified path. Exiting....")
+    exit()
 
 if(input_vcn_name==''):
     input_vcn_name='OCS_VCN'
@@ -211,8 +216,15 @@ def write_file(file_name,file_data):
     f.write(file_data)
     f.close()
 
-#del_config_file = input_config_file
-del_config_file = "config_for_delete"
+
+del_config_file = input_cleanup_script_file
+#Take backup of existing and Open a new config_for_delete
+if(os.path.exists(del_config_file)):
+    x = datetime.datetime.now()
+    date = x.strftime("%f").strip()
+    print("Taking backup of existing cleanup script file to "+del_config_file+"_"+date)
+    shutil.move(del_config_file,del_config_file+"_"+date)
+
 
 def append_file(file_name,file_data):
     f = open(file_name, "a+")
@@ -896,6 +908,7 @@ if(input_create_vm=="1"):
             print('Reserved Public IP of VM: ' + public_ip)
             ip = public_ip
 
+    print("\nWriting OCID info to file: "+del_config_file+" required for cleanup script")
     #Write to config file for cleanup
     with open(input_config_file, 'r') as file:
         existing_data = file.read()
@@ -914,7 +927,8 @@ if(input_create_vm=="1"):
     if (lpg_to_rsync_ocid != ''):
         append_file(del_config_file, "lpg_to_rsync_ocid=" + lpg_to_rsync_ocid)
 
-    append_file(del_config_file, "ocswork_instance_ocid=" + instance_ocid)
+    #append_file(del_config_file, "ocswork_instance_ocid=" + instance_ocid)
+    updatePropsFile(del_config_file, "ocswork_instance_ocid", instance_ocid)
 
     if(public_ip!=None):
         append_file(del_config_file, "public_ip=" + public_ip)
@@ -941,7 +955,7 @@ if(input_create_vm=="1"):
     updatePropsFile(input_config_file, "ocswork_instance_ocid", instance_ocid)
 
     #scp private key and config files to VM
-    print('Copying required files to the VM')
+    print('\nCopying required files to the VM')
     time.sleep(5)
 
     f=open(input_pvt_key_file,"r")

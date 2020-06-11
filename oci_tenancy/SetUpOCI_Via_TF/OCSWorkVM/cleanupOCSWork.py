@@ -18,7 +18,7 @@ config.read(args.propsfile)
 
 #Read Config file Variables
 try:
-    input_config_file="config_for_delete"
+    input_config_file=config.get('Default','cleanup_script_file').strip()
     input_pvt_key_file = config.get('Default', 'pvt_key_file').strip()
     config_file = config.get('Default', 'python_config_file').strip()
 
@@ -33,6 +33,7 @@ def write_file(file_name,file_data):
     f.write(file_data)
     f.close()
 
+print("Reading OCID info for deletion from "+input_config_file+"\n")
 python_config = oci.config.from_file(file_location=input_config_file)
 ocs_compartment_ocid = python_config['ocs_compartment_ocid']
 input_vcn_ocid = python_config['vcn_ocid']
@@ -177,7 +178,12 @@ for lpg in lpg_list.data:
 
 
 print ("Deleting Subnet")
-response = network_client.delete_subnet(input_subnet_ocid)
+try:
+    response = network_client.delete_subnet(input_subnet_ocid)
+except Exception as e:
+    print(e)
+    print("Make sure to delete other VMs in same subnet..exiting without removing VCN and other network components.")
+    exit()
 
 print ("Deleting VCN")
 response = network_client.delete_vcn(input_vcn_ocid)
