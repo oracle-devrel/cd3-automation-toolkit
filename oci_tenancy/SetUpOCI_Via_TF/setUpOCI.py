@@ -83,7 +83,7 @@ if (input_nongf_tenancy.lower() == 'true'):
     print("3. Run bash script to import objects to TF state")
     userInput = input('Enter your choice: multiple allowed ')
     if ("1" in userInput):
-        """input_comp = input("Enter name of Compartment as it appears in OCI (comma seperated without spaces if multiple)for which you want to export identity objects;\nLeave blank if want to export for all Compartments: ")
+        """input_comp = input("Enter name of Compartment as it appears in OCI (comma seperated if multiple)for which you want to export identity objects;\nLeave blank if want to export for all Compartments: ")
 
         if (input_comp == ''):
             if (input_config_file == ''):
@@ -159,9 +159,9 @@ if (input_nongf_tenancy.lower() == 'true'):
                 command = "python export_network_nonGreenField.py " + input_cd3file + ' ' + input_outdir +" --configFileName " + input_config_file
         else:
             if (input_config_file == ''):
-                command = "python export_network_nonGreenField.py "+input_cd3file + ' ' + input_outdir +" --networkCompartment "+input_comp
+                command = "python export_network_nonGreenField.py "+input_cd3file + ' ' + input_outdir +" --networkCompartment \""+input_comp +"\""
             else:
-                command = "python export_network_nonGreenField.py " + input_cd3file + ' ' + input_outdir +" --networkCompartment "+input_comp+" --configFileName " + input_config_file
+                command = "python export_network_nonGreenField.py " + input_cd3file + ' ' + input_outdir +" --networkCompartment \""+input_comp+"\""" --configFileName " + input_config_file
         print("\nExecuting command "+command)
         exitval =os.system(command)
         if (exitval==0):
@@ -248,33 +248,8 @@ if (input_nongf_tenancy.lower() == 'true'):
     #else:
     #    print("Invalid Choice!!")
     exit()
-if (input_format == 'cd3'):
-    inputfile = input_cd3file
-
-    cd3validate = input("Do you want to verify CD3? Enter y or n: ")
-    if(cd3validate.lower()=='y'):
-        print("It will verify tabs: VCNs, DHCP and Subnets in excel sheet\n")
-        if (input_config_file == ''):
-            command = 'python cd3Validator.py ' + inputfile
-            print("Executing Command: " + command)
-            exitval=os.system(command)
-        else:
-            command = 'python cd3Validator.py ' + inputfile + ' --configFileName ' + input_config_file
-            print("Executing Command: " + command)
-            exitval=os.system(command)
-        print("\n")
-        if(exitval==1 or exitval==256):
-            prcd_input = input("Do you still want to proceed with setUpOCI? Enter y or n: ")
-            if(prcd_input.lower()=='y'):
-                pass
-            else:
-                print("Exiting...")
-                exit()
-    elif(cd3validate.lower()=='n'):
-        pass
-    else:
-        print("wrong input")
-        exit()
+#if (input_format == 'cd3'):
+#    inputfile = input_cd3file
 
 print("1.  Identity")
 print("2.  Networking")
@@ -366,6 +341,30 @@ if('2' in userInput):
 
     if not os.path.exists(outdir):
         os.makedirs(outdir)
+    cd3validate = input("Do you want to verify CD3 Network Tabs? Enter y or n: ")
+    if (cd3validate.lower() == 'y'):
+        print("It will verify tabs: VCNs, DHCP and Subnets in excel sheet\n")
+        if (input_config_file == ''):
+            command = 'python cd3Validator.py ' + inputfile
+            print("Executing Command: " + command)
+            exitval = os.system(command)
+        else:
+            command = 'python cd3Validator.py ' + inputfile + ' --configFileName ' + input_config_file
+            print("Executing Command: " + command)
+            exitval = os.system(command)
+        print("\n")
+        if (exitval == 1 or exitval == 256):
+            prcd_input = input("Do you still want to proceed with setUpOCI? Enter y or n: ")
+            if (prcd_input.lower() == 'y'):
+                pass
+            else:
+                print("Exiting...")
+                exit()
+    elif (cd3validate.lower() == 'n'):
+        pass
+    else:
+        print("wrong input")
+        exit()
 
     print("1.  Create Network- overwrites all TF files; reverts all SecLists and RouteTables to original rules")
     print("2.  Modify Network- Add/Remove/Modify any network object; updates TF files with changes; this option should be used after modifications have been done to SecRules or RouteRules")
@@ -397,7 +396,7 @@ if('2' in userInput):
         if (input_format == 'cd3'):
             cd3outfile = input_cd3file
         inputConfigFile = input_config_file
-        input_comp = input("Enter name of Compartment as it appears in OCI (comma seperated without spaces if multiple) for which you want to export rules; Leave blank if want to export for all Compartments: ")
+        input_comp = input("Enter name of Compartment as it appears in OCI (comma seperated if multiple) for which you want to export rules; Leave blank if want to export for all Compartments: ")
 
         if (input_comp is ""):
             if (input_config_file == ''):
@@ -408,11 +407,11 @@ if('2' in userInput):
                 command_rt = 'python exportRoutetable.py ' + cd3outfile+ ' --configFileName ' + input_config_file
         else:
             if (input_config_file == ''):
-                command_sl = 'python exportSeclist.py ' + cd3outfile +" --networkCompartment " + input_comp
-                command_rt = 'python exportRoutetable.py ' + cd3outfile + " --networkCompartment " + input_comp
+                command_sl = 'python exportSeclist.py ' + cd3outfile +" --networkCompartment \""+input_comp +"\""
+                command_rt = 'python exportRoutetable.py ' + cd3outfile + " --networkCompartment \""+input_comp +"\""
             else:
-                command_sl = 'python exportSeclist.py ' + cd3outfile + ' --configFileName ' + input_config_file + " --networkCompartment " + input_comp
-                command_rt = 'python exportRoutetable.py ' + cd3outfile +' --configFileName ' + input_config_file + " --networkCompartment " + input_comp
+                command_sl = 'python exportSeclist.py ' + cd3outfile + ' --configFileName ' + input_config_file + " --networkCompartment \""+input_comp +"\""
+                command_rt = 'python exportRoutetable.py ' + cd3outfile +' --configFileName ' + input_config_file + " --networkCompartment \""+input_comp +"\""
 
         print("Executing Command: " + command_sl)
         os.chdir('CoreInfra/Networking/BaseNetwork')

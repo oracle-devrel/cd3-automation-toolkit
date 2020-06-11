@@ -12,7 +12,7 @@ from commonTools import *
 
 def copy_template_file(hostname, operatingsystem,region):
         region=region.strip().lower()
-        print('Using template file - template/' + operatingsystem + 'template.tf')
+        print('Copying template file - template/' + operatingsystem + 'template.tf for hostname '+hostname)
         shutil.copyfile('template/' + operatingsystem + 'template.tf', outdir + '/'+region+'/' + hostname + '.tf')
 
 
@@ -67,92 +67,113 @@ if('.xls' in filename):
     df = df.dropna(how='all')
     df = df.reset_index(drop=True)
 
-    """for row in df.index:
-        region=df['Region'][row]
-        region=region.strip().lower()
-        if region not in all_regions and region not in endNames:
-            print("Invalid Region; It should be one of the values mentioned in VCN Info tab")
-            exit(1)
-    """
     for row in df.index:
         region = df['Region'][row]
         region = region.strip().lower()
-        if region in all_regions:
-            copy_template_file(df['Hostname'][row], df['OS'][row],df['Region'][row])
-        elif region in endNames:
+        if region in endNames:
             break
-        else:
-            print("Skipping row "+ region + " as invalid region")
-    #for i in df.keys():
-    #    for j in df.index:
+
+        hostname=df['Hostname'][row]
+        shapeField = df['Shape'][row]
+        shapeField = shapeField.strip()
+        shape_error=0
+        if(shapeField.lower()!="nan" and ".Flex" in shapeField):
+            if("::" not in shapeField):
+                shape_error=1
+            else:
+                shapeField=shapeField.split("::")
+                if(shapeField[1].strip()==""):
+                    shape_error=1
+
+        if region in all_regions and shape_error==0:
+            copy_template_file(df['Hostname'][row], df['OS'][row],df['Region'][row])
+        elif region not in all_regions:
+            print("Skipping copy template for hostname "+ hostname + " as invalid region")
+        elif(shape_error==1):
+            print("Skipping copy template for hostname "+ hostname +" as ocpus missing for Flex shape")
+
     for j in df.index:
         for i in df.keys():
             if(str(df[i][j]) in endNames):
                 exit()
-            if (re.match('subnet name', i, flags=re.IGNORECASE)):
-                subnet_name = str(df[i][j])
-                subnet_name_tf = commonTools.check_tf_variable(subnet_name)
-                replaceAllplaceholders(outdir + '/' + df['Region'][j].strip().lower() + '/' + df['Hostname'][j] + '.tf','##' + i + '##', subnet_name_tf)
+            # proceed only if template file has been copied
+            if (os.path.exists(outdir + '/' + df['Region'][j].strip().lower() + '/' + df['Hostname'][j] + '.tf')):
+                if (re.match('subnet name', i, flags=re.IGNORECASE)):
+                    subnet_name = str(df[i][j]).strip()
+                    if (subnet_name != 'nan'):
+                        subnet_name_tf = commonTools.check_tf_variable(subnet_name)
+                    replaceAllplaceholders(outdir + '/' + df['Region'][j].strip().lower() + '/' + df['Hostname'][j] + '.tf','##' + i + '##', subnet_name_tf)
 
-            if (re.match('Compartment Name', i, flags=re.IGNORECASE)):
-                compartment_name=str(df[i][j]).strip()
-                if(compartment_name!='nan'):
-                    compartment_name=commonTools.check_tf_variable(compartment_name)
-                    replaceAllplaceholders(outdir + '/' + df['Region'][j].strip().lower() + '/' + df['Hostname'][j] + '.tf','##' + i + '##', compartment_name)
-                continue
-
-            if(re.match('Region', i, flags=re.IGNORECASE)):
-                region = str(df[i][j])
-                region = region.strip().lower()
-                if (region not in all_regions):
-                    break
-
-            if (re.match('DedicatedVMHost', i, flags=re.IGNORECASE)):
-                dedicated_host=str(df[i][j])
-                if(dedicated_host!='nan'):
-                    dedicated_host_str="""dedicated_vm_host_id = "${oci_core_dedicated_vm_host."""+commonTools.check_tf_variable(dedicated_host)+""".id}" """
-                    replaceAllplaceholders(outdir + '/' + df['Region'][j].strip().lower() + '/' + df['Hostname'][j] + '.tf','##' + i + '##', dedicated_host_str)
-                continue
-            if (re.match('NSGs', i, flags=re.IGNORECASE)):
-                NSG_col = str(df[i][j])
-                if NSG_col != 'nan':
-                    nsg_str = "nsg_ids=""[ "
-                    NSGs = NSG_col.split(",")
-                    k = 0
-                    while k < len(NSGs):
-                        nsg_str = nsg_str + """"${oci_core_network_security_group.""" + commonTools.check_tf_variable(NSGs[k].strip()) + """.id}" """
-                        if (k != len(NSGs) - 1):
-                            nsg_str = nsg_str + ","
-                        else:
-                            nsg_str = nsg_str + " ]"
-                        k += 1
-                    replaceAllplaceholders(outdir + '/' + df['Region'][j].strip().lower() + '/' + df['Hostname'][j] + '.tf','##' + i + '##', nsg_str)
-                continue
-
-            if (re.match('Availability domain', i, flags=re.IGNORECASE)):
-                if ('ad1' in str(df[i][j]).lower()):
-                    replaceAllplaceholders(outdir + '/' + df['Region'][j].strip().lower()+'/'+df['Hostname'][j] + '.tf', '##' + i + '##', '0')
+                if (re.match('Compartment Name', i, flags=re.IGNORECASE)):
+                    compartment_name=str(df[i][j]).strip()
+                    if(compartment_name!='nan'):
+                        compartment_name=commonTools.check_tf_variable(compartment_name)
+                        replaceAllplaceholders(outdir + '/' + df['Region'][j].strip().lower() + '/' + df['Hostname'][j] + '.tf','##' + i + '##', compartment_name)
                     continue
-                if ('ad2' in str(df[i][j]).lower()):
-                    replaceAllplaceholders(outdir + '/' + df['Region'][j].strip().lower()+ '/'+df['Hostname'][j] + '.tf', '##' + i + '##', '1')
-                    continue
-                if ('ad3' in str(df[i][j]).lower()):
-                    replaceAllplaceholders(outdir + '/' + df['Region'][j].strip().lower()+ '/'+df['Hostname'][j] + '.tf', '##' + i + '##', '2')
-                    continue
-            if (str(df[i][j]) == 'nan'):
-                replaceAllplaceholders(outdir + '/' + df['Region'][j].strip().lower()+ '/'+df['Hostname'][j] + '.tf', '##' + i + '##', "")
-                continue
-            if (str(df[i][j]) == 'True' or str(df[i][j]) == 'False'):
-                replaceAllplaceholders(outdir + '/' + df['Region'][j].strip().lower()+ '/'+df['Hostname'][j] + '.tf', '##' + i + '##', str(df[i][j]).lower())
-                continue
-            if (str(df[i][j]) == '0.0'):
-                replaceAllplaceholders(outdir + '/' + df['Region'][j].strip().lower()+ '/'+df['Hostname'][j] + '.tf', '##' + i + '##', "false")
-                continue
-            if (str(df[i][j]) == '1.0'):
-                replaceAllplaceholders(outdir + '/' + df['Region'][j].strip().lower() + '/' + df['Hostname'][j] + '.tf','##' + i + '##', "true")
-                continue
 
-            replaceAllplaceholders(outdir + '/' + df['Region'][j].strip().lower()+ '/'+df['Hostname'][j] + '.tf', '##' + i + '##', str(df[i][j]))
+                if (re.match('Shape', i, flags=re.IGNORECASE)):
+                    shapeField=str(df[i][j]).strip()
+                    if(shapeField!='nan' and ".Flex" in shapeField):
+                        shape=shapeField.split("::")[0].strip()
+                        ocpus = shapeField.split("::")[1].strip()
+                        replaceAllplaceholders(outdir + '/' + df['Region'][j].strip().lower() + '/' + df['Hostname'][j] + '.tf','##Shape##', shape)
+                        replaceAllplaceholders(outdir + '/' + df['Region'][j].strip().lower() + '/' + df['Hostname'][j] + '.tf', '##ocpus##',ocpus)
+                        continue
+
+
+
+                if(re.match('Region', i, flags=re.IGNORECASE)):
+                    region = str(df[i][j])
+                    region = region.strip().lower()
+                    if (region not in all_regions):
+                        break
+
+                if (re.match('DedicatedVMHost', i, flags=re.IGNORECASE)):
+                    dedicated_host=str(df[i][j]).strip()
+                    if(dedicated_host!='nan'):
+                        dedicated_host_str="""dedicated_vm_host_id = "${oci_core_dedicated_vm_host."""+commonTools.check_tf_variable(dedicated_host)+""".id}" """
+                        replaceAllplaceholders(outdir + '/' + df['Region'][j].strip().lower() + '/' + df['Hostname'][j] + '.tf','##' + i + '##', dedicated_host_str)
+                    continue
+                if (re.match('NSGs', i, flags=re.IGNORECASE)):
+                    NSG_col = str(df[i][j])
+                    if NSG_col != 'nan':
+                        nsg_str = "nsg_ids=""[ "
+                        NSGs = NSG_col.split(",")
+                        k = 0
+                        while k < len(NSGs):
+                            nsg_str = nsg_str + """"${oci_core_network_security_group.""" + commonTools.check_tf_variable(NSGs[k].strip()) + """.id}" """
+                            if (k != len(NSGs) - 1):
+                                nsg_str = nsg_str + ","
+                            else:
+                                nsg_str = nsg_str + " ]"
+                            k += 1
+                        replaceAllplaceholders(outdir + '/' + df['Region'][j].strip().lower() + '/' + df['Hostname'][j] + '.tf','##' + i + '##', nsg_str)
+                    continue
+
+                if (re.match('Availability domain', i, flags=re.IGNORECASE)):
+                    if ('ad1' in str(df[i][j]).strip().lower()):
+                        replaceAllplaceholders(outdir + '/' + df['Region'][j].strip().lower()+'/'+df['Hostname'][j] + '.tf', '##' + i + '##', '0')
+                        continue
+                    if ('ad2' in str(df[i][j]).strip().lower()):
+                        replaceAllplaceholders(outdir + '/' + df['Region'][j].strip().lower()+ '/'+df['Hostname'][j] + '.tf', '##' + i + '##', '1')
+                        continue
+                    if ('ad3' in str(df[i][j]).strip().lower()):
+                        replaceAllplaceholders(outdir + '/' + df['Region'][j].strip().lower()+ '/'+df['Hostname'][j] + '.tf', '##' + i + '##', '2')
+                        continue
+                if (str(df[i][j]) == 'nan'):
+                    replaceAllplaceholders(outdir + '/' + df['Region'][j].strip().lower()+ '/'+df['Hostname'][j] + '.tf', '##' + i + '##', "")
+                    continue
+                if (str(df[i][j]) == 'True' or str(df[i][j]) == 'False'):
+                    replaceAllplaceholders(outdir + '/' + df['Region'][j].strip().lower()+ '/'+df['Hostname'][j] + '.tf', '##' + i + '##', str(df[i][j]).lower())
+                    continue
+                if (str(df[i][j]) == '0.0'):
+                    replaceAllplaceholders(outdir + '/' + df['Region'][j].strip().lower()+ '/'+df['Hostname'][j] + '.tf', '##' + i + '##', "false")
+                    continue
+                if (str(df[i][j]) == '1.0'):
+                    replaceAllplaceholders(outdir + '/' + df['Region'][j].strip().lower() + '/' + df['Hostname'][j] + '.tf','##' + i + '##', "true")
+                    continue
+
+                replaceAllplaceholders(outdir + '/' + df['Region'][j].strip().lower()+ '/'+df['Hostname'][j] + '.tf', '##' + i + '##', str(df[i][j]))
 
 #If input is a csv file
 elif('.csv' in filename):

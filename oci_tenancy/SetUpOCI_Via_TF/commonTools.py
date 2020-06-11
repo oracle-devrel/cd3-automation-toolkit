@@ -121,14 +121,21 @@ class commonTools():
                     sheet.cell(row=i+3, column=j+1).value = rows[i][j]
                 sheet.cell(row=i+3, column=j+1).alignment = Alignment(wrap_text=True)
 
+
+        brdr = Border(left=Side(style='thin'),
+                      right=Side(style='thin'),
+                      top=Side(style='thin'),
+                      bottom=Side(style='thin'),
+                      )
+
+
+        for row in sheet.iter_rows(min_row=3):
+            for cell in row:
+                cell.border = brdr
+
         #Add color for exported sec rules and route rules
         if (sheet_name == "RouteRulesinOCI" or sheet_name == "SecRulesinOCI"):
             names = []
-            brdr = Border(left=Side(style='thin'),
-                          right=Side(style='thin'),
-                          top=Side(style='thin'),
-                          bottom=Side(style='thin'),
-                          )
             # Add color coding to exported rules
             for row in sheet.iter_rows(min_row=3):
                 c = 0
@@ -441,7 +448,7 @@ class parseVCNInfo():
 
         onprem_destinations = str(values[0]).strip()
         if (onprem_destinations.lower() == 'nan'):
-            print("\ndrg_subnet should not be left empty.. It will create empty route tables")
+            #print("\ndrg_subnet should not be left empty.. It will create empty route tables")
             self.onprem_destinations.append('')
         else:
             self.onprem_destinations = onprem_destinations.split(",")

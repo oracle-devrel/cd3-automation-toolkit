@@ -486,6 +486,8 @@ if('.xls' in filename):
                 if "_routetable.tf" in file:
                     routetablefiles[reg].append(file)
 
+    if(vcnInfo.onprem_destinations[0]==""):
+        print("\nonprem_destinations field is empty in VCN Info Sheet.. It will create empty route tables!!\n")
     # Create LPG Rules
     createLPGRouteRules(vcns.peering_dict)
 

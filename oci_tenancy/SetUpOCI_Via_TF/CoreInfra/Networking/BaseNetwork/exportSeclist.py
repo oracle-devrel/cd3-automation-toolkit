@@ -211,6 +211,7 @@ else:
 input_compartment_list = args.networkCompartment
 if(input_compartment_list is not None):
     input_compartment_names = input_compartment_list.split(",")
+    input_compartment_names = [x.strip() for x in input_compartment_names]
 else:
     input_compartment_names = None
 
