@@ -59,7 +59,10 @@ for region in all_regions:
     # Backup the existing Routes tf file
     shutil.copy(file, file + "_backup")
 
-def get_compartments(c_id,c_name):
+global ntk_compartment_ids
+ntk_compartment_ids = {}
+
+def get_network_compartment_ids(c_id,c_name):
     compartments = idc.list_compartments(compartment_id=c_id,compartment_id_in_subtree =False)
     for c in compartments.data:
         if c.lifecycle_state =="ACTIVE" :
@@ -67,41 +70,36 @@ def get_compartments(c_id,c_name):
                 name=c_name+"::"+c.name
             else:
                 name=c.name
+            ntk_compartment_ids[name]=c.id
+            # Put individual compartment names also in the dictionary
+            if (name != c.name):
+                if c.name not in ntk_compartment_ids.keys():
+                    ntk_compartment_ids[c.name] = c.id
+                else:
+                    #Remove the individual name added to dict as it is duplicate
+                    ntk_compartment_ids.pop(c.name)
 
-            full_compartment_name = commonTools.check_tf_variable(name)
-            searchstr = "variable \"" + full_compartment_name + ""
-            for reg in all_regions:
-                if (searchstr not in var_data[reg]):
-                    tempStr[reg] = tempStr[reg] + """
-            variable \"""" + full_compartment_name + """" {
-                    type = "string"
-                    default = \"""" + c.id + """"
-            }
-            """
-            # Included to support just the compartment names(rather than complete hierarchy)
-            if(name!=c.name):
-                compartment_name = commonTools.check_tf_variable(c.name)
-                searchstr = "variable \"" + compartment_name + ""
-                for reg in all_regions:
-                    if (searchstr not in var_data[reg]):
-                        if (searchstr not in tempStr[reg]):
-                            tempStr[reg] = tempStr[reg] + """
-            variable \"""" + compartment_name + """" {
-                    type = "string"
-                    default = \"""" + c.id + """"
-            }
-            """
-                        else:
-                            print("Compartment with same name "+c.name +" has already been fetched for region "+reg+" . Make sure to use it with complete hierarchy rather than just the name")
+            get_network_compartment_ids(c.id,name)
 
-            get_compartments(c.id,name)
-
-get_compartments(tenancy_id,"root")
+get_network_compartment_ids(config['tenancy'],"root")
 
 for reg in all_regions:
+    for name,ocid in ntk_compartment_ids.items():
+        comp_tf_name=commonTools.check_tf_variable(name)
+        searchstr = "variable \"" + comp_tf_name + ""
+        str="""
+        variable \"""" + comp_tf_name + """" {
+            type = "string"
+            default = \"""" + ocid + """"
+        }
+        """
+        if(searchstr not in var_data[reg]):
+            tempStr[reg]=tempStr[reg]+str
+
     vname = open(var_files[reg],"a")
     vname.write(tempStr[reg])
     vname.close()
-    if ("linux" in sys.platform):
-        os.system("dos2unix "+var_files[reg])
+
+if ("linux" in sys.platform):
+    os.system("dos2unix "+var_files[reg])
 print("Compartment info written to all region specific variables files under outdir folder")

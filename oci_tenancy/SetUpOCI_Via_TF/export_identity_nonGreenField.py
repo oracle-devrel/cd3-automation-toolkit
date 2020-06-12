@@ -29,8 +29,12 @@ def get_network_compartment_ids(c_id,c_name):
                 name=c.name
             ntk_compartment_ids[name]=c.id
             # Put individual compartment names also in the dictionary
-            if (name != c.name and c.name not in ntk_compartment_ids.keys()):
-                ntk_compartment_ids[c.name] = c.id
+            if (name != c.name):
+                if c.name not in ntk_compartment_ids.keys():
+                    ntk_compartment_ids[c.name] = c.id
+                else:
+                    #Remove the individual name added to dict as it is duplicate
+                    ntk_compartment_ids.pop(c.name)
 
             get_network_compartment_ids(c.id,name)
 
@@ -69,7 +73,6 @@ else:
 idc=IdentityClient(config)
 ntk_compartment_ids["root"] = config['tenancy']
 get_network_compartment_ids(config['tenancy'],"root")
-
 #Check Compartments
 """remove_comps=[]
 if(input_compartment_names is not None):
