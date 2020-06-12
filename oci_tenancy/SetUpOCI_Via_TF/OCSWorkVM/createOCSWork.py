@@ -201,6 +201,7 @@ network_client = oci.core.VirtualNetworkClient(python_config)
 identity_client = oci.identity.IdentityClient(python_config)
 compute_client = oci.core.ComputeClient(python_config)
 
+
 ct=commonTools()
 regions=[]
 regionsubscriptions = identity_client.list_region_subscriptions(tenancy_id=python_config['tenancy'])
@@ -218,12 +219,13 @@ def write_file(file_name,file_data):
 
 
 del_config_file = input_cleanup_script_file
-#Take backup of existing and Open a new config_for_delete
-if(os.path.exists(del_config_file)):
-    x = datetime.datetime.now()
-    date = x.strftime("%f").strip()
-    print("Taking backup of existing cleanup script file to "+del_config_file+"_"+date)
-    shutil.move(del_config_file,del_config_file+"_"+date)
+#Report Error when cleanup _script_file already exists and is not empty.
+if(os.path.exists(del_config_file) and os.stat(del_config_file).st_size != 0):
+    #x = datetime.datetime.now()
+    #date = x.strftime("%f").strip()
+    print('cleanup_script_file '+del_config_file +" already exists and is not empty. Make sure to provide a new file name..Exiting")
+    exit()
+    #shutil.move(del_config_file,del_config_file+"_"+date)
 
 
 def append_file(file_name,file_data):
@@ -667,8 +669,10 @@ if (input_configure_koala=="1"):
     expect eof
     """
     write_file("discover_koala_expect.sh",script_data)
-#Creating VM
 
+tenant_name=identity_client.get_tenancy(tenancy_id=python_config['tenancy']).data.name
+
+#Creating VM
 if(input_create_vm=="1"):
     ad_name = python_config[input_ad_name]
     vcn_found=0
@@ -914,6 +918,7 @@ if(input_create_vm=="1"):
         existing_data = file.read()
         append_file(del_config_file, existing_data)
 
+    append_file(del_config_file,"Tenant_Name="+tenant_name)
     append_file(del_config_file, "vcn_ocid=" + vcn_ocid)
     if (igw_ocid!=''):
         append_file(del_config_file, "igw_ocid=" + igw_ocid)
