@@ -112,7 +112,7 @@ if('.xls' in args.inputfile):
         else:
             if (ckeys.count(str(parent_compartment_name)) > 1):
                 print("Could not find Path for " + compartment_name + "Please give Full Path")
-                exit(0)
+                exit(1)
             elif ("::" in parent_compartment_name):
                 var_c_name = parent_compartment_name + "::" + compartment_name
                 parent_compartment = commonTools.check_tf_variable(parent_compartment_name)
