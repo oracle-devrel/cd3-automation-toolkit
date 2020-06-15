@@ -70,7 +70,7 @@ if('.xls' in args.inputfile):
     df = df.reset_index(drop=True)
 
     #To handle duplicates during export process
-    #df=df.drop_duplicates(ignore_index=True)
+    df=df.drop_duplicates(ignore_index=True)
 
     #Initialise empty TF string for each region
     for reg in vcnInfo.all_regions:
@@ -105,13 +105,13 @@ if('.xls' in args.inputfile):
         compartment_desc = str(df.iat[i, 2]).strip()
         parent_compartment_name = str(df.iat[i, 3]).strip()
         var_c_name = ""
-        # Added Logic IT
+        # Build compartment TF
         if (str(parent_compartment_name).lower() == "nan" or str(parent_compartment_name).lower() == 'root' or str(parent_compartment_name).lower() == ""):
             var_c_name = compartment_name
             parent_compartment = '${var.tenancy_ocid}'
         else:
             if (ckeys.count(str(parent_compartment_name)) > 1):
-                print("Could not able to find Path for " + compartment_name + "Please give Full Path")
+                print("Could not find Path for " + compartment_name + "Please give Full Path")
                 exit(0)
             elif ("::" in parent_compartment_name):
                 var_c_name = parent_compartment_name + "::" + compartment_name
@@ -119,9 +119,8 @@ if('.xls' in args.inputfile):
                 parent_compartment = '${oci_identity_compartment.' + parent_compartment + '.id}'
             else:
                 if (parent_compartment_name not in ckeys):
-                    print(
-                        "There is no parent compartment with name " + parent_compartment_name + " to create " + compartment_name + " compartment")
-                    exit(0)
+                    print("There is no parent compartment with name " + parent_compartment_name + " to create " + compartment_name + " compartment")
+                    exit(1)
                 parent_compartment = travel(parent_compartment_name, ckeys, pvalues, c)
                 var_c_name = parent_compartment + "::" + compartment_name
                 if (len(parent_compartment) > 1 and parent_compartment[0] == ":" and parent_compartment[1] == ":"):
