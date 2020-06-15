@@ -41,6 +41,22 @@ outfile={}
 oname={}
 tfStr={}
 
+c=0
+
+#reversal path function
+def travel(parent, keys, values, c):
+    if (parent == "" or parent =="nan" or parent == "root"):
+        return ""
+    else:
+        if ( "::" in str(values[keys.index(parent)])):
+           if(c==0):
+               return values[keys.index(parent)]+"::"+parent
+           c = c + 1
+           return values[keys.index(parent)]
+        return travel(values[keys.index(parent)],keys,values,c)+"::"+parent
+
+
+
 #If input in cd3 file
 if('.xls' in args.inputfile):
     # Get vcnInfo object from commonTools
@@ -54,11 +70,20 @@ if('.xls' in args.inputfile):
     df = df.reset_index(drop=True)
 
     #To handle duplicates during export process
-    df=df.drop_duplicates(ignore_index=True)
+    #df=df.drop_duplicates(ignore_index=True)
 
     #Initialise empty TF string for each region
     for reg in vcnInfo.all_regions:
         tfStr[reg] = ''
+    #Separating Compartments and ParentComparements into list
+    ckeys=[]
+    pvalues=[]
+    for i in df.index:
+        if (df.iat[i,0] in commonTools.endNames):
+            break
+        ckeys.append(str(df.iat[i, 1]).strip())
+        pvalues.append(str(df.iat[i, 3]).strip())
+
 
     #Iterate over rows
     for i in df.index:
@@ -79,31 +104,49 @@ if('.xls' in args.inputfile):
         compartment_name = str(df.iat[i, 1]).strip()
         compartment_desc = str(df.iat[i, 2]).strip()
         parent_compartment_name = str(df.iat[i, 3]).strip()
-
-        if (str(parent_compartment_name).lower() != "nan" and str(parent_compartment_name).lower() != 'root'):
-            var_c_name=parent_compartment_name+"::"+compartment_name
-            parentcomp_tf_name = commonTools.check_tf_variable(parent_compartment_name)
-            parent_compartment = '${oci_identity_compartment.' + parentcomp_tf_name + '.id}'
-        else:
-            var_c_name=compartment_name
+        var_c_name = ""
+        # Added Logic IT
+        if (str(parent_compartment_name).lower() == "nan" or str(parent_compartment_name).lower() == 'root' or str(parent_compartment_name).lower() == ""):
+            var_c_name = compartment_name
             parent_compartment = '${var.tenancy_ocid}'
+        else:
+            if (ckeys.count(str(parent_compartment_name)) > 1):
+                print("Could not able to find Path for " + compartment_name + "Please give Full Path")
+                exit(0)
+            elif ("::" in parent_compartment_name):
+                var_c_name = parent_compartment_name + "::" + compartment_name
+                parent_compartment = commonTools.check_tf_variable(parent_compartment_name)
+                parent_compartment = '${oci_identity_compartment.' + parent_compartment + '.id}'
+            else:
+                if (parent_compartment_name not in ckeys):
+                    print(
+                        "There is no parent compartment with name " + parent_compartment_name + " to create " + compartment_name + " compartment")
+                    exit(0)
+                parent_compartment = travel(parent_compartment_name, ckeys, pvalues, c)
+                var_c_name = parent_compartment + "::" + compartment_name
+                if (len(parent_compartment) > 1 and parent_compartment[0] == ":" and parent_compartment[1] == ":"):
+                    parent_compartment = parent_compartment[2:]
+                    var_c_name = parent_compartment + "::" + compartment_name
+                parent_compartment = commonTools.check_tf_variable(parent_compartment)
+                parent_compartment = '${oci_identity_compartment.' + parent_compartment + '.id}'
 
-        comp_tf_name=commonTools.check_tf_variable(var_c_name)
+        var_c_name = commonTools.check_tf_variable(var_c_name)
 
         if (str(compartment_name).lower() != "nan"):
             region = region.strip().lower()
             compartment_name = compartment_name.strip()
-            #If description field is empty; put name as description
+            # If description field is empty; put name as description
             if (str(compartment_desc).lower() == "nan"):
                 compartment_desc = compartment_name
 
-            #Write all info to TF string
-            tfStr[region]=tfStr[region] + """
-resource "oci_identity_compartment" \"""" +comp_tf_name + """" {
-	    compartment_id = \"""" + parent_compartment + """"
-	    description = \"""" + compartment_desc.strip() + """"
-  	    name = \"""" + compartment_name.strip() + """"
-} """
+            # Write all info to TF string
+            tfStr[region] = tfStr[region] + """
+        resource "oci_identity_compartment" \"""" + var_c_name + """" {
+        	    compartment_id = \"""" + parent_compartment + """"
+        	    description = \"""" + compartment_desc.strip() + """"
+          	    name = \"""" + compartment_name.strip() + """"
+        } """
+
 
 #If input is a csv file
 elif('.csv' in args.inputfile):
