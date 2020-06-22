@@ -75,10 +75,12 @@ if ('.xlsx' in filename):
 
         else:
             tagnamespace = i
+            tagnamespace_tf=commonTools.check_tf_variable(tagnamespace)
+            compartment_var_name_tf=commonTools.check_tf_variable(compartment_var_name)
             tmpstr = """
-            resource "oci_identity_tag_namespace" \"""" + tagnamespace + """\" {
+            resource "oci_identity_tag_namespace" \"""" + tagnamespace_tf + """\" {
                 #Required
-                compartment_id = "${var.""" + compartment_var_name + """}"
+                compartment_id = "${var.""" + compartment_var_name_tf + """}"
                 description = "Create Tag Namespace for """ + tagnamespace + """\"
                 name = \"""" + tagnamespace + """\"
                 is_retired = false
@@ -119,13 +121,14 @@ if ('.xlsx' in filename):
                     if (tagkey == 'Keys') and (key == 'TagNamespace'):
                         continue
                     else:
+                        key_tf = commonTools.check_tf_variable(key)
+                        tagkey_tf = commonTools.check_tf_variable(tagkey)
                         tmpstr = """
-
-                        resource "oci_identity_tag" \"""" + tagkey + """\" {
+                        resource "oci_identity_tag" \"""" + tagkey_tf + """\" {
                         #Required
                         description = "Creating """ + tagkey + """ in Namespace """ + key + """\"
                         name = \"""" + tagkey + """\"
-                        tag_namespace_id = \"${oci_identity_tag_namespace.""" + key + """.id}\"
+                        tag_namespace_id = \"${oci_identity_tag_namespace.""" + key_tf + """.id}\"
                         is_retired = false
                     }
                     """
