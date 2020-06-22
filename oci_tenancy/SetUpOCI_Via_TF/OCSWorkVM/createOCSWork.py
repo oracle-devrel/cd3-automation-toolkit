@@ -12,7 +12,8 @@ import puttykeys
 from pathlib import Path
 import sys
 import os
-import datetime
+from datetime import datetime
+import calendar
 sys.path.append(os.getcwd()+"/..")
 from commonTools import commonTools
 
@@ -403,6 +404,9 @@ for region in regions:
             break
 
     #write variables data
+    today = datetime.today()
+    dt = str(today.day) + calendar.month_name[today.month] + str(today.year)
+
     variables_data[region] = """variable "ssh_public_key" {
             type = "string"
             default = \"""" + input_ssh_key1 + """"
@@ -443,15 +447,17 @@ for region in regions:
     """
     if (windows_image_id[region] != ''):
         variables_data[region] = variables_data[region] + """
-    variable "windows_latest_ocid" {
+    variable "windows_ocid" {
             type = "string"
             default = \"""" + windows_image_id[region] + """"
+            description = \"""" + dt + """"
     }"""
     if (linux_image_id[region] != ''):
         variables_data[region] = variables_data[region] + """
-    variable "linux_latest_ocid"{
+    variable "linux_ocid"{
             type = "string"
             default = \"""" + linux_image_id[region] + """"
+            description = \"""" + dt + """"
     }"""
     write_file("variables_"+region+".tf", variables_data[region])
 

@@ -7,7 +7,7 @@ resource "oci_core_instance" "##Hostname##" {
         #Optional
         fault_domain = "##Fault Domain##"
         source_details {
-	        source_id  = "${var.windows_latest_ocid}"
+	        source_id  = "${var.windows_ocid}"
             source_type = "image"
         }
 

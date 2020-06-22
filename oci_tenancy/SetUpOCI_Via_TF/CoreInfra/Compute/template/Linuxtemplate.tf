@@ -3,17 +3,11 @@ resource "oci_core_instance" "##Hostname##" {
         availability_domain = "${data.oci_identity_availability_domains.ADs.availability_domains.##Availability Domain##.name}"
         compartment_id = "${var.##Compartment Name##}"
         shape = "##Shape##"
-        shape_config {
-                # Note: RAM = ocpus x 16GB
-                # Note: # of vNICs = ocpus x 2
-                ocpus = "##ocpus##"
-        }
-
 
         #Optional
         fault_domain = "##Fault Domain##"
         source_details {
-		        source_id  = "${var.linux_latest_ocid}"
+		        source_id  = "${var.linux_ocid}"
                 source_type = "image"
         }
         create_vnic_details {
