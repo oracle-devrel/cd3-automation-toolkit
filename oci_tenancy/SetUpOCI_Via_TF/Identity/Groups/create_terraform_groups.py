@@ -59,7 +59,7 @@ if('.xls' in args.inputfile):
 
     # Iterate over rows
     for i in df.index:
-        region=df.iat[i,0]
+        region=str(df.iat[i,0])
 
         # Encountered <End>
         if (region in commonTools.endNames):
@@ -72,8 +72,8 @@ if('.xls' in args.inputfile):
             exit(1)
 
         # Fetch column values for each row
-        group_name = df.iat[i, 1]
-        group_desc = df.iat[i, 2]
+        group_name = str(df.iat[i, 1])
+        group_desc = str(df.iat[i, 2])
         if(str(group_name).lower()!= "nan"):
             region = region.strip().lower()
             group_name = group_name.strip()

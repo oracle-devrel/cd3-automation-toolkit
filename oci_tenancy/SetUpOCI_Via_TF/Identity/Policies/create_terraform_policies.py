@@ -69,7 +69,7 @@ if('.xls' in args.inputfile):
 
     #Iterate over rows
     for i in df.index:
-        region=df.iat[i,0]
+        region=str(df.iat[i,0])
 
         # Encountered <End>
         if (region in commonTools.endNames):
@@ -81,7 +81,7 @@ if('.xls' in args.inputfile):
             exit(1)
 
         # Fetch column values for each row
-        policy_name = df.iat[i, 1]
+        policy_name = str(df.iat[i, 1])
 
         if (str(policy_name).lower() != "nan"):
             count=count +1
@@ -95,11 +95,11 @@ if('.xls' in args.inputfile):
                 policy_compartment = '${var.' + policy_compartment_name + '}'
 
 
-            policy_desc = df.iat[i, 3]
+            policy_desc = str(df.iat[i, 3])
             if (str(policy_desc).lower() == "nan"):
                 policy_desc = policy_name
 
-            policy_statement = df.iat[i,4]
+            policy_statement = str(df.iat[i,4])
             actual_policy_statement = policy_statement
 
             # assign groups in policy statements
