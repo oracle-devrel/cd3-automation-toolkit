@@ -167,6 +167,43 @@ def validate_cidr(cidr_list, cidrs_dict):
     else:
         return False
 
+#Validate the dhcp_option_name of DHCP and Subnets Tab
+def validate_dhcp_and_subnets_tab(filename,list):
+    # Read the Subnets tab from excel
+    df = pd.read_excel(filename, sheet_name='Subnets', skiprows=1)
+    #Drop null values
+    df = df.dropna(how='all')
+    #Reset index
+    df = df.reset_index(drop=True)
+
+    # Counter to fetch the row number
+    count = 0
+
+    subnet_dhcp_check = False
+
+    # List of the column headers
+    dfcolumns = df.columns.values.tolist()
+
+    #Loop through each row
+    for i in df.index:
+        count = count + 1
+        for columnname in dfcolumns:
+            # Column value
+            columnvalue = str(df.loc[i, columnname]).strip()
+
+            if columnname == "dhcp_option_name\n(Leave blank if default dhcp option needs to be used)":
+                if columnvalue in list:
+                    pass
+                else:
+                    if columnvalue == 'nan':
+                        continue
+                    logging.log(60, "ROW " + str(i + 3) + " : The value " + columnvalue + " in column \"dhcp_option_name\" of Subnets tab is not declared in DHCP tab.")
+                    subnet_dhcp_check = True
+    return subnet_dhcp_check
+
+
+
+
 #Check if subnets tab is compliant
 def validate_subnets(filename,comp_ids,vcnobj,vcnInfoobj):
 
@@ -448,8 +485,16 @@ def validate_dhcp(filename,comp_ids,vcnobj,vcnInfoobj):
     dhcp_comp_check=False
     dhcp_vcn_check=False
     dhcp_reg_check=False
+
     # Counter to fetch the row number
     count = 0
+
+    logging.log(60, "Start validating the dhcp_options values of Subnet and DHCP Tab------------------\n")
+    # Get a list of dhcp options name
+    dhcp_options_list = df['dhcp_option_name'].tolist()
+    subnet_dhcp_check = validate_dhcp_and_subnets_tab(filename,dhcp_options_list)
+    logging.log(60, "End validating the dhcp_options values of Subnet and DHCP Tab------------------\n")
+
 
     logging.log(60,"Start Null or Wrong value Check in each row----------------")
     for i in df.index:
@@ -496,7 +541,7 @@ def validate_dhcp(filename,comp_ids,vcnobj,vcnInfoobj):
                     logging.log(60,"ROW " + str(count+2) + " : Empty value at column " + j)
                     dhcp_empty_check = True
     logging.log(60,"End Null or Wrong value Check in each row-----------------\n")
-    if (dhcp_reg_check==True or dhcp_vcn_check==True or dhcp_wrong_check == True or dhcp_comp_check==True or dhcp_empty_check==True):
+    if (dhcp_reg_check==True or dhcp_vcn_check==True or dhcp_wrong_check == True or dhcp_comp_check==True or dhcp_empty_check==True or subnet_dhcp_check == True):
         print("Null or Wrong value Check failed!!")
         return True
     else:
@@ -513,7 +558,6 @@ def main():
     ntk_compartment_ids["root"] = config['tenancy']
     get_network_compartment_ids(config['tenancy'], "root")
     vcn_check,vcn_cidr_check,vcn_peer_check = validate_vcns(filename, ntk_compartment_ids, vcn_ids,vcnobj,vcnInfoobj)
-
 
     logging.log(60,"============================= Verifying Subnets Tab ==========================================\n")
     print("\nProcessing Subnets Tab..")
