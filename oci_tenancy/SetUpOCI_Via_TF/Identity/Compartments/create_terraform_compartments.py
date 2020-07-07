@@ -111,7 +111,7 @@ if('.xls' in args.inputfile):
             parent_compartment = '${var.tenancy_ocid}'
         else:
             if (ckeys.count(str(parent_compartment_name)) > 1):
-                print("Could not find Path for " + compartment_name + "Please give Full Path")
+                print("Error!! Could not find Path for " + compartment_name + "Please give Full Path")
                 exit(1)
             elif ("::" in parent_compartment_name):
                 var_c_name = parent_compartment_name + "::" + compartment_name
@@ -119,7 +119,7 @@ if('.xls' in args.inputfile):
                 parent_compartment = '${oci_identity_compartment.' + parent_compartment + '.id}'
             else:
                 if (parent_compartment_name not in ckeys):
-                    print("There is no parent compartment with name " + parent_compartment_name + " to create " + compartment_name + " compartment")
+                    print("Error!! There is no parent compartment with name " + parent_compartment_name + " to create " + compartment_name + " compartment")
                     exit(1)
                 parent_compartment = travel(parent_compartment_name, ckeys, pvalues, c)
                 var_c_name = parent_compartment + "::" + compartment_name
