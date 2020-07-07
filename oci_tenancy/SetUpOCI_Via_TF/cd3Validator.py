@@ -582,7 +582,7 @@ def validate_dhcp(filename,comp_ids,vcnobj,vcnInfoobj):
                     dhcp_empty_check = True
                     
     logging.log(60,"End Null or Wrong value Check in each row-----------------\n")
-    if (dhcp_reg_check==True or dhcp_vcn_check==True or dhcp_wrong_check == True or dhcp_comp_check==True or dhcp_empty_check==True or subnet_dhcp_check == True):
+    if (dhcp_reg_check==True or dhcp_vcn_check==True or dhcp_wrong_check == True or dhcp_comp_check==True or dhcp_empty_check==True):
         print("Null or Wrong value Check failed!!")
         return True
     else:
