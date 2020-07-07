@@ -9,6 +9,7 @@ import sys
 import ipaddr
 import oci
 import logging
+import ipaddress
 from oci.core.virtual_network_client import VirtualNetworkClient
 from oci.identity import IdentityClient
 sys.path.append(os.getcwd()+"/../../..")
@@ -167,42 +168,44 @@ def validate_cidr(cidr_list, cidrs_dict):
     else:
         return False
 
-#Validate the dhcp_option_name of DHCP and Subnets Tab
-def validate_dhcp_and_subnets_tab(filename,list):
+#Fetch the dhcp list and vcn cidrs for cross validation of values
+def fetch_dhcplist_vcn_cidrs(filename):
     # Read the Subnets tab from excel
-    df = pd.read_excel(filename, sheet_name='Subnets', skiprows=1)
+    df = pd.read_excel(filename, sheet_name='DHCP', skiprows=1)
     #Drop null values
     df = df.dropna(how='all')
     #Reset index
     df = df.reset_index(drop=True)
 
-    # Counter to fetch the row number
-    count = 0
+    # Get a list of dhcp options name
+    dhcplist = df['dhcp_option_name'].tolist()
 
-    subnet_dhcp_check = False
+    # Read the Subnets tab from excel
+    dfv = pd.read_excel(filename, sheet_name='VCNs', skiprows=1)
+    #Drop null values
+    dfv = dfv.dropna(how='all')
+    #Reset index
+    dfv = dfv.reset_index(drop=True)
 
+    cidr_list = []
+    vcn_cidrs = {}
     # List of the column headers
-    dfcolumns = df.columns.values.tolist()
+    dfcolumns = dfv.columns.values.tolist()
 
     #Loop through each row
-    for i in df.index:
-        count = count + 1
+    for i in dfv.index:
         for columnname in dfcolumns:
             # Column value
-            columnvalue = str(df.loc[i, columnname]).strip()
-
-            if columnname == "dhcp_option_name\n(Leave blank if default dhcp option needs to be used)":
-                if columnvalue in list:
-                    pass
+            columnvalue = str(dfv.loc[i, columnname]).strip()
+            if columnname == "vcn_cidr":
+                # Collect CIDR List for validating
+                if str(columnvalue).lower() == "nan":
+                    cidr_list.append("")
                 else:
-                    if columnvalue == 'nan':
-                        continue
-                    logging.log(60, "ROW " + str(i + 3) + " : The value " + columnvalue + " in column \"dhcp_option_name\" of Subnets tab is not declared in DHCP tab.")
-                    subnet_dhcp_check = True
-    return subnet_dhcp_check
+                    cidr_list.append(str(columnvalue))
+                    vcn_cidrs.update({str(dfv.loc[i,'vcn_name']) : str(columnvalue) })
 
-
-
+    return dhcplist,vcn_cidrs
 
 #Check if subnets tab is compliant
 def validate_subnets(filename,comp_ids,vcnobj,vcnInfoobj):
@@ -226,9 +229,20 @@ def validate_subnets(filename,comp_ids,vcnobj,vcnInfoobj):
     subnet_comp_check=False
     subnet_reg_check=False
     subnet_vcn_check=False
+    subnet_dhcp_check = False
+    subnet_vcn_cidr_check = False
     subnet_dns=[]
 
     logging.log(60,"Start Null or Wrong value check in each row-----------------")
+
+    # List of the column headers
+    dfcolumns = df.columns.values.tolist()
+
+    #Fetch the dhcp list and VCN CIDR List for cross validation
+    list = fetch_dhcplist_vcn_cidrs(filename)
+    dhcplist = list[0]
+    vcncidrlist = list[1]
+
     #Loop through each row
     for i in df.index:
         count = count + 1
@@ -295,8 +309,40 @@ def validate_subnets(filename,comp_ids,vcnobj,vcnInfoobj):
                     logging.log(60,"ROW " + str(count+2) + " : Empty value at column " +j)
                     subnet_empty_check = True
 
+        #Lop through Columns and cross validate - 1. Subnets and VCN CIDRs and 2. Subnet and DHCP Options
+        for columnname in dfcolumns:
 
-    if (subnet_reg_check == True or subnet_vcn_check == True or subnet_comp_check == True or subnet_empty_check == True or subnet_dnswrong_check == True or subnet_wrong_check == True or subnet_dnsdup_check == True):
+            # Column value
+            columnvalue = str(df.loc[i, columnname]).strip()
+
+            #Execute this portion of code only when called from DHCP function;(List cannot be empty)
+            if dhcplist !=[]:
+                if columnname == "dhcp_option_name\n(Leave blank if default dhcp option needs to be used)":
+                    if columnvalue in dhcplist:
+                        pass
+                    else:
+                        if columnvalue == 'nan':
+                            continue
+                        logging.log(60, "ROW " + str(i + 3) + " : Value \"" + columnvalue + "\" in column \"dhcp_option_name\" is not declared in DHCP tab.")
+                        subnet_dhcp_check = True
+
+            #Execute if list is []; list is empty when called from VCN function
+            if columnname == "subnet_cidr":
+                if columnvalue == "nan":
+                    continue
+                columnvalue = ipaddress.ip_network(columnvalue)
+
+                for vcns in vcncidrlist:
+                    vcncidrlist[vcns] = str(vcncidrlist[vcns]).strip()
+                    vcn_cidr = ipaddress.ip_network(vcncidrlist[vcns])
+                    if df.loc[i, 'vcn_name'] == vcns:
+                        if columnvalue.subnet_of(vcn_cidr):
+                            pass
+                        else:
+                            logging.log(60, "ROW " + str(i + 3) + " : Subnet CIDR - " + str(columnvalue) + "  does not fall under VCN CIDR - "+str(vcn_cidr))
+                            subnet_vcn_cidr_check = True
+
+    if (subnet_reg_check == True or subnet_vcn_check == True or subnet_comp_check == True or subnet_empty_check == True or subnet_dnswrong_check == True or subnet_wrong_check == True or subnet_dnsdup_check == True or subnet_dhcp_check == True and subnet_vcn_cidr_check == True):
         print("Null or Wrong value Check failed!!")
         subnet_check=True
     else:
@@ -341,6 +387,7 @@ def validate_vcns(filename,comp_ids,vcn_ids,vcnobj,vcnInfoobj):#,vcn_cidrs,vcn_c
     logging.log(60,"Start Null or Wrong value Check in each row---------------")
     vcn_dns=[]
     vcn_names=[]
+
     #Loop through each row
     for i in df.index:
         count = count + 1
@@ -489,13 +536,6 @@ def validate_dhcp(filename,comp_ids,vcnobj,vcnInfoobj):
     # Counter to fetch the row number
     count = 0
 
-    logging.log(60, "Start validating the dhcp_options values of Subnet and DHCP Tab------------------\n")
-    # Get a list of dhcp options name
-    dhcp_options_list = df['dhcp_option_name'].tolist()
-    subnet_dhcp_check = validate_dhcp_and_subnets_tab(filename,dhcp_options_list)
-    logging.log(60, "End validating the dhcp_options values of Subnet and DHCP Tab------------------\n")
-
-
     logging.log(60,"Start Null or Wrong value Check in each row----------------")
     for i in df.index:
         count = count + 1
@@ -540,6 +580,7 @@ def validate_dhcp(filename,comp_ids,vcnobj,vcnInfoobj):
                 if str(df[j][i]) in empty and j != str(df.columns[5]):
                     logging.log(60,"ROW " + str(count+2) + " : Empty value at column " + j)
                     dhcp_empty_check = True
+                    
     logging.log(60,"End Null or Wrong value Check in each row-----------------\n")
     if (dhcp_reg_check==True or dhcp_vcn_check==True or dhcp_wrong_check == True or dhcp_comp_check==True or dhcp_empty_check==True or subnet_dhcp_check == True):
         print("Null or Wrong value Check failed!!")
