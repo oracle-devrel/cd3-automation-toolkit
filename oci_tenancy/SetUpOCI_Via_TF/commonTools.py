@@ -3,6 +3,8 @@ import os
 import shutil
 import datetime
 import configparser
+import oci
+from oci.identity import IdentityClient
 from openpyxl import load_workbook
 from openpyxl.styles import PatternFill
 from openpyxl.styles import Alignment
@@ -11,6 +13,9 @@ from openpyxl.styles import Side
 import re
 
 class commonTools():
+    all_regions=[]
+    home_region=""
+    ntk_compartment_ids = {}
     region_dict={}
     protocol_dict={}
     endNames = {'<END>', '<end>', '<End>'}
@@ -19,8 +24,16 @@ class commonTools():
     def __init__(self):
         #When called from wthin BaseNetwork
         dir=os.getcwd()
-        if("BaseNetwork" in dir):
-            os.chdir("../../..")
+        if("Networking" in dir):
+            os.chdir("../../../")
+        elif ("CoreInfra" in dir):
+            os.chdir("../../")
+        elif("Identity" in dir):
+            os.chdir("../../")
+        elif ("Database" in dir):
+            os.chdir("../")
+        elif ("Governance" in dir):
+            os.chdir("../../")
         elif("OCSWorkVM" in dir):
             os.chdir("../")
         regionFileName="OCI_Regions"
@@ -37,8 +50,66 @@ class commonTools():
                 val=line.split(":")[1].strip()
                 self.protocol_dict[key]=val
 
-        #Change ack to Initial
+        #Change back to Initial
         os.chdir(dir)
+
+    #Get Tenancy Regions
+    def get_subscribedregions(self,configFileName):
+        #Get config client
+        if configFileName=="":
+            config = oci.config.from_file()
+        else:
+            config = oci.config.from_file(file_location=configFileName)
+        idc = IdentityClient(config)
+        regionsubscriptions = idc.list_region_subscriptions(tenancy_id=config['tenancy'])
+        homeregion=""
+        for rs in regionsubscriptions.data:
+            if (rs.is_home_region == True):
+                homeregion = rs.region_name
+            for k, v in self.region_dict.items():
+                if (homeregion!="" and v == homeregion):
+                    self.home_region = k
+                if (rs.region_name == v):
+                    self.all_regions.append(k)
+
+        del config
+        del idc
+
+    #Get Compartment OCIDs
+    def get_network_compartment_ids(self,c_id, c_name,configFileName):
+        # Get config client
+        if configFileName == "":
+            config = oci.config.from_file()
+        else:
+            config = oci.config.from_file(file_location=configFileName)
+
+        tenancy_id=config['tenancy']
+        idc = IdentityClient(config)
+        compartments = idc.list_compartments(compartment_id=c_id, compartment_id_in_subtree=False)
+
+        for c in compartments.data:
+            if c.lifecycle_state == "ACTIVE":
+                if (c_name != "root"):
+                    name = c_name + "::" + c.name
+                else:
+                    name = c.name
+                self.ntk_compartment_ids[name] = c.id
+                # Put individual compartment names also in the dictionary
+                if (name != c.name):
+                    if c.name not in self.ntk_compartment_ids.keys():
+                        self.ntk_compartment_ids[c.name] = c.id
+                    else:
+                        # Remove the individual name added to dict as it is duplicate only if its parent comp is not root
+                        c_details = idc.get_compartment(self.ntk_compartment_ids[c.name]).data
+                        if (c_details.compartment_id != tenancy_id):
+                            self.ntk_compartment_ids.pop(c.name)
+
+                self.get_network_compartment_ids(c.id, name,configFileName)
+
+        self.ntk_compartment_ids["root"]=tenancy_id
+        del tenancy_id
+        del idc
+        del config
 
     #Check TF variable Name
     def check_tf_variable(var_name):
@@ -67,7 +138,7 @@ class commonTools():
                 ngw_destinations = destination + "," + ngw_destinations
             for destination in rows[2]:
                 igw_destinations = destination + "," + igw_destinations
-            #regions is not empty (from export_network_nonGreenField)
+            """"#regions is not empty (from export_network_nonGreenField)
             if(len(rows)==4):
                 regions = ""
                 for r in rows[3]:
@@ -78,6 +149,7 @@ class commonTools():
                 sheet.cell(6,2).value = 'n'
                 #Put regions value
                 sheet.cell(7, 2).value = regions
+            """
 
             if (onprem_destinations != "" and onprem_destinations[-1] == ','):
                 onprem_destinations = onprem_destinations[:-1]
@@ -89,6 +161,8 @@ class commonTools():
             sheet.cell(3,2).value=onprem_destinations
             sheet.cell(4,2).value = ngw_destinations
             sheet.cell(5,2).value = igw_destinations
+            # Put n for subnet_name_attach_cidr
+            sheet.cell(6, 2).value = 'n'
             book.save(cd3file)
             book.close()
             return
@@ -171,100 +245,6 @@ class commonTools():
 
         book.save(cd3file)
         book.close()
-
-    """def write_to_cd3_old(df, cd3file,sheet_name):
-        book = load_workbook(cd3file)
-        if (sheet_name in book.sheetnames):
-            book.remove(book[sheet_name])
-
-        writer = pd.ExcelWriter(cd3file, engine='openpyxl')
-        writer.book = book
-        writer.save()
-
-        book = load_workbook(cd3file)
-        writer = pd.ExcelWriter(cd3file, engine='openpyxl')
-        writer.book = book
-        df.to_excel(writer, sheet_name=sheet_name, index=False)
-
-        # Adjust column widths
-        ws = writer.sheets[sheet_name]
-        from openpyxl.utils import get_column_letter
-
-        column_widths = []
-        for row in ws.iter_rows(min_row=2):
-            for i, cell in enumerate(row):
-                if len(column_widths) > i:
-                    if len(str(cell.value)) > column_widths[i]:
-                        column_widths[i] = len(str(cell.value))
-                else:
-                    column_widths += [len(str(cell.value))]
-
-        for i, column_width in enumerate(column_widths):
-            ws.column_dimensions[get_column_letter(i + 1)].width = column_width
-
-        # Header Row
-        for row in ws.iter_rows(min_row=1, max_row=1):
-            for cell in row:
-                cell.fill = PatternFill(start_color="FFFF00", end_color="FFFF00", fill_type="solid")
-                cell.font = Font(bold=True)
-                cell.alignment = Alignment(wrap_text=True)
-
-        # Move the sheet near Networking sheets
-        book._sheets.remove(ws)
-        if (sheet_name == "VCNs"):
-            book._sheets.insert(5, ws)
-        elif (sheet_name == "DHCP"):
-            book._sheets.insert(6, ws)
-        elif (sheet_name == "Subnets"):
-            book._sheets.insert(7, ws)
-
-        elif(sheet_name == "RouteRulesinOCI" or sheet_name == "SecRulesinOCI"):
-            names = []
-            brdr = Border(left=Side(style='thin'),
-                          right=Side(style='thin'),
-                          top=Side(style='thin'),
-                          bottom=Side(style='thin'),
-                          )
-            # Add color coding to exported rules
-            for row in ws.iter_rows(min_row=2):
-                c = 0
-                region = ""
-                name = ""
-                for cell in row:
-                    c = c + 1
-                    if (c == 1):
-                        region = cell.value
-                        continue
-                    elif (c == 4):
-                        name = cell.value
-                        break
-
-                vcn_name = region + "_" + name
-                if (vcn_name not in names):
-                    names.append(vcn_name)
-                    for cellnew in row:
-                        if (len(names) % 2 == 0):
-                            cellnew.fill = PatternFill(start_color="94AFAF", end_color="94AFAF", fill_type="solid")
-                            cellnew.border = brdr
-                        else:
-                            cellnew.fill = PatternFill(start_color="E5DBBE", end_color="E5DBBE", fill_type="solid")
-                            cellnew.border = brdr
-                else:
-                    for cellnew in row:
-                        if (len(names) % 2 == 0):
-                            cellnew.fill = PatternFill(start_color="94AFAF", end_color="94AFAF", fill_type="solid")
-                            cellnew.border = brdr
-                        else:
-                            cellnew.fill = PatternFill(start_color="E5DBBE", end_color="E5DBBE", fill_type="solid")
-                            cellnew.border = brdr
-
-            # Move the sheet near Networking sheets
-            if(sheet_name=="RouteRulesinOCI"):
-                book._sheets.insert(9, ws)
-            elif(sheet_name=="SecRulesinOCI"):
-                book._sheets.insert(8, ws)
-
-        writer.save()"""
 
     #def backup_file(src_dir, pattern, overwrite):
     def backup_file(src_dir, pattern):
@@ -432,12 +412,11 @@ class parseVCNs():
             all_regions = [x.strip().lower() for x in all_regions]
 
 class parseVCNInfo():
-    all_regions = []
+    #all_regions = []
     subnet_name_attach_cidr = ''
     onprem_destinations = []
     ngw_destinations = []
     igw_destinations = []
-
 
     def __init__(self,filename):
 
@@ -471,14 +450,11 @@ class parseVCNInfo():
         else:
             self.subnet_name_attach_cidr=self.subnet_name_attach_cidr.strip().lower()
 
-        all_regions_excel = str(values[4]).strip()
+        """all_regions_excel = str(values[4]).strip()
         if(all_regions_excel.lower()=="nan"):
             print("\nERROR!!! regions field in VCN Info tab cannot be left empty..Exiting!!")
             exit(1)
         all_regions_excel = all_regions_excel.split(",")
+        
         self.all_regions = [x.strip().lower() for x in all_regions_excel]
-
-
-
-
-
+        """

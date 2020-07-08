@@ -146,3 +146,18 @@ Below are the highlights of this release:
 SetUPOCI_Via_TF Tag v6.0.1
 ------------------------
 Bug fix for Instance, FSS, LBR and DB creation using subnet name
+
+------------------------
+SetUPOCI_Via_TF Tag v6.1
+------------------------
+1. Addition of Description field for Security Rules and Route Rules. Keep using same CD3 but just add new column 'RuleDescription'
+   at the end of both the sheets - SecRulesinOCI and RouteRulesinOCI
+2. New text files - OCI_Regions and OCI_Protocols have been introduced. If any new region gets supported by OCI, it can be added in
+   OCI_Regions file. Similarly Protocol and its number mapping has been defined in OCI_Protocols file which will be used by Security
+   Rules as well as NSG Rules.
+3. Automation Toolkit will now support duplicate compartment names like OCI does. Please refer to CD3-template.xlsx under example folder for sample data.
+4. There is a change in ocswork.properties file. Extra properties specific to OCItoOCI project have been removed. Also Regions property
+   has been removed and now tenancy's subscribed regions will be fetched using API and terraform directories would be created based on that.
+5. CD3 Validator has been introduced. This will validate Networking tabs as of now. It will check for any Null Values, CIDR overlaps etc.
+6. Support for Flex shapes for Instances
+7. Support for Multiple Listeners for LBRs

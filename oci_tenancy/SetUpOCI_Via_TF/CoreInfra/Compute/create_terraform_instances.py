@@ -38,6 +38,7 @@ def skipCommentedLine(lines):
 parser = argparse.ArgumentParser(description="Creates Instances TF file")
 parser.add_argument("file", help="Full Path of csv file or CD3 excel file. eg instance.csv or CD3-template.xlsx in example folder")
 parser.add_argument("outdir", help="directory path for output tf files ")
+parser.add_argument("--configFileName", help="Config file name", required=False)
 
 if len(sys.argv) == 1:
     parser.print_help()
@@ -51,17 +52,16 @@ args = parser.parse_args()
 filename = args.file
 outdir = args.outdir
 endNames = {'<END>', '<end>','<End>'}
+if args.configFileName is not None:
+    configFileName = args.configFileName
+else:
+    configFileName=""
+
+ct = commonTools()
+ct.get_subscribedregions(configFileName)
 
 #If input is CD3 excel file
 if('.xls' in filename):
-    #df_info = pd.read_excel(filename, sheet_name='VCN Info', skiprows=1)
-    #properties = df_info['Property']
-    #values = df_info['Value']
-
-    #all_regions = str(values[7]).strip()
-    #all_regions = all_regions.split(",")
-    #all_regions = [x.strip().lower() for x in all_regions]
-    all_regions = os.listdir(outdir)
 
     df = pd.read_excel(filename, sheet_name='Instances',skiprows=1)
     df = df.dropna(how='all')
@@ -85,9 +85,9 @@ if('.xls' in filename):
                 if(shapeField[1].strip()==""):
                     shape_error=1
 
-        if region in all_regions and shape_error==0:
+        if region in ct.all_regions and shape_error==0:
             copy_template_file(df['Hostname'][row], df['OS'][row],df['Region'][row])
-        elif region not in all_regions:
+        elif region not in ct.all_regions:
             print("Skipping copy template for hostname "+ hostname + " as invalid region")
         elif(shape_error==1):
             print("Skipping copy template for hostname "+ hostname +" as ocpus missing for Flex shape")
@@ -125,7 +125,7 @@ if('.xls' in filename):
                 if(re.match('Region', i, flags=re.IGNORECASE)):
                     region = str(df[i][j])
                     region = region.strip().lower()
-                    if (region not in all_regions):
+                    if (region not in ct.all_regions):
                         break
 
                 if (re.match('DedicatedVMHost', i, flags=re.IGNORECASE)):

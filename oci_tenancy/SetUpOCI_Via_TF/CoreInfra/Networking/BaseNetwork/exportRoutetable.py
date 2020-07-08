@@ -21,27 +21,6 @@ onprem_destinations=[]
 igw_destinations=[]
 ngw_destinations=[]
 
-global ntk_compartment_ids
-ntk_compartment_ids = {}
-
-def get_network_compartment_ids(c_id,c_name):
-    compartments = idc.list_compartments(compartment_id=c_id,compartment_id_in_subtree =False)
-    for c in compartments.data:
-        if c.lifecycle_state =="ACTIVE" :
-            if(c_name!="root"):
-                name=c_name+"::"+c.name
-            else:
-                name=c.name
-            ntk_compartment_ids[name]=c.id
-            #Put individual compartment names also in the dictionary
-            if(name!=c.name):
-                if c.name not in ntk_compartment_ids.keys():
-                    ntk_compartment_ids[c.name]=c.id
-                else:
-                    # Remove the individual name added to dict as it is duplicate
-                    ntk_compartment_ids.pop(c.name)
-
-            get_network_compartment_ids(c.id,name)
 
 def get_network_entity_name(config,network_identity_id):
     vcn1 = VirtualNetworkClient(config)
@@ -144,12 +123,15 @@ if('.xls' not in cd3file):
 tf_import_cmd = args.tf_import_cmd
 outdir = args.outdir
 
-
 if args.configFileName is not None:
     configFileName = args.configFileName
     config = oci.config.from_file(file_location=configFileName)
 else:
     config = oci.config.from_file()
+
+ct = commonTools()
+ct.get_subscribedregions(configFileName)
+ct.get_network_compartment_ids(config['tenancy'],"root",configFileName)
 
 input_compartment_list = args.networkCompartment
 if(input_compartment_list is not None):
@@ -166,49 +148,37 @@ if tf_import_cmd is not None:
 else:
     tf_import_cmd = "false"
 
-idc = IdentityClient(config)
-ntk_compartment_ids["root"] = config['tenancy']
-get_network_compartment_ids(config['tenancy'],"root")
 rows=[]
-all_regions = []
 
 if(tf_import_cmd=="true"):
     importCommands={}
-    regionsubscriptions = idc.list_region_subscriptions(tenancy_id=config['tenancy'])
-    for rs in regionsubscriptions.data:
-        for k, v in commonTools().region_dict.items():
-            if (rs.region_name == v):
-                all_regions.append(k)
-    for reg in all_regions:
+    for reg in ct.all_regions:
         importCommands[reg] = open(outdir + "/" + reg + "/tf_import_commands_network_nonGF.sh", "a")
         importCommands[reg].write("\n\n######### Writing import for Route Tables #########\n\n")
-else:
-    vcnInfo = parseVCNInfo(cd3file)
-    all_regions=vcnInfo.all_regions
 
 print("\nFetching Route Rules...")
 
-for reg in all_regions:
+for reg in ct.all_regions:
     config.__setitem__("region", commonTools().region_dict[reg])
     vcn = VirtualNetworkClient(config)
     region = reg.capitalize()
     comp_ocid_done = []
-    for ntk_compartment_name in ntk_compartment_ids:
-        if ntk_compartment_ids[ntk_compartment_name] not in comp_ocid_done:
+    for ntk_compartment_name in ct.ntk_compartment_ids:
+        if ct.ntk_compartment_ids[ntk_compartment_name] not in comp_ocid_done:
             if (input_compartment_names is not None and ntk_compartment_name not in input_compartment_names):
                 continue
-            comp_ocid_done.append(ntk_compartment_ids[ntk_compartment_name])
-            vcns = oci.pagination.list_call_get_all_results(vcn.list_vcns,compartment_id=ntk_compartment_ids[ntk_compartment_name],lifecycle_state="AVAILABLE")
+            comp_ocid_done.append(ct.ntk_compartment_ids[ntk_compartment_name])
+            vcns = oci.pagination.list_call_get_all_results(vcn.list_vcns,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name],lifecycle_state="AVAILABLE")
             for v in vcns.data:
                 vcn_id = v.id
                 vcn_name=v.display_name
                 comp_ocid_done_again = []
-                for ntk_compartment_name_again in ntk_compartment_ids:
-                    if ntk_compartment_ids[ntk_compartment_name_again] not in comp_ocid_done_again:
+                for ntk_compartment_name_again in ct.ntk_compartment_ids:
+                    if ct.ntk_compartment_ids[ntk_compartment_name_again] not in comp_ocid_done_again:
                         if (input_compartment_names is not None and ntk_compartment_name_again not in input_compartment_names):
                             continue
-                        comp_ocid_done_again.append(ntk_compartment_ids[ntk_compartment_name_again])
-                        routetables = oci.pagination.list_call_get_all_results(vcn.list_route_tables, compartment_id=ntk_compartment_ids[ntk_compartment_name_again], vcn_id=vcn_id, lifecycle_state='AVAILABLE')
+                        comp_ocid_done_again.append(ct.ntk_compartment_ids[ntk_compartment_name_again])
+                        routetables = oci.pagination.list_call_get_all_results(vcn.list_route_tables, compartment_id=ct.ntk_compartment_ids[ntk_compartment_name_again], vcn_id=vcn_id, lifecycle_state='AVAILABLE')
                         print_routetables(routetables,region,vcn_name,ntk_compartment_name_again)
 
 commonTools.write_to_cd3(rows,cd3file,"RouteRulesinOCI")
@@ -217,7 +187,5 @@ vcninfo_rows=(onprem_destinations,ngw_destinations,igw_destinations)
 commonTools.write_to_cd3(vcninfo_rows,cd3file,"VCN Info")
 
 if (tf_import_cmd == "true"):
-    for reg in all_regions:
+    for reg in ct.all_regions:
         importCommands[reg].close()
-
-

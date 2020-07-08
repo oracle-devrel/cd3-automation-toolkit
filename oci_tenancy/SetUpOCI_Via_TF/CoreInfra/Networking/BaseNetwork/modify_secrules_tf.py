@@ -200,7 +200,7 @@ parser = argparse.ArgumentParser(description="Takes in an input file mentioning 
 parser.add_argument("inputfile",help="Full Path of input file: It could be either the properties file eg vcn-info.properties or CD3 excel file")
 parser.add_argument("outdir",help="directory path for output tf files ")
 parser.add_argument("secrulesfile",help="Input file(either csv or CD3 excel) containing new secrules to be added for Security List of a given subnet")
-
+parser.add_argument("--configFileName", help="Config file name" , required=False)
 
 if len(sys.argv)==1:
         parser.print_help()
@@ -210,6 +210,13 @@ args = parser.parse_args()
 
 secrulesfilename = args.secrulesfile
 outdir = args.outdir
+if args.configFileName is not None:
+    configFileName = args.configFileName
+else:
+    configFileName=""
+
+ct = commonTools()
+ct.get_subscribedregions(configFileName)
 
 
 seclists_done={}
@@ -221,13 +228,12 @@ defaultname={}
 #If input is CD3 excel file
 if('.xls' in secrulesfilename):
     vcns = parseVCNs(secrulesfilename)
-    vcnInfo = parseVCNInfo(secrulesfilename)
 
     df = pd.read_excel(secrulesfilename, sheet_name='SecRulesinOCI', skiprows=1, dtype=object).to_csv('out.csv')
     totalRowCount = sum(1 for row in csv.DictReader(skipCommentedLine(open('out.csv'))))
     i=0
 
-    for reg in vcnInfo.all_regions:
+    for reg in ct.all_regions:
         if(os.path.exists(outdir + "/" +reg)):
             defaultname[reg] = open(outdir + "/" +reg+ "/VCNs_Default_SecList.tf", "w")
         default_ruleStr[reg]=''
@@ -266,7 +272,9 @@ if('.xls' in secrulesfilename):
             ruleType = row['RuleType']
             region = row['Region']
             region=region.strip().lower()
-
+            if region not in ct.all_regions:
+                print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
+                exit(1)
             if('Default Security List for' in display_name):
                 if (seclist_tf_name not in default_seclists_done[region]):
                     if(len(default_seclists_done[region])==0):
@@ -325,7 +333,7 @@ if('.xls' in secrulesfilename):
         }"""
                 oname.write(tfStr)
                 oname.close()
-        for reg in vcnInfo.all_regions:
+        for reg in ct.all_regions:
             if(default_ruleStr[reg]!=''):
                 default_ruleStr[reg]=default_ruleStr[reg]+"""
         }"""

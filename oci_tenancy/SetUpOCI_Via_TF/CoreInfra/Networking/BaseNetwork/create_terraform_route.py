@@ -25,7 +25,7 @@ parser = argparse.ArgumentParser(description="Creates route tables containing de
 parser.add_argument("inputfile", help="Full Path of properties file. eg vcn-info.properties or cd3 excel file")
 parser.add_argument("outdir", help="Output directory for creation of TF files")
 parser.add_argument("--modify_network", help="Modify: true or false", required=False)
-
+parser.add_argument("--configFileName", help="Config file name", required=False)
 
 if len(sys.argv)<3:
         parser.print_help()
@@ -38,6 +38,13 @@ if args.modify_network is not None:
     modify_network = str(args.modify_network)
 else:
     modify_network = "false"
+if args.configFileName is not None:
+    configFileName = args.configFileName
+else:
+    configFileName=""
+
+ct = commonTools()
+ct.get_subscribedregions(configFileName)
 
 outfile={}
 oname={}
@@ -472,14 +479,14 @@ if('.xls' in filename):
 
     # Purge existing routetable files
     if (modify_network == 'false'):
-        for reg in vcnInfo.all_regions:
+        for reg in ct.all_regions:
             routetablefiles.setdefault(reg, [])
             purge(outdir + "/" + reg, "_routetable.tf")
 
 
     # Get existing list of route table files
     if(modify_network == 'true'):
-        for reg in vcnInfo.all_regions:
+        for reg in ct.all_regions:
             routetablefiles.setdefault(reg,[])
             lisoffiles = os.listdir(outdir + "/" + reg)
             for file in lisoffiles:
@@ -523,8 +530,8 @@ if('.xls' in filename):
             break
         compartment_var_name = df.iat[i, 1]
         region = region.strip().lower()
-        if region not in vcnInfo.all_regions:
-            print("\nERROR!!! Invalid Region; It should be one of the values mentioned in VCN Info tab..Exiting!")
+        if region not in ct.all_regions:
+            print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
             exit(1)
         vcn_name = str(df['vcn_name'][i]).strip()
         if (vcn_name.strip() not in vcns.vcn_names):
@@ -573,7 +580,7 @@ if('.xls' in filename):
 
     #remove any extra route table files (not part of latest cd3)
     RTs_in_objnames=[]
-    for reg in vcnInfo.all_regions:
+    for reg in ct.all_regions:
         #Get any route tables from objnames.safe
         if (os.path.exists(outdir + "/" + reg + "/obj_names.safe")):
             with open(outdir + "/" + reg + "/obj_names.safe") as f:

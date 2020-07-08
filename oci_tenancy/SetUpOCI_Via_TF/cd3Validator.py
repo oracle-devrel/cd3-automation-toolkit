@@ -15,7 +15,7 @@ from oci.identity import IdentityClient
 sys.path.append(os.getcwd()+"/../../..")
 from commonTools import *
 
-ct =commonTools()
+
 parser = argparse.ArgumentParser(description="CD3 Validator")
 parser.add_argument("cd3file", help="Full Path of CD3 file")
 parser.add_argument("--configFileName", help="Path to config file")
@@ -35,37 +35,22 @@ if args.configFileName is not None:
 else:
     config = oci.config.from_file()
 
+ct = commonTools()
+ct.get_subscribedregions(configFileName)
+ct.get_network_compartment_ids(config['tenancy'],"root",configFileName)
+
 compartment_ids={}
 vcn_ids = {}
 vcn_cidrs = {}
 vcn_compartment_ids = {}
-idc = IdentityClient(config)
 
 logging.addLevelName(60,"custom")
 logging.basicConfig(filename="cd3Validator.log",filemode="w",format="%(asctime)s - %(message)s",level=60)
 logger=logging.getLogger("cd3Validator")
 
-global ntk_compartment_ids
-ntk_compartment_ids = {}
-#Prepares dictionery containing compartments names and its OCIDs
-def get_network_compartment_ids(c_id,c_name):
-    compartments = idc.list_compartments(compartment_id=c_id,compartment_id_in_subtree =False)
-    for c in compartments.data:
-        if c.lifecycle_state =="ACTIVE" :
-            if(c_name!="root"):
-                name=c_name+"::"+c.name
-            else:
-                name=c.name
-            ntk_compartment_ids[name]=c.id
-            # Put individual compartment names also in the dictionary
-            if (name != c.name and c.name not in ntk_compartment_ids.keys()):
-                ntk_compartment_ids[c.name] = c.id
-
-            get_network_compartment_ids(c.id,name)
-
-def get_vcn_ids(compartment_ids,vcnInfoobj,config):
+def get_vcn_ids(compartment_ids,config):
     #Fetch the VCN ID
-    for region in vcnInfoobj.all_regions:
+    for region in ct.all_regions:
         config.__setitem__("region", ct.region_dict[region])
         vnc = VirtualNetworkClient(config)
         for comp_id in compartment_ids.values():
@@ -208,7 +193,7 @@ def fetch_dhcplist_vcn_cidrs(filename):
     return dhcplist,vcn_cidrs
 
 #Check if subnets tab is compliant
-def validate_subnets(filename,comp_ids,vcnobj,vcnInfoobj):
+def validate_subnets(filename,comp_ids,vcnobj):
 
     # Read the Subnets tab from excel
     df = pd.read_excel(filename, sheet_name='Subnets', skiprows=1)
@@ -253,8 +238,8 @@ def validate_subnets(filename,comp_ids,vcnobj,vcnInfoobj):
 
         # Check for invalid Region
         region = str(df[df.columns[0]][i])
-        if (region.lower()!="nan" and region.lower() not in vcnInfoobj.all_regions):
-            logging.log(60, "ROW " + str(i + 3) + " : Region " + region + " not declared in VCN Info Tab")
+        if (region.lower()!="nan" and region.lower() not in ct.all_regions):
+            logging.log(60, "ROW " + str(i + 3) + " : Region " + region + " is not subscribed to tenancy")
             subnet_reg_check = True
 
         #Check for invalid compartment name
@@ -359,9 +344,9 @@ def validate_subnets(filename,comp_ids,vcnobj,vcnInfoobj):
 
 
 #Check if VCNs tab is compliant
-def validate_vcns(filename,comp_ids,vcn_ids,vcnobj,vcnInfoobj):#,vcn_cidrs,vcn_compartment_ids):
+def validate_vcns(filename,comp_ids,vcn_ids,vcnobj):#,vcn_cidrs,vcn_compartment_ids):
 
-    vcn_ids = get_vcn_ids(comp_ids, vcnInfoobj, config)
+    vcn_ids = get_vcn_ids(comp_ids, config)
 
     #Read the VCNs tab from excel
     df = pd.read_excel(filename, sheet_name='VCNs', skiprows=1)
@@ -399,8 +384,8 @@ def validate_vcns(filename,comp_ids,vcn_ids,vcnobj,vcnInfoobj):#,vcn_cidrs,vcn_c
 
         # Check for invalid Region
         region=str(df[df.columns[0]][i])
-        if(region.lower()!="nan" and region.lower() not in vcnInfoobj.all_regions):
-            logging.log(60, "ROW " + str(i + 3) + " : Region " + region + " not declared in VCN Info Tab")
+        if(region.lower()!="nan" and region.lower() not in ct.all_regions):
+            logging.log(60, "ROW " + str(i + 3) + " : Region " + region + " is not subscribed to tenancy")
             vcn_reg_check=True
 
         #Check for invalid Compartment Name
@@ -497,7 +482,6 @@ def validate_vcns(filename,comp_ids,vcn_ids,vcnobj,vcnInfoobj):#,vcn_cidrs,vcn_c
 
         oci_vcn_lpgs[vcn_name]=[]
         vcn_lpg_str=""
-
         lpg_list=oci.pagination.list_call_get_all_results(vnc.list_local_peering_gateways,compartment_id=comp_id,vcn_id=vcn_id)
         if(len(lpg_list.data)==0):
             logging.log(60,"ROW "+str(i+3)+" : LPGs for VCN "+vcn_name+ " in OCI-  None")
@@ -508,17 +492,17 @@ def validate_vcns(filename,comp_ids,vcn_ids,vcnobj,vcnInfoobj):#,vcn_cidrs,vcn_c
             logging.log(60,"ROW "+str(i+3)+" : LPGs for VCN " + vcn_name + " in OCI-  "+vcn_lpg_str)
 
 
-    logging.log(60,"Below LPG peering would be established new;\nMake sure that none of the LPGs listed below as part of peering already exist for the VCN as shown above!")
+    logging.log(60,"Below LPG peering would be established new; Make sure that none of the LPGs listed below as part of peering\nalready exist for the VCN as listed above!")
     #Show the peering details of each lpg in Hub,Spoke or Peer VCNs
     vcn_peer_check = showPeering(vcnobj,oci_vcn_lpgs)
     if (vcn_peer_check == True):
-        print("LPG Peering Check failed!!")
+        print("Please verify LPG Peering Status in log file !!")
     logging.log(60,"Please verify if the LPGs status is as you desire otherwise please correct the order of LPGs!!!")
     logging.log(60,"End LPG Peering Check---------------------------------------------\n")
     return vcn_check,vcn_cidr_check,vcn_peer_check
 
 #Checks if the fields in DHCP tab are compliant
-def validate_dhcp(filename,comp_ids,vcnobj,vcnInfoobj):
+def validate_dhcp(filename,comp_ids,vcnobj):
     #Read DHCP tab from excel
     df = pd.read_excel(filename, sheet_name='DHCP', skiprows=1)
     #Drop null values
@@ -548,8 +532,8 @@ def validate_dhcp(filename,comp_ids,vcnobj,vcnInfoobj):
         # Check for invalid Region
         region = str(df[df.columns[0]][i])
 
-        if (region.lower()!="nan" and region.lower() not in vcnInfoobj.all_regions):
-            logging.log(60, "ROW " + str(i + 3) + " : Region " + region + " not declared in VCN Info Tab")
+        if (region.lower()!="nan" and region.lower() not in ct.all_regions):
+            logging.log(60, "ROW " + str(i + 3) + " : Region " + region + " is not subscribed to tenancy")
             dhcp_reg_check = True
 
         #Check for invalid compartment name
@@ -582,7 +566,7 @@ def validate_dhcp(filename,comp_ids,vcnobj,vcnInfoobj):
                     dhcp_empty_check = True
                     
     logging.log(60,"End Null or Wrong value Check in each row-----------------\n")
-    if (dhcp_reg_check==True or dhcp_vcn_check==True or dhcp_wrong_check == True or dhcp_comp_check==True or dhcp_empty_check==True or subnet_dhcp_check == True):
+    if (dhcp_reg_check==True or dhcp_vcn_check==True or dhcp_wrong_check == True or dhcp_comp_check==True or dhcp_empty_check==True): # or subnet_dhcp_check == True):
         print("Null or Wrong value Check failed!!")
         return True
     else:
@@ -592,21 +576,18 @@ def main():
     #CD3 Validation begins here for Sunbnets, VCNs and DHCP tabs
     #Flag to check if for errors
     vcnobj = parseVCNs(filename)
-    vcnInfoobj = parseVCNInfo(filename)
 
     logging.log(60,"============================= Verifying VCNs Tab ==========================================\n")
     print("\nProcessing VCNs Tab..")
-    ntk_compartment_ids["root"] = config['tenancy']
-    get_network_compartment_ids(config['tenancy'], "root")
-    vcn_check,vcn_cidr_check,vcn_peer_check = validate_vcns(filename, ntk_compartment_ids, vcn_ids,vcnobj,vcnInfoobj)
+    vcn_check,vcn_cidr_check,vcn_peer_check = validate_vcns(filename, ct.ntk_compartment_ids, vcn_ids,vcnobj)
 
     logging.log(60,"============================= Verifying Subnets Tab ==========================================\n")
     print("\nProcessing Subnets Tab..")
-    subnet_check,subnet_cidr_check = validate_subnets(filename,ntk_compartment_ids,vcnobj,vcnInfoobj)
+    subnet_check,subnet_cidr_check = validate_subnets(filename,ct.ntk_compartment_ids,vcnobj)
 
     logging.log(60,"============================= Verifying DHCP Tab ==========================================\n")
     print("\nProcessing DHCP Tab..")
-    dhcp_check = validate_dhcp(filename,ntk_compartment_ids,vcnobj,vcnInfoobj)
+    dhcp_check = validate_dhcp(filename,ct.ntk_compartment_ids,vcnobj)
 
     #Prints the final result; once the validation is complete
     if vcn_check == True or vcn_cidr_check == True or vcn_peer_check == True or subnet_check == True or subnet_cidr_check == True or dhcp_check == True:

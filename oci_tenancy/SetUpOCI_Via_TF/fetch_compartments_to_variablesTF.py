@@ -27,6 +27,7 @@ if args.configFileName is not None:
     configFileName = args.configFileName
     config = oci.config.from_file(file_location=configFileName)
 else:
+    configFileName = ""
     config = oci.config.from_file()
 
 outdir=args.outdir
@@ -36,20 +37,16 @@ var_files={}
 var_data={}
 
 print("outdir specified should contain region directories and then variables_<region>.tf file inside the region directories eg /root/ocswork/terraform_files")
-idc=IdentityClient(config)
-all_regions=[]
-ct=commonTools()
 
-regionsubscriptions = idc.list_region_subscriptions(tenancy_id=tenancy_id)
-for rs in regionsubscriptions.data:
-    for k,v in ct.region_dict.items():
-        if (rs.region_name==v):
-            all_regions.append(k)
+ct=commonTools()
+ct.get_subscribedregions(configFileName)
+ct.get_network_compartment_ids(config['tenancy'],"root",configFileName)
+
 """for file in glob.glob(outdir + '/*/' +'variables_*.tf'):#, recursive=True):
     region=file.split("variables_")[1].split(".tf")[0]
     all_regions.append(region)
 """
-for region in all_regions:
+for region in ct.all_regions:
     file=outdir+"/"+region+"/variables_"+region+".tf"
     var_files[region]=file
     tempStr[region]=''
@@ -59,34 +56,10 @@ for region in all_regions:
     # Backup the existing Routes tf file
     shutil.copy(file, file + "_backup")
 
-global ntk_compartment_ids
-ntk_compartment_ids = {}
-
-def get_network_compartment_ids(c_id,c_name):
-    compartments = idc.list_compartments(compartment_id=c_id,compartment_id_in_subtree =False)
-    for c in compartments.data:
-        if c.lifecycle_state =="ACTIVE" :
-            if(c_name!="root"):
-                name=c_name+"::"+c.name
-            else:
-                name=c.name
-            ntk_compartment_ids[name]=c.id
-            # Put individual compartment names also in the dictionary
-            if (name != c.name):
-                if c.name not in ntk_compartment_ids.keys():
-                    ntk_compartment_ids[c.name] = c.id
-                else:
-                    #Remove the individual name added to dict as it is duplicate
-                    ntk_compartment_ids.pop(c.name)
-
-            get_network_compartment_ids(c.id,name)
-
-get_network_compartment_ids(config['tenancy'],"root")
-
-for reg in all_regions:
-    for name,ocid in ntk_compartment_ids.items():
+for reg in ct.all_regions:
+    for name,ocid in ct.ntk_compartment_ids.items():
         comp_tf_name=commonTools.check_tf_variable(name)
-        searchstr = "variable \"" + comp_tf_name + ""
+        searchstr = "variable \"" + comp_tf_name + "\""
         str="""
         variable \"""" + comp_tf_name + """" {
             type = "string"

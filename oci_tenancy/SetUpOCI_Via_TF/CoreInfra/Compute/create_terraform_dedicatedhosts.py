@@ -17,7 +17,7 @@ from commonTools import *
 parser = argparse.ArgumentParser(description="Create Dedicated VM Hosts terraform file")
 parser.add_argument("inputfile", help="Full Path of input file. It could be either the csv file or CD3 excel file")
 parser.add_argument("outdir", help="Output directory for creation of TF files")
-
+parser.add_argument("--configFileName", help="Config file name", required=False)
 
 if len(sys.argv)<2:
         parser.print_help()
@@ -26,6 +26,13 @@ if len(sys.argv)<2:
 args = parser.parse_args()
 filename=args.inputfile
 outdir=args.outdir
+if args.configFileName is not None:
+    configFileName = args.configFileName
+else:
+    configFileName=""
+
+ct = commonTools()
+ct.get_subscribedregions(configFileName)
 
 outfile={}
 oname={}
@@ -40,8 +47,7 @@ if('.xls' in args.inputfile):
     df = df.dropna(how='all')
     df = df.reset_index(drop=True)
 
-    all_regions = os.listdir(outdir)
-    for reg in all_regions:
+    for reg in ct.all_regions:
         src = outdir + "/" + reg + "/dedicated_vm_hosts.tf"
         if (os.path.exists(src)):
             dst = outdir + "/" + reg + "/dedicated_vm_hosts_backup" + date
@@ -59,8 +65,8 @@ if('.xls' in args.inputfile):
             break
 
         region=region.strip().lower()
-        if region not in all_regions:
-            print("Invalid Region; It should be one of the values mentioned in VCN Info tab")
+        if region not in ct.all_regions:
+            print("Invalid Region; It should be one of the regions tenancy is subscribed to")
             exit(1)
         compartment_name = df.iat[i, 1]
         dedicated_host_name = df.iat[i, 2]
@@ -156,7 +162,7 @@ else:
     exit()
 
 
-for reg in all_regions:
+for reg in ct.all_regions:
     reg_out_dir = outdir + "/" + reg
     outfile[reg] = reg_out_dir + "/dedicated_vm_hosts.tf"
 

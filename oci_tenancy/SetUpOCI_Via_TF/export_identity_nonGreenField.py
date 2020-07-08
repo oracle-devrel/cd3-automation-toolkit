@@ -13,30 +13,6 @@ from commonTools import *
 
 compartment_ids={}
 importCommands={}
-ct=commonTools()
-
-global ntk_compartment_ids
-ntk_compartment_ids = {}
-
-def get_network_compartment_ids(c_id,c_name):
-
-    compartments = idc.list_compartments(compartment_id=c_id,compartment_id_in_subtree =False)
-    for c in compartments.data:
-        if c.lifecycle_state =="ACTIVE" :
-            if(c_name!="root"):
-                name=c_name+"::"+c.name
-            else:
-                name=c.name
-            ntk_compartment_ids[name]=c.id
-            # Put individual compartment names also in the dictionary
-            if (name != c.name):
-                if c.name not in ntk_compartment_ids.keys():
-                    ntk_compartment_ids[c.name] = c.id
-                else:
-                    #Remove the individual name added to dict as it is duplicate
-                    ntk_compartment_ids.pop(c.name)
-
-            get_network_compartment_ids(c.id,name)
 
 parser = argparse.ArgumentParser(description="Export Route Table on OCI to CD3")
 parser.add_argument("cd3file", help="path of CD3 excel file to export network objects to")
@@ -70,9 +46,10 @@ if args.configFileName is not None:
 else:
     config = oci.config.from_file()
 
-idc=IdentityClient(config)
-ntk_compartment_ids["root"] = config['tenancy']
-get_network_compartment_ids(config['tenancy'],"root")
+ct = commonTools()
+ct.get_subscribedregions(configFileName)
+ct.get_network_compartment_ids(config['tenancy'],"root",configFileName)
+
 #Check Compartments
 """remove_comps=[]
 if(input_compartment_names is not None):
@@ -94,30 +71,21 @@ print("Fetching for all Compartments...")
 print("\nCD3 excel file should not be opened during export process!!!")
 print("Tabs- Compartments, Groups, Policies would be overwritten during export process!!!\n")
 
-#Fetch Home Region
-home_region=None
-regionsubscriptions = idc.list_region_subscriptions(tenancy_id=config['tenancy'])
-for rs in regionsubscriptions.data:
-    if(rs.is_home_region==True):
-        region=rs.region_name
-        for k,v in ct.region_dict.items():
-            if(v==region):
-                home_region=k
 # Create backup
-if(os.path.exists(outdir + "/" + home_region+"/tf_import_commands_identity_nonGF.sh")):
-    commonTools.backup_file(outdir + "/" + home_region,"tf_import_commands_identity_nonGF.sh")
-importCommands[home_region] = open(outdir + "/" + home_region+"/tf_import_commands_identity_nonGF.sh", "w")
-importCommands[home_region].write("#!/bin/bash")
-importCommands[home_region].write("\n")
-importCommands[home_region].write("terraform init")
+if(os.path.exists(outdir + "/" + ct.home_region+"/tf_import_commands_identity_nonGF.sh")):
+    commonTools.backup_file(outdir + "/" + ct.home_region,"tf_import_commands_identity_nonGF.sh")
+importCommands[ct.home_region] = open(outdir + "/" + ct.home_region+"/tf_import_commands_identity_nonGF.sh", "w")
+importCommands[ct.home_region].write("#!/bin/bash")
+importCommands[ct.home_region].write("\n")
+importCommands[ct.home_region].write("terraform init")
 
-config.__setitem__("region", ct.region_dict[home_region])
+config.__setitem__("region", ct.region_dict[ct.home_region])
 idc=IdentityClient(config)
 
 #Fetch Compartments
 print("\nFetching Compartments...")
 rows=[]
-importCommands[home_region].write("\n######### Writing import for Compartments #########\n")
+importCommands[ct.home_region].write("\n######### Writing import for Compartments #########\n")
 """if (input_compartment_names is not None):
     for input_comp_name in input_compartment_names:
         if(input_comp_name=='root'):
@@ -137,8 +105,8 @@ importCommands[home_region].write("\n######### Writing import for Compartments #
             else:
                 tf_name=input_comp_info.name
             tf_name= commonTools.check_tf_variable(tf_name)
-            importCommands[home_region].write("\nterraform import oci_identity_compartment." + tf_name + " " + input_comp_id)
-            new_row = (home_region.capitalize(), input_comp_name, input_comp_info.description, parent_input_comp_name)
+            importCommands[ct.home_region].write("\nterraform import oci_identity_compartment." + tf_name + " " + input_comp_id)
+            new_row = (ct.home_region.capitalize(), input_comp_name, input_comp_info.description, parent_input_comp_name)
             rows.append(new_row)
             if(parent_input_comp_name=='root'):
                 break
@@ -157,7 +125,7 @@ for comp in comps.data:
         parent_comp_id = comp_info.compartment_id
 
         keys = []
-        for k,v in ntk_compartment_ids.items():
+        for k,v in ct.ntk_compartment_ids.items():
             if(v==parent_comp_id):
                 keys.append(k)
         if(len(keys)>1):
@@ -173,8 +141,8 @@ for comp in comps.data:
             tf_name=comp_display_name
 
         tf_name = commonTools.check_tf_variable(tf_name)
-        importCommands[home_region].write("\nterraform import oci_identity_compartment." + tf_name + " " + comp_info.id)
-        new_row = (home_region.capitalize(), comp_display_name, comp_desc, parent_comp_name)
+        importCommands[ct.home_region].write("\nterraform import oci_identity_compartment." + tf_name + " " + comp_info.id)
+        new_row = (ct.home_region.capitalize(), comp_display_name, comp_desc, parent_comp_name)
         rows.append(new_row)
 
 commonTools.write_to_cd3(rows,cd3file,"Compartments")
@@ -183,7 +151,7 @@ print("Compartments exported to CD3\n")
 #Fetch Groups
 print("\nFetchig Groups...")
 rows=[]
-importCommands[home_region].write("\n######### Writing import for Groups #########\n")
+importCommands[ct.home_region].write("\n######### Writing import for Groups #########\n")
 groups = oci.pagination.list_call_get_all_results(idc.list_groups,compartment_id=config['tenancy'])
 for group in groups.data:
     grp_info=group
@@ -191,8 +159,8 @@ for group in groups.data:
         grp_display_name=grp_info.name
         grp_desc=grp_info.description
         tf_name=commonTools.check_tf_variable(grp_display_name)
-        importCommands[home_region].write("\nterraform import oci_identity_group."+ tf_name+" "+grp_info.id)
-        new_row = (home_region.capitalize(), grp_display_name, grp_desc)
+        importCommands[ct.home_region].write("\nterraform import oci_identity_group."+ tf_name+" "+grp_info.id)
+        new_row = (ct.home_region.capitalize(), grp_display_name, grp_desc)
         rows.append(new_row)
 
 commonTools.write_to_cd3(rows,cd3file,"Groups")
@@ -201,14 +169,14 @@ print("Groups exported to CD3\n")
 # Fetch Policies
 rows=[]
 print("\nFetchig Policies...")
-importCommands[home_region].write("\n\n######### Writing import for Policies #########\n\n")
+importCommands[ct.home_region].write("\n\n######### Writing import for Policies #########\n\n")
 comp_ocid_done = []
-for ntk_compartment_name in ntk_compartment_ids:
-    if ntk_compartment_ids[ntk_compartment_name] not in comp_ocid_done:
-        comp_ocid_done.append(ntk_compartment_ids[ntk_compartment_name])
+for ntk_compartment_name in ct.ntk_compartment_ids:
+    if ct.ntk_compartment_ids[ntk_compartment_name] not in comp_ocid_done:
+        comp_ocid_done.append(ct.ntk_compartment_ids[ntk_compartment_name])
     #if(input_compartment_names is not None and ntk_compartment_name not in input_compartment_names):
     #    continue
-        policies = oci.pagination.list_call_get_all_results(idc.list_policies, compartment_id=ntk_compartment_ids[ntk_compartment_name])
+        policies = oci.pagination.list_call_get_all_results(idc.list_policies, compartment_id=ct.ntk_compartment_ids[ntk_compartment_name])
         for policy in policies.data:
             policy_name=policy.name
             policy_desc=policy.description
@@ -217,7 +185,7 @@ for ntk_compartment_name in ntk_compartment_ids:
                 policy_comp = 'root'
             else:
                 keys = []
-                for k, v in ntk_compartment_ids.items():
+                for k, v in ct.ntk_compartment_ids.items():
                     if (v == policy_comp_id):
                         keys.append(k)
 
@@ -237,7 +205,7 @@ for ntk_compartment_name in ntk_compartment_ids:
 
 
             tf_name = commonTools.check_tf_variable(tf_name)
-            importCommands[home_region].write("\nterraform import oci_identity_policy." + tf_name + " " + policy.id)
+            importCommands[ct.home_region].write("\nterraform import oci_identity_policy." + tf_name + " " + policy.id)
 
             count=1
             policy_statements = policy.statements
@@ -256,8 +224,8 @@ for ntk_compartment_name in ntk_compartment_ids:
                     policy_grp_name=""
                 """
                 if(count==1):
-                    #new_row = (home_region.capitalize(), policy_name, policy_comp,policy_desc,stmt,policy_grp_name,policy_compartment_name)
-                    new_row = (home_region.capitalize(), policy_name, policy_comp, policy_desc, stmt, '','')
+                    #new_row = (ct.home_region.capitalize(), policy_name, policy_comp,policy_desc,stmt,policy_grp_name,policy_compartment_name)
+                    new_row = (ct.home_region.capitalize(), policy_name, policy_comp, policy_desc, stmt, '','')
                 else:
                     #new_row = ('', '','', '', stmt, policy_grp_name, policy_compartment_name)
                     new_row = ('', '', '', '', stmt, '', '')
@@ -267,7 +235,7 @@ for ntk_compartment_name in ntk_compartment_ids:
 commonTools.write_to_cd3(rows,cd3file,"Policies")
 print("Policies exported to CD3\n")
 
-importCommands[home_region] = open(outdir + "/" + home_region + "/tf_import_commands_identity_nonGF.sh", "a")
-importCommands[home_region].write("\n\nterraform plan")
-importCommands[home_region].write("\n")
-importCommands[home_region].close()
+importCommands[ct.home_region] = open(outdir + "/" + ct.home_region + "/tf_import_commands_identity_nonGF.sh", "a")
+importCommands[ct.home_region].write("\n\nterraform plan")
+importCommands[ct.home_region].write("\n")
+importCommands[ct.home_region].close()

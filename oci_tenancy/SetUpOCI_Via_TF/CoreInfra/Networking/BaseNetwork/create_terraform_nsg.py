@@ -205,7 +205,15 @@ def main():
         inputs given in vcn-info.properties, separated by regions.")
     parser.add_argument("inputfile", help="Full Path of cd3 excel file or csv containing NSG info")
     parser.add_argument("outdir", help="Output directory")
+    parser.add_argument("--configFileName", help="Config file name", required=False)
     args = parser.parse_args()
+    if args.configFileName is not None:
+        configFileName = args.configFileName
+    else:
+        configFileName = ""
+
+    ct = commonTools()
+    ct.get_subscribedregions(configFileName)
 
     if('.csv' in args.inputfile):
         df = pd.read_csv(args.inputfile)
@@ -227,6 +235,12 @@ def main():
     # creates all region directories in specified out directory
     # creates all region directories in specified out directory
     for region in listOfRegions:
+        if (region in commonTools.endNames):
+            break
+
+        if region not in ct.all_regions:
+            print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
+            exit(1)
         regionDirPath = outdir + "/{}".format(region)
         """if os.path.exists(regionDirPath):
             nsgParser.purge(regionDirPath, "nsg.tf")
@@ -238,6 +252,13 @@ def main():
     # Stage 2 using the dictionary of unique_id:rules, use factory method to produces resources and
     # rules
     for region in listOfRegions:
+        if (region in commonTools.endNames):
+            break
+
+        if region not in ct.all_regions:
+            print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
+            exit(1)
+
         # with open(outdir + "/{}/{}-NSG.tf".format(region,region), 'w') as f:
         reg_outdir = outdir + "/" + region
         [NSGtemplate(nsgParser, k, v, reg_outdir) for k, v in

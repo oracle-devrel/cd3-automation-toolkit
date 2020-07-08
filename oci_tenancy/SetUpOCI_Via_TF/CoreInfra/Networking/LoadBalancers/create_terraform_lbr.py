@@ -15,7 +15,7 @@ from commonTools import *
 parser = argparse.ArgumentParser(description="Creates TF files for LBR")
 parser.add_argument("inputfile",help="Full Path to the CSV file for creating lbr or CD3 excel file. eg lbr.csv or CD3-template.xlsx in example folder")
 parser.add_argument("outdir",help="directory path for output tf files ")
-
+parser.add_argument("--configFileName", help="Config file name", required=False)
 
 if len(sys.argv)<2:
         parser.print_help()
@@ -24,9 +24,13 @@ if len(sys.argv)<2:
 args = parser.parse_args()
 filename = args.inputfile
 outdir = args.outdir
-all_regions = os.listdir(outdir)
+if args.configFileName is not None:
+    configFileName = args.configFileName
+else:
+    configFileName=""
 
-#ADS = ["AD1", "AD2", "AD3"]
+ct = commonTools()
+ct.get_subscribedregions(configFileName)
 
 #If input is csv file; convert to excel
 if('.csv' in filename):
@@ -50,8 +54,8 @@ for i in df.index:
     if region in endNames:
         break
 
-    if region not in all_regions:
-        print("Invalid Region; It should be one of the values mentioned in VCN Info tab")
+    if region not in ct.all_regions:
+        print("Invalid Region; It should be one of the regions tenancy is subscribed to")
         continue
     compartment_name = df.iat[i, 1]
     lbr_name = df.iat[i, 2]
@@ -160,10 +164,10 @@ for i in df.index:
     }
     """
     tempStr_be_server = ""
-    ct=0
+    cnt=0
     for lbr_be_server in lbr_be_servers:
         if(lbr_be_server!=""):
-            ct=ct+1
+            cnt=cnt+1
             serverinfo=lbr_be_server.strip().split(":")
             servername=serverinfo[0].strip()
             serverport=serverinfo[1].strip()
@@ -173,7 +177,7 @@ for i in df.index:
             else:
                 be_server_ip_address="${oci_core_instance."+servername+".private_ip}"
 
-            lbr_be_server_res_name=lbr_listener_tf_name+"_bes_"+str(ct)
+            lbr_be_server_res_name=lbr_listener_tf_name+"_bes_"+str(cnt)
 
             tempStr_be_server=tempStr_be_server+"""
     #Create Backend Server

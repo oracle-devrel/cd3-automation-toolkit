@@ -2,6 +2,7 @@ import argparse
 import configparser
 import os
 import sys
+from commonTools import *
 
 parser = argparse.ArgumentParser(description="Sets Up OCI via TF")
 parser.add_argument("propsfile",help="Full Path of properties file containing input variables. eg setUpOCI.properties")
@@ -81,6 +82,7 @@ if (input_nongf_tenancy.lower() == 'true'):
     print("1. Export Identity Objects(Compartments, Groups, Policies) to CD3 and create TF Files")
     print("2. Export Network Objects(VCNs, Subnets, Security Lists, Route Tables) to CD3 and create TF Files")
     print("3. Run bash script to import objects to TF state")
+    print("q. Press q to quit")
     userInput = input('Enter your choice: multiple allowed ')
     if ("1" in userInput):
         """input_comp = input("Enter name of Compartment as it appears in OCI (comma seperated if multiple)for which you want to export identity objects;\nLeave blank if want to export for all Compartments: ")
@@ -121,7 +123,11 @@ if (input_nongf_tenancy.lower() == 'true'):
             exit()
         print("\nProceeding to create TF files...\n")
         print("\n-----------Process Compartments tab-----------")
-        command = 'python create_terraform_compartments.py ' + input_cd3file + ' ' + input_outdir + ' ' + input_prefix
+        if (input_config_file == ''):
+            command = 'python create_terraform_compartments.py ' + input_cd3file + ' ' + input_outdir + ' ' + input_prefix
+        else:
+            command = 'python create_terraform_compartments.py '+input_cd3file + ' ' + input_outdir+ ' '+input_prefix + ' --configFileName ' + input_config_file
+
         os.chdir('Identity/Compartments')
         print("Executing Command: " + command)
         exitVal = os.system(command)
@@ -129,7 +135,11 @@ if (input_nongf_tenancy.lower() == 'true'):
             exit()
 
         print("\n-----------Process Groups tab-----------")
-        command = 'python create_terraform_groups.py ' + input_cd3file + ' ' + input_outdir + ' ' + input_prefix
+        if (input_config_file == ''):
+            command = 'python create_terraform_compartments.py ' + input_cd3file + ' ' + input_outdir + ' ' + input_prefix
+        else:
+            command = 'python create_terraform_groups.py ' + input_cd3file + ' ' + input_outdir + ' ' + input_prefix + ' --configFileName ' + input_config_file
+
         os.chdir("../..")
         os.chdir('Identity/Groups')
         print("Executing Command: " + command)
@@ -138,7 +148,11 @@ if (input_nongf_tenancy.lower() == 'true'):
             exit()
 
         print("\n-----------Process Policies tab-----------")
-        command = 'python create_terraform_policies.py ' + input_cd3file + ' ' + input_outdir + ' ' + input_prefix
+        if (input_config_file == ''):
+            command = 'python create_terraform_policies.py ' + input_cd3file + ' ' + input_outdir + ' ' + input_prefix
+        else:
+            command = 'python create_terraform_policies.py ' + input_cd3file + ' ' + input_outdir + ' ' + input_prefix + ' --configFileName ' + input_config_file
+
         os.chdir("../..")
         os.chdir('Identity/Policies')
         print("Executing Command: " + command)
@@ -182,7 +196,11 @@ if (input_nongf_tenancy.lower() == 'true'):
             exit()
         print("\nProceeding to create TF files...\n")
         print("\n-----------Process VCNs tab-----------")
-        command = 'python create_major_objects.py ' + input_cd3file + ' ' + input_outdir + ' ' + input_prefix
+        if (input_config_file == ''):
+            command = 'python create_all_tf_objects.py ' + input_cd3file + ' ' + input_outdir + ' ' + input_prefix
+        else:
+            command = 'python create_all_tf_objects.py ' + input_cd3file + ' ' + input_outdir + ' ' + input_prefix + ' --configFileName ' + input_config_file
+
         os.chdir('CoreInfra/Networking/BaseNetwork')
         print("Executing Command: " + command)
         exitVal = os.system(command)
@@ -190,27 +208,39 @@ if (input_nongf_tenancy.lower() == 'true'):
             exit()
 
         print("\n--------------Process DHCP tab------------")
-        command = 'python create_terraform_dhcp_options.py ' + input_cd3file + ' ' + input_outdir + ' ' + input_prefix
+        if (input_config_file == ''):
+            command = 'python create_terraform_dhcp_options.py ' + input_cd3file + ' ' + input_outdir + ' ' + input_prefix
+        else:
+            command = 'python create_terraform_dhcp_options.py ' + input_cd3file + ' ' + input_outdir + ' ' + input_prefix + ' --configFileName ' + input_config_file
         print("Executing Command: " + command)
         exitVal = os.system(command)
         if (exitVal == 1):
             exit()
 
         print("\n----------------Process Subnets tab for Subnets creation----------------")
-        command = 'python create_terraform_subnet.py ' + input_cd3file + ' ' + input_outdir + ' ' + input_prefix
+        if (input_config_file == ''):
+            command = 'python create_terraform_subnet.py ' + input_cd3file + ' ' + input_outdir + ' ' + input_prefix
+        else:
+            command = 'python create_terraform_subnet.py ' + input_cd3file + ' ' + input_outdir + ' ' + input_prefix + ' --configFileName ' + input_config_file
         print("Executing Command: " + command)
         exitVal = os.system(command)
         if (exitVal == 1):
             exit()
 
         print("\n----------------Process SecRulesinOCI tab for SecList creation----------------")
-        command = 'python modify_secrules_tf.py ' + input_cd3file + ' ' + input_outdir + ' '+input_cd3file
+        if (input_config_file == ''):
+            command = 'python modify_secrules_tf.py ' + input_cd3file + ' ' + input_outdir + ' '+input_cd3file
+        else:
+            command = 'python modify_secrules_tf.py ' + input_cd3file + ' ' + input_outdir + ' ' + input_cd3file + ' --configFileName ' + input_config_file
         print("Executing Command: " + command)
         exitval=os.system(command)
         if (exitval == 1):
             exit()
         print("\n----------------Process RouteRulesinOCI tab for RouteRule creation----------------")
-        command = 'python modify_routerules_tf.py ' + input_cd3file + ' ' + input_outdir
+        if (input_config_file == ''):
+            command = 'python modify_routerules_tf.py ' + input_cd3file + ' ' + input_outdir
+        else:
+            command = 'python modify_routerules_tf.py ' + input_cd3file + ' ' + input_outdir + ' --configFileName ' + input_config_file
         print("Executing Command: " + command)
         exitval=os.system(command)
         if (exitval == 1):
@@ -218,21 +248,20 @@ if (input_nongf_tenancy.lower() == 'true'):
         print("\n\nExecute tf_import_commands_network_nonGF.sh script created under each region directory to synch TF with OCI objects; option No 3\n")
 
     if ("3" in userInput):
-        all_regions=[]
-        for name in os.listdir(input_outdir):
-            if os.path.isdir(os.path.join(input_outdir, name)):
-                all_regions.append(name)
+        ct = commonTools()
+        ct.get_subscribedregions(input_config_file)
+
         print("\nterraform tfstate file should not be existing while doing fresh export/import!!\n")
         if ("linux" not in sys.platform):
             print("You are not using Linux system. Please proceed with manual execution of TF import cmds")
             print("scripts are in files: ")
-            for reg in all_regions:
+            for reg in ct.all_regions:
                 if (os.path.exists(input_outdir + "/" + reg + "/tf_import_commands_network_nonGF.sh")):
                     print(input_outdir+ "/" + reg+"/tf_import_commands_network_nonGF.sh")
                 if (os.path.exists(input_outdir + "/" + reg + "/tf_import_commands_identity_nonGF.sh")):
                     print(input_outdir + "/" + reg + "/tf_import_commands_identity_nonGF.sh")
         else:
-            for reg in all_regions:
+            for reg in ct.all_regions:
                 os.chdir(input_outdir+ "/" + reg)
                 if(os.path.exists(input_outdir+ "/" + reg + "/tf_import_commands_identity_nonGF.sh")):
                     print("Executing " + input_outdir + "/" + reg + "/tf_import_commands_identity_nonGF.sh")
@@ -244,12 +273,10 @@ if (input_nongf_tenancy.lower() == 'true'):
                     os.system("chmod +x tf_import_commands_network_nonGF.sh")
                     os.system("./tf_import_commands_network_nonGF.sh")
 
-
-    #else:
-    #    print("Invalid Choice!!")
+    if ("q" in userInput or "Q" in userInput):
+        print("Exiting...")
+        exit()
     exit()
-#if (input_format == 'cd3'):
-#    inputfile = input_cd3file
 
 print("1.  Identity")
 print("2.  Networking")
@@ -261,6 +288,7 @@ print("7.  File Storage Service")
 print("8.  Load Balancer Service")
 print("9.  Create ADW/ATP")
 print("10. Create Database")
+print("q. Press q to quit")
 print("\nSee example folder for sample input files\n")
 
 userInput = input('Enter your choice: ')
@@ -277,6 +305,8 @@ if('1' in userInput):
     print("1.  Add/Modify/Delete Compartments")
     print("2.  Add/Modify/Delete Groups")
     print("3.  Add/Modify/Delete Policies")
+    print("m.  Press m to go back to Main Menu")
+    print("q.  Press q to quit")
     choice = input("Enter your choice ")
     choice = choice.split(",")
     if ('1' in choice):
@@ -290,7 +320,10 @@ if('1' in userInput):
             inputfile = input_compartments_csv
 
         os.chdir('Identity/Compartments')
-        command = 'python create_terraform_compartments.py '+inputfile + ' ' + outdir+ ' '+prefix
+        if (input_config_file == ''):
+            command = 'python create_terraform_compartments.py ' + inputfile + ' ' + outdir + ' ' + prefix
+        else:
+            command = 'python create_terraform_compartments.py '+inputfile + ' ' + outdir+ ' '+prefix + ' --configFileName ' + input_config_file
         print("Executing Command: "+command)
         os.system(command)
         os.chdir("../..")
@@ -308,7 +341,10 @@ if('1' in userInput):
         outdir = input_outdir
 
         os.chdir('Identity/Groups')
-        command = 'python create_terraform_groups.py '+inputfile + ' ' + outdir+ ' '+prefix
+        if (input_config_file == ''):
+            command = 'python create_terraform_compartments.py ' + inputfile + ' ' + outdir + ' ' + prefix
+        else:
+            command = 'python create_terraform_groups.py '+inputfile + ' ' + outdir+ ' '+prefix + ' --configFileName ' + input_config_file
         print("Executing Command: " + command)
         os.system(command)
         os.chdir("../..")
@@ -320,12 +356,22 @@ if('1' in userInput):
             inputfile=input_cd3file
 
         os.chdir('Identity/Policies')
-        command = 'python create_terraform_policies.py '+inputfile + ' ' +  outdir+ ' '+prefix
+        if (input_config_file == ''):
+            command = 'python create_terraform_policies.py ' + inputfile + ' ' + outdir + ' ' + prefix
+        else:
+            command = 'python create_terraform_policies.py '+inputfile + ' ' +  outdir+ ' '+prefix + ' --configFileName ' + input_config_file
         print("Executing Command: " + command)
         os.system(command)
         os.chdir("../..")
         print("--------------------------------------------------------------------------")
 
+    if("m" in choice or "M" in choice):
+        cmd = "python setUpOCI.py "+args.propsfile
+        print("Going back to Main Menu...")
+        os.system(cmd)
+    if ("q" in choice or "Q" in choice):
+        print("Exiting...")
+        exit()
 if('2' in userInput):
     print("---------------------Networking----------------------------------")
     if (input_format=='cd3'):
@@ -372,11 +418,17 @@ if('2' in userInput):
     print("4.  Modify SecRules")
     print("5.  Modify RouteRules")
     print("6.  Add/Modify/Delete Network Security Groups")
+    print("m.  Press m to go back to Main Menu")
+    print("q.  Press q to quit")
+
     choice = input("Enter your choice ")
     choice = choice.split(",")
 
     if ('1' in choice):
-        command = 'python create_all_tf_objects.py ' + inputfile + ' ' + outdir + ' ' + prefix
+        if (input_config_file == ''):
+            command = 'python create_all_tf_objects.py ' + inputfile + ' ' + outdir + ' ' + prefix
+        else:
+            command = 'python create_all_tf_objects.py ' + inputfile + ' ' + outdir + ' ' + prefix + ' --configFileName ' + input_config_file
         print("Executing Command: " + command)
         os.chdir('CoreInfra/Networking/BaseNetwork')
         os.system(command)
@@ -384,7 +436,10 @@ if('2' in userInput):
         print("--------------------------------------------------------------------------")
 
     if ('2' in choice):
-        command = 'python create_all_tf_objects.py ' + inputfile + ' ' + outdir + ' ' + prefix + ' --modify_network true'
+        if (input_config_file == ''):
+            command = 'python create_all_tf_objects.py ' + inputfile + ' ' + outdir + ' ' + prefix + ' --modify_network true'
+        else:
+            command = 'python create_all_tf_objects.py ' + inputfile + ' ' + outdir + ' ' + prefix + ' --configFileName ' + input_config_file + ' --modify_network true'
         print("Executing Command: " + command)
         os.chdir('CoreInfra/Networking/BaseNetwork')
         os.system(command)
@@ -438,10 +493,11 @@ if('2' in userInput):
             inputcsv = input_add_secrules_csv
 
 
-#        if (inputConfigFile == ''):
-        command = 'python modify_secrules_tf.py ' + inputfile + ' ' + outdir + ' ' + inputcsv
- #       else:
- #           command = 'python modify_secrules_tf.py ' + inputfile + ' ' + outdir + ' ' + inputcsv + ' --configFileName ' + inputConfigFile
+        if (input_config_file == ''):
+            command = 'python modify_secrules_tf.py ' + inputfile + ' ' + outdir + ' ' + inputcsv
+        else:
+            command = 'python modify_secrules_tf.py ' + inputfile + ' ' + outdir + ' ' + inputcsv + ' --configFileName ' + input_config_file
+
         print("Executing Command: " + command)
         os.chdir('CoreInfra/Networking/BaseNetwork')
         os.system(command)
@@ -458,8 +514,10 @@ if('2' in userInput):
                 exit(1)
             inputfile = input_add_routes_csv
 
-
-        command = 'python modify_routerules_tf.py ' + inputfile + ' ' + outdir
+        if (input_config_file == ''):
+            command = 'python modify_routerules_tf.py ' + inputfile + ' ' + outdir
+        else:
+            command = 'python modify_routerules_tf.py ' + inputfile + ' ' + outdir +' --configFileName ' + input_config_file
         print("Executing Command: " + command)
         os.chdir('CoreInfra/Networking/BaseNetwork')
         os.system(command)
@@ -475,28 +533,38 @@ if('2' in userInput):
                 print("input nsgs_csv location cannot be left blank. Exiting... ")
                 exit(1)
             inputfile = input_nsgs_csv
-
-        command = 'python create_terraform_nsg.py ' + inputfile + ' ' + outdir
+        if (input_config_file == ''):
+           command = 'python create_terraform_nsg.py ' + inputfile + ' ' + outdir
+        else:
+            command = 'python create_terraform_nsg.py ' + inputfile + ' ' + outdir +' --configFileName ' + input_config_file
         print("Executing Command: " + command)
         os.chdir('CoreInfra/Networking/BaseNetwork')
         os.system(command)
         os.chdir("../../..")
         print("--------------------------------------------------------------------------")
+    if ("m" in choice or "M" in choice):
+        cmd = "python setUpOCI.py " + args.propsfile
+        print("Going back to Main Menu...")
+        os.system(cmd)
+    if ("q" in choice or "Q" in choice):
+        print("Exiting...")
+        exit()
 
 if('3' in userInput):
     print("--------------------Instances/Dedicated VM Hosts------------------------------------")
     print("1.  Create Dedicated VM Hosts")
     print("2.  Create Instances")
     print("3.  Update existing instance to be part of NSG")
+    print("m.  Press m to go back to Main Menu")
+    print("q.  Press q to quit")
 
     choice = input("Enter your choice ")
     outdir = input_outdir
     if not os.path.exists(outdir):
         os.makedirs(outdir)
 
-    os.chdir('CoreInfra/Compute')
-
     if (choice=='1'):
+        os.chdir('CoreInfra/Compute')
         print("---------------------Processing DedicatedVMHosts Tab----------------------------------")
         if (input_format == 'cd3'):
             inputfile = input_cd3file
@@ -505,13 +573,16 @@ if('3' in userInput):
                 print("input instances_csv location cannot be left blank. Exiting... ")
                 exit(1)
             inputfile=input_dedicatedhosts_csv
-
-        command = 'python create_terraform_dedicatedhosts.py '+inputfile + ' ' + outdir
+        if (input_config_file == ''):
+            command = 'python create_terraform_dedicatedhosts.py '+inputfile + ' ' + outdir
+        else:
+            command = 'python create_terraform_dedicatedhosts.py ' + inputfile + ' ' + outdir  + ' --configFileName ' + input_config_file
         print("Executing Command: " + command)
         os.system(command)
         os.chdir("../..")
         print("--------------------------------------------------------------------------")
     elif (choice=='2'):
+        os.chdir('CoreInfra/Compute')
         print("---------------------Processing Instances Tab----------------------------------")
         if (input_format == 'cd3'):
             inputfile = input_cd3file
@@ -520,14 +591,17 @@ if('3' in userInput):
                 print("input instances_csv location cannot be left blank. Exiting... ")
                 exit(1)
             inputfile = input_instances_csv
-
-        command = 'python create_terraform_instances.py ' + inputfile + ' ' + outdir
+        if (input_config_file == ''):
+            command = 'python create_terraform_instances.py ' + inputfile + ' ' + outdir
+        else:
+            command = 'python create_terraform_instances.py ' + inputfile + ' ' + outdir  + ' --configFileName ' + input_config_file
         print("Executing Command: " + command)
         os.system(command)
         os.chdir("../..")
         print("--------------------------------------------------------------------------")
 
     elif (choice=='3'):
+        os.chdir('CoreInfra/Compute')
         print("---------------------Processing Instances Tab----------------------------------")
         if (input_format == 'cd3'):
             inputfile = input_cd3file
@@ -542,6 +616,13 @@ if('3' in userInput):
         os.system(command)
         os.chdir("../..")
         print("--------------------------------------------------------------------------")
+    elif (choice == 'm' or choice=="M"):
+        cmd = "python setUpOCI.py " + args.propsfile
+        print("Going back to Main Menu...")
+        os.system(cmd)
+    elif (choice == 'q' or choice=="Q"):
+        print("Exiting...")
+        exit()
     else:
         print("Invalid Choice")
 
@@ -561,7 +642,10 @@ if('4' in userInput):
         os.makedirs(outdir)
 
     os.chdir('CoreInfra/BlockVolume')
-    command = 'python create_terraform_block_volumes.py '+inputfile + ' ' + outdir
+    if (input_config_file == ''):
+        command = 'python create_terraform_block_volumes.py '+inputfile + ' ' + outdir
+    else:
+        command = 'python create_terraform_block_volumes.py ' + inputfile + ' ' + outdir  + ' --configFileName ' + input_config_file
     print("Executing Command: " + command)
     os.system(command)
     os.chdir("../..")
@@ -573,6 +657,8 @@ if('5' in userInput):
     print("1.  Create Tags and Tag Namespaces")
     print("2.  Attach Tags to Servers")
     print("3.  Attach Tags to Block Volumes")
+    print("m.  Press m to go back to Main Menu")
+    print("q.  Press q to quit")
 
     tag_choice = input("Enter your choice ")
     tag_choice=tag_choice.split(",")
@@ -586,7 +672,10 @@ if('5' in userInput):
             os.makedirs(outdir)
 
         os.chdir('Governance/Tagging')
-        command = 'python create_namespace_tagkey.py '+inputfile + ' ' + outdir
+        if (input_config_file == ''):
+            command = 'python create_namespace_tagkey.py '+inputfile + ' ' + outdir
+        else:
+            command = 'python create_namespace_tagkey.py ' + inputfile + ' ' + outdir  + ' --configFileName ' + input_config_file
         print("Executing Command: " + command)
         os.system(command)
         os.chdir("../..")
@@ -629,7 +718,15 @@ if('5' in userInput):
         print("Executing Command: " + command)
         os.system(command)
         os.chdir("../..")
+
     print("--------------------------------------------------------------------------")
+    if ("m" in tag_choice or "M" in tag_choice):
+        cmd = "python setUpOCI.py " + args.propsfile
+        print("Going back to Main Menu...")
+        os.system(cmd)
+    if ("q" in tag_choice or "Q" in tag_choice):
+        print("Exiting...")
+        exit()
 
 if('6' in userInput):
     print("------------------------Attaching Backup Policy---------------------------")
@@ -640,6 +737,9 @@ if('6' in userInput):
 
     print("1. Attach BackupPolicy to Boot Volumes")
     print("2. Attach BackupPolicy to Block Volumes")
+    print("m.  Press m to go back to Main Menu")
+    print("q.  Press q to quit")
+
     backup_choice = input("Enter your choice ")
     backup_choice = backup_choice.split(",")
     if ('1' in backup_choice):
@@ -652,7 +752,10 @@ if('6' in userInput):
             inputfile = input_instances_csv
 
         os.chdir('CoreInfra/Compute')
-        command = 'python boot_backups_policy.py '+inputfile + ' ' + outdir
+        if (input_config_file == ''):
+            command = 'python boot_backups_policy.py '+inputfile + ' ' + outdir
+        else:
+            command = 'python boot_backups_policy.py ' + inputfile + ' ' + outdir  + ' --configFileName ' + input_config_file
         print("Executing Command: " + command)
         os.system(command)
         os.chdir("../..")
@@ -668,11 +771,21 @@ if('6' in userInput):
             inputfile = input_blocks_csv
 
         os.chdir('CoreInfra/BlockVolume')
-        command = 'python block_backups_policy.py '+inputfile + ' ' + outdir
+        if (input_config_file == ''):
+            command = 'python block_backups_policy.py '+inputfile + ' ' + outdir
+        else:
+            command = 'python block_backups_policy.py ' + inputfile + ' ' + outdir  + ' --configFileName ' + input_config_file
         print("Executing Command: " + command)
         os.system(command)
         os.chdir("../..")
         print("--------------------------------------------------------------------------")
+    if ("m" in backup_choice or "M" in backup_choice):
+        cmd = "python setUpOCI.py " + args.propsfile
+        print("Going back to Main Menu...")
+        os.system(cmd)
+    if ("q" in backup_choice or "Q" in backup_choice):
+        print("Exiting...")
+        exit()
 
 if('7' in userInput):
     print("------------------------Setting up FSS---------------------------")
@@ -689,7 +802,10 @@ if('7' in userInput):
         os.makedirs(outdir)
 
     os.chdir('CoreInfra/FileStorage')
-    command = 'python create_terraform_fss.py '+inputfile + ' ' + outdir
+    if (input_config_file == ''):
+        command = 'python create_terraform_fss.py '+inputfile + ' ' + outdir
+    else:
+        command = 'python create_terraform_fss.py ' + inputfile + ' ' + outdir  + ' --configFileName ' + input_config_file
     print("Executing Command: " + command)
     os.system(command)
     os.chdir("../..")
@@ -710,7 +826,11 @@ if('8' in userInput):
         os.makedirs(outdir)
 
     os.chdir('CoreInfra/Networking/LoadBalancers')
-    command = 'python create_terraform_lbr.py '+inputfile + ' ' + outdir
+    if (input_config_file == ''):
+        command = 'python create_terraform_lbr.py '+inputfile + ' ' + outdir
+    else:
+        command = 'python create_terraform_lbr.py ' + inputfile + ' ' + outdir  + ' --configFileName ' + input_config_file
+
     print("Executing Command: " + command)
     os.system(command)
     os.chdir("../..")
@@ -730,7 +850,10 @@ if('9' in userInput):
     if not os.path.exists(outdir):
         os.makedirs(outdir)
     os.chdir('Database')
-    command = 'python create_terraform_adw_atp.py ' + inputfile + ' ' + outdir + ' ' + prefix
+    if (input_config_file == ''):
+        command = 'python create_terraform_adw_atp.py ' + inputfile + ' ' + outdir + ' ' + prefix
+    else:
+        command = 'python create_terraform_adw_atp.py ' + inputfile + ' ' + outdir + ' ' + prefix  + ' --configFileName ' + input_config_file
     print("Executing Command: " + command)
     os.system(command)
     os.chdir("../")
@@ -740,6 +863,8 @@ if('10' in userInput):
     print("1.  Virtual Machine")
     print("2.  Bare Metal")
     print("3.  ExaData")
+    print("m.  Press m to go back to Main Menu")
+    print("q.  Press q to quit")
 
     update_choice = input("Enter your choice ")
     update_choice = update_choice.split(",")
@@ -759,7 +884,10 @@ if('10' in userInput):
         if not os.path.exists(outdir):
             os.makedirs(outdir)
         os.chdir('Database')
-        command = 'python create_terraform_database_VM.py ' + inputfile + ' ' + outdir + ' ' + prefix
+        if (input_config_file == ''):
+            command = 'python create_terraform_database_VM.py ' + inputfile + ' ' + outdir + ' ' + prefix
+        else:
+            command = 'python create_terraform_database_VM.py ' + inputfile + ' ' + outdir + ' ' + prefix  + ' --configFileName ' + input_config_file
         print("Executing Command: " + command)
         os.system(command)
         os.chdir("../")
@@ -779,7 +907,10 @@ if('10' in userInput):
         if not os.path.exists(outdir):
             os.makedirs(outdir)
         os.chdir('Database')
-        command = 'python create_terraform_database_BM.py ' + inputfile + ' ' + outdir + ' ' + prefix
+        if (input_config_file == ''):
+            command = 'python create_terraform_database_BM.py ' + inputfile + ' ' + outdir + ' ' + prefix
+        else:
+            command = 'python create_terraform_database_BM.py ' + inputfile + ' ' + outdir + ' ' + prefix  + ' --configFileName ' + input_config_file
         print("Executing Command: " + command)
         os.system(command)
         os.chdir("../")
@@ -799,8 +930,22 @@ if('10' in userInput):
         if not os.path.exists(outdir):
             os.makedirs(outdir)
         os.chdir('Database')
-        command = 'python create_terraform_database_EXA.py ' + inputfile + ' ' + outdir + ' ' + prefix
+        if (input_config_file == ''):
+            command = 'python create_terraform_database_EXA.py ' + inputfile + ' ' + outdir + ' ' + prefix
+        else:
+            command = 'python create_terraform_database_EXA.py ' + inputfile + ' ' + outdir + ' ' + prefix  + ' --configFileName ' + input_config_file
         print("Executing Command: " + command)
         os.system(command)
         os.chdir("../")
         print("--------------------------------------------------------------------------")
+    if ("m" in update_choice or "M" in update_choice):
+        cmd = "python setUpOCI.py " + args.propsfile
+        print("Going back to Main Menu...")
+        os.system(cmd)
+    if ("q" in update_choice or "Q" in update_choice):
+        print("Exiting...")
+        exit()
+
+if ("q" in userInput):
+    print("Exiting...")
+    exit()

@@ -25,7 +25,7 @@ parser = argparse.ArgumentParser(description="Create Compartments terraform file
 parser.add_argument("inputfile", help="Full Path of input file. It could be either the csv file or CD3 excel file")
 parser.add_argument("outdir", help="Output directory for creation of TF files")
 parser.add_argument("prefix", help="customer name/prefix for all file names")
-
+parser.add_argument("--configFileName", help="Config file name", required=False)
 
 if len(sys.argv)<3:
         parser.print_help()
@@ -37,10 +37,17 @@ args = parser.parse_args()
 filename=args.inputfile
 outdir=args.outdir
 prefix=args.prefix
+if args.configFileName is not None:
+    configFileName = args.configFileName
+else:
+    configFileName=""
+
+ct = commonTools()
+ct.get_subscribedregions(configFileName)
+
 outfile={}
 oname={}
 tfStr={}
-
 c=0
 
 #reversal path function
@@ -59,8 +66,6 @@ def travel(parent, keys, values, c):
 
 #If input in cd3 file
 if('.xls' in args.inputfile):
-    # Get vcnInfo object from commonTools
-    vcnInfo = parseVCNInfo(args.inputfile)
 
     #Read cd3 using pandas dataframe
     df = pd.read_excel(args.inputfile, sheet_name='Compartments',skiprows=1)
@@ -73,7 +78,7 @@ if('.xls' in args.inputfile):
     df=df.drop_duplicates(ignore_index=True)
 
     #Initialise empty TF string for each region
-    for reg in vcnInfo.all_regions:
+    for reg in ct.all_regions:
         tfStr[reg] = ''
     #Separating Compartments and ParentComparements into list
     ckeys=[]
@@ -96,8 +101,8 @@ if('.xls' in args.inputfile):
         region=region.strip().lower()
 
         #If some invalid region is specified in a row which is not part of VCN Info Tab
-        if region not in vcnInfo.all_regions:
-            print("Invalid Region; It should be one of the values mentioned in VCN Info tab")
+        if region not in ct.all_regions:
+            print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
             exit(1)
 
         #Fetch column values for each row
@@ -111,7 +116,7 @@ if('.xls' in args.inputfile):
             parent_compartment = '${var.tenancy_ocid}'
         else:
             if (ckeys.count(str(parent_compartment_name)) > 1):
-                print("Error!! Could not find Path for " + compartment_name + "Please give Full Path")
+                print("Error!! Could not find Path for " + compartment_name + " Please give Full Path")
                 exit(1)
             elif ("::" in parent_compartment_name):
                 var_c_name = parent_compartment_name + "::" + compartment_name
@@ -191,7 +196,7 @@ else:
     exit()
 
 #Write TF string to the file in respective region directory
-for reg in vcnInfo.all_regions:
+for reg in ct.all_regions:
     reg_out_dir = outdir + "/" + reg
     if not os.path.exists(reg_out_dir):
         os.makedirs(reg_out_dir)

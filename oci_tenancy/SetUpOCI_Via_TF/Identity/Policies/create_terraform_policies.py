@@ -25,6 +25,7 @@ parser = argparse.ArgumentParser(description="Create Compartments terraform file
 parser.add_argument("inputfile", help="Full Path of input file. It could be either the csv file or CD3 excel file")
 parser.add_argument("outdir", help="Output directory for creation of TF files")
 parser.add_argument("prefix", help="customer name/prefix for all file names")
+parser.add_argument("--configFileName", help="Config file name", required=False)
 
 if len(sys.argv)<3:
         parser.print_help()
@@ -36,14 +37,20 @@ args = parser.parse_args()
 filename=args.inputfile
 outdir=args.outdir
 prefix=args.prefix
+if args.configFileName is not None:
+    configFileName = args.configFileName
+else:
+    configFileName=""
+
+ct = commonTools()
+ct.get_subscribedregions(configFileName)
+
 outfile={}
 oname={}
 tempStr=''
 
 #If input is cd3 file
 if('.xls' in args.inputfile):
-    # Get vcnInfo object from commonTools
-    vcnInfo = parseVCNInfo(args.inputfile)
 
     # Read cd3 using pandas dataframe
     df = pd.read_excel(args.inputfile, sheet_name='Policies',skiprows=1)
@@ -76,8 +83,8 @@ if('.xls' in args.inputfile):
             break
 
         # If some invalid region is specified in a row which is not part of VCN Info Tab
-        if check_diff_region[0].strip().lower() not in vcnInfo.all_regions:
-            print("Invalid Region; It should be one of the values mentioned in VCN Info tab")
+        if check_diff_region[0].strip().lower() not in ct.all_regions:
+            print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
             exit(1)
 
         # Fetch column values for each row

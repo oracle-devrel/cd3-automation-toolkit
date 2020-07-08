@@ -16,7 +16,7 @@ from commonTools import *
 parser = argparse.ArgumentParser(description="Creates TF files for Block Volumes")
 parser.add_argument("file",help="Full Path to the CSV file for creating block volume or CD3 excel file. eg instance.csv or CD3-template.xlsx in example folder")
 parser.add_argument("outdir",help="directory path for output tf files ")
-
+parser.add_argument("--configFileName", help="Config file name", required=False)
 
 if len(sys.argv)<2:
         parser.print_help()
@@ -25,20 +25,19 @@ if len(sys.argv)<2:
 args = parser.parse_args()
 filename = args.file
 outdir = args.outdir
+if args.configFileName is not None:
+    configFileName = args.configFileName
+else:
+    configFileName=""
+
+ct = commonTools()
+ct.get_subscribedregions(configFileName)
 
 ADS = ["AD1", "AD2", "AD3"]
 endNames = {'<END>', '<end>','<End>'}
 
 #If input is CD3 excel file
 if('.xls' in filename):
-    #df_info = pd.read_excel(filename, sheet_name='VCN Info', skiprows=1)
-    #properties = df_info['Property']
-    #values = df_info['Value']
-
-    #all_regions = str(values[7]).strip()
-    #all_regions = all_regions.split(",")
-    #all_regions = [x.strip().lower() for x in all_regions]
-    all_regions = os.listdir(outdir)
 
     df = pd.read_excel(filename, sheet_name='BlockVols',skiprows=1)
     df = df.dropna(how='all')
@@ -48,8 +47,8 @@ if('.xls' in filename):
         region=region.strip().lower()
         if region in endNames:
             break
-        if region not in all_regions:
-            print("Invalid Region; It should be one of the values mentioned in VCN Info tab")
+        if region not in ct.all_regions:
+            print("Invalid Region; It should be one of the values tenancy is subscribed to")
             continue
 
         blockname = df.iat[i, 1]

@@ -28,7 +28,7 @@ parser.add_argument("inputfile", help="Full Path of input file. eg vcn-info.prop
 parser.add_argument("outdir", help="Output directory for creation of TF files")
 parser.add_argument("prefix", help="customer name/prefix for all file names")
 parser.add_argument("--modify_network", help="modify network: true or false", required=False)
-
+parser.add_argument("--configFileName", help="Config file name", required=False)
 
 if len(sys.argv)<3:
         parser.print_help()
@@ -42,6 +42,13 @@ if args.modify_network is not None:
     modify_network = str(args.modify_network)
 else:
     modify_network = "false"
+if args.configFileName is not None:
+    configFileName = args.configFileName
+else:
+    configFileName=""
+
+ct = commonTools()
+ct.get_subscribedregions(configFileName)
 
 
 fname = None
@@ -163,7 +170,7 @@ if('.xls' in filename):
 	df = df.dropna(how='all')
 	df = df.reset_index(drop=True)
 
-	for reg in vcnInfo.all_regions:
+	for reg in ct.all_regions:
 		tfStr[reg] = ''
 
 
@@ -179,8 +186,8 @@ if('.xls' in filename):
 			exit(1)
 
 		region=region.strip().lower()
-		if region not in vcnInfo.all_regions:
-			print("\nERROR!!! Invalid Region; It should be one of the values mentioned in VCN Info tab..Exiting!")
+		if region not in ct.all_regions:
+			print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
 			exit(1)
 
 
@@ -306,7 +313,7 @@ if fname != None:
 
 subnetdata={}
 if(modify_network=='true'):
-	for reg in vcnInfo.all_regions:
+	for reg in ct.all_regions:
 		reg_out_dir = outdir + "/" + reg
 		if not os.path.exists(reg_out_dir):
 			os.makedirs(reg_out_dir)
@@ -323,7 +330,7 @@ if(modify_network=='true'):
 		print(outfile[reg] + " containing TF for Subnets has been updated for region " + reg)
 
 elif(modify_network == 'false'):
-	for reg in vcnInfo.all_regions:
+	for reg in ct.all_regions:
 		reg_out_dir = outdir + "/" + reg
 		if not os.path.exists(reg_out_dir):
 			os.makedirs(reg_out_dir)

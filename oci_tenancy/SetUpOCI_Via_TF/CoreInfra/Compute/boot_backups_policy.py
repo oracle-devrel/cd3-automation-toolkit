@@ -17,6 +17,7 @@ date = x.strftime("%S").strip()
 parser = argparse.ArgumentParser(description="Attaches back up policy to Boot Volumes")
 parser.add_argument("file", help="Full Path of CD3 excel file. eg CD3-template.xlsx in example folder")
 parser.add_argument("outdir", help="directory path for output tf file ")
+parser.add_argument("--configFileName", help="Config file name", required=False)
 
 if len(sys.argv) == 1:
     parser.print_help()
@@ -29,6 +30,13 @@ if len(sys.argv) < 2:
 args = parser.parse_args()
 filename = args.file
 outdir = args.outdir
+if args.configFileName is not None:
+    configFileName = args.configFileName
+else:
+    configFileName=""
+
+ct = commonTools()
+ct.get_subscribedregions(configFileName)
 
 tmpstr = """
 data "oci_core_volume_backup_policies" "gold" {
@@ -60,16 +68,8 @@ endnames= ['<end>','<END>','<End>']
 
 # If the input is CD3
 if ('.xls' in filename):
-    #df_info = pd.read_excel(filename, sheet_name='VCN Info', skiprows=1)
-    #properties = df_info['Property']
-    #values = df_info['Value']
 
-    #all_regions = str(values[7]).strip()
-    #all_regions = all_regions.split(",")
-    #all_regions = [x.strip().lower() for x in all_regions]
-    all_regions = os.listdir(outdir)
-
-    for reg in all_regions:
+    for reg in ct.all_regions:
         policy_file[reg] = outdir + "/" + reg + "/attach_boot_backups_policy.tf"
         src = policy_file[reg]
         if path.exists(src):
@@ -92,7 +92,12 @@ if ('.xls' in filename):
 
             elif (j == 'Region'):
                 Region = df['Region'][i].strip().lower()
+                if (Region in commonTools.endNames):
+                    exit()
 
+                if(Region not in ct.all_regions):
+                    print("Invalid Region "+ Region)
+                    break
 
             elif (j == 'Hostname'):
                 Host_name = df['Hostname'][i]

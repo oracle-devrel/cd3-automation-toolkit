@@ -16,7 +16,7 @@ from commonTools import *
 parser = argparse.ArgumentParser(description="Updates routelist for subnet. It accepts input file which contains new rules to be added to the existing rule list of the subnet.")
 parser.add_argument("inputfile", help="Required; Full Path to input route file (either csv or CD3 excel file) containing rules to be updated; See example folder for sample format: add_routes-example.txt")
 parser.add_argument("outdir",help="directory path for output tf files ")
-
+parser.add_argument("--configFileName", help="Config file name", required=False)
 
 if len(sys.argv) == 1:
     parser.print_help()
@@ -26,6 +26,13 @@ if len(sys.argv) == 1:
 args = parser.parse_args()
 inputfile = args.inputfile
 outdir=args.outdir
+if args.configFileName is not None:
+    configFileName = args.configFileName
+else:
+    configFileName=""
+
+ct = commonTools()
+ct.get_subscribedregions(configFileName)
 
 data=""
 tfStr=''
@@ -39,13 +46,12 @@ default_rtables_done={}
 #If input is CD3 excel file
 if('.xls' in inputfile):
     vcns=parseVCNs(inputfile)
-    vcnInfo=parseVCNInfo(inputfile)
 
     df = pd.read_excel(inputfile, sheet_name='RouteRulesinOCI', skiprows=1)
     df = df.dropna(how='all')
     df = df.reset_index(drop=True)
 
-    for reg in vcnInfo.all_regions:
+    for reg in ct.all_regions:
         if(os.path.exists(outdir + "/" +reg)):
             defaultname[reg] = open(outdir + "/" + reg + "/VCNs_Default_RouteTable.tf", "w")
         default_ruleStr[reg] = ''
@@ -58,8 +64,8 @@ if('.xls' in inputfile):
     for i in df.index:
         region = df.iat[i, 0]
         region = region.strip().lower()
-        if region not in vcnInfo.all_regions:
-            print("Invalid Region; It should be one of the values mentioned in VCN Info tab")
+        if region not in ct.all_regions:
+            print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
             exit(1)
         comp_name = df.iat[i, 1]
         comp_name = comp_name.strip()
@@ -202,7 +208,7 @@ if('.xls' in inputfile):
     if (oname != None):
         oname.write(tfStr)
         oname.close()
-    for reg in vcnInfo.all_regions:
+    for reg in ct.all_regions:
         if (default_ruleStr[reg] != ''):
             default_ruleStr[reg] = default_ruleStr[reg] + """
         }"""

@@ -13,30 +13,6 @@ from commonTools import *
 
 importCommands = {}
 oci_obj_names = {}
-ct =commonTools()
-
-global ntk_compartment_ids
-ntk_compartment_ids = {}
-
-def get_network_compartment_ids(c_id,c_name):
-    compartments = idc.list_compartments(compartment_id=c_id,compartment_id_in_subtree =False)
-    for c in compartments.data:
-        if c.lifecycle_state =="ACTIVE" :
-            if(c_name!="root"):
-                name=c_name+"::"+c.name
-            else:
-                name=c.name
-            ntk_compartment_ids[name]=c.id
-            # Put individual compartment names also in the dictionary
-            if (name != c.name and c.name):
-                if ntk_compartment_ids.keys():
-                    ntk_compartment_ids[c.name] = c.id
-                else:
-                    #Remove the individual name added to dict as it is duplicate
-                    ntk_compartment_ids.pop(c.name)
-
-            get_network_compartment_ids(c.id,name)
-
 
 def print_nsgsl(region, comp_name, vcn_name, nsg, nsgsl):
     global rows
@@ -234,14 +210,15 @@ if args.configFileName is not None:
 else:
     config = oci.config.from_file()
 
-idc = IdentityClient(config)
-ntk_compartment_ids["root"] = config['tenancy']
-get_network_compartment_ids(config['tenancy'],"root")
+ct = commonTools()
+ct.get_subscribedregions(configFileName)
+ct.get_network_compartment_ids(config['tenancy'],"root",configFileName)
+
 # Check Compartments
 remove_comps = []
 if (input_compartment_names is not None):
     for x in range(0, len(input_compartment_names)):
-        if (input_compartment_names[x] not in ntk_compartment_ids.keys()):
+        if (input_compartment_names[x] not in ct.ntk_compartment_ids.keys()):
             print("Input compartment: " + input_compartment_names[x] + " doesn't exist in OCI")
             remove_comps.append(input_compartment_names[x])
 
@@ -257,19 +234,12 @@ print("\nCD3 excel file should not be opened during export process!!!")
 print(
     "Tabs- VCNs, VCN Info, Subnets, DHCP, SecRulesinOCI and RouteRulesinOCI would be overwritten during export process!!!\n")
 
-# Fetch Regions
-all_regions = []
-regionsubscriptions = idc.list_region_subscriptions(tenancy_id=config['tenancy'])
-for rs in regionsubscriptions.data:
-    for k, v in ct.region_dict.items():
-        if (rs.region_name == v):
-            all_regions.append(k)
 
-rows = ([], [], [], all_regions)
-commonTools.write_to_cd3(rows, cd3file, "VCN Info")
+#rows = ([], [], [], ct.all_regions)
+#commonTools.write_to_cd3(rows, cd3file, "VCN Info")
 
 # Create backups
-for reg in all_regions:
+for reg in ct.all_regions:
     if (os.path.exists(outdir + "/" + reg + "/tf_import_commands_network_nonGF.sh")):
         commonTools.backup_file(outdir + "/" + reg, "tf_import_commands_network_nonGF.sh")
     if (os.path.exists(outdir + "/" + reg + "/obj_names.safe")):
@@ -283,26 +253,26 @@ for reg in all_regions:
 # Fetch VCNs
 print("\nFetching VCNs...")
 rows = []
-for reg in all_regions:
+for reg in ct.all_regions:
     importCommands[reg].write("\n######### Writing import for VCNs #########\n")
     config.__setitem__("region", ct.region_dict[reg])
     vnc = VirtualNetworkClient(config)
     region = reg.capitalize()
     comp_ocid_done=[]
-    for ntk_compartment_name in ntk_compartment_ids:
-        if ntk_compartment_ids[ntk_compartment_name] not in comp_ocid_done:
+    for ntk_compartment_name in ct.ntk_compartment_ids:
+        if ct.ntk_compartment_ids[ntk_compartment_name] not in comp_ocid_done:
             if (input_compartment_names is not None and ntk_compartment_name not in input_compartment_names):
                 continue
-            comp_ocid_done.append(ntk_compartment_ids[ntk_compartment_name])
+            comp_ocid_done.append(ct.ntk_compartment_ids[ntk_compartment_name])
             vcns = oci.pagination.list_call_get_all_results(vnc.list_vcns,
-                                                            compartment_id=ntk_compartment_ids[ntk_compartment_name],
+                                                            compartment_id=ct.ntk_compartment_ids[ntk_compartment_name],
                                                             lifecycle_state="AVAILABLE")
             for vcn in vcns.data:
                 vcn_info = vcn
                 # Fetch VCN components assuming components are in same comp as VCN
                 drg_display_name = "n"
                 DRG_Attachments = oci.pagination.list_call_get_all_results(vnc.list_drg_attachments,
-                                                                           compartment_id=ntk_compartment_ids[
+                                                                           compartment_id=ct.ntk_compartment_ids[
                                                                                ntk_compartment_name], vcn_id=vcn.id)
                 for drg_attachment in DRG_Attachments.data:
                     drg_attachment_info = drg_attachment
@@ -328,7 +298,7 @@ for reg in all_regions:
 
                 igw_display_name = "n"
                 IGWs = oci.pagination.list_call_get_all_results(vnc.list_internet_gateways,
-                                                                compartment_id=ntk_compartment_ids[ntk_compartment_name],
+                                                                compartment_id=ct.ntk_compartment_ids[ntk_compartment_name],
                                                                 vcn_id=vcn.id, lifecycle_state="AVAILABLE")
                 for igw in IGWs.data:
                     igw_info = igw
@@ -339,7 +309,7 @@ for reg in all_regions:
 
                 ngw_display_name = "n"
                 NGWs = oci.pagination.list_call_get_all_results(vnc.list_nat_gateways,
-                                                                compartment_id=ntk_compartment_ids[ntk_compartment_name],
+                                                                compartment_id=ct.ntk_compartment_ids[ntk_compartment_name],
                                                                 vcn_id=vcn.id, lifecycle_state="AVAILABLE")
                 for ngw in NGWs.data:
                     ngw_info = ngw
@@ -351,7 +321,7 @@ for reg in all_regions:
 
                 sgw_display_name = "n"
                 SGWs = oci.pagination.list_call_get_all_results(vnc.list_service_gateways,
-                                                                compartment_id=ntk_compartment_ids[ntk_compartment_name],
+                                                                compartment_id=ct.ntk_compartment_ids[ntk_compartment_name],
                                                                 vcn_id=vcn.id, lifecycle_state="AVAILABLE")
                 for sgw in SGWs.data:
                     sgw_info = sgw
@@ -362,7 +332,7 @@ for reg in all_regions:
 
                 lpg_display_names = ""
                 LPGs = oci.pagination.list_call_get_all_results(vnc.list_local_peering_gateways,
-                                                                compartment_id=ntk_compartment_ids[ntk_compartment_name],
+                                                                compartment_id=ct.ntk_compartment_ids[ntk_compartment_name],
                                                                 vcn_id=vcn.id)
                 for lpg in LPGs.data:
                     if (lpg.lifecycle_state != "AVAILABLE"):
@@ -397,31 +367,31 @@ print("VCNs exported to CD3\n")
 # Fetch NSGs
 rows = []
 print("\nFetching NSGs...")
-for reg in all_regions:
+for reg in ct.all_regions:
     importCommands[reg].write("\n\n######### Writing import for NSG #########\n\n")
     config.__setitem__("region", ct.region_dict[reg])
     vnc = VirtualNetworkClient(config)
     region = reg.capitalize()
     comp_ocid_done = []
-    for ntk_compartment_name in ntk_compartment_ids:
-        if ntk_compartment_ids[ntk_compartment_name] not in comp_ocid_done:
+    for ntk_compartment_name in ct.ntk_compartment_ids:
+        if ct.ntk_compartment_ids[ntk_compartment_name] not in comp_ocid_done:
             if (input_compartment_names is not None and ntk_compartment_name not in input_compartment_names):
                 continue
-            comp_ocid_done.append(ntk_compartment_ids[ntk_compartment_name])
+            comp_ocid_done.append(ct.ntk_compartment_ids[ntk_compartment_name])
             vcns = oci.pagination.list_call_get_all_results(vnc.list_vcns,
-                                                            compartment_id=ntk_compartment_ids[ntk_compartment_name],
+                                                            compartment_id=ct.ntk_compartment_ids[ntk_compartment_name],
                                                             lifecycle_state="AVAILABLE")
 
             for vcn in vcns.data:
                 vcn_info = vnc.get_vcn(vcn.id).data
                 comp_ocid_done_again = []
-                for ntk_compartment_name_again in ntk_compartment_ids:
-                    if ntk_compartment_ids[ntk_compartment_name_again] not in comp_ocid_done_again:
+                for ntk_compartment_name_again in ct.ntk_compartment_ids:
+                    if ct.ntk_compartment_ids[ntk_compartment_name_again] not in comp_ocid_done_again:
                         if (input_compartment_names is not None and ntk_compartment_name_again not in input_compartment_names):
                             continue
-                        comp_ocid_done_again.append(ntk_compartment_ids[ntk_compartment_name_again])
+                        comp_ocid_done_again.append(ct.ntk_compartment_ids[ntk_compartment_name_again])
                         NSGs = oci.pagination.list_call_get_all_results(vnc.list_network_security_groups,
-                                                                        compartment_id=ntk_compartment_ids[
+                                                                        compartment_id=ct.ntk_compartment_ids[
                                                                             ntk_compartment_name_again], vcn_id=vcn.id,
                                                                         lifecycle_state="AVAILABLE")
                         nsglist = [""]
@@ -439,30 +409,30 @@ print("NSGs exported to CD3\n")
 # Fetch DHCP
 rows = []
 print("\nFetching DHCP...")
-for reg in all_regions:
+for reg in ct.all_regions:
     importCommands[reg].write("\n\n######### Writing import for DHCP #########\n\n")
     config.__setitem__("region", ct.region_dict[reg])
     vnc = VirtualNetworkClient(config)
     region = reg.capitalize()
     comp_ocid_done = []
-    for ntk_compartment_name in ntk_compartment_ids:
-        if ntk_compartment_ids[ntk_compartment_name] not in comp_ocid_done:
+    for ntk_compartment_name in ct.ntk_compartment_ids:
+        if ct.ntk_compartment_ids[ntk_compartment_name] not in comp_ocid_done:
             if (input_compartment_names is not None and ntk_compartment_name not in input_compartment_names):
                 continue
-            comp_ocid_done.append(ntk_compartment_ids[ntk_compartment_name])
+            comp_ocid_done.append(ct.ntk_compartment_ids[ntk_compartment_name])
             vcns = oci.pagination.list_call_get_all_results(vnc.list_vcns,
-                                                            compartment_id=ntk_compartment_ids[ntk_compartment_name],
+                                                            compartment_id=ct.ntk_compartment_ids[ntk_compartment_name],
                                                             lifecycle_state="AVAILABLE")
             for vcn in vcns.data:
                 vcn_info = vnc.get_vcn(vcn.id).data
                 comp_ocid_done_again = []
-                for ntk_compartment_name_again in ntk_compartment_ids:
-                    if ntk_compartment_ids[ntk_compartment_name_again] not in comp_ocid_done_again:
+                for ntk_compartment_name_again in ct.ntk_compartment_ids:
+                    if ct.ntk_compartment_ids[ntk_compartment_name_again] not in comp_ocid_done_again:
                         if (input_compartment_names is not None and ntk_compartment_name_again not in input_compartment_names):
                             continue
-                        comp_ocid_done_again.append(ntk_compartment_ids[ntk_compartment_name_again])
+                        comp_ocid_done_again.append(ct.ntk_compartment_ids[ntk_compartment_name_again])
                         DHCPs = oci.pagination.list_call_get_all_results(vnc.list_dhcp_options,
-                                                                         compartment_id=ntk_compartment_ids[
+                                                                         compartment_id=ct.ntk_compartment_ids[
                                                                              ntk_compartment_name_again], vcn_id=vcn.id,
                                                                          lifecycle_state="AVAILABLE")
                         for dhcp in DHCPs.data:
@@ -475,29 +445,29 @@ print("DHCP exported to CD3\n")
 # Fetch Subnets
 rows = []
 print("\nFetching Subnets...")
-for reg in all_regions:
+for reg in ct.all_regions:
     importCommands[reg].write("\n\n######### Writing import for Subnets #########\n\n")
     config.__setitem__("region", ct.region_dict[reg])
     vnc = VirtualNetworkClient(config)
     region = reg.capitalize()
     comp_ocid_done = []
-    for ntk_compartment_name in ntk_compartment_ids:
-        if ntk_compartment_ids[ntk_compartment_name] not in comp_ocid_done:
+    for ntk_compartment_name in ct.ntk_compartment_ids:
+        if ct.ntk_compartment_ids[ntk_compartment_name] not in comp_ocid_done:
             if (input_compartment_names is not None and ntk_compartment_name not in input_compartment_names):
                 continue
-            comp_ocid_done.append(ntk_compartment_ids[ntk_compartment_name])
+            comp_ocid_done.append(ct.ntk_compartment_ids[ntk_compartment_name])
             vcns = oci.pagination.list_call_get_all_results(vnc.list_vcns,
-                                                            compartment_id=ntk_compartment_ids[ntk_compartment_name],
+                                                            compartment_id=ct.ntk_compartment_ids[ntk_compartment_name],
                                                             lifecycle_state="AVAILABLE")
             for vcn in vcns.data:
                 vcn_info = vnc.get_vcn(vcn.id).data
                 comp_ocid_done_again = []
-                for ntk_compartment_name_again in ntk_compartment_ids:
-                    if ntk_compartment_ids[ntk_compartment_name_again] not in comp_ocid_done_again:
+                for ntk_compartment_name_again in ct.ntk_compartment_ids:
+                    if ct.ntk_compartment_ids[ntk_compartment_name_again] not in comp_ocid_done_again:
                         if (input_compartment_names is not None and ntk_compartment_name_again not in input_compartment_names):
                             continue
-                        comp_ocid_done_again.append(ntk_compartment_ids[ntk_compartment_name_again])
-                        Subnets = oci.pagination.list_call_get_all_results(vnc.list_subnets, compartment_id=ntk_compartment_ids[
+                        comp_ocid_done_again.append(ct.ntk_compartment_ids[ntk_compartment_name_again])
+                        Subnets = oci.pagination.list_call_get_all_results(vnc.list_subnets, compartment_id=ct.ntk_compartment_ids[
                             ntk_compartment_name_again], vcn_id=vcn.id, lifecycle_state="AVAILABLE")
                         for subnet in Subnets.data:
                             subnet_info = subnet
@@ -531,7 +501,7 @@ for reg in all_regions:
 commonTools.write_to_cd3(rows, cd3file, "Subnets")
 print("Subnets exported to CD3\n")
 
-for reg in all_regions:
+for reg in ct.all_regions:
     importCommands[reg].close()
     oci_obj_names[reg].close()
 
@@ -562,7 +532,7 @@ print("RouteRules exported to CD3\n")
 
 os.chdir("../../..")
 
-for reg in all_regions:
+for reg in ct.all_regions:
     importCommands[reg] = open(outdir + "/" + reg + "/tf_import_commands_network_nonGF.sh", "a")
     importCommands[reg].write("\n\nterraform plan")
     importCommands[reg].write("\n")

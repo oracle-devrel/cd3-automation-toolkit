@@ -31,6 +31,7 @@ parser.add_argument("inputfile",help="Full Path of input file either props file.
 parser.add_argument("outdir", help="Output directory for creation of TF files")
 parser.add_argument("prefix", help="customer name/prefix for all file names")
 parser.add_argument("--modify_network", help="modify network: true or false", required=False)
+parser.add_argument("--configFileName", help="Config file name", required=False)
 
 if len(sys.argv) < 3:
     parser.print_help()
@@ -46,7 +47,13 @@ if args.modify_network is not None:
     modify_network = str(args.modify_network)
 else:
     modify_network = "false"
+if args.configFileName is not None:
+    configFileName = args.configFileName
+else:
+    configFileName=""
 
+ct = commonTools()
+ct.get_subscribedregions(configFileName)
 
 outfile = {}
 oname = {}
@@ -318,11 +325,10 @@ def processVCN(region, vcn_name, vcn_cidr, vcn_drg, vcn_igw, vcn_ngw, vcn_sgw, v
 
 # If input is CD3 excel file
 if ('.xls' in filename):
-    # Get vcnInfo and vcns object from commonTools
-    vcnInfo = parseVCNInfo(filename)
+    # Get vcns object from commonTools
     vcns = parseVCNs(filename)
 
-    for reg in vcnInfo.all_regions:
+    for reg in ct.all_regions:
         tfStr[reg] = ''
         dhcpStr[reg] = ''
 
@@ -339,8 +345,8 @@ if ('.xls' in filename):
         if (region in commonTools.endNames):
             break
         region = region.strip().lower()
-        if region not in vcnInfo.all_regions:
-            print("\nERROR!!! Invalid Region; It should be one of the values mentioned in VCN Info tab..Exiting!")
+        if region not in ct.all_regions:
+            print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
             exit(1)
 
 
@@ -469,8 +475,9 @@ else:
     print("Invalid input file format; Acceptable formats: .xls, .xlsx, .properties")
     exit(1)
 
+
 if(modify_network=='true'):
-    for reg in vcnInfo.all_regions:
+    for reg in ct.all_regions:
         reg_out_dir = outdir + "/" + reg
 
         if not os.path.exists(reg_out_dir):
@@ -485,9 +492,9 @@ if(modify_network=='true'):
         if(os.path.exists(outfile[reg])):
             print("creating backup file " + outfile[reg] + "_backup" + date)
             shutil.copy(outfile[reg], outfile[reg] + "_backup" + date)
-        if (os.path.exists(outfile[reg])):
+        if (os.path.exists(outfile_dhcp[reg])):
             print("creating backup file " + outfile_dhcp[reg] + "_backup" + date)
-            shutil.copy(outfile[reg], outfile_dhcp[reg] + "_backup" + date)
+            shutil.copy(outfile_dhcp[reg], outfile_dhcp[reg] + "_backup" + date)
 
 
         oname[reg] = open(outfile[reg], "w")
@@ -502,7 +509,7 @@ if(modify_network=='true'):
 
 
 elif(modify_network == 'false'):
-    for reg in vcnInfo.all_regions:
+    for reg in ct.all_regions:
         reg_out_dir = outdir + "/" + reg
 
         if not os.path.exists(reg_out_dir):
