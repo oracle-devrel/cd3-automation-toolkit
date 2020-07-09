@@ -483,6 +483,8 @@ def validate_vcns(filename,comp_ids,vcnobj):#,vcn_cidrs,vcn_compartment_ids):
 
         oci_vcn_lpgs[vcn_name]=[]
         vcn_lpg_str=""
+        comp_id = str(comp_id)
+        vcn_id = str(vcn_id)
         lpg_list=oci.pagination.list_call_get_all_results(vnc.list_local_peering_gateways,compartment_id=comp_id,vcn_id=vcn_id)
         if(len(lpg_list.data)==0):
             logging.log(60,"ROW "+str(i+3)+" : LPGs for VCN "+vcn_name+ " in OCI-  None")
