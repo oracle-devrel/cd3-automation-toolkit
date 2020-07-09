@@ -119,7 +119,7 @@ if('.xls' in args.inputfile):
                 r=0
                 for check in range(len(ckeys)):
                    if(ckeys[check]==parent_compartment_name):
-                      if (pvalues[check]=="root"):
+                      if (pvalues[check].lower()=="root" or pvalues[check].lower()=="nan"):
                         r=1
                 if (r==1):
                     var_c_name = parent_compartment_name + "::" + compartment_name
