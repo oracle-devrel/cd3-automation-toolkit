@@ -127,6 +127,7 @@ if args.configFileName is not None:
     configFileName = args.configFileName
     config = oci.config.from_file(file_location=configFileName)
 else:
+    configFileName=""
     config = oci.config.from_file()
 
 ct = commonTools()
