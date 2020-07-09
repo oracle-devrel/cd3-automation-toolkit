@@ -345,7 +345,7 @@ def validate_subnets(filename,comp_ids,vcnobj):
 
 
 #Check if VCNs tab is compliant
-def validate_vcns(filename,comp_ids,vcn_ids,vcnobj):#,vcn_cidrs,vcn_compartment_ids):
+def validate_vcns(filename,comp_ids,vcnobj):#,vcn_cidrs,vcn_compartment_ids):
 
     vcn_ids = get_vcn_ids(comp_ids, config)
 
@@ -410,7 +410,7 @@ def validate_vcns(filename,comp_ids,vcn_ids,vcnobj):#,vcn_cidrs,vcn_compartment_
                 vcn_vcnname_check=True
 
 
-        # Check if the dns_label field has special characters or is duplicate
+        # Check if the dns_label field has special characters # duplicates for vcn dns_label allowed
         dns_value = str(df[str(df.columns[10])][i])
         if (dns_value.lower() == "nan"):
             vcn_dns.append("")
@@ -455,6 +455,7 @@ def validate_vcns(filename,comp_ids,vcn_ids,vcnobj):#,vcn_cidrs,vcn_compartment_
     logging.log(60,"Start LPG Peering Check---------------------------------------------")
     logging.log(60,"Current Status of LPGs in OCI for each VCN listed in VCNs tab:")
     oci_vcn_lpgs={}
+    vnc = VirtualNetworkClient(config)
 
     #Loop through each row
     for i in df.index:
@@ -465,7 +466,6 @@ def validate_vcns(filename,comp_ids,vcn_ids,vcnobj):#,vcn_cidrs,vcn_compartment_
         #Fetches current LPGs for each VCN and show its status
         comp_name = str(df[df.columns[1]][i])
         vcn_name = str(df[df.columns[2]][i])
-        vnc = VirtualNetworkClient(config)
 
         try:
             comp_id=comp_ids[comp_name]
@@ -478,7 +478,7 @@ def validate_vcns(filename,comp_ids,vcn_ids,vcnobj):#,vcn_cidrs,vcn_compartment_
             if (lpg != 'n'):
                 logging.log(60,"ROW "+str(i+3)+" : VCN " + vcn_name + " doesnot exist in OCI. VCN and its LPGs "+str(vcnobj.vcn_lpg_names[vcn_name]) +" will be created new")
             else:
-                logging.log(60,"ROW "+str(i+3)+" : VCN " + vcn_name + "doesnot exist in OCI. VCN will be created new")
+                logging.log(60,"ROW "+str(i+3)+" : VCN " + vcn_name + " doesnot exist in OCI. VCN will be created new")
             continue
 
         oci_vcn_lpgs[vcn_name]=[]
@@ -580,7 +580,7 @@ def main():
 
     logging.log(60,"============================= Verifying VCNs Tab ==========================================\n")
     print("\nProcessing VCNs Tab..")
-    vcn_check,vcn_cidr_check,vcn_peer_check = validate_vcns(filename, ct.ntk_compartment_ids, vcn_ids,vcnobj)
+    vcn_check,vcn_cidr_check,vcn_peer_check = validate_vcns(filename, ct.ntk_compartment_ids, vcnobj)
 
     logging.log(60,"============================= Verifying Subnets Tab ==========================================\n")
     print("\nProcessing Subnets Tab..")
