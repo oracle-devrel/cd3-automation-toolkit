@@ -75,7 +75,7 @@ if('.xls' in args.inputfile):
     df = df.reset_index(drop=True)
 
     #To handle duplicates during export process
-    df=df.drop_duplicates(ignore_index=True)
+    #df=df.drop_duplicates(ignore_index=True)
 
     #Initialise empty TF string for each region
     for reg in ct.all_regions:
@@ -116,8 +116,18 @@ if('.xls' in args.inputfile):
             parent_compartment = '${var.tenancy_ocid}'
         else:
             if (ckeys.count(str(parent_compartment_name)) > 1):
-                print("Error!! Could not find Path for " + compartment_name + " Please give Full Path")
-                exit(1)
+                r=0
+                for check in range(len(ckeys)):
+                   if(ckeys[check]==parent_compartment_name):
+                      if (pvalues[check]=="root"):
+                        r=1
+                if (r==1):
+                    var_c_name = parent_compartment_name + "::" + compartment_name
+                    parent_compartment = commonTools.check_tf_variable(parent_compartment_name)
+                    parent_compartment = '${oci_identity_compartment.' + parent_compartment + '.id}'
+                else:
+                  print("Error!! Could not find Path for " + compartment_name + " Please give Full Path")
+                  exit(1)
             elif ("::" in parent_compartment_name):
                 var_c_name = parent_compartment_name + "::" + compartment_name
                 parent_compartment = commonTools.check_tf_variable(parent_compartment_name)

@@ -44,7 +44,9 @@ if args.configFileName is not None:
     configFileName = args.configFileName
     config = oci.config.from_file(file_location=configFileName)
 else:
+    configFileName=""
     config = oci.config.from_file()
+
 
 ct = commonTools()
 ct.get_subscribedregions(configFileName)
@@ -82,10 +84,6 @@ importCommands[ct.home_region].write("terraform init")
 config.__setitem__("region", ct.region_dict[ct.home_region])
 idc=IdentityClient(config)
 
-#Fetch Compartments
-print("\nFetching Compartments...")
-rows=[]
-importCommands[ct.home_region].write("\n######### Writing import for Compartments #########\n")
 """if (input_compartment_names is not None):
     for input_comp_name in input_compartment_names:
         if(input_comp_name=='root'):
@@ -116,7 +114,8 @@ importCommands[ct.home_region].write("\n######### Writing import for Compartment
 
 else:
 """
-comps = oci.pagination.list_call_get_all_results(idc.list_compartments,compartment_id=config['tenancy'],compartment_id_in_subtree=True)
+
+"""comps = oci.pagination.list_call_get_all_results(idc.list_compartments,compartment_id=config['tenancy'],compartment_id_in_subtree=True)
 for comp in comps.data:
     comp_info = comp
     if (comp_info.lifecycle_state == "ACTIVE"):
@@ -144,6 +143,38 @@ for comp in comps.data:
         importCommands[ct.home_region].write("\nterraform import oci_identity_compartment." + tf_name + " " + comp_info.id)
         new_row = (ct.home_region.capitalize(), comp_display_name, comp_desc, parent_comp_name)
         rows.append(new_row)
+
+commonTools.write_to_cd3(rows,cd3file,"Compartments")
+print("Compartments exported to CD3\n")
+"""
+#Fetch Compartments
+print("\nFetching Compartments...")
+rows=[]
+importCommands[ct.home_region].write("\n######### Writing import for Compartments #########\n")
+
+for c_name, c_id in ct.ntk_compartment_ids.items():
+    c_details=idc.get_compartment(c_id).data
+
+    #write child comps info
+    if("::" in c_name):
+        c_names=c_name.rsplit("::", 1)
+        comp_display_name = c_names[1]
+        comp_parent_name = c_names[0]
+        tf_name = commonTools.check_tf_variable(c_name)
+        importCommands[ct.home_region].write("\nterraform import oci_identity_compartment." + tf_name + " " + c_id)
+        new_row = (ct.home_region.capitalize(), comp_display_name, c_details.description, comp_parent_name)
+        rows.append(new_row)
+
+    #write parent comp info(at root)
+    else:
+        parent_c_id = c_details.compartment_id
+        if(parent_c_id==ct.ntk_compartment_ids["root"]):
+            comp_display_name=c_name
+            comp_parent_name = "root"
+            tf_name = commonTools.check_tf_variable(c_name)
+            importCommands[ct.home_region].write("\nterraform import oci_identity_compartment." + tf_name + " " + c_id)
+            new_row = (ct.home_region.capitalize(), comp_display_name, c_details.description, comp_parent_name)
+            rows.append(new_row)
 
 commonTools.write_to_cd3(rows,cd3file,"Compartments")
 print("Compartments exported to CD3\n")
