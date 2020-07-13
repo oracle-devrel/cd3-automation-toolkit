@@ -78,40 +78,53 @@ if(input_format=='csv'):
         exit()
 
 if (input_nongf_tenancy.lower() == 'true'):
-    print("\nnon_gf_tenancy in properties files is set to true..Export existing Network objects and Synch with TF\n")
+    print("\nnon_gf_tenancy in properties files is set to true..Export existing OCI objects and Synch with TF state")
+    print("Process will fetch objects from OCI in the specified compartment from all regions tenancy is subscribed to\n")
     print("1. Export Identity Objects(Compartments, Groups, Policies) to CD3 and create TF Files")
     print("2. Export Network Objects(VCNs, Subnets, Security Lists, Route Tables) to CD3 and create TF Files")
     print("3. Run bash script to import objects to TF state")
     print("q. Press q to quit")
     userInput = input('Enter your choice: multiple allowed ')
-    if ("1" in userInput):
-        """input_comp = input("Enter name of Compartment as it appears in OCI (comma seperated if multiple)for which you want to export identity objects;\nLeave blank if want to export for all Compartments: ")
 
-        if (input_comp == ''):
-            if (input_config_file == ''):
-                command = "python export_identity_nonGreenField.py " + input_cd3file + ' ' + input_outdir
-            else:
-                command = "python export_identity_nonGreenField.py " + input_cd3file + ' ' + input_outdir + " --configFileName " + input_config_file
-        else:
-            if (input_config_file == ''):
-                command = "python export_identity_nonGreenField.py " + input_cd3file + ' ' + input_outdir + " --networkCompartment " + input_comp
-            else:
-                command = "python export_identity_nonGreenField.py " + input_cd3file + ' ' + input_outdir + " --networkCompartment " + input_comp + " --configFileName " + input_config_file
-            """
+    ct = commonTools()
+    ct.get_subscribedregions(input_config_file)
+
+    print("\nChecking if specified outdir contains any existing tf files...")
+    tf_list = {}
+    for reg in ct.all_regions:
+        tf_list[reg]=[]
+        list = os.listdir(input_outdir + "/" + reg)
+        for f in list:
+            if f.endswith(".tf") and f!="provider.tf" and f!="variables_"+reg+".tf":
+                tf_list[reg].append(f)
+    found=0
+    for reg in ct.all_regions:
+        if (len(tf_list[reg]) != 0):
+                print(reg + " directory under outdir is not empty; contains below tf files " + str(tf_list[reg]))
+                found=1
+    if(found==1):
+        proceed = input("Make sure you have clean outdir for fresh export. Proceed y/n: ")
+        if(proceed.lower()=='n'):
+            print("Exiting...")
+            exit()
+    else:
+        print("None Found. Proceeding to Export...")
+    print("----------------------------------------------------------")
+    if ("1" in userInput):
         if (input_config_file == ''):
             command = "python export_identity_nonGreenField.py " + input_cd3file + ' ' + input_outdir
         else:
             command = "python export_identity_nonGreenField.py " + input_cd3file + ' ' + input_outdir + " --configFileName " + input_config_file
 
-        print("\nExecuting command " + command)
+        print("Executing command " + command)
         exitval = os.system(command)
         if (exitval == 0):
             print("\nIdentity Objects export completed for CD3 excel " + input_cd3file)
         else:
             print("\nError Occured. Please try again!!!")
             exit()
-
-        print("\nFetching Compartment Info to variables files...")
+        print("----------------------------------------------------------")
+        print("Fetching Compartment Info to variables files...\n")
         if (input_config_file == ''):
             command = "python fetch_compartments_to_variablesTF.py " + input_outdir
         else:
@@ -121,7 +134,8 @@ if (input_nongf_tenancy.lower() == 'true'):
         exitVal = os.system(command)
         if (exitVal == 1):
             exit()
-        print("\nProceeding to create TF files...\n")
+        print("----------------------------------------------------------")
+        print("Proceeding to create TF files...\n")
         print("\n-----------Process Compartments tab-----------")
         if (input_config_file == ''):
             command = 'python create_terraform_compartments.py ' + input_cd3file + ' ' + input_outdir + ' ' + input_prefix
@@ -183,7 +197,7 @@ if (input_nongf_tenancy.lower() == 'true'):
         else:
             print("\nError Occured. Please try again!!!")
             exit()
-
+        print("----------------------------------------------------------")
         print("\nFetching Compartment Info to variables files...")
         if (input_config_file == ''):
             command = "python fetch_compartments_to_variablesTF.py " + input_outdir
@@ -194,6 +208,7 @@ if (input_nongf_tenancy.lower() == 'true'):
         exitVal = os.system(command)
         if (exitVal == 1):
             exit()
+        print("----------------------------------------------------------")
         print("\nProceeding to create TF files...\n")
         print("\n-----------Process VCNs tab-----------")
         if (input_config_file == ''):
@@ -248,9 +263,6 @@ if (input_nongf_tenancy.lower() == 'true'):
         print("\n\nExecute tf_import_commands_network_nonGF.sh script created under each region directory to synch TF with OCI objects; option No 3\n")
 
     if ("3" in userInput):
-        ct = commonTools()
-        ct.get_subscribedregions(input_config_file)
-
         print("\nterraform tfstate file should not be existing while doing fresh export/import!!\n")
         if ("linux" not in sys.platform):
             print("You are not using Linux system. Please proceed with manual execution of TF import cmds")
