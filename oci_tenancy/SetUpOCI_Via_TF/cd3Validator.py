@@ -99,16 +99,18 @@ def showPeering(vcnsob,oci_vcn_lpgs):
             vcnsob.vcn_lpg_names[left_vcn].pop(0)
             right_vcn_lpg=vcnsob.vcn_lpg_names[right_vcn][0]
             vcnsob.vcn_lpg_names[right_vcn].pop(0)
-            logging.log(60,left_vcn_lpg + " of VCN " + left_vcn + " will be peered with " + right_vcn_lpg + " of VCN " + right_vcn)
+            logging.log(60,left_vcn_lpg + " of VCN " + left_vcn + " peers with " + right_vcn_lpg + " of VCN " + right_vcn)
+
+            '''
             if(left_vcn in oci_vcn_lpgs.keys()):
                 if(left_vcn_lpg in oci_vcn_lpgs[left_vcn]):
-                    logging.log(60,"ERROR!!! "+left_vcn_lpg +" for vcn "+left_vcn+" already exists in OCI. Use another name")
+                    #logging.log(60,"ERROR!!! "+left_vcn_lpg +" for vcn "+left_vcn+" already exists in OCI. Use another name")
                     present=True
             if(right_vcn in oci_vcn_lpgs.keys()):
                 if(right_vcn_lpg in oci_vcn_lpgs[right_vcn]):
-                    logging.log(60,"ERROR!!! " + right_vcn_lpg + " for vcn "+right_vcn+"  already exists in OCI. Use another name")
+                    #logging.log(60,"ERROR!!! " + right_vcn_lpg + " for vcn "+right_vcn+"  already exists in OCI. Use another name")
                     present =True
-
+            '''
     return present
 
 # Checks for duplicates
@@ -218,6 +220,8 @@ def validate_subnets(filename,comp_ids,vcnobj):
     subnet_dhcp_check = False
     subnet_vcn_cidr_check = False
     subnet_dns=[]
+    subnetname_list=[]
+    vcn_list=[]
 
     logging.log(60,"Start Null or Wrong value check in each row-----------------")
 
@@ -259,15 +263,35 @@ def validate_subnets(filename,comp_ids,vcnobj):
 
         # Check if the dns_label field has special characters or is duplicate
         dns_value=str(df[str(df.columns[16])][i])
+        dns_subnetname=str(df[str(df.columns[3])][i])
+        dns_vcn=str(df[str(df.columns[2])][i])
+
         if (dns_value.lower() == "nan"):
             subnet_dns.append("")
         else:
+            if (dns_vcn not in vcn_list):
+                vcn_list.append(dns_vcn)
+                if (dns_subnetname not in subnetname_list):
+                    subnetname_list.append(dns_subnetname)
+                    if (dns_value not in subnet_dns):
+                        subnet_dns.append(dns_value)
+            else:
+                if (dns_value not in subnet_dns):
+                    subnet_dns.append(dns_value)
+                else:
+                    logging.log(60,"ROW " + str(i + 3) + " : Duplicate dns_label value " + dns_value + " for subnet " + str(dns_subnetname) + " of vcn " + str(dns_vcn))
+                    subnet_dns.append(dns_value)
+                    subnet_dnsdup_check = True
+
+            '''
             if (dns_value not in subnet_dns):
                 subnet_dns.append(dns_value)
+                subnetname_list.append(dns_subnetname)
             else:
                 logging.log(60, "ROW " + str(i + 3) + " : Duplicate dns_label value " + dns_value +" with ROW "+str(subnet_dns.index(dns_value)+3))
                 subnet_dns.append(dns_value)
                 subnet_dnsdup_check = True
+            '''
             subnet_dnswrong_check = checklabel(dns_value, count)
 
         # Check if the Service and Internet gateways are set appropriately; if not display the message;
@@ -455,7 +479,7 @@ def validate_vcns(filename,comp_ids,vcnobj):#,vcn_cidrs,vcn_compartment_ids):
     logging.log(60,"Start LPG Peering Check---------------------------------------------")
     logging.log(60,"Current Status of LPGs in OCI for each VCN listed in VCNs tab:")
     oci_vcn_lpgs={}
-    vnc = VirtualNetworkClient(config)
+
 
     #Loop through each row
     for i in df.index:
@@ -463,9 +487,11 @@ def validate_vcns(filename,comp_ids,vcnobj):#,vcn_cidrs,vcn_compartment_ids):
         if str(df[df.columns[0]][i]) in commonTools.endNames:
             break
 
+        region = str(df[df.columns[0]][i]).lower().strip()
+
         #Fetches current LPGs for each VCN and show its status
-        comp_name = str(df[df.columns[1]][i])
-        vcn_name = str(df[df.columns[2]][i])
+        comp_name = str(df[df.columns[1]][i]).strip()
+        vcn_name = str(df[df.columns[2]][i]).strip()
 
         try:
             comp_id=comp_ids[comp_name]
@@ -483,7 +509,11 @@ def validate_vcns(filename,comp_ids,vcnobj):#,vcn_cidrs,vcn_compartment_ids):
 
         oci_vcn_lpgs[vcn_name]=[]
         vcn_lpg_str=""
-        lpg_list=oci.pagination.list_call_get_all_results(vnc.list_local_peering_gateways,compartment_id=comp_id,vcn_id=vcn_id)
+
+        config.__setitem__("region", ct.region_dict[region])
+        vnc = oci.core.VirtualNetworkClient(config)
+        lpg_list=vnc.list_local_peering_gateways(compartment_id=comp_id,vcn_id=vcn_id)
+
         if(len(lpg_list.data)==0):
             logging.log(60,"ROW "+str(i+3)+" : LPGs for VCN "+vcn_name+ " in OCI-  None")
         else:
@@ -493,13 +523,17 @@ def validate_vcns(filename,comp_ids,vcnobj):#,vcn_cidrs,vcn_compartment_ids):
             logging.log(60,"ROW "+str(i+3)+" : LPGs for VCN " + vcn_name + " in OCI-  "+vcn_lpg_str)
 
 
-    logging.log(60,"Below LPG peering would be established new; Make sure that none of the LPGs listed below as part of peering\nalready exist for the VCN as listed above!")
+    logging.log(60,"####### Below is the LPG peering as per CD3 data: Please verify !! ##########")
     #Show the peering details of each lpg in Hub,Spoke or Peer VCNs
     vcn_peer_check = showPeering(vcnobj,oci_vcn_lpgs)
     if (vcn_peer_check == True):
         print("Please verify LPG Peering Status in log file !!")
-    logging.log(60,"Please verify if the LPGs status is as you desire otherwise please correct the order of LPGs!!!")
+    logging.log(60,"\nPlease go through \"CD3 Modification Procedure\" of confluence page for information on correct order of lpg entries for non-greenfield tenancies")
+    logging.log(60,"Link: https://confluence.oraclecorp.com/confluence/display/NAC/Support+for+Non-GreenField+Tenancies")
+
+
     logging.log(60,"End LPG Peering Check---------------------------------------------\n")
+
     return vcn_check,vcn_cidr_check,vcn_peer_check
 
 #Checks if the fields in DHCP tab are compliant
