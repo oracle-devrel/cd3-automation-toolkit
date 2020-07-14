@@ -86,6 +86,10 @@ if (input_nongf_tenancy.lower() == 'true'):
     print("q. Press q to quit")
     userInput = input('Enter your choice: multiple allowed ')
 
+    if ("q" in userInput or "Q" in userInput):
+        print("Exiting...")
+        exit()
+
     ct = commonTools()
     ct.get_subscribedregions(input_config_file)
 
@@ -100,10 +104,16 @@ if (input_nongf_tenancy.lower() == 'true'):
     found=0
     for reg in ct.all_regions:
         if (len(tf_list[reg]) != 0):
-                print(reg + " directory under outdir is not empty; contains below tf files " + str(tf_list[reg]))
+            if(len(tf_list[reg]) > 2):
+                print(reg + " directory under outdir is not empty; contains below tf files " + str(tf_list[reg][0])+","+str(tf_list[reg][1])+" ...")
                 found=1
+            elif(len(tf_list[reg]) ==1):
+                print(reg + " directory under outdir is not empty; contains below tf files " + str(tf_list[reg][0]))
+                found = 1
     if(found==1):
-        proceed = input("Make sure you have clean outdir for fresh export. Proceed y/n: ")
+        print("\nMake sure you have clean outdir(other than provider.tf and variables_<region>.tf) for fresh export.")
+        print("Existing tf files should not be conflicting with new tf files that are going to be generated with this process.")
+        proceed = input("Proceed y/n: ")
         if(proceed.lower()=='n'):
             print("Exiting...")
             exit()
@@ -285,9 +295,6 @@ if (input_nongf_tenancy.lower() == 'true'):
                     os.system("chmod +x tf_import_commands_network_nonGF.sh")
                     os.system("./tf_import_commands_network_nonGF.sh")
 
-    if ("q" in userInput or "Q" in userInput):
-        print("Exiting...")
-        exit()
     exit()
 
 print("1.  Identity")
