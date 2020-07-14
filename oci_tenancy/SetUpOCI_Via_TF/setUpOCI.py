@@ -111,7 +111,7 @@ if (input_nongf_tenancy.lower() == 'true'):
                 print(reg + " directory under outdir is not empty; contains below tf files " + str(tf_list[reg][0]))
                 found = 1
     if(found==1):
-        print("\nMake sure you have clean outdir(other than provider.tf and variables_<region>.tf) for fresh export.")
+        print("\nMake sure you have clean tfstate file and outdir(other than provider.tf and variables_<region>.tf) for fresh export.")
         print("Existing tf files should not be conflicting with new tf files that are going to be generated with this process.")
         proceed = input("Proceed y/n: ")
         if(proceed.lower()=='n'):
