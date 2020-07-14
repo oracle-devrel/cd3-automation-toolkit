@@ -270,6 +270,17 @@ if (input_nongf_tenancy.lower() == 'true'):
         exitval=os.system(command)
         if (exitval == 1):
             exit()
+
+        print("\n-----------Process NSGs tab-----------")
+        if (input_config_file == ''):
+            command = 'python create_terraform_nsg.py ' + input_cd3file + ' ' + input_outdir
+        else:
+            command = 'python create_terraform_nsg.py ' + input_cd3file + ' ' + input_outdir + ' --configFileName ' + input_config_file
+        print("Executing Command: " + command)
+        exitVal = os.system(command)
+        if (exitVal == 1):
+            exit()
+
         print("\n\nExecute tf_import_commands_network_nonGF.sh script created under each region directory to synch TF with OCI objects; option No 3\n")
 
     if ("3" in userInput):

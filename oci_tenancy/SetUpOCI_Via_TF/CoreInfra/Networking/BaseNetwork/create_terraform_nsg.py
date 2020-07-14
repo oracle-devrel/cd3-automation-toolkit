@@ -142,7 +142,7 @@ def NSGtemplate(nsgParser, key, value, outdir):
         "    vcn_id = \"${{oci_core_vcn.{}.id}}\"\n"
         "}}\n" \
         ).format("{}".format(commonTools.check_tf_variable(key[2])), key[2],compartment_var_name, commonTools.check_tf_variable(key[1]))
-    with open(outdir + "/{}_nsg.tf".format(key[2]), 'w') as f:
+    with open(outdir + "/{}_nsg.tf".format(commonTools.check_tf_variable(key[2])), 'w') as f:
         f.write(resource_group)
         ruleindex = 1
         for rule in value:

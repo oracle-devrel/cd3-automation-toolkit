@@ -14,7 +14,7 @@ from commonTools import *
 importCommands = {}
 oci_obj_names = {}
 
-def print_nsgsl(region, comp_name, vcn_name, nsg, nsgsl):
+def print_nsgsl(region, comp_name, vcn_name, nsg, nsgsl,i):
     global rows
 
     tf_name = commonTools.check_tf_variable(str(nsg.display_name))
@@ -72,11 +72,10 @@ def print_nsgsl(region, comp_name, vcn_name, nsg, nsgsl):
         protocol = commonTools().protocol_dict[nsgsl.protocol].lower()
     else:
         protocol="all"
-    # print (region,comp_name,vcn_name,nsg.display_name, nsgsl.direction, nsgsl.protocol, nsgsl.is_stateless, nsgsl.source_type, nsgsl.source, nsgsl.destination_type, nsgsl.destination,sportmin,sportmax,dportmin,dportmax,icmptype,icmpcode,nsgsl.description)
-    new_row = (region, comp_name, vcn_name, nsg.display_name, nsgsl.direction, protocol, nsgsl.is_stateless, nsgsourcetype,nsgsource, nsgdestinationtype, nsgdestination, sportmin, sportmax, dportmin, dportmax, icmptype, icmpcode,nsgsl.description)
 
-    #new_row = (region, comp_name, vcn_name, nsg.display_name, nsgsl.direction, protocol, nsgsl.is_stateless,nsgsl.source_type, nsgsl.source, nsgsl.destination_type, nsgsl.destination, sportmin, sportmax, dportmin,dportmax, icmptype, icmpcode, nsgsl.description)
+    new_row = (region, comp_name, vcn_name, nsg.display_name, nsgsl.direction, protocol, nsgsl.is_stateless, nsgsourcetype,nsgsource, nsgdestinationtype, nsgdestination, sportmin, sportmax, dportmin, dportmax, icmptype, icmpcode,nsgsl.description)
     rows.append(new_row)
+    importCommands[region.lower()].write("\nterraform import oci_core_network_security_group_security_rule." + tf_name + "_security_rule" + str(i) + " " + "networkSecurityGroups/" + str(nsg.id) + "/securityRules/" + str(nsgsl.id))
 
 
 #    importCommands[region.lower()].write("\nterraform import oci_core_network_security_group." + str(nsg.display_name) + " "+str(nsg.id))
@@ -86,9 +85,7 @@ def print_nsg(region, comp_name, vcn_name, nsg):
     tf_name = commonTools.check_tf_variable(str(nsg.display_name))
     new_row = (region, comp_name, vcn_name, nsg.display_name, "", "", "", "", "", "", "", "", "", "", "", "", "", "")
     rows.append(new_row)
-
-
-#  importCommands[region.lower()].write("\nterraform import oci_core_network_security_group." + str(nsg.display_name) + " "+str(nsg.id))
+    importCommands[region.lower()].write("\nterraform import oci_core_network_security_group." + tf_name + " "+str(nsg.id))
 
 def print_vcns(region, comp_name, vcn, drg_display_name, igw_display_name, ngw_display_name, sgw_display_name,
                lpg_display_names):
@@ -398,9 +395,11 @@ for reg in ct.all_regions:
                         nsglist = [""]
                         for nsg in NSGs.data:
                             NSGSLs = vnc.list_network_security_group_security_rules(nsg.id)
+                            i = 1
                             for nsgsl in NSGSLs.data:
                                 nsglist.append(nsg.id)
-                                print_nsgsl(region, ntk_compartment_name_again, vcn_info.display_name, nsg, nsgsl)
+                                print_nsgsl(region, ntk_compartment_name_again, vcn_info.display_name, nsg, nsgsl, i)
+                                i = i + 1
                             if (nsg.id not in nsglist):
                                 print_nsg(region, ntk_compartment_name_again, vcn_info.display_name, nsg)
 
