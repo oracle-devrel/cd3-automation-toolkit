@@ -81,7 +81,7 @@ if (input_nongf_tenancy.lower() == 'true'):
     print("\nnon_gf_tenancy in properties files is set to true..Export existing OCI objects and Synch with TF state")
     print("Process will fetch objects from OCI in the specified compartment from all regions tenancy is subscribed to\n")
     print("1. Export Identity Objects(Compartments, Groups, Policies) to CD3 and create TF Files")
-    print("2. Export Network Objects(VCNs, Subnets, Security Lists, Route Tables) to CD3 and create TF Files")
+    print("2. Export Network Objects(VCNs, Subnets, Security Lists, Route Tables, NSGs) to CD3 and create TF Files")
     print("3. Run bash script to import objects to TF state")
     print("q. Press q to quit")
     userInput = input('Enter your choice: multiple allowed ')
