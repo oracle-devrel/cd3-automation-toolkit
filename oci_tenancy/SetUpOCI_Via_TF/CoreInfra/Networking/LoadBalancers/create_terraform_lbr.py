@@ -274,7 +274,7 @@ for i in df.index:
 }
 """
 
-    outfile = outdir + "/" + region + "/" + lbr_name.strip() + "_lbr.tf"
+    outfile = outdir + "/" + region + "/" + lbr_tf_name + "_lbr.tf"
     if(append_listenr==0):
         oname = open(outfile, "w")
         print("Writing " + outfile)

@@ -81,10 +81,14 @@ if (input_nongf_tenancy.lower() == 'true'):
     print("\nnon_gf_tenancy in properties files is set to true..Export existing OCI objects and Synch with TF state")
     print("Process will fetch objects from OCI in the specified compartment from all regions tenancy is subscribed to\n")
     print("1. Export Identity Objects(Compartments, Groups, Policies) to CD3 and create TF Files")
-    print("2. Export Network Objects(VCNs, Subnets, Security Lists, Route Tables) to CD3 and create TF Files")
+    print("2. Export Network Objects(VCNs, Subnets, Security Lists, Route Tables, NSGs) to CD3 and create TF Files")
     print("3. Run bash script to import objects to TF state")
     print("q. Press q to quit")
     userInput = input('Enter your choice: multiple allowed ')
+
+    if ("q" in userInput or "Q" in userInput):
+        print("Exiting...")
+        exit()
 
     ct = commonTools()
     ct.get_subscribedregions(input_config_file)
@@ -100,10 +104,16 @@ if (input_nongf_tenancy.lower() == 'true'):
     found=0
     for reg in ct.all_regions:
         if (len(tf_list[reg]) != 0):
-                print(reg + " directory under outdir is not empty; contains below tf files " + str(tf_list[reg]))
+            if(len(tf_list[reg]) > 2):
+                print(reg + " directory under outdir is not empty; contains below tf files " + str(tf_list[reg][0])+","+str(tf_list[reg][1])+" ...")
                 found=1
+            elif(len(tf_list[reg]) ==1):
+                print(reg + " directory under outdir is not empty; contains below tf files " + str(tf_list[reg][0]))
+                found = 1
     if(found==1):
-        proceed = input("Make sure you have clean outdir for fresh export. Proceed y/n: ")
+        print("\nMake sure you have clean tfstate file and outdir(other than provider.tf and variables_<region>.tf) for fresh export.")
+        print("Existing tf files should not be conflicting with new tf files that are going to be generated with this process.")
+        proceed = input("Proceed y/n: ")
         if(proceed.lower()=='n'):
             print("Exiting...")
             exit()
@@ -260,6 +270,17 @@ if (input_nongf_tenancy.lower() == 'true'):
         exitval=os.system(command)
         if (exitval == 1):
             exit()
+
+        print("\n-----------Process NSGs tab-----------")
+        if (input_config_file == ''):
+            command = 'python create_terraform_nsg.py ' + input_cd3file + ' ' + input_outdir
+        else:
+            command = 'python create_terraform_nsg.py ' + input_cd3file + ' ' + input_outdir + ' --configFileName ' + input_config_file
+        print("Executing Command: " + command)
+        exitVal = os.system(command)
+        if (exitVal == 1):
+            exit()
+
         print("\n\nExecute tf_import_commands_network_nonGF.sh script created under each region directory to synch TF with OCI objects; option No 3\n")
 
     if ("3" in userInput):
@@ -285,9 +306,6 @@ if (input_nongf_tenancy.lower() == 'true'):
                     os.system("chmod +x tf_import_commands_network_nonGF.sh")
                     os.system("./tf_import_commands_network_nonGF.sh")
 
-    if ("q" in userInput or "Q" in userInput):
-        print("Exiting...")
-        exit()
     exit()
 
 print("1.  Identity")
