@@ -160,7 +160,7 @@ if (input_nongf_tenancy.lower() == 'true'):
 
         print("\n-----------Process Groups tab-----------")
         if (input_config_file == ''):
-            command = 'python create_terraform_compartments.py ' + input_cd3file + ' ' + input_outdir + ' ' + input_prefix
+            command = 'python create_terraform_groups.py ' + input_cd3file + ' ' + input_outdir + ' ' + input_prefix
         else:
             command = 'python create_terraform_groups.py ' + input_cd3file + ' ' + input_outdir + ' ' + input_prefix + ' --configFileName ' + input_config_file
 
