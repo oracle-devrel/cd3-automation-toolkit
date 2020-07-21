@@ -9,6 +9,7 @@ import sys
 import argparse
 import pandas as pd
 import os
+from jinja2 import Environment, FileSystemLoader
 sys.path.append(os.getcwd()+"/../..")
 from commonTools import *
 
@@ -51,6 +52,11 @@ outfile={}
 oname={}
 tfStr={}
 
+#Load the template file
+file_loader = FileSystemLoader('templates')
+env = Environment(loader=file_loader,keep_trailing_newline=True)
+template = env.get_template('groups-template')
+
 #If input is cd3 file
 if('.xls' in args.inputfile):
 
@@ -61,13 +67,16 @@ if('.xls' in args.inputfile):
     df = df.dropna(how='all')
     df = df.reset_index(drop=True)
 
+    # List of the column headers
+    dfcolumns = df.columns.values.tolist()
+
     # Initialise empty TF string for each region
     for reg in ct.all_regions:
         tfStr[reg] = ''
 
     # Iterate over rows
     for i in df.index:
-        region=str(df.iat[i,0])
+        region = str(df.loc[i, 'Region'])
 
         # Encountered <End>
         if (region in commonTools.endNames):
@@ -79,25 +88,58 @@ if('.xls' in args.inputfile):
             print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
             exit(1)
 
-        # Fetch column values for each row
-        group_name = str(df.iat[i, 1])
-        group_desc = str(df.iat[i, 2])
-        if(str(group_name).lower()!= "nan"):
-            region = region.strip().lower()
-            group_name = group_name.strip()
-            group_tf_name = commonTools.check_tf_variable(group_name)
+        # temporary dictionary1 and dictionary2
+        tempStr = {}
+        tempdict = {}
+
+        # Check if values are entered for mandatory fields
+        if str(df.loc[i, 'Region']).lower() == 'nan' or str(df.loc[i, 'Name']).lower() == 'nan' :
+            print(" The values for Region and Name cannot be left empty. Please enter a value and try again !!")
+            exit()
+
+        for columnname in dfcolumns:
+            # Column value
+            columnvalue = str(df[columnname][i]).strip()
+
+            if columnvalue == 'True' or columnvalue == 'TRUE' or columnvalue == 'False' or columnvalue == 'FALSE':
+                columnvalue = columnvalue.lower()
+
+            if (columnvalue.lower() == 'nan'):
+                columnvalue = ""
+
+            elif "::" in columnvalue:
+                if columnname != "Compartment Name":
+                    columnname = commonTools.check_column_headers(columnname)
+                    multivalues = columnvalue.split("::")
+                    multivalues = [str(part).strip() for part in multivalues if part]
+                    tempdict = { columnname : multivalues }
+
+            if columnname == "Compartment Name":
+                compartmentVarName = columnvalue.strip()
+                columnname = commonTools.check_column_headers(columnname)
+                compartmentVarName = commonTools.check_tf_variable(compartmentVarName)
+                columnvalue = str(compartmentVarName)
+                tempdict = {columnname: columnvalue}
+
+            if columnname in commonTools.tagColumns:
+                tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)
+
+            if columnname == 'Name':
+                columnvalue = columnvalue.strip()
+                group_tf_name = commonTools.check_tf_variable(columnvalue)
+                tempdict = {'group_tf_name': group_tf_name}
 
             # If description field is empty; put name as description
-            if (str(group_desc).lower() == "nan"):
-                group_desc = group_name
+            if columnname == 'Description':
+                if columnvalue == "" or columnvalue == 'nan':
+                    columnvalue = df.loc[i,'Name']
 
-            # Write all info to TF string
-            tfStr[region]=tfStr[region] + """
-resource "oci_identity_group" \"""" +group_tf_name + """" {
-	    compartment_id = "${var.tenancy_ocid}"
-	    description = \"""" + group_desc.strip() + """"
-	    name = \"""" + group_name.strip() + """"
-	} """
+            columnname = commonTools.check_column_headers(columnname)
+            tempStr[columnname] = str(columnvalue).strip()
+            tempStr.update(tempdict)
+
+        # Write all info to TF string
+        tfStr[region]=tfStr[region] + template.render(tempStr)
 
 #If input is a csv file
 elif('.csv' in args.inputfile):
@@ -126,13 +168,10 @@ elif('.csv' in args.inputfile):
             if(group_name!='Name' and group_name!=''):
                 if (group_desc.strip() == ''):
                     group_desc = group_name
-                tfStr[region]=tfStr[region] + """
-resource "oci_identity_group" \"""" + group_name + """" {
-	    compartment_id = "${var.tenancy_ocid}"
-	    description = \"""" + group_desc + """"
-	    name = \"""" + group_name + """"
-	} """
 
+                compartment_id = 'var.tenancy_ocid'
+
+                tfStr[region]=tfStr[region] + template.render(group_tf_name=group_name,compartment_id=compartment_id,group_desc=group_desc,group_name=group_name)
 else:
     print("Invalid input file format; Acceptable formats: .xls, .xlsx, .csv")
     exit()
