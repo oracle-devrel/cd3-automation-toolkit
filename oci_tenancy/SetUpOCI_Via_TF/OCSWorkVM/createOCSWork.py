@@ -38,7 +38,7 @@ try:
     #input_ocic_identity_domain=config.get('Default','ocic_identity_domain').strip()
     #input_ocic_compute_endpoint=config.get('Default','ocic_compute_endpoint').strip()
     input_git_username=config.get('Default','git_username').strip()
-    input_git_password=config.get('Default','git_password').strip()
+    input_git_pvt_key_file=config.get('Default','git_pvt_key_file').strip()
     input_vcn_name=config.get('Default','ocs_vcn_name').strip()
     input_vcn_cidr=config.get('Default','ocs_vcn_cidr').strip()
     input_igw_name=config.get('Default','ocs_igw_name').strip()
@@ -169,6 +169,11 @@ if(input_cleanup_script_file==''):
 if os.path.isfile(input_pvt_key_file)==False:
     print("input private key file corresponding to ssh_key1 does not exist at the specified path. Exiting....")
     exit()
+
+if os.path.isfile(input_git_pvt_key_file)==False:
+    print("input private key file for GIT does not exist at the specified path. Exiting....")
+    exit()
+
 
 if(input_vcn_name==''):
     input_vcn_name='OCS_VCN'
@@ -484,27 +489,19 @@ write_file("provider.tf",provider_data)
 
 #write git expect script to download python code
 if (input_configure_git_oci=="1"):
-    script_data="""#!/usr/bin/expect
-    set password """+input_git_password+"""
+    script_data="""
     cd /root/ocswork/git_oci
     set timeout -1
-    spawn git pull  https://"""+input_git_username.replace('@','%40')+"""@developer.em2.oraclecloud.com/developer14539-usoraocips16001/s/developer14539-usoraocips16001_oci_9900/scm/oci.git
-    expect "Password for 'https://"""+input_git_username+"""@developer.em2.oraclecloud.com':" {send "$password\\r"}
-    #sleep 60
-    expect eof
+    git pull ssh://idcs-1c7c880a11284a04a8f72d257e67de9f."""+input_git_username.replace('@','%40')+"""@nac-gc39002.developer.ocp.oraclecloud.com/nac-gc39002_oci_262/oci.git
     """
-    write_file("download_git_expect1.sh",script_data)
+    write_file("download_git_oci.sh",script_data)
 if (input_configure_git_ocictooci == "1"):
-    script_data="""#!/usr/bin/expect
-    set password """+input_git_password+"""
+    script_data="""
     cd /root/ocswork/git_ocic2oci
     set timeout -1
-    spawn git pull https://"""+input_git_username.replace('@','%40')+"""@developer.em2.oraclecloud.com/developer14539-usoraocips16001/s/developer14539-usoraocips16001_ocictooci_10075/scm/ocictooci.git
-    expect "Password for 'https://"""+input_git_username+"""@developer.em2.oraclecloud.com':" {send "$password\\r"}
-    #sleep 30
-    expect eof
+    git pull ssh://idcs-1c7c880a11284a04a8f72d257e67de9f."""+input_git_username.replace('@','%40')+"""@nac-gc39002.developer.ocp.oraclecloud.com/nac-gc39002_ocic2oci_182/ocictooci.git
     """
-    write_file("download_git_expect2.sh",script_data)
+    write_file("download_git_ocic2oci.sh",script_data)
 
 #write Panda specific files
 if (input_configure_panda=="1"):
@@ -992,8 +989,8 @@ if(input_create_vm=="1"):
     provider=str(tmp_folder / 'provider.tf')
     koala = str(tmp_folder / 'default')
     script_file = input_shell_script
-    upload_git_script1 = str(tmp_folder / 'download_git_expect1.sh')
-    upload_git_script2 = str(tmp_folder / 'download_git_expect2.sh')
+    upload_git_script1 = str(tmp_folder / 'download_git_oci.sh')
+    upload_git_script2 = str(tmp_folder / 'download_git_ocic2oci.sh')
     discover_koala_script = str(tmp_folder / 'discover_koala_expect.sh')
     upgrade_terraform_script = str(tmp_folder / 'upgrade_terraform_expect_script.sh')
     public_key_file = str(tmp_folder / 'ocs_public_keys.txt')
@@ -1020,8 +1017,6 @@ if(input_create_vm=="1"):
         ssh.exec_command(mv_variables_cmd)
         ssh.exec_command(mv_provider_cmd)
 
-
-
     if(input_configure_panda=="1"):
         print('Copying generated files for Panda Server Creation..')
         sftp.put(str(tmp_folder / 'panda.tf'), '/home/opc/panda.tf')
@@ -1036,12 +1031,15 @@ if(input_create_vm=="1"):
         print('Copying Koala files..')
         sftp.put(koala, '/home/opc/default')
         sftp.put(discover_koala_script, '/home/opc/discover_koala_expect.sh')
+    if (input_configure_git_oci == "1" or input_configure_git_ocictooci == "1"):
+        print('Copying private key file for GIT..')
+        sftp.put(input_git_pvt_key_file,'/home/opc/id_rsa')
     if(input_configure_git_oci=="1"):
         print('Copying OCI GIT download script file..')
-        sftp.put(upload_git_script1, '/home/opc/download_git_expect1.sh')
+        sftp.put(upload_git_script1, '/home/opc/download_git_oci.sh')
     if (input_configure_git_ocictooci == "1"):
         print('Copying OCICTOOCI GIT download script file..')
-        sftp.put(upload_git_script2, '/home/opc/download_git_expect2.sh')
+        sftp.put(upload_git_script2, '/home/opc/download_git_ocic2oci.sh')
 
     print('Copying shell script file to setup the VM..')
 
