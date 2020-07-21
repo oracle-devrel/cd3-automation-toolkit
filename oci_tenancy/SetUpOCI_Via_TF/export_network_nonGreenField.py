@@ -402,6 +402,10 @@ for reg in ct.all_regions:
                                 i = i + 1
                             if (nsg.id not in nsglist):
                                 print_nsg(region, ntk_compartment_name_again, vcn_info.display_name, nsg)
+                            else:
+                                tf_name = commonTools.check_tf_variable(str(nsg.display_name))
+                                importCommands[region.lower()].write("\nterraform import oci_core_network_security_group." + tf_name + " " + str(nsg.id))
+
 
 commonTools.write_to_cd3(rows, cd3file, "NSGs")
 print("NSGs exported to CD3\n")

@@ -156,8 +156,10 @@ SetUPOCI_Via_TF Tag v6.1
    OCI_Regions file. Similarly Protocol and its number mapping has been defined in OCI_Protocols file which will be used by Security
    Rules as well as NSG Rules.
 3. Automation Toolkit will now support duplicate compartment names like OCI does. Please refer to CD3-template.xlsx under example folder for sample data.
-4. There is a change in ocswork.properties file. Extra properties specific to OCItoOCI project have been removed. Also Regions property
-   has been removed and now tenancy's subscribed regions will be fetched using API and terraform directories would be created based on that.
+4. There is a change in ocswork.properties file. Extra properties specific to OCItoOCI project have been removed.
+4a. Also Regions property has been removed and now tenancy's subscribed regions will be fetched using API and terraform directories would be created based on that.
+4b. Regions property has been removed from VCN Info tab of CD3 as well.
 5. CD3 Validator has been introduced. This will validate Networking tabs as of now. It will check for any Null Values, CIDR overlaps etc.
-6. Support for Flex shapes for Instances
+6. Support for Flex shapes for Instances. Please refer to CD3-template.xlsx under example folder for sample input data.
 7. Support for Multiple Listeners for LBRs
+8. GIT repo has been moved to OCI. SSH key needs to be setup for access to the repo. Please see the instructions in confluence page.
