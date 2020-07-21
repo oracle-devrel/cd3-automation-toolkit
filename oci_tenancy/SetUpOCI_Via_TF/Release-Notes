@@ -162,4 +162,5 @@ SetUPOCI_Via_TF Tag v6.1
 5. CD3 Validator has been introduced. This will validate Networking tabs as of now. It will check for any Null Values, CIDR overlaps etc.
 6. Support for Flex shapes for Instances. Please refer to CD3-template.xlsx under example folder for sample input data.
 7. Support for Multiple Listeners for LBRs
-8. GIT repo has been moved to OCI. SSH key needs to be setup for access to the repo. Please see the instructions in confluence page.
+8. GIT repo has been moved to OCI. SSH key needs to be setup for access to the repo. Please see the instructions in confluence page:
+   https://confluence.oraclecorp.com/confluence/display/NAC/Guide+to+access+repository+in+DevCS
