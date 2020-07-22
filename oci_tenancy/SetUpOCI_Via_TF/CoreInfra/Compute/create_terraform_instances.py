@@ -163,7 +163,7 @@ if('.xls' in filename):
                 if (str(df[i][j]) == 'nan'):
                     replaceAllplaceholders(outdir + '/' + df['Region'][j].strip().lower()+ '/'+df['Hostname'][j] + '.tf', '##' + i + '##', "")
                     continue
-                if (str(df[i][j]) == 'True' or str(df[i][j]) == 'False'):
+                if (str(df[i][j]).lower() == 'true' or str(df[i][j]).lower() == 'false'):
                     replaceAllplaceholders(outdir + '/' + df['Region'][j].strip().lower()+ '/'+df['Hostname'][j] + '.tf', '##' + i + '##', str(df[i][j]).lower())
                     continue
                 if (str(df[i][j]) == '0.0'):
