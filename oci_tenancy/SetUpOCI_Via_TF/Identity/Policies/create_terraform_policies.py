@@ -81,14 +81,13 @@ if ('.xls' in args.inputfile):
 
     # Regions listed in Policies tab should be same for all rows as policies can only be created in home region
     if (len(check_diff_region) > 1):
-        print(
-            "Policies can be created only in Home Region; You have specified different regions for different policies...Exiting...")
+        print("Policies can be created only in Home Region; You have specified different regions for different policies...Exiting...")
         exit(1)
 
     # Iterate over rows
     for i in df.index:
 
-        region = str(df.loc[i, "Region"])
+        region = str(df.loc[i, "Region"]).strip()
 
         # Encountered <End>
         if (region in commonTools.endNames):

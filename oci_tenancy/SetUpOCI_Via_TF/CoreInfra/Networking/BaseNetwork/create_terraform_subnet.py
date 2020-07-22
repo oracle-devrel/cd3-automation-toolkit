@@ -20,6 +20,7 @@ import shutil
 import datetime
 import os
 sys.path.append(os.getcwd()+"/../../..")
+from jinja2 import Environment, FileSystemLoader
 from commonTools import *
 
 parser = argparse.ArgumentParser(description="Takes in a list of subnet names with format \"name,subnet CIDR,Availability Domain, Public|Private subnet,dhcp-options\". "
@@ -55,23 +56,33 @@ fname = None
 outfile={}
 oname={}
 tfStr={}
-
 ADS = ["AD1", "AD2", "AD3"]
 
-def processSubnet(region,vcn_name,name,rt_name,seclist_names,subnet,AD,dnslabel,pubpvt,compartment_var_name,add_defaul_seclist):
+#Load the template file
+file_loader = FileSystemLoader('templates')
+env = Environment(loader=file_loader,keep_trailing_newline=True)
+template = env.get_template('subnet-template')
+
+def processSubnet(tempStr):
+
+	region = tempStr['region'].lower().strip()
+	subnet = tempStr['subnet_cidr']
+	AD = tempStr['availability_domain'].strip()
 	if (AD.strip().lower() != 'regional'):
 		AD = AD.strip().upper()
 		ad = ADS.index(AD)
 		ad_name_int = ad + 1
 		ad_name = str(ad_name_int)
-		adString = """availability_domain = "${data.oci_identity_availability_domains.ADs.availability_domains.""" + str(
-			ad) + """.name}" """
+		adString = "data.oci_identity_availability_domains.ADs.availability_domains.""" + str(ad) + """.name """
 	else:
 		ad_name = ""
-		adString = """availability_domain = "" """
+		adString = ""
 
-	vcn_tf_name = commonTools.check_tf_variable(vcn_name)
+	tempStr['adString'] = adString
 
+	vcn_tf_name = commonTools.check_tf_variable(tempStr['vcn_name'].strip())
+	name = tempStr['subnet_name']
+	tempStr['vcn_tf_name'] = vcn_tf_name
 	if (vcnInfo.subnet_name_attach_cidr == 'y'):
 		if (str(ad_name) != ''):
 			name1 = name + "-ad" + str(ad_name)
@@ -87,21 +98,27 @@ def processSubnet(region,vcn_name,name,rt_name,seclist_names,subnet,AD,dnslabel,
 		display_name = name
 		rt_display_name=rt_name
 
+	tempStr['display_name'] = display_name
+	tempStr['rt_display_name'] = rt_display_name
+
+
 	sl_tf_names=[]
+	seclist_names = tempStr['sl_names']
 	if (vcnInfo.subnet_name_attach_cidr == 'y'):
 		for sl_name in seclist_names:
-			sl_name=sl_name.strip()
+			sl_name=str(sl_name).strip()
 			if (str(ad_name) != ''):
-				namesl = sl_name + "-ad" + str(ad_name)
+				namesl = str(sl_name) + "-ad" + str(ad_name)
 			else:
-				namesl = sl_name
+				namesl = str(sl_name)
 			sl_display_name = namesl + "-" + subnet
 			sl_tf_name=vcn_name+"_"+sl_display_name
+
 			sl_tf_names.append(commonTools.check_tf_variable(sl_tf_name))
 	else:
 		for sl_name in seclist_names:
-			sl_name=sl_name.strip()
-			sl_display_name=sl_name
+			sl_name=str(sl_name).strip()
+			sl_display_name=str(sl_name)
 			sl_tf_name = vcn_name + "_" + sl_display_name
 			sl_tf_names.append(commonTools.check_tf_variable(sl_tf_name))
 
@@ -110,56 +127,45 @@ def processSubnet(region,vcn_name,name,rt_name,seclist_names,subnet,AD,dnslabel,
 	rt_tf_name = vcn_name+"_"+rt_display_name
 	rt_tf_name = commonTools.check_tf_variable(rt_tf_name)
 
-	data = """
-    resource "oci_core_subnet"  \"""" + subnet_tf_name + """" {
-    	compartment_id = "${var.""" + compartment_var_name + """}" 
-    	""" + adString + """			
-    	vcn_id = "${oci_core_vcn.""" + str(vcn_tf_name) + """.id}" """
-
-	if(rt_name!="n"):
-		data = data + """
-		route_table_id   = "${oci_core_route_table.""" + rt_tf_name + """.id}" """
+	tempStr['subnet_tf_name'] = subnet_tf_name
+	tempStr['rt_tf_name'] = rt_tf_name
 
 	seclist_ids=""
+	add_default_seclist =  tempStr['add_default_seclist'].strip()
+
 	#Attach Default Security List
-	if add_defaul_seclist.strip() == "y":
-		seclist_ids =  """\"${oci_core_vcn.""" + vcn_tf_name + """.default_security_list_id}","""
+	if add_default_seclist.strip() == "y":
+		seclist_ids =  """oci_core_vcn.""" + vcn_tf_name + """.default_security_list_id,"""
+		tempStr['seclist_ids'] = seclist_ids
+
+
 	#Attach other security list IDs
-	if(seclist_names[0]!="n"):
+	if( seclist_names  !="n"):
 		index=0
 		for seclist_id in sl_tf_names:
-			if(index==len(sl_tf_names)):
-				seclist_ids = seclist_ids + """\"${oci_core_security_list.""" +  seclist_id  + """.id}" """
+			if(index==len(sl_tf_names)-1):
+				seclist_ids = seclist_ids + """oci_core_security_list.""" +  seclist_id  + """.id """
 			else:
-				seclist_ids = seclist_ids + """\"${oci_core_security_list.""" +  seclist_id + """.id}", """
+				seclist_ids = seclist_ids + """oci_core_security_list.""" +  seclist_id + """.id, """
 			index=index+1
 
-		data = data + """
-			security_list_ids   = [ """ + seclist_ids + """ ]"""
+			tempStr['seclist_ids'] =  seclist_ids
 
-	if (str(dhcp).lower() != 'nan' and str(dhcp)!=''):
-		data = data + """
-    	dhcp_options_id     = "${oci_core_dhcp_options.""" + str(dhcp).strip() + """.id}" """
+	if (tempStr['dhcp'].lower() != 'nan' and tempStr['dhcp'] != ''):
+		dhcp_options_id = "oci_core_dhcp_options." + tempStr['dhcp'].strip() + ".id "
 	else:
-		data = data + """
-		dhcp_options_id = "${oci_core_vcn.""" + vcn_tf_name + """.default_dhcp_options_id}" """
-	data = data + """
-    	display_name               = \"""" + display_name + """"
-    	cidr_block                 = \"""" + subnet + """\" """
-	if pubpvt.lower() == "public":
-		data = data + """
-    	prohibit_public_ip_on_vnic = false """
+		dhcp_options_id = "oci_core_vcn."+ vcn_tf_name + ".default_dhcp_options_id"
+	tempStr['dhcp_options_id'] = dhcp_options_id
+
+	if tempStr['type'] == 'public':
+		prohibit_public_ip_on_vnic = "false"
 	else:
-		data = data + """
-    	prohibit_public_ip_on_vnic = true """
-	if(dnslabel.lower()!="n"):
-		data = data + """
-    	dns_label           =  \"""" + dnslabel + """"
-    """
-	data=data+"""
-    }
-    """
-	tfStr[region]=tfStr[region]+data
+		prohibit_public_ip_on_vnic = "true"
+	tempStr['prohibit_public_ip_on_vnic'] = prohibit_public_ip_on_vnic
+
+	tfStr[region]= tfStr[region] +"\n"+ template.render(tempStr)
+
+
 
 #If input is CD3 excel file
 if('.xls' in filename):
@@ -173,14 +179,21 @@ if('.xls' in filename):
 	for reg in ct.all_regions:
 		tfStr[reg] = ''
 
+	# temporary dictionary1, dictionary2 and list
+	tempStr = {}
+	tempdict = {}
+
+	# List of the column headers
+	dfcolumns = df.columns.values.tolist()
 
 	for i in df.index:
-		region=df.iat[i,0]
+		region=str(df.loc[i,'Region'])
 		if (region in commonTools.endNames):
 			break
 
-		compartment_var_name = df.iat[i, 1]
-		vcn_name=str(df['vcn_name'][i]).strip()
+		compartment_var_name = df.loc[i, 'Compartment Name']
+		vcn_name=str(df['VCN Name'][i]).strip()
+
 		if (vcn_name.strip() not in vcns.vcn_names):
 			print("\nERROR!!! " + vcn_name + " specified in Subnets tab has not been declared in VCNs tab..Exiting!")
 			exit(1)
@@ -190,61 +203,107 @@ if('.xls' in filename):
 			print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
 			exit(1)
 
+		if (str(df.loc[i, 'Region']).lower() == 'nan' or str(df.loc[i, 'Compartment Name']).lower() == 'nan' or str(
+				df.loc[i, 'VCN Name']).lower() == 'nan' or str(df.loc[i, 'Subnet Name']).lower() == 'nan' or str(
+				df.loc[i, 'Subnet CIDR']).lower() == 'nan' or str(df.loc[i, 'Seclist Names']).lower() == 'nan' or str(
+				df.loc[i, 'Configure IGW Route (y|n)']).lower() == 'nan' or str(df.loc[i, 'Add Default Seclist']).lower() == 'nan' or str(df.loc[i,'Availability Domain\n(AD1|AD2|AD3|Regional)']).lower =='nan' or str(
+				df.loc[i, 'Configure NGW Route\n(y|n)']).lower() == 'nan' or str(df.loc[i, 'Configure SGW Route\n(n|object_storage|all_services)']).lower() == 'nan' or str(df.loc[i, 'Configure OnPrem Route (y|n)']).lower() == 'nan' or str(
+				df.loc[i, 'Type(private|public)']).lower() == 'nan' or str(df.loc[i,'Configure VCNPeering\nRoute (y|n)']).lower() == 'nan'):
+			print("Column Values(except dns_label) or Rows cannot be left empty in VCNs sheet in CD3..exiting...")
+			exit(1)
+		for columnname in dfcolumns:
+			# Column value
+			columnvalue = str(df[columnname][i]).strip()
 
-		#Get subnet data
-		name = df.iat[i, 3]
-		name=name.strip()
-		subnet = df.iat[i, 4]
-		subnet=subnet.strip()
-		AD = df.iat[i, 5]
-		AD=AD.strip()
-		pubpvt = df.iat[i, 6]
-		pubpvt=pubpvt.strip()
-		dhcp=df.iat[i,7]
-		rt_name=df.iat[i,8]
-		seclist_names=df.iat[i,9]
-		add_default_seclist = df.iat[i, 10]
+			if columnvalue == 'True' or columnvalue == 'TRUE' or columnvalue == 'False' or columnvalue == 'FALSE':
+				columnvalue = columnvalue.lower()
 
-		if(str(add_default_seclist).lower()=='nan'):
-			add_default_seclist='y'
+			if (columnvalue.lower() == 'nan'):
+				columnvalue = ""
 
-		if(str(dhcp).lower() !='nan'):
-			dhcp = vcn_name + "_" + dhcp
-			dhcp = commonTools.check_tf_variable(dhcp)
+			if "::" in columnvalue:
+				if columnname != 'Compartment Name':
+					columnname = commonTools.check_column_headers(columnname)
+					multivalues = columnvalue.split("::")
+					multivalues = [str(part).strip() for part in multivalues if part]
+					tempdict = {columnname: multivalues}
 
-		compartment_var_name=compartment_var_name.strip()
-		# Added to check if compartment name is compatible with TF variable name syntax
-		compartment_var_name = commonTools.check_tf_variable(compartment_var_name)
 
-		dnslabel = df.iat[i, 16]
-		# check if subnet_dns_label is not given by user in input use subnet name
-		if (str(dnslabel).lower() == 'nan'):
-			regex = re.compile('[^a-zA-Z0-9]')
-			subnet_dns = regex.sub('', name)
-			# truncate all digits from start of dns_label
-			index = 0
-			for c in subnet_dns:
-				if c.isdigit() == True:
-					index = index + 1
-					continue
+			if columnname in commonTools.tagColumns:
+				tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)
+
+
+			if columnname == 'Compartment Name':
+				compartment_var_name = columnvalue
+				compartment_var_name = commonTools.check_tf_variable(compartment_var_name)
+				tempdict = {'compartment_tf_name': compartment_var_name}
+
+
+			if columnname == 'Availability Domain\n(AD1|AD2|AD3|Regional)':
+				columnname = 'availability_domain'
+				tempdict = {'availability_domain': columnvalue}
+
+
+			if columnname == 'Add Default Seclist':
+				if columnvalue.lower() == 'nan':
+					columnvalue = 'y'
+
+			if columnname == 'DHCP Option Name\n(Leave blank if default dhcp option needs to be used)':
+				columnname = 'dhcp_option_name'
+				if str(columnvalue).strip().lower() != '':
+					dhcp = df.loc[i,'VCN Name'].strip() +"_" + columnvalue
+					dhcp = commonTools.check_tf_variable(dhcp)
+					tempdict = {'dhcp': dhcp,'dhcp_option_name' : columnvalue}
+
+			if columnname == 'DNS Label':
+				dnslabel = columnvalue.strip()
+				# check if subnet_dns_label is not given by user in input use subnet name
+				if (str(dnslabel).lower() == 'nan' or str(dnslabel).lower() == ''):
+					regex = re.compile('[^a-zA-Z0-9]')
+					subnet_dns = regex.sub('', df.loc[i,'Subnet Name'])
+					# truncate all digits from start of dns_label
+					index = 0
+					for c in subnet_dns:
+						if c.isdigit() == True:
+							index = index + 1
+							continue
+						else:
+							break
+					subnet_dns = subnet_dns[index:]
+					dnslabel = (subnet_dns[:15]) if len(subnet_dns) > 15 else subnet_dns
+					tempdict = {'dns_label': dnslabel, 'subnet_dns': subnet_dns}
 				else:
-					break
-			subnet_dns = subnet_dns[index:]
-			dnslabel = (subnet_dns[:15]) if len(subnet_dns) > 15 else subnet_dns
+					tempdict = {'dns_label': dnslabel}
 
-		if (str(rt_name).lower() != 'nan'):
-			rt_name = rt_name.strip()
-		else:
-			# route table name not provided; use subnet name as route table name
-			rt_name = name
-		sl_names = []
-		if (str(seclist_names).lower() != 'nan'):
-			sl_names = seclist_names.split(",")
-		else:
-			# seclist name not provided; use subnet name as seclist name
-			sl_names.append(name)
+			if columnname == 'Route Table Name':
+				rt_name = columnvalue
+				if (str(rt_name).lower() == 'nan' or str(rt_name).lower() == ''):
+					# route table name not provided; use subnet name as route table name
+					rt_name = str(df.loc[i,'Subnet Name']).strip()
+					tempdict = {'rt_name': rt_name}
+				else:
+					rt_name = columnvalue.strip()
+					tempdict = {'rt_name': rt_name}
+				tempStr.update(tempdict)
 
-		processSubnet(region,vcn_name,name,rt_name,sl_names,subnet,AD,dnslabel,pubpvt,compartment_var_name,add_default_seclist)
+			sl_names = []
+			if columnname == 'Seclist Names':
+				if columnvalue.lower() != 'nan':
+					sl_names = columnvalue.split(",")
+					tempdict = {'sl_names': sl_names}
+				else:
+					# seclist name not provided; use subnet name as seclist name
+					sl_names.append(df.loc['Subnet_Name'][i].strip())
+					tempdict= {'sl_names' : sl_names }
+
+			if columnname == 'Type(private|public)':
+				columnname = 'type'
+				columnvalue = columnvalue.lower()
+
+			columnname = commonTools.check_column_headers(columnname)
+			tempStr[columnname] = str(columnvalue).strip()
+			tempStr.update(tempdict)
+		processSubnet(tempStr)
 
 # If CD3 excel file is not given as input
 elif('.properties' in filename):
@@ -312,6 +371,8 @@ if fname != None:
 	fname.close()
 
 subnetdata={}
+
+
 if(modify_network=='true'):
 	for reg in ct.all_regions:
 		reg_out_dir = outdir + "/" + reg

@@ -1,26 +1,26 @@
 #!/usr/bin/python3
-#Author: Murali Nagulakonda
-#Oracle Consulting
-#murali.nagulakonda.venkata@oracle.com
+# Author: Murali Nagulakonda
+# Oracle Consulting
+# murali.nagulakonda.venkata@oracle.com
 
 
 import sys
 import argparse
 import pandas as pd
 import os
-sys.path.append(os.getcwd()+"/../..")
+from jinja2 import Environment, FileSystemLoader
+
+sys.path.append(os.getcwd() + "/../..")
 from commonTools import *
-
-
 
 parser = argparse.ArgumentParser(description="Creates TF files for Block Volumes")
 parser.add_argument("file",help="Full Path to the CSV file for creating block volume or CD3 excel file. eg instance.csv or CD3-template.xlsx in example folder")
-parser.add_argument("outdir",help="directory path for output tf files ")
+parser.add_argument("outdir", help="directory path for output tf files ")
 parser.add_argument("--configFileName", help="Config file name", required=False)
 
-if len(sys.argv)<2:
-        parser.print_help()
-        sys.exit(1)
+if len(sys.argv) < 2:
+    parser.print_help()
+    sys.exit(1)
 
 args = parser.parse_args()
 filename = args.file
@@ -34,77 +34,118 @@ ct = commonTools()
 ct.get_subscribedregions(configFileName)
 
 ADS = ["AD1", "AD2", "AD3"]
-endNames = {'<END>', '<end>','<End>'}
+endNames = {'<END>', '<end>', '<End>'}
 
-#If input is CD3 excel file
-if('.xls' in filename):
+#Load the template file
+file_loader = FileSystemLoader('templates')
+env = Environment(loader=file_loader,keep_trailing_newline=True)
+template = env.get_template('block-volume-template')
 
+# If input is CD3 excel file
+if ('.xls' in filename):
     df = pd.read_excel(filename, sheet_name='BlockVols',skiprows=1)
     df = df.dropna(how='all')
     df = df.reset_index(drop=True)
+
+    # List of the column headers
+    dfcolumns = df.columns.values.tolist()
+
     for i in df.index:
-        region=df.iat[i,0]
-        region=region.strip().lower()
+
+        region = str(df.loc[i,"Region"])
+        region = region.strip().lower()
         if region in endNames:
             break
         if region not in ct.all_regions:
-            print("Invalid Region; It should be one of the values tenancy is subscribed to")
-            continue
+            print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
+            exit()
 
-        blockname = df.iat[i, 1]
-        size = df.iat[i, 2]
-        s=int(size)
-        size=str(s)
-        AD = df.iat[i, 3]
-        AD=AD.upper()
-        attacheToInstanceName = df.iat[i, 4]
-        attachType = df.iat[i, 5]
-        compartmentVarName = df.iat[i, 6]
-        ad = ADS.index(AD)
-        display_name = blockname
+        #temporary dictionary1 and dictionary2
+        tempStr = {}
+        tempdict = {}
 
-        blockname=blockname.strip()
-        blockname_tf=commonTools.check_tf_variable(blockname)
-        compartmentVarName=compartmentVarName.strip()
-        compartmentVarName = commonTools.check_tf_variable(compartmentVarName)
+        # Check if values are entered for mandatory fields - to create volumes
+        if str(df.loc[i,'Region']).lower() == 'nan' or str(df.loc[i, 'Block Name']).lower() == 'nan' or str(df.loc[i,'Compartment Name']).lower()  == 'nan' or str(df.loc[i,'Availability Domain\n(AD1|AD2|AD3)']).lower()  == 'nan':
+            print( " The values for Region, Block Name, Compartment Name and Availability Domain cannot be left empty. Please enter a value and try again !!")
+            exit()
 
-        tempStr = """resource "oci_core_volume"  \"""" + blockname_tf + """"  {
-        #Required
-        availability_domain = "${data.oci_identity_availability_domains.ADs.availability_domains.""" + str(ad) + """.name}"
-        compartment_id = "${var.""" + compartmentVarName + """}"
+        # Check if values are entered for mandatory fields - to attach volumes to instances
+        if str(df.loc[i,'Attached To Instance']).lower()  != 'nan' and str(df.loc[i,'Attach Type\n(iscsi|paravirtualized)']).lower()  == 'nan' :
+            print("Attach Type cannot be left empty if you want to attach  the volume to instance "+df.loc[i,'Attached  To Instance']+". Please enter a value and try again !!")
+            exit()
 
-        #Optional
-        display_name = \"""" + blockname + """"
-        size_in_gbs = \"""" + size + """"
-        ## Defined Tag Info ##
-        }
+        blockname_tf = commonTools.check_tf_variable(df.loc[i, 'Block Name'])
+        tempStr['block_tf_name'] = blockname_tf
 
-resource "oci_core_volume_attachment" \"""" + blockname_tf + """_volume_attachment" {
-        #Required
-        instance_id = "${oci_core_instance.""" + attacheToInstanceName + """.id}"
-        attachment_type = \"""" + attachType + """"
-        volume_id = "${oci_core_volume.""" + blockname_tf + """.id}"
+        # Fetch data; loop through columns
+        for columnname in dfcolumns:
+            # Column value
+            columnvalue = str(df.loc[i, columnname]).strip()
 
-        }
-        
-        """
-        outfile = outdir+"/"+region+"/"+blockname+".tf"
+            if columnvalue == 'True' or columnvalue == 'TRUE' or columnvalue == 'False' or columnvalue == 'FALSE':
+                columnvalue = columnvalue.lower()
+
+            #replace 'nan' with ""
+            if columnvalue.lower() == 'nan':
+                columnvalue= ""
+
+            elif "::" in columnvalue:
+                if columnname != "Compartment Name":
+                    columnname = commonTools.check_column_headers(columnname)
+                    multivalues = columnvalue.split("::")
+                    multivalues = [str(part).strip() for part in multivalues if part]
+                    tempdict = { columnname : multivalues }
+
+            if columnname == "Compartment Name":
+                compartmentVarName = columnvalue.strip()
+                columnname = commonTools.check_column_headers(columnname)
+                compartmentVarName = commonTools.check_tf_variable(compartmentVarName)
+                columnvalue = str(compartmentVarName)
+                tempdict = {'compartment_tf_name': columnvalue}
+
+            if columnname in commonTools.tagColumns:
+                tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)
+
+            if columnname == "Availability Domain\n(AD1|AD2|AD3)":
+                columnname = "availability_domain"
+                AD = columnvalue.upper()
+                ad = ADS.index(AD)
+                columnvalue = str(ad)
+
+            if columnname == "Attached To Instance":
+                columnvalue = commonTools.check_tf_variable(columnvalue)
+
+            if columnname == "Attach Type\n(iscsi|paravirtualized)":
+                columnname = "attach_type"
+
+            if columnname == "Size In GBs":
+                if columnvalue != '':
+                    columnvalue = int(float(columnvalue))
+
+            columnname = commonTools.check_column_headers(columnname)
+            tempStr[columnname] = str(columnvalue).strip()
+            tempStr.update(tempdict)
+
+
+        #Render template
+        tempStr = template.render(tempStr)
+
+        outfile = outdir + "/" + region + "/" + blockname_tf + ".tf"
         print("Writing " + outfile)
-        oname = open(outfile,"w")
+        oname = open(outfile, "w")
         oname.write(tempStr)
         oname.close()
 
 
-
-#If input is a csv file
-elif('.csv' in filename):
+# If input is a csv file
+elif ('.csv' in filename):
     fname = open(filename, "r")
     all_regions = os.listdir(outdir)
     for line in fname:
         if not line.startswith('#'):
-            #[block_name,size_in_gb,availability_domain(AD1|AD2|AD3),attached_to_instance,attach_type(iscsi|paravirtualized,compartment_var_name] = line.split(',')
+            # [block_name,size_in_gb,availability_domain(AD1|AD2|AD3),attached_to_instance,attach_type(iscsi|paravirtualized,compartment_var_name] = line.split(',')
             linearr = line.split(",")
-            region=linearr[0].strip().lower()
+            region = linearr[0].strip().lower()
             if region not in all_regions:
                 print("Invalid Region")
                 continue
@@ -137,12 +178,13 @@ resource "oci_core_volume_attachment" \"""" + blockname + """_volume_attachment"
 
         }
         """
-            outfile = outdir+"/"+region+"/"+blockname+".tf"
-            oname = open(outfile,"w")
+            outfile = outdir + "/" + region + "/" + blockname + ".tf"
+            oname = open(outfile, "w")
             oname.write(tempStr)
             oname.close()
     fname.close()
 else:
     print("Invalid input file format; Acceptable formats: .xls, .xlsx, .csv")
     exit()
+
 

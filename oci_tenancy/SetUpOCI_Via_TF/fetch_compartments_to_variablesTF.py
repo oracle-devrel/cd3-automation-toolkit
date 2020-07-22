@@ -5,8 +5,14 @@ import sys
 import oci
 import shutil
 from oci.identity import IdentityClient
+from jinja2 import Environment, FileSystemLoader
 #import glob
 from commonTools import *
+
+#Load the template file
+file_loader = FileSystemLoader('templates')
+env = Environment(loader=file_loader,keep_trailing_newline=True)
+template = env.get_template('variables-template')
 
 def paginate(operation, *args, **kwargs):
     while True:
@@ -60,12 +66,7 @@ for reg in ct.all_regions:
     for name,ocid in ct.ntk_compartment_ids.items():
         comp_tf_name=commonTools.check_tf_variable(name)
         searchstr = "variable \"" + comp_tf_name + "\""
-        str="""
-        variable \"""" + comp_tf_name + """" {
-            type = "string"
-            default = \"""" + ocid + """"
-        }
-        """
+        str=template.render(comp_tf_name=comp_tf_name,ocid=ocid)
         if(searchstr not in var_data[reg]):
             tempStr[reg]=tempStr[reg]+str
 

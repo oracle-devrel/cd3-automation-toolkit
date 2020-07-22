@@ -9,7 +9,7 @@ import datetime
 from os import path
 sys.path.append(os.getcwd()+"/../..")
 from commonTools import *
-
+from jinja2 import Environment, FileSystemLoader
 
 x = datetime.datetime.now()
 date = x.strftime("%S").strip()
@@ -34,98 +34,94 @@ if args.configFileName is not None:
     configFileName = args.configFileName
 else:
     configFileName=""
-
 ct = commonTools()
 ct.get_subscribedregions(configFileName)
 
-tmpstr = """
-data "oci_core_volume_backup_policies" "gold" {
-	filter {
-		name = "display_name"
-		values = [ "gold" ]
-		}
-}
+#Load the template file
+file_loader = FileSystemLoader('templates')
+env = Environment(loader=file_loader,keep_trailing_newline=True)
+template = env.get_template('boot-backup-policy-template')
 
-data "oci_core_volume_backup_policies" "silver" {
-	filter {
-		name = "display_name"
-		values = [ "silver" ]
-		}
-}
-
-data "oci_core_volume_backup_policies" "bronze" {
-	filter {
-		name = "display_name"
-		values = [ "bronze" ]
-		}
-}
-
-## Add policy attachment ##
-"""
-first_tmpstr = tmpstr
 policy_file={}
-endnames= ['<end>','<END>','<End>']
+bootppolicy=''
 
 # If the input is CD3
 if ('.xls' in filename):
-
-    for reg in ct.all_regions:
-        policy_file[reg] = outdir + "/" + reg + "/attach_boot_backups_policy.tf"
-        src = policy_file[reg]
-        if path.exists(src):
-            dst = outdir + "/" + reg + "/attach_boot_backups_policy_backup" + date
-            os.rename(src, dst)
-        fname = open(policy_file[reg], "a+")
-        fname.write(tmpstr)
-        fname.close()
 
     df = pd.read_excel(filename, sheet_name='Instances',skiprows=1)
     df = df.dropna(how='all')
     df = df.reset_index(drop=True)
 
+
+    # List of column headers
+    dfcolumns = df.columns.values.tolist()
+
     for i in df.index:
-        for j in df.keys():
-            if (str(df[j][i]) in endnames):
-                exit()
-            if (str(df[j][i]) == 'nan'):
-                continue
+        region = df.loc[i,"Region"]
+        region = str(region).strip().lower()
+        if region in commonTools.endNames:
+            break
+        if region not in ct.all_regions:
+            print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
+            exit()
 
-            elif (j == 'Region'):
-                Region = df['Region'][i].strip().lower()
-                if (Region in commonTools.endNames):
-                    exit()
+        policy_data_file = outdir + "/"+region+"/oci-backup-policy-data.tf"
+        datasource = env.get_template('datasource-template')
 
-                if(Region not in ct.all_regions):
-                    print("Invalid Region "+ Region)
-                    break
+        fname=open(policy_data_file,"w+")
+        # To add the 'data' resource - required for fetching the policy id
+        fname.write(datasource.render())
+        fname.close()
 
-            elif (j == 'Hostname'):
-                Host_name = df['Hostname'][i]
-                if (str(df['Backup Policy'][i]) == 'nan'):
-                    continue
-                else:
-                    policy = df['Backup Policy'][i].lower().strip()
-                    res_name = Host_name + "_bkupPolicy"
-                    tmpstr = """resource "oci_core_volume_backup_policy_assignment" \"""" + res_name + """\"{
-                                #Required
-                                asset_id = "${oci_core_instance.""" + Host_name + """.boot_volume_id}"
-                                policy_id = "${data.oci_core_volume_backup_policies.""" + policy + """.volume_backup_policies.0.id}"
-                        }
-                        ## Add policy attachment ##
-                            """
+        # temporary dictionary1 and dictionary2
+        tempStr = {}
+        tempdict = {}
 
-                    textToSearch = "## Add policy attachment ##"
+        #Check if values are entered for mandatory fields
+        if str(df.loc[i,"Region"]).lower() == 'nan' or str(df.loc[i, 'Hostname']).lower() == 'nan' or str(df.loc[i,'Backup Policy']).lower()  == 'nan':
+            print( "The values for Region, Hostname and Backup Policy cannot be left empty. Please enter a value and try again !!")
+            exit()
 
-                    with open(policy_file[Region], 'r+') as file:
-                        filedata = file.read()
-                    file.close()
-                    # Replace the target string
-                    filedata = filedata.replace(textToSearch, tmpstr)
 
-                    # Write the file out again
-                    with open(policy_file[Region], 'w+') as file:
-                        file.write(filedata)
-                    file.close()
+        # Fetch data ; loop through columns
+        for columnname in dfcolumns:
+
+            # Column value
+            columnvalue = str(df[columnname][i]).strip()
+
+            if columnvalue == 'True' or columnvalue == 'TRUE' or columnvalue == 'False' or columnvalue == 'FALSE':
+                columnvalue = columnvalue.lower()
+
+            if (columnvalue.lower() == 'nan'):
+                columnvalue = ""
+
+            elif "::" in columnvalue:
+                if columnname != 'Compartment Name':
+                    columnname = commonTools.check_column_headers(columnname)
+                    multivalues = columnvalue.split("::")
+                    multivalues = [str(part).strip() for part in multivalues if part]
+                    tempdict = { columnname : multivalues }
+
+            if columnname == "Hostname":
+                hostname_tf = commonTools.check_tf_variable(columnvalue)
+                tempStr['hostname_tf_name'] = hostname_tf
+
+            if (columnname == 'Backup Policy'):
+                columnname = 'backup_policy'
+                columnvalue = columnvalue.lower()
+
+            columnname = commonTools.check_column_headers(columnname)
+            tempStr[columnname] = str(columnvalue).strip()
+            tempStr.update(tempdict)
+
+        #Render template
+        bootppolicy =  template.render(tempStr)
+
+        file = outdir + "/" + region + "/" +hostname_tf+"-boot-backup-policy.tf"
+        oname = open(file, "w+")
+        print("Writing " + file)
+        oname.write(bootppolicy)
+        oname.close()
 
 elif('.csv' in filename):
     fname = open(filename, "r")

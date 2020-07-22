@@ -76,7 +76,7 @@ if('.xls' in args.inputfile):
 
     # Iterate over rows
     for i in df.index:
-        region = str(df.loc[i, 'Region'])
+        region = str(df.loc[i, 'Region']).strip()
 
         # Encountered <End>
         if (region in commonTools.endNames):

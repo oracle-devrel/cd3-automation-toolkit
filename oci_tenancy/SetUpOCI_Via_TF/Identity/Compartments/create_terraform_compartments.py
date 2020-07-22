@@ -56,7 +56,6 @@ file_loader = FileSystemLoader('templates')
 env = Environment(loader=file_loader, keep_trailing_newline=True)
 template = env.get_template('compartments-template')
 
-
 # reversal path function
 def travel(parent, keys, values, c):
     if (parent == "" or parent == "nan" or parent == "root"):
@@ -95,7 +94,7 @@ if ('.xls' in args.inputfile):
     pvalues = []
 
     for i in df.index:
-        if (df.loc[i, 'Region'] in commonTools.endNames):
+        if (str(df.loc[i, 'Region']) in commonTools.endNames):
             break
         ckeys.append(str(df.loc[i, 'Name']).strip())
         pvalues.append(str(df.loc[i, 'Parent Compartment']).strip())
@@ -197,7 +196,7 @@ if ('.xls' in args.inputfile):
                         tempStr.update(tempdict)
 
             var_c_name = commonTools.check_tf_variable(var_c_name)
-            tempStr['var_c_name'] = var_c_name
+            tempStr['comp_tf_name'] = var_c_name
 
             if columnname == 'Name':
                 if (str(columnvalue).lower() != "nan"):
