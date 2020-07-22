@@ -2,7 +2,6 @@
 # Author: Suruchi
 # Oracle Consulting
 # suruchi.singla@oracle.com
-# Modified IT
 
 
 import sys
@@ -43,6 +42,61 @@ tempStr = {}
 FSS_names = {}
 MT_names = {}
 
+global value
+
+
+# fss_multi export logic
+def fss_exports(i, df, sourceCIDR, access, gid, uid, idsquash, require_ps_port, path):
+    global value
+    i = i + 1
+    try:
+        if (str(df.iat[i, 10]) == path and str(df.iat[i, 0]) == "nan"):
+            sourcecidr_1 = df.iat[i, 11]
+            access_1 = df.iat[i, 12]
+            gid_1 = df.iat[i, 13]
+            uid_1 = df.iat[i, 14]
+            idsquash_1 = df.iat[i, 15]
+            require_ps_port_1 = str(str(df.iat[i, 16]))
+            if (str(sourcecidr_1).lower() == NaNstr.lower()):
+                sourcecidr_1 = "0.0.0.0/0"
+            if str(access_1).lower() == NaNstr.lower():
+                access_1 = "READ_ONLY"
+            elif str(access_1).strip() != "READ_WRITE":
+                access_1 = "READ_ONLY"
+
+            if str(gid_1).lower() == NaNstr.lower():
+                gid_1 = "65534"
+            else:
+                gid_1 = int(gid_1)
+
+            if str(uid_1).lower() == NaNstr.lower():
+                uid_1 = "65534"
+            else:
+                uid_1 = int(uid_1)
+
+            if str(idsquash_1).lower() == NaNstr.lower() or (
+                    str(idsquash_1).strip() != "ALL" and str(idsquash_1).strip() != "ROOT"):
+                idsquash_1 = "NONE"
+            if str(require_ps_port_1).lower() == NaNstr.lower():
+                require_ps_port_1 = "false"
+            elif str(require_ps_port_1).lower() == "true" or require_ps_port_1 == "TRUE" or df.iat[i, 16] == 1.0:
+                require_ps_port_1 = "true"
+            else:
+                require_ps_port_1 = "false"
+            sourceCIDR.append(sourcecidr_1)
+            access.append(access_1)
+            gid.append(gid_1)
+            uid.append(uid_1)
+            idsquash.append(idsquash_1)
+            require_ps_port.append(require_ps_port_1)
+            fss_exports(i, df, sourceCIDR, access, gid, uid, idsquash, require_ps_port, path)
+            value = i
+        else:
+            return "null"
+    except Exception as e:
+        print(e)
+
+
 # If input is csv file; convert to excel
 if ('.csv' in filename):
     df = pd.read_csv(filename)
@@ -67,8 +121,9 @@ for i in df.index:
     region = df.iat[i, 0]
     if region in endNames:
         break
-    region = region.strip().lower()
-
+    region = str(region).lower().strip()
+    if region == "nan":
+        continue
     if region not in ct.all_regions:
         print("Invalid Region; It should be one of the values mentioned in VCN Info tab")
         continue
@@ -82,46 +137,68 @@ for i in df.index:
     fss_size = df.iat[i, 8]
     fss_name = df.iat[i, 9]
     path = df.iat[i, 10]
-
-    sourceCIDR = df.iat[i, 11]
-    access = df.iat[i, 12]
-    gid = df.iat[i, 13]
-    uid = df.iat[i, 14]
-    idsquash = df.iat[i, 15]
-    require_ps_port = df.iat[i, 16]
+    exports = []
+    sourceCIDR = []
+    access = []
+    gid = []
+    uid = []
+    idsquash = []
+    require_ps_port = []
     if (str(compartment_name).lower() == NaNstr.lower() or str(AD).lower() == NaNstr.lower() or str(
             mount_target_name).lower() == NaNstr.lower()
             or str(mount_target_subnet).lower() == NaNstr.lower() or str(fss_name).lower() == NaNstr.lower() or str(
                 path).lower() == NaNstr.lower()):
         print("Columns Compartment Name, Availability Domain, MountTarget Name, MountTarget Subnet, Max FSS Capacity, Max FSS Inodes, FSS Name and path cannot be left blank..exiting...")
         exit(1)
+
     mount_target_subnet = commonTools.check_tf_variable(mount_target_subnet.strip())
     AD = str(AD).strip().upper()
     ad = ADS.index(AD)
-    if (str(sourceCIDR).lower() == NaNstr.lower()):
-        sourceCIDR = "0.0.0.0/0"
 
-    if str(access).lower() == NaNstr.lower():
-        access = "READ_ONLY"
-    elif access.strip() != "READ_WRITE":
-        access = "READ_ONLY"
-
-    if str(gid).lower() == NaNstr.lower():
-        gid = "65534"
+    if (str(df.iat[i, 11]).lower() == NaNstr.lower()):
+        sourceCIDR.append("0.0.0.0/0")
     else:
-        gid = int(gid)
+        sourceCIDR.append(str(df.iat[i, 11]))
 
-    if str(uid).lower() == NaNstr.lower():
-        uid = "65534"
+    if str(df.iat[i, 12]).lower() == NaNstr.lower():
+        access.append("READ_ONLY")
+    elif str(df.iat[i, 12]).strip() != "READ_WRITE":
+        access.append("READ_ONLY")
+
+    if str(df.iat[i, 13]).lower() == NaNstr.lower():
+        gid.append(str("65534"))
     else:
-        uid = int(uid)
-    if str(idsquash).lower() == NaNstr.lower() or (str(idsquash).strip() != "ALL" and str(idsquash).strip() != "ROOT"):
-        idsquash = "NONE"
+        gid.append(int(df.iat[i, 13]))
 
-    if str(require_ps_port).lower() == NaNstr.lower():
-        require_ps_port = "false"
-    elif str(require_ps_port).lower() != "true":
-        require_ps_port = "false"
+    if str(df.iat[i, 14]).lower() == NaNstr.lower():
+        uid.append(str("65534"))
+    else:
+        uid.append(int(df.iat[i, 14]))
+
+    if str(df.iat[i, 15]).lower() == NaNstr.lower() or (str(df.iat[i, 15]).strip() != "ALL" and str(df.iat[i, 15]).strip() != "ROOT"):
+        idsquash.append("NONE")
+    else:
+        idsquash.append(str(df.iat[i, 15]))
+    if (str(df.iat[i, 16]).lower() == NaNstr.lower()):
+        require_ps_port.append("false")
+    elif (str(df.iat[i, 16]).lower() == "true" or df.iat[i, 16] == "TRUE" or df.iat[i, 16] == 1.0):
+        require_ps_port.append("true")
+    else:
+        require_ps_port.append("false")
+
+    fss_exports(i, df, sourceCIDR, access, gid, uid, idsquash, require_ps_port, path)
+    export_set_info = ""
+    for j in range(0, len(sourceCIDR)):
+        export_set_info += """
+        export_options {
+                        source = \"""" + str(sourceCIDR[j]).strip() + """"
+                        access = \"""" + access[j].strip() + """"
+                        anonymous_gid = \"""" + str(gid[j]) + """"
+                        anonymous_uid = \"""" + str(uid[j]) + """"
+                        identity_squash = \"""" + idsquash[j].strip() + """"
+                        require_privileged_source_port = \"""" + str(require_ps_port[j]).strip().lower() + """"
+                        } """
+
     compartment_name = compartment_name.strip()
     compartment_name = commonTools.check_tf_variable(compartment_name)
 
@@ -161,27 +238,21 @@ for i in df.index:
 
         tempStr[region] = tempStr[region] + data_fs
 
-    path_tf=path
+    path_tf = path
     if path[-1] == '/':
         path_tf = path[:-1]
     FSE_tf_name = "FSE-" + mount_target_tf_name + "-" + fss_tf_name + "-" + path_tf[1:]
     FSE_tf_name = commonTools.check_tf_variable(FSE_tf_name)
+
     # FSE_tf_name=commonTools.check_tf_variable(FSE_name)
     data_fs_es = """
             resource "oci_file_storage_export" \"""" + FSE_tf_name + """" {
                 export_set_id = "${oci_file_storage_mount_target.""" + mount_target_tf_name + """.export_set_id}"
                 file_system_id = "${oci_file_storage_file_system.""" + fss_tf_name + """.id}"
                 path = \"""" + path + """"
-                export_options {
-                    source = \"""" + str(sourceCIDR).strip() + """"
-                    access = \"""" + access.strip() + """"
-                    anonymous_gid = \"""" + str(gid) + """"
-                    anonymous_uid = \"""" + str(uid) + """"
-                    identity_squash = \"""" + idsquash.strip() + """"
-                    require_privileged_source_port = \"""" + str(require_ps_port).strip().lower() + """"
-                    }
-            }
-        """
+                """ + export_set_info + """ 
+                }
+               """
     tempStr[region] = tempStr[region] + data_fs_es
 
 for r in ct.all_regions:
