@@ -217,10 +217,12 @@ for i in df.index:
 
         if columnname == "Access (READ_ONLY|READ_WRITE)":
             columnname = "access"
-            if str(columnvalue).lower() == "nan" or str(columnvalue) == "":
+            if str(columnvalue).lower() == "nan" or str(columnvalue) == "" or str(columnvalue) == "READ_ONLY":
                 columnvalue = "READ_ONLY"
             if str(columnvalue).strip() != "READ_WRITE":
                 columnvalue = "READ_ONLY"
+            if str(columnvalue).strip() == "READ_WRITE":
+                columnvalue = "READ_WRITE"
             access.append(columnvalue)
             tempdict = {'access': columnvalue}
 
