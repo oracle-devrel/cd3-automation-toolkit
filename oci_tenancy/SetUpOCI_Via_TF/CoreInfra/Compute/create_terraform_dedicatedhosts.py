@@ -11,8 +11,12 @@ import os
 import datetime
 sys.path.append(os.getcwd()+"/../..")
 from commonTools import *
+from jinja2 import Environment, FileSystemLoader
 
-
+#Load the template file
+file_loader = FileSystemLoader('templates')
+env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
+template = env.get_template('dedicated-hosts-template')
 
 parser = argparse.ArgumentParser(description="Create Dedicated VM Hosts terraform file")
 parser.add_argument("inputfile", help="Full Path of input file. It could be either the csv file or CD3 excel file")
@@ -37,7 +41,7 @@ ct.get_subscribedregions(configFileName)
 outfile={}
 oname={}
 tfStr={}
-
+ADS = ["AD1", "AD2", "AD3"]
 x = datetime.datetime.now()
 date = x.strftime("%S").strip()
 
@@ -58,8 +62,11 @@ if('.xls' in args.inputfile):
     NaNstr = 'NaN'
     endNames = {'<END>', '<end>', '<End>'}
 
+    # List of column headers
+    dfcolumns = df.columns.values.tolist()
+
     for i in df.index:
-        region = df.iat[i,0]
+        region = str(df.loc[i,'Region'])
 
         if (region in endNames):
             break
@@ -68,45 +75,65 @@ if('.xls' in args.inputfile):
         if region not in ct.all_regions:
             print("Invalid Region; It should be one of the regions tenancy is subscribed to")
             exit(1)
-        compartment_name = df.iat[i, 1]
-        dedicated_host_name = df.iat[i, 2]
-        dedicated_host_ad = df.iat[i, 3]
-        dedicated_host_fd = df.iat[i, 4]
-        dedicated_host_shape = df.iat[i, 5]
 
-        if(str(compartment_name).lower()==NaNstr.lower() or str(dedicated_host_name).lower()==NaNstr.lower() or
-                str(dedicated_host_ad)==NaNstr.lower() or str(dedicated_host_shape).lower()==NaNstr.lower()):
-            print("All Fields mandatory except Fault Domain. Exiting...")
+        # temporary dictionary1 and dictionary2
+        tempStr = {}
+        tempdict = {}
+
+        # Check if values are entered for mandatory fields
+        if (str(df.loc[i, 'Region']).lower() == 'nan' or str(df.loc[i, 'Shape']).lower() == 'nan' or str(df.loc[i, 'Compartment Name']).lower() == 'nan' or str(
+                df.loc[i, 'Availability Domain\n(AD1|AD2|AD3)']).lower() == 'nan' or str(df.loc[i, 'Hostname']).lower() == 'nan'):
+            print("All Fields are mandatory except Fault Domain. Exiting...")
             exit(1)
 
-        if('ad1' in dedicated_host_ad.lower()):
-            ad='0'
-        if('ad2' in dedicated_host_ad.lower()):
-            ad='1'
-        if('ad3' in dedicated_host_ad.lower()):
-            ad='2'
+        for columnname in dfcolumns:
 
-        dedicated_host_name = dedicated_host_name.strip()
-        dedicated_host_name = commonTools.check_tf_variable(dedicated_host_name)
+            # Column value
+            columnvalue = str(df[columnname][i]).strip()
 
-        compartment_name = compartment_name.strip()
-        compartment_name = commonTools.check_tf_variable(compartment_name)
+            if columnvalue == '1.0' or columnvalue == '0.0':
+                if columnvalue == '1.0':
+                    columnvalue = "true"
+                else:
+                    columnvalue = "false"
 
-        tfStr[region] = tfStr[region] + """
-        resource "oci_core_dedicated_vm_host" \"""" + dedicated_host_name + """" {
-        	    compartment_id = "${var.""" + compartment_name + """}"
-        	    availability_domain = "${data.oci_identity_availability_domains.ADs.availability_domains."""+ad+""".name}"
-          	    dedicated_vm_host_shape = \"""" + dedicated_host_shape.strip() + """"
-          	    display_name = \"""" + dedicated_host_name.strip() + """"
-        """
-        if(str(dedicated_host_fd).lower()!=NaNstr.lower()):
-            tfStr[region]=tfStr[region]+"""
-                fault_domain = \"""" + dedicated_host_fd.strip() + """"
-            }
-            """
-        else:
-            tfStr[region]=tfStr[region]+"""
-        } """
+            if (columnvalue.lower() == 'nan'):
+                columnvalue = ""
+
+            if columnname in commonTools.tagColumns:
+                tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)
+
+            if "::" in columnvalue:
+                if columnname != 'Compartment Name':
+                    columnname = commonTools.check_column_headers(columnname)
+                    multivalues = columnvalue.split("::")
+                    multivalues = [str(part).strip() for part in multivalues if part]
+                    tempdict = {columnname: multivalues}
+
+            if columnname == 'Hostname':
+                columnvalue = columnvalue.strip()
+                host_tf_name = commonTools.check_tf_variable(columnvalue)
+                tempdict = {'dedicated_vm_host_tf': host_tf_name, 'dedicated_vm_host': columnvalue}
+
+            if columnname == 'Compartment Name':
+                compartment_var_name = columnvalue.strip()
+                compartment_var_name = commonTools.check_tf_variable(compartment_var_name)
+                tempdict = {'compartment_tf_name': compartment_var_name}
+
+            if columnname == 'Availability Domain\n(AD1|AD2|AD3)':
+                columnname = 'availability_domain'
+                AD = columnvalue.upper()
+                ad = ADS.index(AD)
+                columnvalue = str(ad)
+                tempdict = {'availability_domain' : columnvalue}
+
+            columnname = commonTools.check_column_headers(columnname)
+            tempStr[columnname] = str(columnvalue).strip()
+            tempStr.update(tempdict)
+
+        # Write all info to TF string; Render template
+        tfStr[region] = tfStr[region] + template.render(tempStr)
+
 #If input is a csv file
 elif('.csv' in args.inputfile):
     all_regions = os.listdir(outdir)

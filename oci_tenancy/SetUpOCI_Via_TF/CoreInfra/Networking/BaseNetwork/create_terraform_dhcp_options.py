@@ -63,7 +63,7 @@ defStr={}
 
 # Load the template file
 file_loader = FileSystemLoader('templates')
-env = Environment(loader=file_loader, keep_trailing_newline=True)
+env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
 template = env.get_template('custom-dhcp-template')
 defaultdhcp = env.get_template('default-dhcp-template')
 
@@ -128,12 +128,19 @@ if('.xls' in args.inputfile):
 
             if (columnvalue.lower() == 'nan'):
                 columnvalue = ""
+
             if "::" in columnvalue:
                 if columnname != "Compartment Name":
                     columnname = commonTools.check_column_headers(columnname)
                     multivalues = columnvalue.split("::")
                     multivalues = [str(part).strip() for part in multivalues if part]
                     tempdict = {columnname: multivalues}
+
+            if columnvalue == '1.0' or  columnvalue == '0.0':
+                if columnvalue == '1.0':
+                    columnvalue = "true"
+                else:
+                    columnvalue = "false"
 
             if columnname in commonTools.tagColumns:
                 tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)

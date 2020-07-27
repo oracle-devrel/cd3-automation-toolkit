@@ -60,13 +60,13 @@ ADS = ["AD1", "AD2", "AD3"]
 
 #Load the template file
 file_loader = FileSystemLoader('templates')
-env = Environment(loader=file_loader,keep_trailing_newline=True)
+env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
 template = env.get_template('subnet-template')
 
 def processSubnet(tempStr):
 
 	region = tempStr['region'].lower().strip()
-	subnet = tempStr['subnet_cidr']
+	subnet = tempStr['cidr_block']
 	AD = tempStr['availability_domain'].strip()
 	if (AD.strip().lower() != 'regional'):
 		AD = AD.strip().upper()
@@ -76,9 +76,9 @@ def processSubnet(tempStr):
 		adString = "data.oci_identity_availability_domains.ADs.availability_domains.""" + str(ad) + """.name """
 	else:
 		ad_name = ""
-		adString = ""
+		adString = "\"\""
 
-	tempStr['adString'] = adString
+	tempStr['availability_domain'] = adString
 
 	vcn_tf_name = commonTools.check_tf_variable(tempStr['vcn_name'].strip())
 	name = tempStr['subnet_name']
@@ -113,7 +113,6 @@ def processSubnet(tempStr):
 				namesl = str(sl_name)
 			sl_display_name = namesl + "-" + subnet
 			sl_tf_name=vcn_name+"_"+sl_display_name
-
 			sl_tf_names.append(commonTools.check_tf_variable(sl_tf_name))
 	else:
 		for sl_name in seclist_names:
@@ -126,6 +125,11 @@ def processSubnet(tempStr):
 	subnet_tf_name = commonTools.check_tf_variable(subnet_tf_name)
 	rt_tf_name = vcn_name+"_"+rt_display_name
 	rt_tf_name = commonTools.check_tf_variable(rt_tf_name)
+
+	if rt_name != 'n' and rt_name != '':
+		rt_tf_name = "oci_core_route_table."+ rt_tf_name +".id"
+	else:
+		rt_tf_name = "\"\""
 
 	tempStr['subnet_tf_name'] = subnet_tf_name
 	tempStr['rt_tf_name'] = rt_tf_name
@@ -140,7 +144,7 @@ def processSubnet(tempStr):
 
 
 	#Attach other security list IDs
-	if( seclist_names  !="n"):
+	if( seclist_names[0]  !="n"):
 		index=0
 		for seclist_id in sl_tf_names:
 			if(index==len(sl_tf_names)-1):
@@ -148,14 +152,13 @@ def processSubnet(tempStr):
 			else:
 				seclist_ids = seclist_ids + """oci_core_security_list.""" +  seclist_id + """.id, """
 			index=index+1
+	tempStr['seclist_ids'] =  seclist_ids
 
-			tempStr['seclist_ids'] =  seclist_ids
-
-	if (tempStr['dhcp'].lower() != 'nan' and tempStr['dhcp'] != ''):
-		dhcp_options_id = "oci_core_dhcp_options." + tempStr['dhcp'].strip() + ".id "
+	if (tempStr['dhcp_tf_name'].lower() != 'nan' and tempStr['dhcp_tf_name'] != '' and tempStr['dhcp_tf_name'] != 'n'):
+		dhcp_options_id = "oci_core_dhcp_options." + tempStr['dhcp_tf_name'].strip() + ".id "
 	else:
 		dhcp_options_id = "oci_core_vcn."+ vcn_tf_name + ".default_dhcp_options_id"
-	tempStr['dhcp_options_id'] = dhcp_options_id
+	tempStr['dhcp_options_name'] = dhcp_options_id
 
 	if tempStr['type'] == 'public':
 		prohibit_public_ip_on_vnic = "false"
@@ -179,13 +182,14 @@ if('.xls' in filename):
 	for reg in ct.all_regions:
 		tfStr[reg] = ''
 
-	# temporary dictionary1, dictionary2 and list
+	# temporary dictionary1, dictionary2
 	tempStr = {}
 	tempdict = {}
 
 	# List of the column headers
 	dfcolumns = df.columns.values.tolist()
 
+	dhcp = ''
 	for i in df.index:
 		region=str(df.loc[i,'Region'])
 		if (region in commonTools.endNames):
@@ -199,24 +203,38 @@ if('.xls' in filename):
 			exit(1)
 
 		region=region.strip().lower()
+
 		if region not in ct.all_regions:
 			print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
 			exit(1)
 
+		# Check if values are entered for mandatory fields
 		if (str(df.loc[i, 'Region']).lower() == 'nan' or str(df.loc[i, 'Compartment Name']).lower() == 'nan' or str(
-				df.loc[i, 'VCN Name']).lower() == 'nan' or str(df.loc[i, 'Subnet Name']).lower() == 'nan' or str(
-				df.loc[i, 'Subnet CIDR']).lower() == 'nan' or str(df.loc[i, 'Seclist Names']).lower() == 'nan' or str(
-				df.loc[i, 'Configure IGW Route (y|n)']).lower() == 'nan' or str(df.loc[i, 'Add Default Seclist']).lower() == 'nan' or str(df.loc[i,'Availability Domain\n(AD1|AD2|AD3|Regional)']).lower =='nan' or str(
-				df.loc[i, 'Configure NGW Route\n(y|n)']).lower() == 'nan' or str(df.loc[i, 'Configure SGW Route\n(n|object_storage|all_services)']).lower() == 'nan' or str(df.loc[i, 'Configure OnPrem Route (y|n)']).lower() == 'nan' or str(
-				df.loc[i, 'Type(private|public)']).lower() == 'nan' or str(df.loc[i,'Configure VCNPeering\nRoute (y|n)']).lower() == 'nan'):
-			print("Column Values(except dns_label) or Rows cannot be left empty in VCNs sheet in CD3..exiting...")
+				df.loc[i, 'VCN Name']).lower() == 'nan' or str(df.loc[i, 'Subnet Name']).lower() == 'nan' or str(df.loc[i, 'CIDR Block']).lower() == 'nan'):
+			print("Column Values Region, Compartment Name, VCN Name, Subnet Name and CIDR Block cannot be left empty in VCNs sheet in CD3..exiting...")
 			exit(1)
+
+		if (str(df.loc[i,'Availability Domain\n(AD1|AD2|AD3|Regional)']).lower =='nan' or str(
+				df.loc[i, 'Type(private|public)']).lower() == 'nan' or str(df.loc[i,'Add Default Seclist']).lower() == 'nan'):
+			print("Column Values Add Default Seclist, Availability Domain and Type cannot be left empty in VCNs sheet in CD3..exiting...")
+			exit(1)
+
+		if (str(df.loc[i, 'Configure IGW Route (y|n)']).lower() == 'nan' or str(df.loc[i, 'Configure NGW Route\n(y|n)']).lower() == 'nan' or str(
+				df.loc[i, 'Configure SGW Route\n(n|object_storage|all_services)']).lower() == 'nan' or str(df.loc[i, 'Configure OnPrem Route (y|n)']).lower() == 'nan' or str(
+			    df.loc[i,'Configure VCNPeering\nRoute (y|n)']).lower() == 'nan'):
+			print("Column Values Configure IGW/SGW/On-Prem/VCN route cannot be left empty in VCNs sheet in CD3..exiting...")
+			exit(1)
+
 		for columnname in dfcolumns:
+
 			# Column value
 			columnvalue = str(df[columnname][i]).strip()
 
-			if columnvalue == 'True' or columnvalue == 'TRUE' or columnvalue == 'False' or columnvalue == 'FALSE':
-				columnvalue = columnvalue.lower()
+			if columnvalue == '1.0' or columnvalue == '0.0':
+				if columnvalue == '1.0':
+					columnvalue = "true"
+				else:
+					columnvalue = "false"
 
 			if (columnvalue.lower() == 'nan'):
 				columnvalue = ""
@@ -228,16 +246,13 @@ if('.xls' in filename):
 					multivalues = [str(part).strip() for part in multivalues if part]
 					tempdict = {columnname: multivalues}
 
-
 			if columnname in commonTools.tagColumns:
 				tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)
-
 
 			if columnname == 'Compartment Name':
 				compartment_var_name = columnvalue
 				compartment_var_name = commonTools.check_tf_variable(compartment_var_name)
 				tempdict = {'compartment_tf_name': compartment_var_name}
-
 
 			if columnname == 'Availability Domain\n(AD1|AD2|AD3|Regional)':
 				columnname = 'availability_domain'
@@ -248,12 +263,14 @@ if('.xls' in filename):
 				if columnvalue.lower() == 'nan':
 					columnvalue = 'y'
 
-			if columnname == 'DHCP Option Name\n(Leave blank if default dhcp option needs to be used)':
+			if columnname == 'DHCP Option Name':
 				columnname = 'dhcp_option_name'
-				if str(columnvalue).strip().lower() != '':
+				if str(columnvalue).strip().lower() != '' and str(columnvalue).strip().lower() != 'n':
 					dhcp = df.loc[i,'VCN Name'].strip() +"_" + columnvalue
 					dhcp = commonTools.check_tf_variable(dhcp)
-					tempdict = {'dhcp': dhcp,'dhcp_option_name' : columnvalue}
+					tempdict = {'dhcp_tf_name': dhcp,'dhcp_option_name' : columnvalue}
+				else:
+					tempdict = {'dhcp_tf_name': columnvalue, 'dhcp_option_name': columnvalue}
 
 			if columnname == 'DNS Label':
 				dnslabel = columnvalue.strip()
@@ -288,13 +305,15 @@ if('.xls' in filename):
 
 			sl_names = []
 			if columnname == 'Seclist Names':
-				if columnvalue.lower() != 'nan':
-					sl_names = columnvalue.split(",")
+				if str(columnvalue).lower() == 'nan' or str(columnvalue).lower() == '':
+					# seclist name not provided; use subnet name as seclist name
+					sl_names.append(df.loc[i,'Subnet Name'].strip())
 					tempdict = {'sl_names': sl_names}
 				else:
-					# seclist name not provided; use subnet name as seclist name
-					sl_names.append(df.loc['Subnet_Name'][i].strip())
-					tempdict= {'sl_names' : sl_names }
+					sl_names = columnvalue.split(",")
+					tempdict = {'sl_names': sl_names}
+
+				tempStr.update(tempdict)
 
 			if columnname == 'Type(private|public)':
 				columnname = 'type'
@@ -303,6 +322,7 @@ if('.xls' in filename):
 			columnname = commonTools.check_column_headers(columnname)
 			tempStr[columnname] = str(columnvalue).strip()
 			tempStr.update(tempdict)
+
 		processSubnet(tempStr)
 
 # If CD3 excel file is not given as input

@@ -13,6 +13,7 @@ import datetime
 
 sys.path.append(os.getcwd() + "/../..")
 from commonTools import *
+from jinja2 import Environment, FileSystemLoader
 
 parser = argparse.ArgumentParser(description="Creates TF files for FSS")
 parser.add_argument("inputfile",help="Full Path to the CSV file for creating fss or CD3 excel file. eg fss.csv or CD3-template.xlsx in example folder")
@@ -39,24 +40,39 @@ date = x.strftime("%f").strip()
 
 ADS = ["AD1", "AD2", "AD3"]
 tempStr = {}
+tempStr_fss = {}
 FSS_names = {}
 MT_names = {}
+data_mt=''
+data_fs=''
+data_fs_es=''
+mount_target_tf_name = ''
+fss_name = ''
+tempdict = {}
 
 global value
 
+#Load the template file
+file_loader = FileSystemLoader('templates')
+env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
+export = env.get_template('export-options-template')
+mounttarget = env.get_template('mount-target-template')
+fss =  env.get_template('fss-template')
+fses = env.get_template('export-resource-template')
 
 # fss_multi export logic
-def fss_exports(i, df, sourceCIDR, access, gid, uid, idsquash, require_ps_port, path):
+def fss_exports(i, df, tempStr):
     global value
+
     i = i + 1
     try:
-        if (str(df.iat[i, 10]) == path and str(df.iat[i, 0]) == "nan"):
-            sourcecidr_1 = df.iat[i, 11]
-            access_1 = df.iat[i, 12]
-            gid_1 = df.iat[i, 13]
-            uid_1 = df.iat[i, 14]
-            idsquash_1 = df.iat[i, 15]
-            require_ps_port_1 = str(str(df.iat[i, 16]))
+        if (str(df.loc[i, 'Path']) == path and str(df.loc[i, 'Region']) == "nan"):
+            sourcecidr_1 = df.loc[i, 'Source CIDR']
+            access_1 = df.loc[i, 'Access (READ_ONLY|READ_WRITE)']
+            gid_1 = df.loc[i, 'GID']
+            uid_1 = df.loc[i, 'UID']
+            idsquash_1 = df.loc[i, 'IDSquash (NONE|ALL|ROOT)']
+            require_ps_port_1 = str(str(df.loc[i, 'Require PS Port (true|false)']))
             if (str(sourcecidr_1).lower() == NaNstr.lower()):
                 sourcecidr_1 = "0.0.0.0/0"
             if str(access_1).lower() == NaNstr.lower():
@@ -79,7 +95,7 @@ def fss_exports(i, df, sourceCIDR, access, gid, uid, idsquash, require_ps_port, 
                 idsquash_1 = "NONE"
             if str(require_ps_port_1).lower() == NaNstr.lower():
                 require_ps_port_1 = "false"
-            elif str(require_ps_port_1).lower() == "true" or require_ps_port_1 == "TRUE" or df.iat[i, 16] == 1.0:
+            elif str(require_ps_port_1).lower() == "true" or require_ps_port_1 == "TRUE" or df.loc[i, 16] == 1.0:
                 require_ps_port_1 = "true"
             else:
                 require_ps_port_1 = "false"
@@ -89,7 +105,8 @@ def fss_exports(i, df, sourceCIDR, access, gid, uid, idsquash, require_ps_port, 
             uid.append(uid_1)
             idsquash.append(idsquash_1)
             require_ps_port.append(require_ps_port_1)
-            fss_exports(i, df, sourceCIDR, access, gid, uid, idsquash, require_ps_port, path)
+            tempStr1={'sourceCIDR' : sourceCIDR,'access': access,'gid' : gid, 'uid':uid, 'idsquash' : idsquash,'require_ps_port' : require_ps_port}
+            fss_exports(i, df, tempStr1)
             value = i
         else:
             return "null"
@@ -113,30 +130,12 @@ endNames = {'<END>', '<end>', '<End>'}
 NaNstr = 'NaN'
 
 for r in ct.all_regions:
-    tempStr[r] = ""
+    tempStr_fss[r] = ''
     MT_names[r] = []
     FSS_names[r] = []
 
 for i in df.index:
-    region = df.iat[i, 0]
-    if region in endNames:
-        break
-    region = str(region).lower().strip()
-    if region == "nan":
-        continue
-    if region not in ct.all_regions:
-        print("Invalid Region; It should be one of the values mentioned in VCN Info tab")
-        continue
-    compartment_name = df.iat[i, 1]
-    AD = df.iat[i, 2]
-    mount_target_name = df.iat[i, 3]
-    mount_target_subnet = df.iat[i, 4]
-    mount_target_ip = df.iat[i, 5]
-    mount_target_hostname = df.iat[i, 6]
-    fss_capacity = df.iat[i, 7]
-    fss_size = df.iat[i, 8]
-    fss_name = df.iat[i, 9]
-    path = df.iat[i, 10]
+
     exports = []
     sourceCIDR = []
     access = []
@@ -144,99 +143,169 @@ for i in df.index:
     uid = []
     idsquash = []
     require_ps_port = []
-    if (str(compartment_name).lower() == NaNstr.lower() or str(AD).lower() == NaNstr.lower() or str(
-            mount_target_name).lower() == NaNstr.lower()
-            or str(mount_target_subnet).lower() == NaNstr.lower() or str(fss_name).lower() == NaNstr.lower() or str(
-                path).lower() == NaNstr.lower()):
-        print("Columns Compartment Name, Availability Domain, MountTarget Name, MountTarget Subnet, Max FSS Capacity, Max FSS Inodes, FSS Name and path cannot be left blank..exiting...")
+    path = ''
+    fss_tf_name=''
+
+    region = str(df.loc[i, 'Region'])
+    if region == "nan":
+        continue
+
+    if region in endNames:
+        break
+    region = str(region).lower().strip()
+
+
+    if region not in ct.all_regions:
+        print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
         exit(1)
 
-    mount_target_subnet = commonTools.check_tf_variable(mount_target_subnet.strip())
-    AD = str(AD).strip().upper()
-    ad = ADS.index(AD)
+    # Check if values are entered for mandatory fields - to create fss
+    if (str(df.loc[i, 'Path']).lower() == 'nan' or str(
+            df.loc[i, 'FSS Name']).lower() == 'nan'
+            or str(df.loc[i, 'Compartment Name']).lower() == 'nan' or str(
+                df.loc[i, 'Availability Domain\n(AD1|AD2|AD3)']).lower() == 'nan' or str(
+                df.loc[i, 'MountTarget Name']).lower() == 'nan'):
+        print("Columns Region, Compartment Name, Availability Domain, MountTarget Name, MountTarget SubnetName, Max FSS Capacity, Max FSS Inodes, FSS Name and path cannot be left blank..Exiting!")
+        exit()
 
-    if (str(df.iat[i, 11]).lower() == NaNstr.lower()):
-        sourceCIDR.append("0.0.0.0/0")
-    else:
-        sourceCIDR.append(str(df.iat[i, 11]))
+    # List of the column headers
+    dfcolumns = df.columns.values.tolist()
 
-    if str(df.iat[i, 12]).lower() == NaNstr.lower():
-        access.append("READ_ONLY")
-    elif str(df.iat[i, 12]).strip() != "READ_WRITE":
-        access.append("READ_ONLY")
+    for columnname in dfcolumns:
 
-    if str(df.iat[i, 13]).lower() == NaNstr.lower():
-        gid.append(str("65534"))
-    else:
-        gid.append(int(df.iat[i, 13]))
+        # Column value
+        columnvalue = str(df[columnname][i]).strip()
 
-    if str(df.iat[i, 14]).lower() == NaNstr.lower():
-        uid.append(str("65534"))
-    else:
-        uid.append(int(df.iat[i, 14]))
+        if columnvalue == '1.0' or columnvalue == '0.0':
+            if columnname != "IDSquash (NONE|ALL|ROOT)":
+                if columnvalue == '1.0':
+                    columnvalue = "true"
+                else:
+                    columnvalue = "false"
 
-    if str(df.iat[i, 15]).lower() == NaNstr.lower() or (str(df.iat[i, 15]).strip() != "ALL" and str(df.iat[i, 15]).strip() != "ROOT"):
-        idsquash.append("NONE")
-    else:
-        idsquash.append(str(df.iat[i, 15]))
-    if (str(df.iat[i, 16]).lower() == NaNstr.lower()):
-        require_ps_port.append("false")
-    elif (str(df.iat[i, 16]).lower() == "true" or df.iat[i, 16] == "TRUE" or df.iat[i, 16] == 1.0):
-        require_ps_port.append("true")
-    else:
-        require_ps_port.append("false")
+        if (columnvalue.lower() == 'nan'):
+            columnvalue = ""
 
-    fss_exports(i, df, sourceCIDR, access, gid, uid, idsquash, require_ps_port, path)
+        if columnname in commonTools.tagColumns:
+            tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)
+            tempStr.update(tempdict)
+
+        if "::" in columnvalue:
+            if columnname != 'Compartment Name':
+                columnname = commonTools.check_column_headers(columnname)
+                multivalues = columnvalue.split("::")
+                multivalues = [str(part).strip() for part in multivalues if part]
+                tempdict = {columnname: multivalues}
+
+        if columnname == 'Compartment Name':
+            compartment_tf_name = commonTools.check_tf_variable(columnvalue)
+            tempdict = {'compartment_tf_name': compartment_tf_name}
+            tempStr.update(tempdict)
+
+        if columnname == 'Availability Domain\n(AD1|AD2|AD3)':
+            columnname = 'availability_domain'
+            if columnvalue != '':
+                AD = columnvalue.upper()
+                ad = ADS.index(AD)
+                columnvalue = str(ad)
+            tempdict = {'availability_domain': columnvalue}
+
+        if columnname == 'MountTarget Subnet Name':
+            mount_target_subnet = commonTools.check_tf_variable(columnvalue.strip())
+            tempdict = {'mount_target_subnet' : mount_target_subnet}
+            tempStr.update(tempdict)
+
+        if columnname == "Access (READ_ONLY|READ_WRITE)":
+            columnname = "access"
+            if str(columnvalue).lower() == "nan" or str(columnvalue) == "":
+                columnvalue = "READ_ONLY"
+            if str(columnvalue).strip() != "READ_WRITE":
+                columnvalue = "READ_ONLY"
+            access.append(columnvalue)
+            tempdict = {'access': columnvalue}
+
+        if columnname == "Source CIDR":
+            columnname = commonTools.check_column_headers(columnname)
+            if str(columnvalue).lower() == "nan" or str(columnvalue) == "":
+                columnvalue = "0.0.0.0/0"
+            sourceCIDR.append(columnvalue)
+            tempdict = {'source_cidr': columnvalue}
+            tempStr.update(tempdict)
+
+        if columnname == "GID":
+            columnname = commonTools.check_column_headers(columnname)
+            if str(columnvalue).lower() == "nan" or str(columnvalue) == "":
+                columnvalue = "65534"
+            else:
+                columnvalue = int(columnvalue)
+            gid.append(columnvalue)
+
+
+        if columnname == "UID":
+            columnname = commonTools.check_column_headers(columnname)
+            if str(columnvalue).lower() == "nan" or str(columnvalue) == "":
+                columnvalue = "65534"
+            else:
+                columnvalue = int(columnvalue)
+            uid.append(columnvalue)
+
+        if columnname == "IDSquash (NONE|ALL|ROOT)":
+            columnname = "idsquash"
+            if str(columnvalue).lower() == "nan" or str(columnvalue) != "ALL" or str(columnvalue) != "ROOT" or str(columnvalue) == "":
+                columnvalue = "NONE"
+            idsquash.append(columnvalue)
+            tempdict = {'idsquash': columnvalue}
+
+
+        if columnname == "Require PS Port (true|false)":
+            columnname = "require_ps_port"
+            if str(columnvalue).lower() == "nan" or str(columnvalue).lower() != "true" or str(columnvalue) == "" or str(columnvalue) != 1.0:
+                columnvalue = "false"
+            require_ps_port.append(columnvalue)
+            tempdict = {'require_ps_port': columnvalue}
+
+        if columnname == "MountTarget Name":
+            if columnvalue != '':
+                mount_target_tf_name = commonTools.check_tf_variable(str(columnvalue).strip())
+            tempdict = {'mount_target_tf_name': mount_target_tf_name}
+            tempStr.update(tempdict)
+
+        if columnname == 'FSS Name':
+            if columnvalue != '':
+                fss_name = str(columnvalue).strip()
+                fss_tf_name = commonTools.check_tf_variable(fss_name.strip())
+            tempdict = {'fss_tf_name' : fss_tf_name,'fss_name' : fss_name}
+            tempStr.update(tempdict)
+
+        path = str(df.loc[i,'Path']).strip()
+
+        columnname = commonTools.check_column_headers(columnname)
+        tempStr[columnname] = str(columnvalue).strip()
+        tempStr.update(tempdict)
+
+    fss_exports(i, df, tempStr)
     export_set_info = ""
+
     for j in range(0, len(sourceCIDR)):
-        export_set_info += """
-        export_options {
-                        source = \"""" + str(sourceCIDR[j]).strip() + """"
-                        access = \"""" + access[j].strip() + """"
-                        anonymous_gid = \"""" + str(gid[j]) + """"
-                        anonymous_uid = \"""" + str(uid[j]) + """"
-                        identity_squash = \"""" + idsquash[j].strip() + """"
-                        require_privileged_source_port = \"""" + str(require_ps_port[j]).strip().lower() + """"
-                        } """
+        tempStr['source'] = str(sourceCIDR[j]).strip()
+        tempStr['access'] = access[j].strip()
+        tempStr['gid'] = str(gid[j])
+        tempStr['uid'] = str(uid[j])
+        tempStr['idsquash'] = idsquash[j].strip()
+        tempStr['require_ps_port'] = str(require_ps_port[j]).strip().lower()
 
-    compartment_name = compartment_name.strip()
-    compartment_name = commonTools.check_tf_variable(compartment_name)
+        export_set_info = export_set_info + export.render(tempStr)
 
-    if (mount_target_name.strip() not in MT_names[region]):
-        MT_names[region].append(mount_target_name.strip())
-        mount_target_tf_name = commonTools.check_tf_variable(mount_target_name.strip())
-        data_mt = """
-            resource "oci_file_storage_mount_target" \"""" + mount_target_tf_name + """" {
-            availability_domain = "${data.oci_identity_availability_domains.ADs.availability_domains.""" + str(ad) + """.name}"
-            compartment_id = "${var.""" + compartment_name + """}"
-            subnet_id = "${oci_core_subnet.""" + mount_target_subnet + """.id}"
-            display_name = \"""" + mount_target_name.strip() + """"
-            """
-        if (str(mount_target_ip).lower() != NaNstr.lower()):
-            data_mt = data_mt + """
-            ip_address = \"""" + mount_target_ip.strip() + """"
-            """
-        if (str(mount_target_hostname).lower() != NaNstr.lower()):
-            data_mt = data_mt + """
-            hostname_label = \"""" + mount_target_hostname.strip() + """"
-            """
+    tempdict = {'export_set_info' : export_set_info }
+    tempStr.update(tempdict)
 
-        data_mt = data_mt + """
-        }
-        """
-        tempStr[region] = tempStr[region] + data_mt
+    if (str(mount_target_tf_name).strip() not in MT_names[region]):
+        MT_names[region].append(str(mount_target_tf_name).strip())
+        tempStr_fss[region] = tempStr_fss[region] + mounttarget.render(tempStr)
 
     if (fss_name.strip() not in FSS_names[region]):
         FSS_names[region].append(fss_name.strip())
-        fss_tf_name = commonTools.check_tf_variable(fss_name.strip())
-        data_fs = """
-        resource "oci_file_storage_file_system" \"""" + fss_tf_name + """" {
-            availability_domain = "${data.oci_identity_availability_domains.ADs.availability_domains.""" + str(ad) + """.name}"
-            compartment_id = "${var.""" + compartment_name + """}"
-            display_name = \"""" + fss_name.strip() + """"
-        }"""
-
-        tempStr[region] = tempStr[region] + data_fs
+        tempStr_fss[region] = tempStr_fss[region] + fss.render(tempStr)
 
     path_tf = path
     if path[-1] == '/':
@@ -244,25 +313,20 @@ for i in df.index:
     FSE_tf_name = "FSE-" + mount_target_tf_name + "-" + fss_tf_name + "-" + path_tf[1:]
     FSE_tf_name = commonTools.check_tf_variable(FSE_tf_name)
 
+    tempStr['FSE_tf_name'] = FSE_tf_name
+    tempStr.update(tempdict)
+
     # FSE_tf_name=commonTools.check_tf_variable(FSE_name)
-    data_fs_es = """
-            resource "oci_file_storage_export" \"""" + FSE_tf_name + """" {
-                export_set_id = "${oci_file_storage_mount_target.""" + mount_target_tf_name + """.export_set_id}"
-                file_system_id = "${oci_file_storage_file_system.""" + fss_tf_name + """.id}"
-                path = \"""" + path + """"
-                """ + export_set_info + """ 
-                }
-               """
-    tempStr[region] = tempStr[region] + data_fs_es
+    tempStr_fss[region] = tempStr_fss[region] + fses.render(tempStr)
 
 for r in ct.all_regions:
-    if (tempStr[r] != ""):
+    if (tempStr_fss[r] != ""):
         outfile = outdir + "/" + r + "/FSS.tf"
         if (os.path.exists(outfile)):
             shutil.copy(outfile, outfile + "_backUp" + date)
         oname = open(outfile, "w")
         print("Writing " + outfile)
-        oname.write(tempStr[r])
+        oname.write(tempStr_fss[r])
         oname.close()
 
 # Remove temporary file created

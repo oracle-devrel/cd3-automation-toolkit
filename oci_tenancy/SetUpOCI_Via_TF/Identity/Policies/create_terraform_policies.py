@@ -52,7 +52,7 @@ tempStr1 = {}
 
 # Load the template file
 file_loader = FileSystemLoader('templates')
-env = Environment(loader=file_loader, keep_trailing_newline=True)
+env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
 template = env.get_template('policy-template')
 
 # If input is cd3 file
@@ -106,8 +106,11 @@ if ('.xls' in args.inputfile):
             # Column value
             columnvalue = str(df.loc[i, columnname]).strip()
 
-            if columnvalue == 'True' or columnvalue == 'TRUE' or columnvalue == 'False' or columnvalue == 'FALSE':
-                columnvalue = columnvalue.lower()
+            if columnvalue == '1.0' or  columnvalue == '0.0':
+                if columnvalue == '1.0':
+                    columnvalue = "true"
+                else:
+                    columnvalue = "false"
 
             # replace 'nan' with ""
             if columnvalue.lower() == 'nan':

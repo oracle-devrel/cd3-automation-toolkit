@@ -73,7 +73,7 @@ global dhcp_data
 
 # Load the template file
 file_loader = FileSystemLoader('templates')
-env = Environment(loader=file_loader, keep_trailing_newline=True)
+env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
 datasource = env.get_template('data-source-template')
 defaultdhcp = env.get_template('default-dhcp-template')
 
@@ -366,10 +366,13 @@ if ('.xls' in filename):
         tempdict = {}
 
         for columnname in dfcolumns:
+
             # Column value
             columnvalue = str(df[columnname][i]).strip()
+
             if (columnvalue.lower() == 'nan'):
                 columnvalue = ""
+
             if "::" in columnvalue:
                 if columnname != "Compartment Name":
                     columnname = commonTools.check_column_headers(columnname)
@@ -379,6 +382,12 @@ if ('.xls' in filename):
 
             if columnname in commonTools.tagColumns:
                 tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)
+
+            if columnvalue == '1.0' or  columnvalue == '0.0':
+                if columnvalue == '1.0':
+                    columnvalue = "true"
+                else:
+                    columnvalue = "false"
 
             if columnname == "DNS Label":
                 # check if vcn_dns_label is not given by user in input use vcn name
