@@ -73,7 +73,7 @@ ADS = ["AD1", "AD2", "AD3"]
 file_loader = FileSystemLoader('templates')
 env = Environment(loader=file_loader,keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
 template = env.get_template('seclist-template')
-secrule = env.get_template('ingress-egress-template')
+secrule = env.get_template('sec-rule-template')
 
 def processSubnet(tempStr):
 

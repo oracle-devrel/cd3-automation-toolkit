@@ -15,7 +15,7 @@ from commonTools import *
 file_loader = FileSystemLoader('templates')
 env = Environment(loader=file_loader,keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
 defaultseclist = env.get_template('default-seclist-template')
-ingress_egress = env.get_template('ingress-egress-template')
+secrule = env.get_template('sec-rule-template')
 seclist = env.get_template('seclist-template')
 
 def skipCommentedLine(lines):
@@ -53,7 +53,7 @@ def create_ingress_rule_string(tempStr,ingress_rule,tempdict2):
     tempdict2 = {'protocol_code': get_protocol(protocol),'isstateless':isstateless}
     tempStr.update(tempdict2)
 
-    ingress_rule = ingress_rule + ingress_egress.render(tempStr)
+    ingress_rule = ingress_rule + secrule.render(tempStr)
     return ingress_rule
 
 
@@ -79,7 +79,7 @@ def create_egress_rule_string(tempStr,egress_rule,tempdict2):
     tempDict2 = {'protocol_code': get_protocol(protocol),'isstateless':isstateless}
     tempStr.update(tempDict2)
 
-    egress_rule = egress_rule + ingress_egress.render(tempStr)
+    egress_rule = egress_rule + secrule.render(tempStr)
     return egress_rule
 
 
