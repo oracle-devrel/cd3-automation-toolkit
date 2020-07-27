@@ -9,6 +9,7 @@ import os
 from os import path
 sys.path.append(os.getcwd()+"/../..")
 from commonTools import *
+from jinja2 import Environment, FileSystemLoader
 
 
 parser = argparse.ArgumentParser(description="Create vars files for the each row in csv file.")
@@ -38,12 +39,21 @@ ct.get_subscribedregions(configFileName)
 x = datetime.datetime.now()
 date = x.strftime("%f").strip()
 
+# Load the template file
+file_loader = FileSystemLoader('templates')
+env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
+namespacetemplate = env.get_template('namespace-template')
+tagkeytemplate = env.get_template('key-template')
+
+tagnamespace_list={}
+
 # Creates the namespaces
 if ('.xlsx' in filename):
     for reg in ct.all_regions:
-        namespace_src=outdir + "/"+reg+"/tagnamespaces.tf"
+        tagnamespace_list[reg] = []
+        namespace_src=outdir + "/"+reg+"/namespaces.tf"
         if path.exists(namespace_src):
-            namespace_dst = outdir + "/"+reg+ "/tagnamespaces_backup" + date
+            namespace_dst = outdir + "/"+reg+ "/namespaces_backup" + date
             os.rename(namespace_src, namespace_dst)
         keys_src=outdir + "/"+reg+"/tagkeys.tf"
         if path.exists(keys_src):
@@ -54,91 +64,115 @@ if ('.xlsx' in filename):
     df = df.dropna(how='all')
     df = df.reset_index(drop=True)
 
-    for i in df.keys():
-        if (i == 'compartment_name'):
-            for j in df.index:
-                if (str(df[i][j]) == 'nan'):
-                    continue
-                else:
-                    compartment_var_name = df[i][j]
-                    continue
-        if (i == 'TagNamespace'):
-            continue
-        elif (i == 'compartment_name'):
-            continue
-        elif (i == 'Region'):
-            for j in df.index:
-                if (str(df[i][j]) == 'nan'):
-                    continue
-                else:
-                    Region = df[i][j].strip().lower()
-                    if(Region in commonTools.endNames):
-                        exit()
-                    if(Region not in ct.all_regions):
-                        print("Invalid region "+Region)
-                        break
+    # temporary dictionary1 and dictionary2
+    tempStr = {}
+    tempdict = {}
 
-        else:
-            tagnamespace = i
-            tagnamespace_tf=commonTools.check_tf_variable(tagnamespace)
-            compartment_var_name_tf=commonTools.check_tf_variable(compartment_var_name)
-            tmpstr = """
-            resource "oci_identity_tag_namespace" \"""" + tagnamespace_tf + """\" {
-                #Required
-                compartment_id = "${var.""" + compartment_var_name_tf + """}"
-                description = "Create Tag Namespace for """ + tagnamespace + """\"
-                name = \"""" + tagnamespace + """\"
-                is_retired = false
-            }
-            """
+    tmpstr=''
+    namespace_tf_name=''
+    key_tf_name=''
+    description=''
+    description_keys=''
+    namespace=''
+    region=''
+    tagkeytemp=''
 
-            outfile = outdir + "/" + Region + "/tagnamespaces.tf"
+    #fill the empty values with that in previous row.
+    dffill = df[['Region','Compartment Name','Tag Namespace','Namespace Description']]
+    dffill= dffill.fillna(method='ffill')
+
+    dfdrop = df[['Region','Compartment Name','Tag Namespace','Namespace Description']]
+    dfdrop = df.drop(dfdrop,axis=1)
+
+    pd.set_option('display.max_columns', 500)
+
+    df = pd.concat([dffill, dfdrop], axis=1)
+
+    # List of the column headers
+    dfcolumns = df.columns.values.tolist()
+
+    for i in df.index:
+        region = str(df.loc[i, 'Region'])
+
+        # Encountered <End>
+        if (region in commonTools.endNames):
+            break
+
+        region = region.strip().lower()
+
+        # If some invalid region is specified in a row which is not part of VCN Info Tab
+        if region not in ct.all_regions and region != 'nan':
+            print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
+            exit(1)
+
+        for columnname in dfcolumns:
+
+            # Column value
+            columnvalue = str(df[columnname][i]).strip()
+
+            if columnvalue == '1.0' or  columnvalue == '0.0':
+                if columnvalue == '1.0':
+                    columnvalue = "true"
+                else:
+                    columnvalue = "false"
+
+            if (columnvalue.lower() == 'nan'):
+                columnvalue = ""
+
+            if "::" in columnvalue:
+                if columnname != "Compartment Name":
+                    columnname = commonTools.check_column_headers(columnname)
+                    multivalues = columnvalue.split("::")
+                    multivalues = [str(part).strip() for part in multivalues if part]
+                    tempdict = {columnname: multivalues}
+
+            if columnname in commonTools.tagColumns:
+                tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)
+
+            if columnname == "Compartment Name":
+                columnvalue = str(columnvalue).strip()
+                compartmentVarName = commonTools.check_tf_variable(columnvalue)
+                tempdict = {'compartment_tf_name': compartmentVarName}
+
+            if columnname == 'Tag Namespace':
+                columnvalue = str(columnvalue).strip()
+                namespace_tf_name = commonTools.check_tf_variable(columnvalue)
+                tempdict = {'namespace_tf_name':namespace_tf_name}
+
+            if columnname == 'Namespace Description':
+                description = str(columnvalue).strip()
+                if columnvalue == '':
+                    description = "Create Tag Namespace - " + namespace_tf_name
+                tempdict = {'description' : description}
+
+            if columnname == 'Tag Keys':
+                columnvalue = str(columnvalue).strip()
+                key_tf_name = commonTools.check_tf_variable(columnvalue)
+                tempdict = {'description_keys':description_keys,'key_tf_name':key_tf_name}
+
+            if columnname == 'Tag Descriptopn':
+                description_keys = str(columnvalue).strip()
+                if columnvalue == '':
+                    description_keys =  "Create Tag Key "+key_tf_name+" for Namespace - "+namespace_tf_name
+                tempdict = {'description_keys' : description_keys}
+
+
+            columnname = commonTools.check_column_headers(columnname)
+            tempStr[columnname] = str(columnvalue).strip()
+            tempStr.update(tempdict)
+
+        if namespace_tf_name not in tagnamespace_list[region]:
+            namespace = namespacetemplate.render(tempStr)
+
+            outfile = outdir + "/" + region + "/namespaces.tf"
             oname = open(outfile, "a+")
-            oname.write(tmpstr)
+            oname.write(namespace)
             oname.close()
+            tagnamespace_list[region].append(namespace_tf_name)
 
-# Adds the tag to the namespaces created
-if ('.xlsx' in filename):
-    df = pd.read_excel(filename, sheet_name='Tags', skiprows=1)
-    df = df.dropna(how='all')
-    df = df.reset_index(drop=True)
-    for i in df.keys():
 
-        if (i == 'Region'):
-            for j in df.index:
-                if (str(df[i][j]) == 'nan'):
-                    continue
-                else:
-                    Region = df[i][j].strip().lower()
-
-        elif (i == 'compartment_name'):
-            continue
-        else:
-            key = i
-
-            for j in df.index:
-                if (str(df[i][j]) == 'nan'):
-                    continue
-                else:
-
-                    tagkey = df[i][j]
-
-                    if (tagkey == 'Keys') and (key == 'TagNamespace'):
-                        continue
-                    else:
-                        key_tf = commonTools.check_tf_variable(key)
-                        tagkey_tf = commonTools.check_tf_variable(tagkey)
-                        tmpstr = """
-                        resource "oci_identity_tag" \"""" + tagkey_tf + """\" {
-                        #Required
-                        description = "Creating """ + tagkey + """ in Namespace """ + key + """\"
-                        name = \"""" + tagkey + """\"
-                        tag_namespace_id = \"${oci_identity_tag_namespace.""" + key_tf + """.id}\"
-                        is_retired = false
-                    }
-                    """
-                    outfile = outdir + "/" + Region + "/tagkeys.tf"
-                    oname = open(outfile, "a+")
-                    oname.write(tmpstr)
-                    oname.close()
-
+        tagkeytemp = tagkeytemplate.render(tempStr)
+        outfile = outdir + "/" + region + "/tagkeys.tf"
+        oname = open(outfile, "a+")
+        oname.write(tagkeytemp)
+        oname.close()
