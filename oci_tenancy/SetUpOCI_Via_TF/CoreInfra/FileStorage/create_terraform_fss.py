@@ -75,10 +75,10 @@ def fss_exports(i, df, tempStr):
             require_ps_port_1 = str(str(df.loc[i, 'Require PS Port (true|false)']))
             if (str(sourcecidr_1).lower() == NaNstr.lower()):
                 sourcecidr_1 = "0.0.0.0/0"
-            if str(access_1).lower() == NaNstr.lower():
+            if str(access_1).lower() == NaNstr.lower() or str(access_1).strip() == "READ_ONLY":
                 access_1 = "READ_ONLY"
-            elif str(access_1).strip() != "READ_WRITE":
-                access_1 = "READ_ONLY"
+            elif str(access_1).strip() == "READ_WRITE":
+                access_1 = "READ_WRITE"
 
             if str(gid_1).lower() == NaNstr.lower():
                 gid_1 = "65534"
@@ -95,7 +95,7 @@ def fss_exports(i, df, tempStr):
                 idsquash_1 = "NONE"
             if str(require_ps_port_1).lower() == NaNstr.lower():
                 require_ps_port_1 = "false"
-            elif str(require_ps_port_1).lower() == "true" or require_ps_port_1 == "TRUE" or df.loc[i, 16] == 1.0:
+            elif str(require_ps_port_1).lower() == "true" or require_ps_port_1 == "TRUE" or df.loc[i, 'Require PS Port (true|false)'] == 1.0:
                 require_ps_port_1 = "true"
             else:
                 require_ps_port_1 = "false"
