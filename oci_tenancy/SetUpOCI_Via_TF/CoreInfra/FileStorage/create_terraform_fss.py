@@ -59,11 +59,10 @@ def fss_exports(i, df, sourceCIDR, access, gid, uid, idsquash, require_ps_port, 
             require_ps_port_1 = str(str(df.iat[i, 16]))
             if (str(sourcecidr_1).lower() == NaNstr.lower()):
                 sourcecidr_1 = "0.0.0.0/0"
-            if str(access_1).lower() == NaNstr.lower():
+            if str(access_1).lower() == NaNstr.lower() or str(access_1).strip() == "READ_ONLY":
                 access_1 = "READ_ONLY"
-            elif str(access_1).strip() != "READ_WRITE":
-                access_1 = "READ_ONLY"
-
+            elif str(access_1).strip() == "READ_WRITE":
+                access_1 = "READ_WRITE"
             if str(gid_1).lower() == NaNstr.lower():
                 gid_1 = "65534"
             else:
@@ -160,10 +159,10 @@ for i in df.index:
     else:
         sourceCIDR.append(str(df.iat[i, 11]))
 
-    if str(df.iat[i, 12]).lower() == NaNstr.lower():
+    if str(df.iat[i, 12]).lower() == NaNstr.lower() or str(df.iat[i, 12]).strip() == "READ_ONLY":
         access.append("READ_ONLY")
-    elif str(df.iat[i, 12]).strip() != "READ_WRITE":
-        access.append("READ_ONLY")
+    elif str(df.iat[i, 12]).strip() == "READ_WRITE":
+        access.append("READ_WRITE")
 
     if str(df.iat[i, 13]).lower() == NaNstr.lower():
         gid.append(str("65534"))
