@@ -1,0 +1,37 @@
+#Create SGW
+resource "oci_core_service_gateway" "{{ sgw_tf_name }}" {
+    #Required
+    compartment_id = var.{{ compartment_tf_name }}
+    services {
+        #Required
+        service_id =  contains(split("-",data.oci_core_services.oci_services.services.0.cidr_block),"all") == true ? data.oci_core_services.oci_services.services.0.id : data.oci_core_services.oci_services.services.1.id
+
+    }
+    vcn_id = oci_core_vcn.{{ vcn_tf_name }}.id
+
+    #Optional
+    display_name = "{{ sgw_name }}"
+
+    {#  ###Section for adding Defined and Freeform Tags###  #}
+    {% if defined_tags and defined_tags != 'nan' and defined_tags != '' %}
+    {% if defined_tags[0] %}
+    defined_tags = {
+    {% for tags in defined_tags  %}   {% if not loop.last %}
+    "{{ tags[0]  }}"= "{{ tags[1] }}" ,{% else %}
+    "{{ tags[0]  }}"= "{{ tags[1] }}"
+    {% endif %}{% endfor %}
+    }
+    {% endif %} {% endif %}
+    {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' %}
+    {% if freeform_tags[0] %}
+    freeform_tags = {
+    {% for tags in freeform_tags %} {% if not loop.last  %}
+        "{{ tags[0] }}"="{{ tags[1] }}",{% else %}
+        "{{ tags[0] }}"="{{ tags[1] }}"
+        {% endif %} {% endfor %}
+    }
+     {% endif %} {% endif %}
+    {#  ###Section for adding Defined and Freeform Tags ends here###  #}
+
+    {#  ## Additional fields to be added here ##  #}
+}

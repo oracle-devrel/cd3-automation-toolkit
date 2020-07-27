@@ -1,0 +1,36 @@
+
+resource "oci_file_storage_mount_target" "{{ mount_target_tf_name }}" {
+    availability_domain = data.oci_identity_availability_domains.ADs.availability_domains.{{ availability_domain }}.name
+    compartment_id = var.{{ compartment_name }}
+    subnet_id = oci_core_subnet.{{ mounttarget_subnetname }}.id
+    display_name = "{{ mounttarget_name }}"
+    {% if mounttarget_ip != '' %}
+    ip_address = "{{ mounttarget_ip }}"
+    {% endif %}
+    {% if mounttarget_hostname != '' %}
+    hostname_label = "{{ mounttarget_hostname }}"
+    {% endif %}
+
+        {#  ###Section for adding Defined and Freeform Tags###  #}
+        {% if defined_tags and defined_tags != 'nan' and defined_tags != '' %}
+        {% if defined_tags[0] %}
+        defined_tags = {
+        {% for tags in defined_tags  %}   {% if not loop.last %}
+        "{{ tags[0]  }}"= "{{ tags[1] }}" ,{% else %}
+        "{{ tags[0]  }}"= "{{ tags[1] }}"
+        {% endif %}{% endfor %}
+        }
+        {% endif %} {% endif %}
+        {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' %}
+        {% if freeform_tags[0] %}
+        freeform_tags = {
+        {% for tags in freeform_tags %} {% if not loop.last  %}
+            "{{ tags[0] }}"="{{ tags[1] }}",{% else %}
+            "{{ tags[0] }}"="{{ tags[1] }}"
+            {% endif %} {% endfor %}
+        }
+         {% endif %} {% endif %}
+        {#  ###Section for adding Defined and Freeform Tags ends here###  #}
+
+        {#  ## Additional fields to be added here ##  #}
+}

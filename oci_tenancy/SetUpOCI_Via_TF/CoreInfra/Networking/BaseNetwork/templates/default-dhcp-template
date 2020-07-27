@@ -1,0 +1,16 @@
+#Default DHCP Options
+resource "oci_core_default_dhcp_options" "{{ dhcp_tf_name }}" {
+	    manage_default_resource_id  = oci_core_vcn.{{ vcn_tf_name }}.default_dhcp_options_id
+	    options {
+				type = "DomainNameServer"
+				server_type = "{{ server_type }}"
+                }
+		{% if search_domain and search_domain != '' %}
+		options {
+				type = "SearchDomain"
+				search_domain_names = [ "{{ search_domain }}" ]
+				}
+		{% endif %}
+
+		{#  ## Additional fields to be added here ##  #}
+ }

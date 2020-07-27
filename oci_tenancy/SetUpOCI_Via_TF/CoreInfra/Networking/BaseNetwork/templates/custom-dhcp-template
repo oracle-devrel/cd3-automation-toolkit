@@ -1,0 +1,43 @@
+
+resource "oci_core_dhcp_options" "{{ dhcp_tf_name }}"  {
+		compartment_id = var.{{ compartment_tf_name }}
+		options {
+				type = "DomainNameServer"
+				server_type = "{{ server_type }}"
+				{% if custom_dns_server and custom_dns_server != '' %}
+				custom_dns_servers = [ {{ custom_dns_server }} ]
+				{% endif %}
+				}
+		{% if search_domain and search_domain != '' %}
+		options {
+				type = "SearchDomain"
+				search_domain_names = [ "{{ search_domain }}" ]
+				}
+		{% endif %}
+
+		vcn_id = oci_core_vcn.{{ vcn_tf_name }}.id
+		display_name = "{{ dhcp_option_name }}"
+
+        {#  ###Section for adding Defined and Freeform Tags###  #}
+        {% if defined_tags and defined_tags != 'nan' and defined_tags != '' %}
+        {% if defined_tags[0] %}
+        defined_tags = {
+        {% for tags in defined_tags  %}   {% if not loop.last %}
+        "{{ tags[0]  }}"= "{{ tags[1] }}" ,{% else %}
+        "{{ tags[0]  }}"= "{{ tags[1] }}"
+        {% endif %}{% endfor %}
+        }
+        {% endif %} {% endif %}
+        {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' %}
+        {% if freeform_tags[0] %}
+        freeform_tags = {
+        {% for tags in freeform_tags %} {% if not loop.last  %}
+            "{{ tags[0] }}"="{{ tags[1] }}",{% else %}
+            "{{ tags[0] }}"="{{ tags[1] }}"
+            {% endif %} {% endfor %}
+        }
+         {% endif %} {% endif %}
+        {#  ###Section for adding Defined and Freeform Tags ends here###  #}
+
+        {#  ## Additional fields to be added here ##  #}
+}

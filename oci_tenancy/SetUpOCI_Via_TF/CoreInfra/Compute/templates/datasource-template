@@ -1,0 +1,20 @@
+data "oci_core_volume_backup_policies" "block_gold" {
+	filter {
+		name = "display_name"
+		values = [ "gold" ]
+		}
+}
+
+data "oci_core_volume_backup_policies" "block_silver" {
+	filter {
+		name = "display_name"
+		values = [ "silver" ]
+		}
+}
+
+data "oci_core_volume_backup_policies" "block_bronze" {
+	filter {
+		name = "display_name"
+		values = [ "bronze" ]
+		}
+}
