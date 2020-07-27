@@ -1,7 +1,7 @@
             {% if rule_type == 'ingress' %}
             ingress_security_rules {
                 #Required
-                protocol = "{{ protocol_code }}"
+                protocol = "{{ protocol }}"
                 source = "{{ source }}"
 
                 #Optional
@@ -45,7 +45,7 @@
             {% if rule_type == 'egress' %}
             egress_security_rules {
                 #Required
-                protocol = "{{ protocol_code }}"
+                protocol = "{{ protocol }}"
                 destination = "{{ destination }}"
 
                 #Optional

@@ -232,6 +232,8 @@ def main():
     regionDict = nsgParser.getRegionDict()
     listOfRegions = nsgParser.regions
 
+    print(regionDict,listOfRegions)
+
     # creates all region directories in specified out directory
     # creates all region directories in specified out directory
     for region in listOfRegions:
