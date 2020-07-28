@@ -103,10 +103,10 @@ if('.xls' in filename):
                     shape_error=1
 
         if region in ct.all_regions and shape_error==0:
-            OS=df['OS'][row]
+            OS=df.loc[i,'OS']
             if(".Flex" in shapeField[0]):
                 OS=OS+"Flex"
-            copy_template_file(df['Hostname'][row], OS,df['Region'][row])
+            copy_template_file(df.loc[i,'Hostname'], OS,df[i,'Region'])
         elif region not in ct.all_regions:
             print("Skipping copy template for hostname "+ hostname + " as invalid region")
         elif(shape_error==1):
@@ -114,9 +114,6 @@ if('.xls' in filename):
         if region not in ct.all_regions:
             print("ERROR!!! Invalid Region; Skipping creation of Terraform File for hostname - " + hostname+". It should be one of the regions tenancy is subscribed to..Exiting!")
             exit(1)
-
-        if(shape_error==1):
-            print("Skipping creation of Terraform File for hostname "+ hostname +" as ocpus missing for Flex shape")
 
         # temporary dictionary1 and dictionary2
         tempStr = {}
