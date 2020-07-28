@@ -1,0 +1,15 @@
+
+resource "oci_identity_tag_default" "{{ namespace_tf_name }}-{{ key_tf_name }}-default" {
+    #Required
+    compartment_id = var.{{ compartment_tf_name }}
+    tag_definition_id = oci_identity_tag.{{ key_tf_name }}.id
+    value = "{{ default_tag_value }}"
+
+    #Optional
+    is_required = false
+
+    {#  ## Add Additional Fields below this line ##  #}
+
+
+    {#  ## End of Additional Fields ##  #}
+}

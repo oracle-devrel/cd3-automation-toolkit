@@ -12,8 +12,9 @@ resource "oci_core_instance" "{{ host_tf_name }}" {
         }
         {% endif %}
 
-        #Optional
         fault_domain = "{{ fault_domain }}"
+        {# The "os" below must be a variable in the variables.tf file with the appropriate image OCID as its value #}
+        {# See variables_<region>.tf for an example #}
         source_details {
 	        source_id  = var.{{ os }}
             source_type = "image"
@@ -36,6 +37,13 @@ resource "oci_core_instance" "{{ host_tf_name }}" {
         }
         dedicated_vm_host_id = {{ dedicated_vm_host_tf }}
 
+        {#  ## Add Additional Fields below this line ##  #}
+
+
+        {#  ## End of Additional Fields ##  #}
+
+        {#  ##Do not modify below this line##  #}
+
         {#  ###Section for adding Defined and Freeform Tags###  #}
         {% if defined_tags and defined_tags != 'nan' and defined_tags != '' %}
         {% if defined_tags[0] %}
@@ -50,13 +58,11 @@ resource "oci_core_instance" "{{ host_tf_name }}" {
         {% if freeform_tags[0] %}
         freeform_tags = {
         {% for tags in freeform_tags %} {% if not loop.last  %}
-            "{{ tags[0] }}"="{{ tags[1] }}",{% else %}
-            "{{ tags[0] }}"="{{ tags[1] }}"
-            {% endif %} {% endfor %}
+        "{{ tags[0] }}"="{{ tags[1] }}",{% else %}
+        "{{ tags[0] }}"="{{ tags[1] }}"
+        {% endif %} {% endfor %}
         }
-         {% endif %} {% endif %}
+        {% endif %} {% endif %}
         {#  ###Section for adding Defined and Freeform Tags ends here###  #}
-
-        {#  ## Additional fields to be added here ##  #}
 }
 

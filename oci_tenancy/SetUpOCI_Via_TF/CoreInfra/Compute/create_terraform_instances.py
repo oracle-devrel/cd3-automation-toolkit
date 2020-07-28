@@ -157,16 +157,6 @@ if('.xls' in filename):
                 host_tf_name = commonTools.check_tf_variable(columnvalue)
                 tempdict = {'host_tf_name': host_tf_name}
 
-            if columnname == 'OS':
-                os_name = columnvalue.strip()
-                if os_name.lower() in defaultos:
-                    if 'flex' not in os_name.lower():
-                        os_name = os_name.lower()+'_ocid'
-                    else:
-                        #Remove 'flex' to match windows_ocid or linux_ocid
-                        os_name = os_name.lower()[:-4]+'_ocid'
-                tempdict = {'os' : os_name}
-
             if columnname == 'Compartment Name':
                 compartment_var_name = columnvalue.strip()
                 compartment_var_name = commonTools.check_tf_variable(compartment_var_name)

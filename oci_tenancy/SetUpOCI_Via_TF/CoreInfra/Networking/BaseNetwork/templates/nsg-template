@@ -6,6 +6,13 @@ resource "oci_core_network_security_group" "{{ nsg_tf_name }}" {
     #Optional
     display_name = "{{ display_name }}"
 
+    {#  ## Add Additional Fields below this line ##  #}
+
+
+    {#  ## End of Additional Fields ##  #}
+
+    {#  ##Do not modify below this line##  #}
+
     {#  ###Section for adding Defined and Freeform Tags###  #}
     {% if defined_tags and defined_tags != 'nan' and defined_tags != '' %}
     {% if defined_tags[0] %}
@@ -20,13 +27,10 @@ resource "oci_core_network_security_group" "{{ nsg_tf_name }}" {
     {% if freeform_tags[0] %}
     freeform_tags = {
     {% for tags in freeform_tags %} {% if not loop.last  %}
-        "{{ tags[0] }}"="{{ tags[1] }}",{% else %}
-        "{{ tags[0] }}"="{{ tags[1] }}"
-        {% endif %} {% endfor %}
+    "{{ tags[0] }}"="{{ tags[1] }}",{% else %}
+    "{{ tags[0] }}"="{{ tags[1] }}"
+    {% endif %} {% endfor %}
     }
-     {% endif %} {% endif %}
+    {% endif %} {% endif %}
     {#  ###Section for adding Defined and Freeform Tags ends here###  #}
-
-    {#  ## Additional fields to be added here ##  #}
-
 }

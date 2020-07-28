@@ -3,5 +3,8 @@ resource "oci_core_volume_backup_policy_assignment" "{{ hostname_tf_name }}_bkup
     asset_id = oci_core_instance.{{ hostname_tf_name }}.boot_volume_id
     policy_id = data.oci_core_volume_backup_policies.block_{{ backup_policy }}.volume_backup_policies.0.id
 
-    {# ## Additional fields to be added here ## #}
+    {#  ## Add Additional Fields below this line ##  #}
+
+
+    {#  ## End of Additional Fields ##  #}
 }
