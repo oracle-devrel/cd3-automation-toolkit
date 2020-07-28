@@ -86,7 +86,10 @@ if('.xls' in filename):
                     shape_error=1
 
         if region in ct.all_regions and shape_error==0:
-            copy_template_file(df['Hostname'][row], df['OS'][row],df['Region'][row])
+            OS=df['OS'][row]
+            if(".Flex" in shapeField[0]):
+                OS=OS+"Flex"
+            copy_template_file(df['Hostname'][row], OS,df['Region'][row])
         elif region not in ct.all_regions:
             print("Skipping copy template for hostname "+ hostname + " as invalid region")
         elif(shape_error==1):

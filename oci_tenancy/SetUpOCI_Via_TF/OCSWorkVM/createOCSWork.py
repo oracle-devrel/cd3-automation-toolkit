@@ -452,17 +452,27 @@ for region in regions:
     """
     if (windows_image_id[region] != ''):
         variables_data[region] = variables_data[region] + """
-    variable "windows_ocid" {
+    #Example for OS value 'Windows' in Instances sheet
+    variable "Windows" {
             type = "string"
             default = \"""" + windows_image_id[region] + """"
-            description = \"""" + dt + """"
+            description = "Latest ocid as on """ + dt + """"
+    }
+    variable "windows_latest_ocid" {
+            type = "string"
+            default = \"""" + windows_image_id[region] + """"
     }"""
     if (linux_image_id[region] != ''):
         variables_data[region] = variables_data[region] + """
-    variable "linux_ocid"{
+    #Example for OS value 'Linux' in Instances sheet
+    variable "Linux"{
             type = "string"
             default = \"""" + linux_image_id[region] + """"
-            description = \"""" + dt + """"
+            description = "Latest ocid as on """ + dt + """"
+    }
+    variable "linux_latest_ocid"{
+            type = "string"
+            default = \"""" + linux_image_id[region] + """"
     }"""
     write_file("variables_"+region+".tf", variables_data[region])
 

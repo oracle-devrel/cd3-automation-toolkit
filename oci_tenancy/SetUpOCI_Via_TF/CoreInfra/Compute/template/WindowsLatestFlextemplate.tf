@@ -9,11 +9,10 @@ resource "oci_core_instance" "##Hostname##" {
                 ocpus = "##ocpus##"
         }
 
-
         #Optional
         fault_domain = "##Fault Domain##"
         source_details {
-	        source_id  = "${var.Windows}"
+	        source_id  = "${var.windows_latest_ocid}"
             source_type = "image"
         }
 

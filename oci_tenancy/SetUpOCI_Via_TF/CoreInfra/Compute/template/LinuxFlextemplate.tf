@@ -13,7 +13,7 @@ resource "oci_core_instance" "##Hostname##" {
         #Optional
         fault_domain = "##Fault Domain##"
         source_details {
-		        source_id  = "${var.linux_ocid}"
+		        source_id  = "${var.Linux}"
                 source_type = "image"
         }
         create_vnic_details {

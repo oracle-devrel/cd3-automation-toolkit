@@ -150,18 +150,25 @@ Bug fix for Instance, FSS, LBR and DB creation using subnet name
 ------------------------
 SetUPOCI_Via_TF Tag v6.1
 ------------------------
-1. Addition of Description field for Security Rules and Route Rules. Keep using same CD3 but just add new column 'RuleDescription'
-   at the end of both the sheets - SecRulesinOCI and RouteRulesinOCI
-2. New text files - OCI_Regions and OCI_Protocols have been introduced. If any new region gets supported by OCI, it can be added in
-   OCI_Regions file. Similarly Protocol and its number mapping has been defined in OCI_Protocols file which will be used by Security
-   Rules as well as NSG Rules.
-3. Automation Toolkit will now support duplicate compartment names like OCI does. Please refer to CD3-template.xlsx under example folder for sample data.
-4. There is a change in ocswork.properties file. Extra properties specific to OCItoOCI project have been removed.
-4a. Also Regions property has been removed and now tenancy's subscribed regions will be fetched using API and terraform directories would be created based on that.
-4b. Regions property has been removed from VCN Info tab of CD3 as well.
-5. CD3 Validator has been introduced. This will validate Networking tabs as of now. It will check for any Null Values, CIDR overlaps etc.
-6. Support for Flex shapes for Instances. Please refer to CD3-template.xlsx under example folder for sample input data.
-7. Support for Multiple Listeners for LBRs
-8. Support for Multiple export options for FSS.
-9. GIT repo has been moved to OCI. SSH key needs to be setup for access to the repo. Please see the instructions in confluence page:
+1.  Addition of Description field for Security Rules and Route Rules. Keep using same CD3 but just add new column 'RuleDescription'
+    at the end of both the sheets - SecRulesinOCI and RouteRulesinOCI
+2.  New text files - OCI_Regions and OCI_Protocols have been introduced. If any new region gets supported by OCI, it can be added in
+    OCI_Regions file. Similarly Protocol and its number mapping has been defined in OCI_Protocols file which will be used by Security
+    Rules as well as NSG Rules.
+3.  Automation Toolkit will now support duplicate compartment names like OCI does. Please refer to CD3-template.xlsx under example folder for sample data.
+4.  There is a change in ocswork.properties file. Extra properties specific to OCItoOCI project have been removed.
+5.  Support for multiple OCSWork VMs via separate config_for_delete files.
+6.  Support for Reserved Public IP for OCSWork VM.
+7a. Regions property has been removed and now tenancy's subscribed regions will be fetched using API and terraform directories would be created based on that.
+    It would be good to subscribe tenancy to all required regions before setting up OCS Work VM or else create the region directory manually.
+7b. Regions property has been removed from VCN Info tab of CD3 as well.
+8.  CD3 Validator has been introduced. This will validate Networking tabs as of now. It will check for any Null Values, CIDR overlaps etc.
+9.  Support for Flex shapes for Instances. Please refer to CD3-template.xlsx under example folder for sample input data.
+10. Support for Multiple Listeners for LBRs. Add new column 'ListenerName' in the CD3 sheet. Please refer to CD3-template.xlsx under example folder for sample input data.
+11. Support for Multiple export options for FSS. Please refer to CD3-template.xlsx under example folder for sample input data.
+12. Support for NSG export/import. Export process for non-greenfield tenancies will support export of NSGs and their import into terraform.
+13. Instead of LinuxLatest and WindowsLatest, OS value in CD3 template has been changed to Linux and Windows respectively. Variable names in
+    variables_<region>.tf has been changed accordingly.
+    Support for LinuxLatest and WindowsLatest templates for instance will be deprecated from next release.
+13. GIT repo has been moved to OCI. SSH key needs to be setup for access to the repo. Please see the instructions in confluence page:
    https://confluence.oraclecorp.com/confluence/display/NAC/Guide+to+access+repository+in+DevCS
