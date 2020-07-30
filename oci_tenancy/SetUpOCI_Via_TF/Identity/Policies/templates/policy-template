@@ -1,6 +1,6 @@
 
 resource "oci_identity_policy" "{{ policy_tf_name }}" {
-            compartment_id = {{ compartment_name }}
+            compartment_id = var.{{ compartment_tf_name }}
             description = "{{ description }}"
             name = "{{ name }}"
 
@@ -10,13 +10,14 @@ resource "oci_identity_policy" "{{ policy_tf_name }}" {
             {#  ## End of Additional Fields ##  #}
 
             {#  ##Do not modify below this line##  #}
-
+            {#                                     #}
             {#  ###Section for adding Defined and Freeform Tags###  #}
             {% if defined_tags and defined_tags != 'nan' and defined_tags != '' %}
             {% if defined_tags[0] %}
             defined_tags = {
             {% for tags in defined_tags  %}   {% if not loop.last %}
-            "{{ tags[0]  }}"= "{{ tags[1] }}" ,{% else %}
+            "{{ tags[0]  }}"= "{{ tags[1] }}" ,
+            {% else %}
             "{{ tags[0]  }}"= "{{ tags[1] }}"
             {% endif %}{% endfor %}
             }
@@ -25,7 +26,8 @@ resource "oci_identity_policy" "{{ policy_tf_name }}" {
             {% if freeform_tags[0] %}
             freeform_tags = {
             {% for tags in freeform_tags %} {% if not loop.last  %}
-            "{{ tags[0] }}"="{{ tags[1] }}",{% else %}
+            "{{ tags[0] }}"="{{ tags[1] }}",
+            {% else %}
             "{{ tags[0] }}"="{{ tags[1] }}"
             {% endif %} {% endfor %}
             }

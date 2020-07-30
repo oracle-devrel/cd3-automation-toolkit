@@ -94,7 +94,7 @@ if('.xls' in args.inputfile):
 
         # Check if values are entered for mandatory fields
         if str(df.loc[i, 'Region']).lower() == 'nan' or str(df.loc[i, 'Name']).lower() == 'nan' :
-            print(" The values for Region and Name cannot be left empty. Please enter a value and try again !!")
+            print("\nThe values for Region and Name cannot be left empty. Please enter a value and try again !!")
             exit()
 
         for columnname in dfcolumns:

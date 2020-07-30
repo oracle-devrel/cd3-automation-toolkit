@@ -79,9 +79,15 @@ if ('.xls' in args.inputfile):
                 regions[j]).lower() != "nan"):
             check_diff_region.append(regions[j])
 
+    # If some invalid region is specified in a row which is not part of VCN Info Tab
+    for j in check_diff_region:
+        if str(j).strip().lower() not in ct.all_regions:
+            print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
+            exit(1)
+
     # Regions listed in Policies tab should be same for all rows as policies can only be created in home region
     if (len(check_diff_region) > 1):
-        print("Policies can be created only in Home Region; You have specified different regions for different policies...Exiting...")
+        print("\nPolicies can be created only in Home Region; You have specified different regions for different policies...Exiting...")
         exit(1)
 
     # Iterate over rows
@@ -92,11 +98,6 @@ if ('.xls' in args.inputfile):
         # Encountered <End>
         if (region in commonTools.endNames):
             break
-
-        # If some invalid region is specified in a row which is not part of VCN Info Tab
-        if check_diff_region[0].strip().lower() not in ct.all_regions:
-            print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
-            exit(1)
 
         # Temporary dictionary1
         tempdict = {}
@@ -117,13 +118,7 @@ if ('.xls' in args.inputfile):
                 columnvalue = ""
 
             elif "::" in columnvalue:
-                if columnname == "Compartment Name":
-                    compartmentVarName = columnvalue.strip()
-                    columnname = commonTools.check_column_headers(columnname)
-                    compartmentVarName = commonTools.check_tf_variable(compartmentVarName)
-                    columnvalue = str(compartmentVarName)
-                    tempdict = {columnname: columnvalue}
-                else:
+                if columnname != 'Compartment Name':
                     columnname = commonTools.check_column_headers(columnname)
                     multivalues = columnvalue.split("::")
                     multivalues = [str(part).strip() for part in multivalues if part]
@@ -131,6 +126,13 @@ if ('.xls' in args.inputfile):
 
             if columnname in commonTools.tagColumns:
                 tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)
+
+            if columnname == "Compartment Name":
+                compartmentVarName = columnvalue.strip()
+                columnname = commonTools.check_column_headers(columnname)
+                compartmentVarName = commonTools.check_tf_variable(compartmentVarName)
+                columnvalue = str(compartmentVarName)
+                tempdict = {'compartment_tf_name': columnvalue}
 
             columnname = commonTools.check_column_headers(columnname)
             tempStr1[columnname] = str(columnvalue).strip()
@@ -159,12 +161,12 @@ if ('.xls' in args.inputfile):
 
             # assign groups in policy statements
             if ('$' in policy_statement):
-                policy_statement_grps = df.loc[i, "Policy Statement Groups"]
+                policy_statement_grps = str(df.loc[i, "Policy Statement Groups"])
                 actual_policy_statement = policy_statement.replace('$', policy_statement_grps)
 
             # assign compartment in policy statements
             if ('compartment *' in policy_statement):
-                policy_statement_comp = df.loc[i, "Policy Statement Compartment"]
+                policy_statement_comp = str(df.loc[i, "Policy Statement Compartment"])
                 # comp_tf = '${var.' + policy_statement_comp + '}'
                 comp_tf = policy_statement_comp
                 actual_policy_statement = actual_policy_statement.replace('compartment *', 'compartment ' + comp_tf)
@@ -209,7 +211,7 @@ if ('.xls' in args.inputfile):
 
                     actual_policy_statement = policy_statement.replace('$', policy_statement_grps)
                 if ('compartment *' in policy_statement):
-                    policy_statement_comp = df.loc[i, "Policy Statement Compartment"]
+                    policy_statement_comp = str(df.loc[i, "Policy Statement Compartment"])
                     # comp_tf = '${oci_identity_compartment.' + policy_statement_comp + '.name}'
                     # comp_tf = '${var.' + policy_statement_comp + '}'
                     comp_tf = policy_statement_comp

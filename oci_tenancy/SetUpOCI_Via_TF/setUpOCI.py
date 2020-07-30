@@ -312,7 +312,7 @@ print("1.  Identity")
 print("2.  Networking")
 print("3.  Instances/Dedicated VM Hosts")
 print("4.  Create and Attach Block Volumes")
-print("5.  Tagging Resources")
+print("5.  Create Tagnamespaces, Default Tags and Defined Tags")
 print("6.  BackUp Policy")
 print("7.  File Storage Service")
 print("8.  Load Balancer Service")
@@ -683,80 +683,24 @@ if('4' in userInput):
 
 
 if('5' in userInput):
-    print("---------------------Creating Tags------------------------------")
-    print("1.  Create Tags and Tag Namespaces")
-    print("2.  Attach Tags to Servers")
-    print("3.  Attach Tags to Block Volumes")
-    print("m.  Press m to go back to Main Menu")
-    print("q.  Press q to quit")
+    print("------------------------Creating Tag Namespaces and Tags---------------------------")
 
-    tag_choice = input("Enter your choice ")
-    tag_choice=tag_choice.split(",")
-    if('1' in tag_choice):
-        if (input_format == 'cd3'):
-            inputfile = input_cd3file
-        outdir = input_outdir
+    if (input_format == 'cd3'):
+        inputfile = input_cd3file
+    outdir = input_outdir
 
 
-        if not os.path.exists(outdir):
-            os.makedirs(outdir)
+    if not os.path.exists(outdir):
+        os.makedirs(outdir)
 
-        os.chdir('Governance/Tagging')
-        if (input_config_file == ''):
-            command = 'python create_namespace_tagkey.py '+inputfile + ' ' + outdir
-        else:
-            command = 'python create_namespace_tagkey.py ' + inputfile + ' ' + outdir  + ' --configFileName ' + input_config_file
-        print("Executing Command: " + command)
-        os.system(command)
-        os.chdir("../..")
-
-    if ('2' in tag_choice):
-        if (input_format == 'cd3'):
-            inputfile = input_cd3file
-        elif (input_format == 'csv'):
-            if (input_tag_servers_csv == ''):
-                print("input tag_servers_csv location cannot be left blank. Exiting... ")
-                exit(1)
-            inputfile = input_tag_servers_csv
-        outdir = input_outdir
-
-        if not os.path.exists(outdir):
-            os.makedirs(outdir)
-
-        os.chdir('Governance/Tagging')
-        command = 'python attach_tag_server.py ' + inputfile + ' ' + outdir
-        print("Executing Command: " + command)
-        os.system(command)
-        os.chdir("../..")
-
-
-    if ('3' in tag_choice):
-        if (input_format == 'cd3'):
-            inputfile = input_cd3file
-        elif (input_format == 'csv'):
-            if (input_tag_volumes_csv == ''):
-                print("input tag_volumes_csv location cannot be left blank. Exiting... ")
-                exit(1)
-            inputfile = input_tag_volumes_csv
-        outdir = input_outdir
-
-        if not os.path.exists(outdir):
-            os.makedirs(outdir)
-
-        os.chdir('Governance/Tagging')
-        command = 'python attach_tag_volume.py ' + inputfile + ' ' + outdir
-        print("Executing Command: " + command)
-        os.system(command)
-        os.chdir("../..")
-
-    print("--------------------------------------------------------------------------")
-    if ("m" in tag_choice or "M" in tag_choice):
-        cmd = "python setUpOCI.py " + args.propsfile
-        print("Going back to Main Menu...")
-        os.system(cmd)
-    if ("q" in tag_choice or "Q" in tag_choice):
-        print("Exiting...")
-        exit()
+    os.chdir('Governance/Tagging')
+    if (input_config_file == ''):
+        command = 'python create_namespace_tagkey.py '+inputfile + ' ' + outdir
+    else:
+        command = 'python create_namespace_tagkey.py ' + inputfile + ' ' + outdir  + ' --configFileName ' + input_config_file
+    print("Executing Command: " + command)
+    os.system(command)
+    os.chdir("../..")
 
 if('6' in userInput):
     print("------------------------Attaching Backup Policy---------------------------")

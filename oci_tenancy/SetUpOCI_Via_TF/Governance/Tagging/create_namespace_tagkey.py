@@ -104,13 +104,13 @@ if ('.xlsx' in filename):
         region = region.strip().lower()
 
         # If some invalid region is specified in a row which is not part of VCN Info Tab
-        if region not in ct.all_regions and region != 'nan':
+        if region not in ct.all_regions:
             print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
             exit(1)
 
         if str(df.loc[i, 'Default Tag']) == "1.0" or str(df.loc[i, 'Default Tag']) == "true":
             if str(df.loc[i,'Default Tag Value']) == 'nan':
-                print("ERROR!! Default Tag Value cannot be left empty when Default Tag is set to TRUE...Exiting!")
+                print("\nERROR!! Default Tag Value cannot be left empty when Default Tag is set to TRUE...Exiting!")
                 exit()
 
         for columnname in dfcolumns:
@@ -181,7 +181,7 @@ if ('.xlsx' in filename):
                     values_list = multivalues[1].replace('"','').split(',')
                     if str(df.loc[i,'Default Tag']).lower().strip() == '1.0' or str(df.loc[i,'Default Tag']).lower().strip() == 'true':
                         if str(df.loc[i, 'Default Tag Value']) not in values_list:
-                            print("ERROR!! Value - "+str(df.loc[i, 'Default Tag Value'])+" in Default Tag Value is not present in Column Validator...Exiting!")
+                            print("\nERROR!! Value - "+str(df.loc[i, 'Default Tag Value'])+" in Default Tag Value is not present in Column Validator...Exiting!")
                             exit()
 
             columnname = commonTools.check_column_headers(columnname)
