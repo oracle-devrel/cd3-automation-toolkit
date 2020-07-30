@@ -1,19 +1,21 @@
+
 resource "oci_core_network_security_group_security_rule" "{{ nsg_rule_tf_name }}" {
     #Required
     network_security_group_id = oci_core_network_security_group.{{ nsg_tf_name }}.id
     direction = "{{ direction }}"
-    protocol = "{{ protocol }}"
+    protocol = "{{ protocol_code }}"
 
     #Optional
-    description = "{{ description }}"
-    destination = "{{ destination }}"
-    source = "{{ source }}"
+    description = "{{ rule_description }}"
     stateless = {{ isstateless }}
+
+    destination = {{ destination }}
+    source = {{ source }}
 
     {% if protocol == 'icmp' %}
     icmp_options {
         #Required
-        type = "${var.network_security_group_security_rule_icmp_options_type}"
+        type = "{{ icmptype }}"
      {% if icmpcode != '' %}
         #Optional
         code = {{ icmpcode }}
@@ -31,18 +33,21 @@ resource "oci_core_network_security_group_security_rule" "{{ nsg_rule_tf_name }}
 
     {% if protocol == 'tcp' or protocol == 'udp' %}
     {{ protocol }}_options {
-
         #Optional
+        {% if dportmax and dportmin %}
         destination_port_range {
             #Required
-            max = {{ dportmax }}
-            min = {{ dportmin }}
+            max = "{{ dportmax }}"
+            min = "{{ dportmin }}"
         }
+        {% endif %}
+        {% if sportmax and sportmin %}
         source_port_range {
             #Required
-            max = {{ sportmax }}
-            min = {{ sportmin }}
+            max = "{{ sportmax }}"
+            min = "{{ sportmin }}"
         }
+        {% endif %}
     }
     {% endif %}
 }

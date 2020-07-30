@@ -50,7 +50,7 @@ def create_ingress_rule_string(tempStr,ingress_rule,tempdict2):
         tempdict2 = {'source_type' : source_type}
     tempStr.update(tempdict2)
 
-    tempdict2 = {'protocol': get_protocol(protocol),'isstateless':isstateless}
+    tempdict2 = {'protocol_code': get_protocol(protocol),'isstateless':isstateless}
     tempStr.update(tempdict2)
 
     ingress_rule = ingress_rule + secrule.render(tempStr)
@@ -76,7 +76,7 @@ def create_egress_rule_string(tempStr,egress_rule,tempdict2):
         tempdict2 = {'destination_type': destination_type}
     tempStr.update(tempdict2)
 
-    tempDict2 = {'protocol': get_protocol(protocol),'isstateless':isstateless}
+    tempDict2 = {'protocol_code': get_protocol(protocol),'isstateless':isstateless}
     tempStr.update(tempDict2)
 
     egress_rule = egress_rule + secrule.render(tempStr)

@@ -35,16 +35,29 @@ import pandas as pd
 import sys
 sys.path.append(os.getcwd()+"/../../..")
 from commonTools import *
-
+from jinja2 import Environment, FileSystemLoader
 
 DEBUG = False
 
+#Load the template file
+file_loader = FileSystemLoader('templates')
+env = Environment(loader=file_loader,keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
+template = env.get_template('nsg-template')
+nsgrule = env.get_template('nsg-rule-template')
+
+tempStr ={}
+freeform_tags={}
+defined_tags={}
 
 # Stage 1 Parse into NetSec class and store into dictionary unique_id:rules
-def directionOptionals(nsgParser, options):
+def directionOptionals(nsgParser, options,tempStr):
     srcdestType = ""
     srcdest = ""
-
+    source_type=''
+    destination_type=''
+    source=''
+    destination =''
+    '''
     ingressegressStrTemplate = "source" if options[1].lower() == "ingress" else "destination"
     if options[1].lower() == "ingress":  # check source option 4,5
         srcdestType = options[4]
@@ -53,15 +66,53 @@ def directionOptionals(nsgParser, options):
         srcdestType = options[6]
         srcdest = options[7]
     # processing becomes the same from this point
+    
     # if srcType or destType is not empty, respective src/dest req.
     if(srcdestType.lower()=='cidr'):
         srcdestType="CIDR_BLOCK"
     if (srcdestType.lower() == 'nsg'):
         srcdestType = "NETWORK_SECURITY_GROUP"
-        srcdest="${oci_core_network_security_group."+srcdest+".id}"
+        srcdest="oci_core_network_security_group."+srcdest+".id"
     if (srcdestType.lower() == 'service'):
         srcdestType = "SERVICE_CIDR_BLOCK"
+    '''
+    destination_type = tempStr['destination_type']
+    source_type = tempStr['source_type']
+    source = tempStr['source']
+    destination = tempStr['destination']
 
+    if source_type.lower() != 'nan' and source_type.lower() != '' :
+        if (source_type.lower() == 'cidr'):
+            source_type="CIDR_BLOCK"
+        elif (source_type.lower()=='service'):
+            source_type = "SERVICE_CIDR_BLOCK"
+        elif (source_type.lower()=='nsg'):
+            source_type = "NETWORK_SECURITY_GROUP"
+            source = "oci_core_network_security_group."+source+".id"
+
+    if destination_type.lower() != 'nan' and destination_type.lower() != '':
+        if (destination_type.lower() == 'cidr'):
+            destination_type='CIDR_BLOCK'
+        elif (destination_type.lower() == 'service'):
+            destination_type='SERVICE_CIDR_BLOCK'
+        elif (destination_type.lower() == 'cidr'):
+            destination_type = "NETWORK_SECURITY_GROUP"
+            destination = "oci_core_network_security_group."+destination+".id"
+
+    if ('oci_core_network_security_group' not in source and source != '\"\"'):
+        source = "\""+source+"\""
+
+
+    if ('oci_core_network_security_group' not in destination  and destination != '\"\"'):
+        destination = "\""+destination+"\""
+
+    tempStr['source_type'] = source_type
+    tempStr['destination_type'] = destination_type
+    tempStr['source'] = source
+    tempStr['destination'] = destination
+
+
+    '''
     if nsgParser.checkOptionalEmpty(srcdestType):
         return ""
     else:
@@ -69,9 +120,10 @@ def directionOptionals(nsgParser, options):
                 "    {} = \"{}\"\n" \
                 "    {}_type = \"{}\"\n" \
                 ).format(ingressegressStrTemplate, srcdest, ingressegressStrTemplate, srcdestType)
+    '''
+    return tempStr
 
-
-def protocolOptionals(nsgParser, options):
+def protocolOptionals(nsgParser, options, tempStr):
 
     protocol = options[2].lower()
     protocolHeader = ""
@@ -109,17 +161,32 @@ def protocolOptionals(nsgParser, options):
               "        }}\n" \
               ).format(int(options[9]), int(options[8]))
 
-    return ("\n" \
+    tempStr['protocol'] = protocolHeader
+
+    if tempStr['dportmax'] != '':
+        tempStr['dportmax'] = int(options[11])
+    if tempStr['dportmin'] != '':
+        tempStr['dportmin'] = int(options[10])
+    if tempStr['sportmax'] != '':
+        tempStr['sportmax'] = int(options[9])
+    if tempStr['sportmin'] != '':
+        tempStr['sportmin'] = int(options[8])
+    return tempStr
+'''
+        ("\n" \
             "    {}_options {{\n" \
             "{}" \
             "{}" \
             "    }}" \
             ).format(protocolHeader, dPort, sPort)
+'''
 
-
-def statelessOptional(nsgParser, options):
-    return "\n    stateless = \"True\"\n" if not nsgParser.checkOptionalEmpty(options[3]) and \
-                                             str(options[3]).lower() == "true" else ""
+def statelessOptional(nsgParser, options,tempStr):
+    if not nsgParser.checkOptionalEmpty(options[3]) and str(options[3]).lower() == "true":
+        tempStr['isstateless'] = 'true'
+    else:
+        tempStr['isstateless'] = 'false'
+    return   tempStr
 
 
 """{'NSGName': 0, 'Direction': 1, 'Protocol': 2, 'isStateless': 3, 'SourceType': 4, 'Source': 5, 
@@ -128,20 +195,47 @@ DestType': 6, 'Destination': 7, 'SPortMin': 8, 'SPortMax': 9, 'DPortMin': 10, 'D
 
 
 # templates to build NSG and NSG_Sec_Rules Terraform
-def NSGtemplate(nsgParser, key, value, outdir):
+def NSGtemplate(nsgParser, key, value, outdir, columnname):
     """Required: compartment_id and vcn_id"""
-
+    columnvalue=''
     compartment_var_name = key[0].strip()
     # Added to check if compartment name is compatible with TF variable name syntax
-    compartment_var_name = commonTools.check_tf_variable(compartment_var_name)
+    compartment_tf_name = commonTools.check_tf_variable(compartment_var_name)
+    nsg_tf_name = commonTools.check_tf_variable(key[2])
+    vcn_tf_name = commonTools.check_tf_variable(key[1])
+    tempStr = {'compartment_tf_name': compartment_tf_name, 'display_name': key[2], 'nsg_tf_name': nsg_tf_name,
+               'vcn_tf_name': vcn_tf_name}
 
-    resource_group = ( \
-        "resource \"oci_core_network_security_group\" \"{}\" {{\n"
-        "    display_name = \"{}\" \n"
-        "    compartment_id = \"${{var.{}}}\"\n"
-        "    vcn_id = \"${{oci_core_vcn.{}.id}}\"\n"
-        "}}\n" \
-        ).format("{}".format(commonTools.check_tf_variable(key[2])), key[2],compartment_var_name, commonTools.check_tf_variable(key[1]))
+    #Dictionary of column headers : column value
+    i=3
+
+    while i < (len(value[0])):
+        for rule in value:
+            if str(rule[i]) == 'nan':
+                columnvalue = ''
+                name = commonTools.check_column_headers(str(columnname[i]).lower())
+            else:
+                columnvalue = str(rule[i])
+                name = commonTools.check_column_headers(str(columnname[i]).lower())
+
+            tempdict = { name : columnvalue }
+            tempStr.update(tempdict)
+        i=i+1
+
+    for rule in value:
+        if str(rule[15]).lower() == 'nan':
+            rule[15] = ''
+        if str(rule[16]).lower() == 'nan':
+            rule[16] = ''
+
+        freeform_tags = commonTools.split_tag_values('freeform_tags', str(rule[15]), tempStr)
+        defined_tags = commonTools.split_tag_values('defined_tags', str(rule[16]), tempStr)
+
+    tempStr.update(freeform_tags)
+    tempStr.update(defined_tags)
+
+    resource_group = template.render(tempStr)
+
     with open(outdir + "/{}_nsg.tf".format(commonTools.check_tf_variable(key[2])), 'w') as f:
         f.write(resource_group)
         ruleindex = 1
@@ -154,27 +248,30 @@ def NSGtemplate(nsgParser, key, value, outdir):
                     break
             if(null_rule==1):
                 continue
+            
+            tempStr.update(NSGrulesTemplate(nsgParser, rule, ruleindex,tempStr))
+            tempStr.update(statelessOptional(nsgParser, rule, tempStr))
+            tempStr.update(directionOptionals(nsgParser, rule,tempStr))
+            tempStr.update(protocolOptionals(nsgParser, rule,tempStr))
 
-            f.write("{}{}{}{}\n}}\n".format(NSGrulesTemplate(nsgParser, rule, ruleindex), \
-                                            statelessOptional(nsgParser, rule), directionOptionals(nsgParser, rule), \
-                                            protocolOptionals(nsgParser, rule)))
-
+            nsg_rule = nsgrule.render(tempStr)
+            f.write(nsg_rule)
             ruleindex += 1
         f.close()
         print(outdir + "/{}_nsg.tf".format(key[2]) + " containing TF for NSG has been created")
 
 
-def NSGrulesTemplate(nsgParser, rule, index):
+def NSGrulesTemplate(nsgParser, rule, index, tempStr):
     if(str(rule[14]).lower()=='nan'):
         rule[14]=""
-    resource_group_rule = ( \
-        "resource \"oci_core_network_security_group_security_rule\" \"{}_security_rule{}\" {{\n"
-        "    network_security_group_id = \"${{oci_core_network_security_group.{}.id}}\"\n"
-        "    description = \"{}\"\n"
-        "    direction = \"{}\"\n"
-        "    protocol = \"{}\""
-    ).format(commonTools.check_tf_variable(rule[0]), index, commonTools.check_tf_variable(rule[0]), rule[14],rule[1].upper(), getProtocolNumber(rule[2]))
-    return resource_group_rule
+
+    nsg_rule_tf_name = commonTools.check_tf_variable(rule[0])+"_security_rule"+str(index)
+    direction = rule[1].upper()
+    protocol = getProtocolNumber(rule[2])
+    tempdict = { 'nsg_rule_tf_name' : nsg_rule_tf_name, 'direction' : direction, 'protocol_code' : protocol}
+    tempStr.update(tempdict)
+
+    return tempStr
 
 
 def getProtocolNumber(protocol):
@@ -214,6 +311,7 @@ def main():
 
     ct = commonTools()
     ct.get_subscribedregions(configFileName)
+    columnname=''
 
     if('.csv' in args.inputfile):
         df = pd.read_csv(args.inputfile)
@@ -230,11 +328,9 @@ def main():
     outdir = args.outdir
 
     regionDict = nsgParser.getRegionDict()
+    headerDict = nsgParser.getHeaderDict()
     listOfRegions = nsgParser.regions
 
-    print(regionDict,listOfRegions)
-
-    # creates all region directories in specified out directory
     # creates all region directories in specified out directory
     for region in listOfRegions:
         if (region in commonTools.endNames):
@@ -263,8 +359,15 @@ def main():
 
         # with open(outdir + "/{}/{}-NSG.tf".format(region,region), 'w') as f:
         reg_outdir = outdir + "/" + region
-        [NSGtemplate(nsgParser, k, v, reg_outdir) for k, v in
+
+        for k,v in headerDict.items():
+            for unique_headers,other_headers in v.items():
+                for name in other_headers:
+                    columnname = name
+
+        [NSGtemplate(nsgParser, k, v, reg_outdir, columnname) for k, v in
          nsgParser.getRegionSpecificDict(regionDict, region).items()]
+
         #   f.close()
     #print("\nTerraform files write out to respective {}/[region]/[NSG Name]_nsg.tf".format(outdir))
 

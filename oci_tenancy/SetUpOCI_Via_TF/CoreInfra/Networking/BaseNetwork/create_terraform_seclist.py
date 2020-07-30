@@ -131,7 +131,7 @@ def processSubnet(tempStr):
         if (index == 0 and os.path.exists(outfile) and modify_network == 'false'):
             tempStr['rule_type'] = "ingress"
             tempStr['source'] = subnet_cidr
-            tempStr['protocol'] = 'all'
+            tempStr['protocol_code'] = 'all'
             tempStr['isstateless'] = "true"
 
             Str = secrule.render(tempStr)
@@ -162,7 +162,7 @@ def processSubnet(tempStr):
             rule_type = ['ingress','egress']
             for rule in rule_type:
                 tempStr['destination'] = '0.0.0.0/0'
-                tempStr['protocol'] = 'all'
+                tempStr['protocol_code'] = 'all'
                 tempStr['source'] = subnet_cidr
                 tempStr['rule_type'] = rule
                 tempStr['isstateless'] = "true"

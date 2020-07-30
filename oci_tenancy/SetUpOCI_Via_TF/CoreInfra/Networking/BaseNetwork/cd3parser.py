@@ -132,11 +132,17 @@ class CD3Parser(object):
         The regions are the initial keys to regionspecific dictionaries, so a dict of dict."""
 
         def __init__(self, nsg):
+            working_header = {}
             self.sheet = nsg
             self.nsg = nsg
             self.nsg_numpy = nsg.to_numpy()  # makes a list of list
+            self.headers = nsg.columns.values.tolist()
             self.regions = sorted(list(set(nsg.Region)))
             self.regions = [x.strip().lower() for x in self.regions]
+            unique_headers = tuple(self.headers[1:4])
+            working_header[unique_headers] = [(self.headers[3:])]
+            self.headersDict = dict((self.headers[0].lower(), working_header) for region in self.regions)
+
             for x in self.regions:
                 if x in commonTools.endNames:
                     self.regions.remove(x)
@@ -155,6 +161,9 @@ class CD3Parser(object):
 
         def getRegionDict(self):
             return self.regionDict
+
+        def getHeaderDict(self):
+            return self.headersDict
 
     # many more respective classes
     """

@@ -1,10 +1,7 @@
 resource "oci_core_network_security_group" "{{ nsg_tf_name }}" {
-    #Required
+    display_name = "{{ display_name }}"
     compartment_id = var.{{ compartment_tf_name }}
     vcn_id = oci_core_vcn.{{ vcn_tf_name }}.id
-
-    #Optional
-    display_name = "{{ display_name }}"
 
     {#  ## Add Additional Fields below this line ##  #}
 
