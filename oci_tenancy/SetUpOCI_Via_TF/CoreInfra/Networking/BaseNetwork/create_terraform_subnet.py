@@ -28,7 +28,7 @@ parser.add_argument("inputfile", help="Full Path of input file. eg vcn-info.prop
 parser.add_argument("outdir", help="Output directory for creation of TF files")
 parser.add_argument("prefix", help="customer name/prefix for all file names")
 parser.add_argument("--modify_network", help="modify network: true or false", required=False)
-
+parser.add_argument("--configFileName", help="Config file name", required=False)
 
 if len(sys.argv)<3:
         parser.print_help()
@@ -42,6 +42,13 @@ if args.modify_network is not None:
     modify_network = str(args.modify_network)
 else:
     modify_network = "false"
+if args.configFileName is not None:
+    configFileName = args.configFileName
+else:
+    configFileName=""
+
+ct = commonTools()
+ct.get_subscribedregions(configFileName)
 
 
 fname = None
@@ -63,7 +70,7 @@ def processSubnet(region,vcn_name,name,rt_name,seclist_names,subnet,AD,dnslabel,
 		ad_name = ""
 		adString = """availability_domain = "" """
 
-	vcn_tf_name = commonTools.tfname.sub("-", vcn_name)
+	vcn_tf_name = commonTools.check_tf_variable(vcn_name)
 
 	if (vcnInfo.subnet_name_attach_cidr == 'y'):
 		if (str(ad_name) != ''):
@@ -83,29 +90,35 @@ def processSubnet(region,vcn_name,name,rt_name,seclist_names,subnet,AD,dnslabel,
 	sl_tf_names=[]
 	if (vcnInfo.subnet_name_attach_cidr == 'y'):
 		for sl_name in seclist_names:
+			sl_name=sl_name.strip()
 			if (str(ad_name) != ''):
 				namesl = sl_name + "-ad" + str(ad_name)
 			else:
 				namesl = sl_name
 			sl_display_name = namesl + "-" + subnet
-			sl_tf_names.append(commonTools.tfname.sub("-", sl_display_name))
+			sl_tf_name=vcn_name+"_"+sl_display_name
+			sl_tf_names.append(commonTools.check_tf_variable(sl_tf_name))
 	else:
 		for sl_name in seclist_names:
+			sl_name=sl_name.strip()
 			sl_display_name=sl_name
-			sl_tf_names.append(commonTools.tfname.sub("-", sl_display_name))
+			sl_tf_name = vcn_name + "_" + sl_display_name
+			sl_tf_names.append(commonTools.check_tf_variable(sl_tf_name))
 
-	subnet_tf_name = commonTools.tfname.sub("-", display_name)
-	rt_tf_name = commonTools.tfname.sub("-", rt_display_name)
+	subnet_tf_name=vcn_name+"_"+display_name
+	subnet_tf_name = commonTools.check_tf_variable(subnet_tf_name)
+	rt_tf_name = vcn_name+"_"+rt_display_name
+	rt_tf_name = commonTools.check_tf_variable(rt_tf_name)
 
 	data = """
-    resource "oci_core_subnet"  \"""" + vcn_tf_name+"_"+subnet_tf_name + """" {
+    resource "oci_core_subnet"  \"""" + subnet_tf_name + """" {
     	compartment_id = "${var.""" + compartment_var_name + """}" 
     	""" + adString + """			
     	vcn_id = "${oci_core_vcn.""" + str(vcn_tf_name) + """.id}" """
 
 	if(rt_name!="n"):
 		data = data + """
-		route_table_id   = "${oci_core_route_table.""" +vcn_tf_name+"_"+ rt_tf_name + """.id}" """
+		route_table_id   = "${oci_core_route_table.""" + rt_tf_name + """.id}" """
 
 	seclist_ids=""
 	#Attach Default Security List
@@ -116,9 +129,9 @@ def processSubnet(region,vcn_name,name,rt_name,seclist_names,subnet,AD,dnslabel,
 		index=0
 		for seclist_id in sl_tf_names:
 			if(index==len(sl_tf_names)):
-				seclist_ids = seclist_ids + """\"${oci_core_security_list.""" + vcn_tf_name + "_" + seclist_id  + """.id}" """
+				seclist_ids = seclist_ids + """\"${oci_core_security_list.""" +  seclist_id  + """.id}" """
 			else:
-				seclist_ids = seclist_ids + """\"${oci_core_security_list.""" + vcn_tf_name + "_" + seclist_id + """.id}", """
+				seclist_ids = seclist_ids + """\"${oci_core_security_list.""" +  seclist_id + """.id}", """
 			index=index+1
 
 		data = data + """
@@ -157,7 +170,7 @@ if('.xls' in filename):
 	df = df.dropna(how='all')
 	df = df.reset_index(drop=True)
 
-	for reg in vcnInfo.all_regions:
+	for reg in ct.all_regions:
 		tfStr[reg] = ''
 
 
@@ -173,8 +186,8 @@ if('.xls' in filename):
 			exit(1)
 
 		region=region.strip().lower()
-		if region not in vcnInfo.all_regions:
-			print("\nERROR!!! Invalid Region; It should be one of the values mentioned in VCN Info tab..Exiting!")
+		if region not in ct.all_regions:
+			print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
 			exit(1)
 
 
@@ -197,15 +210,26 @@ if('.xls' in filename):
 
 		if(str(dhcp).lower() !='nan'):
 			dhcp = vcn_name + "_" + dhcp
-			dhcp = commonTools.tfname.sub("-", dhcp)
+			dhcp = commonTools.check_tf_variable(dhcp)
 
 		compartment_var_name=compartment_var_name.strip()
+		# Added to check if compartment name is compatible with TF variable name syntax
+		compartment_var_name = commonTools.check_tf_variable(compartment_var_name)
 
 		dnslabel = df.iat[i, 16]
 		# check if subnet_dns_label is not given by user in input use subnet name
 		if (str(dnslabel).lower() == 'nan'):
 			regex = re.compile('[^a-zA-Z0-9]')
 			subnet_dns = regex.sub('', name)
+			# truncate all digits from start of dns_label
+			index = 0
+			for c in subnet_dns:
+				if c.isdigit() == True:
+					index = index + 1
+					continue
+				else:
+					break
+			subnet_dns = subnet_dns[index:]
 			dnslabel = (subnet_dns[:15]) if len(subnet_dns) > 15 else subnet_dns
 
 		if (str(rt_name).lower() != 'nan'):
@@ -289,7 +313,7 @@ if fname != None:
 
 subnetdata={}
 if(modify_network=='true'):
-	for reg in vcnInfo.all_regions:
+	for reg in ct.all_regions:
 		reg_out_dir = outdir + "/" + reg
 		if not os.path.exists(reg_out_dir):
 			os.makedirs(reg_out_dir)
@@ -306,7 +330,7 @@ if(modify_network=='true'):
 		print(outfile[reg] + " containing TF for Subnets has been updated for region " + reg)
 
 elif(modify_network == 'false'):
-	for reg in vcnInfo.all_regions:
+	for reg in ct.all_regions:
 		reg_out_dir = outdir + "/" + reg
 		if not os.path.exists(reg_out_dir):
 			os.makedirs(reg_out_dir)

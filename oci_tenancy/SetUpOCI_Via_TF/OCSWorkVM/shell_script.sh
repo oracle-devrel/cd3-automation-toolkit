@@ -27,7 +27,12 @@ pip3 install xlsxwriter
 pip3 install puttykeys
 pip3 install netaddr
 pip3 install cfgparse
+pip3 install ipaddr
+pip3 install ipaddress
+pip3 install paramiko
 
+sudo echo "export PYTHONPATH=${PYTHONPATH}:/opt/rh/rh-python36/root/usr/lib/python3.6/site-packages/" >> /root/.bashrc
+source /root/.bashrc
 
 ## Needed for conversion from putty ppk to openssh
 sudo yum install -y putty
@@ -85,29 +90,37 @@ chown root:root /root/ocswork/keys/ocs_public_keys.txt
 chmod 400 /root/ocswork/keys/ocs_public_keys.txt
 
 #Download GIT Repo
-## the download_git_expect1.sh and download_git_expect2.sh will not be created if configure_git is set to 0 in the props file.
-if [ -e /home/opc/download_git_expect1.sh ]
+## the download_git_oci.sh and download_git_ocic2oci.sh will not be created if configure_git is set to 0 in the props file.
+if [ -e /home/opc/download_git_oci.sh ] || [ -e /home/opc/download_git_ocic2oci.sh ]
+then
+  mv /home/opc/id_rsa /root/.ssh
+  cd /root/.ssh
+  chmod 400 id_rsa
+  echo -e "Host nac-gc39002.developer.ocp.oraclecloud.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
+fi
+
+if [ -e /home/opc/download_git_oci.sh ]
 then
     cd  /home/opc
-    dos2unix download_git_expect1.sh download_git_expect1.sh
-    chmod +x download_git_expect1.sh
+    dos2unix download_git_oci.sh download_git_oci.sh
+    chmod +x download_git_oci.sh
     cd /root/ocswork/git_oci
     git init
     cd  /home/opc
-    ./download_git_expect1.sh
+    ./download_git_oci.sh
     sleep 15s
     find /root/ocswork/git_oci -type f -iname "*.py" -exec chmod +x {} \;
     dos2unix /root/ocswork/git_oci/oci_tenancy/ova_disk_migration_bash/*.sh
 fi
-if [ -e /home/opc/download_git_expect2.sh ]
+if [ -e /home/opc/download_git_ocic2oci.sh ]
 then
     cd /home/opc
-    dos2unix download_git_expect2.sh download_git_expect2.sh
-    chmod +x download_git_expect2.sh
+    dos2unix download_git_ocic2oci.sh download_git_ocic2oci.sh
+    chmod +x download_git_ocic2oci.sh
     cd /root/ocswork/git_ocic2oci
     git init
     cd  /home/opc
-    ./download_git_expect2.sh
+    ./download_git_ocic2oci.sh
     sleep 5s
     find /root/ocswork/git_ocic2oci -type f -iname "*.py" -exec chmod +x {} \;
 fi

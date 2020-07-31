@@ -94,7 +94,8 @@ def protocolOptionals(nsgParser, options):
     elif protocol == "udp":
         protocolHeader = protocol
     else:
-        return "SELECTION UNCOMMON and NOT HANDLED, please use TCP instead and specify ports"
+        return ""
+        #return "SELECTION UNCOMMON and NOT HANDLED, please use TCP instead and specify ports"
     dPort = "" if nsgParser.checkOptionalEmpty(options[10]) \
         else ("        destination_port_range {{\n"
               "            max = \"{}\"\n" \
@@ -130,14 +131,18 @@ DestType': 6, 'Destination': 7, 'SPortMin': 8, 'SPortMax': 9, 'DPortMin': 10, 'D
 def NSGtemplate(nsgParser, key, value, outdir):
     """Required: compartment_id and vcn_id"""
 
+    compartment_var_name = key[0].strip()
+    # Added to check if compartment name is compatible with TF variable name syntax
+    compartment_var_name = commonTools.check_tf_variable(compartment_var_name)
+
     resource_group = ( \
         "resource \"oci_core_network_security_group\" \"{}\" {{\n"
         "    display_name = \"{}\" \n"
         "    compartment_id = \"${{var.{}}}\"\n"
         "    vcn_id = \"${{oci_core_vcn.{}.id}}\"\n"
         "}}\n" \
-        ).format("{}".format(key[2]), key[2],key[0], commonTools.tfname.sub("-", key[1]))
-    with open(outdir + "/{}_nsg.tf".format(key[2]), 'w') as f:
+        ).format("{}".format(commonTools.check_tf_variable(key[2])), key[2],compartment_var_name, commonTools.check_tf_variable(key[1]))
+    with open(outdir + "/{}_nsg.tf".format(commonTools.check_tf_variable(key[2])), 'w') as f:
         f.write(resource_group)
         ruleindex = 1
         for rule in value:
@@ -168,20 +173,26 @@ def NSGrulesTemplate(nsgParser, rule, index):
         "    description = \"{}\"\n"
         "    direction = \"{}\"\n"
         "    protocol = \"{}\""
-    ).format(rule[0], index, rule[0], rule[14],rule[1].upper(), getProtocolNumber(rule[2]))
+    ).format(commonTools.check_tf_variable(rule[0]), index, commonTools.check_tf_variable(rule[0]), rule[14],rule[1].upper(), getProtocolNumber(rule[2]))
     return resource_group_rule
 
 
 def getProtocolNumber(protocol):
     if protocol.lower() == 'all':
         return "all"
+    else:
+        protocol_dict=commonTools().protocol_dict
+        for k, v in protocol_dict.items():
+            if (protocol).lower() == v.lower():
+                return k
+"""
     if protocol.lower() == 'tcp':
         return "6"
     if protocol.lower() == 'udp':
         return "17"
     if protocol.lower() == 'icmp':
         return "1"
-
+"""
 
 """
 The rules should be further organized with ingress or egress as a parent level to the optional fts.
@@ -194,7 +205,15 @@ def main():
         inputs given in vcn-info.properties, separated by regions.")
     parser.add_argument("inputfile", help="Full Path of cd3 excel file or csv containing NSG info")
     parser.add_argument("outdir", help="Output directory")
+    parser.add_argument("--configFileName", help="Config file name", required=False)
     args = parser.parse_args()
+    if args.configFileName is not None:
+        configFileName = args.configFileName
+    else:
+        configFileName = ""
+
+    ct = commonTools()
+    ct.get_subscribedregions(configFileName)
 
     if('.csv' in args.inputfile):
         df = pd.read_csv(args.inputfile)
@@ -216,6 +235,12 @@ def main():
     # creates all region directories in specified out directory
     # creates all region directories in specified out directory
     for region in listOfRegions:
+        if (region in commonTools.endNames):
+            break
+
+        if region not in ct.all_regions:
+            print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
+            exit(1)
         regionDirPath = outdir + "/{}".format(region)
         """if os.path.exists(regionDirPath):
             nsgParser.purge(regionDirPath, "nsg.tf")
@@ -227,6 +252,13 @@ def main():
     # Stage 2 using the dictionary of unique_id:rules, use factory method to produces resources and
     # rules
     for region in listOfRegions:
+        if (region in commonTools.endNames):
+            break
+
+        if region not in ct.all_regions:
+            print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
+            exit(1)
+
         # with open(outdir + "/{}/{}-NSG.tf".format(region,region), 'w') as f:
         reg_outdir = outdir + "/" + region
         [NSGtemplate(nsgParser, k, v, reg_outdir) for k, v in

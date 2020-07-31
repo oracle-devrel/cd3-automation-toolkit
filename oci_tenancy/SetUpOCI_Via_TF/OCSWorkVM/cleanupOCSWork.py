@@ -18,7 +18,7 @@ config.read(args.propsfile)
 
 #Read Config file Variables
 try:
-    input_config_file="config_for_delete"
+    input_config_file=config.get('Default','cleanup_script_file').strip()
     input_pvt_key_file = config.get('Default', 'pvt_key_file').strip()
     config_file = config.get('Default', 'python_config_file').strip()
 
@@ -33,6 +33,7 @@ def write_file(file_name,file_data):
     f.write(file_data)
     f.close()
 
+print("Reading OCID info for deletion from "+input_config_file+"\n")
 python_config = oci.config.from_file(file_location=input_config_file)
 ocs_compartment_ocid = python_config['ocs_compartment_ocid']
 input_vcn_ocid = python_config['vcn_ocid']
@@ -59,6 +60,7 @@ except Exception as e:
     print(e)
 
 input_instance_ocid = python_config['ocswork_instance_ocid']
+input_reserved_public_ocid=python_config['ocswork_reservedpublic_ocid']
 input_public_ip = python_config['public_ip']
 input_subnet_ocid = python_config['subnet_ocid']
 ## First create file to destroy the Panda Instance
@@ -137,6 +139,16 @@ print ("Deleting Instance")
 get_instance_response=oci.wait_until(compute_client,compute_client.get_instance(input_instance_ocid),'lifecycle_state', 'TERMINATED')
 print (get_instance_response.data)
 
+print("Delete the Reserved Public IP if it is end of OCS enagagement with client or Retain it if intend to rebuild OCSWork VM")
+delete_ip = input("Delete Reserved public IP(y) or Retain(n): ")
+
+if(delete_ip.lower()=='y'):
+    print ("Deleting Reserved Public IP")
+    try :
+        network_client.delete_public_ip(input_reserved_public_ocid)
+    except Exception as e:
+        print (e)
+
 
 ## Remove route rules
 route_rules_list=[]
@@ -166,7 +178,12 @@ for lpg in lpg_list.data:
 
 
 print ("Deleting Subnet")
-response = network_client.delete_subnet(input_subnet_ocid)
+try:
+    response = network_client.delete_subnet(input_subnet_ocid)
+except Exception as e:
+    print(e)
+    print("Make sure to delete other VMs in same subnet..exiting without removing VCN and other network components.")
+    exit()
 
 print ("Deleting VCN")
 response = network_client.delete_vcn(input_vcn_ocid)

@@ -7,12 +7,14 @@ import pandas as pd
 import datetime
 import os
 from os import path
-import glob
+sys.path.append(os.getcwd()+"/../..")
+from commonTools import *
 
 
 parser = argparse.ArgumentParser(description="Create vars files for the each row in csv file.")
 parser.add_argument("file", help="Full Path of CD3 excel file. eg CD3-template.xlsx in example folder")
 parser.add_argument("outdir", help="directory path for output tf files ")
+parser.add_argument("--configFileName", help="Config file name", required=False)
 
 if len(sys.argv) == 1:
     parser.print_help()
@@ -25,22 +27,20 @@ if len(sys.argv) < 2:
 args = parser.parse_args()
 filename = args.file
 outdir = args.outdir
+if args.configFileName is not None:
+    configFileName = args.configFileName
+else:
+    configFileName=""
+
+ct = commonTools()
+ct.get_subscribedregions(configFileName)
 
 x = datetime.datetime.now()
 date = x.strftime("%f").strip()
 
 # Creates the namespaces
 if ('.xlsx' in filename):
-    #df_info = pd.read_excel(filename, sheet_name='VCN Info', skiprows=1)
-    #properties = df_info['Property']
-    #values = df_info['Value']
-
-    #all_regions = str(values[7]).strip()
-    #all_regions = all_regions.split(",")
-    #all_regions = [x.strip().lower() for x in all_regions]
-
-    all_regions = os.listdir(outdir)
-    for reg in all_regions:
+    for reg in ct.all_regions:
         namespace_src=outdir + "/"+reg+"/tagnamespaces.tf"
         if path.exists(namespace_src):
             namespace_dst = outdir + "/"+reg+ "/tagnamespaces_backup" + date
@@ -72,13 +72,20 @@ if ('.xlsx' in filename):
                     continue
                 else:
                     Region = df[i][j].strip().lower()
+                    if(Region in commonTools.endNames):
+                        exit()
+                    if(Region not in ct.all_regions):
+                        print("Invalid region "+Region)
+                        break
 
         else:
             tagnamespace = i
+            tagnamespace_tf=commonTools.check_tf_variable(tagnamespace)
+            compartment_var_name_tf=commonTools.check_tf_variable(compartment_var_name)
             tmpstr = """
-            resource "oci_identity_tag_namespace" \"""" + tagnamespace + """\" {
+            resource "oci_identity_tag_namespace" \"""" + tagnamespace_tf + """\" {
                 #Required
-                compartment_id = "${var.""" + compartment_var_name + """}"
+                compartment_id = "${var.""" + compartment_var_name_tf + """}"
                 description = "Create Tag Namespace for """ + tagnamespace + """\"
                 name = \"""" + tagnamespace + """\"
                 is_retired = false
@@ -119,13 +126,14 @@ if ('.xlsx' in filename):
                     if (tagkey == 'Keys') and (key == 'TagNamespace'):
                         continue
                     else:
+                        key_tf = commonTools.check_tf_variable(key)
+                        tagkey_tf = commonTools.check_tf_variable(tagkey)
                         tmpstr = """
-
-                        resource "oci_identity_tag" \"""" + tagkey + """\" {
+                        resource "oci_identity_tag" \"""" + tagkey_tf + """\" {
                         #Required
                         description = "Creating """ + tagkey + """ in Namespace """ + key + """\"
                         name = \"""" + tagkey + """\"
-                        tag_namespace_id = \"${oci_identity_tag_namespace.""" + key + """.id}\"
+                        tag_namespace_id = \"${oci_identity_tag_namespace.""" + key_tf + """.id}\"
                         is_retired = false
                     }
                     """

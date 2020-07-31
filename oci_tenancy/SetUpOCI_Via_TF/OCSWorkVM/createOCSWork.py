@@ -12,6 +12,8 @@ import puttykeys
 from pathlib import Path
 import sys
 import os
+from datetime import datetime
+import calendar
 sys.path.append(os.getcwd()+"/..")
 from commonTools import commonTools
 
@@ -26,53 +28,130 @@ config.read(args.propsfile)
 try:
     input_config_file=config.get('Default','python_config_file').strip()
     input_ocs_compartment_name=config.get('Default','ocs_compartment_name').strip()
-    input_vm_compartment_name=config.get('Default','vm_compartment_name').strip()
-    input_ntk_compartment_name=config.get('Default','ntk_compartment_name').strip()
-    input_regions = config.get('Default', 'regions').strip()
+    #input_vm_compartment_name=config.get('Default','vm_compartment_name').strip()
+    #input_ntk_compartment_name=config.get('Default','ntk_compartment_name').strip()
     input_ssh_key1=config.get('Default','ssh_key1').strip()
     input_ssh_key2=config.get('Default', 'ssh_key2').strip()
     input_ssh_key3=config.get('Default', 'ssh_key3').strip()
-    input_ocic_username=config.get('Default','ocic_username').strip()
-    input_ocic_password=config.get('Default','ocic_password').strip()
-    input_ocic_identity_domain=config.get('Default','ocic_identity_domain').strip()
-    input_ocic_compute_endpoint=config.get('Default','ocic_compute_endpoint').strip()
+    #input_ocic_username=config.get('Default','ocic_username').strip()
+    #input_ocic_password=config.get('Default','ocic_password').strip()
+    #input_ocic_identity_domain=config.get('Default','ocic_identity_domain').strip()
+    #input_ocic_compute_endpoint=config.get('Default','ocic_compute_endpoint').strip()
     input_git_username=config.get('Default','git_username').strip()
-    input_git_password=config.get('Default','git_password').strip()
+    input_git_pvt_key_file=config.get('Default','git_pvt_key_file').strip()
     input_vcn_name=config.get('Default','ocs_vcn_name').strip()
     input_vcn_cidr=config.get('Default','ocs_vcn_cidr').strip()
     input_igw_name=config.get('Default','ocs_igw_name').strip()
-    input_lpg_to_orig_name=config.get('Default','ocs_lpg_to_orig_name').strip()
-    input_lpg_to_mirror_name = config.get('Default', 'ocs_lpg_to_mirror_name').strip()
-    input_lpg_to_rsync_name = config.get('Default', 'ocs_lpg_to_rsync_name').strip()
+    input_lpg_to_orig_name=config.get('Default','ocs_lpg_name').strip()
+    #input_lpg_to_mirror_name = config.get('Default', 'ocs_lpg_to_mirror_name').strip()
+    #input_lpg_to_rsync_name = config.get('Default', 'ocs_lpg_to_rsync_name').strip()
     input_subnet_name=config.get('Default','ocs_subnet_name').strip()
     input_subnet_cidr=config.get('Default','ocs_subnet_cidr').strip()
     input_ad_name=config.get('Default','ocs_input_ad').strip()
     input_vm_name=config.get('Default','ocs_vm_name').strip()
     input_vm_shape=config.get('Default','ocs_vm_shape').strip()
     input_image_id=config.get('Default','ocs_vm_source_image_ocid').strip()
+    input_cleanup_script_file=config.get('Default','cleanup_script_file').strip()
     input_user_data_file=config.get('Default','ocs_user_data_file').strip()
     input_pvt_key_file=config.get('Default','pvt_key_file').strip()
     input_shell_script=config.get('Default','shell_script_name')
 
-    input_configure_panda = config.get('Default', 'configure_panda').strip()
-    input_configure_koala = config.get('Default', 'configure_koala').strip()
-    input_configure_git_oci = config.get('Default', 'configure_git_oci').strip()
-    input_configure_git_ocictooci = config.get('Default', 'configure_git_ocictooci').strip()
+    #input_configure_panda = config.get('Default', 'configure_panda').strip()
+    #input_configure_koala = config.get('Default', 'configure_koala').strip()
+    #input_configure_git_oci = config.get('Default', 'configure_git_oci').strip()
+    #input_configure_git_ocictooci = config.get('Default', 'configure_git_ocictooci').strip()
 
-    input_ocic_ip_network_for_panda = config.get('Default','ocic_ip_network_for_panda').strip()
-    input_ocic_vnicset_for_panda = config.get('Default','ocic_vnicset_for_panda').strip()
-    input_ocic_tf_prefix_for_panda = config.get('Default','ocic_tf_prefix_for_panda').strip()
-    input_ocic_panda_storage_volume_size = int(config.get('Default','ocic_panda_storage_volume_size').strip())
-    input_ocic_panda_storage_volume_disks = int(config.get('Default','ocic_panda_storage_volume_disks').strip())
-    input_ocic_panda_storage_pvlv_name = config.get('Default','ocic_panda_storage_pvlv_name').strip()
+    #input_ocic_ip_network_for_panda = config.get('Default','ocic_ip_network_for_panda').strip()
+    #input_ocic_vnicset_for_panda = config.get('Default','ocic_vnicset_for_panda').strip()
+    #input_ocic_tf_prefix_for_panda = config.get('Default','ocic_tf_prefix_for_panda').strip()
+    #input_ocic_panda_storage_volume_size = int(config.get('Default','ocic_panda_storage_volume_size').strip())
+    #input_ocic_panda_storage_volume_disks = int(config.get('Default','ocic_panda_storage_volume_disks').strip())
+    #input_ocic_panda_storage_pvlv_name = config.get('Default','ocic_panda_storage_pvlv_name').strip()
 
     input_create_vm = config.get('Default','create_vm').strip()
     input_cleanup = config.get('Default','cleanup').strip()
+    input_run_shell_script = config.get('Default', 'run_shell_script')
 
 except Exception as e:
     print(e)
-    print('Check if all property values exist and try again..exiting...`    ')
+    print('Check if property values exist and try again..exiting...`    ')
     exit()
+
+#Put default values for properties related to OCIC to OCI when using for automation
+try:
+    input_vm_compartment_name = config.get('Default', 'vm_compartment_name').strip()
+except Exception as e:
+    input_vm_compartment_name = input_ocs_compartment_name
+try:
+    input_ntk_compartment_name = config.get('Default', 'ntk_compartment_name').strip()
+except Exception as e:
+    input_ntk_compartment_name = input_ocs_compartment_name
+try:
+    input_configure_panda = config.get('Default', 'configure_panda').strip()
+except Exception as e:
+    input_configure_panda = "0"
+try:
+    input_configure_koala = config.get('Default', 'configure_koala').strip()
+except Exception as e:
+    input_configure_koala = "0"
+try:
+    input_configure_git_ocictooci = config.get('Default', 'configure_git_ocictooci').strip()
+except Exception as e:
+    input_configure_git_ocictooci = "1"
+try:
+    input_configure_git_oci = config.get('Default', 'configure_git_oci').strip()
+except Exception as e:
+    input_configure_git_oci = "1"
+try:
+    input_ocic_username = config.get('Default', 'ocic_username').strip()
+except Exception as e:
+    input_ocic_username = ""
+try:
+    input_ocic_password=config.get('Default','ocic_password').strip()
+except Exception as e:
+    input_ocic_password = ""
+try:
+    input_ocic_identity_domain=config.get('Default','ocic_identity_domain').strip()
+except Exception as e:
+    input_ocic_identity_domain = ""
+try:
+    input_ocic_compute_endpoint=config.get('Default','ocic_compute_endpoint').strip()
+except Exception as e:
+    input_ocic_compute_endpoint = ""
+try:
+    input_lpg_to_mirror_name = config.get('Default', 'ocs_lpg_to_mirror_name').strip()
+except Exception as e:
+    input_lpg_to_mirror_name = ""
+try:
+    input_lpg_to_rsync_name = config.get('Default', 'ocs_lpg_to_rsync_name').strip()
+except Exception as e:
+    input_lpg_to_rsync_name = ""
+try:
+    input_ocic_ip_network_for_panda = config.get('Default', 'ocic_ip_network_for_panda').strip()
+except Exception as e:
+    input_ocic_ip_network_for_panda = ""
+try:
+    input_ocic_vnicset_for_panda = config.get('Default', 'ocic_vnicset_for_panda').strip()
+except Exception as e:
+    input_ocic_vnicset_for_panda = ""
+try:
+    input_ocic_tf_prefix_for_panda = config.get('Default','ocic_tf_prefix_for_panda').strip()
+except Exception as e:
+    input_ocic_tf_prefix_for_panda = ""
+try:
+    input_ocic_panda_storage_volume_size = int(config.get('Default','ocic_panda_storage_volume_size').strip())
+except Exception as e:
+    input_ocic_panda_storage_volume_size = int("1536")
+try:
+    input_ocic_panda_storage_volume_disks = int(config.get('Default','ocic_panda_storage_volume_disks').strip())
+except Exception as e:
+    input_ocic_panda_storage_volume_disks = ""
+try:
+    input_ocic_panda_storage_pvlv_name = config.get('Default', 'ocic_panda_storage_pvlv_name').strip()
+except Exception as e:
+    input_ocic_panda_storage_pvlv_name = ""
+
+
 
 if input_ocic_panda_storage_volume_size > 2048:
     print ("Storage volume in OCIC cannot be greater than 2Tb. Setting to 1.5T ")
@@ -83,12 +162,18 @@ if(input_ntk_compartment_name=='' or input_vm_compartment_name=='' or input_ocs_
 if(input_ssh_key1==''):
     print("ssh_key1 cannot be left blank. Exiting...")
     exit()
-if(input_regions==''):
-    print("regions cannot be left blank. Exiting...")
+if(input_cleanup_script_file==''):
+    print("cleanup_script_file cannot be empty. Please specify file name which will be used by cleanup script later. Exiting...")
     exit()
+
 if os.path.isfile(input_pvt_key_file)==False:
-        print("input private key file corresponding to ssh_key1 does not exist. Exiting....")
-        exit()
+    print("input private key file corresponding to ssh_key1 does not exist at the specified path. Exiting....")
+    exit()
+
+if os.path.isfile(input_git_pvt_key_file)==False:
+    print("input private key file for GIT does not exist at the specified path. Exiting....")
+    exit()
+
 
 if(input_vcn_name==''):
     input_vcn_name='OCS_VCN'
@@ -121,8 +206,16 @@ python_config = oci.config.from_file(file_location=input_config_file)#,profile_n
 network_client = oci.core.VirtualNetworkClient(python_config)
 identity_client = oci.identity.IdentityClient(python_config)
 compute_client = oci.core.ComputeClient(python_config)
-regions=input_regions.split(",")
-#region_dict = {'ashburn':'us-ashburn-1','phoenix':'us-phoenix-1','london':'uk-london-1','frankfurt':'eu-frankfurt-1','toronto':'ca-toronto-1','tokyo':'ap-tokyo-1','seoul':'ap-seoul-1','mumbai':'ap-mumbai-1','sydney':'ap-sydney-1','saopaulo':'sa-saopaulo-1','zurich':'eu-zurich-1'}
+
+
+ct=commonTools()
+regions=[]
+regionsubscriptions = identity_client.list_region_subscriptions(tenancy_id=python_config['tenancy'])
+for rs in regionsubscriptions.data:
+    for k,v in ct.region_dict.items():
+        if (rs.region_name==v):
+            regions.append(k)
+
 
 def write_file(file_name,file_data):
     file_to_open = tmp_folder / file_name
@@ -130,8 +223,16 @@ def write_file(file_name,file_data):
     f.write(file_data)
     f.close()
 
-#del_config_file = input_config_file
-del_config_file = "config_for_delete"
+
+del_config_file = input_cleanup_script_file
+#Report Error when cleanup _script_file already exists and is not empty.
+if(os.path.exists(del_config_file) and os.stat(del_config_file).st_size != 0):
+    #x = datetime.datetime.now()
+    #date = x.strftime("%f").strip()
+    print('cleanup_script_file '+del_config_file +" already exists and is not empty. Make sure to provide a new file name..Exiting")
+    exit()
+    #shutil.move(del_config_file,del_config_file+"_"+date)
+
 
 def append_file(file_name,file_data):
     f = open(file_name, "a+")
@@ -180,21 +281,21 @@ def create_compartment(compartment_name,compartment_desc):
             new_config = python_config
             message = e.message
             if ("IAD" in message):
-                new_config.__setitem__("region",commonTools.region_dict['ashburn'])
+                new_config.__setitem__("region",ct.region_dict['ashburn'])
             if ("PHX" in message):
-                new_config.__setitem__("region", commonTools.region_dict['phoenix'])
+                new_config.__setitem__("region", ct.region_dict['phoenix'])
             if ("YYZ" in message):
-                new_config.__setitem__("region", commonTools.region_dict['toronto'])
+                new_config.__setitem__("region", ct.region_dict['toronto'])
             if ("FRA" in message):
-                new_config.__setitem__("region", commonTools.region_dict['frankfurt'])
+                new_config.__setitem__("region", ct.region_dict['frankfurt'])
             if ("LHR" in message):
-                new_config.__setitem__("region", commonTools.region_dict['london'])
+                new_config.__setitem__("region", ct.region_dict['london'])
             if ("BOM" in message):
-                new_config.__setitem__("region", commonTools.region_dict['mumbai'])
+                new_config.__setitem__("region", ct.region_dict['mumbai'])
             if ("ICN" in message):
-                new_config.__setitem__("region", commonTools.region_dict['seoul'])
+                new_config.__setitem__("region", ct.region_dict['seoul'])
             if ("NRT" in message):
-                new_config.__setitem__("region", commonTools.region_dict['tokyo'])
+                new_config.__setitem__("region", ct.region_dict['tokyo'])
 
             new_id_client = oci.identity.IdentityClient(new_config)
             try:
@@ -287,7 +388,7 @@ if(input_image_id==''):
 linux_image_id={}
 windows_image_id={}
 variables_data={}
-for key in commonTools.region_dict:
+for key in ct.region_dict:
     linux_image_id.setdefault(key,'')
     windows_image_id.setdefault(key,'')
     variables_data.setdefault(key,'')
@@ -295,7 +396,7 @@ for key in commonTools.region_dict:
 new_config=python_config
 for region in regions:
     region=region.strip().lower()
-    new_config.__setitem__("region",commonTools.region_dict[region])
+    new_config.__setitem__("region",ct.region_dict[region])
     cc = oci.core.ComputeClient(new_config)
     #fetch latest image ocids
     for image in paginate(cc.list_images,compartment_id=tenancy_id,operating_system ='Oracle Linux',sort_by='TIMECREATED'):
@@ -308,6 +409,9 @@ for region in regions:
             break
 
     #write variables data
+    today = datetime.today()
+    dt = str(today.day) + calendar.month_name[today.month] + str(today.year)
+
     variables_data[region] = """variable "ssh_public_key" {
             type = "string"
             default = \"""" + input_ssh_key1 + """"
@@ -343,17 +447,29 @@ for region in regions:
     }
     variable "region" {
             type = "string"
-            default = \"""" + commonTools.region_dict[region] + """"
+            default = \"""" + ct.region_dict[region] + """"
     }
     """
     if (windows_image_id[region] != ''):
         variables_data[region] = variables_data[region] + """
+    #Example for OS value 'Windows' in Instances sheet
+    variable "Windows" {
+            type = "string"
+            default = \"""" + windows_image_id[region] + """"
+            description = "Latest ocid as on """ + dt + """"
+    }
     variable "windows_latest_ocid" {
             type = "string"
             default = \"""" + windows_image_id[region] + """"
     }"""
     if (linux_image_id[region] != ''):
         variables_data[region] = variables_data[region] + """
+    #Example for OS value 'Linux' in Instances sheet
+    variable "Linux"{
+            type = "string"
+            default = \"""" + linux_image_id[region] + """"
+            description = "Latest ocid as on """ + dt + """"
+    }
     variable "linux_latest_ocid"{
             type = "string"
             default = \"""" + linux_image_id[region] + """"
@@ -383,27 +499,19 @@ write_file("provider.tf",provider_data)
 
 #write git expect script to download python code
 if (input_configure_git_oci=="1"):
-    script_data="""#!/usr/bin/expect
-    set password """+input_git_password+"""
+    script_data="""
     cd /root/ocswork/git_oci
     set timeout -1
-    spawn git pull  https://"""+input_git_username.replace('@','%40')+"""@developer.em2.oraclecloud.com/developer14539-usoraocips16001/s/developer14539-usoraocips16001_oci_9900/scm/oci.git
-    expect "Password for 'https://"""+input_git_username+"""@developer.em2.oraclecloud.com':" {send "$password\\r"}
-    #sleep 60
-    expect eof
+    git pull ssh://idcs-1c7c880a11284a04a8f72d257e67de9f."""+input_git_username.replace('@','%40')+"""@nac-gc39002.developer.ocp.oraclecloud.com/nac-gc39002_oci_262/oci.git
     """
-    write_file("download_git_expect1.sh",script_data)
+    write_file("download_git_oci.sh",script_data)
 if (input_configure_git_ocictooci == "1"):
-    script_data="""#!/usr/bin/expect
-    set password """+input_git_password+"""
+    script_data="""
     cd /root/ocswork/git_ocic2oci
     set timeout -1
-    spawn git pull https://"""+input_git_username.replace('@','%40')+"""@developer.em2.oraclecloud.com/developer14539-usoraocips16001/s/developer14539-usoraocips16001_ocictooci_10075/scm/ocictooci.git
-    expect "Password for 'https://"""+input_git_username+"""@developer.em2.oraclecloud.com':" {send "$password\\r"}
-    #sleep 30
-    expect eof
+    git pull ssh://idcs-1c7c880a11284a04a8f72d257e67de9f."""+input_git_username.replace('@','%40')+"""@nac-gc39002.developer.ocp.oraclecloud.com/nac-gc39002_ocic2oci_182/ocictooci.git
     """
-    write_file("download_git_expect2.sh",script_data)
+    write_file("download_git_ocic2oci.sh",script_data)
 
 #write Panda specific files
 if (input_configure_panda=="1"):
@@ -574,8 +682,10 @@ if (input_configure_koala=="1"):
     expect eof
     """
     write_file("discover_koala_expect.sh",script_data)
-#Creating VM
 
+tenant_name=identity_client.get_tenancy(tenancy_id=python_config['tenancy']).data.name
+
+#Creating VM
 if(input_create_vm=="1"):
     ad_name = python_config[input_ad_name]
     vcn_found=0
@@ -654,6 +764,7 @@ if(input_create_vm=="1"):
 
     # Creating subnet
     if (subnet_found == 0):
+        subnet_private=False
         print('Creating public SUBNET: ' + input_subnet_name + ' with default route table, security list and dhcp options')
         # Converting subnet name to alphanumeric string
         regex = re.compile('[^a-zA-Z0-9]')
@@ -684,7 +795,7 @@ if(input_create_vm=="1"):
     add_rule=1
     for rule in existing_rules_list:
         if (route_rule.destination == rule.destination):
-            print("Route Rule with 0.0.0.0/0 destination already exists in the route table. Not adding anything. Internet Access might not work for the VM")
+            print("Route Rule with 0.0.0.0/0 destination already exists in the route table. Not adding any new route rule now. Please verify internet access for OCS VM")
             add_rule=0
 
     if(add_rule==1):
@@ -756,7 +867,11 @@ if(input_create_vm=="1"):
 
     create_source_details=oci.core.models.InstanceSourceViaImageDetails(source_type="image",image_id=input_image_id)
     metadata= {"ssh_authorized_keys" : multiple_ssh_keys, "user_data" : encoded_user_data}
-    launch_instance_details=oci.core.models.LaunchInstanceDetails(availability_domain=ad_name,compartment_id=ocs_compartment_ocid,display_name=input_vm_name,shape=input_vm_shape,source_details=create_source_details,metadata=metadata,subnet_id=subnet_ocid)
+    create_vnic_details = oci.core.models.CreateVnicDetails(subnet_id=subnet_ocid, assign_public_ip=False)
+    launch_instance_details=oci.core.models.LaunchInstanceDetails(availability_domain=ad_name,compartment_id=ocs_compartment_ocid,
+                                                                  display_name=input_vm_name,shape=input_vm_shape,
+                                                                  source_details=create_source_details,metadata=metadata,
+                                                                  create_vnic_details=create_vnic_details)
     instance=compute_client.launch_instance(launch_instance_details)
 
     #wait till Instance comes to RUNNING state
@@ -771,21 +886,52 @@ if(input_create_vm=="1"):
     vnic=network_client.get_vnic(vnic_ocid)
 
     ip=''
-    public_ip=vnic.data.public_ip
+    """public_ip=vnic.data.public_ip
     if(public_ip!=None):
         print('Public IP of VM: '+public_ip)
         ip=public_ip
-
+    """
     private_ip = vnic.data.private_ip
     print('Private IP of VM: ' + private_ip)
-    if(ip==''):
-        ip=private_ip
+    ip = private_ip
 
+    #Attach Reserved Public IP if subnet is public subnet
+    if(subnet_private==False):
+        private_ip_ids=network_client.list_private_ips(vnic_id=vnic_ocid)
+        for pvtipid in private_ip_ids.data:
+            pvtip_ocid=pvtipid.id
+
+    #if(ip==''):
+    #    ip=private_ip
+    # create Reserved Public IP
+        reserved_ip_exists= False
+        tenancy_public_ips = network_client. list_public_ips(scope="REGION", compartment_id=ocs_compartment_ocid, lifetime ="RESERVED")
+        for tenancy_public_ip in tenancy_public_ips.data:
+            if(tenancy_public_ip.display_name==input_vm_name and tenancy_public_ip.private_ip_id == None):
+                reserved_ip_exists=True
+                update_public_ip_details = oci.core.models.UpdatePublicIpDetails(private_ip_id=pvtip_ocid)
+                public_ip_id=network_client.update_public_ip(public_ip_id =tenancy_public_ip.id, update_public_ip_details=update_public_ip_details)
+
+
+        if(reserved_ip_exists==False):
+            create_public_ip_details = oci.core.models.CreatePublicIpDetails(display_name=input_vm_name,compartment_id=ocs_compartment_ocid,lifetime="RESERVED", private_ip_id=pvtip_ocid)
+            public_ip_id=network_client.create_public_ip(create_public_ip_details=create_public_ip_details)
+
+        #Get public IP
+        public_ip_id=public_ip_id.data
+        public_ip_ocid=public_ip_id.id
+        public_ip = public_ip_id.ip_address
+        if (public_ip != None):
+            print('Reserved Public IP of VM: ' + public_ip)
+            ip = public_ip
+
+    print("\nWriting OCID info to file: "+del_config_file+" required for cleanup script")
     #Write to config file for cleanup
     with open(input_config_file, 'r') as file:
         existing_data = file.read()
         append_file(del_config_file, existing_data)
 
+    append_file(del_config_file,"Tenant_Name="+tenant_name)
     append_file(del_config_file, "vcn_ocid=" + vcn_ocid)
     if (igw_ocid!=''):
         append_file(del_config_file, "igw_ocid=" + igw_ocid)
@@ -799,10 +945,12 @@ if(input_create_vm=="1"):
     if (lpg_to_rsync_ocid != ''):
         append_file(del_config_file, "lpg_to_rsync_ocid=" + lpg_to_rsync_ocid)
 
-    append_file(del_config_file, "ocswork_instance_ocid=" + instance_ocid)
+    #append_file(del_config_file, "ocswork_instance_ocid=" + instance_ocid)
+    updatePropsFile(del_config_file, "ocswork_instance_ocid", instance_ocid)
 
     if(public_ip!=None):
         append_file(del_config_file, "public_ip=" + public_ip)
+        append_file(del_config_file, "ocswork_reservedpublic_ocid=" + public_ip_ocid)
 
     append_file(del_config_file, "private_ip=" + private_ip)
 
@@ -825,7 +973,7 @@ if(input_create_vm=="1"):
     updatePropsFile(input_config_file, "ocswork_instance_ocid", instance_ocid)
 
     #scp private key and config files to VM
-    print('Copying required files to the VM')
+    print('\nCopying required files to the VM')
     time.sleep(5)
 
     f=open(input_pvt_key_file,"r")
@@ -851,8 +999,8 @@ if(input_create_vm=="1"):
     provider=str(tmp_folder / 'provider.tf')
     koala = str(tmp_folder / 'default')
     script_file = input_shell_script
-    upload_git_script1 = str(tmp_folder / 'download_git_expect1.sh')
-    upload_git_script2 = str(tmp_folder / 'download_git_expect2.sh')
+    upload_git_script1 = str(tmp_folder / 'download_git_oci.sh')
+    upload_git_script2 = str(tmp_folder / 'download_git_ocic2oci.sh')
     discover_koala_script = str(tmp_folder / 'discover_koala_expect.sh')
     upgrade_terraform_script = str(tmp_folder / 'upgrade_terraform_expect_script.sh')
     public_key_file = str(tmp_folder / 'ocs_public_keys.txt')
@@ -879,8 +1027,6 @@ if(input_create_vm=="1"):
         ssh.exec_command(mv_variables_cmd)
         ssh.exec_command(mv_provider_cmd)
 
-
-
     if(input_configure_panda=="1"):
         print('Copying generated files for Panda Server Creation..')
         sftp.put(str(tmp_folder / 'panda.tf'), '/home/opc/panda.tf')
@@ -895,15 +1041,18 @@ if(input_create_vm=="1"):
         print('Copying Koala files..')
         sftp.put(koala, '/home/opc/default')
         sftp.put(discover_koala_script, '/home/opc/discover_koala_expect.sh')
+    if (input_configure_git_oci == "1" or input_configure_git_ocictooci == "1"):
+        print('Copying private key file for GIT..')
+        sftp.put(input_git_pvt_key_file,'/home/opc/id_rsa')
     if(input_configure_git_oci=="1"):
         print('Copying OCI GIT download script file..')
-        sftp.put(upload_git_script1, '/home/opc/download_git_expect1.sh')
+        sftp.put(upload_git_script1, '/home/opc/download_git_oci.sh')
     if (input_configure_git_ocictooci == "1"):
         print('Copying OCICTOOCI GIT download script file..')
-        sftp.put(upload_git_script2, '/home/opc/download_git_expect2.sh')
+        sftp.put(upload_git_script2, '/home/opc/download_git_ocic2oci.sh')
 
     print('Copying shell script file to setup the VM..')
-    input_run_shell_script = config.get('Default','run_shell_script')
+
     if input_run_shell_script == "1":
         sftp.put(script_file, '/home/opc/shell_script.sh')
     else:

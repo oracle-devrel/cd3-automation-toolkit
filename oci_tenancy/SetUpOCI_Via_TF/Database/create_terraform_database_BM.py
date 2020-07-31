@@ -19,6 +19,7 @@ parser = argparse.ArgumentParser(description="Creating DB_Systems")
 parser.add_argument("file", help="Full Path of CD3 excel file. eg CD3-template_1.xlsx in example folder")
 parser.add_argument("outdir", help="directory path for output tf file ")
 parser.add_argument("prefix", help="customer name/prefix for all file names")
+parser.add_argument("--configFileName", help="Config file name", required=False)
 
 if len(sys.argv) == 1:
     parser.print_help()
@@ -32,20 +33,18 @@ args = parser.parse_args()
 filename = args.file
 outdir = args.outdir
 prefix = args.prefix
+if args.configFileName is not None:
+    configFileName = args.configFileName
+else:
+    configFileName=""
+
+ct = commonTools()
+ct.get_subscribedregions(configFileName)
 
 ADS = ["AD1", "AD2", "AD3"]
 
 # If the input is CD3
 if ('.xls' in filename):
-    #df_info = pd.read_excel(filename, sheet_name='VCN Info', skiprows=1)
-    #properties = df_info['Property']
-    #values = df_info['Value']
-
-    #all_regions_v = str(values[7]).strip()
-    #all_regions_v = all_regions_v.split(",")
-    #all_regions_v = [x.strip().lower() for x in all_regions_v]
-
-    all_regions_f = os.listdir(outdir)
 
     df = pd.read_excel(filename, sheet_name='DB_System_BM', skiprows=1)
     df = df.dropna(how='all')
@@ -55,12 +54,12 @@ if ('.xls' in filename):
         Region = df.iat[i, 0]
         Region = Region.strip().lower()
 
-        if Region not in all_regions_f:
-            if Region == '<end>' and '<END>':
+        if Region not in ct.all_regions:
+            if Region in commonTools.endNames:
                 print('This is the end of the file')
                 break
             else:
-                print("Invalid Region -> " + Region + "; It should be one of the values mentioned in VCN Info tab and directory with region name in Output directory")
+                print("Invalid Region -> " + Region + "; It should be one of the values tenancy is subscribed to and directory with region name should exist in Output directory")
                 continue
 
         database_system_availability_domain = df['Availability domain'][i].strip()
@@ -110,7 +109,7 @@ if ('.xls' in filename):
         database_auto_backup_option = df['Enable Automatic Backups'][i].strip()
 
         database_subnet_name = df['Subnet name'][i].strip()
-        database_subnet_name = commonTools.tfname.sub("-", database_subnet_name.strip())
+        database_subnet_name = commonTools.check_tf_variable(database_subnet_name.strip())
 
         database_ssh_key = df['SSH Key'][i].strip()
 
@@ -128,8 +127,11 @@ if ('.xls' in filename):
         else:
             database_auto_backup_option = "false"
 
+        database_system_display_name_tf=commonTools.check_tf_variable(database_system_display_name)
+        compartment_var_name = commonTools.check_tf_variable(compartment_var_name)
+
         resources_content = """
-                resource "oci_database_db_system" \"""" + database_system_display_name + """\" {
+                resource "oci_database_db_system" \"""" + database_system_display_name_tf + """\" {
                   availability_domain = "${data.oci_identity_availability_domains.ADs.availability_domains.""" + str(ad) + """.name}"
                   compartment_id = "${var.""" + compartment_var_name + """}"
                   cpu_core_count      = \"""" + str(database_cpu_core) + """\"

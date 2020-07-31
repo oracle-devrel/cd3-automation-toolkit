@@ -31,7 +31,7 @@ parser.add_argument("inputfile", help="Full Path of input file. It could be eith
 parser.add_argument("outdir", help="Output directory for creation of TF files")
 parser.add_argument("prefix", help="customer name/prefix for all file names")
 parser.add_argument("--modify_network", help="Modify: true or false", required=False)
-
+parser.add_argument("--configFileName", help="Config file name", required=False)
 
 if len(sys.argv)<3:
         parser.print_help()
@@ -45,6 +45,13 @@ if args.modify_network is not None:
     modify_network = str(args.modify_network)
 else:
     modify_network = "false"
+if args.configFileName is not None:
+    configFileName = args.configFileName
+else:
+    configFileName=""
+
+ct = commonTools()
+ct.get_subscribedregions(configFileName)
 
 outfile={}
 deffile={}
@@ -57,13 +64,17 @@ def processDHCP(region,vcn_name,dhcp_option_name,compartment_var_name,serverType
 
 	region = region.lower().strip()
 	compartment_var_name=compartment_var_name.strip()
+
+	# Added to check if compartment name is compatible with TF variable name syntax
+	compartment_var_name = commonTools.check_tf_variable(compartment_var_name)
+
 	serverType=serverType.strip()
 	search_domain=search_domain.strip()
 	vcn_name=vcn_name.strip()
-	vcn_tf_name = commonTools.tfname.sub("-", vcn_name)
+	vcn_tf_name = commonTools.check_tf_variable(vcn_name)
 	dhcp_option_name=dhcp_option_name.strip()
 	vcn_dhcp = vcn_name + "_" + dhcp_option_name
-	vcn_dhcp_tf_name = commonTools.tfname.sub("-", vcn_dhcp)
+	vcn_dhcp_tf_name = commonTools.check_tf_variable(vcn_dhcp)
 	if("Default DHCP Options for " in dhcp_option_name):
 		dhcp_res = """
 	resource "oci_core_default_dhcp_options" \"""" + vcn_dhcp_tf_name + """" {
@@ -111,9 +122,8 @@ def processDHCP(region,vcn_name,dhcp_option_name,compartment_var_name,serverType
 
 
 if('.xls' in args.inputfile):
-	vcnInfo = parseVCNInfo(filename)
 	vcns = parseVCNs(filename)
-	for reg in vcnInfo.all_regions:
+	for reg in ct.all_regions:
 		tfStr[reg] = ''
 		defStr[reg] = ''
 
@@ -139,8 +149,8 @@ if('.xls' in args.inputfile):
 
 		custom_dns_servers = df.iat[i,6]
 
-		if region not in vcnInfo.all_regions:
-			print("\nERROR!!! Invalid Region; It should be one of the values mentioned in VCN Info tab..Exiting!")
+		if region not in ct.all_regions:
+			print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
 			exit(1)
 		processDHCP(region,vcn_name,dhcp_option_name,compartment_var_name,serverType,custom_dns_servers,search_domain)
 
@@ -195,7 +205,7 @@ else:
 
 dhcpdata={}
 if(modify_network=='true'):
-	for reg in vcnInfo.all_regions:
+	for reg in ct.all_regions:
 		reg_out_dir = outdir + "/" + reg
 		if not os.path.exists(reg_out_dir):
 			os.makedirs(reg_out_dir)
@@ -213,18 +223,19 @@ if(modify_network=='true'):
 		oname[reg].close()
 		print(outfile[reg] + " containing TF for DHCP Options has been updated for region " + reg)
 
-		#if (defStr[reg] != ''):
-		if (os.path.exists(deffile[reg])):
-			print("creating backup file " + deffile[reg] + "_backup" + date)
-			shutil.copy(outfile[reg], deffile[reg] + "_backup" + date)
-		defname[reg] = open(deffile[reg], "w")
-		defname[reg].write(defStr[reg])
-		defname[reg].close()
-		print(deffile[reg] + " containing TF for Default DHCP Options has been updated for region " + reg)
+		# Added this if condition again because modify network was showing tf destroying Default DHCP Options
+		if (defStr[reg] != ''):
+			if (os.path.exists(deffile[reg])):
+				print("creating backup file " + deffile[reg] + "_backup" + date)
+				shutil.copy(outfile[reg], deffile[reg] + "_backup" + date)
+			defname[reg] = open(deffile[reg], "w")
+			defname[reg].write(defStr[reg])
+			defname[reg].close()
+			print(deffile[reg] + " containing TF for Default DHCP Options has been updated for region " + reg)
 
 
 elif(modify_network == 'false'):
-	for reg in vcnInfo.all_regions:
+	for reg in ct.all_regions:
 		reg_out_dir = outdir + "/" + reg
 		if not os.path.exists(reg_out_dir):
 			os.makedirs(reg_out_dir)

@@ -5,6 +5,9 @@ import argparse
 import pandas as pd
 import os
 import datetime
+sys.path.append(os.getcwd()+"/../..")
+from commonTools import *
+
 
 
 x = datetime.datetime.now()
@@ -60,7 +63,7 @@ if ('.xls' in filename):
                     NSGs=NSG_col.split(",")
                     i=0
                     while i<len(NSGs):
-                        nsg_ids=nsg_ids+""""${oci_core_network_security_group."""+NSGs[i].strip()+""".id}" """
+                        nsg_ids=nsg_ids+""""${oci_core_network_security_group."""+commonTools.check_tf_variable(NSGs[i].strip())+""".id}" """
                         if(i!=len(NSGs)-1):
                             nsg_ids=nsg_ids+","
                         else:

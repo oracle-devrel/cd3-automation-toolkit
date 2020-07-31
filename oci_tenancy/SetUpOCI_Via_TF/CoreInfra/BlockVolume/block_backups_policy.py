@@ -7,6 +7,9 @@ import pandas as pd
 import os
 import datetime
 from os import path
+sys.path.append(os.getcwd()+"/../..")
+from commonTools import *
+
 
 x = datetime.datetime.now()
 date = x.strftime("%S").strip()
@@ -14,6 +17,7 @@ date = x.strftime("%S").strip()
 parser = argparse.ArgumentParser(description="Attaches back up policy to Block Volumes")
 parser.add_argument("file", help="Full Path of CD3 excel file. eg CD3-template.xlsx in example folder")
 parser.add_argument("outdir", help="directory path for output tf file ")
+parser.add_argument("--configFileName", help="Config file name", required=False)
 
 if len(sys.argv) == 1:
     parser.print_help()
@@ -26,6 +30,13 @@ if len(sys.argv) < 2:
 args = parser.parse_args()
 filename = args.file
 outdir = args.outdir
+if args.configFileName is not None:
+    configFileName = args.configFileName
+else:
+    configFileName=""
+
+ct = commonTools()
+ct.get_subscribedregions(configFileName)
 
 tmpstr = """
 data "oci_core_volume_backup_policies" "block_gold" {
@@ -56,16 +67,8 @@ policy_file={}
 endnames= ['<end>','<END>','<End>']
 
 if ('.xls' in filename):
-    #df_info = pd.read_excel(filename, sheet_name='VCN Info', skiprows=1)
-    #properties = df_info['Property']
-    #values = df_info['Value']
 
-    #all_regions = str(values[7]).strip()
-    #all_regions = all_regions.split(",")
-    #all_regions = [x.strip().lower() for x in all_regions]
-    all_regions = os.listdir(outdir)
-
-    for reg in all_regions:
+    for reg in ct.all_regions:
         policy_file[reg] = outdir + "/"+reg+"/attach_block_backups_policy.tf"
         src=policy_file[reg]
         if path.exists(src):
@@ -88,6 +91,12 @@ if ('.xls' in filename):
 
             elif (j == 'Region'):
                 Region = df['Region'][i].strip().lower()
+                if(Region in commonTools.endNames):
+                    exit()
+                if(Region not in ct.all_regions):
+                    print("Invalid Region "+ Region)
+                    break
+
 
             elif (j == 'block_name'):
                 block_name = df['block_name'][i]
@@ -97,10 +106,11 @@ if ('.xls' in filename):
 
                     policy = df['Backup Policy'][i].lower().strip()
 
-                    res_name=block_name+"_bkupPolicy"
+                    block_name_tf=commonTools.check_tf_variable(block_name)
+                    res_name=block_name_tf+"_bkupPolicy"
                     tmpstr = """resource "oci_core_volume_backup_policy_assignment" \"""" + res_name + """\"{
                         #Required
-                        asset_id = "${oci_core_volume.""" + block_name + """.id}"
+                        asset_id = "${oci_core_volume.""" + block_name_tf + """.id}"
                         policy_id = "${data.oci_core_volume_backup_policies.block_""" + policy + """.volume_backup_policies.0.id}"
                         }
                         ## Add policy attachment ##

@@ -141,3 +141,36 @@ Below are the highlights of this release:
     ATTENION!!! Below RouteTables are not attached to any subnet or DRG and LPG; If you want to delete any of them, remove the TF file!!!")
 
     ATTENION!!! Below SecLists are not attached to any subnet; If you want to delete any of them, remove the TF file!!!")
+
+------------------------
+SetUPOCI_Via_TF Tag v6.0.1
+------------------------
+Bug fix for Instance, FSS, LBR and DB creation using subnet name
+
+------------------------
+SetUPOCI_Via_TF Tag v6.1
+------------------------
+1.  Addition of Description field for Security Rules and Route Rules. Keep using same CD3 but just add new column 'RuleDescription'
+    at the end of both the sheets - SecRulesinOCI and RouteRulesinOCI
+2.  New text files - OCI_Regions and OCI_Protocols have been introduced. If any new region gets supported by OCI, it can be added in
+    OCI_Regions file. Similarly Protocol and its number mapping has been defined in OCI_Protocols file which will be used by Security
+    Rules as well as NSG Rules.
+3.  Automation Toolkit will now support duplicate compartment names like OCI does. Please refer to CD3-template.xlsx under example folder for sample data.
+4.  Extra properties specific to OCItoOCI project have been removed from ocswork.properties and a new file ocswork_ocic.properties has been added to accomodate that.
+5.  Support for multiple OCSWork VMs via separate config_for_delete files. A new input parameter has been added to ocswork.properties file.
+6.  Support for Reserved Public IP for OCSWork VM. Reserved public IP will e assigned to OCSWork VM which you cna chose to retain also while destroying OCSWork VM.
+7a. Regions property has been removed and now tenancy's subscribed regions will be fetched using API and terraform directories would be created based on that.
+    It would be good to subscribe tenancy to all required regions before setting up OCS Work VM or else create the region directory manually.
+7b. Regions property has been removed from VCN Info tab of CD3 as well.
+8.  CD3 Validator has been introduced. This will validate Networking tabs as of now. It will check for any Null Values, CIDR overlaps etc. Please look at Confluence Page
+    https://confluence.oraclecorp.com/confluence/display/NAC/Support+for+CD3+Validator for more details.
+9.  Support for Flex shapes for Instances. Please refer to CD3-template.xlsx under example folder for sample input data.
+10. Instead of LinuxLatest and WindowsLatest, OS value in CD3 template has been changed to Linux and Windows respectively. Variable names in
+    variables_<region>.tf has been changed accordingly.
+    Support for LinuxLatest and WindowsLatest templates for instance will be deprecated from next release.
+11. Support for Multiple Listeners for LBRs. Add new column 'ListenerName' in the CD3 sheet. Please refer to CD3-template.xlsx under example folder for sample input data.
+12. Support for Multiple export options for FSS. Please refer to CD3-template.xlsx under example folder for sample input data.
+13. Support for NSG export/import. Export process for non-greenfield tenancies will support export of NSGs and their import into terraform.
+14. GIT repo has been moved to OCI. SSH key needs to be setup for access to the repo. Please see the instructions at confluence page:
+    https://confluence.oraclecorp.com/confluence/display/NAC/Guide+to+access+repository+in+DevCS
+    Private key is copied over to /root/.ssh folder. It is up to the developers if they want to keep the private key there for any future GIT updates or if they want to remove the key for security reasons.

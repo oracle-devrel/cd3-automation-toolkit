@@ -35,6 +35,7 @@ parser = argparse.ArgumentParser(description="Creates a terraform sec list resou
 parser.add_argument("inputfile", help="Full Path of input file. eg vcn-info.properties or cd3 excel file")
 parser.add_argument("outdir",help="Output directory")
 parser.add_argument("--modify_network", help="modify: true or false", required=False)
+parser.add_argument("--configFileName", help="Config file name", required=False)
 
 
 if len(sys.argv)==1:
@@ -53,6 +54,13 @@ if args.modify_network is not None:
     modify_network = str(args.modify_network)
 else:
     modify_network = "false"
+if args.configFileName is not None:
+    configFileName = args.configFileName
+else:
+    configFileName=""
+
+ct = commonTools()
+ct.get_subscribedregions(configFileName)
 
 fname = None
 oname=None
@@ -73,7 +81,7 @@ def processSubnet(region,vcn_name,AD,seclist_names,compartment_var_name):
     else:
         ad_name = ""
 
-    vcn_tf_name=commonTools.tfname.sub("-",vcn_name)
+    vcn_tf_name=commonTools.check_tf_variable(vcn_name)
 
     index=0
     for sl_name in seclist_names:
@@ -89,11 +97,12 @@ def processSubnet(region,vcn_name,AD,seclist_names,compartment_var_name):
         else:
             display_name = sl_name
 
-        sl_tf_name = commonTools.tfname.sub("-",display_name)
+        sl_tf_name=vcn_name+"_"+display_name
+        sl_tf_name = commonTools.check_tf_variable(sl_tf_name)
 
-        if (vcn_tf_name +"_"+sl_tf_name+"_seclist.tf" in secrulefiles[region]):
-            secrulefiles[region].remove(vcn_tf_name +"_"+sl_tf_name+"_seclist.tf")
-        outfile = outdir + "/" + region + "/" + vcn_tf_name +"_"+sl_tf_name+"_seclist.tf"
+        if (sl_tf_name+"_seclist.tf" in secrulefiles[region]):
+            secrulefiles[region].remove(sl_tf_name+"_seclist.tf")
+        outfile = outdir + "/" + region + "/" + sl_tf_name+"_seclist.tf"
 
         # If Modify Network is set to true
         if (os.path.exists(outfile) and modify_network == 'true'):
@@ -124,7 +133,7 @@ def processSubnet(region,vcn_name,AD,seclist_names,compartment_var_name):
         oname = open(outfile, "w")
 
         tempStr = """
-        resource "oci_core_security_list" \"""" + vcn_tf_name+"_"+sl_tf_name + """"{
+        resource "oci_core_security_list" \"""" + sl_tf_name + """"{
             compartment_id = "${var.""" + compartment_var_name + """}"
             vcn_id = "${oci_core_vcn.""" + vcn_tf_name + """.id}"
             display_name = \"""" + display_name.strip() + "\""
@@ -160,13 +169,13 @@ if('.xls' in filename):
 
     # Purge existing routetable files
     if (modify_network == 'false'):
-        for reg in vcnInfo.all_regions:
+        for reg in ct.all_regions:
             purge(outdir+"/"+reg, "_seclist.tf")
             secrulefiles.setdefault(reg, [])
 
     # Get existing list of secrule table files
     if (modify_network == 'true'):
-        for reg in vcnInfo.all_regions:
+        for reg in ct.all_regions:
             secrulefiles.setdefault(reg, [])
             lisoffiles = os.listdir(outdir + "/" + reg)
             for file in lisoffiles:
@@ -184,11 +193,14 @@ if('.xls' in filename):
         if (region in commonTools.endNames):
             break
         compartment_var_name = df.iat[i, 1]
+        region = region.strip().lower()
+        if region not in ct.all_regions:
+            print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
+            exit(1)
         vcn_name = str(df['vcn_name'][i]).strip()
         if (vcn_name.strip() not in vcns.vcn_names):
             print("\nERROR!!! " + vcn_name + " specified in Subnets tab has not been declared in VCNs tab..Exiting!")
             exit(1)
-        region = region.strip().lower()
 
 
         # Get subnet data
@@ -207,12 +219,14 @@ if('.xls' in filename):
             sl_names.append(name)
         compartment_var_name=compartment_var_name.strip()
 
+        # Added to check if compartment name is compatible with TF variable name syntax
+        compartment_var_name = commonTools.check_tf_variable(compartment_var_name)
 
         processSubnet(region,vcn_name,AD,sl_names,compartment_var_name)
 
 
     # remove any extra sec list files (not part of latest cd3)
-    for reg in vcnInfo.all_regions:
+    for reg in ct.all_regions:
         if(len(secrulefiles[reg])!=0):
             print("\nATTENION!!! Below SecLists are not attached to any subnet; If you want to delete any of them, remove the TF file!!!")
         for remaining_sl_file in secrulefiles[reg]:

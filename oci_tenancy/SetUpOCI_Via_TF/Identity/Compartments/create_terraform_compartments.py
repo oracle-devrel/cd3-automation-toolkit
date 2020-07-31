@@ -19,68 +19,148 @@ from commonTools import *
 # outfile is the name of output terraform file generated
 ######
 
+## Start Processing
 
 parser = argparse.ArgumentParser(description="Create Compartments terraform file")
 parser.add_argument("inputfile", help="Full Path of input file. It could be either the csv file or CD3 excel file")
 parser.add_argument("outdir", help="Output directory for creation of TF files")
 parser.add_argument("prefix", help="customer name/prefix for all file names")
-
+parser.add_argument("--configFileName", help="Config file name", required=False)
 
 if len(sys.argv)<3:
         parser.print_help()
         sys.exit(1)
 
 args = parser.parse_args()
+
+#Declare variables
 filename=args.inputfile
 outdir=args.outdir
 prefix=args.prefix
+if args.configFileName is not None:
+    configFileName = args.configFileName
+else:
+    configFileName=""
+
+ct = commonTools()
+ct.get_subscribedregions(configFileName)
 
 outfile={}
 oname={}
 tfStr={}
+c=0
+
+#reversal path function
+def travel(parent, keys, values, c):
+    if (parent == "" or parent =="nan" or parent == "root"):
+        return ""
+    else:
+        if ( "::" in str(values[keys.index(parent)])):
+           if(c==0):
+               return values[keys.index(parent)]+"::"+parent
+           c = c + 1
+           return values[keys.index(parent)]
+        return travel(values[keys.index(parent)],keys,values,c)+"::"+parent
 
 
+
+#If input in cd3 file
 if('.xls' in args.inputfile):
-    vcnInfo = parseVCNInfo(args.inputfile)
+
+    #Read cd3 using pandas dataframe
     df = pd.read_excel(args.inputfile, sheet_name='Compartments',skiprows=1)
+
+    #Remove empty rows
     df = df.dropna(how='all')
     df = df.reset_index(drop=True)
+
     #To handle duplicates during export process
-    df=df.drop_duplicates()
-    for reg in vcnInfo.all_regions:
+    #df=df.drop_duplicates(ignore_index=True)
+
+    #Initialise empty TF string for each region
+    for reg in ct.all_regions:
         tfStr[reg] = ''
-
+    #Separating Compartments and ParentComparements into list
+    ckeys=[]
+    pvalues=[]
     for i in df.index:
-        region = df.iat[i,0]
+        if (df.iat[i,0] in commonTools.endNames):
+            break
+        ckeys.append(str(df.iat[i, 1]).strip())
+        pvalues.append(str(df.iat[i, 3]).strip())
 
+
+    #Iterate over rows
+    for i in df.index:
+        region = str(df.iat[i,0])
+
+        #Encountered <End>
         if (region in commonTools.endNames):
             break
 
         region=region.strip().lower()
-        if region not in vcnInfo.all_regions:
-            print("Invalid Region; It should be one of the values mentioned in VCN Info tab")
-            exit(1)
-        compartment_name = df.iat[i, 1]
-        comp_tf_name = commonTools.tfname.sub("-", compartment_name)
 
-        compartment_desc = df.iat[i, 2]
-        parent_compartment_name = df.iat[i, 3]
-        if (str(parent_compartment_name).lower()== "nan" or parent_compartment_name.lower() == 'root'):
-            parent_compartment='${var.tenancy_ocid}'
+        #If some invalid region is specified in a row which is not part of VCN Info Tab
+        if region not in ct.all_regions:
+            print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
+            exit(1)
+
+        #Fetch column values for each row
+        compartment_name = str(df.iat[i, 1]).strip()
+        compartment_desc = str(df.iat[i, 2]).strip()
+        parent_compartment_name = str(df.iat[i, 3]).strip()
+        var_c_name = ""
+        # Build compartment TF
+        if (str(parent_compartment_name).lower() == "nan" or str(parent_compartment_name).lower() == 'root' or str(parent_compartment_name).lower() == ""):
+            var_c_name = compartment_name
+            parent_compartment = '${var.tenancy_ocid}'
         else:
-            parent_compartment='${oci_identity_compartment.'+parent_compartment_name.strip()+'.id}'
+            if (ckeys.count(str(parent_compartment_name)) > 1):
+                r=0
+                for check in range(len(ckeys)):
+                   if(ckeys[check]==parent_compartment_name):
+                      if (pvalues[check].lower()=="root" or pvalues[check].lower()=="nan"):
+                        r=1
+                if (r==1):
+                    var_c_name = parent_compartment_name + "::" + compartment_name
+                    parent_compartment = commonTools.check_tf_variable(parent_compartment_name)
+                    parent_compartment = '${oci_identity_compartment.' + parent_compartment + '.id}'
+                else:
+                  print("Error!! Could not find Path for " + compartment_name + " Please give Full Path")
+                  exit(1)
+            elif ("::" in parent_compartment_name):
+                var_c_name = parent_compartment_name + "::" + compartment_name
+                parent_compartment = commonTools.check_tf_variable(parent_compartment_name)
+                parent_compartment = '${oci_identity_compartment.' + parent_compartment + '.id}'
+            else:
+                if (parent_compartment_name not in ckeys):
+                    print("Error!! There is no parent compartment with name " + parent_compartment_name + " to create " + compartment_name + " compartment")
+                    exit(1)
+                parent_compartment = travel(parent_compartment_name, ckeys, pvalues, c)
+                var_c_name = parent_compartment + "::" + compartment_name
+                if (len(parent_compartment) > 1 and parent_compartment[0] == ":" and parent_compartment[1] == ":"):
+                    parent_compartment = parent_compartment[2:]
+                    var_c_name = parent_compartment + "::" + compartment_name
+                parent_compartment = commonTools.check_tf_variable(parent_compartment)
+                parent_compartment = '${oci_identity_compartment.' + parent_compartment + '.id}'
+
+        var_c_name = commonTools.check_tf_variable(var_c_name)
+
         if (str(compartment_name).lower() != "nan"):
             region = region.strip().lower()
-
             compartment_name = compartment_name.strip()
+            # If description field is empty; put name as description
             if (str(compartment_desc).lower() == "nan"):
                 compartment_desc = compartment_name
-            tfStr[region]=tfStr[region] + """
-resource "oci_identity_compartment" \"""" +comp_tf_name + """" {
-	    compartment_id = \"""" + parent_compartment + """"
-	    description = \"""" + compartment_desc.strip() + """"
-  	    name = \"""" + compartment_name.strip() + """"
-} """
+
+            # Write all info to TF string
+            tfStr[region] = tfStr[region] + """
+        resource "oci_identity_compartment" \"""" + var_c_name + """" {
+        	    compartment_id = \"""" + parent_compartment + """"
+        	    description = \"""" + compartment_desc.strip() + """"
+          	    name = \"""" + compartment_name.strip() + """"
+        } """
+
 
 #If input is a csv file
 elif('.csv' in args.inputfile):
@@ -125,8 +205,8 @@ else:
     print("Invalid input file format; Acceptable formats: .xls, .xlsx, .csv")
     exit()
 
-
-for reg in vcnInfo.all_regions:
+#Write TF string to the file in respective region directory
+for reg in ct.all_regions:
     reg_out_dir = outdir + "/" + reg
     if not os.path.exists(reg_out_dir):
         os.makedirs(reg_out_dir)
@@ -137,5 +217,3 @@ for reg in vcnInfo.all_regions:
         oname[reg].write(tfStr[reg])
         oname[reg].close()
         print(outfile[reg] + " containing TF for compartments has been created for region "+reg)
-
-
