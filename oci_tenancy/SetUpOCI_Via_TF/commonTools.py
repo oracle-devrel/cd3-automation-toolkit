@@ -275,18 +275,11 @@ class commonTools():
         book.close()
 
     # def backup_file(src_dir, pattern, overwrite):
-    def backup_file(src_dir, pattern):
+    def backup_file(src_dir, resource, pattern):
         x = datetime.datetime.now()
         date = x.strftime("%f").strip()
-        if ("_routetable.tf" in pattern):
-            dest_dir = src_dir + "/backup_RTs_" + date
-            print("back up Directory: " + dest_dir)
-        elif ("_seclist.tf" in pattern):
-            dest_dir = src_dir + "/backup_SLs_" + date
-            print("back up Directory: " + dest_dir)
-        else:
-            dest_dir = src_dir + "/backup_" + date
-            print("Backing up existing " + pattern + " to " + dest_dir)
+        dest_dir = src_dir + "/backup_" +resource+"_"+ date
+        print("Backing up existing " + pattern + " to " + dest_dir)
         for f in os.listdir(src_dir):
             if f.endswith(pattern):
                 if not os.path.exists(dest_dir):

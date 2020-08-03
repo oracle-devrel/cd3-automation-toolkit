@@ -312,7 +312,7 @@ print("1.  Identity")
 print("2.  Networking")
 print("3.  Instances/Dedicated VM Hosts")
 print("4.  Create and Attach Block Volumes")
-print("5.  Create Tagnamespaces, Default Tags and Defined Tags")
+print("5.  Tagging")
 print("6.  BackUp Policy")
 print("7.  File Storage Service")
 print("8.  Load Balancer Service")
@@ -688,7 +688,6 @@ if('5' in userInput):
     if (input_format == 'cd3'):
         inputfile = input_cd3file
     outdir = input_outdir
-
 
     if not os.path.exists(outdir):
         os.makedirs(outdir)

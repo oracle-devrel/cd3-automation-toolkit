@@ -59,7 +59,20 @@ if ('.xlsx' in filename):
     df = df.dropna(how='all')
     df = df.reset_index(drop=True)
 
-    reg = str(df['Region'].unique())
+    unique_region = df['Region'].unique()
+
+    # Take backup of files
+    for eachregion in unique_region:
+        eachregion = str(eachregion).strip().lower()
+        if (eachregion in commonTools.endNames):
+            break
+        if eachregion not in ct.all_regions:
+            print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
+            exit()
+        resource='Tagging'
+        srcdir = outdir + "/" + eachregion + "/"
+        commonTools.backup_file(srcdir, resource, "_tagging.tf")
+
 
     for reg in ct.all_regions:
         if reg not in commonTools.endNames and  reg != 'nan':
@@ -200,24 +213,9 @@ if ('.xlsx' in filename):
 
 for reg in ct.all_regions:
 
-    namespace_src = outdir + "/" + reg + "/namespaces.tf"
-    if path.exists(namespace_src):
-        namespace_dst = outdir + "/" + reg + "/namespaces_backup" + date
-        os.rename(namespace_src, namespace_dst)
-
-    defaulttags_src = outdir + "/" + reg + "/default-tags.tf"
-    if path.exists(defaulttags_src):
-        defaulttag_dst = outdir + "/" + reg + "/default-tags_backup" + date
-        os.replace(defaulttags_src, defaulttag_dst)
-
-    keys_src = outdir + "/" + reg + "/tagkeys.tf"
-    if path.exists(keys_src):
-        key_dst = outdir + "/" + reg + "/tagkeys_backup" + date
-        os.replace(keys_src, key_dst)
-
     if defaulttagtemp[reg] != '':
 
-        outfile = outdir + "/" + reg + "/default-tags.tf"
+        outfile = outdir + "/" + reg + "/default-tags_tagging.tf"
         oname = open(outfile, "w+")
         print("Writing to ..."+outfile)
         oname.write(defaulttagtemp[reg])
@@ -225,7 +223,7 @@ for reg in ct.all_regions:
 
     if namespacetemp[reg] != '':
 
-        outfile = outdir + "/" + reg + "/namespaces.tf"
+        outfile = outdir + "/" + reg + "/namespaces_tagging.tf"
         oname = open(outfile, "w+")
         print("Writing to ..."+outfile)
         oname.write(namespacetemp[reg])
@@ -233,7 +231,7 @@ for reg in ct.all_regions:
 
     if tagkeytemp[reg] != '':
 
-        outfile = outdir + "/" + reg + "/tagkeys.tf"
+        outfile = outdir + "/" + reg + "/tag-keys_tagging.tf"
         oname = open(outfile, "w+")
         print("Writing to ..."+outfile)
         oname.write(tagkeytemp[reg])

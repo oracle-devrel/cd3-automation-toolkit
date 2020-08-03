@@ -76,9 +76,9 @@ if ('.xls' in filename):
                     x = datetime.datetime.now()
                     date = x.strftime("%S").strip()
 
-                    os.rename(outdir+"/"+Region+"/"+Host_name+".tf",outdir+"/"+Region+"/"+Host_name+".tf_beforeNSG"+date)
-                    file_r= open(outdir+"/"+Region+"/"+Host_name+".tf_beforeNSG"+date, 'r')
-                    file_w = open(outdir + "/" + Region + "/" + Host_name + ".tf", 'w')
+                    os.rename(outdir+"/"+Region+"/"+Host_name+"_instance.tf",outdir+"/"+Region+"/"+Host_name+"_instance.tf_beforeNSG"+date)
+                    file_r= open(outdir+"/"+Region+"/"+Host_name+"_instance.tf_beforeNSG"+date, 'r')
+                    file_w = open(outdir + "/" + Region + "/" + Host_name + "_instance.tf", 'w')
 
                     for line in file_r:
                         if(textToSearch1 in line):
@@ -88,7 +88,7 @@ if ('.xls' in filename):
                         file_w.write(line)
                     file_w.close()
                     file_r.close()
-                    print("NSG info updated in "+outdir + "/" + Region + "/" + Host_name + ".tf")
+                    print("NSG info updated in "+outdir + "/" + Region + "/" + Host_name + "_instance.tf")
 
 if('tmp_' in filename):
     os.remove(filename)

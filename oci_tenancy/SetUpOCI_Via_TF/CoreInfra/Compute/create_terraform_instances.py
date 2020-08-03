@@ -1,44 +1,16 @@
 #!/usr/bin/python3
 import csv
-import shutil
 import sys
 import argparse
 import re
 import pandas as pd
 import os
+from os import path
 sys.path.append(os.getcwd()+"/../..")
 from commonTools import *
 from jinja2 import Environment, FileSystemLoader
 
-#Load the template file
-file_loader = FileSystemLoader('templates')
-env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
-template = env.get_template('instance-template')
-
 ADS = ["AD1", "AD2", "AD3"]
-def copy_template_file(hostname, operatingsystem, region):
-    region = region.strip().lower()
-    print('Copying template file - template/' + operatingsystem + 'template.tf for hostname ' + hostname)
-    shutil.copyfile('template/' + operatingsystem + 'template.tf', outdir + '/' + region + '/' + hostname + '.tf')
-
-def replaceAllplaceholders(fileToSearch, textToSearch, textToReplace):
-    with open(fileToSearch, 'r') as file:
-        filedata = file.read()
-
-    # Replace the target string
-    filedata = re.sub(textToSearch, textToReplace, filedata, flags=re.IGNORECASE)
-
-    # Write the file out again
-    with open(fileToSearch, 'w') as file:
-        file.write(filedata)
-
-def skipCommentedLine(lines):
-    for line in lines:
-        comment_pattern = re.compile(r'\s*#.*$')
-        line = re.sub(comment_pattern, '', line).strip()
-        if line:
-            yield line
-
 
 parser = argparse.ArgumentParser(description="Creates Instances TF file")
 parser.add_argument("file", help="Full Path of csv file or CD3 excel file. eg instance.csv or CD3-template.xlsx in example folder")
@@ -56,7 +28,7 @@ if len(sys.argv) < 2:
 args = parser.parse_args()
 filename = args.file
 outdir = args.outdir
-endNames = {'<END>', '<end>','<End>'}
+
 if args.configFileName is not None:
     configFileName = args.configFileName
 else:
@@ -65,6 +37,10 @@ else:
 ct = commonTools()
 ct.get_subscribedregions(configFileName)
 
+#Load the template file
+file_loader = FileSystemLoader('templates')
+env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
+template = env.get_template('instance-template')
 
 #If input is CD3 excel file
 if('.xls' in filename):
@@ -83,17 +59,37 @@ if('.xls' in filename):
     compartment_var_name=''
     defaultos = ['linux', 'windows', 'linuxflex', 'windowsflex']
 
+    reg = df['Region'].unique()
+
+    # Take backup of files
+    for eachregion in reg:
+        eachregion = str(eachregion).strip().lower()
+        resource='Instances'
+        if (eachregion in commonTools.endNames):
+            break
+        if eachregion not in ct.all_regions:
+            print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
+            exit()
+        srcdir = outdir + "/" + eachregion + "/"
+        commonTools.backup_file(srcdir, resource, "_instance.tf")
+
     for i in df.index:
-        region = str(df.loc[i,'Region'])
+        region = str(df.loc[i, 'Region'])
 
         region = region.strip().lower()
-        if region in endNames:
+
+        if region in commonTools.endNames:
             break
+
+        if region not in ct.all_regions:
+            print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
+            exit()
 
         hostname = str(df.loc[i,'Hostname'])
         shapeField = str(df.loc[i,'Shape'])
         shapeField = shapeField.strip()
         shape_error=0
+
         if(shapeField.lower()!="nan" and ".Flex" in shapeField):
             if("::" not in shapeField):
                 shape_error=1
@@ -106,23 +102,21 @@ if('.xls' in filename):
             OS=df.loc[i,'OS']
             if(".Flex" in shapeField[0]):
                 OS=OS+"Flex"
-            copy_template_file(df.loc[i,'Hostname'], OS,df[i,'Region'])
-        elif region not in ct.all_regions:
-            print("Skipping copy template for hostname "+ hostname + " as invalid region")
-        elif(shape_error==1):
-            print("Skipping copy template for hostname "+ hostname +" as ocpus missing for Flex shape")
-        if region not in ct.all_regions:
-            print("ERROR!!! Invalid Region; Skipping creation of Terraform File for hostname - " + hostname+". It should be one of the regions tenancy is subscribed to..Exiting!")
-            exit(1)
+            #copy_template_file(df.loc[i,'Hostname'], OS,df.loc[i,'Region'])
+
+        if(shape_error==1):
+            print("\nERROR!!! "+ hostname +" is missing ocpus for Flex shape....Exiting!")
+            exit()
+
 
         # temporary dictionary1 and dictionary2
         tempStr = {}
         tempdict = {}
 
         # Check if values are entered for mandatory fields
-        if (str(df.loc[i, 'Region']).lower() == 'nan' or str(df.loc[i, 'Shape']).lower() == 'nan' or str(df.loc[i, 'Compartment Name']).lower() == 'nan' or str(df.loc[i, 'Pub Address']).lower() == 'nan' or str(
+        if (str(df.loc[i, 'Region']).lower() == 'nan' or str(df.loc[i, 'Hostname']).lower() == 'nan' or str(df.loc[i, 'Shape']).lower() == 'nan' or str(df.loc[i, 'Compartment Name']).lower() == 'nan' or str(df.loc[i, 'Pub Address']).lower() == 'nan' or str(
                 df.loc[i, 'Availability Domain\n(AD1|AD2|AD3)']).lower() == 'nan' or str(df.loc[i, 'Subnet Name']).lower() == 'nan' or str(df.loc[i, 'OS']).lower() == 'nan'):
-            print("Column Region, Shape, Compartment Name, Availability Domain, Pub Address, OS and Subnet Name cannot be left empty in Instances sheet of CD3..exiting...")
+            print("\nColumn Region, Shape, Compartment Name, Availability Domain, Hostname, Pub Address, OS and Subnet Name cannot be left empty in Instances sheet of CD3..exiting...")
             exit(1)
 
         for columnname in dfcolumns:
@@ -143,7 +137,12 @@ if('.xls' in filename):
                 tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)
 
             if "::" in columnvalue:
-                if columnname != 'Compartment Name' and ".Flex" in columnvalue:
+                if ".Flex" in columnvalue:
+                    columnname = commonTools.check_column_headers(columnname)
+                    multivalues = columnvalue.split("::")
+                    multivalues = [str(part).strip() for part in multivalues if part]
+                    tempdict = {columnname: multivalues}
+                elif columnname != 'Compartment Name':
                     columnname = commonTools.check_column_headers(columnname)
                     multivalues = columnvalue.split("::")
                     multivalues = [str(part).strip() for part in multivalues if part]
@@ -208,9 +207,9 @@ if('.xls' in filename):
         # Write all info to TF string; Render template
         hostStr = template.render(tempStr)
 
-        file = outdir + "/" + region + "/" + host_tf_name + ".tf"
+        file = outdir + "/" + region + "/" + host_tf_name + "_instance.tf"
         oname = open(file, "w+")
-        print("Writing " + file)
+        print("Writing... " + file)
         oname.write(hostStr)
         oname.close()
 

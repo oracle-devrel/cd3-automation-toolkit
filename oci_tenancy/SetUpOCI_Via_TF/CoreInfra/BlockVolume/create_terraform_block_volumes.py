@@ -34,7 +34,6 @@ ct = commonTools()
 ct.get_subscribedregions(configFileName)
 
 ADS = ["AD1", "AD2", "AD3"]
-endNames = {'<END>', '<end>', '<End>'}
 
 #Load the template file
 file_loader = FileSystemLoader('templates')
@@ -50,11 +49,25 @@ if ('.xls' in filename):
     # List of the column headers
     dfcolumns = df.columns.values.tolist()
 
+    reg = df['Region'].unique()
+
+    # Take backup of files
+    for eachregion in reg:
+        eachregion = str(eachregion).strip().lower()
+        resource='BlockVols'
+        if (eachregion in commonTools.endNames or eachregion == 'nan'):
+            break
+        if eachregion not in ct.all_regions:
+            print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
+            exit()
+        srcdir = outdir + "/" + eachregion + "/"
+        commonTools.backup_file(srcdir, resource, "_blockvolume.tf")
+
     for i in df.index:
 
         region = str(df.loc[i,"Region"])
         region = region.strip().lower()
-        if region in endNames:
+        if region in commonTools.endNames:
             break
         if region not in ct.all_regions:
             print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
@@ -133,7 +146,7 @@ if ('.xls' in filename):
         #Render template
         tempStr = template.render(tempStr)
 
-        outfile = outdir + "/" + region + "/" + blockname_tf + ".tf"
+        outfile = outdir + "/" + region + "/" + blockname_tf + "_blockvolume.tf"
         print("Writing " + outfile)
         oname = open(outfile, "w")
         oname.write(tempStr)

@@ -44,6 +44,7 @@ template = env.get_template('boot-backup-policy-template')
 
 policy_file={}
 bootppolicy=''
+hostname_tf = ''
 
 # If the input is CD3
 if ('.xls' in filename):
@@ -52,15 +53,32 @@ if ('.xls' in filename):
     df = df.dropna(how='all')
     df = df.reset_index(drop=True)
 
-
     # List of column headers
     dfcolumns = df.columns.values.tolist()
 
-    for i in df.index:
-        region = df.loc[i,"Region"]
-        region = str(region).strip().lower()
-        if region in commonTools.endNames:
+    reg = df['Region'].unique()
+
+    # Take backup of files
+    for eachregion in reg:
+        eachregion = str(eachregion).strip().lower()
+        resource='BootBackupPolicy'
+        if (eachregion in commonTools.endNames):
             break
+        if eachregion not in ct.all_regions:
+            print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
+            exit()
+        srcdir = outdir + "/" + eachregion + "/"
+        commonTools.backup_file(srcdir, resource, "-boot-backup-policy.tf")
+
+    for i in df.index:
+
+        region = df.loc[i,"Region"]
+
+        if (region in commonTools.endNames):
+            break
+
+        region = str(region).strip().lower()
+
         if region not in ct.all_regions:
             print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
             exit()

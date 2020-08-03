@@ -44,23 +44,30 @@ tfStr={}
 ADS = ["AD1", "AD2", "AD3"]
 x = datetime.datetime.now()
 date = x.strftime("%S").strip()
-
+unique_region=[]
 
 if('.xls' in args.inputfile):
     df = pd.read_excel(args.inputfile, sheet_name='DedicatedVMHosts',skiprows=1)
     df = df.dropna(how='all')
     df = df.reset_index(drop=True)
 
-    for reg in ct.all_regions:
-        src = outdir + "/" + reg + "/dedicated_vm_hosts.tf"
-        if (os.path.exists(src)):
-            dst = outdir + "/" + reg + "/dedicated_vm_hosts_backup" + date
-            os.rename(src, dst)
+    unique_region = df['Region'].unique()
 
-        tfStr[reg] = ''
+    # Take backup of files
+    for eachregion in unique_region:
+        eachregion = str(eachregion).strip().lower()
+        if (eachregion in commonTools.endNames):
+            break
+        if eachregion not in ct.all_regions:
+            print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
+            exit()
+        resource='DedicatedHosts'
+        srcdir = outdir + "/" + eachregion + "/"
+        commonTools.backup_file(srcdir, resource, "dedicated_vm_hosts.tf")
+
+        tfStr[eachregion] = ''
 
     NaNstr = 'NaN'
-    endNames = {'<END>', '<end>', '<End>'}
 
     # List of column headers
     dfcolumns = df.columns.values.tolist()
@@ -68,7 +75,7 @@ if('.xls' in args.inputfile):
     for i in df.index:
         region = str(df.loc[i,'Region'])
 
-        if (region in endNames):
+        if (region in commonTools.endNames):
             break
 
         region=region.strip().lower()
@@ -188,13 +195,15 @@ else:
     print("Invalid input file format; Acceptable formats: .xls, .xlsx, .csv")
     exit()
 
+for regions in unique_region:
+    regions=regions.lower()
+    for reg in ct.all_regions:
+        if reg == regions:
+            reg_out_dir = outdir + "/" + reg
+            outfile[reg] = reg_out_dir + "/dedicated_vm_hosts.tf"
 
-for reg in ct.all_regions:
-    reg_out_dir = outdir + "/" + reg
-    outfile[reg] = reg_out_dir + "/dedicated_vm_hosts.tf"
-
-    if(tfStr[reg]!=''):
-        oname[reg]=open(outfile[reg],'w')
-        oname[reg].write(tfStr[reg])
-        oname[reg].close()
-        print(outfile[reg] + " containing TF for dedicated vm hosts has been created for region "+reg)
+            if(tfStr[reg]!=''):
+                oname[reg]=open(outfile[reg],'w')
+                oname[reg].write(tfStr[reg])
+                oname[reg].close()
+                print(outfile[reg] + " containing TF for dedicated vm hosts has been created for region "+reg)
