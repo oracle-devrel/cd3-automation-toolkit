@@ -173,3 +173,4 @@ SetUPOCI_Via_TF Tag v6.1
 13. Support for NSG export/import. Export process for non-greenfield tenancies will support export of NSGs and their import into terraform.
 14. GIT repo has been moved to OCI. SSH key needs to be setup for access to the repo. Please see the instructions at confluence page:
     https://confluence.oraclecorp.com/confluence/display/NAC/Guide+to+access+repository+in+DevCS
+    Private key is copied over to /root/.ssh folder. It is up to the developers if they want to keep the private key there for any future GIT updates or if they want to remove the key for security reasons.
