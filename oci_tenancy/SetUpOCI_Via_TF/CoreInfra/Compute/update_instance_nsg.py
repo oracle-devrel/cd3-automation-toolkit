@@ -88,7 +88,7 @@ if ('.xls' in filename):
                         file_w.write(line)
                     file_w.close()
                     file_r.close()
-                    print("NSG info updated in "+outdir + "/" + Region + "/" + Host_name + "_instance.tf")
+                    print("\nNSG info updated in "+outdir + "/" + Region + "/" + Host_name + "_instance.tf")
 
 if('tmp_' in filename):
     os.remove(filename)

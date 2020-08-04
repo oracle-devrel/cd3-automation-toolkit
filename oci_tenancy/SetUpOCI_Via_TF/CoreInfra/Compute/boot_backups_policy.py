@@ -97,7 +97,7 @@ if ('.xls' in filename):
 
         #Check if values are entered for mandatory fields
         if str(df.loc[i,"Region"]).lower() == 'nan' or str(df.loc[i, 'Hostname']).lower() == 'nan' or str(df.loc[i,'Backup Policy']).lower()  == 'nan':
-            print( "The values for Region, Hostname and Backup Policy cannot be left empty. Please enter a value and try again !!")
+            print( "\nError!! The values for Region, Hostname and Backup Policy cannot be left empty. Please enter a value and try again !!")
             exit()
 
 

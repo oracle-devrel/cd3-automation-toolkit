@@ -80,7 +80,7 @@ if('.xls' in args.inputfile):
 
         region=region.strip().lower()
         if region not in ct.all_regions:
-            print("Invalid Region; It should be one of the regions tenancy is subscribed to")
+            print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
             exit(1)
 
         # temporary dictionary1 and dictionary2
@@ -90,7 +90,7 @@ if('.xls' in args.inputfile):
         # Check if values are entered for mandatory fields
         if (str(df.loc[i, 'Region']).lower() == 'nan' or str(df.loc[i, 'Shape']).lower() == 'nan' or str(df.loc[i, 'Compartment Name']).lower() == 'nan' or str(
                 df.loc[i, 'Availability Domain\n(AD1|AD2|AD3)']).lower() == 'nan' or str(df.loc[i, 'Hostname']).lower() == 'nan'):
-            print("All Fields are mandatory except Fault Domain. Exiting...")
+            print("\nAll Fields are mandatory except Fault Domain. Exiting...")
             exit(1)
 
         for columnname in dfcolumns:
