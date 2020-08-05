@@ -41,7 +41,7 @@ resource "oci_core_volume" "{{ block_tf_name }}" {
     }
 
 {% if attached_to_instance != '' %}
-# attach to the instance only if attached_to_instance is not null
+{# ## attach to the instance only if attached_to_instance is not null ## #}
 resource "oci_core_volume_attachment" "{{ block_tf_name }}_volume_attachment" {
         #Required
         instance_id = oci_core_instance.{{ attached_to_instance }}.id
