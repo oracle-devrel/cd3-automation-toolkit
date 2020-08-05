@@ -57,7 +57,6 @@ if('.xls' in filename):
     ocpus=''
     host_tf_name=''
     compartment_var_name=''
-    defaultos = ['linux', 'windows', 'linuxflex', 'windowsflex']
 
     reg = df['Region'].unique()
 
