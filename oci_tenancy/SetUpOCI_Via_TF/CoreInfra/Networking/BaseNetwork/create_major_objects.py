@@ -94,13 +94,11 @@ def establishPeering(peering_dict):
 
             try:
                 if (vcns.vcn_lpg_names[left_vcn][0].lower() == 'n' or vcns.vcn_lpg_names[right_vcn][0].lower() == 'n'):
-                    print(
-                        "\nERROR!!! Cannot specify n for lpg_required field of VCN if it is part of VCN peering..Exiting!")
+                    print( "\nERROR!!! Cannot specify n for lpg_required field of VCN if it is part of VCN peering..Exiting!")
                     exit(1)
             except IndexError:
 
-                print(
-                    "\nERROR!!! Insufficient LPGs declared for either " + left_vcn + " or " + right_vcn + ". Check lpg_required column in VCNs tab..Exiting!")
+                print("\nERROR!!! Insufficient LPGs declared for either " + left_vcn + " or " + right_vcn + ". Check lpg_required column in VCNs tab..Exiting!")
                 exit(1)
             searchString = """##peer_id for lpg """ + left_vcn + "_" + vcns.vcn_lpg_names[left_vcn][0] + "##"
             vcns.vcn_lpg_names[left_vcn].pop(0)
@@ -358,7 +356,7 @@ if ('.xls' in filename):
                 str(df.loc[i, 'NGW Required']).lower() == 'nan' or str(
                     df.loc[i, 'SGW Required']).lower() == 'nan' or str(df.loc[i, 'LPG Required']).lower() == 'nan' or
                 str(df.loc[i, 'Hub/Spoke/Peer/None']).lower() == 'nan'):
-            print("Column Values(except dns_label) or Rows cannot be left empty in VCNs sheet in CD3..exiting...")
+            print("\nColumn Values(except dns_label) or Rows cannot be left empty in VCNs sheet in CD3..exiting...")
             exit(1)
 
         # temporary dictionary1 and dictionary2
@@ -388,6 +386,11 @@ if ('.xls' in filename):
                     columnvalue = "true"
                 else:
                     columnvalue = "false"
+
+            if columnname == 'Compartment Name':
+                compartment_var_name = columnvalue.strip()
+                compartment_var_name = commonTools.check_tf_variable(compartment_var_name)
+                tempdict = {'compartment_tf_name': compartment_var_name}
 
             if columnname == "DNS Label":
                 # check if vcn_dns_label is not given by user in input use vcn name
@@ -451,7 +454,6 @@ elif ('.properties' in filename):
             v = v[:-1]
             peering_dict[k] = v
 
-    print(peering_dict)
     for vcn_name in vcns:
         vcn_data = config.get('VCN_INFO', vcn_name)
         vcn_data = vcn_data.split(',')
@@ -548,8 +550,7 @@ elif (modify_network == 'false'):
             oname_def_dhcp[reg] = open(outfile_dhcp[reg], "w")
             oname_def_dhcp[reg].write(dhcpStr[reg])
             oname_def_dhcp[reg].close()
-            print(outfile_dhcp[
-                      reg] + " containing TF for default DHCP options for VCNs has been created for region " + reg)
+            print(outfile_dhcp[reg] + " containing TF for default DHCP options for VCNs has been created for region " + reg)
 
         if (tfStr[reg] != ''):
             tfStr[reg] = tfStr[reg]

@@ -192,8 +192,11 @@ if('.xls' in filename):
 	dhcp = ''
 	for i in df.index:
 		region=str(df.loc[i,'Region'])
+
 		if (region in commonTools.endNames):
 			break
+
+		region=region.strip().lower()
 
 		compartment_var_name = df.loc[i, 'Compartment Name']
 		vcn_name=str(df['VCN Name'][i]).strip()
@@ -202,8 +205,6 @@ if('.xls' in filename):
 			print("\nERROR!!! " + vcn_name + " specified in Subnets tab has not been declared in VCNs tab..Exiting!")
 			exit(1)
 
-		region=region.strip().lower()
-
 		if region not in ct.all_regions:
 			print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
 			exit(1)
@@ -211,18 +212,18 @@ if('.xls' in filename):
 		# Check if values are entered for mandatory fields
 		if (str(df.loc[i, 'Region']).lower() == 'nan' or str(df.loc[i, 'Compartment Name']).lower() == 'nan' or str(
 				df.loc[i, 'VCN Name']).lower() == 'nan' or str(df.loc[i, 'Subnet Name']).lower() == 'nan' or str(df.loc[i, 'CIDR Block']).lower() == 'nan'):
-			print("Column Values Region, Compartment Name, VCN Name, Subnet Name and CIDR Block cannot be left empty in VCNs sheet in CD3..exiting...")
+			print("\nColumn Values Region, Compartment Name, VCN Name, Subnet Name and CIDR Block cannot be left empty in VCNs sheet in CD3..exiting...")
 			exit(1)
 
 		if (str(df.loc[i,'Availability Domain\n(AD1|AD2|AD3|Regional)']).lower =='nan' or str(
 				df.loc[i, 'Type(private|public)']).lower() == 'nan' or str(df.loc[i,'Add Default Seclist']).lower() == 'nan'):
-			print("Column Values Add Default Seclist, Availability Domain and Type cannot be left empty in VCNs sheet in CD3..exiting...")
+			print("\nColumn Values Add Default Seclist, Availability Domain and Type cannot be left empty in VCNs sheet in CD3..exiting...")
 			exit(1)
 
 		if (str(df.loc[i, 'Configure IGW Route (y|n)']).lower() == 'nan' or str(df.loc[i, 'Configure NGW Route\n(y|n)']).lower() == 'nan' or str(
 				df.loc[i, 'Configure SGW Route\n(n|object_storage|all_services)']).lower() == 'nan' or str(df.loc[i, 'Configure OnPrem Route (y|n)']).lower() == 'nan' or str(
 			    df.loc[i,'Configure VCNPeering\nRoute (y|n)']).lower() == 'nan'):
-			print("Column Values Configure IGW/SGW/On-Prem/VCN route cannot be left empty in VCNs sheet in CD3..exiting...")
+			print("\nColumn Values Configure IGW/SGW/On-Prem/VCN route cannot be left empty in VCNs sheet in CD3..exiting...")
 			exit(1)
 
 		for columnname in dfcolumns:

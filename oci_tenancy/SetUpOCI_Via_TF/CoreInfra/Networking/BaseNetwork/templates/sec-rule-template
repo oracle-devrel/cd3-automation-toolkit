@@ -45,7 +45,7 @@
             {% if rule_type == 'egress' %}
             egress_security_rules {
                 #Required
-                protocol = "{{ protocol }}"
+                protocol = "{{ protocol_code }}"
                 destination = "{{ destination }}"
 
                 #Optional

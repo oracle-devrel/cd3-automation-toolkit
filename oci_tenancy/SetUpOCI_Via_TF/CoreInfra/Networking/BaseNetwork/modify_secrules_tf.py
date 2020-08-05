@@ -150,8 +150,9 @@ if ('.xls' in secrulesfilename):
         default_seclists_done[reg] = []
         seclists_done[reg] = []
         # Backup existing seclist files in ash and phx dir
+        resource = "SL"
         print("Backing up all existing SL TF files for region " + reg + " to")
-        commonTools.backup_file(outdir + "/" + reg, "_seclist.tf")
+        commonTools.backup_file(outdir + "/" + reg, resource, "_seclist.tf")
 
     with open('out.csv') as secrulesfile:
         reader = csv.DictReader(skipCommentedLine(secrulesfile))
@@ -176,7 +177,7 @@ if ('.xls' in secrulesfilename):
 
             # Process only those VCNs which are present in cd3(and have been created via TF)
             if (vcn_name not in vcns.vcn_names):
-                print("skipping seclist: " + display_name + " as its VCN is not part of VCNs tab in cd3")
+                print("\nskipping seclist: " + display_name + " as its VCN is not part of VCNs tab in cd3")
                 continue
 
             if (str(display_name).lower() == "nan"):
@@ -224,9 +225,10 @@ if ('.xls' in secrulesfilename):
                 columnname = commonTools.check_column_headers(columnname)
                 tempStr[columnname] = columnvalue
                 tempStr.update(tempdict)
-                srcStr = "##Add More rules for "+vcn_tf_name+"_"+seclist_tf_name+"##"
+
 
             new_sec_rule = ""
+            srcStr =  "####ADD_NEW_SEC_RULES####"+vcn_tf_name+"_"+seclist_tf_name
 
             if ('Default Security List for' in display_name):
                 if (seclist_tf_name not in default_seclists_done[region]):
@@ -259,8 +261,6 @@ if ('.xls' in secrulesfilename):
                 seclists_done[region].append(seclist_tf_name)
 
             new_sec_rule = ""
-            srcStr =  "####ADD_NEW_SEC_RULES####"+vcn_tf_name+"_"+seclist_tf_name
-
             if row['Rule Type'] == 'ingress':
                 new_sec_rule = create_ingress_rule_string(tempStr, ingress_rule, tempdict2)
 

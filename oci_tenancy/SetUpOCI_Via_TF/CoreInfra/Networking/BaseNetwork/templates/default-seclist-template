@@ -1,5 +1,5 @@
 
 resource "oci_core_default_security_list" "{{ seclist_tf_name }}" {
-            manage_default_resource_id  = oci_core_vcn.{{ vcn_tf_name }}.default_security_list_id
-            ##Add More rules for {{ vcn_tf_name }}_{{ seclist_tf_name }}##
+      manage_default_resource_id  = oci_core_vcn.{{ vcn_tf_name }}.default_security_list_id
+       ####ADD_NEW_SEC_RULES####{{ vcn_tf_name }}_{{ seclist_tf_name }}
 }

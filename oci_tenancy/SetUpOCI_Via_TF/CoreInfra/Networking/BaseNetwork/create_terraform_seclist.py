@@ -221,7 +221,7 @@ if ('.xls' in filename):
 
         # Check if values are entered for mandatory fields
         if str(df.loc[i, 'Region']).lower() == 'nan' or str(df.loc[i, 'Compartment Name']).lower() == 'nan' or str(df.loc[i,'VCN Name']).lower() == 'nan':
-            print(" The values for Region, Compartment Name and VCN Name cannot be left empty in Subnets Tab. Please enter a value and try again !!")
+            print("\nThe values for Region, Compartment Name and VCN Name cannot be left empty in Subnets Tab. Please enter a value and try again !!")
             exit()
 
         for columnname in dfcolumns:
@@ -338,8 +338,7 @@ elif ('.properties' in filename):
         hub_spoke_none = vcn_data[6].strip().lower()
         vcn_subnet_file = vcn_data[7].strip().lower()
         if os.path.isfile(vcn_subnet_file) == False:
-            print(
-                "input subnet file " + vcn_subnet_file + " for VCN " + vcn_name + " does not exist. Skipping SecList TF creation for this VCN.")
+            print("\ninput subnet file " + vcn_subnet_file + " for VCN " + vcn_name + " does not exist. Skipping SecList TF creation for this VCN.")
             continue
         sps = vcn_data[9].strip().lower()
         seclists_per_subnet = int(sps)
@@ -370,8 +369,7 @@ elif ('.properties' in filename):
                                                 }
                                                 """
                     oname_common.write(data)
-                    print(
-                        out_common_file + " containing TF for seclist has been created for region " + region)
+                    print(out_common_file + " containing TF for seclist has been created for region " + region)
                     oname_common.close()
 
                 processSubnet(region, vcn_name, AD, seclists_per_subnet, name, seclist_name.strip(),

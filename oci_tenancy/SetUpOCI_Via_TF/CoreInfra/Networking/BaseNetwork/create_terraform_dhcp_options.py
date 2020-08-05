@@ -1,8 +1,7 @@
 #!/usr/bin/python3
-#Author: Suruchi
-#Oracle Consulting
-#suruchi.singla@oracle.com
-
+# Author: Suruchi
+# Oracle Consulting
+# suruchi.singla@oracle.com
 
 
 import sys
@@ -12,7 +11,8 @@ import pandas as pd
 import shutil
 import datetime
 import os
-sys.path.append(os.getcwd()+"/../../..")
+
+sys.path.append(os.getcwd() + "/../../..")
 from jinja2 import Environment, FileSystemLoader
 from commonTools import *
 
@@ -28,20 +28,21 @@ from commonTools import *
 
 
 parser = argparse.ArgumentParser(description="Create DHCP options terraform file")
-parser.add_argument("inputfile", help="Full Path of input file. It could be either the properties file eg vcn-info.properties or CD3 excel file")
+parser.add_argument("inputfile",
+                    help="Full Path of input file. It could be either the properties file eg vcn-info.properties or CD3 excel file")
 parser.add_argument("outdir", help="Output directory for creation of TF files")
 parser.add_argument("prefix", help="customer name/prefix for all file names")
 parser.add_argument("--modify_network", help="Modify: true or false", required=False)
 parser.add_argument("--configFileName", help="Config file name", required=False)
 
-if len(sys.argv)<3:
-        parser.print_help()
-        sys.exit(1)
+if len(sys.argv) < 3:
+    parser.print_help()
+    sys.exit(1)
 
 args = parser.parse_args()
-filename=args.inputfile
+filename = args.inputfile
 outdir = args.outdir
-prefix=args.prefix
+prefix = args.prefix
 if args.modify_network is not None:
     modify_network = str(args.modify_network)
 else:
@@ -49,17 +50,17 @@ else:
 if args.configFileName is not None:
     configFileName = args.configFileName
 else:
-    configFileName=""
+    configFileName = ""
 
 ct = commonTools()
 ct.get_subscribedregions(configFileName)
 
-outfile={}
-deffile={}
-oname={}
-defname={}
-tfStr={}
-defStr={}
+outfile = {}
+deffile = {}
+oname = {}
+defname = {}
+tfStr = {}
+defStr = {}
 
 # Load the template file
 file_loader = FileSystemLoader('templates')
@@ -67,8 +68,9 @@ env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=Tr
 template = env.get_template('custom-dhcp-template')
 defaultdhcp = env.get_template('default-dhcp-template')
 
+
 def processDHCP(tempStr):
-    compartment_var_name=tempStr['compartment_tf_name'].strip()
+    compartment_var_name = tempStr['compartment_tf_name'].strip()
     region = tempStr['region'].lower().strip()
     vcn_name = tempStr['vcn_name'].strip()
     vcn_tf_name = commonTools.check_tf_variable(vcn_name)
@@ -76,31 +78,34 @@ def processDHCP(tempStr):
     # Added to check if compartment name is compatible with TF variable name syntax
     compartment_var_name = commonTools.check_tf_variable(compartment_var_name)
 
-    server_type=tempStr['server_type'].strip()
-    search_domain=tempStr['search_domain'].strip()
-    dhcp_option_name=tempStr['dhcp_option_name'].strip()
+    server_type = tempStr['server_type'].strip()
+    search_domain = tempStr['search_domain'].strip()
+    dhcp_option_name = tempStr['dhcp_option_name'].strip()
     vcn_dhcp = vcn_name + "_" + dhcp_option_name
     vcn_dhcp_tf_name = commonTools.check_tf_variable(vcn_dhcp)
 
-    tempdict = {'vcn_tf_name': vcn_tf_name, 'compartment_tf_name': compartment_var_name, 'dhcp_tf_name': vcn_dhcp_tf_name, 'vcn_dhcp' : vcn_dhcp,
-				'vcn_name' : vcn_name,'search_domain': search_domain, 'dhcp_option_name' : dhcp_option_name,'server_type': server_type}
+    tempdict = {'vcn_tf_name': vcn_tf_name, 'compartment_tf_name': compartment_var_name,
+                'dhcp_tf_name': vcn_dhcp_tf_name, 'vcn_dhcp': vcn_dhcp,
+                'vcn_name': vcn_name, 'search_domain': search_domain, 'dhcp_option_name': dhcp_option_name,
+                'server_type': server_type}
 
     tempStr.update(tempdict)
 
-    if("Default DHCP Options for " in dhcp_option_name):
-       data = defaultdhcp.render(tempStr)
+    if ("Default DHCP Options for " in dhcp_option_name):
+        data = defaultdhcp.render(tempStr)
     else:
-       data = template.render(tempStr)
+        data = template.render(tempStr)
 
     tfStr[region] = tfStr[region] + data
 
-if('.xls' in args.inputfile):
+
+if ('.xls' in args.inputfile):
     vcns = parseVCNs(filename)
     for reg in ct.all_regions:
         tfStr[reg] = ''
         defStr[reg] = ''
 
-    df = pd.read_excel(args.inputfile, sheet_name='DHCP',skiprows=1)
+    df = pd.read_excel(args.inputfile, sheet_name='DHCP', skiprows=1)
     df = df.dropna(how='all')
     df = df.reset_index(drop=True)
 
@@ -108,11 +113,11 @@ if('.xls' in args.inputfile):
     dfcolumns = df.columns.values.tolist()
 
     for i in df.index:
-        region = str(df.loc[i,'Region'])
+        region = str(df.loc[i, 'Region'])
 
         if (region in commonTools.endNames):
             break
-        region=region.strip().lower()
+        region = region.strip().lower()
 
         if region not in ct.all_regions:
             print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
@@ -136,7 +141,7 @@ if('.xls' in args.inputfile):
                     multivalues = [str(part).strip() for part in multivalues if part]
                     tempdict = {columnname: multivalues}
 
-            if columnvalue == '1.0' or  columnvalue == '0.0':
+            if columnvalue == '1.0' or columnvalue == '0.0':
                 if columnvalue == '1.0':
                     columnvalue = "true"
                 else:
@@ -153,8 +158,9 @@ if('.xls' in args.inputfile):
                 vcn_name = columnvalue.strip()
                 tempStr['vcn_name'] = vcn_name
 
-                if(vcn_name.strip() not in vcns.vcn_names):
-                    print("\nERROR!!! "+vcn_name+" specified in DHCP tab has not been declared in VCNs tab..Exiting!")
+                if (vcn_name.strip() not in vcns.vcn_names):
+                    print(
+                        "\nERROR!!! " + vcn_name + " specified in DHCP tab has not been declared in VCNs tab..Exiting!")
                     exit(1)
 
             if columnname == "Server Type(VcnLocalPlusInternet|CustomDnsServer)":
@@ -163,7 +169,7 @@ if('.xls' in args.inputfile):
 
             if columnname == 'Custom DNS Server':
                 custom_dns_server = str(columnvalue).strip()
-                if custom_dns_server != '' :
+                if custom_dns_server != '':
                     custom_dns_server = custom_dns_server.replace(',', '","')
                     custom_dns_server = '"' + custom_dns_server + '"'
                     tempdict = {'custom_dns_server': custom_dns_server}
@@ -175,101 +181,102 @@ if('.xls' in args.inputfile):
         processDHCP(tempStr)
 
 
-elif('.properties' in args.inputfile):
-	print("Input is vcn-info.properties")
+elif ('.properties' in args.inputfile):
+    print("Input is vcn-info.properties")
 
-	config = configparser.RawConfigParser()
-	config.optionxform = str
-	config.read(args.inputfile)
-	#sections=config.sections()
+    config = configparser.RawConfigParser()
+    config.optionxform = str
+    config.read(args.inputfile)
+    # sections=config.sections()
 
-	all_regions = config.get('Default', 'regions')
-	all_regions = all_regions.split(",")
-	all_regions = [x.strip().lower() for x in all_regions]
-	for reg in all_regions:
-		tfStr[reg] = ''
+    all_regions = config.get('Default', 'regions')
+    all_regions = all_regions.split(",")
+    all_regions = [x.strip().lower() for x in all_regions]
+    for reg in all_regions:
+        tfStr[reg] = ''
 
-	#Get VCN and DHCP file info from VCN_INFO section
-	vcns=config.options('VCN_INFO')
+    # Get VCN and DHCP file info from VCN_INFO section
+    vcns = config.options('VCN_INFO')
 
-	for vcn in vcns:
-		vcn_data = config.get('VCN_INFO', vcn)
-		vcn_data = vcn_data.split(',')
-		vcn_name = vcn
-		region=vcn_data[0].strip().lower()
-		if region not in all_regions:
-			print("Invalid Region")
-			exit(1)
-		compartment_var_name = vcn_data[12].strip()
-		vcn_dhcp_file = vcn_data[8].strip().lower()
-		### Read the DHCP file
-		dhcpfile = configparser.RawConfigParser()
-		file_read=dhcpfile.read(vcn_dhcp_file)
-		if(len(file_read)!=1):
-			print("input dhcp file "+vcn_dhcp_file +" for VCN "+vcn_name +" could not be opened. Please check if it exists. Skipping DHCP TF creation for this VCN.")
-			continue
-		dhcp_sections = dhcpfile.sections()
-		for dhcp_sec in dhcp_sections :
-			serverType = dhcpfile.get(dhcp_sec,'serverType')
-			search_domain = dhcpfile.get(dhcp_sec,'search_domain')
-			custom_dns_servers=""
-			try:
-				custom_dns_servers = dhcpfile.get(dhcp_sec, 'custom_dns_servers')
-			except Exception as e:
-				print()
+    for vcn in vcns:
+        vcn_data = config.get('VCN_INFO', vcn)
+        vcn_data = vcn_data.split(',')
+        vcn_name = vcn
+        region = vcn_data[0].strip().lower()
+        if region not in all_regions:
+            print("Invalid Region")
+            exit(1)
+        compartment_var_name = vcn_data[12].strip()
+        vcn_dhcp_file = vcn_data[8].strip().lower()
+        ### Read the DHCP file
+        dhcpfile = configparser.RawConfigParser()
+        file_read = dhcpfile.read(vcn_dhcp_file)
+        if (len(file_read) != 1):
+            print(
+                "input dhcp file " + vcn_dhcp_file + " for VCN " + vcn_name + " could not be opened. Please check if it exists. Skipping DHCP TF creation for this VCN.")
+            continue
+        dhcp_sections = dhcpfile.sections()
+        for dhcp_sec in dhcp_sections:
+            serverType = dhcpfile.get(dhcp_sec, 'serverType')
+            search_domain = dhcpfile.get(dhcp_sec, 'search_domain')
+            custom_dns_servers = ""
+            try:
+                custom_dns_servers = dhcpfile.get(dhcp_sec, 'custom_dns_servers')
+            except Exception as e:
+                print()
 
-			processDHCP(region, vcn_name, dhcp_sec, compartment_var_name, serverType, custom_dns_servers,search_domain)
+            processDHCP(region, vcn_name, dhcp_sec, compartment_var_name, serverType, custom_dns_servers, search_domain)
 
 else:
     print("Invalid input file format; Acceptable formats: .xls, .xlsx, .properties")
 
-dhcpdata={}
-if(modify_network=='true'):
-	for reg in ct.all_regions:
-		reg_out_dir = outdir + "/" + reg
-		if not os.path.exists(reg_out_dir):
-			os.makedirs(reg_out_dir)
-		outfile[reg] = reg_out_dir + "/" + prefix + '-dhcp.tf'
-		deffile[reg] = reg_out_dir + "/VCNs_Default_DHCP.tf"
+dhcpdata = {}
+if (modify_network == 'true'):
+    for reg in ct.all_regions:
+        reg_out_dir = outdir + "/" + reg
+        if not os.path.exists(reg_out_dir):
+            os.makedirs(reg_out_dir)
+        outfile[reg] = reg_out_dir + "/" + prefix + '-dhcp.tf'
+        deffile[reg] = reg_out_dir + "/VCNs_Default_DHCP.tf"
 
-		x = datetime.datetime.now()
-		date = x.strftime("%f").strip()
-		#if(tfStr[reg]!=''):
-		if (os.path.exists(outfile[reg])):
-			print("creating backup file " + outfile[reg] + "_backup" + date)
-			shutil.copy(outfile[reg], outfile[reg] + "_backup" + date)
-		oname[reg] = open(outfile[reg], "w")
-		oname[reg].write(tfStr[reg])
-		oname[reg].close()
-		print(outfile[reg] + " containing TF for DHCP Options has been updated for region " + reg)
+        x = datetime.datetime.now()
+        date = x.strftime("%f").strip()
+        # if(tfStr[reg]!=''):
+        if (os.path.exists(outfile[reg])):
+            print("creating backup file " + outfile[reg] + "_backup" + date)
+            shutil.copy(outfile[reg], outfile[reg] + "_backup" + date)
+        oname[reg] = open(outfile[reg], "w")
+        oname[reg].write(tfStr[reg])
+        oname[reg].close()
+        print(outfile[reg] + " containing TF for DHCP Options has been updated for region " + reg)
 
-		# Added this if condition again because modify network was showing tf destroying Default DHCP Options
-		if (defStr[reg] != ''):
-			if (os.path.exists(deffile[reg])):
-				print("creating backup file " + deffile[reg] + "_backup" + date)
-				shutil.copy(outfile[reg], deffile[reg] + "_backup" + date)
-			defname[reg] = open(deffile[reg], "w")
-			defname[reg].write(defStr[reg])
-			defname[reg].close()
-			print(deffile[reg] + " containing TF for Default DHCP Options has been updated for region " + reg)
+        # Added this if condition again because modify network was showing tf destroying Default DHCP Options
+        if (defStr[reg] != ''):
+            if (os.path.exists(deffile[reg])):
+                print("creating backup file " + deffile[reg] + "_backup" + date)
+                shutil.copy(outfile[reg], deffile[reg] + "_backup" + date)
+            defname[reg] = open(deffile[reg], "w")
+            defname[reg].write(defStr[reg])
+            defname[reg].close()
+            print(deffile[reg] + " containing TF for Default DHCP Options has been updated for region " + reg)
 
 
-elif(modify_network == 'false'):
-	for reg in ct.all_regions:
-		reg_out_dir = outdir + "/" + reg
-		if not os.path.exists(reg_out_dir):
-			os.makedirs(reg_out_dir)
-		outfile[reg] = reg_out_dir + "/" + prefix + '-dhcp.tf'
-		deffile[reg] = reg_out_dir + "/VCNs_Default_DHCP.tf"
+elif (modify_network == 'false'):
+    for reg in ct.all_regions:
+        reg_out_dir = outdir + "/" + reg
+        if not os.path.exists(reg_out_dir):
+            os.makedirs(reg_out_dir)
+        outfile[reg] = reg_out_dir + "/" + prefix + '-dhcp.tf'
+        deffile[reg] = reg_out_dir + "/VCNs_Default_DHCP.tf"
 
-		if (tfStr[reg] != ''):
-			oname[reg] = open(outfile[reg], 'w')
-			oname[reg].write(tfStr[reg])
-			oname[reg].close()
-			print(outfile[reg] + " containing TF for DHCP Options has been created for region " + reg)
+        if (tfStr[reg] != ''):
+            oname[reg] = open(outfile[reg], 'w')
+            oname[reg].write(tfStr[reg])
+            oname[reg].close()
+            print(outfile[reg] + " containing TF for DHCP Options has been created for region " + reg)
 
-		if (defStr[reg] != ''):
-			defname[reg] = open(deffile[reg], "w")
-			defname[reg].write(defStr[reg])
-			defname[reg].close()
-			print(deffile[reg] + " containing TF for Default DHCP Options has been created for region " + reg)
+        if (defStr[reg] != ''):
+            defname[reg] = open(deffile[reg], "w")
+            defname[reg].write(defStr[reg])
+            defname[reg].close()
+            print(deffile[reg] + " containing TF for Default DHCP Options has been created for region " + reg)

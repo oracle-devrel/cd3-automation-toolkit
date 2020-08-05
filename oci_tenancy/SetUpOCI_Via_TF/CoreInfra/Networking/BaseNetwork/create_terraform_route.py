@@ -113,7 +113,7 @@ def createLPGRouteRules(peering_dict):
 
             vcns.vcn_lpg_rules[right_vcn] = vcns.vcn_lpg_rules[right_vcn] + ruleStr
 
-def createDRGRtTableString(compartment_var_name, hub_vcn_name, peering_dict, region):
+def createDRGRtTableString(compartment_var_name, hub_vcn_name, peering_dict, region, tempStr):
     if (vcns.vcn_drgs[hub_vcn_name] == 'y'):
         # rt_tmp = hub_vcn_name+"_"+hub_vcn_name + "_drg_rt"
         # drg_name = hub_vcn_name + "_drg"
@@ -122,7 +122,7 @@ def createDRGRtTableString(compartment_var_name, hub_vcn_name, peering_dict, reg
         # rt_tmp=hub_vcn_name+"_"+vcns.vcn_drgs[hub_vcn_name]+"_rt"
         drg_name = vcns.vcn_drgs[hub_vcn_name]
     elif (vcns.vcn_drgs[hub_vcn_name] == 'n'):
-        print("drg_required column for VCN " + hub_vcn_name + " marked as Hub should not be set to n!!\n")
+        print("\ndrg_required column for VCN " + hub_vcn_name + " marked as Hub should not be set to n!!\n")
         return
 
     drg_rt_name = ""
@@ -168,7 +168,7 @@ def createDRGRtTableString(compartment_var_name, hub_vcn_name, peering_dict, reg
             if (os.path.exists(outfile)):
                 filedata = open(outfile, "r").read()
                 if temprule not in filedata:
-                    srcStr = "##Add More rules for subnet " + rt_tf_name + "##"
+                    srcStr = "####ADD_NEW_ROUTE_RULES####"+ rt_tf_name
                     tempstr = temprule + srcStr
                     filedata = filedata.replace(srcStr, tempstr)
                     oname = open(outfile, "w")
@@ -177,12 +177,11 @@ def createDRGRtTableString(compartment_var_name, hub_vcn_name, peering_dict, reg
 
             else:
                 oname = open(outfile, "w")
-
                 tempStr['rt_tf_name'] = rt_tf_name
                 tempStr['compartment_tf_name'] = compartment_var_name
                 tempStr['rt_display'] = rt_display
                 tempStr['vcn_tf_name'] =hub_vcn_tf_name
-                srcStr = "##Add More rules for subnet " + rt_tf_name + "##"
+                srcStr = "####ADD_NEW_ROUTE_RULES####"+ rt_tf_name
                 drgStr = template.render(tempStr)
                 temprule = temprule + srcStr
                 drgStr = drgStr.replace(srcStr,temprule)
@@ -194,7 +193,7 @@ def createDRGRtTableString(compartment_var_name, hub_vcn_name, peering_dict, reg
         routetablefiles[region].remove(rt_tf_name + "_routetable.tf")
 
 
-def createLPGRtTableString(compartment_var_name, hub_vcn_name, peering_dict, region):
+def createLPGRtTableString(compartment_var_name, hub_vcn_name, peering_dict, region, tempStr):
     # Retain exported route tables associated with exported LPGs
     if (os.path.exists(outdir + "/" + region + "/obj_names.safe")):
         with open(outdir + "/" + region + "/obj_names.safe") as f:
@@ -232,7 +231,7 @@ def createLPGRtTableString(compartment_var_name, hub_vcn_name, peering_dict, reg
             tempStr['vcn_tf_name'] = hub_vcn_tf_name
 
             lpgStr = template.render(tempStr)
-            srcStr = "##Add More rules for subnet "+ rt_tf_name +"##"
+            srcStr = "####ADD_NEW_ROUTE_RULES####"+ rt_tf_name
             drg_name = ""
             if (vcns.vcn_drgs[hub_vcn_name] == 'y'):
                 # drg_name = hub_vcn_name + "_drg"
@@ -252,6 +251,7 @@ def createLPGRtTableString(compartment_var_name, hub_vcn_name, peering_dict, reg
 
             temprule = srcStr + temprule
             lpgStr = lpgStr.replace(srcStr,temprule)
+            #print(lpgStr)
             oname.write(lpgStr)
             oname.close()
             print(outfile + " containing TF for LPG Route Table has been created for region " + region)
@@ -387,8 +387,6 @@ def processSubnet(tempStr):
     vcn_tf_name=commonTools.check_tf_variable(tempStr['vcn_name'])
     subnet_tf_name = tempStr['vcn_name']+"_"+display_name
 
-    print(subnet_tf_name)
-
     subnet_tf_name = commonTools.check_tf_variable(subnet_tf_name)
 
     tempStr['vcn_tf_name'] = vcn_tf_name
@@ -486,7 +484,7 @@ def processSubnet(tempStr):
     tempStr['vcn_tf_name'] = vcn_tf_name
     tempStr['rt_display'] = display_name
     tempStr['compartment_tf_name'] = compartment_var_name
-    srcStr = "##Add More rules for subnet " + rt_tf_name + "##"
+    srcStr = "####ADD_NEW_ROUTE_RULES####"+ rt_tf_name
     dataStr = dataStr + "\n" +"    "+ srcStr
     data_res = template.render(tempStr)
     tempStr = data_res.replace(srcStr, dataStr)
@@ -506,7 +504,6 @@ if ('.xls' in filename):
         for reg in ct.all_regions:
             routetablefiles.setdefault(reg, [])
             purge(outdir + "/" + reg, "_routetable.tf")
-
     # Get existing list of route table files
     if (modify_network == 'true'):
         for reg in ct.all_regions:
@@ -515,34 +512,8 @@ if ('.xls' in filename):
             for file in lisoffiles:
                 if "_routetable.tf" in file:
                     routetablefiles[reg].append(file)
-
     if (vcnInfo.onprem_destinations[0] == ""):
         print("\nonprem_destinations field is empty in VCN Info Sheet.. It will create empty route tables!!\n")
-
-    # Create LPG Rules
-    createLPGRouteRules(vcns.peering_dict)
-
-
-    # Create Route Table associated with DRG for Hub VCN and route rules for its each spoke VCN
-    for hub_vcn_name in vcns.hub_vcn_names:
-        compartment_var_name = vcns.vcn_compartment[hub_vcn_name]
-
-        # Added to check if compartment name is compatible with TF variable name syntax
-        compartment_var_name = commonTools.check_tf_variable(compartment_var_name)
-
-        # String for Route Table Assocaited with DRG
-        r = vcns.vcn_region[hub_vcn_name].strip().lower()
-        createDRGRtTableString(compartment_var_name, hub_vcn_name, vcns.peering_dict, r)
-
-    # Create Route Table associated with LPGs in Hub VCN peered with spoke VCNs
-    for hub_vcn_name in vcns.hub_vcn_names:
-        compartment_var_name = vcns.vcn_compartment[hub_vcn_name]
-        # Added to check if compartment name is compatible with TF variable name syntax
-        compartment_var_name = commonTools.check_tf_variable(compartment_var_name)
-
-        r = vcns.vcn_region[hub_vcn_name].strip().lower()
-        # String for Route Table Associated with each LPG in hub VCN peered with Spoke VCN
-        createLPGRtTableString(compartment_var_name, hub_vcn_name, vcns.peering_dict, r)
 
 
     # Start processing for each subnet
@@ -562,8 +533,10 @@ if ('.xls' in filename):
     dfcolumns = df.columns.values.tolist()
 
     for i in df.index:
+
         # Get subnet data
-        region = df.loc[i,'Region']
+        region = str(df.loc[i,'Region'])
+
         if (region in commonTools.endNames):
             break
 
@@ -584,7 +557,7 @@ if ('.xls' in filename):
                 str(df.loc[i, 'Type(private|public)']).lower() == 'nan' or str(
                     df.loc[i, 'Configure SGW Route\n(n|object_storage|all_services)']).lower() == 'nan' or str(df.loc[i, 'Configure NGW Route\n(y|n)']).lower() == 'nan' or
                 str(df.loc[i, 'Configure IGW Route (y|n)']).lower() == 'nan' or str(df.loc[i, 'Configure OnPrem Route (y|n)']).lower() == 'nan' or str(df.loc[i, 'Configure VCNPeering\nRoute (y|n)']).lower() == 'nan'):
-            print("\nERROR!!! Column Values (except DHCP Option Name, Route Table Name, Seclist Name, Common Seclist Name or DNS Label) or Rows cannot be left empty in Subnets sheet in CD3..Exiting!")
+            print("\nERROR!!! Column Values (except DHCP Option Name, Route Table Name, Seclist Name or DNS Label) or Rows cannot be left empty in Subnets sheet in CD3..Exiting!")
             exit(1)
 
         for columnname in dfcolumns:
@@ -659,6 +632,31 @@ if ('.xls' in filename):
             tempStr.update(tempdict)
 
         processSubnet(tempStr)
+
+    # Create LPG Rules
+    createLPGRouteRules(vcns.peering_dict)
+
+
+    # Create Route Table associated with DRG for Hub VCN and route rules for its each spoke VCN
+    for hub_vcn_name in vcns.hub_vcn_names:
+        compartment_var_name = vcns.vcn_compartment[hub_vcn_name]
+
+        # Added to check if compartment name is compatible with TF variable name syntax
+        compartment_var_name = commonTools.check_tf_variable(compartment_var_name)
+
+        # String for Route Table Assocaited with DRG
+        r = vcns.vcn_region[hub_vcn_name].strip().lower()
+        createDRGRtTableString(compartment_var_name, hub_vcn_name, vcns.peering_dict, r, tempStr)
+
+    # Create Route Table associated with LPGs in Hub VCN peered with spoke VCNs
+    for hub_vcn_name in vcns.hub_vcn_names:
+        compartment_var_name = vcns.vcn_compartment[hub_vcn_name]
+        # Added to check if compartment name is compatible with TF variable name syntax
+        compartment_var_name = commonTools.check_tf_variable(compartment_var_name)
+
+        r = vcns.vcn_region[hub_vcn_name].strip().lower()
+        # String for Route Table Associated with each LPG in hub VCN peered with Spoke VCN
+        createLPGRtTableString(compartment_var_name, hub_vcn_name, vcns.peering_dict, r, tempStr)
 
     # remove any extra route table files (not part of latest cd3)
     RTs_in_objnames = []

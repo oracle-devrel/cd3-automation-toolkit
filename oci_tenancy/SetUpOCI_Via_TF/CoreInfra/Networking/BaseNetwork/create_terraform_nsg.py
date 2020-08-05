@@ -33,6 +33,7 @@ from cd3parser import CD3Parser as cd3parser
 import os
 import pandas as pd
 import sys
+import re
 sys.path.append(os.getcwd()+"/../../..")
 from commonTools import *
 from jinja2 import Environment, FileSystemLoader
@@ -51,6 +52,7 @@ defined_tags={}
 
 # Stage 1 Parse into NetSec class and store into dictionary unique_id:rules
 def directionOptionals(nsgParser, options,tempStr):
+
     srcdestType = ""
     srcdest = ""
     source_type=''
@@ -76,12 +78,12 @@ def directionOptionals(nsgParser, options,tempStr):
     if (srcdestType.lower() == 'service'):
         srcdestType = "SERVICE_CIDR_BLOCK"
     '''
-    destination_type = tempStr['destination_type']
-    source_type = tempStr['source_type']
-    source = tempStr['source']
-    destination = tempStr['destination']
+    destination_type = str(options[6])
+    source_type = str(options[4])
+    source = str(options[5])
+    destination =  str(options[7])
 
-    if source_type.lower() != 'nan' and source_type.lower() != '' :
+    if source_type != 'nan':
         if (source_type.lower() == 'cidr'):
             source_type="CIDR_BLOCK"
         elif (source_type.lower()=='service'):
@@ -89,8 +91,10 @@ def directionOptionals(nsgParser, options,tempStr):
         elif (source_type.lower()=='nsg'):
             source_type = "NETWORK_SECURITY_GROUP"
             source = "oci_core_network_security_group."+source+".id"
+    else:
+        source_type = ""
 
-    if destination_type.lower() != 'nan' and destination_type.lower() != '':
+    if destination_type != 'nan':
         if (destination_type.lower() == 'cidr'):
             destination_type='CIDR_BLOCK'
         elif (destination_type.lower() == 'service'):
@@ -98,12 +102,17 @@ def directionOptionals(nsgParser, options,tempStr):
         elif (destination_type.lower() == 'cidr'):
             destination_type = "NETWORK_SECURITY_GROUP"
             destination = "oci_core_network_security_group."+destination+".id"
+    else:
+        destination_type = ""
 
-    if ('oci_core_network_security_group' not in source and source != '\"\"'):
+    if ('oci_core_network_security_group' not in source):
+        if source == 'nan':
+            source = ""
         source = "\""+source+"\""
 
-
-    if ('oci_core_network_security_group' not in destination  and destination != '\"\"'):
+    if ('oci_core_network_security_group' not in destination):
+        if destination == 'nan':
+            destination = ""
         destination = "\""+destination+"\""
 
     tempStr['source_type'] = source_type
@@ -127,20 +136,16 @@ def protocolOptionals(nsgParser, options, tempStr):
 
     protocol = options[2].lower()
     protocolHeader = ""
+    code=''
+    type=''
     if protocol == "all":
         return ""
     elif protocol == "icmp":
+        protocolHeader = protocol
         code = "" if nsgParser.checkOptionalEmpty(options[13]) \
-            else "        code = \"{}\"\n".format(int(options[13]))
-        if nsgParser.checkOptionalEmpty(options[12]):
-            return (" ")
-        else:
-            return ("\n" \
-                    "    icmp_options {{\n" \
-                    "        type = \"{}\"\n" \
-                    "{}"
-                    "    }}" \
-                    ).format(int(options[12]), code)
+            else int(options[13])
+        type = "" if nsgParser.checkOptionalEmpty(options[12]) \
+            else int(options[12])
     elif protocol == "tcp":
         protocolHeader = protocol
     elif protocol == "udp":
@@ -162,15 +167,25 @@ def protocolOptionals(nsgParser, options, tempStr):
               ).format(int(options[9]), int(options[8]))
 
     tempStr['protocol'] = protocolHeader
-
-    if tempStr['dportmax'] != '':
-        tempStr['dportmax'] = int(options[11])
-    if tempStr['dportmin'] != '':
+    tempStr['icmptype'] = type
+    tempStr['icmpcode'] = code
+    if str(options[11]) != '' and str(options[11]) != 'nan':
+        tempStr['dportmax'] =  int(options[11])
+    else:
+        tempStr['dportmax'] =""
+    if str(options[10]) != '' and str(options[10]) != 'nan':
         tempStr['dportmin'] = int(options[10])
-    if tempStr['sportmax'] != '':
-        tempStr['sportmax'] = int(options[9])
-    if tempStr['sportmin'] != '':
+    else:
+        tempStr['dportmin'] =""
+    if str(options[9]) != '' and str(options[9]) != 'nan':
+        tempStr['sportmax'] =  int(options[9])
+    else:
+        tempStr['sportmax'] =""
+    if str(options[8]) != '' and str(options[8]) != 'nan':
         tempStr['sportmin'] = int(options[8])
+    else:
+        tempStr['sportmin'] =""
+
     return tempStr
 '''
         ("\n" \
@@ -203,43 +218,54 @@ def NSGtemplate(nsgParser, key, value, outdir, columnname):
     compartment_tf_name = commonTools.check_tf_variable(compartment_var_name)
     nsg_tf_name = commonTools.check_tf_variable(key[2])
     vcn_tf_name = commonTools.check_tf_variable(key[1])
-    tempStr = {'compartment_tf_name': compartment_tf_name, 'display_name': key[2], 'nsg_tf_name': nsg_tf_name,
-               'vcn_tf_name': vcn_tf_name}
+    tempDict = {'compartment_tf_name': compartment_tf_name, 'display_name': key[2], 'nsg_tf_name': nsg_tf_name,
+                'vcn_tf_name': vcn_tf_name}
 
     #Dictionary of column headers : column value
-    i=3
-
-    while i < (len(value[0])):
-        for rule in value:
-            if str(rule[i]) == 'nan':
-                columnvalue = ''
-                name = commonTools.check_column_headers(str(columnname[i]).lower())
-            else:
-                columnvalue = str(rule[i])
-                name = commonTools.check_column_headers(str(columnname[i]).lower())
-
-            tempdict = { name : columnvalue }
-            tempStr.update(tempdict)
-        i=i+1
+    updatedcols=[]
+    nsg_done = []
+    updatedrule=[]
+    ruleindex = 1
 
     for rule in value:
-        if str(rule[15]).lower() == 'nan':
-            rule[15] = ''
-        if str(rule[16]).lower() == 'nan':
-            rule[16] = ''
+        rule = list(rule)
+        #Replace nan to "" in each value
+        for eachvalue in rule:
+            if nsgParser.checkOptionalEmpty(eachvalue):
+                eachvalue = ""
+            updatedrule.append(eachvalue)
 
-        freeform_tags = commonTools.split_tag_values('freeform_tags', str(rule[15]), tempStr)
-        defined_tags = commonTools.split_tag_values('defined_tags', str(rule[16]), tempStr)
+        #Change column header names to lower case for matching template
+        for column in columnname:
+            column = commonTools.check_column_headers(column)
+            if column != '':
+                updatedcols.append(column)
 
-    tempStr.update(freeform_tags)
-    tempStr.update(defined_tags)
+        tempStr = dict(zip(updatedcols, updatedrule))
 
-    resource_group = template.render(tempStr)
+        #process tags
+        freeform_tags = commonTools.split_tag_values('freeform_tags', tempStr['freeform_tags'], tempStr)
+        defined_tags = commonTools.split_tag_values('defined_tags', tempStr['defined_tags'], tempStr)
 
-    with open(outdir + "/{}_nsg.tf".format(commonTools.check_tf_variable(key[2])), 'w') as f:
-        f.write(resource_group)
-        ruleindex = 1
-        for rule in value:
+        tempStr.update(freeform_tags)
+        tempStr.update(defined_tags)
+
+        tempStr.update(tempDict)
+        #NSG template; Write only for the first apperance.
+        nsg_name = commonTools.check_tf_variable(key[2])
+
+        resource_group = template.render(tempStr)
+        if nsg_done == [] :
+            nsg_done.append(nsg_name)
+            with open(outdir + "/{}_nsg.tf".format(commonTools.check_tf_variable(key[2])), 'w') as f:
+                f.write(resource_group)
+        else:
+            if nsg_name not in nsg_done:
+                with open(outdir + "/{}_nsg.tf".format(commonTools.check_tf_variable(key[2])), 'w') as f:
+                    f.write(resource_group)
+
+        with open(outdir + "/{}_nsg.tf".format(commonTools.check_tf_variable(key[2])), 'a') as f:
+
             null_rule = 0
             for i in range(1,3):
                 if(str(rule[i]).lower()=='nan'):
@@ -248,7 +274,7 @@ def NSGtemplate(nsgParser, key, value, outdir, columnname):
                     break
             if(null_rule==1):
                 continue
-            
+
             tempStr.update(NSGrulesTemplate(nsgParser, rule, ruleindex,tempStr))
             tempStr.update(statelessOptional(nsgParser, rule, tempStr))
             tempStr.update(directionOptionals(nsgParser, rule,tempStr))
@@ -258,7 +284,7 @@ def NSGtemplate(nsgParser, key, value, outdir, columnname):
             f.write(nsg_rule)
             ruleindex += 1
         f.close()
-        print(outdir + "/{}_nsg.tf".format(key[2]) + " containing TF for NSG has been created")
+    print("\n"+outdir + "/{}_nsg.tf".format(key[2]) + " containing TF for NSG has been created")
 
 
 def NSGrulesTemplate(nsgParser, rule, index, tempStr):
@@ -308,7 +334,6 @@ def main():
         configFileName = args.configFileName
     else:
         configFileName = ""
-
     ct = commonTools()
     ct.get_subscribedregions(configFileName)
     columnname=''
@@ -322,6 +347,7 @@ def main():
 
     # tested path allows for space, full or relative path acceptable
     nsgParser = cd3parser(os.path.realpath(args.inputfile)).getNSG()
+
 
     if('tmp_to_excel' in args.inputfile):
         os.remove(args.inputfile)
@@ -357,6 +383,13 @@ def main():
             print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
             exit(1)
 
+        # Backup of existing NSG files
+        for region in ct.all_regions:
+            if (os.path.exists(outdir + "/" + region)):
+                resource = "NSG"
+                print("Backing up all existing NSG TF files for region " + region + " to")
+                commonTools.backup_file(outdir + "/" + region, resource, "_nsg.tf")
+
         # with open(outdir + "/{}/{}-NSG.tf".format(region,region), 'w') as f:
         reg_outdir = outdir + "/" + region
 
@@ -374,7 +407,6 @@ def main():
     if DEBUG:
         nsgParser.debug()
         print("Rules only list and its indice:\n{}".format({k: v for v, k in enumerate(nsgParser.nsg.columns[3:])}))
-
 
 if __name__ == '__main__':
     main()

@@ -47,7 +47,12 @@ oname = None
 default_ruleStr={}
 defaultname={}
 default_rtables_done={}
+default_rule={}
 
+def create_route_rule_string(new_route_rule,tempStr):
+    new_route_rule = new_route_rule + routerule.render(tempStr)
+
+    return new_route_rule
 #If input is CD3 excel file
 if('.xls' in inputfile):
     vcns=parseVCNs(inputfile)
@@ -60,11 +65,13 @@ if('.xls' in inputfile):
         if(os.path.exists(outdir + "/" +reg)):
             defaultname[reg] = open(outdir + "/" + reg + "/VCNs_Default_RouteTable.tf", "w")
         default_ruleStr[reg] = ''
+        default_rule[reg] = ''
         default_rtables_done[reg]=[]
         subnets_done[reg] = []
-        # Backup existing seclist files in ash and phx dir
+        # Backup existing route table files in ash and phx dir
+        resource = "RT"
         print("Backing up all existing RT TF files for region " + reg+ " to")
-        commonTools.backup_file(outdir + "/" + reg, "_routetable.tf")
+        commonTools.backup_file(outdir + "/" + reg, resource, "_routetable.tf")
 
     # temporary dictionary1 and dictionary2
     tempStr = {}
@@ -76,6 +83,14 @@ if('.xls' in inputfile):
     rt_tf_name=''
     dest_objs=[]
     dest_obj=''
+    tfStr = ''
+    tfrt=''
+    des_rt=''
+    rtrule=''
+    final={}
+
+    # List of the column headers
+    dfcolumns = df.columns.values.tolist()
 
     for i in df.index:
         region = str(df.loc[i, 'Region'])
@@ -86,8 +101,13 @@ if('.xls' in inputfile):
 
         # Check if values are entered for mandatory fields
         if (str(df.loc[i, 'Region']).lower() == 'nan' or str(df.loc[i, 'VCN Name']).lower() == 'nan' or str(df.loc[i, 'Compartment Name']).lower() == 'nan'):
-            print("Column Region, VCN Name and Compartment Name cannot be left empty in Instances sheet of CD3..Exiting!")
+            print("\nColumn Region, VCN Name and Compartment Name cannot be left empty in Instances sheet of CD3..Exiting!")
             exit(1)
+
+        # Process only those VCNs which are present in cd3(and have been created via TF)
+        if (str(df.loc[i, 'VCN Name']) not in vcns.vcn_names):
+            print("skipping route table: " + str(df.loc[i, 'Route Table Name']) + " as its VCN is not part of VCNs tab in cd3")
+            continue
 
         for columnname in dfcolumns:
 
@@ -105,32 +125,38 @@ if('.xls' in inputfile):
 
             if columnname in commonTools.tagColumns:
                 tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)
+                tempStr.update(tempdict)
 
             if "::" in columnvalue:
-                if columnname != 'Compartment Name' and ".Flex" in columnvalue:
+                if columnname != 'Compartment Name':
                     columnname = commonTools.check_column_headers(columnname)
                     multivalues = columnvalue.split("::")
                     multivalues = [str(part).strip() for part in multivalues if part]
                     tempdict = {columnname: multivalues}
+                    tempStr.update(tempdict)
 
             if columnname == 'Compartment Name':
                 compartment_tf_name = commonTools.check_tf_variable(columnvalue)
                 tempdict = {'compartment_tf_name': compartment_tf_name}
+                tempStr.update(tempdict)
 
             if columnname == 'VCN Name':
                 vcn_name = columnvalue
                 display_name = str(df.loc[i,'Route Table Name'])
-                # Process only those VCNs which are present in cd3(and have been created via TF)
-                if (vcn_name not in vcns.vcn_names):
-                    print("skipping route table: " + display_name + " as its VCN is not part of VCNs tab in cd3")
-                    continue
+
                 vcn_tf_name = commonTools.check_tf_variable(vcn_name)
                 tempdict = {'vcn_tf_name': vcn_tf_name,'rt_display' : display_name}
+                tempStr.update(tempdict)
 
             #Check this code once
-            #if columnname == 'Route Table Name':
-                #if columnvalue == '':
-                    #continue
+            if columnname == 'Route Table Name':
+                if columnvalue == '':
+                    continue
+                else:
+                    columnvalue = commonTools.check_tf_variable(str(columnvalue).strip())
+                    tempdict = {'rt_tf_name' :  columnvalue}
+                    add_rules_tf_name = columnvalue
+                    tempStr.update(tempdict)
 
             if columnname == 'Route Destination Object':
                 dest_objs = columnvalue.strip()
@@ -156,9 +182,14 @@ if('.xls' in inputfile):
                         dest_obj = "\""+dest_objs[0].strip()+"\""
 
                     tempdict = {'network_entity_id' : dest_obj}
+                    tempStr.update(tempdict)
 
             destination = str(df.loc[i,'Destination CIDR']).strip()
+            if "oci" not in destination:
+                destination = "\""+destination+"\""
             description = str(df.loc[i,'Rule Description']).strip()
+            if description == 'nan':
+                description = ""
             tempdict = {'destination' : destination,'description' : description}
             rt_var = vcn_tf_name + "_" + display_name
             rt_tf_name = commonTools.check_tf_variable(rt_var)
@@ -167,34 +198,49 @@ if('.xls' in inputfile):
             tempStr[columnname] = str(columnvalue).strip()
             tempStr.update(tempdict)
 
+        srcStr = "####ADD_NEW_ROUTE_RULES####" + add_rules_tf_name
         if("Default Route Table for " in display_name):
-            if(rt_tf_name not in default_rtables_done[region]):
-                if (len(default_rtables_done[region]) == 0):
-                    default_ruleStr[region] = default_ruleStr[region] + defaultrt.render(tempStr)
-                    default_rtables_done[region].append(rt_tf_name)
-            if(dest_objs[0]!=""):
-                default_ruleStr[region]=default_ruleStr[region]+ routerule.render(tempStr)
+            if (rt_tf_name not in default_rtables_done[region]):
+                default_ruleStr[region] = default_ruleStr[region] + defaultrt.render(tempStr)
+                default_rtables_done[region].append(rt_tf_name)
+
+            default_rule[region] = ''
+            if(dest_objs and dest_objs[0]!=""):
+                default_rule[region]=create_route_rule_string(default_rule[region],tempStr)
+            default_rule[region] = default_rule[region] + "\n" + "    " + srcStr
+            default_ruleStr[region] = default_ruleStr[region].replace(srcStr, default_rule[region])
+
             continue
+
 
         #Process other route tables
         outfile = outdir + "/" + region + "/"+rt_tf_name+"_routetable.tf"
+        oname = open(outfile, "w")
         if(rt_tf_name not in subnets_done[region] or len(subnets_done[region])==0):
-            if (tfStr!= ''):
+            if (tfStr != ""):
                 oname.write(tfStr)
                 oname.close()
-                tfStr = ''
-            oname=open(outfile,'w')
-            tfStr= tfStr + routetable.render(tempStr)
-            if(dest_objs[0]!=""):
-                tfStr=tfStr+ routerule.render(tempStr)
+                tfStr = ""
+
+            tfStr = routetable.render(tempStr)
+
+            new_route_rule = ""
+            if (dest_objs and dest_objs[0] != ""):
+                new_route_rule = create_route_rule_string(new_route_rule, tempStr)
             subnets_done[region].append(rt_tf_name)
         else:
-            if (dest_objs[0] != ""):
-                tfStr=tfStr+ routerule.render(tempStr)
+            new_route_rule = ""
+            if (dest_objs and dest_objs[0] != ""):
+                new_route_rule = create_route_rule_string(new_route_rule,tempStr)
 
-    if (oname != None):
-        oname.write(tfStr)
-        oname.close()
+        new_route_rule = new_route_rule + "\n" + "    " + srcStr
+        tfStr = tfStr.replace(srcStr, new_route_rule)
+
+        if (tfStr != ''):
+            oname = open(outfile, "w")
+            oname.write(tfStr)
+            oname.close()
+
     for reg in ct.all_regions:
         if (default_ruleStr[reg] != ''):
             defaultname[reg].write(default_ruleStr[reg])

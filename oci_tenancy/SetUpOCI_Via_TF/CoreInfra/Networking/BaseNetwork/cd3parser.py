@@ -135,9 +135,15 @@ class CD3Parser(object):
             working_header = {}
             self.sheet = nsg
             self.nsg = nsg
+            nsg = nsg.dropna(how='all')
+            nsg = nsg.reset_index(drop=True)
             self.nsg_numpy = nsg.to_numpy()  # makes a list of list
             self.headers = nsg.columns.values.tolist()
+            if nsg.Region.isnull().any() :
+                print("\nError!! Region cannot be left empty.... Exiting!!")
+                exit()
             self.regions = sorted(list(set(nsg.Region)))
+
             self.regions = [x.strip().lower() for x in self.regions]
             unique_headers = tuple(self.headers[1:4])
             working_header[unique_headers] = [(self.headers[3:])]
@@ -158,7 +164,7 @@ class CD3Parser(object):
                 else:
                     workingdict[unique_id] = [index[3:]]
             super().__init__(nsg, self.regions)
-
+        
         def getRegionDict(self):
             return self.regionDict
 
