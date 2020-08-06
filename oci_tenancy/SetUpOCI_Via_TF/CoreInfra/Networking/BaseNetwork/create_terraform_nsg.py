@@ -231,14 +231,11 @@ def NSGtemplate(nsgParser, key, value, outdir, columnname):
         rule = list(rule)
         #Replace nan to "" in each value
         for eachvalue in rule:
-            if nsgParser.checkOptionalEmpty(eachvalue):
-                eachvalue = ""
-            #if the value is boolean
-            if str(eachvalue) == '1.0' or str(eachvalue) == '0.0':
-                if str(eachvalue) == '1.0':
-                    eachvalue = "true"
-                else:
-                    eachvalue = "false"
+            eachvalue = str(eachvalue)
+
+            # Check for boolean/null in column values
+            eachvalue = commonTools.check_columnvalue(eachvalue)
+
             updatedrule.append(eachvalue)
 
         #Change column header names to lower case for matching template

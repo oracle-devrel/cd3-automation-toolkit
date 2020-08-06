@@ -54,7 +54,7 @@ class CD3Parser(object):
             #self.addsecrules = self.excel_CD3.parse("AddSecRules")
             #self.routerules = self.excel_CD3.parse("RouteRulesinOCI")
             #self.secrules = self.excel_CD3.parse("SecRulesinOCI")
-            self.nsg = self.excel_CD3.parse("NSGs", skiprows=1)
+            self.nsg = self.excel_CD3.parse("NSGs", skiprows=1,dtype=object)
         except Exception as e:
             raise NameError(("More information: Check that sheet_names are correct and exact on"
                              "CD3 .xls file.\n{}\n"
