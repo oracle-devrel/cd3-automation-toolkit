@@ -63,7 +63,6 @@ fses = env.get_template('export-resource-template')
 # fss_multi export logic
 def fss_exports(i, df, tempStr):
     global value
-
     i = i + 1
     try:
         if (str(df.loc[i, 'Path']) == path and str(df.loc[i, 'Region']) == "nan"):
@@ -154,7 +153,6 @@ for i in df.index:
         break
     region = str(region).lower().strip()
 
-
     if region not in ct.all_regions:
         print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
         exit(1)
@@ -165,7 +163,7 @@ for i in df.index:
             or str(df.loc[i, 'Compartment Name']).lower() == 'nan' or str(
                 df.loc[i, 'Availability Domain\n(AD1|AD2|AD3)']).lower() == 'nan' or str(
                 df.loc[i, 'MountTarget Name']).lower() == 'nan'):
-        print("Columns Region, Compartment Name, Availability Domain, MountTarget Name, MountTarget SubnetName, Max FSS Capacity, Max FSS Inodes, FSS Name and path cannot be left blank..Exiting!")
+        print("\nColumns Compartment Name, Availability Domain, MountTarget Name, MountTarget SubnetName, FSS Name and path cannot be left blank..Exiting!")
         exit()
 
     # List of the column headers
