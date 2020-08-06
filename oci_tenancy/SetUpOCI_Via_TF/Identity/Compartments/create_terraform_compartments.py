@@ -23,7 +23,7 @@ from commonTools import *
 ## Start Processing
 
 parser = argparse.ArgumentParser(description="Create Compartments terraform file")
-parser.add_argument("inputfile", help="Full Path of input file. It could be either the csv file or CD3 excel file")
+parser.add_argument("inputfile", help="Full Path of input file. It could be CD3 excel file")
 parser.add_argument("outdir", help="Output directory for creation of TF files")
 parser.add_argument("prefix", help="customer name/prefix for all file names")
 parser.add_argument("--configFileName", help="Config file name", required=False)
@@ -212,48 +212,8 @@ if ('.xls' in args.inputfile):
         # Write all info to TF string; Render template
         tfStr[reg] = tfStr[reg] + template.render(tempStr)
 
-
-# If input is a csv file
-elif ('.csv' in args.inputfile):
-    all_regions = os.listdir(outdir)
-    for reg in all_regions:
-        tfStr[reg] = ''
-    compartment_file_name = args.inputfile
-    fname = open(compartment_file_name, "r")
-
-    endNames = {'<END>', '<end>', '<End>'}
-
-    # Read compartment file
-    for line in fname:
-        if (line.strip() in endNames):
-            break
-        if not line.startswith('#') and line != '\n':
-            [region, compartment_name, compartment_desc, parent_compartment_name] = line.split(',')
-            region = region.strip().lower()
-            if region not in all_regions:
-                print("Invalid Region")
-                exit(1)
-            compartment_name = compartment_name.strip()
-            compartment_desc = compartment_desc.strip()
-            parent_compartment_name = parent_compartment_name.strip()
-
-            if (parent_compartment_name.strip() == '' or parent_compartment_name.lower() == 'root'):
-                parent_compartment = '${var.tenancy_ocid}'
-            else:
-                parent_compartment = '${oci_identity_compartment.' + parent_compartment_name + '.id}'
-
-            if (compartment_name.strip() != 'Name' and compartment_name.strip() != ''):
-                if (compartment_desc.strip() == ''):
-                    compartment_desc = compartment_name
-                tfStr[region] = tfStr[region] + """
-resource "oci_identity_compartment" \"""" + compartment_name.strip() + """" {
-        compartment_id = \"""" + parent_compartment + """"
-        description = \"""" + compartment_desc.strip() + """"
-  	    name = \"""" + compartment_name.strip() + """"
-} """
-
 else:
-    print("Invalid input file format; Acceptable formats: .xls, .xlsx, .csv")
+    print("Invalid input file format; Acceptable formats: .xls, .xlsx")
     exit()
 
 # Write TF string to the file in respective region directory

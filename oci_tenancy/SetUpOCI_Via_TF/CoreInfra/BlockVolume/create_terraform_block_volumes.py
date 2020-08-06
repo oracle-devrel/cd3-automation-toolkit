@@ -14,7 +14,7 @@ sys.path.append(os.getcwd() + "/../..")
 from commonTools import *
 
 parser = argparse.ArgumentParser(description="Creates TF files for Block Volumes")
-parser.add_argument("file",help="Full Path to the CSV file for creating block volume or CD3 excel file. eg instance.csv or CD3-template.xlsx in example folder")
+parser.add_argument("file",help="Full Path to the CD3 excel file. eg CD3-template.xlsx in example folder")
 parser.add_argument("outdir", help="directory path for output tf files ")
 parser.add_argument("--configFileName", help="Config file name", required=False)
 
@@ -140,56 +140,8 @@ if ('.xls' in filename):
         oname = open(outfile, "w")
         oname.write(tempStr)
         oname.close()
-
-
-# If input is a csv file
-elif ('.csv' in filename):
-    fname = open(filename, "r")
-    all_regions = os.listdir(outdir)
-    for line in fname:
-        if not line.startswith('#'):
-            # [block_name,size_in_gb,availability_domain(AD1|AD2|AD3),attached_to_instance,attach_type(iscsi|paravirtualized,compartment_var_name] = line.split(',')
-            linearr = line.split(",")
-            region = linearr[0].strip().lower()
-            if region not in all_regions:
-                print("Invalid Region")
-                continue
-
-            blockname = linearr[1].strip()
-            size = linearr[2].strip()
-            AD = linearr[3].strip()
-            attacheToInstanceName = linearr[4].strip()
-            attachType = linearr[5].strip()
-            compartmentVarName = linearr[6].strip()
-            ad = ADS.index(AD)
-            display_name = blockname
-
-            tempStr = """resource "oci_core_volume"  \"""" + blockname + """"  {
-        #Required
-        availability_domain = "${data.oci_identity_availability_domains.ADs.availability_domains.""" + str(ad) + """.name}"
-        compartment_id = "${var.""" + compartmentVarName + """}"
-
-        #Optional
-        display_name = \"""" + blockname + """"
-        size_in_gbs = \"""" + size + """"
-        ## Defined Tag Info ##
-        }
-
-resource "oci_core_volume_attachment" \"""" + blockname + """_volume_attachment" {
-        #Required
-        instance_id = "${oci_core_instance.""" + attacheToInstanceName + """.id}"
-        attachment_type = \"""" + attachType + """"
-        volume_id = "${oci_core_volume.""" + blockname + """.id}"
-
-        }
-        """
-            outfile = outdir + "/" + region + "/" + blockname + ".tf"
-            oname = open(outfile, "w")
-            oname.write(tempStr)
-            oname.close()
-    fname.close()
 else:
-    print("Invalid input file format; Acceptable formats: .xls, .xlsx, .csv")
+    print("Invalid input file format; Acceptable formats: .xls, .xlsx")
     exit()
 
 

@@ -20,7 +20,7 @@ from commonTools import *
 
 ######
 # Required Files
-# input file containing VCN info either vcn-info.properties or CD3 excel
+# input file containing VCN info - CD3 excel
 # Create the major terraform objects - DRG, IGW, NGW, SGW, LPGs for the VCN
 # Outdir
 # prefix
@@ -30,8 +30,7 @@ from commonTools import *
 
 parser = argparse.ArgumentParser(
     description="Create major-objects (VCN, IGW, NGW, DRG, LPGs etc for the VCN) terraform file")
-parser.add_argument("inputfile",
-                    help="Full Path of input file either props file. eg vcn-info.properties or cd3 excel file")
+parser.add_argument("inputfile",help="Full Path of input file eg: cd3 excel file")
 parser.add_argument("outdir", help="Output directory for creation of TF files")
 parser.add_argument("prefix", help="customer name/prefix for all file names")
 parser.add_argument("--modify_network", help="modify network: true or false", required=False)
@@ -407,87 +406,8 @@ if ('.xls' in filename):
 
         processVCN(tempStr)
 
-# If CD3 excel file is not given as input
-elif ('.properties' in filename):
-    vcns = parseVCNs(filename)
-    config = configparser.RawConfigParser()
-    config.optionxform = str
-    file_read = config.read(args.inputfile)
-
-    if (len(file_read) != 1):
-        print(args.propsfile + " doesn't exist or it could not be opened. Please check input params and try again..")
-        exit(1)
-
-    for reg in vcns.all_regions:
-        tfStr[reg] = ''
-
-    # Get VCN Info from VCN_INFO section
-    vcns = config.options('VCN_INFO')
-
-    for vcn_name in vcns:
-        vcn_data = config.get('VCN_INFO', vcn_name)
-        vcn_data = vcn_data.split(',')
-        region = vcn_data[0].strip().lower()
-        if region not in vcns.all_regions:
-            print("Invalid Region")
-            exit(1)
-        hub_spoke_peer_none = vcn_data[7].strip().split(":")
-        if (hub_spoke_peer_none[0] == 'hub'):
-            hub_vcn_names.append(vcn_name)
-            peering_dict[vcn_name] = ''
-        if (hub_spoke_peer_none[0] == 'spoke'):
-            hub_name = hub_spoke_peer_none[1]
-            peering_dict[hub_name] = peering_dict[hub_name] + vcn_name + ","
-            spoke_vcn_names.append(vcn_name)
-    for k, v in peering_dict.items():
-        if (v[-1] == ','):
-            v = v[:-1]
-            peering_dict[k] = v
-
-    for vcn_name in vcns:
-        vcn_data = config.get('VCN_INFO', vcn_name)
-        vcn_data = vcn_data.split(',')
-        region = vcn_data[0].strip().lower()
-        vcn_cidr = vcn_data[1].strip().lower()
-        regex = re.compile('[^a-zA-Z0-9]')
-        vcn_dns_label = regex.sub('', vcn_name)
-        vcn_drg = vcn_data[2].strip()
-        vcn_igw = vcn_data[3].strip()
-        vcn_ngw = vcn_data[4].strip()
-        vcn_sgw = vcn_data[5].strip()
-        vcn_lpg = vcn_data[6].strip().split(":")
-
-        hub_spoke_peer_none = vcn_data[7].strip().lower()
-        compartment_var_name = vcn_data[11].strip()
-        vcn_compartment[vcn_name] = compartment_var_name
-        vcn_region[vcn_name] = region
-
-        vcn_dns_label = vcn_data[11].strip()
-        # check if vcn_dns_label is not given by user in input use vcn name
-        if (vcn_dns_label == ''):
-            regex = re.compile('[^a-zA-Z0-9]')
-            vcn_dns = regex.sub('', vcn_name)
-            vcn_dns_label = (vcn_dns[:15]) if len(vcn_dns) > 15 else vcn_dns
-
-        # if(hub_spoke_none=='hub' and vcn_drg!='y'):
-        #        print("\nVCN marked as Hub should have DRG configured..Modify the input file and try again")
-        #        exit(1)
-
-        processVCN(region, vcn_name, vcn_cidr, vcn_drg, vcn_igw, vcn_ngw, vcn_sgw, vcn_lpg, hub_spoke_peer_none,
-                   compartment_var_name, vcn_dns_label, dhcp_data)
-
-    # Create LPGs as per Section VCN_PEERING
-    """peering_dict = dict(config.items('VCN_PEERING'))
-    ocs_vcn_lpg_ocids = peering_dict['ocs_vcn_lpg_ocid']
-    ocs_vcn_lpg_ocids = ocs_vcn_lpg_ocids.split(",")
-    peering_dict.pop('ocs_vcn_lpg_ocid')
-    peering_dict.pop('ocs_vcn_cidr')
-    peering_dict.pop('add_ping_sec_rules_onprem')
-    peering_dict.pop('add_ping_sec_rules_vcnpeering')
-"""
-
 else:
-    print("Invalid input file format; Acceptable formats: .xls, .xlsx, .properties")
+    print("Invalid input file format; Acceptable formats: .xls, .xlsx")
     exit(1)
 
 if (modify_network == 'true'):

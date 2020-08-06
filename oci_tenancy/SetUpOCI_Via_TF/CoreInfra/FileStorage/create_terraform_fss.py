@@ -16,7 +16,7 @@ from commonTools import *
 from jinja2 import Environment, FileSystemLoader
 
 parser = argparse.ArgumentParser(description="Creates TF files for FSS")
-parser.add_argument("inputfile",help="Full Path to the CSV file for creating fss or CD3 excel file. eg fss.csv or CD3-template.xlsx in example folder")
+parser.add_argument("inputfile",help="Full Path to the CSV file for creating fss or CD3 excel file. eg  CD3-template.xlsx in example folder")
 parser.add_argument("outdir", help="directory path for output tf files ")
 parser.add_argument("--configFileName", help="Config file name", required=False)
 

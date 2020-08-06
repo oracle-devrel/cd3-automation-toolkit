@@ -24,7 +24,7 @@ from commonTools import *
 ## Start Processing
 
 parser = argparse.ArgumentParser(description="Create Groups terraform file")
-parser.add_argument("inputfile", help="Full Path of input file. It could be either the csv file or CD3 excel file")
+parser.add_argument("inputfile", help="Full Path of input file. It could be CD3 excel file")
 parser.add_argument("outdir", help="Output directory for creation of TF files")
 parser.add_argument("prefix", help="customer name/prefix for all file names")
 parser.add_argument("--configFileName", help="Config file name", required=False)
@@ -133,40 +133,8 @@ if('.xls' in args.inputfile):
 
         # Write all info to TF string
         tfStr[region]=tfStr[region] + template.render(tempStr)
-
-#If input is a csv file
-elif('.csv' in args.inputfile):
-    all_regions = os.listdir(outdir)
-    for reg in all_regions:
-        tfStr[reg] = ''
-
-    group_file_name = args.inputfile
-    fname = open(group_file_name, "r")
-
-    endNames = {'<END>', '<end>', '<End>'}
-
-    # Read compartment file
-    for line in fname:
-        if(line.strip() in endNames):
-            break
-        if not line.startswith('#') and line != '\n':
-            [region,group_name, group_desc] = line.split(',')
-            region=region.strip().lower()
-            if region not in all_regions:
-                print("Invalid Region")
-                exit(1)
-            group_name=group_name.strip()
-            group_desc=group_desc.strip()
-
-            if(group_name!='Name' and group_name!=''):
-                if (group_desc.strip() == ''):
-                    group_desc = group_name
-
-                compartment_id = 'var.tenancy_ocid'
-
-                tfStr[region]=tfStr[region] + template.render(group_tf_name=group_name,compartment_id=compartment_id,group_desc=group_desc,group_name=group_name)
 else:
-    print("Invalid input file format; Acceptable formats: .xls, .xlsx, .csv")
+    print("Invalid input file format; Acceptable formats: .xls, .xlsx")
     exit()
 
 #Write TF string to the file in respective region directory

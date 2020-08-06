@@ -19,7 +19,7 @@ env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=Tr
 template = env.get_template('dedicated-hosts-template')
 
 parser = argparse.ArgumentParser(description="Create Dedicated VM Hosts terraform file")
-parser.add_argument("inputfile", help="Full Path of input file. It could be either the csv file or CD3 excel file")
+parser.add_argument("inputfile", help="Full Path of input file. It could be the CD3 excel file")
 parser.add_argument("outdir", help="Output directory for creation of TF files")
 parser.add_argument("--configFileName", help="Config file name", required=False)
 
@@ -130,59 +130,8 @@ if('.xls' in args.inputfile):
 
         # Write all info to TF string; Render template
         tfStr[region] = tfStr[region] + template.render(tempStr)
-
-#If input is a csv file
-elif('.csv' in args.inputfile):
-    all_regions = os.listdir(outdir)
-    for reg in all_regions:
-        src=outdir+"/"+reg+"/dedicated_vm_hosts.tf"
-        if(os.path.exists(src)):
-            dst = outdir + "/" + reg + "/dedicated_vm_hosts_backup" + date
-            os.rename(src, dst)
-        tfStr[reg] = ''
-    dedicated_host_file_name = args.inputfile
-    fname = open(dedicated_host_file_name, "r")
-
-    endNames = {'<END>', '<end>', '<End>'}
-
-    # Read compartment file
-    for line in fname:
-        if(line.strip() in endNames):
-            break
-        if not line.startswith('#') and line != '\n':
-            [region,compartment_name, dedicated_host_name, dedicated_host_ad, dedicated_host_fd, dedicated_host_shape] = line.split(',')
-            region=region.strip().lower()
-            if region not in all_regions:
-                print("Invalid Region")
-                exit(1)
-            if ('ad1' in dedicated_host_ad.lower()):
-                ad = '0'
-            if ('ad2' in dedicated_host_ad.lower()):
-                ad = '1'
-            if ('ad3' in dedicated_host_ad.lower()):
-                ad = '2'
-            if (compartment_name=='' or dedicated_host_name=='' or
-                    dedicated_host_ad==''or dedicated_host_shape==''):
-                print("All Fields mandatory except Fault Domain. Exiting...")
-                exit(1)
-
-            tfStr[region] = tfStr[region] + """
-                    resource "oci_core_dedicated_vm_host" \"""" + dedicated_host_name.strip() + """" {
-                    	    compartment_id = "${var.""" + compartment_name.strip() + """}"
-                    	    availability_domain = "${data.oci_identity_availability_domains.ADs.availability_domains.""" + ad + """.name}"
-                      	    dedicated_vm_host_shape = \"""" + dedicated_host_shape.strip() + """"
-                      	    display_name = \"""" + dedicated_host_name.strip() + """"
-                    """
-            if (str(dedicated_host_fd).lower() != ''):
-                tfStr[region] = tfStr[region] + """
-                            fault_domain = \"""" + dedicated_host_fd.strip() + """"
-                        }
-                        """
-            else:
-                tfStr[region] = tfStr[region] + """
-                    } """
 else:
-    print("Invalid input file format; Acceptable formats: .xls, .xlsx, .csv")
+    print("Invalid input file format; Acceptable formats: .xls, .xlsx")
     exit()
 
 for regions in unique_region:

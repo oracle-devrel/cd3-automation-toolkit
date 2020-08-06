@@ -1,6 +1,7 @@
 #!/usr/bin/python3
-# Author: Shruthi Subramanian
+#Author: Shruthi Subramanian
 #shruthi.subramanian@oracle.com
+
 import sys
 import argparse
 import pandas as pd
@@ -133,54 +134,6 @@ if ('.xls' in filename):
         print("Writing " + file)
         oname.write(bootppolicy)
         oname.close()
-
-elif('.csv' in filename):
-    fname = open(filename, "r")
-    all_regions = os.listdir(outdir)
-    for reg in all_regions:
-        policy_file[reg] = outdir + "/" + reg + "/attach_boot_backups_policy.tf"
-        src = policy_file[reg]
-        if path.exists(src):
-            dst = outdir + "/" + reg + "/attach_boot_backups_policy_backup" + date
-            os.rename(src, dst)
-        fname = open(policy_file[reg], "a+")
-        fname.write(tmpstr)
-        fname.close()
-
-    for line in fname:
-        if not line.startswith('#'):
-            linearr = line.split(",")
-            region = linearr[0].strip().lower()
-            if region not in all_regions:
-                print("Invalid Region")
-                continue
-
-            Hostname = linearr[1].strip()
-            res_name = Hostname + "_bkupPolicy"
-            policy = linearr[11].strip()
-
-            tmpstr = """resource "oci_core_volume_backup_policy_assignment" \"""" + res_name + """\"{
-                                        #Required
-                                        asset_id = "${oci_core_instance.""" + Hostname + """.boot_volume_id}"
-                                        policy_id = "${data.oci_core_volume_backup_policies.""" + policy + """.volume_backup_policies.0.id}"
-                                }
-                                ## Add policy attachment ##
-                                    """
-
-            textToSearch = "## Add policy attachment ##"
-
-            with open(policy_file[region], 'r+') as file:
-                filedata = file.read()
-            file.close()
-            # Replace the target string
-            filedata = filedata.replace(textToSearch, tmpstr)
-
-            # Write the file out again
-            with open(policy_file[region], 'w+') as file:
-                file.write(filedata)
-            file.close()
-
-    fname.close()
 else:
     print("Invalid input file format; Acceptable formats: .xls, .xlsx")
     exit()

@@ -200,7 +200,9 @@ if ('.xlsx' in filename):
             tagnamespace_list[region].append(namespace_tf_name)
 
         tagkeytemp[region] = tagkeytemp[region] + tagkey.render(tempStr)
-
+else:
+    print("Invalid input file format; Acceptable formats: .xls, .xlsx")
+    exit()
 
 for reg in ct.all_regions:
 

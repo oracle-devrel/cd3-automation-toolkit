@@ -3,13 +3,6 @@
 #Oracle Consulting
 #suruchi.singla@oracle.com
 
-######
-# Required Files
-# Properties File: vcn-info.properties"
-# Code will read input subnet file name for each vcn from properties file
-# Subnets file will contain info about each subnet
-# Outfile
-######
 
 import sys
 import re
@@ -25,7 +18,7 @@ from commonTools import *
 
 parser = argparse.ArgumentParser(description="Takes in a list of subnet names with format \"name,subnet CIDR,Availability Domain, Public|Private subnet,dhcp-options\". "
 											 "Create terraform files for subnets.")
-parser.add_argument("inputfile", help="Full Path of input file. eg vcn-info.properties or cd3 excel file")
+parser.add_argument("inputfile", help="Full Path of input file. eg  cd3 excel file")
 parser.add_argument("outdir", help="Output directory for creation of TF files")
 parser.add_argument("prefix", help="customer name/prefix for all file names")
 parser.add_argument("--modify_network", help="modify network: true or false", required=False)
@@ -167,8 +160,6 @@ def processSubnet(tempStr):
 	tempStr['prohibit_public_ip_on_vnic'] = prohibit_public_ip_on_vnic
 
 	tfStr[region]= tfStr[region] +"\n"+ template.render(tempStr)
-
-
 
 #If input is CD3 excel file
 if('.xls' in filename):
@@ -315,74 +306,14 @@ if('.xls' in filename):
 			tempStr.update(tempdict)
 
 		processSubnet(tempStr)
-
-# If CD3 excel file is not given as input
-elif('.properties' in filename):
-	config = configparser.RawConfigParser()
-	config.optionxform = str
-	config.read(args.inputfile)
-	sections=config.sections()
-
-	#Get Global Properties from Default Section
-	all_regions = config.get('Default', 'regions')
-	all_regions = all_regions.split(",")
-	all_regions = [x.strip().lower() for x in all_regions]
-	for reg in all_regions:
-		tfStr[reg] = ''
-
-	subnet_name_attach_cidr = config.get('Default','subnet_name_attach_cidr')
-
-	#Get vcn and subnet file info from VCN_INFO section
-	vcns=config.options('VCN_INFO')
-	for vcn_name in vcns:
-		vcn_data = config.get('VCN_INFO', vcn_name)
-		vcn_data = vcn_data.split(',')
-
-		region=vcn_data[0].strip().lower()
-		if region not in all_regions:
-			print("Invalid Region")
-			exit(1)
-		sps = vcn_data[9].strip().lower()
-		vcn_add_defaul_seclist = vcn_data[11].strip().lower()
-		vcn_subnet_file = vcn_data[7].strip().lower()
-
-		if os.path.isfile(vcn_subnet_file) == False:
-			print("input subnet file " + vcn_subnet_file + " for VCN " + vcn_name + " does not exist. Skipping Subnet TF creation for this VCN.")
-			continue
-
-		fname = open(vcn_subnet_file,"r")
-		seclists_per_subnet = int(sps)
-
-		# Read subnet file
-		for line in fname:
-			if not line.startswith('#') and line !='\n':
-				[compartment_var_name,name, sub, AD, pubpvt, dhcp, rt_name,seclist_name,common_seclist_name,SGW, NGW, IGW,dnslabel] = line.split(',')
-				linearr = line.split(",")
-				compartment_var_name = linearr[0].strip()
-				name = linearr[1].strip()
-				subnet = linearr[2].strip()
-				#dnslabel = linearr[9].strip()
-
-				if(dhcp!=''):
-					dhcp=vcn_name+"_"+dhcp
-
-				# check if vcn_dns_label is not given by user in input use vcn name
-				if (dnslabel.strip() == ''):
-					regex = re.compile('[^a-zA-Z0-9]')
-					subnet_dns = regex.sub('', name)
-					dnslabel = (subnet_dns[:15]) if len(subnet_dns) > 15 else subnet_dns
-
-					processSubnet(region, vcn_name, name, rt_name.strip(),seclist_name.strip(),common_seclist_name.strip(),subnet, AD, dnslabel, pubpvt, compartment_var_name,vcn_add_defaul_seclist, seclists_per_subnet)
 else:
-    print("Invalid input file format; Acceptable formats: .xls, .xlsx, .properties")
+    print("Invalid input file format; Acceptable formats: .xls, .xlsx")
     exit()
 
-
 if fname != None:
-	fname.close()
+   fname.close()
 
 subnetdata={}
-
 
 if(modify_network=='true'):
 	for reg in ct.all_regions:

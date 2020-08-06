@@ -18,18 +18,15 @@ from commonTools import *
 
 ######
 # Required Files
-# input file is cd3 or vcn-info.properties; if vcn-info.properties then Code will read input dhcp file name from properties file
-# Dhcp options defined in "ini" format.
-# the Section name of the ini file becomes the "dhcp rule name" with vcn_name as the prefix
-# The script expects a "default" section.
-# Optionally - name the dhcp section the same as the subnet name - and when creating subnets - the subnet will point to this dhcp option.
+# input file is cd3 , A prefix for the tf files generated- ex: <prefix>_dhcp.tf
+# A Config file
 # Outdir
 ######
 
 
 parser = argparse.ArgumentParser(description="Create DHCP options terraform file")
 parser.add_argument("inputfile",
-                    help="Full Path of input file. It could be either the properties file eg vcn-info.properties or CD3 excel file")
+                    help="Full Path of input file. It could be CD3 excel file")
 parser.add_argument("outdir", help="Output directory for creation of TF files")
 parser.add_argument("prefix", help="customer name/prefix for all file names")
 parser.add_argument("--modify_network", help="Modify: true or false", required=False)
@@ -170,57 +167,9 @@ if ('.xls' in args.inputfile):
             tempStr.update(tempdict)
         processDHCP(tempStr)
 
-
-elif ('.properties' in args.inputfile):
-    print("Input is vcn-info.properties")
-
-    config = configparser.RawConfigParser()
-    config.optionxform = str
-    config.read(args.inputfile)
-    # sections=config.sections()
-
-    all_regions = config.get('Default', 'regions')
-    all_regions = all_regions.split(",")
-    all_regions = [x.strip().lower() for x in all_regions]
-    for reg in all_regions:
-        tfStr[reg] = ''
-
-    # Get VCN and DHCP file info from VCN_INFO section
-    vcns = config.options('VCN_INFO')
-
-    for vcn in vcns:
-        vcn_data = config.get('VCN_INFO', vcn)
-        vcn_data = vcn_data.split(',')
-        vcn_name = vcn
-        region = vcn_data[0].strip().lower()
-        if region not in all_regions:
-            print("Invalid Region")
-            exit(1)
-        compartment_var_name = vcn_data[12].strip()
-        vcn_dhcp_file = vcn_data[8].strip().lower()
-        ### Read the DHCP file
-        dhcpfile = configparser.RawConfigParser()
-        file_read = dhcpfile.read(vcn_dhcp_file)
-        if (len(file_read) != 1):
-            print(
-                "input dhcp file " + vcn_dhcp_file + " for VCN " + vcn_name + " could not be opened. Please check if it exists. Skipping DHCP TF creation for this VCN.")
-            continue
-        dhcp_sections = dhcpfile.sections()
-        for dhcp_sec in dhcp_sections:
-            serverType = dhcpfile.get(dhcp_sec, 'serverType')
-            search_domain = dhcpfile.get(dhcp_sec, 'search_domain')
-            custom_dns_servers = ""
-            try:
-                custom_dns_servers = dhcpfile.get(dhcp_sec, 'custom_dns_servers')
-            except Exception as e:
-                print()
-
-            processDHCP(region, vcn_name, dhcp_sec, compartment_var_name, serverType, custom_dns_servers, search_domain)
-
 else:
-    print("Invalid input file format; Acceptable formats: .xls, .xlsx, .properties")
+    print("Invalid input file format; Acceptable formats: .xls, .xlsx")
 
-dhcpdata = {}
 if (modify_network == 'true'):
     for reg in ct.all_regions:
         reg_out_dir = outdir + "/" + reg

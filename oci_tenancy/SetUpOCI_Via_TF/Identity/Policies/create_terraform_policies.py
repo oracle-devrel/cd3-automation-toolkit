@@ -22,7 +22,7 @@ from commonTools import *
 
 
 parser = argparse.ArgumentParser(description="Create Compartments terraform file")
-parser.add_argument("inputfile", help="Full Path of input file. It could be either the csv file or CD3 excel file")
+parser.add_argument("inputfile", help="Full Path of input file. It could be CD3 excel file")
 parser.add_argument("outdir", help="Output directory for creation of TF files")
 parser.add_argument("prefix", help="customer name/prefix for all file names")
 parser.add_argument("--configFileName", help="Config file name", required=False)
