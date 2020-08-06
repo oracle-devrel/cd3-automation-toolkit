@@ -55,7 +55,7 @@ tagkeytemp={}
 # Creates the namespaces
 if ('.xlsx' in filename):
 
-    df = pd.read_excel(filename, sheet_name='Tags', skiprows=1)
+    df = pd.read_excel(filename, sheet_name='Tags', skiprows=1, dtype=object)
     df = df.dropna(how='all')
     df = df.reset_index(drop=True)
 
@@ -66,6 +66,8 @@ if ('.xlsx' in filename):
         eachregion = str(eachregion).strip().lower()
         if (eachregion in commonTools.endNames):
             break
+        if eachregion == 'nan':
+            continue
         if eachregion not in ct.all_regions:
             print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
             exit()
@@ -121,7 +123,7 @@ if ('.xlsx' in filename):
             print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
             exit(1)
 
-        if str(df.loc[i, 'Default Tag']) == "1.0" or str(df.loc[i, 'Default Tag']) == "true":
+        if str(df.loc[i, 'Default Tag']).strip() == "1.0" or str(df.loc[i, 'Default Tag']).lower().strip() == "true":
             if str(df.loc[i,'Default Tag Value']) == 'nan':
                 print("\nERROR!! Default Tag Value cannot be left empty when Default Tag is set to TRUE...Exiting!")
                 exit()
@@ -131,22 +133,13 @@ if ('.xlsx' in filename):
             # Column value
             columnvalue = str(df[columnname][i]).strip()
 
-            if (columnvalue.lower() == 'nan'):
-                columnvalue = ""
-
-            if columnvalue == '1.0' or  columnvalue == '0.0':
-                if columnname != 'Cost Tracking' or columnname != 'Default Tag' :
-                    if columnvalue == '1.0':
-                        columnvalue = "true"
-                    else:
-                        columnvalue = "false"
+            # Check for boolean/null in column values
+            columnvalue = commonTools.check_columnvalue(columnvalue)
 
             if "::" in columnvalue:
                 if columnname != "Compartment Name" and columnname != 'Validator':
-                    columnname = commonTools.check_column_headers(columnname)
-                    multivalues = columnvalue.split("::")
-                    multivalues = [str(part).strip() for part in multivalues if part]
-                    tempdict = {columnname: multivalues}
+                    # Check for multivalued columns
+                    tempdict = commonTools.check_multivalues_columnvalue(columnvalue, columnname, tempdict)
 
             if columnname in commonTools.tagColumns:
                 tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)
@@ -179,9 +172,7 @@ if ('.xlsx' in filename):
                 tempdict = {'description_keys' : description_keys}
 
             if columnname == 'Cost Tracking':
-                if columnvalue == '1.0':
-                    columnvalue = "true"
-                else:
+                if str(columnvalue).lower().strip() != 'true':
                     columnvalue = "false"
 
             if columnname == 'Validator':

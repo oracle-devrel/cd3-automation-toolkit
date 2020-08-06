@@ -175,7 +175,7 @@ if('.xls' in filename):
 	vcnInfo = parseVCNInfo(filename)
 	vcns = parseVCNs(filename)
 
-	df = pd.read_excel(filename, sheet_name='Subnets',skiprows=1)
+	df = pd.read_excel(filename, sheet_name='Subnets',skiprows=1,dtype=object)
 	df = df.dropna(how='all')
 	df = df.reset_index(drop=True)
 
@@ -231,21 +231,11 @@ if('.xls' in filename):
 			# Column value
 			columnvalue = str(df[columnname][i]).strip()
 
-			if columnvalue == '1.0' or columnvalue == '0.0':
-				if columnvalue == '1.0':
-					columnvalue = "true"
-				else:
-					columnvalue = "false"
+			# Check for boolean/null in column values
+			columnvalue = commonTools.check_columnvalue(columnvalue)
 
-			if (columnvalue.lower() == 'nan'):
-				columnvalue = ""
-
-			if "::" in columnvalue:
-				if columnname != 'Compartment Name':
-					columnname = commonTools.check_column_headers(columnname)
-					multivalues = columnvalue.split("::")
-					multivalues = [str(part).strip() for part in multivalues if part]
-					tempdict = {columnname: multivalues}
+			# Check for multivalued columns
+			tempdict = commonTools.check_multivalues_columnvalue(columnvalue, columnname, tempdict)
 
 			if columnname in commonTools.tagColumns:
 				tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)

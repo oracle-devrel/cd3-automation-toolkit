@@ -135,6 +135,33 @@ class commonTools():
         var_name = re.sub('_+', '_', var_name).lower()
         return var_name
 
+    # Process ColumnValues
+    def check_columnvalue(columnvalue):
+
+        if str(columnvalue).lower() == 'true' or str(columnvalue).lower() == 'false':
+            columnvalue = str(columnvalue).lower()
+
+        if (columnvalue.lower() == 'nan'):
+            columnvalue = ""
+
+        return columnvalue
+
+    #Process column values with ::
+    def check_multivalues_columnvalue(columnvalue,columnname,tempdict):
+        columnvalue = str(columnvalue).strip()
+        if "::" in columnvalue:
+            if ".Flex" in columnvalue:
+                columnname = commonTools.check_column_headers(columnname)
+                multivalues = columnvalue.split("::")
+                multivalues = [str(part).strip() for part in multivalues if part]
+                tempdict = {columnname: multivalues}
+            elif columnname != 'Compartment Name':
+                columnname = commonTools.check_column_headers(columnname)
+                multivalues = columnvalue.split("::")
+                multivalues = [str(part).strip() for part in multivalues if part]
+                tempdict = {columnname: multivalues}
+        return tempdict
+
     # Split values for tagging
     def split_tag_values(columnname, columnvalue, tempdict):
         columnvalue = columnvalue.replace("\n", "")

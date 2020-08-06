@@ -73,7 +73,7 @@ def travel(parent, keys, values, c):
 if ('.xls' in args.inputfile):
 
     # Read cd3 using pandas dataframe
-    df = pd.read_excel(args.inputfile, sheet_name='Compartments', skiprows=1)
+    df = pd.read_excel(args.inputfile, sheet_name='Compartments', skiprows=1, dtype=object)
 
     # Remove empty rows
     df = df.dropna(how='all')
@@ -125,23 +125,17 @@ if ('.xls' in args.inputfile):
 
         var_c_name = ""
         for columnname in dfcolumns:
+
             # Column value
             columnvalue = str(df[columnname][i]).strip()
 
-            if columnvalue == '1.0' or  columnvalue == '0.0':
-                if columnvalue == '1.0':
-                    columnvalue = "true"
-                else:
-                    columnvalue = "false"
+            #Check for boolean/null in column values
+            columnvalue = commonTools.check_columnvalue(columnvalue)
 
-            if (columnvalue.lower() == 'nan'):
-                columnvalue = ""
             if "::" in columnvalue:
                 if columnname != "Parent Compartment":
-                    columnname = commonTools.check_column_headers(columnname)
-                    multivalues = columnvalue.split("::")
-                    multivalues = [str(part).strip() for part in multivalues if part]
-                    tempdict = {columnname: multivalues}
+                    # Check for multivalued columns
+                    tempdict = commonTools.check_multivalues_columnvalue(columnvalue, columnname, tempdict)
 
             if columnname in commonTools.tagColumns:
                 tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)

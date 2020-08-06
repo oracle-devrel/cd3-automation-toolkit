@@ -141,8 +141,6 @@ if ('.xls' in secrulesfilename):
     totalRowCount = sum(1 for row in csv.DictReader(skipCommentedLine(open('out.csv'))))
     i = 0
 
-
-
     for reg in ct.all_regions:
         if (os.path.exists(outdir + "/" + reg)):
             defaultname[reg] = open(outdir + "/" + reg + "/VCNs_Default_SecList.tf", "w")
@@ -197,18 +195,11 @@ if ('.xls' in secrulesfilename):
                 # Column value
                 columnvalue = str(row[columnname].strip())
 
-                if columnvalue == 'True' or columnvalue == 'TRUE' or columnvalue == 'False' or columnvalue == 'FALSE':
-                    columnvalue = columnvalue.lower()
+                # Check for boolean/null in column values
+                columnvalue = commonTools.check_columnvalue(columnvalue)
 
-                if (columnvalue.lower() == 'nan'):
-                    columnvalue = ""
-
-                if "::" in columnvalue:
-                    if columnname != 'Compartment Name':
-                        columnname = commonTools.check_column_headers(columnname)
-                        multivalues = columnvalue.split("::")
-                        multivalues = [str(part).strip() for part in multivalues if part]
-                        tempdict = {columnname: multivalues}
+                # Check for multivalued columns
+                tempdict = commonTools.check_multivalues_columnvalue(columnvalue, columnname, tempdict)
 
                 if columnname in commonTools.tagColumns:
                     tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)

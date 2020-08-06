@@ -330,7 +330,7 @@ if ('.xls' in filename):
         dhcpStr[reg] = ''
 
     # Read cd3 using pandas dataframe
-    df = pd.read_excel(filename, sheet_name='VCNs', skiprows=1)
+    df = pd.read_excel(filename, sheet_name='VCNs', skiprows=1, dtype = object)
 
     # Remove empty rows
     df = df.dropna(how='all')
@@ -368,24 +368,14 @@ if ('.xls' in filename):
             # Column value
             columnvalue = str(df[columnname][i]).strip()
 
-            if (columnvalue.lower() == 'nan'):
-                columnvalue = ""
+            #Check for boolean/null in column values
+            columnvalue = commonTools.check_columnvalue(columnvalue)
 
-            if "::" in columnvalue:
-                if columnname != "Compartment Name":
-                    columnname = commonTools.check_column_headers(columnname)
-                    multivalues = columnvalue.split("::")
-                    multivalues = [str(part).strip() for part in multivalues if part]
-                    tempdict = {columnname: multivalues}
+            #Check for multivalued columns
+            tempdict = commonTools.check_multivalues_columnvalue(columnvalue,columnname,tempdict)
 
             if columnname in commonTools.tagColumns:
                 tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)
-
-            if columnvalue == '1.0' or  columnvalue == '0.0':
-                if columnvalue == '1.0':
-                    columnvalue = "true"
-                else:
-                    columnvalue = "false"
 
             if columnname == 'Compartment Name':
                 compartment_var_name = columnvalue.strip()

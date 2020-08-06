@@ -57,7 +57,7 @@ def create_route_rule_string(new_route_rule,tempStr):
 if('.xls' in inputfile):
     vcns=parseVCNs(inputfile)
 
-    df = pd.read_excel(inputfile, sheet_name='RouteRulesinOCI', skiprows=1)
+    df = pd.read_excel(inputfile, sheet_name='RouteRulesinOCI', skiprows=1,dtype=object)
     df = df.dropna(how='all')
     df = df.reset_index(drop=True)
 
@@ -114,26 +114,15 @@ if('.xls' in inputfile):
             # Column value
             columnvalue = str(df[columnname][i]).strip()
 
-            if columnvalue == '1.0' or columnvalue == '0.0':
-                if columnvalue == '1.0':
-                    columnvalue = "true"
-                else:
-                    columnvalue = "false"
+            #Check for boolean/null in column values
+            columnvalue = commonTools.check_columnvalue(columnvalue)
 
-            if (columnvalue.lower() == 'nan'):
-                columnvalue = ""
+            #Check for multivalued columns
+            tempdict = commonTools.check_multivalues_columnvalue(columnvalue,columnname,tempdict)
 
             if columnname in commonTools.tagColumns:
                 tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)
                 tempStr.update(tempdict)
-
-            if "::" in columnvalue:
-                if columnname != 'Compartment Name':
-                    columnname = commonTools.check_column_headers(columnname)
-                    multivalues = columnvalue.split("::")
-                    multivalues = [str(part).strip() for part in multivalues if part]
-                    tempdict = {columnname: multivalues}
-                    tempStr.update(tempdict)
 
             if columnname == 'Compartment Name':
                 compartment_tf_name = commonTools.check_tf_variable(columnvalue)

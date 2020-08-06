@@ -39,7 +39,7 @@ if('.csv' in filename):
 
 if ('.xls' in filename):
 
-    df = pd.read_excel(filename, sheet_name='Instances',skiprows=1)
+    df = pd.read_excel(filename, sheet_name='Instances',skiprows=1, dtype = object)
     df = df.dropna(how='all')
     df = df.reset_index(drop=True)
 

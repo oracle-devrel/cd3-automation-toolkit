@@ -94,7 +94,7 @@ def fss_exports(i, df, tempStr):
                 idsquash_1 = "NONE"
             if str(require_ps_port_1).lower() == NaNstr.lower():
                 require_ps_port_1 = "false"
-            elif str(require_ps_port_1).lower() == "true" or require_ps_port_1 == "TRUE" or df.loc[i, 'Require PS Port (true|false)'] == 1.0:
+            elif str(require_ps_port_1).lower() == "true" or require_ps_port_1 == "TRUE" or str(df.loc[i, 'Require PS Port (true|false)']) == 1.0:
                 require_ps_port_1 = "true"
             else:
                 require_ps_port_1 = "false"
@@ -121,7 +121,7 @@ if ('.csv' in filename):
     excel_writer.save()
     filename = 'tmp_to_excel.xlsx'
 
-df = pd.read_excel(filename, sheet_name='FSS', skiprows=1)
+df = pd.read_excel(filename, sheet_name='FSS', skiprows=1, dtype=object)
 df = df.dropna(how='all')
 df = df.reset_index(drop=True)
 
@@ -174,26 +174,15 @@ for i in df.index:
         # Column value
         columnvalue = str(df[columnname][i]).strip()
 
-        if columnvalue == '1.0' or columnvalue == '0.0':
-            if columnname != "IDSquash (NONE|ALL|ROOT)":
-                if columnvalue == '1.0':
-                    columnvalue = "true"
-                else:
-                    columnvalue = "false"
+        # Check for boolean/null in column values
+        columnvalue = commonTools.check_columnvalue(columnvalue)
 
-        if (columnvalue.lower() == 'nan'):
-            columnvalue = ""
+        # Check for multivalued columns
+        tempdict = commonTools.check_multivalues_columnvalue(columnvalue, columnname, tempdict)
 
         if columnname in commonTools.tagColumns:
             tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)
             tempStr.update(tempdict)
-
-        if "::" in columnvalue:
-            if columnname != 'Compartment Name':
-                columnname = commonTools.check_column_headers(columnname)
-                multivalues = columnvalue.split("::")
-                multivalues = [str(part).strip() for part in multivalues if part]
-                tempdict = {columnname: multivalues}
 
         if columnname == 'Compartment Name':
             compartment_tf_name = commonTools.check_tf_variable(columnvalue)
@@ -240,7 +229,6 @@ for i in df.index:
                 columnvalue = int(columnvalue)
             gid.append(columnvalue)
 
-
         if columnname == "UID":
             columnname = commonTools.check_column_headers(columnname)
             if str(columnvalue).lower() == "nan" or str(columnvalue) == "":
@@ -255,7 +243,6 @@ for i in df.index:
                 columnvalue = "NONE"
             idsquash.append(columnvalue)
             tempdict = {'idsquash': columnvalue}
-
 
         if columnname == "Require PS Port (true|false)":
             columnname = "require_ps_port"
