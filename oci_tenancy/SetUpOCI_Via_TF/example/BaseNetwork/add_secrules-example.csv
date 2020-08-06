@@ -1,4 +1,0 @@
-# Rows after <END> or <end> will not be processed;
-SubnetName/SecurityListName,RuleType,Protocol,isStateless,Source,SPortMin,SPortMax,Destination,DPortMin,DPortMax,ICMPType,ICMPCode,Region
-qa-app,ingress,tcp,FALSE,10.89.0.0/16,,,,123,234,,Ashburn
-<END>

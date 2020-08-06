@@ -1,3 +1,0 @@
-#Valid Values for source or destination type: service|cidr|nsg
-Region,Compartment Name,VCN Name,NSGName,Direction,Protocol,isStateless,SourceType,Source,DestType,Destination,SPortMin,SPortMax,DPortMin,DPortMax,ICMPType,ICMPCode
-Ashburn,Networking,ASHProd-VCN,ash-nsg1,egress,all,False,,,service,oci-phx-objectstorage,,,,,,

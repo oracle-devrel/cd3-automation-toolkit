@@ -1,3 +1,0 @@
-#Columns: Region, Compartment Name, Availability Domain, MountTarget Name, MountTarget SubnetName, FSS name, Path are mandatory. Default value for sourceCIDR- 0.0.0.0/0, Access- READ_ONLY, GID- 65534, UID- 65534, IDSquash- NONE and require_ps_port- false
-Region,Compartment Name,Availability Domain,MountTarget Name,MountTarget SubnetName,MountTarget IP,MountTarget Hostname,Max FSS Capacity (in bytes),Max FSS inodes,FSS Name,Path,sourceCIDR,Access (READ_ONLY|READ_WRITE),GID,UID,IDSquash (NONE|ALL|ROOT),require_ps_port (true|false)
-Ashburn,Demo1,AD1,MT1,test,,,51200,51200,FSS1,/fss/,,,65531,,ROOT,true
