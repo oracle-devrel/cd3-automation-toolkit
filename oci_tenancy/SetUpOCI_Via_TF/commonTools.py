@@ -11,6 +11,7 @@ from openpyxl.styles import Alignment
 from openpyxl.styles import Border
 from openpyxl.styles import Side
 import re
+import collections
 
 
 class commonTools():
@@ -178,6 +179,23 @@ class commonTools():
             multivalues = [str(part).strip() for part in multivalues if part]
             tempdict = {columnname: [multivalues]}
         return tempdict
+
+    #Read rows from CD3
+    def read_cd3(cd3file, sheet_name):
+        if (".xls" not in cd3file or ".xlsx" not in cd3file):
+            print("Invalid CD3 Format..Exiting!!!")
+            exit()
+        df = pd.read_excel(cd3file, sheet_name=sheet_name, skiprows=1, dtype=object)
+        yield df
+        book = load_workbook(cd3file)
+        sheet = book[sheet_name]
+        values_for_column = collections.OrderedDict()
+        # values_for_column={}
+        for j in range(0, sheet.max_column):
+            col_name = sheet.cell(row=2, column=j + 1).value
+            if (type(col_name) == str):
+                values_for_column[col_name] = []
+        yield values_for_column
 
     # Write exported  rows to cd3
     def write_to_cd3(rows, cd3file, sheet_name):

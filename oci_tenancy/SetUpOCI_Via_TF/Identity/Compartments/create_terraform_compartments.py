@@ -1,60 +1,23 @@
 #!/usr/bin/python3
-# Author: Suruchi
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
+#
+# This script will produce a Terraform file that will be used to set up OCI core components
+# Compartments
+#
+# Author: Suruchi Singla
 # Oracle Consulting
-# suruchi.singla@oracle.com
-
+#
 
 import sys
 import argparse
-import pandas as pd
 import os
 from jinja2 import Environment, FileSystemLoader
-
 sys.path.append(os.getcwd() + "/../..")
 from commonTools import *
 
 ######
-# Required Inputs- Either properties file: vcn-info.properties or CD3 excel file AND Outfile
-# if properties file is the input then Code will read input compartment file name from Default Section
-# Compartments are defined in csv format
-# outfile is the name of output terraform file generated
+# Required Inputs-CD3 excel file, Config file, prefix AND outdir
 ######
-
-## Start Processing
-
-parser = argparse.ArgumentParser(description="Create Compartments terraform file")
-parser.add_argument("inputfile", help="Full Path of input file. It could be CD3 excel file")
-parser.add_argument("outdir", help="Output directory for creation of TF files")
-parser.add_argument("prefix", help="customer name/prefix for all file names")
-parser.add_argument("--configFileName", help="Config file name", required=False)
-
-if len(sys.argv) < 3:
-    parser.print_help()
-    sys.exit(1)
-
-args = parser.parse_args()
-
-# Declare variables
-filename = args.inputfile
-outdir = args.outdir
-prefix = args.prefix
-if args.configFileName is not None:
-    configFileName = args.configFileName
-else:
-    configFileName = ""
-
-ct = commonTools()
-ct.get_subscribedregions(configFileName)
-
-outfile = {}
-oname = {}
-tfStr = {}
-c = 0
-
-# Load the template file
-file_loader = FileSystemLoader('templates')
-env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
-template = env.get_template('compartments-template')
 
 # reversal path function
 def travel(parent, keys, values, c):
@@ -70,17 +33,49 @@ def travel(parent, keys, values, c):
 
 
 # If input in cd3 file
-if ('.xls' in args.inputfile):
+def main():
+
+    # Read the arguments
+    parser = argparse.ArgumentParser(description="Create Compartments terraform file")
+    parser.add_argument("inputfile", help="Full Path of input file. It could be CD3 excel file")
+    parser.add_argument("outdir", help="Output directory for creation of TF files")
+    parser.add_argument("prefix", help="customer name/prefix for all file names")
+    parser.add_argument("--configFileName", help="Config file name", required=False)
+
+    if len(sys.argv) < 3:
+        parser.print_help()
+        sys.exit(1)
+
+    args = parser.parse_args()
+
+    # Declare variables
+    filename = args.inputfile
+    outdir = args.outdir
+    prefix = args.prefix
+    if args.configFileName is not None:
+        configFileName = args.configFileName
+    else:
+        configFileName = ""
+
+    ct = commonTools()
+    ct.get_subscribedregions(configFileName)
+
+    outfile = {}
+    oname = {}
+    tfStr = {}
+    c = 0
+
+    # Load the template file
+    file_loader = FileSystemLoader('templates')
+    env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
+    template = env.get_template('compartments-template')
 
     # Read cd3 using pandas dataframe
-    df = pd.read_excel(args.inputfile, sheet_name='Compartments', skiprows=1, dtype=object)
+    df, col_headers = commonTools.read_cd3(filename, "Compartments")
 
     # Remove empty rows
     df = df.dropna(how='all')
     df = df.reset_index(drop=True)
-
-    # To handle duplicates during export process
-    # df=df.drop_duplicates(ignore_index=True)
 
     # List of the column headers
     dfcolumns = df.columns.values.tolist()
@@ -137,6 +132,7 @@ if ('.xls' in args.inputfile):
                     # Check for multivalued columns
                     tempdict = commonTools.check_multivalues_columnvalue(columnvalue, columnname, tempdict)
 
+            # Process Defined and Freeform Tags
             if columnname in commonTools.tagColumns:
                 tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)
 
@@ -212,19 +208,20 @@ if ('.xls' in args.inputfile):
         # Write all info to TF string; Render template
         tfStr[reg] = tfStr[reg] + template.render(tempStr)
 
-else:
-    print("Invalid input file format; Acceptable formats: .xls, .xlsx")
-    exit()
+    # Write TF string to the file in respective region directory
+    for reg in ct.all_regions:
+        reg_out_dir = outdir + "/" + reg
+        if not os.path.exists(reg_out_dir):
+            os.makedirs(reg_out_dir)
+        outfile[reg] = reg_out_dir + "/" + prefix + '-compartments.tf'
 
-# Write TF string to the file in respective region directory
-for reg in ct.all_regions:
-    reg_out_dir = outdir + "/" + reg
-    if not os.path.exists(reg_out_dir):
-        os.makedirs(reg_out_dir)
-    outfile[reg] = reg_out_dir + "/" + prefix + '-compartments.tf'
+        if (tfStr[reg] != ''):
+            oname[reg] = open(outfile[reg], 'w')
+            oname[reg].write(tfStr[reg])
+            oname[reg].close()
+            print(outfile[reg] + " containing TF for compartments has been created for region " + reg)
 
-    if (tfStr[reg] != ''):
-        oname[reg] = open(outfile[reg], 'w')
-        oname[reg].write(tfStr[reg])
-        oname[reg].close()
-        print(outfile[reg] + " containing TF for compartments has been created for region " + reg)
+if __name__ == '__main__':
+
+    # Execution of the code begins here
+    main()
