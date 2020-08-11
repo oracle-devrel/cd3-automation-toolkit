@@ -1,62 +1,64 @@
 #!/usr/bin/python3
-import csv
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
+#
+# This script will produce a Terraform file that will be used to set up OCI core components
+# Instances
+#
+# Author: Suruchi Singla
+# Oracle Consulting
+#
+
 import sys
 import argparse
-import re
-import pandas as pd
 import os
-from os import path
-sys.path.append(os.getcwd()+"/../..")
+sys.path.append(os.getcwd() + "/../..")
 from commonTools import *
 from jinja2 import Environment, FileSystemLoader
 
-ADS = ["AD1", "AD2", "AD3"]
-
-parser = argparse.ArgumentParser(description="Creates Instances TF file")
-parser.add_argument("file", help="Full Path of CD3 excel file. eg  CD3-template.xlsx in example folder")
-parser.add_argument("outdir", help="directory path for output tf files ")
-parser.add_argument("--configFileName", help="Config file name", required=False)
-
-if len(sys.argv) == 1:
-    parser.print_help()
-    sys.exit(1)
-
-if len(sys.argv) < 2:
-    parser.print_help()
-    sys.exit(1)
-
-args = parser.parse_args()
-filename = args.file
-outdir = args.outdir
-
-if args.configFileName is not None:
-    configFileName = args.configFileName
-else:
-    configFileName=""
-
-ct = commonTools()
-ct.get_subscribedregions(configFileName)
-
-#Load the template file
-file_loader = FileSystemLoader('templates')
-env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
-template = env.get_template('instance-template')
-
 #If input is CD3 excel file
-if('.xls' in filename):
+def main():
 
-    df = pd.read_excel(filename, sheet_name='Instances',skiprows=1, dtype = object)
+    # Read the input arguments
+    parser = argparse.ArgumentParser(description="Creates Instances TF file")
+    parser.add_argument("file", help="Full Path of CD3 excel file. eg  CD3-template.xlsx in example folder")
+    parser.add_argument("outdir", help="directory path for output tf files ")
+    parser.add_argument("--configFileName", help="Config file name", required=False)
+
+    ADS = ["AD1", "AD2", "AD3"]
+
+    if len(sys.argv) == 1:
+        parser.print_help()
+        sys.exit(1)
+
+    if len(sys.argv) < 2:
+        parser.print_help()
+        sys.exit(1)
+
+    args = parser.parse_args()
+    filename = args.file
+    outdir = args.outdir
+
+    if args.configFileName is not None:
+        configFileName = args.configFileName
+    else:
+        configFileName = ""
+
+    ct = commonTools()
+    ct.get_subscribedregions(configFileName)
+
+    # Load the template file
+    file_loader = FileSystemLoader('templates')
+    env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
+    template = env.get_template('instance-template')
+
+    # Read cd3 using pandas dataframe
+    df, col_headers = commonTools.read_cd3(filename, "Instances")
     df = df.dropna(how='all')
     df = df.reset_index(drop=True)
 
     # List of column headers
     dfcolumns = df.columns.values.tolist()
-
-    subnet_tf_name=''
-    shape=''
-    ocpus=''
     host_tf_name=''
-    compartment_var_name=''
 
     reg = df['Region'].unique()
 
@@ -74,7 +76,6 @@ if('.xls' in filename):
 
     for i in df.index:
         region = str(df.loc[i, 'Region'])
-
         region = region.strip().lower()
 
         if region in commonTools.endNames:
@@ -107,7 +108,6 @@ if('.xls' in filename):
             print("\nERROR!!! "+ hostname +" is missing ocpus for Flex shape....Exiting!")
             exit()
 
-
         # temporary dictionary1 and dictionary2
         tempStr = {}
         tempdict = {}
@@ -123,12 +123,13 @@ if('.xls' in filename):
             # Column value
             columnvalue = str(df[columnname][i]).strip()
 
-            #Check for boolean/null in column values
+            # Check for boolean/null in column values
             columnvalue = commonTools.check_columnvalue(columnvalue)
 
-            #Check for multivalued columns
+            # Check for multivalued columns
             tempdict = commonTools.check_multivalues_columnvalue(columnvalue,columnname,tempdict)
 
+            # Process Defined and Freeform Tags
             if columnname in commonTools.tagColumns:
                 tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)
 
@@ -191,14 +192,16 @@ if('.xls' in filename):
         # Write all info to TF string; Render template
         hostStr = template.render(tempStr)
 
+        # Write to output
         file = outdir + "/" + region + "/" + host_tf_name + "_instance.tf"
         oname = open(file, "w+")
         print("Writing... " + file)
         oname.write(hostStr)
         oname.close()
-else:
-    print("Invalid input file format; Acceptable formats: .xls, .xlsx")
-    exit()
 
+if __name__ == '__main__':
+
+    # Execution of the code begins here
+    main()
 
 

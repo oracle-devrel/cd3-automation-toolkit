@@ -1,53 +1,61 @@
 #!/usr/bin/python3
-#Author: Suruchi
-#Oracle Consulting
-#suruchi.singla@oracle.com
-
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
+#
+# This script will produce a Terraform file that will be used to set up OCI core components
+# Dedicated Hosts
+#
+# Author: Suruchi Singla
+# Oracle Consulting
+#
 
 import sys
 import argparse
-import pandas as pd
 import os
-import datetime
-sys.path.append(os.getcwd()+"/../..")
+sys.path.append(os.getcwd() + "/../..")
 from commonTools import *
 from jinja2 import Environment, FileSystemLoader
 
-#Load the template file
-file_loader = FileSystemLoader('templates')
-env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
-template = env.get_template('dedicated-hosts-template')
+######
+# Required Inputs-CD3 excel file, Config file, prefix AND outdir
+######
 
-parser = argparse.ArgumentParser(description="Create Dedicated VM Hosts terraform file")
-parser.add_argument("inputfile", help="Full Path of input file. It could be the CD3 excel file")
-parser.add_argument("outdir", help="Output directory for creation of TF files")
-parser.add_argument("--configFileName", help="Config file name", required=False)
+# If input is CD3 excel file
+def main():
 
-if len(sys.argv)<2:
+    # Read input arguments
+    parser = argparse.ArgumentParser(description="Create Dedicated VM Hosts terraform file")
+    parser.add_argument("inputfile", help="Full Path of input file. It could be the CD3 excel file")
+    parser.add_argument("outdir", help="Output directory for creation of TF files")
+    parser.add_argument("--configFileName", help="Config file name", required=False)
+
+    # Load the template file
+    file_loader = FileSystemLoader('templates')
+    env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
+    template = env.get_template('dedicated-hosts-template')
+
+    if len(sys.argv) < 2:
         parser.print_help()
         sys.exit(1)
 
-args = parser.parse_args()
-filename=args.inputfile
-outdir=args.outdir
-if args.configFileName is not None:
-    configFileName = args.configFileName
-else:
-    configFileName=""
+    args = parser.parse_args()
+    filename = args.inputfile
+    outdir = args.outdir
+    if args.configFileName is not None:
+        configFileName = args.configFileName
+    else:
+        configFileName = ""
 
-ct = commonTools()
-ct.get_subscribedregions(configFileName)
+    ct = commonTools()
+    ct.get_subscribedregions(configFileName)
 
-outfile={}
-oname={}
-tfStr={}
-ADS = ["AD1", "AD2", "AD3"]
-x = datetime.datetime.now()
-date = x.strftime("%S").strip()
-unique_region=[]
+    outfile = {}
+    oname = {}
+    tfStr = {}
+    ADS = ["AD1", "AD2", "AD3"]
 
-if('.xls' in args.inputfile):
-    df = pd.read_excel(args.inputfile, sheet_name='DedicatedVMHosts',skiprows=1, dtype = object)
+    # Read cd3 using pandas dataframe
+    df, col_headers = commonTools.read_cd3(filename, "DedicatedVMHosts")
+
     df = df.dropna(how='all')
     df = df.reset_index(drop=True)
 
@@ -66,8 +74,6 @@ if('.xls' in args.inputfile):
         commonTools.backup_file(srcdir, resource, "dedicated_vm_hosts.tf")
 
         tfStr[eachregion] = ''
-
-    NaNstr = 'NaN'
 
     # List of column headers
     dfcolumns = df.columns.values.tolist()
@@ -98,12 +104,13 @@ if('.xls' in args.inputfile):
             # Column value
             columnvalue = str(df[columnname][i]).strip()
 
-            #Check for boolean/null in column values
+            # Check for boolean/null in column values
             columnvalue = commonTools.check_columnvalue(columnvalue)
 
-            #Check for multivalued columns
+            # Check for multivalued columns
             tempdict = commonTools.check_multivalues_columnvalue(columnvalue,columnname,tempdict)
 
+            # Process Defined and Freeform Tags
             if columnname in commonTools.tagColumns:
                 tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)
 
@@ -130,19 +137,22 @@ if('.xls' in args.inputfile):
 
         # Write all info to TF string; Render template
         tfStr[region] = tfStr[region] + template.render(tempStr)
-else:
-    print("Invalid input file format; Acceptable formats: .xls, .xlsx")
-    exit()
 
-for regions in unique_region:
-    regions=regions.lower()
-    for reg in ct.all_regions:
-        if reg == regions:
-            reg_out_dir = outdir + "/" + reg
-            outfile[reg] = reg_out_dir + "/dedicated_vm_hosts.tf"
+    # Write to output
+    for regions in unique_region:
+        regions=regions.lower()
+        for reg in ct.all_regions:
+            if reg == regions:
+                reg_out_dir = outdir + "/" + reg
+                outfile[reg] = reg_out_dir + "/dedicated_vm_hosts.tf"
 
-            if(tfStr[reg]!=''):
-                oname[reg]=open(outfile[reg],'w')
-                oname[reg].write(tfStr[reg])
-                oname[reg].close()
-                print(outfile[reg] + " containing TF for dedicated vm hosts has been created for region "+reg)
+                if(tfStr[reg]!=''):
+                    oname[reg]=open(outfile[reg],'w')
+                    oname[reg].write(tfStr[reg])
+                    oname[reg].close()
+                    print(outfile[reg] + " containing TF for dedicated vm hosts has been created for region "+reg)
+
+if __name__ == '__main__':
+
+    # Execution of the code begins here
+    main()

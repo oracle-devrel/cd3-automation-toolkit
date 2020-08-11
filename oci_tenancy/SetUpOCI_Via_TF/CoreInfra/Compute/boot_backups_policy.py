@@ -1,56 +1,57 @@
 #!/usr/bin/python3
-#Author: Shruthi Subramanian
-#shruthi.subramanian@oracle.com
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
+#
+# This script will produce a Terraform file that will be used to set up OCI core components
+# Boot Volumes - Backup Policy
+#
+# Author: Shruthi Subramanian
+# Oracle Consulting
+#
 
 import sys
 import argparse
-import pandas as pd
 import os
-import datetime
-from os import path
 sys.path.append(os.getcwd()+"/../..")
 from commonTools import *
 from jinja2 import Environment, FileSystemLoader
 
-x = datetime.datetime.now()
-date = x.strftime("%S").strip()
-
-parser = argparse.ArgumentParser(description="Attaches back up policy to Boot Volumes")
-parser.add_argument("file", help="Full Path of CD3 excel file. eg CD3-template.xlsx in example folder")
-parser.add_argument("outdir", help="directory path for output tf file ")
-parser.add_argument("--configFileName", help="Config file name", required=False)
-
-if len(sys.argv) == 1:
-    parser.print_help()
-    sys.exit(1)
-
-if len(sys.argv) < 2:
-    parser.print_help()
-    sys.exit(1)
-
-args = parser.parse_args()
-filename = args.file
-outdir = args.outdir
-if args.configFileName is not None:
-    configFileName = args.configFileName
-else:
-    configFileName=""
-ct = commonTools()
-ct.get_subscribedregions(configFileName)
-
-#Load the template file
-file_loader = FileSystemLoader('templates')
-env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
-template = env.get_template('boot-backup-policy-template')
-
-policy_file={}
-bootppolicy=''
-hostname_tf = ''
-
 # If the input is CD3
-if ('.xls' in filename):
+def main():
 
-    df = pd.read_excel(filename, sheet_name='Instances',skiprows=1, dtype = object)
+    # Read the arguments
+    parser = argparse.ArgumentParser(description="Attaches back up policy to Boot Volumes")
+    parser.add_argument("file", help="Full Path of CD3 excel file. eg CD3-template.xlsx in example folder")
+    parser.add_argument("outdir", help="directory path for output tf file ")
+    parser.add_argument("--configFileName", help="Config file name", required=False)
+
+    if len(sys.argv) == 1:
+        parser.print_help()
+        sys.exit(1)
+
+    if len(sys.argv) < 2:
+        parser.print_help()
+        sys.exit(1)
+
+    args = parser.parse_args()
+    filename = args.file
+    outdir = args.outdir
+    if args.configFileName is not None:
+        configFileName = args.configFileName
+    else:
+        configFileName = ""
+    ct = commonTools()
+    ct.get_subscribedregions(configFileName)
+
+    # Load the template file
+    file_loader = FileSystemLoader('templates')
+    env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
+    template = env.get_template('boot-backup-policy-template')
+
+    hostname_tf = ''
+
+    # Read cd3 using pandas dataframe
+    df, col_headers = commonTools.read_cd3(filename, "Instances")
+
     df = df.dropna(how='all')
     df = df.reset_index(drop=True)
 
@@ -129,11 +130,14 @@ if ('.xls' in filename):
         #Render template
         bootppolicy =  template.render(tempStr)
 
+        #Write to output
         file = outdir + "/" + region + "/" +hostname_tf+"-boot-backup-policy.tf"
         oname = open(file, "w+")
         print("Writing " + file)
         oname.write(bootppolicy)
         oname.close()
-else:
-    print("Invalid input file format; Acceptable formats: .xls, .xlsx")
-    exit()
+
+if __name__ == '__main__':
+
+    # Execution of the code begins here
+    main()

@@ -1,48 +1,58 @@
 #!/usr/bin/python3
-# Author: Murali Nagulakonda
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
+#
+# This script will produce a Terraform file that will be used to set up OCI core components
+# Block Volumes
+#
+# Author: Murali N V
 # Oracle Consulting
-# murali.nagulakonda.venkata@oracle.com
-
+#
 
 import sys
 import argparse
-import pandas as pd
 import os
 from jinja2 import Environment, FileSystemLoader
-
 sys.path.append(os.getcwd() + "/../..")
 from commonTools import *
 
-parser = argparse.ArgumentParser(description="Creates TF files for Block Volumes")
-parser.add_argument("file",help="Full Path to the CD3 excel file. eg CD3-template.xlsx in example folder")
-parser.add_argument("outdir", help="directory path for output tf files ")
-parser.add_argument("--configFileName", help="Config file name", required=False)
-
-if len(sys.argv) < 2:
-    parser.print_help()
-    sys.exit(1)
-
-args = parser.parse_args()
-filename = args.file
-outdir = args.outdir
-if args.configFileName is not None:
-    configFileName = args.configFileName
-else:
-    configFileName=""
-
-ct = commonTools()
-ct.get_subscribedregions(configFileName)
-
-ADS = ["AD1", "AD2", "AD3"]
-
-#Load the template file
-file_loader = FileSystemLoader('templates')
-env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
-template = env.get_template('block-volume-template')
+######
+# Required Inputs-CD3 excel file, Config file, prefix AND outdir
+######
 
 # If input is CD3 excel file
-if ('.xls' in filename):
-    df = pd.read_excel(filename, sheet_name='BlockVols',skiprows=1, dtype=object)
+def main():
+
+    # Read the arguments
+    parser = argparse.ArgumentParser(description="Creates TF files for Block Volumes")
+    parser.add_argument("file", help="Full Path to the CD3 excel file. eg CD3-template.xlsx in example folder")
+    parser.add_argument("outdir", help="directory path for output tf files ")
+    parser.add_argument("--configFileName", help="Config file name", required=False)
+
+    if len(sys.argv) < 2:
+        parser.print_help()
+        sys.exit(1)
+
+    args = parser.parse_args()
+    filename = args.file
+    outdir = args.outdir
+    if args.configFileName is not None:
+        configFileName = args.configFileName
+    else:
+        configFileName = ""
+
+    ct = commonTools()
+    ct.get_subscribedregions(configFileName)
+
+    ADS = ["AD1", "AD2", "AD3"]
+
+    # Load the template file
+    file_loader = FileSystemLoader('templates')
+    env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
+    template = env.get_template('block-volume-template')
+
+    # Read cd3 using pandas dataframe
+    df, col_headers = commonTools.read_cd3(filename, "BlockVols")
+
     df = df.dropna(how='all')
     df = df.reset_index(drop=True)
 
@@ -108,6 +118,7 @@ if ('.xls' in filename):
                 columnvalue = str(compartmentVarName)
                 tempdict = {'compartment_tf_name': columnvalue}
 
+            # Process Freeform Tags and Defined Tags
             if columnname in commonTools.tagColumns:
                 tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)
 
@@ -135,13 +146,16 @@ if ('.xls' in filename):
         #Render template
         tempStr = template.render(tempStr)
 
+        # Write TF string to output
         outfile = outdir + "/" + region + "/" + blockname_tf + "_blockvolume.tf"
         print("Writing " + outfile)
         oname = open(outfile, "w")
         oname.write(tempStr)
         oname.close()
-else:
-    print("Invalid input file format; Acceptable formats: .xls, .xlsx")
-    exit()
+
+if __name__ == '__main__':
+
+    # Execution of the code begins here
+    main()
 
 

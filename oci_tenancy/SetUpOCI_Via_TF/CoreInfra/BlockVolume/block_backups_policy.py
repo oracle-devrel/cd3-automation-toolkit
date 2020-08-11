@@ -1,54 +1,61 @@
 #!/usr/bin/python3
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
+#
+# This script will produce a Terraform file that will be used to set up OCI core components
+# Backup Policy - Block Volume
+#
 # Author: Shruthi Subramanian
-#shruthi.subramanian@oracle.com
+# Oracle Consulting
+#
+
 import sys
 import argparse
-import pandas as pd
 import os
-import datetime
-from os import path
 sys.path.append(os.getcwd()+"/../..")
 from commonTools import *
 from jinja2 import Environment, FileSystemLoader
 
-x = datetime.datetime.now()
-date = x.strftime("%S").strip()
+######
+# Required Inputs-CD3 excel file, Config file, prefix AND outdir
+######
 
-parser = argparse.ArgumentParser(description="Attaches back up policy to Block Volumes")
-parser.add_argument("file", help="Full Path of CD3 excel file. eg CD3-template.xlsx in example folder")
-parser.add_argument("outdir", help="directory path for output tf file ")
-parser.add_argument("--configFileName", help="Config file name", required=False)
+# If input in cd3 file
+def main():
 
-if len(sys.argv) == 1:
-    parser.print_help()
-    sys.exit(1)
+    # Read the arguments
+    parser = argparse.ArgumentParser(description="Attaches back up policy to Block Volumes")
+    parser.add_argument("file", help="Full Path of CD3 excel file. eg CD3-template.xlsx in example folder")
+    parser.add_argument("outdir", help="directory path for output tf file ")
+    parser.add_argument("--configFileName", help="Config file name", required=False)
 
-if len(sys.argv) < 2:
-    parser.print_help()
-    sys.exit(1)
+    if len(sys.argv) == 1:
+        parser.print_help()
+        sys.exit(1)
 
-args = parser.parse_args()
-filename = args.file
-outdir = args.outdir
+    if len(sys.argv) < 2:
+        parser.print_help()
+        sys.exit(1)
 
-if args.configFileName is not None:
-    configFileName = args.configFileName
-else:
-    configFileName=""
+    args = parser.parse_args()
+    filename = args.file
+    outdir = args.outdir
 
-ct = commonTools()
-ct.get_subscribedregions(configFileName)
+    if args.configFileName is not None:
+        configFileName = args.configFileName
+    else:
+        configFileName = ""
 
-#Load the template file
-file_loader = FileSystemLoader('templates')
-env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
-template = env.get_template('block-backup-policy-template')
+    ct = commonTools()
+    ct.get_subscribedregions(configFileName)
 
-policy_file={}
-backuppolicy=''
-if ('.xls' in filename):
+    # Load the template file
+    file_loader = FileSystemLoader('templates')
+    env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
+    template = env.get_template('block-backup-policy-template')
 
-    df = pd.read_excel(filename, sheet_name='BlockVols',skiprows=1, dtype=object)
+    # Read cd3 using pandas dataframe
+    df, col_headers = commonTools.read_cd3(filename, "BlockVols")
+
     df = df.dropna(how='all')
     df = df.reset_index(drop=True)
 
@@ -82,6 +89,7 @@ if ('.xls' in filename):
         datasource = env.get_template('datasource-template')
 
         fname=open(policy_data_file,"w+")
+
         # To add the 'data' resource - required for fetching the policy id
         fname.write(datasource.render())
         fname.close()
@@ -101,10 +109,10 @@ if ('.xls' in filename):
             # Column value
             columnvalue = str(df[columnname][i]).strip()
 
-            #Check for boolean/null in column values
+            # Check for boolean/null in column values
             columnvalue = commonTools.check_columnvalue(columnvalue)
 
-            #Check for multivalued columns
+            # Check for multivalued columns
             tempdict = commonTools.check_multivalues_columnvalue(columnvalue,columnname,tempdict)
 
             if (columnname == 'Block Name'):
@@ -124,11 +132,14 @@ if ('.xls' in filename):
         #Render template
         backuppolicy =  template.render(tempStr)
 
+        #Write to output file
         file = outdir + "/" + region + "/" + blockname_tf + "-backup-policy.tf"
         oname = open(file, "w+")
         print("Writing " + file)
         oname.write(backuppolicy)
         oname.close()
-else:
-    print("Invalid input file format; Acceptable formats: .xls, .xlsx")
-    exit()
+
+if __name__ == '__main__':
+
+    # Execution of the code begins here
+    main()
