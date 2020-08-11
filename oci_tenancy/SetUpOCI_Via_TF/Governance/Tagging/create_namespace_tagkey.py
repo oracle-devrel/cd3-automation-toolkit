@@ -1,61 +1,68 @@
 #!/usr/bin/python3
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
+#
+# This script will produce a Terraform file that will be used to set up OCI core components
+# Tags
+#
 # Author: Shruthi Subramanian
-# Create Tag Namespace, Default Tags and TagKeys from CD3 file
+# Oracle Consulting
+#
 
 import sys
 import argparse
 import pandas as pd
-import datetime
 import os
-from os import path
 sys.path.append(os.getcwd()+"/../..")
 from commonTools import *
 from jinja2 import Environment, FileSystemLoader
 
+######
+# Required Inputs-CD3 excel file, Config file AND outdir
+######
 
-parser = argparse.ArgumentParser(description="Create vars files for the each row in csv file.")
-parser.add_argument("file", help="Full Path of CD3 excel file. eg CD3-template.xlsx in example folder")
-parser.add_argument("outdir", help="directory path for output tf files ")
-parser.add_argument("--configFileName", help="Config file name", required=False)
+# If input in cd3 file
+def main():
 
-if len(sys.argv) == 1:
-    parser.print_help()
-    sys.exit(1)
+    # Read the arguments
+    parser = argparse.ArgumentParser(description="Create vars files for the each row in csv file.")
+    parser.add_argument("file", help="Full Path of CD3 excel file. eg CD3-template.xlsx in example folder")
+    parser.add_argument("outdir", help="directory path for output tf files ")
+    parser.add_argument("--configFileName", help="Config file name", required=False)
 
-if len(sys.argv) < 2:
-    parser.print_help()
-    sys.exit(1)
+    if len(sys.argv) == 1:
+        parser.print_help()
+        sys.exit(1)
 
-args = parser.parse_args()
-filename = args.file
-outdir = args.outdir
-if args.configFileName is not None:
-    configFileName = args.configFileName
-else:
-    configFileName=""
+    if len(sys.argv) < 2:
+        parser.print_help()
+        sys.exit(1)
 
-ct = commonTools()
-ct.get_subscribedregions(configFileName)
+    args = parser.parse_args()
+    filename = args.file
+    outdir = args.outdir
+    if args.configFileName is not None:
+        configFileName = args.configFileName
+    else:
+        configFileName = ""
 
-x = datetime.datetime.now()
-date = x.strftime("%f").strip()
+    ct = commonTools()
+    ct.get_subscribedregions(configFileName)
 
-# Load the template file
-file_loader = FileSystemLoader('templates')
-env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
-namespace = env.get_template('namespace-template')
-tagkey = env.get_template('key-template')
-defaulttag = env.get_template('default-tag-template')
+    # Load the template file
+    file_loader = FileSystemLoader('templates')
+    env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
+    namespace = env.get_template('namespace-template')
+    tagkey = env.get_template('key-template')
+    defaulttag = env.get_template('default-tag-template')
 
-tagnamespace_list={}
-defaulttagtemp={}
-namespacetemp={}
-tagkeytemp={}
+    tagnamespace_list = {}
+    defaulttagtemp = {}
+    namespacetemp = {}
+    tagkeytemp = {}
 
-# Creates the namespaces
-if ('.xlsx' in filename):
+    # Read cd3 using pandas dataframe
+    df, col_headers = commonTools.read_cd3(filename, "Tags")
 
-    df = pd.read_excel(filename, sheet_name='Tags', skiprows=1, dtype=object)
     df = df.dropna(how='all')
     df = df.reset_index(drop=True)
 
@@ -87,22 +94,16 @@ if ('.xlsx' in filename):
     tempStr = {}
     tempdict = {}
 
-    tmpstr=''
     namespace_tf_name=''
     key_tf_name=''
-    description=''
     description_keys=''
-    region=''
-    values_list=[]
 
     #fill the empty values with that in previous row.
-    dffill = df[['Region','Compartment Name','Tag Namespace','Namespace Description']]
+    dffill = df[['Region','Compartment Name','Tag Namespace']]
     dffill= dffill.fillna(method='ffill')
 
-    dfdrop = df[['Region','Compartment Name','Tag Namespace','Namespace Description']]
+    dfdrop = df[['Region','Compartment Name','Tag Namespace']]
     dfdrop = df.drop(dfdrop,axis=1)
-
-    pd.set_option('display.max_columns', 500)
 
     df = pd.concat([dffill, dfdrop], axis=1)
 
@@ -141,6 +142,7 @@ if ('.xlsx' in filename):
                     # Check for multivalued columns
                     tempdict = commonTools.check_multivalues_columnvalue(columnvalue, columnname, tempdict)
 
+            # Process Defined and Freeform Tags
             if columnname in commonTools.tagColumns:
                 tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)
 
@@ -199,33 +201,37 @@ if ('.xlsx' in filename):
             namespacetemp[region] = namespacetemp[region]+ namespace.render(tempStr)
             tagnamespace_list[region].append(namespace_tf_name)
 
+        # Write all info to TF string; Render template
         tagkeytemp[region] = tagkeytemp[region] + tagkey.render(tempStr)
-else:
-    print("Invalid input file format; Acceptable formats: .xls, .xlsx")
-    exit()
 
-for reg in ct.all_regions:
+    # Write TF string to the file in respective region directory
+    for reg in ct.all_regions:
 
-    if defaulttagtemp[reg] != '':
+        if defaulttagtemp[reg] != '':
 
-        outfile = outdir + "/" + reg + "/default-tags_tagging.tf"
-        oname = open(outfile, "w+")
-        print("Writing to ..."+outfile)
-        oname.write(defaulttagtemp[reg])
-        oname.close()
+            outfile = outdir + "/" + reg + "/default-tags_tagging.tf"
+            oname = open(outfile, "w+")
+            print("Writing to ..."+outfile)
+            oname.write(defaulttagtemp[reg])
+            oname.close()
 
-    if namespacetemp[reg] != '':
+        if namespacetemp[reg] != '':
 
-        outfile = outdir + "/" + reg + "/namespaces_tagging.tf"
-        oname = open(outfile, "w+")
-        print("Writing to ..."+outfile)
-        oname.write(namespacetemp[reg])
-        oname.close()
+            outfile = outdir + "/" + reg + "/namespaces_tagging.tf"
+            oname = open(outfile, "w+")
+            print("Writing to ..."+outfile)
+            oname.write(namespacetemp[reg])
+            oname.close()
 
-    if tagkeytemp[reg] != '':
+        if tagkeytemp[reg] != '':
 
-        outfile = outdir + "/" + reg + "/tag-keys_tagging.tf"
-        oname = open(outfile, "w+")
-        print("Writing to ..."+outfile)
-        oname.write(tagkeytemp[reg])
-        oname.close()
+            outfile = outdir + "/" + reg + "/tag-keys_tagging.tf"
+            oname = open(outfile, "w+")
+            print("Writing to ..."+outfile)
+            oname.write(tagkeytemp[reg])
+            oname.close()
+
+if __name__ == '__main__':
+
+    # Execution of the code begins here
+    main()
