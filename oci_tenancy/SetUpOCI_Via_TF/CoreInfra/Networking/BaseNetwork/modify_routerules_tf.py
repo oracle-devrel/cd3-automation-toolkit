@@ -1,8 +1,15 @@
 #!/usr/bin/python3
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
+#
+# This script will produce a Terraform file that will be used to set up OCI core components
+# Modify Route Table
+#
+# Author: Suruchi Singla
+# Oracle Consulting
+#
 
 import sys
 import argparse
-import pandas as pd
 import os
 sys.path.append(os.getcwd()+"/../../..")
 from commonTools import *
@@ -12,49 +19,53 @@ from jinja2 import Environment, FileSystemLoader
 # Takes in input  CD3 excel which contains routerules to be updated for the subnet and updates the routes tf file created using BaseNetwork TF generation.
 # ######
 
-#Load the template file
-file_loader = FileSystemLoader('templates')
-env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
-routerule = env.get_template('route-rule-template')
-defaultrt = env.get_template('default-route-table-template')
-routetable = env.get_template('route-table-template')
+# If the input is CD3
+def main():
 
-parser = argparse.ArgumentParser(description="Updates routelist for subnet. It accepts input file which contains new rules to be added to the existing rule list of the subnet.")
-parser.add_argument("inputfile", help="Required; Full Path to input route file (CD3 excel file) containing rules to be updated; See example folder for sample format: add_routes-example.txt")
-parser.add_argument("outdir",help="directory path for output tf files ")
-parser.add_argument("--configFileName", help="Config file name", required=False)
+    # Read the input arguments
+    parser = argparse.ArgumentParser(description="Updates routelist for subnet. It accepts input file which contains new rules to be added to the existing rule list of the subnet.")
+    parser.add_argument("inputfile", help="Required; Full Path to input route file (CD3 excel file) containing rules to be updated; See example folder for sample format: add_routes-example.txt")
+    parser.add_argument("outdir",help="directory path for output tf files ")
+    parser.add_argument("--configFileName", help="Config file name", required=False)
 
-if len(sys.argv) == 1:
-    parser.print_help()
-    sys.exit(1)
+    if len(sys.argv) == 1:
+        parser.print_help()
+        sys.exit(1)
 
-args = parser.parse_args()
-inputfile = args.inputfile
-outdir=args.outdir
-if args.configFileName is not None:
-    configFileName = args.configFileName
-else:
-    configFileName=""
+    args = parser.parse_args()
+    inputfile = args.inputfile
+    outdir=args.outdir
+    if args.configFileName is not None:
+        configFileName = args.configFileName
+    else:
+        configFileName=""
 
-ct = commonTools()
-ct.get_subscribedregions(configFileName)
+    ct = commonTools()
+    ct.get_subscribedregions(configFileName)
 
-subnets_done={}
-oname = None
-default_ruleStr={}
-defaultname={}
-default_rtables_done={}
-default_rule={}
+    #Load the template file
+    file_loader = FileSystemLoader('templates')
+    env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
+    routerule = env.get_template('route-rule-template')
+    defaultrt = env.get_template('default-route-table-template')
+    routetable = env.get_template('route-table-template')
 
-def create_route_rule_string(new_route_rule,tempStr):
-    new_route_rule = new_route_rule + routerule.render(tempStr)
-    return new_route_rule
+    subnets_done={}
+    oname = None
+    default_ruleStr={}
+    defaultname={}
+    default_rtables_done={}
+    default_rule={}
 
-#If input is CD3 excel file
-if('.xls' in inputfile):
+    def create_route_rule_string(new_route_rule,tempStr):
+        new_route_rule = new_route_rule + routerule.render(tempStr)
+        return new_route_rule
+
     vcns=parseVCNs(inputfile)
 
-    df = pd.read_excel(inputfile, sheet_name='RouteRulesinOCI', skiprows=1,dtype=object)
+    # Read cd3 using pandas dataframe
+    df, col_headers = commonTools.read_cd3(filename, "RouteRulesinOCI")
+
     df = df.dropna(how='all')
     df = df.reset_index(drop=True)
 
@@ -74,12 +85,10 @@ if('.xls' in inputfile):
     tempStr = {}
     tempdict = {}
     vcn_tf_name = ''
-    compartment_tf_name = ''
     obj_tf_name = ''
     display_name=''
     rt_tf_name=''
     dest_objs=[]
-    dest_obj=''
     tfStr = ''
 
     # List of the column headers
@@ -107,12 +116,13 @@ if('.xls' in inputfile):
             # Column value
             columnvalue = str(df[columnname][i]).strip()
 
-            #Check for boolean/null in column values
+            # Check for boolean/null in column values
             columnvalue = commonTools.check_columnvalue(columnvalue)
 
-            #Check for multivalued columns
+            # Check for multivalued columns
             tempdict = commonTools.check_multivalues_columnvalue(columnvalue,columnname,tempdict)
 
+            # Process Defined and Freeform Tags
             if columnname in commonTools.tagColumns:
                 tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)
                 tempStr.update(tempdict)
@@ -130,7 +140,7 @@ if('.xls' in inputfile):
                 tempdict = {'vcn_tf_name': vcn_tf_name,'rt_display' : display_name}
                 tempStr.update(tempdict)
 
-            #Check this code once
+            # Check this code once
             if columnname == 'Route Table Name':
                 if columnvalue == '':
                     continue
@@ -226,5 +236,8 @@ if('.xls' in inputfile):
         if (default_ruleStr[reg] != ''):
             defaultname[reg].write(default_ruleStr[reg])
             defaultname[reg].close()
-else:
-    print("Invalid input file format; Acceptable formats: .xls, .xlsx")
+
+if __name__ == '__main__':
+
+    # Execution of the code begins here
+    main()

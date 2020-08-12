@@ -1,14 +1,16 @@
 #!/usr/bin/python3
-#Author: Suruchi
-#Oracle Consulting
-#suruchi.singla@oracle.com
-
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
+#
+# This script will produce a Terraform file that will be used to set up OCI core components
+# Subnets
+#
+# Author: Suruchi Singla
+# Oracle Consulting
+#
 
 import sys
 import re
 import argparse
-import configparser
-import pandas as pd
 import shutil
 import datetime
 import os
@@ -16,157 +18,165 @@ sys.path.append(os.getcwd()+"/../../..")
 from jinja2 import Environment, FileSystemLoader
 from commonTools import *
 
-parser = argparse.ArgumentParser(description="Takes in a list of subnet names with format \"name,subnet CIDR,Availability Domain, Public|Private subnet,dhcp-options\". "
-											 "Create terraform files for subnets.")
-parser.add_argument("inputfile", help="Full Path of input file. eg  cd3 excel file")
-parser.add_argument("outdir", help="Output directory for creation of TF files")
-parser.add_argument("prefix", help="customer name/prefix for all file names")
-parser.add_argument("--modify_network", help="modify network: true or false", required=False)
-parser.add_argument("--configFileName", help="Config file name", required=False)
+######
+# Required Inputs-CD3 excel file, Config file, prefix AND outdir
+######
 
-if len(sys.argv)<3:
-        parser.print_help()
-        sys.exit(1)
+#If input is CD3
+def main():
 
-args = parser.parse_args()
-filename=args.inputfile
-outdir = args.outdir
-prefix=args.prefix
-if args.modify_network is not None:
-    modify_network = str(args.modify_network)
-else:
-    modify_network = "false"
-if args.configFileName is not None:
-    configFileName = args.configFileName
-else:
-    configFileName=""
+	# Read the input arguments
+	parser = argparse.ArgumentParser(description="Takes in a list of subnet names with format \"name,subnet CIDR,Availability Domain, Public|Private subnet,dhcp-options\". "
+												 "Create terraform files for subnets.")
+	parser.add_argument("inputfile", help="Full Path of input file. eg  cd3 excel file")
+	parser.add_argument("outdir", help="Output directory for creation of TF files")
+	parser.add_argument("prefix", help="customer name/prefix for all file names")
+	parser.add_argument("--modify_network", help="modify network: true or false", required=False)
+	parser.add_argument("--configFileName", help="Config file name", required=False)
 
-ct = commonTools()
-ct.get_subscribedregions(configFileName)
+	if len(sys.argv)<3:
+			parser.print_help()
+			sys.exit(1)
 
-
-fname = None
-outfile={}
-oname={}
-tfStr={}
-ADS = ["AD1", "AD2", "AD3"]
-
-#Load the template file
-file_loader = FileSystemLoader('templates')
-env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
-template = env.get_template('subnet-template')
-
-def processSubnet(tempStr):
-
-	region = tempStr['region'].lower().strip()
-	subnet = tempStr['cidr_block']
-	AD = tempStr['availability_domain'].strip()
-	if (AD.strip().lower() != 'regional'):
-		AD = AD.strip().upper()
-		ad = ADS.index(AD)
-		ad_name_int = ad + 1
-		ad_name = str(ad_name_int)
-		adString = "data.oci_identity_availability_domains.ADs.availability_domains.""" + str(ad) + """.name """
+	args = parser.parse_args()
+	filename=args.inputfile
+	outdir = args.outdir
+	prefix=args.prefix
+	if args.modify_network is not None:
+		modify_network = str(args.modify_network)
 	else:
-		ad_name = ""
-		adString = "\"\""
+		modify_network = "false"
+	if args.configFileName is not None:
+		configFileName = args.configFileName
+	else:
+		configFileName=""
 
-	tempStr['availability_domain'] = adString
+	ct = commonTools()
+	ct.get_subscribedregions(configFileName)
 
-	vcn_tf_name = commonTools.check_tf_variable(tempStr['vcn_name'].strip())
-	name = tempStr['subnet_name']
-	tempStr['vcn_tf_name'] = vcn_tf_name
-	if (vcnInfo.subnet_name_attach_cidr == 'y'):
-		if (str(ad_name) != ''):
-			name1 = name + "-ad" + str(ad_name)
-			namert = rt_name + "-ad" + str(ad_name)
+
+	fname = None
+	outfile={}
+	oname={}
+	tfStr={}
+	ADS = ["AD1", "AD2", "AD3"]
+
+	#Load the template file
+	file_loader = FileSystemLoader('templates')
+	env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
+	template = env.get_template('subnet-template')
+
+	def processSubnet(tempStr):
+
+		region = tempStr['region'].lower().strip()
+		subnet = tempStr['cidr_block']
+		AD = tempStr['availability_domain'].strip()
+		if (AD.strip().lower() != 'regional'):
+			AD = AD.strip().upper()
+			ad = ADS.index(AD)
+			ad_name_int = ad + 1
+			ad_name = str(ad_name_int)
+			adString = "data.oci_identity_availability_domains.ADs.availability_domains.""" + str(ad) + """.name """
 		else:
-			name1 = name
-			namert = rt_name
+			ad_name = ""
+			adString = "\"\""
 
-		display_name = name1 + "-" + subnet
-		rt_display_name=namert+ "-" + subnet
+		tempStr['availability_domain'] = adString
 
-	else:
-		display_name = name
-		rt_display_name=rt_name
-
-	tempStr['display_name'] = display_name
-	tempStr['rt_display_name'] = rt_display_name
-
-
-	sl_tf_names=[]
-	seclist_names = tempStr['sl_names']
-	if (vcnInfo.subnet_name_attach_cidr == 'y'):
-		for sl_name in seclist_names:
-			sl_name=str(sl_name).strip()
+		vcn_tf_name = commonTools.check_tf_variable(tempStr['vcn_name'].strip())
+		name = tempStr['subnet_name']
+		tempStr['vcn_tf_name'] = vcn_tf_name
+		if (vcnInfo.subnet_name_attach_cidr == 'y'):
 			if (str(ad_name) != ''):
-				namesl = str(sl_name) + "-ad" + str(ad_name)
+				name1 = name + "-ad" + str(ad_name)
+				namert = rt_name + "-ad" + str(ad_name)
 			else:
-				namesl = str(sl_name)
-			sl_display_name = namesl + "-" + subnet
-			sl_tf_name=vcn_name+"_"+sl_display_name
-			sl_tf_names.append(commonTools.check_tf_variable(sl_tf_name))
-	else:
-		for sl_name in seclist_names:
-			sl_name=str(sl_name).strip()
-			sl_display_name=str(sl_name)
-			sl_tf_name = vcn_name + "_" + sl_display_name
-			sl_tf_names.append(commonTools.check_tf_variable(sl_tf_name))
+				name1 = name
+				namert = rt_name
 
-	subnet_tf_name=vcn_name+"_"+display_name
-	subnet_tf_name = commonTools.check_tf_variable(subnet_tf_name)
-	rt_tf_name = vcn_name+"_"+rt_display_name
-	rt_tf_name = commonTools.check_tf_variable(rt_tf_name)
+			display_name = name1 + "-" + subnet
+			rt_display_name=namert+ "-" + subnet
 
-	if rt_name != 'n' and rt_name != '':
-		rt_tf_name = "oci_core_route_table."+ rt_tf_name +".id"
-	else:
-		rt_tf_name = "\"\""
+		else:
+			display_name = name
+			rt_display_name=rt_name
 
-	tempStr['subnet_tf_name'] = subnet_tf_name
-	tempStr['rt_tf_name'] = rt_tf_name
-
-	seclist_ids=""
-	add_default_seclist =  tempStr['add_default_seclist'].strip()
-
-	#Attach Default Security List
-	if add_default_seclist.strip() == "y":
-		seclist_ids =  """oci_core_vcn.""" + vcn_tf_name + """.default_security_list_id,"""
-		tempStr['seclist_ids'] = seclist_ids
+		tempStr['display_name'] = display_name
+		tempStr['rt_display_name'] = rt_display_name
 
 
-	#Attach other security list IDs
-	if( seclist_names[0]  !="n"):
-		index=0
-		for seclist_id in sl_tf_names:
-			if(index==len(sl_tf_names)-1):
-				seclist_ids = seclist_ids + """oci_core_security_list.""" +  seclist_id  + """.id """
-			else:
-				seclist_ids = seclist_ids + """oci_core_security_list.""" +  seclist_id + """.id, """
-			index=index+1
-	tempStr['seclist_ids'] =  seclist_ids
+		sl_tf_names=[]
+		seclist_names = tempStr['sl_names']
+		if (vcnInfo.subnet_name_attach_cidr == 'y'):
+			for sl_name in seclist_names:
+				sl_name=str(sl_name).strip()
+				if (str(ad_name) != ''):
+					namesl = str(sl_name) + "-ad" + str(ad_name)
+				else:
+					namesl = str(sl_name)
+				sl_display_name = namesl + "-" + subnet
+				sl_tf_name=vcn_name+"_"+sl_display_name
+				sl_tf_names.append(commonTools.check_tf_variable(sl_tf_name))
+		else:
+			for sl_name in seclist_names:
+				sl_name=str(sl_name).strip()
+				sl_display_name=str(sl_name)
+				sl_tf_name = vcn_name + "_" + sl_display_name
+				sl_tf_names.append(commonTools.check_tf_variable(sl_tf_name))
 
-	if (tempStr['dhcp_tf_name'].lower() != 'nan' and tempStr['dhcp_tf_name'] != '' and tempStr['dhcp_tf_name'] != 'n'):
-		dhcp_options_id = "oci_core_dhcp_options." + tempStr['dhcp_tf_name'].strip() + ".id "
-	else:
-		dhcp_options_id = "oci_core_vcn."+ vcn_tf_name + ".default_dhcp_options_id"
-	tempStr['dhcp_options_name'] = dhcp_options_id
+		subnet_tf_name=vcn_name+"_"+display_name
+		subnet_tf_name = commonTools.check_tf_variable(subnet_tf_name)
+		rt_tf_name = vcn_name+"_"+rt_display_name
+		rt_tf_name = commonTools.check_tf_variable(rt_tf_name)
 
-	if tempStr['type'] == 'public':
-		prohibit_public_ip_on_vnic = "false"
-	else:
-		prohibit_public_ip_on_vnic = "true"
-	tempStr['prohibit_public_ip_on_vnic'] = prohibit_public_ip_on_vnic
+		if rt_name != 'n' and rt_name != '':
+			rt_tf_name = "oci_core_route_table."+ rt_tf_name +".id"
+		else:
+			rt_tf_name = "\"\""
 
-	tfStr[region]= tfStr[region] +"\n"+ template.render(tempStr)
+		tempStr['subnet_tf_name'] = subnet_tf_name
+		tempStr['rt_tf_name'] = rt_tf_name
 
-#If input is CD3 excel file
-if('.xls' in filename):
+		seclist_ids=""
+		add_default_seclist =  tempStr['add_default_seclist'].strip()
+
+		#Attach Default Security List
+		if add_default_seclist.strip() == "y":
+			seclist_ids =  """oci_core_vcn.""" + vcn_tf_name + """.default_security_list_id,"""
+			tempStr['seclist_ids'] = seclist_ids
+
+
+		#Attach other security list IDs
+		if( seclist_names[0]  !="n"):
+			index=0
+			for seclist_id in sl_tf_names:
+				if(index==len(sl_tf_names)-1):
+					seclist_ids = seclist_ids + """oci_core_security_list.""" +  seclist_id  + """.id """
+				else:
+					seclist_ids = seclist_ids + """oci_core_security_list.""" +  seclist_id + """.id, """
+				index=index+1
+		tempStr['seclist_ids'] =  seclist_ids
+
+		if (tempStr['dhcp_tf_name'].lower() != 'nan' and tempStr['dhcp_tf_name'] != '' and tempStr['dhcp_tf_name'] != 'n'):
+			dhcp_options_id = "oci_core_dhcp_options." + tempStr['dhcp_tf_name'].strip() + ".id "
+		else:
+			dhcp_options_id = "oci_core_vcn."+ vcn_tf_name + ".default_dhcp_options_id"
+		tempStr['dhcp_options_name'] = dhcp_options_id
+
+		if tempStr['type'] == 'public':
+			prohibit_public_ip_on_vnic = "false"
+		else:
+			prohibit_public_ip_on_vnic = "true"
+		tempStr['prohibit_public_ip_on_vnic'] = prohibit_public_ip_on_vnic
+
+		tfStr[region]= tfStr[region] +"\n"+ template.render(tempStr)
+
 	vcnInfo = parseVCNInfo(filename)
 	vcns = parseVCNs(filename)
 
-	df = pd.read_excel(filename, sheet_name='Subnets',skiprows=1,dtype=object)
+	# Read cd3 using pandas dataframe
+	df, col_headers = commonTools.read_cd3(filename, "Subnets")
+
 	df = df.dropna(how='all')
 	df = df.reset_index(drop=True)
 
@@ -180,7 +190,6 @@ if('.xls' in filename):
 	# List of the column headers
 	dfcolumns = df.columns.values.tolist()
 
-	dhcp = ''
 	for i in df.index:
 		region=str(df.loc[i,'Region'])
 
@@ -213,7 +222,7 @@ if('.xls' in filename):
 
 		if (str(df.loc[i, 'Configure IGW Route (y|n)']).lower() == 'nan' or str(df.loc[i, 'Configure NGW Route\n(y|n)']).lower() == 'nan' or str(
 				df.loc[i, 'Configure SGW Route\n(n|object_storage|all_services)']).lower() == 'nan' or str(df.loc[i, 'Configure OnPrem Route (y|n)']).lower() == 'nan' or str(
-			    df.loc[i,'Configure VCNPeering\nRoute (y|n)']).lower() == 'nan'):
+				df.loc[i,'Configure VCNPeering\nRoute (y|n)']).lower() == 'nan'):
 			print("\nColumn Values Configure IGW/SGW/On-Prem/VCN route cannot be left empty in VCNs sheet in CD3..exiting...")
 			exit(1)
 
@@ -228,6 +237,7 @@ if('.xls' in filename):
 			# Check for multivalued columns
 			tempdict = commonTools.check_multivalues_columnvalue(columnvalue, columnname, tempdict)
 
+			# Process the Freefrorm and Defined Tags
 			if columnname in commonTools.tagColumns:
 				tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)
 
@@ -306,42 +316,41 @@ if('.xls' in filename):
 			tempStr.update(tempdict)
 
 		processSubnet(tempStr)
-else:
-    print("Invalid input file format; Acceptable formats: .xls, .xlsx")
-    exit()
 
-if fname != None:
-   fname.close()
+	if fname != None:
+		fname.close()
 
-subnetdata={}
+	if(modify_network=='true'):
+		for reg in ct.all_regions:
+			reg_out_dir = outdir + "/" + reg
+			if not os.path.exists(reg_out_dir):
+				os.makedirs(reg_out_dir)
+			outfile[reg] = reg_out_dir + "/" + prefix + '-subnets.tf'
 
-if(modify_network=='true'):
-	for reg in ct.all_regions:
-		reg_out_dir = outdir + "/" + reg
-		if not os.path.exists(reg_out_dir):
-			os.makedirs(reg_out_dir)
-		outfile[reg] = reg_out_dir + "/" + prefix + '-subnets.tf'
-
-		x = datetime.datetime.now()
-		date = x.strftime("%f").strip()
-		if(os.path.exists(outfile[reg])):
-			print("creating backup file " + outfile[reg] + "_backup" + date)
-			shutil.copy(outfile[reg], outfile[reg] + "_backup" + date)
-		oname[reg] = open(outfile[reg], "w")
-		oname[reg].write(tfStr[reg])
-		oname[reg].close()
-		print(outfile[reg] + " containing TF for Subnets has been updated for region " + reg)
-
-elif(modify_network == 'false'):
-	for reg in ct.all_regions:
-		reg_out_dir = outdir + "/" + reg
-		if not os.path.exists(reg_out_dir):
-			os.makedirs(reg_out_dir)
-		outfile[reg] = reg_out_dir + "/" + prefix + '-subnets.tf'
-		if (tfStr[reg] != ''):
-			oname[reg] = open(outfile[reg], 'w')
-			tfStr[reg]=tfStr[reg]
+			x = datetime.datetime.now()
+			date = x.strftime("%f").strip()
+			if(os.path.exists(outfile[reg])):
+				print("creating backup file " + outfile[reg] + "_backup" + date)
+				shutil.copy(outfile[reg], outfile[reg] + "_backup" + date)
+			oname[reg] = open(outfile[reg], "w")
 			oname[reg].write(tfStr[reg])
 			oname[reg].close()
-			print(outfile[reg] + " containing TF for Subnets has been created for region " + reg)
+			print(outfile[reg] + " containing TF for Subnets has been updated for region " + reg)
 
+	elif(modify_network == 'false'):
+		for reg in ct.all_regions:
+			reg_out_dir = outdir + "/" + reg
+			if not os.path.exists(reg_out_dir):
+				os.makedirs(reg_out_dir)
+			outfile[reg] = reg_out_dir + "/" + prefix + '-subnets.tf'
+			if (tfStr[reg] != ''):
+				oname[reg] = open(outfile[reg], 'w')
+				tfStr[reg]=tfStr[reg]
+				oname[reg].write(tfStr[reg])
+				oname[reg].close()
+				print(outfile[reg] + " containing TF for Subnets has been created for region " + reg)
+
+if __name__ == '__main__':
+
+    # Execution of the code begins here
+    main()

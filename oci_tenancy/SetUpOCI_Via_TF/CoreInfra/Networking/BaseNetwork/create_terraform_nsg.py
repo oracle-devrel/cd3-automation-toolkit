@@ -33,7 +33,6 @@ from cd3parser import CD3Parser as cd3parser
 import os
 import pandas as pd
 import sys
-import re
 sys.path.append(os.getcwd()+"/../../..")
 from commonTools import *
 from jinja2 import Environment, FileSystemLoader
@@ -327,8 +326,7 @@ factory methods
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Create NSG and its NSG rules based on\
-        inputs given in vcn-info.properties, separated by regions.")
+    parser = argparse.ArgumentParser(description="Create NSG and its NSG rules based on inputs given in vcn-info.properties, separated by regions.")
     parser.add_argument("inputfile", help="Full Path of cd3 excel file or csv containing NSG info")
     parser.add_argument("outdir", help="Output directory")
     parser.add_argument("--configFileName", help="Config file name", required=False)

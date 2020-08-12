@@ -182,7 +182,7 @@ def main():
             # Check for multivalued columns
             tempdict = commonTools.check_multivalues_columnvalue(columnvalue, columnname, tempdict)
 
-            # Process Default Tags and Freeform Tags
+            # Process Defined Tags and Freeform Tags
             if columnname in commonTools.tagColumns:
                 tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)
                 tempStr.update(tempdict)

@@ -19,19 +19,6 @@ from commonTools import *
 # Required Inputs-CD3 excel file, Config file, prefix AND outdir
 ######
 
-# reversal path function
-def travel(parent, keys, values, c):
-    if (parent == "" or parent == "nan" or parent == "root"):
-        return ""
-    else:
-        if ("::" in str(values[keys.index(parent)])):
-            if (c == 0):
-                return values[keys.index(parent)] + "::" + parent
-            c = c + 1
-            return values[keys.index(parent)]
-        return travel(values[keys.index(parent)], keys, values, c) + "::" + parent
-
-
 # If input in cd3 file
 def main():
 
@@ -87,6 +74,18 @@ def main():
     # Separating Compartments and ParentComparements into list
     ckeys = []
     pvalues = []
+
+    # reversal path function
+    def travel(parent, keys, values, c):
+        if (parent == "" or parent == "nan" or parent == "root"):
+            return ""
+        else:
+            if ("::" in str(values[keys.index(parent)])):
+                if (c == 0):
+                    return values[keys.index(parent)] + "::" + parent
+                c = c + 1
+                return values[keys.index(parent)]
+            return travel(values[keys.index(parent)], keys, values, c) + "::" + parent
 
     for i in df.index:
         if (str(df.loc[i, 'Region']) in commonTools.endNames):
