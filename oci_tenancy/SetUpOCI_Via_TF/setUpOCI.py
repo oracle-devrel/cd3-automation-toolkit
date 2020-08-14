@@ -372,7 +372,7 @@ if('1' in userInput):
 
         os.chdir('Identity/Groups')
         if (input_config_file == ''):
-            command = 'python create_terraform_compartments.py ' + inputfile + ' ' + outdir + ' ' + prefix
+            command = 'python create_terraform_groups.py ' + inputfile + ' ' + outdir + ' ' + prefix
         else:
             command = 'python create_terraform_groups.py '+inputfile + ' ' + outdir+ ' '+prefix + ' --configFileName ' + input_config_file
         print("Executing Command: " + command)
