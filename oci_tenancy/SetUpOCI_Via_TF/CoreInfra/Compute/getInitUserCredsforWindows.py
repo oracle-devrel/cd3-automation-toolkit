@@ -1,10 +1,12 @@
 #!/usr/bin/python3
-
-
-#Author: Amit Shah
-#Oracle Consulting
-#amit.a.shah@oracle.com
-
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
+#
+# This script will produce a Terraform file that will be used to set up OCI core components
+# Get Windows User Credentials
+#
+# Author: Amit Shah
+# Oracle Consulting
+#
 
 import oci
 import sys

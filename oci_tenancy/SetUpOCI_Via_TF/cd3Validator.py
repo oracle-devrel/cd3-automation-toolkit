@@ -1,6 +1,14 @@
 #!/usr/bin/python3
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
+#
+# This script will help you to validate the entries in CD3 sheet for - VCN, DHCP and Subnets Tabs
+# CD3 Validator for Networking Objects
+#
 # Author: Shruthi Subramanian
-#shruthi.subramanian@oracle.com
+# Oracle Consulting
+# Modified (TF Upgrade): Shruthi Subramanian
+#
+
 import argparse
 import re
 import pandas as pd
