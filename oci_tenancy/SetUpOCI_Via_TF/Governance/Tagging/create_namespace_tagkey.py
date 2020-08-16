@@ -127,7 +127,7 @@ def main():
         if str(df.loc[i, 'Default Tag']).strip() == "1.0" or str(df.loc[i, 'Default Tag']).lower().strip() == "true":
             if str(df.loc[i,'Default Tag Value']) == 'nan':
                 print("\nERROR!! Default Tag Value cannot be left empty when Default Tag is set to TRUE...Exiting!")
-                exit()
+                exit(1)
 
         for columnname in dfcolumns:
 
