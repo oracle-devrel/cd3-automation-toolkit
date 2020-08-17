@@ -2,7 +2,7 @@
 # Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 # This script will produce a Terraform file that will be used to set up OCI core components
-# Backend Set and Backend Server
+# Create Listener
 #
 # Author: Suruchi Singla
 # Oracle Consulting
@@ -25,7 +25,7 @@ from jinja2 import Environment, FileSystemLoader
 def main():
 
     # Read the input arguments
-    parser = argparse.ArgumentParser(description="Creates Backend Set and Backend Server TF files for LBR")
+    parser = argparse.ArgumentParser(description="Creates Listener TF files for LBR")
     parser.add_argument("inputfile",help="Full Path to the CD3 excel file. eg CD3-template.xlsx in example folder")
     parser.add_argument("outdir", help="directory path for output tf files ")
     parser.add_argument("--configFileName", help="Config file name", required=False)
@@ -33,8 +33,8 @@ def main():
     # Load the template file
     file_loader = FileSystemLoader('templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True)
-    beset = env.get_template('backend-set-template')
-    beserver = env.get_template('backend-server-template')
+    listener = env.get_template('listener-template')
+
 
     if len(sys.argv) < 2:
         parser.print_help()
@@ -52,19 +52,19 @@ def main():
     ct.get_subscribedregions(configFileName)
 
     # Read cd3 using pandas dataframe
-    df, col_headers = commonTools.read_cd3(filename, "BackendSet-BackendServer")
+    df, col_headers = commonTools.read_cd3(filename, "LB-Listener")
 
     df = df.dropna(how='all')
     df = df.reset_index(drop=True)
 
-    #DF with just the load balancer names and the Cert details
+    #DF with just the load balancer names and the Region details
 
     # fill the empty values with that in previous row.
-    dffill = df[['Region','Compartment Name','LBR Name']]
+    dffill = df[['Region','LBR Name']]
     dffill = dffill.fillna(method='ffill')
 
     #Drop unnecessary columns
-    dfdrop = df[['Region','Compartment Name','LBR Name']]
+    dfdrop = df[['Region','LBR Name']]
     dfdrop = df.drop(dfdrop, axis=1)
 
     #dfcert with required details
@@ -82,9 +82,9 @@ def main():
         if eachregion not in ct.all_regions:
             print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
             exit()
-        resource='BackendSet-BackendServer'
+        resource='Listener'
         srcdir = outdir + "/" + eachregion + "/"
-        commonTools.backup_file(srcdir, resource, "_backends_lb.tf")
+        commonTools.backup_file(srcdir, resource, "_listener_lb.tf")
 
     # List of the column headers
     dfcolumns = df.columns.values.tolist()
@@ -107,12 +107,22 @@ def main():
         # temporary dictionaries
         tempStr= {}
         tempdict= {}
-        backend_set_tf_name = ''
+        lbr_hostname = ''
+        rule_set_names = ''
+        listener_tf_name = ''
+        lbr_tf_name = ''
 
         #Check if mandatory field is empty
-        if (str(df.loc[i,'Backend Set Name']).lower() == 'nan'):
-            print("\nColumn Backend Set Name cannot be left empty.....Exiting!")
+        if (str(df.loc[i,'Listener Name']).lower() == 'nan') or (str(df.loc[i,'Listener Protocol (HTTPS|HTTP|TCP)']).lower() == 'nan') or (str(df.loc[i,'Listener Port']).lower() == 'nan') or (str
+            (df.loc[i,'Backend Set Name']).lower() == 'nan') :
+            print("\nColumns Backend Set Name, Listener Name, Listerner Protocol and Listener Port cannot be left empty.....Exiting!")
             exit(1)
+
+        # UseSSL cannot be'n', if the protocol is HTTPS
+        if (str(df.loc[i,'Listener Protocol (HTTPS|HTTP|TCP)']).upper() == 'HTTPS'):
+            if (str(df.loc[i,'UseSSL']).lower() != 'y'):
+                print("\nUseSSL must be 'y' if the Listener Protocol is 'HTTPS'......Exiting!!")
+                exit(1)
 
         # Fetch data; loop through columns
         for columnname in dfcolumns:
@@ -130,10 +140,6 @@ def main():
             if columnname in commonTools.tagColumns:
                 tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)
 
-            if columnname == "Compartment Name":
-                columnname = "compartment_tf_name"
-                columnvalue = commonTools.check_tf_variable(columnvalue)
-
             if columnname == "LBR Name":
                 lbr_tf_name = commonTools.check_tf_variable(columnvalue)
                 tempdict = {'lbr_tf_name': lbr_tf_name}
@@ -146,69 +152,73 @@ def main():
                 backend_set_tf_name = commonTools.check_tf_variable(columnvalue)
                 tempdict = {'backend_set_tf_name': backend_set_tf_name}
 
-            if columnname == "Backend\nPolicy(LEAST_CONNECTIONS|ROUND_ROBIN|IP_HASH)":
-                columnname = 'backend_policy'
-
-            if columnname == "Cookie Session (n|LB|Backend Server)":
-                columnname = "session"
-
-            if columnname == "Disable Fallback (TRUE|FALSE)":
-                columnname = "disable_fallback"
-
-            if columnname == "Backend HealthCheck\nProtocol\n(HTTP|TCP)":
-                columnname = "backend_healthcheck_protocol"
+            if columnname == "Listener Name":
+                listener_tf_name = commonTools.check_tf_variable(columnvalue)
+                tempdict = {'listener_tf_name': listener_tf_name}
 
             if columnname == "UseSSL (y|n)":
                 columnname = "usessl"
 
-            if columnname == "Backup\n<Backend Server Name>":
-                columnname = "backup"
+            if columnname == 'Listener Protocol (HTTPS|HTTP|TCP)':
+                columnname = 'protocol'
 
-            if columnname == "Backend\nServerName:Port":
-                columnname = "backend_server"
+            if columnname == 'Idle Time Out (in Seconds)':
+                columnname = 'idle_timeout_in_seconds'
+
+            if columnname == 'Path Route Set Name':
+                if columnvalue == '':
+                    path_route_set_tf_name = "\"\""
+                else:
+                    columnvalue = str(columnvalue).strip()
+                    path_route_set_tf_name = 'oci_load_balancer_path_route_set.'+columnvalue+'.name'
+                tempdict = {'path_route_set_tf_name' : path_route_set_tf_name}
+
+            if columnname == "LBR Hostnames":
+                if columnvalue != '':
+                    lbr_hostnames =  str(columnvalue).strip().split(',')
+                    if len(lbr_hostnames) == 1:
+                        for hostname in lbr_hostnames:
+                            hostname = commonTools.check_tf_variable(hostname)
+                            lbr_hostname = 'oci_load_balancer_hostname.'+lbr_tf_name+"_"+hostname+'_hostname.name'
+                    elif len(lbr_hostnames) >= 2:
+                        c = 1
+                        for hostname in lbr_hostnames:
+                            hostname = commonTools.check_tf_variable(hostname)
+                            if c == len(lbr_hostnames):
+                                lbr_hostname = lbr_hostname+'oci_load_balancer_hostname.'+lbr_tf_name+"_" + hostname + '_hostname.name'
+                            else:
+                                lbr_hostname = lbr_hostname+'oci_load_balancer_hostname.'+lbr_tf_name+"_"+hostname+'_hostname.name,'
+                            c += 1
+                columnvalue = lbr_hostname
+
+            if columnname == 'Rule Set Names':
+                if columnvalue != '':
+                    rule_sets = str(columnvalue).strip().split(',')
+                    if len(rule_sets) == 1:
+                        for rule in rule_sets:
+                            rule_set_names = 'oci_load_balancer_rule_set.'+rule+'.name'
+                    elif len(rule_sets) >=2 :
+                        c=1
+                        for rule in rule_sets:
+                            if c == len(rule_sets):
+                                rule_set_names = rule_set_names+'oci_load_balancer_rule_set.'+rule+'.name'
+                            else:
+                                rule_set_names = rule_set_names+'oci_load_balancer_rule_set.' + rule + '.name,'
+                            c += 1
+                columnvalue = rule_set_names
 
             columnname = commonTools.check_column_headers(columnname)
             tempStr[columnname] = str(columnvalue).strip()
             tempStr.update(tempdict)
 
         # Render Backend Set
-        beset_str= beset.render(tempStr)
-
-        cnt = 0
-        backup=''
-        beserver_str = ''
-        columnvalue = str(df.loc[i,'Backend\nServerName:Port']).strip().split(',')
-        for lbr_be_server in columnvalue:
-            if (lbr_be_server != ""):
-                cnt = cnt + 1
-                serverinfo = lbr_be_server.strip().split(":")
-                servername = serverinfo[0].strip()
-                backend_server_tf_name = commonTools.check_tf_variable(servername)
-                serverport = serverinfo[1].strip()
-                e = servername.count(".")
-                if (e == 3):
-                    backend_server_ip_address = "\""+servername+"\""
-                else:
-                    backend_server_ip_address = "oci_core_instance." + servername + ".private_ip"
-
-                bserver_list = str(df.loc[i,'Backup\n<Backend Server Name>']).strip().split(',')
-
-                for servers in bserver_list:
-                    if servername == servers:
-                        backup = "true"
-                    else:
-                        backup = "false"
-                tempback = {'backup' : backup,'backend_server_tf_name':backend_server_tf_name,'serverport':serverport,'backend_server_ip_address':backend_server_ip_address}
-                tempStr.update(tempback)
-
-                # Render Backend Server
-                beserver_str = beserver_str + beserver.render(tempStr)
+        listener_str = listener.render(tempStr)
 
         # Write to TF file
-        outfile = outdir + "/" + region + "/"+backend_set_tf_name+"_backends_lb.tf"
+        outfile = outdir + "/" + region + "/"+listener_tf_name+"_listener_lb.tf"
         oname = open(outfile, "w+")
         print("Writing to ..." + outfile)
-        oname.write(beset_str + beserver_str)
+        oname.write(listener_str)
         oname.close()
 
 if __name__ == '__main__':

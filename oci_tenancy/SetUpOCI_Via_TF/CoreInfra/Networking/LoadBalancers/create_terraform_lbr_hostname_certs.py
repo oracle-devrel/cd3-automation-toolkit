@@ -146,7 +146,7 @@ def main():
                 certificate_str[region] = certificate_str[region] + certficate.render(tempStr)
 
             # Write to TF file
-            outfile = outdir + "/" + region + "/"+certificate_tf_name+"_cert_lb.tf"
+            outfile = outdir + "/" + region + "/"+certificate_tf_name+"_certificate_lb.tf"
             oname = open(outfile, "w+")
             print("Writing to ..." + outfile)
             oname.write(certificate_str[region])

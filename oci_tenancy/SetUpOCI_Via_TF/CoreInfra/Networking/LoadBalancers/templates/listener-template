@@ -1,0 +1,23 @@
+resource "oci_load_balancer_listener" "{{ listener_tf_name }}" {
+    #Required
+    default_backend_set_name = oci_load_balancer_backend_set.{{ backend_set_tf_name }}.name
+    load_balancer_id = oci_load_balancer_load_balancer.{{ lbr_tf_name }}.id
+    name = "{{ listener_name }}"
+    port = "{{ listener_port }}"
+    protocol = "{{ protocol }}"
+
+    {% if idle_timeout_in_seconds != '' %}
+    connection_configuration {
+        #Required
+        idle_timeout_in_seconds = "{{ idle_timeout_in_seconds }}"
+
+    }{% endif %}
+    hostname_names = [{{ lbr_hostnames }}]
+    path_route_set_name = {{ path_route_set_tf_name }}
+    rule_set_names = [{{ rule_set_names }}]
+    {% if usessl == 'y' %}
+    ssl_configuration {
+        #Required
+        certificate_name = oci_load_balancer_certificate.{{ certificate_tf_name }}.name
+    }{% endif %}
+}

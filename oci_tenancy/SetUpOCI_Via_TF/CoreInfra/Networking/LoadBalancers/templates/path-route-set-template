@@ -1,0 +1,8 @@
+resource "oci_load_balancer_path_route_set" "{{ path_route_set_tf_name }}" {
+    #Required
+    load_balancer_id = oci_load_balancer_load_balancer.{{ lbr_tf_name }}.id
+    name = "{{ path_route_set_name }}"
+
+{{ path_routes }}
+
+}
