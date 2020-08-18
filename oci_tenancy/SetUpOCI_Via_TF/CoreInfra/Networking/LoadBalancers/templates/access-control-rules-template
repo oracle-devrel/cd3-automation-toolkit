@@ -1,0 +1,12 @@
+items {
+    #Required
+    action = "{{ action }}"
+    conditions {
+        #Required
+        attribute_name = "{{ attribute_name }}"
+        attribute_value = {{ attribute_value }}
+
+    }
+    description = "{{ description }}"
+    }
+    ## Add_rules_here ##

@@ -52,7 +52,7 @@ def main():
     ct.get_subscribedregions(configFileName)
 
     # Read cd3 using pandas dataframe
-    df, col_headers = commonTools.read_cd3(filename, "PathRouteSet-RuleSet")
+    df, col_headers = commonTools.read_cd3(filename, "PathRouteSet")
 
     df = df.dropna(how='all')
     df = df.reset_index(drop=True)

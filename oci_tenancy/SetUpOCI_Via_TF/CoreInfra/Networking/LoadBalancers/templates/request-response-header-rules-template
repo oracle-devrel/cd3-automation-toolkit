@@ -1,0 +1,9 @@
+items  {
+        #Required
+        action = "{{ action }}"
+        header = "{{ header }}"
+        prefix = "{{ prefix }}"
+        suffix = "{{ suffix }}"
+        value = "{{ value }}"
+    }
+    ## Add_rules_here ##

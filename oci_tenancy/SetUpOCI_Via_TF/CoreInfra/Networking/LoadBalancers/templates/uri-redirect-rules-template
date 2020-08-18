@@ -1,0 +1,23 @@
+items  {
+        #Required
+        action = "{{ action }}"
+
+        conditions {
+            #Required
+            attribute_name = "{{ attribute_name }}"
+            attribute_value = "{{ attribute_value }}"
+
+            #Optional
+            operator = "{{ operator }}"
+        }
+        redirect_uri {
+
+            #Optional
+            host = "{{ host }}"
+            path = "{{ path }}"
+            port = "{{ port }}"
+            protocol = "{{ protocol }}"
+        }
+        response_code = "{{ response_code }}"
+    }
+    ## Add_rules_here ##
