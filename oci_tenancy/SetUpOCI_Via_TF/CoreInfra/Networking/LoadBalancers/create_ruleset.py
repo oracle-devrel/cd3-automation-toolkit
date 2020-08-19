@@ -7,6 +7,7 @@
 # Author: Shruthi Subramanian
 # Oracle Consulting
 #
+
 import json
 import sys
 import argparse
@@ -77,10 +78,10 @@ def main():
 
     unique_region = df['Region'].unique()
 
-    d = {}
-    for i in df['Rule Set Name'].unique():
-        d[i] = [df['Allowed Methods'][j] for j in df[df['Rule Set Name'] == i].index]
-        d[i] = [x for x in d[i] if str(x) != 'nan']
+    # Make a dictionary - { Region :{ Rule Set : [Methods] } }
+    d = {k: f.groupby(df['Rule Set Name'])['Allowed Methods'].apply(list).to_dict()
+         for k, f in df.groupby(df['Region'])}
+    d = dict((k.lower(), v) for k, v in d.items())
 
     # Take backup of files
     for eachregion in unique_region:
@@ -154,6 +155,7 @@ def main():
         tempStr= {}
         tempdict= {}
         suffix=''
+        method_list = ''
         prefix=''
         host=''
         port=''
@@ -279,18 +281,23 @@ def main():
             columnname = commonTools.check_column_headers(columnname)
             tempStr[columnname] = str(columnvalue).strip()
 
-            if rule_set_tf_name in d.keys():
-                tempdict = {'method_list' : json.dumps(d[rule_set_tf_name])}
+            # To process the methods - remove 'nan' from list and add it to tempStr
+            if rule_set_tf_name != '':
+                method_list = [x for x in d[region][rule_set_tf_name] if str(x).lower() != 'nan']
+                for k, v in d.items():
+                    if rule_set_tf_name in v.keys():
+                        tempdict = {'method_list' : json.dumps(method_list)}
 
             tempStr.update(tempdict)
 
-
         outfile = outdir + "/" + region + "/" + lbr_tf_name + rule_set_tf_name + "_ruleset_lb.tf"
 
-        if str(df.loc[i, 'Region']) not in region_list and str(df.loc[i, 'LBR Name']) not in lbr_list:
+        if str(df.loc[i, 'Region']) not in region_list:
             region_list.append(str(df.loc[i, 'Region']))
-            lbr_list.append(str(df.loc[i, 'LBR Name']))
+            lbr_list = []
+            rule_set_list = []
             if str(df.loc[i, 'Rule Set Name']) not in rule_set_list and str(df.loc[i, 'Rule Set Name'])  != 'nan':
+                lbr_list.append(str(df.loc[i, 'LBR Name']))
                 rule_set_list.append(str(df.loc[i, 'Rule Set Name']))
                 rs_str = rs.render(tempStr)
                 count = 0
@@ -310,7 +317,7 @@ def main():
                 count = 1
                 rs_str = add_rules(df, rs_str, tempStr, count)
 
-
+    
         # Write to TF file
         oname = open(outfile, "w+")
         oname.write(rs_str)
