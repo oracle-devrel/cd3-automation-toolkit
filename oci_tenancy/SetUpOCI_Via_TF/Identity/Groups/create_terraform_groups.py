@@ -104,13 +104,6 @@ def main():
             # Check for multivalued columns
             tempdict = commonTools.check_multivalues_columnvalue(columnvalue,columnname,tempdict)
 
-            if columnname == "Compartment Name":
-                compartmentVarName = columnvalue.strip()
-                columnname = commonTools.check_column_headers(columnname)
-                compartmentVarName = commonTools.check_tf_variable(compartmentVarName)
-                columnvalue = str(compartmentVarName)
-                tempdict = {columnname: columnvalue}
-
             # Process Defined and Freeform Tags
             if columnname in commonTools.tagColumns:
                 tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)
