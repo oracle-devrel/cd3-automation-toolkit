@@ -174,3 +174,8 @@ SetUPOCI_Via_TF Tag v6.1
 14. GIT repo has been moved to OCI. SSH key needs to be setup for access to the repo. Please see the instructions at confluence page:
     https://confluence.oraclecorp.com/confluence/display/NAC/Guide+to+access+repository+in+DevCS
     Private key is copied over to /root/.ssh folder. It is up to the developers if they want to keep the private key there for any future GIT updates or if they want to remove the key for security reasons.
+------------------------
+SetUPOCI_Via_TF Tag v6.1.1
+------------------------
+Launch Linux 7.8 as OCSWork VM (if image ocid is empty in ocswork.properties) as Linux 8 does not support many packages which are required by
+automation toolkit.
