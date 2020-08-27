@@ -12,6 +12,8 @@ from openpyxl.styles import Border
 from openpyxl.styles import Side
 import re
 import collections
+import simplejson
+from simplejson.decoder import WHITESPACE
 
 
 class commonTools():
@@ -21,8 +23,8 @@ class commonTools():
     region_dict = {}
     protocol_dict = {}
     endNames = {'<END>', '<end>', '<End>'}
-    tagColumns = {'Freeform Tags', 'freeform_tags', 'freeForm tags', 'freeform Tags', 'freeform tags', 'FreeForm Tags', 'Defined Tags', 'defined Tags'
-                  'defined tags', 'defined_tags', 'Defined tags'}
+    tagColumns = {'Freeform Tags', 'freeform_tags', 'freeForm tags', 'freeform Tags', 'freeform tags', 'FreeForm Tags',
+                  'Defined Tags', 'defined Tags','defined tags', 'defined_tags', 'Defined tags'}
 
     # Read Regions and Protocols Files and create dicts
     def __init__(self):
@@ -136,6 +138,20 @@ class commonTools():
         var_name = re.sub('_+', '_', var_name).lower()
         return var_name
 
+    # Process the excel sheet headers to a dictionary - (Not used currently)
+    FLAGS = re.VERBOSE | re.MULTILINE | re.DOTALL
+    WHITESPACE = re.compile(r'[ \t\n\r]*', FLAGS)
+
+    def excel_columns_dict(df,path):
+        with open(path+"excelColumns.txt") as f:
+            s = f.read()
+        while True:
+            decoder = simplejson.JSONDecoder()
+            obj, end = decoder.raw_decode(s)
+            end = WHITESPACE.match(s, end).end()
+            df = dict(obj)
+            return df
+
     # Process ColumnValues
     def check_columnvalue(columnvalue):
 
@@ -147,8 +163,8 @@ class commonTools():
 
         return columnvalue
 
-    #Process column values with ::
-    def check_multivalues_columnvalue(columnvalue,columnname,tempdict):
+    # Process column values with ::
+    def check_multivalues_columnvalue(columnvalue, columnname, tempdict):
         columnvalue = str(columnvalue).strip()
         if "::" in columnvalue:
             if ".Flex" in columnvalue:
@@ -180,7 +196,7 @@ class commonTools():
             tempdict = {columnname: [multivalues]}
         return tempdict
 
-    #Read rows from CD3
+    # Read rows from CD3
     def read_cd3(cd3file, sheet_name):
         if (".xls" not in cd3file or ".xlsx" not in cd3file):
             print("Invalid CD3 Format..Exiting!!!")
@@ -198,32 +214,19 @@ class commonTools():
         yield values_for_column
 
     # Write exported  rows to cd3
-    def write_to_cd3(rows, cd3file, sheet_name):
+    def write_to_cd3(values_for_column, cd3file, sheet_name):
         book = load_workbook(cd3file)
         sheet = book[sheet_name]
-
         if (sheet_name == "VCN Info"):
             onprem_destinations = ""
             ngw_destinations = ""
             igw_destinations = ""
-            for destination in rows[0]:
+            for destination in values_for_column[onprem_destinations]:
                 onprem_destinations = destination + "," + onprem_destinations
-            for destination in rows[1]:
+            for destination in values_for_column[ngw_destinations]:
                 ngw_destinations = destination + "," + ngw_destinations
-            for destination in rows[2]:
+            for destination in values_for_column[igw_destinations]:
                 igw_destinations = destination + "," + igw_destinations
-            """"#regions is not empty (from export_network_nonGreenField)
-            if(len(rows)==4):
-                regions = ""
-                for r in rows[3]:
-                    regions=r+","+regions
-                if (regions != "" and regions[-1] == ','):
-                    regions = regions[:-1]
-                #Put n for subnet_name_attach_cidr
-                sheet.cell(6,2).value = 'n'
-                #Put regions value
-                sheet.cell(7, 2).value = regions
-            """
 
             if (onprem_destinations != "" and onprem_destinations[-1] == ','):
                 onprem_destinations = onprem_destinations[:-1]
@@ -240,9 +243,8 @@ class commonTools():
             book.save(cd3file)
             book.close()
             return
-
-        rows_len = len(rows)
-
+        # rows_len=len(rows)
+        rows_len = len(values_for_column["Region"])
         # If no rows exported from OCI, remove the sample data as well
         if (rows_len == 0):
             print(
@@ -260,16 +262,24 @@ class commonTools():
             large = rows_len
         else:
             large = sheet_max_rows
-
+        print(large)
         # Put Data
+        j = 0
         for i in range(0, large):
-            for j in range(0, len(rows[0])):
+            # for j in range(0,len(rows[0])):
+            for col_name in values_for_column.keys():
                 if (i >= rows_len):
                     sheet.cell(row=i + 3, column=j + 1).value = ""
+                    if not (isinstance(values_for_column[col_name][i], int)):
+                        if len(values_for_column[col_name][i]) > 1:
+                            for values in values_for_column[col_name][i]:
+                                sheet.cell(row=i + 3, column=j + 1).value = values
                 else:
-                    sheet.cell(row=i + 3, column=j + 1).value = rows[i][j]
+                    sheet.cell(row=i + 3, column=j + 1).value = values_for_column[col_name][i]
+                    #sheet.cell(row=i + 3, column=j + 1).value = values_for_column[col_name][i]
                 sheet.cell(row=i + 3, column=j + 1).alignment = Alignment(wrap_text=True)
-
+                j = j + 1
+            j = 0
         brdr = Border(left=Side(style='thin'),
                       right=Side(style='thin'),
                       top=Side(style='thin'),
@@ -296,7 +306,8 @@ class commonTools():
                     elif (c == 4):
                         name = cell.value
                         break
-
+                print(name)
+                print(region)
                 vcn_name = region + "_" + name
                 if (vcn_name not in names):
                     names.append(vcn_name)
@@ -323,7 +334,7 @@ class commonTools():
     def backup_file(src_dir, resource, pattern):
         x = datetime.datetime.now()
         date = x.strftime("%f").strip()
-        dest_dir = src_dir + "/backup_" +resource+"_"+ date
+        dest_dir = src_dir + "/backup_" + resource + "_" + date
         print("Backing up existing " + pattern + " to " + dest_dir)
         for f in os.listdir(src_dir):
             if f.endswith(pattern):
