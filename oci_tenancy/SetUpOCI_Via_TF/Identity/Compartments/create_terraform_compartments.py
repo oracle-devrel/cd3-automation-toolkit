@@ -213,6 +213,11 @@ def main():
         reg_out_dir = outdir + "/" + reg
         if not os.path.exists(reg_out_dir):
             os.makedirs(reg_out_dir)
+
+        srcdir = reg_out_dir + "/"
+        resource = 'Compartments'
+        commonTools.backup_file(srcdir, resource, "-compartments.tf")
+
         outfile[reg] = reg_out_dir + "/" + prefix + '-compartments.tf'
 
         if (tfStr[reg] != ''):

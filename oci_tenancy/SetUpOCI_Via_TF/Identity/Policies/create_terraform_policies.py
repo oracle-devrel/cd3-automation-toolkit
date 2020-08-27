@@ -221,6 +221,11 @@ def main():
         reg_out_dir = outdir + "/" + reg
         if not os.path.exists(reg_out_dir):
             os.makedirs(reg_out_dir)
+
+        srcdir = reg_out_dir + "/"
+        resource = 'Policies'
+        commonTools.backup_file(srcdir, resource, "-policies.tf")
+
         outfile[reg] = reg_out_dir + "/" + prefix + '-policies.tf'
 
         oname[reg] = open(outfile[reg], 'w')

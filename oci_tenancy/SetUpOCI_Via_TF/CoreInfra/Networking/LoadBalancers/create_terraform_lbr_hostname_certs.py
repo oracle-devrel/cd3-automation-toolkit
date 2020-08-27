@@ -89,7 +89,7 @@ def main():
             exit()
         resource='LB-Hostname-Certs'
         srcdir = outdir + "/" + eachregion + "/"
-        commonTools.backup_file(srcdir, resource, "_lb.tf")
+        commonTools.backup_file(srcdir, resource, "-lb.tf")
 
     for reg in ct.all_regions:
         if reg not in commonTools.endNames and  reg != 'nan':
@@ -146,7 +146,7 @@ def main():
                 certificate_str[region] = certificate_str[region] + certficate.render(tempStr)
 
             # Write to TF file
-            outfile = outdir + "/" + region + "/"+certificate_tf_name+"_certificate_lb.tf"
+            outfile = outdir + "/" + region + "/"+certificate_tf_name+"-certificate-lb.tf"
             oname = open(outfile, "w+")
             print("Writing to ..." + outfile)
             oname.write(certificate_str[region])
@@ -210,6 +210,9 @@ def main():
             if columnname == "Shape(100Mbps|400Mbps|8000Mbps)":
                 columnname = 'lbr_shape'
 
+            if columnname == "LBR Hostname\n(Name:Hostname)":
+                columnname = "lbr_hostname"
+
             if columnname == 'LBR Subnets':
                 lbr_subnets = str(columnvalue).strip().split(",")
                 if len(lbr_subnets) == 1:
@@ -244,10 +247,14 @@ def main():
                     lbr_hostnames = columnvalue.strip().split(",")
                     if len(lbr_hostnames) == 1:
                         for hostnames in lbr_hostnames:
-                            lbr_host_tf_name = lbr_tf_name+"_"+commonTools.check_tf_variable(hostnames)
-                            lbr_hosname = hostnames
+                            hostnames = hostnames.split(":")
+                            name = hostnames[0]
+                            hostname_value = hostnames[1]
+
+                            lbr_host_tf_name = lbr_tf_name+"_"+commonTools.check_tf_variable(name)
+                            lbr_hosname = hostname_value
                             host_list.append(lbr_host_tf_name)
-                            tempdict = {'host_tf_name': lbr_host_tf_name,'hostname' : lbr_hosname}
+                            tempdict = {'host_tf_name': lbr_host_tf_name,'hostname' : lbr_hosname,'name' : name}
 
                             columnname = commonTools.check_column_headers(columnname)
                             tempStr[columnname] = str(columnvalue).strip()
@@ -260,10 +267,14 @@ def main():
                         hostname_str[region] = ''
                         for hostnames in lbr_hostnames:
                             if c <= len(lbr_hostnames):
-                                lbr_host_tf_name = lbr_tf_name + "_" + commonTools.check_tf_variable(hostnames)
-                                lbr_hosname = hostnames
+                                hostnames = hostnames.split(":")
+                                name = hostnames[0]
+                                hostname_value = hostnames[1]
+
+                                lbr_host_tf_name = lbr_tf_name + "_" + commonTools.check_tf_variable(name)
+                                lbr_hosname = hostname_value
                                 host_list.append(lbr_host_tf_name)
-                                tempdict = {'host_tf_name': lbr_host_tf_name, 'hostname': lbr_hosname}
+                                tempdict = {'host_tf_name': lbr_host_tf_name, 'hostname': lbr_hosname,'name':name}
 
                                 columnname = commonTools.check_column_headers(columnname)
                                 tempStr[columnname] = str(columnvalue).strip()
@@ -278,7 +289,7 @@ def main():
         finalstring = hostname_str[region] + lbr_str[region]
 
         # Write to TF file
-        outfile = outdir + "/" + region + "/"+lbr_tf_name+"_lbr_hostname_lb.tf"
+        outfile = outdir + "/" + region + "/"+lbr_tf_name+"-lbr-hostname-lb.tf"
         oname = open(outfile, "w+")
         print("Writing to ..."+outfile)
         oname.write(finalstring)

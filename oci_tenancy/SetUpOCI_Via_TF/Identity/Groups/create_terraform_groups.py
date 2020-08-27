@@ -130,6 +130,11 @@ def main():
         reg_out_dir = outdir + "/" + reg
         if not os.path.exists(reg_out_dir):
             os.makedirs(reg_out_dir)
+
+        srcdir = reg_out_dir + "/"
+        resource = 'Groups'
+        commonTools.backup_file(srcdir, resource, "-groups.tf")
+
         outfile[reg] = reg_out_dir + "/" + prefix + '-groups.tf'
 
         if(tfStr[reg]!=''):

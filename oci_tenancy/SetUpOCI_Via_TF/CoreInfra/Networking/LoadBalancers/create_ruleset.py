@@ -93,9 +93,10 @@ def main():
         if eachregion not in ct.all_regions:
             print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
             exit()
+
         resource='RuleSet'
         srcdir = outdir + "/" + eachregion + "/"
-        commonTools.backup_file(srcdir, resource, "_ruleset_lb.tf")
+        commonTools.backup_file(srcdir, resource, "-ruleset-lb.tf")
 
     # List of the column headers
     dfcolumns = df.columns.values.tolist()
@@ -290,7 +291,7 @@ def main():
 
             tempStr.update(tempdict)
 
-        outfile = outdir + "/" + region + "/" + lbr_tf_name + rule_set_tf_name + "_ruleset_lb.tf"
+        outfile = outdir + "/" + region + "/" + lbr_tf_name + rule_set_tf_name + "-ruleset-lb.tf"
 
         if str(df.loc[i, 'Region']) not in region_list:
             region_list.append(str(df.loc[i, 'Region']))

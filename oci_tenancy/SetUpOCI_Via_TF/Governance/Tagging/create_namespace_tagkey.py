@@ -81,7 +81,7 @@ def main():
             exit()
         resource='Tagging'
         srcdir = outdir + "/" + eachregion + "/"
-        commonTools.backup_file(srcdir, resource, "_tagging.tf")
+        commonTools.backup_file(srcdir, resource, "-tagging.tf")
 
 
     for reg in ct.all_regions:
@@ -168,7 +168,7 @@ def main():
                 key_tf_name = commonTools.check_tf_variable(columnvalue)
                 tempdict = {'description_keys':description_keys,'key_tf_name':key_tf_name}
 
-            if columnname == 'Tag Descriptopn':
+            if columnname == 'Tag Description':
                 description_keys = str(columnvalue).strip()
                 if columnvalue == '':
                     description_keys =  "Create Tag Key "+key_tf_name+" for Namespace - "+namespace_tf_name
@@ -210,7 +210,7 @@ def main():
 
         if defaulttagtemp[reg] != '':
 
-            outfile = outdir + "/" + reg + "/default-tags_tagging.tf"
+            outfile = outdir + "/" + reg + "/default-tags-tagging.tf"
             oname = open(outfile, "w+")
             print("Writing to ..."+outfile)
             oname.write(defaulttagtemp[reg])
@@ -218,7 +218,7 @@ def main():
 
         if namespacetemp[reg] != '':
 
-            outfile = outdir + "/" + reg + "/namespaces_tagging.tf"
+            outfile = outdir + "/" + reg + "/namespaces-tagging.tf"
             oname = open(outfile, "w+")
             print("Writing to ..."+outfile)
             oname.write(namespacetemp[reg])
@@ -226,7 +226,7 @@ def main():
 
         if tagkeytemp[reg] != '':
 
-            outfile = outdir + "/" + reg + "/tag-keys_tagging.tf"
+            outfile = outdir + "/" + reg + "/tag-keys-tagging.tf"
             oname = open(outfile, "w+")
             print("Writing to ..."+outfile)
             oname.write(tagkeytemp[reg])
