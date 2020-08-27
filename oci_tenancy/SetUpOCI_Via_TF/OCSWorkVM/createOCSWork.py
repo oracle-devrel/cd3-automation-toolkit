@@ -380,7 +380,9 @@ tmp_folder = Path("tmp")
 #If image OICD provided is null in properties value, pick the latest image of OS Oracle Linux
 if(input_image_id==''):
     for image in paginate(compute_client.list_images,compartment_id=tenancy_id,operating_system ='Oracle Linux',sort_by='TIMECREATED'):
-        if ("Gen2-GPU" not in image.display_name):
+        #print(image.display_name)
+        #if ("Gen2-GPU" not in image.display_name):
+        if ("Oracle-Linux-7.8-2020.07.28-0" in image.display_name):
             input_image_id=image.id
             break
 
