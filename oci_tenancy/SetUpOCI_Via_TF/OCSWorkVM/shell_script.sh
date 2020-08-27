@@ -31,6 +31,7 @@ pip3 install ipaddr
 pip3 install ipaddress
 pip3 install paramiko
 pip3 install Jinja2
+pip3 install simplejson
 sudo echo "export PYTHONPATH=${PYTHONPATH}:/opt/rh/rh-python36/root/usr/lib/python3.6/site-packages/" >> /root/.bashrc
 source /root/.bashrc
 
