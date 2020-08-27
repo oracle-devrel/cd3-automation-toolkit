@@ -800,14 +800,46 @@ if('8' in userInput):
 
     os.chdir('CoreInfra/Networking/LoadBalancers')
     if (input_config_file == ''):
-        command = 'python create_terraform_lbr.py '+inputfile + ' ' + outdir
-    else:
-        command = 'python create_terraform_lbr.py ' + inputfile + ' ' + outdir  + ' --configFileName ' + input_config_file
 
+        command = 'python create_terraform_lbr_hostname_certs.py '+inputfile + ' ' + outdir
+
+        command2 = 'python create_backendset_backendservers.py ' + inputfile + ' ' + outdir
+
+        command3 = 'python create_listener.py '+inputfile + ' ' + outdir
+
+        command4 = 'python create_path_route_set.py '+inputfile + ' ' + outdir
+
+        command5 = 'python create_ruleset.py '+inputfile + ' ' + outdir
+
+    else:
+
+        command = 'python create_terraform_lbr_hostname_certs.py ' + inputfile + ' ' + outdir  + ' --configFileName ' + input_config_file
+
+        command2 = 'python create_backendset_backendservers.py ' + inputfile + ' ' + outdir  + ' --configFileName ' + input_config_file
+
+        command3 = 'python create_listener.py '+inputfile + ' ' + outdir  + ' --configFileName ' + input_config_file
+
+        command4 = 'python create_path_route_set.py '+inputfile + ' ' + outdir  + ' --configFileName ' + input_config_file
+
+        command5 = 'python create_ruleset.py '+inputfile + ' ' + outdir  + ' --configFileName ' + input_config_file
+
+    print("\n------------------------Creating LB and Certificates---------------------------")
     print("Executing Command: " + command)
     os.system(command)
+    print("\n------------------------Creating Backend Sets and Backend Servers---------------------------")
+    print("Executing Command: " + command2)
+    os.system(command2)
+    print("\n------------------------Creating Listeners---------------------------")
+    print("Executing Command: " + command3)
+    os.system(command3)
+    print("\n------------------------Creating Path Route Sets---------------------------")
+    print("Executing Command: " + command4)
+    os.system(command4)
+    print("\n------------------------Creating RuleSets---------------------------")
+    print("Executing Command: " + command5)
+    os.system(command5)
     os.chdir("../..")
-    print("--------------------------------------------------------------------------")
+    print("\n--------------------------------------------------------------------------")
 
 if('9' in userInput):
     print("------------------------Creating ADW/ATP---------------------------")
