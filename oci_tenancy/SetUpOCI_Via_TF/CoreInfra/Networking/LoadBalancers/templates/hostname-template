@@ -3,7 +3,7 @@ resource "oci_load_balancer_hostname" "{{ host_tf_name }}_hostname" {
     #Required
     hostname = "{{ hostname }}"
     load_balancer_id = oci_load_balancer_load_balancer.{{ lbr_tf_name }}.id
-    name = "{{ hostname }}"
+    name = "{{ name }}"
 
     #Optional
     lifecycle {
