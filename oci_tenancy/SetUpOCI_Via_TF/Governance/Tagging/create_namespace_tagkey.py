@@ -85,11 +85,10 @@ def main():
 
 
     for reg in ct.all_regions:
-        if reg not in commonTools.endNames and  reg != 'nan':
-            tagnamespace_list[reg] = []
-            defaulttagtemp[reg] = ''
-            namespacetemp[reg] = ''
-            tagkeytemp[reg] = ''
+        tagnamespace_list[reg] = []
+        defaulttagtemp[reg] = ''
+        namespacetemp[reg] = ''
+        tagkeytemp[reg] = ''
 
     # temporary dictionary1 and dictionary2
     tempStr = {}
