@@ -195,14 +195,14 @@ def main():
             tempStr.update(tempdict)
 
         if str(df.loc[i,'Default Tag']).lower().strip() == '1.0' or str(df.loc[i,'Default Tag']).lower().strip() == 'true':
-            defaulttagtemp[region] = defaulttagtemp[region] + defaulttag.render(tempStr)
+            defaulttagtemp[reg] = defaulttagtemp[reg] + defaulttag.render(tempStr)
 
         if namespace_tf_name not in tagnamespace_list[region]:
-            namespacetemp[region] = namespacetemp[region]+ namespace.render(tempStr)
-            tagnamespace_list[region].append(namespace_tf_name)
+            namespacetemp[reg] = namespacetemp[reg]+ namespace.render(tempStr)
+            tagnamespace_list[reg].append(namespace_tf_name)
 
         # Write all info to TF string; Render template
-        tagkeytemp[region] = tagkeytemp[region] + tagkey.render(tempStr)
+        tagkeytemp[reg] = tagkeytemp[reg] + tagkey.render(tempStr)
 
     # Write TF string to the file in respective region directory
     for reg in ct.all_regions:
