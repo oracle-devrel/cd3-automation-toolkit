@@ -326,13 +326,13 @@ def main():
 			reg_out_dir = outdir + "/" + reg
 			if not os.path.exists(reg_out_dir):
 				os.makedirs(reg_out_dir)
+
+			srcdir = reg_out_dir + "/"
+			resource = 'Subnets'
+			commonTools.backup_file(srcdir, resource, "-subnets.tf")
+
 			outfile[reg] = reg_out_dir + "/" + prefix + '-subnets.tf'
 
-			x = datetime.datetime.now()
-			date = x.strftime("%f").strip()
-			if(os.path.exists(outfile[reg])):
-				print("creating backup file " + outfile[reg] + "_backup" + date)
-				shutil.copy(outfile[reg], outfile[reg] + "_backup" + date)
 			oname[reg] = open(outfile[reg], "w")
 			oname[reg].write(tfStr[reg])
 			oname[reg].close()
@@ -343,6 +343,11 @@ def main():
 			reg_out_dir = outdir + "/" + reg
 			if not os.path.exists(reg_out_dir):
 				os.makedirs(reg_out_dir)
+
+			srcdir = reg_out_dir + "/"
+			resource = 'Subnets'
+			commonTools.backup_file(srcdir, resource, "-subnets.tf")
+
 			outfile[reg] = reg_out_dir + "/" + prefix + '-subnets.tf'
 			if (tfStr[reg] != ''):
 				oname[reg] = open(outfile[reg], 'w')

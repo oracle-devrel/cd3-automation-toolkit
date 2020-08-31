@@ -154,6 +154,8 @@ def main():
 
             if columnname == "Disable Fallback (TRUE|FALSE)":
                 columnname = "disable_fallback"
+                if columnvalue == '':
+                    columnvalue = 'false'
 
             if columnname == "Backend HealthCheck\nProtocol\n(HTTP|TCP)":
                 columnname = "backend_healthcheck_protocol"
@@ -198,7 +200,7 @@ def main():
                         backup = "true"
                     else:
                         backup = "false"
-                tempback = {'backup' : backup,'backend_server_tf_name':backend_server_tf_name,'serverport':serverport,'backend_server_ip_address':backend_server_ip_address}
+                tempback = {'backup' : backup,'backend_server_tf_name': backend_set_tf_name+"-"+backend_server_tf_name,'serverport':serverport,'backend_server_ip_address':backend_server_ip_address}
                 tempStr.update(tempback)
 
                 # Render Backend Server

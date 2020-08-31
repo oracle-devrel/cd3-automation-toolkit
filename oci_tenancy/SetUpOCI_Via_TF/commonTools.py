@@ -182,6 +182,9 @@ class commonTools():
     # Split values for tagging
     def split_tag_values(columnname, columnvalue, tempdict):
         columnvalue = columnvalue.replace("\n", "")
+        # if comma is used as delimeter, replace it with ';'
+        if ',' in columnvalue:
+            columnvalue = columnvalue.replace(',',';')
         if ";" in columnvalue:
             # If there are more than one tag; split them by ";" and "="
             columnname = commonTools.check_column_headers(columnname)
@@ -212,6 +215,31 @@ class commonTools():
             if (type(col_name) == str):
                 values_for_column[col_name] = []
         yield values_for_column
+
+    # Export Tag fields - common code - Defined and Freeform Tags
+    # defined_tags_list and freeform_tags_list are empty lists
+    # headers - individual headers/coulmns
+    # col_headers - list of columns from read_cd3 function
+    def export_tags(resource,headers,col_headers,defined_tags_list,freeform_tags_list):
+        if 'defined' in str(headers).lower():
+            if (resource.__getattribute__('defined_tags')):
+                for namespace, tags in resource.__getattribute__('defined_tags').items():
+                    for key, value in tags.items():
+                        # Each Namespace/TagKey - Value pair ends with a ;
+                        value = str(namespace + "." + key + "=" + value)
+                        defined_tags_list.append(value)
+            else:
+                defined_tags_list.append("")
+            col_headers[headers].append(defined_tags_list)
+        elif 'free' in str(headers).lower():
+            if (resource.__getattribute__('freeform_tags')):
+                for keys, values in resource.__getattribute__('freeform_tags').items():
+                    value = str(keys + "=" + values)
+                    freeform_tags_list.append(value)
+            else:
+                freeform_tags_list.append("")
+            col_headers[headers].append(freeform_tags_list)
+        return col_headers
 
     # Write exported  rows to cd3
     def write_to_cd3(values_for_column, cd3file, sheet_name):
@@ -262,24 +290,28 @@ class commonTools():
             large = rows_len
         else:
             large = sheet_max_rows
-        print(large)
-        # Put Data
-        j = 0
-        for i in range(0, large):
-            # for j in range(0,len(rows[0])):
+        j=0
+        for i in range(0,large):
+            #for j in range(0,len(rows[0])):
             for col_name in values_for_column.keys():
-                if (i >= rows_len):
-                    sheet.cell(row=i + 3, column=j + 1).value = ""
-                    if not (isinstance(values_for_column[col_name][i], int)):
-                        if len(values_for_column[col_name][i]) > 1:
-                            for values in values_for_column[col_name][i]:
-                                sheet.cell(row=i + 3, column=j + 1).value = values
+                if(i>=rows_len):
+                    sheet.cell(row=i+3, column=j+1).value = ""
                 else:
-                    sheet.cell(row=i + 3, column=j + 1).value = values_for_column[col_name][i]
-                    #sheet.cell(row=i + 3, column=j + 1).value = values_for_column[col_name][i]
-                sheet.cell(row=i + 3, column=j + 1).alignment = Alignment(wrap_text=True)
-                j = j + 1
-            j = 0
+                    if (isinstance(values_for_column[col_name][i],list)):
+                        values_for_column[col_name][i] = (','.join(map(str, values_for_column[col_name][i])))
+
+                        # remove all the trailing and prreceeding commas
+                        values_for_column[col_name][i] = re.sub(r'^,+|,+$', '', values_for_column[col_name][i])
+
+                        # replace multiple commas in the sting with a single comma
+                        values_for_column[col_name][i] = re.sub(r'(,,){2,}', ',', values_for_column[col_name][i])
+
+                    sheet.cell(row=i+3, column=j+1).value = values_for_column[col_name][i]
+                sheet.cell(row=i+3, column=j+1).alignment = Alignment(wrap_text=True)
+                j=j+1
+            j=0
+
+
         brdr = Border(left=Side(style='thin'),
                       right=Side(style='thin'),
                       top=Side(style='thin'),

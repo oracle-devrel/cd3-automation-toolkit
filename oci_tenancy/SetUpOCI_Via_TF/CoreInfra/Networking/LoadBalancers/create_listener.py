@@ -173,7 +173,8 @@ def main():
                     path_route_set_tf_name = 'oci_load_balancer_path_route_set.'+columnvalue+'.name'
                 tempdict = {'path_route_set_tf_name' : path_route_set_tf_name}
 
-            if columnname == "LBR Hostnames":
+            if columnname == "LBR Hostnames\n(Name)":
+                columnname = 'lbr_hostnames'
                 if columnvalue != '':
                     lbr_hostnames =  str(columnvalue).strip().split(',')
                     if len(lbr_hostnames) == 1:

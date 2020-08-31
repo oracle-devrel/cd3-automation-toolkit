@@ -415,15 +415,10 @@ def main():
             outfile[reg] = reg_out_dir + "/" + prefix + '-major-objs.tf'
             outfile_dhcp[reg] = reg_out_dir + "/VCNs_Default_DHCP.tf"
 
-            x = datetime.datetime.now()
-            date = x.strftime("%f").strip()
-
-            if (os.path.exists(outfile[reg])):
-                print("creating backup file " + outfile[reg] + "_backup" + date)
-                shutil.copy(outfile[reg], outfile[reg] + "_backup" + date)
-            if (os.path.exists(outfile_dhcp[reg])):
-                print("creating backup file " + outfile_dhcp[reg] + "_backup" + date)
-                shutil.copy(outfile_dhcp[reg], outfile_dhcp[reg] + "_backup" + date)
+            srcdir = reg_out_dir + "/"
+            resource = 'MajorObjects'
+            commonTools.backup_file(srcdir, resource, "-major-objs.tf")
+            commonTools.backup_file(srcdir, resource, "/VCNs_Default_DHCP.tf")
 
             oname[reg] = open(outfile[reg], "w")
             oname[reg].write(tfStr[reg])
@@ -442,6 +437,11 @@ def main():
 
             if not os.path.exists(reg_out_dir):
                 os.makedirs(reg_out_dir)
+
+            srcdir = reg_out_dir + "/"
+            resource = 'MajorObjects'
+            commonTools.backup_file(srcdir, resource, "-major-objs.tf")
+            commonTools.backup_file(srcdir, resource, "/VCNs_Default_DHCP.tf")
 
             outfile[reg] = reg_out_dir + "/" + prefix + '-major-objs.tf'
             outfile_dhcp[reg] = reg_out_dir + "/VCNs_Default_DHCP.tf"
