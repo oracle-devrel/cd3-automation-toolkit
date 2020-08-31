@@ -206,7 +206,7 @@ def main():
             tempStr.update(tempdict)
 
         # Write all info to TF string; Render template
-        tfStr[reg] = tfStr[reg] + template.render(tempStr)
+        tfStr[region] = tfStr[region] + template.render(tempStr)
 
     # Write TF string to the file in respective region directory
     for reg in ct.all_regions:
