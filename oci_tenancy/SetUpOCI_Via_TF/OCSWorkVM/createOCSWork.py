@@ -415,40 +415,40 @@ for region in regions:
     dt = str(today.day) + calendar.month_name[today.month] + str(today.year)
 
     variables_data[region] = """variable "ssh_public_key" {
-            type = "string"
+            type = string
             default = \"""" + input_ssh_key1 + """"
     }
     variable "tenancy_ocid" {
-            type = "string"
+            type = string
             default = \"""" + tenancy_id + """"
     }
     variable "user_ocid" {
-            type = "string"
+            type = string
             default = \"""" + python_config['user'] + """"
     }
     variable "compartment_ocid" {
-            type = "string"
+            type = string
             default = \"""" + vm_compartment_ocid + """"
     }
     variable "ntk_compartment_ocid" {
-            type = "string"
+            type = string
             default = \"""" + ntk_compartment_ocid + """"
     }
     #Added below variable because tf file generated through Koala uses this variable for network components
     variable "compartment_id" {
-            type = "string"
+            type = string
             default = \"""" + ntk_compartment_ocid + """"
     }
     variable "fingerprint" {
-            type = "string"
+            type = string
             default = \"""" + python_config['fingerprint'] + """"
     }
     variable "private_key_path" {
-            type = "string"
+            type = string
             default = "/root/ocswork/keys/oci_api_key.pem"
     }
     variable "region" {
-            type = "string"
+            type = string
             default = \"""" + ct.region_dict[region] + """"
     }
     """
@@ -456,24 +456,24 @@ for region in regions:
         variables_data[region] = variables_data[region] + """
     #Example for OS value 'Windows' in Instances sheet
     variable "Windows" {
-            type = "string"
+            type = string
             default = \"""" + windows_image_id[region] + """"
             description = "Latest ocid as on """ + dt + """"
     }
     variable "windows_latest_ocid" {
-            type = "string"
+            type = string
             default = \"""" + windows_image_id[region] + """"
     }"""
     if (linux_image_id[region] != ''):
         variables_data[region] = variables_data[region] + """
     #Example for OS value 'Linux' in Instances sheet
     variable "Linux"{
-            type = "string"
+            type = string
             default = \"""" + linux_image_id[region] + """"
             description = "Latest ocid as on """ + dt + """"
     }
     variable "linux_latest_ocid"{
-            type = "string"
+            type = string
             default = \"""" + linux_image_id[region] + """"
     }"""
     write_file("variables_"+region+".tf", variables_data[region])
@@ -491,11 +491,11 @@ write_file("ocs_public_keys.txt",public_key_data)
 #Writing Terraform config files provider.tf and variables.tf
 provider_data="""provider "oci" {
   version          = ">= 3.0.0"
-  tenancy_ocid     = "${var.tenancy_ocid}"
-  user_ocid        = "${var.user_ocid}"
-  fingerprint      = "${var.fingerprint}"
-  private_key_path = "${var.private_key_path}"
-  region           = "${var.region}"
+  tenancy_ocid     = var.tenancy_ocid
+  user_ocid        = var.user_ocid
+  fingerprint      = var.fingerprint
+  private_key_path = var.private_key_path
+  region           = var.region
 }"""
 write_file("provider.tf",provider_data)
 
@@ -520,29 +520,29 @@ if (input_configure_panda=="1"):
 
     #write TF file for OCIC TF Provider
     provider_panda_data = """provider "opc" {
-user            = "${var.user}"
-password        = "${var.password}"
+user            = var.user
+password        = var.password
 identity_domain = \"""" + input_ocic_identity_domain + """"
-endpoint        = "${var.endpoint}"
+endpoint        = var.endpoint
 }"""
     write_file("ocic-provider.tf", provider_panda_data)
 
     # write TF file for for OCIC TF Variables
     variables_panda_data="""
 variable "user" {
-        type = "string"
+        type = string
         default = \"""" + input_ocic_username + """"
 }
 variable "password" {
-        type = "string"
+        type = string
         default = \"""" + input_ocic_password + """"
 }
 variable "endpoint" {
-        type = "string"
+        type = string
         default = \"""" + input_ocic_compute_endpoint + """"
 }
 variable "domain" {
-       type = "string"
+       type = string
        default = \"""" + input_ocic_identity_domain + """"
 }
 """
@@ -572,18 +572,18 @@ resource "opc_compute_instance" "panda_new" {
  image_list = "/oracle/public/OL_7.5_UEKR4_x86_64_MIGRATION"
 
   storage {
-    volume = "${opc_compute_storage_volume.panda_boot_vol.name}"
+    volume = opc_compute_storage_volume.panda_boot_vol.name
     index  = 1
   }
    networking_info {
    index          = 0
-   nat            =["${opc_compute_ip_reservation.panda_new.name}"]
+   nat            =[opc_compute_ip_reservation.panda_new.name]
    shared_network = true
   }
 
   networking_info {
    index          = 1
-   ip_network     = "${opc_compute_ip_network.panda_new.id}"
+   ip_network     = opc_compute_ip_network.panda_new.id
    shared_network = false
    vnic = \"""" + input_ocic_tf_prefix_for_panda + """_Panda-OCIC2OCI-vnic"
    """
@@ -591,7 +591,7 @@ resource "opc_compute_instance" "panda_new" {
     tf_data = tf_data + """"]
     
  }
- ssh_keys = ["${opc_compute_ssh_key.OCS-Panda-ssh-key.name}"]
+ ssh_keys = [opc_compute_ssh_key.OCS-Panda-ssh-key.name]
 
 }
 resource "opc_compute_ssh_key" "OCS-Panda-ssh-key" {
