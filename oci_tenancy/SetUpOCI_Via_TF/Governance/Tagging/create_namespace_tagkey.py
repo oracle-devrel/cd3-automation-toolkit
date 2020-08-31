@@ -72,17 +72,10 @@ def main():
     # Take backup of files
     for eachregion in unique_region:
         eachregion = str(eachregion).strip().lower()
-        if (eachregion in commonTools.endNames):
-            break
-        if eachregion == 'nan':
-            continue
-        if eachregion not in ct.all_regions:
-            print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
-            exit()
+
         resource='Tagging'
         srcdir = outdir + "/" + eachregion + "/"
         commonTools.backup_file(srcdir, resource, "-tagging.tf")
-
 
     for reg in ct.all_regions:
         tagnamespace_list[reg] = []
@@ -123,8 +116,7 @@ def main():
         check_diff_region = []
         # Get a list of unique region names
         for j in regions.index:
-            if (regions[j] not in check_diff_region and regions[j] not in commonTools.endNames and str(
-                    regions[j]).lower() != "nan"):
+            if (regions[j] not in check_diff_region and regions[j] not in commonTools.endNames and str(regions[j]).lower() != "nan"):
                 check_diff_region.append(regions[j])
 
         # Regions listed in Policies tab should be same for all rows as policies can only be created in home region
