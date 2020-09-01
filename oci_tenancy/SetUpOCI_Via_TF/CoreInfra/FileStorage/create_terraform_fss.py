@@ -136,7 +136,8 @@ def main():
             else:
                 return "null"
         except Exception as e:
-            print(e)
+            pass
+            #print(e)
 
     for i in df.index:
 
@@ -185,7 +186,7 @@ def main():
             tempdict = commonTools.check_multivalues_columnvalue(columnvalue, columnname, tempdict)
 
             # Process Defined Tags and Freeform Tags
-            if columnname in commonTools.tagColumns:
+            if columnname.lower() in commonTools.tagColumns:
                 tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)
                 tempStr.update(tempdict)
 
@@ -315,7 +316,10 @@ def main():
         if (tempStr_fss[r] != ""):
             outfile = outdir + "/" + r + "/FSS.tf"
             if (os.path.exists(outfile)):
-                shutil.copy(outfile, outfile + "_backUp" + date)
+                srcdir = outdir + "/" + r + "/"
+                resource = 'FSS'
+                commonTools.backup_file(srcdir, resource, "FSS.tf")
+
             oname = open(outfile, "w")
             print("Writing " + outfile)
             oname.write(tempStr_fss[r])

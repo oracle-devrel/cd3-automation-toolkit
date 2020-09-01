@@ -18,6 +18,6 @@ resource "oci_load_balancer_listener" "{{ listener_tf_name }}" {
     {% if usessl == 'y' %}
     ssl_configuration {
         #Required
-        certificate_name = oci_load_balancer_certificate.{{ certificate_tf_name }}.name
+        certificate_name = oci_load_balancer_certificate.{{ certificate_tf_name }}.certificate_name
     }{% endif %}
 }

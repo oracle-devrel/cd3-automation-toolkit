@@ -109,6 +109,9 @@ def main():
 
             region = str(dfcert.loc[i, 'Region']).strip().lower()
 
+            if region in commonTools.endNames:
+                break
+
             # Fetch data; loop through columns
             for columnname in dfcolumns:
 
@@ -122,7 +125,7 @@ def main():
                 tempdict = commonTools.check_multivalues_columnvalue(columnvalue,columnname,tempdict)
 
                 # Process Defined and Freeform Tags
-                if columnname in commonTools.tagColumns:
+                if columnname.lower() in commonTools.tagColumns:
                     tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)
 
                 if columnname == "LBR Name":
@@ -143,7 +146,7 @@ def main():
                 tempStr.update(tempdict)
 
             if certificate_tf_name != '' and certificate_tf_name.lower() != 'nan':
-                certificate_str[region] = certificate_str[region] + certficate.render(tempStr)
+                certificate_str[region] =  certficate.render(tempStr)
 
             # Write to TF file
             outfile = outdir + "/" + region + "/"+certificate_tf_name+"-certificate-lb.tf"
@@ -193,7 +196,7 @@ def main():
             tempdict = commonTools.check_multivalues_columnvalue(columnvalue,columnname,tempdict)
 
             # Process Defined and Freeform Tags
-            if columnname in commonTools.tagColumns:
+            if columnname.lower() in commonTools.tagColumns:
                 tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)
 
             if columnname == "Is Private(True|False)":

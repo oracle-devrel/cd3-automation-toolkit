@@ -127,7 +127,7 @@ def main():
             tempdict = commonTools.check_multivalues_columnvalue(columnvalue,columnname,tempdict)
 
             # Process Defined and Freeform Tags
-            if columnname in commonTools.tagColumns:
+            if columnname.lower() in commonTools.tagColumns:
                 tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)
 
             if columnname == "Compartment Name":
@@ -139,7 +139,7 @@ def main():
                 tempdict = {'lbr_tf_name': lbr_tf_name}
 
             if columnname == "Certificate Name":
-                certificate_tf_name = commonTools.check_tf_variable(columnvalue)
+                certificate_tf_name = commonTools.check_tf_variable(columnvalue)+"_cert"
                 tempdict = {'certificate_tf_name': certificate_tf_name}
 
             if columnname == "Backend Set Name":

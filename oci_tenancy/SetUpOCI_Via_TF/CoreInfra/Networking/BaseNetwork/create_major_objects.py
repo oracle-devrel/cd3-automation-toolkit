@@ -372,7 +372,7 @@ def main():
             tempdict = commonTools.check_multivalues_columnvalue(columnvalue,columnname,tempdict)
 
             # Process Defined Tags and Freeform Tags
-            if columnname in commonTools.tagColumns:
+            if columnname.lower() in commonTools.tagColumns:
                 tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)
 
             if columnname == 'Compartment Name':

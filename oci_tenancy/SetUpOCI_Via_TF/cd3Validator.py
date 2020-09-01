@@ -72,11 +72,11 @@ def get_vcn_ids(compartment_ids,config):
 #Checks for special characters in dns_label name
 def checklabel(lable,count):
     present=False
-    lable = str(lable)
+    lable = str(lable).strip()
     if (lable == "Nan") or (lable == "") or (lable == "NaN") or (lable == "nan"):
         pass
     else:
-        regex = re.compile('[@_!#$%^&*()<>?/\|}{~:]')
+        regex = re.compile('[@_!#$%^&* ()<>?/\|}{~:]')
         if (regex.search(lable) == None):
             pass
         else:

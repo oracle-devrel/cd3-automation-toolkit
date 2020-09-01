@@ -6,7 +6,9 @@ resource "oci_load_balancer_backend_set" "{{ backend_set_tf_name }}" {
         protocol = "{{ backend_healthcheck_protocol }}"
 
         #Optional
+        {% if port != '' %}
         port = "{{ backend_healthcheck_port }}"
+        {% endif %}
         {% if backend_healthcheck_protocol == 'HTTP' %}
         url_path = "{{ backend_healthcheck_url }}"
         {% endif %}

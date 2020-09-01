@@ -213,12 +213,19 @@ DestType': 6, 'Destination': 7, 'SPortMin': 8, 'SPortMax': 9, 'DPortMin': 10, 'D
 def NSGtemplate(nsgParser, key, value, outdir, columnname):
     """Required: compartment_id and vcn_id"""
     columnvalue=''
-    compartment_var_name = key[0].strip()
+    if str(key[0]).lower() == 'nan':
+        print("\n Compartment Name cannot be left empty....Exiting!!")
+        exit(1)
+    if str(key[2]).lower() == 'nan':
+        print(str(key[2]))
+        print("\n NSG Name cannot be left empty....Exiting!!")
+        exit(1)
+    compartment_var_name = str(key[0]).strip()
     # Added to check if compartment name is compatible with TF variable name syntax
     compartment_tf_name = commonTools.check_tf_variable(compartment_var_name)
-    nsg_tf_name = commonTools.check_tf_variable(key[2])
-    vcn_tf_name = commonTools.check_tf_variable(key[1])
-    tempDict = {'compartment_tf_name': compartment_tf_name, 'display_name': key[2], 'nsg_tf_name': nsg_tf_name,
+    nsg_tf_name = commonTools.check_tf_variable(str(key[2]))
+    vcn_tf_name = commonTools.check_tf_variable(str(key[1]))
+    tempDict = {'compartment_tf_name': compartment_tf_name, 'display_name': str(key[2]), 'nsg_tf_name': nsg_tf_name,
                 'vcn_tf_name': vcn_tf_name}
 
     #Dictionary of column headers : column value
@@ -255,19 +262,19 @@ def NSGtemplate(nsgParser, key, value, outdir, columnname):
 
         tempStr.update(tempDict)
         #NSG template; Write only for the first apperance.
-        nsg_name = commonTools.check_tf_variable(key[2])
+        nsg_name = commonTools.check_tf_variable(str(key[2]))
 
         resource_group = template.render(tempStr)
         if nsg_done == [] :
             nsg_done.append(nsg_name)
-            with open(outdir + "/{}_nsg.tf".format(commonTools.check_tf_variable(key[2])), 'w') as f:
+            with open(outdir + "/{}_nsg.tf".format(commonTools.check_tf_variable(str(key[2]))), 'w') as f:
                 f.write(resource_group)
         else:
             if nsg_name not in nsg_done:
-                with open(outdir + "/{}_nsg.tf".format(commonTools.check_tf_variable(key[2])), 'w') as f:
+                with open(outdir + "/{}_nsg.tf".format(commonTools.check_tf_variable(str(key[2]))), 'w') as f:
                     f.write(resource_group)
 
-        with open(outdir + "/{}_nsg.tf".format(commonTools.check_tf_variable(key[2])), 'a') as f:
+        with open(outdir + "/{}_nsg.tf".format(commonTools.check_tf_variable(str(key[2]))), 'a') as f:
 
             null_rule = 0
             for i in range(1,3):
@@ -287,16 +294,16 @@ def NSGtemplate(nsgParser, key, value, outdir, columnname):
             f.write(nsg_rule)
             ruleindex += 1
         f.close()
-    print("\n"+outdir + "/{}_nsg.tf".format(key[2]) + " containing TF for NSG has been created")
+    print(outdir + "/{}_nsg.tf".format(key[2]) + " containing TF for NSG has been created")
 
 
 def NSGrulesTemplate(nsgParser, rule, index, tempStr):
     if(str(rule[14]).lower()=='nan'):
         rule[14]=""
 
-    nsg_rule_tf_name = commonTools.check_tf_variable(rule[0])+"_security_rule"+str(index)
-    direction = rule[1].upper()
-    protocol = getProtocolNumber(rule[2])
+    nsg_rule_tf_name = commonTools.check_tf_variable(str(rule[0]))+"_security_rule"+str(index)
+    direction = str(rule[1]).upper()
+    protocol = getProtocolNumber(str(rule[2]))
     tempdict = { 'nsg_rule_tf_name' : nsg_rule_tf_name, 'direction' : direction, 'protocol_code' : protocol}
     tempStr.update(tempdict)
 
@@ -359,6 +366,13 @@ def main():
     headerDict = nsgParser.getHeaderDict()
     listOfRegions = nsgParser.regions
 
+    # Backup of existing NSG files
+    for reg in ct.all_regions:
+        if (os.path.exists(outdir + "/" + reg)):
+            resource = "NSG"
+            print("Backing up all existing NSG TF files for region " + reg + " to")
+            commonTools.backup_file(outdir + "/" + reg, resource, "_nsg.tf")
+
     # creates all region directories in specified out directory
     for region in listOfRegions:
         if (region in commonTools.endNames):
@@ -384,13 +398,6 @@ def main():
         if region not in ct.all_regions:
             print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
             exit(1)
-
-        # Backup of existing NSG files
-        for region in ct.all_regions:
-            if (os.path.exists(outdir + "/" + region)):
-                resource = "NSG"
-                print("Backing up all existing NSG TF files for region " + region + " to")
-                commonTools.backup_file(outdir + "/" + region, resource, "_nsg.tf")
 
         # with open(outdir + "/{}/{}-NSG.tf".format(region,region), 'w') as f:
         reg_outdir = outdir + "/" + region

@@ -34,7 +34,7 @@ def main():
         sys.exit(1)
 
     args = parser.parse_args()
-    inputfile = args.inputfile
+    filename = args.inputfile
     outdir=args.outdir
     if args.configFileName is not None:
         configFileName = args.configFileName
@@ -62,7 +62,7 @@ def main():
         new_route_rule = new_route_rule + routerule.render(tempStr)
         return new_route_rule
 
-    vcns=parseVCNs(inputfile)
+    vcns=parseVCNs(filename)
 
     # Read cd3 using pandas dataframe
     df, col_headers = commonTools.read_cd3(filename, "RouteRulesinOCI")
@@ -124,7 +124,7 @@ def main():
             tempdict = commonTools.check_multivalues_columnvalue(columnvalue,columnname,tempdict)
 
             # Process Defined and Freeform Tags
-            if columnname in commonTools.tagColumns:
+            if columnname.lower() in commonTools.tagColumns:
                 tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)
                 tempStr.update(tempdict)
 
@@ -146,7 +146,7 @@ def main():
                 if columnvalue == '':
                     continue
                 else:
-                    columnvalue = commonTools.check_tf_variable(str(columnvalue).strip())
+                    columnvalue = vcn_tf_name+"_"+commonTools.check_tf_variable(str(columnvalue).strip())
                     tempdict = {'rt_tf_name' :  columnvalue}
                     add_rules_tf_name = columnvalue
                     tempStr.update(tempdict)
@@ -178,8 +178,7 @@ def main():
                     tempStr.update(tempdict)
 
             destination = str(df.loc[i,'Destination CIDR']).strip()
-            if "oci" not in destination:
-                destination = "\""+destination+"\""
+            destination = "\""+destination+"\""
             description = str(df.loc[i,'Rule Description']).strip()
             if description == 'nan':
                 description = ""

@@ -97,6 +97,9 @@ def main():
         if str(df.loc[i,'Attached To Instance']).lower()  != 'nan' and str(df.loc[i,'Attach Type\n(iscsi|paravirtualized)']).lower()  == 'nan' :
             print("Attach Type cannot be left empty if you want to attach  the volume to instance "+df.loc[i,'Attached  To Instance']+". Please enter a value and try again !!")
             exit()
+        elif str(df.loc[i,'Attach Type\n(iscsi|paravirtualized)']).lower()  != 'nan' and str(df.loc[i,'Attached To Instance']).lower()  == 'nan' :
+            print("Attached To Instance cannot be left empty if Attachment Type is "+df.loc[i,'Attach Type\n(iscsi|paravirtualized)']+". Please enter a value and try again !!")
+            exit()
 
         blockname_tf = commonTools.check_tf_variable(df.loc[i, 'Block Name'])
         tempStr['block_tf_name'] = blockname_tf
@@ -120,7 +123,7 @@ def main():
                 tempdict = {'compartment_tf_name': columnvalue}
 
             # Process Freeform Tags and Defined Tags
-            if columnname in commonTools.tagColumns:
+            if columnname.lower() in commonTools.tagColumns:
                 tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)
 
             if columnname == "Availability Domain\n(AD1|AD2|AD3)":

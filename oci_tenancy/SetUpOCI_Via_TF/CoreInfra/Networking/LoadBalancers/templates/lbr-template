@@ -4,7 +4,7 @@ resource "oci_load_balancer_load_balancer" "{{ lbr_tf_name }}" {
     compartment_id = var.{{ compartment_tf_name }}
     display_name = "{{ lbr_name }}"
     shape = "{{ lbr_shape }}"
-    subnet_ids =  ["{{ lbr_subnets }}"]
+    subnet_ids =  [ {{ lbr_subnets }} ]
 
     #Optional
     is_private = {{ is_private }}
