@@ -228,6 +228,9 @@ def main():
 
         outfile[reg] = reg_out_dir + "/" + prefix + '-policies.tf'
 
+        #If the excel sheet has <end> in first row; exit; no rows to process
+        if str(regions[0]) in commonTools.endNames:
+            exit(1)
         oname[reg] = open(outfile[reg], 'w')
         oname[reg].write(tempStr)
         oname[reg].close()
