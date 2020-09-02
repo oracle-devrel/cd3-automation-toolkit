@@ -206,7 +206,8 @@ def fetch_dhcplist_vcn_cidrs(filename):
 def validate_subnets(filename,comp_ids,vcnobj):
 
     # Read the Subnets tab from excel
-    df = pd.read_excel(filename, sheet_name='Subnets', skiprows=1)
+    df, col_headers = commonTools.read_cd3(filename, "Subnets")
+
     #Drop null values
     df = df.dropna(how='all')
     #Reset index
@@ -306,8 +307,8 @@ def validate_subnets(filename,comp_ids,vcnobj):
             subnet_dnswrong_check = checklabel(dns_value, count)
 
         # Check if the Service and Internet gateways are set appropriately; if not display the message;
-        sgw_value=str(df.loc[i,'Configure SGW Route\n(n|object_storage|all_services)'])
-        igw_value = str(df.loc[i,'Configure IGW Route (y|n)'])
+        sgw_value=str(df.loc[i,'Configure SGW Route(n|object_storage|all_services)'])
+        igw_value = str(df.loc[i,'Configure IGW Route(y|n)'])
         if(igw_value.lower()!="nan" and sgw_value.lower()!="nan"):
             if (igw_value.lower() == "y" and sgw_value.lower() == "all_services"):
                 logging.log(60,"ROW " + str(count+2) + " : Internet Gateway target cannot be used together with Service Gateway target for All Services in the same routing table. Change either the value of SGW or IGW configure route !!")
@@ -385,7 +386,8 @@ def validate_vcns(filename,comp_ids,vcnobj):#,vcn_cidrs,vcn_compartment_ids):
     vcn_ids = get_vcn_ids(comp_ids, config)
 
     #Read the VCNs tab from excel
-    df = pd.read_excel(filename, sheet_name='VCNs', skiprows=1)
+    df, col_headers = commonTools.read_cd3(filename, "VCNs")
+
     # Drop null values
     df = df.dropna(how='all')
     # Reset index
@@ -554,7 +556,8 @@ def validate_vcns(filename,comp_ids,vcnobj):#,vcn_cidrs,vcn_compartment_ids):
 #Checks if the fields in DHCP tab are compliant
 def validate_dhcp(filename,comp_ids,vcnobj):
     #Read DHCP tab from excel
-    df = pd.read_excel(filename, sheet_name='DHCP', skiprows=1)
+    df, col_headers = commonTools.read_cd3(filename, "DHCP")
+
     #Drop null values
     df = df.dropna(how='all')
     #Reset index
