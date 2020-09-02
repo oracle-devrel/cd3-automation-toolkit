@@ -552,10 +552,10 @@ def main():
             if (str(df.loc[i, 'Region']).lower() == 'nan' or str(df.loc[i, 'Compartment Name']).lower() == 'nan' or str(
                     df.loc[i, 'VCN Name']).lower() == 'nan' or
                     str(df.loc[i, 'Subnet Name']).lower() == 'nan' or str(df.loc[i, 'CIDR Block']).lower() == 'nan' or str(
-                        df.loc[i, 'Availability Domain\n(AD1|AD2|AD3|Regional)']).lower() == 'nan' or
+                        df.loc[i, 'Availability Domain(AD1|AD2|AD3|Regional)']).lower() == 'nan' or
                     str(df.loc[i, 'Type(private|public)']).lower() == 'nan' or str(
-                        df.loc[i, 'Configure SGW Route\n(n|object_storage|all_services)']).lower() == 'nan' or str(df.loc[i, 'Configure NGW Route\n(y|n)']).lower() == 'nan' or
-                    str(df.loc[i, 'Configure IGW Route (y|n)']).lower() == 'nan' or str(df.loc[i, 'Configure OnPrem Route (y|n)']).lower() == 'nan' or str(df.loc[i, 'Configure VCNPeering\nRoute (y|n)']).lower() == 'nan'):
+                        df.loc[i, 'Configure SGW Route(n|object_storage|all_services)']).lower() == 'nan' or str(df.loc[i, 'Configure NGW Route(y|n)']).lower() == 'nan' or
+                    str(df.loc[i, 'Configure IGW Route(y|n)']).lower() == 'nan' or str(df.loc[i, 'Configure OnPrem Route(y|n)']).lower() == 'nan' or str(df.loc[i, 'Configure VCNPeering Route(y|n)']).lower() == 'nan'):
                 print("\nERROR!!! Column Values (except DHCP Option Name, Route Table Name, Seclist Name or DNS Label) or Rows cannot be left empty in Subnets sheet in CD3..Exiting!")
                 exit(1)
 
@@ -584,27 +584,27 @@ def main():
                     compartment_var_name = commonTools.check_tf_variable(compartment_var_name)
                     tempdict = {'compartment_tf_name' : compartment_var_name }
 
-                if columnname == 'Configure SGW Route\n(n|object_storage|all_services)':
+                if columnname == 'Configure SGW Route(n|object_storage|all_services)':
                     columnname = 'configure_sgw_route'
                     columnvalue = columnvalue.lower().strip()
                     tempdict = { 'configure_sgw_route' : columnvalue }
 
-                if columnname == 'Configure NGW Route\n(y|n)':
+                if columnname == 'Configure NGW Route(y|n)':
                     columnname = 'configure_ngw_route'
                     columnvalue = columnvalue.lower().strip()
                     tempdict = {'configure_ngw_route' : columnvalue }
 
-                if columnname == 'Configure IGW Route (y|n)':
+                if columnname == 'Configure IGW Route(y|n)':
                     columnname = 'configure_igw_route'
                     columnvalue = columnvalue.lower().strip()
                     tempdict = {'configure_igw_route' : columnvalue }
 
-                if columnname == 'Configure OnPrem Route (y|n)':
+                if columnname == 'Configure OnPrem Route(y|n)':
                     columnname = 'configure_onprem_route'
                     columnvalue = columnvalue.lower().strip()
                     tempdict = {'configure_onprem_route' : columnvalue }
 
-                if columnname == 'Configure VCNPeering\nRoute (y|n)':
+                if columnname == 'Configure VCNPeering Route(y|n)':
                     columnname = 'configure_vcnpeering_route'
                     columnvalue = columnvalue.lower().strip()
                     tempdict = {'configure_vcnpeering_route' : columnvalue }

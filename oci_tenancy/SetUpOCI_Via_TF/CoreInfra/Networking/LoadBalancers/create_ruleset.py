@@ -167,7 +167,7 @@ def main():
         srcStr="## Add_rules_here ##"
 
         #Check if mandatory field is empty
-        if (str(df.loc[i,'Action']).lower() == 'CONTROL_ACCESS_USING_HTTP_METHODS') and (str(df.loc[i,'Allowed Methods']).lower() == 'nan'):
+        if (str(df.loc[i,'Action']).upper() == 'CONTROL_ACCESS_USING_HTTP_METHODS') and (str(df.loc[i,'Allowed Methods']).lower() == 'nan'):
             print("\nAllowed Methods cannot be left empty when Action is CONTROL_ACCESS_USING_HTTP_METHODS.....Exiting!")
             exit(1)
 
@@ -216,7 +216,7 @@ def main():
             if columnname.lower() in commonTools.tagColumns:
                 tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)
 
-            if columnname == 'Allow Invalid Characters (TRUE|FALSE)':
+            if columnname == 'Allow Invalid Characters(TRUE|FALSE)':
                 columnname = 'allow_invalid_characters'
 
             if columnname == 'HTTP Header Size(in kB)':
@@ -236,7 +236,7 @@ def main():
                     tempdict = {'rule_set_tf_name': rule_set_tf_name}
                     tempStr.update(tempdict)
 
-            if columnname == 'Redirect URI\nHost:Port':
+            if columnname == 'Redirect URI Host:Port':
                 if columnvalue != '':
                     columnname = 'redirect_uri_host_port'
                     columnvalue = str(columnvalue).strip().split(':')
@@ -245,7 +245,7 @@ def main():
                 tempdict = {'host':host, 'port':port}
                 tempStr.update(tempdict)
 
-            if columnname == 'Redirect URI\nProtocol:Path':
+            if columnname == 'Redirect URI Protocol:Path':
                 columnname = 'redirect_uri_protocol_path'
                 if columnvalue != '':
                     columnvalue = str(columnvalue).strip().split(':')
@@ -255,7 +255,7 @@ def main():
                 tempStr.update(tempdict)
 
 
-            if columnname == 'Suffix or Prefix\n(suffix:<value>|prefix:<value>)':
+            if columnname == 'Suffix or Prefix (suffix:<value>|prefix:<value>)':
                 columnname = 'suffix_or_prefix'
                 if columnvalue != '':
                     columnvalue = str(columnvalue).strip().split(',')

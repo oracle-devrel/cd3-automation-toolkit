@@ -247,7 +247,7 @@ def main():
                 print("\nERROR!!! " + vcn_name + " specified in Subnets tab has not been declared in VCNs tab..Exiting!")
                 exit(1)
 
-            if columnname == 'Availability Domain\n(AD1|AD2|AD3|Regional)':
+            if columnname == 'Availability Domain(AD1|AD2|AD3|Regional)':
                 columnname = 'availability_domain'
                 columnvalue = columnvalue.strip()
 

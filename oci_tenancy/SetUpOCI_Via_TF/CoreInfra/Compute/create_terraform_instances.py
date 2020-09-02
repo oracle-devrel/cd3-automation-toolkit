@@ -115,7 +115,7 @@ def main():
 
         # Check if values are entered for mandatory fields
         if (str(df.loc[i, 'Region']).lower() == 'nan' or str(df.loc[i, 'Hostname']).lower() == 'nan' or str(df.loc[i, 'Shape']).lower() == 'nan' or str(df.loc[i, 'Compartment Name']).lower() == 'nan' or str(df.loc[i, 'Pub Address']).lower() == 'nan' or str(
-                df.loc[i, 'Availability Domain\n(AD1|AD2|AD3)']).lower() == 'nan' or str(df.loc[i, 'Subnet Name']).lower() == 'nan' or str(df.loc[i, 'OS']).lower() == 'nan'):
+                df.loc[i, 'Availability Domain(AD1|AD2|AD3)']).lower() == 'nan' or str(df.loc[i, 'Subnet Name']).lower() == 'nan' or str(df.loc[i, 'OS']).lower() == 'nan'):
             print("\nColumn Region, Shape, Compartment Name, Availability Domain, Hostname, Pub Address, OS and Subnet Name cannot be left empty in Instances sheet of CD3..exiting...")
             exit(1)
 
@@ -153,7 +153,7 @@ def main():
                 compartment_var_name = commonTools.check_tf_variable(compartment_var_name)
                 tempdict = {'compartment_tf_name': compartment_var_name}
 
-            if columnname == 'Availability Domain\n(AD1|AD2|AD3)':
+            if columnname == 'Availability Domain(AD1|AD2|AD3)':
                 columnname = 'availability_domain'
                 AD = columnvalue.upper()
                 ad = ADS.index(AD)

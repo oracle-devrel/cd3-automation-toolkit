@@ -213,7 +213,7 @@ def main():
             if columnname == "Shape(100Mbps|400Mbps|8000Mbps)":
                 columnname = 'lbr_shape'
 
-            if columnname == "LBR Hostname\n(Name:Hostname)":
+            if columnname == "LBR Hostname(Name:Hostname)":
                 columnname = "lbr_hostname"
 
             if columnname == 'LBR Subnets':

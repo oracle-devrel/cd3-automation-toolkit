@@ -166,7 +166,7 @@ def main():
         if (str(df.loc[i, 'Path']).lower() == 'nan' or str(
                 df.loc[i, 'FSS Name']).lower() == 'nan'
                 or str(df.loc[i, 'Compartment Name']).lower() == 'nan' or str(
-                    df.loc[i, 'Availability Domain\n(AD1|AD2|AD3)']).lower() == 'nan' or str(
+                    df.loc[i, 'Availability Domain(AD1|AD2|AD3)']).lower() == 'nan' or str(
                     df.loc[i, 'MountTarget Name']).lower() == 'nan'):
             print("\nColumns Compartment Name, Availability Domain, MountTarget Name, MountTarget SubnetName, FSS Name and path cannot be left blank..Exiting!")
             exit()
@@ -195,7 +195,7 @@ def main():
                 tempdict = {'compartment_tf_name': compartment_tf_name}
                 tempStr.update(tempdict)
 
-            if columnname == 'Availability Domain\n(AD1|AD2|AD3)':
+            if columnname == 'Availability Domain(AD1|AD2|AD3)':
                 columnname = 'availability_domain'
                 if columnvalue != '':
                     AD = columnvalue.upper()

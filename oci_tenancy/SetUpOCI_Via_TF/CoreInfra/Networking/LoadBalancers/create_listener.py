@@ -144,6 +144,10 @@ def main():
                 lbr_tf_name = commonTools.check_tf_variable(columnvalue)
                 tempdict = {'lbr_tf_name': lbr_tf_name}
 
+            if columnname == "Certificate Name":
+                certificate_tf_name = commonTools.check_tf_variable(columnvalue)+"_cert"
+                tempdict = {'certificate_tf_name': certificate_tf_name}
+
             if columnname == "Backend Set Name":
                 backend_set_tf_name = commonTools.check_tf_variable(columnvalue)
                 tempdict = {'backend_set_tf_name': backend_set_tf_name}
@@ -169,7 +173,7 @@ def main():
                     path_route_set_tf_name = 'oci_load_balancer_path_route_set.'+columnvalue+'.name'
                 tempdict = {'path_route_set_tf_name' : path_route_set_tf_name}
 
-            if columnname == "LBR Hostnames\n(Name)":
+            if columnname == "LBR Hostnames (Name)":
                 columnname = 'lbr_hostnames'
                 if columnvalue != '':
                     lbr_hostnames =  str(columnvalue).strip().split(',')
@@ -193,14 +197,14 @@ def main():
                     rule_sets = str(columnvalue).strip().split(',')
                     if len(rule_sets) == 1:
                         for rule in rule_sets:
-                            rule_set_names = 'oci_load_balancer_rule_set.'+lbr_tf_name+"_"+rule+'.name'
+                            rule_set_names = 'oci_load_balancer_rule_set.'+lbr_tf_name+"-"+rule+'.name'
                     elif len(rule_sets) >=2 :
                         c=1
                         for rule in rule_sets:
                             if c == len(rule_sets):
-                                rule_set_names = rule_set_names+'oci_load_balancer_rule_set.'+lbr_tf_name+"_"+rule+'.name'
+                                rule_set_names = rule_set_names+'oci_load_balancer_rule_set.'+lbr_tf_name+"-"+rule+'.name'
                             else:
-                                rule_set_names = rule_set_names+'oci_load_balancer_rule_set.'+lbr_tf_name+"_"+ rule + '.name,'
+                                rule_set_names = rule_set_names+'oci_load_balancer_rule_set.'+lbr_tf_name+"-"+ rule + '.name,'
                             c += 1
                 columnvalue = rule_set_names
 

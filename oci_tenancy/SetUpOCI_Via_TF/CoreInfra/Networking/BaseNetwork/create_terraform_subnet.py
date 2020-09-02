@@ -216,14 +216,14 @@ def main():
 			print("\nColumn Values Region, Compartment Name, VCN Name, Subnet Name and CIDR Block cannot be left empty in VCNs sheet in CD3..exiting...")
 			exit(1)
 
-		if (str(df.loc[i,'Availability Domain\n(AD1|AD2|AD3|Regional)']).lower =='nan' or str(
+		if (str(df.loc[i,'Availability Domain(AD1|AD2|AD3|Regional)']).lower =='nan' or str(
 				df.loc[i, 'Type(private|public)']).lower() == 'nan' or str(df.loc[i,'Add Default Seclist']).lower() == 'nan'):
 			print("\nColumn Values Add Default Seclist, Availability Domain and Type cannot be left empty in VCNs sheet in CD3..exiting...")
 			exit(1)
 
-		if (str(df.loc[i, 'Configure IGW Route (y|n)']).lower() == 'nan' or str(df.loc[i, 'Configure NGW Route\n(y|n)']).lower() == 'nan' or str(
-				df.loc[i, 'Configure SGW Route\n(n|object_storage|all_services)']).lower() == 'nan' or str(df.loc[i, 'Configure OnPrem Route (y|n)']).lower() == 'nan' or str(
-				df.loc[i,'Configure VCNPeering\nRoute (y|n)']).lower() == 'nan'):
+		if (str(df.loc[i, 'Configure IGW Route(y|n)']).lower() == 'nan' or str(df.loc[i, 'Configure NGW Route(y|n)']).lower() == 'nan' or str(
+				df.loc[i, 'Configure SGW Route(n|object_storage|all_services)']).lower() == 'nan' or str(df.loc[i, 'Configure OnPrem Route(y|n)']).lower() == 'nan' or str(
+				df.loc[i,'Configure VCNPeering Route(y|n)']).lower() == 'nan'):
 			print("\nColumn Values Configure IGW/SGW/On-Prem/VCN route cannot be left empty in VCNs sheet in CD3..exiting...")
 			exit(1)
 
@@ -247,7 +247,7 @@ def main():
 				compartment_var_name = commonTools.check_tf_variable(compartment_var_name)
 				tempdict = {'compartment_tf_name': compartment_var_name}
 
-			if columnname == 'Availability Domain\n(AD1|AD2|AD3|Regional)':
+			if columnname == 'Availability Domain(AD1|AD2|AD3|Regional)':
 				columnname = 'availability_domain'
 				tempdict = {'availability_domain': columnvalue}
 

@@ -146,27 +146,27 @@ def main():
                 backend_set_tf_name = commonTools.check_tf_variable(columnvalue)
                 tempdict = {'backend_set_tf_name': backend_set_tf_name}
 
-            if columnname == "Backend\nPolicy(LEAST_CONNECTIONS|ROUND_ROBIN|IP_HASH)":
+            if columnname == "Backend Policy(LEAST_CONNECTIONS|ROUND_ROBIN|IP_HASH)":
                 columnname = 'backend_policy'
 
-            if columnname == "Cookie Session (n|LB|Backend Server)":
+            if columnname == "Cookie Session(n|LB|Backend Server)":
                 columnname = "session"
 
-            if columnname == "Disable Fallback (TRUE|FALSE)":
+            if columnname == "Disable Fallback(TRUE|FALSE)":
                 columnname = "disable_fallback"
                 if columnvalue == '':
                     columnvalue = 'false'
 
-            if columnname == "Backend HealthCheck\nProtocol\n(HTTP|TCP)":
+            if columnname == "Backend HealthCheck Protocol(HTTP|TCP)":
                 columnname = "backend_healthcheck_protocol"
 
-            if columnname == "UseSSL (y|n)":
+            if columnname == "UseSSL(y|n)":
                 columnname = "usessl"
 
-            if columnname == "Backup\n<Backend Server Name>":
+            if columnname == "Backup <Backend Server Name>":
                 columnname = "backup"
 
-            if columnname == "Backend\nServerName:Port":
+            if columnname == "Backend ServerName:Port":
                 columnname = "backend_server"
 
             columnname = commonTools.check_column_headers(columnname)
@@ -179,7 +179,7 @@ def main():
         cnt = 0
         backup=''
         beserver_str = ''
-        columnvalue = str(df.loc[i,'Backend\nServerName:Port']).strip().split(',')
+        columnvalue = str(df.loc[i,'Backend ServerName:Port']).strip().split(',')
         for lbr_be_server in columnvalue:
             if (lbr_be_server != ""):
                 cnt = cnt + 1
@@ -193,7 +193,7 @@ def main():
                 else:
                     backend_server_ip_address = "oci_core_instance." + servername + ".private_ip"
 
-                bserver_list = str(df.loc[i,'Backup\n<Backend Server Name>']).strip().split(',')
+                bserver_list = str(df.loc[i,'Backup <Backend Server Name>']).strip().split(',')
 
                 for servers in bserver_list:
                     if servername == servers:

@@ -89,15 +89,15 @@ def main():
         tempdict = {}
 
         # Check if values are entered for mandatory fields - to create volumes
-        if str(df.loc[i,'Region']).lower() == 'nan' or str(df.loc[i, 'Block Name']).lower() == 'nan' or str(df.loc[i,'Compartment Name']).lower()  == 'nan' or str(df.loc[i,'Availability Domain\n(AD1|AD2|AD3)']).lower()  == 'nan':
+        if str(df.loc[i,'Region']).lower() == 'nan' or str(df.loc[i, 'Block Name']).lower() == 'nan' or str(df.loc[i,'Compartment Name']).lower()  == 'nan' or str(df.loc[i,'Availability Domain(AD1|AD2|AD3)']).lower()  == 'nan':
             print( " The values for Region, Block Name, Compartment Name and Availability Domain cannot be left empty. Please enter a value and try again !!")
             exit()
 
         # Check if values are entered for mandatory fields - to attach volumes to instances
-        if str(df.loc[i,'Attached To Instance']).lower()  != 'nan' and str(df.loc[i,'Attach Type\n(iscsi|paravirtualized)']).lower()  == 'nan' :
+        if str(df.loc[i,'Attached To Instance']).lower()  != 'nan' and str(df.loc[i,'Attach Type(iscsi|paravirtualized)']).lower()  == 'nan' :
             print("Attach Type cannot be left empty if you want to attach  the volume to instance "+df.loc[i,'Attached  To Instance']+". Please enter a value and try again !!")
             exit()
-        elif str(df.loc[i,'Attach Type\n(iscsi|paravirtualized)']).lower()  != 'nan' and str(df.loc[i,'Attached To Instance']).lower()  == 'nan' :
+        elif str(df.loc[i,'Attach Type(iscsi|paravirtualized)']).lower()  != 'nan' and str(df.loc[i,'Attached To Instance']).lower()  == 'nan' :
             print("Attached To Instance cannot be left empty if Attachment Type is "+df.loc[i,'Attach Type\n(iscsi|paravirtualized)']+". Please enter a value and try again !!")
             exit()
 
@@ -126,7 +126,7 @@ def main():
             if columnname.lower() in commonTools.tagColumns:
                 tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)
 
-            if columnname == "Availability Domain\n(AD1|AD2|AD3)":
+            if columnname == "Availability Domain(AD1|AD2|AD3)":
                 columnname = "availability_domain"
                 AD = columnvalue.upper()
                 ad = ADS.index(AD)
@@ -135,7 +135,7 @@ def main():
             if columnname == "Attached To Instance":
                 columnvalue = commonTools.check_tf_variable(columnvalue)
 
-            if columnname == "Attach Type\n(iscsi|paravirtualized)":
+            if columnname == "Attach Type(iscsi|paravirtualized)":
                 columnname = "attach_type"
 
             if columnname == "Size In GBs":

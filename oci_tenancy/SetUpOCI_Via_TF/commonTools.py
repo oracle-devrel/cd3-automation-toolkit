@@ -23,8 +23,7 @@ class commonTools():
     region_dict = {}
     protocol_dict = {}
     endNames = {'<END>', '<end>', '<End>'}
-    tagColumns = {'Freeform Tags', 'freeform_tags', 'freeForm tags', 'freeform Tags', 'freeform tags', 'FreeForm Tags',
-                  'Defined Tags', 'defined Tags','defined tags', 'defined_tags', 'Defined tags'}
+    tagColumns = {'freeform tags', 'freeform_tags', 'defined_tags', 'defined tags'}
 
     # Read Regions and Protocols Files and create dicts
     def __init__(self):
@@ -217,29 +216,30 @@ class commonTools():
         yield values_for_column
 
     # Export Tag fields - common code - Defined and Freeform Tags
-    # defined_tags_list and freeform_tags_list are empty lists
-    # headers - individual headers/coulmns
-    # col_headers - list of columns from read_cd3 function
-    def export_tags(resource,headers,col_headers,defined_tags_list,freeform_tags_list):
-        if 'defined' in str(headers).lower():
+    # headers - individual header/coulmn name
+    # values_for_column - list of columns from read_cd3 function
+    def export_tags(resource, header, values_for_column):
+        defined_tags = ""
+        freeform_tags = ""
+        if 'defined' in str(header).lower():
             if (resource.__getattribute__('defined_tags')):
                 for namespace, tags in resource.__getattribute__('defined_tags').items():
                     for key, value in tags.items():
                         # Each Namespace/TagKey - Value pair ends with a ;
                         value = str(namespace + "." + key + "=" + value)
-                        defined_tags_list.append(value)
-            else:
-                defined_tags_list.append("")
-            col_headers[headers].append(defined_tags_list)
-        elif 'free' in str(headers).lower():
+                        defined_tags = value + "," + defined_tags
+            if (defined_tags != "" and defined_tags[-1] == ','):
+                defined_tags = defined_tags[:-1]
+            values_for_column[header].append(defined_tags)
+        elif 'free' in str(header).lower():
             if (resource.__getattribute__('freeform_tags')):
                 for keys, values in resource.__getattribute__('freeform_tags').items():
                     value = str(keys + "=" + values)
-                    freeform_tags_list.append(value)
-            else:
-                freeform_tags_list.append("")
-            col_headers[headers].append(freeform_tags_list)
-        return col_headers
+                    freeform_tags = value + ',' + freeform_tags
+            if (freeform_tags != '' and freeform_tags[-1] == ','):
+                freeform_tags = freeform_tags[:-1]
+            values_for_column[header].append(freeform_tags)
+        return values_for_column
 
     # Write exported  rows to cd3
     def write_to_cd3(values_for_column, cd3file, sheet_name):
