@@ -73,6 +73,9 @@ def main():
     for eachregion in unique_region:
         eachregion = str(eachregion).strip().lower()
 
+        if eachregion in commonTools.endNames():
+            exit(1)
+
         resource='Tagging'
         srcdir = outdir + "/" + eachregion + "/"
         commonTools.backup_file(srcdir, resource, "-tagging.tf")

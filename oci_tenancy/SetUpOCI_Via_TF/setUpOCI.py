@@ -587,7 +587,7 @@ if('3' in userInput):
     print("3.  Update existing instance to be part of NSG")
     print("m.  Press m to go back to Main Menu")
     print("q.  Press q to quit")
-
+    print("NOTE: Enter one choice at a time ")
     choice = input("Enter your choice ")
     outdir = input_outdir
     if not os.path.exists(outdir):
