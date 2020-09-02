@@ -573,7 +573,7 @@ def main():
                 if columnname.lower() in commonTools.tagColumns:
                     tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)
 
-                if columnname == 'Availability Domain\n(AD1|AD2|AD3|Regional)':
+                if columnname == 'Availability Domain(AD1|AD2|AD3|Regional)':
                     columnname = 'availability_domain'
                     tempdict = {'availability_domain' : columnvalue }
 
