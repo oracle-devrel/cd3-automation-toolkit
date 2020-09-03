@@ -10,22 +10,22 @@ from openpyxl.styles import PatternFill
 from openpyxl.styles import Alignment
 from openpyxl.styles import Border
 from openpyxl.styles import Side
-import re
 import collections
-import simplejson
-from simplejson.decoder import WHITESPACE
-
+import re
+import json as simplejson
 
 class commonTools():
-    all_regions = []
-    home_region = ""
+    all_regions=[]
+    home_region=""
     ntk_compartment_ids = {}
-    region_dict = {}
-    protocol_dict = {}
+    region_dict={}
+    protocol_dict={}
+    sheet_dict={}
     endNames = {'<END>', '<end>', '<End>'}
+    std_columns={"Region","Compartment Name","VCN name"}
     tagColumns = {'freeform tags', 'freeform_tags', 'defined_tags', 'defined tags'}
 
-    # Read Regions and Protocols Files and create dicts
+    #Read Regions and Protocols Files and Excel_Columns and create dicts
     def __init__(self):
         # When called from wthin BaseNetwork
         dir = os.getcwd()
@@ -41,9 +41,10 @@ class commonTools():
             os.chdir("../../")
         elif ("OCSWorkVM" in dir):
             os.chdir("../")
-        regionFileName = "OCI_Regions"
-        protocolFileName = "OCI_Protocols"
-        with open(regionFileName) as f:
+        regionFileName="OCI_Regions"
+        protocolFileName="OCI_Protocols"
+        excelColumnName="Excel_Columns"
+        with open (regionFileName) as f:
             for line in f:
                 key = line.split(":")[0].strip()
                 val = line.split(":")[1].strip()
@@ -51,28 +52,37 @@ class commonTools():
 
         with open(protocolFileName) as f:
             for line in f:
-                key = line.split(":")[0].strip()
-                val = line.split(":")[1].strip()
-                self.protocol_dict[key] = val
+                key=line.split(":")[0].strip()
+                val=line.split(":")[1].strip()
+                self.protocol_dict[key]=val
 
-        # Change back to Initial
+        #Get Dict for column names
+        with open(excelColumnName) as f:
+            s = f.read()
+        while True:
+            decoder = simplejson.JSONDecoder()
+            obj, end = decoder.raw_decode(s)
+            self.sheet_dict = dict(obj)
+            break
+
+        #Change back to Initial
         os.chdir(dir)
 
-    # Get Tenancy Regions
-    def get_subscribedregions(self, configFileName):
-        # Get config client
-        if configFileName == "":
+    #Get Tenancy Regions
+    def get_subscribedregions(self,configFileName):
+        #Get config client
+        if configFileName=="":
             config = oci.config.from_file()
         else:
             config = oci.config.from_file(file_location=configFileName)
         idc = IdentityClient(config)
         regionsubscriptions = idc.list_region_subscriptions(tenancy_id=config['tenancy'])
-        homeregion = ""
+        homeregion=""
         for rs in regionsubscriptions.data:
             if (rs.is_home_region == True):
                 homeregion = rs.region_name
             for k, v in self.region_dict.items():
-                if (homeregion != "" and v == homeregion):
+                if (homeregion!="" and v == homeregion):
                     self.home_region = k
                 if (rs.region_name == v):
                     self.all_regions.append(k)
@@ -80,15 +90,15 @@ class commonTools():
         del config
         del idc
 
-    # Get Compartment OCIDs
-    def get_network_compartment_ids(self, c_id, c_name, configFileName):
+    #Get Compartment OCIDs
+    def get_network_compartment_ids(self,c_id, c_name,configFileName):
         # Get config client
         if configFileName == "":
             config = oci.config.from_file()
         else:
             config = oci.config.from_file(file_location=configFileName)
 
-        tenancy_id = config['tenancy']
+        tenancy_id=config['tenancy']
         idc = IdentityClient(config)
         compartments = idc.list_compartments(compartment_id=c_id, compartment_id_in_subtree=False)
 
@@ -109,14 +119,34 @@ class commonTools():
                         if (c_details.compartment_id != tenancy_id):
                             self.ntk_compartment_ids.pop(c.name)
 
-                self.get_network_compartment_ids(c.id, name, configFileName)
+                self.get_network_compartment_ids(c.id, name,configFileName)
 
-        self.ntk_compartment_ids["root"] = tenancy_id
+        self.ntk_compartment_ids["root"]=tenancy_id
         del tenancy_id
         del idc
         del config
 
-    # Check TF variable Name
+    #Check value exported
+    #If None - replace with ""
+    #If list, convert to comma sepearted string
+    def check_exported_value(value):
+        if value == None:
+            value = ""
+        if ("list" in str(type(value))):
+            str1 = ""
+            if(value.__len__()==0):
+                value=""
+            for v in value:
+                str1 = v + "," + str1
+            if (str1 != "" and str1[-1] == ','):
+                value = str1[:-1]
+
+        return value
+
+
+
+
+    #Check TF variable Name
     def check_tf_variable(var_name):
         tfname = re.compile('[^a-zA-Z0-9_-]')
         tfnamestart = re.compile('[A-Za-z]')
@@ -136,20 +166,6 @@ class commonTools():
         var_name = re.sub('[@!#$%^&*<>?/}{~: \n()|]', '_', var_name).lower()
         var_name = re.sub('_+', '_', var_name).lower()
         return var_name
-
-    # Process the excel sheet headers to a dictionary - (Not used currently)
-    FLAGS = re.VERBOSE | re.MULTILINE | re.DOTALL
-    WHITESPACE = re.compile(r'[ \t\n\r]*', FLAGS)
-
-    def excel_columns_dict(df,path):
-        with open(path+"excelColumns.txt") as f:
-            s = f.read()
-        while True:
-            decoder = simplejson.JSONDecoder()
-            obj, end = decoder.raw_decode(s)
-            end = WHITESPACE.match(s, end).end()
-            df = dict(obj)
-            return df
 
     # Process ColumnValues
     def check_columnvalue(columnvalue):
@@ -216,7 +232,7 @@ class commonTools():
         yield values_for_column
 
     # Export Tag fields - common code - Defined and Freeform Tags
-    # headers - individual header/coulmn name
+    # header - individual headers/column name
     # values_for_column - list of columns from read_cd3 function
     def export_tags(resource, header, values_for_column):
         defined_tags = ""
@@ -249,11 +265,11 @@ class commonTools():
             onprem_destinations = ""
             ngw_destinations = ""
             igw_destinations = ""
-            for destination in values_for_column[onprem_destinations]:
-                onprem_destinations = destination + "," + onprem_destinations
-            for destination in values_for_column[ngw_destinations]:
+            for destination in values_for_column["onprem_destinations"]:
+                onprem_destinations=destination+","+onprem_destinations
+            for destination in values_for_column["ngw_destinations"]:
                 ngw_destinations = destination + "," + ngw_destinations
-            for destination in values_for_column[igw_destinations]:
+            for destination in values_for_column["igw_destinations"]:
                 igw_destinations = destination + "," + igw_destinations
 
             if (onprem_destinations != "" and onprem_destinations[-1] == ','):
@@ -263,20 +279,22 @@ class commonTools():
             if (igw_destinations != "" and igw_destinations[-1] == ','):
                 igw_destinations = igw_destinations[:-1]
 
-            sheet.cell(3, 2).value = onprem_destinations
-            sheet.cell(4, 2).value = ngw_destinations
-            sheet.cell(5, 2).value = igw_destinations
+            sheet.cell(3,2).value = onprem_destinations
+            sheet.cell(4,2).value = ngw_destinations
+            sheet.cell(5,2).value = igw_destinations
             # Put n for subnet_name_attach_cidr
             sheet.cell(6, 2).value = 'n'
             book.save(cd3file)
             book.close()
             return
-        # rows_len=len(rows)
+
+
+        #rows_len=len(rows)
         rows_len = len(values_for_column["Region"])
-        # If no rows exported from OCI, remove the sample data as well
-        if (rows_len == 0):
-            print(
-                "0 rows exported; Nothing to write to CD3 excel; Sheet " + sheet_name + " will be empty in CD3 excel!!")
+
+        #If no rows exported from OCI, remove the sample data as well
+        if(rows_len == 0):
+            print("0 rows exported; Nothing to write to CD3 excel; Sheet "+sheet_name +" will be empty in CD3 excel!!")
             for i in range(0, sheet.max_row):
                 for j in range(0, sheet.max_column):
                     sheet.cell(row=i + 3, column=j + 1).value = ""
@@ -290,22 +308,14 @@ class commonTools():
             large = rows_len
         else:
             large = sheet_max_rows
+
+        #Put Data
         j=0
         for i in range(0,large):
-            #for j in range(0,len(rows[0])):
             for col_name in values_for_column.keys():
                 if(i>=rows_len):
                     sheet.cell(row=i+3, column=j+1).value = ""
                 else:
-                    if (isinstance(values_for_column[col_name][i],list)):
-                        values_for_column[col_name][i] = (','.join(map(str, values_for_column[col_name][i])))
-
-                        # remove all the trailing and prreceeding commas
-                        values_for_column[col_name][i] = re.sub(r'^,+|,+$', '', values_for_column[col_name][i])
-
-                        # replace multiple commas in the sting with a single comma
-                        values_for_column[col_name][i] = re.sub(r'(,,){2,}', ',', values_for_column[col_name][i])
-
                     sheet.cell(row=i+3, column=j+1).value = values_for_column[col_name][i]
                 sheet.cell(row=i+3, column=j+1).alignment = Alignment(wrap_text=True)
                 j=j+1
@@ -338,8 +348,7 @@ class commonTools():
                     elif (c == 4):
                         name = cell.value
                         break
-                print(name)
-                print(region)
+
                 vcn_name = region + "_" + name
                 if (vcn_name not in names):
                     names.append(vcn_name)
@@ -497,8 +506,7 @@ class parseVCNs():
                     try:
                         self.peering_dict[hub_name] = self.peering_dict[hub_name] + vcn_name + ","
                     except KeyError:
-                        print(
-                            "ERROR!!! " + hub_name + " not marked as Hub. Verify hub_spoke_peer_none column again..Exiting!")
+                        print("ERROR!!! "+hub_name +" not marked as Hub. Verify hub_spoke_peer_none column again..Exiting!")
                         exit(1)
 
                 if (self.vcn_hub_spoke_peer_none[vcn_name][0].strip().lower() == 'peer'):
