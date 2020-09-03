@@ -65,11 +65,13 @@ def main():
     # Take backup of files
     for eachregion in unique_region:
         eachregion = str(eachregion).strip().lower()
-        if (eachregion in commonTools.endNames):
-            break
+
+        if (eachregion in commonTools.endNames or eachregion == 'nan'):
+            continue
         if eachregion not in ct.all_regions:
             print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
             exit()
+
         resource='DedicatedHosts'
         srcdir = outdir + "/" + eachregion + "/"
         commonTools.backup_file(srcdir, resource, "dedicated_vm_hosts.tf")

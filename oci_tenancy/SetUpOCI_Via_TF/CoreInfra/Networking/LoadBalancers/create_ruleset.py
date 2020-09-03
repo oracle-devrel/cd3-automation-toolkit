@@ -87,7 +87,7 @@ def main():
     for eachregion in unique_region:
         eachregion = str(eachregion).strip().lower()
         if (eachregion in commonTools.endNames):
-            break
+            continue
         if eachregion == 'nan':
             continue
         if eachregion not in ct.all_regions:
@@ -216,8 +216,10 @@ def main():
             if columnname.lower() in commonTools.tagColumns:
                 tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)
 
-            if columnname == 'Allow Invalid Characters(TRUE|FALSE)':
+            if columnname == 'Allow Invalid Characters (TRUE|FALSE)':
                 columnname = 'allow_invalid_characters'
+                if columnvalue == "":
+                    columnvalue = "false"
 
             if columnname == 'HTTP Header Size(in kB)':
                 columnname = 'http_header_size'

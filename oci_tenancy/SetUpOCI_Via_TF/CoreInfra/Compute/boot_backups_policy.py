@@ -64,12 +64,14 @@ def main():
     # Take backup of files
     for eachregion in reg:
         eachregion = str(eachregion).strip().lower()
-        resource='BootBackupPolicy'
-        if (eachregion in commonTools.endNames):
-            break
+
+        if (eachregion in commonTools.endNames or eachregion == 'nan'):
+            continue
         if eachregion not in ct.all_regions:
             print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
             exit()
+
+        resource = 'BootBackupPolicy'
         srcdir = outdir + "/" + eachregion + "/"
         commonTools.backup_file(srcdir, resource, "-boot-backup-policy.tf")
 

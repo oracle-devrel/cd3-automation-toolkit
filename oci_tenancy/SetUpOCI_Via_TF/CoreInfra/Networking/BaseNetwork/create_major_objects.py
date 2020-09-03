@@ -126,8 +126,8 @@ def main():
         ngw = ''
         sgw = ''
         drg = ''
-        rt_tf_name = ''
         rt_var = ''
+        rt_tf_name = ''
         lpgdata = ''
         region = tempStr['region'].lower().strip()
         vcn_name = tempStr['vcn_name'].strip()
@@ -284,6 +284,7 @@ def main():
                 count_spokes = len(spoke_vcns)
 
             for lpg_name in vcns.vcn_lpg_names[vcn_name]:
+
                 count_lpg = count_lpg + 1
                 lpg_tf_name = vcn_name + "_" + lpg_name
                 lpg_tf_name = commonTools.check_tf_variable(lpg_tf_name)
@@ -293,6 +294,7 @@ def main():
                 tempStr['vcn_tf_name'] = vcn_tf_name
                 tempStr['lpg_required'] = tempStr['lpg_required'].lower().strip()
 
+                rt_var = ''
                 if (hub_spoke_none == 'hub'):
                     lpg_rt_name = ""
                     if (os.path.exists(outdir + "/" + region + "/obj_names.safe")):
@@ -305,16 +307,20 @@ def main():
                         rt_var = vcn_name + "_" + lpg_rt_name
                     elif (count_lpg <= count_spokes):
                         rt_var = vcn_name + "_Route Table associated with LPG-" + lpg_name
+
                     else:
                         rt_var = ""
+
                     rt_tf_name = commonTools.check_tf_variable(rt_var)
 
                 tempStr['rt_tf_name'] = rt_tf_name
+
                 tempStr['rt_var'] = rt_var
 
                 lpg = env.get_template('major-objects-lpg-template')
                 lpg = lpg.render(tempStr)
                 lpgdata = lpgdata + lpg
+
 
         tfStr[region] = tfStr[region] + igw + ngw + sgw + drg + lpgdata + vcn
         dhcpStr[region] = dhcpStr[reg] + dhcp_default

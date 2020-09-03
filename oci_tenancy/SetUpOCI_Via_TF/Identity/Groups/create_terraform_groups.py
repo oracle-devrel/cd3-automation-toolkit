@@ -71,6 +71,23 @@ def main():
     for reg in ct.all_regions:
         tfStr[reg] = ''
 
+    uniquereg = df['Region'].unique()
+
+    # Take backup of files
+    for eachregion in uniquereg:
+        eachregion = str(eachregion).strip().lower()
+        reg_out_dir = outdir + "/" + eachregion
+
+        if (eachregion in commonTools.endNames or eachregion == 'nan'):
+            continue
+        if eachregion not in ct.all_regions:
+            print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
+            exit()
+
+        srcdir = reg_out_dir + "/"
+        resource = 'Groups'
+        commonTools.backup_file(srcdir, resource, "-groups.tf")
+
     # Iterate over rows
     for i in df.index:
         region = str(df.loc[i, 'Region']).strip()
@@ -130,10 +147,6 @@ def main():
         reg_out_dir = outdir + "/" + reg
         if not os.path.exists(reg_out_dir):
             os.makedirs(reg_out_dir)
-
-        srcdir = reg_out_dir + "/"
-        resource = 'Groups'
-        commonTools.backup_file(srcdir, resource, "-groups.tf")
 
         outfile[reg] = reg_out_dir + "/" + prefix + '-groups.tf'
 

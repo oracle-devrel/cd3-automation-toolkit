@@ -76,7 +76,7 @@ def main():
     for eachregion in unique_region:
         eachregion = str(eachregion).strip().lower()
         if (eachregion in commonTools.endNames):
-            break
+            continue
         if eachregion == 'nan':
             continue
         if eachregion not in ct.all_regions:
@@ -114,6 +114,10 @@ def main():
             print("\nColumn Backend Set Name cannot be left empty.....Exiting!")
             exit(1)
 
+        if (str(df.loc[i,'UseSSL(y|n)']).lower() == 'y') and (str(df.loc[i,'Certificate Name']).lower() == 'y'):
+            print("\n Certificate Name cannot be empty if Use SSL is set to 'y'.....Exiting!")
+            exit(1)
+
         # Fetch data; loop through columns
         for columnname in dfcolumns:
 
@@ -139,7 +143,10 @@ def main():
                 tempdict = {'lbr_tf_name': lbr_tf_name}
 
             if columnname == "Certificate Name":
-                certificate_tf_name = commonTools.check_tf_variable(columnvalue)+"_cert"
+                if columnvalue != "":
+                    certificate_tf_name = commonTools.check_tf_variable(columnvalue)+"_cert"
+                else:
+                    certificate_tf_name = ""
                 tempdict = {'certificate_tf_name': certificate_tf_name}
 
             if columnname == "Backend Set Name":

@@ -81,7 +81,7 @@ def main():
     for eachregion in unique_region:
         eachregion = str(eachregion).strip().lower()
         if (eachregion in commonTools.endNames):
-            break
+            continue
         if eachregion == 'nan':
             continue
         if eachregion not in ct.all_regions:
