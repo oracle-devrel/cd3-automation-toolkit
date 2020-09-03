@@ -1,11 +1,9 @@
 #!/usr/bin/python3
 
-
 import argparse
 import sys
 import oci
 from oci.core.virtual_network_client import VirtualNetworkClient
-from oci.identity import IdentityClient
 import os
 sys.path.append(os.getcwd()+"/../../..")
 from commonTools import *
@@ -16,11 +14,6 @@ def convertNullToNothing(input):
         return EMPTY_STRING
     else:
         return str(input)
-
-onprem_destinations=[]
-igw_destinations=[]
-ngw_destinations=[]
-
 
 def get_network_entity_name(config,network_identity_id):
     vcn1 = VirtualNetworkClient(config)
@@ -59,9 +52,74 @@ def get_network_entity_name(config,network_identity_id):
     else:
         return network_identity_id
 
-def print_routetables(routetables,region,vcn_name,comp_name):
-    global rows
+def insert_values(oci_obj,values_for_column,region,comp_name,vcn_name,obj):
+    for col_header in values_for_column.keys():
+        if (col_header == "Region"):
+            values_for_column[col_header].append(region)
+        elif (col_header == "Compartment Name"):
+            values_for_column[col_header].append(comp_name)
+        elif (col_header == "VCN Name"):
+            values_for_column[col_header].append(vcn_name)
+        elif col_header.lower() in commonTools.tagColumns:
+            values_for_column = commonTools.export_tags(oci_obj, col_header, values_for_column)
 
+        elif (obj != None and col_header == 'Route Destination Object'):
+            network_entity_id = obj.network_entity_id
+            network_entity_name = get_network_entity_name(config, network_entity_id)
+            values_for_column[col_header].append(network_entity_name)
+            if ('internetgateway' in network_entity_id):
+                if (obj.destination not in values_for_vcninfo['igw_destinations']):
+                    values_for_vcninfo['igw_destinations'].append(obj.destination)
+            elif ('natgateway' in network_entity_id):
+                if (obj.destination not in values_for_vcninfo['ngw_destinations']):
+                    values_for_vcninfo['ngw_destinations'].append(obj.destination)
+            elif('drg' in network_entity_id):
+                if(obj.destination not in values_for_vcninfo['onprem_destinations']):
+                    values_for_vcninfo['onprem_destinations'].append(obj.destination)
+        elif (col_header in sheet_dict.keys()):
+            #Check if property exists for routeTable
+            try:
+                value=oci_obj.__getattribute__(sheet_dict[col_header])
+                value = commonTools.check_exported_value(value)
+                values_for_column[col_header].append(value)
+            except AttributeError as e:
+                # Check if property exists for routeRule when Route Table has some rules
+                if (obj != None):
+                    try:
+                        value = obj.__getattribute__(sheet_dict[col_header])
+                        value = commonTools.check_exported_value(value)
+                        values_for_column[col_header].append(value)
+                    except AttributeError as e:
+                        value = ""
+                        values_for_column[col_header].append(value)
+                # empty route table - put null values for all other cols
+                else:
+                    value = ""
+                    values_for_column[col_header].append(value)
+
+        #For Cols not defined in Excel_Columns sheet
+        else:
+            # Check if property exists for routeTable
+            try:
+                value = oci_obj.__getattribute__(commonTools.check_column_headers(col_header))
+                value = commonTools.check_exported_value(value)
+                values_for_column[col_header].append(value)
+            except AttributeError as e:
+                # Check if property exists for routeRule when Route Table has some rules
+                if (obj != None):
+                    try:
+                        value = obj.__getattribute__(commonTools.check_column_headers(col_header))
+                        value = commonTools.check_exported_value(value)
+                        values_for_column[col_header].append(value)
+                    except AttributeError as e:
+                        value = ""
+                        values_for_column[col_header].append(value)
+                # empty route table - put null values for all other cols
+                else:
+                    value = ""
+                    values_for_column[col_header].append(value)
+
+def print_routetables(routetables,region,vcn_name,comp_name):
     for routetable in routetables.data:
         rules = routetable.route_rules
         display_name = routetable.display_name
@@ -76,117 +134,118 @@ def print_routetables(routetables,region,vcn_name,comp_name):
                 importCommands[region.lower()].write("\nterraform import oci_core_route_table." + tf_name + " " + str(routetable.id))
 
         if(not rules):
-            new_row=(region,comp_name,vcn_name,dn,'','','','')
-            rows.append(new_row)
+            insert_values(routetable, values_for_column, region, comp_name, vcn_name,obj=None)
 
         for rule in rules:
-            desc = str(rule.description)
-            if (desc == "None"):
-                desc = ""
+            insert_values(routetable, values_for_column, region, comp_name, vcn_name,obj=rule)
 
-            network_entity_id=rule.network_entity_id
-            network_entity_name=get_network_entity_name(config,network_entity_id)
-            if ('internetgateway' in network_entity_id):
-                if (rule.destination not in igw_destinations):
-                    igw_destinations.append(rule.destination)
-            elif ('natgateway' in network_entity_id):
-                if (rule.destination not in ngw_destinations):
-                    ngw_destinations.append(rule.destination)
-            elif('drg' in network_entity_id):
-                if(rule.destination not in onprem_destinations):
-                    onprem_destinations.append(rule.destination)
+            #if(tf_import_cmd=="false"):
+                #print(dn + "," + str(rule.destination) + "," + str(network_entity_name)+","+ str(rule.destination_type),desc)
 
-            new_row=(region,comp_name,vcn_name,dn,rule.destination,str(network_entity_name),str(rule.destination_type),desc)
-            rows.append(new_row)
-            if(tf_import_cmd=="false"):
-                print(dn + "," + str(rule.destination) + "," + str(network_entity_name)+","+ str(rule.destination_type),desc)
+def main():
+    # Read the arguments
+    parser = argparse.ArgumentParser(description="Export Route Table on OCI to CD3")
+    parser.add_argument("cd3file", help="path of CD3 excel file to export rules to")
+    parser.add_argument("--networkCompartment", help="comma seperated Compartments for which to export Networking Objects", required=False)
+    parser.add_argument("--configFileName", help="Config file name" , required=False)
+    parser.add_argument("--tf_import_cmd", help="write tf import commands" , required=False)
+    parser.add_argument("--outdir", help="outdir for TF import commands script" , required=False)
+    global tf_import_cmd
+    global values_for_column
+    global sheet_dict
+    global importCommands
+    global config
+    global values_for_vcninfo
+
+    if len(sys.argv) < 2:
+        parser.print_help()
+        sys.exit(1)
+
+    args = parser.parse_args()
+
+    cd3file=args.cd3file
+    if('.xls' not in cd3file):
+        print("\nAcceptable cd3 format: .xlsx")
+        exit()
+
+    tf_import_cmd = args.tf_import_cmd
+    outdir = args.outdir
+
+    if args.configFileName is not None:
+        configFileName = args.configFileName
+        config = oci.config.from_file(file_location=configFileName)
+    else:
+        configFileName=""
+        config = oci.config.from_file()
+
+    values_for_vcninfo={}
+    values_for_vcninfo['igw_destinations']=[]
+    values_for_vcninfo['ngw_destinations']=[]
+    values_for_vcninfo['onprem_destinations']=[]
+
+    # Read CD3
+    df,values_for_column=commonTools.read_cd3(cd3file,"RouteRulesinOCI")
+
+    ct = commonTools()
+    ct.get_subscribedregions(configFileName)
+    ct.get_network_compartment_ids(config['tenancy'],"root",configFileName)
+
+    # Get dict for columns from Excel_Columns
+    sheet_dict=ct.sheet_dict["RouteRulesinOCI"]
+
+    input_compartment_list = args.networkCompartment
+    if(input_compartment_list is not None):
+        input_compartment_names = input_compartment_list.split(",")
+        input_compartment_names = [x.strip() for x in input_compartment_names]
+    else:
+        input_compartment_names = None
+
+    if tf_import_cmd is not None:
+        tf_import_cmd="true"
+        if(outdir is None):
+            print("out directory is a mandatory arguement to write tf import commands ")
+            exit(1)
+    else:
+        tf_import_cmd = "false"
 
 
-parser = argparse.ArgumentParser(description="Export Route Table on OCI to CD3")
-parser.add_argument("cd3file", help="path of CD3 excel file to export rules to")
-parser.add_argument("--networkCompartment", help="comma seperated Compartments for which to export Networking Objects", required=False)
-parser.add_argument("--configFileName", help="Config file name" , required=False)
-parser.add_argument("--tf_import_cmd", help="write tf import commands" , required=False)
-parser.add_argument("--outdir", help="outdir for TF import commands script" , required=False)
+    if(tf_import_cmd=="true"):
+        importCommands={}
+        for reg in ct.all_regions:
+            importCommands[reg] = open(outdir + "/" + reg + "/tf_import_commands_network_nonGF.sh", "a")
+            importCommands[reg].write("\n\n######### Writing import for Route Tables #########\n\n")
 
-if len(sys.argv) < 2:
-    parser.print_help()
-    sys.exit(1)
+    print("\nFetching Route Rules...")
 
-args = parser.parse_args()
-cd3file=args.cd3file
-
-if('.xls' not in cd3file):
-    print("\nAcceptable cd3 format: .xlsx")
-    exit()
-
-tf_import_cmd = args.tf_import_cmd
-outdir = args.outdir
-
-if args.configFileName is not None:
-    configFileName = args.configFileName
-    config = oci.config.from_file(file_location=configFileName)
-else:
-    configFileName=""
-    config = oci.config.from_file()
-
-ct = commonTools()
-ct.get_subscribedregions(configFileName)
-ct.get_network_compartment_ids(config['tenancy'],"root",configFileName)
-
-input_compartment_list = args.networkCompartment
-if(input_compartment_list is not None):
-    input_compartment_names = input_compartment_list.split(",")
-    input_compartment_names = [x.strip() for x in input_compartment_names]
-else:
-    input_compartment_names = None
-
-if tf_import_cmd is not None:
-    tf_import_cmd="true"
-    if(outdir is None):
-        print("out directory is a mandatory arguement to write tf import commands ")
-        exit(1)
-else:
-    tf_import_cmd = "false"
-
-rows=[]
-
-if(tf_import_cmd=="true"):
-    importCommands={}
     for reg in ct.all_regions:
-        importCommands[reg] = open(outdir + "/" + reg + "/tf_import_commands_network_nonGF.sh", "a")
-        importCommands[reg].write("\n\n######### Writing import for Route Tables #########\n\n")
+        config.__setitem__("region", commonTools().region_dict[reg])
+        vcn = VirtualNetworkClient(config)
+        region = reg.capitalize()
+        comp_ocid_done = []
+        for ntk_compartment_name in ct.ntk_compartment_ids:
+            if ct.ntk_compartment_ids[ntk_compartment_name] not in comp_ocid_done:
+                if (input_compartment_names is not None and ntk_compartment_name not in input_compartment_names):
+                    continue
+                comp_ocid_done.append(ct.ntk_compartment_ids[ntk_compartment_name])
+                vcns = oci.pagination.list_call_get_all_results(vcn.list_vcns,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name],lifecycle_state="AVAILABLE")
+                for v in vcns.data:
+                    vcn_id = v.id
+                    vcn_name=v.display_name
+                    comp_ocid_done_again = []
+                    for ntk_compartment_name_again in ct.ntk_compartment_ids:
+                        if ct.ntk_compartment_ids[ntk_compartment_name_again] not in comp_ocid_done_again:
+                            if (input_compartment_names is not None and ntk_compartment_name_again not in input_compartment_names):
+                                continue
+                            comp_ocid_done_again.append(ct.ntk_compartment_ids[ntk_compartment_name_again])
+                            routetables = oci.pagination.list_call_get_all_results(vcn.list_route_tables, compartment_id=ct.ntk_compartment_ids[ntk_compartment_name_again], vcn_id=vcn_id, lifecycle_state='AVAILABLE')
+                            print_routetables(routetables,region,vcn_name,ntk_compartment_name_again)
 
-print("\nFetching Route Rules...")
+    commonTools.write_to_cd3(values_for_column,cd3file,"RouteRulesinOCI")
+    commonTools.write_to_cd3(values_for_vcninfo,cd3file,"VCN Info")
 
-for reg in ct.all_regions:
-    config.__setitem__("region", commonTools().region_dict[reg])
-    vcn = VirtualNetworkClient(config)
-    region = reg.capitalize()
-    comp_ocid_done = []
-    for ntk_compartment_name in ct.ntk_compartment_ids:
-        if ct.ntk_compartment_ids[ntk_compartment_name] not in comp_ocid_done:
-            if (input_compartment_names is not None and ntk_compartment_name not in input_compartment_names):
-                continue
-            comp_ocid_done.append(ct.ntk_compartment_ids[ntk_compartment_name])
-            vcns = oci.pagination.list_call_get_all_results(vcn.list_vcns,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name],lifecycle_state="AVAILABLE")
-            for v in vcns.data:
-                vcn_id = v.id
-                vcn_name=v.display_name
-                comp_ocid_done_again = []
-                for ntk_compartment_name_again in ct.ntk_compartment_ids:
-                    if ct.ntk_compartment_ids[ntk_compartment_name_again] not in comp_ocid_done_again:
-                        if (input_compartment_names is not None and ntk_compartment_name_again not in input_compartment_names):
-                            continue
-                        comp_ocid_done_again.append(ct.ntk_compartment_ids[ntk_compartment_name_again])
-                        routetables = oci.pagination.list_call_get_all_results(vcn.list_route_tables, compartment_id=ct.ntk_compartment_ids[ntk_compartment_name_again], vcn_id=vcn_id, lifecycle_state='AVAILABLE')
-                        print_routetables(routetables,region,vcn_name,ntk_compartment_name_again)
+    if (tf_import_cmd == "true"):
+        for reg in ct.all_regions:
+            importCommands[reg].close()
 
-commonTools.write_to_cd3(rows,cd3file,"RouteRulesinOCI")
-
-vcninfo_rows=(onprem_destinations,ngw_destinations,igw_destinations)
-commonTools.write_to_cd3(vcninfo_rows,cd3file,"VCN Info")
-
-if (tf_import_cmd == "true"):
-    for reg in ct.all_regions:
-        importCommands[reg].close()
+if __name__=="__main__":
+    main()
