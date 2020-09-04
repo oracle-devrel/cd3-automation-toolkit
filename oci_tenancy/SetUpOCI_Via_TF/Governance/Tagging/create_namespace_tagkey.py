@@ -161,7 +161,10 @@ def main():
 
             if columnname == "Compartment Name":
                 columnvalue = str(columnvalue).strip()
-                compartmentVarName = commonTools.check_tf_variable(columnvalue)
+                if (columnvalue.lower() == 'root'):
+                    compartmentVarName="tenancy_ocid"
+                else:
+                    compartmentVarName = commonTools.check_tf_variable(columnvalue)
                 tempdict = {'compartment_tf_name': compartmentVarName}
 
             if columnname == 'Tag Namespace':
