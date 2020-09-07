@@ -222,9 +222,9 @@ if (input_nongf_tenancy.lower() == 'true'):
         print("\nProceeding to create TF files...\n")
         print("\n-----------Process VCNs tab-----------")
         if (input_config_file == ''):
-            command = 'python create_all_tf_objects.py ' + input_cd3file + ' ' + input_outdir + ' ' + input_prefix
+            command = 'python create_major_objects.py ' + input_cd3file + ' ' + input_outdir + ' ' + input_prefix
         else:
-            command = 'python create_all_tf_objects.py ' + input_cd3file + ' ' + input_outdir + ' ' + input_prefix + ' --configFileName ' + input_config_file
+            command = 'python create_major_objects.py ' + input_cd3file + ' ' + input_outdir + ' ' + input_prefix + ' --configFileName ' + input_config_file
 
         os.chdir('CoreInfra/Networking/BaseNetwork')
         print("Executing Command: " + command)
