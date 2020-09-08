@@ -1,0 +1,95 @@
+{
+    "VCNs" :
+    {
+        "Region" : "region",
+        "Compartment Name" : "compartment_id",
+        "CIDR Block" : "cidr_block"
+    },
+    "DHCP" :
+    {
+        "Region" : "region",
+        "Compartment Name" : "compartment_id",
+        "DHCP Option Name" : "display_name",
+        "Server Type(VcnLocalPlusInternet|CustomDnsServer)" : "server_type",
+        "Search Domain" : "search_domain_names",
+        "Custom DNS Server" : "custom_dns_servers"
+
+    },
+    "Subnets" :
+    {
+        "Region" : "region",
+        "Compartment Name" : "compartment_id",
+        "Subnet Name" : "display_name",
+        "CIDR Block" : "cidr_block",
+        "Availability Domain(AD1|AD2|AD3|Regional)" : "availability_domain",
+        "Type(private|public)" : "prohibit_public_ip_on_vnic"
+    },
+    "RouteRulesinOCI" :
+    {
+        "Region" : "region",
+        "Compartment Name" :"compartment_id",
+        "VCN Name" : "vcn_id",
+        "Route Table Name" : "display_name",
+        "Destination CIDR" : "destination",
+        "Route Destination Object" : "network_entity_id",
+        "Destination Type" : "destination_type",
+        "Rule Description" : "description"
+    },
+
+    "LB-Hostname-Certs" :
+    {
+        "Shape(100Mbps|400Mbps|8000Mbps)" : "shape_name",
+        "Is Private(True|False)" : "is_private"
+    },
+
+    "BackendSet-BackendServer" :
+    {
+        "Backend ServerName:Port" : "backend_server_name:port",
+        "Backend Set Name" : "backend_set_name",
+        "Certificate Name" : "certificates",
+        "Backend Policy(LEAST_CONNECTIONS|ROUND_ROBIN|IP_HASH)" : "policy",
+        "Backend HealthCheck Protocol(HTTP|TCP)" : "protocol",
+        "Backend HealthCheck Port" : "port",
+        "Backend HealthCheck URL" : "url_path",
+        "Cookie Name" : "cookie_name",
+        "Cookie Path" : "path",
+        "Disable Fallback(TRUE|FALSE)" : "disable_fallback",
+        "Backup <Backend Server Name>" : "backup",
+        "UseSSL(y|n)" : "ssl_configuration"
+
+    },
+
+    "LB-Listener" :
+    {
+        "Backend Set Name" : "default_backend_set_name",
+        "LBR Hostnames (Name)" : "hostname_names",
+        "Path Route Set Name" : "path_route_set_name",
+        "Rule Set Names" : "rule_set_names",
+        "UseSSL (y|n)" : "ssl_configuration",
+        "Listener Name" : "name",
+        "Listener Protocol (HTTPS|HTTP|TCP)" : "protocol",
+        "Listener Port" : "port",
+        "Idle Time Out (in Seconds)" : "idle_timeout"
+    },
+
+    "RuleSet" :
+    {
+        "Description of Access Control Rule" : "description",
+        "Allow Invalid Characters (TRUE|FALSE)" : "are_invalid_characters_allowed",
+        "HTTP Header Size(in kB)" : "http_large_header_size_in_kb",
+        "Redirect URI Host:Port" : "host",
+        "Redirect URI Protocol:Path" : "protocol"
+    },
+    "PathRouteSet":
+    {
+        "Path Route Set Name" : "name"
+    },
+
+    "Common-LBR-Headers" :
+    {
+        "Region" : "region",
+        "Compartment Name" : "compartment_id",
+        "LBR Name" : "display_name"
+    }
+
+}
