@@ -17,11 +17,6 @@ resource "oci_core_subnet" "{{ subnet_tf_name }}" {
     security_list_ids = [{{ seclist_ids }}]
     {% endif %}
 
-    {#  ## Add Additional Fields below this line ##  #}
-
-
-    {#  ## End of Additional Fields ##  #}
-
     {#  ##Do not modify below this line##  #}
     {#                                     #}
     {#  ###Section for adding Defined and Freeform Tags###  #}

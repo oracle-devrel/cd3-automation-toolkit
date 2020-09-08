@@ -9,11 +9,6 @@ resource "oci_core_volume" "{{ block_tf_name }}" {
     size_in_gbs = {{ size_in_gbs }}
     {% endif %}
 
-    {#  ## Add Additional Fields below this line ##  #}
-
-
-    {#  ## End of Additional Fields ##  #}
-
     {#  ##Do not modify below this line##  #}
     {#                                     #}
     {#  ###Section for adding Defined and Freeform Tags###  #}
@@ -48,10 +43,6 @@ resource "oci_core_volume_attachment" "{{ block_tf_name }}_volume_attachment" {
         attachment_type = "{{ attach_type }}"
         volume_id = oci_core_volume.{{ block_tf_name }}.id
 
-        {#  ## Add Additional Fields below this line ##  #}
-
-
-        {#  ## End of Additional Fields ##  #}
         }
 {%  endif %}
 

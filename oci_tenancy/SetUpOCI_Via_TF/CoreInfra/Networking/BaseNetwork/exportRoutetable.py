@@ -52,7 +52,7 @@ def get_network_entity_name(config,network_identity_id):
     else:
         return network_identity_id
 
-def insert_values(oci_obj,values_for_column,region,comp_name,vcn_name,obj):
+def insert_values(routetable,values_for_column,region,comp_name,vcn_name,routerule):
     for col_header in values_for_column.keys():
         if (col_header == "Region"):
             values_for_column[col_header].append(region)
@@ -61,22 +61,25 @@ def insert_values(oci_obj,values_for_column,region,comp_name,vcn_name,obj):
         elif (col_header == "VCN Name"):
             values_for_column[col_header].append(vcn_name)
         elif col_header.lower() in commonTools.tagColumns:
-            values_for_column = commonTools.export_tags(oci_obj, col_header, values_for_column)
+            values_for_column = commonTools.export_tags(routetable, col_header, values_for_column)
 
-        elif (obj != None and col_header == 'Route Destination Object'):
-            network_entity_id = obj.network_entity_id
+        elif (routerule != None and col_header == 'Route Destination Object'):
+            network_entity_id = routerule.network_entity_id
             network_entity_name = get_network_entity_name(config, network_entity_id)
             values_for_column[col_header].append(network_entity_name)
             if ('internetgateway' in network_entity_id):
-                if (obj.destination not in values_for_vcninfo['igw_destinations']):
-                    values_for_vcninfo['igw_destinations'].append(obj.destination)
+                if (routerule.destination not in values_for_vcninfo['igw_destinations']):
+                    values_for_vcninfo['igw_destinations'].append(routerule.destination)
             elif ('natgateway' in network_entity_id):
-                if (obj.destination not in values_for_vcninfo['ngw_destinations']):
-                    values_for_vcninfo['ngw_destinations'].append(obj.destination)
+                if (routerule.destination not in values_for_vcninfo['ngw_destinations']):
+                    values_for_vcninfo['ngw_destinations'].append(routerule.destination)
             elif('drg' in network_entity_id):
-                if(obj.destination not in values_for_vcninfo['onprem_destinations']):
-                    values_for_vcninfo['onprem_destinations'].append(obj.destination)
-        elif (col_header in sheet_dict.keys()):
+                if(routerule.destination not in values_for_vcninfo['onprem_destinations']):
+                    values_for_vcninfo['onprem_destinations'].append(routerule.destination)
+        else:
+            oci_objs = [routetable,routerule]
+            values_for_column = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict,values_for_column)
+        """elif (col_header in sheet_dict.keys()):
             #Check if property exists for routeTable
             try:
                 value=oci_obj.__getattribute__(sheet_dict[col_header])
@@ -118,7 +121,7 @@ def insert_values(oci_obj,values_for_column,region,comp_name,vcn_name,obj):
                 else:
                     value = ""
                     values_for_column[col_header].append(value)
-
+        """
 def print_routetables(routetables,region,vcn_name,comp_name):
     for routetable in routetables.data:
         rules = routetable.route_rules
@@ -134,13 +137,17 @@ def print_routetables(routetables,region,vcn_name,comp_name):
                 importCommands[region.lower()].write("\nterraform import oci_core_route_table." + tf_name + " " + str(routetable.id))
 
         if(not rules):
-            insert_values(routetable, values_for_column, region, comp_name, vcn_name,obj=None)
+            insert_values(routetable, values_for_column, region, comp_name, vcn_name,None)
+            if (tf_import_cmd == "false"):
+                print(dn)
 
         for rule in rules:
-            insert_values(routetable, values_for_column, region, comp_name, vcn_name,obj=rule)
-
-            #if(tf_import_cmd=="false"):
-                #print(dn + "," + str(rule.destination) + "," + str(network_entity_name)+","+ str(rule.destination_type),desc)
+            insert_values(routetable, values_for_column, region, comp_name, vcn_name,rule)
+            desc = str(rule.description)
+            if (desc == "None"):
+                desc = ""
+            if(tf_import_cmd=="false"):
+                print(dn + "," +str(rule.destination)+","+desc)
 
 def main():
     # Read the arguments

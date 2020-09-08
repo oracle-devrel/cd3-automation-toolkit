@@ -11,11 +11,6 @@ resource "oci_core_vcn" "{{ vcn_tf_name }}" {
     dns_label = "{{ dns_label }}"
     {% endif %}
 
-    {#  ## Add Additional Fields below this line ##  #}
-
-
-    {#  ## End of Additional Fields ##  #}
-
     {#  ##Do not modify below this line##  #}
     {#                                     #}
     {#  ###Section for adding Defined and Freeform Tags###  #}

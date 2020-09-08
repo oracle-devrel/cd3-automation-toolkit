@@ -188,7 +188,7 @@ def main():
         beserver_str = ''
         columnvalue = str(df.loc[i,'Backend ServerName:Port']).strip().split(',')
         for lbr_be_server in columnvalue:
-            if (lbr_be_server != ""):
+            if (lbr_be_server != "" and lbr_be_server != "nan"):
                 cnt = cnt + 1
                 serverinfo = lbr_be_server.strip().split(":")
                 servername = serverinfo[0].strip()

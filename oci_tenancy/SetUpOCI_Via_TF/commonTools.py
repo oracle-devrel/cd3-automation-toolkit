@@ -22,14 +22,17 @@ class commonTools():
     protocol_dict={}
     sheet_dict={}
     endNames = {'<END>', '<end>', '<End>'}
-    std_columns={"Region","Compartment Name","VCN name"}
     tagColumns = {'freeform tags', 'freeform_tags', 'defined_tags', 'defined tags'}
 
     #Read Regions and Protocols Files and Excel_Columns and create dicts
     def __init__(self):
-        # When called from wthin BaseNetwork
-        dir = os.getcwd()
-        if ("Networking" in dir):
+        #When called from wthin BaseNetwork
+        dir=os.getcwd()
+        if("ExportFromOCI" in dir):
+            os.chdir("../")
+        elif ("Solutions" in dir):
+            os.chdir("../../")
+        if("Networking" in dir):
             os.chdir("../../../")
         elif ("CoreInfra" in dir):
             os.chdir("../../")
@@ -143,8 +146,71 @@ class commonTools():
 
         return value
 
+    # Export Tag fields - common code - Defined and Freeform Tags
+    # header - individual headers/column name
+    # values_for_column - list of columns from read_cd3 function
+    def export_tags(oci_obj, header, values_for_column):
+        defined_tags=""
+        freeform_tags=""
+        if 'defined' in str(header).lower():
+            if (oci_obj.__getattribute__('defined_tags')):
+                for namespace, tags in oci_obj.__getattribute__('defined_tags').items():
+                    for key, value in tags.items():
+                        # Each Namespace/TagKey - Value pair ends with a ;
+                        value = str(namespace + "." + key + "=" + value)
+                        defined_tags=value+","+defined_tags
 
+            if (defined_tags != "" and defined_tags[-1] == ','):
+                defined_tags = defined_tags[:-1]
+            values_for_column[header].append(defined_tags)
 
+        elif 'free' in str(header).lower():
+            if (oci_obj.__getattribute__('freeform_tags')):
+                for keys, values in oci_obj.__getattribute__('freeform_tags').items():
+                    value = str(keys + "=" + values)
+                    freeform_tags= value + ',' +freeform_tags
+
+            if (freeform_tags != '' and freeform_tags[-1] == ','):
+                freeform_tags = freeform_tags [:-1]
+            values_for_column[header].append(freeform_tags)
+
+        return values_for_column
+
+    #Export extra fields
+    def export_extra_columns(oci_objs, col_header, sheet_dict, values_for_column):
+        value = ""
+        if (col_header in sheet_dict.keys()):
+            # Check if property exists for any object on that sheet
+            for oci_obj in oci_objs:
+                try:
+                    value = oci_obj.__getattribute__(sheet_dict[col_header])
+                    value = commonTools.check_exported_value(value)
+                    break
+                except AttributeError as e:
+                    pass
+            values_for_column[col_header].append(value)
+        # For Cols not defined in Excel_Columns sheet
+        else:
+            # Check if property exists for any object on that sheet
+            for oci_obj in oci_objs:
+                try:
+                    value = oci_obj.__getattribute__(commonTools.check_column_headers(col_header))
+                    value = commonTools.check_exported_value(value)
+                    break
+                except AttributeError as e:
+                    pass
+            values_for_column[col_header].append(value)
+
+        return values_for_column
+
+    # Check CD3 Column headers
+    def check_column_headers(var_name):
+        # replace special characters and spaces with '_' and convert to lowercase
+        # replaces multiple occurrence of '_' to just 1
+        var_name = var_name.strip()
+        var_name = re.sub('[@!#$%^&*<>?/}{~: \n()|]', '_', var_name).lower()
+        var_name = re.sub('_+', '_', var_name).lower()
+        return var_name
 
     #Check TF variable Name
     def check_tf_variable(var_name):
@@ -231,33 +297,7 @@ class commonTools():
                 values_for_column[col_name] = []
         yield values_for_column
 
-    # Export Tag fields - common code - Defined and Freeform Tags
-    # header - individual headers/column name
-    # values_for_column - list of columns from read_cd3 function
-    def export_tags(resource, header, values_for_column):
-        defined_tags = ""
-        freeform_tags = ""
-        if 'defined' in str(header).lower():
-            if (resource.__getattribute__('defined_tags')):
-                for namespace, tags in resource.__getattribute__('defined_tags').items():
-                    for key, value in tags.items():
-                        # Each Namespace/TagKey - Value pair ends with a ;
-                        value = str(namespace + "." + key + "=" + value)
-                        defined_tags = value + "," + defined_tags
-            if (defined_tags != "" and defined_tags[-1] == ','):
-                defined_tags = defined_tags[:-1]
-            values_for_column[header].append(defined_tags)
-        elif 'free' in str(header).lower():
-            if (resource.__getattribute__('freeform_tags')):
-                for keys, values in resource.__getattribute__('freeform_tags').items():
-                    value = str(keys + "=" + values)
-                    freeform_tags = value + ',' + freeform_tags
-            if (freeform_tags != '' and freeform_tags[-1] == ','):
-                freeform_tags = freeform_tags[:-1]
-            values_for_column[header].append(freeform_tags)
-        return values_for_column
-
-    # Write exported  rows to cd3
+    #Write exported  rows to cd3
     def write_to_cd3(values_for_column, cd3file, sheet_name):
         book = load_workbook(cd3file)
         sheet = book[sheet_name]

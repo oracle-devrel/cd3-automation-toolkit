@@ -8,11 +8,6 @@ resource "oci_identity_tag_namespace" "{{ namespace_tf_name }}" {
     #Optional
     is_retired = false
 
-    {#  ## Add Additional Fields below this line ##  #}
-
-
-    {#  ## End of Additional Fields ##  #}
-
     {#  ##Do not modify below this line##  #}
     {#                                     #}
     {#  ###Section for adding Defined and Freeform Tags###  #}

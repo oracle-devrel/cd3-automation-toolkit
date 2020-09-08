@@ -55,6 +55,7 @@ def main():
     lbr_str = {}
     hostname_str = {}
     certificate_str = {}
+    cipher_suites = {}
 
     # Read cd3 using pandas dataframe
     df, col_headers = commonTools.read_cd3(filename, "LB-Hostname-Certs")
@@ -96,6 +97,7 @@ def main():
             lbr_str[reg] = ''
             hostname_str[reg] = ''
             certificate_str[reg] = ''
+            cipher_suites[reg] = ''
 
     def certificate_templates(dfcert):
 
@@ -136,10 +138,11 @@ def main():
                     if columnvalue != '':
                         columnvalue = str(columnvalue).strip()
                         certificate_tf_name = commonTools.check_tf_variable(columnvalue)
+                        tempdict = {'certificate_tf_name': certificate_tf_name}
 
                     else:
                         certificate_tf_name = ''
-                    tempdict = {'certificate_tf_name': certificate_tf_name}
+                        tempdict = {'certificate_tf_name': certificate_tf_name}
 
                 columnname = commonTools.check_column_headers(columnname)
                 tempStr[columnname] = str(columnvalue).strip()
@@ -148,12 +151,12 @@ def main():
             if certificate_tf_name != '' and certificate_tf_name.lower() != 'nan':
                 certificate_str[region] =  certficate.render(tempStr)
 
-            # Write to TF file
-            outfile = outdir + "/" + region + "/"+certificate_tf_name+"-certificate-lb.tf"
-            oname = open(outfile, "w+")
-            print("Writing to ..." + outfile)
-            oname.write(certificate_str[region])
-            oname.close()
+                # Write to TF file
+                outfile = outdir + "/" + region + "/"+certificate_tf_name+"-certificate-lb.tf"
+                oname = open(outfile, "w+")
+                print("Writing to ..." + outfile)
+                oname.write(certificate_str[region])
+                oname.close()
 
     #create Certificates
     certificate_templates(dfcert)

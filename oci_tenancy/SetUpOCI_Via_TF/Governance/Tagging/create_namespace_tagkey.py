@@ -126,12 +126,6 @@ def main():
             if (regions[j] not in check_diff_region and regions[j] not in commonTools.endNames and str(regions[j]).lower() != "nan"):
                 check_diff_region.append(regions[j])
 
-        # Regions listed in Policies tab should be same for all rows as policies can only be created in home region
-        if (len(check_diff_region) > 1):
-            print(
-                "\nTags can be created only in Home Region; You have specified different regions for different Tag Namespaces...Exiting...")
-            exit(1)
-
         # If some invalid region is specified in a row which is not part of VCN Info Tab
         if region not in ct.all_regions:
             print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")

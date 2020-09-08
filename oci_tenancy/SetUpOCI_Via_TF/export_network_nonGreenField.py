@@ -5,7 +5,6 @@ import argparse
 import sys
 import oci
 from oci.core.virtual_network_client import VirtualNetworkClient
-from oci.identity import IdentityClient
 import os
 
 sys.path.append(os.getcwd() + "/../../..")
@@ -14,9 +13,7 @@ from commonTools import *
 importCommands = {}
 oci_obj_names = {}
 
-def print_nsgsl(region, comp_name, vcn_name, nsg, nsgsl,i):
-    global rows
-
+def print_nsgsl(values_for_column_nsgs,vnc,region, comp_name, vcn_name, nsg, nsgsl,i):
     tf_name = commonTools.check_tf_variable(str(nsg.display_name))
     sportmin = ""
     sportmax = ""
@@ -34,6 +31,11 @@ def print_nsgsl(region, comp_name, vcn_name, nsg, nsgsl,i):
         nsgdestinationtype = "cidr"
     if (nsgsl.source_type == "CIDR_BLOCK"):
         nsgsourcetype = "cidr"
+    if (nsgsl.source_type == None):
+        nsgsourcetype = ""
+    if (nsgsl.destination_type == None):
+        nsgdestinationtype = ""
+
     if (nsgsl.destination_type == "SERVICE_CIDR_BLOCK"):
         nsgdestinationtype = "service"
     if (nsgsl.source_type == "SERVICE_CIDR_BLOCK"):
@@ -43,11 +45,15 @@ def print_nsgsl(region, comp_name, vcn_name, nsg, nsgsl,i):
             nsgdestinationtype = "nsg"
             nsgname = vnc.get_network_security_group(nsgsl.destination).data
             nsgdestination = nsgname.display_name
+    else:
+        nsgdestination=""
     if (nsgsl.source is not None):
         if ("networksecuritygroup" in nsgsl.source):
             nsgsourcetype = "nsg"
             nsgname = vnc.get_network_security_group(nsgsl.source).data
             nsgsource = nsgname.display_name
+    else:
+        nsgsource=""
     if (nsgsl.tcp_options is not None):
         if (nsgsl.tcp_options.source_port_range is not None):
             sportmin = nsgsl.tcp_options.source_port_range.min
@@ -69,22 +75,116 @@ def print_nsgsl(region, comp_name, vcn_name, nsg, nsgsl,i):
             icmpcode = nsgsl.icmp_options.code
 
     if nsgsl.protocol.lower()!="all":
-        protocol = commonTools().protocol_dict[nsgsl.protocol].lower()
+        protocol = str(commonTools().protocol_dict[nsgsl.protocol].lower())
     else:
         protocol="all"
+    for col_header in values_for_column_nsgs.keys():
+        if (col_header == "Region"):
+            values_for_column_nsgs[col_header].append(region)
+        elif (col_header == "Compartment Name"):
+            values_for_column_nsgs[col_header].append(comp_name)
+        elif (col_header == "VCN Name"):
+            values_for_column_nsgs[col_header].append(vcn_name)
+        elif(col_header == "Protocol"):
+            values_for_column_nsgs[col_header].append(protocol)
+        elif(col_header == "Soure Type"):
+            values_for_column_nsgs[col_header].append(nsgsourcetype)
+        elif(col_header == "Source"):
+            values_for_column_nsgs[col_header].append(nsgsource)
+        elif (col_header == "Destination Type"):
+            values_for_column_nsgs[col_header].append(nsgdestinationtype)
+        elif (col_header == "Destination"):
+            values_for_column_nsgs[col_header].append(nsgdestination)
+        elif (col_header == "SPortMin"):
+            values_for_column_nsgs[col_header].append(sportmin)
+        elif (col_header == "SPortMax"):
+            values_for_column_nsgs[col_header].append(sportmax)
+        elif (col_header == "DPortMin"):
+            values_for_column_nsgs[col_header].append(dportmin)
+        elif (col_header == "DPortMax"):
+            values_for_column_nsgs[col_header].append(dportmax)
+        elif (col_header == "ICMPType"):
+            values_for_column_nsgs[col_header].append(icmptype)
+        elif (col_header == "ICMPCode"):
+            values_for_column_nsgs[col_header].append(icmpcode)
+        elif col_header.lower() in commonTools.tagColumns:
+            values_for_column_nsgs = commonTools.export_tags(nsg, col_header, values_for_column_nsgs)
+        else:
+            oci_objs = [nsg,nsgsl]
+            values_for_column_nsgs = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict_nsgs,values_for_column_nsgs)
 
-    new_row = (region, comp_name, vcn_name, nsg.display_name, nsgsl.direction, protocol, nsgsl.is_stateless, nsgsourcetype,nsgsource, nsgdestinationtype, nsgdestination, sportmin, sportmax, dportmin, dportmax, icmptype, icmpcode,nsgsl.description)
-    rows.append(new_row)
+        """elif(col_header in sheet_dict_nsgs.keys()):
+            # Check if property exists for nsg
+            try:
+                value = nsg.__getattribute__(sheet_dict_nsgs[col_header])
+                value = commonTools.check_exported_value(value)
+                values_for_column_nsgs[col_header].append(value)
+            #Check if property exists for nsgsl
+            except AttributeError as e:
+                try:
+                    value = nsgsl.__getattribute__(sheet_dict_nsgs[col_header])
+                    value = commonTools.check_exported_value(value)
+                    values_for_column_nsgs[col_header].append(value)
+                except AttributeError as e:
+                    value = ""
+                    values_for_column_nsgs[col_header].append(value)
+        else:
+            # Check if property exists for nsg
+            try:
+                value = nsg.__getattribute__(commonTools.check_column_headers(col_header))
+                value = commonTools.check_exported_value(value)
+                values_for_column_nsgs[col_header].append(value)
+            # Check if property exists for nsgsl
+            except AttributeError as e:
+                try:
+                    value = nsgsl.__getattribute__(commonTools.check_column_headers(col_header))
+                    value = commonTools.check_exported_value(value)
+                    values_for_column_nsgs[col_header].append(value)
+                except AttributeError as e:
+                    value = ""
+                    values_for_column_nsgs[col_header].append(value)
+        """
+
     importCommands[region.lower()].write("\nterraform import oci_core_network_security_group_security_rule." + tf_name + "_security_rule" + str(i) + " " + "networkSecurityGroups/" + str(nsg.id) + "/securityRules/" + str(nsgsl.id))
 
 
-#    importCommands[region.lower()].write("\nterraform import oci_core_network_security_group." + str(nsg.display_name) + " "+str(nsg.id))
-def print_nsg(region, comp_name, vcn_name, nsg):
-    global rows
-
+def print_nsg(values_for_column_nsgs,region, comp_name, vcn_name, nsg):
     tf_name = commonTools.check_tf_variable(str(nsg.display_name))
-    new_row = (region, comp_name, vcn_name, nsg.display_name, "", "", "", "", "", "", "", "", "", "", "", "", "", "")
-    rows.append(new_row)
+
+    for col_header in values_for_column_nsgs.keys():
+        if (col_header == "Region"):
+            values_for_column_nsgs[col_header].append(region)
+        elif (col_header == "Compartment Name"):
+            values_for_column_nsgs[col_header].append(comp_name)
+        elif (col_header == "VCN Name"):
+            values_for_column_nsgs[col_header].append(vcn_name)
+        elif col_header.lower() in commonTools.tagColumns:
+            values_for_column_nsgs = commonTools.export_tags(nsg, col_header, values_for_column_nsgs)
+        else:
+            oci_objs = [nsg]
+            values_for_column_nsgs = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict_nsgs,values_for_column_nsgs)
+
+        """elif (col_header in sheet_dict_nsgs.keys()):
+            # Check if property exists for nsg
+            try:
+                value = nsg.__getattribute__(sheet_dict_nsgs[col_header])
+                value = commonTools.check_exported_value(value)
+                values_for_column_nsgs[col_header].append(value)
+            # Check if property exists for nsgsl
+            except AttributeError as e:
+                value = ""
+                values_for_column_nsgs[col_header].append(value)
+        else:
+            # Check if property exists for nsg
+            try:
+                value = nsg.__getattribute__(commonTools.check_column_headers(col_header))
+                value = commonTools.check_exported_value(value)
+                values_for_column_nsgs[col_header].append(value)
+            # Check if property exists for nsgsl
+            except AttributeError as e:
+                value = ""
+                values_for_column_nsgs[col_header].append(value)
+            """
     importCommands[region.lower()].write("\nterraform import oci_core_network_security_group." + tf_name + " "+str(nsg.id))
 
 def print_vcns(values_for_column_vcns,region, comp_name, vcn_info, drg_info, igw_info, ngw_info, sgw_info,lpg_display_names):
@@ -125,8 +225,11 @@ def print_vcns(values_for_column_vcns,region, comp_name, vcn_info, drg_info, igw
             values_for_column_vcns[col_header].append("exported")
         elif col_header.lower() in commonTools.tagColumns:
             values_for_column_vcns = commonTools.export_tags(vcn_info, col_header, values_for_column_vcns)
+        else:
+            oci_objs = [vcn_info,drg_info,igw_info,ngw_info,sgw_info]
+            values_for_column_vcns = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict_vcns,values_for_column_vcns)
 
-        elif (col_header in sheet_dict_vcns.keys()):
+        """elif (col_header in sheet_dict_vcns.keys()):
             # Check if property exists for vcn
             try:
                 value = vcn_info.__getattribute__(sheet_dict_vcns[col_header])
@@ -212,7 +315,7 @@ def print_vcns(values_for_column_vcns,region, comp_name, vcn_info, drg_info, igw
                 if(found == 0):
                     value = ""
                     values_for_column_vcns[col_header].append(value)
-
+            """
     tf_name = commonTools.check_tf_variable(vcn_info.display_name)
     importCommands[region.lower()].write("\nterraform import oci_core_vcn." + tf_name + " " + str(vcn_info.id))
 
@@ -272,6 +375,10 @@ def print_dhcp(values_for_column_dhcp,region, comp_name, vcn_name, dhcp_info):
 
 
 def print_subnets(values_for_column_subnets,region, comp_name, vcn_name, subnet_info, dhcp_name, rt_name, sl_names, add_def_seclist):
+    tf_name = vcn_name + "_" + str(subnet_info.display_name)
+    tf_name = commonTools.check_tf_variable(tf_name)
+    importCommands[region.lower()].write("\nterraform import oci_core_subnet." + tf_name + " " + str(subnet_info.id))
+
     for col_header in values_for_column_subnets.keys():
         if (col_header == "Region"):
             values_for_column_subnets[col_header].append(region)
@@ -287,6 +394,26 @@ def print_subnets(values_for_column_subnets,region, comp_name, vcn_name, subnet_
             values_for_column_subnets[col_header].append(sl_names)
         elif (col_header == "Add Default Seclist"):
             values_for_column_subnets[col_header].append(add_def_seclist)
+        elif ("Availability Domain" in col_header):
+            value = subnet_info.__getattribute__(sheet_dict_subnets[col_header])
+            ad = ""
+            if (value == None):
+                value = "Regional"
+            elif ("AD-1" in value):
+                ad = "AD1"
+            elif ("AD-2" in value):
+                ad = "AD2"
+            elif ("AD-3" in value):
+                ad = "AD3"
+            values_for_column_subnets[col_header].append(ad)
+            # Get public or private
+        elif (col_header == "Type(private|public)"):
+            value = subnet_info.__getattribute__(sheet_dict_subnets[col_header])
+            if (value == True):
+                access = "private"
+            elif (value == False):
+                access = "public"
+            values_for_column_subnets[col_header].append(access)
 
         elif (col_header == "DNS Label"):
             value = subnet_info.dns_label
@@ -296,32 +423,16 @@ def print_subnets(values_for_column_subnets,region, comp_name, vcn_name, subnet_
                 values_for_column_subnets[col_header].append(value)
         elif col_header.lower() in commonTools.tagColumns:
             values_for_column_subnets = commonTools.export_tags(subnet_info, col_header, values_for_column_subnets)
-        elif (col_header in sheet_dict_subnets.keys()):
+        else:
+            oci_objs = [subnet_info]
+            values_for_column_subnets = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict_subnets,values_for_column_subnets)
+
+        """elif (col_header in sheet_dict_subnets.keys()):
             # Check if property exists for subnet_info
             try:
                 value = subnet_info.__getattribute__(sheet_dict_subnets[col_header])
-                # Get AD
-                if("Availability Domain" in col_header):
-                    ad=""
-                    if (value == None):
-                        value = "Regional"
-                    elif ("AD-1" in value):
-                        ad = "AD1"
-                    elif ("AD-2" in value):
-                        ad = "AD2"
-                    elif ("AD-3" in value):
-                        ad = "AD3"
-                    values_for_column_subnets[col_header].append(ad)
-                # Get public or private
-                elif(col_header  == "Type(private|public)"):
-                    if(value == True):
-                        access="private"
-                    elif(value == False):
-                        access="public"
-                    values_for_column_subnets[col_header].append(access)
-                else:
-                    value = commonTools.check_exported_value(value)
-                    values_for_column_subnets[col_header].append(value)
+                value = commonTools.check_exported_value(value)
+                values_for_column_subnets[col_header].append(value)
             except AttributeError as e:
                 value = ""
                 values_for_column_subnets[col_header].append(value)
@@ -334,10 +445,7 @@ def print_subnets(values_for_column_subnets,region, comp_name, vcn_name, subnet_
             except AttributeError as e:
                 value = ""
                 values_for_column_subnets[col_header].append(value)
-
-    tf_name = vcn_name + "_" + str(subnet_info.display_name)
-    tf_name=commonTools.check_tf_variable(tf_name)
-    importCommands[region.lower()].write("\nterraform import oci_core_subnet." + tf_name + " " + str(subnet_info.id))
+        """
 
 def main():
     parser = argparse.ArgumentParser(description="Export Route Table on OCI to CD3")
@@ -400,7 +508,7 @@ def main():
     sheet_dict_vcns=ct.sheet_dict["VCNs"]
     sheet_dict_dhcp = ct.sheet_dict["DHCP"]
     sheet_dict_subnets = ct.sheet_dict["Subnets"]
-    #sheet_dict_nsgs = ct.sheet_dict["NSGs"]
+    sheet_dict_nsgs = ct.sheet_dict["NSGs"]
 
 
     # Check Compartments
@@ -426,9 +534,9 @@ def main():
     # Create backups
     for reg in ct.all_regions:
         if (os.path.exists(outdir + "/" + reg + "/tf_import_commands_network_nonGF.sh")):
-            commonTools.backup_file(outdir + "/" + reg, "tf_import_commands_network_nonGF.sh")
+            commonTools.backup_file(outdir + "/" + reg, "tf_import_network","tf_import_commands_network_nonGF.sh")
         if (os.path.exists(outdir + "/" + reg + "/obj_names.safe")):
-            commonTools.backup_file(outdir + "/" + reg, "obj_names.safe")
+            commonTools.backup_file(outdir + "/" + reg, "obj_names","obj_names.safe")
         importCommands[reg] = open(outdir + "/" + reg + "/tf_import_commands_network_nonGF.sh", "w")
         importCommands[reg].write("#!/bin/bash")
         importCommands[reg].write("\n")
@@ -550,12 +658,11 @@ def main():
                     print_vcns(values_for_column_vcns,region,ntk_compartment_name, vcn_info, drg_info,igw_info,ngw_info, sgw_info, lpg_display_names)
 
     commonTools.write_to_cd3(values_for_column_vcns, cd3file, "VCNs")
-    # commonTools.write_to_cd3(df_vcn,cd3file,"VCNs")
     print("VCNs exported to CD3\n")
     # Fetch NSGs
     rows = []
     print("\nFetching NSGs...")
-    """for reg in ct.all_regions:
+    for reg in ct.all_regions:
         importCommands[reg].write("\n\n######### Writing import for NSG #########\n\n")
         config.__setitem__("region", ct.region_dict[reg])
         vnc = VirtualNetworkClient(config)
@@ -588,18 +695,17 @@ def main():
                                 i = 1
                                 for nsgsl in NSGSLs.data:
                                     nsglist.append(nsg.id)
-                                    print_nsgsl(region, ntk_compartment_name_again, vcn_info.display_name, nsg, nsgsl, i)
+                                    print_nsgsl(values_for_column_nsgs,vnc,region, ntk_compartment_name_again, vcn_info.display_name, nsg, nsgsl, i)
                                     i = i + 1
                                 if (nsg.id not in nsglist):
-                                    print_nsg(region, ntk_compartment_name_again, vcn_info.display_name, nsg)
+                                    print_nsg(values_for_column_nsgs,region, ntk_compartment_name_again, vcn_info.display_name, nsg)
                                 else:
                                     tf_name = commonTools.check_tf_variable(str(nsg.display_name))
                                     importCommands[region.lower()].write("\nterraform import oci_core_network_security_group." + tf_name + " " + str(nsg.id))
 
-
-    commonTools.write_to_cd3(rows, cd3file, "NSGs")
+    commonTools.write_to_cd3(values_for_column_nsgs, cd3file, "NSGs")
     print("NSGs exported to CD3\n")
-    """
+
     # Fetch DHCP
     print("\nFetching DHCP...")
     for reg in ct.all_regions:

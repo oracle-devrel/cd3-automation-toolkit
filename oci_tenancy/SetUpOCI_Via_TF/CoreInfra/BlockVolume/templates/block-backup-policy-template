@@ -4,8 +4,4 @@ resource "oci_core_volume_backup_policy_assignment" "{{ block_tf_name }}_bkupPol
     asset_id = oci_core_volume.{{ block_tf_name }}.id
     policy_id = data.oci_core_volume_backup_policies.block_{{ backup_policy }}.volume_backup_policies.0.id
 
-    {#  ## Add Additional Fields below this line ##  #}
-
-
-    {#  ## End of Additional Fields ##  #}
 }

@@ -16,11 +16,6 @@ resource "oci_identity_tag" "{{ key_tf_name }}" {
         values = [{{ validator[1] }}]
     }
     {% endif %}
-
-    {#  ## Add Additional Fields below this line ##  #}
-
-
-    {#  ## End of Additional Fields ##  #}
 }
 
 

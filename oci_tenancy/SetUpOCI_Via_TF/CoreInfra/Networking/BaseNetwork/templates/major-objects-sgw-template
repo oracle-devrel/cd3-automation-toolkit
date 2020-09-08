@@ -13,11 +13,6 @@ resource "oci_core_service_gateway" "{{ sgw_tf_name }}" {
     #Optional
     display_name = "{{ sgw_name }}"
 
-    {#  ## Add Additional Fields below this line ##  #}
-
-
-    {#  ## End of Additional Fields ##  #}
-
     {#  ##Do not modify below this line##  #}
     {#                                     #}
     {#  ###Section for adding Defined and Freeform Tags###  #}

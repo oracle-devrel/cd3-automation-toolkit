@@ -82,7 +82,8 @@ if (input_nongf_tenancy.lower() == 'true'):
     print("Process will fetch objects from OCI in the specified compartment from all regions tenancy is subscribed to\n")
     print("1. Export Identity Objects(Compartments, Groups, Policies) to CD3 and create TF Files")
     print("2. Export Network Objects(VCNs, Subnets, Security Lists, Route Tables, NSGs) to CD3 and create TF Files")
-    print("3. Run bash script to import objects to TF state")
+    print("5. Export Load Balancer Objects(LB-Hostname-Certs, BackendSet-BackendServer, RuleSet,PathRouteSet, LB-Listener) to CD3 and create TF Files")
+    print("6. Run bash script to import objects to TF state")
     print("q. Press q to quit")
     userInput = input('Enter your choice: multiple allowed ')
 
@@ -188,7 +189,7 @@ if (input_nongf_tenancy.lower() == 'true'):
         print("\n\nExecute tf_import_commands_identity_nonGF.sh script created under home region directory to synch TF with OCI objects; option No 3\n")
 
     if("2" in userInput):
-        input_comp = input("Enter name of Compartment as it appears in OCI (comma seperated without spaces if multiple)for which you want to export network objects;\nLeave blank if want to export for all Compartments: ")
+        input_comp = input("Enter name of Compartment as it appears in OCI (comma seperated without spaces if multiple)for which you want to export network objects;\nLeave blank if you want to export for all Compartments: ")
 
         if(input_comp==''):
             if (input_config_file == ''):
@@ -283,7 +284,94 @@ if (input_nongf_tenancy.lower() == 'true'):
 
         print("\n\nExecute tf_import_commands_network_nonGF.sh script created under each region directory to synch TF with OCI objects; option No 3\n")
 
-    if ("3" in userInput):
+
+    if("5" in userInput):
+        input_comp = input("Enter name of Compartment as it appears in OCI (comma seperated without spaces if multiple)for which you want to export LBR objects;\nLeave blank if you want to export for all Compartments: ")
+
+        if(input_comp==''):
+            if (input_config_file == ''):
+                command = "python export_lbr_nonGreenField.py "+input_cd3file + ' --outdir ' + input_outdir
+            else:
+                command = "python export_lbr_nonGreenField.py " + input_cd3file + ' --outdir ' + input_outdir +" --configFileName " + input_config_file
+        else:
+            if (input_config_file == ''):
+                command = "python export_lbr_nonGreenField.py "+input_cd3file + ' --outdir ' + input_outdir +" --networkCompartment \""+input_comp +"\""
+            else:
+                command = "python export_lbr_nonGreenField.py " + input_cd3file + ' --outdir ' + input_outdir +" --networkCompartment \""+input_comp+"\""" --configFileName " + input_config_file
+
+        print("\nExecuting command "+command)
+        exitval =os.system(command)
+        if (exitval==0):
+            print("\nLBR Objects export completed for CD3 excel "+ input_cd3file)
+        else:
+            print("\nError Occured. Please try again!!!")
+            exit()
+
+        print("----------------------------------------------------------")
+
+        print("\nProceeding to create TF files...\n")
+
+        print("\n-----------Process Load Balancer tabs-----------")
+
+        os.chdir('CoreInfra/Networking/LoadBalancers')
+        if (input_config_file == ''):
+
+            command = 'python create_terraform_lbr_hostname_certs.py ' + input_cd3file + ' ' + input_outdir
+
+            command2 = 'python create_backendset_backendservers.py ' + input_cd3file + ' ' + input_outdir
+
+            command3 = 'python create_listener.py ' + input_cd3file + ' ' + input_outdir
+
+            command4 = 'python create_path_route_set.py ' + input_cd3file + ' ' + input_outdir
+
+            command5 = 'python create_ruleset.py ' + input_cd3file + ' ' + input_outdir
+
+        else:
+
+            command = 'python create_terraform_lbr_hostname_certs.py ' + input_cd3file + ' ' + input_outdir + ' --configFileName ' + input_config_file
+
+            command2 = 'python create_backendset_backendservers.py ' + input_cd3file + ' ' + input_outdir + ' --configFileName ' + input_config_file
+
+            command3 = 'python create_listener.py ' + input_cd3file + ' ' + input_outdir + ' --configFileName ' + input_config_file
+
+            command4 = 'python create_path_route_set.py ' + input_cd3file + ' ' + input_outdir + ' --configFileName ' + input_config_file
+
+            command5 = 'python create_ruleset.py ' + input_cd3file + ' ' + input_outdir + ' --configFileName ' + input_config_file
+
+        print("\n------------------------Creating LB and Certificates---------------------------")
+        print("Executing Command: " + command)
+        exitVal = os.system(command)
+        if (exitVal == 1):
+            exit()
+
+        print("\n------------------------Creating Backend Sets and Backend Servers---------------------------")
+        print("Executing Command: " + command2)
+        exitVal = os.system(command2)
+        if (exitVal == 1):
+            exit()
+
+        print("\n------------------------Creating Listeners---------------------------")
+        print("Executing Command: " + command3)
+        exitVal = os.system(command3)
+        if (exitVal == 1):
+            exit()
+
+        print("\n------------------------Creating Path Route Sets---------------------------")
+        print("Executing Command: " + command4)
+        exitVal = os.system(command4)
+        if (exitVal == 1):
+            exit()
+
+        print("\n------------------------Creating RuleSets---------------------------")
+        print("Executing Command: " + command5)
+        exitVal = os.system(command5)
+        os.chdir("../..")
+        if (exitVal == 1):
+            exit()
+
+        print("\n\nExecute tf_import_commands_lbr_nonGF.sh script created under each region directory to synch TF with OCI objects; option No 6\n")
+
+    if ("6" in userInput):
         print("\nterraform tfstate file should not be existing while doing fresh export/import!!\n")
         if ("linux" not in sys.platform):
             print("You are not using Linux system. Please proceed with manual execution of TF import cmds")
@@ -293,6 +381,8 @@ if (input_nongf_tenancy.lower() == 'true'):
                     print(input_outdir+ "/" + reg+"/tf_import_commands_network_nonGF.sh")
                 if (os.path.exists(input_outdir + "/" + reg + "/tf_import_commands_identity_nonGF.sh")):
                     print(input_outdir + "/" + reg + "/tf_import_commands_identity_nonGF.sh")
+                if (os.path.exists(input_outdir + "/" + reg + "/tf_import_commands_lbr_nonGF.sh")):
+                    print(input_outdir + "/" + reg + "/tf_import_commands_lbr_nonGF.sh")
         else:
             for reg in ct.all_regions:
                 os.chdir(input_outdir+ "/" + reg)
@@ -305,6 +395,11 @@ if (input_nongf_tenancy.lower() == 'true'):
                     print("Executing " + input_outdir + "/" + reg + "/tf_import_commands_network_nonGF.sh")
                     os.system("chmod +x tf_import_commands_network_nonGF.sh")
                     os.system("./tf_import_commands_network_nonGF.sh")
+
+                if (os.path.exists(input_outdir + "/" + reg + "/tf_import_commands_lbr_nonGF.sh")):
+                    print("Executing " + input_outdir + "/" + reg + "/tf_import_commands_lbr_nonGF.sh")
+                    os.system("chmod +x tf_import_commands_lbr_nonGF.sh")
+                    os.system("./tf_import_commands_lbr_nonGF.sh")
 
     exit()
 
@@ -481,7 +576,7 @@ if('2' in userInput):
         if (input_format == 'cd3'):
             cd3outfile = input_cd3file
         inputConfigFile = input_config_file
-        input_comp = input("Enter name of Compartment as it appears in OCI (comma seperated if multiple) for which you want to export rules; Leave blank if want to export for all Compartments: ")
+        input_comp = input("Enter name of Compartment as it appears in OCI (comma seperated if multiple) for which you want to export rules; Leave blank if you want to export for all Compartments: ")
 
         if (input_comp is ""):
             if (input_config_file == ''):

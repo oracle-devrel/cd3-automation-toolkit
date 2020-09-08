@@ -8,8 +8,4 @@ resource "oci_identity_tag_default" "{{ namespace_tf_name }}-{{ key_tf_name }}-d
     #Optional
     is_required = false
 
-    {#  ## Add Additional Fields below this line ##  #}
-
-
-    {#  ## End of Additional Fields ##  #}
 }
