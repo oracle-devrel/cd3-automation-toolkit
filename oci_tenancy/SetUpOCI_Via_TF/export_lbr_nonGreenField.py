@@ -63,21 +63,21 @@ def common_headers(region, headers, values_for_column, eachlbr, excel_header_map
                 pass
     return values_for_column
 
-def print_certs(region, values_for_column_lhc, lbr, VCNs, LBRs, ntk_compartment_name, SUBNETs, NSGs):
+def print_lbr_hostname_certs(region, values_for_column_lhc, lbr, VCNs, LBRs, ntk_compartment_name, SUBNETs, NSGs):
     for eachlbr in LBRs.data:
         ciphers = eachlbr.ssl_cipher_suites
         certs = eachlbr.certificates
         if (not certs):
             count = 0
-            print_lbr_hostname_certs(region, values_for_column_lhc, lbr, VCNs, eachlbr, ntk_compartment_name, SUBNETs,NSGs, None, count)
+            fetch_values(region, values_for_column_lhc, lbr, VCNs, eachlbr, ntk_compartment_name, SUBNETs,NSGs, None, count)
         else:
             count = 0
             for certificates,details in certs.items():
-                print_lbr_hostname_certs(region, values_for_column_lhc, lbr, VCNs, eachlbr, ntk_compartment_name, SUBNETs,NSGs,details,count)
+                fetch_values(region, values_for_column_lhc, lbr, VCNs, eachlbr, ntk_compartment_name, SUBNETs,NSGs,details,count)
                 count = count + 1
     return values_for_column_lhc
 
-def print_lbr_hostname_certs(region, values_for_column_lhc, lbr, VCNs, eachlbr, ntk_compartment_name, SUBNETs, NSGs, obj, count):
+def fetch_values(region, values_for_column_lhc, lbr, VCNs, eachlbr, ntk_compartment_name, SUBNETs, NSGs, obj, count):
     lbr_info = lbr.get_load_balancer(eachlbr.id).data
     cname=""
     pname=""
@@ -143,26 +143,7 @@ def print_lbr_hostname_certs(region, values_for_column_lhc, lbr, VCNs, eachlbr, 
                         values_for_column_lhc[col_headers].append(subnet_name_list)
                 else:
                     values_for_column_lhc[col_headers].append("")
-                    '''
-            elif col_headers == 'Cipher Suites':
-                cipher_suites = ""
-                if eachlbr.ssl_cipher_suites:
-                    list_of_values = ''
-                    for ciphers, details in (eachlbr.ssl_cipher_suites).items():
-                        suites_list = details.ciphers
-                        for suites in suites_list:
-                            cipher_suites = suites + "," + cipher_suites
-                            if (cipher_suites != "" and cipher_suites[-1] == ','):
-                                cipher_suites = cipher_suites[:-1]
-                        cipher_name = ciphers
-                        value = cipher_name + ":" + cipher_suites
-                        list_of_values = value + ";" + list_of_values
-                    if (list_of_values != "" and list_of_values[-1] == ';'):
-                        list_of_values = list_of_values[:-1]
-                    values_for_column_lhc[col_headers].append(list_of_values)
-                else:
-                    values_for_column_lhc[col_headers].append("")
-                    '''
+
             # if headers are a part of Tags
             elif headers_lower in commonTools.tagColumns:
                 if count == 0:
@@ -598,7 +579,7 @@ def main():
                 NSGs = oci.pagination.list_call_get_all_results(vcn.list_network_security_groups,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name],
                                                                 lifecycle_state="AVAILABLE")
 
-                values_for_column_lhc = print_certs(region, values_for_column_lhc, lbr, VCNs, LBRs,ntk_compartment_name, SUBNETs, NSGs)
+                values_for_column_lhc = print_lbr_hostname_certs(region, values_for_column_lhc, lbr, VCNs, LBRs,ntk_compartment_name, SUBNETs, NSGs)
                 values_for_column_lis = print_listener(region,values_for_column_lis,LBRs,ntk_compartment_name)
                 values_for_column_bss = print_backendset_backendserver(region, values_for_column_bss, lbr,LBRs,ntk_compartment_name)
                 values_for_column_rule = print_rule(region, values_for_column_rule, LBRs, ntk_compartment_name)
