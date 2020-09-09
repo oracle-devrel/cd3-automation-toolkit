@@ -1,0 +1,111 @@
+{
+    "Compartments" :
+    {
+        "Description" : "description"
+    },
+   "Groups" :
+    {
+        "Description" : "description",
+        "Name" : "name"
+    },
+    "Policies" :
+    {
+       "Description" : "description",
+        "Name" : "name"
+    },
+    "Tags" :
+    {
+        "Region" : "region",
+        "Compartment Name" : "compartment_id",
+        "Tag Namespace" : "name",
+        "Namespace Description" : "description",
+        "Tag Keys" : "name",
+        "Tag Description" : "description",
+        "Cost Tracking" : "is_cost_tracking",
+        "Validator" : "validator",
+        "Default Tag Value" : "value"
+    },
+
+    "VCNs" :
+    {
+        "VCN Name" : "display_name",
+        "CIDR Block" : "cidr_block"
+    },
+    "DHCP" :
+    {
+        "DHCP Option Name" : "display_name",
+        "Server Type(VcnLocalPlusInternet|CustomDnsServer)" : "server_type",
+        "Search Domain" : "search_domain_names",
+        "Custom DNS Server" : "custom_dns_servers"
+
+    },
+    "Subnets" :
+    {
+        "Subnet Name" : "display_name",
+        "CIDR Block" : "cidr_block",
+        "Availability Domain(AD1|AD2|AD3|Regional)" : "availability_domain",
+        "Type(private|public)" : "prohibit_public_ip_on_vnic"
+    },
+    "NSGs" :
+    {
+        "NSG Name" : "display_name",
+        "Direction" : "direction",
+        "isStateless" : "is_stateless",
+        "Rule Description" : "description"
+    },
+    "RouteRulesinOCI" :
+    {
+        "Route Table Name" : "display_name",
+        "Destination CIDR" : "destination",
+        "Route Destination Object" : "network_entity_id",
+        "Destination Type" : "destination_type",
+        "Rule Description" : "description"
+    },
+    "SecRulesinOCI" :
+    {
+        "SecList Name" : "display_name",
+        "isStateless" : "is_stateless",
+        "Source" : "source",
+        "Destination" : "destination",
+        "Rule Description" : "description"
+    },
+    "LB-Hostname-Certs" :
+    {
+    "Shape(100Mbps|400Mbps|8000Mbps)" : "shape_name",
+    "LBR Subnets" : "subnet_ids",
+    "Is Private(True|False)" : "is_private",
+    "NSGs" : "network_security_group_ids",
+    "LBR Hostname(Name:Hostname)" : "hostname",
+    "Cipher Suites" : "ssl_cipher_suites"
+    },
+    "Common-LBR-Headers" :
+    {
+    "Region" : "region",
+    "Compartment Name" : "compartment_id",
+    "LBR Name" : "display_name"
+    },
+
+    "Events" :
+    {
+        "Region" : "region",
+        "Compartment Name" : "compartment_id",
+        "Event Name" : "display_name",
+        "Event Description" : "description",
+        "Action Type" :  "action_type",
+        "Action is Enabled" : "is_enabled",
+        "Action Description" : "description",
+        "Service Name" :  "condition",
+        "Resource" : "condition",
+        "Event is Enabled" : "is_enabled",
+        "Topic" : "topic_id"
+    },
+   "Notifications" :
+    {
+        "Region" : "region",
+        "Compartment Name" : "compartment_id",
+        "Topic" : "topic_id",
+        "Description" : "description",
+        "Protocol" :  "protocol",
+        "Endpoint" : "endpoint"
+    }
+}

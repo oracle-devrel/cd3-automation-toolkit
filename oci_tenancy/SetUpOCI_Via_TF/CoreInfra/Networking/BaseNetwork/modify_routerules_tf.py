@@ -59,7 +59,7 @@ if('.xls' in inputfile):
         subnets_done[reg] = []
         # Backup existing seclist files in ash and phx dir
         print("Backing up all existing RT TF files for region " + reg+ " to")
-        commonTools.backup_file(outdir + "/" + reg, "_routetable.tf")
+        commonTools.backup_file(outdir + "/" + reg,"RTs", "_routetable.tf")
 
     for i in df.index:
         region = df.iat[i, 0]

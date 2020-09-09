@@ -241,7 +241,7 @@ if('.xls' in secrulesfilename):
         seclists_done[reg]=[]
         # Backup existing seclist files in ash and phx dir
         print("Backing up all existing SL TF files for region " + reg+" to")
-        commonTools.backup_file(outdir + "/" + reg, "_seclist.tf")
+        commonTools.backup_file(outdir + "/" + reg,"SLs", "_seclist.tf")
 
     with open('out.csv') as secrulesfile:
         reader = csv.DictReader(skipCommentedLine(secrulesfile))

@@ -1,23 +1,25 @@
 - hosts: all
   become: true
   become_user: root
-  vars: 
-    create_lvsize: '100%FREE'
   tasks:
-    - name: Create Volume Group on /dev/sdb
-      lvg: vg=vg01 pvs=/dev/sdb
-    
-    - name: Create LV on VG01
-      lvol: vg=vg01 lv=lv01 size={{ create_lvsize }}
-     
-    - name: Create et4 on vg01
-      filesystem: fstype=ext4 dev=/dev/vg01/lv01 
-    
-    - name: Get blkid
-      command: blkid -s UUID -o value /dev/mapper/vg01-lv01
-      register: disk_blkid
-
-    - name: mounting new filesystem
-      mount: name=/u01 src='UUID={{ disk_blkid.stdout }}' fstype=ext4 state=mounted opts='defaults,noatime,_netdev' passno=2
-      
-
+  - parted:
+     device: /dev/oracleoci/oraclevdb
+     number: 1
+     state: present
+     part_end: 100%
+​
+  - name: Create Volume Group on /dev/oracleoci/oraclevdb
+    lvg: vg=vg01 pvs=/dev/oracleoci/oraclevdb
+​
+  - name: Create LV on VG01
+    lvol: vg=vg01 lv=lv01 size=145G
+​
+  - name: Create xfs on vg01-lv01
+    filesystem: fstype=xfs dev=/dev/vg01/lv01
+​
+  - name: Get blkid vg01-lv01
+    command: blkid -s UUID -o value /dev/mapper/vg01-lv01
+    register: disk_blkid_lv01
+​
+  - name: mounting new filesystem on /u01
+    mount: name=/u01 src='UUID={{ disk_blkid_lv01.stdout }}' fstype=xfs state=mounted opts='defaults,noatime,_netdev' passno=2
