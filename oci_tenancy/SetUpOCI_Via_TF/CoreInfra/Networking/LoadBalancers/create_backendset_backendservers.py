@@ -84,7 +84,7 @@ def main():
             exit()
         resource='BackendSet-BackendServer'
         srcdir = outdir + "/" + eachregion + "/"
-        commonTools.backup_file(srcdir, resource, "-backends-lb.tf")
+        commonTools.backup_file(srcdir, resource, "_backends-lb.tf")
 
     # List of the column headers
     dfcolumns = df.columns.values.tolist()
@@ -214,7 +214,7 @@ def main():
                 beserver_str = beserver_str + beserver.render(tempStr)
 
         # Write to TF file
-        outfile = outdir + "/" + region + "/"+backend_set_tf_name+"-backends-lb.tf"
+        outfile = outdir + "/" + region + "/"+backend_set_tf_name+"_backends-lb.tf"
         oname = open(outfile, "w+")
         print("Writing to ..." + outfile)
         oname.write(beset_str + beserver_str)

@@ -90,7 +90,8 @@ def main():
             exit()
         resource='LB-Hostname-Certs'
         srcdir = outdir + "/" + eachregion + "/"
-        commonTools.backup_file(srcdir, resource, "-lb.tf")
+        commonTools.backup_file(srcdir, resource, "_certificate-lb.tf")
+        commonTools.backup_file(srcdir, resource, "_lbr-hostname-lb.tf")
 
     for reg in ct.all_regions:
         if reg not in commonTools.endNames and  reg != 'nan':
@@ -152,7 +153,7 @@ def main():
                 certificate_str[region] =  certficate.render(tempStr)
 
                 # Write to TF file
-                outfile = outdir + "/" + region + "/"+certificate_tf_name+"-certificate-lb.tf"
+                outfile = outdir + "/" + region + "/"+certificate_tf_name+"_certificate-lb.tf"
                 oname = open(outfile, "w+")
                 print("Writing to ..." + outfile)
                 oname.write(certificate_str[region])
@@ -295,7 +296,7 @@ def main():
         finalstring = hostname_str[region] + lbr_str[region]
 
         # Write to TF file
-        outfile = outdir + "/" + region + "/"+lbr_tf_name+"-lbr-hostname-lb.tf"
+        outfile = outdir + "/" + region + "/"+lbr_tf_name+"_lbr-hostname-lb.tf"
         oname = open(outfile, "w+")
         print("Writing to ..."+outfile)
         oname.write(finalstring)

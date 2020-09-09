@@ -32,9 +32,13 @@ resource "oci_core_instance" "{{ host_tf_name }}" {
                 nsg_ids=[{{ nsg_ids }}]
         }
         display_name = "{{ hostname }}"
+
+        {% if ssh_key_var_name != '' %}
         metadata = {
 		    ssh_authorized_keys = {{ ssh_key_var_name }}
         }
+        {% endif %}
+
         dedicated_vm_host_id = {{ dedicated_vm_host_tf }}
 
         {#  ##Do not modify below this line##  #}

@@ -77,7 +77,7 @@ def main():
 
         resource = 'BlockBackupPolicy'
         srcdir = outdir + "/" + eachregion + "/"
-        commonTools.backup_file(srcdir, resource, "-backup-policy.tf")
+        commonTools.backup_file(srcdir, resource, "_backup-policy.tf")
 
     for i in df.index:
         region = df.loc[i,"Region"]
@@ -136,7 +136,7 @@ def main():
         backuppolicy =  template.render(tempStr)
 
         #Write to output file
-        file = outdir + "/" + region + "/" + blockname_tf + "-backup-policy.tf"
+        file = outdir + "/" + region + "/" + blockname_tf + "_backup-policy.tf"
         oname = open(file, "w+")
         print("Writing " + file)
         oname.write(backuppolicy)

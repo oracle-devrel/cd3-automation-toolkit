@@ -85,7 +85,7 @@ def main():
             exit()
         resource = 'PathRouteSet'
         srcdir = outdir + "/" + eachregion + "/"
-        commonTools.backup_file(srcdir, resource, "-pathrouteset-lb.tf")
+        commonTools.backup_file(srcdir, resource, "_pathrouteset-lb.tf")
 
     # List of the column headers
     dfcolumns = df.columns.values.tolist()
@@ -161,7 +161,7 @@ def main():
                 prs_str = prs.render(tempStr)
 
                 # Write to TF file
-                outfile = outdir + "/" + region + "/" + path_route_set_tf_name + "-pathrouteset-lb.tf"
+                outfile = outdir + "/" + region + "/" + path_route_set_tf_name + "_pathrouteset-lb.tf"
                 oname = open(outfile, "w+")
                 print("Writing to ..." + outfile)
                 oname.write(prs_str)
@@ -176,7 +176,7 @@ def main():
                 prs_str = prs_str.replace(srcStr,rule_str)
 
                 # Write to TF file - Update the Routes
-                outfile = outdir + "/" + region + "/" + path_route_set_tf_name + "-pathrouteset-lb.tf"
+                outfile = outdir + "/" + region + "/" + path_route_set_tf_name + "_pathrouteset-lb.tf"
                 oname = open(outfile, "w+")
                 oname.write(prs_str)
                 oname.close()

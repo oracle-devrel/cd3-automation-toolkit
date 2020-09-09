@@ -73,7 +73,7 @@ def main():
 
         resource = 'BootBackupPolicy'
         srcdir = outdir + "/" + eachregion + "/"
-        commonTools.backup_file(srcdir, resource, "-boot-backup-policy.tf")
+        commonTools.backup_file(srcdir, resource, "_boot-backup-policy.tf")
 
     for i in df.index:
 
@@ -134,7 +134,7 @@ def main():
         bootppolicy =  template.render(tempStr)
 
         #Write to output
-        file = outdir + "/" + region + "/" +hostname_tf+"-boot-backup-policy.tf"
+        file = outdir + "/" + region + "/" +hostname_tf+"_boot-backup-policy.tf"
         oname = open(file, "w+")
         print("Writing " + file)
         oname.write(bootppolicy)

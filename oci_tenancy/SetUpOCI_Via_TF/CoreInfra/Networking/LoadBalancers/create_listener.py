@@ -84,7 +84,7 @@ def main():
             exit()
         resource='Listener'
         srcdir = outdir + "/" + eachregion + "/"
-        commonTools.backup_file(srcdir, resource, "-listener-lb.tf")
+        commonTools.backup_file(srcdir, resource, "_listener-lb.tf")
 
     # List of the column headers
     dfcolumns = df.columns.values.tolist()
@@ -216,7 +216,7 @@ def main():
         listener_str = listener.render(tempStr)
 
         # Write to TF file
-        outfile = outdir + "/" + region + "/"+listener_tf_name+"-listener-lb.tf"
+        outfile = outdir + "/" + region + "/"+listener_tf_name+"_listener-lb.tf"
         oname = open(outfile, "w+")
         print("Writing to ..." + outfile)
         oname.write(listener_str)

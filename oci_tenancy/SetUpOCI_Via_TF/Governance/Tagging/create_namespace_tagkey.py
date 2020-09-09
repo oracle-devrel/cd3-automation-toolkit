@@ -187,6 +187,11 @@ def main():
                 if str(columnvalue).lower().strip() != 'true':
                     columnvalue = "false"
 
+            if columnname == 'Default Tag Value':
+                if columnvalue != '':
+                    if '$' in columnvalue and columnvalue.count('$') == 1:
+                        columnvalue = '$'+columnvalue
+
             if columnname == 'Validator':
                 if str(columnvalue).strip() != '':
                     columnname = commonTools.check_column_headers(columnname)

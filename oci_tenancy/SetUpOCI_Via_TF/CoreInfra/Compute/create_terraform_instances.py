@@ -169,8 +169,9 @@ def main():
                     dedicated_vm_host_tf = "\"\""
                 tempdict = {'dedicated_vm_host_tf': dedicated_vm_host_tf}
 
+
             if columnname == 'NSGs':
-                if columnvalue != '' or columnvalue != 'nan':
+                if columnvalue != '' or columnvalue.strip().lower()  != 'nan':
                     nsg_str = ""
                     NSGs = columnvalue.split(",")
                     k=0
@@ -179,14 +180,15 @@ def main():
                         if (k != len(NSGs) - 1):
                             nsg_str = nsg_str + ","
                         k += 1
+                    tempdict = {'nsg_ids': nsg_str}
+                    tempStr.update(tempdict)
                 continue
+
 
             if columnname == "SSH Key Var Name":
                 if columnvalue.strip() != '' and  columnvalue.strip().lower() != 'nan':
                     ssh_key_var_name = "var."+columnvalue.strip()
-                else:
-                    ssh_key_var_name = "\"\""
-                tempdict = {'ssh_key_var_name': ssh_key_var_name}
+                    tempdict = {'ssh_key_var_name': ssh_key_var_name}
 
             columnname = commonTools.check_column_headers(columnname)
             tempStr[columnname] = str(columnvalue).strip()
