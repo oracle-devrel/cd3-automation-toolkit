@@ -71,20 +71,54 @@
     },
     "LB-Hostname-Certs" :
     {
-    "Shape(100Mbps|400Mbps|8000Mbps)" : "shape_name",
-    "LBR Subnets" : "subnet_ids",
-    "Is Private(True|False)" : "is_private",
-    "NSGs" : "network_security_group_ids",
-    "LBR Hostname(Name:Hostname)" : "hostname",
-    "Cipher Suites" : "ssl_cipher_suites"
+        "Shape(100Mbps|400Mbps|8000Mbps)" : "shape_name",
+        "Is Private(True|False)" : "is_private"
+    },
+    "BackendSet-BackendServer" :
+    {
+        "Backend ServerName:Port" : "backend_server_name:port",
+        "Backend Set Name" : "backend_set_name",
+        "Certificate Name" : "certificates",
+        "Backend Policy(LEAST_CONNECTIONS|ROUND_ROBIN|IP_HASH)" : "policy",
+        "Backend HealthCheck Protocol(HTTP|TCP)" : "protocol",
+        "Backend HealthCheck Port" : "port",
+        "Backend HealthCheck URL" : "url_path",
+        "Cookie Name" : "cookie_name",
+        "Cookie Path" : "path",
+        "Disable Fallback(TRUE|FALSE)" : "disable_fallback",
+        "Backup <Backend Server Name>" : "backup",
+        "UseSSL(y|n)" : "ssl_configuration"
+    },
+    "LB-Listener" :
+    {
+        "Backend Set Name" : "default_backend_set_name",
+        "LBR Hostnames (Name)" : "hostname_names",
+        "Path Route Set Name" : "path_route_set_name",
+        "Rule Set Names" : "rule_set_names",
+        "UseSSL (y|n)" : "ssl_configuration",
+        "Listener Name" : "name",
+        "Listener Protocol (HTTPS|HTTP|TCP)" : "protocol",
+        "Listener Port" : "port",
+        "Idle Time Out (in Seconds)" : "idle_timeout"
+    },
+    "RuleSet" :
+    {
+        "Description of Access Control Rule" : "description",
+        "Allow Invalid Characters (TRUE|FALSE)" : "are_invalid_characters_allowed",
+        "HTTP Header Size(in kB)" : "http_large_header_size_in_kb",
+        "Redirect URI Host:Port" : "host",
+        "Redirect URI Protocol:Path" : "protocol"
+    },
+    "PathRouteSet":
+    {
+        "Path Route Set Name" : "name"
     },
     "Common-LBR-Headers" :
     {
-    "Region" : "region",
-    "Compartment Name" : "compartment_id",
-    "LBR Name" : "display_name"
+        "Region" : "region",
+        "Compartment Name" : "compartment_id",
+        "LBR Name" : "display_name"
     },
-
     "Events" :
     {
         "Region" : "region",
