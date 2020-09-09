@@ -14,7 +14,7 @@ import oci
 from oci.core.virtual_network_client import VirtualNetworkClient
 from oci.load_balancer.load_balancer_client import LoadBalancerClient
 import os
-sys.path.append(os.getcwd()+"/../../..")
+sys.path.append(os.getcwd()+"/..")
 from commonTools import *
 
 importCommands = {}
@@ -509,7 +509,7 @@ def main():
     ct.get_network_compartment_ids(config['tenancy'],"root",configFileName)
 
     # Read CD3
-    df,values_for_column_lhc= commonTools.read_cd3(cd3file,"LB-Hostname-Certs")
+    df, values_for_column_lhc= commonTools.read_cd3(cd3file,"LB-Hostname-Certs")
     df, values_for_column_bss = commonTools.read_cd3(cd3file, "BackendSet-BackendServer")
     df, values_for_column_lis = commonTools.read_cd3(cd3file, "LB-Listener")
     df, values_for_column_rule = commonTools.read_cd3(cd3file, "RuleSet")
@@ -545,14 +545,13 @@ def main():
 
     # Create backups
     for reg in ct.all_regions:
-        resource='Export-LBR'
+        resource='tf_import_lbr'
         if (os.path.exists(outdir + "/" + reg + "/tf_import_commands_lbr_nonGF.sh")):
             commonTools.backup_file(outdir + "/" + reg, resource, "tf_import_commands_lbr_nonGF.sh")
         importCommands[reg] = open(outdir + "/" + reg + "/tf_import_commands_lbr_nonGF.sh", "w")
         importCommands[reg].write("#!/bin/bash")
         importCommands[reg].write("\n")
         importCommands[reg].write("terraform init")
-        oci_obj_names[reg] = open(outdir + "/" + reg + "/obj_names.safe", "w")
 
     # Fetch LBR Details
     print("\nFetching details of Load Balancer...")
