@@ -1,0 +1,7 @@
+resource "oci_ons_subscription" "{{ subscription_tf_name }}" {
+	    compartment_id = var.{{ compartment_name }}
+            endpoint = "{{ endpoint }}"
+            protocol = "{{ protocol }}"
+            topic_id = oci_ons_notification_topic.{{ topic }}.id
+            
+}
