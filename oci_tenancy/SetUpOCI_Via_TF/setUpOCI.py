@@ -399,15 +399,44 @@ if (input_nongf_tenancy.lower() == 'true'):
         os.chdir('..')
         print("----------------------------------------------------------")
         print("Proceeding to create TF files...\n")
-        print("\n-----------Process LBR tab-----------")
-        if (input_config_file == ''):
-            command = 'python create_terraform_lbr.py ' + input_cd3file + ' ' + input_outdir
-        else:
-            command = 'python create_terraform_lbr.py ' + input_cd3file + ' ' + input_outdir + ' --configFileName ' + input_config_file
-
+        print("\n-----------Process Load Balancer tabs-----------")
         os.chdir('CoreInfra/Networking/LoadBalancers')
+        if (input_config_file == ''):
+            command = 'python create_terraform_lbr_hostname_certs.py ' + input_cd3file + ' ' + input_outdir
+            command2 = 'python create_backendset_backendservers.py ' + input_cd3file + ' ' + input_outdir
+            command3 = 'python create_listener.py ' + input_cd3file + ' ' + input_outdir
+            command4 = 'python create_path_route_set.py ' + input_cd3file + ' ' + input_outdir
+            command5 = 'python create_ruleset.py ' + input_cd3file + ' ' + input_outdir
+        else:
+            command = 'python create_terraform_lbr_hostname_certs.py ' + input_cd3file + ' ' + input_outdir + ' --configFileName ' + input_config_file
+            command2 = 'python create_backendset_backendservers.py ' + input_cd3file + ' ' + input_outdir + ' --configFileName ' + input_config_file
+            command3 = 'python create_listener.py ' + input_cd3file + ' ' + input_outdir + ' --configFileName ' + input_config_file
+            command4 = 'python create_path_route_set.py ' + input_cd3file + ' ' + input_outdir + ' --configFileName ' + input_config_file
+            command5 = 'python create_ruleset.py ' + input_cd3file + ' ' + input_outdir + ' --configFileName ' + input_config_file
+        print("\n------------------------Creating LB and Certificates---------------------------")
         print("Executing Command: " + command)
         exitVal = os.system(command)
+        if (exitVal == 1):
+            exit()
+        print("\n------------------------Creating Backend Sets and Backend Servers---------------------------")
+        print("Executing Command: " + command2)
+        exitVal = os.system(command2)
+        if (exitVal == 1):
+            exit()
+        print("\n------------------------Creating Listeners---------------------------")
+        print("Executing Command: " + command3)
+        exitVal = os.system(command3)
+        if (exitVal == 1):
+            exit()
+        print("\n------------------------Creating Path Route Sets---------------------------")
+        print("Executing Command: " + command4)
+        exitVal = os.system(command4)
+        if (exitVal == 1):
+            exit()
+        print("\n------------------------Creating RuleSets---------------------------")
+        print("Executing Command: " + command5)
+        exitVal = os.system(command5)
+        os.chdir("../..")
         if (exitVal == 1):
             exit()
 
