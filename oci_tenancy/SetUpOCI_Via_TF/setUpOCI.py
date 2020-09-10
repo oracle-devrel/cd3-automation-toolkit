@@ -125,12 +125,14 @@ if (input_nongf_tenancy.lower() == 'true'):
 
     os.chdir('Governance/Tagging')
     print("Executing Command: " + command)
-    exitVal = os.system(command)
+    #exitVal = os.system(command)
     if (exitVal == 1):
         exit()
     os.chdir("../..")
 
     if ("1" in userInput):
+        print("----------------------------------------------------------")
+        print("\nExporting Identity...")
         os.chdir('ExportFromOCI')
         if (input_config_file == ''):
             command = "python export_identity_nonGreenField.py " + input_cd3file + ' ' + input_outdir
@@ -189,6 +191,9 @@ if (input_nongf_tenancy.lower() == 'true'):
 
 
     if("2" in userInput):
+        print("----------------------------------------------------------")
+        print("\nExporting Network...")
+
         os.chdir('ExportFromOCI')
         input_comp = input("Enter name of Compartment as it appears in OCI (comma seperated without spaces if multiple)for which you want to export network objects;\nLeave blank if want to export for all Compartments: ")
         if(input_comp==''):
@@ -284,11 +289,20 @@ if (input_nongf_tenancy.lower() == 'true'):
         print("\n\nExecute tf_import_commands_network_nonGF.sh script created under each region directory to synch TF with OCI Network objects\n")
 
     if ("3" in userInput):
+        print("----------------------------------------------------------")
+        print("\nExporting Instances...")
         os.chdir('ExportFromOCI')
-        if (input_config_file == ''):
-            command = "python export_instance_nonGreenField.py " + input_cd3file + ' ' + input_outdir
+        input_comp = input("Enter name of Compartment as it appears in OCI (comma seperated without spaces if multiple)for which you want to export Instances;\nLeave blank if want to export for all Compartments: ")
+        if(input_comp==''):
+            if (input_config_file == ''):
+                command = "python export_instance_nonGreenField.py " + input_cd3file + ' ' + input_outdir
+            else:
+                command = "python export_instance_nonGreenField.py " + input_cd3file + ' ' + input_outdir + " --configFileName " + input_config_file
         else:
-            command = "python export_instance_nonGreenField.py " + input_cd3file + ' ' + input_outdir + " --configFileName " + input_config_file
+            if (input_config_file == ''):
+                command = "python export_instance_nonGreenField.py " + input_cd3file + ' ' + input_outdir + " --networkCompartment \"" + input_comp + "\""
+            else:
+                command = "python export_instance_nonGreenField.py " + input_cd3file + ' ' + input_outdir + " --networkCompartment \"" + input_comp + "\""" --configFileName " + input_config_file
 
         print("Executing command " + command)
         exitval = os.system(command)
@@ -317,11 +331,20 @@ if (input_nongf_tenancy.lower() == 'true'):
 
 
     if ("4" in userInput):
+        print("----------------------------------------------------------")
+        print("\nExporting FSS...")
         os.chdir('ExportFromOCI')
-        if (input_config_file == ''):
-            command = "python export_fss_nonGreenField.py " + input_cd3file + ' ' + input_outdir
+        input_comp = input("Enter name of Compartment as it appears in OCI (comma seperated without spaces if multiple)for which you want to export FSS objects;\nLeave blank if want to export for all Compartments: ")
+        if (input_comp == ''):
+            if (input_config_file == ''):
+                command = "python export_fss_nonGreenField.py " + input_cd3file + ' ' + input_outdir
+            else:
+                command = "python export_fss_nonGreenField.py " + input_cd3file + ' ' + input_outdir + " --configFileName " + input_config_file
         else:
-            command = "python export_fss_nonGreenField.py " + input_cd3file + ' ' + input_outdir + " --configFileName " + input_config_file
+            if (input_config_file == ''):
+                command = "python export_fss_nonGreenField.py "+input_cd3file + ' ' + input_outdir +" --networkCompartment \""+input_comp +"\""
+            else:
+                command = "python export_fss_nonGreenField.py " + input_cd3file + ' ' + input_outdir +" --networkCompartment \""+input_comp+"\""" --configFileName " + input_config_file
 
         print("Executing command " + command)
         exitval = os.system(command)
@@ -350,11 +373,21 @@ if (input_nongf_tenancy.lower() == 'true'):
 
 
     if ("5" in userInput):
+        print("----------------------------------------------------------")
+        print("\nExporting LBR...")
+
         os.chdir('ExportFromOCI')
-        if (input_config_file == ''):
-            command = "python export_lbr_nonGreenField.py " + input_cd3file + ' ' + input_outdir
+        input_comp = input("Enter name of Compartment as it appears in OCI (comma seperated without spaces if multiple)for which you want to export LBR objects;\nLeave blank if want to export for all Compartments: ")
+        if (input_comp == ''):
+            if (input_config_file == ''):
+                command = "python export_lbr_nonGreenField.py " + input_cd3file + ' ' + input_outdir
+            else:
+                command = "python export_lbr_nonGreenField.py " + input_cd3file + ' ' + input_outdir + " --configFileName " + input_config_file
         else:
-            command = "python export_lbr_nonGreenField.py " + input_cd3file + ' ' + input_outdir + " --configFileName " + input_config_file
+            if (input_config_file == ''):
+                command = "python export_lbr_nonGreenField.py "+input_cd3file + ' ' + input_outdir +" --networkCompartment \""+input_comp +"\""
+            else:
+                command = "python export_lbr_nonGreenField.py " + input_cd3file + ' ' + input_outdir +" --networkCompartment \""+input_comp+"\""" --configFileName " + input_config_file
 
         print("Executing command " + command)
         exitval = os.system(command)
@@ -411,11 +444,20 @@ if (input_nongf_tenancy.lower() == 'true'):
         print("\n\nExecute tf_import_commands_lbr_nonGF.sh script created under each region directory to synch TF with OCI LBR objects\n")
 
     if ("6" in userInput):
+        print("----------------------------------------------------------")
+        print("\nExporting Events and Notifications...")
         os.chdir('ExportFromOCI')
-        if (input_config_file == ''):
-            command = "python export_solutions_nonGreenField.py " + input_cd3file + ' ' + input_outdir
+        input_comp = input("Enter name of Compartment as it appears in OCI (comma seperated without spaces if multiple)for which you want to export Events and Notifications objects;\nLeave blank if want to export for all Compartments: ")
+        if (input_comp == ''):
+            if (input_config_file == ''):
+                command = "python export_solutions_nonGreenField.py " + input_cd3file + ' ' + input_outdir
+            else:
+                command = "python export_solutions_nonGreenField.py " + input_cd3file + ' ' + input_outdir + " --configFileName " + input_config_file
         else:
-            command = "python export_solutions_nonGreenField.py " + input_cd3file + ' ' + input_outdir + " --configFileName " + input_config_file
+            if (input_config_file == ''):
+                command = "python export_solutions_nonGreenField.py " + input_cd3file + ' ' + input_outdir + " --networkCompartment \"" + input_comp + "\""
+            else:
+                command = "python export_solutions_nonGreenField.py " + input_cd3file + ' ' + input_outdir + " --networkCompartment \"" + input_comp + "\""" --configFileName " + input_config_file
 
         print("Executing command " + command)
         exitval = os.system(command)
