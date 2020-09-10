@@ -106,11 +106,12 @@ def main():
         dfcolumns = dfcert.columns.values.tolist()
         tempdict = {}
         tempStr = {}
-        certificate_tf_name = ''
+
 
         for i in dfcert.index:
 
             region = str(dfcert.loc[i, 'Region']).strip().lower()
+            certificate_tf_name = ''
 
             if region in commonTools.endNames:
                 break
