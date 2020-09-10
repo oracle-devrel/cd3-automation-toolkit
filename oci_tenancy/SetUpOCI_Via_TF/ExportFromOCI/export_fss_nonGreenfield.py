@@ -10,58 +10,8 @@ import re
 from oci.identity import IdentityClient
 import os
 sys.path.append(os.getcwd()+"/..")
-#os.chdir("../")
 from commonTools import *
-parser = argparse.ArgumentParser(description="Export FSS Details on OCI to CD3")
-parser.add_argument("cd3file", help="path of CD3 excel file to export FileSystem objects to")
-parser.add_argument("outdir", help="path to out directory containing script for TF import commands")
-parser.add_argument("--configFileName", help="Config file name")
-parser.add_argument("--networkCompartment", help="comma seperated Compartments for which to export FileSystem Objects")
 
-if len(sys.argv) < 4:
-    parser.print_help()
-    sys.exit(1)
-
-args = parser.parse_args()
-cd3file = args.cd3file
-outdir = args.outdir
-
-if ('.xls' not in cd3file):
-    print("\nAcceptable cd3 format: .xlsx")
-    exit()
-
-if args.configFileName is not None:
-    configFileName = args.configFileName
-    config = oci.config.from_file(file_location=configFileName)
-else:
-    config = oci.config.from_file()
-
-
-idc=IdentityClient(config)
-compute=oci.core.ComputeClient(config)
-file_system=oci.file_storage.FileStorageClient(config)
-ct =commonTools()
-vnc_info = oci.core.VirtualNetworkClient(config)
-
-importCommands = {}
-rows=[]
-all_regions = []
-all_ads = []
-all_compartments=[]
-
-input_compartment_list = args.networkCompartment
-
-print("\nCD3 excel file should not be opened during export process!!!")
-print("Tabs FSS will be overwritten during this export process!!!\n")
-
-AD = lambda ad : "AD1" if ("AD-1" in ad ) else( "AD2" if ("AD-2" in ad) else ( "AD3" if ("AD-3" in ad) else "NULL"))   #Get shortend AD
-
-
-global values_for_column_fss
-df, values_for_column_fss = commonTools.read_cd3(cd3file, "FSS")
-
-global sheet_dict_instances
-sheet_dict_instances = ct.sheet_dict["FSS"]
 
 def add_column_data(reg,cname,AD_name,mt_display_name,vplussubnet,mnt_p_ip,mnt_p_hostname,bytes,files,fs_name,einfo_path,sourceCIDR,Access,GID,UID,IDSquash,require_ps_port,fsinfo,values_for_column_fss,mnt_info1):
     for col_header in values_for_column_fss.keys():
@@ -172,6 +122,54 @@ def __get_mount_info(cname,compartment_id,reg,availability_domain_name,config):
            pass
 
 def main():
+    parser = argparse.ArgumentParser(description="Export FSS Details on OCI to CD3")
+    parser.add_argument("cd3file", help="path of CD3 excel file to export FileSystem objects to")
+    parser.add_argument("outdir", help="path to out directory containing script for TF import commands")
+    parser.add_argument("--configFileName", help="Config file name")
+    parser.add_argument("--networkCompartment", help="comma seperated Compartments for which to export FileSystem Objects")
+
+    if len(sys.argv) < 4:
+        parser.print_help()
+        sys.exit(1)
+
+    args = parser.parse_args()
+    cd3file = args.cd3file
+    outdir = args.outdir
+
+    if ('.xls' not in cd3file):
+        print("\nAcceptable cd3 format: .xlsx")
+        exit()
+
+    if args.configFileName is not None:
+        configFileName = args.configFileName
+        config = oci.config.from_file(file_location=configFileName)
+    else:
+        config = oci.config.from_file()
+
+
+    global idc,compute,file_system,ct,vnc_info,importCommands,rows,all_regions,all_ads,all_compartments,input_compartment_list,AD,df,values_for_column_fss,sheet_dict_instances
+
+    idc=IdentityClient(config)
+    compute=oci.core.ComputeClient(config)
+    file_system=oci.file_storage.FileStorageClient(config)
+    ct =commonTools()
+    vnc_info = oci.core.VirtualNetworkClient(config)
+    importCommands = {}
+    rows=[]
+    all_regions = []
+    all_ads = []
+    all_compartments=[]
+    input_compartment_list = args.networkCompartment
+
+    print("\nCD3 excel file should not be opened during export process!!!")
+    print("Tabs FSS will be overwritten during this export process!!!\n")
+
+    AD = lambda ad : "AD1" if ("AD-1" in ad ) else( "AD2" if ("AD-2" in ad) else ( "AD3" if ("AD-3" in ad) else "NULL"))   #Get shortend AD
+
+
+    df, values_for_column_fss = commonTools.read_cd3(cd3file, "FSS")
+    sheet_dict_instances = ct.sheet_dict["FSS"]
+
 
     # Fetch Regions
     regionsubscriptions = idc.list_region_subscriptions(tenancy_id=config['tenancy'])
@@ -205,8 +203,9 @@ def main():
     if (input_compartment_list is not None):                                            #For Specific Compartments
         input_compartment_names = input_compartment_list.split(",")
         input_compartment_names = [x.strip() for x in input_compartment_names]
-        comps = oci.pagination.list_call_get_all_results(idc.list_compartments,compartment_id=config['tenancy'],compartment_id_in_subtree=True,lifecycle_state = "ACTIVE")    
+        comps = oci.pagination.list_call_get_all_results(idc.list_compartments,compartment_id=config['tenancy'],compartment_id_in_subtree=True)    
         for comp in comps.data:
+          if (comp.lifecycle_state == "ACTIVE"):
             comp_info = comp
             compartment_id=comp_info.id
             compartment_name = comp.name
@@ -222,8 +221,9 @@ def main():
     else:
         print("\n####Checking FileSystems in all compartments####\n")
         input_compartment_names = None
-        comps = oci.pagination.list_call_get_all_results(idc.list_compartments,compartment_id=config['tenancy'],compartment_id_in_subtree=True,lifecycle_state = "ACTIVE")
+        comps = oci.pagination.list_call_get_all_results(idc.list_compartments,compartment_id=config['tenancy'],compartment_id_in_subtree=True)
         for comp in comps.data:
+          if (comp.lifecycle_state == "ACTIVE"):
             comp_info = comp
             compartment_id=comp_info.id
             compartment_name = comp.name
