@@ -127,8 +127,6 @@
     },
     "Events" :
     {
-        "Region" : "region",
-        "Compartment Name" : "compartment_id",
         "Event Name" : "display_name",
         "Event Description" : "description",
         "Action Type" :  "action_type",
@@ -141,8 +139,6 @@
     },
    "Notifications" :
     {
-        "Region" : "region",
-        "Compartment Name" : "compartment_id",
         "Topic" : "topic_id",
         "Description" : "description",
         "Protocol" :  "protocol",
