@@ -171,7 +171,7 @@ def main():
 
 
             if columnname == 'NSGs':
-                if columnvalue != '' or columnvalue.strip().lower()  != 'nan':
+                if columnvalue != '' and columnvalue.strip().lower()  != 'nan':
                     nsg_str = ""
                     NSGs = columnvalue.split(",")
                     k=0
