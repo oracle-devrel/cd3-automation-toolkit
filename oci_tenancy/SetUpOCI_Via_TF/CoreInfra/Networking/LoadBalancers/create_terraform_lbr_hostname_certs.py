@@ -36,7 +36,7 @@ def main():
     lbr = env.get_template('lbr-template')
     hostname = env.get_template('hostname-template')
     certficate = env.get_template('certificate-template')
-
+    ciphersuite =  env.get_template('cipher-suite-template')
     if len(sys.argv) < 2:
         parser.print_help()
         sys.exit(1)
@@ -78,6 +78,10 @@ def main():
 
     unique_region = df['Region'].unique()
 
+    oracle_cipher_suites = ['oci-default-ssl-cipher-suite-v1', 'oci-modern-ssl-cipher-suite-v1',
+                            'oci-compatible-ssl-cipher-suite-v1', 'oci-wider-compatible-ssl-cipher-suite-v1',
+                            'oci-customized-ssl-cipher-suite']
+
     # Take backup of files
     for eachregion in unique_region:
         eachregion = str(eachregion).strip().lower()
@@ -92,6 +96,7 @@ def main():
         srcdir = outdir + "/" + eachregion + "/"
         commonTools.backup_file(srcdir, resource, "_certificate-lb.tf")
         commonTools.backup_file(srcdir, resource, "_lbr-hostname-lb.tf")
+        commonTools.backup_file(srcdir, resource,"_cipher-suite-lb.tf")
 
     for reg in ct.all_regions:
         if reg not in commonTools.endNames and  reg != 'nan':
@@ -112,6 +117,8 @@ def main():
 
             region = str(dfcert.loc[i, 'Region']).strip().lower()
             certificate_tf_name = ''
+            ciphers_list = ''
+            cipher_tf_name = ''
 
             if region in commonTools.endNames:
                 break
@@ -146,9 +153,48 @@ def main():
                         certificate_tf_name = ''
                         tempdict = {'certificate_tf_name': certificate_tf_name}
 
+                if columnname == 'Cipher Suite Name':
+                    if str(columnvalue).strip() != '':
+                        cipher_tf_name = commonTools.check_tf_variable(columnvalue)
+                        tempdict = { 'cipher_tf_name' : cipher_tf_name }
+                        tempStr.update(tempdict)
+
+                        if columnvalue.strip().lower() in oracle_cipher_suites:
+                            print("User-defined cipher suite must not be the same as any of Oracle's predefined or reserved SSL cipher suite names... Exiting!!")
+                            exit()
+
+                        if str(df.loc[i,'Ciphers']).strip() == '':
+                            print("Ciphers Column cannot be left blank when Cipher Suite Name has a value.....Exiting!!")
+                            exit()
+                    else:
+                            columnvalue = ""
+
+                if columnname == 'Ciphers':
+                    columnvalue = columnvalue.strip()
+                    if columnvalue != '':
+                        columnvalue = columnvalue.split(',')
+                        for ciphers in columnvalue:
+                            ciphers_list = "\""+ciphers+"\","+ciphers_list
+
+                        if (ciphers_list != "" and ciphers_list[-1] == ','):
+                            ciphers_list = ciphers_list[:-1]
+
+                        tempdict = {'ciphers' : ciphers_list}
+                        tempStr.update(tempdict)
+
                 columnname = commonTools.check_column_headers(columnname)
                 tempStr[columnname] = str(columnvalue).strip()
                 tempStr.update(tempdict)
+
+
+            if cipher_tf_name != '' and cipher_tf_name.lower() != 'nan':
+                cipher_suites[region] = ciphersuite.render(tempStr)
+
+                outfile = outdir + "/" + region + "/"+cipher_tf_name+"_cipher-suite-lb.tf"
+                oname = open(outfile, "w+")
+                print("Writing to ..." + outfile)
+                oname.write(cipher_suites[region])
+                oname.close()
 
             if certificate_tf_name != '' and certificate_tf_name.lower() != 'nan':
                 certificate_str[region] =  certficate.render(tempStr)
@@ -159,6 +205,7 @@ def main():
                 print("Writing to ..." + outfile)
                 oname.write(certificate_str[region])
                 oname.close()
+
 
     #create Certificates
     certificate_templates(dfcert)
@@ -212,8 +259,9 @@ def main():
                 columnvalue = commonTools.check_tf_variable(columnvalue)
 
             if columnname == "LBR Name":
-                lbr_tf_name = commonTools.check_tf_variable(columnvalue)
-                tempdict = {'lbr_tf_name': lbr_tf_name}
+                if columnvalue != '':
+                    lbr_tf_name = commonTools.check_tf_variable(columnvalue)
+                    tempdict = {'lbr_tf_name': lbr_tf_name}
 
             if columnname == "Shape(100Mbps|400Mbps|8000Mbps)":
                 columnname = 'lbr_shape'
@@ -293,15 +341,16 @@ def main():
                 else:
                     hostname_str[region] = ''
 
-        lbr_str[region] = lbr.render(tempStr)
-        finalstring = hostname_str[region] + lbr_str[region]
+        if lbr_tf_name != '':
+            lbr_str[region] = lbr.render(tempStr)
+            finalstring = hostname_str[region] + lbr_str[region]
 
-        # Write to TF file
-        outfile = outdir + "/" + region + "/"+lbr_tf_name+"_lbr-hostname-lb.tf"
-        oname = open(outfile, "w+")
-        print("Writing to ..."+outfile)
-        oname.write(finalstring)
-        oname.close()
+            # Write to TF file
+            outfile = outdir + "/" + region + "/"+lbr_tf_name+"_lbr-hostname-lb.tf"
+            oname = open(outfile, "w+")
+            print("Writing to ..."+outfile)
+            oname.write(finalstring)
+            oname.close()
 
 if __name__ == '__main__':
     # Execution of the code begins here

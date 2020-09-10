@@ -63,103 +63,273 @@ def common_headers(region, headers, values_for_column, eachlbr, excel_header_map
                 pass
     return values_for_column
 
+def print_certs(obj, reg, outdir):
+
+    cname = ""
+    pname = ""
+
+    ca_certificate = obj.ca_certificate
+    public_certificate = obj.public_certificate
+
+    #print(obj.certificate_name, outdir, reg)
+
+    if str(ca_certificate).lower() != "none":
+        cname = outdir + "/" + reg + str(obj.certificate_name) + "-ca-certificate.cert"
+        ca_cert = open(cname, "w")
+        ca_cert.write(ca_certificate)
+        ca_cert.close()
+
+    if str(public_certificate).lower() != "none":
+        pname = outdir + "/" + reg + str(obj.certificate_name) + "-public_certificate.cert"
+        public_cert = open(pname, "w")
+        public_cert.write(public_certificate)
+        public_cert.close()
+
+    cert_name = obj.certificate_name
+    ca_cert = str(cname).replace("\\", "\\\\")
+    public_cert = str(pname).replace("\\", "\\\\")
+
+    return cert_name, ca_cert, public_cert
+
+
+def insert_values(values_for_column, oci_objs, sheet_dict, region, comp_name, display_name,subnets, nsgs, hostnames, cert_name, ca_cert,
+                  passphrase, privatekey, public_cert, cipher_name, cipher_suites):
+
+    for col_header in values_for_column.keys():
+            if col_header == 'Region':
+                values_for_column[col_header].append(str(region))
+            elif col_header == 'Compartment Name':
+                values_for_column[col_header].append(comp_name)
+            elif col_header == 'LBR Name':
+                values_for_column[col_header].append(display_name)
+            elif col_header == "LBR Subnets":
+                values_for_column[col_header].append(subnets)
+            elif (col_header == "NSGs"):
+                values_for_column[col_header].append(nsgs)
+            elif (col_header == 'LBR Hostname(Name:Hostname)'):
+                values_for_column[col_header].append(hostnames)
+            elif col_header == 'Certificate Name':
+                values_for_column[col_header].append(cert_name)
+            elif col_header == 'CA Cert':
+                values_for_column[col_header].append(ca_cert)
+            elif col_header == 'Passphrase':
+                values_for_column[col_header].append(passphrase)
+            elif col_header == 'Private Key':
+                values_for_column[col_header].append(privatekey)
+            elif col_header == 'Public Cert':
+                values_for_column[col_header].append(public_cert)
+            elif col_header == 'Cipher Suite Name':
+                values_for_column[col_header].append(cipher_name)
+            elif col_header == 'Ciphers':
+                values_for_column[col_header].append(cipher_suites)
+            elif col_header.lower() in commonTools.tagColumns:
+                values_for_column = commonTools.export_tags(oci_objs[0], col_header, values_for_column)
+            else:
+                values_for_column = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict, values_for_column)
+
+
 def print_lbr_hostname_certs(region, values_for_column_lhc, lbr, VCNs, LBRs, ntk_compartment_name, SUBNETs, NSGs):
+
     for eachlbr in LBRs.data:
+
+        #Fetch LBR Name
+        display_name = eachlbr.display_name
+
+        #Fetch hostname
+        hostname_name_list = ''
+        if(eachlbr.hostnames):
+            for hostname in eachlbr.hostnames:
+                hostname_info = lbr.get_hostname(eachlbr.id, hostname).data
+                value = hostname_info.name + ":" + hostname_info.hostname
+                hostname_name_list = value + "," + hostname_name_list
+            if (hostname_name_list != "" and hostname_name_list[-1] == ','):
+                hostname_name_list = hostname_name_list[:-1]
+
+        # Fetch NSGs
+        nsg_name = ""
+        if eachlbr.network_security_group_ids:
+            for nsg_ids in eachlbr.network_security_group_ids:
+                nsg_name = ''
+                for nsgs in NSGs.data:
+                    id = nsgs.id
+                    if nsg_ids == id:
+                        nsg_name = nsgs.display_name
+        else:
+            nsg_name = ""
+
+        # Fetch Subnets
+        subnet_name_list = ""
+        if eachlbr.subnet_ids:
+            for subnet_ids in eachlbr.subnet_ids:
+                subnet_name_list = ''
+                for subnets in SUBNETs.data:
+                    id = subnets.__getattribute__('id')
+                    if subnet_ids == id:
+                        subnet_name = subnets.display_name
+                        for eachvcn in VCNs.data:
+                            if eachvcn.id == subnets.vcn_id:
+                                vcn_name = eachvcn.display_name
+                                value = vcn_name + "_" + subnet_name
+                                subnet_name_list = value + subnet_name_list
+        else:
+            subnet_name_list = ""
+
+        #Loops for fetching Certificates and Cipher Suites
         ciphers = eachlbr.ssl_cipher_suites
         certs = eachlbr.certificates
-        if (not certs):
-            count = 0
-            fetch_values(region, values_for_column_lhc, lbr, VCNs, eachlbr, ntk_compartment_name, SUBNETs,NSGs, None, count)
-        else:
-            count = 0
-            for certificates,details in certs.items():
-                fetch_values(region, values_for_column_lhc, lbr, VCNs, eachlbr, ntk_compartment_name, SUBNETs,NSGs,details,count)
-                count = count + 1
+        cert_ct = 0
+        cipher_ct = 0
+        no_of_certs = ''
+        no_of_ciphers = ''
+        cipher_list =[]
+        certificate_list = []
+
+        if (not certs and not ciphers):
+            oci_objs = [eachlbr]
+            insert_values(values_for_column_lhc, oci_objs, sheet_dict_lhc, region, ntk_compartment_name,display_name,subnet_name_list, nsg_name, hostname_name_list, '', '', '', '', '','','')
+
+        elif (not certs and ciphers):
+            oci_objs = [eachlbr, ciphers]
+
+            # Only Ciphers
+            for ciphers, details in (eachlbr.ssl_cipher_suites).items():
+                cipher_suites = ''
+                suites_list = details.ciphers
+                for suites in suites_list:
+                    cipher_suites = suites + "," + cipher_suites
+                    if (cipher_suites != "" and cipher_suites[-1] == ','):
+                        cipher_suites = cipher_suites[:-1]
+                cipher_name = ciphers
+
+                cipher_ct = cipher_ct + 1
+
+                if (cipher_ct == 1):
+                    insert_values(values_for_column_lhc, oci_objs, sheet_dict_lhc, region, ntk_compartment_name, display_name,subnet_name_list, nsg_name,hostname_name_list, '','','','','',cipher_name,cipher_suites)
+                else:
+                    insert_values(values_for_column_lhc, oci_objs, sheet_dict_lhc,'','','','','','','','','','','', cipher_name,cipher_suites)
+
+        elif (certs and not ciphers):
+            oci_objs = [eachlbr, certs]
+
+            for certificates, details in certs.items():
+                # Get cert info
+                cert_name,ca_cert,public_cert = print_certs(details,region,outdir)
+
+                cert_ct = cert_ct + 1
+                if (cert_ct == 1):
+                    insert_values(values_for_column_lhc, oci_objs, sheet_dict_lhc, region, ntk_compartment_name,display_name, subnet_name_list, nsg_name,hostname_name_list, cert_name,ca_cert,'','',public_cert, '','')
+                else:
+                    insert_values(values_for_column_lhc, oci_objs, sheet_dict_lhc,'','','','','','', cert_name,ca_cert,'','',public_cert, '','')
+
+        elif (certs and ciphers):
+            oci_objs = [eachlbr, certs, ciphers]
+
+            #Check the number of certs and ciphers; consider largest count for loop
+            for certificates,cert_details in certs.items():
+                certificate_list.append(certificates)
+                no_of_certs = len(certificate_list)
+
+            for cipher, cipher_details in ciphers.items():
+                cipher_list.append(cipher_details.name)
+                no_of_ciphers = len(cipher_list)
+
+            # If number of ciphers are greater than that of certs; loop through ciphers
+            if no_of_ciphers > no_of_certs:
+                i = 0
+                if i == no_of_ciphers:
+                    break
+                else:
+                    for cipher, cipher_details in ciphers.items():
+                        cipher_suites = ''
+                        suites_list = cipher_details.ciphers
+                        for suites in suites_list:
+                            cipher_suites = suites + "," + cipher_suites
+                            if (cipher_suites != "" and cipher_suites[-1] == ','):
+                                cipher_suites = cipher_suites[:-1]
+                        cipher_name = cipher_details.name
+                        j = 0
+                        for cert, cert_details in certs.items():
+                            if i == j:
+                                #Insert values of certs and cipher till they are equal
+                                cert_name, ca_cert, public_cert = print_certs(cert_details, region, outdir)
+
+                                if i != 0:
+                                    insert_values(values_for_column_lhc, oci_objs, sheet_dict_lhc, '',
+                                                  '', '', '', '',
+                                                  '', cert_name, ca_cert, '', '', public_cert,
+                                                  cipher_name, cipher_suites)
+                                else:
+                                    insert_values(values_for_column_lhc, oci_objs, sheet_dict_lhc, region, ntk_compartment_name, display_name, subnet_name_list, nsg_name, hostname_name_list, cert_name, ca_cert, '', '', public_cert, cipher_name, cipher_suites)
+                            elif i >= no_of_certs and j == no_of_certs - 1:
+                                #Insert additional values of cipher; as count of cipher is more
+                                insert_values(values_for_column_lhc, oci_objs, sheet_dict_lhc, '','','', '', '', '','', '', '', '', '', cipher_name, cipher_suites)
+                            else:
+                                pass
+                            j = j + 1
+                        i = i + 1
+
+            # If number of certs are greater than that of ciphers; loop through certs
+            if no_of_certs > no_of_ciphers:
+                i = 0
+                if i == no_of_certs:
+                    break
+                else:
+                    for cert, cert_details in certs.items():
+                        # Fetch Cert values
+                        cert_name, ca_cert, public_cert = print_certs(cert_details, region, outdir)
+                        j = 0
+                        for cipher, cipher_details in ciphers.items():
+                            cipher_suites = ''
+                            if i == j:
+                                suites_list = cipher_details.ciphers
+                                for suites in suites_list:
+                                    cipher_suites = suites + "," + cipher_suites
+                                    if (cipher_suites != "" and cipher_suites[-1] == ','):
+                                        cipher_suites = cipher_suites[:-1]
+                                cipher_name = cipher_details.name
+                                if i != 0:
+                                    insert_values(values_for_column_lhc, oci_objs, sheet_dict_lhc, '',
+                                                  '', '', '', '',
+                                                  '', cert_name, ca_cert, '', '', public_cert,
+                                                  cipher_name, cipher_suites)
+                                else:
+                                    insert_values(values_for_column_lhc, oci_objs, sheet_dict_lhc, region, ntk_compartment_name, display_name,subnet_name_list, nsg_name, hostname_name_list, cert_name, ca_cert, '', '', public_cert, cipher_name, cipher_suites)
+                            elif i >= no_of_ciphers and j == no_of_ciphers - 1:
+                                #Insert additional values of certs; as count of certs is more
+                                insert_values(values_for_column_lhc, oci_objs, sheet_dict_lhc, '','', '','', '', '',cert_name, ca_cert, '', '', public_cert, '', '')
+                            else:
+                                pass
+                            j = j + 1
+                        i = i + 1
+
+            # if both are equal, loop through one of them as main; other as secondary
+            elif no_of_certs == no_of_ciphers:
+                i=0
+                if i == no_of_ciphers:
+                    break
+                else:
+                    for cipher, cipher_details in ciphers.items():
+                        cipher_suites = ''
+                        suites_list = cipher_details.ciphers
+                        for suites in suites_list:
+                            cipher_suites = suites + "," + cipher_suites
+                            if (cipher_suites != "" and cipher_suites[-1] == ','):
+                                cipher_suites = cipher_suites[:-1]
+                        cipher_name = cipher_details.name
+                        j = 0
+                        for cert, cert_details in certs.items():
+                            if i == j:
+                                cert_name, ca_cert, public_cert = print_certs(cert_details, region, outdir)
+                                if i != 0:
+                                    insert_values(values_for_column_lhc, oci_objs, sheet_dict_lhc, '',
+                                                  '', '', '', '',
+                                                  '', cert_name, ca_cert, '', '', public_cert,
+                                                  cipher_name, cipher_suites)
+                                else:
+                                    insert_values(values_for_column_lhc, oci_objs, sheet_dict_lhc, region, ntk_compartment_name, display_name,subnet_name_list, nsg_name, hostname_name_list, cert_name, ca_cert, '','', public_cert, cipher_name, cipher_suites)
+                            j = j + 1
+                        i = i + 1
     return values_for_column_lhc
-
-def fetch_values(region, values_for_column_lhc, lbr, VCNs, eachlbr, ntk_compartment_name, SUBNETs, NSGs, obj, count):
-    lbr_info = lbr.get_load_balancer(eachlbr.id).data
-    cname=""
-    pname=""
-    for col_headers in values_for_column_lhc.keys():
-        headers_lower = commonTools.check_column_headers(col_headers)
-        if (obj != None and col_headers == 'Certificate Name'):
-            ca_certificate = obj.__getattribute__('ca_certificate')
-            public_certificate = obj.__getattribute__('public_certificate')
-            if str(ca_certificate).lower() != "none":
-                cname = outdir + "/" + reg + str(obj.certificate_name) + "-ca-certificate.cert"
-                ca_cert = open(cname, "w")
-                ca_cert.write(ca_certificate)
-                ca_cert.close()
-            if str(public_certificate).lower() != "none":
-                pname = outdir + "/" + reg + str(obj.certificate_name) + "-public_certificate.cert"
-                public_cert = open(pname, "w")
-                public_cert.write(public_certificate)
-                public_cert.close()
-            values_for_column_lhc[col_headers].append(obj.certificate_name)
-            values_for_column_lhc['CA Cert'].append(str(cname).replace("\\","\\\\"))
-            values_for_column_lhc['Public Cert'].append(str(pname).replace("\\","\\\\"))
-        elif (obj == None and col_headers == 'Certificate Name'):
-            values_for_column_lhc[col_headers].append("")
-            values_for_column_lhc['CA Cert'].append("")
-            values_for_column_lhc['Public Cert'].append("")
-        if (count == 0):
-            # If the headers are part of Common-LBR-Headers in Excel_Columns
-            if col_headers in sheet_dict_common.keys():
-                values_for_column_lhc = common_headers(region, col_headers, values_for_column_lhc, eachlbr, sheet_dict_common,ntk_compartment_name)
-            elif col_headers == 'LBR Hostname(Name:Hostname)':
-                hostname_name_list = ''
-                for hostname in lbr_info.hostnames:
-                    hostname_info = lbr.get_hostname(eachlbr.id, hostname).data
-                    value = hostname_info.name + ":" + hostname_info.hostname
-                    hostname_name_list = value + "," + hostname_name_list
-                if (hostname_name_list != "" and hostname_name_list[-1] == ','):
-                    hostname_name_list = hostname_name_list[:-1]
-                values_for_column_lhc['LBR Hostname(Name:Hostname)'].append(hostname_name_list)
-            elif col_headers == 'NSGs':
-                if eachlbr.network_security_group_ids:
-                    for nsg_ids in eachlbr.network_security_group_ids:
-                        nsg_name = ''
-                        for nsgs in NSGs.data:
-                            id = nsgs.id
-                            if nsg_ids == id:
-                                nsg_name = nsgs.display_name
-                        values_for_column_lhc[col_headers].append(nsg_name)
-                else:
-                    values_for_column_lhc[col_headers].append("")
-            elif col_headers == 'LBR Subnets':
-                if eachlbr.subnet_ids:
-                    for subnet_ids in eachlbr.subnet_ids:
-                        subnet_name_list = ''
-                        for subnets in SUBNETs.data:
-                            id = subnets.__getattribute__('id')
-                            if subnet_ids == id:
-                                subnet_name = subnets.display_name
-                                for eachvcn in VCNs.data:
-                                    if eachvcn.id == subnets.vcn_id:
-                                        vcn_name = eachvcn.display_name
-                                        value = vcn_name+"_"+subnet_name
-                                        subnet_name_list = value + subnet_name_list
-                        values_for_column_lhc[col_headers].append(subnet_name_list)
-                else:
-                    values_for_column_lhc[col_headers].append("")
-
-            # if headers are a part of Tags
-            elif headers_lower in commonTools.tagColumns:
-                if count == 0:
-                    values_for_column_lhc = commonTools.export_tags(eachlbr, col_headers, values_for_column_lhc)
-                else:
-                    values_for_column_lhc[col_headers].append("")
-            else:
-                if 'cert' not in col_headers.lower():
-                    oci_objs = [eachlbr]
-                    values_for_column_lhc = commonTools.export_extra_columns(oci_objs, col_headers, sheet_dict_lhc,values_for_column_lhc)
-        else:
-            if 'cert' not in col_headers.lower():
-                values_for_column_lhc[col_headers].append("")
-
-    return values_for_column_lhc
-
 
 def print_backendset_backendserver(region, values_for_column_bss, lbr, LBRs, ntk_compartment_name):
     for eachlbr in LBRs.data:
@@ -266,7 +436,7 @@ def print_backendset_backendserver(region, values_for_column_bss, lbr, LBRs, ntk
 
 def print_listener(region, values_for_column_lis, LBRs, ntk_compartment_name):
     for eachlbr in LBRs.data:
-
+        sslcerts = ''
         # Loop through listeners
         for listeners, values in eachlbr.__getattribute__('listeners').items():
             for col_headers in values_for_column_lis.keys():
@@ -274,11 +444,25 @@ def print_listener(region, values_for_column_lis, LBRs, ntk_compartment_name):
 
                 # If value of Certificate Name is needed, check in ssl_configuration attribute
                 if col_headers == 'Certificate Name':
-                    certs = values.__getattribute__(sheet_dict_lis['UseSSL (y|n)'])
-                    if str(certs).lower() == 'none':
+                    sslcerts = values.__getattribute__(sheet_dict_lis['UseSSL (y|n)'])
+                    if str(sslcerts).lower() == 'none':
                         values_for_column_lis[col_headers].append("")
                     else:
-                        values_for_column_lis[col_headers].append(certs.__getattribute__('certificate_name'))
+                        values_for_column_lis[col_headers].append(sslcerts.__getattribute__('certificate_name'))
+
+                elif col_headers == 'SSL Protocols':
+                    protocols_list = ''
+                    if str(sslcerts).lower() == 'none':
+                        values_for_column_lis[col_headers].append("")
+                    else:
+
+                        for protocols in sslcerts.protocols:
+                            protocols_list = protocols+","+protocols_list
+
+                        if (protocols_list != "" and protocols_list[-1] == ','):
+                            protocols_list = protocols_list[:-1]
+
+                        values_for_column_lis[col_headers].append(protocols_list)
 
                 # Process Columns that are common across LBR sheets - Region, Compartment Name and LBR Name
                 elif col_headers in sheet_dict_common.keys():
@@ -322,11 +506,11 @@ def print_listener(region, values_for_column_lis, LBRs, ntk_compartment_name):
                         values_for_column_lis[col_headers].append(connection_config.__getattribute__(sheet_dict_lis[col_headers]))
 
                     else:
-                        oci_objs = [values,eachlbr]
+                        oci_objs = [values,eachlbr,sslcerts]
                         values_for_column_lis = commonTools.export_extra_columns(oci_objs, col_headers, sheet_dict_lis, values_for_column_lis)
 
                 else:
-                    oci_objs = [eachlbr,values]
+                    oci_objs = [eachlbr,values,sslcerts]
                     values_for_column_lis = commonTools.export_extra_columns(oci_objs, col_headers, sheet_dict_lis, values_for_column_lis)
 
     return values_for_column_lis
@@ -627,7 +811,9 @@ def main():
             routerules_tf_name = commonTools.check_tf_variable(routerules)
             importCommands[reg].write("\nterraform import oci_load_balancer_rule_set." + tf_name+"-"+routerules_tf_name  + " loadBalancers/" + lbr_info.id + "/ruleSets/" + routerules)
 
-
+        for ciphers in eachlbr.ssl_cipher_suites:
+            ciphers_tf_name = commonTools.check_tf_variable(ciphers)
+            importCommands[reg].write("\nterraform import oci_load_balancer_ssl_cipher_suite." +ciphers_tf_name+" loadBalancers/" + lbr_info.id + "/sslCipherSuites/" + ciphers)
 
 
 if __name__ == '__main__':

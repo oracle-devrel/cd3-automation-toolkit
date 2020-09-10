@@ -208,6 +208,27 @@ def main():
                             c += 1
                 columnvalue = rule_set_names
 
+            if columnname == 'SSL Protocols':
+                tls_versions_list = ''
+                if columnvalue != '' and str(df.loc[i,'Cipher Suite Name']) != 'nan':
+                    tls_versions = str(columnvalue).strip().split(',')
+                    for tls in tls_versions:
+                        tls_versions_list = "\""+tls+"\","+tls_versions_list
+
+                    if (tls_versions_list != "" and tls_versions_list[-1] == ','):
+                        tls_versions_list = tls_versions_list[:-1]
+                    columnvalue = tls_versions_list
+
+                elif columnvalue == '' and str(df.loc[i,'Cipher Suite Name']) != 'nan':
+                    print("\nSSL Protocols are mandatory when custom CipherSuiteName is provided..... Exiting !!")
+                    exit()
+
+                elif columnvalue != '' and str(df.loc[i,'Cipher Suite Name']) == 'nan':
+                    print("\nNOTE: Cipher Suite Name is not specified for Listener -> "+str(df.loc[i,'Listener Name'])+", default value - 'oci-default-ssl-cipher-suite-v1' will be considered.\n")
+
+                else:
+                    pass
+
             columnname = commonTools.check_column_headers(columnname)
             tempStr[columnname] = str(columnvalue).strip()
             tempStr.update(tempdict)
