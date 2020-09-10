@@ -3,8 +3,8 @@
 	    display_name             = "{{ display_name }}"
         compartment_id           = var.{{ compartment_name }}
         admin_password           = "{{ admin_password }}"
-        cpu_core_count           = "1"
-        data_storage_size_in_tbs = "1"
+        cpu_core_count           = "{{ cpu_count }}"
+        data_storage_size_in_tbs = "{{ size_in_tb }}"
         db_name                  = "{{ db_name }}"
         db_version               = "19c"
         {% if autonomous_value == 'adw' %}
