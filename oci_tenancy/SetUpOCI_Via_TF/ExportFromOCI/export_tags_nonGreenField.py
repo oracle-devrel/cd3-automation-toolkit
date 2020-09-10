@@ -23,6 +23,11 @@ oci_obj_names={}
 
 def  print_tags(values_for_column_tags,region, ntk_compartment_name, tag, tag_key, tag_default_value, tag_default):
     tag_default_req = "TRUE"
+    if ( tag_default_value == '' ) :
+     tag_default_req = "FALSE"
+     tag_default_id = ''
+    else:
+     tag_default_id = tag_default.id
     validator = ''
     validator = tag_key.validator
     if ( validator is not None):
@@ -61,13 +66,14 @@ def  print_tags(values_for_column_tags,region, ntk_compartment_name, tag, tag_ke
             values_for_column_tags = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict_tags,values_for_column_tags)
     importCommands[region.lower()].write("\nterraform import oci_identity_tag_namespace." + tf_name_namespace + " " + str(tag.id))
     importCommands[region.lower()].write("\nterraform import oci_identity_tag."+ tf_name_key + ' ' + "tagNamespaces/"+ str(tag.id) +"/tags/\"" + str(tag_key.name) + "\"")
-    importCommands[region.lower()].write("\nterraform import oci_identity_tag_default."+ tf_name_namespace+'-' +tf_name_key + '-default'+ ' ' + str(tag_default.id))
+    if ( tag_default_value != ''):
+        importCommands[region.lower()].write("\nterraform import oci_identity_tag_default."+ tf_name_namespace+'-' +tf_name_key + '-default'+ ' ' + str(tag_default_id))
 
 
 def main():
 
-    parser = argparse.ArgumentParser(description="Export Notifications on OCI to CD3")
-    parser.add_argument("cd3file", help="path of CD3 excel file to export network objects to")
+    parser = argparse.ArgumentParser(description="Export Tags on OCI to CD3")
+    parser.add_argument("cd3file", help="path of CD3 excel file to export tag objects to")
     parser.add_argument("outdir", help="path to out directory containing script for TF import commands")
     parser.add_argument("--networkCompartment", help="comma seperated Compartments for which to export Identity Objects", required=False)
     parser.add_argument("--configFileName", help="Config file name" , required=False)
@@ -157,16 +163,32 @@ def main():
                     continue
                 comp_ocid_done.append(ct.ntk_compartment_ids[ntk_compartment_name])
                 tags = oci.pagination.list_call_get_all_results(identity.list_tag_namespaces, compartment_id=ct.ntk_compartment_ids[ntk_compartment_name])
+                tag_defaults = oci.pagination.list_call_get_all_results(identity.list_tag_defaults, compartment_id=ct.ntk_compartment_ids[ntk_compartment_name],lifecycle_state="ACTIVE")
+
                 for tag in tags.data:
-                  tag_keys = oci.pagination.list_call_get_all_results(identity.list_tags, tag_namespace_id= tag.id,lifecycle_state="ACTIVE")
-                  for tag_key in tag_keys.data:
+                    tag_keys = oci.pagination.list_call_get_all_results(identity.list_tags, tag_namespace_id= tag.id,lifecycle_state="ACTIVE")
+                    tag_key_check = []
+                    tag_default_check = []
+                    for tag_key in tag_keys.data:
                        tag_key = identity.get_tag(tag.id, tag_key.name)
                        tag_key = tag_key.data
-                       tag_defaults = oci.pagination.list_call_get_all_results(identity.list_tag_defaults, compartment_id=ct.ntk_compartment_ids[ntk_compartment_name],lifecycle_state="ACTIVE")
-                       for tag_default in tag_defaults.data : 
+                       tag_key_id = str(tag_key.id)
+                       tag_key_check.append(tag_key_id)
+                       for tag_default in tag_defaults.data :
                             tag_default_value = ''
                             if ( tag_key.id == tag_default.tag_definition_id ):
+                                 tag_key_id = str(tag_key.id)
+                                 tag_default_check.append(tag_key_id)
                                  tag_default_value = tag_default.value
+                                 print_tags(values_for_column_tags, region, ntk_compartment_name, tag, tag_key, tag_default_value, tag_default)
+                    check_non_default_tags = [i for i in tag_key_check + tag_default_check if i not in tag_key_check or i not in tag_default_check]
+                    for tag_check in check_non_default_tags:
+                        for tag_key in tag_keys.data:
+                           if ( tag_check in  tag_key.id):
+                                 tag_key = identity.get_tag(tag.id, tag_key.name)
+                                 tag_key = tag_key.data
+                                 tag_default_value = ''
+                                 tag_default = ''
                                  print_tags(values_for_column_tags, region, ntk_compartment_name, tag, tag_key, tag_default_value, tag_default)
 
     commonTools.write_to_cd3(values_for_column_tags, cd3file, "Tags")
