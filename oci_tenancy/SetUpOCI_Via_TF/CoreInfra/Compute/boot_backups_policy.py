@@ -89,7 +89,7 @@ def main():
             exit()
 
         policy_data_file = outdir + "/"+region+"/oci-backup-policy-data.tf"
-        datasource = env.get_template('datasource-template')
+        datasource = env.get_template('backup-policy-data-source-template')
 
         fname=open(policy_data_file,"w+")
         # To add the 'data' resource - required for fetching the policy id
