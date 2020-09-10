@@ -1,0 +1,60 @@
+{## template to create DBBM ##}
+
+    resource "oci_database_db_system" "{{ display_tf_name }}" {
+        availability_domain = data.oci_identity_availability_domains.ADs.availability_domains.{{ availability_domain }}.name
+        compartment_id      = var.{{ compartment_name }}
+        cpu_core_count      = "{{ cpu_core }}"
+        database_edition    = "{{ oracle_db_software_edition }}"
+        db_home {
+        database {
+          admin_password = "{{ db_admin_password }}"
+          db_name        = "{{ db_home }}"
+          character_set  = "{{ character_set }}"
+          ncharacter_set = "{{ ncharacter_set }}"
+          db_workload    = "{{ workload_type }}"
+          pdb_name       = "{{ pdb_name }}"
+          db_backup_config {
+            auto_backup_enabled     = "{{ automatic_backups }}"
+            recovery_window_in_days = "{{ recovery_windows }}"
+          }
+        }
+        db_version   = "{{ db_version }}"
+        display_name = "{{ db_display_name }}"
+        }
+        disk_redundancy         = "{{ db_disk_redundancy }}"
+        shape                   = "{{ shape }}"
+        subnet_id               = oci_core_subnet.{{ subnet_name }}.id
+        ssh_public_keys         = [var.{{ ssh_key }}]
+        display_name            = "{{ db_display_name }}"
+        hostname                = "{{ hostname_prefix }}"
+        data_storage_size_in_gb = "{{ db_size }}"
+        license_model           = "{{ license_type }}"
+        node_count              = "{{ cpu_core }}"
+
+        {#  ##Do not modify below this line##  #}
+        {#                                     #}
+        {#  ###Section for adding Defined and Freeform Tags###  #}
+        {% if defined_tags and defined_tags != 'nan' and defined_tags != '' %}
+        {% if defined_tags[0] %}
+        defined_tags = {
+        {% for tags in defined_tags  %}   {% if not loop.last %}
+        "{{ tags[0]  }}"= "{{ tags[1] }}" ,
+        {% else %}
+        "{{ tags[0]  }}"= "{{ tags[1] }}"
+        {% endif %}{% endfor %}
+        }
+        {% endif %} {% endif %}
+        {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' %}
+        {% if freeform_tags[0] %}
+        freeform_tags = {
+        {% for tags in freeform_tags %} {% if not loop.last  %}
+        "{{ tags[0] }}"="{{ tags[1] }}",
+        {% else %}
+        "{{ tags[0] }}"="{{ tags[1] }}"
+        {% endif %} {% endfor %}
+        }
+        {% endif %} {% endif %}
+        {#  ###Section for adding Defined and Freeform Tags ends here###  #}
+	}
+
+

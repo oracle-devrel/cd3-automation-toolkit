@@ -1,284 +1,189 @@
-#!/bin/bash
+#!/usr/bin/python3
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
+#
+# This script will produce a Terraform file that will be used to set up OCI core components
+# Database System Virtual Machine
+#
 # Author: Kartikey Rajput
-# kartikey.rajput@oracle.com
-#DB Systems
+# Oracle Consulting
+# Modified (TF Upgrade): Kartikey Rajput
+#
 
 import sys
 import argparse
-import pandas as pd
 import os
-import datetime
-sys.path.append(os.getcwd()+"/..")
+from jinja2 import Environment, FileSystemLoader
+sys.path.append(os.getcwd()+"../../")
 from commonTools import *
 
-x = datetime.datetime.now()
-date = x.strftime("%S").strip()
 
-parser = argparse.ArgumentParser(description="Creating DB_Systems")
-parser.add_argument("file", help="Full Path of CD3 excel file. eg CD3-template_1.xlsx in example folder")
-parser.add_argument("outdir", help="directory path for output tf file ")
-parser.add_argument("prefix", help="customer name/prefix for all file names")
-parser.add_argument("--configFileName", help="Config file name", required=False)
+######
+# Required Inputs- CD3 excel file, Config file, prefix AND outdir
+######
 
-if len(sys.argv) == 1:
-    parser.print_help()
-    sys.exit(1)
+#If input is cd3 file
+def main():
 
-if len(sys.argv) < 2:
-    parser.print_help()
-    sys.exit(1)
+    # Read the arguments
+    parser = argparse.ArgumentParser(description="Create DBVM terraform file")
+    parser.add_argument("inputfile", help="Full Path of input file. It could be CD3 excel file")
+    parser.add_argument("outdir", help="Output directory for creation of TF files")
+    parser.add_argument("prefix", help="customer name/prefix for all file names")
+    parser.add_argument("--configFileName", help="Config file name", required=False)
 
-args = parser.parse_args()
-filename = args.file
-outdir = args.outdir
-prefix = args.prefix
-if args.configFileName is not None:
-    configFileName = args.configFileName
-else:
-    configFileName=""
+    if len(sys.argv) < 3:
+        parser.print_help()
+        sys.exit(1)
 
-ct = commonTools()
-ct.get_subscribedregions(configFileName)
+    # Declare variables
+    args = parser.parse_args()
+    filename = args.inputfile
+    outdir = args.outdir
+    prefix = args.prefix
 
-ADS = ["AD1", "AD2", "AD3"]
+    if args.configFileName is not None:
+        configFileName = args.configFileName
+    else:
+        configFileName = ""
 
-# If the input is CD3
-if ('.xls' in filename):
+    ct = commonTools()
+    ct.get_subscribedregions(configFileName)
 
-    df = pd.read_excel(filename, sheet_name='DB_System_VM', skiprows=1)
+    outfile = {}
+    oname = {}
+    tfStr = {}
+    ADS = ["AD1", "AD2", "AD3"]
+
+    # Load the template file
+    file_loader = FileSystemLoader('templates')
+    env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
+    template = env.get_template('db_vm_template')
+
+    # Read cd3 using pandas dataframe
+    df, col_headers = commonTools.read_cd3(filename, "DB_System_VM")
+
+    #Remove empty rows
     df = df.dropna(how='all')
     df = df.reset_index(drop=True)
 
+    # List of the column headers
+    dfcolumns = df.columns.values.tolist()
+
+    # Initialise empty TF string for each region
+    for reg in ct.all_regions:
+        tfStr[reg] = ''
+
+    uniquereg = df['Region'].unique()
+    # Take backup of files
+    for eachregion in uniquereg:
+        eachregion = str(eachregion).strip().lower()
+        reg_out_dir = outdir + "/" + eachregion
+        if (eachregion in commonTools.endNames or eachregion == 'nan'):
+            continue
+        if eachregion not in ct.all_regions:
+            print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
+            exit()
+        srcdir = reg_out_dir + "/"
+        resource = 'DBVM'
+        commonTools.backup_file(srcdir, resource, "DBVM.tf")
+
+    # Iterate over rows
     for i in df.index:
-        Region = df.iat[i, 0]
-        Region = Region.strip().lower()
-        if Region not in ct.all_regions:
-            if Region in commonTools.endNames:
-                print('This is the end of the file')
-                break
-            else:
-                print("Invalid Region -> " + Region + "; It should be one of the values tenancy is subscribed to and directory with region name should exist in Output directory")
-                continue
+        region = str(df.loc[i, 'Region']).strip()
 
-        database_system_availability_domain = df['Availability domain'][i].strip()
-        AD = df.iat[i, 3]
-        AD = AD.upper()
-        ad = ADS.index(AD)
-        ad_type = type(database_system_availability_domain)
-
-        compartment_var_name = df['Compartment Name'][i].strip()
-        compartment_var_name=commonTools.check_tf_variable(compartment_var_name)
-
-        database_shape = df['Shape'][i].strip()
-
-        # database_cpu_core = int(df['CPU Core'][i])
-
-        database_soft_edition = df['Oracle database software edition'][i].strip()
-
-        database_admin_password = df['Database admin password'][i].strip()
-
-        database_name = df['Database name'][i].strip()
-
-        database_version = df['Database version'][i].strip()
-
-        database_home_display_name = df['Name your DB system'][i].strip()
-
-        database_disk_redundancy = df['Database Disk Redundancy'][i].strip()
-
-        database_system_display_name = df['Name your DB system'][i].strip()
-
-        database_hostname_prefix = df['Hostname prefix'][i].strip()
-
-        database_host_user_name = df['Database username'][i].strip()
-
-        database_workload_type = df['Select workload type'][i].strip()
-        if(str(df['PDB name (Optional)'][i]).lower()!='nan'):
-            database_PDB_name = df['PDB name (Optional)'][i].strip()
-        else:
-            database_PDB_name=""
-
-        database_storage = int(df['Database Size (GB)'][i])
-
-        database_license = df['Choose a license type'][i].strip()
-
-        database_node_count_int = int(df['Total node count'][i])
-
-        database_node_count_str = str(database_node_count_int)
-
-        database_auto_backup_option = df['Enable Automatic Backups'][i].strip()
-
-        database_subnet_name = df['Subnet name'][i].strip()
-        database_subnet_name = commonTools.check_tf_variable(database_subnet_name.strip())
-
-        database_ssh_key = df['SSH Key'][i].strip()
-
-        database_character_set = df['Character Set'][i].strip()
-
-        database_n_character_set = df['nCharacter Set'][i].strip()
-
-        Recovery_Windows_in_days_int = int(df['Recovery Windows in days'][i])
-
-        Recovery_Windows_in_days = str(Recovery_Windows_in_days_int)
+        # Encountered <End>
+        if (region in commonTools.endNames):
+            break
+        region=region.strip().lower()
 
 
-        if (database_auto_backup_option.lower() == 'yes'):
-            database_auto_backup_option = "true"
-        else:
-            database_auto_backup_option = "false"
+        # If some invalid region is specified in a row which is not part of VCN Info Tab
+        if region not in ct.all_regions:
+            print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
+            exit(1)
 
-        database_system_display_name_tf=commonTools.check_tf_variable(database_system_display_name)
-        resources_content = """
-                resource "oci_database_db_system" \"""" + database_system_display_name_tf + """\" {
-                  availability_domain = "${data.oci_identity_availability_domains.ADs.availability_domains.""" + str(ad) + """.name}"
-                  compartment_id = "${var.""" + compartment_var_name + """}"
-                  database_edition    = \"""" + database_soft_edition + """\"
-                  db_home {
-                    database {
-                      admin_password = \"""" + database_admin_password + """\"
-                      db_name        = \"""" + database_name + """\"
-                      character_set  = \"""" + database_character_set + """\"
-                      ncharacter_set = \"""" + database_n_character_set + """\"
-                      db_workload    = \"""" + database_workload_type + """\"
-                      pdb_name       = \"""" + database_PDB_name + """\"
-                      db_backup_config {
-                        auto_backup_enabled     = \"""" + database_auto_backup_option + """\"
-                        recovery_window_in_days = \"""" + Recovery_Windows_in_days + """\"
-                      }
-                    }
-                    db_version   = \"""" + database_version + """\"
-                    display_name = \"""" + database_home_display_name + """\"
-                  }
-                  disk_redundancy = \"""" + database_disk_redundancy + """\"
-                  shape           = \"""" + database_shape + """\"
-                  subnet_id       = "${oci_core_subnet.""" + database_subnet_name + """.id}"
-                  ssh_public_keys = ["${var.""" + database_ssh_key + """}"]
-                  display_name    = \"""" + database_system_display_name + """\"
-                  hostname                = \"""" + database_hostname_prefix + """\"
-                  data_storage_size_in_gb = \"""" + str(database_storage) + """\"
-                  license_model           = \"""" + database_license + """\"
-                  node_count              = \"""" + str(database_node_count_str) + """\"
-                }
-                """
+        # temporary dictionary1 and dictionary2
+        tempStr = {}
+        tempdict = {}
 
-        reg = Region[:1].upper()
-        outfile = outdir + "/" + Region + "/" + reg + '_' + prefix + """_DBS_CD3_""" + database_system_display_name + ".tf"
-        print("Writing " + outfile)
-        oname = open(outfile, "w")
-        oname.write(resources_content)
-        oname.close()
+        # Check if values are entered for mandatory fields
+        if str(df.loc[i, 'Region']).lower() == 'nan' or \
+                str(df.loc[i, 'Compartment Name']).lower() == 'nan' or \
+                str(df.loc[i, 'Availability Domain(AD1|AD2|AD3)']).lower() == 'nan' or \
+                str(df.loc[i, 'Oracle DB Software Edition']).lower() == 'nan' or \
+                str(df.loc[i, 'DB Version']).lower() == 'nan' or \
+                str(df.loc[i, 'Hostname Prefix']).lower() == 'nan' or \
+                str(df.loc[i, 'Shape']).lower() == 'nan' or \
+                str(df.loc[i, 'SSH Key']).lower() == 'nan' or \
+                str(df.loc[i, 'Subnet Name']).lower() == 'nan' or \
+                str(df.loc[i, 'DB Home']).lower() == 'nan' or \
+                str(df.loc[i, 'DB Admin Password']).lower() == 'nan':
+            print("\nAll the fields are mandatory. Please enter a value and try again.......Exiting!!")
+            print("\n** Exiting **")
+            exit()
 
-# If the input is CSV
-elif ('.csv' in filename):
-    fname = open(filename, "r")
-    all_regions = os.listdir(outdir)
-    for line in fname:
-        if not line.startswith('#'):
-            linearr = line.split(",")
-            region = linearr[0].strip().lower()
-            print(f"REGION---------> {region}")
-            if region not in all_regions:
-                print("Invalid Region -> " + region + "; It should be one of the values mentioned in VCN Info tab and directory with region name in Output directory")
-                continue
+        for columnname in dfcolumns:
+            # Column value
+            columnvalue = str(df[columnname][i]).strip()
 
-            database_system_availability_domain = linearr[3].strip()
+            # Check for boolean/null in column values
+            columnvalue = commonTools.check_columnvalue(columnvalue)
 
-            ad = ADS.index(database_system_availability_domain)
+            # Check for multivalued columns
+            tempdict = commonTools.check_multivalues_columnvalue(columnvalue,columnname,tempdict)
 
-            compartment_var_name = linearr[1].strip()
+            if columnname == "Compartment Name":
+                compartmentVarName = columnvalue.strip()
+                columnname = commonTools.check_column_headers(columnname)
+                compartmentVarName = commonTools.check_tf_variable(compartmentVarName)
+                columnvalue = str(compartmentVarName)
+                tempdict = {columnname: columnvalue}
 
-            database_shape = linearr[5].strip()
+            # Process Defined and Freeform Tags
+            if columnname.lower() in commonTools.tagColumns:
+                tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)
 
-            database_cpu_core = int(linearr[6])
+            if columnname == "DB Display Name":
+                display_tf_name = columnvalue.strip()
+                display_tf_name = commonTools.check_tf_variable(display_tf_name)
+                tempdict = {'display_tf_name': display_tf_name}
 
-            database_soft_edition = linearr[8].strip()
+            if columnname == "DB Size (GB)":
+                tempdict = {'db_size': columnvalue.strip()}
 
-            database_admin_password = linearr[17].strip()
+            if columnname == "Recovery Windows (Days)":
+                tempdict = {'recovery_windows': columnvalue.strip()}
 
-            database_name = linearr[13].strip()
+            if columnname == 'Availability Domain(AD1|AD2|AD3)':
+                columnname = 'availability_domain'
+                AD = columnvalue.upper()
+                ad = ADS.index(AD)
+                columnvalue = str(ad)
+                tempdict = {'availability_domain': columnvalue}
 
-            database_version = linearr[14].strip()
+            columnname = commonTools.check_column_headers(columnname)
+            tempStr[columnname] = str(columnvalue).strip()
+            tempStr.update(tempdict)
 
-            database_home_display_name = linearr[4].strip()
 
-            database_disk_redundancy = linearr[10].strip()
+        # Write all info to TF string
+        tfStr[region]=tfStr[region] + template.render(tempStr)
 
-            database_system_display_name = linearr[4].strip()
 
-            database_hostname_prefix = linearr[12].strip()
+    # Write TF string to the file in respective region directory
+    for reg in ct.all_regions:
+        reg_out_dir = outdir + "/" + reg
+        if not os.path.exists(reg_out_dir):
+            os.makedirs(reg_out_dir)
+        outfile[reg] = reg_out_dir + "/DBVM.tf"
 
-            database_host_user_name = linearr[16].strip()
+        if(tfStr[reg]!=''):
+            oname[reg]=open(outfile[reg],'w')
+            oname[reg].write(tfStr[reg])
+            oname[reg].close()
+            print(outfile[reg] + " containing TF for DBVM has been created for region "+reg)
 
-            database_workload_type = linearr[18].strip()
+if __name__ == '__main__':
 
-            database_PDB_name = linearr[15].strip()
-
-            database_storage = int(linearr[9])
-
-            database_license = linearr[11].strip()
-
-            database_node_count_int = int(linearr[7])
-
-            database_node_count_str = str(database_node_count_int)
-
-            database_auto_backup_option = linearr[19].strip()
-
-            database_subnet_name = linearr[2].strip()
-
-            database_ssh_key = linearr[20].strip()
-
-            database_character_set = linearr[21].strip()
-
-            database_n_character_set = linearr[22].strip()
-
-            Recovery_Windows_in_days_int = int(linearr[23])
-
-            Recovery_Windows_in_days = str(Recovery_Windows_in_days_int)
-
-            if (database_auto_backup_option.lower() == 'yes'):
-                database_auto_backup_option = "true"
-            else:
-                database_auto_backup_option = "false"
-
-            resources_content = """
-                            resource "oci_database_db_system" \"""" + database_system_display_name + """\" {
-                              availability_domain = "${data.oci_identity_availability_domains.ADs.availability_domains.""" + str(ad) + """.name}"
-                              compartment_id = "${var.""" + compartment_var_name + """}"
-                              cpu_core_count      = \"""" + str(database_cpu_core) + """\"
-                              database_edition    = \"""" + database_soft_edition + """\"
-                              db_home {
-                                database {
-                                  admin_password = \"""" + database_admin_password + """\"
-                                  db_name        = \"""" + database_name + """\"
-                                  character_set  = \"""" + database_character_set + """\"
-                                  ncharacter_set = \"""" + database_n_character_set + """\"
-                                  db_workload    = \"""" + database_workload_type + """\"
-                                  pdb_name       = \"""" + database_PDB_name + """\"
-                                  db_backup_config {
-                                    auto_backup_enabled     = \"""" + database_auto_backup_option + """\"
-                                    recovery_window_in_days = \"""" + Recovery_Windows_in_days + """\"
-                                  }
-                                }
-                                db_version   = \"""" + database_version + """\"
-                                display_name = \"""" + database_home_display_name + """\"
-                              }
-                              disk_redundancy = \"""" + database_disk_redundancy + """\"
-                              shape           = \"""" + database_shape + """\"
-                              subnet_id       = "${oci_core_subnet.""" + database_subnet_name + """.id}"
-                              ssh_public_keys = ["${var.""" + database_ssh_key + """}"]
-                              display_name    = \"""" + database_system_display_name + """\"
-                              hostname                = \"""" + database_hostname_prefix + """\"
-                              data_storage_size_in_gb = \"""" + str(database_storage) + """\"
-                              license_model           = \"""" + database_license + """\"
-                              node_count              = \"""" + str(database_node_count_str) + """\"
-                            }
-                            """
-
-            reg = region[:1].upper()
-            outfile = outdir + "/" + region + "/" + reg + '_' + prefix + """_DBS_CSV_""" + database_system_display_name + ".tf"
-            print("Writing " + outfile)
-            oname = open(outfile, "w")
-            oname.write(resources_content)
-            oname.close()
-
-else:
-    print("Enter valid file type")
+    # Execution of the code begins here
+    main()
