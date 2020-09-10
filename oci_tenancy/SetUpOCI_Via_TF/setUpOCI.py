@@ -125,7 +125,7 @@ if (input_nongf_tenancy.lower() == 'true'):
 
     os.chdir('Governance/Tagging')
     print("Executing Command: " + command)
-    #exitVal = os.system(command)
+    exitVal = os.system(command)
     if (exitVal == 1):
         exit()
     os.chdir("../..")

@@ -12,53 +12,7 @@ import os
 sys.path.append(os.getcwd()+"/..")
 from commonTools import *
 
-parser = argparse.ArgumentParser(description="Export FSS Details on OCI to CD3")
-parser.add_argument("cd3file", help="path of CD3 excel file to export Instance objects to")
-parser.add_argument("outdir", help="path to out directory containing script for TF import commands")
-parser.add_argument("--configFileName", help="Config file name")
-parser.add_argument("--networkCompartment", help="comma seperated Compartments for which to export Instance Objects")
 
-if len(sys.argv) < 4:
-    parser.print_help()
-    sys.exit(1)
-
-args = parser.parse_args()
-cd3file = args.cd3file
-outdir = args.outdir
-input_compartment_list = args.networkCompartment
-
-if ('.xls' not in cd3file):
-    print("\nAcceptable cd3 format: .xlsx")
-    exit()
-
-if args.configFileName is not None:
-    configFileName = args.configFileName
-    config = oci.config.from_file(file_location=configFileName)
-else:
-    config = oci.config.from_file()
-
-
-instance_keys={}                        #dict name
-os_keys = {}                            #os_ocids
-all_regions = []
-ct =commonTools()
-importCommands = {}
-idc=IdentityClient(config)
-rows=[]
-all_compartments=[]
-
-AD = lambda ad : "AD1" if ("AD-1" in ad ) else( "AD2" if ("AD-2" in ad) else ( "AD3" if ("AD-3" in ad) else "NULL"))   #Get shortend AD
-
-
-
-global values_for_column_instances
-df, values_for_column_instances = commonTools.read_cd3(cd3file, "Instances")
-
-global sheet_dict_instances
-sheet_dict_instances = ct.sheet_dict["Instances"]
-
-print("\nCD3 excel file should not be opened during export process!!!")
-print("Tabs Instances will be overwritten during this export process!!!\n")
 
 def adding_columns_values(region,hostname,ad,fd,vs,publicip,privateip,os,shape,key_name,c_name,bkp_policy_name,nsgs,d_host,instance_data,values_for_column_instances,bc_info):
     for col_header in values_for_column_instances.keys():
@@ -211,6 +165,55 @@ def __get_instances_info(compartment_name,compartment_id,reg_name,config):
                     #rows.append(new_row)
                     
 def main():
+    parser = argparse.ArgumentParser(description="Export FSS Details on OCI to CD3")
+    parser.add_argument("cd3file", help="path of CD3 excel file to export Instance objects to")
+    parser.add_argument("outdir", help="path to out directory containing script for TF import commands")
+    parser.add_argument("--configFileName", help="Config file name")
+    parser.add_argument("--networkCompartment", help="comma seperated Compartments for which to export Instance Objects")
+
+    if len(sys.argv) < 4:
+        parser.print_help()
+        sys.exit(1)
+
+    args = parser.parse_args()
+    cd3file = args.cd3file
+    outdir = args.outdir
+    input_compartment_list = args.networkCompartment
+
+    if ('.xls' not in cd3file):
+        print("\nAcceptable cd3 format: .xlsx")
+        exit()
+
+    if args.configFileName is not None:
+        configFileName = args.configFileName
+        config = oci.config.from_file(file_location=configFileName)
+    else:
+        config = oci.config.from_file()
+        
+    global instance_keys,os_keys,all_regions,ct,importCommands,idc,rows,all_compartments,AD,values_for_column_instances,df,sheet_dict_instances  #declaring global variables
+    
+
+    instance_keys={}                        #dict name
+    os_keys = {}                            #os_ocids
+    all_regions = []
+    ct =commonTools()
+    importCommands = {}
+    idc=IdentityClient(config)
+    rows=[]
+    all_compartments=[]
+    
+
+    AD = lambda ad : "AD1" if ("AD-1" in ad ) else( "AD2" if ("AD-2" in ad) else ( "AD3" if ("AD-3" in ad) else "NULL"))   #Get shortend AD
+
+
+    df, values_for_column_instances = commonTools.read_cd3(cd3file, "Instances")
+    sheet_dict_instances = ct.sheet_dict["Instances"]
+
+    print("\nCD3 excel file should not be opened during export process!!!")
+    print("Tabs Instances will be overwritten during this export process!!!\n")
+
+
+
     # Fetch Regions
     regionsubscriptions = idc.list_region_subscriptions(tenancy_id=config['tenancy'])
     for rs in regionsubscriptions.data:
@@ -218,9 +221,10 @@ def main():
             if (rs.region_name == v):
                 all_regions.append(k)
 
-    comps = oci.pagination.list_call_get_all_results(idc.list_compartments,compartment_id=config['tenancy'],compartment_id_in_subtree=True,lifecycle_state = "ACTIVE")
+    comps = oci.pagination.list_call_get_all_results(idc.list_compartments,compartment_id=config['tenancy'],compartment_id_in_subtree=True)
     for comp_info in comps.data:
-        all_compartments.append(comp_info.id)
+        if (comp_info.lifecycle_state == "ACTIVE"):
+            all_compartments.append(comp_info.id)
 
     # Create of .sh file
     for reg in all_regions:
@@ -237,30 +241,32 @@ def main():
         print("\n####Checking Instances ####\n")
         input_compartment_names = input_compartment_list.split(",")
         input_compartment_names = [x.strip() for x in input_compartment_names]
-        comps = oci.pagination.list_call_get_all_results(idc.list_compartments,compartment_id=config['tenancy'],compartment_id_in_subtree=True,lifecycle_state = "ACTIVE")
+        comps = oci.pagination.list_call_get_all_results(idc.list_compartments,compartment_id=config['tenancy'],compartment_id_in_subtree=True)
         for reg_name in all_regions:
             #importCommands[reg_name] = open(outdir + "/" + reg_name + "/tf_import_commands_instances_nonGF.sh", "w")
             config.__setitem__("region", ct.region_dict[reg_name])
             for comp in comps.data:
-                comp_info = comp
-                compartment_id=comp_info.id
-                compartment_name = comp.name
-                if (compartment_name in input_compartment_names):
-                    #print("##Checking Instances in region "+str(reg_name)+ " - "+ compartment_name +" compartment_name ")
-                    __get_instances_info(compartment_name,compartment_id,reg_name,config)
+              if (comp.lifecycle_state == "ACTIVE"):
+                  comp_info = comp
+                  compartment_id=comp_info.id
+                  compartment_name = comp.name
+                  if (compartment_name in input_compartment_names):
+                     #print("##Checking Instances in region "+str(reg_name)+ " - "+ compartment_name +" compartment_name ")
+                     __get_instances_info(compartment_name,compartment_id,reg_name,config)
                   
     else:
         print("\n####Checking Instances in all compartments####\n")
         input_compartment_names = None
-        comps = oci.pagination.list_call_get_all_results(idc.list_compartments,compartment_id=config['tenancy'],compartment_id_in_subtree=True,lifecycle_state = "ACTIVE")
+        comps = oci.pagination.list_call_get_all_results(idc.list_compartments,compartment_id=config['tenancy'],compartment_id_in_subtree=True)
         for reg_name in all_regions:
             #importCommands[reg_name] = open(outdir + "/" + reg_name + "/tf_import_commands_instances_nonGF.sh", "w")
             config.__setitem__("region", ct.region_dict[reg_name])    
             for comp in comps.data:
-                comp_info = comp
-                compartment_id=comp_info.id
-                compartment_name = comp.name
-                __get_instances_info(compartment_name,compartment_id,reg_name,config)
+              if (comp.lifecycle_state == "ACTIVE"):
+                  comp_info = comp
+                  compartment_id=comp_info.id
+                  compartment_name = comp.name
+                  __get_instances_info(compartment_name,compartment_id,reg_name,config)
           
 
     #writing ocids values into os_ocids.tf
@@ -306,9 +312,9 @@ def main():
             os.chdir(dir)
 
 
-
     commonTools.write_to_cd3(values_for_column_instances,cd3file,"Instances")
     print("{0} Instance Details exported to CD3.\n".format(len(values_for_column_instances["Region"])))
+
 
 
 if __name__ == '__main__':
