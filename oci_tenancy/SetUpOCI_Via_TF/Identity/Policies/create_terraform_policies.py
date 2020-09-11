@@ -120,7 +120,7 @@ def main():
             if columnname == "Compartment Name":
                 columnname = commonTools.check_column_headers(columnname)
                 compartmentVarName = columnvalue.strip()
-                if compartmentVarName == '' or compartmentVarName.lower() == 'root':
+                if compartmentVarName.lower() == 'root':
                     columnvalue = 'var.tenancy_ocid'
                 else:
                     compartmentVarName = commonTools.check_tf_variable(compartmentVarName)
