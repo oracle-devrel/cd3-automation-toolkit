@@ -118,10 +118,13 @@ def main():
                 tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)
 
             if columnname == "Compartment Name":
-                compartmentVarName = columnvalue.strip()
                 columnname = commonTools.check_column_headers(columnname)
-                compartmentVarName = commonTools.check_tf_variable(compartmentVarName)
-                columnvalue = str(compartmentVarName)
+                compartmentVarName = columnvalue.strip()
+                if compartmentVarName.lower() == 'root' or compartmentVarName.lower() == '' :
+                    columnvalue = 'var.tenancy_ocid'
+                else:
+                    compartmentVarName = commonTools.check_tf_variable(compartmentVarName)
+                    columnvalue = str(compartmentVarName)
                 tempdict = {'compartment_tf_name': columnvalue}
 
             columnname = commonTools.check_column_headers(columnname)
