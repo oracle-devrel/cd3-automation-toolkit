@@ -121,7 +121,7 @@ def main():
                 columnname = commonTools.check_column_headers(columnname)
                 compartmentVarName = columnvalue.strip()
                 if compartmentVarName.lower() == 'root' or compartmentVarName.lower() == '' :
-                    columnvalue = 'var.tenancy_ocid'
+                    columnvalue = 'tenancy_ocid'
                 else:
                     compartmentVarName = commonTools.check_tf_variable(compartmentVarName)
                     columnvalue = str(compartmentVarName)
