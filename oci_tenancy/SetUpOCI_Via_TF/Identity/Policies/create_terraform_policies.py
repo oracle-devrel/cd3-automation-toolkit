@@ -139,11 +139,11 @@ def main():
             policy_compartment_name = df.loc[i, "Compartment Name"]
             if (str(policy_compartment_name).lower() == "nan" or policy_compartment_name.lower() == 'root'):
                 policy_comp = ""
-                policy_compartment = 'var.tenancy_ocid'
+                policy_compartment = 'tenancy_ocid'
             else:
                 policy_comp = policy_compartment_name
                 policy_compartment_name = commonTools.check_tf_variable(policy_compartment_name)
-                policy_compartment = 'var.' + policy_compartment_name
+                policy_compartment = policy_compartment_name
 
             policy_desc = str(df.loc[i, "Description"])
             if (str(policy_desc).lower() == "nan"):
