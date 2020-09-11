@@ -666,9 +666,9 @@ if('2' in userInput):
     if('4' in choice):
         print("------------------------Modifying Security Rules--------------------------------")
         if (input_config_file == ''):
-            command = 'python modify_secrules_tf.py ' + inputfile + ' ' + outdir + ' ' + inputcsv
+            command = 'python modify_secrules_tf.py ' + inputfile + ' ' + outdir
         else:
-            command = 'python modify_secrules_tf.py ' + inputfile + ' ' + outdir + ' ' + inputcsv + ' --configFileName ' + input_config_file
+            command = 'python modify_secrules_tf.py ' + inputfile + ' ' + outdir + ' --configFileName ' + input_config_file
 
         print("Executing Command: " + command)
         os.chdir('CoreInfra/Networking/BaseNetwork')
@@ -854,8 +854,6 @@ if('8' in userInput):
 
     os.chdir('CoreInfra/Networking/LoadBalancers')
 
-    print("\n-----------Process Load Balancer tabs-----------")
-    os.chdir('CoreInfra/Networking/LoadBalancers')
     if (input_config_file == ''):
         command = 'python create_terraform_lbr_hostname_certs.py ' + input_cd3file + ' ' + input_outdir
         command2 = 'python create_backendset_backendservers.py ' + input_cd3file + ' ' + input_outdir
@@ -868,7 +866,7 @@ if('8' in userInput):
         command3 = 'python create_listener.py ' + input_cd3file + ' ' + input_outdir + ' --configFileName ' + input_config_file
         command4 = 'python create_path_route_set.py ' + input_cd3file + ' ' + input_outdir + ' --configFileName ' + input_config_file
         command5 = 'python create_ruleset.py ' + input_cd3file + ' ' + input_outdir + ' --configFileName ' + input_config_file
-    print("\n------------------------Creating LB and Certificates---------------------------")
+    print("\n------------------------Creating LBR---------------------------")
     print("Executing Command: " + command)
     exitVal = os.system(command)
     if (exitVal == 1):
@@ -894,7 +892,7 @@ if('8' in userInput):
     if (exitVal == 1):
         exit()
 
-    os.chdir("../..")
+    os.chdir("../../..")
     print("--------------------------------------------------------------------------")
 
 if('9' in userInput):

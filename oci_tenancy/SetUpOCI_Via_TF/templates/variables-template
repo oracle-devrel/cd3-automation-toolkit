@@ -1,4 +1,5 @@
-variable  "{{ comp_tf_name }}" {
+
+variable "{{ comp_tf_name }}" {
             type = string
             default = "{{ ocid }}"
 }

@@ -158,7 +158,7 @@ def main():
         default_seclists_done[reg] = []
         seclists_done[reg] = []
         # Backup existing seclist files in ash and phx dir
-        resource = "SL"
+        resource = "SLs"
         print("Backing up all existing SL TF files for region " + reg + " to")
         commonTools.backup_file(outdir + "/" + reg, resource, "_seclist.tf")
 
