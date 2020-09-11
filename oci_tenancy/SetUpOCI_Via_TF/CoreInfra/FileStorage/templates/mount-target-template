@@ -10,6 +10,7 @@ resource "oci_file_storage_mount_target" "{{ mount_target_tf_name }}" {
     {% if mounttarget_hostname != '' %}
     hostname_label = "{{ mounttarget_hostname }}"
     {% endif %}
+    nsg_ids = [ {{ nsgs }} ]
 
     {#  ##Do not modify below this line##  #}
     {#                                     #}
