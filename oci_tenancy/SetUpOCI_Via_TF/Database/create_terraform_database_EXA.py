@@ -13,7 +13,7 @@ import sys
 import argparse
 import os
 from jinja2 import Environment, FileSystemLoader
-sys.path.append(os.getcwd()+"../../")
+sys.path.append(os.getcwd()+"/..")
 from commonTools import *
 
 
@@ -78,8 +78,8 @@ def main():
     for eachregion in uniquereg:
         eachregion = str(eachregion).strip().lower()
         reg_out_dir = outdir + "/" + eachregion
-        if (eachregion in commonTools.endNames or eachregion == 'nan'):
-            continue
+        if (eachregion in commonTools.endNames):
+            break
         if eachregion not in ct.all_regions:
             print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
             exit()
@@ -147,8 +147,8 @@ def main():
                 display_tf_name = commonTools.check_tf_variable(display_tf_name)
                 tempdict = {'display_tf_name': display_tf_name}
 
-            if columnname == "Database Size (GB)":
-                tempdict = {'database_size': columnvalue.strip()}
+            if columnname == "DB Size (GB)":
+                tempdict = {'db_size': columnvalue.strip()}
 
             if columnname == "Recovery Windows (Days)":
                 tempdict = {'recovery_windows': columnvalue.strip()}
