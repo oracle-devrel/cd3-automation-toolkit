@@ -711,16 +711,17 @@ if('3' in userInput):
     print("--------------------Instances/Dedicated VM Hosts------------------------------------")
     print("1.  Create Dedicated VM Hosts")
     print("2.  Create Instances")
-    print("3.  Update existing instance to be part of NSG")
     print("m.  Press m to go back to Main Menu")
     print("q.  Press q to quit")
 
     choice = input("Enter your choice ")
+    choice = choice.split(",")
+
     outdir = input_outdir
     if not os.path.exists(outdir):
         os.makedirs(outdir)
 
-    if (choice=='1'):
+    if ("1" in choice):
         os.chdir('CoreInfra/Compute')
         print("---------------------Processing DedicatedVMHosts Tab----------------------------------")
         if (input_config_file == ''):
@@ -731,7 +732,7 @@ if('3' in userInput):
         os.system(command)
         os.chdir("../..")
         print("--------------------------------------------------------------------------")
-    elif (choice=='2'):
+    if ("2" in choice):
         os.chdir('CoreInfra/Compute')
         print("---------------------Processing Instances Tab----------------------------------")
         if (input_config_file == ''):
@@ -743,14 +744,6 @@ if('3' in userInput):
         os.chdir("../..")
         print("--------------------------------------------------------------------------")
 
-    elif (choice=='3'):
-        os.chdir('CoreInfra/Compute')
-        print("---------------------Processing Instances Tab----------------------------------")
-        command = 'python update_instance_nsg.py ' + inputfile + ' ' + outdir
-        print("Executing Command: " + command)
-        os.system(command)
-        os.chdir("../..")
-        print("--------------------------------------------------------------------------")
     elif (choice == 'm' or choice=="M"):
         cmd = "python setUpOCI.py " + args.propsfile
         print("Going back to Main Menu...")
