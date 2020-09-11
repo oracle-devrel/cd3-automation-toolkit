@@ -277,7 +277,7 @@ if (input_nongf_tenancy.lower() == 'true'):
         if (exitVal == 1):
             exit()
 
-        os.chdir("../..")
+        os.chdir("../../..")
         if ("linux" in sys.platform):
             dir = os.getcwd()
             for reg in ct.all_regions:

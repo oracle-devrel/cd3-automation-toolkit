@@ -394,6 +394,16 @@ def print_subnets(values_for_column_subnets,region, comp_name, vcn_name, subnet_
             values_for_column_subnets[col_header].append(sl_names)
         elif (col_header == "Add Default Seclist"):
             values_for_column_subnets[col_header].append(add_def_seclist)
+        elif (col_header == "Configure SGW Route(n|object_storage|all_services)"):
+            values_for_column_subnets[col_header].append("-")
+        elif (col_header == "Configure NGW Route(y|n)"):
+            values_for_column_subnets[col_header].append("-")
+        elif (col_header == "Configure IGW Route(y|n)"):
+            values_for_column_subnets[col_header].append("-")
+        elif (col_header == "Configure OnPrem Route(y|n)"):
+            values_for_column_subnets[col_header].append("-")
+        elif (col_header == "Configure VCNPeering Route(y|n)"):
+            values_for_column_subnets[col_header].append("-")
         elif ("Availability Domain" in col_header):
             value = subnet_info.__getattribute__(sheet_dict_subnets[col_header])
             ad = ""

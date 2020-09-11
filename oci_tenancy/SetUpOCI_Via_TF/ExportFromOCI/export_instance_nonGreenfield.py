@@ -238,7 +238,7 @@ def main():
         importCommands[reg].write("terraform init")
      
     if (input_compartment_list is not None):
-        print("\n####Checking Instances ####\n")
+        print("Fetching for Compartments... " + input_compartment_list)
         input_compartment_names = input_compartment_list.split(",")
         input_compartment_names = [x.strip() for x in input_compartment_names]
         comps = oci.pagination.list_call_get_all_results(idc.list_compartments,compartment_id=config['tenancy'],compartment_id_in_subtree=True)
@@ -255,7 +255,7 @@ def main():
                      __get_instances_info(compartment_name,compartment_id,reg_name,config)
                   
     else:
-        print("\n####Checking Instances in all compartments####\n")
+        print("Fetching for all Compartments...")
         input_compartment_names = None
         comps = oci.pagination.list_call_get_all_results(idc.list_compartments,compartment_id=config['tenancy'],compartment_id_in_subtree=True)
         for reg_name in all_regions:

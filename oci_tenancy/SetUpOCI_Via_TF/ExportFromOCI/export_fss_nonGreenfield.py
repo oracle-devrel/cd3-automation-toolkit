@@ -198,9 +198,8 @@ def main():
         importCommands[reg].write("terraform init")
                     
 
-                                
-
     if (input_compartment_list is not None):                                            #For Specific Compartments
+        print("Fetching for Compartments... " + input_compartment_list)
         input_compartment_names = input_compartment_list.split(",")
         input_compartment_names = [x.strip() for x in input_compartment_names]
         comps = oci.pagination.list_call_get_all_results(idc.list_compartments,compartment_id=config['tenancy'],compartment_id_in_subtree=True)    
@@ -210,7 +209,6 @@ def main():
             compartment_id=comp_info.id
             compartment_name = comp.name
             if (compartment_name in input_compartment_names):
-                print("##Checking FileSystems in "+compartment_name +" compartment ")
                 for reg in all_regions:
                   config.__setitem__("region", ct.region_dict[reg])
                   ads=oci.identity.IdentityClient(config)
@@ -219,7 +217,7 @@ def main():
                     __get_mount_info(compartment_name,compartment_id,reg,aval.name,config)
         
     else:
-        print("\n####Checking FileSystems in all compartments####\n")
+        print("Fetching for all Compartments...")
         input_compartment_names = None
         comps = oci.pagination.list_call_get_all_results(idc.list_compartments,compartment_id=config['tenancy'],compartment_id_in_subtree=True)
         for comp in comps.data:

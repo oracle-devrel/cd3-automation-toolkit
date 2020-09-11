@@ -455,10 +455,6 @@ for region in regions:
             type = string
             default = \"""" + windows_image_id[region] + """"
             description = "Latest ocid as on """ + dt + """"
-    }
-    variable "windows_latest_ocid" {
-            type = string
-            default = \"""" + windows_image_id[region] + """"
     }"""
     if (linux_image_id[region] != ''):
         variables_data[region] = variables_data[region] + """
@@ -467,10 +463,6 @@ for region in regions:
             type = string
             default = \"""" + linux_image_id[region] + """"
             description = "Latest ocid as on """ + dt + """"
-    }
-    variable "linux_latest_ocid"{
-            type = string
-            default = \"""" + linux_image_id[region] + """"
     }"""
     write_file("variables_" + region + ".tf", variables_data[region])
 
