@@ -78,7 +78,7 @@ def main():
         default_rtables_done[reg]=[]
         subnets_done[reg] = []
         # Backup existing route table files in ash and phx dir
-        resource = "RT"
+        resource = "RTs"
         print("Backing up all existing RT TF files for region " + reg+ " to")
         commonTools.backup_file(outdir + "/" + reg, resource, "_routetable.tf")
 
