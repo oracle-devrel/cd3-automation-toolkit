@@ -75,6 +75,9 @@ def main():
         defStr[reg] = ''
 
     def processDHCP(tempStr, template, defaultdhcp):
+        defaultdhcpdata = ''
+        customdhcpdata = ''
+
         compartment_var_name = tempStr['compartment_tf_name'].strip()
         region = tempStr['region'].lower().strip()
         vcn_name = tempStr['vcn_name'].strip()
@@ -96,12 +99,13 @@ def main():
 
         tempStr.update(tempdict)
 
-        if ("Default DHCP Options for " in dhcp_option_name):
-            data = defaultdhcp.render(tempStr)
+        if ("Default DHCP Options" in dhcp_option_name):
+            defaultdhcpdata = defaultdhcp.render(tempStr)
         else:
-            data = template.render(tempStr)
+            customdhcpdata = template.render(tempStr)
 
-        tfStr[region] = tfStr[region] + data
+        defStr[region] =  defStr[region] + defaultdhcpdata
+        tfStr[region] = tfStr[region] + customdhcpdata
 
     # Read cd3 using pandas dataframe
     df, col_headers = commonTools.read_cd3(filename, "DHCP")
@@ -169,6 +173,7 @@ def main():
             columnname = commonTools.check_column_headers(columnname)
             tempStr[columnname] = str(columnvalue).strip()
             tempStr.update(tempdict)
+
         processDHCP(tempStr,template,defaultdhcp)
 
     if (modify_network == 'true'):
@@ -183,8 +188,9 @@ def main():
             date = x.strftime("%f").strip()
             # if(tfStr[reg]!=''):
             if (os.path.exists(outfile[reg])):
-                print("creating backup file " + outfile[reg] + "_backup" + date)
-                shutil.copy(outfile[reg], outfile[reg] + "_backup" + date)
+                resource = 'Custom-DHCP'
+                srcdir = outdir + "/" + reg + "/"
+                commonTools.backup_file(srcdir, resource, "-dhcp.tf")
             oname[reg] = open(outfile[reg], "w")
             oname[reg].write(tfStr[reg])
             oname[reg].close()
@@ -193,8 +199,9 @@ def main():
             # Added this if condition again because modify network was showing tf destroying Default DHCP Options
             if (defStr[reg] != ''):
                 if (os.path.exists(deffile[reg])):
-                    print("creating backup file " + deffile[reg] + "_backup" + date)
-                    shutil.copy(outfile[reg], deffile[reg] + "_backup" + date)
+                    resource = 'Default-DHCP'
+                    srcdir = outdir + "/" + reg + "/"
+                    commonTools.backup_file(srcdir, resource, "VCNs_Default_DHCP.tf")
                 defname[reg] = open(deffile[reg], "w")
                 defname[reg].write(defStr[reg])
                 defname[reg].close()
@@ -204,18 +211,28 @@ def main():
     elif (modify_network == 'false'):
         for reg in ct.all_regions:
             reg_out_dir = outdir + "/" + reg
+
             if not os.path.exists(reg_out_dir):
                 os.makedirs(reg_out_dir)
+
             outfile[reg] = reg_out_dir + "/" + prefix + '-dhcp.tf'
             deffile[reg] = reg_out_dir + "/VCNs_Default_DHCP.tf"
 
             if (tfStr[reg] != ''):
+                if (os.path.exists(outfile[reg])):
+                    resource = 'Custom-DHCP'
+                    srcdir = outdir + "/" + reg + "/"
+                    commonTools.backup_file(srcdir, resource, "-dhcp.tf")
                 oname[reg] = open(outfile[reg], 'w')
                 oname[reg].write(tfStr[reg])
                 oname[reg].close()
                 print(outfile[reg] + " containing TF for DHCP Options has been created for region " + reg)
 
             if (defStr[reg] != ''):
+                if (os.path.exists(deffile[reg])):
+                    resource = 'Default-DHCP'
+                    srcdir = outdir + "/" + reg + "/"
+                    commonTools.backup_file(srcdir, resource, "VCNs_Default_DHCP.tf")
                 defname[reg] = open(deffile[reg], "w")
                 defname[reg].write(defStr[reg])
                 defname[reg].close()
