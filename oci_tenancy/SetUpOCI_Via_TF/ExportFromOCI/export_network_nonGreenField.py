@@ -164,27 +164,6 @@ def print_nsg(values_for_column_nsgs,region, comp_name, vcn_name, nsg):
             oci_objs = [nsg]
             values_for_column_nsgs = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict_nsgs,values_for_column_nsgs)
 
-        """elif (col_header in sheet_dict_nsgs.keys()):
-            # Check if property exists for nsg
-            try:
-                value = nsg.__getattribute__(sheet_dict_nsgs[col_header])
-                value = commonTools.check_exported_value(value)
-                values_for_column_nsgs[col_header].append(value)
-            # Check if property exists for nsgsl
-            except AttributeError as e:
-                value = ""
-                values_for_column_nsgs[col_header].append(value)
-        else:
-            # Check if property exists for nsg
-            try:
-                value = nsg.__getattribute__(commonTools.check_column_headers(col_header))
-                value = commonTools.check_exported_value(value)
-                values_for_column_nsgs[col_header].append(value)
-            # Check if property exists for nsgsl
-            except AttributeError as e:
-                value = ""
-                values_for_column_nsgs[col_header].append(value)
-            """
     importCommands[region.lower()].write("\nterraform import oci_core_network_security_group." + tf_name + " "+str(nsg.id))
 
 def print_vcns(values_for_column_vcns,region, comp_name, vcn_info, drg_info, igw_info, ngw_info, sgw_info,lpg_display_names):
@@ -229,93 +208,6 @@ def print_vcns(values_for_column_vcns,region, comp_name, vcn_info, drg_info, igw
             oci_objs = [vcn_info,drg_info,igw_info,ngw_info,sgw_info]
             values_for_column_vcns = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict_vcns,values_for_column_vcns)
 
-        """elif (col_header in sheet_dict_vcns.keys()):
-            # Check if property exists for vcn
-            try:
-                value = vcn_info.__getattribute__(sheet_dict_vcns[col_header])
-                value = commonTools.check_exported_value(value)
-                values_for_column_vcns[col_header].append(value)
-            except AttributeError as e:
-                found = 0
-                if(drg_info!=None):
-                    try:
-                        value = drg_info.__getattribute__(sheet_dict_vcns[col_header])
-                        value = commonTools.check_exported_value(value)
-                        values_for_column_vcns[col_header].append(value)
-                        found = 1
-                    except AttributeError as e:
-                        pass
-                if (igw_info != None):
-                    try:
-                        value = igw_info.__getattribute__(sheet_dict_vcns[col_header])
-                        value = commonTools.check_exported_value(value)
-                        values_for_column_vcns[col_header].append(value)
-                        found = 1
-                    except AttributeError as e:
-                        pass
-                if (ngw_info != None):
-                    try:
-                        value = ngw_info.__getattribute__(sheet_dict_vcns[col_header])
-                        value = commonTools.check_exported_value(value)
-                        values_for_column_vcns[col_header].append(value)
-                        found = 1
-                    except AttributeError as e:
-                        pass
-                if (sgw_info != None):
-                    try:
-                        value = sgw_info.__getattribute__(sheet_dict_vcns[col_header])
-                        value = commonTools.check_exported_value(value)
-                        values_for_column_vcns[col_header].append(value)
-                        found = 1
-                    except AttributeError as e:
-                        pass
-                if(found == 0):
-                    value=""
-                    values_for_column_vcns[col_header].append(value)
-        else:
-            # Check if property exists for vcn
-            try:
-                value = vcn_info.__getattribute__(commonTools.check_column_headers(col_header))
-                value = commonTools.check_exported_value(value)
-                values_for_column_vcns[col_header].append(value)
-            except AttributeError as e:
-                found = 0
-                if (drg_info != None):
-                    try:
-                        value = drg_info.__getattribute__(commonTools.check_column_headers(col_header))
-                        value = commonTools.check_exported_value(value)
-                        values_for_column_vcns[col_header].append(value)
-                        found = 1
-                    except AttributeError as e:
-                        pass
-                if (igw_info != None):
-                    try:
-                        value = igw_info.__getattribute__(commonTools.check_column_headers(col_header))
-                        value = commonTools.check_exported_value(value)
-                        values_for_column_vcns[col_header].append(value)
-                        found = 1
-                    except AttributeError as e:
-                        pass
-                if (ngw_info != None):
-                    try:
-                        value = ngw_info.__getattribute__(commonTools.check_column_headers(col_header))
-                        value = commonTools.check_exported_value(value)
-                        values_for_column_vcns[col_header].append(value)
-                        found = 1
-                    except AttributeError as e:
-                        pass
-                if (sgw_info != None):
-                    try:
-                        value = sgw_info.__getattribute__(commonTools.check_column_headers(col_header))
-                        value = commonTools.check_exported_value(value)
-                        values_for_column_vcns[col_header].append(value)
-                        found = 1
-                    except AttributeError as e:
-                        pass
-                if(found == 0):
-                    value = ""
-                    values_for_column_vcns[col_header].append(value)
-            """
     tf_name = commonTools.check_tf_variable(vcn_info.display_name)
     importCommands[region.lower()].write("\nterraform import oci_core_vcn." + tf_name + " " + str(vcn_info.id))
 
@@ -323,9 +215,25 @@ def print_vcns(values_for_column_vcns,region, comp_name, vcn_info, drg_info, igw
 def print_dhcp(values_for_column_dhcp,region, comp_name, vcn_name, dhcp_info):
     tf_name=vcn_name+"_"+str(dhcp_info.display_name)
     tf_name = commonTools.check_tf_variable(tf_name)
-    # Dont write Default DHCP option to cd3, jst write TF import command
 
     options = dhcp_info.options
+    server_type = ""
+    custom_dns_servers_str = ""
+    search_domain_names_str = ""
+    oci_objs=[dhcp_info]
+    for option in options:
+        oci_objs.append(option)
+        if (option.type == "DomainNameServer"):
+            server_type = option.server_type
+            custom_dns_servers = option.custom_dns_servers
+            for custom_dns_server in custom_dns_servers:
+                custom_dns_servers_str = custom_dns_servers_str + "," + custom_dns_server
+            if (custom_dns_servers_str != "" and custom_dns_servers_str[0] == ','):
+                custom_dns_servers_str = custom_dns_servers_str[1:]
+        if (option.type == "SearchDomain"):
+            search_domain_names = option.search_domain_names
+            search_domain_names_str = search_domain_names[0]
+
     for col_header in values_for_column_dhcp.keys():
         if (col_header == "Region"):
             values_for_column_dhcp[col_header].append(region)
@@ -333,40 +241,16 @@ def print_dhcp(values_for_column_dhcp,region, comp_name, vcn_name, dhcp_info):
             values_for_column_dhcp[col_header].append(comp_name)
         elif (col_header == "VCN Name"):
             values_for_column_dhcp[col_header].append(vcn_name)
+        elif(col_header == "Server Type(VcnLocalPlusInternet|CustomDnsServer)"):
+            values_for_column_dhcp[col_header].append(server_type)
+        elif (col_header == "Search Domain"):
+            values_for_column_dhcp[col_header].append(search_domain_names_str)
+        elif (col_header == "Custom DNS Server"):
+            values_for_column_dhcp[col_header].append(custom_dns_servers_str)
         elif col_header.lower() in commonTools.tagColumns:
             values_for_column_dhcp = commonTools.export_tags(dhcp_info, col_header, values_for_column_dhcp)
-        elif (col_header in sheet_dict_dhcp.keys()):
-            # Check if property exists for dhcp_info
-            try:
-                value = dhcp_info.__getattribute__(sheet_dict_dhcp[col_header])
-                value = commonTools.check_exported_value(value)
-                values_for_column_dhcp[col_header].append(value)
-            except AttributeError as e:
-                # Check if property exists for option
-                for option in options:
-                    try:
-                        value = option.__getattribute__(sheet_dict_dhcp[col_header])
-                        value = commonTools.check_exported_value(value)
-                        values_for_column_dhcp[col_header].append(value)
-                    except AttributeError as e:
-                        pass
         else:
-            # Check if property exists for dhcp_info
-            try:
-                value = dhcp_info.__getattribute__(commonTools.check_column_headers(col_header))
-                value = commonTools.check_exported_value(value)
-                values_for_column_dhcp[col_header].append(value)
-            except AttributeError as e:
-                # Check if property exists for option
-                for option in options:
-                    try:
-                        value = option.__getattribute__(commonTools.check_column_headers(col_header))
-                        value = commonTools.check_exported_value(value)
-                        values_for_column_dhcp[col_header].append(value)
-                    except AttributeError as e:
-                        value=""
-                        values_for_column_dhcp[col_header].append(value)
-                        break
+            values_for_column_dhcp = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict_dhcp, values_for_column_dhcp)
     if ("Default DHCP Options for " in dhcp_info.display_name):
         importCommands[region.lower()].write(
             "\nterraform import oci_core_default_dhcp_options." + tf_name + " " + str(dhcp_info.id))
@@ -437,25 +321,6 @@ def print_subnets(values_for_column_subnets,region, comp_name, vcn_name, subnet_
             oci_objs = [subnet_info]
             values_for_column_subnets = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict_subnets,values_for_column_subnets)
 
-        """elif (col_header in sheet_dict_subnets.keys()):
-            # Check if property exists for subnet_info
-            try:
-                value = subnet_info.__getattribute__(sheet_dict_subnets[col_header])
-                value = commonTools.check_exported_value(value)
-                values_for_column_subnets[col_header].append(value)
-            except AttributeError as e:
-                value = ""
-                values_for_column_subnets[col_header].append(value)
-        else:
-            # Check if property exists for subnet_info
-            try:
-                value = subnet_info.__getattribute__(commonTools.check_column_headers(col_header))
-                value = commonTools.check_exported_value(value)
-                values_for_column_subnets[col_header].append(value)
-            except AttributeError as e:
-                value = ""
-                values_for_column_subnets[col_header].append(value)
-        """
 
 def main():
     parser = argparse.ArgumentParser(description="Export Route Table on OCI to CD3")

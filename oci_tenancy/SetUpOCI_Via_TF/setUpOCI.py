@@ -47,12 +47,13 @@ except Exception as e:
 if (input_nongf_tenancy.lower() == 'true'):
     print("\nnon_gf_tenancy in properties files is set to true..Export existing OCI objects and Synch with TF state")
     print("Process will fetch objects from OCI in the specified compartment from all regions tenancy is subscribed to\n")
-    print("1. Export Identity Objects(Compartments, Groups, Policies) to CD3 and create TF Files")
-    print("2. Export Network Objects(VCNs, Subnets, Security Lists, Route Tables, NSGs) to CD3 and create TF Files")
-    print("3. Export Instance Objects to CD3 and create TF Files")
-    print("4. Export FSS Objects to CD3 and create TF Files")
-    print("5. Export LBR Objects to CD3 and create TF Files")
-    print("6. Export Solutions(Events and Notifications) Objects to CD3 and create TF Files")
+    print("1. Export Tag Objects(TagnameSpaces, Tag Keys, Tag Defauls, Tag Values) to CD3 and create TF Files")
+    print("2. Export Identity Objects(Compartments, Groups, Policies) to CD3 and create TF Files")
+    print("3. Export Network Objects(VCNs, Subnets, Security Lists, Route Tables, NSGs) to CD3 and create TF Files")
+    print("4. Export Instance Objects to CD3 and create TF Files")
+    print("5. Export FSS Objects to CD3 and create TF Files")
+    print("6. Export LBR Objects to CD3 and create TF Files")
+    print("7. Export Solutions(Events and Notifications) Objects to CD3 and create TF Files")
     print("q. Press q to quit")
     userInput = input('Enter your choice: multiple allowed ')
     userInput=userInput.split(",")
@@ -101,36 +102,39 @@ if (input_nongf_tenancy.lower() == 'true'):
     if (exitVal == 1):
         print("Error Occured. Please try again!!!")
         exit()
-    print("----------------------------------------------------------")
-    print("\nExporting Tags...")
-    os.chdir('ExportFromOCI')
-    if (input_config_file == ''):
-        command = "python export_tags_nonGreenField.py " + input_cd3file + ' ' + input_outdir
-    else:
-        command = "python export_tags_nonGreenField.py " + input_cd3file + ' ' + input_outdir + " --configFileName " + input_config_file
-
-    print("Executing Command: " + command)
-    exitVal = os.system(command)
-    if(exitVal == 1):
-        print("\nError Occured. Please try again!!!")
-        exit()
-    os.chdir('..')
-    print("----------------------------------------------------------")
-    print("\nProceeding to create TF files...\n")
-    print("\n-----------Process Tags tab-----------")
-    if (input_config_file == ''):
-        command = 'python create_namespace_tagkey.py ' + input_cd3file + ' ' + input_outdir
-    else:
-        command = 'python create_namespace_tagkey.py ' + input_cd3file + ' ' + input_outdir  + ' --configFileName ' + input_config_file
-
-    os.chdir('Governance/Tagging')
-    print("Executing Command: " + command)
-    exitVal = os.system(command)
-    if (exitVal == 1):
-        exit()
-    os.chdir("../..")
-
     if ("1" in userInput):
+        print("----------------------------------------------------------")
+        print("\nExporting Tags...")
+        os.chdir('ExportFromOCI')
+        if (input_config_file == ''):
+            command = "python export_tags_nonGreenField.py " + input_cd3file + ' ' + input_outdir
+        else:
+            command = "python export_tags_nonGreenField.py " + input_cd3file + ' ' + input_outdir + " --configFileName " + input_config_file
+
+        print("Executing Command: " + command)
+        exitVal = os.system(command)
+        if(exitVal == 1):
+            print("\nError Occured. Please try again!!!")
+            exit()
+        os.chdir('..')
+        print("----------------------------------------------------------")
+        print("\nProceeding to create TF files...\n")
+        print("\n-----------Process Tags tab-----------")
+        if (input_config_file == ''):
+            command = 'python create_namespace_tagkey.py ' + input_cd3file + ' ' + input_outdir
+        else:
+            command = 'python create_namespace_tagkey.py ' + input_cd3file + ' ' + input_outdir  + ' --configFileName ' + input_config_file
+
+        os.chdir('Governance/Tagging')
+        print("Executing Command: " + command)
+        exitVal = os.system(command)
+        if (exitVal == 1):
+            exit()
+        os.chdir("../..")
+        print("\n\nExecute tf_import_commands_tag_nonGF.sh script created under home region directory to synch TF with OCI Identity objects\n")
+
+
+    if ("2" in userInput):
         print("----------------------------------------------------------")
         print("\nExporting Identity...")
         os.chdir('ExportFromOCI')
@@ -185,12 +189,11 @@ if (input_nongf_tenancy.lower() == 'true'):
         exitVal = os.system(command)
         if (exitVal == 1):
             exit()
-
         os.chdir("../..")
         print("\n\nExecute tf_import_commands_identity_nonGF.sh script created under home region directory to synch TF with OCI Identity objects\n")
 
 
-    if("2" in userInput):
+    if("3" in userInput):
         print("----------------------------------------------------------")
         print("\nExporting Network...")
 
@@ -288,7 +291,7 @@ if (input_nongf_tenancy.lower() == 'true'):
 
         print("\n\nExecute tf_import_commands_network_nonGF.sh script created under each region directory to synch TF with OCI Network objects\n")
 
-    if ("3" in userInput):
+    if ("4" in userInput):
         print("----------------------------------------------------------")
         print("\nExporting Instances...")
         os.chdir('ExportFromOCI')
@@ -330,7 +333,7 @@ if (input_nongf_tenancy.lower() == 'true'):
         print("\n\nExecute tf_import_commands_instances_nonGF.sh script created under each region directory to synch TF with OCI Instances\n")
 
 
-    if ("4" in userInput):
+    if ("5" in userInput):
         print("----------------------------------------------------------")
         print("\nExporting FSS...")
         os.chdir('ExportFromOCI')
@@ -372,7 +375,7 @@ if (input_nongf_tenancy.lower() == 'true'):
         print("\n\nExecute tf_import_commands_fss_nonGF.sh script created under each region directory to synch TF with OCI FSS objects\n")
 
 
-    if ("5" in userInput):
+    if ("6" in userInput):
         print("----------------------------------------------------------")
         print("\nExporting LBR...")
 
@@ -443,7 +446,7 @@ if (input_nongf_tenancy.lower() == 'true'):
         os.chdir("../../..")
         print("\n\nExecute tf_import_commands_lbr_nonGF.sh script created under each region directory to synch TF with OCI LBR objects\n")
 
-    if ("6" in userInput):
+    if ("7" in userInput):
         print("----------------------------------------------------------")
         print("\nExporting Events and Notifications...")
         os.chdir('ExportFromOCI')

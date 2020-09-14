@@ -20,6 +20,7 @@ from commonTools import *
 compartment_ids={}
 importCommands={}
 oci_obj_names={}
+tf_name_namespace_list = {}
 
 def  print_tags(values_for_column_tags,region, ntk_compartment_name, tag, tag_key, tag_default_value, tag_default):
     tag_default_req = "TRUE"
@@ -64,7 +65,9 @@ def  print_tags(values_for_column_tags,region, ntk_compartment_name, tag, tag_ke
         else:
             oci_objs = [tag,tag_key,tag_default]
             values_for_column_tags = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict_tags,values_for_column_tags)
-    importCommands[region.lower()].write("\nterraform import oci_identity_tag_namespace." + tf_name_namespace + " " + str(tag.id))
+    if (tag.id not in tf_name_namespace_list[region.lower()]):
+        importCommands[region.lower()].write("\nterraform import oci_identity_tag_namespace." + tf_name_namespace + " " + str(tag.id))
+        tf_name_namespace_list[region.lower()].append(tag.id)
     importCommands[region.lower()].write("\nterraform import oci_identity_tag."+ tf_name_key + ' ' + "tagNamespaces/"+ str(tag.id) +"/tags/\"" + str(tag_key.name) + "\"")
     if ( tag_default_value != ''):
         importCommands[region.lower()].write("\nterraform import oci_identity_tag_default."+ tf_name_namespace+'-' +tf_name_key + '-default'+ ' ' + str(tag_default_id))
@@ -154,6 +157,7 @@ def main():
         importCommands[reg].write("\n\n######### Writing import for Tags #########\n\n")
         config.__setitem__("region", ct.region_dict[reg])
         comp_ocid_done = []
+        tf_name_namespace_list[reg] = []
         identity = IdentityClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
         validator_con = oci.identity.models.EnumTagDefinitionValidator()
         region = reg.capitalize()
