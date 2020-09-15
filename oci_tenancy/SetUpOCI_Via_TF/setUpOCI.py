@@ -668,10 +668,11 @@ if('2' in userInput):
 
     if('4' in choice):
         print("------------------------Modifying Security Rules--------------------------------")
+        inputcsv =inputfile
         if (input_config_file == ''):
-            command = 'python modify_secrules_tf.py ' + inputfile + ' ' + outdir
+            command = 'python modify_secrules_tf.py ' + inputfile + ' ' + outdir + ' ' + inputcsv
         else:
-            command = 'python modify_secrules_tf.py ' + inputfile + ' ' + outdir + ' --configFileName ' + input_config_file
+            command = 'python modify_secrules_tf.py ' + inputfile + ' ' + outdir + ' ' + inputcsv + ' --configFileName ' + input_config_file
 
         print("Executing Command: " + command)
         os.chdir('CoreInfra/Networking/BaseNetwork')
