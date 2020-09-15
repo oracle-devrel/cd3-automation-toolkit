@@ -66,7 +66,7 @@ for reg in ct.all_regions:
     for name,ocid in ct.ntk_compartment_ids.items():
         comp_tf_name=commonTools.check_tf_variable(name)
         searchstr = "variable \"" + comp_tf_name + "\""
-        str=template.render(comp_tf_name=comp_tf_name,ocid=ocid)
+        str=template.render(var_tf_name=comp_tf_name,values=ocid)
         if(searchstr not in var_data[reg]):
             tempStr[reg]=tempStr[reg]+str
 
