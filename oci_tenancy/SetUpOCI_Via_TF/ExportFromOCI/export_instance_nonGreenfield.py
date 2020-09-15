@@ -300,7 +300,7 @@ def main():
         # print(myocids)
         f = open(outdir + "/" + reg + "/os_ocids.tf", "w")
         for keys, values in myocids.items():
-            tempstr = {"comp_tf_name": keys, "ocid": values}
+            tempstr = {"var_tf_name": keys, "values": values}
             temp_str_test = template.render(tempstr)
             # str="variable \""+keys+"\" {\n type    = \"string\"\n default = \""+values+"\" \n }\n"
             f.write(temp_str_test)
@@ -317,7 +317,7 @@ def main():
         # print(myocids)
         f = open(outdir + "/" + reg + "/ssh_metadata.tf", "w")
         for keys, values in myocids.items():
-            tempstr = {"comp_tf_name": keys, "ocid": values}
+            tempstr = {"var_tf_name": keys, "values": values}
             # str="variable \""+keys+"\" {\n type    = \"string\"\n default = \""+values+"\" \n }\n"
             temp_str_test = template2.render(tempstr)
             f.write(temp_str_test)
