@@ -99,7 +99,7 @@ def directionOptionals(nsgParser, options,tempStr):
             destination_type='CIDR_BLOCK'
         elif (destination_type.lower() == 'service'):
             destination_type='SERVICE_CIDR_BLOCK'
-        elif (destination_type.lower() == 'cidr'):
+        elif (destination_type.lower() == 'nsg'):
             destination_type = "NETWORK_SECURITY_GROUP"
             destination = "oci_core_network_security_group."+destination+".id"
     else:
