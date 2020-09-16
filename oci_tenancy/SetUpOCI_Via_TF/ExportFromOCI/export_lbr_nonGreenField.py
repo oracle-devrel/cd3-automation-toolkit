@@ -768,64 +768,63 @@ def main():
                 values_for_column_rule = print_rule(region, values_for_column_rule, LBRs, ntk_compartment_name)
                 values_for_column_prs = print_prs(region, values_for_column_prs, LBRs, ntk_compartment_name)
 
+                for eachlbr in LBRs.data:
+                    importCommands[reg] = open(outdir + "/" + reg + "/tf_import_commands_lbr_nonGF.sh", "a")
+                    lbr_info = eachlbr
+                    lbr_display_name = lbr_info.display_name
+                    tf_name = commonTools.check_tf_variable(lbr_display_name)
+                    importCommands[reg].write("\nterraform import oci_load_balancer_load_balancer." + tf_name + " " + lbr_info.id)
+
+                    for certificates in eachlbr.certificates:
+                        cert_tf_name = commonTools.check_tf_variable(certificates)
+                        importCommands[reg].write("\nterraform import oci_load_balancer_certificate." + cert_tf_name + "_cert" + " loadBalancers/" + lbr_info.id + "/certificates/" + certificates)
+
+                    for hostnames in eachlbr.hostnames:
+                        hostname_tf_name = commonTools.check_tf_variable(hostnames)
+                        importCommands[reg].write("\nterraform import oci_load_balancer_hostname." + tf_name + "_" + hostname_tf_name + "_hostname" + " loadBalancers/" + lbr_info.id + "/hostnames/" + hostnames)
+
+                    for listeners in eachlbr.listeners:
+                        listener_tf_name = commonTools.check_tf_variable(listeners)
+                        importCommands[reg].write("\nterraform import oci_load_balancer_listener." + listener_tf_name + " loadBalancers/" + lbr_info.id + "/listeners/" + listeners)
+
+                    for backendsets, values in eachlbr.backend_sets.items():
+                        backendsets_tf_name = commonTools.check_tf_variable(backendsets)
+                        importCommands[reg].write("\nterraform import oci_load_balancer_backend_set." + backendsets_tf_name + " loadBalancers/" + lbr_info.id + "/backendSets/" + backendsets)
+
+                        for keys in values.backends:
+                            backendservers_name = keys.name
+                            backendservers_tf_name = commonTools.check_tf_variable(keys.ip_address)
+                            importCommands[reg].write("\nterraform import oci_load_balancer_backend." + backendsets_tf_name + "-" + backendservers_tf_name + " loadBalancers/" + lbr_info.id + "/backendSets/" + backendsets + "/backends/" + backendservers_name)
+
+                    for pathroutes in eachlbr.path_route_sets:
+                        pathroutes_tf_name = commonTools.check_tf_variable(pathroutes)
+                        importCommands[reg].write("\nterraform import oci_load_balancer_path_route_set." + pathroutes_tf_name + " loadBalancers/" + lbr_info.id + "/pathRouteSets/" + pathroutes)
+
+                    for routerules in eachlbr.rule_sets:
+                        routerules_tf_name = commonTools.check_tf_variable(routerules)
+                        importCommands[reg].write("\nterraform import oci_load_balancer_rule_set." + tf_name + "-" + routerules_tf_name + " loadBalancers/" + lbr_info.id + "/ruleSets/" + routerules)
+
+                    for ciphers in eachlbr.ssl_cipher_suites:
+                        ciphers_tf_name = commonTools.check_tf_variable(ciphers)
+                        importCommands[reg].write("\nterraform import oci_load_balancer_ssl_cipher_suite." + ciphers_tf_name + " loadBalancers/" + lbr_info.id + "/sslCipherSuites/" + ciphers)
+
+        importCommands[reg] = open(outdir + "/" + reg + "/tf_import_commands_lbr_nonGF.sh", "a")
+        importCommands[reg].write("\n\nterraform plan")
+        importCommands[reg].write("\n")
+        importCommands[reg].close()
+        if ("linux" in sys.platform):
+            dir = os.getcwd()
+            os.chdir(outdir + "/" + reg)
+            os.system("chmod +x tf_import_commands_lbr_nonGF.sh")
+            os.chdir(dir)
+
     commonTools.write_to_cd3(values_for_column_lhc, cd3file, "LB-Hostname-Certs")
     commonTools.write_to_cd3(values_for_column_bss, cd3file, "BackendSet-BackendServer")
     commonTools.write_to_cd3(values_for_column_lis, cd3file, "LB-Listener")
     commonTools.write_to_cd3(values_for_column_rule,cd3file, "RuleSet")
     commonTools.write_to_cd3(values_for_column_prs, cd3file, "PathRouteSet")
 
-    for reg in ct.all_regions:
-
-        for eachlbr in LBRs.data:
-            lbr_info = eachlbr
-            lbr_display_name = lbr_info.display_name
-            tf_name = commonTools.check_tf_variable(lbr_display_name)
-            importCommands[reg].write("\nterraform import oci_load_balancer_load_balancer." + tf_name + " " + lbr_info.id)
-
-            for certificates in eachlbr.certificates:
-                cert_tf_name = commonTools.check_tf_variable(certificates)
-                importCommands[reg].write("\nterraform import oci_load_balancer_certificate."+cert_tf_name+"_cert"+" loadBalancers/"+lbr_info.id+"/certificates/"+certificates)
-
-            for hostnames in eachlbr.hostnames:
-                hostname_tf_name = commonTools.check_tf_variable(hostnames)
-                importCommands[reg].write("\nterraform import oci_load_balancer_hostname."+tf_name+"_"+hostname_tf_name+"_hostname"+" loadBalancers/"+lbr_info.id+"/hostnames/"+hostnames)
-
-            for listeners in eachlbr.listeners:
-                listener_tf_name = commonTools.check_tf_variable(listeners)
-                importCommands[reg].write("\nterraform import oci_load_balancer_listener."+ listener_tf_name +" loadBalancers/" + lbr_info.id + "/listeners/" + listeners)
-
-            for backendsets,values in eachlbr.backend_sets.items():
-                backendsets_tf_name = commonTools.check_tf_variable(backendsets)
-                importCommands[reg].write("\nterraform import oci_load_balancer_backend_set." + backendsets_tf_name + " loadBalancers/" + lbr_info.id + "/backendSets/" + backendsets)
-
-                for keys in values.backends:
-                    backendservers_name = keys.name
-                    backendservers_tf_name = commonTools.check_tf_variable(keys.ip_address)
-                    importCommands[reg].write("\nterraform import oci_load_balancer_backend." + backendsets_tf_name+"-"+backendservers_tf_name  + " loadBalancers/" + lbr_info.id + "/backendSets/"+backendsets+"/backends/" + backendservers_name)
-
-            for pathroutes in eachlbr.path_route_sets:
-                pathroutes_tf_name = commonTools.check_tf_variable(pathroutes)
-                importCommands[reg].write("\nterraform import oci_load_balancer_path_route_set." + pathroutes_tf_name  + " loadBalancers/" + lbr_info.id + "/pathRouteSets/" + pathroutes)
-
-            for routerules in eachlbr.rule_sets:
-                routerules_tf_name = commonTools.check_tf_variable(routerules)
-                importCommands[reg].write("\nterraform import oci_load_balancer_rule_set." + tf_name+"-"+routerules_tf_name  + " loadBalancers/" + lbr_info.id + "/ruleSets/" + routerules)
-
-            for ciphers in eachlbr.ssl_cipher_suites:
-                ciphers_tf_name = commonTools.check_tf_variable(ciphers)
-                importCommands[reg].write("\nterraform import oci_load_balancer_ssl_cipher_suite." +ciphers_tf_name+" loadBalancers/" + lbr_info.id + "/sslCipherSuites/" + ciphers)
-
-            importCommands[reg] = open(outdir + "/" + reg + "/tf_import_commands_lbr_nonGF.sh", "a")
-            importCommands[reg].write("\n\nterraform plan")
-            importCommands[reg].write("\n")
-            importCommands[reg].close()
-            if ("linux" in sys.platform):
-                dir = os.getcwd()
-                os.chdir(outdir + "/" + reg)
-                os.system("chmod +x tf_import_commands_lbr_nonGF.sh")
-                os.chdir(dir)
     print("LBRs exported to CD3\n")
-
 
 if __name__ == '__main__':
 
