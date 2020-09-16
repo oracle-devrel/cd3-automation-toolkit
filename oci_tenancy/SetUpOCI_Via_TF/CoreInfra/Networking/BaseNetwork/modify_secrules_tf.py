@@ -197,9 +197,9 @@ def main():
 
             # temporary dictionary1, dictionary2 and list
             tempStr = {}
-            tempdict = {}
-            tempdict2 = {}
-            compartment_tf_name = ''
+            tempdict = {'vcn_tf_name': vcn_tf_name, 'rt_var': rt_var, 'seclist_tf_name': seclist_tf_name,
+                        'region': region}
+            tempdict2= {}
 
             for columnname in row:
                 # Column value
@@ -217,17 +217,16 @@ def main():
 
                 if columnname == 'SecList Name':
                     display_name = columnvalue.strip()
+                    tempdict = {'display_name': display_name}
 
                 if columnname == 'Compartment Name':
                     columnname = 'compartment_name'
                     compartment_tf_name =  commonTools.check_tf_variable(columnvalue.strip())
-
-                tempdict = {'vcn_tf_name': vcn_tf_name,'rt_var' : rt_var,'seclist_tf_name': seclist_tf_name,'region' : region,'compartment_tf_name' : compartment_tf_name,'display_name' : display_name}
+                    tempdict = {'compartment_tf_name': compartment_tf_name}
 
                 columnname = commonTools.check_column_headers(columnname)
-                tempStr[columnname] = columnvalue
+                tempStr[columnname] = str(columnvalue).strip()
                 tempStr.update(tempdict)
-
 
             new_sec_rule = ""
             srcStr =  "####ADD_NEW_SEC_RULES####"+vcn_tf_name+"_"+seclist_tf_name

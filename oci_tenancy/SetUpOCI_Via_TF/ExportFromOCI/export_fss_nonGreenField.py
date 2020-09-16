@@ -169,7 +169,7 @@ def main():
     parser.add_argument("--networkCompartment",
                         help="comma seperated Compartments for which to export FileSystem Objects")
 
-    if len(sys.argv) < 4:
+    if len(sys.argv) < 2:
         parser.print_help()
         sys.exit(1)
 
@@ -264,7 +264,7 @@ def main():
                 comp_info = comp
                 compartment_id = comp_info.id
                 compartment_name = comp.name
-                print("##Checking FileSystems in " + compartment_name + " compartment ")
+                #print("##Checking FileSystems in " + compartment_name + " compartment ")
                 for reg in all_regions:
                     config.__setitem__("region", ct.region_dict[reg])
                     ads = oci.identity.IdentityClient(config)

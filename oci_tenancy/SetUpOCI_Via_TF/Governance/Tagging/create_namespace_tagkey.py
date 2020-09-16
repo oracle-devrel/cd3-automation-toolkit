@@ -174,8 +174,10 @@ def main():
 
             if columnname == 'Tag Keys':
                 columnvalue = str(columnvalue).strip()
-                key_tf_name = commonTools.check_tf_variable(columnvalue)
-                tempdict = {'description_keys':description_keys,'key_tf_name':key_tf_name}
+                tag_keys = columnvalue
+                if columnvalue != '':
+                    key_tf_name = commonTools.check_tf_variable(columnvalue)
+                    tempdict = {'description_keys':description_keys,'key_tf_name':key_tf_name}
 
             if columnname == 'Tag Description':
                 description_keys = str(columnvalue).strip()
@@ -217,7 +219,8 @@ def main():
             tagnamespace_list[region].append(namespace_tf_name)
 
         # Write all info to TF string; Render template
-        tagkeytemp[region] = tagkeytemp[region] + tagkey.render(tempStr)
+        if tag_keys != "":
+            tagkeytemp[region] = tagkeytemp[region] + tagkey.render(tempStr)
 
     # Write TF string to the file in respective region directory
     for reg in ct.all_regions:

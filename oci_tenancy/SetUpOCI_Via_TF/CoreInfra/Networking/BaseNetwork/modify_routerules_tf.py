@@ -112,6 +112,13 @@ def main():
             print("skipping route table: " + str(df.loc[i, 'Route Table Name']) + " as its VCN is not part of VCNs tab in cd3")
             continue
 
+        destination = str(df.loc[i, 'Destination CIDR']).strip()
+        destination = "\"" + destination + "\""
+        description = str(df.loc[i, 'Rule Description']).strip()
+        if description == 'nan':
+            description = ""
+        tempdict = {'destination': destination, 'description': description}
+
         for columnname in dfcolumns:
 
             # Column value
@@ -126,7 +133,6 @@ def main():
             # Process Defined and Freeform Tags
             if columnname.lower() in commonTools.tagColumns:
                 tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)
-                tempStr.update(tempdict)
 
             if columnname == 'Compartment Name':
                 compartment_tf_name = commonTools.check_tf_variable(columnvalue)
@@ -177,12 +183,6 @@ def main():
                     tempdict = {'network_entity_id' : dest_obj}
                     tempStr.update(tempdict)
 
-            destination = str(df.loc[i,'Destination CIDR']).strip()
-            destination = "\""+destination+"\""
-            description = str(df.loc[i,'Rule Description']).strip()
-            if description == 'nan':
-                description = ""
-            tempdict = {'destination' : destination,'description' : description}
             rt_var = vcn_tf_name + "_" + display_name
             rt_tf_name = commonTools.check_tf_variable(rt_var)
 
