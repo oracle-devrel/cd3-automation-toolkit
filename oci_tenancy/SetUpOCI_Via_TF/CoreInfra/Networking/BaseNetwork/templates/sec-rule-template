@@ -5,7 +5,9 @@
                 source = "{{ source }}"
 
                 #Optional
+                {% if rule_description != '' %}
                 description = "{{ rule_description }}"
+                {% endif %}
                 stateless = {{ isstateless }}
 
                 {% if protocol == 'icmp' and icmptype != '' %}
@@ -49,7 +51,9 @@
                 destination = "{{ destination }}"
 
                 #Optional
+                {% if rule_description != '' %}
                 description = "{{ rule_description }}"
+                {% endif %}
                 stateless = {{ isstateless }}
 
                 {% if protocol == 'icmp' and icmptype != '' %}
