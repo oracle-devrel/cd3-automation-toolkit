@@ -183,7 +183,7 @@ def main():
     parser.add_argument("--networkCompartment",
                         help="comma seperated Compartments for which to export Instance Objects")
 
-    if len(sys.argv) < 4:
+    if len(sys.argv) < 2:
         parser.print_help()
         sys.exit(1)
 
