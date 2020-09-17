@@ -121,6 +121,8 @@ def main():
 
         regions = df['Region']
         check_diff_region = []
+        values_list = ''
+
         # Get a list of unique region names
         for j in regions.index:
             if (regions[j] not in check_diff_region and regions[j] not in commonTools.endNames and str(regions[j]).lower() != "nan"):
@@ -131,11 +133,6 @@ def main():
             print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
             exit(1)
 
-        if str(df.loc[i, 'Default Tag']).strip() == "1.0" or str(df.loc[i, 'Default Tag']).lower().strip() == "true":
-            if str(df.loc[i,'Default Tag Value']) == 'nan':
-                print("\nERROR!! Default Tag Value cannot be left empty when Default Tag is set to TRUE...Exiting!")
-                exit(1)
-
         for columnname in dfcolumns:
 
             # Column value
@@ -145,7 +142,7 @@ def main():
             columnvalue = commonTools.check_columnvalue(columnvalue)
 
             if "::" in columnvalue:
-                if columnname != "Compartment Name" and columnname != 'Validator':
+                if columnname != "Compartment Name" and columnname != 'Validator' and columnname != 'Default Tag Compartment':
                     # Check for multivalued columns
                     tempdict = commonTools.check_multivalues_columnvalue(columnvalue, columnname, tempdict)
 
@@ -189,10 +186,10 @@ def main():
                 if str(columnvalue).lower().strip() != 'true':
                     columnvalue = "false"
 
-            if columnname == 'Default Tag Value':
+            if columnname == 'Default Tag Compartment':
+                columnvalue = str(columnvalue).strip()
                 if columnvalue != '':
-                    if '$' in columnvalue and columnvalue.count('$') == 1:
-                        columnvalue = '$'+columnvalue
+                    columnvalue = commonTools.check_tf_variable(columnvalue)
 
             if columnname == 'Validator':
                 if str(columnvalue).strip() != '':
@@ -202,16 +199,38 @@ def main():
                     tempdict = {columnname: multivalues}
 
                     values_list = multivalues[1].replace('"','').split(',')
-                    if str(df.loc[i,'Default Tag']).lower().strip() == '1.0' or str(df.loc[i,'Default Tag']).lower().strip() == 'true':
-                        if str(df.loc[i, 'Default Tag Value']) not in values_list:
+                    if str(df.loc[i,'Default Tag Compartment']).strip() != '' and str(df.loc[i,'Default Tag Compartment']).lower().strip() != 'nan':
+                        if str(df.loc[i, 'Default Tag Value']) not in values_list and str(df.loc[i, 'Default Tag Value']).strip() != '' and str(df.loc[i, 'Default Tag Value']).strip().lower() != 'nan':
                             print("\nERROR!! Value - "+str(df.loc[i, 'Default Tag Value'])+" in Default Tag Value is not present in Column Validator...Exiting!")
                             exit()
+
+
+            if columnname == 'Default Tag Value':
+                if columnvalue != '' and columnvalue.strip().lower() != 'nan':
+                    is_required = 'false'
+                    if '$' in columnvalue and columnvalue.count('$') == 1:
+                        columnvalue = '$'+columnvalue
+                    tempdict = {'is_required' : is_required}
+
+                else:
+                    if columnvalue == '' or columnvalue.strip().lower() == 'nan':
+                        if str(df.loc[i,'Default Tag Compartment']).strip() != '' and str(df.loc[i,'Default Tag Compartment']).lower().strip() != 'nan':
+                            if str(df.loc[i,'Validator']).strip() != '' and  str(df.loc[i,'Validator']).strip().lower() != 'nan':
+                                is_required = 'true'
+                                columnvalue = values_list[0]
+                                tempdict = {'is_required': is_required}
+
+                            else:
+                                if str(df.loc[i, 'Validator']).strip() == '' or  str(df.loc[i, 'Validator']).strip().lower() == 'nan':
+                                    is_required = 'true'
+                                    columnvalue = '-'
+                                    tempdict = {'is_required': is_required}
 
             columnname = commonTools.check_column_headers(columnname)
             tempStr[columnname] = str(columnvalue).strip()
             tempStr.update(tempdict)
 
-        if str(df.loc[i,'Default Tag']).lower().strip() == '1.0' or str(df.loc[i,'Default Tag']).lower().strip() == 'true':
+        if str(df.loc[i,'Default Tag Compartment']).strip() != '' and str(df.loc[i,'Default Tag Compartment']).lower().strip() != 'nan':
             defaulttagtemp[region] = defaulttagtemp[region] + defaulttag.render(tempStr)
 
         if namespace_tf_name not in tagnamespace_list[region]:
