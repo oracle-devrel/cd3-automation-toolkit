@@ -296,10 +296,11 @@ if (input_nongf_tenancy.lower() == 'true'):
             command1 = 'python create_terraform_instances.py ' + input_cd3file + ' ' + input_outdir + ' --configFileName ' + input_config_file
             command2 = 'python boot_backups_policy.py ' + inputfile + ' ' + outdir + ' --configFileName ' + input_config_file
         os.chdir('CoreInfra/Compute')
-        print("Executing Command: " + command)
+        print("Executing Command: " + command1)
         exitVal = os.system(command1)
         if (exitVal == 1):
             exit()
+        print("Executing Command: " + command2)
         exitVal = os.system(command2)
         if (exitVal == 1):
             exit()
@@ -811,8 +812,9 @@ if('3' in userInput):
         else:
             command1 = 'python create_terraform_instances.py ' + inputfile + ' ' + outdir  + ' --configFileName ' + input_config_file
             command2 = 'python boot_backups_policy.py ' + inputfile + ' ' + outdir + ' --configFileName ' + input_config_file
-        print("Executing Command: " + command)
+        print("Executing Command: " + command1)
         os.system(command1)
+        print("Executing Command: " + command2)
         os.system(command2)
         os.chdir("../..")
         print("--------------------------------------------------------------------------")
