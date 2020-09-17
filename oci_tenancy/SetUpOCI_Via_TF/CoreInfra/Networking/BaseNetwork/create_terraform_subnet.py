@@ -282,6 +282,9 @@ def main():
 					subnet_dns = subnet_dns[index:]
 					dnslabel = (subnet_dns[:15]) if len(subnet_dns) > 15 else subnet_dns
 					tempdict = {'dns_label': dnslabel, 'subnet_dns': subnet_dns}
+				elif dnslabel.lower() == 'n':
+					dnslabel = ''
+					tempdict = {'dns_label': dnslabel}
 				else:
 					tempdict = {'dns_label': dnslabel}
 
