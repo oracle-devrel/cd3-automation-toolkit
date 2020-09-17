@@ -99,12 +99,7 @@ def main():
         # temporary dictionary1 and dictionary2
         tempStr = {}
         tempdict = {}
-
-        #Check if values are entered for mandatory fields
-        if str(df.loc[i,"Region"]).lower() == 'nan' or str(df.loc[i, 'Hostname']).lower() == 'nan' or str(df.loc[i,'Backup Policy']).lower()  == 'nan':
-            print( "\nError!! The values for Region, Hostname and Backup Policy cannot be left empty. Please enter a value and try again !!")
-            exit()
-
+        policy = ''
 
         # Fetch data ; loop through columns
         for columnname in dfcolumns:
@@ -124,21 +119,25 @@ def main():
 
             if (columnname == 'Backup Policy'):
                 columnname = 'backup_policy'
-                columnvalue = columnvalue.lower()
+                columnvalue = str(columnvalue).strip()
+                if columnvalue != '':
+                    columnvalue = columnvalue.lower()
+                    policy = columnvalue
 
             columnname = commonTools.check_column_headers(columnname)
             tempStr[columnname] = str(columnvalue).strip()
             tempStr.update(tempdict)
 
         #Render template
-        bootppolicy =  template.render(tempStr)
+        if policy != '':
+            bootppolicy =  template.render(tempStr)
 
-        #Write to output
-        file = outdir + "/" + region + "/" +hostname_tf+"_boot-backup-policy.tf"
-        oname = open(file, "w+")
-        print("Writing " + file)
-        oname.write(bootppolicy)
-        oname.close()
+            #Write to output
+            file = outdir + "/" + region + "/" +hostname_tf+"_boot-backup-policy.tf"
+            oname = open(file, "w+")
+            print("Writing " + file)
+            oname.write(bootppolicy)
+            oname.close()
 
 if __name__ == '__main__':
 

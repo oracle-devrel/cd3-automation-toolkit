@@ -345,10 +345,11 @@ if (input_nongf_tenancy.lower() == 'true'):
             command2 = 'python block_backups_policy.py ' + inputfile + ' ' + outdir + ' --configFileName ' + input_config_file
 
         os.chdir('CoreInfra/BlockVolume')
-        print("Executing Command: " + command)
+        print("Executing Command: " + command1)
         exitVal = os.system(command1)
         if (exitVal == 1):
             exit()
+        print("Executing Command: " + command2)
         exitVal = os.system(command2)
         if (exitVal == 1):
             exit()
@@ -842,8 +843,9 @@ if('4' in userInput):
     else:
         command1 = 'python create_terraform_block_volumes.py ' + inputfile + ' ' + outdir  + ' --configFileName ' + input_config_file
         command2 = 'python block_backups_policy.py ' + inputfile + ' ' + outdir + ' --configFileName ' + input_config_file
-    print("Executing Command: " + command)
+    print("Executing Command: " + command1)
     os.system(command1)
+    print("Executing Command: " + command2)
     os.system(command2)
     os.chdir("../..")
     print("--------------------------------------------------------------------------")

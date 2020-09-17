@@ -77,7 +77,7 @@ def main():
 
         resource = 'BlockBackupPolicy'
         srcdir = outdir + "/" + eachregion + "/"
-        commonTools.backup_file(srcdir, resource, "_backup-policy.tf")
+        commonTools.backup_file(srcdir, resource, "_block-backup-policy.tf")
 
     for i in df.index:
         region = df.loc[i,"Region"]
@@ -100,12 +100,8 @@ def main():
         # temporary dictionary1 and dictionary2
         tempStr = {}
         tempdict = {}
-
-        #Check if values are entered for mandatory fields
-        if str(df.loc[i,"Region"]).lower() == 'nan' or str(df.loc[i, 'Block Name']).lower() == 'nan' or str(df.loc[i,'Backup Policy']).lower()  == 'nan':
-            print( "The values for Region, Block Name and Backup Policy cannot be left empty. Please enter a value and try again !!")
-            exit()
-
+        policy = ''
+        blockname_tf = ''
         # Fetch data ; loop through columns
         for columnname in dfcolumns:
 
@@ -125,22 +121,25 @@ def main():
 
             if (columnname == 'Backup Policy'):
                 columnname = 'backup_policy'
-                columnvalue = columnvalue.lower()
+                columnvalue = str(columnvalue).strip()
+                if columnvalue != '':
+                    columnvalue = columnvalue.lower()
+                    policy = columnvalue
 
             columnname = commonTools.check_column_headers(columnname)
-
             tempStr[columnname] = str(columnvalue).strip()
             tempStr.update(tempdict)
 
         #Render template
-        backuppolicy =  template.render(tempStr)
+        if policy != '':
+            backuppolicy =  template.render(tempStr)
 
-        #Write to output file
-        file = outdir + "/" + region + "/" + blockname_tf + "_backup-policy.tf"
-        oname = open(file, "w+")
-        print("Writing " + file)
-        oname.write(backuppolicy)
-        oname.close()
+            #Write to output file
+            file = outdir + "/" + region + "/" + blockname_tf + "_block-backup-policy.tf"
+            oname = open(file, "w+")
+            print("Writing " + file)
+            oname.write(backuppolicy)
+            oname.close()
 
 if __name__ == '__main__':
 
