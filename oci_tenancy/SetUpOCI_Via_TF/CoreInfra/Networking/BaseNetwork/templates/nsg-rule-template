@@ -6,7 +6,9 @@ resource "oci_core_network_security_group_security_rule" "{{ nsg_rule_tf_name }}
     protocol = "{{ protocol_code }}"
 
     #Optional
+    {% if rule_description != '' %}
     description = "{{ rule_description }}"
+    {% endif %}
     stateless = {{ isstateless }}
 
     destination = {{ destination }}

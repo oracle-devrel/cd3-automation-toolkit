@@ -104,8 +104,13 @@ def main():
 
         # Loop through the columns; used to fetch newdly added columns and values
         for columnname in dfcolumns:
+
             # Column value
-            columnvalue = str(df.loc[i, columnname]).strip()
+            if 'description' in columnname.lower():
+                columnvalue = str(df[columnname][i])
+                tempdict = {'description': columnvalue}
+            else:
+                columnvalue = str(df.loc[i, columnname]).strip()
 
             # Check for boolean/null in column values
             columnvalue = commonTools.check_columnvalue(columnvalue)
@@ -176,7 +181,7 @@ def main():
 
             tempStr1['policy_tf_name'] = policy_tf_name
             tempStr1['compartment_name'] = policy_compartment
-            tempStr1['description'] = policy_desc.strip()
+            tempStr1['description'] = policy_desc
             tempStr1['name'] = policy_name.strip()
             tempStr1['policy_statements'] = actual_policy_statement
 

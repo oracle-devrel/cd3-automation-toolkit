@@ -4,6 +4,8 @@ items  {
         header = "{{ header }}"
         prefix = "{{ prefix }}"
         suffix = "{{ suffix }}"
+        {% if value and value != '' %}
         value = "{{ value }}"
+        {% endif %}
     }
     ## Add_rules_here ##

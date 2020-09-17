@@ -139,7 +139,11 @@ def main():
         for columnname in dfcolumns:
 
             # Column value
-            columnvalue = str(df[columnname][i]).strip()
+            if 'description' in columnname.lower():
+                columnvalue = str(df[columnname][i])
+                tempdict = {'description': columnvalue}
+            else:
+                columnvalue = str(df[columnname][i]).strip()
 
             #Check for boolean/null in column values
             columnvalue = commonTools.check_columnvalue(columnvalue)
@@ -217,6 +221,8 @@ def main():
             if columnname == 'Description':
                 if columnvalue == "" or columnvalue == 'nan':
                     columnvalue = df.loc[i, 'Name']
+                    tempdict = {'description': columnvalue}
+
 
             columnname = commonTools.check_column_headers(columnname)
             tempStr[columnname] = str(columnvalue).strip()

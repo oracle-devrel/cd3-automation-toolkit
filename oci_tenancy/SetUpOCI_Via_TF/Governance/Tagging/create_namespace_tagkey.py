@@ -122,6 +122,7 @@ def main():
         regions = df['Region']
         check_diff_region = []
         values_list = ''
+        namespace_tf_name = ''
 
         # Get a list of unique region names
         for j in regions.index:
@@ -136,7 +137,10 @@ def main():
         for columnname in dfcolumns:
 
             # Column value
-            columnvalue = str(df[columnname][i]).strip()
+            if 'description' in columnname.lower():
+                columnvalue = str(df[columnname][i])
+            else:
+                columnvalue = str(df[columnname][i]).strip()
 
             # Check for boolean/null in column values
             columnvalue = commonTools.check_columnvalue(columnvalue)
@@ -164,7 +168,7 @@ def main():
                 tempdict = {'namespace_tf_name':namespace_tf_name}
 
             if columnname == 'Namespace Description':
-                description = str(columnvalue).strip()
+                description = str(columnvalue)
                 if columnvalue == '':
                     description = "Create Tag Namespace - " + namespace_tf_name
                 tempdict = {'description' : description}
@@ -174,10 +178,11 @@ def main():
                 tag_keys = columnvalue
                 if columnvalue != '':
                     key_tf_name = commonTools.check_tf_variable(columnvalue)
-                    tempdict = {'description_keys':description_keys,'key_tf_name':key_tf_name}
+                    key_tf_name = namespace_tf_name +"-"+key_tf_name
+                    tempdict = {'key_tf_name':key_tf_name}
 
             if columnname == 'Tag Description':
-                description_keys = str(columnvalue).strip()
+                description_keys = str(columnvalue)
                 if columnvalue == '':
                     description_keys =  "Create Tag Key "+key_tf_name+" for Namespace - "+namespace_tf_name
                 tempdict = {'description_keys' : description_keys}

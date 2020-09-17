@@ -204,7 +204,8 @@ def main():
         for columnname in dfcolumns:
 
             # Column value
-            columnvalue = str(df[columnname][i]).strip()
+            if 'description' not in columnname:
+                columnvalue = str(df[columnname][i]).strip()
 
             # Check for boolean/null in column values
             columnvalue = commonTools.check_columnvalue(columnvalue)
@@ -224,13 +225,11 @@ def main():
             if columnname == 'HTTP Header Size(in kB)':
                 columnname = 'http_header_size'
 
-            if columnname == 'Description of Access Control Rule':
-                columnname = 'description'
-
             if columnname == 'LBR Name':
                 if columnvalue != '':
                     lbr_tf_name = commonTools.check_tf_variable(columnvalue)
                     tempdict = {'lbr_tf_name': lbr_tf_name}
+                    tempStr.update(tempdict)
 
             if columnname == 'Rule Set Name':
                 if columnvalue != '':
@@ -281,8 +280,20 @@ def main():
                         else:
                             columnvalue = "\"" +columnvalue +"\""
 
+            if columnname == 'Description of Access Control Rule':
+                columnvalue = str(df[columnname][i])
+                columnname = 'description'
+                if columnvalue == 'nan':
+                    columnvalue = ''
+                    tempdict = {'description': columnvalue}
+                    tempStr.update(tempdict)
+                else:
+                    tempdict = {'description': columnvalue}
+                    tempStr.update(tempdict)
+
             columnname = commonTools.check_column_headers(columnname)
-            tempStr[columnname] = str(columnvalue).strip()
+            if columnname != 'description':
+                tempStr[columnname] = str(columnvalue).strip()
 
             # To process the methods - remove 'nan' from list and add it to tempStr
             if rule_set_tf_name != '':

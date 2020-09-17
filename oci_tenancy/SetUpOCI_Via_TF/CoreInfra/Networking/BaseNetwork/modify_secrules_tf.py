@@ -66,7 +66,7 @@ def main():
         """
         for line in lines:
             comment_pattern = re.compile(r'\s*#.*$')
-            line = re.sub(comment_pattern, '', line).strip()
+            line = re.sub(comment_pattern, '', line)
             if line:
                 yield line
 
@@ -80,7 +80,7 @@ def main():
             rule_desc = ""
             tempdict2 ={'rule_description' : rule_desc}
         else:
-            rule_desc = str(rule_desc).strip()
+            rule_desc = str(rule_desc)
             tempdict2 = {'rule_description': rule_desc}
         tempStr.update(tempdict2)
 
@@ -106,7 +106,7 @@ def main():
             rule_desc = ""
             tempdict2 ={'rule_description' : rule_desc}
         else:
-            rule_desc = str(rule_desc).strip()
+            rule_desc = str(rule_desc)
             tempdict2 ={'rule_description' : rule_desc}
         tempStr.update(tempdict2)
 
@@ -182,7 +182,6 @@ def main():
             region = row['Region']
             region = region.strip().lower()
 
-
             # Process only those VCNs which are present in cd3(and have been created via TF)
             if (vcn_name not in vcns.vcn_names):
                 print("\nskipping seclist: " + display_name + " as its VCN is not part of VCNs tab in cd3")
@@ -202,8 +201,13 @@ def main():
             tempdict2= {}
 
             for columnname in row:
+
                 # Column value
-                columnvalue = str(row[columnname].strip())
+                if 'description' in columnname.lower():
+                    columnvalue = str(row[columnname])
+                    tempdict = {'rule_description': columnvalue}
+                else:
+                    columnvalue = str(row[columnname].strip())
 
                 # Check for boolean/null in column values
                 columnvalue = commonTools.check_columnvalue(columnvalue)

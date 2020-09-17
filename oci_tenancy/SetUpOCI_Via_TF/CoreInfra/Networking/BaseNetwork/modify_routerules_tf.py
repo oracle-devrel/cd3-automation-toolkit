@@ -114,7 +114,7 @@ def main():
 
         destination = str(df.loc[i, 'Destination CIDR']).strip()
         destination = "\"" + destination + "\""
-        description = str(df.loc[i, 'Rule Description']).strip()
+        description = str(df.loc[i, 'Rule Description'])
         if description == 'nan':
             description = ""
         tempdict = {'destination': destination, 'description': description}
@@ -191,6 +191,7 @@ def main():
             tempStr.update(tempdict)
 
         srcStr = "####ADD_NEW_ROUTE_RULES####" + add_rules_tf_name
+
         if("Default Route Table for " in display_name):
             if (rt_tf_name not in default_rtables_done[region]):
                 default_ruleStr[region] = default_ruleStr[region] + defaultrt.render(tempStr)
