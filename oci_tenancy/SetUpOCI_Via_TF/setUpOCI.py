@@ -48,12 +48,15 @@ if (input_nongf_tenancy.lower() == 'true'):
     print("\nnon_gf_tenancy in properties files is set to true..Export existing OCI objects and Synch with TF state")
     print("Process will fetch objects from OCI in the specified compartment from all regions tenancy is subscribed to\n")
     print("1. Export Identity Objects(Compartments, Groups, Policies) to CD3 and create TF Files")
-    print("2. Export Tag Objects(TagnameSpaces, Tag Keys, Tag Defaults, Tag Values) to CD3 and create TF Files")
-    print("3. Export Network Objects(VCNs, Subnets, Security Lists, Route Tables, NSGs) to CD3 and create TF Files")
-    print("4. Export Instance Objects to CD3 and create TF Files")
-    print("5. Export FSS Objects to CD3 and create TF Files")
-    print("6. Export LBR Objects to CD3 and create TF Files")
-    print("7. Export Solutions(Events and Notifications) Objects to CD3 and create TF Files")
+    print("2. Export Network Objects(VCNs, Subnets, Security Lists, Route Tables, NSGs) to CD3 and create TF Files")
+    print("3. Export Instance Objects to CD3 and create TF Files")
+    print("4. Export Block Volumes to CD3 and create TF Files")
+    print("5. Export Tag Objects(TagnameSpaces, Tag Keys, Tag Defaults, Tag Values) to CD3 and create TF Files")
+    print("6. Export FSS Objects to CD3 and create TF Files")
+    print("7. Export LBR Objects to CD3 and create TF Files")
+    print("8. Export ADW/ATP")
+    print("9. Export Database")
+    print("10. Export Solutions(Events and Notifications) Objects to CD3 and create TF Files")
     print("q. Press q to quit")
     userInput = input('Enter your choice: multiple allowed ')
     userInput=userInput.split(",")
@@ -159,58 +162,27 @@ if (input_nongf_tenancy.lower() == 'true'):
             exit()
         os.chdir("../..")
         print("\n\nExecute tf_import_commands_identity_nonGF.sh script created under home region directory to synch TF with OCI Identity objects\n")
-
     if ("2" in userInput):
-        print("----------------------------------------------------------")
-        print("\nExporting Tags...")
-        os.chdir('ExportFromOCI')
-        if (input_config_file == ''):
-            command = "python export_tags_nonGreenField.py " + input_cd3file + ' ' + input_outdir
-        else:
-            command = "python export_tags_nonGreenField.py " + input_cd3file + ' ' + input_outdir + " --configFileName " + input_config_file
-
-        print("Executing Command: " + command)
-        exitVal = os.system(command)
-        if(exitVal == 1):
-            print("\nError Occured. Please try again!!!")
-            exit()
-        os.chdir('..')
-        print("----------------------------------------------------------")
-        print("\nProceeding to create TF files...\n")
-        print("\n-----------Process Tags tab-----------")
-        if (input_config_file == ''):
-            command = 'python create_namespace_tagkey.py ' + input_cd3file + ' ' + input_outdir
-        else:
-            command = 'python create_namespace_tagkey.py ' + input_cd3file + ' ' + input_outdir  + ' --configFileName ' + input_config_file
-
-        os.chdir('Governance/Tagging')
-        print("Executing Command: " + command)
-        exitVal = os.system(command)
-        if (exitVal == 1):
-            exit()
-        os.chdir("../..")
-        print("\n\nExecute tf_import_commands_tag_nonGF.sh script created under home region directory to synch TF with OCI Identity objects\n")
-
-    if("3" in userInput):
         print("----------------------------------------------------------")
         print("\nExporting Network...")
 
         os.chdir('ExportFromOCI')
-        input_comp = input("Enter name of Compartment as it appears in OCI (comma seperated without spaces if multiple)for which you want to export network objects;\nLeave blank if want to export for all Compartments: ")
-        if(input_comp==''):
+        input_comp = input(
+            "Enter name of Compartment as it appears in OCI (comma seperated without spaces if multiple)for which you want to export network objects;\nLeave blank if want to export for all Compartments: ")
+        if (input_comp == ''):
             if (input_config_file == ''):
-                command = "python export_network_nonGreenField.py "+input_cd3file + ' ' + input_outdir
+                command = "python export_network_nonGreenField.py " + input_cd3file + ' ' + input_outdir
             else:
-                command = "python export_network_nonGreenField.py " + input_cd3file + ' ' + input_outdir +" --configFileName " + input_config_file
+                command = "python export_network_nonGreenField.py " + input_cd3file + ' ' + input_outdir + " --configFileName " + input_config_file
         else:
             if (input_config_file == ''):
-                command = "python export_network_nonGreenField.py "+input_cd3file + ' ' + input_outdir +" --networkCompartment \""+input_comp +"\""
+                command = "python export_network_nonGreenField.py " + input_cd3file + ' ' + input_outdir + " --networkCompartment \"" + input_comp + "\""
             else:
-                command = "python export_network_nonGreenField.py " + input_cd3file + ' ' + input_outdir +" --networkCompartment \""+input_comp+"\""" --configFileName " + input_config_file
-        print("\nExecuting command "+command)
-        exitval =os.system(command)
-        if (exitval==0):
-            print("\nNetwork Objects export completed for CD3 excel "+ input_cd3file)
+                command = "python export_network_nonGreenField.py " + input_cd3file + ' ' + input_outdir + " --networkCompartment \"" + input_comp + "\""" --configFileName " + input_config_file
+        print("\nExecuting command " + command)
+        exitval = os.system(command)
+        if (exitval == 0):
+            print("\nNetwork Objects export completed for CD3 excel " + input_cd3file)
         else:
             print("\nError Occured. Please try again!!!")
             exit()
@@ -251,11 +223,11 @@ if (input_nongf_tenancy.lower() == 'true'):
 
         print("\n----------------Process SecRulesinOCI tab for SecList creation----------------")
         if (input_config_file == ''):
-            command = 'python modify_secrules_tf.py ' + input_cd3file + ' ' + input_outdir + ' '+input_cd3file
+            command = 'python modify_secrules_tf.py ' + input_cd3file + ' ' + input_outdir + ' ' + input_cd3file
         else:
             command = 'python modify_secrules_tf.py ' + input_cd3file + ' ' + input_outdir + ' ' + input_cd3file + ' --configFileName ' + input_config_file
         print("Executing Command: " + command)
-        exitval=os.system(command)
+        exitval = os.system(command)
         if (exitval == 1):
             exit()
         print("\n----------------Process RouteRulesinOCI tab for RouteRule creation----------------")
@@ -264,7 +236,7 @@ if (input_nongf_tenancy.lower() == 'true'):
         else:
             command = 'python modify_routerules_tf.py ' + input_cd3file + ' ' + input_outdir + ' --configFileName ' + input_config_file
         print("Executing Command: " + command)
-        exitval=os.system(command)
+        exitval = os.system(command)
         if (exitval == 1):
             exit()
 
@@ -289,7 +261,7 @@ if (input_nongf_tenancy.lower() == 'true'):
 
         print("\n\nExecute tf_import_commands_network_nonGF.sh script created under each region directory to synch TF with OCI Network objects\n")
 
-    if ("4" in userInput):
+    if ("3" in userInput):
         print("----------------------------------------------------------")
         print("\nExporting Instances...")
         os.chdir('ExportFromOCI')
@@ -317,21 +289,107 @@ if (input_nongf_tenancy.lower() == 'true'):
         print("Proceeding to create TF files...\n")
         print("\n-----------Process Instances tab-----------")
         if (input_config_file == ''):
-            command = 'python create_terraform_instances.py ' + input_cd3file + ' ' + input_outdir
-        else:
-            command = 'python create_terraform_instances.py ' + input_cd3file + ' ' + input_outdir + ' --configFileName ' + input_config_file
+            command1 = 'python create_terraform_instances.py ' + input_cd3file + ' ' + input_outdir
+            command2 = 'python boot_backups_policy.py ' + inputfile + ' ' + outdir
 
+        else:
+            command1 = 'python create_terraform_instances.py ' + input_cd3file + ' ' + input_outdir + ' --configFileName ' + input_config_file
+            command2 = 'python boot_backups_policy.py ' + inputfile + ' ' + outdir + ' --configFileName ' + input_config_file
         os.chdir('CoreInfra/Compute')
         print("Executing Command: " + command)
-        exitVal = os.system(command)
+        exitVal = os.system(command1)
+        if (exitVal == 1):
+            exit()
+        exitVal = os.system(command2)
         if (exitVal == 1):
             exit()
 
         os.chdir("../..")
         print("\n\nExecute tf_import_commands_instances_nonGF.sh script created under each region directory to synch TF with OCI Instances\n")
 
+    if ("4" in userInput):
+        print("----------------------------------------------------------")
+        print("\nExporting Block Volumes...")
+        print("Yet to be Implemented")
+        exit()
+        os.chdir('ExportFromOCI')
+        input_comp = input("Enter name of Compartment as it appears in OCI (comma seperated without spaces if multiple)for which you want to export Block Volumes;\nLeave blank if want to export for all Compartments: ")
+        if(input_comp==''):
+            if (input_config_file == ''):
+                command = "python export_blockvol_nonGreenField.py " + input_cd3file + ' ' + input_outdir
+            else:
+                command = "python export_blockvol_nonGreenField.py " + input_cd3file + ' ' + input_outdir + " --configFileName " + input_config_file
+        else:
+            if (input_config_file == ''):
+                command = "python export_blockvol_nonGreenField.py " + input_cd3file + ' ' + input_outdir + " --networkCompartment \"" + input_comp + "\""
+            else:
+                command = "python export_blockvol_nonGreenField.py " + input_cd3file + ' ' + input_outdir + " --networkCompartment \"" + input_comp + "\""" --configFileName " + input_config_file
+
+        print("Executing command " + command)
+        exitval = os.system(command)
+        if (exitval == 0):
+            print("\nBlock Volume export completed for CD3 excel " + input_cd3file)
+        else:
+            print("\nError Occured. Please try again!!!")
+            exit()
+        os.chdir('..')
+        print("----------------------------------------------------------")
+        print("Proceeding to create TF files...\n")
+        print("\n-----------Process BlockVols tab-----------")
+        if (input_config_file == ''):
+            command1 = 'python create_terraform_block_volumes.py ' + input_cd3file + ' ' + input_outdir
+            command2 = 'python block_backups_policy.py ' + inputfile + ' ' + outdir
+        else:
+            command1 = 'python create_terraform_block_volumes.py ' + input_cd3file + ' ' + input_outdir + ' --configFileName ' + input_config_file
+            command2 = 'python block_backups_policy.py ' + inputfile + ' ' + outdir + ' --configFileName ' + input_config_file
+
+        os.chdir('CoreInfra/BlockVolume')
+        print("Executing Command: " + command)
+        exitVal = os.system(command1)
+        if (exitVal == 1):
+            exit()
+        exitVal = os.system(command2)
+        if (exitVal == 1):
+            exit()
+
+
+        os.chdir("../..")
+        print("\n\nExecute tf_import_commands_blockvols_nonGF.sh script created under each region directory to synch TF with OCI Instances\n")
+
 
     if ("5" in userInput):
+        print("----------------------------------------------------------")
+        print("\nExporting Tags...")
+        os.chdir('ExportFromOCI')
+        if (input_config_file == ''):
+            command = "python export_tags_nonGreenField.py " + input_cd3file + ' ' + input_outdir
+        else:
+            command = "python export_tags_nonGreenField.py " + input_cd3file + ' ' + input_outdir + " --configFileName " + input_config_file
+
+        print("Executing Command: " + command)
+        exitVal = os.system(command)
+        if(exitVal == 1):
+            print("\nError Occured. Please try again!!!")
+            exit()
+        os.chdir('..')
+        print("----------------------------------------------------------")
+        print("\nProceeding to create TF files...\n")
+        print("\n-----------Process Tags tab-----------")
+        if (input_config_file == ''):
+            command = 'python create_namespace_tagkey.py ' + input_cd3file + ' ' + input_outdir
+        else:
+            command = 'python create_namespace_tagkey.py ' + input_cd3file + ' ' + input_outdir  + ' --configFileName ' + input_config_file
+
+        os.chdir('Governance/Tagging')
+        print("Executing Command: " + command)
+        exitVal = os.system(command)
+        if (exitVal == 1):
+            exit()
+        os.chdir("../..")
+        print("\n\nExecute tf_import_commands_tag_nonGF.sh script created under home region directory to synch TF with OCI Identity objects\n")
+
+
+    if ("6" in userInput):
         print("----------------------------------------------------------")
         print("\nExporting FSS...")
         os.chdir('ExportFromOCI')
@@ -373,7 +431,7 @@ if (input_nongf_tenancy.lower() == 'true'):
         print("\n\nExecute tf_import_commands_fss_nonGF.sh script created under each region directory to synch TF with OCI FSS objects\n")
 
 
-    if ("6" in userInput):
+    if ("7" in userInput):
         print("----------------------------------------------------------")
         print("\nExporting LBR...")
 
@@ -444,7 +502,18 @@ if (input_nongf_tenancy.lower() == 'true'):
         os.chdir("../../..")
         print("\n\nExecute tf_import_commands_lbr_nonGF.sh script created under each region directory to synch TF with OCI LBR objects\n")
 
-    if ("7" in userInput):
+    if ("9" in userInput):
+        print("----------------------------------------------------------")
+        print("\nExporting ADW/ATP...")
+        print("Yet to be Implemented")
+        exit()
+    if ("9" in userInput):
+        print("----------------------------------------------------------")
+        print("\nExporting Database...")
+        print("Yet to be Implemented")
+        exit()
+
+    if ("10" in userInput):
         print("----------------------------------------------------------")
         print("\nExporting Events and Notifications...")
         os.chdir('ExportFromOCI')
@@ -504,12 +573,11 @@ print("2.  Networking")
 print("3.  Instances/Dedicated VM Hosts")
 print("4.  Create and Attach Block Volumes")
 print("5.  Tagging Resources")
-print("6.  BackUp Policy")
-print("7.  File Storage Service")
-print("8.  Load Balancer Service")
-print("9.  Create ADW/ATP")
-print("10. Create Database")
-print("11. Events and Notifications")
+print("6.  File Storage Service")
+print("7.  Load Balancer Service")
+print("8.  Create ADW/ATP")
+print("9. Create Database")
+print("10. Solutions (Events and Notifications)")
 print("q. Press q to quit")
 print("\nSee example folder for sample input files\n")
 
@@ -738,11 +806,14 @@ if('3' in userInput):
         os.chdir('CoreInfra/Compute')
         print("---------------------Processing Instances Tab----------------------------------")
         if (input_config_file == ''):
-            command = 'python create_terraform_instances.py ' + inputfile + ' ' + outdir
+            command1 = 'python create_terraform_instances.py ' + inputfile + ' ' + outdir
+            command2 = 'python boot_backups_policy.py ' + inputfile + ' ' + outdir
         else:
-            command = 'python create_terraform_instances.py ' + inputfile + ' ' + outdir  + ' --configFileName ' + input_config_file
+            command1 = 'python create_terraform_instances.py ' + inputfile + ' ' + outdir  + ' --configFileName ' + input_config_file
+            command2 = 'python boot_backups_policy.py ' + inputfile + ' ' + outdir + ' --configFileName ' + input_config_file
         print("Executing Command: " + command)
-        os.system(command)
+        os.system(command1)
+        os.system(command2)
         os.chdir("../..")
         print("--------------------------------------------------------------------------")
 
@@ -764,14 +835,16 @@ if('4' in userInput):
 
     os.chdir('CoreInfra/BlockVolume')
     if (input_config_file == ''):
-        command = 'python create_terraform_block_volumes.py '+inputfile + ' ' + outdir
+        command1 = 'python create_terraform_block_volumes.py '+inputfile + ' ' + outdir
+        command2 = 'python block_backups_policy.py ' + inputfile + ' ' + outdir
     else:
-        command = 'python create_terraform_block_volumes.py ' + inputfile + ' ' + outdir  + ' --configFileName ' + input_config_file
+        command1 = 'python create_terraform_block_volumes.py ' + inputfile + ' ' + outdir  + ' --configFileName ' + input_config_file
+        command2 = 'python block_backups_policy.py ' + inputfile + ' ' + outdir + ' --configFileName ' + input_config_file
     print("Executing Command: " + command)
-    os.system(command)
+    os.system(command1)
+    os.system(command2)
     os.chdir("../..")
     print("--------------------------------------------------------------------------")
-
 
 if('5' in userInput):
     print("---------------------Creating TagNamespaces and Tags------------------------------")
@@ -785,47 +858,6 @@ if('5' in userInput):
     os.chdir("../..")
 
 if('6' in userInput):
-    print("------------------------Attaching Backup Policy---------------------------")
-    if not os.path.exists(outdir):
-        os.makedirs(outdir)
-
-    print("1. Attach BackupPolicy to Boot Volumes")
-    print("2. Attach BackupPolicy to Block Volumes")
-    print("m.  Press m to go back to Main Menu")
-    print("q.  Press q to quit")
-
-    backup_choice = input("Enter your choice ")
-    backup_choice = backup_choice.split(",")
-    if ('1' in backup_choice):
-        os.chdir('CoreInfra/Compute')
-        if (input_config_file == ''):
-            command = 'python boot_backups_policy.py '+inputfile + ' ' + outdir
-        else:
-            command = 'python boot_backups_policy.py ' + inputfile + ' ' + outdir  + ' --configFileName ' + input_config_file
-        print("Executing Command: " + command)
-        os.system(command)
-        os.chdir("../..")
-        print("--------------------------------------------------------------------------")
-    if ('2' in backup_choice):
-        print("------------------------Attaching Backup Policy to Block Volumes---------------------------")
-        os.chdir('CoreInfra/BlockVolume')
-        if (input_config_file == ''):
-            command = 'python block_backups_policy.py '+inputfile + ' ' + outdir
-        else:
-            command = 'python block_backups_policy.py ' + inputfile + ' ' + outdir  + ' --configFileName ' + input_config_file
-        print("Executing Command: " + command)
-        os.system(command)
-        os.chdir("../..")
-        print("--------------------------------------------------------------------------")
-    if ("m" in backup_choice or "M" in backup_choice):
-        cmd = "python setUpOCI.py " + args.propsfile
-        print("Going back to Main Menu...")
-        os.system(cmd)
-    if ("q" in backup_choice or "Q" in backup_choice):
-        print("Exiting...")
-        exit()
-
-if('7' in userInput):
     print("------------------------Setting up FSS---------------------------")
     outdir = input_outdir
 
@@ -842,7 +874,7 @@ if('7' in userInput):
     os.chdir("../..")
     print("--------------------------------------------------------------------------")
 
-if('8' in userInput):
+if('7' in userInput):
     print("------------------------Setting up LBR---------------------------")
     if not os.path.exists(outdir):
         os.makedirs(outdir)
@@ -890,7 +922,7 @@ if('8' in userInput):
     os.chdir("../../..")
     print("--------------------------------------------------------------------------")
 
-if('9' in userInput):
+if('8' in userInput):
     print("------------------------Creating ADW/ATP---------------------------")
     if not os.path.exists(outdir):
         os.makedirs(outdir)
@@ -903,7 +935,7 @@ if('9' in userInput):
     os.system(command)
     os.chdir("../")
     print("--------------------------------------------------------------------------")
-if('10' in userInput):
+if('9' in userInput):
     print("---------------------Create DB System----------------------------------")
     print("1.  Virtual Machine")
     print("2.  Bare Metal")
@@ -961,7 +993,7 @@ if('10' in userInput):
         print("Exiting...")
         exit()
 
-if('11' in userInput):
+if('10' in userInput):
     print("---------------------Events and Notifications----------------------------------")
     print("1.  Add/Modify/Delete Notifications")
     print("2.  Add/Modify/Delete Events")
