@@ -127,6 +127,8 @@ def main():
                 compartmentVarName = columnvalue.strip()
                 if compartmentVarName.lower() == 'root':
                     columnvalue = 'tenancy_ocid'
+                elif columnvalue == '':
+                    columnvalue = 'tenancy_ocid'
                 else:
                     compartmentVarName = commonTools.check_tf_variable(compartmentVarName)
                     columnvalue = str(compartmentVarName)
