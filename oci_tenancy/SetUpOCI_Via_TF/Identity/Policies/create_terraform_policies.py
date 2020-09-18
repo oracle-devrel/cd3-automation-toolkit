@@ -90,6 +90,7 @@ def main():
         print("\nPolicies can be created only in Home Region; You have specified different regions for different policies...Exiting...")
         exit(1)
 
+
     # Iterate over rows
     for i in df.index:
 
@@ -101,6 +102,10 @@ def main():
 
         # Temporary dictionary1
         tempdict = {}
+
+        if str(df.loc[i, 'Compartment Name']).strip().lower() == 'nan' and str(df.loc[i, 'Policy Statements']).strip().lower() != 'nan' and str(df.loc[i,'Name']).strip().lower() != 'nan':
+            print("\nCompartment Name cannot be left empty....Exiting!!")
+            exit()
 
         # Loop through the columns; used to fetch newdly added columns and values
         for columnname in dfcolumns:
@@ -125,7 +130,7 @@ def main():
             if columnname == "Compartment Name":
                 columnname = commonTools.check_column_headers(columnname)
                 compartmentVarName = columnvalue.strip()
-                if compartmentVarName.lower() == 'root' or columnvalue == '':
+                if compartmentVarName.lower() == 'root':
                     columnvalue = 'tenancy_ocid'
                 else:
                     compartmentVarName = commonTools.check_tf_variable(compartmentVarName)
