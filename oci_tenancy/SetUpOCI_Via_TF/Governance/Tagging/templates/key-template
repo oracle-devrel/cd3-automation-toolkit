@@ -6,9 +6,6 @@ resource "oci_identity_tag" "{{ key_tf_name }}" {
     tag_namespace_id = oci_identity_tag_namespace.{{ namespace_tf_name }}.id
     is_cost_tracking = {{ cost_tracking }}
 
-    #Optional
-    is_retired = false
-
     {% if validator  and validator[0] != '' %}
     validator {
         #Required

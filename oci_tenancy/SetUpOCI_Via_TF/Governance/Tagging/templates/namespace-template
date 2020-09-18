@@ -5,9 +5,6 @@ resource "oci_identity_tag_namespace" "{{ namespace_tf_name }}" {
     description = "{{ description }}"
     name = "{{ tag_namespace }}"
 
-    #Optional
-    is_retired = false
-
     {#  ##Do not modify below this line##  #}
     {#                                     #}
     {#  ###Section for adding Defined and Freeform Tags###  #}
