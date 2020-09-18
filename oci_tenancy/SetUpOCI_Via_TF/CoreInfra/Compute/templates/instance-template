@@ -28,7 +28,6 @@ resource "oci_core_instance" "{{ host_tf_name }}" {
                 display_name = "{{ hostname }}"
                 hostname_label = "{{ hostname }}"
                 private_ip = "{{ ip_address }}"
-                skip_source_dest_check = false
                 nsg_ids=[{{ nsg_ids }}]
         }
         display_name = "{{ hostname }}"
