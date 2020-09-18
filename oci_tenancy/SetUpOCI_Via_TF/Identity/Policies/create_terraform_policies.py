@@ -107,6 +107,10 @@ def main():
             print("\nCompartment Name cannot be left empty....Exiting!!")
             exit()
 
+        if str(df.loc[i,'Name']).strip().lower() == 'nan'and str(df.loc[i, 'Compartment Name']).strip().lower() != 'nan' and str(df.loc[i, 'Policy Statements']).strip().lower() != 'nan':
+            print("\nPolicy Name cannot be left empty....Exiting!!")
+            exit()
+
         # Loop through the columns; used to fetch newdly added columns and values
         for columnname in dfcolumns:
 
