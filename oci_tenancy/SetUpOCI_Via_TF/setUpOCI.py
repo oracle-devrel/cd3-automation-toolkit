@@ -572,8 +572,8 @@ if (input_nongf_tenancy.lower() == 'true'):
 
 print("1.  Identity")
 print("2.  Networking")
-print("3.  Instances/Dedicated VM Hosts")
-print("4.  Create and Attach Block Volumes")
+print("3.  Dedicated VM Hosts/Instances/Boot Backup Policy")
+print("4.  Create and Attach Block Volumes/Block BackUp Policy")
 print("5.  Tagging Resources")
 print("6.  File Storage Service")
 print("7.  Load Balancer Service")
@@ -782,7 +782,7 @@ if('2' in userInput):
 if('3' in userInput):
     print("--------------------Instances/Dedicated VM Hosts------------------------------------")
     print("1.  Create Dedicated VM Hosts")
-    print("2.  Create Instances")
+    print("2.  Create Instances/Boot Backup Policy")
     print("m.  Press m to go back to Main Menu")
     print("q.  Press q to quit")
 
@@ -820,11 +820,11 @@ if('3' in userInput):
         os.chdir("../..")
         print("--------------------------------------------------------------------------")
 
-    elif (choice == 'm' or choice=="M"):
+    if (choice == 'm' or choice=="M"):
         cmd = "python setUpOCI.py " + args.propsfile
         print("Going back to Main Menu...")
         os.system(cmd)
-    elif (choice == 'q' or choice=="Q"):
+    if (choice == 'q' or choice=="Q"):
         print("Exiting...")
         exit()
     else:
