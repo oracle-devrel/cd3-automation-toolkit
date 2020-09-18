@@ -1,5 +1,5 @@
 
-resource "oci_identity_tag_default" "{{ namespace_tf_name }}-{{ key_tf_name }}-default" {
+resource "oci_identity_tag_default" "{{ key_tf_name }}-default" {
     #Required
     compartment_id = var.{{ default_tag_compartment }}
     tag_definition_id = oci_identity_tag.{{ key_tf_name }}.id
