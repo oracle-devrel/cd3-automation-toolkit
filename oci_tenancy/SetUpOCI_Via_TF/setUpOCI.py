@@ -818,16 +818,13 @@ if('3' in userInput):
         os.chdir("../..")
         print("--------------------------------------------------------------------------")
 
-    if (choice == 'm' or choice=="M"):
+    if ("m" in choice or "M" in choice):
         cmd = "python setUpOCI.py " + args.propsfile
         print("Going back to Main Menu...")
         os.system(cmd)
-    if (choice == 'q' or choice=="Q"):
+    if ("q" in choice or "Q" in choice):
         print("Exiting...")
         exit()
-    else:
-        print("Invalid Choice")
-
 
 if('4' in userInput):
     print("------------------------Creating BlockVolumes---------------------------")
