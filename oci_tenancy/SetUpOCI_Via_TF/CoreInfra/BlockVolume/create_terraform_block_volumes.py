@@ -135,7 +135,8 @@ def main():
                 columnvalue = str(ad)
 
             if columnname == "Attached To Instance":
-                columnvalue = commonTools.check_tf_variable(columnvalue)
+                if str(columnvalue).strip() != '':
+                    columnvalue = commonTools.check_tf_variable(columnvalue)
 
             if columnname == "Attach Type(iscsi|paravirtualized)":
                 columnname = "attach_type"

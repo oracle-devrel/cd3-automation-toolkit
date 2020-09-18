@@ -311,8 +311,6 @@ if (input_nongf_tenancy.lower() == 'true'):
     if ("4" in userInput):
         print("----------------------------------------------------------")
         print("\nExporting Block Volumes...")
-        print("Yet to be Implemented")
-        exit()
         os.chdir('ExportFromOCI')
         input_comp = input("Enter name of Compartment as it appears in OCI (comma seperated without spaces if multiple)for which you want to export Block Volumes;\nLeave blank if want to export for all Compartments: ")
         if(input_comp==''):

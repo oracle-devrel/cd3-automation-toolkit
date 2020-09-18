@@ -741,7 +741,7 @@ def main():
     print("\nFetching details of Load Balancer...")
 
     for reg in ct.all_regions:
-        #importCommands[reg].write("\n\n######### Writing import for LBR-Hostname-Certs #########\n\n")
+        importCommands[reg].write("\n\n######### Writing import for Load Balancer Objects #########\n\n")
         config.__setitem__("region", ct.region_dict[reg])
         lbr = LoadBalancerClient(config)
         vcn = VirtualNetworkClient(config)

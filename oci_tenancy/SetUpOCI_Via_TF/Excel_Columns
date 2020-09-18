@@ -75,6 +75,11 @@
 	"FSS" :
 	{
 	},
+	"BlockVols" :
+	{
+	    "Availability Domain(AD1|AD2|AD3)" : "availability_domain",
+	    "Block Name" : "display_name"
+	},
     "LB-Hostname-Certs" :
     {
         "Shape(100Mbps|400Mbps|8000Mbps)" : "shape_name",
