@@ -779,8 +779,8 @@ if('2' in userInput):
 
 if('3' in userInput):
     print("--------------------Instances/Dedicated VM Hosts------------------------------------")
-    print("1.  Create Dedicated VM Hosts")
-    print("2.  Create Instances/Boot Backup Policy")
+    print("1.  Add/Modify/Delete Dedicated VM Hosts")
+    print("2.  Add/Modify/Delete Instances/Boot Backup Policy")
     print("m.  Press m to go back to Main Menu")
     print("q.  Press q to quit")
 
@@ -827,7 +827,7 @@ if('3' in userInput):
         exit()
 
 if('4' in userInput):
-    print("------------------------Creating BlockVolumes---------------------------")
+    print("------------------------Processing BlockVolumes Tab---------------------------")
     if not os.path.exists(outdir):
         os.makedirs(outdir)
 
@@ -846,7 +846,7 @@ if('4' in userInput):
     print("--------------------------------------------------------------------------")
 
 if('5' in userInput):
-    print("---------------------Creating TagNamespaces and Tags------------------------------")
+    print("---------------------Processing Tags Tab------------------------------")
     os.chdir('Governance/Tagging')
     if (input_config_file == ''):
         command = 'python create_namespace_tagkey.py '+inputfile + ' ' + outdir
@@ -857,7 +857,7 @@ if('5' in userInput):
     os.chdir("../..")
 
 if('6' in userInput):
-    print("------------------------Setting up FSS---------------------------")
+    print("------------------------Processing FSS Tab---------------------------")
     outdir = input_outdir
 
     if not os.path.exists(outdir):
@@ -922,7 +922,7 @@ if('7' in userInput):
     print("--------------------------------------------------------------------------")
 
 if('8' in userInput):
-    print("------------------------Creating ADW/ATP---------------------------")
+    print("------------------------Processing ADW/ATP Tab---------------------------")
     if not os.path.exists(outdir):
         os.makedirs(outdir)
     os.chdir('Database')
@@ -935,10 +935,10 @@ if('8' in userInput):
     os.chdir("../")
     print("--------------------------------------------------------------------------")
 if('9' in userInput):
-    print("---------------------Create DB System----------------------------------")
-    print("1.  Virtual Machine")
-    print("2.  Bare Metal")
-    print("3.  ExaData")
+    print("---------------------Databases----------------------------------")
+    print("1.  Add/Modify/Delete Virtual Machine")
+    print("2.  Add/Modify/Delete Bare Metal")
+    print("3.  Add/Modify/Delete ExaData")
     print("m.  Press m to go back to Main Menu")
     print("q.  Press q to quit")
 
@@ -946,7 +946,7 @@ if('9' in userInput):
     update_choice = update_choice.split(",")
 
     if ('1' in update_choice):
-        print("---------------------------Create DB_System_VM--------------------------")
+        print("---------------------------Processing DB_System_VM Tab--------------------------")
         if not os.path.exists(outdir):
             os.makedirs(outdir)
         os.chdir('Database')
@@ -959,7 +959,7 @@ if('9' in userInput):
         os.chdir("../")
         print("--------------------------------------------------------------------------")
     if ('2' in update_choice):
-        print("---------------------------Create DB_System_BM--------------------------")
+        print("---------------------------Processing DB_System_BM Tab--------------------------")
         if not os.path.exists(outdir):
             os.makedirs(outdir)
         os.chdir('Database')
@@ -972,7 +972,7 @@ if('9' in userInput):
         os.chdir("../")
         print("--------------------------------------------------------------------------")
     if ('3' in update_choice):
-        print("---------------------------Create DB_System_EXA--------------------------")
+        print("---------------------------Processing DB_System_EXA Tab--------------------------")
         if not os.path.exists(outdir):
             os.makedirs(outdir)
         os.chdir('Database')
