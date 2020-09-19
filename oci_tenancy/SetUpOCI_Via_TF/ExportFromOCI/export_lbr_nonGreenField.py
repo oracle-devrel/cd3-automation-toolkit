@@ -527,8 +527,7 @@ def print_rule(region, values_for_column_rule, LBRs, ntk_compartment_name):
                         values_for_column_rule = common_headers(region, col_headers, values_for_column_rule, eachlbr,sheet_dict_common, ntk_compartment_name)
 
                     elif col_headers == 'Rule Set Name':
-                        for rulesets, values in eachlbr.__getattribute__('rule_sets').items():
-                            values_for_column_rule[col_headers].append(rulesets)
+                        values_for_column_rule[col_headers].append(rulesets)
 
                     elif col_headers in sheet_dict_rule.keys():
                         try:
