@@ -15,8 +15,12 @@ items  {
             #Optional
             host = "{{ host }}"
             path = "{{ path }}"
+            {% if port != '' %}
             port = "{{ port }}"
+            {% endif %}
+            {% if protocol != '' %}
             protocol = "{{ protocol }}"
+            {% endif %}
         }
         response_code = "{{ response_code }}"
     }
