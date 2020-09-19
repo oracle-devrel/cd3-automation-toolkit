@@ -540,8 +540,12 @@ def print_rule(region, values_for_column_rule, LBRs, ntk_compartment_name):
                                 protocol = uri_details.protocol
                                 query = uri_details.protocol
 
+                                if str(port).lower() == 'null' or str(port).lower() == 'none':
+                                    port = ""
+
                                 if 'Host:Port' in col_headers:
                                     value = host+":"+str(port)
+                                    print(value)
                                     values_for_column_rule[col_headers].append(value)
 
                                 if 'Protocol:Path' in col_headers:

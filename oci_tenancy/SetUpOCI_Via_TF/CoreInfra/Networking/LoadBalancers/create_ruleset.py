@@ -303,7 +303,6 @@ def main():
                         method_list = json.dumps(method_list).replace("\\",'')
                         method_list = method_list.replace('""','"')
                         tempdict = {'method_list' : method_list}
-                        print(method_list)
 
             tempStr.update(tempdict)
 
