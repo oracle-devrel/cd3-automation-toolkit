@@ -545,7 +545,6 @@ def print_rule(region, values_for_column_rule, LBRs, ntk_compartment_name):
 
                                 if 'Host:Port' in col_headers:
                                     value = host+":"+str(port)
-                                    print(value)
                                     values_for_column_rule[col_headers].append(value)
 
                                 if 'Protocol:Path' in col_headers:
