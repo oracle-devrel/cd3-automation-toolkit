@@ -2,8 +2,12 @@ items  {
         #Required
         action = "{{ action }}"
         header = "{{ header }}"
+        {% if prefix !='' %}
         prefix = "{{ prefix }}"
+        {% endif %}
+        {% if suffix !='' %}
         suffix = "{{ suffix }}"
+        {% endif %}
         {% if value and value != '' %}
         value = "{{ value }}"
         {% endif %}
