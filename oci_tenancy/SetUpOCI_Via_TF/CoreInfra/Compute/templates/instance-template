@@ -25,7 +25,6 @@ resource "oci_core_instance" "{{ host_tf_name }}" {
                 assign_public_ip = {{ pub_address }}
 
                 #Optional
-                display_name = "{{ hostname }}"
                 private_ip = "{{ ip_address }}"
                 nsg_ids=[{{ nsg_ids }}]
         }
