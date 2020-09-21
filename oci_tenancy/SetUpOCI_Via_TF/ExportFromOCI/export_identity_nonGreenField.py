@@ -134,6 +134,7 @@ def main():
     print("\nFetchig Groups...")
     importCommands[ct.home_region].write("\n######### Writing import for Groups #########\n")
     groups = oci.pagination.list_call_get_all_results(idc.list_groups,compartment_id=config['tenancy'])
+    dyngroups=oci.pagination.list_call_get_all_results(idc.list_dynamic_groups,compartment_id=config['tenancy'])
     for group in groups.data:
         grp_info=group
         if(grp_info.lifecycle_state == "ACTIVE"):
@@ -148,6 +149,22 @@ def main():
                 else:
                     oci_objs=[grp_info]
                     values_for_column_groups = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict_groups,values_for_column_groups)
+
+    for group in dyngroups.data:
+        grp_info=group
+        if(grp_info.lifecycle_state == "ACTIVE"):
+            grp_display_name=grp_info.name
+            tf_name=commonTools.check_tf_variable(grp_display_name)
+            importCommands[ct.home_region].write("\nterraform import oci_identity_dynamic_group."+ tf_name+" "+grp_info.id)
+            for col_header in values_for_column_groups.keys():
+                if (col_header == "Region"):
+                    values_for_column_groups[col_header].append(ct.home_region.capitalize())
+                elif col_header.lower() in commonTools.tagColumns:
+                    values_for_column_groups = commonTools.export_tags(grp_info, col_header, values_for_column_groups)
+                else:
+                    oci_objs=[grp_info]
+                    values_for_column_groups = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict_groups,values_for_column_groups)
+
 
     commonTools.write_to_cd3(values_for_column_groups,cd3file,"Groups")
     print("Groups exported to CD3\n")
