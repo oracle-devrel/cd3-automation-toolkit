@@ -209,17 +209,20 @@ def main():
                                     tag_namespace_check.append( str(tag.id))
                                     print_tags(values_for_column_tags, region, ntk_compartment_name, tag, tag_key,
                                                tag_default_value, tag_default, tag_default_comp)
+
+                    tag_namespace_check = list(dict.fromkeys(tag_namespace_check))
                     check_non_key_tags = [i for i in tag_list + tag_namespace_check if i not in tag_list or i not in tag_namespace_check]
                     for tag_check in check_non_key_tags:
-                                    tag_key = str(tag_key)
-                                    tag_key = "Nan"
-                                    tag_default_value = ''
-                                    tag_default = ''
-                                    tag_default_comp = ''
-                                    for tag in tags.data:
-                                        tag = identity.get_tag_namespace(tag.id).data
-                                        print_tags(values_for_column_tags, region, ntk_compartment_name, tag, tag_key,
-                                               tag_default_value, tag_default, tag_default_comp)
+                        tag_key = str(tag_key)
+                        tag_key = "Nan"
+                        tag_default_value = ''
+                        tag_default = ''
+                        tag_default_comp = ''
+                        for tag in tags.data:
+                            if (tag_check in tag.id):
+                                tag = identity.get_tag_namespace(tag.id).data
+                                print_tags(values_for_column_tags, region, ntk_compartment_name, tag, tag_key,
+                                       tag_default_value, tag_default, tag_default_comp)
 
             commonTools.write_to_cd3(values_for_column_tags, cd3file, "Tags")
             print("Tags exported to CD3\n")
