@@ -134,6 +134,18 @@ def main():
             print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
             exit(1)
 
+        if str(df.loc[i,'Default Tag Compartment']).strip().lower() != 'nan' and str(df.loc[i,'Tag Keys']).strip().lower() == 'nan':
+            print("\nERROR!!! Tag Keys cannot be null when there is a Default Tag Compartment...Exiting!")
+            exit(1)
+
+        if str(df.loc[i,'Default Tag Compartment']).strip().lower() == 'nan' and str(df.loc[i,'Default Tag Value']).strip().lower() != 'nan':
+            print("\nERROR!!! Default Tag Compartment cannot be null when there is a Default Tag Value...Exiting!")
+            exit(1)
+
+        if str(df.loc[i,'Cost Tracking']).strip().lower() == 'true' and str(df.loc[i,'Tag Keys']).strip().lower() == 'nan':
+            print("\nERROR!!! Tag Keys cannot be null when Cost Tracking is set to TRUE...Exiting!")
+            exit(1)
+
         for columnname in dfcolumns:
 
             # Column value

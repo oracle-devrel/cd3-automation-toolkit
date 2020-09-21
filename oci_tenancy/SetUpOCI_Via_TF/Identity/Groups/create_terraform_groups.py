@@ -56,6 +56,7 @@ def main():
     file_loader = FileSystemLoader('templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
     template = env.get_template('groups-template')
+    dynamicgroup =  env.get_template('dynamic-groups-template')
 
     # Read cd3 using pandas dataframe
     df, col_headers = commonTools.read_cd3(filename, "Groups")
@@ -144,9 +145,11 @@ def main():
             columnname = commonTools.check_column_headers(columnname)
             tempStr[columnname] = str(columnvalue).strip()
             tempStr.update(tempdict)
-
         # Write all info to TF string
-        tfStr[region]=tfStr[region] + template.render(tempStr)
+        if str(df.loc[i, 'Matching Rule']).lower() == 'nan':
+            tfStr[region]=tfStr[region] + template.render(tempStr)
+        else:
+            tfStr[region] = tfStr[region] + dynamicgroup.render(tempStr)
 
     # Write TF string to the file in respective region directory
     for reg in ct.all_regions:
