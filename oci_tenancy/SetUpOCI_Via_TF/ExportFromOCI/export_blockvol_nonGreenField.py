@@ -21,18 +21,20 @@ importCommands = {}
 oci_obj_names = {}
 
 def policy_info(bvol,volume_id):
-    asset_policy_id=''
     asset_policy_name = ''
+    asset_assignment_id = ''
+    asset_policy_id = ''
     bvol_info = bvol.list_volume_backup_policies()
     blockvol_policy = bvol.get_volume_backup_policy_asset_assignment(asset_id=volume_id)
     for assets in blockvol_policy.data:
+        asset_assignment_id = assets.id
         asset_policy_id = assets.policy_id
     for policies in bvol_info.data:
         policy_id = policies.id
         policy_name = policies.display_name
         if asset_policy_id == policy_id:
             asset_policy_name = policy_name
-    return asset_policy_id, asset_policy_name
+    return asset_assignment_id, asset_policy_name
 
 def volume_attachment_info(compute,ntk_compartment_name,ct,volume_id):
     instance_id = ''
@@ -54,14 +56,14 @@ def print_blockvolumes(region, BVOLS, bvol, compute, ct, values_for_column, ntk_
     for blockvols in BVOLS.data:
         volume_id = blockvols.id
         attachment_id, instance_name, attachment_type = volume_attachment_info(compute, ntk_compartment_name, ct,volume_id)
-        asset_policy_id, asset_policy_name = policy_info(bvol, volume_id)
+        asset_assignment_id, asset_policy_name = policy_info(bvol, volume_id)
         block_tf_name = commonTools.check_tf_variable(blockvols.display_name)
 
         importCommands[region.lower()].write("\nterraform import oci_core_volume." + block_tf_name + " " + str(blockvols.id))
         if attachment_id != '':
             importCommands[region.lower()].write("\nterraform import oci_core_volume_attachment." + block_tf_name +"_volume_attachment " + str(attachment_id))
-        if asset_policy_id != '':
-            importCommands[region.lower()].write("\nterraform import oci_core_volume_backup_policy_assignment." + block_tf_name +"_bkupPolicy " + str(asset_policy_id))
+        if asset_assignment_id != '':
+            importCommands[region.lower()].write("\nterraform import oci_core_volume_backup_policy_assignment." + block_tf_name +"_bkupPolicy " + str(asset_assignment_id))
 
         for col_header in values_for_column:
             if col_header == 'Region':
@@ -95,7 +97,7 @@ def main():
 
     # Read the arguments
     parser = argparse.ArgumentParser(description="Export Block Volumes on OCI to CD3")
-    parser.add_argument("cd3file", help="path of CD3 excel file to export network objects to")
+    parser.add_argument("cd3file", help="path of CD3 excel file to export Block Volume objects to")
     parser.add_argument("outdir", help="path to out directory containing script for TF import commands")
     parser.add_argument("--networkCompartment", help="comma seperated Compartments for which to export Block Volume Objects", required=False)
     parser.add_argument("--configFileName", help="Config file name" , required=False)

@@ -332,13 +332,14 @@ def print_lbr_hostname_certs(region, values_for_column_lhc, lbr, VCNs, LBRs, ntk
     return values_for_column_lhc
 
 def print_backendset_backendserver(region, values_for_column_bss, lbr, LBRs, ntk_compartment_name):
+
     for eachlbr in LBRs.data:
         # Loop through Backend Sets
         for backendsets in eachlbr.__getattribute__('backend_sets'):
             backend_list = ""
             backup_list = ""
             backendset_details = lbr.get_backend_set(eachlbr.__getattribute__('id'), backendsets).data
-
+            certificate_list = ''
             # Process the Backend Server and Backup server details
             for backends in backendset_details.__getattribute__('backends'):
                 if str(backends.__getattribute__('name')).lower() != "none":
@@ -422,13 +423,13 @@ def print_backendset_backendserver(region, values_for_column_bss, lbr, LBRs, ntk
                         continue
 
                     else:
-                        oci_objs = [backendset_details,eachlbr]
+                        oci_objs = [backendset_details,eachlbr,hc,certificate_list]
                         values_for_column_bss = commonTools.export_extra_columns(oci_objs, col_headers, sheet_dict_bss,values_for_column_bss)
                 else:
 
                     if "Cookie" not in col_headers:
                         # Process the remaining  Columns
-                        oci_objs = [backendset_details,eachlbr]
+                        oci_objs = [backendset_details,eachlbr,hc,certificate_list]
                         values_for_column_bss = commonTools.export_extra_columns(oci_objs, col_headers, sheet_dict_bss,values_for_column_bss)
 
     return values_for_column_bss
@@ -526,8 +527,7 @@ def print_rule(region, values_for_column_rule, LBRs, ntk_compartment_name):
                         values_for_column_rule = common_headers(region, col_headers, values_for_column_rule, eachlbr,sheet_dict_common, ntk_compartment_name)
 
                     elif col_headers == 'Rule Set Name':
-                        for rulesets, values in eachlbr.__getattribute__('rule_sets').items():
-                            values_for_column_rule[col_headers].append(rulesets)
+                        values_for_column_rule[col_headers].append(rulesets)
 
                     elif col_headers in sheet_dict_rule.keys():
                         try:
@@ -538,6 +538,9 @@ def print_rule(region, values_for_column_rule, LBRs, ntk_compartment_name):
                                 path = uri_details.path
                                 protocol = uri_details.protocol
                                 query = uri_details.protocol
+
+                                if str(port).lower() == 'null' or str(port).lower() == 'none':
+                                    port = ""
 
                                 if 'Host:Port' in col_headers:
                                     value = host+":"+str(port)

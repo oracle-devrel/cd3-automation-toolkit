@@ -56,7 +56,7 @@ def adding_columns_values(region, hostname, ad, fd, vs, publicip, privateip, os,
 
 
 def find_boot(ins_ad, ins_id, config):
-    compute = oci.core.ComputeClient(config)
+    compute = oci.core.ComputeClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
     for comp in all_compartments:
         bl = compute.list_boot_volume_attachments(availability_domain=ins_ad, compartment_id=comp, instance_id=ins_id)
         if (len(bl.data)):
@@ -64,8 +64,8 @@ def find_boot(ins_ad, ins_id, config):
 
 
 def find_vnic(ins_id, config):
-    network = oci.core.VirtualNetworkClient(config)
-    compute = oci.core.ComputeClient(config)
+    network = oci.core.VirtualNetworkClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
+    compute = oci.core.ComputeClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
     for comp in all_compartments:
         net = oci.pagination.list_call_get_all_results(compute.list_vnic_attachments, compartment_id=comp,
                                                        instance_id=ins_id)
@@ -75,10 +75,10 @@ def find_vnic(ins_id, config):
 
 def __get_instances_info(compartment_name, compartment_id, reg_name, config):
     config.__setitem__("region", ct.region_dict[reg_name])
-    compute = oci.core.ComputeClient(config)
-    network = oci.core.VirtualNetworkClient(config)
-    bc = oci.core.BlockstorageClient(config)
-    idc = IdentityClient(config)
+    compute = oci.core.ComputeClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
+    network = oci.core.VirtualNetworkClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
+    bc = oci.core.BlockstorageClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
+    idc = IdentityClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
     instance_info = oci.pagination.list_call_get_all_results(compute.list_instances, compartment_id=compartment_id)
     # print(instance_info.data)
     for ins in instance_info.data:
@@ -126,8 +126,14 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, config):
             if (len(bvp.data)):
                 # print("Bvp Data:",bvp.data)
                 bkp_pname = bc.get_volume_backup_policy(policy_id=bvp.data[0].policy_id)
-                # print("bkp_data::",bkp_pname.data)
+                #print(bkp_pname)
+                #print("BVP-DATA=",bvp.data)
+                #print("bkp_data::",bkp_pname.data)
+                bpolicy=ins_dname+"_bkupPolicy"
                 bkp_policy_name = bkp_pname.data.display_name.title()  # backup policy name
+                tf_name = commonTools.check_tf_variable(bpolicy)
+                #print(bvp.data[0])
+                importCommands[reg_name].write("\nterraform import oci_core_volume_backup_policy_assignment." + tf_name + " " + str(bvp.data[0].id))
             for lnic in ins_vnic.data:
                 subnet_id = lnic.subnet_id
                 vnic_id = lnic.vnic_id

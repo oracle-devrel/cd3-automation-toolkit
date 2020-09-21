@@ -142,7 +142,7 @@ def events_rows(values_for_column_events, region, ntk_compartment_name, event_na
 def main():
 
     parser = argparse.ArgumentParser(description="Export Notifications on OCI to CD3")
-    parser.add_argument("cd3file", help="path of CD3 excel file to export network objects to")
+    parser.add_argument("cd3file", help="path of CD3 excel file to export solution objects to")
     parser.add_argument("outdir", help="path to out directory containing script for TF import commands")
     parser.add_argument("--networkCompartment", help="comma seperated Compartments for which to export Identity Objects", required=False)
     parser.add_argument("--configFileName", help="Config file name" , required=False)
@@ -218,7 +218,7 @@ def main():
     for reg in ct.all_regions:
         if (os.path.exists(outdir + "/" + reg + "/tf_import_commands_solutions_nonGF.sh")):
                    commonTools.backup_file(outdir + "/" + reg, "tf_import_solutions", "tf_import_commands_solutions_nonGF.sh")
-        importCommands[reg] = open(outdir + "/" + reg + "/tf_import_commands_solution_nonGF.sh", "w")
+        importCommands[reg] = open(outdir + "/" + reg + "/tf_import_commands_solutions_nonGF.sh", "w")
         importCommands[reg].write("#!/bin/bash")
         importCommands[reg].write("\n")
         importCommands[reg].write("terraform init")

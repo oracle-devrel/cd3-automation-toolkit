@@ -60,9 +60,9 @@ def add_column_data(reg, cname, AD_name, mt_display_name, vplussubnet, mnt_p_ip,
 
 
 def __get_mount_info(cname, compartment_id, reg, availability_domain_name, config):
-    file_system = oci.file_storage.FileStorageClient(config)
-    network = oci.core.VirtualNetworkClient(config)
-    vnc_info = oci.core.VirtualNetworkClient(config)
+    file_system = oci.file_storage.FileStorageClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
+    network = oci.core.VirtualNetworkClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
+    vnc_info = oci.core.VirtualNetworkClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
     global exports_ids
     AD_name = AD(availability_domain_name)
     try:
@@ -189,11 +189,11 @@ def main():
 
     global idc, compute, file_system, ct, vnc_info, importCommands, rows, all_regions, all_ads, all_compartments, input_compartment_list, AD, df, values_for_column_fss, sheet_dict_instances
 
-    idc = IdentityClient(config)
-    compute = oci.core.ComputeClient(config)
-    file_system = oci.file_storage.FileStorageClient(config)
+    idc = IdentityClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
+    compute = oci.core.ComputeClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
+    file_system = oci.file_storage.FileStorageClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
     ct = commonTools()
-    vnc_info = oci.core.VirtualNetworkClient(config)
+    vnc_info = oci.core.VirtualNetworkClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
     importCommands = {}
     rows = []
     all_regions = []
@@ -220,7 +220,7 @@ def main():
     # Fetch all ADs in all Subscribed Regions
     for reg in all_regions:
         config.__setitem__("region", ct.region_dict[reg])
-        ads = oci.identity.IdentityClient(config)
+        ads = oci.identity.IdentityClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
         for aval in ads.list_availability_domains(compartment_id=config['tenancy']).data:
             all_ads.append(aval.name)
 
@@ -249,7 +249,7 @@ def main():
                 if (compartment_name in input_compartment_names):
                     for reg in all_regions:
                         config.__setitem__("region", ct.region_dict[reg])
-                        ads = oci.identity.IdentityClient(config)
+                        ads = oci.identity.IdentityClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
                         for aval in ads.list_availability_domains(compartment_id=config['tenancy']).data:
                             # print(compartment_name,compartment_id,reg,aval.name)
                             __get_mount_info(compartment_name, compartment_id, reg, aval.name, config)
@@ -267,7 +267,7 @@ def main():
                 #print("##Checking FileSystems in " + compartment_name + " compartment ")
                 for reg in all_regions:
                     config.__setitem__("region", ct.region_dict[reg])
-                    ads = oci.identity.IdentityClient(config)
+                    ads = oci.identity.IdentityClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
                     for aval in ads.list_availability_domains(compartment_id=config['tenancy']).data:
                         __get_mount_info(compartment_name, compartment_id, reg, aval.name, config)
                 # all_compartments.append(compartment_id)

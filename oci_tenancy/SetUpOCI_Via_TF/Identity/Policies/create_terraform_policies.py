@@ -103,6 +103,10 @@ def main():
         # Temporary dictionary1
         tempdict = {}
 
+        if str(df.loc[i, 'Policy Statements']).strip().lower() == 'nan':
+            print("\nPolicy Statements cannot be left empty....Exiting!!")
+            exit()
+
         if str(df.loc[i, 'Compartment Name']).strip().lower() == 'nan' and str(df.loc[i, 'Policy Statements']).strip().lower() != 'nan' and str(df.loc[i,'Name']).strip().lower() != 'nan':
             print("\nCompartment Name cannot be left empty....Exiting!!")
             exit()

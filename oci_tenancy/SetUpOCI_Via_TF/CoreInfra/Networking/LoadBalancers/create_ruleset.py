@@ -300,7 +300,9 @@ def main():
                 method_list = [x for x in d[region][rule_set_tf_name] if str(x).lower() != 'nan']
                 for k, v in d.items():
                     if rule_set_tf_name in v.keys():
-                        tempdict = {'method_list' : json.dumps(method_list)}
+                        method_list = json.dumps(method_list).replace("\\",'')
+                        method_list = method_list.replace('""','"')
+                        tempdict = {'method_list' : method_list}
 
             tempStr.update(tempdict)
 
