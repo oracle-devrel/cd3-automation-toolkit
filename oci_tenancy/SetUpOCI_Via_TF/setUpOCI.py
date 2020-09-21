@@ -39,11 +39,12 @@ try:
         exit(1)
 
 except Exception as e:
-    print(e)
+    print(e)    inputs = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
+
     print('Check if input properties exist and try again..exiting...`    ')
     exit()
 
-
+inputs = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
 if (input_nongf_tenancy.lower() == 'true'):
     print("\nnon_gf_tenancy in properties files is set to true..Export existing OCI objects and Synch with TF state")
     print("Process will fetch objects from OCI in the specified compartment from all regions tenancy is subscribed to\n")
@@ -59,11 +60,14 @@ if (input_nongf_tenancy.lower() == 'true'):
     print("10. Export Solutions(Events and Notifications) Objects to CD3 and create TF Files")
     print("q. Press q to quit")
     userInput = input('Enter your choice: multiple allowed ')
+
     userInput=userInput.split(",")
     if ("q" in userInput or "Q" in userInput):
         print("Exiting...")
         exit()
-
+    if (not set(userInput).issubset(set(inputs))):
+        print("Invalid Choice..Exiting...")
+        exit()
     ct = commonTools()
     ct.get_subscribedregions(input_config_file)
 
@@ -583,6 +587,9 @@ print("\nSee example folder for sample input files\n")
 
 userInput = input('Enter your choice: ')
 userInput=userInput.split(',')
+if (not set(userInput).issubset(set(inputs))):
+    print("Invalid Choice..Exiting...")
+    exit()
 
 if('1' in userInput):
     print('-----------------------------Identity----------------------')
