@@ -36,7 +36,6 @@ def  print_tags(values_for_column_tags,region, ntk_compartment_name, tag, tag_ke
      tag_key_is_cost_tracking = tag_key.is_cost_tracking
      validator = tag_key.validator
      if ( validator is not None ):
-      print (validator)
       validator = str(validator)
       validator = validator.replace("\n","")
       validator = validator.split("{  \"validator_type\": \"ENUM\",  \"values\": [    ")
