@@ -95,7 +95,7 @@ def main():
 
     # Read the arguments
     parser = argparse.ArgumentParser(description="Export Block Volumes on OCI to CD3")
-    parser.add_argument("cd3file", help="path of CD3 excel file to export network objects to")
+    parser.add_argument("cd3file", help="path of CD3 excel file to export Block Volume objects to")
     parser.add_argument("outdir", help="path to out directory containing script for TF import commands")
     parser.add_argument("--networkCompartment", help="comma seperated Compartments for which to export Block Volume Objects", required=False)
     parser.add_argument("--configFileName", help="Config file name" , required=False)
