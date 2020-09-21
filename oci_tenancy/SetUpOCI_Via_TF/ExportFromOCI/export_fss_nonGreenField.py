@@ -200,6 +200,14 @@ def main():
     all_ads = []
     all_compartments = []
     input_compartment_list = args.networkCompartment
+    ct.get_subscribedregions(configFileName)
+    ct.get_network_compartment_ids(config['tenancy'],"root",configFileName)
+
+    if (input_compartment_list is not None):
+        input_compartment_names = input_compartment_list.split(",")
+        input_compartment_names = [x.strip() for x in input_compartment_names]
+    else:
+        input_compartment_names = None
 
     print("\nCD3 excel file should not be opened during export process!!!")
     print("Tabs FSS will be overwritten during this export process!!!\n")
@@ -235,42 +243,34 @@ def main():
         importCommands[reg].write("\n")
         importCommands[reg].write("terraform init")
 
-    if (input_compartment_list is not None):  # For Specific Compartments
-        print("Fetching for Compartments... " + input_compartment_list)
-        input_compartment_names = input_compartment_list.split(",")
-        input_compartment_names = [x.strip() for x in input_compartment_names]
-        comps = oci.pagination.list_call_get_all_results(idc.list_compartments, compartment_id=config['tenancy'],
-                                                         compartment_id_in_subtree=True)
-        for comp in comps.data:
-            if (comp.lifecycle_state == "ACTIVE"):
-                comp_info = comp
-                compartment_id = comp_info.id
-                compartment_name = comp.name
-                if (compartment_name in input_compartment_names):
-                    for reg in all_regions:
-                        config.__setitem__("region", ct.region_dict[reg])
-                        ads = oci.identity.IdentityClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
-                        for aval in ads.list_availability_domains(compartment_id=config['tenancy']).data:
-                            # print(compartment_name,compartment_id,reg,aval.name)
-                            __get_mount_info(compartment_name, compartment_id, reg, aval.name, config)
+    # Check Compartments
+    remove_comps = []
+    if (input_compartment_names is not None):
+        for x in range(0, len(input_compartment_names)):
+            if (input_compartment_names[x] not in ct.ntk_compartment_ids.keys()):
+                print("Input compartment: " + input_compartment_names[x] + " doesn't exist in OCI")
+                remove_comps.append(input_compartment_names[x])
 
+        input_compartment_names = [x for x in input_compartment_names if x not in remove_comps]
+        if (len(input_compartment_names) == 0):
+            print("None of the input compartments specified exist in OCI..Exiting!!!")
+            exit(1)
+        else:
+            print("Fetching for Compartments... " + str(input_compartment_names))
+            for compartment_name in input_compartment_names:
+                for reg in all_regions:
+                  config.__setitem__("region", ct.region_dict[reg])
+                  ads=oci.identity.IdentityClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
+                  for aval in ads.list_availability_domains(compartment_id=config['tenancy']).data:
+                    __get_mount_info(compartment_name,ct.ntk_compartment_ids[compartment_name],reg,aval.name,config)
     else:
         print("Fetching for all Compartments...")
-        input_compartment_names = None
-        comps = oci.pagination.list_call_get_all_results(idc.list_compartments, compartment_id=config['tenancy'],
-                                                         compartment_id_in_subtree=True)
-        for comp in comps.data:
-            if (comp.lifecycle_state == "ACTIVE"):
-                comp_info = comp
-                compartment_id = comp_info.id
-                compartment_name = comp.name
-                #print("##Checking FileSystems in " + compartment_name + " compartment ")
-                for reg in all_regions:
-                    config.__setitem__("region", ct.region_dict[reg])
-                    ads = oci.identity.IdentityClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
-                    for aval in ads.list_availability_domains(compartment_id=config['tenancy']).data:
-                        __get_mount_info(compartment_name, compartment_id, reg, aval.name, config)
-                # all_compartments.append(compartment_id)
+        for keys,values in ct.ntk_compartment_ids.items():
+          for reg in all_regions:
+              config.__setitem__("region", ct.region_dict[reg])
+              ads=oci.identity.IdentityClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
+              for aval in ads.list_availability_domains(compartment_id=config['tenancy']).data:
+                 __get_mount_info(keys,values,reg,aval.name,config)
 
     commonTools.write_to_cd3(values_for_column_fss, cd3file, "FSS")
     print("FSS objects exported to CD3.\n")

@@ -215,9 +215,18 @@ def main():
     all_regions = []
     ct = commonTools()
     importCommands = {}
-    idc = IdentityClient(config)
+    idc = IdentityClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
     rows = []
     all_compartments = []
+    input_compartment_list = args.networkCompartment
+    ct.get_subscribedregions(configFileName)
+    ct.get_network_compartment_ids(config['tenancy'],"root",configFileName)
+
+    if (input_compartment_list is not None):
+        input_compartment_names = input_compartment_list.split(",")
+        input_compartment_names = [x.strip() for x in input_compartment_names]
+    else:
+        input_compartment_names = None
 
     AD = lambda ad: "AD1" if ("AD-1" in ad) else (
         "AD2" if ("AD-2" in ad) else ("AD3" if ("AD-3" in ad) else "NULL"))  # Get shortend AD
@@ -262,38 +271,30 @@ def main():
         importCommands[reg].write("\n")
         importCommands[reg].write("terraform init")
 
-    if (input_compartment_list is not None):
-        print("Fetching for Compartments... " + input_compartment_list)
-        input_compartment_names = input_compartment_list.split(",")
-        input_compartment_names = [x.strip() for x in input_compartment_names]
-        comps = oci.pagination.list_call_get_all_results(idc.list_compartments, compartment_id=config['tenancy'],
-                                                         compartment_id_in_subtree=True)
-        for reg_name in all_regions:
-            # importCommands[reg_name] = open(outdir + "/" + reg_name + "/tf_import_commands_instances_nonGF.sh", "w")
-            config.__setitem__("region", ct.region_dict[reg_name])
-            for comp in comps.data:
-                if (comp.lifecycle_state == "ACTIVE"):
-                    comp_info = comp
-                    compartment_id = comp_info.id
-                    compartment_name = comp.name
-                    if (compartment_name in input_compartment_names):
-                        # print("##Checking Instances in region "+str(reg_name)+ " - "+ compartment_name +" compartment_name ")
-                        __get_instances_info(compartment_name, compartment_id, reg_name, config)
+    # Check Compartments
+    remove_comps = []
+    if (input_compartment_names is not None):
+        for x in range(0, len(input_compartment_names)):
+            if (input_compartment_names[x] not in ct.ntk_compartment_ids.keys()):
+                print("Input compartment: " + input_compartment_names[x] + " doesn't exist in OCI")
+                remove_comps.append(input_compartment_names[x])
 
+        input_compartment_names = [x for x in input_compartment_names if x not in remove_comps]
+        if (len(input_compartment_names) == 0):
+            print("None of the input compartments specified exist in OCI..Exiting!!!")
+            exit(1)
+        else:
+            print("Fetching for Compartments... " + str(input_compartment_names))
+            for compartment_name in input_compartment_names:
+                for reg in all_regions:
+                  config.__setitem__("region", ct.region_dict[reg])
+                  __get_instances_info(compartment_name,ct.ntk_compartment_ids[compartment_name],reg,config)
     else:
         print("Fetching for all Compartments...")
-        input_compartment_names = None
-        comps = oci.pagination.list_call_get_all_results(idc.list_compartments, compartment_id=config['tenancy'],
-                                                         compartment_id_in_subtree=True)
-        for reg_name in all_regions:
-            # importCommands[reg_name] = open(outdir + "/" + reg_name + "/tf_import_commands_instances_nonGF.sh", "w")
-            config.__setitem__("region", ct.region_dict[reg_name])
-            for comp in comps.data:
-                if (comp.lifecycle_state == "ACTIVE"):
-                    comp_info = comp
-                    compartment_id = comp_info.id
-                    compartment_name = comp.name
-                    __get_instances_info(compartment_name, compartment_id, reg_name, config)
+        for keys,values in ct.ntk_compartment_ids.items():
+          for reg in all_regions:
+              config.__setitem__("region", ct.region_dict[reg])
+              __get_instances_info(keys,values, reg, config)
 
     # writing ocids values into os_ocids.tf
     for reg in all_regions:
