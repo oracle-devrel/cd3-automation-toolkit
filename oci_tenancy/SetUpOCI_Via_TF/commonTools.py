@@ -103,7 +103,7 @@ class commonTools():
 
         tenancy_id=config['tenancy']
         idc = IdentityClient(config)
-        compartments = idc.list_compartments(compartment_id=c_id, compartment_id_in_subtree=False)
+        compartments = oci.pagination.list_call_get_all_results(idc.list_compartments,compartment_id=c_id, compartment_id_in_subtree=False)
 
         for c in compartments.data:
             if c.lifecycle_state == "ACTIVE":
