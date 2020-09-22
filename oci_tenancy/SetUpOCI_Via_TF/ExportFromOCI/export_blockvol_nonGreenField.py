@@ -186,8 +186,8 @@ def main():
         config.__setitem__("region", ct.region_dict[reg])
         region = reg.capitalize()
         comp_ocid_done = []
-        compute = ComputeClient(config)
-        bvol = BlockstorageClient(config)
+        compute = ComputeClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
+        bvol = BlockstorageClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
 
         for ntk_compartment_name in ct.ntk_compartment_ids:
             if ct.ntk_compartment_ids[ntk_compartment_name] not in comp_ocid_done:

@@ -423,7 +423,7 @@ def main():
     for reg in ct.all_regions:
         importCommands[reg].write("\n######### Writing import for VCNs #########\n")
         config.__setitem__("region", ct.region_dict[reg])
-        vnc = VirtualNetworkClient(config)
+        vnc = VirtualNetworkClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
         region = reg.capitalize()
         comp_ocid_done=[]
         for ntk_compartment_name in ct.ntk_compartment_ids:
@@ -540,7 +540,7 @@ def main():
     for reg in ct.all_regions:
         importCommands[reg].write("\n\n######### Writing import for NSG #########\n\n")
         config.__setitem__("region", ct.region_dict[reg])
-        vnc = VirtualNetworkClient(config)
+        vnc = VirtualNetworkClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
         region = reg.capitalize()
         comp_ocid_done = []
         for ntk_compartment_name in ct.ntk_compartment_ids:
@@ -586,7 +586,7 @@ def main():
     for reg in ct.all_regions:
         importCommands[reg].write("\n\n######### Writing import for DHCP #########\n\n")
         config.__setitem__("region", ct.region_dict[reg])
-        vnc = VirtualNetworkClient(config)
+        vnc = VirtualNetworkClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
         region = reg.capitalize()
         comp_ocid_done = []
         for ntk_compartment_name in ct.ntk_compartment_ids:
@@ -620,7 +620,7 @@ def main():
     for reg in ct.all_regions:
         importCommands[reg].write("\n\n######### Writing import for Subnets #########\n\n")
         config.__setitem__("region", ct.region_dict[reg])
-        vnc = VirtualNetworkClient(config)
+        vnc = VirtualNetworkClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
         region = reg.capitalize()
         comp_ocid_done = []
         for ntk_compartment_name in ct.ntk_compartment_ids:

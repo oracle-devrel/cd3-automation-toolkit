@@ -746,8 +746,8 @@ def main():
     for reg in ct.all_regions:
         importCommands[reg].write("\n\n######### Writing import for Load Balancer Objects #########\n\n")
         config.__setitem__("region", ct.region_dict[reg])
-        lbr = LoadBalancerClient(config)
-        vcn = VirtualNetworkClient(config)
+        lbr = LoadBalancerClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
+        vcn = VirtualNetworkClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
         region = reg.capitalize()
         comp_ocid_done = []
 

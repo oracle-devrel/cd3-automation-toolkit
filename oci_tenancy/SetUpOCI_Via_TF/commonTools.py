@@ -78,7 +78,7 @@ class commonTools():
             config = oci.config.from_file()
         else:
             config = oci.config.from_file(file_location=configFileName)
-        idc = IdentityClient(config)
+        idc = IdentityClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
         regionsubscriptions = idc.list_region_subscriptions(tenancy_id=config['tenancy'])
         homeregion=""
         for rs in regionsubscriptions.data:
@@ -102,7 +102,7 @@ class commonTools():
             config = oci.config.from_file(file_location=configFileName)
 
         tenancy_id=config['tenancy']
-        idc = IdentityClient(config)
+        idc = IdentityClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
         compartments = oci.pagination.list_call_get_all_results(idc.list_compartments,compartment_id=c_id, compartment_id_in_subtree=False)
 
         for c in compartments.data:

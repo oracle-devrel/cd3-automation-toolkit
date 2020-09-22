@@ -83,7 +83,7 @@ def main():
     importCommands[ct.home_region].write("terraform init")
 
     config.__setitem__("region", ct.region_dict[ct.home_region])
-    idc=IdentityClient(config)
+    idc=IdentityClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
 
     #Fetch Compartments
     print("\nFetching Compartments...")
