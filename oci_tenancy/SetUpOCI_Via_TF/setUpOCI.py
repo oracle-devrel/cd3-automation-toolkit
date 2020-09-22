@@ -672,7 +672,7 @@ if('2' in userInput):
     elif (cd3validate.lower() == 'n'):
         pass
     else:
-        print("wrong input")
+        print("Invalid Input !! Please enter 'y' or 'n'... Exiting!!")
         exit()
 
     print("1.  Create Network- overwrites all TF files; reverts all SecLists and RouteTables to original rules")
