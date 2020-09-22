@@ -113,9 +113,9 @@ def main():
             #Check for multivalued columns
             tempdict = commonTools.check_multivalues_columnvalue(columnvalue,columnname,tempdict)
 
-            if columnname == "Hostname":
-                hostname_tf = commonTools.check_tf_variable(columnvalue)
-                tempStr['hostname_tf_name'] = hostname_tf
+            if columnname == "Display Name":
+                display_tf_name = commonTools.check_tf_variable(columnvalue)
+                tempStr['display_tf_name'] = display_tf_name
 
             if (columnname == 'Backup Policy'):
                 columnname = 'backup_policy'
@@ -133,7 +133,7 @@ def main():
             bootppolicy =  template.render(tempStr)
 
             #Write to output
-            file = outdir + "/" + region + "/" +hostname_tf+"_boot-backup-policy.tf"
+            file = outdir + "/" + region + "/" +display_tf_name+"_boot-backup-policy.tf"
             oname = open(file, "w+")
             print("Writing " + file)
             oname.write(bootppolicy)
