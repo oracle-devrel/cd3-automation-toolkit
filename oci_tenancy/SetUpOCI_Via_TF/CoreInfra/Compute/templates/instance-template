@@ -1,4 +1,4 @@
-resource "oci_core_instance" "{{ host_tf_name }}" {
+resource "oci_core_instance" "{{ display_tf_name }}" {
         #Required
         availability_domain = data.oci_identity_availability_domains.ADs.availability_domains.{{ availability_domain }}.name
         compartment_id = var.{{ compartment_tf_name }}
@@ -28,7 +28,7 @@ resource "oci_core_instance" "{{ host_tf_name }}" {
                 private_ip = "{{ ip_address }}"
                 nsg_ids=[{{ nsg_ids }}]
         }
-        display_name = "{{ hostname }}"
+        display_name = "{{ display_name }}"
 
         {% if ssh_key_var_name != '' %}
         metadata = {

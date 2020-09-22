@@ -59,7 +59,7 @@ def main():
 
     # List of column headers
     dfcolumns = df.columns.values.tolist()
-    host_tf_name=''
+    display_tf_name=''
 
     reg = df['Region'].unique()
 
@@ -88,7 +88,7 @@ def main():
             print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
             exit()
 
-        hostname = str(df.loc[i,'Hostname'])
+        display_name = str(df.loc[i,'Display Name'])
         shapeField = str(df.loc[i,'Shape'])
         shapeField = shapeField.strip()
         shape_error=0
@@ -105,10 +105,10 @@ def main():
             OS=df.loc[i,'OS']
             if(".Flex" in shapeField[0]):
                 OS=OS+"Flex"
-            #copy_template_file(df.loc[i,'Hostname'], OS,df.loc[i,'Region'])
+            #copy_template_file(df.loc[i,'Display Name'], OS,df.loc[i,'Region'])
 
         if(shape_error==1):
-            print("\nERROR!!! "+ hostname +" is missing ocpus for Flex shape....Exiting!")
+            print("\nERROR!!! "+ display_name +" is missing ocpus for Flex shape....Exiting!")
             exit()
 
         # temporary dictionary1 and dictionary2
@@ -116,9 +116,9 @@ def main():
         tempdict = {}
 
         # Check if values are entered for mandatory fields
-        if (str(df.loc[i, 'Region']).lower() == 'nan' or str(df.loc[i, 'Hostname']).lower() == 'nan' or str(df.loc[i, 'Shape']).lower() == 'nan' or str(df.loc[i, 'Compartment Name']).lower() == 'nan' or str(df.loc[i, 'Pub Address']).lower() == 'nan' or str(
+        if (str(df.loc[i, 'Region']).lower() == 'nan' or str(df.loc[i, 'Display Name']).lower() == 'nan' or str(df.loc[i, 'Shape']).lower() == 'nan' or str(df.loc[i, 'Compartment Name']).lower() == 'nan' or str(df.loc[i, 'Pub Address']).lower() == 'nan' or str(
                 df.loc[i, 'Availability Domain(AD1|AD2|AD3)']).lower() == 'nan' or str(df.loc[i, 'Subnet Name']).lower() == 'nan' or str(df.loc[i, 'OS']).lower() == 'nan'):
-            print("\nColumn Region, Shape, Compartment Name, Availability Domain, Hostname, Pub Address, OS and Subnet Name cannot be left empty in Instances sheet of CD3..exiting...")
+            print("\nColumn Region, Shape, Compartment Name, Availability Domain, Display Name, Pub Address, OS and Subnet Name cannot be left empty in Instances sheet of CD3..exiting...")
             exit(1)
 
         for columnname in dfcolumns:
@@ -145,10 +145,10 @@ def main():
                 subnet_tf_name = commonTools.check_tf_variable(columnvalue.strip())
                 tempdict = { 'subnet_tf_name' : subnet_tf_name }
 
-            if columnname == 'Hostname':
+            if columnname == 'Display Name':
                 columnvalue = columnvalue.strip()
-                host_tf_name = commonTools.check_tf_variable(columnvalue)
-                tempdict = {'host_tf_name': host_tf_name}
+                display_tf_name = commonTools.check_tf_variable(columnvalue)
+                tempdict = {'display_tf_name': display_tf_name}
 
             if columnname == 'Compartment Name':
                 compartment_var_name = columnvalue.strip()
@@ -198,7 +198,7 @@ def main():
         hostStr = template.render(tempStr)
 
         # Write to output
-        file = outdir + "/" + region + "/" + host_tf_name + "_instance.tf"
+        file = outdir + "/" + region + "/" + display_tf_name + "_instance.tf"
         oname = open(file, "w+")
         print("Writing... " + file)
         oname.write(hostStr)
