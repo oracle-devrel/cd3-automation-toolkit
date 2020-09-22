@@ -185,6 +185,7 @@ def main():
         configFileName = args.configFileName
         config = oci.config.from_file(file_location=configFileName)
     else:
+        configFileName=""
         config = oci.config.from_file()
 
     global idc, compute, file_system, ct, vnc_info, importCommands, rows, all_regions, all_ads, all_compartments, input_compartment_list, AD, df, values_for_column_fss, sheet_dict_instances
@@ -290,3 +291,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

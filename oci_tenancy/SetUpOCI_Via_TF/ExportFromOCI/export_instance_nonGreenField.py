@@ -206,6 +206,7 @@ def main():
         configFileName = args.configFileName
         config = oci.config.from_file(file_location=configFileName)
     else:
+        configFileName=""
         config = oci.config.from_file()
 
     global instance_keys, os_keys, all_regions, ct, importCommands, idc, rows, all_compartments, AD, values_for_column_instances, df, sheet_dict_instances  # declaring global variables
@@ -349,3 +350,4 @@ def main():
 if __name__ == '__main__':
     # Execution of the code begins here
     main()
+
