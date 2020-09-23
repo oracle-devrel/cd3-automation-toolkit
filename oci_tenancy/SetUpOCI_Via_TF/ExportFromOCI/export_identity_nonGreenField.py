@@ -18,8 +18,8 @@ sys.path.append(os.getcwd()+"/..")
 from commonTools import *
 
 def main():
-    parser = argparse.ArgumentParser(description="Export Route Table on OCI to CD3")
-    parser.add_argument("cd3file", help="path of CD3 excel file to export network objects to")
+    parser = argparse.ArgumentParser(description="Export Identity Objects in OCI to CD3")
+    parser.add_argument("cd3file", help="path of CD3 excel file to export identity objects to")
     parser.add_argument("outdir", help="path to out directory containing script for TF import commands")
     parser.add_argument("--networkCompartment", help="comma seperated Compartments for which to export Identity Objects", required=False)
     parser.add_argument("--configFileName", help="Config file name" , required=False)
@@ -131,7 +131,7 @@ def main():
     print("Compartments exported to CD3\n")
 
     #Fetch Groups
-    print("\nFetchig Groups...")
+    print("\nFetching Groups...")
     importCommands[ct.home_region].write("\n######### Writing import for Groups #########\n")
     groups = oci.pagination.list_call_get_all_results(idc.list_groups,compartment_id=config['tenancy'])
     dyngroups=oci.pagination.list_call_get_all_results(idc.list_dynamic_groups,compartment_id=config['tenancy'])
@@ -170,7 +170,7 @@ def main():
     print("Groups exported to CD3\n")
 
     # Fetch Policies
-    print("\nFetchig Policies...")
+    print("\nFetching Policies...")
     importCommands[ct.home_region].write("\n\n######### Writing import for Policies #########\n\n")
     comp_ocid_done = []
     for ntk_compartment_name in ct.ntk_compartment_ids:
