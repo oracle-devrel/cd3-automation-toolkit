@@ -19,5 +19,6 @@ resource "oci_load_balancer_certificate" "{{ certificate_tf_name }}_cert" {
     {% endif %}
     lifecycle {
         create_before_destroy = true
+        ignore_changes = [ca_certificate,public_certificate]
     }
 }
