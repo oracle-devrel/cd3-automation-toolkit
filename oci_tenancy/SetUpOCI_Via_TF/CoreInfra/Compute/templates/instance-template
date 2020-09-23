@@ -40,7 +40,7 @@ resource "oci_core_instance" "{{ display_tf_name }}" {
 
         lifecycle {
                 ignore_changes = [
-                  metadata["user_data"]
+                  metadata
                 ]
         }
 

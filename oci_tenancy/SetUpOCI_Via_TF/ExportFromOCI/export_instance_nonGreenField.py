@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # This script will export all oci instances details into cd3
 # Author: Tharun Karam
-# Oracle Consulting
+# Oracle Consulting.
 
 import oci
 import argparse
@@ -56,7 +56,7 @@ def adding_columns_values(region, hostname, ad, fd, vs, publicip, privateip, os,
 
 
 def find_boot(ins_ad, ins_id, config):
-    compute = oci.core.ComputeClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
+    compute = oci.core.ComputeClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
     for comp in all_compartments:
         bl = compute.list_boot_volume_attachments(availability_domain=ins_ad, compartment_id=comp, instance_id=ins_id)
         if (len(bl.data)):
@@ -64,8 +64,8 @@ def find_boot(ins_ad, ins_id, config):
 
 
 def find_vnic(ins_id, config):
-    network = oci.core.VirtualNetworkClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
-    compute = oci.core.ComputeClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
+    network = oci.core.VirtualNetworkClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
+    compute = oci.core.ComputeClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
     for comp in all_compartments:
         net = oci.pagination.list_call_get_all_results(compute.list_vnic_attachments, compartment_id=comp,
                                                        instance_id=ins_id)
@@ -75,10 +75,10 @@ def find_vnic(ins_id, config):
 
 def __get_instances_info(compartment_name, compartment_id, reg_name, config):
     config.__setitem__("region", ct.region_dict[reg_name])
-    compute = oci.core.ComputeClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
-    network = oci.core.VirtualNetworkClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
-    bc = oci.core.BlockstorageClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
-    idc = IdentityClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
+    compute = oci.core.ComputeClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
+    network = oci.core.VirtualNetworkClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
+    bc = oci.core.BlockstorageClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
+    idc = IdentityClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
     instance_info = oci.pagination.list_call_get_all_results(compute.list_instances, compartment_id=compartment_id)
     # print(instance_info.data)
     for ins in instance_info.data:
@@ -111,14 +111,13 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, config):
             # print(ins_vnic.data)
             boot_check = find_boot(ins_ad, ins_id, config)
             boot_id = boot_check.data[0].boot_volume_id
-            source_image_id = ins.source_details.image_id
-            # print("Source_image=",source_image_id)
-            os = compute.get_image(image_id=source_image_id)
+            boot_details = bc.get_boot_volume(boot_volume_id=boot_id).data.image_id
+            os = compute.get_image(image_id=boot_details)
             # print("OS",os.data)                                   #Operating system
             os_dname = os.data.display_name  # Source os name
             os_dname = commonTools.check_tf_variable(os_dname)
             tf_name = commonTools.check_tf_variable(reg_name + "-" + os_dname)
-            os_keys[tf_name] = source_image_id
+            os_keys[tf_name] = boot_details
             # sdet=bc.get_volume(volume_id=source_image_id)
             bvp = bc.get_volume_backup_policy_asset_assignment(asset_id=boot_id)
             bvdetails = bc.get_boot_volume(boot_volume_id=boot_id)
@@ -126,20 +125,23 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, config):
             if (len(bvp.data)):
                 # print("Bvp Data:",bvp.data)
                 bkp_pname = bc.get_volume_backup_policy(policy_id=bvp.data[0].policy_id)
-                #print(bkp_pname)
-                #print("BVP-DATA=",bvp.data)
-                #print("bkp_data::",bkp_pname.data)
-                bpolicy=ins_dname+"_bkupPolicy"
+                # print(bkp_pname)
+                # print("BVP-DATA=",bvp.data)
+                # print("bkp_data::",bkp_pname.data)
+                bpolicy = ins_dname + "_bkupPolicy"
                 bkp_policy_name = bkp_pname.data.display_name.title()  # backup policy name
                 tf_name = commonTools.check_tf_variable(bpolicy)
-                #print(bvp.data[0])
-                importCommands[reg_name].write("\nterraform import oci_core_volume_backup_policy_assignment." + tf_name + " " + str(bvp.data[0].id))
+                # print(bvp.data[0])
+                importCommands[reg_name].write(
+                    "\nterraform import oci_core_volume_backup_policy_assignment." + tf_name + " " + str(
+                        bvp.data[0].id))
             for lnic in ins_vnic.data:
                 subnet_id = lnic.subnet_id
                 vnic_id = lnic.vnic_id
                 vnic_info = network.get_vnic(vnic_id=vnic_id)
+                if (vnic_info.data.is_primary == False):
+                    continue
                 # print("Lnic",lnic)
-                # print("Vnic_info",vnic_info.data)
                 # print(vnic_id)
                 subnet_info = network.get_subnet(subnet_id=subnet_id)
                 subnet_name = subnet_info.data.display_name
@@ -162,6 +164,7 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, config):
                     instance_keys[tf_name] = ""
                     key_name = ins_dname + "_" + str(privateip)
                     key_name = ""
+
                 publicip = vnic_info.data.public_ip
                 if (publicip == None):
                     publicip = "FALSE"
@@ -175,6 +178,7 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, config):
                         nsg_names = nsg_names + "," + nsg_info.data.display_name
                     nsg_names = nsg_names[1:]
                 vs = vcn_name + "_" + subnet_name  # VCN + Subnet Name
+                vs = commonTools.check_tf_variable(vs)
                 adding_columns_values(reg_name.title(), ins_dname, AD_name, ins_fd, vs, publicip, privateip, os_dname,
                                       ins_shape, key_name, compartment_name, bkp_policy_name, nsg_names, dedicated_host,
                                       ins, values_for_column_instances, boot_check.data)
@@ -206,22 +210,23 @@ def main():
         configFileName = args.configFileName
         config = oci.config.from_file(file_location=configFileName)
     else:
-        configFileName=""
+        configFileName = ""
         config = oci.config.from_file()
 
-    global instance_keys, os_keys, all_regions, ct, importCommands, idc, rows, all_compartments, AD, values_for_column_instances, df, sheet_dict_instances  # declaring global variables
+    global instance_keys, user_data_in, os_keys, all_regions, ct, importCommands, idc, rows, all_compartments, AD, values_for_column_instances, df, sheet_dict_instances  # declaring global variables
 
     instance_keys = {}  # dict name
     os_keys = {}  # os_ocids
+    user_data_in = {}  # user data for exports
     all_regions = []
     ct = commonTools()
     importCommands = {}
-    idc = IdentityClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
+    idc = IdentityClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
     rows = []
     all_compartments = []
     input_compartment_list = args.networkCompartment
     ct.get_subscribedregions(configFileName)
-    ct.get_network_compartment_ids(config['tenancy'],"root",configFileName)
+    ct.get_network_compartment_ids(config['tenancy'], "root", configFileName)
 
     if (input_compartment_list is not None):
         input_compartment_names = input_compartment_list.split(",")
@@ -288,14 +293,29 @@ def main():
             print("Fetching for Compartments... " + str(input_compartment_names))
             for compartment_name in input_compartment_names:
                 for reg in all_regions:
-                  config.__setitem__("region", ct.region_dict[reg])
-                  __get_instances_info(compartment_name,ct.ntk_compartment_ids[compartment_name],reg,config)
+                    config.__setitem__("region", ct.region_dict[reg])
+                    __get_instances_info(compartment_name, ct.ntk_compartment_ids[compartment_name], reg, config)
     else:
         print("Fetching for all Compartments...")
-        for keys,values in ct.ntk_compartment_ids.items():
-          for reg in all_regions:
-              config.__setitem__("region", ct.region_dict[reg])
-              __get_instances_info(keys,values, reg, config)
+        comp_ocid_done = []
+        for ntk_compartment_name in ct.ntk_compartment_ids:
+            if ct.ntk_compartment_ids[ntk_compartment_name] not in comp_ocid_done:
+                if (input_compartment_names is not None and ntk_compartment_name not in input_compartment_names):
+                    continue
+                comp_ocid_done.append(ct.ntk_compartment_ids[ntk_compartment_name])
+        uc = {}  # compartment names with hierarchy
+        for cid in comp_ocid_done:
+            for cname, cocid in ct.ntk_compartment_ids.items():
+                if cocid == cid and "::" in cname:
+                    uc[cname] = cocid
+                    continue
+                if cocid == cid:
+                    if cocid not in uc.values():
+                        uc[cname] = cocid
+        for comp_name, comp_ocid in uc.items():
+            for reg in all_regions:
+                config.__setitem__("region", ct.region_dict[reg])
+                __get_instances_info(comp_name, comp_ocid, reg, config)
 
     # writing ocids values into os_ocids.tf
     for reg in all_regions:
@@ -350,4 +370,3 @@ def main():
 if __name__ == '__main__':
     # Execution of the code begins here
     main()
-

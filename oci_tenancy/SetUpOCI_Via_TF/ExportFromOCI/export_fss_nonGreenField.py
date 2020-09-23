@@ -89,6 +89,7 @@ def __get_mount_info(cname, compartment_id, reg, availability_domain_name, confi
             mnt_sub_name = subnet_info.data.display_name  # Subnet-Name
             vnc_name = vnc_info.get_vcn(subnet_info.data.vcn_id).data.display_name  # vcn-Name
             vplussubnet = vnc_name + "_" + mnt_sub_name
+            vplussubnet =  commonTools.check_tf_variable(vplussubnet)
             for ips in private_ip_ids:
                 private_address = vnc_info.get_private_ip(ips)
                 mnt_p_ip = private_address.data.ip_address  # Private IP
@@ -266,12 +267,28 @@ def main():
                     __get_mount_info(compartment_name,ct.ntk_compartment_ids[compartment_name],reg,aval.name,config)
     else:
         print("Fetching for all Compartments...")
-        for keys,values in ct.ntk_compartment_ids.items():
-          for reg in all_regions:
-              config.__setitem__("region", ct.region_dict[reg])
-              ads=oci.identity.IdentityClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
-              for aval in ads.list_availability_domains(compartment_id=config['tenancy']).data:
-                 __get_mount_info(keys,values,reg,aval.name,config)
+        comp_ocid_done=[]
+        for ntk_compartment_name in ct.ntk_compartment_ids:
+            if ct.ntk_compartment_ids[ntk_compartment_name] not in comp_ocid_done:
+                if (input_compartment_names is not None and ntk_compartment_name not in input_compartment_names):
+                    continue
+                comp_ocid_done.append(ct.ntk_compartment_ids[ntk_compartment_name])
+        uc={}                                   #compartment names with hierarchy
+        for cid in comp_ocid_done:
+            for cname,cocid in ct.ntk_compartment_ids.items():
+               if cocid == cid and "::" in cname:
+                  uc[cname]=cocid
+                  continue
+               if cocid == cid:
+                 if cocid not in uc.values():
+                    uc[cname]=cocid
+        for comp_name,comp_ocid in uc.items():
+            for reg in all_regions:
+               config.__setitem__("region", ct.region_dict[reg])
+               ads=oci.identity.IdentityClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
+               for aval in ads.list_availability_domains(compartment_id=config['tenancy']).data:
+                 __get_mount_info(comp_name,comp_ocid,reg,aval.name,config)
+
 
     commonTools.write_to_cd3(values_for_column_fss, cd3file, "FSS")
     print("FSS objects exported to CD3.\n")
