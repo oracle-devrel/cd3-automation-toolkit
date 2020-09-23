@@ -38,6 +38,12 @@ resource "oci_core_instance" "{{ display_tf_name }}" {
 
         dedicated_vm_host_id = {{ dedicated_vm_host_tf }}
 
+        lifecycle {
+                ignore_changes = [
+                  metadata["user_data"]
+                ]
+        }
+
         {#  ##Do not modify below this line##  #}
         {#                                     #}
         {#  ###Section for adding Defined and Freeform Tags###  #}

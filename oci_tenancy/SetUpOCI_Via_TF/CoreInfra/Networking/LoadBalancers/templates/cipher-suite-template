@@ -6,4 +6,8 @@ resource "oci_load_balancer_ssl_cipher_suite" "{{ cipher_tf_name }}" {
 
     #Optional
     load_balancer_id = oci_load_balancer_load_balancer.{{ lbr_tf_name }}.id
+
+    lifecycle {
+        ignore_changes = [ciphers]
+    }
 }
