@@ -59,7 +59,7 @@ if (input_nongf_tenancy.lower() == 'true'):
     print("9. Export Database")
     print("10. Export Solutions(Events and Notifications) Objects to CD3 and create TF Files")
     print("q. Press q to quit")
-    userInput = input('Enter your choice (multiple allowed): ')
+    userInput = input('Enter your choice (you can specify comma separated multiple choices eg 1,2): ')
 
     userInput=userInput.split(",")
     if ("q" in userInput or "Q" in userInput):
