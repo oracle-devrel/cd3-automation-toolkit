@@ -228,7 +228,7 @@ def main():
                     comp_tf = policy_statement_comp
                     actual_policy_statement = actual_policy_statement.replace('compartment *', 'compartment ' + comp_tf)
 
-                tempStr = tempStr + """,\"""" + actual_policy_statement.strip() + "\" """
+                tempStr = tempStr + """,\"""" + actual_policy_statement + "\" """
 
     tempStr = tempStr + """ ]
                 } \n """
