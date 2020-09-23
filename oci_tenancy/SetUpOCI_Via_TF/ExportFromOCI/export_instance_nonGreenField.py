@@ -182,7 +182,7 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, config):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Export FSS Details on OCI to CD3")
+    parser = argparse.ArgumentParser(description="Export Instances in OCI to CD3")
     parser.add_argument("cd3file", help="path of CD3 excel file to export Instance objects to")
     parser.add_argument("outdir", help="path to out directory containing script for TF import commands")
     parser.add_argument("--configFileName", help="Config file name")

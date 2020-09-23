@@ -323,7 +323,7 @@ def print_subnets(values_for_column_subnets,region, comp_name, vcn_name, subnet_
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Export Route Table on OCI to CD3")
+    parser = argparse.ArgumentParser(description="Export Network Objects in OCI to CD3")
     parser.add_argument("cd3file", help="path of CD3 excel file to export network objects to")
     parser.add_argument("outdir", help="path to out directory containing script for TF import commands")
     parser.add_argument("--networkCompartment", help="comma seperated Compartments for which to export Networking Objects",
