@@ -1,5 +1,5 @@
 {##section to select adw/atp##}
-    resource "oci_database_autonomous_database" "{{ display_name }}"{
+    resource "oci_database_autonomous_database" "{{ display_tf_name }}"{
 	    display_name             = "{{ display_name }}"
         compartment_id           = var.{{ compartment_name }}
         admin_password           = "{{ admin_password }}"
