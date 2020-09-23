@@ -55,9 +55,11 @@ if (input_nongf_tenancy.lower() == 'true'):
     print("5. Export Tag Objects(TagnameSpaces, Tag Keys, Tag Defaults, Tag Values) to CD3 and create TF Files")
     print("6. Export FSS Objects to CD3 and create TF Files")
     print("7. Export LBR Objects to CD3 and create TF Files")
+    '''
     print("8. Export ADW/ATP")
     print("9. Export Database")
-    print("10. Export Solutions(Events and Notifications) Objects to CD3 and create TF Files")
+    '''
+    print("8. Export Solutions(Events and Notifications) Objects to CD3 and create TF Files")
     print("q. Press q to quit")
     userInput = input('Enter your choice (you can specify comma separated multiple choices eg 1,2): ')
 
@@ -505,8 +507,8 @@ if (input_nongf_tenancy.lower() == 'true'):
 
         os.chdir("../../..")
         print("\n\nExecute tf_import_commands_lbr_nonGF.sh script created under each region directory to synch TF with OCI LBR objects\n")
-
-    if ("9" in userInput):
+    '''
+    if ("8" in userInput):
         print("----------------------------------------------------------")
         print("\nExporting ADW/ATP...")
         print("Yet to be Implemented")
@@ -516,8 +518,8 @@ if (input_nongf_tenancy.lower() == 'true'):
         print("\nExporting Database...")
         print("Yet to be Implemented")
         exit()
-
-    if ("10" in userInput):
+    '''
+    if ("8" in userInput):
         print("----------------------------------------------------------")
         print("\nExporting Events and Notifications...")
         os.chdir('ExportFromOCI')
