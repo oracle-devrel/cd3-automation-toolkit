@@ -120,7 +120,7 @@ def main():
 
         # UseSSL cannot be'n', if the protocol is HTTPS
         if (str(df.loc[i,'Listener Protocol (HTTPS|HTTP|TCP)']).upper() == 'HTTPS'):
-            if (str(df.loc[i,'UseSSL']).lower() != 'y'):
+            if (str(df.loc[i,'UseSSL (y|n)']).lower() != 'y'):
                 print("\nUseSSL must be 'y' if the Listener Protocol is 'HTTPS'......Exiting!!")
                 exit(1)
 
