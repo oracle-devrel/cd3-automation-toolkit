@@ -298,11 +298,15 @@ def main():
             # To process the methods - remove 'nan' from list and add it to tempStr
             if rule_set_tf_name != '':
                 method_list = [x for x in d[region][rule_set_tf_name] if str(x).lower() != 'nan']
-                for k, v in d.items():
-                    if rule_set_tf_name in v.keys():
-                        method_list = json.dumps(method_list).replace("\\",'')
-                        method_list = method_list.replace('""','"')
-                        tempdict = {'method_list' : method_list}
+                # convert single quotes to double in the list; terraform does not accept otherwise
+                if ("\'") in str(method_list):
+                    method_list = json.dumps(method_list).replace('\\','')
+                    method_list = str(method_list).replace("\'",'')
+                if ('\"\"') in str(method_list):
+                    method_list = str(method_list).replace('""','"')
+                else:
+                    pass
+                tempdict = {'method_list' : method_list}
 
             tempStr.update(tempdict)
 

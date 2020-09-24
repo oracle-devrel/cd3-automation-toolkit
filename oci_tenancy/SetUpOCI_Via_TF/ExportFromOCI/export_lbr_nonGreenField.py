@@ -141,9 +141,9 @@ def print_lbr_hostname_certs(region, values_for_column_lhc, lbr, VCNs, LBRs, ntk
             for hostname in eachlbr.hostnames:
                 hostname_info = lbr.get_hostname(eachlbr.id, hostname).data
                 value = hostname_info.name + ":" + hostname_info.hostname
-                hostname_name_list = value + "," + hostname_name_list
-            if (hostname_name_list != "" and hostname_name_list[-1] == ','):
-                hostname_name_list = hostname_name_list[:-1]
+                hostname_name_list = hostname_name_list +','+value
+            if (hostname_name_list != "" and hostname_name_list[0] == ','):
+                hostname_name_list = hostname_name_list.lstrip(',')
 
         # Fetch NSGs
         nsg_name = ""
@@ -196,9 +196,9 @@ def print_lbr_hostname_certs(region, values_for_column_lhc, lbr, VCNs, LBRs, ntk
                 cipher_suites = ''
                 suites_list = details.ciphers
                 for suites in suites_list:
-                    cipher_suites = suites + "," + cipher_suites
-                    if (cipher_suites != "" and cipher_suites[-1] == ','):
-                        cipher_suites = cipher_suites[:-1]
+                    cipher_suites = cipher_suites + "," + suites
+                    if (cipher_suites != "" and cipher_suites[0] == ','):
+                        cipher_suites = cipher_suites.lstrip(',')
                 cipher_name = ciphers
 
                 cipher_ct = cipher_ct + 1
@@ -243,9 +243,9 @@ def print_lbr_hostname_certs(region, values_for_column_lhc, lbr, VCNs, LBRs, ntk
                         cipher_suites = ''
                         suites_list = cipher_details.ciphers
                         for suites in suites_list:
-                            cipher_suites = suites + "," + cipher_suites
-                            if (cipher_suites != "" and cipher_suites[-1] == ','):
-                                cipher_suites = cipher_suites[:-1]
+                            cipher_suites = cipher_suites + "," + suites
+                            if (cipher_suites != "" and cipher_suites[0] == ','):
+                                cipher_suites = cipher_suites.lstrip(',')
                         cipher_name = cipher_details.name
                         j = 0
                         for cert, cert_details in certs.items():
@@ -283,9 +283,9 @@ def print_lbr_hostname_certs(region, values_for_column_lhc, lbr, VCNs, LBRs, ntk
                             if i == j:
                                 suites_list = cipher_details.ciphers
                                 for suites in suites_list:
-                                    cipher_suites = suites + "," + cipher_suites
-                                    if (cipher_suites != "" and cipher_suites[-1] == ','):
-                                        cipher_suites = cipher_suites[:-1]
+                                    cipher_suites = cipher_suites + "," + suites
+                                    if (cipher_suites != "" and cipher_suites[0] == ','):
+                                        cipher_suites = cipher_suites.lstrip(',')
                                 cipher_name = cipher_details.name
                                 if i != 0:
                                     insert_values(values_for_column_lhc, oci_objs, sheet_dict_lhc, '',
@@ -312,9 +312,9 @@ def print_lbr_hostname_certs(region, values_for_column_lhc, lbr, VCNs, LBRs, ntk
                         cipher_suites = ''
                         suites_list = cipher_details.ciphers
                         for suites in suites_list:
-                            cipher_suites = suites + "," + cipher_suites
-                            if (cipher_suites != "" and cipher_suites[-1] == ','):
-                                cipher_suites = cipher_suites[:-1]
+                            cipher_suites = cipher_suites + "," + suites
+                            if (cipher_suites != "" and cipher_suites[0] == ','):
+                                cipher_suites = cipher_suites.lstrip(',')
                         cipher_name = cipher_details.name
                         j = 0
                         for cert, cert_details in certs.items():
@@ -344,15 +344,15 @@ def print_backendset_backendserver(region, values_for_column_bss, lbr, LBRs, ntk
             for backends in backendset_details.__getattribute__('backends'):
                 if str(backends.__getattribute__('name')).lower() != "none":
                     backend_value = str(backends.__getattribute__('name'))
-                    backend_list=backend_value+','+backend_list
-                if (backend_list != "" and backend_list[-1] == ','):
-                    backend_list = backend_list[:-1]
+                    backend_list= backend_list+","+backend_value
+                if (backend_list != "" and backend_list[0] == ','):
+                    backend_list = backend_list.lstrip(',')
 
                 if str(backends.__getattribute__('backup')).lower() == 'true':
                     backup_value = backends.ip_address
-                    backup_list = backup_value + ',' + backup_list
-                if (backup_list != "" and backup_list[-1] == ','):
-                    backup_list = backup_list[:-1]
+                    backup_list =  backup_list +',' +backup_value
+                if (backup_list != "" and backup_list[0] == ','):
+                    backup_list = backup_list.lstrip(',')
 
             # Process columns related to Session Cookies
             lb_cookie_session_persistence_configuration = backendset_details.__getattribute__('lb_cookie_session_persistence_configuration')
@@ -458,11 +458,9 @@ def print_listener(region, values_for_column_lis, LBRs, ntk_compartment_name):
                     else:
 
                         for protocols in sslcerts.protocols:
-                            protocols_list = protocols+","+protocols_list
-
-                        if (protocols_list != "" and protocols_list[-1] == ','):
-                            protocols_list = protocols_list[:-1]
-
+                            protocols_list = protocols_list+","+protocols
+                        if (protocols_list != "" and protocols_list[0] == ','):
+                            protocols_list = protocols_list.lstrip(',')
                         values_for_column_lis[col_headers].append(protocols_list)
 
                 # Process Columns that are common across LBR sheets - Region, Compartment Name and LBR Name
@@ -480,11 +478,9 @@ def print_listener(region, values_for_column_lis, LBRs, ntk_compartment_name):
                         if values.__getattribute__(sheet_dict_lis[col_headers]) != []:
                             for rule in values.__getattribute__(sheet_dict_lis[col_headers]):
                                 value = rule
-                                rule = value+","+rule
-
-                            if (rule != "" and rule[-1] == ','):
-                                rule = rule[:-1]
-
+                                rule = rule +","+value
+                            if (rule != "" and rule[0] == ','):
+                                rule = rule.lstrip(',')
                         values_for_column_lis[col_headers].append(rule)
 
                     elif col_headers == 'UseSSL (y|n)':
@@ -497,9 +493,9 @@ def print_listener(region, values_for_column_lis, LBRs, ntk_compartment_name):
                         hostnames=""
                         if values.__getattribute__(sheet_dict_lis[col_headers]):
                             for eachhostname in values.__getattribute__(sheet_dict_lis[col_headers]):
-                                hostnames = eachhostname+","+hostnames
-                            if (hostnames != "" and hostnames[-1] == ','):
-                                hostnames = hostnames[:-1]
+                                hostnames = hostnames+","+eachhostname
+                            if (hostnames != "" and hostnames[0] == ','):
+                                hostnames = hostnames.lstrip(',')
                         values_for_column_lis[col_headers].append(hostnames)
 
                     elif col_headers == 'Idle Time Out (in Seconds)':
@@ -564,10 +560,10 @@ def print_rule(region, values_for_column_rule, LBRs, ntk_compartment_name):
                         allowed_method = ''
                         if eachitem.action == "CONTROL_ACCESS_USING_HTTP_METHODS":
                             for method in eachitem.__getattribute__(headers_lower):
-                                allowed_method = "\""+ method +"\"," + allowed_method
+                                allowed_method = allowed_method +",\"" + method + "\""
 
-                            if (allowed_method != "" and allowed_method[-1] == ','):
-                                allowed_method = allowed_method[:-1]
+                            if (allowed_method != "" and allowed_method[0] == ','):
+                                allowed_method = allowed_method.lstrip(',')
 
                         values_for_column_rule[col_headers].append(allowed_method)
 
