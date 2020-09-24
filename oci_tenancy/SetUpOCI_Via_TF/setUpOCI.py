@@ -547,7 +547,7 @@ if (input_nongf_tenancy.lower() == 'true'):
         print("Proceeding to create TF files...\n")
         print("\n-----------Process Events tab-----------")
         command = 'python create_terraform_events.py ' + input_cd3file + ' ' + input_outdir + ' ' + input_prefix
-        os.chdir('Solutions/AppIntegration')
+        os.chdir('Solutions/EventsAndNotifications')
         print("Executing Command: " + command)
         exitVal = os.system(command)
         if (exitVal == 1):
@@ -555,7 +555,7 @@ if (input_nongf_tenancy.lower() == 'true'):
         print("\n-----------Process Notifications tab-----------")
         command = 'python create_terraform_notifications.py ' + input_cd3file + ' ' + input_outdir + ' ' + input_prefix
         os.chdir("../..")
-        os.chdir('Solutions/AppIntegration')
+        os.chdir('Solutions/EventsAndNotifications')
         print("Executing Command: " + command)
         exitVal = os.system(command)
         if (exitVal == 1):
@@ -1023,7 +1023,7 @@ if('10' in userInput):
         print("-----------------------Setting up Notifications-------------------------")
         if not os.path.exists(outdir):
             os.makedirs(outdir)
-        os.chdir('Solutions/AppIntegration')
+        os.chdir('Solutions/EventsAndNotifications')
         if (input_config_file == ''):
             command = 'python create_terraform_notifications.py ' + inputfile + ' ' + outdir + ' ' + input_prefix
         else:
@@ -1037,7 +1037,7 @@ if('10' in userInput):
         print("-----------------------Setting up Events----------------------------------")
         if not os.path.exists(outdir):
             os.makedirs(outdir)
-        os.chdir('Solutions/AppIntegration')
+        os.chdir('Solutions/EventsAndNotifications')
         if (input_config_file == ''):
             command = 'python create_terraform_events.py ' + inputfile + ' ' + outdir + ' ' + input_prefix
         else:
