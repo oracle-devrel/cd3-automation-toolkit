@@ -43,9 +43,11 @@ def volume_attachment_info(compute,ntk_compartment_name,ct,volume_id):
     attachment_id = ''
     attach_info = compute.list_volume_attachments(compartment_id = ct.ntk_compartment_ids[ntk_compartment_name], volume_id = volume_id)
     for attachments in attach_info.data:
-        instance_id = attachments.instance_id
-        attachment_type = attachments.attachment_type
-        attachment_id = attachments.id
+        lifecycle_state = attachments.lifecycle_state
+        if lifecycle_state == 'ATTACHED':
+            instance_id = attachments.instance_id
+            attachment_type = attachments.attachment_type
+            attachment_id = attachments.id
     compute_info = compute.list_instances(ct.ntk_compartment_ids[ntk_compartment_name])
     for instance in compute_info.data:
         if instance_id == instance.id:
