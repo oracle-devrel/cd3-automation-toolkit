@@ -14,7 +14,7 @@ resource "oci_core_network_security_group_security_rule" "{{ nsg_rule_tf_name }}
     destination = {{ destination }}
     source = {{ source }}
 
-    {% if protocol == 'icmp' %}
+    {% if protocol == 'icmp' and icmptype !='' %}
     icmp_options {
         #Required
         type = "{{ icmptype }}"
