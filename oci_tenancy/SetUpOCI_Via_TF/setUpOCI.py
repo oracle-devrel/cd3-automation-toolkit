@@ -174,7 +174,7 @@ if (input_nongf_tenancy.lower() == 'true'):
 
         os.chdir('ExportFromOCI')
         input_comp = input(
-            "Enter name of Compartment as it appears in OCI (comma seperated without spaces if multiple)for which you want to export network objects;\nLeave blank if want to export for all Compartments: ")
+            "Enter name of Compartment as it appears in OCI (comma separated without spaces if multiple)for which you want to export network objects;\nLeave blank if want to export for all Compartments: ")
         if (input_comp == ''):
             if (input_config_file == ''):
                 command = "python export_network_nonGreenField.py " + input_cd3file + ' ' + input_outdir
@@ -271,7 +271,7 @@ if (input_nongf_tenancy.lower() == 'true'):
         print("----------------------------------------------------------")
         print("\nExporting Instances...")
         os.chdir('ExportFromOCI')
-        input_comp = input("Enter name of Compartment as it appears in OCI (comma seperated without spaces if multiple)for which you want to export Instances;\nLeave blank if want to export for all Compartments: ")
+        input_comp = input("Enter name of Compartment as it appears in OCI (comma separated without spaces if multiple)for which you want to export Instances;\nLeave blank if want to export for all Compartments: ")
         if(input_comp==''):
             if (input_config_file == ''):
                 command = "python export_instance_nonGreenField.py " + input_cd3file + ' ' + input_outdir
@@ -318,7 +318,7 @@ if (input_nongf_tenancy.lower() == 'true'):
         print("----------------------------------------------------------")
         print("\nExporting Block Volumes...")
         os.chdir('ExportFromOCI')
-        input_comp = input("Enter name of Compartment as it appears in OCI (comma seperated without spaces if multiple)for which you want to export Block Volumes;\nLeave blank if want to export for all Compartments: ")
+        input_comp = input("Enter name of Compartment as it appears in OCI (comma separated without spaces if multiple)for which you want to export Block Volumes;\nLeave blank if want to export for all Compartments: ")
         if(input_comp==''):
             if (input_config_file == ''):
                 command = "python export_blockvol_nonGreenField.py " + input_cd3file + ' ' + input_outdir
@@ -399,7 +399,7 @@ if (input_nongf_tenancy.lower() == 'true'):
         print("----------------------------------------------------------")
         print("\nExporting FSS...")
         os.chdir('ExportFromOCI')
-        input_comp = input("Enter name of Compartment as it appears in OCI (comma seperated without spaces if multiple)for which you want to export FSS objects;\nLeave blank if want to export for all Compartments: ")
+        input_comp = input("Enter name of Compartment as it appears in OCI (comma separated without spaces if multiple)for which you want to export FSS objects;\nLeave blank if want to export for all Compartments: ")
         if (input_comp == ''):
             if (input_config_file == ''):
                 command = "python export_fss_nonGreenField.py " + input_cd3file + ' ' + input_outdir
@@ -442,7 +442,7 @@ if (input_nongf_tenancy.lower() == 'true'):
         print("\nExporting LBR...")
 
         os.chdir('ExportFromOCI')
-        input_comp = input("Enter name of Compartment as it appears in OCI (comma seperated without spaces if multiple)for which you want to export LBR objects;\nLeave blank if want to export for all Compartments: ")
+        input_comp = input("Enter name of Compartment as it appears in OCI (comma separated without spaces if multiple)for which you want to export LBR objects;\nLeave blank if want to export for all Compartments: ")
         if (input_comp == ''):
             if (input_config_file == ''):
                 command = "python export_lbr_nonGreenField.py " + input_cd3file + ' ' + input_outdir
@@ -523,7 +523,7 @@ if (input_nongf_tenancy.lower() == 'true'):
         print("----------------------------------------------------------")
         print("\nExporting Events and Notifications...")
         os.chdir('ExportFromOCI')
-        input_comp = input("Enter name of Compartment as it appears in OCI (comma seperated without spaces if multiple)for which you want to export Events and Notifications objects;\nLeave blank if want to export for all Compartments: ")
+        input_comp = input("Enter name of Compartment as it appears in OCI (comma separated without spaces if multiple)for which you want to export Events and Notifications objects;\nLeave blank if want to export for all Compartments: ")
         if (input_comp == ''):
             if (input_config_file == ''):
                 command = "python export_solutions_nonGreenField.py " + input_cd3file + ' ' + input_outdir
@@ -715,7 +715,7 @@ if('2' in userInput):
         print("---------------------------Exporting Rules--------------------------")
         cd3outfile = input_cd3file
         inputConfigFile = input_config_file
-        input_comp = input("Enter name of Compartment as it appears in OCI (comma seperated if multiple) for which you want to export rules; Leave blank if want to export for all Compartments: ")
+        input_comp = input("Enter name of Compartment as it appears in OCI (comma separated if multiple) for which you want to export rules; Leave blank if want to export for all Compartments: ")
 
         if (input_comp is ""):
             if (input_config_file == ''):
