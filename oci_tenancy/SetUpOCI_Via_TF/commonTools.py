@@ -325,7 +325,7 @@ class commonTools():
 
         #If no rows exported from OCI, remove the sample data as well
         if(rows_len == 0):
-            print("0 rows exported; Nothing to write to CD3 excel; Sheet "+sheet_name +" will be empty in CD3 excel!!")
+            print("0 rows exported; Nothing to write to CD3 excel; Tab "+sheet_name +" will be empty in CD3 excel!!")
             for i in range(0, sheet.max_row):
                 for j in range(0, sheet.max_column):
                     sheet.cell(row=i + 3, column=j + 1).value = ""
@@ -407,9 +407,9 @@ class commonTools():
         x = datetime.datetime.now()
         date = x.strftime("%f").strip()
         dest_dir = src_dir + "/backup_" + resource + "_" + datetime.datetime.now().strftime("%d-%m-%H%M%S").replace('/','-')
-        print("Backing up existing " + pattern + " to " + dest_dir)
         for f in os.listdir(src_dir):
             if f.endswith(pattern):
+                print("Backing up existing " + pattern + " to " + dest_dir)
                 if not os.path.exists(dest_dir):
                     # print("\nCreating backup dir " + dest_dir + "\n")
                     os.makedirs(dest_dir)

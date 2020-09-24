@@ -370,7 +370,6 @@ def main():
     for reg in ct.all_regions:
         if (os.path.exists(outdir + "/" + reg)):
             resource = "NSG"
-            print("Backing up all existing NSG TF files for region " + reg + " to")
             commonTools.backup_file(outdir + "/" + reg, resource, "_nsg.tf")
 
     # creates all region directories in specified out directory
