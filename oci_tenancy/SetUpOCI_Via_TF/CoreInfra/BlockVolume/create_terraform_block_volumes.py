@@ -70,7 +70,7 @@ def main():
             continue
         if eachregion not in ct.all_regions:
             print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
-            exit()
+            exit(1)
 
         resource = 'BlockVols'
         srcdir = outdir + "/" + eachregion + "/"
@@ -84,7 +84,7 @@ def main():
             break
         if region not in ct.all_regions:
             print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
-            exit()
+            exit(1)
 
         #temporary dictionary1 and dictionary2
         tempStr = {}
@@ -93,15 +93,15 @@ def main():
         # Check if values are entered for mandatory fields - to create volumes
         if str(df.loc[i,'Region']).lower() == 'nan' or str(df.loc[i, 'Block Name']).lower() == 'nan' or str(df.loc[i,'Compartment Name']).lower()  == 'nan' or str(df.loc[i,'Availability Domain(AD1|AD2|AD3)']).lower()  == 'nan':
             print( " The values for Region, Block Name, Compartment Name and Availability Domain cannot be left empty. Please enter a value and try again !!")
-            exit()
+            exit(1)
 
         # Check if values are entered for mandatory fields - to attach volumes to instances
         if str(df.loc[i,'Attached To Instance']).lower()  != 'nan' and str(df.loc[i,'Attach Type(iscsi|paravirtualized)']).lower()  == 'nan' :
-            print("Attach Type cannot be left empty if you want to attach  the volume to instance "+df.loc[i,'Attached  To Instance']+". Please enter a value and try again !!")
-            exit()
+            print("Attach Type cannot be left empty if you want to attach  the volume to instance "+df.loc[i,'Attached To Instance']+". Please enter a value and try again !!")
+            exit(1)
         elif str(df.loc[i,'Attach Type(iscsi|paravirtualized)']).lower()  != 'nan' and str(df.loc[i,'Attached To Instance']).lower()  == 'nan' :
             print("Attached To Instance cannot be left empty if Attachment Type is "+df.loc[i,'Attach Type(iscsi|paravirtualized)']+". Please enter a value and try again !!")
-            exit()
+            exit(1)
 
         blockname_tf = commonTools.check_tf_variable(df.loc[i, 'Block Name'])
         tempStr['block_tf_name'] = blockname_tf

@@ -71,7 +71,7 @@ def main():
             continue
         if eachregion not in ct.all_regions:
             print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
-            exit()
+            exit(1)
 
         resource = 'Instances'
         srcdir = outdir + "/" + eachregion + "/"
@@ -86,7 +86,7 @@ def main():
 
         if region not in ct.all_regions:
             print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
-            exit()
+            exit(1)
 
         display_name = str(df.loc[i,'Display Name'])
         shapeField = str(df.loc[i,'Shape'])
@@ -109,7 +109,7 @@ def main():
 
         if(shape_error==1):
             print("\nERROR!!! "+ display_name +" is missing ocpus for Flex shape....Exiting!")
-            exit()
+            exit(1)
 
         # temporary dictionary1 and dictionary2
         tempStr = {}

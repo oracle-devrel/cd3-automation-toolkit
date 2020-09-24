@@ -306,7 +306,7 @@ if (input_nongf_tenancy.lower() == 'true'):
         exitVal = os.system(command1)
         if (exitVal == 1):
             exit()
-        print("Executing Command: " + command2)
+        print("\nExecuting Command: " + command2)
         exitVal = os.system(command2)
         if (exitVal == 1):
             exit()
@@ -353,7 +353,7 @@ if (input_nongf_tenancy.lower() == 'true'):
         exitVal = os.system(command1)
         if (exitVal == 1):
             exit()
-        print("Executing Command: " + command2)
+        print("\nExecuting Command: " + command2)
         exitVal = os.system(command2)
         if (exitVal == 1):
             exit()
@@ -821,9 +821,13 @@ if('3' in userInput):
             command1 = 'python create_terraform_instances.py ' + inputfile + ' ' + outdir  + ' --configFileName ' + input_config_file
             command2 = 'python boot_backups_policy.py ' + inputfile + ' ' + outdir + ' --configFileName ' + input_config_file
         print("Executing Command: " + command1)
-        os.system(command1)
-        print("Executing Command: " + command2)
-        os.system(command2)
+        exitVal = os.system(command1)
+        if (exitVal == 1):
+            exit()
+        print("\nExecuting Command: " + command2)
+        exitVal = os.system(command2)
+        if (exitVal == 1):
+            exit()
         os.chdir("../..")
         print("--------------------------------------------------------------------------")
 
@@ -848,9 +852,13 @@ if('4' in userInput):
         command1 = 'python create_terraform_block_volumes.py ' + inputfile + ' ' + outdir  + ' --configFileName ' + input_config_file
         command2 = 'python block_backups_policy.py ' + inputfile + ' ' + outdir + ' --configFileName ' + input_config_file
     print("Executing Command: " + command1)
-    os.system(command1)
-    print("Executing Command: " + command2)
-    os.system(command2)
+    exitVal = os.system(command1)
+    if (exitVal == 1):
+        exit()
+    print("\nExecuting Command: " + command2)
+    exitVal = os.system(command2)
+    if (exitVal == 1):
+        exit()
     os.chdir("../..")
     print("--------------------------------------------------------------------------")
 
