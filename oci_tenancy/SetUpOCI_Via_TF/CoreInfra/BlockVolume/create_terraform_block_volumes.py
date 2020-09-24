@@ -100,7 +100,7 @@ def main():
             print("Attach Type cannot be left empty if you want to attach  the volume to instance "+df.loc[i,'Attached  To Instance']+". Please enter a value and try again !!")
             exit()
         elif str(df.loc[i,'Attach Type(iscsi|paravirtualized)']).lower()  != 'nan' and str(df.loc[i,'Attached To Instance']).lower()  == 'nan' :
-            print("Attached To Instance cannot be left empty if Attachment Type is "+df.loc[i,'Attach Type\n(iscsi|paravirtualized)']+". Please enter a value and try again !!")
+            print("Attached To Instance cannot be left empty if Attachment Type is "+df.loc[i,'Attach Type(iscsi|paravirtualized)']+". Please enter a value and try again !!")
             exit()
 
         blockname_tf = commonTools.check_tf_variable(df.loc[i, 'Block Name'])
