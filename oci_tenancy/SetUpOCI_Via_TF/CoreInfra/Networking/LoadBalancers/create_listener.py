@@ -113,16 +113,11 @@ def main():
         lbr_tf_name = ''
 
         #Check if mandatory field is empty
-        if (str(df.loc[i,'Listener Name']).lower() == 'nan') or (str(df.loc[i,'Listener Protocol (HTTPS|HTTP|TCP)']).lower() == 'nan') or (str(df.loc[i,'Listener Port']).lower() == 'nan') or (str
+        if (str(df.loc[i,'Listener Name']).lower() == 'nan') or (str(df.loc[i,'Listener Protocol (HTTP|TCP)']).lower() == 'nan') or (str(df.loc[i,'Listener Port']).lower() == 'nan') or (str
             (df.loc[i,'Backend Set Name']).lower() == 'nan') :
             print("\nColumns Backend Set Name, Listener Name, Listerner Protocol and Listener Port cannot be left empty.....Exiting!")
             exit(1)
 
-        # UseSSL cannot be'n', if the protocol is HTTPS
-        if (str(df.loc[i,'Listener Protocol (HTTPS|HTTP|TCP)']).upper() == 'HTTPS'):
-            if (str(df.loc[i,'UseSSL (y|n)']).lower() != 'y'):
-                print("\nUseSSL must be 'y' if the Listener Protocol is 'HTTPS'......Exiting!!")
-                exit(1)
 
         # Fetch data; loop through columns
         for columnname in dfcolumns:
@@ -159,7 +154,7 @@ def main():
             if columnname == "UseSSL (y|n)":
                 columnname = "usessl"
 
-            if columnname == 'Listener Protocol (HTTPS|HTTP|TCP)':
+            if columnname == 'Listener Protocol (HTTP|TCP)':
                 columnname = 'protocol'
 
             if columnname == 'Idle Time Out (in Seconds)':

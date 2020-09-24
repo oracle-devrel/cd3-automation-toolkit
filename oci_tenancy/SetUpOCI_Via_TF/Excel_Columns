@@ -108,7 +108,7 @@
         "Rule Set Names" : "rule_set_names",
         "UseSSL (y|n)" : "ssl_configuration",
         "Listener Name" : "name",
-        "Listener Protocol (HTTPS|HTTP|TCP)" : "protocol",
+        "Listener Protocol (HTTP|TCP)" : "protocol",
         "Listener Port" : "port",
         "Idle Time Out (in Seconds)" : "idle_timeout"
     },
