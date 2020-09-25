@@ -155,7 +155,7 @@ def __get_mount_info(cname, compartment_id, reg, availability_domain_name, confi
                                         mnt_info1=mnt, nsg_n=nsg_names)
                         # new_row=("","","","","","","","","","",einfo_path,einfo_export_data.export_options[rw].source,einfo_export_data.export_options[rw].access,einfo_export_data.export_options[rw].anonymous_gid,einfo_export_data.export_options[rw].anonymous_uid,einfo_export_data.export_options[rw].identity_squash,einfo_export_data.export_options[rw].require_privileged_source_port)
                         # rows.append(new_row)
-                tf_name = commonTools.check_tf_variable("FSE-" + mt_display_name + "-" + fs_name + "-" + einfo_path[1:])
+                tf_name = commonTools.check_tf_variable("FSE-" + commonTools.check_tf_variable(mt_display_name) + "-" + commonTools.check_tf_variable(fs_name) + "-" + einfo_path[1:])
                 importCommands[reg].write(
                     "\nterraform import oci_file_storage_export." + tf_name + " " + str(einfo.id))  # exports import
     except Exception as e:
