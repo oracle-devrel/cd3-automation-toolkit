@@ -273,6 +273,7 @@ class commonTools():
 
     # Read rows from CD3
     def read_cd3(cd3file, sheet_name):
+        df = {}
         if (".xls" not in cd3file or ".xlsx" not in cd3file):
             print("Invalid CD3 Format..Exiting!!!")
             exit()
