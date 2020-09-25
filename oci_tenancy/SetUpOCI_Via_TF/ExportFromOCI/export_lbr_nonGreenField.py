@@ -161,7 +161,6 @@ def print_lbr_hostname_certs(region, values_for_column_lhc, lbr, VCNs, LBRs, ntk
         subnet_name_list = ""
         if eachlbr.subnet_ids:
             for subnet_ids in eachlbr.subnet_ids:
-                subnet_name_list = ''
                 for subnets in SUBNETs.data:
                     id = subnets.__getattribute__('id')
                     if subnet_ids == id:
@@ -170,7 +169,9 @@ def print_lbr_hostname_certs(region, values_for_column_lhc, lbr, VCNs, LBRs, ntk
                             if eachvcn.id == subnets.vcn_id:
                                 vcn_name = eachvcn.display_name
                                 value = vcn_name + "_" + subnet_name
-                                subnet_name_list = value + subnet_name_list
+                                subnet_name_list = subnet_name_list+','+value
+                            if (subnet_name_list != "" and subnet_name_list[0] == ','):
+                                subnet_name_list = subnet_name_list.lstrip(',')
         else:
             subnet_name_list = ""
 
