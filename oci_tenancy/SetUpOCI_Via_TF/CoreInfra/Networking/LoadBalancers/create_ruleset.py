@@ -328,7 +328,7 @@ def main():
                 control_access = 0
             else:
                 control_access = 1
-                rs_str = add_rules(df, rs_str, tempStr,control_access)
+            rs_str = add_rules(df, rs_str, tempStr,control_access)
             control_access = control_access + 1
 
         # Write to TF file
