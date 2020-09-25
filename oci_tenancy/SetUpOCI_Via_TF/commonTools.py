@@ -276,7 +276,14 @@ class commonTools():
         if (".xls" not in cd3file or ".xlsx" not in cd3file):
             print("Invalid CD3 Format..Exiting!!!")
             exit()
-        df = pd.read_excel(cd3file, sheet_name=sheet_name, skiprows=1, dtype=object)
+        try:
+            df = pd.read_excel(cd3file, sheet_name=sheet_name, skiprows=1, dtype=object)
+
+        except Exception as e:
+            if("Events" in str(e) or "Notifications" in str(e)):
+                print("Tabs- Events or Notifications is missing in the CD3. Please make sure to use correct input file for Events and Notifications")
+                exit(1)
+
         yield df
         book = load_workbook(cd3file)
         sheet = book[sheet_name]
