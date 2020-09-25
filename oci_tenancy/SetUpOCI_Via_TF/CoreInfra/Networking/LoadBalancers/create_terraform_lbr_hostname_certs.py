@@ -119,6 +119,7 @@ def main():
             certificate_tf_name = ''
             ciphers_list = ''
             cipher_tf_name = ''
+            lbr_tf_name=''
 
             if region in commonTools.endNames:
                 break
@@ -190,7 +191,7 @@ def main():
             if cipher_tf_name != '' and cipher_tf_name.lower() != 'nan':
                 cipher_suites[region] = ciphersuite.render(tempStr)
 
-                outfile = outdir + "/" + region + "/"+cipher_tf_name+"_cipher-suite-lb.tf"
+                outfile = outdir + "/" + region + "/"+lbr_tf_name+"_"+cipher_tf_name+"_cipher-suite-lb.tf"
                 oname = open(outfile, "w+")
                 print("Writing to ..." + outfile)
                 oname.write(cipher_suites[region])
@@ -200,7 +201,7 @@ def main():
                 certificate_str[region] =  certficate.render(tempStr)
 
                 # Write to TF file
-                outfile = outdir + "/" + region + "/"+certificate_tf_name+"_certificate-lb.tf"
+                outfile = outdir + "/" + region + "/"+lbr_tf_name+"_"+certificate_tf_name+"_certificate-lb.tf"
                 oname = open(outfile, "w+")
                 print("Writing to ..." + outfile)
                 oname.write(certificate_str[region])

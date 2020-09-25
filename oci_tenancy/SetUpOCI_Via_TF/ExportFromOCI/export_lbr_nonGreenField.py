@@ -525,6 +525,14 @@ def print_rule(region, values_for_column_rule, LBRs, ntk_compartment_name):
                     elif col_headers == 'Rule Set Name':
                         values_for_column_rule[col_headers].append(rulesets)
 
+                    elif 'Query' in col_headers or 'query' in col_headers:
+                        try:
+                            uri_details = eachitem.redirect_uri
+                            values_for_column_rule[col_headers].append(uri_details.query)
+                        except AttributeError as e:
+                            values_for_column_rule[col_headers].append("")
+                            pass
+
                     elif col_headers in sheet_dict_rule.keys():
                         try:
                             if 'Redirect' in col_headers:
@@ -533,7 +541,7 @@ def print_rule(region, values_for_column_rule, LBRs, ntk_compartment_name):
                                 host = uri_details.host
                                 path = uri_details.path
                                 protocol = uri_details.protocol
-                                query = uri_details.protocol
+                                query = uri_details.query
 
                                 if str(port).lower() == 'null' or str(port).lower() == 'none':
                                     port = ""
@@ -593,14 +601,9 @@ def print_rule(region, values_for_column_rule, LBRs, ntk_compartment_name):
                             values_for_column_rule[col_headers].append("")
                             pass
                     else:
-                        try:
-                            value = str(eachitem.__getattribute__(headers_lower))
-                            if value.lower() == "none":
-                                value = ""
-                            values_for_column_rule[col_headers].append(value)
-                        except AttributeError as e:
-                            values_for_column_rule[col_headers].append("")
-                            pass
+                        oci_objs = [eachlbr, eachitem]
+                        values_for_column_rule = commonTools.export_extra_columns(oci_objs, col_headers, sheet_dict_rule,
+                                                                                 values_for_column_rule)
 
     return values_for_column_rule
 
@@ -626,8 +629,9 @@ def print_prs(region, values_for_column_prs, LBRs, ntk_compartment_name):
 
                     else:
                         # Process the remaining  Columns
-                        attribute = path_routes.__getattribute__(headers_lower)
-                        values_for_column_prs[col_headers].append(attribute)
+                        oci_objs = [eachlbr, values, path_routes]
+                        values_for_column_prs = commonTools.export_extra_columns(oci_objs, col_headers, sheet_dict_prs,
+                                                                                 values_for_column_prs)
 
     return values_for_column_prs
 
@@ -776,7 +780,7 @@ def main():
 
                     for certificates in eachlbr.certificates:
                         cert_tf_name = commonTools.check_tf_variable(certificates)
-                        importCommands[reg].write("\nterraform import oci_load_balancer_certificate." + cert_tf_name + "_cert" + " loadBalancers/" + lbr_info.id + "/certificates/" + certificates)
+                        importCommands[reg].write("\nterraform import oci_load_balancer_certificate." + tf_name + "_" + cert_tf_name + "_cert" + " loadBalancers/" + lbr_info.id + "/certificates/" + certificates)
 
                     for hostnames in eachlbr.hostnames:
                         hostname_tf_name = commonTools.check_tf_variable(hostnames)
@@ -784,28 +788,28 @@ def main():
 
                     for listeners in eachlbr.listeners:
                         listener_tf_name = commonTools.check_tf_variable(listeners)
-                        importCommands[reg].write("\nterraform import oci_load_balancer_listener." + listener_tf_name + " loadBalancers/" + lbr_info.id + "/listeners/" + listeners)
+                        importCommands[reg].write("\nterraform import oci_load_balancer_listener." + tf_name + "_" + listener_tf_name + " loadBalancers/" + lbr_info.id + "/listeners/" + listeners)
 
                     for backendsets, values in eachlbr.backend_sets.items():
                         backendsets_tf_name = commonTools.check_tf_variable(backendsets)
-                        importCommands[reg].write("\nterraform import oci_load_balancer_backend_set." + backendsets_tf_name + " loadBalancers/" + lbr_info.id + "/backendSets/" + backendsets)
+                        importCommands[reg].write("\nterraform import oci_load_balancer_backend_set." + tf_name + "_" + backendsets_tf_name + " loadBalancers/" + lbr_info.id + "/backendSets/" + backendsets)
 
                         for keys in values.backends:
                             backendservers_name = keys.name
                             backendservers_tf_name = commonTools.check_tf_variable(keys.ip_address)
-                            importCommands[reg].write("\nterraform import oci_load_balancer_backend." + backendsets_tf_name + "-" + backendservers_tf_name + " loadBalancers/" + lbr_info.id + "/backendSets/" + backendsets + "/backends/" + backendservers_name)
+                            importCommands[reg].write("\nterraform import oci_load_balancer_backend." + tf_name + "_" + backendsets_tf_name + "_" + backendservers_tf_name + " loadBalancers/" + lbr_info.id + "/backendSets/" + backendsets + "/backends/" + backendservers_name)
 
                     for pathroutes in eachlbr.path_route_sets:
                         pathroutes_tf_name = commonTools.check_tf_variable(pathroutes)
-                        importCommands[reg].write("\nterraform import oci_load_balancer_path_route_set." + pathroutes_tf_name + " loadBalancers/" + lbr_info.id + "/pathRouteSets/" + pathroutes)
+                        importCommands[reg].write("\nterraform import oci_load_balancer_path_route_set." + tf_name + "_" + pathroutes_tf_name + " loadBalancers/" + lbr_info.id + "/pathRouteSets/" + pathroutes)
 
                     for routerules in eachlbr.rule_sets:
                         routerules_tf_name = commonTools.check_tf_variable(routerules)
-                        importCommands[reg].write("\nterraform import oci_load_balancer_rule_set." + tf_name + "-" + routerules_tf_name + " loadBalancers/" + lbr_info.id + "/ruleSets/" + routerules)
+                        importCommands[reg].write("\nterraform import oci_load_balancer_rule_set." + tf_name + "_" + routerules_tf_name + " loadBalancers/" + lbr_info.id + "/ruleSets/" + routerules)
 
                     for ciphers in eachlbr.ssl_cipher_suites:
                         ciphers_tf_name = commonTools.check_tf_variable(ciphers)
-                        importCommands[reg].write("\nterraform import oci_load_balancer_ssl_cipher_suite." + ciphers_tf_name + " loadBalancers/" + lbr_info.id + "/sslCipherSuites/" + ciphers)
+                        importCommands[reg].write("\nterraform import oci_load_balancer_ssl_cipher_suite." + tf_name + "_" + ciphers_tf_name + " loadBalancers/" + lbr_info.id + "/sslCipherSuites/" + ciphers)
 
         importCommands[reg] = open(outdir + "/" + reg + "/tf_import_commands_lbr_nonGF.sh", "a")
         importCommands[reg].write("\n\nterraform plan")

@@ -2,13 +2,13 @@ items  {
         #Required
         action = "{{ action }}"
         header = "{{ header }}"
-        {% if prefix !='' and prefix != 'nan' %}
+        {% if prefix and prefix !='' %}
         prefix = "{{ prefix }}"
         {% endif %}
-        {% if suffix !='' and suffix != 'nan' %}
+        {% if suffix and suffix !='' %}
         suffix = "{{ suffix }}"
         {% endif %}
-        {% if value and value != '' and value != 'nan' %}
+        {% if value and value != '' %}
         value = "{{ value }}"
         {% endif %}
     }

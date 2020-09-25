@@ -1,6 +1,6 @@
-resource "oci_load_balancer_listener" "{{ listener_tf_name }}" {
+resource "oci_load_balancer_listener" "{{ lbr_tf_name }}_{{ listener_tf_name }}" {
     #Required
-    default_backend_set_name = oci_load_balancer_backend_set.{{ backend_set_tf_name }}.name
+    default_backend_set_name = oci_load_balancer_backend_set.{{ lbr_tf_name }}_{{ backend_set_tf_name }}.name
     load_balancer_id = oci_load_balancer_load_balancer.{{ lbr_tf_name }}.id
     name = "{{ listener_name }}"
     port = "{{ listener_port }}"

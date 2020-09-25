@@ -1,5 +1,5 @@
 #Backend Set
-resource "oci_load_balancer_backend_set" "{{ backend_set_tf_name }}" {
+resource "oci_load_balancer_backend_set" "{{ lbr_tf_name }}_{{ backend_set_tf_name }}" {
     #Required
     health_checker {
         #Required
@@ -38,6 +38,6 @@ resource "oci_load_balancer_backend_set" "{{ backend_set_tf_name }}" {
     {% if usessl == 'y' %}
     ssl_configuration {
         #Required
-        certificate_name = oci_load_balancer_certificate.{{ certificate_tf_name }}.certificate_name
+        certificate_name = oci_load_balancer_certificate.{{ lbr_tf_name }}_{{ certificate_tf_name }}.certificate_name
     }{% endif %}
 }

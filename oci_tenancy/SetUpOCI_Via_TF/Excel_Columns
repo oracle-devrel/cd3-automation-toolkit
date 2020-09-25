@@ -118,7 +118,8 @@
         "Allow Invalid Characters (TRUE|FALSE)" : "are_invalid_characters_allowed",
         "HTTP Header Size(in kB)" : "http_large_header_size_in_kb",
         "Redirect URI Host:Port" : "host",
-        "Redirect URI Protocol:Path" : "protocol"
+        "Redirect URI Protocol:Path" : "protocol",
+        "Redirect query" : "query"
     },
     "PathRouteSet":
     {

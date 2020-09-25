@@ -1,5 +1,5 @@
 #Cipher Suite
-resource "oci_load_balancer_ssl_cipher_suite" "{{ cipher_tf_name }}" {
+resource "oci_load_balancer_ssl_cipher_suite" "{{ lbr_tf_name }}_{{ cipher_tf_name }}" {
     #Required
     ciphers = [{{ ciphers }}]
     name = "{{ cipher_suite_name }}"

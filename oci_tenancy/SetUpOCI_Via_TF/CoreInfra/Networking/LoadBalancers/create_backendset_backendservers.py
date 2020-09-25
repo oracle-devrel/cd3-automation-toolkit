@@ -107,6 +107,7 @@ def main():
         # temporary dictionaries
         tempStr= {}
         tempdict= {}
+        lbr_tf_name =''
         backend_set_tf_name = ''
 
         #Check if mandatory field is empty
@@ -207,14 +208,14 @@ def main():
                         backup = "true"
                     else:
                         backup = "false"
-                tempback = {'backup' : backup,'backend_server_tf_name': backend_set_tf_name+"-"+backend_server_tf_name,'serverport':serverport,'backend_server_ip_address':backend_server_ip_address}
+                tempback = {'backup' : backup,'backend_server_tf_name': backend_set_tf_name+"_"+backend_server_tf_name,'serverport':serverport,'backend_server_ip_address':backend_server_ip_address}
                 tempStr.update(tempback)
 
                 # Render Backend Server
                 beserver_str = beserver_str + beserver.render(tempStr)
 
         # Write to TF file
-        outfile = outdir + "/" + region + "/"+backend_set_tf_name+"_backends-lb.tf"
+        outfile = outdir + "/" + region + "/"+ lbr_tf_name+"_"+ backend_set_tf_name+"_backends-lb.tf"
         oname = open(outfile, "w+")
         print("Writing to ..." + outfile)
         oname.write(beset_str + beserver_str)

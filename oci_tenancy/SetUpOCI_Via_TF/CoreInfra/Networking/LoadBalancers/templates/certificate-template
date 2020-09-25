@@ -1,5 +1,5 @@
 #Certificate
-resource "oci_load_balancer_certificate" "{{ certificate_tf_name }}_cert" {
+resource "oci_load_balancer_certificate" "{{ lbr_tf_name }}_{{ certificate_tf_name }}_cert" {
     #Required
     certificate_name = "{{ certificate_name }}"
     load_balancer_id = oci_load_balancer_load_balancer.{{ lbr_tf_name }}.id
