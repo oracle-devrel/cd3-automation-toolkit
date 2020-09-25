@@ -474,14 +474,13 @@ def print_listener(region, values_for_column_lis, LBRs, ntk_compartment_name):
                 # Process the Listerner Columns
                 elif col_headers in sheet_dict_lis.keys():
                     if col_headers == 'Rule Set Names':
-                        rule = ""
+                        rule_str = ""
                         if values.__getattribute__(sheet_dict_lis[col_headers]) != []:
                             for rule in values.__getattribute__(sheet_dict_lis[col_headers]):
-                                value = rule
-                                rule = rule +","+value
-                            if (rule != "" and rule[0] == ','):
-                                rule = rule.lstrip(',')
-                        values_for_column_lis[col_headers].append(rule)
+                                rule_str = rule_str +","+rule
+                            if (rule_str != "" and rule_str[0] == ','):
+                                rule_str = rule_str.lstrip(',')
+                        values_for_column_lis[col_headers].append(rule_str)
 
                     elif col_headers == 'UseSSL (y|n)':
                         if str(values.__getattribute__(sheet_dict_lis[col_headers])).lower() != "none":
