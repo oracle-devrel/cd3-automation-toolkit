@@ -22,6 +22,7 @@ def print_nsgsl(values_for_column_nsgs,vnc,region, comp_name, vcn_name, nsg, nsg
     icmptype = ""
     icmpcode = ""
     nsgname = ""
+    is_stateless = ""
     nsgsourcetype = nsgsl.source_type
     nsgdestinationtype = nsgsl.destination_type
     nsgdestination = nsgsl.destination
@@ -108,7 +109,10 @@ def print_nsgsl(values_for_column_nsgs,vnc,region, comp_name, vcn_name, nsg, nsg
         elif (col_header == "ICMPCode"):
             values_for_column_nsgs[col_header].append(icmpcode)
         elif(col_header == 'isStateless'):
-            values_for_column_nsgs[col_header].append(str(nsgsl.is_stateless))
+            is_stateless = nsgsl.is_stateless
+            if str(is_stateless).lower() == 'none':
+                is_stateless = "false"
+            values_for_column_nsgs[col_header].append(str(is_stateless))
         elif col_header.lower() in commonTools.tagColumns:
             values_for_column_nsgs = commonTools.export_tags(nsg, col_header, values_for_column_nsgs)
         else:
