@@ -392,7 +392,7 @@ if (input_nongf_tenancy.lower() == 'true'):
         if (exitVal == 1):
             exit()
         os.chdir("../..")
-        print("\n\nExecute tf_import_commands_tag_nonGF.sh script created under home region directory to synch TF with OCI Identity objects\n")
+        print("\n\nExecute tf_import_commands_tags_nonGF.sh script created under home region directory to synch TF with OCI Identity objects\n")
 
 
     if ("6" in userInput):
