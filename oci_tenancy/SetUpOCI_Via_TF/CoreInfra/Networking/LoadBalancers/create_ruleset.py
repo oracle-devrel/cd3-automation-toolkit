@@ -101,15 +101,15 @@ def main():
     # List of the column headers
     dfcolumns = df.columns.values.tolist()
 
-    rule_set_list = []
     rs_str = ''
-    region_list = []
+    control_access = 1
     lbr_list = []
+    methods = []
 
-    def add_rules(df,rs_str,tempStr,count):
+    def add_rules(df,rs_str,tempStr,control_access):
 
         if str(df.loc[i, 'Action']).upper() == 'CONTROL_ACCESS_USING_HTTP_METHODS':
-            if count == 0:
+            if control_access == 1:
                 method_str = method.render(tempStr)
                 rs_str = rs_str.replace(srcStr, method_str)
             else:
@@ -137,6 +137,7 @@ def main():
 
         return rs_str
 
+
     for i in df.index:
         region = str(df.loc[i, 'Region'])
 
@@ -156,6 +157,7 @@ def main():
         tempStr= {}
         tempdict= {}
         suffix=''
+        lbr_ruleset=''
         method_list = ''
         prefix=''
         host=''
@@ -310,38 +312,30 @@ def main():
 
             tempStr.update(tempdict)
 
-        outfile = outdir + "/" + region + "/" + lbr_tf_name + rule_set_tf_name + "_ruleset-lb.tf"
+        outfile = outdir + "/" + region + "/" + lbr_tf_name +"-"+ rule_set_tf_name + "_ruleset-lb.tf"
 
-        if str(df.loc[i, 'Region']) not in region_list:
-            region_list.append(str(df.loc[i, 'Region']))
-            lbr_list = []
-            rule_set_list = []
-            if str(df.loc[i, 'Rule Set Name']) not in rule_set_list and str(df.loc[i, 'Rule Set Name'])  != 'nan':
-                lbr_list.append(str(df.loc[i, 'LBR Name']))
-                rule_set_list.append(str(df.loc[i, 'Rule Set Name']))
-                rs_str = rs.render(tempStr)
-                count = 0
-                rs_str = add_rules(df,rs_str,tempStr, count)
-                print("Writing to ..." + outfile)
-            else:
-                count = 1
-                rs_str = add_rules(df, rs_str, tempStr, count)
+        if str(df.loc[i, 'Rule Set Name']) != 'nan':
+            lbr_ruleset = str(df.loc[i, 'Region'])+ str(df.loc[i, 'LBR Name']) + str(df.loc[i, 'Rule Set Name'])
+
+        if lbr_ruleset not in lbr_list:
+            lbr_list.append(lbr_ruleset)
+            rs_str = rs.render(tempStr)
+            control_access = 1
+            rs_str = add_rules(df,rs_str,tempStr,control_access)
+            print("Writing to ..."+outfile)
         else:
-            if str(df.loc[i, 'Rule Set Name']) not in rule_set_list and str(df.loc[i, 'Rule Set Name'])  != 'nan':
-                rule_set_list.append(str(df.loc[i, 'Rule Set Name']))
-                rs_str = rs.render(tempStr)
-                count = 0
-                rs_str = add_rules(df,rs_str,tempStr, count)
-                print("Writing to ..." + outfile)
+            if 'allowed_methods' in rs_str:
+                control_access = 0
             else:
-                count = 1
-                rs_str = add_rules(df, rs_str, tempStr, count)
+                control_access = 1
+                rs_str = add_rules(df, rs_str, tempStr,control_access)
+            control_access = control_access + 1
 
-    
         # Write to TF file
         oname = open(outfile, "w+")
         oname.write(rs_str)
         oname.close()
+
 
 if __name__ == '__main__':
     # Execution of the code begins here

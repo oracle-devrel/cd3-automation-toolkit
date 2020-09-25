@@ -23,4 +23,10 @@ resource "oci_load_balancer_listener" "{{ listener_tf_name }}" {
         cipher_suite_name = "{{ cipher_suite_name }}"
 
     }{% endif %}
+
+    lifecycle {
+        ignore_changes = [
+            ssl_configuration
+        ]
+    }
 }
