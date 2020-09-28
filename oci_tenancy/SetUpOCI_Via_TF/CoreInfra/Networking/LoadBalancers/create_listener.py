@@ -234,7 +234,7 @@ def main():
         # Write to TF file
         outfile = outdir + "/" + region + "/"+lbr_tf_name+"_"+listener_tf_name+"_listener-lb.tf"
         oname = open(outfile, "w+")
-        print("Writing to ..." + outfile)
+        print("Writing to " + outfile)
         oname.write(listener_str)
         oname.close()
 

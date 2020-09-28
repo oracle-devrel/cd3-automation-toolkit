@@ -217,7 +217,7 @@ def main():
         # Write to TF file
         outfile = outdir + "/" + region + "/"+ lbr_tf_name+"_"+ backend_set_tf_name+"_backends-lb.tf"
         oname = open(outfile, "w+")
-        print("Writing to ..." + outfile)
+        print("Writing to " + outfile)
         oname.write(beset_str + beserver_str)
         oname.close()
 

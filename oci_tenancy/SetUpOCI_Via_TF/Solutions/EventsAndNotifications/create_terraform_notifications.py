@@ -164,7 +164,7 @@ def main():
                 # Write to output
                 file = outdir + "/" + region + "/" + tf_name_topic + "-notification.tf"
                 oname = open(file, "w+")
-                print("Writing... " + file)
+                print("Writing to " + file)
                 oname.write(tfStr[region])
                 oname.close()
                 tfStr[region]= ""
@@ -182,7 +182,7 @@ def main():
                 # Write to output
                 file = outdir + "/" + region + "/" + subscription + "-subscription.tf"
                 oname = open(file, "w+")
-                print("Writing... " + file)
+                print("Writing to " + file)
                 oname.write(tfStr[region])
                 oname.close()
                 tfStr[region]=""

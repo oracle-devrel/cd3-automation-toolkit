@@ -322,7 +322,7 @@ def main():
             rs_str = rs.render(tempStr)
             control_access = 1
             rs_str = add_rules(df,rs_str,tempStr,control_access)
-            print("Writing to ..."+outfile)
+            print("Writing to "+outfile)
         else:
             if 'allowed_methods' in rs_str:
                 control_access = 0

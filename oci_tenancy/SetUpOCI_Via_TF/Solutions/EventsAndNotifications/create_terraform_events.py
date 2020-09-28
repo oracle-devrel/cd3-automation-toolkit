@@ -225,7 +225,7 @@ def main():
             # Write to output
             file = outdir + "/" + region + "/" + tf_name + "-event.tf"
             oname = open(file, "w+")
-            print("Writing... " + file)
+            print("Writing to " + file)
             oname.write(tfStr[region])
             oname.close()
 

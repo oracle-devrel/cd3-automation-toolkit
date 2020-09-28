@@ -193,7 +193,7 @@ def main():
 
                 outfile = outdir + "/" + region + "/"+lbr_tf_name+"_"+cipher_tf_name+"_cipher-suite-lb.tf"
                 oname = open(outfile, "w+")
-                print("Writing to ..." + outfile)
+                print("Writing to " + outfile)
                 oname.write(cipher_suites[region])
                 oname.close()
 
@@ -203,7 +203,7 @@ def main():
                 # Write to TF file
                 outfile = outdir + "/" + region + "/"+lbr_tf_name+"_"+certificate_tf_name+"_certificate-lb.tf"
                 oname = open(outfile, "w+")
-                print("Writing to ..." + outfile)
+                print("Writing to " + outfile)
                 oname.write(certificate_str[region])
                 oname.close()
 

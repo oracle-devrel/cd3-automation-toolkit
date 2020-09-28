@@ -164,7 +164,7 @@ def main():
                 # Write to TF file
                 outfile = outdir + "/" + region + "/" + lbr_tf_name + "_" + path_route_set_tf_name + "_pathrouteset-lb.tf"
                 oname = open(outfile, "w+")
-                print("Writing to ..." + outfile)
+                print("Writing to " + outfile)
                 oname.write(prs_str)
                 oname.close()
 
