@@ -18,7 +18,7 @@ resource "oci_load_balancer_listener" "{{ lbr_tf_name }}_{{ listener_tf_name }}"
     {% if usessl == 'y' %}
     ssl_configuration {
         #Required
-        certificate_name = oci_load_balancer_certificate.{{ certificate_tf_name }}.certificate_name
+        certificate_name = oci_load_balancer_certificate.{{ lbr_tf_name }}_{{ certificate_tf_name }}.certificate_name
         protocols = [ {{ ssl_protocols }} ]
         cipher_suite_name = "{{ cipher_suite_name }}"
 
