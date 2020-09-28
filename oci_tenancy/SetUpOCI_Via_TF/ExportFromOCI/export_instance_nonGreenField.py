@@ -17,7 +17,7 @@ from jinja2 import Environment, FileSystemLoader
 
 def adding_columns_values(region, hostname, ad, fd, vs, publicip, privateip, os_dname, shape, key_name, c_name,
                           bkp_policy_name, nsgs, d_host, instance_data, values_for_column_instances, bc_info):
-    print("ADD=",os_dname)
+    #print("ADD=",os_dname)
     for col_header in values_for_column_instances.keys():
         if (col_header == "Region"):
             values_for_column_instances[col_header].append(region)
