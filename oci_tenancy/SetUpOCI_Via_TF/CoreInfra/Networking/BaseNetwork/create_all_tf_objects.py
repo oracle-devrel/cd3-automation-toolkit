@@ -49,9 +49,7 @@ def main():
     else:
         nongf_tenancy = "false"
 
-
-
-    print("-----------Process VCNs tab-----------")
+    print("-------------------------------------------------Process VCNs tab---------------------------------------------------")
     if (input_config_file == ''):
         command = 'python create_major_objects.py ' + propsfile + ' ' + outdir + ' ' + prefix + ' --modify_network ' + modify_network
     else:
@@ -60,7 +58,7 @@ def main():
     if (exitVal == 1):
         exit(1)
 
-    print("\n--------------Process DHCP tab------------")
+    print("\n---------------------------------------------Process DHCP tab-----------------------------------------------------")
     if (input_config_file == ''):
         command = 'python create_terraform_dhcp_options.py ' + propsfile + ' ' + outdir + ' '+prefix +' --modify_network '+modify_network
     else:
@@ -69,7 +67,7 @@ def main():
     if (exitVal == 1):
         exit(1)
 
-    print("\n------------------Process Subnets tab for Routes creation----------------")
+    print("\n---------------------------------------------Process Subnets tab for Routes creation------------------------------")
     if (input_config_file == ''):
         command = 'python create_terraform_route.py ' + propsfile + ' ' + outdir + ' '+' --modify_network '+modify_network
     else:
@@ -78,7 +76,7 @@ def main():
     if (exitVal == 1):
         exit(1)
 
-    print("\n---------------Process Subnets tab for Seclists creation---------------")
+    print("\n---------------------------------------------Process Subnets tab for Seclists creation-----------------------------")
     if (input_config_file == ''):
         command = 'python create_terraform_seclist.py  '+ propsfile + ' ' + outdir + ' '+' --modify_network '+modify_network
     else:
@@ -87,7 +85,7 @@ def main():
     if (exitVal == 1):
         exit(1)
 
-    print("\n----------------Process Subnets tab for Subnets creation----------------")
+    print("\n---------------------------------------------Process Subnets tab for Subnets creation-------------------------------")
     if (input_config_file == ''):
         command = 'python create_terraform_subnet.py ' + propsfile + ' ' + outdir + ' ' + prefix +' --modify_network '+modify_network
     else:

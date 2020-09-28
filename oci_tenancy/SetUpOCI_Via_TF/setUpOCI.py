@@ -99,7 +99,7 @@ if (input_nongf_tenancy.lower() == 'true'):
             exit()
     else:
         print("None Found. Proceeding to Export...")
-    print("----------------------------------------------------------")
+    print("-----------------------------------------------------------------------------------------------------------------")
     print("\nFetching Compartment Info to variables files...")
     if (input_config_file == ''):
         command = "python fetch_compartments_to_variablesTF.py " + input_outdir
@@ -112,7 +112,7 @@ if (input_nongf_tenancy.lower() == 'true'):
         print("Error Occured. Please try again!!!")
         exit()
     if ("1" in userInput):
-        print("----------------------------------------------------------")
+        print("-----------------------------------------------------------------------------------------------------------------")
         print("\nExporting Identity...")
         os.chdir('ExportFromOCI')
         if (input_config_file == ''):
@@ -128,9 +128,9 @@ if (input_nongf_tenancy.lower() == 'true'):
             print("\nError Occured. Please try again!!!")
             exit()
         os.chdir("..")
-        print("----------------------------------------------------------")
+        print("-----------------------------------------------------------------------------------------------------------------")
         print("Proceeding to create TF files...\n")
-        print("\n-----------Process Compartments tab-----------")
+        print("\n---------------------------------Process Compartments tab------------------------------------------------------")
         if (input_config_file == ''):
             command = 'python create_terraform_compartments.py ' + input_cd3file + ' ' + input_outdir + ' ' + input_prefix
         else:
@@ -141,7 +141,7 @@ if (input_nongf_tenancy.lower() == 'true'):
         exitVal = os.system(command)
         if (exitVal == 1):
             exit()
-        print("\n-----------Process Groups tab-----------")
+        print("\n---------------------------------Process Groups tab-------------------------------------------------------------")
         if (input_config_file == ''):
             command = 'python create_terraform_groups.py ' + input_cd3file + ' ' + input_outdir + ' ' + input_prefix
         else:
@@ -154,7 +154,7 @@ if (input_nongf_tenancy.lower() == 'true'):
         if (exitVal == 1):
             exit()
 
-        print("\n-----------Process Policies tab-----------")
+        print("\n----------------------------------Process Policies tab----------------------------------------------------------")
         if (input_config_file == ''):
             command = 'python create_terraform_policies.py ' + input_cd3file + ' ' + input_outdir + ' ' + input_prefix
         else:
@@ -169,7 +169,7 @@ if (input_nongf_tenancy.lower() == 'true'):
         os.chdir("../..")
         print("\n\nExecute tf_import_commands_identity_nonGF.sh script created under home region directory to synch TF with OCI Identity objects\n")
     if ("2" in userInput):
-        print("----------------------------------------------------------")
+        print("-----------------------------------------------------------------------------------------------------------------")
         print("\nExporting Network...")
 
         os.chdir('ExportFromOCI')
@@ -193,9 +193,9 @@ if (input_nongf_tenancy.lower() == 'true'):
             print("\nError Occured. Please try again!!!")
             exit()
         os.chdir('..')
-        print("----------------------------------------------------------")
+        print("-----------------------------------------------------------------------------------------------------------------")
         print("\nProceeding to create TF files...\n")
-        print("\n-----------Process VCNs tab-----------")
+        print("\n--------------------------------------Process VCNs tab---------------------------------------------------------")
         if (input_config_file == ''):
             command = 'python create_major_objects.py ' + input_cd3file + ' ' + input_outdir + ' ' + input_prefix
         else:
@@ -207,7 +207,7 @@ if (input_nongf_tenancy.lower() == 'true'):
         if (exitVal == 1):
             exit()
 
-        print("\n--------------Process DHCP tab------------")
+        print("\n--------------------------------------Process DHCP tab---------------------------------------------------------")
         if (input_config_file == ''):
             command = 'python create_terraform_dhcp_options.py ' + input_cd3file + ' ' + input_outdir + ' ' + input_prefix
         else:
@@ -217,7 +217,7 @@ if (input_nongf_tenancy.lower() == 'true'):
         if (exitVal == 1):
             exit()
 
-        print("\n----------------Process Subnets tab for Subnets creation----------------")
+        print("\n--------------------------------------Process Subnets tab for Subnets creation--------------------------------")
         if (input_config_file == ''):
             command = 'python create_terraform_subnet.py ' + input_cd3file + ' ' + input_outdir + ' ' + input_prefix
         else:
@@ -227,7 +227,7 @@ if (input_nongf_tenancy.lower() == 'true'):
         if (exitVal == 1):
             exit()
 
-        print("\n----------------Process SecRulesinOCI tab for SecList creation----------------")
+        print("\n--------------------------------------Process SecRulesinOCI tab for SecList creation----------------------------")
         if (input_config_file == ''):
             command = 'python modify_secrules_tf.py ' + input_cd3file + ' ' + input_outdir + ' ' + input_cd3file
         else:
@@ -236,7 +236,7 @@ if (input_nongf_tenancy.lower() == 'true'):
         exitval = os.system(command)
         if (exitval == 1):
             exit()
-        print("\n----------------Process RouteRulesinOCI tab for RouteRule creation----------------")
+        print("\n--------------------------------------Process RouteRulesinOCI tab for RouteRule creation------------------------")
         if (input_config_file == ''):
             command = 'python modify_routerules_tf.py ' + input_cd3file + ' ' + input_outdir
         else:
@@ -246,7 +246,7 @@ if (input_nongf_tenancy.lower() == 'true'):
         if (exitval == 1):
             exit()
 
-        print("\n-----------Process NSGs tab-----------")
+        print("\n--------------------------------------Process NSGs tab----------------------------------------------------------")
         if (input_config_file == ''):
             command = 'python create_terraform_nsg.py ' + input_cd3file + ' ' + input_outdir
         else:
@@ -268,7 +268,7 @@ if (input_nongf_tenancy.lower() == 'true'):
         print("\n\nExecute tf_import_commands_network_nonGF.sh script created under each region directory to synch TF with OCI Network objects\n")
 
     if ("3" in userInput):
-        print("----------------------------------------------------------")
+        print("-----------------------------------------------------------------------------------------------------------------")
         print("\nExporting Instances...")
         os.chdir('ExportFromOCI')
         input_comp = input("Enter name of Compartment as it appears in OCI (comma separated without spaces if multiple)for which you want to export Instances;\nPress 'Enter' to export from all the Compartments:")
@@ -291,9 +291,9 @@ if (input_nongf_tenancy.lower() == 'true'):
             print("\nError Occured. Please try again!!!")
             exit()
         os.chdir('..')
-        print("----------------------------------------------------------")
+        print("-----------------------------------------------------------------------------------------------------------------")
         print("Proceeding to create TF files...\n")
-        print("\n-----------Process Instances tab-----------")
+        print("\n--------------------------------------Process Instances tab----------------------------------------------------")
         if (input_config_file == ''):
             command1 = 'python create_terraform_instances.py ' + input_cd3file + ' ' + input_outdir
             command2 = 'python boot_backups_policy.py ' + inputfile + ' ' + outdir
@@ -315,7 +315,7 @@ if (input_nongf_tenancy.lower() == 'true'):
         print("\n\nExecute tf_import_commands_instances_nonGF.sh script created under each region directory to synch TF with OCI Instances\n")
 
     if ("4" in userInput):
-        print("----------------------------------------------------------")
+        print("-----------------------------------------------------------------------------------------------------------------")
         print("\nExporting Block Volumes...")
         os.chdir('ExportFromOCI')
         input_comp = input("Enter name of Compartment as it appears in OCI (comma separated without spaces if multiple)for which you want to export Block Volumes;\nPress 'Enter' to export from all the Compartments: ")
@@ -338,9 +338,9 @@ if (input_nongf_tenancy.lower() == 'true'):
             print("\nError Occured. Please try again!!!")
             exit()
         os.chdir('..')
-        print("----------------------------------------------------------")
+        print("-----------------------------------------------------------------------------------------------------------------")
         print("Proceeding to create TF files...\n")
-        print("\n-----------Process BlockVols tab-----------")
+        print("\n-----------------------------------Process BlockVols tab-------------------------------------------------------")
         if (input_config_file == ''):
             command1 = 'python create_terraform_block_volumes.py ' + input_cd3file + ' ' + input_outdir
             command2 = 'python block_backups_policy.py ' + inputfile + ' ' + outdir
@@ -364,7 +364,7 @@ if (input_nongf_tenancy.lower() == 'true'):
 
 
     if ("5" in userInput):
-        print("----------------------------------------------------------")
+        print("-----------------------------------------------------------------------------------------------------------------")
         print("\nExporting Tags...")
         os.chdir('ExportFromOCI')
         if (input_config_file == ''):
@@ -378,9 +378,9 @@ if (input_nongf_tenancy.lower() == 'true'):
             print("\nError Occured. Please try again!!!")
             exit()
         os.chdir('..')
-        print("----------------------------------------------------------")
+        print("-----------------------------------------------------------------------------------------------------------------")
         print("\nProceeding to create TF files...\n")
-        print("\n-----------Process Tags tab-----------")
+        print("\n--------------------------------------------Process Tags tab---------------------------------------------------")
         if (input_config_file == ''):
             command = 'python create_namespace_tagkey.py ' + input_cd3file + ' ' + input_outdir
         else:
@@ -396,7 +396,7 @@ if (input_nongf_tenancy.lower() == 'true'):
 
 
     if ("6" in userInput):
-        print("----------------------------------------------------------")
+        print("-----------------------------------------------------------------------------------------------------------------")
         print("\nExporting FSS...")
         os.chdir('ExportFromOCI')
         input_comp = input("Enter name of Compartment as it appears in OCI (comma separated without spaces if multiple)for which you want to export FSS objects;\nPress 'Enter' to export from all the Compartments: ")
@@ -419,9 +419,9 @@ if (input_nongf_tenancy.lower() == 'true'):
             print("\nError Occured. Please try again!!!")
             exit()
         os.chdir('..')
-        print("----------------------------------------------------------")
+        print("-----------------------------------------------------------------------------------------------------------------")
         print("Proceeding to create TF files...\n")
-        print("\n-----------Process FSS tab-----------")
+        print("\n-----------------------------------------------Process FSS tab-------------------------------------------------")
         if (input_config_file == ''):
             command = 'python create_terraform_fss.py ' + input_cd3file + ' ' + input_outdir
         else:
@@ -438,7 +438,7 @@ if (input_nongf_tenancy.lower() == 'true'):
 
 
     if ("7" in userInput):
-        print("----------------------------------------------------------")
+        print("-----------------------------------------------------------------------------------------------------------------")
         print("\nExporting LBR...")
 
         os.chdir('ExportFromOCI')
@@ -462,9 +462,9 @@ if (input_nongf_tenancy.lower() == 'true'):
             print("\nError Occured. Please try again!!!")
             exit()
         os.chdir('..')
-        print("----------------------------------------------------------")
+        print("-----------------------------------------------------------------------------------------------------------------")
         print("Proceeding to create TF files...\n")
-        print("\n-----------Process Load Balancer tabs-----------")
+        print("\n---------------------------------------------Process Load Balancer tabs----------------------------------------")
         os.chdir('CoreInfra/Networking/LoadBalancers')
         if (input_config_file == ''):
             command = 'python create_terraform_lbr_hostname_certs.py ' + input_cd3file + ' ' + input_outdir
@@ -478,27 +478,27 @@ if (input_nongf_tenancy.lower() == 'true'):
             command3 = 'python create_listener.py ' + input_cd3file + ' ' + input_outdir + ' --configFileName ' + input_config_file
             command4 = 'python create_path_route_set.py ' + input_cd3file + ' ' + input_outdir + ' --configFileName ' + input_config_file
             command5 = 'python create_ruleset.py ' + input_cd3file + ' ' + input_outdir + ' --configFileName ' + input_config_file
-        print("\n------------------------Creating LB and Certificates---------------------------")
+        print("\n---------------------------------------------Creating LB and Certificates----------------------------------------")
         print("Executing Command: " + command)
         exitVal = os.system(command)
         if (exitVal == 1):
             exit()
-        print("\n------------------------Creating Backend Sets and Backend Servers---------------------------")
+        print("\n---------------------------------------------Creating Backend Sets and Backend Servers---------------------------")
         print("Executing Command: " + command2)
         exitVal = os.system(command2)
         if (exitVal == 1):
             exit()
-        print("\n------------------------Creating Listeners---------------------------")
+        print("\n---------------------------------------------Creating Listeners--------------------------------------------------")
         print("Executing Command: " + command3)
         exitVal = os.system(command3)
         if (exitVal == 1):
             exit()
-        print("\n------------------------Creating Path Route Sets---------------------------")
+        print("\n---------------------------------------------Creating Path Route Sets--------------------------------------------")
         print("Executing Command: " + command4)
         exitVal = os.system(command4)
         if (exitVal == 1):
             exit()
-        print("\n------------------------Creating RuleSets---------------------------")
+        print("\n---------------------------------------------Creating RuleSets---------------------------------------------------")
         print("Executing Command: " + command5)
         exitVal = os.system(command5)
         os.chdir("../..")
@@ -509,18 +509,18 @@ if (input_nongf_tenancy.lower() == 'true'):
         print("\n\nExecute tf_import_commands_lbr_nonGF.sh script created under each region directory to synch TF with OCI LBR objects\n")
     '''
     if ("8" in userInput):
-        print("----------------------------------------------------------")
+        print("-----------------------------------------------------------------------------------------------------------------")
         print("\nExporting ADW/ATP...")
         print("Yet to be Implemented")
         exit()
     if ("9" in userInput):
-        print("----------------------------------------------------------")
+        print("-----------------------------------------------------------------------------------------------------------------")
         print("\nExporting Database...")
         print("Yet to be Implemented")
         exit()
     '''
     if ("8" in userInput):
-        print("----------------------------------------------------------")
+        print("-----------------------------------------------------------------------------------------------------------------")
         print("\nExporting Events and Notifications...")
         os.chdir('ExportFromOCI')
         input_comp = input("Enter name of Compartment as it appears in OCI (comma separated without spaces if multiple)for which you want to export Events and Notifications objects;\nPress 'Enter' to export from all the Compartments: ")
@@ -543,16 +543,16 @@ if (input_nongf_tenancy.lower() == 'true'):
             print("\nError Occured. Please try again!!!")
             exit()
         os.chdir('..')
-        print("----------------------------------------------------------")
+        print("-----------------------------------------------------------------------------------------------------------------")
         print("Proceeding to create TF files...\n")
-        print("\n-----------Process Events tab-----------")
+        print("\n-----------------------------------------Process Events tab----------------------------------------------------")
         command = 'python create_terraform_events.py ' + input_cd3file + ' ' + input_outdir + ' ' + input_prefix
         os.chdir('Solutions/EventsAndNotifications')
         print("Executing Command: " + command)
         exitVal = os.system(command)
         if (exitVal == 1):
             exit()
-        print("\n-----------Process Notifications tab-----------")
+        print("\n-----------------------------------------Process Notifications tab---------------------------------------------")
         command = 'python create_terraform_notifications.py ' + input_cd3file + ' ' + input_outdir + ' ' + input_prefix
         os.chdir("../..")
         os.chdir('Solutions/EventsAndNotifications')
@@ -594,7 +594,7 @@ if (not set(userInput).issubset(set(inputs))):
     exit()
 
 if('1' in userInput):
-    print('-----------------------------Identity----------------------')
+    print('-------------------------------------------------------Identity------------------------------------------------------')
     if not os.path.exists(outdir):
         os.makedirs(outdir)
 
@@ -606,7 +606,7 @@ if('1' in userInput):
     choice = input("Enter your choice ")
     choice = choice.split(",")
     if ('1' in choice):
-        print("--------------------------Processing Compartments Tab--------------------------------")
+        print("------------------------------------------Processing Compartments Tab-----------------------------------------------")
         os.chdir('Identity/Compartments')
         if (input_config_file == ''):
             command = 'python create_terraform_compartments.py ' + inputfile + ' ' + outdir + ' ' + prefix
@@ -615,10 +615,10 @@ if('1' in userInput):
         print("Executing Command: "+command)
         os.system(command)
         os.chdir("../..")
-        print("--------------------------------------------------------------------------")
+        print("--------------------------------------------------------------------------------------------------------------------")
 
     if('2' in choice):
-        print("---------------------------Processing Groups Tab--------------------------------")
+        print("------------------------------------------Processing Groups Tab-----------------------------------------------------")
         os.chdir('Identity/Groups')
         if (input_config_file == ''):
             command = 'python create_terraform_groups.py ' + inputfile + ' ' + outdir + ' ' + prefix
@@ -627,10 +627,10 @@ if('1' in userInput):
         print("Executing Command: " + command)
         os.system(command)
         os.chdir("../..")
-        print("--------------------------------------------------------------------------")
+        print("---------------------------------------------------------------------------------------------------------------------")
 
     if('3' in choice):
-        print("----------------------Processing Policies Tab----------------------------------")
+        print("------------------------------------------Processing Policies Tab----------------------------------------------------")
         os.chdir('Identity/Policies')
         if (input_config_file == ''):
             command = 'python create_terraform_policies.py ' + inputfile + ' ' + outdir + ' ' + prefix
@@ -639,7 +639,7 @@ if('1' in userInput):
         print("Executing Command: " + command)
         os.system(command)
         os.chdir("../..")
-        print("--------------------------------------------------------------------------")
+        print("---------------------------------------------------------------------------------------------------------------------")
 
     if("m" in choice or "M" in choice):
         cmd = "python setUpOCI.py "+args.propsfile
@@ -649,7 +649,7 @@ if('1' in userInput):
         print("Exiting...")
         exit()
 if('2' in userInput):
-    print("---------------------Networking----------------------------------")
+    print("---------------------------------------------------Networking--------------------------------------------------------")
     if not os.path.exists(outdir):
         os.makedirs(outdir)
     cd3validate = input("Do you want to verify CD3 Network Tabs? Enter y or n: ")
@@ -698,7 +698,7 @@ if('2' in userInput):
         os.chdir('CoreInfra/Networking/BaseNetwork')
         os.system(command)
         os.chdir("../../..")
-        print("--------------------------------------------------------------------------")
+        print("-------------------------------------------------------------------------------------------------------------")
 
     if ('2' in choice):
         if (input_config_file == ''):
@@ -709,10 +709,10 @@ if('2' in userInput):
         os.chdir('CoreInfra/Networking/BaseNetwork')
         os.system(command)
         os.chdir("../../..")
-        print("--------------------------------------------------------------------------")
+        print("---------------------------------------------------------------------------------------------------------------")
 
     if('3' in choice):
-        print("---------------------------Exporting Rules--------------------------")
+        print("-----------------------------------------Exporting Rules-------------------------------------------------------")
         cd3outfile = input_cd3file
         inputConfigFile = input_config_file
         input_comp = input("Enter name of Compartment as it appears in OCI (comma separated if multiple) for which you want to export rules;\nPress 'Enter' to export from all the Compartments: ")
@@ -735,14 +735,14 @@ if('2' in userInput):
         print("Executing Command: " + command_sl)
         os.chdir('CoreInfra/Networking/BaseNetwork')
         os.system(command_sl)
-        print("-----------------------------------------------------------------------------")
+        print("-----------------------------------------------------------------------------------------------------------------")
         print("Executing Command: " + command_rt)
         os.system(command_rt)
         os.chdir("../../..")
-        print("--------------------------------------------------------------------------")
+        print("-----------------------------------------------------------------------------------------------------------------")
 
     if('4' in choice):
-        print("------------------------Modifying Security Rules--------------------------------")
+        print("---------------------------------------------Modifying Security Rules--------------------------------------------")
         inputcsv =inputfile
         if (input_config_file == ''):
             command = 'python modify_secrules_tf.py ' + inputfile + ' ' + outdir + ' ' + inputcsv
@@ -753,10 +753,10 @@ if('2' in userInput):
         os.chdir('CoreInfra/Networking/BaseNetwork')
         os.system(command)
         os.chdir("../../..")
-        print("--------------------------------------------------------------------------")
+        print("-----------------------------------------------------------------------------------------------------------------")
 
     if('5' in choice):
-        print("------------------------Modifying Route Rules--------------------------------")
+        print("---------------------------------------------Modifying Route Rules-----------------------------------------------")
         if (input_config_file == ''):
             command = 'python modify_routerules_tf.py ' + inputfile + ' ' + outdir
         else:
@@ -765,10 +765,10 @@ if('2' in userInput):
         os.chdir('CoreInfra/Networking/BaseNetwork')
         os.system(command)
         os.chdir("../../..")
-        print("--------------------------------------------------------------------------")
+        print("-----------------------------------------------------------------------------------------------------------------")
 
     if('6' in choice):
-        print("---------------------Processing NSGs Tab----------------------------------")
+        print("---------------------------------------------Processing NSGs Tab-------------------------------------------------")
         if (input_config_file == ''):
            command = 'python create_terraform_nsg.py ' + inputfile + ' ' + outdir
         else:
@@ -777,7 +777,7 @@ if('2' in userInput):
         os.chdir('CoreInfra/Networking/BaseNetwork')
         os.system(command)
         os.chdir("../../..")
-        print("--------------------------------------------------------------------------")
+        print("-----------------------------------------------------------------------------------------------------------------")
     if ("m" in choice or "M" in choice):
         cmd = "python setUpOCI.py " + args.propsfile
         print("Going back to Main Menu...")
@@ -787,7 +787,7 @@ if('2' in userInput):
         exit()
 
 if('3' in userInput):
-    print("--------------------Instances/Dedicated VM Hosts------------------------------------")
+    print("-------------------------------------------------Instances/Dedicated VM Hosts----------------------------------------")
     print("1.  Add/Modify/Delete Dedicated VM Hosts")
     print("2.  Add/Modify/Delete Instances/Boot Backup Policy")
     print("m.  Press m to go back to Main Menu")
@@ -802,7 +802,7 @@ if('3' in userInput):
 
     if ("1" in choice):
         os.chdir('CoreInfra/Compute')
-        print("---------------------Processing DedicatedVMHosts Tab----------------------------------")
+        print("-----------------------------------------------Processing DedicatedVMHosts Tab-----------------------------------")
         if (input_config_file == ''):
             command = 'python create_terraform_dedicatedhosts.py '+inputfile + ' ' + outdir
         else:
@@ -810,10 +810,10 @@ if('3' in userInput):
         print("Executing Command: " + command)
         os.system(command)
         os.chdir("../..")
-        print("--------------------------------------------------------------------------")
+        print("-----------------------------------------------------------------------------------------------------------------")
     if ("2" in choice):
         os.chdir('CoreInfra/Compute')
-        print("---------------------Processing Instances Tab----------------------------------")
+        print("-----------------------------------------------Processing Instances Tab------------------------------------------")
         if (input_config_file == ''):
             command1 = 'python create_terraform_instances.py ' + inputfile + ' ' + outdir
             command2 = 'python boot_backups_policy.py ' + inputfile + ' ' + outdir
@@ -829,7 +829,7 @@ if('3' in userInput):
         if (exitVal == 1):
             exit()
         os.chdir("../..")
-        print("--------------------------------------------------------------------------")
+        print("------------------------------------------------------------------------------------------------------------------")
 
     if ("m" in choice or "M" in choice):
         cmd = "python setUpOCI.py " + args.propsfile
@@ -840,7 +840,7 @@ if('3' in userInput):
         exit()
 
 if('4' in userInput):
-    print("------------------------Processing BlockVolumes Tab---------------------------")
+    print("--------------------------------------------------Processing BlockVolumes Tab-------------------------------------")
     if not os.path.exists(outdir):
         os.makedirs(outdir)
 
@@ -860,10 +860,10 @@ if('4' in userInput):
     if (exitVal == 1):
         exit()
     os.chdir("../..")
-    print("--------------------------------------------------------------------------")
+    print("------------------------------------------------------------------------------------------------------------------------")
 
 if('5' in userInput):
-    print("---------------------Processing Tags Tab------------------------------")
+    print("--------------------------------------------------Processing Tags Tab---------------------------------------------------")
     os.chdir('Governance/Tagging')
     if (input_config_file == ''):
         command = 'python create_namespace_tagkey.py '+inputfile + ' ' + outdir
@@ -874,7 +874,7 @@ if('5' in userInput):
     os.chdir("../..")
 
 if('6' in userInput):
-    print("------------------------Processing FSS Tab---------------------------")
+    print("--------------------------------------------------Processing FSS Tab-----------------------------------------------------")
     outdir = input_outdir
 
     if not os.path.exists(outdir):
@@ -888,10 +888,10 @@ if('6' in userInput):
     print("Executing Command: " + command)
     os.system(command)
     os.chdir("../..")
-    print("--------------------------------------------------------------------------")
+    print("------------------------------------------------------------------------------------------------------------------------")
 
 if('7' in userInput):
-    print("------------------------Setting up LBR---------------------------")
+    print("-------------------------------------------------Setting up LBR---------------------------------------------------------")
     if not os.path.exists(outdir):
         os.makedirs(outdir)
 
@@ -909,37 +909,37 @@ if('7' in userInput):
         command3 = 'python create_listener.py ' + input_cd3file + ' ' + input_outdir + ' --configFileName ' + input_config_file
         command4 = 'python create_path_route_set.py ' + input_cd3file + ' ' + input_outdir + ' --configFileName ' + input_config_file
         command5 = 'python create_ruleset.py ' + input_cd3file + ' ' + input_outdir + ' --configFileName ' + input_config_file
-    print("\n------------------------Creating LBR---------------------------")
+    print("\n-----------------------------------------------Creating LBR-------------------------------------------------------------")
     print("Executing Command: " + command)
     exitVal = os.system(command)
     if (exitVal == 1):
         exit()
-    print("\n------------------------Creating Backend Sets and Backend Servers---------------------------")
+    print("\n---------------------------------------Creating Backend Sets and Backend Servers----------------------------------------")
     print("Executing Command: " + command2)
     exitVal = os.system(command2)
     if (exitVal == 1):
         exit()
-    print("\n------------------------Creating Listeners---------------------------")
+    print("\n------------------------------------------------Creating Listeners-------------------------------------------------------")
     print("Executing Command: " + command3)
     exitVal = os.system(command3)
     if (exitVal == 1):
         exit()
-    print("\n------------------------Creating Path Route Sets---------------------------")
+    print("\n-------------------------------------------Creating Path Route Sets------------------------------------------------------")
     print("Executing Command: " + command4)
     exitVal = os.system(command4)
     if (exitVal == 1):
         exit()
-    print("\n------------------------Creating RuleSets---------------------------")
+    print("\n----------------------------------------------Creating RuleSets----------------------------------------------------------")
     print("Executing Command: " + command5)
     exitVal = os.system(command5)
     if (exitVal == 1):
         exit()
 
     os.chdir("../../..")
-    print("--------------------------------------------------------------------------")
+    print("------------------------------------------------------------------------------------------------------------------------")
 
 if('8' in userInput):
-    print("------------------------Processing ADW/ATP Tab---------------------------")
+    print("----------------------------------------------Processing ADW/ATP Tab----------------------------------------------------")
     if not os.path.exists(outdir):
         os.makedirs(outdir)
     os.chdir('Database')
@@ -950,9 +950,9 @@ if('8' in userInput):
     print("Executing Command: " + command)
     os.system(command)
     os.chdir("../")
-    print("--------------------------------------------------------------------------")
+    print("-----------------------------------------------------------------------------------------------------------------------")
 if('9' in userInput):
-    print("---------------------Databases----------------------------------")
+    print("------------------------------------------------Databases-------------------------------------------------------------")
     print("1.  Add/Modify/Delete Virtual Machine")
     print("2.  Add/Modify/Delete Bare Metal")
     print("3.  Add/Modify/Delete ExaData")
@@ -963,7 +963,7 @@ if('9' in userInput):
     update_choice = update_choice.split(",")
 
     if ('1' in update_choice):
-        print("---------------------------Processing DB_System_VM Tab--------------------------")
+        print("----------------------------------------Processing DB_System_VM Tab-----------------------------------------------")
         if not os.path.exists(outdir):
             os.makedirs(outdir)
         os.chdir('Database')
@@ -974,9 +974,9 @@ if('9' in userInput):
         print("Executing Command: " + command)
         os.system(command)
         os.chdir("../")
-        print("--------------------------------------------------------------------------")
+        print("------------------------------------------------------------------------------------------------------------------")
     if ('2' in update_choice):
-        print("---------------------------Processing DB_System_BM Tab--------------------------")
+        print("----------------------------------------Processing DB_System_BM Tab-----------------------------------------------")
         if not os.path.exists(outdir):
             os.makedirs(outdir)
         os.chdir('Database')
@@ -987,9 +987,9 @@ if('9' in userInput):
         print("Executing Command: " + command)
         os.system(command)
         os.chdir("../")
-        print("--------------------------------------------------------------------------")
+        print("---------------------------------------------------------------------------------------------------------------------")
     if ('3' in update_choice):
-        print("---------------------------Processing DB_System_EXA Tab--------------------------")
+        print("----------------------------------------Processing DB_System_EXA Tab-------------------------------------------------")
         if not os.path.exists(outdir):
             os.makedirs(outdir)
         os.chdir('Database')
@@ -1000,7 +1000,7 @@ if('9' in userInput):
         print("Executing Command: " + command)
         os.system(command)
         os.chdir("../")
-        print("--------------------------------------------------------------------------")
+        print("----------------------------------------------------------------------------------------------------------------------")
     if ("m" in update_choice or "M" in update_choice):
         cmd = "python setUpOCI.py " + args.propsfile
         print("Going back to Main Menu...")
@@ -1010,7 +1010,7 @@ if('9' in userInput):
         exit()
 
 if('10' in userInput):
-    print("---------------------Events and Notifications----------------------------------")
+    print("----------------------------------------------Events and Notifications---------------------------------------------------")
     print("1.  Add/Modify/Delete Notifications")
     print("2.  Add/Modify/Delete Events")
     print("m.  Press m to go back to Main Menu")
@@ -1020,7 +1020,7 @@ if('10' in userInput):
     choice = choice.split(",")
 
     if ('1' in choice):
-        print("-----------------------Setting up Notifications-------------------------")
+        print("-----------------------------------------Setting up Notifications-----------------------------------------------------")
         if not os.path.exists(outdir):
             os.makedirs(outdir)
         os.chdir('Solutions/EventsAndNotifications')
@@ -1031,10 +1031,10 @@ if('10' in userInput):
         print("Executing Command: " + command)
         os.system(command)
         os.chdir("../..")
-        print("--------------------------------------------------------------------------")
+        print("-----------------------------------------------------------------------------------------------------------------------")
 
     if ('2' in choice):
-        print("-----------------------Setting up Events----------------------------------")
+        print("-------------------------------------------Setting up Events-----------------------------------------------------------")
         if not os.path.exists(outdir):
             os.makedirs(outdir)
         os.chdir('Solutions/EventsAndNotifications')
@@ -1045,7 +1045,7 @@ if('10' in userInput):
         print("Executing Command: " + command)
         os.system(command)
         os.chdir("../..")
-        print("--------------------------------------------------------------------------")
+        print("------------------------------------------------------------------------------------------------------------------------")
 
     if ("m" in choice or "M" in choice):
         cmd = "python setUpOCI.py " + args.propsfile
