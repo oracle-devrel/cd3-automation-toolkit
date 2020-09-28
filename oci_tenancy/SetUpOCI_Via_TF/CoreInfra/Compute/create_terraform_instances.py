@@ -194,7 +194,7 @@ def main():
         # Write to output
         file = outdir + "/" + region + "/" + display_tf_name + "_instance.tf"
         oname = open(file, "w+")
-        print("Writing... " + file)
+        print("Writing to " + file)
         oname.write(hostStr)
         oname.close()
 

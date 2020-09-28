@@ -137,7 +137,7 @@ def main():
             #Write to output file
             file = outdir + "/" + region + "/" + blockname_tf + "_block-backup-policy.tf"
             oname = open(file, "w+")
-            print("Writing " + file)
+            print("Writing to " + file)
             oname.write(backuppolicy)
             oname.close()
 
