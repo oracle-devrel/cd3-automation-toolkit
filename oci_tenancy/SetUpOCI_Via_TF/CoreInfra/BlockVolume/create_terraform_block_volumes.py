@@ -155,7 +155,7 @@ def main():
 
         # Write TF string to output
         outfile = outdir + "/" + region + "/" + blockname_tf + "_blockvolume.tf"
-        print("Writing to" + outfile)
+        print("Writing to " + outfile)
         oname = open(outfile, "w")
         oname.write(tempStr)
         oname.close()

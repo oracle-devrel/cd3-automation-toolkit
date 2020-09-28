@@ -265,7 +265,7 @@ def main():
 
             outfile = outdir + "/" + reg + "/default-tags-tagging.tf"
             oname = open(outfile, "w+")
-            print("Writing to ..."+outfile)
+            print("Writing to "+outfile)
             oname.write(defaulttagtemp[reg])
             oname.close()
 
@@ -273,7 +273,7 @@ def main():
 
             outfile = outdir + "/" + reg + "/namespaces-tagging.tf"
             oname = open(outfile, "w+")
-            print("Writing to ..."+outfile)
+            print("Writing to "+outfile)
             oname.write(namespacetemp[reg])
             oname.close()
 
@@ -281,7 +281,7 @@ def main():
 
             outfile = outdir + "/" + reg + "/tag-keys-tagging.tf"
             oname = open(outfile, "w+")
-            print("Writing to ..."+outfile)
+            print("Writing to "+outfile)
             oname.write(tagkeytemp[reg])
             oname.close()
 
