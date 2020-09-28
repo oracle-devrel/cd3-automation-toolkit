@@ -16,7 +16,7 @@ from jinja2 import Environment, FileSystemLoader
 
 
 def adding_columns_values(region, hostname, ad, fd, vs, publicip, privateip, os_dname, shape, key_name, c_name,
-                          bkp_policy_name, nsgs, d_host, instance_data, values_for_column_instances, bc_info):
+                          bkp_policy_name, nsgs, d_host, instance_data, values_for_column_instances, bc_info, bdet):
     #print("ADD=",os_dname)
     for col_header in values_for_column_instances.keys():
         if (col_header == "Region"):
@@ -45,6 +45,10 @@ def adding_columns_values(region, hostname, ad, fd, vs, publicip, privateip, os_
             values_for_column_instances[col_header].append(bkp_policy_name)
         elif (col_header == "NSGs"):
             values_for_column_instances[col_header].append(nsgs)
+        elif (col_header.lower() == "boot volume size in gbs"):
+            values_for_column_instances[col_header].append(bdet.size_in_gbs)
+        elif (col_header.lower() == "kms key id"):
+            values_for_column_instances[col_header].append(bdet.kms_key_id)
         elif (col_header == "Dedicated VM Host"):
             values_for_column_instances[col_header].append(d_host)
         elif str(col_header).lower() in commonTools.tagColumns:
@@ -112,6 +116,7 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, config):
             # print(ins_vnic.data)
             boot_check = find_boot(ins_ad, ins_id, config)
             boot_id = boot_check.data[0].boot_volume_id
+            bdet=boot_details = bc.get_boot_volume(boot_volume_id=boot_id)
             boot_details = bc.get_boot_volume(boot_volume_id=boot_id).data.image_id
             os = compute.get_image(image_id=boot_details)
             # print("OS",os.data)                                   #Operating system
@@ -189,7 +194,7 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, config):
                 vs = commonTools.check_tf_variable(vs)
                 adding_columns_values(reg_name.title(), ins_dname, AD_name, ins_fd, vs, publicip, privateip, os_dname,
                                       ins_shape, key_name, compartment_name, bkp_policy_name, nsg_names, dedicated_host,
-                                      ins, values_for_column_instances, boot_check.data)
+                                      ins, values_for_column_instances, boot_check.data,bdet.data)
                 # rows.append(new_row)
 
 
