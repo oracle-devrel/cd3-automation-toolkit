@@ -135,7 +135,7 @@ def main():
             #Write to output
             file = outdir + "/" + region + "/" +display_tf_name+"_boot-backup-policy.tf"
             oname = open(file, "w+")
-            print("Writing to" + file)
+            print("Writing to " + file)
             oname.write(bootppolicy)
             oname.close()
 
