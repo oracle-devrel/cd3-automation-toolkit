@@ -359,7 +359,7 @@ def main():
             outfile = outdir + "/" + r + "/FSS.tf"
 
             oname = open(outfile, "w")
-            print("Writing " + outfile)
+            print("Writing to " + outfile)
             oname.write(tempStr_fss[r])
             oname.close()
 
