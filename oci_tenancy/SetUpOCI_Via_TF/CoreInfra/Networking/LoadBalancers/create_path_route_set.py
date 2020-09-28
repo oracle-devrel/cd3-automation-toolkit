@@ -151,9 +151,10 @@ def main():
             tempStr[columnname] = str(columnvalue).strip()
             tempStr.update(tempdict)
 
-        if path_route_set_tf_name != '':
-            if path_route_set_tf_name not in path_route_set_list:
-                path_route_set_list.append(path_route_set_tf_name)
+        lbr_path_route_set_name = lbr_tf_name+"_"+path_route_set_tf_name
+        if lbr_path_route_set_name != '':
+            if lbr_path_route_set_name not in path_route_set_list:
+                path_route_set_list.append(lbr_path_route_set_name)
                 rule_str = pathroutes.render(tempStr)
                 tempdict2 = {'path_routes': rule_str}
                 tempStr.update(tempdict2)
