@@ -30,7 +30,6 @@
         hostname                = "{{ hostname_prefix }}"
         data_storage_size_in_gb = "{{ db_size }}"
         license_model           = "{{ license_type }}"
-        node_count              = "{{ cpu_core }}"
 
         {#  ##Do not modify below this line##  #}
         {#                                     #}

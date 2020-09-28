@@ -15,8 +15,9 @@ from commonTools import *
 from jinja2 import Environment, FileSystemLoader
 
 
-def adding_columns_values(region, hostname, ad, fd, vs, publicip, privateip, os, shape, key_name, c_name,
+def adding_columns_values(region, hostname, ad, fd, vs, publicip, privateip, os_dname, shape, key_name, c_name,
                           bkp_policy_name, nsgs, d_host, instance_data, values_for_column_instances, bc_info):
+    print("ADD=",os_dname)
     for col_header in values_for_column_instances.keys():
         if (col_header == "Region"):
             values_for_column_instances[col_header].append(region)
@@ -32,8 +33,8 @@ def adding_columns_values(region, hostname, ad, fd, vs, publicip, privateip, os,
             values_for_column_instances[col_header].append(publicip)
         elif (col_header == "IP Address"):
             values_for_column_instances[col_header].append(privateip)
-        elif (col_header == "OS"):
-            values_for_column_instances[col_header].append(os)
+        elif (col_header == "Source Details"):
+            values_for_column_instances[col_header].append(os_dname)
         elif (col_header == "Shape"):
             values_for_column_instances[col_header].append(shape)
         elif (col_header == "SSH Key Var Name"):
@@ -114,10 +115,6 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, config):
             boot_details = bc.get_boot_volume(boot_volume_id=boot_id).data.image_id
             os = compute.get_image(image_id=boot_details)
             # print("OS",os.data)                                   #Operating system
-            os_dname = os.data.display_name  # Source os name
-            os_dname = commonTools.check_tf_variable(os_dname)
-            tf_name = commonTools.check_tf_variable(reg_name + "-" + os_dname)
-            os_keys[tf_name] = boot_details
             # sdet=bc.get_volume(volume_id=source_image_id)
             bvp = bc.get_volume_backup_policy_asset_assignment(asset_id=boot_id)
             bvdetails = bc.get_boot_volume(boot_volume_id=boot_id)
@@ -164,7 +161,18 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, config):
                     instance_keys[tf_name] = ""
                     key_name = ins_dname + "_" + str(privateip)
                     key_name = ""
-
+                if (ins.source_details.source_type=="image"):
+                    os_dname = os.data.display_name  # Source os name
+                    os_dname = commonTools.check_tf_variable(os_dname)
+                    tf_name = commonTools.check_tf_variable(reg_name + "-" + os_dname)
+                    os_keys[tf_name] = ins.source_details.image_id
+                    os_dname = "image::"+os_dname
+                elif (ins.source_details.source_type=="bootVolume"):
+                    os_dname = "Boot_"+ins_dname + "_" + str(privateip)
+                    os_dname = commonTools.check_tf_variable(os_dname)
+                    tf_name = commonTools.check_tf_variable(reg_name + "-" + os_dname)
+                    os_keys[tf_name] = ins.source_details.boot_volume_id
+                    os_dname = "bootVolume::"+os_dname
                 publicip = vnic_info.data.public_ip
                 if (publicip == None):
                     publicip = "FALSE"

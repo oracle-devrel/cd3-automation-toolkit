@@ -3,11 +3,6 @@ resource "oci_ons_notification_topic" "{{ topic_tf_name }}" {
 	    description = "{{ topic_description }}"
 	    name = "{{ topic }}"
 
-        {#  ## Add Additional Fields below this line ##  #}
-
-
-        {#  ## End of Additional Fields ##  #}
-
         {#  ##Do not modify below this line##  #}
         {#                                     #}
         {#  ###Section for adding Defined and Freeform Tags###  #}

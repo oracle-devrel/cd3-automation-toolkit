@@ -101,12 +101,6 @@ def main():
                 if(shapeField[1].strip()==""):
                     shape_error=1
 
-        if region in ct.all_regions and shape_error==0:
-            OS=df.loc[i,'OS']
-            if(".Flex" in shapeField[0]):
-                OS=OS+"Flex"
-            #copy_template_file(df.loc[i,'Display Name'], OS,df.loc[i,'Region'])
-
         if(shape_error==1):
             print("\nERROR!!! "+ display_name +" is missing ocpus for Flex shape....Exiting!")
             exit(1)
@@ -117,8 +111,8 @@ def main():
 
         # Check if values are entered for mandatory fields
         if (str(df.loc[i, 'Region']).lower() == 'nan' or str(df.loc[i, 'Display Name']).lower() == 'nan' or str(df.loc[i, 'Shape']).lower() == 'nan' or str(df.loc[i, 'Compartment Name']).lower() == 'nan' or str(df.loc[i, 'Pub Address']).lower() == 'nan' or str(
-                df.loc[i, 'Availability Domain(AD1|AD2|AD3)']).lower() == 'nan' or str(df.loc[i, 'Subnet Name']).lower() == 'nan' or str(df.loc[i, 'OS']).lower() == 'nan'):
-            print("\nColumn Region, Shape, Compartment Name, Availability Domain, Display Name, Pub Address, OS and Subnet Name cannot be left empty in Instances sheet of CD3..exiting...")
+                df.loc[i, 'Availability Domain(AD1|AD2|AD3)']).lower() == 'nan' or str(df.loc[i, 'Subnet Name']).lower() == 'nan' or str(df.loc[i, 'Source Details']).lower() == 'nan'):
+            print("\nColumn Region, Shape, Compartment Name, Availability Domain, Display Name, Pub Address, Source Details and Subnet Name cannot be left empty in Instances sheet of CD3..exiting...")
             exit(1)
 
         for columnname in dfcolumns:

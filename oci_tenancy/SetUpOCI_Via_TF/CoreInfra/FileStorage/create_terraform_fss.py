@@ -15,16 +15,18 @@ import pandas as pd
 import os
 import shutil
 import datetime
+
 sys.path.append(os.getcwd() + "/../..")
 from commonTools import *
 from jinja2 import Environment, FileSystemLoader
 
+
 # If input is csv file; convert to excel
 def main():
-
-    #Read input arguments
+    # Read input arguments
     parser = argparse.ArgumentParser(description="Creates TF files for FSS")
-    parser.add_argument("inputfile",help="Full Path to the CSV file for creating fss or CD3 excel file. eg  CD3-template.xlsx in example folder")
+    parser.add_argument("inputfile",
+                        help="Full Path to the CSV file for creating fss or CD3 excel file. eg  CD3-template.xlsx in example folder")
     parser.add_argument("outdir", help="directory path for output tf files ")
     parser.add_argument("--configFileName", help="Config file name", required=False)
 
@@ -96,13 +98,13 @@ def main():
                 uid_1 = df.loc[i, 'UID']
                 idsquash_1 = df.loc[i, 'IDSquash (NONE|ALL|ROOT)']
                 require_ps_port_1 = str(str(df.loc[i, 'Require PS Port (true|false)']))
+
                 if (str(sourcecidr_1).lower() == NaNstr.lower()):
                     sourcecidr_1 = "0.0.0.0/0"
                 if str(access_1).lower() == NaNstr.lower() or str(access_1).strip() == "READ_ONLY":
                     access_1 = "READ_ONLY"
                 elif str(access_1).strip() == "READ_WRITE":
                     access_1 = "READ_WRITE"
-
                 if str(gid_1).lower() == NaNstr.lower():
                     gid_1 = "65534"
                 else:
@@ -137,7 +139,7 @@ def main():
                 return "null"
         except Exception as e:
             pass
-            #print(e)
+            # print(e)
 
     uniquereg = df['Region'].unique()
 
@@ -165,7 +167,7 @@ def main():
         idsquash = []
         require_ps_port = []
         path = ''
-        fss_tf_name=''
+        fss_tf_name = ''
         nsg_id = ''
 
         region = str(df.loc[i, 'Region'])
@@ -186,7 +188,8 @@ def main():
                 or str(df.loc[i, 'Compartment Name']).lower() == 'nan' or str(
                     df.loc[i, 'Availability Domain(AD1|AD2|AD3)']).lower() == 'nan' or str(
                     df.loc[i, 'MountTarget Name']).lower() == 'nan'):
-            print("\nColumns Compartment Name, Availability Domain, MountTarget Name, MountTarget SubnetName, FSS Name and path cannot be left blank..Exiting!")
+            print(
+                "\nColumns Compartment Name, Availability Domain, MountTarget Name, MountTarget SubnetName, FSS Name and path cannot be left blank..Exiting!")
             exit()
 
         # List of the column headers
@@ -196,7 +199,6 @@ def main():
 
             # Column value
             columnvalue = str(df[columnname][i]).strip()
-
             # Check for boolean/null in column values
             columnvalue = commonTools.check_columnvalue(columnvalue)
 
@@ -223,7 +225,7 @@ def main():
 
             if columnname == 'MountTarget Subnet Name':
                 mount_target_subnet = commonTools.check_tf_variable(columnvalue.strip())
-                tempdict = {'mount_target_subnet' : mount_target_subnet}
+                tempdict = {'mount_target_subnet': mount_target_subnet}
                 tempStr.update(tempdict)
 
             if columnname == "Access (READ_ONLY|READ_WRITE)":
@@ -267,26 +269,32 @@ def main():
                     if len(lbr_nsgs) == 1:
                         for nsgs in lbr_nsgs:
                             nsg_id = "oci_core_network_security_group." + nsgs + ".id"
-                    elif len(lbr_nsgs) >=2 :
+                    elif len(lbr_nsgs) >= 2:
                         c = 1
                         for nsgs in lbr_nsgs:
                             if c == len(lbr_nsgs):
-                                nsg_id = nsg_id + "oci_core_network_security_group."+nsgs+".id"
+                                nsg_id = nsg_id + "oci_core_network_security_group." + nsgs + ".id"
                             else:
-                                nsg_id = nsg_id + "oci_core_network_security_group."+nsgs+".id,"
+                                nsg_id = nsg_id + "oci_core_network_security_group." + nsgs + ".id,"
                             c += 1
                 columnvalue = nsg_id
 
             if columnname == "IDSquash (NONE|ALL|ROOT)":
                 columnname = "idsquash"
-                if str(columnvalue).lower() == "nan" or str(columnvalue) != "ALL" or str(columnvalue) != "ROOT" or str(columnvalue) == "":
+                if (columnvalue).lower() == "all":
+                    columnvalue = "ALL"
+                elif (columnvalue).lower() == "root":
+                    columnvalue = "ROOT"
+                else:
                     columnvalue = "NONE"
                 idsquash.append(columnvalue)
                 tempdict = {'idsquash': columnvalue}
 
             if columnname == "Require PS Port (true|false)":
                 columnname = "require_ps_port"
-                if str(columnvalue).lower() == "nan" or str(columnvalue).lower() != "true" or str(columnvalue) == "" or str(columnvalue) != 1.0:
+                if str(columnvalue).lower() == "true" or str(columnvalue) == 1.0:
+                    columnvalue = "true"
+                elif str(columnvalue).lower() == "nan" or str(columnvalue) == "" or str(columnvalue).lower() == "false":
                     columnvalue = "false"
                 require_ps_port.append(columnvalue)
                 tempdict = {'require_ps_port': columnvalue}
@@ -301,10 +309,10 @@ def main():
                 if columnvalue != '':
                     fss_name = str(columnvalue).strip()
                     fss_tf_name = commonTools.check_tf_variable(fss_name.strip())
-                tempdict = {'fss_tf_name' : fss_tf_name,'fss_name' : fss_name}
+                tempdict = {'fss_tf_name': fss_tf_name, 'fss_name': fss_name}
                 tempStr.update(tempdict)
 
-            path = str(df.loc[i,'Path']).strip()
+            path = str(df.loc[i, 'Path']).strip()
 
             columnname = commonTools.check_column_headers(columnname)
             tempStr[columnname] = str(columnvalue).strip()
@@ -323,7 +331,7 @@ def main():
 
             export_set_info = export_set_info + export.render(tempStr)
 
-        tempdict = {'export_set_info' : export_set_info }
+        tempdict = {'export_set_info': export_set_info}
         tempStr.update(tempdict)
 
         if (str(mount_target_tf_name).strip() not in MT_names[region]):
@@ -359,7 +367,7 @@ def main():
     if ('tmp_to_excel.xlsx' in filename):
         os.remove(filename)
 
-if __name__ == '__main__':
 
+if __name__ == '__main__':
     # Execution of the code begins here
     main()

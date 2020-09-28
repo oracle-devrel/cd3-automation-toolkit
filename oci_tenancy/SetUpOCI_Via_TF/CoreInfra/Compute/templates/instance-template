@@ -16,8 +16,8 @@ resource "oci_core_instance" "{{ display_tf_name }}" {
         {# The "os" below must be a variable in the variables.tf file with the appropriate image OCID as its value #}
         {# See variables_<region>.tf for an example #}
         source_details {
-	        source_id  = var.{{ os }}
-            source_type = "image"
+	        source_id  = var.{{ source_details[1] }}
+            source_type = "{{ source_details[0] }}"
         }
         create_vnic_details {
                 #Required
