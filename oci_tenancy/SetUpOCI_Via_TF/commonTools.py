@@ -270,8 +270,8 @@ class commonTools():
             columnname = commonTools.check_column_headers(columnname)
             multivalues = columnvalue.split("=")
             multivalues = [str(part).strip() for part in multivalues if part]
-            for value in multivalues:
-                value[1] = value[1].replace("\\","\\\\")
+            if multivalues != []:
+                multivalues[1] = multivalues[1].replace("\\","\\\\")
             tempdict = {columnname: [multivalues]}
         return tempdict
 
