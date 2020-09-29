@@ -175,11 +175,20 @@ def main():
             display_name = row['SecList Name']
             vcn_name = row['VCN Name']
             vcn_tf_name = commonTools.check_tf_variable(vcn_name)
+            comp_name = row['Compartment Name']
             rt_var = vcn_name + "_" + display_name
             seclist_tf_name = commonTools.check_tf_variable(rt_var)
 
             region = row['Region']
             region = region.strip().lower()
+
+            if region not in ct.all_regions:
+                print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
+                exit(1)
+                # Check if values are entered for mandatory fields
+            if (region == 'nan' or str(vcn_name).lower() == 'nan' or str(comp_name).lower() == 'nan'):
+                    print("\nColumn Region, VCN Name and Compartment Name cannot be left empty in SecRulesinOCI sheet of CD3..Exiting!")
+                    exit(1)
 
             # Process only those VCNs which are present in cd3(and have been created via TF)
             if (vcn_name not in vcns.vcn_names):

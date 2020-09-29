@@ -103,7 +103,7 @@ def main():
 
         # Check if values are entered for mandatory fields
         if (str(df.loc[i, 'Region']).lower() == 'nan' or str(df.loc[i, 'VCN Name']).lower() == 'nan' or str(df.loc[i, 'Compartment Name']).lower() == 'nan'):
-            print("\nColumn Region, VCN Name and Compartment Name cannot be left empty in Instances sheet of CD3..Exiting!")
+            print("\nColumn Region, VCN Name and Compartment Name cannot be left empty in RouteRulesinOCI sheet of CD3..Exiting!")
             exit(1)
 
         # Process only those VCNs which are present in cd3(and have been created via TF)

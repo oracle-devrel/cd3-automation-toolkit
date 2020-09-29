@@ -717,7 +717,7 @@ if('2' in userInput):
         inputConfigFile = input_config_file
         input_comp = input("Enter name of Compartment as it appears in OCI (comma separated if multiple) for which you want to export rules;\nPress 'Enter' to export from all the Compartments: ")
 
-        if (input_comp is ""):
+        if (input_comp == ""):
             if (input_config_file == ''):
                 command_sl = 'python exportSeclist.py ' + cd3outfile
                 command_rt = 'python exportRoutetable.py ' + cd3outfile
