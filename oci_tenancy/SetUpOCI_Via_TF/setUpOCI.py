@@ -73,7 +73,7 @@ if (input_nongf_tenancy.lower() == 'true'):
     ct = commonTools()
     ct.get_subscribedregions(input_config_file)
 
-    print("\nChecking if specified outdir contains any existing tf files...")
+    print("\nChecking if the specified outdir contains tf files related to the OCI components being exported...")
     tf_list = {}
     for reg in ct.all_regions:
         tf_list[reg]=[]
