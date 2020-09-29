@@ -108,7 +108,7 @@ if (input_nongf_tenancy.lower() == 'true'):
 
     print("Executing Command: " + command)
     exitVal = os.system(command)
-    if (exitVal == 1):
+    if (exitVal == 1) or (exitVal == 256):
         print("Error Occured. Please try again!!!")
         exit()
     if ("1" in userInput):
