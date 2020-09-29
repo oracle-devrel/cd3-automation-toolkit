@@ -218,12 +218,12 @@ def main():
                 if str(columnvalue).strip() != '':
                     columnname = commonTools.check_column_headers(columnname)
                     multivalues = columnvalue.split("::")
-                    multivalues = [str(part).strip() for part in multivalues if part]
+                    multivalues = [str(part).strip().replace('$','$$') for part in multivalues if part]
                     tempdict = {columnname: multivalues}
 
                     values_list = multivalues[1].replace('"','').split(',')
                     if str(df.loc[i,'Default Tag Compartment']).strip() != '' and str(df.loc[i,'Default Tag Compartment']).lower().strip() != 'nan':
-                        if str(df.loc[i, 'Default Tag Value']) not in values_list and str(df.loc[i, 'Default Tag Value']).strip() != '' and str(df.loc[i, 'Default Tag Value']).strip().lower() != 'nan':
+                        if '$'+str(df.loc[i, 'Default Tag Value']) not in values_list and str(df.loc[i, 'Default Tag Value']).strip() != '' and str(df.loc[i, 'Default Tag Value']).strip().lower() != 'nan':
                             print("\nERROR!! Value - "+str(df.loc[i, 'Default Tag Value'])+" in Default Tag Value is not present in Column Validator...Exiting!")
                             exit()
 
@@ -234,11 +234,10 @@ def main():
                     if '$' in columnvalue and columnvalue.count('$') == 1:
                         columnvalue = '$'+columnvalue
                     tempdict = {'is_required' : is_required}
-
                 else:
                     if columnvalue == '' or columnvalue.strip().lower() == 'nan':
                         if str(df.loc[i,'Default Tag Compartment']).strip() != '' and str(df.loc[i,'Default Tag Compartment']).lower().strip() != 'nan':
-                            if str(df.loc[i,'Validator']).strip() != '' and  str(df.loc[i,'Validator']).strip().lower() != 'nan':
+                            if str(df.loc[i,'Validator']).strip() != '' and  str(df.loc[i,'Validator']).strip().lower() != 'nan' and str(df.loc[i,'Validator']).strip() != []:
                                 is_required = 'true'
                                 columnvalue = values_list[0]
                                 tempdict = {'is_required': is_required}
