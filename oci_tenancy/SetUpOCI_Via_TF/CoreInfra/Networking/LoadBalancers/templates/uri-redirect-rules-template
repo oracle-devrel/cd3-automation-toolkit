@@ -22,7 +22,7 @@ items  {
             protocol = "{{ protocol }}"
             {% endif %}
             {% if redirect_uri_query != '' %}
-            query = {{ redirect_uri_query }}
+            query = "{{ redirect_uri_query }}"
             {% endif %}
         }
         response_code = "{{ response_code }}"
