@@ -80,7 +80,7 @@ def main():
     for eachregion in reg:
         eachregion = str(eachregion).strip().lower()
         resource='Notifications'
-        if (eachregion in commonTools.endNames):
+        if (eachregion in commonTools.endNames)or ('nan' in str(eachregion).lower() ):
             break
         if eachregion not in ct.all_regions:
             print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
