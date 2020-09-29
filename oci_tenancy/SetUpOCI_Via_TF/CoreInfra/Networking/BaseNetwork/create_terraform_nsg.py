@@ -84,22 +84,22 @@ def directionOptionals(nsgParser, options,tempStr):
     destination =  str(options[7])
 
     if source_type != 'nan':
-        if (source_type.lower() == 'cidr'):
+        if (source_type.lower() == 'cidr') or (source_type == 'CIDR_BLOCK'):
             source_type="CIDR_BLOCK"
-        elif (source_type.lower()=='service'):
+        elif (source_type.lower()=='service') or (source_type =='SERVICE_CIDR_BLOCK') :
             source_type = "SERVICE_CIDR_BLOCK"
-        elif (source_type.lower()=='nsg'):
+        elif (source_type.lower()=='nsg') or (source_type =='NETWORK_SECURITY_GROUP') :
             source_type = "NETWORK_SECURITY_GROUP"
             source = "oci_core_network_security_group."+source+".id"
     else:
         source_type = ""
 
     if destination_type != 'nan':
-        if (destination_type.lower() == 'cidr'):
+        if (destination_type.lower() == 'cidr') or (destination_type == 'CIDR_BLOCK'):
             destination_type='CIDR_BLOCK'
-        elif (destination_type.lower() == 'service'):
+        elif (destination_type.lower() == 'service') or (destination_type =='SERVICE_CIDR_BLOCK') :
             destination_type='SERVICE_CIDR_BLOCK'
-        elif (destination_type.lower() == 'nsg'):
+        elif (destination_type.lower() == 'nsg') or (destination_type =='NETWORK_SECURITY_GROUP') :
             destination_type = "NETWORK_SECURITY_GROUP"
             destination = "oci_core_network_security_group."+destination+".id"
     else:
