@@ -56,8 +56,12 @@ for region in ct.all_regions:
     file=outdir+"/"+region+"/variables_"+region+".tf"
     var_files[region]=file
     tempStr[region]=''
-    with open(file, 'r') as f:
-        var_data[region] = f.read()
+    try:
+        with open(file, 'r') as f:
+            var_data[region] = f.read()
+    except FileNotFoundError as e:
+        print("\nVariables file not found in region - "+region+".......Exiting!!!\n")
+        exit(1)
     f.close()
     # Backup the existing Routes tf file
     shutil.copy(file, file + "_backup")
