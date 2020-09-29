@@ -180,6 +180,8 @@ def main():
             seclist_tf_name = commonTools.check_tf_variable(rt_var)
 
             region = row['Region']
+            if (region in commonTools.endNames):
+                break
             region = region.strip().lower()
 
             if region not in ct.all_regions:

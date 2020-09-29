@@ -96,6 +96,8 @@ def main():
 
     for i in df.index:
         region = str(df.loc[i, 'Region'])
+        if (region in commonTools.endNames):
+            break
         region = region.strip().lower()
         if region not in ct.all_regions:
             print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
