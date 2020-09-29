@@ -151,6 +151,9 @@ def main():
             if columnname == "DB Size (GB)":
                 tempdict = {'db_size': columnvalue.strip()}
 
+            if columnname == 'Subnet Name':
+                columnvalue = commonTools.check_tf_variable(columnvalue)
+
             if columnname == "Recovery Windows (Days)":
                 tempdict = {'recovery_windows': columnvalue.strip()}
 
