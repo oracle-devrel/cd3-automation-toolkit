@@ -176,6 +176,9 @@ def main():
 
             if columnname == 'Tag Namespace':
                 columnvalue = str(columnvalue).strip()
+                if ' ' in columnvalue or '.' in columnvalue:
+                    print("\nSpaces and Periods are not allowed in Tag Namespaces. Please correct the value at row "+str(i+3)+" and run again....Exiting!!")
+                    exit(1)
                 namespace_tf_name = commonTools.check_tf_variable(columnvalue)
                 tempdict = {'namespace_tf_name':namespace_tf_name}
 
@@ -188,6 +191,9 @@ def main():
             if columnname == 'Tag Keys':
                 columnvalue = str(columnvalue).strip()
                 tag_keys = columnvalue
+                if ' ' in tag_keys or '.' in tag_keys:
+                    print("\nSpaces and Periods are not allowed in Tag Keys. Please correct the value at row "+str(i+3)+" and run again....Exiting!!")
+                    exit(1)
                 if columnvalue != '':
                     key_tf_name = commonTools.check_tf_variable(columnvalue)
                     key_tf_name = namespace_tf_name +"-"+key_tf_name
