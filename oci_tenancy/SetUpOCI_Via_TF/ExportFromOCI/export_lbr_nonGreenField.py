@@ -341,6 +341,8 @@ def print_backendset_backendserver(region, values_for_column_bss, lbr, LBRs, ntk
             backup_list = ""
             backendset_details = lbr.get_backend_set(eachlbr.__getattribute__('id'), backendsets).data
             certificate_list = ''
+            hc = ''
+
             # Process the Backend Server and Backup server details
             for backends in backendset_details.__getattribute__('backends'):
                 if str(backends.__getattribute__('name')).lower() != "none":
@@ -386,6 +388,18 @@ def print_backendset_backendserver(region, values_for_column_bss, lbr, LBRs, ntk
                 # Process the Tag  Columns
                 elif headers_lower in commonTools.tagColumns:
                     values_for_column_bss = commonTools.export_tags(eachlbr, col_headers, values_for_column_bss)
+
+                elif col_headers == 'SSL Protocols':
+                    protocols_list = ''
+                    certificate_list = backendset_details.ssl_configuration
+                    if str(certificate_list).lower() == 'none':
+                        values_for_column_bss[col_headers].append("")
+                    else:
+                        for protocols in certificate_list.protocols:
+                            protocols_list = protocols_list+","+protocols
+                        if (protocols_list != "" and protocols_list[0] == ','):
+                            protocols_list = protocols_list.lstrip(',')
+                        values_for_column_bss[col_headers].append(protocols_list)
 
                 # Process the Backend Set and Backend Server  Columns
                 elif col_headers in sheet_dict_bss.keys():
@@ -457,7 +471,6 @@ def print_listener(region, values_for_column_lis, LBRs, ntk_compartment_name):
                     if str(sslcerts).lower() == 'none':
                         values_for_column_lis[col_headers].append("")
                     else:
-
                         for protocols in sslcerts.protocols:
                             protocols_list = protocols_list+","+protocols
                         if (protocols_list != "" and protocols_list[0] == ','):
@@ -525,14 +538,6 @@ def print_rule(region, values_for_column_rule, LBRs, ntk_compartment_name):
                     elif col_headers == 'Rule Set Name':
                         values_for_column_rule[col_headers].append(rulesets)
 
-                    elif 'Query' in col_headers or 'query' in col_headers:
-                        try:
-                            uri_details = eachitem.redirect_uri
-                            values_for_column_rule[col_headers].append(uri_details.query)
-                        except AttributeError as e:
-                            values_for_column_rule[col_headers].append("")
-                            pass
-
                     elif col_headers in sheet_dict_rule.keys():
                         try:
                             if 'Redirect' in col_headers:
@@ -553,6 +558,9 @@ def print_rule(region, values_for_column_rule, LBRs, ntk_compartment_name):
                                 if 'Protocol:Path' in col_headers:
                                     value = protocol+":"+path
                                     values_for_column_rule[col_headers].append(value)
+
+                                if 'Query' in col_headers:
+                                    values_for_column_rule[col_headers].append(query)
 
                             else:
                                 value = str(eachitem.__getattribute__(sheet_dict_rule[col_headers]))

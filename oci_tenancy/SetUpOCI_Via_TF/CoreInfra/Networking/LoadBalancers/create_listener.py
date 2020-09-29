@@ -203,15 +203,21 @@ def main():
                             c += 1
                 columnvalue = rule_set_names
 
+            if columnname == 'Verify Peer Certificate':
+                if str(columnvalue).lower() == 'true':
+                    if str(df.loc[i,'Verify Depth']) == '' or str(df.loc[i,'Verify Depth']) == 'nan':
+                        print("\nVerify Depth cannot be left empty when Verify Peer Certificate has a value... Exiting!!!")
+                        exit()
+
             if columnname == 'SSL Protocols':
                 tls_versions_list = ''
                 if columnvalue != '' and str(df.loc[i,'Cipher Suite Name']) != 'nan':
                     tls_versions = str(columnvalue).strip().split(',')
                     for tls in tls_versions:
-                        tls_versions_list = "\""+tls+"\","+tls_versions_list
+                        tls_versions_list = tls_versions_list + "\""+tls+"\","
 
-                    if (tls_versions_list != "" and tls_versions_list[-1] == ','):
-                        tls_versions_list = tls_versions_list[:-1]
+                    if (tls_versions_list != "" and tls_versions_list[0] == ','):
+                        tls_versions_list = tls_versions_list.lstrip(',')
                     columnvalue = tls_versions_list
 
                 elif columnvalue == '' and str(df.loc[i,'Cipher Suite Name']) != 'nan':

@@ -94,6 +94,7 @@
         "Backend HealthCheck Protocol(HTTP|TCP)" : "protocol",
         "Backend HealthCheck Port" : "port",
         "Backend HealthCheck URL" : "url_path",
+        "Backend HealthCheck Interval In Millis" : "interval_in_millis",
         "Cookie Name" : "cookie_name",
         "Cookie Path" : "path",
         "Disable Fallback(TRUE|FALSE)" : "disable_fallback",
@@ -119,7 +120,7 @@
         "HTTP Header Size(in kB)" : "http_large_header_size_in_kb",
         "Redirect URI Host:Port" : "host",
         "Redirect URI Protocol:Path" : "protocol",
-        "Redirect query" : "query"
+        "Redirect URI Query" : "query"
     },
     "PathRouteSet":
     {

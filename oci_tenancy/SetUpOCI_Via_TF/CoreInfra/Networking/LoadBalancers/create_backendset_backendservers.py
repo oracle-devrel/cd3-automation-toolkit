@@ -168,11 +168,40 @@ def main():
             if columnname == "Backend HealthCheck Protocol(HTTP|TCP)":
                 columnname = "backend_healthcheck_protocol"
 
+            if columnname == "Backend HealthCheck Interval In Millis":
+                columnname = 'interval_in_millis'
+
             if columnname == "UseSSL(y|n)":
                 columnname = "usessl"
 
             if columnname == "Backup <Backend Server Name>":
                 columnname = "backup"
+
+            if columnname == 'Verify Peer Certificate':
+                if str(columnvalue).lower() == 'true':
+                    if str(df.loc[i,'Verify Depth']) == '' or str(df.loc[i,'Verify Depth']) == 'nan':
+                        print("\nVerify Depth cannot be left empty when Verify Peer Certificate has a value... Exiting!!!")
+                        exit()
+
+            if columnname == 'SSL Protocols':
+                tls_versions_list = ''
+                if columnvalue != '' and str(df.loc[i, 'Cipher Suite Name']) != 'nan':
+                    tls_versions = str(columnvalue).strip().split(',')
+                    for tls in tls_versions:
+                        tls_versions_list = tls_versions_list + "\"" + tls + "\","
+
+                    if (tls_versions_list != "" and tls_versions_list[0] == ','):
+                        tls_versions_list = tls_versions_list.lstrip(',')
+                    columnvalue = tls_versions_list
+
+                elif columnvalue == '' and str(df.loc[i, 'Cipher Suite Name']) != 'nan':
+                    print("\nSSL Protocols are mandatory when custom CipherSuiteName is provided..... Exiting !!")
+                    exit()
+
+                elif columnvalue != '' and str(df.loc[i, 'Cipher Suite Name']) == 'nan':
+                    print("\nNOTE: Cipher Suite Name is not specified for Listener -> " + str(df.loc[i, 'Listener Name']) + ", default value - 'oci-default-ssl-cipher-suite-v1' will be considered.\n")
+                else:
+                    pass
 
             if columnname == "Backend ServerName:Port":
                 columnname = "backend_server"
@@ -185,14 +214,23 @@ def main():
         beset_str= beset.render(tempStr)
 
         cnt = 0
-        backup=''
+
         beserver_str = ''
         columnvalue = str(df.loc[i,'Backend ServerName:Port']).strip().split(',')
         for lbr_be_server in columnvalue:
             if (lbr_be_server != "" and lbr_be_server != "nan"):
+                bserver_list = str(df.loc[i, 'Backup <Backend Server Name>']).strip().split(',')
                 cnt = cnt + 1
                 serverinfo = lbr_be_server.strip().split(":")
                 servername = serverinfo[0].strip()
+                if servername in bserver_list:
+                    backup = "true"
+                else:
+                    backup = "false"
+
+                tempback = {'backup': backup }
+                tempStr.update(tempback)
+
                 backend_server_tf_name = commonTools.check_tf_variable(servername)
                 serverport = serverinfo[1].strip()
                 e = servername.count(".")
@@ -201,14 +239,7 @@ def main():
                 else:
                     backend_server_ip_address = "oci_core_instance." + servername + ".private_ip"
 
-                bserver_list = str(df.loc[i,'Backup <Backend Server Name>']).strip().split(',')
-
-                for servers in bserver_list:
-                    if servername == servers:
-                        backup = "true"
-                    else:
-                        backup = "false"
-                tempback = {'backup' : backup,'backend_server_tf_name': backend_set_tf_name+"_"+backend_server_tf_name,'serverport':serverport,'backend_server_ip_address':backend_server_ip_address}
+                tempback = {'backend_server_tf_name': backend_set_tf_name+"_"+backend_server_tf_name,'serverport':serverport,'backend_server_ip_address':backend_server_ip_address}
                 tempStr.update(tempback)
 
                 # Render Backend Server

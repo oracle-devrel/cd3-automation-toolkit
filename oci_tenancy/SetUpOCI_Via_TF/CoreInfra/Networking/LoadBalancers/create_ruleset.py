@@ -257,7 +257,6 @@ def main():
                 tempdict = {'protocol':protocol, 'path':path}
                 tempStr.update(tempdict)
 
-
             if columnname == 'Suffix or Prefix (suffix:<value>|prefix:<value>)':
                 columnname = 'suffix_or_prefix'
                 if columnvalue != '':
