@@ -223,10 +223,8 @@ def main():
                     columnvalue = str(ad)
                 tempdict = {'availability_domain': columnvalue}
 
-            if columnname == 'MountTarget Subnet Name':
-                mount_target_subnet = commonTools.check_tf_variable(columnvalue.strip())
-                tempdict = {'mount_target_subnet': mount_target_subnet}
-                tempStr.update(tempdict)
+            if columnname == 'MountTarget SubnetName':
+                columnvalue = commonTools.check_tf_variable(columnvalue.strip())
 
             if columnname == "Access (READ_ONLY|READ_WRITE)":
                 columnname = "access"
