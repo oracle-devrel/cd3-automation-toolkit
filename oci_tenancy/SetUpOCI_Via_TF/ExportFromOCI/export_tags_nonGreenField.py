@@ -25,6 +25,8 @@ def  print_tags(values_for_column_tags,region, ntk_compartment_name, tag, tag_ke
      tag_default_id = ''
     else:
      tag_default_id = tag_default.id
+     if (tag_default.is_required is True):
+        tag_default_value = ""
     validator = ''
     tag_key_name = ''
     tag_key_description = ''
