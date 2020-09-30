@@ -89,7 +89,7 @@ def main():
         eachregion = str(eachregion).strip().lower()
         resource='Events'
         if (eachregion in commonTools.endNames):
-            break
+            continue
         if eachregion == 'nan':
             continue
         if eachregion not in ct.all_regions:
