@@ -164,7 +164,7 @@ def main():
                 if columnvalue == '':
                     path_route_set_tf_name = "\"\""
                 else:
-                    columnvalue = str(columnvalue).strip()
+                    columnvalue = commonTools.check_tf_variable(str(columnvalue).strip())
                     path_route_set_tf_name = 'oci_load_balancer_path_route_set.'+lbr_tf_name +"_"+ columnvalue+'.name'
                 tempdict = {'path_route_set_tf_name' : path_route_set_tf_name}
 
@@ -192,13 +192,16 @@ def main():
                     rule_sets = str(columnvalue).strip().split(',')
                     if len(rule_sets) == 1:
                         for rule in rule_sets:
+                            rule = commonTools.check_tf_variable(str(rule))
                             rule_set_names = 'oci_load_balancer_rule_set.'+lbr_tf_name+"_"+rule+'.name'
                     elif len(rule_sets) >=2 :
                         c=1
                         for rule in rule_sets:
                             if c == len(rule_sets):
+                                rule = commonTools.check_tf_variable(str(rule))
                                 rule_set_names = rule_set_names+'oci_load_balancer_rule_set.'+lbr_tf_name+"_"+rule+'.name'
                             else:
+                                rule = commonTools.check_tf_variable(str(rule))
                                 rule_set_names = rule_set_names+'oci_load_balancer_rule_set.'+lbr_tf_name+"_"+ rule + '.name,'
                             c += 1
                 columnvalue = rule_set_names

@@ -152,14 +152,14 @@ def main():
 			index=0
 			for seclist_id in sl_tf_names:
 				if(index==len(sl_tf_names)-1):
-					seclist_ids = seclist_ids + """oci_core_security_list.""" +  seclist_id  + """.id """
+					seclist_ids = seclist_ids + """oci_core_security_list.""" +  commonTools.check_tf_variable(str(seclist_id))  + """.id """
 				else:
-					seclist_ids = seclist_ids + """oci_core_security_list.""" +  seclist_id + """.id, """
+					seclist_ids = seclist_ids + """oci_core_security_list.""" +  commonTools.check_tf_variable(str(seclist_id)) + """.id, """
 				index=index+1
 		tempStr['seclist_ids'] =  seclist_ids
 
 		if (tempStr['dhcp_tf_name'].lower() != 'nan' and tempStr['dhcp_tf_name'] != '' and tempStr['dhcp_tf_name'] != 'n'):
-			dhcp_options_id = "oci_core_dhcp_options." + tempStr['dhcp_tf_name'].strip() + ".id "
+			dhcp_options_id = "oci_core_dhcp_options." + commonTools.check_tf_variable(tempStr['dhcp_tf_name'].strip()) + ".id "
 		else:
 			dhcp_options_id = "oci_core_vcn."+ vcn_tf_name + ".default_dhcp_options_id"
 		tempStr['dhcp_options_name'] = dhcp_options_id
