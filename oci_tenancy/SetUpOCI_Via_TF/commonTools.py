@@ -286,7 +286,7 @@ class commonTools():
 
         except Exception as e:
             if("Events" in str(e) or "Notifications" in str(e)):
-                print("Tabs- Events or Notifications is missing in the CD3. Please make sure to use the correct input file for Events and Notifications in properties file...Exiting!!")
+                print("\nTabs- Events or Notifications is missing in the CD3. Please make sure to use the correct input file for Events and Notifications in properties file...Exiting!!")
                 exit(1)
 
         yield df
@@ -295,7 +295,7 @@ class commonTools():
             sheet = book[sheet_name]
         except KeyError as e:
             if 'does not exist' in str(e):
-                print("\n Tab - \""+sheet_name+"\" seems to be missing in the CD3. Please make sure to use the right CD3 in properties file.....Exiting!!")
+                print("\nTab - \""+sheet_name+"\" seems to be missing in the CD3. Please make sure to use the right CD3 in properties file.....Exiting!!")
                 exit(1)
 
         values_for_column = collections.OrderedDict()
