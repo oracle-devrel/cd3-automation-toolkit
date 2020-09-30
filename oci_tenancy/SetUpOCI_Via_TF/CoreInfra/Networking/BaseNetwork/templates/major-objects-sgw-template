@@ -10,4 +10,6 @@ resource "oci_core_service_gateway" "{{ sgw_tf_name }}" {
     }
     vcn_id = oci_core_vcn.{{ vcn_tf_name }}.id
 
+    #Optional
+    display_name = "{{ sgw_name }}"
 }
