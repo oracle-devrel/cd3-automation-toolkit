@@ -153,6 +153,9 @@ def main():
             if columnname == 'Subnet Name':
                 columnvalue = commonTools.check_tf_variable(columnvalue)
 
+            if columnname == 'Backup Subnet Name':
+                columnvalue = commonTools.check_tf_variable(columnvalue)
+
             if columnname == "Recovery Windows (Days)":
                 tempdict = {'recovery_windows': columnvalue.strip()}
 
