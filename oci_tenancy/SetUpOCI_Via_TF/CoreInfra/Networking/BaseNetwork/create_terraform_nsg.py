@@ -90,7 +90,7 @@ def directionOptionals(nsgParser, options,tempStr):
             source_type = "SERVICE_CIDR_BLOCK"
         elif (source_type.lower()=='nsg') or (source_type =='NETWORK_SECURITY_GROUP') :
             source_type = "NETWORK_SECURITY_GROUP"
-            source = "oci_core_network_security_group."+commonTools.check_tf_variable(source)+".id"
+            source = "oci_core_network_security_group."+commonTools.check_tf_variable(str(source))+".id"
     else:
         source_type = ""
 
@@ -101,7 +101,7 @@ def directionOptionals(nsgParser, options,tempStr):
             destination_type='SERVICE_CIDR_BLOCK'
         elif (destination_type.lower() == 'nsg') or (destination_type =='NETWORK_SECURITY_GROUP') :
             destination_type = "NETWORK_SECURITY_GROUP"
-            destination = "oci_core_network_security_group."+commonTools.check_tf_variable(destination)+".id"
+            destination = "oci_core_network_security_group."+commonTools.check_tf_variable(str(destination))+".id"
     else:
         destination_type = ""
 
