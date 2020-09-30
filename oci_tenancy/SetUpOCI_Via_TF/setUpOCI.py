@@ -504,7 +504,6 @@ if (input_nongf_tenancy.lower() == 'true'):
         os.chdir("../..")
         if (exitVal == 1):
             exit()
-
         os.chdir("../../..")
         print("\n\nExecute tf_import_commands_lbr_nonGF.sh script created under each region directory to synch TF with OCI LBR objects\n")
     '''
@@ -522,7 +521,11 @@ if (input_nongf_tenancy.lower() == 'true'):
     if ("8" in userInput):
         print("-----------------------------------------------------------------------------------------------------------------")
         print("\nExporting Events and Notifications...")
-        os.chdir('ExportFromOCI')
+        try:
+            os.chdir('ExportFromOCI')
+        except FileNotFoundError as e:
+            os.chdir('oci_tenancy/SetUpOCI_Via_TF/ExportFromOCI')
+
         input_comp = input("Enter name of Compartment as it appears in OCI (comma separated without spaces if multiple)for which you want to export Events and Notifications objects;\nPress 'Enter' to export from all the Compartments: ")
         if (input_comp == ''):
             if (input_config_file == ''):
