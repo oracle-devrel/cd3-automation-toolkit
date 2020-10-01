@@ -56,7 +56,7 @@ def main():
     # Load the template file
     file_loader = FileSystemLoader('templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
-    template = env.get_template('adw_atp_template')
+    template = env.get_template('adw-atp-template')
 
     # Read cd3 using pandas dataframe
     df, col_headers = commonTools.read_cd3(filename, "ADW_ATP")
