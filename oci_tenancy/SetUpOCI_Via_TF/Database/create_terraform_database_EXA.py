@@ -57,7 +57,7 @@ def main():
     # Load the template file
     file_loader = FileSystemLoader('templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
-    template = env.get_template('db_EXA_template')
+    template = env.get_template('db-EXA-VM-BM-template')
 
     # Read cd3 using pandas dataframe
     df, col_headers = commonTools.read_cd3(filename, "DB_System_EXA")
@@ -111,15 +111,19 @@ def main():
                 str(df.loc[i, 'Availability Domain(AD1|AD2|AD3)']).lower() == 'nan' or \
                 str(df.loc[i, 'DB Version']).lower() == 'nan' or \
                 str(df.loc[i, 'Hostname Prefix']).lower() == 'nan' or \
-                str(df.loc[i, 'Shape']).lower() == 'nan' or \
-                str(df.loc[i, 'SSH Key']).lower() == 'nan' or \
+                str(df.loc[i, 'Shape']).lower() == 'nan':
+            print("\nRegion, Compartment Name, Availability Domain(AD1|AD2|AD3), DB Version, Hostname Prefix, Shape are mandatory fields. Please enter a value and try again.......Exiting!!")
+            exit()
+
+        if str(df.loc[i, 'SSH Key']).lower() == 'nan' or \
                 str(df.loc[i, 'Subnet Name']).lower() == 'nan' or \
                 str(df.loc[i, 'Backup Subnet Name']).lower() == 'nan' or \
                 str(df.loc[i, 'DB Name']).lower() == 'nan' or \
                 str(df.loc[i, 'DB Admin Password']).lower() == 'nan':
-            print("\nAll the fields are mandatory. Please enter a value and try again !!")
-            print("\n** Exiting **")
+            print("\nSSH Key, Subnet Name, DB Name, Backup Subnet Name, DB Admin Password are mandatory fields. Please enter a value and try again.......Exiting!!")
             exit()
+
+        tempdict = {'oracle_db_software_edition' : 'ENTERPRISE_EDITION_EXTREME_PERFORMANCE'}
 
         for columnname in dfcolumns:
             # Column value
