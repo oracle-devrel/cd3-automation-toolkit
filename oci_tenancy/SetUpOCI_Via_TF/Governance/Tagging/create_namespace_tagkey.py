@@ -221,7 +221,8 @@ def main():
                     multivalues = [str(part).strip().replace('$','$$') if part and '$' in part else str(part).strip() for part in multivalues ]
                     tempdict = {columnname: multivalues}
 
-                    values_list = multivalues[1].replace('"','').split(',')
+                    values_list = multivalues[1].split(',"')
+                    values_list = [values.replace('"','') for values in values_list]
                     if str(df.loc[i,'Default Tag Compartment']).strip() != '' and str(df.loc[i,'Default Tag Compartment']).lower().strip() != 'nan':
                         if '$' not in str(df.loc[i, 'Default Tag Value']):
                             if str(df.loc[i, 'Default Tag Value']) not in values_list and str(df.loc[i, 'Default Tag Value']).strip() != '' and str(df.loc[i, 'Default Tag Value']).strip().lower() != 'nan':
