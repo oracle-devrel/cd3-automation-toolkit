@@ -75,7 +75,7 @@ def  print_tags(values_for_column_tags,region, ntk_compartment_name, tag, tag_ke
         tf_name_namespace_list.append(tag.id)
     if ( str(tag_key) != "Nan" ):
       importCommands[region].write("\nterraform import oci_identity_tag."+tf_name_namespace + '-' + tf_name_key + ' ' + "tagNamespaces/"+ str(tag.id) +"/tags/\"" + str(tag_key_name) + "\"")
-    if ( tag_default_value != ''):
+    if ( tag_default_comp != ''):
         importCommands[region].write("\nterraform import oci_identity_tag_default."+ tf_name_namespace+'-' +tf_name_key + '-default'+ ' ' + str(tag_default_id))
 def main():
 
