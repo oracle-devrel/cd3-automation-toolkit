@@ -263,7 +263,10 @@ class commonTools():
             multivalues = columnvalue.split(";")
             multivalues = [part.split("=") for part in multivalues if part]
             for value in multivalues:
-                value[1] = value[1].replace("\\","\\\\")
+                try:
+                    value[1] = value[1].replace("\\","\\\\")
+                except IndexError as e:
+                    pass
             tempdict = {columnname: multivalues}
         else:
             # If there is only one tag; split them only by "="; each key-value pair is stored as a list
@@ -271,7 +274,10 @@ class commonTools():
             multivalues = columnvalue.split("=")
             multivalues = [str(part).strip() for part in multivalues if part]
             if multivalues != []:
-                multivalues[1] = multivalues[1].replace("\\","\\\\")
+                try:
+                    multivalues[1] = multivalues[1].replace("\\","\\\\")
+                except IndexError as e:
+                    pass
             tempdict = {columnname: [multivalues]}
         return tempdict
 
