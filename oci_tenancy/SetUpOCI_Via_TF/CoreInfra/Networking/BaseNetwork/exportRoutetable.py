@@ -143,11 +143,7 @@ def print_routetables(routetables,region,vcn_name,comp_name):
 
         for rule in rules:
             insert_values(routetable, values_for_column, region, comp_name, vcn_name,rule)
-            try:
-                desc = str(rule.description)
-            except AttributeError as e:
-                desc = ""
-
+            desc = str(rule.description)
             if (desc == "None"):
                 desc = ""
             if(tf_import_cmd=="false"):
