@@ -12,8 +12,8 @@ resource "oci_load_balancer_backend_set" "{{ lbr_tf_name }}_{{ backend_set_tf_na
         {% if backend_healthcheck_protocol == 'HTTP' %}
         url_path = "{{ backend_healthcheck_url }}"
         {% endif %}
-        {% if interval_in_millis != '' %}
-        interval_ms = {{ interval_in_millis }}
+        {% if interval_in_millis and interval_in_millis != '' and interval_in_millis != 'nan' %}
+        interval_ms = "{{ interval_in_millis }}"
         {% endif %}
     }
     load_balancer_id = oci_load_balancer_load_balancer.{{ lbr_tf_name }}.id
