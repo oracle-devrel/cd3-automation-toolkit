@@ -70,7 +70,11 @@ def print_secrules(seclists,region,vcn_name,comp_name):
 
         for rule in esec_rules:
             oci_objs=[seclist,rule]
-            desc = str(rule.description)
+            try:
+                desc = str(rule.description)
+            except AttributeError as e:
+                desc = ""
+
             if (desc == "None"):
                 desc = ""
 
@@ -124,7 +128,11 @@ def print_secrules(seclists,region,vcn_name,comp_name):
                 print(printstr)
         for rule in isec_rules:
             oci_objs=[seclist,rule]
-            desc = str(rule.description)
+            try:
+                desc = str(rule.description)
+            except AttributeError as e:
+                desc = ""
+
             if (desc == "None"):
                 desc = ""
             if rule.protocol == "6":
