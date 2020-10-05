@@ -94,6 +94,10 @@ def main():
         # Encountered <End>
         if (region in commonTools.endNames):
             break
+
+        if region.lower() == 'nan':
+            continue
+
         region=region.strip().lower()
 
         # If some invalid region is specified in a row which is not part of VCN Info Tab

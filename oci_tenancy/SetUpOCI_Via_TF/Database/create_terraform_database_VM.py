@@ -94,6 +94,10 @@ def main():
         # Encountered <End>
         if (region in commonTools.endNames):
             break
+
+        if region.lower() == 'nan':
+            continue
+
         region=region.strip().lower()
 
 
