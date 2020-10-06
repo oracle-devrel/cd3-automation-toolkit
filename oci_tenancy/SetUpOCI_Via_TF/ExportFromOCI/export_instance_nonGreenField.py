@@ -16,8 +16,9 @@ from jinja2 import Environment, FileSystemLoader
 
 
 def adding_columns_values(region, hostname, ad, fd, vs, publicip, privateip, os_dname, shape, key_name, c_name,
-                          bkp_policy_name, nsgs, d_host, instance_data, values_for_column_instances, bc_info, bdet):
-    #print("ADD=",os_dname)
+                          bkp_policy_name, nsgs, d_host, instance_data, values_for_column_instances, bc_info, bdet,
+                          cpcn):
+    # print("CPCN=",cpcn)
     for col_header in values_for_column_instances.keys():
         if (col_header == "Region"):
             values_for_column_instances[col_header].append(region)
@@ -51,6 +52,8 @@ def adding_columns_values(region, hostname, ad, fd, vs, publicip, privateip, os_
             values_for_column_instances[col_header].append(bdet.kms_key_id)
         elif (col_header == "Dedicated VM Host"):
             values_for_column_instances[col_header].append(d_host)
+        elif (col_header == "Custom Policy Compartment Name"):
+            values_for_column_instances[col_header].append(cpcn)
         elif str(col_header).lower() in commonTools.tagColumns:
             values_for_column_instances = commonTools.export_tags(instance_data, col_header,
                                                                   values_for_column_instances)
@@ -116,7 +119,7 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, config):
             # print(ins_vnic.data)
             boot_check = find_boot(ins_ad, ins_id, config)
             boot_id = boot_check.data[0].boot_volume_id
-            bdet=boot_details = bc.get_boot_volume(boot_volume_id=boot_id)
+            bdet = boot_details = bc.get_boot_volume(boot_volume_id=boot_id)
             boot_details = bc.get_boot_volume(boot_volume_id=boot_id).data.image_id
             os = compute.get_image(image_id=boot_details)
             # print("OS",os.data)                                   #Operating system
@@ -124,6 +127,7 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, config):
             bvp = bc.get_volume_backup_policy_asset_assignment(asset_id=boot_id)
             bvdetails = bc.get_boot_volume(boot_volume_id=boot_id)
             bkp_policy_name = ""
+            cpcn = ""
             if (len(bvp.data)):
                 # print("Bvp Data:",bvp.data)
                 bkp_pname = bc.get_volume_backup_policy(policy_id=bvp.data[0].policy_id)
@@ -137,6 +141,12 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, config):
                 importCommands[reg_name].write(
                     "\nterraform import oci_core_volume_backup_policy_assignment." + tf_name + " " + str(
                         bvp.data[0].id))
+                if (bkp_pname.data.display_name not in ["Gold", "Silver", "Bronze"]):
+                    bkp_policy_name = bkp_pname.data.display_name
+                    for comp_name, comp_id in uc.items():
+                        if (bkp_pname.data.compartment_id == comp_id):
+                            # print(comp_name, comp_id)
+                            cpcn = comp_name
             for lnic in ins_vnic.data:
                 subnet_id = lnic.subnet_id
                 vnic_id = lnic.vnic_id
@@ -166,18 +176,18 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, config):
                     instance_keys[tf_name] = ""
                     key_name = ins_dname + "_" + str(privateip)
                     key_name = ""
-                if (ins.source_details.source_type=="image"):
+                if (ins.source_details.source_type == "image"):
                     os_dname = os.data.display_name  # Source os name
                     os_dname = commonTools.check_tf_variable(os_dname)
                     tf_name = commonTools.check_tf_variable(reg_name + "-" + os_dname)
                     os_keys[tf_name] = ins.source_details.image_id
-                    os_dname = "image::"+os_dname
-                elif (ins.source_details.source_type=="bootVolume"):
-                    os_dname = "Boot_"+ins_dname + "_" + str(privateip)
+                    os_dname = "image::" + os_dname
+                elif (ins.source_details.source_type == "bootVolume"):
+                    os_dname = "Boot_" + ins_dname + "_" + str(privateip)
                     os_dname = commonTools.check_tf_variable(os_dname)
                     tf_name = commonTools.check_tf_variable(reg_name + "-" + os_dname)
                     os_keys[tf_name] = ins.source_details.boot_volume_id
-                    os_dname = "bootVolume::"+os_dname
+                    os_dname = "bootVolume::" + os_dname
                 publicip = vnic_info.data.public_ip
                 if (publicip == None):
                     publicip = "FALSE"
@@ -194,7 +204,7 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, config):
                 vs = commonTools.check_tf_variable(vs)
                 adding_columns_values(reg_name.title(), ins_dname, AD_name, ins_fd, vs, publicip, privateip, os_dname,
                                       ins_shape, key_name, compartment_name, bkp_policy_name, nsg_names, dedicated_host,
-                                      ins, values_for_column_instances, boot_check.data,bdet.data)
+                                      ins, values_for_column_instances, boot_check.data, bdet.data, cpcn)
                 # rows.append(new_row)
 
 
@@ -226,7 +236,7 @@ def main():
         configFileName = ""
         config = oci.config.from_file()
 
-    global instance_keys, user_data_in, os_keys, all_regions, ct, importCommands, idc, rows, all_compartments, AD, values_for_column_instances, df, sheet_dict_instances  # declaring global variables
+    global instance_keys, user_data_in, os_keys, all_regions, ct, importCommands, idc, rows, all_compartments, AD, values_for_column_instances, df, uc, sheet_dict_instances  # declaring global variables
 
     instance_keys = {}  # dict name
     os_keys = {}  # os_ocids
@@ -292,6 +302,20 @@ def main():
 
     # Check Compartments
     remove_comps = []
+    comp_ocid_done = []
+    for ntk_compartment_name in ct.ntk_compartment_ids:
+        if ct.ntk_compartment_ids[ntk_compartment_name] not in comp_ocid_done:
+            comp_ocid_done.append(ct.ntk_compartment_ids[ntk_compartment_name])
+    uc = {}  # compartment names with hierarchy
+    for cid in comp_ocid_done:
+        for cname, cocid in ct.ntk_compartment_ids.items():
+            if cocid == cid and "::" in cname:
+                uc[cname] = cocid
+                continue
+            if cocid == cid:
+                if cocid not in uc.values():
+                    uc[cname] = cocid
+
     if (input_compartment_names is not None):
         for x in range(0, len(input_compartment_names)):
             if (input_compartment_names[x] not in ct.ntk_compartment_ids.keys()):
@@ -383,3 +407,4 @@ def main():
 if __name__ == '__main__':
     # Execution of the code begins here
     main()
+
