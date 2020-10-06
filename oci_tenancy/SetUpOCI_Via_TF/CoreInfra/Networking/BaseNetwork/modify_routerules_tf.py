@@ -211,6 +211,7 @@ def main():
         oname = open(outfile, "w")
         if(rt_tf_name not in subnets_done[region] or len(subnets_done[region])==0):
             if (tfStr != ""):
+                print("Writing to..."+str(oname.name))
                 oname.write(tfStr)
                 oname.close()
                 tfStr = ""
@@ -231,11 +232,13 @@ def main():
 
         if (tfStr != ''):
             oname = open(outfile, "w")
+            print("Writing to ..."+str(oname.name))
             oname.write(tfStr)
             oname.close()
 
     for reg in ct.all_regions:
         if (default_ruleStr[reg] != ''):
+            print("Writing to ..." + str(defaultname[reg].name))
             defaultname[reg].write(default_ruleStr[reg])
             defaultname[reg].close()
 

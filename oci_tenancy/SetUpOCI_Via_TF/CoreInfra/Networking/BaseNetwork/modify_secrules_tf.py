@@ -267,6 +267,7 @@ def main():
             # Process other seclists
             if (seclist_tf_name not in seclists_done[region]):
                 if (tfStr != ""):
+                    print("Writing to..."+str(oname.name))
                     oname.write(tfStr)
                     oname.close()
                     tfStr = ""
@@ -286,10 +287,12 @@ def main():
             tfStr = tfStr.replace(srcStr,new_sec_rule)
 
         if (tfStr != ''):
+            print("Writing to..." + str(oname.name))
             oname.write(tfStr)
             oname.close()
         for reg in ct.all_regions:
             if (default_ruleStr[reg] != ''):
+                print("Writing to..." + str(defaultname[reg].name))
                 defaultname[reg].write(default_ruleStr[reg])
                 defaultname[reg].close()
 

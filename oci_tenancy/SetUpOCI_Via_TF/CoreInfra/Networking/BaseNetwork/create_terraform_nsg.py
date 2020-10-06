@@ -291,6 +291,7 @@ def NSGtemplate(nsgParser, key, value, outdir, columnname):
             tempStr.update(protocolOptionals(nsgParser, rule,tempStr))
 
             nsg_rule = nsgrule.render(tempStr)
+            print("Writing to..."+str(f.name))
             f.write(nsg_rule)
             ruleindex += 1
         f.close()
