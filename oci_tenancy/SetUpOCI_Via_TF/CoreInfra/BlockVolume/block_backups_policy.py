@@ -158,7 +158,7 @@ def main():
                 columnvalue = str(columnvalue).strip()
                 if columnvalue != '':
                     columnvalue = columnvalue.lower()
-                    policy = columnvalue
+                    policy = commonTools.check_tf_variable(columnvalue)
 
             columnname = commonTools.check_column_headers(columnname)
             tempStr[columnname] = str(columnvalue).strip()
