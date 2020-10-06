@@ -128,12 +128,20 @@ def insert_values(values_for_column, oci_objs, sheet_dict, region, comp_name, di
                 values_for_column = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict, values_for_column)
 
 
-def print_lbr_hostname_certs(region, values_for_column_lhc, lbr, VCNs, LBRs, ntk_compartment_name, SUBNETs, NSGs):
+def print_lbr_hostname_certs(region, ct, values_for_column_lhc, lbr, VCNs, LBRs, ntk_compartment_name, SUBNETs, NSGs):
 
     for eachlbr in LBRs.data:
 
         #Fetch LBR Name
         display_name = eachlbr.display_name
+
+        #Fetch Compartment Name
+        lbr_comp_id = eachlbr.compartment_id
+        comp_done_ids = []
+        for comp_name,comp_id in ct.ntk_compartment_ids.items():
+            if lbr_comp_id == comp_id and lbr_comp_id not in comp_done_ids:
+                ntk_compartment_name = comp_name
+                comp_done_ids.append(lbr_comp_id)
 
         #Fetch hostname
         hostname_name_list = ''
@@ -332,10 +340,20 @@ def print_lbr_hostname_certs(region, values_for_column_lhc, lbr, VCNs, LBRs, ntk
                         i = i + 1
     return values_for_column_lhc
 
-def print_backendset_backendserver(region, values_for_column_bss, lbr, LBRs, ntk_compartment_name):
+def print_backendset_backendserver(region, ct, values_for_column_bss, lbr, LBRs, ntk_compartment_name):
 
     for eachlbr in LBRs.data:
+
         # Loop through Backend Sets
+
+        #Fetch Compartment Name
+        lbr_comp_id = eachlbr.compartment_id
+        comp_done_ids = []
+        for comp_name,comp_id in ct.ntk_compartment_ids.items():
+            if lbr_comp_id == comp_id and lbr_comp_id not in comp_done_ids:
+                ntk_compartment_name = comp_name
+                comp_done_ids.append(lbr_comp_id)
+
         for backendsets in eachlbr.__getattribute__('backend_sets'):
             backend_list = ""
             backup_list = ""
@@ -450,9 +468,18 @@ def print_backendset_backendserver(region, values_for_column_bss, lbr, LBRs, ntk
     return values_for_column_bss
 
 
-def print_listener(region, values_for_column_lis, LBRs, ntk_compartment_name):
+def print_listener(region, ct, values_for_column_lis, LBRs, ntk_compartment_name):
     for eachlbr in LBRs.data:
         sslcerts = ''
+
+        #Fetch Compartment Name
+        lbr_comp_id = eachlbr.compartment_id
+        comp_done_ids = []
+        for comp_name,comp_id in ct.ntk_compartment_ids.items():
+            if lbr_comp_id == comp_id and lbr_comp_id not in comp_done_ids:
+                ntk_compartment_name = comp_name
+                comp_done_ids.append(lbr_comp_id)
+
         # Loop through listeners
         for listeners, values in eachlbr.__getattribute__('listeners').items():
             for col_headers in values_for_column_lis.keys():
@@ -525,8 +552,16 @@ def print_listener(region, values_for_column_lis, LBRs, ntk_compartment_name):
 
     return values_for_column_lis
 
-def print_rule(region, values_for_column_rule, LBRs, ntk_compartment_name):
+def print_rule(region, ct, values_for_column_rule, LBRs, ntk_compartment_name):
     for eachlbr in LBRs.data:
+        #Fetch Compartment Name
+        lbr_comp_id = eachlbr.compartment_id
+        comp_done_ids = []
+        for comp_name,comp_id in ct.ntk_compartment_ids.items():
+            if lbr_comp_id == comp_id and lbr_comp_id not in comp_done_ids:
+                ntk_compartment_name = comp_name
+                comp_done_ids.append(lbr_comp_id)
+
         for rulesets, values in eachlbr.__getattribute__('rule_sets').items():
             for eachitem in values.items:
                 for col_headers in values_for_column_rule.keys():
@@ -615,8 +650,15 @@ def print_rule(region, values_for_column_rule, LBRs, ntk_compartment_name):
 
     return values_for_column_rule
 
-def print_prs(region, values_for_column_prs, LBRs, ntk_compartment_name):
+def print_prs(region, ct, values_for_column_prs, LBRs, ntk_compartment_name):
     for eachlbr in LBRs.data:
+        #Fetch Compartment Name
+        lbr_comp_id = eachlbr.compartment_id
+        comp_done_ids = []
+        for comp_name,comp_id in ct.ntk_compartment_ids.items():
+            if lbr_comp_id == comp_id and lbr_comp_id not in comp_done_ids:
+                ntk_compartment_name = comp_name
+                comp_done_ids.append(lbr_comp_id)
         for prs,values in eachlbr.__getattribute__('path_route_sets').items():
             for path_routes in values.__getattribute__('path_routes'):
                 for col_headers in values_for_column_prs.keys():
@@ -773,11 +815,11 @@ def main():
                 NSGs = oci.pagination.list_call_get_all_results(vcn.list_network_security_groups,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name],
                                                                 lifecycle_state="AVAILABLE")
 
-                values_for_column_lhc = print_lbr_hostname_certs(region, values_for_column_lhc, lbr, VCNs, LBRs,ntk_compartment_name, SUBNETs, NSGs)
-                values_for_column_lis = print_listener(region,values_for_column_lis,LBRs,ntk_compartment_name)
-                values_for_column_bss = print_backendset_backendserver(region, values_for_column_bss, lbr,LBRs,ntk_compartment_name)
-                values_for_column_rule = print_rule(region, values_for_column_rule, LBRs, ntk_compartment_name)
-                values_for_column_prs = print_prs(region, values_for_column_prs, LBRs, ntk_compartment_name)
+                values_for_column_lhc = print_lbr_hostname_certs(region, ct, values_for_column_lhc, lbr, VCNs, LBRs,ntk_compartment_name, SUBNETs, NSGs)
+                values_for_column_lis = print_listener(region, ct, values_for_column_lis,LBRs,ntk_compartment_name)
+                values_for_column_bss = print_backendset_backendserver(region, ct, values_for_column_bss, lbr,LBRs,ntk_compartment_name)
+                values_for_column_rule = print_rule(region, ct, values_for_column_rule, LBRs, ntk_compartment_name)
+                values_for_column_prs = print_prs(region, ct, values_for_column_prs, LBRs, ntk_compartment_name)
 
                 for eachlbr in LBRs.data:
                     importCommands[reg] = open(outdir + "/" + reg + "/tf_import_commands_lbr_nonGF.sh", "a")

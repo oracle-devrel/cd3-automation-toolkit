@@ -20,21 +20,24 @@ from commonTools import *
 importCommands = {}
 oci_obj_names = {}
 
-def policy_info(bvol,volume_id):
+def policy_info(bvol,volume_id,ct):
     asset_policy_name = ''
     asset_assignment_id = ''
-    asset_policy_id = ''
-    bvol_info = bvol.list_volume_backup_policies()
+    policy_comp_name = ''
     blockvol_policy = bvol.get_volume_backup_policy_asset_assignment(asset_id=volume_id)
     for assets in blockvol_policy.data:
         asset_assignment_id = assets.id
         asset_policy_id = assets.policy_id
-    for policies in bvol_info.data:
-        policy_id = policies.id
-        policy_name = policies.display_name
-        if asset_policy_id == policy_id:
-            asset_policy_name = policy_name
-    return asset_assignment_id, asset_policy_name
+        bvol_info = bvol.get_volume_backup_policy(policy_id=asset_policy_id)
+        asset_policy_name = bvol_info.data.display_name
+        policy_comp_id = bvol_info.data.compartment_id
+        if str(policy_comp_id).lower() != 'none':
+            comp_done_ids = []
+            for comp_name,comp_ocids in ct.ntk_compartment_ids.items():
+                if policy_comp_id == comp_ocids and policy_comp_id not in comp_done_ids:
+                    policy_comp_name = comp_name
+                    comp_done_ids.append(policy_comp_id)
+    return asset_assignment_id, asset_policy_name, policy_comp_name
 
 def volume_attachment_info(compute,ntk_compartment_name,ct,volume_id):
     instance_id = ''
@@ -55,11 +58,19 @@ def volume_attachment_info(compute,ntk_compartment_name,ct,volume_id):
     return attachment_id, instance_name, attachment_type
 
 def print_blockvolumes(region, BVOLS, bvol, compute, ct, values_for_column, ntk_compartment_name):
+    volume_comp = ''
     for blockvols in BVOLS.data:
         volume_id = blockvols.id
+        volume_compartment_id = blockvols.compartment_id
         attachment_id, instance_name, attachment_type = volume_attachment_info(compute, ntk_compartment_name, ct,volume_id)
-        asset_assignment_id, asset_policy_name = policy_info(bvol, volume_id)
+        asset_assignment_id, asset_policy_name, policy_comp_name = policy_info(bvol, volume_id,ct)
         block_tf_name = commonTools.check_tf_variable(blockvols.display_name)
+
+        comp_done_ids = []
+        for comp_name,comp_id in ct.ntk_compartment_ids.items():
+            if volume_compartment_id == comp_id and volume_compartment_id not in comp_done_ids:
+                volume_comp = comp_name
+                comp_done_ids.append(volume_compartment_id)
 
         importCommands[region.lower()].write("\nterraform import oci_core_volume." + block_tf_name + " " + str(blockvols.id))
         if attachment_id != '':
@@ -71,7 +82,7 @@ def print_blockvolumes(region, BVOLS, bvol, compute, ct, values_for_column, ntk_
             if col_header == 'Region':
                 values_for_column[col_header].append(region)
             elif col_header == 'Compartment Name':
-                values_for_column[col_header].append(ntk_compartment_name)
+                values_for_column[col_header].append(volume_comp)
             elif ("Availability Domain" in col_header):
                 value = blockvols.__getattribute__(sheet_dict[col_header])
                 ad = ""
@@ -88,6 +99,8 @@ def print_blockvolumes(region, BVOLS, bvol, compute, ct, values_for_column, ntk_
                 values_for_column[col_header].append(instance_name)
             elif col_header == 'Backup Policy':
                 values_for_column[col_header].append(asset_policy_name)
+            elif col_header == 'Custom Policy Compartment Name':
+                values_for_column[col_header].append(policy_comp_name)
             elif col_header.lower() in commonTools.tagColumns:
                 values_for_column = commonTools.export_tags(blockvols, col_header, values_for_column)
             else:

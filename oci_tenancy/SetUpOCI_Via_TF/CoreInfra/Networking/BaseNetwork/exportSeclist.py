@@ -130,14 +130,14 @@ def print_secrules(seclists,region,vcn_name,comp_name):
             if rule.protocol == "6":
                 if rule.tcp_options is None:
                     printstr= (dn + ",ingress,tcp," + str(rule.is_stateless) + "," + rule.source + ",,,,,,,,"+desc)
-                    insert_values(values_for_column,oci_objs,region, comp_name, vcn_name, 'ingress', 'tcp', '', '', '','', '', '')
+                    insert_values(values_for_column,oci_objs,region, comp_name, vcn_name, 'ingress', 'tcp', '', '', '', '', '', '')
                 elif rule.tcp_options.destination_port_range is not None:
                     min = convertNullToNothing(rule.tcp_options.destination_port_range.min)
                     max = convertNullToNothing(rule.tcp_options.destination_port_range.max)
                     printstr= (dn + ",ingress,tcp," + str(rule.is_stateless) + "," + rule.source + ",,,," + min + "," + max+",,,"+desc)
                     insert_values(values_for_column,oci_objs,region, comp_name, vcn_name,'ingress', 'tcp','', '',min, max, '', '')
                 else:
-                    insert_values(values_for_column,oci_objs,region, comp_name, vcn_name, dn, 'ingress', 'tcp', '', '', '','', '', '')
+                    insert_values(values_for_column,oci_objs,region, comp_name, vcn_name,'ingress', 'tcp', '', '', '','', '', '')
 
             elif rule.protocol == "1":
                 if rule.icmp_options is None:

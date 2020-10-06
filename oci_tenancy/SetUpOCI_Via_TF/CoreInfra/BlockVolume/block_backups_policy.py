@@ -78,7 +78,9 @@ def main():
         resource = 'BlockBackupPolicy'
         srcdir = outdir + "/" + eachregion + "/"
         commonTools.backup_file(srcdir, resource, "_block-backup-policy.tf")
+        commonTools.backup_file(srcdir,resource,"-block-backup-policy-data.tf")
 
+    policy_done = []
     for i in df.index:
         region = df.loc[i,"Region"]
         region = region.strip().lower()
@@ -88,14 +90,46 @@ def main():
             print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
             exit()
 
-        policy_data_file = outdir + "/"+region+"/oci-backup-policy-data.tf"
+        policy_data_file = outdir + "/"+region+"/oci-block-backup-policy-data.tf"
         datasource = env.get_template('backup-policy-data-source-template')
+        oci_policy = ["gold","silver","bronze"]
+        reg_policy = str(df.loc[i, 'Region']).lower()+"-"+str(df.loc[i, 'Backup Policy']).lower()
 
-        fname=open(policy_data_file,"w+")
+        if str(df.loc[i,'Backup Policy']).lower() in oci_policy and  reg_policy not in policy_done:
+            if os.path.isfile(policy_data_file):
+                with open(policy_data_file) as fname:
+                    if "block_"+str(df.loc[i,'Backup Policy']).lower() not in fname.read():
+                            policy_data_dict = {'block_tf_policy': str(df.loc[i, 'Backup Policy']).lower(),'policy_tf_compartment': commonTools.check_tf_variable(str(df.loc[i, 'Custom Policy Compartment Name']))}
+                            fname=open(policy_data_file,"a+")
+                            # To add the 'data' resource - required for fetching the policy id
+                            fname.write(datasource.render(policy_data_dict))
+                            fname.close()
+            else:
+                policy_data_dict = {'block_tf_policy': str(df.loc[i, 'Backup Policy']).lower(),'policy_tf_compartment': commonTools.check_tf_variable(str(df.loc[i, 'Custom Policy Compartment Name']))}
 
-        # To add the 'data' resource - required for fetching the policy id
-        fname.write(datasource.render())
-        fname.close()
+                fname = open(policy_data_file, "w+")
+                # To add the 'data' resource - required for fetching the policy id
+                fname.write(datasource.render(policy_data_dict))
+                fname.close()
+            policy_done.append(reg_policy)
+        else:
+            if str(df.loc[i, 'Backup Policy']).lower() not in oci_policy and reg_policy not in policy_done:
+                if os.path.isfile(policy_data_file):
+                    with open(policy_data_file) as fname:
+                        if "block_"+str(df.loc[i, 'Backup Policy']).lower() not in fname.read():
+                            policy_data_dict = {'block_tf_policy' : str(df.loc[i,'Backup Policy']).lower(),'policy_tf_compartment' : commonTools.check_tf_variable(str(df.loc[i,'Custom Policy Compartment Name']))}
+                            fname = open(policy_data_file, "a+")
+                            # To add the 'data' resource - required for fetching the policy id
+                            fname.write(datasource.render(policy_data_dict))
+                            fname.close()
+                else:
+                    policy_data_dict = {'block_tf_policy' : str(df.loc[i,'Backup Policy']).lower(),'policy_tf_compartment' : commonTools.check_tf_variable(str(df.loc[i,'Custom Policy Compartment Name']))}
+                    fname = open(policy_data_file, "w+")
+                    # To add the 'data' resource - required for fetching the policy id
+                    fname.write(datasource.render(policy_data_dict))
+                    fname.close()
+                policy_done.append(reg_policy)
+
 
         # temporary dictionary1 and dictionary2
         tempStr = {}

@@ -37,6 +37,9 @@
         {% if total_node_count %}
         node_count              = "{{ total_node_count }}"
         {% endif %}
+        {% time_zone %}
+        time_zone = "{{ time_zone }}"
+        {% endif %}
 
         {#  ##Do not modify below this line##  #}
         {#                                     #}

@@ -158,9 +158,9 @@ class commonTools():
                     for key, value in tags.items():
                         # Each Namespace/TagKey - Value pair ends with a ;
                         value = str(namespace + "." + key + "=" + value)
-                        defined_tags=value+","+defined_tags
+                        defined_tags=value+";"+defined_tags
 
-            if (defined_tags != "" and defined_tags[-1] == ','):
+            if (defined_tags != "" and defined_tags[-1] == ';'):
                 defined_tags = defined_tags[:-1]
             values_for_column[header].append(defined_tags)
 
@@ -168,9 +168,9 @@ class commonTools():
             if (oci_obj.__getattribute__('freeform_tags')):
                 for keys, values in oci_obj.__getattribute__('freeform_tags').items():
                     value = str(keys + "=" + values)
-                    freeform_tags= value + ',' +freeform_tags
+                    freeform_tags= value + ';' +freeform_tags
 
-            if (freeform_tags != '' and freeform_tags[-1] == ','):
+            if (freeform_tags != '' and freeform_tags[-1] == ';'):
                 freeform_tags = freeform_tags [:-1]
             values_for_column[header].append(freeform_tags)
 
@@ -254,9 +254,6 @@ class commonTools():
     # Split values for tagging
     def split_tag_values(columnname, columnvalue, tempdict):
         columnvalue = columnvalue.replace("\n", "")
-        # if comma is used as delimeter, replace it with ';'
-        if ',' in columnvalue:
-            columnvalue = columnvalue.replace(',',';')
         if ";" in columnvalue:
             # If there are more than one tag; split them by ";" and "="
             columnname = commonTools.check_column_headers(columnname)
