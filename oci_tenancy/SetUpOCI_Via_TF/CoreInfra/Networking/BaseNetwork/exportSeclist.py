@@ -84,37 +84,52 @@ def print_secrules(seclists,region,vcn_name,comp_name):
                 else:
                     code = convertNullToNothing(rule.icmp_options.code)
                     type = convertNullToNothing(rule.icmp_options.type)
-                    printstr = (dn + ",egress,icmp," + str(rule.is_stateless) + "," + rule.destination + ",,,,,"+type+","+code,+","+desc)
+                    printstr = (dn + ",egress,icmp," + str(rule.is_stateless) + "," + rule.destination + ",,,,,"+type+","+code+","+desc)
                     insert_values(values_for_column,oci_objs,region, comp_name, vcn_name,'egress', 'icmp','', '', '','', type, code)
             elif rule.protocol == "6":
                 if rule.tcp_options is None:
                     printstr = (dn + ",egress,tcp," + str(rule.is_stateless) + ",,,," + rule.destination+",,,,,"+desc)
                     insert_values(values_for_column,oci_objs,region, comp_name, vcn_name, 'egress', 'tcp','', '', '','', '', '')
-                elif rule.tcp_options.source_port_range is not None:
+                elif rule.tcp_options.source_port_range is not None and rule.tcp_options.destination_port_range is None:
                     min = convertNullToNothing(rule.tcp_options.source_port_range.min)
                     max = convertNullToNothing(rule.tcp_options.source_port_range.max)
                     printstr = (dn + ",egress,tcp," + str(rule.is_stateless) + ",,,," + rule.destination + ",," + min + "," + max + ",,,"+desc)
                     insert_values(values_for_column,oci_objs,region, comp_name, vcn_name, 'egress', 'tcp',min, max,'', '', '', '')
-                elif rule.tcp_options.destination_port_range is not None:
+                elif rule.tcp_options.destination_port_range is not None and rule.tcp_options.source_port_range is None:
                     min = convertNullToNothing(rule.tcp_options.destination_port_range.min)
                     max = convertNullToNothing(rule.tcp_options.destination_port_range.max)
                     printstr = (dn + ",egress,tcp," + str(rule.is_stateless) + ",,,," + rule.destination + ",," + min + "," + max + ",,,"+desc)
                     insert_values(values_for_column,oci_objs,region, comp_name, vcn_name, 'egress', 'tcp','', '', min, max, '', '')
+                elif rule.tcp_options.destination_port_range is not None and rule.tcp_options.source_port_range is not None:
+                    smin = convertNullToNothing(rule.tcp_options.source_port_range.min)
+                    smax = convertNullToNothing(rule.tcp_options.source_port_range.max)
+                    dmin = convertNullToNothing(rule.tcp_options.destination_port_range.min)
+                    dmax = convertNullToNothing(rule.tcp_options.destination_port_range.max)
+                    printstr = (dn + ",egress,tcp," + str(rule.is_stateless) + ",,,," + rule.destination + ",," + smin + "," + smax + "," + dmin + "," + dmax + ",,," + desc)
+                    insert_values(values_for_column, oci_objs, region, comp_name, vcn_name, 'egress', 'tcp', smin, smax,dmin, dmax, '', '')
+
             elif rule.protocol == "17":
                 if rule.udp_options is None:
                     printstr = (dn + ",egress,udp," + str(rule.is_stateless) + ",,,," + rule.destination+",,,,,"+desc)
                     insert_values(values_for_column,oci_objs,region, comp_name, vcn_name, 'egress', 'udp', '', '', '', '', '', '')
-                elif rule.udp_options.source_port_range is not None:
+                elif rule.udp_options.source_port_range is not None and rule.udp_options.destination_port_range is None :
                     min = convertNullToNothing(rule.udp_options.source_port_range.min)
                     max = convertNullToNothing(rule.udp_options.source_port_range.max)
                     printstr = (dn + ",egress,udp," + str(rule.is_stateless) + ",,,," + rule.destination + ",," + min + "," + max + ",,,"+desc)
                     insert_values(values_for_column,oci_objs,region, comp_name, vcn_name, 'egress', 'udp', min, max,'', '', '', '')
-
-                elif rule.udp_options.destination_port_range is not None:
+                elif rule.udp_options.destination_port_range is not None and rule.udp_options.source_port_range is None:
                     min = convertNullToNothing(rule.udp_options.destination_port_range.min)
                     max = convertNullToNothing(rule.udp_options.destination_port_range.max)
                     printstr=(dn + ",egress,udp," + str(rule.is_stateless) + ",,,," + rule.destination + ",," + min + "," + max + ",,,"+desc)
                     insert_values(values_for_column,oci_objs,region, comp_name, vcn_name, 'egress', 'udp', '', '', min, max, '', '')
+                elif rule.udp_options.destination_port_range is not None and rule.udp_options.source_port_range is not None:
+                    smin = convertNullToNothing(rule.udp_options.source_port_range.min)
+                    smax = convertNullToNothing(rule.udp_options.source_port_range.max)
+                    dmin = convertNullToNothing(rule.udp_options.destination_port_range.min)
+                    dmax = convertNullToNothing(rule.udp_options.destination_port_range.max)
+                    printstr = (dn + ",egress,udp," + str(rule.is_stateless) + ",,,," + rule.destination + ",," + smin + "," + smax + "," + dmin + "," + dmax + ",,," + desc)
+                    insert_values(values_for_column, oci_objs, region, comp_name, vcn_name, 'egress', 'udp', smin, smax,dmin, dmax, '', '')
+
             #Any Other protocol
             else:
                 protocol=commonTools().protocol_dict[rule.protocol].lower()
@@ -131,13 +146,24 @@ def print_secrules(seclists,region,vcn_name,comp_name):
                 if rule.tcp_options is None:
                     printstr= (dn + ",ingress,tcp," + str(rule.is_stateless) + "," + rule.source + ",,,,,,,,"+desc)
                     insert_values(values_for_column,oci_objs,region, comp_name, vcn_name, 'ingress', 'tcp', '', '', '', '', '', '')
-                elif rule.tcp_options.destination_port_range is not None:
+                elif rule.tcp_options.destination_port_range is not None and rule.tcp_options.source_port_range is None:
                     min = convertNullToNothing(rule.tcp_options.destination_port_range.min)
                     max = convertNullToNothing(rule.tcp_options.destination_port_range.max)
                     printstr= (dn + ",ingress,tcp," + str(rule.is_stateless) + "," + rule.source + ",,,," + min + "," + max+",,,"+desc)
                     insert_values(values_for_column,oci_objs,region, comp_name, vcn_name,'ingress', 'tcp','', '',min, max, '', '')
-                else:
-                    insert_values(values_for_column,oci_objs,region, comp_name, vcn_name,'ingress', 'tcp', '', '', '','', '', '')
+                elif rule.tcp_options.source_port_range is not None and rule.tcp_options.destination_port_range is None:
+                    min = convertNullToNothing(rule.tcp_options.source_port_range.min)
+                    max = convertNullToNothing(rule.tcp_options.source_port_range.max)
+                    printstr = (dn + ",ingress,tcp," + str(rule.is_stateless) + ",,,," + rule.source + ",," + min + "," + max + ",,," + desc)
+                    insert_values(values_for_column, oci_objs, region, comp_name, vcn_name, 'ingress', 'tcp', min, max,'', '', '', '')
+                elif rule.tcp_options.destination_port_range is not None and rule.tcp_options.source_port_range is not None:
+                    smin = convertNullToNothing(rule.tcp_options.source_port_range.min)
+                    smax = convertNullToNothing(rule.tcp_options.source_port_range.max)
+                    dmin = convertNullToNothing(rule.tcp_options.destination_port_range.min)
+                    dmax = convertNullToNothing(rule.tcp_options.destination_port_range.max)
+                    printstr = (dn + ",ingress,tcp," + str(rule.is_stateless) + ",,,," + rule.source + ",," + smin + "," + smax + "," + dmin + "," + dmax + ",,," + desc)
+                    insert_values(values_for_column, oci_objs, region, comp_name, vcn_name, 'ingress', 'tcp', smin, smax,dmin, dmax, '', '')
+
 
             elif rule.protocol == "1":
                 if rule.icmp_options is None:
@@ -153,13 +179,23 @@ def print_secrules(seclists,region,vcn_name,comp_name):
                 if rule.udp_options is None:
                     printstr= (dn + ",ingress,udp," + str(rule.is_stateless) + "," + rule.source + ",,,,,,,,"+desc)
                     insert_values(values_for_column,oci_objs,region, comp_name, vcn_name, 'ingress', 'udp', '', '', '','', '', '')
-                elif rule.udp_options.destination_port_range is not None:
+                elif rule.udp_options.destination_port_range is not None and rule.udp_options.source_port_range is None:
                     min = convertNullToNothing(rule.udp_options.destination_port_range.min)
                     max = convertNullToNothing(rule.udp_options.destination_port_range.max)
                     printstr= (dn + ",ingress,udp," + str(rule.is_stateless) + "," + rule.source + ",,,," + min + "," + max+",,,"+desc)
                     insert_values(values_for_column,oci_objs,region, comp_name, vcn_name, 'ingress', 'udp', '', '',min, max, '', '')
-                else:
-                    insert_values(values_for_column,oci_objs,region, comp_name, vcn_name,'ingress', 'udp', '', '', '','', '', '')
+                elif rule.udp_options.source_port_range is not None and rule.udp_options.destination_port_range is None:
+                    min = convertNullToNothing(rule.udp_options.source_port_range.min)
+                    max = convertNullToNothing(rule.udp_options.source_port_range.max)
+                    printstr = (dn + ",ingress,udp," + str(rule.is_stateless) + ",,,," + rule.source + ",," + min + "," + max + ",,," + desc)
+                    insert_values(values_for_column, oci_objs, region, comp_name, vcn_name, 'ingress', 'udp', min, max,'', '', '', '')
+                elif rule.udp_options.destination_port_range is not None and rule.udp_options.source_port_range is not None:
+                    smin = convertNullToNothing(rule.udp_options.source_port_range.min)
+                    smax = convertNullToNothing(rule.udp_options.source_port_range.max)
+                    dmin = convertNullToNothing(rule.udp_options.destination_port_range.min)
+                    dmax = convertNullToNothing(rule.udp_options.destination_port_range.max)
+                    printstr = (dn + ",ingress,udp," + str(rule.is_stateless) + ",,,," + rule.source + ",," + smin + "," + smax + "," + dmin + "," + dmax + ",,," + desc)
+                    insert_values(values_for_column, oci_objs, region, comp_name, vcn_name, 'ingress', 'udp', smin, smax,dmin, dmax, '', '')
 
             elif rule.protocol == "all":
                 printstr= (dn + ",ingress,all," + str(rule.is_stateless) + "," + rule.source + ",,,,,,,,"+desc)
