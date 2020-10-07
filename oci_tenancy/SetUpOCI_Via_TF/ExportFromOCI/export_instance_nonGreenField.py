@@ -121,7 +121,6 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, config):
             boot_id = boot_check.data[0].boot_volume_id
             bdet = boot_details = bc.get_boot_volume(boot_volume_id=boot_id)
             boot_details = bc.get_boot_volume(boot_volume_id=boot_id).data.image_id
-            os = compute.get_image(image_id=boot_details)
             # print("OS",os.data)                                   #Operating system
             # sdet=bc.get_volume(volume_id=source_image_id)
             bvp = bc.get_volume_backup_policy_asset_assignment(asset_id=boot_id)
@@ -177,6 +176,7 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, config):
                     key_name = ins_dname + "_" + str(privateip)
                     key_name = ""
                 if (ins.source_details.source_type == "image"):
+                    os = compute.get_image(image_id=boot_details)
                     os_dname = os.data.display_name  # Source os name
                     os_dname = commonTools.check_tf_variable(os_dname)
                     tf_name = commonTools.check_tf_variable(reg_name + "-" + os_dname)
