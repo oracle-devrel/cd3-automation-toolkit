@@ -468,7 +468,12 @@ class parseVCNs():
 
     def __init__(self, filename):
         if (".xls" in filename):
-            df_vcn = pd.read_excel(filename, sheet_name='VCNs', skiprows=1)
+            try:
+                df_vcn = pd.read_excel(filename, sheet_name='VCNs', skiprows=1)
+            except Exception as e:
+                if ("No sheet named" in str(e)):
+                    print("\nTabs- VCNs is missing in the CD3. Please make sure to use the right CD3 in properties file...Exiting!!")
+                    exit(1)
             df_vcn = df_vcn.dropna(how='all')
             df_vcn = df_vcn.reset_index(drop=True)
 
@@ -589,9 +594,12 @@ class parseVCNInfo():
     igw_destinations = []
 
     def __init__(self, filename):
-
-        df_info = pd.read_excel(filename, sheet_name='VCN Info', skiprows=1)
-
+        try:
+            df_info = pd.read_excel(filename, sheet_name='VCN Info', skiprows=1)
+        except Exception as e:
+            if ("No sheet named" in str(e)):
+                print("\nTabs- VCN Info is missing in the CD3. Please make sure to use the right CD3 in properties...Exiting!!")
+                exit(1)
         # Get Property Values
         values = df_info['Value']
 
