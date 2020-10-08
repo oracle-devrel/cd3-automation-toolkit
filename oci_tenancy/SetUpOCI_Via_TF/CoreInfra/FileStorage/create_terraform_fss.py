@@ -63,7 +63,13 @@ def main():
         excel_writer.save()
         filename = 'tmp_to_excel.xlsx'
 
-    df = pd.read_excel(filename, sheet_name='FSS', skiprows=1, dtype=object)
+    try:
+        df = pd.read_excel(filename, sheet_name='FSS', skiprows=1, dtype=object)
+    except Exception as e:
+        if ("No sheet named" in str(e)):
+            print("\nTabs- \"FSS\" is missing in the CD3. Please make sure to use the right CD3 in properties file...Exiting!!")
+            exit(1)
+
     df = df.dropna(how='all')
     df = df.reset_index(drop=True)
 

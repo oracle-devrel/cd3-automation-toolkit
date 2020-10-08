@@ -68,7 +68,7 @@ if (input_nongf_tenancy.lower() == 'true'):
         print("Exiting...")
         exit()
     if (not set(userInput).issubset(set(inputs))):
-        print("Invalid Choice..Exiting...")
+        print("\nInvalid Choice..Exiting...")
         exit()
     ct = commonTools()
     ct.get_subscribedregions(input_config_file)
@@ -592,15 +592,12 @@ print("\nSee example folder for sample input files\n")
 
 userInput = input('Enter your choice: ')
 userInput=userInput.split(',')
-if (not set(userInput).issubset(set(inputs))):
-    print("Invalid Choice..Exiting...")
-    exit()
 
 if('1' in userInput):
     print('-------------------------------------------------------Identity------------------------------------------------------')
     if not os.path.exists(outdir):
         os.makedirs(outdir)
-
+    inputs =["1","2","3","m","q"]
     print("1.  Add/Modify/Delete Compartments")
     print("2.  Add/Modify/Delete Groups")
     print("3.  Add/Modify/Delete Policies")
@@ -608,6 +605,7 @@ if('1' in userInput):
     print("q.  Press q to quit")
     choice = input("Enter your choice ")
     choice = choice.split(",")
+
     if ('1' in choice):
         print("------------------------------------------Processing Compartments Tab-----------------------------------------------")
         os.chdir('Identity/Compartments')
@@ -651,6 +649,10 @@ if('1' in userInput):
     if ("q" in choice or "Q" in choice):
         print("Exiting...")
         exit()
+    if (not set(choice).issubset(set(inputs))):
+        print("\nInvalid Choice..Exiting...")
+        exit()
+
 if('2' in userInput):
     print("---------------------------------------------------Networking--------------------------------------------------------")
     if not os.path.exists(outdir):
@@ -677,9 +679,10 @@ if('2' in userInput):
     elif (cd3validate.lower() == 'n'):
         pass
     else:
-        print("Invalid Input !! Please enter 'y' or 'n'... Exiting!!")
+        print("\nInvalid Input !! Please enter 'y' or 'n'... Exiting!!")
         exit()
 
+    inputs = ["1", "2", "3", "4", "5", "6"]
     print("1.  Create Network- overwrites all TF files; reverts all SecLists and RouteTables to original rules")
     print("2.  Modify Network- Add/Remove/Modify any network object; updates TF files with changes; this option should be used after modifications have been done to SecRules or RouteRules")
     print("3.  Export existing SecRules and RouteRules to cd3")
@@ -788,8 +791,12 @@ if('2' in userInput):
     if ("q" in choice or "Q" in choice):
         print("Exiting...")
         exit()
+    if (not set(choice).issubset(set(inputs))):
+        print("\nInvalid Choice..Exiting...")
+        exit()
 
 if('3' in userInput):
+    inputs = ["1","2"]
     print("-------------------------------------------------Instances/Dedicated VM Hosts----------------------------------------")
     print("1.  Add/Modify/Delete Dedicated VM Hosts")
     print("2.  Add/Modify/Delete Instances/Boot Backup Policy")
@@ -840,6 +847,9 @@ if('3' in userInput):
         os.system(cmd)
     if ("q" in choice or "Q" in choice):
         print("Exiting...")
+        exit()
+    if (not set(choice).issubset(set(inputs))):
+        print("\nInvalid Choice..Exiting...")
         exit()
 
 if('4' in userInput):
@@ -1058,7 +1068,10 @@ if('10' in userInput):
         print("Exiting...")
         exit()
 
-
-if ("q" in userInput):
+if ("q" in userInput or "Q" in userInput):
     print("Exiting...")
+    exit()
+
+if (not set(userInput).issubset(set(inputs))):
+    print("\nInvalid Choice..Exiting...")
     exit()
