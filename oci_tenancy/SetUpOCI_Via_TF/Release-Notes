@@ -185,6 +185,10 @@ SetUPOCI_Via_TF Tag v7.0
 ------------------------
 1. Support for additional properties for OCI objects uisng Jinja2 templates
 2. Support for configuring Events and Notifications
-3. Support for export of all objects in CD3 other than DBs
-4. Latest Terraform Version
+3. Support for export of all objects to CD3 (Except DBs)
+4. Updated Terraform Configuration Files to support the Latest Terraform Version
 5. Support for Resource Manager
+6. Support to create and export Dynamic Groups
+7. Support to create and export Cost Tracking and Default Tags
+8. Support to create and export LBR Components- Cipher Suites, Rule Set and  Path Route Set
+9. Support to attach or export 'Custom Backup Policy Attachments' to Block and Boot Volumes.
