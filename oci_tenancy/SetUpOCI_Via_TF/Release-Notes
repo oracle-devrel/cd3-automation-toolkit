@@ -183,7 +183,7 @@ automation toolkit.
 ------------------------
 SetUPOCI_Via_TF Tag v7.0
 ------------------------
-1. Support for additional properties for OCI objects uisng Jinja2 templates
+1. Support for additional properties for OCI objects using Jinja2 templates
 2. Support for configuring Events and Notifications
 3. Support for export of all objects to CD3 (Except DBs)
 4. Updated Terraform Configuration Files to support the Latest Terraform Version
