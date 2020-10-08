@@ -965,6 +965,7 @@ if('8' in userInput):
     os.chdir("../")
     print("-----------------------------------------------------------------------------------------------------------------------")
 if('9' in userInput):
+    inputs = ["1","2","3"]
     print("------------------------------------------------Databases-------------------------------------------------------------")
     print("1.  Add/Modify/Delete Virtual Machine")
     print("2.  Add/Modify/Delete Bare Metal")
@@ -1021,9 +1022,13 @@ if('9' in userInput):
     if ("q" in update_choice or "Q" in update_choice):
         print("Exiting...")
         exit()
+    if (not set(userInput).issubset(set(inputs))):
+        print("\nInvalid Choice..Exiting...")
+        exit()
 
 if('10' in userInput):
     print("----------------------------------------------Events and Notifications---------------------------------------------------")
+    inputs = ["1", "2"]
     print("1.  Add/Modify/Delete Notifications")
     print("2.  Add/Modify/Delete Events")
     print("m.  Press m to go back to Main Menu")
@@ -1066,6 +1071,10 @@ if('10' in userInput):
         os.system(cmd)
     if ("q" in choice or "Q" in choice):
         print("Exiting...")
+        exit()
+
+    if (not set(userInput).issubset(set(inputs))):
+        print("\nInvalid Choice..Exiting...")
         exit()
 
 if ("q" in userInput or "Q" in userInput):

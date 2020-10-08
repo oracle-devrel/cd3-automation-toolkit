@@ -59,7 +59,7 @@ class CD3Parser(object):
                 self.nsg = self.excel_CD3.parse("NSGs", skiprows=1,dtype=object)
             except Exception as e:
                 if ("No sheet named" in str(e)):
-                    print("\nTabs- \"NSGs\" is missing in the CD3. Please make sure to use the right CD3 in properties file...Exiting!!")
+                    print("\nTab - \"NSGs\" is missing in the CD3. Please make sure to use the right CD3 in properties file...Exiting!!")
                     exit(1)
 
         except Exception as e:

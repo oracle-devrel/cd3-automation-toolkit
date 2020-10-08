@@ -289,7 +289,7 @@ class commonTools():
 
         except Exception as e:
             if("Events" in str(e) or "Notifications" in str(e)):
-                print("\nTabs- \"Events\" or \"Notifications\" is missing in the CD3. Please make sure to use the correct input file for Events and Notifications in properties file...Exiting!!")
+                print("\nTabs - \"Events\" or \"Notifications\" is missing in the CD3. Please make sure to use the correct input file for Events and Notifications in properties file...Exiting!!")
                 exit(1)
 
         yield df
@@ -472,7 +472,7 @@ class parseVCNs():
                 df_vcn = pd.read_excel(filename, sheet_name='VCNs', skiprows=1)
             except Exception as e:
                 if ("No sheet named" in str(e)):
-                    print("\nTabs- \"VCNs\" is missing in the CD3. Please make sure to use the right CD3 in properties file...Exiting!!")
+                    print("\nTab - \"VCNs\" is missing in the CD3. Please make sure to use the right CD3 in properties file...Exiting!!")
                     exit(1)
             df_vcn = df_vcn.dropna(how='all')
             df_vcn = df_vcn.reset_index(drop=True)
@@ -598,7 +598,7 @@ class parseVCNInfo():
             df_info = pd.read_excel(filename, sheet_name='VCN Info', skiprows=1)
         except Exception as e:
             if ("No sheet named" in str(e)):
-                print("\nTabs- \"VCN Info\" is missing in the CD3. Please make sure to use the right CD3 in properties file...Exiting!!")
+                print("\nTab - \"VCN Info\" is missing in the CD3. Please make sure to use the right CD3 in properties file...Exiting!!")
                 exit(1)
         # Get Property Values
         values = df_info['Value']
