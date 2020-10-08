@@ -598,7 +598,7 @@ class parseVCNInfo():
             df_info = pd.read_excel(filename, sheet_name='VCN Info', skiprows=1)
         except Exception as e:
             if ("No sheet named" in str(e)):
-                print("\nTabs- VCN Info is missing in the CD3. Please make sure to use the right CD3 in properties...Exiting!!")
+                print("\nTabs- VCN Info is missing in the CD3. Please make sure to use the right CD3 in properties file...Exiting!!")
                 exit(1)
         # Get Property Values
         values = df_info['Value']
