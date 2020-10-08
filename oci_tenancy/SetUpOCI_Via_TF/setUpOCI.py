@@ -68,8 +68,12 @@ if (input_nongf_tenancy.lower() == 'true'):
         print("Exiting...")
         exit()
     if (not set(userInput).issubset(set(inputs))):
-        print("\nInvalid Choice..Exiting...")
-        exit()
+        if ("m" in userInput or "M" in userInput):
+            pass
+        else:
+            print("\nInvalid Choice..Exiting...")
+            exit()
+
     ct = commonTools()
     ct.get_subscribedregions(input_config_file)
 
@@ -577,6 +581,7 @@ if (input_nongf_tenancy.lower() == 'true'):
 
     exit()
 
+inputs = ["1","2","3","4","5","6","7","8","9","10"]
 print("1.  Identity")
 print("2.  Networking")
 print("3.  Dedicated VM Hosts/Instances/Boot Backup Policy")
@@ -597,7 +602,7 @@ if('1' in userInput):
     print('-------------------------------------------------------Identity------------------------------------------------------')
     if not os.path.exists(outdir):
         os.makedirs(outdir)
-    inputs =["1","2","3","m","q"]
+    Ideninputs =["1","2","3","m","q"]
     print("1.  Add/Modify/Delete Compartments")
     print("2.  Add/Modify/Delete Groups")
     print("3.  Add/Modify/Delete Policies")
@@ -649,9 +654,12 @@ if('1' in userInput):
     if ("q" in choice or "Q" in choice):
         print("Exiting...")
         exit()
-    if (not set(choice).issubset(set(inputs))):
-        print("\nInvalid Choice..Exiting...")
-        exit()
+    if (not set(choice).issubset(set(Ideninputs))):
+        if ("m" in choice or "M" in choice):
+            pass
+        else:
+            print("\nInvalid Choice..Exiting...")
+            exit()
 
 if('2' in userInput):
     print("---------------------------------------------------Networking--------------------------------------------------------")
@@ -682,7 +690,7 @@ if('2' in userInput):
         print("\nInvalid Input !! Please enter 'y' or 'n'... Exiting!!")
         exit()
 
-    inputs = ["1", "2", "3", "4", "5", "6"]
+    netinputs = ["1", "2", "3", "4", "5", "6"]
     print("1.  Create Network- overwrites all TF files; reverts all SecLists and RouteTables to original rules")
     print("2.  Modify Network- Add/Remove/Modify any network object; updates TF files with changes; this option should be used after modifications have been done to SecRules or RouteRules")
     print("3.  Export existing SecRules and RouteRules to cd3")
@@ -791,12 +799,14 @@ if('2' in userInput):
     if ("q" in choice or "Q" in choice):
         print("Exiting...")
         exit()
-    if (not set(choice).issubset(set(inputs))):
-        print("\nInvalid Choice..Exiting...")
-        exit()
-
+    if (not set(choice).issubset(set(netinputs))):
+        if ("m" in choice or "M" in choice):
+            pass
+        else:
+            print("\nInvalid Choice..Exiting...")
+            exit()
 if('3' in userInput):
-    inputs = ["1","2"]
+    instinputs = ["1","2"]
     print("-------------------------------------------------Instances/Dedicated VM Hosts----------------------------------------")
     print("1.  Add/Modify/Delete Dedicated VM Hosts")
     print("2.  Add/Modify/Delete Instances/Boot Backup Policy")
@@ -848,9 +858,12 @@ if('3' in userInput):
     if ("q" in choice or "Q" in choice):
         print("Exiting...")
         exit()
-    if (not set(choice).issubset(set(inputs))):
-        print("\nInvalid Choice..Exiting...")
-        exit()
+    if (not set(choice).issubset(set(instinputs))):
+        if ("m" in choice or "M" in choice):
+            pass
+        else:
+            print("\nInvalid Choice..Exiting...")
+            exit()
 
 if('4' in userInput):
     print("--------------------------------------------------Processing BlockVolumes Tab-------------------------------------")
@@ -965,7 +978,7 @@ if('8' in userInput):
     os.chdir("../")
     print("-----------------------------------------------------------------------------------------------------------------------")
 if('9' in userInput):
-    inputs = ["1","2","3"]
+    dbinputs = ["1","2","3"]
     print("------------------------------------------------Databases-------------------------------------------------------------")
     print("1.  Add/Modify/Delete Virtual Machine")
     print("2.  Add/Modify/Delete Bare Metal")
@@ -1022,13 +1035,16 @@ if('9' in userInput):
     if ("q" in update_choice or "Q" in update_choice):
         print("Exiting...")
         exit()
-    if (not set(userInput).issubset(set(inputs))):
-        print("\nInvalid Choice..Exiting...")
-        exit()
+    if (not set(update_choice).issubset(set(dbinputs))):
+        if ("m"  in update_choice or "M"  in update_choice):
+            pass
+        else:
+            print("\nInvalid Choice..Exiting...")
+            exit()
 
 if('10' in userInput):
     print("----------------------------------------------Events and Notifications---------------------------------------------------")
-    inputs = ["1", "2"]
+    eninputs = ["1", "2"]
     print("1.  Add/Modify/Delete Notifications")
     print("2.  Add/Modify/Delete Events")
     print("m.  Press m to go back to Main Menu")
@@ -1072,10 +1088,12 @@ if('10' in userInput):
     if ("q" in choice or "Q" in choice):
         print("Exiting...")
         exit()
-
-    if (not set(userInput).issubset(set(inputs))):
-        print("\nInvalid Choice..Exiting...")
-        exit()
+    if (not set(choice).issubset(set(eninputs))):
+        if ("m"  in choice or "M"  in choice):
+            pass
+        else:
+            print("\nInvalid Choice..Exiting...")
+            exit()
 
 if ("q" in userInput or "Q" in userInput):
     print("Exiting...")
@@ -1084,3 +1102,4 @@ if ("q" in userInput or "Q" in userInput):
 if (not set(userInput).issubset(set(inputs))):
     print("\nInvalid Choice..Exiting...")
     exit()
+
