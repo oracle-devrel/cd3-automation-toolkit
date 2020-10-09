@@ -325,7 +325,7 @@ def validate_subnets(filename,comp_ids,vcnobj):
         for j in df.keys():
             if (str(df[j][i]) == "NaN" or str(df[j][i]) == "nan" or str(df[j][i]) == ""):
                 #only dhcp_option_name, route table name, seclist_names and dns_label columns can be empty
-                if j == 'DNS Label' or j == 'DHCP Option Name' or j == 'Route Table Name' or j == 'Seclist Names' or j in commonTools.tagColumns:
+                if j == 'DNS Label' or j == 'DHCP Option Name' or j == 'Route Table Name' or j == 'Seclist Names' or commonTools.check_column_headers(j) in commonTools.tagColumns:
                     pass
                 else:
                     logging.log(60,"ROW " + str(count+2) + " : Empty value at column " +j)
@@ -475,7 +475,7 @@ def validate_vcns(filename,comp_ids,vcnobj):#,vcn_cidrs,vcn_compartment_ids):
         #Check for null values and display appropriate message
         for j in df.keys():
             if (str(df[j][i]) == "NaN" or str(df[j][i]) == "nan" or str(df[j][i]) == ""):
-                if j == 'DNS Label' or j in commonTools.tagColumns:
+                if j == 'DNS Label' or commonTools.check_column_headers(j) in commonTools.tagColumns:
                     continue
                 else:
                     logging.log(60,"ROW " + str(count+2) + " : Empty value at column " + j)
@@ -617,7 +617,7 @@ def validate_dhcp(filename,comp_ids,vcnobj):
                         continue
             else:
                 #Check if there are any field that is empty; display appropriate message
-                if str(df[j][i]).strip() in empty and j != 'Search Domain' and j not in commonTools.tagColumns:
+                if str(df[j][i]).strip() in empty and j != 'Search Domain'and commonTools.check_column_headers(j) not in commonTools.tagColumns:
                     logging.log(60,"ROW " + str(count+2) + " : Empty value at column " + j)
                     dhcp_empty_check = True
                     
