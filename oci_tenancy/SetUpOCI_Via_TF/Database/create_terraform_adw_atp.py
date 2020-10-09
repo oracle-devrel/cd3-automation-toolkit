@@ -1,177 +1,171 @@
-#!/bin/bash
+#!/usr/bin/python3
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
+#
+# This script will produce a Terraform file that will be used to set up OCI core components
+# Groups
+#
 # Author: Kartikey Rajput
-# kartikey.rajput@oracle.com
-#Autonomous DataWarehouse | Autonomous Transaction
+# Oracle Consulting
+# Modified (TF Upgrade): Kartikey Rajput
+#
 
 import sys
 import argparse
-import pandas as pd
 import os
-import datetime
+from jinja2 import Environment, FileSystemLoader
 sys.path.append(os.getcwd()+"/..")
 from commonTools import *
 
 
-x = datetime.datetime.now()
-date = x.strftime("%S").strip()
+######
+# Required Inputs- CD3 excel file, Config file, prefix AND outdir
+######
 
-parser = argparse.ArgumentParser(description="Create ADW/ATP")
-parser.add_argument("file", help="Full Path of CD3 excel file. eg CD3-template.xlsx in example folder")
-parser.add_argument("outdir", help="directory path for output tf file ")
-parser.add_argument("prefix", help="customer name/prefix for all file names")
-parser.add_argument("--configFileName", help="Config file name", required=False)
+#If input is cd3 file
+def main():
 
-if len(sys.argv) == 1:
-    parser.print_help()
-    sys.exit(1)
+    # Read the arguments
+    parser = argparse.ArgumentParser(description="Create ADW_ATP terraform file")
+    parser.add_argument("inputfile", help="Full Path of input file. It could be CD3 excel file")
+    parser.add_argument("outdir", help="Output directory for creation of TF files")
+    parser.add_argument("prefix", help="customer name/prefix for all file names")
+    parser.add_argument("--configFileName", help="Config file name", required=False)
 
-if len(sys.argv) < 3:
-    parser.print_help()
-    sys.exit(1)
+    if len(sys.argv) < 3:
+        parser.print_help()
+        sys.exit(1)
 
-args = parser.parse_args()
-filename = args.file
-outdir = args.outdir
-prefix = args.prefix
-if args.configFileName is not None:
-    configFileName = args.configFileName
-else:
-    configFileName=""
+    # Declare variables
+    args = parser.parse_args()
+    filename = args.inputfile
+    outdir = args.outdir
+    prefix = args.prefix
 
-ct = commonTools()
-ct.get_subscribedregions(configFileName)
+    if args.configFileName is not None:
+        configFileName = args.configFileName
+    else:
+        configFileName = ""
 
-host_file = {}
+    ct = commonTools()
+    ct.get_subscribedregions(configFileName)
 
-# If the input is CD3
-if ('.xls' in filename):
+    outfile = {}
+    oname = {}
+    tfStr = {}
 
-    df = pd.read_excel(filename, sheet_name='ADW_ATP', skiprows=1)
+    # Load the template file
+    file_loader = FileSystemLoader('templates')
+    env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
+    template = env.get_template('adw-atp-template')
+
+    # Read cd3 using pandas dataframe
+    df, col_headers = commonTools.read_cd3(filename, "ADW_ATP")
+
+    #Remove empty rows
     df = df.dropna(how='all')
     df = df.reset_index(drop=True)
 
+    # List of the column headers
+    dfcolumns = df.columns.values.tolist()
+
+    # Initialise empty TF string for each region
+    for reg in ct.all_regions:
+        tfStr[reg] = ''
+
+    uniquereg = df['Region'].unique()
+    # Take backup of files
+    for eachregion in uniquereg:
+        eachregion = str(eachregion).strip().lower()
+        reg_out_dir = outdir + "/" + eachregion
+        if (eachregion in commonTools.endNames) or ('nan' in str(eachregion).lower() ):
+            continue
+        if eachregion not in ct.all_regions:
+            print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
+            exit()
+        srcdir = reg_out_dir + "/"
+        resource = 'ATP_ADW'
+        commonTools.backup_file(srcdir, resource, "ATP-ADW.tf")
+
+    # Iterate over rows
     for i in df.index:
-        Region = df.iat[i, 0]
-        Region = Region.strip().lower()
-        if Region not in ct.all_regions:
-            if Region in commonTools.endNames:
-                print('This is the end of the file')
-                break
-            else:
-                print("Invalid Region -> " + Region + "; It should be one of the values tenancy is subscribed to and directory with region name should exist in Output directory")
-                continue
+        region = str(df.loc[i, 'Region']).strip()
 
-        name = df['Display Name'][i].strip()
+        # Encountered <End>
+        if (region in commonTools.endNames):
+            break
+        region=region.strip().lower()
 
-        autonomous_data_warehouse_db_name = df['DB Name'][i].strip()
+        # If some invalid region is specified in a row which is not part of VCN Info Tab
+        if region not in ct.all_regions:
+            print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
+            exit(1)
 
-        compartment_var_name = df['Compartment Name'][i].strip()
+        # temporary dictionary1 and dictionary2
+        tempStr = {}
+        tempdict = {}
 
-        autonomous_data_warehouse_admin_password = df['Admin Password'][i].strip()
+        # Check if values are entered for mandatory fields
+        if str(df.loc[i, 'Region']).lower() == 'nan' or \
+                str(df.loc[i, 'Compartment Name']).lower() == 'nan' or \
+                str(df.loc[i, 'CPU Count']).lower() == 'nan' or \
+                str(df.loc[i, 'Size in TB']).lower() == 'nan' or \
+                str(df.loc[i, 'DB Name']).lower() == 'nan':
+            print("\nAll the fields are mandatory. Please enter a value and try again !!")
+            print("\n** Exiting **")
+            exit()
 
-        autonomous_data_warehouse_cpu_core_count = int(df['CPU Count'][i])
+        for columnname in dfcolumns:
+            # Column value
+            columnvalue = str(df[columnname][i]).strip()
 
-        autonomous_data_warehouse_data_storage_size_in_tbs = int(df['Size in TB'][i])
+            # Check for boolean/null in column values
+            columnvalue = commonTools.check_columnvalue(columnvalue)
 
-        adw_atp = df['ADW or ATP'][i].strip()
+            # Check for multivalued columns
+            tempdict = commonTools.check_multivalues_columnvalue(columnvalue,columnname,tempdict)
 
-        name_tf = commonTools.check_tf_variable(name)
-        compartment_var_name = commonTools.check_tf_variable(compartment_var_name)
+            if columnname == "Compartment Name":
+                compartmentVarName = columnvalue.strip()
+                columnname = commonTools.check_column_headers(columnname)
+                compartmentVarName = commonTools.check_tf_variable(compartmentVarName)
+                columnvalue = str(compartmentVarName)
+                tempdict = {columnname: columnvalue}
 
-        if adw_atp == 'ADW':
-            # print("-------------------Inside ADW--------------------")
-            tmpstr = """resource "oci_database_autonomous_data_warehouse" \"""" + name_tf + """\"{
-			                            display_name = \"""" + name + """\"
-                                        compartment_id = "${var.""" + compartment_var_name + """}"
-                    					admin_password = \"""" + autonomous_data_warehouse_admin_password + """\"
-                    					cpu_core_count = \"""" + str(autonomous_data_warehouse_cpu_core_count) + """\"
-                    					data_storage_size_in_tbs = \"""" + str(autonomous_data_warehouse_data_storage_size_in_tbs) + """\"
-                    					db_name = \"""" + autonomous_data_warehouse_db_name + """\"
-                    				}\n"""
-            reg = Region[:1].upper()
-            outfile = outdir + "/" + Region + "/" + reg + '_' + prefix + "_ADW_CD3_" + name + ".tf"
-            print("Writing " + outfile)
-            oname = open(outfile, "w")
-            oname.write(tmpstr)
-            oname.close()
-        elif adw_atp == 'ATP':
-            tmpstr = """resource "oci_database_autonomous_database" \"""" + name_tf + """\"{
-                			                            display_name = \"""" + name + """\"
-                                                        compartment_id = "${var.""" + compartment_var_name + """}"
-                                    					admin_password = \"""" + autonomous_data_warehouse_admin_password + """\"
-                                    					cpu_core_count = \"""" + str(autonomous_data_warehouse_cpu_core_count) + """\"
-                                    					data_storage_size_in_tbs = \"""" + str(autonomous_data_warehouse_data_storage_size_in_tbs) + """\"
-                                    					db_name = \"""" + autonomous_data_warehouse_db_name + """\"
-                                    				}\n"""
-            reg = Region[:1].upper()
-            outfile = outdir + "/" + Region + "/" + reg + '_' + prefix + "_ATP_CD3_" + name + ".tf"
-            print("Writing " + outfile)
-            oname = open(outfile, "w")
-            oname.write(tmpstr)
-            oname.close()
-        else:
-            print("--Enter Valid Database type in ADW or ATP tab--")
+            # Process Defined and Freeform Tags
+            if columnname.lower() in commonTools.tagColumns:
+                tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)
 
-# If the input is CSV
-elif ('.csv' in filename):
-    fname = open(filename, "r")
-    all_regions = os.listdir(outdir)
-    for line in fname:
-        if not line.startswith('#'):
-            linearr = line.split(",")
-            region = linearr[0].strip().lower()
-            if region not in all_regions:
-                print("Invalid Region -> " + region + "; It should be one of the values mentioned in VCN Info tab and directory with region name in Output directory")
-                continue
+            if columnname == "Display Name":
+                display_tf_name = columnvalue.strip()
+                display_tf_name = commonTools.check_tf_variable(display_tf_name)
+                tempdict = {'display_tf_name': display_tf_name}
 
-            name = linearr[1].strip()
+            if columnname == 'ADW or ATP':
+                columnvalue = columnvalue.strip()
+                autonomous_value = commonTools.check_tf_variable(columnvalue).lower()
+                tempdict = {'autonomous_value': autonomous_value}
 
-            autonomous_data_warehouse_db_name = linearr[2].strip()
+            columnname = commonTools.check_column_headers(columnname)
+            tempStr[columnname] = str(columnvalue).strip()
+            tempStr.update(tempdict)
 
-            compartment_var_name = linearr[3].strip()
+        # Write all info to TF string
+        tfStr[region]=tfStr[region] + template.render(tempStr)
 
-            autonomous_data_warehouse_admin_password = linearr[4].strip()
+    # Write TF string to the file in respective region directory
+    for reg in ct.all_regions:
+        reg_out_dir = outdir + "/" + reg
+        if not os.path.exists(reg_out_dir):
+            os.makedirs(reg_out_dir)
+        outfile[reg] = reg_out_dir + "/ATP-ADW.tf"
 
-            autonomous_data_warehouse_cpu_core_count = int(linearr[5])
+        if(tfStr[reg]!=''):
+            oname[reg]=open(outfile[reg],'w')
+            oname[reg].write(tfStr[reg])
+            oname[reg].close()
+            print(outfile[reg] + " containing TF for ATP_ADW has been created for region "+reg)
 
-            autonomous_data_warehouse_data_storage_size_in_tbs = int(linearr[6])
+if __name__ == '__main__':
 
-            adw_atp = linearr[7].strip()
-
-            if adw_atp == 'ADW':
-                tmpstr = """resource "oci_database_autonomous_data_warehouse" \"""" + name + """\"{
-                                                    display_name = \"""" + name + """\"
-                                                    compartment_id = "${var.""" + compartment_var_name + """}"
-                                                    admin_password = \"""" + autonomous_data_warehouse_admin_password + """\"
-                                                    cpu_core_count = \"""" + str(autonomous_data_warehouse_cpu_core_count) + """\"
-                                                    data_storage_size_in_tbs = \"""" + str(
-                    autonomous_data_warehouse_data_storage_size_in_tbs) + """\"
-                                                    db_name = \"""" + autonomous_data_warehouse_db_name + """\"
-                                                }\n"""
-                reg = region[:1].upper()
-                outfile = outdir + "/" + region + "/" + reg + '_' + prefix + "_ADW_CSV_" + name + ".tf"
-                print("Writing " + outfile)
-                oname = open(outfile, "w")
-                oname.write(tmpstr)
-                oname.close()
-            elif adw_atp == 'ATP':
-                tmpstr = """resource "oci_database_autonomous_database" \"""" + name + """\"{
-                                                                    display_name = \"""" + name + """\"
-                                                                    compartment_id = "${var.""" + compartment_var_name + """}"
-                                                                    admin_password = \"""" + autonomous_data_warehouse_admin_password + """\"
-                                                                    cpu_core_count = \"""" + str(
-                    autonomous_data_warehouse_cpu_core_count) + """\"
-                                                                    data_storage_size_in_tbs = \"""" + str(
-                    autonomous_data_warehouse_data_storage_size_in_tbs) + """\"
-                                                                    db_name = \"""" + autonomous_data_warehouse_db_name + """\"
-                                                                }\n"""
-                reg = region[:1].upper()
-                outfile = outdir + "/" + region + "/" + reg + '_' + prefix + "_ATP_CSV_" + name + ".tf"
-                print("Writing " + outfile)
-                oname = open(outfile, "w")
-                oname.write(tmpstr)
-                oname.close()
-            else:
-                print("--Enter Valid Database type in ADW or ATP tab--")
-else:
-    print("Enter valid file type")
+    # Execution of the code begins here
+    main()

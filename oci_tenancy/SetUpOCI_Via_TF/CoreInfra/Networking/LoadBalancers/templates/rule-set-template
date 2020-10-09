@@ -1,0 +1,7 @@
+resource "oci_load_balancer_rule_set" "{{ lbr_tf_name}}_{{ rule_set_tf_name }}" {
+    #Required
+
+    ## Add_rules_here ##
+    load_balancer_id = oci_load_balancer_load_balancer.{{ lbr_tf_name }}.id
+    name = "{{ rule_set_name }}"
+}

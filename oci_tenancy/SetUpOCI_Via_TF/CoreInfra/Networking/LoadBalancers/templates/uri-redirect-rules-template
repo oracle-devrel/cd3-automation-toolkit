@@ -1,0 +1,30 @@
+items  {
+        #Required
+        action = "{{ action }}"
+
+        conditions {
+            #Required
+            attribute_name = "{{ attribute_name }}"
+            attribute_value = "{{ attribute_value }}"
+
+            #Optional
+            operator = "{{ operator }}"
+        }
+        redirect_uri {
+
+            #Optional
+            host = "{{ host }}"
+            path = "{{ path }}"
+            {% if port != '' %}
+            port = "{{ port }}"
+            {% endif %}
+            {% if protocol != '' %}
+            protocol = "{{ protocol }}"
+            {% endif %}
+            {% if redirect_uri_query != '' %}
+            query = "{{ redirect_uri_query }}"
+            {% endif %}
+        }
+        response_code = "{{ response_code }}"
+    }
+    ## Add_rules_here ##

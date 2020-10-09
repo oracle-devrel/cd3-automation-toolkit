@@ -1,0 +1,11 @@
+#Create Backend Server
+resource "oci_load_balancer_backend" "{{ lbr_tf_name }}_{{ backend_server_tf_name }}"  {
+    #Required
+    backendset_name = oci_load_balancer_backend_set.{{ lbr_tf_name }}_{{ backend_set_tf_name }}.name
+    ip_address = {{ backend_server_ip_address }}
+    load_balancer_id = oci_load_balancer_load_balancer.{{ lbr_tf_name }}.id
+    port = "{{ serverport }}"
+
+    #Optional
+    backup = {{ backup }}
+}

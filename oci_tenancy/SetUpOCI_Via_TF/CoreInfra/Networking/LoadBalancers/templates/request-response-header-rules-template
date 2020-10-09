@@ -1,0 +1,15 @@
+items  {
+        #Required
+        action = "{{ action }}"
+        header = "{{ header }}"
+        {% if prefix and prefix !='' %}
+        prefix = "{{ prefix }}"
+        {% endif %}
+        {% if suffix and suffix !='' %}
+        suffix = "{{ suffix }}"
+        {% endif %}
+        {% if value and value != '' %}
+        value = "{{ value }}"
+        {% endif %}
+    }
+    ## Add_rules_here ##

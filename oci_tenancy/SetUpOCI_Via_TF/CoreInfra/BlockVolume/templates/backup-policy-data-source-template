@@ -1,0 +1,15 @@
+{% if block_tf_policy != 'nan' %}
+{% if block_tf_policy == 'gold' or block_tf_policy == "silver" or block_tf_policy == "bronze" %}
+data "oci_core_volume_backup_policies" "block_{{ block_tf_policy }}" {
+	filter {
+		name = "display_name"
+		values = [ "{{ block_tf_policy }}" ]
+		}
+}
+{% else %}
+data "oci_core_volume_backup_policies" "block_{{ block_tf_policy }}" {
+
+    #Optional
+    compartment_id = var.{{ policy_tf_compartment }}
+}
+{% endif %}{% endif %}

@@ -1,0 +1,91 @@
+            {% if rule_type == 'ingress' %}
+            ingress_security_rules {
+                #Required
+                protocol = "{{ protocol_code }}"
+                source = "{{ source }}"
+
+                #Optional
+                {% if rule_description != '' %}
+                description = "{{ rule_description }}"
+                {% endif %}
+                stateless = {{ isstateless }}
+
+                {% if protocol == 'icmp' and icmptype != '' %}
+                icmp_options {
+                    #Required
+                    type = "{{ icmptype }}"
+                    {% if icmpcode != '' %}
+                    #Optional
+                    code = {{ icmpcode }}
+                    {% endif %}
+                }
+                {% endif %}
+
+                {% if source_type and source_type != '' %}
+                source_type = "{{ source_type }}"
+                {% endif %}
+
+                {% if protocol == 'tcp' or protocol == 'udp' %}
+                {{ protocol }}_options {
+                    {% if dportmax and dportmin %}
+                    #Optional
+                    max = "{{ dportmax }}"
+                    min = "{{ dportmin }}"
+                    {% endif %}
+                    {% if sportmax and sportmin %}
+                    source_port_range {
+                        #Required
+                        max = "{{ sportmax }}"
+                        min = "{{ sportmin }}"
+                    }
+                    {% endif %}
+                }
+                {% endif %}
+            }
+            {% endif %}
+
+            {% if rule_type == 'egress' %}
+            egress_security_rules {
+                #Required
+                protocol = "{{ protocol_code }}"
+                destination = "{{ destination }}"
+
+                #Optional
+                {% if rule_description != '' %}
+                description = "{{ rule_description }}"
+                {% endif %}
+                stateless = {{ isstateless }}
+
+                {% if protocol == 'icmp' and icmptype != '' %}
+                icmp_options {
+                    #Required
+                    type = "{{ icmptype }}"
+                    {% if icmpcode != '' %}
+                    #Optional
+                    code = {{ icmpcode }}
+                    {% endif %}
+                }
+                {% endif %}
+
+                {% if destination_type and destination_type != '' %}
+                destination_type = "{{ destination_type }}"
+                {% endif %}
+
+                {% if protocol == 'tcp' or protocol == 'udp' %}
+                {{ protocol }}_options {
+                    {% if dportmax and dportmin %}
+                    #Optional
+                    max = "{{ dportmax }}"
+                    min = "{{ dportmin }}"
+                    {% endif %}
+                    {% if sportmax and sportmin %}
+                    source_port_range {
+                        #Required
+                        max = "{{ sportmax }}"
+                        min = "{{ sportmin }}"
+                    }
+                    {% endif %}
+                }
+                {% endif %}
+            }
+            {% endif %}

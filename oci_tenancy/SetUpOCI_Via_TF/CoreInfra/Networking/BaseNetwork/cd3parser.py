@@ -5,6 +5,7 @@
 #
 # Author: Andrew Vuong
 # Oracle Consulting
+# Modified (TF Upgrade): Shruthi Subramanian
 #
 
 import math
@@ -54,7 +55,13 @@ class CD3Parser(object):
             #self.addsecrules = self.excel_CD3.parse("AddSecRules")
             #self.routerules = self.excel_CD3.parse("RouteRulesinOCI")
             #self.secrules = self.excel_CD3.parse("SecRulesinOCI")
-            self.nsg = self.excel_CD3.parse("NSGs", skiprows=1)
+            try:
+                self.nsg = self.excel_CD3.parse("NSGs", skiprows=1,dtype=object)
+            except Exception as e:
+                if ("No sheet named" in str(e)):
+                    print("\nTab - \"NSGs\" is missing in the CD3. Please make sure to use the right CD3 in properties file...Exiting!!")
+                    exit(1)
+
         except Exception as e:
             raise NameError(("More information: Check that sheet_names are correct and exact on"
                              "CD3 .xls file.\n{}\n"
@@ -132,11 +139,23 @@ class CD3Parser(object):
         The regions are the initial keys to regionspecific dictionaries, so a dict of dict."""
 
         def __init__(self, nsg):
+            working_header = {}
             self.sheet = nsg
             self.nsg = nsg
+            nsg = nsg.dropna(how='all')
+            nsg = nsg.reset_index(drop=True)
             self.nsg_numpy = nsg.to_numpy()  # makes a list of list
+            self.headers = nsg.columns.values.tolist()
+            if nsg.Region.isnull().any() :
+                print("\nError!! Region cannot be left empty.... Exiting!!")
+                exit()
             self.regions = sorted(list(set(nsg.Region)))
+
             self.regions = [x.strip().lower() for x in self.regions]
+            unique_headers = tuple(self.headers[1:4])
+            working_header[unique_headers] = [(self.headers[3:])]
+            self.headersDict = dict((self.headers[0].lower(), working_header) for region in self.regions)
+
             for x in self.regions:
                 if x in commonTools.endNames:
                     self.regions.remove(x)
@@ -152,9 +171,12 @@ class CD3Parser(object):
                 else:
                     workingdict[unique_id] = [index[3:]]
             super().__init__(nsg, self.regions)
-
+        
         def getRegionDict(self):
             return self.regionDict
+
+        def getHeaderDict(self):
+            return self.headersDict
 
     # many more respective classes
     """

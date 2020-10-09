@@ -1,181 +1,181 @@
 #!/usr/bin/python3
+# Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
+#
+# This script will produce a Terraform file that will be used to set up OCI core components
+# Backup Policy - Block Volume
+#
 # Author: Shruthi Subramanian
-#shruthi.subramanian@oracle.com
+# Oracle Consulting
+# Modified (TF Upgrade): Shruthi Subramanian
+#
+
 import sys
 import argparse
-import pandas as pd
 import os
-import datetime
-from os import path
 sys.path.append(os.getcwd()+"/../..")
 from commonTools import *
+from jinja2 import Environment, FileSystemLoader
 
+######
+# Required Inputs-CD3 excel file, Config file, prefix AND outdir
+######
 
-x = datetime.datetime.now()
-date = x.strftime("%S").strip()
+# If input in cd3 file
+def main():
 
-parser = argparse.ArgumentParser(description="Attaches back up policy to Block Volumes")
-parser.add_argument("file", help="Full Path of CD3 excel file. eg CD3-template.xlsx in example folder")
-parser.add_argument("outdir", help="directory path for output tf file ")
-parser.add_argument("--configFileName", help="Config file name", required=False)
+    # Read the arguments
+    parser = argparse.ArgumentParser(description="Attaches back up policy to Block Volumes")
+    parser.add_argument("file", help="Full Path of CD3 excel file. eg CD3-template.xlsx in example folder")
+    parser.add_argument("outdir", help="directory path for output tf file ")
+    parser.add_argument("--configFileName", help="Config file name", required=False)
 
-if len(sys.argv) == 1:
-    parser.print_help()
-    sys.exit(1)
+    if len(sys.argv) == 1:
+        parser.print_help()
+        sys.exit(1)
 
-if len(sys.argv) < 2:
-    parser.print_help()
-    sys.exit(1)
+    if len(sys.argv) < 2:
+        parser.print_help()
+        sys.exit(1)
 
-args = parser.parse_args()
-filename = args.file
-outdir = args.outdir
-if args.configFileName is not None:
-    configFileName = args.configFileName
-else:
-    configFileName=""
+    args = parser.parse_args()
+    filename = args.file
+    outdir = args.outdir
 
-ct = commonTools()
-ct.get_subscribedregions(configFileName)
+    if args.configFileName is not None:
+        configFileName = args.configFileName
+    else:
+        configFileName = ""
 
-tmpstr = """
-data "oci_core_volume_backup_policies" "block_gold" {
-	filter {
-		name = "display_name"
-		values = [ "gold" ]
-		}
-}
+    ct = commonTools()
+    ct.get_subscribedregions(configFileName)
 
-data "oci_core_volume_backup_policies" "block_silver" {
-	filter {
-		name = "display_name"
-		values = [ "silver" ]
-		}
-}
+    # Load the template file
+    file_loader = FileSystemLoader('templates')
+    env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
+    template = env.get_template('block-backup-policy-template')
 
-data "oci_core_volume_backup_policies" "block_bronze" {
-	filter {
-		name = "display_name"
-		values = [ "bronze" ]
-		}
-}
+    # Read cd3 using pandas dataframe
+    df, col_headers = commonTools.read_cd3(filename, "BlockVols")
 
-## Add policy attachment ##
-"""
-first_tmpstr = tmpstr
-policy_file={}
-endnames= ['<end>','<END>','<End>']
-
-if ('.xls' in filename):
-
-    for reg in ct.all_regions:
-        policy_file[reg] = outdir + "/"+reg+"/attach_block_backups_policy.tf"
-        src=policy_file[reg]
-        if path.exists(src):
-            dst = outdir + "/"+reg+"/attach_block_backups_policy_backup" + date
-            os.rename(src, dst)
-        fname=open(policy_file[reg],"a+")
-        fname.write(tmpstr)
-        fname.close()
-
-    df = pd.read_excel(filename, sheet_name='BlockVols',skiprows=1)
     df = df.dropna(how='all')
     df = df.reset_index(drop=True)
 
+    # List of column headers
+    dfcolumns = df.columns.values.tolist()
+
+    reg = df['Region'].unique()
+
+    # Take backup of files
+    for eachregion in reg:
+        eachregion = str(eachregion).strip().lower()
+
+        if (eachregion in commonTools.endNames or eachregion == 'nan'):
+            continue
+        if eachregion not in ct.all_regions:
+            print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
+            exit()
+
+        resource = 'BlockBackupPolicy'
+        srcdir = outdir + "/" + eachregion + "/"
+        commonTools.backup_file(srcdir, resource, "_block-backup-policy.tf")
+        commonTools.backup_file(srcdir,resource,"-block-backup-policy-data.tf")
+
+    policy_done = []
     for i in df.index:
-        for j in df.keys():
-            if (str(df[j][i]) in endnames):
-                exit()
-            if (str(df[j][i]) == 'nan'):
-                continue
+        region = df.loc[i,"Region"]
+        region = region.strip().lower()
+        if region in commonTools.endNames:
+            break
+        if region not in ct.all_regions:
+            print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
+            exit()
 
-            elif (j == 'Region'):
-                Region = df['Region'][i].strip().lower()
-                if(Region in commonTools.endNames):
-                    exit()
-                if(Region not in ct.all_regions):
-                    print("Invalid Region "+ Region)
-                    break
+        policy_data_file = outdir + "/"+region+"/oci-block-backup-policy-data.tf"
+        datasource = env.get_template('backup-policy-data-source-template')
+        oci_policy = ["gold","silver","bronze"]
+        reg_policy = str(df.loc[i, 'Region']).lower()+"-"+str(df.loc[i, 'Backup Policy']).lower()
 
+        if str(df.loc[i,'Backup Policy']).lower() in oci_policy and  reg_policy not in policy_done:
+            if os.path.isfile(policy_data_file):
+                with open(policy_data_file) as fname:
+                    if "block_"+str(df.loc[i,'Backup Policy']).lower() not in fname.read():
+                            policy_data_dict = {'block_tf_policy': str(df.loc[i, 'Backup Policy']).lower(),'policy_tf_compartment': commonTools.check_tf_variable(str(df.loc[i, 'Custom Policy Compartment Name']))}
+                            fname=open(policy_data_file,"a+")
+                            # To add the 'data' resource - required for fetching the policy id
+                            fname.write(datasource.render(policy_data_dict))
+                            fname.close()
+            else:
+                policy_data_dict = {'block_tf_policy': str(df.loc[i, 'Backup Policy']).lower(),'policy_tf_compartment': commonTools.check_tf_variable(str(df.loc[i, 'Custom Policy Compartment Name']))}
 
-            elif (j == 'block_name'):
-                block_name = df['block_name'][i]
-                if (str(df['Backup Policy'][i]) == 'nan'):
-                    continue
+                fname = open(policy_data_file, "w+")
+                # To add the 'data' resource - required for fetching the policy id
+                fname.write(datasource.render(policy_data_dict))
+                fname.close()
+            policy_done.append(reg_policy)
+        else:
+            if str(df.loc[i, 'Backup Policy']).lower() not in oci_policy and reg_policy not in policy_done:
+                if os.path.isfile(policy_data_file):
+                    with open(policy_data_file) as fname:
+                        if "block_"+str(df.loc[i, 'Backup Policy']).lower() not in fname.read():
+                            policy_data_dict = {'block_tf_policy' : str(df.loc[i,'Backup Policy']).lower(),'policy_tf_compartment' : commonTools.check_tf_variable(str(df.loc[i,'Custom Policy Compartment Name']))}
+                            fname = open(policy_data_file, "a+")
+                            # To add the 'data' resource - required for fetching the policy id
+                            fname.write(datasource.render(policy_data_dict))
+                            fname.close()
                 else:
+                    policy_data_dict = {'block_tf_policy' : str(df.loc[i,'Backup Policy']).lower(),'policy_tf_compartment' : commonTools.check_tf_variable(str(df.loc[i,'Custom Policy Compartment Name']))}
+                    fname = open(policy_data_file, "w+")
+                    # To add the 'data' resource - required for fetching the policy id
+                    fname.write(datasource.render(policy_data_dict))
+                    fname.close()
+                policy_done.append(reg_policy)
 
-                    policy = df['Backup Policy'][i].lower().strip()
 
-                    block_name_tf=commonTools.check_tf_variable(block_name)
-                    res_name=block_name_tf+"_bkupPolicy"
-                    tmpstr = """resource "oci_core_volume_backup_policy_assignment" \"""" + res_name + """\"{
-                        #Required
-                        asset_id = "${oci_core_volume.""" + block_name_tf + """.id}"
-                        policy_id = "${data.oci_core_volume_backup_policies.block_""" + policy + """.volume_backup_policies.0.id}"
-                        }
-                        ## Add policy attachment ##
-                        """
+        # temporary dictionary1 and dictionary2
+        tempStr = {}
+        tempdict = {}
+        policy = ''
+        blockname_tf = ''
+        # Fetch data ; loop through columns
+        for columnname in dfcolumns:
 
-                    textToSearch = "## Add policy attachment ##"
+            # Column value
+            columnvalue = str(df[columnname][i]).strip()
 
-                    with open(policy_file[Region], 'r+') as file:
-                        filedata = file.read()
-                    file.close()
-                    # Replace the target string
-                    filedata = filedata.replace(textToSearch, tmpstr)
+            # Check for boolean/null in column values
+            columnvalue = commonTools.check_columnvalue(columnvalue)
 
-                    # Write the file out again
-                    with open(policy_file[Region], 'w+') as file:
-                        file.write(filedata)
-                    file.close()
+            # Check for multivalued columns
+            tempdict = commonTools.check_multivalues_columnvalue(columnvalue,columnname,tempdict)
 
-elif('.csv' in filename):
-    fname = open(filename, "r")
-    all_regions = os.listdir(outdir)
-    for reg in all_regions:
-        policy_file[reg] = outdir + "/"+reg+"/attach_block_backups_policy.tf"
-        src=policy_file[reg]
-        if path.exists(src):
-            dst = outdir + "/"+reg+"/attach_block_backups_policy_backup" + date
-            os.rename(src, dst)
-        fname=open(policy_file[reg],"a+")
-        fname.write(tmpstr)
-        fname.close()
+            if (columnname == 'Block Name'):
+                columnvalue = commonTools.check_tf_variable(columnvalue)
+                blockname_tf = columnvalue
+                tempdict = {'block_tf_name' : blockname_tf}
 
-    for line in fname:
-        if not line.startswith('#'):
-            #[block_name,size_in_gb,availability_domain(AD1|AD2|AD3),attached_to_instance,attach_type(iscsi|paravirtualized,compartment_var_name] = line.split(',')
-            linearr = line.split(",")
-            region = linearr[0].strip().lower()
-            if region not in all_regions:
-                print("Invalid Region")
-                continue
+            if (columnname == 'Backup Policy'):
+                columnname = 'backup_policy'
+                columnvalue = str(columnvalue).strip()
+                if columnvalue != '':
+                    columnvalue = columnvalue.lower()
+                    policy = commonTools.check_tf_variable(columnvalue)
 
-            block_vol_name = linearr[1].strip()
-            res_name = block_vol_name + "_bkupPolicy"
-            policy = linearr[7].strip()
+            columnname = commonTools.check_column_headers(columnname)
+            tempStr[columnname] = str(columnvalue).strip()
+            tempStr.update(tempdict)
 
-            tmpstr = """resource "oci_core_volume_backup_policy_assignment" \"""" + res_name + """\"{
-                                #Required
-                                asset_id = "${oci_core_volume.""" + block_vol_name + """.id}"
-                                policy_id = "${data.oci_core_volume_backup_policies.block_""" + policy + """.volume_backup_policies.0.id}"
-                                }
-                                ## Add policy attachment ##
-                                """
+        #Render template
+        if policy != '':
+            backuppolicy =  template.render(tempStr)
 
-            textToSearch = "## Add policy attachment ##"
+            #Write to output file
+            file = outdir + "/" + region + "/" + blockname_tf + "_block-backup-policy.tf"
+            oname = open(file, "w+")
+            print("Writing to " + file)
+            oname.write(backuppolicy)
+            oname.close()
 
-            with open(policy_file[region], 'r+') as file:
-                filedata = file.read()
-            file.close()
-            # Replace the target string
-            filedata = filedata.replace(textToSearch, tmpstr)
+if __name__ == '__main__':
 
-            # Write the file out again
-            with open(policy_file[region], 'w+') as file:
-                file.write(filedata)
-            file.close()
-    fname.close()
-else:
-    print("Invalid input file format; Acceptable formats: .xls, .xlsx")
-    exit()
+    # Execution of the code begins here
+    main()

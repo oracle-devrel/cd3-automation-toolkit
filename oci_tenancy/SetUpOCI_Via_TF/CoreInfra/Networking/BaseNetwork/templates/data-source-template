@@ -1,0 +1,6 @@
+data "oci_core_services" "oci_services" {
+}
+
+data "oci_identity_availability_domains" "ADs" {
+	  compartment_id = var.tenancy_ocid
+}

@@ -1,0 +1,15 @@
+
+#Create LPG
+resource "oci_core_local_peering_gateway" "{{ lpg_tf_name }}" {
+    #Required
+    compartment_id = var.{{ compartment_tf_name }}
+    vcn_id = oci_core_vcn.{{ vcn_tf_name }}.id
+
+    #Optional
+    display_name = "{{ lpg_name }}"
+    ##peer_id for lpg {{ vcn_name }}_{{ lpg_name }}##
+
+    {% if rt_var != '' %}
+    route_table_id = oci_core_route_table.{{ rt_tf_name }}.id
+    {% endif %}
+}

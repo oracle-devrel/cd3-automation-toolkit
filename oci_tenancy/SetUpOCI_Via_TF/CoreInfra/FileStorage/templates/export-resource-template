@@ -1,0 +1,9 @@
+
+resource "oci_file_storage_export" "{{ FSE_tf_name }}" {
+    #Required
+    export_set_id = oci_file_storage_mount_target.{{ mount_target_tf_name }}.export_set_id
+    file_system_id = oci_file_storage_file_system.{{ fss_tf_name }}.id
+    path = "{{ path }}"
+
+    {{ export_set_info }}
+}

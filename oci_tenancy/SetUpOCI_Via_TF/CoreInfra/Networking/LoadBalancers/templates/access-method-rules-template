@@ -1,0 +1,11 @@
+items {
+        #Required
+        action = "{{ action }}"
+
+        #Optional
+        allowed_methods = {{ method_list }}
+        {% if status_code != '' %}
+        status_code = {{ status_code }}
+        {% endif %}
+    }
+    ## Add_rules_here ##

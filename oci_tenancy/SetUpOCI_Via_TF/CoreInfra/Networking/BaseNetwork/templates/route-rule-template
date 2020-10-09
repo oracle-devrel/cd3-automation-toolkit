@@ -1,0 +1,11 @@
+
+    route_rules {
+        destination = {{ destination }}
+        network_entity_id = {{ network_entity_id }}
+        destination_type = "{{ destination_type }}"
+        {% if description != '' %}
+        description = "{{ description }}"
+        {% endif %}
+      }
+
+

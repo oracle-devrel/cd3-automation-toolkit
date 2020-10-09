@@ -139,7 +139,7 @@ print ("Deleting Instance")
 get_instance_response=oci.wait_until(compute_client,compute_client.get_instance(input_instance_ocid),'lifecycle_state', 'TERMINATED')
 print (get_instance_response.data)
 
-print("Delete the Reserved Public IP if it is end of OCS enagagement with client or Retain it if intend to rebuild OCSWork VM")
+print("Delete the Reserved Public IP if it is the end of OCS enagagement with client or Retain it if you intend to rebuild OCSWork VM")
 delete_ip = input("Delete Reserved public IP(y) or Retain(n): ")
 
 if(delete_ip.lower()=='y'):

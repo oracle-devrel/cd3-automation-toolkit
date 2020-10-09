@@ -30,7 +30,8 @@ pip3 install cfgparse
 pip3 install ipaddr
 pip3 install ipaddress
 pip3 install paramiko
-
+pip3 install Jinja2
+pip3 install simplejson
 sudo echo "export PYTHONPATH=${PYTHONPATH}:/opt/rh/rh-python36/root/usr/lib/python3.6/site-packages/" >> /root/.bashrc
 source /root/.bashrc
 
@@ -48,9 +49,10 @@ sudo yum install -y putty
 
 
 sudo yum -y install git
-#Don't install latest version of TF as there are lot of syntax changes
+#sudo yum --showduplicates list terraform #TF RHEL packages list
+#uncomment for 0.13v/latest version of terraform
 #sudo yum -y install terraform
-sudo yum -y install terraform-0.12.13-1.el7
+sudo yum -y install terraform-0.12.28-1.el7
 sudo yum -y install expect
 sudo yum -y install telnet
 

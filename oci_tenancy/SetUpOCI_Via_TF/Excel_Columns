@@ -1,0 +1,154 @@
+{
+    "Compartments" :
+    {
+        "Description" : "description"
+    },
+   "Groups" :
+    {
+        "Description" : "description",
+        "Name" : "name"
+    },
+    "Policies" :
+    {
+       "Description" : "description",
+        "Name" : "name"
+    },
+    "Tags" :
+    {
+        "Region" : "region",
+        "Compartment Name" : "compartment_id",
+        "Tag Namespace" : "name",
+        "Namespace Description" : "description",
+        "Tag Keys" : "name",
+        "Tag Description" : "description",
+        "Cost Tracking" : "is_cost_tracking",
+        "Validator" : "validator",
+        "Default Tag Value" : "value"
+    },
+
+    "VCNs" :
+    {
+        "VCN Name" : "display_name",
+        "CIDR Block" : "cidr_block"
+    },
+    "DHCP" :
+    {
+        "DHCP Option Name" : "display_name",
+        "Server Type(VcnLocalPlusInternet|CustomDnsServer)" : "server_type",
+        "Search Domain" : "search_domain_names",
+        "Custom DNS Server" : "custom_dns_servers"
+
+    },
+    "Subnets" :
+    {
+        "Subnet Name" : "display_name",
+        "CIDR Block" : "cidr_block",
+        "Availability Domain(AD1|AD2|AD3|Regional)" : "availability_domain",
+        "Type(private|public)" : "prohibit_public_ip_on_vnic"
+    },
+    "NSGs" :
+    {
+        "NSG Name" : "display_name",
+        "Direction" : "direction",
+        "isStateless" : "is_stateless",
+        "Rule Description" : "description"
+    },
+    "RouteRulesinOCI" :
+    {
+        "Route Table Name" : "display_name",
+        "Destination CIDR" : "destination",
+        "Route Destination Object" : "network_entity_id",
+        "Destination Type" : "destination_type",
+        "Rule Description" : "description"
+    },
+    "SecRulesinOCI" :
+    {
+        "SecList Name" : "display_name",
+        "isStateless" : "is_stateless",
+        "Source" : "source",
+        "Destination" : "destination",
+        "Rule Description" : "description"
+    },
+    "Instances" :
+	{
+	},
+	"FSS" :
+	{
+	},
+	"BlockVols" :
+	{
+	    "Availability Domain(AD1|AD2|AD3)" : "availability_domain",
+	    "Block Name" : "display_name"
+	},
+    "LB-Hostname-Certs" :
+    {
+        "Shape(100Mbps|400Mbps|8000Mbps)" : "shape_name",
+        "Is Private(True|False)" : "is_private"
+    },
+    "BackendSet-BackendServer" :
+    {
+        "Backend ServerName:Port" : "backend_server_name:port",
+        "Backend Set Name" : "backend_set_name",
+        "Certificate Name" : "certificates",
+        "Backend Policy(LEAST_CONNECTIONS|ROUND_ROBIN|IP_HASH)" : "policy",
+        "Backend HealthCheck Protocol(HTTP|TCP)" : "protocol",
+        "Backend HealthCheck Port" : "port",
+        "Backend HealthCheck URL" : "url_path",
+        "Backend HealthCheck Interval In Millis" : "interval_in_millis",
+        "Cookie Name" : "cookie_name",
+        "Cookie Path" : "path",
+        "Disable Fallback(TRUE|FALSE)" : "disable_fallback",
+        "Backup <Backend Server Name>" : "backup",
+        "UseSSL(y|n)" : "ssl_configuration"
+    },
+    "LB-Listener" :
+    {
+        "Backend Set Name" : "default_backend_set_name",
+        "LBR Hostnames (Name)" : "hostname_names",
+        "Path Route Set Name" : "path_route_set_name",
+        "Rule Set Names" : "rule_set_names",
+        "UseSSL (y|n)" : "ssl_configuration",
+        "Listener Name" : "name",
+        "Listener Protocol (HTTP|TCP)" : "protocol",
+        "Listener Port" : "port",
+        "Idle Time Out (in Seconds)" : "idle_timeout"
+    },
+    "RuleSet" :
+    {
+        "Description of Access Control Rule" : "description",
+        "Allow Invalid Characters (TRUE|FALSE)" : "are_invalid_characters_allowed",
+        "HTTP Header Size(in kB)" : "http_large_header_size_in_kb",
+        "Redirect URI Host:Port" : "host",
+        "Redirect URI Protocol:Path" : "protocol",
+        "Redirect URI Query" : "query"
+    },
+    "PathRouteSet":
+    {
+        "Path Route Set Name" : "name"
+    },
+    "Common-LBR-Headers" :
+    {
+        "Region" : "region",
+        "Compartment Name" : "compartment_id",
+        "LBR Name" : "display_name"
+    },
+    "Events" :
+    {
+        "Event Name" : "display_name",
+        "Event Description" : "description",
+        "Action Type" :  "action_type",
+        "Action is Enabled" : "is_enabled",
+        "Action Description" : "description",
+        "Service Name" :  "condition",
+        "Resource" : "condition",
+        "Event is Enabled" : "is_enabled",
+        "Topic" : "topic_id"
+    },
+   "Notifications" :
+    {
+        "Topic" : "topic_id",
+        "Description" : "description",
+        "Protocol" :  "protocol",
+        "Endpoint" : "endpoint"
+    }
+}
