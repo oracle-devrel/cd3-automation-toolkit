@@ -176,6 +176,7 @@ def main():
                                                                             lifecycle_state="ACTIVE")
                     tag_namespace_check = []
                     tag_list = []
+                    tag_default_comp = ''
                     for tag in tags.data:
                         tag_list.append(str(tag.id))
                         tag_keys = oci.pagination.list_call_get_all_results(identity.list_tags, tag_namespace_id=tag.id,
