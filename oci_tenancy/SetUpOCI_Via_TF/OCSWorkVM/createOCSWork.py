@@ -355,15 +355,17 @@ if (vm_compartment_found == 0 and input_vm_compartment_name != input_ocs_compart
         print("Exiting due to compartment error : ")
         exit(-1)
     updatePropsFile(input_config_file, "vm_compartment_ocid", vm_compartment_ocid)
-
-if (ntk_compartment_found == 0 and ntk_compartment_ocid != ocs_compartment_ocid and ntk_compartment_ocid != vm_compartment_ocid):
-    print('Creating Compartment for Network components: ' + input_ntk_compartment_name + ' under root compartment')
-    ntk_compartment_ocid = create_compartment(input_ntk_compartment_name, "compartment for Network components")
-    if ntk_compartment_ocid == "-1":
-        print("Exiting due to compartment error : ")
-        exit(-1)
-    updatePropsFile(input_config_file, "ntk_compartment_ocid", ntk_compartment_ocid)
-
+try:
+    if (ntk_compartment_found == 0 and ntk_compartment_ocid != ocs_compartment_ocid and ntk_compartment_ocid != vm_compartment_ocid):
+        print('Creating Compartment for Network components: ' + input_ntk_compartment_name + ' under root compartment')
+        ntk_compartment_ocid = create_compartment(input_ntk_compartment_name, "compartment for Network components")
+        if ntk_compartment_ocid == "-1":
+            print("Exiting due to compartment error : ")
+            exit(-1)
+        updatePropsFile(input_config_file, "ntk_compartment_ocid", ntk_compartment_ocid)
+except NameError as e:
+    print("An error occured....Exiting!")
+    exit(-1)
 # Read Python config file again
 python_config = oci.config.from_file(file_location=input_config_file)
 
