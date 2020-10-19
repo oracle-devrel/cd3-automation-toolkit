@@ -531,6 +531,9 @@ def main():
         # List of the column headers
         dfcolumns = df.columns.values.tolist()
 
+        # Create LPG Rules
+        createLPGRouteRules(vcns.peering_dict)
+
         for i in df.index:
 
             # Get subnet data
@@ -622,10 +625,6 @@ def main():
                 tempStr.update(tempdict)
 
             processSubnet(tempStr)
-
-        # Create LPG Rules
-        createLPGRouteRules(vcns.peering_dict)
-
 
         # Create Route Table associated with DRG for Hub VCN and route rules for its each spoke VCN
         for hub_vcn_name in vcns.hub_vcn_names:
