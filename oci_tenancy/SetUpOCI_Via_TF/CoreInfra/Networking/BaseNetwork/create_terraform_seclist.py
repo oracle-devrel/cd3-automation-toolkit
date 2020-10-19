@@ -133,7 +133,7 @@ def main():
                 tempStr['rule_type'] = "ingress"
                 tempStr['source'] = subnet_cidr
                 tempStr['protocol_code'] = 'all'
-                tempStr['isstateless'] = "true"
+                tempStr['isstateless'] = "false"
 
                 Str = secrule.render(tempStr)
 
@@ -166,7 +166,7 @@ def main():
                     tempStr['protocol_code'] = 'all'
                     tempStr['source'] = subnet_cidr
                     tempStr['rule_type'] = rule
-                    tempStr['isstateless'] = "true"
+                    tempStr['isstateless'] = "false"
                     secrule_data = secrule_data + secrule.render(tempStr)
                 textToSearch = "####ADD_NEW_SEC_RULES####" + vcn_tf_name + "_" + sl_tf_name
                 secrule_data = secrule_data + textToSearch
