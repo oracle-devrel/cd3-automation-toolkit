@@ -167,10 +167,15 @@ def main():
             if columnname == 'NSGs':
                 if columnvalue != '' and columnvalue.strip().lower()  != 'nan':
                     nsg_str = ""
+                    nsg = ""
                     NSGs = columnvalue.split(",")
                     k=0
                     while k < len(NSGs):
-                        nsg_str = nsg_str + "oci_core_network_security_group." + commonTools.check_tf_variable(NSGs[k].strip()) + ".id"
+                        if "ocid" in NSGs[k].strip():
+                            nsg = "\""+NSGs[k].strip()+"\""
+                        else:
+                            nsg = "oci_core_network_security_group."+commonTools.check_tf_variable(NSGs[k].strip())+ ".id"
+                        nsg_str = nsg_str + str(nsg)
                         if (k != len(NSGs) - 1):
                             nsg_str = nsg_str + ","
                         k += 1

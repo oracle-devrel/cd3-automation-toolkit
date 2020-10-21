@@ -283,14 +283,23 @@ def main():
                     lbr_nsgs = str(columnvalue).strip().split(",")
                     if len(lbr_nsgs) == 1:
                         for nsgs in lbr_nsgs:
-                            nsg_id = "oci_core_network_security_group." + commonTools.check_tf_variable(str(nsgs).strip()) + ".id"
+                            if "ocid" in nsgs.strip():
+                                nsg_id = "\"" + nsgs.strip() + "\""
+                            else:
+                                nsg_id = "oci_core_network_security_group." + commonTools.check_tf_variable(str(nsgs).strip()) + ".id"
+
                     elif len(lbr_nsgs) >=2 :
                         c = 1
                         for nsgs in lbr_nsgs:
-                            if c == len(lbr_nsgs):
-                                nsg_id = nsg_id + "oci_core_network_security_group."+commonTools.check_tf_variable(str(nsgs).strip())+".id"
+                            if "ocid" in nsgs.strip():
+                                data = "\"" + nsgs.strip() + "\""
                             else:
-                                nsg_id = nsg_id + "oci_core_network_security_group."+commonTools.check_tf_variable(str(nsgs).strip())+".id,"
+                                data = "oci_core_network_security_group." + commonTools.check_tf_variable(str(nsgs).strip()) + ".id"
+
+                            if c == len(lbr_nsgs):
+                                nsg_id = nsg_id + data
+                            else:
+                                nsg_id = nsg_id + data +","
                             c += 1
                 columnvalue = nsg_id
 
