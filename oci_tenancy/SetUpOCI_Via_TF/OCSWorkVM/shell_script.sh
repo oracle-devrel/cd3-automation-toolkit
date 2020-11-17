@@ -65,6 +65,10 @@ cd oci-ansible-modules
 sudo yum -y install java
 sudo yum -y install wget
 
+#Copy MarkUp Safe to appropriate location; Jinja2 and Ansible requires it
+sudo cp -R /opt/rh/rh-python36/root/usr/lib64/python3.6/site-packages/MarkupSafe-1.1.1.dist-info /opt/rh/rh-python36/root/usr/lib/python3.6/site-packages/
+sudo cp -R /opt/rh/rh-python36/root/usr/lib64/python3.6/site-packages/markupsafe /opt/rh/rh-python36/root/usr/lib/python3.6/site-packages/
+
 #sudo yum -y install python36 python36-setuptools graphviz
 #sudo easy_install-3.6 pip
 
