@@ -1,0 +1,12 @@
+{
+  "ClientId" : "2ea5fa935ef7433ea8ea3e143ae89b33",
+  "ClientSecret" : "cbe026d5-a630-4d96-9f26-980375925338",
+  "BaseUrl" : "https://idcs-25070016ce0c4eb8b6eea18f07fe170d.identity.oraclecloud.com/",
+  "AudienceServiceUrl" : "https://idcs-25070016ce0c4eb8b6eea18f07fe170d.identity.oraclecloud.com/",
+  "scope" : "openid",
+  "TokenIssuer" : "https://identity.oraclecloud.com/",
+  "redirectURL": "http://localhost:8000/callback",
+  "logoutSufix":"/oauth2/v1/userlogout",
+  "LogLevel":"INFO",
+  "ConsoleLog":"True"
+}
