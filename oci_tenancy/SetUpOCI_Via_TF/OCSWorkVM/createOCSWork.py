@@ -366,7 +366,6 @@ try:
 except NameError as e:
     print("An error occured....Exiting!")
     exit(-1)
-
 # Read Python config file again
 python_config = oci.config.from_file(file_location=input_config_file)
 
