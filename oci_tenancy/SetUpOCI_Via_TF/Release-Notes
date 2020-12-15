@@ -192,3 +192,12 @@ SetUPOCI_Via_TF Tag v7.0
 7. Support to create and export Cost Tracking and Default Tags
 8. Support to create and export LBR Components- Cipher Suites, Rule Set and  Path Route Set
 9. Support to attach or export 'Custom Backup Policy Attachments' to Block and Boot Volumes.
+
+------------------------
+SetUPOCI_Via_TF Tag v7.0.1
+------------------------
+This is a minor release.
+xrld package's latest release was not compatible and giving issues with CD.
+It has been fixed by installing lower version of xlrd package.
+pip3 install xlrd==1.2.0
+
