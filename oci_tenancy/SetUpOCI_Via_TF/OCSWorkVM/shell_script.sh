@@ -20,10 +20,10 @@ pip3 install oci
 pip3 install oci-cli
 pip3 install pycrypto
 pip3 install regex
-pip3 install pandas
-pip3 install openpyxl
-pip3 install xlrd
-pip3 install xlsxwriter
+pip3 install pandas==1.1.5
+pip3 install openpyxl==3.0.5
+pip3 install xlrd==1.2.0
+pip3 install xlsxwriter==1.3.7
 pip3 install puttykeys
 pip3 install netaddr
 pip3 install cfgparse
