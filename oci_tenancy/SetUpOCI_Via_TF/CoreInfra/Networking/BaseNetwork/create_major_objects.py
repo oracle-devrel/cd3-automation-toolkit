@@ -323,7 +323,7 @@ def main():
 
 
         tfStr[region] = tfStr[region] + igw + ngw + sgw + drg + lpgdata + vcn
-        dhcpStr[region] = dhcpStr[reg] + dhcp_default
+        dhcpStr[region] = dhcpStr[region] + dhcp_default
 
     # Get vcns object from commonTools
     vcns = parseVCNs(filename)
