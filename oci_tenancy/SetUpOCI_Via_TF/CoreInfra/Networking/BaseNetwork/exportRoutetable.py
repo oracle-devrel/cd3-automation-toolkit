@@ -248,9 +248,9 @@ def main():
                             print_routetables(routetables,region,vcn_name,ntk_compartment_name_again)
 
     commonTools.write_to_cd3(values_for_column,cd3file,"RouteRulesinOCI")
-    commonTools.write_to_cd3(values_for_vcninfo,cd3file,"VCN Info")
 
     if (tf_import_cmd == "true"):
+        commonTools.write_to_cd3(values_for_vcninfo, cd3file, "VCN Info")
         for reg in ct.all_regions:
             importCommands[reg].close()
 
