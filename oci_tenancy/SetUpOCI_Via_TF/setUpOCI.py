@@ -553,14 +553,20 @@ if (input_nongf_tenancy.lower() == 'true'):
         print("-----------------------------------------------------------------------------------------------------------------")
         print("Proceeding to create TF files...\n")
         print("\n-----------------------------------------Process Events tab----------------------------------------------------")
-        command = 'python create_terraform_events.py ' + input_cd3file + ' ' + input_outdir + ' ' + input_prefix
+        if (input_config_file == ''):
+            command = 'python create_terraform_events.py ' + input_cd3file + ' ' + input_outdir + ' ' + input_prefix
+        else:
+            command = 'python create_terraform_events.py ' + input_cd3file + ' ' + input_outdir + ' ' + input_prefix + ' --configFileName ' + input_config_file
         os.chdir('Solutions/EventsAndNotifications')
         print("Executing Command: " + command)
         exitVal = os.system(command)
         if (exitVal == 1):
             exit()
         print("\n-----------------------------------------Process Notifications tab---------------------------------------------")
-        command = 'python create_terraform_notifications.py ' + input_cd3file + ' ' + input_outdir + ' ' + input_prefix
+        if (input_config_file == ''):
+            command = 'python create_terraform_notifications.py ' + input_cd3file + ' ' + input_outdir + ' ' + input_prefix
+        else:
+            command = 'python create_terraform_notifications.py ' + input_cd3file + ' ' + input_outdir + ' ' + input_prefix + ' --configFileName ' + input_config_file
         os.chdir("../..")
         os.chdir('Solutions/EventsAndNotifications')
         print("Executing Command: " + command)
