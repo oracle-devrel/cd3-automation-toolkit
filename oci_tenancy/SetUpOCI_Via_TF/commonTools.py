@@ -32,6 +32,8 @@ class commonTools():
             os.chdir("../")
         elif ("Solutions" in dir):
             os.chdir("../../")
+        if ("ResourceManager" in dir):
+            os.chdir("../")
         if("Networking" in dir):
             os.chdir("../../../")
         elif ("CoreInfra" in dir):

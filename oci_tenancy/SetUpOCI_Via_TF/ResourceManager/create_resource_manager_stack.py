@@ -29,7 +29,6 @@ rm_region = []
 comp_name = ''
 stack_ocid = ''
 
-
 def create_rm(region,comp_name,ocs_stack,ct,rm_stack_name,rm_ocids_file,create_rm_flag):
     print("\nCreating a new Resource Manager Stack for " + region + ".......................")
     stackdetails = CreateStackDetails()
@@ -103,12 +102,13 @@ class resourceManager:
     #apply_flag = args.apply_flag
     #rm_ocid = args.rm_ocid
     all_regions = os.listdir(outdir)
+
     if args.configFileName is not None:
         configFileName = args.configFileName
     else:
         configFileName = ""
+        config = oci.config.from_file()
 
-    config = oci.config.from_file(file_location=configFileName)
     ocs_stack = oci.resource_manager.ResourceManagerClient(config)
 
     rm_stack_name = "ocswork-"+prefix
@@ -237,7 +237,6 @@ class resourceManager:
 
     print("\nProcess Completed !!!\b"
           "Terraform Configuration (and/or) State files are uploaded to  Resource Manager Stack in "+comp_name+" Compartment.")
-
 
 
 
