@@ -50,9 +50,9 @@ sudo yum install -y putty
 
 sudo yum -y install git
 #sudo yum --showduplicates list terraform #TF RHEL packages list
-#uncomment for 0.13v/latest version of terraform
+#uncomment for latest version of terraform
 #sudo yum -y install terraform
-sudo yum -y install terraform-0.12.28-1.el7
+sudo yum -y install terraform-0.13.5-1.el7
 sudo yum -y install expect
 sudo yum -y install telnet
 
