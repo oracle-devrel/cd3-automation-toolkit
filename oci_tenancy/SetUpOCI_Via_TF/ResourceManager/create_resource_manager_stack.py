@@ -105,6 +105,7 @@ class resourceManager:
 
     if args.configFileName is not None:
         configFileName = args.configFileName
+        config = oci.config.from_file(file_location=configFileName)
     else:
         configFileName = ""
         config = oci.config.from_file()
@@ -136,25 +137,30 @@ class resourceManager:
 
     #2. Change the provider.tf to include just the region variable in all the subscribed regions
     for region in ct.all_regions:
-        with open(outdir+'/'+region+'/provider.tf') as origfile, open(rm_dir+'/'+region+'/provider.tf', 'w') as newfile:
+        with open(outdir+'/'+region+'/provider.tf') as origfile, open(rm_dir+'/'+region + '/provider.tf', 'w') as newfile:
             for line in origfile:
+                #if "user_ocid" not in line and "fingerprint" not in line and "private_key_path" not in line:
                 if 'version' in line or 'tenancy_ocid' in line or "user_ocid" in line or "fingerprint" in line or "private_key_path" in line:
                     pass
                 else:
                     newfile.write(line)
 
-        #3. Change the variables.tf to exclude user_ocid,findgerprint and private_key_path in all the subscribed regions
-        with open(outdir+'/'+region+'/variables_'+region+'.tf') as origfile, open(rm_dir+'/'+region+'/variables_'+region+'.tf', 'w') as newfile:
-            count = 0
+    skipline = False
+
+
+    for region in ct.all_regions:
+        with open(outdir+'/'+region+'/variables_' + region + '.tf') as origfile, open(rm_dir+'/'+region + '/variables_' + region + '.tf','w') as newfile:
             for line in origfile:
-                if "user_ocid" in line or "fingerprint" in line or "private_key_path" in line:
-                    count = 3
-                elif count != 0 :
-                    if "default" in line or "type" in line or "}\n" == line:
-                        count = count - 1
-                        pass
-                elif count == 0 :
-                    newfile.write(line)
+                #if any(skip_var in line for skip_var in skip_vars):
+                #for skip_var in skip_vars:
+                if "user_ocid"  in line or "fingerprint"  in line or "private_key_path" in line:
+                    skipline = True
+                if not skipline:
+                        newfile.write(line)
+                if skipline:
+                    if ('}' in line):
+                        skipline = False
+
 
     #4. Create RM if not present and store the ocid in a tempfile; name of RM is ocswork-<prefix>;
     os.chdir(rm_dir)
