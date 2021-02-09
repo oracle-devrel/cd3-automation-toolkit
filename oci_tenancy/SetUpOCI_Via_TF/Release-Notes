@@ -201,3 +201,14 @@ xrld package's latest release was not compatible and giving issues with CD.
 It has been fixed by installing lower version of xlrd package.
 pip3 install xlrd==1.2.0
 
+------------------------
+SetUPOCI_Via_TF Tag v7.1
+------------------------
+1. Introduced new option in setUpOCI Menu to create RM Stack.
+ - When this option is chosen, it will ask for the compartment where the RM stack has to be created.
+ - It will create stacks in the specified compartment in the region (mentioned in config file)
+ - RM Stack names: ocswork-<prefix>-<region> where <prefix> is the prefix mentioned in setUpOCI.properties file and <region> is the regions tenancy is subscribed to.
+ - Uploads all files in outdir to RM Stack and also uploads the tfstate file if existing
+ - Uses same RM Stack for multiple executions.
+
+2. Bug fix for LBR Backend sets to allow same backend servers with different ports.
