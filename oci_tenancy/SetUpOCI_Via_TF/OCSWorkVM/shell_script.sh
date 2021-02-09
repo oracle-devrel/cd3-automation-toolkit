@@ -8,9 +8,15 @@ mkdir -p /root/ocswork/git_oci
 mkdir -p /root/ocswork/git_ocic2oci
 mkdir -p /root/ocswork/ocic2oci_work
 
+#yum install scl-utils-20130529-19.el7.x86_64
 sudo yum -y install scl-utils
+
+#sudo yum -y install  rh-python36-2.0-1.el7.x86_64
 sudo yum -y install rh-python36
+
+#sudo yum -y install gcc-4.8.5-44.0.3.el7.x86_64
 sudo yum -y install gcc
+
 #scl enable rh-python36 bash
 sudo echo "source scl_source enable rh-python36" >> /root/.bashrc
 source /root/.bashrc
@@ -53,9 +59,12 @@ sudo yum -y install git
 #uncomment for latest version of terraform
 #sudo yum -y install terraform
 sudo yum -y install terraform-0.13.5-1.el7
+
+#yum install  expect-5.45-14.el7_1.x86_64
 sudo yum -y install expect
 sudo yum -y install telnet
 
+#yum install  ansible-2.9.10-1.el7.noarch
 sudo yum -y install ansible
 cd /root/ocswork/downloads
 git clone https://github.com/oracle/oci-ansible-modules.git
