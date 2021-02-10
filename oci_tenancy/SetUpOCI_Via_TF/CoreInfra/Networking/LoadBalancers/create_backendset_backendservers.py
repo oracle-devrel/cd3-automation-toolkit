@@ -231,7 +231,7 @@ def main():
                 tempback = {'backup': backup }
                 tempStr.update(tempback)
 
-                backend_server_tf_name = commonTools.check_tf_variable(servername)
+                backend_server_tf_name = commonTools.check_tf_variable(servername+"-"+str(cnt))
                 serverport = serverinfo[1].strip()
                 e = servername.count(".")
                 if (e == 3):

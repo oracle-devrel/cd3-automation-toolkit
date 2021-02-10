@@ -844,9 +844,11 @@ def main():
                         backendsets_tf_name = commonTools.check_tf_variable(backendsets)
                         importCommands[reg].write("\nterraform import oci_load_balancer_backend_set." + tf_name + "_" + backendsets_tf_name + " loadBalancers/" + lbr_info.id + "/backendSets/" + backendsets)
 
+                        cnt = 0
                         for keys in values.backends:
+                            cnt = cnt + 1
                             backendservers_name = keys.name
-                            backendservers_tf_name = commonTools.check_tf_variable(keys.ip_address)
+                            backendservers_tf_name = commonTools.check_tf_variable(keys.ip_address+"-"+str(cnt))
                             importCommands[reg].write("\nterraform import oci_load_balancer_backend." + tf_name + "_" + backendsets_tf_name + "_" + backendservers_tf_name + " loadBalancers/" + lbr_info.id + "/backendSets/" + backendsets + "/backends/" + backendservers_name)
 
                     for pathroutes in eachlbr.path_route_sets:

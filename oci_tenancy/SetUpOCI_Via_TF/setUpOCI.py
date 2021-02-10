@@ -587,7 +587,7 @@ if (input_nongf_tenancy.lower() == 'true'):
 
     exit()
 
-inputs = ["1","2","3","4","5","6","7","8","9","10"]
+inputs = ["1","2","3","4","5","6","7","8","9","10","11"]
 print("1.  Identity")
 print("2.  Networking")
 print("3.  Dedicated VM Hosts/Instances/Boot Backup Policy")
@@ -598,6 +598,7 @@ print("7.  Load Balancer Service")
 print("8.  ADW/ATP")
 print("9.  Database")
 print("10. Solutions (Events and Notifications)")
+print("11. Upload current terraform files/state to Resource Manager")
 print("q.  Press q to quit")
 print("\nSee example folder for sample input files\n")
 
@@ -1101,6 +1102,20 @@ if('10' in userInput):
             print("\nInvalid Choice..Exiting...")
             exit()
 
+if('11' in userInput):
+    print('\n-------------------------------------------------------Resource Manager------------------------------------------------------')
+    os.chdir('ResourceManager')
+    if (input_config_file == ''):
+        command = 'python create_resource_manager_stack.py '+ outdir + ' ' + input_prefix # + ' ' + apply_flag + ' ' + rm_ocid
+    else:
+        command =  'python create_resource_manager_stack.py '+ outdir + ' ' + input_prefix + ' --configFileName ' + input_config_file #+ ' ' + apply_flag + ' ' + rm_ocid
+    print("Executing Command: " + command)
+    exitVal = os.system(command)
+    if (exitVal == 1):
+        exit()
+    os.chdir("../..")
+    print("-----------------------------------------------------------------------------------------------------------------------")
+
 if ("q" in userInput or "Q" in userInput):
     print("Exiting...")
     exit()
@@ -1108,4 +1123,5 @@ if ("q" in userInput or "Q" in userInput):
 if (not set(userInput).issubset(set(inputs))):
     print("\nInvalid Choice..Exiting...")
     exit()
+
 
