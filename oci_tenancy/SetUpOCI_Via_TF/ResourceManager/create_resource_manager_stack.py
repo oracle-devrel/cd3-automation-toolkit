@@ -18,6 +18,7 @@ import csv
 import base64
 
 from oci.exceptions import ServiceError
+from oci.identity import IdentityClient
 
 sys.path.append(os.getcwd()+"/..")
 from commonTools import *
@@ -28,6 +29,30 @@ ocid_list = []
 rm_region = []
 comp_name = ''
 stack_ocid = ''
+
+class SubscribedRegions:
+
+    def get_subscribed_regions(self, config, **kwargs):
+        regions_shortname_list = []
+        regions_map = {}
+        home_region = ''
+        try:
+            identity_client = IdentityClient(config)
+            regions = identity_client.list_region_subscriptions(config['tenancy'])
+            for reg in regions.data:
+                region = reg.region_name.split("-")
+                region = region[-2]
+
+                if str(reg.is_home_region).lower() == "true":
+                    home_region = reg.region_name
+
+                regions_shortname_list.append(region)
+                regions_map[region] = reg.region_name
+            return regions_shortname_list, regions_map, home_region
+
+        except Exception as e:
+            print(e)
+
 
 def create_rm(region,comp_name,ocs_stack,ct,rm_stack_name,rm_ocids_file,create_rm_flag):
     print("\nCreating a new Resource Manager Stack for " + region + ".......................")
@@ -110,7 +135,12 @@ class resourceManager:
         configFileName = ""
         config = oci.config.from_file()
 
-    ocs_stack = oci.resource_manager.ResourceManagerClient(config)
+    sr = SubscribedRegions()
+    regions_shortname_list, regions_map, home_region = sr.get_subscribed_regions(config)
+    new_config = config
+    new_config.__setitem__("region", home_region)
+
+    ocs_stack = oci.resource_manager.ResourceManagerClient(new_config)
 
     rm_stack_name = "ocswork-"+prefix
     ct = commonTools()
@@ -202,7 +232,7 @@ class resourceManager:
                             zipConfigSource.zip_file_base64_encoded = encodedZip
                             updatestackdetails.config_source = zipConfigSource
                             updatestackdetails.terraform_version = "0.13.x"
-                            updatestackdetails.description = "Created using Automation Tool Kit"
+                            updatestackdetails.description = "Updated by Automation Tool Kit"
                             mstack = ocs_stack.update_stack(stack_id=ocid, update_stack_details=updatestackdetails)
                             stack_ocid = mstack.data.id
                             time.sleep(5)
