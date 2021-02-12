@@ -18,6 +18,7 @@ import csv
 import base64
 
 from oci.exceptions import ServiceError
+from oci.identity import IdentityClient
 
 sys.path.append(os.getcwd()+"/..")
 from commonTools import *
@@ -28,6 +29,7 @@ ocid_list = []
 rm_region = []
 comp_name = ''
 stack_ocid = ''
+
 
 def create_rm(region,comp_name,ocs_stack,ct,rm_stack_name,rm_ocids_file,create_rm_flag):
     print("\nCreating a new Resource Manager Stack for " + region + ".......................")
@@ -110,12 +112,15 @@ class resourceManager:
         configFileName = ""
         config = oci.config.from_file()
 
-    ocs_stack = oci.resource_manager.ResourceManagerClient(config)
 
     rm_stack_name = "ocswork-"+prefix
     ct = commonTools()
     ct.get_subscribedregions(configFileName)
     ct.get_network_compartment_ids(config['tenancy'],"root",configFileName)
+
+    new_config = config
+    new_config.__setitem__("region", ct.home_region)
+    ocs_stack = oci.resource_manager.ResourceManagerClient(new_config)
 
     x = datetime.datetime.now()
     date = x.strftime("%f").strip()
@@ -202,7 +207,7 @@ class resourceManager:
                             zipConfigSource.zip_file_base64_encoded = encodedZip
                             updatestackdetails.config_source = zipConfigSource
                             updatestackdetails.terraform_version = "0.13.x"
-                            updatestackdetails.description = "Created using Automation Tool Kit"
+                            updatestackdetails.description = "Updated by Automation Tool Kit"
                             mstack = ocs_stack.update_stack(stack_id=ocid, update_stack_details=updatestackdetails)
                             stack_ocid = mstack.data.id
                             time.sleep(5)
