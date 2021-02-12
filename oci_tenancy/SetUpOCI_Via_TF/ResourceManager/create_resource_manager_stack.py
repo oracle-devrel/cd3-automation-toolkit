@@ -119,7 +119,7 @@ class resourceManager:
     ct.get_network_compartment_ids(config['tenancy'],"root",configFileName)
 
     new_config = config
-    new_config.__setitem__("region", ct.home_region)
+    new_config.__setitem__("region", str(ct.region_dict[ct.home_region]))
     ocs_stack = oci.resource_manager.ResourceManagerClient(new_config)
 
     x = datetime.datetime.now()
