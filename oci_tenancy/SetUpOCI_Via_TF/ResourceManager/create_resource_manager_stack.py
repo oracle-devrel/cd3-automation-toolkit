@@ -170,7 +170,7 @@ class resourceManager:
     #4. Create RM if not present and store the ocid in a tempfile; name of RM is ocswork-<prefix>;
     os.chdir(rm_dir)
     temp = {}
-    rm_ocids_file = outdir+'/rm_ocids.csv'
+    rm_ocids_file = outdir+'/'+str(ct.home_region).lower()+'/rm_ocids.csv'
     if os.path.exists(rm_ocids_file):
         tempdict = {}
         with open(rm_ocids_file) as csv_file:
