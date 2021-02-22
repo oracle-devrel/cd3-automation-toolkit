@@ -26,6 +26,8 @@
                 {% endif %}
 
                 {% if protocol == 'tcp' or protocol == 'udp' %}
+                {% if (dportmax and dportmin) or (sportmax and sportmin) %}
+
                 {{ protocol }}_options {
                     {% if dportmax and dportmin %}
                     #Optional
@@ -40,6 +42,7 @@
                     }
                     {% endif %}
                 }
+                {% endif %}
                 {% endif %}
             }
             {% endif %}
@@ -72,6 +75,8 @@
                 {% endif %}
 
                 {% if protocol == 'tcp' or protocol == 'udp' %}
+                {% if (dportmax and dportmin) or (sportmax and sportmin) %}
+
                 {{ protocol }}_options {
                     {% if dportmax and dportmin %}
                     #Optional
@@ -85,7 +90,9 @@
                         min = "{{ sportmin }}"
                     }
                     {% endif %}
+
                 }
+                {% endif %}
                 {% endif %}
             }
             {% endif %}
