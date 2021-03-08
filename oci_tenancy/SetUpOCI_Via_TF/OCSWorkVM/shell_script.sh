@@ -15,7 +15,7 @@ sudo yum -y install scl-utils
 sudo yum -y install rh-python36
 
 #sudo yum -y install gcc-4.8.5-44.0.3.el7.x86_64
-sudo yum -y install gcc
+#sudo yum -y install gcc
 
 #scl enable rh-python36 bash
 sudo echo "source scl_source enable rh-python36" >> /root/.bashrc

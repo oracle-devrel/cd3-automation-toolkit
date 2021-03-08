@@ -283,9 +283,9 @@ class commonTools():
     # Read rows from CD3
     def read_cd3(cd3file, sheet_name):
         df = {}
-        if (".xls" not in cd3file or ".xlsx" not in cd3file):
-            print("Invalid CD3 Format..Exiting!!!")
-            exit()
+        #if (".xls" not in cd3file or ".xlsx" not in cd3file):
+        #    print("Invalid CD3 Format..Exiting!!!")
+        #    exit()
         try:
             df = pd.read_excel(cd3file, sheet_name=sheet_name, skiprows=1, dtype=object)
 
@@ -469,123 +469,113 @@ class parseVCNs():
     vcn_names = []
 
     def __init__(self, filename):
-        if (".xls" in filename):
-            try:
-                df_vcn = pd.read_excel(filename, sheet_name='VCNs', skiprows=1)
-            except Exception as e:
-                if ("No sheet named" in str(e)):
-                    print("\nTab - \"VCNs\" is missing in the CD3. Please make sure to use the right CD3 in properties file...Exiting!!")
+        #if (".xls" in filename):
+        try:
+            df_vcn = pd.read_excel(filename, sheet_name='VCNs', skiprows=1)
+        except Exception as e:
+            if ("No sheet named" in str(e)):
+                print("\nTab - \"VCNs\" is missing in the CD3. Please make sure to use the right CD3 in properties file...Exiting!!")
+                exit(1)
+        df_vcn = df_vcn.dropna(how='all')
+        df_vcn = df_vcn.reset_index(drop=True)
+
+        # Create VCN details Dicts and Hub and Spoke VCN Names
+        for i in df_vcn.index:
+            region = df_vcn['Region'][i]
+            if (region in commonTools.endNames):  # or str(region).lower() == 'nan'):
+                break
+            vcn_name = df_vcn['VCN Name'][i]
+            self.vcn_names.append(vcn_name)
+
+            # Check to see if vcn_name is empty in VCNs Sheet
+            # if (str(vcn_name).lower() == 'nan'):
+            #    print("ERROR!!! vcn_name/row cannot be left empty in VCNs sheet in CD3..exiting...")
+            #    exit(1)
+            vcn_name = str(vcn_name).strip()
+            if str(df_vcn['Hub/Spoke/Peer/None'][i]).strip().split(":")[0].strip().lower() == 'hub':
+                self.peering_dict[vcn_name] = ""
+
+        for i in df_vcn.index:
+            region = df_vcn['Region'][i]
+            if (region in commonTools.endNames):  # or str(region).lower()=='nan'):
+                break
+            vcn_name = df_vcn['VCN Name'][i]
+            self.vcn_names.append(vcn_name)
+
+            # Check to see if vcn_name is empty in VCNs Sheet
+            # if (str(vcn_name).lower() == 'nan'):
+            #    print("ERROR!!! vcn_name/row cannot be left empty in VCNs sheet in CD3..exiting...")
+            #    exit(1)
+            vcn_name = str(vcn_name).strip()
+
+            region = str(region).strip().lower()
+            self.vcn_region[vcn_name] = region
+
+            self.vcn_lpg_names[vcn_name] = str(df_vcn['LPG Required'][i]).strip().split(",")
+            self.vcn_lpg_names[vcn_name] = [x.strip() for x in self.vcn_lpg_names[vcn_name]]
+
+            j = 0
+            for lpg in self.vcn_lpg_names[vcn_name]:
+                if lpg == 'y':
+                    self.vcn_lpg_names[vcn_name][j] = vcn_name + "_lpg" + str(j)
+                    j = j + 1
+            self.vcn_lpg_names1[vcn_name] = str(df_vcn['LPG Required'][i]).strip().split(",")
+            self.vcn_lpg_names1[vcn_name] = [x.strip() for x in self.vcn_lpg_names1[vcn_name]]
+
+            j = 0
+            for lpg in self.vcn_lpg_names1[vcn_name]:
+                if lpg == 'y':
+                    self.vcn_lpg_names1[vcn_name][j] = vcn_name + "_lpg" + str(j)
+                    j = j + 1
+
+            self.vcn_lpg_names2[vcn_name] = str(df_vcn['LPG Required'][i]).strip().split(",")
+            self.vcn_lpg_names2[vcn_name] = [x.strip() for x in self.vcn_lpg_names2[vcn_name]]
+
+            j = 0
+            for lpg in self.vcn_lpg_names2[vcn_name]:
+                if lpg == 'y':
+                    self.vcn_lpg_names2[vcn_name][j] = vcn_name + "_lpg" + str(j)
+                    j = j + 1
+
+            self.vcn_lpg_names3[vcn_name] = str(df_vcn['LPG Required'][i]).strip().split(",")
+            self.vcn_lpg_names3[vcn_name] = [x.strip() for x in self.vcn_lpg_names3[vcn_name]]
+
+            j = 0
+            for lpg in self.vcn_lpg_names3[vcn_name]:
+                if lpg == 'y':
+                    self.vcn_lpg_names3[vcn_name][j] = vcn_name + "_lpg" + str(j)
+                    j = j + 1
+
+            self.vcn_drgs[vcn_name] = str(df_vcn['DRG Required'][i]).strip()
+            self.vcn_igws[vcn_name] = str(df_vcn['IGW Required'][i]).strip()
+            self.vcn_ngws[vcn_name] = str(df_vcn['NGW Required'][i]).strip()
+            self.vcn_sgws[vcn_name] = str(df_vcn['SGW Required'][i]).strip()
+            self.vcn_hub_spoke_peer_none[vcn_name] = str(df_vcn['Hub/Spoke/Peer/None'][i]).strip().split(":")
+            self.vcn_compartment[vcn_name] = str(df_vcn['Compartment Name'][i]).strip()
+
+            self.vcn_lpg_rules.setdefault(vcn_name, '')
+
+            if (self.vcn_hub_spoke_peer_none[vcn_name][0].strip().lower() == 'hub'):
+                self.hub_vcn_names.append(vcn_name)
+                # self.peering_dict[vcn_name]=''
+
+            if (self.vcn_hub_spoke_peer_none[vcn_name][0].strip().lower() == 'spoke'):
+                hub_name = self.vcn_hub_spoke_peer_none[vcn_name][1].strip()
+                self.spoke_vcn_names.append(vcn_name)
+                try:
+                    self.peering_dict[hub_name] = self.peering_dict[hub_name] + vcn_name + ","
+                except KeyError:
+                    print("ERROR!!! "+hub_name +" not marked as Hub. Verify hub_spoke_peer_none column again..Exiting!")
                     exit(1)
-            df_vcn = df_vcn.dropna(how='all')
-            df_vcn = df_vcn.reset_index(drop=True)
 
-            # Create VCN details Dicts and Hub and Spoke VCN Names
-            for i in df_vcn.index:
-                region = df_vcn['Region'][i]
-                if (region in commonTools.endNames):  # or str(region).lower() == 'nan'):
-                    break
-                vcn_name = df_vcn['VCN Name'][i]
-                self.vcn_names.append(vcn_name)
+            if (self.vcn_hub_spoke_peer_none[vcn_name][0].strip().lower() == 'peer'):
+                self.peering_dict[vcn_name] = self.vcn_hub_spoke_peer_none[vcn_name][1].strip()
 
-                # Check to see if vcn_name is empty in VCNs Sheet
-                # if (str(vcn_name).lower() == 'nan'):
-                #    print("ERROR!!! vcn_name/row cannot be left empty in VCNs sheet in CD3..exiting...")
-                #    exit(1)
-                vcn_name = str(vcn_name).strip()
-                if str(df_vcn['Hub/Spoke/Peer/None'][i]).strip().split(":")[0].strip().lower() == 'hub':
-                    self.peering_dict[vcn_name] = ""
+        for k, v in self.peering_dict.items():
+            if (v != "" and v[-1] == ','):
+                v = v[:-1]
+                self.peering_dict[k] = v
 
-            for i in df_vcn.index:
-                region = df_vcn['Region'][i]
-                if (region in commonTools.endNames):  # or str(region).lower()=='nan'):
-                    break
-                vcn_name = df_vcn['VCN Name'][i]
-                self.vcn_names.append(vcn_name)
-
-                # Check to see if vcn_name is empty in VCNs Sheet
-                # if (str(vcn_name).lower() == 'nan'):
-                #    print("ERROR!!! vcn_name/row cannot be left empty in VCNs sheet in CD3..exiting...")
-                #    exit(1)
-                vcn_name = str(vcn_name).strip()
-
-                region = str(region).strip().lower()
-                self.vcn_region[vcn_name] = region
-
-                self.vcn_lpg_names[vcn_name] = str(df_vcn['LPG Required'][i]).strip().split(",")
-                self.vcn_lpg_names[vcn_name] = [x.strip() for x in self.vcn_lpg_names[vcn_name]]
-
-                j = 0
-                for lpg in self.vcn_lpg_names[vcn_name]:
-                    if lpg == 'y':
-                        self.vcn_lpg_names[vcn_name][j] = vcn_name + "_lpg" + str(j)
-                        j = j + 1
-                self.vcn_lpg_names1[vcn_name] = str(df_vcn['LPG Required'][i]).strip().split(",")
-                self.vcn_lpg_names1[vcn_name] = [x.strip() for x in self.vcn_lpg_names1[vcn_name]]
-
-                j = 0
-                for lpg in self.vcn_lpg_names1[vcn_name]:
-                    if lpg == 'y':
-                        self.vcn_lpg_names1[vcn_name][j] = vcn_name + "_lpg" + str(j)
-                        j = j + 1
-
-                self.vcn_lpg_names2[vcn_name] = str(df_vcn['LPG Required'][i]).strip().split(",")
-                self.vcn_lpg_names2[vcn_name] = [x.strip() for x in self.vcn_lpg_names2[vcn_name]]
-
-                j = 0
-                for lpg in self.vcn_lpg_names2[vcn_name]:
-                    if lpg == 'y':
-                        self.vcn_lpg_names2[vcn_name][j] = vcn_name + "_lpg" + str(j)
-                        j = j + 1
-
-                self.vcn_lpg_names3[vcn_name] = str(df_vcn['LPG Required'][i]).strip().split(",")
-                self.vcn_lpg_names3[vcn_name] = [x.strip() for x in self.vcn_lpg_names3[vcn_name]]
-
-                j = 0
-                for lpg in self.vcn_lpg_names3[vcn_name]:
-                    if lpg == 'y':
-                        self.vcn_lpg_names3[vcn_name][j] = vcn_name + "_lpg" + str(j)
-                        j = j + 1
-
-                self.vcn_drgs[vcn_name] = str(df_vcn['DRG Required'][i]).strip()
-                self.vcn_igws[vcn_name] = str(df_vcn['IGW Required'][i]).strip()
-                self.vcn_ngws[vcn_name] = str(df_vcn['NGW Required'][i]).strip()
-                self.vcn_sgws[vcn_name] = str(df_vcn['SGW Required'][i]).strip()
-                self.vcn_hub_spoke_peer_none[vcn_name] = str(df_vcn['Hub/Spoke/Peer/None'][i]).strip().split(":")
-                self.vcn_compartment[vcn_name] = str(df_vcn['Compartment Name'][i]).strip()
-
-                self.vcn_lpg_rules.setdefault(vcn_name, '')
-
-                if (self.vcn_hub_spoke_peer_none[vcn_name][0].strip().lower() == 'hub'):
-                    self.hub_vcn_names.append(vcn_name)
-                    # self.peering_dict[vcn_name]=''
-
-                if (self.vcn_hub_spoke_peer_none[vcn_name][0].strip().lower() == 'spoke'):
-                    hub_name = self.vcn_hub_spoke_peer_none[vcn_name][1].strip()
-                    self.spoke_vcn_names.append(vcn_name)
-                    try:
-                        self.peering_dict[hub_name] = self.peering_dict[hub_name] + vcn_name + ","
-                    except KeyError:
-                        print("ERROR!!! "+hub_name +" not marked as Hub. Verify hub_spoke_peer_none column again..Exiting!")
-                        exit(1)
-
-                if (self.vcn_hub_spoke_peer_none[vcn_name][0].strip().lower() == 'peer'):
-                    self.peering_dict[vcn_name] = self.vcn_hub_spoke_peer_none[vcn_name][1].strip()
-
-            for k, v in self.peering_dict.items():
-                if (v != "" and v[-1] == ','):
-                    v = v[:-1]
-                    self.peering_dict[k] = v
-
-        if (".csv" in filename):
-            config = configparser.RawConfigParser()
-            config.optionxform = str
-            file_read = config.read(filename)
-            sections = config.sections()
-
-            # Get Global Properties from Default Section
-            all_regions = config.get('Default', 'regions')
-            all_regions = all_regions.split(",")
-            all_regions = [x.strip().lower() for x in all_regions]
 
 
 class parseVCNInfo():
