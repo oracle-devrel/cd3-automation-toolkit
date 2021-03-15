@@ -2,7 +2,7 @@
 SetUPOCI_Via_TF Tag v1.0
 ------------------------
 Python Version used 3.7
-Packages required on your local system: oci, scp, paramiko, puttykeys, numpy, pycryptodome and pycryptodomex via pip (pip3)
+Packages required on your local system: oci, scp, paramiko, puttykeys, numpy, pycryptodomex via pip (pip3)
 
 
 This contains Python code to create terraform files for OCI setup. It includes below functionality:
