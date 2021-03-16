@@ -197,7 +197,7 @@ SetUPOCI_Via_TF Tag v7.0
 SetUPOCI_Via_TF Tag v7.0.1
 ------------------------
 This is a minor release.
-xrld package's latest release was not compatible and giving issues with CD.
+xrld package's latest release was not compatible and giving issues with CD3.
 It has been fixed by installing lower version of xlrd package.
 pip3 install xlrd==1.2.0
 
@@ -216,4 +216,5 @@ SetUPOCI_Via_TF Tag v7.1
 SetUPOCI_Via_TF Tag v7.1.1
 ------------------------
 1. Bug fix for CD3 Network components validator - included check for invalid CIDR range having host bits set
-2. Removed unwanted packages from shell script - cfgparse, ipaddr, pycrypto, gcc
+2. Bug fix for Security List Rules - allow all ports for TCP/UDP
+3. Removed unwanted packages from shell script - cfgparse, ipaddr, pycrypto, gcc
