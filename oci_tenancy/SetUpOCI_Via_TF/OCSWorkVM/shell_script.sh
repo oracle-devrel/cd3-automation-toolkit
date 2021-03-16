@@ -24,7 +24,7 @@ sudo yum -y groupinstall 'Development Tools'
 #pip3 install --upgrade pip
 pip3 install oci
 pip3 install oci-cli
-pip3 install pycrypto
+#pip3 install pycrypto
 pip3 install regex
 pip3 install pandas==1.1.5
 pip3 install openpyxl==3.0.5
@@ -32,8 +32,8 @@ pip3 install xlrd==1.2.0
 pip3 install xlsxwriter==1.3.7
 pip3 install puttykeys
 pip3 install netaddr
-pip3 install cfgparse
-pip3 install ipaddr
+#pip3 install cfgparse
+#pip3 install ipaddr
 pip3 install ipaddress
 pip3 install paramiko
 pip3 install Jinja2
