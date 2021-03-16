@@ -212,3 +212,8 @@ SetUPOCI_Via_TF Tag v7.1
  - Uses same RM Stack for multiple executions.
 
 2. Bug fix for LBR Backend sets to allow same backend servers with different ports.
+------------------------
+SetUPOCI_Via_TF Tag v7.1.1
+------------------------
+1. Bug fix for CD3 Network components validator - included check for invalid CIDR range having host bits set
+2. Removed unwanted packages from shell script - cfgparse, ipaddr, pycrypto, gcc
