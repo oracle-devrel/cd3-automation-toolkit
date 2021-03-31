@@ -8,7 +8,8 @@
 # Oracle Consulting
 # Modified (TF Upgrade): Shruthi Subramanian
 #
-
+import re
+import shutil
 import sys
 import argparse
 import os
@@ -143,6 +144,14 @@ def main():
                 if columnname == "LBR Name":
                     lbr_tf_name = commonTools.check_tf_variable(columnvalue)
                     tempdict = {'lbr_tf_name': lbr_tf_name}
+
+                if columnname == "CA Cert" or columnname == "Public Cert" or columnname == "Private Key":
+                    columnname = commonTools.check_column_headers(columnname)
+                    if columnvalue != '':
+                        cert_name = re.split('/|\\\\', columnvalue)[-1]
+                        if columnvalue != outdir + '/' +region+'/'+ cert_name :
+                            shutil.copy(columnvalue, outdir + '/' +region+'/'+ cert_name)
+                        tempdict = { columnname : cert_name }
 
                 if columnname == "Certificate Name":
                     if columnvalue != '':

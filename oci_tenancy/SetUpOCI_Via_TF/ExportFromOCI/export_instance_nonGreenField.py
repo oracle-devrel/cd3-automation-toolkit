@@ -81,6 +81,7 @@ def find_vnic(ins_id, config):
             return net
 
 
+
 def __get_instances_info(compartment_name, compartment_id, reg_name, config):
     config.__setitem__("region", ct.region_dict[reg_name])
     compute = oci.core.ComputeClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
@@ -119,15 +120,23 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, config):
             # print(ins_vnic.data)
             boot_check = find_boot(ins_ad, ins_id, config)
             boot_id = boot_check.data[0].boot_volume_id
-            bdet = boot_details = bc.get_boot_volume(boot_volume_id=boot_id)
-            boot_details = bc.get_boot_volume(boot_volume_id=boot_id).data.image_id
+            try:
+                bdet = boot_details = bc.get_boot_volume(boot_volume_id=boot_id).data
+                boot_details = bc.get_boot_volume(boot_volume_id=boot_id).data.image_id
+                bvp = bc.get_volume_backup_policy_asset_assignment(asset_id=boot_id)
+
+            except oci.exceptions.ServiceError as s:
+                if 'Authorization failed or requested resource not found' in s.message:
+                    bdet = []
+                    boot_details = ''
+                    bvp = []
             # print("OS",os.data)                                   #Operating system
             # sdet=bc.get_volume(volume_id=source_image_id)
-            bvp = bc.get_volume_backup_policy_asset_assignment(asset_id=boot_id)
-            bvdetails = bc.get_boot_volume(boot_volume_id=boot_id)
+
+            #bvdetails = bc.get_boot_volume(boot_volume_id=boot_id)
             bkp_policy_name = ""
             cpcn = ""
-            if (len(bvp.data)):
+            if bvp != [] and (len(bvp.data)):
                 # print("Bvp Data:",bvp.data)
                 bkp_pname = bc.get_volume_backup_policy(policy_id=bvp.data[0].policy_id)
                 # print(bkp_pname)
@@ -204,8 +213,9 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, config):
                 vs = commonTools.check_tf_variable(vs)
                 adding_columns_values(reg_name.title(), ins_dname, AD_name, ins_fd, vs, publicip, privateip, os_dname,
                                       ins_shape, key_name, compartment_name, bkp_policy_name, nsg_names, dedicated_host,
-                                      ins, values_for_column_instances, boot_check.data, bdet.data, cpcn)
+                                      ins, values_for_column_instances, boot_check.data, bdet, cpcn)
                 # rows.append(new_row)
+
 
 
 def main():
@@ -257,8 +267,7 @@ def main():
     else:
         input_compartment_names = None
 
-    AD = lambda ad: "AD1" if ("AD-1" in ad) else (
-        "AD2" if ("AD-2" in ad) else ("AD3" if ("AD-3" in ad) else "NULL"))  # Get shortend AD
+    AD = lambda ad: "AD1" if ("AD-1" in ad or "ad-1" in ad) else ("AD2" if ("AD-2" in ad or "ad-2" in ad) else ("AD3" if ("AD-3" in ad or "ad-3" in ad) else " NULL"))  # Get shortend AD
 
     df, values_for_column_instances = commonTools.read_cd3(cd3file, "Instances")
     sheet_dict_instances = ct.sheet_dict["Instances"]
@@ -282,7 +291,7 @@ def main():
         for k, v in ct.region_dict.items():
             if (rs.region_name == v):
                 all_regions.append(k)
-
+    all_compartments.append(config['tenancy'])
     comps = oci.pagination.list_call_get_all_results(idc.list_compartments, compartment_id=config['tenancy'],
                                                      compartment_id_in_subtree=True)
     for comp_info in comps.data:
