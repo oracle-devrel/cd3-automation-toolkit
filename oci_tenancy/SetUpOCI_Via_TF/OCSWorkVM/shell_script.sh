@@ -20,7 +20,7 @@ sudo yum -y install rh-python36
 #scl enable rh-python36 bash
 sudo echo "source scl_source enable rh-python36" >> /root/.bashrc
 source /root/.bashrc
-sudo yum -y groupinstall 'Development Tools'
+#sudo yum -y groupinstall 'Development Tools'
 #pip3 install --upgrade pip
 pip3 install oci
 pip3 install oci-cli

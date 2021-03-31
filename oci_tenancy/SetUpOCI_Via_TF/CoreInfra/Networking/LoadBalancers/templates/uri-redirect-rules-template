@@ -13,8 +13,12 @@ items  {
         redirect_uri {
 
             #Optional
+            {% if host != '' %}
             host = "{{ host }}"
+            {% endif %}
+            {% if path != '' %}
             path = "{{ path }}"
+            {% endif %}
             {% if port != '' %}
             port = "{{ port }}"
             {% endif %}

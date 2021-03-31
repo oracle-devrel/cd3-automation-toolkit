@@ -74,20 +74,20 @@ def print_certs(obj, reg, outdir):
     #print(obj.certificate_name, outdir, reg)
 
     if str(ca_certificate).lower() != "none":
-        cname = outdir + "/" + reg + str(obj.certificate_name) + "-ca-certificate.cert"
+        cname = outdir + "/" + str(reg).lower() + "/"+ str(obj.certificate_name) + "-ca-certificate.cert"
         ca_cert = open(cname, "w")
         ca_cert.write(ca_certificate)
         ca_cert.close()
 
     if str(public_certificate).lower() != "none":
-        pname = outdir + "/" + reg + str(obj.certificate_name) + "-public_certificate.cert"
+        pname = outdir + "/" + str(reg).lower() + "/"+ str(obj.certificate_name) + "-public_certificate.cert"
         public_cert = open(pname, "w")
         public_cert.write(public_certificate)
         public_cert.close()
 
     cert_name = obj.certificate_name
-    ca_cert = str(cname).replace("\\", "\\\\")
-    public_cert = str(pname).replace("\\", "\\\\")
+    ca_cert = str(cname)#.replace("\\", "\\\\")
+    public_cert = str(pname)#.replace("\\", "\\\\")
 
     return cert_name, ca_cert, public_cert
 
@@ -577,25 +577,27 @@ def print_rule(region, ct, values_for_column_rule, LBRs, ntk_compartment_name):
                         try:
                             if 'Redirect' in col_headers:
                                 uri_details = eachitem.redirect_uri
-                                port = uri_details.port
-                                host = uri_details.host
-                                path = uri_details.path
-                                protocol = uri_details.protocol
-                                query = uri_details.query
-
-                                if str(port).lower() == 'null' or str(port).lower() == 'none':
-                                    port = ""
+                                if str(uri_details.port).lower() == 'none':
+                                    uri_details.port = ''
+                                if str(uri_details.host).lower() == 'none':
+                                    uri_details.host = ''
+                                if str(uri_details.path).lower() == 'none':
+                                    uri_details.path = ''
+                                if str(uri_details.protocol).lower() == 'none':
+                                    uri_details.protocol = ''
+                                if str(uri_details.query).lower() == 'none':
+                                    uri_details.query = ''
 
                                 if 'Host:Port' in col_headers:
-                                    value = host+":"+str(port)
+                                    value = uri_details.host+":"+str(uri_details.port)
                                     values_for_column_rule[col_headers].append(value)
 
                                 if 'Protocol:Path' in col_headers:
-                                    value = protocol+":"+path
+                                    value = uri_details.protocol+":"+uri_details.path
                                     values_for_column_rule[col_headers].append(value)
 
                                 if 'Query' in col_headers:
-                                    values_for_column_rule[col_headers].append(query)
+                                    values_for_column_rule[col_headers].append(uri_details.query)
 
                             else:
                                 value = str(eachitem.__getattribute__(sheet_dict_rule[col_headers]))

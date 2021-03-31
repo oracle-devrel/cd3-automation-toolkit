@@ -212,9 +212,18 @@ SetUPOCI_Via_TF Tag v7.1
  - Uses same RM Stack for multiple executions.
 
 2. Bug fix for LBR Backend sets to allow same backend servers with different ports.
+
 ------------------------
 SetUPOCI_Via_TF Tag v7.1.1
 ------------------------
 1. Bug fix for CD3 Network components validator - included check for invalid CIDR range having host bits set
 2. Bug fix for Security List Rules - allow all ports for TCP/UDP
 3. Removed unwanted packages from shell script - cfgparse, ipaddr, pycrypto, gcc
+
+------------------------
+SetUPOCI_Via_TF Tag v7.1.2
+------------------------
+1. Bug fix for CD3 LBR - Certs/PEM keys copied to outdir- this helps to resolve the path issue while RM upload
+   Export LBR modified
+2. Bug fix for Instance Export - included root compartment, AD issue and Boot Volume not found issue
+3. Removed installation of Development Tools from shell script on OCSVM.
