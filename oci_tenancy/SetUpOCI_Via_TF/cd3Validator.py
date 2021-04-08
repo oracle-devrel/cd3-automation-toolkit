@@ -251,6 +251,7 @@ def validate_subnets(filename, comp_ids, vcnobj):
     subnet_vcn_check = False
     subnet_dhcp_check = False
     subnet_vcn_cidr_check = False
+    subnet_dns_length = False
     subnet_dns = []
     subnetname_list = []
     vcn_list = []
@@ -297,7 +298,7 @@ def validate_subnets(filename, comp_ids, vcnobj):
             logging.log(60, "ROW " + str(i + 3) + " : VCN " + vcn_name + " not part of VCNs Tab")
             subnet_vcn_check = True
 
-        # Check if the dns_label field has special characters or is duplicate
+        # Check if the dns_label field has special characters or if it has greater than 15 characters or is duplicate
         dns_value = str(df.loc[i, 'DNS Label'])
         dns_subnetname = str(df.loc[i, 'Subnet Name'])
         dns_vcn = str(df.loc[i, 'VCN Name'])
@@ -332,6 +333,10 @@ def validate_subnets(filename, comp_ids, vcnobj):
             '''
 
             subnet_dnswrong_check = checklabel(dns_value, count)
+
+        if (len(dns_value) > 15):
+            logging.log(60, "ROW " + str(i + 3) + " : DNS Label value " + dns_value + " for subnet " + str(dns_subnetname) + " of vcn " + str(dns_vcn) + " has more alphanumeric characters than the allowed maximum limit of 15.")
+            subnet_dns_length = True
 
         # Check if the Service and Internet gateways are set appropriately; if not display the message;
         sgw_value = str(df.loc[i, 'Configure SGW Route(n|object_storage|all_services)'])
@@ -401,8 +406,7 @@ def validate_subnets(filename, comp_ids, vcnobj):
                                 columnvalue) + "  does not fall under VCN CIDR - " + str(vcn_cidr))
                             subnet_vcn_cidr_check = True
 
-    if (
-            subnet_reg_check == True or subnet_vcn_check == True or subnet_comp_check == True or subnet_empty_check == True or subnet_dnswrong_check == True or subnet_wrong_check == True or subnet_dnsdup_check == True or subnet_dhcp_check == True and subnet_vcn_cidr_check == True):
+    if (subnet_reg_check == True or subnet_vcn_check == True or subnet_comp_check == True or subnet_empty_check == True or subnet_dnswrong_check == True or subnet_wrong_check == True or subnet_dnsdup_check == True or subnet_dns_length == True or subnet_dhcp_check == True and subnet_vcn_cidr_check == True):
         print("Null or Wrong value Check failed!!")
         subnet_check = True
     else:
@@ -442,6 +446,7 @@ def validate_vcns(filename, comp_ids, vcnobj):  # ,vcn_cidrs,vcn_compartment_ids
     vcn_comp_check = False
     vcn_reg_check = False
     vcn_vcnname_check = False
+    vcn_dns_length =  False
 
     vcn_check = False
 
@@ -489,7 +494,7 @@ def validate_vcns(filename, comp_ids, vcnobj):  # ,vcn_cidrs,vcn_compartment_ids
                 vcn_names.append(vcn_name)
                 vcn_vcnname_check = True
 
-        # Check if the dns_label field has special characters # duplicates for vcn dns_label allowed
+        # Check if the dns_label field has special characters # duplicates for vcn dns_label allowed # dns length not more than 15 characters
         dns_value = str(df.loc[i, 'DNS Label'])
         if (dns_value.lower() == "nan"):
             vcn_dns.append("")
@@ -502,6 +507,10 @@ def validate_vcns(filename, comp_ids, vcnobj):  # ,vcn_cidrs,vcn_compartment_ids
                 vcn_dnsdup_check = True
             """
             vcn_dnswrong_check = checklabel(dns_value, count)
+
+        if (len(dns_value) > 15):
+            logging.log(60, "ROW " + str(i + 3) + " : DNS Label value " + dns_value + " has more alphanumeric characters than the allowed maximum limit of 15.")
+            vcn_dns_length = True
 
         # Collect CIDR List for validating
         if str(df.loc[i, 'CIDR Block']).lower() == "nan":
@@ -519,8 +528,7 @@ def validate_vcns(filename, comp_ids, vcnobj):  # ,vcn_cidrs,vcn_compartment_ids
                     logging.log(60, "ROW " + str(count + 2) + " : Empty value at column " + j)
                     vcn_empty_check = True
 
-    if (
-            vcn_vcnname_check == True or vcn_reg_check == True or vcn_comp_check == True or vcn_empty_check == True or vcn_dnswrong_check == True):  # or vcn_dnsdup_check == True):
+    if (vcn_vcnname_check == True or vcn_reg_check == True or vcn_comp_check == True or vcn_empty_check == True or vcn_dnswrong_check == True or vcn_dns_length == True):  # or vcn_dnsdup_check == True):
         print("Null or Wrong value Check failed!!")
         vcn_check = True
     logging.log(60, "End Null or Wrong value Check in each row---------------\n")
@@ -585,10 +593,8 @@ def validate_vcns(filename, comp_ids, vcnobj):  # ,vcn_cidrs,vcn_compartment_ids
     vcn_peer_check = showPeering(vcnobj, oci_vcn_lpgs)
     if (vcn_peer_check == True):
         print("Please verify LPG Peering Status in log file !!")
-    logging.log(60,
-                "\nPlease go through \"CD3 Modification Procedure\" of confluence page for information on correct order of lpg entries for non-greenfield tenancies")
-    logging.log(60,
-                "Link: https://confluence.oraclecorp.com/confluence/display/NAC/Support+for+Non-GreenField+Tenancies")
+    logging.log(60,"\nPlease go through \"CD3 Modification Procedure\" of confluence page for information on correct order of lpg entries for non-greenfield tenancies")
+    logging.log(60,"Link: https://confluence.oraclecorp.com/confluence/display/NAC/Support+for+Non-GreenField+Tenancies")
 
     logging.log(60, "End LPG Peering Check---------------------------------------------\n")
 
@@ -621,8 +627,7 @@ def validate_dhcp(filename, comp_ids, vcnobj):
 
         # Check for <END> in the inputs; if found the validation ends there and return the status of flag
         if str(df.loc[i, 'Region']) in commonTools.endNames:
-            logging.log(60,
-                        "Reached <END> Tag. Validation ends here, any data beyond this tag will not be checked for errors !!!")
+            logging.log(60,"Reached <END> Tag. Validation ends here, any data beyond this tag will not be checked for errors !!!")
             break
 
         # Check for invalid Region
@@ -706,12 +711,10 @@ def main():
         logging.log(60, "=======")
         logging.log(60, "Summary:")
         logging.log(60, "=======")
-        logging.log(60,
-                    "There are no errors in CD3. Verify LPG's Peering Check Status once in the log file. Otherwise You are good to proceed !!!")
+        logging.log(60,"There are no errors in CD3. Verify LPG's Peering Check Status once in the log file. Otherwise You are good to proceed !!!")
         print("\n\nSummary:")
         print("=======")
-        print(
-            "There are no errors in CD3. Verify LPG's Peering Check Status once in the log file. Otherwise You are good to proceed !!!")
+        print("There are no errors in CD3. Verify LPG's Peering Check Status once in the log file. Otherwise You are good to proceed !!!")
         exit(0)
 
 
