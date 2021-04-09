@@ -227,3 +227,4 @@ SetUPOCI_Via_TF Tag v7.1.2
    Export LBR modified
 2. Bug fix for Instance Export - included root compartment, AD issue and Boot Volume not found issue
 3. Removed installation of Development Tools from shell script on OCSVM.
+4. Added CD3 validation for DNS Label length for VCN and Subnets
