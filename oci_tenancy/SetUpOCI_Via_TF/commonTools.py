@@ -10,6 +10,7 @@ from openpyxl.styles import PatternFill
 from openpyxl.styles import Alignment
 from openpyxl.styles import Border
 from openpyxl.styles import Side
+from contextlib import contextmanager
 import collections
 import re
 import json as simplejson
@@ -448,6 +449,7 @@ class commonTools():
                 """
 
 
+# NOTE: Does this really need to be a class? its an obsfucated function call.
 class parseVCNs():
     peering_dict = dict()
 
@@ -471,18 +473,21 @@ class parseVCNs():
     def __init__(self, filename):
         #if (".xls" in filename):
         try:
+            # Read and search for VCN
             df_vcn = pd.read_excel(filename, sheet_name='VCNs', skiprows=1)
         except Exception as e:
             if ("No sheet named" in str(e)):
                 print("\nTab - \"VCNs\" is missing in the CD3. Please make sure to use the right CD3 in properties file...Exiting!!")
                 exit(1)
+
+        # Drop all empty rows
         df_vcn = df_vcn.dropna(how='all')
         df_vcn = df_vcn.reset_index(drop=True)
 
         # Create VCN details Dicts and Hub and Spoke VCN Names
         for i in df_vcn.index:
             region = df_vcn['Region'][i]
-            if (region in commonTools.endNames):  # or str(region).lower() == 'nan'):
+            if region in commonTools.endNames:  # or str(region).lower() == 'nan'):
                 break
             vcn_name = df_vcn['VCN Name'][i]
             self.vcn_names.append(vcn_name)
@@ -576,6 +581,18 @@ class parseVCNs():
                 v = v[:-1]
                 self.peering_dict[k] = v
 
+
+@contextmanager
+def section(title, padding=117):
+    # Not sure why 117 but thats how it was before.
+    print(f'{title:-^{padding}}')
+    yield
+    print('-' * padding)
+
+
+def exit_menu(msg, exit_code=0):
+    print(msg)
+    exit(exit_code)
 
 
 class parseVCNInfo():

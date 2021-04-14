@@ -13,6 +13,8 @@ import sys
 import argparse
 import re
 import os
+from pathlib import Path
+from oci.config import DEFAULT_LOCATION
 sys.path.append(os.getcwd() + "/../../..")
 from commonTools import *
 from jinja2 import Environment, FileSystemLoader
@@ -21,31 +23,21 @@ from jinja2 import Environment, FileSystemLoader
 # Required Inputs-CD3 excel file, Config file, Modify Network AND outdir
 ######
 
-# If input in cd3 file
-def main():
-
+def parse_args():
     # Read the input arguments
-    parser = argparse.ArgumentParser(description="Creates route tables containing default routes for each subnet based on inputs given in CD3 excel sheet.")
-    parser.add_argument("inputfile", help="Full Path of input file. eg: cd3 excel file")
-    parser.add_argument("outdir", help="Output directory for creation of TF files")
-    parser.add_argument("--modify_network", help="Modify: true or false", required=False)
-    parser.add_argument("--configFileName", help="Config file name", required=False)
+    parser = argparse.ArgumentParser(description='Creates route tables containing default routes for each subnet based on inputs given in CD3 excel sheet.')
+    parser.add_argument('inputfile', help='Full Path of input file. eg: cd3 excel file')
+    parser.add_argument('outdir', help='Output directory for creation of TF files')
+    parser.add_argument('prefix', help='customer name/prefix for all file names')
+    parser.add_argument('--modify-network', action='store_true', help='Modify: true or false')
+    parser.add_argument('--config', default=DEFAULT_LOCATION, help='Config file name')
+    return parser.parse_args()
 
-    if len(sys.argv) < 3:
-        parser.print_help()
-        sys.exit(1)
-
-    args = parser.parse_args()
-    filename = args.inputfile
-    outdir = args.outdir
-    if args.modify_network is not None:
-        modify_network = str(args.modify_network)
-    else:
-        modify_network = "false"
-    if args.configFileName is not None:
-        configFileName = args.configFileName
-    else:
-        configFileName = ""
+# If input in cd3 file
+def create_terraform_route(inputfile, outdir, prefix, config, modify_network=False):
+    filename = inputfile
+    modify_network = str(modify_network)
+    configFileName = config
 
     ct = commonTools()
     ct.get_subscribedregions(configFileName)
@@ -59,7 +51,7 @@ def main():
     # Get Hub VCN name and create route rules for LPGs as per Section VCN_PEERING
 
     #Load the template file
-    file_loader = FileSystemLoader('templates')
+    file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader,keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
     template = env.get_template('route-table-template')
     routerule = env.get_template("route-rule-template")
@@ -673,6 +665,6 @@ def main():
         fname.close()
 
 if __name__ == '__main__':
-
+    args = parse_args()
     # Execution of the code begins here
-    main()
+    create_terraform_route(args.inputfile, args.outdir, args.prefix, args.config, args.modify_network)

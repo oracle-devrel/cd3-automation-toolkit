@@ -12,6 +12,8 @@
 import sys
 import argparse
 import os
+from oci.config import DEFAULT_LOCATION
+from pathlib import Path
 sys.path.append(os.getcwd()+"/../..")
 from commonTools import *
 from jinja2 import Environment, FileSystemLoader
@@ -19,38 +21,25 @@ from jinja2 import Environment, FileSystemLoader
 ######
 # Required Inputs-CD3 excel file, Config file, prefix AND outdir
 ######
+def parse_args():
+    # Read the arguments
+    parser = argparse.ArgumentParser(description='Attaches back up policy to Block Volumes')
+    parser.add_argument('file', help='Full Path of CD3 excel file. eg CD3-template.xlsx in example folder')
+    parser.add_argument('outdir', help='directory path for output tf file ')
+    parser.add_argument('--config', default=DEFAULT_LOCATION, help='Config file name')
+    return parser.parse_args()
+
 
 # If input in cd3 file
-def main():
-
-    # Read the arguments
-    parser = argparse.ArgumentParser(description="Attaches back up policy to Block Volumes")
-    parser.add_argument("file", help="Full Path of CD3 excel file. eg CD3-template.xlsx in example folder")
-    parser.add_argument("outdir", help="directory path for output tf file ")
-    parser.add_argument("--configFileName", help="Config file name", required=False)
-
-    if len(sys.argv) == 1:
-        parser.print_help()
-        sys.exit(1)
-
-    if len(sys.argv) < 2:
-        parser.print_help()
-        sys.exit(1)
-
-    args = parser.parse_args()
-    filename = args.file
-    outdir = args.outdir
-
-    if args.configFileName is not None:
-        configFileName = args.configFileName
-    else:
-        configFileName = ""
+def block_backups_policy(inputfile, outdir, config=DEFAULT_LOCATION):
+    filename = inputfile
+    configFileName = config
 
     ct = commonTools()
     ct.get_subscribedregions(configFileName)
 
     # Load the template file
-    file_loader = FileSystemLoader('templates')
+    file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
     template = env.get_template('block-backup-policy-template')
 
@@ -176,6 +165,6 @@ def main():
             oname.close()
 
 if __name__ == '__main__':
-
+    args = parse_args()
     # Execution of the code begins here
-    main()
+    block_tf_policy(args.file, args.outdir, args.config)
