@@ -9,6 +9,8 @@ import sys
 import oci
 import re
 import os
+from oci.config import DEFAULT_LOCATION
+from pathlib import Path
 
 sys.path.append(os.getcwd() + "/..")
 from commonTools import *
@@ -217,34 +219,25 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, config):
                 # rows.append(new_row)
 
 
-
-def main():
+def parse_args():
     parser = argparse.ArgumentParser(description="Export Instances in OCI to CD3")
-    parser.add_argument("cd3file", help="path of CD3 excel file to export Instance objects to")
+    parser.add_argument("inputfile", help="path of CD3 excel file to export Instance objects to")
     parser.add_argument("outdir", help="path to out directory containing script for TF import commands")
-    parser.add_argument("--configFileName", help="Config file name")
-    parser.add_argument("--networkCompartment",
-                        help="comma seperated Compartments for which to export Instance Objects")
+    parser.add_argument("--config", default=DEFAULT_LOCATION, help="Config file name")
+    parser.add_argument("--network-compartments", nargs='*', required=False, help="comma seperated Compartments for which to export Instance Objects")
+    return parser.parse_args()
 
-    if len(sys.argv) < 2:
-        parser.print_help()
-        sys.exit(1)
 
-    args = parser.parse_args()
-    cd3file = args.cd3file
-    outdir = args.outdir
-    input_compartment_list = args.networkCompartment
+def export_instance(inputfile, outdir, network_compartments=[], config=DEFAULT_LOCATION):
+    cd3file = inputfile
+    input_compartment_names = network_compartments
 
     if ('.xls' not in cd3file):
         print("\nAcceptable cd3 format: .xlsx")
         exit()
 
-    if args.configFileName is not None:
-        configFileName = args.configFileName
-        config = oci.config.from_file(file_location=configFileName)
-    else:
-        configFileName = ""
-        config = oci.config.from_file()
+    configFileName = config
+    config = oci.config.from_file(file_location=configFileName)
 
     global instance_keys, user_data_in, os_keys, all_regions, ct, importCommands, idc, rows, all_compartments, AD, values_for_column_instances, df, uc, sheet_dict_instances  # declaring global variables
 
@@ -257,15 +250,8 @@ def main():
     idc = IdentityClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
     rows = []
     all_compartments = []
-    input_compartment_list = args.networkCompartment
     ct.get_subscribedregions(configFileName)
     ct.get_network_compartment_ids(config['tenancy'], "root", configFileName)
-
-    if (input_compartment_list is not None):
-        input_compartment_names = input_compartment_list.split(",")
-        input_compartment_names = [x.strip() for x in input_compartment_names]
-    else:
-        input_compartment_names = None
 
     AD = lambda ad: "AD1" if ("AD-1" in ad or "ad-1" in ad) else ("AD2" if ("AD-2" in ad or "ad-2" in ad) else ("AD3" if ("AD-3" in ad or "ad-3" in ad) else " NULL"))  # Get shortend AD
 
@@ -276,12 +262,12 @@ def main():
     print("Tabs Instances will be overwritten during this export process!!!\n")
 
     # Load os_ocids template file
-    file_loader = FileSystemLoader('../templates')
+    file_loader = FileSystemLoader(f'{Path(__file__).parent.parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
     template = env.get_template('variables-template')
 
     # Load ssh_metadata template file
-    file_loader2 = FileSystemLoader('../templates')
+    file_loader2 = FileSystemLoader(f'{Path(__file__).parent.parent}/templates')
     env2 = Environment(loader=file_loader2, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
     template2 = env.get_template('variables-template')
 
@@ -325,7 +311,7 @@ def main():
                 if cocid not in uc.values():
                     uc[cname] = cocid
 
-    if (input_compartment_names is not None):
+    if len(input_compartment_names):
         for x in range(0, len(input_compartment_names)):
             if (input_compartment_names[x] not in ct.ntk_compartment_ids.keys()):
                 print("Input compartment: " + input_compartment_names[x] + " doesn't exist in OCI")
@@ -415,5 +401,5 @@ def main():
 
 if __name__ == '__main__':
     # Execution of the code begins here
-    main()
-
+    args = parse_args()
+    export_instance(args.inputfile, args.outdir, args.network_compartments, args.config)

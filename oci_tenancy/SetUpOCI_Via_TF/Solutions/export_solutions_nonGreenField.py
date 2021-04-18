@@ -17,6 +17,7 @@ from oci.ons import NotificationControlPlaneClient
 from oci.events import EventsClient
 from oci.ons import NotificationDataPlaneClient
 from oci.functions import FunctionsManagementClient
+from oci.config import DEFAULT_LOCATION
 import os
 sys.path.append(os.getcwd() + "/..")
 from commonTools import *
@@ -139,13 +140,16 @@ def events_rows(values_for_column_events, region, ntk_compartment_name, event_na
             values_for_column_events = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict_events,values_for_column_events)
 
 
-def main():
-
+def parse_args():
     parser = argparse.ArgumentParser(description="Export Notifications on OCI to CD3")
-    parser.add_argument("cd3file", help="path of CD3 excel file to export solution objects to")
+    parser.add_argument("inputfile", help="path of CD3 excel file to export solution objects to")
     parser.add_argument("outdir", help="path to out directory containing script for TF import commands")
-    parser.add_argument("--networkCompartment", help="comma seperated Compartments for which to export Identity Objects", required=False)
-    parser.add_argument("--configFileName", help="Config file name" , required=False)
+    parser.add_argument("--network-compartments", nargs='*', help="comma seperated Compartments for which to export Identity Objects", required=False)
+    parser.add_argument("--config", default=DEFAULT_LOCATION, help="Config file name" )
+    return parser.parse_args()
+
+
+def export_solutions(inputfile, outdir, network_compartments=[], _config=DEFAULT_LOCATION):
     global rows
     global tf_import_cmd
     global values_for_column_events
@@ -155,32 +159,16 @@ def main():
     global importCommands
     global config
 
-    if len(sys.argv) < 3:
-        parser.print_help()
-        sys.exit(1)
-
-    args = parser.parse_args()
-    cd3file = args.cd3file
-    outdir = args.outdir
-    input_config_file = args.configFileName
-    input_compartment_list = args.networkCompartment
-    if (input_compartment_list is not None):
-        input_compartment_names = input_compartment_list.split(",")
-        input_compartment_names = [x.strip() for x in input_compartment_names]
-    else:
-        input_compartment_names = None
-
+    cd3file = inputfile
+    input_config_file = _config
+    input_compartment_names = network_compartments
+    configFileName = _config
+    config = oci.config.from_file(file_location=configFileName)
 
     if ('.xls' not in cd3file):
         print("\nAcceptable cd3 format: .xlsx")
         exit()
 
-    if args.configFileName is not None:
-        configFileName = args.configFileName
-        config = oci.config.from_file(file_location=configFileName)
-    else:
-        configFileName=""
-        config = oci.config.from_file()
     # Read CD3
     df, values_for_column_events = commonTools.read_cd3(cd3file, "Events")
     df, values_for_column_notifications = commonTools.read_cd3(cd3file, "Notifications")
@@ -196,7 +184,7 @@ def main():
 
     # Check Compartments
     remove_comps = []
-    if (input_compartment_names is not None):
+    if len(input_compartment_names):
         for x in range(0, len(input_compartment_names)):
             if (input_compartment_names[x] not in ct.ntk_compartment_ids.keys()):
                 print("Input compartment: " + input_compartment_names[x] + " doesn't exist in OCI")
@@ -304,4 +292,5 @@ def main():
 
 
 if __name__=="__main__":
-    main()
+    args = parse_args()
+    export_solutions(args.inputfile, args.outdir, args.network_compartments, args.config)

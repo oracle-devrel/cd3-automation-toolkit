@@ -11,9 +11,10 @@
 import argparse
 import sys
 import oci
+import os
 from oci.core.virtual_network_client import VirtualNetworkClient
 from oci.load_balancer.load_balancer_client import LoadBalancerClient
-import os
+from oci.config import DEFAULT_LOCATION
 sys.path.append(os.getcwd()+"/..")
 from commonTools import *
 
@@ -687,15 +688,18 @@ def print_prs(region, ct, values_for_column_prs, LBRs, ntk_compartment_name):
 
     return values_for_column_prs
 
-def main():
 
+def parse_args():
     # Read the arguments
     parser = argparse.ArgumentParser(description="Export LBR on OCI to CD3")
-    parser.add_argument("cd3file", help="path of CD3 excel file to export network objects to")
+    parser.add_argument("inputfile", help="path of CD3 excel file to export network objects to")
     parser.add_argument("outdir", help="path to out directory containing script for TF import commands")
-    parser.add_argument("--networkCompartment", help="comma seperated Compartments for which to export LBR Objects", required=False)
-    parser.add_argument("--configFileName", help="Config file name" , required=False)
+    parser.add_argument("--network-compartments", nargs='*', help="comma seperated Compartments for which to export LBR Objects", required=False)
+    parser.add_argument("--config", default=DEFAULT_LOCATION, help="Config file name")
 
+
+
+def export_lbr(inputfile, _outdir, network_compartments, _config):
     global tf_import_cmd
     global sheet_dict
     global importCommands
@@ -716,32 +720,16 @@ def main():
     global sheet_dict_rule
     global sheet_dict_prs
     global listener_to_cd3
-    if len(sys.argv) < 3:
-        parser.print_help()
-        sys.exit(1)
 
-    args = parser.parse_args()
-    cd3file = args.cd3file
+    cd3file = inputfile
     if ('.xls' not in cd3file):
         print("\nAcceptable cd3 format: .xlsx")
         exit()
 
-    input_config_file = args.configFileName
-    input_compartment_list = args.networkCompartment
-    if (input_compartment_list is not None):
-        input_compartment_names = input_compartment_list.split(",")
-        input_compartment_names = [x.strip() for x in input_compartment_names]
-    else:
-        input_compartment_names = None
-
-    outdir = args.outdir
-
-    if args.configFileName is not None:
-        configFileName = args.configFileName
-        config = oci.config.from_file(file_location=configFileName)
-    else:
-        configFileName=""
-        config = oci.config.from_file()
+    input_compartment_names = network_compartments
+    outdir = _outdir
+    configFileName = _config
+    config = oci.config.from_file(file_location=configFileName)
 
     ct = commonTools()
     ct.get_subscribedregions(configFileName)
@@ -765,7 +753,7 @@ def main():
 
     # Check Compartments
     remove_comps = []
-    if (input_compartment_names is not None):
+    if len(input_compartment_names):
         for x in range(0, len(input_compartment_names)):
             if (input_compartment_names[x] not in ct.ntk_compartment_ids.keys()):
                 print("Input compartment: " + input_compartment_names[x] + " doesn't exist in OCI")
@@ -883,7 +871,8 @@ def main():
 
     print("LBRs exported to CD3\n")
 
-if __name__ == '__main__':
 
+if __name__ == '__main__':
+    args = parse_args()
     # Execution of the code begins here
-    main()
+    export_lbr(args.inputfile, args.outdir, args.network_compartments, args.config)

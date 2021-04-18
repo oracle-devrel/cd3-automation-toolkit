@@ -11,6 +11,7 @@ import argparse
 import sys
 import oci
 from oci.identity import IdentityClient
+from oci.config import DEFAULT_LOCATION
 import os
 sys.path.append(os.getcwd()+"/..")
 from commonTools import *
@@ -77,45 +78,35 @@ def  print_tags(values_for_column_tags,region, ntk_compartment_name, tag, tag_ke
       importCommands[region].write("\nterraform import oci_identity_tag."+tf_name_namespace + '-' + tf_name_key + ' ' + "tagNamespaces/"+ str(tag.id) +"/tags/\"" + str(tag_key_name) + "\"")
     if ( tag_default_comp != ''):
         importCommands[region].write("\nterraform import oci_identity_tag_default."+ tf_name_namespace+'-' +tf_name_key + '-default'+ ' ' + str(tag_default_id))
-def main():
 
+
+def parse_args():
     parser = argparse.ArgumentParser(description="Export Tags on OCI to CD3")
-    parser.add_argument("cd3file", help="path of CD3 excel file to export tag objects to")
+    parser.add_argument("inputfile", help="path of CD3 excel file to export tag objects to")
     parser.add_argument("outdir", help="path to out directory containing script for TF import commands")
-    parser.add_argument("--networkCompartment", help="comma seperated Compartments for which to export Identity Objects", required=False)
-    parser.add_argument("--configFileName", help="Config file name" , required=False)
+    parser.add_argument("--network-compartments", nargs='*', help="comma seperated Compartments for which to export Identity Objects", required=False)
+    parser.add_argument("--config", default=DEFAULT_LOCATION, help="Config file name")
+    return parser.parse_args()
+
+
+def export_tags(inputfile, outdir, network_compartments=[], _config=DEFAULT_LOCATION):
     global tf_import_cmd
     global values_for_column_tags
     global sheet_dict_tags
     global importCommands
     global config
 
-    if len(sys.argv) < 3:
-        parser.print_help()
-        sys.exit(1)
-
-    args = parser.parse_args()
-    cd3file = args.cd3file
-    outdir = args.outdir
-    input_config_file = args.configFileName
-    input_compartment_list = args.networkCompartment
-    if (input_compartment_list is not None):
-        input_compartment_names = input_compartment_list.split(",")
-        input_compartment_names = [x.strip() for x in input_compartment_names]
-    else:
-        input_compartment_names = None
-
+    cd3file = inputfile
+    input_config_file = _config
+    input_compartment_names = network_compartments
+    configFileName = _config
+    config = oci.config.from_file(file_location=configFileName)
 
     if ('.xls' not in cd3file):
         print("\nAcceptable cd3 format: .xlsx")
         exit()
 
-    if args.configFileName is not None:
-        configFileName = args.configFileName
-        config = oci.config.from_file(file_location=configFileName)
-    else:
-        configFileName=""
-        config = oci.config.from_file()
+
     # Read CD3
     df, values_for_column_tags = commonTools.read_cd3(cd3file, "Tags")
 
@@ -128,7 +119,7 @@ def main():
 
     # Check Compartments
     remove_comps = []
-    if (input_compartment_names is not None):
+    if len(input_compartment_names):
         for x in range(0, len(input_compartment_names)):
             if (input_compartment_names[x] not in ct.ntk_compartment_ids.keys()):
                 print("Input compartment: " + input_compartment_names[x] + " doesn't exist in OCI")
@@ -244,4 +235,5 @@ def main():
 
 
 if __name__=="__main__":
-    main()
+    args = parse_args()
+    export_tags(args.inputfile, args.outdir, args.network_compartments, args.config)
