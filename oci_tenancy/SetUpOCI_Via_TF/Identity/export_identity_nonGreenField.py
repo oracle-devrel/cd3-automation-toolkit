@@ -249,7 +249,7 @@ def export_identity(inputfile, outdir, network_compartments=[], _config=DEFAULT_
     importCommands[ct.home_region].write("\n\nterraform plan")
     importCommands[ct.home_region].write("\n")
     importCommands[ct.home_region].close()
-    if ("linux" in sys.platform):
+    if 'linux' in sys.platform:
         dir = os.getcwd()
         os.chdir(outdir + "/" + ct.home_region)
         os.system("chmod +x tf_import_commands_identity_nonGF.sh")

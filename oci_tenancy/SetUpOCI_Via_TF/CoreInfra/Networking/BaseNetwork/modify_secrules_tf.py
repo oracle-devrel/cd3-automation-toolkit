@@ -30,7 +30,7 @@ def parse_args():
     return parser.parse_args()
 
 
-def modify_secrules(inputfile, outdir, prefix=None, config=DEFAULT_LOCATION):
+def modify_terraform_secrules(inputfile, outdir, prefix=None, config=DEFAULT_LOCATION):
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
@@ -295,4 +295,4 @@ def modify_secrules(inputfile, outdir, prefix=None, config=DEFAULT_LOCATION):
 if __name__ == '__main__':
     # Execution of the code begins here
     args = parse_args()
-    modify_secrules(args.inputfile, args.outdir, None, args.config)
+    modify_terraform_secrules(args.inputfile, args.outdir, None, args.config)

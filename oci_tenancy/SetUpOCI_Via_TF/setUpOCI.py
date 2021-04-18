@@ -18,6 +18,7 @@ from glob import glob
 from textwrap import shorten
 
 
+
 def show_options(options, quit=False, menu=False, extra=None):
     # Just add whitespace between number and option. It just makes it look better
     number_offset = len(str(len(options))) + 1
@@ -41,6 +42,7 @@ def show_options(options, quit=False, menu=False, extra=None):
 
 
 def execute_options(options, *args, **kwargs):
+    global menu, quit
     if 'm' in options or 'q' in options:
         menu = 'm' in options
         quit = 'q' in options
@@ -90,6 +92,12 @@ def validate_cd3():
         exit_menu("\nInvalid Input !! Please enter 'y' or 'n'... Exiting!!")
 
 
+def get_compartment_list(resource_name):
+    compartment_list_str = "Enter name of Compartment as it appears in OCI (comma separated without spaces if multiple)for which you want to export {};\nPress 'Enter' to export from all the Compartments: "
+    compartments = input(compartment_list_str.format(resource_name))
+    return list(map(lambda x: x.strip(), compartments.split(','))) if compartments else []
+
+
 def export_identity():
     Identity.export_identity(inputfile, outdir, prefix, config)
     create_identity(execute_all=True)
@@ -97,48 +105,48 @@ def export_identity():
 
 
 def export_networking():
-    compartments = input("Enter name of Compartment as it appears in OCI (comma separated without spaces if multiple)for which you want to export network objects;\nPress 'Enter' to export from all the Compartments: ")
-    Identity.export_identity(inputfile, outdir, prefix, config=config, compartments=comparments)
+    compartments = get_compartment_list('Network Objects')
+    Networking.export_networking(inputfile, outdir, prefix, config=config, compartments=comparments)
     create_networking(execute_all=True)
     print("\n\nExecute tf_import_commands_network_nonGF.sh script created under each region directory to synch TF with OCI Network objects\n")
 
 
 def export_instances():
-    compartments = input("Enter name of Compartment as it appears in OCI (comma separated without spaces if multiple)for which you want to export Instances;\nPress 'Enter' to export from all the Compartments: ")
+    compartments = get_compartment_list('Instances')
     Compute.export_instance(inputfile, outdir, config=config, compartments=compartments)
     create_instances(execute_all=True)
     print("\n\nExecute tf_import_commands_instances_nonGF.sh script created under each region directory to synch TF with OCI Instances\n")
 
 
 def export_block_volumes():
-    compartments = input("Enter name of Compartment as it appears in OCI (comma separated without spaces if multiple)for which you want to export Block Volumes;\nPress 'Enter' to export from all the Compartments: ")
+    compartments = get_compartment_list('Block Volumes')
     BlockVolumes.export_blockvol(inputfile, outdir, config=config, compartments=compartments)
-    create_block_volumes(execute_all=True)
+    create_block_volumes()
     print("\n\nExecute tf_import_commands_blockvols_nonGF.sh script created under each region directory to synch TF with OCI Instances\n")
 
 
 def export_tags():
     Tagging.export_tags(inputfile, outdir, config=config)
-    create_tags(execute_all=True)
+    create_tags()
     print("\n\nExecute tf_import_commands_tags_nonGF.sh script created under home region directory to synch TF with OCI Identity objects\n")
 
 
 def export_fss():
-    compartments = input("Enter name of Compartment as it appears in OCI (comma separated without spaces if multiple)for which you want to export FSS objects;\nPress 'Enter' to export from all the Compartments: ")
+    compartments = get_compartment_list('FSS objects')
     FileStorage.export_fss(inputfile, outdir, config=config, compartments=compartments)
-    create_fss(execute_all=True)
+    create_fss()
     print("\n\nExecute tf_import_commands_fss_nonGF.sh script created under each region directory to synch TF with OCI FSS objects\n")
 
 
 def export_lb():
-    compartments = input("Enter name of Compartment as it appears in OCI (comma separated without spaces if multiple)for which you want to export LBR objects;\nPress 'Enter' to export from all the Compartments: ")
+    compartments = get_compartment_list('LBR objects')
     Networking.export_lbr(inputfile, outdir, config=config, compartments=compartments)
-    create_lb(execute_all=True)
+    create_lb()
     print("\n\nExecute tf_import_commands_lbr_nonGF.sh script created under each region directory to synch TF with OCI LBR objects\n")
 
 
 def export_events_notifications():
-    compartments = input("Enter name of Compartment as it appears in OCI (comma separated without spaces if multiple)for which you want to export Events and Notifications objects;\nPress 'Enter' to export from all the Compartments: ")
+    compartments = get_compartment_list('Events and Notifications objects')
     Solutions.export_solutions(inputfile, outdir, config=config, compartments=compartments)
     create_events_notifications(execute_all=True)
     print("\n\nExecute tf_import_commands_solutions_nonGF.sh script created under each region directory to synch TF with OCI Events and Notifications objects\n")
@@ -150,16 +158,16 @@ def create_identity(execute_all=False):
         Option('Add/Modify/Delete Groups', Identity.create_terraform_groups, 'Group Tab'),
         Option('Add/Modify/Delete Policies', Identity.create_terraform_policies, 'Policies Tab'),
     ]
-    if not execute_options:
+    if not execute_all:
         options = show_options(options, quit=True, menu=True)
     execute_options(options, inputfile, outdir, prefix, config=config)
 
 
-def modify_terraform_network(inputfile, outdir, prefix, config=config):
+def modify_terraform_network(inputfile, outdir, prefix, config):
     Networking.create_all_tf_objects(inputfile, outdir, prefix, config=config, modify_network=True)
 
 
-def export_terraform_routes_and_secrules(inputfile, outdir, prefix, config=config):
+def export_terraform_routes_and_secrules(inputfile, outdir, prefix, config):
     compartments = input("Enter name of Compartment as it appears in OCI (comma separated if multiple) for which you want to export rules;\nPress 'Enter' to export from all the Compartments: ")
     compartments = comparments.split(',') if compartments else []
     Networking.export_seclist(inputfile, outdir, prefix, config=config, modify_network=True, network_compartments=compartments)
@@ -168,11 +176,11 @@ def export_terraform_routes_and_secrules(inputfile, outdir, prefix, config=confi
 
 def create_networking(execute_all=False):
     options = [
-        Option('Create Network- overwrites all TF files; reverts all SecLists and RouteTables to original rules', Networking.create_all_tf_objects, ''),
+        Option('Create Network- overwrites all TF files; reverts all SecLists and RouteTables to original rules', Networking.create_all_tf_objects, 'Create All Objects'),
         Option('Modify Network- Add/Remove/Modify any network object; updates TF files with changes; this option should be used after modifications have been done to SecRules or RouteRules', modify_terraform_network, ''),
         Option('Export existing SecRules and RouteRules to cd3', export_terraform_routes_and_secrules, 'Exporting Rules'),
         Option('Modify SecRules', Networking.modify_terraform_secrules, 'Modifiying Security Rules'),
-        Option('Modify RouteRules', Networking.modify_terraform_routes, 'Modifiying Route Rules'),
+        Option('Modify RouteRules', Networking.modify_terraform_routerules, 'Modifiying Route Rules'),
         Option('Add/Modify/Delete Network Security Groups', Networking.create_terraform_nsg, 'Processing NSGs Tab'),
     ]
     if not execute_all:
@@ -191,7 +199,7 @@ def create_instances(execute_all=False):
     execute_options(options, inputfile, outdir, config=config)
 
 
-def create_block_volumes(execute_all=False):
+def create_block_volumes():
     options = [
         Option(None, BlockVolume.create_terraform_block_volumes, 'Processing Block Volume Tab'),
         Option(None, BlockVolume.block_backups_policy, 'Processing Block Volume Policies'),
@@ -199,17 +207,17 @@ def create_block_volumes(execute_all=False):
     execute_options(options, inputfile, outdir, config=config)
 
 
-def create_tags(execute_all=False):
+def create_tags():
     options = [Option(None, Tagging.create_namespace_tagkey, 'Processing Tags Tab')]
     execute_options(options, inputfile, outdir, config=config)
 
 
-def create_fss(execute_all=False):
+def create_fss():
     options = [Option(None, FileStorage.create_terraform_fss, 'Processing FSS Tab')]
     execute_options(options, inputfile, outdir, config=config)
 
 
-def create_lb(execute_all=False):
+def create_lb():
     options = [
         Option(None, Networking.create_terraform_lbr_hostname_certs, 'Creating LBR'),
         Option(None, Networking.create_backendset_backendservers, 'Creating Backend Sets and Backend Servers'),
@@ -220,7 +228,7 @@ def create_lb(execute_all=False):
     execute_options(options, inputfile, outdir, config=config)
 
 
-def create_adw(execute_all=False):
+def create_adw():
     options = [Options(None, Database.create_terraform_adw_atp, 'Processing ADW/ATP Tab')]
     execute_options(options, inputfile, outdir, prefix, config=config)
 
@@ -229,7 +237,7 @@ def create_db(execute_all=False):
     options = [
         Option('Add/Modify/Delete Virtual Machine', Database.create_terraform_database_VM, 'Processing DB_System_VM Tab'),
         Option('Add/Modify/Delete Bare Metal', Database.create_terraform_database_BM, 'Processing DB_System_BM Tab'),
-        Option('Add/Modify/Delete ExaData', Database, create_terraform_database_EXA, 'Processing DB_System_EXA Tab'),
+        Option('Add/Modify/Delete ExaData', Database.create_terraform_database_EXA, 'Processing DB_System_EXA Tab'),
     ]
     if not execute_all:
         choices = show_options(options, quit=True, menu=True)
@@ -246,7 +254,7 @@ def create_events_notifications(execute_all=False):
     execute_options(choices, inputfile, outdir, prefix, config=config)
 
 
-def create_resource_manager(execute_all=False):
+def create_resource_manager():
     options = [Options(None, ResourceManager.create_resource_manager_stack, 'Creating stack')]
     execute_options(options, outdir, prefix, config=config)
 
@@ -259,11 +267,11 @@ config.read(args.propsfile)
 
 #Read Config file Variables
 try:
-    nongf_tenancy = config.get('Default', 'non_gf_tenancy').strip().lower() == 'true'
+    non_gf_tenancy = config.get('Default', 'non_gf_tenancy').strip().lower() == 'true'
     inputfile = config.get('Default','cd3file').strip()
-    config = config.get('Default', 'config_file').strip()
     outdir = config.get('Default', 'outdir').strip()
     prefix = config.get('Default', 'prefix').strip()
+    config = config.get('Default', 'config_file').strip()
 
     if not outdir:
         exit_menu('input outdir location cannot be left blank. Exiting... ')
@@ -321,7 +329,8 @@ while menu:
         exit_menu('Exiting...')
     for option in options:
         menu = False
-        with section(option.text):
+        with section(option.text, header=True):
             option.callback()
             if menu:
+                print('ok')
                 break

@@ -36,7 +36,6 @@ def parse_args():
 # If input in cd3 file
 def create_terraform_route(inputfile, outdir, prefix, config, modify_network=False):
     filename = inputfile
-    modify_network = str(modify_network)
     configFileName = config
 
     ct = commonTools()
@@ -125,7 +124,7 @@ def create_terraform_route(inputfile, outdir, prefix, config, modify_network=Fal
 
         if (drg_rt_name == ""):
 
-            rt_display = "Route Table associated with DRG-""" + drg_name
+            rt_display = "Route Table associated with DRG-" + drg_name
             rt_var = hub_vcn_name + "_" + rt_display
         else:
             rt_var = hub_vcn_name + "_" + drg_rt_name
@@ -137,9 +136,9 @@ def create_terraform_route(inputfile, outdir, prefix, config, modify_network=Fal
         right_vcns = peering_dict[hub_vcn_name]
         right_vcns = right_vcns.split(",")
 
-        drgRuleStr = ""
+        drgRuleStr = ''
         for right_vcn in right_vcns:
-            if (right_vcn == ""):
+            if right_vcn == '':
                 continue
             if right_vcn in vcns.spoke_vcn_names:
                 right_vcn_tf_name = commonTools.check_tf_variable(right_vcn)
@@ -491,12 +490,12 @@ def create_terraform_route(inputfile, outdir, prefix, config, modify_network=Fal
         vcns = parseVCNs(filename)
 
         # Purge existing routetable files
-        if (modify_network == 'false'):
+        if not modify_network:
             for reg in ct.all_regions:
                 routetablefiles.setdefault(reg, [])
                 purge(outdir + "/" + reg, "_routetable.tf")
         # Get existing list of route table files
-        if (modify_network == 'true'):
+        if modify_network:
             for reg in ct.all_regions:
                 routetablefiles.setdefault(reg, [])
                 lisoffiles = os.listdir(outdir + "/" + reg)

@@ -32,15 +32,14 @@ def parse_args():
     parser.add_argument('inputfile', help='Full Path of input file. eg  cd3 excel file')
     parser.add_argument('outdir', help='Output directory for creation of TF files')
     parser.add_argument('prefix', help='customer name/prefix for all file names')
-    parser.add_argument('--modify_network', action='store_true', help='modify network: true or false')
+    parser.add_argument('--modify-network', action='store_true', help='modify network: true or false')
     parser.add_argument('--configFileName', default=DEFAULT_LOCATION, help='Config file name')
     args = parser.parse_args()
 
 
 #If input is CD3
-def create_terraform_subnet(inputdir, outidr, prefix, config, modify_network=False):
+def create_terraform_subnet(inputfile, outdir, prefix, config, modify_network=False):
     filename = inputfile
-    modify_network = str(modify_network)
     configFileName = config
 
     ct = commonTools()
@@ -59,7 +58,6 @@ def create_terraform_subnet(inputdir, outidr, prefix, config, modify_network=Fal
     template = env.get_template('subnet-template')
 
     def processSubnet(tempStr):
-
         region = tempStr['region'].lower().strip()
         subnet = tempStr['cidr_block']
         AD = tempStr['availability_domain'].strip()
@@ -68,10 +66,10 @@ def create_terraform_subnet(inputdir, outidr, prefix, config, modify_network=Fal
             ad = ADS.index(AD)
             ad_name_int = ad + 1
             ad_name = str(ad_name_int)
-            adString = "data.oci_identity_availability_domains.ADs.availability_domains.""" + str(ad) + """.name """
+            adString = f'data.oci_identity_availability_domains.ADs.availability_domains.{ad}.name'
         else:
-                ad_name = ""
-                adString = "\"\""
+            ad_name = ""
+            adString = "\"\""
 
         tempStr['availability_domain'] = adString
 
@@ -233,89 +231,88 @@ def create_terraform_subnet(inputdir, outidr, prefix, config, modify_network=Fal
             if columnname.lower() in commonTools.tagColumns:
                 tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)
 
-                if columnname == 'Compartment Name':
-                    compartment_var_name = columnvalue
-                    compartment_var_name = commonTools.check_tf_variable(compartment_var_name)
-                    tempdict = {'compartment_tf_name': compartment_var_name}
+            if columnname == 'Compartment Name':
+                compartment_var_name = columnvalue
+                compartment_var_name = commonTools.check_tf_variable(compartment_var_name)
+                tempdict = {'compartment_tf_name': compartment_var_name}
 
-                if columnname == 'Availability Domain(AD1|AD2|AD3|Regional)':
-                    columnname = 'availability_domain'
-                    tempdict = {'availability_domain': columnvalue}
+            if columnname == 'Availability Domain(AD1|AD2|AD3|Regional)':
+                columnname = 'availability_domain'
+                tempdict = {'availability_domain': columnvalue}
 
 
-                if columnname == 'Add Default Seclist':
-                    if columnvalue.lower() == 'nan':
-                        columnvalue = 'y'
+            if columnname == 'Add Default Seclist':
+                if columnvalue.lower() == 'nan':
+                    columnvalue = 'y'
 
-                if columnname == 'DHCP Option Name':
-                    columnname = 'dhcp_option_name'
-                    if str(columnvalue).strip().lower() != '' and str(columnvalue).strip().lower() != 'n':
-                        dhcp = df.loc[i,'VCN Name'].strip() +"_" + columnvalue
-                        dhcp = commonTools.check_tf_variable(dhcp)
-                        tempdict = {'dhcp_tf_name': dhcp,'dhcp_option_name' : columnvalue}
-                    else:
-                        tempdict = {'dhcp_tf_name': columnvalue, 'dhcp_option_name': columnvalue}
+            if columnname == 'DHCP Option Name':
+                columnname = 'dhcp_option_name'
+                if str(columnvalue).strip().lower() != '' and str(columnvalue).strip().lower() != 'n':
+                    dhcp = df.loc[i,'VCN Name'].strip() +"_" + columnvalue
+                    dhcp = commonTools.check_tf_variable(dhcp)
+                    tempdict = {'dhcp_tf_name': dhcp,'dhcp_option_name' : columnvalue}
+                else:
+                    tempdict = {'dhcp_tf_name': columnvalue, 'dhcp_option_name': columnvalue}
 
-                if columnname == 'DNS Label':
-                    dnslabel = columnvalue.strip()
-                    # check if subnet_dns_label is not given by user in input use subnet name
-                    if (str(dnslabel).lower() == 'nan' or str(dnslabel).lower() == ''):
-                        regex = re.compile('[^a-zA-Z0-9]')
-                        subnet_dns = regex.sub('', df.loc[i,'Subnet Name'])
-                        # truncate all digits from start of dns_label
-                        index = 0
-                        for c in subnet_dns:
-                            if c.isdigit() == True:
-                                index = index + 1
-                                continue
-                            else:
-                                break
-                        subnet_dns = subnet_dns[index:]
-                        dnslabel = (subnet_dns[:15]) if len(subnet_dns) > 15 else subnet_dns
-                        tempdict = {'dns_label': dnslabel, 'subnet_dns': subnet_dns}
-                    elif dnslabel.lower() == 'n':
-                        dnslabel = ''
-                        tempdict = {'dns_label': dnslabel}
-                    else:
-                        tempdict = {'dns_label': dnslabel}
+            if columnname == 'DNS Label':
+                dnslabel = columnvalue.strip()
+                # check if subnet_dns_label is not given by user in input use subnet name
+                if (str(dnslabel).lower() == 'nan' or str(dnslabel).lower() == ''):
+                    regex = re.compile('[^a-zA-Z0-9]')
+                    subnet_dns = regex.sub('', df.loc[i,'Subnet Name'])
+                    # truncate all digits from start of dns_label
+                    index = 0
+                    for c in subnet_dns:
+                        if c.isdigit() == True:
+                            index = index + 1
+                            continue
+                        else:
+                            break
+                    subnet_dns = subnet_dns[index:]
+                    dnslabel = (subnet_dns[:15]) if len(subnet_dns) > 15 else subnet_dns
+                    tempdict = {'dns_label': dnslabel, 'subnet_dns': subnet_dns}
+                elif dnslabel.lower() == 'n':
+                    dnslabel = ''
+                    tempdict = {'dns_label': dnslabel}
+                else:
+                    tempdict = {'dns_label': dnslabel}
 
-                if columnname == 'Route Table Name':
-                    rt_name = columnvalue
-                    if (str(rt_name).lower() == 'nan' or str(rt_name).lower() == ''):
-                        # route table name not provided; use subnet name as route table name
-                        rt_name = str(df.loc[i,'Subnet Name']).strip()
-                        tempdict = {'rt_name': rt_name}
-                    else:
-                        rt_name = columnvalue.strip()
-                        tempdict = {'rt_name': rt_name}
-                    tempStr.update(tempdict)
-
-                sl_names = []
-                if columnname == 'Seclist Names':
-                    if str(columnvalue).lower() == 'nan' or str(columnvalue).lower() == '':
-                        # seclist name not provided; use subnet name as seclist name
-                        sl_names.append(df.loc[i,'Subnet Name'].strip())
-                        tempdict = {'sl_names': sl_names}
-                    else:
-                        sl_names = columnvalue.split(",")
-                        tempdict = {'sl_names': sl_names}
-
-                    tempStr.update(tempdict)
-
-                if columnname == 'Type(private|public)':
-                    columnname = 'type'
-                    columnvalue = columnvalue.lower()
-
-                columnname = commonTools.check_column_headers(columnname)
-                tempStr[columnname] = str(columnvalue).strip()
+            if columnname == 'Route Table Name':
+                rt_name = columnvalue
+                if (str(rt_name).lower() == 'nan' or str(rt_name).lower() == ''):
+                    # route table name not provided; use subnet name as route table name
+                    rt_name = str(df.loc[i,'Subnet Name']).strip()
+                    tempdict = {'rt_name': rt_name}
+                else:
+                    rt_name = columnvalue.strip()
+                    tempdict = {'rt_name': rt_name}
                 tempStr.update(tempdict)
 
+            sl_names = []
+            if columnname == 'Seclist Names':
+                if str(columnvalue).lower() == 'nan' or str(columnvalue).lower() == '':
+                    # seclist name not provided; use subnet name as seclist name
+                    sl_names.append(df.loc[i,'Subnet Name'].strip())
+                    tempdict = {'sl_names': sl_names}
+                else:
+                    sl_names = columnvalue.split(",")
+                    tempdict = {'sl_names': sl_names}
+
+                tempStr.update(tempdict)
+
+            if columnname == 'Type(private|public)':
+                columnname = 'type'
+                columnvalue = columnvalue.lower()
+
+            columnname = commonTools.check_column_headers(columnname)
+            tempStr[columnname] = str(columnvalue).strip()
+            tempStr.update(tempdict)
         processSubnet(tempStr)
 
     if fname != None:
         fname.close()
 
-    if(modify_network=='true'):
+    if modify_network:
         for reg in ct.all_regions:
             reg_out_dir = outdir + "/" + reg
             if not os.path.exists(reg_out_dir):
@@ -332,7 +329,7 @@ def create_terraform_subnet(inputdir, outidr, prefix, config, modify_network=Fal
             oname[reg].close()
             print(outfile[reg] + " containing TF for Subnets has been updated for region " + reg)
 
-    elif(modify_network == 'false'):
+    elif not modify_network:
         for reg in ct.all_regions:
             reg_out_dir = outdir + "/" + reg
             if not os.path.exists(reg_out_dir):

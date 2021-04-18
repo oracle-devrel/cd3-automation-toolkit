@@ -207,7 +207,7 @@ def export_blockvol(inputfile, _outdir, network_compartments=[], _config=DEFAULT
         importCommands[reg].write("\n\nterraform plan")
         importCommands[reg].write("\n")
         importCommands[reg].close()
-        if ("linux" in sys.platform):
+        if "linux" in sys.platform:
             dir = os.getcwd()
             os.chdir(outdir + "/" + reg)
             os.system("chmod +x tf_import_commands_blockvol_nonGF.sh")

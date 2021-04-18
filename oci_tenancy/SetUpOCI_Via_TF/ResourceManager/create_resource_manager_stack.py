@@ -16,14 +16,16 @@ import oci
 import time
 import csv
 import base64
-
+from commonTools import *
 from oci.exceptions import ServiceError
 from oci.identity import IdentityClient
 from oci.config import DEFAULT_LOCATION
-
-sys.path.append(os.getcwd()+"/..")
-from commonTools import *
-from oci.resource_manager.models import CreateImportTfStateJobOperationDetails,ImportTfStateJobOperationDetails,CreateStackDetails,CreateZipUploadConfigSourceDetails,UpdateStackDetails,UpdateZipUploadConfigSourceDetails
+from oci.resource_manager.models import ImportTfStateJobOperationDetails
+from oci.resource_manager.models import CreateImportTfStateJobOperationDetail
+from oci.resource_manager.models import CreateStackDetails
+from oci.resource_manager.models import UpdateStackDetails
+from oci.resource_manager.models import CreateZipUploadConfigSourceDetails
+from oci.resource_manager.models import UpdateZipUploadConfigSourceDetails
 
 
 ocid_list = []

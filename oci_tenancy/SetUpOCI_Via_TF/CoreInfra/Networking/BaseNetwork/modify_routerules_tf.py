@@ -32,7 +32,7 @@ def parse_args():
     return parser.parse_args()
 
 
-def modify_routerules(inputfile, outdir, prefix=None, config=DEFAULT_LOCATION):
+def modify_terraform_routerules(inputfile, outdir, prefix=None, config=DEFAULT_LOCATION):
     filename = inputfile
     configFileName = config
 
@@ -240,4 +240,4 @@ def modify_routerules(inputfile, outdir, prefix=None, config=DEFAULT_LOCATION):
 if __name__ == '__main__':
     args = parse_args()
     # Execution of the code begins here
-    modify_routerules(args.inputfile, args.outdir, prefix=None, args.config)
+    modify_terraform_routerules(args.inputfile, args.outdir, prefix=None, config=args.config)

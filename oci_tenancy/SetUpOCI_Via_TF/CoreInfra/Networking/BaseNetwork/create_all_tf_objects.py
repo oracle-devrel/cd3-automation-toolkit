@@ -14,7 +14,11 @@ import argparse
 import sys
 from oci.config import DEFAULT_LOCATION
 from commonTools import section
-from . import *
+from .create_major_objects import create_major_objects
+from .create_terraform_dhcp_options import create_terraform_dhcp_options
+from .create_terraform_route import create_terraform_route
+from .create_terraform_seclist import create_terraform_seclist
+from .create_terraform_subnet import create_terraform_subnet
 
 
 def parse_args():

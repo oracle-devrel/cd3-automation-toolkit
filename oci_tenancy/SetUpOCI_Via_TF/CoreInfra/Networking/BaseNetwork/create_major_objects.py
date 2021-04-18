@@ -44,7 +44,6 @@ def parse_args():
 def create_major_objects(inputfile, outdir, prefix, config, modify_network=False):
     # Declare Variables
     filename = inputfile
-    modify_network = str(modify_network)
     configFileName = config
 
     ct = commonTools()
@@ -400,7 +399,7 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
 
         processVCN(tempStr)
 
-    if (modify_network == 'true'):
+    if modify_network:
         for reg in ct.all_regions:
             reg_out_dir = outdir + "/" + reg
 
@@ -426,7 +425,7 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
             print(outfile_dhcp[reg] + " containing TF for default DHCP options for VCNs has been updated for region " + reg)
 
 
-    elif (modify_network == 'false'):
+    else:
         for reg in ct.all_regions:
             reg_out_dir = outdir + "/" + reg
 

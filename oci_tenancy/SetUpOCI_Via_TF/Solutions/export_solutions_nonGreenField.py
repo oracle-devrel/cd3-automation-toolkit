@@ -56,7 +56,7 @@ def  print_notifications(values_for_column_notifications,region, ntk_compartment
        importCommands[region.lower()].write("\nterraform import oci_ons_notification_topic." + tf_name_nftn + " " + str(nftn_info.topic_id))
     importCommands[region.lower()].write("\nterraform import oci_ons_subscription." + tf_name_sbpn + " " + str(sbpn.id))
 
-def  print_events(values_for_column_events, region, ntk_compartment_name, event, event_info, ncpc, fun):
+def print_events(values_for_column_events, region, ntk_compartment_name, event, event_info, ncpc, fun):
     tf_name = commonTools.check_tf_variable(str(event.display_name))
     event_name = event.display_name
     action_type = ""
@@ -276,8 +276,6 @@ def export_solutions(inputfile, outdir, network_compartments=[], _config=DEFAULT
 
     commonTools.write_to_cd3(values_for_column_events, cd3file, "Events")
     print("Events exported to CD3\n")
-
-    os.chdir("../../..")
 
     for reg in ct.all_regions:
         importCommands[reg] = open(outdir + "/" + reg + "/tf_import_commands_solutions_nonGF.sh", "a")

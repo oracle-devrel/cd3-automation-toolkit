@@ -14,6 +14,7 @@ import argparse
 import re
 import os
 from oci.config import DEFAULT_LOCATION
+from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
 sys.path.append(os.getcwd() + '/../../..')
 from commonTools import *
@@ -46,7 +47,6 @@ def create_terraform_seclist(inputfile, outdir, prefix, config, modify_network=F
 
 
     filename = inputfile
-    modify_network = str(modify_network)
     configFileName = config
 
     ct = commonTools()
@@ -112,11 +112,11 @@ def create_terraform_seclist(inputfile, outdir, prefix, config, modify_network=F
             outfile = outdir + "/" + region + "/" + sl_tf_name + "_seclist.tf"
 
             # If Modify Network is set to true
-            if (os.path.exists(outfile) and modify_network == 'true'):
+            if (os.path.exists(outfile) and modify_network):
                 continue
 
             # If same seclist name is used for subsequent subnets
-            if (index == 0 and os.path.exists(outfile) and modify_network == 'false'):
+            if (index == 0 and os.path.exists(outfile) and not modify_network):
                 tempStr['rule_type'] = "ingress"
                 tempStr['source'] = subnet_cidr
                 tempStr['protocol_code'] = 'all'
@@ -167,13 +167,13 @@ def create_terraform_seclist(inputfile, outdir, prefix, config, modify_network=F
     vcns = parseVCNs(filename)
 
     # Purge existing routetable files
-    if (modify_network == 'false'):
+    if not modify_network:
         for reg in ct.all_regions:
             purge(outdir+"/"+reg, "_seclist.tf")
             secrulefiles.setdefault(reg, [])
 
     # Get existing list of secrule table files
-    if (modify_network == 'true'):
+    if modify_network:
         for reg in ct.all_regions:
             secrulefiles.setdefault(reg, [])
             lisoffiles = os.listdir(outdir + "/" + reg)

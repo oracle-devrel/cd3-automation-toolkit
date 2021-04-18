@@ -16,41 +16,23 @@ import re
 import json as simplejson
 
 class commonTools():
-    all_regions=[]
-    home_region=""
-    ntk_compartment_ids = {}
-    region_dict={}
-    protocol_dict={}
-    sheet_dict={}
     endNames = {'<END>', '<end>', '<End>'}
     tagColumns = {'freeform tags', 'freeform_tags', 'defined_tags', 'defined tags'}
 
     #Read Regions and Protocols Files and Excel_Columns and create dicts
     def __init__(self):
-        #When called from wthin BaseNetwork
-        dir=os.getcwd()
-        if("ExportFromOCI" in dir):
-            os.chdir("../")
-        elif ("Solutions" in dir):
-            os.chdir("../../")
-        if ("ResourceManager" in dir):
-            os.chdir("../")
-        if("Networking" in dir):
-            os.chdir("../../../")
-        elif ("CoreInfra" in dir):
-            os.chdir("../../")
-        elif ("Identity" in dir):
-            os.chdir("../../")
-        elif ("Database" in dir):
-            os.chdir("../")
-        elif ("Governance" in dir):
-            os.chdir("../../")
-        elif ("OCSWorkVM" in dir):
-            os.chdir("../")
+        self.all_regions=[]
+        self.home_region=""
+        self.ntk_compartment_ids = {}
+        self.region_dict={}
+        self.protocol_dict={}
+        self.sheet_dict={}
+
+        # When called from wthin BaseNetwork
         regionFileName="OCI_Regions"
         protocolFileName="OCI_Protocols"
         excelColumnName="Excel_Columns"
-        with open (regionFileName) as f:
+        with open(regionFileName) as f:
             for line in f:
                 key = line.split(":")[0].strip()
                 val = line.split(":")[1].strip()
@@ -72,7 +54,7 @@ class commonTools():
             break
 
         #Change back to Initial
-        os.chdir(dir)
+        # os.chdir(dir)
 
     #Get Tenancy Regions
     def get_subscribedregions(self,configFileName):
@@ -451,26 +433,25 @@ class commonTools():
 
 # NOTE: Does this really need to be a class? its an obsfucated function call.
 class parseVCNs():
-    peering_dict = dict()
-
-    vcn_region = {}
-    vcn_drgs = {}
-    vcn_compartment = {}
-    vcn_lpg_names = {}
-    vcn_lpg_names1 = {}
-    vcn_lpg_names2 = {}
-    vcn_lpg_names3 = {}
-    hub_vcn_names = []
-    spoke_vcn_names = []
-    vcn_lpg_rules = {}
-    vcn_igws = {}
-    vcn_ngws = {}
-    vcn_sgws = {}
-    vcn_hub_spoke_peer_none = {}
-    vcn_compartment = {}
-    vcn_names = []
-
     def __init__(self, filename):
+        self.peering_dict = dict()
+
+        self.vcn_region = {}
+        self.vcn_drgs = {}
+        self.vcn_compartment = {}
+        self.vcn_lpg_names = {}
+        self.vcn_lpg_names1 = {}
+        self.vcn_lpg_names2 = {}
+        self.vcn_lpg_names3 = {}
+        self.hub_vcn_names = []
+        self.spoke_vcn_names = []
+        self.vcn_lpg_rules = {}
+        self.vcn_igws = {}
+        self.vcn_ngws = {}
+        self.vcn_sgws = {}
+        self.vcn_hub_spoke_peer_none = {}
+        self.vcn_compartment = {}
+        self.vcn_names = []
         #if (".xls" in filename):
         try:
             # Read and search for VCN
@@ -557,7 +538,6 @@ class parseVCNs():
             self.vcn_sgws[vcn_name] = str(df_vcn['SGW Required'][i]).strip()
             self.vcn_hub_spoke_peer_none[vcn_name] = str(df_vcn['Hub/Spoke/Peer/None'][i]).strip().split(":")
             self.vcn_compartment[vcn_name] = str(df_vcn['Compartment Name'][i]).strip()
-
             self.vcn_lpg_rules.setdefault(vcn_name, '')
 
             if (self.vcn_hub_spoke_peer_none[vcn_name][0].strip().lower() == 'hub'):
@@ -583,11 +563,13 @@ class parseVCNs():
 
 
 @contextmanager
-def section(title, padding=117):
+def section(title='', header=False, padding=117):
+    separator = '-' if not header else '='
     # Not sure why 117 but thats how it was before.
-    print(f'{title:-^{padding}}')
+    print(f'{title:{separator}^{padding}}')
     yield
-    print('-' * padding)
+    if header:
+        print(separator * padding)
 
 
 def exit_menu(msg, exit_code=0):
@@ -597,12 +579,12 @@ def exit_menu(msg, exit_code=0):
 
 class parseVCNInfo():
     # all_regions = []
-    subnet_name_attach_cidr = ''
-    onprem_destinations = []
-    ngw_destinations = []
-    igw_destinations = []
 
     def __init__(self, filename):
+        self.subnet_name_attach_cidr = ''
+        self.onprem_destinations = []
+        self.ngw_destinations = []
+        self.igw_destinations = []
         try:
             df_info = pd.read_excel(filename, sheet_name='VCN Info', skiprows=1)
         except Exception as e:
