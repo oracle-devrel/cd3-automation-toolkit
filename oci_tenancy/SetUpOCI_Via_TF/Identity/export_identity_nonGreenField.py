@@ -13,17 +13,22 @@ import sys
 import oci
 import re
 from oci.identity import IdentityClient
+from oci.config import DEFAULT_LOCATION
 import os
 sys.path.append(os.getcwd()+"/..")
 from commonTools import *
 
-def main():
-    parser = argparse.ArgumentParser(description="Export Identity Objects in OCI to CD3")
-    parser.add_argument("cd3file", help="path of CD3 excel file to export identity objects to")
-    parser.add_argument("outdir", help="path to out directory containing script for TF import commands")
-    parser.add_argument("--networkCompartment", help="comma seperated Compartments for which to export Identity Objects", required=False)
-    parser.add_argument("--configFileName", help="Config file name" , required=False)
 
+def parse_args():
+    parser = argparse.ArgumentParser(description="Export Identity Objects in OCI to CD3")
+    parser.add_argument("inputfile", help="path of CD3 excel file to export identity objects to")
+    parser.add_argument("outdir", help="path to out directory containing script for TF import commands")
+    parser.add_argument("--network-compartments", required=False, nargs='*', help="comma seperated Compartments for which to export Identity Objects")
+    parser.add_argument("--config", default=DEFAULT_LOCATION, help="Config file name")
+    return parser.parse_args()
+
+
+def export_identity(inputfile, outdir, network_compartments=[], _config=DEFAULT_LOCATION):
     global values_for_column_comps
     global values_for_column_groups
     global values_for_column_policies
@@ -33,26 +38,17 @@ def main():
     global config
     global cd3file
 
-    if len(sys.argv) < 3:
-        parser.print_help()
-        sys.exit(1)
-
-    args = parser.parse_args()
-    cd3file=args.cd3file
-    outdir=args.outdir
-    input_compartment_list = args.networkCompartment
+    cd3file = inputfile
+    input_compartment_list = network_compartments
 
     if('.xls' not in cd3file):
         print("\nAcceptable cd3 format: .xlsx")
         exit()
 
 
-    if args.configFileName is not None:
-        configFileName = args.configFileName
-        config = oci.config.from_file(file_location=configFileName)
-    else:
-        configFileName=""
-        config = oci.config.from_file()
+    configFileName = _config
+    config = oci.config.from_file(file_location=configFileName)
+    config = oci.config.from_file()
 
     importCommands={}
 
@@ -261,4 +257,5 @@ def main():
 
 
 if __name__=="__main__":
-    main()
+    args = parse_args()
+    export_identity(args.inputfile, args.outdir, args.network_compartments, args.config)

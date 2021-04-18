@@ -12,6 +12,8 @@
 import sys
 import argparse
 import os
+from oci.config import DEFAULT_LOCATION
+from pathlib import Path
 sys.path.append(os.getcwd()+"/../../..")
 from commonTools import *
 from jinja2 import Environment, FileSystemLoader
@@ -21,31 +23,24 @@ from jinja2 import Environment, FileSystemLoader
 # ######
 
 # If the input is CD3
-def main():
-
+def parse_args():
     # Read the input arguments
     parser = argparse.ArgumentParser(description="Updates routelist for subnet. It accepts input file which contains new rules to be added to the existing rule list of the subnet.")
     parser.add_argument("inputfile", help="Required; Full Path to input route file (CD3 excel file) containing rules to be updated; See example folder for sample format: add_routes-example.txt")
     parser.add_argument("outdir",help="directory path for output tf files ")
-    parser.add_argument("--configFileName", help="Config file name", required=False)
+    parser.add_argument("--config", default=DEFAULT_LOCATION, help="Config file name")
+    return parser.parse_args()
 
-    if len(sys.argv) == 1:
-        parser.print_help()
-        sys.exit(1)
 
-    args = parser.parse_args()
-    filename = args.inputfile
-    outdir=args.outdir
-    if args.configFileName is not None:
-        configFileName = args.configFileName
-    else:
-        configFileName=""
+def modify_routerules(inputfile, outdir, prefix=None, config=DEFAULT_LOCATION):
+    filename = inputfile
+    configFileName = config
 
     ct = commonTools()
     ct.get_subscribedregions(configFileName)
 
     #Load the template file
-    file_loader = FileSystemLoader('templates')
+    file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
     routerule = env.get_template('route-rule-template')
     defaultrt = env.get_template('default-route-table-template')
@@ -243,6 +238,6 @@ def main():
             defaultname[reg].close()
 
 if __name__ == '__main__':
-
+    args = parse_args()
     # Execution of the code begins here
-    main()
+    modify_routerules(args.inputfile, args.outdir, prefix=None, args.config)

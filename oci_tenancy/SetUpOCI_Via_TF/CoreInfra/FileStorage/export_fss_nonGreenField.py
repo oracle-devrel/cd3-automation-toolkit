@@ -7,10 +7,9 @@ import argparse
 import sys
 import oci
 import re
-from oci.identity import IdentityClient
 import os
-
-sys.path.append(os.getcwd() + "/..")
+from oci.identity import IdentityClient
+from oci.config import DEFAULT_LOCATION
 from commonTools import *
 
 
@@ -162,32 +161,24 @@ def __get_mount_info(cname, compartment_id, reg, availability_domain_name, confi
         pass
 
 
-def main():
+def parse_args():
     parser = argparse.ArgumentParser(description="Export FSS Details on OCI to CD3")
-    parser.add_argument("cd3file", help="path of CD3 excel file to export FileSystem objects to")
+    parser.add_argument("inputfile", help="path of CD3 excel file to export FileSystem objects to")
     parser.add_argument("outdir", help="path to out directory containing script for TF import commands")
-    parser.add_argument("--configFileName", help="Config file name")
-    parser.add_argument("--networkCompartment",
-                        help="comma seperated Compartments for which to export FileSystem Objects")
+    parser.add_argument("--config", default=DEFAULT_LOCATION, help="Config file name")
+    parser.add_argument("--network-compartments", nargs='*', required=False, help="comma seperated Compartments for which to export FileSystem Objects")
+    return parser.parse_args()
 
-    if len(sys.argv) < 2:
-        parser.print_help()
-        sys.exit(1)
 
-    args = parser.parse_args()
-    cd3file = args.cd3file
-    outdir = args.outdir
+def export_fss(inputfile, outdir, network_compartments=[], config=DEFAULT_LOCATION):
+    cd3file = inputfile
 
     if ('.xls' not in cd3file):
         print("\nAcceptable cd3 format: .xlsx")
         exit()
 
-    if args.configFileName is not None:
-        configFileName = args.configFileName
-        config = oci.config.from_file(file_location=configFileName)
-    else:
-        configFileName=""
-        config = oci.config.from_file()
+    configFileName = config
+    config = oci.config.from_file(file_location=configFileName)
 
     global idc, compute, file_system, ct, vnc_info, importCommands, rows, all_regions, all_ads, all_compartments, input_compartment_list, AD, df, values_for_column_fss, sheet_dict_instances
 
@@ -201,15 +192,9 @@ def main():
     all_regions = []
     all_ads = []
     all_compartments = []
-    input_compartment_list = args.networkCompartment
+    input_compartment_list = network_compartments
     ct.get_subscribedregions(configFileName)
     ct.get_network_compartment_ids(config['tenancy'],"root",configFileName)
-
-    if (input_compartment_list is not None):
-        input_compartment_names = input_compartment_list.split(",")
-        input_compartment_names = [x.strip() for x in input_compartment_names]
-    else:
-        input_compartment_names = None
 
     print("\nCD3 excel file should not be opened during export process!!!")
     print("Tabs FSS will be overwritten during this export process!!!\n")
@@ -307,5 +292,5 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
-
+    args = parse_args()
+    export_fss(args.inputfile, args.outdir, args.network_compartments, args.config)

@@ -15,44 +15,37 @@ import argparse
 import os
 import shutil
 import datetime
-sys.path.append(os.getcwd()+"/../..")
 from commonTools import *
+from oci.config import DEFAULT_LOCATION
+from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
 
 #Method to extend conditions with resources
 def extend_event(service_name, resources, listeventid):
-            event = [ "com.oraclecloud." + service_name + "." + resources ]
-            listeventid['eventType'].extend(event)
-            listeventid['eventType'] = list(dict.fromkeys(listeventid['eventType']))
-            condition = json.dumps(listeventid)
-            condition = condition.replace("\"" , "\\\"")
-            condition = condition.replace(" " , "")
-            return (condition)
+    event = [ "com.oraclecloud." + service_name + "." + resources ]
+    listeventid['eventType'].extend(event)
+    listeventid['eventType'] = list(dict.fromkeys(listeventid['eventType']))
+    condition = json.dumps(listeventid)
+    condition = condition.replace("\"" , "\\\"")
+    condition = condition.replace(" " , "")
+    return (condition)
 
 
-#If input is CD3 excel file
-def main():
-
+def parse_args():
     # Read the input arguments
     parser = argparse.ArgumentParser(description="Creates TF files for Events")
     parser.add_argument("inputfile",help="Full Path to the CSV file for creating fss or CD3 excel file. eg fss.csv or CD3-template.xlsx in example folder")
     parser.add_argument("outdir",help="directory path for output tf files ")
     parser.add_argument("prefix", help="customer name/prefix for all file names")
-    parser.add_argument("--configFileName", help="Config file name", required=False)
+    parser.add_argument("--config", default=DEFAULT_LOCATION, help="Config file name")
+    return parser.parse_args()
 
-    if len(sys.argv)<2:
-            parser.print_help()
-            sys.exit(1)
 
-    # Declare variables
-    args = parser.parse_args()
-    filename = args.inputfile
-    outdir = args.outdir
+#If input is CD3 excel file
+def create_terraform_events(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
+    filename = inputfile
     all_regions = os.listdir(outdir)
-    if args.configFileName is not None:
-        configFileName = args.configFileName
-    else:
-        configFileName = ""
+    configFileName = config
     ct = commonTools()
     ct.get_subscribedregions(configFileName)
     x = datetime.datetime.now()
@@ -64,7 +57,7 @@ def main():
     NaNstr = 'NaN'
 
     # Load the template file
-    file_loader = FileSystemLoader('templates')
+    file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
     events_template = env.get_template('events-template')
     actions_template = env.get_template('actions-template')
@@ -256,6 +249,6 @@ def main():
             oname.close()
 
 if __name__ == '__main__':
-
     # Execution of the code begins here
-    main()
+    args = parse_args()
+    create_terraform_events(args.inputfile, args.outdir, args.prefix, args.config)
