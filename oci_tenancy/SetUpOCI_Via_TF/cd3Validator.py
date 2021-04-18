@@ -384,8 +384,7 @@ def validate_subnets(filename, comp_ids, vcnobj):
 
 
 # Check if VCNs tab is compliant
-def validate_vcns(filename, comp_ids, vcnobj):  # ,vcn_cidrs,vcn_compartment_ids):
-
+def validate_vcns(filename, comp_ids, vcnobj, config):  # ,vcn_cidrs,vcn_compartment_ids):
     vcn_ids = get_vcn_ids(comp_ids, config)
 
     # Read the VCNs tab from excel
@@ -644,7 +643,7 @@ def validate_cd3(filename, configFileName):
 
     log("============================= Verifying VCNs Tab ==========================================\n")
     print("\nProcessing VCNs Tab..")
-    vcn_check, vcn_cidr_check, vcn_peer_check = validate_vcns(filename, ct.ntk_compartment_ids, vcnobj)
+    vcn_check, vcn_cidr_check, vcn_peer_check = validate_vcns(filename, ct.ntk_compartment_ids, vcnobj, config)
 
     log("============================= Verifying Subnets Tab ==========================================\n")
     print("\nProcessing Subnets Tab..")
@@ -655,7 +654,7 @@ def validate_cd3(filename, configFileName):
     dhcp_check = validate_dhcp(filename, ct.ntk_compartment_ids, vcnobj)
 
     # Prints the final result; once the validation is complete
-    if any([vcn_check, vcn_cidr_check, vcn_peer_check, subnet_check, subnet_cidr_check, dhcp]):
+    if any([vcn_check, vcn_cidr_check, vcn_peer_check, subnet_check, subnet_cidr_check, dhcp_check]):
         log("=======")
         log("Summary:")
         log("=======")

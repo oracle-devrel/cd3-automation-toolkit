@@ -16,7 +16,7 @@ from pathlib import Path
 from oci.config import DEFAULT_LOCATION
 from jinja2 import Environment, FileSystemLoader
 from commonTools import *
-from pprint import pprint
+
 
 ######
 # Required Inputs- CD3 excel file, Config file, prefix AND outdir
@@ -210,6 +210,7 @@ def create_terraform_policies(inputfile, outdir, prefix, config=DEFAULT_LOCATION
         oname[reg].write(template.render(policies=all_policies))
         oname[reg].close()
         print(outfile[reg] + " containing TF for policies has been created for region " + reg)
+
 
 if __name__ == '__main__':
     # Execution of the code begins here

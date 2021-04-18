@@ -5,8 +5,9 @@ import Identity
 import os
 import ResourceManager
 import Solutions
+import cd3Validator
 import sys
-# import fetch_compartments_to_variablesTF as fetch_compartments
+from .fetch_compartments_to_variablesTF import fetch_compartments
 from commonTools import *
 from collections import namedtuple
 from CoreInfra import Networking
@@ -82,7 +83,7 @@ def validate_cd3():
     choice = input("Do you want to verify CD3 Network Tabs? Enter y or n: ").lower()
     if choice == 'y':
         print('It will verify tabs: VCNs, DHCP and Subnets in excel sheet\n')
-        validated = validate_cd3(inputfile, config)
+        validated = cd3Validator.validate_cd3(inputfile, config)
         if not validated:
             prcd = input('Do you still want to proceed with setUpOCI? Enter y or n: ').lower()
             if (prcd != 'y'):
