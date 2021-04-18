@@ -17,44 +17,23 @@ import sys
 import oci
 import logging
 import ipaddress
+from functools import partial
 from oci.core.virtual_network_client import VirtualNetworkClient
 from oci.identity import IdentityClient
-
-sys.path.append(os.getcwd() + "/../../..")
 from commonTools import *
 
-parser = argparse.ArgumentParser(description="CD3 Validator")
-parser.add_argument("cd3file", help="Full Path of CD3 file")
-parser.add_argument("--configFileName", help="Path to config file")
 
-if len(sys.argv) == 1:
-    parser.print_help()
-    sys.exit(1)
-if len(sys.argv) < 2:
-    parser.print_help()
-    sys.exit(1)
-
-args = parser.parse_args()
-filename = args.cd3file
-if args.configFileName is not None:
-    configFileName = args.configFileName
-    config = oci.config.from_file(file_location=configFileName)
-else:
-    configFileName = ""
-    config = oci.config.from_file()
+CD3_LOG_LEVEL = 60
+logging.addLevelName(CD3_LOG_LEVEL, "custom")
+logging.basicConfig(filename="cd3Validator.log", filemode="w", format="%(asctime)s - %(message)s", level=60)
+logger = logging.getLogger("cd3Validator")
+log = partial(logger.log, CD3_LOG_LEVEL)
 
 ct = commonTools()
-ct.get_subscribedregions(configFileName)
-ct.get_network_compartment_ids(config['tenancy'], "root", configFileName)
-
 compartment_ids = {}
 vcn_ids = {}
 vcn_cidrs = {}
 vcn_compartment_ids = {}
-
-logging.addLevelName(60, "custom")
-logging.basicConfig(filename="cd3Validator.log", filemode="w", format="%(asctime)s - %(message)s", level=60)
-logger = logging.getLogger("cd3Validator")
 
 
 def get_vcn_ids(compartment_ids, config):
@@ -81,7 +60,7 @@ def checklabel(lable, count):
         if (regex.search(lable) == None):
             pass
         else:
-            logging.log(60, "ROW " + str(count + 2) + " : DNS Label value has special characters")
+            log(f'ROW {count+2} : DNS Label value has special characters')
             present = True
     return present
 
@@ -97,23 +76,19 @@ def showPeering(vcnsob, oci_vcn_lpgs):
                 continue
             right_vcn = right_vcn.strip()
             try:
-                if (vcnsob.vcn_lpg_names[left_vcn][0].lower() == 'n' or vcnsob.vcn_lpg_names[right_vcn][
-                    0].lower() == 'n'):
-                    logging.log(60,
-                                "ERROR!!! Cannot specify n for LPG Required field for either " + left_vcn + " or " + right_vcn + "; Since they are part of VCN peering")
+                if (vcnsob.vcn_lpg_names[left_vcn][0].lower() == 'n' or vcnsob.vcn_lpg_names[right_vcn][0].lower() == 'n'):
+                    log(f'ERROR!!! Cannot specify n for LPG Required field for either {left_vcn} or {right_vcn}; Since they are part of VCN peering')
                     present = True
                     continue
             except IndexError:
-                logging.log(60,
-                            "ERROR!!! Insufficient LPGs declared for either " + left_vcn + " or " + right_vcn + ". Check LPG Required column for both VCNs in VCNs tab")
+                log(f'ERROR!!! Insufficient LPGs declared for either {left_vcn} or {right_vcn}. Check LPG Required column for both VCNs in VCNs tab')
                 present = True
                 continue
             left_vcn_lpg = vcnsob.vcn_lpg_names[left_vcn][0]
             vcnsob.vcn_lpg_names[left_vcn].pop(0)
             right_vcn_lpg = vcnsob.vcn_lpg_names[right_vcn][0]
             vcnsob.vcn_lpg_names[right_vcn].pop(0)
-            logging.log(60,
-                        left_vcn_lpg + " of VCN " + left_vcn + " peers with " + right_vcn_lpg + " of VCN " + right_vcn)
+            log(f'{left_vcn_lpg} of VCN {left_vcn} peers with {right_vcn_lpg} of VCN {right_vcn}')
 
             '''
             if(left_vcn in oci_vcn_lpgs.keys()):
@@ -149,8 +124,7 @@ def validate_cidr(cidr_list, cidrs_dict):
         try:
             ipaddress.ip_network(cidr_list[i])
         except ValueError:
-            logging.log(60, "Row " + str(i + 3) + " Field CIDR Block " + cidr_list[
-                i] + " is invalid. CIDR range has host bits set.")
+            log(f'Row  {str(i+3)} Field CIDR Block {cidr_list[i]} is invalid. CIDR range has host bits set.')
             cidr_check = True
 
     for i in range(0, len(cidr_list)):
@@ -170,22 +144,15 @@ def validate_cidr(cidr_list, cidrs_dict):
                 continue
             # Check for Duplicate CIDRs
             if (str(cidr1) == str(cidr2)):
-                logging.log(60,
-                            "ROW " + str(j + 3) + " : Duplicate CIDR value " + str(cidr2) + " with ROW " + str(i + 3))
+                log(f'ROW {j+3} : Duplicate CIDR value {cidr2} with ROW {i+3}')
                 cidrdup_check = True
                 continue
 
             # Check for Overlapping CIDRs
-            bool = cidr1.overlaps(cidr2)
-            if (bool == True):
-                logging.log(60, "ROW " + str(j + 3) + " : Overlapping CIDR value " + str(cidr2) + " with ROW " + str(
-                    i + 3) + " CIDR value " + str(cidr1))
+            if cidr1.overlaps(cidr2):
+                log(f'ROW {str(j+3)} : Overlapping CIDR value {str(cidr2)} with ROW {str(i+3)} CIDR value {str(cidr1)}')
                 cidroverlap_check = True
-
-    if (cidroverlap_check == True or cidrdup_check == True or cidr_check == True):
-        return True
-    else:
-        return False
+    return any([cidroverlap_check, cidrdup_check, cidr_check])
 
 
 # Fetch the dhcp list and vcn cidrs for cross validation of values
@@ -256,7 +223,7 @@ def validate_subnets(filename, comp_ids, vcnobj):
     subnetname_list = []
     vcn_list = []
 
-    logging.log(60, "Start Null or Wrong value check in each row-----------------")
+    log("Start Null or Wrong value check in each row-----------------")
 
     # List of the column headers
     dfcolumns = df.columns.values.tolist()
@@ -271,14 +238,13 @@ def validate_subnets(filename, comp_ids, vcnobj):
         count = count + 1
         # Check for <END> in the inputs; if found the validation ends there and return the status of flag
         if (str(df.loc[i, 'Region']) in commonTools.endNames):
-            logging.log(60,
-                        "Reached <END> Tag. Validation ends here, any data beyond this tag will not be checked for errors !!!")
+            log('Reached <END> Tag. Validation ends here, any data beyond this tag will not be checked for errors !!!')
             break
 
         # Check for invalid Region
         region = str(df.loc[i, 'Region'])
         if (region.lower() != "nan" and region.lower() not in ct.all_regions):
-            logging.log(60, "ROW " + str(i + 3) + " : Region " + region + " is not subscribed to tenancy")
+            log(f'ROW {i+3} : Region {region} is not subscribed to tenancy')
             subnet_reg_check = True
 
         # Check for invalid compartment name
@@ -289,13 +255,13 @@ def validate_subnets(filename, comp_ids, vcnobj):
             try:
                 comp_id = comp_ids[comp_name]
             except KeyError:
-                logging.log(60, "ROW " + str(i + 3) + " : Compartment " + comp_name + " doesnot exist in OCI")
+                log(f'ROW {i+3} : Compartment {comp_name} does not exist in OCI')
                 dhcp_comp_check = True
 
         # Check for invalid VCN name
         vcn_name = str(df.loc[i, 'VCN Name'])
         if (vcn_name.lower() != "nan" and vcn_name not in vcnobj.vcn_names):
-            logging.log(60, "ROW " + str(i + 3) + " : VCN " + vcn_name + " not part of VCNs Tab")
+            log(f'ROW {i+3} : VCN {vcn_name} not part of VCNs Tab')
             subnet_vcn_check = True
 
         # Check if the dns_label field has special characters or if it has greater than 15 characters or is duplicate
@@ -316,9 +282,7 @@ def validate_subnets(filename, comp_ids, vcnobj):
                 if (dns_value not in subnet_dns):
                     subnet_dns.append(dns_value)
                 else:
-                    logging.log(60, "ROW " + str(
-                        i + 3) + " : Duplicate DNS Label value " + dns_value + " for subnet " + str(
-                        dns_subnetname) + " of vcn " + str(dns_vcn))
+                    log(f'ROW {i+3} : Duplicate DNS Label value "{dns_value}" for subnet "{dns_subnetname}" of vcn "{dns_vcn}"')
                     subnet_dns.append(dns_value)
                     subnet_dnsdup_check = True
 
@@ -335,7 +299,7 @@ def validate_subnets(filename, comp_ids, vcnobj):
             subnet_dnswrong_check = checklabel(dns_value, count)
 
         if (len(dns_value) > 15):
-            logging.log(60, "ROW " + str(i + 3) + " : DNS Label value " + dns_value + " for subnet " + str(dns_subnetname) + " of vcn " + str(dns_vcn) + " has more alphanumeric characters than the allowed maximum limit of 15.")
+            log(f'ROW {i+3} : DNS Label value "{dns_value}" for subnet "{dns_subnetname}" of vcn "{dns_vcn}" has more alphanumeric characters than the allowed maximum limit of 15.')
             subnet_dns_length = True
 
         # Check if the Service and Internet gateways are set appropriately; if not display the message;
@@ -343,8 +307,7 @@ def validate_subnets(filename, comp_ids, vcnobj):
         igw_value = str(df.loc[i, 'Configure IGW Route(y|n)'])
         if (igw_value.lower() != "nan" and sgw_value.lower() != "nan"):
             if (igw_value.lower() == "y" and sgw_value.lower() == "all_services"):
-                logging.log(60, "ROW " + str(
-                    count + 2) + " : Internet Gateway target cannot be used together with Service Gateway target for All Services in the same routing table. Change either the value of SGW or IGW configure route !!")
+                log(f'ROW {count + 2} : Internet Gateway target cannot be used together with Service Gateway target for All Services in the same routing table. Change either the value of SGW or IGW configure route !!')
                 subnet_wrong_check = True
 
         # Collect CIDR List for validating
@@ -355,14 +318,14 @@ def validate_subnets(filename, comp_ids, vcnobj):
             cidr_list.append(str(df.loc[i, 'CIDR Block']))
 
         # Check for null values and display appropriate message
+        labels = ['DNS Label', 'DHCP Option Name', 'Route Table Name', 'Seclist Names']
         for j in df.keys():
             if (str(df[j][i]) == "NaN" or str(df[j][i]) == "nan" or str(df[j][i]) == ""):
                 # only dhcp_option_name, route table name, seclist_names and dns_label columns can be empty
-                if j == 'DNS Label' or j == 'DHCP Option Name' or j == 'Route Table Name' or j == 'Seclist Names' or commonTools.check_column_headers(
-                        j) in commonTools.tagColumns:
+                if j in labels or commonTools.check_column_headers(j) in commonTools.tagColumns:
                     pass
                 else:
-                    logging.log(60, "ROW " + str(count + 2) + " : Empty value at column " + j)
+                    log(f'ROW {count+2} : Empty value at column {j}')
                     subnet_empty_check = True
 
         # Lop through Columns and cross validate - 1. Subnets and VCN CIDRs and 2. Subnet and DHCP Options
@@ -379,8 +342,7 @@ def validate_subnets(filename, comp_ids, vcnobj):
                     else:
                         if columnvalue == 'nan':
                             continue
-                        logging.log(60, "ROW " + str(
-                            i + 3) + " : Value \"" + columnvalue + "\" in column \"DHCP Option Name\" is not declared in DHCP tab.")
+                        log(f'ROW {i + 3} : Value "{columnvalue}" in column "DHCP Option Name" is not declared in DHCP tab.')
                         subnet_dhcp_check = True
 
             # Execute if list is []; list is empty when called from VCN function
@@ -402,22 +364,21 @@ def validate_subnets(filename, comp_ids, vcnobj):
                         if columnvalue.subnet_of(vcn_cidr):
                             pass
                         else:
-                            logging.log(60, "ROW " + str(i + 3) + " : Subnet CIDR - " + str(
-                                columnvalue) + "  does not fall under VCN CIDR - " + str(vcn_cidr))
+                            log(f'ROW {i+3} : Subnet CIDR - {columnvalue} does not fall under VCN CIDR - {vcn_cidr}')
                             subnet_vcn_cidr_check = True
 
-    if (subnet_reg_check == True or subnet_vcn_check == True or subnet_comp_check == True or subnet_empty_check == True or subnet_dnswrong_check == True or subnet_wrong_check == True or subnet_dnsdup_check == True or subnet_dns_length == True or subnet_dhcp_check == True and subnet_vcn_cidr_check == True):
+    if any([subnet_reg_check, subnet_vcn_check, subnet_comp_check, subnet_empty_check, subnet_dnswrong_check, subnet_wrong_check, subnet_dnsdup_check, subnet_dns_length, subnet_dhcp_check, subnet_vcn_cidr_check]):
         print("Null or Wrong value Check failed!!")
         subnet_check = True
     else:
         subnet_check = False
-    logging.log(60, "End Null or Wrong value Check in each row------------------\n")
+    log("End Null or Wrong value Check in each row------------------\n")
 
-    logging.log(60, "Start Subnet CIDRs Check---------------------------------")
+    log("Start Subnet CIDRs Check---------------------------------")
     subnet_cidr_check = validate_cidr(cidr_list, cidrs_dict)
     if (subnet_cidr_check == True):
         print("Subnet CIDRs Check failed!!")
-    logging.log(60, "End Subnet CIDRs Check---------------------------------\n")
+    log("End Subnet CIDRs Check---------------------------------\n")
 
     return subnet_check, subnet_cidr_check
 
@@ -450,7 +411,7 @@ def validate_vcns(filename, comp_ids, vcnobj):  # ,vcn_cidrs,vcn_compartment_ids
 
     vcn_check = False
 
-    logging.log(60, "Start Null or Wrong value Check in each row---------------")
+    log("Start Null or Wrong value Check in each row---------------")
     vcn_dns = []
     vcn_names = []
 
@@ -460,14 +421,13 @@ def validate_vcns(filename, comp_ids, vcnobj):  # ,vcn_cidrs,vcn_compartment_ids
 
         # Check for <END> in the inputs; if found the validation ends there and return the status of flag
         if str(df.loc[i, 'Region']) in commonTools.endNames:
-            logging.log(60,
-                        "Reached <END> Tag. Validation ends here, any data beyond this tag will not be checked for errors !!!")
+            log("Reached <END> Tag. Validation ends here, any data beyond this tag will not be checked for errors !!!")
             break
 
         # Check for invalid Region
         region = str(df.loc[i, 'Region'])
         if (region.lower() != "nan" and region.lower() not in ct.all_regions):
-            logging.log(60, "ROW " + str(i + 3) + " : Region " + region + " is not subscribed to tenancy")
+            log(f'ROW {i+3} : Region {region} is not subscribed to tenancy')
             vcn_reg_check = True
 
         # Check for invalid Compartment Name
@@ -478,7 +438,7 @@ def validate_vcns(filename, comp_ids, vcnobj):  # ,vcn_cidrs,vcn_compartment_ids
             try:
                 comp_id = comp_ids[comp_name]
             except KeyError:
-                logging.log(60, "ROW " + str(i + 3) + " : Compartment " + comp_name + " doesnot exist in OCI")
+                log(f'ROW {i+3}  : Compartment {comp_name} + does not exist in OCI')
                 vcn_comp_check = True
 
         # Check for invalid(duplicate) vcn name
@@ -489,8 +449,7 @@ def validate_vcns(filename, comp_ids, vcnobj):  # ,vcn_cidrs,vcn_compartment_ids
             if (vcn_name not in vcn_names):
                 vcn_names.append(vcn_name)
             else:
-                logging.log(60, "ROW " + str(i + 3) + " : Duplicate VCN Name value " + vcn_name + " with ROW " + str(
-                    vcn_names.index(vcn_name) + 3))
+                log(f'ROW {i+3} : Duplicate VCN Name value {vcn_name}  with ROW {vcn_names.index(vcn_name) + 3}')
                 vcn_names.append(vcn_name)
                 vcn_vcnname_check = True
 
@@ -509,7 +468,7 @@ def validate_vcns(filename, comp_ids, vcnobj):  # ,vcn_cidrs,vcn_compartment_ids
             vcn_dnswrong_check = checklabel(dns_value, count)
 
         if (len(dns_value) > 15):
-            logging.log(60, "ROW " + str(i + 3) + " : DNS Label value " + dns_value + " has more alphanumeric characters than the allowed maximum limit of 15.")
+            log(f'ROW {i+3} : DNS Label value {dns_value} has more alphanumeric characters than the allowed maximum limit of 15.')
             vcn_dns_length = True
 
         # Collect CIDR List for validating
@@ -525,22 +484,22 @@ def validate_vcns(filename, comp_ids, vcnobj):  # ,vcn_cidrs,vcn_compartment_ids
                 if j == 'DNS Label' or commonTools.check_column_headers(j) in commonTools.tagColumns:
                     continue
                 else:
-                    logging.log(60, "ROW " + str(count + 2) + " : Empty value at column " + j)
+                    log(f'ROW {count+2} : Empty value at column {j}')
                     vcn_empty_check = True
 
-    if (vcn_vcnname_check == True or vcn_reg_check == True or vcn_comp_check == True or vcn_empty_check == True or vcn_dnswrong_check == True or vcn_dns_length == True):  # or vcn_dnsdup_check == True):
+    if any([vcn_vcnname_check, vcn_reg_check, vcn_comp_check, vcn_empty_check, vcn_dnswrong_check, vcn_dns_length]):  # or vcn_dnsdup_check == True):
         print("Null or Wrong value Check failed!!")
         vcn_check = True
-    logging.log(60, "End Null or Wrong value Check in each row---------------\n")
+    log("End Null or Wrong value Check in each row---------------\n")
 
-    logging.log(60, "Start VCN CIDRs Check--------------------------------------")
+    log("Start VCN CIDRs Check--------------------------------------")
     vcn_cidr_check = validate_cidr(cidr_list, cidrs_dict)
     if (vcn_cidr_check == True):
         print("VCN CIDRs Check failed!!")
-    logging.log(60, "End VCN CIDRs Check--------------------------------------\n")
+    log("End VCN CIDRs Check--------------------------------------\n")
 
-    logging.log(60, "Start LPG Peering Check---------------------------------------------")
-    logging.log(60, "Current Status of LPGs in OCI for each VCN listed in VCNs tab:")
+    log("Start LPG Peering Check---------------------------------------------")
+    log("Current Status of LPGs in OCI for each VCN listed in VCNs tab:")
     oci_vcn_lpgs = {}
 
     # Loop through each row
@@ -564,12 +523,9 @@ def validate_vcns(filename, comp_ids, vcnobj):  # ,vcn_cidrs,vcn_compartment_ids
         except KeyError:
             lpg = vcnobj.vcn_lpg_names[vcn_name][0]
             if (lpg != 'n'):
-                logging.log(60, "ROW " + str(
-                    i + 3) + " : VCN " + vcn_name + " doesnot exist in OCI. VCN and its LPGs " + str(
-                    vcnobj.vcn_lpg_names[vcn_name]) + " will be created new")
+                log(f'ROW {i+3} : VCN {vcn_name} does not exist in OCI. VCN and its LPGs {vcnobj.vcn_lpg_names[vcn_name]} will be created new')
             else:
-                logging.log(60, "ROW " + str(
-                    i + 3) + " : VCN " + vcn_name + " doesnot exist in OCI. VCN will be created new")
+                log(f'ROW {i+3} : VCN {vcn_name} does not exist in OCI. VCN will be created new')
             continue
 
         oci_vcn_lpgs[vcn_name] = []
@@ -581,22 +537,22 @@ def validate_vcns(filename, comp_ids, vcnobj):  # ,vcn_cidrs,vcn_compartment_ids
         lpg_list = vnc.list_local_peering_gateways(compartment_id=comp_id, vcn_id=vcn_id)
 
         if (len(lpg_list.data) == 0):
-            logging.log(60, "ROW " + str(i + 3) + " : LPGs for VCN " + vcn_name + " in OCI-  None")
+            log(f'ROW {i+3} : LPGs for VCN {vcn_name} in OCI-  None')
         else:
             for lpg in lpg_list.data:
                 oci_vcn_lpgs[vcn_name].append(lpg.display_name)
                 vcn_lpg_str = lpg.display_name + " : " + lpg.peering_status + ", " + vcn_lpg_str
-            logging.log(60, "ROW " + str(i + 3) + " : LPGs for VCN " + vcn_name + " in OCI-  " + vcn_lpg_str)
+            log(f'ROW {i + 3} : LPGs for VCN {vcn_name} in OCI- {vcn_lpg_str}')
 
-    logging.log(60, "####### Below is the LPG peering as per CD3 data: Please verify !! ##########")
+    log("####### Below is the LPG peering as per CD3 data: Please verify !! ##########")
     # Show the peering details of each lpg in Hub,Spoke or Peer VCNs
     vcn_peer_check = showPeering(vcnobj, oci_vcn_lpgs)
     if (vcn_peer_check == True):
         print("Please verify LPG Peering Status in log file !!")
-    logging.log(60,"\nPlease go through \"CD3 Modification Procedure\" of confluence page for information on correct order of lpg entries for non-greenfield tenancies")
-    logging.log(60,"Link: https://confluence.oraclecorp.com/confluence/display/NAC/Support+for+Non-GreenField+Tenancies")
+    log("\nPlease go through \"CD3 Modification Procedure\" of confluence page for information on correct order of lpg entries for non-greenfield tenancies")
+    log("Link: https://confluence.oraclecorp.com/confluence/display/NAC/Support+for+Non-GreenField+Tenancies")
 
-    logging.log(60, "End LPG Peering Check---------------------------------------------\n")
+    log("End LPG Peering Check---------------------------------------------\n")
 
     return vcn_check, vcn_cidr_check, vcn_peer_check
 
@@ -621,20 +577,20 @@ def validate_dhcp(filename, comp_ids, vcnobj):
     # Counter to fetch the row number
     count = 0
 
-    logging.log(60, "Start Null or Wrong value Check in each row----------------")
+    log("Start Null or Wrong value Check in each row----------------")
     for i in df.index:
         count = count + 1
 
         # Check for <END> in the inputs; if found the validation ends there and return the status of flag
         if str(df.loc[i, 'Region']) in commonTools.endNames:
-            logging.log(60,"Reached <END> Tag. Validation ends here, any data beyond this tag will not be checked for errors !!!")
+            log("Reached <END> Tag. Validation ends here, any data beyond this tag will not be checked for errors !!!")
             break
 
         # Check for invalid Region
         region = str(df.loc[i, 'Region'])
 
         if (region.lower() != "nan" and region.lower() not in ct.all_regions):
-            logging.log(60, "ROW " + str(i + 3) + " : Region " + region + " is not subscribed to tenancy")
+            log(f'ROW {i+3} : Region {region} is not subscribed to tenancy')
             dhcp_reg_check = True
 
         # Check for invalid compartment name
@@ -645,13 +601,13 @@ def validate_dhcp(filename, comp_ids, vcnobj):
             try:
                 comp_id = comp_ids[comp_name]
             except KeyError:
-                logging.log(60, "ROW " + str(i + 3) + " : Compartment " + comp_name + " doesnot exist in OCI")
+                log(f'ROW {i+3} : Compartment {comp_name} does not exist in OCI')
                 dhcp_comp_check = True
 
         # Check for invalid VCN name
         vcn_name = str(df.loc[i, 'VCN Name'])
         if (vcn_name.lower() != "nan" and vcn_name not in vcnobj.vcn_names):
-            logging.log(60, "ROW " + str(i + 3) + " : VCN " + vcn_name + " not part of VCNs Tab")
+            log(f'ROW {i+3}: VCN {vcn_name} not part of VCNs Tab')
             dhcp_vcn_check = True
 
         for j in df.keys():
@@ -659,8 +615,7 @@ def validate_dhcp(filename, comp_ids, vcnobj):
             if j == 'Custom DNS Server':
                 if str(df.loc[i, 'Custom DNS Server']) in empty:
                     if str(df.loc[i, 'Server Type(VcnLocalPlusInternet|CustomDnsServer)']) == "CustomDnsServer":
-                        logging.log(60, "ROW  " + str(
-                            count + 2) + ": 'Custom DNS Server' column cannot be empty if server type is 'CustomDnsServer'")
+                        log(f'ROW {count+2} : "Custom DNS Server" column cannot be empty if server type is "CustomDnsServer"')
                         dhcp_wrong_check = True
                     elif str(df.loc[i, 'Server Type(VcnLocalPlusInternet|CustomDnsServer)']) == "VcnLocalPlusInternet":
                         continue
@@ -668,56 +623,66 @@ def validate_dhcp(filename, comp_ids, vcnobj):
                 # Check if there are any field that is empty; display appropriate message
                 if str(df[j][i]).strip() in empty and j != 'Search Domain' and commonTools.check_column_headers(
                         j) not in commonTools.tagColumns:
-                    logging.log(60, "ROW " + str(count + 2) + " : Empty value at column " + j)
+                    log(f'ROW {count+2}  : Empty value at column {j}')
                     dhcp_empty_check = True
 
-    logging.log(60, "End Null or Wrong value Check in each row-----------------\n")
-    if (
-            dhcp_reg_check == True or dhcp_vcn_check == True or dhcp_wrong_check == True or dhcp_comp_check == True or dhcp_empty_check == True):  # or subnet_dhcp_check == True):
+    log("End Null or Wrong value Check in each row-----------------\n")
+    if any([dhcp_reg_check, dhcp_vcn_check, dhcp_wrong_check, dhcp_comp_check, dhcp_empty_check]):  # or subnet_dhcp_check == True):
         print("Null or Wrong value Check failed!!")
         return True
     else:
         return False
 
 
-def main():
+def validate_cd3(filename, configFileName):
     # CD3 Validation begins here for Sunbnets, VCNs and DHCP tabs
     # Flag to check if for errors
+    config = oci.config.from_file(file_location=configFileName)
+    ct.get_subscribedregions(configFileName)
+    ct.get_network_compartment_ids(config['tenancy'], "root", configFileName)
     vcnobj = parseVCNs(filename)
 
-    logging.log(60, "============================= Verifying VCNs Tab ==========================================\n")
+    log("============================= Verifying VCNs Tab ==========================================\n")
     print("\nProcessing VCNs Tab..")
     vcn_check, vcn_cidr_check, vcn_peer_check = validate_vcns(filename, ct.ntk_compartment_ids, vcnobj)
 
-    logging.log(60, "============================= Verifying Subnets Tab ==========================================\n")
+    log("============================= Verifying Subnets Tab ==========================================\n")
     print("\nProcessing Subnets Tab..")
     subnet_check, subnet_cidr_check = validate_subnets(filename, ct.ntk_compartment_ids, vcnobj)
 
-    logging.log(60, "============================= Verifying DHCP Tab ==========================================\n")
+    log("============================= Verifying DHCP Tab ==========================================\n")
     print("\nProcessing DHCP Tab..")
     dhcp_check = validate_dhcp(filename, ct.ntk_compartment_ids, vcnobj)
 
     # Prints the final result; once the validation is complete
-    if vcn_check == True or vcn_cidr_check == True or vcn_peer_check == True or subnet_check == True or subnet_cidr_check == True or dhcp_check == True:
-        logging.log(60, "=======")
-        logging.log(60, "Summary:")
-        logging.log(60, "=======")
-        logging.log(60, "ERROR: Make appropriate changes to CD3 Values as per above Errors and try again !!!")
+    if any([vcn_check, vcn_cidr_check, vcn_peer_check, subnet_check, subnet_cidr_check, dhcp]):
+        log("=======")
+        log("Summary:")
+        log("=======")
+        log("ERROR: Make appropriate changes to CD3 Values as per above Errors and try again !!!")
         print("\n\nSummary:")
         print("=======")
         print("Errors Found!!! Please check cd3Validator.log for details before proceeding!!")
         exit(1)
-    elif vcn_check == False and vcn_cidr_check == False and vcn_peer_check == False and subnet_check == False and subnet_cidr_check == False and dhcp_check == False:
-        logging.log(60, "=======")
-        logging.log(60, "Summary:")
-        logging.log(60, "=======")
-        logging.log(60,"There are no errors in CD3. Verify LPG's Peering Check Status once in the log file. Otherwise You are good to proceed !!!")
+    else:
+        log("=======")
+        log("Summary:")
+        log("=======")
+        log("There are no errors in CD3. Verify LPG's Peering Check Status once in the log file. Otherwise You are good to proceed !!!")
         print("\n\nSummary:")
         print("=======")
         print("There are no errors in CD3. Verify LPG's Peering Check Status once in the log file. Otherwise You are good to proceed !!!")
         exit(0)
 
 
+def parse_args():
+    parser = argparse.ArgumentParser(description="CD3 Validator")
+    parser.add_argument("cd3file", help="Full Path of CD3 file")
+    parser.add_argument("--config", default=DEFAULT_LOCATION, help="Path to config file")
+    return parser.parse_args()
+
 if __name__ == '__main__':
     # Execution of the code begins here
-    main()
+    filename = args.cd3file
+    configFileName = args.configFileName
+    validate_cd3(filename, configFileName)

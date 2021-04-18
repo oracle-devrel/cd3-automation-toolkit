@@ -18,7 +18,6 @@ from glob import glob
 from textwrap import shorten
 
 
-
 def show_options(options, quit=False, menu=False, extra=None):
     # Just add whitespace between number and option. It just makes it look better
     number_offset = len(str(len(options))) + 1
@@ -65,7 +64,7 @@ def verify_outdir_is_empty():
 
     has_files = False
     for reg in ct.all_regions:
-        if len(tf_list[reg]) != 0:
+        if len(tf_list[reg]) > 0:
             print(f'{outdir}/{reg} directory under outdir is not empty; contains below tf files {shorten(tf_list[reg].join(","), 40)}')
             has_files = True
 
@@ -176,8 +175,8 @@ def export_terraform_routes_and_secrules(inputfile, outdir, prefix, config):
 
 def create_networking(execute_all=False):
     options = [
-        Option('Create Network- overwrites all TF files; reverts all SecLists and RouteTables to original rules', Networking.create_all_tf_objects, 'Create All Objects'),
-        Option('Modify Network- Add/Remove/Modify any network object; updates TF files with changes; this option should be used after modifications have been done to SecRules or RouteRules', modify_terraform_network, ''),
+        Option('Create Network - overwrites all TF files; reverts all SecLists and RouteTables to original rules', Networking.create_all_tf_objects, 'Create All Objects'),
+        Option('Modify Network - Add/Remove/Modify any network object; updates TF files with changes; this option should be used after modifications have been done to SecRules or RouteRules', modify_terraform_network, 'Modifying Networking'),
         Option('Export existing SecRules and RouteRules to cd3', export_terraform_routes_and_secrules, 'Exporting Rules'),
         Option('Modify SecRules', Networking.modify_terraform_secrules, 'Modifiying Security Rules'),
         Option('Modify RouteRules', Networking.modify_terraform_routerules, 'Modifiying Route Rules'),
@@ -271,7 +270,7 @@ try:
     inputfile = config.get('Default','cd3file').strip()
     outdir = config.get('Default', 'outdir').strip()
     prefix = config.get('Default', 'prefix').strip()
-    config = config.get('Default', 'config_file').strip()
+    config = config.get('Default', 'config_file').strip() or DEFAULT_LOCATION
 
     if not outdir:
         exit_menu('input outdir location cannot be left blank. Exiting... ')
@@ -332,5 +331,4 @@ while menu:
         with section(option.text, header=True):
             option.callback()
             if menu:
-                print('ok')
                 break

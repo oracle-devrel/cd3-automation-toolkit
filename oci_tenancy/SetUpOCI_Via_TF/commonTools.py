@@ -5,6 +5,7 @@ import datetime
 import configparser
 import oci
 from oci.identity import IdentityClient
+from oci.config import DEFAULT_LOCATION
 from openpyxl import load_workbook
 from openpyxl.styles import PatternFill
 from openpyxl.styles import Alignment
@@ -57,13 +58,10 @@ class commonTools():
         # os.chdir(dir)
 
     #Get Tenancy Regions
-    def get_subscribedregions(self,configFileName):
+    def get_subscribedregions(self, configFileName=DEFAULT_LOCATION):
         #Get config client
-        if configFileName=="":
-            config = oci.config.from_file()
-        else:
-            config = oci.config.from_file(file_location=configFileName)
-        idc = IdentityClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
+        config = oci.config.from_file(file_location=configFileName)
+        idc = IdentityClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
         regionsubscriptions = idc.list_region_subscriptions(tenancy_id=config['tenancy'])
         homeregion=""
         for rs in regionsubscriptions.data:
@@ -75,8 +73,6 @@ class commonTools():
                 if (rs.region_name == v):
                     self.all_regions.append(k)
 
-        del config
-        del idc
 
     #Get Compartment OCIDs
     def get_network_compartment_ids(self,c_id, c_name,configFileName):
