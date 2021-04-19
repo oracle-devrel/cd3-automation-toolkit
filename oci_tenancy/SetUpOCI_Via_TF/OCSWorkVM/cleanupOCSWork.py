@@ -88,12 +88,12 @@ if not os.path.exists(del_file_path):
 
 write_file(del_file_path+"\\tf_destroy.sh", tf_destroy_script)
 
-f = open(input_pvt_key_file, "r")
-putty_pvtkey_contents = f.read()
-f.close()
-f = open(del_file_path+"\\openSSHpvtKeyFile", "w+")
-f.write(puttykeys.ppkraw_to_openssh(putty_pvtkey_contents))
-f.close()
+#f = open(input_pvt_key_file, "r")
+#putty_pvtkey_contents = f.read()
+#f.close()
+#f = open(del_file_path+"\\openSSHpvtKeyFile", "w+")
+#f.write(puttykeys.ppkraw_to_openssh(putty_pvtkey_contents))
+#f.close()
 
 dont_ssh = 0
 
@@ -103,7 +103,8 @@ if dont_ssh == 1:
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     for x in range(10):
         try:
-            ssh.connect(input_public_ip, username='opc', key_filename=del_file_path+"\\openSSHpvtKeyFile")
+ #           ssh.connect(input_public_ip, username='opc', key_filename=del_file_path+"\\openSSHpvtKeyFile")
+            ssh.connect(input_public_ip, username='opc', key_filename=input_pvt_key_file)
             print('Connected to VM for file transfer')
             break
         except Exception as e:
