@@ -24,8 +24,8 @@ def paginate(operation, *args, **kwargs):
             break
 
 parser = argparse.ArgumentParser(description="Fetches Compartment name/ocid info from OCI and pushes to variables.tf file of each region used by TF")
-parser.add_argument("outdir", help="Path  to outdir(on OCSVM: /root/ocswork/terraform_files) containing region directories having variables_<region>.tf file that will be used by TerraForm to communicate with OCI")
-parser.add_argument("--configFileName", help="Config file name" , required=False)
+parser.add_argument("outdir", help="Path to outdir(on OCSVM: /root/ocswork/terraform_files and on Docker: /root/ocswork/tenancies/<customer_name>/terraform_files")
+parser.add_argument("--configFileName", help="Full path to Config File", required=False)
 
 args = parser.parse_args()
 
@@ -42,7 +42,7 @@ tempStr = {}
 var_files={}
 var_data={}
 
-print("outdir specified should contain region directories and then variables_<region>.tf file inside the region directories eg /root/ocswork/terraform_files")
+#print("outdir specified should contain region directories and then variables_<region>.tf file inside the region directories eg /root/ocswork/terraform_files")
 
 ct=commonTools()
 ct.get_subscribedregions(configFileName)
@@ -78,6 +78,7 @@ for reg in ct.all_regions:
     vname.write(tempStr[reg])
     vname.close()
 
-if ("linux" in sys.platform):
-    os.system("dos2unix "+var_files[reg])
+    if ("linux" in sys.platform):
+        os.system("dos2unix "+var_files[reg])
+
 print("Compartment info written to all region specific variables files under outdir folder")
