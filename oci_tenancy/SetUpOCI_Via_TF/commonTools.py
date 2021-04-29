@@ -51,9 +51,10 @@ class commonTools():
         excelColumnName="Excel_Columns"
         with open (regionFileName) as f:
             for line in f:
-                key = line.split(":")[0].strip()
-                val = line.split(":")[1].strip()
-                self.region_dict[key] = val
+                if(":" in line):
+                    key = line.split(":")[0].strip().lower()
+                    val = line.split(":")[1].strip().lower()
+                    self.region_dict[key] = val
 
         with open(protocolFileName) as f:
             for line in f:

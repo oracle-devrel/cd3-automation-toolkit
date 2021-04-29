@@ -25,17 +25,20 @@ from commonTools import *
 
 parser = argparse.ArgumentParser(description="CD3 Validator")
 parser.add_argument("cd3file", help="Full Path of CD3 file")
+parser.add_argument("validate_cd3file", help="Validate Options; comma seperated")
 parser.add_argument("--configFileName", help="Path to config file")
 
-if len(sys.argv) == 1:
+if len(sys.argv) == 2:
     parser.print_help()
     sys.exit(1)
-if len(sys.argv) < 2:
+if len(sys.argv) < 3:
     parser.print_help()
     sys.exit(1)
 
 args = parser.parse_args()
 filename = args.cd3file
+validate_options = args.validate_cd3file
+
 if args.configFileName is not None:
     configFileName = args.configFileName
     config = oci.config.from_file(file_location=configFileName)
@@ -53,7 +56,7 @@ vcn_cidrs = {}
 vcn_compartment_ids = {}
 
 logging.addLevelName(60, "custom")
-logging.basicConfig(filename="cd3Validator.log", filemode="w", format="%(asctime)s - %(message)s", level=60)
+logging.basicConfig(filename="cd3Validator.log", filemode="a", format="%(asctime)s - %(message)s", level=60)
 logger = logging.getLogger("cd3Validator")
 
 
@@ -278,7 +281,7 @@ def validate_subnets(filename, comp_ids, vcnobj):
         # Check for invalid Region
         region = str(df.loc[i, 'Region'])
         if (region.lower() != "nan" and region.lower() not in ct.all_regions):
-            logging.log(60, "ROW " + str(i + 3) + " : Region " + region + " is not subscribed to tenancy")
+            logging.log(60, "ROW " + str(i + 3) + " : Region " + region + " is not subscribed for tenancy")
             subnet_reg_check = True
 
         # Check for invalid compartment name
@@ -460,14 +463,13 @@ def validate_vcns(filename, comp_ids, vcnobj):  # ,vcn_cidrs,vcn_compartment_ids
 
         # Check for <END> in the inputs; if found the validation ends there and return the status of flag
         if str(df.loc[i, 'Region']) in commonTools.endNames:
-            logging.log(60,
-                        "Reached <END> Tag. Validation ends here, any data beyond this tag will not be checked for errors !!!")
+            logging.log(60,"Reached <END> Tag. Validation ends here, any data beyond this tag will not be checked for errors !!!")
             break
 
         # Check for invalid Region
         region = str(df.loc[i, 'Region'])
         if (region.lower() != "nan" and region.lower() not in ct.all_regions):
-            logging.log(60, "ROW " + str(i + 3) + " : Region " + region + " is not subscribed to tenancy")
+            logging.log(60, "ROW " + str(i + 3) + " : Region " + region + " is not subscribed for tenancy")
             vcn_reg_check = True
 
         # Check for invalid Compartment Name
@@ -575,7 +577,10 @@ def validate_vcns(filename, comp_ids, vcnobj):  # ,vcn_cidrs,vcn_compartment_ids
         oci_vcn_lpgs[vcn_name] = []
         vcn_lpg_str = ""
 
-        config.__setitem__("region", ct.region_dict[region])
+        try:
+            config.__setitem__("region", ct.region_dict[region])
+        except KeyError:
+            continue
         vnc = oci.core.VirtualNetworkClient(config)
 
         lpg_list = vnc.list_local_peering_gateways(compartment_id=comp_id, vcn_id=vcn_id)
@@ -634,7 +639,7 @@ def validate_dhcp(filename, comp_ids, vcnobj):
         region = str(df.loc[i, 'Region'])
 
         if (region.lower() != "nan" and region.lower() not in ct.all_regions):
-            logging.log(60, "ROW " + str(i + 3) + " : Region " + region + " is not subscribed to tenancy")
+            logging.log(60, "ROW " + str(i + 3) + " : Region " + region + " is not subscribed for tenancy")
             dhcp_reg_check = True
 
         # Check for invalid compartment name
@@ -672,8 +677,347 @@ def validate_dhcp(filename, comp_ids, vcnobj):
                     dhcp_empty_check = True
 
     logging.log(60, "End Null or Wrong value Check in each row-----------------\n")
-    if (
-            dhcp_reg_check == True or dhcp_vcn_check == True or dhcp_wrong_check == True or dhcp_comp_check == True or dhcp_empty_check == True):  # or subnet_dhcp_check == True):
+    if (dhcp_reg_check == True or dhcp_vcn_check == True or dhcp_wrong_check == True or dhcp_comp_check == True or dhcp_empty_check == True):  # or subnet_dhcp_check == True):
+        print("Null or Wrong value Check failed!!")
+        return True
+    else:
+        return False
+
+def validate_compartments(filename):
+
+    comp_empty_check = False
+    comp_invalid_check = False
+    parent_comp_check= False
+    # Read the Compartments tab from excel
+    df, col_headers = commonTools.read_cd3(filename, "Compartments")
+
+    # Drop null values
+    df = df.dropna(how='all')
+    # Reset index
+    df = df.reset_index(drop=True)
+
+    #Collect Compartment Names in a list
+    comp_list = df['Name'].tolist()
+
+    for i in df.index:
+        region = str(df.loc[i, 'Region']).strip().lower()
+        # Encountered <End>
+        if (region in commonTools.endNames):
+            break
+        if region == 'nan':
+            logging.log(60, "ROW " + str(i + 3) + " : Empty value at column Region")
+            comp_empty_check = True
+        elif region!=ct.home_region:
+            logging.log(60, "ROW " + str(i + 3) + " : Region specified is not the Home Region")
+            comp_invalid_check = True
+        if str(df.loc[i, 'Name']).lower() == 'nan':
+            logging.log(60, "ROW " + str(i + 3) + " : Empty value at column Name")
+            comp_empty_check = True
+        if str(df.loc[i, 'Parent Compartment']).strip() not in comp_list and str(df.loc[i, 'Parent Compartment']).strip().lower() !='root' and str(df.loc[i, 'Parent Compartment']).strip().lower() !='nan':
+            logging.log(60, "ROW " + str(i + 3) + " : Invalid value for column Parent Compartment; It should be one of the values in column Name")
+            parent_comp_check = True
+
+    if (comp_empty_check == True or parent_comp_check == True or comp_invalid_check == True):
+        print("Null or Wrong value Check failed!!")
+        return True
+    else:
+        return False
+
+def validate_groups(filename):
+    groups_empty_check = False
+    groups_invalid_check = False
+    # Read the Groups tab from excel
+    df, col_headers = commonTools.read_cd3(filename, "Groups")
+
+    # Drop null values
+    df = df.dropna(how='all')
+    # Reset index
+    df = df.reset_index(drop=True)
+
+    for i in df.index:
+        region = str(df.loc[i, 'Region']).strip().lower()
+        # Encountered <End>
+        if (region in commonTools.endNames):
+            break
+        if region == 'nan':
+            logging.log(60, "ROW " + str(i + 3) + " : Empty value at column Region")
+            groups_empty_check = True
+        elif region!=ct.home_region:
+            logging.log(60, "ROW " + str(i + 3) + " : Region specified is not the Home Region")
+            groups_invalid_check = True
+        if str(df.loc[i, 'Name']).strip().lower() == 'nan':
+            logging.log(60, "ROW " + str(i + 3) + " : Empty value at column Name")
+            groups_empty_check = True
+    if groups_empty_check == True or groups_invalid_check == True:
+        print("Null or Wrong value Check failed!!")
+        return True
+    else:
+        return False
+
+def validate_policies(filename,comp_ids):
+    policies_empty_check = False
+    policies_comp_check = False
+    policies_invalid_check = False
+
+    # Read the Policies tab from excel
+    df, col_headers = commonTools.read_cd3(filename, "Policies")
+
+    # Drop null values
+    df = df.dropna(how='all')
+    # Reset index
+    df = df.reset_index(drop=True)
+
+
+    for i in df.index:
+        region = str(df.loc[i, 'Region']).strip().lower()
+        # Encountered <End>
+        if (region in commonTools.endNames):
+            break
+
+        # Check for invalid Compartment Name
+        comp_name = str(df.loc[i, 'Compartment Name']).strip()
+        if comp_name.lower() == 'nan':
+            pass
+        else:
+            try:
+                comp_id = comp_ids[comp_name]
+            except KeyError:
+                logging.log(60, "ROW " + str(i + 3) + " : Compartment " + comp_name + " doesnot exist in OCI")
+                policies_comp_check = True
+
+        #Check for Null Values
+        if str(df.loc[i, 'Region']).strip().lower()!='nan' and str(df.loc[i, 'Region']).strip().lower()!=ct.home_region:
+            logging.log(60, "ROW " + str(i + 3) + " : Region specified is not the Home Region")
+            policies_invalid_check = True
+
+        if str(df.loc[i, 'Region']).strip().lower() != 'nan' and str(
+                df.loc[i, 'Name']).strip().lower() == 'nan' and str(
+                df.loc[i, 'Compartment Name']).strip().lower() == 'nan' and str(
+                df.loc[i, 'Policy Statements']).strip().lower() != 'nan':
+            logging.log(60, "ROW " + str(i + 3) + " : Empty value at column Name and Compartment Name")
+            policies_empty_check = True
+        if str(df.loc[i, 'Region']).strip().lower() == 'nan' and str(
+                df.loc[i, 'Name']).strip().lower() != 'nan' and str(
+                df.loc[i, 'Compartment Name']).strip().lower() == 'nan' and str(
+                df.loc[i, 'Policy Statements']).strip().lower() != 'nan':
+            logging.log(60, "ROW " + str(i + 3) + " : Empty value at column Region and Compartment Name")
+            policies_empty_check = True
+
+        if str(df.loc[i, 'Region']).strip().lower() == 'nan' and str(
+                df.loc[i, 'Name']).strip().lower() != 'nan' and str(
+                df.loc[i, 'Compartment Name']).strip().lower() != 'nan' and str(
+                df.loc[i, 'Policy Statements']).strip().lower() != 'nan':
+            logging.log(60, "ROW " + str(i + 3) + " : Empty value at column Region")
+            policies_empty_check = True
+
+        if str(df.loc[i, 'Region']).strip().lower() != 'nan' and str(
+                df.loc[i, 'Name']).strip().lower() == 'nan' and str(
+                df.loc[i, 'Compartment Name']).strip().lower() != 'nan' and str(
+                df.loc[i, 'Policy Statements']).strip().lower() != 'nan':
+            logging.log(60, "ROW " + str(i + 3) + " : Empty value at column Name")
+            policies_empty_check = True
+
+        if str(df.loc[i, 'Policy Statements']).strip().lower() == 'nan':
+            logging.log(60, "ROW " + str(i + 3) + " : Empty value at column Policy Statements")
+            policies_empty_check = True
+
+        if str(df.loc[i, 'Compartment Name']).strip().lower() == 'nan' and str(df.loc[i, 'Policy Statements']).strip().lower() != 'nan' and str(
+            df.loc[i, 'Name']).strip().lower() != 'nan':
+            logging.log(60, "ROW " + str(i + 3) + " : Empty value at column Compartment Name")
+            policies_empty_check = True
+
+        if str(df.loc[i, 'Region']).strip().lower() == 'nan' and str(
+                df.loc[i, 'Name']).strip().lower() == 'nan' and str(
+                df.loc[i, 'Compartment Name']).strip().lower() != 'nan' and str(
+            df.loc[i, 'Policy Statements']).strip().lower() != 'nan':
+            logging.log(60, "ROW " + str(i + 3) + " : Empty value at column Region and Name")
+            policies_empty_check = True
+
+    if policies_empty_check == True or policies_comp_check == True or policies_invalid_check == True:
+        print("Null or Wrong value Check failed!!")
+        return True
+    else:
+        return False
+
+
+def validate_instances(filename,comp_ids):
+    inst_empty_check = False
+    inst_invalid_check = False
+    inst_comp_check = False
+
+    # Read the Instances tab from excel
+    df, col_headers = commonTools.read_cd3(filename, "Instances")
+
+    # Drop null values
+    df = df.dropna(how='all')
+    # Reset index
+    df = df.reset_index(drop=True)
+    dfcolumns = df.columns.values.tolist()
+    for i in df.index:
+        region = str(df.loc[i, 'Region']).strip().lower()
+        # Encountered <End>
+        if (region in commonTools.endNames):
+            break
+
+        if region == 'nan':
+            logging.log(60, "ROW " + str(i + 3) + " : Empty value at column Region")
+            inst_empty_check = True
+        elif region not in ct.all_regions:
+            logging.log(60, "ROW " + str(i + 3) + " : Region " + region + " is not subscribed for tenancy")
+            inst_invalid_check = True
+
+        # Check for invalid Compartment Name
+        comp_name = str(df.loc[i, 'Compartment Name']).strip()
+        if comp_name.lower() == 'nan':
+            logging.log(60, "ROW " + str(i + 3) + " : Empty value at column Compartment Name")
+            inst_empty_check = True
+
+        else:
+            try:
+                comp_id = comp_ids[comp_name]
+            except KeyError:
+                logging.log(60, "ROW " + str(i + 3) + " : Compartment " + comp_name + " doesnot exist in OCI")
+                inst_comp_check = True
+
+        for columnname in dfcolumns:
+            # Column value
+            columnvalue = str(df.loc[i, columnname]).strip()
+            if (columnname == 'Availability Domain(AD1|AD2|AD3)'):
+                if columnvalue.lower() == 'nan':
+                    logging.log(60, "ROW " + str(i + 3) + " : Empty value at column Availability Domain")
+                    inst_empty_check = True
+                elif columnvalue.upper() not in ["AD1", "AD2", "AD3"]:
+                    logging.log(60, "ROW " + str(i + 3) + " : Wrong value at column Availability Domain - "+columnvalue)
+                    inst_invalid_check = True
+
+            if columnname == 'Fault Domain':
+                if columnvalue.lower() != 'nan' and columnvalue not in ["FAULT-DOMAIN-1", "FAULT-DOMAIN-2", "FAULT-DOMAIN-3"]:
+                    logging.log(60, "ROW " + str(i + 3) + " : Wrong value at column Fault Domain - " + columnvalue)
+                    inst_invalid_check = True
+
+            if columnname == 'SSH Key Var Name':
+                if columnvalue.lower() == 'nan':
+                    logging.log(60, "ROW " + str(i + 3) + " : Empty value at column SSH Key Var Name. Instance will be launched without any ssh key. Ignore for Windows")
+                    print("Warning! ROW " + str(i + 3) + " : Empty value at column SSH Key Var Name. Instance will be launched without any ssh key. Ignore for Windows")
+
+            if columnname == 'Pub Address':
+                if columnvalue.lower() == 'nan':
+                    logging.log(60, "ROW " + str(i + 3) + " : Empty value at column Pub Address")
+                    inst_empty_check = True
+                elif columnvalue.lower()!='true' and columnvalue.lower()!='false':
+                    logging.log(60, "ROW " + str(i + 3) + " : Wrong value at column Pub Address - "+columnvalue)
+                    inst_invalid_check = True
+
+            if columnname == 'Display Name' or columnname == 'Subnet Name':
+                if columnvalue.lower()=='nan':
+                    logging.log(60, "ROW " + str(i + 3) + " : Empty value at column Display Name/Subnet Name")
+                    inst_empty_check = True
+
+            if columnname == 'Source Details':
+                if columnvalue.lower()== 'nan':
+                    logging.log(60, "ROW " + str(i + 3) + " : Empty value at column Source Details")
+                    inst_empty_check = True
+
+                elif (not columnvalue.startswith("image::") and not columnvalue.startswith("bootVolume::")):
+                    logging.log(60, "ROW " + str(i + 3) + " : Wrong value at column Source Details - " + columnvalue + ". Valid format is image::<var_name> or bootVolume::<var_name>")
+                    inst_invalid_check = True
+
+            if columnname == 'Shape':
+                if columnvalue.lower()=='nan':
+                    logging.log(60, "ROW " + str(i + 3) + " : Empty value at column Shape")
+                    inst_empty_check = True
+
+                elif "Flex" in columnvalue:
+                    if "::" not in columnvalue:
+                        logging.log(60, "ROW " + str(i + 3) + " : Wrong value at column Shape - " + columnvalue + ". Valid format for Flex Shapes is VM.Standard.E3.Flex::<ocpus>")
+                        inst_invalid_check = True
+                    else:
+                        shape= columnvalue.split("::")
+                        if len(shape)!=2:
+                            logging.log(60, "ROW " + str(i + 3) + " : Wrong value at column Shape - " + columnvalue + ".Valid format for Flex Shapes is VM.Standard.E3.Flex::<ocpus>")
+                            inst_invalid_check = True
+
+    if inst_empty_check == True or inst_comp_check == True or inst_invalid_check == True:
+        print("Null or Wrong value Check failed!!")
+        return True
+    else:
+        return False
+
+
+
+def validate_blockvols(filename,comp_ids):
+    bvs_empty_check = False
+    bvs_invalid_check = False
+    bvs_comp_check = False
+
+    # Read the BlockVols tab from excel
+    df, col_headers = commonTools.read_cd3(filename, "BlockVols")
+
+    # Drop null values
+    df = df.dropna(how='all')
+    # Reset index
+    df = df.reset_index(drop=True)
+    dfcolumns = df.columns.values.tolist()
+
+    for i in df.index:
+        region = str(df.loc[i, 'Region']).strip().lower()
+        # Encountered <End>
+        if (region in commonTools.endNames):
+            break
+
+        if region == 'nan':
+            logging.log(60, "ROW " + str(i + 3) + " : Empty value at column Region")
+            bvs_empty_check = True
+        elif region not in ct.all_regions:
+            logging.log(60, "ROW " + str(i + 3) + " : Region " + region + " is not subscribed for tenancy")
+            bvs_invalid_check = True
+
+        # Check for invalid Compartment Name
+        comp_name = str(df.loc[i, 'Compartment Name']).strip()
+        if comp_name.lower() == 'nan':
+            logging.log(60, "ROW " + str(i + 3) + " : Empty value at column Compartment Name")
+            bvs_empty_check = True
+        else:
+            try:
+                comp_id = comp_ids[comp_name]
+            except KeyError:
+                logging.log(60, "ROW " + str(i + 3) + " : Compartment " + comp_name + " doesnot exist in OCI")
+                bvs_comp_check = True
+
+        for columnname in dfcolumns:
+            # Column value
+            columnvalue = str(df.loc[i, columnname]).strip()
+
+            # Check if values are entered for mandatory fields - to create volumes
+            if columnname == 'Block Name':
+                if columnvalue.lower() == 'nan':
+                    logging.log(60, "ROW " + str(i + 3) + " : Empty value at column Block Name")
+                    bvs_empty_check = True
+
+            if (columnname == 'Availability Domain(AD1|AD2|AD3)'):
+                if columnvalue.lower() == 'nan':
+                    logging.log(60, "ROW " + str(i + 3) + " : Empty value at column Availability Domain")
+                    bvs_empty_check = True
+                elif columnvalue.upper() not in ["AD1", "AD2", "AD3"]:
+                    logging.log(60, "ROW " + str(i + 3) + " : Wrong value at column Availability Domain - "+columnvalue)
+                    bvs_invalid_check = True
+            if (columnname == 'Attach Type(iscsi|paravirtualized)'):
+                if columnvalue.lower()!='nan' and columnvalue!="iscsi" and columnvalue!="paravirtualized":
+                    logging.log(60,"ROW " + str(i + 3) + " : Wrong value at column Attach Type - " + columnvalue)
+                    bvs_invalid_check = True
+
+        # Check if values are entered for mandatory fields - to attach volumes to instances
+        if str(df.loc[i, 'Attached To Instance']).lower() != 'nan' and str(
+                df.loc[i, 'Attach Type(iscsi|paravirtualized)']).lower() == 'nan':
+            logging.log(60, "ROW " + str(i + 3) + " : Field Attach Type is empty if you want to attach  the volume to instance " + df.loc[i, 'Attached To Instance'] + ".")
+            bvs_invalid_check = True
+        elif str(df.loc[i, 'Attach Type(iscsi|paravirtualized)']).lower() != 'nan' and str(
+                df.loc[i, 'Attached To Instance']).lower() == 'nan':
+            logging.log(60, "ROW " + str(i + 3) + " : Field Attached To Instance is empty for Attachment Type " + df.loc[
+                i, 'Attach Type(iscsi|paravirtualized)'] + ".")
+            bvs_invalid_check = True
+
+    if bvs_empty_check == True or bvs_comp_check == True or bvs_invalid_check == True:
         print("Null or Wrong value Check failed!!")
         return True
     else:
@@ -681,24 +1025,62 @@ def validate_dhcp(filename, comp_ids, vcnobj):
 
 
 def main():
-    # CD3 Validation begins here for Sunbnets, VCNs and DHCP tabs
-    # Flag to check if for errors
-    vcnobj = parseVCNs(filename)
+    comp_check = False
+    groups_check = False
+    policies_check = False
+    vcn_check = False
+    vcn_cidr_check = False
+    vcn_peer_check = False
+    subnet_check = False
+    subnet_cidr_check = False
+    dhcp_check = False
+    bvs_check = False
+    instances_check = False
 
-    logging.log(60, "============================= Verifying VCNs Tab ==========================================\n")
-    print("\nProcessing VCNs Tab..")
-    vcn_check, vcn_cidr_check, vcn_peer_check = validate_vcns(filename, ct.ntk_compartment_ids, vcnobj)
+    choice = validate_options.split(",")
 
-    logging.log(60, "============================= Verifying Subnets Tab ==========================================\n")
-    print("\nProcessing Subnets Tab..")
-    subnet_check, subnet_cidr_check = validate_subnets(filename, ct.ntk_compartment_ids, vcnobj)
+    if ('1' in choice):
+        logging.log(60, "============================= Verifying Compartments Tab ==========================================\n")
+        print("\nProcessing Compartments Tab..")
+        comp_check = validate_compartments(filename)
+    if ('2' in choice):
+        logging.log(60,"\n============================= Verifying Groups Tab ==========================================\n")
+        print("\nProcessing Groups Tab..")
+        groups_check = validate_groups(filename)
+    if ('3' in choice):
+        logging.log(60, "\n============================= Verifying Policies Tab ==========================================\n")
+        print("\nProcessing Policies Tab..")
+        policies_check = validate_policies(filename,ct.ntk_compartment_ids)
 
-    logging.log(60, "============================= Verifying DHCP Tab ==========================================\n")
-    print("\nProcessing DHCP Tab..")
-    dhcp_check = validate_dhcp(filename, ct.ntk_compartment_ids, vcnobj)
+    # CD3 Validation begins here for Network
+    if ('4' in choice):
+
+        vcnobj = parseVCNs(filename)
+
+        logging.log(60, "\n============================= Verifying VCNs Tab ==========================================\n")
+        print("\nProcessing VCNs Tab..")
+        vcn_check, vcn_cidr_check, vcn_peer_check = validate_vcns(filename, ct.ntk_compartment_ids, vcnobj)
+
+        logging.log(60, "============================= Verifying Subnets Tab ==========================================\n")
+        print("\nProcessing Subnets Tab..")
+        subnet_check, subnet_cidr_check = validate_subnets(filename, ct.ntk_compartment_ids, vcnobj)
+
+        logging.log(60, "============================= Verifying DHCP Tab ==========================================\n")
+        print("\nProcessing DHCP Tab..")
+        dhcp_check = validate_dhcp(filename, ct.ntk_compartment_ids, vcnobj)
+    if ('5' in choice):
+        logging.log(60, "\n============================= Verifying Instances Tab ==========================================\n")
+        print("\nProcessing Instances Tab..")
+        instances_check = validate_instances(filename,ct.ntk_compartment_ids)
+
+    if ('6' in choice):
+        logging.log(60, "\n============================= Verifying BlockVols Tab ==========================================\n")
+        print("\nProcessing BlockVols Tab..")
+        instances_check = validate_blockvols(filename,ct.ntk_compartment_ids)
+
 
     # Prints the final result; once the validation is complete
-    if vcn_check == True or vcn_cidr_check == True or vcn_peer_check == True or subnet_check == True or subnet_cidr_check == True or dhcp_check == True:
+    if comp_check ==True or groups_check == True or policies_check == True or vcn_check == True or vcn_cidr_check == True or vcn_peer_check == True or subnet_check == True or subnet_cidr_check == True or dhcp_check == True or instances_check == True or bvs_check == True:
         logging.log(60, "=======")
         logging.log(60, "Summary:")
         logging.log(60, "=======")
@@ -707,15 +1089,21 @@ def main():
         print("=======")
         print("Errors Found!!! Please check cd3Validator.log for details before proceeding!!")
         exit(1)
-    elif vcn_check == False and vcn_cidr_check == False and vcn_peer_check == False and subnet_check == False and subnet_cidr_check == False and dhcp_check == False:
+    elif comp_check ==False and groups_check == False and policies_check == False and vcn_check == False and vcn_cidr_check == False and vcn_peer_check == False and subnet_check == False and subnet_cidr_check == False and dhcp_check == False and instances_check == False and bvs_check == False:
         logging.log(60, "=======")
         logging.log(60, "Summary:")
         logging.log(60, "=======")
-        logging.log(60,"There are no errors in CD3. Verify LPG's Peering Check Status once in the log file. Otherwise You are good to proceed !!!")
+        logging.log(60,"There are no errors in CD3. Please proceed with TF Generation\n")
+        if('2' in choice):
+            print("Verify LPG's Peering Check Status once in the log file. Otherwise You are good to proceed !!!")
         print("\n\nSummary:")
         print("=======")
-        print("There are no errors in CD3. Verify LPG's Peering Check Status once in the log file. Otherwise You are good to proceed !!!")
+        print("There are no errors in CD3. Please proceed with TF Generation\n")
+        if('2' in choice):
+            print("Verify LPG's Peering Check Status once in the log file. Otherwise You are good to proceed !!!\n")
+
         exit(0)
+
 
 
 if __name__ == '__main__':
