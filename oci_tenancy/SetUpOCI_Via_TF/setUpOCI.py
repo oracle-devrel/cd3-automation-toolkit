@@ -63,11 +63,12 @@ if(input_validate_cd3file.lower() == 'true'):
 
     userInput = input('Enter your choice (comma seperated): ')
     userInput=userInput.strip()
+    val_inputs = userInput.split(",")
 
     if ("q" in userInput or "Q" in userInput):
         print("Exiting...")
         exit()
-    if (not set(userInput).issubset(set(validate_cd3file_inputs))):
+    if (not set(val_inputs).issubset(set(validate_cd3file_inputs))):
         print("\nInvalid Choice..Exiting...")
         exit()
 
