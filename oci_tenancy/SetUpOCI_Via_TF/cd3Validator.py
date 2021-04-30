@@ -56,7 +56,7 @@ vcn_cidrs = {}
 vcn_compartment_ids = {}
 
 logging.addLevelName(60, "custom")
-logging.basicConfig(filename="cd3Validator.log", filemode="a", format="%(asctime)s - %(message)s", level=60)
+logging.basicConfig(filename="cd3Validator.log", filemode="w", format="%(asctime)s - %(message)s", level=60)
 logger = logging.getLogger("cd3Validator")
 
 
@@ -697,7 +697,7 @@ def validate_compartments(filename):
     df = df.reset_index(drop=True)
 
     #Collect Compartment Names in a list
-    comp_list = df['Name'].tolist()
+    #comp_list = df['Name'].tolist()
 
     for i in df.index:
         region = str(df.loc[i, 'Region']).strip().lower()
@@ -713,9 +713,9 @@ def validate_compartments(filename):
         if str(df.loc[i, 'Name']).lower() == 'nan':
             logging.log(60, "ROW " + str(i + 3) + " : Empty value at column Name")
             comp_empty_check = True
-        if str(df.loc[i, 'Parent Compartment']).strip() not in comp_list and str(df.loc[i, 'Parent Compartment']).strip().lower() !='root' and str(df.loc[i, 'Parent Compartment']).strip().lower() !='nan':
-            logging.log(60, "ROW " + str(i + 3) + " : Invalid value for column Parent Compartment; It should be one of the values in column Name")
-            parent_comp_check = True
+        #if str(df.loc[i, 'Parent Compartment']).strip() not in comp_list and str(df.loc[i, 'Parent Compartment']).strip().lower() !='root' and str(df.loc[i, 'Parent Compartment']).strip().lower() !='nan':
+        #    logging.log(60, "ROW " + str(i + 3) + " : Invalid value for column Parent Compartment; It should be one of the values in column Name")
+        #    parent_comp_check = True
 
     if (comp_empty_check == True or parent_comp_check == True or comp_invalid_check == True):
         print("Null or Wrong value Check failed!!")
