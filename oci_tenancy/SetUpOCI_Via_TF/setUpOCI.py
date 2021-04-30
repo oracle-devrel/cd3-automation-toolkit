@@ -14,7 +14,6 @@ config.read(args.propsfile)
 #Read Config file Variables
 try:
     input_nongf_tenancy = config.get('Default', 'non_gf_tenancy').strip()
-    input_validate_cd3file = config.get('Default', 'validate_cd3file').strip()
 
     input_outdir = config.get('Default', 'outdir').strip()
     outdir = input_outdir
@@ -45,52 +44,9 @@ except Exception as e:
     print('Check if input properties exist and try again..exiting...`    ')
     exit()
 
-if (input_nongf_tenancy.lower() == 'true' and input_validate_cd3file.lower()=='true'):
-    print("validate_cd3file flag should not be set true for export process from non greenfield tenancy")
-    print("Exiting...")
-    exit()
-
-validate_cd3file_inputs = ["1","2","3","4","5","6"]
-if(input_validate_cd3file.lower() == 'true'):
-    print("\nvalidate_cd3file in properties files is set to true..\n")
-    print("1.  Validate Compartments")
-    print("2.  Validate Groups")
-    print("3.  Validate Policies")
-    print("4.  Validate Networking(VCNs, Subnets, DHCP)")
-    print("5.  Validate Instances")
-    print("6.  Validate Block Volumes")
-    print("q.  Press q to quit")
-
-    userInput = input('Enter your choice (comma seperated): ')
-    userInput=userInput.strip()
-    val_inputs = userInput.split(",")
-
-    if ("q" in userInput or "Q" in userInput):
-        print("Exiting...")
-        exit()
-    if (not set(val_inputs).issubset(set(validate_cd3file_inputs))):
-        print("\nInvalid Choice..Exiting...")
-        exit()
-
-
-    if (input_config_file == ''):
-        command = 'python cd3Validator.py ' + inputfile +' ' +userInput
-        print("Executing Command: " + command)
-        exitval = os.system(command)
-    else:
-        command = 'python cd3Validator.py ' + inputfile +' ' +userInput + ' --configFileName ' + input_config_file
-        print("Executing Command: " + command)
-        exitval = os.system(command)
-        if (exitval == 1 or exitval == 256):
-            prcd_input = input("Do you still want to proceed with setUpOCI? Enter y or n: ")
-            if (prcd_input.lower() == 'y'):
-                pass
-            else:
-                print("Exiting...")
-                exit()
 
 inputs = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
-if (input_nongf_tenancy.lower() == 'true' and input_validate_cd3file.lower()=='false'):
+if (input_nongf_tenancy.lower() == 'true'):
     print("\nnon_gf_tenancy in properties files is set to true..Export existing OCI objects and Synch with TF state")
     print("Process will fetch objects from OCI in the specified compartment from all regions tenancy is subscribed to\n")
     print("1. Export Identity Objects(Compartments, Groups, Policies) to CD3 and create TF Files")
@@ -632,7 +588,8 @@ if (input_nongf_tenancy.lower() == 'true' and input_validate_cd3file.lower()=='f
 
     exit()
 
-inputs = ["1","2","3","4","5","6","7","8","9","10","11"]
+inputs = ["0","1","2","3","4","5","6","7","8","9","10","11"]
+print("0.  Validate CD3")
 print("1.  Identity")
 print("2.  Networking")
 print("3.  Dedicated VM Hosts/Instances/Boot Backup Policy")
@@ -649,6 +606,46 @@ print("\nSee example folder for sample input files\n")
 
 userInput = input('Enter your choice: ')
 userInput=userInput.split(',')
+
+if ('0' in userInput):
+    validate_cd3file_inputs = ["1", "2", "3", "4", "5", "6"]
+    print("1.  Validate Compartments")
+    print("2.  Validate Groups")
+    print("3.  Validate Policies")
+    print("4.  Validate Networking(VCNs, Subnets, DHCP)")
+    print("5.  Validate Instances")
+    print("6.  Validate Block Volumes")
+    print("q.  Press q to quit")
+
+    valInput = input('Enter your choice (comma seperated): ')
+    valInput = valInput.strip()
+    val_inputs = valInput.split(",")
+
+
+    if ("q" in val_inputs or "Q" in val_inputs):
+        print("Exiting...")
+        exit()
+    if (not set(val_inputs).issubset(set(validate_cd3file_inputs))):
+        print("\nInvalid Choice..Exiting...")
+        exit()
+
+    if (input_config_file == ''):
+        command = 'python cd3Validator.py ' + inputfile + ' ' + valInput
+        print("Executing Command: " + command)
+        exitval = os.system(command)
+    else:
+        command = 'python cd3Validator.py ' + inputfile + ' ' + valInput + ' --configFileName ' + input_config_file
+        print("Executing Command: " + command)
+        exitval = os.system(command)
+        #if (exitval == 1 or exitval == 256):
+        #    prcd_input = input("Do you still want to proceed with setUpOCI? Enter y or n: ")
+        #    if (prcd_input.lower() == 'y'):
+        #        pass
+        #    else:
+        #        print("Exiting...")
+        #        exit()
+    print("Exiting CD3 Validation...")
+    exit()
 
 if('1' in userInput):
     print('-------------------------------------------------------Identity------------------------------------------------------')
