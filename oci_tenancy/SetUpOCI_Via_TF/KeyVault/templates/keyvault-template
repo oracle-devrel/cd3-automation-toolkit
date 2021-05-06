@@ -1,0 +1,18 @@
+# Creates a vault
+resource "oci_kms_vault" "{{ vault_tf_name }}" {
+    compartment_id = var.{{ compartment_tf_name }}
+    display_name   = "{{ vault_name }}"
+    vault_type     = "DEFAULT"
+}
+
+# Creates a Key
+resource "oci_kms_key" "{{ key_tf_name }}" {
+    compartment_id      = var.{{ compartment_tf_name }}
+    display_name        = "{{ key_name }}"
+    management_endpoint = {{ management_endpoint }}
+
+    key_shape {
+      algorithm = "AES"
+      length    = 32
+    }
+}
