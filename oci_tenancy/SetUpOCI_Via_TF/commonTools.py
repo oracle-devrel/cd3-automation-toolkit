@@ -32,9 +32,9 @@ class commonTools():
             os.chdir("../")
         elif ("Solutions" in dir):
             os.chdir("../../")
-        if ("ResourceManager" in dir):
+        elif ("ResourceManager" in dir):
             os.chdir("../")
-        if("Networking" in dir):
+        elif("Networking" in dir):
             os.chdir("../../../")
         elif ("CoreInfra" in dir):
             os.chdir("../../")
@@ -46,12 +46,21 @@ class commonTools():
             os.chdir("../../")
         elif ("OCSWorkVM" in dir):
             os.chdir("../")
+        elif ("OSS" in dir):
+            os.chdir("../")
+        elif ("KeyVault" in dir):
+            os.chdir("../")
+        elif ("CloudGuard" in dir):
+            os.chdir("../")
+        elif ("Logging" in dir):
+            os.chdir("../")
+
         regionFileName="OCI_Regions"
         protocolFileName="OCI_Protocols"
         excelColumnName="Excel_Columns"
         with open (regionFileName) as f:
             for line in f:
-                if(":" in line):
+                if("#" not in line and ":" in line):
                     key = line.split(":")[0].strip().lower()
                     val = line.split(":")[1].strip().lower()
                     self.region_dict[key] = val

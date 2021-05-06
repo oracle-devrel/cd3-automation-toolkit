@@ -3,6 +3,10 @@ import configparser
 import os
 import sys
 from commonTools import *
+import CloudGuard
+import KeyVault
+import OSS
+import Logging
 
 parser = argparse.ArgumentParser(description="Sets Up OCI via TF")
 parser.add_argument("propsfile",help="Full Path of properties file containing input variables. eg setUpOCI.properties")
@@ -10,6 +14,7 @@ parser.add_argument("propsfile",help="Full Path of properties file containing in
 args = parser.parse_args()
 config = configparser.RawConfigParser()
 config.read(args.propsfile)
+
 
 #Read Config file Variables
 try:
@@ -27,8 +32,6 @@ try:
         print("input prefix value cannot be left blank. Exiting... ")
         exit(1)
 
-    input_config_file=config.get('Default', 'config_file').strip()
-
     input_cd3file=config.get('Default','cd3file').strip()
     inputfile=input_cd3file
     if(input_cd3file==''):
@@ -38,12 +41,17 @@ try:
         print("valid formats for input cd3file are either .xls or .xlsx")
         exit(1)
 
+    input_config_file=config.get('Default', 'config_file').strip()
+    config = config.get('Default', 'config_file').strip() #or DEFAULT_LOCATION
+
 except Exception as e:
     print(e)
 
     print('Check if input properties exist and try again..exiting...`    ')
     exit()
 
+ct = commonTools()
+ct.get_subscribedregions(input_config_file)
 
 inputs = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
 if (input_nongf_tenancy.lower() == 'true'):
@@ -74,9 +82,6 @@ if (input_nongf_tenancy.lower() == 'true'):
         else:
             print("\nInvalid Choice..Exiting...")
             exit()
-
-    ct = commonTools()
-    ct.get_subscribedregions(input_config_file)
 
     print("\nChecking if the specified outdir contains tf files related to the OCI components being exported...")
     tf_list = {}
@@ -588,7 +593,7 @@ if (input_nongf_tenancy.lower() == 'true'):
 
     exit()
 
-inputs = ["0","1","2","3","4","5","6","7","8","9","10","11"]
+inputs = ["0","1","2","3","4","5","6","7","8","9","10","11","12"]
 print("0.  Validate CD3")
 print("1.  Identity")
 print("2.  Networking")
@@ -601,6 +606,7 @@ print("8.  ADW/ATP")
 print("9.  Database")
 print("10. Solutions (Events and Notifications)")
 print("11. Upload current terraform files/state to Resource Manager")
+print("12. Enable OCI CIS Compliant Features")
 print("q.  Press q to quit")
 print("\nSee example folder for sample input files\n")
 
@@ -1133,8 +1139,33 @@ if('11' in userInput):
     exitVal = os.system(command)
     if (exitVal == 1):
         exit()
-    os.chdir("../..")
+    os.chdir("../")
     print("-----------------------------------------------------------------------------------------------------------------------")
+if('12' in userInput):
+    print('\n-------------------------------------------------------CIS Compliant Features------------------------------------------------------')
+    cisinputs = ["1", "2","3","4"]
+    print("1.  Create Key/Vault, Object Storage Bucket and enable Logging for write events to bucket")
+    #print("2.  Enable Logging for Subnets")
+    print("2.  Enable Cloud Guard")
+    print("m.  Press m to go back to Main Menu")
+    print("q.  Press q to quit")
+
+    choice = input("Enter your choice ")
+    choice = choice.split(",")
+    if ('1' in choice):
+        region_name = input("Enter region name eg ashburn where you want to create OSS Bucket and Key/Vault ")
+        comp_name=input("Enter name of compartment as it appears in OCI Console ")
+
+        ##Add option here . make print statements consistent
+        KeyVault.create_cis_keyvault(outdir, prefix, region_name, comp_name, config=config)
+        OSS.create_cis_oss(outdir, prefix, region_name, comp_name, config=config)
+        Logging.enable_cis_oss_logging(outdir, prefix, region_name, comp_name, config=config)
+
+    if ('2' in choice):
+        ##Add option here . make print statements consistent
+        CloudGuard.enable_cis_cloudguard(outdir, prefix, config=config)
+    print("-----------------------------------------------------------------------------------------------------------------------")
+
 
 if ("q" in userInput or "Q" in userInput):
     print("Exiting...")
