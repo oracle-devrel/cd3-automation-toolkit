@@ -1,39 +1,38 @@
-{% for policy in policies %}
-resource oci_identity_policy {{ policy['tf_name'] }} {
-  compartment_id = var.{{ policy.compartment }}
-  description    = "{{ policy['description'] }}"
-  name           = "{{ policy['name'] }}"
 
-  statements = [
-  {% for stmt in policy['statements'] %}
-    "{{ stmt }}",
-  {% endfor %}
-  ]
-  {#  ##Do not modify below this line##  #}
-  {#                                     #}
-  {#  ###Section for adding Defined and Freeform Tags###  #}
-  {% if defined_tags and defined_tags != 'nan' and defined_tags != '' %}
+resource "oci_identity_policy" "{{ policy_tf_name }}" {
+            compartment_id = var.{{ compartment_tf_name }}
+            {% if '\n' not in description %}
+            description = "{{ description }}"
+            {% else %}
+            description = <<EOT
+{{ description }}
+EOT
+            {% endif %}
+            name = "{{ name }}"
 
-  {% if defined_tags[0] %}
-  defined_tags = {
-  {% for tags in defined_tags  %}   {% if not loop.last %}
-  "{{ tags[0]  }}"= "{{ tags[1] }}" ,
-  {% else %}
-  "{{ tags[0]  }}"= "{{ tags[1] }}"
-  {% endif %}{% endfor %}
-  }
-  {% endif %} {% endif %}
-  {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' %}
-  {% if freeform_tags[0] %}
-  freeform_tags = {
-  {% for tags in freeform_tags %} {% if not loop.last  %}
-  "{{ tags[0] }}"="{{ tags[1] }}",
-  {% else %}
-  "{{ tags[0] }}"="{{ tags[1] }}"
-  {% endif %} {% endfor %}
-  }
-  {% endif %} {% endif %}
-  {#  ###Section for adding Defined and Freeform Tags ends here###  #}
-}
+            {#  ##Do not modify below this line##  #}
+            {#                                     #}
+            {#  ###Section for adding Defined and Freeform Tags###  #}
+            {% if defined_tags and defined_tags != 'nan' and defined_tags != '' %}
+            {% if defined_tags[0] %}
+            defined_tags = {
+            {% for tags in defined_tags  %}   {% if not loop.last %}
+            "{{ tags[0]  }}"= "{{ tags[1] }}" ,
+            {% else %}
+            "{{ tags[0]  }}"= "{{ tags[1] }}"
+            {% endif %}{% endfor %}
+            }
+            {% endif %} {% endif %}
+            {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' %}
+            {% if freeform_tags[0] %}
+            freeform_tags = {
+            {% for tags in freeform_tags %} {% if not loop.last  %}
+            "{{ tags[0] }}"="{{ tags[1] }}",
+            {% else %}
+            "{{ tags[0] }}"="{{ tags[1] }}"
+            {% endif %} {% endfor %}
+            }
+            {% endif %} {% endif %}
+            {#  ###Section for adding Defined and Freeform Tags ends here###  #}
 
-{% endfor %}
+            statements = [ {{ policy_statements }} -#Addstmt]}
