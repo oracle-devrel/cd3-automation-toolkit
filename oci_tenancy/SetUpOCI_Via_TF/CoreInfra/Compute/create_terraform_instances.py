@@ -177,7 +177,10 @@ def create_terraform_instances(inputfile, outdir, config):
 
             if columnname == "SSH Key Var Name":
                 if columnvalue.strip() != '' and  columnvalue.strip().lower() != 'nan':
-                    ssh_key_var_name = "var."+columnvalue.strip()
+                    if "ssh-rsa" in columnvalue.strip():
+                        ssh_key_var_name = "\"" + columnvalue.strip() + "\""
+                    else:
+                        ssh_key_var_name = "var." + columnvalue.strip()
                     tempdict = {'ssh_key_var_name': ssh_key_var_name}
 
             columnname = commonTools.check_column_headers(columnname)
