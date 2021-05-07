@@ -59,11 +59,12 @@ def fetch_compartments(outdir, config=DEFAULT_LOCATION):
             if(searchstr not in var_data[reg]):
                 tempStr[reg]=tempStr[reg]+str
 
+        with open(var_files[reg],"a") as vname:
+            vname.write(tempStr[reg])
+
         if ("linux" in sys.platform):
             os.system("dos2unix " + var_files[reg])
 
-        with open(var_files[reg],"a") as vname:
-            vname.write(tempStr[reg])
     print("Compartment info written to all region specific variables files under outdir folder")
 
 
