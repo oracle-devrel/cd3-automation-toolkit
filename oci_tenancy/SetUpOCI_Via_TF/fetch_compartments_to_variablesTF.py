@@ -1,19 +1,12 @@
-#!/bin/python
-import argparse
-import os
 import sys
-import oci
-import shutil
-from oci.identity import IdentityClient
+import argparse
+from jinja2 import Environment, FileSystemLoader
 from commonTools import *
 
-variables_template = """
-variables "{var_tf_name}" {{
-  type = string
-  default = "{values}"
-}}
-"""
-
+#Load the template file
+file_loader = FileSystemLoader('templates')
+env = Environment(loader=file_loader,keep_trailing_newline=True)
+template = env.get_template('variables-template')
 
 def paginate(operation, *args, **kwargs):
     while True:
@@ -36,7 +29,6 @@ def fetch_compartments(outdir, config=DEFAULT_LOCATION):
     configFileName = config
     config = oci.config.from_file(config)
 
-    tenancy_id = config['tenancy']
     tempStr = {}
     var_files={}
     var_data={}
@@ -47,10 +39,6 @@ def fetch_compartments(outdir, config=DEFAULT_LOCATION):
     ct.get_subscribedregions(configFileName)
     ct.get_network_compartment_ids(config['tenancy'], "root", configFileName)
 
-    """for file in glob.glob(outdir + '/*/' +'variables_*.tf'):#, recursive=True):
-        region=file.split("variables_")[1].split(".tf")[0]
-        all_regions.append(region)
-    """
     for region in ct.all_regions:
         file = f'{outdir}/{region}/variables_{region}.tf'
         var_files[region]=file
@@ -65,11 +53,14 @@ def fetch_compartments(outdir, config=DEFAULT_LOCATION):
 
     for reg in ct.all_regions:
         for name, ocid in ct.ntk_compartment_ids.items():
-            comp_tf_name = commonTools.check_tf_variable(name)
-            searchstr = 'variable "' + comp_tf_name + '"'
-            str=variables_template.format(var_tf_name=comp_tf_name, values=ocid)
-            if searchstr not in var_data[reg]:
+            comp_tf_name=commonTools.check_tf_variable(name)
+            searchstr = "variable \"" + comp_tf_name + "\""
+            str=template.render(var_tf_name=comp_tf_name,values=ocid)
+            if(searchstr not in var_data[reg]):
                 tempStr[reg]=tempStr[reg]+str
+
+        if ("linux" in sys.platform):
+            os.system("dos2unix " + var_files[reg])
 
         with open(var_files[reg],"a") as vname:
             vname.write(tempStr[reg])

@@ -16,6 +16,15 @@ import collections
 import re
 import json as simplejson
 
+def data_frame(filename,sheetname):
+
+    # Read the tab from excel, Drop null values, Reset index
+    df, col_headers = commonTools.read_cd3(filename, sheetname)
+    df = df.dropna(how='all')
+    df = df.reset_index(drop=True)
+
+    return df
+
 class commonTools():
     endNames = {'<END>', '<end>', '<End>'}
     tagColumns = {'freeform tags', 'freeform_tags', 'defined_tags', 'defined tags'}
