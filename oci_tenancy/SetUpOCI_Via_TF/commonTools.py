@@ -67,9 +67,10 @@ class commonTools():
 
         with open(protocolFileName) as f:
             for line in f:
-                key=line.split(":")[0].strip()
-                val=line.split(":")[1].strip()
-                self.protocol_dict[key]=val
+                if ("#" not in line and ":" in line):
+                    key=line.split(":")[0].strip()
+                    val=line.split(":")[1].strip()
+                    self.protocol_dict[key]=val
 
         #Get Dict for column names
         with open(excelColumnName) as f:
