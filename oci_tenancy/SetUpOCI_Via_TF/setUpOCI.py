@@ -1,12 +1,9 @@
 import argparse
-import configparser
 import Database
 import Identity
-import os
 import ResourceManager
 import Solutions
 import cd3Validator
-import sys
 from fetch_compartments_to_variablesTF import fetch_compartments
 from commonTools import *
 from collections import namedtuple
@@ -24,7 +21,7 @@ def show_options(options, quit=False, menu=False, extra=None):
     number_offset = len(str(len(options))) + 1
 
     # Iterate over options. Print number and option
-    for i, option in enumerate(options, 1):
+    for i, option in enumerate(options, 0):
         print(f'{str(i)+".":<{number_offset}} {option.name}')
     if quit:
         print(f'{"q"+".":<{number_offset}} Press q to quit')
@@ -38,7 +35,8 @@ def show_options(options, quit=False, menu=False, extra=None):
     if 'q' in user_input or 'm' in user_input:
         return user_input
     # Subtract one to account for zero-indexing. The options start at 1
-    return [options[int(choice)-1] for choice in user_input]
+    # #return [options[int(choice)-1] for choice in user_input]
+    return [options[int(choice)] for choice in user_input]
 
 
 def execute_options(options, *args, **kwargs):
@@ -80,17 +78,28 @@ def verify_outdir_is_empty():
 
 
 def validate_cd3():
-    choice = input("Do you want to verify CD3 Network Tabs? Enter y or n: ").lower()
-    if choice == 'y':
-        print('It will verify tabs: VCNs, DHCP and Subnets in excel sheet\n')
-        validated = cd3Validator.validate_cd3(inputfile, config)
-        if not validated:
-            prcd = input('Do you still want to proceed with setUpOCI? Enter y or n: ').lower()
-            if (prcd != 'y'):
-                exit_menu('Exiting...', exit_code=1)
-    elif choice != 'n':
-        exit_menu("\nInvalid Input !! Please enter 'y' or 'n'... Exiting!!")
+    validate_cd3file_inputs = ["1", "2", "3", "4", "5", "6"]
+    print("1.  Validate Compartments")
+    print("2.  Validate Groups")
+    print("3.  Validate Policies")
+    print("4.  Validate Networking(VCNs, Subnets, DHCP)")
+    print("5.  Validate Instances")
+    print("6.  Validate Block Volumes")
+    print("q.  Press q to quit")
 
+    choice = input('Enter your choice (comma separated): ')
+    choice = choice.strip()
+    choice = choice.split(",")
+
+    #choice = show_options(inputs, quit=True)
+    if 'q' in choice:
+        exit_menu('Exiting...')
+    elif (not set(choice).issubset(set(validate_cd3file_inputs))):
+        exit_menu("\nInvalid Input !!... Exiting!!")
+
+    cd3Validator.validate_cd3(inputfile, choice, config)
+
+    print("Exiting CD3 Validation...")
 
 def get_compartment_list(resource_name):
     compartment_list_str = "Enter name of Compartment as it appears in OCI (comma separated without spaces if multiple)for which you want to export {};\nPress 'Enter' to export from all the Compartments: "
@@ -106,7 +115,7 @@ def export_identity():
 
 def export_networking():
     compartments = get_compartment_list('Network Objects')
-    Networking.export_networking(inputfile, outdir, prefix, config=config, compartments=comparments)
+    Networking.export_networking(inputfile, outdir, prefix, config=config, compartments=compartments)
     create_networking(execute_all=True)
     print("\n\nExecute tf_import_commands_network_nonGF.sh script created under each region directory to synch TF with OCI Network objects\n")
 
@@ -120,7 +129,7 @@ def export_instances():
 
 def export_block_volumes():
     compartments = get_compartment_list('Block Volumes')
-    BlockVolumes.export_blockvol(inputfile, outdir, config=config, compartments=compartments)
+    BlockVolume.export_blockvol(inputfile, outdir, config=config, compartments=compartments)
     create_block_volumes()
     print("\n\nExecute tf_import_commands_blockvols_nonGF.sh script created under each region directory to synch TF with OCI Instances\n")
 
@@ -169,7 +178,7 @@ def modify_terraform_network(inputfile, outdir, prefix, config):
 
 def export_terraform_routes_and_secrules(inputfile, outdir, prefix, config):
     compartments = input("Enter name of Compartment as it appears in OCI (comma separated if multiple) for which you want to export rules;\nPress 'Enter' to export from all the Compartments: ")
-    compartments = comparments.split(',') if compartments else []
+    compartments = compartments.split(',') if compartments else []
     Networking.export_seclist(inputfile, outdir, prefix, config=config, modify_network=True, network_compartments=compartments)
     Networking.export_routetables(inputfile, outdir, prefix, config=config, modify_network=True, network_compartments=compartments)
 
@@ -184,7 +193,6 @@ def create_networking(execute_all=False):
         Option('Add/Modify/Delete Network Security Groups', Networking.create_terraform_nsg, 'Processing NSGs Tab'),
     ]
     if not execute_all:
-        validate_cd3()
         options = show_options(options, quit=True, menu=True)
     execute_options(options, inputfile, outdir, prefix, config=config)
 
@@ -229,7 +237,7 @@ def create_lb():
 
 
 def create_adw():
-    options = [Options(None, Database.create_terraform_adw_atp, 'Processing ADW/ATP Tab')]
+    options = [ Option(None, Database.create_terraform_adw_atp, 'Processing ADW/ATP Tab')]
     execute_options(options, inputfile, outdir, prefix, config=config)
 
 
@@ -255,7 +263,7 @@ def create_events_notifications(execute_all=False):
 
 
 def create_resource_manager():
-    options = [Options(None, ResourceManager.create_resource_manager_stack, 'Creating stack')]
+    options = [ Option(None, ResourceManager.create_resource_manager_stack, 'Creating stack')]
     execute_options(options, outdir, prefix, config=config)
 
 
@@ -308,6 +316,7 @@ if non_gf_tenancy:
     print("Process will fetch objects from OCI in the specified compartment from all regions tenancy is subscribed to\n")
 else:
     inputs = [
+        Option('Validate CD3', validate_cd3, 'Validate CD3'),
         Option('Identity', create_identity, 'Identity'),
         Option('Networking', create_networking, 'Networking'),
         Option('Dedicated VM Hosts/Instances/Boot Backup Policy', create_instances, 'Instances'),

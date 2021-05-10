@@ -891,8 +891,22 @@ def validate_policies(filename,comp_ids):
     else:
         return False
 
+def validate_networking(filename,config):
+    vcnobj = parseVCNs(filename)
 
-def validate_cd3(filename, configFileName):
+    logging.log(60, "\n============================= Verifying VCNs Tab ==========================================\n")
+    print("\nProcessing VCNs Tab..")
+    vcn_check, vcn_cidr_check, vcn_peer_check = validate_vcns(filename, ct.ntk_compartment_ids, vcnobj, config)
+
+    logging.log(60, "============================= Verifying Subnets Tab ==========================================\n")
+    print("\nProcessing Subnets Tab..")
+    subnet_check, subnet_cidr_check = validate_subnets(filename, ct.ntk_compartment_ids, vcnobj)
+
+    logging.log(60, "============================= Verifying DHCP Tab ==========================================\n")
+    print("\nProcessing DHCP Tab..")
+    dhcp_check = validate_dhcp(filename, ct.ntk_compartment_ids, vcnobj)
+
+def validate_cd3(filename, choice, configFileName):
 
     comp_check = False
     groups_check = False
@@ -909,7 +923,6 @@ def validate_cd3(filename, configFileName):
     config = oci.config.from_file(file_location=configFileName)
     ct.get_subscribedregions(configFileName)
     ct.get_network_compartment_ids(config['tenancy'], "root", configFileName)
-    choice = validate_options.split(",")
 
     if ('1' in choice):
         logging.log(60, "============================= Verifying Compartments Tab ==========================================\n")
@@ -985,5 +998,5 @@ if __name__ == '__main__':
     filename = args.cd3file
     configFileName = args.config
     validate_options = args.validate_cd3file
-    validate_cd3(filename, configFileName)
+    validate_cd3(filename, validate_options, configFileName)
 
