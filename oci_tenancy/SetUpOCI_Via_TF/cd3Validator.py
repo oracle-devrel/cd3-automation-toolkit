@@ -981,7 +981,7 @@ def validate_cd3(filename, choice, configFileName):
         print("\n\nSummary:")
         print("=======")
         print("There are no errors in CD3. Verify LPG's Peering Check Status once in the log file. Otherwise You are good to proceed !!!")
-        exit(0)
+        # exit(0)
 
 
 
