@@ -16,12 +16,12 @@ from glob import glob
 from textwrap import shorten
 
 
-def show_options(options, quit=False, menu=False, extra=None):
+def show_options(options, quit=False, menu=False, extra=None, index=0):
     # Just add whitespace between number and option. It just makes it look better
     number_offset = len(str(len(options))) + 1
 
     # Iterate over options. Print number and option
-    for i, option in enumerate(options, 0):
+    for i, option in enumerate(options, index):
         print(f'{str(i)+".":<{number_offset}} {option.name}')
     if quit:
         print(f'{"q"+".":<{number_offset}} Press q to quit')
@@ -36,7 +36,7 @@ def show_options(options, quit=False, menu=False, extra=None):
         return user_input
     # Subtract one to account for zero-indexing. The options start at 1
     # #return [options[int(choice)-1] for choice in user_input]
-    return [options[int(choice)] for choice in user_input]
+    return [options[int(choice)-index] for choice in user_input]
 
 
 def execute_options(options, *args, **kwargs):
@@ -164,11 +164,11 @@ def export_events_notifications():
 def create_identity(execute_all=False):
     options = [
         Option('Add/Modify/Delete Compartments', Identity.create_terraform_compartments, 'Compartments Tab'),
-        Option('Add/Modify/Delete Groups', Identity.create_terraform_groups, 'Group Tab'),
+        Option('Add/Modify/Delete Groups', Identity.create_terraform_groups, 'Groups Tab'),
         Option('Add/Modify/Delete Policies', Identity.create_terraform_policies, 'Policies Tab'),
     ]
     if not execute_all:
-        options = show_options(options, quit=True, menu=True)
+        options = show_options(options, quit=True, menu=True, index=1)
     execute_options(options, inputfile, outdir, prefix, config=config)
 
 
@@ -193,7 +193,7 @@ def create_networking(execute_all=False):
         Option('Add/Modify/Delete Network Security Groups', Networking.create_terraform_nsg, 'Processing NSGs Tab'),
     ]
     if not execute_all:
-        options = show_options(options, quit=True, menu=True)
+        options = show_options(options, quit=True, menu=True, index=1)
     execute_options(options, inputfile, outdir, prefix, config=config)
 
 
@@ -203,7 +203,7 @@ def create_instances(execute_all=False):
         Option('Add/Modify/Delete Instances/Boot Backup Policy', Compute.create_terraform_instances, 'Processing Instances Tab'),
     ]
     if not execute_all:
-        options = show_options(options, quit=True, menu=True)
+        options = show_options(options, quit=True, menu=True, index=1)
     execute_options(options, inputfile, outdir, config=config)
 
 
@@ -248,7 +248,7 @@ def create_db(execute_all=False):
         Option('Add/Modify/Delete ExaData', Database.create_terraform_database_EXA, 'Processing DB_System_EXA Tab'),
     ]
     if not execute_all:
-        choices = show_options(options, quit=True, menu=True)
+        choices = show_options(options, quit=True, menu=True, index=1)
     execute_options(choices, inputfile, outdir, prefix, config=config)
 
 
@@ -258,7 +258,7 @@ def create_events_notifications(execute_all=False):
         Option("Add/Modify/Delete Events", Solutions.create_terraform_events, 'Setting up Events'),
     ]
     if not execute_all:
-        choices = show_options(options, quit=True, menu=True)
+        choices = show_options(options, quit=True, menu=True, index=1)
     execute_options(choices, inputfile, outdir, prefix, config=config)
 
 

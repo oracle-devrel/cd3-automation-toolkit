@@ -9,7 +9,6 @@
 # Modified (TF Upgrade): Shruthi Subramanian
 #
 
-import sys
 import argparse
 import os
 from pathlib import Path
@@ -21,6 +20,8 @@ from commonTools import *
 ######
 # Required Inputs- CD3 excel file, Config file, prefix AND outdir
 ######
+
+
 def parse_args():
     # Read the arguments
     parser = argparse.ArgumentParser(description="Create Compartments terraform file")
@@ -50,12 +51,8 @@ def create_terraform_policies(inputfile, outdir, prefix, config=DEFAULT_LOCATION
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
     template = env.get_template('policy-template')
 
-    # Read cd3 using pandas dataframe
-    df, col_headers = commonTools.read_cd3(filename, "Policies")
-
-    # Remove empty rows
-    df = df.dropna(how='all')
-    df = df.reset_index(drop=True)
+    # Read CD3
+    df = data_frame(filename, 'Policies')
 
     # List of the column headers
     dfcolumns = df.columns.values.tolist()
@@ -83,8 +80,6 @@ def create_terraform_policies(inputfile, outdir, prefix, config=DEFAULT_LOCATION
 
 
     # Iterate over rows
-    all_policies = []
-    policy_data = {}
     for i in df.index:
 
         region = str(df.loc[i, "Region"]).strip()
@@ -140,55 +135,91 @@ def create_terraform_policies(inputfile, outdir, prefix, config=DEFAULT_LOCATION
             tempStr1.update(tempdict)
 
         # Fetch column values for each row for creating policies.
-        policy_name = str(df.loc[i, 'Name'])
-        if (str(policy_name).lower() != "nan"):
-            if 'name' in policy_data:
-                all_policies.append(policy_data)
-            count = count + 1
-            policy_data = {'statements': []}
-            policy_data['name'] = policy_name
-            policy_data['compartment'] = df.loc[i, "Compartment Name"]
-            if (str(policy_data['compartment']).lower() == "nan" or policy_data['compartment'].lower() == 'root'):
-                policy_comp = ""
-                policy_data['compartment'] = 'tenancy_ocid'
-            else:
-                policy_comp = policy_data['compartment']
-                policy_compartment_name = commonTools.check_tf_variable(policy_data['compartment'])
+        policy_name = str(df.loc[i, "Name"])
 
-            policy_data['description'] = str(df.loc[i, "Description"])
-            if (str(policy_data['description']).lower() == "nan"):
-                policy_data['description'] = policy_data['name']
+        if (str(policy_name).lower() != "nan"):
+            count = count + 1
+            policy_compartment_name = df.loc[i, "Compartment Name"]
+            if (str(policy_compartment_name).lower() == "nan" or policy_compartment_name.lower() == 'root'):
+                policy_comp = ""
+                policy_compartment = 'tenancy_ocid'
+            else:
+                policy_comp = policy_compartment_name
+                policy_compartment_name = commonTools.check_tf_variable(policy_compartment_name)
+                policy_compartment = policy_compartment_name
+
+            policy_desc = str(df.loc[i, "Description"])
+            if (str(policy_desc).lower() == "nan"):
+                policy_desc = policy_name
 
             policy_statement = str(df.loc[i, "Policy Statements"])
             actual_policy_statement = policy_statement
 
             # assign groups in policy statements
-            if '$' in policy_statement:
+            if ('$' in policy_statement):
                 policy_statement_grps = str(df.loc[i, "Policy Statement Groups"])
                 actual_policy_statement = policy_statement.replace('$', policy_statement_grps)
 
             # assign compartment in policy statements
             if ('compartment *' in policy_statement):
                 policy_statement_comp = str(df.loc[i, "Policy Statement Compartment"])
+                # comp_tf = '${var.' + policy_statement_comp + '}'
                 comp_tf = policy_statement_comp
                 actual_policy_statement = actual_policy_statement.replace('compartment *', 'compartment ' + comp_tf)
+            if (count != 1):
+                # Do not change below line;
+                tempStr = tempStr + " ]\n            }\n\n"
+            if (policy_comp != ""):
+                policy_tf_name = policy_comp + "_" + policy_name
+            else:
+                policy_tf_name = policy_name
+            policy_tf_name = commonTools.check_tf_variable(policy_tf_name)
 
-            policy_data['tf_name'] = policy_data['name'] if not policy_comp else policy_data['compartment'] + "_" + policy_data['name']
-            policy_tf_name = commonTools.check_tf_variable(policy_data['tf_name'])
-            policy_data['statements'].append(actual_policy_statement)
+            actual_policy_statement = "\"" + actual_policy_statement + "\""
+
+            tempStr1['policy_tf_name'] = policy_tf_name
+            tempStr1['compartment_name'] = policy_compartment
+            tempStr1['description'] = policy_desc
+            tempStr1['name'] = policy_name.strip()
+            tempStr1['policy_statements'] = actual_policy_statement
+
+            tempStr = tempStr + template.render(tempStr1)
 
         if (str(policy_name).lower() == "nan"):
             policy_statement = df.loc[i, "Policy Statements"]
-            if str(policy_statement).lower() != "nan":
+
+            if (str(policy_statement).lower() != "nan"):
                 actual_policy_statement = policy_statement
-                if '$' in policy_statement:
+                if ('$' in policy_statement):
                     policy_statement_grps = df.loc[i, "Policy Statement Groups"]
+                    """policy_statement_grps= policy_statement_grps.split(",")
+                    grp_tf = ""
+                    j = 0
+                    for policy_statement_grp in policy_statement_grps:
+                        j = j + 1
+                        if (j == 1):
+                            grp_tf = grp_tf + 'oci_identity_group.' + policy_statement_grp + '.name'
+                        if (j != 1):
+                            grp_tf = grp_tf + "," + 'oci_identity_group.' + policy_statement_grp + '.name'
+
+                    actual_policy_statement = policy_statement.replace('$', grp_tf)
+                    """
+
                     actual_policy_statement = policy_statement.replace('$', policy_statement_grps)
-                if 'compartment *' in policy_statement:
+                if ('compartment *' in policy_statement):
                     policy_statement_comp = str(df.loc[i, "Policy Statement Compartment"])
+                    # comp_tf = '${oci_identity_compartment.' + policy_statement_comp + '.name}'
+                    # comp_tf = '${var.' + policy_statement_comp + '}'
                     comp_tf = policy_statement_comp
                     actual_policy_statement = actual_policy_statement.replace('compartment *', 'compartment ' + comp_tf)
-                policy_data['statements'].append(actual_policy_statement)
+
+                tempStr = tempStr + """,\"""" + actual_policy_statement + "\" """
+
+    tempStr = tempStr + """ ]
+                } \n """
+
+    # re-places the placeolder -Addstmt]} of Render template
+    tempStr = tempStr.replace('-#Addstmt]}', '')
 
     # Write TF string to the file in respective region directory
     if (len(check_diff_region) != 0):
@@ -207,10 +238,9 @@ def create_terraform_policies(inputfile, outdir, prefix, config=DEFAULT_LOCATION
         if str(regions[0]) in commonTools.endNames:
             exit(1)
         oname[reg] = open(outfile[reg], 'w')
-        oname[reg].write(template.render(policies=all_policies))
+        oname[reg].write(tempStr)
         oname[reg].close()
         print(outfile[reg] + " containing TF for policies has been created for region " + reg)
-
 
 if __name__ == '__main__':
     # Execution of the code begins here
