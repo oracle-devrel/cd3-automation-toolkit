@@ -894,15 +894,15 @@ def validate_policies(filename,comp_ids):
 def validate_networking(filename,config):
     vcnobj = parseVCNs(filename)
 
-    logging.log(60, "\n============================= Verifying VCNs Tab ==========================================\n")
+    log("\n============================= Verifying VCNs Tab ==========================================\n")
     print("\nProcessing VCNs Tab..")
     vcn_check, vcn_cidr_check, vcn_peer_check = validate_vcns(filename, ct.ntk_compartment_ids, vcnobj, config)
 
-    logging.log(60, "============================= Verifying Subnets Tab ==========================================\n")
+    log("============================= Verifying Subnets Tab ==========================================\n")
     print("\nProcessing Subnets Tab..")
     subnet_check, subnet_cidr_check = validate_subnets(filename, ct.ntk_compartment_ids, vcnobj)
 
-    logging.log(60, "============================= Verifying DHCP Tab ==========================================\n")
+    log("============================= Verifying DHCP Tab ==========================================\n")
     print("\nProcessing DHCP Tab..")
     dhcp_check = validate_dhcp(filename, ct.ntk_compartment_ids, vcnobj)
 
@@ -925,15 +925,15 @@ def validate_cd3(filename, choice, configFileName):
     ct.get_network_compartment_ids(config['tenancy'], "root", configFileName)
 
     if ('1' in choice):
-        logging.log(60, "============================= Verifying Compartments Tab ==========================================\n")
+        log("============================= Verifying Compartments Tab ==========================================\n")
         print("\nProcessing Compartments Tab..")
         comp_check = validate_compartments(filename)
     if ('2' in choice):
-        logging.log(60,"\n============================= Verifying Groups Tab ==========================================\n")
+        log("\n============================= Verifying Groups Tab ==========================================\n")
         print("\nProcessing Groups Tab..")
         groups_check = validate_groups(filename)
     if ('3' in choice):
-        logging.log(60, "\n============================= Verifying Policies Tab ==========================================\n")
+        log("\n============================= Verifying Policies Tab ==========================================\n")
         print("\nProcessing Policies Tab..")
         policies_check = validate_policies(filename,ct.ntk_compartment_ids)
 
@@ -942,24 +942,24 @@ def validate_cd3(filename, choice, configFileName):
 
         vcnobj = parseVCNs(filename)
 
-        logging.log(60, "\n============================= Verifying VCNs Tab ==========================================\n")
+        log("\n============================= Verifying VCNs Tab ==========================================\n")
         print("\nProcessing VCNs Tab..")
         vcn_check, vcn_cidr_check, vcn_peer_check = validate_vcns(filename, ct.ntk_compartment_ids, vcnobj, config)
 
-        logging.log(60, "============================= Verifying Subnets Tab ==========================================\n")
+        log("============================= Verifying Subnets Tab ==========================================\n")
         print("\nProcessing Subnets Tab..")
         subnet_check, subnet_cidr_check = validate_subnets(filename, ct.ntk_compartment_ids, vcnobj)
 
-        logging.log(60, "============================= Verifying DHCP Tab ==========================================\n")
+        log("============================= Verifying DHCP Tab ==========================================\n")
         print("\nProcessing DHCP Tab..")
         dhcp_check = validate_dhcp(filename, ct.ntk_compartment_ids, vcnobj)
     if ('5' in choice):
-        logging.log(60, "\n============================= Verifying Instances Tab ==========================================\n")
+        log("\n============================= Verifying Instances Tab ==========================================\n")
         print("\nProcessing Instances Tab..")
         instances_check = validate_instances(filename,ct.ntk_compartment_ids)
 
     if ('6' in choice):
-        logging.log(60, "\n============================= Verifying BlockVols Tab ==========================================\n")
+        log("\n============================= Verifying BlockVols Tab ==========================================\n")
         print("\nProcessing BlockVols Tab..")
         bvs_check = validate_blockvols(filename,ct.ntk_compartment_ids)
 

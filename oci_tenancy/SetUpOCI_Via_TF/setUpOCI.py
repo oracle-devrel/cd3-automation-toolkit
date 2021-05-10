@@ -4,6 +4,10 @@ import Identity
 import ResourceManager
 import Solutions
 import cd3Validator
+import CloudGuard
+import KeyVault
+import OSS
+import Logging
 from fetch_compartments_to_variablesTF import fetch_compartments
 from commonTools import *
 from collections import namedtuple
@@ -266,6 +270,21 @@ def create_resource_manager():
     options = [ Option(None, ResourceManager.create_resource_manager_stack, 'Creating stack')]
     execute_options(options, outdir, prefix, config=config)
 
+def create_cis_keyvault(*args,**kwargs):
+    region_name = input("Enter region name eg ashburn where you want to create OSS Bucket and Key/Vault ")
+    comp_name = input("Enter name of compartment as it appears in OCI Console ")
+
+    options = [Option(None, KeyVault.create_cis_keyvault, 'Creating KeyVault'),
+               Option(None, OSS.create_cis_oss, 'Creating Object Storage Bucket'),
+               Option(None, Logging.enable_cis_oss_logging, 'Enabling Logging for write events to bucket')]
+    execute_options(options, outdir, prefix,region_name, comp_name, config=config)
+
+def create_cis_features(execute_all=False):
+    options = [Option("Create Key/Vault, Object Storage Bucket and enable Logging for write events to bucket", create_cis_keyvault, 'Creating CIS Key/Vault, Object Storage Bucket and enable Logging for write events to bucket'),
+               Option("Enable Cloud Guard", CloudGuard.enable_cis_cloudguard, 'Enable Cloud Guard')]
+    if not execute_all:
+        options = show_options(options, quit=True, menu=True, index=1)
+    execute_options(options, outdir, prefix, config=config)
 
 parser = argparse.ArgumentParser(description='Sets Up OCI via TF')
 parser.add_argument('propsfile', help="Full Path of properties file containing input variables. eg setUpOCI.properties")
@@ -328,6 +347,7 @@ else:
         Option('Database', create_db, 'Database'),
         Option('Solutions (Events and Notifications)', create_events_notifications, 'Solutions'),
         Option('Upload current terraform files/state to Resource Manager', create_resource_manager, 'Resource Manager'),
+        Option('Enable OCI CIS Compliant Features', create_cis_features, 'CIS Compliant Features'),
     ]
 
 # Run menu
