@@ -906,7 +906,7 @@ def validate_networking(filename,config):
     print("\nProcessing DHCP Tab..")
     dhcp_check = validate_dhcp(filename, ct.ntk_compartment_ids, vcnobj)
 
-def validate_cd3(filename, choice, configFileName):
+def validate_cd3(filename, choices, configFileName):
 
     comp_check = False
     groups_check = False
@@ -924,44 +924,45 @@ def validate_cd3(filename, choice, configFileName):
     ct.get_subscribedregions(configFileName)
     ct.get_network_compartment_ids(config['tenancy'], "root", configFileName)
 
-    if ('1' in choice):
-        log("============================= Verifying Compartments Tab ==========================================\n")
-        print("\nProcessing Compartments Tab..")
-        comp_check = validate_compartments(filename)
-    if ('2' in choice):
-        log("\n============================= Verifying Groups Tab ==========================================\n")
-        print("\nProcessing Groups Tab..")
-        groups_check = validate_groups(filename)
-    if ('3' in choice):
-        log("\n============================= Verifying Policies Tab ==========================================\n")
-        print("\nProcessing Policies Tab..")
-        policies_check = validate_policies(filename,ct.ntk_compartment_ids)
-
-    # CD3 Validation begins here for Network
-    if ('4' in choice):
-
-        vcnobj = parseVCNs(filename)
-
-        log("\n============================= Verifying VCNs Tab ==========================================\n")
-        print("\nProcessing VCNs Tab..")
-        vcn_check, vcn_cidr_check, vcn_peer_check = validate_vcns(filename, ct.ntk_compartment_ids, vcnobj, config)
-
-        log("============================= Verifying Subnets Tab ==========================================\n")
-        print("\nProcessing Subnets Tab..")
-        subnet_check, subnet_cidr_check = validate_subnets(filename, ct.ntk_compartment_ids, vcnobj)
-
-        log("============================= Verifying DHCP Tab ==========================================\n")
-        print("\nProcessing DHCP Tab..")
-        dhcp_check = validate_dhcp(filename, ct.ntk_compartment_ids, vcnobj)
-    if ('5' in choice):
-        log("\n============================= Verifying Instances Tab ==========================================\n")
-        print("\nProcessing Instances Tab..")
-        instances_check = validate_instances(filename,ct.ntk_compartment_ids)
-
-    if ('6' in choice):
-        log("\n============================= Verifying BlockVols Tab ==========================================\n")
-        print("\nProcessing BlockVols Tab..")
-        bvs_check = validate_blockvols(filename,ct.ntk_compartment_ids)
+    for options in choices:
+        if ('Validate Compartments' in options[0]):
+            log("============================= Verifying Compartments Tab ==========================================\n")
+            print("\nProcessing Compartments Tab..")
+            comp_check = validate_compartments(filename)
+        if ('Validate Groups' in options[0]):
+            log("\n============================= Verifying Groups Tab ==========================================\n")
+            print("\nProcessing Groups Tab..")
+            groups_check = validate_groups(filename)
+        if ('Validate Policies' in options[0]):
+            log("\n============================= Verifying Policies Tab ==========================================\n")
+            print("\nProcessing Policies Tab..")
+            policies_check = validate_policies(filename,ct.ntk_compartment_ids)
+    
+        # CD3 Validation begins here for Network
+        if ('Validate Networking(VCNs, Subnets, DHCP)' in options[0]):
+    
+            vcnobj = parseVCNs(filename)
+    
+            log("\n============================= Verifying VCNs Tab ==========================================\n")
+            print("\nProcessing VCNs Tab..")
+            vcn_check, vcn_cidr_check, vcn_peer_check = validate_vcns(filename, ct.ntk_compartment_ids, vcnobj, config)
+    
+            log("============================= Verifying Subnets Tab ==========================================\n")
+            print("\nProcessing Subnets Tab..")
+            subnet_check, subnet_cidr_check = validate_subnets(filename, ct.ntk_compartment_ids, vcnobj)
+    
+            log("============================= Verifying DHCP Tab ==========================================\n")
+            print("\nProcessing DHCP Tab..")
+            dhcp_check = validate_dhcp(filename, ct.ntk_compartment_ids, vcnobj)
+        if ('Validate Instances' in options[0]):
+            log("\n============================= Verifying Instances Tab ==========================================\n")
+            print("\nProcessing Instances Tab..")
+            instances_check = validate_instances(filename,ct.ntk_compartment_ids)
+    
+        if ('Validate Block Volumes' in options[0]):
+            log("\n============================= Verifying BlockVols Tab ==========================================\n")
+            print("\nProcessing BlockVols Tab..")
+            bvs_check = validate_blockvols(filename,ct.ntk_compartment_ids)
 
     # Prints the final result; once the validation is complete
     if any([comp_check, groups_check, policies_check, instances_check, bvs_check,vcn_check, vcn_cidr_check, vcn_peer_check, subnet_check, subnet_cidr_check, dhcp_check]):

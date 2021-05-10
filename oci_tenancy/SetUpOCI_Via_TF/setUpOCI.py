@@ -81,28 +81,18 @@ def verify_outdir_is_empty():
         print("None Found. Proceeding to Export...")
 
 
-def validate_cd3():
-    validate_cd3file_inputs = ["1", "2", "3", "4", "5", "6"]
-    print("1.  Validate Compartments")
-    print("2.  Validate Groups")
-    print("3.  Validate Policies")
-    print("4.  Validate Networking(VCNs, Subnets, DHCP)")
-    print("5.  Validate Instances")
-    print("6.  Validate Block Volumes")
-    print("q.  Press q to quit")
-
-    choice = input('Enter your choice (comma separated): ')
-    choice = choice.strip()
-    choice = choice.split(",")
-
-    #choice = show_options(inputs, quit=True)
-    if 'q' in choice:
-        exit_menu('Exiting...')
-    elif (not set(choice).issubset(set(validate_cd3file_inputs))):
-        exit_menu("\nInvalid Input !!... Exiting!!")
-
-    cd3Validator.validate_cd3(inputfile, choice, config)
-
+def validate_cd3(execute_all=False):
+    options = [
+        Option("Validate Compartments", None, None),
+        Option("Validate Groups", None, None),
+        Option("Validate Policies", None, None),
+        Option("Validate Networking(VCNs, Subnets, DHCP)", None, None),
+        Option("Validate Instances", None, None),
+        Option("Validate Block Volumes", None, None),
+    ]
+    if not execute_all:
+        options = show_options(options, quit=True, menu=True, index=1)
+    cd3Validator.validate_cd3(inputfile, options, config)
     print("Exiting CD3 Validation...")
 
 def get_compartment_list(resource_name):
