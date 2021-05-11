@@ -1,10 +1,12 @@
 import sys
 import argparse
+from pathlib import Path
+
 from jinja2 import Environment, FileSystemLoader
 from commonTools import *
 
 #Load the template file
-file_loader = FileSystemLoader('templates')
+file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
 env = Environment(loader=file_loader,keep_trailing_newline=True)
 template = env.get_template('variables-template')
 
