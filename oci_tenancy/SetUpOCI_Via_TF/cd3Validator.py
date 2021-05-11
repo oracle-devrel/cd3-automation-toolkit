@@ -974,7 +974,7 @@ def validate_cd3(filename, choices, configFileName):
         print("=======")
         print("Errors Found!!! Please check cd3Validator.log for details before proceeding!!")
         exit(1)
-    else:
+    elif ('q' not in choices and 'm' not in choices):
         log("=======")
         log("Summary:")
         log("=======")
