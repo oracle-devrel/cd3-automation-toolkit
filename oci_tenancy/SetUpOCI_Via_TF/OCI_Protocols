@@ -1,3 +1,4 @@
+#protocol number:protocol name
 0:HOPOPT
 1:ICMP
 2:IGMP
