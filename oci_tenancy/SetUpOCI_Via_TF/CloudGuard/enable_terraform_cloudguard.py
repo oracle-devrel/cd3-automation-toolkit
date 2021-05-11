@@ -48,9 +48,18 @@ def enable_cis_cloudguard(outdir, prefix, config=DEFAULT_LOCATION):
 
     compartment_id = 'tenancy_ocid'
     cg_tf_name = prefix+"-cloud_guard"
+    cg_target_tf_name = prefix + "-cloudguard-target"
+    cg_target_name = prefix + "-cloudguard-target"
+    cg_target_desc = "Cloud Guard for root compartment for "+prefix
+    cg_target_comp_tf_name='tenancy_ocid'
+
     tempStr['compartment_tf_name'] = str(compartment_id).strip()
     tempStr['home_region'] = home_region_key
     tempStr['cg_tf_name'] = cg_tf_name
+    tempStr['cg_target_tf_name'] = cg_target_tf_name
+    tempStr['cg_target_name'] = cg_target_name
+    tempStr['cg_target_desc'] = cg_target_desc
+    tempStr['cg_target_comp_tf_name'] = cg_target_comp_tf_name
 
     tfStr=tfStr + template.render(tempStr)
 
