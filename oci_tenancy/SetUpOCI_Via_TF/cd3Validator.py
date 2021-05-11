@@ -974,7 +974,7 @@ def validate_cd3(filename, choices, configFileName):
         print("=======")
         print("Errors Found!!! Please check cd3Validator.log for details before proceeding!!")
         exit(1)
-    elif ('q' not in choices and 'm' not in choices):
+    elif ('q' not in choices):
         log("=======")
         log("Summary:")
         log("=======")
@@ -983,7 +983,6 @@ def validate_cd3(filename, choices, configFileName):
         print("=======")
         print("There are no errors in CD3. Verify LPG's Peering Check Status once in the log file. Otherwise You are good to proceed !!!")
         # exit(0)
-
 
 
 def parse_args():

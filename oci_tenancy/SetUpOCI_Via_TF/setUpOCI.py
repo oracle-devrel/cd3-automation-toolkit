@@ -68,7 +68,7 @@ def verify_outdir_is_empty():
     has_files = False
     for reg in ct.all_regions:
         if len(tf_list[reg]) > 0:
-            print(f'{outdir}/{reg} directory under outdir is not empty; contains below tf files {shorten(tf_list[reg].join(","), 40)}')
+            print(f'{outdir}/{reg} directory under outdir is not empty; contains below tf files {shorten(str(tf_list[reg]).join(","), 40)}')
             has_files = True
 
     if has_files:
@@ -91,7 +91,7 @@ def validate_cd3(execute_all=False):
         Option("Validate Block Volumes", None, None),
     ]
     if not execute_all:
-        options = show_options(options, quit=True, menu=True, index=1)
+        options = show_options(options, quit=True, menu=False, index=1)
     cd3Validator.validate_cd3(inputfile, options, config)
     print("Exiting CD3 Validation...")
 
