@@ -48,7 +48,7 @@ def create_terraform_dhcp_options(inputfile, outdir, prefix, config, modify_netw
 
     filename = inputfile
     configFileName = config
-    modify_network = str(modify_network)
+    modify_network = str(modify_network).lower()
 
     ct = commonTools()
     ct.get_subscribedregions(configFileName)
