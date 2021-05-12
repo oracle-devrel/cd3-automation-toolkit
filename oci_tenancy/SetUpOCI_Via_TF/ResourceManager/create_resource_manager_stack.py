@@ -21,7 +21,7 @@ from oci.exceptions import ServiceError
 from oci.identity import IdentityClient
 from oci.config import DEFAULT_LOCATION
 from oci.resource_manager.models import ImportTfStateJobOperationDetails
-from oci.resource_manager.models import CreateImportTfStateJobOperationDetail
+from oci.resource_manager.models import CreateImportTfStateJobOperationDetails
 from oci.resource_manager.models import CreateStackDetails
 from oci.resource_manager.models import UpdateStackDetails
 from oci.resource_manager.models import CreateZipUploadConfigSourceDetails

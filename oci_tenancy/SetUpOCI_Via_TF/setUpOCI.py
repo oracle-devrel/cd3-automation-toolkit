@@ -40,7 +40,11 @@ def show_options(options, quit=False, menu=False, extra=None, index=0):
         return user_input
     # Subtract one to account for zero-indexing. The options start at 1
     # #return [options[int(choice)-1] for choice in user_input]
-    return [options[int(choice)-index] for choice in user_input]
+    try:
+        return [options[int(choice)-index] for choice in user_input]
+    except IndexError as ie:
+        print("Invalid Choice.....Exiting!!")
+        exit(1)
 
 
 def execute_options(options, *args, **kwargs):
@@ -257,7 +261,7 @@ def create_events_notifications(execute_all=False):
 
 
 def create_resource_manager():
-    options = [ Option(None, ResourceManager.create_resource_manager_stack, 'Creating stack')]
+    options = [ Option(None, ResourceManager.create_resource_manager, 'Creating stack')]
     execute_options(options, outdir, prefix, config=config)
 
 def create_cis_keyvault(*args,**kwargs):
