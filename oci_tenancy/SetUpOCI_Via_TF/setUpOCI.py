@@ -177,8 +177,8 @@ def modify_terraform_network(inputfile, outdir, prefix, config):
 def export_terraform_routes_and_secrules(inputfile, outdir, prefix, config):
     compartments = input("Enter name of Compartment as it appears in OCI (comma separated if multiple) for which you want to export rules;\nPress 'Enter' to export from all the Compartments: ")
     compartments = compartments.split(',') if compartments else []
-    Networking.export_seclist(inputfile, outdir, prefix, config=config, modify_network=True, network_compartments=compartments)
-    Networking.export_routetables(inputfile, outdir, prefix, config=config, modify_network=True, network_compartments=compartments)
+    Networking.export_seclist(inputfile, network_compartments=compartments, _config=config)
+    Networking.export_routetable(inputfile, network_compartments=compartments, _config=config)
 
 
 def create_networking(execute_all=False):

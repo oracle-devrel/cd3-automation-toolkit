@@ -161,7 +161,7 @@ def parse_args():
 
 
 
-def export_routetable(inputfile, network_compartment, _config, _tf_import_cmd=False, outdir=None):
+def export_routetable(inputfile, network_compartments, _config, _tf_import_cmd=False, outdir=None):
     # Read the arguments
     global tf_import_cmd
     global values_for_column
@@ -190,16 +190,17 @@ def export_routetable(inputfile, network_compartment, _config, _tf_import_cmd=Fa
 
     ct = commonTools()
     ct.get_subscribedregions(_config)
-    ct.get_network_compartment_ids(config['tenancy'], "root", _config)
     config = oci.config.from_file(_config)
+    ct.get_network_compartment_ids(config['tenancy'], "root", _config)
+
 
     # Get dict for columns from Excel_Columns
     sheet_dict=ct.sheet_dict["RouteRulesinOCI"]
 
-    input_compartment_list = args.networkCompartment
+    input_compartment_list = network_compartments
     if(input_compartment_list is not None):
-        input_compartment_names = input_compartment_list.split(",")
-        input_compartment_names = [x.strip() for x in input_compartment_names]
+        #input_compartment_names = input_compartment_list.split(",")
+        input_compartment_names = [x.strip() for x in input_compartment_list]
     else:
         input_compartment_names = None
 
@@ -243,4 +244,4 @@ def export_routetable(inputfile, network_compartment, _config, _tf_import_cmd=Fa
 
 if __name__=="__main__":
     args = parse_args()
-    export_routetable(args.inputfile, args.network_compartment, args.config, args.tf_import_cmd, args.outdir)
+    export_routetable(args.inputfile, args.network_compartments, args.config, args.tf_import_cmd, args.outdir)

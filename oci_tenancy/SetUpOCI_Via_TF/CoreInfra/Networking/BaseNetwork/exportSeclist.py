@@ -4,6 +4,7 @@
 import argparse
 import sys
 import oci
+from oci.config import DEFAULT_LOCATION
 from oci.core.virtual_network_client import VirtualNetworkClient
 import os
 sys.path.append(os.getcwd()+"/../../..")
@@ -241,13 +242,15 @@ def export_seclist(inputfile, network_compartments, _config, _tf_import_cmd=Fals
 
     ct = commonTools()
     ct.get_subscribedregions(_config)
-    ct.get_network_compartment_ids(config['tenancy'],"root", _config)
     config = oci.config.from_file(_config)
+    ct.get_network_compartment_ids(config['tenancy'],"root", _config)
 
-    input_compartment_list = network_compartment
+
+    input_compartment_list = network_compartments
+    print(input_compartment_list)
     if(input_compartment_list is not None):
-        input_compartment_names = input_compartment_list.split(",")
-        input_compartment_names = [x.strip() for x in input_compartment_names]
+        #input_compartment_names = input_compartment_list.split(",")
+        input_compartment_names = [x.strip() for x in input_compartment_list]
     else:
         input_compartment_names = None
 
@@ -292,4 +295,4 @@ def export_seclist(inputfile, network_compartments, _config, _tf_import_cmd=Fals
 
 if __name__=="__main__":
     args = parse_args()
-    export_seclist(args.inputfile, args.network-compartments, args.config, args.tf_import_cmd, args.outdir)
+    export_seclist(args.inputfile, args.network_compartments, args.config, args.tf_import_cmd, args.outdir)
