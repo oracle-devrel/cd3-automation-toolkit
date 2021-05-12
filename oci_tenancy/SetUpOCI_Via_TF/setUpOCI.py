@@ -264,7 +264,7 @@ def create_resource_manager():
     options = [ Option(None, ResourceManager.create_resource_manager, 'Creating stack')]
     execute_options(options, outdir, prefix, config=config)
 
-def create_cis_keyvault(*args,**kwargs):
+def create_cis_keyvault_oss_log(*args,**kwargs):
     region_name = input("Enter region name eg ashburn where you want to create OSS Bucket and Key/Vault ")
     comp_name = input("Enter name of compartment as it appears in OCI Console ")
 
@@ -274,7 +274,7 @@ def create_cis_keyvault(*args,**kwargs):
     execute_options(options, outdir, prefix,region_name, comp_name, config=config)
 
 def create_cis_features(execute_all=False):
-    options = [Option("Create Key/Vault, Object Storage Bucket and enable Logging for write events to bucket", create_cis_keyvault, 'Creating CIS Key/Vault, Object Storage Bucket and enable Logging for write events to bucket'),
+    options = [Option("Create Key/Vault, Object Storage Bucket and enable Logging for write events to bucket", create_cis_keyvault_oss_log, 'Creating CIS Key/Vault, Object Storage Bucket and enable Logging for write events to bucket'),
                Option("Enable Cloud Guard", CloudGuard.enable_cis_cloudguard, 'Enable Cloud Guard')]
     if not execute_all:
         options = show_options(options, quit=True, menu=True, index=1)
@@ -324,7 +324,7 @@ if non_gf_tenancy:
         Option('Export Solutions (Events and Notifications)', export_events_notifications, 'Solutions'),
     ]
     verify_outdir_is_empty()
-    fetch_compartments(inputfile, config)
+    fetch_compartments(outdir, config)
     print("\nnon_gf_tenancy in properties files is set to true..Export existing OCI objects and Synch with TF state")
     print("Process will fetch objects from OCI in the specified compartment from all regions tenancy is subscribed to\n")
 else:
