@@ -486,7 +486,16 @@ provider_data = """provider "oci" {
   fingerprint      = var.fingerprint
   private_key_path = var.private_key_path
   region           = var.region
-}"""
+}
+
+terraform {
+  required_providers {
+    oci = {
+      version = ">= 3.0.0"
+    }
+  }
+}
+"""
 write_file("provider.tf", provider_data)
 
 # write git expect script to download python code
