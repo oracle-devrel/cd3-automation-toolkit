@@ -46,7 +46,7 @@ def get_vcn_ids(compartment_ids, config):
 # Check for unique values across two sheets
 def compare_values(list_to_check,value_to_check,index):
     if (value_to_check not in list_to_check):
-        log(f'ROW {index[0] + 2} : Invalid value for column "{index[1]}". {value_to_check} does not exist in {index[2]} tab.')
+        log(f'ROW {index[0] + 3} : Invalid value for column "{index[1]}". {value_to_check} does not exist in {index[2]} tab.')
         return True
     return False
 
@@ -208,7 +208,6 @@ def validate_subnets(filename, comp_ids, vcnobj):
         count = count + 1
         # Check for <END> in the inputs; if found the validation ends there and return the status of flag
         if (str(dfsub.loc[i, 'Region']) in commonTools.endNames):
-            log('Reached <END> Tag. Validation ends here, any data beyond this tag will not be checked for errors !!!')
             break
 
         # Check for invalid Region
@@ -372,7 +371,6 @@ def validate_vcns(filename, comp_ids, vcnobj, config):  # ,vcn_cidrs,vcn_compart
 
         # Check for <END> in the inputs; if found the validation ends there and return the status of flag
         if str(dfv.loc[i, 'Region']) in commonTools.endNames:
-            log("Reached <END> Tag. Validation ends here, any data beyond this tag will not be checked for errors !!!")
             break
 
         # Check for invalid Region
@@ -520,7 +518,6 @@ def validate_dhcp(filename, comp_ids, vcnobj):
 
         # Check for <END> in the inputs; if found the validation ends there and return the status of flag
         if str(dfdhcp.loc[i, 'Region']) in commonTools.endNames:
-            log("Reached <END> Tag. Validation ends here, any data beyond this tag will not be checked for errors !!!")
             break
 
         # Check for invalid Region
