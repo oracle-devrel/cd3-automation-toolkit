@@ -46,7 +46,7 @@ def get_vcn_ids(compartment_ids, config):
 # Check for unique values across two sheets
 def compare_values(list_to_check,value_to_check,index):
     if (value_to_check not in list_to_check):
-        log(f'ROW {index[0] + 2} : Invalid value for column "{index[1]}". {value_to_check} does not exist in {index[2]} tab.')
+        log(f'ROW {index[0] + 3} : Invalid value for column "{index[1]}". {value_to_check} does not exist in {index[2]} tab.')
         return True
     return False
 
