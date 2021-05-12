@@ -34,8 +34,8 @@ def parse_arg():
 
 #If input is cd3 file
 def create_terraform_notifications(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
-    filename = args.inputfile
-    outdir = args.outdir
+    filename = inputfile
+    outdir = outdir
     all_regions = os.listdir(outdir)
     configFileName = config
     ct = commonTools()

@@ -46,7 +46,10 @@ def get_vcn_ids(compartment_ids, config):
 # Check for unique values across two sheets
 def compare_values(list_to_check,value_to_check,index):
     if (value_to_check not in list_to_check):
-        log(f'ROW {index[0] + 3} : Invalid value for column "{index[1]}". {value_to_check} does not exist in {index[2]} tab.')
+        if 'Availability Domain(AD1|AD2|AD3)' in index[1]:
+            log(f'ROW {index[0] + 3} : Invalid value for column "{index[1]}".')
+        else:
+            log(f'ROW {index[0] + 3} : Invalid value for column "{index[1]}". {value_to_check} does not exist in {index[2]} tab.')
         return True
     return False
 
@@ -681,6 +684,7 @@ def validate_blockvols(filename,comp_ids):
     dfvol = data_frame(filename, 'BlockVols')
     dfinst = data_frame(filename, 'Instances')
     values_list = dfinst['Display Name'].tolist()
+    inst_ad_list = dfinst['Display Name']+'_'+dfinst['Availability Domain(AD1|AD2|AD3)']
     dfcolumns = dfvol.columns.values.tolist()
 
     for i in dfvol.index:
@@ -742,7 +746,10 @@ def validate_blockvols(filename,comp_ids):
         # Cross check the instance names in Instances and Block Volumes sheet
         instance_name_check = compare_values(values_list,str(dfvol.loc[i, 'Attached To Instance']).lower(),[i, 'Attached To Instance', 'Instances'])
 
-    if any([bvs_empty_check, bvs_comp_check, bvs_invalid_check, instance_name_check]):
+        # Cross check the ADs in Instances and Block Volumes sheet
+        bv_ad_check = compare_values(inst_ad_list,str(dfvol.loc[i, 'Attached To Instance']).lower()+'_'+str(dfvol.loc[i, 'Availability Domain(AD1|AD2|AD3)']).lower(),[i, 'Availability Domain(AD1|AD2|AD3)', 'Instances'])
+
+    if any([bvs_empty_check, bvs_comp_check, bvs_invalid_check, instance_name_check, bv_ad_check]):
         print("Null or Wrong value Check failed!!")
         return True
     else:
@@ -981,7 +988,7 @@ def validate_cd3(filename, choices, configFileName):
         print("There are no errors in CD3. Verify LPG's Peering Check Status once in the log file. Otherwise You are good to proceed !!!")
         # exit(0)
     elif('q' in choices):
-        pass
+        exit(1)
     else:
         print("Invalid Choice....Exiting!!")
         exit(1)
