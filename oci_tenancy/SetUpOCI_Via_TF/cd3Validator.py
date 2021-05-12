@@ -371,7 +371,6 @@ def validate_vcns(filename, comp_ids, vcnobj, config):  # ,vcn_cidrs,vcn_compart
 
         # Check for <END> in the inputs; if found the validation ends there and return the status of flag
         if str(dfv.loc[i, 'Region']) in commonTools.endNames:
-            log("Reached <END> Tag. Validation ends here, any data beyond this tag will not be checked for errors !!!")
             break
 
         # Check for invalid Region
