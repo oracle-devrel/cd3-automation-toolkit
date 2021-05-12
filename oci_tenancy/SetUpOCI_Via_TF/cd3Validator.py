@@ -208,7 +208,6 @@ def validate_subnets(filename, comp_ids, vcnobj):
         count = count + 1
         # Check for <END> in the inputs; if found the validation ends there and return the status of flag
         if (str(dfsub.loc[i, 'Region']) in commonTools.endNames):
-            log('Reached <END> Tag. Validation ends here, any data beyond this tag will not be checked for errors !!!')
             break
 
         # Check for invalid Region
@@ -520,7 +519,6 @@ def validate_dhcp(filename, comp_ids, vcnobj):
 
         # Check for <END> in the inputs; if found the validation ends there and return the status of flag
         if str(dfdhcp.loc[i, 'Region']) in commonTools.endNames:
-            log("Reached <END> Tag. Validation ends here, any data beyond this tag will not be checked for errors !!!")
             break
 
         # Check for invalid Region
