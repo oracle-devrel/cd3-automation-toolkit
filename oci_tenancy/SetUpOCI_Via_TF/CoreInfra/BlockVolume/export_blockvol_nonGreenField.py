@@ -132,7 +132,6 @@ def export_blockvol(inputfile, _outdir, network_compartments=[], _config=DEFAULT
     global outdir
     global values_for_column
 
-    args = parser.parse_args()
     cd3file = inputfile
     if ('.xls' not in cd3file):
         print("\nAcceptable cd3 format: .xlsx")

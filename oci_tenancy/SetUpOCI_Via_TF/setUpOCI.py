@@ -127,7 +127,7 @@ def export_instances():
 
 def export_block_volumes():
     compartments = get_compartment_list('Block Volumes')
-    BlockVolume.export_blockvol(inputfile, outdir, config=config, compartments=compartments)
+    BlockVolume.export_blockvol(inputfile, outdir, _config=config, network_compartments=compartments)
     create_block_volumes()
     print("\n\nExecute tf_import_commands_blockvols_nonGF.sh script created under each region directory to synch TF with OCI Instances\n")
 
