@@ -11,6 +11,7 @@ from .modify_routerules_tf import modify_terraform_routerules
 from .modify_secrules_tf import modify_terraform_secrules
 from .exportRoutetable import export_routetable
 from .exportSeclist import export_seclist
+from .export_network_nonGreenField import export_networking
 
 __all__ = [
     'create_all_tf_objects',
@@ -24,4 +25,5 @@ __all__ = [
     'modify_terraform_secrules',
     'export_routetable',
     'export_seclist',
+    'export_networking',
 ]

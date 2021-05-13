@@ -340,7 +340,7 @@ def parse_args():
     return parser.parse_args()
 
 
-def export_network(inputfile, outdir, network_compartments=[], _config=DEFAULT_LOCATION):
+def export_networking(inputfile, outdir, network_compartments=[], _config=DEFAULT_LOCATION):
     global tf_import_cmd
     global values_for_column_vcns
     global values_for_column_dhcp
@@ -689,4 +689,4 @@ def export_network(inputfile, outdir, network_compartments=[], _config=DEFAULT_L
 
 if __name__=="__main__":
     args = parse_args()
-    export_network(args.inputfile, args.outdir, args.network_compartments, args.config)
+    export_networking(args.inputfile, args.outdir, args.network_compartments, args.config)
