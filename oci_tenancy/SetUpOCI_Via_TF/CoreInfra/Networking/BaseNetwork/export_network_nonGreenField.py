@@ -673,10 +673,10 @@ def export_networking(inputfile, outdir, network_compartments=[], _config=DEFAUL
         oci_obj_names[reg].close()
 
     # Fetch RouteRules and SecRules
-    export_seclist(cd3file, outdir, tf_import_cmd=True, config=input_config_file, network_compartments=input_compartment_list)
+    export_seclist(cd3file, outdir, tf_import_cmd=True, config=input_config_file, network_compartments=network_compartments)
     print("SecRules exported to CD3\n")
 
-    export_routetable(cd3file, outdir, tf_import_cmd=True, config=input_config_file, network_compartments=input_compartment_list)
+    export_routetable(cd3file, outdir, tf_import_cmd=True, config=input_config_file, network_compartments=network_compartments)
     print("RouteRules exported to CD3\n")
 
     for reg in ct.all_regions:
