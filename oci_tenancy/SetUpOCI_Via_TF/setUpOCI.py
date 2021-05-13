@@ -113,7 +113,7 @@ def export_identity():
 
 def export_networking():
     compartments = get_compartment_list('Network Objects')
-    Networking.export_networking(inputfile, outdir, prefix, config=config, compartments=compartments)
+    Networking.export_networking(inputfile, outdir, prefix, _config=config, compartments=compartments)
     create_networking(execute_all=True)
     print("\n\nExecute tf_import_commands_network_nonGF.sh script created under each region directory to synch TF with OCI Network objects\n")
 
