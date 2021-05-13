@@ -7,19 +7,13 @@ import oci
 import argparse
 import sys
 import oci
-import re
 import os
 from oci.config import DEFAULT_LOCATION
 from pathlib import Path
 sys.path.append(os.getcwd() + "/..")
 from commonTools import *
+from jinja2 import Environment, FileSystemLoader
 
-variable_template = '''
-variable {var_tf_name} {{
-  type = string
-  default = "{values}"
-}}
-'''
 
 def adding_columns_values(region, hostname, ad, fd, vs, publicip, privateip, os_dname, shape, key_name, c_name,
                           bkp_policy_name, nsgs, d_host, instance_data, values_for_column_instances, bc_info, bdet,
@@ -266,9 +260,9 @@ def export_instance(inputfile, outdir, network_compartments=[], config=DEFAULT_L
     print("Tabs Instances will be overwritten during this export process!!!\n")
 
     # Load os_ocids template file
-    file_loader = FileSystemLoader(f'{Path(__file__).parent.parent}/templates')
+    file_loader = FileSystemLoader(f'{Path(__file__).parent.parent}/../templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
-    template = env.get_template('variables-template')
+    variable_template = env.get_template('variables-template')
 
     # Fetch Regions
     regionsubscriptions = idc.list_region_subscriptions(tenancy_id=config['tenancy'])
@@ -360,9 +354,8 @@ def export_instance(inputfile, outdir, network_compartments=[], config=DEFAULT_L
         f = open(outdir + "/" + reg + "/os_ocids.tf", "w")
         for keys, values in myocids.items():
             tempstr = {"var_tf_name": keys, "values": values}
-            temp_str_test = variable_template.format(**tempstr)
-            # temp_str_test = template.render(tempstr)
-            # str="variable \""+keys+"\" {\n type    = \"string\"\n default = \""+values+"\" \n }\n"
+            #temp_str_test = variable_template.format(**tempstr)
+            temp_str_test = variable_template.render(tempstr)
             f.write(temp_str_test)
         f.close()
     tempstr = {}
@@ -378,9 +371,8 @@ def export_instance(inputfile, outdir, network_compartments=[], config=DEFAULT_L
         f = open(outdir + "/" + reg + "/ssh_metadata.tf", "w")
         for keys, values in myocids.items():
             tempstr = {"var_tf_name": keys, "values": values}
-            # str="variable \""+keys+"\" {\n type    = \"string\"\n default = \""+values+"\" \n }\n"
-            # temp_str_test = template.render(tempstr)
-            temp_str_test = variable_template.format(**tempstr)
+            temp_str_test = variable_template.render(tempstr)
+            #temp_str_test = variable_template.format(**tempstr)
             f.write(temp_str_test)
         f.close()
 

@@ -113,14 +113,14 @@ def export_identity():
 
 def export_networking():
     compartments = get_compartment_list('Network Objects')
-    Networking.export_networking(inputfile, outdir, prefix, _config=config, network_compartments=compartments)
+    Networking.export_networking(inputfile, outdir, _config=config, network_compartments=compartments)
     create_networking(execute_all=True)
     print("\n\nExecute tf_import_commands_network_nonGF.sh script created under each region directory to synch TF with OCI Network objects\n")
 
 
 def export_instances():
     compartments = get_compartment_list('Instances')
-    Compute.export_instance(inputfile, outdir, config=config, compartments=compartments)
+    Compute.export_instance(inputfile, outdir, config=config, network_compartments=compartments)
     create_instances(execute_all=True)
     print("\n\nExecute tf_import_commands_instances_nonGF.sh script created under each region directory to synch TF with OCI Instances\n")
 
@@ -197,7 +197,6 @@ def create_networking(execute_all=False):
 
 def create_instances(execute_all=False):
     options = [
-        Option('Add/Modify/Delete Dedicated VM Hosts', Compute.create_terraform_dedicatedhosts, 'Processing DedicatedVMHosts Tab'),
         Option('Add/Modify/Delete Instances/Boot Backup Policy', Compute.create_terraform_instances, 'Processing Instances Tab'),
     ]
     if not execute_all:
