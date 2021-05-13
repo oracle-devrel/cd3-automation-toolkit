@@ -154,7 +154,7 @@ def export_lb():
 
 def export_events_notifications():
     compartments = get_compartment_list('Events and Notifications objects')
-    Solutions.export_solutions(inputfile, outdir, config=config, compartments=compartments)
+    Solutions.export_solutions(inputfile, outdir, _config=config, network_compartments=compartments)
     create_events_notifications(execute_all=True)
     print("\n\nExecute tf_import_commands_solutions_nonGF.sh script created under each region directory to synch TF with OCI Events and Notifications objects\n")
 
