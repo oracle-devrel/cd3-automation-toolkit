@@ -171,6 +171,7 @@ def parse_args():
 
 
 def export_fss(inputfile, outdir, network_compartments=[], config=DEFAULT_LOCATION):
+    input_compartment_names = network_compartments
     cd3file = inputfile
 
     if ('.xls' not in cd3file):

@@ -113,7 +113,7 @@ def export_identity():
 
 def export_networking():
     compartments = get_compartment_list('Network Objects')
-    Networking.export_networking(inputfile, outdir, prefix, _config=config, compartments=compartments)
+    Networking.export_networking(inputfile, outdir, prefix, _config=config, network_compartments=compartments)
     create_networking(execute_all=True)
     print("\n\nExecute tf_import_commands_network_nonGF.sh script created under each region directory to synch TF with OCI Network objects\n")
 
@@ -140,14 +140,14 @@ def export_tags():
 
 def export_fss():
     compartments = get_compartment_list('FSS objects')
-    FileStorage.export_fss(inputfile, outdir, config=config, compartments=compartments)
+    FileStorage.export_fss(inputfile, outdir, config=config, network_compartments=compartments)
     create_fss()
     print("\n\nExecute tf_import_commands_fss_nonGF.sh script created under each region directory to synch TF with OCI FSS objects\n")
 
 
 def export_lb():
     compartments = get_compartment_list('LBR objects')
-    Networking.export_lbr(inputfile, outdir, config=config, compartments=compartments)
+    Networking.export_lbr(inputfile, outdir, _config=config, network_compartments=compartments)
     create_lb()
     print("\n\nExecute tf_import_commands_lbr_nonGF.sh script created under each region directory to synch TF with OCI LBR objects\n")
 
