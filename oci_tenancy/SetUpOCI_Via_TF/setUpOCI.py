@@ -249,8 +249,8 @@ def create_db(execute_all=False):
         Option('Add/Modify/Delete ExaData', Database.create_terraform_database_EXA, 'Processing DB_System_EXA Tab'),
     ]
     if not execute_all:
-        choices = show_options(options, quit=True, menu=True, index=1)
-    execute_options(choices, inputfile, outdir, prefix, config=config)
+        options = show_options(options, quit=True, menu=True, index=1)
+    execute_options(options, inputfile, outdir, prefix, config=config)
 
 
 def create_events_notifications(execute_all=False):
@@ -259,8 +259,8 @@ def create_events_notifications(execute_all=False):
         Option("Add/Modify/Delete Events", Solutions.create_terraform_events, 'Setting up Events'),
     ]
     if not execute_all:
-        choices = show_options(options, quit=True, menu=True, index=1)
-    execute_options(choices, inputfile, outdir, prefix, config=config)
+        options = show_options(options, quit=True, menu=True, index=1)
+    execute_options(options, inputfile, outdir, prefix, config=config)
 
 
 def create_resource_manager():
