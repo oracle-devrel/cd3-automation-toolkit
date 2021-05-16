@@ -86,11 +86,11 @@ def parse_args():
     parser.add_argument("inputfile", help="path of CD3 excel file to export tag objects to")
     parser.add_argument("outdir", help="path to out directory containing script for TF import commands")
     parser.add_argument("--config", default=DEFAULT_LOCATION, help="Config file name")
-    parser.add_argument("--network-compartments", nargs='*', help="comma seperated Compartments for which to export Identity Objects", required=False)
+    parser.add_argument("--network-compartments", default=[], nargs='*', help="comma seperated Compartments for which to export Identity Objects", required=False)
     return parser.parse_args()
 
 
-def export_tags(inputfile, outdir, _config, network_compartments=[]):
+def export_tags_nongreenfield(inputfile, outdir, _config, network_compartments):
     global tf_import_cmd
     global values_for_column_tags
     global sheet_dict_tags
@@ -220,8 +220,9 @@ def export_tags(inputfile, outdir, _config, network_compartments=[]):
 
             commonTools.write_to_cd3(values_for_column_tags, cd3file, "Tags")
             print("Tags exported to CD3\n")
+            print(os.getcwd())
 
-            os.chdir("../../..")
+    # os.chdir("../../..")
 
     importCommands[ct.home_region] = open(outdir + "/" + ct.home_region + "/tf_import_commands_tags_nonGF.sh", "a")
     importCommands[ct.home_region].write("\n\nterraform plan")
@@ -236,4 +237,4 @@ def export_tags(inputfile, outdir, _config, network_compartments=[]):
 
 if __name__=="__main__":
     args = parse_args()
-    export_tags(args.inputfile, args.outdir, args.config, args.network_compartments)
+    export_tags_nongreenfield(args.inputfile, args.outdir, args.config, args.network_compartments)
