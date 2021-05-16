@@ -218,21 +218,21 @@ def export_tags_nongreenfield(inputfile, outdir, _config, network_compartments):
                                 print_tags(values_for_column_tags, region, ntk_compartment_name, tag, tag_key,
                                        tag_default_value, tag_default, tag_default_comp)
 
-            commonTools.write_to_cd3(values_for_column_tags, cd3file, "Tags")
-            print("Tags exported to CD3\n")
-            print(os.getcwd())
+                    commonTools.write_to_cd3(values_for_column_tags, cd3file, "Tags")
+                    print("Tags exported to CD3\n")
 
-    # os.chdir("../../..")
+                    os.chdir("../../..")
 
-    importCommands[ct.home_region] = open(outdir + "/" + ct.home_region + "/tf_import_commands_tags_nonGF.sh", "a")
-    importCommands[ct.home_region].write("\n\nterraform plan")
-    importCommands[ct.home_region].write("\n")
-    importCommands[ct.home_region].close()
-    if ("linux" in sys.platform):
-        dir = os.getcwd()
-        os.chdir(outdir + "/" + ct.home_region)
-        os.system("chmod +x tf_import_commands_tags_nonGF.sh")
-        os.chdir(dir)
+            importCommands[ct.home_region] = open(outdir + "/" + ct.home_region + "/tf_import_commands_tags_nonGF.sh",
+                                                  "a")
+            importCommands[ct.home_region].write("\n\nterraform plan")
+            importCommands[ct.home_region].write("\n")
+            importCommands[ct.home_region].close()
+            if ("linux" in sys.platform):
+                dir = os.getcwd()
+                os.chdir(outdir + "/" + ct.home_region)
+                os.system("chmod +x tf_import_commands_tags_nonGF.sh")
+                os.chdir(dir)
 
 
 if __name__=="__main__":
