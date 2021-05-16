@@ -14,6 +14,7 @@ import argparse
 import os
 from oci.config import DEFAULT_LOCATION
 from pathlib import Path
+from .boot_backups_policy import create_boot_backup_policy
 sys.path.append(os.getcwd() + "/../..")
 from commonTools import *
 from jinja2 import Environment, FileSystemLoader
@@ -201,3 +202,6 @@ if __name__ == '__main__':
     args = parse_args()
     # Execution of the code begins here
     create_terraform_instances(args.inputfile, args.outdir, args.config)
+    # Create Boot Backup Policy
+    print("Processing Boot Volume Backup Policies...")
+    create_boot_backup_policy(args.inputfile, args.outdir, args.config)

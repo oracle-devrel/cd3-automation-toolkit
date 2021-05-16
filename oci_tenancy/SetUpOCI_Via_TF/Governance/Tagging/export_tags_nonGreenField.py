@@ -44,6 +44,7 @@ def  print_tags(values_for_column_tags,region, ntk_compartment_name, tag, tag_ke
       validator = validator.split("{  \"validator_type\": \"ENUM\",  \"values\": [    ")
       validator = validator[1].split("  ]}")
       validator = "ENUM::" + validator[0].replace(" ","")
+
     tf_name_namespace = commonTools.check_tf_variable(tag.name)
     for col_header in values_for_column_tags.keys():
         if (col_header == "Region"):
@@ -84,12 +85,12 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Export Tags on OCI to CD3")
     parser.add_argument("inputfile", help="path of CD3 excel file to export tag objects to")
     parser.add_argument("outdir", help="path to out directory containing script for TF import commands")
-    parser.add_argument("--network-compartments", nargs='*', help="comma seperated Compartments for which to export Identity Objects", required=False)
     parser.add_argument("--config", default=DEFAULT_LOCATION, help="Config file name")
+    parser.add_argument("--network-compartments", nargs='*', help="comma seperated Compartments for which to export Identity Objects", required=False)
     return parser.parse_args()
 
 
-def export_tags(inputfile, outdir, network_compartments=[], _config=DEFAULT_LOCATION):
+def export_tags(inputfile, outdir, _config, network_compartments=[]):
     global tf_import_cmd
     global values_for_column_tags
     global sheet_dict_tags
@@ -97,7 +98,6 @@ def export_tags(inputfile, outdir, network_compartments=[], _config=DEFAULT_LOCA
     global config
 
     cd3file = inputfile
-    input_config_file = _config
     input_compartment_names = network_compartments
     configFileName = _config
     config = oci.config.from_file(file_location=configFileName)
@@ -236,4 +236,4 @@ def export_tags(inputfile, outdir, network_compartments=[], _config=DEFAULT_LOCA
 
 if __name__=="__main__":
     args = parse_args()
-    export_tags(args.inputfile, args.outdir, args.network_compartments, args.config)
+    export_tags(args.inputfile, args.outdir, args.config, args.network_compartments)

@@ -36,6 +36,7 @@ def fetch_compartments(outdir, config=DEFAULT_LOCATION):
     var_data={}
 
     print("outdir specified should contain region directories and then variables_<region>.tf file inside the region directories eg /root/ocswork/terraform_files")
+    print("Verifying out directory...Please wait...")
 
     ct = commonTools()
     ct.get_subscribedregions(configFileName)

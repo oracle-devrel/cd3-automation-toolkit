@@ -23,12 +23,12 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Export Identity Objects in OCI to CD3")
     parser.add_argument("inputfile", help="path of CD3 excel file to export identity objects to")
     parser.add_argument("outdir", help="path to out directory containing script for TF import commands")
-    parser.add_argument("--network-compartments", required=False, nargs='*', help="comma seperated Compartments for which to export Identity Objects")
     parser.add_argument("--config", default=DEFAULT_LOCATION, help="Config file name")
+    parser.add_argument("--network-compartments", required=False, nargs='*', help="comma seperated Compartments for which to export Identity Objects")
     return parser.parse_args()
 
 
-def export_identity(inputfile, outdir, network_compartments=[], _config=DEFAULT_LOCATION):
+def export_identity(inputfile, outdir, _config, network_compartments=[]):
     global values_for_column_comps
     global values_for_column_groups
     global values_for_column_policies
@@ -48,7 +48,7 @@ def export_identity(inputfile, outdir, network_compartments=[], _config=DEFAULT_
 
     configFileName = _config
     config = oci.config.from_file(file_location=configFileName)
-    config = oci.config.from_file()
+    #config = oci.config.from_file()
 
     importCommands={}
 
@@ -258,4 +258,4 @@ def export_identity(inputfile, outdir, network_compartments=[], _config=DEFAULT_
 
 if __name__=="__main__":
     args = parse_args()
-    export_identity(args.inputfile, args.outdir, args.network_compartments, args.config)
+    export_identity(args.inputfile, args.outdir, args.config, args.network_compartments)

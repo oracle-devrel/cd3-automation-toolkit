@@ -226,7 +226,7 @@ def parse_args():
     return parser.parse_args()
 
 
-def export_instance(inputfile, outdir, network_compartments=[], config=DEFAULT_LOCATION):
+def export_instance(inputfile, outdir, config, network_compartments=[]):
     cd3file = inputfile
     input_compartment_names = network_compartments
 
@@ -395,4 +395,4 @@ def export_instance(inputfile, outdir, network_compartments=[], config=DEFAULT_L
 if __name__ == '__main__':
     # Execution of the code begins here
     args = parse_args()
-    export_instance(args.inputfile, args.outdir, args.network_compartments, args.config)
+    export_instance(args.inputfile, args.outdir, args.config, args.network_compartments)

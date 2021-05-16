@@ -32,7 +32,7 @@ def parse_args():
 
 
 # If input in cd3 file
-def create_namespace_tagkey(inputfile, outdir, config=DEFAULT_LOCATION):
+def create_namespace_tagkey(inputfile, outdir, config):
     filename = inputfile
     configFileName = config
 

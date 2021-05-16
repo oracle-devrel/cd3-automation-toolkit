@@ -155,13 +155,13 @@ def parse_args():
     parser.add_argument('cd3file', help='path of CD3 excel file to export rules to')
     parser.add_argument('--network-compartment', nargs='*', help='comma seperated Compartments for which to export Networking Objects')
     parser.add_argument('--config', default=DEFAULT_LOCATION, help='Config file name')
-    parser.add_argument('--tf-import-cmd', action='store_true', help='write tf import commands')
-    parser.add_argument('--outdir', required=False, help='outdir for TF import commands script')
+    parser.add_argument('--tf-import-cmd', default=False, action='store_true', help='write tf import commands')
+    parser.add_argument('--outdir', default=None, required=False, help='outdir for TF import commands script')
     args = parser.parse_args()
 
 
 
-def export_routetable(inputfile, network_compartments, _config, _tf_import_cmd=False, outdir=None):
+def export_routetable(inputfile, network_compartments, _config, _tf_import_cmd, outdir):
     # Read the arguments
     global tf_import_cmd
     global values_for_column

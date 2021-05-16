@@ -12,34 +12,28 @@
 import sys
 import argparse
 import os
+from oci.config import DEFAULT_LOCATION
+
+
+
 sys.path.append(os.getcwd()+"/../..")
 from commonTools import *
 from jinja2 import Environment, FileSystemLoader
 
+def parse_args():
+    parser = argparse.ArgumentParser(description='Creates Instances TF file')
+    parser.add_argument('file', help='Full Path of CD3 excel file. eg  CD3-template.xlsx in example folder')
+    parser.add_argument('outdir', help='directory path for output tf files ')
+    parser.add_argument('--config', default=DEFAULT_LOCATION, help='Config file name')
+    return parser.parse_args()
+
 # If the input is CD3
-def main():
+#If input is CD3 excel file
+def create_boot_backup_policy(inputfile, outdir, config):
 
-    # Read the arguments
-    parser = argparse.ArgumentParser(description="Attaches back up policy to Boot Volumes")
-    parser.add_argument("file", help="Full Path of CD3 excel file. eg CD3-template.xlsx in example folder")
-    parser.add_argument("outdir", help="directory path for output tf file ")
-    parser.add_argument("--configFileName", help="Config file name", required=False)
+    filename = inputfile
+    configFileName = config
 
-    if len(sys.argv) == 1:
-        parser.print_help()
-        sys.exit(1)
-
-    if len(sys.argv) < 2:
-        parser.print_help()
-        sys.exit(1)
-
-    args = parser.parse_args()
-    filename = args.file
-    outdir = args.outdir
-    if args.configFileName is not None:
-        configFileName = args.configFileName
-    else:
-        configFileName = ""
     ct = commonTools()
     ct.get_subscribedregions(configFileName)
 
@@ -174,6 +168,7 @@ def main():
             oname.close()
 
 if __name__ == '__main__':
-
+    args = parse_args()
     # Execution of the code begins here
-    main()
+    create_boot_backup_policy(args.file, args.outdir, args.config)
+

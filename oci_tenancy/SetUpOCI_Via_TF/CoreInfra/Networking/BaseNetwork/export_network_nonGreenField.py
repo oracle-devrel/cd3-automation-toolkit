@@ -7,6 +7,7 @@ import oci
 from oci.core.virtual_network_client import VirtualNetworkClient
 from oci.config import DEFAULT_LOCATION
 # from CoreInfra import Networking
+from oci_tenancy.SetUpOCI_Via_TF.CoreInfra import Networking
 from .exportRoutetable import export_routetable
 from .exportSeclist import export_seclist
 import os
@@ -335,12 +336,12 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Export Network Objects in OCI to CD3")
     parser.add_argument("inputfile", help="path of CD3 excel file to export network objects to")
     parser.add_argument("outdir", help="path to out directory containing script for TF import commands")
-    parser.add_argument("--network-compartments", nargs='*', help="comma seperated Compartments for which to export Networking Objects", required=False)
     parser.add_argument("--configFileName", default=DEFAULT_LOCATION, help="Config file name")
+    parser.add_argument("--network-compartments", nargs='*', help="comma seperated Compartments for which to export Networking Objects", required=False)
     return parser.parse_args()
 
 
-def export_networking(inputfile, outdir, network_compartments=[], _config=DEFAULT_LOCATION):
+def export_networking(inputfile, outdir, _config, network_compartments=[]):
     global tf_import_cmd
     global values_for_column_vcns
     global values_for_column_dhcp
@@ -673,10 +674,12 @@ def export_networking(inputfile, outdir, network_compartments=[], _config=DEFAUL
         oci_obj_names[reg].close()
 
     # Fetch RouteRules and SecRules
-    export_seclist(cd3file, outdir, tf_import_cmd=True, config=input_config_file, network_compartments=network_compartments)
+    Networking.export_seclist(inputfile, network_compartments=network_compartments, _config=input_config_file, _tf_import_cmd=True, outdir=outdir )
+    #export_seclist(cd3file, outdir, tf_import_cmd=True, config=input_config_file, network_compartments=network_compartments)
     print("SecRules exported to CD3\n")
 
-    export_routetable(cd3file, outdir, tf_import_cmd=True, config=input_config_file, network_compartments=network_compartments)
+    Networking.export_routetable(inputfile, network_compartments=network_compartments, _config=input_config_file, _tf_import_cmd=True, outdir=outdir )
+    #export_routetable(cd3file, outdir, tf_import_cmd=True, config=input_config_file, network_compartments=network_compartments)
     print("RouteRules exported to CD3\n")
 
     for reg in ct.all_regions:
@@ -689,4 +692,4 @@ def export_networking(inputfile, outdir, network_compartments=[], _config=DEFAUL
 
 if __name__=="__main__":
     args = parse_args()
-    export_networking(args.inputfile, args.outdir, args.network_compartments, args.config)
+    export_networking(args.inputfile, args.outdir, args.config, args.network_compartments)

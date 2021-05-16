@@ -67,12 +67,15 @@ def verify_outdir_is_empty():
     for reg in ct.all_regions:
         whitelisted_files = ['provider.tf', f'variables_{reg}.tf']
         terraform_files = glob(f'{outdir}/{reg}/*.tf')
-        tf_list[reg] = [file for file in terraform_files if file not in whitelisted_files]
+        tf_list[reg] = [file for file in terraform_files if file.split('/')[-1] not in whitelisted_files]
+
 
     has_files = False
     for reg in ct.all_regions:
         if len(tf_list[reg]) > 0:
-            print(f'{outdir}/{reg} directory under outdir is not empty; contains below tf files {shorten(str(tf_list[reg]).join(","), 40)}')
+            print(f'{outdir}/{reg} directory under outdir is not empty; contains below tf files.')
+            for files in tf_list[reg]:
+                print(files.split('/')[-1])
             has_files = True
 
     if has_files:
@@ -106,7 +109,7 @@ def get_compartment_list(resource_name):
 
 
 def export_identity():
-    Identity.export_identity(inputfile, outdir, prefix, config)
+    Identity.export_identity(inputfile, outdir, _config=config)
     create_identity(execute_all=True)
     print("\n\nExecute tf_import_commands_identity_nonGF.sh script created under home region directory to synch TF with OCI Identity objects\n")
 
@@ -121,7 +124,7 @@ def export_networking():
 def export_instances():
     compartments = get_compartment_list('Instances')
     Compute.export_instance(inputfile, outdir, config=config, network_compartments=compartments)
-    create_instances(execute_all=True)
+    Compute.create_terraform_instances(inputfile, outdir, config)
     print("\n\nExecute tf_import_commands_instances_nonGF.sh script created under each region directory to synch TF with OCI Instances\n")
 
 
@@ -177,8 +180,8 @@ def modify_terraform_network(inputfile, outdir, prefix, config):
 def export_terraform_routes_and_secrules(inputfile, outdir, prefix, config):
     compartments = input("Enter name of Compartment as it appears in OCI (comma separated if multiple) for which you want to export rules;\nPress 'Enter' to export from all the Compartments: ")
     compartments = compartments.split(',') if compartments else []
-    Networking.export_seclist(inputfile, network_compartments=compartments, _config=config)
-    Networking.export_routetable(inputfile, network_compartments=compartments, _config=config)
+    Networking.export_seclist(inputfile, network_compartments=compartments, _config=config, _tf_import_cmd=False, outdir=None)
+    Networking.export_routetable(inputfile, network_compartments=compartments, _config=config, _tf_import_cmd=False, outdir=None)
 
 
 def create_networking(execute_all=False):
@@ -197,6 +200,7 @@ def create_networking(execute_all=False):
 
 def create_instances(execute_all=False):
     options = [
+        Option('Add/Modify/Delete Dedicated VM Hosts', Compute.create_terraform_dedicatedhosts, 'Processing Dedicated VM Hosts Tab'),
         Option('Add/Modify/Delete Instances/Boot Backup Policy', Compute.create_terraform_instances, 'Processing Instances Tab'),
     ]
     if not execute_all:
@@ -227,7 +231,7 @@ def create_lb():
         Option(None, Networking.create_terraform_lbr_hostname_certs, 'Creating LBR'),
         Option(None, Networking.create_backendset_backendservers, 'Creating Backend Sets and Backend Servers'),
         Option(None, Networking.create_listener, 'Creating Listeners'),
-        Option(None, Networking.create_path_route_set, 'Creating Pauth Route Sets'),
+        Option(None, Networking.create_path_route_set, 'Creating Path Route Sets'),
         Option(None, Networking.create_ruleset, 'Creating Rule Sets'),
     ]
     execute_options(options, inputfile, outdir, config=config)
@@ -346,7 +350,10 @@ else:
 # Run menu
 menu = True
 while menu:
-    options = show_options(inputs, quit=True, extra='\nSee example folder for sample input files\n')
+    if non_gf_tenancy:
+        options = show_options(inputs, quit=True, index=1)
+    else:
+        options = show_options(inputs, quit=True, extra='\nSee example folder for sample input files\n', index=0)
     if 'q' in options:
         exit_menu('Exiting...')
     for option in options:

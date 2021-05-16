@@ -688,17 +688,6 @@ def print_prs(region, ct, values_for_column_prs, LBRs, ntk_compartment_name):
 
     return values_for_column_prs
 
-
-def parse_args():
-    # Read the arguments
-    parser = argparse.ArgumentParser(description="Export LBR on OCI to CD3")
-    parser.add_argument("inputfile", help="path of CD3 excel file to export network objects to")
-    parser.add_argument("outdir", help="path to out directory containing script for TF import commands")
-    parser.add_argument("--network-compartments", nargs='*', help="comma seperated Compartments for which to export LBR Objects", required=False)
-    parser.add_argument("--config", default=DEFAULT_LOCATION, help="Config file name")
-
-
-
 def export_lbr(inputfile, _outdir, network_compartments, _config):
     global tf_import_cmd
     global sheet_dict
@@ -871,6 +860,14 @@ def export_lbr(inputfile, _outdir, network_compartments, _config):
 
     print("LBRs exported to CD3\n")
 
+def parse_args():
+    # Read the arguments
+    parser = argparse.ArgumentParser(description="Export LBR on OCI to CD3")
+    parser.add_argument("inputfile", help="path of CD3 excel file to export network objects to")
+    parser.add_argument("outdir", help="path to out directory containing script for TF import commands")
+    parser.add_argument("--network-compartments", nargs='*', help="comma seperated Compartments for which to export LBR Objects", required=False)
+    parser.add_argument("--config", default=DEFAULT_LOCATION, help="Config file name")
+    return parser.parse_args()
 
 if __name__ == '__main__':
     args = parse_args()

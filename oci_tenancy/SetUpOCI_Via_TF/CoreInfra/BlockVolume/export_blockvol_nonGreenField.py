@@ -116,12 +116,12 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Export Block Volumes on OCI to CD3")
     parser.add_argument("inputfile", help="path of CD3 excel file to export Block Volume objects to")
     parser.add_argument("outdir", help="path to out directory containing script for TF import commands")
-    parser.add_argument("--network-compartments", nargs='*', required=False, help="comma seperated Compartments for which to export Block Volume Objects")
     parser.add_argument("--config", default=DEFAULT_LOCATION, help="Config file name")
+    parser.add_argument("--network-compartments", nargs='*', required=False, help="comma seperated Compartments for which to export Block Volume Objects")
     return parser.parse_args()
 
 
-def export_blockvol(inputfile, _outdir, network_compartments=[], _config=DEFAULT_LOCATION):
+def export_blockvol(inputfile, _outdir, _config, network_compartments=[]):
     global tf_import_cmd
     global sheet_dict
     global importCommands
@@ -220,4 +220,4 @@ def export_blockvol(inputfile, _outdir, network_compartments=[], _config=DEFAULT
 if __name__ == '__main__':
     args = parse_args()
     # Execution of the code begins here
-    export_blockvol(args.inputfile, args.outdir, args.network_compartments, args.config)
+    export_blockvol(args.inputfile, args.outdir, args.config, args.network_compartments)
