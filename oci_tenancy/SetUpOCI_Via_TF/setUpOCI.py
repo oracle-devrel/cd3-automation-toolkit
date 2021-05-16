@@ -136,7 +136,7 @@ def export_block_volumes():
 
 
 def export_tags():
-    Tagging.export_tags(inputfile, outdir, _config=config)
+    Tagging.export_tags_nongreenfield(inputfile, outdir, _config=config, network_compartments=[])
     create_tags()
     print("\n\nExecute tf_import_commands_tags_nonGF.sh script created under home region directory to synch TF with OCI Identity objects\n")
 
