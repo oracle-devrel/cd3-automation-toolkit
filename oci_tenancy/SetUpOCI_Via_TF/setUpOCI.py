@@ -65,9 +65,9 @@ def verify_outdir_is_empty():
     print("\nChecking if the specified outdir contains tf files related to the OCI components being exported...")
     tf_list = {}
     for reg in ct.all_regions:
-        whitelisted_files = ['provider.tf', f'variables_{reg}.tf']
+        whitelisted_files = [f'{outdir}/{reg}/provider.tf', f'{outdir}/{reg}/variables_{reg}.tf']
         terraform_files = glob(f'{outdir}/{reg}/*.tf')
-        tf_list[reg] = [file for file in terraform_files if file.split('/')[-1] not in whitelisted_files]
+        tf_list[reg] = [file for file in terraform_files if file not in whitelisted_files]
 
 
     has_files = False
@@ -75,7 +75,7 @@ def verify_outdir_is_empty():
         if len(tf_list[reg]) > 0:
             print(f'{outdir}/{reg} directory under outdir is not empty; contains below tf files.')
             for files in tf_list[reg]:
-                print(files.split('/')[-1])
+                print(files)
             has_files = True
 
     if has_files:
