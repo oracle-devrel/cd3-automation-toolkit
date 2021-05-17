@@ -131,7 +131,7 @@ def export_networking():
 def export_instances():
     compartments = get_compartment_list('Instances')
     Compute.export_instance(inputfile, outdir, config=config, network_compartments=compartments)
-    Compute.create_terraform_instances(inputfile, outdir, config)
+    create_instances()
     print("\n\nExecute tf_import_commands_instances_nonGF.sh script created under each region directory to synch TF with OCI Instances\n")
 
 
@@ -143,7 +143,7 @@ def export_block_volumes():
 
 
 def export_tags():
-    Tagging.export_tags_nongreenfield(inputfile, outdir, _config=config, network_compartments=[])
+    Tagging.export_tags_nongreenfield(inputfile, outdir, _config=config, network_compartments=None)
     create_tags()
     print("\n\nExecute tf_import_commands_tags_nonGF.sh script created under home region directory to synch TF with OCI Identity objects\n")
 
@@ -204,16 +204,20 @@ def create_networking(execute_all=False):
         options = show_options(options, quit=True, menu=True, index=1)
     execute_options(options, inputfile, outdir, prefix, config=config)
 
-
-def create_instances(execute_all=False):
+def create_instances():
     options = [
-        Option('Add/Modify/Delete Dedicated VM Hosts', Compute.create_terraform_dedicatedhosts, 'Processing Dedicated VM Hosts Tab'),
-        Option('Add/Modify/Delete Instances/Boot Backup Policy', Compute.create_terraform_instances, 'Processing Instances Tab'),
+        Option(None, Compute.create_terraform_instances, 'Processing Instances Tab'),
+        Option(None, Compute.boot_backups_policy, 'Processing Boot Volume Policies'),
     ]
-    if not execute_all:
-        options = show_options(options, quit=True, menu=True, index=1)
     execute_options(options, inputfile, outdir, config=config)
 
+def create_vmhosts_instances():
+    options = [
+        Option('Add/Modify/Delete Dedicated VM Hosts', Compute.create_terraform_dedicatedhosts, 'Processing Dedicated VM Hosts Tab'),
+        Option('Add/Modify/Delete Instances/Boot Backup Policy', create_instances, 'Processing Instances Tab'),
+    ]
+    options = show_options(options, quit=True, menu=True, index=1)
+    execute_options(options, inputfile, outdir, config=config)
 
 def create_block_volumes():
     options = [
@@ -326,8 +330,8 @@ if non_gf_tenancy:
     inputs = [
         Option('Export Identity', export_identity, 'Identity'),
         Option('Export Networking', export_networking, 'Networking'),
-        Option('Export Dedicated VM Hosts/Instances/Boot Backup Policy', export_instances, 'Instances'),
-        Option('Export Create and Attach Block Volumes/Block BackUp Policy', export_block_volumes, 'Block Volumes'),
+        Option('Export Instances/Boot Backup Policy', export_instances, 'Instances'),
+        Option('Export Block Volumes/Block BackUp Policy', export_block_volumes, 'Block Volumes'),
         Option('Export Tags', export_tags, 'Tagging'),
         Option('Export File Storage Service', export_fss, 'FSS'),
         Option('Export Load Balancer Service', export_lb, 'Load Balancers'),
@@ -342,7 +346,7 @@ else:
         Option('Validate CD3', validate_cd3, 'Validate CD3'),
         Option('Identity', create_identity, 'Identity'),
         Option('Networking', create_networking, 'Networking'),
-        Option('Dedicated VM Hosts/Instances/Boot Backup Policy', create_instances, 'Instances'),
+        Option('Dedicated VM Hosts/Instances/Boot Backup Policy', create_vmhosts_instances, 'Instances'),
         Option('Create and Attach Block Volumes/Block BackUp Policy', create_block_volumes, 'Block Volumes'),
         Option('Tags', create_tags, 'Tagging'),
         Option('File Storage Service', create_fss, 'FSS'),
