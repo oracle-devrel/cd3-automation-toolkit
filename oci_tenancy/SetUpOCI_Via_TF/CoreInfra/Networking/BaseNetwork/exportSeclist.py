@@ -247,7 +247,6 @@ def export_seclist(inputfile, network_compartments, _config, _tf_import_cmd, out
 
 
     input_compartment_list = network_compartments
-    print(input_compartment_list)
     if(input_compartment_list is not None):
         #input_compartment_names = input_compartment_list.split(",")
         input_compartment_names = [x.strip() for x in input_compartment_list]

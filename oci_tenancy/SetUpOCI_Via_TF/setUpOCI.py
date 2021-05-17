@@ -118,20 +118,22 @@ def export_networking():
     compartments = get_compartment_list('Network Objects')
     Networking.export_networking(inputfile, outdir, _config=config, network_compartments=compartments)
     #create_networking(execute_all=True)
-    Networking.create_major_objects(inputfile, outdir, prefix, config=config)
-    Networking.create_terraform_dhcp_options(inputfile, outdir, prefix, config=config)
-    Networking.create_terraform_subnet(inputfile, outdir, prefix, config=config)
-    Networking.modify_terraform_secrules(inputfile, outdir, prefix, config=config)
-    Networking.modify_terraform_routerules(inputfile, outdir, prefix, config=config)
-    Networking.create_terraform_nsg(inputfile, outdir, prefix, config=config)
-
+    options = [
+        Option(None, Networking.create_major_objects, 'Processing VCNs Tab'),
+        Option(None, Networking.create_terraform_dhcp_options, 'Processing DHCP Tab'),
+        Option(None, Networking.create_terraform_subnet, 'Processing Subnets Tab'),
+        Option(None, Networking.modify_terraform_secrules, 'Processing SecRulesinOCI Tab'),
+        Option(None, Networking.modify_terraform_routerules, 'Processing RouteRulesinOCI Tab'),
+        Option(None, Networking.create_terraform_nsg, 'Processing NSGs Tab'),
+    ]
+    execute_options(options, inputfile, outdir, prefix, config=config)
     print("\n\nExecute tf_import_commands_network_nonGF.sh script created under each region directory to synch TF with OCI Network objects\n")
 
 
 def export_instances():
     compartments = get_compartment_list('Instances')
     Compute.export_instance(inputfile, outdir, config=config, network_compartments=compartments)
-    create_instances()
+    create_instances(inputfile, outdir, config)
     print("\n\nExecute tf_import_commands_instances_nonGF.sh script created under each region directory to synch TF with OCI Instances\n")
 
 
