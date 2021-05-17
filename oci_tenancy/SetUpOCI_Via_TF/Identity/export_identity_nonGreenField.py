@@ -245,15 +245,11 @@ def export_identity(inputfile, outdir, _config, network_compartments=[]):
     commonTools.write_to_cd3(values_for_column_policies,cd3file,"Policies")
     print("Policies exported to CD3\n")
 
-    importCommands[ct.home_region] = open(outdir + "/" + ct.home_region + "/tf_import_commands_identity_nonGF.sh", "a")
-    importCommands[ct.home_region].write("\n\nterraform plan")
-    importCommands[ct.home_region].write("\n")
-    importCommands[ct.home_region].close()
-    if 'linux' in sys.platform:
-        dir = os.getcwd()
-        os.chdir(outdir + "/" + ct.home_region)
-        os.system("chmod +x tf_import_commands_identity_nonGF.sh")
-        os.chdir(dir)
+    script_file = f'{outdir}/{ct.home_region}/tf_import_commands_identity_nonGF.sh'
+    with open(script_file, 'a') as importCommands[ct.home_region]:
+        importCommands[ct.home_region].write('\n\nterraform plan\n')
+    if "linux" in sys.platform:
+        os.chmod(script_file, 0o755)
 
 
 if __name__=="__main__":

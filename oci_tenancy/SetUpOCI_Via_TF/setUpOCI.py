@@ -173,9 +173,9 @@ def export_events_notifications():
 
 def create_identity(execute_all=False):
     options = [
-        Option('Add/Modify/Delete Compartments', Identity.create_terraform_compartments, 'Compartments Tab'),
-        Option('Add/Modify/Delete Groups', Identity.create_terraform_groups, 'Groups Tab'),
-        Option('Add/Modify/Delete Policies', Identity.create_terraform_policies, 'Policies Tab'),
+        Option('Add/Modify/Delete Compartments', Identity.create_terraform_compartments, 'Processing Compartments Tab'),
+        Option('Add/Modify/Delete Groups', Identity.create_terraform_groups, 'Processing Groups Tab'),
+        Option('Add/Modify/Delete Policies', Identity.create_terraform_policies, 'Processing Policies Tab'),
     ]
     if not execute_all:
         options = show_options(options, quit=True, menu=True, index=1)
