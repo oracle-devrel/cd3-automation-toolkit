@@ -380,7 +380,8 @@ if(input_image_id==''):
         #print(image.display_name)
         #if ("Gen2-GPU" not in image.display_name):
         #if ("Oracle-Linux-7.8-2020.07.28-0" in image.display_name):
-        if ("Gen2-GPU" not in image.display_name and "Oracle-Linux-7.8" in image.display_name):
+        #if ("Gen2-GPU" not in image.display_name and "Oracle-Linux-7.8" in image.display_name):
+        if ("Oracle-Linux-7.9-2021.04.09-0" in image.display_name):
             input_image_id = image.id
             break
 
