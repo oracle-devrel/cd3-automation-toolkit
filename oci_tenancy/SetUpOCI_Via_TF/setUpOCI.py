@@ -34,7 +34,7 @@ def show_options(options, quit=False, menu=False, extra=None, index=0):
     if extra:
         print(extra)
 
-    user_input = input('Enter your choice: ')
+    user_input = input('Enter your choice (specify comma separated to chose multiple choices): ')
     user_input = user_input.split(',')
     if 'q' in user_input or 'm' in user_input:
         return user_input
