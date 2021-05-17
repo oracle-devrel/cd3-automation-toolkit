@@ -6,11 +6,9 @@ import sys
 import oci
 from oci.core.virtual_network_client import VirtualNetworkClient
 from oci.config import DEFAULT_LOCATION
-# from CoreInfra import Networking
-from oci_tenancy.SetUpOCI_Via_TF.CoreInfra import Networking
+import os
 from .exportRoutetable import export_routetable
 from .exportSeclist import export_seclist
-import os
 
 sys.path.append(os.getcwd() + "/..")
 from commonTools import *
@@ -674,11 +672,11 @@ def export_networking(inputfile, outdir, _config, network_compartments=[]):
         oci_obj_names[reg].close()
 
     # Fetch RouteRules and SecRules
-    Networking.export_seclist(inputfile, network_compartments=network_compartments, _config=input_config_file, _tf_import_cmd=True, outdir=outdir )
+    export_seclist(inputfile, network_compartments=network_compartments, _config=input_config_file, _tf_import_cmd=True, outdir=outdir )
     #export_seclist(cd3file, outdir, tf_import_cmd=True, config=input_config_file, network_compartments=network_compartments)
     print("SecRules exported to CD3\n")
 
-    Networking.export_routetable(inputfile, network_compartments=network_compartments, _config=input_config_file, _tf_import_cmd=True, outdir=outdir )
+    export_routetable(inputfile, network_compartments=network_compartments, _config=input_config_file, _tf_import_cmd=True, outdir=outdir )
     #export_routetable(cd3file, outdir, tf_import_cmd=True, config=input_config_file, network_compartments=network_compartments)
     print("RouteRules exported to CD3\n")
 
