@@ -117,7 +117,14 @@ def export_identity():
 def export_networking():
     compartments = get_compartment_list('Network Objects')
     Networking.export_networking(inputfile, outdir, _config=config, network_compartments=compartments)
-    create_networking(execute_all=True)
+    #create_networking(execute_all=True)
+    Networking.create_major_objects(inputfile, outdir, prefix, config=config)
+    Networking.create_terraform_dhcp_options(inputfile, outdir, prefix, config=config)
+    Networking.create_terraform_subnet(inputfile, outdir, prefix, config=config)
+    Networking.modify_terraform_secrules(inputfile, outdir, prefix, config=config)
+    Networking.modify_terraform_routerules(inputfile, outdir, prefix, config=config)
+    Networking.create_terraform_nsg(inputfile, outdir, prefix, config=config)
+
     print("\n\nExecute tf_import_commands_network_nonGF.sh script created under each region directory to synch TF with OCI Network objects\n")
 
 
