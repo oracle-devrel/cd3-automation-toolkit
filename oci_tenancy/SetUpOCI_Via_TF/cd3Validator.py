@@ -982,10 +982,14 @@ def validate_cd3(filename, choices, configFileName):
         log("=======")
         log("Summary:")
         log("=======")
-        log("There are no errors in CD3. Verify LPG's Peering Check Status once in the log file. Otherwise You are good to proceed !!!")
+        log("There are no errors in CD3. Please proceed with TF Generation\n")
+        if('Validate Networking(VCNs, Subnets, DHCP)' in options[0]):
+            log("Verify LPG's Peering Check Status once in the log file. Otherwise You are good to proceed with TF !!!")
         print("\n\nSummary:")
         print("=======")
-        print("There are no errors in CD3. Verify LPG's Peering Check Status once in the log file. Otherwise You are good to proceed !!!")
+        print("There are no errors in CD3. Please proceed with TF Generation\n")
+        if('Validate Networking(VCNs, Subnets, DHCP)' in options[0]):
+            print("Verify LPG's Peering Check Status once in the log file. Otherwise You are good to proceed !!!")
         # exit(0)
     elif('q' in choices):
         exit(1)
