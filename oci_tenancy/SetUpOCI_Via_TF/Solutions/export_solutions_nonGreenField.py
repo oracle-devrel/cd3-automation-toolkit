@@ -160,7 +160,6 @@ def export_solutions(inputfile, outdir, network_compartments=[], _config=DEFAULT
     global config
 
     cd3file = inputfile
-    input_config_file = _config
     input_compartment_names = network_compartments
     configFileName = _config
     config = oci.config.from_file(file_location=configFileName)
@@ -183,6 +182,7 @@ def export_solutions(inputfile, outdir, network_compartments=[], _config=DEFAULT
 
 
     # Check Compartments
+
     remove_comps = []
     if len(input_compartment_names):
         for x in range(0, len(input_compartment_names)):
@@ -237,16 +237,18 @@ def export_solutions(inputfile, outdir, network_compartments=[], _config=DEFAULT
                 i = 0
                 for sbpn in sbpns.data:
                   try:
+                   print("hereeeeeeee")
+
                    nftn_info = ncpc.get_topic(sbpn.topic_id).data
+                   print(nftn_info)
                   except:
-                   continue 
+                   continue
                   if( nftn_info.topic_id  not in list_nftn):
                      i = 1
                      list_nftn.append(nftn_info.topic_id)
                   else:
                      i = i + 1
                   print_notifications(values_for_column_notifications,region, ntk_compartment_name, sbpn, nftn_info, i, fun)
-
     commonTools.write_to_cd3(values_for_column_notifications, cd3file, "Notifications")
     print("Notifications exported to CD3\n")
 
@@ -277,16 +279,13 @@ def export_solutions(inputfile, outdir, network_compartments=[], _config=DEFAULT
     commonTools.write_to_cd3(values_for_column_events, cd3file, "Events")
     print("Events exported to CD3\n")
 
+
     for reg in ct.all_regions:
-        importCommands[reg] = open(outdir + "/" + reg + "/tf_import_commands_solutions_nonGF.sh", "a")
-        importCommands[reg].write("\n\nterraform plan")
-        importCommands[reg].write("\n")
-        importCommands[reg].close()
-        if ("linux" in sys.platform):
-            dir = os.getcwd()
-            os.chdir(outdir + "/" + reg)
-            os.system("chmod +x tf_import_commands_solutions_nonGF.sh")
-            os.chdir(dir)
+        script_file = f'{outdir}/{reg}/tf_import_commands_solutions_nonGF.sh'
+        with open(script_file, 'a') as importCommands[reg]:
+            importCommands[reg].write('\n\nterraform plan\n')
+        if "linux" in sys.platform:
+            os.chmod(script_file, 0o755)
 
 
 if __name__=="__main__":

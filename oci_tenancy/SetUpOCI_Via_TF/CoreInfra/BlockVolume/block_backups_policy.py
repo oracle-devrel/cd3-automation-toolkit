@@ -167,4 +167,4 @@ def block_backups_policy(inputfile, outdir, config=DEFAULT_LOCATION):
 if __name__ == '__main__':
     args = parse_args()
     # Execution of the code begins here
-    block_tf_policy(args.file, args.outdir, args.config)
+    block_backups_policy(args.file, args.outdir, args.config)

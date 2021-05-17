@@ -106,7 +106,6 @@ def export_tags_nongreenfield(inputfile, outdir, _config, network_compartments):
         print("\nAcceptable cd3 format: .xlsx")
         exit()
 
-
     # Read CD3
     df, values_for_column_tags = commonTools.read_cd3(cd3file, "Tags")
 
@@ -119,7 +118,7 @@ def export_tags_nongreenfield(inputfile, outdir, _config, network_compartments):
 
     # Check Compartments
     remove_comps = []
-    if len(input_compartment_names):
+    if (input_compartment_names is not None):
         for x in range(0, len(input_compartment_names)):
             if (input_compartment_names[x] not in ct.ntk_compartment_ids.keys()):
                 print("Input compartment: " + input_compartment_names[x] + " doesn't exist in OCI")
@@ -218,21 +217,20 @@ def export_tags_nongreenfield(inputfile, outdir, _config, network_compartments):
                                 print_tags(values_for_column_tags, region, ntk_compartment_name, tag, tag_key,
                                        tag_default_value, tag_default, tag_default_comp)
 
-                    commonTools.write_to_cd3(values_for_column_tags, cd3file, "Tags")
-                    print("Tags exported to CD3\n")
+            commonTools.write_to_cd3(values_for_column_tags, cd3file, "Tags")
+            print("Tags exported to CD3\n")
 
-                    os.chdir("../../..")
+            #os.chdir("../../..")
 
-            importCommands[ct.home_region] = open(outdir + "/" + ct.home_region + "/tf_import_commands_tags_nonGF.sh",
-                                                  "a")
-            importCommands[ct.home_region].write("\n\nterraform plan")
-            importCommands[ct.home_region].write("\n")
-            importCommands[ct.home_region].close()
-            if ("linux" in sys.platform):
-                dir = os.getcwd()
-                os.chdir(outdir + "/" + ct.home_region)
-                os.system("chmod +x tf_import_commands_tags_nonGF.sh")
-                os.chdir(dir)
+    importCommands[ct.home_region] = open(outdir + "/" + ct.home_region + "/tf_import_commands_tags_nonGF.sh", "a")
+    importCommands[ct.home_region].write("\n\nterraform plan")
+    importCommands[ct.home_region].write("\n")
+    importCommands[ct.home_region].close()
+    if ("linux" in sys.platform):
+        dir = os.getcwd()
+        os.chdir(outdir + "/" + ct.home_region)
+        os.system("chmod +x tf_import_commands_tags_nonGF.sh")
+        os.chdir(dir)
 
 
 if __name__=="__main__":

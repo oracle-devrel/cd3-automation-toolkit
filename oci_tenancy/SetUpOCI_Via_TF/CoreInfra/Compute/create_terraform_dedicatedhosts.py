@@ -31,7 +31,7 @@ def parse_args():
 
 
 # If input is CD3 excel file
-def create_terraform_dedicatedhosts(inputfile, outdir, config=DEFAULT_LOCATION):
+def create_terraform_dedicatedhosts(inputfile, outdir, config):
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
