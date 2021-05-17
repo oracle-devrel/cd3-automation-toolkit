@@ -30,10 +30,12 @@ Run through the list of relevant classes and perform factory action on them to w
 
 """
 import argparse
-from cd3parser import CD3Parser as cd3parser
+from .cd3parser import CD3Parser as cd3parser
 import os
 import pandas as pd
 import sys
+from oci.config import DEFAULT_LOCATION
+from pathlib import Path
 sys.path.append(os.getcwd()+"/../../..")
 from commonTools import *
 from jinja2 import Environment, FileSystemLoader
@@ -41,7 +43,7 @@ from jinja2 import Environment, FileSystemLoader
 DEBUG = False
 
 #Load the template file
-file_loader = FileSystemLoader('templates')
+file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
 env = Environment(loader=file_loader,keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
 template = env.get_template('nsg-template')
 nsgrule = env.get_template('nsg-rule-template')
@@ -335,35 +337,34 @@ The rules should be further organized with ingress or egress as a parent level t
 factory methods
 """
 
+def parse_args():
+    parser = argparse.ArgumentParser(description='Create NSG and its NSG rules based on inputs given in vcn-info.properties, separated by regions.')
+    parser.add_argument('inputfile', help='Full Path of cd3 excel file or csv containing NSG info')
+    parser.add_argument('outdir', help='Output directory')
+    parser.add_argument('prefix', help='customer name/prefix for all file names')
+    parser.add_argument('--config', help='Config file name')
+    return parser.parse_args()
+   
 
-def main():
-    parser = argparse.ArgumentParser(description="Create NSG and its NSG rules based on inputs given in vcn-info.properties, separated by regions.")
-    parser.add_argument("inputfile", help="Full Path of cd3 excel file or csv containing NSG info")
-    parser.add_argument("outdir", help="Output directory")
-    parser.add_argument("--configFileName", help="Config file name", required=False)
-    args = parser.parse_args()
-    if args.configFileName is not None:
-        configFileName = args.configFileName
-    else:
-        configFileName = ""
+def create_terraform_nsg(inputfile, outdir, prefix, config, nongf_tenancy=False):
+    configFileName = config
     ct = commonTools()
     ct.get_subscribedregions(configFileName)
     columnname=''
 
-    if('.csv' in args.inputfile):
-        df = pd.read_csv(args.inputfile)
+    if('.csv' in inputfile):
+        df = pd.read_csv(inputfile)
         excel_writer = pd.ExcelWriter('tmp_to_excel.xlsx', engine='xlsxwriter')
         df.to_excel(excel_writer, 'NSGs')
         excel_writer.save()
-        args.inputfile='tmp_to_excel.xlsx'
+        inputfile='tmp_to_excel.xlsx'
 
     # tested path allows for space, full or relative path acceptable
-    nsgParser = cd3parser(os.path.realpath(args.inputfile)).getNSG()
+    nsgParser = cd3parser(os.path.realpath(inputfile)).getNSG()
 
 
-    if('tmp_to_excel' in args.inputfile):
-        os.remove(args.inputfile)
-    outdir = args.outdir
+    if('tmp_to_excel' in inputfile):
+        os.remove(inputfile)
 
     regionDict = nsgParser.getRegionDict()
     headerDict = nsgParser.getHeaderDict()
@@ -420,4 +421,5 @@ def main():
         print("Rules only list and its indice:\n{}".format({k: v for v, k in enumerate(nsgParser.nsg.columns[3:])}))
 
 if __name__ == '__main__':
-    main()
+    args = parse_args()
+    create_terraform_nsg(args.inputfile, args.outdir, args.prefix, args.config)

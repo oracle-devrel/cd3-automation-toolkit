@@ -24,6 +24,7 @@ def parse_args():
 
     # Read the arguments
     parser = argparse.ArgumentParser(description="Create Groups terraform file")
+    parser.add_argument("inputfile", help="Input CD3 file for reading subnets to enable Flow Logs")
     parser.add_argument("outdir", help="Output directory for creation of TF files")
     parser.add_argument("prefix", help="customer name/prefix for all file names")
     parser.add_argument("comp_name", help="compartment name")
@@ -85,10 +86,86 @@ def enable_cis_oss_logging(outdir, prefix, region_name, comp_name, config=DEFAUL
         oname=open(outfile,'w')
         oname.write(tfStr)
         oname.close()
-        print(outfile + " containing TF for OSS has been created for region "+region_name)
+        print(outfile + " containing TF for OSS Logging has been created for region "+region_name)
+
+
+def enable_cis_vcnflow_logging(filename, outdir, prefix, config=DEFAULT_LOCATION):
+
+    # Declare variables
+    # Read cd3 using pandas dataframe
+    df, col_headers = commonTools.read_cd3(filename, "Subnets")
+
+    # Remove empty rows
+    df = df.dropna(how='all')
+    df = df.reset_index(drop=True)
+
+    # Load the template file
+    file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
+    env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
+    template = env.get_template('logging-template')
+
+    tfStr = {}
+    tempStr = {}
+    outfile={}
+
+    for i in df.index:
+        region = str(df.loc[i, 'Region'])
+
+        if (region in commonTools.endNames):
+            break
+
+        region = region.strip().lower()
+        tfStr[region]=''
+
+    for i in df.index:
+        region = str(df.loc[i, 'Region'])
+
+        if (region in commonTools.endNames):
+            break
+
+        region = region.strip().lower()
+        compartment_var_name = str(df.loc[i, 'Compartment Name']).strip()
+        vcn_name = str(df['VCN Name'][i]).strip()
+        subnet_name = str(df['Subnet Name'][i]).strip()
+
+
+        compartmentVarName = commonTools.check_tf_variable(compartment_var_name)
+        columnvalue = str(compartmentVarName)
+
+        tempStr['compartment_tf_name'] =  columnvalue
+
+        loggroup_name = prefix +"-"+ commonTools.check_tf_variable(vcn_name)+"-flow-log-group"
+        log_name = prefix +"-"+ commonTools.check_tf_variable(subnet_name)+"-flow-log"
+        log_group_id= 'oci_logging_log_group.'+loggroup_name+'.id'
+        resource='oci_core_subnet.'+commonTools.check_tf_variable(vcn_name+"_"+subnet_name)+'.id'
+
+        tempStr['loggroup_name'] = loggroup_name
+        tempStr['loggroup_tf_name'] = loggroup_name
+        tempStr['log_group_id'] = log_group_id
+        tempStr['resource'] = resource
+        tempStr['log_name'] = log_name
+        tempStr['log_tf_name'] = log_name
+        tempStr['category'] = 'all'
+        tempStr['service'] = 'flowlogs'
+
+        tfStr[region] = tfStr[region] + template.render(tempStr)
+
+    # Write TF string to the file in respective region directory
+    for reg in tfStr.keys():
+        reg_out_dir = outdir + "/" + reg
+        if not os.path.exists(reg_out_dir):
+            os.makedirs(reg_out_dir)
+
+        outfile[reg] = reg_out_dir + "/cis-vcnflow-logging.tf"
+        if(tfStr[reg]!=''):
+            oname=open(outfile[reg],'w')
+            oname.write(tfStr[reg])
+            oname.close()
+            print(outfile[reg] + " containing TF for VCN Flow Logs has been created for region "+reg)
 
 
 if __name__ == '__main__':
     # Execution of the code begins here
     args = parse_args()
     enable_cis_oss_logging(args.outdir, args.prefix, args.config, args.region_name, args.comp_name)
+    enable_cis_vcnflow_logging(args.inputfile, args.outdir, args.prefix, args.config)

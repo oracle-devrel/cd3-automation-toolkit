@@ -5,56 +5,40 @@ import datetime
 import configparser
 import oci
 from oci.identity import IdentityClient
+from oci.config import DEFAULT_LOCATION
 from openpyxl import load_workbook
 from openpyxl.styles import PatternFill
 from openpyxl.styles import Alignment
 from openpyxl.styles import Border
 from openpyxl.styles import Side
+from contextlib import contextmanager
 import collections
 import re
 import json as simplejson
 
+def data_frame(filename,sheetname):
+
+    # Read the tab from excel, Drop null values, Reset index
+    df, col_headers = commonTools.read_cd3(filename, sheetname)
+    df = df.dropna(how='all')
+    df = df.reset_index(drop=True)
+
+    return df
+
 class commonTools():
-    all_regions=[]
-    home_region=""
-    ntk_compartment_ids = {}
-    region_dict={}
-    protocol_dict={}
-    sheet_dict={}
     endNames = {'<END>', '<end>', '<End>'}
     tagColumns = {'freeform tags', 'freeform_tags', 'defined_tags', 'defined tags'}
 
     #Read Regions and Protocols Files and Excel_Columns and create dicts
     def __init__(self):
-        #When called from wthin BaseNetwork
-        dir=os.getcwd()
-        if("ExportFromOCI" in dir):
-            os.chdir("../")
-        elif ("Solutions" in dir):
-            os.chdir("../../")
-        elif ("ResourceManager" in dir):
-            os.chdir("../")
-        elif("Networking" in dir):
-            os.chdir("../../../")
-        elif ("CoreInfra" in dir):
-            os.chdir("../../")
-        elif ("Identity" in dir):
-            os.chdir("../../")
-        elif ("Database" in dir):
-            os.chdir("../")
-        elif ("Governance" in dir):
-            os.chdir("../../")
-        elif ("OCSWorkVM" in dir):
-            os.chdir("../")
-        elif ("OSS" in dir):
-            os.chdir("../")
-        elif ("KeyVault" in dir):
-            os.chdir("../")
-        elif ("CloudGuard" in dir):
-            os.chdir("../")
-        elif ("Logging" in dir):
-            os.chdir("../")
+        self.all_regions=[]
+        self.home_region=""
+        self.ntk_compartment_ids = {}
+        self.region_dict={}
+        self.protocol_dict={}
+        self.sheet_dict={}
 
+        # When called from wthin BaseNetwork
         regionFileName="OCI_Regions"
         protocolFileName="OCI_Protocols"
         excelColumnName="Excel_Columns"
@@ -82,16 +66,13 @@ class commonTools():
             break
 
         #Change back to Initial
-        os.chdir(dir)
+        # os.chdir(dir)
 
     #Get Tenancy Regions
-    def get_subscribedregions(self,configFileName):
+    def get_subscribedregions(self, configFileName=DEFAULT_LOCATION):
         #Get config client
-        if configFileName=="":
-            config = oci.config.from_file()
-        else:
-            config = oci.config.from_file(file_location=configFileName)
-        idc = IdentityClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
+        config = oci.config.from_file(file_location=configFileName)
+        idc = IdentityClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
         regionsubscriptions = idc.list_region_subscriptions(tenancy_id=config['tenancy'])
         homeregion=""
         for rs in regionsubscriptions.data:
@@ -103,8 +84,6 @@ class commonTools():
                 if (rs.region_name == v):
                     self.all_regions.append(k)
 
-        del config
-        del idc
 
     #Get Compartment OCIDs
     def get_network_compartment_ids(self,c_id, c_name,configFileName):
@@ -440,15 +419,15 @@ class commonTools():
     def backup_file(src_dir, resource, pattern):
         x = datetime.datetime.now()
         date = x.strftime("%f").strip()
-        dest_dir = src_dir + "/backup_" + resource + "_" + datetime.datetime.now().strftime("%d-%m-%H%M%S").replace('/','-')
-        for f in os.listdir(src_dir):
+        dest_dir = str(src_dir) + "/backup_" + resource + "_" + datetime.datetime.now().strftime("%d-%m-%H%M%S").replace('/', '-')
+        for f in os.listdir(str(src_dir)):
             if f.endswith(pattern):
                 print("Backing up existing " + pattern + " to " + dest_dir)
                 if not os.path.exists(dest_dir):
                     # print("\nCreating backup dir " + dest_dir + "\n")
                     os.makedirs(dest_dir)
 
-                src = os.path.join(src_dir, f)
+                src = os.path.join(str(src_dir), f)
                 dest = os.path.join(dest_dir, f)
                 # print("backing up ....." + src +"   to  "+dest)
                 shutil.move(src, dest_dir)
@@ -459,41 +438,44 @@ class commonTools():
                 """
 
 
+# NOTE: Does this really need to be a class? its an obsfucated function call.
 class parseVCNs():
-    peering_dict = dict()
-
-    vcn_region = {}
-    vcn_drgs = {}
-    vcn_compartment = {}
-    vcn_lpg_names = {}
-    vcn_lpg_names1 = {}
-    vcn_lpg_names2 = {}
-    vcn_lpg_names3 = {}
-    hub_vcn_names = []
-    spoke_vcn_names = []
-    vcn_lpg_rules = {}
-    vcn_igws = {}
-    vcn_ngws = {}
-    vcn_sgws = {}
-    vcn_hub_spoke_peer_none = {}
-    vcn_compartment = {}
-    vcn_names = []
-
     def __init__(self, filename):
+        self.peering_dict = dict()
+
+        self.vcn_region = {}
+        self.vcn_drgs = {}
+        self.vcn_compartment = {}
+        self.vcn_lpg_names = {}
+        self.vcn_lpg_names1 = {}
+        self.vcn_lpg_names2 = {}
+        self.vcn_lpg_names3 = {}
+        self.hub_vcn_names = []
+        self.spoke_vcn_names = []
+        self.vcn_lpg_rules = {}
+        self.vcn_igws = {}
+        self.vcn_ngws = {}
+        self.vcn_sgws = {}
+        self.vcn_hub_spoke_peer_none = {}
+        self.vcn_compartment = {}
+        self.vcn_names = []
         #if (".xls" in filename):
         try:
+            # Read and search for VCN
             df_vcn = pd.read_excel(filename, sheet_name='VCNs', skiprows=1)
         except Exception as e:
             if ("No sheet named" in str(e)):
                 print("\nTab - \"VCNs\" is missing in the CD3. Please make sure to use the right CD3 in properties file...Exiting!!")
                 exit(1)
+
+        # Drop all empty rows
         df_vcn = df_vcn.dropna(how='all')
         df_vcn = df_vcn.reset_index(drop=True)
 
         # Create VCN details Dicts and Hub and Spoke VCN Names
         for i in df_vcn.index:
             region = df_vcn['Region'][i]
-            if (region in commonTools.endNames):  # or str(region).lower() == 'nan'):
+            if region in commonTools.endNames:  # or str(region).lower() == 'nan'):
                 break
             vcn_name = df_vcn['VCN Name'][i]
             self.vcn_names.append(vcn_name)
@@ -563,7 +545,6 @@ class parseVCNs():
             self.vcn_sgws[vcn_name] = str(df_vcn['SGW Required'][i]).strip()
             self.vcn_hub_spoke_peer_none[vcn_name] = str(df_vcn['Hub/Spoke/Peer/None'][i]).strip().split(":")
             self.vcn_compartment[vcn_name] = str(df_vcn['Compartment Name'][i]).strip()
-
             self.vcn_lpg_rules.setdefault(vcn_name, '')
 
             if (self.vcn_hub_spoke_peer_none[vcn_name][0].strip().lower() == 'hub'):
@@ -588,15 +569,29 @@ class parseVCNs():
                 self.peering_dict[k] = v
 
 
+@contextmanager
+def section(title='', header=False, padding=117):
+    separator = '-' if not header else '='
+    # Not sure why 117 but thats how it was before.
+    print(f'{title:{separator}^{padding}}')
+    yield
+    if header:
+        print(separator * padding)
+
+
+def exit_menu(msg, exit_code=0):
+    print(msg)
+    exit(exit_code)
+
 
 class parseVCNInfo():
     # all_regions = []
-    subnet_name_attach_cidr = ''
-    onprem_destinations = []
-    ngw_destinations = []
-    igw_destinations = []
 
     def __init__(self, filename):
+        self.subnet_name_attach_cidr = ''
+        self.onprem_destinations = []
+        self.ngw_destinations = []
+        self.igw_destinations = []
         try:
             df_info = pd.read_excel(filename, sheet_name='VCN Info', skiprows=1)
         except Exception as e:

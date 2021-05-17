@@ -1,0 +1,6 @@
+#!/usr/bin/env python3
+
+from .create_terraform_adw_atp import create_terraform_adw_atp
+from .create_terraform_database_BM import create_terraform_database_BM
+from .create_terraform_database_EXA import create_terraform_database_EXA
+from .create_terraform_database_VM import create_terraform_database_VM

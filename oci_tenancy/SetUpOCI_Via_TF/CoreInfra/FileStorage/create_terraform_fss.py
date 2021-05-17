@@ -16,31 +16,26 @@ import os
 import shutil
 import datetime
 
+from oci.config import DEFAULT_LOCATION
+from pathlib import Path
 sys.path.append(os.getcwd() + "/../..")
 from commonTools import *
 from jinja2 import Environment, FileSystemLoader
 
 
-# If input is csv file; convert to excel
-def main():
+def parse_args():
     # Read input arguments
     parser = argparse.ArgumentParser(description="Creates TF files for FSS")
-    parser.add_argument("inputfile",
-                        help="Full Path to the CSV file for creating fss or CD3 excel file. eg  CD3-template.xlsx in example folder")
+    parser.add_argument("inputfile", help="Full Path to the CSV file for creating fss or CD3 excel file. eg  CD3-template.xlsx in example folder")
     parser.add_argument("outdir", help="directory path for output tf files ")
-    parser.add_argument("--configFileName", help="Config file name", required=False)
+    parser.add_argument("--config", default=DEFAULT_LOCATION, help="Config file name")
+    return parser.parse_args()
 
-    if len(sys.argv) < 2:
-        parser.print_help()
-        sys.exit(1)
 
-    args = parser.parse_args()
-    filename = args.inputfile
-    outdir = args.outdir
-    if args.configFileName is not None:
-        configFileName = args.configFileName
-    else:
-        configFileName = ""
+# If input is csv file; convert to excel
+def create_terraform_fss(inputfile, outdir, config=DEFAULT_LOCATION):
+    filename = inputfile
+    configFileName = config
 
     ct = commonTools()
     ct.get_subscribedregions(configFileName)
@@ -49,7 +44,7 @@ def main():
     date = x.strftime("%f").strip()
 
     # Load the template file
-    file_loader = FileSystemLoader('templates')
+    file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
     export = env.get_template('export-options-template')
     mounttarget = env.get_template('mount-target-template')
@@ -383,4 +378,5 @@ def main():
 
 if __name__ == '__main__':
     # Execution of the code begins here
-    main()
+    args = parse_args()
+    create_terraform_fss(args.inputfile, args.outdir, args.config)

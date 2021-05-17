@@ -9,41 +9,34 @@
 # Modified (TF Upgrade): Shruthi Subramanian
 #
 
-import sys
 import argparse
 import os
+from pathlib import Path
+from oci.config import DEFAULT_LOCATION
 from jinja2 import Environment, FileSystemLoader
-sys.path.append(os.getcwd() + "/../..")
 from commonTools import *
+
 
 ######
 # Required Inputs- CD3 excel file, Config file, prefix AND outdir
 ######
 
-# If input is cd3 file
-def main():
 
+def parse_args():
     # Read the arguments
     parser = argparse.ArgumentParser(description="Create Compartments terraform file")
     parser.add_argument("inputfile", help="Full Path of input file. It could be CD3 excel file")
     parser.add_argument("outdir", help="Output directory for creation of TF files")
     parser.add_argument("prefix", help="customer name/prefix for all file names")
-    parser.add_argument("--configFileName", help="Config file name", required=False)
+    parser.add_argument("--config", default=DEFAULT_LOCATION, help="Config file name")
+    return parser.parse_args()
 
-    if len(sys.argv) < 3:
-        parser.print_help()
-        sys.exit(1)
 
-    args = parser.parse_args()
-
+# If input is cd3 file
+def create_terraform_policies(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
     # Declare variables
-    filename = args.inputfile
-    outdir = args.outdir
-    prefix = args.prefix
-    if args.configFileName is not None:
-        configFileName = args.configFileName
-    else:
-        configFileName = ""
+    filename = inputfile
+    configFileName = config
 
     ct = commonTools()
     ct.get_subscribedregions(configFileName)
@@ -54,16 +47,12 @@ def main():
     tempStr1 = {}
 
     # Load the template file
-    file_loader = FileSystemLoader('templates')
+    file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
     template = env.get_template('policy-template')
 
-    # Read cd3 using pandas dataframe
-    df, col_headers = commonTools.read_cd3(filename, "Policies")
-
-    # Remove empty rows
-    df = df.dropna(how='all')
-    df = df.reset_index(drop=True)
+    # Read CD3
+    df = data_frame(filename, 'Policies')
 
     # List of the column headers
     dfcolumns = df.columns.values.tolist()
@@ -75,8 +64,7 @@ def main():
     check_diff_region = []
     # Get a list of unique region names
     for j in regions.index:
-        if (regions[j] not in check_diff_region and regions[j] not in commonTools.endNames and str(
-                regions[j]).lower() != "nan"):
+        if regions[j] not in check_diff_region and regions[j] not in commonTools.endNames and str(regions[j]).lower() != "nan":
             check_diff_region.append(regions[j])
 
     # If some invalid region is specified in a row which is not part of VCN Info Tab
@@ -97,23 +85,20 @@ def main():
         region = str(df.loc[i, "Region"]).strip()
 
         # Encountered <End>
-        if (region in commonTools.endNames):
+        if region in commonTools.endNames:
             break
 
         # Temporary dictionary1
         tempdict = {}
 
         if str(df.loc[i, 'Policy Statements']).strip().lower() == 'nan':
-            print("\nPolicy Statements cannot be left empty....Exiting!!")
-            exit()
+            exit_menu("\nPolicy Statements cannot be left empty....Exiting!!")
 
         if str(df.loc[i, 'Compartment Name']).strip().lower() == 'nan' and str(df.loc[i, 'Policy Statements']).strip().lower() != 'nan' and str(df.loc[i,'Name']).strip().lower() != 'nan':
-            print("\nCompartment Name cannot be left empty....Exiting!!")
-            exit()
+            exit_menu("\nCompartment Name cannot be left empty....Exiting!!")
 
         if str(df.loc[i,'Name']).strip().lower() == 'nan'and str(df.loc[i, 'Compartment Name']).strip().lower() != 'nan' and str(df.loc[i, 'Policy Statements']).strip().lower() != 'nan':
-            print("\nPolicy Name cannot be left empty....Exiting!!")
-            exit()
+            exit_menu("\nPolicy Name cannot be left empty....Exiting!!")
 
         # Loop through the columns; used to fetch newdly added columns and values
         for columnname in dfcolumns:
@@ -258,6 +243,6 @@ def main():
         print(outfile[reg] + " containing TF for policies has been created for region " + reg)
 
 if __name__ == '__main__':
-
     # Execution of the code begins here
-    main()
+    args = parse_args()
+    create_terraform_policies(args.inputfile, args.outdir, args.prefix, args.config)

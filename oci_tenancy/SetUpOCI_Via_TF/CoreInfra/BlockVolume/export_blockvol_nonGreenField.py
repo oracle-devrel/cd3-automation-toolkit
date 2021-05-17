@@ -11,14 +11,15 @@
 import argparse
 import sys
 import oci
+import os
 from oci.core.blockstorage_client import BlockstorageClient
 from oci.core.compute_client import ComputeClient
-import os
-sys.path.append(os.getcwd()+"/..")
+from oci.config import DEFAULT_LOCATION
 from commonTools import *
 
 importCommands = {}
 oci_obj_names = {}
+
 
 def policy_info(bvol,volume_id,ct):
     asset_policy_name = ''
@@ -39,6 +40,7 @@ def policy_info(bvol,volume_id,ct):
                     comp_done_ids.append(policy_comp_id)
     return asset_assignment_id, asset_policy_name, policy_comp_name
 
+
 def volume_attachment_info(compute,ntk_compartment_name,ct,volume_id):
     instance_id = ''
     attachment_type=''
@@ -56,6 +58,7 @@ def volume_attachment_info(compute,ntk_compartment_name,ct,volume_id):
         if instance_id == instance.id:
            instance_name = instance.display_name
     return attachment_id, instance_name, attachment_type
+
 
 def print_blockvolumes(region, BVOLS, bvol, compute, ct, values_for_column, ntk_compartment_name):
     volume_comp = ''
@@ -108,15 +111,17 @@ def print_blockvolumes(region, BVOLS, bvol, compute, ct, values_for_column, ntk_
                 values_for_column = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict, values_for_column)
 
 
-def main():
-
+def parse_args():
     # Read the arguments
     parser = argparse.ArgumentParser(description="Export Block Volumes on OCI to CD3")
-    parser.add_argument("cd3file", help="path of CD3 excel file to export Block Volume objects to")
+    parser.add_argument("inputfile", help="path of CD3 excel file to export Block Volume objects to")
     parser.add_argument("outdir", help="path to out directory containing script for TF import commands")
-    parser.add_argument("--networkCompartment", help="comma seperated Compartments for which to export Block Volume Objects", required=False)
-    parser.add_argument("--configFileName", help="Config file name" , required=False)
+    parser.add_argument("--config", default=DEFAULT_LOCATION, help="Config file name")
+    parser.add_argument("--network-compartments", nargs='*', required=False, help="comma seperated Compartments for which to export Block Volume Objects")
+    return parser.parse_args()
 
+
+def export_blockvol(inputfile, _outdir, _config, network_compartments=[]):
     global tf_import_cmd
     global sheet_dict
     global importCommands
@@ -127,32 +132,16 @@ def main():
     global outdir
     global values_for_column
 
-    if len(sys.argv) < 3:
-        parser.print_help()
-        sys.exit(1)
-
-    args = parser.parse_args()
-    cd3file = args.cd3file
+    cd3file = inputfile
     if ('.xls' not in cd3file):
         print("\nAcceptable cd3 format: .xlsx")
         exit()
 
-    input_config_file = args.configFileName
-    input_compartment_list = args.networkCompartment
-    if (input_compartment_list is not None):
-        input_compartment_names = input_compartment_list.split(",")
-        input_compartment_names = [x.strip() for x in input_compartment_names]
-    else:
-        input_compartment_names = None
-
-    outdir = args.outdir
-
-    if args.configFileName is not None:
-        configFileName = args.configFileName
-        config = oci.config.from_file(file_location=configFileName)
-    else:
-        configFileName=""
-        config = oci.config.from_file()
+    input_config_file = _config
+    input_compartment_names = network_compartments
+    outdir = _outdir
+    configFileName = _config
+    config = oci.config.from_file(file_location=configFileName)
 
     ct = commonTools()
     ct.get_subscribedregions(configFileName)
@@ -213,21 +202,19 @@ def main():
                 BVOLS = oci.pagination.list_call_get_all_results(bvol.list_volumes,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name],lifecycle_state="AVAILABLE")
                 print_blockvolumes(region, BVOLS, bvol, compute, ct, values_for_column, ntk_compartment_name)
 
-        importCommands[reg] = open(outdir + "/" + reg + "/tf_import_commands_blockvol_nonGF.sh", "a")
-        importCommands[reg].write("\n\nterraform plan")
-        importCommands[reg].write("\n")
-        importCommands[reg].close()
-        if ("linux" in sys.platform):
-            dir = os.getcwd()
-            os.chdir(outdir + "/" + reg)
-            os.system("chmod +x tf_import_commands_blockvol_nonGF.sh")
-            os.chdir(dir)
+        script_file = f'{outdir}/{reg}/tf_import_commands_blockvol_nonGF.sh'
+        with open(script_file, 'a') as importCommands[reg]:
+            importCommands[reg].write('\n\nterraform plan\n')
+        if "linux" in sys.platform:
+            os.chmod(script_file, 0o755)
+
 
     commonTools.write_to_cd3(values_for_column, cd3file, "BlockVols")
 
     print("Block Volumes exported to CD3\n")
 
-if __name__ == '__main__':
 
+if __name__ == '__main__':
+    args = parse_args()
     # Execution of the code begins here
-    main()
+    export_blockvol(args.inputfile, args.outdir, args.config, args.network_compartments)

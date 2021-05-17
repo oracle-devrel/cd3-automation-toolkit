@@ -12,43 +12,34 @@
 import sys
 import argparse
 import os
+from oci.config import DEFAULT_LOCATION
+from pathlib import Path
 sys.path.append(os.getcwd() + "/../..")
 from commonTools import *
 from jinja2 import Environment, FileSystemLoader
 
-#If input is CD3 excel file
-def main():
 
-    # Read the input arguments
-    parser = argparse.ArgumentParser(description="Creates Instances TF file")
-    parser.add_argument("file", help="Full Path of CD3 excel file. eg  CD3-template.xlsx in example folder")
-    parser.add_argument("outdir", help="directory path for output tf files ")
-    parser.add_argument("--configFileName", help="Config file name", required=False)
+def parse_args():
+    parser = argparse.ArgumentParser(description='Creates Instances TF file')
+    parser.add_argument('file', help='Full Path of CD3 excel file. eg  CD3-template.xlsx in example folder')
+    parser.add_argument('outdir', help='directory path for output tf files ')
+    parser.add_argument('--config', default=DEFAULT_LOCATION, help='Config file name')
+    return parser.parse_args()
+
+
+#If input is CD3 excel file
+def create_terraform_instances(inputfile, outdir, config):
 
     ADS = ["AD1", "AD2", "AD3"]
 
-    if len(sys.argv) == 1:
-        parser.print_help()
-        sys.exit(1)
-
-    if len(sys.argv) < 2:
-        parser.print_help()
-        sys.exit(1)
-
-    args = parser.parse_args()
-    filename = args.file
-    outdir = args.outdir
-
-    if args.configFileName is not None:
-        configFileName = args.configFileName
-    else:
-        configFileName = ""
+    filename = inputfile
+    configFileName = config
 
     ct = commonTools()
     ct.get_subscribedregions(configFileName)
 
     # Load the template file
-    file_loader = FileSystemLoader('templates')
+    file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
     template = env.get_template('instance-template')
 
@@ -186,7 +177,10 @@ def main():
 
             if columnname == "SSH Key Var Name":
                 if columnvalue.strip() != '' and  columnvalue.strip().lower() != 'nan':
-                    ssh_key_var_name = "var."+columnvalue.strip()
+                    if "ssh-rsa" in columnvalue.strip():
+                        ssh_key_var_name = "\"" + columnvalue.strip() + "\""
+                    else:
+                        ssh_key_var_name = "var." + columnvalue.strip()
                     tempdict = {'ssh_key_var_name': ssh_key_var_name}
 
             columnname = commonTools.check_column_headers(columnname)
@@ -204,8 +198,6 @@ def main():
         oname.close()
 
 if __name__ == '__main__':
-
+    args = parse_args()
     # Execution of the code begins here
-    main()
-
-
+    create_terraform_instances(args.inputfile, args.outdir, args.config)

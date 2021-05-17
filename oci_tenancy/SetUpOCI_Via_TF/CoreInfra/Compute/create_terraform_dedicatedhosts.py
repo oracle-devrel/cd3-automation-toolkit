@@ -12,6 +12,8 @@
 import sys
 import argparse
 import os
+from oci.config import DEFAULT_LOCATION
+from pathlib import Path
 sys.path.append(os.getcwd() + "/../..")
 from commonTools import *
 from jinja2 import Environment, FileSystemLoader
@@ -19,32 +21,24 @@ from jinja2 import Environment, FileSystemLoader
 ######
 # Required Inputs-CD3 excel file, Config file, prefix AND outdir
 ######
+def parse_args():
+    # Read input arguments
+    parser = argparse.ArgumentParser(description='Create Dedicated VM Hosts terraform file')
+    parser.add_argument('inputfile', help='Full Path of input file. It could be the CD3 excel file')
+    parser.add_argument('outdir', help='Output directory for creation of TF files')
+    parser.add_argument('--config', default=DEFAULT_LOCATION, help='Config file name')
+    return parser.parse_args()
+
 
 # If input is CD3 excel file
-def main():
-
-    # Read input arguments
-    parser = argparse.ArgumentParser(description="Create Dedicated VM Hosts terraform file")
-    parser.add_argument("inputfile", help="Full Path of input file. It could be the CD3 excel file")
-    parser.add_argument("outdir", help="Output directory for creation of TF files")
-    parser.add_argument("--configFileName", help="Config file name", required=False)
-
+def create_terraform_dedicatedhosts(inputfile, outdir, config):
     # Load the template file
-    file_loader = FileSystemLoader('templates')
+    file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
     template = env.get_template('dedicated-hosts-template')
 
-    if len(sys.argv) < 2:
-        parser.print_help()
-        sys.exit(1)
-
-    args = parser.parse_args()
-    filename = args.inputfile
-    outdir = args.outdir
-    if args.configFileName is not None:
-        configFileName = args.configFileName
-    else:
-        configFileName = ""
+    filename = inputfile
+    configFileName = config
 
     ct = commonTools()
     ct.get_subscribedregions(configFileName)
@@ -156,6 +150,6 @@ def main():
                     print(outfile[reg] + " containing TF for dedicated vm hosts has been created for region "+reg)
 
 if __name__ == '__main__':
-
+    args = parse_args()
     # Execution of the code begins here
-    main()
+    create_terraform_dedicatedhosts(args.inputfile, args.outdir, args.config)
