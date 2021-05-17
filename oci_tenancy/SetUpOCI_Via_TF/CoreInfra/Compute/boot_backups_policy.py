@@ -12,10 +12,8 @@
 import sys
 import argparse
 import os
+from pathlib import Path
 from oci.config import DEFAULT_LOCATION
-
-
-
 sys.path.append(os.getcwd()+"/../..")
 from commonTools import *
 from jinja2 import Environment, FileSystemLoader
@@ -29,7 +27,7 @@ def parse_args():
 
 # If the input is CD3
 #If input is CD3 excel file
-def create_boot_backup_policy(inputfile, outdir, config):
+def boot_backups_policy(inputfile, outdir, config):
 
     filename = inputfile
     configFileName = config
@@ -38,7 +36,7 @@ def create_boot_backup_policy(inputfile, outdir, config):
     ct.get_subscribedregions(configFileName)
 
     # Load the template file
-    file_loader = FileSystemLoader('templates')
+    file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
     template = env.get_template('boot-backup-policy-template')
 
@@ -170,5 +168,5 @@ def create_boot_backup_policy(inputfile, outdir, config):
 if __name__ == '__main__':
     args = parse_args()
     # Execution of the code begins here
-    create_boot_backup_policy(args.file, args.outdir, args.config)
+    boot_backups_policy(args.file, args.outdir, args.config)
 

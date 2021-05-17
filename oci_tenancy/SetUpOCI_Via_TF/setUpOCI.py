@@ -204,20 +204,20 @@ def create_networking(execute_all=False):
         options = show_options(options, quit=True, menu=True, index=1)
     execute_options(options, inputfile, outdir, prefix, config=config)
 
-def create_instances():
+def create_instances(inputfile, outdir, config):
     options = [
         Option(None, Compute.create_terraform_instances, 'Processing Instances Tab'),
         Option(None, Compute.boot_backups_policy, 'Processing Boot Volume Policies'),
     ]
-    execute_options(options, inputfile, outdir, config=config)
+    execute_options(options, inputfile, outdir, config)
 
 def create_vmhosts_instances():
     options = [
         Option('Add/Modify/Delete Dedicated VM Hosts', Compute.create_terraform_dedicatedhosts, 'Processing Dedicated VM Hosts Tab'),
-        Option('Add/Modify/Delete Instances/Boot Backup Policy', create_instances, 'Processing Instances Tab'),
+        Option('Add/Modify/Delete Instances/Boot Backup Policy', create_instances,''),
     ]
     options = show_options(options, quit=True, menu=True, index=1)
-    execute_options(options, inputfile, outdir, config=config)
+    execute_options(options, inputfile, outdir, config)
 
 def create_block_volumes():
     options = [
