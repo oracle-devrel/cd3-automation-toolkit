@@ -184,7 +184,7 @@ def export_solutions(inputfile, outdir, network_compartments=[], _config=DEFAULT
     # Check Compartments
 
     remove_comps = []
-    if len(input_compartment_names):
+    if (input_compartment_names is not None):
         for x in range(0, len(input_compartment_names)):
             if (input_compartment_names[x] not in ct.ntk_compartment_ids.keys()):
                 print("Input compartment: " + input_compartment_names[x] + " doesn't exist in OCI")
@@ -215,6 +215,7 @@ def export_solutions(inputfile, outdir, network_compartments=[], _config=DEFAULT
     # Fetch Notifications & Subscriptions
     print("\nFetching Notifications & Subscriptions...")
     for reg in ct.all_regions:
+
         importCommands[reg].write("\n\n######### Writing import for Notifications #########\n\n")
         config.__setitem__("region", ct.region_dict[reg])
         comp_ocid_done = []
@@ -233,14 +234,12 @@ def export_solutions(inputfile, outdir, network_compartments=[], _config=DEFAULT
                                                             lifecycle_state="ACTIVE")
                 sbpns = oci.pagination.list_call_get_all_results(ndpc.list_subscriptions,
                                                             compartment_id=ct.ntk_compartment_ids[ntk_compartment_name])
+
                 list_nftn = []
                 i = 0
                 for sbpn in sbpns.data:
                   try:
-                   print("hereeeeeeee")
-
                    nftn_info = ncpc.get_topic(sbpn.topic_id).data
-                   print(nftn_info)
                   except:
                    continue
                   if( nftn_info.topic_id  not in list_nftn):

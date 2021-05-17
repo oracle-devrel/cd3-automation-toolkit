@@ -155,7 +155,7 @@ def export_blockvol(inputfile, _outdir, _config, network_compartments=[]):
 
     # Check Compartments
     remove_comps = []
-    if len(input_compartment_names):
+    if (input_compartment_names is not None):
         for x in range(0, len(input_compartment_names)):
             if (input_compartment_names[x] not in ct.ntk_compartment_ids.keys()):
                 print("Input compartment: " + input_compartment_names[x] + " doesn't exist in OCI")
@@ -202,15 +202,12 @@ def export_blockvol(inputfile, _outdir, _config, network_compartments=[]):
                 BVOLS = oci.pagination.list_call_get_all_results(bvol.list_volumes,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name],lifecycle_state="AVAILABLE")
                 print_blockvolumes(region, BVOLS, bvol, compute, ct, values_for_column, ntk_compartment_name)
 
-        importCommands[reg] = open(outdir + "/" + reg + "/tf_import_commands_blockvol_nonGF.sh", "a")
-        importCommands[reg].write("\n\nterraform plan")
-        importCommands[reg].write("\n")
-        importCommands[reg].close()
+        script_file = f'{outdir}/{reg}/tf_import_commands_blockvol_nonGF.sh'
+        with open(script_file, 'a') as importCommands[reg]:
+            importCommands[reg].write('\n\nterraform plan\n')
         if "linux" in sys.platform:
-            dir = os.getcwd()
-            os.chdir(outdir + "/" + reg)
-            os.system("chmod +x tf_import_commands_blockvol_nonGF.sh")
-            os.chdir(dir)
+            os.chmod(script_file, 0o755)
+
 
     commonTools.write_to_cd3(values_for_column, cd3file, "BlockVols")
 

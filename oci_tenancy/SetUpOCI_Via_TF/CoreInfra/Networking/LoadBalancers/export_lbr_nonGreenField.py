@@ -742,7 +742,7 @@ def export_lbr(inputfile, _outdir, network_compartments, _config):
 
     # Check Compartments
     remove_comps = []
-    if len(input_compartment_names):
+    if (input_compartment_names is not None):
         for x in range(0, len(input_compartment_names)):
             if (input_compartment_names[x] not in ct.ntk_compartment_ids.keys()):
                 print("Input compartment: " + input_compartment_names[x] + " doesn't exist in OCI")
@@ -842,15 +842,12 @@ def export_lbr(inputfile, _outdir, network_compartments, _config):
                         ciphers_tf_name = commonTools.check_tf_variable(ciphers)
                         importCommands[reg].write("\nterraform import oci_load_balancer_ssl_cipher_suite." + tf_name + "_" + ciphers_tf_name + " loadBalancers/" + lbr_info.id + "/sslCipherSuites/" + ciphers)
 
-        importCommands[reg] = open(outdir + "/" + reg + "/tf_import_commands_lbr_nonGF.sh", "a")
-        importCommands[reg].write("\n\nterraform plan")
-        importCommands[reg].write("\n")
-        importCommands[reg].close()
-        if ("linux" in sys.platform):
-            dir = os.getcwd()
-            os.chdir(outdir + "/" + reg)
-            os.system("chmod +x tf_import_commands_lbr_nonGF.sh")
-            os.chdir(dir)
+        script_file = f'{outdir}/{reg}/tf_import_commands_lbr_nonGF.sh'
+        with open(script_file, 'a') as importCommands[reg]:
+            importCommands[reg].write('\n\nterraform plan\n')
+        if "linux" in sys.platform:
+            os.chmod(script_file, 0o755)
+
 
     commonTools.write_to_cd3(values_for_column_lhc, cd3file, "LB-Hostname-Certs")
     commonTools.write_to_cd3(values_for_column_bss, cd3file, "BackendSet-BackendServer")

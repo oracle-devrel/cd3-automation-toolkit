@@ -281,15 +281,11 @@ def export_fss(inputfile, outdir, network_compartments=[], config=DEFAULT_LOCATI
 
     # writing data
     for reg in all_regions:
-        importCommands[reg] = open(outdir + "/" + reg + "/tf_import_commands_fss_nonGF.sh", "a")
-        importCommands[reg].write("\n\nterraform plan")
-        importCommands[reg].write("\n")
-        importCommands[reg].close()
-        if ("linux" in sys.platform):
-            dir = os.getcwd()
-            os.chdir(outdir + "/" + reg)
-            os.system("chmod +x tf_import_commands_fss_nonGF.sh")
-            os.chdir(dir)
+        script_file = f'{outdir}/{reg}/tf_import_commands_fss_nonGF.sh'
+        with open(script_file, 'a') as importCommands[reg]:
+            importCommands[reg].write('\n\nterraform plan\n')
+        if "linux" in sys.platform:
+            os.chmod(script_file, 0o755)
 
 
 if __name__ == "__main__":

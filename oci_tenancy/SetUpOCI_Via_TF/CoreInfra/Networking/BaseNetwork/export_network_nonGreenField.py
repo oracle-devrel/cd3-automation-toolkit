@@ -383,7 +383,7 @@ def export_networking(inputfile, outdir, _config, network_compartments=[]):
 
     # Check Compartments
     remove_comps = []
-    if len(input_compartment_names):
+    if input_compartment_names is not None:
         for x in range(0, len(input_compartment_names)):
             if (input_compartment_names[x] not in ct.ntk_compartment_ids.keys()):
                 print("Input compartment: " + input_compartment_names[x] + " doesn't exist in OCI")
@@ -673,11 +673,9 @@ def export_networking(inputfile, outdir, _config, network_compartments=[]):
 
     # Fetch RouteRules and SecRules
     export_seclist(inputfile, network_compartments=network_compartments, _config=input_config_file, _tf_import_cmd=True, outdir=outdir )
-    #export_seclist(cd3file, outdir, tf_import_cmd=True, config=input_config_file, network_compartments=network_compartments)
     print("SecRules exported to CD3\n")
 
     export_routetable(inputfile, network_compartments=network_compartments, _config=input_config_file, _tf_import_cmd=True, outdir=outdir )
-    #export_routetable(cd3file, outdir, tf_import_cmd=True, config=input_config_file, network_compartments=network_compartments)
     print("RouteRules exported to CD3\n")
 
     for reg in ct.all_regions:

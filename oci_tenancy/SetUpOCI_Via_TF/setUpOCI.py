@@ -105,7 +105,7 @@ def validate_cd3(execute_all=False):
 def get_compartment_list(resource_name):
     compartment_list_str = "Enter name of Compartment as it appears in OCI (comma separated without spaces if multiple)for which you want to export {};\nPress 'Enter' to export from all the Compartments: "
     compartments = input(compartment_list_str.format(resource_name))
-    return list(map(lambda x: x.strip(), compartments.split(','))) if compartments else []
+    return list(map(lambda x: x.strip(), compartments.split(','))) if compartments else None
 
 
 def export_identity():
