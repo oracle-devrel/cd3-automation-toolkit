@@ -24,7 +24,6 @@ def parse_args():
 
     # Read the arguments
     parser = argparse.ArgumentParser(description="Create Groups terraform file")
-    parser.add_argument("inputfile", help="Input CD3 file for reading subnets to enable Flow Logs")
     parser.add_argument("outdir", help="Output directory for creation of TF files")
     parser.add_argument("prefix", help="customer name/prefix for all file names")
     parser.add_argument("comp_name", help="compartment name")
@@ -57,7 +56,7 @@ def enable_cis_oss_logging(outdir, prefix, region_name, comp_name, config=DEFAUL
     compartmentVarName = commonTools.check_tf_variable(comp_name)
     columnvalue = str(compartmentVarName)
 
-    tempStr['compartment_tf_name'] =  columnvalue
+    tempStr['compartment_tf_name'] = columnvalue
 
     loggroup_name = prefix + "-oss-log-group"
     log_name = prefix + "-oss-log"
@@ -107,7 +106,7 @@ def enable_cis_vcnflow_logging(filename, outdir, prefix, config=DEFAULT_LOCATION
     tfStr = {}
     tempStr = {}
     outfile={}
-
+    vcns_list = []
     for i in df.index:
         region = str(df.loc[i, 'Region'])
 
@@ -139,8 +138,14 @@ def enable_cis_vcnflow_logging(filename, outdir, prefix, config=DEFAULT_LOCATION
         log_group_id= 'oci_logging_log_group.'+loggroup_name+'.id'
         resource='oci_core_subnet.'+commonTools.check_tf_variable(vcn_name+"_"+subnet_name)+'.id'
 
-        tempStr['loggroup_name'] = loggroup_name
-        tempStr['loggroup_tf_name'] = loggroup_name
+        if vcn_name not in vcns_list:
+            tempStr['vcn_exists'] = 'false'
+            tempStr['loggroup_name'] = loggroup_name
+            tempStr['loggroup_tf_name'] = loggroup_name
+            tfStr[region] = tfStr[region] + template.render(tempStr)
+            vcns_list.append(vcn_name)
+
+        tempStr['vcn_exists'] = 'true'
         tempStr['log_group_id'] = log_group_id
         tempStr['resource'] = resource
         tempStr['log_name'] = log_name
@@ -168,4 +173,3 @@ if __name__ == '__main__':
     # Execution of the code begins here
     args = parse_args()
     enable_cis_oss_logging(args.outdir, args.prefix, args.config, args.region_name, args.comp_name)
-    enable_cis_vcnflow_logging(args.inputfile, args.outdir, args.prefix, args.config)
