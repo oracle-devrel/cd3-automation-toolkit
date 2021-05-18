@@ -1,10 +1,11 @@
 # Enable Logging
+{% if vcn_exists == 'false' %}
 resource "oci_logging_log_group" "{{ loggroup_tf_name }}" {
     compartment_id = var.{{ compartment_tf_name }}
     display_name   = "{{ loggroup_name }}"
     description    = "Log Group for OSS bucket"
 }
-
+{% else %}
 resource "oci_logging_log" "{{ log_tf_name }}" {
         display_name = "{{ log_name }}"
         log_group_id = {{ log_group_id }}
@@ -25,3 +26,4 @@ resource "oci_logging_log" "{{ log_tf_name }}" {
         retention_duration = 30
 
 }
+{% endif %}
