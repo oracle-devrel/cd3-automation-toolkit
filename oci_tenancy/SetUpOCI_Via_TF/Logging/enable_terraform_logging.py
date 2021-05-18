@@ -57,7 +57,7 @@ def enable_cis_oss_logging(outdir, prefix, region_name, comp_name, config=DEFAUL
     compartmentVarName = commonTools.check_tf_variable(comp_name)
     columnvalue = str(compartmentVarName)
 
-    tempStr['compartment_tf_name'] =  columnvalue
+    tempStr['compartment_tf_name'] = columnvalue
 
     loggroup_name = prefix + "-oss-log-group"
     log_name = prefix + "-oss-log"

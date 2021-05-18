@@ -296,7 +296,7 @@ def create_cis_keyvault_oss_log(*args,**kwargs):
 
 def create_cis_features(execute_all=False):
     options = [Option("Create Key/Vault, Object Storage Bucket and enable Logging for write events to bucket", create_cis_keyvault_oss_log, 'Creating CIS Key/Vault, Object Storage Bucket and enable Logging for write events to bucket'),
-               Option("Enable Cloud Guard", CloudGuard.enable_cis_cloudguard, 'Enable Cloud Guard')
+               Option("Enable Cloud Guard", CloudGuard.enable_cis_cloudguard, 'Enable Cloud Guard'),
                Option("Enable VCN Flow Logs", create_cis_vcnflow_logs, 'Enable VCN Flow Logs')]
 
     if not execute_all:
