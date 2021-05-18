@@ -280,6 +280,11 @@ def create_resource_manager():
     options = [ Option(None, ResourceManager.create_resource_manager, 'Creating stack')]
     execute_options(options, outdir, prefix, config=config)
 
+def create_cis_vcnflow_logs(*args,**kwargs):
+    options = [Option(None, Logging.enable_cis_vcnflow_logging, 'Enabling Flow Logs')]
+    execute_options(options, inputfile, outdir, prefix, config=config)
+
+
 def create_cis_keyvault_oss_log(*args,**kwargs):
     region_name = input("Enter region name eg ashburn where you want to create OSS Bucket and Key/Vault ")
     comp_name = input("Enter name of compartment as it appears in OCI Console ")
@@ -291,7 +296,9 @@ def create_cis_keyvault_oss_log(*args,**kwargs):
 
 def create_cis_features(execute_all=False):
     options = [Option("Create Key/Vault, Object Storage Bucket and enable Logging for write events to bucket", create_cis_keyvault_oss_log, 'Creating CIS Key/Vault, Object Storage Bucket and enable Logging for write events to bucket'),
-               Option("Enable Cloud Guard", CloudGuard.enable_cis_cloudguard, 'Enable Cloud Guard')]
+               Option("Enable Cloud Guard", CloudGuard.enable_cis_cloudguard, 'Enable Cloud Guard')
+               Option("Enable VCN Flow Logs", create_cis_vcnflow_logs, 'Enable VCN Flow Logs')]
+
     if not execute_all:
         options = show_options(options, quit=True, menu=True, index=1)
     execute_options(options, outdir, prefix, config=config)
