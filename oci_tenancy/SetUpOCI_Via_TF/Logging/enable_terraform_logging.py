@@ -65,7 +65,7 @@ def enable_cis_oss_logging(outdir, prefix, region_name, comp_name, config=DEFAUL
 
     tempStr['loggroup_name'] = loggroup_name
     tempStr['loggroup_tf_name'] = loggroup_name
-    tempStr['loggroup_exists'] = 'true'
+    tempStr['loggroup_exists'] = 'false'
     tempStr['loggroup_desc']='Log Group for OSS bucket'
     tempStr['log_group_id'] = log_group_id
     tempStr['resource'] = resource
