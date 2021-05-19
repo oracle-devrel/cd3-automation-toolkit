@@ -12,7 +12,6 @@ resource "oci_objectstorage_bucket" "{{ bucket_tf_name }}" {
         name             = "{{ bucket_name }}"
         compartment_id   = var.{{ compartment_tf_name }}
         kms_key_id       = {{ kms_key_id }}
-        #kms_key_id      = oci_kms_key.{{ prefix }}-kms-key.id
 }
 
 

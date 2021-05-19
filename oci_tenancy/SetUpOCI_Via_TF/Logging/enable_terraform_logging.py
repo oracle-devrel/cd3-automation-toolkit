@@ -65,6 +65,8 @@ def enable_cis_oss_logging(outdir, prefix, region_name, comp_name, config=DEFAUL
 
     tempStr['loggroup_name'] = loggroup_name
     tempStr['loggroup_tf_name'] = loggroup_name
+    tempStr['loggroup_exists'] = 'true'
+    tempStr['loggroup_desc']='Log Group for OSS bucket'
     tempStr['log_group_id'] = log_group_id
     tempStr['resource'] = resource
     tempStr['log_name'] = log_name
@@ -133,19 +135,20 @@ def enable_cis_vcnflow_logging(filename, outdir, prefix, config=DEFAULT_LOCATION
 
         tempStr['compartment_tf_name'] =  columnvalue
 
-        loggroup_name = prefix +"-"+ commonTools.check_tf_variable(vcn_name)+"-flow-log-group"
-        log_name = prefix +"-"+ commonTools.check_tf_variable(subnet_name)+"-flow-log"
+        loggroup_name = commonTools.check_tf_variable(vcn_name)+"-flow-log-group"
+        log_name = commonTools.check_tf_variable(subnet_name)+"-flow-log"
         log_group_id= 'oci_logging_log_group.'+loggroup_name+'.id'
         resource='oci_core_subnet.'+commonTools.check_tf_variable(vcn_name+"_"+subnet_name)+'.id'
 
         if vcn_name not in vcns_list:
-            tempStr['vcn_exists'] = 'false'
+            tempStr['loggroup_exists'] = 'false'
             tempStr['loggroup_name'] = loggroup_name
             tempStr['loggroup_tf_name'] = loggroup_name
+            tempStr['loggroup_desc'] = 'Log Group for VCN'
             tfStr[region] = tfStr[region] + template.render(tempStr)
             vcns_list.append(vcn_name)
 
-        tempStr['vcn_exists'] = 'true'
+        tempStr['loggroup_exists'] = 'true'
         tempStr['log_group_id'] = log_group_id
         tempStr['resource'] = resource
         tempStr['log_name'] = log_name

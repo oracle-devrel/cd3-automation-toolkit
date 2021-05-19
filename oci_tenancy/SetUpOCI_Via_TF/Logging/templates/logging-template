@@ -1,10 +1,10 @@
 # Enable Logging
-{% if vcn_exists == 'false' %}
+{% if loggroup_exists == 'false' %}
 # Log Group
 resource "oci_logging_log_group" "{{ loggroup_tf_name }}" {
     compartment_id = var.{{ compartment_tf_name }}
     display_name   = "{{ loggroup_name }}"
-    description    = "Log Group for OSS bucket"
+    description    = "{{ loggroup_desc }}"
 }
 {% else %}
 # Log
