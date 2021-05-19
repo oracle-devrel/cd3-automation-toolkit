@@ -680,6 +680,7 @@ def validate_blockvols(filename,comp_ids):
     bvs_invalid_check = False
     bvs_comp_check = False
     instance_name_check = False
+    bv_ad_check = False
 
     dfvol = data_frame(filename, 'BlockVols')
     dfinst = data_frame(filename, 'Instances')
