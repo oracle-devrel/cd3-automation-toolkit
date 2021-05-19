@@ -39,6 +39,7 @@ class commonTools():
         self.sheet_dict={}
 
         # When called from wthin OCSWorkVM
+        dir=os.getcwd()
         if ("OCSWorkVM" in os.getcwd()):
             os.chdir("../")
         regionFileName="OCI_Regions"
@@ -68,7 +69,9 @@ class commonTools():
             break
 
         #Change back to Initial
-        # os.chdir(dir)
+        if ("OCSWorkVM" in dir):
+            os.chdir(dir)
+        #os.chdir(dir)
 
     #Get Tenancy Regions
     def get_subscribedregions(self, configFileName=DEFAULT_LOCATION):
