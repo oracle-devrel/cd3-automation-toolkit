@@ -63,7 +63,7 @@ def create_cis_oss(outdir, prefix, region_name, comp_name, config=DEFAULT_LOCATI
     compartmentVarName = commonTools.check_tf_variable(comp_name)
     columnvalue = str(compartmentVarName)
 
-    oss_name= prefix+"-oss-bucket"
+    oss_name= prefix+"-"+region_name+"-oss-bucket"
     key_name=prefix+"-kms-key"
 
     tempStr['compartment_tf_name'] =  columnvalue
