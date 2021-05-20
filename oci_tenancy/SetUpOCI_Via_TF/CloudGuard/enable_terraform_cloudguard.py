@@ -69,6 +69,11 @@ def enable_cis_cloudguard(outdir, prefix, config=DEFAULT_LOCATION):
         os.makedirs(reg_out_dir)
 
     outfile = reg_out_dir + "/cis-cloudguard.tf"
+
+    srcdir = reg_out_dir + "/"
+    resource = 'cloudguard'
+    commonTools.backup_file(srcdir, resource, "cis-cloudguard.tf")
+
     if(tfStr!=''):
         oname=open(outfile,'w')
         oname.write(tfStr)

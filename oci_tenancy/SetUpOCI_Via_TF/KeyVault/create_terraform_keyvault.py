@@ -77,6 +77,11 @@ def create_cis_keyvault(outdir, prefix, region_name, comp_name, config=DEFAULT_L
 
     outfile = reg_out_dir + "/cis-keyvault.tf"
 
+    srcdir = reg_out_dir + "/"
+    resource = 'keyvault'
+    commonTools.backup_file(srcdir, resource, "cis-keyvault.tf")
+
+
     if(tfStr!=''):
         oname=open(outfile,'w')
         oname.write(tfStr)

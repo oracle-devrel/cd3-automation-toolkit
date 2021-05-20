@@ -82,6 +82,9 @@ def enable_cis_oss_logging(outdir, prefix, region_name, comp_name, config=DEFAUL
         os.makedirs(reg_out_dir)
 
     outfile = reg_out_dir + "/cis-oss-logging.tf"
+    srcdir = reg_out_dir + "/"
+    resource = 'osslog'
+    commonTools.backup_file(srcdir, resource, "cis-oss-logging.tf")
 
     if(tfStr!=''):
         oname=open(outfile,'w')
@@ -165,6 +168,11 @@ def enable_cis_vcnflow_logging(filename, outdir, prefix, config=DEFAULT_LOCATION
             os.makedirs(reg_out_dir)
 
         outfile[reg] = reg_out_dir + "/cis-vcnflow-logging.tf"
+
+        srcdir = reg_out_dir + "/"
+        resource = 'vcnflowlog'
+        commonTools.backup_file(srcdir, resource, "cis-vcnflow-logging.tf")
+
         if(tfStr[reg]!=''):
             oname=open(outfile[reg],'w')
             oname.write(tfStr[reg])

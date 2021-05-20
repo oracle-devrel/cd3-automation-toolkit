@@ -93,6 +93,10 @@ def create_cis_oss(outdir, prefix, region_name, comp_name, config=DEFAULT_LOCATI
     outfile = reg_out_dir + "/cis-oss.tf"
     outPolfile= home_reg_out_dir+"/cis-osskeyvault-policy.tf"
 
+    srcdir = reg_out_dir + "/"
+    resource = 'oss'
+    commonTools.backup_file(srcdir, resource, "cis-oss.tf")
+
     if(tfStr!=''):
         oname=open(outfile,'w')
         oname.write(tfStr)
