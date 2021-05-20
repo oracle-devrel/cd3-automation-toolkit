@@ -929,6 +929,7 @@ def validate_cd3(filename, choices, configFileName):
     ct.get_subscribedregions(configFileName)
     ct.get_network_compartment_ids(config['tenancy'], "root", configFileName)
 
+    val_net=False
     for options in choices:
         if ('Validate Compartments' in options[0]):
             log("============================= Verifying Compartments Tab ==========================================\n")
@@ -945,7 +946,7 @@ def validate_cd3(filename, choices, configFileName):
     
         # CD3 Validation begins here for Network
         if ('Validate Networking(VCNs, Subnets, DHCP)' in options[0]):
-    
+            val_net=True
             vcnobj = parseVCNs(filename)
     
             log("\n============================= Verifying VCNs Tab ==========================================\n")
@@ -984,12 +985,12 @@ def validate_cd3(filename, choices, configFileName):
         log("Summary:")
         log("=======")
         log("There are no errors in CD3. Please proceed with TF Generation\n")
-        if('Validate Networking(VCNs, Subnets, DHCP)' in options[0]):
+        if(val_net == True):
             log("Verify LPG's Peering Check Status once in the log file. Otherwise You are good to proceed with TF !!!")
         print("\n\nSummary:")
         print("=======")
         print("There are no errors in CD3. Please proceed with TF Generation\n")
-        if('Validate Networking(VCNs, Subnets, DHCP)' in options[0]):
+        if(val_net == True):
             print("Verify LPG's Peering Check Status once in the log file. Otherwise You are good to proceed !!!")
         # exit(0)
     elif('q' in choices):
