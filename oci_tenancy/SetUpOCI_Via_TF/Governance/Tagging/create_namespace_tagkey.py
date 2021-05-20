@@ -64,7 +64,7 @@ def create_namespace_tagkey(inputfile, outdir, config):
         eachregion = str(eachregion).strip().lower()
 
         if eachregion in commonTools.endNames:
-            continue
+            break
         if eachregion == 'nan':
             continue
         if eachregion not in ct.all_regions:

@@ -82,7 +82,7 @@ def create_terraform_events(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
         eachregion = str(eachregion).strip().lower()
         resource='Events'
         if (eachregion in commonTools.endNames):
-            continue
+            break
         if eachregion == 'nan':
             continue
         if eachregion not in ct.all_regions:
