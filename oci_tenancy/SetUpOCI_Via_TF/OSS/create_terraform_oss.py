@@ -28,9 +28,9 @@ def parse_args():
     parser.add_argument("prefix", help="customer name/prefix for all file names")
     parser.add_argument("region_name", help="region name")
     parser.add_argument("comp_name", help="compartment name")
-    parser.add_argument("--configFileName", help="Config file name", required=False)
+    parser.add_argument("--configFileName", deafult=DEFAULT_LOCATION, help="Config file name", required=False)
 
-def create_cis_oss(outdir, prefix, region_name, comp_name, config=DEFAULT_LOCATION):
+def create_cis_oss(outdir, prefix, region_name, comp_name, config):
     # Declare variables
     configFileName = config
     comp_name = comp_name.strip()
@@ -53,7 +53,7 @@ def create_cis_oss(outdir, prefix, region_name, comp_name, config=DEFAULT_LOCATI
     pol_env = Environment(loader=file_pol_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
     policyTemplate = pol_env.get_template('policy-template')
 
-    region_key = ct.region_dict[region_name]
+    #region_key = ct.region_dict[region_name]
 
     tempStr = {}
     tempPolStr = {}
@@ -72,13 +72,15 @@ def create_cis_oss(outdir, prefix, region_name, comp_name, config=DEFAULT_LOCATI
     tempStr['kms_key_id'] = 'oci_kms_key.'+key_name+'.id'
     tfStr = tfStr + template.render(tempStr)
 
+
     tempPolStr['policy_tf_name']=prefix+"-oss-kms-policy"
     tempPolStr['name'] = prefix + "-oss-kms-policy"
     tempPolStr['compartment_tf_name']='tenancy_ocid'
     tempPolStr['description']="Policy allowing OCI OSS service to access Key in the Vault service."
-    actual_policy_statement = "Allow service objectstorage-"+region_key+" to use keys in compartment "+columnvalue
-    tempPolStr['policy_statements']= "\"" + actual_policy_statement + "\""
-
+    tempPolStr['policy_statements'] = ''
+    for region_name in ct.all_regions:
+        actual_policy_statement = "Allow service objectstorage-"+ct.region_dict[region_name]+" to use keys in tenancy "
+        tempPolStr['policy_statements'] = "\""+actual_policy_statement + "\","+tempPolStr['policy_statements']
     tfPolStr=tfPolStr + policyTemplate.render(tempPolStr)
     tfPolStr = tfPolStr + """ ]
                     } \n """
@@ -121,4 +123,4 @@ def create_cis_oss(outdir, prefix, region_name, comp_name, config=DEFAULT_LOCATI
 
 if __name__ == '__main__':
     args = parse_args()
-    create_cis_oss(args.outdir, args.prefix, args.config, args.region_name, args.comp_name)
+    create_cis_oss(args.outdir, args.prefix, args.region_name, args.comp_name, args.config)
