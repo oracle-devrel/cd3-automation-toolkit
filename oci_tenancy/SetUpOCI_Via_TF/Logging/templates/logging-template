@@ -1,12 +1,13 @@
 # Enable Logging
-{% if loggroup_exists == 'false' %}
+{% if loggroup == 'true' %}
 # Log Group
 resource "oci_logging_log_group" "{{ loggroup_tf_name }}" {
     compartment_id = var.{{ compartment_tf_name }}
     display_name   = "{{ loggroup_name }}"
     description    = "{{ loggroup_desc }}"
 }
-{% else %}
+{% endif %}
+{% if logs == 'true' or loggroup == 'false' %}
 # Log
 resource "oci_logging_log" "{{ log_tf_name }}" {
         display_name = "{{ log_name }}"

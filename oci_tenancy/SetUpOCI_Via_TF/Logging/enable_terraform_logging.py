@@ -65,7 +65,8 @@ def enable_cis_oss_logging(outdir, prefix, region_name, comp_name, config=DEFAUL
 
     tempStr['loggroup_name'] = loggroup_name
     tempStr['loggroup_tf_name'] = loggroup_name
-    tempStr['loggroup_exists'] = 'false'
+    tempStr['loggroup'] = 'true'
+    tempStr['logs'] = 'true'
     tempStr['loggroup_desc']='Log Group for OSS bucket'
     tempStr['log_group_id'] = log_group_id
     tempStr['resource'] = resource
@@ -144,14 +145,14 @@ def enable_cis_vcnflow_logging(filename, outdir, prefix, config=DEFAULT_LOCATION
         resource='oci_core_subnet.'+commonTools.check_tf_variable(vcn_name+"_"+subnet_name)+'.id'
 
         if vcn_name not in vcns_list:
-            tempStr['loggroup_exists'] = 'false'
+            tempStr['loggroup'] = 'true'
             tempStr['loggroup_name'] = loggroup_name
             tempStr['loggroup_tf_name'] = loggroup_name
             tempStr['loggroup_desc'] = 'Log Group for VCN'
             tfStr[region] = tfStr[region] + template.render(tempStr)
             vcns_list.append(vcn_name)
 
-        tempStr['loggroup_exists'] = 'true'
+        tempStr['loggroup'] = 'false'
         tempStr['log_group_id'] = log_group_id
         tempStr['resource'] = resource
         tempStr['log_name'] = log_name
