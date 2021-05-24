@@ -79,6 +79,7 @@ def enable_cis_cloudguard(outdir, prefix, config=DEFAULT_LOCATION):
         oname.write(tfStr)
         oname.close()
         print(outfile + " containing TF for cloud-guard has been created for region "+home_region)
+        print("TF has been generated in Home Region Directory.\nOnce you apply the Terraform, Cloud Guard will be enabled from Home Region and Target will be created with Oracle Managed Recipes for root compartment.")
 
 if __name__ == '__main__':
     # Execution of the code begins here
