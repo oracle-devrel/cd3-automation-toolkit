@@ -364,7 +364,7 @@ else:
         Option('Database', create_db, 'Database'),
         Option('Solutions (Events and Notifications)', create_events_notifications, 'Solutions'),
         Option('Upload current terraform files/state to Resource Manager', create_resource_manager, 'Resource Manager'),
-        Option('Enable OCI CIS Compliant Features', create_cis_features, 'CIS Compliant Features'),
+        Option('Enable OCI CIS Compliant Features (OSS, Cloud-Guard, VCN Flow Logs)', create_cis_features, 'CIS Compliant Features'),
     ]
 
 # Run menu
