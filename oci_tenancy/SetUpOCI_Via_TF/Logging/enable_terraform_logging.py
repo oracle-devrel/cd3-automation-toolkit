@@ -97,6 +97,10 @@ def enable_cis_oss_logging(outdir, prefix, region_name, comp_name, config=DEFAUL
 def enable_cis_vcnflow_logging(filename, outdir, prefix, config=DEFAULT_LOCATION):
 
     # Declare variables
+    vcnInfo = parseVCNInfo(filename)
+    ADS = ["AD1", "AD2", "AD3"]
+
+
     # Read cd3 using pandas dataframe
     df, col_headers = commonTools.read_cd3(filename, "Subnets")
 
@@ -131,8 +135,31 @@ def enable_cis_vcnflow_logging(filename, outdir, prefix, config=DEFAULT_LOCATION
         region = region.strip().lower()
         compartment_var_name = str(df.loc[i, 'Compartment Name']).strip()
         vcn_name = str(df['VCN Name'][i]).strip()
-        subnet_name = str(df['Subnet Name'][i]).strip()
+        name = str(df['Subnet Name'][i]).strip()
+        subnet = str(df['CIDR Block'][i]).strip()
+        AD = str(df['Availability Domain(AD1|AD2|AD3|Regional)'][i]).strip()
 
+        if (AD.strip().lower() != 'regional'):
+            AD = AD.strip().upper()
+            ad = ADS.index(AD)
+            ad_name_int = ad + 1
+            ad_name = str(ad_name_int)
+        else:
+            ad_name = ""
+
+        if (vcnInfo.subnet_name_attach_cidr == 'y'):
+                if (str(ad_name) != ''):
+                        name1 = name + "-ad" + str(ad_name)
+                else:
+                        name1 = name
+
+                display_name = name1 + "-" + subnet
+
+        else:
+                display_name = name
+
+        subnet_tf_name=vcn_name+"_"+display_name
+        subnet_tf_name = commonTools.check_tf_variable(subnet_tf_name)
 
         compartmentVarName = commonTools.check_tf_variable(compartment_var_name)
         columnvalue = str(compartmentVarName)
@@ -140,9 +167,9 @@ def enable_cis_vcnflow_logging(filename, outdir, prefix, config=DEFAULT_LOCATION
         tempStr['compartment_tf_name'] =  columnvalue
 
         loggroup_name = commonTools.check_tf_variable(vcn_name)+"-flow-log-group"
-        log_name = commonTools.check_tf_variable(subnet_name)+"-flow-log"
+        log_name = commonTools.check_tf_variable(display_name)+"-flow-log"
         log_group_id= 'oci_logging_log_group.'+loggroup_name+'.id'
-        resource='oci_core_subnet.'+commonTools.check_tf_variable(vcn_name+"_"+subnet_name)+'.id'
+        resource='oci_core_subnet.'+subnet_tf_name+'.id'
 
         if vcn_name not in vcns_list:
             tempStr['loggroup'] = 'true'
