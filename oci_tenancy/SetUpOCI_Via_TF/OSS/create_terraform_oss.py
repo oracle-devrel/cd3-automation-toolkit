@@ -61,12 +61,12 @@ def create_cis_oss(outdir, prefix, region_name, comp_name, config):
     tfPolStr = ''
 
     compartmentVarName = commonTools.check_tf_variable(comp_name)
-    columnvalue = str(compartmentVarName)
+    cname = str(compartmentVarName)
 
     oss_name= prefix+"-"+region_name+"-oss-bucket"
-    key_name=prefix+"-kms-key"
+    key_name=prefix+"-"+region_name+"-kms-key"
 
-    tempStr['compartment_tf_name'] =  columnvalue
+    tempStr['compartment_tf_name'] =  cname
     tempStr['bucket_name'] = oss_name
     tempStr['bucket_tf_name'] = oss_name
     tempStr['kms_key_id'] = 'oci_kms_key.'+key_name+'.id'
@@ -78,8 +78,8 @@ def create_cis_oss(outdir, prefix, region_name, comp_name, config):
     tempPolStr['compartment_tf_name']='tenancy_ocid'
     tempPolStr['description']="Policy allowing OCI OSS service to access Key in the Vault service."
     tempPolStr['policy_statements'] = ''
-    for region_name in ct.all_regions:
-        actual_policy_statement = "Allow service objectstorage-"+ct.region_dict[region_name]+" to use keys in tenancy "
+    for reg in ct.all_regions:
+        actual_policy_statement = "Allow service objectstorage-"+ct.region_dict[reg]+" to use keys in compartment "+comp_name
         tempPolStr['policy_statements'] = "\""+actual_policy_statement + "\","+tempPolStr['policy_statements']
     tfPolStr=tfPolStr + policyTemplate.render(tempPolStr)
     tfPolStr = tfPolStr + """ ]
@@ -114,7 +114,7 @@ def create_cis_oss(outdir, prefix, region_name, comp_name, config):
     print("\nPlease run terraform apply from home region directory to create policy first and then proceed to run terraform apply for OSS/Key/Vault in specified region directory")
     print("terraform apply will create below components ")
     print(prefix + "-oss-kms-policy")
-    print("under root compartment and below components under compartment "+columnvalue+ " : ")
+    print("under root compartment and below components under compartment "+cname+ " : ")
     print(prefix + "-kms-vault")
     print(prefix + "-kms-key")
     print(prefix + "-oss-bucket")

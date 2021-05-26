@@ -58,10 +58,10 @@ def enable_cis_oss_logging(outdir, prefix, region_name, comp_name, config=DEFAUL
 
     tempStr['compartment_tf_name'] = columnvalue
 
-    loggroup_name = prefix + "-oss-log-group"
-    log_name = prefix + "-oss-log"
-    log_group_id= 'oci_logging_log_group.'+prefix+'-oss-log-group.id'
-    resource='oci_objectstorage_bucket.'+prefix+'-oss-bucket.name'
+    loggroup_name = prefix+"-"+region_name+"-oss-log-group"
+    log_name = prefix+"-"+region_name+"-oss-log"
+    log_group_id= 'oci_logging_log_group.'+loggroup_name+'.id'
+    resource='oci_objectstorage_bucket.'+prefix+"-"+region_name+"-oss-bucket.name"
 
     tempStr['loggroup_name'] = loggroup_name
     tempStr['loggroup_tf_name'] = loggroup_name
