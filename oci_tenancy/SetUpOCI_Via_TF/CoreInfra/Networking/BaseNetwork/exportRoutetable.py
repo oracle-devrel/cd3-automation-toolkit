@@ -127,7 +127,7 @@ def print_routetables(routetables,region,vcn_name,comp_name):
         rules = routetable.route_rules
         display_name = routetable.display_name
         dn=display_name
-        if (tf_import_cmd == "true"):
+        if tf_import_cmd:
             tf_name = vcn_name + "_" + dn
             tf_name = commonTools.check_tf_variable(tf_name)
 
@@ -138,7 +138,7 @@ def print_routetables(routetables,region,vcn_name,comp_name):
 
         if(not rules):
             insert_values(routetable, values_for_column, region, comp_name, vcn_name,None)
-            if (tf_import_cmd == "false"):
+            if not tf_import_cmd:
                 print(dn)
 
         for rule in rules:
@@ -146,17 +146,23 @@ def print_routetables(routetables,region,vcn_name,comp_name):
             desc = str(rule.description)
             if (desc == "None"):
                 desc = ""
-            if(tf_import_cmd=="false"):
+            if not tf_import_cmd:
                 print(dn + "," +str(rule.destination)+","+desc)
 
-def main():
+
+def parse_args():
+    parser = argparse.ArgumentParser(description='Export Route Table on OCI to CD3')
+    parser.add_argument('cd3file', help='path of CD3 excel file to export rules to')
+    parser.add_argument('--network-compartment', nargs='*', help='comma seperated Compartments for which to export Networking Objects')
+    parser.add_argument('--config', default=DEFAULT_LOCATION, help='Config file name')
+    parser.add_argument('--tf-import-cmd', default=False, action='store_true', help='write tf import commands')
+    parser.add_argument('--outdir', default=None, required=False, help='outdir for TF import commands script')
+    args = parser.parse_args()
+
+
+
+def export_routetable(inputfile, network_compartments, _config, _tf_import_cmd, outdir):
     # Read the arguments
-    parser = argparse.ArgumentParser(description="Export Route Table on OCI to CD3")
-    parser.add_argument("cd3file", help="path of CD3 excel file to export rules to")
-    parser.add_argument("--networkCompartment", help="comma seperated Compartments for which to export Networking Objects", required=False)
-    parser.add_argument("--configFileName", help="Config file name" , required=False)
-    parser.add_argument("--tf_import_cmd", help="write tf import commands" , required=False)
-    parser.add_argument("--outdir", help="outdir for TF import commands script" , required=False)
     global tf_import_cmd
     global values_for_column
     global sheet_dict
@@ -164,26 +170,15 @@ def main():
     global config
     global values_for_vcninfo
 
-    if len(sys.argv) < 2:
-        parser.print_help()
-        sys.exit(1)
-
-    args = parser.parse_args()
-
-    cd3file=args.cd3file
-    if('.xls' not in cd3file):
+    cd3file = inputfile
+    if '.xls' not in cd3file:
         print("\nAcceptable cd3 format: .xlsx")
         exit()
 
-    tf_import_cmd = args.tf_import_cmd
-    outdir = args.outdir
-
-    if args.configFileName is not None:
-        configFileName = args.configFileName
-        config = oci.config.from_file(file_location=configFileName)
-    else:
-        configFileName=""
-        config = oci.config.from_file()
+    tf_import_cmd = _tf_import_cmd
+    if tf_import_cmd and not outdir:
+        print("out directory is a mandatory arguement to write tf import commands ")
+        exit(1)
 
     values_for_vcninfo={}
     values_for_vcninfo['igw_destinations']=[]
@@ -194,29 +189,22 @@ def main():
     df,values_for_column=commonTools.read_cd3(cd3file,"RouteRulesinOCI")
 
     ct = commonTools()
-    ct.get_subscribedregions(configFileName)
-    ct.get_network_compartment_ids(config['tenancy'],"root",configFileName)
+    ct.get_subscribedregions(_config)
+    config = oci.config.from_file(_config)
+    ct.get_network_compartment_ids(config['tenancy'], "root", _config)
+
 
     # Get dict for columns from Excel_Columns
     sheet_dict=ct.sheet_dict["RouteRulesinOCI"]
 
-    input_compartment_list = args.networkCompartment
+    input_compartment_list = network_compartments
     if(input_compartment_list is not None):
-        input_compartment_names = input_compartment_list.split(",")
-        input_compartment_names = [x.strip() for x in input_compartment_names]
+        #input_compartment_names = input_compartment_list.split(",")
+        input_compartment_names = [x.strip() for x in input_compartment_list]
     else:
         input_compartment_names = None
 
-    if tf_import_cmd is not None:
-        tf_import_cmd="true"
-        if(outdir is None):
-            print("out directory is a mandatory arguement to write tf import commands ")
-            exit(1)
-    else:
-        tf_import_cmd = "false"
-
-
-    if(tf_import_cmd=="true"):
+    if tf_import_cmd:
         importCommands={}
         for reg in ct.all_regions:
             importCommands[reg] = open(outdir + "/" + reg + "/tf_import_commands_network_nonGF.sh", "a")
@@ -249,10 +237,11 @@ def main():
 
     commonTools.write_to_cd3(values_for_column,cd3file,"RouteRulesinOCI")
 
-    if (tf_import_cmd == "true"):
+    if tf_import_cmd:
         commonTools.write_to_cd3(values_for_vcninfo, cd3file, "VCN Info")
         for reg in ct.all_regions:
             importCommands[reg].close()
 
 if __name__=="__main__":
-    main()
+    args = parse_args()
+    export_routetable(args.inputfile, args.network_compartments, args.config, args.tf_import_cmd, args.outdir)

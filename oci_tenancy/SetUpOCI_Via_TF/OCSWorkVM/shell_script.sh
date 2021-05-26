@@ -58,6 +58,8 @@ sudo yum -y install git
 #sudo yum --showduplicates list terraform #TF RHEL packages list
 #uncomment for latest version of terraform
 #sudo yum -y install terraform
+sudo yum-config-manager --enable ol7_developer_EPEL
+sudo yum-config-manager --enable ol7_developer
 sudo yum -y install terraform-0.13.4-1.el7
 
 #yum install  expect-5.45-14.el7_1.x86_64

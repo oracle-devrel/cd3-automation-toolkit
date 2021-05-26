@@ -16,13 +16,16 @@ import oci
 import time
 import csv
 import base64
-
+from commonTools import *
 from oci.exceptions import ServiceError
 from oci.identity import IdentityClient
-
-sys.path.append(os.getcwd()+"/..")
-from commonTools import *
-from oci.resource_manager.models import CreateImportTfStateJobOperationDetails,ImportTfStateJobOperationDetails,CreateStackDetails,CreateZipUploadConfigSourceDetails,UpdateStackDetails,UpdateZipUploadConfigSourceDetails
+from oci.config import DEFAULT_LOCATION
+from oci.resource_manager.models import ImportTfStateJobOperationDetails
+from oci.resource_manager.models import CreateImportTfStateJobOperationDetails
+from oci.resource_manager.models import CreateStackDetails
+from oci.resource_manager.models import UpdateStackDetails
+from oci.resource_manager.models import CreateZipUploadConfigSourceDetails
+from oci.resource_manager.models import UpdateZipUploadConfigSourceDetails
 
 
 ocid_list = []
@@ -82,8 +85,7 @@ def write_to_ocids_file(rm_ocids_file,region,rm_ocid,create_rm_flag,comp_name):
                 n.write(comp_name+";"+region + ";" + rm_ocid + '\n')
             n.close()
 
-
-class resourceManager:
+def parse_args():
     # Read the input arguments
     parser = argparse.ArgumentParser(description="Creates Resource Manager and performs terraform plan or apply")
     #parser.add_argument("rm_ocid", help="OCID of Resource Manager if exists; else empty")
@@ -91,27 +93,16 @@ class resourceManager:
     parser.add_argument("prefix", help="customer name/prefix for all file names")
     parser.add_argument("--configFileName", help="Config file name", required=False)
     #parser.add_argument("apply_flag",help="Is it terraform plan or apply.")
+    return parser.parse_args()
 
-    if len(sys.argv) < 2:
-        parser.print_help()
-        sys.exit(1)
 
-    # Declare variables
-    args = parser.parse_args()
-
-    outdir = args.outdir
-    prefix = args.prefix
+def create_resource_manager(outdir, prefix, config=DEFAULT_LOCATION):
     #apply_flag = args.apply_flag
     #rm_ocid = args.rm_ocid
     all_regions = os.listdir(outdir)
 
-    if args.configFileName is not None:
-        configFileName = args.configFileName
-        config = oci.config.from_file(file_location=configFileName)
-    else:
-        configFileName = ""
-        config = oci.config.from_file()
-
+    configFileName = config
+    config = oci.config.from_file(file_location=configFileName)
 
     rm_stack_name = "ocswork-"+prefix
     ct = commonTools()
@@ -250,4 +241,6 @@ class resourceManager:
           "Terraform Configuration (and/or) State files are uploaded to  Resource Manager Stack in "+comp_name+" Compartment.")
 
 
-
+if __name__ == '__main__':
+    args = parse_args()
+    create_resource_manager(args.outdir, args.prefix, args.config)

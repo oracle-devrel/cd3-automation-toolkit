@@ -17,6 +17,7 @@ from oci.ons import NotificationControlPlaneClient
 from oci.events import EventsClient
 from oci.ons import NotificationDataPlaneClient
 from oci.functions import FunctionsManagementClient
+from oci.config import DEFAULT_LOCATION
 import os
 sys.path.append(os.getcwd() + "/..")
 from commonTools import *
@@ -55,7 +56,7 @@ def  print_notifications(values_for_column_notifications,region, ntk_compartment
        importCommands[region.lower()].write("\nterraform import oci_ons_notification_topic." + tf_name_nftn + " " + str(nftn_info.topic_id))
     importCommands[region.lower()].write("\nterraform import oci_ons_subscription." + tf_name_sbpn + " " + str(sbpn.id))
 
-def  print_events(values_for_column_events, region, ntk_compartment_name, event, event_info, ncpc, fun):
+def print_events(values_for_column_events, region, ntk_compartment_name, event, event_info, ncpc, fun):
     tf_name = commonTools.check_tf_variable(str(event.display_name))
     event_name = event.display_name
     action_type = ""
@@ -139,13 +140,16 @@ def events_rows(values_for_column_events, region, ntk_compartment_name, event_na
             values_for_column_events = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict_events,values_for_column_events)
 
 
-def main():
-
+def parse_args():
     parser = argparse.ArgumentParser(description="Export Notifications on OCI to CD3")
-    parser.add_argument("cd3file", help="path of CD3 excel file to export solution objects to")
+    parser.add_argument("inputfile", help="path of CD3 excel file to export solution objects to")
     parser.add_argument("outdir", help="path to out directory containing script for TF import commands")
-    parser.add_argument("--networkCompartment", help="comma seperated Compartments for which to export Identity Objects", required=False)
-    parser.add_argument("--configFileName", help="Config file name" , required=False)
+    parser.add_argument("--network-compartments", nargs='*', help="comma seperated Compartments for which to export Identity Objects", required=False)
+    parser.add_argument("--config", default=DEFAULT_LOCATION, help="Config file name" )
+    return parser.parse_args()
+
+
+def export_solutions(inputfile, outdir, network_compartments=[], _config=DEFAULT_LOCATION):
     global rows
     global tf_import_cmd
     global values_for_column_events
@@ -155,32 +159,15 @@ def main():
     global importCommands
     global config
 
-    if len(sys.argv) < 3:
-        parser.print_help()
-        sys.exit(1)
-
-    args = parser.parse_args()
-    cd3file = args.cd3file
-    outdir = args.outdir
-    input_config_file = args.configFileName
-    input_compartment_list = args.networkCompartment
-    if (input_compartment_list is not None):
-        input_compartment_names = input_compartment_list.split(",")
-        input_compartment_names = [x.strip() for x in input_compartment_names]
-    else:
-        input_compartment_names = None
-
+    cd3file = inputfile
+    input_compartment_names = network_compartments
+    configFileName = _config
+    config = oci.config.from_file(file_location=configFileName)
 
     if ('.xls' not in cd3file):
         print("\nAcceptable cd3 format: .xlsx")
         exit()
 
-    if args.configFileName is not None:
-        configFileName = args.configFileName
-        config = oci.config.from_file(file_location=configFileName)
-    else:
-        configFileName=""
-        config = oci.config.from_file()
     # Read CD3
     df, values_for_column_events = commonTools.read_cd3(cd3file, "Events")
     df, values_for_column_notifications = commonTools.read_cd3(cd3file, "Notifications")
@@ -195,6 +182,7 @@ def main():
 
 
     # Check Compartments
+
     remove_comps = []
     if (input_compartment_names is not None):
         for x in range(0, len(input_compartment_names)):
@@ -227,6 +215,7 @@ def main():
     # Fetch Notifications & Subscriptions
     print("\nFetching Notifications & Subscriptions...")
     for reg in ct.all_regions:
+
         importCommands[reg].write("\n\n######### Writing import for Notifications #########\n\n")
         config.__setitem__("region", ct.region_dict[reg])
         comp_ocid_done = []
@@ -245,20 +234,20 @@ def main():
                                                             lifecycle_state="ACTIVE")
                 sbpns = oci.pagination.list_call_get_all_results(ndpc.list_subscriptions,
                                                             compartment_id=ct.ntk_compartment_ids[ntk_compartment_name])
+
                 list_nftn = []
                 i = 0
                 for sbpn in sbpns.data:
                   try:
                    nftn_info = ncpc.get_topic(sbpn.topic_id).data
                   except:
-                   continue 
+                   continue
                   if( nftn_info.topic_id  not in list_nftn):
                      i = 1
                      list_nftn.append(nftn_info.topic_id)
                   else:
                      i = i + 1
                   print_notifications(values_for_column_notifications,region, ntk_compartment_name, sbpn, nftn_info, i, fun)
-
     commonTools.write_to_cd3(values_for_column_notifications, cd3file, "Notifications")
     print("Notifications exported to CD3\n")
 
@@ -289,19 +278,15 @@ def main():
     commonTools.write_to_cd3(values_for_column_events, cd3file, "Events")
     print("Events exported to CD3\n")
 
-    os.chdir("../../..")
 
     for reg in ct.all_regions:
-        importCommands[reg] = open(outdir + "/" + reg + "/tf_import_commands_solutions_nonGF.sh", "a")
-        importCommands[reg].write("\n\nterraform plan")
-        importCommands[reg].write("\n")
-        importCommands[reg].close()
-        if ("linux" in sys.platform):
-            dir = os.getcwd()
-            os.chdir(outdir + "/" + reg)
-            os.system("chmod +x tf_import_commands_solutions_nonGF.sh")
-            os.chdir(dir)
+        script_file = f'{outdir}/{reg}/tf_import_commands_solutions_nonGF.sh'
+        with open(script_file, 'a') as importCommands[reg]:
+            importCommands[reg].write('\n\nterraform plan\n')
+        if "linux" in sys.platform:
+            os.chmod(script_file, 0o755)
 
 
 if __name__=="__main__":
-    main()
+    args = parse_args()
+    export_solutions(args.inputfile, args.outdir, args.network_compartments, args.config)

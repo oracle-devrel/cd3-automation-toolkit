@@ -5,7 +5,10 @@ import argparse
 import sys
 import oci
 from oci.core.virtual_network_client import VirtualNetworkClient
+from oci.config import DEFAULT_LOCATION
 import os
+from .exportRoutetable import export_routetable
+from .exportSeclist import export_seclist
 
 sys.path.append(os.getcwd() + "/..")
 from commonTools import *
@@ -327,15 +330,16 @@ def print_subnets(values_for_column_subnets,region, comp_name, vcn_name, subnet_
             oci_objs = [subnet_info]
             values_for_column_subnets = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict_subnets,values_for_column_subnets)
 
-
-def main():
+def parse_args():
     parser = argparse.ArgumentParser(description="Export Network Objects in OCI to CD3")
-    parser.add_argument("cd3file", help="path of CD3 excel file to export network objects to")
+    parser.add_argument("inputfile", help="path of CD3 excel file to export network objects to")
     parser.add_argument("outdir", help="path to out directory containing script for TF import commands")
-    parser.add_argument("--networkCompartment", help="comma seperated Compartments for which to export Networking Objects",
-                        required=False)
-    parser.add_argument("--configFileName", help="Config file name", required=False)
+    parser.add_argument("--configFileName", default=DEFAULT_LOCATION, help="Config file name")
+    parser.add_argument("--network-compartments", nargs='*', help="comma seperated Compartments for which to export Networking Objects", required=False)
+    return parser.parse_args()
 
+
+def export_networking(inputfile, outdir, _config, network_compartments=[]):
     global tf_import_cmd
     global values_for_column_vcns
     global values_for_column_dhcp
@@ -348,32 +352,17 @@ def main():
     global importCommands
     global config
 
-    if len(sys.argv) < 3:
-        parser.print_help()
-        sys.exit(1)
-
-    args = parser.parse_args()
-    cd3file = args.cd3file
-    outdir = args.outdir
-    input_config_file = args.configFileName
-    input_compartment_list = args.networkCompartment
-    if (input_compartment_list is not None):
-        input_compartment_names = input_compartment_list.split(",")
-        input_compartment_names = [x.strip() for x in input_compartment_names]
-    else:
-        input_compartment_names = None
+    cd3file = inputfile
+    input_config_file = _config
+    input_compartment_names = network_compartments
 
 
     if ('.xls' not in cd3file):
         print("\nAcceptable cd3 format: .xlsx")
         exit()
 
-    if args.configFileName is not None:
-        configFileName = args.configFileName
-        config = oci.config.from_file(file_location=configFileName)
-    else:
-        configFileName=""
-        config = oci.config.from_file()
+    configFileName = _config
+    config = oci.config.from_file(file_location=configFileName)
 
     # Read CD3
     df,values_for_column_vcns=commonTools.read_cd3(cd3file,"VCNs")
@@ -394,7 +383,7 @@ def main():
 
     # Check Compartments
     remove_comps = []
-    if (input_compartment_names is not None):
+    if input_compartment_names is not None:
         for x in range(0, len(input_compartment_names)):
             if (input_compartment_names[x] not in ct.ntk_compartment_ids.keys()):
                 print("Input compartment: " + input_compartment_names[x] + " doesn't exist in OCI")
@@ -683,41 +672,20 @@ def main():
         oci_obj_names[reg].close()
 
     # Fetch RouteRules and SecRules
-    os.chdir('../CoreInfra/Networking/BaseNetwork')
-    if (input_compartment_list is None):
-        if (input_config_file is None):
-            command_sl = 'python exportSeclist.py ' + cd3file + " --tf_import_cmd true --outdir " + outdir
-            command_rt = 'python exportRoutetable.py ' + cd3file + " --tf_import_cmd true --outdir " + outdir
-        else:
-            command_sl = 'python exportSeclist.py ' + cd3file + ' --tf_import_cmd true --outdir ' + outdir + ' --configFileName ' + input_config_file
-            command_rt = 'python exportRoutetable.py ' + cd3file + ' --tf_import_cmd true --outdir ' + outdir + ' --configFileName ' + input_config_file
-    else:
-        if (input_config_file is None):
-            command_sl = 'python exportSeclist.py ' + cd3file + " --tf_import_cmd true --outdir " + outdir + " --networkCompartment " + input_compartment_list
-            command_rt = 'python exportRoutetable.py ' + cd3file + " --tf_import_cmd true --outdir " + outdir + " --networkCompartment " + input_compartment_list
-        else:
-            command_sl = 'python exportSeclist.py ' + cd3file + ' --tf_import_cmd true --outdir ' + outdir + ' --configFileName ' + input_config_file + " --networkCompartment " + input_compartment_list
-            command_rt = 'python exportRoutetable.py ' + cd3file + ' --tf_import_cmd true --outdir ' + outdir + ' --configFileName ' + input_config_file + " --networkCompartment " + input_compartment_list
-
-    os.system(command_sl)
+    export_seclist(inputfile, network_compartments=network_compartments, _config=input_config_file, _tf_import_cmd=True, outdir=outdir )
     print("SecRules exported to CD3\n")
 
-    os.system(command_rt)
+    export_routetable(inputfile, network_compartments=network_compartments, _config=input_config_file, _tf_import_cmd=True, outdir=outdir )
     print("RouteRules exported to CD3\n")
 
-    os.chdir("../../..")
-
     for reg in ct.all_regions:
-        importCommands[reg] = open(outdir + "/" + reg + "/tf_import_commands_network_nonGF.sh", "a")
-        importCommands[reg].write("\n\nterraform plan")
-        importCommands[reg].write("\n")
-        importCommands[reg].close()
-        if ("linux" in sys.platform):
-            dir = os.getcwd()
-            os.chdir(outdir + "/" + reg)
-            os.system("chmod +x tf_import_commands_network_nonGF.sh")
-            os.chdir(dir)
+        script_file = f'{outdir}/{reg}/tf_import_commands_network_nonGF.sh'
+        with open(script_file, 'a') as importCommands[reg]:
+            importCommands[reg].write('\n\nterraform plan\n')
+        if "linux" in sys.platform:
+            os.chmod(script_file, 0o755)
 
 
 if __name__=="__main__":
-    main()
+    args = parse_args()
+    export_networking(args.inputfile, args.outdir, args.config, args.network_compartments)

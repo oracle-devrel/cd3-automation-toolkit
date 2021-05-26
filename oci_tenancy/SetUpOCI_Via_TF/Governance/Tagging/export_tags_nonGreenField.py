@@ -11,6 +11,7 @@ import argparse
 import sys
 import oci
 from oci.identity import IdentityClient
+from oci.config import DEFAULT_LOCATION
 import os
 sys.path.append(os.getcwd()+"/..")
 from commonTools import *
@@ -43,6 +44,7 @@ def  print_tags(values_for_column_tags,region, ntk_compartment_name, tag, tag_ke
       validator = validator.split("{  \"validator_type\": \"ENUM\",  \"values\": [    ")
       validator = validator[1].split("  ]}")
       validator = "ENUM::" + validator[0].replace(" ","")
+
     tf_name_namespace = commonTools.check_tf_variable(tag.name)
     for col_header in values_for_column_tags.keys():
         if (col_header == "Region"):
@@ -77,45 +79,33 @@ def  print_tags(values_for_column_tags,region, ntk_compartment_name, tag, tag_ke
       importCommands[region].write("\nterraform import oci_identity_tag."+tf_name_namespace + '-' + tf_name_key + ' ' + "tagNamespaces/"+ str(tag.id) +"/tags/\"" + str(tag_key_name) + "\"")
     if ( tag_default_comp != ''):
         importCommands[region].write("\nterraform import oci_identity_tag_default."+ tf_name_namespace+'-' +tf_name_key + '-default'+ ' ' + str(tag_default_id))
-def main():
 
+
+def parse_args():
     parser = argparse.ArgumentParser(description="Export Tags on OCI to CD3")
-    parser.add_argument("cd3file", help="path of CD3 excel file to export tag objects to")
+    parser.add_argument("inputfile", help="path of CD3 excel file to export tag objects to")
     parser.add_argument("outdir", help="path to out directory containing script for TF import commands")
-    parser.add_argument("--networkCompartment", help="comma seperated Compartments for which to export Identity Objects", required=False)
-    parser.add_argument("--configFileName", help="Config file name" , required=False)
+    parser.add_argument("--config", default=DEFAULT_LOCATION, help="Config file name")
+    parser.add_argument("--network-compartments", default=[], nargs='*', help="comma seperated Compartments for which to export Identity Objects", required=False)
+    return parser.parse_args()
+
+
+def export_tags_nongreenfield(inputfile, outdir, _config, network_compartments):
     global tf_import_cmd
     global values_for_column_tags
     global sheet_dict_tags
     global importCommands
     global config
 
-    if len(sys.argv) < 3:
-        parser.print_help()
-        sys.exit(1)
-
-    args = parser.parse_args()
-    cd3file = args.cd3file
-    outdir = args.outdir
-    input_config_file = args.configFileName
-    input_compartment_list = args.networkCompartment
-    if (input_compartment_list is not None):
-        input_compartment_names = input_compartment_list.split(",")
-        input_compartment_names = [x.strip() for x in input_compartment_names]
-    else:
-        input_compartment_names = None
-
+    cd3file = inputfile
+    input_compartment_names = network_compartments
+    configFileName = _config
+    config = oci.config.from_file(file_location=configFileName)
 
     if ('.xls' not in cd3file):
         print("\nAcceptable cd3 format: .xlsx")
         exit()
 
-    if args.configFileName is not None:
-        configFileName = args.configFileName
-        config = oci.config.from_file(file_location=configFileName)
-    else:
-        configFileName=""
-        config = oci.config.from_file()
     # Read CD3
     df, values_for_column_tags = commonTools.read_cd3(cd3file, "Tags")
 
@@ -230,18 +220,13 @@ def main():
             commonTools.write_to_cd3(values_for_column_tags, cd3file, "Tags")
             print("Tags exported to CD3\n")
 
-            os.chdir("../../..")
-
-    importCommands[ct.home_region] = open(outdir + "/" + ct.home_region + "/tf_import_commands_tags_nonGF.sh", "a")
-    importCommands[ct.home_region].write("\n\nterraform plan")
-    importCommands[ct.home_region].write("\n")
-    importCommands[ct.home_region].close()
-    if ("linux" in sys.platform):
-        dir = os.getcwd()
-        os.chdir(outdir + "/" + ct.home_region)
-        os.system("chmod +x tf_import_commands_tags_nonGF.sh")
-        os.chdir(dir)
+    script_file = f'{outdir}/{ct.home_region}/tf_import_commands_tags_nonGF.sh'
+    with open(script_file, 'a') as importCommands[ct.home_region]:
+        importCommands[ct.home_region].write('\n\nterraform plan\n')
+    if "linux" in sys.platform:
+        os.chmod(script_file, 0o755)
 
 
 if __name__=="__main__":
-    main()
+    args = parse_args()
+    export_tags_nongreenfield(args.inputfile, args.outdir, args.config, args.network_compartments)

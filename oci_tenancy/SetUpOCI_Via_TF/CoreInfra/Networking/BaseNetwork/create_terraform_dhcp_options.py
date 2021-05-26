@@ -14,6 +14,8 @@ import argparse
 import shutil
 import datetime
 import os
+from pathlib import Path
+from oci.config import DEFAULT_LOCATION
 sys.path.append(os.getcwd() + "/../../..")
 from jinja2 import Environment, FileSystemLoader
 from commonTools import *
@@ -25,21 +27,18 @@ from commonTools import *
 # Modify Network
 # Outdir
 ######
-
-def main():
-
+def parse_args():
     # Read the nput arguments
-    parser = argparse.ArgumentParser(description="Create DHCP options terraform file")
-    parser.add_argument("inputfile",help="Full Path of input file. It could be CD3 excel file")
-    parser.add_argument("outdir", help="Output directory for creation of TF files")
-    parser.add_argument("prefix", help="customer name/prefix for all file names")
-    parser.add_argument("--modify_network", help="Modify: true or false", required=False)
-    parser.add_argument("--configFileName", help="Config file name", required=False)
+    parser = argparse.ArgumentParser(description='Create DHCP options terraform file')
+    parser.add_argument('inputfile',help='Full Path of input file. It could be CD3 excel file')
+    parser.add_argument('outdir', help='Output directory for creation of TF files')
+    parser.add_argument('prefix', help='customer name/prefix for all file names')
+    parser.add_argument('--modify-network', action='store_true', help='Modify network')
+    parser.add_argument('--config', default=DEFAULT_LOCATION, help='Config file name')
+    return parser.parse_args()
 
-    if len(sys.argv) < 3:
-        parser.print_help()
-        sys.exit(1)
 
+def create_terraform_dhcp_options(inputfile, outdir, prefix, config, modify_network=False):
     outfile = {}
     deffile = {}
     oname = {}
@@ -47,24 +46,15 @@ def main():
     tfStr = {}
     defStr = {}
 
-    args = parser.parse_args()
-    filename = args.inputfile
-    outdir = args.outdir
-    prefix = args.prefix
-    if args.modify_network is not None:
-        modify_network = str(args.modify_network)
-    else:
-        modify_network = "false"
-    if args.configFileName is not None:
-        configFileName = args.configFileName
-    else:
-        configFileName = ""
+    filename = inputfile
+    configFileName = config
+    modify_network = str(modify_network).lower()
 
     ct = commonTools()
     ct.get_subscribedregions(configFileName)
 
     # Load the template file
-    file_loader = FileSystemLoader('templates')
+    file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
     template = env.get_template('custom-dhcp-template')
     defaultdhcp = env.get_template('default-dhcp-template')
@@ -238,7 +228,8 @@ def main():
                 defname[reg].close()
                 print(deffile[reg] + " containing TF for Default DHCP Options has been created for region " + reg)
 
-if __name__ == '__main__':
 
+if __name__ == '__main__':
+    args = parse_args()
     # Execution of the code begins here
-    main()
+    create_terraform_dhcp_options(args.inputfile, args.outdir, args.config, args.modify_network)

@@ -1,0 +1,52 @@
+resource "oci_cloud_guard_cloud_guard_configuration" "{{ cg_tf_name }}" {
+    #Required
+    compartment_id = var.{{ compartment_tf_name }}
+    reporting_region = "{{ home_region }}"
+    status = "ENABLED"
+
+    #Optional
+    self_manage_resources = false
+}
+
+resource "oci_cloud_guard_target" "{{ cg_target_tf_name }}" {
+    #Required
+    compartment_id = var.{{ compartment_tf_name }}
+    display_name = "{{cg_target_name }}"
+    target_resource_id = var.{{cg_target_comp_tf_name}}
+    target_resource_type = "COMPARTMENT"
+    description = "{{cg_target_desc}}"
+
+# Need to repeat target detector_recipe for each type - Config and Activity
+    target_detector_recipes {
+       #Required
+        detector_recipe_id = data.oci_cloud_guard_detector_recipes.root_config_detector_recipes.detector_recipe_collection[0].items[0].id
+    }
+    target_detector_recipes {
+       #Required
+        detector_recipe_id = data.oci_cloud_guard_detector_recipes.root_activity_detector_recipes.detector_recipe_collection[0].items[0].id
+    }
+# Need to determine how to exact the default responder recipe and assign to target
+# Only needs one responder recipe
+   target_responder_recipes {
+        #Required
+        responder_recipe_id = data.oci_cloud_guard_responder_recipes.root_responder_recipes.responder_recipe_collection[0].items[0].id
+
+        }
+}
+
+# Creates a target that covers the root compartment and all subcompartments
+data "oci_cloud_guard_responder_recipes" "root_responder_recipes" {
+    #Required
+    compartment_id = var.tenancy_ocid
+    display_name = "OCI Responder Recipe"
+}
+data "oci_cloud_guard_detector_recipes" "root_activity_detector_recipes" {
+    #Required
+    compartment_id = var.tenancy_ocid
+    display_name = "OCI Activity Detector Recipe"
+}
+data "oci_cloud_guard_detector_recipes" "root_config_detector_recipes" {
+    #Required
+    compartment_id = var.tenancy_ocid
+    display_name = "OCI Configuration Detector Recipe"
+}

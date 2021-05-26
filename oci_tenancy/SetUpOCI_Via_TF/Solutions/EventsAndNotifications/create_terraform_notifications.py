@@ -15,36 +15,29 @@ import argparse
 import os
 import datetime
 from jinja2 import Environment, FileSystemLoader
-sys.path.append(os.getcwd()+"/../..")
+from oci.config import DEFAULT_LOCATION
+from pathlib import Path
 from commonTools import *
 
 ######
 # Required Inputs- CD3 excel file, Config file, prefix AND outdir
 ######
-
-#If input is cd3 file
-def main():
-
+def parse_arg():
     # Read the arguments
     parser = argparse.ArgumentParser(description="Creates TF files for Notifications")
     parser.add_argument("inputfile",help="Full Path to the CSV file for creating fss or CD3 excel file. eg fss.csv or CD3-template.xlsx in example folder")
     parser.add_argument("outdir",help="directory path for output tf files ")
     parser.add_argument("prefix", help="customer name/prefix for all file names")
-    parser.add_argument("--configFileName", help="Config file name", required=False)
+    parser.add_argument("--config", default=DEFAULT_LOCATION, help="Config file name")
+    return parser.parse_args()
 
-    if len(sys.argv)<3:
-            parser.print_help()
-            sys.exit(1)
 
-    # Declare variables
-    args = parser.parse_args()
-    filename = args.inputfile
-    outdir = args.outdir
+#If input is cd3 file
+def create_terraform_notifications(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
+    filename = inputfile
+    outdir = outdir
     all_regions = os.listdir(outdir)
-    if args.configFileName is not None:
-        configFileName = args.configFileName
-    else:
-        configFileName = ""
+    configFileName = config
     ct = commonTools()
     ct.get_subscribedregions(configFileName)
     x = datetime.datetime.now()
@@ -55,7 +48,7 @@ def main():
     Subscriptions_names={}
 
     # Load the template file
-    file_loader = FileSystemLoader('templates')
+    file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
     notifications_template = env.get_template('notifications-template')
     subscriptions_template = env.get_template('subscriptions-template')
@@ -80,8 +73,8 @@ def main():
     for eachregion in reg:
         eachregion = str(eachregion).strip().lower()
         resource='Notifications'
-        if (eachregion in commonTools.endNames)or ('nan' in str(eachregion).lower() ):
-            continue
+        if (eachregion in commonTools.endNames):
+            break
         if eachregion not in ct.all_regions:
             print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
             exit()
@@ -188,6 +181,6 @@ def main():
                 tfStr[region]=""
 
 if __name__ == '__main__':
-
     # Execution of the code begins here
-    main()
+    args = parse_arg()
+    create_terraform_notifications(args.inputfile, args.outdir, args.prefix, args.config)

@@ -12,6 +12,8 @@
 import sys
 import argparse
 import os
+from oci.config import DEFAULT_LOCATION
+from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
 sys.path.append(os.getcwd() + "/../..")
 from commonTools import *
@@ -19,27 +21,20 @@ from commonTools import *
 ######
 # Required Inputs-CD3 excel file, Config file, prefix AND outdir
 ######
-
-# If input is CD3 excel file
-def main():
-
+def parse_args():
     # Read the arguments
     parser = argparse.ArgumentParser(description="Creates TF files for Block Volumes")
     parser.add_argument("file", help="Full Path to the CD3 excel file. eg CD3-template.xlsx in example folder")
     parser.add_argument("outdir", help="directory path for output tf files ")
-    parser.add_argument("--configFileName", help="Config file name", required=False)
+    parser.add_argument("--config", default=DEFAULT_LOCATION, help="Config file name")
+    return parser.parse_args()
 
-    if len(sys.argv) < 2:
-        parser.print_help()
-        sys.exit(1)
 
-    args = parser.parse_args()
-    filename = args.file
-    outdir = args.outdir
-    if args.configFileName is not None:
-        configFileName = args.configFileName
-    else:
-        configFileName = ""
+
+# If input is CD3 excel file
+def create_terraform_block_volumes(inputfile, outdir, config=DEFAULT_LOCATION):
+    filename = inputfile
+    configFileName = config
 
     ct = commonTools()
     ct.get_subscribedregions(configFileName)
@@ -47,7 +42,7 @@ def main():
     ADS = ["AD1", "AD2", "AD3"]
 
     # Load the template file
-    file_loader = FileSystemLoader('templates')
+    file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
     template = env.get_template('block-volume-template')
 
@@ -66,8 +61,8 @@ def main():
     for eachregion in reg:
         eachregion = str(eachregion).strip().lower()
 
-        if (eachregion in commonTools.endNames or eachregion == 'nan'):
-            continue
+        if (eachregion in commonTools.endNames):
+            break
         if eachregion not in ct.all_regions:
             print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
             exit(1)
@@ -161,8 +156,6 @@ def main():
         oname.close()
 
 if __name__ == '__main__':
-
+    args = parse_args()
     # Execution of the code begins here
-    main()
-
-
+    create_terraform_block_volumes(args.file, args.outdir, args.config)

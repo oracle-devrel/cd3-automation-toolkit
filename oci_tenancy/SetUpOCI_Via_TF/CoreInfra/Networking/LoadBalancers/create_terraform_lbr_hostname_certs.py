@@ -14,41 +14,35 @@ import sys
 import argparse
 import os
 import pandas as pd
-sys.path.append(os.getcwd()+"/../../..")
+from oci.config import DEFAULT_LOCATION
+from pathlib import Path
 from commonTools import *
 from jinja2 import Environment, FileSystemLoader
 
 ######
 # Required Inputs-CD3 excel file, Config file AND outdir
 ######
-
-# If input file is CD3
-def main():
-
+def parse_args():
     # Read the input arguments
     parser = argparse.ArgumentParser(description="Creates TF files for LBR")
     parser.add_argument("inputfile",help="Full Path to the CD3 excel file. eg CD3-template.xlsx in example folder")
     parser.add_argument("outdir", help="directory path for output tf files ")
-    parser.add_argument("--configFileName", help="Config file name", required=False)
+    parser.add_argument("--config", default=DEFAULT_LOCATION, help="Config file name")
+    return parser.parse_args()
 
+
+# If input file is CD3
+def create_terraform_lbr_hostname_certs(inputfile, outdir, config=DEFAULT_LOCATION):
     # Load the template file
-    file_loader = FileSystemLoader('templates')
+    file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True)
     lbr = env.get_template('lbr-template')
     hostname = env.get_template('hostname-template')
     certficate = env.get_template('certificate-template')
     ciphersuite =  env.get_template('cipher-suite-template')
-    if len(sys.argv) < 2:
-        parser.print_help()
-        sys.exit(1)
 
-    args = parser.parse_args()
-    filename = args.inputfile
-    outdir = args.outdir
-    if args.configFileName is not None:
-        configFileName = args.configFileName
-    else:
-        configFileName = ""
+    filename = inputfile
+    configFileName = config
 
     ct = commonTools()
     ct.get_subscribedregions(configFileName)
@@ -373,4 +367,5 @@ def main():
 
 if __name__ == '__main__':
     # Execution of the code begins here
-    main()
+    args = parse_args()
+    create_terraform_lbr_hostname_certs(args.inputfile, args.outdir, args.config)

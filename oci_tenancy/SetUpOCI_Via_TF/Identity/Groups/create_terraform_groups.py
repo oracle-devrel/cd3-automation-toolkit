@@ -9,41 +9,34 @@
 # Modified (TF Upgrade): Shruthi Subramanian
 #
 
-import sys
+# import sys
 import argparse
 import os
+from pathlib import Path
+from oci.config import DEFAULT_LOCATION
 from jinja2 import Environment, FileSystemLoader
-sys.path.append(os.getcwd()+"/../..")
+# sys.path.append(os.getcwd()+"/../..")
 from commonTools import *
 
 ######
 # Required Inputs- CD3 excel file, Config file, prefix AND outdir
 ######
-
-#If input is cd3 file
-def main():
-
-    # Read the arguments
+def parse_args():
     parser = argparse.ArgumentParser(description="Create Groups terraform file")
     parser.add_argument("inputfile", help="Full Path of input file. It could be CD3 excel file")
     parser.add_argument("outdir", help="Output directory for creation of TF files")
     parser.add_argument("prefix", help="customer name/prefix for all file names")
-    parser.add_argument("--configFileName", help="Config file name", required=False)
-
-    if len(sys.argv) < 3:
-        parser.print_help()
-        sys.exit(1)
+    parser.add_argument("--config", default=DEFAULT_LOCATION, help="Config file name")
 
     # Declare variables
     args = parser.parse_args()
-    filename = args.inputfile
-    outdir = args.outdir
-    prefix = args.prefix
 
-    if args.configFileName is not None:
-        configFileName = args.configFileName
-    else:
-        configFileName = ""
+
+#If input is cd3 file
+def create_terraform_groups(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
+    # Read the arguments
+    filename = inputfile
+    configFileName = config
 
     ct = commonTools()
     ct.get_subscribedregions(configFileName)
@@ -53,7 +46,7 @@ def main():
     tfStr = {}
 
     # Load the template file
-    file_loader = FileSystemLoader('templates')
+    file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
     template = env.get_template('groups-template')
     dynamicgroup =  env.get_template('dynamic-groups-template')
@@ -79,8 +72,8 @@ def main():
         eachregion = str(eachregion).strip().lower()
         reg_out_dir = outdir + "/" + eachregion
 
-        if (eachregion in commonTools.endNames or eachregion == 'nan'):
-            continue
+        if (eachregion in commonTools.endNames):
+            break
         if eachregion not in ct.all_regions:
             print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
             exit()
@@ -166,6 +159,6 @@ def main():
             print(outfile[reg] + " containing TF for groups has been created for region "+reg)
 
 if __name__ == '__main__':
-
+    args = parse_args()
     # Execution of the code begins here
-    main()
+    create_terraform_groups(args.inputfile, args.outdir, args.prefix, config=args.config)

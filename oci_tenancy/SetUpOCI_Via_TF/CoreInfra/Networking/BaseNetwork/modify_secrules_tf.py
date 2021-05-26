@@ -14,38 +14,32 @@ import csv
 import re
 import sys
 import os
+from oci.config import DEFAULT_LOCATION
+from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
 sys.path.append(os.getcwd() + "/../../..")
 from commonTools import *
 
-def main():
 
+def parse_args():
     # Read the input arguments
     parser = argparse.ArgumentParser(description="Takes in an input file mentioning sec rules to be added for the subnet. See update_seclist-example.csv/CD3 for format under example folder. It will then take backup of all existing sec list files in outdir and create new one with modified rules")
     parser.add_argument("inputfile",help="Full Path of input file: It could be either the properties file eg CD3 excel file")
     parser.add_argument("outdir", help="directory path for output tf files ")
-    parser.add_argument("secrulesfile",help="Input file( CD3 excel) containing new secrules to be added for Security List of a given subnet")
-    parser.add_argument("--configFileName", help="Config file name", required=False)
+    parser.add_argument("--config", default=DEFAULT_LOCATION, help="Config file name")
+    return parser.parse_args()
 
+
+def modify_terraform_secrules(inputfile, outdir, prefix=None, config=DEFAULT_LOCATION):
     # Load the template file
-    file_loader = FileSystemLoader('templates')
+    file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
     defaultseclist = env.get_template('default-seclist-template')
     secrule = env.get_template('sec-rule-template')
     seclist = env.get_template('seclist-template')
 
-    if len(sys.argv) == 1:
-        parser.print_help()
-        sys.exit(1)
-
-    args = parser.parse_args()
-
-    secrulesfilename = args.secrulesfile
-    outdir = args.outdir
-    if args.configFileName is not None:
-        configFileName = args.configFileName
-    else:
-        configFileName = ""
+    secrulesfilename = inputfile
+    configFileName = config
 
     ct = commonTools()
     ct.get_subscribedregions(configFileName)
@@ -300,4 +294,5 @@ def main():
 
 if __name__ == '__main__':
     # Execution of the code begins here
-    main()
+    args = parse_args()
+    modify_terraform_secrules(args.inputfile, args.outdir, None, args.config)

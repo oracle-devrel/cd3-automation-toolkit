@@ -228,3 +228,14 @@ SetUPOCI_Via_TF Tag v7.1.2
 2. Bug fix for Instance Export - included root compartment, AD issue and Boot Volume not found issue
 3. Removed installation of Development Tools from shell script on OCSVM.
 4. Added CD3 validation for DNS Label length for VCN and Subnets
+
+------------------------
+SetUPOCI_Via_TF Tag v7.2
+------------------------
+1. Bug fix for export of policies having newline is description eg for policies added automatically for streaming
+2. Launch Linux 7.9 as OCS VM since 7.8 is not searcheable now and enable yum repos
+3. Change os.cmd to function calls for SetUPOCI
+4. Include CIS Features to enable cloud-guard, OSS, VCN Flow Logging
+5. CD3 Validator for Identity, Networking, Instances, Block Volumes
+6. Accept key value along with key var name in Instances Sheet
+7. Updated CD3 Templates as per CIS

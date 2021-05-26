@@ -380,7 +380,8 @@ if(input_image_id==''):
         #print(image.display_name)
         #if ("Gen2-GPU" not in image.display_name):
         #if ("Oracle-Linux-7.8-2020.07.28-0" in image.display_name):
-        if ("Gen2-GPU" not in image.display_name and "Oracle-Linux-7.8" in image.display_name):
+        #if ("Gen2-GPU" not in image.display_name and "Oracle-Linux-7.8" in image.display_name):
+        if ("Oracle-Linux-7.9-2021.04.09-0" in image.display_name):
             input_image_id = image.id
             break
 
@@ -480,13 +481,21 @@ write_file("ocs_public_keys.txt", public_key_data)
 
 # Writing Terraform config files provider.tf and variables.tf
 provider_data = """provider "oci" {
-  version          = ">= 3.0.0"
   tenancy_ocid     = var.tenancy_ocid
   user_ocid        = var.user_ocid
   fingerprint      = var.fingerprint
   private_key_path = var.private_key_path
   region           = var.region
-}"""
+}
+
+terraform {
+  required_providers {
+    oci = {
+      version = ">= 3.0.0"
+    }
+  }
+}
+"""
 write_file("provider.tf", provider_data)
 
 # write git expect script to download python code

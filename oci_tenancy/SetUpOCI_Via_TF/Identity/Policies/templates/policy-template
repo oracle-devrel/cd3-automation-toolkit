@@ -1,7 +1,13 @@
 
 resource "oci_identity_policy" "{{ policy_tf_name }}" {
             compartment_id = var.{{ compartment_tf_name }}
+            {% if '\n' not in description %}
             description = "{{ description }}"
+            {% else %}
+            description = <<EOT
+{{ description }}
+EOT
+            {% endif %}
             name = "{{ name }}"
 
             {#  ##Do not modify below this line##  #}
