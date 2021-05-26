@@ -58,8 +58,8 @@ def create_cis_keyvault(outdir, prefix, region_name, comp_name, config=DEFAULT_L
     columnvalue = str(compartmentVarName)
     tempStr['compartment_tf_name'] =  columnvalue
 
-    key_name = prefix + "-kms-key"
-    vault_name = prefix + "-kms-vault"
+    key_name = prefix+"-"+region_name+"-kms-key"
+    vault_name = prefix+"-"+region_name+"-kms-vault"
     management_endpoint = 'oci_kms_vault.'+vault_name+'.management_endpoint'
 
     tempStr['key_name'] = key_name
