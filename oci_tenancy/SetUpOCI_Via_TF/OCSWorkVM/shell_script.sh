@@ -8,6 +8,9 @@ mkdir -p /root/ocswork/git_oci
 mkdir -p /root/ocswork/git_ocic2oci
 mkdir -p /root/ocswork/ocic2oci_work
 
+sudo yum-config-manager --enable ol7_developer_EPEL
+sudo yum-config-manager --enable ol7_developer
+
 #yum install scl-utils-20130529-19.el7.x86_64
 sudo yum -y install scl-utils
 
@@ -44,22 +47,9 @@ source /root/.bashrc
 ## Needed for conversion from putty ppk to openssh
 sudo yum install -y putty
 
-#Install Required Packages
-#sudo yum -y install python-pip
-#pip install pip==9.0.3
-#pip install oci
-#pip install oci-cli
-#pip install pandas
-#pip install xlrd
-#pip install in_place
-
-
 sudo yum -y install git
-#sudo yum --showduplicates list terraform #TF RHEL packages list
-#uncomment for latest version of terraform
+
 #sudo yum -y install terraform
-sudo yum-config-manager --enable ol7_developer_EPEL
-sudo yum-config-manager --enable ol7_developer
 sudo yum -y install terraform-0.13.4-1.el7
 
 #yum install  expect-5.45-14.el7_1.x86_64
@@ -83,9 +73,6 @@ sudo cp -R /opt/rh/rh-python36/root/usr/lib64/python3.6/site-packages/markupsafe
 #sudo yum -y install python36 python36-setuptools graphviz
 #sudo easy_install-3.6 pip
 
-#Copy MarkUp Safe to appropriate location; Jinja2 and Ansible requires it
-sudo cp -R /opt/rh/rh-python36/root/usr/lib64/python3.6/site-packages/MarkupSafe-1.1.1.dist-info /opt/rh/rh-python36/root/usr/lib/python3.6/site-packages/
-sudo cp -R /opt/rh/rh-python36/root/usr/lib64/python3.6/site-packages/markupsafe /opt/rh/rh-python36/root/usr/lib/python3.6/site-packages/
 
 #Copy files to respective locations and do required configurations
 mv /home/opc/config ~/.oci
