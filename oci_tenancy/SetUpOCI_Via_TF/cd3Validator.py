@@ -390,7 +390,7 @@ def validate_vcns(filename, comp_ids, vcnobj, config):  # ,vcn_cidrs,vcn_compart
             try:
                 comp_id = comp_ids[comp_name]
             except KeyError:
-                log(f'ROW {i+3}  : Compartment {comp_name} + does not exist in OCI.')
+                log(f'ROW {i+3}  : Compartment {comp_name} does not exist in OCI.')
                 vcn_comp_check = True
 
         # Check for invalid(duplicate) vcn name
