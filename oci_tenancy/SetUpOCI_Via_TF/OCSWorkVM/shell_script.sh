@@ -28,6 +28,7 @@ source /root/.bashrc
 pip3 install oci
 pip3 install oci-cli
 #pip3 install pycrypto
+pip3 install pycryptodomex==3.10.1
 pip3 install regex
 pip3 install pandas==1.1.5
 pip3 install openpyxl==3.0.5
