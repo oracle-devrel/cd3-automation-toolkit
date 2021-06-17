@@ -745,7 +745,7 @@ def validate_blockvols(filename,comp_ids):
             bvs_invalid_check = True
 
         # Cross check the instance names in Instances and Block Volumes sheet
-        instance_name_check = compare_values([x for x in values_list],str(dfvol.loc[i, 'Attached To Instance']).lower(),[i, 'Attached To Instance', 'Instances'])
+        instance_name_check = compare_values([x for x in values_list],str(dfvol.loc[i, 'Attached To Instance']),[i, 'Attached To Instance', 'Instances'])
 
         # Cross check the ADs in Instances and Block Volumes sheet
         bv_ad_check = compare_values([str(x).lower() for x in inst_ad_list.tolist()],str(dfvol.loc[i, 'Attached To Instance']).lower()+'_'+str(dfvol.loc[i, 'Availability Domain(AD1|AD2|AD3)']).lower(),[i, 'Availability Domain(AD1|AD2|AD3)', 'Instances'])
