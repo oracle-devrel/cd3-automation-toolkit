@@ -60,26 +60,12 @@ def create_terraform_compartments(inputfile, outdir, prefix, config=DEFAULT_LOCA
     # List of the column headers
     dfcolumns = df.columns.values.tolist()
 
-    uniquereg = df['Region'].unique()
-
-    # Take backup of files
-    for eachregion in uniquereg:
-        eachregion = str(eachregion).strip().lower()
-        reg_out_dir = outdir + "/" + eachregion
-
-        if (eachregion in commonTools.endNames):
-            break
-        if eachregion not in ct.all_regions:
-            print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
-            exit()
-
-        srcdir = reg_out_dir + "/"
-        resource = 'Compartments'
-        commonTools.backup_file(srcdir, resource, "-compartments.tf")
+    srcdir = outdir + "/" + ct.home_region + "/"
+    resource = 'Compartments'
+    commonTools.backup_file(srcdir, resource, "-compartments.tf")
 
     # Initialise empty TF string for each region
-    for reg in ct.all_regions:
-        tfStr[reg] = ''
+    tfStr[ct.home_region] = ''
 
     # Separating Compartments and ParentComparements into list
     ckeys = []

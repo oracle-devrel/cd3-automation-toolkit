@@ -40,7 +40,8 @@ def parse_args():
     return parser.parse_args()
 
 
-# If the input is CD3
+
+
 def create_major_objects(inputfile, outdir, prefix, config, modify_network=False):
     # Declare Variables
     filename = inputfile
@@ -52,9 +53,12 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
     outfile = {}
     oname = {}
     tfStr = {}
+    drg_data = {}
     dhcpStr = {}
     outfile_dhcp = {}
+    outfile_oci_drg_data = {}
     oname_def_dhcp = {}
+    oname_oci_drg_data = {}
     oname_datafile = {}
 
     global dhcp_data
@@ -107,14 +111,204 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
                     f.write(updated_data)
                 f.close()
 
+    def create_drg_and_attachments(inputfile, outdir, config):
+        # Declare Variables
+        filename = inputfile
+        configFileName = config
 
+        ct = commonTools()
+        ct.get_subscribedregions(configFileName)
+
+        # Load the template file
+        file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
+        env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
+        drg_template = env.get_template('major-objects-drg-template')
+        drg_attach_template = env.get_template('major-objects-drg-attach-template')
+        drg_datasource_template = env.get_template('drg-data-source-template')
+
+        # Create drg-oci-data
+        for region in drgv2.drg_names.keys():
+            for drg in drgv2.drg_names[region]:
+                for drg_auto_rt_name in commonTools.drg_auto_RTs:
+                    temp = {}
+                    drg_auto_rt_tf_name = commonTools.check_tf_variable(drg + "_" + drg_auto_rt_name)
+                    temp['drg_auto_rt_tf_name'] = drg_auto_rt_tf_name
+                    temp['drg_auto_rt_name'] = drg_auto_rt_name
+                    temp['drg_tf_name'] = commonTools.check_tf_variable(drg)
+                    drg_data[region] = drg_data[region] + drg_datasource_template.render(temp)
+
+                for drg_auto_rd_name in commonTools.drg_auto_RDs:
+                    temp = {}
+                    drg_auto_rd_tf_name = commonTools.check_tf_variable(drg + "_" + drg_auto_rd_name)
+                    temp['drg_auto_rd_tf_name'] = drg_auto_rd_tf_name
+                    temp['drg_auto_rd_name'] = drg_auto_rd_name
+                    temp['drg_tf_name'] = commonTools.check_tf_variable(drg)
+                    drg_data[region] = drg_data[region] + drg_datasource_template.render(temp)
+
+        # Read cd3 using pandas dataframe
+        df, col_headers = commonTools.read_cd3(filename, "DRGv2")
+        # Remove empty rows
+        df = df.dropna(how='all')
+        df = df.reset_index(drop=True)
+
+
+        # List of the column headers
+        dfcolumns = df.columns.values.tolist()
+
+        for i in df.index:
+            region = str(df['Region'][i]).strip()
+            comp_name = str(df['Compartment Name'][i]).strip()
+            drg = str(df['DRG Name'][i]).strip()
+
+
+            if (region.lower()=='nan' or comp_name.lower()=='nan' or drg.lower()=='nan'):
+                print("\nERROR!!! Columns Region/Compartment Name/DRG Name can not be empty..Exiting!")
+                exit(1)
+
+            if (region in commonTools.endNames):
+                break
+            region = region.strip().lower()
+            if region not in ct.all_regions:
+                print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
+                exit(1)
+
+            if drg not in vcns.vcns_having_drg.values():
+                print("\nERROR!!! Invalid DRG Name. It should be one of the values defined in VCNs tab..Exiting!")
+                exit(1)
+
+            attached_to = str(df['Attached To'][i]).strip()
+            attached_to = attached_to.split("::")
+            if(len(attached_to)==2):
+                if attached_to[0].strip().upper() == "VCN":
+                    vcn_name = attached_to[1].strip()
+                    if (vcn_name.lower() != "nan" and vcns.vcns_having_drg[vcn_name,region] != drg):
+                        print("ERROR!!! VCN "+vcn_name +" in column Attached To is not as per DRG Required column of VCNs Tab..Exiting!")
+                        exit()
+
+        # Process Rows
+        ip=1
+        for i in df.index:
+            region = str(df['Region'][i]).strip()
+            if (region in commonTools.endNames):
+                break
+            region = region.strip().lower()
+            if region not in ct.all_regions:
+                print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
+                exit(1)
+
+            # temporary dictionary1 and dictionary2
+            tempStr = {}
+            tempdict = {}
+            drg_rt_tf_name = ''
+            drg_tf_name = ''
+
+            for columnname in dfcolumns:
+                # Column value
+                columnvalue = str(df[columnname][i]).strip()
+                # Check for boolean/null in column values
+                columnvalue = commonTools.check_columnvalue(columnvalue)
+
+                # Check for multivalued columns
+                tempdict = commonTools.check_multivalues_columnvalue(columnvalue, columnname, tempdict)
+
+                # Process Defined Tags and Freeform Tags
+                if columnname.lower() in commonTools.tagColumns:
+                    tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)
+
+                if columnname == 'Compartment Name':
+                    compartment_var_name = columnvalue.strip()
+                    compartment_var_name = commonTools.check_tf_variable(compartment_var_name)
+                    tempdict = {'compartment_tf_name': compartment_var_name}
+
+                if columnname == "DRG Name":
+                    drg_name = columnvalue
+                    drg_tf_name = commonTools.check_tf_variable(drg_name)
+                    tempdict['drg_tf_name'] = drg_tf_name
+
+                if (columnname == 'Attached To'):
+                    columnvalues = columnvalue.split("::")
+
+                    # for VCN attachments
+                    if columnvalues[0].strip().lower() == "vcn":
+                        vcn_name = columnvalues[1].strip()
+                        vcn_tf_name = commonTools.check_tf_variable(vcn_name)
+
+                        # Get DRG Attach Name
+                        drg_attach_name=''
+                        if (os.path.exists(outdir + "/" + region + "/obj_names.safe")):
+                            with open(outdir + "/" + region + "/obj_names.safe") as f:
+                                for line in f:
+                                    if ("drgattachinfo::::" + vcn_name + "::::" + drg_name in line):
+                                        drg_attach_name = line.split("::::")[3].strip()
+                                        break
+                        if (drg_attach_name == ""):
+                            drg_attach_name = drg_name + "_"+vcn_name+"_attach"
+
+                        tempStr['drg_attach_display_name'] = drg_attach_name
+                        drg_attach_tf_name = commonTools.check_tf_variable(drg_attach_name)
+
+                        tempStr['drg_attach_tf_name'] = drg_attach_tf_name
+                        tempStr['network_type'] = "VCN"
+                        tempStr['network_id'] = "oci_core_vcn." + vcn_tf_name + ".id"
+
+                        tempStr.update(tempdict)
+                        # Get VCN DRG RT table
+                        vcn_drg_rt_name = ""
+                        if (os.path.exists(outdir + "/" + region + "/obj_names.safe")):
+                            with open(outdir + "/" + region + "/obj_names.safe") as f:
+                                for line in f:
+                                    if ("drginfo::::" + vcn_name + "::::" + drg_name in line):
+                                        vcn_drg_rt_name = line.split("::::")[3].strip()
+                                        break
+                        if (vcn_drg_rt_name == ""):
+                            vcn_drg_rt_var = vcn_name + "_Route Table associated with DRG-" + drg_name
+                        # Route table associated with DRG inside VCN is not existing
+                        elif (vcn_drg_rt_name == "None"):
+                            vcn_drg_rt_var = ""
+                        else:
+                            vcn_drg_rt_var = vcn_name + "_" + vcn_drg_rt_name
+
+                        if (vcn_drg_rt_var != ""):
+                            vcn_drg_rt_tf_name = commonTools.check_tf_variable(vcn_drg_rt_var)
+                        else:
+                            vcn_drg_rt_tf_name = ""
+                        tempStr['vcn_drg_rt_tf_name'] = vcn_drg_rt_tf_name
+
+                    # for other attachments
+                    else:
+                        drg_attach_name = drg_name +"_"+columnvalues[0].strip()+"_"+str(ip)+"_attach"
+                        ip=ip+1
+                        tempStr['drg_attach_display_name'] = drg_attach_name
+                        drg_attach_tf_name = commonTools.check_tf_variable(drg_attach_name)
+                        tempStr['drg_attach_tf_name'] = drg_attach_tf_name
+                        tempdict['network_type'] = columnvalues[0].strip().upper()
+                        # push the OCID of IP Sec or RPC or FC
+                        tempStr['network_id'] = columnvalues[1].strip()
+
+                if columnname == 'DRG RT Name':
+                    #if it is Auto Generated RT(during export) dont attach any RT to DRG attachment
+                    if(columnvalue in commonTools.drg_auto_RTs):
+                        drg_rt_tf_name = ''
+                    elif(columnvalue!=''):
+                        drg_rt_tf_name = commonTools.check_tf_variable(drg_name + "_" + columnvalue)
+                    tempStr['drg_rt_tf_name'] = drg_rt_tf_name
+
+                columnname = commonTools.check_column_headers(columnname)
+                tempStr[columnname] = str(columnvalue).strip()
+                tempStr.update(tempdict)
+
+            drgstr = drg_template.render(tempStr)
+            drg_attach = drg_attach_template.render(tempStr)
+
+            if (drgstr not in tfStr[region]):
+                tfStr[region] = tfStr[region] + drgstr + drg_attach
+            else:
+                tfStr[region] = tfStr[region] + drg_attach
 
     def processVCN(tempStr):
         igw = ''
         ngw = ''
         sgw = ''
-        drg = ''
-        rt_var = ''
         rt_tf_name = ''
         lpgdata = ''
         region = tempStr['region'].lower().strip()
@@ -166,69 +360,6 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
 
             igw = env.get_template('major-objects-igw-template')
             igw = igw.render(tempStr)
-        # print(igw)
-
-        if vcn_drg != "n":
-            # use default name
-            if (vcn_drg == "y"):
-                # drg_name = vcn_name + "_drg"
-                drg_name = region + "_drg"
-
-                # drg_display = vcn_name + "_drg"
-                drg_display = region + "_drg"
-
-            # use name provided in input
-            else:
-                drg_name = vcn_drg
-                drg_display = vcn_drg
-
-            drg_tf_name = commonTools.check_tf_variable(drg_name)
-
-            drg_rt_name = ""
-            if (os.path.exists(outdir + "/" + region + "/obj_names.safe")):
-                with open(outdir + "/" + region + "/obj_names.safe") as f:
-                    for line in f:
-                        if ("drginfo::::" + vcn_name + "::::" + drg_display in line):
-                            drg_rt_name = line.split("::::")[3].strip()
-                            tempStr['drg_tf_name'] = drg_tf_name
-                            break
-            if (drg_rt_name == ""):
-                # rt_var = vcn_name+"_"+drg_name + "_rt"
-                rt_var = vcn_name + "_Route Table associated with DRG-" + drg_name
-            else:
-                rt_var = vcn_name + "_" + drg_rt_name
-
-            tempStr['rt_var'] = rt_var
-
-            drg_attach_name = ""
-            if (os.path.exists(outdir + "/" + region + "/obj_names.safe")):
-                with open(outdir + "/" + region + "/obj_names.safe") as f:
-                    for line in f:
-                        if ("drgattachinfo::::" + vcn_name + "::::" + drg_display in line):
-                            drg_attach_name = line.split("::::")[3].strip()
-                            tempStr['drg_attach_name'] = drg_attach_name
-                            break
-            if (drg_attach_name == ""):
-                # rt_var = vcn_name+"_"+drg_name + "_rt"
-                drg_attach_name = drg_name + "_attach"
-                tempStr['drg_attach_name'] = drg_attach_name
-
-            drg_attach_tf_name = vcn_name + "_" + drg_attach_name
-            drg_attach_tf_name = commonTools.check_tf_variable(drg_attach_tf_name)
-            rt_tf_name = commonTools.check_tf_variable(rt_var)
-
-            tempStr['drg_attach_tf_name'] = drg_attach_tf_name
-            tempStr['rt_tf_name'] = rt_tf_name
-            tempStr['compartment_tf_name'] = compartment_var_name
-            tempStr['drg_required'] = tempStr['drg_required'].lower().strip()
-            tempStr['drg_name'] = drg_name
-            tempStr['drg_display'] = drg_display
-            tempStr['drg_tf_name'] = drg_tf_name
-
-            # Create new DRG
-            # if (drg_ocid == ''):
-            drg = env.get_template('major-objects-drg-template')
-            drg = drg.render(tempStr)
 
         if vcn_sgw != "n":
             # use default name
@@ -309,20 +440,23 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
                 lpg = lpg.render(tempStr)
                 lpgdata = lpgdata + lpg
 
-
-        tfStr[region] = tfStr[region] + igw + ngw + sgw + drg + lpgdata + vcn
+        #if(drg not in tfStr[region]):
+        tfStr[region] = tfStr[region] + igw + ngw + sgw + lpgdata + vcn
+        #else:
+        #    tfStr[region] = tfStr[region] + igw + ngw + sgw +drg_attach+ lpgdata + vcn
         dhcpStr[region] = dhcpStr[region] + dhcp_default
 
     # Get vcns object from commonTools
     vcns = parseVCNs(filename)
+    drgv2 = parseDRGv2(filename)
 
     for reg in ct.all_regions:
         tfStr[reg] = ''
         dhcpStr[reg] = ''
+        drg_data[reg] = ''
 
     # Read cd3 using pandas dataframe
     df, col_headers = commonTools.read_cd3(filename, "VCNs")
-
     # Remove empty rows
     df = df.dropna(how='all')
     df = df.reset_index(drop=True)
@@ -358,7 +492,6 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
 
             # Column value
             columnvalue = str(df[columnname][i]).strip()
-
             # Check for boolean/null in column values
             columnvalue = commonTools.check_columnvalue(columnvalue)
 
@@ -399,6 +532,9 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
 
         processVCN(tempStr)
 
+    create_drg_and_attachments(inputfile, outdir, config)
+
+    #Write outfiles
     if modify_network:
         for reg in ct.all_regions:
             reg_out_dir = outdir + "/" + reg
@@ -408,11 +544,14 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
 
             outfile[reg] = reg_out_dir + "/" + prefix + '-major-objs.tf'
             outfile_dhcp[reg] = reg_out_dir + "/VCNs_Default_DHCP.tf"
+            outfile_oci_drg_data[reg] = reg_out_dir + "/oci-drg-data.tf"
 
             srcdir = reg_out_dir + "/"
             resource = 'MajorObjects'
             commonTools.backup_file(srcdir, resource, "-major-objs.tf")
             commonTools.backup_file(srcdir, resource, "/VCNs_Default_DHCP.tf")
+            commonTools.backup_file(srcdir, resource, "/oci-drg-data.tf")
+
 
             oname[reg] = open(outfile[reg], "w")
             oname[reg].write(tfStr[reg])
@@ -423,6 +562,11 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
             oname_def_dhcp[reg].write(dhcpStr[reg])
             oname_def_dhcp[reg].close()
             print(outfile_dhcp[reg] + " containing TF for default DHCP options for VCNs has been updated for region " + reg)
+
+            oname_oci_drg_data[reg]=open(outfile_oci_drg_data[reg], "w")
+            oname_oci_drg_data[reg].write(drg_data[reg])
+            oname_oci_drg_data[reg].close()
+            print(outfile_oci_drg_data[reg] + " containing TF for ovi-drg-data for DRGs has been updated for region " + reg)
 
 
     else:
@@ -436,14 +580,22 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
             resource = 'MajorObjects'
             commonTools.backup_file(srcdir, resource, "-major-objs.tf")
             commonTools.backup_file(srcdir, resource, "/VCNs_Default_DHCP.tf")
+            commonTools.backup_file(srcdir, resource, "/oci-drg-data.tf")
 
             outfile[reg] = reg_out_dir + "/" + prefix + '-major-objs.tf'
             outfile_dhcp[reg] = reg_out_dir + "/VCNs_Default_DHCP.tf"
+            outfile_oci_drg_data[reg] = reg_out_dir + "/oci-drg-data.tf"
 
             oname_datafile[reg] = open(reg_out_dir + "/oci-data.tf", "w")
             datastr = datasource.render()
             oname_datafile[reg].write(datastr)
             print(reg_out_dir + "/oci-data.tf" + " containing TF for oci-data has been created for region " + reg)
+
+            oname_oci_drg_data[reg] = open(outfile_oci_drg_data[reg], "w")
+            oname_oci_drg_data[reg].write(drg_data[reg])
+            oname_oci_drg_data[reg].close()
+            print(outfile_oci_drg_data[
+                      reg] + " containing TF for oci-drg-data for DRGs has been updated for region " + reg)
 
             if (dhcpStr[reg] != ''):
                 oname_def_dhcp[reg] = open(outfile_dhcp[reg], "w")

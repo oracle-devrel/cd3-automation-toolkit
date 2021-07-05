@@ -69,7 +69,6 @@ def create_ruleset(inputfile, outdir, config=DEFAULT_LOCATION):
 
     pd.set_option('display.max_columns', 500)
 
-    unique_region = df['Region'].unique()
 
     # Make a dictionary - { Region :{ Rule Set : [Methods] } }
     d = {k: f.groupby(df['Rule Set Name'])['Allowed Methods'].apply(list).to_dict()
@@ -77,16 +76,7 @@ def create_ruleset(inputfile, outdir, config=DEFAULT_LOCATION):
     d = dict((k.lower(), v) for k, v in d.items())
 
     # Take backup of files
-    for eachregion in unique_region:
-        eachregion = str(eachregion).strip().lower()
-        if (eachregion in commonTools.endNames):
-            continue
-        if eachregion == 'nan':
-            continue
-        if eachregion not in ct.all_regions:
-            print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
-            exit()
-
+    for eachregion in ct.all_regions:
         resource='RuleSet'
         srcdir = outdir + "/" + eachregion + "/"
         commonTools.backup_file(srcdir, resource, "_ruleset-lb.tf")
@@ -132,7 +122,7 @@ def create_ruleset(inputfile, outdir, config=DEFAULT_LOCATION):
 
 
     for i in df.index:
-        region = str(df.loc[i, 'Region'])
+        region = str(df.loc[i, 'Region']).strip()
 
         if region.lower() == 'nan':
             continue

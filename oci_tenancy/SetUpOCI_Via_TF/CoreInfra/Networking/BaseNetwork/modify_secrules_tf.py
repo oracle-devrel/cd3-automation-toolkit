@@ -126,18 +126,6 @@ def modify_terraform_secrules(inputfile, outdir, prefix=None, config=DEFAULT_LOC
                     return k
 
 
-    """    if str(strprotocol).lower() == "tcp":
-            return "6"
-        elif str(strprotocol).lower() == "icmp":
-            return "1"
-        elif str(strprotocol).lower() == "udp":
-            return "17"
-        elif str(strprotocol).lower() == "all":
-            return "all"
-        else:
-            return strprotocol
-    """
-
     # Read cd3 using pandas dataframe
     df, col_headers = commonTools.read_cd3(secrulesfilename, "SecRulesinOCI")
     df = df.to_csv('out.csv')
@@ -247,11 +235,11 @@ def modify_terraform_secrules(inputfile, outdir, prefix=None, config=DEFAULT_LOC
                         default_ruleStr[region] = default_ruleStr[region] +  defaultseclist.render(tempStr)
                     default_seclists_done[region].append(seclist_tf_name)
 
-                if row['Rule Type'] == 'ingress':
+                if str(row['Rule Type']).lower() == 'ingress':
                     new_sec_rule = create_ingress_rule_string(tempStr,ingress_rule,tempdict2)
 
 
-                if row['Rule Type'] == 'egress':
+                if str(row['Rule Type']).lower() == 'egress':
                     new_sec_rule = create_egress_rule_string(tempStr,egress_rule,tempdict2)
 
                 new_sec_rule = new_sec_rule +"\n"+ srcStr
@@ -271,10 +259,10 @@ def modify_terraform_secrules(inputfile, outdir, prefix=None, config=DEFAULT_LOC
                 seclists_done[region].append(seclist_tf_name)
 
             new_sec_rule = ""
-            if row['Rule Type'] == 'ingress':
+            if str(row['Rule Type']).lower() == 'ingress':
                 new_sec_rule = create_ingress_rule_string(tempStr, ingress_rule, tempdict2)
 
-            if row['Rule Type'] == 'egress':
+            if str(row['Rule Type']).lower() == 'egress':
                 new_sec_rule = create_egress_rule_string(tempStr, egress_rule, tempdict2)
 
             new_sec_rule = new_sec_rule + "\n" + srcStr

@@ -65,20 +65,19 @@ def adding_columns_values(region, hostname, ad, fd, vs, publicip, privateip, os_
 
 def find_boot(ins_ad, ins_id, config):
     compute = oci.core.ComputeClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
-    for comp in all_compartments:
-        bl = compute.list_boot_volume_attachments(availability_domain=ins_ad, compartment_id=comp, instance_id=ins_id)
+    for comp in comp_list_fetch:
+        bl = compute.list_boot_volume_attachments(availability_domain=ins_ad, compartment_id=ct.ntk_compartment_ids[comp], instance_id=ins_id)
         if (len(bl.data)):
             return bl
 
 
-def find_vnic(ins_id, config):
-    network = oci.core.VirtualNetworkClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
+def find_vnic(ins_id, config,compartment_id):
     compute = oci.core.ComputeClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
-    for comp in all_compartments:
-        net = oci.pagination.list_call_get_all_results(compute.list_vnic_attachments, compartment_id=comp,
+    #for comp in all_compartments:
+    net = oci.pagination.list_call_get_all_results(compute.list_vnic_attachments, compartment_id=compartment_id,
                                                        instance_id=ins_id)
-        if (len(net.data)):
-            return net
+    if (len(net.data)):
+        return net
 
 
 
@@ -87,7 +86,6 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, config):
     compute = oci.core.ComputeClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
     network = oci.core.VirtualNetworkClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
     bc = oci.core.BlockstorageClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
-    idc = IdentityClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
     instance_info = oci.pagination.list_call_get_all_results(compute.list_instances, compartment_id=compartment_id)
     # print(instance_info.data)
     for ins in instance_info.data:
@@ -116,7 +114,7 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, config):
                 dedicated_host = ""
                 # print("Dedi=",dedicated_host)
             # print(ins_dname,ins_ad,ins_fd,ins_shape)
-            ins_vnic = find_vnic(ins_id, config)
+            ins_vnic = find_vnic(ins_id, config,compartment_id)
             # print(ins_vnic.data)
             boot_check = find_boot(ins_ad, ins_id, config)
             boot_id = boot_check.data[0].boot_volume_id
@@ -151,7 +149,7 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, config):
                         bvp.data[0].id))
                 if (bkp_pname.data.display_name not in ["Gold", "Silver", "Bronze"]):
                     bkp_policy_name = bkp_pname.data.display_name
-                    for comp_name, comp_id in uc.items():
+                    for comp_name, comp_id in ct.ntk_compartment_ids.items():
                         if (bkp_pname.data.compartment_id == comp_id):
                             # print(comp_name, comp_id)
                             cpcn = comp_name
@@ -237,17 +235,14 @@ def export_instance(inputfile, outdir, config, network_compartments=[]):
     configFileName = config
     config = oci.config.from_file(file_location=configFileName)
 
-    global instance_keys, user_data_in, os_keys, all_regions, ct, importCommands, idc, rows, all_compartments, AD, values_for_column_instances, df, uc, sheet_dict_instances  # declaring global variables
+    global instance_keys, user_data_in, os_keys, ct, importCommands, idc, rows, AD, values_for_column_instances, df, sheet_dict_instances  # declaring global variables
 
     instance_keys = {}  # dict name
     os_keys = {}  # os_ocids
     user_data_in = {}  # user data for exports
-    all_regions = []
     ct = commonTools()
     importCommands = {}
-    idc = IdentityClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
     rows = []
-    all_compartments = []
     ct.get_subscribedregions(configFileName)
     ct.get_network_compartment_ids(config['tenancy'], "root", configFileName)
 
@@ -264,22 +259,9 @@ def export_instance(inputfile, outdir, config, network_compartments=[]):
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
     variable_template = env.get_template('variables-template')
 
-    # Fetch Regions
-    regionsubscriptions = idc.list_region_subscriptions(tenancy_id=config['tenancy'])
-    for rs in regionsubscriptions.data:
-        for k, v in ct.region_dict.items():
-            if (rs.region_name == v):
-                all_regions.append(k)
-    all_compartments.append(config['tenancy'])
-    comps = oci.pagination.list_call_get_all_results(idc.list_compartments, compartment_id=config['tenancy'],
-                                                     compartment_id_in_subtree=True)
-    for comp_info in comps.data:
-        if (comp_info.lifecycle_state == "ACTIVE"):
-            all_compartments.append(comp_info.id)
-
     # Create of .sh file
-    for reg in all_regions:
-        resource = ' tf_import_instances'
+    for reg in ct.all_regions:
+        resource = 'tf_import_instances'
         srcdir = outdir + "/" + reg + "/"
         if (os.path.exists(outdir + "/" + reg + "/tf_import_commands_instances_nonGF.sh")):
             commonTools.backup_file(srcdir, resource, "tf_import_commands_instances_nonGF.sh")
@@ -289,61 +271,18 @@ def export_instance(inputfile, outdir, config, network_compartments=[]):
         importCommands[reg].write("terraform init")
 
     # Check Compartments
-    remove_comps = []
-    comp_ocid_done = []
-    for ntk_compartment_name in ct.ntk_compartment_ids:
-        if ct.ntk_compartment_ids[ntk_compartment_name] not in comp_ocid_done:
-            comp_ocid_done.append(ct.ntk_compartment_ids[ntk_compartment_name])
-    uc = {}  # compartment names with hierarchy
-    for cid in comp_ocid_done:
-        for cname, cocid in ct.ntk_compartment_ids.items():
-            if cocid == cid and "::" in cname:
-                uc[cname] = cocid
-                continue
-            if cocid == cid:
-                if cocid not in uc.values():
-                    uc[cname] = cocid
+    global comp_list_fetch
+    comp_list_fetch = commonTools.get_comp_list_for_export(network_compartments, ct.ntk_compartment_ids)
 
-    if (input_compartment_names is not None):
-        for x in range(0, len(input_compartment_names)):
-            if (input_compartment_names[x] not in ct.ntk_compartment_ids.keys()):
-                print("Input compartment: " + input_compartment_names[x] + " doesn't exist in OCI")
-                remove_comps.append(input_compartment_names[x])
-
-        input_compartment_names = [x for x in input_compartment_names if x not in remove_comps]
-        if (len(input_compartment_names) == 0):
-            print("None of the input compartments specified exist in OCI..Exiting!!!")
-            exit(1)
-        else:
-            print("Fetching for Compartments... " + str(input_compartment_names))
-            for compartment_name in input_compartment_names:
-                for reg in all_regions:
-                    config.__setitem__("region", ct.region_dict[reg])
-                    __get_instances_info(compartment_name, ct.ntk_compartment_ids[compartment_name], reg, config)
-    else:
-        print("Fetching for all Compartments...")
-        comp_ocid_done = []
-        for ntk_compartment_name in ct.ntk_compartment_ids:
-            if ct.ntk_compartment_ids[ntk_compartment_name] not in comp_ocid_done:
-                if (input_compartment_names is not None and ntk_compartment_name not in input_compartment_names):
-                    continue
-                comp_ocid_done.append(ct.ntk_compartment_ids[ntk_compartment_name])
-        uc = {}  # compartment names with hierarchy
-        for cid in comp_ocid_done:
-            for cname, cocid in ct.ntk_compartment_ids.items():
-                if cocid == cid and "::" in cname:
-                    uc[cname] = cocid
-                    continue
-                if cocid == cid:
-                    if cocid not in uc.values():
-                        uc[cname] = cocid
-        for comp_name, comp_ocid in uc.items():
-            for reg in all_regions:
-                config.__setitem__("region", ct.region_dict[reg])
-                __get_instances_info(comp_name, comp_ocid, reg, config)
+    for reg in ct.all_regions:
+        importCommands[reg].write("\n\n######### Writing import for Block Volumes #########\n\n")
+        config.__setitem__("region", ct.region_dict[reg])
+        #region = reg.capitalize()
+        for ntk_compartment_name in comp_list_fetch:
+           __get_instances_info(ntk_compartment_name, ct.ntk_compartment_ids[ntk_compartment_name], reg, config)
 
     # writing ocids values into os_ocids.tf
-    for reg in all_regions:
+    for reg in ct.all_regions:
         myocids = {}
         for keys, values in os_keys.items():
             reg_name = keys.split("-")[0]
@@ -360,7 +299,7 @@ def export_instance(inputfile, outdir, config, network_compartments=[]):
         f.close()
     tempstr = {}
     # writing ssh_keys_metadata into ssh_metadata
-    for reg in all_regions:
+    for reg in ct.all_regions:
         myocids = {}
         for keys, values in instance_keys.items():
             reg_name = keys.split("-")[0]
@@ -377,7 +316,7 @@ def export_instance(inputfile, outdir, config, network_compartments=[]):
         f.close()
 
     # write data into file
-    for reg in all_regions:
+    for reg in ct.all_regions:
         script_file = f'{outdir}/{reg}/tf_import_commands_instances_nonGF.sh'
         with open(script_file, 'a') as importCommands[reg]:
             importCommands[reg].write('\n\nterraform plan\n')

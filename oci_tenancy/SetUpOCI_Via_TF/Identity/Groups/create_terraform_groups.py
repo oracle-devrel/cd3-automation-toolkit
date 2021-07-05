@@ -65,22 +65,11 @@ def create_terraform_groups(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
     for reg in ct.all_regions:
         tfStr[reg] = ''
 
-    uniquereg = df['Region'].unique()
 
     # Take backup of files
-    for eachregion in uniquereg:
-        eachregion = str(eachregion).strip().lower()
-        reg_out_dir = outdir + "/" + eachregion
-
-        if (eachregion in commonTools.endNames):
-            break
-        if eachregion not in ct.all_regions:
-            print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
-            exit()
-
-        srcdir = reg_out_dir + "/"
-        resource = 'Groups'
-        commonTools.backup_file(srcdir, resource, "-groups.tf")
+    srcdir = outdir + "/" + ct.home_region + "/"
+    resource = 'Groups'
+    commonTools.backup_file(srcdir, resource, "-groups.tf")
 
     # Iterate over rows
     for i in df.index:

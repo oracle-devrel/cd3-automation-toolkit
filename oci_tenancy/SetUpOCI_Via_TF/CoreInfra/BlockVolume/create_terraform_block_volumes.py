@@ -55,18 +55,10 @@ def create_terraform_block_volumes(inputfile, outdir, config=DEFAULT_LOCATION):
     # List of the column headers
     dfcolumns = df.columns.values.tolist()
 
-    reg = df['Region'].unique()
+    #reg = df['Region'].unique()
 
     # Take backup of files
-    for eachregion in reg:
-        eachregion = str(eachregion).strip().lower()
-
-        if (eachregion in commonTools.endNames):
-            break
-        if eachregion not in ct.all_regions:
-            print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
-            exit(1)
-
+    for eachregion in ct.all_regions:
         resource = 'BlockVols'
         srcdir = outdir + "/" + eachregion + "/"
         commonTools.backup_file(srcdir, resource, "_blockvolume.tf")

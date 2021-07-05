@@ -32,6 +32,216 @@ def parse_args():
     return parser.parse_args()
 
 
+def modify_terraform_drg_routerules(inputfile, outdir, prefix=None, config=DEFAULT_LOCATION):
+    filename = inputfile
+    configFileName = config
+
+    ct = commonTools()
+    ct.get_subscribedregions(configFileName)
+
+    #Load the template file
+    file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
+    env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
+    routerule_drg = env.get_template('drg-route-rule-template')
+    routetable_drg = env.get_template('drg-route-table-template')
+    tempStr = {}
+    tempdict={}
+
+    drgv2=parseDRGv2(filename)
+
+    # Read cd3 using pandas dataframe
+    df, col_headers = commonTools.read_cd3(filename, "DRGRouteRulesinOCI")
+
+    df = df.dropna(how='all')
+    df = df.reset_index(drop=True)
+    rts_done={}
+    oname_rt=None
+
+
+    for reg in ct.all_regions:
+        rts_done[reg] = []
+        # Backup existing route table files in ash and phx dir
+        resource = "DRGRTs"
+        commonTools.backup_file(outdir + "/" + reg, resource, "_drgroutetable.tf")
+
+    # List of the column headers
+    dfcolumns = df.columns.values.tolist()
+    tfStr = ''
+    for i in df.index:
+
+        drg_rt_dstrb_tf_name=''
+        drg_rt_dstrb_res_name = ''
+        drg_rt_tf_name = ''
+        new_rule=0
+
+        region = str(df.loc[i, 'Region']).strip()
+        if (region in commonTools.endNames):
+            break
+        region = region.strip().lower()
+        if region not in ct.all_regions:
+            print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
+            exit(1)
+
+        DRG_RT = str(df.loc[i, 'DRG RT Name']).strip()
+        DRG_Name = str(df.loc[i, 'DRG Name']).strip()
+        DRG_RD_Name = str(df.loc[i, 'Import DRG Route Distribution Name']).strip()
+
+        # Check if values are entered for mandatory fields
+        if (str(df.loc[i, 'Region']).lower() == 'nan' or str(df.loc[i, 'DRG Name']).lower() == 'nan' or str(df.loc[i, 'DRG RT Name']).lower() == 'nan'):# or str(df.loc[i, 'Import DRG Route Distribution Name']).lower() == 'nan'):
+            print("\nColumn Region, DRG Name and DRG RT Name and Import DRG Route Distribution Name cannot be left empty in DRGRouteRulesinOCI sheet of CD3..Exiting!")
+            exit(1)
+
+        # Process RTs only for those DRG which are present in cd3(and have been created via TF)
+        if (DRG_Name not in drgv2.drg_names[region]):
+            print("skipping DRG route table: " + str(df.loc[i, 'DRG RT Name']) + " as its DRG is not part of DRGv2 tab in cd3")
+            continue
+
+        # Process RTs only for those Import DRG Route Distribution Names which are present in cd3(and have been created via TF)
+        if (DRG_RD_Name not in drgv2.drg_rds[DRG_Name,region] and  DRG_RD_Name.lower()!='nan' and DRG_RD_Name not in commonTools.drg_auto_RDs):
+            print("skipping DRG route table: " + str(df.loc[i, 'DRG RT Name']) + " as either its DRG is not part of DRGv2 tab in cd3 or its Import Route Distribution Name is not attached to DRG "+ DRG_Name+" as per DRGv2 tab in cd3")
+            continue
+
+
+        #new rule to be added
+        if (str(df.loc[i, 'Destination CIDR']).lower() != 'nan' and str(df.loc[i, 'Next Hop Attachment']).lower() != 'nan' and str(df.loc[i, 'Destination Type']).lower() != 'nan' and str(df.loc[i, 'Route Type']).lower() == 'static'):
+            new_rule = 1
+
+
+        #Route table without any rule
+        if (str(df.loc[i, 'Destination CIDR']).lower() == 'nan' and str(df.loc[i, 'Next Hop Attachment']).lower() == 'nan' and str(df.loc[i, 'Destination Type']).lower() == 'nan' and str(df.loc[i, 'Route Type']).lower() != 'static'):
+            new_rule = -1
+
+
+        for columnname in dfcolumns:
+
+            # Column value
+            columnvalue = str(df[columnname][i]).strip()
+
+            # Check for boolean/null in column values
+            columnvalue = commonTools.check_columnvalue(columnvalue)
+
+            # Check for multivalued columns
+            tempdict = commonTools.check_multivalues_columnvalue(columnvalue, columnname, tempdict)
+
+            # Process Defined and Freeform Tags
+            if columnname.lower() in commonTools.tagColumns:
+                tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)
+
+            tempStr.update(tempdict)
+
+            if columnname == 'DRG Name':
+                drg_name = columnvalue
+                drg_tf_name = commonTools.check_tf_variable(drg_name)
+                tempStr['drg_tf_name'] = drg_tf_name
+
+            if columnname == 'DRG RT Name':
+                rt=columnvalue
+                drg_rt_tf_name = commonTools.check_tf_variable(drg_name + "_" + rt)
+                if (rt in commonTools.drg_auto_RTs):
+                    drg_rt_res_name = "data.oci_core_drg_route_tables." + drg_rt_tf_name + ".drg_route_tables[0].id"
+                else:
+                    drg_rt_res_name = "oci_core_drg_route_table." + drg_rt_tf_name + ".id"
+
+                tempStr['display_name']= rt
+                tempStr['drg_rt_tf_name'] = drg_rt_tf_name
+                tempStr['drg_rt_res_name'] = drg_rt_res_name
+
+            if(columnname == "Import DRG Route Distribution Name"):
+
+                if columnvalue in commonTools.drg_auto_RDs:
+                    drg_rt_dstrb_tf_name = commonTools.check_tf_variable(drg_name + "_" + columnvalue)
+                    drg_rt_dstrb_res_name = "data.oci_core_drg_route_distributions." + drg_rt_dstrb_tf_name + ".drg_route_distributions[0].id"
+                elif columnvalue!='':
+                    drg_rt_dstrb_tf_name = commonTools.check_tf_variable(drg_name + "_" + columnvalue)
+                    drg_rt_dstrb_res_name = "oci_core_drg_route_distribution."+drg_rt_dstrb_tf_name+".id"
+
+                #Route Distribution name can be null also in that dont assign any distribution name to the rote table
+
+                tempStr['drg_rt_dstrb_tf_name']=drg_rt_dstrb_tf_name
+                tempStr['drg_rt_dstrb_res_name'] = drg_rt_dstrb_res_name
+
+            if columnname == 'Next Hop Attachment':
+                dest_obj = columnvalue.strip()
+                if dest_obj != '':
+                    if("ocid1.drgattachment.oc1" in dest_obj):
+                        dest_objs = str(dest_obj).strip().split(".")
+                        if(len(dest_objs)==5):
+                            dest_obj = "\"" + dest_obj.strip() + "\""
+                        else:
+                            print("wrong OCID")
+                            break
+                    else:
+                        dest_obj = "oci_core_drg_attachment." + commonTools.check_tf_variable(dest_obj.strip()) + ".id"
+
+                    tempdict = {'next_hop_drg_attachment_id': dest_obj}
+                    tempStr.update(tempdict)
+
+            columnname = commonTools.check_column_headers(columnname)
+            tempStr[columnname] = str(columnvalue).strip()
+
+
+        # Process first RT
+        tfStrRT=''
+        if(len(rts_done[region])==0):
+            #Write Previous Region's file
+            if(tfStr!=''):
+                print("Writing to..." + str(oname_rt.name))
+                oname_rt.write(tfStr)
+                oname_rt.close()
+
+
+            outfile = outdir + "/" + region + "/" + drg_rt_tf_name + "_drgroutetable.tf"
+            oname_rt = open(outfile, "w")
+            k=1
+            #Create RT resource only if it is not Auto Generated one
+            if (DRG_RT not in commonTools.drg_auto_RTs):
+                tfStrRT = routetable_drg.render(tempStr)
+            tfStr = tfStrRT
+            rts_done[region].append(drg_rt_tf_name)
+
+        if (drg_rt_tf_name not in rts_done[region]):
+            rts_done[region].append(drg_rt_tf_name)
+            if (tfStr != ''):
+                print("Writing to..." + str(oname_rt.name))
+                oname_rt.write(tfStr)
+                oname_rt.close()
+
+            # Create RT resource only if it is not Auto Generated one
+            if (DRG_RT not in commonTools.drg_auto_RTs):
+                tfStrRT = routetable_drg.render(tempStr)
+            tfStr = tfStrRT
+            k=1
+            outfile = outdir + "/" + region + "/" + drg_rt_tf_name + "_drgroutetable.tf"
+            oname_rt = open(outfile,"w")
+
+            #Empty Route Table
+            if(new_rule == -1):
+                if(tfStr!=""):
+                    print("Writing to..." + str(oname_rt.name))
+                    oname_rt.write(tfStr)
+                    oname_rt.close()
+
+                if (drg_rt_tf_name not in rts_done[region]):
+                    rts_done[region].append(drg_rt_tf_name)
+                tfStr=""
+
+        #Add rules to RTs
+        if(new_rule ==1):
+            tempStr['drg_rt_rule_tf_name']=drg_rt_tf_name+"_route_rule"+str(k)
+            k=k+1
+            tfStrRule=routerule_drg.render(tempStr)
+            tfStr = tfStr + tfStrRule
+            if(drg_rt_tf_name not in rts_done[region]):
+                rts_done[region].append(drg_rt_tf_name)
+
+
+    #write last routetable
+    if(tfStr!=""):
+        print("Writing to..." + str(oname_rt.name))
+        oname_rt.write(tfStr)
+        oname_rt.close()
+
+
 def modify_terraform_routerules(inputfile, outdir, prefix=None, config=DEFAULT_LOCATION):
     filename = inputfile
     configFileName = config
@@ -45,6 +255,7 @@ def modify_terraform_routerules(inputfile, outdir, prefix=None, config=DEFAULT_L
     routerule = env.get_template('route-rule-template')
     defaultrt = env.get_template('default-route-table-template')
     routetable = env.get_template('route-table-template')
+
 
     subnets_done={}
     oname = None
@@ -99,12 +310,12 @@ def modify_terraform_routerules(inputfile, outdir, prefix=None, config=DEFAULT_L
             exit(1)
 
         # Check if values are entered for mandatory fields
-        if (str(df.loc[i, 'Region']).lower() == 'nan' or str(df.loc[i, 'VCN Name']).lower() == 'nan' or str(df.loc[i, 'Compartment Name']).lower() == 'nan'):
+        if (str(df.loc[i, 'Region']).strip().lower() == 'nan' or str(df.loc[i, 'VCN Name']).strip().lower() == 'nan' or str(df.loc[i, 'Compartment Name']).lower() == 'nan'):
             print("\nColumn Region, VCN Name and Compartment Name cannot be left empty in RouteRulesinOCI sheet of CD3..Exiting!")
             exit(1)
 
         # Process only those VCNs which are present in cd3(and have been created via TF)
-        if (str(df.loc[i, 'VCN Name']) not in vcns.vcn_names):
+        if (str(df.loc[i, 'VCN Name'].strip()) not in vcns.vcn_names):
             print("skipping route table: " + str(df.loc[i, 'Route Table Name']) + " as its VCN is not part of VCNs tab in cd3")
             continue
 
@@ -241,3 +452,5 @@ if __name__ == '__main__':
     args = parse_args()
     # Execution of the code begins here
     modify_terraform_routerules(args.inputfile, args.outdir, prefix=None, config=args.config)
+    modify_terraform_drg_routerules(args.inputfile, args.outdir, prefix=None, config=args.config)
+

@@ -39,7 +39,8 @@ def create_rm(region,comp_name,ocs_stack,ct,rm_stack_name,rm_ocids_file,create_r
     stackdetails = CreateStackDetails()
     zipConfigSource = CreateZipUploadConfigSourceDetails()
     stackdetails.description = "Created using Automation Tool Kit"
-    stackdetails.terraform_version = "0.13.x"
+    #stackdetails.terraform_version = "0.13.x"
+    stackdetails.terraform_version = "1.0.x"
     # compartment_ocid = create_compartment(self.stack.Compartment_Name, "Created using CD3aaS")
     stackdetails.compartment_id = ct.ntk_compartment_ids[comp_name]
     stackdetails.display_name = rm_stack_name + "-" + region
@@ -197,7 +198,8 @@ def create_resource_manager(outdir, prefix, config=DEFAULT_LOCATION):
                             zipConfigSource.config_source_type = 'ZIP_UPLOAD'
                             zipConfigSource.zip_file_base64_encoded = encodedZip
                             updatestackdetails.config_source = zipConfigSource
-                            updatestackdetails.terraform_version = "0.13.x"
+                            #updatestackdetails.terraform_version = "0.13.x"
+                            updatestackdetails.terraform_version = "1.0.x"
                             updatestackdetails.description = "Updated by Automation Tool Kit"
                             mstack = ocs_stack.update_stack(stack_id=ocid, update_stack_details=updatestackdetails)
                             stack_ocid = mstack.data.id

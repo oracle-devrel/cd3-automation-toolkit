@@ -52,18 +52,9 @@ def create_terraform_instances(inputfile, outdir, config):
     dfcolumns = df.columns.values.tolist()
     display_tf_name=''
 
-    reg = df['Region'].unique()
 
     # Take backup of files
-    for eachregion in reg:
-        eachregion = str(eachregion).strip().lower()
-
-        if (eachregion in commonTools.endNames):
-            break
-        if eachregion not in ct.all_regions:
-            print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
-            exit(1)
-
+    for eachregion in ct.all_regions:
         resource = 'Instances'
         srcdir = outdir + "/" + eachregion + "/"
         commonTools.backup_file(srcdir, resource, "_instance.tf")

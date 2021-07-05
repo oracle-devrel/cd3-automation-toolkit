@@ -31,6 +31,11 @@
         "VCN Name" : "display_name",
         "CIDR Block" : "cidr_block"
     },
+    "DRGv2" :
+    {
+        "DRG Name" : "drg_name"
+
+    },
     "DHCP" :
     {
         "DHCP Option Name" : "display_name",
@@ -52,6 +57,13 @@
         "Direction" : "direction",
         "isStateless" : "is_stateless",
         "Rule Description" : "description"
+    },
+    "DRGRouteRulesinOCI" :
+    {
+        "DRG RT Name" : "display_name",
+        "Destination CIDR" : "destination",
+        "Next Hop Attachment" : "next_hop_drg_attachment_id",
+        "Destination Type" : "destination_type"
     },
     "RouteRulesinOCI" :
     {

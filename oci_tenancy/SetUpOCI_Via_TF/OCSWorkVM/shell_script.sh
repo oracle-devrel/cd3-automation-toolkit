@@ -51,7 +51,8 @@ sudo yum install -y putty
 sudo yum -y install git
 
 #sudo yum -y install terraform
-sudo yum -y install terraform-0.13.4-1.el7
+#sudo yum -y install terraform-0.13.4-1.el7
+sudo yum install terraform-1.0.0-1.el7
 
 #yum install  expect-5.45-14.el7_1.x86_64
 sudo yum -y install expect

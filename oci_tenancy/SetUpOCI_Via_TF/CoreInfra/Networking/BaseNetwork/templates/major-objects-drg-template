@@ -1,17 +1,7 @@
-
 #Create DRG
+
 resource "oci_core_drg" "{{ drg_tf_name }}" {
     #Required
     compartment_id = var.{{ compartment_tf_name }}
-    display_name = "{{ drg_display }}"
+    display_name = "{{ drg_name }}"
 }
-
-resource "oci_core_drg_attachment" "{{ drg_attach_tf_name }}" {
-                    drg_id = oci_core_drg.{{ drg_tf_name }}.id
-                    vcn_id = oci_core_vcn.{{ vcn_tf_name }}.id
-                    display_name = "{{ drg_attach_name }}"
-                    {% if hub_spoke_peer_none == 'hub' %}
-                    route_table_id = oci_core_route_table.{{ rt_tf_name }}.id
-                    {% endif %}
-}
-

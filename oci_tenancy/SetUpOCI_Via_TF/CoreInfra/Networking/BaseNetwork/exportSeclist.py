@@ -245,13 +245,17 @@ def export_seclist(inputfile, network_compartments, _config, _tf_import_cmd, out
     config = oci.config.from_file(_config)
     ct.get_network_compartment_ids(config['tenancy'],"root", _config)
 
-
+    '''
     input_compartment_list = network_compartments
     if(input_compartment_list is not None):
         #input_compartment_names = input_compartment_list.split(",")
         input_compartment_names = [x.strip() for x in input_compartment_list]
     else:
         input_compartment_names = None
+    '''
+
+    # Check Compartments
+    comp_list_fetch = commonTools.get_comp_list_for_export(network_compartments, ct.ntk_compartment_ids)
 
     # Get dict for columns from Excel_Columns
     sheet_dict=ct.sheet_dict["SecRulesinOCI"]
@@ -268,22 +272,22 @@ def export_seclist(inputfile, network_compartments, _config, _tf_import_cmd, out
         config.__setitem__("region", commonTools().region_dict[reg])
         vcn = VirtualNetworkClient(config)
         region = reg.capitalize()
-        comp_ocid_done = []
-        for ntk_compartment_name in ct.ntk_compartment_ids:
-            if ct.ntk_compartment_ids[ntk_compartment_name] not in comp_ocid_done:
-                if (input_compartment_names is not None and ntk_compartment_name not in input_compartment_names):
-                    continue
-                comp_ocid_done.append(ct.ntk_compartment_ids[ntk_compartment_name])
+        #comp_ocid_done = []
+        for ntk_compartment_name in comp_list_fetch:
+        #    if ct.ntk_compartment_ids[ntk_compartment_name] not in comp_ocid_done:
+        #        if (input_compartment_names is not None and ntk_compartment_name not in input_compartment_names):
+        #            continue
+        #        comp_ocid_done.append(ct.ntk_compartment_ids[ntk_compartment_name])
                 vcns = oci.pagination.list_call_get_all_results(vcn.list_vcns,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name],lifecycle_state="AVAILABLE")
                 for v in vcns.data:
                     vcn_id = v.id
                     vcn_name=v.display_name
-                    comp_ocid_done_again = []
-                    for ntk_compartment_name_again in ct.ntk_compartment_ids:
-                        if ct.ntk_compartment_ids[ntk_compartment_name_again] not in comp_ocid_done_again:
-                            if (input_compartment_names is not None and ntk_compartment_name_again not in input_compartment_names):
-                                continue
-                            comp_ocid_done_again.append(ct.ntk_compartment_ids[ntk_compartment_name_again])
+        #            comp_ocid_done_again = []
+                    for ntk_compartment_name_again in comp_list_fetch:
+        #                if ct.ntk_compartment_ids[ntk_compartment_name_again] not in comp_ocid_done_again:
+        #                    if (input_compartment_names is not None and ntk_compartment_name_again not in input_compartment_names):
+        #                        continue
+        #                    comp_ocid_done_again.append(ct.ntk_compartment_ids[ntk_compartment_name_again])
                             seclists = oci.pagination.list_call_get_all_results(vcn.list_security_lists,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name_again], vcn_id=vcn_id, lifecycle_state='AVAILABLE',sort_by='DISPLAYNAME')
                             print_secrules(seclists,region,vcn_name,ntk_compartment_name_again)
 

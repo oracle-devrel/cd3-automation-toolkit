@@ -62,18 +62,8 @@ def create_terraform_database_BM(inputfile, outdir, prefix, config=DEFAULT_LOCAT
     # Initialise empty TF string for each region
     for reg in ct.all_regions:
         tfStr[reg] = ''
-
-    uniquereg = df['Region'].unique()
-    # Take backup of files
-    for eachregion in uniquereg:
-        eachregion = str(eachregion).strip().lower()
-        reg_out_dir = outdir + "/" + eachregion
-        if (eachregion in commonTools.endNames) or ('nan' in str(eachregion).lower() ):
-            break
-        if eachregion not in ct.all_regions:
-            print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
-            exit()
-        srcdir = reg_out_dir + "/"
+        # Take backup of files
+        srcdir = outdir + "/" + reg + "/"
         resource = 'DBBM'
         commonTools.backup_file(srcdir, resource, "DBBM.tf")
 

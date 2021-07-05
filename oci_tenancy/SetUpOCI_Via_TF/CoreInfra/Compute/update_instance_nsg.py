@@ -42,12 +42,6 @@ def main():
     outdir = args.outdir
     endnames = ['<end>', '<END>', '<End>']
 
-    if ('.csv' in filename):
-        df = pd.read_csv(filename)
-        excel_writer = pd.ExcelWriter('tmp_to_excel.xlsx', engine='xlsxwriter')
-        df.to_excel(excel_writer, 'Instances')
-        excel_writer.save()
-        filename = 'tmp_to_excel.xlsx'
 
     # Read cd3 using pandas dataframe
     df, col_headers = commonTools.read_cd3(filename, "Instances")
@@ -104,8 +98,6 @@ def main():
                     file_r.close()
                     print("\nNSG info updated in "+outdir + "/" + Region + "/" + Host_name + "_instance.tf")
 
-    if('tmp_' in filename):
-        os.remove(filename)
 
 if __name__ == '__main__':
 

@@ -72,24 +72,15 @@ def create_terraform_events(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
     # List of the column headers
     dfcolumns = df.columns.values.tolist()
 
-    for reg in ct.all_regions:
-        tfStr[reg] = '' 
-        Events_names[reg]=[]
-    reg = df['Region'].unique()
-    
+
     # Take backup of files
-    for eachregion in reg:
-        eachregion = str(eachregion).strip().lower()
+    for eachregion in ct.all_regions:
         resource='Events'
-        if (eachregion in commonTools.endNames):
-            break
-        if eachregion == 'nan':
-            continue
-        if eachregion not in ct.all_regions:
-            print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
-            exit()
         srcdir = outdir + "/" + eachregion + "/"
         commonTools.backup_file(srcdir, resource, "-event.tf")
+
+        tfStr[eachregion] = ''
+        Events_names[eachregion] = []
 
     # Iterate over rows
     for i in df.index:

@@ -93,7 +93,7 @@ def validate_cd3(execute_all=False):
         Option("Validate Compartments", None, None),
         Option("Validate Groups", None, None),
         Option("Validate Policies", None, None),
-        Option("Validate Networking(VCNs, Subnets, DHCP)", None, None),
+        Option("Validate Networking(VCNs, Subnets, DHCP, DRGv2)", None, None),
         Option("Validate Instances", None, None),
         Option("Validate Block Volumes", None, None),
     ]
@@ -117,13 +117,14 @@ def export_identity():
 def export_networking():
     compartments = get_compartment_list('Network Objects')
     Networking.export_networking(inputfile, outdir, _config=config, network_compartments=compartments)
-    #create_networking(execute_all=True)
     options = [
         Option(None, Networking.create_major_objects, 'Processing VCNs Tab'),
         Option(None, Networking.create_terraform_dhcp_options, 'Processing DHCP Tab'),
         Option(None, Networking.create_terraform_subnet, 'Processing Subnets Tab'),
         Option(None, Networking.modify_terraform_secrules, 'Processing SecRulesinOCI Tab'),
         Option(None, Networking.modify_terraform_routerules, 'Processing RouteRulesinOCI Tab'),
+        Option(None, Networking.create_terraform_drg_route, 'Processing DRGv2 Tab'),
+        Option(None, Networking.modify_terraform_drg_routerules, 'Processing DRGRouteRulesinOCI Tab'),
         Option(None, Networking.create_terraform_nsg, 'Processing NSGs Tab'),
     ]
     execute_options(options, inputfile, outdir, prefix, config=config)
@@ -187,19 +188,23 @@ def modify_terraform_network(inputfile, outdir, prefix, config):
 
 
 def export_terraform_routes_and_secrules(inputfile, outdir, prefix, config):
-    compartments = input("Enter name of Compartment as it appears in OCI (comma separated if multiple) for which you want to export rules;\nPress 'Enter' to export from all the Compartments: ")
-    compartments = compartments.split(',') if compartments else []
+    compartments = get_compartment_list('OCI Rules')
     Networking.export_seclist(inputfile, network_compartments=compartments, _config=config, _tf_import_cmd=False, outdir=None)
     Networking.export_routetable(inputfile, network_compartments=compartments, _config=config, _tf_import_cmd=False, outdir=None)
 
+def export_terraform_drg_routes(inputfile, outdir, prefix, config):
+    compartments = get_compartment_list('OCI DRG Rules')
+    Networking.export_drg_routetable(inputfile, network_compartments=compartments, _config=config, _tf_import_cmd=False,outdir=None)
 
 def create_networking(execute_all=False):
     options = [
         Option('Create Network - overwrites all TF files; reverts all SecLists and RouteTables to original rules', Networking.create_all_tf_objects, 'Create All Objects'),
         Option('Modify Network - Add/Remove/Modify any network object; updates TF files with changes; this option should be used after modifications have been done to SecRules or RouteRules', modify_terraform_network, 'Modifying Networking'),
         Option('Export existing SecRules and RouteRules to cd3', export_terraform_routes_and_secrules, 'Exporting Rules'),
+        Option('Export existing DRG RouteRules to cd3', export_terraform_drg_routes,'Exporting DRG Route Rules'),
         Option('Modify SecRules', Networking.modify_terraform_secrules, 'Modifiying Security Rules'),
         Option('Modify RouteRules', Networking.modify_terraform_routerules, 'Modifiying Route Rules'),
+        Option('Modify DRG RouteRules', Networking.modify_terraform_drg_routerules, 'Modifiying DRG Route Rules'),
         Option('Add/Modify/Delete Network Security Groups', Networking.create_terraform_nsg, 'Processing NSGs Tab'),
     ]
     if not execute_all:
@@ -346,8 +351,8 @@ if non_gf_tenancy:
         Option('Export Load Balancer Service', export_lb, 'Load Balancers'),
         Option('Export Solutions (Events and Notifications)', export_events_notifications, 'Solutions'),
     ]
-    verify_outdir_is_empty()
-    fetch_compartments(outdir, config)
+    #verify_outdir_is_empty()
+    #fetch_compartments(outdir, config)
     print("\nnon_gf_tenancy in properties files is set to true..Export existing OCI objects and Synch with TF state")
     print("Process will fetch objects from OCI in the specified compartment from all regions tenancy is subscribed to\n")
 else:

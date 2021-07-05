@@ -160,7 +160,6 @@ def export_solutions(inputfile, outdir, network_compartments=[], _config=DEFAULT
     global config
 
     cd3file = inputfile
-    input_compartment_names = network_compartments
     configFileName = _config
     config = oci.config.from_file(file_location=configFileName)
 
@@ -182,25 +181,10 @@ def export_solutions(inputfile, outdir, network_compartments=[], _config=DEFAULT
 
 
     # Check Compartments
+    comp_list_fetch = commonTools.get_comp_list_for_export(network_compartments, ct.ntk_compartment_ids)
 
-    remove_comps = []
-    if (input_compartment_names is not None):
-        for x in range(0, len(input_compartment_names)):
-            if (input_compartment_names[x] not in ct.ntk_compartment_ids.keys()):
-                print("Input compartment: " + input_compartment_names[x] + " doesn't exist in OCI")
-                remove_comps.append(input_compartment_names[x])
-
-        input_compartment_names = [x for x in input_compartment_names if x not in remove_comps]
-        if (len(input_compartment_names) == 0):
-            print("None of the input compartments specified exist in OCI..Exiting!!!")
-            exit(1)
-        else:
-            print("Fetching for Compartments... " + str(input_compartment_names))
-    else:
-        print("Fetching for all Compartments...")
     print("\nCD3 excel file should not be opened during export process!!!")
-    print(
-        "Tabs- Events and Notifications would be overwritten during export process!!!\n")
+    print("Tabs- Events and Notifications would be overwritten during export process!!!\n")
 
     # Create backups
     for reg in ct.all_regions:
@@ -218,17 +202,17 @@ def export_solutions(inputfile, outdir, network_compartments=[], _config=DEFAULT
 
         importCommands[reg].write("\n\n######### Writing import for Notifications #########\n\n")
         config.__setitem__("region", ct.region_dict[reg])
-        comp_ocid_done = []
+        #comp_ocid_done = []
         ncpc = NotificationControlPlaneClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
         ndpc = NotificationDataPlaneClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
         evt = EventsClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
         fun = FunctionsManagementClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
         region = reg.capitalize()
-        for ntk_compartment_name in ct.ntk_compartment_ids:
-            if ct.ntk_compartment_ids[ntk_compartment_name] not in comp_ocid_done:
-                if (input_compartment_names is not None and ntk_compartment_name not in input_compartment_names):
-                    continue
-                comp_ocid_done.append(ct.ntk_compartment_ids[ntk_compartment_name])
+        for ntk_compartment_name in comp_list_fetch:
+            #if ct.ntk_compartment_ids[ntk_compartment_name] not in comp_ocid_done:
+            #    if (input_compartment_names is not None and ntk_compartment_name not in input_compartment_names):
+            #        continue
+            #    comp_ocid_done.append(ct.ntk_compartment_ids[ntk_compartment_name])
                 nftns = oci.pagination.list_call_get_all_results(ncpc.list_topics,
                                                             compartment_id=ct.ntk_compartment_ids[ntk_compartment_name],
                                                             lifecycle_state="ACTIVE")
@@ -248,6 +232,7 @@ def export_solutions(inputfile, outdir, network_compartments=[], _config=DEFAULT
                   else:
                      i = i + 1
                   print_notifications(values_for_column_notifications,region, ntk_compartment_name, sbpn, nftn_info, i, fun)
+
     commonTools.write_to_cd3(values_for_column_notifications, cd3file, "Notifications")
     print("Notifications exported to CD3\n")
 
@@ -256,16 +241,16 @@ def export_solutions(inputfile, outdir, network_compartments=[], _config=DEFAULT
     for reg in ct.all_regions:
         importCommands[reg].write("\n\n######### Writing import for Events #########\n\n")
         config.__setitem__("region", ct.region_dict[reg])
-        comp_ocid_done = []
+        #comp_ocid_done = []
         ncpc = NotificationControlPlaneClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
         fun = FunctionsManagementClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
         evt = EventsClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
         region = reg.capitalize()
-        for ntk_compartment_name in ct.ntk_compartment_ids:
-            if ct.ntk_compartment_ids[ntk_compartment_name] not in comp_ocid_done:
-                if (input_compartment_names is not None and ntk_compartment_name not in input_compartment_names):
-                    continue
-                comp_ocid_done.append(ct.ntk_compartment_ids[ntk_compartment_name])
+        for ntk_compartment_name in comp_list_fetch:
+            #if ct.ntk_compartment_ids[ntk_compartment_name] not in comp_ocid_done:
+            #    if (input_compartment_names is not None and ntk_compartment_name not in input_compartment_names):
+            #        continue
+            #    comp_ocid_done.append(ct.ntk_compartment_ids[ntk_compartment_name])
                 evts = oci.pagination.list_call_get_all_results(evt.list_rules, compartment_id=ct.ntk_compartment_ids[ntk_compartment_name],lifecycle_state="ACTIVE")
                 for event in evts.data:
                   event_info = evt.get_rule(event.id).data
@@ -277,7 +262,6 @@ def export_solutions(inputfile, outdir, network_compartments=[], _config=DEFAULT
 
     commonTools.write_to_cd3(values_for_column_events, cd3file, "Events")
     print("Events exported to CD3\n")
-
 
     for reg in ct.all_regions:
         script_file = f'{outdir}/{reg}/tf_import_commands_solutions_nonGF.sh'
