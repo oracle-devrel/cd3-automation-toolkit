@@ -154,8 +154,13 @@ def print_drgv2(values_for_column_drgv2,region, comp_name, vcn_info,drg_info,drg
         elif (col_header == "DRG Name"):
             values_for_column_drgv2[col_header].append(drg_info.display_name)
         elif(col_header == "Attached To"):
-            attach_type=drg_attachment_info.network_details.type
-            attach_id=drg_attachment_info.network_details.id
+            if (drg_attachment_info.network_details is not None):
+                attach_type = drg_attachment_info.network_details.type
+                attach_id = drg_attachment_info.network_details.id
+            # DRG v1
+            else:
+                attach_type = "VCN"
+                attach_id = drg_attachment_info.vcn_id
 
             if(attach_type.upper()=="VCN"):
                 columnval = attach_type+"::"+vcn_info.display_name
@@ -571,8 +576,16 @@ def export_networking(inputfile, outdir, _config, network_compartments=[]):
                                             break
 
                                 tf_name = commonTools.check_tf_variable(drg_display_name)
-                                attach_type = drg_attachment_info.network_details.type
-                                attach_id = drg_attachment_info.network_details.id
+
+
+                                if(drg_attachment_info.network_details is not None):
+                                    attach_type = drg_attachment_info.network_details.type
+                                    attach_id = drg_attachment_info.network_details.id
+                                #DRG v1
+                                else:
+                                    attach_type = "VCN"
+                                    attach_id = drg_attachment_info.vcn_id
+
                                 if (attach_type.upper() == "VCN"):
                                     vcn_drgattach_route_table_id = drg_attachment_info.route_table_id
                                     vcn_info = vnc.get_vcn(attach_id).data
@@ -593,8 +606,9 @@ def export_networking(inputfile, outdir, _config, network_compartments=[]):
                                 importCommands[reg].write("\nterraform import oci_core_drg_attachment." + tf_name + " " + drg_attachment_info.id)
                                 oci_obj_names[reg].write("\ndrgattachinfo::::" + vcn_info.display_name + "::::" + drg_display_name + "::::" + drg_attachment_name)
 
-                                drg_route_table_id=None
                                 drg_route_table_id = drg_attachment_info.drg_route_table_id
+
+                                ##DRG v2
                                 if(drg_route_table_id is not None):
                                     drg_route_table_info = vnc.get_drg_route_table(drg_route_table_id).data
 
