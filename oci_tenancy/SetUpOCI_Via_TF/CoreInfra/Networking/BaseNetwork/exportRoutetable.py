@@ -33,7 +33,13 @@ def get_network_entity_name(config,network_identity_id):
         return network_identity_name
     elif ('drgattachment' in network_identity_id):
         drg_attach = vcn1.get_drg_attachment(network_identity_id)
-        drg_attach_type = drg_attach.data.network_details.type
+
+        if (drg_attach.data.network_details is not None):
+            drg_attach_type = drg_attach.data.network_details.type
+        #DRG v1
+        else:
+            drg_attach_type= "VCN"
+
         if (drg_attach_type == "VCN"):
             network_identity_name = drg_attach.data.display_name
         else:
@@ -224,6 +230,10 @@ def export_drg_routetable(inputfile, network_compartments, _config, _tf_import_c
                 drgs = oci.pagination.list_call_get_all_results(vcn.list_drgs,
                                                                 compartment_id=ct.ntk_compartment_ids[ntk_compartment_name])
                 for drg in drgs.data:
+                    #DRG v1
+                    if drg.default_drg_route_tables is None:
+                        continue
+
                     # Get DRG RT Tables for the DRG - They are in same compartment s DRG by default
                     DRG_RTs = oci.pagination.list_call_get_all_results(vcn.list_drg_route_tables, drg_id=drg.id)
                     for drg_route_table_info in DRG_RTs.data:
