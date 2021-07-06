@@ -609,6 +609,7 @@ def export_networking(inputfile, outdir, _config, network_compartments=[]):
                                 drg_route_table_id = drg_attachment_info.drg_route_table_id
 
                                 ##DRG v2
+                                drg_route_table_info =None
                                 if(drg_route_table_id is not None):
                                     drg_route_table_info = vnc.get_drg_route_table(drg_route_table_id).data
 
