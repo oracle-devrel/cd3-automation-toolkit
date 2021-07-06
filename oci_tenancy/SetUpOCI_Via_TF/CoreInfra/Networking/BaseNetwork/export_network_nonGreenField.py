@@ -18,7 +18,7 @@ importCommands = {}
 oci_obj_names = {}
 
 def print_nsgsl(values_for_column_nsgs,vnc,region, comp_name, vcn_name, nsg, nsgsl,i):
-    tf_name = commonTools.check_tf_variable(str(nsg.display_name))
+    tf_name = commonTools.check_tf_variable(vcn_name+"_"+str(nsg.display_name))
     sportmin = ""
     sportmax = ""
     dportmin = ""
@@ -655,7 +655,7 @@ def export_networking(inputfile, outdir, _config, network_compartments=[]):
                                 if (nsg.id not in nsglist):
                                     print_nsg(values_for_column_nsgs,region, ntk_compartment_name_again, vcn_info.display_name, nsg)
                                 else:
-                                    tf_name = commonTools.check_tf_variable(str(nsg.display_name))
+                                    tf_name = commonTools.check_tf_variable(str(vcn_info.display_name) + "_" + str(nsg.display_name))
                                     importCommands[region.lower()].write("\nterraform import oci_core_network_security_group." + tf_name + " " + str(nsg.id))
 
     commonTools.write_to_cd3(values_for_column_nsgs, cd3file, "NSGs")

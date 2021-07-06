@@ -296,11 +296,11 @@ def NSGtemplate(nsgParser, key, value, outdir, columnname):
             tempStr.update(protocolOptionals(nsgParser, rule,tempStr))
 
             nsg_rule = nsgrule.render(tempStr)
-            print("Writing to..."+str(f.name))
+            #print("Writing to..."+str(f.name))
             f.write(nsg_rule)
             ruleindex += 1
         f.close()
-    print(outdir + "/{}_nsg.tf".format(key[2]) + " containing TF for NSG has been created")
+    print(outdir + "/{}_nsg.tf".format(nsg_tf_name) + " containing TF for NSG has been created")
 
 
 def NSGrulesTemplate(nsgParser, rule, index, tempStr):

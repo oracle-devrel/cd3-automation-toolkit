@@ -566,7 +566,7 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
             oname_oci_drg_data[reg]=open(outfile_oci_drg_data[reg], "w")
             oname_oci_drg_data[reg].write(drg_data[reg])
             oname_oci_drg_data[reg].close()
-            print(outfile_oci_drg_data[reg] + " containing TF for ovi-drg-data for DRGs has been updated for region " + reg)
+            print(outfile_oci_drg_data[reg] + " containing TF for oci-drg-data for DRGs has been updated for region " + reg)
 
 
     else:
