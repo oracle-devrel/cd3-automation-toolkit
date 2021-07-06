@@ -227,8 +227,9 @@ def NSGtemplate(nsgParser, key, value, outdir, columnname):
     compartment_var_name = str(key[0]).strip()
     # Added to check if compartment name is compatible with TF variable name syntax
     compartment_tf_name = commonTools.check_tf_variable(compartment_var_name)
-    nsg_tf_name = commonTools.check_tf_variable(str(key[2]))
+    #nsg_tf_name = commonTools.check_tf_variable(str(key[2]))
     vcn_tf_name = commonTools.check_tf_variable(str(key[1]))
+    nsg_tf_name = vcn_tf_name + "_" + commonTools.check_tf_variable(str(key[2]))
     tempDict = {'compartment_tf_name': compartment_tf_name, 'display_name': str(key[2]), 'nsg_tf_name': nsg_tf_name,
                 'vcn_tf_name': vcn_tf_name}
 
@@ -271,14 +272,14 @@ def NSGtemplate(nsgParser, key, value, outdir, columnname):
         resource_group = template.render(tempStr)
         if nsg_done == [] :
             nsg_done.append(nsg_name)
-            with open(outdir + "/{}_nsg.tf".format(commonTools.check_tf_variable(str(key[2]))), 'w') as f:
+            with open(outdir + "/{}_nsg.tf".format(nsg_tf_name), 'w') as f:
                 f.write(resource_group)
         else:
             if nsg_name not in nsg_done:
-                with open(outdir + "/{}_nsg.tf".format(commonTools.check_tf_variable(str(key[2]))), 'w') as f:
+                with open(outdir + "/{}_nsg.tf".format(nsg_tf_name), 'w') as f:
                     f.write(resource_group)
 
-        with open(outdir + "/{}_nsg.tf".format(commonTools.check_tf_variable(str(key[2]))), 'a') as f:
+        with open(outdir + "/{}_nsg.tf".format(nsg_tf_name), 'a') as f:
 
             null_rule = 0
             for i in range(1,3):
@@ -306,7 +307,8 @@ def NSGrulesTemplate(nsgParser, rule, index, tempStr):
     if(str(rule[14]).lower()=='nan'):
         rule[14]=""
 
-    nsg_rule_tf_name = commonTools.check_tf_variable(str(rule[0]))+"_security_rule"+str(index)
+    nsg_tf_name = tempStr['nsg_tf_name']
+    nsg_rule_tf_name = nsg_tf_name+"_"+commonTools.check_tf_variable(str(rule[0]))+"_security_rule"+str(index)
     direction = str(rule[1]).upper()
     protocol = getProtocolNumber(str(rule[2]))
     tempdict = { 'nsg_rule_tf_name' : nsg_rule_tf_name, 'direction' : direction, 'protocol_code' : protocol}

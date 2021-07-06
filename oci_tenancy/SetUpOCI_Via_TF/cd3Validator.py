@@ -629,9 +629,14 @@ def validate_drgv2(filename, comp_ids, vcnobj):
             elif attached_to[0].strip().upper()=="VCN":
                 vcn_name = attached_to[1].strip()
 
-                if (vcn_name.lower() != "nan" and vcnobj.vcns_having_drg[vcn_name,region]!=drg_name):
-                    log(f'ROW {i + 3}: VCN {vcn_name} in column Attached To is not as per DRG Required column of VCNs Tab.')
+                try:
+                    if (vcn_name.lower() != "nan" and vcnobj.vcns_having_drg[vcn_name,region]!=drg_name):
+                        log(f'ROW {i + 3}: VCN {vcn_name} in column Attached To is not as per DRG Required column of VCNs Tab.')
+                        drgv2_vcn_check = True
+                except KeyError:
+                    log(f'ROW {i + 3}: VCN {vcn_name} in column Attached To is not as per VCN Name column of VCNs Tab.')
                     drgv2_vcn_check = True
+
 
         rd_name=str(dfdrgv2.loc[i, 'Import DRG Route Distribution Name']).strip()
         rd_name_stmts = str(dfdrgv2.loc[i, 'Import DRG Route Distribution Statements']).strip()
