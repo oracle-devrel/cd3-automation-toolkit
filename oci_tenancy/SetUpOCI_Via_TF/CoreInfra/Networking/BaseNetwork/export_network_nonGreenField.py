@@ -128,7 +128,7 @@ def print_nsgsl(values_for_column_nsgs,vnc,region, comp_name, vcn_name, nsg, nsg
 
 
 def print_nsg(values_for_column_nsgs,region, comp_name, vcn_name, nsg):
-    tf_name = commonTools.check_tf_variable(str(nsg.display_name))
+    tf_name = commonTools.check_tf_variable(vcn_name+"_"+str(nsg.display_name))
 
     for col_header in values_for_column_nsgs.keys():
         if (col_header == "Region"):
