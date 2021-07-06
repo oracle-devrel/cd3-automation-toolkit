@@ -308,7 +308,8 @@ def NSGrulesTemplate(nsgParser, rule, index, tempStr):
         rule[14]=""
 
     nsg_tf_name = tempStr['nsg_tf_name']
-    nsg_rule_tf_name = nsg_tf_name+"_"+commonTools.check_tf_variable(str(rule[0]))+"_security_rule"+str(index)
+    #nsg_rule_tf_name = nsg_tf_name+"_"+commonTools.check_tf_variable(str(rule[0]))+"_security_rule"+str(index)
+    nsg_rule_tf_name = nsg_tf_name + "_security_rule" + str(index)
     direction = str(rule[1]).upper()
     protocol = getProtocolNumber(str(rule[2]))
     tempdict = { 'nsg_rule_tf_name' : nsg_rule_tf_name, 'direction' : direction, 'protocol_code' : protocol}

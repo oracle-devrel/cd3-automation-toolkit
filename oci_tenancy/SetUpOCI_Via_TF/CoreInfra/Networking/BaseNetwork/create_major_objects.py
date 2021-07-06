@@ -126,7 +126,7 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
         drg_attach_template = env.get_template('major-objects-drg-attach-template')
         drg_datasource_template = env.get_template('drg-data-source-template')
 
-        # Create drg-oci-data
+        # Create oci-drg-data
         for region in drgv2.drg_names.keys():
             for drg in drgv2.drg_names[region]:
                 for drg_auto_rt_name in commonTools.drg_auto_RTs:

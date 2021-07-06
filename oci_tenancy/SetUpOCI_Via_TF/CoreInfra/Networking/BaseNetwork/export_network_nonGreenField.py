@@ -165,7 +165,10 @@ def print_drgv2(values_for_column_drgv2,region, comp_name, vcn_info,drg_info,drg
                 values_for_column_drgv2[col_header].append(columnval)
 
         elif (col_header == "DRG RT Name"):
-            values_for_column_drgv2[col_header].append(drg_rt_info.display_name)
+            if(drg_rt_info == None):
+                values_for_column_drgv2[col_header].append("")
+            else:
+                values_for_column_drgv2[col_header].append(drg_rt_info.display_name)
         elif(col_header == 'Import DRG Route Distribution Name'):
             if import_drg_route_distribution_info == None:
                 values_for_column_drgv2[col_header].append("")
@@ -567,9 +570,6 @@ def export_networking(inputfile, outdir, _config, network_compartments=[]):
                                             drg_comp_name = key
                                             break
 
-                                drg_route_table_id = drg_attachment_info.drg_route_table_id
-                                drg_route_table_info = vnc.get_drg_route_table(drg_route_table_id).data
-
                                 tf_name = commonTools.check_tf_variable(drg_display_name)
                                 attach_type = drg_attachment_info.network_details.type
                                 attach_id = drg_attachment_info.network_details.id
@@ -593,21 +593,26 @@ def export_networking(inputfile, outdir, _config, network_compartments=[]):
                                 importCommands[reg].write("\nterraform import oci_core_drg_attachment." + tf_name + " " + drg_attachment_info.id)
                                 oci_obj_names[reg].write("\ndrgattachinfo::::" + vcn_info.display_name + "::::" + drg_display_name + "::::" + drg_attachment_name)
 
-                                import_drg_route_distribution_id = drg_route_table_info.import_drg_route_distribution_id
-                                import_drg_route_distribution_info=None
-                                drg_route_distribution_statements=None
-                                if(import_drg_route_distribution_id!=None):
-                                    import_drg_route_distribution_info = vnc.get_drg_route_distribution(import_drg_route_distribution_id).data
-                                    drg_route_distribution_statements = vnc.list_drg_route_distribution_statements(import_drg_route_distribution_info.id)
+                                drg_route_table_id=None
+                                drg_route_table_id = drg_attachment_info.drg_route_table_id
+                                if(drg_route_table_id is not None):
+                                    drg_route_table_info = vnc.get_drg_route_table(drg_route_table_id).data
 
-                                    tf_name = commonTools.check_tf_variable(drg_display_name+"_"+import_drg_route_distribution_info.display_name)
-                                    if(import_drg_route_distribution_info.display_name not in commonTools.drg_auto_RDs):
-                                        importCommands[reg].write("\nterraform import oci_core_drg_route_distribution." + tf_name + " " + import_drg_route_distribution_info.id)
+                                    import_drg_route_distribution_id = drg_route_table_info.import_drg_route_distribution_id
+                                    import_drg_route_distribution_info=None
+                                    drg_route_distribution_statements=None
+                                    if(import_drg_route_distribution_id!=None):
+                                        import_drg_route_distribution_info = vnc.get_drg_route_distribution(import_drg_route_distribution_id).data
+                                        drg_route_distribution_statements = vnc.list_drg_route_distribution_statements(import_drg_route_distribution_info.id)
 
-                                        k = 1
-                                        for stmt in drg_route_distribution_statements.data:
-                                            importCommands[reg].write("\nterraform import oci_core_drg_route_distribution_statement." + tf_name + "_statement" + str(k) + " drgRouteDistributions/" + import_drg_route_distribution_info.id + "/statements/" + stmt.id)
-                                            k=k+1
+                                        tf_name = commonTools.check_tf_variable(drg_display_name+"_"+import_drg_route_distribution_info.display_name)
+                                        if(import_drg_route_distribution_info.display_name not in commonTools.drg_auto_RDs):
+                                            importCommands[reg].write("\nterraform import oci_core_drg_route_distribution." + tf_name + " " + import_drg_route_distribution_info.id)
+
+                                            k = 1
+                                            for stmt in drg_route_distribution_statements.data:
+                                                importCommands[reg].write("\nterraform import oci_core_drg_route_distribution_statement." + tf_name + "_statement" + str(k) + " drgRouteDistributions/" + import_drg_route_distribution_info.id + "/statements/" + stmt.id)
+                                                k=k+1
 
                                 print_drgv2(values_for_column_drgv2, region, drg_comp_name, vcn_info,drg_info, drg_attachment_info, drg_route_table_info, import_drg_route_distribution_info,drg_route_distribution_statements)
 
