@@ -12,8 +12,6 @@
 import sys
 import argparse
 import re
-import datetime
-import shutil
 import os
 from pathlib import Path
 from oci.config import DEFAULT_LOCATION
@@ -125,25 +123,35 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
         drg_template = env.get_template('major-objects-drg-template')
         drg_attach_template = env.get_template('major-objects-drg-attach-template')
         drg_datasource_template = env.get_template('drg-data-source-template')
+        drg_version = "DRGv2"
+
+        region = ct.home_region
+        if (os.path.exists(outdir + "/" + region + "/obj_names.safe")):
+            with open(outdir + "/" + region + "/obj_names.safe") as f:
+                for line in f:
+                    if ("DRG Version::::" in line):
+                        drg_version = line.split("::::")[1].strip()
+                        break
 
         # Create oci-drg-data
-        for region in drgv2.drg_names.keys():
-            for drg in drgv2.drg_names[region]:
-                for drg_auto_rt_name in commonTools.drg_auto_RTs:
-                    temp = {}
-                    drg_auto_rt_tf_name = commonTools.check_tf_variable(drg + "_" + drg_auto_rt_name)
-                    temp['drg_auto_rt_tf_name'] = drg_auto_rt_tf_name
-                    temp['drg_auto_rt_name'] = drg_auto_rt_name
-                    temp['drg_tf_name'] = commonTools.check_tf_variable(drg)
-                    drg_data[region] = drg_data[region] + drg_datasource_template.render(temp)
+        if(drg_version == "DRGv2"):
+            for region in drgv2.drg_names.keys():
+                for drg in drgv2.drg_names[region]:
+                    for drg_auto_rt_name in commonTools.drg_auto_RTs:
+                        temp = {}
+                        drg_auto_rt_tf_name = commonTools.check_tf_variable(drg + "_" + drg_auto_rt_name)
+                        temp['drg_auto_rt_tf_name'] = drg_auto_rt_tf_name
+                        temp['drg_auto_rt_name'] = drg_auto_rt_name
+                        temp['drg_tf_name'] = commonTools.check_tf_variable(drg)
+                        drg_data[region] = drg_data[region] + drg_datasource_template.render(temp)
 
-                for drg_auto_rd_name in commonTools.drg_auto_RDs:
-                    temp = {}
-                    drg_auto_rd_tf_name = commonTools.check_tf_variable(drg + "_" + drg_auto_rd_name)
-                    temp['drg_auto_rd_tf_name'] = drg_auto_rd_tf_name
-                    temp['drg_auto_rd_name'] = drg_auto_rd_name
-                    temp['drg_tf_name'] = commonTools.check_tf_variable(drg)
-                    drg_data[region] = drg_data[region] + drg_datasource_template.render(temp)
+                    for drg_auto_rd_name in commonTools.drg_auto_RDs:
+                        temp = {}
+                        drg_auto_rd_tf_name = commonTools.check_tf_variable(drg + "_" + drg_auto_rd_name)
+                        temp['drg_auto_rd_tf_name'] = drg_auto_rd_tf_name
+                        temp['drg_auto_rd_name'] = drg_auto_rd_name
+                        temp['drg_tf_name'] = commonTools.check_tf_variable(drg)
+                        drg_data[region] = drg_data[region] + drg_datasource_template.render(temp)
 
         # Read cd3 using pandas dataframe
         df, col_headers = commonTools.read_cd3(filename, "DRGv2")
@@ -201,6 +209,7 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
             tempdict = {}
             drg_rt_tf_name = ''
             drg_tf_name = ''
+            tempStr['drg_version']=drg_version
 
             for columnname in dfcolumns:
                 # Column value
@@ -250,6 +259,9 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
                         tempStr['drg_attach_tf_name'] = drg_attach_tf_name
                         tempStr['network_type'] = "VCN"
                         tempStr['network_id'] = "oci_core_vcn." + vcn_tf_name + ".id"
+
+                        #DRG v1
+                        tempStr['vcn_id'] = "oci_core_vcn." + vcn_tf_name + ".id"
 
                         tempStr.update(tempdict)
                         # Get VCN DRG RT table

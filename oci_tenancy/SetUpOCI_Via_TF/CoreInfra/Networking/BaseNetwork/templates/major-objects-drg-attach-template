@@ -3,6 +3,14 @@ resource "oci_core_drg_attachment" "{{ drg_attach_tf_name }}" {
                     drg_id = oci_core_drg.{{ drg_tf_name }}.id
                     display_name = "{{ drg_attach_display_name }}"
 
+                    #DRG v1
+                    {% if drg_version == 'DRGv1' %}
+                    route_table_id = oci_core_route_table.{{ vcn_drg_rt_tf_name }}.id
+                    vcn_id = {{ vcn_id }}
+                    {% endif %}
+
+                    #DRG v2
+                    {% if drg_version == 'DRGv2' %}
                     {% if drg_rt_tf_name !='' %}
                     drg_route_table_id = oci_core_drg_route_table.{{ drg_rt_tf_name }}.id
                     {% endif %}
@@ -16,6 +24,7 @@ resource "oci_core_drg_attachment" "{{ drg_attach_tf_name }}" {
                         route_table_id = oci_core_route_table.{{ vcn_drg_rt_tf_name }}.id
                         {% endif %}
                     }
+                    {% endif %}
 }
 
 

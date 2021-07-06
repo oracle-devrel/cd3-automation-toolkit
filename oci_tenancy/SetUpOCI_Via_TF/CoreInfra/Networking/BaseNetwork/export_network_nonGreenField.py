@@ -544,6 +544,7 @@ def export_networking(inputfile, outdir, _config, network_compartments=[]):
         region = reg.capitalize()
         drg_ocid=[]
         drg_comp_name=''
+        drg_version="DRGv2"
         for ntk_compartment_name in comp_list_fetch:
             #if ct.ntk_compartment_ids[ntk_compartment_name] not in comp_ocid_done:
                 #if (input_compartment_names is not None and ntk_compartment_name not in input_compartment_names):
@@ -583,8 +584,11 @@ def export_networking(inputfile, outdir, _config, network_compartments=[]):
                                     attach_id = drg_attachment_info.network_details.id
                                 #DRG v1
                                 else:
+                                    drg_version = "DRGv1"
                                     attach_type = "VCN"
                                     attach_id = drg_attachment_info.vcn_id
+
+                                oci_obj_names[ct.home_region].write("\nDRG Version::::" + drg_version)
 
                                 if (attach_type.upper() == "VCN"):
                                     vcn_drgattach_route_table_id = drg_attachment_info.route_table_id
