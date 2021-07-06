@@ -248,4 +248,4 @@ SetUPOCI_Via_TF Tag v8.0
 3. Optimized the code for export of objects
 4. Bug fix for export of SecRules and RouteRules for all compartments
 5. Allow duplicate names of NSGs across VCNs
-6. Upgrade terraform version to 1.0
+6. Upgrade terraform version to 1.0.0
