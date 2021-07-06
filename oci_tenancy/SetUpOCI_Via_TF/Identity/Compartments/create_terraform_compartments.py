@@ -210,14 +210,15 @@ def create_terraform_compartments(inputfile, outdir, prefix, config=DEFAULT_LOCA
         tfStr[region] = tfStr[region] + template.render(tempStr)
 
     # Write TF string to the file in respective region directory
-    for reg in ct.all_regions:
-        reg_out_dir = outdir + "/" + reg
-        if not os.path.exists(reg_out_dir):
-            os.makedirs(reg_out_dir)
 
-        outfile[reg] = reg_out_dir + "/" + prefix + '-compartments.tf'
+    reg_out_dir = outdir + "/" + ct.home_region
+    if not os.path.exists(reg_out_dir):
+        os.makedirs(reg_out_dir)
 
-        if (tfStr[reg] != ''):
+    reg = ct.home_region
+    outfile[reg] = reg_out_dir + "/" + prefix + '-compartments.tf'
+
+    if (tfStr[reg] != ''):
             oname[reg] = open(outfile[reg], 'w')
             oname[reg].write(tfStr[reg])
             oname[reg].close()
