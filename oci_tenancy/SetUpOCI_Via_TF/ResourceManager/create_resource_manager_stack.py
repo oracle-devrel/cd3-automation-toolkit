@@ -127,10 +127,10 @@ def create_resource_manager(outdir, prefix, config=DEFAULT_LOCATION):
 
     #Copy all the TF files to RM directory
     try:
-        shutil.copytree(outdir, rm_dir, ignore=shutil.ignore_patterns('*.terraform','provider.tf','rm_ocids*','ocswork-*.zip*'))
+        shutil.copytree(outdir, rm_dir, ignore=shutil.ignore_patterns('*.terraform.lock.hcl','*.terraform','provider.tf','rm_ocids*','ocswork-*.zip*'))
     except FileExistsError as fe:
         shutil.rmtree(rm_dir)
-        shutil.copytree(outdir, rm_dir, ignore=shutil.ignore_patterns('*.terraform', 'provider.tf', 'rm_ocids*', 'ocswork-*.zip*'))
+        shutil.copytree(outdir, rm_dir, ignore=shutil.ignore_patterns('*.terraform.lock.hcl','*.terraform', 'provider.tf', 'rm_ocids*', 'ocswork-*.zip*'))
 
     #2. Change the provider.tf to include just the region variable in all the subscribed regions
     for region in ct.all_regions:
