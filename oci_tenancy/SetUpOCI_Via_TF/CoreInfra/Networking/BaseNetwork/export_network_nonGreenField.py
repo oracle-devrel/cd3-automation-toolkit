@@ -610,12 +610,13 @@ def export_networking(inputfile, outdir, _config, network_compartments=[]):
 
                                 ##DRG v2
                                 drg_route_table_info =None
+                                import_drg_route_distribution_info = None
+                                drg_route_distribution_statements = None
+
                                 if(drg_route_table_id is not None):
                                     drg_route_table_info = vnc.get_drg_route_table(drg_route_table_id).data
 
                                     import_drg_route_distribution_id = drg_route_table_info.import_drg_route_distribution_id
-                                    import_drg_route_distribution_info=None
-                                    drg_route_distribution_statements=None
                                     if(import_drg_route_distribution_id!=None):
                                         import_drg_route_distribution_info = vnc.get_drg_route_distribution(import_drg_route_distribution_id).data
                                         drg_route_distribution_statements = vnc.list_drg_route_distribution_statements(import_drg_route_distribution_info.id)
