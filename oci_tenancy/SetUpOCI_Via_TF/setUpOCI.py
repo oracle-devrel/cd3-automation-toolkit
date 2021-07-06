@@ -118,12 +118,12 @@ def export_networking():
     compartments = get_compartment_list('Network Objects')
     Networking.export_networking(inputfile, outdir, _config=config, network_compartments=compartments)
     options = [
-        Option(None, Networking.create_major_objects, 'Processing VCNs Tab'),
+        Option(None, Networking.create_major_objects, 'Processing VCNs and DRGs Tab'),
         Option(None, Networking.create_terraform_dhcp_options, 'Processing DHCP Tab'),
         Option(None, Networking.create_terraform_subnet, 'Processing Subnets Tab'),
         Option(None, Networking.modify_terraform_secrules, 'Processing SecRulesinOCI Tab'),
         Option(None, Networking.modify_terraform_routerules, 'Processing RouteRulesinOCI Tab'),
-        Option(None, Networking.create_terraform_drg_route, 'Processing DRGs Tab'),
+        Option(None, Networking.create_terraform_drg_route, 'Processing DRGs tab for DRG Route Tables and Route Distribution creation'),
         Option(None, Networking.modify_terraform_drg_routerules, 'Processing DRGRouteRulesinOCI Tab'),
         Option(None, Networking.create_terraform_nsg, 'Processing NSGs Tab'),
     ]

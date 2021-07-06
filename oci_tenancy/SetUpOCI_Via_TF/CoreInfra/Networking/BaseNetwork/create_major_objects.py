@@ -185,13 +185,14 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
                 exit(1)
 
             attached_to = str(df['Attached To'][i]).strip()
-            attached_to = attached_to.split("::")
-            if(len(attached_to)==2):
-                if attached_to[0].strip().upper() == "VCN":
-                    vcn_name = attached_to[1].strip()
-                    if (vcn_name.lower() != "nan" and vcns.vcns_having_drg[vcn_name,region] != drg):
-                        print("ERROR!!! VCN "+vcn_name +" in column Attached To is not as per DRG Required column of VCNs Tab..Exiting!")
-                        exit()
+            if(attached_to.lower()!='nan'):
+                attached_to = attached_to.split("::")
+                if(len(attached_to)==2):
+                    if attached_to[0].strip().upper() == "VCN":
+                        vcn_name = attached_to[1].strip()
+                        if (vcn_name.lower() != "nan" and vcns.vcns_having_drg[vcn_name,region] != drg):
+                            print("ERROR!!! VCN "+vcn_name +" in column Attached To is not as per DRG Required column of VCNs Tab..Exiting!")
+                            exit()
 
         # Process Rows
         ip=1
@@ -235,67 +236,70 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
                     tempdict['drg_tf_name'] = drg_tf_name
 
                 if (columnname == 'Attached To'):
-                    columnvalues = columnvalue.split("::")
-
-                    # for VCN attachments
-                    if columnvalues[0].strip().lower() == "vcn":
-                        vcn_name = columnvalues[1].strip()
-                        vcn_tf_name = commonTools.check_tf_variable(vcn_name)
-
-                        # Get DRG Attach Name
-                        drg_attach_name=''
-                        if (os.path.exists(outdir + "/" + region + "/obj_names.safe")):
-                            with open(outdir + "/" + region + "/obj_names.safe") as f:
-                                for line in f:
-                                    if ("drgattachinfo::::" + vcn_name + "::::" + drg_name in line):
-                                        drg_attach_name = line.split("::::")[3].strip()
-                                        break
-                        if (drg_attach_name == ""):
-                            drg_attach_name = drg_name + "_"+vcn_name+"_attach"
-
-                        tempStr['drg_attach_display_name'] = drg_attach_name
-                        drg_attach_tf_name = commonTools.check_tf_variable(drg_attach_name)
-
-                        tempStr['drg_attach_tf_name'] = drg_attach_tf_name
-                        tempStr['network_type'] = "VCN"
-                        tempStr['network_id'] = "oci_core_vcn." + vcn_tf_name + ".id"
-
-                        #DRG v1
-                        tempStr['vcn_id'] = "oci_core_vcn." + vcn_tf_name + ".id"
-
-                        tempStr.update(tempdict)
-                        # Get VCN DRG RT table
-                        vcn_drg_rt_name = ""
-                        if (os.path.exists(outdir + "/" + region + "/obj_names.safe")):
-                            with open(outdir + "/" + region + "/obj_names.safe") as f:
-                                for line in f:
-                                    if ("drginfo::::" + vcn_name + "::::" + drg_name in line):
-                                        vcn_drg_rt_name = line.split("::::")[3].strip()
-                                        break
-                        if (vcn_drg_rt_name == ""):
-                            vcn_drg_rt_var = vcn_name + "_Route Table associated with DRG-" + drg_name
-                        # Route table associated with DRG inside VCN is not existing
-                        elif (vcn_drg_rt_name == "None"):
-                            vcn_drg_rt_var = ""
-                        else:
-                            vcn_drg_rt_var = vcn_name + "_" + vcn_drg_rt_name
-
-                        if (vcn_drg_rt_var != ""):
-                            vcn_drg_rt_tf_name = commonTools.check_tf_variable(vcn_drg_rt_var)
-                        else:
-                            vcn_drg_rt_tf_name = ""
-                        tempStr['vcn_drg_rt_tf_name'] = vcn_drg_rt_tf_name
-
-                    # for other attachments
+                    if(columnvalue.lower()=='nan' or columnvalue.lower()==''):
+                        attachedto="empty"
                     else:
-                        drg_attach_name = drg_name +"_"+columnvalues[0].strip()+"_"+str(ip)+"_attach"
-                        ip=ip+1
-                        tempStr['drg_attach_display_name'] = drg_attach_name
-                        drg_attach_tf_name = commonTools.check_tf_variable(drg_attach_name)
-                        tempStr['drg_attach_tf_name'] = drg_attach_tf_name
-                        tempdict['network_type'] = columnvalues[0].strip().upper()
-                        # push the OCID of IP Sec or RPC or FC
-                        tempStr['network_id'] = columnvalues[1].strip()
+                        attachedto="attached"
+                        columnvalues = columnvalue.split("::")
+                        # for VCN attachments
+                        if columnvalues[0].strip().lower() == "vcn":
+                            vcn_name = columnvalues[1].strip()
+                            vcn_tf_name = commonTools.check_tf_variable(vcn_name)
+
+                            # Get DRG Attach Name
+                            drg_attach_name=''
+                            if (os.path.exists(outdir + "/" + region + "/obj_names.safe")):
+                                with open(outdir + "/" + region + "/obj_names.safe") as f:
+                                    for line in f:
+                                        if ("drgattachinfo::::" + vcn_name + "::::" + drg_name in line):
+                                            drg_attach_name = line.split("::::")[3].strip()
+                                            break
+                            if (drg_attach_name == ""):
+                                drg_attach_name = drg_name + "_"+vcn_name+"_attach"
+
+                            tempStr['drg_attach_display_name'] = drg_attach_name
+                            drg_attach_tf_name = commonTools.check_tf_variable(drg_attach_name)
+
+                            tempStr['drg_attach_tf_name'] = drg_attach_tf_name
+                            tempStr['network_type'] = "VCN"
+                            tempStr['network_id'] = "oci_core_vcn." + vcn_tf_name + ".id"
+
+                            #DRG v1
+                            tempStr['vcn_id'] = "oci_core_vcn." + vcn_tf_name + ".id"
+
+                            tempStr.update(tempdict)
+                            # Get VCN DRG RT table
+                            vcn_drg_rt_name = ""
+                            if (os.path.exists(outdir + "/" + region + "/obj_names.safe")):
+                                with open(outdir + "/" + region + "/obj_names.safe") as f:
+                                    for line in f:
+                                        if ("drginfo::::" + vcn_name + "::::" + drg_name in line):
+                                            vcn_drg_rt_name = line.split("::::")[3].strip()
+                                            break
+                            if (vcn_drg_rt_name == ""):
+                                vcn_drg_rt_var = vcn_name + "_Route Table associated with DRG-" + drg_name
+                            # Route table associated with DRG inside VCN is not existing
+                            elif (vcn_drg_rt_name == "None"):
+                                vcn_drg_rt_var = ""
+                            else:
+                                vcn_drg_rt_var = vcn_name + "_" + vcn_drg_rt_name
+
+                            if (vcn_drg_rt_var != ""):
+                                vcn_drg_rt_tf_name = commonTools.check_tf_variable(vcn_drg_rt_var)
+                            else:
+                                vcn_drg_rt_tf_name = ""
+                            tempStr['vcn_drg_rt_tf_name'] = vcn_drg_rt_tf_name
+
+                        # for other attachments
+                        else:
+                            drg_attach_name = drg_name +"_"+columnvalues[0].strip()+"_"+str(ip)+"_attach"
+                            ip=ip+1
+                            tempStr['drg_attach_display_name'] = drg_attach_name
+                            drg_attach_tf_name = commonTools.check_tf_variable(drg_attach_name)
+                            tempStr['drg_attach_tf_name'] = drg_attach_tf_name
+                            tempdict['network_type'] = columnvalues[0].strip().upper()
+                            # push the OCID of IP Sec or RPC or FC
+                            tempStr['network_id'] = columnvalues[1].strip()
 
                 if columnname == 'DRG RT Name':
                     #if it is Auto Generated RT(during export) dont attach any RT to DRG attachment
@@ -310,7 +314,10 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
                 tempStr.update(tempdict)
 
             drgstr = drg_template.render(tempStr)
-            drg_attach = drg_attach_template.render(tempStr)
+            if(attachedto=="attached"):
+                drg_attach = drg_attach_template.render(tempStr)
+            elif(attachedto=="empty"):
+                drg_attach=""
 
             if (drgstr not in tfStr[region]):
                 tfStr[region] = tfStr[region] + drgstr + drg_attach

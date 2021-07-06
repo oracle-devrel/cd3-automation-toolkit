@@ -1,5 +1,5 @@
-#Create DRG
 
+#Create DRG
 resource "oci_core_drg" "{{ drg_tf_name }}" {
     #Required
     compartment_id = var.{{ compartment_tf_name }}

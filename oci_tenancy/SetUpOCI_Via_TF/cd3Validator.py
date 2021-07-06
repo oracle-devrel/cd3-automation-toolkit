@@ -618,24 +618,27 @@ def validate_drgv2(filename, comp_ids, vcnobj):
             drgv2_drg_check = True
 
         attached_to=str(dfdrgv2.loc[i, 'Attached To']).strip()
-        if "::" not in attached_to:
-            log(f'ROW {i + 3} : Wrong value at column Attached To - {attached_to}. Valid format is <ATTACH_TYPE>::<ATTACH_ID>')
-            drgv2_format_check = True
+        if(attached_to.lower()=='' or attached_to.lower()=='nan'):
+            pass
         else:
-            attached_to=attached_to.split("::")
-            if(len(attached_to)!=2):
+            if "::" not in attached_to:
                 log(f'ROW {i + 3} : Wrong value at column Attached To - {attached_to}. Valid format is <ATTACH_TYPE>::<ATTACH_ID>')
                 drgv2_format_check = True
-            elif attached_to[0].strip().upper()=="VCN":
-                vcn_name = attached_to[1].strip()
+            else:
+                attached_to=attached_to.split("::")
+                if(len(attached_to)!=2):
+                    log(f'ROW {i + 3} : Wrong value at column Attached To - {attached_to}. Valid format is <ATTACH_TYPE>::<ATTACH_ID>')
+                    drgv2_format_check = True
+                elif attached_to[0].strip().upper()=="VCN":
+                    vcn_name = attached_to[1].strip()
 
-                try:
-                    if (vcn_name.lower() != "nan" and vcnobj.vcns_having_drg[vcn_name,region]!=drg_name):
-                        log(f'ROW {i + 3}: VCN {vcn_name} in column Attached To is not as per DRG Required column of VCNs Tab.')
+                    try:
+                        if (vcn_name.lower() != "nan" and vcnobj.vcns_having_drg[vcn_name,region]!=drg_name):
+                            log(f'ROW {i + 3}: VCN {vcn_name} in column Attached To is not as per DRG Required column of VCNs Tab.')
+                            drgv2_vcn_check = True
+                    except KeyError:
+                        log(f'ROW {i + 3}: VCN {vcn_name} in column Attached To is not as per VCN Name column of VCNs Tab.')
                         drgv2_vcn_check = True
-                except KeyError:
-                    log(f'ROW {i + 3}: VCN {vcn_name} in column Attached To is not as per VCN Name column of VCNs Tab.')
-                    drgv2_vcn_check = True
 
 
         rd_name=str(dfdrgv2.loc[i, 'Import DRG Route Distribution Name']).strip()

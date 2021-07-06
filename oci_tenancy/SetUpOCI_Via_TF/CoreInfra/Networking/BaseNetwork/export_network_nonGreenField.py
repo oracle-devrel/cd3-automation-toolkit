@@ -154,20 +154,23 @@ def print_drgv2(values_for_column_drgv2,region, comp_name, vcn_info,drg_info,drg
         elif (col_header == "DRG Name"):
             values_for_column_drgv2[col_header].append(drg_info.display_name)
         elif(col_header == "Attached To"):
-            if (drg_attachment_info.network_details is not None):
-                attach_type = drg_attachment_info.network_details.type
-                attach_id = drg_attachment_info.network_details.id
-            # DRG v1
+            if(drg_attachment_info is None):
+                values_for_column_drgv2[col_header].append('')
             else:
-                attach_type = "VCN"
-                attach_id = drg_attachment_info.vcn_id
+                if (drg_attachment_info.network_details is not None):
+                    attach_type = drg_attachment_info.network_details.type
+                    attach_id = drg_attachment_info.network_details.id
+                # DRG v1
+                else:
+                    attach_type = "VCN"
+                    attach_id = drg_attachment_info.vcn_id
 
-            if(attach_type.upper()=="VCN"):
-                columnval = attach_type+"::"+vcn_info.display_name
-                values_for_column_drgv2[col_header].append(columnval)
-            else:
-                columnval = attach_type + "::" + attach_id
-                values_for_column_drgv2[col_header].append(columnval)
+                if(attach_type.upper()=="VCN"):
+                    columnval = attach_type+"::"+vcn_info.display_name
+                    values_for_column_drgv2[col_header].append(columnval)
+                else:
+                    columnval = attach_type + "::" + attach_id
+                    values_for_column_drgv2[col_header].append(columnval)
 
         elif (col_header == "DRG RT Name"):
             if(drg_rt_info == None):
@@ -543,28 +546,20 @@ def export_networking(inputfile, outdir, _config, network_compartments=[]):
         vnc = VirtualNetworkClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
         region = reg.capitalize()
         drg_ocid=[]
+        drg_rt_ocid=[]
         drg_comp_name=''
         drg_version="DRGv2"
         for ntk_compartment_name in comp_list_fetch:
-            #if ct.ntk_compartment_ids[ntk_compartment_name] not in comp_ocid_done:
-                #if (input_compartment_names is not None and ntk_compartment_name not in input_compartment_names):
-                #    continue
-                #comp_ocid_done.append(ct.ntk_compartment_ids[ntk_compartment_name])
-                #drgs = oci.pagination.list_call_get_all_results(vnc.list_drgs,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name])
+              #drgs = oci.pagination.list_call_get_all_results(vnc.list_drgs,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name])
                 #for drg in drgs.data:
-                    # Get DRG Attachments for each DRG
-                    #comp_ocid_done_again=[]
-                #    for ntk_compartment_name_again in comp_list_fetch:
-                    #    if ct.ntk_compartment_ids[ntk_compartment_name_again] not in comp_ocid_done_again:
-                    #        comp_ocid_done_again.append(ct.ntk_compartment_ids[ntk_compartment_name_again])
                             DRG_Attachments = oci.pagination.list_call_get_all_results(vnc.list_drg_attachments,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name],lifecycle_state ="ATTACHED")#,attachment_type="ALL")
-
-                            drg_info=None
 
                             for drg_attachment_info in DRG_Attachments.data:
                                 drg_attachment_name = drg_attachment_info.display_name
                                 drg_id = drg_attachment_info.drg_id
                                 drg_info = vnc.get_drg(drg_id).data
+
+                                # Attachment Data
                                 drg_display_name = drg_info.display_name
                                 drg_comp_id=drg_info.compartment_id
                                 for key, val in ct.ntk_compartment_ids.items():
@@ -578,7 +573,8 @@ def export_networking(inputfile, outdir, _config, network_compartments=[]):
 
                                 tf_name = commonTools.check_tf_variable(drg_display_name)
 
-
+                                #Get Attachment Details
+                                # DRG v2
                                 if(drg_attachment_info.network_details is not None):
                                     attach_type = drg_attachment_info.network_details.type
                                     attach_id = drg_attachment_info.network_details.id
@@ -618,6 +614,7 @@ def export_networking(inputfile, outdir, _config, network_compartments=[]):
                                 drg_route_distribution_statements = None
 
                                 if(drg_route_table_id is not None):
+                                    drg_rt_ocid.append(drg_route_table_id)
                                     drg_route_table_info = vnc.get_drg_route_table(drg_route_table_id).data
 
                                     import_drg_route_distribution_id = drg_route_table_info.import_drg_route_distribution_id
@@ -635,6 +632,50 @@ def export_networking(inputfile, outdir, _config, network_compartments=[]):
                                                 k=k+1
 
                                 print_drgv2(values_for_column_drgv2, region, drg_comp_name, vcn_info,drg_info, drg_attachment_info, drg_route_table_info, import_drg_route_distribution_info,drg_route_distribution_statements)
+
+                            # Get All Other RTs for this DRG only if it is DRGv2
+                            # DRG v2
+                            for drg_id in drg_ocid:
+                                drg_attachment_info = None
+                                vcn_info=None
+                                drg_info = vnc.get_drg(drg_id).data
+
+                                if drg_info.default_drg_route_tables is not None:
+                                    DRG_RTs = oci.pagination.list_call_get_all_results(vnc.list_drg_route_tables,
+                                                                                       drg_id=drg_id)
+                                    for drg_route_table_info in DRG_RTs.data:
+                                        drg_rt_id = drg_route_table_info.id
+                                        #RT associated with attachment already processed above
+                                        if (drg_rt_id in drg_rt_ocid):
+                                            continue
+                                        #Process other RTs of this DRG
+                                        import_drg_route_distribution_info = None
+                                        drg_route_distribution_statements = None
+
+                                        import_drg_route_distribution_id = drg_route_table_info.import_drg_route_distribution_id
+                                        if (import_drg_route_distribution_id != None):
+                                            import_drg_route_distribution_info = vnc.get_drg_route_distribution(
+                                                import_drg_route_distribution_id).data
+                                            drg_route_distribution_statements = vnc.list_drg_route_distribution_statements(
+                                                import_drg_route_distribution_info.id)
+
+                                            tf_name = commonTools.check_tf_variable(
+                                                drg_display_name + "_" + import_drg_route_distribution_info.display_name)
+                                            if (import_drg_route_distribution_info.display_name not in commonTools.drg_auto_RDs):
+                                                importCommands[reg].write(
+                                                    "\nterraform import oci_core_drg_route_distribution." + tf_name + " " + import_drg_route_distribution_info.id)
+
+                                                k = 1
+                                                for stmt in drg_route_distribution_statements.data:
+                                                    importCommands[reg].write(
+                                                        "\nterraform import oci_core_drg_route_distribution_statement." + tf_name + "_statement" + str(
+                                                            k) + " drgRouteDistributions/" + import_drg_route_distribution_info.id + "/statements/" + stmt.id)
+                                                    k = k + 1
+                                        print_drgv2(values_for_column_drgv2, region, drg_comp_name, vcn_info, drg_info,
+                                                    drg_attachment_info, drg_route_table_info,
+                                                    import_drg_route_distribution_info,
+                                                    drg_route_distribution_statements)
+
 
     commonTools.write_to_cd3(values_for_column_drgv2, cd3file, "DRGs")
     print("DRGs exported to CD3\n")
