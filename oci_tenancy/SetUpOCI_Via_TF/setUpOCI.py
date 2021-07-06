@@ -93,7 +93,7 @@ def validate_cd3(execute_all=False):
         Option("Validate Compartments", None, None),
         Option("Validate Groups", None, None),
         Option("Validate Policies", None, None),
-        Option("Validate Networking(VCNs, Subnets, DHCP, DRGv2)", None, None),
+        Option("Validate Networking(VCNs, Subnets, DHCP, DRGs)", None, None),
         Option("Validate Instances", None, None),
         Option("Validate Block Volumes", None, None),
     ]
@@ -123,7 +123,7 @@ def export_networking():
         Option(None, Networking.create_terraform_subnet, 'Processing Subnets Tab'),
         Option(None, Networking.modify_terraform_secrules, 'Processing SecRulesinOCI Tab'),
         Option(None, Networking.modify_terraform_routerules, 'Processing RouteRulesinOCI Tab'),
-        Option(None, Networking.create_terraform_drg_route, 'Processing DRGv2 Tab'),
+        Option(None, Networking.create_terraform_drg_route, 'Processing DRGs Tab'),
         Option(None, Networking.modify_terraform_drg_routerules, 'Processing DRGRouteRulesinOCI Tab'),
         Option(None, Networking.create_terraform_nsg, 'Processing NSGs Tab'),
     ]

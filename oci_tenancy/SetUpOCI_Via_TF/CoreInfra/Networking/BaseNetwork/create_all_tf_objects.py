@@ -37,7 +37,7 @@ def create_all_tf_objects(inputfile, outdir, prefix, config, modify_network=Fals
     if not os.path.exists(outdir):
         os.makedirs(outdir)
 
-    with section('Process VCNs Tab and DRGv2 Tab'):
+    with section('Process VCNs Tab and DRGs Tab'):
         create_major_objects(inputfile, outdir, prefix, config, modify_network)
 
     with section('Process DHCP Tab'):
@@ -47,7 +47,7 @@ def create_all_tf_objects(inputfile, outdir, prefix, config, modify_network=Fals
         with section('Process Subnets tab for Routes creation'):
             create_terraform_route(inputfile, outdir, prefix, config, modify_network)
 
-        with section('Process DRGv2 tab for DRG Route Tables and Route Distribution creation'):
+        with section('Process DRGs tab for DRG Route Tables and Route Distribution creation'):
             create_terraform_drg_route(inputfile, outdir, prefix, config, modify_network)
 
         with section('Process Subnets for Seclists creation'):

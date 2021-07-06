@@ -472,16 +472,16 @@ class commonTools():
                 """
 
 
-class parseDRGv2():
+class parseDRGs():
     def __init__(self, filename):
         self.drg_names = {}
         self.drg_rds = {}
         try:
             # Read and search for VCN
-            df_drgv2 = pd.read_excel(filename, sheet_name='DRGv2', skiprows=1)
+            df_drgv2 = pd.read_excel(filename, sheet_name='DRGs', skiprows=1)
         except Exception as e:
             if ("No sheet named" in str(e)):
-                print("\nTab - \"DRGv2\" is missing in the CD3. Please make sure to use the right CD3 in properties file...Exiting!!")
+                print("\nTab - \"DRGs\" is missing in the CD3. Please make sure to use the right CD3 in properties file...Exiting!!")
                 exit(1)
 
         # Drop all empty rows

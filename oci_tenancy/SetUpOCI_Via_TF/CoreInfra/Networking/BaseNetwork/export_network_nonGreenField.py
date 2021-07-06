@@ -400,7 +400,7 @@ def export_networking(inputfile, outdir, _config, network_compartments=[]):
 
     # Read CD3
     df,values_for_column_vcns=commonTools.read_cd3(cd3file,"VCNs")
-    df, values_for_column_drgv2 = commonTools.read_cd3(cd3file, "DRGv2")
+    df, values_for_column_drgv2 = commonTools.read_cd3(cd3file, "DRGs")
     df, values_for_column_dhcp = commonTools.read_cd3(cd3file, "DHCP")
     df, values_for_column_subnets = commonTools.read_cd3(cd3file, "Subnets")
     df, values_for_column_nsgs = commonTools.read_cd3(cd3file, "NSGs")
@@ -411,7 +411,7 @@ def export_networking(inputfile, outdir, _config, network_compartments=[]):
 
     # Get dict for columns from Excel_Columns
     sheet_dict_vcns=ct.sheet_dict["VCNs"]
-    sheet_dict_drgv2 = ct.sheet_dict["DRGv2"]
+    sheet_dict_drgv2 = ct.sheet_dict["DRGs"]
     sheet_dict_dhcp = ct.sheet_dict["DHCP"]
     sheet_dict_subnets = ct.sheet_dict["Subnets"]
     sheet_dict_nsgs = ct.sheet_dict["NSGs"]
@@ -535,10 +535,10 @@ def export_networking(inputfile, outdir, _config, network_compartments=[]):
     commonTools.write_to_cd3(values_for_column_vcns, cd3file, "VCNs")
     print("VCNs exported to CD3\n")
 
-    # Fetch DRGv2
-    print("\nFetching DRGv2...")
+    # Fetch DRGs
+    print("\nFetching DRGs...")
     for reg in ct.all_regions:
-        importCommands[reg].write("\n######### Writing import for DRGv2 #########\n")
+        importCommands[reg].write("\n######### Writing import for DRGs #########\n")
         config.__setitem__("region", ct.region_dict[reg])
         vnc = VirtualNetworkClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
         region = reg.capitalize()
@@ -636,8 +636,8 @@ def export_networking(inputfile, outdir, _config, network_compartments=[]):
 
                                 print_drgv2(values_for_column_drgv2, region, drg_comp_name, vcn_info,drg_info, drg_attachment_info, drg_route_table_info, import_drg_route_distribution_info,drg_route_distribution_statements)
 
-    commonTools.write_to_cd3(values_for_column_drgv2, cd3file, "DRGv2")
-    print("DRGv2 exported to CD3\n")
+    commonTools.write_to_cd3(values_for_column_drgv2, cd3file, "DRGs")
+    print("DRGs exported to CD3\n")
 
     # Fetch NSGs
     rows = []

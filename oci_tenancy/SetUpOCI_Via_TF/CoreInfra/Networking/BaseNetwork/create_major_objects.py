@@ -154,7 +154,7 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
                         drg_data[region] = drg_data[region] + drg_datasource_template.render(temp)
 
         # Read cd3 using pandas dataframe
-        df, col_headers = commonTools.read_cd3(filename, "DRGv2")
+        df, col_headers = commonTools.read_cd3(filename, "DRGs")
         # Remove empty rows
         df = df.dropna(how='all')
         df = df.reset_index(drop=True)
@@ -460,7 +460,7 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
 
     # Get vcns object from commonTools
     vcns = parseVCNs(filename)
-    drgv2 = parseDRGv2(filename)
+    drgv2 = parseDRGs(filename)
 
     for reg in ct.all_regions:
         tfStr[reg] = ''

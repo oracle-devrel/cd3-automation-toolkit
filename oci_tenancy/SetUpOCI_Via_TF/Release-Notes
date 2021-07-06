@@ -243,9 +243,10 @@ SetUPOCI_Via_TF Tag v7.2
 ------------------------
 SetUPOCI_Via_TF Tag v8.0
 ------------------------
-1. Support DRGv2 - added 2 new sheets to CD3: DRGv2 and DRGRouteRulesinOCI
-2. Updated CD3 Validator
-3. Optimized the code for export of objects
-4. Bug fix for export of SecRules and RouteRules for all compartments
-5. Allow duplicate names of NSGs across VCNs
-6. Upgrade terraform version to 1.0.0
+1. Support for DRGv2 - added 2 new sheets to CD3: DRGs and DRGRouteRulesinOCI
+2. Backward compatible to support DRGv1
+3. Updated CD3 Validator
+4. Optimized the code for export of objects
+5. Bug fix for export of SecRules and RouteRules for all compartments
+6. Allow duplicate names of NSGs across VCNs
+7. Upgrade terraform version to 1.0.0

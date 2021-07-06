@@ -574,7 +574,7 @@ def validate_dhcp(filename, comp_ids, vcnobj):
 
 # Checks if the fields in DRGv2 tab are compliant
 def validate_drgv2(filename, comp_ids, vcnobj):
-    dfdrgv2 = data_frame(filename, 'DRGv2')
+    dfdrgv2 = data_frame(filename, 'DRGs')
     drgv2_empty_check = False
     drgv2_invalid_check = False
     drgv2_comp_check = False
@@ -1026,7 +1026,7 @@ def validate_cd3(filename, choices, configFileName):
             policies_check = validate_policies(filename,ct.ntk_compartment_ids)
     
         # CD3 Validation begins here for Network
-        if ('Validate Networking(VCNs, Subnets, DHCP, DRGv2)' in options[0]):
+        if ('Validate Networking(VCNs, Subnets, DHCP, DRGs)' in options[0]):
             val_net=True
             vcnobj = parseVCNs(filename)
     
@@ -1042,8 +1042,8 @@ def validate_cd3(filename, choices, configFileName):
             print("\nProcessing DHCP Tab..")
             dhcp_check = validate_dhcp(filename, ct.ntk_compartment_ids, vcnobj)
 
-            log("============================= Verifying DRGv2 Tab ==========================================\n")
-            print("\nProcessing DRGv2 Tab..")
+            log("============================= Verifying DRGs Tab ==========================================\n")
+            print("\nProcessing DRGs Tab..")
             drgv2_check = validate_drgv2(filename, ct.ntk_compartment_ids, vcnobj)
 
         if ('Validate Instances' in options[0]):

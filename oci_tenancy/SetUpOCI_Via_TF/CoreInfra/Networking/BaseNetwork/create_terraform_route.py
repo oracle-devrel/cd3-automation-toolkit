@@ -38,7 +38,7 @@ def parse_args():
 def create_terraform_drg_route(inputfile, outdir, prefix, config, modify_network=False):
     filename = inputfile
     configFileName = config
-    drgv2=parseDRGv2(filename)
+    drgv2=parseDRGs(filename)
 
     ct = commonTools()
     ct.get_subscribedregions(configFileName)
@@ -57,7 +57,7 @@ def create_terraform_drg_route(inputfile, outdir, prefix, config, modify_network
     # If input is CD3 excel file
     if ('.xls' in filename):
 
-        df, col_headers = commonTools.read_cd3(filename, "DRGv2")
+        df, col_headers = commonTools.read_cd3(filename, "DRGs")
         df = df.dropna(how='all')
         df = df.reset_index(drop=True)
 

@@ -31,7 +31,7 @@
         "VCN Name" : "display_name",
         "CIDR Block" : "cidr_block"
     },
-    "DRGv2" :
+    "DRGs" :
     {
         "DRG Name" : "drg_name"
 

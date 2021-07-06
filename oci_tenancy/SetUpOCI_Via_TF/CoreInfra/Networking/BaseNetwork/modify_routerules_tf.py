@@ -47,7 +47,7 @@ def modify_terraform_drg_routerules(inputfile, outdir, prefix=None, config=DEFAU
     tempStr = {}
     tempdict={}
 
-    drgv2=parseDRGv2(filename)
+    drgv2=parseDRGs(filename)
 
     # Read cd3 using pandas dataframe
     df, col_headers = commonTools.read_cd3(filename, "DRGRouteRulesinOCI")
