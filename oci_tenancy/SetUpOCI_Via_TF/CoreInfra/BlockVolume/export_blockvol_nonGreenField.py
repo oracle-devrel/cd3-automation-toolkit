@@ -58,7 +58,6 @@ def volume_attachment_info(compute,ct,volume_id):
             #compute_info = compute.list_instances(ct.ntk_compartment_ids[ntk_compartment_name])
             compute_info = compute.get_instance(instance_id=instance_id)#,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name])
             #for instance in compute_info.data:
-            print("attached to "+compute_info.data.display_name)
             #if instance_id == compute_info.data.id:
             instance_name = compute_info.data.display_name
             return attachments,attachment_id, instance_name, attachment_type
