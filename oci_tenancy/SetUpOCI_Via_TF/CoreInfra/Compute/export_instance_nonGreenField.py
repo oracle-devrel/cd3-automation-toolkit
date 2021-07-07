@@ -62,7 +62,7 @@ def adding_columns_values(region, ad, fd, vs, publicip, privateip, os_dname, sha
             values_for_column_instances = commonTools.export_tags(instance_data, col_header,
                                                                   values_for_column_instances)
         else:
-            oci_objs = [instance_data, bdet,shape_config,vnic_info]
+            oci_objs = [instance_data, bdet,shape_config,vnic_info,d_host]
             values_for_column_instances = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict_instances,
                                                                            values_for_column_instances)
 
