@@ -15,15 +15,15 @@ from commonTools import *
 from jinja2 import Environment, FileSystemLoader
 
 
-def adding_columns_values(region, hostname, ad, fd, vs, publicip, privateip, os_dname, shape, key_name, c_name,
-                          bkp_policy_name, nsgs, d_host, instance_data, values_for_column_instances, bc_info, bdet,
-                          cpcn):
+def adding_columns_values(region, ad, fd, vs, publicip, privateip, os_dname, shape, key_name, c_name,
+                          bkp_policy_name, nsgs, d_host, instance_data, values_for_column_instances,  bdet,
+                          cpcn,shape_config,vnic_info):
     # print("CPCN=",cpcn)
     for col_header in values_for_column_instances.keys():
         if (col_header == "Region"):
             values_for_column_instances[col_header].append(region)
-        elif (col_header == "Hostname"):
-            values_for_column_instances[col_header].append(hostname)
+        #elif (col_header == "Hostname"):
+        #    values_for_column_instances[col_header].append(hostname)
         elif (col_header == "Availability Domain(AD1|AD2|AD3)"):
             values_for_column_instances[col_header].append(ad)
         elif (col_header == "Fault Domain"):
@@ -46,19 +46,23 @@ def adding_columns_values(region, hostname, ad, fd, vs, publicip, privateip, os_
             values_for_column_instances[col_header].append(bkp_policy_name)
         elif (col_header == "NSGs"):
             values_for_column_instances[col_header].append(nsgs)
-        elif (col_header.lower() == "boot volume size in gbs"):
-            values_for_column_instances[col_header].append(bdet.size_in_gbs)
-        elif (col_header.lower() == "kms key id"):
-            values_for_column_instances[col_header].append(bdet.kms_key_id)
+        #elif (col_header.lower() == "boot volume size in gbs"):
+        #    values_for_column_instances[col_header].append(bdet.size_in_gbs)
+        #elif (col_header.lower() == "kms key id"):
+        #    values_for_column_instances[col_header].append(bdet.kms_key_id)
         elif (col_header == "Dedicated VM Host"):
-            values_for_column_instances[col_header].append(d_host)
+            if (d_host == None):
+                values_for_column_instances[col_header].append('')
+            else:
+                values_for_column_instances[col_header].append(d_host.display_name
+                                                               )
         elif (col_header == "Custom Policy Compartment Name"):
             values_for_column_instances[col_header].append(cpcn)
         elif str(col_header).lower() in commonTools.tagColumns:
             values_for_column_instances = commonTools.export_tags(instance_data, col_header,
                                                                   values_for_column_instances)
         else:
-            oci_objs = [instance_data, bc_info[0]]
+            oci_objs = [instance_data, bdet,shape_config,vnic_info]
             values_for_column_instances = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict_instances,
                                                                            values_for_column_instances)
 
@@ -101,45 +105,42 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, config):
             tf_name = commonTools.check_tf_variable(ins_dname)
             importCommands[reg_name].write(
                 "\nterraform import oci_core_instance." + tf_name + " " + str(ins.id))  # writing into tf file
-            ins_shape = ins.shape  # Shape
+
+            # Shape Details
+            ins_shape = ins.shape
+            shape_config=None
+
             if ('Flex' in ins_shape):
-                ocpu = ins.shape_config
-                ocpus_n = str(ocpu.ocpus)
+                #ocpu = ins.shape_config
+                shape_config = ins.shape_config
+                ocpus_n = str(shape_config.ocpus)
                 ocpu = ocpus_n.split(".")[0]
                 ins_shape = ins_shape + "::" + ocpu
-                # print(ins_shape)
-            region_code = ins.region
-            dedicated_host = ins.dedicated_vm_host_id  # dedicated host_name
-            if (dedicated_host == None):
-                dedicated_host = ""
-                # print("Dedi=",dedicated_host)
-            # print(ins_dname,ins_ad,ins_fd,ins_shape)
-            ins_vnic = find_vnic(ins_id, config,compartment_id)
-            # print(ins_vnic.data)
+
+            #Dedicated VM Host Details
+            dedicated_host=None
+            dedicated_host_id = ins.dedicated_vm_host_id  # dedicated host_name
+            if(dedicated_host_id is not None):
+                dedicated_host=compute.get_dedicated_vm_host(dedicated_host_id)
+
+            # Boot Volume and its BackUp Policy Details
             boot_check = find_boot(ins_ad, ins_id, config)
             boot_id = boot_check.data[0].boot_volume_id
             try:
-                bdet = boot_details = bc.get_boot_volume(boot_volume_id=boot_id).data
-                boot_details = bc.get_boot_volume(boot_volume_id=boot_id).data.image_id
+                bdet = bc.get_boot_volume(boot_volume_id=boot_id).data
+                boot_details = bdet.image_id
                 bvp = bc.get_volume_backup_policy_asset_assignment(asset_id=boot_id)
-
             except oci.exceptions.ServiceError as s:
                 if 'Authorization failed or requested resource not found' in s.message:
-                    bdet = []
+                    bdet = None
                     boot_details = ''
                     bvp = []
-            # print("OS",os.data)                                   #Operating system
-            # sdet=bc.get_volume(volume_id=source_image_id)
 
-            #bvdetails = bc.get_boot_volume(boot_volume_id=boot_id)
             bkp_policy_name = ""
+
             cpcn = ""
             if bvp != [] and (len(bvp.data)):
-                # print("Bvp Data:",bvp.data)
                 bkp_pname = bc.get_volume_backup_policy(policy_id=bvp.data[0].policy_id)
-                # print(bkp_pname)
-                # print("BVP-DATA=",bvp.data)
-                # print("bkp_data::",bkp_pname.data)
                 bpolicy = ins_dname + "_bkupPolicy"
                 bkp_policy_name = bkp_pname.data.display_name.title()  # backup policy name
                 tf_name = commonTools.check_tf_variable(bpolicy)
@@ -153,20 +154,24 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, config):
                         if (bkp_pname.data.compartment_id == comp_id):
                             # print(comp_name, comp_id)
                             cpcn = comp_name
+
+            # VNIC Details
+            ins_vnic = find_vnic(ins_id, config, compartment_id)
+            vnic_info=None
             for lnic in ins_vnic.data:
                 subnet_id = lnic.subnet_id
                 vnic_id = lnic.vnic_id
-                vnic_info = network.get_vnic(vnic_id=vnic_id)
-                if (vnic_info.data.is_primary == False):
+                vnic_info = network.get_vnic(vnic_id=vnic_id).data
+
+                #Get only primary VNIC details
+                if (vnic_info.is_primary == False):
                     continue
-                # print("Lnic",lnic)
-                # print(vnic_id)
                 subnet_info = network.get_subnet(subnet_id=subnet_id)
                 subnet_name = subnet_info.data.display_name
                 vcn_id = subnet_info.data.vcn_id
                 vcn_info = network.get_vcn(vcn_id=vcn_id)
                 vcn_name = vcn_info.data.display_name
-                privateip = vnic_info.data.private_ip
+                privateip = vnic_info.private_ip
                 key_name = ins_dname + "_" + str(privateip)
                 key_name = commonTools.check_tf_variable(key_name)
                 if ('ssh_authorized_keys' in ins.metadata.keys()):
@@ -195,12 +200,14 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, config):
                     tf_name = commonTools.check_tf_variable(reg_name + "-" + os_dname)
                     os_keys[tf_name] = ins.source_details.boot_volume_id
                     os_dname = "bootVolume::" + os_dname
-                publicip = vnic_info.data.public_ip
+                publicip = vnic_info.public_ip
                 if (publicip == None):
                     publicip = "FALSE"
                 else:
                     publicip = "TRUE"
-                nsg_id = vnic_info.data.nsg_ids
+
+                #Get NSG Details
+                nsg_id = vnic_info.nsg_ids
                 nsg_names = ""
                 if (len(nsg_id)):
                     for j in nsg_id:
@@ -209,10 +216,10 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, config):
                     nsg_names = nsg_names[1:]
                 vs = vcn_name + "_" + subnet_name  # VCN + Subnet Name
                 vs = commonTools.check_tf_variable(vs)
-                adding_columns_values(reg_name.title(), ins_dname, AD_name, ins_fd, vs, publicip, privateip, os_dname,
+
+                adding_columns_values(reg_name.title(), AD_name, ins_fd, vs, publicip, privateip, os_dname,
                                       ins_shape, key_name, compartment_name, bkp_policy_name, nsg_names, dedicated_host,
-                                      ins, values_for_column_instances, boot_check.data, bdet, cpcn)
-                # rows.append(new_row)
+                                      ins, values_for_column_instances, bdet, cpcn,shape_config,vnic_info)
 
 
 def parse_args():

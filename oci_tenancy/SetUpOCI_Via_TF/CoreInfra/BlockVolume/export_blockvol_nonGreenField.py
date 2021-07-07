@@ -46,6 +46,7 @@ def volume_attachment_info(compute,ct,volume_id):
     attachment_type=''
     instance_name = ''
     attachment_id = ''
+    attachments=None
     for ntk_compartment_name in comp_list_fetch:
         attach_info = compute.list_volume_attachments(compartment_id = ct.ntk_compartment_ids[ntk_compartment_name], volume_id = volume_id)
         for attachments in attach_info.data:
@@ -60,10 +61,10 @@ def volume_attachment_info(compute,ct,volume_id):
             print("attached to "+compute_info.data.display_name)
             #if instance_id == compute_info.data.id:
             instance_name = compute_info.data.display_name
-            return attachment_id, instance_name, attachment_type
+            return attachments,attachment_id, instance_name, attachment_type
 
     #retun empty values if not attached to any instance
-    return attachment_id, instance_name, attachment_type
+    return attachments,attachment_id, instance_name, attachment_type
 
 
 def print_blockvolumes(region, BVOLS, bvol, compute, ct, values_for_column, ntk_compartment_name):
@@ -71,7 +72,7 @@ def print_blockvolumes(region, BVOLS, bvol, compute, ct, values_for_column, ntk_
     for blockvols in BVOLS.data:
         volume_id = blockvols.id
         volume_compartment_id = blockvols.compartment_id
-        attachment_id, instance_name, attachment_type = volume_attachment_info(compute, ct,volume_id)
+        attachments, attachment_id, instance_name, attachment_type = volume_attachment_info(compute, ct,volume_id)
         asset_assignment_id, asset_policy_name, policy_comp_name = policy_info(bvol, volume_id,ct)
         block_tf_name = commonTools.check_tf_variable(blockvols.display_name)
 
@@ -113,7 +114,7 @@ def print_blockvolumes(region, BVOLS, bvol, compute, ct, values_for_column, ntk_
             elif col_header.lower() in commonTools.tagColumns:
                 values_for_column = commonTools.export_tags(blockvols, col_header, values_for_column)
             else:
-                oci_objs = [blockvols]
+                oci_objs = [blockvols,attachments]
                 values_for_column = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict, values_for_column)
 
 
