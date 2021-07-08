@@ -75,6 +75,9 @@ def print_events(values_for_column_events, region, ntk_compartment_name, event, 
         for action in actions:
           action_type = action.action_type
           action_is_enabled = str(action.is_enabled)
+          if (action_type == "OSS"):
+              print("Ignoring Event "+event_name +" because action is OSS")
+              continue
           if ( action_type == "FAAS" ):
              action_id = action.function_id
              try:
