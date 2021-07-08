@@ -245,7 +245,7 @@ SetUPOCI_Via_TF Tag v8.0
 ------------------------
 1. Support for DRGv2 - added 2 new sheets to CD3: DRGs and DRGRouteRulesinOCI
 2. Backward compatible to support DRGv1
-3. Updated CD3 Validator
+3. Updated CD3 Validator to include validation for DRGs tab
 4. Optimized the code for export of objects
 5. Bug fix for export of SecRules and RouteRules for all compartments
 6. Included export of additional objects for Instances and Block Volumes

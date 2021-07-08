@@ -552,9 +552,11 @@ def export_networking(inputfile, outdir, _config, network_compartments=[]):
         for ntk_compartment_name in comp_list_fetch:
               #drgs = oci.pagination.list_call_get_all_results(vnc.list_drgs,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name])
                 #for drg in drgs.data:
-                            DRG_Attachments = oci.pagination.list_call_get_all_results(vnc.list_drg_attachments,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name],lifecycle_state ="ATTACHED")#,attachment_type="ALL")
+                            DRG_Attachments = oci.pagination.list_call_get_all_results(vnc.list_drg_attachments,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name])#,lifecycle_state ="ATTACHED")#,attachment_type="ALL")
 
                             for drg_attachment_info in DRG_Attachments.data:
+                                if (drg_attachment_info.lifecycle_state != "ATTACHED"):
+                                    continue
                                 drg_attachment_name = drg_attachment_info.display_name
                                 drg_id = drg_attachment_info.drg_id
                                 drg_info = vnc.get_drg(drg_id).data
