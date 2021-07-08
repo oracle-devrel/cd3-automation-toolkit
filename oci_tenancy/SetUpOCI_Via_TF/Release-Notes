@@ -248,5 +248,5 @@ SetUPOCI_Via_TF Tag v8.0
 3. Updated CD3 Validator
 4. Optimized the code for export of objects
 5. Bug fix for export of SecRules and RouteRules for all compartments
-6. Allow duplicate names of NSGs across VCNs
+6. Included export of additional objects for Instances and Block Volumes
 7. Upgrade terraform version to 1.0.0
