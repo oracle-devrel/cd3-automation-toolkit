@@ -650,7 +650,9 @@ def export_networking(inputfile, outdir, _config, network_compartments=[]):
                                         #RT associated with attachment already processed above
                                         if (drg_rt_id in drg_rt_ocid):
                                             continue
+
                                         #Process other RTs of this DRG
+                                        drg_rt_ocid.append(drg_rt_id)
                                         import_drg_route_distribution_info = None
                                         drg_route_distribution_statements = None
 
