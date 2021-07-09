@@ -165,6 +165,8 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
 
         for i in df.index:
             region = str(df['Region'][i]).strip()
+            if (region in commonTools.endNames):
+                break
             comp_name = str(df['Compartment Name'][i]).strip()
             drg = str(df['DRG Name'][i]).strip()
 
@@ -173,8 +175,7 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
                 print("\nERROR!!! Columns Region/Compartment Name/DRG Name can not be empty..Exiting!")
                 exit(1)
 
-            if (region in commonTools.endNames):
-                break
+
             region = region.strip().lower()
             if region not in ct.all_regions:
                 print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")

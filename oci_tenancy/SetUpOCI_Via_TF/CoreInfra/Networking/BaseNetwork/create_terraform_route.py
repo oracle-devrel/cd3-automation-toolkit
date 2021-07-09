@@ -91,6 +91,11 @@ def create_terraform_drg_route(inputfile, outdir, prefix, config, modify_network
             drg_rt_dstrb_tf_name = ''
             drg_rt_dstrb_res_name = ''
             drg_tf_name= ''
+            region = str(df.loc[i, 'Region']).strip()
+
+            if (region in commonTools.endNames):
+                break
+
             DRG_RT=str(df.loc[i, 'DRG RT Name']).strip()
             DRG_RD=str(df.loc[i, 'Import DRG Route Distribution Name']).strip()
 
@@ -102,10 +107,6 @@ def create_terraform_drg_route(inputfile, outdir, prefix, config, modify_network
             if(DRG_RT in commonTools.drg_auto_RTs and DRG_RD in commonTools.drg_auto_RDs):
                 continue
 
-            region = str(df.loc[i, 'Region']).strip()
-
-            if (region in commonTools.endNames):
-                break
 
             region = region.strip().lower()
             if region not in ct.all_regions:
