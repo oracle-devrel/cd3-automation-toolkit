@@ -191,8 +191,12 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
                 if(len(attached_to)==2):
                     if attached_to[0].strip().upper() == "VCN":
                         vcn_name = attached_to[1].strip()
-                        if (vcn_name.lower() != "nan" and vcns.vcns_having_drg[vcn_name,region] != drg):
-                            print("ERROR!!! VCN "+vcn_name +" in column Attached To is not as per DRG Required column of VCNs Tab..Exiting!")
+                        try:
+                            if (vcn_name.lower() != "nan" and vcns.vcns_having_drg[vcn_name,region] != drg):
+                                print("ERROR!!! VCN "+vcn_name +" in column Attached To is not as per DRG Required column of VCNs Tab..Exiting!")
+                                exit()
+                        except KeyError:
+                            print("ERROR!!! VCN "+vcn_name+" in column Attached To is not as per VCN Name column of VCNs Tab..Exiting!")
                             exit()
 
         # Process Rows
