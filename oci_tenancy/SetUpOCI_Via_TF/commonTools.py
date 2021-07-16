@@ -319,13 +319,17 @@ class commonTools():
                 exit(1)
 
         yield df
-        book = load_workbook(cd3file)
         try:
+            book = load_workbook(cd3file)
             sheet = book[sheet_name]
         except KeyError as e:
             if 'does not exist' in str(e):
                 print("\nTab - \""+sheet_name+"\" seems to be missing in the CD3. Please make sure to use the right CD3 in properties file.....Exiting!!")
                 exit(1)
+        except Exception as e:
+            print(str(e))
+            print("Exiting!!")
+            exit()
 
         values_for_column = collections.OrderedDict()
         # values_for_column={}
@@ -337,8 +341,13 @@ class commonTools():
 
     #Write exported  rows to cd3
     def write_to_cd3(values_for_column, cd3file, sheet_name):
-        book = load_workbook(cd3file)
-        sheet = book[sheet_name]
+        try:
+            book = load_workbook(cd3file)
+            sheet = book[sheet_name]
+        except Exception as e:
+            print(str(e))
+            print("Exiting!!")
+            exit()
         if (sheet_name == "VCN Info"):
             onprem_destinations = ""
             ngw_destinations = ""
@@ -362,8 +371,13 @@ class commonTools():
             sheet.cell(5,2).value = igw_destinations
             # Put n for subnet_name_attach_cidr
             sheet.cell(6, 2).value = 'n'
-            book.save(cd3file)
-            book.close()
+            try:
+                book.save(cd3file)
+                book.close()
+            except Exception as e:
+                print(str(e))
+                print("Exiting!!")
+                exit()
             return
 
 
@@ -376,9 +390,13 @@ class commonTools():
             for i in range(0, sheet.max_row):
                 for j in range(0, sheet.max_column):
                     sheet.cell(row=i + 3, column=j + 1).value = ""
-
-            book.save(cd3file)
-            book.close()
+            try:
+                book.save(cd3file)
+                book.close()
+            except Exception as e:
+                print(str(e))
+                print("Exiting!!")
+                exit()
             return
 
         sheet_max_rows = sheet.max_row
@@ -445,9 +463,13 @@ class commonTools():
                         else:
                             cellnew.fill = PatternFill(start_color="E5DBBE", end_color="E5DBBE", fill_type="solid")
                             cellnew.border = brdr
-
-        book.save(cd3file)
-        book.close()
+        try:
+            book.save(cd3file)
+            book.close()
+        except Exception as e:
+            print(str(e))
+            print("Exiting!!")
+            exit()
 
     # def backup_file(src_dir, pattern, overwrite):
     def backup_file(src_dir, resource, pattern):
