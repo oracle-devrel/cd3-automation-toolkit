@@ -586,7 +586,7 @@ def export_networking(inputfile, outdir, _config, network_compartments=[]):
                                     attach_type = "VCN"
                                     attach_id = drg_attachment_info.vcn_id
 
-                                oci_obj_names[ct.home_region].write("\nDRG Version::::" + drg_version)
+                                oci_obj_names[ct.home_region].write("\nDRG Version::::" + drg_version+"::::None::::None")
 
                                 if (attach_type.upper() == "VCN"):
                                     vcn_drgattach_route_table_id = drg_attachment_info.route_table_id
