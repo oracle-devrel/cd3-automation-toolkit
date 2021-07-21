@@ -95,7 +95,11 @@ def seek_info():
     if os.path.exists(auto_keys_dir):
         print("Moving the key files to /root/ocswork/tenancies/"+prefix+"/")
         for f in files:
-            shutil.move(f,root_dir)
+            try:
+                shutil.move(f,root_dir)
+            except shutil.Error as e:
+                shutil.move(root_dir+"/oci_api_private.pem", root_dir+"/oci_api_private_pem_backup")
+                shutil.move(f, root_dir)
         shutil.rmtree(auto_keys_dir)
 
     # If the private key is empty; initialize it to the default path
