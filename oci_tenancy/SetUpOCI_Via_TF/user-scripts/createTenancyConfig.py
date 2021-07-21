@@ -10,7 +10,10 @@ import glob
 import argparse
 import logging
 import os
+import shutil
 import sys
+import oci
+
 sys.path.append(os.getcwd()+"/..")
 from commonTools import *
 
