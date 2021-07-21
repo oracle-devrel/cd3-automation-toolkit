@@ -9,7 +9,12 @@ import calendar
 import glob
 import argparse
 import logging
-from SetUpOCI_Via_TF.commonTools import *
+import os
+import sys
+sys.path.append(os.getcwd()+"/..")
+from commonTools import *
+
+
 from datetime import datetime
 
 def paginate(operation, *args, **kwargs):
