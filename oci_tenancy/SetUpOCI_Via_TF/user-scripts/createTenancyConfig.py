@@ -59,8 +59,6 @@ def seek_info():
            exit(1)
 
         key_path = config.get('Default', 'key_path').strip()
-        if (key_path == '' or key_path == "\n"):
-            key_path = "/root/ocswork/tenancies/"+prefix+"/oci_api_private.pem"
 
         region = config.get('Default', 'region').strip()
         if (region == '' or key_path == "\n"):
@@ -76,19 +74,31 @@ def seek_info():
     root_dir = "/root/ocswork/tenancies/" + prefix
     regions_dir = root_dir+"/terraform_files/"
     config_file_path = root_dir+"/"+prefix+"_config"
-    keys_dir = "/root/ocswork/tenancies/keys"
+    auto_keys_dir = "/root/ocswork/tenancies/keys"
 
     if not os.path.exists(root_dir):
         os.makedirs(root_dir)
 
-    # 2. Move the  newly created PEM keys to /root/ocswork/tenancies/<customer_name>/
-    files = glob.glob(keys_dir+"/*")
-    if os.path.exists(keys_dir):
+    # 2. Move the newly created PEM keys to /root/ocswork/tenancies/<customer_name>/
+    files = glob.glob(auto_keys_dir+"/*")
+
+    # If the keys are auto-generated
+    if os.path.exists(auto_keys_dir):
         print("Moving the key files to /root/ocswork/tenancies/"+prefix+"/")
         for f in files:
             shutil.move(f,root_dir)
-        shutil.rmtree(keys_dir)
+        shutil.rmtree(auto_keys_dir)
 
+    # If the private key is empty; initialize it to the default path
+    if (key_path == '' or key_path == "\n"):
+        key_path = root_dir+"/oci_api_private.pem"
+    # If the private key is already present in the tenancy folder; do nothing
+    elif (root_dir+ '/oci_api_private.pem' in key_path):
+        key_path = root_dir+'/oci_api_private.pem'
+    # If the private key is elsewhere; move it to the tenancy folder
+    else:
+        shutil.move(key_path, root_dir+'/oci_api_private.pem')
+        key_path = root_dir+"/oci_api_private.pem"
 
     if not os.path.exists(regions_dir):
         os.makedirs(regions_dir)
