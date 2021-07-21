@@ -40,9 +40,9 @@ class commonTools():
         self.protocol_dict={}
         self.sheet_dict={}
 
-        # When called from wthin OCSWorkVM
+        # When called from wthin OCSWorkVM or user-scripts
         dir=os.getcwd()
-        if ("OCSWorkVM" in os.getcwd()):
+        if ("OCSWorkVM" in os.getcwd() or 'user-scripts' in os.getcwd()):
             os.chdir("../")
         regionFileName="OCI_Regions"
         protocolFileName="OCI_Protocols"
