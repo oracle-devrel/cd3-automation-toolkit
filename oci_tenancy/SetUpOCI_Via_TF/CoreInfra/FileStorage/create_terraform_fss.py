@@ -51,13 +51,6 @@ def create_terraform_fss(inputfile, outdir, config=DEFAULT_LOCATION):
     fss = env.get_template('fss-template')
     fses = env.get_template('export-resource-template')
 
-    if ('.csv' in filename):
-        df = pd.read_csv(filename)
-        excel_writer = pd.ExcelWriter('tmp_to_excel.xlsx', engine='xlsxwriter')
-        df.to_excel(excel_writer, 'FSS')
-        excel_writer.save()
-        filename = 'tmp_to_excel.xlsx'
-
     try:
         df = pd.read_excel(filename, sheet_name='FSS', skiprows=1, dtype=object)
     except Exception as e:
@@ -68,7 +61,6 @@ def create_terraform_fss(inputfile, outdir, config=DEFAULT_LOCATION):
     df = df.dropna(how='all')
     df = df.reset_index(drop=True)
 
-    endNames = {'<END>', '<end>', '<End>'}
     NaNstr = 'NaN'
 
     ADS = ["AD1", "AD2", "AD3"]
@@ -142,21 +134,11 @@ def create_terraform_fss(inputfile, outdir, config=DEFAULT_LOCATION):
             pass
             # print(e)
 
-    uniquereg = df['Region'].unique()
 
     # Take backup of files
-    for eachregion in uniquereg:
-        eachregion = str(eachregion).strip().lower()
-        reg_out_dir = outdir + "/" + eachregion
-
-        if (eachregion in commonTools.endNames):
-            break
-        if eachregion not in ct.all_regions:
-            print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
-            exit()
-
-        srcdir = outdir + "/" + r + "/"
+    for eachregion in ct.all_regions:
         resource = 'FSS'
+        srcdir = outdir + "/" + eachregion + "/"
         commonTools.backup_file(srcdir, resource, "FSS.tf")
 
     for i in df.index:
@@ -175,7 +157,7 @@ def create_terraform_fss(inputfile, outdir, config=DEFAULT_LOCATION):
         if region == "nan":
             continue
 
-        if region in endNames:
+        if region in commonTools.endNames:
             break
         region = str(region).lower().strip()
 
@@ -371,9 +353,6 @@ def create_terraform_fss(inputfile, outdir, config=DEFAULT_LOCATION):
             oname.write(tempStr_fss[r])
             oname.close()
 
-    # Remove temporary file created
-    if ('tmp_to_excel.xlsx' in filename):
-        os.remove(filename)
 
 
 if __name__ == '__main__':

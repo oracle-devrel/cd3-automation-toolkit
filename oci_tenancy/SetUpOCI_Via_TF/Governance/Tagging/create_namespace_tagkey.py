@@ -57,24 +57,13 @@ def create_namespace_tagkey(inputfile, outdir, config):
     df = df.dropna(how='all')
     df = df.reset_index(drop=True)
 
-    unique_region = df['Region'].unique()
 
     # Take backup of files
-    for eachregion in unique_region:
-        eachregion = str(eachregion).strip().lower()
-
-        if eachregion in commonTools.endNames:
-            break
-        if eachregion == 'nan':
-            continue
-        if eachregion not in ct.all_regions:
-            print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
-            exit()
+    for reg in ct.all_regions:
         resource='Tagging'
-        srcdir = outdir + "/" + eachregion + "/"
+        srcdir = outdir + "/" + reg + "/"
         commonTools.backup_file(srcdir, resource, "-tagging.tf")
 
-    for reg in ct.all_regions:
         tagnamespace_list[reg] = []
         defaulttagtemp[reg] = ''
         namespacetemp[reg] = ''

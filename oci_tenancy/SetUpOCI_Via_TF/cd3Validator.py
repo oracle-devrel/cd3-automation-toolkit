@@ -164,11 +164,11 @@ def fetch_dhcplist_vcn_cidrs(filename):
             columnvalue = str(dfv.loc[i, columnname]).strip()
             if columnname == "CIDR Block":
                 # Collect CIDR List for validating
-                if str(columnvalue).strip().lower() == "nan":
+                if str(columnvalue).lower() == "nan":
                     cidr_list.append("")
                 else:
                     cidr_list.append(str(columnvalue))
-                    vcn_cidrs.update({str(dfv.loc[i, 'VCN Name']): str(columnvalue)})
+                    vcn_cidrs.update({str(dfv.loc[i, 'VCN Name']).strip(): str(columnvalue)})
     return vcn_cidrs
 
 
@@ -210,17 +210,17 @@ def validate_subnets(filename, comp_ids, vcnobj):
     for i in dfsub.index:
         count = count + 1
         # Check for <END> in the inputs; if found the validation ends there and return the status of flag
-        if (str(dfsub.loc[i, 'Region']) in commonTools.endNames):
+        if (str(dfsub.loc[i, 'Region']).strip() in commonTools.endNames):
             break
 
         # Check for invalid Region
-        region = str(dfsub.loc[i, 'Region'])
+        region = str(dfsub.loc[i, 'Region']).strip()
         if (region.lower() != "nan" and region.lower() not in ct.all_regions):
             log(f'ROW {i+3} : "Region" {region} is not subscribed to tenancy.')
             subnet_reg_check = True
 
         # Check for invalid compartment name
-        comp_name = str(dfsub.loc[i, 'Compartment Name'])
+        comp_name = str(dfsub.loc[i, 'Compartment Name']).strip()
         if comp_name.lower() == 'nan':
             pass
         else:
@@ -231,15 +231,15 @@ def validate_subnets(filename, comp_ids, vcnobj):
                 dhcp_comp_check = True
 
         # Check for invalid VCN name
-        vcn_name = str(dfsub.loc[i, 'VCN Name'])
+        vcn_name = str(dfsub.loc[i, 'VCN Name']).strip()
         if (vcn_name.lower() != "nan" and vcn_name not in vcnobj.vcn_names):
             log(f'ROW {i+3} : VCN {vcn_name} not part of VCNs Tab.')
             subnet_vcn_check = True
 
         # Check if the dns_label field has special characters or if it has greater than 15 characters or is duplicate
-        dns_value = str(dfsub.loc[i, 'DNS Label'])
-        dns_subnetname = str(dfsub.loc[i, 'Subnet Name'])
-        dns_vcn = str(dfsub.loc[i, 'VCN Name'])
+        dns_value = str(dfsub.loc[i, 'DNS Label']).strip()
+        dns_subnetname = str(dfsub.loc[i, 'Subnet Name']).strip()
+        dns_vcn = str(dfsub.loc[i, 'VCN Name']).strip()
 
         if (dns_value.lower() == "nan"):
             subnet_dns.append("")
@@ -264,24 +264,24 @@ def validate_subnets(filename, comp_ids, vcnobj):
             subnet_dns_length = True
 
         # Check if the Service and Internet gateways are set appropriately; if not display the message;
-        sgw_value = str(dfsub.loc[i, 'Configure SGW Route(n|object_storage|all_services)'])
-        igw_value = str(dfsub.loc[i, 'Configure IGW Route(y|n)'])
+        sgw_value = str(dfsub.loc[i, 'Configure SGW Route(n|object_storage|all_services)']).strip()
+        igw_value = str(dfsub.loc[i, 'Configure IGW Route(y|n)']).strip()
         if (igw_value.lower() != "nan" and sgw_value.lower() != "nan"):
             if (igw_value.lower() == "y" and sgw_value.lower() == "all_services"):
                 log(f'ROW {count + 2} : Internet Gateway target cannot be used together with Service Gateway target for All Services in the same routing table. Change either the value of SGW or IGW configure route !!')
                 subnet_wrong_check = True
 
         # Collect CIDR List for validating
-        if str(dfsub.loc[i, 'CIDR Block']).lower() == "nan":
+        if str(dfsub.loc[i, 'CIDR Block']).strip().lower() == "nan":
             cidr_list.append("")
             continue
         else:
-            cidr_list.append(str(dfsub.loc[i, 'CIDR Block']))
+            cidr_list.append(str(dfsub.loc[i, 'CIDR Block']).strip())
 
         # Check for null values and display appropriate message
         labels = ['DNS Label', 'DHCP Option Name', 'Route Table Name', 'Seclist Names']
         for j in dfsub.keys():
-            if (str(dfsub[j][i]) == "NaN" or str(dfsub[j][i]) == "nan" or str(dfsub[j][i]) == ""):
+            if (str(dfsub[j][i]).strip() == "NaN" or str(dfsub[j][i]).strip() == "nan" or str(dfsub[j][i]).strip() == ""):
                 # only dhcp_option_name, route table name, seclist_names and dns_label columns can be empty
                 if j in labels or commonTools.check_column_headers(j) in commonTools.tagColumns:
                     pass
@@ -373,11 +373,11 @@ def validate_vcns(filename, comp_ids, vcnobj, config):  # ,vcn_cidrs,vcn_compart
         count = count + 1
 
         # Check for <END> in the inputs; if found the validation ends there and return the status of flag
-        if str(dfv.loc[i, 'Region']) in commonTools.endNames:
+        if str(dfv.loc[i, 'Region']).strip() in commonTools.endNames:
             break
 
         # Check for invalid Region
-        region = str(dfv.loc[i, 'Region'])
+        region = str(dfv.loc[i, 'Region']).strip()
         if (region.lower() != "nan" and region.lower() not in ct.all_regions):
             log(f'ROW {i+3} : "Region" {region} is not subscribed to tenancy.')
             vcn_reg_check = True
@@ -394,7 +394,7 @@ def validate_vcns(filename, comp_ids, vcnobj, config):  # ,vcn_cidrs,vcn_compart
                 vcn_comp_check = True
 
         # Check for invalid(duplicate) vcn name
-        vcn_name = str(dfv.loc[i, 'VCN Name'])
+        vcn_name = str(dfv.loc[i, 'VCN Name']).strip()
         if (vcn_name.lower() == 'nan'):
             vcn_names.append("")
         else:
@@ -406,7 +406,7 @@ def validate_vcns(filename, comp_ids, vcnobj, config):  # ,vcn_cidrs,vcn_compart
                 vcn_vcnname_check = True
 
         # Check if the dns_label field has special characters # duplicates for vcn dns_label allowed # dns length not more than 15 characters
-        dns_value = str(dfv.loc[i, 'DNS Label'])
+        dns_value = str(dfv.loc[i, 'DNS Label']).strip()
         if (dns_value.lower() == "nan"):
             vcn_dns.append("")
         else:
@@ -417,15 +417,15 @@ def validate_vcns(filename, comp_ids, vcnobj, config):  # ,vcn_cidrs,vcn_compart
             vcn_dns_length = True
 
         # Collect CIDR List for validating
-        if str(dfv.loc[i, 'CIDR Block']).lower() == "nan":
+        if str(dfv.loc[i, 'CIDR Block']).strip().lower() == "nan":
             cidr_list.append("")
         else:
-            cidr_list.append(str(dfv.loc[i, 'CIDR Block']))
-            cidrs_dict.update({str(dfv.loc[i, 'CIDR Block']): str(dfv.loc[i, 'VCN Name'])})
+            cidr_list.append(str(dfv.loc[i, 'CIDR Block']).strip())
+            cidrs_dict.update({str(dfv.loc[i, 'CIDR Block']).strip(): str(dfv.loc[i, 'VCN Name']).strip()})
 
         # Check for null values and display appropriate message
         for j in dfv.keys():
-            if (str(dfv[j][i]) == "NaN" or str(dfv[j][i]) == "nan" or str(dfv[j][i]) == ""):
+            if (str(dfv[j][i]).strip() == "NaN" or str(dfv[j][i]).strip() == "nan" or str(dfv[j][i]).strip() == ""):
                 if j == 'DNS Label' or commonTools.check_column_headers(j) in commonTools.tagColumns:
                     continue
                 else:
@@ -450,7 +450,7 @@ def validate_vcns(filename, comp_ids, vcnobj, config):  # ,vcn_cidrs,vcn_compart
     # Loop through each row
     for i in dfv.index:
         # Check for <END> in the inputs; if found the validation ends there and return the status of flag
-        if str(dfv.loc[i, 'Region']) in commonTools.endNames:
+        if str(dfv.loc[i, 'Region']).strip() in commonTools.endNames:
             break
 
         region = str(dfv.loc[i, 'Region']).lower().strip()
@@ -520,18 +520,18 @@ def validate_dhcp(filename, comp_ids, vcnobj):
         count = count + 1
 
         # Check for <END> in the inputs; if found the validation ends there and return the status of flag
-        if str(dfdhcp.loc[i, 'Region']) in commonTools.endNames:
+        if str(dfdhcp.loc[i, 'Region']).strip() in commonTools.endNames:
             break
 
         # Check for invalid Region
-        region = str(dfdhcp.loc[i, 'Region'])
+        region = str(dfdhcp.loc[i, 'Region']).strip()
 
         if (region.lower() != "nan" and region.lower() not in ct.all_regions):
             log(f'ROW {i+3} : "Region" {region} is not subscribed to tenancy.')
             dhcp_reg_check = True
 
         # Check for invalid compartment name
-        comp_name = str(dfdhcp.loc[i, 'Compartment Name'])
+        comp_name = str(dfdhcp.loc[i, 'Compartment Name']).strip()
         if comp_name.lower() == 'nan':
             pass
         else:
@@ -542,7 +542,7 @@ def validate_dhcp(filename, comp_ids, vcnobj):
                 dhcp_comp_check = True
 
         # Check for invalid VCN name
-        vcn_name = str(dfdhcp.loc[i, 'VCN Name'])
+        vcn_name = str(dfdhcp.loc[i, 'VCN Name']).strip()
         if (vcn_name.lower() != "nan" and vcn_name not in vcnobj.vcn_names):
             log(f'ROW {i+3}: VCN {vcn_name} not part of VCNs Tab.')
             dhcp_vcn_check = True
@@ -550,11 +550,11 @@ def validate_dhcp(filename, comp_ids, vcnobj):
         for j in dfdhcp.keys():
             # Check the customer_dns_servers column; if empty return error based on the value in server_type column
             if j == 'Custom DNS Server':
-                if str(dfdhcp.loc[i, 'Custom DNS Server']) in empty:
-                    if str(dfdhcp.loc[i, 'Server Type(VcnLocalPlusInternet|CustomDnsServer)']) == "CustomDnsServer":
+                if str(dfdhcp.loc[i, 'Custom DNS Server']).strip() in empty:
+                    if str(dfdhcp.loc[i, 'Server Type(VcnLocalPlusInternet|CustomDnsServer)']).strip() == "CustomDnsServer":
                         log(f'ROW {count+2} : "Custom DNS Server" column cannot be empty if server type is "CustomDnsServer".')
                         dhcp_wrong_check = True
-                    elif str(dfdhcp.loc[i, 'Server Type(VcnLocalPlusInternet|CustomDnsServer)']) == "VcnLocalPlusInternet":
+                    elif str(dfdhcp.loc[i, 'Server Type(VcnLocalPlusInternet|CustomDnsServer)']).strip() == "VcnLocalPlusInternet":
                         continue
             else:
                 # Check if there are any field that is empty; display appropriate message
@@ -569,6 +569,103 @@ def validate_dhcp(filename, comp_ids, vcnobj):
         return True
     else:
         return False
+
+
+
+# Checks if the fields in DRGv2 tab are compliant
+def validate_drgv2(filename, comp_ids, vcnobj):
+    dfdrgv2 = data_frame(filename, 'DRGs')
+    drgv2_empty_check = False
+    drgv2_invalid_check = False
+    drgv2_comp_check = False
+    drgv2_drg_check = False
+    drgv2_vcn_check = False
+    drgv2_format_check = False
+
+    for i in dfdrgv2.index:
+        region = str(dfdrgv2.loc[i, 'Region']).strip().lower()
+
+        # Encountered <End>
+        if (region in commonTools.endNames):
+            break
+
+        if region == 'nan':
+            log(f'ROW {i + 3} : Empty value at column "Region".')
+            drgv2_empty_check = True
+        elif region not in ct.all_regions:
+            log(f'ROW {i + 3} : "Region" {region} is not subscribed for tenancy.')
+            drgv2_invalid_check = True
+
+        # Check for invalid Compartment Name
+        comp_name = str(dfdrgv2.loc[i, 'Compartment Name']).strip()
+        if comp_name.lower() == 'nan':
+            log(f'ROW {i + 3} : Empty value at column "Compartment Name".')
+            drgv2_empty_check = True
+        else:
+            try:
+                comp_id = comp_ids[comp_name]
+            except KeyError:
+                log(f'ROW {i+3} : Compartment {comp_name} does not exist in OCI.')
+                drgv2_comp_check = True
+
+        # Check for invalid DRG name
+        drg_name=str(dfdrgv2.loc[i, 'DRG Name']).strip()
+        if drg_name.lower() == 'nan':
+            log(f'ROW {i + 3} : Empty value at column "DRG Name".')
+            drgv2_empty_check = True
+        if drg_name not in vcnobj.vcns_having_drg.values():
+            log(f'ROW {i + 3}: DRG Name {drg_name} not part of VCNs Tab.')
+            drgv2_drg_check = True
+
+        attached_to=str(dfdrgv2.loc[i, 'Attached To']).strip()
+        if(attached_to.lower()=='' or attached_to.lower()=='nan'):
+            pass
+        else:
+            if "::" not in attached_to:
+                log(f'ROW {i + 3} : Wrong value at column Attached To - {attached_to}. Valid format is <ATTACH_TYPE>::<ATTACH_ID>')
+                drgv2_format_check = True
+            else:
+                attached_to=attached_to.split("::")
+                if(len(attached_to)!=2):
+                    log(f'ROW {i + 3} : Wrong value at column Attached To - {attached_to}. Valid format is <ATTACH_TYPE>::<ATTACH_ID>')
+                    drgv2_format_check = True
+                elif attached_to[0].strip().upper()=="VCN":
+                    vcn_name = attached_to[1].strip()
+
+                    try:
+                        if (vcn_name.lower() != "nan" and vcnobj.vcns_having_drg[vcn_name,region]!=drg_name):
+                            log(f'ROW {i + 3}: VCN {vcn_name} in column Attached To is not as per DRG Required column of VCNs Tab.')
+                            drgv2_vcn_check = True
+                    except KeyError:
+                        log(f'ROW {i + 3}: VCN {vcn_name} in column Attached To is not as per VCN Name column of VCNs Tab.')
+                        drgv2_vcn_check = True
+
+
+        rd_name=str(dfdrgv2.loc[i, 'Import DRG Route Distribution Name']).strip()
+        rd_name_stmts = str(dfdrgv2.loc[i, 'Import DRG Route Distribution Statements']).strip()
+
+        if(rd_name.lower()=='nan' and rd_name_stmts.lower()!='nan'):
+            log(f"ROW {i + 3} : column 'Import DRG Route Distribution Statements' cannot have value if column 'Import DRG Route Distribution Name' is null")
+            drgv2_format_check = True
+        if rd_name_stmts.lower()!='nan':
+            if "::" not in rd_name_stmts:
+                log(f'ROW {i + 3} : Wrong value at column Import DRG Route Distribution Statements. Valid format is <matchtype>::<type|ocid>::<priority>')
+                drgv2_format_check = True
+            else:
+                rd_name_stmts = rd_name_stmts.split("\n")
+                for rd_name_stmt in rd_name_stmts:
+                    if rd_name_stmt!="":
+                        rd_name_stmt=rd_name_stmt.split("::")
+                        if(len(rd_name_stmt)!=3):
+                            log(f'ROW {i + 3} : Wrong value at column Import DRG Route Distribution Statements. Valid format is <matchtype>::<type|ocid>::<priority>')
+                            drgv2_format_check = True
+
+    if any([drgv2_empty_check,drgv2_invalid_check,drgv2_comp_check,drgv2_drg_check,drgv2_vcn_check,drgv2_format_check]):
+        print("Null or Wrong value Check failed!!")
+        return True
+    else:
+        return False
+
 
 def validate_instances(filename,comp_ids):
     inst_empty_check = False
@@ -736,11 +833,11 @@ def validate_blockvols(filename,comp_ids):
                     bvs_invalid_check = True
 
         # Check if values are entered for mandatory fields - to attach volumes to instances
-        if str(dfvol.loc[i, 'Attached To Instance']).lower() != 'nan' and str(dfvol.loc[i, 'Attach Type(iscsi|paravirtualized)']).lower() == 'nan':
+        if str(dfvol.loc[i, 'Attached To Instance']).strip().lower() != 'nan' and str(dfvol.loc[i, 'Attach Type(iscsi|paravirtualized)']).strip().lower() == 'nan':
             log(f'ROW {i+3} : Field "Attach Type" is empty if you want to attach  the volume to instance {dfvol.loc[i,"Attached To Instance"]}.')
             bvs_invalid_check = True
-        elif str(dfvol.loc[i, 'Attach Type(iscsi|paravirtualized)']).lower() != 'nan' and str(
-                dfvol.loc[i, 'Attached To Instance']).lower() == 'nan':
+        elif str(dfvol.loc[i, 'Attach Type(iscsi|paravirtualized)']).strip().lower() != 'nan' and str(
+                dfvol.loc[i, 'Attached To Instance']).strip().lower() == 'nan':
             log(f'ROW {i+3} : Field "Attached To Instance" is empty for Attachment Type {dfvol.loc[i,"Attach Type(iscsi|paravirtualized)"]}.')
             bvs_invalid_check = True
 
@@ -778,7 +875,7 @@ def validate_compartments(filename):
         elif region!=ct.home_region:
             log(f'ROW {i+3} : Region specified is not the Home Region.')
             comp_invalid_check = True
-        if str(dfcomp.loc[i, 'Name']).lower() == 'nan':
+        if str(dfcomp.loc[i, 'Name']).strip().lower() == 'nan':
             log(f'ROW {i+3} : Empty value at column "Name".')
             comp_empty_check = True
         #if str(df.loc[i, 'Parent Compartment']).strip() not in comp_list and str(df.loc[i, 'Parent Compartment']).strip().lower() !='root' and str(df.loc[i, 'Parent Compartment']).strip().lower() !='nan':
@@ -896,20 +993,6 @@ def validate_policies(filename,comp_ids):
     else:
         return False
 
-def validate_networking(filename,config):
-    vcnobj = parseVCNs(filename)
-
-    log("\n============================= Verifying VCNs Tab ==========================================\n")
-    print("\nProcessing VCNs Tab..")
-    vcn_check, vcn_cidr_check, vcn_peer_check = validate_vcns(filename, ct.ntk_compartment_ids, vcnobj, config)
-
-    log("============================= Verifying Subnets Tab ==========================================\n")
-    print("\nProcessing Subnets Tab..")
-    subnet_check, subnet_cidr_check = validate_subnets(filename, ct.ntk_compartment_ids, vcnobj)
-
-    log("============================= Verifying DHCP Tab ==========================================\n")
-    print("\nProcessing DHCP Tab..")
-    dhcp_check = validate_dhcp(filename, ct.ntk_compartment_ids, vcnobj)
 
 def validate_cd3(filename, choices, configFileName):
 
@@ -922,6 +1005,7 @@ def validate_cd3(filename, choices, configFileName):
     subnet_check = False
     subnet_cidr_check = False
     dhcp_check = False
+    drgv2_check = False
     bvs_check = False
     instances_check = False
 
@@ -945,7 +1029,7 @@ def validate_cd3(filename, choices, configFileName):
             policies_check = validate_policies(filename,ct.ntk_compartment_ids)
     
         # CD3 Validation begins here for Network
-        if ('Validate Networking(VCNs, Subnets, DHCP)' in options[0]):
+        if ('Validate Networking(VCNs, Subnets, DHCP, DRGs)' in options[0]):
             val_net=True
             vcnobj = parseVCNs(filename)
     
@@ -960,6 +1044,11 @@ def validate_cd3(filename, choices, configFileName):
             log("============================= Verifying DHCP Tab ==========================================\n")
             print("\nProcessing DHCP Tab..")
             dhcp_check = validate_dhcp(filename, ct.ntk_compartment_ids, vcnobj)
+
+            log("============================= Verifying DRGs Tab ==========================================\n")
+            print("\nProcessing DRGs Tab..")
+            drgv2_check = validate_drgv2(filename, ct.ntk_compartment_ids, vcnobj)
+
         if ('Validate Instances' in options[0]):
             log("\n============================= Verifying Instances Tab ==========================================\n")
             print("\nProcessing Instances Tab..")
@@ -971,7 +1060,7 @@ def validate_cd3(filename, choices, configFileName):
             bvs_check = validate_blockvols(filename,ct.ntk_compartment_ids)
 
     # Prints the final result; once the validation is complete
-    if any([comp_check, groups_check, policies_check, instances_check, bvs_check,vcn_check, vcn_cidr_check, vcn_peer_check, subnet_check, subnet_cidr_check, dhcp_check]):
+    if any([comp_check, groups_check, policies_check, instances_check, bvs_check,vcn_check, vcn_cidr_check, vcn_peer_check, subnet_check, subnet_cidr_check, dhcp_check, drgv2_check]):
         log("=======")
         log("Summary:")
         log("=======")

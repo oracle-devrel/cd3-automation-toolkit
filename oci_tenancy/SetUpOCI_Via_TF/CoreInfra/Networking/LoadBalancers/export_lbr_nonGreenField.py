@@ -715,7 +715,6 @@ def export_lbr(inputfile, _outdir, network_compartments, _config):
         print("\nAcceptable cd3 format: .xlsx")
         exit()
 
-    input_compartment_names = network_compartments
     outdir = _outdir
     configFileName = _config
     config = oci.config.from_file(file_location=configFileName)
@@ -742,20 +741,8 @@ def export_lbr(inputfile, _outdir, network_compartments, _config):
 
     # Check Compartments
     remove_comps = []
-    if (input_compartment_names is not None):
-        for x in range(0, len(input_compartment_names)):
-            if (input_compartment_names[x] not in ct.ntk_compartment_ids.keys()):
-                print("Input compartment: " + input_compartment_names[x] + " doesn't exist in OCI")
-                remove_comps.append(input_compartment_names[x])
+    comp_list_fetch = commonTools.get_comp_list_for_export(network_compartments, ct.ntk_compartment_ids)
 
-        input_compartment_names = [x for x in input_compartment_names if x not in remove_comps]
-        if (len(input_compartment_names) == 0):
-            print("None of the input compartments specified exist in OCI..Exiting!!!")
-            exit(1)
-        else:
-            print("Fetching for Compartments... " + str(input_compartment_names))
-    else:
-        print("Fetching for all Compartments...")
     print("\nCD3 excel file should not be opened during export process!!!")
     print("Tabs- LB-Hostname-Certs, BackendSet-BackendServer, LB-Listener, RuleSet, PathRouteSet will be overwritten during export process!!!\n")
 
@@ -778,13 +765,13 @@ def export_lbr(inputfile, _outdir, network_compartments, _config):
         lbr = LoadBalancerClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
         vcn = VirtualNetworkClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
         region = reg.capitalize()
-        comp_ocid_done = []
+        #comp_ocid_done = []
 
-        for ntk_compartment_name in ct.ntk_compartment_ids:
-            if ct.ntk_compartment_ids[ntk_compartment_name] not in comp_ocid_done:
-                if (input_compartment_names is not None and ntk_compartment_name not in input_compartment_names):
-                    continue
-                comp_ocid_done.append(ct.ntk_compartment_ids[ntk_compartment_name])
+        for ntk_compartment_name in comp_list_fetch:
+            #if ct.ntk_compartment_ids[ntk_compartment_name] not in comp_ocid_done:
+            #    if (input_compartment_names is not None and ntk_compartment_name not in input_compartment_names):
+            #        continue
+            #    comp_ocid_done.append(ct.ntk_compartment_ids[ntk_compartment_name])
                 LBRs = oci.pagination.list_call_get_all_results(lbr.list_load_balancers,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name],
                                                                 lifecycle_state="ACTIVE")
                 VCNs = oci.pagination.list_call_get_all_results(vcn.list_vcns,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name],

@@ -62,18 +62,8 @@ def create_backendset_backendservers(inputfile, outdir, config=DEFAULT_LOCATION)
     #dfcert with required details
     df = pd.concat([dffill, dfdrop], axis=1)
 
-    unique_region = df['Region'].unique()
-
     # Take backup of files
-    for eachregion in unique_region:
-        eachregion = str(eachregion).strip().lower()
-        if (eachregion in commonTools.endNames):
-            continue
-        if eachregion == 'nan':
-            continue
-        if eachregion not in ct.all_regions:
-            print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
-            exit()
+    for eachregion in ct.all_regions:
         resource='BackendSet-BackendServer'
         srcdir = outdir + "/" + eachregion + "/"
         commonTools.backup_file(srcdir, resource, "_backends-lb.tf")

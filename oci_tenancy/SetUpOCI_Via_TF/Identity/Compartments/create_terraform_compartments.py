@@ -6,7 +6,7 @@
 #
 # Author: Suruchi Singla
 # Oracle Consulting
-# Modified (TF Upgrade): Shruthi Subramanian
+# Modified (TF if (columnvalue not in ckeys):Upgrade): Shruthi Subramanian
 #
 
 # import sys
@@ -17,6 +17,7 @@ from jinja2 import Environment, FileSystemLoader
 # sys.path.append(os.getcwd() + "/../..")
 from pathlib import Path
 from commonTools import *
+import oci
 
 ######
 # Required Inputs-CD3 excel file, Config file, prefix AND outdir
@@ -39,6 +40,8 @@ def create_terraform_compartments(inputfile, outdir, prefix, config=DEFAULT_LOCA
 
     ct = commonTools()
     ct.get_subscribedregions(configFileName)
+    config = oci.config.from_file(file_location=configFileName)
+    ct.get_network_compartment_ids(config['tenancy'],"root",configFileName)
 
     outfile = {}
     oname = {}
@@ -60,26 +63,12 @@ def create_terraform_compartments(inputfile, outdir, prefix, config=DEFAULT_LOCA
     # List of the column headers
     dfcolumns = df.columns.values.tolist()
 
-    uniquereg = df['Region'].unique()
-
-    # Take backup of files
-    for eachregion in uniquereg:
-        eachregion = str(eachregion).strip().lower()
-        reg_out_dir = outdir + "/" + eachregion
-
-        if (eachregion in commonTools.endNames):
-            break
-        if eachregion not in ct.all_regions:
-            print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
-            exit()
-
-        srcdir = reg_out_dir + "/"
-        resource = 'Compartments'
-        commonTools.backup_file(srcdir, resource, "-compartments.tf")
+    srcdir = outdir + "/" + ct.home_region + "/"
+    resource = 'Compartments'
+    commonTools.backup_file(srcdir, resource, "-compartments.tf")
 
     # Initialise empty TF string for each region
-    for reg in ct.all_regions:
-        tfStr[reg] = ''
+    tfStr[ct.home_region] = ''
 
     # Separating Compartments and ParentComparements into list
     ckeys = []
@@ -121,13 +110,13 @@ def create_terraform_compartments(inputfile, outdir, prefix, config=DEFAULT_LOCA
         # temporary dictionary1 and dictionary2
         tempStr = {}
         tempdict = {}
-
         # Check if values are entered for mandatory fields
         if str(df.loc[i, 'Region']).lower() == 'nan' or str(df.loc[i, 'Name']).lower() == 'nan':
             print("\nThe values for Region and Name cannot be left empty. Please enter a value and try again !!")
             exit()
 
         var_c_name = ""
+        nf=0
         for columnname in dfcolumns:
 
             # Column value
@@ -175,18 +164,24 @@ def create_terraform_compartments(inputfile, outdir, prefix, config=DEFAULT_LOCA
                                 df.loc[i, 'Name']).strip() + " Please give Full Path")
                             exit(1)
 
-                    elif ("::" in columnvalue):
-                        var_c_name = columnvalue + "::" + str(df.loc[i, 'Name']).strip()
-                        parent_compartment = commonTools.check_tf_variable(columnvalue)
-                        parent_compartment = 'oci_identity_compartment.' + parent_compartment + '.id'
-                        tempdict = {'parent_compartment': parent_compartment}
-                        tempStr.update(tempdict)
+                    elif (columnvalue not in ckeys):
+                            if columnvalue in ct.ntk_compartment_ids.keys():
+                                parent_compartment = 'var.'+commonTools.check_tf_variable(columnvalue)
+                                var_c_name=columnvalue + "::" +commonTools.check_tf_variable(str(df.loc[i, 'Name']).strip())
+                                tempdict = {'parent_compartment': parent_compartment}
+                                tempStr.update(tempdict)
+                            elif ("::" in columnvalue):
+                                var_c_name = columnvalue + "::" + str(df.loc[i, 'Name']).strip()
+                                parent_compartment = commonTools.check_tf_variable(columnvalue)
+                                parent_compartment = 'oci_identity_compartment.' + parent_compartment + '.id'
+                                tempdict = {'parent_compartment': parent_compartment}
+                                tempStr.update(tempdict)
+                            else:
+                                print("Error!! There is no parent compartment with name " + columnvalue + " either in OCI or in input CD3..Skipping this row")
+                                nf=1
+                                break
+
                     else:
-                        if (columnvalue not in ckeys):
-                            print(
-                                "Error!! There is no parent compartment with name " + columnvalue + " to create " + str(
-                                    df.loc[i, 'Name']).strip() + " compartment")
-                            exit(1)
                         parent_compartment = travel(str(columnvalue).strip(), ckeys, pvalues, c)
                         var_c_name = parent_compartment + "::" + str(df.loc[i, 'Name']).strip()
                         tempdict = {'parent_compartment': parent_compartment}
@@ -221,17 +216,19 @@ def create_terraform_compartments(inputfile, outdir, prefix, config=DEFAULT_LOCA
             tempStr.update(tempdict)
 
         # Write all info to TF string; Render template
-        tfStr[region] = tfStr[region] + template.render(tempStr)
+        if(nf==0):
+            tfStr[region] = tfStr[region] + template.render(tempStr)
 
     # Write TF string to the file in respective region directory
-    for reg in ct.all_regions:
-        reg_out_dir = outdir + "/" + reg
-        if not os.path.exists(reg_out_dir):
-            os.makedirs(reg_out_dir)
 
-        outfile[reg] = reg_out_dir + "/" + prefix + '-compartments.tf'
+    reg_out_dir = outdir + "/" + ct.home_region
+    if not os.path.exists(reg_out_dir):
+        os.makedirs(reg_out_dir)
 
-        if (tfStr[reg] != ''):
+    reg = ct.home_region
+    outfile[reg] = reg_out_dir + "/" + prefix + '-compartments.tf'
+
+    if (tfStr[reg] != ''):
             oname[reg] = open(outfile[reg], 'w')
             oname[reg].write(tfStr[reg])
             oname[reg].close()

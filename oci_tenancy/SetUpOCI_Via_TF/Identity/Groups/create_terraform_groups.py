@@ -62,25 +62,13 @@ def create_terraform_groups(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
     dfcolumns = df.columns.values.tolist()
 
     # Initialise empty TF string for each region
-    for reg in ct.all_regions:
-        tfStr[reg] = ''
+    tfStr[ct.home_region] = ''
 
-    uniquereg = df['Region'].unique()
 
     # Take backup of files
-    for eachregion in uniquereg:
-        eachregion = str(eachregion).strip().lower()
-        reg_out_dir = outdir + "/" + eachregion
-
-        if (eachregion in commonTools.endNames):
-            break
-        if eachregion not in ct.all_regions:
-            print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
-            exit()
-
-        srcdir = reg_out_dir + "/"
-        resource = 'Groups'
-        commonTools.backup_file(srcdir, resource, "-groups.tf")
+    srcdir = outdir + "/" + ct.home_region + "/"
+    resource = 'Groups'
+    commonTools.backup_file(srcdir, resource, "-groups.tf")
 
     # Iterate over rows
     for i in df.index:
@@ -145,18 +133,18 @@ def create_terraform_groups(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
             tfStr[region] = tfStr[region] + dynamicgroup.render(tempStr)
 
     # Write TF string to the file in respective region directory
-    for reg in ct.all_regions:
-        reg_out_dir = outdir + "/" + reg
-        if not os.path.exists(reg_out_dir):
-            os.makedirs(reg_out_dir)
+    reg=ct.home_region
+    reg_out_dir = outdir + "/" + reg
+    if not os.path.exists(reg_out_dir):
+        os.makedirs(reg_out_dir)
 
-        outfile[reg] = reg_out_dir + "/" + prefix + '-groups.tf'
+    outfile[reg] = reg_out_dir + "/" + prefix + '-groups.tf'
 
-        if(tfStr[reg]!=''):
-            oname[reg]=open(outfile[reg],'w')
-            oname[reg].write(tfStr[reg])
-            oname[reg].close()
-            print(outfile[reg] + " containing TF for groups has been created for region "+reg)
+    if(tfStr[reg]!=''):
+        oname[reg]=open(outfile[reg],'w')
+        oname[reg].write(tfStr[reg])
+        oname[reg].close()
+        print(outfile[reg] + " containing TF for groups has been created for region "+reg)
 
 if __name__ == '__main__':
     args = parse_args()

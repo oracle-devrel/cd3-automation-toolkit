@@ -41,23 +41,29 @@ def policy_info(bvol,volume_id,ct):
     return asset_assignment_id, asset_policy_name, policy_comp_name
 
 
-def volume_attachment_info(compute,ntk_compartment_name,ct,volume_id):
+def volume_attachment_info(compute,ct,volume_id):
     instance_id = ''
     attachment_type=''
     instance_name = ''
     attachment_id = ''
-    attach_info = compute.list_volume_attachments(compartment_id = ct.ntk_compartment_ids[ntk_compartment_name], volume_id = volume_id)
-    for attachments in attach_info.data:
-        lifecycle_state = attachments.lifecycle_state
-        if lifecycle_state == 'ATTACHED':
-            instance_id = attachments.instance_id
-            attachment_type = attachments.attachment_type
-            attachment_id = attachments.id
-    compute_info = compute.list_instances(ct.ntk_compartment_ids[ntk_compartment_name])
-    for instance in compute_info.data:
-        if instance_id == instance.id:
-           instance_name = instance.display_name
-    return attachment_id, instance_name, attachment_type
+    attachments=None
+    for ntk_compartment_name in comp_list_fetch:
+        attach_info = compute.list_volume_attachments(compartment_id = ct.ntk_compartment_ids[ntk_compartment_name], volume_id = volume_id)
+        for attachments in attach_info.data:
+            lifecycle_state = attachments.lifecycle_state
+            if lifecycle_state == 'ATTACHED':
+                instance_id = attachments.instance_id
+                attachment_type = attachments.attachment_type
+                attachment_id = attachments.id
+            #compute_info = compute.list_instances(ct.ntk_compartment_ids[ntk_compartment_name])
+            compute_info = compute.get_instance(instance_id=instance_id)#,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name])
+            #for instance in compute_info.data:
+            #if instance_id == compute_info.data.id:
+            instance_name = compute_info.data.display_name
+            return attachments,attachment_id, instance_name, attachment_type
+
+    #retun empty values if not attached to any instance
+    return attachments,attachment_id, instance_name, attachment_type
 
 
 def print_blockvolumes(region, BVOLS, bvol, compute, ct, values_for_column, ntk_compartment_name):
@@ -65,7 +71,7 @@ def print_blockvolumes(region, BVOLS, bvol, compute, ct, values_for_column, ntk_
     for blockvols in BVOLS.data:
         volume_id = blockvols.id
         volume_compartment_id = blockvols.compartment_id
-        attachment_id, instance_name, attachment_type = volume_attachment_info(compute, ntk_compartment_name, ct,volume_id)
+        attachments, attachment_id, instance_name, attachment_type = volume_attachment_info(compute, ct,volume_id)
         asset_assignment_id, asset_policy_name, policy_comp_name = policy_info(bvol, volume_id,ct)
         block_tf_name = commonTools.check_tf_variable(blockvols.display_name)
 
@@ -107,7 +113,7 @@ def print_blockvolumes(region, BVOLS, bvol, compute, ct, values_for_column, ntk_
             elif col_header.lower() in commonTools.tagColumns:
                 values_for_column = commonTools.export_tags(blockvols, col_header, values_for_column)
             else:
-                oci_objs = [blockvols]
+                oci_objs = [blockvols,attachments]
                 values_for_column = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict, values_for_column)
 
 
@@ -137,8 +143,7 @@ def export_blockvol(inputfile, _outdir, _config, network_compartments=[]):
         print("\nAcceptable cd3 format: .xlsx")
         exit()
 
-    input_config_file = _config
-    input_compartment_names = network_compartments
+
     outdir = _outdir
     configFileName = _config
     config = oci.config.from_file(file_location=configFileName)
@@ -154,21 +159,9 @@ def export_blockvol(inputfile, _outdir, _config, network_compartments=[]):
     sheet_dict=ct.sheet_dict["BlockVols"]
 
     # Check Compartments
-    remove_comps = []
-    if (input_compartment_names is not None):
-        for x in range(0, len(input_compartment_names)):
-            if (input_compartment_names[x] not in ct.ntk_compartment_ids.keys()):
-                print("Input compartment: " + input_compartment_names[x] + " doesn't exist in OCI")
-                remove_comps.append(input_compartment_names[x])
+    global comp_list_fetch
+    comp_list_fetch = commonTools.get_comp_list_for_export(network_compartments, ct.ntk_compartment_ids)
 
-        input_compartment_names = [x for x in input_compartment_names if x not in remove_comps]
-        if (len(input_compartment_names) == 0):
-            print("None of the input compartments specified exist in OCI..Exiting!!!")
-            exit(1)
-        else:
-            print("Fetching for Compartments... " + str(input_compartment_names))
-    else:
-        print("Fetching for all Compartments...")
     print("\nCD3 excel file should not be opened during export process!!!")
     print("Tabs- BlockVols  will be overwritten during export process!!!\n")
 
@@ -189,15 +182,15 @@ def export_blockvol(inputfile, _outdir, _config, network_compartments=[]):
         importCommands[reg].write("\n\n######### Writing import for Block Volumes #########\n\n")
         config.__setitem__("region", ct.region_dict[reg])
         region = reg.capitalize()
-        comp_ocid_done = []
+        #comp_ocid_done = []
         compute = ComputeClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
         bvol = BlockstorageClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
 
-        for ntk_compartment_name in ct.ntk_compartment_ids:
-            if ct.ntk_compartment_ids[ntk_compartment_name] not in comp_ocid_done:
-                if (input_compartment_names is not None and ntk_compartment_name not in input_compartment_names):
-                    continue
-                comp_ocid_done.append(ct.ntk_compartment_ids[ntk_compartment_name])
+        for ntk_compartment_name in comp_list_fetch:
+            #if ct.ntk_compartment_ids[ntk_compartment_name] not in comp_ocid_done:
+            #    if (input_compartment_names is not None and ntk_compartment_name not in input_compartment_names):
+            #        continue
+            #    comp_ocid_done.append(ct.ntk_compartment_ids[ntk_compartment_name])
 
                 BVOLS = oci.pagination.list_call_get_all_results(bvol.list_volumes,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name],lifecycle_state="AVAILABLE")
                 print_blockvolumes(region, BVOLS, bvol, compute, ct, values_for_column, ntk_compartment_name)

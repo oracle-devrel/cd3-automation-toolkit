@@ -17,6 +17,7 @@ from commonTools import section
 from .create_major_objects import create_major_objects
 from .create_terraform_dhcp_options import create_terraform_dhcp_options
 from .create_terraform_route import create_terraform_route
+from .create_terraform_route import create_terraform_drg_route
 from .create_terraform_seclist import create_terraform_seclist
 from .create_terraform_subnet import create_terraform_subnet
 
@@ -36,7 +37,7 @@ def create_all_tf_objects(inputfile, outdir, prefix, config, modify_network=Fals
     if not os.path.exists(outdir):
         os.makedirs(outdir)
 
-    with section('Process VCNs Tab'):
+    with section('Process VCNs Tab and DRGs Tab'):
         create_major_objects(inputfile, outdir, prefix, config, modify_network)
 
     with section('Process DHCP Tab'):
@@ -45,6 +46,9 @@ def create_all_tf_objects(inputfile, outdir, prefix, config, modify_network=Fals
     if not nongf_tenancy:
         with section('Process Subnets tab for Routes creation'):
             create_terraform_route(inputfile, outdir, prefix, config, modify_network)
+
+        with section('Process DRGs tab for DRG Route Tables and Route Distribution creation'):
+            create_terraform_drg_route(inputfile, outdir, prefix, config, modify_network)
 
         with section('Process Subnets for Seclists creation'):
             create_terraform_seclist(inputfile, outdir, prefix, config, modify_network)

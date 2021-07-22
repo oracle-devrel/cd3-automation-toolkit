@@ -19,7 +19,7 @@ def add_column_data(reg, cname, AD_name, mt_display_name, vplussubnet, mnt_p_ip,
 
     for col_header in values_for_column_fss.keys():
         if (col_header == "Region"):
-            values_for_column_fss[col_header].append(reg)
+            values_for_column_fss[col_header].append(reg.capitalize())
         elif (col_header == "Compartment Name"):
             values_for_column_fss[col_header].append(cname)
         elif (col_header == "Availability Domain(AD1|AD2|AD3)"):
@@ -181,7 +181,7 @@ def export_fss(inputfile, outdir, network_compartments=[], config=DEFAULT_LOCATI
     configFileName = config
     config = oci.config.from_file(file_location=configFileName)
 
-    global idc, compute, file_system, ct, vnc_info, importCommands, rows, all_regions, all_ads, all_compartments, input_compartment_list, AD, df, values_for_column_fss, sheet_dict_instances
+    global idc, compute, file_system, ct, vnc_info, importCommands, rows,  all_ads, input_compartment_list, AD, df, values_for_column_fss, sheet_dict_instances
 
     idc = IdentityClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
     compute = oci.core.ComputeClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
@@ -190,10 +190,10 @@ def export_fss(inputfile, outdir, network_compartments=[], config=DEFAULT_LOCATI
     vnc_info = oci.core.VirtualNetworkClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
     importCommands = {}
     rows = []
-    all_regions = []
+    #all_regions = []
     all_ads = []
-    all_compartments = []
-    input_compartment_list = network_compartments
+    #all_compartments = []
+    #input_compartment_list = network_compartments
     ct.get_subscribedregions(configFileName)
     ct.get_network_compartment_ids(config['tenancy'],"root",configFileName)
 
@@ -206,23 +206,16 @@ def export_fss(inputfile, outdir, network_compartments=[], config=DEFAULT_LOCATI
     df, values_for_column_fss = commonTools.read_cd3(cd3file, "FSS")
     sheet_dict_instances = ct.sheet_dict["FSS"]
 
-    # Fetch Regions
-    regionsubscriptions = idc.list_region_subscriptions(tenancy_id=config['tenancy'])
-    for rs in regionsubscriptions.data:
-        for k, v in ct.region_dict.items():
-            if (rs.region_name == v):
-                all_regions.append(k)
-
     # Fetch all ADs in all Subscribed Regions
-    for reg in all_regions:
+    for reg in ct.all_regions:
         config.__setitem__("region", ct.region_dict[reg])
         ads = oci.identity.IdentityClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
         for aval in ads.list_availability_domains(compartment_id=config['tenancy']).data:
             all_ads.append(aval.name)
 
     # backup of .sh file
-    for reg in all_regions:
-        resource = ' tf_import_fss'
+    for reg in ct.all_regions:
+        resource = 'tf_import_fss'
         srcdir = outdir + "/" + reg + "/"
         if (os.path.exists(outdir + "/" + reg + "/tf_import_commands_fss_nonGF.sh")):
             commonTools.backup_file(srcdir, resource, "tf_import_commands_fss_nonGF.sh")
@@ -232,55 +225,23 @@ def export_fss(inputfile, outdir, network_compartments=[], config=DEFAULT_LOCATI
         importCommands[reg].write("terraform init")
 
     # Check Compartments
-    remove_comps = []
-    if (input_compartment_names is not None):
-        for x in range(0, len(input_compartment_names)):
-            if (input_compartment_names[x] not in ct.ntk_compartment_ids.keys()):
-                print("Input compartment: " + input_compartment_names[x] + " doesn't exist in OCI")
-                remove_comps.append(input_compartment_names[x])
+    global comp_list_fetch
+    comp_list_fetch = commonTools.get_comp_list_for_export(network_compartments, ct.ntk_compartment_ids)
 
-        input_compartment_names = [x for x in input_compartment_names if x not in remove_comps]
-        if (len(input_compartment_names) == 0):
-            print("None of the input compartments specified exist in OCI..Exiting!!!")
-            exit(1)
-        else:
-            print("Fetching for Compartments... " + str(input_compartment_names))
-            for compartment_name in input_compartment_names:
-                for reg in all_regions:
-                  config.__setitem__("region", ct.region_dict[reg])
-                  ads=oci.identity.IdentityClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
-                  for aval in ads.list_availability_domains(compartment_id=config['tenancy']).data:
-                    __get_mount_info(compartment_name,ct.ntk_compartment_ids[compartment_name],reg,aval.name,config)
-    else:
-        print("Fetching for all Compartments...")
-        comp_ocid_done=[]
-        for ntk_compartment_name in ct.ntk_compartment_ids:
-            if ct.ntk_compartment_ids[ntk_compartment_name] not in comp_ocid_done:
-                if (input_compartment_names is not None and ntk_compartment_name not in input_compartment_names):
-                    continue
-                comp_ocid_done.append(ct.ntk_compartment_ids[ntk_compartment_name])
-        uc={}                                   #compartment names with hierarchy
-        for cid in comp_ocid_done:
-            for cname,cocid in ct.ntk_compartment_ids.items():
-               if cocid == cid and "::" in cname:
-                  uc[cname]=cocid
-                  continue
-               if cocid == cid:
-                 if cocid not in uc.values():
-                    uc[cname]=cocid
-        for comp_name,comp_ocid in uc.items():
-            for reg in all_regions:
-               config.__setitem__("region", ct.region_dict[reg])
-               ads=oci.identity.IdentityClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
-               for aval in ads.list_availability_domains(compartment_id=config['tenancy']).data:
-                 __get_mount_info(comp_name,comp_ocid,reg,aval.name,config)
+    for reg in ct.all_regions:
+        config.__setitem__("region", ct.region_dict[reg])
+        for ntk_compartment_name in comp_list_fetch:
+            ads = oci.identity.IdentityClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
+            for aval in ads.list_availability_domains(compartment_id=config['tenancy']).data:
+                __get_mount_info(ntk_compartment_name, ct.ntk_compartment_ids[ntk_compartment_name], reg, aval.name, config)
+
 
 
     commonTools.write_to_cd3(values_for_column_fss, cd3file, "FSS")
     print("FSS objects exported to CD3.\n")
 
     # writing data
-    for reg in all_regions:
+    for reg in ct.all_regions:
         script_file = f'{outdir}/{reg}/tf_import_commands_fss_nonGF.sh'
         with open(script_file, 'a') as importCommands[reg]:
             importCommands[reg].write('\n\nterraform plan\n')

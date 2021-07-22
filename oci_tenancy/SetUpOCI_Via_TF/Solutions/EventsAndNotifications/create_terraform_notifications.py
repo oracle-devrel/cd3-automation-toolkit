@@ -67,20 +67,12 @@ def create_terraform_notifications(inputfile, outdir, prefix, config=DEFAULT_LOC
         tfStr[reg] = ''
         Notifications_names[reg]=[]
         Subscriptions_names[reg]=[]
-    reg = df['Region'].unique()
-    
-    # Take backup of Notification files
-    for eachregion in reg:
-        eachregion = str(eachregion).strip().lower()
+
         resource='Notifications'
-        if (eachregion in commonTools.endNames):
-            break
-        if eachregion not in ct.all_regions:
-            print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
-            exit()
-        srcdir = outdir + "/" + eachregion + "/"
+        srcdir = outdir + "/" + reg + "/"
         commonTools.backup_file(srcdir, resource, "-notification.tf")
         commonTools.backup_file(srcdir, resource, "-subscription.tf")
+
     # Iterate over rows
     for i in df.index:
         region = str(df.loc[i, 'Region']).strip()

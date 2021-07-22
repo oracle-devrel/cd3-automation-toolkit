@@ -239,3 +239,15 @@ SetUPOCI_Via_TF Tag v7.2
 5. CD3 Validator for Identity, Networking, Instances, Block Volumes
 6. Accept key value along with key var name in Instances Sheet
 7. Updated CD3 Templates as per CIS
+
+------------------------
+SetUPOCI_Via_TF Tag v8.0
+------------------------
+1. Support for DRGv2 - added 2 new sheets to CD3: DRGs and DRGRouteRulesinOCI
+2. Backward compatible to support DRGv1
+3. Updated CD3 Validator to include validation for DRGs tab
+4. Optimized the code for export of objects
+5. Bug fix for export of SecRules and RouteRules for all compartments
+6. Updated the toolkit to support user access to a single compartment by allowing creation of sub-compartments under that only.
+7. Included export of additional objects for Instances and Block Volumes
+8. Upgrade terraform version to 1.0.0

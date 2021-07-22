@@ -15,15 +15,15 @@ from commonTools import *
 from jinja2 import Environment, FileSystemLoader
 
 
-def adding_columns_values(region, hostname, ad, fd, vs, publicip, privateip, os_dname, shape, key_name, c_name,
-                          bkp_policy_name, nsgs, d_host, instance_data, values_for_column_instances, bc_info, bdet,
-                          cpcn):
+def adding_columns_values(region, ad, fd, vs, publicip, privateip, os_dname, shape, key_name, c_name,
+                          bkp_policy_name, nsgs, d_host, instance_data, values_for_column_instances,  bdet,
+                          cpcn,shape_config,vnic_info):
     # print("CPCN=",cpcn)
     for col_header in values_for_column_instances.keys():
         if (col_header == "Region"):
             values_for_column_instances[col_header].append(region)
-        elif (col_header == "Hostname"):
-            values_for_column_instances[col_header].append(hostname)
+        #elif (col_header == "Hostname"):
+        #    values_for_column_instances[col_header].append(hostname)
         elif (col_header == "Availability Domain(AD1|AD2|AD3)"):
             values_for_column_instances[col_header].append(ad)
         elif (col_header == "Fault Domain"):
@@ -46,39 +46,42 @@ def adding_columns_values(region, hostname, ad, fd, vs, publicip, privateip, os_
             values_for_column_instances[col_header].append(bkp_policy_name)
         elif (col_header == "NSGs"):
             values_for_column_instances[col_header].append(nsgs)
-        elif (col_header.lower() == "boot volume size in gbs"):
-            values_for_column_instances[col_header].append(bdet.size_in_gbs)
-        elif (col_header.lower() == "kms key id"):
-            values_for_column_instances[col_header].append(bdet.kms_key_id)
+        #elif (col_header.lower() == "boot volume size in gbs"):
+        #    values_for_column_instances[col_header].append(bdet.size_in_gbs)
+        #elif (col_header.lower() == "kms key id"):
+        #    values_for_column_instances[col_header].append(bdet.kms_key_id)
         elif (col_header == "Dedicated VM Host"):
-            values_for_column_instances[col_header].append(d_host)
+            if (d_host == None):
+                values_for_column_instances[col_header].append('')
+            else:
+                values_for_column_instances[col_header].append(d_host.display_name
+                                                               )
         elif (col_header == "Custom Policy Compartment Name"):
             values_for_column_instances[col_header].append(cpcn)
         elif str(col_header).lower() in commonTools.tagColumns:
             values_for_column_instances = commonTools.export_tags(instance_data, col_header,
                                                                   values_for_column_instances)
         else:
-            oci_objs = [instance_data, bc_info[0]]
+            oci_objs = [instance_data, bdet,shape_config,vnic_info,d_host]
             values_for_column_instances = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict_instances,
                                                                            values_for_column_instances)
 
 
 def find_boot(ins_ad, ins_id, config):
     compute = oci.core.ComputeClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
-    for comp in all_compartments:
-        bl = compute.list_boot_volume_attachments(availability_domain=ins_ad, compartment_id=comp, instance_id=ins_id)
+    for comp in comp_list_fetch:
+        bl = compute.list_boot_volume_attachments(availability_domain=ins_ad, compartment_id=ct.ntk_compartment_ids[comp], instance_id=ins_id)
         if (len(bl.data)):
             return bl
 
 
-def find_vnic(ins_id, config):
-    network = oci.core.VirtualNetworkClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
+def find_vnic(ins_id, config,compartment_id):
     compute = oci.core.ComputeClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
-    for comp in all_compartments:
-        net = oci.pagination.list_call_get_all_results(compute.list_vnic_attachments, compartment_id=comp,
+    #for comp in all_compartments:
+    net = oci.pagination.list_call_get_all_results(compute.list_vnic_attachments, compartment_id=compartment_id,
                                                        instance_id=ins_id)
-        if (len(net.data)):
-            return net
+    if (len(net.data)):
+        return net
 
 
 
@@ -87,7 +90,6 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, config):
     compute = oci.core.ComputeClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
     network = oci.core.VirtualNetworkClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
     bc = oci.core.BlockstorageClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
-    idc = IdentityClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
     instance_info = oci.pagination.list_call_get_all_results(compute.list_instances, compartment_id=compartment_id)
     # print(instance_info.data)
     for ins in instance_info.data:
@@ -103,45 +105,42 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, config):
             tf_name = commonTools.check_tf_variable(ins_dname)
             importCommands[reg_name].write(
                 "\nterraform import oci_core_instance." + tf_name + " " + str(ins.id))  # writing into tf file
-            ins_shape = ins.shape  # Shape
+
+            # Shape Details
+            ins_shape = ins.shape
+            shape_config=None
+
             if ('Flex' in ins_shape):
-                ocpu = ins.shape_config
-                ocpus_n = str(ocpu.ocpus)
+                #ocpu = ins.shape_config
+                shape_config = ins.shape_config
+                ocpus_n = str(shape_config.ocpus)
                 ocpu = ocpus_n.split(".")[0]
                 ins_shape = ins_shape + "::" + ocpu
-                # print(ins_shape)
-            region_code = ins.region
-            dedicated_host = ins.dedicated_vm_host_id  # dedicated host_name
-            if (dedicated_host == None):
-                dedicated_host = ""
-                # print("Dedi=",dedicated_host)
-            # print(ins_dname,ins_ad,ins_fd,ins_shape)
-            ins_vnic = find_vnic(ins_id, config)
-            # print(ins_vnic.data)
+
+            #Dedicated VM Host Details
+            dedicated_host=None
+            dedicated_host_id = ins.dedicated_vm_host_id  # dedicated host_name
+            if(dedicated_host_id is not None):
+                dedicated_host=compute.get_dedicated_vm_host(dedicated_host_id)
+
+            # Boot Volume and its BackUp Policy Details
             boot_check = find_boot(ins_ad, ins_id, config)
             boot_id = boot_check.data[0].boot_volume_id
             try:
-                bdet = boot_details = bc.get_boot_volume(boot_volume_id=boot_id).data
-                boot_details = bc.get_boot_volume(boot_volume_id=boot_id).data.image_id
+                bdet = bc.get_boot_volume(boot_volume_id=boot_id).data
+                boot_details = bdet.image_id
                 bvp = bc.get_volume_backup_policy_asset_assignment(asset_id=boot_id)
-
             except oci.exceptions.ServiceError as s:
                 if 'Authorization failed or requested resource not found' in s.message:
-                    bdet = []
+                    bdet = None
                     boot_details = ''
                     bvp = []
-            # print("OS",os.data)                                   #Operating system
-            # sdet=bc.get_volume(volume_id=source_image_id)
 
-            #bvdetails = bc.get_boot_volume(boot_volume_id=boot_id)
             bkp_policy_name = ""
+
             cpcn = ""
             if bvp != [] and (len(bvp.data)):
-                # print("Bvp Data:",bvp.data)
                 bkp_pname = bc.get_volume_backup_policy(policy_id=bvp.data[0].policy_id)
-                # print(bkp_pname)
-                # print("BVP-DATA=",bvp.data)
-                # print("bkp_data::",bkp_pname.data)
                 bpolicy = ins_dname + "_bkupPolicy"
                 bkp_policy_name = bkp_pname.data.display_name.title()  # backup policy name
                 tf_name = commonTools.check_tf_variable(bpolicy)
@@ -151,24 +150,28 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, config):
                         bvp.data[0].id))
                 if (bkp_pname.data.display_name not in ["Gold", "Silver", "Bronze"]):
                     bkp_policy_name = bkp_pname.data.display_name
-                    for comp_name, comp_id in uc.items():
+                    for comp_name, comp_id in ct.ntk_compartment_ids.items():
                         if (bkp_pname.data.compartment_id == comp_id):
                             # print(comp_name, comp_id)
                             cpcn = comp_name
+
+            # VNIC Details
+            ins_vnic = find_vnic(ins_id, config, compartment_id)
+            vnic_info=None
             for lnic in ins_vnic.data:
                 subnet_id = lnic.subnet_id
                 vnic_id = lnic.vnic_id
-                vnic_info = network.get_vnic(vnic_id=vnic_id)
-                if (vnic_info.data.is_primary == False):
+                vnic_info = network.get_vnic(vnic_id=vnic_id).data
+
+                #Get only primary VNIC details
+                if (vnic_info.is_primary == False):
                     continue
-                # print("Lnic",lnic)
-                # print(vnic_id)
                 subnet_info = network.get_subnet(subnet_id=subnet_id)
                 subnet_name = subnet_info.data.display_name
                 vcn_id = subnet_info.data.vcn_id
                 vcn_info = network.get_vcn(vcn_id=vcn_id)
                 vcn_name = vcn_info.data.display_name
-                privateip = vnic_info.data.private_ip
+                privateip = vnic_info.private_ip
                 key_name = ins_dname + "_" + str(privateip)
                 key_name = commonTools.check_tf_variable(key_name)
                 if ('ssh_authorized_keys' in ins.metadata.keys()):
@@ -197,12 +200,14 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, config):
                     tf_name = commonTools.check_tf_variable(reg_name + "-" + os_dname)
                     os_keys[tf_name] = ins.source_details.boot_volume_id
                     os_dname = "bootVolume::" + os_dname
-                publicip = vnic_info.data.public_ip
+                publicip = vnic_info.public_ip
                 if (publicip == None):
                     publicip = "FALSE"
                 else:
                     publicip = "TRUE"
-                nsg_id = vnic_info.data.nsg_ids
+
+                #Get NSG Details
+                nsg_id = vnic_info.nsg_ids
                 nsg_names = ""
                 if (len(nsg_id)):
                     for j in nsg_id:
@@ -211,10 +216,10 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, config):
                     nsg_names = nsg_names[1:]
                 vs = vcn_name + "_" + subnet_name  # VCN + Subnet Name
                 vs = commonTools.check_tf_variable(vs)
-                adding_columns_values(reg_name.title(), ins_dname, AD_name, ins_fd, vs, publicip, privateip, os_dname,
+
+                adding_columns_values(reg_name.title(), AD_name, ins_fd, vs, publicip, privateip, os_dname,
                                       ins_shape, key_name, compartment_name, bkp_policy_name, nsg_names, dedicated_host,
-                                      ins, values_for_column_instances, boot_check.data, bdet, cpcn)
-                # rows.append(new_row)
+                                      ins, values_for_column_instances, bdet, cpcn,shape_config,vnic_info)
 
 
 def parse_args():
@@ -237,17 +242,14 @@ def export_instance(inputfile, outdir, config, network_compartments=[]):
     configFileName = config
     config = oci.config.from_file(file_location=configFileName)
 
-    global instance_keys, user_data_in, os_keys, all_regions, ct, importCommands, idc, rows, all_compartments, AD, values_for_column_instances, df, uc, sheet_dict_instances  # declaring global variables
+    global instance_keys, user_data_in, os_keys, ct, importCommands, idc, rows, AD, values_for_column_instances, df, sheet_dict_instances  # declaring global variables
 
     instance_keys = {}  # dict name
     os_keys = {}  # os_ocids
     user_data_in = {}  # user data for exports
-    all_regions = []
     ct = commonTools()
     importCommands = {}
-    idc = IdentityClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
     rows = []
-    all_compartments = []
     ct.get_subscribedregions(configFileName)
     ct.get_network_compartment_ids(config['tenancy'], "root", configFileName)
 
@@ -264,22 +266,9 @@ def export_instance(inputfile, outdir, config, network_compartments=[]):
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
     variable_template = env.get_template('variables-template')
 
-    # Fetch Regions
-    regionsubscriptions = idc.list_region_subscriptions(tenancy_id=config['tenancy'])
-    for rs in regionsubscriptions.data:
-        for k, v in ct.region_dict.items():
-            if (rs.region_name == v):
-                all_regions.append(k)
-    all_compartments.append(config['tenancy'])
-    comps = oci.pagination.list_call_get_all_results(idc.list_compartments, compartment_id=config['tenancy'],
-                                                     compartment_id_in_subtree=True)
-    for comp_info in comps.data:
-        if (comp_info.lifecycle_state == "ACTIVE"):
-            all_compartments.append(comp_info.id)
-
     # Create of .sh file
-    for reg in all_regions:
-        resource = ' tf_import_instances'
+    for reg in ct.all_regions:
+        resource = 'tf_import_instances'
         srcdir = outdir + "/" + reg + "/"
         if (os.path.exists(outdir + "/" + reg + "/tf_import_commands_instances_nonGF.sh")):
             commonTools.backup_file(srcdir, resource, "tf_import_commands_instances_nonGF.sh")
@@ -289,61 +278,18 @@ def export_instance(inputfile, outdir, config, network_compartments=[]):
         importCommands[reg].write("terraform init")
 
     # Check Compartments
-    remove_comps = []
-    comp_ocid_done = []
-    for ntk_compartment_name in ct.ntk_compartment_ids:
-        if ct.ntk_compartment_ids[ntk_compartment_name] not in comp_ocid_done:
-            comp_ocid_done.append(ct.ntk_compartment_ids[ntk_compartment_name])
-    uc = {}  # compartment names with hierarchy
-    for cid in comp_ocid_done:
-        for cname, cocid in ct.ntk_compartment_ids.items():
-            if cocid == cid and "::" in cname:
-                uc[cname] = cocid
-                continue
-            if cocid == cid:
-                if cocid not in uc.values():
-                    uc[cname] = cocid
+    global comp_list_fetch
+    comp_list_fetch = commonTools.get_comp_list_for_export(network_compartments, ct.ntk_compartment_ids)
 
-    if (input_compartment_names is not None):
-        for x in range(0, len(input_compartment_names)):
-            if (input_compartment_names[x] not in ct.ntk_compartment_ids.keys()):
-                print("Input compartment: " + input_compartment_names[x] + " doesn't exist in OCI")
-                remove_comps.append(input_compartment_names[x])
-
-        input_compartment_names = [x for x in input_compartment_names if x not in remove_comps]
-        if (len(input_compartment_names) == 0):
-            print("None of the input compartments specified exist in OCI..Exiting!!!")
-            exit(1)
-        else:
-            print("Fetching for Compartments... " + str(input_compartment_names))
-            for compartment_name in input_compartment_names:
-                for reg in all_regions:
-                    config.__setitem__("region", ct.region_dict[reg])
-                    __get_instances_info(compartment_name, ct.ntk_compartment_ids[compartment_name], reg, config)
-    else:
-        print("Fetching for all Compartments...")
-        comp_ocid_done = []
-        for ntk_compartment_name in ct.ntk_compartment_ids:
-            if ct.ntk_compartment_ids[ntk_compartment_name] not in comp_ocid_done:
-                if (input_compartment_names is not None and ntk_compartment_name not in input_compartment_names):
-                    continue
-                comp_ocid_done.append(ct.ntk_compartment_ids[ntk_compartment_name])
-        uc = {}  # compartment names with hierarchy
-        for cid in comp_ocid_done:
-            for cname, cocid in ct.ntk_compartment_ids.items():
-                if cocid == cid and "::" in cname:
-                    uc[cname] = cocid
-                    continue
-                if cocid == cid:
-                    if cocid not in uc.values():
-                        uc[cname] = cocid
-        for comp_name, comp_ocid in uc.items():
-            for reg in all_regions:
-                config.__setitem__("region", ct.region_dict[reg])
-                __get_instances_info(comp_name, comp_ocid, reg, config)
+    for reg in ct.all_regions:
+        importCommands[reg].write("\n\n######### Writing import for Block Volumes #########\n\n")
+        config.__setitem__("region", ct.region_dict[reg])
+        #region = reg.capitalize()
+        for ntk_compartment_name in comp_list_fetch:
+           __get_instances_info(ntk_compartment_name, ct.ntk_compartment_ids[ntk_compartment_name], reg, config)
 
     # writing ocids values into os_ocids.tf
-    for reg in all_regions:
+    for reg in ct.all_regions:
         myocids = {}
         for keys, values in os_keys.items():
             reg_name = keys.split("-")[0]
@@ -360,7 +306,7 @@ def export_instance(inputfile, outdir, config, network_compartments=[]):
         f.close()
     tempstr = {}
     # writing ssh_keys_metadata into ssh_metadata
-    for reg in all_regions:
+    for reg in ct.all_regions:
         myocids = {}
         for keys, values in instance_keys.items():
             reg_name = keys.split("-")[0]
@@ -377,7 +323,7 @@ def export_instance(inputfile, outdir, config, network_compartments=[]):
         f.close()
 
     # write data into file
-    for reg in all_regions:
+    for reg in ct.all_regions:
         script_file = f'{outdir}/{reg}/tf_import_commands_instances_nonGF.sh'
         with open(script_file, 'a') as importCommands[reg]:
             importCommands[reg].write('\n\nterraform plan\n')

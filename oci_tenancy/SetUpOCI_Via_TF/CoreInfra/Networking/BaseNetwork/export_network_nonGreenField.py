@@ -8,6 +8,7 @@ from oci.core.virtual_network_client import VirtualNetworkClient
 from oci.config import DEFAULT_LOCATION
 import os
 from .exportRoutetable import export_routetable
+from .exportRoutetable import export_drg_routetable
 from .exportSeclist import export_seclist
 
 sys.path.append(os.getcwd() + "/..")
@@ -122,37 +123,6 @@ def print_nsgsl(values_for_column_nsgs,vnc,region, comp_name, vcn_name, nsg, nsg
             oci_objs = [nsg,nsgsl]
             values_for_column_nsgs = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict_nsgs,values_for_column_nsgs)
 
-        """elif(col_header in sheet_dict_nsgs.keys()):
-            # Check if property exists for nsg
-            try:
-                value = nsg.__getattribute__(sheet_dict_nsgs[col_header])
-                value = commonTools.check_exported_value(value)
-                values_for_column_nsgs[col_header].append(value)
-            #Check if property exists for nsgsl
-            except AttributeError as e:
-                try:
-                    value = nsgsl.__getattribute__(sheet_dict_nsgs[col_header])
-                    value = commonTools.check_exported_value(value)
-                    values_for_column_nsgs[col_header].append(value)
-                except AttributeError as e:
-                    value = ""
-                    values_for_column_nsgs[col_header].append(value)
-        else:
-            # Check if property exists for nsg
-            try:
-                value = nsg.__getattribute__(commonTools.check_column_headers(col_header))
-                value = commonTools.check_exported_value(value)
-                values_for_column_nsgs[col_header].append(value)
-            # Check if property exists for nsgsl
-            except AttributeError as e:
-                try:
-                    value = nsgsl.__getattribute__(commonTools.check_column_headers(col_header))
-                    value = commonTools.check_exported_value(value)
-                    values_for_column_nsgs[col_header].append(value)
-                except AttributeError as e:
-                    value = ""
-                    values_for_column_nsgs[col_header].append(value)
-        """
 
     importCommands[region.lower()].write("\nterraform import oci_core_network_security_group_security_rule." + tf_name + "_security_rule" + str(i) + " " + "networkSecurityGroups/" + str(nsg.id) + "/securityRules/" + str(nsgsl.id))
 
@@ -175,6 +145,70 @@ def print_nsg(values_for_column_nsgs,region, comp_name, vcn_name, nsg):
 
     importCommands[region.lower()].write("\nterraform import oci_core_network_security_group." + tf_name + " "+str(nsg.id))
 
+def print_drgv2(values_for_column_drgv2,region, comp_name, vcn_info,drg_info,drg_attachment_info, drg_rt_info, import_drg_route_distribution_info,drg_route_distribution_statements):
+    for col_header in values_for_column_drgv2.keys():
+        if (col_header == "Region"):
+            values_for_column_drgv2[col_header].append(region)
+        elif (col_header == "Compartment Name"):
+            values_for_column_drgv2[col_header].append(comp_name)
+        elif (col_header == "DRG Name"):
+            values_for_column_drgv2[col_header].append(drg_info.display_name)
+        elif(col_header == "Attached To"):
+            if(drg_attachment_info is None):
+                values_for_column_drgv2[col_header].append('')
+            else:
+                if (drg_attachment_info.network_details is not None):
+                    attach_type = drg_attachment_info.network_details.type
+                    attach_id = drg_attachment_info.network_details.id
+                # DRG v1
+                else:
+                    attach_type = "VCN"
+                    attach_id = drg_attachment_info.vcn_id
+
+                if(attach_type.upper()=="VCN"):
+                    columnval = attach_type+"::"+vcn_info.display_name
+                    values_for_column_drgv2[col_header].append(columnval)
+                else:
+                    columnval = attach_type + "::" + attach_id
+                    values_for_column_drgv2[col_header].append(columnval)
+
+        elif (col_header == "DRG RT Name"):
+            if(drg_rt_info == None):
+                values_for_column_drgv2[col_header].append("")
+            else:
+                values_for_column_drgv2[col_header].append(drg_rt_info.display_name)
+        elif(col_header == 'Import DRG Route Distribution Name'):
+            if import_drg_route_distribution_info == None:
+                values_for_column_drgv2[col_header].append("")
+            else:
+                values_for_column_drgv2[col_header].append(import_drg_route_distribution_info.display_name)
+        elif(col_header == "Import DRG Route Distribution Statements"):
+            statement_val = ''
+            if (drg_route_distribution_statements == None):
+                statement_val=''
+            else:
+                for stmt in drg_route_distribution_statements.data:
+                    priority=stmt.priority
+                    if(len(stmt.match_criteria))!=0:
+                        match_type=stmt.match_criteria[0].match_type
+                        if(match_type=="DRG_ATTACHMENT_TYPE"):
+                            attachment_type=stmt.match_criteria[0].attachment_type
+                            statement_val=statement_val+"\n"+ match_type+"::"+attachment_type+"::"+str(priority)
+                        elif(match_type=="DRG_ATTACHMENT_ID"):
+                            drg_attachment_id=stmt.match_criteria[0].drg_attachment_id
+
+                            statement_val = statement_val+"\n"+ match_type + "::" + drg_attachment_id + "::" + str(priority)
+                    else:
+                        statement_val = statement_val+"\n"+ "ALL::::"+str(priority)+ "\n"
+            values_for_column_drgv2[col_header].append(statement_val)
+        elif col_header.lower() in commonTools.tagColumns:
+            values_for_column_drgv2 = commonTools.export_tags(drg_info, col_header, values_for_column_drgv2)
+        else:
+            oci_objs = [drg_info,drg_attachment_info, drg_rt_info, import_drg_route_distribution_info]
+            values_for_column_drgv2 = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict_drgv2,values_for_column_drgv2)
+
+
+
 def print_vcns(values_for_column_vcns,region, comp_name, vcn_info, drg_info, igw_info, ngw_info, sgw_info,lpg_display_names):
     for col_header in values_for_column_vcns.keys():
         if (col_header == "Region"):
@@ -186,6 +220,7 @@ def print_vcns(values_for_column_vcns,region, comp_name, vcn_info, drg_info, igw
                 values_for_column_vcns[col_header].append("n")
             else:
                 values_for_column_vcns[col_header].append(drg_info.display_name)
+
         elif (col_header == "IGW Required"):
             if(igw_info==None):
                 values_for_column_vcns[col_header].append("n")
@@ -342,10 +377,12 @@ def parse_args():
 def export_networking(inputfile, outdir, _config, network_compartments=[]):
     global tf_import_cmd
     global values_for_column_vcns
+    global values_for_column_drgv2
     global values_for_column_dhcp
     global values_for_column_subnets
     global values_for_column_nsgs
     global sheet_dict_vcns
+    global sheet_dict_drgv2
     global sheet_dict_dhcp
     global sheet_dict_subnets
     global sheet_dict_nsgs
@@ -366,6 +403,7 @@ def export_networking(inputfile, outdir, _config, network_compartments=[]):
 
     # Read CD3
     df,values_for_column_vcns=commonTools.read_cd3(cd3file,"VCNs")
+    df, values_for_column_drgv2 = commonTools.read_cd3(cd3file, "DRGs")
     df, values_for_column_dhcp = commonTools.read_cd3(cd3file, "DHCP")
     df, values_for_column_subnets = commonTools.read_cd3(cd3file, "Subnets")
     df, values_for_column_nsgs = commonTools.read_cd3(cd3file, "NSGs")
@@ -376,30 +414,17 @@ def export_networking(inputfile, outdir, _config, network_compartments=[]):
 
     # Get dict for columns from Excel_Columns
     sheet_dict_vcns=ct.sheet_dict["VCNs"]
+    sheet_dict_drgv2 = ct.sheet_dict["DRGs"]
     sheet_dict_dhcp = ct.sheet_dict["DHCP"]
     sheet_dict_subnets = ct.sheet_dict["Subnets"]
     sheet_dict_nsgs = ct.sheet_dict["NSGs"]
 
-
     # Check Compartments
-    remove_comps = []
-    if input_compartment_names is not None:
-        for x in range(0, len(input_compartment_names)):
-            if (input_compartment_names[x] not in ct.ntk_compartment_ids.keys()):
-                print("Input compartment: " + input_compartment_names[x] + " doesn't exist in OCI")
-                remove_comps.append(input_compartment_names[x])
+    comp_list_fetch = commonTools.get_comp_list_for_export(network_compartments, ct.ntk_compartment_ids)
 
-        input_compartment_names = [x for x in input_compartment_names if x not in remove_comps]
-        if (len(input_compartment_names) == 0):
-            print("None of the input compartments specified exist in OCI..Exiting!!!")
-            exit(1)
-        else:
-            print("Fetching for Compartments... " + str(input_compartment_names))
-    else:
-        print("Fetching for all Compartments...")
+
     print("\nCD3 excel file should not be opened during export process!!!")
-    print("Tabs- VCNs, VCN Info, Subnets, DHCP, SecRulesinOCI and RouteRulesinOCI would be overwritten during export process!!!\n")
-
+    print("Tabs- VCNs, VCN Info, Subnets, DHCP, SecRulesinOCI and RouteRulesinOCI DRGRouteRulesinOCI would be overwritten during export process!!!\n")
 
     # Create backups
     for reg in ct.all_regions:
@@ -421,47 +446,31 @@ def export_networking(inputfile, outdir, _config, network_compartments=[]):
         vnc = VirtualNetworkClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
         region = reg.capitalize()
         comp_ocid_done=[]
-        for ntk_compartment_name in ct.ntk_compartment_ids:
-            if ct.ntk_compartment_ids[ntk_compartment_name] not in comp_ocid_done:
-                if (input_compartment_names is not None and ntk_compartment_name not in input_compartment_names):
-                    continue
-                comp_ocid_done.append(ct.ntk_compartment_ids[ntk_compartment_name])
+        for ntk_compartment_name in comp_list_fetch:
+            #if ct.ntk_compartment_ids[ntk_compartment_name] not in comp_ocid_done:
+                #if (input_compartment_names is not None and ntk_compartment_name not in input_compartment_names):
+                #    continue
+                #comp_ocid_done.append(ct.ntk_compartment_ids[ntk_compartment_name])
                 vcns = oci.pagination.list_call_get_all_results(vnc.list_vcns,
                                                                 compartment_id=ct.ntk_compartment_ids[ntk_compartment_name],
                                                                 lifecycle_state="AVAILABLE")
                 for vcn in vcns.data:
                     vcn_info = vcn
                     # Fetch VCN components assuming components are in same comp as VCN
-                    #drg_display_name = "n"
+
+                    #DRG attachemnt is in same compartment as VCN by default
                     DRG_Attachments = oci.pagination.list_call_get_all_results(vnc.list_drg_attachments,
                                                                                compartment_id=ct.ntk_compartment_ids[
                                                                                    ntk_compartment_name], vcn_id=vcn.id)
                     drg_info=None
-                    igw_info=None
+                    igw_info = None
                     ngw_info = None
                     sgw_info = None
 
-                    for drg_attachment in DRG_Attachments.data:
-                        drg_attachment_info = drg_attachment
-                        drg_attachment_name = drg_attachment_info.display_name
+                    for drg_attachment_info in DRG_Attachments.data:
                         drg_id = drg_attachment_info.drg_id
-
                         drg_info = vnc.get_drg(drg_id).data
-                        drg_display_name = drg_info.display_name
 
-                        drgattach_route_table_id = drg_attachment_info.route_table_id
-                        if (drgattach_route_table_id is not None):
-                            oci_obj_names[reg].write(
-                                "\ndrginfo::::" + vcn_info.display_name + "::::" + drg_display_name + "::::" + vnc.get_route_table(
-                                    drgattach_route_table_id).data.display_name)
-                        tf_name = commonTools.check_tf_variable(drg_display_name)
-                        importCommands[reg].write("\nterraform import oci_core_drg." + tf_name + " " + drg_info.id)
-
-                        tf_name = vcn_info.display_name + "_" + drg_attachment_name
-                        tf_name=commonTools.check_tf_variable(tf_name)
-
-                        importCommands[reg].write("\nterraform import oci_core_drg_attachment." + tf_name + " " + drg_attachment_info.id)
-                        oci_obj_names[reg].write("\ndrgattachinfo::::" + vcn_info.display_name + "::::" + drg_display_name + "::::" + drg_attachment_name)
 
                     #igw_display_name = "n"
                     IGWs = oci.pagination.list_call_get_all_results(vnc.list_internet_gateways,
@@ -524,11 +533,157 @@ def export_networking(inputfile, outdir, _config, network_compartments=[]):
                         lpg_display_names = lpg_display_names[:-1]
 
                     # Fill VCNs Tab
-                    #print_vcns(region, ntk_compartment_name, vcn_info, drg_display_name, igw_display_name, ngw_display_name,sgw_display_name, lpg_display_names)
                     print_vcns(values_for_column_vcns,region,ntk_compartment_name, vcn_info, drg_info,igw_info,ngw_info, sgw_info, lpg_display_names)
 
     commonTools.write_to_cd3(values_for_column_vcns, cd3file, "VCNs")
     print("VCNs exported to CD3\n")
+
+    # Fetch DRGs
+    print("\nFetching DRGs...")
+    for reg in ct.all_regions:
+        importCommands[reg].write("\n######### Writing import for DRGs #########\n")
+        config.__setitem__("region", ct.region_dict[reg])
+        vnc = VirtualNetworkClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
+        region = reg.capitalize()
+        drg_ocid=[]
+        drg_rt_ocid=[]
+        drg_comp_name=''
+        drg_version="DRGv2"
+        for ntk_compartment_name in comp_list_fetch:
+              #drgs = oci.pagination.list_call_get_all_results(vnc.list_drgs,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name])
+                #for drg in drgs.data:
+                            DRG_Attachments = oci.pagination.list_call_get_all_results(vnc.list_drg_attachments,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name])#,lifecycle_state ="ATTACHED")#,attachment_type="ALL")
+
+                            for drg_attachment_info in DRG_Attachments.data:
+                                if (drg_attachment_info.lifecycle_state != "ATTACHED"):
+                                    continue
+                                drg_attachment_name = drg_attachment_info.display_name
+                                drg_id = drg_attachment_info.drg_id
+                                drg_info = vnc.get_drg(drg_id).data
+
+                                # Attachment Data
+                                drg_display_name = drg_info.display_name
+                                drg_comp_id=drg_info.compartment_id
+                                for key, val in ct.ntk_compartment_ids.items():
+                                    if val == drg_comp_id:
+                                        if("::" in key):
+                                            drg_comp_name = key
+                                            continue
+                                        else:
+                                            drg_comp_name = key
+                                            break
+
+                                tf_name = commonTools.check_tf_variable(drg_display_name)
+
+                                #Get Attachment Details
+                                # DRG v2
+                                if(drg_attachment_info.network_details is not None):
+                                    attach_type = drg_attachment_info.network_details.type
+                                    attach_id = drg_attachment_info.network_details.id
+                                #DRG v1
+                                else:
+                                    drg_version = "DRGv1"
+                                    attach_type = "VCN"
+                                    attach_id = drg_attachment_info.vcn_id
+
+                                oci_obj_names[ct.home_region].write("\nDRG Version::::" + drg_version+"::::None::::None")
+
+                                if (attach_type.upper() == "VCN"):
+                                    vcn_drgattach_route_table_id = drg_attachment_info.route_table_id
+                                    vcn_info = vnc.get_vcn(attach_id).data
+                                    if (vcn_drgattach_route_table_id is not None):
+                                        oci_obj_names[reg].write("\ndrginfo::::" + vcn_info.display_name + "::::" + drg_info.display_name + "::::" + vnc.get_route_table(
+                                        vcn_drgattach_route_table_id).data.display_name)
+                                    else:
+                                        oci_obj_names[reg].write("\ndrginfo::::" + vcn_info.display_name + "::::" + drg_info.display_name + "::::None")
+
+
+                                if (drg_id not in drg_ocid):
+                                    importCommands[reg].write("\nterraform import oci_core_drg." + tf_name + " " + drg_info.id)
+                                    drg_ocid.append(drg_id)
+
+                                #tf_name = vcn_info.display_name + "_" + drg_attachment_name
+                                tf_name = commonTools.check_tf_variable(drg_attachment_name)
+
+                                importCommands[reg].write("\nterraform import oci_core_drg_attachment." + tf_name + " " + drg_attachment_info.id)
+                                oci_obj_names[reg].write("\ndrgattachinfo::::" + vcn_info.display_name + "::::" + drg_display_name + "::::" + drg_attachment_name)
+
+                                drg_route_table_id = drg_attachment_info.drg_route_table_id
+
+                                ##DRG v2
+                                drg_route_table_info =None
+                                import_drg_route_distribution_info = None
+                                drg_route_distribution_statements = None
+
+                                if(drg_route_table_id is not None):
+                                    drg_rt_ocid.append(drg_route_table_id)
+                                    drg_route_table_info = vnc.get_drg_route_table(drg_route_table_id).data
+
+                                    import_drg_route_distribution_id = drg_route_table_info.import_drg_route_distribution_id
+                                    if(import_drg_route_distribution_id!=None):
+                                        import_drg_route_distribution_info = vnc.get_drg_route_distribution(import_drg_route_distribution_id).data
+                                        drg_route_distribution_statements = vnc.list_drg_route_distribution_statements(import_drg_route_distribution_info.id)
+
+                                        tf_name = commonTools.check_tf_variable(drg_display_name+"_"+import_drg_route_distribution_info.display_name)
+                                        if(import_drg_route_distribution_info.display_name not in commonTools.drg_auto_RDs):
+                                            importCommands[reg].write("\nterraform import oci_core_drg_route_distribution." + tf_name + " " + import_drg_route_distribution_info.id)
+
+                                            k = 1
+                                            for stmt in drg_route_distribution_statements.data:
+                                                importCommands[reg].write("\nterraform import oci_core_drg_route_distribution_statement." + tf_name + "_statement" + str(k) + " drgRouteDistributions/" + import_drg_route_distribution_info.id + "/statements/" + stmt.id)
+                                                k=k+1
+
+                                print_drgv2(values_for_column_drgv2, region, drg_comp_name, vcn_info,drg_info, drg_attachment_info, drg_route_table_info, import_drg_route_distribution_info,drg_route_distribution_statements)
+
+                            # Get All Other RTs for this DRG only if it is DRGv2
+                            # DRG v2
+                            for drg_id in drg_ocid:
+                                drg_attachment_info = None
+                                vcn_info=None
+                                drg_info = vnc.get_drg(drg_id).data
+
+                                if drg_info.default_drg_route_tables is not None:
+                                    DRG_RTs = oci.pagination.list_call_get_all_results(vnc.list_drg_route_tables,
+                                                                                       drg_id=drg_id)
+                                    for drg_route_table_info in DRG_RTs.data:
+                                        drg_rt_id = drg_route_table_info.id
+                                        #RT associated with attachment already processed above
+                                        if (drg_rt_id in drg_rt_ocid):
+                                            continue
+
+                                        #Process other RTs of this DRG
+                                        drg_rt_ocid.append(drg_rt_id)
+                                        import_drg_route_distribution_info = None
+                                        drg_route_distribution_statements = None
+
+                                        import_drg_route_distribution_id = drg_route_table_info.import_drg_route_distribution_id
+                                        if (import_drg_route_distribution_id != None):
+                                            import_drg_route_distribution_info = vnc.get_drg_route_distribution(
+                                                import_drg_route_distribution_id).data
+                                            drg_route_distribution_statements = vnc.list_drg_route_distribution_statements(
+                                                import_drg_route_distribution_info.id)
+
+                                            tf_name = commonTools.check_tf_variable(
+                                                drg_display_name + "_" + import_drg_route_distribution_info.display_name)
+                                            if (import_drg_route_distribution_info.display_name not in commonTools.drg_auto_RDs):
+                                                importCommands[reg].write(
+                                                    "\nterraform import oci_core_drg_route_distribution." + tf_name + " " + import_drg_route_distribution_info.id)
+
+                                                k = 1
+                                                for stmt in drg_route_distribution_statements.data:
+                                                    importCommands[reg].write(
+                                                        "\nterraform import oci_core_drg_route_distribution_statement." + tf_name + "_statement" + str(
+                                                            k) + " drgRouteDistributions/" + import_drg_route_distribution_info.id + "/statements/" + stmt.id)
+                                                    k = k + 1
+                                        print_drgv2(values_for_column_drgv2, region, drg_comp_name, vcn_info, drg_info,
+                                                    drg_attachment_info, drg_route_table_info,
+                                                    import_drg_route_distribution_info,
+                                                    drg_route_distribution_statements)
+
+
+    commonTools.write_to_cd3(values_for_column_drgv2, cd3file, "DRGs")
+    print("DRGs exported to CD3\n")
+
     # Fetch NSGs
     rows = []
     print("\nFetching NSGs...")
@@ -537,24 +692,24 @@ def export_networking(inputfile, outdir, _config, network_compartments=[]):
         config.__setitem__("region", ct.region_dict[reg])
         vnc = VirtualNetworkClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
         region = reg.capitalize()
-        comp_ocid_done = []
-        for ntk_compartment_name in ct.ntk_compartment_ids:
-            if ct.ntk_compartment_ids[ntk_compartment_name] not in comp_ocid_done:
-                if (input_compartment_names is not None and ntk_compartment_name not in input_compartment_names):
-                    continue
-                comp_ocid_done.append(ct.ntk_compartment_ids[ntk_compartment_name])
+        #comp_ocid_done = []
+        for ntk_compartment_name in comp_list_fetch:
+            #if ct.ntk_compartment_ids[ntk_compartment_name] not in comp_ocid_done:
+                #if (input_compartment_names is not None and ntk_compartment_name not in input_compartment_names):
+                #    continue
+                #comp_ocid_done.append(ct.ntk_compartment_ids[ntk_compartment_name])
                 vcns = oci.pagination.list_call_get_all_results(vnc.list_vcns,
                                                                 compartment_id=ct.ntk_compartment_ids[ntk_compartment_name],
                                                                 lifecycle_state="AVAILABLE")
 
                 for vcn in vcns.data:
                     vcn_info = vnc.get_vcn(vcn.id).data
-                    comp_ocid_done_again = []
-                    for ntk_compartment_name_again in ct.ntk_compartment_ids:
-                        if ct.ntk_compartment_ids[ntk_compartment_name_again] not in comp_ocid_done_again:
-                            if (input_compartment_names is not None and ntk_compartment_name_again not in input_compartment_names):
-                                continue
-                            comp_ocid_done_again.append(ct.ntk_compartment_ids[ntk_compartment_name_again])
+                    #comp_ocid_done_again = []
+                    for ntk_compartment_name_again in comp_list_fetch:
+                    #    if ct.ntk_compartment_ids[ntk_compartment_name_again] not in comp_ocid_done_again:
+                    #        if (input_compartment_names is not None and ntk_compartment_name_again not in input_compartment_names):
+                    #            continue
+                    #        comp_ocid_done_again.append(ct.ntk_compartment_ids[ntk_compartment_name_again])
                             NSGs = oci.pagination.list_call_get_all_results(vnc.list_network_security_groups,
                                                                             compartment_id=ct.ntk_compartment_ids[
                                                                                 ntk_compartment_name_again], vcn_id=vcn.id,
@@ -583,23 +738,23 @@ def export_networking(inputfile, outdir, _config, network_compartments=[]):
         config.__setitem__("region", ct.region_dict[reg])
         vnc = VirtualNetworkClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
         region = reg.capitalize()
-        comp_ocid_done = []
-        for ntk_compartment_name in ct.ntk_compartment_ids:
-            if ct.ntk_compartment_ids[ntk_compartment_name] not in comp_ocid_done:
-                if (input_compartment_names is not None and ntk_compartment_name not in input_compartment_names):
-                    continue
-                comp_ocid_done.append(ct.ntk_compartment_ids[ntk_compartment_name])
+        #comp_ocid_done = []
+        for ntk_compartment_name in comp_list_fetch:
+        #    if ct.ntk_compartment_ids[ntk_compartment_name] not in comp_ocid_done:
+        #        if (input_compartment_names is not None and ntk_compartment_name not in input_compartment_names):
+        #            continue
+        #        comp_ocid_done.append(ct.ntk_compartment_ids[ntk_compartment_name])
                 vcns = oci.pagination.list_call_get_all_results(vnc.list_vcns,
                                                                 compartment_id=ct.ntk_compartment_ids[ntk_compartment_name],
                                                                 lifecycle_state="AVAILABLE")
                 for vcn in vcns.data:
                     vcn_info = vnc.get_vcn(vcn.id).data
-                    comp_ocid_done_again = []
-                    for ntk_compartment_name_again in ct.ntk_compartment_ids:
-                        if ct.ntk_compartment_ids[ntk_compartment_name_again] not in comp_ocid_done_again:
-                            if (input_compartment_names is not None and ntk_compartment_name_again not in input_compartment_names):
-                                continue
-                            comp_ocid_done_again.append(ct.ntk_compartment_ids[ntk_compartment_name_again])
+        #            comp_ocid_done_again = []
+                    for ntk_compartment_name_again in comp_list_fetch:
+        #                if ct.ntk_compartment_ids[ntk_compartment_name_again] not in comp_ocid_done_again:
+        #                    if (input_compartment_names is not None and ntk_compartment_name_again not in input_compartment_names):
+        #                        continue
+        #                    comp_ocid_done_again.append(ct.ntk_compartment_ids[ntk_compartment_name_again])
                             DHCPs = oci.pagination.list_call_get_all_results(vnc.list_dhcp_options,
                                                                              compartment_id=ct.ntk_compartment_ids[
                                                                                  ntk_compartment_name_again], vcn_id=vcn.id,
@@ -617,23 +772,23 @@ def export_networking(inputfile, outdir, _config, network_compartments=[]):
         config.__setitem__("region", ct.region_dict[reg])
         vnc = VirtualNetworkClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
         region = reg.capitalize()
-        comp_ocid_done = []
-        for ntk_compartment_name in ct.ntk_compartment_ids:
-            if ct.ntk_compartment_ids[ntk_compartment_name] not in comp_ocid_done:
-                if (input_compartment_names is not None and ntk_compartment_name not in input_compartment_names):
-                    continue
-                comp_ocid_done.append(ct.ntk_compartment_ids[ntk_compartment_name])
+        #comp_ocid_done = []
+        for ntk_compartment_name in comp_list_fetch:
+        #    if ct.ntk_compartment_ids[ntk_compartment_name] not in comp_ocid_done:
+        #        if (input_compartment_names is not None and ntk_compartment_name not in input_compartment_names):
+        #            continue
+        #        comp_ocid_done.append(ct.ntk_compartment_ids[ntk_compartment_name])
                 vcns = oci.pagination.list_call_get_all_results(vnc.list_vcns,
                                                                 compartment_id=ct.ntk_compartment_ids[ntk_compartment_name],
                                                                 lifecycle_state="AVAILABLE")
                 for vcn in vcns.data:
                     vcn_info = vnc.get_vcn(vcn.id).data
-                    comp_ocid_done_again = []
-                    for ntk_compartment_name_again in ct.ntk_compartment_ids:
-                        if ct.ntk_compartment_ids[ntk_compartment_name_again] not in comp_ocid_done_again:
-                            if (input_compartment_names is not None and ntk_compartment_name_again not in input_compartment_names):
-                                continue
-                            comp_ocid_done_again.append(ct.ntk_compartment_ids[ntk_compartment_name_again])
+        #            comp_ocid_done_again = []
+                    for ntk_compartment_name_again in comp_list_fetch:
+        #                if ct.ntk_compartment_ids[ntk_compartment_name_again] not in comp_ocid_done_again:
+        #                    if (input_compartment_names is not None and ntk_compartment_name_again not in input_compartment_names):
+        #                        continue
+        #                    comp_ocid_done_again.append(ct.ntk_compartment_ids[ntk_compartment_name_again])
                             Subnets = oci.pagination.list_call_get_all_results(vnc.list_subnets, compartment_id=ct.ntk_compartment_ids[
                                 ntk_compartment_name_again], vcn_id=vcn.id, lifecycle_state="AVAILABLE")
                             for subnet in Subnets.data:
@@ -677,6 +832,9 @@ def export_networking(inputfile, outdir, _config, network_compartments=[]):
 
     export_routetable(inputfile, network_compartments=network_compartments, _config=input_config_file, _tf_import_cmd=True, outdir=outdir )
     print("RouteRules exported to CD3\n")
+
+    export_drg_routetable(inputfile, network_compartments=network_compartments, _config=input_config_file, _tf_import_cmd=True, outdir=outdir )
+    print("DRG RouteRules exported to CD3\n")
 
     for reg in ct.all_regions:
         script_file = f'{outdir}/{reg}/tf_import_commands_network_nonGF.sh'

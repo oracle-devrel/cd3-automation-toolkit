@@ -98,7 +98,6 @@ def export_tags_nongreenfield(inputfile, outdir, _config, network_compartments):
     global config
 
     cd3file = inputfile
-    input_compartment_names = network_compartments
     configFileName = _config
     config = oci.config.from_file(file_location=configFileName)
 
@@ -116,22 +115,7 @@ def export_tags_nongreenfield(inputfile, outdir, _config, network_compartments):
     # Get dict for columns from Excel_Columns
     sheet_dict_tags = ct.sheet_dict["Tags"]
 
-    # Check Compartments
-    remove_comps = []
-    if (input_compartment_names is not None):
-        for x in range(0, len(input_compartment_names)):
-            if (input_compartment_names[x] not in ct.ntk_compartment_ids.keys()):
-                print("Input compartment: " + input_compartment_names[x] + " doesn't exist in OCI")
-                remove_comps.append(input_compartment_names[x])
 
-        input_compartment_names = [x for x in input_compartment_names if x not in remove_comps]
-        if (len(input_compartment_names) == 0):
-            print("None of the input compartments specified exist in OCI..Exiting!!!")
-            exit(1)
-        else:
-            print("Fetching for Compartments... " + str(input_compartment_names))
-    else:
-        print("Fetching for all Compartments...")
     print("\nCD3 excel file should not be opened during export process!!!")
     print("Tabs- Tags would be overwritten during export process!!!\n")
 
@@ -147,78 +131,75 @@ def export_tags_nongreenfield(inputfile, outdir, _config, network_compartments):
     print("\nFetching Tags...")
     importCommands[ct.home_region].write("\n\n######### Writing import for Tags #########\n\n")
     config.__setitem__("region", ct.region_dict[ct.home_region])
-    comp_ocid_done = []
+    #comp_ocid_done = []
     identity = IdentityClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
     region = ct.home_region.lower()
+    comp_ocid_done = []
     for ntk_compartment_name in ct.ntk_compartment_ids:
         if ct.ntk_compartment_ids[ntk_compartment_name] not in comp_ocid_done:
-            for ntk_compartment_name in ct.ntk_compartment_ids:
-                if ct.ntk_compartment_ids[ntk_compartment_name] not in comp_ocid_done:
-                    if (input_compartment_names is not None and ntk_compartment_name not in input_compartment_names):
-                        continue
-                    comp_ocid_done.append(ct.ntk_compartment_ids[ntk_compartment_name])
-                    tags = oci.pagination.list_call_get_all_results(identity.list_tag_namespaces,
+            comp_ocid_done.append(ct.ntk_compartment_ids[ntk_compartment_name])
+            tags = oci.pagination.list_call_get_all_results(identity.list_tag_namespaces,
                                                                     compartment_id=ct.ntk_compartment_ids[
                                                                         ntk_compartment_name])
-                    tag_defaults = oci.pagination.list_call_get_all_results(identity.list_tag_defaults,
+            tag_defaults = oci.pagination.list_call_get_all_results(identity.list_tag_defaults,
                                                                             compartment_id=ct.ntk_compartment_ids[
                                                                                 ntk_compartment_name],
                                                                             lifecycle_state="ACTIVE")
-                    tag_namespace_check = []
-                    tag_list = []
-                    tag_default_comp = ''
-                    for tag in tags.data:
-                        tag_list.append(str(tag.id))
-                        tag_keys = oci.pagination.list_call_get_all_results(identity.list_tags, tag_namespace_id=tag.id,
+            tag_namespace_check = []
+            tag_list = []
+            tag_default_comp = ''
+            for tag in tags.data:
+                tag_list.append(str(tag.id))
+                tag_keys = oci.pagination.list_call_get_all_results(identity.list_tags, tag_namespace_id=tag.id,
                                                                             lifecycle_state="ACTIVE")
-                        tag_key_check = []
-                        tag_default_check = []
-                        for tag_key in tag_keys.data:
+                tag_key_check = []
+                tag_default_check = []
+                for tag_key in tag_keys.data:
+                    tag_key = identity.get_tag(tag.id, tag_key.name)
+                    tag_key = tag_key.data
+                    tag_key_id = str(tag_key.id)
+                    tag_key_check.append(tag_key_id)
+                    for tag_default in tag_defaults.data:
+                        if (ct.ntk_compartment_ids[ntk_compartment_name] == tag_default.compartment_id):
+                            tag_default_comp = ntk_compartment_name
+                            if ("::" in ntk_compartment_name):
+                                tag_default_comp = ntk_compartment_name
+                        if (tag_key.id == tag_default.tag_definition_id):
+                            tag_key_id = str(tag_key.id)
+                            tag_default_check.append(tag_key_id)
+                            tag_default_value = tag_default.value
+                            tag_namespace_check.append( str(tag.id))
+                            print_tags(values_for_column_tags, region, ntk_compartment_name, tag, tag_key,
+                                               tag_default_value, tag_default, tag_default_comp)
+                check_non_default_tags = [i for i in tag_key_check + tag_default_check if
+                                                  i not in tag_key_check or i not in tag_default_check]
+                for tag_check in check_non_default_tags:
+                    for tag_key in tag_keys.data:
+                        if (tag_check in tag_key.id):
                             tag_key = identity.get_tag(tag.id, tag_key.name)
                             tag_key = tag_key.data
-                            tag_key_id = str(tag_key.id)
-                            tag_key_check.append(tag_key_id)
-                            for tag_default in tag_defaults.data:
-                                if (ct.ntk_compartment_ids[ntk_compartment_name] == tag_default.compartment_id):
-                                    tag_default_comp = ntk_compartment_name
-                                    if ("::" in ntk_compartment_name):
-                                        tag_default_comp = ntk_compartment_name
-                                if (tag_key.id == tag_default.tag_definition_id):
-                                    tag_key_id = str(tag_key.id)
-                                    tag_default_check.append(tag_key_id)
-                                    tag_default_value = tag_default.value
-                                    tag_namespace_check.append( str(tag.id))
-                                    print_tags(values_for_column_tags, region, ntk_compartment_name, tag, tag_key,
-                                               tag_default_value, tag_default, tag_default_comp)
-                        check_non_default_tags = [i for i in tag_key_check + tag_default_check if
-                                                  i not in tag_key_check or i not in tag_default_check]
-                        for tag_check in check_non_default_tags:
-                            for tag_key in tag_keys.data:
-                                if (tag_check in tag_key.id):
-                                    tag_key = identity.get_tag(tag.id, tag_key.name)
-                                    tag_key = tag_key.data
-                                    tag_default_value = ''
-                                    tag_default = ''
-                                    tag_namespace_check.append( str(tag.id))
-                                    print_tags(values_for_column_tags, region, ntk_compartment_name, tag, tag_key,
+                            tag_default_value = ''
+                            tag_default = ''
+                            tag_namespace_check.append( str(tag.id))
+                            print_tags(values_for_column_tags, region, ntk_compartment_name, tag, tag_key,
                                                tag_default_value, tag_default, tag_default_comp)
 
-                    tag_namespace_check = list(dict.fromkeys(tag_namespace_check))
-                    check_non_key_tags = [i for i in tag_list + tag_namespace_check if i not in tag_list or i not in tag_namespace_check]
-                    for tag_check in check_non_key_tags:
-                        tag_key = str(tag_key)
-                        tag_key = "Nan"
-                        tag_default_value = ''
-                        tag_default = ''
-                        tag_default_comp = ''
-                        for tag in tags.data:
-                            if (tag_check in tag.id):
-                                tag = identity.get_tag_namespace(tag.id).data
-                                print_tags(values_for_column_tags, region, ntk_compartment_name, tag, tag_key,
+            tag_namespace_check = list(dict.fromkeys(tag_namespace_check))
+            check_non_key_tags = [i for i in tag_list + tag_namespace_check if i not in tag_list or i not in tag_namespace_check]
+            for tag_check in check_non_key_tags:
+                tag_key = str(tag_key)
+                tag_key = "Nan"
+                tag_default_value = ''
+                tag_default = ''
+                tag_default_comp = ''
+                for tag in tags.data:
+                    if (tag_check in tag.id):
+                        tag = identity.get_tag_namespace(tag.id).data
+                        print_tags(values_for_column_tags, region, ntk_compartment_name, tag, tag_key,
                                        tag_default_value, tag_default, tag_default_comp)
 
-            commonTools.write_to_cd3(values_for_column_tags, cd3file, "Tags")
-            print("Tags exported to CD3\n")
+    commonTools.write_to_cd3(values_for_column_tags, cd3file, "Tags")
+    print("Tags exported to CD3\n")
 
     script_file = f'{outdir}/{ct.home_region}/tf_import_commands_tags_nonGF.sh'
     with open(script_file, 'a') as importCommands[ct.home_region]:

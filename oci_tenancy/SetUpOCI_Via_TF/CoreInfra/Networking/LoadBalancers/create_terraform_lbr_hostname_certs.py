@@ -71,34 +71,23 @@ def create_terraform_lbr_hostname_certs(inputfile, outdir, config=DEFAULT_LOCATI
     #dfcert with required details
     dfcert = pd.concat([dffill, dfdrop], axis=1)
 
-    unique_region = df['Region'].unique()
 
     oracle_cipher_suites = ['oci-default-ssl-cipher-suite-v1', 'oci-modern-ssl-cipher-suite-v1',
                             'oci-compatible-ssl-cipher-suite-v1', 'oci-wider-compatible-ssl-cipher-suite-v1',
                             'oci-customized-ssl-cipher-suite']
 
     # Take backup of files
-    for eachregion in unique_region:
-        eachregion = str(eachregion).strip().lower()
-        if (eachregion in commonTools.endNames):
-            continue
-        if eachregion == 'nan':
-            continue
-        if eachregion not in ct.all_regions:
-            print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
-            exit()
+    for reg in ct.all_regions:
         resource='LB-Hostname-Certs'
-        srcdir = outdir + "/" + eachregion + "/"
+        srcdir = outdir + "/" + reg + "/"
         commonTools.backup_file(srcdir, resource, "_certificate-lb.tf")
         commonTools.backup_file(srcdir, resource, "_lbr-hostname-lb.tf")
         commonTools.backup_file(srcdir, resource,"_cipher-suite-lb.tf")
 
-    for reg in ct.all_regions:
-        if reg not in commonTools.endNames and  reg != 'nan':
-            lbr_str[reg] = ''
-            hostname_str[reg] = ''
-            certificate_str[reg] = ''
-            cipher_suites[reg] = ''
+        lbr_str[reg] = ''
+        hostname_str[reg] = ''
+        certificate_str[reg] = ''
+        cipher_suites[reg] = ''
 
     def certificate_templates(dfcert):
 

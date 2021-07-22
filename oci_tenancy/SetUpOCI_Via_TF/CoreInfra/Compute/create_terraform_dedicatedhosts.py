@@ -54,18 +54,9 @@ def create_terraform_dedicatedhosts(inputfile, outdir, config):
     df = df.dropna(how='all')
     df = df.reset_index(drop=True)
 
-    unique_region = df['Region'].unique()
 
     # Take backup of files
-    for eachregion in unique_region:
-        eachregion = str(eachregion).strip().lower()
-
-        if (eachregion in commonTools.endNames):
-            break
-        if eachregion not in ct.all_regions:
-            print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
-            exit()
-
+    for eachregion in ct.all_regions:
         resource='DedicatedHosts'
         srcdir = outdir + "/" + eachregion + "/"
         commonTools.backup_file(srcdir, resource, "dedicated_vm_hosts.tf")
@@ -136,18 +127,16 @@ def create_terraform_dedicatedhosts(inputfile, outdir, config):
         tfStr[region] = tfStr[region] + template.render(tempStr)
 
     # Write to output
-    for regions in unique_region:
-        regions=regions.lower()
-        for reg in ct.all_regions:
-            if reg == regions:
-                reg_out_dir = outdir + "/" + reg
-                outfile[reg] = reg_out_dir + "/dedicated_vm_hosts.tf"
 
-                if(tfStr[reg]!=''):
-                    oname[reg]=open(outfile[reg],'w')
-                    oname[reg].write(tfStr[reg])
-                    oname[reg].close()
-                    print(outfile[reg] + " containing TF for dedicated vm hosts has been created for region "+reg)
+    for reg in ct.all_regions:
+        reg_out_dir = outdir + "/" + reg
+        outfile[reg] = reg_out_dir + "/dedicated_vm_hosts.tf"
+
+        if(tfStr[reg]!=''):
+            oname[reg]=open(outfile[reg],'w')
+            oname[reg].write(tfStr[reg])
+            oname[reg].close()
+            print(outfile[reg] + " containing TF for dedicated vm hosts has been created for region "+reg)
 
 if __name__ == '__main__':
     args = parse_args()

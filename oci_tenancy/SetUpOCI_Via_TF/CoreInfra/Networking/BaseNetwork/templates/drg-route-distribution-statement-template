@@ -1,0 +1,28 @@
+
+resource "oci_core_drg_route_distribution_statement" "{{ drg_rt_dstrb_statement_tf_name }}" {
+    #Required
+    drg_route_distribution_id = {{ drg_rt_dstrb_res_name }}
+
+
+    match_criteria {
+    {% if statements[0].upper() != 'ALL' %}
+        match_type = "{{ statements[0].upper() }}"
+
+        {% if statements[0] == 'DRG_ATTACHMENT_TYPE' %}
+            attachment_type = "{{ statements[1].upper() }}"
+        {% endif %}
+
+        {% if statements[0] == 'DRG_ATTACHMENT_ID' %}
+            {% if "ocid1.drgattachment" in statements[1] %}
+            drg_attachment_id = "{{ statements[1] }}"
+            {% else %}
+            drg_attachment_id = oci_core_drg_attachment.{{ statements[1] }}.id
+            {% endif %}
+        {% endif %}
+    {% endif %}
+    }
+
+    priority = {{ statements[2] }}
+    action = "ACCEPT"
+
+}
