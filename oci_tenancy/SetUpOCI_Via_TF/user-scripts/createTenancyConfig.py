@@ -94,23 +94,30 @@ def seek_info():
     # If the keys are auto-generated
     if os.path.exists(auto_keys_dir):
         print("Moving the key files to /root/ocswork/tenancies/"+prefix+"/")
-        for f in files:
-            try:
-                shutil.move(f,root_dir)
-            except shutil.Error as e:
-                shutil.move(root_dir+"/oci_api_private.pem", root_dir+"/oci_api_private_pem_backup")
-                shutil.move(f, root_dir)
-        shutil.rmtree(auto_keys_dir)
+        if files:
+            for f in files:
+                try:
+                    shutil.move(f,root_dir)
+                except shutil.Error as e:
+                    shutil.move(root_dir+"/oci_api_private.pem", root_dir+"/oci_api_private_pem_backup")
+                    shutil.move(f, root_dir)
+                key_path = root_dir + "/oci_api_private.pem"
+            shutil.rmtree(auto_keys_dir)
+        else:
+            print("Key file not found. Please make sure to specify the right path in the properties file.....Exiting!!!")
+            exit(0)
 
-    # If the private key is empty; initialize it to the default path
-    if (key_path == '' or key_path == "\n"):
-        key_path = root_dir+"/oci_api_private.pem"
-    # If the private key is already present in the tenancy folder; do nothing
-    elif (root_dir+ '/oci_api_private.pem' in key_path):
-        key_path = root_dir+'/oci_api_private.pem'
+
+    # If the private key is empty or if the private key is already present in the tenancy folder; initialize it to the default path;
+    if (key_path == '' or key_path == "\n" or root_dir+ '/oci_api_private.pem' in key_path):
+        key_path = root_dir + "/oci_api_private.pem"
     # If the private key is elsewhere; move it to the tenancy folder
-    else:
-        shutil.move(key_path, root_dir+'/oci_api_private.pem')
+    elif auto_keys_dir+"/oci_api_private.pem" not in key_path:
+        try:
+            shutil.move(key_path, root_dir+'/oci_api_private.pem')
+        except FileNotFoundError as e:
+            print("Key file not found. Please make sure to specify the right path in the properties file.....Exiting!!!")
+            exit(0)
         key_path = root_dir+"/oci_api_private.pem"
 
     if not os.path.exists(regions_dir):
@@ -129,7 +136,11 @@ def seek_info():
 
     # 3. Fetch AD Names -
     print('Fetching AD names from tenancy and writing to config file if it does not exist.............')
-    python_config = oci.config.from_file(file_location=config_file_path)
+    try:
+        python_config = oci.config.from_file(file_location=config_file_path)
+    except oci.exceptions.InvalidKeyFilePath as e:
+        print("\nInvalid key_file path. Please make sure to specify the right path in the properties file.....Exiting!!!")
+        exit(0)
     identity_client = oci.identity.IdentityClient(python_config)
     conf_file = open(config_file_path, "a")
     tenancy_id = tenancy
