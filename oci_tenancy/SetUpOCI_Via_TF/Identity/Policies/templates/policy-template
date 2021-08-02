@@ -4,9 +4,9 @@ resource "oci_identity_policy" "{{ policy_tf_name }}" {
             {% if '\n' not in description %}
             description = "{{ description }}"
             {% else %}
-            description = <<EOT
+            description = <<-EOF
 {{ description }}
-EOT
+EOF
             {% endif %}
             name = "{{ name }}"
 
