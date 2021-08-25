@@ -149,16 +149,18 @@ class CD3Parser(object):
             if nsg.Region.isnull().any() :
                 print("\nError!! Region cannot be left empty.... Exiting!!")
                 exit()
-            self.regions = sorted(list(set(nsg.Region)))
+            #self.regions = sorted(list(set(nsg.Region)))
+            self.regions = list(nsg.Region)
 
             self.regions = [x.strip().lower() for x in self.regions]
             unique_headers = tuple(self.headers[1:4])
             working_header[unique_headers] = [(self.headers[3:])]
             self.headersDict = dict((self.headers[0].lower(), working_header) for region in self.regions)
 
-            for x in self.regions:
-                if x in commonTools.endNames:
-                    self.regions.remove(x)
+            self.regions = [i for n, i in enumerate(self.regions) if i not in self.regions[:n]]
+            #for x in self.regions:
+                #if x in commonTools.endNames:
+                #    self.regions.remove(x)
             self.regionDict = dict((region.lower(), {}) for region in self.regions)  # robust
             for index in self.nsg_numpy:  # each row on excel
                 region = str(index[0]).strip().lower()
@@ -171,6 +173,7 @@ class CD3Parser(object):
                 else:
                     workingdict[unique_id] = [index[3:]]
             super().__init__(nsg, self.regions)
+
         
         def getRegionDict(self):
             return self.regionDict
