@@ -93,7 +93,7 @@ def print_certs(obj, reg, outdir):
     return cert_name, ca_cert, public_cert
 
 
-def insert_values(values_for_column, oci_objs, sheet_dict, region, comp_name, display_name,subnets, nsgs, hostnames, cert_name, ca_cert,
+def insert_values(values_for_column, oci_objs, sheet_dict, region, comp_name, display_name, minimum_bandwidth_in_mbps, maximum_bandwidth_in_mbps, subnets, nsgs, hostnames, cert_name, ca_cert,
                   passphrase, privatekey, public_cert, cipher_name, cipher_suites):
 
     for col_header in values_for_column.keys():
@@ -123,13 +123,17 @@ def insert_values(values_for_column, oci_objs, sheet_dict, region, comp_name, di
                 values_for_column[col_header].append(cipher_name)
             elif col_header == 'Ciphers':
                 values_for_column[col_header].append(cipher_suites)
+            elif col_header == 'Minimum Bandwidth In Mbps (Flexible shapes only)':
+                values_for_column[col_header].append(minimum_bandwidth_in_mbps)
+            elif col_header == 'Maximum Bandwidth In Mbps (Flexible shapes only)':
+                values_for_column[col_header].append(maximum_bandwidth_in_mbps)
             elif col_header.lower() in commonTools.tagColumns:
                 values_for_column = commonTools.export_tags(oci_objs[0], col_header, values_for_column)
             else:
                 values_for_column = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict, values_for_column)
 
 
-def print_lbr_hostname_certs(region, ct, values_for_column_lhc, lbr, VCNs, LBRs, ntk_compartment_name, SUBNETs, NSGs):
+def print_lbr_hostname_certs(region, ct, values_for_column_lhc, lbr, LBRs, ntk_compartment_name, vcnname_subname, NSGs):
 
     for eachlbr in LBRs.data:
 
@@ -154,7 +158,7 @@ def print_lbr_hostname_certs(region, ct, values_for_column_lhc, lbr, VCNs, LBRs,
             if (hostname_name_list != "" and hostname_name_list[0] == ','):
                 hostname_name_list = hostname_name_list.lstrip(',')
 
-        # Fetch NSGs
+        #Fetch NSGs
         nsg_name = ""
         if eachlbr.network_security_group_ids:
             for nsg_ids in eachlbr.network_security_group_ids:
@@ -166,23 +170,23 @@ def print_lbr_hostname_certs(region, ct, values_for_column_lhc, lbr, VCNs, LBRs,
         else:
             nsg_name = ""
 
-        # Fetch Subnets
+        #Fetch Subnets
         subnet_name_list = ""
         if eachlbr.subnet_ids:
             for subnet_ids in eachlbr.subnet_ids:
-                for subnets in SUBNETs.data:
-                    id = subnets.__getattribute__('id')
+                for name,id in vcnname_subname.items():
                     if subnet_ids == id:
-                        subnet_name = subnets.display_name
-                        for eachvcn in VCNs.data:
-                            if eachvcn.id == subnets.vcn_id:
-                                vcn_name = eachvcn.display_name
-                                value = vcn_name + "_" + subnet_name
-                                subnet_name_list = subnet_name_list+','+value
-                            if (subnet_name_list != "" and subnet_name_list[0] == ','):
-                                subnet_name_list = subnet_name_list.lstrip(',')
+                        subnet_name_list = subnet_name_list+','+name
+                    if (subnet_name_list != "" and subnet_name_list[0] == ','):
+                        subnet_name_list = subnet_name_list.lstrip(',')
         else:
             subnet_name_list = ""
+
+        maximum_bandwidth_in_mbps = ""
+        minimum_bandwidth_in_mbps = ""
+        if eachlbr.shape_details:
+            maximum_bandwidth_in_mbps = eachlbr.shape_details.maximum_bandwidth_in_mbps
+            minimum_bandwidth_in_mbps = eachlbr.shape_details.minimum_bandwidth_in_mbps
 
         #Loops for fetching Certificates and Cipher Suites
         ciphers = eachlbr.ssl_cipher_suites
@@ -196,7 +200,7 @@ def print_lbr_hostname_certs(region, ct, values_for_column_lhc, lbr, VCNs, LBRs,
 
         if (not certs and not ciphers):
             oci_objs = [eachlbr]
-            insert_values(values_for_column_lhc, oci_objs, sheet_dict_lhc, region, ntk_compartment_name,display_name,subnet_name_list, nsg_name, hostname_name_list, '', '', '', '', '','','')
+            insert_values(values_for_column_lhc, oci_objs, sheet_dict_lhc, region, ntk_compartment_name,display_name, minimum_bandwidth_in_mbps, maximum_bandwidth_in_mbps, subnet_name_list, nsg_name, hostname_name_list, '', '', '', '', '','','')
 
         elif (not certs and ciphers):
             oci_objs = [eachlbr, ciphers]
@@ -214,9 +218,9 @@ def print_lbr_hostname_certs(region, ct, values_for_column_lhc, lbr, VCNs, LBRs,
                 cipher_ct = cipher_ct + 1
 
                 if (cipher_ct == 1):
-                    insert_values(values_for_column_lhc, oci_objs, sheet_dict_lhc, region, ntk_compartment_name, display_name,subnet_name_list, nsg_name,hostname_name_list, '','','','','',cipher_name,cipher_suites)
+                    insert_values(values_for_column_lhc, oci_objs, sheet_dict_lhc, region, ntk_compartment_name, display_name, minimum_bandwidth_in_mbps, maximum_bandwidth_in_mbps, subnet_name_list, nsg_name,hostname_name_list, '','','','','',cipher_name,cipher_suites)
                 else:
-                    insert_values(values_for_column_lhc, oci_objs, sheet_dict_lhc,'','','','','','','','','','','', cipher_name,cipher_suites)
+                    insert_values(values_for_column_lhc, oci_objs, sheet_dict_lhc,'','','','','','','','','','','','','', cipher_name,cipher_suites)
 
         elif (certs and not ciphers):
             oci_objs = [eachlbr, certs]
@@ -227,9 +231,9 @@ def print_lbr_hostname_certs(region, ct, values_for_column_lhc, lbr, VCNs, LBRs,
 
                 cert_ct = cert_ct + 1
                 if (cert_ct == 1):
-                    insert_values(values_for_column_lhc, oci_objs, sheet_dict_lhc, region, ntk_compartment_name,display_name, subnet_name_list, nsg_name,hostname_name_list, cert_name,ca_cert,'','',public_cert, '','')
+                    insert_values(values_for_column_lhc, oci_objs, sheet_dict_lhc, region, ntk_compartment_name,display_name, minimum_bandwidth_in_mbps, maximum_bandwidth_in_mbps,  subnet_name_list, nsg_name,hostname_name_list, cert_name,ca_cert,'','',public_cert, '','')
                 else:
-                    insert_values(values_for_column_lhc, oci_objs, sheet_dict_lhc,'','','','','','', cert_name,ca_cert,'','',public_cert, '','')
+                    insert_values(values_for_column_lhc, oci_objs, sheet_dict_lhc,'','','','','','','','', cert_name,ca_cert,'','',public_cert, '','')
 
         elif (certs and ciphers):
             oci_objs = [eachlbr, certs, ciphers]
@@ -264,15 +268,15 @@ def print_lbr_hostname_certs(region, ct, values_for_column_lhc, lbr, VCNs, LBRs,
                                 cert_name, ca_cert, public_cert = print_certs(cert_details, region, outdir)
 
                                 if i != 0:
-                                    insert_values(values_for_column_lhc, oci_objs, sheet_dict_lhc, '',
+                                    insert_values(values_for_column_lhc, oci_objs, sheet_dict_lhc, '','','',
                                                   '', '', '', '',
                                                   '', cert_name, ca_cert, '', '', public_cert,
                                                   cipher_name, cipher_suites)
                                 else:
-                                    insert_values(values_for_column_lhc, oci_objs, sheet_dict_lhc, region, ntk_compartment_name, display_name, subnet_name_list, nsg_name, hostname_name_list, cert_name, ca_cert, '', '', public_cert, cipher_name, cipher_suites)
+                                    insert_values(values_for_column_lhc, oci_objs, sheet_dict_lhc, region, ntk_compartment_name, display_name, minimum_bandwidth_in_mbps, maximum_bandwidth_in_mbps,  subnet_name_list, nsg_name, hostname_name_list, cert_name, ca_cert, '', '', public_cert, cipher_name, cipher_suites)
                             elif i >= no_of_certs and j == no_of_certs - 1:
                                 #Insert additional values of cipher; as count of cipher is more
-                                insert_values(values_for_column_lhc, oci_objs, sheet_dict_lhc, '','','', '', '', '','', '', '', '', '', cipher_name, cipher_suites)
+                                insert_values(values_for_column_lhc, oci_objs, sheet_dict_lhc, '','','', '','','','', '','', '', '', '', '', cipher_name, cipher_suites)
                             else:
                                 pass
                             j = j + 1
@@ -298,15 +302,15 @@ def print_lbr_hostname_certs(region, ct, values_for_column_lhc, lbr, VCNs, LBRs,
                                         cipher_suites = cipher_suites.lstrip(',')
                                 cipher_name = cipher_details.name
                                 if i != 0:
-                                    insert_values(values_for_column_lhc, oci_objs, sheet_dict_lhc, '',
+                                    insert_values(values_for_column_lhc, oci_objs, sheet_dict_lhc, '','','',
                                                   '', '', '', '',
                                                   '', cert_name, ca_cert, '', '', public_cert,
                                                   cipher_name, cipher_suites)
                                 else:
-                                    insert_values(values_for_column_lhc, oci_objs, sheet_dict_lhc, region, ntk_compartment_name, display_name,subnet_name_list, nsg_name, hostname_name_list, cert_name, ca_cert, '', '', public_cert, cipher_name, cipher_suites)
+                                    insert_values(values_for_column_lhc, oci_objs, sheet_dict_lhc, region, ntk_compartment_name, display_name, minimum_bandwidth_in_mbps, maximum_bandwidth_in_mbps, subnet_name_list, nsg_name, hostname_name_list, cert_name, ca_cert, '', '', public_cert, cipher_name, cipher_suites)
                             elif i >= no_of_ciphers and j == no_of_ciphers - 1:
                                 #Insert additional values of certs; as count of certs is more
-                                insert_values(values_for_column_lhc, oci_objs, sheet_dict_lhc, '','', '','', '', '',cert_name, ca_cert, '', '', public_cert, '', '')
+                                insert_values(values_for_column_lhc, oci_objs, sheet_dict_lhc, '','','','', '','', '', '',cert_name, ca_cert, '', '', public_cert, '', '')
                             else:
                                 pass
                             j = j + 1
@@ -331,12 +335,12 @@ def print_lbr_hostname_certs(region, ct, values_for_column_lhc, lbr, VCNs, LBRs,
                             if i == j:
                                 cert_name, ca_cert, public_cert = print_certs(cert_details, region, outdir)
                                 if i != 0:
-                                    insert_values(values_for_column_lhc, oci_objs, sheet_dict_lhc, '',
+                                    insert_values(values_for_column_lhc, oci_objs, sheet_dict_lhc, '','','',
                                                   '', '', '', '',
                                                   '', cert_name, ca_cert, '', '', public_cert,
                                                   cipher_name, cipher_suites)
                                 else:
-                                    insert_values(values_for_column_lhc, oci_objs, sheet_dict_lhc, region, ntk_compartment_name, display_name,subnet_name_list, nsg_name, hostname_name_list, cert_name, ca_cert, '','', public_cert, cipher_name, cipher_suites)
+                                    insert_values(values_for_column_lhc, oci_objs, sheet_dict_lhc, region, ntk_compartment_name, display_name, minimum_bandwidth_in_mbps, maximum_bandwidth_in_mbps, subnet_name_list, nsg_name, hostname_name_list, cert_name, ca_cert, '','', public_cert, cipher_name, cipher_suites)
                             j = j + 1
                         i = i + 1
     return values_for_column_lhc
@@ -732,7 +736,7 @@ def export_lbr(inputfile, _outdir, network_compartments, _config):
 
     # Get dict for columns from Excel_Columns
     sheet_dict_common=ct.sheet_dict["Common-LBR-Headers"]
-    sheet_dict_lhc =ct.sheet_dict["LB-Hostname-Certs"]
+    sheet_dict_lhc = ct.sheet_dict["LB-Hostname-Certs"]
     sheet_dict_bss = ct.sheet_dict["BackendSet-BackendServer"]
     sheet_dict_lis = ct.sheet_dict["LB-Listener"]
     sheet_dict_rule = ct.sheet_dict["RuleSet"]
@@ -740,7 +744,6 @@ def export_lbr(inputfile, _outdir, network_compartments, _config):
 
 
     # Check Compartments
-    remove_comps = []
     comp_list_fetch = commonTools.get_comp_list_for_export(network_compartments, ct.ntk_compartment_ids)
 
     print("\nCD3 excel file should not be opened during export process!!!")
@@ -765,23 +768,39 @@ def export_lbr(inputfile, _outdir, network_compartments, _config):
         lbr = LoadBalancerClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
         vcn = VirtualNetworkClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
         region = reg.capitalize()
-        #comp_ocid_done = []
+        subname_id = {}
+        subname_vcnid = {}
+        vcnname_id = {}
+        vcnname_subname = {}
+
+        for compartments in ct.ntk_compartment_ids:
+            SUBNETs = oci.pagination.list_call_get_all_results(vcn.list_subnets,compartment_id=ct.ntk_compartment_ids[compartments],lifecycle_state="AVAILABLE")
+            VCNs = oci.pagination.list_call_get_all_results(vcn.list_vcns, compartment_id=ct.ntk_compartment_ids[compartments],lifecycle_state="AVAILABLE")
+            for vcns in VCNs.data:
+                vcnname_id.update({vcns.display_name: vcns.id})
+
+            for subnets in SUBNETs.data:
+                subname_id.update({subnets.display_name : subnets.id})
+                subname_vcnid.update({subnets.display_name : subnets.vcn_id})
+
+        for subnets,vcn_ids in subname_vcnid.items():
+            for vcns,ids in vcnname_id.items():
+                if vcn_ids == ids:
+                    subnet_name_re = vcns+"_"+subnets
+                    vcnname_subname.update({subnet_name_re : ids})
+
+        for subnets,sid in subname_id.items():
+            for subnet_rename,vid in vcnname_subname.items():
+                if subnets in subnet_rename:
+                    vcnname_subname[subnet_rename] = sid
 
         for ntk_compartment_name in comp_list_fetch:
-            #if ct.ntk_compartment_ids[ntk_compartment_name] not in comp_ocid_done:
-            #    if (input_compartment_names is not None and ntk_compartment_name not in input_compartment_names):
-            #        continue
-            #    comp_ocid_done.append(ct.ntk_compartment_ids[ntk_compartment_name])
                 LBRs = oci.pagination.list_call_get_all_results(lbr.list_load_balancers,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name],
                                                                 lifecycle_state="ACTIVE")
-                VCNs = oci.pagination.list_call_get_all_results(vcn.list_vcns,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name],
-                                                                lifecycle_state="AVAILABLE")
-                SUBNETs = oci.pagination.list_call_get_all_results(vcn.list_subnets,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name],
-                                                                lifecycle_state="AVAILABLE")
                 NSGs = oci.pagination.list_call_get_all_results(vcn.list_network_security_groups,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name],
                                                                 lifecycle_state="AVAILABLE")
 
-                values_for_column_lhc = print_lbr_hostname_certs(region, ct, values_for_column_lhc, lbr, VCNs, LBRs,ntk_compartment_name, SUBNETs, NSGs)
+                values_for_column_lhc = print_lbr_hostname_certs(region, ct, values_for_column_lhc, lbr, LBRs, ntk_compartment_name, vcnname_subname, NSGs)
                 values_for_column_lis = print_listener(region, ct, values_for_column_lis,LBRs,ntk_compartment_name)
                 values_for_column_bss = print_backendset_backendserver(region, ct, values_for_column_bss, lbr,LBRs,ntk_compartment_name)
                 values_for_column_rule = print_rule(region, ct, values_for_column_rule, LBRs, ntk_compartment_name)
