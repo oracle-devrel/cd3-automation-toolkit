@@ -256,8 +256,16 @@ def create_terraform_lbr_hostname_certs(inputfile, outdir, config=DEFAULT_LOCATI
                     lbr_tf_name = commonTools.check_tf_variable(columnvalue)
                     tempdict = {'lbr_tf_name': lbr_tf_name}
 
-            if columnname == "Shape(100Mbps|400Mbps|8000Mbps)":
+            if columnname == "Shape(100Mbps|400Mbps|8000Mbps|flexible)":
                 columnname = 'lbr_shape'
+                if str(columnvalue).lower() == 'flexible':
+                    columnvalue = 'flexible'
+
+            if columnname == "Minimum Bandwidth In Mbps (Flexible shapes only)":
+                columnname = "min_bandwidth"
+
+            if columnname == "Maximum Bandwidth In Mbps (Flexible shapes only)":
+                columnname = "max_bandwidth"
 
             if columnname == "LBR Hostname(Name:Hostname)":
                 columnname = "lbr_hostname"

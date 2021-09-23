@@ -10,6 +10,14 @@ resource "oci_load_balancer_load_balancer" "{{ lbr_tf_name }}" {
     is_private = {{ is_private }}
     network_security_group_ids = [ {{ nsgs }} ]
 
+    {% if lbr_shape  == 'flexible' %}
+    shape_details {
+        #Required
+        maximum_bandwidth_in_mbps = {{ max_bandwidth }}
+        minimum_bandwidth_in_mbps = {{ min_bandwidth }}
+    }
+    {% endif %}
+
     {#  ##Do not modify below this line##  #}
     {#                                     #}
     {#  ###Section for adding Defined and Freeform Tags###  #}
