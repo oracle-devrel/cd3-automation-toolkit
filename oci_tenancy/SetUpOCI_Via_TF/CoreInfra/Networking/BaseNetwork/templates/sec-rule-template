@@ -1,4 +1,4 @@
-            {% if rule_type == 'ingress' %}
+            {% if rule_type.lower() == 'ingress' %}
             ingress_security_rules {
                 #Required
                 protocol = "{{ protocol_code }}"
@@ -10,7 +10,7 @@
                 {% endif %}
                 stateless = {{ isstateless }}
 
-                {% if protocol == 'icmp' and icmptype != '' %}
+                {% if protocol.lower() == 'icmp' and icmptype != '' %}
                 icmp_options {
                     #Required
                     type = "{{ icmptype }}"
@@ -25,10 +25,10 @@
                 source_type = "{{ source_type }}"
                 {% endif %}
 
-                {% if protocol == 'tcp' or protocol == 'udp' %}
+                {% if protocol.lower() == 'tcp' or protocol.lower() == 'udp' %}
                 {% if (dportmax and dportmin) or (sportmax and sportmin) %}
 
-                {{ protocol }}_options {
+                {{ protocol.lower() }}_options {
                     {% if dportmax and dportmin %}
                     #Optional
                     max = "{{ dportmax }}"
@@ -47,7 +47,7 @@
             }
             {% endif %}
 
-            {% if rule_type == 'egress' %}
+            {% if rule_type.lower() == 'egress' %}
             egress_security_rules {
                 #Required
                 protocol = "{{ protocol_code }}"
@@ -59,7 +59,7 @@
                 {% endif %}
                 stateless = {{ isstateless }}
 
-                {% if protocol == 'icmp' and icmptype != '' %}
+                {% if protocol.lower() == 'icmp' and icmptype != '' %}
                 icmp_options {
                     #Required
                     type = "{{ icmptype }}"
@@ -74,10 +74,10 @@
                 destination_type = "{{ destination_type }}"
                 {% endif %}
 
-                {% if protocol == 'tcp' or protocol == 'udp' %}
+                {% if protocol.lower() == 'tcp' or protocol.lower() == 'udp' %}
                 {% if (dportmax and dportmin) or (sportmax and sportmin) %}
 
-                {{ protocol }}_options {
+                {{ protocol.lower() }}_options {
                     {% if dportmax and dportmin %}
                     #Optional
                     max = "{{ dportmax }}"
