@@ -324,7 +324,7 @@ def create_terraform_route(inputfile, outdir, prefix, config, modify_network=Fal
                 tempStr['rt_tf_name'] = rt_tf_name
                 tempStr['compartment_tf_name'] = compartment_var_name
                 tempStr['rt_display'] = rt_display
-                tempStr['vcn_tf_name'] = vcn_with_drg
+                tempStr['vcn_tf_name'] = commonTools.check_tf_variable(vcn_with_drg)
                 #srcStr = "####ADD_NEW_ROUTE_RULES####" + rt_tf_name
                 drgStr = template.render(tempStr)
                 oname.write(drgStr)
