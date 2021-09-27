@@ -251,3 +251,12 @@ SetUPOCI_Via_TF Tag v8.0
 6. Updated the toolkit to support user access to a single compartment by allowing creation of sub-compartments under that only.
 7. Included export of additional objects for Instances and Block Volumes
 8. Upgrade terraform version to 1.0.0
+
+------------------------
+SetUPOCI_Via_TF Tag v8.0.2
+------------------------
+1. Bug fix for End Tag in NSGs tab
+2. Bug fix for export of LBR hosted in two subnets in different compartments
+3. Bug fix for terraform variable name for route table names
+4. Allow case insensitive for Security Rule Types/Protocols
+5. Allow flexible shapes in LBR CD3
