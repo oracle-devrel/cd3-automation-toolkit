@@ -120,6 +120,7 @@ def create_terraform_seclist(inputfile, outdir, prefix, config, modify_network=F
                 tempStr['rule_type'] = "ingress"
                 tempStr['source'] = subnet_cidr
                 tempStr['protocol_code'] = 'all'
+                tempStr['protocol'] = ''
                 tempStr['isstateless'] = "false"
 
                 Str = secrule.render(tempStr)
@@ -151,6 +152,7 @@ def create_terraform_seclist(inputfile, outdir, prefix, config, modify_network=F
                 for rule in rule_type:
                     tempStr['destination'] = '0.0.0.0/0'
                     tempStr['protocol_code'] = 'all'
+                    tempStr['protocol'] = ''
                     tempStr['source'] = subnet_cidr
                     tempStr['rule_type'] = rule
                     tempStr['isstateless'] = "false"
