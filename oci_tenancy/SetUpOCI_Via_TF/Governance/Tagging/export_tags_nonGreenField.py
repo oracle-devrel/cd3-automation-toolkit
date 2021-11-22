@@ -43,7 +43,7 @@ def  print_tags(values_for_column_tags,region, ntk_compartment_name, tag, tag_ke
       validator = validator.replace("\n","")
       validator = validator.split("{  \"validator_type\": \"ENUM\",  \"values\": [    ")
       validator = validator[1].split("  ]}")
-      validator = "ENUM::" + validator[0].replace(" ","")
+      validator = "ENUM::" + validator[0].replace("    ","")
 
     tf_name_namespace = commonTools.check_tf_variable(tag.name)
     for col_header in values_for_column_tags.keys():

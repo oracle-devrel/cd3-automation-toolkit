@@ -200,8 +200,8 @@ def export_fss(inputfile, outdir, network_compartments=[], config=DEFAULT_LOCATI
     print("\nCD3 excel file should not be opened during export process!!!")
     print("Tabs FSS will be overwritten during this export process!!!\n")
 
-    AD = lambda ad: "AD1" if ("AD-1" in ad) else (
-        "AD2" if ("AD-2" in ad) else ("AD3" if ("AD-3" in ad) else "NULL"))  # Get shortend AD
+    AD = lambda ad: "AD1" if ("AD-1" in ad or "ad-1" in ad) else (
+        "AD2" if ("AD-2" in ad or "ad-2" in ad) else ("AD3" if ("AD-3" in ad or "ad-3" in ad) else "NULL"))  # Get shortend AD
 
     df, values_for_column_fss = commonTools.read_cd3(cd3file, "FSS")
     sheet_dict_instances = ct.sheet_dict["FSS"]

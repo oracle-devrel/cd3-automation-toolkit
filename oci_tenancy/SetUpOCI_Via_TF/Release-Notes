@@ -260,3 +260,10 @@ SetUPOCI_Via_TF Tag v8.0.2
 3. Bug fix for terraform variable name for route table names
 4. Allow case insensitive for Security Rule Types/Protocols
 5. Allow flexible shapes in LBR CD3
+
+------------------------
+SetUPOCI_Via_TF Tag v8.0.3
+------------------------
+1. Bug fix for Availability Domain values while export of block volumes, FSS
+2. Bug fix for DRG Route Rules export error - 'Too Many requests'
+3. Bug fix for export of Tags having spaces in the values
