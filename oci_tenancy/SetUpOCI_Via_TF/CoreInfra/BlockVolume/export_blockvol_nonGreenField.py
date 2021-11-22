@@ -95,11 +95,11 @@ def print_blockvolumes(region, BVOLS, bvol, compute, ct, values_for_column, ntk_
             elif ("Availability Domain" in col_header):
                 value = blockvols.__getattribute__(sheet_dict[col_header])
                 ad = ""
-                if ("AD-1" in value):
+                if ("AD-1" in value or "ad-1" in value):
                     ad = "AD1"
-                elif ("AD-2" in value):
+                elif ("AD-2" in value or "ad-2" in value):
                     ad = "AD2"
-                elif ("AD-3" in value):
+                elif ("AD-3" in value or "ad-3" in value):
                     ad = "AD3"
                 values_for_column[col_header].append(ad)
             elif col_header == 'Attach Type(iscsi|paravirtualized)':

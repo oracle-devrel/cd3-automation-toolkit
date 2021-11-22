@@ -253,7 +253,10 @@ def export_drg_routetable(inputfile, network_compartments, _config, _tf_import_c
                             if drg_route_table_name not in commonTools.drg_auto_RTs:
                                 importCommands_drg[reg].write("\nterraform import oci_core_drg_route_table." + drg_rt_tf_name + " " + drg_route_table_id)
 
-                        drg_rt_rules = vcn.list_drg_route_rules(drg_route_table_id)
+
+
+                        #drg_rt_rules = vcn.list_drg_route_rules(drg_route_table_id)
+                        drg_rt_rules = oci.pagination.list_call_get_all_results(vcn.list_drg_route_rules, drg_route_table_id)
                         print_drg_routerules(drg_route_table_info, drg_display_name,drg_route_table_name, import_drg_route_distribution_name,
                                              drg_rt_rules, region, ntk_compartment_name)
 
