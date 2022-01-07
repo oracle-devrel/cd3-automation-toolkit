@@ -974,19 +974,20 @@ if (input_create_vm == "1"):
     print('\nCopying required files to the VM')
     time.sleep(5)
 
-    f = open(input_pvt_key_file, "r")
-    putty_pvtkey_contents = f.read()
-    f.close()
-    openSSHpvtKeyFile = str(tmp_folder / "openSSHpvtKeyFile")
-    f = open(openSSHpvtKeyFile, "w+")
-    f.write(puttykeys.ppkraw_to_openssh(putty_pvtkey_contents))
-    f.close()
+    #f = open(input_pvt_key_file, "r")
+    #putty_pvtkey_contents = f.read()
+    #f.close()
+    #openSSHpvtKeyFile = str(tmp_folder / "openSSHpvtKeyFile")
+    #f = open(openSSHpvtKeyFile, "w+")
+    #f.write(puttykeys.ppkraw_to_openssh(putty_pvtkey_contents))
+    #f.close()
 
     ssh = SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     for x in range(10):
         try:
-            ssh.connect(ip, username='opc', key_filename=openSSHpvtKeyFile)
+            #ssh.connect(ip, username='opc', key_filename=openSSHpvtKeyFile)
+            ssh.connect(ip, username='opc', key_filename=input_pvt_key_file)
             print('Connected to VM for file transfer')
             break
         except Exception as e:
