@@ -8,7 +8,8 @@ from commonTools import *
 #Load the template file
 file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
 env = Environment(loader=file_loader,keep_trailing_newline=True)
-template = env.get_template('variables-template')
+template = env.get_template('modules-variables-template')
+var_template = env.get_template('variables-template')
 
 def paginate(operation, *args, **kwargs):
     while True:
@@ -33,7 +34,8 @@ def fetch_compartments(outdir, config=DEFAULT_LOCATION):
 
     tempStr = {}
     var_files={}
-    var_data={}
+    var_data = {}
+    comp_ocids = []
 
     print("outdir specified should contain region directories and then variables_<region>.tf file inside the region directories eg /root/ocswork/terraform_files")
     print("Verifying out directory...Please wait...")
@@ -58,7 +60,7 @@ def fetch_compartments(outdir, config=DEFAULT_LOCATION):
         for name, ocid in ct.ntk_compartment_ids.items():
             comp_tf_name=commonTools.check_tf_variable(name)
             searchstr = "variable \"" + comp_tf_name + "\""
-            str=template.render(var_tf_name=comp_tf_name,values=ocid)
+            str=var_template.render(var_tf_name=comp_tf_name,values=ocid)
             if(searchstr not in var_data[reg]):
                 tempStr[reg]=tempStr[reg]+str
 
@@ -70,6 +72,31 @@ def fetch_compartments(outdir, config=DEFAULT_LOCATION):
 
     print("Compartment info written to all region specific variables files under outdir folder")
 
+    # Below code is for the creation of fetch_compartments_to_variables.tf for terraform modules
+    for name, ocid in ct.ntk_compartment_ids.items():
+        comp_tf_name=commonTools.check_tf_variable(name)
+        comp_ocids.append(comp_tf_name+"::"+ocid)
+
+    for region in ct.all_regions:
+        file = f'{outdir}/{region}/fetch_compartments_to_variable.tf'
+        var_files[region]=file
+        tempStr[region]=''
+
+        try:
+            if os.path.exists(file):
+                # Backup the existing fetch_compartments_to_variables tf file
+                shutil.copy(file, file + "_backup")
+        except FileNotFoundError as e:
+            pass
+
+        tempStr[region] = template.render(comp_ocids=comp_ocids)
+
+        with open(var_files[region],"w") as vname:
+            vname.write(tempStr[region])
+
+        if ("linux" in sys.platform):
+            os.system("dos2unix " + var_files[region])
+    # print("Completed fetching the Compartments to variables!!!")
 
 if __name__ == '__main__':
     args = parse_args()

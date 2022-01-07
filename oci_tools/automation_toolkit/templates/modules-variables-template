@@ -1,0 +1,16 @@
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+
+############################
+# Variable Block - Identity
+# Fetch Compartments
+############################
+
+variable "compartment_ocids" {
+            type = list(any)
+            default = [
+            { {% for compartment in comp_ocids %}{% set compartment_name_ocid = compartment.split("::") %} {% if not loop.last %}
+                {{ compartment_name_ocid[0] }} = "{{ compartment_name_ocid[1] }}", {% else %}
+                {{ compartment_name_ocid[0] }} = "{{ compartment_name_ocid[1] }}"  {% endif %} {% endfor %}
+            }
+            ]
+}
