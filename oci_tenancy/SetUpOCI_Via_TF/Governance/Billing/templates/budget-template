@@ -1,0 +1,14 @@
+resource "oci_budget_budget" "{{ budget_tf_name }}" {
+    #Required
+    amount = {{ amount }}
+    compartment_id = var.tenancy_ocid
+    reset_period = "MONTHLY"
+
+    #Optional
+    budget_processing_period_start_offset = {{ period_start }}
+    description = "{{ description }}"
+    display_name = "{{ budget_name }}"
+
+    target_type = "{{ target_type }}"
+    targets = [{{target_ocid}}]
+}

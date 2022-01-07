@@ -1,0 +1,14 @@
+resource "oci_budget_alert_rule" "{{ budget_tf_name }}_alert_rule" {
+    #Required
+    budget_id = oci_budget_budget.{{ budget_tf_name }}.id
+    type = "{{ type }}"
+    threshold_type = "{{ threshold_type }}"
+    threshold = "{{ threshold }}"
+
+
+    #Optional
+    description = "{{ description }}"
+    display_name = "{{budget_name}}_alert_rule"
+    message = "{{ message }}"
+    recipients = "{{recipients}}"
+}

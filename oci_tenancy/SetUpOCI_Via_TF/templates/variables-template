@@ -1,5 +1,11 @@
-
+{% if db_export=='true' %}
+variable "{{ var_tf_name }}" {
+            type = list
+            default = {{ values }}
+}
+{% else %}
 variable "{{ var_tf_name }}" {
             type = string
             default = "{{ values }}"
 }
+{% endif %}

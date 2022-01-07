@@ -258,6 +258,14 @@ class commonTools():
         if (columnvalue.lower() == 'nan'):
             columnvalue = ""
 
+        # replace \ with \\
+        if("\\" in columnvalue):
+            columnvalue = columnvalue.replace("\\", "\\\\")
+
+        # replace " with \"
+        if("\"" in columnvalue):
+            columnvalue=columnvalue.replace("\"","\\\"")
+
         return columnvalue
 
     # Process column values with ::

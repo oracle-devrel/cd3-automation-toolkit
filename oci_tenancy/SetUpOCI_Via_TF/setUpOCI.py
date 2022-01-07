@@ -1,23 +1,18 @@
 import argparse
 import Database
 import Identity
-import ResourceManager
-import Solutions
+import Compute
+import ManagementServices
+import DeveloperServices
 import cd3Validator
-import CloudGuard
-import KeyVault
-import OSS
-import Logging
+import Security
+import Storage
+import Networking
+import Governance
 from fetch_compartments_to_variablesTF import fetch_compartments
 from commonTools import *
 from collections import namedtuple
-from CoreInfra import Networking
-from CoreInfra import BlockVolume
-from CoreInfra import Compute
-from CoreInfra import FileStorage
-from Governance import Tagging
 from glob import glob
-from textwrap import shorten
 
 
 def show_options(options, quit=False, menu=False, extra=None, index=0):
@@ -131,30 +126,50 @@ def export_networking():
     print("\n\nExecute tf_import_commands_network_nonGF.sh script created under each region directory to synch TF with OCI Network objects\n")
 
 
-def export_instances():
+def export_compute():
+    options = [Option("Export Dedicated VM Hosts", export_dedicatedvmhosts, 'Exporting Dedicated VM Hosts'),
+               Option("Export Instances", export_instances, 'Exporting Instances')]
+
+    options = show_options(options, quit=True, menu=True, index=1)
+    execute_options(options, inputfile, outdir, prefix, config)
+
+def export_dedicatedvmhosts(inputfile, outdir, prefix,config):
+    compartments = get_compartment_list('Dedicated VM Hosts')
+    Compute.export_dedicatedvmhosts(inputfile, outdir, _config=config, network_compartments=compartments)
+    create_dedicatedvmhosts(inputfile, outdir, prefix, config)
+    print("\n\nExecute tf_import_commands_dedicatedvmhosts_nonGF.sh script created under each region directory to synch TF with OCI Instances\n")
+
+
+def export_instances(inputfile, outdir, prefix,config):
     compartments = get_compartment_list('Instances')
-    Compute.export_instance(inputfile, outdir, config=config, network_compartments=compartments)
-    create_instances(inputfile, outdir, config)
+    Compute.export_instances(inputfile, outdir, config=config, network_compartments=compartments)
+    create_instances(inputfile, outdir, prefix, config)
     print("\n\nExecute tf_import_commands_instances_nonGF.sh script created under each region directory to synch TF with OCI Instances\n")
 
 
-def export_block_volumes():
-    compartments = get_compartment_list('Block Volumes')
-    BlockVolume.export_blockvol(inputfile, outdir, _config=config, network_compartments=compartments)
-    create_block_volumes()
-    print("\n\nExecute tf_import_commands_blockvols_nonGF.sh script created under each region directory to synch TF with OCI Instances\n")
-
-
 def export_tags():
-    Tagging.export_tags_nongreenfield(inputfile, outdir, _config=config, network_compartments=None)
+    Governance.export_tags_nongreenfield(inputfile, outdir, _config=config, network_compartments=None)
     create_tags()
     print("\n\nExecute tf_import_commands_tags_nonGF.sh script created under home region directory to synch TF with OCI Identity objects\n")
 
+def export_storage():
+    options = [Option("Export Block Storage/Block Backup Policy",export_block_volumes,'Exporting Block Volumes'),
+               Option("Export File Storage", export_fss, 'Exporting FSS')]
 
-def export_fss():
+    options = show_options(options, quit=True, menu=True, index=1)
+    execute_options(options, inputfile, outdir, prefix, config)
+
+def export_block_volumes(inputfile, outdir, prefix,config):
+    compartments = get_compartment_list('Block Volumes')
+    Storage.export_blockvolumes(inputfile, outdir, _config=config, network_compartments=compartments)
+    create_block_volumes(inputfile, outdir, prefix, config=config)
+    print("\n\nExecute tf_import_commands_blockvolumes_nonGF.sh script created under each region directory to synch TF with OCI Instances\n")
+
+
+def export_fss(inputfile, outdir, prefix,config):
     compartments = get_compartment_list('FSS objects')
-    FileStorage.export_fss(inputfile, outdir, config=config, network_compartments=compartments)
-    create_fss()
+    Storage.export_fss(inputfile, outdir, config=config, network_compartments=compartments)
+    create_fss(inputfile, outdir, prefix, config=config)
     print("\n\nExecute tf_import_commands_fss_nonGF.sh script created under each region directory to synch TF with OCI FSS objects\n")
 
 
@@ -164,12 +179,45 @@ def export_lb():
     create_lb()
     print("\n\nExecute tf_import_commands_lbr_nonGF.sh script created under each region directory to synch TF with OCI LBR objects\n")
 
+def export_databases():
+    options = [Option("Export Virtual Machine or Bare Metal DB Systems",export_dbsystems_vm_bm,'Exporting VM and BM DB Systems'),
+               Option("Export EXA Infra and EXA VMClusters", export_exa_infra_vmclusters, 'Exporting EXA Infra and EXA VMClusters')]
 
-def export_events_notifications():
-    compartments = get_compartment_list('Events and Notifications objects')
-    Solutions.export_solutions(inputfile, outdir, _config=config, network_compartments=compartments)
-    create_events_notifications(execute_all=True)
-    print("\n\nExecute tf_import_commands_solutions_nonGF.sh script created under each region directory to synch TF with OCI Events and Notifications objects\n")
+    options = show_options(options, quit=True, menu=True, index=1)
+    execute_options(options, inputfile, outdir, prefix, config)
+
+def export_dbsystems_vm_bm(inputfile, outdir, prefix,config):
+    compartments = get_compartment_list('VM and BM DB Systems')
+    Database.export_dbsystems_vm_bm(inputfile, outdir, _config=config, network_compartments=compartments)
+    Database.create_terraform_dbsystems_vm_bm(inputfile, outdir, prefix, config=config)
+    print("\n\nExecute tf_import_commands_dbsystems-vm-bm_nonGF.sh script created under each region directory to synch TF with OCI LBR objects\n")
+
+def export_exa_infra_vmclusters(inputfile, outdir, prefix,config):
+    compartments = get_compartment_list('EXA Infra and EXA VMClusters')
+    Database.export_exa_infra(inputfile, outdir, _config=config, network_compartments=compartments)
+    Database.export_exa_vmclusters(inputfile, outdir, _config=config, network_compartments=compartments)
+    create_exa_infra_vmclusters(inputfile, outdir, prefix,config=config)
+    print("\n\nExecute tf_import_commands_exa-infra_nonGF.sh and tf_import_commands_exa-vmclusters_nonGF.sh scripts created under each region directory to synch TF with OCI LBR objects\n")
+
+def export_management_services():
+    options = [Option("Export Events and Notifications",export_events_notifications,'Exporting Events and Notifications'),
+               Option("Export Alarms", export_alarms, 'Exporting Alarms')]
+
+    options = show_options(options, quit=True, menu=True, index=1)
+    execute_options(options, inputfile, outdir, prefix, config)
+
+def export_events_notifications(inputfile, outdir, prefix,config):
+    compartments = get_compartment_list('Events and Notifications')
+    ManagementServices.export_events_notifications(inputfile, outdir, _config=config, network_compartments=compartments)
+    ManagementServices.create_terraform_events(inputfile, outdir, prefix, config=config)
+    ManagementServices.create_terraform_notifications(inputfile, outdir, prefix, config=config)
+    print("\n\nExecute tf_import_commands_events_notifications_nonGF.sh script created under each region directory to synch TF with OCI Events and Notifications objects\n")
+
+def export_alarms(inputfile, outdir, prefix,config):
+    compartments = get_compartment_list('Alarms')
+    ManagementServices.export_alarms(inputfile, outdir, _config=config, network_compartments=compartments)
+    ManagementServices.create_terraform_alarms(inputfile, outdir, prefix,config=config)
+    print("\n\nExecute tf_import_commands_alarms_nonGF.sh script created under each region directory to synch TF with OCI Events and Notifications objects\n")
 
 
 def create_identity(execute_all=False):
@@ -196,6 +244,11 @@ def export_terraform_drg_routes(inputfile, outdir, prefix, config):
     compartments = get_compartment_list('OCI DRG Rules')
     Networking.export_drg_routetable(inputfile, network_compartments=compartments, _config=config, _tf_import_cmd=False,outdir=None)
 
+
+def create_tags():
+    options = [Option(None, Governance.create_namespace_tagkey, 'Processing Tags Tab')]
+    execute_options(options, inputfile, outdir, prefix,config=config)
+
 def create_networking(execute_all=False):
     options = [
         Option('Create Network - overwrites all TF files; reverts all SecLists and RouteTables to original rules', Networking.create_all_tf_objects, 'Create All Objects'),
@@ -211,38 +264,45 @@ def create_networking(execute_all=False):
         options = show_options(options, quit=True, menu=True, index=1)
     execute_options(options, inputfile, outdir, prefix, config=config)
 
-def create_instances(inputfile, outdir, config):
+def create_instances(inputfile, outdir, prefix,config):
     options = [
         Option(None, Compute.create_terraform_instances, 'Processing Instances Tab'),
         Option(None, Compute.boot_backups_policy, 'Processing Boot Volume Policies'),
     ]
-    execute_options(options, inputfile, outdir, config)
+    execute_options(options, inputfile, outdir, prefix,config)
 
-def create_vmhosts_instances():
+def create_dedicatedvmhosts(inputfile, outdir, prefix,config):
+    options = [Option(None, Compute.create_terraform_dedicatedhosts, 'Processing Dedicated VM Hosts Tab')]
+    execute_options(options, inputfile, outdir, prefix,config=config)
+
+
+def create_compute():
     options = [
         Option('Add/Modify/Delete Dedicated VM Hosts', Compute.create_terraform_dedicatedhosts, 'Processing Dedicated VM Hosts Tab'),
         Option('Add/Modify/Delete Instances/Boot Backup Policy', create_instances,''),
     ]
     options = show_options(options, quit=True, menu=True, index=1)
-    execute_options(options, inputfile, outdir, config)
+    execute_options(options, inputfile, outdir, prefix,config)
 
-def create_block_volumes():
+def create_block_volumes(inputfile, outdir, prefix,config):
     options = [
-        Option(None, BlockVolume.create_terraform_block_volumes, 'Processing Block Volume Tab'),
-        Option(None, BlockVolume.block_backups_policy, 'Processing Block Volume Policies'),
+        Option(None, Storage.create_terraform_block_volumes, 'Processing BlockVolumes Tab'),
+        Option(None, Storage.block_backups_policy, 'Processing Block Volume Policies'),
     ]
-    execute_options(options, inputfile, outdir, config=config)
+    execute_options(options, inputfile, outdir, prefix,config=config)
+
+def create_fss(inputfile, outdir, prefix,config):
+    options = [Option(None, Storage.create_terraform_fss, 'Processing FSS Tab')]
+    execute_options(options, inputfile, outdir, prefix,config=config)
 
 
-def create_tags():
-    options = [Option(None, Tagging.create_namespace_tagkey, 'Processing Tags Tab')]
-    execute_options(options, inputfile, outdir, config=config)
-
-
-def create_fss():
-    options = [Option(None, FileStorage.create_terraform_fss, 'Processing FSS Tab')]
-    execute_options(options, inputfile, outdir, config=config)
-
+def create_storage(execute_all=False):
+    options = [
+        Option('Add/Modify/Delete Block Storage/Block Backup Policy', create_block_volumes, ''),
+        Option('Add/Modify/Delete File Storage', create_fss, '')]
+    options = show_options(options, quit=True, menu=True, index=1)
+    if not execute_all:
+        execute_options(options, inputfile, outdir, prefix,config)
 
 def create_lb():
     options = [
@@ -254,39 +314,43 @@ def create_lb():
     ]
     execute_options(options, inputfile, outdir, config=config)
 
-
-def create_adw():
-    options = [ Option(None, Database.create_terraform_adw_atp, 'Processing ADW/ATP Tab')]
-    execute_options(options, inputfile, outdir, prefix, config=config)
-
-
-def create_db(execute_all=False):
+def create_databases(execute_all=False):
     options = [
-        Option('Add/Modify/Delete Virtual Machine', Database.create_terraform_database_VM, 'Processing DB_System_VM Tab'),
-        Option('Add/Modify/Delete Bare Metal', Database.create_terraform_database_BM, 'Processing DB_System_BM Tab'),
-        Option('Add/Modify/Delete ExaData', Database.create_terraform_database_EXA, 'Processing DB_System_EXA Tab'),
+        Option('Add/Modify/Delete Virtual Machine or Bare Metal DB Systems', Database.create_terraform_dbsystems_vm_bm, 'Processing DBSystems-VM-BM Tab'),
+        Option('Add/Modify/Delete EXA Infra and EXA VM Cluster', create_exa_infra_vmclusters, ''),
+        Option('Add/Modify/Delete ADW/ATP', Database.create_terraform_adw_atp, 'Processing ADW/ATP Tab'),
     ]
     if not execute_all:
         options = show_options(options, quit=True, menu=True, index=1)
     execute_options(options, inputfile, outdir, prefix, config=config)
 
 
-def create_events_notifications(execute_all=False):
+def create_exa_infra_vmclusters(inputfile, outdir, prefix,config):
+    options = [Option(None, Database.create_terraform_exa_infra, 'Processing Exa-Infra Tab'),
+    Option(None, Database.create_terraform_exa_vmclusters, 'Processing Exa-VM-Clusters Tab')]
+    execute_options(options, inputfile, outdir, prefix, config)
+
+def create_management_services(execute_all=False):
     options = [
-        Option("Add/Modify/Delete Notifications", Solutions.create_terraform_notifications, 'Setting up Notifications'),
-        Option("Add/Modify/Delete Events", Solutions.create_terraform_events, 'Setting up Events'),
+        Option("Add/Modify/Delete Notifications", ManagementServices.create_terraform_notifications, 'Setting up Notifications'),
+        Option("Add/Modify/Delete Events", ManagementServices.create_terraform_events, 'Setting up Events'),
+        Option("Add/Modify/Delete Alarms", ManagementServices.create_terraform_alarms, 'Setting up Alarms'),
     ]
     if not execute_all:
         options = show_options(options, quit=True, menu=True, index=1)
     execute_options(options, inputfile, outdir, prefix, config=config)
 
 
-def create_resource_manager():
-    options = [ Option(None, ResourceManager.create_resource_manager, 'Creating stack')]
+def create_developer_services(execute_all=False):
+    options = [
+        Option("Upload current terraform files/state to Resource Manager", DeveloperServices.create_resource_manager, 'Creating RM Stack')]
+    if not execute_all:
+        options = show_options(options, quit=True, menu=True, index=1)
     execute_options(options, outdir, prefix, config=config)
 
+
 def create_cis_vcnflow_logs(*args,**kwargs):
-    options = [Option(None, Logging.enable_cis_vcnflow_logging, 'Enabling Flow Logs')]
+    options = [Option(None, ManagementServices.enable_cis_vcnflow_logging, 'Enabling Flow Logs')]
     execute_options(options, inputfile, outdir, prefix, config=config)
 
 
@@ -294,14 +358,21 @@ def create_cis_keyvault_oss_log(*args,**kwargs):
     region_name = input("Enter region name eg ashburn where you want to create OSS Bucket and Key/Vault ")
     comp_name = input("Enter name of compartment as it appears in OCI Console ")
 
-    options = [Option(None, KeyVault.create_cis_keyvault, 'Creating KeyVault'),
-               Option(None, OSS.create_cis_oss, 'Creating Object Storage Bucket'),
-               Option(None, Logging.enable_cis_oss_logging, 'Enabling Logging for write events to bucket')]
+    options = [Option(None, Security.create_cis_keyvault, 'Creating KeyVault'),
+               Option(None, Storage.create_cis_oss, 'Creating Object Storage Bucket'),
+               Option(None, ManagementServices.enable_cis_oss_logging, 'Enabling Logging for write events to bucket')]
     execute_options(options, outdir, prefix,region_name, comp_name, config=config)
+
+def create_cis_budget(*args,**kwargs):
+    amount = input("Enter Monthly Budget Amount (in US$): ")
+    threshold = input("Enter Threshold Percentage of Budget ")
+    options = [Option(None, Governance.create_cis_budget, 'Creating Budget')]
+    execute_options(options, outdir, prefix,amount,threshold, config=config)
 
 def create_cis_features(execute_all=False):
     options = [Option("Create Key/Vault, Object Storage Bucket and enable Logging for write events to bucket", create_cis_keyvault_oss_log, 'Creating CIS Key/Vault, Object Storage Bucket and enable Logging for write events to bucket'),
-               Option("Enable Cloud Guard", CloudGuard.enable_cis_cloudguard, 'Enable Cloud Guard'),
+               Option("Create Default Budget",create_cis_budget,'Creating Default Budget'),
+               Option("Enable Cloud Guard", Security.enable_cis_cloudguard, 'Enable Cloud Guard'),
                Option("Enable VCN Flow Logs", create_cis_vcnflow_logs, 'Enable VCN Flow Logs')]
 
     if not execute_all:
@@ -343,33 +414,33 @@ if not os.path.exists(outdir):
 if non_gf_tenancy:
     inputs = [
         Option('Export Identity', export_identity, 'Identity'),
-        Option('Export Networking', export_networking, 'Networking'),
-        Option('Export Instances/Boot Backup Policy', export_instances, 'Instances'),
-        Option('Export Block Volumes/Block BackUp Policy', export_block_volumes, 'Block Volumes'),
         Option('Export Tags', export_tags, 'Tagging'),
-        Option('Export File Storage Service', export_fss, 'FSS'),
-        Option('Export Load Balancer Service', export_lb, 'Load Balancers'),
-        Option('Export Solutions (Events and Notifications)', export_events_notifications, 'Solutions'),
+        Option('Export Networking', export_networking, 'Networking'),
+        Option('Export Compute', export_compute, 'Dedicated VM Hosts and Instances'),
+        Option('Export Storage', export_storage, 'Storage'),
+        Option('Export Databases', export_databases, 'Databases'),
+        Option('Export Load Balancers', export_lb, 'Load Balancers'),
+        Option('Export Management Services', export_management_services, 'Management Services'),
     ]
-    verify_outdir_is_empty()
-    fetch_compartments(outdir, config)
+
+    #verify_outdir_is_empty()
+    #fetch_compartments(outdir, config)
     print("\nnon_gf_tenancy in properties files is set to true..Export existing OCI objects and Synch with TF state")
     print("Process will fetch objects from OCI in the specified compartment from all regions tenancy is subscribed to\n")
 else:
     inputs = [
         Option('Validate CD3', validate_cd3, 'Validate CD3'),
         Option('Identity', create_identity, 'Identity'),
-        Option('Networking', create_networking, 'Networking'),
-        Option('Dedicated VM Hosts/Instances/Boot Backup Policy', create_vmhosts_instances, 'Instances'),
-        Option('Create and Attach Block Volumes/Block BackUp Policy', create_block_volumes, 'Block Volumes'),
         Option('Tags', create_tags, 'Tagging'),
-        Option('File Storage Service', create_fss, 'FSS'),
-        Option('Load Balancer Service', create_lb, 'Load Balancers'),
-        Option('ADW/ATP', create_adw, 'ADW/ATP'),
-        Option('Database', create_db, 'Database'),
-        Option('Solutions (Events and Notifications)', create_events_notifications, 'Solutions'),
-        Option('Upload current terraform files/state to Resource Manager', create_resource_manager, 'Resource Manager'),
-        Option('Enable OCI CIS Compliant Features (OSS, Cloud-Guard, VCN Flow Logs)', create_cis_features, 'CIS Compliant Features'),
+        Option('Networking', create_networking, 'Networking'),
+        Option('Compute', create_compute, 'Compute'),
+        Option('Storage', create_storage, 'Storage'),
+        Option('Database', create_databases, 'Databases'),
+        Option('Load Balancers', create_lb, 'Load Balancers'),
+        Option('Management Services', create_management_services, 'Management Services'),
+        Option('Developer Services', create_developer_services, 'Developer Services'),
+        Option('Enable OCI CIS Compliant Features (Key/Vault, OSS, Budget, Cloud-Guard, VCN Flow Logs)', create_cis_features, 'CIS Compliant Features'),
+
     ]
 
 # Run menu

@@ -25,14 +25,15 @@ from jinja2 import Environment, FileSystemLoader
 def parse_args():
     # Read the arguments
     parser = argparse.ArgumentParser(description="Create vars files for the each row in csv file.")
-    parser.add_argument("file", help="Full Path of CD3 excel file. eg CD3-template.xlsx in example folder")
-    parser.add_argument("outdir", help="directory path for output tf files ")
-    parser.add_argument("--config", default=DEFAULT_LOCATION, help="Config file name")
+    parser.add_argument('inputfile', help='Full Path of input CD3 excel file')
+    parser.add_argument('outdir', help='Output directory for creation of TF files')
+    parser.add_argument('prefix', help='TF files prefix')
+    parser.add_argument('--config', default=DEFAULT_LOCATION, help='Config file name')
     return parser.parse_args()
 
 
 # If input in cd3 file
-def create_namespace_tagkey(inputfile, outdir, config):
+def create_namespace_tagkey(inputfile, outdir, prefix, config):
     filename = inputfile
     configFileName = config
 
@@ -278,4 +279,4 @@ def create_namespace_tagkey(inputfile, outdir, config):
 if __name__ == '__main__':
     args = parse_args()
     # Execution of the code begins here
-    create_namespace_tagkey(args.file, args.outdir, args.config)
+    create_namespace_tagkey(args.file, args.outdir, args.prefix,args.config)
