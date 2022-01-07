@@ -1,0 +1,33 @@
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+
+############################
+# Variable Block - Networking
+# Create Default DHCP Options
+############################
+
+variable "manage_default_resource_id" {
+  type    = string
+  default = null
+}
+
+variable "server_type" {
+  type    = string
+  default = null
+}
+
+variable "defined_tags" {
+  type    = map
+  default = { "Oracle-Tags.CreatedOn" = "$${oci.datetime}",
+              "Oracle-Tags.CreatedBy"= "$${iam.principal.name}"
+            }
+}
+
+variable "freeform_tags" {
+  type    = map
+  default = {}
+}
+
+variable "search_domain_names" {
+  type    = list
+  default = [""]
+}

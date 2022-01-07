@@ -80,28 +80,31 @@ def seek_info():
         print('Check if input properties exist and try again..exiting...`    ')
         exit()
 
-    root_dir = "/root/ocswork/tenancies/" + prefix
-    regions_dir = root_dir+"/terraform_files/"
-    config_file_path = root_dir+"/"+prefix+"_config"
-    auto_keys_dir = "/root/ocswork/tenancies/keys"
+    # Variables Initialization
+    user_dir = "/"+"cd3user"
+    customer_tenancy_dir = user_dir +"/tenancies/" + prefix
+    terraform_files = customer_tenancy_dir+"/terraform_files/"
+    config_file_path = customer_tenancy_dir+"/"+prefix+"_config"
+    auto_keys_dir = user_dir+"/tenancies/keys"
+    modules_dir = user_dir +"/oci_tools/automation_toolkit/user-scripts/terraform"
 
-    if not os.path.exists(root_dir):
-        os.makedirs(root_dir)
+    if not os.path.exists(customer_tenancy_dir):
+        os.makedirs(customer_tenancy_dir)
 
-    # 2. Move the newly created PEM keys to /root/ocswork/tenancies/<customer_name>/
+    # 2. Move the newly created PEM keys to /cd3user/tenancies/<customer_name>/
     files = glob.glob(auto_keys_dir+"/*")
 
     # If the keys are auto-generated
     if os.path.exists(auto_keys_dir):
-        print("Moving the key files to /root/ocswork/tenancies/"+prefix+"/")
+        print("Moving the key files to "+customer_tenancy_dir)
         if files:
             for f in files:
                 try:
-                    shutil.move(f,root_dir)
+                    shutil.move(f,customer_tenancy_dir)
                 except shutil.Error as e:
-                    shutil.move(root_dir+"/oci_api_private.pem", root_dir+"/oci_api_private_pem_backup")
-                    shutil.move(f, root_dir)
-                key_path = root_dir + "/oci_api_private.pem"
+                    shutil.move(customer_tenancy_dir+"/oci_api_private.pem", customer_tenancy_dir+"/oci_api_private_pem_backup")
+                    shutil.move(f, customer_tenancy_dir)
+                key_path = customer_tenancy_dir + "/oci_api_private.pem"
             shutil.rmtree(auto_keys_dir)
         else:
             print("Key file not found. Please make sure to specify the right path in the properties file.....Exiting!!!")
@@ -109,19 +112,19 @@ def seek_info():
 
 
     # If the private key is empty or if the private key is already present in the tenancy folder; initialize it to the default path;
-    if (key_path == '' or key_path == "\n" or root_dir+ '/oci_api_private.pem' in key_path):
-        key_path = root_dir + "/oci_api_private.pem"
+    if (key_path == '' or key_path == "\n" or customer_tenancy_dir+ '/oci_api_private.pem' in key_path):
+        key_path = customer_tenancy_dir + "/oci_api_private.pem"
     # If the private key is elsewhere; move it to the tenancy folder
     elif auto_keys_dir+"/oci_api_private.pem" not in key_path:
         try:
-            shutil.move(key_path, root_dir+'/oci_api_private.pem')
+            shutil.move(key_path, customer_tenancy_dir+'/oci_api_private.pem')
         except FileNotFoundError as e:
             print("Key file not found. Please make sure to specify the right path in the properties file.....Exiting!!!")
             exit(0)
-        key_path = root_dir+"/oci_api_private.pem"
+        key_path = customer_tenancy_dir+"/oci_api_private.pem"
 
-    if not os.path.exists(regions_dir):
-        os.makedirs(regions_dir)
+    if not os.path.exists(terraform_files):
+        os.makedirs(terraform_files)
 
     # 1. Create config file
     print("Creating the Tenancy specific config, terraform provider , variables and properties files.................")
@@ -155,13 +158,13 @@ def seek_info():
     # 4. Generate setUpOCI.properties file
     ct.get_subscribedregions(config_file_path)
 
-    setupoci_props_file = open(root_dir + "/" +prefix+"_setUpOCI.properties", "w")
+    setupoci_props_file = open(customer_tenancy_dir + "/" +prefix+"_setUpOCI.properties", "w")
     setupoci_props_file.write("[Default]\n"
                               "\n"
                               "#Input variables required to run setUpOCI script\n"
                               "\n"
-                              "#path to output directory where terraform file will be generated. eg /root/tenancies/<customer_tenancy_name>/terraform_files when running from OCS VM\n"
-                              "outdir="+regions_dir+"\n"
+                              "#path to output directory where terraform file will be generated. eg /cd3user/tenancies/<customer_tenancy_name>/terraform_files when running from OCS VM\n"
+                              "outdir="+terraform_files+"\n"
                               "\n"
                               "#prefix for output terraform files eg client name\n"
                               "prefix="+prefix+"\n"
@@ -198,35 +201,45 @@ def seek_info():
                 windows_image_id= image.id
                 break
 
-        if not os.path.exists(regions_dir+region):
-            os.mkdir(regions_dir+region)
+        if not os.path.exists(terraform_files+region):
+            os.mkdir(terraform_files+region)
 
-        # 6. Writing Terraform config files provider.tf and variables.tf
-        provider_data = """provider "oci" {
-          tenancy_ocid     = var.tenancy_ocid
-          user_ocid        = var.user_ocid
-          fingerprint      = var.fingerprint
-          private_key_path = var.private_key_path
-          region           = var.region
-        }
-
-        terraform {
-          required_providers {
-            oci = {
-              version = ">= 3.0.0"
-            }
-          }
-        }"""
-
-
-        f = open(regions_dir+"/"+region+"/provider.tf", "w+")
-        f.write(provider_data)
-        f.close()
+        # # 6. Writing Terraform config files provider.tf and variables.tf
+        # provider_data = """provider "oci" {
+        #   tenancy_ocid     = var.tenancy_ocid
+        #   user_ocid        = var.user_ocid
+        #   fingerprint      = var.fingerprint
+        #   private_key_path = var.private_key_path
+        #   region           = var.region
+        # }
+        #
+        # terraform {
+        #   required_providers {
+        #     oci = {
+        #       version = ">= 3.0.0"
+        #     }
+        #   }
+        # }"""
+        #
+        #
+        # f = open(terraform_files+"/"+region+"/provider.tf", "w+")
+        # f.write(provider_data)
+        # f.close()
 
         today = datetime.today()
         dt = str(today.day) +" "+ calendar.month_name[today.month]+" "+ str(today.year)
 
-        variables_data = """variable "ssh_public_key" {
+        variables_data = """
+        // Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+
+        ############################
+        #
+        # Variables Block
+        # OCI
+        #
+        ############################
+
+        variable "ssh_public_key" {
                 type = string
                 default = \"""" + ssh_public_key + """"
         }
@@ -250,6 +263,71 @@ def seek_info():
                 type = string
                 default = \"""" + ct.region_dict[region] + """"
         }
+        
+        #################################
+        #
+        # Variables according to Services
+        #
+        #################################
+        
+        #########################
+        ##### Identity ##########
+        #########################
+        
+        variable "compartments" {
+          type    = map(any)
+          default = {}
+        }
+        
+        variable "policies" {
+          type    = map(any)
+          default = {}
+        }
+        
+        variable "groups" {
+          type    = map(any)
+          default = {}
+        }
+        
+        #########################
+        ##### Networking ########
+        #########################
+        
+        variable "default_dhcps" {
+          type = map(any)
+          default = {}
+        }
+        
+        variable "vcns" {
+          type    = map(any)
+          default = {}
+        }
+        
+        variable "igws" {
+          type    = map(any)
+          default = {}
+        }
+        
+        variable "sgws" {
+          type    = map(any)
+          default = {}
+        }
+        
+        variable "ngws" {
+          type    = map(any)
+          default = {}
+        }
+        
+        variable "hub-lpgs" {
+          type    = map(any)
+          default = {}
+        }
+        
+        variable "spoke-lpgs" {
+          type    = map(any)
+          default = {}
+        }
+        
         """
         if (windows_image_id != ''):
             variables_data = variables_data + """
@@ -267,28 +345,31 @@ def seek_info():
                 default = \"""" + linux_image_id + """"
                 description = "Latest ocid as on """ + dt + """"
         }"""
-        f = open(regions_dir+"/"+region+"/variables_" + region + ".tf", "w+")
+        f = open(terraform_files+"/"+region+"/variables_" + region + ".tf", "w+")
         f.write(variables_data)
         f.close()
 
+        # 7. Copy the terraform modules and variables file to outdir
+        shutil.copytree(modules_dir, terraform_files+region, ignore=shutil.ignore_patterns('example*'), dirs_exist_ok=True)
+
     #logging information
-    logging.basicConfig(filename=root_dir+'/cmds.log', format='%(message)s', filemode='w', level=logging.INFO)
+    logging.basicConfig(filename=customer_tenancy_dir+'/cmds.log', format='%(message)s', filemode='w', level=logging.INFO)
 
     print("==================================================================================================================================")
     print("\nDocker has been configured to connect with OCI successfully !!!")
-    print("Working Directory Path: "+root_dir)
+    print("Working Directory Path: "+customer_tenancy_dir)
     print("Config File Path: "+ config_file_path )
-    print("Path to region based directories, terraform provider and the variables files: " + regions_dir)
-    print("\nPlease use "+prefix+"_setUpOCI.properties file at "+root_dir +" to proceed with the execution of the SetUpOCI script !!!!")
-    print("Update the path of CD3 Excel input file in "+root_dir + "/" +prefix+"_setUpOCI.properties before executing the next command......")
+    print("Path to region based directories, terraform provider and the variables files: " + terraform_files)
+    print("\nPlease use "+prefix+"_setUpOCI.properties file at "+customer_tenancy_dir +" to proceed with the execution of the SetUpOCI script !!!!")
+    print("Update the path of CD3 Excel input file in "+customer_tenancy_dir + "/" +prefix+"_setUpOCI.properties before executing the next command......")
     print("\nCommands to execute: (Alternately, you may also check the cmds.log in outdir for the same information)")
     logging.info("Commands to execute:")
-    print("cd /root/ocswork/git_oci/oci_tenancy/SetUpOCI_Via_TF/")
-    logging.info("cd /root/ocswork/git_oci/oci_tenancy/SetUpOCI_Via_TF/")
-    print("python setUpOCI.py "+root_dir + "/" +prefix+"_setUpOCI.properties")
-    logging.info("python setUpOCI.py "+root_dir + "/" +prefix+"_setUpOCI.properties")
-    print("python fetch_compartments_to_variablesTF.py "+regions_dir + " --config "+root_dir + "/"+prefix+"_config")
-    logging.info("python fetch_compartments_to_variablesTF.py "+regions_dir + " --config "+root_dir + "/"+prefix+"_config")
+    print("cd "+user_dir+"/oci_tools/automation_toolkit/")
+    logging.info("cd "+user_dir+"/oci_tools/automation_toolkit/")
+    print("python setUpOCI.py "+customer_tenancy_dir + "/" +prefix+"_setUpOCI.properties")
+    logging.info("python setUpOCI.py "+customer_tenancy_dir + "/" +prefix+"_setUpOCI.properties")
+    print("python fetch_compartments_to_variablesTF.py "+terraform_files + " --config "+customer_tenancy_dir + "/"+prefix+"_config")
+    logging.info("python fetch_compartments_to_variablesTF.py "+terraform_files + " --config "+customer_tenancy_dir + "/"+prefix+"_config")
     print("==================================================================================================================================")
 
 if __name__ == '__main__':

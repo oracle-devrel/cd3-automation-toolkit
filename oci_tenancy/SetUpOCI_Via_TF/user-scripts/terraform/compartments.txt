@@ -1,0 +1,158 @@
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+
+############################
+# Module Block - Identity
+# Create Compartments
+############################
+
+module "iam-compartments" {
+  source = "./modules/identity/iam-compartment"
+  for_each              = var.compartments.root != null ? var.compartments.root : {}
+
+
+  # insert the 4 required variables here
+  tenancy_ocid            = var.tenancy_ocid
+  compartment_id          = each.value.parent_compartment != null ? (length(regexall("ocid1.compartment.oc1*", each.value.parent_compartment)) > 0 ? each.value.parent_compartment : try(var.compartment_ocids[0][each.value.parent_compartment],module.fetch-compartments.compartment_id_map[each.value.parent_compartment])) : var.tenancy_ocid
+  compartment_name        = each.value.name
+  compartment_description = each.value.description
+  compartment_create      = true
+  enable_delete           = each.value.enable_delete
+
+  #Optional
+  defined_tags  = each.value.defined_tags
+  freeform_tags = each.value.freeform_tags
+}
+
+module "sub-compartments-level1" {
+  source = "./modules/identity/iam-compartment"
+  for_each              = var.compartments.compartment_level1 != null ? var.compartments.compartment_level1 : {}
+
+  depends_on = [module.iam-compartments]
+  # insert the 4 required variables here
+  tenancy_ocid            = var.tenancy_ocid
+  compartment_id          = try(merge(module.iam-compartments.*...)[each.value.parent_compartment]["compartment_id"][each.value.parent_compartment],var.compartment_ocids[0][each.value.parent_compartment],module.fetch-compartments.compartment_id_map[each.value.parent_compartment])
+  compartment_name        = each.value.name
+  compartment_description = each.value.description
+  compartment_create      = true
+  enable_delete           = each.value.enable_delete
+
+  #Optional
+  defined_tags  = each.value.defined_tags
+  freeform_tags = each.value.freeform_tags
+}
+
+module "sub-compartments-level2" {
+  source = "./modules/identity/iam-compartment"
+  for_each              = var.compartments.compartment_level2 != null ? var.compartments.compartment_level2 : {}
+
+  depends_on = [module.sub-compartments-level1]
+  # insert the 4 required variables here
+  tenancy_ocid            = var.tenancy_ocid
+  compartment_id          = try(merge(module.sub-compartments-level1.*...)[each.value.parent_compartment]["compartment_id"][split("--", each.value.parent_compartment)[1]],var.compartment_ocids[0][each.value.parent_compartment],module.fetch-compartments.compartment_id_map[each.value.parent_compartment])
+  compartment_name        = each.value.name
+  compartment_description = each.value.description
+  compartment_create      = true
+  enable_delete           = each.value.enable_delete
+
+  #Optional
+  defined_tags  = each.value.defined_tags
+  freeform_tags = each.value.freeform_tags
+}
+
+module "sub-compartments-level3" {
+  source = "./modules/identity/iam-compartment"
+  for_each              = var.compartments.compartment_level3 != null ? var.compartments.compartment_level3 : {}
+
+  depends_on = [module.sub-compartments-level2]
+  # insert the 4 required variables here
+  tenancy_ocid            = var.tenancy_ocid
+  compartment_id          = try(merge(module.sub-compartments-level2.*...)[each.value.parent_compartment]["compartment_id"][split("--", each.value.parent_compartment)[2]],var.compartment_ocids[0][each.value.parent_compartment],module.fetch-compartments.compartment_id_map[each.value.parent_compartment])
+  compartment_name        = each.value.name
+  compartment_description = each.value.description
+  compartment_create      = true
+  enable_delete           = each.value.enable_delete
+
+  #Optional
+  defined_tags  = each.value.defined_tags
+  freeform_tags = each.value.freeform_tags
+}
+
+module "sub-compartments-level4" {
+  source = "./modules/identity/iam-compartment"
+  for_each              = var.compartments.compartment_level4 != null ? var.compartments.compartment_level4 : {}
+
+  depends_on = [module.sub-compartments-level3]
+  # insert the 4 required variables here
+  tenancy_ocid            = var.tenancy_ocid
+  compartment_id          = try(merge(module.sub-compartments-level3.*...)[each.value.parent_compartment]["compartment_id"][split("--", each.value.parent_compartment)[3]],var.compartment_ocids[0][each.value.parent_compartment],module.fetch-compartments.compartment_id_map[each.value.parent_compartment])
+  compartment_name        = each.value.name
+  compartment_description = each.value.description
+  compartment_create      = true
+  enable_delete           = each.value.enable_delete
+
+  #Optional
+  defined_tags  = each.value.defined_tags
+  freeform_tags = each.value.freeform_tags
+}
+
+module "sub-compartments-level5" {
+  source = "./modules/identity/iam-compartment"
+  for_each              = var.compartments.compartment_level5 != null ? var.compartments.compartment_level5 : {}
+
+  depends_on = [module.sub-compartments-level4]
+  # insert the 4 required variables here
+  tenancy_ocid            = var.tenancy_ocid
+  compartment_id          = try(merge(module.sub-compartments-level4.*...)[each.value.parent_compartment]["compartment_id"][split("--", each.value.parent_compartment)[4]],var.compartment_ocids[0][each.value.parent_compartment],module.fetch-compartments.compartment_id_map[each.value.parent_compartment])
+  compartment_name        = each.value.name
+  compartment_description = each.value.description
+  compartment_create      = true
+  enable_delete           = each.value.enable_delete
+
+  #Optional
+  defined_tags  = each.value.defined_tags
+  freeform_tags = each.value.freeform_tags
+}
+
+/*
+output "root_compartments_map" {
+  description = "Compartment ocid"
+  // This allows the compartment ID to be retrieved from the resource if it exists, and if not to use the data source.
+  #value = element(concat(oci_identity_compartment.this.*.id, tolist([""])), 0)
+  value = [ for k,v in merge(module.iam-compartments.*...) : v.compartment_id]
+}
+
+output "sub_compartments_level1_map" {
+  description = "Compartment ocid"
+  // This allows the compartment ID to be retrieved from the resource if it exists, and if not to use the data source.
+  #value = element(concat(oci_identity_compartment.this.*.id, tolist([""])), 0)
+  value = [ for k,v in merge(module.sub-compartments-level1.*...) : v.compartment_id]
+}
+
+output "sub_compartments_level2_map" {
+  description = "Compartment ocid"
+  // This allows the compartment ID to be retrieved from the resource if it exists, and if not to use the data source.
+  #value = element(concat(oci_identity_compartment.this.*.id, tolist([""])), 0)
+  value = [ for k,v in merge(module.sub-compartments-level2.*...) : v.compartment_id]
+}
+
+output "sub_compartments_level3_map" {
+  description = "Compartment ocid"
+  // This allows the compartment ID to be retrieved from the resource if it exists, and if not to use the data source.
+  #value = element(concat(oci_identity_compartment.this.*.id, tolist([""])), 0)
+  value = [ for k,v in merge(module.sub-compartments-level3.*...) : v.compartment_id]
+}
+
+output "sub_compartments_level4_map" {
+  description = "Compartment ocid"
+  // This allows the compartment ID to be retrieved from the resource if it exists, and if not to use the data source.
+  #value = element(concat(oci_identity_compartment.this.*.id, tolist([""])), 0)
+  value = [ for k,v in merge(module.sub-compartments-level4.*...) : v.compartment_id]
+}
+
+output "sub_compartments_level5_map" {
+  description = "Compartment ocid"
+  // This allows the compartment ID to be retrieved from the resource if it exists, and if not to use the data source.
+  #value = element(concat(oci_identity_compartment.this.*.id, tolist([""])), 0)
+  value = [ for k,v in merge(module.sub-compartments-level5.*...) : v.compartment_id]
+}
+*/

@@ -16,7 +16,7 @@ import os
 from pathlib import Path
 from oci.config import DEFAULT_LOCATION
 from jinja2 import Environment, FileSystemLoader
-sys.path.append(os.getcwd() + "/../../..")
+#sys.path.append(os.getcwd() + "/../../..")
 from commonTools import *
 
 ######
@@ -51,29 +51,33 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
     outfile = {}
     oname = {}
     tfStr = {}
+    igw_tfStr = {}
+    vcn_tfStr = {}
+    sgw_tfStr = {}
+    ngw_tfStr = {}
     drg_data = {}
+    lpg_tfStr = {}
+    hub_lpg_tfStr = {}
+    spoke_lpg_tfStr = {}
+    dhcp_default_tfStr = {}
     dhcpStr = {}
     outfile_dhcp = {}
     outfile_oci_drg_data = {}
     oname_def_dhcp = {}
-    oname_oci_drg_data = {}
-    oname_datafile = {}
 
     global dhcp_data
-
+    auto_tfvars_filename = '_major_objects.auto.tfvars'
+    dhcp_auto_tfvars_filename = '_major_objects_default_dhcp.auto.tfvars'
 
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
-    datasource = env.get_template('data-source-template')
-    defaultdhcp = env.get_template('default-dhcp-template')
-
 
     # Function to establish peering between LPGs
     def establishPeering(peering_dict):
         for left_vcn, value in peering_dict.items():
             region = vcns.vcn_region[left_vcn]
-            outfile = outdir + "/" + region + "/" + prefix + '-major-objs.tf'
+            outfile = outdir + "/" + region + "/" + prefix + auto_tfvars_filename
 
             right_vcns = value.split(",")
 
@@ -97,7 +101,7 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
                 lpg_tf_name = right_vcn + "_" + lpg_name
                 lpg_tf_name = commonTools.check_tf_variable(lpg_tf_name)
 
-                peerStr = """peer_id = oci_core_local_peering_gateway.""" + lpg_tf_name + """.id"""
+                peerStr = lpg_tf_name
                 vcns.vcn_lpg_names[right_vcn].pop(0)
 
                 # Update file contents
@@ -324,17 +328,14 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
             elif(attachedto=="empty"):
                 drg_attach=""
 
-            if (drgstr not in tfStr[region]):
-                tfStr[region] = tfStr[region] + drgstr + drg_attach
-            else:
-                tfStr[region] = tfStr[region] + drg_attach
+            # uncomment below lines
+            # if (drgstr not in tfStr[region]):
+            #     tfStr[region] = tfStr[region] + drgstr + drg_attach
+            # else:
+            #     tfStr[region] = tfStr[region] + drg_attach
 
     def processVCN(tempStr):
-        igw = ''
-        ngw = ''
-        sgw = ''
         rt_tf_name = ''
-        lpgdata = ''
         region = tempStr['region'].lower().strip()
         vcn_name = tempStr['vcn_name'].strip()
         vcn_tf_name = commonTools.check_tf_variable(vcn_name)
@@ -349,7 +350,7 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
         # Added to check if compartment name is compatible with TF variable name syntax
         compartment_var_name = commonTools.check_tf_variable(compartment_var_name)
         vcn_dns_label = tempStr['dns_label'].lower().strip()
-
+        lpg = env.get_template('module-major-objects-lpgs-template')
         # Create TF object for default DHCP options
         dhcpname = vcn_name + "_Default DHCP Options for " + vcn_name
         dhcp_tf_name = commonTools.check_tf_variable(dhcpname)
@@ -357,12 +358,6 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
                     'server_type': 'VcnLocalPlusInternet'}
 
         tempStr.update(tempdict)
-
-        dhcp_default = defaultdhcp.render(tempStr)
-
-        vcn = env.get_template('major-objects-vcn-template')
-        vcn = vcn.render(tempStr)
-
 
         if vcn_igw != "n":
             # use default name
@@ -382,9 +377,6 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
             tempStr['igw_tf_name'] = igw_tf_name
             tempStr.update(tempdict)
 
-            igw = env.get_template('major-objects-igw-template')
-            igw = igw.render(tempStr)
-
         if vcn_sgw != "n":
             # use default name
             if (vcn_sgw == "y"):
@@ -398,9 +390,6 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
             tempStr['sgw_tf_name'] = sgw_tf_name
             tempStr['sgw_name'] = sgw_name
             tempStr['sgw_required'] = tempStr['sgw_required'].lower().strip()
-
-            sgw = env.get_template('major-objects-sgw-template')
-            sgw = sgw.render(tempStr)
 
         if vcn_ngw != 'n':
             # use default name
@@ -416,13 +405,10 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
             tempStr['ngw_tf_name'] = ngw_tf_name
             tempStr['ngw_required'] = tempStr['ngw_required'].lower().strip()
 
-            ngw = env.get_template('major-objects-ngw-template')
-            ngw = ngw.render(tempStr)
-
         if (vcn_lpg != 'n'):
             count_lpg = 0
 
-            if (hub_spoke_none == 'hub'):
+            if (hub_spoke_none.lower() == 'hub'):
                 spoke_vcns = vcns.peering_dict[vcn_name].split(",")
                 count_spokes = len(spoke_vcns)
 
@@ -432,13 +418,14 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
                 lpg_tf_name = vcn_name + "_" + lpg_name
                 lpg_tf_name = commonTools.check_tf_variable(lpg_tf_name)
 
+                tempStr['count_lpg'] = count_lpg
                 tempStr['lpg_tf_name'] = lpg_tf_name
                 tempStr['lpg_name'] = lpg_name
                 tempStr['vcn_tf_name'] = vcn_tf_name
                 tempStr['lpg_required'] = tempStr['lpg_required'].lower().strip()
 
                 rt_var = ''
-                if (hub_spoke_none == 'hub'):
+                if (hub_spoke_none.lower() == 'hub'):
                     lpg_rt_name = ""
                     if (os.path.exists(outdir + "/" + region + "/obj_names.safe")):
                         with open(outdir + "/" + region + "/obj_names.safe") as f:
@@ -455,20 +442,29 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
                         rt_var = ""
 
                     rt_tf_name = commonTools.check_tf_variable(rt_var)
+                    hub_lpg_tfStr[region] = hub_lpg_tfStr[region] + lpg.render(tempStr)
+                else:
+                    spoke_lpg_tfStr[region] = spoke_lpg_tfStr[region] + lpg.render(tempStr)
 
                 tempStr['rt_tf_name'] = rt_tf_name
-
                 tempStr['rt_var'] = rt_var
 
-                lpg = env.get_template('major-objects-lpg-template')
-                lpg = lpg.render(tempStr)
-                lpgdata = lpgdata + lpg
+        lpg_tfStr[region] = lpg.render(create_lpg_auto_vars=True,hub_lpg_details=hub_lpg_tfStr[region],spoke_lpg_details=spoke_lpg_tfStr[region])
 
-        #if(drg not in tfStr[region]):
-        tfStr[region] = tfStr[region] + igw + ngw + sgw + lpgdata + vcn
-        #else:
-        #    tfStr[region] = tfStr[region] + igw + ngw + sgw +drg_attach+ lpgdata + vcn
-        dhcpStr[region] = dhcpStr[region] + dhcp_default
+        defaultdhcp = env.get_template('module-major-objects-default-dhcp-template')
+        dhcp_default_tfStr[region] = dhcp_default_tfStr[region][:-1] + defaultdhcp.render(tempStr)
+
+        vcn = env.get_template('module-major-objects-vcns-template')
+        vcn_tfStr[region] = vcn_tfStr[region][:-1] + vcn.render(tempStr)
+
+        igws = env.get_template('module-major-objects-igws-template')
+        igw_tfStr[region] = igw_tfStr[region][:-1] + igws.render(tempStr)
+
+        ngws = env.get_template('module-major-objects-ngws-template')
+        ngw_tfStr[region] = ngw_tfStr[region][:-1] + ngws.render(tempStr)
+
+        sgws = env.get_template('module-major-objects-sgws-template')
+        sgw_tfStr[region] = sgw_tfStr[region][:-1] + sgws.render(tempStr)
 
     # Get vcns object from commonTools
     vcns = parseVCNs(filename)
@@ -476,6 +472,14 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
 
     for reg in ct.all_regions:
         tfStr[reg] = ''
+        igw_tfStr[reg] = ''
+        lpg_tfStr[reg] = ''
+        hub_lpg_tfStr[reg] = ''
+        spoke_lpg_tfStr[reg] = ''
+        vcn_tfStr[reg] = ''
+        dhcp_default_tfStr[reg] = ''
+        sgw_tfStr[reg] = ''
+        ngw_tfStr[reg] = ''
         dhcpStr[reg] = ''
         drg_data[reg] = ''
 
@@ -487,7 +491,7 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
 
     # List of the column headers
     dfcolumns = df.columns.values.tolist()
-
+    region_included = []
     # Process VCNs
     for i in df.index:
         region = str(df['Region'][i])
@@ -554,6 +558,10 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
             tempStr[columnname] = str(columnvalue).strip()
             tempStr.update(tempdict)
 
+        if region not in region_included:
+            tempStr.update({'count': 0})
+            region_included.append(region)
+
         processVCN(tempStr)
 
     create_drg_and_attachments(inputfile, outdir, config)
@@ -561,78 +569,93 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
     #Write outfiles
     if modify_network:
         for reg in ct.all_regions:
+
+            tfStr[reg] = vcn_tfStr[reg] + igw_tfStr[reg] + ngw_tfStr[reg] + sgw_tfStr[reg] + lpg_tfStr[reg]
+
             reg_out_dir = outdir + "/" + reg
 
             if not os.path.exists(reg_out_dir):
                 os.makedirs(reg_out_dir)
 
-            outfile[reg] = reg_out_dir + "/" + prefix + '-major-objs.tf'
-            outfile_dhcp[reg] = reg_out_dir + "/VCNs_Default_DHCP.tf"
+            # outfile[reg] = reg_out_dir + "/" + prefix + '-major-objs.tf'
+            outfile[reg] = reg_out_dir + "/" + prefix + auto_tfvars_filename
+            outfile_dhcp[reg] = reg_out_dir + "/" + prefix + dhcp_auto_tfvars_filename
             outfile_oci_drg_data[reg] = reg_out_dir + "/oci-drg-data.tf"
 
             srcdir = reg_out_dir + "/"
             resource = 'MajorObjects'
-            commonTools.backup_file(srcdir, resource, "-major-objs.tf")
-            commonTools.backup_file(srcdir, resource, "/VCNs_Default_DHCP.tf")
+            # commonTools.backup_file(srcdir, resource, "-major-objs.tf")
+            commonTools.backup_file(srcdir, resource, auto_tfvars_filename)
+            commonTools.backup_file(srcdir, resource, dhcp_auto_tfvars_filename)
             commonTools.backup_file(srcdir, resource, "/oci-drg-data.tf")
 
 
             oname[reg] = open(outfile[reg], "w")
             oname[reg].write(tfStr[reg])
             oname[reg].close()
-            print(outfile[reg] + " containing TF for major objects has been updated for region " + reg)
+            print(outfile[reg] + " for major objects has been updated for region " + reg)
 
             oname_def_dhcp[reg] = open(outfile_dhcp[reg], "w")
-            oname_def_dhcp[reg].write(dhcpStr[reg])
+            oname_def_dhcp[reg].write(dhcp_default_tfStr[reg])
             oname_def_dhcp[reg].close()
-            print(outfile_dhcp[reg] + " containing TF for default DHCP options for VCNs has been updated for region " + reg)
+            print(outfile_dhcp[reg] + " for default DHCP options for VCNs has been updated for region " + reg)
 
-            oname_oci_drg_data[reg]=open(outfile_oci_drg_data[reg], "w")
-            oname_oci_drg_data[reg].write(drg_data[reg])
-            oname_oci_drg_data[reg].close()
-            print(outfile_oci_drg_data[reg] + " containing TF for oci-drg-data for DRGs has been updated for region " + reg)
+            # oname_oci_drg_data[reg]=open(outfile_oci_drg_data[reg], "w")
+            # oname_oci_drg_data[reg].write(drg_data[reg])
+            # oname_oci_drg_data[reg].close()
+            # print(outfile_oci_drg_data[reg] + " containing TF for oci-drg-data for DRGs has been updated for region " + reg)
 
 
     else:
         for reg in ct.all_regions:
+
+            tfStr[reg] = vcn_tfStr[reg] + igw_tfStr[reg] + ngw_tfStr[reg] + sgw_tfStr[reg] + lpg_tfStr[reg]
+
             reg_out_dir = outdir + "/" + reg
 
             if not os.path.exists(reg_out_dir):
                 os.makedirs(reg_out_dir)
 
+            # Rename the modules file in outdir to .tf
+            module_txt_filenames = ['vcns','igws','ngws','sgws','default_dhcp']
+            for modules in module_txt_filenames:
+                module_filename = outdir + "/" + reg + "/" + modules.lower() + ".txt"
+                rename_module_filename = outdir + "/" + reg + "/" + modules.lower() + ".tf"
+
+                if not os.path.isfile(rename_module_filename):
+                    if os.path.isfile(module_filename):
+                        os.rename(module_filename, rename_module_filename)
+
             srcdir = reg_out_dir + "/"
             resource = 'MajorObjects'
-            commonTools.backup_file(srcdir, resource, "-major-objs.tf")
-            commonTools.backup_file(srcdir, resource, "/VCNs_Default_DHCP.tf")
+            # commonTools.backup_file(srcdir, resource, "-major-objs.tf")
+            commonTools.backup_file(srcdir, resource, auto_tfvars_filename)
+            commonTools.backup_file(srcdir, resource, dhcp_auto_tfvars_filename)
             commonTools.backup_file(srcdir, resource, "/oci-drg-data.tf")
 
-            outfile[reg] = reg_out_dir + "/" + prefix + '-major-objs.tf'
-            outfile_dhcp[reg] = reg_out_dir + "/VCNs_Default_DHCP.tf"
+            # outfile[reg] = reg_out_dir + "/" + prefix + '-major-objs.tf'
+            outfile[reg] = reg_out_dir + "/" + prefix + auto_tfvars_filename
+            outfile_dhcp[reg] = reg_out_dir + "/" + prefix + dhcp_auto_tfvars_filename
             outfile_oci_drg_data[reg] = reg_out_dir + "/oci-drg-data.tf"
 
-            oname_datafile[reg] = open(reg_out_dir + "/oci-data.tf", "w")
-            datastr = datasource.render()
-            oname_datafile[reg].write(datastr)
-            print(reg_out_dir + "/oci-data.tf" + " containing TF for oci-data has been created for region " + reg)
+            # oname_oci_drg_data[reg] = open(outfile_oci_drg_data[reg], "w")
+            # oname_oci_drg_data[reg].write(drg_data[reg])
+            # oname_oci_drg_data[reg].close()
+            # print(outfile_oci_drg_data[
+            #           reg] + " containing TF for oci-drg-data for DRGs has been updated for region " + reg)
 
-            oname_oci_drg_data[reg] = open(outfile_oci_drg_data[reg], "w")
-            oname_oci_drg_data[reg].write(drg_data[reg])
-            oname_oci_drg_data[reg].close()
-            print(outfile_oci_drg_data[
-                      reg] + " containing TF for oci-drg-data for DRGs has been updated for region " + reg)
-
-            if (dhcpStr[reg] != ''):
+            if (dhcp_default_tfStr[reg] != ''):
                 oname_def_dhcp[reg] = open(outfile_dhcp[reg], "w")
-                oname_def_dhcp[reg].write(dhcpStr[reg])
+                oname_def_dhcp[reg].write(dhcp_default_tfStr[reg])
                 oname_def_dhcp[reg].close()
-                print(outfile_dhcp[reg] + " containing TF for default DHCP options for VCNs has been created for region " + reg)
+                print(outfile_dhcp[reg] + " for default DHCP options for VCNs has been created for region " + reg)
 
             if (tfStr[reg] != ''):
                 tfStr[reg] = tfStr[reg]
                 oname[reg] = open(outfile[reg], 'w')
                 oname[reg].write(tfStr[reg])
                 oname[reg].close()
-                print(outfile[reg] + " containing TF for VCN major objects has been created for region " + reg)
+                print(outfile[reg] + " for major objects has been created for region " + reg)
 
     establishPeering(vcns.peering_dict)
 

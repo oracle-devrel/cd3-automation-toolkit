@@ -9,13 +9,11 @@
 # Modified (TF Upgrade): Shruthi Subramanian
 #
 
-# import sys
 import argparse
 import os
 from pathlib import Path
 from oci.config import DEFAULT_LOCATION
 from jinja2 import Environment, FileSystemLoader
-# sys.path.append(os.getcwd()+"/../..")
 from commonTools import *
 
 ######
@@ -23,14 +21,11 @@ from commonTools import *
 ######
 def parse_args():
     parser = argparse.ArgumentParser(description="Create Groups terraform file")
-    parser.add_argument("inputfile", help="Full Path of input file. It could be CD3 excel file")
-    parser.add_argument("outdir", help="Output directory for creation of TF files")
-    parser.add_argument("prefix", help="customer name/prefix for all file names")
-    parser.add_argument("--config", default=DEFAULT_LOCATION, help="Config file name")
-
-    # Declare variables
-    args = parser.parse_args()
-
+    parser.add_argument('inputfile', help='Full Path of input CD3 excel file')
+    parser.add_argument('outdir', help='Output directory for creation of TF files')
+    parser.add_argument('prefix', help='TF files prefix')
+    parser.add_argument('--config', default=DEFAULT_LOCATION, help='Config file name')
+    return parser.parse_args()
 
 #If input is cd3 file
 def create_terraform_groups(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
@@ -38,6 +33,8 @@ def create_terraform_groups(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
     filename = inputfile
     configFileName = config
 
+    sheetName = 'Groups'
+    auto_tfvars_filename = '_' + sheetName.lower() + '.auto.tfvars'
     ct = commonTools()
     ct.get_subscribedregions(configFileName)
 
@@ -48,11 +45,10 @@ def create_terraform_groups(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
-    template = env.get_template('groups-template')
-    dynamicgroup =  env.get_template('dynamic-groups-template')
+    groups_template = env.get_template('module-groups-template')
 
     # Read cd3 using pandas dataframe
-    df, col_headers = commonTools.read_cd3(filename, "Groups")
+    df, col_headers = commonTools.read_cd3(filename, sheetName)
 
     #Remove empty rows
     df = df.dropna(how='all')
@@ -67,8 +63,8 @@ def create_terraform_groups(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
 
     # Take backup of files
     srcdir = outdir + "/" + ct.home_region + "/"
-    resource = 'Groups'
-    commonTools.backup_file(srcdir, resource, "-groups.tf")
+    resource = sheetName.lower()
+    commonTools.backup_file(srcdir, resource, auto_tfvars_filename)
 
     # Iterate over rows
     for i in df.index:
@@ -85,7 +81,7 @@ def create_terraform_groups(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
             exit(1)
 
         # temporary dictionary1 and dictionary2
-        tempStr = {}
+        tempStr = { "count" : i }
         tempdict = {}
 
         # Check if values are entered for mandatory fields
@@ -126,25 +122,33 @@ def create_terraform_groups(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
             columnname = commonTools.check_column_headers(columnname)
             tempStr[columnname] = str(columnvalue).strip()
             tempStr.update(tempdict)
+
         # Write all info to TF string
-        if str(df.loc[i, 'Matching Rule']).lower() == 'nan':
-            tfStr[region]=tfStr[region] + template.render(tempStr)
-        else:
-            tfStr[region] = tfStr[region] + dynamicgroup.render(tempStr)
+        tfStr[region]= tfStr[region][:-1] + groups_template.render(tempStr)
 
     # Write TF string to the file in respective region directory
     reg=ct.home_region
+
     reg_out_dir = outdir + "/" + reg
     if not os.path.exists(reg_out_dir):
         os.makedirs(reg_out_dir)
 
-    outfile[reg] = reg_out_dir + "/" + prefix + '-groups.tf'
+    outfile[reg] = reg_out_dir + "/" + prefix + auto_tfvars_filename
 
     if(tfStr[reg]!=''):
         oname[reg]=open(outfile[reg],'w')
         oname[reg].write(tfStr[reg])
         oname[reg].close()
-        print(outfile[reg] + " containing TF for groups has been created for region "+reg)
+        print(outfile[reg] + " for Groups has been created for region "+reg)
+
+    # Rename the modules file in outdir to .tf
+    module_filename = outdir + "/" + reg + "/"+sheetName.lower()+".txt"
+    rename_module_filename = outdir + "/" + reg + "/"+sheetName.lower()+".tf"
+
+    if not os.path.isfile(rename_module_filename):
+        if os.path.isfile(module_filename):
+            os.rename(module_filename,rename_module_filename)
+
 
 if __name__ == '__main__':
     args = parse_args()

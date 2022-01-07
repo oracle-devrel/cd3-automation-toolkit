@@ -1,0 +1,31 @@
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+
+############################
+# Module Block - Identity
+# Create Groups
+############################
+
+module "iam-groups" {
+  source = "./modules/identity/iam-group"
+  for_each          = var.groups != null ? var.groups : {}
+
+  tenancy_ocid      = var.tenancy_ocid
+  group_name        = each.value.group_name
+  group_description = each.value.group_description
+  matching_rule     = (each.value.matching_rule != null && each.value.matching_rule != "") ? each.value.matching_rule : ""
+
+  #Optional
+  defined_tags  = each.value.defined_tags
+  freeform_tags = each.value.freeform_tags
+}
+
+/*
+output "group_id_map" {
+  value = [ for k,v in merge(module.iam-groups.*...) : v.group_id_map]
+}
+
+
+output "dynamic_group_id_map" {
+  value = [ for k,v in merge(module.iam-groups.*...) : v.dynamic_group_id_map]
+}
+*/

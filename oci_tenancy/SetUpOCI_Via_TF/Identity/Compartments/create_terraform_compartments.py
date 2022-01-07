@@ -14,7 +14,6 @@ import argparse
 import os
 from oci.config import DEFAULT_LOCATION
 from jinja2 import Environment, FileSystemLoader
-# sys.path.append(os.getcwd() + "/../..")
 from pathlib import Path
 from commonTools import *
 import oci
@@ -26,9 +25,9 @@ import oci
 def parse_args():
     # Read the arguments
     parser = argparse.ArgumentParser(description='Create Compartments terraform file')
-    parser.add_argument('inputfile', help='Full Path of input file. It could be CD3 excel file')
+    parser.add_argument('inputfile', help='Full Path of input CD3 excel file')
     parser.add_argument('outdir', help='Output directory for creation of TF files')
-    parser.add_argument('prefix', help='customer name/prefix for all file names')
+    parser.add_argument('prefix', help='TF files prefix')
     parser.add_argument('--config', default=DEFAULT_LOCATION, help='Config file name')
     return parser.parse_args()
 
@@ -43,18 +42,19 @@ def create_terraform_compartments(inputfile, outdir, prefix, config=DEFAULT_LOCA
     config = oci.config.from_file(file_location=configFileName)
     ct.get_network_compartment_ids(config['tenancy'],"root",configFileName)
 
+    sheetName = 'Compartments'
+    auto_tfvars_filename = '_'+sheetName.lower()+'.auto.tfvars'
     outfile = {}
     oname = {}
-    tfStr = {}
     c = 0
 
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
-    template = env.get_template('compartments-template')
+    template = env.get_template('module-compartments-template')
 
     # Read cd3 using pandas dataframe
-    df, col_headers = commonTools.read_cd3(filename, "Compartments")
+    df, col_headers = commonTools.read_cd3(filename, sheetName)
 
     # Remove empty rows
     df = df.dropna(how='all')
@@ -64,11 +64,17 @@ def create_terraform_compartments(inputfile, outdir, prefix, config=DEFAULT_LOCA
     dfcolumns = df.columns.values.tolist()
 
     srcdir = outdir + "/" + ct.home_region + "/"
-    resource = 'Compartments'
-    commonTools.backup_file(srcdir, resource, "-compartments.tf")
+    resource = sheetName.lower()
+    commonTools.backup_file(srcdir, resource, auto_tfvars_filename)
 
     # Initialise empty TF string for each region
-    tfStr[ct.home_region] = ''
+    tfStr = ''
+    root_compartments = ''
+    sub_compartments_level1 = ''
+    sub_compartments_level2 = ''
+    sub_compartments_level3 = ''
+    sub_compartments_level4 = ''
+    sub_compartments_level5 = ''
 
     # Separating Compartments and ParentComparements into list
     ckeys = []
@@ -166,14 +172,14 @@ def create_terraform_compartments(inputfile, outdir, prefix, config=DEFAULT_LOCA
 
                     elif (columnvalue not in ckeys):
                             if columnvalue in ct.ntk_compartment_ids.keys():
-                                parent_compartment = 'var.'+commonTools.check_tf_variable(columnvalue)
+                                #parent_compartment = 'var.'+commonTools.check_tf_variable(columnvalue)
+                                parent_compartment = commonTools.check_tf_variable(columnvalue)
                                 var_c_name=columnvalue + "::" +commonTools.check_tf_variable(str(df.loc[i, 'Name']).strip())
                                 tempdict = {'parent_compartment': parent_compartment}
                                 tempStr.update(tempdict)
                             elif ("::" in columnvalue):
                                 var_c_name = columnvalue + "::" + str(df.loc[i, 'Name']).strip()
                                 parent_compartment = commonTools.check_tf_variable(columnvalue)
-                                parent_compartment = 'oci_identity_compartment.' + parent_compartment + '.id'
                                 tempdict = {'parent_compartment': parent_compartment}
                                 tempStr.update(tempdict)
                             else:
@@ -192,7 +198,6 @@ def create_terraform_compartments(inputfile, outdir, prefix, config=DEFAULT_LOCA
                             parent_compartment = parent_compartment[2:]
                             var_c_name = parent_compartment + "::" + str(df.loc[i, 'Name']).strip()
                         parent_compartment = commonTools.check_tf_variable(parent_compartment)
-                        parent_compartment = 'oci_identity_compartment.' + parent_compartment + '.id'
                         tempdict = {'parent_compartment': parent_compartment}
                         tempStr.update(tempdict)
 
@@ -216,23 +221,49 @@ def create_terraform_compartments(inputfile, outdir, prefix, config=DEFAULT_LOCA
             tempStr.update(tempdict)
 
         # Write all info to TF string; Render template
-        if(nf==0):
-            tfStr[region] = tfStr[region] + template.render(tempStr)
+        if nf==0:
+            if tempStr['parent_compartment'] == "var.tenancy_ocid" or tempStr['parent_compartment'] == "root":
+                tempStr.update({'compartment_details' : True})
+                root_compartments = str(root_compartments) + template.render(tempStr)
+            elif len(tempStr['parent_compartment'].split("--")) == 1:
+                tempStr.update({'compartment_details' : True})
+                sub_compartments_level1 = str(sub_compartments_level1) + template.render(tempStr)
+            elif len(tempStr['parent_compartment'].split("--")) == 2:
+                tempStr.update({'compartment_details' : True})
+                sub_compartments_level2 = str(sub_compartments_level2) + template.render(tempStr)
+            elif len(tempStr['parent_compartment'].split("--")) == 3:
+                tempStr.update({'compartment_details' : True})
+                sub_compartments_level3 = str(sub_compartments_level3) + template.render(tempStr)
+            elif len(tempStr['parent_compartment'].split("--")) == 4:
+                tempStr.update({'compartment_details' : True})
+                sub_compartments_level4 = str(sub_compartments_level4) + template.render(tempStr)
+            elif len(tempStr['parent_compartment'].split("--")) == 5:
+                tempStr.update({'compartment_details' : True})
+                sub_compartments_level5 = str(sub_compartments_level5) + template.render(tempStr)
+
+    tfStr = tfStr + template.render(count=0,root=root_compartments,compartment_level1=sub_compartments_level1,compartment_level2=sub_compartments_level2,compartment_level3=sub_compartments_level3,compartment_level4=sub_compartments_level4,compartment_level5=sub_compartments_level5)
+
+    # Rename the modules file in outdir to .tf
+    module_filename = outdir + "/" + ct.home_region + "/"+sheetName.lower()+".txt"
+    rename_module_filename = outdir + "/" + ct.home_region + "/"+sheetName.lower()+".tf"
+
+    if not os.path.isfile(rename_module_filename):
+        if os.path.isfile(module_filename):
+            os.rename(module_filename, rename_module_filename)
 
     # Write TF string to the file in respective region directory
-
     reg_out_dir = outdir + "/" + ct.home_region
     if not os.path.exists(reg_out_dir):
         os.makedirs(reg_out_dir)
 
     reg = ct.home_region
-    outfile[reg] = reg_out_dir + "/" + prefix + '-compartments.tf'
+    outfile[reg] = reg_out_dir + "/" + prefix + auto_tfvars_filename
 
-    if (tfStr[reg] != ''):
+    if (tfStr != ''):
             oname[reg] = open(outfile[reg], 'w')
-            oname[reg].write(tfStr[reg])
+            oname[reg].write(tfStr)
             oname[reg].close()
-            print(outfile[reg] + " containing TF for compartments has been created for region " + reg)
+            print(outfile[reg] + " for Compartments has been created for region " + reg)
 
 if __name__ == '__main__':
     # Execution of the code begins here

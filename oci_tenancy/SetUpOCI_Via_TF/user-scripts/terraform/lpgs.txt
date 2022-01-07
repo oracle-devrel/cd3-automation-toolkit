@@ -1,0 +1,50 @@
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+
+############################
+# Module Block - Networking
+# Create Local Peering Gateways
+############################
+
+module "hub-lpgs" {
+  source = "./modules/network/lpg"
+  for_each = (var.hub-lpgs != null || var.hub-lpgs != {})  ? var.hub-lpgs : {}
+
+  depends_on = [module.vcns, module.fetch-vcns, module.fetch-compartments]
+
+  #Required
+  compartment_id = each.value.compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[0][each.value.compartment_name]) : var.tenancy_ocid
+
+  vcn_id = length(regexall("ocid1.vcn.oc1*", each.value.vcn_name)) > 0 ? each.value.vcn_name : merge(module.vcns.*...)[each.value.vcn_name]["vcn_id"][each.value.vcn_name]
+
+  #Optional
+  peer_id = each.value.peer_id != "" ? (length(regexall("##peer_id*", each.value.peer_id)) > 0 ? null : merge(module.spoke-lpgs.*...)[each.value.peer_id]["lpg_id"][each.value.peer_id]) : null
+  route_table_id = each.value.route_table_id
+  defined_tags  = each.value.defined_tags
+  display_name  = each.value.lpg_name != null ? each.value.lpg_name : null
+  freeform_tags = each.value.freeform_tags
+}
+
+module "spoke-lpgs" {
+  source = "./modules/network/lpg"
+  for_each = (var.spoke-lpgs != null || var.spoke-lpgs != {})  ? var.spoke-lpgs : {}
+
+  depends_on = [module.vcns, module.fetch-vcns, module.fetch-compartments]
+
+  #Required
+  compartment_id = each.value.compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[0][each.value.compartment_name]) : var.tenancy_ocid
+
+  vcn_id = length(regexall("ocid1.vcn.oc1*", each.value.vcn_name)) > 0 ? each.value.vcn_name : merge(module.vcns.*...)[each.value.vcn_name]["vcn_id"][each.value.vcn_name]
+
+  #Optional
+  peer_id = each.value.peer_id != "" ? (length(regexall("##peer_id*", each.value.peer_id)) > 0 ? null : merge(module.hub-lpgs.*...)[each.value.peer_id]["lpg_id"][each.value.peer_id]) : null
+  route_table_id = each.value.route_table_id
+  defined_tags  = each.value.defined_tags
+  display_name  = each.value.lpg_name != null ? each.value.lpg_name : null
+  freeform_tags = each.value.freeform_tags
+}
+
+/*
+output "lpg_id" {
+  value = [ for k,v in merge(module.lpgs.*...) : v.lpg_id ]
+}
+*/

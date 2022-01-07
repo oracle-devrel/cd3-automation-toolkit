@@ -1,0 +1,20 @@
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+
+############################
+# Module Block - Networking
+# Fetch VCNs
+############################
+
+module "fetch-vcns" {
+  source         = "./modules/network/network-data"
+  for_each = var.vcns != null ? var.vcns : {}
+  compartment_id = try(module.fetch-compartments.compartment_id_map[each.value.compartment_name],var.compartment_ocids[0][each.value.compartment_name])
+
+}
+
+/*
+output "vcn_id_map" {
+  depends_on = [module.vcns, module.fetch-vcns, module.fetch-compartments]
+  value      = [ for k,v in merge(module.fetch-vcns.*...) : v.vcns ]
+}
+*/

@@ -1,0 +1,209 @@
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+
+############################
+#
+# Variables Block
+# OCI
+#
+############################
+
+
+variable "tenancy_ocid" {
+  type    = string
+  default = ""
+}
+variable "user_ocid" {
+  type    = string
+  default = ""
+}
+variable "fingerprint" {
+  type    = string
+  default = ""
+}
+variable "private_key_path" {
+  type    = string
+  default = ""
+}
+variable "region" {
+  type    = string
+  default = ""
+}
+
+
+#################################
+#
+# Variables according to Services
+#
+#################################
+
+#########################
+##### Identity ##########
+#########################
+
+variable "compartments" {
+  type    = map(any)
+  default = {}
+}
+
+variable "policies" {
+  type    = map(any)
+  default = {}
+}
+
+variable "groups" {
+  type    = map(any)
+  default = {}
+}
+
+#########################
+##### Networking ########
+#########################
+
+variable "default_dhcps" {
+  type = map(any)
+  default = {}
+}
+
+variable "vcns" {
+  type    = map(any)
+  default = {}
+}
+
+variable "igws" {
+  type    = map(any)
+  default = {}
+}
+
+variable "sgws" {
+  type    = map(any)
+  default = {}
+}
+
+variable "ngws" {
+  type    = map(any)
+  default = {}
+}
+
+variable "hub-lpgs" {
+  type    = map(any)
+  default = {}
+}
+
+variable "spoke-lpgs" {
+  type    = map(any)
+  default = {}
+}
+
+variable "seclist_details" {
+  type = list(any)
+  default = [""]
+}
+
+variable "route_table_details" {
+  type = list(any)
+  default = [""]
+}
+
+variable "index" {
+  type    = number
+  default = null
+}
+
+variable "create_dhcp" {
+  type    = bool
+  default = false
+}
+
+variable "create_subnets" {
+  type    = bool
+  default = false
+}
+
+variable "create_seclist" {
+  type    = bool
+  default = false
+}
+
+variable "create_route_table" {
+  type    = bool
+  default = false
+}
+
+variable "create_log_groups" {
+  type    = bool
+  default = false
+}
+
+variable "create_nsgs" {
+  type    = bool
+  default = false
+}
+
+variable "create_nsg_rules" {
+  type    = bool
+  default = false
+}
+
+variable "create_drg" {
+  type    = bool
+  default = false
+}
+
+variable "create_drg_attachments" {
+  type    = bool
+  default = false
+}
+
+variable "subnet_details" {
+  type    = list(any)
+  default = [""]
+}
+
+variable "vcns" {
+  type    = list(any)
+  default = [""]
+}
+
+variable "dhcp_options" {
+  type    = list(any)
+  default = [""]
+}
+
+variable "drg_attachments" {
+  type    = list(any)
+  default = [""]
+}
+
+variable "drg_details" {
+  type    = list(any)
+  default = [""]
+}
+
+variable "nsg_details" {
+  type    = list(any)
+  default = [""]
+}
+
+variable "nsg_rules_details" {
+  type    = list(any)
+  default = [""]
+}
+
+#########################
+##### Logging ###########
+#########################
+
+variable "create_logs" {
+  type    = bool
+  default = false
+}
+
+variable "log_group_details" {
+  type    = list(any)
+  default = [""]
+}
+
+variable "logs_details" {
+  type    = list(any)
+  default = [""]
+}

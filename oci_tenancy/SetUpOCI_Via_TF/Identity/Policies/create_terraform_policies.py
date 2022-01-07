@@ -25,10 +25,10 @@ from commonTools import *
 def parse_args():
     # Read the arguments
     parser = argparse.ArgumentParser(description="Create Compartments terraform file")
-    parser.add_argument("inputfile", help="Full Path of input file. It could be CD3 excel file")
-    parser.add_argument("outdir", help="Output directory for creation of TF files")
-    parser.add_argument("prefix", help="customer name/prefix for all file names")
-    parser.add_argument("--config", default=DEFAULT_LOCATION, help="Config file name")
+    parser.add_argument('inputfile', help='Full Path of input CD3 excel file')
+    parser.add_argument('outdir', help='Output directory for creation of TF files')
+    parser.add_argument('prefix', help='TF files prefix')
+    parser.add_argument('--config', default=DEFAULT_LOCATION, help='Config file name')
     return parser.parse_args()
 
 
@@ -37,7 +37,8 @@ def create_terraform_policies(inputfile, outdir, prefix, config=DEFAULT_LOCATION
     # Declare variables
     filename = inputfile
     configFileName = config
-
+    sheetName = 'Policies'
+    auto_tfvars_filename = '_' + sheetName.lower() + '.auto.tfvars'
     ct = commonTools()
     ct.get_subscribedregions(configFileName)
 
@@ -49,10 +50,10 @@ def create_terraform_policies(inputfile, outdir, prefix, config=DEFAULT_LOCATION
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
-    template = env.get_template('policy-template')
+    policies_template = env.get_template('module-policies-template')
 
     # Read CD3
-    df = data_frame(filename, 'Policies')
+    df = data_frame(filename, sheetName)
 
     # List of the column headers
     dfcolumns = df.columns.values.tolist()
@@ -90,6 +91,7 @@ def create_terraform_policies(inputfile, outdir, prefix, config=DEFAULT_LOCATION
 
         # Temporary dictionary1
         tempdict = {}
+        tempStr1 = {'count' : i }
 
         if str(df.loc[i, 'Policy Statements']).strip().lower() == 'nan':
             exit_menu("\nPolicy Statements cannot be left empty....Exiting!!")
@@ -142,7 +144,7 @@ def create_terraform_policies(inputfile, outdir, prefix, config=DEFAULT_LOCATION
             policy_compartment_name = df.loc[i, "Compartment Name"]
             if (str(policy_compartment_name).lower() == "nan" or policy_compartment_name.lower() == 'root'):
                 policy_comp = ""
-                policy_compartment = 'tenancy_ocid'
+                policy_compartment =None
             else:
                 policy_comp = policy_compartment_name
                 policy_compartment_name = commonTools.check_tf_variable(policy_compartment_name)
@@ -168,7 +170,7 @@ def create_terraform_policies(inputfile, outdir, prefix, config=DEFAULT_LOCATION
                 actual_policy_statement = actual_policy_statement.replace('compartment *', 'compartment ' + comp_tf)
             if (count != 1):
                 # Do not change below line;
-                tempStr = tempStr + " ]\n            }\n\n"
+                tempStr = tempStr + " ]\n   },\n"
             if (policy_comp != ""):
                 policy_tf_name = policy_comp + "_" + policy_name
             else:
@@ -179,11 +181,11 @@ def create_terraform_policies(inputfile, outdir, prefix, config=DEFAULT_LOCATION
 
             tempStr1['policy_tf_name'] = policy_tf_name
             tempStr1['compartment_name'] = policy_compartment
-            tempStr1['description'] = policy_desc
+            tempStr1['description'] = policy_desc.replace("\n", "\\n")
             tempStr1['name'] = policy_name.strip()
-            tempStr1['policy_statements'] = actual_policy_statement
+            tempStr1['policy_statements'] = actual_policy_statement.replace("\n", "\\n")
 
-            tempStr = tempStr + template.render(tempStr1)
+            tempStr = tempStr + policies_template.render(tempStr1)
 
         if (str(policy_name).lower() == "nan"):
             policy_statement = df.loc[i, "Policy Statements"]
@@ -213,13 +215,14 @@ def create_terraform_policies(inputfile, outdir, prefix, config=DEFAULT_LOCATION
                     comp_tf = policy_statement_comp
                     actual_policy_statement = actual_policy_statement.replace('compartment *', 'compartment ' + comp_tf)
 
-                tempStr = tempStr + """,\"""" + actual_policy_statement + "\" """
+                tempStr = tempStr + """,\"""" + actual_policy_statement.replace("\n", "\\n") + "\" """
 
     tempStr = tempStr + """ ]
-                } \n """
+            },
+ }"""
 
     # re-places the placeolder -Addstmt]} of Render template
-    tempStr = tempStr.replace('-#Addstmt]}', '')
+    tempStr = tempStr.replace('-#Addstmt]}}', '')
 
     # Write TF string to the file in respective region directory
     if (len(check_diff_region) != 0):
@@ -229,10 +232,10 @@ def create_terraform_policies(inputfile, outdir, prefix, config=DEFAULT_LOCATION
             os.makedirs(reg_out_dir)
 
         srcdir = reg_out_dir + "/"
-        resource = 'Policies'
-        commonTools.backup_file(srcdir, resource, "-policies.tf")
+        resource = sheetName.lower()
+        commonTools.backup_file(srcdir, resource, auto_tfvars_filename)
 
-        outfile[reg] = reg_out_dir + "/" + prefix + '-policies.tf'
+        outfile[reg] = reg_out_dir + "/" + prefix + auto_tfvars_filename
 
         #If the excel sheet has <end> in first row; exit; no rows to process
         if str(regions[0]) in commonTools.endNames:
@@ -240,7 +243,16 @@ def create_terraform_policies(inputfile, outdir, prefix, config=DEFAULT_LOCATION
         oname[reg] = open(outfile[reg], 'w')
         oname[reg].write(tempStr)
         oname[reg].close()
-        print(outfile[reg] + " containing TF for policies has been created for region " + reg)
+        print(outfile[reg] + " for Policies has been created for region " + reg)
+
+        # Rename the modules file in outdir to .tf
+        module_filename = outdir + "/" + reg + "/"+sheetName.lower()+".txt"
+        rename_module_filename = outdir + "/" + reg + "/"+sheetName.lower()+".tf"
+
+        if not os.path.isfile(rename_module_filename):
+            if os.path.isfile(module_filename):
+                os.rename(module_filename, rename_module_filename)
+
 
 if __name__ == '__main__':
     # Execution of the code begins here

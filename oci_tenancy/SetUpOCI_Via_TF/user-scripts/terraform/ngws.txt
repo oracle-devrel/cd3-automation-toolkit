@@ -1,0 +1,30 @@
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+
+############################
+# Module Block - Networking
+# Create NAT Gateways
+############################
+
+module "ngws" {
+  source = "./modules/network/ngw"
+  for_each = (var.ngws != null || var.ngws != {}) ? var.ngws : {}
+
+  depends_on = [module.vcns, module.fetch-vcns, module.fetch-compartments]
+
+  #Required
+  compartment_id = each.value.compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[0][each.value.compartment_name]) : var.tenancy_ocid
+
+  vcn_id = length(regexall("ocid1.vcn.oc1*", each.value.display_name)) > 0 ? each.value.display_name : merge(module.vcns.*...)[each.value.display_name]["vcn_id"][each.value.display_name]
+
+  #Optional
+  public_ip_id  = each.value.public_ip_id
+  defined_tags  = each.value.defined_tags
+  display_name  = each.value.ngw_name != null ? each.value.ngw_name : null
+  freeform_tags = each.value.freeform_tags
+}
+
+/*
+output "ngw_id_map" {
+  value = [ for k,v in merge(module.ngws.*...) : v.ngw_id ]
+}
+*/

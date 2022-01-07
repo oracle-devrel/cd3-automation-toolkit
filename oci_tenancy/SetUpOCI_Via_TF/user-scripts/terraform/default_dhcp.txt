@@ -1,0 +1,28 @@
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+
+############################
+# Module Block - Networking
+# Create Default DHCP
+############################
+
+module "default-dhcps" {
+  #Required
+  source = "./modules/network/default-dhcp"
+  for_each = (var.default_dhcps != null || var.default_dhcps != {})  ? var.default_dhcps : {}
+
+  #Required
+  manage_default_resource_id = length(regexall("ocid1.dhcpoptions.oc1*", each.value.manage_default_resource_id)) > 0 ? each.value.manage_default_resource_id : merge(module.vcns.*...)[each.value.manage_default_resource_id]["vcn_default_dhcp_id"][each.value.manage_default_resource_id]
+
+  server_type         = each.value.server_type
+  search_domain_names = each.value.search_domain_names
+
+  #Optional
+  defined_tags     = each.value.defined_tags
+  freeform_tags    = each.value.freeform_tags
+}
+
+/*
+output "default_dhcp_id" {
+  value = [ for k,v in merge(module.default-dhcps.*...) : v.default_dhcp_id ]
+}
+*/
