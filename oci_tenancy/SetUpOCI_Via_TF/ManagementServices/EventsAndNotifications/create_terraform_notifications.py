@@ -53,8 +53,8 @@ def create_terraform_notifications(inputfile, outdir, prefix, config=DEFAULT_LOC
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
-    notifications_template = env.get_template('notifications-template')
-    subscriptions_template = env.get_template('subscriptions-template')
+    notifications_template = env.get_template('notification-template')
+    subscriptions_template = env.get_template('subscription-template')
 
     # Read cd3 using pandas dataframe
     df, col_headers = commonTools.read_cd3(filename, sheetName)
