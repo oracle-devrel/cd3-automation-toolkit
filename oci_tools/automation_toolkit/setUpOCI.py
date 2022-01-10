@@ -7,7 +7,7 @@ import DeveloperServices
 import cd3Validator
 import Security
 import Storage
-import Networking
+import Network
 import Governance
 from fetch_compartments_to_variablesTF import fetch_compartments
 from commonTools import *
@@ -88,7 +88,7 @@ def validate_cd3(execute_all=False):
         Option("Validate Compartments", None, None),
         Option("Validate Groups", None, None),
         Option("Validate Policies", None, None),
-        Option("Validate Networking(VCNs, Subnets, DHCP, DRGs)", None, None),
+        Option("Validate Network(VCNs, Subnets, DHCP, DRGs)", None, None),
         Option("Validate Instances", None, None),
         Option("Validate Block Volumes", None, None),
     ]
@@ -109,18 +109,18 @@ def export_identity():
     print("\n\nExecute tf_import_commands_identity_nonGF.sh script created under home region directory to synch TF with OCI Identity objects\n")
 
 
-def export_networking():
+def export_network():
     compartments = get_compartment_list('Network Objects')
-    Networking.export_networking(inputfile, outdir, _config=config, network_compartments=compartments)
+    Network.export_Network(inputfile, outdir, _config=config, network_compartments=compartments)
     options = [
-        Option(None, Networking.create_major_objects, 'Processing VCNs and DRGs Tab'),
-        Option(None, Networking.create_terraform_dhcp_options, 'Processing DHCP Tab'),
-        Option(None, Networking.create_terraform_subnet, 'Processing Subnets Tab'),
-        Option(None, Networking.modify_terraform_secrules, 'Processing SecRulesinOCI Tab'),
-        Option(None, Networking.modify_terraform_routerules, 'Processing RouteRulesinOCI Tab'),
-        Option(None, Networking.create_terraform_drg_route, 'Processing DRGs tab for DRG Route Tables and Route Distribution creation'),
-        Option(None, Networking.modify_terraform_drg_routerules, 'Processing DRGRouteRulesinOCI Tab'),
-        Option(None, Networking.create_terraform_nsg, 'Processing NSGs Tab'),
+        Option(None, Network.create_major_objects, 'Processing VCNs and DRGs Tab'),
+        Option(None, Network.create_terraform_dhcp_options, 'Processing DHCP Tab'),
+        Option(None, Network.create_terraform_subnet, 'Processing Subnets Tab'),
+        Option(None, Network.modify_terraform_secrules, 'Processing SecRulesinOCI Tab'),
+        Option(None, Network.modify_terraform_routerules, 'Processing RouteRulesinOCI Tab'),
+        Option(None, Network.create_terraform_drg_route, 'Processing DRGs tab for DRG Route Tables and Route Distribution creation'),
+        Option(None, Network.modify_terraform_drg_routerules, 'Processing DRGRouteRulesinOCI Tab'),
+        Option(None, Network.create_terraform_nsg, 'Processing NSGs Tab'),
     ]
     execute_options(options, inputfile, outdir, prefix, config=config)
     print("\n\nExecute tf_import_commands_network_nonGF.sh script created under each region directory to synch TF with OCI Network objects\n")
@@ -175,7 +175,7 @@ def export_fss(inputfile, outdir, prefix,config):
 
 def export_lb():
     compartments = get_compartment_list('LBR objects')
-    Networking.export_lbr(inputfile, outdir, _config=config, network_compartments=compartments)
+    Network.export_lbr(inputfile, outdir, _config=config, network_compartments=compartments)
     create_lb()
     print("\n\nExecute tf_import_commands_lbr_nonGF.sh script created under each region directory to synch TF with OCI LBR objects\n")
 
@@ -232,33 +232,33 @@ def create_identity(execute_all=False):
 
 
 def modify_terraform_network(inputfile, outdir, prefix, config):
-    Networking.create_all_tf_objects(inputfile, outdir, prefix, config=config, modify_network=True)
+    Network.create_all_tf_objects(inputfile, outdir, prefix, config=config, modify_network=True)
 
 
 def export_terraform_routes_and_secrules(inputfile, outdir, prefix, config):
     compartments = get_compartment_list('OCI Rules')
-    Networking.export_seclist(inputfile, network_compartments=compartments, _config=config, _tf_import_cmd=False, outdir=None)
-    Networking.export_routetable(inputfile, network_compartments=compartments, _config=config, _tf_import_cmd=False, outdir=None)
+    Network.export_seclist(inputfile, network_compartments=compartments, _config=config, _tf_import_cmd=False, outdir=None)
+    Network.export_routetable(inputfile, network_compartments=compartments, _config=config, _tf_import_cmd=False, outdir=None)
 
 def export_terraform_drg_routes(inputfile, outdir, prefix, config):
     compartments = get_compartment_list('OCI DRG Rules')
-    Networking.export_drg_routetable(inputfile, network_compartments=compartments, _config=config, _tf_import_cmd=False,outdir=None)
+    Network.export_drg_routetable(inputfile, network_compartments=compartments, _config=config, _tf_import_cmd=False,outdir=None)
 
 
 def create_tags():
     options = [Option(None, Governance.create_namespace_tagkey, 'Processing Tags Tab')]
     execute_options(options, inputfile, outdir, prefix,config=config)
 
-def create_networking(execute_all=False):
+def create_network(execute_all=False):
     options = [
-        Option('Create Network - overwrites all TF files; reverts all SecLists and RouteTables to original rules', Networking.create_all_tf_objects, 'Create All Objects'),
-        Option('Modify Network - Add/Remove/Modify any network object; updates TF files with changes; this option should be used after modifications have been done to SecRules or RouteRules', modify_terraform_network, 'Modifying Networking'),
+        Option('Create Network - overwrites all TF files; reverts all SecLists and RouteTables to original rules', Network.create_all_tf_objects, 'Create All Objects'),
+        Option('Modify Network - Add/Remove/Modify any network object; updates TF files with changes; this option should be used after modifications have been done to SecRules or RouteRules', modify_terraform_network, 'Modifying Network'),
         Option('Export existing SecRules and RouteRules to cd3', export_terraform_routes_and_secrules, 'Exporting Rules'),
         Option('Export existing DRG RouteRules to cd3', export_terraform_drg_routes,'Exporting DRG Route Rules'),
-        Option('Modify SecRules', Networking.modify_terraform_secrules, 'Modifiying Security Rules'),
-        Option('Modify RouteRules', Networking.modify_terraform_routerules, 'Modifiying Route Rules'),
-        Option('Modify DRG RouteRules', Networking.modify_terraform_drg_routerules, 'Modifiying DRG Route Rules'),
-        Option('Add/Modify/Delete Network Security Groups', Networking.create_terraform_nsg, 'Processing NSGs Tab'),
+        Option('Modify SecRules', Network.modify_terraform_secrules, 'Modifiying Security Rules'),
+        Option('Modify RouteRules', Network.modify_terraform_routerules, 'Modifiying Route Rules'),
+        Option('Modify DRG RouteRules', Network.modify_terraform_drg_routerules, 'Modifiying DRG Route Rules'),
+        Option('Add/Modify/Delete Network Security Groups', Network.create_terraform_nsg, 'Processing NSGs Tab'),
     ]
     if not execute_all:
         options = show_options(options, quit=True, menu=True, index=1)
@@ -306,11 +306,11 @@ def create_storage(execute_all=False):
 
 def create_lb():
     options = [
-        Option(None, Networking.create_terraform_lbr_hostname_certs, 'Creating LBR'),
-        Option(None, Networking.create_backendset_backendservers, 'Creating Backend Sets and Backend Servers'),
-        Option(None, Networking.create_listener, 'Creating Listeners'),
-        Option(None, Networking.create_path_route_set, 'Creating Path Route Sets'),
-        Option(None, Networking.create_ruleset, 'Creating Rule Sets'),
+        Option(None, Network.create_terraform_lbr_hostname_certs, 'Creating LBR'),
+        Option(None, Network.create_backendset_backendservers, 'Creating Backend Sets and Backend Servers'),
+        Option(None, Network.create_listener, 'Creating Listeners'),
+        Option(None, Network.create_path_route_set, 'Creating Path Route Sets'),
+        Option(None, Network.create_ruleset, 'Creating Rule Sets'),
     ]
     execute_options(options, inputfile, outdir, config=config)
 
@@ -415,7 +415,7 @@ if non_gf_tenancy:
     inputs = [
         Option('Export Identity', export_identity, 'Identity'),
         Option('Export Tags', export_tags, 'Tagging'),
-        Option('Export Networking', export_networking, 'Networking'),
+        Option('Export Network', export_network, 'Network'),
         Option('Export Compute', export_compute, 'Dedicated VM Hosts and Instances'),
         Option('Export Storage', export_storage, 'Storage'),
         Option('Export Databases', export_databases, 'Databases'),
@@ -432,7 +432,7 @@ else:
         Option('Validate CD3', validate_cd3, 'Validate CD3'),
         Option('Identity', create_identity, 'Identity'),
         Option('Tags', create_tags, 'Tagging'),
-        Option('Networking', create_networking, 'Networking'),
+        Option('Network', create_network, 'Network'),
         Option('Compute', create_compute, 'Compute'),
         Option('Storage', create_storage, 'Storage'),
         Option('Database', create_databases, 'Databases'),
