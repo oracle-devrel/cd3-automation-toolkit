@@ -28,5 +28,14 @@ variable "region" {
         default = "<OCI Tenancy Region where these objects will be created - us-phoenix-1 or us-ashburn-1>"
 }
 
-## Compartment OCIDs added by fetch_compartments_to_variablesTF.py
+############################
+# Fetch Compartments
+############################
+
+## Do Not Modify #START_Compartment_OCIDs#
+variable "compartment_ocids" {
+            type = list(any)
+            default = [{}]
+}
+#Compartment_OCIDs_END#  ## Do Not Modify
 
