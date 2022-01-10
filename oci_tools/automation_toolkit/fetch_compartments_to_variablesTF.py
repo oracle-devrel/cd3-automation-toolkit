@@ -29,7 +29,7 @@ def fetch_compartments(outdir, config=DEFAULT_LOCATION):
     ct = commonTools()
     ct.get_subscribedregions(configFileName)
 
-    print("outdir specified should contain region directories and then variables_<region>.tf file inside the region directories eg /cd3user/tenancies/<customer_name>/terraform_files")
+    print("outdir specified should contain region directories and then variables_<region>.tf file inside the region directories eg /cd3user/tenancies/<customer_tenancy_name>/terraform_files")
     print("Verifying out directory and Taking backup of existing variables files...Please wait...")
 
     for region in ct.all_regions:
