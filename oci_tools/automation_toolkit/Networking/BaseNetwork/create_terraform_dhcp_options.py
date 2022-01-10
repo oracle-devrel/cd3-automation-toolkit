@@ -57,7 +57,7 @@ def create_terraform_dhcp_options(inputfile, outdir, prefix, config, modify_netw
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
     template = env.get_template('custom-dhcp-template')
-    defaultdhcp = env.get_template('default-dhcp-template')
+    defaultdhcp = env.get_template('module-major-objects-default-dhcp-template')
 
     vcns = parseVCNs(filename)
     for reg in ct.all_regions:
@@ -94,8 +94,8 @@ def create_terraform_dhcp_options(inputfile, outdir, prefix, config, modify_netw
         else:
             customdhcpdata = template.render(tempStr)
 
-        defStr[region] =  defStr[region] + defaultdhcpdata
-        tfStr[region] = tfStr[region] + customdhcpdata
+        defStr[region] = defStr[region][:-1] + defaultdhcpdata
+        tfStr[region] = tfStr[region][:-1] + customdhcpdata
 
     # Read cd3 using pandas dataframe
     df, col_headers = commonTools.read_cd3(filename, "DHCP")
@@ -105,6 +105,7 @@ def create_terraform_dhcp_options(inputfile, outdir, prefix, config, modify_netw
 
     # List of the column headers
     dfcolumns = df.columns.values.tolist()
+    region_included = []
 
     for i in df.index:
         region = str(df.loc[i, 'Region'])
@@ -144,8 +145,7 @@ def create_terraform_dhcp_options(inputfile, outdir, prefix, config, modify_netw
                 tempStr['vcn_name'] = vcn_name
 
                 if (vcn_name.strip() not in vcns.vcn_names):
-                    print(
-                        "\nERROR!!! " + vcn_name + " specified in DHCP tab has not been declared in VCNs tab..Exiting!")
+                    print( "\nERROR!!! " + vcn_name + " specified in DHCP tab has not been declared in VCNs tab..Exiting!")
                     exit(1)
 
             if columnname == "Server Type(VcnLocalPlusInternet|CustomDnsServer)":
@@ -164,6 +164,10 @@ def create_terraform_dhcp_options(inputfile, outdir, prefix, config, modify_netw
             tempStr[columnname] = str(columnvalue).strip()
             tempStr.update(tempdict)
 
+        if region not in region_included:
+            tempStr.update({'count': 0})
+            region_included.append(region)
+
         processDHCP(tempStr,template,defaultdhcp)
 
     if (modify_network == 'true'):
@@ -172,7 +176,8 @@ def create_terraform_dhcp_options(inputfile, outdir, prefix, config, modify_netw
             if not os.path.exists(reg_out_dir):
                 os.makedirs(reg_out_dir)
             outfile[reg] = reg_out_dir + "/" + prefix + '-dhcp.tf'
-            deffile[reg] = reg_out_dir + "/VCNs_Default_DHCP.tf"
+            dhcp_auto_tfvars_filename = '_default_dhcp.auto.tfvars'
+            deffile[reg] = reg_out_dir + "/" +prefix +dhcp_auto_tfvars_filename
 
             x = datetime.datetime.now()
             date = x.strftime("%f").strip()
@@ -191,11 +196,11 @@ def create_terraform_dhcp_options(inputfile, outdir, prefix, config, modify_netw
                 if (os.path.exists(deffile[reg])):
                     resource = 'Default-DHCP'
                     srcdir = outdir + "/" + reg + "/"
-                    commonTools.backup_file(srcdir, resource, "VCNs_Default_DHCP.tf")
+                    commonTools.backup_file(srcdir, resource, prefix + dhcp_auto_tfvars_filename)
                 defname[reg] = open(deffile[reg], "w")
                 defname[reg].write(defStr[reg])
                 defname[reg].close()
-                print(deffile[reg] + " containing TF for Default DHCP Options has been updated for region " + reg)
+                print(deffile[reg] + " for Default DHCP Options has been updated for region " + reg)
 
 
     elif (modify_network == 'false'):
@@ -206,7 +211,8 @@ def create_terraform_dhcp_options(inputfile, outdir, prefix, config, modify_netw
                 os.makedirs(reg_out_dir)
 
             outfile[reg] = reg_out_dir + "/" + prefix + '-dhcp.tf'
-            deffile[reg] = reg_out_dir + "/VCNs_Default_DHCP.tf"
+            dhcp_auto_tfvars_filename = '_default_dhcp.auto.tfvars'
+            deffile[reg] = reg_out_dir + "/" +prefix +dhcp_auto_tfvars_filename
 
             if (tfStr[reg] != ''):
                 if (os.path.exists(outfile[reg])):
@@ -222,11 +228,11 @@ def create_terraform_dhcp_options(inputfile, outdir, prefix, config, modify_netw
                 if (os.path.exists(deffile[reg])):
                     resource = 'Default-DHCP'
                     srcdir = outdir + "/" + reg + "/"
-                    commonTools.backup_file(srcdir, resource, "VCNs_Default_DHCP.tf")
+                    commonTools.backup_file(srcdir, resource, prefix + dhcp_auto_tfvars_filename)
                 defname[reg] = open(deffile[reg], "w")
                 defname[reg].write(defStr[reg])
                 defname[reg].close()
-                print(deffile[reg] + " containing TF for Default DHCP Options has been created for region " + reg)
+                print(deffile[reg] + " for Default DHCP Options has been created for region " + reg)
 
 
 if __name__ == '__main__':

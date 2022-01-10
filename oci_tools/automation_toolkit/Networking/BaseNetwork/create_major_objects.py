@@ -59,6 +59,7 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
     lpg_tfStr = {}
     hub_lpg_tfStr = {}
     spoke_lpg_tfStr = {}
+    exported_lpg_tfStr = {}
     dhcp_default_tfStr = {}
     dhcpStr = {}
     outfile_dhcp = {}
@@ -67,7 +68,7 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
 
     global dhcp_data
     auto_tfvars_filename = '_major_objects.auto.tfvars'
-    dhcp_auto_tfvars_filename = '_major_objects_default_dhcp.auto.tfvars'
+    dhcp_auto_tfvars_filename = '_default_dhcp.auto.tfvars'
 
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
@@ -343,7 +344,8 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
         vcn_igw = tempStr['igw_required'].strip()
         vcn_ngw = tempStr['ngw_required'].strip()
         vcn_sgw = tempStr['sgw_required'].strip()
-        vcn_lpg = tempStr['lpg_required'].strip()
+        vcn_lpg = tempStr['lpg_required']
+        #vcn_lpg = tempStr['lpg_required'].strip()
         hub_spoke_none = tempStr['hub_spoke_peer_none'].strip()
         compartment_var_name = str(tempStr['compartment_name']).strip()
 
@@ -351,6 +353,7 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
         compartment_var_name = commonTools.check_tf_variable(compartment_var_name)
         vcn_dns_label = tempStr['dns_label'].lower().strip()
         lpg = env.get_template('module-major-objects-lpgs-template')
+
         # Create TF object for default DHCP options
         dhcpname = vcn_name + "_Default DHCP Options for " + vcn_name
         dhcp_tf_name = commonTools.check_tf_variable(dhcpname)
@@ -417,15 +420,14 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
                 count_lpg = count_lpg + 1
                 lpg_tf_name = vcn_name + "_" + lpg_name
                 lpg_tf_name = commonTools.check_tf_variable(lpg_tf_name)
-
                 tempStr['count_lpg'] = count_lpg
                 tempStr['lpg_tf_name'] = lpg_tf_name
                 tempStr['lpg_name'] = lpg_name
                 tempStr['vcn_tf_name'] = vcn_tf_name
-                tempStr['lpg_required'] = tempStr['lpg_required'].lower().strip()
+                tempStr['lpg_required'] = tempStr['lpg_required']
 
                 rt_var = ''
-                if (hub_spoke_none.lower() == 'hub'):
+                if (hub_spoke_none.lower() == 'hub' or 'peer' in hub_spoke_none.lower() ) :
                     lpg_rt_name = ""
                     if (os.path.exists(outdir + "/" + region + "/obj_names.safe")):
                         with open(outdir + "/" + region + "/obj_names.safe") as f:
@@ -443,13 +445,16 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
 
                     rt_tf_name = commonTools.check_tf_variable(rt_var)
                     hub_lpg_tfStr[region] = hub_lpg_tfStr[region] + lpg.render(tempStr)
-                else:
+                elif ('spoke' in hub_spoke_none.lower()):
                     spoke_lpg_tfStr[region] = spoke_lpg_tfStr[region] + lpg.render(tempStr)
+
+                else:
+                    exported_lpg_tfStr[region] = exported_lpg_tfStr[region] + lpg.render(tempStr)
 
                 tempStr['rt_tf_name'] = rt_tf_name
                 tempStr['rt_var'] = rt_var
 
-        lpg_tfStr[region] = lpg.render(create_lpg_auto_vars=True,hub_lpg_details=hub_lpg_tfStr[region],spoke_lpg_details=spoke_lpg_tfStr[region])
+        lpg_tfStr[region] = lpg.render(create_lpg_auto_vars=True,hub_lpg_details=hub_lpg_tfStr[region],spoke_lpg_details=spoke_lpg_tfStr[region],exported_lpg_details=exported_lpg_tfStr[region])
 
         defaultdhcp = env.get_template('module-major-objects-default-dhcp-template')
         dhcp_default_tfStr[region] = dhcp_default_tfStr[region][:-1] + defaultdhcp.render(tempStr)
@@ -476,6 +481,7 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
         lpg_tfStr[reg] = ''
         hub_lpg_tfStr[reg] = ''
         spoke_lpg_tfStr[reg] = ''
+        exported_lpg_tfStr[reg] = ''
         vcn_tfStr[reg] = ''
         dhcp_default_tfStr[reg] = ''
         sgw_tfStr[reg] = ''
@@ -492,6 +498,7 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
     # List of the column headers
     dfcolumns = df.columns.values.tolist()
     region_included = []
+
     # Process VCNs
     for i in df.index:
         region = str(df['Region'][i])

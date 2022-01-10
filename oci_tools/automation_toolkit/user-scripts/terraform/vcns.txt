@@ -16,7 +16,7 @@ module "vcns" {
   cidr_block     = each.value.cidr_block
   cidr_blocks    = each.value.cidr_blocks
   display_name   = each.value.display_name
-  dns_label      = each.value.dns_label
+  dns_label      = (each.value.dns_label == "n") ? null : each.value.dns_label
   is_ipv6enabled = each.value.is_ipv6enabled
   defined_tags   = each.value.defined_tags
   freeform_tags  = each.value.freeform_tags

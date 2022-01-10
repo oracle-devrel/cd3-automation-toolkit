@@ -6,10 +6,10 @@
 
 lpgs = {
         hub-lpgs = { {{ hub_lpg_details }} },
-        spoke-lpgs = { {{ spoke_lpg_details }} }
+        spoke-lpgs = { {{ spoke_lpg_details }} },
+        exported-lpgs = { {{ exported_lpg_details }} }
 }
 {% endif %}
-
         {% if lpg_name != "" and lpg_name != "nan" and lpg_name != null %}
           {{ lpg_tf_name }} = {
                 compartment_name = "{{ compartment_tf_name }}"
@@ -20,8 +20,8 @@ lpgs = {
                 {% if route_table_id and route_table_id != 'nan' and route_table_id != '' %}
                 route_table_id = {{ route_table_id }} {% else %}
                 route_table_id = ""
-                {% endif %} {#  Default Value  #}
-                {% if hub_spoke_peer_none.lower() == 'spoke' %}
+                {% endif %}{#  Default Value  #}
+                {% if 'spoke' in hub_spoke_peer_none.lower() or 'exported' in hub_spoke_peer_none.lower() %}
                 peer_id = ""
                 {% else %}
                 peer_id = "##peer_id for lpg {{ vcn_name }}_{{ lpg_name }}##"

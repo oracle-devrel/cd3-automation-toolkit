@@ -253,7 +253,7 @@ def print_vcns(values_for_column_vcns,region, comp_name, vcn_info, drg_info, igw
             values_for_column_vcns = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict_vcns,values_for_column_vcns)
 
     tf_name = commonTools.check_tf_variable(vcn_info.display_name)
-    importCommands[region.lower()].write("\nterraform import oci_core_vcn." + tf_name + " " + str(vcn_info.id))
+    importCommands[region.lower()].write("\nterraform import \"module.vcns[\\\"" + tf_name + "\\\"].oci_core_vcn.vcn[0]\" " + str(vcn_info.id))
 
 
 def print_dhcp(values_for_column_dhcp,region, comp_name, vcn_name, dhcp_info):
@@ -297,7 +297,7 @@ def print_dhcp(values_for_column_dhcp,region, comp_name, vcn_name, dhcp_info):
             values_for_column_dhcp = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict_dhcp, values_for_column_dhcp)
     if ("Default DHCP Options for " in dhcp_info.display_name):
         importCommands[region.lower()].write(
-            "\nterraform import oci_core_default_dhcp_options." + tf_name + " " + str(dhcp_info.id))
+            "\nterraform import \"module.default-dhcps[\\\""+ tf_name + "\\\"].oci_core_default_dhcp_options.default_dhcp_option[0]\" " + str(dhcp_info.id))
     else:
         importCommands[region.lower()].write("\nterraform import oci_core_dhcp_options." + tf_name + " " + str(dhcp_info.id))
 
@@ -481,7 +481,7 @@ def export_networking(inputfile, outdir, _config, network_compartments=[]):
                         igw_display_name = igw_info.display_name
                         tf_name = vcn_info.display_name + "_" + igw_display_name
                         tf_name=commonTools.check_tf_variable(tf_name)
-                        importCommands[reg].write("\nterraform import oci_core_internet_gateway." + tf_name + " " + igw_info.id)
+                        importCommands[reg].write("\nterraform import \"module.igws[\\\"" + tf_name + "\\\"].oci_core_internet_gateway.internet_gateway[0]\" " + igw_info.id)
 
                     #ngw_display_name = "n"
                     NGWs = oci.pagination.list_call_get_all_results(vnc.list_nat_gateways,
@@ -493,7 +493,7 @@ def export_networking(inputfile, outdir, _config, network_compartments=[]):
                         tf_name = vcn_info.display_name + "_" + ngw_display_name
                         tf_name = commonTools.check_tf_variable(tf_name)
 
-                        importCommands[reg].write("\nterraform import oci_core_nat_gateway." + tf_name + " " + ngw_info.id)
+                        importCommands[reg].write("\nterraform import \"module.ngws[\\\"" + tf_name + "\\\"].oci_core_nat_gateway.nat_gateway[0]\" " + ngw_info.id)
 
                     #sgw_display_name = "n"
                     SGWs = oci.pagination.list_call_get_all_results(vnc.list_service_gateways,
@@ -504,7 +504,7 @@ def export_networking(inputfile, outdir, _config, network_compartments=[]):
                         sgw_display_name = sgw_info.display_name
                         tf_name = vcn_info.display_name + "_" + sgw_display_name
                         tf_name = commonTools.check_tf_variable(tf_name)
-                        importCommands[reg].write("\nterraform import oci_core_service_gateway." + tf_name + " " + sgw_info.id)
+                        importCommands[reg].write("\nterraform import \"module.sgws[\\\"" + tf_name + "\\\"].oci_core_service_gateway.service_gateway[0]\" " + sgw_info.id)
 
                     lpg_display_names = ""
                     LPGs = oci.pagination.list_call_get_all_results(vnc.list_local_peering_gateways,
@@ -525,7 +525,7 @@ def export_networking(inputfile, outdir, _config, network_compartments=[]):
                         tf_name = vcn_info.display_name + "_" + lpg_info.display_name
                         tf_name = commonTools.check_tf_variable(tf_name)
                         importCommands[reg].write(
-                            "\nterraform import oci_core_local_peering_gateway." + tf_name + " " + lpg_info.id)
+                            "\nterraform import \"module.exported-lpgs[\\\"" + tf_name + "\\\"].oci_core_local_peering_gateway.local_peering_gateway[0]\" " + lpg_info.id)
 
                     if (lpg_display_names == ""):
                         lpg_display_names = "n"
