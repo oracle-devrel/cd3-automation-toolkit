@@ -28,14 +28,78 @@ variable "region" {
         default = "<OCI Tenancy Region where these objects will be created - us-phoenix-1 or us-ashburn-1>"
 }
 
-############################
-# Fetch Compartments
-############################
+        #################################
+        #
+        # Variables according to Services
+        #
+        #################################
 
-## Do Not Modify #START_Compartment_OCIDs#
-variable "compartment_ocids" {
+        ############################
+        ### Fetch Compartments #####
+        ############################
+
+        ## Do Not Modify #START_Compartment_OCIDs#
+        variable "compartment_ocids" {
             type = list(any)
             default = [{}]
-}
-#Compartment_OCIDs_END#  ## Do Not Modify
+        }
+        #Compartment_OCIDs_END#  ## Do Not Modify
+
+        #########################
+        ##### Identity ##########
+        #########################
+
+        variable "compartments" {
+          type    = map(any)
+          default = {}
+        }
+
+        variable "policies" {
+          type    = map(any)
+          default = {}
+        }
+
+        variable "groups" {
+          type    = map(any)
+          default = {}
+        }
+
+        #########################
+        ##### Network ########
+        #########################
+
+        variable "default_dhcps" {
+          type = map(any)
+          default = {}
+        }
+
+        variable "vcns" {
+          type    = map(any)
+          default = {}
+        }
+
+        variable "igws" {
+          type    = map(any)
+          default = {}
+        }
+
+        variable "sgws" {
+          type    = map(any)
+          default = {}
+        }
+
+        variable "ngws" {
+          type    = map(any)
+          default = {}
+        }
+
+        variable "hub-lpgs" {
+          type    = map(any)
+          default = {}
+        }
+
+        variable "spoke-lpgs" {
+          type    = map(any)
+          default = {}
+        }
 

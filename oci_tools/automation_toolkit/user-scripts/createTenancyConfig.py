@@ -272,6 +272,17 @@ def seek_info():
         #
         #################################
         
+        ############################
+        ### Fetch Compartments #####
+        ############################
+
+        ## Do Not Modify #START_Compartment_OCIDs#
+        variable "compartment_ocids" {
+            type = list(any)
+            default = [{}]
+        }
+        #Compartment_OCIDs_END#  ## Do Not Modify
+        
         #########################
         ##### Identity ##########
         #########################
