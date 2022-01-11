@@ -14,9 +14,12 @@ resource "oci_core_default_dhcp_options" "default_dhcp_option" {
             server_type = var.server_type
             }
 
-    options {
-            type = "SearchDomain"
-            search_domain_names = var.search_domain_names
+    dynamic "options" {
+            for_each = var.search_domain_names
+            content {
+                type = "SearchDomain"
+                search_domain_names = options.value
+                }
             }
 
     #Optional

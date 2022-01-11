@@ -28,6 +28,6 @@ variable "freeform_tags" {
 }
 
 variable "search_domain_names" {
-  type    = list
-  default = [""]
+  type    = map(any)
+  default = {}
 }

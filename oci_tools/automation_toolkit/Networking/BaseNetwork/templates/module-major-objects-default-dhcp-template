@@ -10,7 +10,11 @@ default_dhcps = {
 
     {{ dhcp_tf_name }} = {
             server_type                = "{{ server_type }}"
-            search_domain_names        = ["{{ search_domain }}"]
+            search_domain        =  {
+                {% if search_domain != "" %}
+                names = ["{{ search_domain }}"]
+                {% endif %}
+            }
             manage_default_resource_id = "{{ vcn_tf_name }}" # can be vcn name or default dhcp ocid
 
         {#  ##Do not modify below this line##  #}

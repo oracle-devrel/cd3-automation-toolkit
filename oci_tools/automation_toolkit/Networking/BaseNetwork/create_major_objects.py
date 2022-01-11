@@ -337,6 +337,7 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
 
     def processVCN(tempStr):
         rt_tf_name = ''
+        count_spokes = 0
         region = tempStr['region'].lower().strip()
         vcn_name = tempStr['vcn_name'].strip()
         vcn_tf_name = commonTools.check_tf_variable(vcn_name)
@@ -416,7 +417,6 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
                 count_spokes = len(spoke_vcns)
 
             for lpg_name in vcns.vcn_lpg_names[vcn_name]:
-
                 count_lpg = count_lpg + 1
                 lpg_tf_name = vcn_name + "_" + lpg_name
                 lpg_tf_name = commonTools.check_tf_variable(lpg_tf_name)
