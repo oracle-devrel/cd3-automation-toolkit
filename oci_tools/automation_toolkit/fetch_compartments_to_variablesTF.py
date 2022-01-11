@@ -8,7 +8,7 @@ from commonTools import *
 #Load the template file
 file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
 env = Environment(loader=file_loader,keep_trailing_newline=True)
-var_template = env.get_template('modules-variables-template')
+var_template = env.get_template('module-variables-template')
 
 
 def parse_args():
@@ -55,13 +55,17 @@ def fetch_compartments(outdir, config=DEFAULT_LOCATION):
             comp_ocids.append(comp_tf_name + "::" + ocid)
 
             searchstr = "variable \"" + comp_tf_name + "\""
-            str=var_template.render(var_tf_name=comp_tf_name,values=ocid)
+            str1=var_template.render(var_tf_name=comp_tf_name,values=ocid)
             if(searchstr not in var_data[reg]):
-                regstr=regstr+str
+                regstr=regstr+str1
 
         #Write individual compartment variables to the file
         with open(var_files[reg],"a") as vname:
             vname.write(regstr)
+
+        # Read variables file data again
+        with open(var_files[reg], "r") as f:
+            var_data[reg] = f.read()
 
         # Write compartment_ocids list variable to the file
         regstr = var_template.render(compartment_ocids_list='true', comp_ocids=comp_ocids)
