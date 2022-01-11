@@ -51,6 +51,7 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
     outfile = {}
     oname = {}
     tfStr = {}
+    drg_tfStr = {}
     igw_tfStr = {}
     vcn_tfStr = {}
     sgw_tfStr = {}
@@ -125,7 +126,7 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
         # Load the template file
         file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
         env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
-        drg_template = env.get_template('major-objects-drg-template')
+        drg_template = env.get_template('module-major-objects-drgs-template')
         drg_attach_template = env.get_template('major-objects-drg-attach-template')
         drg_datasource_template = env.get_template('drg-data-source-template')
         drg_version = "DRGv2"
@@ -323,15 +324,19 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
                 tempStr[columnname] = str(columnvalue).strip()
                 tempStr.update(tempdict)
 
-            drgstr = drg_template.render(tempStr)
+
             if(attachedto=="attached"):
                 drg_attach = drg_attach_template.render(tempStr)
             elif(attachedto=="empty"):
                 drg_attach=""
 
-            # uncomment below lines
-            # if (drgstr not in tfStr[region]):
-            #     tfStr[region] = tfStr[region] + drgstr + drg_attach
+            if region not in region_included_drg:
+                tempStr.update({'count': 0})
+                region_included.append(region)
+
+            drgstr = drg_template.render(tempStr)
+            if (drgstr not in drg_tfStr[region]):
+                drg_tfStr[region] = drg_tfStr[region][:-1] + drgstr #+ drg_attach
             # else:
             #     tfStr[region] = tfStr[region] + drg_attach
 
@@ -477,6 +482,7 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
 
     for reg in ct.all_regions:
         tfStr[reg] = ''
+        drg_tfStr[reg] = ''
         igw_tfStr[reg] = ''
         lpg_tfStr[reg] = ''
         hub_lpg_tfStr[reg] = ''
@@ -498,6 +504,7 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
     # List of the column headers
     dfcolumns = df.columns.values.tolist()
     region_included = []
+    region_included_drg = []
 
     # Process VCNs
     for i in df.index:
@@ -577,7 +584,7 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
     if modify_network:
         for reg in ct.all_regions:
 
-            tfStr[reg] = vcn_tfStr[reg] + igw_tfStr[reg] + ngw_tfStr[reg] + sgw_tfStr[reg] + lpg_tfStr[reg]
+            tfStr[reg] = vcn_tfStr[reg] + igw_tfStr[reg] + ngw_tfStr[reg] + sgw_tfStr[reg] + lpg_tfStr[reg] + drg_tfStr[reg]
 
             reg_out_dir = outdir + "/" + reg
 
@@ -616,7 +623,7 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
     else:
         for reg in ct.all_regions:
 
-            tfStr[reg] = vcn_tfStr[reg] + igw_tfStr[reg] + ngw_tfStr[reg] + sgw_tfStr[reg] + lpg_tfStr[reg]
+            tfStr[reg] = vcn_tfStr[reg] + igw_tfStr[reg] + ngw_tfStr[reg] + sgw_tfStr[reg] + lpg_tfStr[reg] + drg_tfStr[reg]
 
             reg_out_dir = outdir + "/" + reg
 
@@ -624,7 +631,7 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
                 os.makedirs(reg_out_dir)
 
             # Rename the modules file in outdir to .tf
-            module_txt_filenames = ['vcns','igws','ngws','sgws','default_dhcp']
+            module_txt_filenames = ['vcns','igws','ngws','sgws','default_dhcp','drgs']
             for modules in module_txt_filenames:
                 module_filename = outdir + "/" + reg + "/" + modules.lower() + ".txt"
                 rename_module_filename = outdir + "/" + reg + "/" + modules.lower() + ".tf"

@@ -94,6 +94,11 @@ variable "lpgs" {
   default = {}
 }
 
+variable "drgs" {
+  type    = map(any)
+  default = {}
+}
+
 variable "seclist_details" {
   type = list(any)
   default = [""]
@@ -169,10 +174,6 @@ variable "drg_attachments" {
   default = [""]
 }
 
-variable "drg_details" {
-  type    = list(any)
-  default = [""]
-}
 
 variable "nsg_details" {
   type    = list(any)

@@ -218,6 +218,16 @@ def create_terraform_dhcp_options(inputfile, outdir, prefix, config, modify_netw
 
             tfStr[reg] = template.render(custom=True,dhcps=custom[reg])
 
+            # Rename the modules file in outdir to .tf
+            module_txt_filenames = ['custom_dhcp','default_dhcp']
+            for modules in module_txt_filenames:
+                module_filename = outdir + "/" + reg + "/" + modules.lower() + ".txt"
+                rename_module_filename = outdir + "/" + reg + "/" + modules.lower() + ".tf"
+
+                if not os.path.isfile(rename_module_filename):
+                    if os.path.isfile(module_filename):
+                        os.rename(module_filename, rename_module_filename)
+
             custom_dhcp_auto_tfvars_filename = '_custom_dhcp.auto.tfvars'
             outfile[reg] = reg_out_dir + "/" + prefix + custom_dhcp_auto_tfvars_filename
             def_dhcp_auto_tfvars_filename = '_default_dhcp.auto.tfvars'

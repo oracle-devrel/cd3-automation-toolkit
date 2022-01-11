@@ -1,4 +1,6 @@
 {% if create_lpg_auto_vars == true %}
+
+
 ############################
 # Networking
 # Major Objects - LPG - tfvars

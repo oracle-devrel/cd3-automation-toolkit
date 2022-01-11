@@ -599,7 +599,7 @@ def export_networking(inputfile, outdir, _config, network_compartments=[]):
 
 
                                 if (drg_id not in drg_ocid):
-                                    importCommands[reg].write("\nterraform import oci_core_drg." + tf_name + " " + drg_info.id)
+                                    importCommands[reg].write("\nterraform import \"module.drgs[\\\"" + tf_name + "\\\"].oci_core_drg.drg[0] " + drg_info.id)
                                     drg_ocid.append(drg_id)
 
                                 #tf_name = vcn_info.display_name + "_" + drg_attachment_name

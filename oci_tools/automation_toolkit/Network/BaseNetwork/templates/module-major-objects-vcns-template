@@ -3,7 +3,7 @@
 
 ############################
 # Networking
-# Major Objects - VCNs, IGW, NGW, SGW - tfvars
+# Major Objects - VCNs, IGW, NGW, SGW, LPG, DRG - tfvars
 ############################
 
 vcns = {

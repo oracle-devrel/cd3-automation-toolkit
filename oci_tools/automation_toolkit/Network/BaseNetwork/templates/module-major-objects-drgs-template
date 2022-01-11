@@ -1,22 +1,15 @@
 {% if count == 0 %}
 
-
 ############################
 # Networking
-# Major Objects - SGW - tfvars
+# Major Objects - DRG - tfvars
 ############################
 
-sgws = {
-{% endif %} {% if sgw_name != "" and sgw_name != "nan" and sgw_name != null %}
-  {{ sgw_tf_name }} = {
+drgs = {
+{% endif %}{% if drg_name != "" and drg_name != "nan" and drg_name != null %}
+  {{ drg_tf_name }} = {
         compartment_name = "{{ compartment_tf_name }}"
-        display_name     = "{{ vcn_name }}"
-
-        #SGW
-        sgw_name     = "{{ sgw_name }}"
-        {% if service and service != 'nan' and service != ''%}
-        service = {{ service }} {% else %}
-        service = "" {% endif %}
+        display_name     = "{{ drg_name }}"
 
     {#  ##Do not modify below this line##  #}
     {#                                     #}
