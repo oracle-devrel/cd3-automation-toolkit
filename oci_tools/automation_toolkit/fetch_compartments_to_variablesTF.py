@@ -8,22 +8,12 @@ from commonTools import *
 #Load the template file
 file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
 env = Environment(loader=file_loader,keep_trailing_newline=True)
-template = env.get_template('modules-variables-template')
-var_template = env.get_template('variables-template')
-
-def paginate(operation, *args, **kwargs):
-    while True:
-        response = operation(*args, **kwargs)
-        for value in response.data:
-            yield value
-        kwargs["page"] = response.next_page
-        if not response.has_next_page:
-            break
+var_template = env.get_template('modules-variables-template')
 
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Fetches Compartment name/ocid info from OCI and pushes to variables.tf file of each region used by TF")
-    parser.add_argument("outdir", help="Path  to outdir(on OCSVM: /root/ocswork/terraform_files) containing region directories having variables_<region>.tf file that will be used by TerraForm to communicate with OCI")
+    parser.add_argument('outdir', help='Output directory for creation of TF files')
     parser.add_argument("--config", default=DEFAULT_LOCATION, help="Config file name")
     return parser.parse_args()
 
@@ -32,22 +22,19 @@ def fetch_compartments(outdir, config=DEFAULT_LOCATION):
     configFileName = config
     config = oci.config.from_file(config)
 
-    tempStr = {}
     var_files={}
     var_data = {}
     comp_ocids = []
 
-    print("outdir specified should contain region directories and then variables_<region>.tf file inside the region directories eg /root/ocswork/terraform_files")
-    print("Verifying out directory...Please wait...")
-
     ct = commonTools()
     ct.get_subscribedregions(configFileName)
-    ct.get_network_compartment_ids(config['tenancy'], "root", configFileName)
+
+    print("outdir specified should contain region directories and then variables_<region>.tf file inside the region directories eg /cd3user/tenancies/<customer_tenancy_name>/terraform_files")
+    print("Verifying out directory and Taking backup of existing variables files...Please wait...")
 
     for region in ct.all_regions:
         file = f'{outdir}/{region}/variables_{region}.tf'
         var_files[region]=file
-        tempStr[region]=''
         try:
             with open(file, 'r') as f:
                 var_data[region] = f.read()
@@ -56,47 +43,39 @@ def fetch_compartments(outdir, config=DEFAULT_LOCATION):
         # Backup the existing Routes tf file
         shutil.copy(file, file + "_backup")
 
+
+    print("Fetching Compartment Info...Please wait...")
+    ct.get_network_compartment_ids(config['tenancy'], "root", configFileName)
+
+
     for reg in ct.all_regions:
+        regstr=''
         for name, ocid in ct.ntk_compartment_ids.items():
             comp_tf_name=commonTools.check_tf_variable(name)
+            comp_ocids.append(comp_tf_name + "::" + ocid)
+
             searchstr = "variable \"" + comp_tf_name + "\""
             str=var_template.render(var_tf_name=comp_tf_name,values=ocid)
             if(searchstr not in var_data[reg]):
-                tempStr[reg]=tempStr[reg]+str
+                regstr=regstr+str
 
+        #Write individual compartment variables to the file
         with open(var_files[reg],"a") as vname:
-            vname.write(tempStr[reg])
+            vname.write(regstr)
+
+        # Write compartment_ocids list variable to the file
+        regstr = var_template.render(compartment_ocids_list='true', comp_ocids=comp_ocids)
+        regstr = "#START_Compartment_OCIDs#" + regstr + "#Compartment_OCIDs_END#"
+
+        var_data[reg] = re.sub('#START_Compartment_OCIDs#.*?#Compartment_OCIDs_END#', regstr,var_data[reg], flags=re.DOTALL)
+
+        with open(var_files[reg], "w") as f:
+            f.write(var_data[reg])
 
         if ("linux" in sys.platform):
             os.system("dos2unix " + var_files[reg])
 
     print("Compartment info written to all region specific variables files under outdir folder")
-
-    # Below code is for the creation of fetch_compartments_to_variables.tf for terraform modules
-    for name, ocid in ct.ntk_compartment_ids.items():
-        comp_tf_name=commonTools.check_tf_variable(name)
-        comp_ocids.append(comp_tf_name+"::"+ocid)
-
-    for region in ct.all_regions:
-        file = f'{outdir}/{region}/fetch_compartments_to_variable.tf'
-        var_files[region]=file
-        tempStr[region]=''
-
-        try:
-            if os.path.exists(file):
-                # Backup the existing fetch_compartments_to_variables tf file
-                shutil.copy(file, file + "_backup")
-        except FileNotFoundError as e:
-            pass
-
-        tempStr[region] = template.render(comp_ocids=comp_ocids)
-
-        with open(var_files[region],"w") as vname:
-            vname.write(tempStr[region])
-
-        if ("linux" in sys.platform):
-            os.system("dos2unix " + var_files[region])
-    # print("Completed fetching the Compartments to variables!!!")
 
 if __name__ == '__main__':
     args = parse_args()

@@ -1,10 +1,4 @@
-// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
-
-############################
-# Variable Block - Identity
-# Fetch Compartments
-############################
-
+{% if compartment_ocids_list and compartment_ocids_list.lower()=='true' %}
 variable "compartment_ocids" {
             type = list(any)
             default = [
@@ -14,3 +8,16 @@ variable "compartment_ocids" {
             }
             ]
 }
+{% else %}
+{% if db_export and db_export.lower()=='true' %}
+variable "{{ var_tf_name }}" {
+            type = list
+            default = {{ values }}
+}
+{% else %}
+variable "{{ var_tf_name }}" {
+            type = string
+            default = "{{ values }}"
+}
+{% endif %}
+{% endif %}
