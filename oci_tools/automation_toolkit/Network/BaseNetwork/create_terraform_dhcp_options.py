@@ -44,6 +44,7 @@ def create_terraform_dhcp_options(inputfile, outdir, prefix, config, modify_netw
     oname = {}
     defname = {}
     tfStr = {}
+    custom = {}
     defStr = {}
 
     filename = inputfile
@@ -56,13 +57,14 @@ def create_terraform_dhcp_options(inputfile, outdir, prefix, config, modify_netw
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
-    template = env.get_template('custom-dhcp-template')
+    template = env.get_template('module-custom-dhcp-template')
     defaultdhcp = env.get_template('module-major-objects-default-dhcp-template')
 
     vcns = parseVCNs(filename)
     for reg in ct.all_regions:
         tfStr[reg] = ''
         defStr[reg] = ''
+        custom[reg] = ''
 
     def processDHCP(tempStr, template, defaultdhcp):
         defaultdhcpdata = ''
@@ -92,10 +94,10 @@ def create_terraform_dhcp_options(inputfile, outdir, prefix, config, modify_netw
         if ("Default DHCP Options" in dhcp_option_name):
             defaultdhcpdata = defaultdhcp.render(tempStr)
         else:
-            customdhcpdata = template.render(tempStr)
+            customdhcpdata = template.render(tempStr,custom=False)
 
         defStr[region] = defStr[region][:-1] + defaultdhcpdata
-        tfStr[region] = tfStr[region][:-1] + customdhcpdata
+        custom[region] = custom[region] + customdhcpdata
 
     # Read cd3 using pandas dataframe
     df, col_headers = commonTools.read_cd3(filename, "DHCP")
@@ -175,9 +177,13 @@ def create_terraform_dhcp_options(inputfile, outdir, prefix, config, modify_netw
             reg_out_dir = outdir + "/" + reg
             if not os.path.exists(reg_out_dir):
                 os.makedirs(reg_out_dir)
-            outfile[reg] = reg_out_dir + "/" + prefix + '-dhcp.tf'
-            dhcp_auto_tfvars_filename = '_default_dhcp.auto.tfvars'
-            deffile[reg] = reg_out_dir + "/" +prefix +dhcp_auto_tfvars_filename
+
+            tfStr[reg] = template.render(custom=True,dhcps=custom[reg])
+
+            custom_dhcp_auto_tfvars_filename = '_custom_dhcp.auto.tfvars'
+            outfile[reg] = reg_out_dir + "/" + prefix + custom_dhcp_auto_tfvars_filename
+            def_dhcp_auto_tfvars_filename = '_default_dhcp.auto.tfvars'
+            deffile[reg] = reg_out_dir + "/" +prefix +def_dhcp_auto_tfvars_filename
 
             x = datetime.datetime.now()
             date = x.strftime("%f").strip()
@@ -185,7 +191,7 @@ def create_terraform_dhcp_options(inputfile, outdir, prefix, config, modify_netw
             if (os.path.exists(outfile[reg])):
                 resource = 'Custom-DHCP'
                 srcdir = outdir + "/" + reg + "/"
-                commonTools.backup_file(srcdir, resource, "-dhcp.tf")
+                commonTools.backup_file(srcdir, resource, prefix + custom_dhcp_auto_tfvars_filename)
             oname[reg] = open(outfile[reg], "w")
             oname[reg].write(tfStr[reg])
             oname[reg].close()
@@ -196,7 +202,7 @@ def create_terraform_dhcp_options(inputfile, outdir, prefix, config, modify_netw
                 if (os.path.exists(deffile[reg])):
                     resource = 'Default-DHCP'
                     srcdir = outdir + "/" + reg + "/"
-                    commonTools.backup_file(srcdir, resource, prefix + dhcp_auto_tfvars_filename)
+                    commonTools.backup_file(srcdir, resource, prefix + def_dhcp_auto_tfvars_filename)
                 defname[reg] = open(deffile[reg], "w")
                 defname[reg].write(defStr[reg])
                 defname[reg].close()
@@ -210,15 +216,18 @@ def create_terraform_dhcp_options(inputfile, outdir, prefix, config, modify_netw
             if not os.path.exists(reg_out_dir):
                 os.makedirs(reg_out_dir)
 
-            outfile[reg] = reg_out_dir + "/" + prefix + '-dhcp.tf'
-            dhcp_auto_tfvars_filename = '_default_dhcp.auto.tfvars'
-            deffile[reg] = reg_out_dir + "/" +prefix +dhcp_auto_tfvars_filename
+            tfStr[reg] = template.render(custom=True,dhcps=custom[reg])
+
+            custom_dhcp_auto_tfvars_filename = '_custom_dhcp.auto.tfvars'
+            outfile[reg] = reg_out_dir + "/" + prefix + custom_dhcp_auto_tfvars_filename
+            def_dhcp_auto_tfvars_filename = '_default_dhcp.auto.tfvars'
+            deffile[reg] = reg_out_dir + "/" +prefix +def_dhcp_auto_tfvars_filename
 
             if (tfStr[reg] != ''):
                 if (os.path.exists(outfile[reg])):
                     resource = 'Custom-DHCP'
                     srcdir = outdir + "/" + reg + "/"
-                    commonTools.backup_file(srcdir, resource, "-dhcp.tf")
+                    commonTools.backup_file(srcdir, resource, prefix + custom_dhcp_auto_tfvars_filename)
                 oname[reg] = open(outfile[reg], 'w')
                 oname[reg].write(tfStr[reg])
                 oname[reg].close()
@@ -228,7 +237,7 @@ def create_terraform_dhcp_options(inputfile, outdir, prefix, config, modify_netw
                 if (os.path.exists(deffile[reg])):
                     resource = 'Default-DHCP'
                     srcdir = outdir + "/" + reg + "/"
-                    commonTools.backup_file(srcdir, resource, prefix + dhcp_auto_tfvars_filename)
+                    commonTools.backup_file(srcdir, resource, prefix + def_dhcp_auto_tfvars_filename)
                 defname[reg] = open(deffile[reg], "w")
                 defname[reg].write(defStr[reg])
                 defname[reg].close()

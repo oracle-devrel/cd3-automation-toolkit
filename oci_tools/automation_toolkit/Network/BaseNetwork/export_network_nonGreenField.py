@@ -299,7 +299,7 @@ def print_dhcp(values_for_column_dhcp,region, comp_name, vcn_name, dhcp_info):
         importCommands[region.lower()].write(
             "\nterraform import \"module.default-dhcps[\\\""+ tf_name + "\\\"].oci_core_default_dhcp_options.default_dhcp_option[0]\" " + str(dhcp_info.id))
     else:
-        importCommands[region.lower()].write("\nterraform import oci_core_dhcp_options." + tf_name + " " + str(dhcp_info.id))
+        importCommands[region.lower()].write("\nterraform import \"module.custom-dhcps[\\\""+ tf_name + "\\\"].oci_core_dhcp_options.custom_dhcp_option[0]\" " + str(dhcp_info.id))
 
 
 def print_subnets(values_for_column_subnets,region, comp_name, vcn_name, subnet_info, dhcp_name, rt_name, sl_names, add_def_seclist):

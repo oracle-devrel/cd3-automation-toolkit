@@ -2,17 +2,18 @@
 
 ############################
 # Resource Block - Networking
-# Create Default DHCP Options
+# Create Custom DHCP Options
 ############################
 
-resource "oci_core_default_dhcp_options" "default_dhcp_option" {
-    count = (var.server_type != null  && var.server_type != "") ? 1 : 0
-    manage_default_resource_id  = var.manage_default_resource_id
-
+resource "oci_core_dhcp_options" "custom_dhcp_option" {
+    #Required
+    count = (var.display_name != null  && var.display_name != "") ? 1 : 0
+    compartment_id = var.compartment_id
     options {
-            type = "DomainNameServer"
-            server_type = var.server_type
-            }
+        type = "DomainNameServer"
+        server_type = var.server_type
+        custom_dns_servers = var.custom_dns_servers
+    }
 
     dynamic "options" {
         for_each = var.search_domain_names
@@ -22,11 +23,15 @@ resource "oci_core_default_dhcp_options" "default_dhcp_option" {
             }
         }
 
+    vcn_id = var.vcn_id
+
     #Optional
     defined_tags = var.defined_tags
+    display_name = var.display_name
+    domain_name_type = var.domain_name_type
     freeform_tags = var.freeform_tags
 
     lifecycle {
         ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"],defined_tags["Oracle-Tags.CreatedBy"],freeform_tags]
         }
- }
+}

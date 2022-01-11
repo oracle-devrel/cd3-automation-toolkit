@@ -111,7 +111,7 @@ def export_identity():
 
 def export_network():
     compartments = get_compartment_list('Network Objects')
-    Network.export_Network(inputfile, outdir, _config=config, network_compartments=compartments)
+    Network.export_networking(inputfile, outdir, _config=config, network_compartments=compartments)
     options = [
         Option(None, Network.create_major_objects, 'Processing VCNs and DRGs Tab'),
         Option(None, Network.create_terraform_dhcp_options, 'Processing DHCP Tab'),

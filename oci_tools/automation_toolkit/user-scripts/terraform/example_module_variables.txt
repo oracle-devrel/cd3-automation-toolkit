@@ -109,11 +109,6 @@ variable "index" {
   default = null
 }
 
-variable "create_dhcp" {
-  type    = bool
-  default = false
-}
-
 variable "create_subnets" {
   type    = bool
   default = false
