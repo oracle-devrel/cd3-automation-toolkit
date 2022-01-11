@@ -14,6 +14,8 @@ import os
 import shutil
 import sys
 import oci
+import distutils
+from distutils import dir_util
 
 sys.path.append(os.getcwd()+"/..")
 from commonTools import *
@@ -290,7 +292,7 @@ def seek_info():
         }
         
         #########################
-        ##### Networking ########
+        ##### Network ########
         #########################
         
         variable "default_dhcps" {
@@ -350,7 +352,8 @@ def seek_info():
         f.close()
 
         # 7. Copy the terraform modules and variables file to outdir
-        shutil.copytree(modules_dir, terraform_files+region, ignore=shutil.ignore_patterns('example*'), dirs_exist_ok=True)
+        distutils.dir_util.copy_tree(modules_dir, terraform_files+"/"+region)
+
 
     #logging information
     logging.basicConfig(filename=customer_tenancy_dir+'/cmds.log', format='%(message)s', filemode='w', level=logging.INFO)
