@@ -311,6 +311,11 @@ def seek_info():
           default = {}
         }
         
+        variable "custom_dhcps" {
+          type = map(any)
+          default = {}
+        }  
+            
         variable "vcns" {
           type    = map(any)
           default = {}
@@ -331,12 +336,7 @@ def seek_info():
           default = {}
         }
         
-        variable "hub-lpgs" {
-          type    = map(any)
-          default = {}
-        }
-        
-        variable "spoke-lpgs" {
+        variable "lpgs" {
           type    = map(any)
           default = {}
         }

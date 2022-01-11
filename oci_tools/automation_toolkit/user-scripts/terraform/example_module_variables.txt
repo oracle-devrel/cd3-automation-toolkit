@@ -64,6 +64,11 @@ variable "default_dhcps" {
   default = {}
 }
 
+variable "custom_dhcps" {
+  type    = map(any)
+  default = {}
+}
+
 variable "vcns" {
   type    = map(any)
   default = {}
@@ -84,12 +89,7 @@ variable "ngws" {
   default = {}
 }
 
-variable "hub-lpgs" {
-  type    = map(any)
-  default = {}
-}
-
-variable "spoke-lpgs" {
+variable "lpgs" {
   type    = map(any)
   default = {}
 }
