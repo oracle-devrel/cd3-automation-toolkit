@@ -483,7 +483,7 @@ class commonTools():
     def backup_file(src_dir, resource, pattern):
         x = datetime.datetime.now()
         date = x.strftime("%f").strip()
-        dest_dir = str(src_dir) + "/backup_" + resource + "_" + datetime.datetime.now().strftime("%d-%m-%H%M%S").replace('/', '-')
+        dest_dir = str(src_dir) + "/backup_" + resource + "/" + datetime.datetime.now().strftime("%d-%m-%H%M%S").replace('/', '-')
         for f in os.listdir(str(src_dir)):
             if f.endswith(pattern):
                 print("Backing up existing " + f + " to " + dest_dir)
