@@ -14,7 +14,7 @@ def create_keys():
     # Creation of PEM Keys -
     print("Creating Public/Private API PEM Key at /root/ocswork/tenancies/keys/.......")
 
-    keys_dir = "/root/ocswork/tenancies/keys/"
+    keys_dir = "/cd3user/tenancies/keys/"
     key = RSA.generate(2048)
     if not os.path.exists(keys_dir):
         os.makedirs(keys_dir)

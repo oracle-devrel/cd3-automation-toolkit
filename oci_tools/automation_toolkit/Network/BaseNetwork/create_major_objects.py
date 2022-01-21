@@ -330,6 +330,7 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
             elif(attachedto=="empty"):
                 drg_attach=""
 
+            tempStr.update({'count': 1})
             if region not in region_included_drg:
                 tempStr.update({'count': 0})
                 region_included.append(region)
@@ -572,6 +573,7 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
             tempStr[columnname] = str(columnvalue).strip()
             tempStr.update(tempdict)
 
+        tempStr.update({'count': 1})
         if region not in region_included:
             tempStr.update({'count': 0})
             region_included.append(region)

@@ -51,25 +51,32 @@ def create_terraform_seclist(inputfile, outdir, prefix, config, modify_network=F
 
     ct = commonTools()
     ct.get_subscribedregions(configFileName)
-
-    fname = None
-    oname = None
-    secrulefiles = {}
+    tempSkeleton = {}
+    tempSecList = {}
+    modify_network_seclists = {}
+    tempSecListModifyNetwork = {}
     ADS = ["AD1", "AD2", "AD3"]
 
     #Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader,keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
-    template = env.get_template('seclist-template')
-    secrule = env.get_template('sec-rule-template')
+    template = env.get_template('module-seclist-template')
+    secrule = env.get_template('module-sec-rule-template')
+
+    auto_tfvars_filename = "_seclist.auto.tfvars"
+    common_seclist = []
+
+    for reg in ct.all_regions:
+        tempSkeleton[reg] = ''
+        tempSecList[reg] = ''
+        modify_network_seclists[reg] = ''
+        tempSecListModifyNetwork[reg] = ''
 
     def processSubnet(tempStr):
-
-        tempStr['region'].lower().strip()
+        region_in_lowercase = tempStr['region'].lower().strip()
         subnet_cidr = tempStr['cidr_block'].strip()
 
         # Seclist name specifiied as 'n' - dont create any seclist
-
         if tempStr['seclist_names'].lower() == 'n':
             return
 
@@ -85,8 +92,9 @@ def create_terraform_seclist(inputfile, outdir, prefix, config, modify_network=F
         vcn_tf_name = commonTools.check_tf_variable(tempStr['vcn_name'])
         tempStr['vcn_tf_name'] = vcn_tf_name
 
-        index = 0
         seclist_names = tempStr['sl_names']
+        seclist_count = 0
+        index = 0
 
         for sl_name in seclist_names:
             sl_name = sl_name.strip()
@@ -106,82 +114,97 @@ def create_terraform_seclist(inputfile, outdir, prefix, config, modify_network=F
             sl_tf_name = commonTools.check_tf_variable(sl_tf_name)
             tempStr['seclist_tf_name'] = sl_tf_name
 
+            outfile = outdir + "/" + region_in_lowercase + "/" + prefix + auto_tfvars_filename
 
-            if (sl_tf_name + "_seclist.tf" in secrulefiles[region]):
-                secrulefiles[region].remove(sl_tf_name + "_seclist.tf")
-            outfile = outdir + "/" + region + "/" + sl_tf_name + "_seclist.tf"
+            # Create Skeleton Template
+            if seclist_count == 0 and tempStr['count'] == 0:
+                tempSkeleton[region_in_lowercase] = template.render(tempStr,skeleton=True)
 
-            # If Modify Network is set to true
-            if (os.path.exists(outfile) and modify_network):
-                continue
+            start = "# Start of " + region_in_lowercase + "_" + sl_tf_name + " #"
+            end = "# End of " + region_in_lowercase + "_" + sl_tf_name + " #"
+
+            region_seclist_name = region_in_lowercase + "_" + sl_tf_name
+            # Option "Modify Network"
+            if modify_network:
+
+                # Read the file if it exists
+                if os.path.exists(outfile):
+                    # Read the contents of file in outdir
+                    with open(outfile, 'r+') as file:
+                        filedata = file.read()
+                    file.close()
+
+                # If seclist is presnt in auto.tfvars
+                if sl_tf_name in filedata:
+                    if sl_tf_name not in modify_network_seclists[region_in_lowercase]:
+                        copy = False
+                        with open(outfile) as infile:
+                            for lines in infile:
+                                if start in lines:
+                                    modify_network_seclists[region_in_lowercase] = modify_network_seclists[region_in_lowercase] + "\n" + start + "\n"
+                                    copy = True
+                                elif end in lines:
+                                    modify_network_seclists[region_in_lowercase] = modify_network_seclists[region_in_lowercase] + "\n" + end + "\n"
+                                    copy = False
+                                elif copy:
+                                    modify_network_seclists[region_in_lowercase] = modify_network_seclists[region_in_lowercase] + lines
+
+            # Create Seclist for all the unique names in Subnet Sheet
+            if (start not in modify_network_seclists[region_in_lowercase] and region_seclist_name not in common_seclist):
+                modify_network_seclists[region_in_lowercase] = modify_network_seclists[region_in_lowercase]+ template.render(tempStr,seclist_count=seclist_count,ingress_sec_rules="####ADD_NEW_INGRESS_SEC_RULES " + region_in_lowercase +"_"+sl_tf_name + " ####",egress_sec_rules="####ADD_NEW_EGRESS_SEC_RULES " + region_in_lowercase +"_"+sl_tf_name + " ####")
+                seclist_count = seclist_count + 1
 
             # If same seclist name is used for subsequent subnets
-            if (index == 0 and os.path.exists(outfile) and not modify_network):
+            if (index == 0 and start in modify_network_seclists[region_in_lowercase] and region_seclist_name in common_seclist):
                 tempStr['rule_type'] = "ingress"
                 tempStr['source'] = subnet_cidr
                 tempStr['protocol_code'] = 'all'
                 tempStr['protocol'] = ''
                 tempStr['isstateless'] = "false"
 
-                Str = secrule.render(tempStr)
+                if "#"+sl_tf_name+"_"+subnet_cidr+"#" not in modify_network_seclists[region_in_lowercase]:
+                    # Replace the target string
+                    Str = secrule.render(tempStr)
+                    textToSearch = "####ADD_NEW_INGRESS_SEC_RULES " + region_seclist_name + " ####"
+                    Str = Str + "\n" + textToSearch
+                    modify_network_seclists[region_in_lowercase] = modify_network_seclists[region_in_lowercase].replace(textToSearch, Str)
+                    index = index + 1
+                    common_seclist.append(region_seclist_name)
+                    continue
 
-                with open(outfile, 'r+') as file:
-                    filedata = file.read()
-                file.close()
-
-                # Replace the target string
-                textToSearch = "####ADD_NEW_SEC_RULES####" + vcn_tf_name + "_" + sl_tf_name
-                Str = Str + "\n" + textToSearch
-
-                filedata = filedata.replace(textToSearch, Str)
-                oname = open(outfile, "w")
-                oname.write(filedata)
-                oname.close()
-                continue
-
-            # New Seclist
-            oname = open(outfile, "w")
-            tempStr['index'] = index
-
-            tempSecList = template.render(tempStr)
+            # Create seclist rules for new seclists
             if index != 0:
-                tempSecList=tempSecList +"\n"
-            elif (index == 0):
-                secrule_data = ''
-                rule_type = ['ingress','egress']
-                for rule in rule_type:
-                    tempStr['destination'] = '0.0.0.0/0'
-                    tempStr['protocol_code'] = 'all'
-                    tempStr['protocol'] = ''
-                    tempStr['source'] = subnet_cidr
-                    tempStr['rule_type'] = rule
-                    tempStr['isstateless'] = "false"
-                    secrule_data = secrule_data + secrule.render(tempStr)
-                textToSearch = "####ADD_NEW_SEC_RULES####" + vcn_tf_name + "_" + sl_tf_name
-                secrule_data = secrule_data + textToSearch
-                tempSecList = tempSecList.replace(textToSearch,secrule_data)
-            oname.write(tempSecList)
-            oname.close()
-            print(outfile + " containing TF for seclist has been created for region " + region)
+                modify_network_seclists[region_in_lowercase] = modify_network_seclists[region_in_lowercase] + "\n"
+            elif index == 0:
+                if modify_network and start in filedata and end in filedata:
+                    index = index + 1
+                    common_seclist.append(region_seclist_name)
+                    continue
+                else:
+                    rule_type = ['ingress','egress']
+                    for rule in rule_type:
+                        tempStr['destination'] = '0.0.0.0/0'
+                        tempStr['protocol_code'] = 'all'
+                        tempStr['protocol'] = ''
+                        tempStr['source'] = subnet_cidr
+                        tempStr['rule_type'] = rule
+                        tempStr['isstateless'] = "false"
+                        if rule == 'ingress':
+                            ingress_secrule_data = secrule.render(tempStr)
+                            textToSearch = "####ADD_NEW_INGRESS_SEC_RULES " + region_seclist_name + " ####"
+                            ingress_secrule_data = ingress_secrule_data + "\n" + textToSearch
+                            modify_network_seclists[region_in_lowercase] = modify_network_seclists[region_in_lowercase].replace(textToSearch, ingress_secrule_data)
+                        else:
+                            egress_secrule_data = secrule.render(tempStr)
+                            textToSearch = "####ADD_NEW_EGRESS_SEC_RULES " + region_seclist_name + " ####"
+                            egress_secrule_data = egress_secrule_data + "\n" + textToSearch
+                            modify_network_seclists[region_in_lowercase] = modify_network_seclists[region_in_lowercase].replace(textToSearch, egress_secrule_data)
+
             index = index + 1
+            common_seclist.append(region_seclist_name)
 
     vcnInfo = parseVCNInfo(filename)
     vcns = parseVCNs(filename)
-
-    # Purge existing routetable files
-    if not modify_network:
-        for reg in ct.all_regions:
-            purge(outdir+"/"+reg, "_seclist.tf")
-            secrulefiles.setdefault(reg, [])
-
-    # Get existing list of secrule table files
-    if modify_network:
-        for reg in ct.all_regions:
-            secrulefiles.setdefault(reg, [])
-            lisoffiles = os.listdir(outdir + "/" + reg)
-            for file in lisoffiles:
-                if "_seclist.tf" in file:
-                    secrulefiles[reg].append(file)
 
     # Read cd3 using pandas dataframe
     df, col_headers = commonTools.read_cd3(filename, "Subnets")
@@ -191,6 +214,7 @@ def create_terraform_seclist(inputfile, outdir, prefix, config, modify_network=F
 
     # List of the column headers
     dfcolumns = df.columns.values.tolist()
+    region_included = []
 
     # Start processing each subnet
     for i in df.index:
@@ -207,6 +231,7 @@ def create_terraform_seclist(inputfile, outdir, prefix, config, modify_network=F
         tempStr = {}
         tempdict = {}
         sl_names = []
+
         compartment_var_name = ''
 
         # Check if values are entered for mandatory fields
@@ -256,21 +281,42 @@ def create_terraform_seclist(inputfile, outdir, prefix, config, modify_network=F
             tempStr[columnname] = columnvalue
             tempStr.update(tempdict)
 
+        tempStr.update({'count': 1})
+        if region not in region_included:
+            tempStr.update({'count': 0})
+            region_included.append(region)
+
         processSubnet(tempStr)
 
-    # remove any extra sec list files (not part of latest cd3)
     for reg in ct.all_regions:
-        if(len(secrulefiles[reg])!=0):
-            print("\nATTENION!!! Below SecLists are not attached to any subnet; If you want to delete any of them, remove the TF file!!!")
-        for remaining_sl_file in secrulefiles[reg]:
-            print(outdir + "/" + reg + "/" + remaining_sl_file)
 
-            # print("\nRemoving "+outdir + "/" + reg + "/"+remaining_sl_file)
-            # os.remove(outdir + "/" + reg + "/"+remaining_sl_file)
-            # secrulefiles[reg].remove(remaining_sl_file)
+        textToAddSeclistSearch = "##Add New Seclists for "+reg+" here##"
+        # Rename the modules file in outdir to .tf
+        module_txt_filenames = ['seclists']
+        for modules in module_txt_filenames:
+            module_filename = outdir + "/" + reg + "/" + modules.lower() + ".txt"
+            rename_module_filename = outdir + "/" + reg + "/" + modules.lower() + ".tf"
 
-    if (fname != None):
-        fname.close()
+            if not os.path.isfile(rename_module_filename):
+                if os.path.isfile(module_filename):
+                    os.rename(module_filename, rename_module_filename)
+
+        outfile = outdir + "/" + reg + "/" + prefix + auto_tfvars_filename
+        if not modify_network:
+            tempSkeleton[reg] = tempSkeleton[reg].replace(textToAddSeclistSearch,modify_network_seclists[reg] + textToAddSeclistSearch)
+            oname = open(outfile, "w")
+            oname.write(tempSkeleton[reg])
+            oname.close()
+            print(outfile + " containing TF for seclist has been created for region " + reg)
+        else:
+            tempSkeleton[reg] = tempSkeleton[reg].replace(textToAddSeclistSearch,modify_network_seclists[reg] + textToAddSeclistSearch)
+            srcdir = outdir + "/" + reg + "/"
+            resource = 'SecurityLists'
+            commonTools.backup_file(srcdir, resource, auto_tfvars_filename)
+            oname = open(outfile, "w")
+            oname.write(tempSkeleton[reg])
+            oname.close()
+            print(outfile + " containing TF for seclist has been created for region " + reg)
 
 if __name__ == '__main__':
     args = parse_args()

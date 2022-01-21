@@ -166,6 +166,7 @@ def create_terraform_dhcp_options(inputfile, outdir, prefix, config, modify_netw
             tempStr[columnname] = str(columnvalue).strip()
             tempStr.update(tempdict)
 
+        tempStr.update({'count': 1})
         if region not in region_included:
             tempStr.update({'count': 0})
             region_included.append(region)

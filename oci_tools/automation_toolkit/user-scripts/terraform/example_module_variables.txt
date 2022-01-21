@@ -99,9 +99,9 @@ variable "drgs" {
   default = {}
 }
 
-variable "seclist_details" {
-  type = list(any)
-  default = [""]
+variable "seclists" {
+  type = map(any)
+  default = {}
 }
 
 variable "route_table_details" {

@@ -1,0 +1,69 @@
+{% if (skeleton and count == 0) %}
+
+############################
+# Networking
+# Major Objects - Security List - tfvars
+############################
+
+seclists = {
+  # Seclist map #
+  ##Add New Seclists for {{ region.lower() }} here##
+}
+{% else %}{% if display_name != "" and display_name != "nan" and display_name != null %}
+
+  # Start of {{ region.lower() }}_{{ seclist_tf_name }} #
+  {{ seclist_tf_name }} = {
+        compartment_name = "{{ compartment_tf_name }}"
+        vcn_name     = "{{ vcn_name }}"
+        display_name     = "{{ display_name }}"
+        {% if ingress_sec_rules == '' %}
+        ingress_sec_rules =[]
+        {% else %}
+        ingress_sec_rules = [
+        {{ ingress_sec_rules }}
+        ]
+        {% endif %}
+        {% if egress_sec_rules == '' %}
+        egress_sec_rules = []
+        {% else %}
+        egress_sec_rules = [
+        {{ egress_sec_rules }}
+        ]
+        {% endif %}
+
+    {#  ##Do not modify below this line##  #}
+    {#                                     #}
+    {#  ###Section for adding Defined and Freeform Tags###  #}
+    {% if defined_tags and defined_tags != 'nan' and defined_tags != '' %}
+      {% if defined_tags[0] %}
+        defined_tags = {
+        {% for tags in defined_tags  %}
+            {% if not loop.last %}
+                "{{ tags[0]  }}"= "{{ tags[1] }}" ,
+            {% else %}
+                "{{ tags[0]  }}"= "{{ tags[1] }}"
+            {% endif %}
+        {% endfor %}
+        }
+      {% else %}
+        defined_tags = {}
+        {% endif %}{% endif %}
+            {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' %}
+                {% if freeform_tags[0] %}
+        freeform_tags = {
+                    {% for tags in freeform_tags %}
+                        {% if not loop.last  %}
+                "{{ tags[0] }}"="{{ tags[1] }}",
+                        {% else %}
+                "{{ tags[0] }}"="{{ tags[1] }}"
+                        {% endif %}
+                    {% endfor %}
+                    }
+                {% endif %}
+            {% else %}
+        freeform_tags = {}
+            {% endif %}
+    {#  ###Section for adding Defined and Freeform Tags ends here###  #}
+      },
+  # End of {{ region.lower() }}_{{ seclist_tf_name }} #
+{% endif %}{% endif %}
