@@ -12,7 +12,7 @@ from Cryptodome.PublicKey import RSA
 def create_keys():
 
     # Creation of PEM Keys -
-    print("Creating Public/Private API PEM Key at /root/ocswork/tenancies/keys/.......")
+    print("Creating Public/Private API PEM Key at /cd3user/tenancies/keys/.......")
 
     keys_dir = "/cd3user/tenancies/keys/"
     key = RSA.generate(2048)
