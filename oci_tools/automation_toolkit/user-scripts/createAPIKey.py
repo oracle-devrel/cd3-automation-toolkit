@@ -29,7 +29,7 @@ def create_keys():
     f.close()
 
     os.chdir(keys_dir)
-    command = "chmod 400 /root/ocswork/tenancies/keys/oci_api_private.pem"
+    command = "chmod 400 /cd3user/tenancies/keys/oci_api_private.pem"
     os.system(command)
 
     print("=================================================================")
