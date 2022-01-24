@@ -185,7 +185,6 @@ def export_events(inputfile, outdir, network_compartments=[], _config=DEFAULT_LO
     # Get dict for columns from Excel_Columns
     sheet_dict_events = ct.sheet_dict[sheetName]
 
-
     # Check Compartments
     comp_list_fetch = commonTools.get_comp_list_for_export(network_compartments, ct.ntk_compartment_ids)
 
@@ -193,9 +192,8 @@ def export_events(inputfile, outdir, network_compartments=[], _config=DEFAULT_LO
     print("Tabs- Events would be overwritten during export process!!!\n")
 
     # Create backups
-
-    resource = 'tf_import_events'
-    file_name = 'tf_import_commands_events_nonGF.sh'
+    resource = 'tf_import_' + sheetName.lower()
+    file_name = 'tf_import_commands_' + sheetName.lower() + '_nonGF.sh'
 
     for reg in ct.all_regions:
         script_file = f'{outdir}/{reg}/'+file_name
@@ -206,36 +204,36 @@ def export_events(inputfile, outdir, network_compartments=[], _config=DEFAULT_LO
         importCommands[reg].write("\n")
         importCommands[reg].write("terraform init")
 
-        # Fetch Events
-        print("\nFetching Events...")
-        for reg in ct.all_regions:
-            importCommands[reg].write("\n\n######### Writing import for Events #########\n\n")
-            config.__setitem__("region", ct.region_dict[reg])
-            # comp_ocid_done = []
-            ncpc = NotificationControlPlaneClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
-            fun = FunctionsManagementClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
-            evt = EventsClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
-            region = reg.capitalize()
-            for ntk_compartment_name in comp_list_fetch:
-                evts = oci.pagination.list_call_get_all_results(evt.list_rules, compartment_id=ct.ntk_compartment_ids[
-                    ntk_compartment_name], lifecycle_state="ACTIVE")
-                for event in evts.data:
-                    event_info = evt.get_rule(event.id).data
-                    print_events(values_for_column_events, region, ntk_compartment_name, event, event_info, ncpc, fun)
-                ievts = oci.pagination.list_call_get_all_results(evt.list_rules, compartment_id=ct.ntk_compartment_ids[
-                    ntk_compartment_name], lifecycle_state="INACTIVE")
-                for event in ievts.data:
-                    event_info = evt.get_rule(event.id).data
-                    print_events(values_for_column_events, region, ntk_compartment_name, event, event_info, ncpc, fun)
+    # Fetch Events
+    print("\nFetching Events...")
+    for reg in ct.all_regions:
+        importCommands[reg].write("\n\n######### Writing import for Events #########\n\n")
+        config.__setitem__("region", ct.region_dict[reg])
+        # comp_ocid_done = []
+        ncpc = NotificationControlPlaneClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
+        fun = FunctionsManagementClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
+        evt = EventsClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
+        region = reg.capitalize()
+        for ntk_compartment_name in comp_list_fetch:
+            evts = oci.pagination.list_call_get_all_results(evt.list_rules, compartment_id=ct.ntk_compartment_ids[
+                ntk_compartment_name], lifecycle_state="ACTIVE")
+            for event in evts.data:
+                event_info = evt.get_rule(event.id).data
+                print_events(values_for_column_events, region, ntk_compartment_name, event, event_info, ncpc, fun)
+            ievts = oci.pagination.list_call_get_all_results(evt.list_rules, compartment_id=ct.ntk_compartment_ids[
+                ntk_compartment_name], lifecycle_state="INACTIVE")
+            for event in ievts.data:
+                event_info = evt.get_rule(event.id).data
+                print_events(values_for_column_events, region, ntk_compartment_name, event, event_info, ncpc, fun)
 
-        commonTools.write_to_cd3(values_for_column_events, cd3file, sheetName)
-        print("Events exported to CD3\n")
+    commonTools.write_to_cd3(values_for_column_events, cd3file, sheetName)
+    print("Events exported to CD3\n")
 
-        for reg in ct.all_regions:
-            with open(script_file, 'a') as importCommands[reg]:
-                importCommands[reg].write('\n\nterraform plan\n')
-            if "linux" in sys.platform:
-                os.chmod(script_file, 0o755)
+    for reg in ct.all_regions:
+        with open(script_file, 'a') as importCommands[reg]:
+            importCommands[reg].write('\n\nterraform plan\n')
+        if "linux" in sys.platform:
+            os.chmod(script_file, 0o755)
 
 
 def export_notifications(inputfile, outdir, network_compartments=[], _config=DEFAULT_LOCATION):
@@ -276,9 +274,8 @@ def export_notifications(inputfile, outdir, network_compartments=[], _config=DEF
     print("Tabs- Notifications would be overwritten during export process!!!\n")
 
     # Create backups
-
-    resource = 'tf_import_notifications'
-    file_name = 'tf_import_commands_notifications_nonGF.sh'
+    resource = 'tf_import_' + sheetName.lower()
+    file_name = 'tf_import_commands_' + sheetName.lower() + '_nonGF.sh'
 
     for reg in ct.all_regions:
         script_file = f'{outdir}/{reg}/'+file_name

@@ -34,6 +34,27 @@ variable "region" {
         #
         #################################
 
+        variable "notifications_topics" {
+            type    = map(any)
+            default = {}
+        }
+
+        variable "notifications_subscriptions" {
+            type    = map(any)
+            default = {}
+        }
+
+        variable "alarms" {
+            type    = map(any)
+            default = {}
+        }
+
+        variable "events" {
+            type    = map(any)
+            default = {}
+        }
+
+
         ############################
         ### Fetch Compartments #####
         ############################
