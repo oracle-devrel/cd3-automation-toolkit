@@ -1,0 +1,6 @@
+       actions {
+                action_type = "{{ action_type }}"
+                is_enabled = {{ action_is_enabled }}
+                {{ label }} = {{ action_id }}
+                description = "{{ action_description }}"
+               }
