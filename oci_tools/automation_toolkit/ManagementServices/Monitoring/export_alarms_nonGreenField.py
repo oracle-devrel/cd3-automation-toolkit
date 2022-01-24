@@ -68,7 +68,8 @@ def print_alarms(region, alarm, ncpclient,values_for_column, ntk_compartment_nam
             values_for_column = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict, values_for_column)
 
     if(skip_row == 0):
-        importCommands[region.lower()].write("\nterraform import oci_monitoring_alarm." + alarm_tf_name + " " + str(alarm.id))
+        #importCommands[region.lower()].write("\nterraform import oci_monitoring_alarm." + alarm_tf_name + " " + str(alarm.id))
+        importCommands[region.lower()].write("\nterraform import \"module.alarms[\\\"" + str(alarm_tf_name) + "\\\"].oci_monitoring_alarm[0]\" " + str(alarm.id))
 
 def parse_args():
     # Read the arguments

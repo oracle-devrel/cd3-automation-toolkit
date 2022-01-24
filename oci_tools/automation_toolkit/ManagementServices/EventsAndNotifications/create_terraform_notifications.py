@@ -37,6 +37,9 @@ def create_terraform_notifications(inputfile, outdir, prefix, config=DEFAULT_LOC
     filename = inputfile
     outdir = outdir
     sheetName="Notifications"
+    topics_auto_tfvars_filename = '_' + sheetName.lower() + '_topics.auto.tfvars'
+    subs_auto_tfvars_filename = '_' + sheetName.lower() + '_subscriptions.auto.tfvars'
+
     configFileName = config
     ct = commonTools()
     ct.get_subscribedregions(configFileName)
@@ -53,8 +56,8 @@ def create_terraform_notifications(inputfile, outdir, prefix, config=DEFAULT_LOC
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
-    notifications_template = env.get_template('notification-template')
-    subscriptions_template = env.get_template('subscription-template')
+    notifications_template = env.get_template('module-notifications-topics-template')
+    subscriptions_template = env.get_template('module-notifications-subscriptions-template')
 
     # Read cd3 using pandas dataframe
     df, col_headers = commonTools.read_cd3(filename, sheetName)
@@ -62,20 +65,22 @@ def create_terraform_notifications(inputfile, outdir, prefix, config=DEFAULT_LOC
     #Remove empty rows
     df = df.dropna(how='all')
     df = df.reset_index(drop=True)
+    regions_done = []
 
     # List of the column headers
     dfcolumns = df.columns.values.tolist()
 
-    for reg in ct.all_regions:
-        tfStr[reg] = ''
-        tfStr1[reg] = ''
-        Notifications_names[reg]=[]
-        Subscriptions_names[reg]=[]
+    for eachregion in ct.all_regions:
+        tfStr[eachregion] = ''
+        tfStr1[eachregion] = ''
+        Notifications_names[eachregion]=[]
+        Subscriptions_names[eachregion]=[]
 
-        resource=sheetName.lower()
-        srcdir = outdir + "/" + reg + "/"
-        commonTools.backup_file(srcdir, resource, sheetName.lower()+".tf")
-        commonTools.backup_file(srcdir, resource, "subscriptions.tf")
+        # Take backup of files
+        resource = sheetName.lower()
+        srcdir = outdir + "/" + eachregion + "/"
+        commonTools.backup_file(srcdir, resource, topics_auto_tfvars_filename)
+        commonTools.backup_file(srcdir, resource, subs_auto_tfvars_filename)
 
     # Iterate over rows
     for i in df.index:
@@ -89,8 +94,12 @@ def create_terraform_notifications(inputfile, outdir, prefix, config=DEFAULT_LOC
             print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
             exit(1)
         # temporary dictionary1 and dictionary2
-        tempStr = {}
         tempdict = {}
+        if(region not in regions_done):
+            tempStr = {"count": 0}
+            regions_done.append(region)
+        else:
+            tempStr = {"count": i}
 
         # Check if values are entered for mandatory fields
         if str(df.loc[i, 'Region']).lower() == 'nan' or str(df.loc[i, 'Compartment Name']).lower() == 'nan' or str(df.loc[i, 'Protocol']).lower() == 'nan' or str(df.loc[i, 'Endpoint']).lower() == 'nan' or str(df.loc[i, 'Topic']).lower() == 'nan' :
@@ -111,11 +120,9 @@ def create_terraform_notifications(inputfile, outdir, prefix, config=DEFAULT_LOC
                 tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)
             
             if columnname == "Compartment Name":
-                compartmentVarName = columnvalue.strip()
-                columnname = commonTools.check_column_headers(columnname)
-                compartmentVarName = commonTools.check_tf_variable(compartmentVarName)
+                compartmentVarName = commonTools.check_tf_variable(columnvalue)
                 columnvalue = str(compartmentVarName)
-                tempdict = {columnname: columnvalue}
+                tempdict = {"compartment_tf_name": columnvalue}
 
             if columnname == "Topic":
                 columnvalue = columnvalue.strip()
@@ -149,14 +156,14 @@ def create_terraform_notifications(inputfile, outdir, prefix, config=DEFAULT_LOC
         if(topic not in Notifications_names[region]):
                 Notifications_names[region].append(topic)             
                 # Write all info to TF string
-                tfStr[region]=tfStr[region] + notifications_template.render(tempStr)
+                tfStr[region]=tfStr[region][:-1]  + notifications_template.render(tempStr)
                 # Write to output
-                file = outdir + "/" + region + "/" + tf_name_topic + "-notification.tf"
-                oname = open(file, "w+")
-                print("Writing to " + file)
-                oname.write(tfStr[region])
-                oname.close()
-                tfStr[region]= ""
+                #file = outdir + "/" + region + "/" + tf_name_topic + "-notification.tf"
+                #oname = open(file, "w+")
+                #print("Writing to " + file)
+                #oname.write(tfStr[region])
+                #oname.close()
+                #tfStr[region]= ""
         subscription = tf_name_topic + "_sub" + str(count)
         tempdict = {'subscription_tf_name': subscription}
         tempStr.update(tempdict)
@@ -167,14 +174,41 @@ def create_terraform_notifications(inputfile, outdir, prefix, config=DEFAULT_LOC
                     endpoint = endpoint[1]
                     tempdict = {'endpoint': endpoint}
                     tempStr.update(tempdict)
-                tfStr[region]=tfStr[region] + subscriptions_template.render(tempStr)
+                tfStr1[region]=tfStr1[region][:-1]  + subscriptions_template.render(tempStr)
                 # Write to output
-                file = outdir + "/" + region + "/" + subscription + "-subscription.tf"
-                oname = open(file, "w+")
-                print("Writing to " + file)
-                oname.write(tfStr[region])
-                oname.close()
-                tfStr[region]=""
+                #file = outdir + "/" + region + "/" + subscription + "-subscription.tf"
+                #oname = open(file, "w+")
+                #print("Writing to " + file)
+                #oname.write(tfStr[region])
+                #oname.close()
+                #tfStr[region]=""
+
+    # Write to output
+    for reg in ct.all_regions:
+        reg_out_dir = outdir + "/" + reg
+        if (tfStr[reg] != ''):
+            outfile[reg] = reg_out_dir + "/" + prefix + topics_auto_tfvars_filename
+            oname[reg] = open(outfile[reg], 'w')
+            oname[reg].write(tfStr[reg])
+            oname[reg].close()
+            print(outfile[reg] + " for Notifications_Topics has been created for region " + reg)
+
+        if (tfStr1[reg] != ''):
+            outfile[reg] = reg_out_dir + "/" + prefix + subs_auto_tfvars_filename
+            oname[reg] = open(outfile[reg], 'w')
+            oname[reg].write(tfStr1[reg])
+            oname[reg].close()
+            print(outfile[reg] + " for Notifications_Subscriptions has been created for region " + reg)
+
+        # Rename the modules file in outdir to .tf
+        module_filename = outdir + "/" + reg + "/" + sheetName.lower() + ".txt"
+        rename_module_filename = outdir + "/" + reg + "/" + sheetName.lower() + ".tf"
+
+        if not os.path.isfile(rename_module_filename):
+            if os.path.isfile(module_filename):
+                os.rename(module_filename, rename_module_filename)
+
+
 
 if __name__ == '__main__':
     # Execution of the code begins here

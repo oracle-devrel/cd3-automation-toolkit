@@ -2,4 +2,5 @@
 
 from .create_terraform_events import create_terraform_events
 from .create_terraform_notifications import create_terraform_notifications
-from .export_events_notifications_nonGreenField import export_events_notifications
+from .export_events_notifications_nonGreenField import export_events
+from .export_events_notifications_nonGreenField import export_notifications
