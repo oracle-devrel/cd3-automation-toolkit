@@ -5,7 +5,7 @@
 # Create Events
 ############################
 
-resource "oci_events_rule" "rule" {
+resource "oci_events_rule" "event" {
   count = var.event_name != null ? 1 : 0
   #Required
   compartment_id = var.compartment_name

@@ -113,7 +113,8 @@ def print_events(values_for_column_events, region, ntk_compartment_name, event, 
              events_rows(values_for_column_events, region, ntk_compartment_name, event_name, event_desc, action_type, action_is_enabled, action_description, event_prod, event_res,  event_is_enabled, action_name, event, event_info)
           i = i + 1
     if ( action_name != "" ):
-       importCommands[region.lower()].write("\nterraform import oci_events_rule." + tf_name + " " + str(event.id))
+       #importCommands[region.lower()].write("\nterraform import oci_events_rule." + tf_name + " " + str(event.id))
+       importCommands[region.lower()].write("\nterraform import \"module.events[\\\"" + str(tf_name) + "\\\"].oci_events_rule.event[0]\" " + str(event.id))
 
 def events_rows(values_for_column_events, region, ntk_compartment_name, event_name, event_desc, action_type, action_is_enabled, action_description, event_prod, event_res,  event_is_enabled, action_name, event, event_info):
     for col_header in values_for_column_events.keys():
