@@ -2,7 +2,7 @@
 
 ############################
 # Module Block - ManagementServices
-# Create Notifications_Topics
+# Create Notifications
 ############################
 
 module "notifications_topics" {
