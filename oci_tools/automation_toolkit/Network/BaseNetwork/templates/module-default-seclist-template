@@ -1,0 +1,12 @@
+{% if (skeleton and count == 0) %}
+
+############################
+# Network
+# Major Objects - Default Security List - tfvars
+############################
+
+default_seclists = {
+  # Seclist map #
+  ##Add New Default Seclists for {{ region.lower() }} here##
+}
+{% endif %}

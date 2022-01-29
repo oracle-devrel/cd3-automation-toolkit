@@ -351,6 +351,11 @@ def seek_info():
           default = {}
         }
         
+        variable "default_seclists" {
+          type = map(any)
+          default = {}
+        }
+        
         """
         if (windows_image_id != ''):
             variables_data = variables_data + """
