@@ -1,0 +1,52 @@
+resource "oci_database_cloud_vm_cluster" "{{ vm_cluster_display_tf_name }}" {
+    #Required
+    cloud_exadata_infrastructure_id = oci_database_cloud_exadata_infrastructure.{{ exadata_infra_display_tf_name }}.id
+    compartment_id = var.{{ compartment_name }}
+    cpu_core_count = "{{ cpu_core_count }}"
+    display_name = "{{ vm_cluster_display_name }}"
+    gi_version = "{{ oracle_grid_infrastructure_version }}"
+    hostname = "{{ hostname_prefix }}"
+    {% if ssh_key_var_name == 'var.ssh_public_key' %}
+    ssh_public_keys         =  [{{ ssh_key_var_name }}]
+    {% elif 'ssh-rsa' in ssh_key_var_name %}
+    ssh_public_keys         =  [{{ ssh_key_var_name }}]
+    {% else %}
+    ssh_public_keys         =  {{ ssh_key_var_name }}
+    {% endif %}
+
+    subnet_id = oci_core_subnet.{{ client_subnet_name }}.id
+    backup_subnet_id = oci_core_subnet.{{ backup_subnet_name }}.id
+
+    #Optional
+
+    is_local_backup_enabled = {{ allocate_storage_for_local_backups }}
+    is_sparse_diskgroup_enabled = {{ allocate_storage_for_exadata_sparse_snapshots }}
+    license_model = "{{ license_model }}"
+    time_zone = "{{ time_zone }}"
+
+    {#  ##Do not modify below this line##  #}
+        {#                                     #}
+        {#  ###Section for adding Defined and Freeform Tags###  #}
+        {% if defined_tags and defined_tags != 'nan' and defined_tags != '' %}
+        {% if defined_tags[0] %}
+        defined_tags = {
+        {% for tags in defined_tags  %}   {% if not loop.last %}
+        "{{ tags[0]  }}"= "{{ tags[1] }}" ,
+        {% else %}
+        "{{ tags[0]  }}"= "{{ tags[1] }}"
+        {% endif %}{% endfor %}
+        }
+        {% endif %} {% endif %}
+        {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' %}
+        {% if freeform_tags[0] %}
+        freeform_tags = {
+        {% for tags in freeform_tags %} {% if not loop.last  %}
+        "{{ tags[0] }}"="{{ tags[1] }}",
+        {% else %}
+        "{{ tags[0] }}"="{{ tags[1] }}"
+        {% endif %} {% endfor %}
+        }
+        {% endif %} {% endif %}
+        {#  ###Section for adding Defined and Freeform Tags ends here###  #}
+
+}

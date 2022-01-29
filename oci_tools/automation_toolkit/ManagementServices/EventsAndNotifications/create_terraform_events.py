@@ -47,21 +47,23 @@ def create_terraform_events(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
 
     configFileName = config
     sheetName = "Events"
+    auto_tfvars_filename = '_' + sheetName.lower() + '.auto.tfvars'
+
     ct = commonTools()
     ct.get_subscribedregions(configFileName)
-    x = datetime.datetime.now()
-    date = x.strftime("%f").strip()
     tempStr={}
-    #tempStr2={}
+    event_data = ""
     Events_names={}
+    outfile = {}
+    oname = {}
     tfStr={}
     NaNstr = 'NaN'
 
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
-    events_template = env.get_template('event-template')
-    actions_template = env.get_template('action-template')
+    events_template = env.get_template('module-events-template')
+    actions_template = env.get_template('module-actions-template')
 
     # Read cd3 using pandas dataframe
     df, col_headers = commonTools.read_cd3(filename, sheetName)
@@ -72,6 +74,7 @@ def create_terraform_events(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
 
     # List of the column headers
     dfcolumns = df.columns.values.tolist()
+    region_list = df['Region'].tolist()
 
 
     # Take backup of files
@@ -82,6 +85,13 @@ def create_terraform_events(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
 
         tfStr[eachregion] = ''
         Events_names[eachregion] = []
+
+        # Take backup of files
+        resource = sheetName.lower()
+        srcdir = outdir + "/" + eachregion + "/"
+        commonTools.backup_file(srcdir, resource, auto_tfvars_filename)
+
+    regions_done_count =[]
 
     # Iterate over rows
     for i in df.index:
@@ -97,6 +107,7 @@ def create_terraform_events(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
             exit(1)
         # temporary dictionary1 and dictionary2
         tempdict = {}
+
         # Check if values are entered for mandatory fields
         if str(df.loc[i, 'Region']).lower() == 'nan' or str(df.loc[i, 'Compartment Name']).lower() == 'nan' or str(df.loc[i, 'Event Name']).lower() == 'nan' or str(df.loc[i, 'Action Type']).lower() == 'nan' or str(df.loc[i, 'Action is Enabled']).lower() == 'nan' or str(df.loc[i, 'Service Name']).lower() == 'nan' or str(df.loc[i, 'Resource']).lower() == 'nan' or str(df.loc[i, 'Event is Enabled']).lower() == 'nan'or str(df.loc[i, 'Topic']).lower() == 'nan' :
             print("\nThe values for Region, Compartment, Topic, Protocol and Endpoint cannot be left empty. Please enter a value and try again !!")
@@ -187,7 +198,20 @@ def create_terraform_events(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
             tempStr.update(tempdict)
 
         if(event_name not in Events_names[region]):
-            tfStr[region] = ""
+            prev_row_region = str(region_list[i-1]).strip().lower()
+            if (region != prev_row_region):
+                tfStr[prev_row_region] = tfStr[prev_row_region][:-1] + event_data
+            else:
+                tfStr[region] =tfStr[region][:-1] + event_data
+
+            event_data = ""
+            if (region not in regions_done_count):
+                tempdict = {"count": 0}
+                regions_done_count.append(region)
+            else:
+                tempdict = {"count": i}
+            tempStr.update(tempdict)
+
             Events_names[region].append(event_name)
             listevent = '{"eventType":[],"data":{}}'
             listeventid = json.loads(listevent)
@@ -202,20 +226,12 @@ def create_terraform_events(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
                 tempdict = {'condition' : condition}
             tempStr.update(tempdict)
       
-            # Write all info to TF string
-            tfStr[region]=tfStr[region] + events_template.render(tempStr)
-            actions =  actions_template.render(tempStr)
-            tfStr[region] = tfStr[region].replace("#ADD_Actions", actions)
+            event_data = events_template.render(tempStr)
+            actions = actions_template.render(tempStr)
+            event_data = event_data.replace("#ADD_Actions", actions)
 
-            # Write to output
-            file = outdir + "/" + region + "/" + tf_name + "-event.tf"
-            oname = open(file, "w+")
-            print("Writing to " + file)
-            oname.write(tfStr[region])
-            oname.close()
 
         elif(event_name in Events_names[region]):
-            tfStr[region]=''
             if( topic_name == temp_topic):
              if( temp_action != action_is_enabled ):
               temp_action = action_is_enabled
@@ -231,14 +247,29 @@ def create_terraform_events(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
                 condition = extend_event(service_name, resources, listeventid)
             tempdict = {'condition' : condition}
             tempStr.update(tempdict)
-            tfStr[region]=tfStr[region] + events_template.render(tempStr)
-            tfStr[region] = tfStr[region].replace("#ADD_Actions", actions)
 
-            # Write to output
-            file = outdir + "/" + region + "/" + tf_name + "-event.tf"
-            oname = open(file, "w+")
-            oname.write(tfStr[region])
-            oname.close()
+            event_data = events_template.render(tempStr)
+            event_data = event_data.replace("#ADD_Actions", actions)
+
+    tfStr[region] = tfStr[region][:-1] + event_data
+    # Write to output
+    for reg in ct.all_regions:
+        reg_out_dir = outdir + "/" + reg
+        if (tfStr[reg] != ''):
+            outfile[reg] = reg_out_dir + "/" + prefix + auto_tfvars_filename
+            oname[reg] = open(outfile[reg], 'w')
+            oname[reg].write(tfStr[reg])
+            oname[reg].close()
+            print(outfile[reg] + " for Events has been created for region " + reg)
+
+        # Rename the modules file in outdir to .tf
+        module_filename = outdir + "/" + reg + "/" + sheetName.lower() + ".txt"
+        rename_module_filename = outdir + "/" + reg + "/" + sheetName.lower() + ".tf"
+
+        if not os.path.isfile(rename_module_filename):
+            if os.path.isfile(module_filename):
+                os.rename(module_filename, rename_module_filename)
+
 
 if __name__ == '__main__':
     # Execution of the code begins here

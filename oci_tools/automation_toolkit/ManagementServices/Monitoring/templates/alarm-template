@@ -8,8 +8,6 @@ resource "oci_monitoring_alarm" "{{ alarm_tf_name }}" {
     namespace = "{{ namespace }}"
     query = "{{ query }}"
     severity = "{{ severity }}"
-
-
     body = "{{ body }}"
     message_format = "{{ message_format }}"
     #metric_compartment_id_in_subtree = var.alarm_metric_compartment_id_in_subtree

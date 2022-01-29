@@ -33,7 +33,9 @@ def parse_args():
 def create_terraform_alarms(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
     filename = inputfile
     configFileName = config
-    sheetName="Alarms"
+
+    sheetName = 'Alarms'
+    auto_tfvars_filename = '_' + sheetName.lower() + '.auto.tfvars'
     ct = commonTools()
     ct.get_subscribedregions(configFileName)
     x = datetime.datetime.now()
@@ -46,7 +48,7 @@ def create_terraform_alarms(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
-    alarms_template = env.get_template('alarm-template')
+    alarms_template = env.get_template('module-alarms-template')
 
     # Read cd3 using pandas dataframe
     df, col_headers = commonTools.read_cd3(filename, sheetName)
@@ -63,8 +65,10 @@ def create_terraform_alarms(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
     for eachregion in ct.all_regions:
         resource=sheetName.lower()
         srcdir = outdir + "/" + eachregion + "/"
-        commonTools.backup_file(srcdir, resource, sheetName.lower()+".tf")
+        commonTools.backup_file(srcdir, resource, auto_tfvars_filename)
         tfStr[eachregion] = ''
+
+    regions_done_count =[]
 
     # Iterate over rows
     for i in df.index:
@@ -81,6 +85,7 @@ def create_terraform_alarms(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
 
         # temporary dictionary1 and dictionary2
         tempdict = {}
+
         # Check if values are entered for mandatory fields
         if str(df.loc[i, 'Region']).lower() == 'nan' or str(df.loc[i, 'Compartment Name']).lower() == 'nan' or str(df.loc[i, 'Alarm Name']).lower() == 'nan' or str(df.loc[i, 'Destination Topic Name']).lower() == 'nan' or str(df.loc[i, 'Is Enabled']).lower() == 'nan' or str(df.loc[i, 'Metric Compartment Name']).lower() == 'nan' or str(df.loc[i, 'Namespace']).lower() == 'nan' or str(df.loc[i, 'Severity']).lower() == 'nan' or str(df.loc[i, 'Query']).lower() == 'nan':
             print("\nThe values for Region, Compartment, Alarm Name, Destination Topic Name, Is Enabled, Metric Compartment Name, Namespace, Severity and Query cannot be left empty. Please enter a value and try again !!")
@@ -156,19 +161,34 @@ def create_terraform_alarms(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
         if skip_row == 1:
             continue
 
+        if (region not in regions_done_count):
+            tempdict = {"count": 0}
+            regions_done_count.append(region)
+        else:
+            tempdict = {"count": i}
+        tempStr.update(tempdict)
+
+
         # Write all info to TF string
-        tfStr[region]=tfStr[region]+alarms_template.render(tempStr)+"\n"
+        tfStr[region]=tfStr[region][:-1] +alarms_template.render(tempStr)
 
     # Write to output
     for reg in ct.all_regions:
         reg_out_dir = outdir + "/" + reg
         if(tfStr[reg]!=''):
-            outfile[reg] = reg_out_dir + "/"+prefix+"_"+sheetName.lower()+".tf"
+            outfile[reg] = reg_out_dir + "/" + prefix + auto_tfvars_filename
             oname[reg] = open(outfile[reg], 'w')
             oname[reg].write(tfStr[reg])
             oname[reg].close()
             print(outfile[reg] + " for Alarms has been created for region "+reg)
 
+        # Rename the modules file in outdir to .tf
+        module_filename = outdir + "/" + reg + "/" + sheetName.lower() + ".txt"
+        rename_module_filename = outdir + "/" + reg + "/" + sheetName.lower() + ".tf"
+
+        if not os.path.isfile(rename_module_filename):
+            if os.path.isfile(module_filename):
+                os.rename(module_filename, rename_module_filename)
 
 
 if __name__ == '__main__':

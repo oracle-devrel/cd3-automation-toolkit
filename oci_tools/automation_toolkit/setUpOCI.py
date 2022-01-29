@@ -200,18 +200,25 @@ def export_exa_infra_vmclusters(inputfile, outdir, prefix,config):
     print("\n\nExecute tf_import_commands_exa-infra_nonGF.sh and tf_import_commands_exa-vmclusters_nonGF.sh scripts created under each region directory to synch TF with OCI LBR objects\n")
 
 def export_management_services():
-    options = [Option("Export Events and Notifications",export_events_notifications,'Exporting Events and Notifications'),
+    options = [Option("Export Notifications",export_notifications,'Exporting Notifications'),
+               Option("Export Events", export_events,'Exporting Events'),
                Option("Export Alarms", export_alarms, 'Exporting Alarms')]
 
     options = show_options(options, quit=True, menu=True, index=1)
     execute_options(options, inputfile, outdir, prefix, config)
 
-def export_events_notifications(inputfile, outdir, prefix,config):
-    compartments = get_compartment_list('Events and Notifications')
-    ManagementServices.export_events_notifications(inputfile, outdir, _config=config, network_compartments=compartments)
+def export_events(inputfile, outdir, prefix,config):
+    compartments = get_compartment_list('Events')
+    ManagementServices.export_events(inputfile, outdir, _config=config, network_compartments=compartments)
     ManagementServices.create_terraform_events(inputfile, outdir, prefix, config=config)
+    print("\n\nExecute tf_import_commands_events_nonGF.sh script created under each region directory to synch TF with OCI Events and Notifications objects\n")
+
+def export_notifications(inputfile, outdir, prefix,config):
+    compartments = get_compartment_list('Notifications')
+    ManagementServices.export_notifications(inputfile, outdir, _config=config, network_compartments=compartments)
     ManagementServices.create_terraform_notifications(inputfile, outdir, prefix, config=config)
-    print("\n\nExecute tf_import_commands_events_notifications_nonGF.sh script created under each region directory to synch TF with OCI Events and Notifications objects\n")
+    print("\n\nExecute tf_import_commands_notifications_nonGF.sh script created under each region directory to synch TF with OCI Events and Notifications objects\n")
+
 
 def export_alarms(inputfile, outdir, prefix,config):
     compartments = get_compartment_list('Alarms')
