@@ -294,7 +294,7 @@ def modify_terraform_secrules(inputfile, outdir, prefix=None, config=DEFAULT_LOC
         defaultTextToAddSeclistSearch = "##Add New Default Seclists for " + reg + " here##"
 
         # Rename the modules file in outdir to .tf
-        module_txt_filenames = ['seclists']
+        module_txt_filenames = ['seclists', 'default_seclists']
         for modules in module_txt_filenames:
             module_filename = outdir + "/" + reg + "/" + modules.lower() + ".txt"
             rename_module_filename = outdir + "/" + reg + "/" + modules.lower() + ".tf"
