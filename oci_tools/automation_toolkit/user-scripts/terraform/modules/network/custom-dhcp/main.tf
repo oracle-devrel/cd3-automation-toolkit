@@ -1,7 +1,7 @@
 // Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 
 ############################
-# Resource Block - Networking
+# Resource Block - Network
 # Create Custom DHCP Options
 ############################
 

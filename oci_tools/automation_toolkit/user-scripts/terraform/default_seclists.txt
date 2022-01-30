@@ -5,7 +5,7 @@
 # Create Default Security Lists
 ############################
 
-module "default_security_lists" {
+module "default-security-lists" {
   source = "./modules/network/default-sec-list"
   for_each  = (var.default_seclists != null || var.default_seclists != {})  ? var.default_seclists : {}
 
@@ -21,6 +21,6 @@ module "default_security_lists" {
 
 /*
 output "default_seclist_id_map" {
-  value = [ for k,v in merge(module.default_security_lists.*...) : v.default_seclist_id ]
+  value = [ for k,v in merge(module.default-security-lists.*...) : v.default_seclist_id ]
 }
 */
