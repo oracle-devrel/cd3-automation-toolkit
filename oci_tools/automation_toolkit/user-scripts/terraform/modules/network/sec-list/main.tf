@@ -156,6 +156,7 @@ resource "oci_core_security_list" "security_list" {
         }
       }
   lifecycle {
+    create_before_destroy = true
     ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"],defined_tags["Oracle-Tags.CreatedBy"]]
     }
 }

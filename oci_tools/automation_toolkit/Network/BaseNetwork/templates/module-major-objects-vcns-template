@@ -2,7 +2,7 @@
 // Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 
 ############################
-# Networking
+# Network
 # Major Objects - VCNs, IGW, NGW, SGW, LPG, DRG - tfvars
 ############################
 

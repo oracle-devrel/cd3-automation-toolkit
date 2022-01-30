@@ -5,7 +5,7 @@
 # Create Security Lists
 ############################
 
-module "security_lists" {
+module "security-lists" {
   source = "./modules/network/sec-list"
   for_each  = (var.seclists != null || var.seclists != {})  ? var.seclists : {}
 
@@ -23,6 +23,6 @@ module "security_lists" {
 
 /*
 output "seclist_id_map" {
-  value = [ for k,v in merge(module.security_lists.*...) : v.seclist_id ]
+  value = [ for k,v in merge(module.security-lists.*...) : v.seclist_id ]
 }
 */

@@ -1,7 +1,7 @@
 // Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 
 ############################
-# Output Block - Networking
+# Output Block - Network
 # Create Default DHCP Options
 ############################
 

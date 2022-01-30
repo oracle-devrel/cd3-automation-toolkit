@@ -1,7 +1,7 @@
 {% if custom == true %}
 
 ############################
-# Networking
+# Network
 # Custom DHCP - tfvars
 ############################
 

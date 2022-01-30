@@ -1,7 +1,7 @@
 {% if count == 0 %}
 
 ############################
-# Networking
+# Network
 # Major Objects - DRG - tfvars
 ############################
 
