@@ -104,9 +104,14 @@ variable "seclists" {
   default = {}
 }
 
-variable "route_table_details" {
-  type = list(any)
-  default = [""]
+variable "default_seclists" {
+  type = map(any)
+  default = {}
+}
+
+variable "route_tables" {
+  type = map(any)
+  default = {}
 }
 
 variable "index" {

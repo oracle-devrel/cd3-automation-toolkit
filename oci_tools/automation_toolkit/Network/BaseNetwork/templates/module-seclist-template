@@ -1,7 +1,7 @@
 {% if (skeleton and count == 0) %}
 
 ############################
-# Networking
+# Network
 # Major Objects - Security List - tfvars
 ############################
 

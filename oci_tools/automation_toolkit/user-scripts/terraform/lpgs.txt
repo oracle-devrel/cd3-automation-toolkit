@@ -63,7 +63,15 @@ module "exported-lpgs" {
 }
 
 /*
-output "lpg_id_map" {
-  value = [ for k,v in merge(module.lpgs.*...) : v.lpg_id ]
+output "hub_lpg_id_map" {
+  value = [ for k,v in merge(module.hub-lpgs.*...) : v.lpg_id ]
+}
+
+output "spoke_lpg_id_map" {
+  value = [ for k,v in merge(module.spoke-lpgs.*...) : v.lpg_id ]
+}
+
+output "exported_lpg_id_map" {
+  value = [ for k,v in merge(module.exported-lpgs.*...) : v.lpg_id ]
 }
 */

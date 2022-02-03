@@ -1,20 +1,20 @@
 // Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 
 ############################
-# Module Block - Networking
+# Module Block - Network
 # Create Security Lists
 ############################
 
-module "security_lists" {
+module "security-lists" {
   source = "./modules/network/sec-list"
   for_each  = (var.seclists != null || var.seclists != {})  ? var.seclists : {}
 
   #Required
   compartment_id = each.value.compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[0][each.value.compartment_name]) : var.tenancy_ocid
 
-  vcn_id = length(regexall("ocid1.vcn.oc1*", each.value.display_name)) > 0 ? each.value.display_name : merge(module.vcns.*...)[each.value.display_name]["vcn_id"][each.value.display_name]
+  vcn_id = length(regexall("ocid1.vcn.oc1*", each.value.vcn_name)) > 0 ? each.value.vcn_name : merge(module.vcns.*...)[each.value.vcn_name]["vcn_id"][each.value.vcn_name]
 
-  index           = count.index
+  key_name = each.key
   defined_tags    = each.value.defined_tags
   display_name    = each.value.display_name != null ? each.value.display_name : null
   freeform_tags   = each.value.freeform_tags
@@ -23,6 +23,6 @@ module "security_lists" {
 
 /*
 output "seclist_id_map" {
-  value = [ for k,v in merge(module.security_lists.*...) : v.seclist_id ]
+  value = [ for k,v in merge(module.security-lists.*...) : v.seclist_id ]
 }
 */

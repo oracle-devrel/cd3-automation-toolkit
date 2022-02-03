@@ -1,12 +1,12 @@
 // Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 
 ############################
-# Resource Block - Networking
+# Resource Block - Network
 # Create Dynamic Routing Gateway
 ############################
 
 resource "oci_core_drg" "drg" {
-    count = (var.drg_display_name != null  && var.drg_display_name != "") ? 1 : 0
+    count = (var.display_name != null  && var.display_name != "") ? 1 : 0
     #Required
     compartment_id = var.compartment_id
 

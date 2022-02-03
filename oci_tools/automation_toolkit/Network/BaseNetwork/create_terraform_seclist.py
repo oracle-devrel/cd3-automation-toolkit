@@ -151,7 +151,7 @@ def create_terraform_seclist(inputfile, outdir, prefix, config, modify_network=F
 
             # Create Seclist for all the unique names in Subnet Sheet
             if (start not in modify_network_seclists[region_in_lowercase] and region_seclist_name not in common_seclist):
-                modify_network_seclists[region_in_lowercase] = modify_network_seclists[region_in_lowercase]+ template.render(tempStr,seclist_count=seclist_count,ingress_sec_rules="####ADD_NEW_INGRESS_SEC_RULES " + region_in_lowercase +"_"+sl_tf_name + " ####",egress_sec_rules="####ADD_NEW_EGRESS_SEC_RULES " + region_in_lowercase +"_"+sl_tf_name + " ####")
+                modify_network_seclists[region_in_lowercase] = modify_network_seclists[region_in_lowercase]+ template.render(tempStr,ingress_sec_rules="####ADD_NEW_INGRESS_SEC_RULES " + region_in_lowercase +"_"+sl_tf_name + " ####",egress_sec_rules="####ADD_NEW_EGRESS_SEC_RULES " + region_in_lowercase +"_"+sl_tf_name + " ####")
                 seclist_count = seclist_count + 1
 
             # If same seclist name is used for subsequent subnets

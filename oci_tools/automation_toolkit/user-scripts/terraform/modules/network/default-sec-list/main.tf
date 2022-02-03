@@ -2,15 +2,14 @@
 
 ############################
 # Resource Block - Network
-# Create Security List
+# Create Default Security List
 ############################
 
-resource "oci_core_security_list" "security_list" {
+resource "oci_core_default_security_list" "default_security_list" {
 
-    #Required
     count = (var.display_name != null  && var.display_name != "") ? 1 : 0
-    compartment_id = var.compartment_id
-    vcn_id         = var.vcn_id
+    #Required
+    manage_default_resource_id   = var.manage_default_resource_id
 
     #Optional
     defined_tags   = var.defined_tags
@@ -133,7 +132,7 @@ resource "oci_core_security_list" "security_list" {
                         #Required
                         max = egress_security_rules.value["tcp_source_ports"][0].tcp_options_source_port_range_max != null ? egress_security_rules.value["tcp_source_ports"][0].tcp_options_source_port_range_max : null
                         min = egress_security_rules.value["tcp_source_ports"][0].tcp_options_source_port_range_min != null ? egress_security_rules.value["tcp_source_ports"][0].tcp_options_source_port_range_min : null
-                        }
+                        } 
                       }
                   }
           }
@@ -154,9 +153,8 @@ resource "oci_core_security_list" "security_list" {
                 }
             }
         }
-      }
+      } 
   lifecycle {
-    create_before_destroy = true
     ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"],defined_tags["Oracle-Tags.CreatedBy"]]
     }
 }

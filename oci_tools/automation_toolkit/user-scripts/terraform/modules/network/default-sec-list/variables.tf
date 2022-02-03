@@ -2,21 +2,16 @@
 
 ############################
 # Variable Block - Network
-# Create Security List
+# Create Default Security List
 ############################
 
-variable "compartment_id" {
+variable "manage_default_resource_id" {
 	type = string
 	default = null
 }
 
 variable "key_name" {
-	type = string
-	default = null
-}
-
-variable "vcn_id" {
-	type = string
+	type = number
 	default = null
 }
 

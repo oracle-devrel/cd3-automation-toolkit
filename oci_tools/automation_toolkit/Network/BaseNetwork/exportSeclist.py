@@ -58,9 +58,9 @@ def print_secrules(seclists,region,vcn_name,comp_name):
             tf_name = vcn_name + "_" + dn
             tf_name=commonTools.check_tf_variable(tf_name)
             if("Default Security List for " in dn):
-                importCommands[region.lower()].write("\nterraform import oci_core_default_security_list." + tf_name + " " + str(seclist.id))
+                importCommands[region.lower()].write("\nterraform import \"module.default_security_lists[\\\"" + tf_name + "\\\"].oci_core_default_security_list.default_security_list[0]\" " + str(seclist.id))
             else:
-                importCommands[region.lower()].write("\nterraform import \"module.security_lists[\\\"" + tf_name + "\\\"].oci_core_security_list.security_list[0] " + str(seclist.id))
+                importCommands[region.lower()].write("\nterraform import \"module.security_lists[\\\"" + tf_name + "\\\"].oci_core_security_list.security_list[0]\" " + str(seclist.id))
 
 
         if(len(isec_rules)==0 and len(esec_rules)==0):
