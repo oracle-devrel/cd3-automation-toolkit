@@ -65,6 +65,14 @@ def modify_terraform_secrules(inputfile, outdir, prefix=None, config=DEFAULT_LOC
             if line:
                 yield line
 
+    def get_protocol(strprotocol):
+        if str(strprotocol).lower() == "all":
+            return "all"
+        else:
+            protocol_dict = commonTools().protocol_dict
+            for k, v in protocol_dict.items():
+                if (strprotocol).lower() == v.lower():
+                    return k
 
     def create_ingress_rule_string(tempStr,ingress_rule,tempdict2):
 
@@ -119,15 +127,25 @@ def modify_terraform_secrules(inputfile, outdir, prefix=None, config=DEFAULT_LOC
         return egress_rule
 
 
-    def get_protocol(strprotocol):
-        if str(strprotocol).lower() == "all":
-            return "all"
-        else:
-            protocol_dict = commonTools().protocol_dict
-            for k, v in protocol_dict.items():
-                if (strprotocol).lower() == v.lower():
-                    return k
+    def generate_security_rules(region_seclist_name,processed_seclist,tfStr,region,tempStr, ingress_rule, tempdict2, egress_rule):
+        if region_seclist_name not in processed_seclist:
+            tfStr[region] = tfStr[region] + seclist.render(tempStr,
+                                                                 ingress_sec_rules="####ADD_NEW_INGRESS_SEC_RULES " + region_seclist_name + " ####",
+                                                                 egress_sec_rules="####ADD_NEW_EGRESS_SEC_RULES " + region_seclist_name + " ####")
 
+            processed_seclist.append(region_seclist_name)
+
+        if str(row['Rule Type']).lower() == 'ingress':
+            new_ingress_sec_rule = create_ingress_rule_string(tempStr, ingress_rule, tempdict2)
+            tfStr[region] = tfStr[region].replace(
+                "####ADD_NEW_INGRESS_SEC_RULES " + region_seclist_name + " ####", new_ingress_sec_rule)
+
+        if str(row['Rule Type']).lower() == 'egress':
+            new_egress_sec_rule = create_egress_rule_string(tempStr, egress_rule, tempdict2)
+            tfStr[region] = tfStr[region].replace(
+                "####ADD_NEW_EGRESS_SEC_RULES " + region_seclist_name + " ####", new_egress_sec_rule)
+
+        return tfStr[region]
 
     # Read cd3 using pandas dataframe
     df, col_headers = commonTools.read_cd3(secrulesfilename, "SecRulesinOCI")
@@ -138,19 +156,17 @@ def modify_terraform_secrules(inputfile, outdir, prefix=None, config=DEFAULT_LOC
     region_included = []
     tempSkeleton = {}
     default_seclist_tempSkeleton = {}
-    tfStr = {}
+    sectfStr = {}
     deftfStr = {}
 
     for reg in ct.all_regions:
-        if (os.path.exists(outdir + "/" + reg)):
-            defaultname[reg] = open(outdir + "/" + reg + "/VCNs_Default_SecList.tf", "w")
         default_ruleStr[reg] = ''
         default_seclists_done[reg] = []
         seclists_done[reg] = []
         tempSkeleton[reg] = ''
         deftfStr[reg] = ''
         default_seclist_tempSkeleton[reg] = ''
-        tfStr[reg] = ''
+        sectfStr[reg] = ''
 
         # Backup existing seclist files in ash and phx dir
         resource = "SLs"
@@ -254,40 +270,9 @@ def modify_terraform_secrules(inputfile, outdir, prefix=None, config=DEFAULT_LOC
                 tempStr.update(tempdict)
 
             if ('Default Security List for' in display_name):
-                if region_seclist_name not in processed_seclist:
-                    deftfStr[region] = deftfStr[region] + seclist.render(tempStr,
-                                                                   ingress_sec_rules="####ADD_NEW_INGRESS_SEC_RULES " + region_seclist_name + " ####",
-                                                                   egress_sec_rules="####ADD_NEW_EGRESS_SEC_RULES " + region_seclist_name + " ####")
-
-                    processed_seclist.append(region_seclist_name)
-
-                if str(row['Rule Type']).lower() == 'ingress':
-                    new_ingress_sec_rule = create_ingress_rule_string(tempStr, ingress_rule, tempdict2)
-                    deftfStr[region] = deftfStr[region].replace(
-                        "####ADD_NEW_INGRESS_SEC_RULES " + region_seclist_name + " ####", new_ingress_sec_rule)
-
-                if str(row['Rule Type']).lower() == 'egress':
-                    new_egress_sec_rule = create_egress_rule_string(tempStr, egress_rule, tempdict2)
-                    deftfStr[region] = deftfStr[region].replace(
-                        "####ADD_NEW_EGRESS_SEC_RULES " + region_seclist_name + " ####", new_egress_sec_rule)
-
+                deftfStr[region] = generate_security_rules(region_seclist_name = region_seclist_name,processed_seclist = processed_seclist,tfStr =deftfStr, region=region,tempStr = tempStr, ingress_rule = ingress_rule, tempdict2 = tempdict2, egress_rule= egress_rule)
             elif ('Default Security List for' not in display_name.strip()):
-
-                if region_seclist_name not in processed_seclist:
-                    tfStr[region] = tfStr[region] + seclist.render(tempStr,
-                                                              ingress_sec_rules="####ADD_NEW_INGRESS_SEC_RULES " + region_seclist_name + " ####",
-                                                              egress_sec_rules="####ADD_NEW_EGRESS_SEC_RULES " + region_seclist_name + " ####")
-
-                    processed_seclist.append(region_seclist_name)
-
-                if str(row['Rule Type']).lower() == 'ingress':
-                    new_ingress_sec_rule = create_ingress_rule_string(tempStr, ingress_rule, tempdict2)
-                    tfStr[region] = tfStr[region].replace("####ADD_NEW_INGRESS_SEC_RULES " + region_seclist_name + " ####",new_ingress_sec_rule)
-
-                if str(row['Rule Type']).lower() == 'egress':
-                    new_egress_sec_rule = create_egress_rule_string(tempStr, egress_rule, tempdict2)
-                    tfStr[region] = tfStr[region].replace("####ADD_NEW_EGRESS_SEC_RULES " + region_seclist_name + " ####",new_egress_sec_rule)
-
+                sectfStr[region] = generate_security_rules(region_seclist_name = region_seclist_name,processed_seclist = processed_seclist,tfStr =sectfStr, region=region,tempStr = tempStr, ingress_rule = ingress_rule, tempdict2 = tempdict2, egress_rule= egress_rule)
 
     for reg in ct.all_regions:
         textToAddSeclistSearch = "##Add New Seclists for " + reg + " here##"
@@ -306,10 +291,8 @@ def modify_terraform_secrules(inputfile, outdir, prefix=None, config=DEFAULT_LOC
         outfile = outdir + "/" + reg + "/" + prefix + auto_tfvars_filename
         default_outfile = outdir + "/" + reg + "/" + prefix + default_auto_tfvars_filename
 
-        default_seclist_tempSkeleton[reg] = default_seclist_tempSkeleton[reg].replace(defaultTextToAddSeclistSearch,
-                                                      deftfStr[reg] + defaultTextToAddSeclistSearch)
-        tempSkeleton[reg] = tempSkeleton[reg].replace(textToAddSeclistSearch,
-                                                      tfStr[reg] + textToAddSeclistSearch)
+        default_seclist_tempSkeleton[reg] = default_seclist_tempSkeleton[reg].replace(defaultTextToAddSeclistSearch,deftfStr[reg] + defaultTextToAddSeclistSearch)
+        tempSkeleton[reg] = tempSkeleton[reg].replace(textToAddSeclistSearch,sectfStr[reg] + textToAddSeclistSearch)
 
         if tempSkeleton[reg] != '' :
             oname = open(outfile, "w")

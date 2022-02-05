@@ -120,10 +120,9 @@ def create_terraform_seclist(inputfile, outdir, prefix, config, modify_network=F
             if seclist_count == 0 and tempStr['count'] == 0:
                 tempSkeleton[region_in_lowercase] = template.render(tempStr,skeleton=True)
 
-            start = "# Start of " + region_in_lowercase + "_" + sl_tf_name + " #"
-            end = "# End of " + region_in_lowercase + "_" + sl_tf_name + " #"
-
             region_seclist_name = region_in_lowercase + "_" + sl_tf_name
+            start = "# Start of " + region_seclist_name + " #"
+            end = "# End of " + region_seclist_name + " #"
             # Option "Modify Network"
             if modify_network:
 
@@ -151,7 +150,7 @@ def create_terraform_seclist(inputfile, outdir, prefix, config, modify_network=F
 
             # Create Seclist for all the unique names in Subnet Sheet
             if (start not in modify_network_seclists[region_in_lowercase] and region_seclist_name not in common_seclist):
-                modify_network_seclists[region_in_lowercase] = modify_network_seclists[region_in_lowercase]+ template.render(tempStr,ingress_sec_rules="####ADD_NEW_INGRESS_SEC_RULES " + region_in_lowercase +"_"+sl_tf_name + " ####",egress_sec_rules="####ADD_NEW_EGRESS_SEC_RULES " + region_in_lowercase +"_"+sl_tf_name + " ####")
+                modify_network_seclists[region_in_lowercase] = modify_network_seclists[region_in_lowercase]+ template.render(tempStr,ingress_sec_rules="####ADD_NEW_INGRESS_SEC_RULES " + region_seclist_name + " ####",egress_sec_rules="####ADD_NEW_EGRESS_SEC_RULES " + region_seclist_name + " ####")
                 seclist_count = seclist_count + 1
 
             # If same seclist name is used for subsequent subnets
@@ -291,6 +290,7 @@ def create_terraform_seclist(inputfile, outdir, prefix, config, modify_network=F
     for reg in ct.all_regions:
 
         textToAddSeclistSearch = "##Add New Seclists for "+reg+" here##"
+
         # Rename the modules file in outdir to .tf
         module_txt_filenames = ['seclists']
         for modules in module_txt_filenames:
@@ -307,7 +307,7 @@ def create_terraform_seclist(inputfile, outdir, prefix, config, modify_network=F
             oname = open(outfile, "w")
             oname.write(tempSkeleton[reg])
             oname.close()
-            print(outfile + " containing TF for seclist has been created for region " + reg)
+            print(outfile + " containing seclists has been created for region " + reg)
         else:
             tempSkeleton[reg] = tempSkeleton[reg].replace(textToAddSeclistSearch,modify_network_seclists[reg] + textToAddSeclistSearch)
             srcdir = outdir + "/" + reg + "/"
@@ -316,7 +316,7 @@ def create_terraform_seclist(inputfile, outdir, prefix, config, modify_network=F
             oname = open(outfile, "w")
             oname.write(tempSkeleton[reg])
             oname.close()
-            print(outfile + " containing TF for seclist has been created for region " + reg)
+            print(outfile + " containing seclists has been updated for region " + reg)
 
 if __name__ == '__main__':
     args = parse_args()

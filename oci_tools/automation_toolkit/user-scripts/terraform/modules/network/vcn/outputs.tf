@@ -20,3 +20,7 @@ output "vcn_default_dhcp_id" {
 output "vcn_default_security_list_id" {
   value = zipmap(oci_core_vcn.vcn.*.display_name, oci_core_vcn.vcn.*.default_security_list_id)
 }
+
+output "vcn_default_route_table_id" {
+  value = zipmap(oci_core_vcn.vcn.*.display_name, oci_core_vcn.vcn.*.default_route_table_id)
+}

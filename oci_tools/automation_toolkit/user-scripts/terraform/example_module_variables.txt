@@ -114,8 +114,8 @@ variable "route_tables" {
   default = {}
 }
 
-variable "index" {
-  type    = number
+variable "default_route_tables" {
+  type    = map(any)
   default = null
 }
 

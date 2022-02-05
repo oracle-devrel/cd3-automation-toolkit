@@ -361,6 +361,11 @@ def seek_info():
           default = {}
         }
 
+        variable "default_route_tables" {
+          type    = map(any)
+          default = null
+        }
+
         """
         if (windows_image_id != ''):
             variables_data = variables_data + """

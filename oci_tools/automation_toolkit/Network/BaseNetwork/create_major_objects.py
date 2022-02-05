@@ -633,7 +633,7 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
                 os.makedirs(reg_out_dir)
 
             # Rename the modules file in outdir to .tf
-            module_txt_filenames = ['vcns','igws','ngws','sgws','default_dhcp','drgs']
+            module_txt_filenames = ['vcns','igws','ngws','sgws','default_dhcp','drgs','lpgs','fetch_vcns']
             for modules in module_txt_filenames:
                 module_filename = outdir + "/" + reg + "/" + modules.lower() + ".txt"
                 rename_module_filename = outdir + "/" + reg + "/" + modules.lower() + ".tf"

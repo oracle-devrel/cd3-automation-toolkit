@@ -140,9 +140,9 @@ def print_routetables(routetables,region,vcn_name,comp_name):
             tf_name = commonTools.check_tf_variable(tf_name)
 
             if ("Default Route Table for " in dn):
-                importCommands[region.lower()].write("\nterraform import oci_core_default_route_table." + tf_name + " " + str(routetable.id))
+                importCommands[region.lower()].write("\nterraform import \"module.default-route-tables[\\\"" + tf_name + "\\\"].oci_core_default_route_table.default_route_table[0]\" " + str(routetable.id))
             else:
-                importCommands[region.lower()].write("\nterraform import oci_core_route_table." + tf_name + " " + str(routetable.id))
+                importCommands[region.lower()].write("\nterraform import \"module.route-tables[\\\"" + tf_name + "\\\"].oci_core_route_table.route_table[0]\" " + str(routetable.id))
 
         if(not rules):
             insert_values(routetable, values_for_column, region, comp_name, vcn_name,None)

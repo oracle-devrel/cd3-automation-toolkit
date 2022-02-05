@@ -11,7 +11,7 @@ variable "manage_default_resource_id" {
 }
 
 variable "key_name" {
-	type = number
+	type = string
 	default = null
 }
 

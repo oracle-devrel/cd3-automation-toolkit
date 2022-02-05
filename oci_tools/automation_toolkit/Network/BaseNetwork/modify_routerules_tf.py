@@ -256,21 +256,58 @@ def modify_terraform_routerules(inputfile, outdir, prefix=None, config=DEFAULT_L
     #Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
-    routerule = env.get_template('route-rule-template')
-    defaultrt = env.get_template('default-route-table-template')
-    routetable = env.get_template('route-table-template')
-
+    routerule = env.get_template('module-route-rule-template')
+    defaultrt = env.get_template('module-default-route-table-template')
+    routetable = env.get_template('module-route-table-template')
+    auto_tfvars_filename = "_routetables.auto.tfvars"
+    default_auto_tfvars_filename = "_default_routetables.auto.tfvars"
+    region_included = []
+    common_rt = []
 
     subnets_done={}
-    oname = None
     default_ruleStr={}
-    defaultname={}
     default_rtables_done={}
     default_rule={}
 
-    def create_route_rule_string(new_route_rule,tempStr):
-        new_route_rule = new_route_rule + routerule.render(tempStr)
-        return new_route_rule
+    def create_route_rule_string(routetableStr,tempStr,region):
+        srcStr = "####ADD_NEW_"+tempStr['resource']+"_RULES " + tempStr['region_rt_name'] + " ####"
+        new_route_rule = routerule.render(tempStr)
+        new_route_rule = new_route_rule + "\n" + srcStr + "\n"
+        routetableStr[region] = routetableStr[region].replace(srcStr, new_route_rule)
+        return routetableStr[region]
+
+
+    def generate_route_table_string(region_rt_name,region,routetableStr,tempStr,common_rt):
+        if (region_rt_name not in common_rt and region_rt_name not in routetableStr[region]):
+            routetableStr[region] = routetableStr[region] + routetable.render(tempStr,
+                                                                            route_rules_igw="####ADD_NEW_IGW_RULES " + region_rt_name + " ####",
+                                                                            route_rules_ngw="####ADD_NEW_NGW_RULES " + region_rt_name + " ####",
+                                                                            route_rules_sgw="####ADD_NEW_SGW_RULES " + region_rt_name + " ####",
+                                                                            route_rules_drg="####ADD_NEW_DRG_RULES " + region_rt_name + " ####",
+                                                                            route_rules_lpg="####ADD_NEW_LPG_RULES " + region_rt_name + " ####",
+                                                                            route_rules_ip="####ADD_NEW_IP_RULES " + region_rt_name + " ####", )
+
+        if tempStr['network_entity_id'] != '':
+            if tempStr['resource'] == "NGW":
+                routetableStr[region] = create_route_rule_string(routetableStr,tempStr,region)
+
+            if tempStr['resource'] == "IGW":
+                routetableStr[region] = create_route_rule_string(routetableStr,tempStr,region)
+
+            if tempStr['resource'] == "SGW":
+                routetableStr[region] = create_route_rule_string(routetableStr,tempStr,region)
+
+            if tempStr['resource'] == "LPG":
+                routetableStr[region] = create_route_rule_string(routetableStr,tempStr,region)
+
+            if tempStr['resource'] == "DRG":
+                routetableStr[region] = create_route_rule_string(routetableStr,tempStr,region)
+
+            if tempStr['resource'] == "IP":
+                routetableStr[region] = create_route_rule_string(routetableStr,tempStr,region)
+
+        common_rt.append(region_rt_name)
+        return routetableStr[region]
 
     vcns=parseVCNs(filename)
 
@@ -280,16 +317,25 @@ def modify_terraform_routerules(inputfile, outdir, prefix=None, config=DEFAULT_L
     df = df.dropna(how='all')
     df = df.reset_index(drop=True)
 
+    tempSkeleton = {}
+    default_rt_tempSkeleton = {}
+    tfStr = {}
+    deftfStr = {}
+
     for reg in ct.all_regions:
-        if(os.path.exists(outdir + "/" +reg)):
-            defaultname[reg] = open(outdir + "/" + reg + "/VCNs_Default_RouteTable.tf", "w")
         default_ruleStr[reg] = ''
         default_rule[reg] = ''
         default_rtables_done[reg]=[]
         subnets_done[reg] = []
+        default_rt_tempSkeleton[reg] = ''
+        tempSkeleton[reg] = ''
+        tfStr[reg] = ''
+        deftfStr[reg] = ''
+
         # Backup existing route table files in ash and phx dir
         resource = "RTs"
-        commonTools.backup_file(outdir + "/" + reg, resource, "_routetable.tf")
+        commonTools.backup_file(outdir + "/" + reg, resource, prefix+auto_tfvars_filename)
+        commonTools.backup_file(outdir + "/" + reg, resource, prefix + default_auto_tfvars_filename)
 
     # temporary dictionary1 and dictionary2
     tempStr = {}
@@ -297,9 +343,7 @@ def modify_terraform_routerules(inputfile, outdir, prefix=None, config=DEFAULT_L
     vcn_tf_name = ''
     obj_tf_name = ''
     display_name=''
-    rt_tf_name=''
-    dest_objs=[]
-    tfStr = ''
+    region_rt_name = ''
 
     # List of the column headers
     dfcolumns = df.columns.values.tolist()
@@ -323,12 +367,21 @@ def modify_terraform_routerules(inputfile, outdir, prefix=None, config=DEFAULT_L
             print("skipping route table: " + str(df.loc[i, 'Route Table Name']) + " as its VCN is not part of VCNs tab in cd3")
             continue
 
-        destination = str(df.loc[i, 'Destination CIDR']).strip()
-        destination = "\"" + destination + "\""
-        description = str(df.loc[i, 'Rule Description'])
-        if description == 'nan':
-            description = ""
-        tempdict = {'destination': destination, 'description': description}
+        tempStr.update({'count': 1})
+        if ('Default Route Table for' in display_name.strip()):
+            if ('Default Route Table for' + region not in region_included):
+                tempStr.update({'count': 0})
+                region_included.append('Default Route Table for' + region)
+        elif region not in region_included:
+            tempStr.update({'count': 0})
+            region_included.append(region)
+
+        # Create Skeleton Template
+        if tempStr['count'] == 0:
+            if ('Default Route Table for' in display_name.strip()):
+                default_rt_tempSkeleton[region] = defaultrt.render(tempStr, skeleton=True, region=region)
+            elif ('Default Route Table for' not in display_name.strip()):
+                tempSkeleton[region] = routetable.render(tempStr, skeleton=True, region=region)
 
         for columnname in dfcolumns:
 
@@ -344,6 +397,7 @@ def modify_terraform_routerules(inputfile, outdir, prefix=None, config=DEFAULT_L
             # Process Defined and Freeform Tags
             if columnname.lower() in commonTools.tagColumns:
                 tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)
+                tempStr.update(tempdict)
 
             if columnname == 'Compartment Name':
                 compartment_tf_name = commonTools.check_tf_variable(columnvalue)
@@ -355,7 +409,7 @@ def modify_terraform_routerules(inputfile, outdir, prefix=None, config=DEFAULT_L
                 display_name = str(df.loc[i,'Route Table Name'])
 
                 vcn_tf_name = commonTools.check_tf_variable(vcn_name)
-                tempdict = {'vcn_tf_name': vcn_tf_name,'rt_display' : display_name}
+                tempdict = {'vcn_tf_name': vcn_tf_name,'display_name' : display_name}
                 tempStr.update(tempdict)
 
             # Check this code once
@@ -368,31 +422,50 @@ def modify_terraform_routerules(inputfile, outdir, prefix=None, config=DEFAULT_L
                     add_rules_tf_name = columnvalue
                     tempStr.update(tempdict)
 
+            if columnname == 'Destination CIDR':
+                destination = columnvalue.strip()
+                tempdict = { 'destination': destination }
+                tempStr.update(tempdict)
+
+            if columnname == 'Rule Description':
+                description = columnvalue.strip()
+                if description == 'nan':
+                    description = ""
+                tempdict = {'description': description}
+                tempStr.update(tempdict)
+
             if columnname == 'Route Destination Object':
                 dest_objs = columnvalue.strip()
                 if dest_objs != '':
                     dest_objs = str(dest_objs).strip().split(":")
                     if (len(dest_objs) == 2):
-                        obj_tf_name = vcn_tf_name + "_" + dest_objs[1].strip()
-                        obj_tf_name = commonTools.check_tf_variable(obj_tf_name)
+                        if "ocid1." not in dest_objs[1].strip():
+                            obj_tf_name = vcn_tf_name + "_" + dest_objs[1].strip()
+                            obj_tf_name = commonTools.check_tf_variable(obj_tf_name)
+                        else:
+                            obj_tf_name = dest_objs[1].strip()
                     if ('ngw' in dest_objs[0].lower().strip()):
-                        dest_obj = "oci_core_nat_gateway." + obj_tf_name + ".id"
+                        tempdict = {'resource' : 'NGW','network_entity_id': obj_tf_name }
+                        tempStr.update(tempdict)
                     elif ('sgw' in dest_objs[0].lower().strip()):
-                        dest_obj = "oci_core_service_gateway." + obj_tf_name + ".id"
+                        tempdict = {'resource': 'SGW','network_entity_id': obj_tf_name}
+                        tempStr.update(tempdict)
                     elif ('igw' in dest_objs[0].lower().strip()):
-                        dest_obj = "oci_core_internet_gateway." + obj_tf_name + ".id"
+                        tempdict = {'resource': 'IGW','network_entity_id': obj_tf_name}
+                        tempStr.update(tempdict)
                     elif ('lpg' in dest_objs[0].lower().strip()):
-                        dest_obj = "oci_core_local_peering_gateway." + obj_tf_name + ".id"
+                        tempdict = {'resource': 'LPG','network_entity_id': obj_tf_name}
+                        tempStr.update(tempdict)
                     elif ('drg' in dest_objs[0].lower().strip()):
                         # dest_obj = "${oci_core_drg." + vcn_tf_name+"_"+obj_tf_name + ".id}"
-                        dest_obj = "oci_core_drg." + commonTools.check_tf_variable(dest_objs[1].strip()) + ".id"
-                    #        elif ('privateip' in dest_objs[0].lower()):
-                    # direct OCID is provided
-                    else:
-                        dest_obj = "\""+dest_objs[0].strip()+"\""
-
-                    tempdict = {'network_entity_id' : dest_obj}
-                    tempStr.update(tempdict)
+                        dest_obj = commonTools.check_tf_variable(dest_objs[1].strip())
+                        tempdict = {'resource': 'DRG','network_entity_id': dest_obj}
+                        tempStr.update(tempdict)
+                    elif('privateip' in dest_objs[0].lower().strip()):
+                        tempdict = {'resource': 'IP','network_entity_id': obj_tf_name }
+                        tempStr.update(tempdict)
+                else:
+                    tempStr.update({'network_entity_id' : ''})
 
             rt_var = vcn_tf_name + "_" + display_name
             rt_tf_name = commonTools.check_tf_variable(rt_var)
@@ -401,56 +474,47 @@ def modify_terraform_routerules(inputfile, outdir, prefix=None, config=DEFAULT_L
             tempStr[columnname] = str(columnvalue).strip()
             tempStr.update(tempdict)
 
-        srcStr = "####ADD_NEW_ROUTE_RULES####" + add_rules_tf_name
+            region_rt_name = region.lower()+"_"+rt_tf_name
+            tempdict = { 'region_rt_name' : region_rt_name }
+            tempStr.update(tempdict)
 
-        if("Default Route Table for " in display_name):
-            if (rt_tf_name not in default_rtables_done[region]):
-                default_ruleStr[region] = default_ruleStr[region] + defaultrt.render(tempStr)
-                default_rtables_done[region].append(rt_tf_name)
-
-            default_rule[region] = ''
-            if(dest_objs and dest_objs[0]!=""):
-                default_rule[region]=create_route_rule_string(default_rule[region],tempStr)
-            default_rule[region] = default_rule[region] + "\n" + "    " + srcStr
-            default_ruleStr[region] = default_ruleStr[region].replace(srcStr, default_rule[region])
-
-            continue
-
-        #Process other route tables
-        outfile = outdir + "/" + region + "/"+rt_tf_name+"_routetable.tf"
-        oname = open(outfile, "w")
-        if(rt_tf_name not in subnets_done[region] or len(subnets_done[region])==0):
-            if (tfStr != ""):
-                print("Writing to..."+str(oname.name))
-                oname.write(tfStr)
-                oname.close()
-                tfStr = ""
-
-            tfStr = routetable.render(tempStr)
-
-            new_route_rule = ""
-            if (dest_objs and dest_objs[0] != ""):
-                new_route_rule = create_route_rule_string(new_route_rule, tempStr)
-            subnets_done[region].append(rt_tf_name)
-        else:
-            new_route_rule = ""
-            if (dest_objs and dest_objs[0] != ""):
-                new_route_rule = create_route_rule_string(new_route_rule,tempStr)
-
-        new_route_rule = new_route_rule + "\n" + "    " + srcStr
-        tfStr = tfStr.replace(srcStr, new_route_rule)
-
-        if (tfStr != ''):
-            oname = open(outfile, "w")
-            print("Writing to ..."+str(oname.name))
-            oname.write(tfStr)
-            oname.close()
+        if ('Default Route Table for' in display_name):
+            deftfStr[region] = generate_route_table_string(region_rt_name=region_rt_name,region=region, routetableStr=deftfStr,tempStr=tempStr,common_rt=common_rt)
+        elif ('Default Route Table for' not in display_name.strip()):
+            tfStr[region] = generate_route_table_string(region_rt_name=region_rt_name,region=region, routetableStr=tfStr,tempStr=tempStr,common_rt=common_rt)
 
     for reg in ct.all_regions:
-        if (default_ruleStr[reg] != ''):
-            print("Writing to ..." + str(defaultname[reg].name))
-            defaultname[reg].write(default_ruleStr[reg])
-            defaultname[reg].close()
+
+        textToAddSeclistSearch = "##Add New Route Tables for " + reg + " here##"
+        defaultTextToAddSeclistSearch = "##Add New Default Route Tables for " + reg + " here##"
+
+        # Rename the modules file in outdir to .tf
+        module_txt_filenames = ['route_tables', 'default_route_tables']
+        for modules in module_txt_filenames:
+            module_filename = outdir + "/" + reg + "/" + modules.lower() + ".txt"
+            rename_module_filename = outdir + "/" + reg + "/" + modules.lower() + ".tf"
+
+            if not os.path.isfile(rename_module_filename):
+                if os.path.isfile(module_filename):
+                    os.rename(module_filename, rename_module_filename)
+
+        outfile = outdir + "/" + reg + "/" + prefix + auto_tfvars_filename
+        default_outfile = outdir + "/" + reg + "/" + prefix + default_auto_tfvars_filename
+
+        default_rt_tempSkeleton[reg] = default_rt_tempSkeleton[reg].replace(defaultTextToAddSeclistSearch,deftfStr[reg] + defaultTextToAddSeclistSearch)
+        tempSkeleton[reg] = tempSkeleton[reg].replace(textToAddSeclistSearch,tfStr[reg] + textToAddSeclistSearch)
+
+        if tempSkeleton[reg] != '' :
+            oname = open(outfile, "w")
+            oname.write(tempSkeleton[reg])
+            oname.close()
+            print(outfile + " for route tables has been created for region " + reg)
+
+        if default_rt_tempSkeleton[reg] !='':
+            oname = open(default_outfile, "w")
+            oname.write(default_rt_tempSkeleton[reg])
+            oname.close()
+            print(default_outfile + " for default route tables has been created for region " + reg)
 
 if __name__ == '__main__':
     args = parse_args()

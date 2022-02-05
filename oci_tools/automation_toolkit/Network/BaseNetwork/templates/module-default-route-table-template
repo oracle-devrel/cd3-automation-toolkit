@@ -1,0 +1,12 @@
+{% if (skeleton and count == 0) %}
+
+############################
+# Network
+# Major Objects - Default Route Table - tfvars
+############################
+
+default_route_tables = {
+  # Route Table map #
+  ##Add New Default Route Tables for {{ region.lower() }} here##
+}
+{% endif %}

@@ -8,3 +8,7 @@
 output "igw_id" {
 	value = zipmap(oci_core_internet_gateway.internet_gateway.*.display_name, oci_core_internet_gateway.internet_gateway.*.id)
 }
+
+output "igw_tf_id" {
+	value =  oci_core_internet_gateway.internet_gateway.*.id
+}
