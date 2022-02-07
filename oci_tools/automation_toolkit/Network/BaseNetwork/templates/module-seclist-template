@@ -1,4 +1,6 @@
 {% if (skeleton and count == 0) %}
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+
 
 ############################
 # Network
@@ -14,7 +16,7 @@ seclists = {
   # Start of {{ region.lower() }}_{{ seclist_tf_name }} #
   {{ seclist_tf_name }} = {
         compartment_name = "{{ compartment_tf_name }}"
-        vcn_name     = "{{ vcn_name }}"
+        vcn_name     = "{{ vcn_tf_name }}"
         display_name     = "{{ display_name }}"
         {% if ingress_sec_rules == '' %}
         ingress_sec_rules =[]

@@ -366,6 +366,21 @@ def seek_info():
           default = null
         }
 
+        variable "nsgs" {
+          type = map(any)
+          default = {}
+        }
+        
+        variable "nsg_rules" {
+          type = map(any)
+          default = {}
+        }
+        
+        variable "subnets" {
+          type    = map(any)
+          default = {}
+        }
+        
         """
         if (windows_image_id != ''):
             variables_data = variables_data + """

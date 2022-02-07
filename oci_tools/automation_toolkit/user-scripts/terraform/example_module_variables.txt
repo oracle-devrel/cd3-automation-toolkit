@@ -119,75 +119,19 @@ variable "default_route_tables" {
   default = null
 }
 
-variable "create_subnets" {
-  type    = bool
-  default = false
+variable "nsgs" {
+  type = map(any)
+  default = {}
 }
 
-variable "create_seclist" {
-  type    = bool
-  default = false
+variable "nsg_rules" {
+  type = map(any)
+  default = {}
 }
 
-variable "create_route_table" {
-  type    = bool
-  default = false
-}
-
-variable "create_log_groups" {
-  type    = bool
-  default = false
-}
-
-variable "create_nsgs" {
-  type    = bool
-  default = false
-}
-
-variable "create_nsg_rules" {
-  type    = bool
-  default = false
-}
-
-variable "create_drg" {
-  type    = bool
-  default = false
-}
-
-variable "create_drg_attachments" {
-  type    = bool
-  default = false
-}
-
-variable "subnet_details" {
-  type    = list(any)
-  default = [""]
-}
-
-variable "vcns" {
-  type    = list(any)
-  default = [""]
-}
-
-variable "dhcp_options" {
-  type    = list(any)
-  default = [""]
-}
-
-variable "drg_attachments" {
-  type    = list(any)
-  default = [""]
-}
-
-
-variable "nsg_details" {
-  type    = list(any)
-  default = [""]
-}
-
-variable "nsg_rules_details" {
-  type    = list(any)
-  default = [""]
+variable "subnets" {
+  type    = map(any)
+  default = {}
 }
 
 #########################

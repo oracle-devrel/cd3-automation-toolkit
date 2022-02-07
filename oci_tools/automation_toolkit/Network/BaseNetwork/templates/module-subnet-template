@@ -1,27 +1,45 @@
-{% if count == 0 %}
+{% if (skeleton and count == 0) %}
 // Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 
 
-############################
-# Identity
-# Policies - tfvars
-############################
+#############################
+# Network
+# Major Objects - Subnets - tfvars
+#############################
 
-policies = {
-{% endif %}
-   {{ policy_tf_name }} = {
-        name        = "{{ name }}"
-        {% if compartment_name == None %}
-        compartment_name = null
-        {% else %}
-        compartment_name = "{{ compartment_name }}"
-        {% endif %}
-        {% if '\n' not in description %}
-        policy_description = "{{ description }}"
-        {% else %}
-        policy_description = <<-EOF
-{{ description }}
-EOF
+subnets = {
+  # Subnets map #
+  ##Add New Subnets for {{ region.lower() }} here##
+}{% else %}{% if display_name != "" and display_name != "nan" and display_name != null %}
+
+{{ subnet_tf_name }} = {
+    #Required
+    cidr_block = "{{ cidr_block }}"
+    compartment_name = var.{{ compartment_tf_name }}
+    vcn_name = oci_core_vcn.{{ vcn_tf_name }}.id
+    display_name = "{{ display_name }}"
+
+    #Optional
+    route_table_id = "{{ rt_tf_name }}"
+    dns_label = "{{ dns_label }}"
+    dhcp_options_id = "{{ dhcp_options_name }}"
+    availability_domain = "{{ availability_domain }}"
+    prohibit_public_ip_on_vnic = "{{ prohibit_public_ip_on_vnic }}"
+
+    {% if ipv6cidr_block and ipv6cidr_block != '' %}
+    ipv6cidr_block = {{ ipv6cidr_block }}
+    {% else %}
+    ipv6cidr_block = ""
+    {% endif %}
+
+    {% if prohibit_internet_ingress and prohibit_internet_ingress != '' %}
+    prohibit_internet_ingress = {{ prohibit_internet_ingress }}
+    {% else %}
+    prohibit_internet_ingress = ""
+    {% endif %}
+
+    {% if seclist_ids != '' %}
+    security_list_ids = [{{ seclist_ids }}]
     {% endif %}
 
     {#  ##Do not modify below this line##  #}
@@ -57,4 +75,5 @@ EOF
         freeform_tags = {}
             {% endif %}
     {#  ###Section for adding Defined and Freeform Tags ends here###  #}
-        policy_statements = [ {{ policy_statements }} -#Addstmt]}}
+      },
+{% endif %}{% endif %}

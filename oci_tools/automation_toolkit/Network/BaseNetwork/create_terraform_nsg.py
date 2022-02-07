@@ -46,41 +46,19 @@ DEBUG = False
 # Load the template file
 file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
 env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
-template = env.get_template('nsg-template')
-nsgrule = env.get_template('nsg-rule-template')
+template = env.get_template('module-nsg-template')
+nsgrule = env.get_template('module-nsg-rule-template')
+nsg_auto_tfvars_filename = '_nsgs.auto.tfvars'
+nsg_rules_auto_tfvars_filename = '_nsg_rules.auto.tfvars'
 
 tempStr = {}
 freeform_tags = {}
 defined_tags = {}
-
+nsg_done = []
+region_included = []
 
 # Stage 1 Parse into NetSec class and store into dictionary unique_id:rules
 def directionOptionals(nsgParser, options, tempStr):
-    srcdestType = ""
-    srcdest = ""
-    source_type = ''
-    destination_type = ''
-    source = ''
-    destination = ''
-    '''
-    ingressegressStrTemplate = "source" if options[1].lower() == "ingress" else "destination"
-    if options[1].lower() == "ingress":  # check source option 4,5
-        srcdestType = options[4]
-        srcdest = options[5]
-    else:  # else dest option 6,7
-        srcdestType = options[6]
-        srcdest = options[7]
-    # processing becomes the same from this point
-
-    # if srcType or destType is not empty, respective src/dest req.
-    if(srcdestType.lower()=='cidr'):
-        srcdestType="CIDR_BLOCK"
-    if (srcdestType.lower() == 'nsg'):
-        srcdestType = "NETWORK_SECURITY_GROUP"
-        srcdest="oci_core_network_security_group."+srcdest+".id"
-    if (srcdestType.lower() == 'service'):
-        srcdestType = "SERVICE_CIDR_BLOCK"
-    '''
     destination_type = str(options[6])
     source_type = str(options[4])
     source = str(options[5])
@@ -94,7 +72,7 @@ def directionOptionals(nsgParser, options, tempStr):
         elif (source_type.lower() == 'nsg') or (source_type == 'NETWORK_SECURITY_GROUP'):
             source_type = "NETWORK_SECURITY_GROUP"
             if "ocid" not in str(source):
-                source = "oci_core_network_security_group." + commonTools.check_tf_variable(str(source)) + ".id"
+                source = commonTools.check_tf_variable(str(source))
     else:
         source_type = ""
 
@@ -106,41 +84,26 @@ def directionOptionals(nsgParser, options, tempStr):
         elif (destination_type.lower() == 'nsg') or (destination_type == 'NETWORK_SECURITY_GROUP'):
             destination_type = "NETWORK_SECURITY_GROUP"
             if "ocid" not in str(destination):
-                destination = "oci_core_network_security_group." + commonTools.check_tf_variable(
-                    str(destination)) + ".id"
+                destination = commonTools.check_tf_variable(str(destination))
     else:
         destination_type = ""
 
-    if ('oci_core_network_security_group' not in source):
-        if source == 'nan':
-            source = ""
-        source = "\"" + source + "\""
+    if source == 'nan':
+        source = ""
 
-    if ('oci_core_network_security_group' not in destination):
-        if destination == 'nan':
-            destination = ""
-        destination = "\"" + destination + "\""
+    if destination == 'nan':
+        destination = ""
 
     tempStr['source_type'] = source_type
     tempStr['destination_type'] = destination_type
     tempStr['source'] = source
     tempStr['destination'] = destination
 
-    '''
-    if nsgParser.checkOptionalEmpty(srcdestType):
-        return ""
-    else:
-        return ("\n\n" \
-                "    {} = \"{}\"\n" \
-                "    {}_type = \"{}\"\n" \
-                ).format(ingressegressStrTemplate, srcdest, ingressegressStrTemplate, srcdestType)
-    '''
     return tempStr
 
 
 def protocolOptionals(nsgParser, options, tempStr):
     protocol = options[2].lower()
-    protocolHeader = ""
     code = ''
     type = ''
     if protocol == "all":
@@ -157,20 +120,6 @@ def protocolOptionals(nsgParser, options, tempStr):
         protocolHeader = protocol
     else:
         return ""
-        # return "SELECTION UNCOMMON and NOT HANDLED, please use TCP instead and specify ports"
-    dPort = "" if nsgParser.checkOptionalEmpty(options[10]) \
-        else ("        destination_port_range {{\n"
-              "            max = \"{}\"\n" \
-              "            min = \"{}\"\n" \
-              "        }}\n" \
-              ).format(int(options[11]), int(options[10]))
-    sPort = "" if nsgParser.checkOptionalEmpty(options[8]) \
-        else ("        source_port_range {{\n"
-              "            max = \"{}\"\n" \
-              "            min = \"{}\"\n" \
-              "        }}\n" \
-              ).format(int(options[9]), int(options[8]))
-
     tempStr['protocol'] = protocolHeader
     tempStr['icmptype'] = type
     tempStr['icmpcode'] = code
@@ -193,17 +142,6 @@ def protocolOptionals(nsgParser, options, tempStr):
 
     return tempStr
 
-
-'''
-        ("\n" \
-            "    {}_options {{\n" \
-            "{}" \
-            "{}" \
-            "    }}" \
-            ).format(protocolHeader, dPort, sPort)
-'''
-
-
 def statelessOptional(nsgParser, options, tempStr):
     if not nsgParser.checkOptionalEmpty(options[3]) and str(options[3]).lower() == "true":
         tempStr['isstateless'] = 'true'
@@ -211,16 +149,9 @@ def statelessOptional(nsgParser, options, tempStr):
         tempStr['isstateless'] = 'false'
     return tempStr
 
-
-"""{'NSGName': 0, 'Direction': 1, 'Protocol': 2, 'isStateless': 3, 'SourceType': 4, 'Source': 5, 
-DestType': 6, 'Destination': 7, 'SPortMin': 8, 'SPortMax': 9, 'DPortMin': 10, 'DPortMax': 11, 
-'ICMPType': 12, 'ICMPCode': 13}"""
-
-
 # templates to build NSG and NSG_Sec_Rules Terraform
-def NSGtemplate(nsgParser, key, value, outdir, columnname):
+def NSGtemplate(region, prefix,nsgParser, key, value, outdir, columnname):
     """Required: compartment_id and vcn_id"""
-    columnvalue = ''
     if str(key[0]).lower() == 'nan':
         print("\n Compartment Name cannot be left empty....Exiting!!")
         exit(1)
@@ -229,16 +160,16 @@ def NSGtemplate(nsgParser, key, value, outdir, columnname):
         print("\n NSG Name cannot be left empty....Exiting!!")
         exit(1)
     compartment_var_name = str(key[0]).strip()
+
     # Added to check if compartment name is compatible with TF variable name syntax
     compartment_tf_name = commonTools.check_tf_variable(compartment_var_name)
     nsg_tf_name = commonTools.check_tf_variable(str(key[2]))
     vcn_tf_name = commonTools.check_tf_variable(str(key[1]))
     tempDict = {'compartment_tf_name': compartment_tf_name, 'display_name': str(key[2]), 'nsg_tf_name': nsg_tf_name,
-                'vcn_tf_name': vcn_tf_name}
+                'vcn_tf_name': vcn_tf_name, 'region' : region}
 
     # Dictionary of column headers : column value
     updatedcols = []
-    nsg_done = []
     updatedrule = []
     ruleindex = 1
 
@@ -265,24 +196,23 @@ def NSGtemplate(nsgParser, key, value, outdir, columnname):
         freeform_tags = commonTools.split_tag_values('freeform_tags', tempStr['freeform_tags'], tempStr)
         defined_tags = commonTools.split_tag_values('defined_tags', tempStr['defined_tags'], tempStr)
 
-        tempStr.update(freeform_tags)
-        tempStr.update(defined_tags)
 
+        tempStr.update(defined_tags)
+        tempStr.update(freeform_tags)
         tempStr.update(tempDict)
+
         # NSG template; Write only for the first apperance.
         nsg_name = commonTools.check_tf_variable(str(key[2]))
 
-        resource_group = template.render(tempStr)
-        if nsg_done == []:
-            nsg_done.append(nsg_name)
-            with open(outdir + "/{}_nsg.tf".format(commonTools.check_tf_variable(str(key[2]))), 'w') as f:
-                f.write(resource_group)
-        else:
-            if nsg_name not in nsg_done:
-                with open(outdir + "/{}_nsg.tf".format(commonTools.check_tf_variable(str(key[2]))), 'w') as f:
-                    f.write(resource_group)
 
-        with open(outdir + "/{}_nsg.tf".format(commonTools.check_tf_variable(str(key[2]))), 'a') as f:
+        if nsg_name not in nsg_done:
+            nsg_done.append(nsg_name)
+            resource_group = template.render(tempStr)
+
+            with open(outdir + "/"+ prefix + nsg_auto_tfvars_filename, 'a+') as f:
+                f.write(resource_group)
+
+        with open(outdir + "/"+ prefix + nsg_rules_auto_tfvars_filename, 'a+') as f:
 
             null_rule = 0
             for i in range(1, 3):
@@ -299,12 +229,9 @@ def NSGtemplate(nsgParser, key, value, outdir, columnname):
             tempStr.update(protocolOptionals(nsgParser, rule, tempStr))
 
             nsg_rule = nsgrule.render(tempStr)
-            print("Writing to..." + str(f.name))
             f.write(nsg_rule)
             ruleindex += 1
         f.close()
-    print(outdir + "/{}_nsg.tf".format(key[2]) + " containing TF for NSG has been created")
-
 
 def NSGrulesTemplate(nsgParser, rule, index, tempStr):
     if (str(rule[14]).lower() == 'nan'):
@@ -328,22 +255,6 @@ def getProtocolNumber(protocol):
             if (protocol).lower() == v.lower():
                 return k
 
-
-"""
-    if protocol.lower() == 'tcp':
-        return "6"
-    if protocol.lower() == 'udp':
-        return "17"
-    if protocol.lower() == 'icmp':
-        return "1"
-"""
-
-"""
-The rules should be further organized with ingress or egress as a parent level to the optional fts.
-factory methods
-"""
-
-
 def parse_args():
     parser = argparse.ArgumentParser(
         description='Create NSG and its NSG rules based on inputs given in vcn-info.properties, separated by regions.')
@@ -359,6 +270,8 @@ def create_terraform_nsg(inputfile, outdir, prefix, config, nongf_tenancy=False)
     ct = commonTools()
     ct.get_subscribedregions(configFileName)
     columnname = ''
+    resource_group = ''
+    resource_group_nsg_rule = ''
 
 
     # tested path allows for space, full or relative path acceptable
@@ -373,27 +286,37 @@ def create_terraform_nsg(inputfile, outdir, prefix, config, nongf_tenancy=False)
     for reg in ct.all_regions:
         if (os.path.exists(outdir + "/" + reg)):
             resource = "NSG"
-            commonTools.backup_file(outdir + "/" + reg, resource, "_nsg.tf")
+            commonTools.backup_file(outdir + "/" + reg, resource, prefix + nsg_auto_tfvars_filename)
+            commonTools.backup_file(outdir + "/" + reg, resource, prefix + nsg_rules_auto_tfvars_filename)
 
     # creates all region directories in specified out directory
     for region in listOfRegions:
+        region = region.lower()
+
         if (region in commonTools.endNames):
             break
 
         if region not in ct.all_regions:
             print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
             exit(1)
+
         regionDirPath = outdir + "/{}".format(region)
-        """if os.path.exists(regionDirPath):
-            nsgParser.purge(regionDirPath, "nsg.tf")
-        else:
-            os.makedirs(regionDirPath)
-        """
+
         if not os.path.exists(regionDirPath):
             os.makedirs(regionDirPath)
+
+        resource_group = template.render(tempStr, region=region, skeleton=True)
+        resource_group_nsg_rule = nsgrule.render(tempStr, region=region, skeleton=True)
+
+        with open(regionDirPath + "/" + prefix + nsg_auto_tfvars_filename, 'w+') as f:
+            f.write(resource_group)
+        with open(regionDirPath + "/" + prefix + nsg_rules_auto_tfvars_filename, 'w+') as f:
+            f.write(resource_group_nsg_rule)
+
     # Stage 2 using the dictionary of unique_id:rules, use factory method to produces resources and
     # rules
     for region in listOfRegions:
+        region = region.lower()
         if (region in commonTools.endNames):
             break
 
@@ -401,7 +324,6 @@ def create_terraform_nsg(inputfile, outdir, prefix, config, nongf_tenancy=False)
             print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
             exit(1)
 
-        # with open(outdir + "/{}/{}-NSG.tf".format(region,region), 'w') as f:
         reg_outdir = outdir + "/" + region
 
         for k, v in headerDict.items():
@@ -409,11 +331,14 @@ def create_terraform_nsg(inputfile, outdir, prefix, config, nongf_tenancy=False)
                 for name in other_headers:
                     columnname = name
 
-        [NSGtemplate(nsgParser, k, v, reg_outdir, columnname) for k, v in
-         nsgParser.getRegionSpecificDict(regionDict, region).items()]
+        for k, v in nsgParser.getRegionSpecificDict(regionDict, region).items():
+            NSGtemplate(region, prefix, nsgParser, k, v, reg_outdir, columnname)
 
-        #   f.close()
-    # print("\nTerraform files write out to respective {}/[region]/[NSG Name]_nsg.tf".format(outdir))
+        with open(reg_outdir + "/" + prefix + nsg_auto_tfvars_filename, 'a+') as f:
+            f.write("\n"+"}")
+
+        with open(reg_outdir + "/" + prefix + nsg_rules_auto_tfvars_filename, 'a+') as f:
+            f.write("\n"+"}")
 
     if DEBUG:
         nsgParser.debug()

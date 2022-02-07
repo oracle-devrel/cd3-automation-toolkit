@@ -123,8 +123,10 @@ def print_nsgsl(values_for_column_nsgs,vnc,region, comp_name, vcn_name, nsg, nsg
             oci_objs = [nsg,nsgsl]
             values_for_column_nsgs = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict_nsgs,values_for_column_nsgs)
 
+    nsg_rule_tf_name = tf_name + "_security_rule" + str(i)
+    importCommands[region.lower()].write("\nterraform import \"module.nsg-rules[\\\""+nsg_rule_tf_name+"\\\"].oci_core_network_security_group_security_rule.nsg_rule[0]\" " + "networkSecurityGroups/" + str(nsg.id) + "/securityRules/" + str(nsgsl.id))
 
-    importCommands[region.lower()].write("\nterraform import oci_core_network_security_group_security_rule." + tf_name + "_security_rule" + str(i) + " " + "networkSecurityGroups/" + str(nsg.id) + "/securityRules/" + str(nsgsl.id))
+    # importCommands[region.lower()].write("\nterraform import oci_core_network_security_group_security_rule." + tf_name + "_security_rule" + str(i) + " " + "networkSecurityGroups/" + str(nsg.id) + "/securityRules/" + str(nsgsl.id))
 
 
 def print_nsg(values_for_column_nsgs,region, comp_name, vcn_name, nsg):
@@ -142,8 +144,7 @@ def print_nsg(values_for_column_nsgs,region, comp_name, vcn_name, nsg):
         else:
             oci_objs = [nsg]
             values_for_column_nsgs = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict_nsgs,values_for_column_nsgs)
-
-    importCommands[region.lower()].write("\nterraform import oci_core_network_security_group." + tf_name + " "+str(nsg.id))
+    importCommands[region.lower()].write("\nterraform import \"module.nsgs[\\\"" + tf_name +  "\\\"].oci_core_network_security_group.network_security_group[0]\" " + str(nsg.id))
 
 def print_drgv2(values_for_column_drgv2,region, comp_name, vcn_info,drg_info,drg_attachment_info, drg_rt_info, import_drg_route_distribution_info,drg_route_distribution_statements):
     for col_header in values_for_column_drgv2.keys():
@@ -726,7 +727,8 @@ def export_networking(inputfile, outdir, _config, network_compartments=[]):
                                     print_nsg(values_for_column_nsgs,region, ntk_compartment_name_again, vcn_info.display_name, nsg)
                                 else:
                                     tf_name = commonTools.check_tf_variable(str(nsg.display_name))
-                                    importCommands[region.lower()].write("\nterraform import oci_core_network_security_group." + tf_name + " " + str(nsg.id))
+
+                                    importCommands[region.lower()].write("\nterraform import \"module.nsgs[\\\"" + tf_name + "\\\"].oci_core_network_security_group.network_security_group[0]\" " + str(nsg.id))
 
     commonTools.write_to_cd3(values_for_column_nsgs, cd3file, "NSGs")
     print("NSGs exported to CD3\n")

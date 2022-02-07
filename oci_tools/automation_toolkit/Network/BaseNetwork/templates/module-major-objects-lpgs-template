@@ -1,4 +1,5 @@
 {% if create_lpg_auto_vars == true %}
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 
 
 ############################

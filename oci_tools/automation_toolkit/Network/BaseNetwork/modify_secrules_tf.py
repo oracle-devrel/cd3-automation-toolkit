@@ -216,7 +216,7 @@ def modify_terraform_secrules(inputfile, outdir, prefix=None, config=DEFAULT_LOC
 
             # temporary dictionary1, dictionary2 and list
             tempStr = {}
-            tempdict = {'vcn_name': vcn_tf_name, 'rt_var': rt_var, 'seclist_tf_name': seclist_tf_name,
+            tempdict = {'vcn_tf_name': vcn_tf_name, 'rt_var': rt_var, 'seclist_tf_name': seclist_tf_name,
                         'region': region}
             tempdict2= {}
 
