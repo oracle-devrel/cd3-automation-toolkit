@@ -6,5 +6,5 @@
 #############################
 
 output "nsg_id" {
-	value = zipmap(oci_core_network_security_group.network_security_group.*.display_name,oci_core_network_security_group.network_security_group.*.id)
+	value = oci_core_network_security_group.network_security_group.*.id
 }

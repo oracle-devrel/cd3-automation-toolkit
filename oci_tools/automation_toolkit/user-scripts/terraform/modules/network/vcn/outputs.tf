@@ -24,3 +24,7 @@ output "vcn_default_security_list_id" {
 output "vcn_default_route_table_id" {
   value = zipmap(oci_core_vcn.vcn.*.display_name, oci_core_vcn.vcn.*.default_route_table_id)
 }
+
+output "vcn_id_for_nsg" {
+  value = oci_core_vcn.vcn.*.id
+}

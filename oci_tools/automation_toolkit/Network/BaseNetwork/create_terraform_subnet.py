@@ -329,7 +329,7 @@ def create_terraform_subnet(inputfile, outdir, prefix, config, modify_network=Fa
             outfile[reg] = reg_out_dir + "/" + prefix + auto_tfvars_filename
 
             # Create Skeleton Template
-            skeletonStr[reg] = template.render(tempStr, skeleton=True, count=0)
+            skeletonStr[reg] = template.render(tempStr, skeleton=True, count=0, region=reg)
             srcStr = "##Add New Subnets for " + reg + " here##"
             tfStr[reg] = skeletonStr[reg].replace(srcStr, tfStr[reg] + "\n" + srcStr)
 
@@ -363,7 +363,7 @@ def create_terraform_subnet(inputfile, outdir, prefix, config, modify_network=Fa
                         os.rename(module_filename, rename_module_filename)
 
             # Create Skeleton Template
-            skeletonStr[reg] = template.render(tempStr, skeleton=True, count=0)
+            skeletonStr[reg] = template.render(tempStr, skeleton=True, count=0, region=reg)
             srcStr = "##Add New Subnets for " + reg + " here##"
             tfStr[reg] = skeletonStr[reg].replace(srcStr, tfStr[reg] + "\n" + srcStr)
 
