@@ -23,7 +23,7 @@ module "drgs" {
 module "drg_attachments" {
   #Required
   source = "./modules/network/drg-attachment"
-  count  = (var.drg_attachments != null || var.drg_attachments != {})  ? var.drg_attachments : {}
+  for_each  = (var.drg_attachments != null || var.drg_attachments != {})  ? var.drg_attachments : {}
 
   defined_tags  = each.value.defined_tags
   freeform_tags = each.value.freeform_tags
