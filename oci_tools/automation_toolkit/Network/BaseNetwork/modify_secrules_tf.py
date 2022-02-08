@@ -49,7 +49,7 @@ def modify_terraform_secrules(inputfile, outdir, prefix=None, config=DEFAULT_LOC
     default_seclists_done = {}
     defaultname = {}
     auto_tfvars_filename = "_seclist.auto.tfvars"
-    default_auto_tfvars_filename = "_default_seclist.auto.tfvars"
+    default_auto_tfvars_filename = "_default-seclist.auto.tfvars"
     vcns = parseVCNs(secrulesfilename)
 
     def skipCommentedLine(lines):

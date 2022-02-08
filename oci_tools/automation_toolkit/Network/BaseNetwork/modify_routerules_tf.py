@@ -260,7 +260,7 @@ def modify_terraform_routerules(inputfile, outdir, prefix=None, config=DEFAULT_L
     defaultrt = env.get_template('module-default-route-table-template')
     routetable = env.get_template('module-route-table-template')
     auto_tfvars_filename = "_routetables.auto.tfvars"
-    default_auto_tfvars_filename = "_default_routetables.auto.tfvars"
+    default_auto_tfvars_filename = "_default-routetables.auto.tfvars"
     region_included = []
     common_rt = []
 

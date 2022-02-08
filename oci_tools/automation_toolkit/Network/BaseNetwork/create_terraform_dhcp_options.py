@@ -181,9 +181,9 @@ def create_terraform_dhcp_options(inputfile, outdir, prefix, config, modify_netw
 
             tfStr[reg] = template.render(custom=True,dhcps=custom[reg])
 
-            custom_dhcp_auto_tfvars_filename = '_custom_dhcp.auto.tfvars'
+            custom_dhcp_auto_tfvars_filename = '_custom-dhcp.auto.tfvars'
             outfile[reg] = reg_out_dir + "/" + prefix + custom_dhcp_auto_tfvars_filename
-            def_dhcp_auto_tfvars_filename = '_default_dhcp.auto.tfvars'
+            def_dhcp_auto_tfvars_filename = '_default-dhcp.auto.tfvars'
             deffile[reg] = reg_out_dir + "/" +prefix +def_dhcp_auto_tfvars_filename
 
             x = datetime.datetime.now()
@@ -229,9 +229,9 @@ def create_terraform_dhcp_options(inputfile, outdir, prefix, config, modify_netw
                     if os.path.isfile(module_filename):
                         os.rename(module_filename, rename_module_filename)
 
-            custom_dhcp_auto_tfvars_filename = '_custom_dhcp.auto.tfvars'
+            custom_dhcp_auto_tfvars_filename = '_custom-dhcp.auto.tfvars'
             outfile[reg] = reg_out_dir + "/" + prefix + custom_dhcp_auto_tfvars_filename
-            def_dhcp_auto_tfvars_filename = '_default_dhcp.auto.tfvars'
+            def_dhcp_auto_tfvars_filename = '_default-dhcp.auto.tfvars'
             deffile[reg] = reg_out_dir + "/" +prefix +def_dhcp_auto_tfvars_filename
 
             if (tfStr[reg] != ''):

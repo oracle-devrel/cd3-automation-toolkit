@@ -413,7 +413,7 @@ def create_terraform_route(inputfile, outdir, prefix, config, modify_network=Fal
                         drgStr = drgStr.replace(srcStr, temprule + "\n" + srcStr)
         return drgStr
 
-    def createLPGRtTableString(compartment_var_name, hub_vcn_name, peering_dict, region, tempStr):
+    def createLPGRtTableString(vcn_name,compartment_var_name, hub_vcn_name, peering_dict, region, tempStr):
         # Retain exported route tables associated with exported LPGs
         if (os.path.exists(outdir + "/" + region + "/obj_names.safe")):
             with open(outdir + "/" + region + "/obj_names.safe") as f:
@@ -482,8 +482,7 @@ def create_terraform_route(inputfile, outdir, prefix, config, modify_network=Fal
 
         return lpgStrCommon[region]
 
-    def prepareSGWRuleStr(sgw_name, destination, configure_sgw, tempStr, data):
-
+    def prepareSGWRuleStr(vcn_name, sgw_name, destination, configure_sgw, tempStr, data):
         sgw_tf_name = vcn_name + "_" + sgw_name
         sgw_tf_name = commonTools.check_tf_variable(sgw_tf_name)
         if (configure_sgw == "all_services"):
@@ -495,17 +494,19 @@ def create_terraform_route(inputfile, outdir, prefix, config, modify_network=Fal
         tempStr['configure_sgw'] = configure_sgw
         tempStr['destination_type'] = "SERVICE_CIDR_BLOCK"
         tempStr['network_entity_id'] = sgw_tf_name
-
+        vcn_name = tempStr['vcn_tf_name']
         start_rule = "## Start Route Rule "+tempStr['region'].lower()+"_"+tempStr['rt_tf_name']+"_"+tempStr['network_entity_id']+"_"+tempStr['destination']
         rem_keys = ['vcn_tf_name', 'drg_tf_name', 'ngw_tf_name', 'igw_tf_name', 'lpg_tf_name']
         [tempStr.pop(key) for key in rem_keys if key in tempStr]
         if start_rule not in routetableStr[reg]:
             data = data + routerule.render(tempStr)
+        tempStr['vcn_tf_name'] = vcn_name
         return data
 
-    def prepareNGWRuleStr(ngw_name, tempStr):
+    def prepareNGWRuleStr(vcn_name, ngw_name, tempStr):
         ngw_tf_name = vcn_name + "_" + ngw_name
         ngw_tf_name = commonTools.check_tf_variable(ngw_tf_name)
+        vcn_name = tempStr['vcn_tf_name']
         data = ""
         for ngw_destination in vcnInfo.ngw_destinations:
             if (ngw_destination != ''):
@@ -518,11 +519,13 @@ def create_terraform_route(inputfile, outdir, prefix, config, modify_network=Fal
                 [tempStr.pop(key) for key in rem_keys if key in tempStr]
                 if start_rule not in routetableStr[reg]:
                     data = data + routerule.render(tempStr)
+        tempStr['vcn_tf_name'] = vcn_name
         return data
 
-    def prepareIGWRuleStr(igw_name, tempStr):
+    def prepareIGWRuleStr(vcn_name, igw_name, tempStr):
         igw_tf_name = vcn_name + "_" + igw_name
         igw_tf_name = commonTools.check_tf_variable(igw_tf_name)
+        vcn_name = tempStr['vcn_tf_name']
         data = ""
         for igw_destination in vcnInfo.igw_destinations:
             if (igw_destination != ''):
@@ -535,10 +538,12 @@ def create_terraform_route(inputfile, outdir, prefix, config, modify_network=Fal
                 [tempStr.pop(key) for key in rem_keys if key in tempStr]
                 if start_rule not in routetableStr[reg]:
                     data = data + routerule.render(tempStr)
+        tempStr['vcn_tf_name'] = vcn_name
         return data
 
-    def prepareOnpremRuleStr(drg_name, tempStr):
+    def prepareOnpremRuleStr(vcn_name, drg_name, tempStr):
         data = ""
+        vcn_name = tempStr['vcn_tf_name']
         v_list_having_drg = []
         for key in vcns.vcns_having_drg.keys():
             v_list_having_drg.append(key[0])
@@ -582,6 +587,7 @@ def create_terraform_route(inputfile, outdir, prefix, config, modify_network=Fal
                     if start_rule not in routetableStr[reg]:
                         data = data + routerule.render(tempStr)
 
+        tempStr['vcn_tf_name'] = vcn_name
         return data
 
     def prepareVCNPeerRuleStr():
@@ -634,7 +640,7 @@ def create_terraform_route(inputfile, outdir, prefix, config, modify_network=Fal
         tempStr['vcn_tf_name'] = vcn_tf_name
         tempStr['subnet_tf_name'] = subnet_tf_name
 
-        tempStr['rt_tf_name'] = vcn_tf_name + "_" + rt_name
+        tempStr['rt_tf_name'] = commonTools.check_tf_variable(vcn_tf_name + "_" + rt_name)
         region_rt_name = region + "_" + tempStr['rt_tf_name']
 
         # Get VCN component names
@@ -671,13 +677,12 @@ def create_terraform_route(inputfile, outdir, prefix, config, modify_network=Fal
             sgw_name = vcn_sgw
         tempStr['sgw_name'] = sgw_name
 
-
         # Prepare rule str
         data = ''
-        data_sgw = prepareSGWRuleStr(sgw_name, destination, configure_sgw, tempStr, data)
-        data_ngw = prepareNGWRuleStr(ngw_name, tempStr)
-        data_igw = prepareIGWRuleStr(igw_name, tempStr)
-        data_onprem = prepareOnpremRuleStr(drg_name, tempStr)
+        data_sgw = prepareSGWRuleStr(vcn_name, sgw_name, destination, configure_sgw, tempStr, data)
+        data_ngw = prepareNGWRuleStr(vcn_name, ngw_name, tempStr)
+        data_igw = prepareIGWRuleStr(vcn_name, igw_name, tempStr)
+        data_onprem = prepareOnpremRuleStr(vcn_name, drg_name, tempStr)
         data_vcnpeer = prepareVCNPeerRuleStr()
 
         # Create Skeleton Template
@@ -743,7 +748,6 @@ def create_terraform_route(inputfile, outdir, prefix, config, modify_network=Fal
 
         common_rt.append(region_rt_name)
 
-
     vcnInfo = parseVCNInfo(filename)
     vcns = parseVCNs(filename)
 
@@ -806,11 +810,18 @@ def create_terraform_route(inputfile, outdir, prefix, config, modify_network=Fal
                 str(df.loc[i, 'Configure IGW Route(y|n)']).lower() == 'nan' or str(
                     df.loc[i, 'Configure OnPrem Route(y|n)']).lower() == 'nan' or str(
                     df.loc[i, 'Configure VCNPeering Route(y|n)']).lower() == 'nan'):
-            print(
-                "\nERROR!!! Column Values (except DHCP Option Name, Route Table Name, Seclist Name or DNS Label) or Rows cannot be left empty in Subnets sheet in CD3..Exiting!")
+            print("\nERROR!!! Column Values (except DHCP Option Name, Route Table Name, Seclist Name or DNS Label) or Rows cannot be left empty in Subnets sheet in CD3..Exiting!")
             exit(1)
 
+        if modify_network == True:
+            if (df.loc[i, 'Configure SGW Route(n|object_storage|all_services)']).lower() == '-' or str( df.loc[i, 'Configure NGW Route(y|n)']).lower() == '-' or \
+                str(df.loc[i, 'Configure IGW Route(y|n)']).lower() == '-' or str( \
+                    df.loc[i, 'Configure OnPrem Route(y|n)']).lower() == '-' or str( \
+                    df.loc[i, 'Configure VCNPeering Route(y|n)']).lower() == '-':
+                continue
+
         for columnname in dfcolumns:
+
             # Column value
             columnvalue = str(df[columnname][i]).strip()
 

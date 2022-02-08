@@ -65,12 +65,44 @@ def create_terraform_seclist(inputfile, outdir, prefix, config, modify_network=F
 
     auto_tfvars_filename = "_seclist.auto.tfvars"
     common_seclist = []
+    seclists_from_secRulesInOCI_sheet = []
+
+    # Option "Modify Network"
+    if modify_network:
+        # Read cd3 using pandas dataframe
+        dfseclist, col_headers = commonTools.read_cd3(filename, "SecRulesinOCI")
+
+        dfseclist = dfseclist.dropna(how='all')
+        dfseclist = dfseclist.reset_index(drop=True)
+
+        # Start processing each seclist
+        for i in dfseclist.index:
+            seclists_tf_from_secRulesInOCI_sheet_name = commonTools.check_tf_variable(dfseclist.loc[i, 'VCN Name'])+"_"+commonTools.check_tf_variable(dfseclist.loc[i, 'SecList Name'])
+            if seclists_tf_from_secRulesInOCI_sheet_name not in seclists_from_secRulesInOCI_sheet:
+                seclists_from_secRulesInOCI_sheet.append(seclists_tf_from_secRulesInOCI_sheet_name)
 
     for reg in ct.all_regions:
         tempSkeleton[reg] = ''
         tempSecList[reg] = ''
         modify_network_seclists[reg] = ''
         tempSecListModifyNetwork[reg] = ''
+
+    def copy_data_from_file(outfile, region_seclist_name, modify_network_seclists):
+        start = "# Start of " + region_seclist_name + " #"
+        end = "# End of " + region_seclist_name + " #"
+        copy = False
+
+        with open(outfile) as infile:
+            for lines in infile:
+                if start in lines:
+                    modify_network_seclists = modify_network_seclists + "\n" + start + "\n"
+                    copy = True
+                elif end in lines:
+                    modify_network_seclists = modify_network_seclists + "\n" + end + "\n"
+                    copy = False
+                elif copy:
+                    modify_network_seclists = modify_network_seclists + lines
+        return modify_network_seclists
 
     def processSubnet(tempStr):
         region_in_lowercase = tempStr['region'].lower().strip()
@@ -133,20 +165,14 @@ def create_terraform_seclist(inputfile, outdir, prefix, config, modify_network=F
                         filedata = file.read()
                     file.close()
 
-                # If seclist is presnt in auto.tfvars
+                # If seclist is present in auto.tfvars
                 if sl_tf_name in filedata:
                     if sl_tf_name not in modify_network_seclists[region_in_lowercase]:
-                        copy = False
-                        with open(outfile) as infile:
-                            for lines in infile:
-                                if start in lines:
-                                    modify_network_seclists[region_in_lowercase] = modify_network_seclists[region_in_lowercase] + "\n" + start + "\n"
-                                    copy = True
-                                elif end in lines:
-                                    modify_network_seclists[region_in_lowercase] = modify_network_seclists[region_in_lowercase] + "\n" + end + "\n"
-                                    copy = False
-                                elif copy:
-                                    modify_network_seclists[region_in_lowercase] = modify_network_seclists[region_in_lowercase] + lines
+                        modify_network_seclists[region_in_lowercase] = copy_data_from_file(outfile,region_seclist_name,modify_network_seclists[region_in_lowercase])
+                for seclists in seclists_from_secRulesInOCI_sheet:
+                    if seclists in filedata and seclists not in modify_network_seclists[region_in_lowercase]:
+                        region_seclist_name = region_in_lowercase+"_"+seclists
+                        modify_network_seclists[region_in_lowercase] = copy_data_from_file(outfile, region_seclist_name,modify_network_seclists[region_in_lowercase])
 
             # Create Seclist for all the unique names in Subnet Sheet
             if (start not in modify_network_seclists[region_in_lowercase] and region_seclist_name not in common_seclist):

@@ -143,11 +143,11 @@ def create_terraform_subnet(inputfile, outdir, prefix, config, modify_network=Fa
             index=0
             for seclist_id in sl_tf_names:
                 if(index==len(sl_tf_names)-1):
-                    seclist_ids = seclist_ids +  "\""+commonTools.check_tf_variable(str(seclist_id))+"\""
+                    seclist_ids = seclist_ids + "," + "\""+commonTools.check_tf_variable(str(seclist_id))+"\""
                 else:
-                    seclist_ids = seclist_ids + "\""+commonTools.check_tf_variable(str(seclist_id))+"\""
+                    seclist_ids = seclist_ids + "," + "\""+commonTools.check_tf_variable(str(seclist_id))+"\""
                 index=index+1
-        tempStr['seclist_ids'] =  seclist_ids
+        tempStr['seclist_ids'] = seclist_ids.lstrip(",")
 
         if (tempStr['dhcp_tf_name'].lower() != 'nan' and tempStr['dhcp_tf_name'] != '' and tempStr['dhcp_tf_name'] != 'n'):
             dhcp_options_id = commonTools.check_tf_variable(tempStr['dhcp_tf_name'].strip())
