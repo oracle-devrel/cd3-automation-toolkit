@@ -15,8 +15,8 @@ subnets = {
 {{ subnet_tf_name }} = {
     #Required
     cidr_block = "{{ cidr_block }}"
-    compartment_name = var.{{ compartment_tf_name }}
-    vcn_name = oci_core_vcn.{{ vcn_tf_name }}.id
+    compartment_name = "{{ compartment_tf_name }}"
+    vcn_name = "{{ vcn_tf_name }}"
     display_name = "{{ display_name }}"
 
     #Optional

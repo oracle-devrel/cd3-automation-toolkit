@@ -5,11 +5,11 @@
 # Create Subnets
 #############################
 
-module "subnet" {
-  source = "./modules/network/subnets"
+module "subnets" {
+  source = "./modules/network/subnet"
   for_each  = (var.subnets != null || var.subnets != {})  ? var.subnets : {}
 
-  depends_on = [module.vcns, module.fetch-vcns, module.fetch_compartments]
+  depends_on = [module.vcns, module.fetch-vcns, module.fetch-compartments]
 
   #Required
   tenancy_ocid   = var.tenancy_ocid
@@ -24,19 +24,20 @@ module "subnet" {
   defined_tags               =  each.value.defined_tags
   display_name               =  each.value.display_name != null ?  each.value.display_name : null
   freeform_tags              =  each.value.freeform_tags
-  prohibit_internet_ingress  = ( each.value.prohibit_internet_ingress != null &&  each.value.prohibit_internet_ingress != "") ?  each.value.prohibit_internet_ingress : false
-  prohibit_public_ip_on_vnic = ( each.value.prohibit_public_ip_on_vnic != null &&  each.value.prohibit_public_ip_on_vnic != "") ?  each.value.prohibit_public_ip_on_vnic : false
+  prohibit_internet_ingress  = ( each.value.prohibit_internet_ingress != null &&  each.value.prohibit_internet_ingress != "") ?  each.value.prohibit_internet_ingress : null
+  prohibit_public_ip_on_vnic = ( each.value.prohibit_public_ip_on_vnic != null &&  each.value.prohibit_public_ip_on_vnic != "") ?  each.value.prohibit_public_ip_on_vnic : null
   availability_domain        =  each.value.availability_domain
 
-  dhcp_options_id = length(regexall("ocid1.dhcpoptions.oc1*",  each.value.dhcp_options_id)) > 0 ?  each.value.dhcp_options_id : ((each.value.dhcp_options_id != "" &&  each.value.dhcp_options_id != null) ? try(merge(module.custom-dhcps.*...)[each.value.dhcp_options_id]["custom_dhcp_id"][each.value.dhcp_options_id], merge(module.default-dhcps.*...)[each.value.dhcp_options_id]["default_dhcp_id"][each.value.dhcp_options_id]) :  each.value.dhcp_options_id)
+  dhcp_options_id = length(regexall("ocid1.dhcpoptions.oc1*",  each.value.dhcp_options_id)) > 0 ?  each.value.dhcp_options_id : ((each.value.dhcp_options_id != "" &&  each.value.dhcp_options_id != null) ? try(merge(module.vcns.*...)[each.value.dhcp_options_id]["vcn_default_dhcp_id"][each.value.dhcp_options_id],merge(module.custom-dhcps.*...)[each.value.dhcp_options_id]["custom_dhcp_subnet_id"][0], merge(module.default-dhcps.*...)[each.value.dhcp_options_id]["default_dhcp_subnet_id"][0]) :  each.value.dhcp_options_id)
 
-  route_table_id = length(regexall("ocid1.routetable.oc1*", each.value.route_table_id)) > 0 ? each.value.route_table_id : (each.value.route_table_id != "" && each.value.route_table_id != null) ? merge(module.route-tables.*...)[each.value.route_table_id]["route_id"][each.value.route_table_id] : each.value.route_table_id)
+  route_table_id = length(regexall("ocid1.routetable.oc1*", each.value.route_table_id)) > 0 ? each.value.route_table_id : ((each.value.route_table_id != "" && each.value.route_table_id != null) ? try(merge(module.vcns.*...)[each.value.route_table_id]["vcn_default_route_table_id"][each.value.route_table_id],merge(module.route-tables.*...)[each.value.route_table_id]["route_subnet_id"][0],merge(module.default-route-tables.*...)[each.value.route_table_id]["default_route_subnet_id"][0]) : each.value.route_table_id)
 
-  security_list_ids = [for sl in each.value.security_list_ids : ( length(regexall("ocid1.securitylist.oc1*",sl)) > 0 ? sl : merge(module.security-lists.*...)[sl]["seclist_id"][sl])]
+  security_list_ids = [for sl in each.value.security_list_ids : ( length(regexall("ocid1.securitylist.oc1*",sl)) > 0 ? sl : try(merge(module.vcns.*...)[sl]["vcn_default_security_list_id"][sl],merge(module.security-lists.*...)[sl]["seclist_subnet_id"][0],merge(module.default-security-lists.*...)[sl]["default_seclist_subnet_id"][0]))]
 
 }
 
+/*
 output "subnet_id_map" {
-  value = [ for k,v in merge(module.subnet.*...) : v.subnet_id ]
+  value = [ for k,v in merge(module.subnets.*...) : v.subnet_id ]
 }
-
+*/

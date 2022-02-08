@@ -19,16 +19,16 @@ resource "oci_core_subnet" "subnet" {
     vcn_id = var.vcn_id
 
     #Optional
-    availability_domain = (var.availability_domain != "" && var.availability_domain != null) ? ({ for k,v in data.oci_identity_availability_domains.availability_domains.availability_domains : v.name => v.id } [var.availability_domain]) : ""
+    availability_domain = (var.availability_domain != "" && var.availability_domain != null) ? data.oci_identity_availability_domains.availability_domains.availability_domains[var.availability_domain].name : ""
     defined_tags = var.defined_tags
-    dhcp_options_id = var.dhcp_options_id
+    dhcp_options_id = var.dhcp_options_id != "" ? var.dhcp_options_id : null
     display_name = var.display_name
     dns_label = var.dns_label
     freeform_tags = var.freeform_tags
     ipv6cidr_block = var.ipv6cidr_block
     prohibit_internet_ingress = var.prohibit_internet_ingress
     prohibit_public_ip_on_vnic = var.prohibit_public_ip_on_vnic
-    route_table_id = var.route_table_id
+    route_table_id = var.route_table_id != "" || length(regexall("ocid1.routetable.oc1*", var.route_table_id)) > 0 ? var.route_table_id : null
     security_list_ids = var.security_list_ids
     
   lifecycle {

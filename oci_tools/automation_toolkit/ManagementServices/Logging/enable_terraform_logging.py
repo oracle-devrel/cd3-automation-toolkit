@@ -111,12 +111,15 @@ def enable_cis_vcnflow_logging(filename, outdir, prefix, config=DEFAULT_LOCATION
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
-    template = env.get_template('logging-template')
+    template = env.get_template('module-logging-template')
+    auto_tfvars_filename = 'cis-vcnflow-logging.auto.tfvars'
 
-    tfStr = {}
+    tfStrLogs = {}
     tempStr = {}
     outfile={}
     vcns_list = []
+    tfStrLogGroups = {}
+
     for i in df.index:
         region = str(df.loc[i, 'Region'])
 
@@ -124,7 +127,8 @@ def enable_cis_vcnflow_logging(filename, outdir, prefix, config=DEFAULT_LOCATION
             break
 
         region = region.strip().lower()
-        tfStr[region]=''
+        tfStrLogs[region]=''
+        tfStrLogGroups[region] = ''
 
     for i in df.index:
         region = str(df.loc[i, 'Region'])
@@ -168,15 +172,14 @@ def enable_cis_vcnflow_logging(filename, outdir, prefix, config=DEFAULT_LOCATION
 
         loggroup_name = commonTools.check_tf_variable(vcn_name)+"-flow-log-group"
         log_name = commonTools.check_tf_variable(display_name)+"-flow-log"
-        log_group_id= 'oci_logging_log_group.'+loggroup_name+'.id'
-        resource='oci_core_subnet.'+subnet_tf_name+'.id'
+        log_group_id= loggroup_name
+        resource= subnet_tf_name
 
         if vcn_name not in vcns_list:
-            tempStr['loggroup'] = 'true'
             tempStr['loggroup_name'] = loggroup_name
             tempStr['loggroup_tf_name'] = loggroup_name
             tempStr['loggroup_desc'] = 'Log Group for VCN'
-            tfStr[region] = tfStr[region] + template.render(tempStr)
+            tfStrLogGroups[region] = tfStrLogGroups[region] + template.render(tempStr,loggroup='true')
             vcns_list.append(vcn_name)
 
         tempStr['loggroup'] = 'false'
@@ -187,25 +190,35 @@ def enable_cis_vcnflow_logging(filename, outdir, prefix, config=DEFAULT_LOCATION
         tempStr['category'] = 'all'
         tempStr['service'] = 'flowlogs'
 
-        tfStr[region] = tfStr[region] + template.render(tempStr)
+        tfStrLogs[region] = tfStrLogs[region] + template.render(tempStr)
 
     # Write TF string to the file in respective region directory
-    for reg in tfStr.keys():
+    for reg in tfStrLogs.keys():
         reg_out_dir = outdir + "/" + reg
         if not os.path.exists(reg_out_dir):
             os.makedirs(reg_out_dir)
 
-        outfile[reg] = reg_out_dir + "/cis-vcnflow-logging.tf"
+        outfile[reg] = reg_out_dir + "/" + auto_tfvars_filename
 
         srcdir = reg_out_dir + "/"
         resource = 'vcnflowlog'
-        commonTools.backup_file(srcdir, resource, "cis-vcnflow-logging.tf")
+        commonTools.backup_file(srcdir, resource, auto_tfvars_filename)
 
-        if(tfStr[reg]!=''):
+        tempSkeletonLogs = template.render(tempStr, count=0, region=reg)
+        srcStr = "##Add New Logs for " + reg + " here##"
+        tfStrLogs[reg] = tempSkeletonLogs.replace(srcStr, tfStrLogs[reg] + "\n" + srcStr)
+
+        tempSkeletonLogGroup = template.render(tempStr, loggroup= 'true', count=0, region=reg)
+        srcStr = "##Add New Log Groups for " + reg + " here##"
+        tfStrLogGroups[reg] = tempSkeletonLogGroup.replace(srcStr, tfStrLogGroups[reg] + "\n" + srcStr)
+
+        tfStrLogs[reg] = tfStrLogs[reg] + tfStrLogGroups[reg]
+
+        if(tfStrLogs[reg]!=''):
             oname=open(outfile[reg],'w')
-            oname.write(tfStr[reg])
+            oname.write(tfStrLogs[reg])
             oname.close()
-            print(outfile[reg] + " containing TF for VCN Flow Logs has been created for region "+reg)
+            print(outfile[reg] + " for VCN Flow Logs has been created for region "+reg)
 
 
 if __name__ == '__main__':

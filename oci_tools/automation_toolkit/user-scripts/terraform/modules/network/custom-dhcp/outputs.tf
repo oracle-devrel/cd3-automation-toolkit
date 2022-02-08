@@ -9,3 +9,6 @@ output "custom_dhcp_id" {
 	value = zipmap(oci_core_dhcp_options.custom_dhcp_option.*.display_name,oci_core_dhcp_options.custom_dhcp_option.*.id)
 }
 
+output "custom_dhcp_subnet_id" {
+	value = oci_core_dhcp_options.custom_dhcp_option.*.id
+}

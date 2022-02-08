@@ -381,6 +381,20 @@ def seek_info():
           default = {}
         }
         
+        #########################
+        ##### Logging ###########
+        #########################
+        
+        variable "log_groups" {
+          type    = map(any)
+          default = {}
+        }
+        
+        variable "logs" {
+          type    = map(any)
+          default = {}
+        }
+        
         """
         if (windows_image_id != ''):
             variables_data = variables_data + """

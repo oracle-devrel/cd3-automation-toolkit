@@ -1,0 +1,124 @@
+{% if loggroup == 'true' %}
+{% if count == 0 %}
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+
+
+############################
+# ManagementServices
+# Log Groups - tfvars
+############################
+
+log_groups = {
+  # Log Group map #
+  ##Add New Log Groups for {{ region.lower() }} here##
+}{% else %}{% if loggroup_tf_name != "" and loggroup_tf_name != "nan" and loggroup_tf_name != null %}
+
+{{ loggroup_tf_name }} = {
+        compartment_name = "{{ compartment_tf_name }}"
+        display_name   = "{{ loggroup_name }}"
+        description    = "{{ loggroup_desc }}"
+
+    {#  ##Do not modify below this line##  #}
+    {#                                     #}
+    {#  ###Section for adding Defined and Freeform Tags###  #}
+    {% if defined_tags and defined_tags != 'nan' and defined_tags != '' %}
+      {% if defined_tags[0] %}
+        defined_tags = {
+        {% for tags in defined_tags  %}
+            {% if not loop.last %}
+                "{{ tags[0]  }}"= "{{ tags[1] }}" ,
+            {% else %}
+                "{{ tags[0]  }}"= "{{ tags[1] }}"
+            {% endif %}
+        {% endfor %}
+        }
+      {% else %}
+        defined_tags = {}
+        {% endif %} {% else %}
+        defined_tags = {}
+            {% endif %}
+            {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' %}
+                {% if freeform_tags[0] %}
+        freeform_tags = {
+                    {% for tags in freeform_tags %}
+                        {% if not loop.last  %}
+                "{{ tags[0] }}"="{{ tags[1] }}",
+                        {% else %}
+                "{{ tags[0] }}"="{{ tags[1] }}"
+                        {% endif %}
+                    {% endfor %}
+                    }
+                {% endif %}
+            {% else %}
+        freeform_tags = {}
+            {% endif %}
+    {#  ###Section for adding Defined and Freeform Tags ends here###  #}
+      },
+{% endif %}{% endif %}
+{% endif %}
+
+{% if logs == 'true' or loggroup == 'false' %}
+{% if count == 0 %}
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+
+
+############################
+# ManagementServices
+# Logs - tfvars
+############################
+
+logs = {
+  # Log map #
+  ##Add New Logs for {{ region.lower() }} here##
+}{% else %}{% if log_name != "" and log_name != "nan" and log_name != null %}
+{{ log_tf_name }}  = {
+        display_name = "{{ log_name }}"
+        log_group_id = "{{ log_group_id }}"
+        log_type     = "SERVICE"
+        category    = "{{ category }}"
+        resource    = "{{ resource }}"
+        service     = "{{ service }}"
+        source_type = "OCISERVICE"
+        compartment_name = "{{ compartment_tf_name }}"
+        is_enabled         = true
+        retention_duration = 30
+
+
+    {#  ##Do not modify below this line##  #}
+    {#                                     #}
+    {#  ###Section for adding Defined and Freeform Tags###  #}
+    {% if defined_tags and defined_tags != 'nan' and defined_tags != '' %}
+      {% if defined_tags[0] %}
+        defined_tags = {
+        {% for tags in defined_tags  %}
+            {% if not loop.last %}
+                "{{ tags[0]  }}"= "{{ tags[1] }}" ,
+            {% else %}
+                "{{ tags[0]  }}"= "{{ tags[1] }}"
+            {% endif %}
+        {% endfor %}
+        }
+      {% else %}
+        defined_tags = {}
+        {% endif %} {% else %}
+        defined_tags = {}
+            {% endif %}
+            {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' %}
+                {% if freeform_tags[0] %}
+        freeform_tags = {
+                    {% for tags in freeform_tags %}
+                        {% if not loop.last  %}
+                "{{ tags[0] }}"="{{ tags[1] }}",
+                        {% else %}
+                "{{ tags[0] }}"="{{ tags[1] }}"
+                        {% endif %}
+                    {% endfor %}
+                    }
+                {% endif %}
+            {% else %}
+        freeform_tags = {}
+            {% endif %}
+    {#  ###Section for adding Defined and Freeform Tags ends here###  #}
+      },
+{% endif %}{% endif %}
+{% endif %}

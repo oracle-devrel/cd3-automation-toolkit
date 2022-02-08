@@ -270,9 +270,6 @@ def create_terraform_nsg(inputfile, outdir, prefix, config, nongf_tenancy=False)
     ct = commonTools()
     ct.get_subscribedregions(configFileName)
     columnname = ''
-    resource_group = ''
-    resource_group_nsg_rule = ''
-
 
     # tested path allows for space, full or relative path acceptable
     nsgParser = cd3parser(os.path.realpath(inputfile)).getNSG()
@@ -288,6 +285,16 @@ def create_terraform_nsg(inputfile, outdir, prefix, config, nongf_tenancy=False)
             resource = "NSG"
             commonTools.backup_file(outdir + "/" + reg, resource, prefix + nsg_auto_tfvars_filename)
             commonTools.backup_file(outdir + "/" + reg, resource, prefix + nsg_rules_auto_tfvars_filename)
+
+        # Rename the modules file in outdir to .tf
+        module_txt_filenames = ['nsgs']
+        for modules in module_txt_filenames:
+            module_filename = outdir + "/" + reg + "/" + modules.lower() + ".txt"
+            rename_module_filename = outdir + "/" + reg + "/" + modules.lower() + ".tf"
+
+            if not os.path.isfile(rename_module_filename):
+                if os.path.isfile(module_filename):
+                    os.rename(module_filename, rename_module_filename)
 
     # creates all region directories in specified out directory
     for region in listOfRegions:

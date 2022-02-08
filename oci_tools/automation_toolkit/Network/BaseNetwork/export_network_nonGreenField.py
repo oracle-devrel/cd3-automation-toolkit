@@ -306,7 +306,7 @@ def print_dhcp(values_for_column_dhcp,region, comp_name, vcn_name, dhcp_info):
 def print_subnets(values_for_column_subnets,region, comp_name, vcn_name, subnet_info, dhcp_name, rt_name, sl_names, add_def_seclist):
     tf_name = vcn_name + "_" + str(subnet_info.display_name)
     tf_name = commonTools.check_tf_variable(tf_name)
-    importCommands[region.lower()].write("\nterraform import oci_core_subnet." + tf_name + " " + str(subnet_info.id))
+    importCommands[region.lower()].write("\nterraform import \"module.subnets[\\\"" + tf_name + "\\\"].oci_core_subnet.subnet[0]\" " + str(subnet_info.id))
 
     for col_header in values_for_column_subnets.keys():
         if (col_header == "Region"):

@@ -50,12 +50,15 @@ def create_terraform_subnet(inputfile, outdir, prefix, config, modify_network=Fa
     outfile={}
     oname={}
     tfStr={}
+    skeletonStr = {}
     ADS = ["AD1", "AD2", "AD3"]
 
     #Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
-    template = env.get_template('subnet-template')
+    template = env.get_template('module-subnet-template')
+    auto_tfvars_filename = '_subnets.auto.tfvars'
+    region_included = []
 
     def processSubnet(tempStr):
         region = tempStr['region'].lower().strip()
@@ -66,10 +69,10 @@ def create_terraform_subnet(inputfile, outdir, prefix, config, modify_network=Fa
             ad = ADS.index(AD)
             ad_name_int = ad + 1
             ad_name = str(ad_name_int)
-            adString = f'data.oci_identity_availability_domains.ADs.availability_domains.{ad}.name'
+            adString = ad
         else:
             ad_name = ""
-            adString = "\"\""
+            adString = ""
 
         tempStr['availability_domain'] = adString
 
@@ -116,13 +119,12 @@ def create_terraform_subnet(inputfile, outdir, prefix, config, modify_network=Fa
 
         subnet_tf_name=vcn_name+"_"+display_name
         subnet_tf_name = commonTools.check_tf_variable(subnet_tf_name)
-        rt_tf_name = vcn_name+"_"+rt_display_name
-        rt_tf_name = commonTools.check_tf_variable(rt_tf_name)
-
-        if rt_name != 'n' and rt_name != '':
-                rt_tf_name = "oci_core_route_table."+ rt_tf_name +".id"
+        if rt_display_name != 'n':
+            rt_tf_name = vcn_name+"_"+rt_display_name
+            rt_tf_name = commonTools.check_tf_variable(rt_tf_name)
         else:
-                rt_tf_name = "\"\""
+            rt_tf_name = ""
+
 
         tempStr['subnet_tf_name'] = subnet_tf_name
         tempStr['rt_tf_name'] = rt_tf_name
@@ -132,7 +134,7 @@ def create_terraform_subnet(inputfile, outdir, prefix, config, modify_network=Fa
 
         #Attach Default Security List
         if add_default_seclist.strip() == "y":
-                seclist_ids =  """oci_core_vcn.""" + vcn_tf_name + """.default_security_list_id,"""
+                seclist_ids = "\""+vcn_tf_name+"\""
                 tempStr['seclist_ids'] = seclist_ids
 
 
@@ -141,16 +143,16 @@ def create_terraform_subnet(inputfile, outdir, prefix, config, modify_network=Fa
             index=0
             for seclist_id in sl_tf_names:
                 if(index==len(sl_tf_names)-1):
-                    seclist_ids = seclist_ids + """oci_core_security_list.""" +  commonTools.check_tf_variable(str(seclist_id))  + """.id """
+                    seclist_ids = seclist_ids +  "\""+commonTools.check_tf_variable(str(seclist_id))+"\""
                 else:
-                    seclist_ids = seclist_ids + """oci_core_security_list.""" +  commonTools.check_tf_variable(str(seclist_id)) + """.id, """
+                    seclist_ids = seclist_ids + "\""+commonTools.check_tf_variable(str(seclist_id))+"\""
                 index=index+1
         tempStr['seclist_ids'] =  seclist_ids
 
         if (tempStr['dhcp_tf_name'].lower() != 'nan' and tempStr['dhcp_tf_name'] != '' and tempStr['dhcp_tf_name'] != 'n'):
-            dhcp_options_id = "oci_core_dhcp_options." + commonTools.check_tf_variable(tempStr['dhcp_tf_name'].strip()) + ".id "
+            dhcp_options_id = commonTools.check_tf_variable(tempStr['dhcp_tf_name'].strip())
         else:
-            dhcp_options_id = "oci_core_vcn."+ vcn_tf_name + ".default_dhcp_options_id"
+            dhcp_options_id = vcn_tf_name
         tempStr['dhcp_options_name'] = dhcp_options_id
 
         if tempStr['type'] == 'public':
@@ -172,6 +174,7 @@ def create_terraform_subnet(inputfile, outdir, prefix, config, modify_network=Fa
 
     for reg in ct.all_regions:
         tfStr[reg] = ''
+        skeletonStr[reg] = ''
 
     # temporary dictionary1, dictionary2
     tempStr = {}
@@ -307,6 +310,7 @@ def create_terraform_subnet(inputfile, outdir, prefix, config, modify_network=Fa
             columnname = commonTools.check_column_headers(columnname)
             tempStr[columnname] = str(columnvalue).strip()
             tempStr.update(tempdict)
+
         processSubnet(tempStr)
 
     if fname != None:
@@ -320,32 +324,54 @@ def create_terraform_subnet(inputfile, outdir, prefix, config, modify_network=Fa
 
             srcdir = reg_out_dir + "/"
             resource = 'Subnets'
-            commonTools.backup_file(srcdir, resource, "-subnets.tf")
+            commonTools.backup_file(srcdir, resource, prefix + auto_tfvars_filename)
 
-            outfile[reg] = reg_out_dir + "/" + prefix + '-subnets.tf'
+            outfile[reg] = reg_out_dir + "/" + prefix + auto_tfvars_filename
+
+            # Create Skeleton Template
+            skeletonStr[reg] = template.render(tempStr, skeleton=True, count=0)
+            srcStr = "##Add New Subnets for " + reg + " here##"
+            tfStr[reg] = skeletonStr[reg].replace(srcStr, tfStr[reg] + "\n" + srcStr)
 
             oname[reg] = open(outfile[reg], "w")
             oname[reg].write(tfStr[reg])
             oname[reg].close()
-            print(outfile[reg] + " containing TF for Subnets has been updated for region " + reg)
+            print(outfile[reg] + " for Subnets has been updated for region " + reg)
 
     elif not modify_network:
         for reg in ct.all_regions:
+
             reg_out_dir = outdir + "/" + reg
+
             if not os.path.exists(reg_out_dir):
                     os.makedirs(reg_out_dir)
 
             srcdir = reg_out_dir + "/"
             resource = 'Subnets'
-            commonTools.backup_file(srcdir, resource, "-subnets.tf")
+            commonTools.backup_file(srcdir, resource, prefix + auto_tfvars_filename)
 
-            outfile[reg] = reg_out_dir + "/" + prefix + '-subnets.tf'
+            outfile[reg] = reg_out_dir + "/" + prefix + auto_tfvars_filename
+
+            # Rename the modules file in outdir to .tf
+            module_txt_filenames = ['subnets']
+            for modules in module_txt_filenames:
+                module_filename = outdir + "/" + reg + "/" + modules.lower() + ".txt"
+                rename_module_filename = outdir + "/" + reg + "/" + modules.lower() + ".tf"
+
+                if not os.path.isfile(rename_module_filename):
+                    if os.path.isfile(module_filename):
+                        os.rename(module_filename, rename_module_filename)
+
+            # Create Skeleton Template
+            skeletonStr[reg] = template.render(tempStr, skeleton=True, count=0)
+            srcStr = "##Add New Subnets for " + reg + " here##"
+            tfStr[reg] = skeletonStr[reg].replace(srcStr, tfStr[reg] + "\n" + srcStr)
+
             if (tfStr[reg] != ''):
                 oname[reg] = open(outfile[reg], 'w')
-                tfStr[reg]=tfStr[reg]
                 oname[reg].write(tfStr[reg])
                 oname[reg].close()
-                print(outfile[reg] + " containing TF for Subnets has been created for region " + reg)
+                print(outfile[reg] + " for Subnets has been created for region " + reg)
 
 if __name__ == '__main__':
     args = parse_args()

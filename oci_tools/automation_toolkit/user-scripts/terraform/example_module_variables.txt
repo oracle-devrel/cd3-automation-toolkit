@@ -138,17 +138,12 @@ variable "subnets" {
 ##### Logging ###########
 #########################
 
-variable "create_logs" {
-  type    = bool
-  default = false
+variable "log_groups" {
+  type    = map(any)
+  default = {}
 }
 
-variable "log_group_details" {
-  type    = list(any)
-  default = [""]
-}
-
-variable "logs_details" {
-  type    = list(any)
-  default = [""]
+variable "logs" {
+  type    = map(any)
+  default = {}
 }
