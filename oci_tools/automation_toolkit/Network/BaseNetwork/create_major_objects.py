@@ -52,6 +52,7 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
     oname = {}
     tfStr = {}
     drg_tfStr = {}
+    drg_attach_tfStr = {}
     igw_tfStr = {}
     vcn_tfStr = {}
     sgw_tfStr = {}
@@ -65,6 +66,7 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
     dhcpStr = {}
     outfile_dhcp = {}
     outfile_oci_drg_data = {}
+    outfile_oci_drg_attach_data = {}
     oname_def_dhcp = {}
 
     global dhcp_data
@@ -122,12 +124,13 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
 
         ct = commonTools()
         ct.get_subscribedregions(configFileName)
+        drg_attach_skeleton = ''
 
         # Load the template file
         file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
         env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
         drg_template = env.get_template('module-major-objects-drgs-template')
-        drg_attach_template = env.get_template('major-objects-drg-attach-template')
+        drg_attach_template = env.get_template('module-major-objects-drg-attachments-template')
         drg_datasource_template = env.get_template('drg-data-source-template')
         drg_version = "DRGv2"
 
@@ -219,6 +222,7 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
             # temporary dictionary1 and dictionary2
             tempStr = {}
             tempdict = {}
+            drg_attach = {}
             drg_rt_tf_name = ''
             drg_tf_name = ''
             tempStr['drg_version']=drg_version
@@ -273,10 +277,10 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
 
                             tempStr['drg_attach_tf_name'] = drg_attach_tf_name
                             tempStr['network_type'] = "VCN"
-                            tempStr['network_id'] = "oci_core_vcn." + vcn_tf_name + ".id"
+                            tempStr['network_id'] = vcn_tf_name
 
                             #DRG v1
-                            tempStr['vcn_id'] = "oci_core_vcn." + vcn_tf_name + ".id"
+                            tempStr['vcn_id'] = vcn_tf_name
 
                             tempStr.update(tempdict)
                             # Get VCN DRG RT table
@@ -324,22 +328,27 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
                 tempStr[columnname] = str(columnvalue).strip()
                 tempStr.update(tempdict)
 
+            tempStr.update({'count': 1})
+            if region not in region_included_drg:
+                tempStr.update({'count': 0})
+                drg_attach_skeleton = drg_attach_template.render(skeleton=True)[:-1]
+                region_included.append(region)
+
+            drgstr = drg_template.render(tempStr)
 
             if(attachedto=="attached"):
                 drg_attach = drg_attach_template.render(tempStr)
             elif(attachedto=="empty"):
                 drg_attach=""
 
-            tempStr.update({'count': 1})
-            if region not in region_included_drg:
-                tempStr.update({'count': 0})
-                region_included.append(region)
-
-            drgstr = drg_template.render(tempStr)
             if (drgstr not in drg_tfStr[region]):
                 drg_tfStr[region] = drg_tfStr[region][:-1] + drgstr #+ drg_attach
+            if (drg_attach not in drg_attach_tfStr[region]):
+                drg_attach_tfStr[region] = drg_attach_tfStr[region][:-1] + drg_attach
             # else:
             #     tfStr[region] = tfStr[region] + drg_attach
+        if region not in commonTools.endNames:
+            drg_attach_tfStr[region] = drg_attach_skeleton + drg_attach_tfStr[region]
 
     def processVCN(tempStr):
         rt_tf_name = ''
@@ -484,6 +493,7 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
     for reg in ct.all_regions:
         tfStr[reg] = ''
         drg_tfStr[reg] = ''
+        drg_attach_tfStr[reg] = ''
         igw_tfStr[reg] = ''
         lpg_tfStr[reg] = ''
         hub_lpg_tfStr[reg] = ''
@@ -583,10 +593,11 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
     create_drg_and_attachments(inputfile, outdir, config)
 
     #Write outfiles
-    if modify_network:
-        for reg in ct.all_regions:
+    for reg in ct.all_regions:
 
-            tfStr[reg] = vcn_tfStr[reg] + igw_tfStr[reg] + ngw_tfStr[reg] + sgw_tfStr[reg] + lpg_tfStr[reg] + drg_tfStr[reg]
+        if modify_network:
+
+            tfStr[reg] = vcn_tfStr[reg] + igw_tfStr[reg] + ngw_tfStr[reg] + sgw_tfStr[reg] + lpg_tfStr[reg] + drg_tfStr[reg] + drg_attach_tfStr[reg]
 
             reg_out_dir = outdir + "/" + reg
 
@@ -605,7 +616,6 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
             commonTools.backup_file(srcdir, resource, dhcp_auto_tfvars_filename)
             commonTools.backup_file(srcdir, resource, "/oci-drg-data.tf")
 
-
             oname[reg] = open(outfile[reg], "w")
             oname[reg].write(tfStr[reg])
             oname[reg].close()
@@ -622,10 +632,10 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
             # print(outfile_oci_drg_data[reg] + " containing TF for oci-drg-data for DRGs has been updated for region " + reg)
 
 
-    else:
-        for reg in ct.all_regions:
+        else:
 
-            tfStr[reg] = vcn_tfStr[reg] + igw_tfStr[reg] + ngw_tfStr[reg] + sgw_tfStr[reg] + lpg_tfStr[reg] + drg_tfStr[reg]
+
+            tfStr[reg] = vcn_tfStr[reg] + igw_tfStr[reg] + ngw_tfStr[reg] + sgw_tfStr[reg] + lpg_tfStr[reg] + drg_tfStr[reg] + drg_attach_tfStr[reg]
 
             reg_out_dir = outdir + "/" + reg
 
@@ -654,11 +664,11 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
             outfile_dhcp[reg] = reg_out_dir + "/" + prefix + dhcp_auto_tfvars_filename
             outfile_oci_drg_data[reg] = reg_out_dir + "/oci-drg-data.tf"
 
+
             # oname_oci_drg_data[reg] = open(outfile_oci_drg_data[reg], "w")
             # oname_oci_drg_data[reg].write(drg_data[reg])
             # oname_oci_drg_data[reg].close()
-            # print(outfile_oci_drg_data[
-            #           reg] + " containing TF for oci-drg-data for DRGs has been updated for region " + reg)
+            # print(outfile_oci_drg_data[reg] + " containing TF for oci-drg-data for DRGs has been updated for region " + reg)
 
             if (dhcp_default_tfStr[reg] != ''):
                 oname_def_dhcp[reg] = open(outfile_dhcp[reg], "w")

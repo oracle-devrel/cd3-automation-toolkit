@@ -381,6 +381,11 @@ def seek_info():
           default = {}
         }
         
+        variable "drg_attachments" {
+          type    = map(any)
+          default = {}      
+        }
+        
         #########################
         ##### Logging ###########
         #########################

@@ -600,13 +600,13 @@ def export_networking(inputfile, outdir, _config, network_compartments=[]):
 
 
                                 if (drg_id not in drg_ocid):
-                                    importCommands[reg].write("\nterraform import \"module.drgs[\\\"" + tf_name + "\\\"].oci_core_drg.drg[0] " + drg_info.id)
+                                    importCommands[reg].write("\nterraform import \"module.drgs[\\\"" + tf_name + "\\\"].oci_core_drg.drg[0]\" " + drg_info.id)
                                     drg_ocid.append(drg_id)
 
                                 #tf_name = vcn_info.display_name + "_" + drg_attachment_name
                                 tf_name = commonTools.check_tf_variable(drg_attachment_name)
 
-                                importCommands[reg].write("\nterraform import oci_core_drg_attachment." + tf_name + " " + drg_attachment_info.id)
+                                importCommands[reg].write("\nterraform import \"module.drg-attachments[\\\"" + tf_name + "\\\"].oci_core_drg_attachment.drg_attachment[0]\" " + drg_attachment_info.id)
                                 oci_obj_names[reg].write("\ndrgattachinfo::::" + vcn_info.display_name + "::::" + drg_display_name + "::::" + drg_attachment_name)
 
                                 drg_route_table_id = drg_attachment_info.drg_route_table_id

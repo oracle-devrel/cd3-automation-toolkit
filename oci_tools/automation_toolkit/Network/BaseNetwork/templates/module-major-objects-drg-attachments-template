@@ -1,0 +1,47 @@
+{% if skeleton %}
+
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+
+
+############################
+# Network
+# Major Objects - DRG Attachment - tfvars
+############################
+
+drg_attachments = {
+{% endif %}
+{% if drg_attach_tf_name != '' and drg_attach_tf_name != null %}
+{{ drg_attach_tf_name }} = {
+        drg_id = "{{ drg_tf_name }}"
+        display_name = "{{ drg_attach_display_name }}"
+
+        #DRG v1
+        {% if drg_version == 'DRGv1' %}
+        route_table_id = "{{ vcn_drg_rt_tf_name }}"
+        vcn_id = "{{ vcn_id }}"
+        {% else %}
+        route_table_id = null
+        vcn_id = null
+        {% endif %}
+
+        #DRG v2
+        {% if drg_version == 'DRGv2' %}
+        {% if drg_rt_tf_name !='' %}
+        drg_route_table_id = "{{ drg_rt_tf_name }}"
+        {% else %}
+        drg_route_table_id = null
+        {% endif %}
+
+        #Required
+        network_details_id = "{{ network_id }}"
+        network_details_type = "{{ network_type }}"
+
+        {% if network_type == 'VCN' and vcn_drg_rt_tf_name !='' %}
+        vcn_route_table_id = "{{ vcn_drg_rt_tf_name }}"
+        {% else %}
+        vcn_route_table_id =  null
+        {% endif %}
+        {% endif %}
+        },
+{% endif %}
+}

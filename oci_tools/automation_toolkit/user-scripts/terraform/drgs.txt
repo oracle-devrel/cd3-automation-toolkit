@@ -19,8 +19,8 @@ module "drgs" {
   freeform_tags    = each.value.freeform_tags
 }
 
-/*
-module "drg_attachments" {
+
+module "drg-attachments" {
   #Required
   source = "./modules/network/drg-attachment"
   for_each  = (var.drg_attachments != null || var.drg_attachments != {})  ? var.drg_attachments : {}
@@ -28,22 +28,22 @@ module "drg_attachments" {
   defined_tags  = each.value.defined_tags
   freeform_tags = each.value.freeform_tags
 
-  drg_id = length(regexall("ocid1.drg.oc1*", each.value.drg_id)) > 0 ? each.value.drg_id : ((each.value.drg_id != "" && each.value.drg_id != null) ? merge(module.drg.*...)[each.value.drg_id]["drg_id"][each.value.drg_id] : each.value.drg_id")
+  drg_id = length(regexall("ocid1.drg.oc1*", each.value.drg_id)) > 0 ? each.value.drg_id : ((each.value.drg_id != "" && each.value.drg_id != null) ? merge(module.drg.*...)[each.value.drg_id]["drg_tf_id"][0] : each.value.drg_id")
 
-  drg_route_table_id = length(regexall("ocid1.routetable.oc1*", lookup(var.drg_attachments[count.index], "drg_route_table_id"))) > 0 ? lookup(var.drg_attachments[count.index], "drg_route_table_id") : ((lookup(var.drg_attachments[count.index], "drg_route_table_id") != "" && lookup(var.drg_attachments[count.index], "drg_route_table_id") != null) ? merge(module.oci_core_route_table.*.route_id_map...)[lookup(var.drg_attachments[count.index], "drg_route_table_id")] : lookup(var.drg_attachments[count.index], "drg_route_table_id"))
+  drg_route_table_id = length(regexall("ocid1.routetable.oc1*", each.value.drg_route_table_id)) > 0 ? each.value.drg_route_table_id : (each.value.drg_route_table_id != "" && each.value.drg_route_table_id != null) ? try(merge(module.drg-route-tables.*...)[each.value.drg_route_table_id]["drg_route_table_ids"][0]) : null)
 
-  network_details_id   = each.value.network_details_id
+  network_details_id   = length(regexall("ocid1.*",each.value.network_details_id)) > 0 ? each.value.network_details_id : merge(module.vcns.*...)[each.value.display_name]["vcn_id_for_nsg"][0]
   network_details_type = each.value.network_details_type
 
-  vcn_route_table_id = length(regexall("ocid1.routetable.oc1*", lookup(var.drg_attachments[count.index], "vcn_route_table_id"))) > 0 ? lookup(var.drg_attachments[count.index], "vcn_route_table_id") : ((lookup(var.drg_attachments[count.index], "vcn_route_table_id") != "" && lookup(var.drg_attachments[count.index], "vcn_route_table_id") != null) ? merge(module.oci_core_route_table.*.route_id_map...)[lookup(var.drg_attachments[count.index], "vcn_route_table_id")] : lookup(var.drg_attachments[count.index], "vcn_route_table_id"))
+  vcn_route_table_id = length(regexall("ocid1.routetable.oc1*", each.value.vcn_route_table_id)) > 0 ? each.value.vcn_route_table_id : (each.value.vcn_route_table_id != "" && each.value.vcn_route_table_id != null) ? try(merge(module.route-tables.*...)[each.value.vcn_route_table_id]["route_table_ids"][0],merge(module.default-route-tables.*...)[each.value.vcn_route_table_id]["default_route_table_ids"][0]) : null)
 }
 
-
+/*
 output "drg_id_map" {
   value = [ for k,v in merge(module.drg.*...) : v.drg_id ]
 }
 
 output "drg_attachments_map" {
-  value = [ for k,v in merge(module.drg_attachments.*...) : v.drg_attachments_map ]
+  value = [ for k,v in merge(module.drg-attachments.*...) : v.drg_attachments_map ]
 }
 */
