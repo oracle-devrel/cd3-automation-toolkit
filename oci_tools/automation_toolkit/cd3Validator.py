@@ -216,7 +216,7 @@ def validate_subnets(filename, comp_ids, vcnobj):
         # Check for invalid Region
         region = str(dfsub.loc[i, 'Region']).strip()
         if (region.lower() != "nan" and region.lower() not in ct.all_regions):
-            log(f'ROW {i+3} : "Region" {region} is not subscribed to tenancy.')
+            log(f'ROW {i+3} : Region {region} is not subscribed to tenancy.')
             subnet_reg_check = True
 
         # Check for invalid compartment name
@@ -325,7 +325,7 @@ def validate_subnets(filename, comp_ids, vcnobj):
                         if columnvalue.subnet_of(vcn_cidr):
                             pass
                         else:
-                            log(f'ROW {i+3} : "Subnet CIDR" - {columnvalue} does not fall under VCN CIDR - {vcn_cidr}.')
+                            log(f'ROW {i+3} : Subnet CIDR - {columnvalue} does not fall under VCN CIDR - {vcn_cidr}.')
                             subnet_vcn_cidr_check = True
 
     if any([subnet_reg_check, subnet_vcn_check, subnet_comp_check, subnet_empty_check, subnet_dnswrong_check, subnet_wrong_check, subnet_dnsdup_check, subnet_dns_length, subnet_dhcp_check, subnet_vcn_cidr_check]):
@@ -379,7 +379,7 @@ def validate_vcns(filename, comp_ids, vcnobj, config):  # ,vcn_cidrs,vcn_compart
         # Check for invalid Region
         region = str(dfv.loc[i, 'Region']).strip()
         if (region.lower() != "nan" and region.lower() not in ct.all_regions):
-            log(f'ROW {i+3} : "Region" {region} is not subscribed to tenancy.')
+            log(f'ROW {i+3} : Region {region} is not subscribed to tenancy.')
             vcn_reg_check = True
 
         # Check for invalid Compartment Name
@@ -390,7 +390,7 @@ def validate_vcns(filename, comp_ids, vcnobj, config):  # ,vcn_cidrs,vcn_compart
             try:
                 comp_id = comp_ids[comp_name]
             except KeyError:
-                log(f'ROW {i+3}  : Compartment {comp_name} does not exist in OCI.')
+                log(f'ROW {i+3} : Compartment {comp_name} does not exist in OCI.')
                 vcn_comp_check = True
 
         # Check for invalid(duplicate) vcn name
@@ -527,7 +527,7 @@ def validate_dhcp(filename, comp_ids, vcnobj):
         region = str(dfdhcp.loc[i, 'Region']).strip()
 
         if (region.lower() != "nan" and region.lower() not in ct.all_regions):
-            log(f'ROW {i+3} : "Region" {region} is not subscribed to tenancy.')
+            log(f'ROW {i+3} : Region {region} is not subscribed to tenancy.')
             dhcp_reg_check = True
 
         # Check for invalid compartment name
@@ -544,7 +544,7 @@ def validate_dhcp(filename, comp_ids, vcnobj):
         # Check for invalid VCN name
         vcn_name = str(dfdhcp.loc[i, 'VCN Name']).strip()
         if (vcn_name.lower() != "nan" and vcn_name not in vcnobj.vcn_names):
-            log(f'ROW {i+3}: VCN {vcn_name} not part of VCNs Tab.')
+            log(f'ROW {i+3} : VCN {vcn_name} not part of VCNs Tab.')
             dhcp_vcn_check = True
 
         for j in dfdhcp.keys():
@@ -593,7 +593,7 @@ def validate_drgv2(filename, comp_ids, vcnobj):
             log(f'ROW {i + 3} : Empty value at column "Region".')
             drgv2_empty_check = True
         elif region not in ct.all_regions:
-            log(f'ROW {i + 3} : "Region" {region} is not subscribed for tenancy.')
+            log(f'ROW {i + 3} : Region {region} is not subscribed to tenancy.')
             drgv2_invalid_check = True
 
         # Check for invalid Compartment Name
@@ -795,7 +795,7 @@ def validate_blockvols(filename,comp_ids):
             log(f'ROW {i+3} : Empty value at column "Region".')
             bvs_empty_check = True
         elif region not in ct.all_regions:
-            log(f'ROW {i+3} : Region {region} is not subscribed for tenancy.')
+            log(f'ROW {i+3} : Region {region} is not subscribed to tenancy.')
             bvs_invalid_check = True
 
         # Check for invalid Compartment Name
@@ -1029,7 +1029,7 @@ def validate_cd3(filename, choices, configFileName):
             policies_check = validate_policies(filename,ct.ntk_compartment_ids)
     
         # CD3 Validation begins here for Network
-        if ('Validate Networking(VCNs, Subnets, DHCP, DRGs)' in options[0]):
+        if ('Validate Network(VCNs, Subnets, DHCP, DRGs)' in options[0]):
             val_net=True
             vcnobj = parseVCNs(filename)
     
