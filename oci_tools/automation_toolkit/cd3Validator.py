@@ -228,7 +228,7 @@ def validate_subnets(filename, comp_ids, vcnobj):
                 comp_id = comp_ids[comp_name]
             except KeyError:
                 log(f'ROW {i+3} : Compartment {comp_name} does not exist in OCI.')
-                dhcp_comp_check = True
+                subnet_comp_check = True
 
         # Check for invalid VCN name
         vcn_name = str(dfsub.loc[i, 'VCN Name']).strip()
