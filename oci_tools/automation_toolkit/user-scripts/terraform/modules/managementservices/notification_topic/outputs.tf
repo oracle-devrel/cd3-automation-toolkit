@@ -7,5 +7,5 @@
 
 output "topic_id" {
   description = "Topic ocid"
-  value = zipmap(oci_ons_notification_topic.topic.*.name,oci_ons_notification_topic.topic.*.id)
+  value = oci_ons_notification_topic.topic.*.id
 }

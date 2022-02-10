@@ -399,6 +399,26 @@ def seek_info():
           type    = map(any)
           default = {}
         }
+                
+        #########################
+        ##### Events ############
+        ##### Notification ######
+        #########################
+        
+        variable "events" {
+          type    = map(any)
+          default = {}
+        }
+        
+        variable "notifications_topics" {
+          type    = map(any)
+          default = {}
+        }
+        
+        variable "notifications_subscriptions" {
+          type    = map(any)
+          default = {}
+        }
         
         """
         if (windows_image_id != ''):

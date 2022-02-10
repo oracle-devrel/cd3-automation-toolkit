@@ -169,7 +169,7 @@ def create_terraform_events(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
                 tempdict = {'label' : name}
                 tempStr.update(tempdict)
                if ( action_type.lower() == "ons"):
-                topic_id = "oci_ons_notification_topic." + topic_name + ".id"
+                topic_id = topic_name
                 tempdict = {'action_id': topic_id}
                 tempStr.update(tempdict)
                 name = "topic_id"

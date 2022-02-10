@@ -7,6 +7,7 @@
 
 resource "oci_events_rule" "event" {
   count = var.event_name != null ? 1 : 0
+
   #Required
   compartment_id = var.compartment_name
   display_name   = var.event_name
@@ -14,7 +15,22 @@ resource "oci_events_rule" "event" {
   is_enabled     = var.is_enabled
   description    = var.description
   condition      = var.condition
-  actions        = var.actions
+  actions        {
+    dynamic "actions" {
+        for_each = var.actions[var.key_name]["actions"] != [] ? var.actions[var.key_name]["actions"] : null
+        content {
+            #Required
+            action_type = actions.value.action_type
+            is_enabled = actions.value.is_enabled
+
+            #Optional
+            description = actions.value.description
+            function_id = (actions.value.function_id != "" && actions.value.function_id != null) ? actions.value.function_id : null
+            stream_id = (actions.value.stream_id != "" && actions.value.stream_id != null) ? actions.value.stream_id : null
+            topic_id = (actions.value.topic_id != "" && actions.value.topic_id != null) ? (length(regexall("ocid1.onstopic.oc1*", actions.value.topic_id)) > 0 ? actions.value.topic_id : var.topic_name[actions.value.topic_id]["topic_id"][0]) : null
+            }
+        }
+    }
 
   #Optional
   defined_tags = var.defined_tags

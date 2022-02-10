@@ -18,6 +18,30 @@ variable "event_name" {
   default = null
 }
 
+variable "condition" {
+  type = string
+  default = ""
+}
+
+variable "topic_name" {
+  type = map(any)
+  default = {}
+}
+
+variable "key_name" {
+  type = string
+  default = ""
+}
+
+variable "description" {
+  type = string
+  default = null
+}
+
+variable "actions" {
+  type = map(any)
+  default = {}
+}
 variable "destinations" {
   type = list
   default = null
