@@ -27,7 +27,7 @@ resource "oci_events_rule" "event" {
             description = actions.value.description
             function_id = (actions.value.function_id != "" && actions.value.function_id != null) ? actions.value.function_id : null
             stream_id = (actions.value.stream_id != "" && actions.value.stream_id != null) ? actions.value.stream_id : null
-            topic_id = (actions.value.topic_id != "" && actions.value.topic_id != null) ? (length(regexall("ocid1.onstopic.oc1*", actions.value.topic_id)) > 0 ? actions.value.topic_id : var.topic_name[actions.value.topic_id]["topic_id"][0]) : null
+            topic_id = (actions.value.topic_id != "" && actions.value.topic_id != null) ? (length(regexall("ocid1.onstopic.oc1*", actions.value.topic_id)) > 0 ? actions.value.topic_id : var.topic_name[actions.value.topic_id]["topic_tf_id"][0]) : null
             }
         }
     }

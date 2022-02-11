@@ -26,7 +26,7 @@ module "notifications-subscriptions" {
   compartment_name = each.value.compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[0][each.value.compartment_name]) : var.tenancy_ocid
   endpoint = each.value.endpoint
   protocol = each.value.protocol
-  topic_name = length(regexall("ocid1.onstopic.oc1*", each.value.topic_name)) > 0 ? each.value.topic_name : merge(module.notifications-topics.*...)[each.value.topic_name]["topic_id"][0]
+  topic_name = length(regexall("ocid1.onstopic.oc1*", each.value.topic_name)) > 0 ? each.value.topic_name : merge(module.notifications-topics.*...)[each.value.topic_name]["topic_tf_id"][0]
   subscription_name = each.value.subscription_name
   #Optional
   defined_tags  = each.value.defined_tags

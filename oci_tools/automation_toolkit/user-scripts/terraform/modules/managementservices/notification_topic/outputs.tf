@@ -5,7 +5,7 @@
 # Create Notifications_Topics
 ############################
 
-output "topic_id" {
+output "topic_tf_id" {
   description = "Topic ocid"
   value = oci_ons_notification_topic.topic.*.id
 }
