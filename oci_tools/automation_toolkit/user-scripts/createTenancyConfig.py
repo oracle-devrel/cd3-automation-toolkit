@@ -388,9 +388,24 @@ def seek_info():
         
         variable "drg_route_tables" {
           type    = map(any)
-          default = null
+          default = {}
         }
         
+        variable "drg_route_rules" {
+          type    = map(any)
+          default = {}
+        }
+        
+        variable "drg_route_distributions" {
+          type    = map(any)
+          default = {}
+        }
+
+        variable "drg_route_distribution_statements" {
+          type    = map(any)
+          default = {}
+        }
+
         #########################
         ##### Logging ###########
         #########################

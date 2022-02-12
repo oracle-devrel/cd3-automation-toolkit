@@ -1,0 +1,66 @@
+{% if skeleton %}
+
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+
+
+#################################
+# Network
+# DRG Route Tables - tfvars
+#################################
+
+drg_route_tables = {
+
+{{ drg_route_tables }}
+
+}
+{% else %}{% if drg_name != "" and drg_name != "nan" and drg_name != null %}
+{{ drg_rt_tf_name }} = {
+
+            drg_name = "{{ drg_tf_name }}"
+            display_name = "{{ display_name }}"
+
+            {% if drg_rt_dstrb_tf_name !='' %}
+            import_drg_route_distribution_id = "{{ drg_rt_dstrb_res_name }}"
+            {% else %}
+            import_drg_route_distribution_id = ""
+            {% endif %}
+
+            is_ecmp_enabled = "false"
+
+        {#  ##Do not modify below this line##  #}
+        {#                                     #}
+        {#  ###Section for adding Defined and Freeform Tags###  #}
+        {% if defined_tags and defined_tags != 'nan' and defined_tags != '' %}
+          {% if defined_tags[0] %}
+            defined_tags = {
+            {% for tags in defined_tags  %}
+                {% if not loop.last %}
+                    "{{ tags[0]  }}"= "{{ tags[1] }}" ,
+                {% else %}
+                    "{{ tags[0]  }}"= "{{ tags[1] }}"
+                {% endif %}
+            {% endfor %}
+            }
+          {% else %}
+            defined_tags = {}
+            {% endif %}{% endif %}
+          {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' %}
+                    {% if freeform_tags[0] %}
+            freeform_tags = {
+                        {% for tags in freeform_tags %}
+                            {% if not loop.last  %}
+                    "{{ tags[0] }}"="{{ tags[1] }}",
+                            {% else %}
+                    "{{ tags[0] }}"="{{ tags[1] }}"
+                            {% endif %}
+                        {% endfor %}
+                        }
+                    {% else %}
+            freeform_tags = {}
+                {% endif %}
+          {% else %}
+            freeform_tags = {}
+         {% endif %}
+        {#  ###Section for adding Defined and Freeform Tags ends here###  #}
+},
+{% endif %}
