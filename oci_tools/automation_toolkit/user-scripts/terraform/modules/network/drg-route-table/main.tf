@@ -5,6 +5,7 @@
 # Create DRG Route Table
 ############################
 
+
 resource "oci_core_drg_route_table" "drg_route_table" {
 
     count = (var.drg_id != null  && var.drg_id != "") ? 1 : 0

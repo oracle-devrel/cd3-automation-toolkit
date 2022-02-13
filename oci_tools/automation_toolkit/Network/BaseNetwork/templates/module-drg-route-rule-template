@@ -10,10 +10,12 @@
 
 drg_route_rules = {
 
-{{ drg_route_rules }}
+# DRG Route Rules for Region - {{ region.lower() }}
+###Add route rules here for {{ region.lower() }} ###
 
 }
 {% else %}{% if drg_rt_res_name != "" and drg_rt_res_name != "nan" and drg_rt_res_name != null %}
+
 {{ drg_rt_rule_tf_name }} = {
 
         #Required
@@ -21,5 +23,5 @@ drg_route_rules = {
         destination = "{{ destination_cidr }}"
         destination_type = "{{ destination_type }}"
         next_hop_drg_attachment_id = "{{ next_hop_drg_attachment_id }}"
-},
+},{% endif %}
 {% endif %}

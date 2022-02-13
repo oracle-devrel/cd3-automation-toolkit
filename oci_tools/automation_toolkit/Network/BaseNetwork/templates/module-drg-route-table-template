@@ -10,10 +10,12 @@
 
 drg_route_tables = {
 
-{{ drg_route_tables }}
+# DRG Route Tables for Region - {{ region.lower() }}
+###Add route tables here for {{ region.lower() }} ###
 
 }
 {% else %}{% if drg_name != "" and drg_name != "nan" and drg_name != null %}
+
 {{ drg_rt_tf_name }} = {
 
             drg_name = "{{ drg_tf_name }}"
@@ -62,5 +64,5 @@ drg_route_tables = {
             freeform_tags = {}
          {% endif %}
         {#  ###Section for adding Defined and Freeform Tags ends here###  #}
-},
+},{% endif %}
 {% endif %}

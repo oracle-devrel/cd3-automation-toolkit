@@ -42,10 +42,14 @@ def modify_terraform_drg_routerules(inputfile, outdir, prefix=None, config=DEFAU
     #Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
-    routerule_drg = env.get_template('drg-route-rule-template')
-    routetable_drg = env.get_template('drg-route-table-template')
+    routerule_drg = env.get_template('module-drg-route-rule-template')
+    routetable_drg = env.get_template('module-drg-route-table-template')
+    auto_tfvars_filename = "_drg-routetables.auto.tfvars"
+
     tempStr = {}
     tempdict={}
+    tempSkeletonDRGRouteTable = {}
+    tempSkeletonDRGRouteRule = {}
 
     drgv2=parseDRGs(filename)
 
@@ -60,13 +64,32 @@ def modify_terraform_drg_routerules(inputfile, outdir, prefix=None, config=DEFAU
 
     for reg in ct.all_regions:
         rts_done[reg] = []
+        tempSkeletonDRGRouteTable[reg] = []
+        tempSkeletonDRGRouteRule[reg] = []
+
         # Backup existing route table files in ash and phx dir
         resource = "DRGRTs"
-        commonTools.backup_file(outdir + "/" + reg, resource, "_drgroutetable.tf")
+        commonTools.backup_file(outdir + "/" + reg, resource, auto_tfvars_filename)
+
+
+        # Rename the modules file in outdir to .tf
+        module_txt_filenames = ['drg_route_tables','drg_route_rules']
+        for modules in module_txt_filenames:
+            module_filename = outdir + "/" + reg + "/" + modules.lower() + ".txt"
+            rename_module_filename = outdir + "/" + reg + "/" + modules.lower() + ".tf"
+
+            if not os.path.isfile(rename_module_filename):
+                if os.path.isfile(module_filename):
+                    os.rename(module_filename, rename_module_filename)
+
+        # Create Skeleton Template
+        tempSkeletonDRGRouteTable[reg] = routetable_drg.render(tempStr, skeleton=True, region=reg)
+        tempSkeletonDRGRouteRule[reg] = routerule_drg.render(tempStr, skeleton=True, region=reg)
 
     # List of the column headers
     dfcolumns = df.columns.values.tolist()
     tfStr = ''
+    tfStrRT = ''
     for i in df.index:
 
         drg_rt_dstrb_tf_name=''
@@ -142,9 +165,9 @@ def modify_terraform_drg_routerules(inputfile, outdir, prefix=None, config=DEFAU
                 rt=columnvalue
                 drg_rt_tf_name = commonTools.check_tf_variable(drg_name + "_" + rt)
                 if (rt in commonTools.drg_auto_RTs):
-                    drg_rt_res_name = "data.oci_core_drg_route_tables." + drg_rt_tf_name + ".drg_route_tables[0].id"
+                    drg_rt_res_name = drg_rt_tf_name
                 else:
-                    drg_rt_res_name = "oci_core_drg_route_table." + drg_rt_tf_name + ".id"
+                    drg_rt_res_name = drg_rt_tf_name
 
                 tempStr['display_name']= rt
                 tempStr['drg_rt_tf_name'] = drg_rt_tf_name
@@ -154,10 +177,10 @@ def modify_terraform_drg_routerules(inputfile, outdir, prefix=None, config=DEFAU
 
                 if columnvalue in commonTools.drg_auto_RDs:
                     drg_rt_dstrb_tf_name = commonTools.check_tf_variable(drg_name + "_" + columnvalue)
-                    drg_rt_dstrb_res_name = "data.oci_core_drg_route_distributions." + drg_rt_dstrb_tf_name + ".drg_route_distributions[0].id"
+                    drg_rt_dstrb_res_name = drg_rt_dstrb_tf_name
                 elif columnvalue!='':
                     drg_rt_dstrb_tf_name = commonTools.check_tf_variable(drg_name + "_" + columnvalue)
-                    drg_rt_dstrb_res_name = "oci_core_drg_route_distribution."+drg_rt_dstrb_tf_name+".id"
+                    drg_rt_dstrb_res_name = drg_rt_dstrb_tf_name
 
                 #Route Distribution name can be null also in that dont assign any distribution name to the rote table
 
@@ -170,12 +193,12 @@ def modify_terraform_drg_routerules(inputfile, outdir, prefix=None, config=DEFAU
                     if("ocid1.drgattachment.oc1" in dest_obj):
                         dest_objs = str(dest_obj).strip().split(".")
                         if(len(dest_objs)==5):
-                            dest_obj = "\"" + dest_obj.strip() + "\""
+                            dest_obj = dest_obj.strip()
                         else:
                             print("wrong OCID")
                             break
                     else:
-                        dest_obj = "oci_core_drg_attachment." + commonTools.check_tf_variable(dest_obj.strip()) + ".id"
+                        dest_obj = commonTools.check_tf_variable(dest_obj.strip())
 
                     tempdict = {'next_hop_drg_attachment_id': dest_obj}
                     tempStr.update(tempdict)
@@ -183,47 +206,28 @@ def modify_terraform_drg_routerules(inputfile, outdir, prefix=None, config=DEFAU
             columnname = commonTools.check_column_headers(columnname)
             tempStr[columnname] = str(columnvalue).strip()
 
-
         # Process first RT
-        tfStrRT=''
         if(len(rts_done[region])==0):
             #Write Previous Region's file
-            if(tfStr!=''):
-                print("Writing to..." + str(oname_rt.name))
-                oname_rt.write(tfStr)
-                oname_rt.close()
 
-
-            outfile = outdir + "/" + region + "/" + drg_rt_tf_name + "_drgroutetable.tf"
+            outfile = outdir + "/" + region + "/" + prefix +"_"+ auto_tfvars_filename
             oname_rt = open(outfile, "w")
             k=1
             #Create RT resource only if it is not Auto Generated one
             if (DRG_RT not in commonTools.drg_auto_RTs):
-                tfStrRT = routetable_drg.render(tempStr)
-            tfStr = tfStrRT
+                tfStrRT = tfStrRT + routetable_drg.render(tempStr)
             rts_done[region].append(drg_rt_tf_name)
 
         if (drg_rt_tf_name not in rts_done[region]):
             rts_done[region].append(drg_rt_tf_name)
-            if (tfStr != ''):
-                print("Writing to..." + str(oname_rt.name))
-                oname_rt.write(tfStr)
-                oname_rt.close()
 
             # Create RT resource only if it is not Auto Generated one
             if (DRG_RT not in commonTools.drg_auto_RTs):
-                tfStrRT = routetable_drg.render(tempStr)
-            tfStr = tfStrRT
+                tfStrRT = tfStrRT + routetable_drg.render(tempStr)
             k=1
-            outfile = outdir + "/" + region + "/" + drg_rt_tf_name + "_drgroutetable.tf"
-            oname_rt = open(outfile,"w")
 
             #Empty Route Table
             if(new_rule == -1):
-                if(tfStr!=""):
-                    print("Writing to..." + str(oname_rt.name))
-                    oname_rt.write(tfStr)
-                    oname_rt.close()
 
                 if (drg_rt_tf_name not in rts_done[region]):
                     rts_done[region].append(drg_rt_tf_name)
@@ -238,13 +242,20 @@ def modify_terraform_drg_routerules(inputfile, outdir, prefix=None, config=DEFAU
             if(drg_rt_tf_name not in rts_done[region]):
                 rts_done[region].append(drg_rt_tf_name)
 
+    for reg in ct.all_regions:
+        outfile = outdir + "/" + reg + "/" + prefix + "_" + auto_tfvars_filename
+        oname_rt = open(outfile, "w")
+        if tfStrRT != '':
+            srcStr="###Add route tables here for "+reg.lower()+" ###"
+            tempSkeletonDRGRouteTable[reg] = tempSkeletonDRGRouteTable[reg].replace(srcStr, tfStrRT)
+        if tfStr != '':
+            srcStr="###Add route rules here for "+reg.lower()+" ###"
+            tempSkeletonDRGRouteRule[reg] = tempSkeletonDRGRouteRule[reg].replace(srcStr, tfStr)
 
-    #write last routetable
-    if(tfStr!=""):
-        print("Writing to..." + str(oname_rt.name))
-        oname_rt.write(tfStr)
+        tempSkeletonDRGRouteTable[reg] = tempSkeletonDRGRouteTable[reg] + tempSkeletonDRGRouteRule[reg]
+        print("Writing to..." + str(oname_rt))
+        oname_rt.write(tempSkeletonDRGRouteTable[reg])
         oname_rt.close()
-
 
 def modify_terraform_routerules(inputfile, outdir, prefix=None, config=DEFAULT_LOCATION):
     filename = inputfile
@@ -483,42 +494,42 @@ def modify_terraform_routerules(inputfile, outdir, prefix=None, config=DEFAULT_L
         elif ('Default Route Table for' not in display_name.strip()):
             tfStr[region] = generate_route_table_string(region_rt_name=region_rt_name,region=region, routetableStr=tfStr,tempStr=tempStr,common_rt=common_rt)
 
-    for reg in ct.all_regions:
-
-        textToAddSeclistSearch = "##Add New Route Tables for " + reg + " here##"
-        defaultTextToAddSeclistSearch = "##Add New Default Route Tables for " + reg + " here##"
-
-        # Rename the modules file in outdir to .tf
-        module_txt_filenames = ['route_tables', 'default_route_tables']
-        for modules in module_txt_filenames:
-            module_filename = outdir + "/" + reg + "/" + modules.lower() + ".txt"
-            rename_module_filename = outdir + "/" + reg + "/" + modules.lower() + ".tf"
-
-            if not os.path.isfile(rename_module_filename):
-                if os.path.isfile(module_filename):
-                    os.rename(module_filename, rename_module_filename)
-
-        outfile = outdir + "/" + reg + "/" + prefix + auto_tfvars_filename
-        default_outfile = outdir + "/" + reg + "/" + prefix + default_auto_tfvars_filename
-
-        default_rt_tempSkeleton[reg] = default_rt_tempSkeleton[reg].replace(defaultTextToAddSeclistSearch,deftfStr[reg] + defaultTextToAddSeclistSearch)
-        tempSkeleton[reg] = tempSkeleton[reg].replace(textToAddSeclistSearch,tfStr[reg] + textToAddSeclistSearch)
-
-        if tempSkeleton[reg] != '' :
-            oname = open(outfile, "w")
-            oname.write(tempSkeleton[reg])
-            oname.close()
-            print(outfile + " for route tables has been created for region " + reg)
-
-        if default_rt_tempSkeleton[reg] !='':
-            oname = open(default_outfile, "w")
-            oname.write(default_rt_tempSkeleton[reg])
-            oname.close()
-            print(default_outfile + " for default route tables has been created for region " + reg)
+    # for reg in ct.all_regions:
+    #
+    #     textToAddSeclistSearch = "##Add New Route Tables for " + reg + " here##"
+    #     defaultTextToAddSeclistSearch = "##Add New Default Route Tables for " + reg + " here##"
+    #
+    #     # Rename the modules file in outdir to .tf
+    #     module_txt_filenames = ['route_tables', 'default_route_tables']
+    #     for modules in module_txt_filenames:
+    #         module_filename = outdir + "/" + reg + "/" + modules.lower() + ".txt"
+    #         rename_module_filename = outdir + "/" + reg + "/" + modules.lower() + ".tf"
+    #
+    #         if not os.path.isfile(rename_module_filename):
+    #             if os.path.isfile(module_filename):
+    #                 os.rename(module_filename, rename_module_filename)
+    #
+    #     outfile = outdir + "/" + reg + "/" + prefix + auto_tfvars_filename
+    #     default_outfile = outdir + "/" + reg + "/" + prefix + default_auto_tfvars_filename
+    #
+    #     default_rt_tempSkeleton[reg] = default_rt_tempSkeleton[reg].replace(defaultTextToAddSeclistSearch,deftfStr[reg] + defaultTextToAddSeclistSearch)
+    #     tempSkeleton[reg] = tempSkeleton[reg].replace(textToAddSeclistSearch,tfStr[reg] + textToAddSeclistSearch)
+    #
+    #     if tempSkeleton[reg] != '' :
+    #         oname = open(outfile, "w")
+    #         oname.write(tempSkeleton[reg])
+    #         oname.close()
+    #         print(outfile + " for route tables has been created for region " + reg)
+    #
+    #     if default_rt_tempSkeleton[reg] !='':
+    #         oname = open(default_outfile, "w")
+    #         oname.write(default_rt_tempSkeleton[reg])
+    #         oname.close()
+    #         print(default_outfile + " for default route tables has been created for region " + reg)
 
 if __name__ == '__main__':
     args = parse_args()
     # Execution of the code begins here
-    modify_terraform_routerules(args.inputfile, args.outdir, prefix=None, config=args.config)
+    #modify_terraform_routerules(args.inputfile, args.outdir, prefix=None, config=args.config)
     modify_terraform_drg_routerules(args.inputfile, args.outdir, prefix=None, config=args.config)
 
