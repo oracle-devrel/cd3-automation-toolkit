@@ -127,7 +127,7 @@ def print_drg_routerules(drg_rt_info,drg_display_name,drg_route_table_name,impor
             print(drg_route_table_name)
         else:
             if rule.route_type.lower()=='static':
-                importCommands_drg[region.lower()].write("\nterraform import oci_core_drg_route_table_route_rule." + drg_rt_tf_name+ "_route_rule" + str(i) + " drgRouteTables/"+str(drg_rt_info.id)+"/routeRules/"+str(rule.id))
+                importCommands_drg[region.lower()].write("\nterraform import \"module.drg-route-rules[\\\"" + drg_rt_tf_name+ "_route_rule" + str(i) + "\\\"].oci_core_drg_route_table_route_rule.drg_route_rule[0]\" drgRouteTables/"+str(drg_rt_info.id)+"/routeRules/"+str(rule.id))
         i=i+1
 
 def print_routetables(routetables,region,vcn_name,comp_name):
@@ -251,7 +251,7 @@ def export_drg_routetable(inputfile, network_compartments, _config, _tf_import_c
                         drg_rt_tf_name = commonTools.check_tf_variable(drg_rt_name)
                         if tf_import_cmd_drg:
                             if drg_route_table_name not in commonTools.drg_auto_RTs:
-                                importCommands_drg[reg].write("\nterraform import oci_core_drg_route_table." + drg_rt_tf_name + " " + drg_route_table_id)
+                                importCommands_drg[reg].write("\nterraform import \"module.drg-route-tables[\\\"" + drg_rt_tf_name + "\\\"].oci_core_drg_route_table.drg_route_table[0]\" " + drg_route_table_id)
 
 
 

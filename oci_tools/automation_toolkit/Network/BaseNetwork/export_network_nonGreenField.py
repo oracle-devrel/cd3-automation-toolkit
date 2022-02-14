@@ -627,11 +627,11 @@ def export_networking(inputfile, outdir, _config, network_compartments=[]):
 
                                         tf_name = commonTools.check_tf_variable(drg_display_name+"_"+import_drg_route_distribution_info.display_name)
                                         if(import_drg_route_distribution_info.display_name not in commonTools.drg_auto_RDs):
-                                            importCommands[reg].write("\nterraform import oci_core_drg_route_distribution." + tf_name + " " + import_drg_route_distribution_info.id)
+                                            importCommands[reg].write("\nterraform import \"module.drg-route-distributions[\\\"" + tf_name + "\\\"].oci_core_drg_route_distribution.drg_route_distribution[0]\" " + import_drg_route_distribution_info.id)
 
                                             k = 1
                                             for stmt in drg_route_distribution_statements.data:
-                                                importCommands[reg].write("\nterraform import oci_core_drg_route_distribution_statement." + tf_name + "_statement" + str(k) + " drgRouteDistributions/" + import_drg_route_distribution_info.id + "/statements/" + stmt.id)
+                                                importCommands[reg].write("\nterraform import \"module.drg-route-distribution-statements[\\\"" + tf_name +"_statement" + str(k)+"\\\"].oci_core_drg_route_distribution_statement.drg_route_distribution_statement[0]\" drgRouteDistributions/" + import_drg_route_distribution_info.id + "/statements/" + stmt.id)
                                                 k=k+1
 
                                 print_drgv2(values_for_column_drgv2, region, drg_comp_name, vcn_info,drg_info, drg_attachment_info, drg_route_table_info, import_drg_route_distribution_info,drg_route_distribution_statements)
@@ -667,14 +667,11 @@ def export_networking(inputfile, outdir, _config, network_compartments=[]):
                                             tf_name = commonTools.check_tf_variable(
                                                 drg_display_name + "_" + import_drg_route_distribution_info.display_name)
                                             if (import_drg_route_distribution_info.display_name not in commonTools.drg_auto_RDs):
-                                                importCommands[reg].write(
-                                                    "\nterraform import oci_core_drg_route_distribution." + tf_name + " " + import_drg_route_distribution_info.id)
+                                                importCommands[reg].write("\nterraform import \"module.drg-route-distributions[\\\"" + tf_name + "\\\"].oci_core_drg_route_distribution.drg_route_distribution[0]\" " + import_drg_route_distribution_info.id)
 
                                                 k = 1
                                                 for stmt in drg_route_distribution_statements.data:
-                                                    importCommands[reg].write(
-                                                        "\nterraform import oci_core_drg_route_distribution_statement." + tf_name + "_statement" + str(
-                                                            k) + " drgRouteDistributions/" + import_drg_route_distribution_info.id + "/statements/" + stmt.id)
+                                                    importCommands[reg].write("\nterraform import \"module.drg-route-distribution-statements[\\\"" + tf_name +"_statement" + str(k)+"\\\"].oci_core_drg_route_distribution_statement.drg_route_distribution_statement[0]\" drgRouteDistributions/" + import_drg_route_distribution_info.id + "/statements/" + stmt.id)
                                                     k = k + 1
                                         print_drgv2(values_for_column_drgv2, region, drg_comp_name, vcn_info, drg_info,
                                                     drg_attachment_info, drg_route_table_info,
