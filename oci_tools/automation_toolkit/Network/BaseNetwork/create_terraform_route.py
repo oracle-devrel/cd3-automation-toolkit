@@ -27,8 +27,7 @@ from jinja2 import Environment, FileSystemLoader
 
 def parse_args():
     # Read the input arguments
-    parser = argparse.ArgumentParser(
-        description='Creates route tables containing default routes for each subnet based on inputs given in CD3 excel sheet.')
+    parser = argparse.ArgumentParser(description='Creates route tables containing default routes for each subnet based on inputs given in CD3 excel sheet.')
     parser.add_argument('inputfile', help='Full Path of input file. eg: cd3 excel file')
     parser.add_argument('outdir', help='Output directory for creation of TF files')
     parser.add_argument('prefix', help='customer name/prefix for all file names')
@@ -36,18 +35,39 @@ def parse_args():
     parser.add_argument('--config', default=DEFAULT_LOCATION, help='Config file name')
     return parser.parse_args()
 
+def read_infile_data(modifiedroutetableStr, reg, rt):
+    start = "# Start of " + rt + " #"
+    end = "# End of " + rt + " #"
+    modifiedroutetableStr[reg] = re.sub(start+'.*?'+end, '',modifiedroutetableStr[reg] , flags=re.DOTALL)
+    filedata = modifiedroutetableStr[reg]
+    return modifiedroutetableStr[reg], filedata
+
+def recursive_process_filedata(common_rt, modifiedroutetableStr, reg, processed_rt,count):
+    for rt in common_rt:
+        if reg in rt:
+            # If the route table in auto.tfvars is absent in CD3 sheet, copy it.
+            if rt in modifiedroutetableStr[reg] and rt not in processed_rt:
+                modifiedroutetableStr[reg],filedata = read_infile_data(modifiedroutetableStr, reg, rt)
+                common_rt.pop(common_rt.index(rt))
+                recursive_process_filedata(common_rt, modifiedroutetableStr, reg, processed_rt,count)
+                count = count + 1
+            else:
+                continue
+            processed_rt.append(rt)
+    return modifiedroutetableStr[reg]
 
 def create_terraform_drg_route(inputfile, outdir, prefix, config, modify_network=False):
     filename = inputfile
     configFileName = config
     drgv2 = parseDRGs(filename)
-
+    common_rt = []
     ct = commonTools()
     ct.get_subscribedregions(configFileName)
 
     drg_routetablefiles = {}
     drg_routedistributionfiles = {}
     tempStr = {}
+    region_rt_name = ''
 
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
@@ -58,6 +78,11 @@ def create_terraform_drg_route(inputfile, outdir, prefix, config, modify_network
     drg_distribution_auto_tfvars_template = "_drg-distribution.auto.tfvars"
     drg_rt_auto_tfvars_filename = "_drg-routetables.auto.tfvars"
 
+    tempSkeletonDRGRouteTable = {}
+    tempSkeletonDRGDistribution = {}
+    tempSkeletonDRGDistributionStmt = {}
+    modifiedroutetableStr = {}
+
     # If input is CD3 excel file
     if ('.xls' in filename):
 
@@ -65,18 +90,12 @@ def create_terraform_drg_route(inputfile, outdir, prefix, config, modify_network
         df = df.dropna(how='all')
         df = df.reset_index(drop=True)
 
-        tempSkeletonDRGRouteTable = {}
-        tempSkeletonDRGDistribution = {}
-        tempSkeletonDRGDistributionStmt = {}
         drg_rt = {}
         drg_rd = {}
         drg_rd_stmt = {}
 
         # Rename the .txt files in outdir to .tf; Generate the Skeleton Templates
         for reg in ct.all_regions:
-            tempSkeletonDRGRouteTable[reg] = []
-            tempSkeletonDRGDistribution[reg] = []
-            tempSkeletonDRGDistributionStmt[reg] = []
             drg_rt[reg] = ''
             drg_rd[reg] = ''
             drg_rd_stmt[reg] = ''
@@ -89,11 +108,6 @@ def create_terraform_drg_route(inputfile, outdir, prefix, config, modify_network
                 if not os.path.isfile(rename_module_filename):
                     if os.path.isfile(module_filename):
                         os.rename(module_filename, rename_module_filename)
-
-            # Create Skeleton Template
-            tempSkeletonDRGRouteTable[reg] = drg_rt_template.render(tempStr, skeleton=True, region=reg)
-            tempSkeletonDRGDistribution[reg] = drg_rd_template.render(tempStr, skeleton=True, region=reg)
-            tempSkeletonDRGDistributionStmt[reg] = drg_rd_stmt_template.render(tempStr, skeleton=True, region=reg)
 
         # Option Modify = False
         # Purge existing routetable files
@@ -134,6 +148,7 @@ def create_terraform_drg_route(inputfile, outdir, prefix, config, modify_network
                 exit(1)
 
             drg_name = ''
+
             for columnname in dfcolumns:
                 # Column value
                 columnvalue = str(df[columnname][i]).strip()
@@ -166,6 +181,9 @@ def create_terraform_drg_route(inputfile, outdir, prefix, config, modify_network
                     tempdict['distribution_type'] = "IMPORT"
                     tempStr.update(tempdict)
 
+                region_rt_name = tempStr['drg_tf_name'] + "_" + region.lower()
+                tempStr['region_rt_name'] = region_rt_name
+
                 # Check for multivalued columns
                 if (columnname == 'Import DRG Route Distribution Statements'):
                     columnvalues = columnvalue.split("\n")
@@ -184,20 +202,61 @@ def create_terraform_drg_route(inputfile, outdir, prefix, config, modify_network
                 tempStr.update(tempdict)
 
             if (DRG_RT != 'nan' and DRG_RT not in commonTools.drg_auto_RTs):
-                drg_rt[region] = drg_rt[region] + drg_rt_template.render(tempStr)
+                    drg_rt[region] = drg_rt[region] + drg_rt_template.render(tempStr)
 
             if (DRG_RD.lower() != 'nan' and DRG_RD not in commonTools.drg_auto_RDs):
                 drg_rd[region] = drg_rd[region] + drg_rd_template.render(tempStr)
 
-    for reg in ct.all_regions:
-        rtfile = outdir + "/" + reg + "/" + prefix + drg_rt_auto_tfvars_filename
-        rtdistribution = outdir + "/" + reg + "/" + prefix + drg_distribution_auto_tfvars_template
-        oname_rt = open(rtfile, "w")
-        oname_drg_dis = open(rtdistribution, "w")
+            if (region_rt_name not in common_rt):
+                common_rt.append(region_rt_name)
 
-        if drg_rt[reg] != '':
-            srcStr="###Add route tables here for "+reg.lower()+" ###"
-            tempSkeletonDRGRouteTable[reg] = tempSkeletonDRGRouteTable[reg].replace(srcStr, drg_rt[reg])
+    for reg in ct.all_regions:
+
+        tempSkeletonDRGRouteTable[reg] = []
+        tempSkeletonDRGDistribution[reg] = []
+        tempSkeletonDRGDistributionStmt[reg] = []
+        modifiedroutetableStr[reg] = []
+
+        tempSkeletonDRGDistribution[reg] = drg_rd_template.render(tempStr, skeleton=True, region=reg)
+        tempSkeletonDRGDistributionStmt[reg] = drg_rd_stmt_template.render(tempStr, skeleton=True, region=reg)
+
+        # Create Skeleton Template
+        rtdistribution = outdir + "/" + reg + "/" + prefix + drg_distribution_auto_tfvars_template
+        rtfile = outdir + "/" + reg + "/" + prefix + drg_rt_auto_tfvars_filename
+
+        if not modify_network:
+
+            tempSkeletonDRGRouteTable[reg] = drg_rt_template.render(tempStr, skeleton=True, region=reg)
+
+            if drg_rt[reg] != '':
+                srcStr = "###Add route tables here for " + reg.lower() + " ###"
+                tempSkeletonDRGRouteTable[reg] = tempSkeletonDRGRouteTable[reg].replace(srcStr, drg_rt[reg])
+
+        # If Modify Network
+        else:
+            skeletonStr = "###Add route tables here for "+reg.lower()+" ###"
+            # Option if Modify Network is TRUE
+            processed_rt = []
+
+            # Read the file if it exists
+            if os.path.exists(rtfile):
+                # Read the contents of file in outdir
+                with open(rtfile, 'r+') as file:
+                    filedata = file.read()
+                file.close()
+
+                modifiedroutetableStr[reg] = filedata
+                modifiedroutetableStr[reg] = recursive_process_filedata(common_rt, modifiedroutetableStr, reg, processed_rt, count=0)
+            else:
+                filedata = ''
+                modifiedroutetableStr[reg] != ''
+
+            if drg_rt[reg] != '':
+                if modifiedroutetableStr[reg] != '':
+                    tempSkeletonDRGRouteTable[reg] = modifiedroutetableStr[reg].replace(skeletonStr, drg_rt[reg] + "\n" + skeletonStr)
+                else:
+                    tempSkeletonDRGRouteTable[reg] = tempSkeletonDRGRouteTable[reg].replace(skeletonStr, drg_rt[reg] + "\n" + skeletonStr)
+
         if drg_rd[reg] != '':
             srcStr="###Add DRG Distribution here for "+reg.lower()+" ###"
             tempSkeletonDRGDistribution[reg] = tempSkeletonDRGDistribution[reg].replace(srcStr, drg_rd[reg])
@@ -206,6 +265,9 @@ def create_terraform_drg_route(inputfile, outdir, prefix, config, modify_network
             tempSkeletonDRGDistributionStmt[reg] = tempSkeletonDRGDistributionStmt[reg].replace(srcStr, drg_rd_stmt[reg])
 
         tempSkeletonDRGDistribution[reg] = tempSkeletonDRGDistribution[reg] + tempSkeletonDRGDistributionStmt[reg]
+
+        oname_rt = open(rtfile, "w")
+        oname_drg_dis = open(rtdistribution, "w")
 
         print("Writing to..." + str(rtfile))
         oname_rt.write(tempSkeletonDRGRouteTable[reg])
@@ -254,27 +316,6 @@ def create_terraform_route(inputfile, outdir, prefix, config, modify_network=Fal
     template = env.get_template('module-route-table-template')
     routerule = env.get_template("module-route-rule-template")
     auto_tfvars_filename = "_routetables.auto.tfvars"
-
-    def read_infile_data(count,modifiedroutetableStr, reg, rt):
-        start = "# Start of " + rt + " #"
-        end = "# End of " + rt + " #"
-        modifiedroutetableStr[reg] = re.sub(start+'.*?'+end, '',modifiedroutetableStr[reg] , flags=re.DOTALL)
-        filedata = modifiedroutetableStr[reg]
-        return modifiedroutetableStr[reg], filedata
-
-    def recursive_process_filedata(common_rt, modifiedroutetableStr, reg, processed_rt,count):
-        for rt in common_rt:
-            if reg in rt:
-                # If the route table in auto.tfvars is absent in CD3 sheet, copy it.
-                if rt in modifiedroutetableStr[reg] and rt not in processed_rt:
-                    modifiedroutetableStr[reg],filedata = read_infile_data(count,modifiedroutetableStr, reg, rt)
-                    common_rt.pop(common_rt.index(rt))
-                    recursive_process_filedata(common_rt, modifiedroutetableStr, reg, processed_rt,count)
-                    count = count + 1
-                else:
-                    continue
-                processed_rt.append(rt)
-        return modifiedroutetableStr[reg]
 
     def createLPGRouteRules(peering_dict):
         for left_vcn, value in peering_dict.items():
@@ -966,7 +1007,7 @@ def create_terraform_route(inputfile, outdir, prefix, config, modify_network=Fal
             oname.close()
             print(outfile + " containing route tables has been created for region " + reg)
         else:
-            # Option if Modify Network is FALSE
+            # Option if Modify Network is TRUE
             processed_rt = []
 
             # Read the file if it exists

@@ -66,7 +66,7 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
     dhcpStr = {}
     outfile_dhcp = {}
     outfile_oci_drg_data = {}
-    outfile_oci_drg_attach_data = {}
+    oname_oci_drg_data = {}
     oname_def_dhcp = {}
 
     global dhcp_data
@@ -626,10 +626,10 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
             oname_def_dhcp[reg].close()
             print(outfile_dhcp[reg] + " for default DHCP options for VCNs has been updated for region " + reg)
 
-            # oname_oci_drg_data[reg]=open(outfile_oci_drg_data[reg], "w")
-            # oname_oci_drg_data[reg].write(drg_data[reg])
-            # oname_oci_drg_data[reg].close()
-            # print(outfile_oci_drg_data[reg] + " containing TF for oci-drg-data for DRGs has been updated for region " + reg)
+            oname_oci_drg_data[reg]=open(outfile_oci_drg_data[reg], "w")
+            oname_oci_drg_data[reg].write(drg_data[reg])
+            oname_oci_drg_data[reg].close()
+            print(outfile_oci_drg_data[reg] + " for oci-drg-data for DRGs has been updated for region " + reg)
 
 
         else:
@@ -664,11 +664,11 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
             outfile_dhcp[reg] = reg_out_dir + "/" + prefix + dhcp_auto_tfvars_filename
             outfile_oci_drg_data[reg] = reg_out_dir + "/oci-drg-data.tf"
 
-
-            # oname_oci_drg_data[reg] = open(outfile_oci_drg_data[reg], "w")
-            # oname_oci_drg_data[reg].write(drg_data[reg])
-            # oname_oci_drg_data[reg].close()
-            # print(outfile_oci_drg_data[reg] + " containing TF for oci-drg-data for DRGs has been updated for region " + reg)
+            if drg_data[reg] != '':
+                oname_oci_drg_data[reg] = open(outfile_oci_drg_data[reg], "w")
+                oname_oci_drg_data[reg].write(drg_data[reg])
+                oname_oci_drg_data[reg].close()
+                print(outfile_oci_drg_data[reg] + " for oci-drg-data for DRGs has been updated for region " + reg)
 
             if (dhcp_default_tfStr[reg] != ''):
                 oname_def_dhcp[reg] = open(outfile_dhcp[reg], "w")
