@@ -52,9 +52,11 @@ def create_terraform_drg_route(inputfile, outdir, prefix, config, modify_network
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
-    drg_rt_template = env.get_template('drg-route-table-template')
-    drg_rd_template = env.get_template('drg-route-distribution-template')
-    drg_rd_stmt_template = env.get_template('drg-route-distribution-statement-template')
+    drg_rt_template = env.get_template('module-drg-route-table-template')
+    drg_rd_template = env.get_template('module-drg-route-distribution-template')
+    drg_rd_stmt_template = env.get_template('module-drg-route-distribution-statement-template')
+    drg_distribution_auto_tfvars_template = "_drg-distribution.auto.tfvars"
+    drg_rt_auto_tfvars_filename = "_drg-routetables.auto.tfvars"
 
     # If input is CD3 excel file
     if ('.xls' in filename):
@@ -63,34 +65,53 @@ def create_terraform_drg_route(inputfile, outdir, prefix, config, modify_network
         df = df.dropna(how='all')
         df = df.reset_index(drop=True)
 
+        tempSkeletonDRGRouteTable = {}
+        tempSkeletonDRGDistribution = {}
+        tempSkeletonDRGDistributionStmt = {}
+        drg_rt = {}
+        drg_rd = {}
+        drg_rd_stmt = {}
+
+        # Rename the .txt files in outdir to .tf; Generate the Skeleton Templates
+        for reg in ct.all_regions:
+            tempSkeletonDRGRouteTable[reg] = []
+            tempSkeletonDRGDistribution[reg] = []
+            tempSkeletonDRGDistributionStmt[reg] = []
+            drg_rt[reg] = ''
+            drg_rd[reg] = ''
+            drg_rd_stmt[reg] = ''
+            # Rename the modules file in outdir to .tf
+            module_txt_filenames = ['drg_route_tables', 'drg_route_distribution_statements', 'drg_route_distributions']
+            for modules in module_txt_filenames:
+                module_filename = outdir + "/" + reg + "/" + modules.lower() + ".txt"
+                rename_module_filename = outdir + "/" + reg + "/" + modules.lower() + ".tf"
+
+                if not os.path.isfile(rename_module_filename):
+                    if os.path.isfile(module_filename):
+                        os.rename(module_filename, rename_module_filename)
+
+            # Create Skeleton Template
+            tempSkeletonDRGRouteTable[reg] = drg_rt_template.render(tempStr, skeleton=True, region=reg)
+            tempSkeletonDRGDistribution[reg] = drg_rd_template.render(tempStr, skeleton=True, region=reg)
+            tempSkeletonDRGDistributionStmt[reg] = drg_rd_stmt_template.render(tempStr, skeleton=True, region=reg)
+
+        # Option Modify = False
         # Purge existing routetable files
         if not modify_network:
             for reg in ct.all_regions:
                 drg_routetablefiles.setdefault(reg, [])
                 drg_routedistributionfiles.setdefault(reg, [])
-                purge(outdir + "/" + reg, "_drgroutetable.tf")
-                purge(outdir + "/" + reg, "_drgroutedistribution.tf")
-
-        # Get existing list of route table files
-        if modify_network:
-            for reg in ct.all_regions:
-                drg_routetablefiles.setdefault(reg, [])
-                drg_routedistributionfiles.setdefault(reg, [])
-                lisoffiles = os.listdir(outdir + "/" + reg)
-                for file in lisoffiles:
-                    if "_drgroutetable.tf" in file:
-                        drg_routetablefiles[reg].append(file)
-                    if "_drgroutedistribution.tf" in file:
-                        drg_routedistributionfiles[reg].append(file)
+                purge(outdir + "/" + reg, prefix + drg_distribution_auto_tfvars_template)
+                purge(outdir + "/" + reg, prefix + drg_rt_auto_tfvars_filename)
 
         # List of the column headers
         dfcolumns = df.columns.values.tolist()
         tempStr = {}
         tempdict = {}
+
         for i in df.index:
             drg_rt_dstrb_tf_name = ''
             drg_rt_dstrb_res_name = ''
-            drg_tf_name = ''
             region = str(df.loc[i, 'Region']).strip()
 
             if (region in commonTools.endNames):
@@ -112,6 +133,7 @@ def create_terraform_drg_route(inputfile, outdir, prefix, config, modify_network
                 print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
                 exit(1)
 
+            drg_name = ''
             for columnname in dfcolumns:
                 # Column value
                 columnvalue = str(df[columnname][i]).strip()
@@ -125,7 +147,6 @@ def create_terraform_drg_route(inputfile, outdir, prefix, config, modify_network
 
                 if columnname == "DRG Name":
                     drg_name = columnvalue
-                    drg_tf_name = commonTools.check_tf_variable(columnvalue)
                     tempdict['drg_tf_name'] = commonTools.check_tf_variable(columnvalue)
 
                 if columnname == "DRG RT Name":
@@ -138,7 +159,7 @@ def create_terraform_drg_route(inputfile, outdir, prefix, config, modify_network
                     if (columnvalue.lower() != ''):
                         drg_rt_dstrb_name = drg_name + "_" + columnvalue
                         drg_rt_dstrb_tf_name = commonTools.check_tf_variable(drg_rt_dstrb_name)
-                        drg_rt_dstrb_res_name = "oci_core_drg_route_distribution." + drg_rt_dstrb_tf_name + ".id"
+                        drg_rt_dstrb_res_name = drg_rt_dstrb_tf_name
                     tempdict['drg_rt_dstrb_tf_name'] = drg_rt_dstrb_tf_name
                     tempdict['drg_rt_dstrb_res_name'] = drg_rt_dstrb_res_name
                     tempdict['dstrb_display_name'] = columnvalue
@@ -149,7 +170,6 @@ def create_terraform_drg_route(inputfile, outdir, prefix, config, modify_network
                 if (columnname == 'Import DRG Route Distribution Statements'):
                     columnvalues = columnvalue.split("\n")
                     k = 1
-                    drg_rd_stmt = ''
                     for cv in columnvalues:
                         if (cv != ''):
                             tempdict = commonTools.check_multivalues_columnvalue(cv, columnname, tempdict)
@@ -157,63 +177,43 @@ def create_terraform_drg_route(inputfile, outdir, prefix, config, modify_network
                             tempStr['statements'] = tempStr['import_drg_route_distribution_statements']
                             tempStr['drg_rt_dstrb_statement_tf_name'] = drg_rt_dstrb_tf_name + "_statement" + str(k)
                             k = k + 1
-                            drg_rd_stmt = drg_rd_stmt + drg_rd_stmt_template.render(tempStr)
+                            drg_rd_stmt[region] = drg_rd_stmt[region] + drg_rd_stmt_template.render(tempStr)
 
                 columnname = commonTools.check_column_headers(columnname)
                 tempStr[columnname] = columnvalue
                 tempStr.update(tempdict)
 
             if (DRG_RT != 'nan' and DRG_RT not in commonTools.drg_auto_RTs):
-                outfile = outdir + "/" + region + "/" + drg_rt_tf_name + "_drgroutetable.tf"
-                if (not os.path.exists(outfile)):
-                    drg_rt = drg_rt_template.render(tempStr)
-                    oname = open(outfile, "w")
-                    oname.write(drg_rt)
-                    oname.close()
-                    print(outfile + " containing TF for DRG Route Table has been created for region " + region)
+                drg_rt[region] = drg_rt[region] + drg_rt_template.render(tempStr)
 
-            # create Import Route Distribution only when specified some name else attach Auto Generated
-            # if(DRG_RD.lower()!='nan' and DRG_RD_stmts.lower()!='nan'):
             if (DRG_RD.lower() != 'nan' and DRG_RD not in commonTools.drg_auto_RDs):
-                outfile_rd = outdir + "/" + region + "/" + drg_rt_dstrb_tf_name + "_drgroutedistribution.tf"
-                drg_rd = drg_rd_template.render(tempStr)
-                tfStr = drg_rd + drg_rd_stmt
-                oname = open(outfile_rd, "w")
-                oname.write(tfStr)
-                oname.close()
-                print(outfile_rd + " containing TF for DRG Route Distribution has been created for region " + region)
-
-            if (drg_rt_tf_name + "_drgroutetable.tf" in drg_routetablefiles[region]):
-                drg_routetablefiles[region].remove(drg_rt_tf_name + "_drgroutetable.tf")
-            if (drg_rt_dstrb_tf_name + "_drgroutedistribution.tf" in drg_routedistributionfiles[region]):
-                drg_routedistributionfiles[region].remove(drg_rt_dstrb_tf_name + "_drgroutedistribution.tf")
-
-        #        for drg_name in drg_list.keys():
-        #            region=drg_list[drg_name]
-        for region in drgv2.drg_names.keys():
-            for drg_name in drgv2.drg_names[region]:
-                for RT in commonTools.drg_auto_RTs:
-                    rt_name = commonTools.check_tf_variable(drg_name + "_" + RT) + "_drgroutetable.tf"
-                    if rt_name in drg_routetablefiles[region]:
-                        drg_routetablefiles[region].remove(rt_name)
-
-                for RD in commonTools.drg_auto_RDs:
-                    rd_name = commonTools.check_tf_variable(drg_name + "_" + RD) + "_drgroutedistribution.tf"
-                    if rd_name in drg_routedistributionfiles[region]:
-                        drg_routedistributionfiles[region].remove(rd_name)
+                drg_rd[region] = drg_rd[region] + drg_rd_template.render(tempStr)
 
     for reg in ct.all_regions:
-        if (len(drg_routetablefiles[reg]) != 0):
-            print(
-                "\nATTENION!!! Below DRG RouteTables are not attached to any attachment; If you want to delete any of them, remove the TF file!!!")
-            for remaining_rt_file in drg_routetablefiles[reg]:
-                print(outdir + "/" + reg + "/" + remaining_rt_file)
-        if (len(drg_routedistributionfiles[reg]) != 0):
-            print(
-                "\nATTENION!!! Below Route Distributions are not attached to DRG Route Table; If you want to delete any of them, remove the TF file!!!")
-            for remaining_rt_file in drg_routedistributionfiles[reg]:
-                print(outdir + "/" + reg + "/" + remaining_rt_file)
+        rtfile = outdir + "/" + reg + "/" + prefix + drg_rt_auto_tfvars_filename
+        rtdistribution = outdir + "/" + reg + "/" + prefix + drg_distribution_auto_tfvars_template
+        oname_rt = open(rtfile, "w")
+        oname_drg_dis = open(rtdistribution, "w")
 
+        if drg_rt[reg] != '':
+            srcStr="###Add route tables here for "+reg.lower()+" ###"
+            tempSkeletonDRGRouteTable[reg] = tempSkeletonDRGRouteTable[reg].replace(srcStr, drg_rt[reg])
+        if drg_rd[reg] != '':
+            srcStr="###Add DRG Distribution here for "+reg.lower()+" ###"
+            tempSkeletonDRGDistribution[reg] = tempSkeletonDRGDistribution[reg].replace(srcStr, drg_rd[reg])
+        if drg_rd_stmt[reg] != '':
+            srcStr="###Add DRG Distribution Statement here for "+reg.lower()+" ###"
+            tempSkeletonDRGDistributionStmt[reg] = tempSkeletonDRGDistributionStmt[reg].replace(srcStr, drg_rd_stmt[reg])
+
+        tempSkeletonDRGDistribution[reg] = tempSkeletonDRGDistribution[reg] + tempSkeletonDRGDistributionStmt[reg]
+
+        print("Writing to..." + str(rtfile))
+        oname_rt.write(tempSkeletonDRGRouteTable[reg])
+        oname_rt.close()
+
+        print("Writing to..." + str(rtdistribution))
+        oname_drg_dis.write(tempSkeletonDRGDistribution[reg])
+        oname_drg_dis.close()
 
 def purge(dir, pattern):
     for f in os.listdir(dir):

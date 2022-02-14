@@ -9,9 +9,11 @@
 
 drg_distribution_statements = {
 
-{{ drg_distribution_statements }}
+# DRG Distribution Statement for Region - {{ region.lower() }}
+###Add DRG Distribution Statement here for {{ region.lower() }} ###
+
 }
-{% endif %}{% if drg_name != "" and drg_name != "nan" and drg_name != null %}
+{% else %}{% if drg_name != "" and drg_name != "nan" and drg_name != null %}
 
 {{ drg_rt_dstrb_statement_tf_name }} = {
 
@@ -29,11 +31,12 @@ drg_distribution_statements = {
 
             {% if statements[0] == 'DRG_ATTACHMENT_ID' %}
             drg_attachment_id = "{{ statements[1] }}"
-            {% endif %}{% else %}
+            {% else %}
             drg_attachment_id = ""
             {% endif %}
 
             {% else %}
+
             match_type = "ALL"
             attachment_type =""
             drg_attachment_id = ""
@@ -44,4 +47,5 @@ drg_distribution_statements = {
             action = "ACCEPT"
 
 },
+{% endif %}
 {% endif %}

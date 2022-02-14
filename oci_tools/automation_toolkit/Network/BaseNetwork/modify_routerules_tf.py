@@ -208,10 +208,6 @@ def modify_terraform_drg_routerules(inputfile, outdir, prefix=None, config=DEFAU
 
         # Process first RT
         if(len(rts_done[region])==0):
-            #Write Previous Region's file
-
-            outfile = outdir + "/" + region + "/" + prefix +"_"+ auto_tfvars_filename
-            oname_rt = open(outfile, "w")
             k=1
             #Create RT resource only if it is not Auto Generated one
             if (DRG_RT not in commonTools.drg_auto_RTs):
