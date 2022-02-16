@@ -213,10 +213,10 @@ def create_terraform_drg_route(inputfile, outdir, prefix, config, modify_network
 
     for reg in ct.all_regions:
 
-        tempSkeletonDRGRouteTable[reg] = []
-        tempSkeletonDRGDistribution[reg] = []
-        tempSkeletonDRGDistributionStmt[reg] = []
-        modifiedroutetableStr[reg] = []
+        tempSkeletonDRGRouteTable[reg] = ''
+        tempSkeletonDRGDistribution[reg] = ''
+        tempSkeletonDRGDistributionStmt[reg] = ''
+        modifiedroutetableStr[reg] = ''
 
         tempSkeletonDRGDistribution[reg] = drg_rd_template.render(tempStr, skeleton=True, region=reg)
         tempSkeletonDRGDistributionStmt[reg] = drg_rd_stmt_template.render(tempStr, skeleton=True, region=reg)
@@ -452,10 +452,11 @@ def create_terraform_route(inputfile, outdir, prefix, config, modify_network=Fal
                                                  route_rules_drg="####ADD_NEW_DRG_RULES " + region_rt_name + " ####",
                                                  route_rules_lpg="####ADD_NEW_LPG_RULES " + region_rt_name + " ####",
                                                  route_rules_ip="####ADD_NEW_IP_RULES " + region_rt_name + " ####", )
+
                         drgStr = drgStr.replace(srcStr, temprule + "\n" + srcStr)
         return drgStr
 
-    def createLPGRtTableString(vcn_name,compartment_var_name, hub_vcn_name, peering_dict, region, tempStr):
+    def createLPGRtTableString(compartment_var_name, hub_vcn_name, peering_dict, region, tempStr):
         # Retain exported route tables associated with exported LPGs
         if (os.path.exists(outdir + "/" + region + "/obj_names.safe")):
             with open(outdir + "/" + region + "/obj_names.safe") as f:
@@ -946,7 +947,8 @@ def create_terraform_route(inputfile, outdir, prefix, config, modify_network=Fal
         tempStr['region'] = r
 
         lpgruleStr = createLPGRtTableString(compartment_var_name, hub_vcn_name, vcns.peering_dict, r, tempStr)
-        routetableStr[r] = routetableStr[r].replace(srcStr, lpgruleStr)
+        if lpgruleStr != "" and lpgruleStr != None :
+            routetableStr[r] = routetableStr[r].replace(srcStr, lpgruleStr)
 
     # Create Route Table associated with DRG(in VCN) for each VCN attached to DRG
     for key in vcns.vcns_having_drg.keys():
@@ -965,7 +967,8 @@ def create_terraform_route(inputfile, outdir, prefix, config, modify_network=Fal
         tempStr['region'] = r
 
         drgruleStr = createVCNDRGRtTableString(compartment_var_name, vcn, vcns.peering_dict, r, tempStr, hub=0)
-        routetableStr[r] = routetableStr[r].replace(srcStr, drgruleStr)
+        if drgruleStr != "" and drgruleStr != None:
+            routetableStr[r] = routetableStr[r].replace(srcStr, drgruleStr)
 
     # Create Route Table associated with DRG for Hub VCN and route rules for its each spoke VCN
     for hub_vcn_name in vcns.hub_vcn_names:
@@ -981,7 +984,8 @@ def create_terraform_route(inputfile, outdir, prefix, config, modify_network=Fal
         tempStr['region'] = r
 
         drgruleStr1 = createVCNDRGRtTableString(compartment_var_name, hub_vcn_name, vcns.peering_dict, r, tempStr,hub=1)
-        routetableStr[r] = routetableStr[r].replace(srcStr, drgruleStr1)
+        if drgruleStr1 != "" and drgruleStr1 != None:
+            routetableStr[r] = routetableStr[r].replace(srcStr, drgruleStr1)
 
     # Write the contents to file
     for reg in ct.all_regions:
