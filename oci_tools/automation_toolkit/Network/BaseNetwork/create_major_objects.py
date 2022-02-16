@@ -70,8 +70,8 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
     oname_def_dhcp = {}
 
     global dhcp_data
-    auto_tfvars_filename = '_major_objects.auto.tfvars'
-    dhcp_auto_tfvars_filename = '_default_dhcp.auto.tfvars'
+    auto_tfvars_filename = '_major-objects.auto.tfvars'
+    dhcp_auto_tfvars_filename = '_default-dhcp.auto.tfvars'
 
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')

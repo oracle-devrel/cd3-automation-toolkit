@@ -7,7 +7,7 @@
 
 resource "oci_core_drg_route_distribution" "drg_route_distribution" {
 
-    count = (var.drg_id != null  && var.drg_id != "") ? 1 : 0
+    count = (var.distribution_type != null  && var.distribution_type != "") ? 1 : 0
 
 
     #Required

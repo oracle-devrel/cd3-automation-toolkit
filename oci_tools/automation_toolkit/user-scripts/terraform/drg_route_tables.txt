@@ -13,10 +13,10 @@ module "drg-route-tables" {
   drg_id   = each.value.drg_name != null && each.value.drg_name  != "" ? (length(regexall("ocid1.drg.oc1*",each.value.drg_name)) > 0 ? each.value.drg_name : merge(module.drgs.*...)[each.value.drg_name]["drg_tf_id"][0]) : null
 
   #Optional
-  defined_tags = var.defined_tags == {} ? null : var.defined_tags
-  freeform_tags = var.freeform_tags == {} ? null : var.freeform_tags
+  defined_tags = each.value.defined_tags == {} ? null : each.value.defined_tags
+  freeform_tags = each.value.freeform_tags == {} ? null : each.value.freeform_tags
   display_name  = each.value.display_name != null ? each.value.display_name : null
-  import_drg_route_distribution_id = each.value.import_drg_route_distribution_id != null && each.value.import_drg_route_distribution_id  != "" ? (length(regexall("ocid1.drgroutedistribution.oc1*",each.value.import_drg_route_distribution_id)) > 0 ? each.value.import_drg_route_distribution_id : try(merge(module.drg-route-distributions.*...)[each.value.import_drg_route_distribution_id]["drg_route_distribution_tf_id"][0],data.oci_core_drg_route_distributions[each.value.import_drg_route_distribution_id].drg_route_distributions[0].id) : null
+  import_drg_route_distribution_id = each.value.import_drg_route_distribution_id != null && each.value.import_drg_route_distribution_id  != "" ? (length(regexall("ocid1.drgroutedistribution.oc1*",each.value.import_drg_route_distribution_id)) > 0 ? each.value.import_drg_route_distribution_id : try(merge(module.drg-route-distributions.*...)[each.value.import_drg_route_distribution_id]["drg_route_distribution_tf_id"][0],data.oci_core_drg_route_distributions[each.value.import_drg_route_distribution_id].drg_route_distributions[0].id)) : null
   is_ecmp_enabled = false
 }
 

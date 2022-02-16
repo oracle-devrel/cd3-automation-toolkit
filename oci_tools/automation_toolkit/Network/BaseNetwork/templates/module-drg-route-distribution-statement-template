@@ -7,7 +7,7 @@
 # Create DRG Route Distribution Statements
 ##########################################
 
-drg_distribution_statements = {
+drg_route_distribution_statements = {
 
 # DRG Distribution Statement for Region - {{ region.lower() }}
 ###Add DRG Distribution Statement here for {{ region.lower() }} ###
@@ -37,7 +37,7 @@ drg_distribution_statements = {
 
             {% else %}
 
-            match_type = "ALL"
+            match_type = ""
             attachment_type =""
             drg_attachment_id = ""
             {% endif %}

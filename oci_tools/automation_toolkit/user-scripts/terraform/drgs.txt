@@ -15,7 +15,7 @@ module "drgs" {
 
   #Optional
   defined_tags     = each.value.defined_tags
-  display_name = each.value.drg_name != null ? each.value.drg_name : null
+  display_name     = each.value.display_name != null ? each.value.display_name : null
   freeform_tags    = each.value.freeform_tags
 }
 
@@ -28,13 +28,13 @@ module "drg-attachments" {
   defined_tags  = each.value.defined_tags
   freeform_tags = each.value.freeform_tags
 
-  drg_id = length(regexall("ocid1.drg.oc1*", each.value.drg_id)) > 0 ? each.value.drg_id : ((each.value.drg_id != "" && each.value.drg_id != null) ? merge(module.drg.*...)[each.value.drg_id]["drg_tf_id"][0] : each.value.drg_id")
-  drg_route_table_id = length(regexall("ocid1.drgroutetable.oc1*", each.value.drg_route_table_id)) > 0 ? each.value.drg_route_table_id : (each.value.drg_route_table_id != "" && each.value.drg_route_table_id != null) ? try(merge(module.drg-route-tables.*...)[each.value.drg_route_table_id]["drg_route_table_tf_id"][0]) : null)
+  drg_id = length(regexall("ocid1.drg.oc1*", each.value.drg_id)) > 0 ? each.value.drg_id : ((each.value.drg_id != "" && each.value.drg_id != null) ? merge(module.drgs.*...)[each.value.drg_id]["drg_tf_id"][0] : each.value.drg_id)
+  drg_route_table_id = length(regexall("ocid1.drgroutetable.oc1*", each.value.drg_route_table_id)) > 0 ? each.value.drg_route_table_id : ((each.value.drg_route_table_id != "" && each.value.drg_route_table_id != null) ? try(merge(module.drg-route-tables.*...)[each.value.drg_route_table_id]["drg_route_table_tf_id"][0]) : null)
 
-  network_details_id   = length(regexall("ocid1.*",each.value.network_details_id)) > 0 ? each.value.network_details_id : merge(module.vcns.*...)[each.value.display_name]["vcn_id_for_nsg"][0]
+  network_details_id   = length(regexall("ocid1.*",each.value.network_details_id)) > 0 ? each.value.network_details_id : merge(module.vcns.*...)[each.value.network_details_id]["vcn_id_for_nsg"][0]
   network_details_type = each.value.network_details_type
 
-  vcn_route_table_id = length(regexall("ocid1.routetable.oc1*", each.value.vcn_route_table_id)) > 0 ? each.value.vcn_route_table_id : (each.value.vcn_route_table_id != "" && each.value.vcn_route_table_id != null) ? try(merge(module.route-tables.*...)[each.value.vcn_route_table_id]["route_table_ids"][0],merge(module.default-route-tables.*...)[each.value.vcn_route_table_id]["default_route_table_ids"][0]) : null)
+  vcn_route_table_id = length(regexall("ocid1.routetable.oc1*", each.value.vcn_route_table_id)) > 0 ? each.value.vcn_route_table_id : ((each.value.vcn_route_table_id != "" && each.value.vcn_route_table_id != null) ? try(merge(module.route-tables.*...)[each.value.vcn_route_table_id]["route_table_ids"][0],merge(module.default-route-tables.*...)[each.value.vcn_route_table_id]["default_route_table_ids"][0]) : null)
 }
 
 /*

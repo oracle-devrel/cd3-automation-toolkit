@@ -20,7 +20,7 @@ drg_attachments = {
         route_table_id = "{{ vcn_drg_rt_tf_name }}"
         vcn_id = "{{ vcn_id }}"
         {% else %}
-        route_table_id = null
+        route_table_id = ""
         vcn_id = null
         {% endif %}
 
@@ -29,7 +29,7 @@ drg_attachments = {
         {% if drg_rt_tf_name !='' %}
         drg_route_table_id = "{{ drg_rt_tf_name }}"
         {% else %}
-        drg_route_table_id = null
+        drg_route_table_id = ""
         {% endif %}
 
         #Required
@@ -39,7 +39,7 @@ drg_attachments = {
         {% if network_type == 'VCN' and vcn_drg_rt_tf_name !='' %}
         vcn_route_table_id = "{{ vcn_drg_rt_tf_name }}"
         {% else %}
-        vcn_route_table_id =  null
+        vcn_route_table_id =  ""
         {% endif %}
         {% endif %}
 
@@ -59,7 +59,10 @@ drg_attachments = {
         }
       {% else %}
         defined_tags = {}
-        {% endif %}{% endif %}
+        {% endif %}
+       {% else %}
+        defined_tags = {}
+       {% endif %}
             {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' %}
                 {% if freeform_tags[0] %}
         freeform_tags = {

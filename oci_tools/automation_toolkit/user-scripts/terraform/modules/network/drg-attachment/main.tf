@@ -6,7 +6,7 @@
 ############################
 
 resource "oci_core_drg_attachment" "drg_attachment" {
-    count = (var.network_details_id != "" && var.network_details_id != null) ? 1 : 0
+    count = (var.drg_display_name != "" && var.drg_display_name != null) ? 1 : 0
     
     #Required
     drg_id = var.drg_id

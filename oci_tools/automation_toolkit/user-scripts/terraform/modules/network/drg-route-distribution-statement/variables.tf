@@ -10,6 +10,11 @@ variable "drg_route_distribution_id" {
   default = null
 }
 
+variable "key_name" {
+  type    = string
+  default = null
+}
+
 variable "action" {
   type    = string
   default = null

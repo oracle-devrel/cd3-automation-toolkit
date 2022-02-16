@@ -10,11 +10,12 @@ module "drg-route-distribution-statements" {
   for_each  = (var.drg_route_distribution_statements != null || var.drg_route_distribution_statements != {})  ? var.drg_route_distribution_statements : {}
 
   #Required
+  key_name = each.key
   drg_route_distribution_id = length(regexall("ocid1.drgroutedistribution.oc1*",each.value.drg_route_distribution_id)) > 0 ? each.value.drg_route_distribution_id : merge(module.drg-route-distributions.*...)[each.value.drg_route_distribution_id]["drg_route_distribution_tf_id"][0]
   priority   = each.value.priority != null && each.value.priority  != "" ? each.value.priority : null
   action  = each.value.action != null ? each.value.action : null
   drg_attachment_ids = merge(module.drg-attachments.*...)
-  match_criteria = var.drg_route_distribution_statements
+  drg_route_distribution_statements = var.drg_route_distribution_statements
 }
 
 /*

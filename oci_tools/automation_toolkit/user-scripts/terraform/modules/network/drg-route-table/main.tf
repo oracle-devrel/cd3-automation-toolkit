@@ -8,7 +8,7 @@
 
 resource "oci_core_drg_route_table" "drg_route_table" {
 
-    count = (var.drg_id != null  && var.drg_id != "") ? 1 : 0
+    count = (var.display_name != null  && var.display_name != "") ? 1 : 0
 
     #Required
     drg_id = var.drg_id

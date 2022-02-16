@@ -83,16 +83,16 @@ def create_terraform_drg_route(inputfile, outdir, prefix, config, modify_network
     tempSkeletonDRGDistributionStmt = {}
     modifiedroutetableStr = {}
 
+    drg_rt = {}
+    drg_rd = {}
+    drg_rd_stmt = {}
+
     # If input is CD3 excel file
     if ('.xls' in filename):
 
         df, col_headers = commonTools.read_cd3(filename, "DRGs")
         df = df.dropna(how='all')
         df = df.reset_index(drop=True)
-
-        drg_rt = {}
-        drg_rd = {}
-        drg_rd_stmt = {}
 
         # Rename the .txt files in outdir to .tf; Generate the Skeleton Templates
         for reg in ct.all_regions:
@@ -175,14 +175,12 @@ def create_terraform_drg_route(inputfile, outdir, prefix, config, modify_network
                         drg_rt_dstrb_name = drg_name + "_" + columnvalue
                         drg_rt_dstrb_tf_name = commonTools.check_tf_variable(drg_rt_dstrb_name)
                         drg_rt_dstrb_res_name = drg_rt_dstrb_tf_name
+
                     tempdict['drg_rt_dstrb_tf_name'] = drg_rt_dstrb_tf_name
                     tempdict['drg_rt_dstrb_res_name'] = drg_rt_dstrb_res_name
                     tempdict['dstrb_display_name'] = columnvalue
                     tempdict['distribution_type'] = "IMPORT"
                     tempStr.update(tempdict)
-
-                region_rt_name = tempStr['drg_tf_name'] + "_" + region.lower()
-                tempStr['region_rt_name'] = region_rt_name
 
                 # Check for multivalued columns
                 if (columnname == 'Import DRG Route Distribution Statements'):
@@ -200,6 +198,9 @@ def create_terraform_drg_route(inputfile, outdir, prefix, config, modify_network
                 columnname = commonTools.check_column_headers(columnname)
                 tempStr[columnname] = columnvalue
                 tempStr.update(tempdict)
+
+            region_rt_name = tempStr['drg_tf_name'] + "_" + region.lower()
+            tempStr['region_rt_name'] = region_rt_name
 
             if (DRG_RT != 'nan' and DRG_RT not in commonTools.drg_auto_RTs):
                     drg_rt[region] = drg_rt[region] + drg_rt_template.render(tempStr)

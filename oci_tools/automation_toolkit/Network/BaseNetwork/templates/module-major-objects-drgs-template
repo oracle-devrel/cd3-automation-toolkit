@@ -30,7 +30,10 @@ drgs = {
         }
       {% else %}
         defined_tags = {}
-        {% endif %}{% endif %}
+        {% endif %}
+       {% else %}
+        defined_tags = {}
+       {% endif %}
             {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' %}
                 {% if freeform_tags[0] %}
         freeform_tags = {
