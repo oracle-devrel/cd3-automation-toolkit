@@ -239,7 +239,7 @@ def modify_terraform_drg_routerules(inputfile, outdir, prefix=None, config=DEFAU
                 rts_done[region].append(drg_rt_tf_name)
 
     for reg in ct.all_regions:
-        outfile = outdir + "/" + reg + "/" + prefix + "_" + auto_tfvars_filename
+        outfile = outdir + "/" + reg + "/" + prefix + auto_tfvars_filename
         oname_rt = open(outfile, "w")
         if tfStrRT != '':
             srcStr="###Add route tables here for "+reg.lower()+" ###"
@@ -249,7 +249,7 @@ def modify_terraform_drg_routerules(inputfile, outdir, prefix=None, config=DEFAU
             tempSkeletonDRGRouteRule[reg] = tempSkeletonDRGRouteRule[reg].replace(srcStr, tfStr)
 
         tempSkeletonDRGRouteTable[reg] = tempSkeletonDRGRouteTable[reg] + tempSkeletonDRGRouteRule[reg]
-        print("Writing to..." + str(oname_rt))
+        print("Writing to..." + str(outfile))
         oname_rt.write(tempSkeletonDRGRouteTable[reg])
         oname_rt.close()
 
@@ -341,7 +341,7 @@ def modify_terraform_routerules(inputfile, outdir, prefix=None, config=DEFAULT_L
 
         # Backup existing route table files in ash and phx dir
         resource = "RTs"
-        commonTools.backup_file(outdir + "/" + reg, resource, prefix+auto_tfvars_filename)
+        commonTools.backup_file(outdir + "/" + reg, resource, prefix + auto_tfvars_filename)
         commonTools.backup_file(outdir + "/" + reg, resource, prefix + default_auto_tfvars_filename)
 
     # temporary dictionary1 and dictionary2
