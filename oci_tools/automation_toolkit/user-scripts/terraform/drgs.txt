@@ -25,6 +25,7 @@ module "drg-attachments" {
   source = "./modules/network/drg-attachment"
   for_each  = (var.drg_attachments != null || var.drg_attachments != {})  ? var.drg_attachments : {}
 
+  drg_display_name = each.value.display_name
   defined_tags  = each.value.defined_tags
   freeform_tags = each.value.freeform_tags
 

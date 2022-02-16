@@ -13,7 +13,7 @@ resource "oci_core_drg_attachment" "drg_attachment" {
 
     #Optional
     defined_tags = var.defined_tags
-    display_name = join("_",[var.drg_display_name,"attachment"])
+    display_name = var.display_name == "" ? null : var.display_name #join("_",[var.drg_display_name,"attachment"])
     drg_route_table_id = var.drg_route_table_id
     freeform_tags = var.freeform_tags
     network_details {

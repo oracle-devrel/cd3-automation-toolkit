@@ -19,4 +19,7 @@ resource "oci_core_drg_route_distribution" "drg_route_distribution" {
     freeform_tags = var.freeform_tags == {} ? null : var.freeform_tags
     display_name = var.display_name == "" ? null : var.display_name
 
+    lifecycle {
+      ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"],defined_tags["Oracle-Tags.CreatedBy"],freeform_tags]
+  }
 }
