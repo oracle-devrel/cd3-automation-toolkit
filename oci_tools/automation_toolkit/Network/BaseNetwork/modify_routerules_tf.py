@@ -50,6 +50,8 @@ def modify_terraform_drg_routerules(inputfile, outdir, prefix=None, config=DEFAU
     tempdict={}
     tempSkeletonDRGRouteTable = {}
     tempSkeletonDRGRouteRule = {}
+    tfStr = {}
+    tfStrRT = {}
 
     drgv2=parseDRGs(filename)
 
@@ -66,6 +68,8 @@ def modify_terraform_drg_routerules(inputfile, outdir, prefix=None, config=DEFAU
         rts_done[reg] = []
         tempSkeletonDRGRouteTable[reg] = []
         tempSkeletonDRGRouteRule[reg] = []
+        tfStr[reg] = ''
+        tfStrRT[reg] = ''
 
         # Backup existing route table files in ash and phx dir
         resource = "DRGRTs"
@@ -88,8 +92,7 @@ def modify_terraform_drg_routerules(inputfile, outdir, prefix=None, config=DEFAU
 
     # List of the column headers
     dfcolumns = df.columns.values.tolist()
-    tfStr = ''
-    tfStrRT = ''
+
     for i in df.index:
 
         drg_rt_dstrb_tf_name=''
@@ -211,7 +214,7 @@ def modify_terraform_drg_routerules(inputfile, outdir, prefix=None, config=DEFAU
             k=1
             #Create RT resource only if it is not Auto Generated one
             if (DRG_RT not in commonTools.drg_auto_RTs):
-                tfStrRT = tfStrRT + routetable_drg.render(tempStr)
+                tfStrRT[region] = tfStrRT[region] + routetable_drg.render(tempStr)
             rts_done[region].append(drg_rt_tf_name)
 
         if (drg_rt_tf_name not in rts_done[region]):
@@ -219,7 +222,7 @@ def modify_terraform_drg_routerules(inputfile, outdir, prefix=None, config=DEFAU
 
             # Create RT resource only if it is not Auto Generated one
             if (DRG_RT not in commonTools.drg_auto_RTs):
-                tfStrRT = tfStrRT + routetable_drg.render(tempStr)
+                tfStrRT[region] = tfStrRT[region] + routetable_drg.render(tempStr)
             k=1
 
             #Empty Route Table
@@ -227,26 +230,26 @@ def modify_terraform_drg_routerules(inputfile, outdir, prefix=None, config=DEFAU
 
                 if (drg_rt_tf_name not in rts_done[region]):
                     rts_done[region].append(drg_rt_tf_name)
-                tfStr=""
+                tfStr[region]=""
 
         #Add rules to RTs
         if(new_rule ==1):
-            tempStr['drg_rt_rule_tf_name']=drg_rt_tf_name+"_route_rule"+str(k)
+            tempStr['drg_rt_rule_tf_name'] = drg_rt_tf_name+"_route_rule"+str(k)
             k=k+1
             tfStrRule=routerule_drg.render(tempStr)
-            tfStr = tfStr + tfStrRule
+            tfStr[region] = tfStr[region] + tfStrRule
             if(drg_rt_tf_name not in rts_done[region]):
                 rts_done[region].append(drg_rt_tf_name)
 
     for reg in ct.all_regions:
         outfile = outdir + "/" + reg + "/" + prefix + auto_tfvars_filename
         oname_rt = open(outfile, "w")
-        if tfStrRT != '':
+        if tfStrRT[reg] != '':
             srcStr="###Add route tables here for "+reg.lower()+" ###"
-            tempSkeletonDRGRouteTable[reg] = tempSkeletonDRGRouteTable[reg].replace(srcStr, tfStrRT)
-        if tfStr != '':
+            tempSkeletonDRGRouteTable[reg] = tempSkeletonDRGRouteTable[reg].replace(srcStr, tfStrRT[reg])
+        if tfStr[reg] != '':
             srcStr="###Add route rules here for "+reg.lower()+" ###"
-            tempSkeletonDRGRouteRule[reg] = tempSkeletonDRGRouteRule[reg].replace(srcStr, tfStr)
+            tempSkeletonDRGRouteRule[reg] = tempSkeletonDRGRouteRule[reg].replace(srcStr, tfStr[reg])
 
         tempSkeletonDRGRouteTable[reg] = tempSkeletonDRGRouteTable[reg] + tempSkeletonDRGRouteRule[reg]
         print("Writing to..." + str(outfile))
