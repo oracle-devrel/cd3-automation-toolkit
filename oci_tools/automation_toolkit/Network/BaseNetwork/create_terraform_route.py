@@ -399,7 +399,7 @@ def create_terraform_route(inputfile, outdir, prefix, config, modify_network=Fal
             if (region_rt_name not in common_rt):
                 tempStr['rt_tf_name'] = rt_tf_name
                 tempStr['compartment_tf_name'] = compartment_var_name
-                tempStr['rt_display'] = rt_display
+                tempStr['display_name'] = rt_display
                 tempStr['vcn_tf_name'] = commonTools.check_tf_variable(vcn_with_drg)
 
                 drgStr = template.render(tempStr,
@@ -428,7 +428,7 @@ def create_terraform_route(inputfile, outdir, prefix, config, modify_network=Fal
 
                     tempStr['rt_tf_name'] = rt_tf_name
                     tempStr['destination'] = right_vcn_tf_name
-                    tempStr['rt_display'] = rt_display
+                    tempStr['display_name'] = rt_display
                     tempStr['lpg_vcn_name'] = lpg_tf_name
                     tempStr['destination_type'] = "CIDR_BLOCK"
                     tempStr['network_entity_id'] = lpg_tf_name
@@ -444,7 +444,7 @@ def create_terraform_route(inputfile, outdir, prefix, config, modify_network=Fal
                     else:
                         tempStr['rt_tf_name'] = rt_tf_name
                         tempStr['compartment_tf_name'] = compartment_var_name
-                        tempStr['rt_display'] = rt_display
+                        tempStr['display_name'] = rt_display
                         tempStr['vcn_tf_name'] = hub_vcn_tf_name
 
                         drgStr = template.render(tempStr,
@@ -485,7 +485,7 @@ def create_terraform_route(inputfile, outdir, prefix, config, modify_network=Fal
                 rt_tf_name = commonTools.check_tf_variable(rt_var)
 
                 hub_vcn_tf_name = commonTools.check_tf_variable(hub_vcn_name)
-                tempStr['rt_display'] = rt_display
+                tempStr['display_name'] = rt_display
                 tempStr['rt_var'] = rt_var
                 tempStr['rt_tf_name'] = rt_tf_name
                 tempStr['vcn_tf_name'] = hub_vcn_tf_name
