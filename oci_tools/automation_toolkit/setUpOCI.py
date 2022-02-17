@@ -97,7 +97,7 @@ def validate_cd3(execute_all=False):
     ]
     if not execute_all:
         options = show_options(options, quit=True, menu=False, index=1)
-    cd3Validator.validate_cd3(inputfile, options, config)
+    cd3Validator.validate_cd3(inputfile, prefix, options, config)
     print("Exiting CD3 Validation...")
 
 def get_compartment_list(resource_name):
