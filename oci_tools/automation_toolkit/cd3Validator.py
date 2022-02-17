@@ -18,19 +18,6 @@ from oci.core.virtual_network_client import VirtualNetworkClient
 from commonTools import *
 
 
-CD3_LOG_LEVEL = 60
-logging.addLevelName(CD3_LOG_LEVEL, "custom")
-logging.basicConfig(filename="cd3Validator.log", filemode="w", format="%(asctime)s - %(message)s", level=60)
-logger = logging.getLogger("cd3Validator")
-log = partial(logger.log, CD3_LOG_LEVEL)
-
-ct = commonTools()
-compartment_ids = {}
-vcn_ids = {}
-vcn_cidrs = {}
-vcn_compartment_ids = {}
-Option = namedtuple('Option', ['name', 'callback', 'text'])
-
 def get_vcn_ids(compartment_ids, config):
     # Fetch the VCN ID
     for region in ct.all_regions:
@@ -994,7 +981,28 @@ def validate_policies(filename,comp_ids):
         return False
 
 
-def validate_cd3(filename, choices, configFileName):
+def validate_cd3(filename, prefix, choices, configFileName):
+    CD3_LOG_LEVEL = 60
+    logging.addLevelName(CD3_LOG_LEVEL, "custom")
+    file="cd3Validator.log"
+    resource = "cd3validator"
+    customer_tenancy_dir = "/cd3user/tenancies/"+prefix
+    commonTools.backup_file(customer_tenancy_dir,resource,file)
+    logging.basicConfig(filename=customer_tenancy_dir+"/"+file, filemode="w", format="%(asctime)s - %(message)s", level=60)
+    logger = logging.getLogger("cd3Validator")
+    global log
+    log = partial(logger.log, CD3_LOG_LEVEL)
+
+    global ct
+    ct = commonTools()
+    global compartment_ids
+    compartment_ids = {}
+    global vcn_ids
+    vcn_ids = {}
+    global vcn_cidrs
+    vcn_cidrs = {}
+    global vcn_compartment_ids
+    vcn_compartment_ids = {}
 
     comp_check = False
     groups_check = False
@@ -1087,11 +1095,13 @@ def validate_cd3(filename, choices, configFileName):
     else:
         print("Invalid Choice....Exiting!!")
         exit(1)
+    print("Please check the log file at "+customer_tenancy_dir+"/"+file+"\n")
 
 
 def parse_args():
     parser = argparse.ArgumentParser(description="CD3 Validator")
     parser.add_argument("cd3file", help="Full Path of CD3 file")
+    parser.add_argument('prefix', help='customer name/prefix for all file names')
     parser.add_argument("validate_cd3file", help="Validate Options; comma seperated")
     parser.add_argument("--config", default=DEFAULT_LOCATION, help="Path to config file")
     return parser.parse_args()
@@ -1101,6 +1111,7 @@ if __name__ == '__main__':
     args = parse_args()
     filename = args.cd3file
     configFileName = args.config
+    prefix  = args.prefix
     validate_options = args.validate_cd3file
-    validate_cd3(filename, validate_options, configFileName)
+    validate_cd3(filename, prefix,validate_options, configFileName)
 
