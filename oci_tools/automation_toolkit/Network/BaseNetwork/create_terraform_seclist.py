@@ -318,7 +318,7 @@ def create_terraform_seclist(inputfile, outdir, prefix, config, modify_network=F
         textToAddSeclistSearch = "##Add New Seclists for "+reg+" here##"
 
         # Rename the modules file in outdir to .tf
-        module_txt_filenames = ['seclists']
+        module_txt_filenames = ['seclists','default_seclists']
         for modules in module_txt_filenames:
             module_filename = outdir + "/" + reg + "/" + modules.lower() + ".txt"
             rename_module_filename = outdir + "/" + reg + "/" + modules.lower() + ".tf"

@@ -9,6 +9,7 @@ module "iam-policies" {
   source                = "./modules/identity/iam-policy"
   for_each              = var.policies != null ? var.policies : {}
 
+  depends_on            = [module.iam-groups]
   tenancy_ocid          = var.tenancy_ocid
   policy_name           = each.value.name
   policy_compartment_id = each.value.compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[0][each.value.compartment_name]) : var.tenancy_ocid

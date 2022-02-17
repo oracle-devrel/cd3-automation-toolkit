@@ -347,9 +347,10 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
                 drg_attach_tfStr[region] = drg_attach_tfStr[region][:-1] + drg_attach
             # else:
             #     tfStr[region] = tfStr[region] + drg_attach
-        if region not in commonTools.endNames:
-            drg_attach_tfStr[region] = drg_attach_skeleton + drg_attach_tfStr[region]
-            drg_tfStr[region] = drgstr_skeleton + drg_tfStr[region]
+        for region in ct.all_regions:
+            if region in region_included_drg:
+                drg_attach_tfStr[region] = drg_attach_skeleton + drg_attach_tfStr[region]
+                drg_tfStr[region] = drgstr_skeleton + drg_tfStr[region]
 
     def processVCN(tempStr):
         rt_tf_name = ''

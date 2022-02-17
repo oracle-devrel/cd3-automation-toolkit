@@ -270,13 +270,15 @@ def create_terraform_drg_route(inputfile, outdir, prefix, config, modify_network
         oname_rt = open(rtfile, "w")
         oname_drg_dis = open(rtdistribution, "w")
 
-        print("Writing to..." + str(rtfile))
-        oname_rt.write(tempSkeletonDRGRouteTable[reg])
-        oname_rt.close()
+        if drg_rt[reg] != '' :
+            print("Writing to..." + str(rtfile))
+            oname_rt.write(tempSkeletonDRGRouteTable[reg])
+            oname_rt.close()
 
-        print("Writing to..." + str(rtdistribution))
-        oname_drg_dis.write(tempSkeletonDRGDistribution[reg])
-        oname_drg_dis.close()
+        if drg_rd_stmt[reg] != '' or drg_rd[reg] != '':
+            print("Writing to..." + str(rtdistribution))
+            oname_drg_dis.write(tempSkeletonDRGDistribution[reg])
+            oname_drg_dis.close()
 
 def purge(dir, pattern):
     for f in os.listdir(dir):

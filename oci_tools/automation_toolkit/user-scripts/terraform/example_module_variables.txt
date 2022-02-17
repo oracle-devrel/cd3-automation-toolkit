@@ -116,12 +116,12 @@ variable "route_tables" {
 
 variable "default_route_tables" {
   type    = map(any)
-  default = null
+  default = {}
 }
 
 variable "drg_route_tables" {
   type    = map(any)
-  default = null
+  default = {}
 }
 
 variable "nsgs" {
