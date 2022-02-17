@@ -90,7 +90,6 @@ def seek_info():
     auto_keys_dir = user_dir+"/tenancies/keys"
     modules_dir = user_dir +"/oci_tools/automation_toolkit/user-scripts/terraform"
 
-
     if not os.path.exists(customer_tenancy_dir):
         os.makedirs(customer_tenancy_dir)
 
@@ -364,7 +363,7 @@ def seek_info():
 
         variable "default_route_tables" {
           type    = map(any)
-          default = null
+          default = {}
         }
 
         variable "nsgs" {
