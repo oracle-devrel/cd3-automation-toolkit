@@ -125,6 +125,7 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
         ct = commonTools()
         ct.get_subscribedregions(configFileName)
         drg_attach_skeleton = ''
+        drgstr_skeleton = ''
 
         # Load the template file
         file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
@@ -167,7 +168,7 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
         # Remove empty rows
         df = df.dropna(how='all')
         df = df.reset_index(drop=True)
-
+        region_included_drg = []
 
         # List of the column headers
         dfcolumns = df.columns.values.tolist()
@@ -328,11 +329,10 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
                 tempStr[columnname] = str(columnvalue).strip()
                 tempStr.update(tempdict)
 
-            tempStr.update({'count': 1})
             if region not in region_included_drg:
-                tempStr.update({'count': 0})
-                drg_attach_skeleton = drg_attach_template.render(skeleton=True)[:-1]
-                region_included.append(region)
+                drg_attach_skeleton = drg_attach_template.render(skeleton=True, count=0)[:-1]
+                drgstr_skeleton = drg_template.render(count=0)[:-1]
+                region_included_drg.append(region)
 
             drgstr = drg_template.render(tempStr)
 
@@ -349,6 +349,7 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
             #     tfStr[region] = tfStr[region] + drg_attach
         if region not in commonTools.endNames:
             drg_attach_tfStr[region] = drg_attach_skeleton + drg_attach_tfStr[region]
+            drg_tfStr[region] = drgstr_skeleton + drg_tfStr[region]
 
     def processVCN(tempStr):
         rt_tf_name = ''
@@ -515,7 +516,6 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
     # List of the column headers
     dfcolumns = df.columns.values.tolist()
     region_included = []
-    region_included_drg = []
 
     # Process VCNs
     for i in df.index:
@@ -607,14 +607,14 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
             # outfile[reg] = reg_out_dir + "/" + prefix + '-major-objs.tf'
             outfile[reg] = reg_out_dir + "/" + prefix + auto_tfvars_filename
             outfile_dhcp[reg] = reg_out_dir + "/" + prefix + dhcp_auto_tfvars_filename
-            outfile_oci_drg_data[reg] = reg_out_dir + "/oci-drg-data.tf"
+            outfile_oci_drg_data[reg] = reg_out_dir + "/oci-drg-data.txt"
 
             srcdir = reg_out_dir + "/"
             resource = 'MajorObjects'
             # commonTools.backup_file(srcdir, resource, "-major-objs.tf")
             commonTools.backup_file(srcdir, resource, auto_tfvars_filename)
             commonTools.backup_file(srcdir, resource, dhcp_auto_tfvars_filename)
-            commonTools.backup_file(srcdir, resource, "/oci-drg-data.tf")
+            commonTools.backup_file(srcdir, resource, "/oci-drg-data.txt")
 
             oname[reg] = open(outfile[reg], "w")
             oname[reg].write(tfStr[reg])
@@ -657,12 +657,12 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
             # commonTools.backup_file(srcdir, resource, "-major-objs.tf")
             commonTools.backup_file(srcdir, resource, auto_tfvars_filename)
             commonTools.backup_file(srcdir, resource, dhcp_auto_tfvars_filename)
-            commonTools.backup_file(srcdir, resource, "/oci-drg-data.tf")
+            commonTools.backup_file(srcdir, resource, "/oci-drg-data.txt")
 
             # outfile[reg] = reg_out_dir + "/" + prefix + '-major-objs.tf'
             outfile[reg] = reg_out_dir + "/" + prefix + auto_tfvars_filename
             outfile_dhcp[reg] = reg_out_dir + "/" + prefix + dhcp_auto_tfvars_filename
-            outfile_oci_drg_data[reg] = reg_out_dir + "/oci-drg-data.tf"
+            outfile_oci_drg_data[reg] = reg_out_dir + "/oci-drg-data.txt"
 
             if drg_data[reg] != '':
                 oname_oci_drg_data[reg] = open(outfile_oci_drg_data[reg], "w")
