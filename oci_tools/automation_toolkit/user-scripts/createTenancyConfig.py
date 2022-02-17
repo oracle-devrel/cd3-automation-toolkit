@@ -87,6 +87,7 @@ def seek_info():
     customer_tenancy_dir = user_dir +"/tenancies/" + prefix
     terraform_files = customer_tenancy_dir+"/terraform_files/"
     config_file_path = customer_tenancy_dir+"/"+prefix+"_config"
+    setupoci_props_file_path = customer_tenancy_dir + "/" + prefix + "_setUpOCI.properties"
     auto_keys_dir = user_dir+"/tenancies/keys"
     modules_dir = user_dir +"/oci_tools/automation_toolkit/user-scripts/terraform"
 
@@ -160,7 +161,7 @@ def seek_info():
     # 4. Generate setUpOCI.properties file
     ct.get_subscribedregions(config_file_path)
 
-    setupoci_props_file = open(customer_tenancy_dir + "/" +prefix+"_setUpOCI.properties", "w")
+    setupoci_props_file = open(setupoci_props_file_path, "w")
     setupoci_props_file.write("[Default]\n"
                               "\n"
                               "#Input variables required to run setUpOCI script\n"
