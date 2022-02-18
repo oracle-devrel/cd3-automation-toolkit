@@ -169,8 +169,6 @@ def modify_terraform_drg_routerules(inputfile, outdir, prefix=None, config=DEFAU
                 drg_rt_tf_name = commonTools.check_tf_variable(drg_name + "_" + rt)
                 if (rt in commonTools.drg_auto_RTs):
                     drg_rt_res_name = drg_rt_tf_name
-                else:
-                    drg_rt_res_name = drg_rt_tf_name
 
                 tempStr['display_name']= rt
                 tempStr['drg_rt_tf_name'] = drg_rt_tf_name
