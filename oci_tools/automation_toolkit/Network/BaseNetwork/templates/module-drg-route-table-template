@@ -67,6 +67,6 @@ drg_route_tables = {
             {% endif %}
     {#  ###Section for adding Defined and Freeform Tags ends here###  #}
 },
-# End of {{ region.lower() }}_{{ rt_tf_name }} #
+# End of {{ region.lower() }}_{{ drg_rt_tf_name }} #
 {% endif %}
 {% endif %}
