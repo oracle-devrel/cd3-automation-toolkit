@@ -530,7 +530,7 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
 
         if (str(df.loc[i, 'Region']).lower() == 'nan' or str(df.loc[i, 'Compartment Name']).lower() == 'nan' or str(
                 df.loc[i, 'VCN Name']).lower() == 'nan' or
-                str(df.loc[i, 'CIDR Block']).lower() == 'nan' or str(df.loc[i, 'DRG Required']).lower() == 'nan' or str(
+                str(df.loc[i, 'CIDR Blocks']).lower() == 'nan' or str(df.loc[i, 'DRG Required']).lower() == 'nan' or str(
                     df.loc[i, 'IGW Required']).lower() == 'nan' or
                 str(df.loc[i, 'NGW Required']).lower() == 'nan' or str(
                     df.loc[i, 'SGW Required']).lower() == 'nan' or str(df.loc[i, 'LPG Required']).lower() == 'nan' or

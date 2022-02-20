@@ -344,6 +344,7 @@ def create_terraform_route(inputfile, outdir, prefix, config, modify_network=Fal
     right_vcn_lpgroute_done = []
     modified_network_new_rt = []
 
+
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
@@ -375,8 +376,10 @@ def create_terraform_route(inputfile, outdir, prefix, config, modify_network=Fal
         else:
             modifiedroutetableStr[reg] = ''
 
-            # Get Hub VCN name and create route rules for LPGs as per Section VCN_PEERING
+     # Get Hub VCN name and create route rules for LPGs as per Section VCN_PEERING
     def createLPGRouteRules(peering_dict):
+        ruleStr = ''
+        region = ''
         for left_vcn, value in peering_dict.items():
             right_vcns = value.split(",")
             left_vcn_tf_name = commonTools.check_tf_variable(left_vcn)
@@ -400,10 +403,7 @@ def create_terraform_route(inputfile, outdir, prefix, config, modify_network=Fal
                 tempStr['network_entity_id'] = lpg_name_tf_name
                 start_rule = "## Start Route Rule lpg_route_rules__" + tempStr['network_entity_id'] + "_" + tempStr['destination']
                 if start_rule not in vcns.vcn_lpg_rules[left_vcn]:
-                    ruleStr = merge_or_generate_route_rule(region.lower(), tempStr, modifiedroutetableStr,
-                                                           routetableStr, start_rule, ruleStr,
-                                                           modify_network=modify_network,
-                                                           routerule=routerule, gateway='LPG')
+                    ruleStr = routerule.render(tempStr,lpg_route_rules=True, region='lpg_route_rules')
                 vcns.vcn_lpg_rules[left_vcn] = vcns.vcn_lpg_rules[left_vcn] + ruleStr
 
                 # Build rule for VCNs on right
@@ -418,10 +418,7 @@ def create_terraform_route(inputfile, outdir, prefix, config, modify_network=Fal
                 tempStr['network_entity_id'] = lpg_name_tf_name
                 start_rule = "## Start Route Rule lpg_route_rules__" + tempStr['network_entity_id'] + "_" + tempStr['destination']
                 if start_rule not in vcns.vcn_lpg_rules[right_vcn]:
-                    ruleStr = merge_or_generate_route_rule(region.lower(), tempStr, modifiedroutetableStr,
-                                                            routetableStr, start_rule, ruleStr,
-                                                            modify_network=modify_network,
-                                                            routerule=routerule, gateway='LPG')
+                    ruleStr =  routerule.render(tempStr,lpg_route_rules=True, region='lpg_route_rules')
                 vcns.vcn_lpg_rules[right_vcn] = vcns.vcn_lpg_rules[right_vcn] + ruleStr
 
     def createVCNDRGRtTableString(compartment_var_name, vcn_with_drg, peering_dict, region, tempStr, hub):
