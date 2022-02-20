@@ -19,7 +19,7 @@ resource "oci_core_subnet" "subnet" {
     vcn_id = var.vcn_id
 
     #Optional
-    availability_domain = (var.availability_domain != "" && var.availability_domain != null) ? data.oci_identity_availability_domains.availability_domains.availability_domains[var.availability_domain].name : ""
+    availability_domain = (var.availability_domain != "" && var.availability_domain != null) ? var.availability_domain : ""
     defined_tags = var.defined_tags
     dhcp_options_id = var.dhcp_options_id != "" ? var.dhcp_options_id : null
     display_name = var.display_name
