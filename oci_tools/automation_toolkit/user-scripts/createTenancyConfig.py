@@ -87,9 +87,9 @@ def seek_info():
     customer_tenancy_dir = user_dir +"/tenancies/" + prefix
     terraform_files = customer_tenancy_dir+"/terraform_files/"
     config_file_path = customer_tenancy_dir+"/"+prefix+"_config"
-    setupoci_props_file_path = customer_tenancy_dir + "/" + prefix + "_setUpOCI.properties"
     auto_keys_dir = user_dir+"/tenancies/keys"
     modules_dir = user_dir +"/oci_tools/automation_toolkit/user-scripts/terraform"
+    setupoci_props_file_path = customer_tenancy_dir + "/" + prefix + "_setUpOCI.properties"
 
     if not os.path.exists(customer_tenancy_dir):
         os.makedirs(customer_tenancy_dir)
