@@ -329,14 +329,15 @@ def create_terraform_subnet(inputfile, outdir, prefix, config, modify_network=Fa
             outfile[reg] = reg_out_dir + "/" + prefix + auto_tfvars_filename
 
             # Create Skeleton Template
-            skeletonStr[reg] = template.render(tempStr, skeleton=True, count=0, region=reg)
-            srcStr = "##Add New Subnets for " + reg + " here##"
-            tfStr[reg] = skeletonStr[reg].replace(srcStr, tfStr[reg] + "\n" + srcStr)
+            if tfStr[reg] != '':
+                skeletonStr[reg] = template.render(tempStr, skeleton=True, count=0, region=reg)
+                srcStr = "##Add New Subnets for " + reg + " here##"
+                tfStr[reg] = skeletonStr[reg].replace(srcStr, tfStr[reg] + "\n" + srcStr)
 
-            oname[reg] = open(outfile[reg], "w")
-            oname[reg].write(tfStr[reg])
-            oname[reg].close()
-            print(outfile[reg] + " for Subnets has been updated for region " + reg)
+                oname[reg] = open(outfile[reg], "w")
+                oname[reg].write(tfStr[reg])
+                oname[reg].close()
+                print(outfile[reg] + " for Subnets has been updated for region " + reg)
 
     elif not modify_network:
         for reg in ct.all_regions:
@@ -363,11 +364,11 @@ def create_terraform_subnet(inputfile, outdir, prefix, config, modify_network=Fa
                         os.rename(module_filename, rename_module_filename)
 
             # Create Skeleton Template
-            skeletonStr[reg] = template.render(tempStr, skeleton=True, count=0, region=reg)
-            srcStr = "##Add New Subnets for " + reg + " here##"
-            tfStr[reg] = skeletonStr[reg].replace(srcStr, tfStr[reg] + "\n" + srcStr)
+            if tfStr[reg] != '':
+                skeletonStr[reg] = template.render(tempStr, skeleton=True, count=0, region=reg)
+                srcStr = "##Add New Subnets for " + reg + " here##"
+                tfStr[reg] = skeletonStr[reg].replace(srcStr, tfStr[reg] + "\n" + srcStr)
 
-            if (tfStr[reg] != ''):
                 oname[reg] = open(outfile[reg], 'w')
                 oname[reg].write(tfStr[reg])
                 oname[reg].close()
