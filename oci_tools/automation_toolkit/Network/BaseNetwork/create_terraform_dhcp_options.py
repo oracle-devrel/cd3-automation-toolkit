@@ -37,7 +37,6 @@ def parse_args():
     parser.add_argument('--config', default=DEFAULT_LOCATION, help='Config file name')
     return parser.parse_args()
 
-
 def create_terraform_dhcp_options(inputfile, outdir, prefix, config, modify_network=False):
     outfile = {}
     deffile = {}
@@ -66,6 +65,7 @@ def create_terraform_dhcp_options(inputfile, outdir, prefix, config, modify_netw
         defStr[reg] = ''
         custom[reg] = ''
 
+
     def processDHCP(tempStr, template, defaultdhcp):
         defaultdhcpdata = ''
         customdhcpdata = ''
@@ -92,9 +92,17 @@ def create_terraform_dhcp_options(inputfile, outdir, prefix, config, modify_netw
         tempStr.update(tempdict)
 
         if ("Default DHCP Options" in dhcp_option_name):
-            defaultdhcpdata = defaultdhcp.render(tempStr)
+            if region in region_included_for_default_dhcp:
+                defaultdhcpdata = defaultdhcp.render(tempStr)
+            else:
+                defaultdhcpdata = defaultdhcp.render(tempStr, count=0)
+                region_included_for_default_dhcp.append(region)
         else:
-            customdhcpdata = template.render(tempStr,custom=False)
+            if region in region_included_for_custom_dhcp:
+                customdhcpdata = template.render(tempStr,custom=False)
+            else:
+                customdhcpdata = template.render(tempStr, custom=False, count=0)
+                region_included_for_custom_dhcp.append(region)
 
         defStr[region] = defStr[region][:-1] + defaultdhcpdata
         custom[region] = custom[region] + customdhcpdata
@@ -107,7 +115,8 @@ def create_terraform_dhcp_options(inputfile, outdir, prefix, config, modify_netw
 
     # List of the column headers
     dfcolumns = df.columns.values.tolist()
-    region_included = []
+    region_included_for_custom_dhcp = []
+    region_included_for_default_dhcp = []
 
     for i in df.index:
         region = str(df.loc[i, 'Region'])
@@ -166,11 +175,6 @@ def create_terraform_dhcp_options(inputfile, outdir, prefix, config, modify_netw
             tempStr[columnname] = str(columnvalue).strip()
             tempStr.update(tempdict)
 
-        tempStr.update({'count': 1})
-        if region not in region_included:
-            tempStr.update({'count': 0})
-            region_included.append(region)
-
         processDHCP(tempStr,template,defaultdhcp)
 
     if (modify_network == 'true'):
@@ -179,7 +183,8 @@ def create_terraform_dhcp_options(inputfile, outdir, prefix, config, modify_netw
             if not os.path.exists(reg_out_dir):
                 os.makedirs(reg_out_dir)
 
-            tfStr[reg] = template.render(custom=True,dhcps=custom[reg])
+            if custom[reg] != '':
+                tfStr[reg] = template.render(custom=True,dhcps=custom[reg])
 
             custom_dhcp_auto_tfvars_filename = '_custom-dhcp.auto.tfvars'
             outfile[reg] = reg_out_dir + "/" + prefix + custom_dhcp_auto_tfvars_filename
@@ -217,7 +222,8 @@ def create_terraform_dhcp_options(inputfile, outdir, prefix, config, modify_netw
             if not os.path.exists(reg_out_dir):
                 os.makedirs(reg_out_dir)
 
-            tfStr[reg] = template.render(custom=True,dhcps=custom[reg])
+            if custom[reg] != '':
+                tfStr[reg] = template.render(custom=True,dhcps=custom[reg])
 
             # Rename the modules file in outdir to .tf
             module_txt_filenames = ['custom_dhcp','default_dhcp']

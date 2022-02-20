@@ -92,7 +92,7 @@ def modify_terraform_drg_routerules(inputfile, outdir, prefix=None, config=DEFAU
 
     # List of the column headers
     dfcolumns = df.columns.values.tolist()
-
+    drg_rt_res_name = ''
     for i in df.index:
 
         drg_rt_dstrb_tf_name=''
