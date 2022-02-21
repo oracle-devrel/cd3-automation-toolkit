@@ -47,7 +47,7 @@ module "peer-lpgs" {
   source = "./modules/network/lpg"
   for_each = (var.lpgs.peer-lpgs != null || var.lpgs.peer-lpgs != {})  ? var.lpgs.peer-lpgs : {}
 
-  depends_on = [module.vcns,module.fetch-vcns, module.fetch-compartments]
+  depends_on = [module.vcns,module.fetch-vcns, module.fetch-compartments, module.none-lpgs]
 
   #Required
   compartment_id = each.value.compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[0][each.value.compartment_name]) : var.tenancy_ocid
@@ -55,7 +55,7 @@ module "peer-lpgs" {
   vcn_id = length(regexall("ocid1.vcn.oc1*", each.value.vcn_name)) > 0 ? each.value.vcn_name : merge(module.vcns.*...)[each.value.vcn_name]["vcn_id"][each.value.vcn_name]
 
   #Optional
-  peer_id = (each.value.peer_id != "" && each.value.peer_id != null)  ? (length(regexall("##peer_id*", each.value.peer_id)) > 0 ? null : each.value.peer_id) : null
+  peer_id = each.value.peer_id != "" ? (length(regexall("##peer_id*", each.value.peer_id)) > 0 ? null : try(merge(module.spoke-lpgs.*...)[each.value.peer_id]["lpg_tf_id"][0],merge(module.exported-lpgs.*...)[each.value.peer_id]["lpg_tf_id"][0],merge(module.none-lpgs.*...)[each.value.peer_id]["lpg_tf_id"][0])) : null
   route_table_id = each.value.route_table_id
   defined_tags  = each.value.defined_tags
   display_name  = each.value.lpg_name != null ? each.value.lpg_name : null
