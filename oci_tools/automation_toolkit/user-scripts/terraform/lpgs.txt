@@ -17,7 +17,7 @@ module "hub-lpgs" {
   vcn_id = length(regexall("ocid1.vcn.oc1*", each.value.vcn_name)) > 0 ? each.value.vcn_name : merge(module.vcns.*...)[each.value.vcn_name]["vcn_id"][each.value.vcn_name]
 
   #Optional
-  peer_id = each.value.peer_id != "" ? (length(regexall("##peer_id*", each.value.peer_id)) > 0 ? null : try(merge(module.spoke-lpgs.*...)[each.value.peer_id]["lpg_tf_id"][0],merge(module.exported-lpgs.*...)[each.value.peer_id]["lpg_tf_id"][0],merge(module.peer-lpgs.*...)[each.value.peer_id]["lpg_tf_id"][0]),merge(module.none-lpgs.*...)[each.value.peer_id]["lpg_tf_id"][0])) : null
+  peer_id = each.value.peer_id != "" ? (length(regexall("##peer_id*", each.value.peer_id)) > 0 ? null : try(merge(module.spoke-lpgs.*...)[each.value.peer_id]["lpg_tf_id"][0],merge(module.exported-lpgs.*...)[each.value.peer_id]["lpg_tf_id"][0],merge(module.peer-lpgs.*...)[each.value.peer_id]["lpg_tf_id"][0],merge(module.none-lpgs.*...)[each.value.peer_id]["lpg_tf_id"][0])) : null
   route_table_id = each.value.route_table_id
   defined_tags  = each.value.defined_tags
   display_name  = each.value.lpg_name != null ? each.value.lpg_name : null
