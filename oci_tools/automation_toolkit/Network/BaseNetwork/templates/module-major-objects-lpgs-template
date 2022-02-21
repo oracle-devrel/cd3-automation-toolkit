@@ -19,7 +19,11 @@ lpgs = {
 
     exported-lpgs = {
     {{ exported_lpg_details }}
-                }
+                },
+
+    none-lpgs  = {
+    {{ none_lpg_details }}
+                },
 }
 {% endif %}
 {% if lpg_name != "" and lpg_name != "nan" and lpg_name != null %}

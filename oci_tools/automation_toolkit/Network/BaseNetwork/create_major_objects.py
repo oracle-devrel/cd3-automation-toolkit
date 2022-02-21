@@ -62,6 +62,7 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
     lpg_tfStr = {}
     hub_lpg_tfStr = {}
     spoke_lpg_tfStr = {}
+    none_lpg_tfStr  = {}
     exported_lpg_tfStr = {}
     dhcp_default_tfStr = {}
     dhcpStr = {}
@@ -465,14 +466,15 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
                     hub_lpg_tfStr[region] = hub_lpg_tfStr[region] + lpg.render(tempStr)
                 elif ('spoke' in hub_spoke_none.lower()):
                     spoke_lpg_tfStr[region] = spoke_lpg_tfStr[region] + lpg.render(tempStr)
-
+                elif ('none' in hub_spoke_none.lower()):
+                    none_lpg_tfStr[region] = none_lpg_tfStr[region] + lpg.render(tempStr)
                 else:
                     exported_lpg_tfStr[region] = exported_lpg_tfStr[region] + lpg.render(tempStr)
 
                 tempStr['rt_tf_name'] = rt_tf_name
                 tempStr['rt_var'] = rt_var
 
-        lpg_tfStr[region] = lpg.render(create_lpg_auto_vars=True,hub_lpg_details=hub_lpg_tfStr[region],spoke_lpg_details=spoke_lpg_tfStr[region],exported_lpg_details=exported_lpg_tfStr[region])
+        lpg_tfStr[region] = lpg.render(create_lpg_auto_vars=True,hub_lpg_details=hub_lpg_tfStr[region],spoke_lpg_details=spoke_lpg_tfStr[region],exported_lpg_details=exported_lpg_tfStr[region],none_lpg_details=none_lpg_tfStr[region])
 
         defaultdhcp = env.get_template('module-major-objects-default-dhcp-template')
         dhcp_default_tfStr[region] = dhcp_default_tfStr[region][:-1] + defaultdhcp.render(tempStr)
@@ -501,6 +503,7 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
         lpg_tfStr[reg] = ''
         hub_lpg_tfStr[reg] = ''
         spoke_lpg_tfStr[reg] = ''
+        none_lpg_tfStr[reg] = ''
         exported_lpg_tfStr[reg] = ''
         vcn_tfStr[reg] = ''
         dhcp_default_tfStr[reg] = ''

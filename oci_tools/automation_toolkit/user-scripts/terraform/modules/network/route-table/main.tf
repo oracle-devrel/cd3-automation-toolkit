@@ -29,7 +29,7 @@ resource "oci_core_route_table" "route_table" {
 
         content {
         #Required
-         network_entity_id = (route_rules.value["network_entity_id"] != null  && length(regexall("ocid1.localpeeringgateway.oc1*", route_rules.value["network_entity_id"])) > 0) ? route_rules.value["network_entity_id"] : try(var.hub_lpg_id[route_rules.value["network_entity_id"]]["lpg_tf_id"][0],var.spoke_lpg_id[route_rules.value["network_entity_id"]]["lpg_tf_id"][0],var.exported_lpg_id[route_rules.value["network_entity_id"]]["lpg_tf_id"][0],var.drg_id[route_rules.value["network_entity_id"]]["drg_tf_id"][0])
+        network_entity_id = (route_rules.value["network_entity_id"] != null  && length(regexall("ocid1.localpeeringgateway.oc1*", route_rules.value["network_entity_id"])) > 0) ? route_rules.value["network_entity_id"] : try(var.hub_lpg_id[route_rules.value["network_entity_id"]]["lpg_tf_id"][0],var.spoke_lpg_id[route_rules.value["network_entity_id"]]["lpg_tf_id"][0],var.none_lpg_id[route_rules.value["network_entity_id"]]["lpg_tf_id"][0],var.exported_lpg_id[route_rules.value["network_entity_id"]]["lpg_tf_id"][0],var.drg_id[route_rules.value["network_entity_id"]]["drg_tf_id"][0])
 
         #Optional
         description = route_rules.value["description"]

@@ -24,6 +24,7 @@ module "route-tables" {
   drg_id = merge(module.drgs.*...)
   hub_lpg_id    = merge(module.hub-lpgs.*...)
   spoke_lpg_id    = merge(module.spoke-lpgs.*...)
+  none_lpg_id    = merge(module.none-lpgs.*...)
   exported_lpg_id    = merge(module.exported-lpgs.*...)
   rt_details    = var.route_tables
 }
