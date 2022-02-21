@@ -1090,12 +1090,13 @@ def create_terraform_route(inputfile, outdir, prefix, config, modify_network=Fal
 
         # Option if Modify Network is FALSE
         if not modify_network:
-            routetableStr[reg] = routetableStr[reg] + "\n" + skeletonStr
-            tempSkeleton[reg] = tempSkeleton[reg].replace(skeletonStr,routetableStr[reg])
-            oname = open(outfile, "w")
-            oname.write(tempSkeleton[reg])
-            oname.close()
-            print(outfile + " containing route tables has been created for region " + reg)
+            if routetableStr[reg] != '':
+                routetableStr[reg] = routetableStr[reg] + "\n" + skeletonStr
+                tempSkeleton[reg] = tempSkeleton[reg].replace(skeletonStr,routetableStr[reg])
+                oname = open(outfile, "w")
+                oname.write(tempSkeleton[reg])
+                oname.close()
+                print(outfile + " containing route tables has been created for region " + reg)
         else:
             # Option if Modify Network is TRUE
             processed_rt = []
@@ -1113,10 +1114,11 @@ def create_terraform_route(inputfile, outdir, prefix, config, modify_network=Fal
                 if skeletonStr not in tempSkeleton[reg]:
                     tempSkeleton[reg] = tempSkeleton[reg] + "\n" + skeletonStr
 
-            oname = open(outfile, "w")
-            oname.write(tempSkeleton[reg])
-            oname.close()
-            print(outfile + " containing route tables has been updated for region " + reg)
+            if tempSkeleton[reg] != '':
+                oname = open(outfile, "w")
+                oname.write(tempSkeleton[reg])
+                oname.close()
+                print(outfile + " containing route tables has been updated for region " + reg)
 
     if (fname != None):
         fname.close()
