@@ -34,27 +34,6 @@ variable "region" {
         #
         #################################
 
-        variable "notifications_topics" {
-            type    = map(any)
-            default = {}
-        }
-
-        variable "notifications_subscriptions" {
-            type    = map(any)
-            default = {}
-        }
-
-        variable "alarms" {
-            type    = map(any)
-            default = {}
-        }
-
-        variable "events" {
-            type    = map(any)
-            default = {}
-        }
-
-
         ############################
         ### Fetch Compartments #####
         ############################
@@ -94,6 +73,11 @@ variable "region" {
           default = {}
         }
 
+        variable "custom_dhcps" {
+          type = map(any)
+          default = {}
+        }
+
         variable "vcns" {
           type    = map(any)
           default = {}
@@ -114,13 +98,110 @@ variable "region" {
           default = {}
         }
 
-        variable "hub-lpgs" {
+        variable "lpgs" {
           type    = map(any)
           default = {}
         }
 
-        variable "spoke-lpgs" {
+        variable "drgs" {
           type    = map(any)
           default = {}
         }
 
+        variable "seclists" {
+          type = map(any)
+          default = {}
+        }
+
+        variable "default_seclists" {
+          type = map(any)
+          default = {}
+        }
+
+        variable "route_tables" {
+          type = map(any)
+          default = {}
+        }
+
+        variable "default_route_tables" {
+          type    = map(any)
+          default = {}
+        }
+
+        variable "nsgs" {
+          type = map(any)
+          default = {}
+        }
+
+        variable "nsg_rules" {
+          type = map(any)
+          default = {}
+        }
+
+        variable "subnets" {
+          type    = map(any)
+          default = {}
+        }
+
+        variable "drg_attachments" {
+          type    = map(any)
+          default = {}
+        }
+
+        variable "drg_route_tables" {
+          type    = map(any)
+          default = {}
+        }
+
+        variable "drg_route_rules" {
+          type    = map(any)
+          default = {}
+        }
+
+        variable "drg_route_distributions" {
+          type    = map(any)
+          default = {}
+        }
+
+        variable "drg_route_distribution_statements" {
+          type    = map(any)
+          default = {}
+        }
+
+        #########################
+        ##### Logging ###########
+        #########################
+
+        variable "log_groups" {
+          type    = map(any)
+          default = {}
+        }
+
+        variable "logs" {
+          type    = map(any)
+          default = {}
+        }
+
+        #########################
+        ## Management Services ##
+        #########################
+
+        variable "alarms" {
+          type    = map(any)
+          default = {}
+        }
+
+        variable "events" {
+          type    = map(any)
+          default = {}
+        }
+
+        variable "notifications_topics" {
+          type    = map(any)
+          default = {}
+        }
+
+        variable "notifications_subscriptions" {
+          type    = map(any)
+          default = {}
+        }

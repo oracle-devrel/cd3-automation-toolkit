@@ -422,9 +422,13 @@ def seek_info():
         }
                 
         #########################
-        ##### Events ############
-        ##### Notification ######
+        ## Management Services ##
         #########################
+        
+        variable "alarms" {
+          type    = map(any)
+          default = {}
+        }
         
         variable "events" {
           type    = map(any)
