@@ -39,6 +39,7 @@ def read_infile_data(modifiedroutetableStr, reg, rt):
     start = "# Start of " + rt + " #"
     end = "# End of " + rt + " #"
     modifiedroutetableStr[reg] = re.sub(start+'.*?'+end, '',modifiedroutetableStr[reg] , flags=re.DOTALL)
+    modifiedroutetableStr[reg] = re.sub('\n\n+','\n\n',modifiedroutetableStr[reg])
     filedata = modifiedroutetableStr[reg]
     return modifiedroutetableStr[reg], filedata
 
@@ -237,7 +238,7 @@ def create_terraform_drg_route(inputfile, outdir, prefix, config, modify_network
                 tempStr[columnname] = columnvalue
                 tempStr.update(tempdict)
 
-            region_rt_name = tempStr['drg_tf_name'] + "_" + region.lower()
+            region_rt_name = region.lower() + "_" + tempStr['drg_rt_tf_name']
             tempStr['region_rt_name'] = region_rt_name
 
             if (DRG_RT != 'nan' and DRG_RT not in commonTools.drg_auto_RTs):
@@ -269,7 +270,7 @@ def create_terraform_drg_route(inputfile, outdir, prefix, config, modify_network
 
             if drg_rt[reg] != '':
                 srcStr = "###Add route tables here for " + reg.lower() + " ###"
-                tempSkeletonDRGRouteTable[reg] = tempSkeletonDRGRouteTable[reg].replace(srcStr, drg_rt[reg])
+                tempSkeletonDRGRouteTable[reg] = tempSkeletonDRGRouteTable[reg].replace(srcStr, drg_rt[reg] + "\n" + srcStr)
 
         # If Modify Network
         else:
@@ -298,10 +299,10 @@ def create_terraform_drg_route(inputfile, outdir, prefix, config, modify_network
 
         if drg_rd[reg] != '':
             srcStr="###Add DRG Distribution here for "+reg.lower()+" ###"
-            tempSkeletonDRGDistribution[reg] = tempSkeletonDRGDistribution[reg].replace(srcStr, drg_rd[reg])
+            tempSkeletonDRGDistribution[reg] = tempSkeletonDRGDistribution[reg].replace(srcStr, drg_rd[reg] + "\n" + srcStr)
         if drg_rd_stmt[reg] != '':
             srcStr="###Add DRG Distribution Statement here for "+reg.lower()+" ###"
-            tempSkeletonDRGDistributionStmt[reg] = tempSkeletonDRGDistributionStmt[reg].replace(srcStr, drg_rd_stmt[reg])
+            tempSkeletonDRGDistributionStmt[reg] = tempSkeletonDRGDistributionStmt[reg].replace(srcStr, drg_rd_stmt[reg] + "\n" + srcStr)
 
         tempSkeletonDRGDistribution[reg] = tempSkeletonDRGDistribution[reg] + tempSkeletonDRGDistributionStmt[reg]
 
