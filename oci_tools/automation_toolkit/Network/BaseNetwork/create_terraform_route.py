@@ -305,15 +305,14 @@ def create_terraform_drg_route(inputfile, outdir, prefix, config, modify_network
 
         tempSkeletonDRGDistribution[reg] = tempSkeletonDRGDistribution[reg] + tempSkeletonDRGDistributionStmt[reg]
 
-        oname_rt = open(rtfile, "w")
-        oname_drg_dis = open(rtdistribution, "w")
-
         if drg_rt[reg] != '' :
+            oname_rt = open(rtfile, "w")
             print("Writing to..." + str(rtfile))
             oname_rt.write(tempSkeletonDRGRouteTable[reg])
             oname_rt.close()
 
         if drg_rd_stmt[reg] != '' or drg_rd[reg] != '':
+            oname_drg_dis = open(rtdistribution, "w")
             print("Writing to..." + str(rtdistribution))
             oname_drg_dis.write(tempSkeletonDRGDistribution[reg])
             oname_drg_dis.close()
