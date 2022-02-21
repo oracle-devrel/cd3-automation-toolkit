@@ -11,7 +11,7 @@ module "alarms" {
 
   alarm_name           = each.value.alarm_name
   compartment_name = each.value.compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[0][each.value.compartment_name]) : var.tenancy_ocid
-  destinations = [for tn in each.value.destinations : ( length(regexall("ocid1.onstopic.oc1*",tn)) > 0 ? tn : merge(module.notifications_topics.*...)[tn]["topic_id"][tn])]
+  destinations = [for tn in each.value.destinations : ( length(regexall("ocid1.onstopic.oc1*",tn)) > 0 ? tn : merge(module.notifications-topics.*...)[tn]["topic_tf_id"][0])]
   is_enabled  = each.value.is_enabled
   metric_compartment_name = each.value.metric_compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.metric_compartment_name)) > 0 ? each.value.metric_compartment_name : var.compartment_ocids[0][each.value.metric_compartment_name]) : var.tenancy_ocid
   namespace      = each.value.namespace
