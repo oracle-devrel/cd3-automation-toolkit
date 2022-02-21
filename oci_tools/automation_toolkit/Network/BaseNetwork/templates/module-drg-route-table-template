@@ -16,7 +16,9 @@ drg_route_tables = {
 }
 {% else %}{% if drg_name != "" and drg_name != "nan" and drg_name != null %}
 
+
 # Start of {{ region.lower() }}_{{ drg_rt_tf_name }} #
+
 {{ drg_rt_tf_name }} = {
 
             drg_name = "{{ drg_tf_name }}"

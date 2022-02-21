@@ -315,10 +315,12 @@ def create_terraform_nsg(inputfile, outdir, prefix, config, nongf_tenancy=False)
         resource_group = template.render(tempStr, region=region, skeleton=True)
         resource_group_nsg_rule = nsgrule.render(tempStr, region=region, skeleton=True)
 
-        with open(regionDirPath + "/" + prefix + nsg_auto_tfvars_filename, 'w+') as f:
-            f.write(resource_group)
-        with open(regionDirPath + "/" + prefix + nsg_rules_auto_tfvars_filename, 'w+') as f:
-            f.write(resource_group_nsg_rule)
+        if resource_group != '':
+            with open(regionDirPath + "/" + prefix + nsg_auto_tfvars_filename, 'w+') as f:
+                f.write(resource_group)
+        if resource_group_nsg_rule != '':
+            with open(regionDirPath + "/" + prefix + nsg_rules_auto_tfvars_filename, 'w+') as f:
+                f.write(resource_group_nsg_rule)
 
     # Stage 2 using the dictionary of unique_id:rules, use factory method to produces resources and
     # rules
