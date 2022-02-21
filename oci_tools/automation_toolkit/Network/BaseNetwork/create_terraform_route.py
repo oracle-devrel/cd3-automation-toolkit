@@ -397,14 +397,17 @@ def create_terraform_route(inputfile, outdir, prefix, config, modify_network=Fal
                 lpg_name_tf_name = commonTools.check_tf_variable(lpg_name)
 
                 vcns.vcn_lpg_names1[left_vcn].pop(0)
-                tempStr['destination'] = right_vcn_tf_name
-                tempStr['lpg_vcn_name'] = lpg_name_tf_name
-                tempStr['destination_type'] = "CIDR_BLOCK"
-                tempStr['network_entity_id'] = lpg_name_tf_name
-                start_rule = "## Start Route Rule lpg_route_rules__" + tempStr['network_entity_id'] + "_" + tempStr['destination']
-                if start_rule not in vcns.vcn_lpg_rules[left_vcn]:
-                    ruleStr = routerule.render(tempStr,lpg_route_rules=True, region='lpg_route_rules')
-                vcns.vcn_lpg_rules[left_vcn] = vcns.vcn_lpg_rules[left_vcn] + ruleStr
+                vcn_cidrs = [x.strip() for x in vcns.vcn_cidrs[right_vcn].split(',')]
+
+                for vcn_cidr in vcn_cidrs:
+                    tempStr['destination'] = vcn_cidr
+                    tempStr['lpg_vcn_name'] = lpg_name_tf_name
+                    tempStr['destination_type'] = "CIDR_BLOCK"
+                    tempStr['network_entity_id'] = lpg_name_tf_name
+                    start_rule = "## Start Route Rule lpg_route_rules__" + tempStr['network_entity_id'] + "_" + tempStr['destination']
+                    if start_rule not in vcns.vcn_lpg_rules[left_vcn]:
+                        ruleStr = routerule.render(tempStr,lpg_route_rules=True, region='lpg_route_rules')
+                    vcns.vcn_lpg_rules[left_vcn] = vcns.vcn_lpg_rules[left_vcn] + ruleStr
 
                 # Build rule for VCNs on right
                 lpg_name = vcns.vcn_lpg_names1[right_vcn][0]
@@ -412,14 +415,16 @@ def create_terraform_route(inputfile, outdir, prefix, config, modify_network=Fal
                 lpg_name_tf_name = commonTools.check_tf_variable(lpg_name)
 
                 vcns.vcn_lpg_names1[right_vcn].pop(0)
-                tempStr['destination'] = left_vcn_tf_name
-                tempStr['lpg_vcn_name'] = lpg_name_tf_name
-                tempStr['destination_type'] = "CIDR_BLOCK"
-                tempStr['network_entity_id'] = lpg_name_tf_name
-                start_rule = "## Start Route Rule lpg_route_rules__" + tempStr['network_entity_id'] + "_" + tempStr['destination']
-                if start_rule not in vcns.vcn_lpg_rules[right_vcn]:
-                    ruleStr =  routerule.render(tempStr,lpg_route_rules=True, region='lpg_route_rules')
-                vcns.vcn_lpg_rules[right_vcn] = vcns.vcn_lpg_rules[right_vcn] + ruleStr
+                vcn_cidrs = [x.strip() for x in vcns.vcn_cidrs[left_vcn].split(',')]
+                for vcn_cidr in vcn_cidrs:
+                    tempStr['destination'] = vcn_cidr
+                    tempStr['lpg_vcn_name'] = lpg_name_tf_name
+                    tempStr['destination_type'] = "CIDR_BLOCK"
+                    tempStr['network_entity_id'] = lpg_name_tf_name
+                    start_rule = "## Start Route Rule lpg_route_rules__" + tempStr['network_entity_id'] + "_" + tempStr['destination']
+                    if start_rule not in vcns.vcn_lpg_rules[right_vcn]:
+                        ruleStr =  routerule.render(tempStr,lpg_route_rules=True, region='lpg_route_rules')
+                    vcns.vcn_lpg_rules[right_vcn] = vcns.vcn_lpg_rules[right_vcn] + ruleStr
 
     def createVCNDRGRtTableString(compartment_var_name, vcn_with_drg, peering_dict, region, tempStr, hub):
         drgStr = ''
