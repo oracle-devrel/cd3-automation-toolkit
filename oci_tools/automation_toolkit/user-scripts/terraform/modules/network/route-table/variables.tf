@@ -26,6 +26,7 @@ variable "sgw_id" {}
 variable "drg_id" {}
 variable "hub_lpg_id" {}
 variable "spoke_lpg_id" {}
+variable "peer_lpg_id" {}
 variable "exported_lpg_id" {}
 variable "none_lpg_id" {}
 
