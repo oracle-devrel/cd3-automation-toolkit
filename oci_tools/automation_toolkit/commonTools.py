@@ -560,6 +560,7 @@ class parseVCNs():
         self.vcn_hub_spoke_peer_none = {}
         self.vcn_compartment = {}
         self.vcn_names = []
+        self.vcn_cidrs = {}
         self.vcns_having_drg = {}
 
         try:
@@ -642,6 +643,9 @@ class parseVCNs():
                     drg_name = str(df_vcn['DRG Required'][i]).strip()
 
                 self.vcns_having_drg[vcn_name,region]=drg_name
+
+            self.vcn_cidrs[vcn_name]=str(df_vcn['CIDR Blocks'][i]).strip()
+            #cidr_blocks = [x.strip() for x in columnvalue.split(',')]
 
             self.vcn_igws[vcn_name] = str(df_vcn['IGW Required'][i]).strip()
             self.vcn_ngws[vcn_name] = str(df_vcn['NGW Required'][i]).strip()
