@@ -12,11 +12,7 @@ vcns = {
 {% endif %}
   {{ vcn_tf_name }} = {
         compartment_name = "{{ compartment_tf_name }}"
-        cidr_block       = "{{ cidr_block }}"
-        {% if cidr_blocks and cidr_blocks != 'nan' and cidr_blocks != '' %}
-        cidr_blocks      = [{{ cidr_blocks }}] {% else %}
-        cidr_blocks      = []
-        {% endif %}
+        cidr_blocks      = {{ cidr_blocks }}
         display_name     = "{{ vcn_name }}"
 
         dns_label      = "{{ dns_label }}"

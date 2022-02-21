@@ -15,11 +15,6 @@ variable "compartment_id" {
   default = null
 }
 
-variable "cidr_block" {
-  type    = string
-  default = null
-}
-
 variable "cidr_blocks" {
   type    = list
   default = [""]

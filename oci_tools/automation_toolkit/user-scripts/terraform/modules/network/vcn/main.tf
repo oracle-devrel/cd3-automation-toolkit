@@ -17,7 +17,6 @@ resource "oci_core_vcn" "vcn" {
     compartment_id = var.compartment_id
 
     #Optional
-    cidr_block = var.cidr_block
     cidr_blocks = var.cidr_blocks
     defined_tags = var.defined_tags
     display_name = var.display_name

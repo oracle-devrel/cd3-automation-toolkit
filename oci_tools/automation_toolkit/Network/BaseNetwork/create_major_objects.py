@@ -561,6 +561,10 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
                 compartment_var_name = commonTools.check_tf_variable(compartment_var_name)
                 tempdict = {'compartment_tf_name': compartment_var_name}
 
+            if columnname == "CIDR Blocks":
+                if len(columnvalue.split(",")) > 0:
+                    columnvalue = str(columnvalue.split(",")).replace("\'","\"").replace(" ","")
+
             if columnname == "DNS Label":
                 # check if vcn_dns_label is not given by user in input use vcn name
                 if str(columnvalue).lower() == 'nan' or str(columnvalue).lower() == '':

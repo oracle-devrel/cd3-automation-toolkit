@@ -13,7 +13,6 @@ module "vcns" {
   compartment_id = try(module.fetch-compartments.compartment_id_map[each.value.compartment_name],var.compartment_ocids[0][each.value.compartment_name])
 
   #Optional
-  cidr_block     = each.value.cidr_block
   cidr_blocks    = each.value.cidr_blocks
   display_name   = each.value.display_name
   dns_label      = (each.value.dns_label == "n") ? null : each.value.dns_label
