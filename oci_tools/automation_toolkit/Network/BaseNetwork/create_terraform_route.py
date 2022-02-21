@@ -397,9 +397,9 @@ def create_terraform_route(inputfile, outdir, prefix, config, modify_network=Fal
                 lpg_name_tf_name = commonTools.check_tf_variable(lpg_name)
 
                 vcns.vcn_lpg_names1[left_vcn].pop(0)
-                vcn_cidrs = [x.strip() for x in vcns.vcn_cidrs[right_vcn].split(',')]
+                right_vcn_cidrs = [x.strip() for x in vcns.vcn_cidrs[right_vcn].split(',')]
 
-                for vcn_cidr in vcn_cidrs:
+                for vcn_cidr in right_vcn_cidrs:
                     tempStr['destination'] = vcn_cidr
                     tempStr['lpg_vcn_name'] = lpg_name_tf_name
                     tempStr['destination_type'] = "CIDR_BLOCK"
@@ -415,8 +415,8 @@ def create_terraform_route(inputfile, outdir, prefix, config, modify_network=Fal
                 lpg_name_tf_name = commonTools.check_tf_variable(lpg_name)
 
                 vcns.vcn_lpg_names1[right_vcn].pop(0)
-                vcn_cidrs = [x.strip() for x in vcns.vcn_cidrs[left_vcn].split(',')]
-                for vcn_cidr in vcn_cidrs:
+                left_vcn_cidrs = [x.strip() for x in vcns.vcn_cidrs[left_vcn].split(',')]
+                for vcn_cidr in left_vcn_cidrs:
                     tempStr['destination'] = vcn_cidr
                     tempStr['lpg_vcn_name'] = lpg_name_tf_name
                     tempStr['destination_type'] = "CIDR_BLOCK"
