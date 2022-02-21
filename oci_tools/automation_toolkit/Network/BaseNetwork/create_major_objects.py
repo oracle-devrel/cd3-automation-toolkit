@@ -13,6 +13,7 @@ import sys
 import argparse
 import re
 import os
+import json
 from pathlib import Path
 from oci.config import DEFAULT_LOCATION
 from jinja2 import Environment, FileSystemLoader
@@ -560,6 +561,11 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
                 compartment_var_name = columnvalue.strip()
                 compartment_var_name = commonTools.check_tf_variable(compartment_var_name)
                 tempdict = {'compartment_tf_name': compartment_var_name}
+
+            if columnname == "CIDR Blocks":
+                cidr_blocks = [x.strip() for x in columnvalue.split(',')]
+                cidr_blocks = json.dumps(cidr_blocks)
+                tempdict = {'cidr_blocks': cidr_blocks}
 
             if columnname == "DNS Label":
                 # check if vcn_dns_label is not given by user in input use vcn name

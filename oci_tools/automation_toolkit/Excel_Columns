@@ -29,7 +29,7 @@
     "VCNs" :
     {
         "VCN Name" : "display_name",
-        "CIDR Block" : "cidr_block"
+        "CIDR Blocks" : "cidr_blocks"
     },
     "DRGs" :
     {
