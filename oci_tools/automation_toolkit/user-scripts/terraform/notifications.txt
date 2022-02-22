@@ -6,7 +6,7 @@
 ############################
 
 module "notifications-topics" {
-  source                = "./modules/managementservices/notification_topic"
+  source                = "./modules/managementservices/notification-topic"
   for_each              = var.notifications_topics != null ? var.notifications_topics : {}
 
   compartment_name = each.value.compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[0][each.value.compartment_name]) : var.tenancy_ocid
@@ -19,7 +19,7 @@ module "notifications-topics" {
 }
 
 module "notifications-subscriptions" {
-  source                = "./modules/managementservices/notification_subscription"
+  source                = "./modules/managementservices/notification-subscription"
   for_each              = var.notifications_subscriptions != null ? var.notifications_subscriptions : {}
 
   depends_on = [module.notifications-topics]

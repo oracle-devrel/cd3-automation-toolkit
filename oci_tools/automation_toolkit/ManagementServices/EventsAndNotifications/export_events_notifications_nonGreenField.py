@@ -52,10 +52,10 @@ def  print_notifications(values_for_column_notifications,region, ntk_compartment
             oci_objs = [nftn_info,sbpn]
             values_for_column_notifications = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict_notifications,values_for_column_notifications)
     if ( i == 1):
-       importCommands[region.lower()].write("\nterraform import \"module.notifications_topics[\\\"" + str(tf_name_nftn) + "\\\"].oci_ons_notification_topic.topic[0]\" " + str(nftn_info.topic_id))
+       importCommands[region.lower()].write("\nterraform import \"module.notifications-topics[\\\"" + str(tf_name_nftn) + "\\\"].oci_ons_notification_topic.topic[0]\" " + str(nftn_info.topic_id))
 
     #importCommands[region.lower()].write("\nterraform import oci_ons_subscription." + tf_name_sbpn + " " + str(sbpn.id))
-    importCommands[region.lower()].write("\nterraform import \"module.notifications_subscriptions[\\\"" + str(tf_name_sbpn) + "\\\"].oci_ons_subscription.subscription[0]\" " + str(sbpn.id))
+    importCommands[region.lower()].write("\nterraform import \"module.notifications-subscriptions[\\\"" + str(tf_name_sbpn) + "\\\"].oci_ons_subscription.subscription[0]\" " + str(sbpn.id))
 
 
 

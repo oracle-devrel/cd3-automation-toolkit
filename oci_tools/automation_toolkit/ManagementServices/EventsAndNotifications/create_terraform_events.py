@@ -162,7 +162,7 @@ def create_terraform_events(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
                topic_name = columnvalue.strip()
                if ( action_type.lower() in "faas"):
                 topic_id = topic_name.split("::")
-                topic_id = "\"" + topic_id[1] + "\""
+                topic_id = topic_id[1]
                 tempdict = {'action_id': topic_id}
                 tempStr.update(tempdict)
                 name = "function_id"
