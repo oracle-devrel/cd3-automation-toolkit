@@ -231,6 +231,11 @@ def create_terraform_seclist(inputfile, outdir, prefix, config, modify_network=F
     vcnInfo = parseVCNInfo(filename)
     vcns = parseVCNs(filename)
 
+    # Purge existing seclist files
+    if not modify_network:
+        for reg in ct.all_regions:
+            purge(outdir + "/" + reg, prefix + auto_tfvars_filename)
+
     # Read cd3 using pandas dataframe
     df, col_headers = commonTools.read_cd3(filename, "Subnets")
 
