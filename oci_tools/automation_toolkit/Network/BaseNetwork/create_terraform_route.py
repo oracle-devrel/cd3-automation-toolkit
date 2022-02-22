@@ -603,124 +603,131 @@ def create_terraform_route(inputfile, outdir, prefix, config, modify_network=Fal
         return lpgStrCommon[region]
 
     def prepareSGWRuleStr(vcn_name, sgw_name, destination, configure_sgw, tempStr, data):
-        sgw_tf_name = vcn_name + "_" + sgw_name
-        sgw_tf_name = commonTools.check_tf_variable(sgw_tf_name)
-        if (configure_sgw == "all_services"):
-            destination = "all"
-        elif (configure_sgw == "object_storage"):
-            destination = "objectstorage"
-        tempStr['destination'] = destination
-        tempStr['sgw_tf_name'] = sgw_tf_name
-        tempStr['configure_sgw'] = configure_sgw
-        tempStr['destination_type'] = "SERVICE_CIDR_BLOCK"
-        tempStr['network_entity_id'] = sgw_tf_name
-        vcn_name = tempStr['vcn_tf_name']
-        start_rule = "## Start Route Rule "+tempStr['region'].lower()+"_"+tempStr['rt_tf_name']+"_"+tempStr['network_entity_id']+"_"+tempStr['destination']
-        rem_keys = ['vcn_tf_name', 'drg_tf_name', 'ngw_tf_name', 'igw_tf_name', 'lpg_tf_name']
-        [tempStr.pop(key) for key in rem_keys if key in tempStr]
-        data = merge_or_generate_route_rule(region.lower(), tempStr, modifiedroutetableStr,
-                                            routetableStr, start_rule, data,modify_network=modify_network,
-                                            routerule=routerule, gateway='SGW')
+        if configure_sgw != 'n' and sgw_name != '':
+            sgw_tf_name = vcn_name + "_" + sgw_name
+            sgw_tf_name = commonTools.check_tf_variable(sgw_tf_name)
+            if (configure_sgw == "all_services"):
+                destination = "all"
+            elif (configure_sgw == "object_storage"):
+                destination = "objectstorage"
+            tempStr['destination'] = destination
+            tempStr['sgw_tf_name'] = sgw_tf_name
+            tempStr['configure_sgw'] = configure_sgw
+            tempStr['destination_type'] = "SERVICE_CIDR_BLOCK"
+            tempStr['network_entity_id'] = sgw_tf_name
+            vcn_name = tempStr['vcn_tf_name']
+            start_rule = "## Start Route Rule "+tempStr['region'].lower()+"_"+tempStr['rt_tf_name']+"_"+tempStr['network_entity_id']+"_"+tempStr['destination']
+            rem_keys = ['vcn_tf_name', 'drg_tf_name', 'ngw_tf_name', 'igw_tf_name', 'lpg_tf_name']
+            [tempStr.pop(key) for key in rem_keys if key in tempStr]
+            data = merge_or_generate_route_rule(region.lower(), tempStr, modifiedroutetableStr,
+                                                routetableStr, start_rule, data,modify_network=modify_network,
+                                                routerule=routerule, gateway='SGW')
 
-        tempStr['vcn_tf_name'] = vcn_name
+            tempStr['vcn_tf_name'] = vcn_name
         return data
 
-    def prepareNGWRuleStr(vcn_name, ngw_name, tempStr):
-        ngw_tf_name = vcn_name + "_" + ngw_name
-        ngw_tf_name = commonTools.check_tf_variable(ngw_tf_name)
-        vcn_name = tempStr['vcn_tf_name']
-        data = ""
-        for ngw_destination in vcnInfo.ngw_destinations:
-            if (ngw_destination != ''):
-                tempStr['destination'] = ngw_destination
-                tempStr['ngw_tf_name'] = ngw_tf_name
-                tempStr['destination_type'] = "CIDR_BLOCK"
-                tempStr['network_entity_id'] = ngw_tf_name
-                start_rule = "## Start Route Rule " + tempStr['region'].lower() + "_" + tempStr['rt_tf_name'] + "_" + tempStr['network_entity_id'] + "_" + tempStr['destination']
-                rem_keys = ['vcn_tf_name', 'drg_tf_name', 'configure_sgw', 'igw_tf_name', 'lpg_tf_name']
-                [tempStr.pop(key) for key in rem_keys if key in tempStr]
-                data = merge_or_generate_route_rule(region.lower(), tempStr, modifiedroutetableStr, routetableStr,
-                                                    start_rule, data, modify_network=modify_network, routerule=routerule,
-                                                    gateway='NGW')
-
-        tempStr['vcn_tf_name'] = vcn_name
-        return data
-
-    def prepareIGWRuleStr(vcn_name, igw_name, tempStr):
-        igw_tf_name = vcn_name + "_" + igw_name
-        igw_tf_name = commonTools.check_tf_variable(igw_tf_name)
-        vcn_name = tempStr['vcn_tf_name']
-        data = ""
-        for igw_destination in vcnInfo.igw_destinations:
-            if (igw_destination != ''):
-                tempStr['igw_tf_name'] = igw_tf_name
-                tempStr['destination'] =  igw_destination
-                tempStr['destination_type'] = "CIDR_BLOCK"
-                tempStr['network_entity_id'] = igw_tf_name
-                start_rule = "## Start Route Rule " + tempStr['region'].lower() + "_" + tempStr['rt_tf_name'] + "_" + tempStr['network_entity_id'] + "_" + tempStr['destination']
-                rem_keys = ['vcn_tf_name', 'drg_tf_name', 'configure_sgw', 'ngw_tf_name', 'lpg_tf_name']
-                [tempStr.pop(key) for key in rem_keys if key in tempStr]
-                data = merge_or_generate_route_rule(region.lower(), tempStr, modifiedroutetableStr, routetableStr,
-                                                    start_rule, data, modify_network=modify_network, routerule=routerule,
-                                                    gateway='IGW')
-        tempStr['vcn_tf_name'] = vcn_name
-        return data
-
-    def prepareOnpremRuleStr(vcn_name, drg_name, tempStr):
-        data = ""
-        vcn_name = tempStr['vcn_tf_name']
-        v_list_having_drg = []
-        for key in vcns.vcns_having_drg.keys():
-            v_list_having_drg.append(key[0])
-        if vcns.vcn_hub_spoke_peer_none[vcn_name][0].lower() == 'hub' or vcn_name in v_list_having_drg:
-            drg_tf_name = commonTools.check_tf_variable(drg_name)
-            for drg_destination in vcnInfo.onprem_destinations:
-                if (drg_destination != ''):
-                    tempStr['drg_tf_name'] = drg_tf_name
-                    tempStr['destination'] = drg_destination
+    def prepareNGWRuleStr(vcn_name, ngw_name, configure_ngw, tempStr):
+        data = ''
+        if configure_ngw != 'n' and ngw_name != '':
+            ngw_tf_name = vcn_name + "_" + ngw_name
+            ngw_tf_name = commonTools.check_tf_variable(ngw_tf_name)
+            vcn_name = tempStr['vcn_tf_name']
+            data = ""
+            for ngw_destination in vcnInfo.ngw_destinations:
+                if (ngw_destination != ''):
+                    tempStr['destination'] = ngw_destination
+                    tempStr['ngw_tf_name'] = ngw_tf_name
                     tempStr['destination_type'] = "CIDR_BLOCK"
-                    tempStr['network_entity_id'] = drg_tf_name
-                    tempStr['lpg'] = False
+                    tempStr['network_entity_id'] = ngw_tf_name
                     start_rule = "## Start Route Rule " + tempStr['region'].lower() + "_" + tempStr['rt_tf_name'] + "_" + tempStr['network_entity_id'] + "_" + tempStr['destination']
-                    rem_keys = ['vcn_tf_name', 'igw_tf_name', 'configure_sgw', 'ngw_tf_name', 'lpg_tf_name']
+                    rem_keys = ['vcn_tf_name', 'drg_tf_name', 'configure_sgw', 'igw_tf_name', 'lpg_tf_name']
                     [tempStr.pop(key) for key in rem_keys if key in tempStr]
                     data = merge_or_generate_route_rule(region.lower(), tempStr, modifiedroutetableStr, routetableStr,
                                                         start_rule, data, modify_network=modify_network, routerule=routerule,
-                                                        gateway='DRG')
+                                                        gateway='NGW')
 
+            tempStr['vcn_tf_name'] = vcn_name
+        return data
 
-        if vcns.vcn_hub_spoke_peer_none[vcn_name][0].lower() == 'spoke':
-            """for left_vcn, value in peering_dict.items():
-                right_vcns = value.split(",")
-                for right_vcn in right_vcns:
-                    if (right_vcn == vcn_name):
-                        hub_vcn_name = left_vcn
-                        break
-
-            lpg_name = vcn_name + "_" + hub_vcn_name + "_lpg"""""
-            lpg_name = vcns.vcn_lpg_names[vcn_name][0]
-            lpg_name = vcn_name + "_" + lpg_name
-            lpg_tf_name = commonTools.check_tf_variable(lpg_name)
-            for drg_destination in vcnInfo.onprem_destinations:
-                if (drg_destination != ''):
-                    tempStr['lpg_tf_name'] = lpg_tf_name
-                    tempStr['destination'] = drg_destination
+    def prepareIGWRuleStr(vcn_name, igw_name, configure_igw,tempStr):
+        data = ''
+        if configure_igw != 'n' and igw_name != '':
+            igw_tf_name = vcn_name + "_" + igw_name
+            igw_tf_name = commonTools.check_tf_variable(igw_tf_name)
+            vcn_name = tempStr['vcn_tf_name']
+            data = ""
+            for igw_destination in vcnInfo.igw_destinations:
+                if (igw_destination != ''):
+                    tempStr['igw_tf_name'] = igw_tf_name
+                    tempStr['destination'] =  igw_destination
                     tempStr['destination_type'] = "CIDR_BLOCK"
-                    tempStr['network_entity_id'] = lpg_tf_name
-                    tempStr['lpg'] = True
+                    tempStr['network_entity_id'] = igw_tf_name
                     start_rule = "## Start Route Rule " + tempStr['region'].lower() + "_" + tempStr['rt_tf_name'] + "_" + tempStr['network_entity_id'] + "_" + tempStr['destination']
-                    rem_keys = ['vcn_tf_name', 'igw_tf_name', 'configure_sgw', 'ngw_tf_name', 'drg_tf_name']
+                    rem_keys = ['vcn_tf_name', 'drg_tf_name', 'configure_sgw', 'ngw_tf_name', 'lpg_tf_name']
                     [tempStr.pop(key) for key in rem_keys if key in tempStr]
                     data = merge_or_generate_route_rule(region.lower(), tempStr, modifiedroutetableStr, routetableStr,
                                                         start_rule, data, modify_network=modify_network, routerule=routerule,
-                                                        gateway='LPG')
-
-        tempStr['vcn_tf_name'] = vcn_name
+                                                        gateway='IGW')
+            tempStr['vcn_tf_name'] = vcn_name
         return data
 
-    def prepareVCNPeerRuleStr():
+    def prepareOnpremRuleStr(vcn_name, drg_name, configure_onprem,tempStr):
         data = ""
-        data = data + vcns.vcn_lpg_rules[vcn_name]
+        if configure_onprem != 'n' and drg_name != '':
+            vcn_name = tempStr['vcn_tf_name']
+            v_list_having_drg = []
+            for key in vcns.vcns_having_drg.keys():
+                v_list_having_drg.append(key[0])
+            if vcns.vcn_hub_spoke_peer_none[vcn_name][0].lower() == 'hub' or vcn_name in v_list_having_drg:
+                drg_tf_name = commonTools.check_tf_variable(drg_name)
+                for drg_destination in vcnInfo.onprem_destinations:
+                    if (drg_destination != ''):
+                        tempStr['drg_tf_name'] = drg_tf_name
+                        tempStr['destination'] = drg_destination
+                        tempStr['destination_type'] = "CIDR_BLOCK"
+                        tempStr['network_entity_id'] = drg_tf_name
+                        tempStr['lpg'] = False
+                        start_rule = "## Start Route Rule " + tempStr['region'].lower() + "_" + tempStr['rt_tf_name'] + "_" + tempStr['network_entity_id'] + "_" + tempStr['destination']
+                        rem_keys = ['vcn_tf_name', 'igw_tf_name', 'configure_sgw', 'ngw_tf_name', 'lpg_tf_name']
+                        [tempStr.pop(key) for key in rem_keys if key in tempStr]
+                        data = merge_or_generate_route_rule(region.lower(), tempStr, modifiedroutetableStr, routetableStr,
+                                                            start_rule, data, modify_network=modify_network, routerule=routerule,
+                                                            gateway='DRG')
+
+
+            if vcns.vcn_hub_spoke_peer_none[vcn_name][0].lower() == 'spoke':
+                """for left_vcn, value in peering_dict.items():
+                    right_vcns = value.split(",")
+                    for right_vcn in right_vcns:
+                        if (right_vcn == vcn_name):
+                            hub_vcn_name = left_vcn
+                            break
+    
+                lpg_name = vcn_name + "_" + hub_vcn_name + "_lpg"""""
+                lpg_name = vcns.vcn_lpg_names[vcn_name][0]
+                lpg_name = vcn_name + "_" + lpg_name
+                lpg_tf_name = commonTools.check_tf_variable(lpg_name)
+                for drg_destination in vcnInfo.onprem_destinations:
+                    if (drg_destination != ''):
+                        tempStr['lpg_tf_name'] = lpg_tf_name
+                        tempStr['destination'] = drg_destination
+                        tempStr['destination_type'] = "CIDR_BLOCK"
+                        tempStr['network_entity_id'] = lpg_tf_name
+                        tempStr['lpg'] = True
+                        start_rule = "## Start Route Rule " + tempStr['region'].lower() + "_" + tempStr['rt_tf_name'] + "_" + tempStr['network_entity_id'] + "_" + tempStr['destination']
+                        rem_keys = ['vcn_tf_name', 'igw_tf_name', 'configure_sgw', 'ngw_tf_name', 'drg_tf_name']
+                        [tempStr.pop(key) for key in rem_keys if key in tempStr]
+                        data = merge_or_generate_route_rule(region.lower(), tempStr, modifiedroutetableStr, routetableStr,
+                                                            start_rule, data, modify_network=modify_network, routerule=routerule,
+                                                            gateway='LPG')
+
+            tempStr['vcn_tf_name'] = vcn_name
+        return data
+
+    def prepareVCNPeerRuleStr(configure_vcnpeering):
+        data = ""
+        if configure_vcnpeering != 'n':
+            data = data + vcns.vcn_lpg_rules[vcn_name]
         return data
 
     def processSubnet(tempStr):
@@ -808,10 +815,10 @@ def create_terraform_route(inputfile, outdir, prefix, config, modify_network=Fal
         # Prepare rule str
         data = ''
         data_sgw = prepareSGWRuleStr(vcn_name, sgw_name, destination, configure_sgw, tempStr, data)
-        data_ngw = prepareNGWRuleStr(vcn_name, ngw_name, tempStr)
-        data_igw = prepareIGWRuleStr(vcn_name, igw_name, tempStr)
-        data_onprem = prepareOnpremRuleStr(vcn_name, drg_name, tempStr)
-        data_vcnpeer = prepareVCNPeerRuleStr()
+        data_ngw = prepareNGWRuleStr(vcn_name, ngw_name, configure_ngw, tempStr)
+        data_igw = prepareIGWRuleStr(vcn_name, igw_name, configure_igw, tempStr)
+        data_onprem = prepareOnpremRuleStr(vcn_name, drg_name, configure_onprem, tempStr)
+        data_vcnpeer = prepareVCNPeerRuleStr(configure_vcnpeering)
 
         # Create Skeleton Template
         if tempStr['count'] == 0:
