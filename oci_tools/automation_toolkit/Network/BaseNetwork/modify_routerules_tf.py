@@ -92,7 +92,7 @@ def modify_terraform_drg_routerules(inputfile, outdir, prefix=None, config=DEFAU
 
     # List of the column headers
     dfcolumns = df.columns.values.tolist()
-    drg_rt_res_name = ''
+
     for i in df.index:
 
         drg_rt_dstrb_tf_name=''
@@ -167,12 +167,9 @@ def modify_terraform_drg_routerules(inputfile, outdir, prefix=None, config=DEFAU
             if columnname == 'DRG RT Name':
                 rt=columnvalue
                 drg_rt_tf_name = commonTools.check_tf_variable(drg_name + "_" + rt)
-                if (rt in commonTools.drg_auto_RTs):
-                    drg_rt_res_name = drg_rt_tf_name
 
                 tempStr['display_name']= rt
                 tempStr['drg_rt_tf_name'] = drg_rt_tf_name
-                tempStr['drg_rt_res_name'] = drg_rt_res_name
 
             if(columnname == "Import DRG Route Distribution Name"):
 
@@ -231,7 +228,7 @@ def modify_terraform_drg_routerules(inputfile, outdir, prefix=None, config=DEFAU
                 tfStr[region]=""
 
         #Add rules to RTs
-        if(new_rule ==1):
+        if(new_rule == 1):
             tempStr['drg_rt_rule_tf_name'] = drg_rt_tf_name+"_route_rule"+str(k)
             k=k+1
             tfStrRule=routerule_drg.render(tempStr)
@@ -512,13 +509,13 @@ def modify_terraform_routerules(inputfile, outdir, prefix=None, config=DEFAULT_L
         default_rt_tempSkeleton[reg] = default_rt_tempSkeleton[reg].replace(defaultTextToAddSeclistSearch,deftfStr[reg] + defaultTextToAddSeclistSearch)
         tempSkeleton[reg] = tempSkeleton[reg].replace(textToAddSeclistSearch,tfStr[reg] + textToAddSeclistSearch)
 
-        if tempSkeleton[reg] != '' :
+        if tfStr[reg] != '' :
             oname = open(outfile, "w")
             oname.write(tempSkeleton[reg])
             oname.close()
             print(outfile + " for route tables has been created for region " + reg)
 
-        if default_rt_tempSkeleton[reg] !='':
+        if deftfStr[reg] !='':
             oname = open(default_outfile, "w")
             oname.write(default_rt_tempSkeleton[reg])
             oname.close()

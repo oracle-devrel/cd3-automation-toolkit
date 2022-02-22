@@ -10,6 +10,16 @@ module "fetch-compartments" {
   compartment_id = var.tenancy_ocid
 }
 
+############################
+# Module Block - Network
+# Fetch ADs
+############################
+
+module "fetch-ads" {
+  source         = "./modules/network/network-data/ads"
+  tenancy_ocid = var.tenancy_ocid
+}
+
 /*
 output "compartment_id_map" {
   value = module.fetch-compartments.compartment_id_map
