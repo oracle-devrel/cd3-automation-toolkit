@@ -343,7 +343,7 @@ def create_terraform_seclist(inputfile, outdir, prefix, config, modify_network=F
             else:
                 tempSkeleton[reg] = tempSkeleton[reg].replace(textToAddSeclistSearch,modify_network_seclists[reg] + textToAddSeclistSearch)
                 srcdir = outdir + "/" + reg + "/"
-                resource = 'SecurityLists'
+                resource = 'SLs'
                 commonTools.backup_file(srcdir, resource, auto_tfvars_filename)
                 oname = open(outfile, "w")
                 oname.write(tempSkeleton[reg])
