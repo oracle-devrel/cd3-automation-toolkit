@@ -63,7 +63,7 @@ def create_terraform_seclist(inputfile, outdir, prefix, config, modify_network=F
     template = env.get_template('module-seclist-template')
     secrule = env.get_template('module-sec-rule-template')
 
-    auto_tfvars_filename = "_seclist.auto.tfvars"
+    auto_tfvars_filename = "_seclists.auto.tfvars"
     common_seclist = []
     seclists_from_secRulesInOCI_sheet = []
 

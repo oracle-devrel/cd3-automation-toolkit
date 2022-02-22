@@ -114,7 +114,7 @@ def create_terraform_drg_route(inputfile, outdir, prefix, config, modify_network
     drg_rt_template = env.get_template('module-drg-route-table-template')
     drg_rd_template = env.get_template('module-drg-route-distribution-template')
     drg_rd_stmt_template = env.get_template('module-drg-route-distribution-statement-template')
-    drg_distribution_auto_tfvars_template = "_drg-distribution.auto.tfvars"
+    drg_distribution_auto_tfvars_template = "_drg-distributions.auto.tfvars"
     drg_rt_auto_tfvars_filename = "_drg-routetables.auto.tfvars"
 
     tempSkeletonDRGRouteTable = {}

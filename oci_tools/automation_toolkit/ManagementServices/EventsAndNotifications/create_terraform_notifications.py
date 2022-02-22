@@ -37,8 +37,8 @@ def create_terraform_notifications(inputfile, outdir, prefix, config=DEFAULT_LOC
     filename = inputfile
     outdir = outdir
     sheetName="Notifications"
-    topics_auto_tfvars_filename = '_' + sheetName.lower() + '_topics.auto.tfvars'
-    subs_auto_tfvars_filename = '_' + sheetName.lower() + '_subscriptions.auto.tfvars'
+    topics_auto_tfvars_filename = '_' + sheetName.lower() + '-topics.auto.tfvars'
+    subs_auto_tfvars_filename = '_' + sheetName.lower() + '-subscriptions.auto.tfvars'
 
     configFileName = config
     ct = commonTools()
