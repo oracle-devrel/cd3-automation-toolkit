@@ -23,10 +23,7 @@ variable "condition" {
   default = ""
 }
 
-variable "topic_name" {
-  type = map(any)
-  default = {}
-}
+variable "topic_name" {}
 
 variable "key_name" {
   type = string
