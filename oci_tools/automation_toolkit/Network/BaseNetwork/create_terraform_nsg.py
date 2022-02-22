@@ -322,6 +322,9 @@ def create_terraform_nsg(inputfile, outdir, prefix, config, nongf_tenancy=False)
             with open(regionDirPath + "/" + prefix + nsg_rules_auto_tfvars_filename, 'w+') as f:
                 f.write(resource_group_nsg_rule)
 
+        print(regionDirPath + "/" + prefix + nsg_rules_auto_tfvars_filename + " for NSG has been created")
+        print(regionDirPath + "/" + prefix + nsg_rules_auto_tfvars_filename + " for NSG Rules has been created")
+
     # Stage 2 using the dictionary of unique_id:rules, use factory method to produces resources and
     # rules
     for region in listOfRegions:
