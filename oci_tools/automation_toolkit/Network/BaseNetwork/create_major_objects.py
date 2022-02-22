@@ -631,20 +631,23 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
             commonTools.backup_file(srcdir, resource, dhcp_auto_tfvars_filename)
             commonTools.backup_file(srcdir, resource, "/oci-drg-data.txt")
 
-            oname[reg] = open(outfile[reg], "w")
-            oname[reg].write(tfStr[reg])
-            oname[reg].close()
-            print(outfile[reg] + " for major objects has been updated for region " + reg)
+            if tfStr[reg] != '':
+                oname[reg] = open(outfile[reg], "w+")
+                oname[reg].write(tfStr[reg])
+                oname[reg].close()
+                print(outfile[reg] + " for major objects has been updated for region " + reg)
 
-            oname_def_dhcp[reg] = open(outfile_dhcp[reg], "w")
-            oname_def_dhcp[reg].write(dhcp_default_tfStr[reg])
-            oname_def_dhcp[reg].close()
-            print(outfile_dhcp[reg] + " for default DHCP options for VCNs has been updated for region " + reg)
+            if dhcp_default_tfStr[reg] != '':
+                oname_def_dhcp[reg] = open(outfile_dhcp[reg], "w+")
+                oname_def_dhcp[reg].write(dhcp_default_tfStr[reg])
+                oname_def_dhcp[reg].close()
+                print(outfile_dhcp[reg] + " for default DHCP options for VCNs has been updated for region " + reg)
 
-            oname_oci_drg_data[reg]=open(outfile_oci_drg_data[reg], "w")
-            oname_oci_drg_data[reg].write(drg_data[reg])
-            oname_oci_drg_data[reg].close()
-            print(outfile_oci_drg_data[reg] + " for oci-drg-data for DRGs has been updated for region " + reg)
+            if drg_data[reg] != '':
+                oname_oci_drg_data[reg]=open(outfile_oci_drg_data[reg], "w+")
+                oname_oci_drg_data[reg].write(drg_data[reg])
+                oname_oci_drg_data[reg].close()
+                print(outfile_oci_drg_data[reg] + " for oci-drg-data for DRGs has been updated for region " + reg)
 
 
         else:
@@ -680,20 +683,20 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
             outfile_oci_drg_data[reg] = reg_out_dir + "/oci-drg-data.txt"
 
             if drg_data[reg] != '':
-                oname_oci_drg_data[reg] = open(outfile_oci_drg_data[reg], "w")
+                oname_oci_drg_data[reg] = open(outfile_oci_drg_data[reg], "w+")
                 oname_oci_drg_data[reg].write(drg_data[reg])
                 oname_oci_drg_data[reg].close()
                 print(outfile_oci_drg_data[reg] + " for oci-drg-data for DRGs has been updated for region " + reg)
 
             if (dhcp_default_tfStr[reg] != ''):
-                oname_def_dhcp[reg] = open(outfile_dhcp[reg], "w")
+                oname_def_dhcp[reg] = open(outfile_dhcp[reg], "w+")
                 oname_def_dhcp[reg].write(dhcp_default_tfStr[reg])
                 oname_def_dhcp[reg].close()
                 print(outfile_dhcp[reg] + " for default DHCP options for VCNs has been created for region " + reg)
 
             if (tfStr[reg] != ''):
                 tfStr[reg] = tfStr[reg]
-                oname[reg] = open(outfile[reg], 'w')
+                oname[reg] = open(outfile[reg], 'w+')
                 oname[reg].write(tfStr[reg])
                 oname[reg].close()
                 print(outfile[reg] + " for major objects has been created for region " + reg)

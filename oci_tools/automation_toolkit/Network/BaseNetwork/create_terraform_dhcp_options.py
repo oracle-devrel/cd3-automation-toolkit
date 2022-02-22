@@ -193,15 +193,15 @@ def create_terraform_dhcp_options(inputfile, outdir, prefix, config, modify_netw
 
             x = datetime.datetime.now()
             date = x.strftime("%f").strip()
-            # if(tfStr[reg]!=''):
-            if (os.path.exists(outfile[reg])):
-                resource = 'Custom-DHCP'
-                srcdir = outdir + "/" + reg + "/"
-                commonTools.backup_file(srcdir, resource, prefix + custom_dhcp_auto_tfvars_filename)
-            oname[reg] = open(outfile[reg], "w")
-            oname[reg].write(tfStr[reg])
-            oname[reg].close()
-            print(outfile[reg] + " containing TF for DHCP Options has been updated for region " + reg)
+            if(custom[reg]!=''):
+                if (os.path.exists(outfile[reg])):
+                    resource = 'Custom-DHCP'
+                    srcdir = outdir + "/" + reg + "/"
+                    commonTools.backup_file(srcdir, resource, prefix + custom_dhcp_auto_tfvars_filename)
+                oname[reg] = open(outfile[reg], "w")
+                oname[reg].write(tfStr[reg])
+                oname[reg].close()
+                print(outfile[reg] + " containing TF for DHCP Options has been updated for region " + reg)
 
             # Added this if condition again because modify network was showing tf destroying Default DHCP Options
             if (defStr[reg] != ''):
