@@ -238,7 +238,7 @@ def modify_terraform_drg_routerules(inputfile, outdir, prefix=None, config=DEFAU
 
     for reg in ct.all_regions:
         outfile = outdir + "/" + reg + "/" + prefix + auto_tfvars_filename
-        oname_rt = open(outfile, "w")
+        oname_rt = open(outfile, "w+")
         rtskeletonStr = "###Add route tables here for "+reg.lower()+" ###"
         rrskeletonStr = "###Add route rules here for "+reg.lower()+" ###"
 
@@ -513,13 +513,13 @@ def modify_terraform_routerules(inputfile, outdir, prefix=None, config=DEFAULT_L
         tempSkeleton[reg] = tempSkeleton[reg].replace(textToAddSeclistSearch,tfStr[reg] + textToAddSeclistSearch)
 
         if tfStr[reg] != '' :
-            oname = open(outfile, "w")
+            oname = open(outfile, "w+")
             oname.write(tempSkeleton[reg])
             oname.close()
             print(outfile + " for route tables has been created for region " + reg)
 
         if deftfStr[reg] !='':
-            oname = open(default_outfile, "w")
+            oname = open(default_outfile, "w+")
             oname.write(default_rt_tempSkeleton[reg])
             oname.close()
             print(default_outfile + " for default route tables has been created for region " + reg)
