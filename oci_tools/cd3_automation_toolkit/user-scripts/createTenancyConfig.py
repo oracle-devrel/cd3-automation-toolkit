@@ -193,16 +193,22 @@ def seek_info():
         cc = oci.core.ComputeClient(new_config)
 
         # fetch latest image ocids
-        for image in paginate(cc.list_images, compartment_id=tenancy_id, operating_system='Oracle Linux',
-                              sort_by='TIMECREATED'):
-            if ("Gen2-GPU" not in image.display_name):
-                linux_image_id = image.id
-                break
-        for image in paginate(cc.list_images, compartment_id=tenancy_id, operating_system='Windows',
-                              sort_by='TIMECREATED'):
-            if ("Gen2-GPU" not in image.display_name):
-                windows_image_id= image.id
-                break
+        try:
+            for image in paginate(cc.list_images, compartment_id=tenancy_id, operating_system='Oracle Linux',
+                                  sort_by='TIMECREATED'):
+                if ("Gen2-GPU" not in image.display_name):
+                    linux_image_id = image.id
+                    break
+            for image in paginate(cc.list_images, compartment_id=tenancy_id, operating_system='Windows',
+                                  sort_by='TIMECREATED'):
+                if ("Gen2-GPU" not in image.display_name):
+                    windows_image_id= image.id
+                    break
+        except:
+            print("!!! Authorization failed !!! Cannot fetch the list of images available for Windows and Oracle Linux to write to variables.tf file !!!\n"
+                  "Please make sure to have Read Access to the Tenancy at the minimum and try again !!!")
+            print("Exiting........!!!")
+            exit()
 
         if not os.path.exists(terraform_files+region):
             os.mkdir(terraform_files+region)
