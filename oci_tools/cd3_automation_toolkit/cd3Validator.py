@@ -149,13 +149,15 @@ def fetch_dhcplist_vcn_cidrs(filename):
         for columnname in dfcolumns:
             # Column value
             columnvalue = str(dfv.loc[i, columnname]).strip()
-            if columnname == "CIDR Block":
+            if columnname == "CIDR Blocks":
                 # Collect CIDR List for validating
                 if str(columnvalue).lower() == "nan":
                     cidr_list.append("")
                 else:
-                    cidr_list.append(str(columnvalue))
-                    vcn_cidrs.update({str(dfv.loc[i, 'VCN Name']).strip(): str(columnvalue)})
+                    for x in str(dfv.loc[i, 'CIDR Blocks']).strip().split(','):
+                        x.strip()
+                        cidr_list.append(x)
+                        vcn_cidrs.update({str(dfv.loc[i, 'VCN Name']).strip(): x})
     return vcn_cidrs
 
 
@@ -404,11 +406,13 @@ def validate_vcns(filename, comp_ids, vcnobj, config):  # ,vcn_cidrs,vcn_compart
             vcn_dns_length = True
 
         # Collect CIDR List for validating
-        if str(dfv.loc[i, 'CIDR Block']).strip().lower() == "nan":
+        if str(dfv.loc[i, 'CIDR Blocks']).strip().lower() == "nan":
             cidr_list.append("")
         else:
-            cidr_list.append(str(dfv.loc[i, 'CIDR Block']).strip())
-            cidrs_dict.update({str(dfv.loc[i, 'CIDR Block']).strip(): str(dfv.loc[i, 'VCN Name']).strip()})
+            for x in str(dfv.loc[i, 'CIDR Blocks']).strip().split(','):
+                x.strip()
+                cidr_list.append(x)
+                cidrs_dict.update({x: str(dfv.loc[i, 'VCN Name']).strip()})
 
         # Check for null values and display appropriate message
         for j in dfv.keys():
