@@ -1,0 +1,45 @@
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+
+############################
+# Module Block - Database
+# Create DBSystems-VM-BM
+############################
+
+module "dbsystems-vm-bm" {
+  source                = "./modules/database/dbsystem-vm-bm"
+  for_each              = var.dbsystems-vm-bm != null ? var.dbsystems-vm-bm : {}
+
+  db_system_display_name           = each.value.db_system_display_name
+  compartment_name = each.value.compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[0][each.value.compartment_name]) : var.tenancy_ocid
+  ssh_public_keys  = each.value.ssh_public_keys
+  cpu_core_count   = each.value.cpu_core_count
+  database_edition = each.value.database_edition
+  admin_password   = each.value.admin_password
+  db_name          = each.value.db_name
+  character_set    = each.value.character_set
+  ncharacter_set   = each.value.ncharacter_set
+  db_workload      = each.value.db_workload
+  pdb_name         = each.value.pdb_name
+  auto_backup_enabled = each.value.auto_backup_enabled
+  recovery_window_in_days = each.value.recovery_window_in_days == null ? "" : each.value.recovery_window_in_days
+  db_version         = each.value.db_version
+  disk_redundancy    = each.value.disk_redundancy
+  shape              = each.value.shape
+  subnet_name        = length(regexall("ocid1.subnet.oc1*", each.value.subnet_name)) > 0 ? each.value.subnet_name : merge(module.subnets.*...)[each.value.subnet_name]["subnet_id"][each.value.subnet_name]
+  hostname           = each.value.hostname
+  data_storage_size_in_gb = each.value.data_storage_size_in_gb == null ? "" : each.value.data_storage_size_in_gb
+  data_storage_percentage = each.value.data_storage_percentage == null ? "" : each.value.data_storage_percentage
+  license_model      = each.value.license_model
+  node_count         = each.value.node_count == null ? "" : each.value.node_count
+  time_zone         = each.value.time_zone == null ? "" : each.value.time_zone
+
+  #Optional
+  defined_tags  = each.value.defined_tags
+  freeform_tags = each.value.freeform_tags
+}
+
+/*
+output "policies_id_map" {
+  value = [ for k,v in merge(module.iam-policies.*...) : v.policies_id_map]
+}
+*/
