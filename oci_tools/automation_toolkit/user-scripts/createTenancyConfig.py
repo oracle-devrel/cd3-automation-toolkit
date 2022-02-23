@@ -233,231 +233,231 @@ def seek_info():
         dt = str(today.day) +" "+ calendar.month_name[today.month]+" "+ str(today.year)
 
         variables_data = """
-        // Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 
-        ############################
-        #
-        # Variables Block
-        # OCI
-        #
-        ############################
+############################
+#
+# Variables Block
+# OCI
+#
+############################
 
-        variable "ssh_public_key" {
-                type = string
-                default = \"""" + ssh_public_key + """"
-        }
-        variable "tenancy_ocid" {
-                type = string
-                default = \"""" + tenancy + """"
-        }
-        variable "user_ocid" {
-                type = string
-                default = \"""" + user + """"
-        }
-        variable "fingerprint" {
-                type = string
-                default = \"""" + fingerprint + """"
-        }
-        variable "private_key_path" {
-                type = string
-                default =  \"""" + key_path + """"
-        }
-        variable "region" {
-                type = string
-                default = \"""" + ct.region_dict[region] + """"
-        }
-        
-        #################################
-        #
-        # Variables according to Services
-        #
-        #################################
-        
-        ############################
-        ### Fetch Compartments #####
-        ############################
+variable "ssh_public_key" {
+        type = string
+        default = \"""" + ssh_public_key + """"
+}
+variable "tenancy_ocid" {
+        type = string
+        default = \"""" + tenancy + """"
+}
+variable "user_ocid" {
+        type = string
+        default = \"""" + user + """"
+}
+variable "fingerprint" {
+        type = string
+        default = \"""" + fingerprint + """"
+}
+variable "private_key_path" {
+        type = string
+        default =  \"""" + key_path + """"
+}
+variable "region" {
+        type = string
+        default = \"""" + ct.region_dict[region] + """"
+}
 
-        ## Do Not Modify #START_Compartment_OCIDs#
-        variable "compartment_ocids" {
-            type = list(any)
-            default = [{}]
-        }
-        #Compartment_OCIDs_END#  ## Do Not Modify
-        
-        #########################
-        ##### Identity ##########
-        #########################
-        
-        variable "compartments" {
-          type    = map(any)
-          default = {
-              root = {},
-              compartment_level1= {},
-              compartment_level2 = {},
-              compartment_level3 = {},
-              compartment_level4 = {},
-              compartment_level5  = {},
-          }
-        }
-        
-        variable "policies" {
-          type    = map(any)
-          default = {}
-        }
-        
-        variable "groups" {
-          type    = map(any)
-          default = {}
-        }
-        
-        #########################
-        ##### Network ########
-        #########################
-        
-        variable "default_dhcps" {
-          type = map(any)
-          default = {}
-        }
-        
-        variable "custom_dhcps" {
-          type = map(any)
-          default = {}
-        }  
-            
-        variable "vcns" {
-          type    = map(any)
-          default = {}
-        }
-        
-        variable "igws" {
-          type    = map(any)
-          default = {}
-        }
-        
-        variable "sgws" {
-          type    = map(any)
-          default = {}
-        }
-        
-        variable "ngws" {
-          type    = map(any)
-          default = {}
-        }
-        
-        variable "lpgs" {
-            type    = map(any)
-            default = {
-                hub-lpgs = {},
-                spoke-lpgs = {},
-                peer-lpgs = {},
-                none-lpgs  = {},
-                exported-lpgs = {},
-                }
-        }
-        
-        variable "drgs" {
-          type    = map(any)
-          default = {}
-        }
-        
-        variable "seclists" {
-          type = map(any)
-          default = {}
-        }
-        
-        variable "default_seclists" {
-          type = map(any)
-          default = {}
-        }
-        
-        variable "route_tables" {
-          type = map(any)
-          default = {}
-        }
+#################################
+#
+# Variables according to Services
+#
+#################################
 
-        variable "default_route_tables" {
-          type    = map(any)
-          default = {}
-        }
+############################
+### Fetch Compartments #####
+############################
 
-        variable "nsgs" {
-          type = map(any)
-          default = {}
-        }
-        
-        variable "nsg_rules" {
-          type = map(any)
-          default = {}
-        }
-        
-        variable "subnets" {
-          type    = map(any)
-          default = {}
-        }
-        
-        variable "drg_attachments" {
-          type    = map(any)
-          default = {}      
-        }
-        
-        variable "drg_route_tables" {
-          type    = map(any)
-          default = {}
-        }
-        
-        variable "drg_route_rules" {
-          type    = map(any)
-          default = {}
-        }
-        
-        variable "drg_route_distributions" {
-          type    = map(any)
-          default = {}
-        }
+## Do Not Modify #START_Compartment_OCIDs#
+variable "compartment_ocids" {
+    type = list(any)
+    default = [{}]
+}
+#Compartment_OCIDs_END#  ## Do Not Modify
 
-        variable "drg_route_distribution_statements" {
-          type    = map(any)
-          default = {}
-        }
+#########################
+##### Identity ##########
+#########################
 
-        #########################
-        ##### Logging ###########
-        #########################
-        
-        variable "log_groups" {
-          type    = map(any)
-          default = {}
+variable "compartments" {
+  type    = map(any)
+  default = {
+      root = {},
+      compartment_level1= {},
+      compartment_level2 = {},
+      compartment_level3 = {},
+      compartment_level4 = {},
+      compartment_level5  = {},
+  }
+}
+
+variable "policies" {
+  type    = map(any)
+  default = {}
+}
+
+variable "groups" {
+  type    = map(any)
+  default = {}
+}
+
+#########################
+##### Network ########
+#########################
+
+variable "default_dhcps" {
+  type = map(any)
+  default = {}
+}
+
+variable "custom_dhcps" {
+  type = map(any)
+  default = {}
+}  
+    
+variable "vcns" {
+  type    = map(any)
+  default = {}
+}
+
+variable "igws" {
+  type    = map(any)
+  default = {}
+}
+
+variable "sgws" {
+  type    = map(any)
+  default = {}
+}
+
+variable "ngws" {
+  type    = map(any)
+  default = {}
+}
+
+variable "lpgs" {
+    type    = map(any)
+    default = {
+        hub-lpgs = {},
+        spoke-lpgs = {},
+        peer-lpgs = {},
+        none-lpgs  = {},
+        exported-lpgs = {},
         }
+}
+
+variable "drgs" {
+  type    = map(any)
+  default = {}
+}
+
+variable "seclists" {
+  type = map(any)
+  default = {}
+}
+
+variable "default_seclists" {
+  type = map(any)
+  default = {}
+}
+
+variable "route_tables" {
+  type = map(any)
+  default = {}
+}
+
+variable "default_route_tables" {
+  type    = map(any)
+  default = {}
+}
+
+variable "nsgs" {
+  type = map(any)
+  default = {}
+}
+
+variable "nsg_rules" {
+  type = map(any)
+  default = {}
+}
+
+variable "subnets" {
+  type    = map(any)
+  default = {}
+}
+
+variable "drg_attachments" {
+  type    = map(any)
+  default = {}      
+}
+
+variable "drg_route_tables" {
+  type    = map(any)
+  default = {}
+}
+
+variable "drg_route_rules" {
+  type    = map(any)
+  default = {}
+}
+
+variable "drg_route_distributions" {
+  type    = map(any)
+  default = {}
+}
+
+variable "drg_route_distribution_statements" {
+  type    = map(any)
+  default = {}
+}
+
+#########################
+##### Logging ###########
+#########################
+
+variable "log_groups" {
+  type    = map(any)
+  default = {}
+}
+
+variable "logs" {
+  type    = map(any)
+  default = {}
+}
         
-        variable "logs" {
-          type    = map(any)
-          default = {}
-        }
-                
-        #########################
-        ## Management Services ##
-        #########################
-        
-        variable "alarms" {
-          type    = map(any)
-          default = {}
-        }
-        
-        variable "events" {
-          type    = map(any)
-          default = {}
-        }
-        
-        variable "notifications_topics" {
-          type    = map(any)
-          default = {}
-        }
-        
-        variable "notifications_subscriptions" {
-          type    = map(any)
-          default = {}
-        }
-        
+#########################
+## Management Services ##
+#########################
+
+variable "alarms" {
+  type    = map(any)
+  default = {}
+}
+
+variable "events" {
+  type    = map(any)
+  default = {}
+}
+
+variable "notifications_topics" {
+  type    = map(any)
+  default = {}
+}
+
+variable "notifications_subscriptions" {
+  type    = map(any)
+  default = {}
+}
+
         """
         if (windows_image_id != ''):
             variables_data = variables_data + """
