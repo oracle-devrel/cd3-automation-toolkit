@@ -29,8 +29,8 @@ module "alarms" {
 }
 
 /*
-output "policies_id_map" {
-  value = [ for k,v in merge(module.iam-policies.*...) : v.policies_id_map]
+output "alarms_id" {
+  value = [ for k,v in merge(module.alarms.*...) : v.alarm_tf_id]
 }
 */
 
@@ -56,6 +56,12 @@ module "events" {
   defined_tags  = each.value.defined_tags
   freeform_tags = each.value.freeform_tags
 }
+
+/*
+output "events_id" {
+  value = [ for k,v in merge(module.events.*...) : v.event_tf_id]
+}
+*/
 
 #############################
 # Module Block - ManagementServices
@@ -107,6 +113,13 @@ module "logs" {
 
 }
 
+/*
+output "logs_id" {
+  value = [ for k,v in merge(module.logs.*...) : v.log_tf_id]
+}
+*/
+
+
 ############################
 # Module Block - ManagementServices
 # Create Notifications
@@ -142,6 +155,6 @@ module "notifications-subscriptions" {
 
 /*
 output "notifications-topics" {
-  value = [ for k,v in merge(module.notifications-topics.*...) : v.policies_id_map]
+  value = [ for k,v in merge(module.notifications-topics.*...) : v.topic_tf_id ]
 }
 */

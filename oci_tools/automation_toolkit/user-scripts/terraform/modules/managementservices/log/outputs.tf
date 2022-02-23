@@ -2,10 +2,10 @@
 
 ############################
 # Output Block - ManagementServices
-# Create Notifications_Topics
+# Create Log
 ############################
 
-output "topic_tf_id" {
-  description = "Topic OCID"
-  value = oci_ons_notification_topic.topic.*.id
+output "log_tf_id" {
+  description = "Log OCID"
+  value = oci_logging_log.log.*.id
 }
