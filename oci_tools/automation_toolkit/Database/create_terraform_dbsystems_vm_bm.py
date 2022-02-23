@@ -36,6 +36,7 @@ def create_terraform_dbsystems_vm_bm(inputfile, outdir, prefix, config=DEFAULT_L
     configFileName = config
 
     sheetName = "DBSystems-VM-BM"
+    auto_tfvars_filename = '_' + sheetName.lower() + '.auto.tfvars'
     ct = commonTools()
     ct.get_subscribedregions(configFileName)
 
@@ -47,7 +48,7 @@ def create_terraform_dbsystems_vm_bm(inputfile, outdir, prefix, config=DEFAULT_L
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
-    template = env.get_template('DBSystem-VM-BM-template')
+    template = env.get_template('module-DBSystems-VM-BM-template')
 
     # Read cd3 using pandas dataframe
     df, col_headers = commonTools.read_cd3(filename, sheetName)
@@ -64,7 +65,10 @@ def create_terraform_dbsystems_vm_bm(inputfile, outdir, prefix, config=DEFAULT_L
         tfStr[reg] = ''
         srcdir = outdir + "/" + reg + "/"
         resource = sheetName.lower()
-        commonTools.backup_file(srcdir, resource, sheetName.lower()+".tf")
+        #commonTools.backup_file(srcdir, resource, sheetName.lower()+".tf")
+        commonTools.backup_file(srcdir, resource, auto_tfvars_filename)
+
+    regions_done_count = []
 
     # Iterate over rows
     for i in df.index:
@@ -173,6 +177,13 @@ def create_terraform_dbsystems_vm_bm(inputfile, outdir, prefix, config=DEFAULT_L
             tempStr[columnname] = str(columnvalue).strip()
             tempStr.update(tempdict)
 
+        if (region not in regions_done_count):
+            tempdict = {"count": 0}
+            regions_done_count.append(region)
+        else:
+            tempdict = {"count": i}
+        tempStr.update(tempdict)
+
 
         # Write all info to TF string
         tfStr[region]=tfStr[region] + template.render(tempStr)
@@ -183,13 +194,23 @@ def create_terraform_dbsystems_vm_bm(inputfile, outdir, prefix, config=DEFAULT_L
         reg_out_dir = outdir + "/" + reg
         if not os.path.exists(reg_out_dir):
             os.makedirs(reg_out_dir)
-        outfile[reg] = reg_out_dir + "/" + prefix + "_"+sheetName.lower()+".tf"
+        #outfile[reg] = reg_out_dir + "/" + prefix + "_"+sheetName.lower()+".tf"
+        outfile[reg] = reg_out_dir + "/" + prefix + auto_tfvars_filename
 
         if(tfStr[reg]!=''):
             oname[reg]=open(outfile[reg],'w')
             oname[reg].write(tfStr[reg])
             oname[reg].close()
             print(outfile[reg] + " for DBSystems-VM-BM has been created for region "+reg)
+
+        # Rename the modules file in outdir to .tf
+        module_filename = outdir + "/" + reg + "/" + sheetName.lower() + ".txt"
+        rename_module_filename = outdir + "/" + reg + "/" + sheetName.lower() + ".tf"
+
+        if not os.path.isfile(rename_module_filename):
+            if os.path.isfile(module_filename):
+                os.rename(module_filename, rename_module_filename)
+
 
 if __name__ == '__main__':
     args = parse_args()

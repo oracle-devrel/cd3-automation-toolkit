@@ -23,17 +23,18 @@ from .create_terraform_subnet import create_terraform_subnet
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description='Creates terraform files for network resources based on given inputs; See example folder for sample input files')
-    parser.add_argument('inputfile', help='Full Path of input file either props file. eg vcn-info.properties or cd3 excel file')
+    parser = argparse.ArgumentParser(
+        description='Creates terraform files for network resources based on given inputs; See example folder for sample input files')
+    parser.add_argument('inputfile',
+                        help='Full Path of input file either props file. eg vcn-info.properties or cd3 excel file')
     parser.add_argument('outdir', help='Output directory for creation of TF files')
     parser.add_argument('prefix', help='customer name/prefix for all file names')
     parser.add_argument('--modify-network', action='store_true', help='modify network')
-    parser.add_argument('--nongf-tenancy', action='store_true', help='non greenfield tenancy')
     parser.add_argument('--config', default=DEFAULT_LOCATION, help='Config file name')
     return parser.parse_args()
 
 
-def create_all_tf_objects(inputfile, outdir, prefix, config, modify_network=False, nongf_tenancy=False):
+def create_all_tf_objects(inputfile, outdir, prefix, config, modify_network=False):
     if not os.path.exists(outdir):
         os.makedirs(outdir)
 
@@ -43,25 +44,22 @@ def create_all_tf_objects(inputfile, outdir, prefix, config, modify_network=Fals
     with section('Process DHCP Tab'):
         create_terraform_dhcp_options(inputfile, outdir, prefix, config, modify_network)
 
-    if not nongf_tenancy:
-        with section('Process Subnets tab for Routes creation'):
-            create_terraform_route(inputfile, outdir, prefix, config, modify_network)
+    with section('Process DRGs tab for DRG Route Tables and Route Distribution creation'):
+        create_terraform_drg_route(inputfile, outdir, prefix, config, modify_network)
 
-        with section('Process DRGs tab for DRG Route Tables and Route Distribution creation'):
-            create_terraform_drg_route(inputfile, outdir, prefix, config, modify_network)
+    with section('Process Subnets tab for Routes creation'):
+        create_terraform_route(inputfile, outdir, prefix, config, modify_network)
 
-        with section('Process Subnets for Seclists creation'):
-            create_terraform_seclist(inputfile, outdir, prefix, config, modify_network)
+    with section('Process Subnets for Seclists creation'):
+        create_terraform_seclist(inputfile, outdir, prefix, config, modify_network)
 
     with section('Process Subnets for Subnets creation'):
         create_terraform_subnet(inputfile, outdir, prefix, config, modify_network)
 
-    if not nongf_tenancy:
-        print('\n\n Make sure to export all SecRules and RouteRules to CD3. Use sub-option 3 under option 2(Networking) of Main Menu for the same.')
-    else:
-        print('\n\nRunning Modify Rules')
+    print('\n\n Make sure to export all SecRules, RouteRules and DRG routeRules to CD3. Use sub-options 3,4 under option 3(Network) of Main Menu for the same.')
 
 
 if __name__ == '__main__':
     args = parse_args()
-    create_all_tf_objects(args.inputfile, args.outdir, args.prefix, config=args.config, modify_network=args.modify_network, nongf_tenancy=args.nongf_tenancy)
+    create_all_tf_objects(args.inputfile, args.outdir, args.prefix, config=args.config,
+                          modify_network=args.modify_network)
