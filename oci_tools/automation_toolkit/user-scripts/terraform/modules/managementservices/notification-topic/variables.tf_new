@@ -1,0 +1,26 @@
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+
+############################
+# Variables Block - ManagementServices
+# Create Notifications_Topics
+############################
+
+variable "notifications_topics" {
+    type = map(object({
+    compartment_name  = string
+    topic_name        = string
+    description       = string
+  }))
+}
+
+variable "defined_tags" {
+type = map
+default = { "Oracle-Tags.CreatedOn" = "$${oci.datetime}",
+            "Oracle-Tags.CreatedBy"= "$${iam.principal.name}"
+          }
+}
+
+variable "freeform_tags" {
+  type = map
+  default = {}
+}

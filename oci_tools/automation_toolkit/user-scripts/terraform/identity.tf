@@ -9,7 +9,6 @@ module "iam-compartments" {
   source = "./modules/identity/iam-compartment"
   for_each              = var.compartments.root != null ? var.compartments.root : {}
 
-
   # insert the 4 required variables here
   tenancy_ocid            = var.tenancy_ocid
   compartment_id          = each.value.parent_compartment != null ? (length(regexall("ocid1.compartment.oc1*", each.value.parent_compartment)) > 0 ? each.value.parent_compartment : try(var.compartment_ocids[0][each.value.parent_compartment],module.fetch-compartments.compartment_id_map[each.value.parent_compartment])) : var.tenancy_ocid
@@ -154,5 +153,63 @@ output "sub_compartments_level5_map" {
   // This allows the compartment ID to be retrieved from the resource if it exists, and if not to use the data source.
   #value = element(concat(oci_identity_compartment.this.*.id, tolist([""])), 0)
   value = [ for k,v in merge(module.sub-compartments-level5.*...) : v.compartment_id]
+}
+*/
+
+
+############################
+# Module Block - Identity
+# Create Groups
+############################
+
+module "iam-groups" {
+  source = "./modules/identity/iam-group"
+  for_each          = var.groups != null ? var.groups : {}
+
+  tenancy_ocid      = var.tenancy_ocid
+  group_name        = each.value.group_name
+  group_description = each.value.group_description
+  matching_rule     = (each.value.matching_rule != null && each.value.matching_rule != "") ? each.value.matching_rule : ""
+
+  #Optional
+  defined_tags  = each.value.defined_tags
+  freeform_tags = each.value.freeform_tags
+}
+
+/*
+output "group_id_map" {
+  value = [ for k,v in merge(module.iam-groups.*...) : v.group_id_map]
+}
+
+
+output "dynamic_group_id_map" {
+  value = [ for k,v in merge(module.iam-groups.*...) : v.dynamic_group_id_map]
+}
+*/
+
+############################
+# Module Block - Identity
+# Create Policies
+############################
+
+module "iam-policies" {
+  source                = "./modules/identity/iam-policy"
+  for_each              = var.policies != null ? var.policies : {}
+
+  depends_on            = [module.iam-groups]
+  tenancy_ocid          = var.tenancy_ocid
+  policy_name           = each.value.name
+  policy_compartment_id = each.value.compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[0][each.value.compartment_name]) : var.tenancy_ocid
+  policy_description = each.value.policy_description
+  policy_statements  = each.value.policy_statements
+
+  #Optional
+  defined_tags  = each.value.defined_tags
+  freeform_tags = each.value.freeform_tags
+}
+
+/*
+output "policies_id_map" {
+  value = [ for k,v in merge(module.iam-policies.*...) : v.policies_id_map]
 }
 */
