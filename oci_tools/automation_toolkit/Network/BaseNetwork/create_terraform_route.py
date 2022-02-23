@@ -150,8 +150,9 @@ def create_terraform_drg_route(inputfile, outdir, prefix, config, modify_network
 
         # Option Modify = False
         # Purge existing routetable files
-        if not modify_network:
-            for reg in ct.all_regions:
+        for reg in ct.all_regions:
+
+            if not modify_network:
                 drg_routetablefiles.setdefault(reg, [])
                 drg_routedistributionfiles.setdefault(reg, [])
                 purge(outdir + "/" + reg, prefix + drg_distribution_auto_tfvars_template)
@@ -297,6 +298,17 @@ def create_terraform_drg_route(inputfile, outdir, prefix, config, modify_network
                 else:
                     tempSkeletonDRGRouteTable[reg] = tempSkeletonDRGRouteTable[reg].replace(skeletonStr, drg_rt[reg] + "\n" + skeletonStr)
 
+            # Backup the existing files and create new ones
+            if (os.path.exists(rtdistribution)):
+                resource = 'DRGRTs'
+                srcdir = outdir + "/" + reg + "/"
+                commonTools.backup_file(srcdir, resource, prefix + drg_distribution_auto_tfvars_template)
+
+            if (os.path.exists(rtfile)):
+                resource = 'DRGRTs'
+                srcdir = outdir + "/" + reg + "/"
+                commonTools.backup_file(srcdir, resource, prefix + drg_rt_auto_tfvars_filename)
+
         if drg_rd[reg] != '':
             srcStr="###Add DRG Distribution here for "+reg.lower()+" ###"
             tempSkeletonDRGDistribution[reg] = tempSkeletonDRGDistribution[reg].replace(srcStr, drg_rd[reg] + "\n" + srcStr)
@@ -305,6 +317,7 @@ def create_terraform_drg_route(inputfile, outdir, prefix, config, modify_network
             tempSkeletonDRGDistributionStmt[reg] = tempSkeletonDRGDistributionStmt[reg].replace(srcStr, drg_rd_stmt[reg] + "\n" + srcStr)
 
         tempSkeletonDRGDistribution[reg] = tempSkeletonDRGDistribution[reg] + tempSkeletonDRGDistributionStmt[reg]
+
 
         if drg_rt[reg] != '' :
             oname_rt = open(rtfile, "w+")
@@ -1122,7 +1135,13 @@ def create_terraform_route(inputfile, outdir, prefix, config, modify_network=Fal
             else:
                 tempSkeleton[reg] = tempSkeleton[reg].replace(skeletonStr, routetableStr[reg] + skeletonStr)
 
-            if routetableStr[reg] != '':
+            # Backup the existing files and create new ones
+            if (os.path.exists(outfile)):
+                resource = 'RTs'
+                srcdir = outdir + "/" + reg + "/"
+                commonTools.backup_file(srcdir, resource, prefix + auto_tfvars_filename)
+
+            if tempSkeleton[reg] != '':
                 oname = open(outfile, "w+")
                 oname.write(tempSkeleton[reg])
                 oname.close()

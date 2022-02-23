@@ -290,7 +290,14 @@ def seek_info():
         
         variable "compartments" {
           type    = map(any)
-          default = {}
+          default = {
+              root = {},
+              compartment_level1= {},
+              compartment_level2 = {},
+              compartment_level3 = {},
+              compartment_level4 = {},
+              compartment_level5  = {},
+          }
         }
         
         variable "policies" {
@@ -338,8 +345,14 @@ def seek_info():
         }
         
         variable "lpgs" {
-          type    = map(any)
-          default = {}
+            type    = map(any)
+            default = {
+                hub-lpgs = {},
+                spoke-lpgs = {},
+                peer-lpgs = {},
+                none-lpgs  = {},
+                exported-lpgs = {},
+                }
         }
         
         variable "drgs" {
