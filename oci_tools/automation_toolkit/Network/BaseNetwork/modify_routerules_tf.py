@@ -238,7 +238,7 @@ def modify_terraform_drg_routerules(inputfile, outdir, prefix=None, config=DEFAU
 
     for reg in ct.all_regions:
         outfile = outdir + "/" + reg + "/" + prefix + auto_tfvars_filename
-        oname_rt = open(outfile, "w+")
+
         rtskeletonStr = "###Add route tables here for "+reg.lower()+" ###"
         rrskeletonStr = "###Add route rules here for "+reg.lower()+" ###"
 
@@ -250,6 +250,7 @@ def modify_terraform_drg_routerules(inputfile, outdir, prefix=None, config=DEFAU
             tempSkeletonDRGRouteRule[reg] = tempSkeletonDRGRouteRule[reg].replace(srcStr, tfStr[reg] + "\n" + rrskeletonStr)
 
         if tfStrRT[reg] != '' or tfStr[reg] != '':
+            oname_rt = open(outfile, "w+")
             tempSkeletonDRGRouteTable[reg] = tempSkeletonDRGRouteTable[reg] + tempSkeletonDRGRouteRule[reg]
             print("Writing to..." + str(outfile))
             oname_rt.write(tempSkeletonDRGRouteTable[reg])
