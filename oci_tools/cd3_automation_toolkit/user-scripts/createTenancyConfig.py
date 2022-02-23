@@ -88,7 +88,7 @@ def seek_info():
     terraform_files = customer_tenancy_dir+"/terraform_files/"
     config_file_path = customer_tenancy_dir+"/"+prefix+"_config"
     auto_keys_dir = user_dir+"/tenancies/keys"
-    modules_dir = user_dir +"/oci_tools/automation_toolkit/user-scripts/terraform"
+    modules_dir = user_dir +"/oci_tools/cd3_automation_toolkit/user-scripts/terraform"
     setupoci_props_file_path = customer_tenancy_dir + "/" + prefix + "_setUpOCI.properties"
 
     if not os.path.exists(customer_tenancy_dir):
@@ -495,8 +495,8 @@ variable "notifications_subscriptions" {
     print("Update the path of CD3 Excel input file in "+customer_tenancy_dir + "/" +prefix+"_setUpOCI.properties before executing the next command......")
     print("\nCommands to execute: (Alternately, you may also check the cmds.log in outdir for the same information)")
     logging.info("Commands to execute:")
-    print("cd "+user_dir+"/oci_tools/automation_toolkit/")
-    logging.info("cd "+user_dir+"/oci_tools/automation_toolkit/")
+    print("cd "+user_dir+"/oci_tools/cd3_automation_toolkit/")
+    logging.info("cd "+user_dir+"/oci_tools/cd3_automation_toolkit/")
     print("python setUpOCI.py "+customer_tenancy_dir + "/" +prefix+"_setUpOCI.properties")
     logging.info("python setUpOCI.py "+customer_tenancy_dir + "/" +prefix+"_setUpOCI.properties")
     print("python fetch_compartments_to_variablesTF.py "+terraform_files + " --config "+customer_tenancy_dir + "/"+prefix+"_config")
