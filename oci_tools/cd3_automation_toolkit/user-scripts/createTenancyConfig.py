@@ -461,20 +461,20 @@ variable "notifications_subscriptions" {
         """
         if (windows_image_id != ''):
             variables_data = variables_data + """
-        #Example for OS value 'Windows' in Instances sheet
-        variable "Windows" {
-                type = string
-                default = \"""" + windows_image_id + """"
-                description = "Latest ocid as on """ + dt + """"
-        }"""
+#Example for OS value 'Windows' in Instances sheet
+variable "Windows" {
+        type = string
+        default = \"""" + windows_image_id + """"
+        description = "Latest ocid as on """ + dt + """"
+}"""
         if (linux_image_id != ''):
             variables_data = variables_data + """
-        #Example for OS value 'Linux' in Instances sheet
-        variable "Linux"{
-                type = string
-                default = \"""" + linux_image_id + """"
-                description = "Latest ocid as on """ + dt + """"
-        }"""
+#Example for OS value 'Linux' in Instances sheet
+variable "Linux"{
+        type = string
+        default = \"""" + linux_image_id + """"
+        description = "Latest ocid as on """ + dt + """"
+}"""
         f = open(terraform_files+"/"+region+"/variables_" + region + ".tf", "w+")
         f.write(variables_data)
         f.close()
