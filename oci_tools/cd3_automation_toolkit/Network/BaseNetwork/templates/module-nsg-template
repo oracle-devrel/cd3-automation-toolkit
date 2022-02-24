@@ -35,8 +35,11 @@ nsgs = {
         }
       {% else %}
         defined_tags = {}
-        {% endif %}{% endif %}
-      {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' %}
+        {% endif %}
+       {% else %}
+        defined_tags = {}
+       {% endif %}
+            {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' %}
                 {% if freeform_tags[0] %}
         freeform_tags = {
                     {% for tags in freeform_tags %}
@@ -47,13 +50,12 @@ nsgs = {
                         {% endif %}
                     {% endfor %}
                     }
-                {% else %}
+                {% endif %}
+            {% else %}
         freeform_tags = {}
             {% endif %}
-      {% else %}
-        freeform_tags = {}
-     {% endif %}
     {#  ###Section for adding Defined and Freeform Tags ends here###  #}
+
       },
   # End of {{ region.lower() }}_{{ nsg_tf_name }} #
 {% endif %}{% endif %}

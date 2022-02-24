@@ -40,7 +40,10 @@ EOF
         }
       {% else %}
         defined_tags = {}
-        {% endif %}{% endif %}
+        {% endif %}
+       {% else %}
+        defined_tags = {}
+       {% endif %}
             {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' %}
                 {% if freeform_tags[0] %}
         freeform_tags = {
@@ -57,4 +60,5 @@ EOF
         freeform_tags = {}
             {% endif %}
     {#  ###Section for adding Defined and Freeform Tags ends here###  #}
+
         policy_statements = [ {{ policy_statements }} -#Addstmt]}}
