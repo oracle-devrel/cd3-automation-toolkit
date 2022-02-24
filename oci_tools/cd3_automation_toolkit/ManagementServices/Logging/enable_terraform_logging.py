@@ -200,16 +200,6 @@ def enable_cis_vcnflow_logging(filename, outdir, prefix, config=DEFAULT_LOCATION
 
         outfile[reg] = reg_out_dir + "/" + auto_tfvars_filename
 
-        # Rename the modules file in outdir to .tf
-        module_txt_filenames = ['logs']
-        for modules in module_txt_filenames:
-            module_filename = outdir + "/" + reg + "/" + modules.lower() + ".txt"
-            rename_module_filename = outdir + "/" + reg + "/" + modules.lower() + ".tf"
-
-            if not os.path.isfile(rename_module_filename):
-                if os.path.isfile(module_filename):
-                    os.rename(module_filename, rename_module_filename)
-
         srcdir = reg_out_dir + "/"
         resource = 'vcnflowlog'
         commonTools.backup_file(srcdir, resource, auto_tfvars_filename)

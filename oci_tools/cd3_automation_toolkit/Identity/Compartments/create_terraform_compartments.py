@@ -243,14 +243,6 @@ def create_terraform_compartments(inputfile, outdir, prefix, config=DEFAULT_LOCA
 
     tfStr = tfStr + template.render(count=0,root=root_compartments,compartment_level1=sub_compartments_level1,compartment_level2=sub_compartments_level2,compartment_level3=sub_compartments_level3,compartment_level4=sub_compartments_level4,compartment_level5=sub_compartments_level5)
 
-    # Rename the modules file in outdir to .tf
-    module_filename = outdir + "/" + ct.home_region + "/"+sheetName.lower()+".txt"
-    rename_module_filename = outdir + "/" + ct.home_region + "/"+sheetName.lower()+".tf"
-
-    if not os.path.isfile(rename_module_filename):
-        if os.path.isfile(module_filename):
-            os.rename(module_filename, rename_module_filename)
-
     # Write TF string to the file in respective region directory
     reg_out_dir = outdir + "/" + ct.home_region
     if not os.path.exists(reg_out_dir):

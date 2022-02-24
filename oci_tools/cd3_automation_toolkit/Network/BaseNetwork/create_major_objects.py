@@ -660,16 +660,6 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
             if not os.path.exists(reg_out_dir):
                 os.makedirs(reg_out_dir)
 
-            # Rename the modules file in outdir to .tf
-            module_txt_filenames = ['vcns','igws','ngws','sgws','default_dhcp','drgs','lpgs','fetch_vcns']
-            for modules in module_txt_filenames:
-                module_filename = outdir + "/" + reg + "/" + modules.lower() + ".txt"
-                rename_module_filename = outdir + "/" + reg + "/" + modules.lower() + ".tf"
-
-                if not os.path.isfile(rename_module_filename):
-                    if os.path.isfile(module_filename):
-                        os.rename(module_filename, rename_module_filename)
-
             srcdir = reg_out_dir + "/"
             resource = 'MajorObjects'
             # commonTools.backup_file(srcdir, resource, "-major-objs.tf")

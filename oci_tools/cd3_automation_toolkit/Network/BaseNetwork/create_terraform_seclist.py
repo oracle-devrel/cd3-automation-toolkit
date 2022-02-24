@@ -319,19 +319,7 @@ def create_terraform_seclist(inputfile, outdir, prefix, config, modify_network=F
         processSubnet(tempStr)
 
     for reg in ct.all_regions:
-
         textToAddSeclistSearch = "##Add New Seclists for "+reg+" here##"
-
-        # Rename the modules file in outdir to .tf
-        module_txt_filenames = ['seclists','default_seclists']
-        for modules in module_txt_filenames:
-            module_filename = outdir + "/" + reg + "/" + modules.lower() + ".txt"
-            rename_module_filename = outdir + "/" + reg + "/" + modules.lower() + ".tf"
-
-            if not os.path.isfile(rename_module_filename):
-                if os.path.isfile(module_filename):
-                    os.rename(module_filename, rename_module_filename)
-
         outfile = outdir + "/" + reg + "/" + prefix + auto_tfvars_filename
         if modify_network_seclists[reg] != '':
             if not modify_network:

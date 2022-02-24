@@ -200,15 +200,6 @@ def create_terraform_notifications(inputfile, outdir, prefix, config=DEFAULT_LOC
             oname[reg].close()
             print(outfile[reg] + " for Notifications_Subscriptions has been created for region " + reg)
 
-        # Rename the modules file in outdir to .tf
-        module_filename = outdir + "/" + reg + "/" + sheetName.lower() + ".txt"
-        rename_module_filename = outdir + "/" + reg + "/" + sheetName.lower() + ".tf"
-
-        if not os.path.isfile(rename_module_filename):
-            if os.path.isfile(module_filename):
-                os.rename(module_filename, rename_module_filename)
-
-
 
 if __name__ == '__main__':
     # Execution of the code begins here
