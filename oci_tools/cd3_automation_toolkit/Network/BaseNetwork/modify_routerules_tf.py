@@ -75,17 +75,6 @@ def modify_terraform_drg_routerules(inputfile, outdir, prefix=None, config=DEFAU
         resource = "DRGRTs"
         commonTools.backup_file(outdir + "/" + reg, resource, auto_tfvars_filename)
 
-
-        # Rename the modules file in outdir to .tf
-        module_txt_filenames = ['drg_route_tables','drg_route_rules']
-        for modules in module_txt_filenames:
-            module_filename = outdir + "/" + reg + "/" + modules.lower() + ".txt"
-            rename_module_filename = outdir + "/" + reg + "/" + modules.lower() + ".tf"
-
-            if not os.path.isfile(rename_module_filename):
-                if os.path.isfile(module_filename):
-                    os.rename(module_filename, rename_module_filename)
-
         # Create Skeleton Template
         tempSkeletonDRGRouteTable[reg] = routetable_drg.render(tempStr, skeleton=True, region=reg)
         tempSkeletonDRGRouteRule[reg] = routerule_drg.render(tempStr, skeleton=True, region=reg)
@@ -497,16 +486,6 @@ def modify_terraform_routerules(inputfile, outdir, prefix=None, config=DEFAULT_L
 
         textToAddSeclistSearch = "##Add New Route Tables for " + reg + " here##"
         defaultTextToAddSeclistSearch = "##Add New Default Route Tables for " + reg + " here##"
-
-        # Rename the modules file in outdir to .tf
-        module_txt_filenames = ['route_tables', 'default_route_tables']
-        for modules in module_txt_filenames:
-            module_filename = outdir + "/" + reg + "/" + modules.lower() + ".txt"
-            rename_module_filename = outdir + "/" + reg + "/" + modules.lower() + ".tf"
-
-            if not os.path.isfile(rename_module_filename):
-                if os.path.isfile(module_filename):
-                    os.rename(module_filename, rename_module_filename)
 
         outfile = outdir + "/" + reg + "/" + prefix + auto_tfvars_filename
         default_outfile = outdir + "/" + reg + "/" + prefix + default_auto_tfvars_filename

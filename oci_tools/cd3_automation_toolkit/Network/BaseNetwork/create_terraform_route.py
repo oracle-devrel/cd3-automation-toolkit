@@ -1099,17 +1099,6 @@ def create_terraform_route(inputfile, outdir, prefix, config, modify_network=Fal
 
     # Write the contents to file
     for reg in ct.all_regions:
-
-        # Rename the modules file in outdir to .tf
-        module_txt_filenames = ['route_tables','default_route_tables']
-        for modules in module_txt_filenames:
-            module_filename = outdir + "/" + reg + "/" + modules.lower() + ".txt"
-            rename_module_filename = outdir + "/" + reg + "/" + modules.lower() + ".tf"
-
-            if not os.path.isfile(rename_module_filename):
-                if os.path.isfile(module_filename):
-                    os.rename(module_filename, rename_module_filename)
-
         outfile = outdir + "/" + reg + "/" + prefix + auto_tfvars_filename
         skeletonStr = "##Add New Route Tables for " + reg.lower() + " here##"
 

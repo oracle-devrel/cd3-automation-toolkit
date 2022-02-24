@@ -341,27 +341,14 @@ def create_terraform_subnet(inputfile, outdir, prefix, config, modify_network=Fa
 
     elif not modify_network:
         for reg in ct.all_regions:
-
             reg_out_dir = outdir + "/" + reg
-
             if not os.path.exists(reg_out_dir):
                     os.makedirs(reg_out_dir)
 
             srcdir = reg_out_dir + "/"
             resource = 'Subnets'
             commonTools.backup_file(srcdir, resource, prefix + auto_tfvars_filename)
-
             outfile[reg] = reg_out_dir + "/" + prefix + auto_tfvars_filename
-
-            # Rename the modules file in outdir to .tf
-            module_txt_filenames = ['subnets']
-            for modules in module_txt_filenames:
-                module_filename = outdir + "/" + reg + "/" + modules.lower() + ".txt"
-                rename_module_filename = outdir + "/" + reg + "/" + modules.lower() + ".tf"
-
-                if not os.path.isfile(rename_module_filename):
-                    if os.path.isfile(module_filename):
-                        os.rename(module_filename, rename_module_filename)
 
             # Create Skeleton Template
             if tfStr[reg] != '':
