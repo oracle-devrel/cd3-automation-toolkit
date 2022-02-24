@@ -66,7 +66,7 @@ module "igws" {
   source = "./modules/network/igw"
   for_each = (var.igws != null || var.igws != {})  ? var.igws : {}
 
-  depends_on = [module.vcns, module.fetch-vcns, module.fetch-compartments]
+  depends_on = [module.vcns, module.fetch-vcns]
 
   #Required
   compartment_id = each.value.compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[0][each.value.compartment_name]) : var.tenancy_ocid
@@ -94,7 +94,7 @@ module "ngws" {
   source = "./modules/network/ngw"
   for_each = (var.ngws != null || var.ngws != {}) ? var.ngws : {}
 
-  depends_on = [module.vcns, module.fetch-vcns, module.fetch-compartments]
+  depends_on = [module.vcns, module.fetch-vcns]
 
   #Required
   compartment_id = each.value.compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[0][each.value.compartment_name]) : var.tenancy_ocid
@@ -122,7 +122,7 @@ module "hub-lpgs" {
   source = "./modules/network/lpg"
   for_each = (var.lpgs.hub-lpgs != null || var.lpgs.hub-lpgs != {})  ? var.lpgs.hub-lpgs : {}
 
-  depends_on = [module.vcns, module.spoke-lpgs, module.fetch-vcns, module.fetch-compartments, module.none-lpgs, module.exported-lpgs, module.peer-lpgs]
+  depends_on = [module.vcns, module.spoke-lpgs, module.fetch-vcns, module.none-lpgs, module.exported-lpgs, module.peer-lpgs]
 
   #Required
   compartment_id = each.value.compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[0][each.value.compartment_name]) : var.tenancy_ocid
@@ -140,7 +140,7 @@ module "spoke-lpgs" {
   source = "./modules/network/lpg"
   for_each = (var.lpgs.spoke-lpgs != null || var.lpgs.spoke-lpgs != {})  ? var.lpgs.spoke-lpgs : {}
 
-  depends_on = [module.vcns,module.fetch-vcns, module.fetch-compartments]
+  depends_on = [module.vcns,module.fetch-vcns]
 
   #Required
   compartment_id = each.value.compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[0][each.value.compartment_name]) : var.tenancy_ocid
@@ -158,7 +158,7 @@ module "peer-lpgs" {
   source = "./modules/network/lpg"
   for_each = (var.lpgs.peer-lpgs != null || var.lpgs.peer-lpgs != {})  ? var.lpgs.peer-lpgs : {}
 
-  depends_on = [module.vcns,module.fetch-vcns, module.fetch-compartments, module.none-lpgs]
+  depends_on = [module.vcns,module.fetch-vcns,module.none-lpgs]
 
   #Required
   compartment_id = each.value.compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[0][each.value.compartment_name]) : var.tenancy_ocid
@@ -176,7 +176,7 @@ module "none-lpgs" {
   source = "./modules/network/lpg"
   for_each = (var.lpgs.none-lpgs != null || var.lpgs.none-lpgs != {})  ? var.lpgs.none-lpgs : {}
 
-  depends_on = [module.vcns,module.fetch-vcns, module.fetch-compartments]
+  depends_on = [module.vcns,module.fetch-vcns]
 
   #Required
   compartment_id = each.value.compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[0][each.value.compartment_name]) : var.tenancy_ocid
@@ -194,7 +194,7 @@ module "exported-lpgs" {
   source = "./modules/network/lpg"
   for_each = (var.lpgs.exported-lpgs != null || var.lpgs.exported-lpgs != {})  ? var.lpgs.exported-lpgs : {}
 
-  depends_on = [module.vcns,module.fetch-vcns, module.fetch-compartments]
+  depends_on = [module.vcns,module.fetch-vcns]
 
   #Required
   compartment_id = each.value.compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[0][each.value.compartment_name]) : var.tenancy_ocid
@@ -593,7 +593,7 @@ module "subnets" {
   source = "./modules/network/subnet"
   for_each  = (var.subnets != null || var.subnets != {})  ? var.subnets : {}
 
-  depends_on = [module.vcns, module.fetch-vcns, module.fetch-compartments, module.fetch-ads]
+  depends_on = [module.vcns, module.fetch-vcns]
 
   #Required
   tenancy_ocid   = var.tenancy_ocid
