@@ -3,7 +3,7 @@
 data "oci_core_drg_route_tables" "{{ drg_auto_rt_tf_name }}" {
 
     #Required
-    drg_id = oci_core_drg.{{ drg_tf_name }}.id
+    drg_id = merge(module.drgs.*...)["{{ drg_tf_name }}"]["drg_tf_id"][0]
     filter {
     name = "display_name"
     values = ["{{ drg_auto_rt_name }}"]
@@ -14,7 +14,7 @@ data "oci_core_drg_route_tables" "{{ drg_auto_rt_tf_name }}" {
 {% if drg_auto_rd_tf_name and drg_auto_rd_tf_name!='' %}
 data "oci_core_drg_route_distributions" "{{ drg_auto_rd_tf_name }}" {
     #Required
-    drg_id = oci_core_drg.{{ drg_tf_name }}.id
+    drg_id = merge(module.drgs.*...)["{{ drg_tf_name }}"]["drg_tf_id"][0]
     filter {
     name = "display_name"
     values = ["{{ drg_auto_rd_name }}"]
