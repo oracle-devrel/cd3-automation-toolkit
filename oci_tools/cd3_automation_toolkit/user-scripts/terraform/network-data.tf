@@ -8,7 +8,7 @@
 module "fetch-vcns" {
   source         = "./modules/network/network-data/vcns"
   for_each = var.vcns != null ? var.vcns : {}
-  compartment_id = try(module.fetch-compartments.compartment_id_map[each.value.compartment_name],var.compartment_ocids[0][each.value.compartment_name])
+  compartment_id = try(zipmap(data.oci_identity_compartments.compartments.compartments.*.name,data.oci_identity_compartments.compartments.compartments.*.id)[each.value.compartment_name],var.compartment_ocids[0][each.value.compartment_name])
 
 }
 

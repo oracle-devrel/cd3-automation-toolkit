@@ -11,7 +11,7 @@ module "iam-compartments" {
 
   # insert the 4 required variables here
   tenancy_ocid            = var.tenancy_ocid
-  compartment_id          = each.value.parent_compartment != null ? (length(regexall("ocid1.compartment.oc1*", each.value.parent_compartment)) > 0 ? each.value.parent_compartment : try(var.compartment_ocids[0][each.value.parent_compartment],module.fetch-compartments.compartment_id_map[each.value.parent_compartment])) : var.tenancy_ocid
+  compartment_id          = each.value.parent_compartment != null ? (length(regexall("ocid1.compartment.oc1*", each.value.parent_compartment)) > 0 ? each.value.parent_compartment : try(var.compartment_ocids[0][each.value.parent_compartment],zipmap(data.oci_identity_compartments.compartments.compartments.*.name,data.oci_identity_compartments.compartments.compartments.*.id)[each.value.parent_compartment])) : var.tenancy_ocid
   compartment_name        = each.value.name
   compartment_description = each.value.description
   compartment_create      = true
@@ -29,7 +29,7 @@ module "sub-compartments-level1" {
   depends_on = [module.iam-compartments]
   # insert the 4 required variables here
   tenancy_ocid            = var.tenancy_ocid
-  compartment_id          = try(merge(module.iam-compartments.*...)[each.value.parent_compartment]["compartment_id"][each.value.parent_compartment],var.compartment_ocids[0][each.value.parent_compartment],module.fetch-compartments.compartment_id_map[each.value.parent_compartment])
+  compartment_id          = try(merge(module.iam-compartments.*...)[each.value.parent_compartment]["compartment_id"][each.value.parent_compartment],var.compartment_ocids[0][each.value.parent_compartment],zipmap(data.oci_identity_compartments.compartments.compartments.*.name,data.oci_identity_compartments.compartments.compartments.*.id)[each.value.parent_compartment])
   compartment_name        = each.value.name
   compartment_description = each.value.description
   compartment_create      = true
@@ -47,7 +47,7 @@ module "sub-compartments-level2" {
   depends_on = [module.sub-compartments-level1]
   # insert the 4 required variables here
   tenancy_ocid            = var.tenancy_ocid
-  compartment_id          = try(merge(module.sub-compartments-level1.*...)[each.value.parent_compartment]["compartment_id"][split("--", each.value.parent_compartment)[1]],var.compartment_ocids[0][each.value.parent_compartment],module.fetch-compartments.compartment_id_map[each.value.parent_compartment])
+  compartment_id          = try(merge(module.sub-compartments-level1.*...)[each.value.parent_compartment]["compartment_id"][split("--", each.value.parent_compartment)[1]],var.compartment_ocids[0][each.value.parent_compartment],zipmap(data.oci_identity_compartments.compartments.compartments.*.name,data.oci_identity_compartments.compartments.compartments.*.id)[each.value.parent_compartment])
   compartment_name        = each.value.name
   compartment_description = each.value.description
   compartment_create      = true
@@ -65,7 +65,7 @@ module "sub-compartments-level3" {
   depends_on = [module.sub-compartments-level2]
   # insert the 4 required variables here
   tenancy_ocid            = var.tenancy_ocid
-  compartment_id          = try(merge(module.sub-compartments-level2.*...)[each.value.parent_compartment]["compartment_id"][split("--", each.value.parent_compartment)[2]],var.compartment_ocids[0][each.value.parent_compartment],module.fetch-compartments.compartment_id_map[each.value.parent_compartment])
+  compartment_id          = try(merge(module.sub-compartments-level2.*...)[each.value.parent_compartment]["compartment_id"][split("--", each.value.parent_compartment)[2]],var.compartment_ocids[0][each.value.parent_compartment],zipmap(data.oci_identity_compartments.compartments.compartments.*.name,data.oci_identity_compartments.compartments.compartments.*.id)[each.value.parent_compartment])
   compartment_name        = each.value.name
   compartment_description = each.value.description
   compartment_create      = true
@@ -83,7 +83,7 @@ module "sub-compartments-level4" {
   depends_on = [module.sub-compartments-level3]
   # insert the 4 required variables here
   tenancy_ocid            = var.tenancy_ocid
-  compartment_id          = try(merge(module.sub-compartments-level3.*...)[each.value.parent_compartment]["compartment_id"][split("--", each.value.parent_compartment)[3]],var.compartment_ocids[0][each.value.parent_compartment],module.fetch-compartments.compartment_id_map[each.value.parent_compartment])
+  compartment_id          = try(merge(module.sub-compartments-level3.*...)[each.value.parent_compartment]["compartment_id"][split("--", each.value.parent_compartment)[3]],var.compartment_ocids[0][each.value.parent_compartment],zipmap(data.oci_identity_compartments.compartments.compartments.*.name,data.oci_identity_compartments.compartments.compartments.*.id)[each.value.parent_compartment])
   compartment_name        = each.value.name
   compartment_description = each.value.description
   compartment_create      = true
@@ -101,7 +101,7 @@ module "sub-compartments-level5" {
   depends_on = [module.sub-compartments-level4]
   # insert the 4 required variables here
   tenancy_ocid            = var.tenancy_ocid
-  compartment_id          = try(merge(module.sub-compartments-level4.*...)[each.value.parent_compartment]["compartment_id"][split("--", each.value.parent_compartment)[4]],var.compartment_ocids[0][each.value.parent_compartment],module.fetch-compartments.compartment_id_map[each.value.parent_compartment])
+  compartment_id          = try(merge(module.sub-compartments-level4.*...)[each.value.parent_compartment]["compartment_id"][split("--", each.value.parent_compartment)[4]],var.compartment_ocids[0][each.value.parent_compartment],zipmap(data.oci_identity_compartments.compartments.compartments.*.name,data.oci_identity_compartments.compartments.compartments.*.id)[each.value.parent_compartment])
   compartment_name        = each.value.name
   compartment_description = each.value.description
   compartment_create      = true

@@ -40,7 +40,7 @@ module "vcns" {
   for_each = var.vcns != null ? var.vcns : {}
 
   #Required
-  compartment_id = try(module.fetch-compartments.compartment_id_map[each.value.compartment_name],var.compartment_ocids[0][each.value.compartment_name])
+  compartment_id = try(zipmap(data.oci_identity_compartments.compartments.compartments.*.name,data.oci_identity_compartments.compartments.compartments.*.id)[each.value.compartment_name],var.compartment_ocids[0][each.value.compartment_name])
 
   #Optional
   cidr_blocks    = each.value.cidr_blocks
@@ -609,7 +609,7 @@ module "subnets" {
   freeform_tags              =  each.value.freeform_tags
   prohibit_internet_ingress  = ( each.value.prohibit_internet_ingress != null &&  each.value.prohibit_internet_ingress != "") ?  each.value.prohibit_internet_ingress : null
   prohibit_public_ip_on_vnic = ( each.value.prohibit_public_ip_on_vnic != null &&  each.value.prohibit_public_ip_on_vnic != "") ?  each.value.prohibit_public_ip_on_vnic : null
-  availability_domain        =  each.value.availability_domain != "" && each.value.availability_domain != null ? merge(module.fetch-ads.*...)["ads"][each.value.availability_domain] : ""
+  availability_domain        =  each.value.availability_domain != "" && each.value.availability_domain != null ? data.oci_identity_availability_domains.availability_domains.availability_domains[each.value.availability_domain].name : ""
   dhcp_options_id = length(regexall("ocid1.dhcpoptions.oc1*",  each.value.dhcp_options_id)) > 0 ?  each.value.dhcp_options_id : ((each.value.dhcp_options_id != "" &&  each.value.dhcp_options_id != null) ? try(merge(module.vcns.*...)[each.value.dhcp_options_id]["vcn_default_dhcp_id"][each.value.dhcp_options_id],merge(module.custom-dhcps.*...)[each.value.dhcp_options_id]["custom_dhcp_subnet_id"][0], merge(module.default-dhcps.*...)[each.value.dhcp_options_id]["default_dhcp_subnet_id"][0]) :  null)
   route_table_id = length(regexall("ocid1.routetable.oc1*", each.value.route_table_id)) > 0 ? each.value.route_table_id : ((each.value.route_table_id != "" && each.value.route_table_id != null) ? try(merge(module.vcns.*...)[each.value.route_table_id]["vcn_default_route_table_id"][each.value.route_table_id],merge(module.route-tables.*...)[each.value.route_table_id]["route_table_ids"][0],merge(module.default-route-tables.*...)[each.value.route_table_id]["default_route_table_ids"][0]) : "")
   security_list_ids = [for sl in each.value.security_list_ids : ( length(regexall("ocid1.securitylist.oc1*",sl)) > 0 ? sl : try(merge(module.vcns.*...)[sl]["vcn_default_security_list_id"][sl],merge(module.security-lists.*...)[sl]["seclist_subnet_id"][0],merge(module.default-security-lists.*...)[sl]["default_seclist_subnet_id"][0]))]
