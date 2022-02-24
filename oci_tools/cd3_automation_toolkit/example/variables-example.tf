@@ -190,6 +190,16 @@ variable "drg_route_distribution_statements" {
   default = {}
 }
 
+variable "data_drg_route_tables" {
+  type    = map(any)
+  default = {}
+}
+
+variable "data_drg_route_table_distributions" {
+  type    = map(any)
+  default = {}
+}
+
 #########################
 ##### Logging ###########
 #########################

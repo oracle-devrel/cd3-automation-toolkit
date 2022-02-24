@@ -17,7 +17,8 @@ sgws = {
         #SGW
         sgw_name     = "{{ sgw_name }}"
         {% if service and service != 'nan' and service != ''%}
-        service = {{ service }} {% else %}
+        service = {{ service }}
+        {% else %}
         service = "" {% endif %}
 
     {#  ##Do not modify below this line##  #}

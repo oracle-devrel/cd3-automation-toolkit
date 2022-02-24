@@ -59,6 +59,8 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
     sgw_tfStr = {}
     ngw_tfStr = {}
     drg_data = {}
+    drg_rt_data = {}
+    drg_rd_data = {}
     lpg_tfStr = {}
     hub_lpg_tfStr = {}
     peer_lpg_tfStr = {}
@@ -75,6 +77,7 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
     global dhcp_data
     auto_tfvars_filename = '_major-objects.auto.tfvars'
     dhcp_auto_tfvars_filename = '_default-dhcp.auto.tfvars'
+    drg_data_tfvars_filename = '_drg-data.auto.tfvars'
 
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
@@ -135,7 +138,7 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
         env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
         drg_template = env.get_template('module-major-objects-drgs-template')
         drg_attach_template = env.get_template('module-major-objects-drg-attachments-template')
-        drg_datasource_template = env.get_template('drg-data-source-template')
+        drg_datasource_template = env.get_template('module-drg-data-source-template')
         drg_version = "DRGv2"
 
         region = ct.home_region
@@ -156,7 +159,7 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
                         temp['drg_auto_rt_tf_name'] = drg_auto_rt_tf_name
                         temp['drg_auto_rt_name'] = drg_auto_rt_name
                         temp['drg_tf_name'] = commonTools.check_tf_variable(drg)
-                        drg_data[region] = drg_data[region] + drg_datasource_template.render(temp)
+                        drg_rt_data[region] = drg_rt_data[region] + drg_datasource_template.render(temp)
 
                     for drg_auto_rd_name in commonTools.drg_auto_RDs:
                         temp = {}
@@ -164,8 +167,11 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
                         temp['drg_auto_rd_tf_name'] = drg_auto_rd_tf_name
                         temp['drg_auto_rd_name'] = drg_auto_rd_name
                         temp['drg_tf_name'] = commonTools.check_tf_variable(drg)
-                        drg_data[region] = drg_data[region] + drg_datasource_template.render(temp)
-
+                        drg_rd_data[region] = drg_rd_data[region] + drg_datasource_template.render(temp)
+                drg_data[region] = drg_datasource_template.render(skeleton=True,
+                                                                  data_drg_route_tables=drg_rt_data[region],
+                                                                  data_drg_route_table_distributions=drg_rd_data[
+                                                                      region])
         # Read cd3 using pandas dataframe
         df, col_headers = commonTools.read_cd3(filename, "DRGs")
         # Remove empty rows
@@ -516,6 +522,8 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
         ngw_tfStr[reg] = ''
         dhcpStr[reg] = ''
         drg_data[reg] = ''
+        drg_rt_data[reg] = ''
+        drg_rd_data[reg] = ''
 
     # Read cd3 using pandas dataframe
     df, col_headers = commonTools.read_cd3(filename, "VCNs")
@@ -622,14 +630,14 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
             # outfile[reg] = reg_out_dir + "/" + prefix + '-major-objs.tf'
             outfile[reg] = reg_out_dir + "/" + prefix + auto_tfvars_filename
             outfile_dhcp[reg] = reg_out_dir + "/" + prefix + dhcp_auto_tfvars_filename
-            outfile_oci_drg_data[reg] = reg_out_dir + "/oci-drg-data.txt"
+            outfile_oci_drg_data[reg] = reg_out_dir + "/" + prefix + drg_data_tfvars_filename
 
             srcdir = reg_out_dir + "/"
             resource = 'MajorObjects'
             # commonTools.backup_file(srcdir, resource, "-major-objs.tf")
             commonTools.backup_file(srcdir, resource, auto_tfvars_filename)
             commonTools.backup_file(srcdir, resource, dhcp_auto_tfvars_filename)
-            commonTools.backup_file(srcdir, resource, "/oci-drg-data.txt")
+            commonTools.backup_file(srcdir, resource, drg_data_tfvars_filename)
 
             if tfStr[reg] != '':
                 oname[reg] = open(outfile[reg], "w+")
@@ -645,7 +653,7 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
 
             if drg_data[reg] != '':
                 oname_oci_drg_data[reg]=open(outfile_oci_drg_data[reg], "w+")
-                oname_oci_drg_data[reg].write(drg_data[reg])
+                oname_oci_drg_data[reg].write()
                 oname_oci_drg_data[reg].close()
                 print(outfile_oci_drg_data[reg] + " for oci-drg-data for DRGs has been updated for region " + reg)
 
@@ -665,12 +673,12 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
             # commonTools.backup_file(srcdir, resource, "-major-objs.tf")
             commonTools.backup_file(srcdir, resource, auto_tfvars_filename)
             commonTools.backup_file(srcdir, resource, dhcp_auto_tfvars_filename)
-            commonTools.backup_file(srcdir, resource, "/oci-drg-data.txt")
+            commonTools.backup_file(srcdir, resource, drg_data_tfvars_filename)
 
             # outfile[reg] = reg_out_dir + "/" + prefix + '-major-objs.tf'
             outfile[reg] = reg_out_dir + "/" + prefix + auto_tfvars_filename
             outfile_dhcp[reg] = reg_out_dir + "/" + prefix + dhcp_auto_tfvars_filename
-            outfile_oci_drg_data[reg] = reg_out_dir + "/oci-drg-data.txt"
+            outfile_oci_drg_data[reg] = reg_out_dir + "/" + prefix + drg_data_tfvars_filename
 
             if drg_data[reg] != '':
                 oname_oci_drg_data[reg] = open(outfile_oci_drg_data[reg], "w+")

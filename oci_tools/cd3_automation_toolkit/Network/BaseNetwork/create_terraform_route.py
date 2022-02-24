@@ -138,15 +138,6 @@ def create_terraform_drg_route(inputfile, outdir, prefix, config, modify_network
             drg_rt[reg] = ''
             drg_rd[reg] = ''
             drg_rd_stmt[reg] = ''
-            # Rename the modules file in outdir to .tf
-            module_txt_filenames = ['drg_route_tables', 'drg_route_distribution_statements', 'drg_route_distributions']
-            for modules in module_txt_filenames:
-                module_filename = outdir + "/" + reg + "/" + modules.lower() + ".txt"
-                rename_module_filename = outdir + "/" + reg + "/" + modules.lower() + ".tf"
-
-                if not os.path.isfile(rename_module_filename):
-                    if os.path.isfile(module_filename):
-                        os.rename(module_filename, rename_module_filename)
 
         # Option Modify = False
         # Purge existing routetable files
