@@ -14,7 +14,7 @@ module "fetch-vcns" {
 
 /*
 output "vcn_id_map" {
-  depends_on = [module.vcns, module.fetch-vcns, module.fetch-compartments]
+  depends_on = [module.vcns, module.fetch-vcns]
   value      = [ for k,v in merge(module.fetch-vcns.*...) : v.vcns ]
 }
 */
