@@ -292,37 +292,36 @@ def validate_subnets(filename, comp_ids, vcnobj):
                     log(f'ROW {count+2} : Empty value at column "{j}".')
                     subnet_empty_check = True
 
-        # Lop through Columns and cross validate - 1. Subnets and VCN CIDRs and 2. Subnet and DHCP Options
-        for columnname in dfcolumns:
+        # Check if subnet CIDR mentioned is valid for the VCN of the subnet
+        subnet_cidr = str(dfsub.loc[i, 'CIDR Block']).strip()
+        if subnet_cidr != "nan" or subnet_cidr!="":
+            try:
+                subnet_cidr = ipaddress.ip_network(subnet_cidr)
+            except ValueError:
+                continue
 
-            # Column value
-            columnvalue = str(dfsub.loc[i, columnname]).strip()
-
-            if columnname == "CIDR Block":
-                if columnvalue == "nan":
-                    continue
-                try:
-                    columnvalue = ipaddress.ip_network(columnvalue)
-                except ValueError:
-                    continue
-
-                for vcns in vcncidrlist:
-                    vcncidrlist[vcns] = str(vcncidrlist[vcns]).strip()
+            correct=0
+            cidr=vcncidrlist[dfsub.loc[i, 'VCN Name'].strip()]
+            if("," in cidr):
+                for x in cidr.split(','):
+                    x.strip()
                     try:
-                        if("," in vcncidrlist[vcns]):
-                            for x in vcncidrlist[vcns].split(','):
-                                x.strip()
-                                vcn_cidr = ipaddress.ip_network(x)
-                        else:
-                            vcn_cidr = ipaddress.ip_network(vcncidrlist[vcns])
+                        vcn_cidr = ipaddress.ip_network(x)
                     except ValueError:
                         continue
-                    if dfsub.loc[i, 'VCN Name'] == vcns:
-                        if columnvalue.subnet_of(vcn_cidr):
-                            pass
-                        else:
-                            log(f'ROW {i+3} : Subnet CIDR - {columnvalue} does not fall under VCN CIDR - {vcncidrlist[vcns]}.')
-                            subnet_vcn_cidr_check = True
+                    if subnet_cidr.subnet_of(vcn_cidr):
+                        correct=1
+                        break
+            else:
+                try:
+                    vcn_cidr = ipaddress.ip_network(cidr)
+                except ValueError:
+                    continue
+                if subnet_cidr.subnet_of(vcn_cidr):
+                    correct=1
+            if(correct==0):
+                log(f'ROW {i + 3} : Subnet CIDR - {subnet_cidr} does not fall under VCN CIDR - {vcncidrlist[vcns]}.')
+                subnet_vcn_cidr_check = True
 
     if any([subnet_reg_check, subnet_vcn_check, subnet_comp_check, subnet_empty_check, subnet_dnswrong_check, subnet_wrong_check, subnet_dnsdup_check, subnet_dns_length, subnet_dhcp_check, subnet_vcn_cidr_check]):
         print("Null or Wrong value Check failed!!")
@@ -1044,20 +1043,20 @@ def validate_cd3(filename, prefix, outdir,choices, configFileName):
             log("\n============================= Verifying Policies Tab ==========================================\n")
             print("\nProcessing Policies Tab..")
             policies_check = validate_policies(filename,ct.ntk_compartment_ids)
-    
+
         # CD3 Validation begins here for Network
         if ('Validate Network(VCNs, Subnets, DHCP, DRGs)' in options[0]):
             val_net=True
             vcnobj = parseVCNs(filename)
-    
+
             log("\n============================= Verifying VCNs Tab ==========================================\n")
             print("\nProcessing VCNs Tab..")
             vcn_check, vcn_cidr_check, vcn_peer_check = validate_vcns(filename, ct.ntk_compartment_ids, vcnobj, config)
-    
+
             log("============================= Verifying Subnets Tab ==========================================\n")
             print("\nProcessing Subnets Tab..")
             subnet_check, subnet_cidr_check = validate_subnets(filename, ct.ntk_compartment_ids, vcnobj)
-    
+
             log("============================= Verifying DHCP Tab ==========================================\n")
             print("\nProcessing DHCP Tab..")
             dhcp_check = validate_dhcp(filename, ct.ntk_compartment_ids, vcnobj)
@@ -1070,7 +1069,7 @@ def validate_cd3(filename, prefix, outdir,choices, configFileName):
             log("\n============================= Verifying Instances Tab ==========================================\n")
             print("\nProcessing Instances Tab..")
             instances_check = validate_instances(filename,ct.ntk_compartment_ids)
-    
+
         if ('Validate Block Volumes' in options[0]):
             log("\n============================= Verifying BlockVols Tab ==========================================\n")
             print("\nProcessing BlockVols Tab..")

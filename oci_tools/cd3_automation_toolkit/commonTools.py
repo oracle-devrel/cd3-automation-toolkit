@@ -324,6 +324,9 @@ class commonTools():
             if("Events" in str(e) or "Notifications" in str(e)):
                 print("\nTabs - \"Events\" or \"Notifications\" is missing in the CD3. Please make sure to use the correct input file for Events and Notifications in properties file...Exiting!!")
                 exit(1)
+            else:
+                print("Error occurred while reading the CD3 excel sheet: "+ str(e))
+                exit(1)
 
         yield df
         try:
@@ -510,6 +513,9 @@ class parseDRGs():
             if ("No sheet named" in str(e)):
                 print("\nTab - \"DRGs\" is missing in the CD3. Please make sure to use the right CD3 in properties file...Exiting!!")
                 exit(1)
+            else:
+                print("Error occurred while reading the CD3 excel sheet " + str(e))
+                exit(1)
 
         # Drop all empty rows
         df_drgv2 = df_drgv2.dropna(how='all')
@@ -569,6 +575,10 @@ class parseVCNs():
             if ("No sheet named" in str(e)):
                 print("\nTab - \"VCNs\" is missing in the CD3. Please make sure to use the right CD3 in properties file...Exiting!!")
                 exit(1)
+            else:
+                print("Error occurred while reading the CD3 excel sheet " + str(e))
+                exit(1)
+
 
         # Drop all empty rows
         df_vcn = df_vcn.dropna(how='all')
@@ -702,6 +712,9 @@ class parseVCNInfo():
         except Exception as e:
             if ("No sheet named" in str(e)):
                 print("\nTab - \"VCN Info\" is missing in the CD3. Please make sure to use the right CD3 in properties file...Exiting!!")
+                exit(1)
+            else:
+                print("Error occurred while reading the CD3 excel sheet "+ str(e))
                 exit(1)
         # Get Property Values
         values = df_info['Value']
