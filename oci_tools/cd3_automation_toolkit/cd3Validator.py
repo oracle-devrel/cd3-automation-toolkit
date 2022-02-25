@@ -137,8 +137,7 @@ def validate_cidr(cidr_list):
 
 
 # Fetch the dhcp list and vcn cidrs for cross validation of values
-def fetch_dhcplist_vcn_cidrs(filename):
-    cidr_list = []
+def fetch_vcn_cidrs(filename):
     vcn_cidrs = {}
     # List of the column headers
     dfv = data_frame(filename, 'VCNs')
@@ -152,12 +151,9 @@ def fetch_dhcplist_vcn_cidrs(filename):
             if columnname == "CIDR Blocks":
                 # Collect CIDR List for validating
                 if str(columnvalue).lower() == "nan":
-                    cidr_list.append("")
+                    pass
                 else:
-                    for x in str(dfv.loc[i, 'CIDR Blocks']).strip().split(','):
-                        x.strip()
-                        cidr_list.append(x)
-                        vcn_cidrs.update({str(dfv.loc[i, 'VCN Name']).strip(): x})
+                    vcn_cidrs.update({str(dfv.loc[i, 'VCN Name']).strip(): str(columnvalue)})
     return vcn_cidrs
 
 
@@ -168,7 +164,6 @@ def validate_subnets(filename, comp_ids, vcnobj):
     count = 0
 
     cidr_list = []
-    cidrs_dict = {}
     subnet_dnsdup_check = False
     subnet_dnswrong_check = False
     subnet_empty_check = False
@@ -182,6 +177,7 @@ def validate_subnets(filename, comp_ids, vcnobj):
     subnet_dns = []
     subnetname_list = []
     vcn_list = []
+    dhcplist = []
 
     log("Start Null or Wrong value check in each row-----------------")
 
@@ -191,9 +187,13 @@ def validate_subnets(filename, comp_ids, vcnobj):
     dfcolumns = dfsub.columns.values.tolist()
 
     # Fetch the dhcp list and VCN CIDR List for cross validation
-    vcncidrlist = fetch_dhcplist_vcn_cidrs(filename)
-    # Get a list of dhcp options name
-    dhcplist = dfdhcp['DHCP Option Name'].tolist()
+    vcncidrlist = fetch_vcn_cidrs(filename)
+
+    # Get a list of dhcp options name from DHCP tab
+    for d in dfdhcp.index:
+        vcn_name = str(dfdhcp.loc[d, 'VCN Name']).strip()
+        dhcp_name = str(dfdhcp.loc[d, 'DHCP Option Name']).strip()
+        dhcplist.append(vcn_name+"_"+dhcp_name)
 
     # Loop through each row
     for i in dfsub.index:
@@ -260,6 +260,20 @@ def validate_subnets(filename, comp_ids, vcnobj):
                 log(f'ROW {count + 2} : Internet Gateway target cannot be used together with Service Gateway target for All Services in the same routing table. Change either the value of SGW or IGW configure route !!')
                 subnet_wrong_check = True
 
+        #Check if DHCP Option Name specified in Subnets Tab is specified/declared correctly in DHCP Tab
+        check_dhcp=0
+        subnet_dhcp_name = ""
+        if(str(dfsub.loc[i, 'DHCP Option Name']).strip().lower()!="n" and str(dfsub.loc[i, 'DHCP Option Name']).strip()!="nan"):
+            subnet_dhcp_name = str(dfsub.loc[i, 'VCN Name']).strip()+"_"+str(dfsub.loc[i, 'DHCP Option Name']).strip()
+            check_dhcp=1
+
+        if dhcplist != [] and check_dhcp == 1 and subnet_dhcp_name!="":
+            if subnet_dhcp_name in dhcplist:
+                pass
+            else:
+                log(f'ROW {i + 3} : Value "{subnet_dhcp_name}" in column "DHCP Option Name" is not declared in DHCP tab.')
+                subnet_dhcp_check = True
+
         # Collect CIDR List for validating
         if str(dfsub.loc[i, 'CIDR Block']).strip().lower() == "nan":
             cidr_list.append("")
@@ -284,18 +298,6 @@ def validate_subnets(filename, comp_ids, vcnobj):
             # Column value
             columnvalue = str(dfsub.loc[i, columnname]).strip()
 
-            # Execute this portion of code only when called from DHCP function;(List cannot be empty)
-            if dhcplist != []:
-                if columnname == "DHCP Option Name":
-                    if columnvalue in dhcplist or columnvalue == 'n':
-                        pass
-                    else:
-                        if columnvalue == 'nan':
-                            continue
-                        log(f'ROW {i + 3} : Value "{columnvalue}" in column "DHCP Option Name" is not declared in DHCP tab.')
-                        subnet_dhcp_check = True
-
-            # Execute if list is []; list is empty when called from VCN function
             if columnname == "CIDR Block":
                 if columnvalue == "nan":
                     continue
@@ -307,14 +309,19 @@ def validate_subnets(filename, comp_ids, vcnobj):
                 for vcns in vcncidrlist:
                     vcncidrlist[vcns] = str(vcncidrlist[vcns]).strip()
                     try:
-                        vcn_cidr = ipaddress.ip_network(vcncidrlist[vcns])
+                        if("," in vcncidrlist[vcns]):
+                            for x in vcncidrlist[vcns].split(','):
+                                x.strip()
+                                vcn_cidr = ipaddress.ip_network(x)
+                        else:
+                            vcn_cidr = ipaddress.ip_network(vcncidrlist[vcns])
                     except ValueError:
                         continue
                     if dfsub.loc[i, 'VCN Name'] == vcns:
                         if columnvalue.subnet_of(vcn_cidr):
                             pass
                         else:
-                            log(f'ROW {i+3} : Subnet CIDR - {columnvalue} does not fall under VCN CIDR - {vcn_cidr}.')
+                            log(f'ROW {i+3} : Subnet CIDR - {columnvalue} does not fall under VCN CIDR - {vcncidrlist[vcns]}.')
                             subnet_vcn_cidr_check = True
 
     if any([subnet_reg_check, subnet_vcn_check, subnet_comp_check, subnet_empty_check, subnet_dnswrong_check, subnet_wrong_check, subnet_dnsdup_check, subnet_dns_length, subnet_dhcp_check, subnet_vcn_cidr_check]):
@@ -342,7 +349,6 @@ def validate_vcns(filename, comp_ids, vcnobj, config):  # ,vcn_cidrs,vcn_compart
     # Counter to fetch the row number
     count = 0
     cidr_list = []
-    cidrs_dict = {}
 
     vcn_empty_check = False
     vcn_dnswrong_check = False
@@ -412,7 +418,6 @@ def validate_vcns(filename, comp_ids, vcnobj, config):  # ,vcn_cidrs,vcn_compart
             for x in str(dfv.loc[i, 'CIDR Blocks']).strip().split(','):
                 x.strip()
                 cidr_list.append(x)
-                cidrs_dict.update({x: str(dfv.loc[i, 'VCN Name']).strip()})
 
         # Check for null values and display appropriate message
         for j in dfv.keys():
