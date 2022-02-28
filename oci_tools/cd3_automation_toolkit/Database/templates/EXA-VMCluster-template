@@ -1,3 +1,4 @@
+
 resource "oci_database_cloud_vm_cluster" "{{ vm_cluster_display_tf_name }}" {
     #Required
     cloud_exadata_infrastructure_id = oci_database_cloud_exadata_infrastructure.{{ exadata_infra_display_tf_name }}.id
@@ -14,8 +15,9 @@ resource "oci_database_cloud_vm_cluster" "{{ vm_cluster_display_tf_name }}" {
     ssh_public_keys         =  {{ ssh_key_var_name }}
     {% endif %}
 
-    subnet_id = oci_core_subnet.{{ client_subnet_name }}.id
-    backup_subnet_id = oci_core_subnet.{{ backup_subnet_name }}.id
+
+    subnet_id = merge(module.subnets.*...)["{{client_subnet_name}}"]["subnet_flow_logs_id"][0]
+    backup_subnet_id = merge(module.subnets.*...)["{{backup_subnet_name}}"]["subnet_flow_logs_id"][0]
 
     #Optional
 
