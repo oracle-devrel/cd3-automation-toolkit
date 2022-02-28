@@ -18,7 +18,7 @@ resource "oci_core_security_list" "security_list" {
     freeform_tags  = var.freeform_tags
 
     dynamic "ingress_security_rules" {
-        for_each = var.seclist_details[var.key_name].ingress_sec_rules != [] ? var.seclist_details[var.key_name].ingress_sec_rules : null
+        for_each = var.seclist_details[var.key_name].ingress_sec_rules != [] ? var.seclist_details[var.key_name].ingress_sec_rules : []
 
         content {
           #Required
