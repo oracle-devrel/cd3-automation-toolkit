@@ -1,6 +1,7 @@
 
 resource "oci_file_storage_file_system" "{{ fss_tf_name }}" {
-    availability_domain = data.oci_identity_availability_domains.ADs.availability_domains.{{ availability_domain }}.name
+    #availability_domain = data.oci_identity_availability_domains.ADs.availability_domains.{{ availability_domain }}.name
+    availability_domain = data.oci_identity_availability_domains.availability_domains.availability_domains[{{availability_domain}}].name
     compartment_id = var.{{ compartment_tf_name }}
     display_name = "{{ fss_name }}"
 
