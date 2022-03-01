@@ -103,7 +103,7 @@ module "logs" {
   log_type = each.value.log_type
   #Required
   source_category        = each.value.category
-  source_resource        = length(regexall("ocid1.*", each.value.resource)) > 0 ? each.value.resource : merge(module.subnets.*...)[each.value.resource]["subnet_flow_logs_id"][0]
+  source_resource        = length(regexall("ocid1.*", each.value.resource)) > 0 ? each.value.resource : merge(module.subnets.*...)[each.value.resource]["subnet_tf_id"][0]
   source_service         = each.value.service
   source_type            = each.value.source_type
   defined_tags           = each.value.defined_tags

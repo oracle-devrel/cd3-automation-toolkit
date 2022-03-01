@@ -16,8 +16,8 @@ resource "oci_database_cloud_vm_cluster" "{{ vm_cluster_display_tf_name }}" {
     {% endif %}
 
 
-    subnet_id = merge(module.subnets.*...)["{{client_subnet_name}}"]["subnet_flow_logs_id"][0]
-    backup_subnet_id = merge(module.subnets.*...)["{{backup_subnet_name}}"]["subnet_flow_logs_id"][0]
+    subnet_id = merge(module.subnets.*...)["{{client_subnet_name}}"]["subnet_tf_id"][0]
+    backup_subnet_id = merge(module.subnets.*...)["{{backup_subnet_name}}"]["subnet_tf_id"][0]
 
     #Optional
 

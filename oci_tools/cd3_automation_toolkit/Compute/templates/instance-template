@@ -23,7 +23,7 @@ resource "oci_core_instance" "{{ display_tf_name }}" {
         create_vnic_details {
                 #Required
                 #subnet_id = oci_core_subnet.{{ subnet_tf_name }}.id
-                subnet_id = merge(module.subnets.*...)["{{subnet_tf_name}}"]["subnet_flow_logs_id"][0]
+                subnet_id = merge(module.subnets.*...)["{{subnet_tf_name}}"]["subnet_tf_id"][0]
                 assign_public_ip = {{ pub_address }}
 
                 #Optional

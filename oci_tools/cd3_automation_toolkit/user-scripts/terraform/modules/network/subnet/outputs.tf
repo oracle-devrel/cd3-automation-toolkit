@@ -13,6 +13,6 @@ output "ads" {
   value = data.oci_identity_availability_domains.availability_domains.availability_domains.*.name
 }
 
-output "subnet_flow_logs_id" {
+output "subnet_tf_id" {
   value = oci_core_subnet.subnet.*.id
 }
