@@ -280,8 +280,10 @@ def create_terraform_drg_route(inputfile, outdir, prefix, config, modify_network
                 modifiedroutetableStr[reg] = filedata
                 modifiedroutetableStr[reg] = recursive_process_filedata(common_rt, modifiedroutetableStr, reg, processed_rt, count=0)
             else:
-                filedata = ''
-                modifiedroutetableStr[reg] != ''
+                modifiedroutetableStr[reg] = ''
+
+            if modifiedroutetableStr[reg] == '':
+                tempSkeletonDRGRouteTable[reg] = drg_rt_template.render(tempStr, skeleton=True, region=reg)
 
             if drg_rt[reg] != '':
                 if modifiedroutetableStr[reg] != '':
