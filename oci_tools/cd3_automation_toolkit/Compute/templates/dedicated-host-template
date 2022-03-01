@@ -1,7 +1,8 @@
 
 resource "oci_core_dedicated_vm_host" "{{ dedicated_vm_host_tf }}" {
     #Required
-    availability_domain = data.oci_identity_availability_domains.ADs.availability_domains.{{ availability_domain }}.name
+    #availability_domain = data.oci_identity_availability_domains.ADs.availability_domains.{{ availability_domain }}.name
+    availability_domain = data.oci_identity_availability_domains.availability_domains.availability_domains[{{availability_domain}}].name
     compartment_id = var.{{ compartment_tf_name }}
     dedicated_vm_host_shape = "{{ shape }}"
 

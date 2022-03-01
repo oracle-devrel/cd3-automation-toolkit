@@ -156,8 +156,9 @@ def create_terraform_seclist(inputfile, outdir, prefix, config, modify_network=F
             start = "# Start of " + region_seclist_name + " #"
             end = "# End of " + region_seclist_name + " #"
             # Option "Modify Network"
-            if modify_network:
 
+            if modify_network:
+                filedata=""
                 # Read the file if it exists
                 if os.path.exists(outfile):
                     # Read the contents of file in outdir
