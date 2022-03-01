@@ -195,14 +195,11 @@ def create_terraform_dhcp_options(inputfile, outdir, prefix, config, modify_netw
             date = x.strftime("%f").strip()
 
             srcdir = outdir + "/" + reg + "/"
-            if (os.path.exists(outfile[reg])):
-                resource = 'Custom-DHCP'
-                commonTools.backup_file(srcdir, resource, prefix + custom_dhcp_auto_tfvars_filename)
-            if (os.path.exists(deffile[reg])):
-                resource = 'Default-DHCP'
-                commonTools.backup_file(srcdir, resource, prefix + def_dhcp_auto_tfvars_filename)
 
             if(custom[reg]!=''):
+                if (os.path.exists(outfile[reg])):
+                    resource = 'Custom-DHCP'
+                    commonTools.backup_file(srcdir, resource, prefix + custom_dhcp_auto_tfvars_filename)
                 oname[reg] = open(outfile[reg], "w+")
                 oname[reg].write(tfStr[reg])
                 oname[reg].close()
@@ -210,6 +207,9 @@ def create_terraform_dhcp_options(inputfile, outdir, prefix, config, modify_netw
 
             # Added this if condition again because modify network was showing tf destroying Default DHCP Options
             if (defStr[reg] != ''):
+                if (os.path.exists(deffile[reg])):
+                    resource = 'Default-DHCP'
+                    commonTools.backup_file(srcdir, resource, prefix + def_dhcp_auto_tfvars_filename)
                 defname[reg] = open(deffile[reg], "w+")
                 defname[reg].write(defStr[reg])
                 defname[reg].close()
@@ -232,20 +232,21 @@ def create_terraform_dhcp_options(inputfile, outdir, prefix, config, modify_netw
             deffile[reg] = reg_out_dir + "/" +prefix +def_dhcp_auto_tfvars_filename
 
             srcdir = outdir + "/" + reg + "/"
-            if (os.path.exists(outfile[reg])):
-                resource = 'Custom-DHCP'
-                commonTools.backup_file(srcdir, resource, prefix + custom_dhcp_auto_tfvars_filename)
-            if (os.path.exists(deffile[reg])):
-                resource = 'Default-DHCP'
-                commonTools.backup_file(srcdir, resource, prefix + def_dhcp_auto_tfvars_filename)
 
             if (tfStr[reg] != ''):
+                if (os.path.exists(outfile[reg])):
+                    resource = 'Custom-DHCP'
+                    commonTools.backup_file(srcdir, resource, prefix + custom_dhcp_auto_tfvars_filename)
                 oname[reg] = open(outfile[reg], 'w+')
                 oname[reg].write(tfStr[reg])
                 oname[reg].close()
                 print(outfile[reg] + " containing TF for DHCP Options has been created for region " + reg)
 
             if (defStr[reg] != ''):
+                if (os.path.exists(deffile[reg])):
+                    print(deffile[reg])
+                    resource = 'Default-DHCP'
+                    commonTools.backup_file(srcdir, resource, prefix + def_dhcp_auto_tfvars_filename)
                 defname[reg] = open(deffile[reg], "w+")
                 defname[reg].write(defStr[reg])
                 defname[reg].close()
