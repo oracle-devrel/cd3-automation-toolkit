@@ -103,6 +103,8 @@ nsg_rules = {
                 destination_port_range = [{}]
                 {% endif %}
             }]
+            {% else %}
+            tcp_options = []
             {% endif %}
             {% else %}
             tcp_options = []
@@ -131,6 +133,8 @@ nsg_rules = {
                 source_port_range = []
                 {% endif %}
             }
+            {% else %}
+            udp_options = []
             {% endif %}
             {% else %}
             udp_options = []

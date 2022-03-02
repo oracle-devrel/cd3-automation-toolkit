@@ -123,19 +123,20 @@ def protocolOptionals(nsgParser, options, tempStr):
     tempStr['protocol'] = protocolHeader
     tempStr['icmptype'] = type
     tempStr['icmpcode'] = code
-    if str(options[11]) != '' and str(options[11]) != 'nan':
+
+    if str(options[11]).strip() != '' and str(options[11]) != 'nan':
         tempStr['dportmax'] = int(options[11])
     else:
         tempStr['dportmax'] = ""
-    if str(options[10]) != '' and str(options[10]) != 'nan':
+    if str(options[10]).strip() != '' and str(options[10]) != 'nan':
         tempStr['dportmin'] = int(options[10])
     else:
         tempStr['dportmin'] = ""
-    if str(options[9]) != '' and str(options[9]) != 'nan':
+    if str(options[9]).strip() != '' and str(options[9]) != 'nan':
         tempStr['sportmax'] = int(options[9])
     else:
         tempStr['sportmax'] = ""
-    if str(options[8]) != '' and str(options[8]) != 'nan':
+    if str(options[8]).strip() != '' and str(options[8]) != 'nan':
         tempStr['sportmin'] = int(options[8])
     else:
         tempStr['sportmin'] = ""
