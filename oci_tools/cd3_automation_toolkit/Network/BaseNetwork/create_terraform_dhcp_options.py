@@ -93,9 +93,9 @@ def create_terraform_dhcp_options(inputfile, outdir, prefix, config, modify_netw
 
         if ("Default DHCP Options" in dhcp_option_name):
             if region in region_included_for_default_dhcp:
-                defaultdhcpdata = defaultdhcp.render(tempStr)
+                defaultdhcpdata = defaultdhcp.render(tempStr)[:-1]
             else:
-                defaultdhcpdata = defaultdhcp.render(tempStr, count=0)
+                defaultdhcpdata = defaultdhcp.render(tempStr, count=0)[:-1]
                 region_included_for_default_dhcp.append(region)
         else:
             if region in region_included_for_custom_dhcp:
@@ -104,7 +104,7 @@ def create_terraform_dhcp_options(inputfile, outdir, prefix, config, modify_netw
                 customdhcpdata = template.render(tempStr, custom=False, count=0)
                 region_included_for_custom_dhcp.append(region)
 
-        defStr[region] = defStr[region][:-1] + defaultdhcpdata
+        defStr[region] = defStr[region]+ defaultdhcpdata
         custom[region] = custom[region] + customdhcpdata
 
     # Read cd3 using pandas dataframe
@@ -177,6 +177,7 @@ def create_terraform_dhcp_options(inputfile, outdir, prefix, config, modify_netw
 
         processDHCP(tempStr,template,defaultdhcp)
 
+
     if (modify_network == 'true'):
         for reg in ct.all_regions:
             reg_out_dir = outdir + "/" + reg
@@ -207,6 +208,7 @@ def create_terraform_dhcp_options(inputfile, outdir, prefix, config, modify_netw
 
             # Added this if condition again because modify network was showing tf destroying Default DHCP Options
             if (defStr[reg] != ''):
+                defStr[reg] = defStr[reg] + "\n}"
                 if (os.path.exists(deffile[reg])):
                     resource = 'Default-DHCP'
                     commonTools.backup_file(srcdir, resource, prefix + def_dhcp_auto_tfvars_filename)
@@ -243,6 +245,7 @@ def create_terraform_dhcp_options(inputfile, outdir, prefix, config, modify_netw
                 print(outfile[reg] + " containing TF for DHCP Options has been created for region " + reg)
 
             if (defStr[reg] != ''):
+                defStr[reg] = defStr[reg] + "\n}"
                 if (os.path.exists(deffile[reg])):
                     print(deffile[reg])
                     resource = 'Default-DHCP'

@@ -7,5 +7,5 @@
 
 output "log_tf_id" {
   description = "Log OCID"
-  value = oci_logging_log.log.*.id
+  value       = oci_logging_log.log.id
 }

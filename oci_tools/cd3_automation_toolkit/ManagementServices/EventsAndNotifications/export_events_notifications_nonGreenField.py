@@ -52,10 +52,10 @@ def  print_notifications(values_for_column_notifications,region, ntk_compartment
             oci_objs = [nftn_info,sbpn]
             values_for_column_notifications = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict_notifications,values_for_column_notifications)
     if ( i == 1):
-       importCommands[region.lower()].write("\nterraform import \"module.notifications-topics[\\\"" + str(tf_name_nftn) + "\\\"].oci_ons_notification_topic.topic[0]\" " + str(nftn_info.topic_id))
+       importCommands[region.lower()].write("\nterraform import \"module.notifications-topics[\\\"" + str(tf_name_nftn) + "\\\"].oci_ons_notification_topic.topic\" " + str(nftn_info.topic_id))
 
     #importCommands[region.lower()].write("\nterraform import oci_ons_subscription." + tf_name_sbpn + " " + str(sbpn.id))
-    importCommands[region.lower()].write("\nterraform import \"module.notifications-subscriptions[\\\"" + str(tf_name_sbpn) + "\\\"].oci_ons_subscription.subscription[0]\" " + str(sbpn.id))
+    importCommands[region.lower()].write("\nterraform import \"module.notifications-subscriptions[\\\"" + str(tf_name_sbpn) + "\\\"].oci_ons_subscription.subscription\" " + str(sbpn.id))
 
 
 
@@ -114,7 +114,7 @@ def print_events(values_for_column_events, region, ntk_compartment_name, event, 
           i = i + 1
     if ( action_name != "" ):
        #importCommands[region.lower()].write("\nterraform import oci_events_rule." + tf_name + " " + str(event.id))
-       importCommands[region.lower()].write("\nterraform import \"module.events[\\\"" + str(tf_name) + "\\\"].oci_events_rule.event[0]\" " + str(event.id))
+       importCommands[region.lower()].write("\nterraform import \"module.events[\\\"" + str(tf_name) + "\\\"].oci_events_rule.event\" " + str(event.id))
 
 def events_rows(values_for_column_events, region, ntk_compartment_name, event_name, event_desc, action_type, action_is_enabled, action_description, event_prod, event_res,  event_is_enabled, action_name, event, event_info):
     for col_header in values_for_column_events.keys():

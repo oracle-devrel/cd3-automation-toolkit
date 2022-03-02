@@ -16,15 +16,15 @@ variable "compartment_id" {
 }
 
 variable "cidr_blocks" {
-  type    = list
+  type    = list(any)
   default = [""]
 }
 
 variable "defined_tags" {
-  type    = map
+  type = map(any)
   default = { "Oracle-Tags.CreatedOn" = "$${oci.datetime}",
-              "Oracle-Tags.CreatedBy"= "$${iam.principal.name}"
-            }
+    "Oracle-Tags.CreatedBy" = "$${iam.principal.name}"
+  }
 }
 
 variable "display_name" {
@@ -38,7 +38,7 @@ variable "dns_label" {
 }
 
 variable "freeform_tags" {
-  type    = map
+  type    = map(any)
   default = {}
 }
 

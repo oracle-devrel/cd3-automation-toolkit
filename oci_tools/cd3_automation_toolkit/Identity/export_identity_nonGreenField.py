@@ -110,19 +110,19 @@ def export_identity(inputfile, outdir, _config, network_compartments=[]):
             comp_parent_name = c_names[0]
             tf_name = commonTools.check_tf_variable(c_name)
             if len(c_name.split("::")) == 2:
-                importCommands[ct.home_region].write("\nterraform import \"module.sub-compartments-level1[\\\""+str(tf_name)+"\\\"].oci_identity_compartment.compartment[0]\" " + c_id)
+                importCommands[ct.home_region].write("\nterraform import \"module.sub-compartments-level1[\\\""+str(tf_name)+"\\\"].oci_identity_compartment.compartment\" " + c_id)
                 sub_comp_l1_index = sub_comp_l1_index + 1
             if len(c_name.split("::")) == 3:
-                importCommands[ct.home_region].write("\nterraform import \"module.sub-compartments-level2[\\\""+str(tf_name)+"\\\"].oci_identity_compartment.compartment[0]\" " + c_id)
+                importCommands[ct.home_region].write("\nterraform import \"module.sub-compartments-level2[\\\""+str(tf_name)+"\\\"].oci_identity_compartment.compartment\" " + c_id)
                 sub_comp_l2_index = sub_comp_l2_index + 1
             if len(c_name.split("::")) == 4:
-                importCommands[ct.home_region].write("\nterraform import \"module.sub-compartments-level3[\\\""+str(tf_name)+"\\\"].oci_identity_compartment.compartment[0]\" " + c_id)
+                importCommands[ct.home_region].write("\nterraform import \"module.sub-compartments-level3[\\\""+str(tf_name)+"\\\"].oci_identity_compartment.compartment\" " + c_id)
                 sub_comp_l3_index = sub_comp_l3_index + 1
             if len(c_name.split("::")) == 5:
-                importCommands[ct.home_region].write("\nterraform import \"module.sub-compartments-level4[\\\""+str(tf_name)+"\\\"].oci_identity_compartment.compartment[0]\" " + c_id)
+                importCommands[ct.home_region].write("\nterraform import \"module.sub-compartments-level4[\\\""+str(tf_name)+"\\\"].oci_identity_compartment.compartment\" " + c_id)
                 sub_comp_l4_index = sub_comp_l4_index + 1
             if len(c_name.split("::")) == 6:
-                importCommands[ct.home_region].write("\nterraform import \"module.sub-compartments-level5[\\\""+str(tf_name)+"\\\"].oci_identity_compartment.compartment[0]\" " + c_id)
+                importCommands[ct.home_region].write("\nterraform import \"module.sub-compartments-level5[\\\""+str(tf_name)+"\\\"].oci_identity_compartment.compartment\" " + c_id)
                 sub_comp_l5_index = sub_comp_l5_index + 1
 
         #write parent comp info(at root)
@@ -133,7 +133,7 @@ def export_identity(inputfile, outdir, _config, network_compartments=[]):
                 comp_display_name=c_name
                 comp_parent_name = "root"
                 tf_name = commonTools.check_tf_variable(c_name)
-                importCommands[ct.home_region].write("\nterraform import \"module.iam-compartments[\\\""+str(tf_name)+"\\\"].oci_identity_compartment.compartment[0]\" " + c_id)
+                importCommands[ct.home_region].write("\nterraform import \"module.iam-compartments[\\\""+str(tf_name)+"\\\"].oci_identity_compartment.compartment\" " + c_id)
                 root_index = root_index + 1
             else:
                 continue
@@ -231,7 +231,7 @@ def export_identity(inputfile, outdir, _config, network_compartments=[]):
 
 
                 tf_name = commonTools.check_tf_variable(tf_name)
-                importCommands[ct.home_region].write("\nterraform import \"module.iam-policies[\\\""+str(tf_name)+"\\\"].oci_identity_policy.policy[0]\" " + policy.id)
+                importCommands[ct.home_region].write("\nterraform import \"module.iam-policies[\\\""+str(tf_name)+"\\\"].oci_identity_policy.policy\" " + policy.id)
                 index = index + 1
                 count=1
                 policy_statements = policy.statements

@@ -26,10 +26,10 @@ variable "server_type" {
 }
 
 variable "defined_tags" {
-  type    = map
+  type = map(any)
   default = { "Oracle-Tags.CreatedOn" = "$${oci.datetime}",
-              "Oracle-Tags.CreatedBy"= "$${iam.principal.name}"
-            }
+    "Oracle-Tags.CreatedBy" = "$${iam.principal.name}"
+  }
 }
 
 variable "display_name" {
@@ -43,7 +43,7 @@ variable "domain_name_type" {
 }
 
 variable "freeform_tags" {
-  type    = map
+  type    = map(any)
   default = {}
 }
 
@@ -53,7 +53,7 @@ variable "vcn_id" {
 }
 
 variable "custom_dns_servers" {
-  type    = list
+  type    = list(any)
   default = [""]
 }
 

@@ -31,7 +31,7 @@
         }
         disk_redundancy         = "{{ disk_redundancy }}"
         shape                   = "{{ shape }}"
-        subnet_id               = merge(module.subnets.*...)["{{subnet_name}}"]["subnet_tf_id"][0]
+        subnet_id               = merge(module.subnets.*...)["{{subnet_name}}"]["subnet_tf_id"]
 
         {% if ssh_key_var_name == 'var.ssh_public_key' %}
         ssh_public_keys         =  [{{ ssh_key_var_name }}]

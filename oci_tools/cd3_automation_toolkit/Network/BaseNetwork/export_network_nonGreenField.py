@@ -124,7 +124,7 @@ def print_nsgsl(values_for_column_nsgs,vnc,region, comp_name, vcn_name, nsg, nsg
             values_for_column_nsgs = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict_nsgs,values_for_column_nsgs)
 
     nsg_rule_tf_name = tf_name + "_security_rule" + str(i)
-    importCommands[region.lower()].write("\nterraform import \"module.nsg-rules[\\\""+nsg_rule_tf_name+"\\\"].oci_core_network_security_group_security_rule.nsg_rule[0]\" " + "networkSecurityGroups/" + str(nsg.id) + "/securityRules/" + str(nsgsl.id))
+    importCommands[region.lower()].write("\nterraform import \"module.nsg-rules[\\\""+nsg_rule_tf_name+"\\\"].oci_core_network_security_group_security_rule.nsg_rule\" " + "networkSecurityGroups/" + str(nsg.id) + "/securityRules/" + str(nsgsl.id))
 
     # importCommands[region.lower()].write("\nterraform import oci_core_network_security_group_security_rule." + tf_name + "_security_rule" + str(i) + " " + "networkSecurityGroups/" + str(nsg.id) + "/securityRules/" + str(nsgsl.id))
 
@@ -144,7 +144,7 @@ def print_nsg(values_for_column_nsgs,region, comp_name, vcn_name, nsg):
         else:
             oci_objs = [nsg]
             values_for_column_nsgs = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict_nsgs,values_for_column_nsgs)
-    importCommands[region.lower()].write("\nterraform import \"module.nsgs[\\\"" + tf_name +  "\\\"].oci_core_network_security_group.network_security_group[0]\" " + str(nsg.id))
+    importCommands[region.lower()].write("\nterraform import \"module.nsgs[\\\"" + tf_name +  "\\\"].oci_core_network_security_group.network_security_group\" " + str(nsg.id))
 
 def print_drgv2(values_for_column_drgv2,region, comp_name, vcn_info,drg_info,drg_attachment_info, drg_rt_info, import_drg_route_distribution_info,drg_route_distribution_statements):
     for col_header in values_for_column_drgv2.keys():
@@ -254,7 +254,7 @@ def print_vcns(values_for_column_vcns,region, comp_name, vcn_info, drg_info, igw
             values_for_column_vcns = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict_vcns,values_for_column_vcns)
 
     tf_name = commonTools.check_tf_variable(vcn_info.display_name)
-    importCommands[region.lower()].write("\nterraform import \"module.vcns[\\\"" + tf_name + "\\\"].oci_core_vcn.vcn[0]\" " + str(vcn_info.id))
+    importCommands[region.lower()].write("\nterraform import \"module.vcns[\\\"" + tf_name + "\\\"].oci_core_vcn.vcn\" " + str(vcn_info.id))
 
 
 def print_dhcp(values_for_column_dhcp,region, comp_name, vcn_name, dhcp_info):
@@ -298,15 +298,15 @@ def print_dhcp(values_for_column_dhcp,region, comp_name, vcn_name, dhcp_info):
             values_for_column_dhcp = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict_dhcp, values_for_column_dhcp)
     if ("Default DHCP Options for " in dhcp_info.display_name):
         importCommands[region.lower()].write(
-            "\nterraform import \"module.default-dhcps[\\\""+ tf_name + "\\\"].oci_core_default_dhcp_options.default_dhcp_option[0]\" " + str(dhcp_info.id))
+            "\nterraform import \"module.default-dhcps[\\\""+ tf_name + "\\\"].oci_core_default_dhcp_options.default_dhcp_option\" " + str(dhcp_info.id))
     else:
-        importCommands[region.lower()].write("\nterraform import \"module.custom-dhcps[\\\""+ tf_name + "\\\"].oci_core_dhcp_options.custom_dhcp_option[0]\" " + str(dhcp_info.id))
+        importCommands[region.lower()].write("\nterraform import \"module.custom-dhcps[\\\""+ tf_name + "\\\"].oci_core_dhcp_options.custom_dhcp_option\" " + str(dhcp_info.id))
 
 
 def print_subnets(values_for_column_subnets,region, comp_name, vcn_name, subnet_info, dhcp_name, rt_name, sl_names, add_def_seclist):
     tf_name = vcn_name + "_" + str(subnet_info.display_name)
     tf_name = commonTools.check_tf_variable(tf_name)
-    importCommands[region.lower()].write("\nterraform import \"module.subnets[\\\"" + tf_name + "\\\"].oci_core_subnet.subnet[0]\" " + str(subnet_info.id))
+    importCommands[region.lower()].write("\nterraform import \"module.subnets[\\\"" + tf_name + "\\\"].oci_core_subnet.subnet\" " + str(subnet_info.id))
 
     for col_header in values_for_column_subnets.keys():
         if (col_header == "Region"):
@@ -482,7 +482,7 @@ def export_networking(inputfile, outdir, _config, network_compartments=[]):
                         igw_display_name = igw_info.display_name
                         tf_name = vcn_info.display_name + "_" + igw_display_name
                         tf_name=commonTools.check_tf_variable(tf_name)
-                        importCommands[reg].write("\nterraform import \"module.igws[\\\"" + tf_name + "\\\"].oci_core_internet_gateway.internet_gateway[0]\" " + igw_info.id)
+                        importCommands[reg].write("\nterraform import \"module.igws[\\\"" + tf_name + "\\\"].oci_core_internet_gateway.internet_gateway\" " + igw_info.id)
 
                     #ngw_display_name = "n"
                     NGWs = oci.pagination.list_call_get_all_results(vnc.list_nat_gateways,
@@ -494,7 +494,7 @@ def export_networking(inputfile, outdir, _config, network_compartments=[]):
                         tf_name = vcn_info.display_name + "_" + ngw_display_name
                         tf_name = commonTools.check_tf_variable(tf_name)
 
-                        importCommands[reg].write("\nterraform import \"module.ngws[\\\"" + tf_name + "\\\"].oci_core_nat_gateway.nat_gateway[0]\" " + ngw_info.id)
+                        importCommands[reg].write("\nterraform import \"module.ngws[\\\"" + tf_name + "\\\"].oci_core_nat_gateway.nat_gateway\" " + ngw_info.id)
 
                     #sgw_display_name = "n"
                     SGWs = oci.pagination.list_call_get_all_results(vnc.list_service_gateways,
@@ -505,7 +505,7 @@ def export_networking(inputfile, outdir, _config, network_compartments=[]):
                         sgw_display_name = sgw_info.display_name
                         tf_name = vcn_info.display_name + "_" + sgw_display_name
                         tf_name = commonTools.check_tf_variable(tf_name)
-                        importCommands[reg].write("\nterraform import \"module.sgws[\\\"" + tf_name + "\\\"].oci_core_service_gateway.service_gateway[0]\" " + sgw_info.id)
+                        importCommands[reg].write("\nterraform import \"module.sgws[\\\"" + tf_name + "\\\"].oci_core_service_gateway.service_gateway\" " + sgw_info.id)
 
                     lpg_display_names = ""
                     LPGs = oci.pagination.list_call_get_all_results(vnc.list_local_peering_gateways,
@@ -526,7 +526,7 @@ def export_networking(inputfile, outdir, _config, network_compartments=[]):
                         tf_name = vcn_info.display_name + "_" + lpg_info.display_name
                         tf_name = commonTools.check_tf_variable(tf_name)
                         importCommands[reg].write(
-                            "\nterraform import \"module.exported-lpgs[\\\"" + tf_name + "\\\"].oci_core_local_peering_gateway.local_peering_gateway[0]\" " + lpg_info.id)
+                            "\nterraform import \"module.exported-lpgs[\\\"" + tf_name + "\\\"].oci_core_local_peering_gateway.local_peering_gateway\" " + lpg_info.id)
 
                     if (lpg_display_names == ""):
                         lpg_display_names = "n"
@@ -600,13 +600,13 @@ def export_networking(inputfile, outdir, _config, network_compartments=[]):
 
 
                                 if (drg_id not in drg_ocid):
-                                    importCommands[reg].write("\nterraform import \"module.drgs[\\\"" + tf_name + "\\\"].oci_core_drg.drg[0]\" " + drg_info.id)
+                                    importCommands[reg].write("\nterraform import \"module.drgs[\\\"" + tf_name + "\\\"].oci_core_drg.drg\" " + drg_info.id)
                                     drg_ocid.append(drg_id)
 
                                 #tf_name = vcn_info.display_name + "_" + drg_attachment_name
                                 tf_name = commonTools.check_tf_variable(drg_attachment_name)
 
-                                importCommands[reg].write("\nterraform import \"module.drg-attachments[\\\"" + tf_name + "\\\"].oci_core_drg_attachment.drg_attachment[0]\" " + drg_attachment_info.id)
+                                importCommands[reg].write("\nterraform import \"module.drg-attachments[\\\"" + tf_name + "\\\"].oci_core_drg_attachment.drg_attachment\" " + drg_attachment_info.id)
                                 oci_obj_names[reg].write("\ndrgattachinfo::::" + vcn_info.display_name + "::::" + drg_display_name + "::::" + drg_attachment_name)
 
                                 drg_route_table_id = drg_attachment_info.drg_route_table_id
@@ -627,11 +627,11 @@ def export_networking(inputfile, outdir, _config, network_compartments=[]):
 
                                         tf_name = commonTools.check_tf_variable(drg_display_name+"_"+import_drg_route_distribution_info.display_name)
                                         if(import_drg_route_distribution_info.display_name not in commonTools.drg_auto_RDs):
-                                            importCommands[reg].write("\nterraform import \"module.drg-route-distributions[\\\"" + tf_name + "\\\"].oci_core_drg_route_distribution.drg_route_distribution[0]\" " + import_drg_route_distribution_info.id)
+                                            importCommands[reg].write("\nterraform import \"module.drg-route-distributions[\\\"" + tf_name + "\\\"].oci_core_drg_route_distribution.drg_route_distribution\" " + import_drg_route_distribution_info.id)
 
                                             k = 1
                                             for stmt in drg_route_distribution_statements.data:
-                                                importCommands[reg].write("\nterraform import \"module.drg-route-distribution-statements[\\\"" + tf_name +"_statement" + str(k)+"\\\"].oci_core_drg_route_distribution_statement.drg_route_distribution_statement[0]\" drgRouteDistributions/" + import_drg_route_distribution_info.id + "/statements/" + stmt.id)
+                                                importCommands[reg].write("\nterraform import \"module.drg-route-distribution-statements[\\\"" + tf_name +"_statement" + str(k)+"\\\"].oci_core_drg_route_distribution_statement.drg_route_distribution_statement\" drgRouteDistributions/" + import_drg_route_distribution_info.id + "/statements/" + stmt.id)
                                                 k=k+1
 
                                 print_drgv2(values_for_column_drgv2, region, drg_comp_name, vcn_info,drg_info, drg_attachment_info, drg_route_table_info, import_drg_route_distribution_info,drg_route_distribution_statements)
@@ -667,11 +667,11 @@ def export_networking(inputfile, outdir, _config, network_compartments=[]):
                                             tf_name = commonTools.check_tf_variable(
                                                 drg_display_name + "_" + import_drg_route_distribution_info.display_name)
                                             if (import_drg_route_distribution_info.display_name not in commonTools.drg_auto_RDs):
-                                                importCommands[reg].write("\nterraform import \"module.drg-route-distributions[\\\"" + tf_name + "\\\"].oci_core_drg_route_distribution.drg_route_distribution[0]\" " + import_drg_route_distribution_info.id)
+                                                importCommands[reg].write("\nterraform import \"module.drg-route-distributions[\\\"" + tf_name + "\\\"].oci_core_drg_route_distribution.drg_route_distribution\" " + import_drg_route_distribution_info.id)
 
                                                 k = 1
                                                 for stmt in drg_route_distribution_statements.data:
-                                                    importCommands[reg].write("\nterraform import \"module.drg-route-distribution-statements[\\\"" + tf_name +"_statement" + str(k)+"\\\"].oci_core_drg_route_distribution_statement.drg_route_distribution_statement[0]\" drgRouteDistributions/" + import_drg_route_distribution_info.id + "/statements/" + stmt.id)
+                                                    importCommands[reg].write("\nterraform import \"module.drg-route-distribution-statements[\\\"" + tf_name +"_statement" + str(k)+"\\\"].oci_core_drg_route_distribution_statement.drg_route_distribution_statement\" drgRouteDistributions/" + import_drg_route_distribution_info.id + "/statements/" + stmt.id)
                                                     k = k + 1
                                         print_drgv2(values_for_column_drgv2, region, drg_comp_name, vcn_info, drg_info,
                                                     drg_attachment_info, drg_route_table_info,
@@ -725,7 +725,7 @@ def export_networking(inputfile, outdir, _config, network_compartments=[]):
                                 else:
                                     tf_name = commonTools.check_tf_variable(str(nsg.display_name))
 
-                                    importCommands[region.lower()].write("\nterraform import \"module.nsgs[\\\"" + tf_name + "\\\"].oci_core_network_security_group.network_security_group[0]\" " + str(nsg.id))
+                                    importCommands[region.lower()].write("\nterraform import \"module.nsgs[\\\"" + tf_name + "\\\"].oci_core_network_security_group.network_security_group\" " + str(nsg.id))
 
     commonTools.write_to_cd3(values_for_column_nsgs, cd3file, "NSGs")
     print("NSGs exported to CD3\n")

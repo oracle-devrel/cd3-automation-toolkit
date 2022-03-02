@@ -11,10 +11,10 @@ variable "compartment_id" {
 }
 
 variable "defined_tags" {
-  type    = map
+  type = map(any)
   default = { "Oracle-Tags.CreatedOn" = "$${oci.datetime}",
-              "Oracle-Tags.CreatedBy"= "$${iam.principal.name}"
-            }
+    "Oracle-Tags.CreatedBy" = "$${iam.principal.name}"
+  }
 }
 
 variable "drg_display_name" {
@@ -23,7 +23,7 @@ variable "drg_display_name" {
 }
 
 variable "freeform_tags" {
-  type    = map
+  type    = map(any)
   default = {}
 }
 

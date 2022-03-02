@@ -276,10 +276,10 @@ def create_terraform_lbr_hostname_certs(inputfile, outdir, config=DEFAULT_LOCATI
             if columnname == 'LBR Subnets':
                 lbr_subnets = str(columnvalue).strip().split(",")
                 if len(lbr_subnets) == 1:
-                    columnvalue = "merge(module.subnets.*...)[\"" + commonTools.check_tf_variable(str(lbr_subnets[0]).strip()) + "\"][\"subnet_tf_id\"][0]"
+                    columnvalue = "merge(module.subnets.*...)[\"" + commonTools.check_tf_variable(str(lbr_subnets[0]).strip()) + "\"][\"subnet_tf_id\"]"
 
                 elif len(lbr_subnets) == 2:
-                    columnvalue = "merge(module.subnets.*...)[\"" + commonTools.check_tf_variable(str(lbr_subnets[0]).strip()) + "\"][\"subnet_tf_id\"][0], merge(module.subnets.*...)[\"" + commonTools.check_tf_variable(str(lbr_subnets[0]).strip()) + "\"][\"subnet_tf_id\"][0]"
+                    columnvalue = "merge(module.subnets.*...)[\"" + commonTools.check_tf_variable(str(lbr_subnets[0]).strip()) + "\"][\"subnet_tf_id\"], merge(module.subnets.*...)[\"" + commonTools.check_tf_variable(str(lbr_subnets[0]).strip()) + "\"][\"subnet_tf_id\"]"
 
             if columnname == "NSGs":
                 if columnvalue != '':
@@ -289,7 +289,7 @@ def create_terraform_lbr_hostname_certs(inputfile, outdir, config=DEFAULT_LOCATI
                             if "ocid" in nsgs.strip():
                                 nsg_id = "\"" + nsgs.strip() + "\""
                             else:
-                                nsg_id = "merge(module.nsgs.*...)[\""+commonTools.check_tf_variable(str(nsgs).strip())+"\"][\"nsg_tf_id\"][0]"
+                                nsg_id = "merge(module.nsgs.*...)[\""+commonTools.check_tf_variable(str(nsgs).strip())+"\"][\"nsg_tf_id\"]"
 
                     elif len(lbr_nsgs) >=2 :
                         c = 1
@@ -297,7 +297,7 @@ def create_terraform_lbr_hostname_certs(inputfile, outdir, config=DEFAULT_LOCATI
                             if "ocid" in nsgs.strip():
                                 data = "\"" + nsgs.strip() + "\""
                             else:
-                                data = "merge(module.nsgs.*...)[\""+commonTools.check_tf_variable(str(nsgs).strip())+"\"][\"nsg_tf_id\"][0]"
+                                data = "merge(module.nsgs.*...)[\""+commonTools.check_tf_variable(str(nsgs).strip())+"\"][\"nsg_tf_id\"]"
 
                             if c == len(lbr_nsgs):
                                 nsg_id = nsg_id + data

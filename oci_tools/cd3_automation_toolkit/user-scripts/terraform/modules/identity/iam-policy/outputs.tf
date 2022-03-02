@@ -5,6 +5,6 @@
 # Create Policies
 ############################
 
-output "policies_id_map" {
-  value = zipmap(oci_identity_policy.policy.*.name,oci_identity_policy.policy.*.id)
+output "policies_tf_id" {
+  value = oci_identity_policy.policy.id
 }

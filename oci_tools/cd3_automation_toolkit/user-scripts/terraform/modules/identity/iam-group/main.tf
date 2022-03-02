@@ -7,18 +7,19 @@
 
 resource "oci_identity_group" "group" {
   count = (var.matching_rule != "" && var.matching_rule != null) ? 0 : 1
+
   #Required
   compartment_id = var.tenancy_ocid
   name           = var.group_name
   description    = var.group_description
 
   #Optional
-  defined_tags = var.defined_tags
+  defined_tags  = var.defined_tags
   freeform_tags = var.freeform_tags
 
   lifecycle {
-    ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"],defined_tags["Oracle-Tags.CreatedBy"],freeform_tags]
-    }
+    ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"], freeform_tags]
+  }
 }
 
 ############################
@@ -36,10 +37,10 @@ resource "oci_identity_dynamic_group" "dynamic_group" {
   matching_rule  = var.matching_rule
 
   #Optional
-  defined_tags = var.defined_tags
+  defined_tags  = var.defined_tags
   freeform_tags = var.freeform_tags
 
   lifecycle {
-    ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"],defined_tags["Oracle-Tags.CreatedBy"],freeform_tags]
-    }
+    ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"], freeform_tags]
+  }
 }

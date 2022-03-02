@@ -7,20 +7,10 @@
 
 output "group_id_map" {
   description = "Group ocid"
-  value = zipmap(oci_identity_group.group.*.name,oci_identity_group.group.*.id)
+  value       = zipmap(oci_identity_group.group.*.name, oci_identity_group.group.*.id)
 }
 
 output "dynamic_group_id_map" {
   description = "Dynamic Group ocid"
-  value = zipmap(oci_identity_dynamic_group.dynamic_group.*.name,oci_identity_dynamic_group.dynamic_group.*.id)
+  value       = zipmap(oci_identity_dynamic_group.dynamic_group.*.name, oci_identity_dynamic_group.dynamic_group.*.id)
 }
-
-output "group_name" {
-  description = "Group name"
-  value = var.group_name
-}
-/*
-output "name_ocid" {
-  value       = zipmap(oci_identity_group.this[*].name, oci_identity_group.this[*].id)
-  description = "group name and associated OCID"
-}*/

@@ -5,25 +5,25 @@
 # Create Notifications_Topics
 ############################
 
-variable "compartment_name"  {
-type = string
+variable "compartment_name" {
+  type = string
 }
 
 variable "topic_name" {
-        type = string
- }
-variable  "description"  {
-       type = string
+  type = string
+}
+variable "description" {
+  type = string
 }
 
 variable "defined_tags" {
-type = map
-default = { "Oracle-Tags.CreatedOn" = "$${oci.datetime}",
-            "Oracle-Tags.CreatedBy"= "$${iam.principal.name}"
-          }
+  type = map(any)
+  default = { "Oracle-Tags.CreatedOn" = "$${oci.datetime}",
+    "Oracle-Tags.CreatedBy" = "$${iam.principal.name}"
+  }
 }
 
 variable "freeform_tags" {
-  type = map
+  type    = map(any)
   default = {}
 }

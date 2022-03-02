@@ -6,27 +6,28 @@
 ############################
 
 resource "oci_core_default_dhcp_options" "default_dhcp_option" {
-    count = (var.server_type != null  && var.server_type != "") ? 1 : 0
-    manage_default_resource_id  = var.manage_default_resource_id
 
-    options {
-            type = "DomainNameServer"
-            server_type = var.server_type
-            }
+  # Required
+  manage_default_resource_id = var.manage_default_resource_id
 
-    dynamic "options" {
-        for_each = var.search_domain_names
-        content {
-            type = "SearchDomain"
-            search_domain_names = options.value
-            }
-        }
+  options {
+    type        = "DomainNameServer"
+    server_type = var.server_type
+  }
 
-    #Optional
-    defined_tags = var.defined_tags
-    freeform_tags = var.freeform_tags
+  dynamic "options" {
+    for_each = var.search_domain_names
+    content {
+      type                = "SearchDomain"
+      search_domain_names = options.value
+    }
+  }
 
-    lifecycle {
-        ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"],defined_tags["Oracle-Tags.CreatedBy"],freeform_tags]
-        }
- }
+  #Optional
+  defined_tags  = var.defined_tags
+  freeform_tags = var.freeform_tags
+
+  lifecycle {
+    ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"], freeform_tags]
+  }
+}

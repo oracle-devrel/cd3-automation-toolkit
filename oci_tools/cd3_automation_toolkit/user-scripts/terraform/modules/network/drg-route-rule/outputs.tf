@@ -6,5 +6,5 @@
 ############################
 
 output "drg_route_rule_tf_id" {
-	value = oci_core_drg_route_table_route_rule.drg_route_rule.*.id
+  value = oci_core_drg_route_table_route_rule.drg_route_rule.id
 }

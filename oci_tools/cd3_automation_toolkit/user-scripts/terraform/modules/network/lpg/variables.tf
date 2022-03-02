@@ -26,10 +26,10 @@ variable "route_table_id" {
 }
 
 variable "defined_tags" {
-  type    = map
+  type = map(any)
   default = { "Oracle-Tags.CreatedOn" = "$${oci.datetime}",
-              "Oracle-Tags.CreatedBy"= "$${iam.principal.name}"
-            }
+    "Oracle-Tags.CreatedBy" = "$${iam.principal.name}"
+  }
 }
 
 variable "display_name" {
@@ -38,7 +38,7 @@ variable "display_name" {
 }
 
 variable "freeform_tags" {
-  type    = map
+  type    = map(any)
   default = {}
 }
 

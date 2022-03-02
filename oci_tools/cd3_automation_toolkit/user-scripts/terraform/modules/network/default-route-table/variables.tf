@@ -24,7 +24,7 @@ variable "spoke_lpg_id" {}
 variable "exported_lpg_id" {}
 
 variable "rt_details" {
-  type    = map(any)
+  type = map(any)
 }
 
 variable "cidr_block" {
@@ -33,10 +33,10 @@ variable "cidr_block" {
 }
 
 variable "defined_tags" {
-  type    = map
+  type = map(any)
   default = { "Oracle-Tags.CreatedOn" = "$${oci.datetime}",
-              "Oracle-Tags.CreatedBy"= "$${iam.principal.name}"
-            }
+    "Oracle-Tags.CreatedBy" = "$${iam.principal.name}"
+  }
 }
 
 variable "display_name" {
@@ -45,7 +45,7 @@ variable "display_name" {
 }
 
 variable "freeform_tags" {
-  type    = map
+  type    = map(any)
   default = {}
 }
 

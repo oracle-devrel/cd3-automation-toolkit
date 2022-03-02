@@ -6,17 +6,17 @@
 ############################
 
 resource "oci_ons_notification_topic" "topic" {
-  count = var.topic_name != null ? 1 : 0
+
   #Required
   compartment_id = var.compartment_name
-  name   = var.topic_name
-  description = var.description
+  name           = var.topic_name
+  description    = var.description
 
   #Optional
-  defined_tags = var.defined_tags
+  defined_tags  = var.defined_tags
   freeform_tags = var.freeform_tags
 
   lifecycle {
-    ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"],defined_tags["Oracle-Tags.CreatedBy"],freeform_tags]
-    }
+    ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"], freeform_tags]
+  }
 }

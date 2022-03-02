@@ -7,31 +7,31 @@
 
 variable "compartment_name" {
   type = string
- }
+}
 
 variable "subscription_name" {
-    type = string
-   }
+  type = string
+}
 
 variable "endpoint" {
-    type = string
-   }
+  type = string
+}
 variable "protocol" {
-type = string
+  type = string
 }
 
 variable "topic_name" {
-          type = string
+  type = string
 }
 
 variable "defined_tags" {
-type = map
-default = { "Oracle-Tags.CreatedOn" = "$${oci.datetime}",
-            "Oracle-Tags.CreatedBy"= "$${iam.principal.name}"
-          }
+  type = map(any)
+  default = { "Oracle-Tags.CreatedOn" = "$${oci.datetime}",
+    "Oracle-Tags.CreatedBy" = "$${iam.principal.name}"
+  }
 }
 
 variable "freeform_tags" {
-  type = map
+  type    = map(any)
   default = {}
 }

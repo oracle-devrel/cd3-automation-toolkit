@@ -7,32 +7,31 @@
 
 resource "oci_logging_log" "log" {
 
-    count = (var.display_name != null  && var.display_name != "") ? 1 : 0
+  #Required
+  display_name = var.display_name
+  log_group_id = var.log_group_id
+  log_type     = var.log_type
+
+  #Optional
+  configuration {
     #Required
-    display_name = var.display_name
-    log_group_id = var.log_group_id
-    log_type = var.log_type
+    source {
+      #Required
+      category    = var.source_category
+      resource    = var.source_resource
+      service     = var.source_service
+      source_type = var.source_type
+    }
 
     #Optional
-    configuration {
-        #Required
-        source {
-            #Required
-            category = var.source_category
-            resource = var.source_resource
-            service = var.source_service
-            source_type = var.source_type
-        }
-
-        #Optional
-        compartment_id = var.compartment_id
-    }
-    defined_tags = var.defined_tags
-    freeform_tags = var.freeform_tags
-    is_enabled = var.log_is_enabled
-    retention_duration = var.log_retention_duration
+    compartment_id = var.compartment_id
+  }
+  defined_tags       = var.defined_tags
+  freeform_tags      = var.freeform_tags
+  is_enabled         = var.log_is_enabled
+  retention_duration = var.log_retention_duration
 
   lifecycle {
-    ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"],defined_tags["Oracle-Tags.CreatedBy"]]
-    }
+    ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"]]
+  }
 }

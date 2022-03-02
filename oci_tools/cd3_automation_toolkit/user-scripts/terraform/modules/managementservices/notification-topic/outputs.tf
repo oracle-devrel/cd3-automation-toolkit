@@ -7,5 +7,5 @@
 
 output "topic_tf_id" {
   description = "Topic OCID"
-  value = oci_ons_notification_topic.topic.*.id
+  value       = oci_ons_notification_topic.topic.id
 }

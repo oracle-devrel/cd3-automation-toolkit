@@ -5,6 +5,6 @@
 # Create Network Security Groups
 #############################
 
-output "nsg_rule_id" {
-	value = oci_core_network_security_group_security_rule.nsg_rule.*.id
+output "nsg_rule_tf_id" {
+  value = oci_core_network_security_group_security_rule.nsg_rule.id
 }
