@@ -12,7 +12,7 @@ data "oci_identity_availability_domains" "availability_domains" {
 
 resource "oci_core_subnet" "subnet" {
 
-    count = (var.display_name != null  && var.display_name != "") ? 1 : 0
+    count = (var.cidr_block != null  && var.cidr_block != "") ? 1 : 0
     #Required
     cidr_block = var.cidr_block
     compartment_id = var.compartment_id
