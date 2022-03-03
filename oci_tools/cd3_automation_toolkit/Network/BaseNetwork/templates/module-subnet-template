@@ -41,6 +41,8 @@ subnets = {
 
     {% if seclist_ids != '' %}
     security_list_ids = [{{ seclist_ids }}]
+    {% else %}
+    security_list_ids = []
     {% endif %}
 
     {#  ##Do not modify below this line##  #}

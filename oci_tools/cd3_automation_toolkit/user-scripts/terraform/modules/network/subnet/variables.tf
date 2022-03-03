@@ -5,6 +5,10 @@
 # Create Subnets
 #############################
 
+variable "vcn_default_security_list_id" {}
+
+variable "custom_security_list_id" {}
+
 variable "tenancy_ocid" {
   type    = string
   default = null
@@ -35,7 +39,6 @@ variable "prohibit_internet_ingress" {
   default = false
 }
 
-
 variable "prohibit_public_ip_on_vnic" {
   type    = bool
   default = false
@@ -59,11 +62,6 @@ variable "ipv6cidr_block" {
 variable "cidr_block" {
   type    = string
   default = null
-}
-
-variable "cidr_blocks" {
-  type    = list(any)
-  default = [""]
 }
 
 variable "defined_tags" {

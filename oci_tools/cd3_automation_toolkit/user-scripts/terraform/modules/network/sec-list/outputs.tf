@@ -5,6 +5,6 @@
 # Create Security List
 ############################
 
-output "seclist_subnet_id" {
+output "seclist_tf_id" {
   value = oci_core_security_list.security_list.id
 }

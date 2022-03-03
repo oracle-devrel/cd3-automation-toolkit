@@ -134,7 +134,7 @@ def create_terraform_subnet(inputfile, outdir, prefix, config, modify_network=Fa
 
         #Attach Default Security List
         if add_default_seclist.strip() == "y":
-                seclist_ids = "\""+vcn_tf_name+"\""
+                seclist_ids = "\"\""
                 tempStr['seclist_ids'] = seclist_ids
 
 
@@ -152,7 +152,7 @@ def create_terraform_subnet(inputfile, outdir, prefix, config, modify_network=Fa
         if (tempStr['dhcp_tf_name'].lower() != 'nan' and tempStr['dhcp_tf_name'] != '' and tempStr['dhcp_tf_name'] != 'n'):
             dhcp_options_id = commonTools.check_tf_variable(tempStr['dhcp_tf_name'].strip())
         else:
-            dhcp_options_id = vcn_tf_name
+            dhcp_options_id = ""
         tempStr['dhcp_options_name'] = dhcp_options_id
 
         if tempStr['type'] == 'public':
@@ -249,13 +249,13 @@ def create_terraform_subnet(inputfile, outdir, prefix, config, modify_network=Fa
                     columnvalue = 'y'
 
             if columnname == 'DHCP Option Name':
-                columnname = 'dhcp_option_name'
+                columnname = 'dhcp_options_name'
                 if str(columnvalue).strip().lower() != '' and str(columnvalue).strip().lower() != 'n':
                     dhcp = df.loc[i,'VCN Name'].strip() +"_" + columnvalue
                     dhcp = commonTools.check_tf_variable(dhcp)
-                    tempdict = {'dhcp_tf_name': dhcp,'dhcp_option_name' : columnvalue}
+                    tempdict = {'dhcp_tf_name': dhcp,'dhcp_options_name' : columnvalue}
                 else:
-                    tempdict = {'dhcp_tf_name': columnvalue, 'dhcp_option_name': columnvalue}
+                    tempdict = {'dhcp_tf_name': columnvalue, 'dhcp_options_name': columnvalue}
 
             if columnname == 'DNS Label':
                 dnslabel = columnvalue.strip()
