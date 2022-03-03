@@ -269,7 +269,7 @@ def modify_terraform_routerules(inputfile, outdir, prefix=None, config=DEFAULT_L
     default_rule={}
 
     def create_route_rule_string(routetableStr,tempStr,region):
-        srcStr = "          ####ADD_NEW_"+tempStr['resource']+"_RULES " + tempStr['region_rt_name'] + " ####"
+        srcStr = "####ADD_NEW_"+tempStr['resource']+"_RULES " + tempStr['region_rt_name'] + " ####"
         new_route_rule = routerule.render(tempStr)
         new_route_rule = new_route_rule + "\n" + srcStr + "\n"
         routetableStr[region] = routetableStr[region].replace(srcStr, new_route_rule)
@@ -279,12 +279,12 @@ def modify_terraform_routerules(inputfile, outdir, prefix=None, config=DEFAULT_L
     def generate_route_table_string(region_rt_name,region,routetableStr,tempStr,common_rt):
         if (region_rt_name not in common_rt and region_rt_name not in routetableStr[region]):
             routetableStr[region] = routetableStr[region] + routetable.render(tempStr,
-                                                                            route_rules_igw="          ####ADD_NEW_IGW_RULES " + region_rt_name + " ####",
-                                                                            route_rules_ngw="          ####ADD_NEW_NGW_RULES " + region_rt_name + " ####",
-                                                                            route_rules_sgw="          ####ADD_NEW_SGW_RULES " + region_rt_name + " ####",
-                                                                            route_rules_drg="          ####ADD_NEW_DRG_RULES " + region_rt_name + " ####",
-                                                                            route_rules_lpg="          ####ADD_NEW_LPG_RULES " + region_rt_name + " ####",
-                                                                            route_rules_ip="          ####ADD_NEW_IP_RULES " + region_rt_name + " ####", )
+                                                                            route_rules_igw="####ADD_NEW_IGW_RULES " + region_rt_name + " ####",
+                                                                            route_rules_ngw="####ADD_NEW_NGW_RULES " + region_rt_name + " ####",
+                                                                            route_rules_sgw="####ADD_NEW_SGW_RULES " + region_rt_name + " ####",
+                                                                            route_rules_drg="####ADD_NEW_DRG_RULES " + region_rt_name + " ####",
+                                                                            route_rules_lpg="####ADD_NEW_LPG_RULES " + region_rt_name + " ####",
+                                                                            route_rules_ip="####ADD_NEW_IP_RULES " + region_rt_name + " ####", )
 
         if tempStr['network_entity_id'] != '':
             if tempStr['resource'] == "NGW":

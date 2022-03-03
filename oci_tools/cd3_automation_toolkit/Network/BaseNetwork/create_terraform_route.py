@@ -59,7 +59,7 @@ def recursive_process_filedata(common_rt, modifiedroutetableStr, reg, processed_
 
 
 def merge_or_generate_route_rule(reg, tempStr, modifiedroutetableStr,routetableStr, start_rule, data, modify_network, routerule, gateway):
-    replace_str = "          ####ADD_NEW_" + gateway + "_RULES " + reg.lower() + "_" + tempStr['rt_tf_name'] + " ####"
+    replace_str = "####ADD_NEW_" + gateway + "_RULES " + reg.lower() + "_" + tempStr['rt_tf_name'] + " ####"
     if modify_network:
         end_rule = "## End Route Rule " + tempStr['region'].lower() + "_" + tempStr['rt_tf_name'] + "_" + tempStr[
             'network_entity_id'] + "_" + tempStr['destination']
@@ -474,12 +474,12 @@ def create_terraform_route(inputfile, outdir, prefix, config, modify_network=Fal
 
                 if region_rt_name not in modifiedroutetableStr[reg]:
                     drgStr = template.render(tempStr,
-                                             route_rules_igw="          ####ADD_NEW_IGW_RULES " + region_rt_name + " ####",
-                                             route_rules_ngw="          ####ADD_NEW_NGW_RULES " + region_rt_name + " ####",
-                                             route_rules_sgw="          ####ADD_NEW_SGW_RULES " + region_rt_name + " ####",
-                                             route_rules_drg="          ####ADD_NEW_DRG_RULES " + region_rt_name + " ####",
-                                             route_rules_lpg="          ####ADD_NEW_LPG_RULES " + region_rt_name + " ####",
-                                             route_rules_ip="          ####ADD_NEW_IP_RULES " + region_rt_name + " ####", )
+                                             route_rules_igw="####ADD_NEW_IGW_RULES " + region_rt_name + " ####",
+                                             route_rules_ngw="####ADD_NEW_NGW_RULES " + region_rt_name + " ####",
+                                             route_rules_sgw="####ADD_NEW_SGW_RULES " + region_rt_name + " ####",
+                                             route_rules_drg="####ADD_NEW_DRG_RULES " + region_rt_name + " ####",
+                                             route_rules_lpg="####ADD_NEW_LPG_RULES " + region_rt_name + " ####",
+                                             route_rules_ip="####ADD_NEW_IP_RULES " + region_rt_name + " ####", )
 
                     modified_network_new_rt.append(region_rt_name)
 
@@ -497,7 +497,7 @@ def create_terraform_route(inputfile, outdir, prefix, config, modify_network=Fal
                     lpg_tf_name = commonTools.check_tf_variable(lpg_name)
                     hub_vcn_tf_name = commonTools.check_tf_variable(hub_vcn_name)
                     vcns.vcn_lpg_names2[vcn_with_drg].pop(0)
-                    srcStr = "          ####ADD_NEW_LPG_RULES " + region_rt_name + " ####"
+                    srcStr = "####ADD_NEW_LPG_RULES " + region_rt_name + " ####"
 
                     tempStr['rt_tf_name'] = rt_tf_name
                     tempStr['destination'] = right_vcn_tf_name
@@ -523,12 +523,12 @@ def create_terraform_route(inputfile, outdir, prefix, config, modify_network=Fal
 
                         if region_rt_name not in modifiedroutetableStr[reg]:
                             drgStr = template.render(tempStr,
-                                                     route_rules_igw="          ####ADD_NEW_IGW_RULES " + region_rt_name + " ####",
-                                                     route_rules_ngw="          ####ADD_NEW_NGW_RULES " + region_rt_name + " ####",
-                                                     route_rules_sgw="          ####ADD_NEW_SGW_RULES " + region_rt_name + " ####",
-                                                     route_rules_drg="          ####ADD_NEW_DRG_RULES " + region_rt_name + " ####",
-                                                     route_rules_lpg="          ####ADD_NEW_LPG_RULES " + region_rt_name + " ####",
-                                                     route_rules_ip="          ####ADD_NEW_IP_RULES " + region_rt_name + " ####", )
+                                                     route_rules_igw="####ADD_NEW_IGW_RULES " + region_rt_name + " ####",
+                                                     route_rules_ngw="####ADD_NEW_NGW_RULES " + region_rt_name + " ####",
+                                                     route_rules_sgw="####ADD_NEW_SGW_RULES " + region_rt_name + " ####",
+                                                     route_rules_drg="####ADD_NEW_DRG_RULES " + region_rt_name + " ####",
+                                                     route_rules_lpg="####ADD_NEW_LPG_RULES " + region_rt_name + " ####",
+                                                     route_rules_ip="####ADD_NEW_IP_RULES " + region_rt_name + " ####", )
 
                             drgStr = drgStr.replace(srcStr, temprule + "\n" + srcStr)
                             modified_network_new_rt.append(region_rt_name)
@@ -571,17 +571,17 @@ def create_terraform_route(inputfile, outdir, prefix, config, modify_network=Fal
 
                 if (region_rt_name not in common_rt):
                     lpgStr = template.render(tempStr,
-                                             route_rules_igw="          ####ADD_NEW_IGW_RULES " + region_rt_name + " ####",
-                                             route_rules_ngw="          ####ADD_NEW_NGW_RULES " + region_rt_name + " ####",
-                                             route_rules_sgw="          ####ADD_NEW_SGW_RULES " + region_rt_name + " ####",
-                                             route_rules_drg="          ####ADD_NEW_DRG_RULES " + region_rt_name + " ####",
-                                             route_rules_lpg="          ####ADD_NEW_LPG_RULES " + region_rt_name + " ####",
-                                             route_rules_ip="          ####ADD_NEW_IP_RULES " + region_rt_name + " ####", )
+                                             route_rules_igw="####ADD_NEW_IGW_RULES " + region_rt_name + " ####",
+                                             route_rules_ngw="####ADD_NEW_NGW_RULES " + region_rt_name + " ####",
+                                             route_rules_sgw="####ADD_NEW_SGW_RULES " + region_rt_name + " ####",
+                                             route_rules_drg="####ADD_NEW_DRG_RULES " + region_rt_name + " ####",
+                                             route_rules_lpg="####ADD_NEW_LPG_RULES " + region_rt_name + " ####",
+                                             route_rules_ip="####ADD_NEW_IP_RULES " + region_rt_name + " ####", )
 
                     if region_rt_name not in modifiedroutetableStr[reg]:
                         modified_network_new_rt.append(region_rt_name)
 
-                srcStr = "          ####ADD_NEW_DRG_RULES " + region.lower() + "_" + rt_tf_name + " ####"
+                srcStr = "####ADD_NEW_DRG_RULES " + region.lower() + "_" + rt_tf_name + " ####"
                 drg_name = ""
                 if (vcns.vcn_drgs[hub_vcn_name] == 'y'):
                     # drg_name = hub_vcn_name + "_drg"
@@ -840,17 +840,17 @@ def create_terraform_route(inputfile, outdir, prefix, config, modify_network=Fal
         # Create Route Tables for all the unique names in Subnet Sheet
         if (start not in routetableStr[region] and start not in modifiedroutetableStr[region]):
             routetableStr[region] = routetableStr[region] + template.render(tempStr,
-                                                                            route_rules_igw="          ####ADD_NEW_IGW_RULES " + region_rt_name + " ####",
-                                                                            route_rules_ngw="          ####ADD_NEW_NGW_RULES " + region_rt_name + " ####",
-                                                                            route_rules_sgw="          ####ADD_NEW_SGW_RULES " + region_rt_name + " ####",
-                                                                            route_rules_drg="          ####ADD_NEW_DRG_RULES " + region_rt_name + " ####",
-                                                                            route_rules_lpg="          ####ADD_NEW_LPG_RULES " + region_rt_name + " ####",
-                                                                            route_rules_ip="          ####ADD_NEW_IP_RULES " + region_rt_name + " ####", )
+                                                                            route_rules_igw="####ADD_NEW_IGW_RULES " + region_rt_name + " ####",
+                                                                            route_rules_ngw="####ADD_NEW_NGW_RULES " + region_rt_name + " ####",
+                                                                            route_rules_sgw="####ADD_NEW_SGW_RULES " + region_rt_name + " ####",
+                                                                            route_rules_drg="####ADD_NEW_DRG_RULES " + region_rt_name + " ####",
+                                                                            route_rules_lpg="####ADD_NEW_LPG_RULES " + region_rt_name + " ####",
+                                                                            route_rules_ip="####ADD_NEW_IP_RULES " + region_rt_name + " ####", )
 
             modified_network_new_rt.append(region_rt_name)
         # Peering Rules
         if configure_vcnpeering.strip() == 'y' and data_vcnpeer != '' and region_rt_name not in lpgrule_added:
-            lpgStr = "          ####ADD_NEW_LPG_RULES "+ region_rt_name + " ####"
+            lpgStr = "####ADD_NEW_LPG_RULES "+ region_rt_name + " ####"
             if data_vcnpeer != '':
                 data_vcnpeer = data_vcnpeer + "\n" + lpgStr
                 routetableStr[region] = routetableStr[region].replace(lpgStr, data_vcnpeer)
@@ -858,20 +858,20 @@ def create_terraform_route(inputfile, outdir, prefix, config, modify_network=Fal
 
         # SGW Rules
         if configure_sgw.strip() == 'all_services' or configure_sgw.strip() == 'object_storage' and vcn_sgw != 'n':
-            sgwStr = "          ####ADD_NEW_SGW_RULES " + region_rt_name + " ####"
+            sgwStr = "####ADD_NEW_SGW_RULES " + region_rt_name + " ####"
             if data_sgw != '':
                 data_sgw = data_sgw + "\n" + sgwStr
                 routetableStr[region] = routetableStr[region].replace(sgwStr, data_sgw)
 
         # NGW Rules
         if configure_ngw.strip() == 'y' and vcn_ngw != 'n':
-            ngwStr = "          ####ADD_NEW_NGW_RULES " + region_rt_name + " ####"
+            ngwStr = "####ADD_NEW_NGW_RULES " + region_rt_name + " ####"
             if data_ngw !=  '':
                 data_ngw = data_ngw + "\n" + ngwStr
                 routetableStr[region] = routetableStr[region].replace(ngwStr, data_ngw)
         # IGW Rules
         if configure_igw.strip() == 'y' and vcn_igw != 'n':
-            igwStr = "          ####ADD_NEW_IGW_RULES " + region_rt_name + " ####"
+            igwStr = "####ADD_NEW_IGW_RULES " + region_rt_name + " ####"
             if data_igw != '':
                 data_igw = data_igw + "\n" + igwStr
                 routetableStr[region] = routetableStr[region].replace(igwStr, data_igw)
@@ -883,12 +883,12 @@ def create_terraform_route(inputfile, outdir, prefix, config, modify_network=Fal
                 v_list_having_drg.append(key[0])
             if (vcn_name in vcns.hub_vcn_names or vcn_name in vcns.spoke_vcn_names or vcn_name in v_list_having_drg):
                 if tempStr['lpg'] == True:
-                    onpremStrlpg = "          ####ADD_NEW_LPG_RULES " + region_rt_name + " ####"
+                    onpremStrlpg = "####ADD_NEW_LPG_RULES " + region_rt_name + " ####"
                     if data_onprem != '':
                         data_onprem = data_onprem + "\n" + onpremStrlpg
                         routetableStr[region] = routetableStr[region].replace(onpremStrlpg, data_onprem)
                 else:
-                    onpremStr = "          ####ADD_NEW_DRG_RULES " + region_rt_name + " ####"
+                    onpremStr = "####ADD_NEW_DRG_RULES " + region_rt_name + " ####"
                     if data_onprem != '':
                         data_onprem = data_onprem + "\n" + onpremStr
                         routetableStr[region] = routetableStr[region].replace(onpremStr, data_onprem)

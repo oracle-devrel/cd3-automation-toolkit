@@ -39,6 +39,7 @@ def parse_args():
 
 # If the input is CD3
 def create_terraform_seclist(inputfile, outdir, prefix, config, modify_network=False):
+
     def purge(dir, pattern):
         for f in os.listdir(dir):
             if re.search(pattern, f):
@@ -105,6 +106,7 @@ def create_terraform_seclist(inputfile, outdir, prefix, config, modify_network=F
         return modify_network_seclists
 
     def processSubnet(tempStr):
+        filedata = ""
         region_in_lowercase = tempStr['region'].lower().strip()
         subnet_cidr = tempStr['cidr_block'].strip()
 
@@ -158,7 +160,7 @@ def create_terraform_seclist(inputfile, outdir, prefix, config, modify_network=F
             # Option "Modify Network"
 
             if modify_network:
-                filedata=""
+
                 # Read the file if it exists
                 if os.path.exists(outfile):
                     # Read the contents of file in outdir
@@ -170,6 +172,7 @@ def create_terraform_seclist(inputfile, outdir, prefix, config, modify_network=F
                 if sl_tf_name in filedata:
                     if sl_tf_name not in modify_network_seclists[region_in_lowercase]:
                         modify_network_seclists[region_in_lowercase] = copy_data_from_file(outfile,region_seclist_name,modify_network_seclists[region_in_lowercase])
+
                 for seclists in seclists_from_secRulesInOCI_sheet:
                     if seclists in filedata and seclists not in modify_network_seclists[region_in_lowercase]:
                         region_seclist_name = region_in_lowercase+"_"+seclists
@@ -181,7 +184,7 @@ def create_terraform_seclist(inputfile, outdir, prefix, config, modify_network=F
                 seclist_count = seclist_count + 1
 
             # If same seclist name is used for subsequent subnets
-            if (index == 0 and start in modify_network_seclists[region_in_lowercase] and region_seclist_name in common_seclist):
+            if (index == 0 and start in modify_network_seclists[region_in_lowercase] and region_seclist_name in common_seclist and region_seclist_name not in filedata):
                 tempStr['rule_type'] = "ingress"
                 tempStr['source'] = subnet_cidr
                 tempStr['protocol_code'] = 'all'
