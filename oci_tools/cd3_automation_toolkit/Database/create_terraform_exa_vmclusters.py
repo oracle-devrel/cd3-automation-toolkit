@@ -105,7 +105,7 @@ def create_terraform_exa_vmclusters(inputfile, outdir, prefix, config=DEFAULT_LO
                 str(df.loc[i, 'Hostname Prefix']).lower() == 'nan' or \
                 str(df.loc[i, 'Oracle Grid Infrastructure Version']).lower() == 'nan':
                 print("\nRegion, Compartment Name, Exadata Infra Display Name, VM Cluster Display Name, Subnet Names, CPU Core Count, Hostname Prefix, Oracle Grid Infrastructure Version are mandatory fields. Please enter a value and try again.......Exiting!!")
-            exit()
+                exit()
 
         # tempdict = {'oracle_db_software_edition' : 'ENTERPRISE_EDITION_EXTREME_PERFORMANCE'}
 
