@@ -1,0 +1,95 @@
+{% if count == 0 %}
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+
+############################
+# Database
+# ExaVMClusters - tfvars
+############################
+
+exa_vmclusters = {
+{% endif %}
+
+         {{ vm_cluster_display_tf_name }} = {
+            compartment_id           = "{{ compartment_name }}"
+            exadata_infrastructure_id= "{{ exadata_infra_display_tf_name }}"
+            cpu_core_count           = "{{ cpu_core_count }}"
+            display_name             = "{{ vm_cluster_display_name }}"
+            gi_version               = "{{ oracle_grid_infrastructure_version }}"
+            cluster_name             = "{{ vm_cluster_display_name }}"
+            cluster_subnet_id        = "{{ client_subnet_name }}"
+            backup_subnet_id         = "{{ backup_subnet_name }}"
+            license_model            = "{{ license_model }}"
+
+            {% if hostname == "" %}
+            hostname                 = null
+            {% else %}
+            hostname                 = "{{ hostname_prefix }}"
+            {% endif %}
+
+            {% if allocate_storage_for_local_backups == "" %}
+            is_local_backup_enabled  = null
+            {% else %}
+            is_local_backup_enabled  = {{ allocate_storage_for_local_backups }}
+            {% endif %}
+
+            {% if allocate_storage_for_exadata_sparse_snapshots == "" %}
+            is_sparse_diskgroup_enabled = null
+            {% else %}
+            is_sparse_diskgroup_enabled = {{ allocate_storage_for_exadata_sparse_snapshots }}
+            {% endif %}
+
+            {% if time_zone == "" %}
+            time_zone                = ""
+            {% else %}
+            time_zone                = "{{ time_zone }}"
+            {% endif %}
+
+
+            #Optional
+            domain                   = ""
+            backup_network_nsg_ids   = [{{ backup_network_nsgs }}]
+            data_storage_percentage  = null
+            nsg_ids                  = [{{ nsgs }}]
+            ocpu_count               = null
+            scan_listener_port_tcp   = null
+            scan_listener_port_tcp_ssl = null
+
+
+              {#  ##Do not modify below this line##  #}
+    {#                                     #}
+    {#  ###Section for adding Defined and Freeform Tags###  #}
+    {% if defined_tags and defined_tags != 'nan' and defined_tags != '' %}
+      {% if defined_tags[0] %}
+        defined_tags = {
+        {% for tags in defined_tags  %}
+            {% if not loop.last %}
+                "{{ tags[0]  }}"= "{{ tags[1] }}" ,
+            {% else %}
+                "{{ tags[0]  }}"= "{{ tags[1] }}"
+            {% endif %}
+        {% endfor %}
+        }
+      {% else %}
+        defined_tags = {}
+        {% endif %}
+       {% else %}
+        defined_tags = {}
+       {% endif %}
+            {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' %}
+                {% if freeform_tags[0] %}
+        freeform_tags = {
+                    {% for tags in freeform_tags %}
+                        {% if not loop.last  %}
+                "{{ tags[0] }}"="{{ tags[1] }}",
+                        {% else %}
+                "{{ tags[0] }}"="{{ tags[1] }}"
+                        {% endif %}
+                    {% endfor %}
+                    }
+                {% endif %}
+            {% else %}
+        freeform_tags = {}
+            {% endif %}
+    {#  ###Section for adding Defined and Freeform Tags ends here###  #}
+      },
+ }

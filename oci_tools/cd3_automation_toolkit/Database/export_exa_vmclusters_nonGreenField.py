@@ -39,8 +39,8 @@ def print_exa_vmcluster(region, vnc_client,exa_infra, exa_vmcluster, key_name,va
 
     maintenance_window = exa_infra.maintenance_window
 
-    importCommands[region.lower()].write("\nterraform import oci_database_cloud_vm_cluster." + exa_vmcluster_tf_name + " " + str(exa_vmcluster.id))
-
+    #importCommands[region.lower()].write("\nterraform import oci_database_cloud_vm_cluster." + exa_vmcluster_tf_name + " " + str(exa_vmcluster.id))
+    importCommands[region.lower()].write("\nterraform import \"module.exa_vmclusters[\\\"" + exa_vmcluster_tf_name + "\\\"].oci_database_cloud_vm_cluster.exa-vmcluster\" " + str(exa_vmcluster.id))
     for col_header in values_for_column:
         if col_header == 'Region':
             values_for_column[col_header].append(region)
@@ -113,7 +113,7 @@ def export_exa_vmclusters(inputfile, _outdir, _config, network_compartments=[]):
     # Load variables template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent.parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
-    variable_template = env.get_template('variables-template')
+    variable_template = env.get_template('module-variables-template')
 
     # Create backups
     resource = 'tf_import_' + sheetName.lower()

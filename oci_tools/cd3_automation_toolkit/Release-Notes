@@ -277,7 +277,7 @@ SetUPOCI_Via_TF Tag v9.0
 3. Updated the excel sheet templates as per latest CIS compliance for IAM compartments, groups, policies,
    events, notifications and alarms.
 4. Added support for multilple VCN CIDRs in VCNs sheet.
-5. Added export for Dedicated VM Hosts.
+5. Added export for Dedicated VM Hosts and Database tabs.
 6. Modified Database tabs to include new features.
 7. Restructured the code directories and setUpOCI menu options.
 8. Added drop downs in the excel sheet columns to mae excel filling easier.

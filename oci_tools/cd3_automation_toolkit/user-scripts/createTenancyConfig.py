@@ -276,6 +276,7 @@ variable "region" {
 #################################
 #
 # Variables according to Services
+# Please do not modify
 #
 #################################
 
@@ -472,6 +473,22 @@ variable "notifications_topics" {
 variable "notifications_subscriptions" {
   type    = map(any)
   default = {}
+}
+
+#########################
+## Database ##
+#########################
+
+variable "exa_infra" {
+  description = "To provision exadata infrastructure"
+  type        = map(any)
+  default     = {}
+}
+
+variable "exa_vmclusters" {
+  description = "To provision exadata cloud VM cluster"
+  type        = map(any)
+  default     = {}
 }
 
         """
