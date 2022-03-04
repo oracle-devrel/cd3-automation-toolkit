@@ -8,10 +8,6 @@ variable "backup_subnet_id" {
   type = string
   default = ""
 }
-variable "exadata_infrastucture_id" {
-  type = string
-  default = ""
-}
 variable "cpu_core_count" {
   type = number
 }
