@@ -17,18 +17,7 @@ exa_vmclusters = {
             hostname                 = "{{ hostname_prefix }}"
             backup_subnet_id         = "{{ backup_subnet_name }}"
             cpu_core_count           = "{{ cpu_core_count }}"
-
-            {% if vm_cluster_display_name %}
             display_name             = "{{ vm_cluster_display_name }}"
-            {% else %}
-            display_name             = ""
-            {% endif %}
-
-            {% if cluster_name %}
-            cluster_name             = "{{ cluster_name }}"
-            {% else %}
-            cluster_name             = ""
-            {% endif %}
 
             {% if ssh_key_var_name %}
             ssh_public_key        =  "{{ ssh_key_var_name }}"
@@ -38,10 +27,17 @@ exa_vmclusters = {
             ssh_public_key        = null
             {% endif %}
 
+
+            {% if cluster_name %}
+            cluster_name             = "{{ cluster_name }}"
+            {% else %}
+            cluster_name             = ""
+            {% endif %}
+
             {% if license_model %}
             license_model            = "{{ license_model }}"
             {% else %}
-            license_model            = null
+            license_model            = ""
             {% endif %}
 
             {% if allocate_storage_for_local_backups %}
@@ -59,7 +55,7 @@ exa_vmclusters = {
             {% if time_zone %}
             time_zone                = "{{ time_zone }}"
             {% else %}
-            time_zone                = null
+            time_zone                = ""
             {% endif %}
 
             #Optional
