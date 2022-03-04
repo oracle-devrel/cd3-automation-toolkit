@@ -16,23 +16,18 @@ exa_vmclusters = {
             gi_version               = "{{ oracle_grid_infrastructure_version }}"
             hostname                 = "{{ hostname_prefix }}"
             backup_subnet_id         = "{{ backup_subnet_name }}"
-
-            {% if cpu_core_count %}
             cpu_core_count           = "{{ cpu_core_count }}"
-            {% else %}
-            cpu_core_count           = null
-            {% endif %}
 
             {% if vm_cluster_display_name %}
             display_name             = "{{ vm_cluster_display_name }}"
             {% else %}
-            display_name             = null
+            display_name             = ""
             {% endif %}
 
-            {% if vm_cluster_display_name %}
-            cluster_name             = "{{ vm_cluster_display_name }}"
+            {% if cluster_name %}
+            cluster_name             = "{{ cluster_name }}"
             {% else %}
-            cluster_name             = null
+            cluster_name             = ""
             {% endif %}
 
             {% if ssh_key_var_name %}

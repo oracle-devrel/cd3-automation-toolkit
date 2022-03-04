@@ -96,11 +96,15 @@ def create_terraform_exa_vmclusters(inputfile, outdir, prefix, config=DEFAULT_LO
 
         # Check if values are entered for mandatory fields
         if str(df.loc[i, 'Region']).lower() == 'nan' or \
-                str(df.loc[i, 'Compartment Name']).lower() == 'nan':
-            # str(df.loc[i, 'Availability Domain(AD1|AD2|AD3)']).lower() == 'nan' or \
-            # str(df.loc[i, 'Shape']).lower() == 'nan':
-            print(
-                "\nRegion, Compartment Name, Availability Domain(AD1|AD2|AD3), Shape are mandatory fields. Please enter a value and try again.......Exiting!!")
+                str(df.loc[i, 'Compartment Name']).lower() == 'nan' or \
+                str(df.loc[i, 'Exadata Infra Display Name']).lower() == 'nan' or \
+                str(df.loc[i, 'VM Cluster Display Name']).lower() == 'nan' or \
+                str(df.loc[i, 'Client Subnet Name']).lower() == 'nan' or \
+                str(df.loc[i, 'Backup Subnet Name']).lower() == 'nan' or \
+                str(df.loc[i, 'CPU Core Count']).lower() == 'nan' or \
+                str(df.loc[i, 'Hostname Prefix']).lower() == 'nan' or \
+                str(df.loc[i, 'Oracle Grid Infrastructure Version']).lower() == 'nan':
+                print("\nRegion, Compartment Name, Exadata Infra Display Name, VM Cluster Display Name, Subnet Names, CPU Core Count, Hostname Prefix, Oracle Grid Infrastructure Version are mandatory fields. Please enter a value and try again.......Exiting!!")
             exit()
 
         # tempdict = {'oracle_db_software_edition' : 'ENTERPRISE_EDITION_EXTREME_PERFORMANCE'}

@@ -11,7 +11,7 @@ exa_infra = {
         {{ exadata_infra_display_tf_name }} = {
         availability_domain = {{ availability_domain }}
         compartment_id = "{{ compartment_name }}"
-        display_name = "{{ exadata_infra_display_tf_name }}"
+        display_name = "{{ exadata_infra_display_name }}"
         shape = "{{ shape }}"
 
         #Optional
