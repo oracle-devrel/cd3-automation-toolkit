@@ -14,7 +14,7 @@ seclists = {
 }
 {% else %}{% if display_name != "" and display_name != "nan" and display_name != null %}
 
-  # Start of {{ region.lower() }}_{{ seclist_tf_name }} #
+  # Start of #{{ region.lower() }}_{{ seclist_tf_name }}# #
   {{ seclist_tf_name }} = {
         compartment_name = "{{ compartment_tf_name }}"
         vcn_name     = "{{ vcn_tf_name }}"
@@ -72,5 +72,5 @@ seclists = {
     {#  ###Section for adding Defined and Freeform Tags ends here###  #}
 
       },
-  # End of {{ region.lower() }}_{{ seclist_tf_name }} #
+  # End of #{{ region.lower() }}_{{ seclist_tf_name }}# #
 {% endif %}{% endif %}

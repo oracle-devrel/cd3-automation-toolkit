@@ -78,7 +78,7 @@ def create_terraform_seclist(inputfile, outdir, prefix, config, modify_network=F
 
         # Start processing each seclist
         for i in dfseclist.index:
-            seclists_tf_from_secRulesInOCI_sheet_name = commonTools.check_tf_variable(dfseclist.loc[i, 'VCN Name'])+"_"+commonTools.check_tf_variable(dfseclist.loc[i, 'SecList Name'])
+            seclists_tf_from_secRulesInOCI_sheet_name = "#"+commonTools.check_tf_variable(dfseclist.loc[i, 'Region']).lower()+"_"+commonTools.check_tf_variable(dfseclist.loc[i, 'VCN Name'])+"_"+commonTools.check_tf_variable(dfseclist.loc[i, 'SecList Name'])+"#"
             if seclists_tf_from_secRulesInOCI_sheet_name not in seclists_from_secRulesInOCI_sheet:
                 seclists_from_secRulesInOCI_sheet.append(seclists_tf_from_secRulesInOCI_sheet_name)
 
@@ -154,11 +154,11 @@ def create_terraform_seclist(inputfile, outdir, prefix, config, modify_network=F
             if seclist_count == 0 and tempStr['count'] == 0:
                 tempSkeleton[region_in_lowercase] = template.render(tempStr,skeleton=True)
 
-            region_seclist_name = region_in_lowercase + "_" + sl_tf_name
+            region_seclist_name = "#"+region_in_lowercase + "_" + sl_tf_name+"#"
             start = "# Start of " + region_seclist_name + " #"
             end = "# End of " + region_seclist_name + " #"
-            # Option "Modify Network"
 
+            # Option "Modify Network"
             if modify_network:
 
                 # Read the file if it exists
@@ -168,15 +168,14 @@ def create_terraform_seclist(inputfile, outdir, prefix, config, modify_network=F
                         filedata = file.read()
                     file.close()
 
-                # If seclist is present in auto.tfvars
-                if sl_tf_name in filedata:
-                    if sl_tf_name not in modify_network_seclists[region_in_lowercase]:
+                # If seclist is present in auto.tfvars but not in modify_network_seclists
+                if start in filedata:
+                    if start not in modify_network_seclists[region_in_lowercase]:
                         modify_network_seclists[region_in_lowercase] = copy_data_from_file(outfile,region_seclist_name,modify_network_seclists[region_in_lowercase])
 
                 for seclists in seclists_from_secRulesInOCI_sheet:
-                    if seclists in filedata and seclists not in modify_network_seclists[region_in_lowercase]:
-                        region_seclist_name = region_in_lowercase+"_"+seclists
-                        modify_network_seclists[region_in_lowercase] = copy_data_from_file(outfile, region_seclist_name,modify_network_seclists[region_in_lowercase])
+                    if "# Start of " + seclists + " #" in filedata and "# Start of " + seclists + " #" not in modify_network_seclists[region_in_lowercase]:
+                        modify_network_seclists[region_in_lowercase] = copy_data_from_file(outfile, seclists,modify_network_seclists[region_in_lowercase])
 
             # Create Seclist for all the unique names in Subnet Sheet
             if (start not in modify_network_seclists[region_in_lowercase] and region_seclist_name not in common_seclist):
@@ -328,7 +327,7 @@ def create_terraform_seclist(inputfile, outdir, prefix, config, modify_network=F
         if modify_network_seclists[reg] != '':
             if not modify_network:
                 tempSkeleton[reg] = tempSkeleton[reg].replace(textToAddSeclistSearch,modify_network_seclists[reg] + textToAddSeclistSearch)
-                oname = open(outfile, "w")
+                oname = open(outfile, "w+")
                 oname.write(tempSkeleton[reg])
                 oname.close()
                 print(outfile + " containing seclists has been created for region " + reg)
@@ -337,10 +336,11 @@ def create_terraform_seclist(inputfile, outdir, prefix, config, modify_network=F
                 srcdir = outdir + "/" + reg + "/"
                 resource = 'SLs'
                 commonTools.backup_file(srcdir, resource, auto_tfvars_filename)
-                oname = open(outfile, "w")
+                oname = open(outfile, "w+")
                 oname.write(tempSkeleton[reg])
                 oname.close()
                 print(outfile + " containing seclists has been updated for region " + reg)
+
 
 if __name__ == '__main__':
     args = parse_args()

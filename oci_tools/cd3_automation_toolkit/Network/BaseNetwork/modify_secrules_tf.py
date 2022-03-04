@@ -137,13 +137,11 @@ def modify_terraform_secrules(inputfile, outdir, prefix=None, config=DEFAULT_LOC
 
         if str(row['Rule Type']).lower() == 'ingress':
             new_ingress_sec_rule = create_ingress_rule_string(tempStr, ingress_rule, tempdict2)
-            tfStr[region] = tfStr[region].replace(
-                "####ADD_NEW_INGRESS_SEC_RULES " + region_seclist_name + " ####", new_ingress_sec_rule)
+            tfStr[region] = tfStr[region].replace("####ADD_NEW_INGRESS_SEC_RULES " + region_seclist_name + " ####", new_ingress_sec_rule)
 
         if str(row['Rule Type']).lower() == 'egress':
             new_egress_sec_rule = create_egress_rule_string(tempStr, egress_rule, tempdict2)
-            tfStr[region] = tfStr[region].replace(
-                "####ADD_NEW_EGRESS_SEC_RULES " + region_seclist_name + " ####", new_egress_sec_rule)
+            tfStr[region] = tfStr[region].replace("####ADD_NEW_EGRESS_SEC_RULES " + region_seclist_name + " ####", new_egress_sec_rule)
 
         return tfStr[region]
 
@@ -192,7 +190,7 @@ def modify_terraform_secrules(inputfile, outdir, prefix=None, config=DEFAULT_LOC
                 break
             region = region.strip().lower()
 
-            region_seclist_name = region+"_"+seclist_tf_name
+            region_seclist_name = "#"+region+"_"+seclist_tf_name+"#"
 
             if region not in ct.all_regions:
                 print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
