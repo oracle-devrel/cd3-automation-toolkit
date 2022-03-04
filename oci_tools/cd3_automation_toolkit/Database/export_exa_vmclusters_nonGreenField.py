@@ -40,7 +40,8 @@ def print_exa_vmcluster(region, vnc_client,exa_infra, exa_vmcluster, key_name,va
     maintenance_window = exa_infra.maintenance_window
 
     #importCommands[region.lower()].write("\nterraform import oci_database_cloud_vm_cluster." + exa_vmcluster_tf_name + " " + str(exa_vmcluster.id))
-    importCommands[region.lower()].write("\nterraform import \"module.exa_vmclusters[\\\"" + exa_vmcluster_tf_name + "\\\"].oci_database_cloud_vm_cluster.exa-vmcluster\" " + str(exa_vmcluster.id))
+    importCommands[region.lower()].write("\nterraform import \"module.exa-vmclusters[\\\"" + exa_vmcluster_tf_name + "\\\"].oci_database_cloud_vm_cluster.exa_vmcluster\" " + str(exa_vmcluster.id))
+
     for col_header in values_for_column:
         if col_header == 'Region':
             values_for_column[col_header].append(region)

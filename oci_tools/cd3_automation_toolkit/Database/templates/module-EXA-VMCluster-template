@@ -15,12 +15,7 @@ exa_vmclusters = {
             cluster_subnet_id        = "{{ client_subnet_name }}"
             gi_version               = "{{ oracle_grid_infrastructure_version }}"
             hostname                 = "{{ hostname_prefix }}"
-
-            {% if backup_subnet_name %}ac
             backup_subnet_id         = "{{ backup_subnet_name }}"
-            {% else %}
-            backup_subnet_id         = null
-            {% endif %}
 
             {% if cpu_core_count %}
             cpu_core_count           = "{{ cpu_core_count }}"
@@ -82,7 +77,7 @@ exa_vmclusters = {
             {% if backup_network_nsgs  %}
             backup_network_nsg_ids   = [{{ backup_network_nsgs }}]
             {% else %}
-            backup_network_nsg_ids   = null
+            backup_network_nsg_ids   = []
             {% endif %}
 
             {% if data_storage_percentage  %}
@@ -94,7 +89,7 @@ exa_vmclusters = {
             {% if nsgs %}
             nsg_ids                  = [{{ nsgs }}]
             {% else %}
-            nsg_ids                  = null
+            nsg_ids                  = []
             {% endif %}
 
             {% if ocpu_count %}
