@@ -35,9 +35,7 @@ def parse_args():
     parser.add_argument('--config', default=DEFAULT_LOCATION, help='Config file name')
     return parser.parse_args()
 
-def read_infile_data(modifiedroutetableStr, reg, rt):
-    start = "# Start of " + rt + " #"
-    end = "# End of " + rt + " #"
+def read_infile_data(modifiedroutetableStr, reg, start, end):
     modifiedroutetableStr[reg] = re.sub(start+'.*?'+end, '',modifiedroutetableStr[reg] , flags=re.DOTALL)
     modifiedroutetableStr[reg] = re.sub('\n\n+','\n\n',modifiedroutetableStr[reg])
     filedata = modifiedroutetableStr[reg]
@@ -48,7 +46,9 @@ def recursive_process_filedata(common_rt, modifiedroutetableStr, reg, processed_
         if reg in rt:
             # If the route table in auto.tfvars is absent in CD3 sheet, copy it.
             if rt in modifiedroutetableStr[reg] and rt not in processed_rt:
-                modifiedroutetableStr[reg],filedata = read_infile_data(modifiedroutetableStr, reg, rt)
+                start = "# Start of " + rt + " #"
+                end = "# End of " + rt + " #"
+                modifiedroutetableStr[reg],filedata = read_infile_data(modifiedroutetableStr, reg, start, end)
                 common_rt.pop(common_rt.index(rt))
                 recursive_process_filedata(common_rt, modifiedroutetableStr, reg, processed_rt,count)
                 count = count + 1
@@ -622,6 +622,17 @@ def create_terraform_route(inputfile, outdir, prefix, config, modify_network=Fal
             tempStr['destination_type'] = "SERVICE_CIDR_BLOCK"
             tempStr['network_entity_id'] = sgw_tf_name
             vcn_name = tempStr['vcn_tf_name']
+
+            # If the auto.tfvars has a rule for all/objectstorage, and the Excel sheet has a RT with both the options in Subnet's Tab, add only the latest/last one.
+            # Both cannot co-exist in the same route table. Must be either all/objectstorage.
+            start = "## Start Route Rule " + tempStr['region'].lower() + "_" + tempStr['rt_tf_name'] + "_" + tempStr['network_entity_id']
+            end = "## End Route Rule " + tempStr['region'].lower() + "_" + tempStr['rt_tf_name'] + "_" + tempStr['network_entity_id'] + "_objectstorage"
+            if start+ "_objectstorage" in routetableStr[region.lower()] and tempStr['destination'] == 'all':
+                routetableStr[region.lower()], filedata = read_infile_data(routetableStr, region.lower(), start, end)
+            elif start+"_all" in routetableStr[region.lower()] and tempStr['destination'] == 'objectstorage':
+                end = "## End Route Rule " + tempStr['region'].lower() + "_" + tempStr['rt_tf_name'] + "_" + tempStr['network_entity_id'] + "_all"
+                routetableStr[region.lower()], filedata = read_infile_data(routetableStr, region.lower(),start, end)
+
             start_rule = "## Start Route Rule "+tempStr['region'].lower()+"_"+tempStr['rt_tf_name']+"_"+tempStr['network_entity_id']+"_"+tempStr['destination']
             rem_keys = ['vcn_tf_name', 'drg_tf_name', 'ngw_tf_name', 'igw_tf_name', 'lpg_tf_name']
             [tempStr.pop(key) for key in rem_keys if key in tempStr]
