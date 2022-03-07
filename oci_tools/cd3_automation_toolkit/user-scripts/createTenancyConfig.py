@@ -491,6 +491,11 @@ variable "exa_vmclusters" {
   default     = {}
 }
 
+variable "dbsystems_vm_bm" {
+  description = "To provision DB System"
+  type        = map(any)
+  default     = {}
+}
         """
         if (windows_image_id != ''):
             variables_data = variables_data + """

@@ -6,14 +6,14 @@
 # DBSystem-VM-BM - tfvars
 ############################
 
-dbsystem_vm_bm = {
+dbsystems_vm_bm = {
 {% endif %}
        {{ display_tf_name }} = {
             availability_domain  = {{ availability_domain }}
             compartment_id       = "{{ compartment_name }}"
             shape                = "{{ shape }}"
             subnet_id            = "{{ subnet_name }}"
-            hostname                = "{{ hostname_prefix }}"
+            hostname             = "{{ hostname_prefix }}"
 
            {% if cpu_core_count %}
             cpu_core_count       = {{ cpu_core_count }}
@@ -119,10 +119,10 @@ dbsystem_vm_bm = {
             display_name            = null
             {% endif %}
 
-            {% if db_system_display_name %}
-            cluster_name            = "{{ db_system_display_name }}"
+            {% if cluster_name %}
+            cluster_name            = "{{ cluster_name }}"
             {%else%}
-             cluster_name            = null
+             cluster_name            = ""
             {% endif %}
 
             {% if data_storage_size_in_gb %}

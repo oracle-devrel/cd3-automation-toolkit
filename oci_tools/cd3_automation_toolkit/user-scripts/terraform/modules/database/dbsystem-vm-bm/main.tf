@@ -36,7 +36,7 @@ resource "oci_database_db_system" "database_db_system" {
         #        }
         recovery_window_in_days = var.recovery_window_in_days
       }
-      db_name        = var.display_name
+      db_name        = var.db_name
       db_workload    = var.db_workload
       defined_tags   = var.defined_tags
       freeform_tags  = var.freeform_tags

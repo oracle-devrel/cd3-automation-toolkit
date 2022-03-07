@@ -38,7 +38,8 @@ def print_dbsystem_vm_bm(region, db_system_vm_bm, count,db_home, database ,vnc_c
     database_management_config = database.database_management_config
 
     if (count ==1):
-        importCommands[region.lower()].write("\nterraform import oci_database_db_system." + db_system_vm_bm_tf_name + " " + str(db_system_vm_bm.id))
+        #importCommands[region.lower()].write("\nterraform import oci_database_db_system." + db_system_vm_bm_tf_name + " " + str(db_system_vm_bm.id))
+        importCommands[region.lower()].write("\nterraform import \"module.dbsystems-vm-bm[\\\"" + db_system_vm_bm_tf_name + "\\\"].oci_database_db_system.database_db_system\" " + str(db_system_vm_bm.id))
 
     if(count!=1):
         for col_header in values_for_column:
@@ -140,7 +141,7 @@ def export_dbsystems_vm_bm(inputfile, _outdir, _config, network_compartments=[])
     # Load variables template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent.parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
-    variable_template = env.get_template('variables-template')
+    variable_template = env.get_template('module-variables-template')
 
     # Create backups
     resource = 'tf_import_' + sheetName.lower()
