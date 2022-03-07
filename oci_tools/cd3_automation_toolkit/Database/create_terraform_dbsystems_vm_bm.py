@@ -48,7 +48,7 @@ def create_terraform_dbsystems_vm_bm(inputfile, outdir, prefix, config=DEFAULT_L
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
-    template = env.get_template('module-DBSystems-VM-BM-template')
+    template = env.get_template('module-DBSystem-VM-DM-template')
 
     # Read cd3 using pandas dataframe
     df, col_headers = commonTools.read_cd3(filename, sheetName)
@@ -92,6 +92,8 @@ def create_terraform_dbsystems_vm_bm(inputfile, outdir, prefix, config=DEFAULT_L
         # temporary dictionary1 and dictionary2
         tempStr = {}
         tempdict = {}
+        nsg_id = ''
+        backup_nsg_id = ''
 
         #Check if it is different DB home on same BM DB
         if str(df.loc[i, 'Region']).lower() == 'nan' and \
@@ -150,7 +152,7 @@ def create_terraform_dbsystems_vm_bm(inputfile, outdir, prefix, config=DEFAULT_L
                     if "ssh-rsa" in columnvalue.strip():
                         ssh_key_var_name = "\"" + columnvalue.strip() + "\""
                     else:
-                        ssh_key_var_name = "var." + columnvalue.strip()
+                        ssh_key_var_name = columnvalue.strip()
                     tempdict = {'ssh_key_var_name': ssh_key_var_name}
 
             # Process Defined and Freeform Tags
@@ -165,6 +167,9 @@ def create_terraform_dbsystems_vm_bm(inputfile, outdir, prefix, config=DEFAULT_L
             if columnname == 'Subnet Name':
                 columnvalue = commonTools.check_tf_variable(columnvalue)
 
+            if columnname == 'Backup Subnet Name':
+                columnvalue = commonTools.check_tf_variable(columnvalue)
+
 
             if columnname == 'Availability Domain(AD1|AD2|AD3)':
                 columnname = 'availability_domain'
@@ -172,6 +177,57 @@ def create_terraform_dbsystems_vm_bm(inputfile, outdir, prefix, config=DEFAULT_L
                 ad = ADS.index(AD)
                 columnvalue = str(ad)
                 tempdict = {'availability_domain': columnvalue}
+
+
+            if columnname == 'NSGs':
+                if columnvalue != '':
+                    db_nsgs = str(columnvalue).strip().split(",")
+                    if len(db_nsgs) == 1:
+                        for nsg in db_nsgs:
+                            if "ocid" in nsg.strip():
+                                nsg_id = "\"" + nsg.strip() + "\""
+                            else:
+                                nsg_id = "\"" + str(nsg).strip() + "\""
+
+                    elif len(db_nsgs) >= 2:
+                        c = 1
+                        for nsg in db_nsgs:
+                            if "ocid" in nsg.strip():
+                                data = "\"" + nsg.strip() + "\""
+                            else:
+                                data = "\"" + str(nsg).strip() + "\""
+
+                            if c == len(db_nsgs):
+                                nsg_id = nsg_id + data
+                            else:
+                                nsg_id = nsg_id + data + ","
+                            c += 1
+                columnvalue = nsg_id
+
+            if columnname == 'Backup Network NSGs':
+                if columnvalue != '':
+                    backup_nsgs = str(columnvalue).strip().split(",")
+                    if len(backup_nsgs) == 1:
+                        for nsgs in backup_nsgs:
+                            if "ocid" in nsgs.strip():
+                                backup_nsg_id = "\"" + nsgs.strip() + "\""
+                            else:
+                                backup_nsg_id = "\"" + str(nsgs).strip() + "\""
+
+                    elif len(backup_nsgs) >= 2:
+                        c = 1
+                        for nsgs in backup_nsgs:
+                            if "ocid" in nsgs.strip():
+                                data = "\"" + nsgs.strip() + "\""
+                            else:
+                                data = "\"" + str(nsgs).strip() + "\""
+
+                            if c == len(backup_nsgs):
+                                backup_nsg_id = backup_nsg_id + data
+                            else:
+                                backup_nsg_id = backup_nsg_id + data + ","
+                            c += 1
+                columnvalue = backup_nsg_id
 
             columnname = commonTools.check_column_headers(columnname)
             tempStr[columnname] = str(columnvalue).strip()
@@ -186,7 +242,7 @@ def create_terraform_dbsystems_vm_bm(inputfile, outdir, prefix, config=DEFAULT_L
 
 
         # Write all info to TF string
-        tfStr[region]=tfStr[region] + template.render(tempStr)
+        tfStr[region]=tfStr[region][:-1] + template.render(tempStr)
 
 
     # Write TF string to the file in respective region directory
@@ -205,7 +261,7 @@ def create_terraform_dbsystems_vm_bm(inputfile, outdir, prefix, config=DEFAULT_L
 
         # Rename the modules file in outdir to .tf
         module_filename = outdir + "/" + reg + "/" + sheetName.lower() + ".txt"
-        rename_module_filename = outdir + "/" + reg + "/" + sheetName.lower() + ".tf"
+        rename_module_filename = outdir + "/" + reg + "/" + sheetName.lower() + ".tfvars"
 
         if not os.path.isfile(rename_module_filename):
             if os.path.isfile(module_filename):
