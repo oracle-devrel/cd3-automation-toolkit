@@ -254,3 +254,9 @@ variable "exa_vmclusters" {
   type        = map(any)
   default     = {}
 }
+
+variable "dbsystems_vm_bm" {
+  description = "To provision DB System"
+  type        = map(any)
+  default     = {}
+}

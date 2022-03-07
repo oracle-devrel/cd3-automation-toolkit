@@ -13,12 +13,12 @@ resource "oci_database_cloud_exadata_infrastructure" "exa_infra" {
 
   #Optional
   compute_count = var.compute_count
+  storage_count = var.storage_count
+
 #  customer_contacts {
 #    #Optional
 #    email = var.customer_contacts_email
 #  }
-  defined_tags  = var.defined_tags
-  freeform_tags = var.freeform_tags
 #  maintenance_window {
 #    #Required
 #    preference = var.maintenance_window_preference
@@ -35,6 +35,13 @@ resource "oci_database_cloud_exadata_infrastructure" "exa_infra" {
 #    }
 #    weeks_of_month = var.maintenance_window_weeks_of_month
 #  }
-  storage_count = var.storage_count
+
+  defined_tags  = var.defined_tags
+  freeform_tags = var.freeform_tags
+
+  lifecycle {
+    ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"], freeform_tags]
+  }
+
 }
 
