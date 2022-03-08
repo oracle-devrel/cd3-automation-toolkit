@@ -346,6 +346,10 @@ def create_terraform_drg_route(inputfile, outdir, prefix, non_gf_tenancy, config
         tempSkeletonDRGDistribution[reg] = tempSkeletonDRGDistribution[reg] + tempSkeletonDRGDistributionStmt[reg]
 
         if drg_rt[reg] != '' :
+            if (os.path.exists(rtfile)):
+                resource = 'DRGRTs'
+                srcdir = outdir + "/" + reg + "/"
+                commonTools.backup_file(srcdir, resource, prefix + drg_rt_auto_tfvars_filename)
             oname_rt = open(rtfile, "w+")
             print("Writing to..." + str(rtfile))
             oname_rt.write(tempSkeletonDRGRouteTable[reg])
@@ -358,13 +362,17 @@ def create_terraform_drg_route(inputfile, outdir, prefix, non_gf_tenancy, config
                     commonTools.backup_file(srcdir, resource, prefix + drg_rt_auto_tfvars_filename)
 
         if drg_rd_stmt[reg] != '' or drg_rd[reg] != '':
+            if (os.path.exists(rtdistribution)):
+                resource = 'DRGRTs'
+                srcdir = outdir + "/" + reg + "/"
+                commonTools.backup_file(srcdir, resource, prefix + drg_distribution_auto_tfvars_template)
             oname_drg_dis = open(rtdistribution, "w+")
             print("Writing to..." + str(rtdistribution))
             oname_drg_dis.write(tempSkeletonDRGDistribution[reg])
             oname_drg_dis.close()
         else:
             if (drg_rd_stmt[reg] == '' and drg_rd[reg] == ''):
-                # Backup the existing files and create new ones
+                # Backup the existing files
                 if (os.path.exists(rtdistribution)):
                     resource = 'DRGRTs'
                     srcdir = outdir + "/" + reg + "/"
