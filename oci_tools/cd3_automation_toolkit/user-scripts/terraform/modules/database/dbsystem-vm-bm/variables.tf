@@ -80,15 +80,15 @@ variable "db_version" {
   type    = string
   default = ""
 }
-variable "pdb_name" {
-  type    = string
-  default = ""
-}
 variable "db_name" {
-  type    = string
-  default = ""
+  type = string
+  default = null
 }
 variable "db_home_display_name" {
+  type = string
+  default = null
+}
+variable "pdb_name" {
   type    = string
   default = ""
 }
@@ -126,7 +126,14 @@ variable "freeform_tags" {
   type    = map(any)
   default = {}
 }
-
+variable "backup_network_nsg_id" {
+  type    = list(string)
+  default = []
+}
+variable "backup_subnet_id" {
+  type    = string
+  default = ""
+}
 variable "cluster_name" {
   type    = string
   default = ""

@@ -38,20 +38,23 @@ resource "oci_database_db_system" "database_db_system" {
       }
       db_name        = var.db_name
       db_workload    = var.db_workload
+      defined_tags   = var.defined_tags
+      freeform_tags  = var.freeform_tags
       ncharacter_set = var.ncharacter_set #(Applicable when source=NONE)
       pdb_name       = var.pdb_name       #(Applicable when source=NONE)
       #sid_prefix = var.sid_prefix
       #tde_wallet_password = var.tde_wallet_password
-      defined_tags = var.defined_tags
-      freeform_tags = var.freeform_tags
     }
     #Optional
     # database_software_image_id = var.db_software_image_id      #(Applicable when source=DB_BACKUP | NONE)
     db_version    = var.db_version
+    defined_tags  = {}
     display_name  = var.db_home_display_name
-
+    freeform_tags = {}
   }
 
+  backup_network_nsg_ids  = var.backup_network_nsg_id
+  backup_subnet_id        = var.backup_subnet_id
   cluster_name            = var.cluster_name
   cpu_core_count          = var.cpu_core_count
   data_storage_percentage = var.data_storage_percentage
@@ -63,7 +66,8 @@ resource "oci_database_db_system" "database_db_system" {
   #  }
   license_model = var.license_model
   display_name  = var.display_name
-
+  defined_tags  = {}
+  freeform_tags = {}
   #fault_domains = []
   #kms_key_id = ""
   #kms_key_version_id = ""
@@ -86,10 +90,6 @@ resource "oci_database_db_system" "database_db_system" {
   #   preference = ""                   # (Applicable when source=NONE)
   #    weeks_of_month = []               # (Applicable when source=NONE)
   #}
-
-  lifecycle {
-    ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"], freeform_tags]
-  }
 
 }
 
