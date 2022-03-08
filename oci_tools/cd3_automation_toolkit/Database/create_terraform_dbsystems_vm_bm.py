@@ -259,14 +259,6 @@ def create_terraform_dbsystems_vm_bm(inputfile, outdir, prefix, config=DEFAULT_L
             oname[reg].close()
             print(outfile[reg] + " for DBSystems-VM-BM has been created for region "+reg)
 
-        # Rename the modules file in outdir to .tf
-        module_filename = outdir + "/" + reg + "/" + sheetName.lower() + ".txt"
-        rename_module_filename = outdir + "/" + reg + "/" + sheetName.lower() + ".tfvars"
-
-        if not os.path.isfile(rename_module_filename):
-            if os.path.isfile(module_filename):
-                os.rename(module_filename, rename_module_filename)
-
 
 if __name__ == '__main__':
     args = parse_args()
