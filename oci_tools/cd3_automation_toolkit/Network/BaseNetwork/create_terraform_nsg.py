@@ -262,11 +262,12 @@ def parse_args():
     parser.add_argument('inputfile', help='Full Path of cd3 excel file or csv containing NSG info')
     parser.add_argument('outdir', help='Output directory')
     parser.add_argument('prefix', help='customer name/prefix for all file names')
+    parser.add_argument('non_gf_tenancy')
     parser.add_argument('--config', help='Config file name')
     return parser.parse_args()
 
 
-def create_terraform_nsg(inputfile, outdir, prefix, config, nongf_tenancy=False):
+def create_terraform_nsg(inputfile, outdir, prefix, non_gf_tenancy, config):
     configFileName = config
     ct = commonTools()
     ct.get_subscribedregions(configFileName)
@@ -274,7 +275,6 @@ def create_terraform_nsg(inputfile, outdir, prefix, config, nongf_tenancy=False)
 
     # tested path allows for space, full or relative path acceptable
     nsgParser = cd3parser(os.path.realpath(inputfile)).getNSG()
-
 
     regionDict = nsgParser.getRegionDict()
     headerDict = nsgParser.getHeaderDict()
@@ -350,4 +350,4 @@ def create_terraform_nsg(inputfile, outdir, prefix, config, nongf_tenancy=False)
 
 if __name__ == '__main__':
     args = parse_args()
-    create_terraform_nsg(args.inputfile, args.outdir, args.prefix, args.config)
+    create_terraform_nsg(args.inputfile, args.outdir, args.prefix, args.non_gf_tenancy, args.config)

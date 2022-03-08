@@ -34,10 +34,11 @@ def parse_args():
     parser.add_argument('outdir', help='Output directory for creation of TF files')
     parser.add_argument('prefix', help='customer name/prefix for all file names')
     parser.add_argument('--modify-network', action='store_true', help='Modify network')
+    parser.add_argument('non_gf_tenancy')
     parser.add_argument('--config', default=DEFAULT_LOCATION, help='Config file name')
     return parser.parse_args()
 
-def create_terraform_dhcp_options(inputfile, outdir, prefix, config, modify_network=False):
+def create_terraform_dhcp_options(inputfile, outdir, prefix, non_gf_tenancy, config, modify_network=False):
     outfile = {}
     deffile = {}
     oname = {}
@@ -180,6 +181,7 @@ def create_terraform_dhcp_options(inputfile, outdir, prefix, config, modify_netw
 
     if (modify_network == 'true'):
         for reg in ct.all_regions:
+
             reg_out_dir = outdir + "/" + reg
             if not os.path.exists(reg_out_dir):
                 os.makedirs(reg_out_dir)
@@ -205,8 +207,13 @@ def create_terraform_dhcp_options(inputfile, outdir, prefix, config, modify_netw
                 oname[reg].write(tfStr[reg])
                 oname[reg].close()
                 print(outfile[reg] + " containing TF for DHCP Options has been updated for region " + reg)
+            else:
+                if(custom[reg]==''):
+                    if (os.path.exists(outfile[reg])):
+                        resource = 'Custom-DHCP'
+                        commonTools.backup_file(srcdir, resource, prefix + custom_dhcp_auto_tfvars_filename)
 
-            # Added this if condition again because modify network was showing tf destroying Default DHCP Options
+            # Added this if condition again because modify network was showing tf destroying for Default DHCP Options
             if (defStr[reg] != ''):
                 defStr[reg] = defStr[reg] + "\n}"
                 if (os.path.exists(deffile[reg])):
@@ -216,6 +223,11 @@ def create_terraform_dhcp_options(inputfile, outdir, prefix, config, modify_netw
                 defname[reg].write(defStr[reg])
                 defname[reg].close()
                 print(deffile[reg] + " for Default DHCP Options has been updated for region " + reg)
+            else:
+                if (defStr[reg] == ''):
+                    if (os.path.exists(deffile[reg])):
+                        resource = 'Default-DHCP'
+                        commonTools.backup_file(srcdir, resource, prefix + def_dhcp_auto_tfvars_filename)
 
 
     elif (modify_network == 'false'):
@@ -235,6 +247,14 @@ def create_terraform_dhcp_options(inputfile, outdir, prefix, config, modify_netw
 
             srcdir = outdir + "/" + reg + "/"
 
+            # Remove the files from other regions if there are any in outdir that is not in CD3.
+            if reg not in region_included_for_custom_dhcp:
+                resource = 'Custom-DHCP'
+                commonTools.backup_file(srcdir, resource, prefix + custom_dhcp_auto_tfvars_filename)
+            if reg not in region_included_for_default_dhcp:
+                resource = 'Default-DHCP'
+                commonTools.backup_file(srcdir, resource, prefix + def_dhcp_auto_tfvars_filename)
+
             if (tfStr[reg] != ''):
                 if (os.path.exists(outfile[reg])):
                     resource = 'Custom-DHCP'
@@ -247,7 +267,6 @@ def create_terraform_dhcp_options(inputfile, outdir, prefix, config, modify_netw
             if (defStr[reg] != ''):
                 defStr[reg] = defStr[reg] + "\n}"
                 if (os.path.exists(deffile[reg])):
-                    print(deffile[reg])
                     resource = 'Default-DHCP'
                     commonTools.backup_file(srcdir, resource, prefix + def_dhcp_auto_tfvars_filename)
                 defname[reg] = open(deffile[reg], "w+")
@@ -259,4 +278,4 @@ def create_terraform_dhcp_options(inputfile, outdir, prefix, config, modify_netw
 if __name__ == '__main__':
     args = parse_args()
     # Execution of the code begins here
-    create_terraform_dhcp_options(args.inputfile, args.outdir, args.config, args.modify_network)
+    create_terraform_dhcp_options(args.inputfile, args.outdir, args.prefix, args.non_gf_tenancy, args.config, args.modify_network)

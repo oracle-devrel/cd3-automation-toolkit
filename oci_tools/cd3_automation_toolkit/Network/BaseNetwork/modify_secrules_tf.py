@@ -27,10 +27,12 @@ def parse_args():
     parser.add_argument("inputfile",help="Full Path of input file: It could be either the properties file eg CD3 excel file")
     parser.add_argument("outdir", help="directory path for output tf files ")
     parser.add_argument("--config", default=DEFAULT_LOCATION, help="Config file name")
+    parser.add_argument('non_gf_tenancy', default=False)
     return parser.parse_args()
 
 
-def modify_terraform_secrules(inputfile, outdir, prefix=None, config=DEFAULT_LOCATION):
+def modify_terraform_secrules(inputfile, outdir, prefix=None, non_gf_tenancy=False, config=DEFAULT_LOCATION):
+
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
@@ -300,4 +302,4 @@ def modify_terraform_secrules(inputfile, outdir, prefix=None, config=DEFAULT_LOC
 if __name__ == '__main__':
     # Execution of the code begins here
     args = parse_args()
-    modify_terraform_secrules(args.inputfile, args.outdir, None, args.config)
+    modify_terraform_secrules(args.inputfile, args.outdir, prefix=None, non_gf_tenancy=args.non_gf_tenancy, config=args.config)

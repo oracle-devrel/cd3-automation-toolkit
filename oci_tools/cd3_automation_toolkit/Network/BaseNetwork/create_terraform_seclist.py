@@ -324,23 +324,33 @@ def create_terraform_seclist(inputfile, outdir, prefix, config, modify_network=F
     for reg in ct.all_regions:
         textToAddSeclistSearch = "##Add New Seclists for "+reg+" here##"
         outfile = outdir + "/" + reg + "/" + prefix + auto_tfvars_filename
-        if modify_network_seclists[reg] != '':
-            if not modify_network:
-                tempSkeleton[reg] = tempSkeleton[reg].replace(textToAddSeclistSearch,modify_network_seclists[reg] + textToAddSeclistSearch)
-                oname = open(outfile, "w+")
-                oname.write(tempSkeleton[reg])
-                oname.close()
-                print(outfile + " containing seclists has been created for region " + reg)
-            else:
-                tempSkeleton[reg] = tempSkeleton[reg].replace(textToAddSeclistSearch,modify_network_seclists[reg] + textToAddSeclistSearch)
-                srcdir = outdir + "/" + reg + "/"
-                resource = 'SLs'
-                commonTools.backup_file(srcdir, resource, auto_tfvars_filename)
-                oname = open(outfile, "w+")
-                oname.write(tempSkeleton[reg])
-                oname.close()
-                print(outfile + " containing seclists has been updated for region " + reg)
 
+        if modify_network_seclists[reg] != '':
+            if reg in region_included:
+                if not modify_network:
+                    tempSkeleton[reg] = tempSkeleton[reg].replace(textToAddSeclistSearch,modify_network_seclists[reg] + textToAddSeclistSearch)
+                    oname = open(outfile, "w+")
+                    oname.write(tempSkeleton[reg])
+                    oname.close()
+                    print(outfile + " containing seclists has been created for region " + reg)
+                else:
+                    tempSkeleton[reg] = tempSkeleton[reg].replace(textToAddSeclistSearch,modify_network_seclists[reg] + textToAddSeclistSearch)
+                    srcdir = outdir + "/" + reg + "/"
+                    resource = 'SLs'
+                    commonTools.backup_file(srcdir, resource, auto_tfvars_filename)
+                    oname = open(outfile, "w+")
+                    oname.write(tempSkeleton[reg])
+                    oname.close()
+                    print(outfile + " containing seclists has been updated for region " + reg)
+            else:
+                if reg not in region_included:
+                    srcdir = outdir + "/" + reg + "/"
+                    resource = 'SLs'
+                    commonTools.backup_file(srcdir, resource, 'seclists.auto.tfvars')
+        else:
+            srcdir = outdir + "/" + reg + "/"
+            resource = 'SLs'
+            commonTools.backup_file(srcdir, resource, 'seclists.auto.tfvars')
 
 if __name__ == '__main__':
     args = parse_args()

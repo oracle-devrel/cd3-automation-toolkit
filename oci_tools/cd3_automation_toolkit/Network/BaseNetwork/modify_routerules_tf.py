@@ -12,6 +12,7 @@
 import sys
 import argparse
 import os
+
 from oci.config import DEFAULT_LOCATION
 from pathlib import Path
 sys.path.append(os.getcwd()+"/../../..")
@@ -28,11 +29,12 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Updates routelist for subnet. It accepts input file which contains new rules to be added to the existing rule list of the subnet.")
     parser.add_argument("inputfile", help="Required; Full Path to input route file (CD3 excel file) containing rules to be updated; See example folder for sample format: add_routes-example.txt")
     parser.add_argument("outdir",help="directory path for output tf files ")
+    parser.add_argument('non_gf_tenancy')
     parser.add_argument("--config", default=DEFAULT_LOCATION, help="Config file name")
     return parser.parse_args()
 
 
-def modify_terraform_drg_routerules(inputfile, outdir, prefix=None, config=DEFAULT_LOCATION):
+def modify_terraform_drg_routerules(inputfile, outdir, prefix=None, non_gf_tenancy=False, config=DEFAULT_LOCATION):
     filename = inputfile
     configFileName = config
 
@@ -245,7 +247,7 @@ def modify_terraform_drg_routerules(inputfile, outdir, prefix=None, config=DEFAU
             oname_rt.write(tempSkeletonDRGRouteTable[reg])
             oname_rt.close()
 
-def modify_terraform_routerules(inputfile, outdir, prefix=None, config=DEFAULT_LOCATION):
+def modify_terraform_routerules(inputfile, outdir, prefix=None, non_gf_tenancy=False, config=DEFAULT_LOCATION):
     filename = inputfile
     configFileName = config
 
@@ -349,9 +351,12 @@ def modify_terraform_routerules(inputfile, outdir, prefix=None, config=DEFAULT_L
 
     for i in df.index:
         region = str(df.loc[i, 'Region'])
+
         if (region in commonTools.endNames):
             break
+
         region = region.strip().lower()
+
         if region not in ct.all_regions:
             print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
             exit(1)
@@ -367,19 +372,19 @@ def modify_terraform_routerules(inputfile, outdir, prefix=None, config=DEFAULT_L
             continue
 
         tempStr.update({'count': 1})
-        if ('Default Route Table for' in display_name.strip()):
-            if ('Default Route Table for' + region not in region_included):
+        if ('Default Route Table for' in str(df.loc[i,'Route Table Name']).strip()):
+            if ('Default Route Table for' + str(df.loc[i, 'Region']).lower() not in region_included):
                 tempStr.update({'count': 0})
-                region_included.append('Default Route Table for' + region)
+                region_included.append('Default Route Table for' + str(df.loc[i, 'Region']).lower())
         elif region not in region_included:
             tempStr.update({'count': 0})
-            region_included.append(region)
+            region_included.append(region.lower())
 
         # Create Skeleton Template
         if tempStr['count'] == 0:
-            if ('Default Route Table for' in display_name.strip()):
+            if ('Default Route Table for' in str(df.loc[i,'Route Table Name']).strip()):
                 default_rt_tempSkeleton[region] = defaultrt.render(tempStr, skeleton=True, region=region)
-            elif ('Default Route Table for' not in display_name.strip()):
+            elif ('Default Route Table for' not in str(df.loc[i,'Route Table Name']).strip()):
                 tempSkeleton[region] = routetable.render(tempStr, skeleton=True, region=region)
 
         for columnname in dfcolumns:
@@ -473,7 +478,7 @@ def modify_terraform_routerules(inputfile, outdir, prefix=None, config=DEFAULT_L
             tempStr[columnname] = str(columnvalue).strip()
             tempStr.update(tempdict)
 
-            region_rt_name = region.lower()+"_"+rt_tf_name
+            region_rt_name = "#"+region.lower()+"_"+rt_tf_name+"#"
             tempdict = { 'region_rt_name' : region_rt_name }
             tempStr.update(tempdict)
 
@@ -508,6 +513,6 @@ def modify_terraform_routerules(inputfile, outdir, prefix=None, config=DEFAULT_L
 if __name__ == '__main__':
     args = parse_args()
     # Execution of the code begins here
-    modify_terraform_routerules(args.inputfile, args.outdir, prefix=None, config=args.config)
-    modify_terraform_drg_routerules(args.inputfile, args.outdir, prefix=None, config=args.config)
+    modify_terraform_routerules(args.inputfile, args.outdir, prefix=None, non_gf_tenancy=args.non_gf_tenancy, config=args.config)
+    modify_terraform_drg_routerules(args.inputfile, args.outdir, prefix=None, non_gf_tenancy=args.non_gf_tenancy, config=args.config)
 

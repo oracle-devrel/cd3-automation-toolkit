@@ -34,14 +34,15 @@ def parse_args():
     parser.add_argument('inputfile',help='Full Path of input file eg: cd3 excel file')
     parser.add_argument('outdir', help='Output directory for creation of TF files')
     parser.add_argument('prefix', help='customer name/prefix for all file names')
-    parser.add_argument('--modify-network', action='store_true', help='modify network')
+    parser.add_argument('non_gf_tenancy')
+    parser.add_argument('--modify-network', default=False, action='store_true', help='modify network')
     parser.add_argument('--config', default=DEFAULT_LOCATION, help='Config file name')
     return parser.parse_args()
 
 
 
 
-def create_major_objects(inputfile, outdir, prefix, config, modify_network=False):
+def create_major_objects(inputfile, outdir, prefix, non_gf_tenancy, config, modify_network=False):
     # Declare Variables
     filename = inputfile
     configFileName = config
@@ -686,11 +687,14 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
                 oname_oci_drg_data[reg].close()
                 print(outfile_oci_drg_data[reg] + " for oci-drg-data for DRGs has been updated for region " + reg)
 
-            if (dhcp_default_tfStr[reg] != ''):
-                oname_def_dhcp[reg] = open(outfile_dhcp[reg], "w+")
-                oname_def_dhcp[reg].write(dhcp_default_tfStr[reg])
-                oname_def_dhcp[reg].close()
-                print(outfile_dhcp[reg] + " for default DHCP options for VCNs has been created for region " + reg)
+            if non_gf_tenancy:
+                pass
+            else:
+                if (dhcp_default_tfStr[reg] != ''):
+                    oname_def_dhcp[reg] = open(outfile_dhcp[reg], "w+")
+                    oname_def_dhcp[reg].write(dhcp_default_tfStr[reg])
+                    oname_def_dhcp[reg].close()
+                    print(outfile_dhcp[reg] + " for default DHCP options for VCNs has been created for region " + reg)
 
             if (tfStr[reg] != ''):
                 tfStr[reg] = tfStr[reg]
@@ -703,4 +707,4 @@ def create_major_objects(inputfile, outdir, prefix, config, modify_network=False
 
 if __name__ == '__main__':
     args = parse_args()
-    create_major_objects(args.inputfile, args.outdir, args.prefix, args.config, args.modify_network)
+    create_major_objects(args.inputfile, args.outdir, prefix=args.prefix, non_gf_tenancy=args.non_gf_tenancy, modify_network=args.modify_network, config=args.config)

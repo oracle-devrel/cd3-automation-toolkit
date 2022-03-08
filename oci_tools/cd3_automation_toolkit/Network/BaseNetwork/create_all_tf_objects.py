@@ -30,36 +30,37 @@ def parse_args():
     parser.add_argument('outdir', help='Output directory for creation of TF files')
     parser.add_argument('prefix', help='customer name/prefix for all file names')
     parser.add_argument('--modify-network', action='store_true', help='modify network')
+    parser.add_argument('non_gf_tenancy')
     parser.add_argument('--config', default=DEFAULT_LOCATION, help='Config file name')
     return parser.parse_args()
 
 
-def create_all_tf_objects(inputfile, outdir, prefix, config, modify_network=False):
+def create_all_tf_objects(inputfile, outdir, prefix, config, non_gf_tenancy, modify_network=False):
     if not os.path.exists(outdir):
         os.makedirs(outdir)
 
     with section('Process VCNs Tab and DRGs Tab'):
-        create_major_objects(inputfile, outdir, prefix, config, modify_network)
+        create_major_objects(inputfile, outdir, prefix, non_gf_tenancy, config, modify_network)
 
     with section('Process DHCP Tab'):
-        create_terraform_dhcp_options(inputfile, outdir, prefix, config, modify_network)
+        create_terraform_dhcp_options(inputfile, outdir, prefix, non_gf_tenancy, config, modify_network)
 
     with section('Process DRGs tab for DRG Route Tables and Route Distribution creation'):
-        create_terraform_drg_route(inputfile, outdir, prefix, config, modify_network)
+        create_terraform_drg_route(inputfile, outdir, prefix, non_gf_tenancy, config, modify_network)
 
     with section('Process Subnets tab for Routes creation'):
-        create_terraform_route(inputfile, outdir, prefix, config, modify_network)
+        create_terraform_route(inputfile, outdir, prefix, non_gf_tenancy,  config,  modify_network)
 
     with section('Process Subnets for Seclists creation'):
         create_terraform_seclist(inputfile, outdir, prefix, config, modify_network)
 
     with section('Process Subnets for Subnets creation'):
-        create_terraform_subnet(inputfile, outdir, prefix, config, modify_network)
+        create_terraform_subnet(inputfile, outdir, prefix, non_gf_tenancy, config, modify_network)
 
     print('\n\nMake sure to export all SecRules, RouteRules and DRG RouteRules to CD3. Use sub-options 3,4 under option 3(Network) of Main Menu for the same.')
 
 
 if __name__ == '__main__':
     args = parse_args()
-    create_all_tf_objects(args.inputfile, args.outdir, args.prefix, config=args.config,
+    create_all_tf_objects(args.inputfile, args.outdir, args.prefix, config=args.config, non_gf_tenancy=args.non_gf_tenancy,
                           modify_network=args.modify_network)

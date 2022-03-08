@@ -125,7 +125,7 @@ def export_network():
         Option(None, Network.modify_terraform_drg_routerules, 'Processing DRGRouteRulesinOCI Tab'),
         Option(None, Network.create_terraform_nsg, 'Processing NSGs Tab'),
     ]
-    execute_options(options, inputfile, outdir, prefix, config=config)
+    execute_options(options, inputfile, outdir, prefix, non_gf_tenancy, config=config)
     print("\n\nExecute tf_import_commands_network_nonGF.sh script created under each region directory to synch TF with OCI Network objects\n")
 
 
@@ -241,16 +241,16 @@ def create_identity(execute_all=False):
     execute_options(options, inputfile, outdir, prefix, config=config)
 
 
-def modify_terraform_network(inputfile, outdir, prefix, config):
-    Network.create_all_tf_objects(inputfile, outdir, prefix, config=config, modify_network=True)
+def modify_terraform_network(inputfile, outdir, prefix, non_gf_tenancy, config):
+    Network.create_all_tf_objects(inputfile, outdir, prefix, config=config, non_gf_tenancy=non_gf_tenancy, modify_network=True)
 
 
-def export_terraform_routes_and_secrules(inputfile, outdir, prefix, config):
+def export_terraform_routes_and_secrules(inputfile, outdir, prefix, config, non_gf_tenancy):
     compartments = get_compartment_list('OCI Rules')
     Network.export_seclist(inputfile, network_compartments=compartments, _config=config, _tf_import_cmd=False, outdir=None)
     Network.export_routetable(inputfile, network_compartments=compartments, _config=config, _tf_import_cmd=False, outdir=None)
 
-def export_terraform_drg_routes(inputfile, outdir, prefix, config):
+def export_terraform_drg_routes(inputfile, outdir, prefix, config, non_gf_tenancy):
     compartments = get_compartment_list('OCI DRG Rules')
     Network.export_drg_routetable(inputfile, network_compartments=compartments, _config=config, _tf_import_cmd=False,outdir=None)
 
@@ -272,7 +272,7 @@ def create_network(execute_all=False):
     ]
     if not execute_all:
         options = show_options(options, quit=True, menu=True, index=1)
-    execute_options(options, inputfile, outdir, prefix, config=config)
+    execute_options(options, inputfile, outdir, prefix, config=config, non_gf_tenancy=non_gf_tenancy)
 
 def create_instances(inputfile, outdir, prefix,config):
     options = [
