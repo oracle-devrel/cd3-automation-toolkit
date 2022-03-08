@@ -36,6 +36,7 @@ def create_terraform_exa_infra(inputfile, outdir, prefix, config=DEFAULT_LOCATIO
     configFileName = config
 
     sheetName = "EXA-Infra"
+    auto_tfvars_filename = '_' + sheetName.lower() + '.auto.tfvars'
     ct = commonTools()
     ct.get_subscribedregions(configFileName)
 
@@ -47,7 +48,7 @@ def create_terraform_exa_infra(inputfile, outdir, prefix, config=DEFAULT_LOCATIO
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
-    template = env.get_template('EXA-Infra-template')
+    template = env.get_template('module-EXA-Infra-template')
 
     # Read cd3 using pandas dataframe
     df, col_headers = commonTools.read_cd3(filename, sheetName)
@@ -64,7 +65,9 @@ def create_terraform_exa_infra(inputfile, outdir, prefix, config=DEFAULT_LOCATIO
         tfStr[reg] = ''
         srcdir = outdir + "/" + reg + "/"
         resource = sheetName.lower()
-        commonTools.backup_file(srcdir, resource, sheetName.lower()+".tf")
+        commonTools.backup_file(srcdir, resource, auto_tfvars_filename)
+
+    regions_done_count = []
 
     # Iterate over rows
     for i in df.index:
@@ -132,19 +135,29 @@ def create_terraform_exa_infra(inputfile, outdir, prefix, config=DEFAULT_LOCATIO
                 columnvalue = str(ad)
                 tempdict = {'availability_domain': columnvalue}
 
+
             columnname = commonTools.check_column_headers(columnname)
             tempStr[columnname] = str(columnvalue).strip()
             tempStr.update(tempdict)
 
+
+        if (region not in regions_done_count):
+            tempdict = {"count": 0}
+            regions_done_count.append(region)
+        else:
+            tempdict = {"count": i}
+        tempStr.update(tempdict)
+
+
         # Write all info to TF string
-        tfStr[region]=tfStr[region] + template.render(tempStr)
+        tfStr[region]=tfStr[region][:-1] + template.render(tempStr)
 
     # Write TF string to the file in respective region directory
     for reg in ct.all_regions:
         reg_out_dir = outdir + "/" + reg
         if not os.path.exists(reg_out_dir):
             os.makedirs(reg_out_dir)
-        outfile[reg] = reg_out_dir + "/"+prefix + "_"+sheetName.lower()+".tf"
+        outfile[reg] = reg_out_dir + "/" + prefix + auto_tfvars_filename
 
         if(tfStr[reg]!=''):
             oname[reg]=open(outfile[reg],'w')

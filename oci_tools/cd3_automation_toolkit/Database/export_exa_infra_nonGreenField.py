@@ -24,7 +24,8 @@ def print_exa_infra(region, exa_infra, values_for_column, ntk_compartment_name):
     exa_infra_tf_name = commonTools.check_tf_variable(exa_infra.display_name)
     maintenance_window = exa_infra.maintenance_window
 
-    importCommands[region.lower()].write("\nterraform import oci_database_cloud_exadata_infrastructure." + exa_infra_tf_name + " " + str(exa_infra.id))
+    #importCommands[region.lower()].write("\nterraform import oci_database_cloud_exadata_infrastructure." + exa_infra_tf_name + " " + str(exa_infra.id))
+    importCommands[region.lower()].write("\nterraform import \"module.exa-infra[\\\"" + exa_infra_tf_name + "\\\"].oci_database_cloud_exadata_infrastructure.exa_infra\" " + str(exa_infra.id))
 
     for col_header in values_for_column:
         if col_header == 'Region':
