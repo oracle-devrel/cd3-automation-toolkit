@@ -74,6 +74,8 @@ drg_attachments = {
                         {% endif %}
                     {% endfor %}
                     }
+                {% else %}
+        freeform_tags = {}
                 {% endif %}
             {% else %}
         freeform_tags = {}

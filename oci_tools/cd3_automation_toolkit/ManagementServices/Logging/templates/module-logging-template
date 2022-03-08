@@ -34,9 +34,10 @@ log_groups = {
         }
       {% else %}
         defined_tags = {}
-        {% endif %} {% else %}
+        {% endif %}
+       {% else %}
         defined_tags = {}
-            {% endif %}
+       {% endif %}
             {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' %}
                 {% if freeform_tags[0] %}
         freeform_tags = {
@@ -48,11 +49,14 @@ log_groups = {
                         {% endif %}
                     {% endfor %}
                     }
+                {% else %}
+        freeform_tags = {}
                 {% endif %}
             {% else %}
         freeform_tags = {}
             {% endif %}
     {#  ###Section for adding Defined and Freeform Tags ends here###  #}
+
       },
 {% endif %}{% endif %}
 {% endif %}

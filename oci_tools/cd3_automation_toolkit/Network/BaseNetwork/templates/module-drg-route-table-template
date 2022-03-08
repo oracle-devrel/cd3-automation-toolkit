@@ -63,6 +63,8 @@ drg_route_tables = {
                         {% endif %}
                     {% endfor %}
                     }
+                {% else %}
+        freeform_tags = {}
                 {% endif %}
             {% else %}
         freeform_tags = {}

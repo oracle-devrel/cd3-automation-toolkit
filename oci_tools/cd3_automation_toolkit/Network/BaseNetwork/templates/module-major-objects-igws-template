@@ -51,6 +51,8 @@ igws = {
                         {% endif %}
                     {% endfor %}
                     }
+                {% else %}
+        freeform_tags = {}
                 {% endif %}
             {% else %}
         freeform_tags = {}

@@ -53,6 +53,8 @@ drg_route_distributions = {
                         {% endif %}
                     {% endfor %}
                     }
+                {% else %}
+        freeform_tags = {}
                 {% endif %}
             {% else %}
         freeform_tags = {}
