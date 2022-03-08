@@ -48,9 +48,9 @@ resource "oci_database_db_system" "database_db_system" {
     #Optional
     # database_software_image_id = var.db_software_image_id      #(Applicable when source=DB_BACKUP | NONE)
     db_version    = var.db_version
-    defined_tags  = {}
+    defined_tags  = var.defined_tags
     display_name  = var.db_home_display_name
-    freeform_tags = {}
+    freeform_tags = var.freeform_tags
   }
 
   backup_network_nsg_ids  = var.backup_network_nsg_id
@@ -66,8 +66,8 @@ resource "oci_database_db_system" "database_db_system" {
   #  }
   license_model = var.license_model
   display_name  = var.display_name
-  defined_tags  = {}
-  freeform_tags = {}
+  defined_tags  = var.defined_tags
+  freeform_tags = var.freeform_tags
   #fault_domains = []
   #kms_key_id = ""
   #kms_key_version_id = ""
