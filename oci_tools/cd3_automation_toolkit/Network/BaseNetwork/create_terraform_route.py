@@ -161,10 +161,9 @@ def create_terraform_drg_route(inputfile, outdir, prefix, non_gf_tenancy, config
 
         # Start processing each RT
         for i in dfdrgroutetable.index:
-            if str(dfdrgroutetable.loc[i, 'Route Type']).lower() == 'static':
-                drgrt_tf_from_rtRulesInOCI_sheet_name = "#"+commonTools.check_tf_variable(dfdrgroutetable.loc[i, 'Region']).lower()+"_"+commonTools.check_tf_variable(dfdrgroutetable.loc[i, 'DRG Name'])+"_"+commonTools.check_tf_variable(dfdrgroutetable.loc[i, 'DRG RT Name'])+"#"
-                if drgrt_tf_from_rtRulesInOCI_sheet_name not in drgrts_from_DRGRouteRulesInOCI_sheet:
-                    drgrts_from_DRGRouteRulesInOCI_sheet.append(drgrt_tf_from_rtRulesInOCI_sheet_name)
+            drgrt_tf_from_rtRulesInOCI_sheet_name = "#"+commonTools.check_tf_variable(dfdrgroutetable.loc[i, 'Region']).lower()+"_"+commonTools.check_tf_variable(dfdrgroutetable.loc[i, 'DRG Name'])+"_"+commonTools.check_tf_variable(dfdrgroutetable.loc[i, 'DRG RT Name'])+"#"
+            if drgrt_tf_from_rtRulesInOCI_sheet_name not in drgrts_from_DRGRouteRulesInOCI_sheet:
+                drgrts_from_DRGRouteRulesInOCI_sheet.append(drgrt_tf_from_rtRulesInOCI_sheet_name)
 
         # Rename the .txt files in outdir to .tf; Generate the Skeleton Templates
         for reg in ct.all_regions:
@@ -191,7 +190,7 @@ def create_terraform_drg_route(inputfile, outdir, prefix, non_gf_tenancy, config
                     tempSkeletonDRGRouteTable[reg] = drg_rt_template.render(count=0, region=reg, skeleton=True)
                     srcStr = "###Add route tables here for " + reg.lower() + " ###"
                     if modifiedroutetableStr[reg] != '':
-                        modifiedroutetableStr[reg] = tempSkeletonDRGRouteTable[reg].replace(srcStr, modifiedroutetableStr[reg])
+                        modifiedroutetableStr[reg] = tempSkeletonDRGRouteTable[reg].replace(srcStr, modifiedroutetableStr[reg] + "\n" + srcStr)
                 else:
                     modifiedroutetableStr[reg] = ''
 

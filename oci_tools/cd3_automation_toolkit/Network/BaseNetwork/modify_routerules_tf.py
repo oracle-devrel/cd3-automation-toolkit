@@ -47,6 +47,7 @@ def modify_terraform_drg_routerules(inputfile, outdir, prefix=None, non_gf_tenan
     routerule_drg = env.get_template('module-drg-route-rule-template')
     routetable_drg = env.get_template('module-drg-route-table-template')
     auto_tfvars_filename = "_drg-routetables.auto.tfvars"
+    rule_auto_tfvars_filename = "_drg-route-rules.auto.tfvars"
 
     tempStr = {}
     tempdict={}
@@ -76,6 +77,8 @@ def modify_terraform_drg_routerules(inputfile, outdir, prefix=None, non_gf_tenan
         # Backup existing route table files in ash and phx dir
         resource = "DRGRTs"
         commonTools.backup_file(outdir + "/" + reg, resource, auto_tfvars_filename)
+        commonTools.backup_file(outdir + "/" + reg, resource, rule_auto_tfvars_filename)
+
 
         # Create Skeleton Template
         tempSkeletonDRGRouteTable[reg] = routetable_drg.render(tempStr, skeleton=True, region=reg)
@@ -229,6 +232,7 @@ def modify_terraform_drg_routerules(inputfile, outdir, prefix=None, non_gf_tenan
 
     for reg in ct.all_regions:
         outfile = outdir + "/" + reg + "/" + prefix + auto_tfvars_filename
+        ruleoutfile = outdir + "/" + reg + "/" + prefix + rule_auto_tfvars_filename
 
         rtskeletonStr = "###Add route tables here for "+reg.lower()+" ###"
         rrskeletonStr = "###Add route rules here for "+reg.lower()+" ###"
@@ -236,15 +240,19 @@ def modify_terraform_drg_routerules(inputfile, outdir, prefix=None, non_gf_tenan
         if tfStrRT[reg] != '':
             srcStr="###Add route tables here for "+reg.lower()+" ###"
             tempSkeletonDRGRouteTable[reg] = tempSkeletonDRGRouteTable[reg].replace(srcStr, tfStrRT[reg] + "\n" + rtskeletonStr)
+
+            oname_rt = open(outfile, "w+")
+            print("Writing to..." + str(outfile))
+            oname_rt.write(tempSkeletonDRGRouteTable[reg])
+            oname_rt.close()
+
         if tfStr[reg] != '':
             srcStr="###Add route rules here for "+reg.lower()+" ###"
             tempSkeletonDRGRouteRule[reg] = tempSkeletonDRGRouteRule[reg].replace(srcStr, tfStr[reg] + "\n" + rrskeletonStr)
 
-        if tfStrRT[reg] != '' or tfStr[reg] != '':
-            oname_rt = open(outfile, "w+")
-            tempSkeletonDRGRouteTable[reg] = tempSkeletonDRGRouteTable[reg] + tempSkeletonDRGRouteRule[reg]
-            print("Writing to..." + str(outfile))
-            oname_rt.write(tempSkeletonDRGRouteTable[reg])
+            oname_rt = open(ruleoutfile, "w+")
+            print("Writing to..." + str(ruleoutfile))
+            oname_rt.write(tempSkeletonDRGRouteRule[reg])
             oname_rt.close()
 
 def modify_terraform_routerules(inputfile, outdir, prefix=None, non_gf_tenancy=False, config=DEFAULT_LOCATION):
