@@ -1217,7 +1217,7 @@ def create_terraform_route(inputfile, outdir, prefix, non_gf_tenancy, config, mo
             else:
                 tempSkeleton[reg] = tempSkeleton[reg].replace(skeletonStr, routetableStr[reg] + skeletonStr)
 
-            if tempSkeleton[reg] != '' and reg in subnet_regions_list and reg in routetable_regions_list:
+            if tempSkeleton[reg] != '' and (reg in subnet_regions_list or reg in routetable_regions_list):
                 # Backup the existing files and create new ones
                 if (os.path.exists(outfile)):
                     resource = 'RTs'
