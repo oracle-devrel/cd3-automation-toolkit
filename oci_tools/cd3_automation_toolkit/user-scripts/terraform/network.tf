@@ -19,6 +19,7 @@ module "vcns" {
   is_ipv6enabled = each.value.is_ipv6enabled
   defined_tags   = each.value.defined_tags
   freeform_tags  = each.value.freeform_tags
+
 }
 
 /*
@@ -490,7 +491,7 @@ module "drg-route-rules" {
   for_each = (var.drg_route_rules != null || var.drg_route_rules != {}) ? var.drg_route_rules : {}
 
   #Required
-  drg_route_table_id         = length(regexall("ocid1.drgroutetable.oc1*", each.value.drg_route_table_id)) > 0 ? each.value.drg_route_table_id : ((each.value.drg_route_table_id != "" && each.value.drg_route_table_id != null) ? try(merge(module.drg-route-tables.*...)[each.value.drg_route_table_id]["drg_route_table_tf_id"], data.oci_core_drg_route_tables.drg_route_tables[each.value.drg_route_table_id].drg_route_tables.id) : null) #data.oci_core_drg_route_tables[each.value.drg_route_table_id].drg_route_tables.id
+  drg_route_table_id         = length(regexall("ocid1.drgroutetable.oc1*", each.value.drg_route_table_id)) > 0 ? each.value.drg_route_table_id : ((each.value.drg_route_table_id != "" && each.value.drg_route_table_id != null) ? try(merge(module.drg-route-tables.*...)[each.value.drg_route_table_id]["drg_route_table_tf_id"], data.oci_core_drg_route_tables.drg_route_tables[each.value.drg_route_table_id].drg_route_tables[0].id) : null)
   destination                = each.value.destination
   destination_type           = each.value.destination_type
   next_hop_drg_attachment_id = length(regexall("ocid1.drgattachment.oc1*", each.value.next_hop_drg_attachment_id)) > 0 ? each.value.next_hop_drg_attachment_id : (each.value.next_hop_drg_attachment_id != "" && each.value.next_hop_drg_attachment_id != null ? merge(module.drg-attachments.*...)[each.value.next_hop_drg_attachment_id]["drg_attachment_tf_id"] : null)
@@ -541,7 +542,7 @@ module "drg-route-distribution-statements" {
 
   #Required
   key_name                          = each.key
-  drg_route_distribution_id         = length(regexall("ocid1.drgroutedistribution.oc1*", each.value.drg_route_distribution_id)) > 0 ? each.value.drg_route_distribution_id : try(merge(module.drg-route-distributions.*...)[each.value.drg_route_distribution_id]["drg_route_distribution_tf_id"], data.oci_core_drg_route_distributions.drg_route_distributions[each.value.drg_route_distribution_id].drg_route_distributions.id)
+  drg_route_distribution_id         = length(regexall("ocid1.drgroutedistribution.oc1*", each.value.drg_route_distribution_id)) > 0 ? each.value.drg_route_distribution_id : try(merge(module.drg-route-distributions.*...)[each.value.drg_route_distribution_id]["drg_route_distribution_tf_id"], data.oci_core_drg_route_distributions.drg_route_distributions[each.value.drg_route_distribution_id].drg_route_distributions[0].id)
   priority                          = each.value.priority != null && each.value.priority != "" ? each.value.priority : null
   action                            = each.value.action != null ? each.value.action : null
   drg_attachment_ids                = merge(module.drg-attachments.*...)
