@@ -288,7 +288,7 @@ def create_terraform_drg_route(inputfile, outdir, prefix, non_gf_tenancy, config
             region_rt_name = "#"+region.lower() + "_" + tempStr['drg_rt_tf_name']+"#"
             tempStr['region_rt_name'] = region_rt_name
 
-            if (DRG_RT != 'nan' and DRG_RT not in commonTools.drg_auto_RTs):
+            if (DRG_RT != 'nan' and DRG_RT not in commonTools.drg_auto_RTs and region_rt_name not in common_rt):
                     drg_rt[region] = drg_rt[region] + drg_rt_template.render(tempStr)
 
             if (DRG_RD.lower() != 'nan' and DRG_RD not in commonTools.drg_auto_RDs):
