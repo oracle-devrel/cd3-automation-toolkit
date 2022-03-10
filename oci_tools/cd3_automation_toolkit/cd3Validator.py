@@ -60,14 +60,16 @@ def checklabel(lable, count):
 def showPeering(vcnsob):
     present = False
     # Check if the LPGs are sufficient for creating the peers.
-    for left_vcn, value in vcnsob.peering_dict.items():
+    for key, value in vcnsob.peering_dict.items():
+        left_vcn=key[0]
+        region=key[1]
         right_vcns = value.split(",")
         for right_vcn in right_vcns:
             if (right_vcn == ""):
                 continue
             right_vcn = right_vcn.strip()
             try:
-                if (vcnsob.vcn_lpg_names[left_vcn][0].lower() == 'n' or vcnsob.vcn_lpg_names[right_vcn][0].lower() == 'n'):
+                if (vcnsob.vcn_lpg_names[left_vcn,region][0].lower() == 'n' or vcnsob.vcn_lpg_names[right_vcn,region][0].lower() == 'n'):
                     log(f'ERROR!!! Cannot specify n for "LPG Required" field for either {left_vcn} or {right_vcn}; Since they are part of VCN peering.')
                     present = True
                     continue
@@ -75,10 +77,10 @@ def showPeering(vcnsob):
                 log(f'ERROR!!! Insufficient LPGs declared for either {left_vcn} or {right_vcn}. Check LPG Required column for both VCNs in VCNs tab.')
                 present = True
                 continue
-            left_vcn_lpg = vcnsob.vcn_lpg_names[left_vcn][0]
-            vcnsob.vcn_lpg_names[left_vcn].pop(0)
-            right_vcn_lpg = vcnsob.vcn_lpg_names[right_vcn][0]
-            vcnsob.vcn_lpg_names[right_vcn].pop(0)
+            left_vcn_lpg = vcnsob.vcn_lpg_names[left_vcn,region][0]
+            vcnsob.vcn_lpg_names[left_vcn,region].pop(0)
+            right_vcn_lpg = vcnsob.vcn_lpg_names[right_vcn,region][0]
+            vcnsob.vcn_lpg_names[right_vcn,region].pop(0)
             log(f'{left_vcn_lpg} of VCN {left_vcn} peers with {right_vcn_lpg} of VCN {right_vcn}.')
 
     return present
@@ -204,6 +206,7 @@ def validate_subnets(filename, comp_ids, vcnobj):
 
         # Check for invalid Region
         region = str(dfsub.loc[i, 'Region']).strip()
+
         if (region.lower() != "nan" and region.lower() not in ct.all_regions):
             log(f'ROW {i+3} : Region {region} is not subscribed to tenancy.')
             subnet_reg_check = True
@@ -221,7 +224,8 @@ def validate_subnets(filename, comp_ids, vcnobj):
 
         # Check for invalid VCN name
         vcn_name = str(dfsub.loc[i, 'VCN Name']).strip()
-        if (vcn_name.lower() != "nan" and vcn_name not in vcnobj.vcn_names):
+        entry=vcn_name,region.lower()
+        if (vcn_name.lower() != "nan" and entry not in vcnobj.vcn_names):
             log(f'ROW {i+3} : VCN {vcn_name} not part of VCNs Tab.')
             subnet_vcn_check = True
 
@@ -320,7 +324,8 @@ def validate_subnets(filename, comp_ids, vcnobj):
                 if subnet_cidr.subnet_of(vcn_cidr):
                     correct=1
             if(correct==0):
-                log(f'ROW {i + 3} : Subnet CIDR - {subnet_cidr} does not fall under VCN CIDR - {vcncidrlist[vcns]}.')
+                vcn=dfsub.loc[i, 'VCN Name'].strip()
+                log(f'ROW {i + 3} : Subnet CIDR - {subnet_cidr} does not fall under VCN CIDR - {vcncidrlist[vcn]}.')
                 subnet_vcn_cidr_check = True
 
     if any([subnet_reg_check, subnet_vcn_check, subnet_comp_check, subnet_empty_check, subnet_dnswrong_check, subnet_wrong_check, subnet_dnsdup_check, subnet_dns_length, subnet_dhcp_check, subnet_vcn_cidr_check]):
@@ -392,8 +397,9 @@ def validate_vcns(filename, comp_ids, vcnobj, config):  # ,vcn_cidrs,vcn_compart
         if (vcn_name.lower() == 'nan'):
             vcn_names.append("")
         else:
-            if (vcn_name not in vcn_names):
-                vcn_names.append(vcn_name)
+            entry = vcn_name, region.lower()
+            if (entry not in vcn_names):
+                vcn_names.append(entry)
             else:
                 log(f'ROW {i+3} : Duplicate "VCN Name" value {vcn_name}  with ROW {vcn_names.index(vcn_name) + 3}.')
                 vcn_names.append(vcn_name)
@@ -461,9 +467,9 @@ def validate_vcns(filename, comp_ids, vcnobj, config):  # ,vcn_cidrs,vcn_compart
         try:
             vcn_id = vcn_ids[vcn_name]
         except KeyError:
-            lpg = vcnobj.vcn_lpg_names[vcn_name][0]
+            lpg = vcnobj.vcn_lpg_names[vcn_name,region][0]
             if (lpg != 'n'):
-                log(f'ROW {i+3} : VCN {vcn_name} does not exist in OCI. VCN and its LPGs {vcnobj.vcn_lpg_names[vcn_name]} will be created new.')
+                log(f'ROW {i+3} : VCN {vcn_name} does not exist in OCI. VCN and its LPGs {vcnobj.vcn_lpg_names[vcn_name,region]} will be created new.')
             else:
                 log(f'ROW {i+3} : VCN {vcn_name} does not exist in OCI. VCN will be created new.')
             continue
@@ -538,7 +544,9 @@ def validate_dhcp(filename, comp_ids, vcnobj):
 
         # Check for invalid VCN name
         vcn_name = str(dfdhcp.loc[i, 'VCN Name']).strip()
-        if (vcn_name.lower() != "nan" and vcn_name not in vcnobj.vcn_names):
+        entry=vcn_name,region.lower()
+
+        if (vcn_name.lower() != "nan" and entry not in vcnobj.vcn_names):
             log(f'ROW {i+3} : VCN {vcn_name} not part of VCNs Tab.')
             dhcp_vcn_check = True
 
