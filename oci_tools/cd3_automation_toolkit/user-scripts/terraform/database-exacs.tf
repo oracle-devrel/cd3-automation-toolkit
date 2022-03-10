@@ -38,15 +38,15 @@ module "exa-vmclusters" {
   source     = "./modules/database/exa-vmcluster"
 
   for_each = var.exa_vmclusters != null ? var.exa_vmclusters : {}
-  backup_subnet_id = merge(module.subnets.*...)[each.value.backup_subnet_id]["subnet_tf_id"]
-  exadata_infrastructure_id = merge(module.exa-infra.*...)[each.value.exadata_infrastructure_id].exainfra_tf_id
+  backup_subnet_id = length(regexall("ocid1.subnet.oc1*", each.value.backup_subnet_id)) > 0 ? each.value.backup_subnet_id : merge(module.subnets.*...)[each.value.backup_subnet_id]["subnet_tf_id"]
+  exadata_infrastructure_id = length(regexall("ocid1.cloudexadatainfrastructure.oc1*", each.value.exadata_infrastructure_id)) > 0 ? each.value.exadata_infrastructure_id : merge(module.exa-infra.*...)[each.value.exadata_infrastructure_id].exainfra_tf_id
   cpu_core_count            = each.value.cpu_core_count
   display_name              = each.value.display_name
   compartment_id            = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[0][each.value.compartment_id]) : var.tenancy_ocid
   gi_version                = each.value.gi_version
   hostname                  = each.value.hostname
   ssh_public_keys           = length(regexall("ssh-rsa*",each.value.ssh_public_key)) > 0 ? each.value.ssh_public_key : var.ssh_public_key
-  cluster_subnet_id         = merge(module.subnets.*...)[each.value.cluster_subnet_id]["subnet_tf_id"]
+  cluster_subnet_id         = length(regexall("ocid1.subnet.oc1*", each.value.cluster_subnet_id)) > 0 ? each.value.cluster_subnet_id : merge(module.subnets.*...)[each.value.cluster_subnet_id]["subnet_tf_id"]
   backup_network_nsg_ids      = [for nsg in each.value.backup_network_nsg_ids : ( length(regexall("ocid1.networksecuritygroup.oc1*",nsg)) > 0 ? nsg : try(merge(module.nsgs.*...)[nsg]["nsg_tf_id"][nsg],merge(module.nsgs.*...)[nsg]["nsg_tf_id"],merge(module.nsgs.*...)[nsg]["nsg_tf_id"]))]
   cluster_name                = each.value.cluster_name
   data_storage_percentage     = each.value.data_storage_percentage
