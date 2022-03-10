@@ -156,7 +156,8 @@ def create_terraform_dhcp_options(inputfile, outdir, prefix, non_gf_tenancy, con
                 vcn_name = columnvalue.strip()
                 tempStr['vcn_name'] = vcn_name
 
-                if (vcn_name.strip() not in vcns.vcn_names):
+                check=vcn_name.strip(),region
+                if (check not in vcns.vcn_names):
                     print( "\nERROR!!! " + vcn_name + " specified in DHCP tab has not been declared in VCNs tab..Exiting!")
                     exit(1)
 

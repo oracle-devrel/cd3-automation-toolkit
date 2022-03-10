@@ -290,7 +290,8 @@ def create_terraform_seclist(inputfile, outdir, prefix, config, modify_network=F
                 compartment_var_name = columnvalue
             vcn_name = str(df.loc[i,'VCN Name'].strip())
 
-            if (vcn_name.strip() not in vcns.vcn_names):
+            check = vcn_name.strip(), region
+            if (check not in vcns.vcn_names):
                 print("\nERROR!!! " + vcn_name + " specified in Subnets tab has not been declared in VCNs tab..Exiting!")
                 exit(1)
 

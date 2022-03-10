@@ -86,12 +86,13 @@ def create_major_objects(inputfile, outdir, prefix, non_gf_tenancy, config, modi
 
     # Function to establish peering between LPGs
     def establishPeering(peering_dict):
-        for left_vcn, value in peering_dict.items():
-            region = vcns.vcn_region[left_vcn]
+        for key, value in peering_dict.items():
+            #region = vcns.vcn_region[left_vcn]
+            left_vcn=key[0]
+            region = key[1]
             outfile = outdir + "/" + region + "/" + prefix + auto_tfvars_filename
 
             right_vcns = value.split(",")
-
             for right_vcn in right_vcns:
                 if (right_vcn == ""):
                     continue
@@ -99,21 +100,21 @@ def create_major_objects(inputfile, outdir, prefix, non_gf_tenancy, config, modi
                 right_vcn_tf_name = commonTools.check_tf_variable(right_vcn)
 
                 try:
-                    if (vcns.vcn_lpg_names[left_vcn][0].lower() == 'n' or vcns.vcn_lpg_names[right_vcn][0].lower() == 'n'):
+                    if (vcns.vcn_lpg_names[left_vcn,region][0].lower() == 'n' or vcns.vcn_lpg_names[right_vcn,region][0].lower() == 'n'):
                         print( "\nERROR!!! Cannot specify n for lpg_required field of VCN if it is part of VCN peering..Exiting!")
                         exit(1)
                 except IndexError:
 
                     print("\nERROR!!! Insufficient LPGs declared for either " + left_vcn + " or " + right_vcn + ". Check lpg_required column in VCNs tab..Exiting!")
                     exit(1)
-                searchString = """##peer_id for lpg """ + left_vcn + "_" + vcns.vcn_lpg_names[left_vcn][0] + "##"
-                vcns.vcn_lpg_names[left_vcn].pop(0)
-                lpg_name = vcns.vcn_lpg_names[right_vcn][0]
+                searchString = """##peer_id for lpg """ + left_vcn + "_" + vcns.vcn_lpg_names[left_vcn,region][0] + "##"
+                vcns.vcn_lpg_names[left_vcn,region].pop(0)
+                lpg_name = vcns.vcn_lpg_names[right_vcn,region][0]
                 lpg_tf_name = right_vcn + "_" + lpg_name
                 lpg_tf_name = commonTools.check_tf_variable(lpg_tf_name)
 
                 peerStr = lpg_tf_name
-                vcns.vcn_lpg_names[right_vcn].pop(0)
+                vcns.vcn_lpg_names[right_vcn,region].pop(0)
 
                 # Update file contents
                 with open(outfile) as f:
@@ -440,10 +441,10 @@ def create_major_objects(inputfile, outdir, prefix, non_gf_tenancy, config, modi
             count_lpg = 0
 
             if (hub_spoke_none.lower() == 'hub'):
-                spoke_vcns = vcns.peering_dict[vcn_name].split(",")
+                spoke_vcns = vcns.peering_dict[vcn_name,region].split(",")
                 count_spokes = len(spoke_vcns)
 
-            for lpg_name in vcns.vcn_lpg_names[vcn_name]:
+            for lpg_name in vcns.vcn_lpg_names[vcn_name,region]:
                 count_lpg = count_lpg + 1
                 lpg_tf_name = vcn_name + "_" + lpg_name
                 lpg_tf_name = commonTools.check_tf_variable(lpg_tf_name)
@@ -470,7 +471,13 @@ def create_major_objects(inputfile, outdir, prefix, non_gf_tenancy, config, modi
                     else:
                         rt_var = ""
 
-                    rt_tf_name = commonTools.check_tf_variable(rt_var)
+                    if(rt_var!=""):
+                        rt_tf_name = commonTools.check_tf_variable(rt_var)
+                    else:
+                        rt_tf_name=""
+
+                    tempStr['rt_tf_name'] = rt_tf_name
+
                     if ('hub' in hub_spoke_none.lower()):
                         hub_lpg_tfStr[region] = hub_lpg_tfStr[region] + lpg.render(tempStr)
                     elif ('peer' in hub_spoke_none.lower()):
@@ -482,8 +489,6 @@ def create_major_objects(inputfile, outdir, prefix, non_gf_tenancy, config, modi
                 else:
                     exported_lpg_tfStr[region] = exported_lpg_tfStr[region] + lpg.render(tempStr)
 
-                tempStr['rt_tf_name'] = rt_tf_name
-                tempStr['rt_var'] = rt_var
 
         lpg_tfStr[region] = lpg.render(create_lpg_auto_vars=True,hub_lpg_details=hub_lpg_tfStr[region],peer_lpg_details=peer_lpg_tfStr[region],spoke_lpg_details=spoke_lpg_tfStr[region],exported_lpg_details=exported_lpg_tfStr[region],none_lpg_details=none_lpg_tfStr[region])
 
@@ -620,9 +625,7 @@ def create_major_objects(inputfile, outdir, prefix, non_gf_tenancy, config, modi
     for reg in ct.all_regions:
 
         if modify_network:
-
             tfStr[reg] = vcn_tfStr[reg] + igw_tfStr[reg] + ngw_tfStr[reg] + sgw_tfStr[reg] + lpg_tfStr[reg] + drg_tfStr[reg] + drg_attach_tfStr[reg]
-
             reg_out_dir = outdir + "/" + reg
 
             if not os.path.exists(reg_out_dir):

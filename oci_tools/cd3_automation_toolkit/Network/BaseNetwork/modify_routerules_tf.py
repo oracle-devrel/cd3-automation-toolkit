@@ -219,7 +219,7 @@ def modify_terraform_drg_routerules(inputfile, outdir, prefix=None, non_gf_tenan
 
                 if (drg_rt_tf_name not in rts_done[region]):
                     rts_done[region].append(drg_rt_tf_name)
-                tfStr[region]=""
+                #tfStr[region]=""
 
         #Add rules to RTs
         if(new_rule == 1):
@@ -375,7 +375,9 @@ def modify_terraform_routerules(inputfile, outdir, prefix=None, non_gf_tenancy=F
             exit(1)
 
         # Process only those VCNs which are present in cd3(and have been created via TF)
-        if (str(df.loc[i, 'VCN Name'].strip()) not in vcns.vcn_names):
+        vcn_name=str(df.loc[i, 'VCN Name']).strip()
+        check = vcn_name, region
+        if (check not in vcns.vcn_names):
             print("skipping route table: " + str(df.loc[i, 'Route Table Name']) + " as its VCN is not part of VCNs tab in cd3")
             continue
 

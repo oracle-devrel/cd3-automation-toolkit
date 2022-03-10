@@ -194,8 +194,9 @@ def create_terraform_subnet(inputfile, outdir, prefix, non_gf_tenancy, config, m
 
         compartment_var_name = df.loc[i, 'Compartment Name']
         vcn_name=str(df['VCN Name'][i]).strip()
+        check = vcn_name.strip(), region
 
-        if (vcn_name.strip() not in vcns.vcn_names):
+        if (check not in vcns.vcn_names):
             print("\nERROR!!! " + vcn_name + " specified in Subnets tab has not been declared in VCNs tab..Exiting!")
             exit(1)
 

@@ -591,11 +591,14 @@ class parseVCNs():
                 break
             vcn_name = df_vcn['VCN Name'][i]
             vcn_name = str(vcn_name).strip()
+            region = str(region).strip().lower()
 
-            self.vcn_names.append(vcn_name)
+            entry = vcn_name,region
+            self.vcn_names.append(entry)
 
             if str(df_vcn['Hub/Spoke/Peer/None'][i]).strip().split(":")[0].strip().lower() == 'hub':
-                self.peering_dict[vcn_name] = ""
+                self.peering_dict[vcn_name,region] = ""
+
 
         for i in df_vcn.index:
             region = str(df_vcn['Region'][i]).strip()
@@ -605,44 +608,45 @@ class parseVCNs():
             vcn_name = str(vcn_name).strip()
 
             region = str(region).strip().lower()
-            self.vcn_region[vcn_name] = region
+            #self.vcn_region[vcn_name] = region
 
-            self.vcn_lpg_names[vcn_name] = str(df_vcn['LPG Required'][i]).strip().split(",")
-            self.vcn_lpg_names[vcn_name] = [x.strip() for x in self.vcn_lpg_names[vcn_name]]
-
-            j = 0
-            for lpg in self.vcn_lpg_names[vcn_name]:
-                if lpg == 'y':
-                    self.vcn_lpg_names[vcn_name][j] = vcn_name + "_lpg" + str(j)
-                    j = j + 1
-            self.vcn_lpg_names1[vcn_name] = str(df_vcn['LPG Required'][i]).strip().split(",")
-            self.vcn_lpg_names1[vcn_name] = [x.strip() for x in self.vcn_lpg_names1[vcn_name]]
+            self.vcn_lpg_names[vcn_name,region] = str(df_vcn['LPG Required'][i]).strip().split(",")
+            self.vcn_lpg_names[vcn_name,region] = [x.strip() for x in self.vcn_lpg_names[vcn_name,region]]
 
             j = 0
-            for lpg in self.vcn_lpg_names1[vcn_name]:
+            for lpg in self.vcn_lpg_names[vcn_name,region]:
                 if lpg == 'y':
-                    self.vcn_lpg_names1[vcn_name][j] = vcn_name + "_lpg" + str(j)
+                    self.vcn_lpg_names[vcn_name,region][j] = vcn_name + "_lpg" + str(j)
                     j = j + 1
-
-            self.vcn_lpg_names2[vcn_name] = str(df_vcn['LPG Required'][i]).strip().split(",")
-            self.vcn_lpg_names2[vcn_name] = [x.strip() for x in self.vcn_lpg_names2[vcn_name]]
+            self.vcn_lpg_names1[vcn_name,region] = str(df_vcn['LPG Required'][i]).strip().split(",")
+            self.vcn_lpg_names1[vcn_name,region] = [x.strip() for x in self.vcn_lpg_names1[vcn_name,region]]
 
             j = 0
-            for lpg in self.vcn_lpg_names2[vcn_name]:
+            for lpg in self.vcn_lpg_names1[vcn_name,region]:
                 if lpg == 'y':
-                    self.vcn_lpg_names2[vcn_name][j] = vcn_name + "_lpg" + str(j)
+                    self.vcn_lpg_names1[vcn_name,region][j] = vcn_name + "_lpg" + str(j)
                     j = j + 1
 
-            self.vcn_lpg_names3[vcn_name] = str(df_vcn['LPG Required'][i]).strip().split(",")
-            self.vcn_lpg_names3[vcn_name] = [x.strip() for x in self.vcn_lpg_names3[vcn_name]]
+            self.vcn_lpg_names2[vcn_name,region] = str(df_vcn['LPG Required'][i]).strip().split(",")
+            self.vcn_lpg_names2[vcn_name,region] = [x.strip() for x in self.vcn_lpg_names2[vcn_name,region]]
 
             j = 0
-            for lpg in self.vcn_lpg_names3[vcn_name]:
+            for lpg in self.vcn_lpg_names2[vcn_name,region]:
                 if lpg == 'y':
-                    self.vcn_lpg_names3[vcn_name][j] = vcn_name + "_lpg" + str(j)
+                    self.vcn_lpg_names2[vcn_name,region][j] = vcn_name + "_lpg" + str(j)
                     j = j + 1
 
-            self.vcn_drgs[vcn_name] = str(df_vcn['DRG Required'][i]).strip()
+            self.vcn_lpg_names3[vcn_name,region] = str(df_vcn['LPG Required'][i]).strip().split(",")
+            self.vcn_lpg_names3[vcn_name,region] = [x.strip() for x in self.vcn_lpg_names3[vcn_name,region]]
+
+            j = 0
+            for lpg in self.vcn_lpg_names3[vcn_name,region]:
+                if lpg == 'y':
+                    self.vcn_lpg_names3[vcn_name,region][j] = vcn_name + "_lpg" + str(j)
+                    j = j + 1
+
+            self.vcn_drgs[vcn_name,region] = str(df_vcn['DRG Required'][i]).strip()
+
 
             if(str(df_vcn['DRG Required'][i]).strip().lower() != 'n'):
                 if (str(df_vcn['DRG Required'][i]).strip().lower() == "y"):
@@ -653,36 +657,38 @@ class parseVCNs():
 
                 self.vcns_having_drg[vcn_name,region]=drg_name
 
-            self.vcn_cidrs[vcn_name]=str(df_vcn['CIDR Blocks'][i]).strip()
+            self.vcn_cidrs[vcn_name,region]=str(df_vcn['CIDR Blocks'][i]).strip()
             #cidr_blocks = [x.strip() for x in columnvalue.split(',')]
 
-            self.vcn_igws[vcn_name] = str(df_vcn['IGW Required'][i]).strip()
-            self.vcn_ngws[vcn_name] = str(df_vcn['NGW Required'][i]).strip()
-            self.vcn_sgws[vcn_name] = str(df_vcn['SGW Required'][i]).strip()
-            self.vcn_hub_spoke_peer_none[vcn_name] = str(df_vcn['Hub/Spoke/Peer/None'][i]).strip().split(":")
-            self.vcn_compartment[vcn_name] = str(df_vcn['Compartment Name'][i]).strip()
-            self.vcn_lpg_rules.setdefault(vcn_name, '')
+            self.vcn_igws[vcn_name,region] = str(df_vcn['IGW Required'][i]).strip()
+            self.vcn_ngws[vcn_name,region] = str(df_vcn['NGW Required'][i]).strip()
+            self.vcn_sgws[vcn_name,region] = str(df_vcn['SGW Required'][i]).strip()
+            self.vcn_hub_spoke_peer_none[vcn_name,region] = str(df_vcn['Hub/Spoke/Peer/None'][i]).strip().split(":")
+            self.vcn_compartment[vcn_name,region] = str(df_vcn['Compartment Name'][i]).strip()
+            self.vcn_lpg_rules.setdefault((vcn_name,region), '')
 
-            if (self.vcn_hub_spoke_peer_none[vcn_name][0].strip().lower() == 'hub'):
-                self.hub_vcn_names.append(vcn_name)
+            if (self.vcn_hub_spoke_peer_none[vcn_name,region][0].strip().lower() == 'hub'):
+                entry=vcn_name,region
+                self.hub_vcn_names.append(entry)
 
-            if (self.vcn_hub_spoke_peer_none[vcn_name][0].strip().lower() == 'spoke'):
-                hub_name = self.vcn_hub_spoke_peer_none[vcn_name][1].strip()
-                self.spoke_vcn_names.append(vcn_name)
+            if (self.vcn_hub_spoke_peer_none[vcn_name,region][0].strip().lower() == 'spoke'):
+                hub_name = self.vcn_hub_spoke_peer_none[vcn_name,region][1].strip()
+                entry = vcn_name, region
+                self.spoke_vcn_names.append(entry)
                 try:
-                    self.peering_dict[hub_name] = self.peering_dict[hub_name] + vcn_name + ","
+                    self.peering_dict[hub_name,region] = self.peering_dict[hub_name,region] + vcn_name + ","
                 except KeyError:
                     print("ERROR!!! "+hub_name +" not marked as Hub. Verify hub_spoke_peer_none column again..Exiting!")
                     exit(1)
 
-            if (self.vcn_hub_spoke_peer_none[vcn_name][0].strip().lower() == 'peer'):
-                self.peering_dict[vcn_name] = self.vcn_hub_spoke_peer_none[vcn_name][1].strip()
+            if (self.vcn_hub_spoke_peer_none[vcn_name,region][0].strip().lower() == 'peer'):
+                self.peering_dict[vcn_name,region] = self.vcn_hub_spoke_peer_none[vcn_name,region][1].strip()
+
 
         for k, v in self.peering_dict.items():
             if (v != "" and v[-1] == ','):
                 v = v[:-1]
                 self.peering_dict[k] = v
-
 
 @contextmanager
 def section(title='', header=False, padding=117):

@@ -203,7 +203,9 @@ def modify_terraform_secrules(inputfile, outdir, prefix=None, non_gf_tenancy=Fal
                     exit(1)
 
             # Process only those VCNs which are present in cd3(and have been created via TF)
-            if (vcn_name not in vcns.vcn_names):
+
+            check = vcn_name.strip(), region
+            if (check not in vcns.vcn_names):
                 print("\nskipping seclist: " + display_name + " as its VCN is not part of VCNs tab in cd3")
                 continue
 
