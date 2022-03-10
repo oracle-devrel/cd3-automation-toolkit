@@ -260,9 +260,3 @@ variable "dbsystems_vm_bm" {
   type        = map(any)
   default     = {}
 }
-
-variable "instance_vms" {
-  type = map(any)
-  description = "Map of instances to be provisioned"
-  default = {}
-}
