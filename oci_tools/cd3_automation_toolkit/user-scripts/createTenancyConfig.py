@@ -286,7 +286,8 @@ variable "Linux"{
         type = string
         default = \"""" + linux_image_id + """"
         description = "Latest ocid as on """ + dt + """"
-}
+} """
+        variables_data = variables_data +"""
 
 #################################
 #
