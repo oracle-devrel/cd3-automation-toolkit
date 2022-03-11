@@ -23,7 +23,14 @@ dubai:me-dubai-1
 cardiff:uk-cardiff-1
 sanjose:us-sanjose-1
 langley:us-langley-1
+abudhabi=me-abudhabi-1
 luke:us-luke-1
+marseille:eu-marseille-1
+jerusalem:il-jerusalem-1
+milan:eu-milan-1
+singapore:ap-singapore-1
+johannesburg=af-johannesburg-1
+stockholm=eu-stockholm-1
 gov-ashburn:us-gov-ashburn-1
 gov-chicago:us-gov-chicago-1
 gov-phoenix:us-gov-phoenix-1
