@@ -111,7 +111,7 @@ def enable_cis_vcnflow_logging(filename, outdir, prefix, config=DEFAULT_LOCATION
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
-    template = env.get_template('module-logging-template')
+    template = env.get_template('logging-template')
     auto_tfvars_filename = 'cis-vcnflow-logging.auto.tfvars'
 
     tfStrLogs = {}

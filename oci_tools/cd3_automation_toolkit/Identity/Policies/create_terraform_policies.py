@@ -50,7 +50,7 @@ def create_terraform_policies(inputfile, outdir, prefix, config=DEFAULT_LOCATION
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
-    policies_template = env.get_template('module-policies-template')
+    policies_template = env.get_template('policies-template')
 
     # Read CD3
     df = data_frame(filename, sheetName)

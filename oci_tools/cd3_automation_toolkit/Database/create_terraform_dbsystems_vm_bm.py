@@ -48,7 +48,7 @@ def create_terraform_dbsystems_vm_bm(inputfile, outdir, prefix, config=DEFAULT_L
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
-    template = env.get_template('module-DBSystem-VM-DM-template')
+    template = env.get_template('DBSystem-VM-BM-template')
 
     # Read cd3 using pandas dataframe
     df, col_headers = commonTools.read_cd3(filename, sheetName)

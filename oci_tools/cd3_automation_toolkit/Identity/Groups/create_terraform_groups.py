@@ -45,7 +45,7 @@ def create_terraform_groups(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
-    groups_template = env.get_template('module-groups-template')
+    groups_template = env.get_template('groups-template')
 
     # Read cd3 using pandas dataframe
     df, col_headers = commonTools.read_cd3(filename, sheetName)
