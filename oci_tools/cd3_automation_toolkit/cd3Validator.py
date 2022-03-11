@@ -105,29 +105,32 @@ def validate_cidr(cidr_list):
 
     for i in range(0, len(cidr_list)):
         try:
-            ipaddress.ip_network(cidr_list[i])
+            ipaddress.ip_network(cidr_list[i][0])
+            rowN= cidr_list[i][1]
         except ValueError:
-            log(f'Row  {str(i+3)} Field "CIDR Block" {cidr_list[i]} is invalid. CIDR range has host bits set.')
+            log(f'Row  {str(rowN)} Field "CIDR Block" {cidr_list[i]} is invalid. CIDR range has host bits set.')
             cidr_check = True
 
     for i in range(0, len(cidr_list)):
-        if (cidr_list[i] == ""):
+        if (cidr_list[i][0] == ""):
             continue
         try:
-            cidr1 = ipaddress.ip_network(cidr_list[i])
+            cidr1 = ipaddress.ip_network(cidr_list[i][0])
+            rowI = cidr_list[i][1]
         except ValueError:
             continue
 
         for j in range(i + 1, len(cidr_list)):
-            if (cidr_list[j] == ""):
+            if (cidr_list[j][0] == ""):
                 continue
             try:
-                cidr2 = ipaddress.ip_network(cidr_list[j])
+                cidr2 = ipaddress.ip_network(cidr_list[j][0])
+                rowJ = cidr_list[j][1]
             except ValueError:
                 continue
             # Check for Duplicate CIDRs
             if (str(cidr1) == str(cidr2)):
-                log(f'ROW {j+3} : Duplicate CIDR value {cidr2} with ROW {i+3}.')
+                log(f'ROW {rowJ} : Duplicate CIDR value {cidr2} with ROW {rowI}.')
                 cidrdup_check = True
                 continue
 
@@ -155,7 +158,7 @@ def fetch_vcn_cidrs(filename):
                 if str(columnvalue).lower() == "nan":
                     pass
                 else:
-                    vcn_cidrs.update({str(dfv.loc[i, 'VCN Name']).strip(): str(columnvalue)})
+                    vcn_cidrs.update({(str(dfv.loc[i, 'VCN Name']).strip(), str(dfv.loc[i, 'Region']).strip().lower()): str(columnvalue)})
     return vcn_cidrs
 
 
@@ -280,10 +283,12 @@ def validate_subnets(filename, comp_ids, vcnobj):
 
         # Collect CIDR List for validating
         if str(dfsub.loc[i, 'CIDR Block']).strip().lower() == "nan":
-            cidr_list.append("")
+            entry=("",i+3)
+            cidr_list.append(entry)
             continue
         else:
-            cidr_list.append(str(dfsub.loc[i, 'CIDR Block']).strip())
+            entry = (str(dfsub.loc[i, 'CIDR Block']).strip(), i+3)
+            cidr_list.append(entry)
 
         # Check for null values and display appropriate message
         labels = ['DNS Label', 'DHCP Option Name', 'Route Table Name', 'Seclist Names']
@@ -305,7 +310,9 @@ def validate_subnets(filename, comp_ids, vcnobj):
                 continue
 
             correct=0
-            cidr=vcncidrlist[dfsub.loc[i, 'VCN Name'].strip()]
+            vcn = str(dfsub.loc[i, 'VCN Name']).strip()
+            region = str(dfsub.loc[i, 'Region']).strip().lower()
+            cidr=vcncidrlist[(vcn,region)]
             if("," in cidr):
                 for x in cidr.split(','):
                     x.strip()
@@ -324,8 +331,7 @@ def validate_subnets(filename, comp_ids, vcnobj):
                 if subnet_cidr.subnet_of(vcn_cidr):
                     correct=1
             if(correct==0):
-                vcn=dfsub.loc[i, 'VCN Name'].strip()
-                log(f'ROW {i + 3} : Subnet CIDR - {subnet_cidr} does not fall under VCN CIDR - {vcncidrlist[vcn]}.')
+                log(f'ROW {i + 3} : Subnet CIDR - {subnet_cidr} does not fall under VCN CIDR - {vcncidrlist[(vcn,region)]}.')
                 subnet_vcn_cidr_check = True
 
     if any([subnet_reg_check, subnet_vcn_check, subnet_comp_check, subnet_empty_check, subnet_dnswrong_check, subnet_wrong_check, subnet_dnsdup_check, subnet_dns_length, subnet_dhcp_check, subnet_vcn_cidr_check]):
@@ -418,11 +424,13 @@ def validate_vcns(filename, comp_ids, vcnobj, config):  # ,vcn_cidrs,vcn_compart
 
         # Collect CIDR List for validating
         if str(dfv.loc[i, 'CIDR Blocks']).strip().lower() == "nan":
-            cidr_list.append("")
+            entry=("",i+3)
+            cidr_list.append(entry)
         else:
             for x in str(dfv.loc[i, 'CIDR Blocks']).strip().split(','):
                 x.strip()
-                cidr_list.append(x)
+                entry=(x,i+3)
+                cidr_list.append(entry)
 
         # Check for null values and display appropriate message
         for j in dfv.keys():
