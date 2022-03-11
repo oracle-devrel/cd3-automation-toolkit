@@ -89,12 +89,13 @@ def seek_info():
     config_file_path = customer_tenancy_dir+"/"+prefix+"_config"
     auto_keys_dir = user_dir+"/tenancies/keys"
     modules_dir = user_dir +"/oci_tools/cd3_automation_toolkit/user-scripts/terraform"
+    variables_example_file = user_dir +"/oci_tools/cd3_automation_toolkit/example/variables-example.tf"
     setupoci_props_file_path = customer_tenancy_dir + "/" + prefix + "_setUpOCI.properties"
 
     if not os.path.exists(customer_tenancy_dir):
         os.makedirs(customer_tenancy_dir)
 
-    # 2. Move the newly created PEM keys to /cd3user/tenancies/<customer_name>/
+    # 1. Move the newly created PEM keys to /cd3user/tenancies/<customer_name>/
     files = glob.glob(auto_keys_dir+"/*")
 
     # If the keys are auto-generated
@@ -129,7 +130,7 @@ def seek_info():
     if not os.path.exists(terraform_files):
         os.makedirs(terraform_files)
 
-    # 1. Create config file
+    # 2. Create config file
     print("Creating the Tenancy specific config, terraform provider , variables and properties files.................")
     file = open(config_file_path, "w")
     file.write("[DEFAULT]\n"
@@ -213,27 +214,18 @@ def seek_info():
         if not os.path.exists(terraform_files+region):
             os.mkdir(terraform_files+region)
 
-        # # 6. Writing Terraform config files provider.tf and variables.tf
-        # provider_data = """provider "oci" {
-        #   tenancy_ocid     = var.tenancy_ocid
-        #   user_ocid        = var.user_ocid
-        #   fingerprint      = var.fingerprint
-        #   private_key_path = var.private_key_path
-        #   region           = var.region
-        # }
-        #
-        # terraform {
-        #   required_providers {
-        #     oci = {
-        #       version = ">= 3.0.0"
-        #     }
-        #   }
-        # }"""
-        #
-        #
-        # f = open(terraform_files+"/"+region+"/provider.tf", "w+")
-        # f.write(provider_data)
-        # f.close()
+        # # 6. Read variables.tf from examples folder and copy the variables as string
+        variables_example_file_data = ""
+        with open(variables_example_file, 'r') as var_eg_file:
+            copy = False
+            for lines in var_eg_file:
+                if "# Variables according to Services" in lines:
+                    copy = True
+                elif "######################### END #########################" in lines:
+                    copy = False
+                    variables_example_file_data = variables_example_file_data + "\n" + lines
+                elif copy:
+                    variables_example_file_data = variables_example_file_data + lines
 
         today = datetime.today()
         dt = str(today.day) +" "+ calendar.month_name[today.month]+" "+ str(today.year)
@@ -252,251 +244,33 @@ variable "ssh_public_key" {
         type = string
         default = \"""" + ssh_public_key + """"
 }
+
 variable "tenancy_ocid" {
         type = string
         default = \"""" + tenancy + """"
 }
+
 variable "user_ocid" {
         type = string
         default = \"""" + user + """"
 }
+
 variable "fingerprint" {
         type = string
         default = \"""" + fingerprint + """"
 }
+
 variable "private_key_path" {
         type = string
         default =  \"""" + key_path + """"
 }
+
 variable "region" {
         type = string
         default = \"""" + ct.region_dict[region] + """"
 }
+"""
 
-#################################
-#
-# Variables according to Services
-# Please do not modify
-#
-#################################
-
-############################
-### Fetch Compartments #####
-############################
-
-## Do Not Modify #START_Compartment_OCIDs#
-variable "compartment_ocids" {
-    type = list(any)
-    default = [{}]
-}
-#Compartment_OCIDs_END#  ## Do Not Modify
-
-#########################
-##### Identity ##########
-#########################
-
-variable "compartments" {
-  type    = map(any)
-  default = {
-      root = {},
-      compartment_level1= {},
-      compartment_level2 = {},
-      compartment_level3 = {},
-      compartment_level4 = {},
-      compartment_level5  = {},
-  }
-}
-
-variable "policies" {
-  type    = map(any)
-  default = {}
-}
-
-variable "groups" {
-  type    = map(any)
-  default = {}
-}
-
-#########################
-##### Network ########
-#########################
-
-variable "default_dhcps" {
-  type = map(any)
-  default = {}
-}
-
-variable "custom_dhcps" {
-  type = map(any)
-  default = {}
-}  
-    
-variable "vcns" {
-  type    = map(any)
-  default = {}
-}
-
-variable "igws" {
-  type    = map(any)
-  default = {}
-}
-
-variable "sgws" {
-  type    = map(any)
-  default = {}
-}
-
-variable "ngws" {
-  type    = map(any)
-  default = {}
-}
-
-variable "lpgs" {
-    type    = map(any)
-    default = {
-        hub-lpgs = {},
-        spoke-lpgs = {},
-        peer-lpgs = {},
-        none-lpgs  = {},
-        exported-lpgs = {},
-        }
-}
-
-variable "drgs" {
-  type    = map(any)
-  default = {}
-}
-
-variable "seclists" {
-  type = map(any)
-  default = {}
-}
-
-variable "default_seclists" {
-  type = map(any)
-  default = {}
-}
-
-variable "route_tables" {
-  type = map(any)
-  default = {}
-}
-
-variable "default_route_tables" {
-  type    = map(any)
-  default = {}
-}
-
-variable "nsgs" {
-  type = map(any)
-  default = {}
-}
-
-variable "nsg_rules" {
-  type = map(any)
-  default = {}
-}
-
-variable "subnets" {
-  type    = map(any)
-  default = {}
-}
-
-variable "drg_attachments" {
-  type    = map(any)
-  default = {}      
-}
-
-variable "drg_route_tables" {
-  type    = map(any)
-  default = {}
-}
-
-variable "drg_route_rules" {
-  type    = map(any)
-  default = {}
-}
-
-variable "drg_route_distributions" {
-  type    = map(any)
-  default = {}
-}
-
-variable "drg_route_distribution_statements" {
-  type    = map(any)
-  default = {}
-}
-
-variable "data_drg_route_tables" {
-  type    = map(any)
-  default = {}
-}
-
-variable "data_drg_route_table_distributions" {
-  type    = map(any)
-  default = {}
-}
-
-#########################
-##### Logging ###########
-#########################
-
-variable "log_groups" {
-  type    = map(any)
-  default = {}
-}
-
-variable "logs" {
-  type    = map(any)
-  default = {}
-}
-        
-#########################
-## Management Services ##
-#########################
-
-variable "alarms" {
-  type    = map(any)
-  default = {}
-}
-
-variable "events" {
-  type    = map(any)
-  default = {}
-}
-
-variable "notifications_topics" {
-  type    = map(any)
-  default = {}
-}
-
-variable "notifications_subscriptions" {
-  type    = map(any)
-  default = {}
-}
-
-#########################
-## Database ##
-#########################
-
-variable "exa_infra" {
-  description = "To provision exadata infrastructure"
-  type        = map(any)
-  default     = {}
-}
-
-variable "exa_vmclusters" {
-  description = "To provision exadata cloud VM cluster"
-  type        = map(any)
-  default     = {}
-}
-
-variable "dbsystems_vm_bm" {
-  description = "To provision DB System"
-  type        = map(any)
-  default     = {}
-}
-        """
         if (windows_image_id != ''):
             variables_data = variables_data + """
 #Example for OS value 'Windows' in Instances sheet
@@ -512,7 +286,13 @@ variable "Linux"{
         type = string
         default = \"""" + linux_image_id + """"
         description = "Latest ocid as on """ + dt + """"
-}"""
+}
+
+#################################
+#
+# Variables according to Services""" \
+                             + "\n" + variables_example_file_data + "\n"
+
         f = open(terraform_files+"/"+region+"/variables_" + region + ".tf", "w+")
         f.write(variables_data)
         f.close()

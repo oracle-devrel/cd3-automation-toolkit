@@ -23,6 +23,7 @@ from oci.resource_manager.models import CreateZipUploadConfigSourceDetails
 from oci.resource_manager.models import UpdateZipUploadConfigSourceDetails
 
 rm_name_ocid_map = {}
+rm_region_name_map = {}
 comp_name = ''
 stack_ocid = ''
 
@@ -45,16 +46,16 @@ def create_rm(region,comp_name,ocs_stack,ct,rm_stack_name,rm_ocids_file,create_r
     print("Resource Manager Stack is created for " + region + " region. ")
     print("Resource Manager Stack OCID: "+ stack_ocid)
     print("Resource Manager Stack Name: "+rm_stack_name+"-"+region)
-    write_to_ocids_file(rm_ocids_file, rm_stack_name+"-"+region, stack_ocid,create_rm_flag,comp_name)
+    write_to_ocids_file(rm_ocids_file, region, rm_stack_name+"-"+region, stack_ocid,create_rm_flag,comp_name)
     return stack_ocid
 
-def write_to_ocids_file(rm_ocids_file,rm_name,rm_ocid,create_rm_flag,comp_name):
+def write_to_ocids_file(rm_ocids_file, rm_region, rm_name,rm_ocid,create_rm_flag,comp_name):
     #If the file exists
     if os.path.exists(rm_ocids_file):
         #If the RM is created newly or If there is no data in the file:
         if create_rm_flag == 1 or  os.stat(rm_ocids_file).st_size == 0:
             with open(rm_ocids_file, 'a+') as n:
-                n.write(comp_name+";"+rm_name + ";" + rm_ocid + '\n')
+                n.write(comp_name+";"+rm_region+";"+rm_name + ";" + rm_ocid + '\n')
             n.close()
         else:
             #If there is data in the file; Take a back up of existing file and update the existing RM details
@@ -64,7 +65,7 @@ def write_to_ocids_file(rm_ocids_file,rm_name,rm_ocid,create_rm_flag,comp_name):
                     with open(rm_ocids_file, 'w+') as n:
                         for line in f:
                             if rm_name in line and comp_name in line:
-                                n.write(line.replace(line, comp_name+";"+rm_name + ";" + rm_ocid + '\n'))
+                                n.write(line.replace(line, comp_name+";"+rm_region+";"+rm_name + ";" + rm_ocid + '\n'))
                             else:
                                 n.write(line)
                     n.close()
@@ -73,7 +74,7 @@ def write_to_ocids_file(rm_ocids_file,rm_name,rm_ocid,create_rm_flag,comp_name):
         #If file does not exist create a new one
         if create_rm_flag == 1:
             with open(rm_ocids_file, 'w+') as n:
-                n.write(comp_name+";"+rm_name + ";" + rm_ocid + '\n')
+                n.write(comp_name+";"+rm_region+";"+rm_name + ";" + rm_ocid + '\n')
             n.close()
 
 def parse_args():
@@ -134,7 +135,7 @@ def create_resource_manager(outdir, prefix, config=DEFAULT_LOCATION):
                 if "user_ocid"  in line or "fingerprint"  in line or "private_key_path" in line:
                     skipline = True
                 if not skipline:
-                        newfile.write(line)
+                    newfile.write(line)
                 if skipline:
                     if ('}' in line):
                         skipline = False
@@ -148,8 +149,10 @@ def create_resource_manager(outdir, prefix, config=DEFAULT_LOCATION):
             csv_reader = csv.reader(csv_file, delimiter=';')
             for row in csv_reader:
                 comp_name = row[0]
-                rm_name = row[1]
-                rm_ocid = row[2]
+                rm_region = row[1]
+                rm_name = row[2]
+                rm_ocid = row[3]
+                rm_region_name_map.update({rm_region: rm_name})
                 rm_name_ocid_map.update({rm_name:rm_ocid})
         if comp_name == '':
             comp_name = input("Resource Manager Compartment Name: ")
@@ -161,18 +164,16 @@ def create_resource_manager(outdir, prefix, config=DEFAULT_LOCATION):
         rm_name = prefix + "-" + region
 
         if rm_name_ocid_map != {}:
-
-            if rm_name in rm_name_ocid_map.keys():
-                ocid = rm_name_ocid_map[rm_name]
-
+            if region in rm_region_name_map.keys():
+                ocid = rm_name_ocid_map[rm_region_name_map[region]]
                 try:
                     status = ocs_stack.get_stack(ocid).data
                     if status.lifecycle_state == "ACTIVE":
-                        print("\nResource Manager ("+rm_name+") "+ ocid + " for region " + region + " exists in '" + comp_name + "' Compartment.Updating the same.................")
+                        print("\nResource Manager ("+rm_region_name_map[region]+") "+ ocid + " for region " + region + " exists in '" + comp_name + "' Compartment.Updating the same.................")
                         updatestackdetails = UpdateStackDetails()
                         zipConfigSource = UpdateZipUploadConfigSourceDetails()
                         zipConfigSource.config_source_type = 'ZIP_UPLOAD'
-                        updatestackdetails.display_name = rm_name
+                        updatestackdetails.display_name = rm_region_name_map[region]
                         with open(region + ".zip", 'rb') as file:
                             zipContents = file.read()
                             encodedZip = base64.b64encode(zipContents).decode('ascii')
@@ -186,9 +187,9 @@ def create_resource_manager(outdir, prefix, config=DEFAULT_LOCATION):
                         time.sleep(5)
 
                 except Exception as e:
-                    print("Resource Manager ("+rm_name+") "+ ocid + " for region " + region + " created previously in compartment '" + comp_name + "' is inactive/terminated!!")
+                    print("\nResource Manager ("+rm_name+") "+ ocid + " for region " + region + " created previously in compartment '" + comp_name + "' is inactive/terminated!!")
                     create_rm_flag = 0
-                    stack_ocid = create_rm(region, comp_name, ocs_stack, ct, prefix,rm_ocids_file,create_rm_flag)
+                    stack_ocid = create_rm(region, comp_name, ocs_stack, ct, prefix, rm_ocids_file,create_rm_flag)
 
             else:
                 create_rm_flag = 1
@@ -212,7 +213,7 @@ def create_resource_manager(outdir, prefix, config=DEFAULT_LOCATION):
             create_job_details.job_operation_details = createjoboperationdetails
             create_job_details.operation = "IMPORT_TF_STATE"
             create_job_details.stack_id = stack_ocid
-            print("Uploading Terraform State file to Resource Manager for region "+region+"..............\n")
+            print("\nUploading Terraform State file to Resource Manager for region "+region+"..............\n")
             ocs_stack.create_job(create_job_details)
 
     os.chdir("../..")
@@ -224,7 +225,7 @@ def create_resource_manager(outdir, prefix, config=DEFAULT_LOCATION):
         #remove existing RM dir
         shutil.rmtree(rm_dir)
 
-    print("\nProcess Completed !!!\b"
+    print("\nProcess Completed !!!\n"
           "Terraform Configuration (and/or) State files are uploaded to  Resource Manager Stack in "+comp_name+" Compartment.")
 
 

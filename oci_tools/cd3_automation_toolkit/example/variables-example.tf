@@ -260,3 +260,9 @@ variable "dbsystems_vm_bm" {
   type        = map(any)
   default     = {}
 }
+
+##########################
+# Add new variables here #
+##########################
+
+######################### END #########################
