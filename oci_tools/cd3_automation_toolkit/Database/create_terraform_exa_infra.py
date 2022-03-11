@@ -48,7 +48,7 @@ def create_terraform_exa_infra(inputfile, outdir, prefix, config=DEFAULT_LOCATIO
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
-    template = env.get_template('module-EXA-Infra-template')
+    template = env.get_template('EXA-Infra-template')
 
     # Read cd3 using pandas dataframe
     df, col_headers = commonTools.read_cd3(filename, sheetName)

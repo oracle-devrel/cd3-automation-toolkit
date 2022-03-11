@@ -1,54 +1,143 @@
+{% if count == 0 %}
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 
-resource "oci_database_cloud_vm_cluster" "{{ vm_cluster_display_tf_name }}" {
-    #Required
-    cloud_exadata_infrastructure_id = oci_database_cloud_exadata_infrastructure.{{ exadata_infra_display_tf_name }}.id
-    compartment_id = var.{{ compartment_name }}
-    cpu_core_count = "{{ cpu_core_count }}"
-    display_name = "{{ vm_cluster_display_name }}"
-    gi_version = "{{ oracle_grid_infrastructure_version }}"
-    hostname = "{{ hostname_prefix }}"
-    {% if ssh_key_var_name == 'var.ssh_public_key' %}
-    ssh_public_keys         =  [{{ ssh_key_var_name }}]
-    {% elif 'ssh-rsa' in ssh_key_var_name %}
-    ssh_public_keys         =  [{{ ssh_key_var_name }}]
-    {% else %}
-    ssh_public_keys         =  {{ ssh_key_var_name }}
-    {% endif %}
+############################
+# Database
+# ExaVMClusters - tfvars
+############################
+
+exa_vmclusters = {
+{% endif %}
+
+         {{ vm_cluster_display_tf_name }} = {
+            compartment_id           = "{{ compartment_name }}"
+            exadata_infrastructure_id= "{{ exadata_infra_display_tf_name }}"
+            cluster_subnet_id        = "{{ client_subnet_name }}"
+            gi_version               = "{{ oracle_grid_infrastructure_version }}"
+            hostname                 = "{{ hostname_prefix }}"
+            backup_subnet_id         = "{{ backup_subnet_name }}"
+            cpu_core_count           = "{{ cpu_core_count }}"
+            display_name             = "{{ vm_cluster_display_name }}"
+
+            {% if ssh_key_var_name %}
+            ssh_public_key        =  "{{ ssh_key_var_name }}"
+            {% elif 'ssh-rsa' in ssh_key_var_name %}
+            ssh_public_key         =  "{{ ssh_key_var_name }}"
+            {%else %}
+            ssh_public_key        = null
+            {% endif %}
 
 
-    subnet_id = merge(module.subnets.*...)["{{client_subnet_name}}"]["subnet_tf_id"]
-    backup_subnet_id = merge(module.subnets.*...)["{{backup_subnet_name}}"]["subnet_tf_id"]
+            {% if cluster_name %}
+            cluster_name             = "{{ cluster_name }}"
+            {% else %}
+            cluster_name             = ""
+            {% endif %}
 
-    #Optional
+            {% if license_model %}
+            license_model            = "{{ license_model }}"
+            {% else %}
+            license_model            = ""
+            {% endif %}
 
-    is_local_backup_enabled = {{ allocate_storage_for_local_backups }}
-    is_sparse_diskgroup_enabled = {{ allocate_storage_for_exadata_sparse_snapshots }}
-    license_model = "{{ license_model }}"
-    time_zone = "{{ time_zone }}"
+            {% if allocate_storage_for_local_backups %}
+            is_local_backup_enabled  = {{ allocate_storage_for_local_backups }}
+            {% else %}
+            is_local_backup_enabled  = null
+            {% endif %}
 
-    {#  ##Do not modify below this line##  #}
-        {#                                     #}
-        {#  ###Section for adding Defined and Freeform Tags###  #}
-        {% if defined_tags and defined_tags != 'nan' and defined_tags != '' %}
-        {% if defined_tags[0] %}
+            {% if allocate_storage_for_exadata_sparse_snapshots %}
+            is_sparse_diskgroup_enabled = {{ allocate_storage_for_exadata_sparse_snapshots }}
+            {% else %}
+            is_sparse_diskgroup_enabled = null
+            {% endif %}
+
+            {% if time_zone %}
+            time_zone                = "{{ time_zone }}"
+            {% else %}
+            time_zone                = ""
+            {% endif %}
+
+            #Optional
+            {% if domain %}
+            domain                   = "{{ domain }}"
+            {% else %}
+            domain                   = ""
+            {% endif %}
+
+            {% if backup_network_nsgs  %}
+            backup_network_nsg_ids   = [{{ backup_network_nsgs }}]
+            {% else %}
+            backup_network_nsg_ids   = []
+            {% endif %}
+
+            {% if data_storage_percentage  %}
+            data_storage_percentage  = {{ data_storage_percentage }}
+            {% else %}
+            data_storage_percentage  = null
+            {% endif %}
+
+            {% if nsgs %}
+            nsg_ids                  = [{{ nsgs }}]
+            {% else %}
+            nsg_ids                  = []
+            {% endif %}
+
+            {% if ocpu_count %}
+            ocpu_count               = {{ ocpu_count }}
+            {% else %}
+            ocpu_count               = null
+            {% endif %}
+
+            {% if scan_listener_port_tcp %}
+            scan_listener_port_tcp   = {{ scan_listener_port_tcp }}
+            {% else %}
+            scan_listener_port_tcp   = null
+            {% endif %}
+
+            {% if scan_listener_port_tcp_ssl %}
+            scan_listener_port_tcp_ssl = {{ scan_listener_port_tcp_ssl }}
+            {% else %}
+            scan_listener_port_tcp_ssl = null
+            {% endif %}
+
+              {#  ##Do not modify below this line##  #}
+    {#                                     #}
+    {#  ###Section for adding Defined and Freeform Tags###  #}
+    {% if defined_tags and defined_tags != 'nan' and defined_tags != '' %}
+      {% if defined_tags[0] %}
         defined_tags = {
-        {% for tags in defined_tags  %}   {% if not loop.last %}
-        "{{ tags[0]  }}"= "{{ tags[1] }}" ,
-        {% else %}
-        "{{ tags[0]  }}"= "{{ tags[1] }}"
-        {% endif %}{% endfor %}
+        {% for tags in defined_tags  %}
+            {% if not loop.last %}
+                "{{ tags[0]  }}"= "{{ tags[1] }}" ,
+            {% else %}
+                "{{ tags[0]  }}"= "{{ tags[1] }}"
+            {% endif %}
+        {% endfor %}
         }
-        {% endif %} {% endif %}
-        {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' %}
-        {% if freeform_tags[0] %}
+      {% else %}
+        defined_tags = {}
+        {% endif %}
+       {% else %}
+        defined_tags = {}
+       {% endif %}
+            {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' %}
+                {% if freeform_tags[0] %}
         freeform_tags = {
-        {% for tags in freeform_tags %} {% if not loop.last  %}
-        "{{ tags[0] }}"="{{ tags[1] }}",
-        {% else %}
-        "{{ tags[0] }}"="{{ tags[1] }}"
-        {% endif %} {% endfor %}
-        }
-        {% endif %} {% endif %}
-        {#  ###Section for adding Defined and Freeform Tags ends here###  #}
-
-}
+                    {% for tags in freeform_tags %}
+                        {% if not loop.last  %}
+                "{{ tags[0] }}"="{{ tags[1] }}",
+                        {% else %}
+                "{{ tags[0] }}"="{{ tags[1] }}"
+                        {% endif %}
+                    {% endfor %}
+                    }
+                {% else %}
+        freeform_tags = {}
+                {% endif %}
+            {% else %}
+        freeform_tags = {}
+            {% endif %}
+    {#  ###Section for adding Defined and Freeform Tags ends here###  #}
+      },
+ }
