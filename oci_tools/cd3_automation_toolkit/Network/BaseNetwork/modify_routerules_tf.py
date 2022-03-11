@@ -44,8 +44,8 @@ def modify_terraform_drg_routerules(inputfile, outdir, prefix=None, non_gf_tenan
     #Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
-    routerule_drg = env.get_template('module-drg-route-rule-template')
-    routetable_drg = env.get_template('module-drg-route-table-template')
+    routerule_drg = env.get_template('drg-route-rule-template')
+    routetable_drg = env.get_template('drg-route-table-template')
     auto_tfvars_filename = "_drg-routetables.auto.tfvars"
     rule_auto_tfvars_filename = "_drg-route-rules.auto.tfvars"
 
@@ -265,9 +265,9 @@ def modify_terraform_routerules(inputfile, outdir, prefix=None, non_gf_tenancy=F
     #Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
-    routerule = env.get_template('module-route-rule-template')
-    defaultrt = env.get_template('module-default-route-table-template')
-    routetable = env.get_template('module-route-table-template')
+    routerule = env.get_template('route-rule-template')
+    defaultrt = env.get_template('default-route-table-template')
+    routetable = env.get_template('route-table-template')
     auto_tfvars_filename = "_routetables.auto.tfvars"
     default_auto_tfvars_filename = "_default-routetables.auto.tfvars"
     region_included = []

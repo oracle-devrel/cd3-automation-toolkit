@@ -129,9 +129,9 @@ def create_terraform_drg_route(inputfile, outdir, prefix, non_gf_tenancy, config
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
-    drg_rt_template = env.get_template('module-drg-route-table-template')
-    drg_rd_template = env.get_template('module-drg-route-distribution-template')
-    drg_rd_stmt_template = env.get_template('module-drg-route-distribution-statement-template')
+    drg_rt_template = env.get_template('drg-route-table-template')
+    drg_rd_template = env.get_template('drg-route-distribution-template')
+    drg_rd_stmt_template = env.get_template('drg-route-distribution-statement-template')
     drg_distribution_auto_tfvars_template = "_drg-distributions.auto.tfvars"
     drg_rt_auto_tfvars_filename = "_drg-routetables.auto.tfvars"
 
@@ -410,8 +410,8 @@ def create_terraform_route(inputfile, outdir, prefix, non_gf_tenancy, config, mo
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
-    template = env.get_template('module-route-table-template')
-    routerule = env.get_template("module-route-rule-template")
+    template = env.get_template('route-table-template')
+    routerule = env.get_template("route-rule-template")
     auto_tfvars_filename = "_routetables.auto.tfvars"
 
     # Purge existing routetable files

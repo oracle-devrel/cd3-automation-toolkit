@@ -57,8 +57,8 @@ def create_terraform_dhcp_options(inputfile, outdir, prefix, non_gf_tenancy, con
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
-    template = env.get_template('module-custom-dhcp-template')
-    defaultdhcp = env.get_template('module-major-objects-default-dhcp-template')
+    template = env.get_template('custom-dhcp-template')
+    defaultdhcp = env.get_template('major-objects-default-dhcp-template')
 
     vcns = parseVCNs(filename)
     for reg in ct.all_regions:

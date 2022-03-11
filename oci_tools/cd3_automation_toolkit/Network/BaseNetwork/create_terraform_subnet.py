@@ -57,7 +57,7 @@ def create_terraform_subnet(inputfile, outdir, prefix, non_gf_tenancy, config, m
     #Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
-    template = env.get_template('module-subnet-template')
+    template = env.get_template('subnet-template')
     auto_tfvars_filename = '_subnets.auto.tfvars'
     region_included = []
 

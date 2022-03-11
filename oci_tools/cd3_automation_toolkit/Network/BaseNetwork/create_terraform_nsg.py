@@ -46,8 +46,8 @@ DEBUG = False
 # Load the template file
 file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
 env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
-template = env.get_template('module-nsg-template')
-nsgrule = env.get_template('module-nsg-rule-template')
+template = env.get_template('nsg-template')
+nsgrule = env.get_template('nsg-rule-template')
 nsg_auto_tfvars_filename = '_nsgs.auto.tfvars'
 nsg_rules_auto_tfvars_filename = '_nsg-rules.auto.tfvars'
 

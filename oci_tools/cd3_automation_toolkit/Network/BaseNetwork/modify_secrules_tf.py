@@ -36,9 +36,9 @@ def modify_terraform_secrules(inputfile, outdir, prefix=None, non_gf_tenancy=Fal
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
-    default_seclist = env.get_template('module-default-seclist-template')
-    secrule = env.get_template('module-sec-rule-template')
-    seclist = env.get_template('module-seclist-template')
+    default_seclist = env.get_template('default-seclist-template')
+    secrule = env.get_template('sec-rule-template')
+    seclist = env.get_template('seclist-template')
 
     secrulesfilename = inputfile
     configFileName = config

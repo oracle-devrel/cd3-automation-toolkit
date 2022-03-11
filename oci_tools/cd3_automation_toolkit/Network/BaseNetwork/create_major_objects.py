@@ -138,9 +138,9 @@ def create_major_objects(inputfile, outdir, prefix, non_gf_tenancy, config, modi
         # Load the template file
         file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
         env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
-        drg_template = env.get_template('module-major-objects-drgs-template')
-        drg_attach_template = env.get_template('module-major-objects-drg-attachments-template')
-        drg_datasource_template = env.get_template('module-drg-data-source-template')
+        drg_template = env.get_template('major-objects-drgs-template')
+        drg_attach_template = env.get_template('major-objects-drg-attachments-template')
+        drg_datasource_template = env.get_template('drg-data-source-template')
         drg_version = "DRGv2"
 
         region = ct.home_region
@@ -381,7 +381,7 @@ def create_major_objects(inputfile, outdir, prefix, non_gf_tenancy, config, modi
         # Added to check if compartment name is compatible with TF variable name syntax
         compartment_var_name = commonTools.check_tf_variable(compartment_var_name)
         vcn_dns_label = tempStr['dns_label'].lower().strip()
-        lpg = env.get_template('module-major-objects-lpgs-template')
+        lpg = env.get_template('major-objects-lpgs-template')
 
         # Create TF object for default DHCP options
         dhcpname = vcn_name + "_Default DHCP Options for " + vcn_name
@@ -492,19 +492,19 @@ def create_major_objects(inputfile, outdir, prefix, non_gf_tenancy, config, modi
 
         lpg_tfStr[region] = lpg.render(create_lpg_auto_vars=True,hub_lpg_details=hub_lpg_tfStr[region],peer_lpg_details=peer_lpg_tfStr[region],spoke_lpg_details=spoke_lpg_tfStr[region],exported_lpg_details=exported_lpg_tfStr[region],none_lpg_details=none_lpg_tfStr[region])
 
-        defaultdhcp = env.get_template('module-major-objects-default-dhcp-template')
+        defaultdhcp = env.get_template('major-objects-default-dhcp-template')
         dhcp_default_tfStr[region] = dhcp_default_tfStr[region][:-1] + defaultdhcp.render(tempStr)
 
-        vcn = env.get_template('module-major-objects-vcns-template')
+        vcn = env.get_template('major-objects-vcns-template')
         vcn_tfStr[region] = vcn_tfStr[region][:-1] + vcn.render(tempStr)
 
-        igws = env.get_template('module-major-objects-igws-template')
+        igws = env.get_template('major-objects-igws-template')
         igw_tfStr[region] = igw_tfStr[region][:-1] + igws.render(tempStr)
 
-        ngws = env.get_template('module-major-objects-ngws-template')
+        ngws = env.get_template('major-objects-ngws-template')
         ngw_tfStr[region] = ngw_tfStr[region][:-1] + ngws.render(tempStr)
 
-        sgws = env.get_template('module-major-objects-sgws-template')
+        sgws = env.get_template('major-objects-sgws-template')
         sgw_tfStr[region] = sgw_tfStr[region][:-1] + sgws.render(tempStr)
 
     # Get vcns object from commonTools

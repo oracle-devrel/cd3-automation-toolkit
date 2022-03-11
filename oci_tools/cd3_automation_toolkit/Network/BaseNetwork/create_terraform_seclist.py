@@ -61,8 +61,8 @@ def create_terraform_seclist(inputfile, outdir, prefix, config, modify_network=F
     #Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader,keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
-    template = env.get_template('module-seclist-template')
-    secrule = env.get_template('module-sec-rule-template')
+    template = env.get_template('seclist-template')
+    secrule = env.get_template('sec-rule-template')
 
     auto_tfvars_filename = "_seclists.auto.tfvars"
     common_seclist = []
