@@ -9,12 +9,12 @@
 
 variable "ssh_public_key" {
 	type = string
-	default = "<YOUR SSH PUB KEY STRING HERE>"
+	default = "<SSH PUB KEY STRING HERE>"
 }
 
 variable "tenancy_ocid" {
         type = string
-        default = "<YOUR TENANCY OCID HERE>"
+        default = "<TENANCY OCID HERE>"
 }
 
 variable "user_ocid" {
@@ -24,23 +24,23 @@ variable "user_ocid" {
 
 variable "fingerprint" {
         type = string
-        default = "<SSH KEY FINGERPRINT> - Use the create_keys.sh for easily creating keys and its fingerprint> "
+        default = "<SSH KEY FINGERPRINT HERE>"
 }
 
 variable "private_key_path" {
         type = string
-        default = "<The Private key file path> - If you've used the createPEMKeys.py then the full path of where the .pem file is>"
+        default = "<SSH PRIVATE KEY FULL PATH HERE>"
 }
 
 variable "region" {
         type = string
-        default = "<OCI Tenancy Region where these objects will be created - us-phoenix-1 or us-ashburn-1>"
+        default = "<OCI TENANCY REGION HERE eg: us-phoenix-1 or us-ashburn-1>"
 }
 
 #################################
 #
 # Variables according to Services
-# Please do not modify
+# PLEASE DO NOT MODIFY
 #
 #################################
 
@@ -48,12 +48,12 @@ variable "region" {
 ### Fetch Compartments #####
 ############################
 
-## Do Not Modify #START_Compartment_OCIDs#
+#START_Compartment_OCIDs#
 variable "compartment_ocids" {
     type = list(any)
     default = [{}]
 }
-#Compartment_OCIDs_END#  ## Do Not Modify
+#Compartment_OCIDs_END#
 
 #########################
 ##### Identity ##########

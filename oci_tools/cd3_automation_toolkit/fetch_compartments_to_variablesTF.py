@@ -37,6 +37,7 @@ def fetch_compartments(outdir, config=DEFAULT_LOCATION):
         file = f'{outdir}/{region}/variables_{region}.tf'
         var_files[region]=file
         try:
+            # Read variables file data
             with open(file, 'r') as f:
                 var_data[region] = f.read()
         except FileNotFoundError as e:
@@ -48,33 +49,22 @@ def fetch_compartments(outdir, config=DEFAULT_LOCATION):
     print("Fetching Compartment Info...Please wait...")
     ct.get_network_compartment_ids(config['tenancy'], "root", configFileName)
 
+    compVarsStr = ""
     for name, ocid in ct.ntk_compartment_ids.items():
         comp_tf_name = commonTools.check_tf_variable(name)
         comp_ocids.append(comp_tf_name + "::" + ocid)
+        str1 = var_template.render(var_tf_name=comp_tf_name, values=ocid)
+        compVarsStr = compVarsStr + str1
+
+    # Write compartment_ocids list variable to the file
+    compocidsStr = var_template.render(compartment_ocids_list='true', comp_ocids=comp_ocids)
+
+    finalCompStr = "#START_Compartment_OCIDs#" + compocidsStr + compVarsStr + "#Compartment_OCIDs_END#"
 
     for reg in ct.all_regions:
-        regstr=''
-        for name, ocid in ct.ntk_compartment_ids.items():
-            comp_tf_name = commonTools.check_tf_variable(name)
-            searchstr = "variable \"" + comp_tf_name + "\""
-            str1=var_template.render(var_tf_name=comp_tf_name,values=ocid)
-            if(searchstr not in var_data[reg]):
-                regstr=regstr+str1
+        var_data[reg] = re.sub('#START_Compartment_OCIDs#.*?#Compartment_OCIDs_END#', finalCompStr,var_data[reg], flags=re.DOTALL)
 
-        #Write individual compartment variables to the file
-        with open(var_files[reg],"a") as vname:
-            vname.write(regstr)
-
-        # Read variables file data again
-        with open(var_files[reg], "r") as f:
-            var_data[reg] = f.read()
-
-        # Write compartment_ocids list variable to the file
-        regstr = var_template.render(compartment_ocids_list='true', comp_ocids=comp_ocids)
-        regstr = "#START_Compartment_OCIDs#" + regstr + "#Compartment_OCIDs_END#"
-
-        var_data[reg] = re.sub('#START_Compartment_OCIDs#.*?#Compartment_OCIDs_END#', regstr,var_data[reg], flags=re.DOTALL)
-
+        # Write variables file data
         with open(var_files[reg], "w") as f:
             f.write(var_data[reg])
 

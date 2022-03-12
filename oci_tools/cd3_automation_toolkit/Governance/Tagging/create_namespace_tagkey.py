@@ -134,8 +134,13 @@ def create_namespace_tagkey(inputfile, outdir, prefix, config):
             else:
                 columnvalue = str(df[columnname][i]).strip()
 
-            # Check for boolean/null in column values
-            columnvalue = commonTools.check_columnvalue(columnvalue)
+            # Check for boolean/null in column values Do for columns other than Validator
+            if columnname == 'Validator':
+                if (columnvalue.lower() == 'nan'):
+                    columnvalue = ""
+            else:
+                columnvalue = commonTools.check_columnvalue(columnvalue)
+
 
             if "::" in columnvalue:
                 if columnname != "Compartment Name" and columnname != 'Validator' and columnname != 'Default Tag Compartment':
@@ -195,14 +200,14 @@ def create_namespace_tagkey(inputfile, outdir, prefix, config):
                     columnvalue = commonTools.check_tf_variable(columnvalue)
 
             if columnname == 'Validator':
-                if str(columnvalue).strip() != '':
+                if str(columnvalue).strip() != '' and str(columnvalue).strip().lower() != 'nan':
                     columnname = commonTools.check_column_headers(columnname)
                     multivalues = columnvalue.split("::")
                     multivalues = [str(part).strip().replace('$','$$') if part and '$' in part else str(part).strip() for part in multivalues ]
                     tempdict = {columnname: multivalues}
 
                     values_list = multivalues[1].split(',"')
-                    values_list = [values.replace('"','') for values in values_list]
+                    values_list = [values[1:-1] for values in values_list]
                     if str(df.loc[i,'Default Tag Compartment']).strip() != '' and str(df.loc[i,'Default Tag Compartment']).lower().strip() != 'nan':
                         if '$' not in str(df.loc[i, 'Default Tag Value']):
                             if str(df.loc[i, 'Default Tag Value']) not in values_list and str(df.loc[i, 'Default Tag Value']).strip() != '' and str(df.loc[i, 'Default Tag Value']).strip().lower() != 'nan':

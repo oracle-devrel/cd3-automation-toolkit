@@ -33,7 +33,6 @@ def  print_tags(values_for_column_tags,region, ntk_compartment_name, tag, tag_ke
     tag_key_description = ''
     tag_key_is_cost_tracking = ''
     if ( str(tag_key) != "Nan"  ):
-     tf_name_key = commonTools.check_tf_variable(tag_key.name)
      tag_key_name = tag_key.name
      tag_key_description = tag_key.description
      tag_key_is_cost_tracking = tag_key.is_cost_tracking
@@ -45,18 +44,20 @@ def  print_tags(values_for_column_tags,region, ntk_compartment_name, tag, tag_ke
       validator = validator[1].split("  ]}")
       validator = "ENUM::" + validator[0].replace("    ","")
 
-    tf_name_namespace = commonTools.check_tf_variable(tag.name)
     for col_header in values_for_column_tags.keys():
         if (col_header == "Region"):
              values_for_column_tags[col_header].append(region)
         elif (col_header == "Compartment Name"):
             values_for_column_tags[col_header].append(ntk_compartment_name)
         elif (col_header == "Tag Namespace"):
-            values_for_column_tags[col_header].append(tag.name)
+            tagname = tag.name
+            values_for_column_tags[col_header].append(tagname)
+            tagname = commonTools.check_columnvalue(tagname)
         elif (col_header == "Namespace Description"):
             values_for_column_tags[col_header].append(tag.description)
         elif (col_header == "Tag Keys"):
             values_for_column_tags[col_header].append(tag_key_name)
+            tag_key_name = commonTools.check_columnvalue(tag_key_name)
         elif (col_header == "Tag Description"):
             values_for_column_tags[col_header].append(tag_key_description)
         elif (col_header == "Cost Tracking"):
@@ -72,6 +73,9 @@ def  print_tags(values_for_column_tags,region, ntk_compartment_name, tag, tag_ke
         else:
             oci_objs = [tag,tag_key,tag_default]
             values_for_column_tags = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict_tags,values_for_column_tags)
+
+    tf_name_namespace = commonTools.check_tf_variable(tagname)
+    tf_name_key = commonTools.check_tf_variable(tag_key_name)
     if (tag.id not in tf_name_namespace_list):
         importCommands[region].write("\nterraform import oci_identity_tag_namespace." + tf_name_namespace + " " + str(tag.id))
         tf_name_namespace_list.append(tag.id)
@@ -140,7 +144,7 @@ def export_tags_nongreenfield(inputfile, outdir, _config, network_compartments):
             comp_ocid_done.append(ct.ntk_compartment_ids[ntk_compartment_name])
             tags = oci.pagination.list_call_get_all_results(identity.list_tag_namespaces,
                                                                     compartment_id=ct.ntk_compartment_ids[
-                                                                        ntk_compartment_name])
+                                                                        ntk_compartment_name],lifecycle_state="ACTIVE")
             tag_defaults = oci.pagination.list_call_get_all_results(identity.list_tag_defaults,
                                                                             compartment_id=ct.ntk_compartment_ids[
                                                                                 ntk_compartment_name],
