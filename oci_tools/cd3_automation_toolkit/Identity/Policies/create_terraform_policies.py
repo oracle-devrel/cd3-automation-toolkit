@@ -106,11 +106,7 @@ def create_terraform_policies(inputfile, outdir, prefix, config=DEFAULT_LOCATION
         for columnname in dfcolumns:
 
             # Column value
-            if 'description' in columnname.lower():
-                columnvalue = str(df[columnname][i])
-                tempdict = {'description': columnvalue}
-            else:
-                columnvalue = str(df.loc[i, columnname]).strip()
+            columnvalue = str(df.loc[i, columnname]).strip()
 
             # Check for boolean/null in column values
             columnvalue = commonTools.check_columnvalue(columnvalue)
@@ -153,6 +149,8 @@ def create_terraform_policies(inputfile, outdir, prefix, config=DEFAULT_LOCATION
             policy_desc = str(df.loc[i, "Description"])
             if (str(policy_desc).lower() == "nan"):
                 policy_desc = policy_name
+            else:
+                policy_desc=commonTools.check_columnvalue(policy_desc)
 
             policy_statement = str(df.loc[i, "Policy Statements"])
             actual_policy_statement = policy_statement

@@ -59,10 +59,10 @@ def fetch_compartments(outdir, config=DEFAULT_LOCATION):
     # Write compartment_ocids list variable to the file
     compocidsStr = var_template.render(compartment_ocids_list='true', comp_ocids=comp_ocids)
 
-    finalCompStr = "#START_Compartment_OCIDs#" + compocidsStr + compVarsStr + "#Compartment_OCIDs_END#"
+    finalCompStr = "#START_compartment_ocids#" + compocidsStr + compVarsStr + "#compartment_ocids_END#"
 
     for reg in ct.all_regions:
-        var_data[reg] = re.sub('#START_Compartment_OCIDs#.*?#Compartment_OCIDs_END#', finalCompStr,var_data[reg], flags=re.DOTALL)
+        var_data[reg] = re.sub('#START_compartment_ocids#.*?#compartment_ocids_END#', finalCompStr,var_data[reg], flags=re.DOTALL)
 
         # Write variables file data
         with open(var_files[reg], "w") as f:

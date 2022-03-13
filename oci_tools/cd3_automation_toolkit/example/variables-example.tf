@@ -7,11 +7,6 @@
 #
 ############################
 
-variable "ssh_public_key" {
-	type = string
-	default = "<SSH PUB KEY STRING HERE>"
-}
-
 variable "tenancy_ocid" {
         type = string
         default = "<TENANCY OCID HERE>"
@@ -36,6 +31,50 @@ variable "region" {
         type = string
         default = "<OCI TENANCY REGION HERE eg: us-phoenix-1 or us-ashburn-1>"
 }
+#################################
+# SSH Keys
+#################################
+
+variable "ssh_public_key" {
+	type = string
+	default = "<SSH PUB KEY STRING HERE>"
+}
+
+variable instance_ssh_keys {
+    type = list(any)
+    default = [
+    {
+    ssh_public_key = "<SSH PUB KEY STRING HERE>"
+    #START_instance_ssh_keys#
+    # exported instance ssh keys
+    #instance_ssh_keys_END#
+    }
+    ]
+}
+
+variable exacs_ssh_keys {
+    type = list(any)
+    default = [
+    {
+    ssh_public_key = "<SSH PUB KEY STRING HERE>"
+    #START_exacs_ssh_keys#
+    # exported exacs ssh keys
+    #exacs_ssh_keys_END#
+    }
+    ]
+}
+
+variable dbsystem_ssh_keys {
+    type = list(any)
+    default = [
+    {
+    ssh_public_key = "<SSH PUB KEY STRING HERE>"
+    #START_dbsystem_ssh_keys#
+    # exported dbsystem ssh keys
+    #dbsystem_ssh_keys_END#
+    }
+    ]
+}
 
 #################################
 #
@@ -48,12 +87,12 @@ variable "region" {
 ### Fetch Compartments #####
 ############################
 
-#START_Compartment_OCIDs#
+#START_compartment_ocids#
 variable "compartment_ocids" {
     type = list(any)
     default = [{}]
 }
-#Compartment_OCIDs_END#
+#compartment_ocids_END#
 
 #########################
 ##### Identity ##########
