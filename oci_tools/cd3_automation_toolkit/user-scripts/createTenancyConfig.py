@@ -90,7 +90,7 @@ def seek_info():
     config_file_path = customer_tenancy_dir+"/"+prefix+"_config"
     auto_keys_dir = user_dir+"/tenancies/keys"
     modules_dir = user_dir +"/oci_tools/cd3_automation_toolkit/user-scripts/terraform"
-    variables_example_file = modules_dir +"/variables-example.tf"
+    variables_example_file = modules_dir +"/variables_example.tf"
     setupoci_props_file_path = customer_tenancy_dir + "/" + prefix + "_setUpOCI.properties"
 
     if not os.path.exists(customer_tenancy_dir):
@@ -243,7 +243,7 @@ def seek_info():
         distutils.dir_util.copy_tree(modules_dir, terraform_files +"/" + region)
 
         # 8. Remove the terraform example variable file from outdir
-        os.remove(terraform_files +"/" + region + "/variables-example.tf")
+        os.remove(terraform_files +"/" + region + "/variables_example.tf")
 
     # Logging information
     logging.basicConfig(filename=customer_tenancy_dir+'/cmds.log', format='%(message)s', filemode='w', level=logging.INFO)
