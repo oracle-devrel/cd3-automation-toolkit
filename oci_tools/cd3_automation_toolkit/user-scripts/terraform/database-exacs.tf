@@ -46,7 +46,7 @@ module "exa-vmclusters" {
   gi_version                = each.value.gi_version
   hostname                  = each.value.hostname
   #ssh_public_keys          = length(regexall("ssh-rsa*",each.value.ssh_public_key)) > 0 ? each.value.ssh_public_key : var.ssh_public_key
-  ssh_public_keys           = lookup(var.exacs_ssh_keys, each.value.ssh_public_key, var.exacs_ssh_keys["ssh_public_key"] )
+  ssh_public_keys           = lookup(var.exacs_ssh_keys, each.value.ssh_public_keys, var.exacs_ssh_keys["ssh_public_key"] )
   cluster_subnet_id         = length(regexall("ocid1.subnet.oc1*", each.value.cluster_subnet_id)) > 0 ? each.value.cluster_subnet_id : merge(module.subnets.*...)[each.value.cluster_subnet_id]["subnet_tf_id"]
   backup_network_nsg_ids      = [for nsg in each.value.backup_network_nsg_ids : ( length(regexall("ocid1.networksecuritygroup.oc1*",nsg)) > 0 ? nsg : try(merge(module.nsgs.*...)[nsg]["nsg_tf_id"][nsg],merge(module.nsgs.*...)[nsg]["nsg_tf_id"],merge(module.nsgs.*...)[nsg]["nsg_tf_id"]))]
   cluster_name                = each.value.cluster_name

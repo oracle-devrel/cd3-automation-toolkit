@@ -102,9 +102,10 @@ def create_terraform_exa_vmclusters(inputfile, outdir, prefix, config=DEFAULT_LO
                 str(df.loc[i, 'Client Subnet Name']).lower() == 'nan' or \
                 str(df.loc[i, 'Backup Subnet Name']).lower() == 'nan' or \
                 str(df.loc[i, 'CPU Core Count']).lower() == 'nan' or \
+                str(df.loc[i, 'SSH Key Var Name']).lower() == 'nan' or \
                 str(df.loc[i, 'Hostname Prefix']).lower() == 'nan' or \
                 str(df.loc[i, 'Oracle Grid Infrastructure Version']).lower() == 'nan':
-                print("\nRegion, Compartment Name, Exadata Infra Display Name, VM Cluster Display Name, Subnet Names, CPU Core Count, Hostname Prefix, Oracle Grid Infrastructure Version are mandatory fields. Please enter a value and try again.......Exiting!!")
+                print("\nRegion, Compartment Name, Exadata Infra Display Name, VM Cluster Display Name, Subnet Names, CPU Core Count, Hostname Prefix, Oracle Grid Infrastructure Version, SSH Key Var Name are mandatory fields. Please enter a value and try again.......Exiting!!")
                 exit()
 
         # tempdict = {'oracle_db_software_edition' : 'ENTERPRISE_EDITION_EXTREME_PERFORMANCE'}
@@ -125,14 +126,6 @@ def create_terraform_exa_vmclusters(inputfile, outdir, prefix, config=DEFAULT_LO
                 compartmentVarName = commonTools.check_tf_variable(compartmentVarName)
                 columnvalue = str(compartmentVarName)
                 tempdict = {columnname: columnvalue}
-
-            if columnname == "SSH Key Var Name":
-                if columnvalue.strip() != '' and columnvalue.strip().lower() != 'nan':
-                    if "ssh-rsa" in columnvalue.strip():
-                        ssh_key_var_name = "\"" + columnvalue.strip() + "\""
-                    else:
-                        ssh_key_var_name = columnvalue.strip()
-                    tempdict = {'ssh_key_var_name': ssh_key_var_name}
 
             # Process Defined and Freeform Tags
             if columnname.lower() in commonTools.tagColumns:
