@@ -7,6 +7,8 @@
 
 module "alarms" {
   source   = "./modules/managementservices/alarm"
+
+  depends_on = [module.notifications-topics]
   for_each = var.alarms != null ? var.alarms : {}
 
   alarm_name                   = each.value.alarm_name
@@ -41,6 +43,7 @@ output "alarms_id" {
 
 module "events" {
   source   = "./modules/managementservices/event"
+  depends_on = [module.notifications-topics]
   for_each = var.events != null ? var.events : {}
 
   event_name       = each.value.event_name
