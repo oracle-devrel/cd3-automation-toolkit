@@ -88,7 +88,7 @@ resource "oci_database_db_system" "database_db_system" {
   #}
 
   lifecycle {
-    ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"]]
+    ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"],db_home[0].database[0].defined_tags["Oracle-Tags.CreatedOn"]]
   }
 
 }
