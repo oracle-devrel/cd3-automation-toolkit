@@ -15,7 +15,7 @@ resource "oci_database_cloud_vm_cluster" "exa_vmcluster" {
   display_name                    = var.display_name
   gi_version                      = var.gi_version
   hostname                        = var.hostname
-  ssh_public_keys                 = [var.ssh_public_keys]
+  ssh_public_keys                 = var.ssh_public_keys
 
   #Optional
   backup_network_nsg_ids      = var.backup_network_nsg_ids

@@ -24,8 +24,8 @@ variable "hostname" {
   default = ""
 }
 variable "ssh_public_keys" {
-  type = string
-  default = ""
+  type = list
+  default = []
 }
 variable "cluster_subnet_id" {
   type = string

@@ -16,6 +16,7 @@ from pathlib import Path
 from commonTools import *
 from jinja2 import Environment, FileSystemLoader
 import json
+import re
 
 from oci.config import DEFAULT_LOCATION
 
@@ -124,6 +125,7 @@ def export_dbsystems_vm_bm(inputfile, _outdir, _config, network_compartments=[])
     ct = commonTools()
     ct.get_subscribedregions(configFileName)
     ct.get_network_compartment_ids(config['tenancy'],"root",configFileName)
+    var_data = {}
 
     # Read CD3
     df, values_for_column= commonTools.read_cd3(cd3file,sheetName)
@@ -160,6 +162,7 @@ def export_dbsystems_vm_bm(inputfile, _outdir, _config, network_compartments=[])
     print("\nFetching details of VM and BM DB Systems...")
 
     for reg in ct.all_regions:
+        var_data[reg] = ""
         importCommands[reg].write("\n\n######### Writing import for DB System VM and DB System BM #########\n\n")
         config.__setitem__("region", ct.region_dict[reg])
         region = reg.capitalize()
@@ -187,13 +190,23 @@ def export_dbsystems_vm_bm(inputfile, _outdir, _config, network_compartments=[])
                     for database in databases.data:
                         print_dbsystem_vm_bm(region, db_system, count,db_home, database, vnc_client, key_name,values_for_column, ntk_compartment_name)
 
-        f = open(outdir + "/" + reg + "/ssh_metadata_vm_bm_db.tf", "w")
+        file = f'{outdir}/{reg}/variables_{reg}.tf'
+        # Read variables file data
+        with open(file, 'r') as f:
+            var_data[reg] = f.read()
 
+        tempStr = ""
         for k, v in db.items():
-            tempstr = {"var_tf_name": k, "values": v,"db_export":"true"}
-            var_name = variable_template.render(tempstr)
-            f.write(var_name)
-        f.close()
+            tempStr = k + " = " + v + "\n" + tempStr
+
+        tempStr = "#START_dbsystem_ssh_keys#" + tempStr + "#dbsystem_ssh_keys_END#"
+        var_data[reg] = re.sub('#START_dbsystem_ssh_keys#.*?#dbsystem_ssh_keys_END#', tempStr, var_data[reg],
+                               flags=re.DOTALL)
+
+        # Write variables file data
+        with open(file, "w") as f:
+            f.write(var_data[reg])
+
 
         with open(script_file, 'a') as importCommands[reg]:
             importCommands[reg].write('\n\nterraform plan\n')

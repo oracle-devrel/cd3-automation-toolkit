@@ -10,7 +10,7 @@ resource "oci_database_db_system" "database_db_system" {
   compartment_id      = var.compartment_id
   hostname            = var.hostname
   shape               = var.shape
-  ssh_public_keys     = [var.ssh_public_key]
+  ssh_public_keys     = var.ssh_public_key
   subnet_id           = var.subnet_id
   disk_redundancy     = var.disk_redundancy
 
