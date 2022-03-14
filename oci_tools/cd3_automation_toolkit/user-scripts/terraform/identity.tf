@@ -15,7 +15,7 @@ module "iam-compartments" {
   compartment_name        = each.value.name
   compartment_description = each.value.description
   compartment_create      = true
-  #enable_delete           = each.value.enable_delete
+  enable_delete           = each.value.enable_delete
 
   #Optional
   defined_tags  = each.value.defined_tags
@@ -199,14 +199,14 @@ module "iam-policies" {
   depends_on            = [module.iam-groups]
   tenancy_ocid          = var.tenancy_ocid
   policy_name           = each.value.name
-  policy_compartment_id = each.value.compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[0][each.value.compartment_name]) : var.tenancy_ocid
+  policy_compartment_id = each.value.compartment_name != "root" ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[each.value.compartment_name]) : var.tenancy_ocid
   policy_description    = each.value.policy_description
   policy_statements     = each.value.policy_statements
 
   #Optional
   defined_tags  = each.value.defined_tags
   freeform_tags = each.value.freeform_tags
-  #policy_version_date  = each.value.policy_version_date != null ? each.value.policy_version_date : null
+  policy_version_date  = each.value.policy_version_date != null ? each.value.policy_version_date : null
 }
 
 /*

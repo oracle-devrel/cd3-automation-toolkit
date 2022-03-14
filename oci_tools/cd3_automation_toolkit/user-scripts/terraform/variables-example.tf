@@ -117,8 +117,8 @@ variable instance_source_ocids {
 
 #START_compartment_ocids#
 variable "compartment_ocids" {
-    type = list(any)
-    default = [{}]
+    type = map(any)
+    default = {}
 }
 #compartment_ocids_END#
 

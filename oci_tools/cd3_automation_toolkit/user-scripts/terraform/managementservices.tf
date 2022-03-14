@@ -10,7 +10,7 @@ module "alarms" {
   for_each = var.alarms != null ? var.alarms : {}
 
   alarm_name                   = each.value.alarm_name
-  compartment_name             = each.value.compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[0][each.value.compartment_name]) : var.tenancy_ocid
+  compartment_name             = each.value.compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[each.value.compartment_name]) : var.tenancy_ocid
   destinations                 = [for tn in each.value.destinations : (length(regexall("ocid1.onstopic.oc1*", tn)) > 0 ? tn : merge(module.notifications-topics.*...)[tn]["topic_tf_id"])]
   is_enabled                   = each.value.is_enabled
   metric_compartment_name      = each.value.metric_compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.metric_compartment_name)) > 0 ? each.value.metric_compartment_name : var.compartment_ocids[0][each.value.metric_compartment_name]) : var.tenancy_ocid
@@ -44,7 +44,7 @@ module "events" {
   for_each = var.events != null ? var.events : {}
 
   event_name       = each.value.event_name
-  compartment_name = each.value.compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[0][each.value.compartment_name]) : var.tenancy_ocid
+  compartment_name = each.value.compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[each.value.compartment_name]) : var.tenancy_ocid
   is_enabled       = each.value.is_enabled
   description      = (each.value.description != "" && each.value.description != null) ? each.value.description : null
   condition        = each.value.condition
@@ -74,7 +74,7 @@ module "log-groups" {
 
   # Log Groups
   #Required
-  compartment_id = each.value.compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[0][each.value.compartment_name]) : var.tenancy_ocid
+  compartment_id = each.value.compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[each.value.compartment_name]) : var.tenancy_ocid
 
   display_name = each.value.display_name != null ? each.value.display_name : null
 
@@ -96,7 +96,7 @@ module "logs" {
 
   # Logs
   #Required
-  compartment_id = each.value.compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[0][each.value.compartment_name]) : var.tenancy_ocid
+  compartment_id = each.value.compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[each.value.compartment_name]) : var.tenancy_ocid
   display_name   = each.value.display_name != null ? each.value.display_name : null
   log_group_id   = length(regexall("ocid1.vcn.oc1*", each.value.log_group_id)) > 0 ? each.value.log_group_id : merge(module.log-groups.*...)[each.value.log_group_id]["log_group_tf_id"]
 
@@ -129,7 +129,7 @@ module "notifications-topics" {
   source   = "./modules/managementservices/notification-topic"
   for_each = var.notifications_topics != null ? var.notifications_topics : {}
 
-  compartment_name = each.value.compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[0][each.value.compartment_name]) : var.tenancy_ocid
+  compartment_name = each.value.compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[each.value.compartment_name]) : var.tenancy_ocid
   description      = each.value.description
   topic_name       = each.value.topic_name
 
@@ -143,7 +143,7 @@ module "notifications-subscriptions" {
   for_each = var.notifications_subscriptions != null ? var.notifications_subscriptions : {}
 
   depends_on        = [module.notifications-topics]
-  compartment_name  = each.value.compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[0][each.value.compartment_name]) : var.tenancy_ocid
+  compartment_name  = each.value.compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[each.value.compartment_name]) : var.tenancy_ocid
   endpoint          = each.value.endpoint
   protocol          = each.value.protocol
   topic_name        = length(regexall("ocid1.onstopic.oc1*", each.value.topic_name)) > 0 ? each.value.topic_name : merge(module.notifications-topics.*...)[each.value.topic_name]["topic_tf_id"]

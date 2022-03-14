@@ -17,4 +17,8 @@ resource "oci_core_drg_route_table" "drg_route_table" {
   freeform_tags                    = var.freeform_tags
   import_drg_route_distribution_id = var.import_drg_route_distribution_id
   is_ecmp_enabled                  = var.is_ecmp_enabled
+
+  lifecycle {
+    ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"]]
+  }
 }

@@ -35,6 +35,6 @@ resource "oci_database_cloud_vm_cluster" "exa_vmcluster" {
   freeform_tags               = var.freeform_tags
 
   lifecycle {
-    ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"], freeform_tags]
+    ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"]]
   }
 }

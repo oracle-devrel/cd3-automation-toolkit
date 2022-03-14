@@ -24,7 +24,7 @@ resource "oci_core_drg_attachment" "drg_attachment" {
     route_table_id = (var.vcn_route_table_id != "" && var.vcn_route_table_id != null) ? var.vcn_route_table_id : null
   }
   lifecycle {
-    ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"], freeform_tags]
+    ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"]]
   }
 
 }

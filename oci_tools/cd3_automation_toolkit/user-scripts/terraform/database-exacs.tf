@@ -9,7 +9,7 @@ module "exa-infra" {
   source              = "./modules/database/exa-infra"
   for_each            = var.exa_infra != null ? var.exa_infra : {}
   availability_domain = each.value.availability_domain != "" && each.value.availability_domain != null ? data.oci_identity_availability_domains.availability_domains.availability_domains[each.value.availability_domain].name : ""
-  compartment_id      = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[0][each.value.compartment_id]) : var.tenancy_ocid
+  compartment_id      = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : var.tenancy_ocid
   display_name        = each.value.display_name
   shape               = each.value.shape
   compute_count       = each.value.compute_count
@@ -42,7 +42,7 @@ module "exa-vmclusters" {
   exadata_infrastructure_id = length(regexall("ocid1.cloudexadatainfrastructure.oc1*", each.value.exadata_infrastructure_id)) > 0 ? each.value.exadata_infrastructure_id : merge(module.exa-infra.*...)[each.value.exadata_infrastructure_id].exainfra_tf_id
   cpu_core_count            = each.value.cpu_core_count
   display_name              = each.value.display_name
-  compartment_id            = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[0][each.value.compartment_id]) : var.tenancy_ocid
+  compartment_id            = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : var.tenancy_ocid
   gi_version                = each.value.gi_version
   hostname                  = each.value.hostname
   #ssh_public_keys          = length(regexall("ssh-rsa*",each.value.ssh_public_key)) > 0 ? each.value.ssh_public_key : var.ssh_public_key

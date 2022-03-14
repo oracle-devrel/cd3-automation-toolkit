@@ -10,7 +10,7 @@ module "vcns" {
   for_each = var.vcns != null ? var.vcns : {}
 
   #Required
-  compartment_id = try(zipmap(data.oci_identity_compartments.compartments.compartments.*.name, data.oci_identity_compartments.compartments.compartments.*.id)[each.value.compartment_name], var.compartment_ocids[0][each.value.compartment_name])
+  compartment_id = try(zipmap(data.oci_identity_compartments.compartments.compartments.*.name, data.oci_identity_compartments.compartments.compartments.*.id)[each.value.compartment_name], var.compartment_ocids[each.value.compartment_name])
 
   #Optional
   cidr_blocks    = each.value.cidr_blocks
@@ -40,7 +40,7 @@ module "igws" {
   depends_on = [module.vcns]
 
   #Required
-  compartment_id = each.value.compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[0][each.value.compartment_name]) : var.tenancy_ocid
+  compartment_id = each.value.compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[each.value.compartment_name]) : var.tenancy_ocid
   vcn_id         = length(regexall("ocid1.vcn.oc1*", each.value.display_name)) > 0 ? each.value.display_name : merge(module.vcns.*...)[each.value.display_name]["vcn_tf_id"]
 
   #Optional
@@ -68,7 +68,7 @@ module "ngws" {
   depends_on = [module.vcns]
 
   #Required
-  compartment_id = each.value.compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[0][each.value.compartment_name]) : var.tenancy_ocid
+  compartment_id = each.value.compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[each.value.compartment_name]) : var.tenancy_ocid
   vcn_id         = length(regexall("ocid1.vcn.oc1*", each.value.display_name)) > 0 ? each.value.display_name : merge(module.vcns.*...)[each.value.display_name]["vcn_tf_id"]
 
   #Optional
@@ -97,7 +97,7 @@ module "hub-lpgs" {
   depends_on = [module.vcns, module.spoke-lpgs, module.none-lpgs, module.exported-lpgs, module.peer-lpgs]
 
   #Required
-  compartment_id = each.value.compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[0][each.value.compartment_name]) : var.tenancy_ocid
+  compartment_id = each.value.compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[each.value.compartment_name]) : var.tenancy_ocid
   vcn_id         = length(regexall("ocid1.vcn.oc1*", each.value.vcn_name)) > 0 ? each.value.vcn_name : merge(module.vcns.*...)[each.value.vcn_name]["vcn_tf_id"]
 
   #Optional
@@ -115,7 +115,7 @@ module "spoke-lpgs" {
   depends_on = [module.vcns]
 
   #Required
-  compartment_id = each.value.compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[0][each.value.compartment_name]) : var.tenancy_ocid
+  compartment_id = each.value.compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[each.value.compartment_name]) : var.tenancy_ocid
   vcn_id         = length(regexall("ocid1.vcn.oc1*", each.value.vcn_name)) > 0 ? each.value.vcn_name : merge(module.vcns.*...)[each.value.vcn_name]["vcn_tf_id"]
 
   #Optional
@@ -133,7 +133,7 @@ module "peer-lpgs" {
   depends_on = [module.vcns, module.none-lpgs]
 
   #Required
-  compartment_id = each.value.compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[0][each.value.compartment_name]) : var.tenancy_ocid
+  compartment_id = each.value.compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[each.value.compartment_name]) : var.tenancy_ocid
   vcn_id         = length(regexall("ocid1.vcn.oc1*", each.value.vcn_name)) > 0 ? each.value.vcn_name : merge(module.vcns.*...)[each.value.vcn_name]["vcn_tf_id"]
 
   #Optional
@@ -151,7 +151,7 @@ module "none-lpgs" {
   depends_on = [module.vcns]
 
   #Required
-  compartment_id = each.value.compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[0][each.value.compartment_name]) : var.tenancy_ocid
+  compartment_id = each.value.compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[each.value.compartment_name]) : var.tenancy_ocid
   vcn_id         = length(regexall("ocid1.vcn.oc1*", each.value.vcn_name)) > 0 ? each.value.vcn_name : merge(module.vcns.*...)[each.value.vcn_name]["vcn_tf_id"]
 
   #Optional
@@ -169,7 +169,7 @@ module "exported-lpgs" {
   depends_on = [module.vcns]
 
   #Required
-  compartment_id = each.value.compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[0][each.value.compartment_name]) : var.tenancy_ocid
+  compartment_id = each.value.compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[each.value.compartment_name]) : var.tenancy_ocid
   vcn_id         = length(regexall("ocid1.vcn.oc1*", each.value.vcn_name)) > 0 ? each.value.vcn_name : merge(module.vcns.*...)[each.value.vcn_name]["vcn_tf_id"]
 
   #Optional
@@ -212,7 +212,7 @@ module "sgws" {
   for_each = (var.sgws != null || var.sgws != {}) ? var.sgws : {}
 
   #Required
-  compartment_id = each.value.compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[0][each.value.compartment_name]) : var.tenancy_ocid
+  compartment_id = each.value.compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[each.value.compartment_name]) : var.tenancy_ocid
   vcn_id         = length(regexall("ocid1.vcn.oc1*", each.value.display_name)) > 0 ? each.value.display_name : merge(module.vcns.*...)[each.value.display_name]["vcn_tf_id"]
 
   #Optional
@@ -240,7 +240,7 @@ module "drgs" {
   for_each = (var.drgs != null || var.drgs != {}) ? var.drgs : {}
 
   #Required
-  compartment_id = each.value.compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[0][each.value.compartment_name]) : var.tenancy_ocid
+  compartment_id = each.value.compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[each.value.compartment_name]) : var.tenancy_ocid
 
   #Optional
   defined_tags  = each.value.defined_tags
@@ -312,7 +312,7 @@ module "custom-dhcps" {
   for_each = (var.custom_dhcps != null || var.custom_dhcps != {}) ? var.custom_dhcps : {}
 
   #Required
-  compartment_id = each.value.compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[0][each.value.compartment_name]) : var.tenancy_ocid
+  compartment_id = each.value.compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[each.value.compartment_name]) : var.tenancy_ocid
   vcn_id         = length(regexall("ocid1.vcn.oc1*", each.value.vcn_name)) > 0 ? each.value.vcn_name : merge(module.vcns.*...)[each.value.vcn_name]["vcn_tf_id"]
 
   server_type         = each.value.server_type
@@ -367,7 +367,7 @@ module "security-lists" {
   for_each = (var.seclists != null || var.seclists != {}) ? var.seclists : {}
 
   #Required
-  compartment_id = each.value.compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[0][each.value.compartment_name]) : var.tenancy_ocid
+  compartment_id = each.value.compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[each.value.compartment_name]) : var.tenancy_ocid
 
   vcn_id = length(regexall("ocid1.vcn.oc1*", each.value.vcn_name)) > 0 ? each.value.vcn_name : merge(module.vcns.*...)[each.value.vcn_name]["vcn_tf_id"]
 
@@ -427,7 +427,7 @@ module "route-tables" {
   for_each = (var.route_tables != null || var.route_tables != {}) ? var.route_tables : {}
 
   #Required
-  compartment_id = each.value.compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[0][each.value.compartment_name]) : var.tenancy_ocid
+  compartment_id = each.value.compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[each.value.compartment_name]) : var.tenancy_ocid
   vcn_id         = length(regexall("ocid1.vcn.oc1*", each.value.vcn_name)) > 0 ? each.value.vcn_name : merge(module.vcns.*...)[each.value.vcn_name]["vcn_tf_id"]
 
   #Optional
@@ -470,7 +470,7 @@ module "drg-route-tables" {
   freeform_tags                    = each.value.freeform_tags == {} ? null : each.value.freeform_tags
   display_name                     = each.value.display_name != null ? each.value.display_name : null
   import_drg_route_distribution_id = each.value.import_drg_route_distribution_id != null && each.value.import_drg_route_distribution_id != "" ? (length(regexall("ocid1.drgroutedistribution.oc1*", each.value.import_drg_route_distribution_id)) > 0 ? each.value.import_drg_route_distribution_id : (length(regexall(".Autogenerated-Import-Route-Distribution-for*", each.value.import_drg_route_distribution_id)) > 0 ? data.oci_core_drg_route_distributions.drg_route_distributions[each.value.drg_route_distribution_id].drg_route_distributions[0].id  : merge(module.drg-route-distributions.*...)[each.value.import_drg_route_distribution_id]["drg_route_distribution_tf_id"])) : null
-  is_ecmp_enabled                  = false
+  is_ecmp_enabled                  = each.value.is_ecmp_enabled != null ? each.value.is_ecmp_enabled : false
 }
 
 /*
@@ -568,7 +568,7 @@ module "subnets" {
 
   #Required
   tenancy_ocid   = var.tenancy_ocid
-  compartment_id = each.value.compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[0][each.value.compartment_name]) : var.tenancy_ocid
+  compartment_id = each.value.compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[each.value.compartment_name]) : var.tenancy_ocid
   vcn_id         = length(regexall("ocid1.vcn.oc1*", each.value.vcn_name)) > 0 ? each.value.vcn_name : merge(module.vcns.*...)[each.value.vcn_name]["vcn_tf_id"]
   cidr_block     = each.value.cidr_block
 
@@ -604,7 +604,7 @@ module "nsgs" {
   for_each = (var.nsgs != null || var.nsgs != {}) ? var.nsgs : {}
 
   #Required
-  compartment_id = each.value.compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[0][each.value.compartment_name]) : var.tenancy_ocid
+  compartment_id = each.value.compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[each.value.compartment_name]) : var.tenancy_ocid
   vcn_id         = length(regexall("ocid1.vcn.oc1*", each.value.vcn_name)) > 0 ? each.value.vcn_name : merge(module.vcns.*...)[each.value.vcn_name]["vcn_tf_id"]
 
   defined_tags  = each.value.defined_tags

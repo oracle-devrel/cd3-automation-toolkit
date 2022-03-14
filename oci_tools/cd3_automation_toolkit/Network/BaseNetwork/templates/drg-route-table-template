@@ -29,8 +29,10 @@ drg_route_tables = {
             {% else %}
             import_drg_route_distribution_id = ""
             {% endif %}
-
+            {% if is_ecmp_enabled and is_ecmp_enabled != 'nan' and is_ecmp_enabled != '' %}
+            is_ecmp_enabled = "{{ is_ecmp_enabled }}" {% else %}
             is_ecmp_enabled = "false"
+            {% endif %} {# Defaults to false - set as per terraform hashicorp #}
 
     {#  ##Do not modify below this line##  #}
     {#                                     #}

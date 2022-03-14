@@ -43,7 +43,10 @@ compartments = {
             {% endif %}
                 name               = "{{ name }}"
                 description        = "{{ description }}"
-                enable_delete = true
+                {% if enable_delete and enable_delete != 'nan' and enable_delete != '' %}
+                enable_delete = {{ enable_delete }} {% else %}
+                enable_delete = "false" {# Defaults to false - set as per terraform hashicorp #}
+                {% endif %}
 
             {#  ##Do not modify below this line##  #}
             {#                                     #}

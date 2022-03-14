@@ -18,7 +18,8 @@ igws = {
         igw_name   = "{{ igw_name }}"
         {% if enable_igw and enable_igw != 'nan' and enable_igw != '' %}
         enable_igw = {{ enable_igw }} {% else %}
-        enable_igw = "true" {% endif %} {#  Default Value  #}
+        enable_igw = "true"
+        {% endif %} {#  Defaults to true - set as per terraform hashicorp  #}
 
     {#  ##Do not modify below this line##  #}
     {#                                     #}
