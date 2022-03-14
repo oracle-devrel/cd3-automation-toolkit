@@ -171,6 +171,7 @@ def export_exa_vmclusters(inputfile, _outdir, _config, network_compartments=[]):
         for k, v in db.items():
             tempStr = k +" = " + v +"\n" +tempStr
 
+        tempStr = "\n"+tempStr
         tempStr = "#START_exacs_ssh_keys#" + tempStr + "#exacs_ssh_keys_END#"
         var_data[reg] = re.sub('#START_exacs_ssh_keys#.*?#exacs_ssh_keys_END#', tempStr, var_data[reg],
                                flags=re.DOTALL)

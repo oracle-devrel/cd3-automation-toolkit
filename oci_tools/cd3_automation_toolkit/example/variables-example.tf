@@ -42,40 +42,51 @@ variable "ssh_public_key" {
 }
 
 variable instance_ssh_keys {
-    type = list(any)
-    default = [
-    {
+    type = map(any)
+    default = {
     ssh_public_key = "<SSH PUB KEY STRING HERE>"
     #START_instance_ssh_keys#
     # exported instance ssh keys
     #instance_ssh_keys_END#
     }
-    ]
 }
 
 variable exacs_ssh_keys {
-    type = list(any)
-    default = [
-    {
+    type = map(any)
+    default = {
     ssh_public_key = "<SSH PUB KEY STRING HERE>"
     #START_exacs_ssh_keys#
     # exported exacs ssh keys
     #exacs_ssh_keys_END#
     }
-    ]
 }
 
 variable dbsystem_ssh_keys {
-    type = list(any)
-    default = [
-    {
+    type = map(any)
+    default = {
     ssh_public_key = "<SSH PUB KEY STRING HERE>"
     #START_dbsystem_ssh_keys#
     # exported dbsystem ssh keys
     #dbsystem_ssh_keys_END#
     }
-    ]
 }
+
+#################################
+# Platform Image OCIDs and
+  Market Place Images
+#################################
+variable instance_source_ocids {
+    type = map(any)
+    default = {
+    Linux = "<Latest Linux OCID>"
+    Windows = "<Latest Windows OCID>"
+    PaloAlto = "Palo Alto Networks VM-Series Next Generation Firewall"
+    #START_instance_source_ocids#
+    # exported instance image ocids
+    #instance_source_ocids_END#
+    }
+}
+
 
 #################################
 #
