@@ -147,14 +147,6 @@ def create_terraform_dbsystems_vm_bm(inputfile, outdir, prefix, config=DEFAULT_L
                 columnvalue = str(compartmentVarName)
                 tempdict = {columnname: columnvalue}
 
-            if columnname == "SSH Key Var Name":
-                if columnvalue.strip() != '' and  columnvalue.strip().lower() != 'nan':
-                    if "ssh-rsa" in columnvalue.strip():
-                        ssh_key_var_name = "\"" + columnvalue.strip() + "\""
-                    else:
-                        ssh_key_var_name = columnvalue.strip()
-                    tempdict = {'ssh_key_var_name': ssh_key_var_name}
-
             # Process Defined and Freeform Tags
             if columnname.lower() in commonTools.tagColumns:
                 tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)
