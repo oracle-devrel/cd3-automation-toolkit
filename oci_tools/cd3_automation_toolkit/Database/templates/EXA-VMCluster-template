@@ -18,16 +18,7 @@ exa_vmclusters = {
             backup_subnet_id         = "{{ backup_subnet_name }}"
             cpu_core_count           = "{{ cpu_core_count }}"
             display_name             = "{{ vm_cluster_display_name }}"
-
-            {% if ssh_key_var_name %}
-            ssh_public_key        =  "{{ ssh_key_var_name }}"
-            {% elif 'ssh-rsa' in ssh_key_var_name %}
-            ssh_public_key         =  "{{ ssh_key_var_name }}"
-            {%else %}
-            ssh_public_key        = null
-            {% endif %}
-
-
+            ssh_public_keys          = "{{ ssh_key_var_name }}"
             {% if cluster_name %}
             cluster_name             = "{{ cluster_name }}"
             {% else %}

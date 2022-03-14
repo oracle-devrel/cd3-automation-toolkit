@@ -197,10 +197,10 @@ def export_dbsystems_vm_bm(inputfile, _outdir, _config, network_compartments=[])
 
         tempStr = ""
         for k, v in db.items():
-            tempStr = k + " = " + v + "\n" + tempStr
+            tempStr = "\t"+k + " = " + v + "\n" + tempStr
 
         tempStr = "\n"+tempStr
-        tempStr = "#START_dbsystem_ssh_keys#" + tempStr + "#dbsystem_ssh_keys_END#"
+        tempStr = "#START_dbsystem_ssh_keys#" + tempStr + "\t#dbsystem_ssh_keys_END#"
         var_data[reg] = re.sub('#START_dbsystem_ssh_keys#.*?#dbsystem_ssh_keys_END#', tempStr, var_data[reg],
                                flags=re.DOTALL)
 

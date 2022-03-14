@@ -22,7 +22,7 @@ variable "shape" {
   type    = string
   default = ""
 }
-variable "ssh_public_key" {
+variable "ssh_public_keys" {
   type    = list
   default = []
 }
