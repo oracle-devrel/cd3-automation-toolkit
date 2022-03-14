@@ -126,7 +126,9 @@ def create_terraform_instances(inputfile, outdir, prefix,config):
                     tempdict = { 'shape' : [columnvalue] }
 
             if columnname == "Subnet Name":
-                subnet_tf_name = commonTools.check_tf_variable(columnvalue.strip())
+                subnet_tf_name = columnvalue.strip()
+                if("ocid1.subnet.oc1" not in subnet_tf_name):
+                    subnet_tf_name = commonTools.check_tf_variable(subnet_tf_name)
                 tempdict = { 'subnet_tf_name' : subnet_tf_name }
 
             if columnname == 'Display Name':

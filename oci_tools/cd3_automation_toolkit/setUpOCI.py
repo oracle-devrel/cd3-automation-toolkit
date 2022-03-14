@@ -139,7 +139,7 @@ def export_dedicatedvmhosts(inputfile, outdir, prefix,config):
     compartments = get_compartment_list('Dedicated VM Hosts')
     Compute.export_dedicatedvmhosts(inputfile, outdir, _config=config, network_compartments=compartments)
     create_dedicatedvmhosts(inputfile, outdir, prefix, config)
-    print("\n\nExecute tf_import_commands_dedicatedvmhosts_nonGF.sh script created under each region directory to synch TF with OCI Instances\n")
+    print("\n\nExecute tf_import_commands_dedicatedvmhosts_nonGF.sh script created under each region directory to synch TF with OCI Dedicated VM Hosts\n")
 
 
 def export_instances(inputfile, outdir, prefix,config):
@@ -152,7 +152,7 @@ def export_instances(inputfile, outdir, prefix,config):
 def export_tags():
     Governance.export_tags_nongreenfield(inputfile, outdir, _config=config, network_compartments=None)
     create_tags()
-    print("\n\nExecute tf_import_commands_tags_nonGF.sh script created under home region directory to synch TF with OCI Identity objects\n")
+    print("\n\nExecute tf_import_commands_tags_nonGF.sh script created under home region directory to synch TF with OCI Tags\n")
 
 def export_storage():
     options = [Option("Export Block Storage/Block Backup Policy",export_block_volumes,'Exporting Block Volumes'),
@@ -165,7 +165,7 @@ def export_block_volumes(inputfile, outdir, prefix,config):
     compartments = get_compartment_list('Block Volumes')
     Storage.export_blockvolumes(inputfile, outdir, _config=config, network_compartments=compartments)
     create_block_volumes(inputfile, outdir, prefix, config=config)
-    print("\n\nExecute tf_import_commands_blockvolumes_nonGF.sh script created under each region directory to synch TF with OCI Instances\n")
+    print("\n\nExecute tf_import_commands_blockvolumes_nonGF.sh script created under each region directory to synch TF with OCI Block Volume Objects\n")
 
 
 def export_fss(inputfile, outdir, prefix,config):
@@ -192,14 +192,14 @@ def export_dbsystems_vm_bm(inputfile, outdir, prefix,config):
     compartments = get_compartment_list('VM and BM DB Systems')
     Database.export_dbsystems_vm_bm(inputfile, outdir, _config=config, network_compartments=compartments)
     Database.create_terraform_dbsystems_vm_bm(inputfile, outdir, prefix, config=config)
-    print("\n\nExecute tf_import_commands_dbsystems-vm-bm_nonGF.sh script created under each region directory to synch TF with OCI LBR objects\n")
+    print("\n\nExecute tf_import_commands_dbsystems-vm-bm_nonGF.sh script created under each region directory to synch TF with DBSystems\n")
 
 def export_exa_infra_vmclusters(inputfile, outdir, prefix,config):
     compartments = get_compartment_list('EXA Infra and EXA VMClusters')
     Database.export_exa_infra(inputfile, outdir, _config=config, network_compartments=compartments)
     Database.export_exa_vmclusters(inputfile, outdir, _config=config, network_compartments=compartments)
     create_exa_infra_vmclusters(inputfile, outdir, prefix,config=config)
-    print("\n\nExecute tf_import_commands_exa-infra_nonGF.sh and tf_import_commands_exa-vmclusters_nonGF.sh scripts created under each region directory to synch TF with OCI LBR objects\n")
+    print("\n\nExecute tf_import_commands_exa-infra_nonGF.sh and tf_import_commands_exa-vmclusters_nonGF.sh scripts created under each region directory to synch TF with Exa-Infra and Exa-VMClusters\n")
 
 def export_management_services():
     options = [Option("Export Notifications",export_notifications,'Exporting Notifications'),
@@ -213,20 +213,20 @@ def export_events(inputfile, outdir, prefix,config):
     compartments = get_compartment_list('Events')
     ManagementServices.export_events(inputfile, outdir, _config=config, network_compartments=compartments)
     ManagementServices.create_terraform_events(inputfile, outdir, prefix, config=config)
-    print("\n\nExecute tf_import_commands_events_nonGF.sh script created under each region directory to synch TF with OCI Events and Notifications objects\n")
+    print("\n\nExecute tf_import_commands_events_nonGF.sh script created under each region directory to synch TF with OCI Events\n")
 
 def export_notifications(inputfile, outdir, prefix,config):
     compartments = get_compartment_list('Notifications')
     ManagementServices.export_notifications(inputfile, outdir, _config=config, network_compartments=compartments)
     ManagementServices.create_terraform_notifications(inputfile, outdir, prefix, config=config)
-    print("\n\nExecute tf_import_commands_notifications_nonGF.sh script created under each region directory to synch TF with OCI Events and Notifications objects\n")
+    print("\n\nExecute tf_import_commands_notifications_nonGF.sh script created under each region directory to synch TF with OCI Notifications\n")
 
 
 def export_alarms(inputfile, outdir, prefix,config):
     compartments = get_compartment_list('Alarms')
     ManagementServices.export_alarms(inputfile, outdir, _config=config, network_compartments=compartments)
     ManagementServices.create_terraform_alarms(inputfile, outdir, prefix,config=config)
-    print("\n\nExecute tf_import_commands_alarms_nonGF.sh script created under each region directory to synch TF with OCI Events and Notifications objects\n")
+    print("\n\nExecute tf_import_commands_alarms_nonGF.sh script created under each region directory to synch TF with OCI Alarms\n")
 
 
 def create_identity(execute_all=False):
