@@ -31,6 +31,7 @@ variable "region" {
         type = string
         default = "<OCI TENANCY REGION HERE eg: us-phoenix-1 or us-ashburn-1>"
 }
+
 #################################
 # SSH Keys
 #################################
