@@ -19,6 +19,9 @@ ngws = {
         {% if public_ip_id and public_ip_id != 'nan' and public_ip_id != ''%}
         public_ip_id = {{ public_ip_id }} {% else %}
         public_ip_id = "" {% endif %}
+        {% if block_traffic and block_traffic != 'nan' and block_traffic != ''%}
+        block_traffic = {{ block_traffic }} {% else %}
+        block_traffic = false {% endif %} {# Defaults to false - set by terraform hashicorp #}
 
     {#  ##Do not modify below this line##  #}
     {#                                     #}

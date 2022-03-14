@@ -12,9 +12,14 @@ policies = {
    {{ policy_tf_name }} = {
         name        = "{{ name }}"
         {% if compartment_name == None %}
-        compartment_name = null
+        compartment_name = "root"
         {% else %}
         compartment_name = "{{ compartment_name }}"
+        {% endif %}
+        {% if policy_version_date and policy_version_date != "" and policy_version_date != null %}
+        policy_version_date = "{{ policy_version_date }}"
+        {% else %}
+        policy_version_date = null
         {% endif %}
         {% if '\n' not in description %}
         policy_description = "{{ description }}"

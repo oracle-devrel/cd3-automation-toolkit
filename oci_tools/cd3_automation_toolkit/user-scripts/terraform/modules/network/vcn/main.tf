@@ -20,6 +20,6 @@ resource "oci_core_vcn" "vcn" {
 
   lifecycle {
     create_before_destroy = true
-    ignore_changes        = [cidr_blocks, defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"], cidr_blocks]
+    ignore_changes        = [cidr_blocks, defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"]]
   }
 }

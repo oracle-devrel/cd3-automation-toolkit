@@ -15,7 +15,7 @@ module "iam-compartments" {
   compartment_name        = each.value.name
   compartment_description = each.value.description
   compartment_create      = true
-  enable_delete           = each.value.enable_delete
+  #enable_delete           = each.value.enable_delete
 
   #Optional
   defined_tags  = each.value.defined_tags
@@ -206,6 +206,7 @@ module "iam-policies" {
   #Optional
   defined_tags  = each.value.defined_tags
   freeform_tags = each.value.freeform_tags
+  #policy_version_date  = each.value.policy_version_date != null ? each.value.policy_version_date : null
 }
 
 /*

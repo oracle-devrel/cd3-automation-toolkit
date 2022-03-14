@@ -73,7 +73,7 @@ variable dbsystem_ssh_keys {
 
 #################################
 # Platform Image OCIDs and
-  Market Place Images
+# Market Place Images
 #################################
 variable instance_source_ocids {
     type = map(any)

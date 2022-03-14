@@ -72,6 +72,7 @@ module "ngws" {
   vcn_id         = length(regexall("ocid1.vcn.oc1*", each.value.display_name)) > 0 ? each.value.display_name : merge(module.vcns.*...)[each.value.display_name]["vcn_tf_id"]
 
   #Optional
+  #block_traffic = each.value.block_traffic != null ? each.value.block_traffic : false   # Defaults to false by terraform hashicorp
   public_ip_id  = each.value.public_ip_id
   defined_tags  = each.value.defined_tags
   display_name  = each.value.ngw_name != null ? each.value.ngw_name : null
@@ -219,7 +220,7 @@ module "sgws" {
   display_name  = each.value.sgw_name != null ? each.value.sgw_name : null
   freeform_tags = each.value.freeform_tags
   service       = each.value.service != "" ? (contains(split("-", each.value.service), "all") == true ? "all" : "objectstorage") : "all"
-  #route_table_id =
+  #route_table_id = length(regexall("ocid1.routetable.oc1*", each.value.route_table_id)) > 0 ? each.value.route_table_id : ((each.value.route_table_id != "" && each.value.route_table_id != null) ? (length(regexall(".Default-Route-Table-for*", each.value.route_table_id)) > 0 ? merge(module.vcns.*...)[each.value.vcn_name]["vcn_default_route_table_id"] : merge(module.route-tables.*...)[each.value.route_table_id]["route_table_ids"]) : null)
 }
 
 /*

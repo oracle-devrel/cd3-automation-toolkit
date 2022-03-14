@@ -35,6 +35,12 @@ variable "policy_compartment_id" {
   default     = null
 }
 
+variable "policy_version_date" {
+   type = string
+   description = "The date of the policy version."
+   default = null
+}
+
 variable "defined_tags" {
   type = map(any)
   default = { "Oracle-Tags.CreatedOn" = "$${oci.datetime}",

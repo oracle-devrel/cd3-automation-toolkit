@@ -10,8 +10,8 @@ resource "oci_identity_group" "group" {
 
   #Required
   compartment_id = var.tenancy_ocid
-  name           = var.group_name
   description    = var.group_description
+  name           = var.group_name
 
   #Optional
   defined_tags  = var.defined_tags
@@ -32,9 +32,9 @@ resource "oci_identity_dynamic_group" "dynamic_group" {
 
   #Required
   compartment_id = var.tenancy_ocid
-  name           = var.group_name
   description    = var.group_description
   matching_rule  = var.matching_rule
+  name           = var.group_name
 
   #Optional
   defined_tags  = var.defined_tags

@@ -7,7 +7,7 @@
 
 variable "tenancy_ocid" {
   type        = string
-  description = "(Deprecated) The OCID of the tenancy."
+  description = "The OCID of the tenancy."
   default     = null
 }
 
@@ -23,7 +23,6 @@ variable "compartment_name" {
   default     = null
 }
 
-// The description is only used if compartment_create = true.
 variable "compartment_description" {
   type        = string
   description = "The description you assign to the compartment. Does not have to be unique, and it's changeable. "

@@ -12,11 +12,11 @@ resource "oci_core_nat_gateway" "nat_gateway" {
   vcn_id         = var.vcn_id
 
   #Optional
-  public_ip_id  = var.public_ip_id
   block_traffic = var.block_traffic
   defined_tags  = var.defined_tags
   display_name  = var.display_name
   freeform_tags = var.freeform_tags
+  public_ip_id  = var.public_ip_id
 
   lifecycle {
     ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"], freeform_tags]

@@ -7,11 +7,13 @@
 
 data "oci_core_services" "oci_services" {
 }
+
 /*
 output "services_id_map"{
     value = merge(zipmap(data.oci_core_services.oci_services.services.*.name,data.oci_core_services.oci_services.services.*.id))
 }
 */
+
 resource "oci_core_service_gateway" "service_gateway" {
 
   #Required
@@ -26,7 +28,7 @@ resource "oci_core_service_gateway" "service_gateway" {
   defined_tags  = var.defined_tags
   display_name  = var.display_name
   freeform_tags = var.freeform_tags
-  #route_table_id = var.route_table_id
+  #route_table_id = (var.route_table_id != "" && var.route_table_id != null) ? var.route_table_id : null
 
   lifecycle {
     ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"], freeform_tags]
