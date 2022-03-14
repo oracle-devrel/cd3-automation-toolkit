@@ -5,6 +5,7 @@
 #
 # Author: Shruthi Subramanian
 #
+
 import calendar
 import configparser
 import glob
@@ -89,7 +90,7 @@ def seek_info():
     config_file_path = customer_tenancy_dir+"/"+prefix+"_config"
     auto_keys_dir = user_dir+"/tenancies/keys"
     modules_dir = user_dir +"/oci_tools/cd3_automation_toolkit/user-scripts/terraform"
-    variables_example_file = user_dir +"/oci_tools/cd3_automation_toolkit/example/variables-example.tf"
+    variables_example_file = modules_dir +"/variables-example.tf"
     setupoci_props_file_path = customer_tenancy_dir + "/" + prefix + "_setUpOCI.properties"
 
     if not os.path.exists(customer_tenancy_dir):
@@ -214,95 +215,37 @@ def seek_info():
         if not os.path.exists(terraform_files+region):
             os.mkdir(terraform_files+region)
 
-        # # 6. Read variables.tf from examples folder and copy the variables as string
-        variables_example_file_data = ""
-        with open(variables_example_file, 'r') as var_eg_file:
-            copy = False
-            for lines in var_eg_file:
-                if "# Variables according to Services" in lines:
-                    copy = True
-                elif "######################### END #########################" in lines:
-                    copy = False
-                    variables_example_file_data = variables_example_file_data + "\n" + lines
-                elif copy:
-                    variables_example_file_data = variables_example_file_data + lines
+        # 6. Read variables.tf from examples folder and copy the variables as string
+        with open(variables_example_file, 'r+') as var_eg_file:
+            variables_example_file_data = var_eg_file.read().rstrip()
 
         today = datetime.today()
         dt = str(today.day) +" "+ calendar.month_name[today.month]+" "+ str(today.year)
 
-        variables_data = """
-// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
-
-############################
-#
-# Variables Block
-# OCI
-#
-############################
-
-variable "ssh_public_key" {
-        type = string
-        default = \"""" + ssh_public_key + """"
-}
-
-variable "tenancy_ocid" {
-        type = string
-        default = \"""" + tenancy + """"
-}
-
-variable "user_ocid" {
-        type = string
-        default = \"""" + user + """"
-}
-
-variable "fingerprint" {
-        type = string
-        default = \"""" + fingerprint + """"
-}
-
-variable "private_key_path" {
-        type = string
-        default =  \"""" + key_path + """"
-}
-
-variable "region" {
-        type = string
-        default = \"""" + ct.region_dict[region] + """"
-}
-"""
-
+        variables_example_file_data = variables_example_file_data.replace("<TENANCY OCID HERE>", tenancy)
+        variables_example_file_data = variables_example_file_data.replace("<USER OCID HERE>", user)
+        variables_example_file_data = variables_example_file_data.replace("<SSH KEY FINGERPRINT HERE>", fingerprint)
+        variables_example_file_data = variables_example_file_data.replace("<SSH PRIVATE KEY FULL PATH HERE>", key_path)
+        variables_example_file_data = variables_example_file_data.replace("<OCI TENANCY REGION HERE eg: us-phoenix-1 or us-ashburn-1>", ct.region_dict[region])
+        variables_example_file_data = variables_example_file_data.replace("<SSH PUB KEY STRING HERE>", ssh_public_key)
         if (windows_image_id != ''):
-            variables_data = variables_data + """
-#Example for OS value 'Windows' in Instances sheet
-variable "Windows" {
-        type = string
-        default = \"""" + windows_image_id + """"
-        description = "Latest ocid as on """ + dt + """"
-}"""
+            variables_example_file_data = variables_example_file_data.replace("<LATEST WINDOWS OCID HERE>", windows_image_id)
+            variables_example_file_data = variables_example_file_data.replace("<WINDOWS DESCRIPTION HERE>", "Latest ocid as on "+dt)
         if (linux_image_id != ''):
-            variables_data = variables_data + """
-#Example for OS value 'Linux' in Instances sheet
-variable "Linux"{
-        type = string
-        default = \"""" + linux_image_id + """"
-        description = "Latest ocid as on """ + dt + """"
-} """
-        variables_data = variables_data +"""
-
-#################################
-#
-# Variables according to Services""" \
-                             + "\n" + variables_example_file_data + "\n"
+            variables_example_file_data = variables_example_file_data.replace("<LATEST LINUX OCID HERE>", linux_image_id)
+            variables_example_file_data = variables_example_file_data.replace("<LINUX DESCRIPTION HERE>", "Latest ocid as on "+dt)
 
         f = open(terraform_files+"/"+region+"/variables_" + region + ".tf", "w+")
-        f.write(variables_data)
+        f.write(variables_example_file_data)
         f.close()
 
         # 7. Copy the terraform modules and variables file to outdir
-        distutils.dir_util.copy_tree(modules_dir, terraform_files+"/"+region)
+        distutils.dir_util.copy_tree(modules_dir, terraform_files +"/" + region)
 
+        # 8. Remove the terraform example variable file from outdir
+        os.remove(terraform_files +"/" + region + "/variables-example.tf")
 
-    #logging information
+    # Logging information
     logging.basicConfig(filename=customer_tenancy_dir+'/cmds.log', format='%(message)s', filemode='w', level=logging.INFO)
 
     print("==================================================================================================================================")

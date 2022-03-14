@@ -87,7 +87,6 @@ variable instance_source_ocids {
     }
 }
 
-
 #################################
 #
 # Variables according to Services
@@ -310,6 +309,24 @@ variable "dbsystems_vm_bm" {
   description = "To provision DB System"
   type        = map(any)
   default     = {}
+}
+
+#########################
+## Instances ##
+#########################
+
+#Example for OS value 'Windows' in Instances sheet
+variable "Windows" {
+        type = string
+        default = "<LATEST WINDOWS OCID HERE>"
+        description = "<WINDOWS DESCRIPTION HERE>"
+}
+
+#Example for OS value 'Linux' in Instances sheet
+variable "Linux"{
+        type = string
+        default = "<LATEST LINUX OCID HERE>"
+        description = "<LINUX DESCRIPTION HERE>"
 }
 
 ##########################
