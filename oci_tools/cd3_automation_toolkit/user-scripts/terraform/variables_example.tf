@@ -331,5 +331,28 @@ variable "dbsystems_vm_bm" {
 ##########################
 # Add new variables here #
 ##########################
+variable "capacity_reservation_ocids" {
+  type = map(any)
+  default = {
+    "AD1" : "ocid1.capacityreservation.oc1.iad.anuwcljrmbgqraachdisdnhc5z7swiwyzhi6radkn7xxtw6uosysheiadlja",
+    "AD2" : "ocid1.capacityreservation.oc1.iad.anuwcljsmbgqraacm4edb4dbsrqsgtskzjicudhmasmpqe7aopxmjvnukugq",
+    "AD3" : "ocid1.capacityreservation.oc1.iad.anuwcljtmbgqraactoi5gwv6ahzutllmjmfgtrabarhcq7wvkx6mz2b7dwga"
+  }
+}
+variable "blockvolumes" {
+  type    = map(any)
+  description = "To provision block volumes"
+  default = {}
+}
+variable "block_backup_policies" {
+  type = map(any)
+  description = "To create block volume back policy"
+  default = {}
+}
+variable "instances" {
+  type = map(any)
+  description = "Map of instances to be provisioned"
+  default = {}
+}
 
 ######################### END #########################

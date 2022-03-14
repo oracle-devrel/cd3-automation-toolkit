@@ -36,8 +36,12 @@ def parse_args():
 def create_terraform_block_volumes(inputfile, outdir, prefix,config=DEFAULT_LOCATION):
     filename = inputfile
     configFileName = config
+    outfile = {}
+    oname = {}
+    tfStr = {}
 
     sheetName="BlockVolumes"
+    auto_tfvars_filename = '_' + sheetName.lower() + '.auto.tfvars'
     ct = commonTools()
     ct.get_subscribedregions(configFileName)
 
@@ -56,6 +60,7 @@ def create_terraform_block_volumes(inputfile, outdir, prefix,config=DEFAULT_LOCA
 
     # List of the column headers
     dfcolumns = df.columns.values.tolist()
+    regions_done_count = []
 
     #reg = df['Region'].unique()
 
@@ -64,7 +69,8 @@ def create_terraform_block_volumes(inputfile, outdir, prefix,config=DEFAULT_LOCA
         resource = sheetName.lower()
         srcdir = outdir + "/" + eachregion + "/"
         # commonTools.backup_file(srcdir, resource, sheetName.lower()+".tf")
-        commonTools.backup_file(srcdir, resource, "_blockvolume.tf")
+        commonTools.backup_file(srcdir, resource, "_blockvolume.tfvars")
+        tfStr[eachregion] = ''
 
     for i in df.index:
 
@@ -128,6 +134,12 @@ def create_terraform_block_volumes(inputfile, outdir, prefix,config=DEFAULT_LOCA
                 if str(columnvalue).strip() != '':
                     columnvalue = commonTools.check_tf_variable(columnvalue)
 
+            if (columnname == 'Backup Policy'):
+                columnname = 'backup_policy'
+                columnvalue = str(columnvalue).strip()
+                if columnvalue != '':
+                    columnvalue = columnvalue.lower()
+
             if columnname == "Attach Type(iscsi|paravirtualized)":
                 columnname = "attach_type"
 
@@ -139,16 +151,39 @@ def create_terraform_block_volumes(inputfile, outdir, prefix,config=DEFAULT_LOCA
             tempStr[columnname] = str(columnvalue).strip()
             tempStr.update(tempdict)
 
+        if region not in regions_done_count:
+            tempdict = {"count": 0}
+            regions_done_count.append(region)
+        else:
+            tempdict = {"count": i}
+        tempStr.update(tempdict)
 
-        #Render template
-        tempStr = template.render(tempStr)
+        # Write all info to TF string
+        tfStr[region] = tfStr[region][:-1] + template.render(tempStr)
 
-        # Write TF string to output
-        outfile = outdir + "/" + region + "/" + blockname_tf + "_blockvolume.tf"
-        oname = open(outfile, "w")
-        print("Writing to " + outfile)
-        oname.write(tempStr)
-        oname.close()
+    # Write TF string to the file in respective region directory
+    for reg in ct.all_regions:
+        reg_out_dir = outdir + "/" + reg
+        if not os.path.exists(reg_out_dir):
+            os.makedirs(reg_out_dir)
+        # outfile[reg] = reg_out_dir + "/" + prefix + "_"+sheetName.lower()+".tf"
+        outfile[reg] = reg_out_dir + "/" + prefix + auto_tfvars_filename
+
+        if tfStr[reg] != '':
+            oname[reg] = open(outfile[reg], 'w')
+            oname[reg].write(tfStr[reg])
+            oname[reg].close()
+            print(outfile[reg] + " for Blockvolume has been created for region " + reg)
+
+        # #Render template
+        # tempStr = template.render(tempStr)
+        #
+        # # Write TF string to output
+        # outfile = outdir + "/" + region + "/" + blockname_tf + "_blockvolume.tf"
+        # oname = open(outfile, "w")
+        # print("Writing to " + outfile)
+        # oname.write(tempStr)
+        # oname.close()
 
 
 if __name__ == '__main__':

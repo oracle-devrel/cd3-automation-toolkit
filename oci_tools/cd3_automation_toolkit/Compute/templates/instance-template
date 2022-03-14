@@ -1,100 +1,264 @@
-resource "oci_core_instance" "{{ display_tf_name }}" {
-        #Required
-        #availability_domain = data.oci_identity_availability_domains.ADs.availability_domains.{{ availability_domain }}.name
-        availability_domain = data.oci_identity_availability_domains.availability_domains.availability_domains[{{availability_domain}}].name
-        compartment_id = var.{{ compartment_tf_name }}
-        shape = "{{ shape[0] }}"
+{% if count == 0 %}
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 
-        {% if shape[1] and shape[1] != '' %}
-        shape_config {
-                {# Note: RAM = ocpus x 16GB #}
-                {# Note: # of vNICs = ocpus x 2 #}
-                ocpus = "{{ shape[1] }}"
-        }
-        {% endif %}
+############################
+# Instances
+# Instance - tfvars
+############################
 
-        fault_domain = "{{ fault_domain }}"
-        {# The "os" below must be a variable in the variables.tf file with the appropriate image OCID as its value #}
-        {# See variables_<region>.tf for an example #}
-        source_details {
-	        source_id  = var.{{ source_details[1] }}
-            source_type = "{{ source_details[0] }}"
-        }
-        create_vnic_details {
-                #Required
-                #subnet_id = oci_core_subnet.{{ subnet_tf_name }}.id
-                subnet_id = merge(module.subnets.*...)["{{subnet_tf_name}}"]["subnet_tf_id"]
-                assign_public_ip = {{ pub_address }}
+instances = {
+{% endif %}
+ {{ display_tf_name }} =  {
+            availability_domain  = {{ availability_domain }}
+            compartment_id       = "{{ compartment_tf_name }}"
+            shape                = "{{ shape[0] }}"
+            display_name         = "{{ display_tf_name }}"
 
-                #Optional
-                private_ip = "{{ ip_address }}"
-                nsg_ids=[{{ nsg_ids }}]
+            {% if boot_volume_size_in_gbs %}
+            boot_volume_size_in_gbs = {{ boot_volume_size_in_gbs }}
+            {% else %}
+            boot_volume_size_in_gbs = null
+            {% endif %}
 
-        {#  ##Do not modify below this line##  #}
-        {#                                     #}
-        {#  ###Section for adding Defined and Freeform Tags###  #}
-        {% if defined_tags and defined_tags != 'nan' and defined_tags != '' %}
-        {% if defined_tags[0] %}
-        defined_tags = {
-        {% for tags in defined_tags  %}   {% if not loop.last %}
-        "{{ tags[0]  }}"= "{{ tags[1] }}" ,
-        {% else %}
-        "{{ tags[0]  }}"= "{{ tags[1] }}"
-        {% endif %}{% endfor %}
-        }
-        {% endif %} {% endif %}
-        {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' %}
-        {% if freeform_tags[0] %}
-        freeform_tags = {
-        {% for tags in freeform_tags %} {% if not loop.last  %}
-        "{{ tags[0] }}"="{{ tags[1] }}",
-        {% else %}
-        "{{ tags[0] }}"="{{ tags[1] }}"
-        {% endif %} {% endfor %}
-        }
-        {% endif %} {% endif %}
-        {#  ###Section for adding Defined and Freeform Tags ends here###  #}
+            {% if fault_domain %}
+            fault_domain         = "{{ fault_domain }}"
+            {% else %}
+            fault_domain         = null
+            {% endif %}
 
-        }
-        display_name = "{{ display_name }}"
+            {% if dedicated_vm_host_tf %}
+            dedicated_vm_host_id = "{{ dedicated_vm_host_tf }}"
+            {% else %}
+            dedicated_vm_host_id = null
+            {% endif %}
 
-        {% if ssh_key_var_name != '' %}
-        metadata = {
-		    ssh_authorized_keys = {{ ssh_key_var_name }}
-        }
-        {% endif %}
+            {% if shape[1] and shape[1] != '' %}
+            {# Note: RAM = ocpus x 16GB #}
+            {# Note: # of vNICs = ocpus x 2 #}
+            ocpus            = "{{ shape[1] }}"
+            {% endif %}
 
-        dedicated_vm_host_id = {{ dedicated_vm_host_tf }}
+            {# The "os" below must be a variable in the variables.tf file with the appropriate image OCID as its value #}
+            {# See variables_<region>.tf for an example #}
+            source_id        =  "{{ source_details[1] }}"
+            source_type      = "{{ source_details[0] }}"
 
-        lifecycle {
-                ignore_changes = [
-                  metadata
-                ]
-        }
+            #Required
+            subnet_id        = "{{ subnet_tf_name }}"
+            #subnet_id       = merge(module.subnets.*...)["{{subnet_tf_name}}"]["subnet_tf_id"]
 
-        {#  ##Do not modify below this line##  #}
-        {#                                     #}
-        {#  ###Section for adding Defined and Freeform Tags###  #}
-        {% if defined_tags and defined_tags != 'nan' and defined_tags != '' %}
-        {% if defined_tags[0] %}
-        defined_tags = {
-        {% for tags in defined_tags  %}   {% if not loop.last %}
-        "{{ tags[0]  }}"= "{{ tags[1] }}" ,
-        {% else %}
-        "{{ tags[0]  }}"= "{{ tags[1] }}"
-        {% endif %}{% endfor %}
-        }
-        {% endif %} {% endif %}
-        {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' %}
-        {% if freeform_tags[0] %}
-        freeform_tags = {
-        {% for tags in freeform_tags %} {% if not loop.last  %}
-        "{{ tags[0] }}"="{{ tags[1] }}",
-        {% else %}
-        "{{ tags[0] }}"="{{ tags[1] }}"
-        {% endif %} {% endfor %}
-        }
-        {% endif %} {% endif %}
-        {#  ###Section for adding Defined and Freeform Tags ends here###  #}
-}
+            {% if pub_address %}
+            assign_public_ip = {{ pub_address }}
+            {% else %}
+            assign_public_ip =  null
+            {% endif %}
 
+            #Optional
+            {% if ip_address %}
+            private_ip       = "{{ ip_address }}"
+            {% else %}
+            private_ip       = null
+            {% endif %}
+
+            {% if nsg_ids %}
+            nsg_ids          = [{{ nsg_ids }}]
+            {% else %}
+            nsg_ids          = null
+            {% endif %}
+
+            {% if memory_in_gbs %}
+            memory_in_gbs = {{ memory_in_gbs }}
+            {% else %}
+            memory_in_gbs = null
+            {% endif %}
+
+            {% if capacity_reservation_id %}
+            capacity_reservation_id = "{{ capacity_reservation_id }}"
+            {% else %}
+            capacity_reservation_id = null
+            {% endif %}
+
+            {% if ssh_key_var_name != '' %}
+            ssh_authorized_keys  = "{{ ssh_key_var_name }}"
+            {% else %}
+            ssh_authorized_keys  = ""
+            {% endif %}
+
+
+          {#  ##All optional params required for TF root module is below ##  #}
+          {#  {% if extended_metadata %}
+            extended_metadata = "{{ extended_metadata }}"
+            {% else %}
+            extended_metadata = null
+            {% endif %}
+
+            {% if skip_source_dest_check %}
+            skip_source_dest_check = {{ skip_source_dest_check }}
+            {% else %}
+            skip_source_dest_check = null
+            {% endif %}
+
+            {% if baseline_ocpu_utilization %}
+            baseline_ocpu_utilization = "{{ baseline_ocpu_utilization }}"
+            {% else %}
+            baseline_ocpu_utilization = null
+            {% endif %}
+
+            {% if preemptible_instance_config %}
+            preemptible_instance_config = "{{ preemptible_instance_config }}"
+            {% else %}
+            preemptible_instance_config = null
+            {% endif %}
+
+            {% if all_plugins_disabled %}
+            all_plugins_disabled = {{ all_plugins_disabled }}
+            {% else %}
+            all_plugins_disabled = null
+            {% endif %}
+
+            {% if is_management_disabled %}
+            is_management_disabled = {{ is_management_disabled }}
+            {% else %}
+            is_management_disabled = null
+            {% endif %}
+
+            {% if is_monitoring_disabled %}
+            is_monitoring_disabled = {{ is_monitoring_disabled }}
+            {% else %}
+            is_monitoring_disabled = null
+            {% endif %}
+
+            {% if plugins_details %}
+            plugins_details = "{{ plugins_details }}"
+            {% else %}
+            plugins_details = {}
+            {% endif %}
+
+            {% if is_live_migration_preferred %}
+            is_live_migration_preferred = {{ is_live_migration_preferred }}
+            {% else %}
+            is_live_migration_preferred = null
+            {% endif %}
+
+            {% if recovery_action %}
+            recovery_action = "{{ recovery_action }}"
+            {% else %}
+            recovery_action = null
+            {% endif %}
+
+            {% if are_legacy_imds_endpoints_disabled %}
+            are_legacy_imds_endpoints_disabled = {{ are_legacy_imds_endpoints_disabled }}
+            {% else %}
+            are_legacy_imds_endpoints_disabled = null
+            {% endif %}
+
+            {% if boot_volume_type %}
+            boot_volume_type = "{{ boot_volume_type }}"
+            {% else %}
+            boot_volume_type = null
+            {% endif %}
+
+            {% if firmware %}
+            firmware = "{{ firmware }}"
+            {% else %}
+            firmware = null
+            {% endif %}
+
+            {% if is_consistent_volume_naming_enabled %}
+            is_consistent_volume_naming_enabled = {{ is_consistent_volume_naming_enabled }}
+            {% else %}
+            is_consistent_volume_naming_enabled = null
+            {% endif %}
+
+            {% if network_type %}
+            network_type = "{{ network_type }}"
+            {% else %}
+            network_type = null
+            {% endif %}
+
+            {% if remote_data_volume_type %}
+            remote_data_volume_type = "{{ remote_data_volume_type }}"
+            {% else %}
+            remote_data_volume_type = null
+            {% endif %}
+
+            {% if platform_config %}
+            platform_config = "{{ platform_config }}"
+            {% else %}
+            platform_config = {}
+            {% endif %}
+
+            {% if ipxe_script %}
+            ipxe_script = "{{ ipxe_script }}"
+            {% else %}
+            ipxe_script = null
+            {% endif %}
+
+            {% if is_pv_encryption_in_transit_enabled %}
+            is_pv_encryption_in_transit_enabled = {{ is_pv_encryption_in_transit_enabled }}
+            {% else %}
+            is_pv_encryption_in_transit_enabled = null
+            {% endif %}
+
+            {% if assign_private_dns_record %}
+            firmware = {{ assign_private_dns_record }}
+            {% else %}
+            assign_private_dns_record = null
+            {% endif %}
+
+            {% if preserve_boot_volume %}
+            preserve_boot_volume = {{ preserve_boot_volume }}
+            {% else %}
+            preserve_boot_volume = null
+            {% endif %}
+
+            {% if vlan_id %}
+            vlan_id = "{{ vlan_id }}"
+            {% else %}
+            vlan_id = null
+            {% endif %}
+
+            {% if kms_key_id %}
+            kms_key_id = "{{ kms_key_id }}"
+            {% else %}
+            kms_key_id = null
+            {% endif %} #}
+
+            {#  ##Do not modify below this line##  #}
+            {#                                     #}
+            {#  ###Section for adding Defined and Freeform Tags###  #}
+            {% if defined_tags and defined_tags != 'nan' and defined_tags != '' %}
+              {% if defined_tags[0] %}
+                defined_tags = {
+                {% for tags in defined_tags  %}
+                    {% if not loop.last %}
+                        "{{ tags[0]  }}"= "{{ tags[1] }}" ,
+                    {% else %}
+                        "{{ tags[0]  }}"= "{{ tags[1] }}"
+                    {% endif %}
+                {% endfor %}
+                }
+              {% else %}
+                defined_tags = {}
+                {% endif %}
+               {% else %}
+                defined_tags = {}
+               {% endif %}
+                    {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' %}
+                        {% if freeform_tags[0] %}
+                freeform_tags = {
+                            {% for tags in freeform_tags %}
+                                {% if not loop.last  %}
+                        "{{ tags[0] }}"="{{ tags[1] }}",
+                                {% else %}
+                        "{{ tags[0] }}"="{{ tags[1] }}"
+                                {% endif %}
+                            {% endfor %}
+                            }
+                        {% endif %}
+                    {% else %}
+                freeform_tags = {}
+                    {% endif %}
+            {#  ###Section for adding Defined and Freeform Tags ends here###  #}
+            },
+ }

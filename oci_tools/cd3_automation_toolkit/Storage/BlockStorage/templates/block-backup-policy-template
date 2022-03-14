@@ -1,7 +1,65 @@
+{% if count == 0 %}
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 
-resource "oci_core_volume_backup_policy_assignment" "{{ block_tf_name }}_bkupPolicy" {
-    #Required
-    asset_id = oci_core_volume.{{ block_tf_name }}.id
-    policy_id = data.oci_core_volume_backup_policies.block_{{ backup_policy }}.volume_backup_policies.0.id
+############################
+# Blockvolumes
+# Backup Policy - tfvars
+############################
 
+block_backup_policies = {
+{% endif %}
+ {{ block_name }} =  {
+           block_tf_name = "{{ block_name }}"
+           compartment_id = "{{ compartment_tf_name }}"
+           display_name   = "{{ block_name }}"
+
+           {% if backup_policy %}
+           backup_policy          = "{{ backup_policy }}"
+           {% else %}
+           backup_policy           = ""
+           {% endif %}
+
+           {% if custom_policy_compartment_name %}
+           policy_tf_compartment_id = "{{ custom_policy_compartment_name }}"
+           {% else %}
+           policy_tf_compartment_id = ""
+           {% endif %}
+
+           {#  ##Do not modify below this line##  #}
+           {#                                     #}
+           {#  ###Section for adding Defined and Freeform Tags###  #}
+           {% if defined_tags and defined_tags != 'nan' and defined_tags != '' %}
+             {% if defined_tags[0] %}
+               defined_tags = {
+               {% for tags in defined_tags  %}
+                   {% if not loop.last %}
+                       "{{ tags[0]  }}"= "{{ tags[1] }}" ,
+                   {% else %}
+                       "{{ tags[0]  }}"= "{{ tags[1] }}"
+                   {% endif %}
+               {% endfor %}
+               }
+             {% else %}
+                defined_tags = {}
+                {% endif %}
+               {% else %}
+                defined_tags = {}
+               {% endif %}
+                    {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' %}
+                        {% if freeform_tags[0] %}
+                freeform_tags = {
+                            {% for tags in freeform_tags %}
+                                {% if not loop.last  %}
+                        "{{ tags[0] }}"="{{ tags[1] }}",
+                                {% else %}
+                        "{{ tags[0] }}"="{{ tags[1] }}"
+                                {% endif %}
+                            {% endfor %}
+                            }
+                        {% endif %}
+                    {% else %}
+                freeform_tags = {}
+                    {% endif %}
+            {#  ###Section for adding Defined and Freeform Tags ends here###  #}
+            },
 }
