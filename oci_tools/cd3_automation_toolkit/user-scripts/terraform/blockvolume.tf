@@ -35,5 +35,5 @@ module "block-backup-policy" {
   block_tf_policy = each.value.backup_policy != "" ? each.value.backup_policy : ""
   defined_tags = each.value.defined_tags
   freeform_tags = each.value.freeform_tags
-  policy_tf_compartment_id = each.value.policy_tf_compartment_id != "" ? (length(regexall("ocid1.compartment.oc1*", each.value.policy_tf_compartment_id)) > 0 ? each.value.policy_tf_compartment_id : var.compartment_ocids[0][each.value.policy_tf_compartment_id]) : ""
+  policy_tf_compartment_id = each.value.policy_tf_compartment_id != "" ? (length(regexall("ocid1.compartment.oc1*", each.value.policy_tf_compartment_id)) > 0 ? each.value.policy_tf_compartment_id : var.compartment_ocids[each.value.policy_tf_compartment_id]) : ""
 }
