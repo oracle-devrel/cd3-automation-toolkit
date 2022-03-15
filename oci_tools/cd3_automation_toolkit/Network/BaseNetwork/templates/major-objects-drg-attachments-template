@@ -15,15 +15,6 @@ drg_attachments = {
         drg_id = "{{ drg_tf_name }}"
         display_name = "{{ drg_attach_display_name }}"
 
-        #DRG v1
-        {% if drg_version == 'DRGv1' %}
-        route_table_id = "{{ vcn_drg_rt_tf_name }}"
-        vcn_id = "{{ vcn_id }}"
-        {% else %}
-        route_table_id = ""
-        vcn_id = null
-        {% endif %}
-
         #DRG v2
         {% if drg_version == 'DRGv2' %}
         {% if drg_rt_tf_name !='' %}
@@ -33,14 +24,23 @@ drg_attachments = {
         {% endif %}
 
         #Required
-        network_details_id = "{{ network_id }}"
-        network_details_type = "{{ network_type }}"
-
+        network_details = [{
+        id = "{{ network_id }}"
+        type = "{{ network_type }}"
         {% if network_type == 'VCN' and vcn_drg_rt_tf_name !='' %}
         vcn_route_table_id = "{{ vcn_drg_rt_tf_name }}"
         {% else %}
         vcn_route_table_id =  ""
         {% endif %}
+        }]
+
+        {% else %}
+        #DRG v1
+        route_table_id = "{{ vcn_drg_rt_tf_name }}"
+        vcn_id = "{{ vcn_id }}"
+        #set DRGv2 params to null
+        drg_route_table_id = ""
+        network_details = []
         {% endif %}
 
     {#  ##Do not modify below this line##  #}
