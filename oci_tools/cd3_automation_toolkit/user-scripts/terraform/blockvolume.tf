@@ -7,6 +7,7 @@
 
 module "blockvolume" {
   source   = "./modules/storage/blockvolume/blockvolume"
+  depends_on = [module.instances]
   for_each = var.blockvolumes != null ? var.blockvolumes : {}
   attachment_type            = each.value.attachment_type
   attach_to_instance         = each.value.attach_to_instance != "" ? each.value.attach_to_instance : ""
