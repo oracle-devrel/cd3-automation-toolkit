@@ -95,6 +95,7 @@ output "log_group_map" {
 
 module "logs" {
   source   = "./modules/managementservices/log"
+  depends_on = [module.subnets, module.log-groups]
   for_each = (var.logs != null || var.logs != {}) ? var.logs : {}
 
   # Logs

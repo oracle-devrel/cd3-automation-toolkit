@@ -117,7 +117,7 @@ def enable_cis_vcnflow_logging(filename, outdir, prefix, config=DEFAULT_LOCATION
     tfStrLogs = {}
     tempStr = {}
     outfile={}
-    vcns_list = []
+    vcns_list = {}
     tfStrLogGroups = {}
 
     for i in df.index:
@@ -129,6 +129,7 @@ def enable_cis_vcnflow_logging(filename, outdir, prefix, config=DEFAULT_LOCATION
         region = region.strip().lower()
         tfStrLogs[region]=''
         tfStrLogGroups[region] = ''
+        vcns_list[region] = []
 
     for i in df.index:
         region = str(df.loc[i, 'Region'])
@@ -175,12 +176,12 @@ def enable_cis_vcnflow_logging(filename, outdir, prefix, config=DEFAULT_LOCATION
         log_group_id= loggroup_name
         resource= subnet_tf_name
 
-        if vcn_name not in vcns_list:
+        if vcn_name not in vcns_list[region]:
             tempStr['loggroup_name'] = loggroup_name
             tempStr['loggroup_tf_name'] = loggroup_name
             tempStr['loggroup_desc'] = 'Log Group for VCN'
             tfStrLogGroups[region] = tfStrLogGroups[region] + template.render(tempStr,loggroup='true')
-            vcns_list.append(vcn_name)
+            vcns_list[region].append(vcn_name)
 
         tempStr['loggroup'] = 'false'
         tempStr['log_group_id'] = log_group_id
