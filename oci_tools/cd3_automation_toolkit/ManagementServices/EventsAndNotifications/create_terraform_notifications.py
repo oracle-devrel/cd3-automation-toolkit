@@ -107,12 +107,19 @@ def create_terraform_notifications(inputfile, outdir, prefix, config=DEFAULT_LOC
             exit()
         for columnname in dfcolumns:
             # Column value
-            columnvalue = str(df[columnname][i]).strip()
-            
-            # Check for boolean/null in column values
-            columnvalue = commonTools.check_columnvalue(columnvalue)
+            columnvalue = str(df[columnname][i])
+            # Dont strip for Description
+            if columnname == "Description":
 
-            # Check for multivXalued columns
+                # Check for boolean/null in column values
+                columnvalue = commonTools.check_columnvalue(columnvalue)
+
+            else:
+                columnvalue = columnvalue.strip()
+                # Check for boolean/null in column values
+                columnvalue = commonTools.check_columnvalue(columnvalue)
+
+            # Check for multivalued columns
             tempdict = commonTools.check_multivalues_columnvalue(columnvalue,columnname,tempdict)
 
             # Process Defined and Freeform Tags
@@ -131,10 +138,7 @@ def create_terraform_notifications(inputfile, outdir, prefix, config=DEFAULT_LOC
                 tempdict = {'topic_tf_name': tf_name_topic}
 
             if columnname == "Description":
-                if columnvalue == "" or columnvalue == 'nan':
-                    topic_desc = ""
-                topic_desc = columnvalue.strip()
-                tempdict = {'topic_description': topic_desc}
+                tempdict = {'topic_description': columnvalue}
 
             if columnname == "Protocol":
                 columnvalue = columnvalue.strip()
