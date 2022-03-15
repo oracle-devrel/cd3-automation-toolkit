@@ -11,7 +11,7 @@ module "blockvolume" {
   attachment_type            = each.value.attachment_type
   attach_to_instance         = each.value.attach_to_instance != "" ? each.value.attach_to_instance : ""
   availability_domain        = each.value.availability_domain != "" && each.value.availability_domain != null ? data.oci_identity_availability_domains.availability_domains.availability_domains[each.value.availability_domain].name : ""
-  compartment_id             = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[0][each.value.compartment_id]) : null
+  compartment_id             = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
   vpus_per_gb                = each.value.vpus_per_gb != null ? each.value.vpus_per_gb : null
   defined_tags               = each.value.defined_tags
   display_name               = each.value.display_name
@@ -30,7 +30,7 @@ module "block-backup-policy" {
   depends_on = [module.blockvolume]
   source = "./modules/storage/blockvolume/backup-policy"
   for_each = var.block_backup_policies != null ? var.block_backup_policies : {}
-  compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[0][each.value.compartment_id]) : null
+  compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
   display_name = each.value.display_name
   block_tf_policy = each.value.backup_policy != "" ? each.value.backup_policy : ""
   defined_tags = each.value.defined_tags
