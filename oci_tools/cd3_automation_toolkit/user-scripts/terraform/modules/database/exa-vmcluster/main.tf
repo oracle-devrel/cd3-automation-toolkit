@@ -31,8 +31,8 @@ resource "oci_database_cloud_vm_cluster" "exa_vmcluster" {
   scan_listener_port_tcp_ssl  = var.scan_listener_port_tcp_ssl
   time_zone                   = var.time_zone
 
-  defined_tags                = var.defined_tags
-  freeform_tags               = var.freeform_tags
+  defined_tags  = var.defined_tags
+  freeform_tags = var.freeform_tags
 
   lifecycle {
     ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"]]

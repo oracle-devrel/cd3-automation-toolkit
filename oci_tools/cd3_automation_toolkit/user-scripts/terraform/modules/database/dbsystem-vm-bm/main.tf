@@ -42,13 +42,13 @@ resource "oci_database_db_system" "database_db_system" {
       pdb_name       = var.pdb_name       #(Applicable when source=NONE)
       #sid_prefix = var.sid_prefix
       #tde_wallet_password = var.tde_wallet_password
-      defined_tags = var.defined_tags
+      defined_tags  = var.defined_tags
       freeform_tags = var.freeform_tags
     }
     #Optional
     # database_software_image_id = var.db_software_image_id      #(Applicable when source=DB_BACKUP | NONE)
-    db_version    = var.db_version
-    display_name  = var.db_home_display_name
+    db_version   = var.db_version
+    display_name = var.db_home_display_name
 
   }
 
@@ -86,9 +86,11 @@ resource "oci_database_db_system" "database_db_system" {
   #   preference = ""                   # (Applicable when source=NONE)
   #    weeks_of_month = []               # (Applicable when source=NONE)
   #}
+  defined_tags  = var.defined_tags
+  freeform_tags = var.freeform_tags
 
   lifecycle {
-    ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"],db_home[0].database[0].defined_tags["Oracle-Tags.CreatedOn"]]
+    ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"], db_home[0].database[0].defined_tags["Oracle-Tags.CreatedOn"]]
   }
 
 }
