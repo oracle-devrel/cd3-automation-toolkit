@@ -1,0 +1,16 @@
+
+resource "oci_file_storage_mount_target" "{{ mount_target_tf_name }}" {
+    #availability_domain = data.oci_identity_availability_domains.ADs.availability_domains.{{ availability_domain }}.name
+    availability_domain = data.oci_identity_availability_domains.availability_domains.availability_domains[{{availability_domain}}].name
+    compartment_id = var.{{ compartment_tf_name }}
+    #subnet_id = oci_core_subnet.{{ mounttarget_subnetname }}.id
+    subnet_id = merge(module.subnets.*...)["{{mounttarget_subnetname}}"]["subnet_tf_id"]
+    display_name = "{{ mounttarget_name }}"
+    {% if mounttarget_ip != '' %}
+    ip_address = "{{ mounttarget_ip }}"
+    {% endif %}
+    {% if mounttarget_hostname != '' %}
+    hostname_label = "{{ mounttarget_hostname }}"
+    {% endif %}
+    nsg_ids = [ {{ nsgs }} ]
+}

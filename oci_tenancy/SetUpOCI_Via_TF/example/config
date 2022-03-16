@@ -1,6 +1,0 @@
-[DEFAULT]
-tenancy = ocid1.tenancy.oc1..aaaaaaaalgrxsxshmi3lewnddt2nfyb7q73qoecqyegtk7l5htjzbzrayxka
-fingerprint = a2:9d:39:04:e4:0a:9a:7f:51:0e:00:d6:d6:d4:d2:7d
-user = ocid1.user.oc1..aaaaaaaaqkm22lvc7v3sftclnm6zok7m7vuo2viel6f7k3mm6m7vvfzbiqoq
-key_file = D:/PycharmProjects/ocictooci_new/OCS/oci_api_private.pem
-region = us-phoenix-1

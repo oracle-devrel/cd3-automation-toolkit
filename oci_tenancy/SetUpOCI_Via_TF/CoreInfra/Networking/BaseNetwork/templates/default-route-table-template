@@ -1,5 +1,0 @@
-
-resource "oci_core_default_route_table" "{{rt_tf_name }}" {
-    manage_default_resource_id  = oci_core_vcn.{{ vcn_tf_name }}.default_route_table_id
-    ####ADD_NEW_ROUTE_RULES####{{ rt_tf_name }}
-}

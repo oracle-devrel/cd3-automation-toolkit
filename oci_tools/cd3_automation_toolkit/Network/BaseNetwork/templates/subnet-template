@@ -1,0 +1,87 @@
+{% if (skeleton and count == 0) %}
+
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+
+
+#############################
+# Network
+# Major Objects - Subnets - tfvars
+#############################
+
+subnets = {
+  # Subnets map #
+  ##Add New Subnets for {{ region.lower() }} here##
+}{% else %}{% if display_name != "" and display_name != "nan" and display_name != null %}
+
+{{ subnet_tf_name }} = {
+    #Required
+    cidr_block = "{{ cidr_block }}"
+    compartment_name = "{{ compartment_tf_name }}"
+    vcn_name = "{{ vcn_tf_name }}"
+    display_name = "{{ display_name }}"
+
+    #Optional
+    route_table_id = "{{ rt_tf_name }}"
+    dns_label = "{{ dns_label }}"
+    dhcp_options_id = "{{ dhcp_options_name }}"
+    availability_domain = "{{ availability_domain }}"
+    prohibit_public_ip_on_vnic = "{{ prohibit_public_ip_on_vnic }}"
+
+    {% if ipv6cidr_block and ipv6cidr_block != '' %}
+    ipv6cidr_block = {{ ipv6cidr_block }}
+    {% else %}
+    ipv6cidr_block = ""
+    {% endif %}
+
+    {% if prohibit_internet_ingress and prohibit_internet_ingress != '' %}
+    prohibit_internet_ingress = {{ prohibit_internet_ingress }}
+    {% else %}
+    prohibit_internet_ingress = ""
+    {% endif %}
+
+    {% if seclist_ids != '' %}
+    security_list_ids = [{{ seclist_ids }}]
+    {% else %}
+    security_list_ids = []
+    {% endif %}
+
+    {#  ##Do not modify below this line##  #}
+    {#                                     #}
+    {#  ###Section for adding Defined and Freeform Tags###  #}
+    {% if defined_tags and defined_tags != 'nan' and defined_tags != '' %}
+      {% if defined_tags[0] %}
+        defined_tags = {
+        {% for tags in defined_tags  %}
+            {% if not loop.last %}
+                "{{ tags[0]  }}"= "{{ tags[1] }}" ,
+            {% else %}
+                "{{ tags[0]  }}"= "{{ tags[1] }}"
+            {% endif %}
+        {% endfor %}
+        }
+      {% else %}
+        defined_tags = {}
+        {% endif %}
+       {% else %}
+        defined_tags = {}
+       {% endif %}
+            {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' %}
+                {% if freeform_tags[0] %}
+        freeform_tags = {
+                    {% for tags in freeform_tags %}
+                        {% if not loop.last  %}
+                "{{ tags[0] }}"="{{ tags[1] }}",
+                        {% else %}
+                "{{ tags[0] }}"="{{ tags[1] }}"
+                        {% endif %}
+                    {% endfor %}
+                    }
+                {% else %}
+        freeform_tags = {}
+                {% endif %}
+            {% else %}
+        freeform_tags = {}
+            {% endif %}
+    {#  ###Section for adding Defined and Freeform Tags ends here###  #}
+      },
+{% endif %}{% endif %}

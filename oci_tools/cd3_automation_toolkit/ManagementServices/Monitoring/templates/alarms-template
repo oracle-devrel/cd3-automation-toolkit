@@ -1,0 +1,95 @@
+{% if count == 0 %}
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+
+############################
+# ManagementServices
+# Alarms - tfvars
+############################
+
+alarms = {
+{% endif %}
+  {{ alarm_tf_name }} = {
+    #Required
+    compartment_name = "{{ compartment_tf_name }}"
+    destinations = ["{{ destination_topic_tf_name }}"]
+    alarm_name = "{{ alarm_name }}"
+    is_enabled = {{ is_enabled }}
+    metric_compartment_name = "{{ metric_compartment_tf_name }}"
+    namespace = "{{ namespace }}"
+    query = "{{ query }}"
+    severity = "{{ severity }}"
+    body = "{{ body }}"
+    message_format = "{{ message_format }}"
+    #metric_compartment_id_in_subtree = var.alarm_metric_compartment_id_in_subtree
+    {% if trigger_delay_minutes %}
+    {% if 'PT' not in  trigger_delay_minutes %}
+    trigger_delay_minutes = "PT{{ trigger_delay_minutes }}M"
+    {% else %}
+    trigger_delay_minutes = "{{ trigger_delay_minutes }}"
+    {% endif %}
+    {% else %}
+    trigger_delay_minutes = "PT1M"
+    {% endif %}
+    {% if repeat_notification_duration %}
+    {% if 'PT' not in  repeat_notification_duration %}
+    repeat_notification_duration = "PT{{ repeat_notification_duration }}M"
+    {% else %}
+    repeat_notification_duration = "{{ repeat_notification_duration }}"
+    {% endif %}
+    {% else %}
+    repeat_notification_duration = ""
+    {% endif %}
+
+
+    #resolution = var.alarm_resolution
+    #resource_group = var.alarm_resource_group
+    #suppression {
+        #Required
+    #    time_suppress_from = var.alarm_suppression_time_suppress_from
+    #    time_suppress_until = var.alarm_suppression_time_suppress_until
+
+        #Optional
+    #    description = var.alarm_suppression_description
+    #}
+
+{#  ##Do not modify below this line##  #}
+{#                                     #}
+{#  ###Section for adding Defined and Freeform Tags###  #}
+{% if defined_tags and defined_tags != 'nan' and defined_tags != '' %}
+  {% if defined_tags[0] %}
+    defined_tags = {
+    {% for tags in defined_tags  %}
+        {% if not loop.last %}
+            "{{ tags[0]  }}"= "{{ tags[1] }}" ,
+        {% else %}
+            "{{ tags[0]  }}"= "{{ tags[1] }}"
+        {% endif %}
+    {% endfor %}
+    }
+  {% else %}
+    defined_tags = {}
+    {% endif %}
+   {% else %}
+    defined_tags = {}
+   {% endif %}
+        {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' %}
+            {% if freeform_tags[0] %}
+    freeform_tags = {
+                {% for tags in freeform_tags %}
+                    {% if not loop.last  %}
+            "{{ tags[0] }}"="{{ tags[1] }}",
+                    {% else %}
+            "{{ tags[0] }}"="{{ tags[1] }}"
+                    {% endif %}
+                {% endfor %}
+                }
+            {% else %}
+    freeform_tags = {}
+            {% endif %}
+        {% else %}
+    freeform_tags = {}
+        {% endif %}
+{#  ###Section for adding Defined and Freeform Tags ends here###  #}
+
+    },
+  }

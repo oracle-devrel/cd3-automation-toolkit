@@ -1,0 +1,88 @@
+{% if (skeleton and count == 0) %}
+
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+
+
+############################
+# Network
+# Major Objects - Route Table - tfvars
+############################
+
+route_tables = {
+  # Route Table map #
+  ##Add New Route Tables for {{ region.lower() }} here##
+}
+{% else %}{% if display_name != "" and display_name != "nan" and display_name != null %}
+
+  # Start of #{{ region.lower() }}_{{ rt_tf_name }}# #
+    {{ rt_tf_name }} = {
+        compartment_name = "{{ compartment_tf_name }}"
+        vcn_name     = "{{ vcn_tf_name }}"
+        display_name     = "{{ display_name }}"
+
+        route_rules_igw = [
+    {{ route_rules_igw }}
+        ]
+
+        route_rules_sgw = [
+    {{ route_rules_sgw }}
+        ]
+
+        route_rules_ngw = [
+    {{ route_rules_ngw }}
+        ]
+
+        route_rules_drg = [
+    {{ route_rules_drg }}
+        ]
+
+        route_rules_lpg = [
+    {{ route_rules_lpg }}
+        ]
+
+        route_rules_ip = [
+    {{ route_rules_ip }}
+        ]
+
+    {#  ##Do not modify below this line##  #}
+    {#                                     #}
+    {#  ###Section for adding Defined and Freeform Tags###  #}
+    {% if defined_tags and defined_tags != 'nan' and defined_tags != '' %}
+      {% if defined_tags[0] %}
+        defined_tags = {
+        {% for tags in defined_tags  %}
+            {% if not loop.last %}
+                "{{ tags[0]  }}"= "{{ tags[1] }}" ,
+            {% else %}
+                "{{ tags[0]  }}"= "{{ tags[1] }}"
+            {% endif %}
+        {% endfor %}
+        }
+      {% else %}
+        defined_tags = {}
+        {% endif %}
+       {% else %}
+        defined_tags = {}
+       {% endif %}
+            {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' %}
+                {% if freeform_tags[0] %}
+        freeform_tags = {
+                    {% for tags in freeform_tags %}
+                        {% if not loop.last  %}
+                "{{ tags[0] }}"="{{ tags[1] }}",
+                        {% else %}
+                "{{ tags[0] }}"="{{ tags[1] }}"
+                        {% endif %}
+                    {% endfor %}
+                    }
+                {% else %}
+        freeform_tags = {}
+                {% endif %}
+            {% else %}
+        freeform_tags = {}
+            {% endif %}
+    {#  ###Section for adding Defined and Freeform Tags ends here###  #}
+
+      },
+  # End of #{{ region.lower() }}_{{ rt_tf_name }}# #
+{% endif %}{% endif %}

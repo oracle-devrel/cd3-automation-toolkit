@@ -1,0 +1,22 @@
+{% if compartment_ocids_list and compartment_ocids_list.lower()=='true' %}
+variable "compartment_ocids" {
+            type = map(any)
+            default = {
+            {% for compartment in comp_ocids %}{% set compartment_name_ocid = compartment.split("::") %} {% if not loop.last %}
+                {{ compartment_name_ocid[0] }} = "{{ compartment_name_ocid[1] }}", {% else %}
+                {{ compartment_name_ocid[0] }} = "{{ compartment_name_ocid[1] }}"  {% endif %} {% endfor %}
+            }
+}
+{% else %}
+{% if db_export and db_export.lower()=='true' %}
+variable "{{ var_tf_name }}" {
+            type = list
+            default = {{ values }}
+}
+{% else %}
+variable "{{ var_tf_name }}" {
+            type = string
+            default = "{{ values }}"
+}
+{% endif %}
+{% endif %}
