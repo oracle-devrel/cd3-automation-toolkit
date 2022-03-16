@@ -106,12 +106,19 @@ def create_terraform_alarms(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
         skip_row=0
         for columnname in dfcolumns:
             # Column value
-            columnvalue = str(df[columnname][i]).strip()
-            
-            # Check for boolean/null in column values
-            columnvalue = commonTools.check_columnvalue(columnvalue)
+            columnvalue = str(df[columnname][i])
 
-            # Check for multivXalued columns
+            # Dont strip for Body
+            if columnname=="Body":
+                # Check for boolean/null in column values
+                columnvalue = commonTools.check_columnvalue(columnvalue)
+
+            else:
+                columnvalue = columnvalue.strip()
+                # Check for boolean/null in column values
+                columnvalue = commonTools.check_columnvalue(columnvalue)
+
+            # Check for multivalued columns
             tempdict = commonTools.check_multivalues_columnvalue(columnvalue,columnname,tempdict)
 
             # Process Defined and Freeform Tags
@@ -155,7 +162,7 @@ def create_terraform_alarms(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
                 tempStr.update(tempdict)
 
             columnname = commonTools.check_column_headers(columnname)
-            tempStr[columnname] = str(columnvalue).strip()
+            tempStr[columnname] = str(columnvalue)
             tempStr.update(tempdict)
 
         if skip_row == 1:

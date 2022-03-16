@@ -33,7 +33,16 @@ def create_rm(region,comp_name,ocs_stack,ct,rm_stack_name,rm_ocids_file,create_r
     zipConfigSource = CreateZipUploadConfigSourceDetails()
     stackdetails.description = "Created using Automation Tool Kit"
     stackdetails.terraform_version = "1.0.x"
-    stackdetails.compartment_id = ct.ntk_compartment_ids[comp_name]
+    try:
+        stackdetails.compartment_id = ct.ntk_compartment_ids[comp_name]
+    except KeyError as fe:
+        print("Compartment specified for the stack previously doesn't exist in OCI")
+        print("Removing rm_ocids.csv file from outdir")
+        if os.path.exists(rm_ocids_file):
+            os.remove(rm_ocids_file)
+        comp_name = input("Enter a new Compartment Name for Resource Manager: ")
+        stackdetails.compartment_id = ct.ntk_compartment_ids[comp_name]
+
     stackdetails.display_name = rm_stack_name + "-" + region
     with open(region + ".zip", 'rb') as file:
         zipContents = file.read()

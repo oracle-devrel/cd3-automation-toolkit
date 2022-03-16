@@ -7,6 +7,7 @@
 
 module "alarms" {
   source   = "./modules/managementservices/alarm"
+
   depends_on = [module.notifications-topics]
   for_each = var.alarms != null ? var.alarms : {}
 
@@ -94,6 +95,7 @@ output "log_group_map" {
 
 module "logs" {
   source   = "./modules/managementservices/log"
+  depends_on = [module.subnets, module.log-groups]
   for_each = (var.logs != null || var.logs != {}) ? var.logs : {}
 
   # Logs

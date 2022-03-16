@@ -23,7 +23,7 @@ variable "shape" {
   default = ""
 }
 variable "ssh_public_keys" {
-  type    = list
+  type    = list(any)
   default = []
 }
 variable "subnet_id" {

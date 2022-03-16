@@ -261,7 +261,7 @@ def create_tags():
 def create_network(execute_all=False):
     options = [
         Option('Create Network - overwrites all TF files; reverts all SecLists and RouteTables to original rules', Network.create_all_tf_objects, 'Create All Objects'),
-        Option('Modify Network - Add/Remove/Modify any network object; updates TF files with changes; this option should be used after modifications have been done to SecRules or RouteRules', modify_terraform_network, 'Modifying Network'),
+        Option('Modify Network - It will read VCNs, DRGs, Subnets and DHCP sheets and update the TF', modify_terraform_network, 'Modifying Network'),
         Option('Export existing SecRules and RouteRules to cd3', export_terraform_routes_and_secrules, 'Exporting Rules'),
         Option('Export existing DRG RouteRules to cd3', export_terraform_drg_routes,'Exporting DRG Route Rules'),
         Option('Modify SecRules', Network.modify_terraform_secrules, 'Modifiying Security Rules'),

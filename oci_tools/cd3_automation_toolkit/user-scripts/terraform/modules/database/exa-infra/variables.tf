@@ -10,54 +10,54 @@ variable "availability_domain" {
   default = null
 }
 variable "compartment_id" {
-  type = string
+  type    = string
   default = ""
 }
 variable "display_name" {
-  type = string
+  type    = string
   default = ""
 }
 variable "shape" {
-  type = string
+  type    = string
   default = ""
 }
 variable "compute_count" {
   type = number
 }
 variable "customer_contacts_email" {
-  type = string
+  type    = string
   default = ""
 }
 variable "defined_tags" {
-  type = map(any)
+  type    = map(any)
   default = {}
 }
 variable "freeform_tags" {
-  type = map(any)
+  type    = map(any)
   default = {}
 }
 variable "maintenance_window_preference" {
-  type = string
+  type    = string
   default = ""
 }
 variable "maintenance_window_days_of_week_name" {
-  type = string
+  type    = string
   default = ""
 }
 variable "maintenance_window_hours_of_day" {
-  type = list(number)
+  type    = list(number)
   default = []
 }
 variable "maintenance_window_lead_time_in_weeks" {
-  type = number
+  type    = number
   default = 0
 }
 variable "maintenance_window_months_name" {
-  type = string
+  type    = string
   default = ""
 }
 variable "maintenance_window_weeks_of_month" {
-  type = list(number)
+  type    = list(number)
   default = []
 }
 variable "storage_count" {

@@ -115,10 +115,17 @@ def create_terraform_events(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
 
         for columnname in dfcolumns:
             # Column value
-            columnvalue = str(df[columnname][i]).strip()
-            
-            # Check for boolean/null in column values
-            columnvalue = commonTools.check_columnvalue(columnvalue)
+            # Dont strip for Description
+            columnvalue = str(df[columnname][i])
+            if columnname == "Event Description":
+
+                # Check for boolean/null in column values
+                columnvalue = commonTools.check_columnvalue(columnvalue)
+
+            else:
+                columnvalue = columnvalue.strip()
+                # Check for boolean/null in column values
+                columnvalue = commonTools.check_columnvalue(columnvalue)
 
             # Check for multivXalued columns
             tempdict = commonTools.check_multivalues_columnvalue(columnvalue,columnname,tempdict)
@@ -135,11 +142,7 @@ def create_terraform_events(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
                 tempdict = {columnname: columnvalue}
 
             if columnname == "Event Description":
-                if columnvalue == "" or columnvalue == 'nan':
-                    event_desc = ''
-                event_desc = columnvalue.strip()
-                event_desc = event_desc.replace("\"" , "\\\"")
-                tempdict = {'event_description': event_desc}   
+                tempdict = {'event_description': columnvalue}
 
             if columnname == "Action Description":
                 if columnvalue == "" or columnvalue == 'nan':

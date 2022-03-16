@@ -257,13 +257,15 @@ module "drg-attachments" {
   drg_display_name = each.value.display_name
   defined_tags     = each.value.defined_tags
   freeform_tags    = each.value.freeform_tags
-
-  drg_id             = length(regexall("ocid1.drg.oc1*", each.value.drg_id)) > 0 ? each.value.drg_id : ((each.value.drg_id != "" && each.value.drg_id != null) ? merge(module.drgs.*...)[each.value.drg_id]["drg_tf_id"] : each.value.drg_id)
+  drg_id           = length(regexall("ocid1.drg.oc1*", each.value.drg_id)) > 0 ? each.value.drg_id : ((each.value.drg_id != "" && each.value.drg_id != null) ? merge(module.drgs.*...)[each.value.drg_id]["drg_tf_id"] : each.value.drg_id)
   drg_route_table_id = length(regexall("ocid1.drgroutetable.oc1*", each.value.drg_route_table_id)) > 0 ? each.value.drg_route_table_id : ((each.value.drg_route_table_id != "" && each.value.drg_route_table_id != null) ? merge(module.drg-route-tables.*...)[each.value.drg_route_table_id]["drg_route_table_tf_id"] : null)
-  network_details_id   = length(regexall("ocid1.*", each.value.network_details_id)) > 0 ? each.value.network_details_id : merge(module.vcns.*...)[each.value.network_details_id]["vcn_tf_id"]
-  network_details_type = each.value.network_details_type
-  vcn_route_table_id   = length(regexall("ocid1.routetable.oc1*", each.value.vcn_route_table_id)) > 0 ? each.value.vcn_route_table_id : ((each.value.vcn_route_table_id != "" && each.value.vcn_route_table_id != null) ? (length(regexall(".Default-Route-Table-for*", each.value.route_table_id)) > 0 ? merge(module.vcns.*...)[each.value.vcn_name]["vcn_default_route_table_id"] : merge(module.route-tables.*...)[each.value.vcn_route_table_id]["route_table_ids"]) : null)
+  vcns_tf_id       = merge(module.vcns.*...)
+  route_table_tf_id = merge(module.route-tables.*...)
+  default_route_table_tf_id = merge(module.default-route-tables.*...)
+  drg_attachments  = var.drg_attachments
+  key_name         = each.key
 }
+
 
 /*
 output "drg_id_map" {
