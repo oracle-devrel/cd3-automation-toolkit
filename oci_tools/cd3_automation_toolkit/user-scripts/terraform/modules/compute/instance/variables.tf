@@ -7,16 +7,16 @@
 
 variable "availability_domain" {
   type    = string
-  default = ""
+  default = null
 }
 variable "compartment_id" {
   type    = string
-  default = ""
+  default = null
 }
 variable "shape" {
   type        = string
   description = "The shape of an instance."
-  default     = "VM.Standard2.1"
+  default     = null
 }
 variable "ocpu_count" {
   type    = number
@@ -27,42 +27,22 @@ variable "dedicated_vm_host_name" {
   default = null
 }
 variable "defined_tags" {
-  type    = map(any)
+  type    = map(string)
   default = {}
 }
 variable "display_name" {
   type    = string
   default = null
 }
-variable "extended_metadata" {
-  type    = map(any)
-  default = {}
-}
 variable "fault_domain" {
   type    = string
   default = null
 }
 variable "freeform_tags" {
-  type    = map(any)
+  type    = map(string)
   default = {}
 }
-variable "ipxe_script" {
-  type    = string
-  default = null
-}
-variable "is_pv_encryption_in_transit_enabled" {
-  type    = bool
-  default = null
-}
 variable "ssh_public_keys" {
-  type    = string
-  default = null
-}
-variable "preserve_boot_volume" {
-  type    = bool
-  default = null
-}
-variable "assign_private_dns_record" {
   type    = string
   default = null
 }
@@ -86,10 +66,6 @@ variable "subnet_id" {
   type    = string
   default = null
 }
-variable "vlan_id" {
-  type    = string
-  default = null
-}
 variable "source_type" {
   type    = string
   default = null
@@ -102,15 +78,44 @@ variable "boot_volume_size_in_gbs" {
   type    = number
   default = null
 }
-variable "kms_key_id" {
-  type    = string
-  default = null
+variable "network_compartment_id" {
+  description = "Network compartmenet OCID to fetch NSG/Subnet details"
+  type        = string
+  default     = null
 }
 
 #Optional
 variable "capacity_reservation_id" {
   type = string
   description = "The OCID of the compute capacity reservation this instance is launched under"
+  default = null
+}
+variable "kms_key_id" {
+  type    = string
+  default = null
+}
+variable "extended_metadata" {
+  type    = map(any)
+  default = {}
+}
+variable "ipxe_script" {
+  type    = string
+  default = null
+}
+variable "is_pv_encryption_in_transit_enabled" {
+  type    = bool
+  default = null
+}
+variable "preserve_boot_volume" {
+  type    = bool
+  default = null
+}
+variable "assign_private_dns_record" {
+  type    = string
+  default = null
+}
+variable "vlan_id" {
+  type    = string
   default = null
 }
 variable "skip_source_dest_check" {
@@ -207,28 +212,28 @@ variable "platform_config" {
   default = {}
 }
 
-#variable "config_type" {
-#  type        = string
-#  description = "The type of platform being configured"
-#  default     = null
-#}
-#variable "is_measured_boot_enabled" {
-#  type        = bool
-#  description = "Whether the Measured Boot feature is enabled on the instance"
-#  default     = null
-#}
-#variable "is_secure_boot_enabled" {
-#  type        = bool
-#  description = "Whether Secure Boot is enabled on the instance"
-#  default     = null
-#}
-#variable "is_trusted_platform_module_enabled" {
-#  type        = bool
-#  description = "Whether the Trusted Platform Module (TPM) is enabled on the instance"
-#  default     = null
-#}
-#variable "numa_nodes_per_socket" {
-#  type        = string
-#  description = "The number of NUMA nodes per socket (NPS)"
-#  default     = null
-#}
+variable "config_type" {
+  type        = string
+  description = "The type of platform being configured"
+  default     = null
+}
+variable "is_measured_boot_enabled" {
+  type        = bool
+  description = "Whether the Measured Boot feature is enabled on the instance"
+  default     = null
+}
+variable "is_secure_boot_enabled" {
+  type        = bool
+  description = "Whether Secure Boot is enabled on the instance"
+  default     = null
+}
+variable "is_trusted_platform_module_enabled" {
+  type        = bool
+  description = "Whether the Trusted Platform Module (TPM) is enabled on the instance"
+  default     = null
+}
+variable "numa_nodes_per_socket" {
+  type        = string
+  description = "The number of NUMA nodes per socket (NPS)"
+  default     = null
+}

@@ -75,7 +75,7 @@ resource "oci_core_instance" "core_instance" {
     display_name              = var.display_name
     freeform_tags             = var.freeform_tags
     hostname_label            = var.hostname_label
-    nsg_ids                   = var.nsg_ids
+    nsg_ids                   = var.nsg_ids == [] ? null : local.nsg_ids
     private_ip                = var.private_ip
     subnet_id                 = var.subnet_id
     vlan_id                   = var.vlan_id
@@ -118,7 +118,7 @@ resource "oci_core_instance" "core_instance" {
   }
 
   source_details {
-    # source_id   = data.oci_core_images.source_image.images[0].id
+
     source_id   = var.source_image_id
     source_type = var.source_type
     #Optional
