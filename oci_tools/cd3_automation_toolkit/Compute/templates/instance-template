@@ -36,6 +36,8 @@ instances = {
             {# Note: RAM = ocpus x 16GB #}
             {# Note: # of vNICs = ocpus x 2 #}
             ocpus            = "{{ shape[1] }}"
+            {% else %}
+            ocpus            = null
             {% endif %}
 
             {# The "os" below must be a variable in the variables.tf file with the appropriate image OCID as its value #}
@@ -63,7 +65,7 @@ instances = {
             {% if nsg_ids %}
             nsg_ids          = [{{ nsg_ids }}]
             {% else %}
-            nsg_ids          = null
+            nsg_ids          = []
             {% endif %}
 
             {% if memory_in_gbs %}
