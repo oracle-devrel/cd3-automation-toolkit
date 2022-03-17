@@ -325,7 +325,7 @@ def create_terraform_subnet(inputfile, outdir, prefix, non_gf_tenancy, config, m
                     os.makedirs(reg_out_dir)
 
             srcdir = reg_out_dir + "/"
-            resource = 'Subnets'
+            resource = 'subnets'
             commonTools.backup_file(srcdir, resource, prefix + auto_tfvars_filename)
 
             outfile[reg] = reg_out_dir + "/" + prefix + auto_tfvars_filename
@@ -348,7 +348,7 @@ def create_terraform_subnet(inputfile, outdir, prefix, non_gf_tenancy, config, m
                     os.makedirs(reg_out_dir)
 
             srcdir = reg_out_dir + "/"
-            resource = 'Subnets'
+            resource = 'subnets'
             commonTools.backup_file(srcdir, resource, prefix + auto_tfvars_filename)
             outfile[reg] = reg_out_dir + "/" + prefix + auto_tfvars_filename
 

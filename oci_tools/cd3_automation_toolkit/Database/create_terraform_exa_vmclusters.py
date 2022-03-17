@@ -38,6 +38,7 @@ def create_terraform_exa_vmclusters(inputfile, outdir, prefix, config=DEFAULT_LO
     configFileName = config
 
     sheetName = "EXA-VMClusters"
+    auto_tfvars_filename = '_' + sheetName.lower() + '.auto.tfvars'
     ct = commonTools()
     ct.get_subscribedregions(configFileName)
 
@@ -66,7 +67,7 @@ def create_terraform_exa_vmclusters(inputfile, outdir, prefix, config=DEFAULT_LO
         tfStr[reg] = ''
         srcdir = outdir + "/" + reg + "/"
         resource = sheetName.lower()
-        commonTools.backup_file(srcdir, resource, sheetName.lower() + "auto.tfvars_backup")
+        commonTools.backup_file(srcdir, resource, auto_tfvars_filename)
 
     regions_done_count = []
 
@@ -217,7 +218,7 @@ def create_terraform_exa_vmclusters(inputfile, outdir, prefix, config=DEFAULT_LO
         reg_out_dir = outdir + "/" + reg
         if not os.path.exists(reg_out_dir):
             os.makedirs(reg_out_dir)
-        outfile[reg] = reg_out_dir + "/" + prefix + "_" + sheetName.lower() + ".auto.tfvars"
+        outfile[reg] = reg_out_dir + "/" + prefix + auto_tfvars_filename
 
         if (tfStr[reg] != ''):
             oname[reg] = open(outfile[reg], 'w')

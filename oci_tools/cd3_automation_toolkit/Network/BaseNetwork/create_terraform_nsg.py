@@ -283,7 +283,7 @@ def create_terraform_nsg(inputfile, outdir, prefix, non_gf_tenancy, config):
     # Backup of existing NSG files
     for reg in ct.all_regions:
         if (os.path.exists(outdir + "/" + reg)):
-            resource = "NSGs"
+            resource = "nsgs"
             commonTools.backup_file(outdir + "/" + reg, resource, prefix + nsg_auto_tfvars_filename)
             commonTools.backup_file(outdir + "/" + reg, resource, prefix + nsg_rules_auto_tfvars_filename)
 
