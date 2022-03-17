@@ -65,7 +65,7 @@ def create_terraform_instances(inputfile, outdir, prefix, config):
         resource = sheetName.lower()
         srcdir = outdir + "/" + eachregion + "/"
         # commonTools.backup_file(srcdir, resource, sheetName.lower()+".tf")
-        commonTools.backup_file(srcdir, resource, "_instance.tfvars")
+        commonTools.backup_file(srcdir, resource, auto_tfvars_filename)
         tfStr[eachregion] = ''
 
 
