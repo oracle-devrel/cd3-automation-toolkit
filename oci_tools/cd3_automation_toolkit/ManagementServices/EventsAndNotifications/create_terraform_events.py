@@ -81,7 +81,7 @@ def create_terraform_events(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
     for eachregion in ct.all_regions:
         resource=sheetName.lower()
         srcdir = outdir + "/" + eachregion + "/"
-        commonTools.backup_file(srcdir, resource, "-event.tf")
+        commonTools.backup_file(srcdir, resource, auto_tfvars_filename)
 
         tfStr[eachregion] = ''
         Events_names[eachregion] = []

@@ -637,7 +637,7 @@ def create_major_objects(inputfile, outdir, prefix, non_gf_tenancy, config, modi
             outfile_oci_drg_data[reg] = reg_out_dir + "/" + prefix + drg_data_tfvars_filename
 
             srcdir = reg_out_dir + "/"
-            resource = 'MajorObjects'
+            resource = 'major-objects'
             # commonTools.backup_file(srcdir, resource, "-major-objs.tf")
             commonTools.backup_file(srcdir, resource, auto_tfvars_filename)
             commonTools.backup_file(srcdir, resource, dhcp_auto_tfvars_filename)
@@ -673,7 +673,7 @@ def create_major_objects(inputfile, outdir, prefix, non_gf_tenancy, config, modi
                 os.makedirs(reg_out_dir)
 
             srcdir = reg_out_dir + "/"
-            resource = 'MajorObjects'
+            resource = 'major-objects'
             # commonTools.backup_file(srcdir, resource, "-major-objs.tf")
             commonTools.backup_file(srcdir, resource, auto_tfvars_filename)
             commonTools.backup_file(srcdir, resource, dhcp_auto_tfvars_filename)
