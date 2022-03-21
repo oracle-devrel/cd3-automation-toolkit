@@ -1,0 +1,32 @@
+# Enable Logging
+{% if loggroup == 'true' %}
+# Log Group
+resource "oci_logging_log_group" "{{ loggroup_tf_name }}" {
+    compartment_id = var.{{ compartment_tf_name }}
+    display_name   = "{{ loggroup_name }}"
+    description    = "{{ loggroup_desc }}"
+}
+{% endif %}
+{% if logs == 'true' or loggroup == 'false' %}
+# Log
+resource "oci_logging_log" "{{ log_tf_name }}" {
+        display_name = "{{ log_name }}"
+        log_group_id = {{ log_group_id }}
+        log_type     = "SERVICE"
+
+        configuration {
+            source {
+                category    = "{{ category }}"
+                resource    = {{ resource }}
+                service     = "{{ service }}"
+                source_type = "OCISERVICE"
+            }
+            compartment_id = var.{{ compartment_tf_name }}
+
+        }
+
+        is_enabled         = true
+        retention_duration = 30
+
+}
+{% endif %}
