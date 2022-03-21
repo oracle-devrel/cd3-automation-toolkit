@@ -364,8 +364,8 @@ def create_cis_vcnflow_logs(*args,**kwargs):
 
 
 def create_cis_keyvault_oss_log(*args,**kwargs):
-    region_name = input("Enter region name eg ashburn where you want to create OSS Bucket and Key/Vault ")
-    comp_name = input("Enter name of compartment as it appears in OCI Console ")
+    region_name = input("Enter region name eg ashburn where you want to create OSS Bucket and Key/Vault: ")
+    comp_name = input("Enter name of compartment as it appears in OCI Console: ")
 
     options = [Option(None, create_cis_keyvault, 'Creating KeyVault'),
                Option(None, create_cis_oss, 'Creating Object Storage Bucket'),
@@ -374,7 +374,7 @@ def create_cis_keyvault_oss_log(*args,**kwargs):
 
 def create_cis_budget(*args,**kwargs):
     amount = input("Enter Monthly Budget Amount (in US$): ")
-    threshold = input("Enter Threshold Percentage of Budget ")
+    threshold = input("Enter Threshold Percentage of Budget: ")
     options = [Option(None, Governance.create_cis_budget, 'Creating Budget')]
     execute_options(options, outdir, prefix,amount,threshold, config=config)
 
