@@ -354,5 +354,9 @@ variable "instances" {
   description = "Map of instances to be provisioned"
   default = {}
 }
-
+variable "db_home" {
+  type = map(any)
+  description = "Map of database db home to be provisioned"
+  default = {}
+}
 ######################### END #########################
