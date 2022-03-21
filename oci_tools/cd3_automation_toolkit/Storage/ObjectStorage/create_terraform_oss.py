@@ -51,7 +51,7 @@ def create_cis_oss(outdir, prefix, region_name, comp_name, config):
 
     file_pol_loader = FileSystemLoader(f'{Path(__file__).parent}/../../Identity/Policies/templates')
     pol_env = Environment(loader=file_pol_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
-    policyTemplate = pol_env.get_template('policy-template')
+    policyTemplate = pol_env.get_template('policies-template')
 
     #region_key = ct.region_dict[region_name]
 
