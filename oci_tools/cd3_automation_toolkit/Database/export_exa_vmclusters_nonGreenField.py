@@ -38,6 +38,24 @@ def print_exa_vmcluster(region, vnc_client,exa_infra, exa_vmcluster, key_name,va
     backup_subnet_name = backup_subnet_info.data.display_name  # Subnet-Name
     backup_vcn_name = vnc_client.get_vcn(backup_subnet_info.data.vcn_id).data.display_name  # vcn-Name
 
+
+    NSGs = exa_vmcluster.nsg_ids
+    nsg_names = ""
+    if (NSGs is not None and len(NSGs)):
+        for j in NSGs:
+            nsg_info = vnc_client.get_network_security_group(j)
+            nsg_names = nsg_names + "," + nsg_info.data.display_name
+        nsg_names = nsg_names[1:]
+
+    Backup_NSGs = exa_vmcluster.backup_network_nsg_ids
+    backup_nsg_names = ""
+    if (Backup_NSGs is not None and len(Backup_NSGs)):
+        for j in Backup_NSGs:
+            nsg_info = vnc_client.get_network_security_group(j)
+            backup_nsg_names = backup_nsg_names + "," + nsg_info.data.display_name
+        backup_nsg_names = backup_nsg_names[1:]
+
+
     maintenance_window = exa_infra.maintenance_window
 
     #importCommands[region.lower()].write("\nterraform import oci_database_cloud_vm_cluster." + exa_vmcluster_tf_name + " " + str(exa_vmcluster.id))
@@ -56,6 +74,10 @@ def print_exa_vmcluster(region, vnc_client,exa_infra, exa_vmcluster, key_name,va
             values_for_column[col_header].append(commonTools.check_tf_variable(client_vcn_name+"_"+client_subnet_name))
         elif col_header == 'Backup Subnet Name':
             values_for_column[col_header].append(commonTools.check_tf_variable(backup_vcn_name + "_" + backup_subnet_name))
+        elif (col_header == "NSGs"):
+            values_for_column[col_header].append(nsg_names)
+        elif (col_header == "Backup Network NSGs"):
+            values_for_column[col_header].append(backup_nsg_names)
         elif col_header.lower() in commonTools.tagColumns:
             values_for_column = commonTools.export_tags(exa_vmcluster, col_header, values_for_column)
         else:
@@ -143,19 +165,16 @@ def export_exa_vmclusters(inputfile, _outdir, _config, network_compartments=[]):
 
         db_client = oci.database.DatabaseClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
         vnc_client = oci.core.VirtualNetworkClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
-        db={}
 
+        db={}
         for ntk_compartment_name in comp_list_fetch:
             exa_infras = oci.pagination.list_call_get_all_results(db_client.list_cloud_exadata_infrastructures,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name], lifecycle_state="AVAILABLE")
             for exa_infra in exa_infras.data:
                 for ntk_compartment_name_again in comp_list_fetch:
                     exa_vmclusters = oci.pagination.list_call_get_all_results(db_client.list_cloud_vm_clusters,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name_again], cloud_exadata_infrastructure_id=exa_infra.id, lifecycle_state="AVAILABLE")
-
-                    db = {}
                     for exa_vmcluster in exa_vmclusters.data:
-
                         # Get ssh keys for exa vm cluster
-                        key_name = commonTools.check_tf_variable(exa_vmcluster.display_name + "-" + exa_vmcluster.hostname)
+                        key_name = commonTools.check_tf_variable(exa_vmcluster.display_name + "_" + exa_vmcluster.hostname)
                         db_ssh_keys = exa_vmcluster.ssh_public_keys
                         db_ssh_keys = json.dumps(db_ssh_keys)
                         db[key_name] = db_ssh_keys
