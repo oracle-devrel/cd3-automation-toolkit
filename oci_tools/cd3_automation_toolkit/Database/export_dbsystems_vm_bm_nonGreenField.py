@@ -34,6 +34,16 @@ def print_dbsystem_vm_bm(region, db_system_vm_bm, count,db_home, database ,vnc_c
 
     db_system_options = db_system_vm_bm.db_system_options
     maintenance_window = db_system_vm_bm.maintenance_window
+
+    NSGs = db_system_vm_bm.nsg_ids
+    nsg_names = ""
+    if (NSGs is not None and len(NSGs)):
+        for j in NSGs:
+            nsg_info = vnc_client.get_network_security_group(j)
+            nsg_names = nsg_names + "," + nsg_info.data.display_name
+        nsg_names = nsg_names[1:]
+
+
     db_backup_config = database.db_backup_config
     connection_strings = database.connection_strings
     database_management_config = database.database_management_config
@@ -47,7 +57,7 @@ def print_dbsystem_vm_bm(region, db_system_vm_bm, count,db_home, database ,vnc_c
             if col_header == 'Region' or col_header == 'Compartment Name' or col_header == 'Subnet Name' or "Availability Domain" in col_header or \
                 col_header == 'Shape' or col_header == 'DB System Display Name' or col_header == 'Node Count' or col_header == 'CPU Core Count' or col_header == "Database Edition" or \
                 col_header == 'Data Storage in GB' or col_header == 'Data Storage Percentage' or col_header == 'Disk Redundancy' or col_header == 'License Model' or \
-                col_header == 'Hostname Prefix' or col_header == 'SSH Key Var Name' or col_header == 'Time Zone':
+                col_header == 'Hostname Prefix' or col_header == 'SSH Key Var Name' or col_header == 'Time Zone' or col_header == 'NSGs':
 
                 values_for_column[col_header].append("")
             elif col_header == 'DB Admin Password':
@@ -82,7 +92,8 @@ def print_dbsystem_vm_bm(region, db_system_vm_bm, count,db_home, database ,vnc_c
                 elif ("AD-3" in value or "ad-3" in value):
                     ad = "AD3"
                 values_for_column[col_header].append(ad)
-
+            elif (col_header == "NSGs"):
+                values_for_column[col_header].append(nsg_names)
             elif col_header.lower() in commonTools.tagColumns:
                 values_for_column = commonTools.export_tags(db_system_vm_bm, col_header, values_for_column)
             else:
@@ -170,14 +181,12 @@ def export_dbsystems_vm_bm(inputfile, _outdir, _config, network_compartments=[])
         db_client = oci.database.DatabaseClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
         vnc_client = oci.core.VirtualNetworkClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
 
+        db = {}
         for ntk_compartment_name in comp_list_fetch:
             db_systems = oci.pagination.list_call_get_all_results(db_client.list_db_systems,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name], lifecycle_state="AVAILABLE")
-
-            db={}
             for db_system in db_systems.data:
-
                 # Get ssh keys for db system
-                key_name = commonTools.check_tf_variable(db_system.display_name+"-"+db_system.hostname)
+                key_name = commonTools.check_tf_variable(db_system.display_name+"_"+db_system.hostname)
                 db_ssh_keys= db_system.ssh_public_keys
                 db_ssh_keys=json.dumps(db_ssh_keys)
                 db[key_name]=db_ssh_keys
@@ -185,7 +194,10 @@ def export_dbsystems_vm_bm(inputfile, _outdir, _config, network_compartments=[])
                 db_homes = oci.pagination.list_call_get_all_results(db_client.list_db_homes,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name],db_system_id=db_system.id,lifecycle_state="AVAILABLE", sort_by="TIMECREATED", sort_order="ASC")
                 count=0
                 for db_home in db_homes.data:
+                    #Currently exports only one DB Home for the DBSystem
                     count=count+1
+                    if (count > 1):
+                        break
                     databases = oci.pagination.list_call_get_all_results(db_client.list_databases,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name],db_home_id=db_home.id,system_id=db_system.id,lifecycle_state="AVAILABLE")
                     for database in databases.data:
                         print_dbsystem_vm_bm(region, db_system, count,db_home, database, vnc_client, key_name,values_for_column, ntk_compartment_name)
