@@ -15,6 +15,16 @@ variable "admin_password" {
   type        = string
   default     = null
 }
+variable "database_image_name" {
+  description = "DB image to be used for db_home"
+  type        = string
+  default     = null
+}
+variable "db_software_image_id" {
+  description = ""
+  type        = string
+  default     = null
+}
 variable "db_name" {
   description = ""
   type        = string
@@ -101,7 +111,12 @@ variable "database_id" {
   type        = string
   default     = null
 }
-variable "db_software_image_id" {
+variable "db_home_db_software_image_id" {
+  description = ""
+  type        = string
+  default     = null
+}
+variable "db_version" {
   description = ""
   type        = string
   default     = null
