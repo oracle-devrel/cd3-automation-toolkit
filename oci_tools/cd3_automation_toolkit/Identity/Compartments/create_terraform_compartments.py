@@ -162,7 +162,6 @@ def create_terraform_compartments(inputfile, outdir, prefix, config=DEFAULT_LOCA
                         if (r == 1):
                             var_c_name = columnvalue + "::" + str(df.loc[i, 'Name']).strip()
                             parent_compartment = commonTools.check_tf_variable(columnvalue)
-                            parent_compartment = 'oci_identity_compartment.' + parent_compartment + '.id'
                             tempdict = {'parent_compartment': parent_compartment}
                             tempStr.update(tempdict)
                         else:
