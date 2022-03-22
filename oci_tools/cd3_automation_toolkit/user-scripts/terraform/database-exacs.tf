@@ -48,7 +48,7 @@ module "exa-vmclusters" {
   #ssh_public_keys          = length(regexall("ssh-rsa*",each.value.ssh_public_key)) > 0 ? each.value.ssh_public_key : var.ssh_public_key
   ssh_public_keys           = lookup(var.exacs_ssh_keys, each.value.ssh_public_keys, var.exacs_ssh_keys["ssh_public_key"] )
   cluster_subnet_id         = length(regexall("ocid1.subnet.oc1*", each.value.cluster_subnet_id)) > 0 ? each.value.cluster_subnet_id : merge(module.subnets.*...)[each.value.cluster_subnet_id]["subnet_tf_id"]
-  backup_network_nsg_ids      = [for nsg in each.value.backup_network_nsg_ids : ( length(regexall("ocid1.networksecuritygroup.oc1*",nsg)) > 0 ? nsg : try(merge(module.nsgs.*...)[nsg]["nsg_tf_id"][nsg],merge(module.nsgs.*...)[nsg]["nsg_tf_id"],merge(module.nsgs.*...)[nsg]["nsg_tf_id"]))]
+  backup_network_nsg_ids      = each.value.backup_network_nsg_ids != null ? [for nsg in each.value.backup_network_nsg_ids : length(regexall("ocid1.networksecuritygroup.oc1*",nsg)) > 0 ? nsg : merge(module.nsgs.*...)[nsg]["nsg_tf_id"]] : null
   cluster_name                = each.value.cluster_name
   data_storage_percentage     = each.value.data_storage_percentage
   defined_tags                = each.value.defined_tags
@@ -57,8 +57,7 @@ module "exa-vmclusters" {
   is_local_backup_enabled     = each.value.is_local_backup_enabled
   is_sparse_diskgroup_enabled = each.value.is_sparse_diskgroup_enabled
   license_model               = each.value.license_model
-  nsg_ids                     = [for nsg in each.value.nsg_ids : ( length(regexall("ocid1.networksecuritygroup.oc1*",nsg)) > 0 ? nsg : try(merge(module.nsgs.*...)[nsg]["nsg_tf_id"][nsg],merge(module.nsgs.*...)[nsg]["nsg_tf_id"],merge(module.nsgs.*...)[nsg]["nsg_tf_id"]))]
-  #nsg_ids                     = length(regexall("ocid1.networksecuritygroup.oc1*", each.value.nsg_ids)) > 0 ? each.value.nsg_id : merge(module.nsgs.*...)[each.value.nsg_ids]["nsg_tf_id"][0]
+  nsg_ids                     = each.value.nsg_ids != null ? [for nsg in each.value.nsg_ids : length(regexall("ocid1.networksecuritygroup.oc1*",nsg)) > 0 ? nsg : merge(module.nsgs.*...)[nsg]["nsg_tf_id"]] : null
   ocpu_count                  = each.value.ocpu_count
   scan_listener_port_tcp      = each.value.scan_listener_port_tcp
   scan_listener_port_tcp_ssl  = each.value.scan_listener_port_tcp_ssl
