@@ -10,13 +10,13 @@ module "dbsystems-vm-bm" {
     cluster_name        = each.value.cluster_name
     shape               = each.value.shape
     #ssh_public_key     = length(regexall("ssh-rsa*",each.value.ssh_public_key)) > 0 ? each.value.ssh_public_key : var.ssh_public_key
-    ssh_public_keys      = lookup(var.dbsystem_ssh_keys, each.value.ssh_public_keys, var.dbsystem_ssh_keys["ssh_public_key"] )
+    ssh_public_keys     = lookup(var.dbsystem_ssh_keys, each.value.ssh_public_keys, var.dbsystem_ssh_keys["ssh_public_key"] )
     subnet_id           = length(regexall("ocid1.subnet.oc1*", each.value.subnet_id)) > 0 ? each.value.subnet_id : merge(module.subnets.*...)[each.value.subnet_id]["subnet_tf_id"]
     node_count          = each.value.node_count
-    nsg_ids             = each.value.nsg_ids != null ?  [for nsg in each.value.nsg_ids : ( length(regexall("ocid1.networksecuritygroup.oc1*",nsg)) > 0 ? nsg : try(merge(module.nsgs.*...)[nsg]["nsg_tf_id"][nsg],merge(module.nsgs.*...)[nsg]["nsg_tf_id"],merge(module.nsgs.*...)[nsg]["nsg_tf_id"]))] : null
+    nsg_ids             = each.value.nsg_ids != null ? [for nsg in each.value.nsg_ids : length(regexall("ocid1.networksecuritygroup.oc1*",nsg)) > 0 ? nsg : merge(module.nsgs.*...)[nsg]["nsg_tf_id"]] : null
 
-    time_zone          = each.value.time_zone
-    cpu_core_count     = each.value.cpu_core_count
+    time_zone           = each.value.time_zone
+    cpu_core_count      = each.value.cpu_core_count
     database_edition = each.value.database_edition
     data_storage_size_in_gb = each.value.data_storage_size_in_gb
     data_storage_percentage = each.value.data_storage_percentage
