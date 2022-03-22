@@ -117,7 +117,7 @@ nsg_rules = {
 
             {% if protocol == 'udp' %}
             {% if (dportmax and dportmin) or (sportmax and sportmin)  %}
-            udp_options {
+            udp_options = [{
                 {% if dportmax and dportmin %}
                 destination_port_range  = [{
                     #Required
@@ -137,7 +137,7 @@ nsg_rules = {
                 {% else %}
                 source_port_range = []
                 {% endif %}
-            }
+            }]
             {% else %}
             udp_options = []
             {% endif %}
