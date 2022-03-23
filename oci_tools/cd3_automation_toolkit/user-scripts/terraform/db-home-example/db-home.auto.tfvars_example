@@ -1,0 +1,39 @@
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+
+############################
+# Database
+# Database Db Home - tfvars
+############################
+db_home = {
+  new_db_home = {
+    compartment_id                       = ""
+    #exadata_infra_name                  = null
+    admin_password                       = "DBadmin##12"
+    custom_database_image_name           = "test-db-image"
+    backup_id                            = null
+    backup_tde_password                  = null
+    character_set                        = null
+    database_id                          = null
+    auto_backup_enabled                  = null
+    auto_backup_window                   = null
+    backup_dest_id                       = null
+    backup_dest_type                     = null
+    recovery_window_in_days              = null
+    db_name                              = "mynewdbname"
+    db_workload                          = null
+    defined_tags                         = {}
+    freeform_tags                        = {}
+    ncharacter_set                       = null
+    pdbname                              = null
+    tde_wallet_password                  = null
+    timestamp_for_point_in_time_recovery = null
+    db_system_id                         = null
+    db_version                           = "21.0.0.0"
+    display_name                         = "my-new-db"
+    is_desupported_version               = null
+    kms_key_id                           = null
+    kms_key_version_id                   = null
+    db_source                            = "VMCLUSTER_NEW"
+    vm_cluster_id                        = null
+  },
+}

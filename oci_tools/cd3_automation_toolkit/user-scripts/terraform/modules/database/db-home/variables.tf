@@ -7,7 +7,7 @@
 
 #Required
 variable "compartment_id" {
-  type = string
+  type    = string
   default = null
 }
 variable "admin_password" {
@@ -15,13 +15,8 @@ variable "admin_password" {
   type        = string
   default     = null
 }
-variable "database_image_name" {
-  description = "DB image to be used for db_home"
-  type        = string
-  default     = null
-}
-variable "db_software_image_id" {
-  description = ""
+variable "custom_database_image_name" {
+  description = "DB image to be used for database"
   type        = string
   default     = null
 }
@@ -111,11 +106,11 @@ variable "database_id" {
   type        = string
   default     = null
 }
-variable "db_home_db_software_image_id" {
-  description = ""
-  type        = string
-  default     = null
-}
+#variable "db_home_db_software_image_id" {
+#  description = ""
+#  type        = string
+#  default     = null
+#}
 variable "db_version" {
   description = ""
   type        = string
@@ -166,9 +161,9 @@ variable "vm_cluster_id" {
   type        = string
   default     = null
 }
-variable "exadata_infra_name" {
-  type = string
-  default = null
-}
+#variable "exadata_infra_name" {
+#  type    = string
+#  default = null
+#}
 
 
