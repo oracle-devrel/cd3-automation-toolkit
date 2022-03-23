@@ -476,7 +476,7 @@ def modify_terraform_routerules(inputfile, outdir, prefix=None, non_gf_tenancy=F
                         tempdict = {'resource': 'DRG','network_entity_id': dest_obj}
                         tempStr.update(tempdict)
                     elif('privateip' in dest_objs[0].lower().strip()):
-                        tempdict = {'resource': 'IP','network_entity_id': obj_tf_name }
+                        tempdict = {'resource': 'IP','network_entity_id': dest_objs[0].lower().strip() }
                         tempStr.update(tempdict)
                 else:
                     tempStr.update({'network_entity_id' : ''})
