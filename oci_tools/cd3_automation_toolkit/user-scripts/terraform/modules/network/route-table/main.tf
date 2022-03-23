@@ -20,6 +20,20 @@ resource "oci_core_route_table" "route_table" {
   display_name  = var.display_name
   freeform_tags = var.freeform_tags
 
+  # Create Private IP Routes
+  dynamic "route_rules" {
+    for_each = var.rt_details[var.key_name].route_rules_ip != [] ? var.rt_details[var.key_name].route_rules_ip : []
+
+    content {
+      #Required
+      network_entity_id = (route_rules.value["network_entity_id"] != null && length(regexall("ocid1.privateip.oc1*", route_rules.value["network_entity_id"])) > 0) ? route_rules.value["network_entity_id"] : ""
+
+      #Optional
+      description      = route_rules.value["description"]
+      destination      = route_rules.value["destination"]
+      destination_type = route_rules.value["destination_type"]
+    }
+  }
 
   # Create LPG Routes
   dynamic "route_rules" {
