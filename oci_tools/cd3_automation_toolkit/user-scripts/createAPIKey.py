@@ -19,6 +19,10 @@ def create_keys():
     if not os.path.exists(keys_dir):
         os.makedirs(keys_dir)
 
+    if os.path.exists(keys_dir+"/oci_api_private.pem"):
+        print("oci_api_private.pem already exists at /cd3user/tenancies/keys. Please move or delete it before running this script.\nExiting!!\n")
+        exit()
+
     f = open(keys_dir+"/oci_api_private.pem", "wb")
     f.write(key.exportKey('PEM'))
     f.close()

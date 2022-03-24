@@ -586,6 +586,9 @@ def create_major_objects(inputfile, outdir, prefix, non_gf_tenancy, config, modi
 
             if columnname == "CIDR Blocks":
                 cidr_blocks = [x.strip() for x in columnvalue.split(',')]
+                # reverses the order while exporting into excel so use reverse to avoid terraform change
+                if(non_gf_tenancy):
+                    cidr_blocks.reverse()
                 cidr_blocks = json.dumps(cidr_blocks)
                 tempdict = {'cidr_blocks': cidr_blocks}
 

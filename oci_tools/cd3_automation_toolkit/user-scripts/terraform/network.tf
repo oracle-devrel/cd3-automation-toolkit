@@ -41,7 +41,7 @@ module "igws" {
 
   #Required
   compartment_id = each.value.compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[each.value.compartment_name]) : null
-  vcn_id         = length(regexall("ocid1.vcn.oc1*", each.value.display_name)) > 0 ? each.value.display_name : merge(module.vcns.*...)[each.value.display_name]["vcn_tf_id"]
+  vcn_id         = length(regexall("ocid1.vcn.oc1*", each.value.vcn_name)) > 0 ? each.value.vcn_name : merge(module.vcns.*...)[each.value.vcn_name]["vcn_tf_id"]
 
   #Optional
   enabled       = each.value.enable_igw
@@ -69,7 +69,7 @@ module "ngws" {
 
   #Required
   compartment_id = each.value.compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[each.value.compartment_name]) : null
-  vcn_id         = length(regexall("ocid1.vcn.oc1*", each.value.display_name)) > 0 ? each.value.display_name : merge(module.vcns.*...)[each.value.display_name]["vcn_tf_id"]
+  vcn_id         = length(regexall("ocid1.vcn.oc1*", each.value.vcn_name)) > 0 ? each.value.vcn_name : merge(module.vcns.*...)[each.value.vcn_name]["vcn_tf_id"]
 
   #Optional
   #block_traffic = each.value.block_traffic != null ? each.value.block_traffic : false   # Defaults to false by terraform hashicorp
@@ -213,7 +213,7 @@ module "sgws" {
 
   #Required
   compartment_id = each.value.compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[each.value.compartment_name]) : null
-  vcn_id         = length(regexall("ocid1.vcn.oc1*", each.value.display_name)) > 0 ? each.value.display_name : merge(module.vcns.*...)[each.value.display_name]["vcn_tf_id"]
+  vcn_id         = length(regexall("ocid1.vcn.oc1*", each.value.vcn_name)) > 0 ? each.value.vcn_name : merge(module.vcns.*...)[each.value.vcn_name]["vcn_tf_id"]
 
   #Optional
   defined_tags  = each.value.defined_tags

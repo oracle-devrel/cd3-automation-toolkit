@@ -20,7 +20,7 @@ resource "oci_core_service_gateway" "service_gateway" {
   compartment_id = var.compartment_id
   services {
     #Required
-    service_id = (var.service == "all") ? (contains(split("-", data.oci_core_services.oci_services.services.0.id), "all") == true ? data.oci_core_services.oci_services.services.0.id : data.oci_core_services.oci_services.services.1.id) : data.oci_core_services.oci_services.services.1.id
+    service_id = contains(split("-", data.oci_core_services.oci_services.services.0.cidr_block), var.service) == true ? data.oci_core_services.oci_services.services.0.id : data.oci_core_services.oci_services.services.1.id
   }
   vcn_id = var.vcn_id
 
