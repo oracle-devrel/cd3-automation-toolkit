@@ -14,7 +14,6 @@ vcns = {
         compartment_name = "{{ compartment_tf_name }}"
         cidr_blocks      = {{ cidr_blocks }}
         display_name     = "{{ vcn_name }}"
-
         dns_label      = "{{ dns_label }}"
         {% if is_ipv6enabled and is_ipv6enabled != 'nan' and is_ipv6enabled != ''%}
         is_ipv6enabled = {{ is_ipv6enabled }} {% else %}

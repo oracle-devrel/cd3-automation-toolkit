@@ -35,8 +35,6 @@ lpgs = {
                 {{ lpg_tf_name }} = {
                     compartment_name = "{{ compartment_tf_name }}"
                     vcn_name     = "{{ vcn_name }}"
-
-                    #LPG
                     lpg_name   = "{{ lpg_name }}"
                     {% if rt_tf_name and rt_tf_name != 'nan' and rt_tf_name != '' %}
                     route_table_id = "{{ rt_tf_name }}"

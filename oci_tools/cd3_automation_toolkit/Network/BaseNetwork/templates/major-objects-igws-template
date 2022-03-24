@@ -12,9 +12,7 @@ igws = {
 {% endif %}{% if igw_name != "" and igw_name != "nan" and igw_name != null %}
   {{ igw_tf_name }} = {
         compartment_name = "{{ compartment_tf_name }}"
-        display_name     = "{{ vcn_name }}"
-
-        #IGW
+        vcn_name     = "{{ vcn_name }}"
         igw_name   = "{{ igw_name }}"
         {% if enable_igw and enable_igw != 'nan' and enable_igw != '' %}
         enable_igw = {{ enable_igw }} {% else %}

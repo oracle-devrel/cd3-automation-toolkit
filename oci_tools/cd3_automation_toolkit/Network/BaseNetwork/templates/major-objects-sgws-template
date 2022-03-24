@@ -12,10 +12,9 @@ sgws = {
 {% endif %} {% if sgw_name != "" and sgw_name != "nan" and sgw_name != null %}
   {{ sgw_tf_name }} = {
         compartment_name = "{{ compartment_tf_name }}"
-        display_name     = "{{ vcn_name }}"
-
-        #SGW
+        vcn_name     = "{{ vcn_name }}"
         sgw_name     = "{{ sgw_name }}"
+        # Possible values for service: "", "all", "objectstorage"
         {% if service and service != 'nan' and service != ''%}
         service = {{ service }}
         {% else %}
