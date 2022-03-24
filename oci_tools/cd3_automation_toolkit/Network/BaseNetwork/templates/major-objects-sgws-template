@@ -13,9 +13,8 @@ sgws = {
   {{ sgw_tf_name }} = {
         compartment_name = "{{ compartment_tf_name }}"
         vcn_name     = "{{ vcn_name }}"
-
-        #SGW
         sgw_name     = "{{ sgw_name }}"
+        # Possible values for service: "", "all", "objectstorage"
         {% if service and service != 'nan' and service != ''%}
         service = {{ service }}
         {% else %}

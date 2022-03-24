@@ -13,8 +13,6 @@ ngws = {
   {{ ngw_tf_name }} = {
         compartment_name = "{{ compartment_tf_name }}"
         vcn_name     = "{{ vcn_name }}"
-
-        #NGW
         ngw_name     = "{{ ngw_name }}"
         {% if public_ip_id and public_ip_id != 'nan' and public_ip_id != ''%}
         public_ip_id = {{ public_ip_id }} {% else %}
