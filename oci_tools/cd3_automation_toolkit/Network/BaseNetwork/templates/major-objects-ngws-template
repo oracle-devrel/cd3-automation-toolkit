@@ -12,7 +12,7 @@ ngws = {
 {% endif %}{% if ngw_name != "" and ngw_name != "nan" and ngw_name != null %}
   {{ ngw_tf_name }} = {
         compartment_name = "{{ compartment_tf_name }}"
-        display_name     = "{{ vcn_name }}"
+        vcn_name     = "{{ vcn_name }}"
 
         #NGW
         ngw_name     = "{{ ngw_name }}"
