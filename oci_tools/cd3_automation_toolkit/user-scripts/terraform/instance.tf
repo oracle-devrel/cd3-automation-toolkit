@@ -21,7 +21,6 @@ module "instances" {
   freeform_tags         = each.value.freeform_tags
   source_type           = each.value.source_type
   source_image_id       = lookup(var.instance_source_ocids, each.value.source_id, null )
-# source_image_id       = each.value.source_type == "image" ? try(each.value.source_id == "Linux" ? var.Linux : each.value.source_id == "Windows" ? var.Windows : length(regexall("ocid1.image.oc1.*", each.value.source_id )) > 0 ? each.value.source_id : each.value.source_id) : each.value.source_id
 # subnet_id             = length(regexall("ocid1.subnet.oc1*", each.value.subnet_id)) > 0 ? each.value.subnet_id : merge(module.subnets.*...)[each.value.subnet_id]["subnet_tf_id"]
   subnet_id             = length(regexall("ocid1.subnet.oc1*", each.value.subnet_id)) > 0 ? each.value.subnet_id : lookup(var.bmc_subnets, each.value.subnet_id, null )
   assign_public_ip      = each.value.assign_public_ip
@@ -29,6 +28,7 @@ module "instances" {
 # ssh_public_keys       = length(regexall("ssh-rsa*",each.value.ssh_authorized_keys)) > 0 ? each.value.ssh_authorized_keys : var.ssh_public_key
   hostname_label        = each.value.display_name
   nsg_ids               = each.value.nsg_ids != [] ? each.value.nsg_ids : []
+  #nsg_ids              = each.value.nsg_ids != [] ? [for nsg in each.value.nsg_ids : length(regexall("ocid1.networksecuritygroup.oc1*",nsg)) > 0 ? nsg : merge(module.nsgs.*...)[nsg]["nsg_tf_id"]] : []
   boot_volume_size_in_gbs = each.value.boot_volume_size_in_gbs != null ? each.value.boot_volume_size_in_gbs : null
   memory_in_gbs         = each.value.memory_in_gbs != null ? each.value.memory_in_gbs : null
   capacity_reservation_id = each.value.capacity_reservation_id != null ? lookup(var.capacity_reservation_ocids, each.value.capacity_reservation_id, null ) : null
