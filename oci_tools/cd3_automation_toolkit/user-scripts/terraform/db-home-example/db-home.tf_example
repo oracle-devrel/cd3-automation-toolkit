@@ -41,3 +41,23 @@ module "db-home" {
   #exadata_infra_name = each.value.exadata_infra_name != null ? each.value.exadata_infra_name : null
 }
 
+#############################
+# Module Block - Database
+# Create Databases in DB Home
+#############################
+module "databases" {
+  source = "./modules/database/databases"
+
+  for_each = var.databases != null ? var.databases : {}
+  compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
+  databases = each.value.databases != [] ? each.value.databases : []
+  db_home_name = each.value.db_home_name
+  vm_cluster_name = each.value.vm_cluster_name
+  db_source = each.value.db_source
+  db_version = each.value.db_version
+  kms_key_id = each.value.kms_key_id
+  kms_key_version_id = each.value.kms_key_version_id
+
+
+}
+

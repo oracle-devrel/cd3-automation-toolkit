@@ -33,7 +33,7 @@ db_home = {
     is_desupported_version               = null
     kms_key_id                           = null
     kms_key_version_id                   = null
-    db_source                            = "VMCLUSTER_NEW"
+    db_source                            = "VM_CLUSTER_NEW"
     vm_cluster_id                        = null
   },
 }

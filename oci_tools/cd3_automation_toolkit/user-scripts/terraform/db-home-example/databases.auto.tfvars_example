@@ -1,0 +1,74 @@
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+
+################################
+# Database
+# Databases in DB Home - tfvars
+################################
+
+databases = {
+  new_database = {
+   compartment_id                          = "ExaCS"
+    db_home_name                           = "Exa19Home1"
+    vm_cluster_name                        = "X8-M VM Cluster "
+    custom_database_image_name             = ""
+    databases = [{
+      admin_password                       = "DBadmin##12"
+      backup_id                            = null
+      backup_tde_password                  = null
+      db_unique_name                       = "my-new-db"
+      character_set                        = null
+      database_id                          = null
+      auto_backup_enabled                  = null
+      auto_backup_window                   = null
+      backup_dest_id                       = null
+      backup_dest_type                     = null
+      recovery_window_in_days              = null
+      db_name                              = "mynewdbname"
+      db_workload                          = null
+      defined_tags                         = {}
+      freeform_tags                        = {}
+      ncharacter_set                       = null
+      sid_prefix                           = null
+      pdb_name                             = null
+      tde_wallet_password                  = null
+      timestamp_for_point_in_time_recovery = null
+    }]
+    db_source = "NONE"
+    db_version = "19.14.0.0.0"
+    kms_key_id = null
+    kms_key_version_id = null
+  },
+
+  new_database_two  = {
+    compartment_id = "ExaCS"
+    db_home_name                           = "Exa19textronHome"
+    vm_cluster_name                        = "X8-M VM Cluster "
+    custom_database_image_name             = null
+    databases = [{
+      admin_password                       = "DBadmin12##12"
+      backup_id                            = null
+      backup_tde_password                  = null
+      db_unique_name                       = "my-new-db-two"
+      character_set                        = null
+      database_id                          = null
+      auto_backup_enabled                  = null
+      auto_backup_window                   = null
+      backup_dest_id                       = null
+      backup_dest_type                     = null
+      recovery_window_in_days              = null
+      db_name                              = "mynewdbname-two"
+      db_workload                          = null
+      defined_tags                         = {}
+      freeform_tags                        = {}
+      ncharacter_set                       = null
+      sid_prefix                           = null
+      pdb_name                             = null
+      tde_wallet_password                  = null
+      timestamp_for_point_in_time_recovery = null
+    }]
+    db_source = "NONE"
+    db_version = "19.14.0.0.0"
+    kms_key_id = null
+    kms_key_version_id = null
+  }
+}
