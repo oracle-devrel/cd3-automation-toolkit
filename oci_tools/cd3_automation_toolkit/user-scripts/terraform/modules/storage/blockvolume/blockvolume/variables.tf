@@ -15,8 +15,8 @@ variable "compartment_id" {
 }
 variable "vpus_per_gb" {
   description = "The number of volume performance units (VPUs) that will be applied to this volume per GB"
-  type = number
-  default = null
+  type        = number
+  default     = null
 }
 #variable "existing_block_volume" {
 #  type    = bool

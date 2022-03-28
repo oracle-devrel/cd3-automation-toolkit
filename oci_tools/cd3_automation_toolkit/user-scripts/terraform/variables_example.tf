@@ -359,4 +359,9 @@ variable "db_home" {
   description = "Map of database db home to be provisioned"
   default = {}
 }
+variable "databases" {
+    description = "Map of databases to be provisioned in an existing db_home"
+    type = map(any)
+    default = {}
+}
 ######################### END #########################
