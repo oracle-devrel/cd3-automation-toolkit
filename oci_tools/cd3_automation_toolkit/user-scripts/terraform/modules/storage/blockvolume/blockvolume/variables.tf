@@ -50,7 +50,7 @@ variable "size_in_gbs" {
 variable "attach_to_instance" {
   description = "The instance display name to attach the volume"
   type        = string
-  default     = null
+  default     = ""
 }
 
 #variable "block_tf_policy" {
