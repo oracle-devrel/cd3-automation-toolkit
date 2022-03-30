@@ -5,6 +5,19 @@
 ## Create Instance
 #############################
 
+data "oci_core_subnets" "oci_subnets" {
+  for_each = var.instances != null ? var.instances : {}
+  compartment_id = each.value.network_compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.network_compartment_id)) > 0 ? each.value.network_compartment_id : var.compartment_ocids[each.value.network_compartment_id]) : var.compartment_ocids[each.value.network_compartment_id]
+  display_name   = each.value.subnet_id
+  vcn_id         = data.oci_core_vcns.oci_vcns[each.value.display_name].virtual_networks.*.id[0]
+}
+
+data "oci_core_vcns" "oci_vcns" {
+  for_each = var.instances != null ? var.instances : {}
+  compartment_id = each.value.network_compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.network_compartment_id)) > 0 ? each.value.network_compartment_id : var.compartment_ocids[each.value.network_compartment_id]) : var.compartment_ocids[each.value.network_compartment_id]
+  display_name   = each.value.vcn_name
+}
+
 module "instances" {
   source   = "./modules/compute/instance"
   for_each = var.instances != null ? var.instances : {}
@@ -21,8 +34,8 @@ module "instances" {
   freeform_tags         = each.value.freeform_tags
   source_type           = each.value.source_type
   source_image_id       = lookup(var.instance_source_ocids, each.value.source_id, null )
-# subnet_id             = length(regexall("ocid1.subnet.oc1*", each.value.subnet_id)) > 0 ? each.value.subnet_id : merge(module.subnets.*...)[each.value.subnet_id]["subnet_tf_id"]
-  subnet_id             = length(regexall("ocid1.subnet.oc1*", each.value.subnet_id)) > 0 ? each.value.subnet_id : lookup(var.bmc_subnets, each.value.subnet_id, null )
+  #subnet_id            = length(regexall("ocid1.subnet.oc1*", each.value.subnet_id)) > 0 ? each.value.subnet_id : lookup(var.bmc_subnets, each.value.subnet_id, null )
+  subnet_id             = each.value.subnet_id != "" ? (length(regexall("ocid1.subnet.oc1*", each.value.subnet_id)) > 0 ? each.value.subnet_id : data.oci_core_subnets.oci_subnets[each.value.display_name].subnets.*.id[0]) : null
   assign_public_ip      = each.value.assign_public_ip
   ssh_public_keys       = length(regexall("ssh-rsa*",each.value.ssh_authorized_keys)) > 0 ? each.value.ssh_authorized_keys : lookup(var.instance_ssh_keys, each.value.ssh_authorized_keys, var.instance_ssh_keys["ssh_public_key"] )
 # ssh_public_keys       = length(regexall("ssh-rsa*",each.value.ssh_authorized_keys)) > 0 ? each.value.ssh_authorized_keys : var.ssh_public_key

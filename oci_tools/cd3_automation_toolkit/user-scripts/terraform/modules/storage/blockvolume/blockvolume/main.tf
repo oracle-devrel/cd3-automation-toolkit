@@ -22,7 +22,7 @@ resource "oci_core_volume" "block_volume" {
 }
 
 resource "oci_core_volume_attachment" "block_vol_instance_attachment" {
-  count           = var.attach_to_instance == "" ? 0 : 1
+  #count           = var.attach_to_instance == "" ? 0 : 1
   attachment_type = var.attachment_type
   instance_id     = var.attach_to_instance
   volume_id       = oci_core_volume.block_volume.id
