@@ -12,9 +12,9 @@ resource "oci_file_storage_mount_target" "{{ mount_target_tf_name }}" {
     {% if mounttarget_hostname != '' %}
     hostname_label = "{{ mounttarget_hostname }}"
     {% endif %}
-    {% if nsg_ids == "" %}
+    {% if nsgs == "" %}
     nsg_ids= []
     {% else %}
-    nsg_ids= [for nsg in [{{ nsg_ids }}] : length(regexall("ocid1.networksecuritygroup.oc1*",nsg)) > 0 ? nsg : merge(module.nsgs.*...)[nsg]["nsg_tf_id"]]
+    nsg_ids= [for nsg in [{{ nsgs }}] : length(regexall("ocid1.networksecuritygroup.oc1*",nsg)) > 0 ? nsg : merge(module.nsgs.*...)[nsg]["nsg_tf_id"]]
     {% endif %}
 }

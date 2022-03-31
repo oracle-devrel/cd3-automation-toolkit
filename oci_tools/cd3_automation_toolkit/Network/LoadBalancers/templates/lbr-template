@@ -8,7 +8,12 @@ resource "oci_load_balancer_load_balancer" "{{ lbr_tf_name }}" {
 
     #Optional
     is_private = {{ is_private }}
-    network_security_group_ids = [ {{ nsgs }} ]
+
+    {% if nsgs == "" %}
+    network_security_group_ids= []
+    {% else %}
+    network_security_group_ids= [for nsg in [{{ nsgs }}] : length(regexall("ocid1.networksecuritygroup.oc1*",nsg)) > 0 ? nsg : merge(module.nsgs.*...)[nsg]["nsg_tf_id"]]
+    {% endif %}
 
     {% if lbr_shape  == 'flexible' %}
     shape_details {

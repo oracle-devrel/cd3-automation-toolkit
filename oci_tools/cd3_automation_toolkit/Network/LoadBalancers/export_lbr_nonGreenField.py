@@ -162,13 +162,13 @@ def print_lbr_hostname_certs(region, ct, values_for_column_lhc, lbr, LBRs, ntk_c
         nsg_name = ""
         if eachlbr.network_security_group_ids:
             for nsg_ids in eachlbr.network_security_group_ids:
-                nsg_name = ''
                 for nsgs in NSGs.data:
                     id = nsgs.id
                     if nsg_ids == id:
-                        nsg_name = nsgs.display_name
+                        nsg_name = nsgs.display_name + "," + nsg_name
         else:
             nsg_name = ""
+        nsg_name = nsg_name[:-1]
 
         #Fetch Subnets
         subnet_name_list = ""
