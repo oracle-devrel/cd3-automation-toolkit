@@ -59,6 +59,8 @@ nsg_rules = {
             icmp_options = [{
                 #Required
                 icmp_type = "{{ icmptype }}"
+                #Optional
+                icmpcode = ""
             }]
                 {% elif icmptype =='' and  icmpcode == '' %}
             icmp_options = [{
