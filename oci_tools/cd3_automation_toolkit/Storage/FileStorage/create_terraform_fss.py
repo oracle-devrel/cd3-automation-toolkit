@@ -254,7 +254,7 @@ def create_terraform_fss(inputfile, outdir, prefix,config=DEFAULT_LOCATION):
                             if "ocid" in nsgs.strip():
                                 nsg_id = "\"" + nsgs.strip() + "\""
                             else:
-                                nsg_id = "oci_core_network_security_group." + commonTools.check_tf_variable(str(nsgs).strip()) + ".id"
+                                nsg_id = "\"" + commonTools.check_tf_variable(str(nsgs).strip()) + "\""
 
                     elif len(fss_nsgs) >= 2:
                         c = 1
@@ -262,7 +262,7 @@ def create_terraform_fss(inputfile, outdir, prefix,config=DEFAULT_LOCATION):
                             if "ocid" in nsgs.strip():
                                 data = "\"" + nsgs.strip() + "\""
                             else:
-                                data = "oci_core_network_security_group." + commonTools.check_tf_variable(str(nsgs).strip()) + ".id"
+                                data = "\""+ commonTools.check_tf_variable(str(nsgs).strip()) + "\""
 
                             if c == len(fss_nsgs):
                                 nsg_id = nsg_id + data
