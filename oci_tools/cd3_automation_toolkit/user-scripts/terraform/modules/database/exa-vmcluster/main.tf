@@ -18,14 +18,14 @@ resource "oci_database_cloud_vm_cluster" "exa_vmcluster" {
   ssh_public_keys                 = var.ssh_public_keys
 
   #Optional
-  backup_network_nsg_ids      = var.backup_network_nsg_ids
+  backup_network_nsg_ids      = var.backup_network_nsg_ids == [] ? null : local.backup_nsg_ids
   cluster_name                = var.cluster_name
   data_storage_percentage     = var.data_storage_percentage
   domain                      = var.domain
   is_local_backup_enabled     = var.is_local_backup_enabled
   is_sparse_diskgroup_enabled = var.is_sparse_diskgroup_enabled
   license_model               = var.license_model
-  nsg_ids                     = var.nsg_ids
+  nsg_ids                     = var.nsg_ids == [] ? null : local.nsg_ids
   ocpu_count                  = var.ocpu_count
   scan_listener_port_tcp      = var.scan_listener_port_tcp
   scan_listener_port_tcp_ssl  = var.scan_listener_port_tcp_ssl

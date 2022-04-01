@@ -88,6 +88,9 @@ variable "time_zone" {
 variable "compartment_id" {
   default = ""
 }
+variable "network_compartment_id" {
+  default = ""
+}
 variable "exadata_infrastructure_id" {
   default = ""
 }

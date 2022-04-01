@@ -15,7 +15,6 @@
 
 module "blockvolume" {
   source               = "./modules/storage/blockvolume/blockvolume"
-  #depends_on           = [module.instances]
   for_each             = var.blockvolumes != null ? var.blockvolumes : {}
   attachment_type      = each.value.attachment_type
   attach_to_instance   = each.value.attach_to_instance != "" ? length(regexall("ocid1.instance.oc1*", each.value.attach_to_instance)) > 0 ? each.value.attach_to_instance : merge(module.instances.*...)[each.value.attach_to_instance]["instance_tf_id"] : ""
