@@ -6,10 +6,9 @@
 ###########################
 
 resource "oci_database_database" "new_database" {
-  count = length(var.databases)
   #Required
   dynamic "database" {
-    for_each = var.databases
+    for_each = var.database
     content {
       #Required
       admin_password = database.value["admin_password"]
@@ -19,7 +18,7 @@ resource "oci_database_database" "new_database" {
       backup_id                  = database.value["backup_id"]
       backup_tde_password        = database.value["backup_tde_password"]
       character_set              = database.value["character_set"]
-      database_software_image_id = var.custom_database_image_name != null ? data.oci_database_database_software_images.custom_database_software_images.database_software_images[0].id : null
+      database_software_image_id = var.custom_database_image_name != null ? element([ for v in data.oci_database_database_software_images.custom_database_software_images[0].database_software_images : v.id if v.display_name == var.custom_database_image_name], 0) : null
       db_backup_config {
         #Optional
         auto_backup_enabled = database.value["auto_backup_enabled"]

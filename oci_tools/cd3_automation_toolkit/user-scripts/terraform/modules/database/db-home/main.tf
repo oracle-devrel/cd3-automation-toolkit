@@ -14,7 +14,7 @@ resource "oci_database_db_home" "new_database_db_home" {
     backup_tde_password        = var.backup_tde_password
     character_set              = var.character_set
     database_id                = var.database_id
-    database_software_image_id = var.custom_database_image_name != null ? data.oci_database_database_software_images.custom_database_software_images[0].database_software_images[0].id : null
+    database_software_image_id = var.custom_database_image_name != null ? element([ for v in data.oci_database_database_software_images.custom_database_software_images[0].database_software_images : v.id if v.display_name == var.custom_database_image_name],0) : null
     db_backup_config {
       #      #Optional
       #      auto_backup_enabled = var.auto_backup_enabled
@@ -36,7 +36,7 @@ resource "oci_database_db_home" "new_database_db_home" {
     time_stamp_for_point_in_time_recovery = var.timestamp_for_point_in_time_recovery
   }
   #Optional
-  database_software_image_id = var.custom_database_image_name != null ? data.oci_database_database_software_images.custom_database_software_images[0].database_software_images[0].id : null
+  database_software_image_id = var.custom_database_image_name != null ? element([ for v in data.oci_database_database_software_images.custom_database_software_images[0].database_software_images : v.id if v.display_name == var.custom_database_image_name], 0) : null
   db_system_id               = var.db_system_id
   db_version                 = var.db_version
   defined_tags               = var.defined_tags

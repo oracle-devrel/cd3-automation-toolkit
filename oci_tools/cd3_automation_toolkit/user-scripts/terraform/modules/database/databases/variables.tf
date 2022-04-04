@@ -20,8 +20,8 @@ variable "custom_database_image_name" {
   type = string
   default = null
 }
-variable "databases" {
-  description = "Map of databases to provision inside existing db_home"
+variable "database" {
+  description = "Database to provision inside existing db_home"
   type = list(object({
     admin_password                       = string,
     backup_id                            = string,

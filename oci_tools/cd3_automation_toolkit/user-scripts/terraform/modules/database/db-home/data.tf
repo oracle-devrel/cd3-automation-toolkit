@@ -13,7 +13,7 @@ data "oci_database_cloud_vm_clusters" "existing_cloud_vm_cluster" {
   #Optional
   #cloud_exadata_infrastructure_id = "oci_database_cloud_exadata_infrastructure.${var.exadata_infra_name}.id"
   display_name = var.vm_cluster_id
-  state        = "AVAILABLE"
+ # state        = "AVAILABLE"
 }
 
 data "oci_database_database_software_images" "custom_database_software_images" {
@@ -22,6 +22,6 @@ data "oci_database_database_software_images" "custom_database_software_images" {
   compartment_id = var.compartment_id
 
   #Optional
-  display_name = var.custom_database_image_name
-  state        = "AVAILABLE"
+ # display_name = var.custom_database_image_name      #Seems to be a provider bug and this filter is not working
+  state        = "Available"
 }

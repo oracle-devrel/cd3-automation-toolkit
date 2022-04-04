@@ -47,7 +47,7 @@ module "db-home" {
 #############################
 module "databases" {
   source = "./modules/database/databases"
-
+  depends_on = [module.db-home]
   for_each = var.databases != null ? var.databases : {}
   compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
   databases = each.value.databases != [] ? each.value.databases : []
@@ -57,7 +57,5 @@ module "databases" {
   db_version = each.value.db_version
   kms_key_id = each.value.kms_key_id
   kms_key_version_id = each.value.kms_key_version_id
-
-
 }
 
