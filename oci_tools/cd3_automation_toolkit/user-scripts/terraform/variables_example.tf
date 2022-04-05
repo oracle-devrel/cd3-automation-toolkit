@@ -328,6 +328,44 @@ variable "dbsystems_vm_bm" {
   default     = {}
 }
 
+#########################
+## FSS ##
+#########################
+
+variable "mount_targets" {
+  description = "To provision Mount Targets"
+  type        = map(any)
+  default     = {}
+}
+
+variable "fss" {
+  description = "To provision File System Services"
+  type        = map(any)
+  default     = {}
+}
+
+variable "export_options" {
+  description = "To provision Export Sets"
+  type        = map(any)
+  default     = {}
+}
+
+#########################
+## OSS Logs ##
+#########################
+
+variable "oss_log_groups" {
+  description = "To provision Log Groups for OSS"
+  type        = map(any)
+  default     = {}
+}
+
+variable "oss_logs" {
+  description = "To provision Logs for OSS"
+  type        = map(any)
+  default     = {}
+}
+
 ##########################
 # Add new variables here #
 ##########################

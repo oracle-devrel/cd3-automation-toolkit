@@ -48,7 +48,7 @@ def enable_cis_oss_logging(outdir, prefix, region_name, comp_name, config=DEFAUL
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
-    template = env.get_template('oss-logging-template')
+    template = env.get_template('logging-template')
 
     tfStr = ''
     tempStr = {}
@@ -60,8 +60,8 @@ def enable_cis_oss_logging(outdir, prefix, region_name, comp_name, config=DEFAUL
 
     loggroup_name = prefix+"-"+region_name+"-oss-log-group"
     log_name = prefix+"-"+region_name+"-oss-log"
-    log_group_id= 'oci_logging_log_group.'+loggroup_name+'.id'
-    resource='oci_objectstorage_bucket.'+prefix+"-"+region_name+"-oss-bucket.name"
+    log_group_id= loggroup_name
+    resource=prefix+"-"+region_name+"-oss-bucket"
 
     tempStr['loggroup_name'] = loggroup_name
     tempStr['loggroup_tf_name'] = loggroup_name
@@ -74,6 +74,7 @@ def enable_cis_oss_logging(outdir, prefix, region_name, comp_name, config=DEFAUL
     tempStr['log_tf_name'] = log_name
     tempStr['category'] = 'write'
     tempStr['service'] = 'objectstorage'
+    tempStr['oci_service'] = 'oss'
 
     tfStr = tfStr + template.render(tempStr)
 
@@ -175,6 +176,8 @@ def enable_cis_vcnflow_logging(filename, outdir, prefix, config=DEFAULT_LOCATION
         log_name = commonTools.check_tf_variable(display_name)+"-flow-log"
         log_group_id= loggroup_name
         resource= subnet_tf_name
+
+        tempStr['oci_service'] = 'vcn'
 
         if vcn_name not in vcns_list[region]:
             tempStr['loggroup_name'] = loggroup_name

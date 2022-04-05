@@ -5,10 +5,10 @@
 
 ############################
 # ManagementServices
-# Log Groups - tfvars
+# {{ oci_service }}.upper() Log Groups - tfvars
 ############################
 
-log_groups = {
+{{ oci_service }}_log_groups = {
   # Log Group map #
   ##Add New Log Groups for {{ region.lower() }} here##
 }{% else %}{% if loggroup_tf_name != "" and loggroup_tf_name != "nan" and loggroup_tf_name != null %}
@@ -68,10 +68,10 @@ log_groups = {
 
 ############################
 # ManagementServices
-# Logs - tfvars
+# {{ oci_service }}.upper() Logs - tfvars
 ############################
 
-logs = {
+{{ oci_service }}_logs = {
   # Log map #
   ##Add New Logs for {{ region.lower() }} here##
 }{% else %}{% if log_name != "" and log_name != "nan" and log_name != null %}
