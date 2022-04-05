@@ -28,7 +28,11 @@ resource "oci_core_instance" "{{ display_tf_name }}" {
 
                 #Optional
                 private_ip = "{{ ip_address }}"
-                nsg_ids=[{{ nsg_ids }}]
+                {% if nsg_ids == "" %}
+                nsg_ids= []
+                {% else %}
+                nsg_ids= [for nsg in [{{ nsg_ids }}] : length(regexall("ocid1.networksecuritygroup.oc1*",nsg)) > 0 ? nsg : merge(module.nsgs.*...)[nsg]["nsg_tf_id"]]
+                {% endif %}
 
         {#  ##Do not modify below this line##  #}
         {#                                     #}

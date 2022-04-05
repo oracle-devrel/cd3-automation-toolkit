@@ -142,19 +142,20 @@ def create_major_objects(inputfile, outdir, prefix, non_gf_tenancy, config, modi
         drg_attach_template = env.get_template('major-objects-drg-attachments-template')
         drg_datasource_template = env.get_template('drg-data-source-template')
         drg_version = "DRGv2"
-
-        region = ct.home_region
-        if (os.path.exists(outdir + "/" + region + "/obj_names.safe")):
-            with open(outdir + "/" + region + "/obj_names.safe") as f:
-                for line in f:
-                    if ("DRG Version::::" in line):
-                        drg_version = line.split("::::")[1].strip()
-                        break
-
-        # Create oci-drg-data
-        if(drg_version == "DRGv2"):
-            for region in drgv2.drg_names.keys():
-                for drg in drgv2.drg_names[region]:
+        drg_versions = {}
+        # Get DRG version and Create oci-drg-data
+        for region in drgv2.drg_names.keys():
+            for drg in drgv2.drg_names[region]:
+                if (os.path.exists(outdir + "/" + region + "/obj_names.safe")):
+                    prevline = ""
+                    with open(outdir + "/" + region + "/obj_names.safe") as f:
+                        for line in f:
+                            if (drg in line):
+                                drg_version = prevline.split("::::")[1].strip()
+                                break
+                            prevline = line
+                drg_versions[region,drg] = drg_version
+                if (drg_version == "DRGv2"):
                     for drg_auto_rt_name in commonTools.drg_auto_RTs:
                         temp = {}
                         drg_auto_rt_tf_name = commonTools.check_tf_variable(drg + "_" + drg_auto_rt_name)
@@ -237,7 +238,6 @@ def create_major_objects(inputfile, outdir, prefix, non_gf_tenancy, config, modi
             drg_attach = {}
             drg_rt_tf_name = ''
             drg_tf_name = ''
-            tempStr['drg_version']=drg_version
 
             for columnname in dfcolumns:
                 # Column value
@@ -345,6 +345,7 @@ def create_major_objects(inputfile, outdir, prefix, non_gf_tenancy, config, modi
                 drgstr_skeleton = drg_template.render(count=0)[:-1]
                 region_included_drg.append(region)
 
+            tempStr['drg_version'] = drg_versions[region, drg_name]
             drgstr = drg_template.render(tempStr)
 
             if(attachedto=="attached"):

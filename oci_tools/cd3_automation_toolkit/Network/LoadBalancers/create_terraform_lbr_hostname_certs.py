@@ -289,7 +289,7 @@ def create_terraform_lbr_hostname_certs(inputfile, outdir, config=DEFAULT_LOCATI
                             if "ocid" in nsgs.strip():
                                 nsg_id = "\"" + nsgs.strip() + "\""
                             else:
-                                nsg_id = "merge(module.nsgs.*...)[\""+commonTools.check_tf_variable(str(nsgs).strip())+"\"][\"nsg_tf_id\"]"
+                                nsg_id = "\"" + commonTools.check_tf_variable(str(nsgs).strip()) + "\""
 
                     elif len(lbr_nsgs) >=2 :
                         c = 1
@@ -297,7 +297,7 @@ def create_terraform_lbr_hostname_certs(inputfile, outdir, config=DEFAULT_LOCATI
                             if "ocid" in nsgs.strip():
                                 data = "\"" + nsgs.strip() + "\""
                             else:
-                                data = "merge(module.nsgs.*...)[\""+commonTools.check_tf_variable(str(nsgs).strip())+"\"][\"nsg_tf_id\"]"
+                                data = "\""+ commonTools.check_tf_variable(str(nsgs).strip()) + "\""
 
                             if c == len(lbr_nsgs):
                                 nsg_id = nsg_id + data

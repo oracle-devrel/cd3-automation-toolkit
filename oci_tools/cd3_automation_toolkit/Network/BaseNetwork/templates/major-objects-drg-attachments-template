@@ -15,8 +15,8 @@ drg_attachments = {
         drg_id = "{{ drg_tf_name }}"
         display_name = "{{ drg_attach_display_name }}"
 
-        #DRG v2
         {% if drg_version == 'DRGv2' %}
+        #DRG v2
         {% if drg_rt_tf_name !='' %}
         drg_route_table_id = "{{ drg_rt_tf_name }}"
         {% else %}
@@ -33,6 +33,9 @@ drg_attachments = {
         vcn_route_table_id =  ""
         {% endif %}
         }]
+        #set DRGv1 params to null
+        route_table_id =""
+        vcn_id = ""
 
         {% else %}
         #DRG v1

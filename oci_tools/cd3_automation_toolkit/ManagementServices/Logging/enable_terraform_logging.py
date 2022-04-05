@@ -171,10 +171,12 @@ def enable_cis_vcnflow_logging(filename, outdir, prefix, config=DEFAULT_LOCATION
 
         tempStr['compartment_tf_name'] =  columnvalue
 
+        resource = subnet_tf_name
         loggroup_name = commonTools.check_tf_variable(vcn_name)+"-flow-log-group"
         log_name = commonTools.check_tf_variable(display_name)+"-flow-log"
+        log_tf_name = commonTools.check_tf_variable(resource) + "-flow-log"
         log_group_id= loggroup_name
-        resource= subnet_tf_name
+
 
         if vcn_name not in vcns_list[region]:
             tempStr['loggroup_name'] = loggroup_name
@@ -187,7 +189,7 @@ def enable_cis_vcnflow_logging(filename, outdir, prefix, config=DEFAULT_LOCATION
         tempStr['log_group_id'] = log_group_id
         tempStr['resource'] = resource
         tempStr['log_name'] = log_name
-        tempStr['log_tf_name'] = log_name
+        tempStr['log_tf_name'] = log_tf_name
         tempStr['category'] = 'all'
         tempStr['service'] = 'flowlogs'
 
