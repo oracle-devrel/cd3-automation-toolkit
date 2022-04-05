@@ -47,7 +47,6 @@ instances = {
 
             #Required
             subnet_id        = "{{ subnet_tf_name }}"
-            #subnet_id       = merge(module.subnets.*...)["{{subnet_tf_name}}"]["subnet_tf_id"]
 
             {% if pub_address %}
             assign_public_ip = {{ pub_address }}
