@@ -49,6 +49,7 @@ def enable_cis_oss_logging(outdir, prefix, region_name, comp_name, config=DEFAUL
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
     template = env.get_template('logging-template')
+    auto_tfvars_filename = "cis-oss-logging.auto.tfvars"
 
     tfStr = ''
     tempStr = {}
@@ -57,6 +58,8 @@ def enable_cis_oss_logging(outdir, prefix, region_name, comp_name, config=DEFAUL
     columnvalue = str(compartmentVarName)
 
     tempStr['compartment_tf_name'] = columnvalue
+    tempStr['region'] = region_name
+    tempStr['oci_service'] = 'oss'
 
     loggroup_name = prefix+"-"+region_name+"-oss-log-group"
     log_name = prefix+"-"+region_name+"-oss-log"
@@ -65,32 +68,32 @@ def enable_cis_oss_logging(outdir, prefix, region_name, comp_name, config=DEFAUL
 
     tempStr['loggroup_name'] = loggroup_name
     tempStr['loggroup_tf_name'] = loggroup_name
-    tempStr['loggroup'] = 'true'
-    tempStr['logs'] = 'true'
     tempStr['loggroup_desc']='Log Group for OSS bucket'
+    srcStr = "##Add New Log Groups for "+region_name+" here##"
+    logstfStr = template.render(tempStr, count = 0, loggroup = 'true').replace(srcStr, template.render(tempStr, loggroup = 'true')+"\n"+srcStr)
+
     tempStr['log_group_id'] = log_group_id
     tempStr['resource'] = resource
     tempStr['log_name'] = log_name
     tempStr['log_tf_name'] = log_name
     tempStr['category'] = 'write'
     tempStr['service'] = 'objectstorage'
-    tempStr['oci_service'] = 'oss'
-
-    tfStr = tfStr + template.render(tempStr)
+    srcStr = "##Add New Logs for "+region_name+" here##"
+    loggrouptfStr = template.render(tempStr, count = 0, logs = 'true', loggroup = 'false').replace(srcStr, template.render(tempStr, logs = 'true')+"\n"+srcStr)
 
     # Write TF string to the file in respective region directory
     reg_out_dir = outdir + "/" + region_name
     if not os.path.exists(reg_out_dir):
         os.makedirs(reg_out_dir)
 
-    outfile = reg_out_dir + "/cis-oss-logging.tf"
+    outfile = reg_out_dir + "/"+auto_tfvars_filename
     srcdir = reg_out_dir + "/"
     resource = 'osslog'
-    commonTools.backup_file(srcdir, resource, "cis-oss-logging.tf")
+    commonTools.backup_file(srcdir, resource, auto_tfvars_filename)
 
-    if(tfStr!=''):
+    if(logstfStr + loggrouptfStr!=''):
         oname=open(outfile,'w')
-        oname.write(tfStr)
+        oname.write(logstfStr + loggrouptfStr)
         oname.close()
         print(outfile + " containing TF for OSS Logging has been created for region "+region_name)
 
@@ -210,13 +213,11 @@ def enable_cis_vcnflow_logging(filename, outdir, prefix, config=DEFAULT_LOCATION
         resource = 'vcnflowlog'
         commonTools.backup_file(srcdir, resource, auto_tfvars_filename)
 
-        tempSkeletonLogs = template.render(tempStr, count=0, region=reg)
         srcStr = "##Add New Logs for " + reg + " here##"
-        tfStrLogs[reg] = tempSkeletonLogs.replace(srcStr, tfStrLogs[reg] + "\n" + srcStr)
+        tfStrLogs[reg] = template.render(tempStr, count=0, region=reg).replace(srcStr, tfStrLogs[reg] + "\n" + srcStr)
 
-        tempSkeletonLogGroup = template.render(tempStr, loggroup= 'true', count=0, region=reg)
         srcStr = "##Add New Log Groups for " + reg + " here##"
-        tfStrLogGroups[reg] = tempSkeletonLogGroup.replace(srcStr, tfStrLogGroups[reg] + "\n" + srcStr)
+        tfStrLogGroups[reg] = template.render(tempStr, loggroup= 'true', count=0, region=reg).replace(srcStr, tfStrLogGroups[reg] + "\n" + srcStr)
 
         tfStrLogs[reg] = tfStrLogs[reg] + tfStrLogGroups[reg]
 

@@ -5,7 +5,7 @@
 
 ############################
 # ManagementServices
-# {{ oci_service }}.upper() Log Groups - tfvars
+# {{ oci_service|upper }} Log Groups - tfvars
 ############################
 
 {{ oci_service }}_log_groups = {
@@ -68,7 +68,7 @@
 
 ############################
 # ManagementServices
-# {{ oci_service }}.upper() Logs - tfvars
+# {{ oci_service|upper }} Logs - tfvars
 ############################
 
 {{ oci_service }}_logs = {
