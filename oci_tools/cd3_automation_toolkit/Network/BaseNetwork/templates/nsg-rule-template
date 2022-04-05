@@ -32,20 +32,19 @@ nsg_rules = {
             stateless = ""
             {% endif %}
 
-            destination = "{{ destination }}"
-            source = "{{ source }}"
-
             {% if source_type and source_type != '' %}
             source_type = "{{ source_type }}"
             {% else %}
             source_type = null
             {% endif %}
-
             {% if destination_type and destination_type != '' %}
             destination_type = "{{ destination_type }}"
             {% else %}
             destination_type = null
             {% endif %}
+
+            destination = "{{ destination }}"
+            source = "{{ source }}"
 
             {% if protocol == 'icmp' %}
                 {% if icmptype !='' and  icmpcode != '' %}
@@ -60,7 +59,7 @@ nsg_rules = {
                 #Required
                 icmp_type = "{{ icmptype }}"
                 #Optional
-                icmpcode = ""
+                icmp_code = ""
             }]
                 {% elif icmptype =='' and  icmpcode == '' %}
             icmp_options = [{
@@ -73,18 +72,6 @@ nsg_rules = {
                 icmp_type = ""
                 icmp_code = ""
             }]
-            {% endif %}
-
-            {% if source_type and source_type != '' %}
-            source_type = "{{ source_type }}"
-            {% else %}
-            source_type = null
-            {% endif %}
-
-            {% if destination_type and destination_type != '' %}
-            destination_type = "{{ destination_type }}"
-            {% else %}
-            destination_type = null
             {% endif %}
 
             {% if protocol == 'tcp' %}
