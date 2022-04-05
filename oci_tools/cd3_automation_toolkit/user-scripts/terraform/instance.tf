@@ -38,7 +38,6 @@ module "instances" {
   subnet_id             = each.value.subnet_id != "" ? (length(regexall("ocid1.subnet.oc1*", each.value.subnet_id)) > 0 ? each.value.subnet_id : data.oci_core_subnets.oci_subnets[each.value.display_name].subnets.*.id[0]) : null
   assign_public_ip      = each.value.assign_public_ip
   ssh_public_keys       = length(regexall("ssh-rsa*",each.value.ssh_authorized_keys)) > 0 ? each.value.ssh_authorized_keys : lookup(var.instance_ssh_keys, each.value.ssh_authorized_keys, var.instance_ssh_keys["ssh_public_key"] )
-# ssh_public_keys       = length(regexall("ssh-rsa*",each.value.ssh_authorized_keys)) > 0 ? each.value.ssh_authorized_keys : var.ssh_public_key
   hostname_label        = each.value.display_name
   nsg_ids               = each.value.nsg_ids != [] ? each.value.nsg_ids : []
   #nsg_ids              = each.value.nsg_ids != [] ? [for nsg in each.value.nsg_ids : length(regexall("ocid1.networksecuritygroup.oc1*",nsg)) > 0 ? nsg : merge(module.nsgs.*...)[nsg]["nsg_tf_id"]] : []
