@@ -11,7 +11,7 @@ tag_defaults = {
 }{% else %}
 
     {% for compartments in default_tag_compartment %}
-    {{ key_tf_name }}-default = {
+    {{ key_tf_name }}-{{ compartments }}-default = {
             #Required
             tag_definition_name = "{{ key_tf_name }}"
             compartment_name = "{{ compartments }}"

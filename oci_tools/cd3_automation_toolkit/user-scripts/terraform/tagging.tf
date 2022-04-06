@@ -5,7 +5,7 @@
 # Create Tag Namespaces, Tag Keys and Default Tags
 ############################
 
-module "tag_namespaces" {
+module "tag-namespaces" {
     source   = "./modules/governance/tagging/namespace"
     for_each = (var.tag_namespaces != null || var.tag_namespaces != {}) ? var.tag_namespaces : {}
 
