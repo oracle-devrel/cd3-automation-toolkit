@@ -1,0 +1,53 @@
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+
+############################
+# Module Block - Storage
+# Create Tag Namespaces, Tag Keys and Default Tags
+############################
+
+module "tag_namespaces" {
+    source   = "./modules/governance/tagging/namespace"
+    for_each = (var.tag_namespaces != null || var.tag_namespaces != {}) ? var.tag_namespaces : {}
+
+    #Required
+    compartment_id = each.value.compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[each.value.compartment_name]) : null
+    description = each.value.description != "" ? each.value.description : each.value.name
+    name = each.value.name
+
+    #Optional
+    defined_tags = each.value.defined_tags
+    freeform_tags = each.value.freeform_tags
+    is_retired = each.value.is_retired != "" ? each.value.is_retired : false
+
+}
+
+module "tag-keys" {
+    source   = "./modules/governance/tagging/tag-key"
+    for_each = (var.tag_keys != null || var.tag_keys != {}) ? var.tag_keys : {}
+
+    #Required
+    tag_namespace_id = length(regexall("ocid1.tagnamespace.oc1*", each.value.tag_namespace_name)) > 0 ? each.value.tag_namespace_name : merge(module.tag-namespaces.*...)[each.value.tag_namespace_name]["namespace_tf_id"]
+    description = each.value.description != "" ? each.value.description : each.value.name
+    name = each.value.name
+
+    #Optional
+    defined_tags = each.value.defined_tags
+    freeform_tags = each.value.freeform_tags
+    is_cost_tracking = each.value.is_cost_tracking != "" ? each.value.is_cost_tracking : false
+    key_name = each.key
+    is_retired = each.value.is_retired != "" ? each.value.is_retired : false
+    tag_keys = var.tag_keys
+}
+
+module "tag-default" {
+    source   = "./modules/governance/tagging/tag-default"
+    for_each = (var.tag-defaults != null || var.tag-defaults != {}) ? var.tag-defaults : {}
+
+    #Required
+    compartment_id = try(zipmap(data.oci_identity_compartments.compartments.compartments.*.name, data.oci_identity_compartments.compartments.compartments.*.id)[each.value.compartment_name], var.compartment_ocids[each.value.compartment_name])
+    tag_definition_id = length(regexall("ocid1.tagdefinition.oc1*", each.value.tag_definition_name)) > 0 ? each.value.tag_definition_name : merge(module.tag-keys.*...)[each.value.tag_definition_name]["tag_default_tf_id"]
+    value = each.value.name
+
+    #Optional
+    is_required = each.value.is_required != "" ? each.value.is_required : false
+}

@@ -43,9 +43,12 @@ def create_namespace_tagkey(inputfile, outdir, prefix, config):
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
-    namespace = env.get_template('namespace-template')
-    tagkey = env.get_template('key-template')
-    defaulttag = env.get_template('default-tag-template')
+    namespace = env.get_template('module-namespace-template')
+    tagkey = env.get_template('module-key-template')
+    defaulttag = env.get_template('module-default-tag-template')
+    namespaces_auto_tfvars_filename = "namespaces-tagging.auto.tfvars"
+    tagkey_auto_tfvars_filename = "tag-keys-tagging.auto.tfvars"
+    default_tags_auto_tfvars_filename = "default-tags-tagging.auto.tfvars"
 
     tagnamespace_list = {}
     defaulttagtemp = {}
@@ -63,7 +66,7 @@ def create_namespace_tagkey(inputfile, outdir, prefix, config):
     for reg in ct.all_regions:
         resource='Tagging'
         srcdir = outdir + "/" + reg + "/"
-        commonTools.backup_file(srcdir, resource, "-tagging.tf")
+        commonTools.backup_file(srcdir, resource, "-tagging.auto.tfvars")
 
         tagnamespace_list[reg] = []
         defaulttagtemp[reg] = ''
@@ -74,9 +77,8 @@ def create_namespace_tagkey(inputfile, outdir, prefix, config):
     tempStr = {}
     tempdict = {}
 
-    namespace_tf_name=''
     key_tf_name=''
-    description_keys=''
+
 
     #fill the empty values with that in previous row.
     dffill = df[['Region','Compartment Name','Tag Namespace']]
@@ -99,6 +101,7 @@ def create_namespace_tagkey(inputfile, outdir, prefix, config):
 
         region = region.strip().lower()
 
+        default_tag_compartments = []
         regions = df['Region']
         check_diff_region = []
         values_list = ''
@@ -153,10 +156,7 @@ def create_namespace_tagkey(inputfile, outdir, prefix, config):
 
             if columnname == "Compartment Name":
                 columnvalue = str(columnvalue).strip()
-                if (columnvalue.lower() == 'root'):
-                    compartmentVarName="tenancy_ocid"
-                else:
-                    compartmentVarName = commonTools.check_tf_variable(columnvalue)
+                compartmentVarName = commonTools.check_tf_variable(columnvalue)
                 tempdict = {'compartment_tf_name': compartmentVarName}
 
             if columnname == 'Tag Namespace':
@@ -195,9 +195,10 @@ def create_namespace_tagkey(inputfile, outdir, prefix, config):
                     columnvalue = "false"
 
             if columnname == 'Default Tag Compartment':
-                columnvalue = str(columnvalue).strip()
-                if columnvalue != '':
-                    columnvalue = commonTools.check_tf_variable(columnvalue)
+                for values in str(columnvalue).strip().split(','):
+                    if values != '':
+                        default_tag_compartments.append(commonTools.check_tf_variable(values))
+                tempdict = {'default_tag_compartment': default_tag_compartments}
 
             if columnname == 'Validator':
                 if str(columnvalue).strip() != '' and str(columnvalue).strip().lower() != 'nan':
@@ -217,7 +218,6 @@ def create_namespace_tagkey(inputfile, outdir, prefix, config):
                             if '$'+str(df.loc[i, 'Default Tag Value']) not in values_list and str(df.loc[i, 'Default Tag Value']).strip() != '' and str(df.loc[i, 'Default Tag Value']).strip().lower() != 'nan':
                                 print("\nERROR!! Value - "+str(df.loc[i, 'Default Tag Value'])+" in Default Tag Value is not present in Column Validator...Exiting!")
                                 exit()
-
 
             if columnname == 'Default Tag Value':
                 if columnvalue != '' and columnvalue.strip().lower() != 'nan':
@@ -259,7 +259,8 @@ def create_namespace_tagkey(inputfile, outdir, prefix, config):
 
         if defaulttagtemp[reg] != '':
 
-            outfile = outdir + "/" + reg + "/default-tags-tagging.tf"
+            defaulttagtemp[reg] = defaulttag.render(tempStr, count = 0).replace("## Add new tag defaults for "+reg.lower()+" here", defaulttagtemp[reg])
+            outfile = outdir + "/" + reg + "/" +default_tags_auto_tfvars_filename
             oname = open(outfile, "w+")
             print("Writing to "+outfile)
             oname.write(defaulttagtemp[reg])
@@ -267,7 +268,8 @@ def create_namespace_tagkey(inputfile, outdir, prefix, config):
 
         if namespacetemp[reg] != '':
 
-            outfile = outdir + "/" + reg + "/namespaces-tagging.tf"
+            namespacetemp[reg] = namespace.render(tempStr, count = 0).replace("## Add new tag namespaces for "+reg.lower()+" here", namespacetemp[reg])
+            outfile = outdir + "/" + reg + "/" + namespaces_auto_tfvars_filename
             oname = open(outfile, "w+")
             print("Writing to "+outfile)
             oname.write(namespacetemp[reg])
@@ -275,7 +277,8 @@ def create_namespace_tagkey(inputfile, outdir, prefix, config):
 
         if tagkeytemp[reg] != '':
 
-            outfile = outdir + "/" + reg + "/tag-keys-tagging.tf"
+            tagkeytemp[reg] = tagkey.render(tempStr, count = 0).replace("## Add new tag keys for "+reg.lower()+" here", tagkeytemp[reg])
+            outfile = outdir + "/" + reg + "/" + tagkey_auto_tfvars_filename
             oname = open(outfile, "w+")
             print("Writing to "+outfile)
             oname.write(tagkeytemp[reg])

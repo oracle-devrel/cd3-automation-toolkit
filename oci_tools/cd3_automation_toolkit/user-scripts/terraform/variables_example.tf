@@ -366,6 +366,28 @@ variable "oss_logs" {
   default     = {}
 }
 
+#########################
+## Tagging ##
+#########################
+
+variable "tag_namespaces" {
+  description = "To provision Namespaces"
+  type        = map(any)
+  default     = {}
+}
+
+variable "tag_keys" {
+  description = "To provision Tag Keys"
+  type        = map(any)
+  default     = {}
+}
+
+variable "tag-defaults" {
+  description = "To make the Tag keys as default to compartments"
+  type        = map(any)
+  default     = {}
+}
+
 ##########################
 # Add new variables here #
 ##########################
