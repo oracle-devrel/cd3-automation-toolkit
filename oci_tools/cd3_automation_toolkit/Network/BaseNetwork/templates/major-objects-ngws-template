@@ -1,8 +1,5 @@
 {% if count == 0 %}
 
-// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
-
-
 ############################
 # Network
 # Major Objects - NGW - tfvars
@@ -62,7 +59,7 @@ ngws = {
         freeform_tags = {}
             {% endif %}
     {#  ###Section for adding Defined and Freeform Tags ends here###  #}
-
       },
+
   {% endif %}
 }

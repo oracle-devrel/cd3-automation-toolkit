@@ -1,8 +1,5 @@
 {% if create_lpg_auto_vars == true %}
 
-// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
-
-
 ############################
 # Network
 # Major Objects - LPG - tfvars
@@ -85,6 +82,6 @@ lpgs = {
                     freeform_tags = {}
                         {% endif %}
                 {#  ###Section for adding Defined and Freeform Tags ends here###  #}
-
              },
+
 {% endif %}

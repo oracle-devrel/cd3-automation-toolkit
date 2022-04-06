@@ -1,7 +1,6 @@
 {% if count == 0 %}
 // Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 
-
 ############################
 # Identity
 # Policies - tfvars
@@ -67,5 +66,4 @@ EOF
         freeform_tags = {}
             {% endif %}
     {#  ###Section for adding Defined and Freeform Tags ends here###  #}
-
         policy_statements = [ {{ policy_statements }} -#Addstmt]}}

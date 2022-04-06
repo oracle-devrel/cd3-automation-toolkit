@@ -41,6 +41,9 @@ variable "ssh_public_key" {
 	default = "<SSH PUB KEY STRING HERE>"
 }
 
+## instance_ssh_keys variable will be used once the terraform code for instances is also modularized
+#  in future releases. Please use above variable 'ssh_public_key' for the current version.
+
 variable instance_ssh_keys {
     type = map(any)
     default = {

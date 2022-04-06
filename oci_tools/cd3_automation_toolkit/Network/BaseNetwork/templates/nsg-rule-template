@@ -1,7 +1,5 @@
 {% if skeleton %}
-
 // Copyright (c) 2021, 2022, Oracle and/or its affiliates.
-
 
 ############################
 # Network
@@ -14,13 +12,10 @@ nsg_rules = {
 
 {% else %}
 {% if nsg_tf_name != '' %}
-{{ nsg_rule_tf_name }} =  {
-            #Required
+   {{ nsg_rule_tf_name }} =  {
             nsg_id = "{{ nsg_tf_name }}"
             direction = "{{ direction }}"
             protocol = "{{ protocol_code }}"
-
-            #Optional
             {% if rule_description and rule_description != '' %}
             description = "{{ rule_description }}"
             {% else %}
@@ -42,23 +37,18 @@ nsg_rules = {
             {% else %}
             destination_type = null
             {% endif %}
-
             destination = "{{ destination }}"
             source = "{{ source }}"
 
             {% if protocol == 'icmp' %}
                 {% if icmptype !='' and  icmpcode != '' %}
             icmp_options = [{
-                #Required
                 icmp_type = "{{ icmptype }}"
-                #Optional
                 icmp_code = "{{ icmpcode }}"
             }]
                 {% elif icmptype !='' and  icmpcode == '' %}
             icmp_options = [{
-                #Required
                 icmp_type = "{{ icmptype }}"
-                #Optional
                 icmp_code = ""
             }]
                 {% elif icmptype =='' and  icmpcode == '' %}
@@ -73,13 +63,11 @@ nsg_rules = {
                 icmp_code = ""
             }]
             {% endif %}
-
             {% if protocol == 'tcp' %}
             {% if (dportmax and dportmin) or (sportmax and sportmin)  %}
             tcp_options = [{
                 {% if sportmax and sportmin %}
                 source_port_range = [{
-                    #Required
                     tcp_options_source_port_max = "{{ sportmax }}"
                     tcp_options_source_port_min = "{{ sportmin }}"
                     }]
@@ -89,7 +77,6 @@ nsg_rules = {
 
                 {% if dportmax and dportmin %}
                 destination_port_range = [{
-                    #Required
                     tcp_options_destination_port_max = "{{ dportmax }}"
                     tcp_options_destination_port_min = "{{ dportmin }}"
                     }]
@@ -103,13 +90,11 @@ nsg_rules = {
             {% else %}
             tcp_options = []
             {% endif %}
-
             {% if protocol == 'udp' %}
             {% if (dportmax and dportmin) or (sportmax and sportmin)  %}
             udp_options = [{
                 {% if dportmax and dportmin %}
                 destination_port_range  = [{
-                    #Required
                     udp_options_destination_port_max = "{{ dportmax }}"
                     udp_options_destination_port_min = "{{ dportmin }}"
                 }]
@@ -119,7 +104,6 @@ nsg_rules = {
 
                 {% if sportmax and sportmin %}
                 source_port_range = [{
-                    #Required
                     udp_options_source_port_max = "{{ sportmax }}"
                     udp_options_source_port_min = "{{ sportmin }}"
                 }]
@@ -134,5 +118,6 @@ nsg_rules = {
             udp_options = []
             {% endif %}
         },
+
 {% endif %}
 {% endif %}
