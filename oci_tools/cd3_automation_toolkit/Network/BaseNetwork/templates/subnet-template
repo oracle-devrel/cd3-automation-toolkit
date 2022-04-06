@@ -1,7 +1,5 @@
 {% if (skeleton and count == 0) %}
-
 // Copyright (c) 2021, 2022, Oracle and/or its affiliates.
-
 
 #############################
 # Network
@@ -12,38 +10,33 @@ subnets = {
   # Subnets map #
   ##Add New Subnets for {{ region.lower() }} here##
 }{% else %}{% if display_name != "" and display_name != "nan" and display_name != null %}
+  {{ subnet_tf_name }} = {
+        cidr_block = "{{ cidr_block }}"
+        compartment_name = "{{ compartment_tf_name }}"
+        vcn_name = "{{ vcn_tf_name }}"
+        display_name = "{{ display_name }}"
+        availability_domain = "{{ availability_domain }}"
+        prohibit_public_ip_on_vnic = "{{ prohibit_public_ip_on_vnic }}"
+        {% if prohibit_internet_ingress and prohibit_internet_ingress != '' %}
+        prohibit_internet_ingress = {{ prohibit_internet_ingress }}
+        {% else %}
+        prohibit_internet_ingress = ""
+        {% endif %}
 
-{{ subnet_tf_name }} = {
-    #Required
-    cidr_block = "{{ cidr_block }}"
-    compartment_name = "{{ compartment_tf_name }}"
-    vcn_name = "{{ vcn_tf_name }}"
-    display_name = "{{ display_name }}"
+        route_table_id = "{{ rt_tf_name }}"
+        dns_label = "{{ dns_label }}"
+        dhcp_options_id = "{{ dhcp_options_name }}"
+        {% if seclist_ids != '' %}
+        security_list_ids = [{{ seclist_ids }}]
+        {% else %}
+        security_list_ids = []
+        {% endif %}
 
-    #Optional
-    route_table_id = "{{ rt_tf_name }}"
-    dns_label = "{{ dns_label }}"
-    dhcp_options_id = "{{ dhcp_options_name }}"
-    availability_domain = "{{ availability_domain }}"
-    prohibit_public_ip_on_vnic = "{{ prohibit_public_ip_on_vnic }}"
-
-    {% if ipv6cidr_block and ipv6cidr_block != '' %}
-    ipv6cidr_block = {{ ipv6cidr_block }}
-    {% else %}
-    ipv6cidr_block = ""
-    {% endif %}
-
-    {% if prohibit_internet_ingress and prohibit_internet_ingress != '' %}
-    prohibit_internet_ingress = {{ prohibit_internet_ingress }}
-    {% else %}
-    prohibit_internet_ingress = ""
-    {% endif %}
-
-    {% if seclist_ids != '' %}
-    security_list_ids = [{{ seclist_ids }}]
-    {% else %}
-    security_list_ids = []
-    {% endif %}
+        {% if ipv6cidr_block and ipv6cidr_block != '' %}
+        ipv6cidr_block = {{ ipv6cidr_block }}
+        {% else %}
+        ipv6cidr_block = ""
+        {% endif %}
 
     {#  ##Do not modify below this line##  #}
     {#                                     #}

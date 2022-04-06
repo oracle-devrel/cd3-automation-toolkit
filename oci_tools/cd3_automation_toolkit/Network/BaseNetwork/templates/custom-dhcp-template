@@ -1,7 +1,5 @@
 {% if custom == true %}
-
 // Copyright (c) 2021, 2022, Oracle and/or its affiliates.
-
 
 ############################
 # Network
@@ -11,9 +9,7 @@
 custom_dhcps = {
     {{ dhcps }}
 }
-
 {% else %}
-
     {{ dhcp_tf_name }} = {
             compartment_name           = "{{ compartment_tf_name }}"
             server_type                = "{{ server_type }}"
@@ -73,6 +69,6 @@ custom_dhcps = {
             freeform_tags = {}
                 {% endif %}
         {#  ###Section for adding Defined and Freeform Tags ends here###  #}
-
     },
+
 {% endif %}

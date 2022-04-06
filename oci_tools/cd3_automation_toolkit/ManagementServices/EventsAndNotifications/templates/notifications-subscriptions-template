@@ -9,51 +9,50 @@
 notifications_subscriptions = {
 {% endif %}
   {{ subscription_tf_name }} = {
-    #Required
-    subscription_name = "{{ subscription_tf_name }}"
-    compartment_name = "{{ compartment_tf_name }}"
-    endpoint = "{{ endpoint }}"
-    protocol = "{{ protocol }}"
-	topic_name = "{{ topic_tf_name }}"
+        subscription_name = "{{ subscription_tf_name }}"
+        compartment_name = "{{ compartment_tf_name }}"
+        endpoint = "{{ endpoint }}"
+        protocol = "{{ protocol }}"
+        topic_name = "{{ topic_tf_name }}"
 
-{#  ##Do not modify below this line##  #}
-{#                                     #}
-{#  ###Section for adding Defined and Freeform Tags###  #}
-{% if defined_tags and defined_tags != 'nan' and defined_tags != '' %}
-  {% if defined_tags[0] %}
-    defined_tags = {
-    {% for tags in defined_tags  %}
-        {% if not loop.last %}
-            "{{ tags[0]  }}"= "{{ tags[1] }}" ,
-        {% else %}
-            "{{ tags[0]  }}"= "{{ tags[1] }}"
-        {% endif %}
-    {% endfor %}
-    }
-  {% else %}
-    defined_tags = {}
-    {% endif %}
-   {% else %}
-    defined_tags = {}
-   {% endif %}
-        {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' %}
-            {% if freeform_tags[0] %}
-    freeform_tags = {
-                {% for tags in freeform_tags %}
-                    {% if not loop.last  %}
-            "{{ tags[0] }}"="{{ tags[1] }}",
-                    {% else %}
-            "{{ tags[0] }}"="{{ tags[1] }}"
-                    {% endif %}
-                {% endfor %}
-                }
+    {#  ##Do not modify below this line##  #}
+    {#                                     #}
+    {#  ###Section for adding Defined and Freeform Tags###  #}
+    {% if defined_tags and defined_tags != 'nan' and defined_tags != '' %}
+      {% if defined_tags[0] %}
+        defined_tags = {
+        {% for tags in defined_tags  %}
+            {% if not loop.last %}
+                "{{ tags[0]  }}"= "{{ tags[1] }}" ,
             {% else %}
-    freeform_tags = {}
+                "{{ tags[0]  }}"= "{{ tags[1] }}"
             {% endif %}
-        {% else %}
-    freeform_tags = {}
+        {% endfor %}
+        }
+      {% else %}
+        defined_tags = {}
         {% endif %}
-{#  ###Section for adding Defined and Freeform Tags ends here###  #}
-
+       {% else %}
+        defined_tags = {}
+       {% endif %}
+            {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' %}
+                {% if freeform_tags[0] %}
+        freeform_tags = {
+                    {% for tags in freeform_tags %}
+                        {% if not loop.last  %}
+                "{{ tags[0] }}"="{{ tags[1] }}",
+                        {% else %}
+                "{{ tags[0] }}"="{{ tags[1] }}"
+                        {% endif %}
+                    {% endfor %}
+                    }
+                {% else %}
+        freeform_tags = {}
+                {% endif %}
+            {% else %}
+        freeform_tags = {}
+            {% endif %}
+    {#  ###Section for adding Defined and Freeform Tags ends here###  #}
     },
+
   }
