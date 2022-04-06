@@ -1,8 +1,5 @@
 {% if count == 0 %}
 
-// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
-
-
 ############################
 # Network
 # Major Objects - DRG - tfvars
@@ -10,7 +7,7 @@
 
 drgs = {
 {% endif %}{% if drg_name != "" and drg_name != "nan" and drg_name != null %}
-  {{ drg_tf_name }} = {
+   {{ drg_tf_name }} = {
         compartment_name = "{{ compartment_tf_name }}"
         display_name     = "{{ drg_name }}"
 
@@ -53,5 +50,6 @@ drgs = {
             {% endif %}
     {#  ###Section for adding Defined and Freeform Tags ends here###  #}
       },
+
   {% endif %}
 }

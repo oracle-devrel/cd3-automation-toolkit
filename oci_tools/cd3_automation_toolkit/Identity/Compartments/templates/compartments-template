@@ -1,7 +1,6 @@
 {% if count == 0 %}
 // Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 
-
 ############################
 # Identity
 # Compartments - tfvars
@@ -86,6 +85,5 @@ compartments = {
                 freeform_tags = {}
                     {% endif %}
             {#  ###Section for adding Defined and Freeform Tags ends here###  #}
-
               },
 {% endif %}
