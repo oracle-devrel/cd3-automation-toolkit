@@ -260,7 +260,7 @@ def create_namespace_tagkey(inputfile, outdir, prefix, config):
         if defaulttagtemp[reg] != '':
 
             defaulttagtemp[reg] = defaulttag.render(tempStr, count = 0).replace("## Add new tag defaults for "+reg.lower()+" here", defaulttagtemp[reg])
-            outfile = outdir + "/" + reg + "/" +default_tags_auto_tfvars_filename
+            outfile = outdir + "/" + reg + "/" + prefix + '_' + default_tags_auto_tfvars_filename
             oname = open(outfile, "w+")
             print("Writing to "+outfile)
             oname.write(defaulttagtemp[reg])
@@ -269,7 +269,7 @@ def create_namespace_tagkey(inputfile, outdir, prefix, config):
         if namespacetemp[reg] != '':
 
             namespacetemp[reg] = namespace.render(tempStr, count = 0).replace("## Add new tag namespaces for "+reg.lower()+" here", namespacetemp[reg])
-            outfile = outdir + "/" + reg + "/" + namespaces_auto_tfvars_filename
+            outfile = outdir + "/" + reg + "/" + prefix + '_' + namespaces_auto_tfvars_filename
             oname = open(outfile, "w+")
             print("Writing to "+outfile)
             oname.write(namespacetemp[reg])
@@ -278,7 +278,7 @@ def create_namespace_tagkey(inputfile, outdir, prefix, config):
         if tagkeytemp[reg] != '':
 
             tagkeytemp[reg] = tagkey.render(tempStr, count = 0).replace("## Add new tag keys for "+reg.lower()+" here", tagkeytemp[reg])
-            outfile = outdir + "/" + reg + "/" + tagkey_auto_tfvars_filename
+            outfile = outdir + "/" + reg + "/" + prefix + '_' + tagkey_auto_tfvars_filename
             oname = open(outfile, "w+")
             print("Writing to "+outfile)
             oname.write(tagkeytemp[reg])
