@@ -13,7 +13,7 @@
   ##Add New Log Groups for {{ region.lower() }} here##
 }{% else %}{% if loggroup_tf_name != "" and loggroup_tf_name != "nan" and loggroup_tf_name != null %}
 
-{{ loggroup_tf_name }} = {
+  {{ loggroup_tf_name }} = {
         compartment_name = "{{ compartment_tf_name }}"
         display_name   = "{{ loggroup_name }}"
         description    = "{{ loggroup_desc }}"
@@ -56,7 +56,6 @@
         freeform_tags = {}
             {% endif %}
     {#  ###Section for adding Defined and Freeform Tags ends here###  #}
-
       },
 {% endif %}{% endif %}
 {% endif %}
@@ -75,7 +74,7 @@
   # Log map #
   ##Add New Logs for {{ region.lower() }} here##
 }{% else %}{% if log_name != "" and log_name != "nan" and log_name != null %}
-{{ log_tf_name }}  = {
+  {{ log_tf_name }}  = {
         display_name = "{{ log_name }}"
         log_group_id = "{{ log_group_id }}"
         log_type     = "SERVICE"

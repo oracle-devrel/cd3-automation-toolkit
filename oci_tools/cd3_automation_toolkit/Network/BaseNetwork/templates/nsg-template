@@ -1,7 +1,5 @@
 {% if skeleton %}
-
 // Copyright (c) 2021, 2022, Oracle and/or its affiliates.
-
 
 ############################
 # Network
@@ -14,7 +12,7 @@ nsgs = {
 
 {% else %}{% if display_name != "" and display_name != "nan" and display_name != null %}
   # Start of {{ region.lower() }}_{{ nsg_tf_name }} #
-    {{ nsg_tf_name }} = {
+   {{ nsg_tf_name }} = {
         compartment_name = "{{ compartment_tf_name }}"
         vcn_name     = "{{ vcn_tf_name }}"
         display_name     = "{{ display_name }}"
@@ -57,7 +55,7 @@ nsgs = {
         freeform_tags = {}
             {% endif %}
     {#  ###Section for adding Defined and Freeform Tags ends here###  #}
-
       },
   # End of {{ region.lower() }}_{{ nsg_tf_name }} #
+
 {% endif %}{% endif %}

@@ -1,7 +1,5 @@
 {% if (skeleton and count == 0) %}
-
 // Copyright (c) 2021, 2022, Oracle and/or its affiliates.
-
 
 ############################
 # Network
@@ -72,7 +70,6 @@ seclists = {
         freeform_tags = {}
             {% endif %}
     {#  ###Section for adding Defined and Freeform Tags ends here###  #}
-
       },
   # End of #{{ region.lower() }}_{{ seclist_tf_name }}# #
 {% endif %}{% endif %}
