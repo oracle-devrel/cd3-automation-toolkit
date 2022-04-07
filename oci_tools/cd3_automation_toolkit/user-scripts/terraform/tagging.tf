@@ -6,7 +6,7 @@
 ############################
 
 module "tag-namespaces" {
-    source   = "./modules/governance/tagging/namespace"
+    source   = "./modules/governance/tagging/tag-namespace"
     for_each = (var.tag_namespaces != null || var.tag_namespaces != {}) ? var.tag_namespaces : {}
 
     #Required
@@ -39,7 +39,7 @@ module "tag-keys" {
     tag_keys = var.tag_keys
 }
 
-module "tag-default" {
+module "tag-defaults" {
     source   = "./modules/governance/tagging/tag-default"
     for_each = (var.tag-defaults != null || var.tag-defaults != {}) ? var.tag-defaults : {}
 

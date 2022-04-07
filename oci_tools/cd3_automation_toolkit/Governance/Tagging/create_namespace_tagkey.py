@@ -43,12 +43,12 @@ def create_namespace_tagkey(inputfile, outdir, prefix, config):
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
-    namespace = env.get_template('module-namespace-template')
-    tagkey = env.get_template('module-key-template')
-    defaulttag = env.get_template('module-default-tag-template')
-    namespaces_auto_tfvars_filename = "namespaces-tagging.auto.tfvars"
+    namespace = env.get_template('tag-namespace-template')
+    tagkey = env.get_template('tag-key-template')
+    defaulttag = env.get_template('tag-default-template')
+    namespaces_auto_tfvars_filename = "tag-namespaces-tagging.auto.tfvars"
     tagkey_auto_tfvars_filename = "tag-keys-tagging.auto.tfvars"
-    default_tags_auto_tfvars_filename = "default-tags-tagging.auto.tfvars"
+    default_tags_auto_tfvars_filename = "tag-defaults-tagging.auto.tfvars"
 
     tagnamespace_list = {}
     defaulttagtemp = {}
