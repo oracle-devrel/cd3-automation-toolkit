@@ -282,3 +282,12 @@ CD3 Automation Toolkit Tag v9.0
 8. Restructured the code directories and setUpOCI menu options.
 9. Added drop downs in the excel sheet columns to make excel filling easier.
 10.Updated OCI_regions to include all regions
+
+---------------------------------
+CD3 Automation Toolkit Tag v9.0.1
+--------------------------------
+1. Bug fix for data after END tag in DRGRouteRulesinOCI sheet.
+2. Bug fix for tenancies having both DRGv1 and DRGv2
+3. Bug fix for VCN Flow Log output
+4. Bug fix for NSG ICMP rules not having only ICMP type
+5. Modified output template files to adjust the spacing
