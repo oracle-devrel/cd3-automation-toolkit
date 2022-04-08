@@ -38,24 +38,75 @@ module "db-home" {
   kms_key_version_id                   = each.value.kms_key_version_id
   db_source                            = each.value.db_source
   vm_cluster_id                        = each.value.vm_cluster_id != null ? each.value.vm_cluster_id : null
-  #exadata_infra_name = each.value.exadata_infra_name != null ? each.value.exadata_infra_name : null
+  #exadata_infra_name                  = each.value.exadata_infra_name != null ? each.value.exadata_infra_name : null
 }
 
 #############################
 # Module Block - Database
 # Create Databases in DB Home
 #############################
-module "databases" {
-  source = "./modules/database/databases"
-  depends_on = [module.db-home]
+
+data "oci_database_database_software_images" "custom_database_software_images" {
   for_each = var.databases != null ? var.databases : {}
   compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
-  databases = each.value.databases != [] ? each.value.databases : []
-  db_home_name = each.value.db_home_name
+  state        = "Available"
+  filter {
+      name   = "display_name"
+      values = [each.value.custom_database_image_name != null ? each.value.custom_database_image_name : ""]
+  }
+  image_shape_family = "EXADATA_SHAPE"
+}
+
+module "databases" {
+  source = "./modules/database/databases/cdb"
+  #depends_on = [module.db-home]
+
+  for_each = var.databases != null ? var.databases : {}
+  compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
+  database = each.value.database != [] ? each.value.database : []
+  #custom_database_image_name = each.value.custom_database_image_name != null ? (length(regexall("ocid1.databasesoftwareimage.oc1*", each.value.custom_database_image_name)) > 0 ? each.value.custom_database_image_name : element([ for v in data.oci_database_database_software_images.custom_database_software_images[each.key].database_software_images : v.id if v.display_name == each.value.custom_database_image_name], 0)) : null
+  #custom_database_image_name = element([ for v in data.oci_database_database_software_images.custom_database_software_images[each.key].database_software_images : v.id if v.display_name == each.value.custom_database_image_name], 0)
+  custom_database_image_name = each.value.custom_database_image_name != null ? (length(regexall("ocid1.databasesoftwareimage.oc1*", each.value.custom_database_image_name)) > 0 ? each.value.custom_database_image_name : data.oci_database_database_software_images.custom_database_software_images[each.key].database_software_images[0].id) : null
+  db_home_id = each.value.db_home_id != null ? merge(module.db-home.*...)[each.value.db_home_id]["db_home_tf_id"] : null
   vm_cluster_name = each.value.vm_cluster_name
   db_source = each.value.db_source
   db_version = each.value.db_version
   kms_key_id = each.value.kms_key_id
   kms_key_version_id = each.value.kms_key_version_id
+}
+
+##############################
+# Module Block - Database PDB
+# Create PDBs in existing CDB
+##############################
+
+data "oci_database_db_homes" "existing_db_homes" {
+  for_each        = var.pdb_databases != null ? var.pdb_databases : {}
+  compartment_id  = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
+  display_name    = each.value.db_home_name
+  #state          = "Available"
+  #vm_cluster_id  = var.vm_cluster_name != null ? data.oci_database_cloud_vm_clusters.existing_cloud_vm_clusters[0].cloud_vm_clusters[0].id : null
+}
+
+#output "db" {
+#  value = data.oci_database_databases.existing_cdb_dbs
+#}
+
+data "oci_database_databases" "existing_cdb_dbs" {
+  for_each       = var.pdb_databases != null ? var.pdb_databases : {}
+  compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
+  db_home_id     = data.oci_database_db_homes.existing_db_homes[each.key].db_homes[0].db_home_id
+  db_name        = each.value.cdb_name
+}
+
+module "pdb-database" {
+  for_each = var.pdb_databases != null ? var.pdb_databases : {}
+  source = "./modules/database/databases/pdb"
+  container_database_id = each.value.cdb_name != null ? merge(module.databases.*...)[each.value.cdb_name]["cdb_name_tf_id"] : data.oci_database_databases.existing_cdb_dbs[each.key].databases[0].id
+  pdb_admin_password = each.value.pdb_admin_password
+  pdb_name = each.value.pdb_name
+  tde_wallet_password = each.value.tde_wallet_password
+  defined_tags = each.value.defined_tags
+  freeform_tags = each.value.freeform_tags
 }
 

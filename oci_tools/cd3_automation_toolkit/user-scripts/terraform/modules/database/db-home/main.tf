@@ -16,14 +16,14 @@ resource "oci_database_db_home" "new_database_db_home" {
     database_id                = var.database_id
     database_software_image_id = var.custom_database_image_name != null ? element([ for v in data.oci_database_database_software_images.custom_database_software_images[0].database_software_images : v.id if v.display_name == var.custom_database_image_name],0) : null
     db_backup_config {
-      #      #Optional
-      #      auto_backup_enabled = var.auto_backup_enabled
-      #      auto_backup_window  = var.auto_backup_window
-      #      backup_destination_details {
-      #        id   = var.backup_dest_id
-      #        type = var.backup_dest_type
-      #      }
-      #      recovery_window_in_days = var.recovery_window_in_days
+            #Optional
+            auto_backup_enabled = var.auto_backup_enabled
+            auto_backup_window  = var.auto_backup_window
+#            backup_destination_details {
+#              id   = var.backup_dest_id
+#              type = var.backup_dest_type
+#            }
+            recovery_window_in_days = var.recovery_window_in_days
     }
     db_name        = var.db_name
     db_workload    = var.db_workload
@@ -49,6 +49,6 @@ resource "oci_database_db_home" "new_database_db_home" {
   vm_cluster_id              = var.vm_cluster_id != null ? data.oci_database_cloud_vm_clusters.existing_cloud_vm_cluster[0].cloud_vm_clusters[0].id : null
 
   lifecycle {
-    ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"]]
+    ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"], database[0]["defined_tags"], database[0]["admin_password"]]
   }
 }

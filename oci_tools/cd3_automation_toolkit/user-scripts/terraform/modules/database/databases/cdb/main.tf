@@ -1,13 +1,13 @@
 // Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 
-###########################
-# Resource Block - Database
+###############################
+# Resource Block - Database CDB
 # Create Databases
-###########################
+###############################
 
 resource "oci_database_database" "new_database" {
   #Required
-  dynamic "database" {
+  dynamic database {
     for_each = var.database
     content {
       #Required
@@ -18,17 +18,17 @@ resource "oci_database_database" "new_database" {
       backup_id                  = database.value["backup_id"]
       backup_tde_password        = database.value["backup_tde_password"]
       character_set              = database.value["character_set"]
-      database_software_image_id = var.custom_database_image_name != null ? element([ for v in data.oci_database_database_software_images.custom_database_software_images[0].database_software_images : v.id if v.display_name == var.custom_database_image_name], 0) : null
+      #database_software_image_id = var.custom_database_image_name != null ? element([ for v in data.oci_database_database_software_images.custom_database_software_images[0].database_software_images : v.id if v.display_name == var.custom_database_image_name], 0) : null
+      database_software_image_id = var.custom_database_image_name
       db_backup_config {
         #Optional
         auto_backup_enabled = database.value["auto_backup_enabled"]
         auto_backup_window  = database.value["auto_backup_window"]
-        backup_destination_details {
-
-          #Optional
-          id   = database.value["backup_dest_id"]
-          type = database.value["backup_dest_type"]
-        }
+#        backup_destination_details {
+#          #Optional
+#          id   = database.value["backup_dest_id"]
+#          type = database.value["backup_dest_type"]
+#        }
         recovery_window_in_days = database.value["recovery_window_in_days"]
       }
       db_unique_name      = database.value["db_unique_name"]
@@ -41,11 +41,20 @@ resource "oci_database_database" "new_database" {
       tde_wallet_password = database.value["tde_wallet_password"]
     }
   }
-  db_home_id = data.oci_database_db_homes.existing_db_home.db_homes[0].id
+  db_home_id = var.db_home_id
   source     = var.db_source
 
   #Optional
   db_version         = var.db_version
   kms_key_id         = var.kms_key_id
   kms_key_version_id = var.kms_key_version_id
+
+  lifecycle {
+    ignore_changes = [database[0].defined_tags["SE_Details.SE_Name"]]
+  }
+}
+
+resource "time_sleep" "wait_5_minutes" {
+  depends_on = [oci_database_database.new_database]
+  create_duration = "300s"
 }

@@ -5,8 +5,8 @@
 # Database Db Home - tfvars
 ############################
 db_home = {
-  new_db_home = {
-    compartment_id                       = ""
+  mynewdbhome = {
+    compartment_id                       = "ExaCS"
     #exadata_infra_name                  = null
     admin_password                       = "DBadmin##12"
     custom_database_image_name           = null
@@ -28,12 +28,12 @@ db_home = {
     tde_wallet_password                  = null
     timestamp_for_point_in_time_recovery = null
     db_system_id                         = null
-    db_version                           = "21.0.0.0"
-    display_name                         = "my-new-db"
+    db_version                           = "19.0.0.0"
+    display_name                         = "mynewdbhome"        #Use the same name as map variable name.
     is_desupported_version               = null
     kms_key_id                           = null
     kms_key_version_id                   = null
     db_source                            = "VM_CLUSTER_NEW"
-    vm_cluster_id                        = null
+    vm_cluster_id                        = "Dig01ExaCS"
   },
 }

@@ -1,14 +1,14 @@
 // Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 
-############################
-# Outputs Block - Database
+##############################
+# Outputs Block - Database CDB
 # Create Databases
-############################
+##############################
 variable "compartment_id" {
   type    = string
   default = null
 }
-variable "db_home_name" {
+variable "db_home_id" {
   type = string
   default = null
 }

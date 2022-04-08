@@ -1,0 +1,29 @@
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+
+###############################
+# PDB Database
+# PDB Databases in CDB - tfvars
+###############################
+
+pdb_databases = {
+  new_pdb_database = {
+      compartment_id = "ExaCS"
+      db_home_name   = "mynewdbhome"
+      cdb_name       = "testdb1"
+      pdb_admin_password = "DBadmin##12"
+      pdb_name = "MYNWPDB2"
+      tde_wallet_password = "NewPw_#12"   #Should match existing TDE wallet password of CDB
+      defined_tags = {}
+      freeform_tags = {}
+  },
+  pdb_database_two = {
+      compartment_id = "ExaCS"
+      db_home_name   = "mynewdbhome"
+      cdb_name       = "testdb1"
+      pdb_admin_password = "DBadmin##12"
+      pdb_name = "MYNWPDB3"
+      tde_wallet_password = "NewPw_#12"   #Should match existing TDE wallet password for the correct CDB
+      defined_tags = {}
+      freeform_tags = {}
+  }
+}
