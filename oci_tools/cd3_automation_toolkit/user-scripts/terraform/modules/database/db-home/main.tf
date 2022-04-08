@@ -48,7 +48,7 @@ resource "oci_database_db_home" "new_database_db_home" {
   source                     = var.db_source
   vm_cluster_id              = var.vm_cluster_id != null ? data.oci_database_cloud_vm_clusters.existing_cloud_vm_cluster[0].cloud_vm_clusters[0].id : null
 
-  lifecycle {
-    ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"], database[0]["defined_tags"], database[0]["admin_password"]]
+ lifecycle {
+    ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"], database[0].defined_tags, database[0].admin_password]
   }
 }
