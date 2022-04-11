@@ -161,6 +161,10 @@ def create_terraform_drg_route(inputfile, outdir, prefix, non_gf_tenancy, config
 
         # Start processing each RT
         for i in dfdrgroutetable.index:
+            region = str(dfdrgroutetable['Region'][i]).strip()
+            if (region in commonTools.endNames):
+                break
+
             drgrt_tf_from_rtRulesInOCI_sheet_name = "#"+commonTools.check_tf_variable(dfdrgroutetable.loc[i, 'Region']).lower()+"_"+commonTools.check_tf_variable(dfdrgroutetable.loc[i, 'DRG Name'])+"_"+commonTools.check_tf_variable(dfdrgroutetable.loc[i, 'DRG RT Name'])+"#"
             if drgrt_tf_from_rtRulesInOCI_sheet_name not in drgrts_from_DRGRouteRulesInOCI_sheet:
                 drgrts_from_DRGRouteRulesInOCI_sheet.append(drgrt_tf_from_rtRulesInOCI_sheet_name)
@@ -432,6 +436,9 @@ def create_terraform_route(inputfile, outdir, prefix, non_gf_tenancy, config, mo
 
         # Start processing each RT
         for i in dfroutetable.index:
+            region = str(dfroutetable['Region'][i]).strip()
+            if (region in commonTools.endNames):
+                break
             rt_tf_from_rtRulesInOCI_sheet_name = "#"+commonTools.check_tf_variable(dfroutetable.loc[i, 'Region']).lower()+"_"+commonTools.check_tf_variable(dfroutetable.loc[i, 'VCN Name'])+"_"+commonTools.check_tf_variable(dfroutetable.loc[i, 'Route Table Name'])+"#"
             if rt_tf_from_rtRulesInOCI_sheet_name not in rts_from_RouteRulesInOCI_sheet:
                 rts_from_RouteRulesInOCI_sheet.append(rt_tf_from_rtRulesInOCI_sheet_name)
@@ -1030,7 +1037,6 @@ def create_terraform_route(inputfile, outdir, prefix, non_gf_tenancy, config, mo
     subnet_regions_list = df["Region"].str.lower().tolist()
 
     for i in df.index:
-
         # Get subnet data
         region = str(df.loc[i, 'Region'])
 
