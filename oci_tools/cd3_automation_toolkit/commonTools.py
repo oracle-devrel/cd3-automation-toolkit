@@ -758,3 +758,18 @@ class parseVCNInfo():
 
         self.all_regions = [x.strip().lower() for x in all_regions_excel]
         """
+
+class parseSubnets():
+
+    def get_subnet_info_from_cd3sheet(self, filename, sheet):
+        vcn_subnet_map = {}
+        try:
+            # Read and search for VCN
+            df = pd.read_excel(filename, sheet_name=sheet, skiprows=1)
+        except Exception as e:
+            pass
+        df = df.dropna(how='all')
+        df = df.reset_index(drop=True)
+        for i in df.index:
+            vcn_subnet_map.update({(df.loc[i,'Region'].strip().lower(),(df.loc[i,'VCN Name'].strip().lower()+"_"+df.loc[i,'Subnet Name'].strip().lower())) : (df.loc[i,'Compartment Name'].strip().lower(), df.loc[i,'VCN Name'].strip().lower(), df.loc[i,'Subnet Name'].strip().lower())})
+        return vcn_subnet_map
