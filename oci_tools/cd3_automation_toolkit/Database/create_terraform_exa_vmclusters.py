@@ -70,6 +70,7 @@ def create_terraform_exa_vmclusters(inputfile, outdir, prefix, config=DEFAULT_LO
         commonTools.backup_file(srcdir, resource, auto_tfvars_filename)
 
     regions_done_count = []
+    subnets = parseSubnets(filename)
 
     # Iterate over rows
     for i in df.index:
