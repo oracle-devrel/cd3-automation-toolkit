@@ -20,6 +20,14 @@ compartment_ids={}
 importCommands={}
 tf_name_namespace_list = []
 
+def add_values_in_dict(sample_dict, key, list_of_values):
+    ''' Append multiple values to a key in
+        the given dictionary '''
+    if key not in sample_dict:
+        sample_dict[key] = list()
+    sample_dict[key].extend(list_of_values)
+    return sample_dict
+
 def  print_tags(values_for_column_tags,region, ntk_compartment_name, tag, tag_key, tag_default_value, tag_default, tag_default_comp):
     if ( tag_default_value == '' ) :
      tag_default_comp = ""
@@ -65,7 +73,10 @@ def  print_tags(values_for_column_tags,region, ntk_compartment_name, tag, tag_ke
         elif (col_header == "Validator"):
             values_for_column_tags[col_header].append(validator)
         elif (col_header == "Default Tag Compartment"):
-            values_for_column_tags[col_header].append(tag_default_comp)
+            if "ocid1.tagdefinition.oc1" in str(tag_default_comp):
+                values_for_column_tags[col_header].append(','.join([str(item) for item in tag_default_comps_map[tag_default_comp]]))
+            else:
+                values_for_column_tags[col_header].append(tag_default_comp)
         elif (col_header == "Default Tag Value"):
             values_for_column_tags[col_header].append(tag_default_value)
         elif col_header.lower() in commonTools.tagColumns:
@@ -83,7 +94,7 @@ def  print_tags(values_for_column_tags,region, ntk_compartment_name, tag, tag_ke
       importCommands[region].write("\nterraform import module.tag-keys[\""+tf_name_namespace + '-' + tf_name_key + '\"].oci_identity_tag.tag ' + "tagNamespaces/"+ str(tag.id) +"/tags/\"" + str(tag_key_name) + "\"")
     if ( tag_default_comp != ''):
         for comp in tag_default_comp:
-            importCommands[region].write("\nterraform import module.tag-default[\""+ tf_name_namespace+'-' +tf_name_key + '-' +comp+ '-default'+ '\"].oci_identity_tag_default.tag_default ' + str(tag_default_id))
+            importCommands[region].write("\nterraform import module.tag-defaults[\""+ tf_name_namespace+'-' +tf_name_key + '-' +comp+ '-default'+ '\"].oci_identity_tag_default.tag_default ' + str(tag_default_id))
 
 
 def parse_args():
@@ -101,6 +112,7 @@ def export_tags_nongreenfield(inputfile, outdir, _config, network_compartments):
     global sheet_dict_tags
     global importCommands
     global config
+    global tag_default_comps_map
 
     cd3file = inputfile
     configFileName = _config
@@ -116,6 +128,8 @@ def export_tags_nongreenfield(inputfile, outdir, _config, network_compartments):
     ct = commonTools()
     ct.get_subscribedregions(configFileName)
     ct.get_network_compartment_ids(config['tenancy'],"root",configFileName)
+    tag_default_comps_map = {}
+    tag_name_id_map = {}
 
     # Get dict for columns from Excel_Columns
     sheet_dict_tags = ct.sheet_dict["Tags"]
@@ -136,9 +150,21 @@ def export_tags_nongreenfield(inputfile, outdir, _config, network_compartments):
     print("\nFetching Tags...")
     importCommands[ct.home_region].write("\n\n######### Writing import for Tags #########\n\n")
     config.__setitem__("region", ct.region_dict[ct.home_region])
-    #comp_ocid_done = []
     identity = IdentityClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
     region = ct.home_region.lower()
+    comp_ocid_done = []
+
+    for ntk_compartment_name in ct.ntk_compartment_ids:
+        if ct.ntk_compartment_ids[ntk_compartment_name] not in comp_ocid_done:
+            comp_ocid_done.append(ct.ntk_compartment_ids[ntk_compartment_name])
+            tag_defaults = oci.pagination.list_call_get_all_results(identity.list_tag_defaults,
+                                                                            compartment_id=ct.ntk_compartment_ids[
+                                                                                ntk_compartment_name],
+                                                                            lifecycle_state="ACTIVE")
+            if tag_defaults.data != []:
+                for tag_default in tag_defaults.data:
+                    add_values_in_dict(tag_default_comps_map, tag_default.tag_definition_id, [ntk_compartment_name])
+
     comp_ocid_done = []
     for ntk_compartment_name in ct.ntk_compartment_ids:
         if ct.ntk_compartment_ids[ntk_compartment_name] not in comp_ocid_done:
@@ -150,6 +176,7 @@ def export_tags_nongreenfield(inputfile, outdir, _config, network_compartments):
                                                                             compartment_id=ct.ntk_compartment_ids[
                                                                                 ntk_compartment_name],
                                                                             lifecycle_state="ACTIVE")
+
             tag_namespace_check = []
             tag_list = []
             tag_default_comp = ''
@@ -164,6 +191,7 @@ def export_tags_nongreenfield(inputfile, outdir, _config, network_compartments):
                     tag_key = tag_key.data
                     tag_key_id = str(tag_key.id)
                     tag_key_check.append(tag_key_id)
+                    tag_name_id_map.update({ tag_key.id : tag_key.name })
                     for tag_default in tag_defaults.data:
                         if (ct.ntk_compartment_ids[ntk_compartment_name] == tag_default.compartment_id):
                             tag_default_comp = ntk_compartment_name
@@ -175,7 +203,7 @@ def export_tags_nongreenfield(inputfile, outdir, _config, network_compartments):
                             tag_default_value = tag_default.value
                             tag_namespace_check.append( str(tag.id))
                             print_tags(values_for_column_tags, region, ntk_compartment_name, tag, tag_key,
-                                               tag_default_value, tag_default, tag_default_comp)
+                                               tag_default_value, tag_default, tag_key_id)
                 check_non_default_tags = [i for i in tag_key_check + tag_default_check if
                                                   i not in tag_key_check or i not in tag_default_check]
                 for tag_check in check_non_default_tags:
@@ -211,7 +239,6 @@ def export_tags_nongreenfield(inputfile, outdir, _config, network_compartments):
         importCommands[ct.home_region].write('\n\nterraform plan\n')
     if "linux" in sys.platform:
         os.chmod(script_file, 0o755)
-
 
 if __name__=="__main__":
     args = parse_args()
