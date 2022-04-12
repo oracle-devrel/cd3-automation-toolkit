@@ -12,37 +12,31 @@ blockvolumes = {
             availability_domain  = {{ availability_domain }}
             compartment_id       = "{{ compartment_tf_name }}"
             display_name         = "{{ block_name }}"
-
             {% if size_in_gbs %}
             size_in_gbs          = {{ size_in_gbs }}
             {% else %}
             size_in_gbs          = null
             {% endif %}
-
             {% if is_auto_tune_enabled %}
             is_auto_tune_enabled = {{ is_auto_tune_enabled }}
             {% else %}
             is_auto_tune_enabled = null
             {% endif %}
-
             {% if vpus_per_gb %}
             vpus_per_gb          = {{ vpus_per_gb }}
             {% else %}
             vpus_per_gb          = null
             {% endif %}
-
             {% if kms_key_id %}
             kms_key_id           = "{{ kms_key_id }}"
             {% else %}
             kms_key_id           = null
             {% endif %}
-
             {% if attached_to_instance %}
             attach_to_instance = "{{ attached_to_instance }}"
             {% else %}
             attach_to_instance = ""
             {% endif %}
-
             {% if attach_type %}
             attachment_type = "{{ attach_type }}"
             {% else %}
@@ -54,7 +48,7 @@ blockvolumes = {
             {#  ###Section for adding Defined and Freeform Tags###  #}
             {% if defined_tags and defined_tags != 'nan' and defined_tags != '' %}
               {% if defined_tags[0] %}
-                defined_tags = {
+            defined_tags = {
                 {% for tags in defined_tags  %}
                     {% if not loop.last %}
                         "{{ tags[0]  }}"= "{{ tags[1] }}" ,
@@ -64,14 +58,14 @@ blockvolumes = {
                 {% endfor %}
                 }
               {% else %}
-                defined_tags = {}
+            defined_tags = {}
                 {% endif %}
                {% else %}
-                defined_tags = {}
+            defined_tags = {}
                {% endif %}
                     {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' %}
                         {% if freeform_tags[0] %}
-                freeform_tags = {
+            freeform_tags = {
                             {% for tags in freeform_tags %}
                                 {% if not loop.last  %}
                         "{{ tags[0] }}"="{{ tags[1] }}",
@@ -82,8 +76,8 @@ blockvolumes = {
                             }
                         {% endif %}
                     {% else %}
-                freeform_tags = {}
+            freeform_tags = {}
                     {% endif %}
             {#  ###Section for adding Defined and Freeform Tags ends here###  #}
-            },
+        },
 }

@@ -92,6 +92,7 @@ class commonTools():
                     self.home_region = k
                 if (rs.region_name == v):
                     self.all_regions.append(k)
+            self.all_regions=['ashburn']
 
 
     #Get Compartment OCIDs
@@ -760,16 +761,28 @@ class parseVCNInfo():
         """
 
 class parseSubnets():
-
-    def get_subnet_info_from_cd3sheet(self, filename, sheet):
-        vcn_subnet_map = {}
+    def __init__(self, filename):
+        self.vcn_subnet_map = {}
         try:
             # Read and search for VCN
-            df = pd.read_excel(filename, sheet_name=sheet, skiprows=1)
+            df_subnet = pd.read_excel(filename, sheet_name='Subnets', skiprows=1)
         except Exception as e:
-            pass
-        df = df.dropna(how='all')
-        df = df.reset_index(drop=True)
-        for i in df.index:
-            vcn_subnet_map.update({(df.loc[i,'Region'].strip().lower(),(df.loc[i,'VCN Name'].strip().lower()+"_"+df.loc[i,'Subnet Name'].strip().lower())) : (df.loc[i,'Compartment Name'].strip().lower(), df.loc[i,'VCN Name'].strip().lower(), df.loc[i,'Subnet Name'].strip().lower())})
-        return vcn_subnet_map
+            if ("No sheet named" in str(e)):
+                print("\nTab - \"Subnets\" is missing in the CD3. Please make sure to use the right CD3 in properties file...Exiting!!")
+                exit(1)
+            else:
+                print("Error occurred while reading the CD3 excel sheet " + str(e))
+                exit(1)
+
+        # Drop all empty rows
+        df_subnet = df_subnet.dropna(how='all')
+        df_subnet = df_subnet.reset_index(drop=True)
+
+
+        for i in df_subnet.index:
+            region = str(df_subnet['Region'][i]).strip()
+            if (region in commonTools.endNames):  # or str(region).lower()=='nan'):
+                break
+            key = df_subnet.loc[i,'Region'].strip().lower(),df_subnet.loc[i,'VCN Name'].strip()+"_"+df_subnet.loc[i,'Subnet Name'].strip()
+            value = df_subnet.loc[i,'Compartment Name'].strip(), df_subnet.loc[i,'VCN Name'].strip(), df_subnet.loc[i,'Subnet Name'].strip()
+            self.vcn_subnet_map[key] =  value

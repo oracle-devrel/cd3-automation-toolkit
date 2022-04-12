@@ -83,6 +83,7 @@
     },
     "Instances" :
 	{
+	    "Boot Volume Size in GBs" : "size_in_gbs"
 	},
 	"DedicatedVMHosts" :
 	{

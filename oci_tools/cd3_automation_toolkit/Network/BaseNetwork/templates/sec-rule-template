@@ -2,14 +2,12 @@
              {  #{{ seclist_tf_name }}_{{ source }}#
                 protocol = "{{ protocol_code }}"
                 source = "{{ source }}"
-
                 {% if rule_description != '' %}
                 description = "{{ rule_description }}"
                 {% else %}
                 description = ""
                 {% endif %}
                 stateless = {{ isstateless }}
-
                 {% if source_type and source_type != '' %}
                 source_type = "{{ source_type }}"
                 {% else %}
@@ -54,8 +52,6 @@
                 udp_options = []
                 {% endif %}
 
-
-
                 {% if protocol.lower() == 'tcp' %}
                 {% if (dportmax and dportmin) or (sportmax and sportmin) %}
                 tcp_options = [{
@@ -78,8 +74,6 @@
                 {% endif %}{% else %}
                 tcp_options = []
                 {% endif %}
-
-
              },
             {% endif %}
 
@@ -93,6 +87,11 @@
                 description = ""
                 {% endif %}
                 stateless = {{ isstateless }}
+                {% if destination_type and destination_type != '' %}
+                destination_type = "{{ destination_type }}"
+                {% else %}
+                destination_type = ""
+                {% endif %}
 
                 {% if protocol.lower() == 'icmp' and icmptype != '' %}
                 icmp_options = [{
@@ -108,13 +107,6 @@
                     icmp_options_code = ""
                     }]
                 {% endif %}
-
-                {% if destination_type and destination_type != '' %}
-                destination_type = "{{ destination_type }}"
-                {% else %}
-                destination_type = ""
-                {% endif %}
-
                 {% if protocol.lower() == 'udp' %}
                 {% if (dportmax and dportmin) or (sportmax and sportmin) %}
                 udp_options = [{
@@ -137,9 +129,6 @@
                 {% endif %}{% else %}
                 udp_options = []
                 {% endif %}
-
-
-
                 {% if protocol.lower() == 'tcp' %}
                 {% if (dportmax and dportmin) or (sportmax and sportmin) %}
                 tcp_options = [{

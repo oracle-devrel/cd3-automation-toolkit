@@ -135,11 +135,6 @@ def export_exa_vmclusters(inputfile, _outdir, _config, network_compartments=[]):
     print("\nCD3 excel file should not be opened during export process!!!")
     print("Tabs- Exa-VMClusters  will be overwritten during export process!!!\n")
 
-    # Load variables template file
-    file_loader = FileSystemLoader(f'{Path(__file__).parent.parent}/templates')
-    env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
-    variable_template = env.get_template('module-variables-template')
-
     # Create backups
     resource = 'tf_import_' + sheetName.lower()
     file_name = 'tf_import_commands_' + sheetName.lower() + '_nonGF.sh'

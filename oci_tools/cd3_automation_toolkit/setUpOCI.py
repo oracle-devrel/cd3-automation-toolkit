@@ -144,7 +144,15 @@ def export_dedicatedvmhosts(inputfile, outdir, prefix,config):
 
 def export_instances(inputfile, outdir, prefix,config):
     compartments = get_compartment_list('Instances')
-    Compute.export_instances(inputfile, outdir, config=config, network_compartments=compartments)
+    print("Enter values for below filters to restrict the export for Instances; Press 'Enter' to use empty value for the filter")
+    filter_str1 = "Enter comma separated list of display name patterns of the instances: "
+    filter_str2 = "Enter comma separated list of ADs of the instances eg AD1,AD2,AD3: "
+    display_name_str = input(filter_str1)
+    ad_name_str = input(filter_str2)
+    display_names =  list(map(lambda x: x.strip(), display_name_str.split(','))) if display_name_str else None
+    ad_names = list(map(lambda x: x.strip(), ad_name_str.split(','))) if ad_name_str else None
+
+    Compute.export_instances(inputfile, outdir, config=config, network_compartments=compartments, display_names = display_names, ad_names = ad_names)
     create_instances(inputfile, outdir, prefix, config)
     print("\n\nExecute tf_import_commands_instances_nonGF.sh script created under each region directory to synch TF with OCI Instances\n")
 
@@ -163,7 +171,16 @@ def export_storage():
 
 def export_block_volumes(inputfile, outdir, prefix,config):
     compartments = get_compartment_list('Block Volumes')
-    Storage.export_blockvolumes(inputfile, outdir, _config=config, network_compartments=compartments)
+    print("Enter values for below filters to restrict the export for Block Volumes; Press 'Enter' to use empty value for the filter")
+    filter_str1 = "Enter comma separated list of display name patterns of the Block Volumes: "
+    filter_str2 = "Enter comma separated list of ADs of the Block Volumes eg AD1,AD2,AD3: "
+
+    display_name_str = input(filter_str1)
+    ad_name_str = input(filter_str2)
+    display_names = list(map(lambda x: x.strip(), display_name_str.split(','))) if display_name_str else None
+    ad_names = list(map(lambda x: x.strip(), ad_name_str.split(','))) if ad_name_str else None
+
+    Storage.export_blockvolumes(inputfile, outdir, _config=config, network_compartments=compartments, display_names = display_names, ad_names = ad_names)
     create_block_volumes(inputfile, outdir, prefix, config=config)
     print("\n\nExecute tf_import_commands_blockvolumes_nonGF.sh script created under each region directory to synch TF with OCI Block Volume Objects\n")
 

@@ -3,7 +3,7 @@
 # Author: Tharun Karam
 # Oracle Consulting.
 
-import oci
+import re
 import argparse
 import sys
 import oci
@@ -84,7 +84,7 @@ def find_vnic(ins_id, config,compartment_id):
 
 
 
-def __get_instances_info(compartment_name, compartment_id, reg_name, config):
+def __get_instances_info(compartment_name, compartment_id, reg_name, config,display_names, ad_names):
     config.__setitem__("region", ct.region_dict[reg_name])
     compute = oci.core.ComputeClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
     network = oci.core.VirtualNetworkClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
@@ -95,15 +95,20 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, config):
         ins_details = compute.get_instance(instance_id=ins.id)
         # print(ins_details.data)
         if (ins.lifecycle_state != 'TERMINATED'):
-            # print(ins)
             ins_dname = ins.display_name  # instance display name
             ins_ad = ins.availability_domain  # avalibility domain
             AD_name = AD(ins_ad)
+
+            if (ad_names is not None):
+                if (not any(e in AD_name for e in ad_names)):
+                    continue
+            if (display_names is not None):
+                if (not any(e in ins_dname for e in display_names)):
+                    continue
             ins_fd = ins.fault_domain  # FD
             ins_id = ins.id
             tf_name = commonTools.check_tf_variable(ins_dname)
-            importCommands[reg_name].write(
-                "\nterraform import oci_core_instance." + tf_name + " " + str(ins.id))  # writing into tf file
+            importCommands[reg_name].write("\nterraform import \"module.instances[\\\"" + tf_name + "\\\"].oci_core_instance.instance\" " + str(ins.id))
 
             # Shape Details
             ins_shape = ins.shape
@@ -262,11 +267,6 @@ def export_instances(inputfile, outdir, config, network_compartments=[]):
     print("\nCD3 excel file should not be opened during export process!!!")
     print("Tabs Instances will be overwritten during this export process!!!\n")
 
-    # Load os_ocids template file
-    file_loader = FileSystemLoader(f'{Path(__file__).parent.parent}/templates')
-    env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
-    variable_template = env.get_template('variables-template')
-
     # Create of .sh file
     resource = 'tf_import_' + sheetName.lower()
     file_name = 'tf_import_commands_' + sheetName.lower() + '_nonGF.sh'
@@ -286,11 +286,11 @@ def export_instances(inputfile, outdir, config, network_compartments=[]):
     for reg in ct.all_regions:
         importCommands[reg].write("\n\n######### Writing import for Instances #########\n\n")
         config.__setitem__("region", ct.region_dict[reg])
-        #region = reg.capitalize()
         for ntk_compartment_name in comp_list_fetch:
-           __get_instances_info(ntk_compartment_name, ct.ntk_compartment_ids[ntk_compartment_name], reg, config)
+           __get_instances_info(ntk_compartment_name, ct.ntk_compartment_ids[ntk_compartment_name], reg, config, display_names, ad_names)
 
-    # writing ocids values into os_ocids.tf
+    # writing image ocids and SSH keys into variables file
+    var_data = {}
     for reg in ct.all_regions:
         myocids = {}
         for keys, values in os_keys.items():
@@ -298,30 +298,43 @@ def export_instances(inputfile, outdir, config, network_compartments=[]):
             if (reg == reg_name):
                 os_name = keys[len(reg_name) + 1:]
                 myocids[os_name] = values
-        # print(myocids)
-        f = open(outdir + "/" + reg + "/os_ocids.tf", "w")
-        for keys, values in myocids.items():
-            tempstr = {"var_tf_name": keys, "values": values}
-            #temp_str_test = variable_template.format(**tempstr)
-            temp_str_test = variable_template.render(tempstr)
-            f.write(temp_str_test)
-        f.close()
-    tempstr = {}
-    # writing ssh_keys_metadata into ssh_metadata
-    for reg in ct.all_regions:
-        myocids = {}
+
+        mykeys = {}
         for keys, values in instance_keys.items():
             reg_name = keys.split("-")[0]
             if (reg == reg_name):
                 key_name = keys[len(reg_name) + 1:]
-                myocids[key_name] = values
-        # print(myocids)
-        f = open(outdir + "/" + reg + "/ssh_metadata.tf", "w")
-        for keys, values in myocids.items():
-            tempstr = {"var_tf_name": keys, "values": values}
-            temp_str_test = variable_template.render(tempstr)
-            #temp_str_test = variable_template.format(**tempstr)
-            f.write(temp_str_test)
+                mykeys[key_name] = values
+
+        file = f'{outdir}/{reg}/variables_{reg}.tf'
+        # Read variables file data
+        with open(file, 'r') as f:
+            var_data[reg] = f.read()
+
+        tempStrOcids = ""
+        for k, v in myocids.items():
+            v = "\""+v+"\""
+            tempStrOcids = "\t" + k + " = " + v + "\n" + tempStrOcids
+
+        tempStrOcids = "\n" + tempStrOcids
+        tempStrOcids = "#START_instance_source_ocids#" + tempStrOcids + "\t#instance_source_ocids_END#"
+        var_data[reg] = re.sub('#START_instance_source_ocids#.*?#instance_source_ocids_END#', tempStrOcids, var_data[reg],
+                               flags=re.DOTALL)
+
+        tempStrKeys = ""
+        for k, v in mykeys.items():
+            v = "\"" + v + "\""
+            tempStrKeys = "\t" + k + " = " + v + "\n" + tempStrKeys
+
+        tempStrKeys = "\n" + tempStrKeys
+        tempStrKeys = "#START_instance_ssh_keys#" + tempStrKeys + "\t#instance_ssh_keys_END#"
+        var_data[reg] = re.sub('#START_instance_ssh_keys#.*?#instance_ssh_keys_END#', tempStrKeys,
+                               var_data[reg],
+                               flags=re.DOTALL)
+
+        # Write variables file data
+        with open(file, "w") as f:
+            f.write(var_data[reg])
         f.close()
 
     # write data into file

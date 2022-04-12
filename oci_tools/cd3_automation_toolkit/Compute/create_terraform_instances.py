@@ -68,7 +68,7 @@ def create_terraform_instances(inputfile, outdir, prefix, config):
         commonTools.backup_file(srcdir, resource, auto_tfvars_filename)
         tfStr[eachregion] = ''
 
-
+    subnets=parseSubnets(filename)
 
     for i in df.index:
         region = str(df.loc[i, 'Region'])
@@ -134,9 +134,21 @@ def create_terraform_instances(inputfile, outdir, prefix, config):
 
             if columnname == "Subnet Name":
                 subnet_tf_name = columnvalue.strip()
-                if ("ocid1.subnet.oc1" not in subnet_tf_name):
-                    subnet_tf_name = commonTools.check_tf_variable(subnet_tf_name)
-                tempdict = {'subnet_tf_name': subnet_tf_name}
+                if ("ocid1.subnet.oc1" in subnet_tf_name):
+                    network_compartment_id = ""
+                    vcn_name = ""
+                    subnet_id = subnet_tf_name
+                else:
+                    try:
+                        key = region, subnet_tf_name
+                        network_compartment_id = subnets.vcn_subnet_map[key][0]
+                        vcn_name = subnets.vcn_subnet_map[key][1]
+                        subnet_id = subnets.vcn_subnet_map[key][2]
+                    except Exception as e:
+                        print("Invalid Subnet Name specified for row "+str(i+3) +". It Doesnt exist in Subnets sheet. Exiting!!!")
+                        exit()
+
+                tempdict = {'network_compartment_id': network_compartment_id, 'vcn_name': vcn_name, 'subnet_id': subnet_id}
 
             if columnname == 'Display Name':
                 columnvalue = columnvalue.strip()

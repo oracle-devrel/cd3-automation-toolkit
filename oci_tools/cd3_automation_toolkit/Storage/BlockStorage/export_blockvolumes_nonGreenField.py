@@ -66,11 +66,19 @@ def volume_attachment_info(compute,ct,volume_id):
     return attachments,attachment_id, instance_name, attachment_type
 
 
-def print_blockvolumes(region, BVOLS, bvol, compute, ct, values_for_column, ntk_compartment_name):
+def print_blockvolumes(region, BVOLS, bvol, compute, ct, values_for_column, ntk_compartment_name, ad_names, display_names):
     volume_comp = ''
     for blockvols in BVOLS.data:
         volume_id = blockvols.id
         volume_compartment_id = blockvols.compartment_id
+        AD_name = blockvols.availability_domain
+        d_name = blockvols.display_name
+        if (ad_names is not None):
+            if (not any(e in AD_name for e in ad_names)):
+                continue
+        if (display_names is not None):
+            if (not any(e in d_name for e in display_names)):
+                continue
         attachments, attachment_id, instance_name, attachment_type = volume_attachment_info(compute, ct,volume_id)
         asset_assignment_id, asset_policy_name, policy_comp_name = policy_info(bvol, volume_id,ct)
         block_tf_name = commonTools.check_tf_variable(blockvols.display_name)
@@ -81,12 +89,13 @@ def print_blockvolumes(region, BVOLS, bvol, compute, ct, values_for_column, ntk_
                 volume_comp = comp_name
                 comp_done_ids.append(volume_compartment_id)
 
-        importCommands[region.lower()].write("\nterraform import oci_core_volume." + block_tf_name + " " + str(blockvols.id))
+        importCommands[region.lower()].write("\nterraform import \"module.blockvolume[\\\"" + block_tf_name + "\\\"].oci_core_volume.block_volume\" " + str(blockvols.id))
         if attachment_id != '':
-            importCommands[region.lower()].write("\nterraform import oci_core_volume_attachment." + block_tf_name +"_volume_attachment " + str(attachment_id))
-        if asset_assignment_id != '':
-            importCommands[region.lower()].write("\nterraform import oci_core_volume_backup_policy_assignment." + block_tf_name +"_bkupPolicy " + str(asset_assignment_id))
+            importCommands[region.lower()].write("\nterraform import \"module.blockvolume[\\\"" + block_tf_name + "\\\"].oci_core_volume_attachment.block_vol_instance_attachment\" " + str(attachment_id))
 
+        if asset_assignment_id != '':
+        #importCommands[region.lower()].write("\nterraform import oci_core_volume_backup_policy_assignment." + block_tf_name +"_bkupPolicy " + str(asset_assignment_id))
+            pass
         for col_header in values_for_column:
             if col_header == 'Region':
                 values_for_column[col_header].append(region)
@@ -127,7 +136,7 @@ def parse_args():
     return parser.parse_args()
 
 
-def export_blockvolumes(inputfile, _outdir, _config, network_compartments=[]):
+def export_blockvolumes(inputfile, _outdir, _config, network_compartments=[], display_names = [], ad_names = []):
     global tf_import_cmd
     global sheet_dict
     global importCommands
@@ -185,18 +194,12 @@ def export_blockvolumes(inputfile, _outdir, _config, network_compartments=[]):
         importCommands[reg].write("\n\n######### Writing import for Block Volumes #########\n\n")
         config.__setitem__("region", ct.region_dict[reg])
         region = reg.capitalize()
-        #comp_ocid_done = []
         compute = ComputeClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
         bvol = BlockstorageClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
 
         for ntk_compartment_name in comp_list_fetch:
-            #if ct.ntk_compartment_ids[ntk_compartment_name] not in comp_ocid_done:
-            #    if (input_compartment_names is not None and ntk_compartment_name not in input_compartment_names):
-            #        continue
-            #    comp_ocid_done.append(ct.ntk_compartment_ids[ntk_compartment_name])
-
                 BVOLS = oci.pagination.list_call_get_all_results(bvol.list_volumes,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name],lifecycle_state="AVAILABLE")
-                print_blockvolumes(region, BVOLS, bvol, compute, ct, values_for_column, ntk_compartment_name)
+                print_blockvolumes(region, BVOLS, bvol, compute, ct, values_for_column, ntk_compartment_name, ad_names, display_names)
 
         with open(script_file, 'a') as importCommands[reg]:
             importCommands[reg].write('\n\nterraform plan\n')

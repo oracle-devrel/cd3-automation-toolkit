@@ -8,65 +8,53 @@
 
 instances = {
 {% endif %}
- {{ display_tf_name }} =  {
+   {{ display_tf_name }} =  {
             availability_domain  = {{ availability_domain }}
             compartment_id       = "{{ compartment_tf_name }}"
             shape                = "{{ shape[0] }}"
             display_name         = "{{ display_tf_name }}"
-
             {% if boot_volume_size_in_gbs %}
             boot_volume_size_in_gbs = {{ boot_volume_size_in_gbs }}
             {% else %}
             boot_volume_size_in_gbs = null
             {% endif %}
-
             {% if fault_domain %}
             fault_domain         = "{{ fault_domain }}"
             {% else %}
             fault_domain         = null
             {% endif %}
-
             {% if dedicated_vm_host_tf %}
             dedicated_vm_host_id = "{{ dedicated_vm_host_tf }}"
             {% else %}
             dedicated_vm_host_id = null
             {% endif %}
-
-            {% if shape[1] and shape[1] != '' %}
-            {# Note: RAM = ocpus x 16GB #}
-            {# Note: # of vNICs = ocpus x 2 #}
-            ocpus            = "{{ shape[1] }}"
-            {% else %}
-            ocpus            = null
-            {% endif %}
-
-            {# The "os" below must be a variable in the variables.tf file with the appropriate image OCID as its value #}
-            {# See variables_<region>.tf for an example #}
             source_id        =  "{{ source_details[1] }}"
             source_type      = "{{ source_details[0] }}"
 
-            #Required
-            subnet_id        = "{{ subnet_tf_name }}"
-
+            network_compartment_id = "{{network_compartment_id}}"
+            vcn_name         = "{{vcn_name}}"
+            subnet_id        = "{{ subnet_id }}"
             {% if pub_address %}
             assign_public_ip = {{ pub_address }}
             {% else %}
             assign_public_ip =  null
             {% endif %}
-
-            #Optional
             {% if ip_address %}
             private_ip       = "{{ ip_address }}"
             {% else %}
             private_ip       = null
             {% endif %}
-
             {% if nsg_ids %}
             nsg_ids          = [{{ nsg_ids }}]
             {% else %}
             nsg_ids          = []
             {% endif %}
 
+            {% if shape[1] and shape[1] != '' %}
+            ocpus            = "{{ shape[1] }}"
+            {% else %}
+            ocpus            = null
+            {% endif %}
             {% if memory_in_gbs %}
             memory_in_gbs = {{ memory_in_gbs }}
             {% else %}
@@ -78,13 +66,11 @@ instances = {
             {% else %}
             capacity_reservation_id = null
             {% endif %}
-
             {% if ssh_key_var_name != '' %}
             ssh_authorized_keys  = "{{ ssh_key_var_name }}"
             {% else %}
             ssh_authorized_keys  = ""
             {% endif %}
-
 
           {#  ##All optional params required for TF root module is below ##  #}
           {#  {% if extended_metadata %}
@@ -224,13 +210,12 @@ instances = {
             {% else %}
             kms_key_id = null
             {% endif %} #}
-
             {#  ##Do not modify below this line##  #}
             {#                                     #}
             {#  ###Section for adding Defined and Freeform Tags###  #}
             {% if defined_tags and defined_tags != 'nan' and defined_tags != '' %}
               {% if defined_tags[0] %}
-                defined_tags = {
+            defined_tags = {
                 {% for tags in defined_tags  %}
                     {% if not loop.last %}
                         "{{ tags[0]  }}"= "{{ tags[1] }}" ,
@@ -240,14 +225,14 @@ instances = {
                 {% endfor %}
                 }
               {% else %}
-                defined_tags = {}
+            defined_tags = {}
                 {% endif %}
                {% else %}
-                defined_tags = {}
+            defined_tags = {}
                {% endif %}
                     {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' %}
                         {% if freeform_tags[0] %}
-                freeform_tags = {
+            freeform_tags = {
                             {% for tags in freeform_tags %}
                                 {% if not loop.last  %}
                         "{{ tags[0] }}"="{{ tags[1] }}",
@@ -258,8 +243,8 @@ instances = {
                             }
                         {% endif %}
                     {% else %}
-                freeform_tags = {}
+            freeform_tags = {}
                     {% endif %}
             {#  ###Section for adding Defined and Freeform Tags ends here###  #}
-            },
+    },
  }
