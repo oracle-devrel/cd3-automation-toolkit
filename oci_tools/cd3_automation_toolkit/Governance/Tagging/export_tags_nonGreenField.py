@@ -94,7 +94,7 @@ def  print_tags(values_for_column_tags,region, ntk_compartment_name, tag, tag_ke
       importCommands[region].write("\nterraform import \"module.tag-keys[\\\""+tf_name_namespace + '-' + tf_name_key + '\\\"].oci_identity_tag.tag\" ' + "tagNamespaces/"+ str(tag.id) +"/tags/\"" + str(tag_key_name) + "\"")
     if ( tag_default_comp != ''):
         for comp in tag_default_comps_map[tag_default_comp]:
-            importCommands[region].write("\nterraform import \"module.tag-defaults[\\\""+ tf_name_namespace+'-' +tf_name_key + '-' +commonTools.check_tf_variable(comp)+ '-default'+ '\\\"].oci_identity_tag_default.tag_default\" ' + str(tag_default_id))
+            importCommands[region].write("\nterraform import \"module.tag-defaults[\\\""+ tf_name_namespace+'-' +tf_name_key + '-' +commonTools.check_tf_variable(comp).strip()+ '-default'+ '\\\"].oci_identity_tag_default.tag_default\" ' + str(tag_default_id))
 
 
 def parse_args():
