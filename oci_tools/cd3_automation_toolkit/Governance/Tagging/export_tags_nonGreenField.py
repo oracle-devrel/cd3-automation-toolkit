@@ -88,13 +88,13 @@ def  print_tags(values_for_column_tags,region, ntk_compartment_name, tag, tag_ke
     tf_name_namespace = commonTools.check_tf_variable(tagname)
     tf_name_key = commonTools.check_tf_variable(tag_key_name)
     if (tag.id not in tf_name_namespace_list):
-        importCommands[region].write("\nterraform import module.tag-namespaces[\"" + tf_name_namespace + "\"].oci_identity_tag_namespace.tag_namespace " + str(tag.id))
+        importCommands[region].write("\nterraform import \"module.tag-namespaces[\\\"" + tf_name_namespace + "\\\"].oci_identity_tag_namespace.tag_namespace\" " + str(tag.id))
         tf_name_namespace_list.append(tag.id)
     if ( str(tag_key) != "Nan" ):
-      importCommands[region].write("\nterraform import module.tag-keys[\""+tf_name_namespace + '-' + tf_name_key + '\"].oci_identity_tag.tag ' + "tagNamespaces/"+ str(tag.id) +"/tags/\"" + str(tag_key_name) + "\"")
+      importCommands[region].write("\nterraform import \"module.tag-keys[\\\""+tf_name_namespace + '-' + tf_name_key + '\\\"].oci_identity_tag.tag\" ' + "tagNamespaces/"+ str(tag.id) +"/tags/\"" + str(tag_key_name) + "\"")
     if ( tag_default_comp != ''):
-        for comp in tag_default_comp:
-            importCommands[region].write("\nterraform import module.tag-defaults[\""+ tf_name_namespace+'-' +tf_name_key + '-' +comp+ '-default'+ '\"].oci_identity_tag_default.tag_default ' + str(tag_default_id))
+        for comp in tag_default_comps_map[tag_default_comp]:
+            importCommands[region].write("\nterraform import \"module.tag-defaults[\\\""+ tf_name_namespace+'-' +tf_name_key + '-' +comp+ '-default'+ '\\\"].oci_identity_tag_default.tag_default\" ' + str(tag_default_id))
 
 
 def parse_args():

@@ -255,7 +255,7 @@ def export_terraform_drg_routes(inputfile, outdir, prefix, config, non_gf_tenanc
 
 
 def create_tags():
-    options = [Option(None, Governance.create_namespace_tagkey, 'Processing Tags Tab')]
+    options = [Option(None, Governance.create_terraform_tags, 'Processing Tags Tab')]
     execute_options(options, inputfile, outdir, prefix,config=config)
 
 def create_network(execute_all=False):

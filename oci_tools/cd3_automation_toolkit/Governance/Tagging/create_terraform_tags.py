@@ -33,22 +33,23 @@ def parse_args():
 
 
 # If input in cd3 file
-def create_namespace_tagkey(inputfile, outdir, prefix, config):
+def create_terraform_tags(inputfile, outdir, prefix, config):
     filename = inputfile
     configFileName = config
 
     ct = commonTools()
     ct.get_subscribedregions(configFileName)
 
+    sheetName = "Tags"
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
     namespace = env.get_template('tag-namespace-template')
     tagkey = env.get_template('tag-key-template')
     defaulttag = env.get_template('tag-default-template')
-    namespaces_auto_tfvars_filename = "tag-namespaces-tagging.auto.tfvars"
-    tagkey_auto_tfvars_filename = "tag-keys-tagging.auto.tfvars"
-    default_tags_auto_tfvars_filename = "tag-defaults-tagging.auto.tfvars"
+    namespaces_auto_tfvars_filename = "_" + sheetName.lower() + "-namespaces.auto.tfvars"
+    tagkey_auto_tfvars_filename = "_" + sheetName.lower() + "-keys.auto.tfvars"
+    default_tags_auto_tfvars_filename = "_" + sheetName.lower() + "-defaults.auto.tfvars"
 
     tagnamespace_list = {}
     defaulttagtemp = {}
@@ -56,7 +57,7 @@ def create_namespace_tagkey(inputfile, outdir, prefix, config):
     tagkeytemp = {}
 
     # Read cd3 using pandas dataframe
-    df, col_headers = commonTools.read_cd3(filename, "Tags")
+    df, col_headers = commonTools.read_cd3(filename, sheetName)
 
     df = df.dropna(how='all')
     df = df.reset_index(drop=True)
@@ -64,9 +65,11 @@ def create_namespace_tagkey(inputfile, outdir, prefix, config):
 
     # Take backup of files
     for reg in ct.all_regions:
-        resource='Tagging'
+        resource= sheetName.lower()
         srcdir = outdir + "/" + reg + "/"
-        commonTools.backup_file(srcdir, resource, "-tagging.auto.tfvars")
+        commonTools.backup_file(srcdir, resource, namespaces_auto_tfvars_filename)
+        commonTools.backup_file(srcdir, resource, tagkey_auto_tfvars_filename)
+        commonTools.backup_file(srcdir, resource, default_tags_auto_tfvars_filename)
 
         tagnamespace_list[reg] = []
         defaulttagtemp[reg] = ''
@@ -260,7 +263,7 @@ def create_namespace_tagkey(inputfile, outdir, prefix, config):
         if defaulttagtemp[reg] != '':
 
             defaulttagtemp[reg] = defaulttag.render(tempStr, count = 0).replace("## Add new tag defaults for "+reg.lower()+" here", defaulttagtemp[reg])
-            outfile = outdir + "/" + reg + "/" + prefix + '_' + default_tags_auto_tfvars_filename
+            outfile = outdir + "/" + reg + "/" + prefix + default_tags_auto_tfvars_filename
             oname = open(outfile, "w+")
             print("Writing to "+outfile)
             oname.write(defaulttagtemp[reg])
@@ -269,7 +272,7 @@ def create_namespace_tagkey(inputfile, outdir, prefix, config):
         if namespacetemp[reg] != '':
 
             namespacetemp[reg] = namespace.render(tempStr, count = 0).replace("## Add new tag namespaces for "+reg.lower()+" here", namespacetemp[reg])
-            outfile = outdir + "/" + reg + "/" + prefix + '_' + namespaces_auto_tfvars_filename
+            outfile = outdir + "/" + reg + "/" + prefix + namespaces_auto_tfvars_filename
             oname = open(outfile, "w+")
             print("Writing to "+outfile)
             oname.write(namespacetemp[reg])
@@ -278,7 +281,7 @@ def create_namespace_tagkey(inputfile, outdir, prefix, config):
         if tagkeytemp[reg] != '':
 
             tagkeytemp[reg] = tagkey.render(tempStr, count = 0).replace("## Add new tag keys for "+reg.lower()+" here", tagkeytemp[reg])
-            outfile = outdir + "/" + reg + "/" + prefix + '_' + tagkey_auto_tfvars_filename
+            outfile = outdir + "/" + reg + "/" + prefix + tagkey_auto_tfvars_filename
             oname = open(outfile, "w+")
             print("Writing to "+outfile)
             oname.write(tagkeytemp[reg])
@@ -287,4 +290,4 @@ def create_namespace_tagkey(inputfile, outdir, prefix, config):
 if __name__ == '__main__':
     args = parse_args()
     # Execution of the code begins here
-    create_namespace_tagkey(args.file, args.outdir, args.prefix,args.config)
+    create_terraform_tags(args.file, args.outdir, args.prefix,args.config)

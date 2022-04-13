@@ -9,7 +9,7 @@ resource "oci_identity_tag_default" "tag_default" {
     #Required
     compartment_id = var.compartment_id
     tag_definition_id = var.tag_definition_id
-    value = var.default_value
+    value = var.value
 
     #Optional
     is_required = var.is_required

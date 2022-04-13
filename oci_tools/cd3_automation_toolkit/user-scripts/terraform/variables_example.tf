@@ -385,7 +385,7 @@ variable "tag_keys" {
   default     = {}
 }
 
-variable "tag-defaults" {
+variable "tag_defaults" {
   description = "To make the Tag keys as default to compartments"
   type        = map(any)
   default     = {}

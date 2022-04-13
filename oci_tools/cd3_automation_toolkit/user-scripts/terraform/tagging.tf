@@ -6,7 +6,7 @@
 ############################
 
 module "tag-namespaces" {
-    source   = "./modules/governance/tagging/tag-namespace"
+    source   = "./modules/tagging/tag-namespace"
     for_each = (var.tag_namespaces != null || var.tag_namespaces != {}) ? var.tag_namespaces : {}
 
     #Required
@@ -22,7 +22,7 @@ module "tag-namespaces" {
 }
 
 module "tag-keys" {
-    source   = "./modules/governance/tagging/tag-key"
+    source   = "./modules/tagging/tag-key"
     for_each = (var.tag_keys != null || var.tag_keys != {}) ? var.tag_keys : {}
 
     #Required
@@ -40,13 +40,13 @@ module "tag-keys" {
 }
 
 module "tag-defaults" {
-    source   = "./modules/governance/tagging/tag-default"
-    for_each = (var.tag-defaults != null || var.tag-defaults != {}) ? var.tag-defaults : {}
+    source   = "./modules/tagging/tag-default"
+    for_each = (var.tag_defaults != null || var.tag_defaults != {}) ? var.tag_defaults : {}
 
     #Required
     compartment_id = try(zipmap(data.oci_identity_compartments.compartments.compartments.*.name, data.oci_identity_compartments.compartments.compartments.*.id)[each.value.compartment_name], var.compartment_ocids[each.value.compartment_name])
-    tag_definition_id = length(regexall("ocid1.tagdefinition.oc1*", each.value.tag_definition_name)) > 0 ? each.value.tag_definition_name : merge(module.tag-keys.*...)[each.value.tag_definition_name]["tag_default_tf_id"]
-    value = each.value.name
+    tag_definition_id = length(regexall("ocid1.tagdefinition.oc1*", each.value.tag_definition_name)) > 0 ? each.value.tag_definition_name : merge(module.tag-keys.*...)[each.value.tag_definition_name]["tag_key_tf_id"]
+    value = each.value.value
 
     #Optional
     is_required = each.value.is_required != "" ? each.value.is_required : false

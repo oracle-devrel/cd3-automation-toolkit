@@ -26,6 +26,7 @@ terraform {
 /*
 # Uncomment and update to use Object Storage Bucket as the backend
 # !!! WARNING !!! Terraform State Lock is not supported in this approach; use Oracle Resource Manager for the same
+# End Point Format: https://<namespace>.compat.objectstorage.<region>.oraclecloud.com
 # Reference: https://docs.oracle.com/en-us/iaas/Content/API/SDKDocs/terraformUsingObjectStore.htm
 terraform {
   backend "s3" {

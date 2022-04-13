@@ -19,11 +19,15 @@ tag_keys = {
             #Optional
             is_cost_tracking = {{ cost_tracking }}
             {% if validator and validator[0] != '' %}
+            validator = [{
             validator_type = "{{ validator[0] }}"
             validator_values = [{{ validator[1] }}]
+            }]
             {% else %}
+            validator = [{
             validator_type = ""
             validator_values = []
+            }]
             {% endif %}
             is_retired = false
 
