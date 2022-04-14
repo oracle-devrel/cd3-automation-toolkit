@@ -91,10 +91,10 @@ def  print_tags(values_for_column_tags,region, ntk_compartment_name, tag, tag_ke
         importCommands[region].write("\nterraform import \"module.tag-namespaces[\\\"" + tf_name_namespace + "\\\"].oci_identity_tag_namespace.tag_namespace\" " + str(tag.id))
         tf_name_namespace_list.append(tag.id)
     if ( str(tag_key) != "Nan" ):
-      importCommands[region].write("\nterraform import \"module.tag-keys[\\\""+tf_name_namespace + '-' + tf_name_key + '\\\"].oci_identity_tag.tag\" ' + "tagNamespaces/"+ str(tag.id) +"/tags/\"" + str(tag_key_name) + "\"")
+      importCommands[region].write("\nterraform import \"module.tag-keys[\\\""+tf_name_namespace + '_' + tf_name_key + '\\\"].oci_identity_tag.tag\" ' + "tagNamespaces/"+ str(tag.id) +"/tags/\"" + str(tag_key_name) + "\"")
     if ( tag_default_comp != ''):
         for comp in tag_default_comps_map[tag_default_comp]:
-            importCommands[region].write("\nterraform import \"module.tag-defaults[\\\""+ tf_name_namespace+'-' +tf_name_key + '-' +commonTools.check_tf_variable(comp).strip()+ '-default'+ '\\\"].oci_identity_tag_default.tag_default\" ' + str(tag_default_id))
+            importCommands[region].write("\nterraform import \"module.tag-defaults[\\\""+ tf_name_namespace+'_' +tf_name_key + '_' +commonTools.check_tf_variable(comp).strip()+ '-default'+ '\\\"].oci_identity_tag_default.tag_default\" ' + str(defaultcomp_to_tagid_map[tf_name_key+"-"+commonTools.check_tf_variable(comp)]))
 
 
 def parse_args():
@@ -113,6 +113,7 @@ def export_tags_nongreenfield(inputfile, outdir, _config, network_compartments):
     global importCommands
     global config
     global tag_default_comps_map
+    global defaultcomp_to_tagid_map
 
     cd3file = inputfile
     configFileName = _config
@@ -130,6 +131,7 @@ def export_tags_nongreenfield(inputfile, outdir, _config, network_compartments):
     ct.get_network_compartment_ids(config['tenancy'],"root",configFileName)
     tag_default_comps_map = {}
     tag_name_id_map = {}
+    defaultcomp_to_tagid_map = {}
 
     # Get dict for columns from Excel_Columns
     sheet_dict_tags = ct.sheet_dict["Tags"]
@@ -164,6 +166,7 @@ def export_tags_nongreenfield(inputfile, outdir, _config, network_compartments):
             if tag_defaults.data != []:
                 for tag_default in tag_defaults.data:
                     add_values_in_dict(tag_default_comps_map, tag_default.tag_definition_id, [ntk_compartment_name])
+                    defaultcomp_to_tagid_map.update({ commonTools.check_tf_variable(str(tag_default.tag_definition_name).replace('\\','\\\\'))+"-"+commonTools.check_tf_variable(ntk_compartment_name) : tag_default.id })
 
     comp_ocid_done = []
     for ntk_compartment_name in ct.ntk_compartment_ids:
