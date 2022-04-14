@@ -184,7 +184,7 @@ def create_terraform_tags(inputfile, outdir, prefix, config):
                     exit(1)
                 if columnvalue != '':
                     key_tf_name = commonTools.check_tf_variable(columnvalue)
-                    key_tf_name = namespace_tf_name +"-"+key_tf_name
+                    key_tf_name = namespace_tf_name +"_"+key_tf_name
                     tempdict = {'key_tf_name':key_tf_name}
 
             if columnname == 'Tag Description':
