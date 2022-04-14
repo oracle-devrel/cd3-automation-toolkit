@@ -11,12 +11,10 @@ tag_namespaces = {
 }{% else %}
 
     {{ namespace_tf_name }} = {
-            #Required
             compartment_name = "{{ compartment_tf_name }}"
             description = "{{ description }}"
             name = "{{ tag_namespace }}"
 
-            #Optional
             is_retired = "false" {#  Default Value  #}
 
             {#  ##Do not modify below this line##  #}

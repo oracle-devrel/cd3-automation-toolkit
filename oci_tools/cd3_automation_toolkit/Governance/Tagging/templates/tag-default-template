@@ -12,12 +12,10 @@ tag_defaults = {
 
     {% for compartments in default_tag_compartment %}
     {{ key_tf_name }}-{{ compartments }}-default = {
-            #Required
-            tag_definition_name = "{{ key_tf_name }}" # Name of the tag definition name, format: namespace_tagkeyname
-            compartment_name = "{{ compartments }}" # Name of the compartment where the tag must be applied as default, format: parentcompname__childcompname
+            tag_definition_name = "{{ key_tf_name }}"
+            compartment_name = "{{ compartments }}"
             value = "{{ default_tag_value }}"
 
-            #Optional
             is_required =  {{ is_required }}
             },
     {% endfor %}
