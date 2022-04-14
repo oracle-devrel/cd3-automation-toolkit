@@ -11,12 +11,10 @@ tag_keys = {
 }{% else %}
 
     {{ key_tf_name }} = {
-            #Required
             tag_namespace_name = "{{ namespace_tf_name }}"
             description = "{{ description_keys }}"
             name = "{{ tag_keys }}"
 
-            #Optional
             is_cost_tracking = {{ cost_tracking }}
             {% if validator and validator[0] != '' %}
             validator = [{
