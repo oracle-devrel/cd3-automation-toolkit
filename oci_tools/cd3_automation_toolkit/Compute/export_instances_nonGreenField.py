@@ -235,7 +235,7 @@ def parse_args():
     return parser.parse_args()
 
 
-def export_instances(inputfile, outdir, config, network_compartments=[]):
+def export_instances(inputfile, outdir, config, network_compartments=[], display_names=[],ad_names=[]):
     cd3file = inputfile
     input_compartment_names = network_compartments
 
