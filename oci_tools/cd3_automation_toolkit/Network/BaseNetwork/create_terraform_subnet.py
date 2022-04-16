@@ -79,6 +79,7 @@ def create_terraform_subnet(inputfile, outdir, prefix, non_gf_tenancy, config, m
 
         vcn_tf_name = commonTools.check_tf_variable(tempStr['vcn_name'].strip())
         name = tempStr['subnet_name']
+
         tempStr['vcn_tf_name'] = vcn_tf_name
         if (vcnInfo.subnet_name_attach_cidr == 'y'):
                 if (str(ad_name) != ''):
