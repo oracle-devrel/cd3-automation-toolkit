@@ -14,23 +14,20 @@ exa_infra = {
         display_name = "{{ exadata_infra_display_name }}"
         shape = "{{ shape }}"
 
-        {% if compute_count %}
-        compute_count = "{{ database_servers }}"
+        {% if database_servers %}
+        compute_count = {{ database_servers }}
         {% else %}
         compute_count = null
         {% endif %}
-        {% if storage_count %}
-        storage_count = "{{ storage_servers }}"
+        {% if storage_servers %}
+        storage_count = {{ storage_servers }}
         {% else %}
         storage_count = null
         {% endif %}
-
-        {% if customer_contact_emails %}
-            customer_contacts {
-        email = "{{ customer_contact_emails }}"
-        }
+        {% if customer_contacts_email %}
+        customer_contacts_email = "{{ customer_contacts_email }}"
         {% else %}
-        email = null
+        customer_contacts_email = null
         {% endif %}
 
      {# maintenance_window_preference = "CUSTOM_PREFERENCE"

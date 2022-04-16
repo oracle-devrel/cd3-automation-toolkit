@@ -13,7 +13,7 @@ module "exa-infra" {
   display_name        = each.value.display_name
   shape               = each.value.shape
   compute_count       = each.value.compute_count
-  #     customer_contacts_email = each.value.customer_contacts_email
+  #   customer_contacts_email = each.value.customer_contacts_email
   defined_tags  = each.value.defined_tags
   freeform_tags = each.value.freeform_tags
   storage_count = each.value.storage_count

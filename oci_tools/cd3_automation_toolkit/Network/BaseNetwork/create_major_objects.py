@@ -375,6 +375,7 @@ def create_major_objects(inputfile, outdir, prefix, non_gf_tenancy, config, modi
         vcn_ngw = tempStr['ngw_required'].strip()
         vcn_sgw = tempStr['sgw_required'].strip()
         vcn_lpg = tempStr['lpg_required']
+        tempStr['vcn_tf_name'] = vcn_tf_name
         #vcn_lpg = tempStr['lpg_required'].strip()
         hub_spoke_none = tempStr['hub_spoke_peer_none'].strip()
         compartment_var_name = str(tempStr['compartment_name']).strip()
@@ -397,7 +398,6 @@ def create_major_objects(inputfile, outdir, prefix, non_gf_tenancy, config, modi
             if (vcn_igw == "y"):
                 igw_name = vcn_name + "_igw"
                 tempStr['igw_name'] = igw_name
-
 
             # use name provided in input
             else:
