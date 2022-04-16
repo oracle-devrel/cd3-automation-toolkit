@@ -92,8 +92,6 @@ class commonTools():
                     self.home_region = k
                 if (rs.region_name == v):
                     self.all_regions.append(k)
-            self.all_regions=['ashburn']
-
 
     #Get Compartment OCIDs
     def get_network_compartment_ids(self,c_id, c_name,configFileName):
