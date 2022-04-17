@@ -26,7 +26,7 @@ resource "oci_load_balancer_listener" "listener" {
   }
   hostname_names      = var.hostname_names
   path_route_set_name = var.path_route_set_name
-  routing_policy_name = var.routing_policy_name
+  routing_policy_name = var.routing_policy_name != "" ?  var.routing_policy_name : null
   rule_set_names      = var.rule_set_names
 
   dynamic "ssl_configuration" {

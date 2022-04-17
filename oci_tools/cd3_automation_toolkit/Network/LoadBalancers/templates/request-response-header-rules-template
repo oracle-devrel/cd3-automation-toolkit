@@ -1,5 +1,4 @@
-    request_response_header_rules = [{
-            #Required
+            {
             action = "{{ action }}"
             header = "{{ header }}"
             {% if prefix and prefix !='' %}
@@ -17,5 +16,5 @@
             {% else %}
             value = ""
             {% endif %}
-        }]
-    ## Add_rules_here ##
+            },
+    ## Add_request_response_header_rules_here ##

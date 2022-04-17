@@ -10,9 +10,21 @@ rule_sets = {
   ##Add New Rule Sets for {{ region.lower() }} here##
 }{% else %}
     {{ lbr_tf_name}}_{{ rule_set_tf_name }} = {
-        items = [{
-        ## Add_rules_here ##
-        }]
+        access_control_rules = [
+    ## Add_access_control_rules_here ##
+        ]
+        access_control_method_rules = [
+    ## Add_access_control_method_rules_here ##
+        ]
+        http_header_rules = [
+    ## Add_http_header_rules_here ##
+        ]
+        uri_redirect_rules = [
+    ## Add_uri_redirect_rules_here ##
+        ]
+        request_response_header_rules = [
+    ## Add_request_response_header_rules_here ##
+        ]
         load_balancer_name = "{{ lbr_tf_name }}"
         name = "{{ rule_set_name }}"
     },

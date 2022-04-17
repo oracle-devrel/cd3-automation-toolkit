@@ -1,16 +1,13 @@
-    uri_redirect_rules = [{
+            {
             action = "{{ action }}"
-
             attribute_name = "{{ attribute_name }}"
             attribute_value = "{{ attribute_value }}"
-
             operator = "{{ operator }}"
-
             host = "{{ host }}"
             path = "{{ path }}"
             port = "{{ port }}"
             protocol = "{{ protocol }}"
             query = "{{ redirect_uri_query }}"
             response_code = "{{ response_code }}"
-        }]
-    ## Add_rules_here ##
+            },
+    ## Add_uri_redirect_rules_here ##

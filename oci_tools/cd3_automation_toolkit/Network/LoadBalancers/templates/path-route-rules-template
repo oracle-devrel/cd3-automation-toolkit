@@ -1,6 +1,6 @@
         {
             #Required
-            backend_set_name = "{{ lbr_tf_name }}_{{ backend_set_tf_name }}"
+            backend_set_name = "{{ backend_set_tf_name }}"
             path = "{{ path }}"
             match_type = "{{ match_type }}"
         },

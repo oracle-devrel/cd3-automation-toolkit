@@ -1,7 +1,7 @@
-    access_control_rules = [{
+            {
             action = "{{ action }}"
             attribute_name = "{{ attribute_name }}"
             attribute_value = {{ attribute_value }}
             description = "{{ description }}"
-            }]
-    ## Add_rules_here ##
+            },
+    ## Add_access_control_rules_here ##

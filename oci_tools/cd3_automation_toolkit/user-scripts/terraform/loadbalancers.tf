@@ -209,7 +209,7 @@ output "path_route_sets_id_map" {
 
 module "rule-sets" {
   source   = "./modules/loadbalancer/lb-rule-set"
-  for_each = var.path_route_sets != null ? var.path_route_sets : {}
+  for_each = var.rule_sets != null ? var.rule_sets : {}
 
   #Required
   load_balancer_id = length(regexall("ocid1.loadbalancer.oc1*", each.value.load_balancer_name)) > 0 ? each.value.load_balancer_name : merge(module.load-balancers.*...)[each.value.load_balancer_name]["load_balancer_tf_id"]

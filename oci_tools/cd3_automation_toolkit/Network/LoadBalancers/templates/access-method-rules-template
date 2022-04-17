@@ -1,8 +1,6 @@
-    access_control_method_rules =  [{
+            {
             action = "{{ action }}"
-
-            #Optional
             allowed_methods = {{ method_list }}
             status_code = "{{ status_code }}"
-        }]
-    ## Add_rules_here ##
+            },
+    ## Add_access_control_method_rules_here ##
