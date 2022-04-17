@@ -1,0 +1,35 @@
+{% if (skeleton and count == 0) %}
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+
+#############################
+# Network
+# Backends - tfvars
+#############################
+
+backends = {
+  ##Add New Backends for {{ region.lower() }} here##
+}{% else %}
+    {{ lbr_tf_name }}_{{ backend_server_tf_name }} = {
+        backendset_name = "{{ lbr_tf_name }}_{{ backend_set_tf_name }}"
+        instance_compartment = "{{ instance_tf_compartment }}"
+        ip_address = "{{ backend_server_ip_address }}"
+        load_balancer_name = "{{ lbr_tf_name }}"
+        port = "{{ serverport }}"
+        backup = "{{ backup }}"
+        {% if drain and drain != '' %}
+        drain   = "{{ drain }}"
+        {% else %}
+        drain   = ""
+        {% endif %}
+        {% if offline and offline != '' %}
+        offline = "{{ offline }}"
+        {% else %}
+        offline = ""
+        {% endif %}
+        {% if weight and weight != '' %}
+        weight  = "{{ weight }}"
+        {% else %}
+        weight  = ""
+        {% endif %}
+        },
+{% endif %}

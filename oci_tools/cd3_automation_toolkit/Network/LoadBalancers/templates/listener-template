@@ -1,0 +1,92 @@
+{% if (skeleton and count == 0) %}
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+
+#############################
+# Network
+# Listeners - tfvars
+#############################
+
+listeners = {
+  ##Add New Listeners for {{ region.lower() }} here##
+}{% else %}
+
+    {{ lbr_tf_name }}_{{ listener_tf_name }} = {
+
+        default_backend_set_name = "{{ lbr_tf_name }}_{{ backend_set_tf_name }}"
+        load_balancer_name = "{{ lbr_tf_name }}"
+        name = "{{ listener_name }}"
+        port = "{{ listener_port }}"
+        protocol = "{{ protocol }}"
+
+        {% if idle_timeout_in_seconds and idle_timeout_in_seconds != '' %}
+        connection_configuration = [{
+
+            idle_timeout_in_seconds = "{{ idle_timeout_in_seconds }}"
+
+            {% if backend_tcp_proxy_protocol_version and backend_tcp_proxy_protocol_version != '' %}
+            backend_tcp_proxy_protocol_version = "{{ backend_tcp_proxy_protocol_version }}"
+            {% else %}
+            backend_tcp_proxy_protocol_version = ""
+            {% endif %}
+            }]{% else %}
+        connection_configuration = []
+        {% endif %}
+
+        hostname_names = [{{ lbr_hostnames }}]
+        path_route_set_name = "{{ path_route_set_tf_name }}"
+        rule_set_names = [{{ rule_set_names }}]
+        {% if routing_policy_name and routing_policy_name != '' %}
+        routing_policy_name = {{ routing_policy_name }}
+        {% else %}
+        routing_policy_name = ""
+        {% endif %}
+
+        {% if certificate_tf_name != '' and certificate_tf_name != 'nan' %}
+        certificate_name = "{{ certificate_tf_name }}"
+        {% else %}
+        certificate_name = ""
+        {% endif %}
+
+        cipher_suite_name = "{{ cipher_suite_name }}"
+
+        {% if usessl == 'y' %}
+        ssl_configuration  = [{
+            certificate_name = "{{ lbr_tf_name }}_{{ certificate_tf_name }}"
+            {% if certificate_ids and certificate_ids != "" %}
+            certificate_ids  = "{{ certificate_ids }}"
+            {% else %}
+            certificate_ids = ""
+            {% endif %}
+
+            {% if server_order_preference and server_order_preference != "" %}
+            server_order_preference  = "{{ server_order_preference }}"
+            {% else %}
+            server_order_preference = ""
+            {% endif %}
+
+            {% if trusted_certificate_authority_ids and trusted_certificate_authority_ids != "" %}
+            trusted_certificate_authority_ids  = [{{ trusted_certificate_authority_ids }}]
+            {% else %}
+            trusted_certificate_authority_ids = []
+            {% endif %}
+
+            {% if verify_peer_certificate %}
+            verify_peer_certificate = {{  verify_peer_certificate }}
+            verify_depth = {{ verify_depth }}
+            {% else %}
+            verify_peer_certificate = ""
+            verify_depth = ""
+            {% endif %}
+
+            {% if cipher_suite_name %}
+            protocols = [ {{ ssl_protocols }} ]
+            cipher_suite_name = "{{ cipher_suite_name }}"
+            {% else %}
+            protocols = []
+            cipher_suite_name = ""
+            {% endif %}
+        }] {% else %}
+        ssl_configuration  = []
+            {% endif %}
+    },
+{% endif %}

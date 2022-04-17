@@ -1,0 +1,19 @@
+{% if (skeleton and count == 0) %}
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+
+#############################
+# Network
+# Hostname - tfvars
+#############################
+# load_balancer_name must be the key of load_balancers (map)
+#############################
+
+hostnames = {
+  ##Add New Hostnames for {{ region.lower() }} here##
+}{% else %}
+  {{ host_tf_name }}_hostname = {
+        name               = "{{ name }}"
+        load_balancer_name = "{{ lbr_tf_name }}"
+        hostname           = "{{ hostname }}"
+        },
+{% endif %}

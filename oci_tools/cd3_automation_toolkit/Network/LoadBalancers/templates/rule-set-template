@@ -1,0 +1,19 @@
+{% if (skeleton and count == 0) %}
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+
+#############################
+# Network
+# Rule Set - tfvars
+#############################
+
+rule_sets = {
+  ##Add New Rule Sets for {{ region.lower() }} here##
+}{% else %}
+    {{ lbr_tf_name}}_{{ rule_set_tf_name }} = {
+        items = [{
+        ## Add_rules_here ##
+        }]
+        load_balancer_name = "{{ lbr_tf_name }}"
+        name = "{{ rule_set_name }}"
+    },
+{% endif %}
