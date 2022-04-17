@@ -4,15 +4,15 @@
 #############################
 
 data "oci_objectstorage_namespace" "objectstorage_namespace" {
-    #Optional
-    compartment_id = var.tenancy_ocid
+  #Optional
+  compartment_id = var.tenancy_ocid
 }
 
 data "oci_objectstorage_bucket" "buckets" {
-    for_each = (var.oss_logs != null || var.oss_logs != {}) ? var.oss_logs : {}
-    #Required
-    name = each.value.resource
-    namespace = data.oci_objectstorage_namespace.objectstorage_namespace.namespace
+  for_each = (var.oss_logs != null || var.oss_logs != {}) ? var.oss_logs : {}
+  #Required
+  name      = each.value.resource
+  namespace = data.oci_objectstorage_namespace.objectstorage_namespace.namespace
 }
 
 module "oss-log-groups" {
@@ -38,9 +38,9 @@ output "oss_log_group_map" {
 */
 
 module "oss-logs" {
-  source   = "./modules/managementservices/log"
+  source     = "./modules/managementservices/log"
   depends_on = [module.subnets, module.oss-log-groups]
-  for_each = (var.oss_logs != null || var.oss_logs != {}) ? var.oss_logs : {}
+  for_each   = (var.oss_logs != null || var.oss_logs != {}) ? var.oss_logs : {}
 
   # Logs
   #Required

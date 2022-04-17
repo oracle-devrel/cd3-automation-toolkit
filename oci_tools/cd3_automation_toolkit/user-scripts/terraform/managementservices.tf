@@ -6,10 +6,10 @@
 ############################
 
 module "alarms" {
-  source   = "./modules/managementservices/alarm"
+  source = "./modules/managementservices/alarm"
 
   depends_on = [module.notifications-topics]
-  for_each = var.alarms != null ? var.alarms : {}
+  for_each   = var.alarms != null ? var.alarms : {}
 
   alarm_name                   = each.value.alarm_name
   compartment_name             = each.value.compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[each.value.compartment_name]) : null
@@ -42,9 +42,9 @@ output "alarms_id" {
 ############################
 
 module "events" {
-  source   = "./modules/managementservices/event"
+  source     = "./modules/managementservices/event"
   depends_on = [module.notifications-topics]
-  for_each = var.events != null ? var.events : {}
+  for_each   = var.events != null ? var.events : {}
 
   event_name       = each.value.event_name
   compartment_name = each.value.compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[each.value.compartment_name]) : null

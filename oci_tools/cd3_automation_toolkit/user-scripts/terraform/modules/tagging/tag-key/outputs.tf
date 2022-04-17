@@ -7,5 +7,5 @@
 
 output "tag_key_tf_id" {
   description = "Tag Key ocid"
-  value = oci_identity_tag.tag.id
+  value       = oci_identity_tag.tag.id
 }

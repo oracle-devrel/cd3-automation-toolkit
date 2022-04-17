@@ -311,17 +311,17 @@ def create_storage(execute_all=False):
         Option('Add/Modify/Delete File Storage', create_fss, '')]
     options = show_options(options, quit=True, menu=True, index=1)
     if not execute_all:
-        execute_options(options, inputfile, outdir, prefix,config)
+        execute_options(options, inputfile, outdir, prefix, config)
 
 def create_lb():
     options = [
-        Option(None, Network.create_terraform_lbr_hostname_certs, 'Creating LBR'),
-        Option(None, Network.create_backendset_backendservers, 'Creating Backend Sets and Backend Servers'),
-        Option(None, Network.create_listener, 'Creating Listeners'),
-        Option(None, Network.create_path_route_set, 'Creating Path Route Sets'),
-        Option(None, Network.create_ruleset, 'Creating Rule Sets'),
+         Option(None, Network.create_terraform_lbr_hostname_certs, 'Creating LBR'),
+         Option(None, Network.create_backendset_backendservers, 'Creating Backend Sets and Backend Servers'),
+         Option(None, Network.create_listener, 'Creating Listeners'),
+         Option(None, Network.create_path_route_set, 'Creating Path Route Sets'),
+         Option(None, Network.create_ruleset, 'Creating Rule Sets'),
     ]
-    execute_options(options, inputfile, outdir, config=config)
+    execute_options(options, inputfile, outdir, prefix, config=config)
 
 def create_databases(execute_all=False):
     options = [

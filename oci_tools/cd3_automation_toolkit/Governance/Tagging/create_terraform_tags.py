@@ -263,6 +263,7 @@ def create_terraform_tags(inputfile, outdir, prefix, config):
         if defaulttagtemp[reg] != '':
 
             defaulttagtemp[reg] = defaulttag.render(tempStr, count = 0).replace("## Add new tag defaults for "+reg.lower()+" here", defaulttagtemp[reg])
+            defaulttagtemp[reg] = "".join([s for s in defaulttagtemp[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
             outfile = outdir + "/" + reg + "/" + prefix + default_tags_auto_tfvars_filename
             oname = open(outfile, "w+")
             print("Writing to "+outfile)
@@ -272,6 +273,7 @@ def create_terraform_tags(inputfile, outdir, prefix, config):
         if namespacetemp[reg] != '':
 
             namespacetemp[reg] = namespace.render(tempStr, count = 0).replace("## Add new tag namespaces for "+reg.lower()+" here", namespacetemp[reg])
+            namespacetemp[reg] = "".join([s for s in namespacetemp[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
             outfile = outdir + "/" + reg + "/" + prefix + namespaces_auto_tfvars_filename
             oname = open(outfile, "w+")
             print("Writing to "+outfile)
@@ -281,6 +283,7 @@ def create_terraform_tags(inputfile, outdir, prefix, config):
         if tagkeytemp[reg] != '':
 
             tagkeytemp[reg] = tagkey.render(tempStr, count = 0).replace("## Add new tag keys for "+reg.lower()+" here", tagkeytemp[reg])
+            tagkeytemp[reg] = "".join([s for s in tagkeytemp[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
             outfile = outdir + "/" + reg + "/" + prefix + tagkey_auto_tfvars_filename
             oname = open(outfile, "w+")
             print("Writing to "+outfile)

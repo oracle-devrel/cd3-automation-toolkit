@@ -7,5 +7,5 @@
 
 output "namespace_tf_id" {
   description = "Namespace ocid"
-  value = oci_identity_tag_namespace.tag_namespace.id
+  value       = oci_identity_tag_namespace.tag_namespace.id
 }

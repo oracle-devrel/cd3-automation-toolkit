@@ -1,14 +1,7 @@
-items {
-    #Required
-    action = "{{ action }}"
-    conditions {
-        #Required
-        attribute_name = "{{ attribute_name }}"
-        attribute_value = {{ attribute_value }}
-
-    }
-    {% if description != '' %}
-    description = "{{ description }}"
-    {% endif %}
-    }
+    access_control_rules = [{
+            action = "{{ action }}"
+            attribute_name = "{{ attribute_name }}"
+            attribute_value = {{ attribute_value }}
+            description = "{{ description }}"
+            }]
     ## Add_rules_here ##

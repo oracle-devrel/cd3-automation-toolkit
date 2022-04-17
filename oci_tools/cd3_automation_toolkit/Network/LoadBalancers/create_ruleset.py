@@ -26,12 +26,13 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Creates Rule Set TF files for LBR")
     parser.add_argument("inputfile",help="Full Path to the CD3 excel file. eg CD3-template.xlsx in example folder")
     parser.add_argument("outdir", help="directory path for output tf files ")
+    parser.add_argument('prefix', help='TF files prefix')
     parser.add_argument("--configFileName", default=DEFAULT_LOCATION, help="Config file name")
     return parser.parse_args()
 
 
 # If input file is CD3
-def create_ruleset(inputfile, outdir, config=DEFAULT_LOCATION):
+def create_ruleset(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True)
@@ -44,12 +45,15 @@ def create_ruleset(inputfile, outdir, config=DEFAULT_LOCATION):
 
     filename = inputfile
     configFileName = config
+    sheetName = "RuleSet"
+    lb_auto_tfvars_filename = prefix + "_"+sheetName.lower()+".auto.tfvars"
+    rs_str = {}
 
     ct = commonTools()
     ct.get_subscribedregions(configFileName)
 
     # Read cd3 using pandas dataframe
-    df, col_headers = commonTools.read_cd3(filename, "RuleSet")
+    df, col_headers = commonTools.read_cd3(filename, sheetName)
 
     df = df.dropna(how='all')
     df = df.reset_index(drop=True)
@@ -69,22 +73,18 @@ def create_ruleset(inputfile, outdir, config=DEFAULT_LOCATION):
 
     pd.set_option('display.max_columns', 500)
 
-
     # Make a dictionary - { Region :{ Rule Set : [Methods] } }
     d = {k: f.groupby(df['Rule Set Name'])['Allowed Methods'].apply(list).to_dict()
          for k, f in df.groupby(df['Region'])}
     d = dict((k.lower(), v) for k, v in d.items())
 
     # Take backup of files
-    for eachregion in ct.all_regions:
-        resource='RuleSet'
-        srcdir = outdir + "/" + eachregion + "/"
-        commonTools.backup_file(srcdir, resource, "_ruleset-lb.tf")
+    for reg in ct.all_regions:
+        rs_str[reg] = ''
 
     # List of the column headers
     dfcolumns = df.columns.values.tolist()
 
-    rs_str = ''
     control_access = 1
     lbr_list = []
     methods = []
@@ -119,7 +119,6 @@ def create_ruleset(inputfile, outdir, config=DEFAULT_LOCATION):
             rs_str = rs_str.replace(srcStr,request_str)
 
         return rs_str
-
 
     for i in df.index:
         region = str(df.loc[i, 'Region']).strip()
@@ -294,32 +293,45 @@ def create_ruleset(inputfile, outdir, config=DEFAULT_LOCATION):
 
             tempStr.update(tempdict)
 
-        outfile = outdir + "/" + region + "/" + lbr_tf_name +"-"+ rule_set_tf_name + "_ruleset-lb.tf"
-
         if str(df.loc[i, 'Rule Set Name']) != 'nan':
             lbr_ruleset = str(df.loc[i, 'Region'])+ str(df.loc[i, 'LBR Name']) + str(df.loc[i, 'Rule Set Name'])
 
         if lbr_ruleset not in lbr_list:
             lbr_list.append(lbr_ruleset)
-            rs_str = rs.render(tempStr)
+            rs_str[reg] = rs_str[reg] + rs.render(tempStr)
             control_access = 1
-            rs_str = add_rules(df,rs_str,tempStr,control_access)
-            print("Writing to "+outfile)
+            rs_str[reg] = add_rules(df,rs_str[reg],tempStr,control_access)
         else:
-            if 'allowed_methods' in rs_str:
+            if 'allowed_methods' in rs_str[reg]:
                 control_access = 0
             else:
                 control_access = 1
-            rs_str = add_rules(df, rs_str, tempStr,control_access)
+            rs_str[reg] = add_rules(df, rs_str[reg], tempStr,control_access)
             control_access = control_access + 1
 
-        # Write to TF file
-        oname = open(outfile, "w+")
-        oname.write(rs_str)
-        oname.close()
+    for reg in ct.all_regions:
+
+        if rs_str[reg] != '':
+
+            # Generate Final String
+            src = "##Add New Rule Sets for "+reg.lower()+" here##"
+            rs_str[reg] = rs.render(skeleton=True, count=0, region=reg).replace(src,rs_str[reg])
+            finalstring = "".join([s for s in rs_str[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
+
+            resource=sheetName
+            srcdir = outdir + "/" + reg + "/"
+            commonTools.backup_file(srcdir, resource, lb_auto_tfvars_filename)
+
+            outfile = outdir + "/" + reg + "/" + lb_auto_tfvars_filename
+
+            # Write to TF file
+            oname = open(outfile, "w+")
+            print("Writing to " + outfile)
+            oname.write(finalstring)
+            oname.close()
 
 
 if __name__ == '__main__':
     # Execution of the code begins here
     args = parse_args()
-    create_ruleset(args.inputfile, args.outdir, args.config)
+    create_ruleset(args.inputfile, args.outdir, args.prefix, args.config)

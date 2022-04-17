@@ -7,5 +7,5 @@
 
 output "tag_default_tf_id" {
   description = "Tag Default ocid"
-  value = oci_identity_tag_default.tag_default.id
+  value       = oci_identity_tag_default.tag_default.id
 }

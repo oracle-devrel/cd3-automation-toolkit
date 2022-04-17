@@ -8,28 +8,28 @@
 ############################
 
 variable "tenancy_ocid" {
-        type = string
-        default = "<TENANCY OCID HERE>"
+  type    = string
+  default = "<TENANCY OCID HERE>"
 }
 
 variable "user_ocid" {
-        type = string
-        default = "<USER OCID HERE>"
+  type    = string
+  default = "<USER OCID HERE>"
 }
 
 variable "fingerprint" {
-        type = string
-        default = "<SSH KEY FINGERPRINT HERE>"
+  type    = string
+  default = "<SSH KEY FINGERPRINT HERE>"
 }
 
 variable "private_key_path" {
-        type = string
-        default = "<SSH PRIVATE KEY FULL PATH HERE>"
+  type    = string
+  default = "<SSH PRIVATE KEY FULL PATH HERE>"
 }
 
 variable "region" {
-        type = string
-        default = "<OCI TENANCY REGION HERE eg: us-phoenix-1 or us-ashburn-1>"
+  type    = string
+  default = "<OCI TENANCY REGION HERE eg: us-phoenix-1 or us-ashburn-1>"
 }
 
 #################################
@@ -37,41 +37,41 @@ variable "region" {
 #################################
 
 variable "ssh_public_key" {
-	type = string
-	default = "<SSH PUB KEY STRING HERE>"
+  type    = string
+  default = "<SSH PUB KEY STRING HERE>"
 }
 
 ## instance_ssh_keys variable will be used once the terraform code for instances is also modularized
 #  in future releases. Please use above variable 'ssh_public_key' for the current version.
 
-variable instance_ssh_keys {
-    type = map(any)
-    default = {
+variable "instance_ssh_keys" {
+  type = map(any)
+  default = {
     ssh_public_key = "<SSH PUB KEY STRING HERE>"
     #START_instance_ssh_keys#
     # exported instance ssh keys
     #instance_ssh_keys_END#
-    }
+  }
 }
 
-variable exacs_ssh_keys {
-    type = map(any)
-    default = {
+variable "exacs_ssh_keys" {
+  type = map(any)
+  default = {
     ssh_public_key = ["<SSH PUB KEY STRING HERE>"]
     #START_exacs_ssh_keys#
     # exported exacs ssh keys
     #exacs_ssh_keys_END#
-    }
+  }
 }
 
-variable dbsystem_ssh_keys {
-    type = map(any)
-    default = {
+variable "dbsystem_ssh_keys" {
+  type = map(any)
+  default = {
     ssh_public_key = ["<SSH PUB KEY STRING HERE>"]
     #START_dbsystem_ssh_keys#
     # exported dbsystem ssh keys
     #dbsystem_ssh_keys_END#
-    }
+  }
 }
 
 #################################
@@ -81,29 +81,29 @@ variable dbsystem_ssh_keys {
 
 #Example for OS value 'Windows' in Instances sheet
 variable "Windows" {
-        type = string
-        default = "<LATEST WINDOWS OCID HERE>"
-        description = "<WINDOWS DESCRIPTION HERE>"
+  type        = string
+  default     = "<LATEST WINDOWS OCID HERE>"
+  description = "<WINDOWS DESCRIPTION HERE>"
 }
 
 #Example for OS value 'Linux' in Instances sheet
-variable "Linux"{
-        type = string
-        default = "<LATEST LINUX OCID HERE>"
-        description = "<LINUX DESCRIPTION HERE>"
+variable "Linux" {
+  type        = string
+  default     = "<LATEST LINUX OCID HERE>"
+  description = "<LINUX DESCRIPTION HERE>"
 }
 
 
-variable instance_source_ocids {
-    type = map(any)
-    default = {
-    Linux = "<LATEST LINUX OCID HERE>"
-    Windows = "<LATEST WINDOWS OCID HERE>"
+variable "instance_source_ocids" {
+  type = map(any)
+  default = {
+    Linux    = "<LATEST LINUX OCID HERE>"
+    Windows  = "<LATEST WINDOWS OCID HERE>"
     PaloAlto = "Palo Alto Networks VM-Series Next Generation Firewall"
     #START_instance_source_ocids#
     # exported instance image ocids
     #instance_source_ocids_END#
-    }
+  }
 }
 
 
@@ -120,8 +120,8 @@ variable instance_source_ocids {
 
 #START_compartment_ocids#
 variable "compartment_ocids" {
-    type = map(any)
-    default = {}
+  type    = map(any)
+  default = {}
 }
 #compartment_ocids_END#
 
@@ -130,14 +130,14 @@ variable "compartment_ocids" {
 #########################
 
 variable "compartments" {
-  type    = map(any)
+  type = map(any)
   default = {
-      root = {},
-      compartment_level1= {},
-      compartment_level2 = {},
-      compartment_level3 = {},
-      compartment_level4 = {},
-      compartment_level5  = {},
+    root               = {},
+    compartment_level1 = {},
+    compartment_level2 = {},
+    compartment_level3 = {},
+    compartment_level4 = {},
+    compartment_level5 = {},
   }
 }
 
@@ -156,12 +156,12 @@ variable "groups" {
 #########################
 
 variable "default_dhcps" {
-  type = map(any)
+  type    = map(any)
   default = {}
 }
 
 variable "custom_dhcps" {
-  type = map(any)
+  type    = map(any)
   default = {}
 }
 
@@ -186,14 +186,14 @@ variable "ngws" {
 }
 
 variable "lpgs" {
-        type    = map(any)
-        default = {
-            hub-lpgs = {},
-            spoke-lpgs = {},
-            peer-lpgs = {},
-            none-lpgs  = {},
-            exported-lpgs = {},
-        }
+  type = map(any)
+  default = {
+    hub-lpgs      = {},
+    spoke-lpgs    = {},
+    peer-lpgs     = {},
+    none-lpgs     = {},
+    exported-lpgs = {},
+  }
 }
 
 variable "drgs" {
@@ -202,17 +202,17 @@ variable "drgs" {
 }
 
 variable "seclists" {
-  type = map(any)
+  type    = map(any)
   default = {}
 }
 
 variable "default_seclists" {
-  type = map(any)
+  type    = map(any)
   default = {}
 }
 
 variable "route_tables" {
-  type = map(any)
+  type    = map(any)
   default = {}
 }
 
@@ -222,12 +222,12 @@ variable "default_route_tables" {
 }
 
 variable "nsgs" {
-  type = map(any)
+  type    = map(any)
   default = {}
 }
 
 variable "nsg_rules" {
-  type = map(any)
+  type    = map(any)
   default = {}
 }
 
@@ -387,6 +387,64 @@ variable "tag_keys" {
 
 variable "tag_defaults" {
   description = "To make the Tag keys as default to compartments"
+  type        = map(any)
+  default     = {}
+}
+
+#########################
+## Load Balancers ##
+#########################
+
+variable "load_balancers" {
+  description = "To provision Load Balancers"
+  type        = map(any)
+  default     = {}
+}
+
+variable "hostnames" {
+  description = "To provision Load Balancer Hostnames"
+  type        = map(any)
+  default     = {}
+}
+
+variable "certificates" {
+  description = "To provision Load Balancer Certificates"
+  type        = map(any)
+  default     = {}
+}
+
+variable "cipher_suites" {
+  description = "To provision Load Balancer Cipher Suites"
+  type        = map(any)
+  default     = {}
+}
+
+variable "backend_sets" {
+  description = "To provision Load Balancer Backend Sets"
+  type        = map(any)
+  default     = {}
+}
+
+variable "backends" {
+  description = "To provision Load Balancer Backends"
+  type        = map(any)
+  default     = {}
+}
+
+variable "listeners" {
+  description = "To provision Load Balancer Listeners"
+  type        = map(any)
+  default     = {}
+}
+
+variable "path_route_sets" {
+  description = "To provision Load Balancer Path Route Sets"
+  type        = map(any)
+  default     = {}
+}
+
+variable "rule_sets" {
+  description = "To provision Load Balancer Rule Sets"
   type        = map(any)
   default     = {}
 }

@@ -204,9 +204,9 @@ module "iam-policies" {
   policy_statements     = each.value.policy_statements
 
   #Optional
-  defined_tags  = each.value.defined_tags
-  freeform_tags = each.value.freeform_tags
-  policy_version_date  = each.value.policy_version_date != null ? each.value.policy_version_date : null
+  defined_tags        = each.value.defined_tags
+  freeform_tags       = each.value.freeform_tags
+  policy_version_date = each.value.policy_version_date != null ? each.value.policy_version_date : null
 }
 
 /*
