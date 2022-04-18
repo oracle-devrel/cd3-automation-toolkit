@@ -15,19 +15,9 @@ load_balancers = {
   ##Add New Load Balancers for {{ region.lower() }} here##
 }{% else %}
     {{ lbr_tf_name }} = {
-        network_compartment_name = "{{ network_compartment_tf_name }}"
-        vcn_name = "{{ vcn_tf_name }}"
-        compartment_name = "{{ lbr_compartment_tf_name }}"
         display_name = "{{ lbr_name }}"
+        compartment_name = "{{ lbr_compartment_tf_name }}"
         shape = "{{ lbr_shape }}"
-        subnet_names =  [ {{ lbr_subnets }} ]
-        {% if ip_mode and ip_mode != "" %}
-        ip_mode = {{ ip_mode }}
-        {% else %}
-        ip_mode = "IPV4"
-        {% endif %}
-        is_private = {{ is_private }}
-        network_security_group_ids= [{{ nsgs }}]
         {% if lbr_shape  == 'flexible' %}
         shape_details = [{
             #Required
@@ -37,6 +27,13 @@ load_balancers = {
         {% else %}
         shape_details = []
         {% endif %}
+
+        network_compartment_name = "{{ network_compartment_tf_name }}"
+        vcn_name = "{{ vcn_tf_name }}"
+        subnet_names =  [ {{ lbr_subnets }} ]
+        nsg_ids= [{{ nsgs }}]
+        is_private = {{ is_private }}
+
         {% if reserved_ips_id %} {% if reserved_ips_id != "" and reserved_ips_id != "[]" %}
         reserved_ips = [{
             id = "{{ reserved_ips_id }}"
@@ -54,6 +51,13 @@ load_balancers = {
         {% else %}
         reserved_ips = []
         {% endif %}
+
+        {% if ip_mode and ip_mode != "" %}
+        ip_mode = {{ ip_mode }}
+        {% else %}
+        ip_mode = "IPV4"
+        {% endif %}
+
     {#  ##Do not modify below this line##  #}
     {#                                     #}
     {#  ###Section for adding Defined and Freeform Tags###  #}

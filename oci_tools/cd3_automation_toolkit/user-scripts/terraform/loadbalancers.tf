@@ -22,7 +22,7 @@ module "load-balancers" {
   freeform_tags              = each.value.freeform_tags
   ip_mode                    = each.value.ip_mode != "" ? each.value.ip_mode : "IPV4"
   is_private                 = each.value.is_private != "" ? each.value.is_private : "false"
-  network_security_group_ids = each.value.network_security_group_ids
+  network_security_group_ids = each.value.nsg_ids
   key_name                   = each.key
   load_balancers             = var.load_balancers
 }

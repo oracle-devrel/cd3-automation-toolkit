@@ -10,6 +10,9 @@ rule_sets = {
   ##Add New Rule Sets for {{ region.lower() }} here##
 }{% else %}
     {{ lbr_tf_name}}_{{ rule_set_tf_name }} = {
+        name = "{{ rule_set_name }}"
+        load_balancer_name = "{{ lbr_tf_name }}"
+
         access_control_rules = [
     ## Add_access_control_rules_here ##
         ]
@@ -25,7 +28,5 @@ rule_sets = {
         request_response_header_rules = [
     ## Add_request_response_header_rules_here ##
         ]
-        load_balancer_name = "{{ lbr_tf_name }}"
-        name = "{{ rule_set_name }}"
     },
 {% endif %}

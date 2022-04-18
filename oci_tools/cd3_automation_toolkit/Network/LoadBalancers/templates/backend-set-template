@@ -12,6 +12,10 @@ backend_sets = {
 
     {{ lbr_tf_name }}_{{ backend_set_tf_name }} = {
 
+        name = "{{ backend_set_name }}"
+        load_balancer_name = "{{ lbr_tf_name }}"
+        policy = "{{ backend_policy }}"
+
         protocol = "{{ backend_healthcheck_protocol }}"
         {% if interval_in_millis and interval_in_millis != '' and interval_in_millis != 'nan' %}
         interval_ms = "{{ interval_in_millis }}"
@@ -55,10 +59,6 @@ backend_sets = {
         url_path = ""
         {% endif %}
 
-        load_balancer_name = "{{ lbr_tf_name }}"
-        name = "{{ backend_set_name }}"
-        policy = "{{ backend_policy }}"
-
         {% if session == "LB" %}
         lb_cookie_session = [{
             cookie_name = "{{ cookie_name }}"
@@ -101,7 +101,6 @@ backend_sets = {
             disable_fallback = "{{ disable_fallback }}"
 
         }]{% else %}
-
         lb_cookie_session = []
         session_persistence_configuration = []
         {% endif %}
@@ -155,7 +154,7 @@ backend_sets = {
             cipher_suite_name = ""
             {% endif %}
         }] {% else %}
-            ssl_configuration  = []
-            {% endif %}
+        ssl_configuration  = []
+        {% endif %}
     },
 {% endif %}
