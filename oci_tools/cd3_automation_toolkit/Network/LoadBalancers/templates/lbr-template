@@ -37,10 +37,10 @@ load_balancers = {
         {% else %}
         shape_details = []
         {% endif %}
-        {% if reserved_ips_id %} {% if reserved_ips_id != "" %}
+        {% if reserved_ips_id %} {% if reserved_ips_id != "" and reserved_ips_id != "[]" %}
         reserved_ips = [{
             id = "{{ reserved_ips_id }}"
-        }]{% elif reserved_ips_id != [] %}
+        }]{% elif reserved_ips_id != [] and reserved_ips_id != "[]" %}
         reserved_ips = [
         {% for id in reserved_ips_id %}{% if not loop.last  %}
         {
@@ -49,7 +49,9 @@ load_balancers = {
         {
             id = "{{ id }}"
         }
-        ]{% endif %}{% endfor %}{% endif %}{% else %}
+        ]{% endif %}{% endfor %}{% endif %}
+        reserved_ips = []
+        {% else %}
         reserved_ips = []
         {% endif %}
     {#  ##Do not modify below this line##  #}
