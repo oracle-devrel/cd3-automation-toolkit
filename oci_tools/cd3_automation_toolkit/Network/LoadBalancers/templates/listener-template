@@ -12,11 +12,12 @@ listeners = {
 
     {{ lbr_tf_name }}_{{ listener_tf_name }} = {
 
-        default_backend_set_name = "{{ lbr_tf_name }}_{{ backend_set_tf_name }}"
-        load_balancer_name = "{{ lbr_tf_name }}"
         name = "{{ listener_name }}"
+        load_balancer_name = "{{ lbr_tf_name }}"
+
         port = "{{ listener_port }}"
         protocol = "{{ protocol }}"
+        default_backend_set_name = "{{ lbr_tf_name }}_{{ backend_set_tf_name }}"
 
         {% if idle_timeout_in_seconds and idle_timeout_in_seconds != '' %}
         connection_configuration = [{
