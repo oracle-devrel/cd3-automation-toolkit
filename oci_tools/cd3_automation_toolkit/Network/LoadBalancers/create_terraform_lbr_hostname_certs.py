@@ -252,7 +252,7 @@ def create_terraform_lbr_hostname_certs(inputfile, outdir, prefix, config=DEFAUL
                     else:
                         pass
                 else:
-                    columnvalue = []
+                    columnvalue = ""
 
             if columnname == "LBR Name":
                 if columnvalue != '':
