@@ -99,7 +99,7 @@
 	},
     "LB-Hostname-Certs" :
     {
-        "Shape(100Mbps|400Mbps|8000Mbps|flexible)" : "shape_name",
+        "Shape(10Mbps|100Mbps|400Mbps|8000Mbps|flexible)" : "shape_name",
         "Is Private(True|False)" : "is_private"
     },
     "BackendSet-BackendServer" :
