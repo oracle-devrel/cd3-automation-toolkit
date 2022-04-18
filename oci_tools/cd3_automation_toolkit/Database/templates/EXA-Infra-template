@@ -8,79 +8,69 @@
 
 exa_infra = {
 {% endif %}
-        {{ exadata_infra_display_tf_name }} = {
+   {{ exadata_infra_display_tf_name }} = {
         availability_domain = {{ availability_domain }}
         compartment_id = "{{ compartment_name }}"
         display_name = "{{ exadata_infra_display_name }}"
         shape = "{{ shape }}"
 
-        #Optional
-        {% if compute_count %}
-        compute_count = "{{ database_servers }}"
+        {% if database_servers %}
+        compute_count = {{ database_servers }}
         {% else %}
         compute_count = null
         {% endif %}
-
-        {% if storage_count %}
-        storage_count = "{{ storage_servers }}"
+        {% if storage_servers %}
+        storage_count = {{ storage_servers }}
         {% else %}
         storage_count = null
         {% endif %}
-
-        {% if customer_contact_emails %}
-            customer_contacts {
-        email = "{{ customer_contact_emails }}"
-        }
+        {% if customer_contacts_email %}
+        customer_contacts_email = "{{ customer_contacts_email }}"
         {% else %}
-        email = null
+        customer_contacts_email = null
         {% endif %}
 
      {# maintenance_window_preference = "CUSTOM_PREFERENCE"
-     #   maintenance_window_days_of_week_name = "Sunday"
-     #   maintenance_window_hours_of_day = [0]
-     #   maintenance_window_lead_time_in_weeks = 2
-     #   maintenance_window_months_name = "MAY,JUNE,JULY"
-     #   maintenance_window_weeks_of_month = [8]    #}
-
-
-          {#  ##Do not modify below this line##  #}
-    {#                                     #}
-    {#  ###Section for adding Defined and Freeform Tags###  #}
-    {% if defined_tags and defined_tags != 'nan' and defined_tags != '' %}
-      {% if defined_tags[0] %}
+     #  maintenance_window_days_of_week_name = "Sunday"
+     #  maintenance_window_hours_of_day = [0]
+     #  maintenance_window_lead_time_in_weeks = 2
+     #  maintenance_window_months_name = "MAY,JUNE,JULY"
+     #  maintenance_window_weeks_of_month = [8]    #}
+     {# ##Do not modify below this line##  #}
+            {#                                     #}
+            {#  ###Section for adding Defined and Freeform Tags###  #}
+            {% if defined_tags and defined_tags != 'nan' and defined_tags != '' %}
+              {% if defined_tags[0] %}
         defined_tags = {
-        {% for tags in defined_tags  %}
-            {% if not loop.last %}
-                "{{ tags[0]  }}"= "{{ tags[1] }}" ,
-            {% else %}
-                "{{ tags[0]  }}"= "{{ tags[1] }}"
-            {% endif %}
-        {% endfor %}
-        }
-      {% else %}
+                {% for tags in defined_tags  %}
+                    {% if not loop.last %}
+                        "{{ tags[0]  }}"= "{{ tags[1] }}" ,
+                    {% else %}
+                        "{{ tags[0]  }}"= "{{ tags[1] }}"
+                    {% endif %}
+                {% endfor %}
+                }
+              {% else %}
         defined_tags = {}
-        {% endif %}
-       {% else %}
-        defined_tags = {}
-       {% endif %}
-            {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' %}
-                {% if freeform_tags[0] %}
-        freeform_tags = {
-                    {% for tags in freeform_tags %}
-                        {% if not loop.last  %}
-                "{{ tags[0] }}"="{{ tags[1] }}",
-                        {% else %}
-                "{{ tags[0] }}"="{{ tags[1] }}"
-                        {% endif %}
-                    {% endfor %}
-                    }
-                 {% else %}
-        freeform_tags = {}
                 {% endif %}
-            {% else %}
+               {% else %}
+        defined_tags = {}
+               {% endif %}
+                    {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' %}
+                        {% if freeform_tags[0] %}
+        freeform_tags = {
+                            {% for tags in freeform_tags %}
+                                {% if not loop.last  %}
+                        "{{ tags[0] }}"="{{ tags[1] }}",
+                                {% else %}
+                        "{{ tags[0] }}"="{{ tags[1] }}"
+                                {% endif %}
+                            {% endfor %}
+                            }
+                        {% endif %}
+                    {% else %}
         freeform_tags = {}
-            {% endif %}
-    {#  ###Section for adding Defined and Freeform Tags ends here###  #}
-
+                    {% endif %}
+            {#  ###Section for adding Defined and Freeform Tags ends here###  #}
     },
  }
