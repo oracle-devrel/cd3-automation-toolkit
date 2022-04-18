@@ -55,7 +55,7 @@ listeners = {
             {% if certificate_ids and certificate_ids != "" %}
             certificate_ids  = "{{ certificate_ids }}"
             {% else %}
-            certificate_ids = ""
+            certificate_ids = []
             {% endif %}
 
             {% if server_order_preference and server_order_preference != "" %}

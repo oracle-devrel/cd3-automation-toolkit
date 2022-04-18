@@ -21,7 +21,7 @@ resource "oci_load_balancer_listener" "listener" {
       idle_timeout_in_seconds = connection_configuration.value.idle_timeout_in_seconds
 
       #Optional
-      backend_tcp_proxy_protocol_version = connection_configuration.value.backend_tcp_proxy_protocol_version
+      backend_tcp_proxy_protocol_version = var.protocol != "TCP" ? null : (connection_configuration.value.backend_tcp_proxy_protocol_version != "" ? connection_configuration.value.backend_tcp_proxy_protocol_version : 4 )
     }
   }
   hostname_names      = var.hostname_names

@@ -95,13 +95,13 @@ module "backend-sets" {
   protocol = each.value.protocol
 
   #Optional
-  interval_ms         = each.value.interval_ms != "" ? each.value.interval_ms : "3000"
+  interval_ms         = each.value.interval_ms != "" ? each.value.interval_ms : null
   port                = each.value.port
   response_body_regex = each.value.response_body_regex
-  retries             = each.value.retries != "" ? each.value.retries : "3"
-  return_code         = each.value.return_code != "" ? each.value.return_code : "200"
-  timeout_in_millis   = each.value.timeout_in_millis != "" ? each.value.timeout_in_millis : "10000"
-  url_path            = each.value.url_path != "" ? each.value.url_path : "/"
+  retries             = each.value.retries != "" ? each.value.retries : null
+  return_code         = each.value.return_code != "" ? each.value.return_code : null
+  timeout_in_millis   = each.value.return_code != "" ? each.value.timeout_in_millis : null
+  url_path            = each.value.url_path != "" ? each.value.url_path : null
 
   load_balancer_id = length(regexall("ocid1.loadbalancer.oc1*", each.value.load_balancer_name)) > 0 ? each.value.load_balancer_name : merge(module.load-balancers.*...)[each.value.load_balancer_name]["load_balancer_tf_id"]
   name             = each.value.name
@@ -122,12 +122,12 @@ output "backend_sets_id_map" {
 data "oci_core_instances" "instances" {
     for_each = var.backends != null ? var.backends : {}
     #Required
-    compartment_id = each.value.instance_compartment != null ? (length(regexall("ocid1.compartment.oc1*", each.value.instance_compartment)) > 0 ? each.value.instance_compartment : var.compartment_ocids[each.value.instance_compartment]) : null
+    compartment_id = each.value.instance_compartment != null ? (length(regexall("ocid1.compartment.oc1*", each.value.instance_compartment)) > 0 ? each.value.instance_compartment : var.compartment_ocids[each.value.instance_compartment]) :  var.tenancy_ocid
 }
 
 data "oci_core_instance" "instance_ip" {
     for_each = { for k,v in var.backends : k => v.ip_address if length(regexall("IP:*", v.ip_address)) == 0 }
-    instance_id = flatten(distinct(local.instance.ocid))[0][split("Name:", each.value)[1]]
+    instance_id = flatten(distinct(local.instance.ocid))[0][split("NAME:", each.value)[1]]
 }
 
 locals {
@@ -143,7 +143,7 @@ module "backends" {
 
   #Required
   backendset_name  = merge(module.backend-sets.*...)[each.value.backendset_name].backend_set_tf_name
-  ip_address       = length(regexall("IP:", each.value.ip_address)) > 0 ? split("IP:", each.value.ip_address)[1] : data.oci_core_instance.instance_ip[each.key].private_ip
+  ip_address       = each.value.ip_address != "" ? (length(regexall("IP:", each.value.ip_address)) > 0 ? split("IP:", each.value.ip_address)[1] : data.oci_core_instance.instance_ip[each.key].private_ip) : null
   load_balancer_id = length(regexall("ocid1.loadbalancer.oc1*", each.value.load_balancer_name)) > 0 ? each.value.load_balancer_name : merge(module.load-balancers.*...)[each.value.load_balancer_name]["load_balancer_tf_id"]
   port             = each.value.port
 

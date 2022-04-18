@@ -106,16 +106,25 @@ backend_sets = {
         session_persistence_configuration = []
         {% endif %}
 
+        {% if certificate_tf_name != "" %}
         certificate_name = "{{ lbr_tf_name }}_{{ certificate_tf_name }}"
+        {% else %}
+        certificate_name = ""
+        {% endif %}
         cipher_suite_name = "{{ cipher_suite_name }}"
 
         {% if usessl == 'y' %}
         ssl_configuration  = [{
+            {% if certificate_tf_name != "" %}
             certificate_name = "{{ lbr_tf_name }}_{{ certificate_tf_name }}"
+            {% else %}
+            certificate_name = ""
+            {% endif %}
+
             {% if certificate_ids and certificate_ids != "" %}
             certificate_ids  = "{{ certificate_ids }}"
             {% else %}
-            certificate_ids = ""
+            certificate_ids = []
             {% endif %}
 
             {% if server_order_preference and server_order_preference != "" %}

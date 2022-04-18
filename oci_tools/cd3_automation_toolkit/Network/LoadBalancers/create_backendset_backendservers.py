@@ -57,11 +57,11 @@ def create_backendset_backendservers(inputfile, outdir, prefix, config=DEFAULT_L
     #DF with just the load balancer names and the Cert details
 
     # fill the empty values with that in previous row.
-    dffill = df[['Region','Compartment Name','LBR Name']]
+    dffill = df[['Region','LBR Compartment Name','LBR Name']]
     dffill = dffill.fillna(method='ffill')
 
     #Drop unnecessary columns
-    dfdrop = df[['Region','Compartment Name','LBR Name']]
+    dfdrop = df[['Region','LBR Compartment Name','LBR Name']]
     dfdrop = df.drop(dfdrop, axis=1)
 
     #dfcert with required details
@@ -121,7 +121,7 @@ def create_backendset_backendservers(inputfile, outdir, prefix, config=DEFAULT_L
             if columnname.lower() in commonTools.tagColumns:
                 tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)
 
-            if columnname == "Compartment Name":
+            if columnname == "LBR Compartment Name":
                 columnname = "compartment_tf_name"
                 columnvalue = commonTools.check_tf_variable(columnvalue)
 
@@ -219,13 +219,16 @@ def create_backendset_backendservers(inputfile, outdir, prefix, config=DEFAULT_L
 
                 backend_server_tf_name = commonTools.check_tf_variable(servername+"-"+str(cnt))
                 serverport = serverinfo[2].strip()
+                inst_compartment_tf_name = ''
                 e = servername.count(".")
                 if (e == 3):
                     backend_server_ip_address = "IP:"+servername
                 else:
-                    backend_server_ip_address = "Name:" + servername
+                    backend_server_ip_address = "NAME:" + servername
 
-                tempback = {'backend_server_tf_name': backend_set_tf_name+"_"+backend_server_tf_name,'serverport':serverport,'backend_server_ip_address':backend_server_ip_address, 'instance_tf_compartment': commonTools.check_tf_variable(serverinfo[0].strip())}
+                if serverinfo[0].strip() != "":
+                    inst_compartment_tf_name = commonTools.check_tf_variable(serverinfo[0].strip())
+                tempback = {'backend_server_tf_name': backend_set_tf_name+"_"+backend_server_tf_name,'serverport':serverport,'backend_server_ip_address':backend_server_ip_address, 'instance_tf_compartment': inst_compartment_tf_name }
                 tempStr.update(tempback)
 
                 # Render Backend Server

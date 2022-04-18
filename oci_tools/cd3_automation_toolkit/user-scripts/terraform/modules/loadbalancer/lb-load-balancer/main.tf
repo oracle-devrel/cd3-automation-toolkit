@@ -28,6 +28,7 @@ resource "oci_load_balancer_load_balancer" "load_balancer" {
       id = reserved_ips.value.id
     }
   }
+
   dynamic "shape_details" {
     for_each = var.load_balancers[var.key_name].shape_details != [] ? var.load_balancers[var.key_name].shape_details : []
     content {
@@ -36,4 +37,9 @@ resource "oci_load_balancer_load_balancer" "load_balancer" {
       minimum_bandwidth_in_mbps = shape_details.value.minimum_bandwidth_in_mbps
     }
   }
+
+  lifecycle {
+    ignore_changes = [reserved_ips]
+  }
+
 }

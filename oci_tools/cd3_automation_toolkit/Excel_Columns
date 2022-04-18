@@ -104,7 +104,7 @@
     },
     "BackendSet-BackendServer" :
     {
-        "Backend ServerName:Port" : "backend_server_name:port",
+        "Backend ServerComp&ServerName&Port" : "backend_server_name:port",
         "Backend Set Name" : "backend_set_name",
         "Certificate Name" : "certificates",
         "Backend Policy(LEAST_CONNECTIONS|ROUND_ROBIN|IP_HASH)" : "policy",
@@ -146,7 +146,7 @@
     "Common-LBR-Headers" :
     {
         "Region" : "region",
-        "Compartment Name" : "compartment_id",
+        "LBR Compartment Name" : "compartment_id",
         "LBR Name" : "display_name"
     },
     "DBSystems-VM-BM" :

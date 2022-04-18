@@ -146,12 +146,10 @@ def create_listener(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
                 columnname = 'idle_timeout_in_seconds'
 
             if columnname == 'Path Route Set Name':
-                if columnvalue == '':
-                    path_route_set_tf_name = "\"\""
-                else:
+                if columnvalue != '':
                     columnvalue = commonTools.check_tf_variable(str(columnvalue).strip())
                     path_route_set_tf_name = lbr_tf_name +"_"+ columnvalue
-                tempdict = {'path_route_set_tf_name' : path_route_set_tf_name}
+                    tempdict = {'path_route_set_tf_name' : path_route_set_tf_name}
 
             if columnname == "LBR Hostnames (Name)":
                 columnname = 'lbr_hostnames'
