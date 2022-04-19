@@ -20,7 +20,6 @@ drg_attachments = {
         drg_route_table_id = ""
         {% endif %}
 
-        #Required
         network_details = [{
         id = "{{ network_id }}"
         type = "{{ network_type }}"
@@ -33,7 +32,6 @@ drg_attachments = {
         #set DRGv1 params to null
         route_table_id =""
         vcn_id = ""
-
         {% else %}
         #DRG v1
         route_table_id = "{{ vcn_drg_rt_tf_name }}"

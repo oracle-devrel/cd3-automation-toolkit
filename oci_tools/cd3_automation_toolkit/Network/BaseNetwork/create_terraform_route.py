@@ -152,7 +152,6 @@ def create_terraform_drg_route(inputfile, outdir, prefix, non_gf_tenancy, config
         df = df.dropna(how='all')
         df = df.reset_index(drop=True)
 
-
         # Read cd3 using pandas dataframe
         dfdrgroutetable, col_headers = commonTools.read_cd3(filename, "DRGRouteRulesinOCI")
 
@@ -249,7 +248,6 @@ def create_terraform_drg_route(inputfile, outdir, prefix, non_gf_tenancy, config
                 # Process Freeform and Defined Tags
                 if columnname.lower() in commonTools.tagColumns:
                     tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)
-
                 if columnname == "DRG Name":
                     drg_name = columnvalue
                     tempdict['drg_tf_name'] = commonTools.check_tf_variable(columnvalue)
@@ -315,7 +313,6 @@ def create_terraform_drg_route(inputfile, outdir, prefix, non_gf_tenancy, config
         rtfile = outdir + "/" + reg + "/" + prefix + drg_rt_auto_tfvars_filename
 
         if not modify_network:
-
             tempSkeletonDRGRouteTable[reg] = drg_rt_template.render(tempStr, skeleton=True, region=reg)
 
             if drg_rt[reg] != '':
@@ -327,7 +324,6 @@ def create_terraform_drg_route(inputfile, outdir, prefix, non_gf_tenancy, config
             skeletonStr = "###Add route tables here for "+reg.lower()+" ###"
             # Option if Modify Network is TRUE
             processed_rt = []
-
             modifiedroutetableStr[reg] = recursive_process_filedata(common_rt, modifiedroutetableStr, reg, processed_rt,count=0)
 
             if modifiedroutetableStr[reg] == '':
