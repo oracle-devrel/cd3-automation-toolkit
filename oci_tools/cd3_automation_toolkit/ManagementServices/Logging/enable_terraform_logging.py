@@ -108,6 +108,9 @@ def enable_cis_vcnflow_logging(filename, outdir, prefix, config=DEFAULT_LOCATION
     df = df.dropna(how='all')
     df = df.reset_index(drop=True)
 
+    # List of the column headers
+    dfcolumns = df.columns.values.tolist()
+
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
@@ -119,10 +122,10 @@ def enable_cis_vcnflow_logging(filename, outdir, prefix, config=DEFAULT_LOCATION
     outfile={}
     vcns_list = {}
     tfStrLogGroups = {}
+    tempdict = {}
 
     for i in df.index:
         region = str(df.loc[i, 'Region'])
-
         if (region in commonTools.endNames):
             break
 
@@ -133,7 +136,6 @@ def enable_cis_vcnflow_logging(filename, outdir, prefix, config=DEFAULT_LOCATION
 
     for i in df.index:
         region = str(df.loc[i, 'Region'])
-
         if (region in commonTools.endNames):
             break
 
@@ -143,6 +145,13 @@ def enable_cis_vcnflow_logging(filename, outdir, prefix, config=DEFAULT_LOCATION
         name = str(df['Subnet Name'][i]).strip()
         subnet = str(df['CIDR Block'][i]).strip()
         AD = str(df['Availability Domain(AD1|AD2|AD3|Regional)'][i]).strip()
+
+        for columnname in dfcolumns:
+            if columnname.lower() in commonTools.tagColumns:
+                columnvalue = str(df[columnname][i]).strip()
+                if columnvalue !='nan' and columnvalue!='':
+                    tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)
+                    tempStr.update(tempdict)
 
         if (AD.strip().lower() != 'regional'):
             AD = AD.strip().upper()
