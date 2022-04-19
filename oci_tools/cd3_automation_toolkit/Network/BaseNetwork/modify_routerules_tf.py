@@ -197,6 +197,7 @@ def modify_terraform_drg_routerules(inputfile, outdir, prefix=None, non_gf_tenan
 
             columnname = commonTools.check_column_headers(columnname)
             tempStr[columnname] = str(columnvalue).strip()
+            tempStr.update(tempdict)
 
         # Process first RT
         if(len(rts_done[region])==0):
