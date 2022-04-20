@@ -1,0 +1,23 @@
+{% if count == 0 %}
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+
+############################
+# Governance
+# Create Default Tags
+############################
+
+tag_defaults = {
+    ## Add new tag defaults for {{ region|lower }} here
+}{% else %}
+
+    {% for compartments in default_tag_compartment %}
+    {{ key_tf_name }}_{{ compartments }}-default = {
+            tag_definition_name = "{{ key_tf_name }}"
+            compartment_name = "{{ compartments }}"
+            value = "{{ default_tag_value }}"
+
+            is_required =  {{ is_required }}
+            },
+    {% endfor %}
+
+{% endif %}
