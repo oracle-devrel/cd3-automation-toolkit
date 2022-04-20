@@ -1,13 +1,17 @@
-#Cipher Suite
-resource "oci_load_balancer_ssl_cipher_suite" "{{ lbr_tf_name }}_{{ cipher_tf_name }}" {
-    #Required
-    ciphers = [{{ ciphers }}]
-    name = "{{ cipher_suite_name }}"
+{% if (skeleton and count == 0) %}
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 
-    #Optional
-    load_balancer_id = oci_load_balancer_load_balancer.{{ lbr_tf_name }}.id
+#############################
+# Network
+# Cipher Suites - tfvars
+#############################
 
-    lifecycle {
-        ignore_changes = [ciphers]
-    }
-}
+cipher_suites = {
+  ##Add New Ciphers for {{ region.lower() }} here##
+}{% else %}
+    {{ lbr_tf_name }}_{{ cipher_tf_name }} = {
+          ciphers          = [{{ ciphers }}]
+          name             = "{{ cipher_suite_name }}"
+          load_balancer_name = "{{ lbr_tf_name }}"
+    },
+{% endif %}

@@ -367,4 +367,67 @@ variable "databases" {
     type = map(any)
     default = {}
 }
+
+#########################
+## Load Balancers ##
+#########################
+
+variable "load_balancers" {
+  description = "To provision Load Balancers"
+  type        = map(any)
+  default     = {}
+}
+
+variable "hostnames" {
+  description = "To provision Load Balancer Hostnames"
+  type        = map(any)
+  default     = {}
+}
+
+variable "certificates" {
+  description = "To provision Load Balancer Certificates"
+  type        = map(any)
+  default     = {}
+}
+
+variable "cipher_suites" {
+  description = "To provision Load Balancer Cipher Suites"
+  type        = map(any)
+  default     = {}
+}
+
+variable "backend_sets" {
+  description = "To provision Load Balancer Backend Sets"
+  type        = map(any)
+  default     = {}
+}
+
+variable "backends" {
+  description = "To provision Load Balancer Backends"
+  type        = map(any)
+  default     = {}
+}
+
+variable "listeners" {
+  description = "To provision Load Balancer Listeners"
+  type        = map(any)
+  default     = {}
+}
+
+variable "path_route_sets" {
+  description = "To provision Load Balancer Path Route Sets"
+  type        = map(any)
+  default     = {}
+}
+
+variable "rule_sets" {
+  description = "To provision Load Balancer Rule Sets"
+  type        = map(any)
+  default     = {}
+}
+
+##########################
+# Add new variables here #
+##########################
+
 ######################### END #########################

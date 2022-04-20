@@ -10,9 +10,7 @@
 #
 import re
 import shutil
-import sys
 import argparse
-import os
 import pandas as pd
 from oci.config import DEFAULT_LOCATION
 from pathlib import Path
@@ -27,12 +25,13 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Creates TF files for LBR")
     parser.add_argument("inputfile",help="Full Path to the CD3 excel file. eg CD3-template.xlsx in example folder")
     parser.add_argument("outdir", help="directory path for output tf files ")
+    parser.add_argument('prefix', help='TF files prefix')
     parser.add_argument("--config", default=DEFAULT_LOCATION, help="Config file name")
     return parser.parse_args()
 
 
 # If input file is CD3
-def create_terraform_lbr_hostname_certs(inputfile, outdir, config=DEFAULT_LOCATION):
+def create_terraform_lbr_hostname_certs(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True)
@@ -40,6 +39,8 @@ def create_terraform_lbr_hostname_certs(inputfile, outdir, config=DEFAULT_LOCATI
     hostname = env.get_template('hostname-template')
     certficate = env.get_template('certificate-template')
     ciphersuite =  env.get_template('cipher-suite-template')
+    sheetName = "LB-Hostname-Certs"
+    lb_auto_tfvars_filename = prefix + "_"+sheetName.lower()+".auto.tfvars"
 
     filename = inputfile
     configFileName = config
@@ -49,11 +50,12 @@ def create_terraform_lbr_hostname_certs(inputfile, outdir, config=DEFAULT_LOCATI
 
     lbr_str = {}
     hostname_str = {}
+    hostname_str_02 = {}
     certificate_str = {}
     cipher_suites = {}
 
     # Read cd3 using pandas dataframe
-    df, col_headers = commonTools.read_cd3(filename, "LB-Hostname-Certs")
+    df, col_headers = commonTools.read_cd3(filename, sheetName)
 
     df = df.dropna(how='all')
     df = df.reset_index(drop=True)
@@ -71,23 +73,17 @@ def create_terraform_lbr_hostname_certs(inputfile, outdir, config=DEFAULT_LOCATI
     #dfcert with required details
     dfcert = pd.concat([dffill, dfdrop], axis=1)
 
-
     oracle_cipher_suites = ['oci-default-ssl-cipher-suite-v1', 'oci-modern-ssl-cipher-suite-v1',
                             'oci-compatible-ssl-cipher-suite-v1', 'oci-wider-compatible-ssl-cipher-suite-v1',
                             'oci-customized-ssl-cipher-suite']
 
     # Take backup of files
     for reg in ct.all_regions:
-        resource='LB-Hostname-Certs'
-        srcdir = outdir + "/" + reg + "/"
-        commonTools.backup_file(srcdir, resource, "_certificate-lb.tf")
-        commonTools.backup_file(srcdir, resource, "_lbr-hostname-lb.tf")
-        commonTools.backup_file(srcdir, resource,"_cipher-suite-lb.tf")
-
         lbr_str[reg] = ''
         hostname_str[reg] = ''
         certificate_str[reg] = ''
         cipher_suites[reg] = ''
+        hostname_str_02[reg] = ''
 
     def certificate_templates(dfcert):
 
@@ -184,24 +180,10 @@ def create_terraform_lbr_hostname_certs(inputfile, outdir, config=DEFAULT_LOCATI
 
 
             if cipher_tf_name != '' and cipher_tf_name.lower() != 'nan':
-                cipher_suites[region] = ciphersuite.render(tempStr)
-
-                outfile = outdir + "/" + region + "/"+lbr_tf_name+"_"+cipher_tf_name+"_cipher-suite-lb.tf"
-                oname = open(outfile, "w+")
-                print("Writing to " + outfile)
-                oname.write(cipher_suites[region])
-                oname.close()
+                cipher_suites[region] = cipher_suites[region] + ciphersuite.render(tempStr)
 
             if certificate_tf_name != '' and certificate_tf_name.lower() != 'nan':
-                certificate_str[region] =  certficate.render(tempStr)
-
-                # Write to TF file
-                outfile = outdir + "/" + region + "/"+lbr_tf_name+"_"+certificate_tf_name+"_certificate-lb.tf"
-                oname = open(outfile, "w+")
-                print("Writing to " + outfile)
-                oname.write(certificate_str[region])
-                oname.close()
-
+                certificate_str[region] =  certificate_str[region] + certficate.render(tempStr)
 
     #create Certificates
     certificate_templates(dfcert)
@@ -250,16 +232,32 @@ def create_terraform_lbr_hostname_certs(inputfile, outdir, config=DEFAULT_LOCATI
             if columnname == "Is Private(True|False)":
                 columnname = 'is_private'
 
-            if columnname == "Compartment Name":
-                columnname = "compartment_tf_name"
+            if columnname == "LBR Compartment Name":
+                columnname = "lbr_compartment_tf_name"
                 columnvalue = commonTools.check_tf_variable(columnvalue)
+
+            if columnname == "Network Compartment Name":
+                columnname = "network_compartment_tf_name"
+                columnvalue = commonTools.check_tf_variable(columnvalue)
+
+            if columnname == "LBR VCN Name":
+                columnname = "vcn_tf_name"
+                columnvalue = commonTools.check_tf_variable(columnvalue)
+
+            if columnname == "Reserved IPs OCID" or columnname == "Reserved IPs ID":
+                columnname = "reserved_ips_id"
+                if columnvalue != "":
+                    if "," in columnvalue:
+                        columnvalue = columnvalue.split(",")
+                else:
+                    columnvalue = []
 
             if columnname == "LBR Name":
                 if columnvalue != '':
                     lbr_tf_name = commonTools.check_tf_variable(columnvalue)
                     tempdict = {'lbr_tf_name': lbr_tf_name}
 
-            if columnname == "Shape(100Mbps|400Mbps|8000Mbps|flexible)":
+            if columnname == "Shape(10Mbps|100Mbps|400Mbps|8000Mbps|flexible)":
                 columnname = 'lbr_shape'
                 if str(columnvalue).lower() == 'flexible':
                     columnvalue = 'flexible'
@@ -276,10 +274,19 @@ def create_terraform_lbr_hostname_certs(inputfile, outdir, config=DEFAULT_LOCATI
             if columnname == 'LBR Subnets':
                 lbr_subnets = str(columnvalue).strip().split(",")
                 if len(lbr_subnets) == 1:
-                    columnvalue = "merge(module.subnets.*...)[\"" + commonTools.check_tf_variable(str(lbr_subnets[0]).strip()) + "\"][\"subnet_tf_id\"]"
-
+                    if ("ocid1.subnet.oc1" in str(lbr_subnets[0]).strip()):
+                        columnvalue = "\""+str(lbr_subnets[0]).strip()+"\""
+                    else:
+                        columnvalue = "\""+commonTools.check_tf_variable(str(lbr_subnets[0]).strip())+"\""
                 elif len(lbr_subnets) == 2:
-                    columnvalue = "merge(module.subnets.*...)[\"" + commonTools.check_tf_variable(str(lbr_subnets[0]).strip()) + "\"][\"subnet_tf_id\"], merge(module.subnets.*...)[\"" + commonTools.check_tf_variable(str(lbr_subnets[0]).strip()) + "\"][\"subnet_tf_id\"]"
+                    if ("ocid1.subnet.oc1" in str(lbr_subnets[0]).strip() and "ocid1.subnet.oc1" not in str(lbr_subnets[1]).strip()):
+                        columnvalue = "\""+str(lbr_subnets[0]).strip() + "\"," +"\""+ commonTools.check_tf_variable(str(lbr_subnets[0]).strip())+"\""
+                    elif ("ocid1.subnet.oc1" not in str(lbr_subnets[0]).strip() and "ocid1.subnet.oc1" not in str(lbr_subnets[1]).strip()):
+                        columnvalue = "\""+commonTools.check_tf_variable(str(lbr_subnets[0]).strip()) + "\",\"" + commonTools.check_tf_variable(str(lbr_subnets[1]).strip())+"\""
+                    elif ("ocid1.subnet.oc1" not in str(lbr_subnets[0]).strip() and "ocid1.subnet.oc1" in str(lbr_subnets[1]).strip()):
+                        columnvalue = "\""+commonTools.check_tf_variable(str(lbr_subnets[0]).strip()) + "\",\"" +str(lbr_subnets[1]).strip()+"\""
+                    else:
+                        columnvalue = "\""+str(lbr_subnets[0]).strip() + "\",\"" + str(lbr_subnets[1]).strip()+"\""
 
             if columnname == "NSGs":
                 if columnvalue != '':
@@ -329,7 +336,7 @@ def create_terraform_lbr_hostname_certs(inputfile, outdir, config=DEFAULT_LOCATI
                             tempStr[columnname] = str(columnvalue).strip()
                             tempStr.update(tempdict)
 
-                            hostname_str[region] = hostname.render(tempStr)
+                            hostname_str[region] = hostname_str[region] +  hostname.render(tempStr)
 
                     elif len(lbr_hostnames) >=2 :
                         c = 1
@@ -353,13 +360,40 @@ def create_terraform_lbr_hostname_certs(inputfile, outdir, config=DEFAULT_LOCATI
                             c += 1
                 else:
                     hostname_str[region] = ''
+        lbr_str[region] = lbr_str[region] + lbr.render(tempStr)
+        hostname_str_02[region] = hostname_str_02[region] + hostname_str[region]
 
-        if lbr_tf_name != '':
-            lbr_str[region] = lbr.render(tempStr)
-            finalstring = hostname_str[region] + lbr_str[region]
+    for reg in ct.all_regions:
+        if lbr_str[reg] != '':
+            # Generate Final String
+            src = "##Add New Load Balancers for "+reg.lower()+" here##"
+            lbr_str[reg] = lbr.render(skeleton=True, count=0, region=reg).replace(src,lbr_str[reg])
+
+        if hostname_str[reg] != '':
+            # Generate Final String
+            src = "##Add New Hostnames for " + reg.lower() + " here##"
+            hostname_str_02[reg] = hostname.render(skeleton=True, count=0, region=reg).replace(src, hostname_str_02[reg])
+
+        if certificate_str[reg] != '':
+            # Generate Final String
+            src = "##Add New Certificates for " + reg.lower() + " here##"
+            certificate_str[reg] = certficate.render(skeleton=True, count = 0, region=reg).replace(src, certificate_str[reg])
+
+        if cipher_suites[reg] != '':
+            # Generate Final String
+            src = "##Add New Ciphers for " + reg.lower() + " here##"
+            cipher_suites[reg] = ciphersuite.render(skeleton=True, count = 0, region=reg).replace(src, cipher_suites[reg])
+
+        finalstring =  lbr_str[reg] + hostname_str_02[reg] + certificate_str[reg] + cipher_suites[reg]
+        finalstring = "".join([s for s in finalstring.strip().splitlines(True) if s.strip("\r\n").strip()])
+
+        if finalstring != "":
+            resource = sheetName.lower()
+            srcdir = outdir + "/" + reg + "/"
+            commonTools.backup_file(srcdir, resource, lb_auto_tfvars_filename)
 
             # Write to TF file
-            outfile = outdir + "/" + region + "/"+lbr_tf_name+"_lbr-hostname-lb.tf"
+            outfile = outdir + "/" + reg + "/" + lb_auto_tfvars_filename
             oname = open(outfile, "w+")
             print("Writing to ..."+outfile)
             oname.write(finalstring)
@@ -368,4 +402,4 @@ def create_terraform_lbr_hostname_certs(inputfile, outdir, config=DEFAULT_LOCATI
 if __name__ == '__main__':
     # Execution of the code begins here
     args = parse_args()
-    create_terraform_lbr_hostname_certs(args.inputfile, args.outdir, args.config)
+    create_terraform_lbr_hostname_certs(args.inputfile, args.outdir, args.prefix, args.config)

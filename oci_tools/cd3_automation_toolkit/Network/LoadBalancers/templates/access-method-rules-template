@@ -1,11 +1,6 @@
-items {
-        #Required
-        action = "{{ action }}"
-
-        #Optional
-        allowed_methods = {{ method_list }}
-        {% if status_code != '' %}
-        status_code = {{ status_code }}
-        {% endif %}
-    }
-    ## Add_rules_here ##
+            {
+            action = "{{ action }}"
+            allowed_methods = {{ method_list }}
+            status_code = "{{ status_code }}"
+            },
+    ## Add_access_control_method_rules_here ##

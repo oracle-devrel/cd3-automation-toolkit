@@ -1,34 +1,13 @@
-items  {
-        #Required
-        action = "{{ action }}"
-
-        conditions {
-            #Required
+            {
+            action = "{{ action }}"
             attribute_name = "{{ attribute_name }}"
             attribute_value = "{{ attribute_value }}"
-
-            #Optional
             operator = "{{ operator }}"
-        }
-        redirect_uri {
-
-            #Optional
-            {% if host != '' %}
             host = "{{ host }}"
-            {% endif %}
-            {% if path != '' %}
             path = "{{ path }}"
-            {% endif %}
-            {% if port != '' %}
             port = "{{ port }}"
-            {% endif %}
-            {% if protocol != '' %}
             protocol = "{{ protocol }}"
-            {% endif %}
-            {% if redirect_uri_query != '' %}
             query = "{{ redirect_uri_query }}"
-            {% endif %}
-        }
-        response_code = "{{ response_code }}"
-    }
-    ## Add_rules_here ##
+            response_code = "{{ response_code }}"
+            },
+    ## Add_uri_redirect_rules_here ##

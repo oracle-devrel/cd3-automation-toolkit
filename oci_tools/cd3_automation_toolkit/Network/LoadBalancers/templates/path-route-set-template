@@ -1,8 +1,19 @@
-resource "oci_load_balancer_path_route_set" "{{ lbr_tf_name }}_{{ path_route_set_tf_name }}" {
-    #Required
-    load_balancer_id = oci_load_balancer_load_balancer.{{ lbr_tf_name }}.id
-    name = "{{ path_route_set_name }}"
+{% if (skeleton and count == 0) %}
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 
+#############################
+# Network
+# Path Route Set - tfvars
+#############################
+
+path_route_sets = {
+  ##Add New Path Route Sets for {{ region.lower() }} here##
+}{% else %}
+   {{ lbr_tf_name }}_{{ path_route_set_tf_name }} = {
+        load_balancer_name = "{{ lbr_tf_name }}"
+        name = "{{ path_route_set_name }}"
+        path_routes = [
 {{ path_routes }}
-
-}
+            ]
+      },
+{% endif %}

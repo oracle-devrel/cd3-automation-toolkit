@@ -26,12 +26,13 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Creates Listener TF files for LBR")
     parser.add_argument("inputfile",help="Full Path to the CD3 excel file. eg CD3-template.xlsx in example folder")
     parser.add_argument("outdir", help="directory path for output tf files ")
+    parser.add_argument('prefix', help='TF files prefix')
     parser.add_argument("--configFileName", default=DEFAULT_LOCATION, help="Config file name")
     return parser.parse_args()
 
 
 # If input file is CD3
-def create_listener(inputfile, outdir, config=DEFAULT_LOCATION):
+def create_listener(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True)
@@ -39,15 +40,18 @@ def create_listener(inputfile, outdir, config=DEFAULT_LOCATION):
     filename = inputfile
     outdir = outdir
     configFileName = config
+    sheetName = "LB-Listener"
+    lb_auto_tfvars_filename = prefix + "_"+sheetName.lower()+".auto.tfvars"
 
     ct = commonTools()
     ct.get_subscribedregions(configFileName)
 
     # Read cd3 using pandas dataframe
-    df, col_headers = commonTools.read_cd3(filename, "LB-Listener")
+    df, col_headers = commonTools.read_cd3(filename, sheetName)
 
     df = df.dropna(how='all')
     df = df.reset_index(drop=True)
+    listener_str = {}
 
     #DF with just the load balancer names and the Region details
 
@@ -62,12 +66,9 @@ def create_listener(inputfile, outdir, config=DEFAULT_LOCATION):
     #dfcert with required details
     df = pd.concat([dffill, dfdrop], axis=1)
 
-
     # Take backup of files
-    for eachregion in ct.all_regions:
-        resource='Listener'
-        srcdir = outdir + "/" + eachregion + "/"
-        commonTools.backup_file(srcdir, resource, "_listener-lb.tf")
+    for reg in ct.all_regions:
+        listener_str[reg] = ""
 
     # List of the column headers
     dfcolumns = df.columns.values.tolist()
@@ -123,8 +124,9 @@ def create_listener(inputfile, outdir, config=DEFAULT_LOCATION):
                 tempdict = {'lbr_tf_name': lbr_tf_name}
 
             if columnname == "Certificate Name":
-                certificate_tf_name = commonTools.check_tf_variable(columnvalue)+"_cert"
-                tempdict = {'certificate_tf_name': certificate_tf_name}
+                if columnvalue != '':
+                    certificate_tf_name = lbr_tf_name + "_" +commonTools.check_tf_variable(columnvalue)+"_cert"
+                    tempdict = {'certificate_tf_name': certificate_tf_name}
 
             if columnname == "Backend Set Name":
                 backend_set_tf_name = commonTools.check_tf_variable(columnvalue)
@@ -144,12 +146,10 @@ def create_listener(inputfile, outdir, config=DEFAULT_LOCATION):
                 columnname = 'idle_timeout_in_seconds'
 
             if columnname == 'Path Route Set Name':
-                if columnvalue == '':
-                    path_route_set_tf_name = "\"\""
-                else:
+                if columnvalue != '':
                     columnvalue = commonTools.check_tf_variable(str(columnvalue).strip())
-                    path_route_set_tf_name = 'oci_load_balancer_path_route_set.'+lbr_tf_name +"_"+ columnvalue+'.name'
-                tempdict = {'path_route_set_tf_name' : path_route_set_tf_name}
+                    path_route_set_tf_name = lbr_tf_name +"_"+ columnvalue
+                    tempdict = {'path_route_set_tf_name' : path_route_set_tf_name}
 
             if columnname == "LBR Hostnames (Name)":
                 columnname = 'lbr_hostnames'
@@ -158,15 +158,15 @@ def create_listener(inputfile, outdir, config=DEFAULT_LOCATION):
                     if len(lbr_hostnames) == 1:
                         for hostname in lbr_hostnames:
                             hostname = commonTools.check_tf_variable(hostname)
-                            lbr_hostname = 'oci_load_balancer_hostname.'+lbr_tf_name+"_"+hostname+'_hostname.name'
+                            lbr_hostname = "\""+lbr_tf_name+"_"+hostname+'_hostname\"'
                     elif len(lbr_hostnames) >= 2:
                         c = 1
                         for hostname in lbr_hostnames:
                             hostname = commonTools.check_tf_variable(hostname)
                             if c == len(lbr_hostnames):
-                                lbr_hostname = lbr_hostname+'oci_load_balancer_hostname.'+lbr_tf_name+"_" + hostname + '_hostname.name'
+                                lbr_hostname = lbr_hostname+"\""+lbr_tf_name+"_" + hostname + '_hostname\"'
                             else:
-                                lbr_hostname = lbr_hostname+'oci_load_balancer_hostname.'+lbr_tf_name+"_"+hostname+'_hostname.name,'
+                                lbr_hostname = lbr_hostname+"\""+lbr_tf_name+"_"+hostname+'_hostname\",'
                             c += 1
                 columnvalue = lbr_hostname
 
@@ -176,16 +176,16 @@ def create_listener(inputfile, outdir, config=DEFAULT_LOCATION):
                     if len(rule_sets) == 1:
                         for rule in rule_sets:
                             rule = commonTools.check_tf_variable(str(rule))
-                            rule_set_names = 'oci_load_balancer_rule_set.'+lbr_tf_name+"_"+rule+'.name'
+                            rule_set_names = "\""+lbr_tf_name+"_"+rule+"\""
                     elif len(rule_sets) >=2 :
                         c=1
                         for rule in rule_sets:
                             if c == len(rule_sets):
                                 rule = commonTools.check_tf_variable(str(rule))
-                                rule_set_names = rule_set_names+'oci_load_balancer_rule_set.'+lbr_tf_name+"_"+rule+'.name'
+                                rule_set_names = rule_set_names+"\""+lbr_tf_name+"_"+rule+"\""
                             else:
                                 rule = commonTools.check_tf_variable(str(rule))
-                                rule_set_names = rule_set_names+'oci_load_balancer_rule_set.'+lbr_tf_name+"_"+ rule + '.name,'
+                                rule_set_names = rule_set_names+"\""+lbr_tf_name+"_"+ rule + '\",'
                             c += 1
                 columnvalue = rule_set_names
 
@@ -221,16 +221,29 @@ def create_listener(inputfile, outdir, config=DEFAULT_LOCATION):
             tempStr.update(tempdict)
 
         # Render Backend Set
-        listener_str = listener.render(tempStr)
+        listener_str[region] = listener_str[region] + listener.render(tempStr)
 
-        # Write to TF file
-        outfile = outdir + "/" + region + "/"+lbr_tf_name+"_"+listener_tf_name+"_listener-lb.tf"
-        oname = open(outfile, "w+")
-        print("Writing to " + outfile)
-        oname.write(listener_str)
-        oname.close()
+    for reg in ct.all_regions:
+
+        if listener_str[reg] != '':
+
+            # Generate Final String
+            src = "##Add New Listeners for "+reg.lower()+" here##"
+            listener_str[reg] = listener.render(skeleton=True, count=0, region=reg).replace(src,listener_str[reg])
+            finalstring = "".join([s for s in listener_str[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
+
+            resource=sheetName
+            srcdir = outdir + "/" + reg + "/"
+            commonTools.backup_file(srcdir, resource, lb_auto_tfvars_filename)
+
+            # Write to TF file
+            outfile = outdir + "/" + reg + "/" + lb_auto_tfvars_filename
+            oname = open(outfile, "w+")
+            print("Writing to " + outfile)
+            oname.write(finalstring)
+            oname.close()
 
 if __name__ == '__main__':
     # Execution of the code begins here
     args = parse_args()
-    create_listener(args.inputfile, args.outdir, args.config)
+    create_listener(args.inputfile, args.outdir, args.prefix, args.config)
