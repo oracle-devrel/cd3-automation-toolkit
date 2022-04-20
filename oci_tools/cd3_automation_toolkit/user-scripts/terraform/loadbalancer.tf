@@ -3,6 +3,24 @@
 # Create Load Balancers
 ############################
 
+data "oci_core_instances" "instances" {
+    for_each = var.backends != null ? var.backends : {}
+    #Required
+    compartment_id = each.value.instance_compartment != null ? (length(regexall("ocid1.compartment.oc1*", each.value.instance_compartment)) > 0 ? each.value.instance_compartment : var.compartment_ocids[each.value.instance_compartment]) :  var.tenancy_ocid
+}
+
+data "oci_core_instance" "instance_ip" {
+    for_each = { for k,v in var.backends : k => v.ip_address if length(regexall("IP:*", v.ip_address)) == 0 }
+    instance_id = flatten(distinct(local.instance.ocid))[0][split("NAME:", each.value)[1]][0]
+}
+
+locals {
+    instance = {
+        for instances in data.oci_core_instances.instances:
+           "ocid" => { for instance in instances.instances : instance.display_name => instance.id... }...
+    }
+}
+
 module "load-balancers" {
   source   = "./modules/loadbalancer/lb-load-balancer"
   for_each = var.load_balancers != null ? var.load_balancers : {}
@@ -118,24 +136,6 @@ output "backend_sets_id_map" {
     value = [ for k,v in merge(module.backend-sets.*...) : v.backend_set_tf_id ]
 }
 */
-
-data "oci_core_instances" "instances" {
-    for_each = var.backends != null ? var.backends : {}
-    #Required
-    compartment_id = each.value.instance_compartment != null ? (length(regexall("ocid1.compartment.oc1*", each.value.instance_compartment)) > 0 ? each.value.instance_compartment : var.compartment_ocids[each.value.instance_compartment]) :  var.tenancy_ocid
-}
-
-data "oci_core_instance" "instance_ip" {
-    for_each = { for k,v in var.backends : k => v.ip_address if length(regexall("IP:*", v.ip_address)) == 0 }
-    instance_id = flatten(distinct(local.instance.ocid))[0][split("NAME:", each.value)[1]]
-}
-
-locals {
-    instance = {
-        for instances in data.oci_core_instances.instances:
-           "ocid" => { for instance in instances.instances : instance.display_name => instance.id }...
-    }
-}
 
 module "backends" {
   source   = "./modules/loadbalancer/lb-backend"
