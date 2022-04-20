@@ -24,4 +24,8 @@ resource "oci_identity_tag" "tag" {
     }
   }
   is_retired = var.is_retired
+  lifecycle {
+    ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"]]
+  }
+
 }
