@@ -7,12 +7,14 @@
 ############################
 
 instances = {
-{% endif %}
+    ## Add instances for {{ region|lower }} here ##
+}
+{% else %}
    {{ display_tf_name }} =  {
             availability_domain  = {{ availability_domain }}
             compartment_id       = "{{ compartment_tf_name }}"
             shape                = "{{ shape[0] }}"
-            display_name         = "{{ display_tf_name }}"
+            display_name         = "{{ display_name }}"
             {% if boot_volume_size_in_gbs %}
             boot_volume_size_in_gbs = {{ boot_volume_size_in_gbs }}
             {% else %}
@@ -247,4 +249,4 @@ instances = {
                     {% endif %}
             {#  ###Section for adding Defined and Freeform Tags ends here###  #}
     },
- }
+{% endif %}

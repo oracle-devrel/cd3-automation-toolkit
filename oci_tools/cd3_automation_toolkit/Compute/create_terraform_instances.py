@@ -31,16 +31,16 @@ def parse_args():
 
 # If input is CD3 excel file
 def create_terraform_instances(inputfile, outdir, prefix, config):
-    outfile = {}
-    oname = {}
+    boot_policy_tfStr = {}
     tfStr = {}
+    finalstring = {}
     ADS = ["AD1", "AD2", "AD3"]
 
     filename = inputfile
     configFileName = config
 
     sheetName = "Instances"
-    auto_tfvars_filename = '_' + sheetName.lower() + '.auto.tfvars'
+    auto_tfvars_filename = prefix+'_' + sheetName.lower() + '.auto.tfvars'
     ct = commonTools()
     ct.get_subscribedregions(configFileName)
 
@@ -48,6 +48,7 @@ def create_terraform_instances(inputfile, outdir, prefix, config):
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
     template = env.get_template('instance-template')
+    boot_backup_policy_template = env.get_template('boot-backup-policy-template')
 
     # Read cd3 using pandas dataframe
     df, col_headers = commonTools.read_cd3(filename, sheetName)
@@ -56,17 +57,15 @@ def create_terraform_instances(inputfile, outdir, prefix, config):
 
     # List of column headers
     dfcolumns = df.columns.values.tolist()
-    display_tf_name = ''
-
-    regions_done_count = []
 
     # Take backup of files
     for eachregion in ct.all_regions:
         resource = sheetName.lower()
         srcdir = outdir + "/" + eachregion + "/"
-        # commonTools.backup_file(srcdir, resource, sheetName.lower()+".tf")
         commonTools.backup_file(srcdir, resource, auto_tfvars_filename)
         tfStr[eachregion] = ''
+        boot_policy_tfStr[eachregion] = ''
+        finalstring[eachregion] = ''
 
     subnets=parseSubnets(filename)
 
@@ -204,54 +203,48 @@ def create_terraform_instances(inputfile, outdir, prefix, config):
             tempStr[columnname] = str(columnvalue).strip()
             tempStr.update(tempdict)
 
-        if region not in regions_done_count:
-            tempdict = {"count": 0}
-            regions_done_count.append(region)
-        else:
-            tempdict = {"count": i}
-        tempStr.update(tempdict)
-
         # Write all info to TF string
-        tfStr[region] = tfStr[region][:-1] + template.render(tempStr)
+        tfStr[region] = tfStr[region] + template.render(tempStr)
+        boot_policy_tfStr[region] = boot_policy_tfStr[region] + boot_backup_policy_template.render(tempStr)
 
     # Write TF string to the file in respective region directory
     for reg in ct.all_regions:
+
         reg_out_dir = outdir + "/" + reg
+
         if not os.path.exists(reg_out_dir):
             os.makedirs(reg_out_dir)
-        # outfile[reg] = reg_out_dir + "/" + prefix + "_"+sheetName.lower()+".tf"
-        outfile[reg] = reg_out_dir + "/" + prefix + auto_tfvars_filename
-
-        if (tfStr[reg] != ''):
-            oname[reg] = open(outfile[reg], 'w')
-            oname[reg].write(tfStr[reg])
-            oname[reg].close()
-            print(outfile[reg] + " for Instance has been created for region " + reg)
 
 
-        # # Write all info to TF string; Render template
-        # hostStr = template.render(tempStr)
-        #
-        # # Write to output
-        # file = outdir + "/" + region + "/" + display_tf_name + "_instance.tf"
-        # oname = open(file, "w+")
-        # print("Writing to " + file)
-        # oname.write(hostStr)
-        # oname.close()
+        if tfStr[reg] != '':
 
+            # Generate Instances String
+            src = "## Add instances for " + reg.lower() + " here ##"
+            tfStr[reg] = template.render(count=0, region=reg).replace(src, tfStr[reg])
+            tfStr[reg] = "".join([s for s in tfStr[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
 
-    # Write to output
-    # for reg in ct.all_regions:
-    #    reg_out_dir = outdir + "/" + reg
-    #    outfile[reg] = reg_out_dir + "/" + prefix + "_" + sheetName.lower() + ".tf"
+        if boot_policy_tfStr[reg] != '':
 
-    #    if (tfStr[reg] != ''):
+            # Generate Boot Volume Backup Policy String
+            src = "## Add boot volume backup policies for " + reg.lower() + " here ##"
+            boot_policy_tfStr[reg] = boot_backup_policy_template.render(count=0, region=reg).replace(src,boot_policy_tfStr[reg])
+            boot_policy_tfStr[reg] = "".join([s for s in boot_policy_tfStr[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
 
-    #        oname[reg] = open(outfile[reg], 'w')
-    #        oname[reg].write(tfStr[reg])
-    #        oname[reg].close()
-    #        print(outfile[reg] + " for instances has been created for region " + reg)
+        # Generate Final String
+        finalstring[reg] = tfStr[reg] + "\n" + boot_policy_tfStr[reg]
 
+        if finalstring[reg] != '':
+
+            resource = sheetName
+            srcdir = outdir + "/" + reg + "/"
+            commonTools.backup_file(srcdir, resource, auto_tfvars_filename)
+
+            # Write to TF file
+            outfile = outdir + "/" + reg + "/" + auto_tfvars_filename
+            oname = open(outfile, "w+")
+            print(outfile + " for instances and boot volume backup policy has been created for region " + reg)
+            oname.write(finalstring[reg])
+            oname.close()
 
 if __name__ == '__main__':
     args = parse_args()
