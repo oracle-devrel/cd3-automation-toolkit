@@ -152,6 +152,28 @@ variable "groups" {
 }
 
 #########################
+## Tagging ##
+#########################
+
+variable "tag_namespaces" {
+  description = "To provision Namespaces"
+  type        = map(any)
+  default     = {}
+}
+
+variable "tag_keys" {
+  description = "To provision Tag Keys"
+  type        = map(any)
+  default     = {}
+}
+
+variable "tag_defaults" {
+  description = "To make the Tag keys as default to compartments"
+  type        = map(any)
+  default     = {}
+}
+
+#########################
 ##### Network ########
 #########################
 
@@ -272,40 +294,22 @@ variable "data_drg_route_table_distributions" {
 }
 
 #########################
-##### Logging ###########
+## Instances/Block Volumes ##
 #########################
 
-variable "log_groups" {
+variable "blockvolumes" {
   type    = map(any)
+  description = "To provision block volumes"
   default = {}
 }
-
-variable "logs" {
-  type    = map(any)
+variable "block_backup_policies" {
+  type = map(any)
+  description = "To create block volume back policy"
   default = {}
 }
-
-#########################
-## Management Services ##
-#########################
-
-variable "alarms" {
-  type    = map(any)
-  default = {}
-}
-
-variable "events" {
-  type    = map(any)
-  default = {}
-}
-
-variable "notifications_topics" {
-  type    = map(any)
-  default = {}
-}
-
-variable "notifications_subscriptions" {
-  type    = map(any)
+variable "instances" {
+  type = map(any)
+  description = "Map of instances to be provisioned"
   default = {}
 }
 
@@ -331,32 +335,6 @@ variable "dbsystems_vm_bm" {
   default     = {}
 }
 
-##########################
-# Add new variables here #
-##########################
-variable "capacity_reservation_ocids" {
-  type = map(any)
-  default = {
-    "AD1" : "ocid1.capacityreservation.oc1.iad.anuwcljrmbgqraachdisdnhc5z7swiwyzhi6radkn7xxtw6uosysheiadlja",
-    "AD2" : "ocid1.capacityreservation.oc1.iad.anuwcljsmbgqraacm4edb4dbsrqsgtskzjicudhmasmpqe7aopxmjvnukugq",
-    "AD3" : "ocid1.capacityreservation.oc1.iad.anuwcljtmbgqraactoi5gwv6ahzutllmjmfgtrabarhcq7wvkx6mz2b7dwga"
-  }
-}
-variable "blockvolumes" {
-  type    = map(any)
-  description = "To provision block volumes"
-  default = {}
-}
-variable "block_backup_policies" {
-  type = map(any)
-  description = "To create block volume back policy"
-  default = {}
-}
-variable "instances" {
-  type = map(any)
-  description = "Map of instances to be provisioned"
-  default = {}
-}
 variable "db_home" {
   type = map(any)
   description = "Map of database db home to be provisioned"
@@ -366,28 +344,6 @@ variable "databases" {
     description = "Map of databases to be provisioned in an existing db_home"
     type = map(any)
     default = {}
-}
-
-#########################
-## Tagging ##
-#########################
-
-variable "tag_namespaces" {
-  description = "To provision Namespaces"
-  type        = map(any)
-  default     = {}
-}
-
-variable "tag_keys" {
-  description = "To provision Tag Keys"
-  type        = map(any)
-  default     = {}
-}
-
-variable "tag_defaults" {
-  description = "To make the Tag keys as default to compartments"
-  type        = map(any)
-  default     = {}
 }
 
 #########################
@@ -448,8 +404,55 @@ variable "rule_sets" {
   default     = {}
 }
 
+
+#########################
+##### Logging ###########
+#########################
+
+variable "log_groups" {
+  type    = map(any)
+  default = {}
+}
+
+variable "logs" {
+  type    = map(any)
+  default = {}
+}
+
+#########################
+## Management Services ##
+#########################
+
+variable "alarms" {
+  type    = map(any)
+  default = {}
+}
+
+variable "events" {
+  type    = map(any)
+  default = {}
+}
+
+variable "notifications_topics" {
+  type    = map(any)
+  default = {}
+}
+
+variable "notifications_subscriptions" {
+  type    = map(any)
+  default = {}
+}
+
 ##########################
 # Add new variables here #
 ##########################
+variable "capacity_reservation_ocids" {
+  type = map(any)
+  default = {
+    "AD1" : "ocid1.capacityreservation.oc1.iad.anuwcljrmbgqraachdisdnhc5z7swiwyzhi6radkn7xxtw6uosysheiadlja",
+    "AD2" : "ocid1.capacityreservation.oc1.iad.anuwcljsmbgqraacm4edb4dbsrqsgtskzjicudhmasmpqe7aopxmjvnukugq",
+    "AD3" : "ocid1.capacityreservation.oc1.iad.anuwcljtmbgqraactoi5gwv6ahzutllmjmfgtrabarhcq7wvkx6mz2b7dwga"
+  }
+}
 
 ######################### END #########################
