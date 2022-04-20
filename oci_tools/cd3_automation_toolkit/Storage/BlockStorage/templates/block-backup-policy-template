@@ -64,5 +64,4 @@ block_backup_policies = {
                 {% endif %}
         {#  ###Section for adding Defined and Freeform Tags ends here###  #}
    },
-}
 {% endif %}

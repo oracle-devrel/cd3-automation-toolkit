@@ -130,7 +130,6 @@ def block_backups_policy(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
         # temporary dictionary1 and dictionary2
         tempStr = {}
         tempdict = {}
-        tempdicttag = {}
 
         # Fetch data ; loop through columns
         for columnname in dfcolumns:
@@ -142,8 +141,11 @@ def block_backups_policy(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
             columnvalue = commonTools.check_columnvalue(columnvalue)
 
             # Check for multivalued columns
-            tempdicttag = commonTools.check_multivalues_columnvalue(columnvalue, columnname, tempdicttag)
-            print(tempdicttag)
+            tempdict = commonTools.check_multivalues_columnvalue(columnvalue,columnname,tempdict)
+
+            # Process Defined and Freeform Tags
+            if columnname.lower() in commonTools.tagColumns:
+                tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)
 
             if (columnname == 'Block Name'):
                 columnvalue = commonTools.check_tf_variable(columnvalue)
@@ -207,7 +209,6 @@ def block_backups_policy(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
         #     print("Writing to " + file)
         #     oname.write(backuppolicy)
         #     oname.close()
-
 
 if __name__ == '__main__':
     args = parse_args()
