@@ -152,6 +152,28 @@ variable "groups" {
 }
 
 #########################
+## Tagging ##
+#########################
+
+variable "tag_namespaces" {
+  description = "To provision Namespaces"
+  type        = map(any)
+  default     = {}
+}
+
+variable "tag_keys" {
+  description = "To provision Tag Keys"
+  type        = map(any)
+  default     = {}
+}
+
+variable "tag_defaults" {
+  description = "To make the Tag keys as default to compartments"
+  type        = map(any)
+  default     = {}
+}
+
+#########################
 ##### Network ########
 #########################
 
@@ -322,28 +344,6 @@ variable "databases" {
     description = "Map of databases to be provisioned in an existing db_home"
     type = map(any)
     default = {}
-}
-
-#########################
-## Tagging ##
-#########################
-
-variable "tag_namespaces" {
-  description = "To provision Namespaces"
-  type        = map(any)
-  default     = {}
-}
-
-variable "tag_keys" {
-  description = "To provision Tag Keys"
-  type        = map(any)
-  default     = {}
-}
-
-variable "tag_defaults" {
-  description = "To make the Tag keys as default to compartments"
-  type        = map(any)
-  default     = {}
 }
 
 #########################
