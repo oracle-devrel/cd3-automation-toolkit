@@ -130,8 +130,8 @@ def block_backups_policy(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
         # temporary dictionary1 and dictionary2
         tempStr = {}
         tempdict = {}
-        policy = ''
-        blockname_tf = ''
+        tempdicttag = {}
+
         # Fetch data ; loop through columns
         for columnname in dfcolumns:
 
@@ -142,7 +142,8 @@ def block_backups_policy(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
             columnvalue = commonTools.check_columnvalue(columnvalue)
 
             # Check for multivalued columns
-            tempdict = commonTools.check_multivalues_columnvalue(columnvalue, columnname, tempdict)
+            tempdicttag = commonTools.check_multivalues_columnvalue(columnvalue, columnname, tempdicttag)
+            print(tempdicttag)
 
             if (columnname == 'Block Name'):
                 columnvalue = commonTools.check_tf_variable(columnvalue)
@@ -153,8 +154,7 @@ def block_backups_policy(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
                 columnname = 'backup_policy'
                 columnvalue = str(columnvalue).strip()
                 if columnvalue != '':
-                    columnvalue = columnvalue.lower()
-                    policy = commonTools.check_tf_variable(columnvalue)
+                    columnvalue = commonTools.check_tf_variable(columnvalue.lower())
 
             if columnname == "Compartment Name":
                 compartmentVarName = columnvalue.strip()
@@ -167,29 +167,35 @@ def block_backups_policy(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
             tempStr[columnname] = str(columnvalue).strip()
             tempStr.update(tempdict)
 
-        if region not in regions_done_count:
-            tempdict = {"count": 0}
-            regions_done_count.append(region)
-        else:
-            tempdict = {"count": i}
-        tempStr.update(tempdict)
-
         # Write all info to TF string
-        tfStr[region] = tfStr[region][:-1] + template.render(tempStr)
+        tfStr[region] = tfStr[region] + template.render(tempStr)
 
     # Write TF string to the file in respective region directory
     for reg in ct.all_regions:
+
         reg_out_dir = outdir + "/" + reg
+
         if not os.path.exists(reg_out_dir):
             os.makedirs(reg_out_dir)
-        # outfile[reg] = reg_out_dir + "/" + prefix + "_"+sheetName.lower()+".tf"
-        outfile[reg] = reg_out_dir + "/" + prefix + auto_tfvars_filename
+
 
         if tfStr[reg] != '':
-            oname[reg] = open(outfile[reg], 'w')
-            oname[reg].write(tfStr[reg])
-            oname[reg].close()
-            print(outfile[reg] + " for Blockvolume backup policy has been created for region " + reg)
+
+            # Generate Final String
+            src = "## Add block volume backup policies for "+reg.lower()+" here ##"
+            tfStr[reg] = template.render(skeleton=True, count=0, region=reg).replace(src,tfStr[reg])
+            finalstring = "".join([s for s in tfStr[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
+
+            resource=sheetName
+            srcdir = outdir + "/" + reg + "/"
+            commonTools.backup_file(srcdir, resource, prefix + auto_tfvars_filename)
+
+            # Write to TF file
+            outfile = outdir + "/" + reg + "/" + prefix + auto_tfvars_filename
+            oname = open(outfile, "w+")
+            print(outfile + " for Blockvolume backup policy has been created for region " + reg)
+            oname.write(finalstring)
+            oname.close()
 
         # #Render template
         # if policy != '':
