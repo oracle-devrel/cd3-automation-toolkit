@@ -176,10 +176,10 @@ module "listeners" {
   certificate_name    = each.value.certificate_name != "" ? merge(module.certificates.*...)[each.value.certificate_name]["certificate_tf_name"] : ""
   cipher_suite_name   = each.value.cipher_suite_name
   key_name            = each.key
-  hostname_names      = each.value.hostname_names != [] ? [ merge(module.hostnames.*...)[hostnames].hostname_tf_name for hostnames in each.value.hostname_names] : []
+  hostname_names      = each.value.hostname_names != [] ? flatten(tolist([for hostnames in each.value.hostname_names : merge(module.hostnames.*...)[hostnames].hostname_tf_name])) : null
   path_route_set_name = each.value.path_route_set_name != "" ? merge(module.path-route-sets.*...)[each.value.path_route_set_name].path_route_set_tf_name : ""
   routing_policy_name = each.value.routing_policy_name #TODO
-  rule_set_names      = each.value.rule_set_names != [] ? [ merge(module.rule-sets.*...)[rules].rule_set_tf_name for rules in each.value.rule_set_names] : []
+  rule_set_names      = each.value.rule_set_names != [] ? flatten(tolist([for rules in each.value.rule_set_names : merge(module.rule-sets.*...)[rules].rule_set_tf_name])) : null
 }
 
 /*

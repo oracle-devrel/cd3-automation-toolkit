@@ -395,7 +395,7 @@ def print_backendset_backendserver(region, ct, values_for_column_bss, lbr, LBRs,
             for backends in backendset_details.__getattribute__('backends'):
                 if str(backends.__getattribute__('name')).lower() != "none":
                     backend_value = str(backends.__getattribute__('name'))
-                    backend_list= backend_list+","+"&"+backend_value.replace(':',"&")
+                    backend_list= backend_list+","+"&"+backend_value
                 if (backend_list != "" and backend_list[0] == ','):
                     backend_list = backend_list.lstrip(',')
 
@@ -460,7 +460,7 @@ def print_backendset_backendserver(region, ct, values_for_column_bss, lbr, LBRs,
                     elif 'Backend HealthCheck' in col_headers:
                         values_for_column_bss[col_headers].append(hc.__getattribute__(sheet_dict_bss[col_headers]))
 
-                    elif col_headers == "Backend ServerComp&ServerName&Port":
+                    elif col_headers == "Backend ServerComp&ServerName:Port":
                         values_for_column_bss[col_headers].append(backend_list)
 
                     elif col_headers == "Backend Set Name":

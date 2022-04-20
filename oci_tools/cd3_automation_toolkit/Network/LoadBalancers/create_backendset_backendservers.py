@@ -189,7 +189,7 @@ def create_backendset_backendservers(inputfile, outdir, prefix, config=DEFAULT_L
                 else:
                     pass
 
-            if columnname == "Backend ServerName:Port":
+            if columnname == "Backend ServerComp&ServerName:Port":
                 columnname = "backend_server"
 
             columnname = commonTools.check_column_headers(columnname)
@@ -202,13 +202,13 @@ def create_backendset_backendservers(inputfile, outdir, prefix, config=DEFAULT_L
         cnt = 0
 
         #beserver_str = ''
-        columnvalue = str(df.loc[i,'Backend ServerComp&ServerName&Port']).strip().split(',')
+        columnvalue = str(df.loc[i,'Backend ServerComp&ServerName:Port']).strip().split(',')
         for lbr_be_server in columnvalue:
             if (lbr_be_server != "" and lbr_be_server != "nan"):
                 bserver_list = str(df.loc[i, 'Backup <Backend Server Name>']).strip().split(',')
                 cnt = cnt + 1
                 serverinfo = lbr_be_server.strip().split("&")
-                servername = serverinfo[1].strip()
+                servername = serverinfo[1].split(":")[0].strip()
                 if servername in bserver_list:
                     backup = "true"
                 else:
@@ -218,7 +218,7 @@ def create_backendset_backendservers(inputfile, outdir, prefix, config=DEFAULT_L
                 tempStr.update(tempback)
 
                 backend_server_tf_name = commonTools.check_tf_variable(servername+"-"+str(cnt))
-                serverport = serverinfo[2].strip()
+                serverport = serverinfo[1].split(":")[1].strip()
                 inst_compartment_tf_name = ''
                 e = servername.count(".")
                 if (e == 3):
