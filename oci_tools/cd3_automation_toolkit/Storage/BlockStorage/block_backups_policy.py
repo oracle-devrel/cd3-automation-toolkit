@@ -32,13 +32,11 @@ def parse_args():
     parser.add_argument('--config', default=DEFAULT_LOCATION, help='Config file name')
     return parser.parse_args()
 
-
 # If input in cd3 file
 def block_backups_policy(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
     filename = inputfile
     configFileName = config
-    outfile = {}
-    oname = {}
+
     tfStr = {}
     sheetName = "BlockVolumes"
     auto_tfvars_filename = '_' + sheetName.lower() + '-backup-policy' + '.auto.tfvars'
@@ -59,73 +57,19 @@ def block_backups_policy(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
 
     # List of column headers
     dfcolumns = df.columns.values.tolist()
-    regions_done_count = []
 
-    # Take backup of files
-    for eachregion in ct.all_regions:
-        resource = 'BlockBackupPolicy'
-        srcdir = outdir + "/" + eachregion + "/"
-        commonTools.backup_file(srcdir, resource, "_block-backup-policy.tfvars")
-        commonTools.backup_file(srcdir, resource, "-block-backup-policy-data.tfvars")
-        tfStr[eachregion] = ''
+    for reg in ct.all_regions:
+        tfStr[reg] = ''
 
-    policy_done = []
     for i in df.index:
         region = str(df.loc[i,"Region"])
         region = region.strip().lower()
+
         if region in commonTools.endNames:
             break
         if region not in ct.all_regions:
             print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
             exit()
-
-        policy_data_file = outdir + "/" + region + "/oci-block-backup-policy-data.tf"
-        datasource = env.get_template('backup-policy-data-source-template')
-        oci_policy = ["gold", "silver", "bronze"]
-        reg_policy = str(df.loc[i, 'Region']).lower() + "-" + str(df.loc[i, 'Backup Policy']).lower()
-
-        if str(df.loc[i, 'Backup Policy']).lower() in oci_policy and reg_policy not in policy_done:
-            if os.path.isfile(policy_data_file):
-                with open(policy_data_file) as fname:
-                    if "block_" + str(df.loc[i, 'Backup Policy']).lower() not in fname.read():
-                        policy_data_dict = {'block_tf_policy': str(df.loc[i, 'Backup Policy']).lower(),
-                                            'policy_tf_compartment': commonTools.check_tf_variable(
-                                                str(df.loc[i, 'Custom Policy Compartment Name']))}
-                        fname = open(policy_data_file, "a+")
-                        # To add the 'data' resource - required for fetching the policy id
-                        fname.write(datasource.render(policy_data_dict))
-                        fname.close()
-            else:
-                policy_data_dict = {'block_tf_policy': str(df.loc[i, 'Backup Policy']).lower(),
-                                    'policy_tf_compartment': commonTools.check_tf_variable(
-                                        str(df.loc[i, 'Custom Policy Compartment Name']))}
-
-                fname = open(policy_data_file, "w+")
-                # To add the 'data' resource - required for fetching the policy id
-                fname.write(datasource.render(policy_data_dict))
-                fname.close()
-            policy_done.append(reg_policy)
-        else:
-            if str(df.loc[i, 'Backup Policy']).lower() not in oci_policy and reg_policy not in policy_done:
-                if os.path.isfile(policy_data_file):
-                    with open(policy_data_file) as fname:
-                        if "block_" + str(df.loc[i, 'Backup Policy']).lower() not in fname.read():
-                            policy_data_dict = {'block_tf_policy': str(df.loc[i, 'Backup Policy']).lower(),
-                                                'policy_tf_compartment': commonTools.check_tf_variable(
-                                                    str(df.loc[i, 'Custom Policy Compartment Name']))}
-                            fname = open(policy_data_file, "a+")
-                            # To add the 'data' resource - required for fetching the policy id
-                            fname.write(datasource.render(policy_data_dict))
-                            fname.close()
-                else:
-                    policy_data_dict = {'block_tf_policy': str(df.loc[i, 'Backup Policy']).lower(),
-                                        'policy_tf_compartment': commonTools.check_tf_variable(
-                                            str(df.loc[i, 'Custom Policy Compartment Name']))}
-                    fname = open(policy_data_file, "w+")
-                    # To add the 'data' resource - required for fetching the policy id
-                    fname.write(datasource.render(policy_data_dict))
-                    fname.close()
-                policy_done.append(reg_policy)
 
         # temporary dictionary1 and dictionary2
         tempStr = {}
@@ -185,7 +129,7 @@ def block_backups_policy(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
 
             # Generate Final String
             src = "## Add block volume backup policies for "+reg.lower()+" here ##"
-            tfStr[reg] = template.render(skeleton=True, count=0, region=reg).replace(src,tfStr[reg])
+            tfStr[reg] = template.render(count=0, region=reg).replace(src,tfStr[reg])
             finalstring = "".join([s for s in tfStr[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
 
             resource=sheetName
@@ -198,17 +142,6 @@ def block_backups_policy(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
             print(outfile + " for Blockvolume backup policy has been created for region " + reg)
             oname.write(finalstring)
             oname.close()
-
-        # #Render template
-        # if policy != '':
-        #     backuppolicy =  template.render(tempStr)
-        #
-        #     #Write to output file
-        #     file = outdir + "/" + region + "/" + blockname_tf + "_block-backup-policy.tf"
-        #     oname = open(file, "w+")
-        #     print("Writing to " + file)
-        #     oname.write(backuppolicy)
-        #     oname.close()
 
 if __name__ == '__main__':
     args = parse_args()
