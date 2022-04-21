@@ -293,7 +293,6 @@ def create_network(execute_all=False):
 def create_instances(inputfile, outdir, prefix,config):
     options = [
         Option(None, Compute.create_terraform_instances, 'Processing Instances Tab'),
-        Option(None, Compute.boot_backups_policy, 'Processing Boot Volume Policies'),
     ]
     execute_options(options, inputfile, outdir, prefix,config)
 
@@ -313,7 +312,6 @@ def create_compute():
 def create_block_volumes(inputfile, outdir, prefix,config):
     options = [
         Option(None, Storage.create_terraform_block_volumes, 'Processing BlockVolumes Tab'),
-        Option(None, Storage.block_backups_policy, 'Processing Block Volume Policies'),
     ]
     execute_options(options, inputfile, outdir, prefix,config=config)
 

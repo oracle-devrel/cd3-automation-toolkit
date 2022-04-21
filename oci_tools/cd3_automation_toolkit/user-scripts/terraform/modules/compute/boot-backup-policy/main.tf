@@ -1,8 +1,8 @@
 // Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 
 ####################################
-## Resource Block - Backup Policy
-## Create Block Volume Backup Policy
+## Resource Boot Volume - Backup Policy
+## Create Boot Volume Backup Policy
 ####################################
 
 data "oci_core_boot_volumes" "all_boot_volumes" {
@@ -24,7 +24,7 @@ data "oci_core_volume_backup_policies" "boot_vol_backup_policy" {
   }
 }
 
-data "oci_core_volume_backup_policies" "block_vol_custom_policy" {
+data "oci_core_volume_backup_policies" "boot_vol_custom_policy" {
   count     = var.boot_tf_policy != "" ? 1 : 0
   compartment_id = local.policy_tf_compartment_id
   filter {
@@ -35,7 +35,7 @@ data "oci_core_volume_backup_policies" "block_vol_custom_policy" {
 
 locals {
   policy_tf_compartment_id = var.policy_tf_compartment_id != "" ? var.policy_tf_compartment_id : ""
-  current_policy_id        = var.boot_tf_policy != "" ? (var.boot_tf_policy == "gold" || var.boot_tf_policy == "silver" || var.boot_tf_policy == "bronze" ? data.oci_core_volume_backup_policies.boot_vol_backup_policy[0].volume_backup_policies.0.id : "") : ""
+  current_policy_id        = var.boot_tf_policy != "" ? (var.boot_tf_policy == "gold" || var.boot_tf_policy == "silver" || var.boot_tf_policy == "bronze" ? data.oci_core_volume_backup_policies.boot_vol_backup_policy[0].volume_backup_policies.0.id : data.oci_core_volume_backup_policies.boot_vol_custom_policy[0].volume_backup_policies.0.id) : ""
 }
 
 resource "oci_core_volume_backup_policy_assignment" "volume_backup_policy_assignment" {

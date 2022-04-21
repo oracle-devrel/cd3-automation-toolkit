@@ -74,15 +74,16 @@ module "instances" {
 }
 
 #######################################
-# Module Block - BlockVolume
-# Create Backup Policy For Block Volume
+# Module Block - Boot Volume
+# Create Backup Policy For Boot Volume
 #######################################
 
 module "boot-backup-policy" {
 
   source = "./modules/compute/boot-backup-policy"
-  depends_on = [module.instances]
   for_each = var.boot_backup_policies != null ? var.boot_backup_policies : {}
+  depends_on = [module.instances]
+
   compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
   availability_domain = each.value.availability_domain != "" && each.value.availability_domain != null ? data.oci_identity_availability_domains.availability_domains.availability_domains[each.value.availability_domain].name : ""
   display_name = each.value.display_name

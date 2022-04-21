@@ -36,12 +36,11 @@ def parse_args():
 def create_terraform_block_volumes(inputfile, outdir, prefix,config=DEFAULT_LOCATION):
     filename = inputfile
     configFileName = config
-    outfile = {}
-    oname = {}
+    backup_policy_tfStr = {}
     tfStr = {}
 
     sheetName="BlockVolumes"
-    auto_tfvars_filename = '_' + sheetName.lower() + '.auto.tfvars'
+    auto_tfvars_filename = prefix + '_' + sheetName.lower() + '.auto.tfvars'
     ct = commonTools()
     ct.get_subscribedregions(configFileName)
 
@@ -51,6 +50,7 @@ def create_terraform_block_volumes(inputfile, outdir, prefix,config=DEFAULT_LOCA
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
     template = env.get_template('block-volume-template')
+    block_backup_policy_template = env.get_template('block-backup-policy-template')
 
     # Read cd3 using pandas dataframe
     df, col_headers = commonTools.read_cd3(filename, sheetName)
@@ -60,17 +60,11 @@ def create_terraform_block_volumes(inputfile, outdir, prefix,config=DEFAULT_LOCA
 
     # List of the column headers
     dfcolumns = df.columns.values.tolist()
-    regions_done_count = []
-
-    #reg = df['Region'].unique()
 
     # Take backup of files
     for eachregion in ct.all_regions:
-        resource = sheetName.lower()
-        srcdir = outdir + "/" + eachregion + "/"
-        # commonTools.backup_file(srcdir, resource, sheetName.lower()+".tf")
-        commonTools.backup_file(srcdir, resource, "_blockvolume.tfvars")
         tfStr[eachregion] = ''
+        backup_policy_tfStr[eachregion] = ''
 
     for i in df.index:
 
@@ -151,39 +145,47 @@ def create_terraform_block_volumes(inputfile, outdir, prefix,config=DEFAULT_LOCA
             tempStr[columnname] = str(columnvalue).strip()
             tempStr.update(tempdict)
 
-        if region not in regions_done_count:
-            tempdict = {"count": 0}
-            regions_done_count.append(region)
-        else:
-            tempdict = {"count": i}
-        tempStr.update(tempdict)
-
         # Write all info to TF string
-        tfStr[region] = tfStr[region][:-1] + template.render(tempStr)
+        tfStr[region] = tfStr[region] + template.render(tempStr)
+        backup_policy_tfStr[region] = backup_policy_tfStr[region] + block_backup_policy_template.render(tempStr)
 
     # Write TF string to the file in respective region directory
     for reg in ct.all_regions:
+
         reg_out_dir = outdir + "/" + reg
+
         if not os.path.exists(reg_out_dir):
             os.makedirs(reg_out_dir)
-        # outfile[reg] = reg_out_dir + "/" + prefix + "_"+sheetName.lower()+".tf"
-        outfile[reg] = reg_out_dir + "/" + prefix + auto_tfvars_filename
+
+        if backup_policy_tfStr[reg] != '':
+
+            # Generate Final String
+            src = "## Add block volume backup policies for "+reg.lower()+" here ##"
+            backup_policy_tfStr[reg] = block_backup_policy_template.render(count=0, region=reg).replace(src,backup_policy_tfStr[reg])
+            backup_policy_tfStr[reg] = "".join([s for s in backup_policy_tfStr[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
 
         if tfStr[reg] != '':
-            oname[reg] = open(outfile[reg], 'w')
-            oname[reg].write(tfStr[reg])
-            oname[reg].close()
-            print(outfile[reg] + " for Blockvolume has been created for region " + reg)
+            # Generate Final String
+            src = "## Add block volumes for "+reg.lower()+" here ##"
+            tfStr[reg] = template.render(count=0, region=reg).replace(src,tfStr[reg])
+            tfStr[reg] = "".join([s for s in tfStr[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
 
-        # #Render template
-        # tempStr = template.render(tempStr)
-        #
-        # # Write TF string to output
-        # outfile = outdir + "/" + region + "/" + blockname_tf + "_blockvolume.tf"
-        # oname = open(outfile, "w")
-        # print("Writing to " + outfile)
-        # oname.write(tempStr)
-        # oname.close()
+        if tfStr[reg] != '' or backup_policy_tfStr[reg] != '':
+            resource=sheetName
+            srcdir = outdir + "/" + reg + "/"
+            commonTools.backup_file(srcdir, resource, auto_tfvars_filename)
+
+        finalstring = tfStr[reg] + "\n" + backup_policy_tfStr[reg]
+
+        if finalstring != '':
+
+            print(finalstring)
+            # Write to TF file
+            outfile = outdir + "/" + reg + "/" + auto_tfvars_filename
+            oname = open(outfile, "w+")
+            print(outfile + " for Block Volume and its Backup Policy has been created for region " + reg)
+            oname.write(finalstring)
+            oname.close()
 
 
 if __name__ == '__main__':

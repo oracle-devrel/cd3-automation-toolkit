@@ -31,7 +31,7 @@ module "blockvolume" {
 }
 
 #######################################
-# Module Block - BlockVolume
+# Module Block - Block Volume
 # Create Backup Policy For Block Volume
 #######################################
 
@@ -39,6 +39,7 @@ module "block-backup-policy" {
   depends_on = [module.blockvolume]
   source = "./modules/storage/blockvolume/backup-policy"
   for_each = var.block_backup_policies != null ? var.block_backup_policies : {}
+
   compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
   display_name = each.value.display_name
   block_tf_policy = each.value.backup_policy != "" ? each.value.backup_policy : ""

@@ -2,12 +2,14 @@
 // Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 
 ############################
-# Blockvolumes
-# Blockvolumes - tfvars
+# Block Volumes
+# Block Volumes - tfvars
 ############################
 
 blockvolumes = {
-{% endif %}
+    ## Add block volumes for {{ region|lower }} here ##
+}
+{% else %}
  {{ block_name }} =  {
             availability_domain  = {{ availability_domain }}
             compartment_id       = "{{ compartment_tf_name }}"
@@ -80,4 +82,4 @@ blockvolumes = {
                     {% endif %}
             {#  ###Section for adding Defined and Freeform Tags ends here###  #}
         },
-}
+{% endif %}
