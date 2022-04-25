@@ -1,7 +1,0 @@
-
-resource "oci_core_volume_backup_policy_assignment" "{{ display_tf_name }}_bkupPolicy" {
-    #Required
-    asset_id = oci_core_instance.{{ display_tf_name }}.boot_volume_id
-    policy_id = data.oci_core_volume_backup_policies.boot_{{ backup_policy }}.volume_backup_policies.0.id
-
-}

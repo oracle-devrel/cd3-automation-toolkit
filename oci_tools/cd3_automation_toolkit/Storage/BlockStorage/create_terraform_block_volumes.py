@@ -36,8 +36,10 @@ def parse_args():
 def create_terraform_block_volumes(inputfile, outdir, prefix,config=DEFAULT_LOCATION):
     filename = inputfile
     configFileName = config
+    tfStr = {}
 
     sheetName="BlockVolumes"
+    auto_tfvars_filename = prefix + '_' + sheetName.lower() + '.auto.tfvars'
     ct = commonTools()
     ct.get_subscribedregions(configFileName)
 
@@ -57,14 +59,9 @@ def create_terraform_block_volumes(inputfile, outdir, prefix,config=DEFAULT_LOCA
     # List of the column headers
     dfcolumns = df.columns.values.tolist()
 
-    #reg = df['Region'].unique()
-
     # Take backup of files
     for eachregion in ct.all_regions:
-        resource = sheetName.lower()
-        srcdir = outdir + "/" + eachregion + "/"
-        # commonTools.backup_file(srcdir, resource, sheetName.lower()+".tf")
-        commonTools.backup_file(srcdir, resource, "_blockvolume.tf")
+        tfStr[eachregion] = ''
 
     for i in df.index:
 
@@ -114,6 +111,13 @@ def create_terraform_block_volumes(inputfile, outdir, prefix,config=DEFAULT_LOCA
                 columnvalue = str(compartmentVarName)
                 tempdict = {'compartment_tf_name': columnvalue}
 
+            if columnname == 'Custom Policy Compartment Name':
+                if columnvalue != "":
+                    custom_policy_compartment_name = columnvalue.strip()
+                    custom_policy_compartment_name = commonTools.check_tf_variable(custom_policy_compartment_name)
+                    tempdict = {'custom_policy_compartment_name': custom_policy_compartment_name}
+
+
             # Process Freeform Tags and Defined Tags
             if columnname.lower() in commonTools.tagColumns:
                 tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)
@@ -128,6 +132,12 @@ def create_terraform_block_volumes(inputfile, outdir, prefix,config=DEFAULT_LOCA
                 if str(columnvalue).strip() != '':
                     columnvalue = commonTools.check_tf_variable(columnvalue)
 
+            if (columnname == 'Backup Policy'):
+                columnname = 'backup_policy'
+                columnvalue = str(columnvalue).strip()
+                if columnvalue != '':
+                    columnvalue = columnvalue.lower()
+
             if columnname == "Attach Type(iscsi|paravirtualized)":
                 columnname = "attach_type"
 
@@ -139,16 +149,31 @@ def create_terraform_block_volumes(inputfile, outdir, prefix,config=DEFAULT_LOCA
             tempStr[columnname] = str(columnvalue).strip()
             tempStr.update(tempdict)
 
+        # Write all info to TF string
+        tfStr[region] = tfStr[region] + template.render(tempStr)
 
-        #Render template
-        tempStr = template.render(tempStr)
+    # Write TF string to the file in respective region directory
+    for reg in ct.all_regions:
 
-        # Write TF string to output
-        outfile = outdir + "/" + region + "/" + blockname_tf + "_blockvolume.tf"
-        oname = open(outfile, "w")
-        print("Writing to " + outfile)
-        oname.write(tempStr)
-        oname.close()
+        reg_out_dir = outdir + "/" + reg
+        if not os.path.exists(reg_out_dir):
+            os.makedirs(reg_out_dir)
+
+        if tfStr[reg] != '':
+            # Generate Final String
+            src = "## Add block volumes for "+reg.lower()+" here ##"
+            tfStr[reg] = template.render(count=0, region=reg).replace(src,tfStr[reg])
+            tfStr[reg] = "".join([s for s in tfStr[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
+
+            resource=sheetName.lower()
+            commonTools.backup_file(reg_out_dir + "/", resource, auto_tfvars_filename)
+
+            # Write to TF file
+            outfile = reg_out_dir+ "/" + auto_tfvars_filename
+            oname = open(outfile, "w+")
+            print(outfile + " for Block Volume and its Backup Policy has been created for region " + reg)
+            oname.write(tfStr[reg])
+            oname.close()
 
 
 if __name__ == '__main__':

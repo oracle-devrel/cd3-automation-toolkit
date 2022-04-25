@@ -272,6 +272,34 @@ variable "data_drg_route_table_distributions" {
 }
 
 #########################
+## Instances/Block Volumes ##
+#########################
+
+variable "blockvolumes" {
+  type    = map(any)
+  description = "To provision block volumes"
+  default = {}
+}
+
+variable "block_backup_policies" {
+  type = map(any)
+  description = "To create block volume back policy"
+  default = {}
+}
+
+variable "instances" {
+  type = map(any)
+  description = "Map of instances to be provisioned"
+  default = {}
+}
+
+variable "boot_backup_policies" {
+  type = map(any)
+  description = "Map of boot volume backup policies to be provisioned"
+  default = {}
+}
+
+#########################
 ##### Logging ###########
 #########################
 
