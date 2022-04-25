@@ -70,9 +70,9 @@ def create_terraform_policies(inputfile, outdir, prefix, config=DEFAULT_LOCATION
 
         region = region.strip().lower()
         if (region == 'nan'):
-            continue
+            pass
 
-        if region != ct.home_region:
+        if region!='nan' and region != ct.home_region:
             print("\nERROR!!! Invalid Region; It should be Home Region of the tenancy..Exiting!")
             exit(1)
 
