@@ -45,6 +45,18 @@ blockvolumes = {
             attachment_type = null
             {% endif %}
 
+            {% if backup_policy %}
+            backup_policy          = "{{ backup_policy }}"
+            {% else %}
+            backup_policy           = ""
+            {% endif %}
+
+            {% if custom_policy_compartment_name %}
+            policy_compartment_id = "{{ custom_policy_compartment_name }}"
+            {% else %}
+            policy_compartment_id = ""
+            {% endif %}
+
             {#  ##Do not modify below this line##  #}
             {#                                     #}
             {#  ###Section for adding Defined and Freeform Tags###  #}

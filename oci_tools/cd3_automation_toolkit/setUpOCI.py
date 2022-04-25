@@ -311,7 +311,7 @@ def create_compute():
 
 def create_block_volumes(inputfile, outdir, prefix,config):
     options = [
-        Option(None, Storage.create_terraform_block_volumes, 'Processing BlockVolumes Tab'),
+        Option(None, Storage.create_terraform_block_volumes, 'Processing BlockVolumes Tab')
     ]
     execute_options(options, inputfile, outdir, prefix,config=config)
 

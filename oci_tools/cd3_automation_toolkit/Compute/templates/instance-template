@@ -74,6 +74,18 @@ instances = {
             ssh_authorized_keys  = ""
             {% endif %}
 
+            {% if backup_policy %}
+            backup_policy          = "{{ backup_policy }}"
+            {% else %}
+            backup_policy           = ""
+            {% endif %}
+
+            {% if custom_policy_compartment_name %}
+            policy_compartment_id = "{{ custom_policy_compartment_name }}"
+            {% else %}
+            policy_compartment_id = ""
+            {% endif %}
+
           {#  ##All optional params required for TF root module is below ##  #}
           {#  {% if extended_metadata %}
             extended_metadata = "{{ extended_metadata }}"

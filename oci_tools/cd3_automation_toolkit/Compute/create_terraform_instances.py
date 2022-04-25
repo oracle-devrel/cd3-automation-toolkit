@@ -33,7 +33,6 @@ def parse_args():
 def create_terraform_instances(inputfile, outdir, prefix, config):
     boot_policy_tfStr = {}
     tfStr = {}
-    finalstring = {}
     ADS = ["AD1", "AD2", "AD3"]
 
     filename = inputfile
@@ -48,7 +47,6 @@ def create_terraform_instances(inputfile, outdir, prefix, config):
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
     template = env.get_template('instance-template')
-    boot_backup_policy_template = env.get_template('boot-backup-policy-template')
 
     # Read cd3 using pandas dataframe
     df, col_headers = commonTools.read_cd3(filename, sheetName)
@@ -65,7 +63,6 @@ def create_terraform_instances(inputfile, outdir, prefix, config):
         commonTools.backup_file(srcdir, resource, auto_tfvars_filename)
         tfStr[eachregion] = ''
         boot_policy_tfStr[eachregion] = ''
-        finalstring[eachregion] = ''
 
     subnets=parseSubnets(filename)
 
@@ -159,6 +156,12 @@ def create_terraform_instances(inputfile, outdir, prefix, config):
                 compartment_var_name = commonTools.check_tf_variable(compartment_var_name)
                 tempdict = {'compartment_tf_name': compartment_var_name}
 
+            if columnname == 'Custom Policy Compartment Name':
+                if columnvalue != "":
+                    custom_policy_compartment_name = columnvalue.strip()
+                    custom_policy_compartment_name = commonTools.check_tf_variable(custom_policy_compartment_name)
+                    tempdict = {'custom_policy_compartment_name': custom_policy_compartment_name}
+
             if columnname == 'Availability Domain(AD1|AD2|AD3)':
                 columnname = 'availability_domain'
                 AD = columnvalue.upper()
@@ -205,13 +208,11 @@ def create_terraform_instances(inputfile, outdir, prefix, config):
 
         # Write all info to TF string
         tfStr[region] = tfStr[region] + template.render(tempStr)
-        boot_policy_tfStr[region] = boot_policy_tfStr[region] + boot_backup_policy_template.render(tempStr)
 
     # Write TF string to the file in respective region directory
     for reg in ct.all_regions:
 
         reg_out_dir = outdir + "/" + reg
-
         if not os.path.exists(reg_out_dir):
             os.makedirs(reg_out_dir)
 
@@ -223,27 +224,14 @@ def create_terraform_instances(inputfile, outdir, prefix, config):
             tfStr[reg] = template.render(count=0, region=reg).replace(src, tfStr[reg])
             tfStr[reg] = "".join([s for s in tfStr[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
 
-        if boot_policy_tfStr[reg] != '':
-
-            # Generate Boot Volume Backup Policy String
-            src = "## Add boot volume backup policies for " + reg.lower() + " here ##"
-            boot_policy_tfStr[reg] = boot_backup_policy_template.render(count=0, region=reg).replace(src,boot_policy_tfStr[reg])
-            boot_policy_tfStr[reg] = "".join([s for s in boot_policy_tfStr[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
-
-        # Generate Final String
-        finalstring[reg] = tfStr[reg] + "\n" + boot_policy_tfStr[reg]
-
-        if finalstring[reg] != '':
-
-            resource = sheetName
-            srcdir = outdir + "/" + reg + "/"
-            commonTools.backup_file(srcdir, resource, auto_tfvars_filename)
+            resource = sheetName.lower()
+            commonTools.backup_file(reg_out_dir+ "/", resource, auto_tfvars_filename)
 
             # Write to TF file
-            outfile = outdir + "/" + reg + "/" + auto_tfvars_filename
+            outfile = reg_out_dir + "/" + auto_tfvars_filename
             oname = open(outfile, "w+")
             print(outfile + " for instances and boot volume backup policy has been created for region " + reg)
-            oname.write(finalstring[reg])
+            oname.write(tfStr[reg])
             oname.close()
 
 if __name__ == '__main__':

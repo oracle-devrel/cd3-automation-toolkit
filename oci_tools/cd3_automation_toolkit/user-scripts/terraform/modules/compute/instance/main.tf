@@ -2,15 +2,8 @@
 #
 #############################
 ## Resource Block - Instance
-## Create Instance
+## Create Instance and Boot Volume Backup Policy
 #############################
-
-data "oci_core_dedicated_vm_hosts" "existing_vm_host" {
-  count          = var.dedicated_vm_host_name != null ? 1 : 0
-  compartment_id = var.compartment_id
-  display_name   = var.dedicated_vm_host_name
-  state          = "ACTIVE"
-}
 
 resource "oci_core_instance" "core_instance" {
   #Required
@@ -129,4 +122,23 @@ resource "oci_core_instance" "core_instance" {
   lifecycle {
     ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"], create_vnic_details[0].defined_tags["Oracle-Tags.CreatedOn"], create_vnic_details[0].defined_tags["Oracle-Tags.CreatedBy"]]
   }
+}
+
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+
+####################################
+## Resource Boot Volume - Backup Policy
+## Create Boot Volume Backup Policy
+####################################
+
+locals {
+  policy_tf_compartment_id = var.policy_tf_compartment_id != "" ? var.policy_tf_compartment_id : ""
+  current_policy_id        = var.boot_tf_policy != "" ? (lower(var.boot_tf_policy) == "gold" || lower(var.boot_tf_policy) == "silver" || lower(var.boot_tf_policy) == "bronze" ? data.oci_core_volume_backup_policies.boot_vol_backup_policy[0].volume_backup_policies.0.id : data.oci_core_volume_backup_policies.boot_vol_custom_policy[0].volume_backup_policies.0.id) : ""
+}
+
+resource "oci_core_volume_backup_policy_assignment" "volume_backup_policy_assignment" {
+  depends_on = [oci_core_instance.core_instance]
+  count     = var.boot_tf_policy != "" ? 1 : 0
+  asset_id  = data.oci_core_boot_volumes.all_boot_volumes[0].boot_volumes.0.id
+  policy_id = local.current_policy_id
 }

@@ -2,7 +2,7 @@
 
 ############################
 # Outputs Block - Instance
-# Create Instance
+# Create Instance and Boot Volume Backup Policy
 ############################
 
 output "instance_tf_id" {

@@ -36,7 +36,6 @@ def parse_args():
 def create_terraform_block_volumes(inputfile, outdir, prefix,config=DEFAULT_LOCATION):
     filename = inputfile
     configFileName = config
-    backup_policy_tfStr = {}
     tfStr = {}
 
     sheetName="BlockVolumes"
@@ -50,7 +49,6 @@ def create_terraform_block_volumes(inputfile, outdir, prefix,config=DEFAULT_LOCA
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
     template = env.get_template('block-volume-template')
-    block_backup_policy_template = env.get_template('block-backup-policy-template')
 
     # Read cd3 using pandas dataframe
     df, col_headers = commonTools.read_cd3(filename, sheetName)
@@ -64,7 +62,6 @@ def create_terraform_block_volumes(inputfile, outdir, prefix,config=DEFAULT_LOCA
     # Take backup of files
     for eachregion in ct.all_regions:
         tfStr[eachregion] = ''
-        backup_policy_tfStr[eachregion] = ''
 
     for i in df.index:
 
@@ -114,6 +111,13 @@ def create_terraform_block_volumes(inputfile, outdir, prefix,config=DEFAULT_LOCA
                 columnvalue = str(compartmentVarName)
                 tempdict = {'compartment_tf_name': columnvalue}
 
+            if columnname == 'Custom Policy Compartment Name':
+                if columnvalue != "":
+                    custom_policy_compartment_name = columnvalue.strip()
+                    custom_policy_compartment_name = commonTools.check_tf_variable(custom_policy_compartment_name)
+                    tempdict = {'custom_policy_compartment_name': custom_policy_compartment_name}
+
+
             # Process Freeform Tags and Defined Tags
             if columnname.lower() in commonTools.tagColumns:
                 tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)
@@ -147,22 +151,13 @@ def create_terraform_block_volumes(inputfile, outdir, prefix,config=DEFAULT_LOCA
 
         # Write all info to TF string
         tfStr[region] = tfStr[region] + template.render(tempStr)
-        backup_policy_tfStr[region] = backup_policy_tfStr[region] + block_backup_policy_template.render(tempStr)
 
     # Write TF string to the file in respective region directory
     for reg in ct.all_regions:
 
         reg_out_dir = outdir + "/" + reg
-
         if not os.path.exists(reg_out_dir):
             os.makedirs(reg_out_dir)
-
-        if backup_policy_tfStr[reg] != '':
-
-            # Generate Final String
-            src = "## Add block volume backup policies for "+reg.lower()+" here ##"
-            backup_policy_tfStr[reg] = block_backup_policy_template.render(count=0, region=reg).replace(src,backup_policy_tfStr[reg])
-            backup_policy_tfStr[reg] = "".join([s for s in backup_policy_tfStr[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
 
         if tfStr[reg] != '':
             # Generate Final String
@@ -170,21 +165,14 @@ def create_terraform_block_volumes(inputfile, outdir, prefix,config=DEFAULT_LOCA
             tfStr[reg] = template.render(count=0, region=reg).replace(src,tfStr[reg])
             tfStr[reg] = "".join([s for s in tfStr[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
 
-        if tfStr[reg] != '' or backup_policy_tfStr[reg] != '':
-            resource=sheetName
-            srcdir = outdir + "/" + reg + "/"
-            commonTools.backup_file(srcdir, resource, auto_tfvars_filename)
+            resource=sheetName.lower()
+            commonTools.backup_file(reg_out_dir + "/", resource, auto_tfvars_filename)
 
-        finalstring = tfStr[reg] + "\n" + backup_policy_tfStr[reg]
-
-        if finalstring != '':
-
-            print(finalstring)
             # Write to TF file
-            outfile = outdir + "/" + reg + "/" + auto_tfvars_filename
+            outfile = reg_out_dir+ "/" + auto_tfvars_filename
             oname = open(outfile, "w+")
             print(outfile + " for Block Volume and its Backup Policy has been created for region " + reg)
-            oname.write(finalstring)
+            oname.write(tfStr[reg])
             oname.close()
 
 

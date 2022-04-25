@@ -6,6 +6,7 @@
 #############################
 
 data "oci_core_subnets" "oci_subnets" {
+  depends_on = [module.subnets]
   for_each = var.instances != null ? var.instances : {}
   compartment_id = each.value.network_compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.network_compartment_id)) > 0 ? each.value.network_compartment_id : var.compartment_ocids[each.value.network_compartment_id]) : var.compartment_ocids[each.value.network_compartment_id]
   display_name   = each.value.subnet_id
@@ -13,6 +14,7 @@ data "oci_core_subnets" "oci_subnets" {
 }
 
 data "oci_core_vcns" "oci_vcns" {
+  depends_on = [module.vcns]
   for_each = var.instances != null ? var.instances : {}
   compartment_id = each.value.network_compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.network_compartment_id)) > 0 ? each.value.network_compartment_id : var.compartment_ocids[each.value.network_compartment_id]) : var.compartment_ocids[each.value.network_compartment_id]
   display_name   = each.value.vcn_name
@@ -24,6 +26,7 @@ module "instances" {
   availability_domain   = each.value.availability_domain != "" && each.value.availability_domain != null ? data.oci_identity_availability_domains.availability_domains.availability_domains[each.value.availability_domain].name : ""
   compartment_id        = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
   network_compartment_id= each.value.network_compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.network_compartment_id)) > 0 ? each.value.network_compartment_id : var.compartment_ocids[each.value.network_compartment_id]) : null
+  vcn_names             = [each.value.vcn_name]
   dedicated_vm_host_name= each.value.dedicated_vm_host_id != null ? each.value.dedicated_vm_host_id : null
   shape                 = each.value.shape
   ocpu_count            = each.value.ocpus
@@ -45,7 +48,8 @@ module "instances" {
   memory_in_gbs         = each.value.memory_in_gbs != null ? each.value.memory_in_gbs : null
   capacity_reservation_id = each.value.capacity_reservation_id != null ? lookup(var.capacity_reservation_ocids, each.value.capacity_reservation_id, null ) : null
 
-
+  boot_tf_policy = each.value.backup_policy != "" ? each.value.backup_policy : ""
+  policy_tf_compartment_id = each.value.policy_compartment_id != "" ? (length(regexall("ocid1.compartment.oc1*", each.value.policy_compartment_id)) > 0 ? each.value.policy_compartment_id : var.compartment_ocids[each.value.policy_compartment_id]) : ""
 
  # Optional parameters to to enable and test.
   # extended_metadata    = each.value.extended_metadata
@@ -71,24 +75,4 @@ module "instances" {
   # assign_private_dns_record = each.value.assign_private_dns_record
   # vlan_id = each.value.vlan_id
   # kms_key_id = each.value.kms_key_id
-}
-
-#######################################
-# Module Block - Boot Volume
-# Create Backup Policy For Boot Volume
-#######################################
-
-module "boot-backup-policy" {
-
-  source = "./modules/compute/boot-backup-policy"
-  for_each = var.boot_backup_policies != null ? var.boot_backup_policies : {}
-  depends_on = [module.instances]
-
-  compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
-  availability_domain = each.value.availability_domain != "" && each.value.availability_domain != null ? data.oci_identity_availability_domains.availability_domains.availability_domains[each.value.availability_domain].name : ""
-  display_name = each.value.display_name
-  boot_tf_policy = each.value.backup_policy != "" ? each.value.backup_policy : ""
-  defined_tags = each.value.defined_tags
-  freeform_tags = each.value.freeform_tags
-  policy_tf_compartment_id = each.value.policy_tf_compartment_id != "" ? (length(regexall("ocid1.compartment.oc1*", each.value.policy_tf_compartment_id)) > 0 ? each.value.policy_tf_compartment_id : var.compartment_ocids[each.value.policy_tf_compartment_id]) : ""
 }
