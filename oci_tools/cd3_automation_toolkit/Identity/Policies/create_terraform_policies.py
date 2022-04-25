@@ -46,6 +46,7 @@ def create_terraform_policies(inputfile, outdir, prefix, config=DEFAULT_LOCATION
     oname = {}
     tempStr = ''
     tempStr1 = {}
+    count = 0
 
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
@@ -54,40 +55,26 @@ def create_terraform_policies(inputfile, outdir, prefix, config=DEFAULT_LOCATION
 
     # Read CD3
     df = data_frame(filename, sheetName)
+    regions = df['Region']
+    regions.dropna()
 
     # List of the column headers
     dfcolumns = df.columns.values.tolist()
 
-    count = 0
-    regions = df['Region']
-    regions.dropna()
-
-    check_diff_region = []
-    # Get a list of unique region names
-    for j in regions.index:
-        if regions[j] not in check_diff_region and regions[j] not in commonTools.endNames and str(regions[j]).lower() != "nan":
-            check_diff_region.append(regions[j])
-
-    # If some invalid region is specified in a row which is not part of VCN Info Tab
-    for j in check_diff_region:
-        if str(j).strip().lower() not in ct.all_regions:
-            print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
-            exit(1)
-
-    # Regions listed in Policies tab should be same for all rows as policies can only be created in home region
-    if (len(check_diff_region) > 1):
-        print("\nPolicies can be created only in Home Region; You have specified different regions for different policies...Exiting...")
-        exit(1)
-
-
     # Iterate over rows
     for i in df.index:
-
-        region = str(df.loc[i, "Region"]).strip()
-
+        region = str(df.loc[i, "Region"])
         # Encountered <End>
         if region in commonTools.endNames:
             break
+
+        region = region.strip().lower()
+        if (region == 'nan'):
+            continue
+
+        if region != ct.home_region:
+            print("\nERROR!!! Invalid Region; It should be Home Region of the tenancy..Exiting!")
+            exit(1)
 
         # Temporary dictionary1
         tempdict = {}
@@ -104,7 +91,6 @@ def create_terraform_policies(inputfile, outdir, prefix, config=DEFAULT_LOCATION
 
         # Loop through the columns; used to fetch newdly added columns and values
         for columnname in dfcolumns:
-
             # Column value
             columnvalue = str(df.loc[i, columnname]).strip()
 
@@ -223,25 +209,25 @@ def create_terraform_policies(inputfile, outdir, prefix, config=DEFAULT_LOCATION
     tempStr = tempStr.replace('-#Addstmt]}}', '')
 
     # Write TF string to the file in respective region directory
-    if (len(check_diff_region) != 0):
-        reg = check_diff_region[0].strip().lower()
-        reg_out_dir = outdir + "/" + reg
-        if not os.path.exists(reg_out_dir):
-            os.makedirs(reg_out_dir)
+    reg=ct.home_region
+    reg_out_dir = outdir + "/" + reg
+    if not os.path.exists(reg_out_dir):
+        os.makedirs(reg_out_dir)
 
-        srcdir = reg_out_dir + "/"
-        resource = sheetName.lower()
-        commonTools.backup_file(srcdir, resource, auto_tfvars_filename)
+    srcdir = reg_out_dir + "/"
+    resource = sheetName.lower()
+    commonTools.backup_file(srcdir, resource, auto_tfvars_filename)
 
-        outfile[reg] = reg_out_dir + "/" + prefix + auto_tfvars_filename
+    outfile[reg] = reg_out_dir + "/" + prefix + auto_tfvars_filename
 
-        #If the excel sheet has <end> in first row; exit; no rows to process
-        if str(regions[0]) in commonTools.endNames:
-            exit(1)
-        oname[reg] = open(outfile[reg], 'w')
-        oname[reg].write(tempStr)
-        oname[reg].close()
-        print(outfile[reg] + " for Policies has been created for region " + reg)
+    #If the excel sheet has <end> in first row; exit; no rows to process
+    if str(regions[0]) in commonTools.endNames:
+        print("No Data to write to the outfile..Exiting!")
+        exit(1)
+    oname[reg] = open(outfile[reg], 'w')
+    oname[reg].write(tempStr)
+    oname[reg].close()
+    print(outfile[reg] + " for Policies has been created for region " + reg)
 
 if __name__ == '__main__':
     # Execution of the code begins here
