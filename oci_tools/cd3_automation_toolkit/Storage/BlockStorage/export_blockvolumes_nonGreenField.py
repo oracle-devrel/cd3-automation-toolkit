@@ -94,7 +94,7 @@ def print_blockvolumes(region, BVOLS, bvol, compute, ct, values_for_column, ntk_
             importCommands[region.lower()].write("\nterraform import \"module.blockvolume[\\\"" + block_tf_name + "\\\"].oci_core_volume_attachment.block_vol_instance_attachment\" " + str(attachment_id))
 
         if asset_assignment_id != '':
-        #importCommands[region.lower()].write("\nterraform import oci_core_volume_backup_policy_assignment." + block_tf_name +"_bkupPolicy " + str(asset_assignment_id))
+            importCommands[region.lower()].write("\nterraform import \"module.blockvolume[\\\"" + block_tf_name + "\\\"].oci_core_volume_backup_policy_assignment.volume_backup_policy_assignment[0]\" " + str(asset_assignment_id))
             pass
         for col_header in values_for_column:
             if col_header == 'Region':

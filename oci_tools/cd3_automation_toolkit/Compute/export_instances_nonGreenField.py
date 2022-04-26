@@ -108,7 +108,7 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, config,disp
             ins_fd = ins.fault_domain  # FD
             ins_id = ins.id
             tf_name = commonTools.check_tf_variable(ins_dname)
-            importCommands[reg_name].write("\nterraform import \"module.instances[\\\"" + tf_name + "\\\"].oci_core_instance.instance\" " + str(ins.id))
+            importCommands[reg_name].write("\nterraform import \"module.instances[\\\"" + tf_name + "\\\"].oci_core_instance.core_instance\" " + str(ins.id))
 
             # Shape Details
             ins_shape = ins.shape
@@ -145,13 +145,10 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, config,disp
             cpcn = ""
             if bvp != [] and (len(bvp.data)):
                 bkp_pname = bc.get_volume_backup_policy(policy_id=bvp.data[0].policy_id)
-                bpolicy = ins_dname + "_bkupPolicy"
                 bkp_policy_name = bkp_pname.data.display_name.title()  # backup policy name
-                tf_name = commonTools.check_tf_variable(bpolicy)
+                tf_name = commonTools.check_tf_variable(ins_dname)
                 # print(bvp.data[0])
-                importCommands[reg_name].write(
-                    "\nterraform import oci_core_volume_backup_policy_assignment." + tf_name + " " + str(
-                        bvp.data[0].id))
+                importCommands[reg_name].write("\nterraform import \"module.instances[\\\"" + tf_name + "\\\"].oci_core_volume_backup_policy_assignment.volume_backup_policy_assignment[0]\" " + str(bvp.data[0].id))
                 if (bkp_pname.data.display_name not in ["Gold", "Silver", "Bronze"]):
                     bkp_policy_name = bkp_pname.data.display_name
                     for comp_name, comp_id in ct.ntk_compartment_ids.items():
