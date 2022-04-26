@@ -151,7 +151,8 @@ def create_major_objects(inputfile, outdir, prefix, non_gf_tenancy, config, modi
                     with open(outdir + "/" + region + "/obj_names.safe") as f:
                         for line in f:
                             if (drg in line):
-                                drg_version = prevline.split("::::")[1].strip()
+                                if prevline!= "\n":
+                                    drg_version = prevline.split("::::")[1].strip()
                                 break
                             prevline = line
                 drg_versions[region,drg] = drg_version
@@ -678,17 +679,14 @@ def create_major_objects(inputfile, outdir, prefix, non_gf_tenancy, config, modi
 
             srcdir = reg_out_dir + "/"
             resource = 'major-objects'
-            # commonTools.backup_file(srcdir, resource, "-major-objs.tf")
-            commonTools.backup_file(srcdir, resource, auto_tfvars_filename)
-            commonTools.backup_file(srcdir, resource, dhcp_auto_tfvars_filename)
-            commonTools.backup_file(srcdir, resource, drg_data_tfvars_filename)
 
-            # outfile[reg] = reg_out_dir + "/" + prefix + '-major-objs.tf'
             outfile[reg] = reg_out_dir + "/" + prefix + auto_tfvars_filename
             outfile_dhcp[reg] = reg_out_dir + "/" + prefix + dhcp_auto_tfvars_filename
             outfile_oci_drg_data[reg] = reg_out_dir + "/" + prefix + drg_data_tfvars_filename
 
             if drg_data[reg] != '':
+                commonTools.backup_file(srcdir, resource, drg_data_tfvars_filename)
+
                 oname_oci_drg_data[reg] = open(outfile_oci_drg_data[reg], "w+")
                 oname_oci_drg_data[reg].write(drg_data[reg])
                 oname_oci_drg_data[reg].close()
@@ -698,12 +696,16 @@ def create_major_objects(inputfile, outdir, prefix, non_gf_tenancy, config, modi
                 pass
             else:
                 if (dhcp_default_tfStr[reg] != ''):
+                    commonTools.backup_file(srcdir, resource, dhcp_auto_tfvars_filename)
+
                     oname_def_dhcp[reg] = open(outfile_dhcp[reg], "w+")
                     oname_def_dhcp[reg].write(dhcp_default_tfStr[reg])
                     oname_def_dhcp[reg].close()
                     print(outfile_dhcp[reg] + " for default DHCP options for VCNs has been created for region " + reg)
 
             if (tfStr[reg] != ''):
+                commonTools.backup_file(srcdir, resource, auto_tfvars_filename)
+
                 tfStr[reg] = tfStr[reg]
                 oname[reg] = open(outfile[reg], 'w+')
                 oname[reg].write(tfStr[reg])
