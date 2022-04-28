@@ -359,6 +359,18 @@ variable "dbsystems_vm_bm" {
   default     = {}
 }
 
+variable "db_home" {
+  type = map(any)
+  description = "Map of database db home to be provisioned"
+  default = {}
+}
+
+variable "databases" {
+    description = "Map of databases to be provisioned in an existing db_home"
+    type = map(any)
+    default = {}
+}
+
 #########################
 ## FSS ##
 #########################
@@ -480,5 +492,13 @@ variable "rule_sets" {
 ##########################
 # Add new variables here #
 ##########################
+variable "capacity_reservation_ocids" {
+  type = map(any)
+  default = {
+    "AD1" : "ocid1.capacityreservation.oc1.iad.anuwcljrmbgqraachdisdnhc5z7swiwyzhi6radkn7xxtw6uosysheiadlja",
+    "AD2" : "ocid1.capacityreservation.oc1.iad.anuwcljsmbgqraacm4edb4dbsrqsgtskzjicudhmasmpqe7aopxmjvnukugq",
+    "AD3" : "ocid1.capacityreservation.oc1.iad.anuwcljtmbgqraactoi5gwv6ahzutllmjmfgtrabarhcq7wvkx6mz2b7dwga"
+  }
+}
 
 ######################### END #########################

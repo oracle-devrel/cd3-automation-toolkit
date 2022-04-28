@@ -91,7 +91,7 @@ def print_blockvolumes(region, BVOLS, bvol, compute, ct, values_for_column, ntk_
 
         importCommands[region.lower()].write("\nterraform import \"module.blockvolume[\\\"" + block_tf_name + "\\\"].oci_core_volume.block_volume\" " + str(blockvols.id))
         if attachment_id != '':
-            importCommands[region.lower()].write("\nterraform import \"module.blockvolume[\\\"" + block_tf_name + "\\\"].oci_core_volume_attachment.block_vol_instance_attachment\" " + str(attachment_id))
+            importCommands[region.lower()].write("\nterraform import \"module.blockvolume[\\\"" + block_tf_name + "\\\"].oci_core_volume_attachment.block_vol_instance_attachment[0]\" " + str(attachment_id))
 
         if asset_assignment_id != '':
             importCommands[region.lower()].write("\nterraform import \"module.blockvolume[\\\"" + block_tf_name + "\\\"].oci_core_volume_backup_policy_assignment.volume_backup_policy_assignment[0]\" " + str(asset_assignment_id))
