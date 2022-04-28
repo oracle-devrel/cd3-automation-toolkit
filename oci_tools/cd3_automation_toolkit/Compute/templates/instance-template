@@ -71,9 +71,7 @@ resource "oci_core_instance" "{{ display_tf_name }}" {
         dedicated_vm_host_id = {{ dedicated_vm_host_tf }}
 
         lifecycle {
-                ignore_changes = [
-                  metadata
-                ]
+         ignore_changes = [metadata,defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"], create_vnic_details[0].defined_tags["Oracle-Tags.CreatedOn"], create_vnic_details[0].defined_tags["Oracle-Tags.CreatedBy"]]
         }
 
         {#  ##Do not modify below this line##  #}

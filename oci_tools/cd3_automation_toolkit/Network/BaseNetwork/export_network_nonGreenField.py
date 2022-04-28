@@ -92,7 +92,7 @@ def print_nsgsl(values_for_column_nsgs,vnc,region, comp_name, vcn_name, nsg, nsg
             values_for_column_nsgs[col_header].append(vcn_name)
         elif(col_header == "Protocol"):
             values_for_column_nsgs[col_header].append(protocol)
-        elif(col_header == "Soure Type"):
+        elif(col_header == "Source Type"):
             values_for_column_nsgs[col_header].append(nsgsourcetype)
         elif(col_header == "Source"):
             values_for_column_nsgs[col_header].append(nsgsource)
