@@ -693,7 +693,7 @@ def create_terraform_route(inputfile, outdir, prefix, non_gf_tenancy, config, mo
                     for drg_destination in vcnInfo.onprem_destinations:
                         if (drg_destination != ''):
                             tempStr['vcn_tf_name'] = ''
-                            tempStr['destination'] = drg_destination
+                            tempStr['destination'] = drg_destination.strip()
                             tempStr['destination_type'] = "CIDR_BLOCK"
                             tempStr['network_entity_id'] = drg_tf_name
                             start_rule = "## Start Route Rule " + tempStr['region'].lower() + "_" + tempStr['rt_tf_name'] + "_" + tempStr['network_entity_id'] + "_" + tempStr['destination']
@@ -788,19 +788,20 @@ def create_terraform_route(inputfile, outdir, prefix, non_gf_tenancy, config, mo
             tempStr['vcn_tf_name'] = vcn_name
         return data
 
-    def prepareOnpremRuleStr(vcn_name, drg_name, configure_onprem,tempStr):
+    def prepareOnpremRuleStr(vcn_name, drg_name, configure_onprem,tempStr,region):
         data = ""
-        if configure_onprem != 'n' and drg_name != '':
-            vcn_name = tempStr['vcn_tf_name']
-            v_list_having_drg = []
-            for key in vcns.vcns_having_drg.keys():
-                v_list_having_drg.append(key[0])
-            if vcns.vcn_hub_spoke_peer_none[vcn_name,key[1]][0].lower() == 'hub' or vcn_name in v_list_having_drg:
+        vcn_tf_name = tempStr['vcn_tf_name']
+        if configure_onprem!= 'n' and drg_name != '':
+            #v_list_having_drg = []
+            #for key in vcns.vcns_having_drg.keys():
+            #    if(region == key[1]):
+            #        v_list_having_drg.append(key[0])
+            if vcns.vcn_hub_spoke_peer_none[vcn_name,region][0].lower() == 'hub' or (vcn_name,region) in vcns.vcns_having_drg.keys():
                 drg_tf_name = commonTools.check_tf_variable(drg_name)
                 for drg_destination in vcnInfo.onprem_destinations:
                     if (drg_destination != ''):
                         tempStr['drg_tf_name'] = drg_tf_name
-                        tempStr['destination'] = drg_destination
+                        tempStr['destination'] = drg_destination.strip()
                         tempStr['destination_type'] = "CIDR_BLOCK"
                         tempStr['network_entity_id'] = drg_tf_name
                         tempStr['lpg'] = False
@@ -812,22 +813,14 @@ def create_terraform_route(inputfile, outdir, prefix, non_gf_tenancy, config, mo
                                                             gateway='DRG')
 
 
-            if vcns.vcn_hub_spoke_peer_none[vcn_name,key[1]][0].lower() == 'spoke':
-                """for left_vcn, value in peering_dict.items():
-                    right_vcns = value.split(",")
-                    for right_vcn in right_vcns:
-                        if (right_vcn == vcn_name):
-                            hub_vcn_name = left_vcn
-                            break
-    
-                lpg_name = vcn_name + "_" + hub_vcn_name + "_lpg"""""
+            if vcns.vcn_hub_spoke_peer_none[vcn_name,region][0].lower() == 'spoke':
                 lpg_name = vcns.vcn_lpg_names[vcn_name][0]
                 lpg_name = vcn_name + "_" + lpg_name
                 lpg_tf_name = commonTools.check_tf_variable(lpg_name)
                 for drg_destination in vcnInfo.onprem_destinations:
                     if (drg_destination != ''):
                         tempStr['lpg_tf_name'] = lpg_tf_name
-                        tempStr['destination'] = drg_destination
+                        tempStr['destination'] = drg_destination.strip()
                         tempStr['destination_type'] = "CIDR_BLOCK"
                         tempStr['network_entity_id'] = lpg_tf_name
                         tempStr['lpg'] = True
@@ -838,7 +831,7 @@ def create_terraform_route(inputfile, outdir, prefix, non_gf_tenancy, config, mo
                                                             start_rule, data, modify_network=modify_network, routerule=routerule,
                                                             gateway='LPG')
 
-            tempStr['vcn_tf_name'] = vcn_name
+            tempStr['vcn_tf_name'] = vcn_tf_name
         return data
 
     def prepareVCNPeerRuleStr(configure_vcnpeering,region):
@@ -934,15 +927,12 @@ def create_terraform_route(inputfile, outdir, prefix, non_gf_tenancy, config, mo
         data_sgw = prepareSGWRuleStr(vcn_name, sgw_name, destination, configure_sgw, tempStr, data)
         data_ngw = prepareNGWRuleStr(vcn_name, ngw_name, configure_ngw, tempStr)
         data_igw = prepareIGWRuleStr(vcn_name, igw_name, configure_igw, tempStr)
-        data_onprem = prepareOnpremRuleStr(vcn_name, drg_name, configure_onprem, tempStr)
+        data_onprem = prepareOnpremRuleStr(vcn_name, drg_name, configure_onprem, tempStr, region)
         data_vcnpeer = prepareVCNPeerRuleStr(configure_vcnpeering,region)
 
         # Create Skeleton Template
         if tempStr['count'] == 0:
             tempSkeleton[region] = template.render(tempStr, skeleton=True)
-
-        # rt_tf_name = subnet_tf_name
-        # tempStr['rt_tf_name'] = rt_tf_name
 
         start = "# Start of " + region_rt_name + " #"
         end = "# End of " + region_rt_name + " #"

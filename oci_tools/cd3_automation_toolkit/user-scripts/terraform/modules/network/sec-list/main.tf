@@ -21,63 +21,64 @@ resource "oci_core_security_list" "security_list" {
 
     content {
       #Required
-      protocol = ingress_security_rules.value["protocol"]
-      source   = ingress_security_rules.value["source"]
+      protocol = ingress_security_rules.value.protocol
+      source   = ingress_security_rules.value.source
 
       #Optional
-      description = ingress_security_rules.value["description"]
+      description = ingress_security_rules.value.description
 
       # If type and code
       dynamic "icmp_options" {
-        for_each = ingress_security_rules.value["icmp_options"][0].icmp_options_code != "" && ingress_security_rules.value["icmp_options"][0].icmp_options_type != "" ? ingress_security_rules.value["icmp_options"] : []
+        for_each = ingress_security_rules.value.icmp_options[0].icmp_options_code != "" && ingress_security_rules.value.icmp_options[0].icmp_options_type != "" ? ingress_security_rules.value.icmp_options : []
         content {
           #Required
-          type = ingress_security_rules.value["icmp_options"][0].icmp_options_type
+          type = ingress_security_rules.value.icmp_options[0].icmp_options_type
 
           #Optional
-          code = ingress_security_rules.value["icmp_options"][0].icmp_options_code != null || ingress_security_rules.value["icmp_options"][0].icmp_options_code != "" ? ingress_security_rules.value["icmp_options"][0].icmp_options_code : null
+          code = ingress_security_rules.value.icmp_options[0].icmp_options_code != null || ingress_security_rules.value.icmp_options[0].icmp_options_code != "" ? ingress_security_rules.value.icmp_options[0].icmp_options_code : null
         }
       }
 
       # If type and no code
       dynamic "icmp_options" {
-        for_each = ingress_security_rules.value["icmp_options"][0].icmp_options_code == "" && ingress_security_rules.value["icmp_options"][0].icmp_options_type != "" ? ingress_security_rules.value["icmp_options"] : []
+        for_each = ingress_security_rules.value.icmp_options[0].icmp_options_code == "" && ingress_security_rules.value.icmp_options[0].icmp_options_type != "" ? ingress_security_rules.value.icmp_options : []
         content {
           #Required
-          type = ingress_security_rules.value["icmp_options"][0].icmp_options_type
+          type = ingress_security_rules.value.icmp_options[0].icmp_options_type
         }
       }
 
-      source_type = ingress_security_rules.value["source_type"] != null ? ingress_security_rules.value["source_type"] : null
-      stateless   = ingress_security_rules.value["stateless"]
+      source_type = ingress_security_rules.value.source_type != null ? ingress_security_rules.value.source_type : null
+      stateless   = ingress_security_rules.value.stateless
 
       dynamic "tcp_options" {
-        for_each = ingress_security_rules.value["tcp_options"] != [] ? ingress_security_rules.value["tcp_options"] : []
+        for_each = ingress_security_rules.value.tcp_options != [] ? ingress_security_rules.value.tcp_options : []
         content {
-          min = ingress_security_rules.value["tcp_options"][0].tcp_options_destination_port_min != null ? ingress_security_rules.value["tcp_options"][0].tcp_options_destination_port_min : null
-          max = ingress_security_rules.value["tcp_options"][0].tcp_options_destination_port_max != null ? ingress_security_rules.value["tcp_options"][0].tcp_options_destination_port_max : null
+          min = tcp_options.value.tcp_options_destination_port_range_min != null ? tcp_options.value.tcp_options_destination_port_range_min : null
+          max = tcp_options.value.tcp_options_destination_port_range_max != null ? tcp_options.value.tcp_options_destination_port_range_max : null
           dynamic "source_port_range" {
-            for_each = ingress_security_rules.value["tcp_source_ports"] != [] ? ingress_security_rules.value["tcp_source_ports"] : []
+            for_each = tcp_options.value.tcp_source_ports != [] ? tcp_options.value.tcp_source_ports : []
             content {
               #Required
-              max = ingress_security_rules.value["tcp_source_ports"][0].tcp_options_source_port_range_max != null ? ingress_security_rules.value["tcp_source_ports"][0].tcp_options_source_port_range_max : null
-              min = ingress_security_rules.value["tcp_source_ports"][0].tcp_options_source_port_range_min != null ? ingress_security_rules.value["tcp_source_ports"][0].tcp_options_source_port_range_min : null
+              max = source_port_range.value.tcp_options_source_port_range_max != null ? source_port_range.value.tcp_options_source_port_range_max : null
+              min = source_port_range.value.tcp_options_source_port_range_min != null ? source_port_range.value.tcp_options_source_port_range_min : null
             }
           }
         }
       }
+
       dynamic "udp_options" {
-        for_each = ingress_security_rules.value["udp_options"] != [] ? ingress_security_rules.value["udp_options"] : []
+        for_each = ingress_security_rules.value.udp_options != [] ? ingress_security_rules.value.udp_options : []
         content {
           #Optional
-          max = ingress_security_rules.value["udp_options"][0].udp_options_destination_port_range_max != null ? ingress_security_rules.value["udp_options"][0].udp_options_destination_port_range_max : null
-          min = ingress_security_rules.value["udp_options"][0].udp_options_destination_port_range_min != null ? ingress_security_rules.value["udp_options"][0].udp_options_destination_port_range_min : null
+          max = udp_options.value.udp_options_destination_port_range_max != null ? udp_options.value.udp_options_destination_port_range_max : null
+          min = udp_options.value.udp_options_destination_port_range_min != null ? udp_options.value.udp_options_destination_port_range_min : null
           dynamic "source_port_range" {
-            for_each = ingress_security_rules.value["udp_source_ports"] != [] ? ingress_security_rules.value["udp_source_ports"] : []
+            for_each = udp_options.value.udp_source_ports != [] ? udp_options.value.udp_source_ports : []
             content {
               #Required
-              max = ingress_security_rules.value["udp_source_ports"][0].udp_options_source_port_range_max != null ? ingress_security_rules.value["udp_source_ports"][0].udp_options_source_port_range_max : null
-              min = ingress_security_rules.value["udp_source_ports"][0].udp_options_source_port_range_min != null ? ingress_security_rules.value["udp_source_ports"][0].udp_options_source_port_range_min : null
+              max = source_port_range.value.udp_options_source_port_range_max != null ? source_port_range.value.udp_options_source_port_range_max : null
+              min = source_port_range.value.udp_options_source_port_range_min != null ? source_port_range.value.udp_options_source_port_range_min : null
             }
           }
         }
@@ -90,64 +91,65 @@ resource "oci_core_security_list" "security_list" {
 
     content {
       #Required
-      protocol    = egress_security_rules.value["protocol"]
-      destination = egress_security_rules.value["destination"]
+      protocol    = egress_security_rules.value.protocol
+      destination = egress_security_rules.value.destination
 
       #Optional
-      description = egress_security_rules.value["description"]
+      description = egress_security_rules.value.description
 
       #If type and code
       dynamic "icmp_options" {
-        for_each = egress_security_rules.value["icmp_options"][0].icmp_options_type != "" && egress_security_rules.value["icmp_options"][0].icmp_options_code != "" ? egress_security_rules.value["icmp_options"] : []
+        for_each = egress_security_rules.value.icmp_options[0].icmp_options_type != "" && egress_security_rules.value.icmp_options[0].icmp_options_code != "" ? egress_security_rules.value.icmp_options : []
         content {
           #Required
-          type = egress_security_rules.value["icmp_options"][0].icmp_options_type
+          type = egress_security_rules.value.icmp_options[0].icmp_options_type
 
           #Optional
-          code = egress_security_rules.value["icmp_options"][0].icmp_options_code != null || egress_security_rules.value["icmp_options"][0].icmp_options_code != "" ? egress_security_rules.value["icmp_options"][0].icmp_options_code : null
+          code = egress_security_rules.value.icmp_options[0].icmp_options_code != null || egress_security_rules.value.icmp_options[0].icmp_options_code != "" ? egress_security_rules.value.icmp_options[0].icmp_options_code : null
         }
       }
 
       #If type and no code
       dynamic "icmp_options" {
-        for_each = egress_security_rules.value["icmp_options"][0].icmp_options_type != "" && egress_security_rules.value["icmp_options"][0].icmp_options_code == "" ? egress_security_rules.value["icmp_options"] : []
+        for_each = egress_security_rules.value.icmp_options[0].icmp_options_type != "" && egress_security_rules.value.icmp_options[0].icmp_options_code == "" ? egress_security_rules.value.icmp_options : []
         content {
           #Required
-          type = egress_security_rules.value["icmp_options"][0].icmp_options_type
+          type = egress_security_rules.value.icmp_options[0].icmp_options_type
 
         }
       }
 
-      destination_type = egress_security_rules.value["destination_type"] != null ? egress_security_rules.value["destination_type"] : null
-      stateless        = egress_security_rules.value["stateless"]
+      destination_type = egress_security_rules.value.destination_type != null ? egress_security_rules.value.destination_type : null
+      stateless        = egress_security_rules.value.stateless
 
       dynamic "tcp_options" {
-        for_each = egress_security_rules.value["tcp_options"] != [] ? egress_security_rules.value["tcp_options"] : []
+        for_each = egress_security_rules.value.tcp_options != [] ? egress_security_rules.value.tcp_options : []
         content {
-          min = egress_security_rules.value["tcp_options"][0].tcp_options_destination_port_min != null ? egress_security_rules.value["tcp_options"][0].tcp_options_destination_port_min : null
-          max = egress_security_rules.value["tcp_options"][0].tcp_options_destination_port_max != null ? egress_security_rules.value["tcp_options"][0].tcp_options_destination_port_max : null
+          min = tcp_options.value.tcp_options_destination_port_range_min != null ? tcp_options.value.tcp_options_destination_port_range_min : null
+          max = tcp_options.value.tcp_options_destination_port_range_max != null ? tcp_options.value.tcp_options_destination_port_range_max : null
           dynamic "source_port_range" {
-            for_each = egress_security_rules.value["tcp_source_ports"] != [] ? egress_security_rules.value["tcp_source_ports"] : []
+            for_each = tcp_options.value.tcp_source_ports != [] ? tcp_options.value.tcp_source_ports : []
             content {
               #Required
-              max = egress_security_rules.value["tcp_source_ports"][0].tcp_options_source_port_range_max != null ? egress_security_rules.value["tcp_source_ports"][0].tcp_options_source_port_range_max : null
-              min = egress_security_rules.value["tcp_source_ports"][0].tcp_options_source_port_range_min != null ? egress_security_rules.value["tcp_source_ports"][0].tcp_options_source_port_range_min : null
+              max = source_port_range.value.tcp_options_source_port_range_max != null ? source_port_range.value.tcp_options_source_port_range_max: null
+              min = source_port_range.value.tcp_options_source_port_range_min != null ? source_port_range.value.tcp_options_source_port_range_min : null
             }
           }
         }
       }
+
       dynamic "udp_options" {
-        for_each = egress_security_rules.value["udp_options"] != [] ? egress_security_rules.value["udp_options"] : []
+        for_each = egress_security_rules.value.udp_options != [] ? egress_security_rules.value.udp_options : []
         content {
           #Optional
-          max = egress_security_rules.value["udp_options"][0].udp_options_destination_port_range_max != null ? egress_security_rules.value["udp_options"][0].udp_options_destination_port_range_max : null
-          min = egress_security_rules.value["udp_options"][0].udp_options_destination_port_range_min != null ? egress_security_rules.value["udp_options"][0].udp_options_destination_port_range_min : null
+          max = udp_options.value.udp_options_destination_port_range_max != null ? udp_options.value.udp_options_destination_port_range_max : null
+          min = udp_options.value.udp_options_destination_port_range_min != null ? udp_options.value.udp_options_destination_port_range_min : null
           dynamic "source_port_range" {
-            for_each = egress_security_rules.value["udp_source_ports"] != [] ? egress_security_rules.value["udp_source_ports"] : []
+            for_each = udp_options.value.udp_source_ports != [] ? udp_options.value.udp_source_ports : []
             content {
               #Required
-              max = egress_security_rules.value["udp_source_ports"][0].udp_options_source_port_range_max != null ? egress_security_rules.value["udp_source_ports"][0].udp_options_source_port_range_max : null
-              min = egress_security_rules.value["udp_source_ports"][0].udp_options_source_port_range_min != null ? egress_security_rules.value["udp_source_ports"][0].udp_options_source_port_range_min : null
+              max = source_port_range.value.udp_options_source_port_range_max != null ? source_port_range.value.udp_options_source_port_range_max : null
+              min = source_port_range.value.udp_options_source_port_range_min != null ? source_port_range.value.udp_options_source_port_range_min : null
             }
           }
         }
