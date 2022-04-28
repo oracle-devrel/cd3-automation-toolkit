@@ -291,3 +291,7 @@ CD3 Automation Toolkit Tag v9.0.1
 3. Bug fix for VCN Flow Log output
 4. Bug fix for NSG ICMP rules not having only ICMP type
 5. Modified output template files to adjust the spacing
+---------------------------------
+CD3 Automation Toolkit Tag v9.0.2
+--------------------------------
+1. Multiple bug fixes for network and policies
