@@ -32,7 +32,7 @@ data "oci_core_network_security_groups" "network_security_groups" {
 }
 
 data "oci_core_boot_volumes" "all_boot_volumes" {
-  depends_on = [oci_core_instance.core_instance]
+  depends_on = [oci_core_instance.instance]
   count     = var.boot_tf_policy != "" ? 1 : 0
   #Required
   compartment_id = var.compartment_id

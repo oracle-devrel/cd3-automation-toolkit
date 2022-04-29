@@ -5,7 +5,7 @@
 ## Create Instance and Boot Volume Backup Policy
 #############################
 
-resource "oci_core_instance" "core_instance" {
+resource "oci_core_instance" "instance" {
   #Required
   availability_domain                 = var.availability_domain
   compartment_id                      = var.compartment_id
@@ -137,7 +137,7 @@ locals {
 }
 
 resource "oci_core_volume_backup_policy_assignment" "volume_backup_policy_assignment" {
-  depends_on = [oci_core_instance.core_instance]
+  depends_on = [oci_core_instance.instance]
   count     = var.boot_tf_policy != "" ? 1 : 0
   asset_id  = data.oci_core_boot_volumes.all_boot_volumes[0].boot_volumes.0.id
   policy_id = local.current_policy_id

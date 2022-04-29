@@ -108,7 +108,7 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, config,disp
             ins_fd = ins.fault_domain  # FD
             ins_id = ins.id
             tf_name = commonTools.check_tf_variable(ins_dname)
-            importCommands[reg_name].write("\nterraform import \"module.instances[\\\"" + tf_name + "\\\"].oci_core_instance.core_instance\" " + str(ins.id))
+            importCommands[reg_name].write("\nterraform import \"module.instances[\\\"" + tf_name + "\\\"].oci_core_instance.instance\" " + str(ins.id))
 
             # Shape Details
             ins_shape = ins.shape
