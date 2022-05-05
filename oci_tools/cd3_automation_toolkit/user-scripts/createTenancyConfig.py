@@ -6,7 +6,6 @@
 # Author: Shruthi Subramanian
 #
 
-import calendar
 import configparser
 import glob
 import argparse
@@ -20,9 +19,6 @@ from distutils import dir_util
 
 sys.path.append(os.getcwd()+"/..")
 from commonTools import *
-
-
-from datetime import datetime
 
 def paginate(operation, *args, **kwargs):
     while True:
@@ -218,9 +214,6 @@ def seek_info():
         # 6. Read variables.tf from examples folder and copy the variables as string
         with open(variables_example_file, 'r+') as var_eg_file:
             variables_example_file_data = var_eg_file.read().rstrip()
-
-        today = datetime.today()
-        dt = str(today.day) +" "+ calendar.month_name[today.month]+" "+ str(today.year)
 
         variables_example_file_data = variables_example_file_data.replace("<TENANCY OCID HERE>", tenancy)
         variables_example_file_data = variables_example_file_data.replace("<USER OCID HERE>", user)
