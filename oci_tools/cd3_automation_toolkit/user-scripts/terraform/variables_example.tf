@@ -300,17 +300,33 @@ variable "boot_backup_policies" {
 }
 
 #########################
-##### Logging ###########
+##### VCN Logs ##########
 #########################
 
-variable "log_groups" {
+variable "vcn_log_groups" {
   type    = map(any)
   default = {}
 }
 
-variable "logs" {
+variable "vcn_logs" {
   type    = map(any)
   default = {}
+}
+
+#########################
+## OSS Logs ##
+#########################
+
+variable "oss_log_groups" {
+  description = "To provision Log Groups for OSS"
+  type        = map(any)
+  default     = {}
+}
+
+variable "oss_logs" {
+  description = "To provision Logs for OSS"
+  type        = map(any)
+  default     = {}
 }
 
 #########################
@@ -389,22 +405,6 @@ variable "fss" {
 
 variable "export_options" {
   description = "To provision Export Sets"
-  type        = map(any)
-  default     = {}
-}
-
-#########################
-## OSS Logs ##
-#########################
-
-variable "oss_log_groups" {
-  description = "To provision Log Groups for OSS"
-  type        = map(any)
-  default     = {}
-}
-
-variable "oss_logs" {
-  description = "To provision Logs for OSS"
   type        = map(any)
   default     = {}
 }
