@@ -66,13 +66,21 @@ def volume_attachment_info(compute,ct,volume_id):
     return attachments,attachment_id, instance_name, attachment_type
 
 
-def print_blockvolumes(region, BVOLS, bvol, compute, ct, values_for_column, ntk_compartment_name, ad_names, display_names):
+def print_blockvolumes(region, BVOLS, bvol, compute, ct, values_for_column, ntk_compartment_name, display_names, ad_names):
     volume_comp = ''
     for blockvols in BVOLS.data:
         volume_id = blockvols.id
         volume_compartment_id = blockvols.compartment_id
         AD_name = blockvols.availability_domain
         d_name = blockvols.display_name
+
+        if ("AD-1" in AD_name or "ad-1" in AD_name):
+            AD_name = "AD1"
+        elif ("AD-2" in AD_name or "ad-2" in AD_name):
+            AD_name = "AD2"
+        elif ("AD-3" in AD_name or "ad-3" in AD_name):
+            AD_name = "AD3"
+
         if (ad_names is not None):
             if (not any(e in AD_name for e in ad_names)):
                 continue
@@ -199,7 +207,7 @@ def export_blockvolumes(inputfile, _outdir, _config, network_compartments=[], di
 
         for ntk_compartment_name in comp_list_fetch:
                 BVOLS = oci.pagination.list_call_get_all_results(bvol.list_volumes,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name],lifecycle_state="AVAILABLE")
-                print_blockvolumes(region, BVOLS, bvol, compute, ct, values_for_column, ntk_compartment_name, ad_names, display_names)
+                print_blockvolumes(region, BVOLS, bvol, compute, ct, values_for_column, ntk_compartment_name, display_names, ad_names)
 
         with open(script_file, 'a') as importCommands[reg]:
             importCommands[reg].write('\n\nterraform plan\n')
