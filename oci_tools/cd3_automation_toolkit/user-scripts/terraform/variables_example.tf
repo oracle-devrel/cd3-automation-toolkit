@@ -36,14 +36,6 @@ variable "region" {
 # SSH Keys
 #################################
 
-variable "ssh_public_key" {
-  type    = string
-  default = "<SSH PUB KEY STRING HERE>"
-}
-
-## instance_ssh_keys variable will be used once the terraform code for instances is also modularized
-#  in future releases. Please use above variable 'ssh_public_key' for the current version.
-
 variable "instance_ssh_keys" {
   type = map(any)
   default = {
@@ -78,21 +70,6 @@ variable "dbsystem_ssh_keys" {
 # Platform Image OCIDs and
 # Market Place Images
 #################################
-
-#Example for OS value 'Windows' in Instances sheet
-variable "Windows" {
-  type        = string
-  default     = "<LATEST WINDOWS OCID HERE>"
-  description = "<WINDOWS DESCRIPTION HERE>"
-}
-
-#Example for OS value 'Linux' in Instances sheet
-variable "Linux" {
-  type        = string
-  default     = "<LATEST LINUX OCID HERE>"
-  description = "<LINUX DESCRIPTION HERE>"
-}
-
 
 variable "instance_source_ocids" {
   type = map(any)
