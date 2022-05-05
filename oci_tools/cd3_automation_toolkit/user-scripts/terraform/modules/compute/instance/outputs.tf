@@ -6,5 +6,5 @@
 ############################
 
 output "instance_tf_id" {
-  value = oci_core_instance.core_instance.id
+  value = oci_core_instance.instance.id
 }
