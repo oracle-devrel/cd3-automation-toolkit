@@ -129,6 +129,28 @@ variable "groups" {
 }
 
 #########################
+## Tagging ##
+#########################
+
+variable "tag_namespaces" {
+  description = "To provision Namespaces"
+  type        = map(any)
+  default     = {}
+}
+
+variable "tag_keys" {
+  description = "To provision Tag Keys"
+  type        = map(any)
+  default     = {}
+}
+
+variable "tag_defaults" {
+  description = "To make the Tag keys as default to compartments"
+  type        = map(any)
+  default     = {}
+}
+
+#########################
 ##### Network ########
 #########################
 
@@ -277,60 +299,6 @@ variable "boot_backup_policies" {
 }
 
 #########################
-##### VCN Logs ##########
-#########################
-
-variable "vcn_log_groups" {
-  type    = map(any)
-  default = {}
-}
-
-variable "vcn_logs" {
-  type    = map(any)
-  default = {}
-}
-
-#########################
-## OSS Logs ##
-#########################
-
-variable "oss_log_groups" {
-  description = "To provision Log Groups for OSS"
-  type        = map(any)
-  default     = {}
-}
-
-variable "oss_logs" {
-  description = "To provision Logs for OSS"
-  type        = map(any)
-  default     = {}
-}
-
-#########################
-## Management Services ##
-#########################
-
-variable "alarms" {
-  type    = map(any)
-  default = {}
-}
-
-variable "events" {
-  type    = map(any)
-  default = {}
-}
-
-variable "notifications_topics" {
-  type    = map(any)
-  default = {}
-}
-
-variable "notifications_subscriptions" {
-  type    = map(any)
-  default = {}
-}
-
-#########################
 ## Database ##
 #########################
 
@@ -382,28 +350,6 @@ variable "fss" {
 
 variable "export_options" {
   description = "To provision Export Sets"
-  type        = map(any)
-  default     = {}
-}
-
-#########################
-## Tagging ##
-#########################
-
-variable "tag_namespaces" {
-  description = "To provision Namespaces"
-  type        = map(any)
-  default     = {}
-}
-
-variable "tag_keys" {
-  description = "To provision Tag Keys"
-  type        = map(any)
-  default     = {}
-}
-
-variable "tag_defaults" {
-  description = "To make the Tag keys as default to compartments"
   type        = map(any)
   default     = {}
 }
@@ -464,6 +410,60 @@ variable "rule_sets" {
   description = "To provision Load Balancer Rule Sets"
   type        = map(any)
   default     = {}
+}
+
+#########################
+##### VCN Logs ##########
+#########################
+
+variable "vcn_log_groups" {
+  type    = map(any)
+  default = {}
+}
+
+variable "vcn_logs" {
+  type    = map(any)
+  default = {}
+}
+
+#########################
+## OSS Logs ##
+#########################
+
+variable "oss_log_groups" {
+  description = "To provision Log Groups for OSS"
+  type        = map(any)
+  default     = {}
+}
+
+variable "oss_logs" {
+  description = "To provision Logs for OSS"
+  type        = map(any)
+  default     = {}
+}
+
+#########################
+## Management Services ##
+#########################
+
+variable "alarms" {
+  type    = map(any)
+  default = {}
+}
+
+variable "events" {
+  type    = map(any)
+  default = {}
+}
+
+variable "notifications_topics" {
+  type    = map(any)
+  default = {}
+}
+
+variable "notifications_subscriptions" {
+  type    = map(any)
+  default = {}
 }
 
 ##########################
