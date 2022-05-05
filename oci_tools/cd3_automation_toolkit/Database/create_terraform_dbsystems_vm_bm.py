@@ -246,6 +246,7 @@ def create_terraform_dbsystems_vm_bm(inputfile, outdir, prefix, config=DEFAULT_L
         outfile[reg] = reg_out_dir + "/" + prefix + auto_tfvars_filename
 
         if(tfStr[reg]!=''):
+            tfStr[reg] = "".join([s for s in tfStr[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
             oname[reg]=open(outfile[reg],'w')
             oname[reg].write(tfStr[reg])
             oname[reg].close()

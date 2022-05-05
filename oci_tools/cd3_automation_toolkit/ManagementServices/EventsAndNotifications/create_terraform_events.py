@@ -259,6 +259,7 @@ def create_terraform_events(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
     for reg in ct.all_regions:
         reg_out_dir = outdir + "/" + reg
         if (tfStr[reg] != ''):
+            tfStr[reg] = "".join([s for s in tfStr[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
             outfile[reg] = reg_out_dir + "/" + prefix + auto_tfvars_filename
             oname[reg] = open(outfile[reg], 'w')
             oname[reg].write(tfStr[reg])

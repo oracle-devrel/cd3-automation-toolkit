@@ -242,6 +242,7 @@ def modify_terraform_drg_routerules(inputfile, outdir, prefix=None, non_gf_tenan
             srcStr="###Add route tables here for "+reg.lower()+" ###"
             tempSkeletonDRGRouteTable[reg] = tempSkeletonDRGRouteTable[reg].replace(srcStr, tfStrRT[reg] + "\n" + rtskeletonStr)
 
+            tempSkeletonDRGRouteTable[reg] = "".join([s for s in tempSkeletonDRGRouteTable[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
             oname_rt = open(outfile, "w+")
             print("Writing to..." + str(outfile))
             oname_rt.write(tempSkeletonDRGRouteTable[reg])
@@ -251,6 +252,7 @@ def modify_terraform_drg_routerules(inputfile, outdir, prefix=None, non_gf_tenan
             srcStr="###Add route rules here for "+reg.lower()+" ###"
             tempSkeletonDRGRouteRule[reg] = tempSkeletonDRGRouteRule[reg].replace(srcStr, tfStr[reg] + "\n" + rrskeletonStr)
 
+            tempSkeletonDRGRouteRule[reg] = "".join([s for s in tempSkeletonDRGRouteRule[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
             oname_rt = open(ruleoutfile, "w+")
             print("Writing to..." + str(ruleoutfile))
             oname_rt.write(tempSkeletonDRGRouteRule[reg])
@@ -510,12 +512,14 @@ def modify_terraform_routerules(inputfile, outdir, prefix=None, non_gf_tenancy=F
         tempSkeleton[reg] = tempSkeleton[reg].replace(textToAddSeclistSearch,tfStr[reg] + textToAddSeclistSearch)
 
         if tfStr[reg] != '' :
+            tempSkeleton[reg] = "".join([s for s in tempSkeleton[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
             oname = open(outfile, "w+")
             oname.write(tempSkeleton[reg])
             oname.close()
             print(outfile + " for route tables has been created for region " + reg)
 
         if deftfStr[reg] !='':
+            default_rt_tempSkeleton[reg] = "".join([s for s in default_rt_tempSkeleton[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
             oname = open(default_outfile, "w+")
             oname.write(default_rt_tempSkeleton[reg])
             oname.close()

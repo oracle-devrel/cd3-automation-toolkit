@@ -204,6 +204,7 @@ def create_terraform_dhcp_options(inputfile, outdir, prefix, non_gf_tenancy, con
                 if (os.path.exists(outfile[reg])):
                     resource = 'custom-dhcp'
                     commonTools.backup_file(srcdir, resource, prefix + custom_dhcp_auto_tfvars_filename)
+                tfStr[reg] = "".join([s for s in tfStr[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
                 oname[reg] = open(outfile[reg], "w+")
                 oname[reg].write(tfStr[reg])
                 oname[reg].close()
@@ -220,6 +221,7 @@ def create_terraform_dhcp_options(inputfile, outdir, prefix, non_gf_tenancy, con
                 if (os.path.exists(deffile[reg])):
                     resource = 'default-dhcp'
                     commonTools.backup_file(srcdir, resource, prefix + def_dhcp_auto_tfvars_filename)
+                defStr[reg] = "".join([s for s in defStr[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
                 defname[reg] = open(deffile[reg], "w+")
                 defname[reg].write(defStr[reg])
                 defname[reg].close()
@@ -260,6 +262,7 @@ def create_terraform_dhcp_options(inputfile, outdir, prefix, non_gf_tenancy, con
                 if (os.path.exists(outfile[reg])):
                     resource = 'custom-dhcp'
                     commonTools.backup_file(srcdir, resource, prefix + custom_dhcp_auto_tfvars_filename)
+                tfStr[reg] = "".join([s for s in tfStr[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
                 oname[reg] = open(outfile[reg], 'w+')
                 oname[reg].write(tfStr[reg])
                 oname[reg].close()
@@ -270,6 +273,7 @@ def create_terraform_dhcp_options(inputfile, outdir, prefix, non_gf_tenancy, con
                 if (os.path.exists(deffile[reg])):
                     resource = 'default-dhcp'
                     commonTools.backup_file(srcdir, resource, prefix + def_dhcp_auto_tfvars_filename)
+                defStr[reg] = "".join([s for s in defStr[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
                 defname[reg] = open(deffile[reg], "w+")
                 defname[reg].write(defStr[reg])
                 defname[reg].close()

@@ -287,12 +287,14 @@ def modify_terraform_secrules(inputfile, outdir, prefix=None, non_gf_tenancy=Fal
         tempSkeleton[reg] = tempSkeleton[reg].replace(textToAddSeclistSearch,sectfStr[reg] + textToAddSeclistSearch)
 
         if sectfStr[reg] != '':
+            tempSkeleton[reg] = "".join([s for s in tempSkeleton[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
             oname = open(outfile, "w+")
             oname.write(tempSkeleton[reg])
             oname.close()
             print(outfile + " for seclist has been created for region " + reg)
 
         if deftfStr[reg] != '':
+            default_seclist_tempSkeleton[reg] = "".join([s for s in default_seclist_tempSkeleton[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
             oname = open(default_outfile, "w+")
             oname.write(default_seclist_tempSkeleton[reg])
             oname.close()

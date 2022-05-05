@@ -330,6 +330,7 @@ def create_terraform_seclist(inputfile, outdir, prefix, config, modify_network=F
             if reg in region_included:
                 if not modify_network:
                     tempSkeleton[reg] = tempSkeleton[reg].replace(textToAddSeclistSearch,modify_network_seclists[reg] + textToAddSeclistSearch)
+                    tempSkeleton[reg] = "".join([s for s in tempSkeleton[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
                     oname = open(outfile, "w+")
                     oname.write(tempSkeleton[reg])
                     oname.close()
@@ -339,6 +340,7 @@ def create_terraform_seclist(inputfile, outdir, prefix, config, modify_network=F
                     srcdir = outdir + "/" + reg + "/"
                     resource = 'SLs'
                     commonTools.backup_file(srcdir, resource, auto_tfvars_filename)
+                    tempSkeleton[reg] = "".join([s for s in tempSkeleton[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
                     oname = open(outfile, "w+")
                     oname.write(tempSkeleton[reg])
                     oname.close()

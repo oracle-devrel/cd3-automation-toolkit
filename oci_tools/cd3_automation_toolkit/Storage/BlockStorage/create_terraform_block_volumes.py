@@ -169,6 +169,7 @@ def create_terraform_block_volumes(inputfile, outdir, prefix,config=DEFAULT_LOCA
             commonTools.backup_file(reg_out_dir + "/", resource, auto_tfvars_filename)
 
             # Write to TF file
+            tfStr[reg] = "".join([s for s in tfStr[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
             outfile = reg_out_dir+ "/" + auto_tfvars_filename
             oname = open(outfile, "w+")
             print(outfile + " for Block Volume and its Backup Policy has been created for region " + reg)

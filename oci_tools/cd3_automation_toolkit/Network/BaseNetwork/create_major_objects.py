@@ -649,18 +649,21 @@ def create_major_objects(inputfile, outdir, prefix, non_gf_tenancy, config, modi
             commonTools.backup_file(srcdir, resource, drg_data_tfvars_filename)
 
             if tfStr[reg] != '':
+                tfStr[reg] = "".join([s for s in tfStr[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
                 oname[reg] = open(outfile[reg], "w+")
                 oname[reg].write(tfStr[reg])
                 oname[reg].close()
                 print(outfile[reg] + " for major objects has been updated for region " + reg)
 
             if dhcp_default_tfStr[reg] != '':
+                dhcp_default_tfStr[reg] = "".join([s for s in dhcp_default_tfStr[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
                 oname_def_dhcp[reg] = open(outfile_dhcp[reg], "w+")
                 oname_def_dhcp[reg].write(dhcp_default_tfStr[reg])
                 oname_def_dhcp[reg].close()
                 print(outfile_dhcp[reg] + " for default DHCP options for VCNs has been updated for region " + reg)
 
             if drg_data[reg] != '':
+                drg_data[reg] = "".join([s for s in drg_data[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
                 oname_oci_drg_data[reg]=open(outfile_oci_drg_data[reg], "w+")
                 oname_oci_drg_data[reg].write(drg_data[reg])
                 oname_oci_drg_data[reg].close()
@@ -686,7 +689,7 @@ def create_major_objects(inputfile, outdir, prefix, non_gf_tenancy, config, modi
 
             if drg_data[reg] != '':
                 commonTools.backup_file(srcdir, resource, drg_data_tfvars_filename)
-
+                drg_data[reg] = "".join([s for s in drg_data[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
                 oname_oci_drg_data[reg] = open(outfile_oci_drg_data[reg], "w+")
                 oname_oci_drg_data[reg].write(drg_data[reg])
                 oname_oci_drg_data[reg].close()
@@ -698,6 +701,7 @@ def create_major_objects(inputfile, outdir, prefix, non_gf_tenancy, config, modi
                 if (dhcp_default_tfStr[reg] != ''):
                     commonTools.backup_file(srcdir, resource, dhcp_auto_tfvars_filename)
 
+                    dhcp_default_tfStr[reg] = "".join([s for s in dhcp_default_tfStr[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
                     oname_def_dhcp[reg] = open(outfile_dhcp[reg], "w+")
                     oname_def_dhcp[reg].write(dhcp_default_tfStr[reg])
                     oname_def_dhcp[reg].close()
@@ -706,7 +710,7 @@ def create_major_objects(inputfile, outdir, prefix, non_gf_tenancy, config, modi
             if (tfStr[reg] != ''):
                 commonTools.backup_file(srcdir, resource, auto_tfvars_filename)
 
-                tfStr[reg] = tfStr[reg]
+                tfStr[reg] = "".join([s for s in tfStr[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
                 oname[reg] = open(outfile[reg], 'w+')
                 oname[reg].write(tfStr[reg])
                 oname[reg].close()

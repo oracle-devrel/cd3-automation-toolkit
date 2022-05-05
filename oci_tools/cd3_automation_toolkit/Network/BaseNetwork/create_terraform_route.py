@@ -353,6 +353,7 @@ def create_terraform_drg_route(inputfile, outdir, prefix, non_gf_tenancy, config
                 resource = 'DRGRTs'
                 srcdir = outdir + "/" + reg + "/"
                 commonTools.backup_file(srcdir, resource, prefix + drg_rt_auto_tfvars_filename)
+            tempSkeletonDRGRouteTable[reg] = "".join([s for s in tempSkeletonDRGRouteTable[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
             oname_rt = open(rtfile, "w+")
             print("Writing to..." + str(rtfile))
             oname_rt.write(tempSkeletonDRGRouteTable[reg])
@@ -369,6 +370,7 @@ def create_terraform_drg_route(inputfile, outdir, prefix, non_gf_tenancy, config
                 resource = 'DRGRTs'
                 srcdir = outdir + "/" + reg + "/"
                 commonTools.backup_file(srcdir, resource, prefix + drg_distribution_auto_tfvars_template)
+            tempSkeletonDRGDistribution[reg] = "".join([s for s in tempSkeletonDRGDistribution[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
             oname_drg_dis = open(rtdistribution, "w+")
             print("Writing to..." + str(rtdistribution))
             oname_drg_dis.write(tempSkeletonDRGDistribution[reg])
@@ -1215,6 +1217,7 @@ def create_terraform_route(inputfile, outdir, prefix, non_gf_tenancy, config, mo
             if routetableStr[reg] != '':
                 routetableStr[reg] = routetableStr[reg] + "\n" + skeletonStr
                 tempSkeleton[reg] = tempSkeleton[reg].replace(skeletonStr, routetableStr[reg])
+                tempSkeleton[reg] = "".join([s for s in tempSkeleton[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
                 oname = open(outfile, "w+")
                 oname.write(tempSkeleton[reg])
                 oname.close()
@@ -1241,6 +1244,7 @@ def create_terraform_route(inputfile, outdir, prefix, non_gf_tenancy, config, mo
                     srcdir = outdir + "/" + reg + "/"
                     commonTools.backup_file(srcdir, resource, prefix + auto_tfvars_filename)
 
+                tempSkeleton[reg] = "".join([s for s in tempSkeleton[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
                 oname = open(outfile, "w+")
                 oname.write(tempSkeleton[reg])
                 oname.close()

@@ -224,6 +224,7 @@ def create_terraform_policies(inputfile, outdir, prefix, config=DEFAULT_LOCATION
     if str(regions[0]) in commonTools.endNames:
         print("No Data to write to the outfile..Exiting!")
         exit(1)
+    tempStr = "".join([s for s in tempStr.strip().splitlines(True) if s.strip("\r\n").strip()])
     oname[reg] = open(outfile[reg], 'w')
     oname[reg].write(tempStr)
     oname[reg].close()

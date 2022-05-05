@@ -93,7 +93,9 @@ def enable_cis_oss_logging(outdir, prefix, region_name, comp_name, config=DEFAUL
 
     if(logstfStr + loggrouptfStr!=''):
         oname=open(outfile,'w')
-        oname.write(logstfStr + loggrouptfStr)
+        finalStr = logstfStr + loggrouptfStr
+        finalStr = "".join([s for s in finalStr.strip().splitlines(True) if s.strip("\r\n").strip()])
+        oname.write(finalStr)
         oname.close()
         print(outfile + " containing TF for OSS Logging has been created for region "+region_name)
 
@@ -234,6 +236,7 @@ def enable_cis_vcnflow_logging(filename, outdir, prefix, config=DEFAULT_LOCATION
 
         if(tfStrLogs[reg]!=''):
             oname=open(outfile[reg],'w')
+            tfStrLogs[reg] = "".join([s for s in tfStrLogs[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
             oname.write(tfStrLogs[reg])
             oname.close()
             print(outfile[reg] + " for VCN Flow Logs has been created for region "+reg)

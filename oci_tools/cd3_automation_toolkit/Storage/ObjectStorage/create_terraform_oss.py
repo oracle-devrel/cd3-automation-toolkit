@@ -97,12 +97,14 @@ def create_cis_oss(outdir, prefix, region_name, comp_name, config):
     commonTools.backup_file(srcdir, resource, "cis-oss.tf")
 
     if(tfStr!=''):
+        tfStr = "".join([s for s in tfStr.strip().splitlines(True) if s.strip("\r\n").strip()])
         oname=open(outfile,'w')
         oname.write(tfStr)
         oname.close()
         print(outfile + " containing TF for OSS has been created for region "+region_name)
 
     if (tfPolStr != ''):
+        tfPolStr = "".join([s for s in tfPolStr.strip().splitlines(True) if s.strip("\r\n").strip()])
         oname = open(outPolfile, 'w')
         oname.write(tfPolStr)
         oname.close()

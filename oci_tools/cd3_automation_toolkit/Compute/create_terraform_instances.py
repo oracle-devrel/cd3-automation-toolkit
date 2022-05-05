@@ -229,6 +229,7 @@ def create_terraform_instances(inputfile, outdir, prefix, config):
 
             # Write to TF file
             outfile = reg_out_dir + "/" + auto_tfvars_filename
+            tfStr[reg] = "".join([s for s in tfStr[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
             oname = open(outfile, "w+")
             print(outfile + " for instances and boot volume backup policy has been created for region " + reg)
             oname.write(tfStr[reg])

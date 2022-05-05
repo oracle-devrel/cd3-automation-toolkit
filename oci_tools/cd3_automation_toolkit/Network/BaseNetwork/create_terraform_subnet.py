@@ -337,6 +337,7 @@ def create_terraform_subnet(inputfile, outdir, prefix, non_gf_tenancy, config, m
                 srcStr = "##Add New Subnets for " + reg + " here##"
                 tfStr[reg] = skeletonStr[reg].replace(srcStr, tfStr[reg] + "\n" + srcStr)
 
+                tfStr[reg] = "".join([s for s in tfStr[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
                 oname[reg] = open(outfile[reg], "w")
                 oname[reg].write(tfStr[reg])
                 oname[reg].close()
@@ -359,6 +360,7 @@ def create_terraform_subnet(inputfile, outdir, prefix, non_gf_tenancy, config, m
                 srcStr = "##Add New Subnets for " + reg + " here##"
                 tfStr[reg] = skeletonStr[reg].replace(srcStr, tfStr[reg] + "\n" + srcStr)
 
+                tfStr[reg] = "".join([s for s in tfStr[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
                 oname[reg] = open(outfile[reg], 'w')
                 oname[reg].write(tfStr[reg])
                 oname[reg].close()

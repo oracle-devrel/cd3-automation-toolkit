@@ -209,7 +209,7 @@ def NSGtemplate(region, prefix,nsgParser, key, value, outdir, columnname):
         if nsg_name not in nsg_done:
             nsg_done.append(nsg_name)
             resource_group = template.render(tempStr)
-
+            resource_group = "".join([s for s in resource_group.strip().splitlines(True) if s.strip("\r\n").strip()])
             with open(outdir + "/"+ prefix + nsg_auto_tfvars_filename, 'a+') as f:
                 f.write(resource_group)
 
@@ -230,6 +230,7 @@ def NSGtemplate(region, prefix,nsgParser, key, value, outdir, columnname):
             tempStr.update(protocolOptionals(nsgParser, rule, tempStr))
 
             nsg_rule = nsgrule.render(tempStr)
+            nsg_rule = "".join([s for s in nsg_rule.strip().splitlines(True) if s.strip("\r\n").strip()])
             f.write(nsg_rule)
             ruleindex += 1
         f.close()
@@ -307,9 +308,11 @@ def create_terraform_nsg(inputfile, outdir, prefix, non_gf_tenancy, config):
         resource_group_nsg_rule = nsgrule.render(tempStr, region=region, skeleton=True)
 
         if resource_group != '':
+            resource_group = "".join([s for s in resource_group.strip().splitlines(True) if s.strip("\r\n").strip()])
             with open(regionDirPath + "/" + prefix + nsg_auto_tfvars_filename, 'w+') as f:
                 f.write(resource_group)
         if resource_group_nsg_rule != '':
+            resource_group_nsg_rule = "".join([s for s in resource_group_nsg_rule.strip().splitlines(True) if s.strip("\r\n").strip()])
             with open(regionDirPath + "/" + prefix + nsg_rules_auto_tfvars_filename, 'w+') as f:
                 f.write(resource_group_nsg_rule)
 

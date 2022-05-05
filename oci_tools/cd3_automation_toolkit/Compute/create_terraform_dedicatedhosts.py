@@ -134,6 +134,7 @@ def create_terraform_dedicatedhosts(inputfile, outdir, prefix,config):
         outfile[reg] = reg_out_dir + "/"+prefix+"_"+sheetName.lower()+".tf"
 
         if(tfStr[reg]!=''):
+            tfStr[reg] = "".join([s for s in tfStr[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
             oname[reg]=open(outfile[reg],'w')
             oname[reg].write(tfStr[reg])
             oname[reg].close()

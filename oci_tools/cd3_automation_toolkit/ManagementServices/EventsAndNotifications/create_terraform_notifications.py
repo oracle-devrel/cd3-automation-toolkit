@@ -192,6 +192,7 @@ def create_terraform_notifications(inputfile, outdir, prefix, config=DEFAULT_LOC
         reg_out_dir = outdir + "/" + reg
         if (tfStr[reg] != ''):
             outfile[reg] = reg_out_dir + "/" + prefix + topics_auto_tfvars_filename
+            tfStr[reg] = "".join([s for s in tfStr[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
             oname[reg] = open(outfile[reg], 'w')
             oname[reg].write(tfStr[reg])
             oname[reg].close()
@@ -199,6 +200,7 @@ def create_terraform_notifications(inputfile, outdir, prefix, config=DEFAULT_LOC
 
         if (tfStr1[reg] != ''):
             outfile[reg] = reg_out_dir + "/" + prefix + subs_auto_tfvars_filename
+            tfStr1[reg] = "".join([s for s in tfStr1[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
             oname[reg] = open(outfile[reg], 'w')
             oname[reg].write(tfStr1[reg])
             oname[reg].close()
