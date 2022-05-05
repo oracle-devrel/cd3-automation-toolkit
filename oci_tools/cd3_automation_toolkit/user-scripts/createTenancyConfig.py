@@ -230,10 +230,9 @@ def seek_info():
         variables_example_file_data = variables_example_file_data.replace("<SSH PUB KEY STRING HERE>", ssh_public_key)
         if (windows_image_id != ''):
             variables_example_file_data = variables_example_file_data.replace("<LATEST WINDOWS OCID HERE>", windows_image_id)
-            variables_example_file_data = variables_example_file_data.replace("<WINDOWS DESCRIPTION HERE>", "Latest ocid as on "+dt)
+
         if (linux_image_id != ''):
             variables_example_file_data = variables_example_file_data.replace("<LATEST LINUX OCID HERE>", linux_image_id)
-            variables_example_file_data = variables_example_file_data.replace("<LINUX DESCRIPTION HERE>", "Latest ocid as on "+dt)
 
         f = open(terraform_files+"/"+region+"/variables_" + region + ".tf", "w+")
         f.write(variables_example_file_data)
