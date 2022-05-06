@@ -121,7 +121,7 @@ def create_backendset_backendservers(inputfile, outdir, prefix, config=DEFAULT_L
             if columnname.lower() in commonTools.tagColumns:
                 tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)
 
-            if columnname == "LBR Compartment Name":
+            if columnname == "Compartment Name":
                 columnname = "compartment_tf_name"
                 columnvalue = commonTools.check_tf_variable(columnvalue)
 

@@ -16,7 +16,7 @@ load_balancers = {
 }{% else %}
     {{ lbr_tf_name }} = {
         display_name = "{{ lbr_name }}"
-        compartment_name = "{{ lbr_compartment_tf_name }}"
+        compartment_name = "{{ compartment_tf_name }}"
         shape = "{{ lbr_shape }}"
         {% if lbr_shape  == 'flexible' %}
         shape_details = [{
@@ -30,7 +30,7 @@ load_balancers = {
 
         network_compartment_name = "{{ network_compartment_tf_name }}"
         vcn_name = "{{ vcn_tf_name }}"
-        subnet_names =  [ {{ lbr_subnets }} ]
+        subnet_names =  {{ lbr_subnets }}
         nsg_ids= [{{ nsgs }}]
         is_private = {{ is_private }}
 

@@ -9,6 +9,7 @@
 # Modified (TF Upgrade): Shruthi Subramanian
 #
 import re
+import json
 import shutil
 import argparse
 import pandas as pd
@@ -72,6 +73,7 @@ def create_terraform_lbr_hostname_certs(inputfile, outdir, prefix, config=DEFAUL
 
     #dfcert with required details
     dfcert = pd.concat([dffill, dfdrop], axis=1)
+
 
     oracle_cipher_suites = ['oci-default-ssl-cipher-suite-v1', 'oci-modern-ssl-cipher-suite-v1',
                             'oci-compatible-ssl-cipher-suite-v1', 'oci-wider-compatible-ssl-cipher-suite-v1',
@@ -191,6 +193,8 @@ def create_terraform_lbr_hostname_certs(inputfile, outdir, prefix, config=DEFAUL
     # List of the column headers
     dfcolumns = df.columns.values.tolist()
 
+    subnets = parseSubnets(filename)
+
     for i in df.index:
         region = str(df.loc[i, 'Region'])
 
@@ -232,16 +236,8 @@ def create_terraform_lbr_hostname_certs(inputfile, outdir, prefix, config=DEFAUL
             if columnname == "Is Private(True|False)":
                 columnname = 'is_private'
 
-            if columnname == "LBR Compartment Name":
-                columnname = "lbr_compartment_tf_name"
-                columnvalue = commonTools.check_tf_variable(columnvalue)
-
-            if columnname == "Network Compartment Name":
-                columnname = "network_compartment_tf_name"
-                columnvalue = commonTools.check_tf_variable(columnvalue)
-
-            if columnname == "LBR VCN Name":
-                columnname = "vcn_tf_name"
+            if columnname == "Compartment Name":
+                columnname = "compartment_tf_name"
                 columnvalue = commonTools.check_tf_variable(columnvalue)
 
             if columnname == "Reserved IPs OCID" or columnname == "Reserved IPs ID":
@@ -271,22 +267,40 @@ def create_terraform_lbr_hostname_certs(inputfile, outdir, prefix, config=DEFAUL
             if columnname == "LBR Hostname(Name:Hostname)":
                 columnname = "lbr_hostname"
 
+            lbr_subnets_list = []
+            network_compartment_id = ''
+            vcn_name = ''
             if columnname == 'LBR Subnets':
                 lbr_subnets = str(columnvalue).strip().split(",")
                 if len(lbr_subnets) == 1:
                     if ("ocid1.subnet.oc1" in str(lbr_subnets[0]).strip()):
-                        columnvalue = "\""+str(lbr_subnets[0]).strip()+"\""
+                        lbr_subnets_list.append(str(lbr_subnets[0]).strip())
                     else:
-                        columnvalue = "\""+commonTools.check_tf_variable(str(lbr_subnets[0]).strip())+"\""
+                        subnet_tf_name = commonTools.check_tf_variable(str(lbr_subnets[0]).strip())
+                        try:
+                            key = region, subnet_tf_name
+                            network_compartment_id = subnets.vcn_subnet_map[key][0]
+                            vcn_name = subnets.vcn_subnet_map[key][1]
+                            lbr_subnets_list.append(subnets.vcn_subnet_map[key][2])
+                        except Exception as e:
+                            print("Invalid Subnet Name specified for row " + str(i + 3) + ". It Doesnt exist in Subnets sheet. Exiting!!!")
+                            exit()
+                    tempdict = {'network_compartment_tf_name': network_compartment_id, 'vcn_tf_name': vcn_name,'lbr_subnets': json.dumps(lbr_subnets_list)}
                 elif len(lbr_subnets) == 2:
-                    if ("ocid1.subnet.oc1" in str(lbr_subnets[0]).strip() and "ocid1.subnet.oc1" not in str(lbr_subnets[1]).strip()):
-                        columnvalue = "\""+str(lbr_subnets[0]).strip() + "\"," +"\""+ commonTools.check_tf_variable(str(lbr_subnets[0]).strip())+"\""
-                    elif ("ocid1.subnet.oc1" not in str(lbr_subnets[0]).strip() and "ocid1.subnet.oc1" not in str(lbr_subnets[1]).strip()):
-                        columnvalue = "\""+commonTools.check_tf_variable(str(lbr_subnets[0]).strip()) + "\",\"" + commonTools.check_tf_variable(str(lbr_subnets[1]).strip())+"\""
-                    elif ("ocid1.subnet.oc1" not in str(lbr_subnets[0]).strip() and "ocid1.subnet.oc1" in str(lbr_subnets[1]).strip()):
-                        columnvalue = "\""+commonTools.check_tf_variable(str(lbr_subnets[0]).strip()) + "\",\"" +str(lbr_subnets[1]).strip()+"\""
-                    else:
-                        columnvalue = "\""+str(lbr_subnets[0]).strip() + "\",\"" + str(lbr_subnets[1]).strip()+"\""
+                    for subnet in lbr_subnets:
+                        if "ocid1.subnet.oc1" in subnet:
+                            lbr_subnets_list.append(str(subnet).strip())
+                        else:
+                            subnet_tf_name = commonTools.check_tf_variable(str(subnet).strip())
+                            try:
+                                key = region, subnet_tf_name
+                                network_compartment_id = subnets.vcn_subnet_map[key][0]
+                                vcn_name = subnets.vcn_subnet_map[key][1]
+                                lbr_subnets_list.append(subnets.vcn_subnet_map[key][2])
+                            except Exception as e:
+                                print("Invalid Subnet Name specified for row " + str(i + 3) + ". It Doesnt exist in Subnets sheet. Exiting!!!")
+                                exit()
+                    tempdict = {'network_compartment_tf_name': network_compartment_id, 'vcn_tf_name': vcn_name,'lbr_subnets': json.dumps(lbr_subnets_list) }
 
             if columnname == "NSGs":
                 if columnvalue != '':
