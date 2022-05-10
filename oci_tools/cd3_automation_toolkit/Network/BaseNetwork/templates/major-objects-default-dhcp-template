@@ -3,6 +3,8 @@
 ############################
 # Network
 # Major Objects - Default DHCP - tfvars
+# Allowed Values:
+# manage_default_resource_id can be the ocid or the key of vcns (map)
 ############################
 
 default_dhcps = {

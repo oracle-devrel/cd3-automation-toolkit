@@ -8,10 +8,10 @@
 resource "oci_ons_subscription" "subscription" {
 
   #Required
-  compartment_id = var.compartment_name
+  compartment_id = var.compartment_id
   endpoint       = var.endpoint
   protocol       = var.protocol
-  topic_id       = var.topic_name
+  topic_id       = var.topic_id
 
   #Optional
   defined_tags  = var.defined_tags

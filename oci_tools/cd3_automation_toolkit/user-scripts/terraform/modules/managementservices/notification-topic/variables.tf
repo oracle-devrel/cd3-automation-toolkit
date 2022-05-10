@@ -5,7 +5,7 @@
 # Create Notifications_Topics
 ############################
 
-variable "compartment_name" {
+variable "compartment_id" {
   type = string
 }
 

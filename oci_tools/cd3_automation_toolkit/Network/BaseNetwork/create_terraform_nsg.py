@@ -211,7 +211,7 @@ def NSGtemplate(region, prefix,nsgParser, key, value, outdir, columnname):
             resource_group = template.render(tempStr)
             resource_group = "".join([s for s in resource_group.strip().splitlines(True) if s.strip("\r\n").strip()])
             with open(outdir + "/"+ prefix + nsg_auto_tfvars_filename, 'a+') as f:
-                f.write(resource_group)
+                f.write("\n  "+resource_group)
 
         with open(outdir + "/"+ prefix + nsg_rules_auto_tfvars_filename, 'a+') as f:
 
@@ -231,7 +231,7 @@ def NSGtemplate(region, prefix,nsgParser, key, value, outdir, columnname):
 
             nsg_rule = nsgrule.render(tempStr)
             nsg_rule = "".join([s for s in nsg_rule.strip().splitlines(True) if s.strip("\r\n").strip()])
-            f.write(nsg_rule)
+            f.write("\n  "+nsg_rule)
             ruleindex += 1
         f.close()
 

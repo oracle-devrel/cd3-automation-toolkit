@@ -4,6 +4,9 @@
 #############################
 # Network
 # Backends - tfvars
+# Allowed Values:
+# backendset_name must be the key of backend_sets (map)
+# load_balancer_id can be ocid or the key of load_balancers (map)
 #############################
 
 backends = {
@@ -11,7 +14,7 @@ backends = {
 }{% else %}
     {{ lbr_tf_name }}_{{ backend_server_tf_name }} = {
         backendset_name = "{{ lbr_tf_name }}_{{ backend_set_tf_name }}"
-        load_balancer_name = "{{ lbr_tf_name }}"
+        load_balancer_id = "{{ lbr_tf_name }}"
 
         instance_compartment = "{{ instance_tf_compartment }}"
         ip_address = "{{ backend_server_ip_address }}" # Format -->  "IP:<ip_address>" or "NAME:<server_name>"

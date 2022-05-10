@@ -4,6 +4,8 @@
 #################################
 # Network
 # DRG Route Tables - tfvars
+# Allowed Values:
+# drg_id can be ocid or the key of drgs (map)
 #################################
 drg_route_tables = {
 
@@ -15,7 +17,7 @@ drg_route_tables = {
 
 # Start of #{{ region.lower() }}_{{ drg_rt_tf_name }}# #
   {{ drg_rt_tf_name }} = {
-        drg_name = "{{ drg_tf_name }}"
+        drg_id = "{{ drg_tf_name }}"
         display_name = "{{ display_name }}"
 
         {% if drg_rt_dstrb_tf_name !='' %}

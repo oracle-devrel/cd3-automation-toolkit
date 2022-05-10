@@ -4,6 +4,8 @@
 #############################
 # Network
 # Rule Set - tfvars
+# Allowed Values:
+# load_balancer_id can be the ocid or the key of load_balancers (map)
 #############################
 
 rule_sets = {
@@ -11,7 +13,7 @@ rule_sets = {
 }{% else %}
     {{ lbr_tf_name}}_{{ rule_set_tf_name }} = {
         name = "{{ rule_set_name }}"
-        load_balancer_name = "{{ lbr_tf_name }}"
+        load_balancer_id = "{{ lbr_tf_name }}"
 
         access_control_rules = [
     ## Add_access_control_rules_here ##

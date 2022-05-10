@@ -4,16 +4,20 @@
 ############################
 # ManagementServices
 # Notifications_Subscriptions - tfvars
+# Allowed Values:
+# topic_id can be ocid or the key of notifications_topics (map)
+# compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens "--"
+# Example : compartment_id = "ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c" or compartment_id = "Network-root-cpt--Network" where "Network-root-cpt" is the parent of "Network" compartment
 ############################
 
 notifications_subscriptions = {
 {% endif %}
   {{ subscription_tf_name }} = {
         subscription_name = "{{ subscription_tf_name }}"
-        compartment_name = "{{ compartment_tf_name }}"
+        compartment_id = "{{ compartment_tf_name }}"
         endpoint = "{{ endpoint }}"
         protocol = "{{ protocol }}"
-        topic_name = "{{ topic_tf_name }}"
+        topic_id = "{{ topic_tf_name }}"
 
     {#  ##Do not modify below this line##  #}
     {#                                     #}

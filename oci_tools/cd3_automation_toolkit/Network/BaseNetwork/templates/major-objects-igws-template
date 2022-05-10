@@ -3,13 +3,17 @@
 ############################
 # Network
 # Major Objects - IGW - tfvars
+# Allowed Values:
+# vcn_id can be the ocid or the key of vcns (map)
+# compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens "--"
+# Example : compartment_id = "ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c" or compartment_id = "Network-root-cpt--Network" where "Network-root-cpt" is the parent of "Network" compartment
 ############################
 
 igws = {
 {% endif %}{% if igw_name != "" and igw_name != "nan" and igw_name != null %}
   {{ igw_tf_name }} = {
-        compartment_name = "{{ compartment_tf_name }}"
-        vcn_name     = "{{ vcn_tf_name }}"
+        compartment_id = "{{ compartment_tf_name }}"
+        vcn_id     = "{{ vcn_tf_name }}"
         igw_name   = "{{ igw_name }}"
         {% if enable_igw and enable_igw != 'nan' and enable_igw != '' %}
         enable_igw = {{ enable_igw }} {% else %}

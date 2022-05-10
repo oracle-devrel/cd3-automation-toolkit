@@ -4,6 +4,9 @@
 ############################
 # Governance
 # Create Tag Namespaces
+# Allowed Values:
+# compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens "--"
+# Example : compartment_id = "ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c" or compartment_id = "Network-root-cpt--Network" where "Network-root-cpt" is the parent of "Network" compartment
 ############################
 
 tag_namespaces = {
@@ -11,7 +14,7 @@ tag_namespaces = {
 }{% else %}
 
     {{ namespace_tf_name }} = {
-            compartment_name = "{{ compartment_tf_name }}"
+            compartment_id = "{{ compartment_tf_name }}"
             description = "{{ description }}"
             name = "{{ tag_namespace }}"
 

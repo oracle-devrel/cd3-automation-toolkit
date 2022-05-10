@@ -10,7 +10,7 @@ module "tag-namespaces" {
   for_each = (var.tag_namespaces != null || var.tag_namespaces != {}) ? var.tag_namespaces : {}
 
   #Required
-  compartment_id = each.value.compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[each.value.compartment_name]) : null
+  compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
   description    = each.value.description != "" ? each.value.description : each.value.name
   name           = each.value.name
 
@@ -26,7 +26,7 @@ module "tag-keys" {
   for_each = (var.tag_keys != null || var.tag_keys != {}) ? var.tag_keys : {}
 
   #Required
-  tag_namespace_id = length(regexall("ocid1.tagnamespace.oc1*", each.value.tag_namespace_name)) > 0 ? each.value.tag_namespace_name : merge(module.tag-namespaces.*...)[each.value.tag_namespace_name]["namespace_tf_id"]
+  tag_namespace_id = length(regexall("ocid1.tagnamespace.oc1*", each.value.tag_namespace_id)) > 0 ? each.value.tag_namespace_id : merge(module.tag-namespaces.*...)[each.value.tag_namespace_id]["namespace_tf_id"]
   description      = each.value.description != "" ? each.value.description : each.value.name
   name             = each.value.name
 
@@ -44,8 +44,8 @@ module "tag-defaults" {
   for_each = (var.tag_defaults != null || var.tag_defaults != {}) ? var.tag_defaults : {}
 
   #Required
-  compartment_id    = try(zipmap(data.oci_identity_compartments.compartments.compartments.*.name, data.oci_identity_compartments.compartments.compartments.*.id)[each.value.compartment_name], var.compartment_ocids[each.value.compartment_name])
-  tag_definition_id = length(regexall("ocid1.tagdefinition.oc1*", each.value.tag_definition_name)) > 0 ? each.value.tag_definition_name : merge(module.tag-keys.*...)[each.value.tag_definition_name]["tag_key_tf_id"]
+  compartment_id    = length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : try(zipmap(data.oci_identity_compartments.compartments.compartments.*.name, data.oci_identity_compartments.compartments.compartments.*.id)[each.value.compartment_id], var.compartment_ocids[each.value.compartment_id])
+  tag_definition_id = length(regexall("ocid1.tagdefinition.oc1*", each.value.tag_definition_id)) > 0 ? each.value.tag_definition_id : merge(module.tag-keys.*...)[each.value.tag_definition_id]["tag_key_tf_id"]
   value             = each.value.value
 
   #Optional

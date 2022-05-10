@@ -4,6 +4,11 @@
 #############################
 # Network
 # Major Objects - Subnets - tfvars
+# Allowed Values:
+# vcn_id, route_table_id, dhcp_options_id can be the ocid or the key of vcns (map), route_tables (map) and dhcp_options (map) respectively
+# security_list_ids can be a list of ocids or the key of security_lists (map)
+# compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens "--"
+# Example : compartment_id = "ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c" or compartment_id = "Network-root-cpt--Network" where "Network-root-cpt" is the parent of "Network" compartment
 #############################
 
 subnets = {
@@ -12,8 +17,8 @@ subnets = {
 }{% else %}{% if display_name != "" and display_name != "nan" and display_name != null %}
   {{ subnet_tf_name }} = {
         cidr_block = "{{ cidr_block }}"
-        compartment_name = "{{ compartment_tf_name }}"
-        vcn_name = "{{ vcn_tf_name }}"
+        compartment_id= "{{ compartment_tf_name }}"
+        vcn_id = "{{ vcn_tf_name }}"
         display_name = "{{ display_name }}"
         availability_domain = "{{ availability_domain }}"
         prohibit_public_ip_on_vnic = "{{ prohibit_public_ip_on_vnic }}"

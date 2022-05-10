@@ -4,17 +4,20 @@
 ############################
 # ManagementServices
 # Alarms - tfvars
+# Allowed Values:
+# compartment_id and metric_compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens "--"
+# Example : compartment_id = "ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c" or compartment_id = "Network-root-cpt--Network" where "Network-root-cpt" is the parent of "Network" compartment
 ############################
 
 alarms = {
 {% endif %}
   {{ alarm_tf_name }} = {
     #Required
-        compartment_name = "{{ compartment_tf_name }}"
+        compartment_id = "{{ compartment_tf_name }}"
         destinations = ["{{ destination_topic_tf_name }}"]
         alarm_name = "{{ alarm_name }}"
         is_enabled = {{ is_enabled }}
-        metric_compartment_name = "{{ metric_compartment_tf_name }}"
+        metric_compartment_id = "{{ metric_compartment_tf_name }}"
         namespace = "{{ namespace }}"
         query = "{{ query }}"
         severity = "{{ severity }}"

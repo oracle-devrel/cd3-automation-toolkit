@@ -4,6 +4,8 @@
 ################################
 # Network
 # Major Objects - DRG Route Rules and DRG Route Distributions
+# Allowed Values:
+# drg_id can be ocid or the key of drgs (map)
 ################################
 
 data_drg_route_tables = {

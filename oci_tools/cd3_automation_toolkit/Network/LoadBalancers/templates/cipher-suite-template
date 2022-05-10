@@ -4,6 +4,8 @@
 #############################
 # Network
 # Cipher Suites - tfvars
+# Allowed Values:
+# load_balancer_id can be ocid or the key of load_balancers (map)
 #############################
 
 cipher_suites = {
@@ -12,6 +14,6 @@ cipher_suites = {
     {{ lbr_tf_name }}_{{ cipher_tf_name }} = {
           ciphers          = [{{ ciphers }}]
           name             = "{{ cipher_suite_name }}"
-          load_balancer_name = "{{ lbr_tf_name }}"
+          load_balancer_id = "{{ lbr_tf_name }}"
     },
 {% endif %}

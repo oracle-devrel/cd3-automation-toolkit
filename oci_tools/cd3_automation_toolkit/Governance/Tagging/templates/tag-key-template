@@ -4,6 +4,8 @@
 ############################
 # Governance
 # Create Tag Keys
+# Allowed Values:
+# tag_namespace_id can be the ocid or the key of tag_namespaces (map)
 ############################
 
 tag_keys = {
@@ -11,7 +13,7 @@ tag_keys = {
 }{% else %}
 
     {{ key_tf_name }} = {
-            tag_namespace_name = "{{ namespace_tf_name }}"
+            tag_namespace_id = "{{ namespace_tf_name }}"
             description = "{{ description_keys }}"
             name = "{{ tag_keys }}"
 

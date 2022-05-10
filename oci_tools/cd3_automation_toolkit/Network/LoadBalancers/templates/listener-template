@@ -4,6 +4,9 @@
 #############################
 # Network
 # Listeners - tfvars
+# Allowed Values:
+# load_balancer_id can be the ocid or the key of load_balancers (map)
+# default_backend_set_name,hostname_names,path_route_set_name,rule_set_names,cipher_suite_name must be the key of the respective maps
 #############################
 
 listeners = {
@@ -13,7 +16,7 @@ listeners = {
     {{ lbr_tf_name }}_{{ listener_tf_name }} = {
 
         name = "{{ listener_name }}"
-        load_balancer_name = "{{ lbr_tf_name }}"
+        load_balancer_id = "{{ lbr_tf_name }}"
 
         port = "{{ listener_port }}"
         protocol = "{{ protocol }}"

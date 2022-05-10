@@ -4,6 +4,8 @@
 #################################
 # Network
 # DRG Route Rules - tfvars
+# Allowed Values:
+# drg_route_table_id and next_hop_drg_attachment_id can be the ocid or the key of drg_route_tables (map) and the key of drg_attachments (map) respectively
 #################################
 
 drg_route_rules = {

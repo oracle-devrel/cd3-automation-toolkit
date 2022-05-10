@@ -4,12 +4,15 @@
 ############################
 # ManagementServices
 # Events - tfvars
+# Allowed Values:
+# compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens "--"
+# Example : compartment_id = "ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c" or compartment_id = "Network-root-cpt--Network" where "Network-root-cpt" is the parent of "Network" compartment
 ############################
 
 events = {
 {% endif %}
   {{ event_tf_name }} = {
-        compartment_name = "{{ compartment_name }}"
+        compartment_id = "{{ compartment_name }}"
         event_name = "{{ event_name }}"
         is_enabled = {{ event_is_enabled }}
         description    = "{{ event_description }}"

@@ -4,6 +4,9 @@
 ############################
 # Identity
 # Policies - tfvars
+# Allowed Values:
+# compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens "--"
+# Example : compartment_id = "ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c" or compartment_id = "Network-root-cpt--Network" where "Network-root-cpt" is the parent of "Network" compartment
 ############################
 
 policies = {
@@ -11,9 +14,9 @@ policies = {
    {{ policy_tf_name }} = {
         name        = "{{ name }}"
         {% if compartment_name == None %}
-        compartment_name = "root"
+        compartment_id = "root"
         {% else %}
-        compartment_name = "{{ compartment_name }}"
+        compartment_id = "{{ compartment_name }}"
         {% endif %}
         {% if policy_version_date and policy_version_date != "" and policy_version_date != null %}
         policy_version_date = "{{ policy_version_date }}"

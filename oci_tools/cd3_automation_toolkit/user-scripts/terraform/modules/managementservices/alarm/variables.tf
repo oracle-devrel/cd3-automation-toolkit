@@ -6,7 +6,7 @@
 ############################
 
 
-variable "compartment_name" {
+variable "compartment_id" {
   type        = string
   description = "The compartment ID where alarm is created."
   default     = null
@@ -29,7 +29,7 @@ variable "is_enabled" {
   default     = null
 }
 
-variable "metric_compartment_name" {
+variable "metric_compartment_id" {
   type        = string
   description = "The compartment ID for the metric"
   default     = null

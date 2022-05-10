@@ -4,13 +4,15 @@
 #############################
 # Network
 # Path Route Set - tfvars
+# Allowed Values:
+# load_balancer_id can be the ocid or the key of load_balancers (map)
 #############################
 
 path_route_sets = {
   ##Add New Path Route Sets for {{ region.lower() }} here##
 }{% else %}
    {{ lbr_tf_name }}_{{ path_route_set_tf_name }} = {
-        load_balancer_name = "{{ lbr_tf_name }}"
+        load_balancer_id = "{{ lbr_tf_name }}"
         name = "{{ path_route_set_name }}"
         path_routes = [
 {{ path_routes }}

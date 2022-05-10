@@ -4,7 +4,11 @@
 ############################
 # Governance
 # Create Default Tags
-############################
+# Allowed Values:
+# tag_definition_id can be the ocid or the key of tag_definitions (map)
+# compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens "--"
+# Example : compartment_id = "ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c" or compartment_id = "Network-root-cpt--Network" where "Network-root-cpt" is the parent of "Network" compartment
+########################################################
 
 tag_defaults = {
     ## Add new tag defaults for {{ region|lower }} here
@@ -12,8 +16,8 @@ tag_defaults = {
 
     {% for compartments in default_tag_compartment %}
     {{ key_tf_name }}_{{ compartments }}-default = {
-            tag_definition_name = "{{ key_tf_name }}"
-            compartment_name = "{{ compartments }}"
+            tag_definition_id = "{{ key_tf_name }}"
+            compartment_id = "{{ compartments }}"
             value = "{{ default_tag_value }}"
 
             is_required =  {{ is_required }}

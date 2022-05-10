@@ -4,8 +4,8 @@
 #############################
 # Network
 # Hostname - tfvars
-#############################
-# load_balancer_name must be the key of load_balancers (map)
+# Allowed Values:
+# load_balancer_id can be the ocid or the key of load_balancers (map)
 #############################
 
 hostnames = {
@@ -13,7 +13,7 @@ hostnames = {
 }{% else %}
   {{ host_tf_name }}_hostname = {
         name               = "{{ name }}"
-        load_balancer_name = "{{ lbr_tf_name }}"
+        load_balancer_id = "{{ lbr_tf_name }}"
         hostname           = "{{ hostname }}"
         },
 {% endif %}
