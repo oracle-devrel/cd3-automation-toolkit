@@ -55,14 +55,14 @@ resource "oci_load_balancer_backend_set" "backend_set" {
 
     content {
       #Optional
-      certificate_ids                   = ssl_configuration.value.certificate_ids #TODO
+      certificate_ids                   = ssl_configuration.value.certificate_ids
       certificate_name                  = var.certificate_name
       cipher_suite_name                 = var.cipher_suite_name
       protocols                         = ssl_configuration.value.protocols
       server_order_preference           = ssl_configuration.value.server_order_preference  #TODO
       trusted_certificate_authority_ids = ssl_configuration.value.trusted_certificate_authority_ids  #TODO
       verify_depth                      = ssl_configuration.value.verify_depth
-      verify_peer_certificate           = ssl_configuration.value.verify_peer_certificate
+      verify_peer_certificate           = ssl_configuration.value.verify_peer_certificate == null ? false : ssl_configuration.value.verify_peer_certificate
     }
   }
 }

@@ -123,10 +123,13 @@ def create_listener(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
                 lbr_tf_name = commonTools.check_tf_variable(columnvalue)
                 tempdict = {'lbr_tf_name': lbr_tf_name}
 
-            if columnname == "Certificate Name":
+            if columnname == "Certificate Name or OCID":
                 if columnvalue != '':
-                    certificate_tf_name = lbr_tf_name + "_" +commonTools.check_tf_variable(columnvalue)+"_cert"
-                    tempdict = {'certificate_tf_name': certificate_tf_name}
+                    if 'ocid1.certificate.oc1' not in columnvalue:
+                        certificate_tf_name = commonTools.check_tf_variable(columnvalue)+"_cert"
+                        tempdict = {'certificate_tf_name': certificate_tf_name}
+                    else:
+                        tempdict = {'certificate_ids': columnvalue}
 
             if columnname == "Backend Set Name":
                 backend_set_tf_name = commonTools.check_tf_variable(columnvalue)

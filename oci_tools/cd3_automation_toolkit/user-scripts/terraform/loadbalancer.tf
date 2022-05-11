@@ -3,6 +3,16 @@
 # Create Load Balancers
 ############################
 
+/*
+data "oci_certificates_management_certificates" "certificates_backendsets" {
+    for_each = var.backend_sets != null ? var.backend_sets : {}
+    #Optional
+    compartment_id = each.value.instance_compartment != null ? (length(regexall("ocid1.compartment.oc1*", each.value.instance_compartment)) > 0 ? each.value.instance_compartment : var.compartment_ocids[each.value.instance_compartment]) :  var.tenancy_ocid
+    name = each.value.certificate_name
+    state = "AVAILABLE"
+}
+*/
+
 data "oci_core_instances" "instances" {
     for_each = var.backends != null ? var.backends : {}
     #Required
@@ -177,7 +187,7 @@ module "listeners" {
   cipher_suite_name   = each.value.cipher_suite_name
   key_name            = each.key
   hostname_names      = each.value.hostname_names != [] ? flatten(tolist([for hostnames in each.value.hostname_names : merge(module.hostnames.*...)[hostnames].hostname_tf_name])) : null
-  path_route_set_name = each.value.path_route_set_name != "" ? merge(module.path-route-sets.*...)[each.value.path_route_set_name].path_route_set_tf_name : ""
+  path_route_set_name = each.value.path_route_set_name != null ? merge(module.path-route-sets.*...)[each.value.path_route_set_name].path_route_set_tf_name : null
   routing_policy_name = each.value.routing_policy_name #TODO
   rule_set_names      = each.value.rule_set_names != [] ? flatten(tolist([for rules in each.value.rule_set_names : merge(module.rule-sets.*...)[rules].rule_set_tf_name])) : null
 }

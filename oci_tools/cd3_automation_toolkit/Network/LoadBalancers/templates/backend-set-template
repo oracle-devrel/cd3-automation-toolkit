@@ -114,16 +114,17 @@ backend_sets = {
         {% endif %}
         cipher_suite_name = "{{ cipher_suite_name }}"
 
-        {% if usessl == 'y' %}
+        {% if usessl|lower == 'y' %}
         ssl_configuration  = [{
-            {% if certificate_tf_name != "" %}
+
+            {% if certificate_tf_name and certificate_tf_name != "" %}
             certificate_name = "{{ lbr_tf_name }}_{{ certificate_tf_name }}"
             {% else %}
             certificate_name = ""
             {% endif %}
 
             {% if certificate_ids and certificate_ids != "" %}
-            certificate_ids  = "{{ certificate_ids }}"
+            certificate_ids  = ["{{ certificate_ids }}"]
             {% else %}
             certificate_ids = []
             {% endif %}
@@ -144,8 +145,8 @@ backend_sets = {
             verify_peer_certificate = {{  verify_peer_certificate }}
             verify_depth = {{ verify_depth }}
             {% else %}
-            verify_peer_certificate = ""
-            verify_depth = ""
+            verify_peer_certificate = null
+            verify_depth = null
             {% endif %}
 
             {% if cipher_suite_name %}

@@ -57,11 +57,11 @@ def create_backendset_backendservers(inputfile, outdir, prefix, config=DEFAULT_L
     #DF with just the load balancer names and the Cert details
 
     # fill the empty values with that in previous row.
-    dffill = df[['Region','LBR Compartment Name','LBR Name']]
+    dffill = df[['Region','Compartment Name','LBR Name']]
     dffill = dffill.fillna(method='ffill')
 
     #Drop unnecessary columns
-    dfdrop = df[['Region','LBR Compartment Name','LBR Name']]
+    dfdrop = df[['Region','Compartment Name','LBR Name']]
     dfdrop = df.drop(dfdrop, axis=1)
 
     #dfcert with required details
@@ -101,7 +101,7 @@ def create_backendset_backendservers(inputfile, outdir, prefix, config=DEFAULT_L
             print("\nColumn Backend Set Name cannot be left empty.....Exiting!")
             exit(1)
 
-        if (str(df.loc[i,'UseSSL(y|n)']).lower() == 'y') and (str(df.loc[i,'Certificate Name']).lower() == 'y'):
+        if (str(df.loc[i,'UseSSL(y|n)']).lower() == 'y') and (str(df.loc[i,'Certificate Name or OCID']).lower() == 'y'):
             print("\n Certificate Name cannot be empty if Use SSL is set to 'y'.....Exiting!")
             exit(1)
 
@@ -129,12 +129,13 @@ def create_backendset_backendservers(inputfile, outdir, prefix, config=DEFAULT_L
                 lbr_tf_name = commonTools.check_tf_variable(columnvalue)
                 tempdict = {'lbr_tf_name': lbr_tf_name}
 
-            if columnname == "Certificate Name":
+            if columnname == "Certificate Name or OCID":
                 if columnvalue != "":
-                    certificate_tf_name = commonTools.check_tf_variable(columnvalue)+"_cert"
-                else:
-                    certificate_tf_name = ""
-                tempdict = {'certificate_tf_name': certificate_tf_name}
+                    if 'ocid1.certificate.oc1' not in columnvalue:
+                        certificate_tf_name = commonTools.check_tf_variable(columnvalue)+"_cert"
+                        tempdict = {'certificate_tf_name': certificate_tf_name}
+                    else:
+                        tempdict = {'certificate_ids': columnvalue}
 
             if columnname == "Backend Set Name":
                 backend_set_tf_name = commonTools.check_tf_variable(columnvalue)

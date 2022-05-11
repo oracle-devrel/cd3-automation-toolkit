@@ -21,7 +21,7 @@ resource "oci_load_balancer_listener" "listener" {
       idle_timeout_in_seconds = connection_configuration.value.idle_timeout_in_seconds
 
       #Optional
-      backend_tcp_proxy_protocol_version = var.protocol != "TCP" ? null : (connection_configuration.value.backend_tcp_proxy_protocol_version != "" ? connection_configuration.value.backend_tcp_proxy_protocol_version : 4 )
+      backend_tcp_proxy_protocol_version = var.protocol != "TCP" ? null : (connection_configuration.value.backend_tcp_proxy_protocol_version != "" ? connection_configuration.value.backend_tcp_proxy_protocol_version : 2 )
     }
   }
   hostname_names      = var.hostname_names
@@ -35,13 +35,13 @@ resource "oci_load_balancer_listener" "listener" {
 
       #Optional
       certificate_name                  = var.certificate_name
-      certificate_ids                   = ssl_configuration.value.certificate_ids #TODO
+      certificate_ids                   = ssl_configuration.value.certificate_ids
       cipher_suite_name                 = var.cipher_suite_name
       protocols                         = ssl_configuration.value.protocols
       server_order_preference           = ssl_configuration.value.server_order_preference #TODO
       trusted_certificate_authority_ids = ssl_configuration.value.trusted_certificate_authority_ids #TODO
       verify_depth                      = ssl_configuration.value.verify_depth
-      verify_peer_certificate           = ssl_configuration.value.verify_peer_certificate
+      verify_peer_certificate           = ssl_configuration.value.verify_peer_certificate == null ? false : ssl_configuration.value.verify_peer_certificate
     }
   }
 }
