@@ -380,8 +380,6 @@ class commonTools():
             sheet.cell(3,2).value = onprem_destinations
             sheet.cell(4,2).value = ngw_destinations
             sheet.cell(5,2).value = igw_destinations
-            # Put n for subnet_name_attach_cidr
-            sheet.cell(6, 2).value = 'n'
             try:
                 book.save(cd3file)
                 book.close()
@@ -710,7 +708,6 @@ class parseVCNInfo():
     # all_regions = []
 
     def __init__(self, filename):
-        self.subnet_name_attach_cidr = ''
         self.onprem_destinations = []
         self.ngw_destinations = []
         self.igw_destinations = []
@@ -745,20 +742,6 @@ class parseVCNInfo():
         else:
             self.igw_destinations = igw_destinations.split(",")
 
-        self.subnet_name_attach_cidr = str(values[3]).strip()
-        if (self.subnet_name_attach_cidr.lower() == 'nan'):
-            self.subnet_name_attach_cidr = 'n'
-        else:
-            self.subnet_name_attach_cidr = self.subnet_name_attach_cidr.strip().lower()
-
-        """all_regions_excel = str(values[4]).strip()
-        if(all_regions_excel.lower()=="nan"):
-            print("\nERROR!!! regions field in VCN Info tab cannot be left empty..Exiting!!")
-            exit(1)
-        all_regions_excel = all_regions_excel.split(",")
-
-        self.all_regions = [x.strip().lower() for x in all_regions_excel]
-        """
 
 class parseSubnets():
     def __init__(self, filename):

@@ -102,11 +102,6 @@ def enable_cis_oss_logging(outdir, prefix, region_name, comp_name, config=DEFAUL
 
 def enable_cis_vcnflow_logging(filename, outdir, prefix, config=DEFAULT_LOCATION):
 
-    # Declare variables
-    vcnInfo = parseVCNInfo(filename)
-    ADS = ["AD1", "AD2", "AD3"]
-
-
     # Read cd3 using pandas dataframe
     df, col_headers = commonTools.read_cd3(filename, "Subnets")
 
@@ -161,24 +156,7 @@ def enable_cis_vcnflow_logging(filename, outdir, prefix, config=DEFAULT_LOCATION
                     tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)
                     tempStr.update(tempdict)
 
-        if (AD.strip().lower() != 'regional'):
-            AD = AD.strip().upper()
-            ad = ADS.index(AD)
-            ad_name_int = ad + 1
-            ad_name = str(ad_name_int)
-        else:
-            ad_name = ""
-
-        if (vcnInfo.subnet_name_attach_cidr == 'y'):
-                if (str(ad_name) != ''):
-                        name1 = name + "-ad" + str(ad_name)
-                else:
-                        name1 = name
-
-                display_name = name1 + "-" + subnet
-
-        else:
-                display_name = name
+        display_name = name
 
         subnet_tf_name=vcn_name+"_"+display_name
         subnet_tf_name = commonTools.check_tf_variable(subnet_tf_name)
