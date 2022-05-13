@@ -549,7 +549,7 @@ module "drg-route-distributions" {
 
   #Required
   distribution_type = each.value.distribution_type
-  drg_id            = each.value.drg_name != null && each.value.drg_name != "" ? (length(regexall("ocid1.drg.oc1*", each.value.drg_name)) > 0 ? each.value.drg_name : merge(module.drgs.*...)[each.value.drg_name]["drg_tf_id"]) : null
+  drg_id            = each.value.drg_id != null && each.value.drg_id != "" ? (length(regexall("ocid1.drg.oc1*", each.value.drg_id)) > 0 ? each.value.drg_id : merge(module.drgs.*...)[each.value.drg_id]["drg_tf_id"]) : null
 
   #Optional
   defined_tags  = each.value.defined_tags
