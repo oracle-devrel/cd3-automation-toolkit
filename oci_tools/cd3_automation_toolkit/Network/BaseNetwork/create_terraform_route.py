@@ -857,26 +857,7 @@ def create_terraform_route(inputfile, outdir, prefix, non_gf_tenancy, config, mo
         if (rt_name == "n"):
             return
 
-        if (AD.strip().lower() != 'regional'):
-            AD = AD.strip().upper()
-            ad = ADS.index(AD)
-            ad_name_int = ad + 1
-            ad_name = str(ad_name_int)
-        else:
-            ad_name = ""
-
-        tempStr['ad_name'] = ad_name
-
-        # check if subnet cidr needs to be attached
-        if (vcnInfo.subnet_name_attach_cidr == 'y'):
-            if (str(ad_name) != ''):
-                name1 = rt_name + "-ad" + str(ad_name)
-            else:
-                name1 = rt_name
-            display_name = name1 + "-" + subnet
-        else:
-            display_name = rt_name
-
+        display_name = rt_name
         tempStr['display_name'] = display_name
 
         vcn_tf_name = commonTools.check_tf_variable(tempStr['vcn_name'])
