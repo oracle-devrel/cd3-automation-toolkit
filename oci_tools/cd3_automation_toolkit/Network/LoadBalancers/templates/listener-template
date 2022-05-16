@@ -5,8 +5,10 @@
 # Network
 # Listeners - tfvars
 # Allowed Values:
+# HTTPS listener must have the protocol specified as HTTP
+# protocols in ssl configuration defaults to "TLSv1.2"
 # load_balancer_id can be the ocid or the key of load_balancers (map)
-# default_backend_set_name,hostname_names,path_route_set_name,rule_set_names,cipher_suite_name must be the key of the respective maps
+# default_backend_set_name,hostname_names,path_route_set_name,rule_set_names,cipher_suite_name,certificate_name must be the key of the respective maps
 #############################
 
 listeners = {
@@ -51,22 +53,20 @@ listeners = {
         routing_policy_name = ""
         {% endif %}
 
-        {% if certificate_tf_name != '' and certificate_tf_name != 'nan' %}
-        certificate_name = "{{ certificate_tf_name }}"
+        {% if certificate_tf_name and certificate_tf_name != "" and certificate_tf_name != 'nan' %}
+        certificate_name = "{{ lbr_tf_name }}_{{ certificate_tf_name }}"
         {% else %}
         certificate_name = ""
         {% endif %}
 
+        {% if cipher_suite_name and cipher_suite_name != "" %}
         cipher_suite_name = "{{ cipher_suite_name }}"
+        {% else %}
+        cipher_suite_name = ""
+        {% endif %}
 
         {% if usessl|lower == 'y' %}
         ssl_configuration  = [{
-
-            {% if certificate_tf_name and certificate_tf_name != "" %}
-            certificate_name = "{{ lbr_tf_name }}_{{ certificate_tf_name }}"
-            {% else %}
-            certificate_name = ""
-            {% endif %}
 
             {% if certificate_ids and certificate_ids != "" %}
             certificate_ids  = ["{{ certificate_ids }}"]
@@ -96,10 +96,8 @@ listeners = {
 
             {% if cipher_suite_name %}
             protocols = [ {{ ssl_protocols }} ]
-            cipher_suite_name = "{{ cipher_suite_name }}"
             {% else %}
             protocols = []
-            cipher_suite_name = ""
             {% endif %}
         }] {% else %}
         ssl_configuration  = []

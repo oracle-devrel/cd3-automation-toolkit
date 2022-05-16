@@ -443,6 +443,15 @@ variable "oss_logs" {
 }
 
 #########################
+## OSS IAM Policies ##
+#########################
+
+variable "oss_policies" {
+  type    = map(any)
+  default = {}
+}
+
+#########################
 ## Management Services ##
 #########################
 
@@ -462,6 +471,20 @@ variable "notifications_topics" {
 }
 
 variable "notifications_subscriptions" {
+  type    = map(any)
+  default = {}
+}
+
+############################
+## Key Management Service ##
+############################
+
+variable "vaults" {
+  type    = map(any)
+  default = {}
+}
+
+variable "keys" {
   type    = map(any)
   default = {}
 }

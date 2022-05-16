@@ -49,10 +49,13 @@ def create_cis_keyvault(outdir, prefix, region_name, comp_name, config=DEFAULT_L
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
-    template = env.get_template('keyvault-template')
+    vault_template = env.get_template('vault-template')
+    key_template = env.get_template('key-template')
 
     tempStr = {}
-    tfStr = ''
+    vaultStr = ''
+    keyStr = ''
+    auto_tfvars_filename = "cis-keyvault.auto.tfvars"
 
     compartmentVarName = commonTools.check_tf_variable(comp_name)
     columnvalue = str(compartmentVarName)
@@ -60,33 +63,40 @@ def create_cis_keyvault(outdir, prefix, region_name, comp_name, config=DEFAULT_L
 
     key_name = prefix+"-"+region_name+"-kms-key"
     vault_name = prefix+"-"+region_name+"-kms-vault"
-    management_endpoint = 'oci_kms_vault.'+vault_name+'.management_endpoint'
 
     tempStr['key_name'] = key_name
     tempStr['key_tf_name'] = key_name
     tempStr['vault_name'] = vault_name
     tempStr['vault_tf_name'] = vault_name
-    tempStr['management_endpoint'] = management_endpoint
+    tempStr['management_endpoint'] = vault_name
 
-    tfStr = tfStr + template.render(tempStr)
+    vaultStr = vaultStr + vault_template.render(tempStr)
+    keyStr= keyStr + key_template.render(tempStr)
 
-    # Write TF string to the file in respective region directory
-    reg_out_dir = outdir + "/" + region_name
-    if not os.path.exists(reg_out_dir):
-        os.makedirs(reg_out_dir)
+    if vaultStr != '':
+        # Generate Final String
+        src = "## Add New Vaults for " + region_name + " here ##"
+        vaultStr = vault_template.render(skeleton=True, count=0, region=region_name).replace(src, vaultStr)
 
-    outfile = reg_out_dir + "/cis-keyvault.tf"
+    if keyStr != '':
+        # Generate Final String
+        src = "## Add New Keys for " + region_name + " here ##"
+        keyStr = key_template.render(skeleton=True, count=0, region=region_name).replace(src, keyStr)
 
-    srcdir = reg_out_dir + "/"
-    resource = 'keyvault'
-    commonTools.backup_file(srcdir, resource, "cis-keyvault.tf")
+    finalstring = vaultStr + keyStr
+    finalstring = "".join([s for s in finalstring.strip().splitlines(True) if s.strip("\r\n").strip()])
 
+    if finalstring != "":
+        resource = "keyvault"
+        srcdir = outdir + "/" + region_name + "/"
+        commonTools.backup_file(srcdir, resource, auto_tfvars_filename)
 
-    if(tfStr!=''):
-        oname=open(outfile,'w')
-        oname.write(tfStr)
-        oname.close()
+        # Write to TF file
+        outfile = outdir + "/" + region_name + "/" + auto_tfvars_filename
+        oname = open(outfile, "w+")
         print(outfile + " containing TF for Key/Vault has been created for region "+region_name)
+        oname.write(finalstring)
+        oname.close()
 
 if __name__ == '__main__':
     # Execution of the code begins here

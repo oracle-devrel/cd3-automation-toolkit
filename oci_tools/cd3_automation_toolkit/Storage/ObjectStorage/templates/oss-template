@@ -1,17 +1,10 @@
-
-# Getting Object Storage Namespace
-data "oci_objectstorage_namespace" "bucket_namespace" {
-
-    #Optional
-    compartment_id = var.tenancy_ocid
-}
-
 # Creates a bucket
 resource "oci_objectstorage_bucket" "{{ bucket_tf_name }}" {
-        namespace = data.oci_objectstorage_namespace.bucket_namespace.namespace
+        depends_on = [module.keys]
+        namespace = data.oci_objectstorage_namespace.objectstorage_namespace.namespace
         name             = "{{ bucket_name }}"
         compartment_id   = var.{{ compartment_tf_name }}
-        kms_key_id       = {{ kms_key_id }}
+        kms_key_id       = merge(module.keys.*...)["{{ kms_key_id }}"].key_tf_id
 }
 
 

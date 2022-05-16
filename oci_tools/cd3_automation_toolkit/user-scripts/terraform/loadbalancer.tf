@@ -136,7 +136,7 @@ module "backend-sets" {
   policy           = each.value.policy
   backend_sets     = var.backend_sets
   certificate_name = each.value.certificate_name != "" ? merge(module.certificates.*...)[each.value.certificate_name]["certificate_tf_name"] : ""
-  cipher_suite_name = each.value.cipher_suite_name != "" ? merge(module.cipher-suites.*...)[each.value.cipher_suite_name]["cipher_suite_tf_name"] : ""
+  cipher_suite_name = each.value.cipher_suite_name != "" && length(regexall("oci-default-ssl", each.value.cipher_suite_name)) < 0 ? merge(module.cipher-suites.*...)[each.value.cipher_suite_name]["cipher_suite_tf_name"] : ""
   key_name         = each.key
 
 }
@@ -184,7 +184,7 @@ module "listeners" {
   #Optional
   listeners           = var.listeners
   certificate_name    = each.value.certificate_name != "" ? merge(module.certificates.*...)[each.value.certificate_name]["certificate_tf_name"] : ""
-  cipher_suite_name   = each.value.cipher_suite_name
+  cipher_suite_name   = each.value.cipher_suite_name != "" && length(regexall("oci-default-ssl", each.value.cipher_suite_name)) < 0 ? each.value.cipher_suite_name : ""
   key_name            = each.key
   hostname_names      = each.value.hostname_names != [] ? flatten(tolist([for hostnames in each.value.hostname_names : merge(module.hostnames.*...)[hostnames].hostname_tf_name])) : null
   path_route_set_name = each.value.path_route_set_name != null ? merge(module.path-route-sets.*...)[each.value.path_route_set_name].path_route_set_tf_name : null

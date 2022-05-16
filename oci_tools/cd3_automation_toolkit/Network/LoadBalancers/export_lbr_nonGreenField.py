@@ -453,10 +453,19 @@ def print_backendset_backendserver(region, ct, values_for_column_bss, lbr, LBRs,
                     elif col_headers == "Backend Set Name":
                         values_for_column_bss[col_headers].append(backendsets)
 
-                    elif col_headers == "Certificate Name":
+                    elif col_headers == "Certificate Name or OCID":
+
                         if str(backendset_details.ssl_configuration).lower() != "none":
                             certificate_list = backendset_details.ssl_configuration
-                            values_for_column_bss[col_headers].append(certificate_list.certificate_name)
+                            if certificate_list.certificate_ids != []:
+                                certificates = ""
+                                for certificate_ids in certificate_list.certificate_ids:
+                                    certificates = certificates + "," + certificate_ids
+                                values_for_column_bss[col_headers].append(str(certificate_list.certificate_ids).lstrip(","))
+                            elif certificate_list.certificate_name != "" and str(certificate_list.certificate_name).lower() != "none":
+                                values_for_column_bss[col_headers].append(certificate_list.certificate_name)
+                            else:
+                                values_for_column_bss[col_headers].append("")
                         else:
                             values_for_column_bss[col_headers].append("")
 
@@ -503,12 +512,17 @@ def print_listener(region, ct, values_for_column_lis, LBRs, lbr_compartment_name
                 headers_lower = commonTools.check_column_headers(col_headers)
 
                 # If value of Certificate Name is needed, check in ssl_configuration attribute
-                if col_headers == 'Certificate Name':
+                if col_headers == 'Certificate Name or OCID':
                     sslcerts = values.__getattribute__(sheet_dict_lis['UseSSL (y|n)'])
-                    if str(sslcerts).lower() == 'none':
-                        values_for_column_lis[col_headers].append("")
-                    else:
+                    if sslcerts.__getattribute__('certificate_name') != "" and str(sslcerts.__getattribute__('certificate_name')).lower() != "none":
                         values_for_column_lis[col_headers].append(sslcerts.__getattribute__('certificate_name'))
+                    elif sslcerts.certificate_ids != [] :
+                        certificates = ""
+                        for certificate_ids in sslcerts.certificate_ids:
+                            certificates = certificates + "," + certificate_ids
+                        values_for_column_lis[col_headers].append(certificates.lstrip(","))
+                    else:
+                        values_for_column_lis[col_headers].append("")
 
                 elif col_headers == 'SSL Protocols':
                     protocols_list = ''

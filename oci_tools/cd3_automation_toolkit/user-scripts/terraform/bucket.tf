@@ -1,3 +1,66 @@
+############################
+# Module Block - Object Storage
+# Create Object Storage Policies
+############################
+
+module "oss-policies" {
+  source   = "./modules/identity/iam-policy"
+  for_each = var.oss_policies != null ? var.oss_policies : {}
+
+  depends_on            = [module.iam-groups]
+  tenancy_ocid          = var.tenancy_ocid
+  policy_name           = each.value.name
+  policy_compartment_id = each.value.compartment_id != "root" ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : var.tenancy_ocid
+  policy_description    = each.value.policy_description
+  policy_statements     = each.value.policy_statements
+
+  #Optional
+  defined_tags        = each.value.defined_tags
+  freeform_tags       = each.value.freeform_tags
+  policy_version_date = each.value.policy_version_date != null ? each.value.policy_version_date : null
+}
+
+/*
+output "oss_policies_id_map" {
+  value = [ for k,v in merge(module.oss-policies.*...) : v.policies_id_map]
+}
+*/
+
+#############################
+# Module Block - Object Storage
+# Create Object Storage
+#############################
+
+module "oss" {
+  source   = "./modules/storage/bucket"
+  for_each = (var.oss != null || var.oss != {}) ? var.oss : {}
+
+  #Required
+  compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
+  name = each.value.bucket_name
+
+  #Optional
+  access_type = each.value.access_type
+  auto_tiering = each.value.auto_tiering
+  defined_tags = each.value.defined_tags
+  freeform_tags = each.value.freeform_tags
+  kms_key_id = each.value.kms_key_id != "" ? merge(module.keys.*...)[each.value.kms_key_id]["key_tf_id"] : ""
+  #kms_key_id = each.value.kms_key_id != "" ? try(merge(module.keys.*...)[each.value.kms_key_id]["key_tf_id"],data.) : ""
+  metadata = each.value.metadata
+  object_events_enabled = each.value.object_events_enabled
+  storage_tier = var.bucket_storage_tier
+  retention_rules {
+    display_name = var.retention_rule_display_name
+    duration {
+        #Required
+        time_amount = var.retention_rule_duration_time_amount
+        time_unit = var.retention_rule_duration_time_unit
+    }
+    time_rule_locked = var.retention_rule_time_rule_locked
+  }
+  versioning = var.bucket_versioning
+}
+
 #############################
 # Module Block - Management Services for Object Storage
 # Create Object Storage Log Groups and Logs

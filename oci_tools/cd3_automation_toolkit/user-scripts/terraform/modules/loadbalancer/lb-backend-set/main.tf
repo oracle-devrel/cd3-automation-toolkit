@@ -58,7 +58,7 @@ resource "oci_load_balancer_backend_set" "backend_set" {
       certificate_ids                   = ssl_configuration.value.certificate_ids
       certificate_name                  = var.certificate_name
       cipher_suite_name                 = var.cipher_suite_name
-      protocols                         = ssl_configuration.value.protocols
+      protocols                         = ssl_configuration.value.protocols != [] ? ssl_configuration.value.protocols : ["TLSv1","TLSv1.1","TLSv1.2"] #Default Values
       server_order_preference           = ssl_configuration.value.server_order_preference  #TODO
       trusted_certificate_authority_ids = ssl_configuration.value.trusted_certificate_authority_ids  #TODO
       verify_depth                      = ssl_configuration.value.verify_depth

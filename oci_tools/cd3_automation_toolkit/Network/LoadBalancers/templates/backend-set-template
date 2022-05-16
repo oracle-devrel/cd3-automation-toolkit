@@ -6,6 +6,7 @@
 # Backend Sets - tfvars
 # Allowed Values:
 # load_balancer_id can be ocid or the key of load_balancers (map)
+# protocols in ssl configuration defaults to "TLSv1","TLSv1.1","TLSv1.2"
 #############################
 
 backend_sets = {
@@ -107,21 +108,20 @@ backend_sets = {
         session_persistence_configuration = []
         {% endif %}
 
-        {% if certificate_tf_name != "" %}
+        {% if certificate_tf_name != '' and certificate_tf_name != 'nan' %}
         certificate_name = "{{ lbr_tf_name }}_{{ certificate_tf_name }}"
         {% else %}
         certificate_name = ""
         {% endif %}
+
+        {% if cipher_suite_name and cipher_suite_name != "" %}
         cipher_suite_name = "{{ cipher_suite_name }}"
+        {% else %}
+        cipher_suite_name = ""
+        {% endif %}
 
         {% if usessl|lower == 'y' %}
         ssl_configuration  = [{
-
-            {% if certificate_tf_name and certificate_tf_name != "" %}
-            certificate_name = "{{ lbr_tf_name }}_{{ certificate_tf_name }}"
-            {% else %}
-            certificate_name = ""
-            {% endif %}
 
             {% if certificate_ids and certificate_ids != "" %}
             certificate_ids  = ["{{ certificate_ids }}"]
@@ -151,10 +151,8 @@ backend_sets = {
 
             {% if cipher_suite_name %}
             protocols = [ {{ ssl_protocols }} ]
-            cipher_suite_name = "{{ cipher_suite_name }}"
             {% else %}
             protocols = []
-            cipher_suite_name = ""
             {% endif %}
         }] {% else %}
         ssl_configuration  = []

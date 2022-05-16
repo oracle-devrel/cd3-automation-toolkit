@@ -66,7 +66,7 @@ def create_cis_oss(outdir, prefix, region_name, comp_name, config):
     tempStr['compartment_tf_name'] =  cname
     tempStr['bucket_name'] = oss_name
     tempStr['bucket_tf_name'] = oss_name
-    tempStr['kms_key_id'] = 'oci_kms_key.'+key_name+'.id'
+    tempStr['kms_key_id'] = key_name
     tfStr = tfStr + template.render(tempStr)
 
 
@@ -80,8 +80,9 @@ def create_cis_oss(outdir, prefix, region_name, comp_name, config):
         tempPolStr['policy_statements'] = "\""+actual_policy_statement + "\","+tempPolStr['policy_statements']
     tfPolStr=tfPolStr + policyTemplate.render(tempPolStr)
     tfPolStr = tfPolStr + """ ]
-                    } \n """
-    tfPolStr = tfPolStr.replace('-#Addstmt]}', '')
+                    } \n
+        } \n"""
+    tfPolStr = tfPolStr.replace('-#Addstmt]', '')
 
     # Write TF string to the file in respective region directory
     reg_out_dir = outdir + "/" + region_name
@@ -90,11 +91,12 @@ def create_cis_oss(outdir, prefix, region_name, comp_name, config):
 
     home_reg_out_dir = outdir + "/" + home_region
     outfile = reg_out_dir + "/cis-oss.tf"
-    outPolfile= home_reg_out_dir+"/cis-osskeyvault-policy.tf"
+    outPolfile= home_reg_out_dir+"/cis-osskeyvault-policy.auto.tfvars"
 
     srcdir = reg_out_dir + "/"
     resource = 'oss'
     commonTools.backup_file(srcdir, resource, "cis-oss.tf")
+    commonTools.backup_file(srcdir, resource, "cis-osskeyvault-policy.auto.tfvars")
 
     if(tfStr!=''):
         tfStr = "".join([s for s in tfStr.strip().splitlines(True) if s.strip("\r\n").strip()])

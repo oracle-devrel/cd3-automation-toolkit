@@ -37,7 +37,7 @@ resource "oci_load_balancer_listener" "listener" {
       certificate_name                  = var.certificate_name
       certificate_ids                   = ssl_configuration.value.certificate_ids
       cipher_suite_name                 = var.cipher_suite_name
-      protocols                         = ssl_configuration.value.protocols
+      protocols                         = ssl_configuration.value.protocols != [] ? ssl_configuration.value.protocols : ["TLSv1.2"]
       server_order_preference           = ssl_configuration.value.server_order_preference #TODO
       trusted_certificate_authority_ids = ssl_configuration.value.trusted_certificate_authority_ids #TODO
       verify_depth                      = ssl_configuration.value.verify_depth
