@@ -244,6 +244,7 @@ def export_fss(inputfile, outdir, network_compartments=[], config=DEFAULT_LOCATI
 
     # writing data
     for reg in ct.all_regions:
+        script_file = f'{outdir}/{reg}/' + file_name
         with open(script_file, 'a') as importCommands[reg]:
             importCommands[reg].write('\n\nterraform plan\n')
         if "linux" in sys.platform:

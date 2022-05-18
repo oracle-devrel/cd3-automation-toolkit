@@ -209,16 +209,16 @@ def export_blockvolumes(inputfile, _outdir, _config, network_compartments=[], di
                 BVOLS = oci.pagination.list_call_get_all_results(bvol.list_volumes,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name],lifecycle_state="AVAILABLE")
                 print_blockvolumes(region, BVOLS, bvol, compute, ct, values_for_column, ntk_compartment_name, display_names, ad_names)
 
+    commonTools.write_to_cd3(values_for_column, cd3file, sheetName)
+    print("Block Volumes exported to CD3\n")
+
+    # writing data
+    for reg in ct.all_regions:
+        script_file = f'{outdir}/{reg}/' + file_name
         with open(script_file, 'a') as importCommands[reg]:
             importCommands[reg].write('\n\nterraform plan\n')
         if "linux" in sys.platform:
             os.chmod(script_file, 0o755)
-
-
-    commonTools.write_to_cd3(values_for_column, cd3file, sheetName)
-
-    print("Block Volumes exported to CD3\n")
-
 
 if __name__ == '__main__':
     args = parse_args()
