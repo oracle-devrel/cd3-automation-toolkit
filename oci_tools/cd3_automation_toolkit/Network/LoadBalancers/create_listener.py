@@ -214,7 +214,7 @@ def create_listener(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
                     exit()
 
                 elif columnvalue != '' and str(df.loc[i,'Cipher Suite Name']) == 'nan':
-                    print("NOTE: Cipher Suite Name is not specified for Listener -> "+str(df.loc[i,'Listener Name'])+", default value - 'oci-default-ssl-cipher-suite-v1' will be considered.\n")
+                    print("NOTE: Cipher Suite Name is not specified for Listener -> "+str(df.loc[i,'Listener Name'])+", default value - 'oci-default-ssl-cipher-suite-v1' will be considered.")
 
                 else:
                     pass
