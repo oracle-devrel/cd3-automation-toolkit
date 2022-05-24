@@ -73,6 +73,12 @@ instances = {
             {% else %}
             capacity_reservation_id = null
             {% endif %}
+            {% if is_pv_encryption_in_transit_enabled %}
+            is_pv_encryption_in_transit_enabled = {{ is_pv_encryption_in_transit_enabled }}
+            {% else %}
+            is_pv_encryption_in_transit_enabled = null
+            {% endif %}
+
             {% if ssh_key_var_name != '' %}
             ssh_authorized_keys  = "{{ ssh_key_var_name }}"
             {% else %}
@@ -198,12 +204,6 @@ instances = {
             ipxe_script = "{{ ipxe_script }}"
             {% else %}
             ipxe_script = null
-            {% endif %}
-
-            {% if is_pv_encryption_in_transit_enabled %}
-            is_pv_encryption_in_transit_enabled = {{ is_pv_encryption_in_transit_enabled }}
-            {% else %}
-            is_pv_encryption_in_transit_enabled = null
             {% endif %}
 
             {% if assign_private_dns_record %}

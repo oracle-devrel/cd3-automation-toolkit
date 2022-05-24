@@ -88,7 +88,7 @@ def __get_mount_info(cname, compartment_id, reg, availability_domain_name, confi
             mnt_sub_name = subnet_info.data.display_name  # Subnet-Name
             vnc_name = vnc_info.get_vcn(subnet_info.data.vcn_id).data.display_name  # vcn-Name
             vplussubnet = vnc_name + "_" + mnt_sub_name
-            vplussubnet =  commonTools.check_tf_variable(vplussubnet)
+            #vplussubnet =  commonTools.check_tf_variable(vplussubnet)
             for ips in private_ip_ids:
                 private_address = vnc_info.get_private_ip(ips)
                 mnt_p_ip = private_address.data.ip_address  # Private IP

@@ -874,13 +874,6 @@ def export_lbr(inputfile, _outdir, network_compartments, _config):
                         ciphers_tf_name = commonTools.check_tf_variable(ciphers)
                         importCommands[reg].write("\nterraform import \"module.cipher-suites[\\\""+str(tf_name)+"_" + ciphers_tf_name +"\\\"].oci_load_balancer_ssl_cipher_suite.ssl_cipher_suite\" loadBalancers/" + lbr_info.id + "/sslCipherSuites/" + ciphers)
 
-        script_file = f'{outdir}/{reg}/tf_import_commands_lbr_nonGF.sh'
-        with open(script_file, 'a') as importCommands[reg]:
-            importCommands[reg].write('\n\nterraform plan\n')
-        if "linux" in sys.platform:
-            os.chmod(script_file, 0o755)
-
-
     commonTools.write_to_cd3(values_for_column_lhc, cd3file, "LB-Hostname-Certs")
     commonTools.write_to_cd3(values_for_column_bss, cd3file, "BackendSet-BackendServer")
     commonTools.write_to_cd3(values_for_column_lis, cd3file, "LB-Listener")
@@ -888,6 +881,17 @@ def export_lbr(inputfile, _outdir, network_compartments, _config):
     commonTools.write_to_cd3(values_for_column_prs, cd3file, "PathRouteSet")
 
     print("LBRs exported to CD3\n")
+
+
+    # writing data
+    for reg in ct.all_regions:
+        script_file = f'{outdir}/{reg}/tf_import_commands_lbr_nonGF.sh'
+        with open(script_file, 'a') as importCommands[reg]:
+            importCommands[reg].write('\n\nterraform plan\n')
+        if "linux" in sys.platform:
+            os.chmod(script_file, 0o755)
+
+
 
 def parse_args():
     # Read the arguments

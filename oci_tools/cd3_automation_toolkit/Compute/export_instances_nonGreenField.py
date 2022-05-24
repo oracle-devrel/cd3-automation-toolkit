@@ -173,7 +173,7 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, config,disp
                 vcn_info = network.get_vcn(vcn_id=vcn_id)
                 vcn_name = vcn_info.data.display_name
                 vs = vcn_name + "_" + subnet_name  # VCN + Subnet Name
-                vs = commonTools.check_tf_variable(vs)
+                #vs = commonTools.check_tf_variable(vs)
 
                 privateip = vnic_info.private_ip
 
