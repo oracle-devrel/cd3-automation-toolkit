@@ -17,7 +17,7 @@ from jinja2 import Environment, FileSystemLoader
 
 def adding_columns_values(region, ad, fd, vs, publicip, privateip, os_dname, shape, key_name, c_name,
                           bkp_policy_name, nsgs, d_host, instance_data, values_for_column_instances,  bdet,
-                          cpcn,shape_config,vnic_info):
+                          cpcn,shape_config,vnic_info,launch_options):
     # print("CPCN=",cpcn)
     for col_header in values_for_column_instances.keys():
         if (col_header == "Region"):
@@ -61,7 +61,7 @@ def adding_columns_values(region, ad, fd, vs, publicip, privateip, os_dname, sha
             values_for_column_instances = commonTools.export_tags(instance_data, col_header,
                                                                   values_for_column_instances)
         else:
-            oci_objs = [instance_data, bdet,shape_config,vnic_info,d_host]
+            oci_objs = [instance_data, bdet,shape_config,vnic_info,d_host,launch_options]
             values_for_column_instances = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict_instances,
                                                                            values_for_column_instances)
 
@@ -172,42 +172,17 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, config,disp
                 vcn_id = subnet_info.data.vcn_id
                 vcn_info = network.get_vcn(vcn_id=vcn_id)
                 vcn_name = vcn_info.data.display_name
+                vs = vcn_name + "_" + subnet_name  # VCN + Subnet Name
+                #vs = commonTools.check_tf_variable(vs)
+
                 privateip = vnic_info.private_ip
-                key_name = ins_dname + "_" + str(privateip)
-                key_name = commonTools.check_tf_variable(key_name)
-                if ('ssh_authorized_keys' in ins.metadata.keys()):
-                    key_name = reg_name + "-" + key_name
-                    tf_name = commonTools.check_tf_variable(key_name)
-                    instance_keys[tf_name] = repr(ins.metadata['ssh_authorized_keys'])[
-                                             1:-1]  # print metadata of the instance
-                    key_name = ins_dname + "_" + str(privateip)
-                    key_name = commonTools.check_tf_variable(key_name)
-                else:
-                    key_name = reg_name + "-" + key_name
-                    tf_name = commonTools.check_tf_variable(key_name)
-                    instance_keys[tf_name] = ""
-                    key_name = ins_dname + "_" + str(privateip)
-                    key_name = ""
-                if (ins.source_details.source_type == "image"):
-                    os = compute.get_image(image_id=boot_details)
-                    os_dname = os.data.display_name  # Source os name
-                    os_dname = commonTools.check_tf_variable(os_dname)
-                    tf_name = commonTools.check_tf_variable(reg_name + "-" + os_dname)
-                    os_keys[tf_name] = ins.source_details.image_id
-                    os_dname = "image::" + os_dname
-                elif (ins.source_details.source_type == "bootVolume"):
-                    os_dname = "Boot_" + ins_dname + "_" + str(privateip)
-                    os_dname = commonTools.check_tf_variable(os_dname)
-                    tf_name = commonTools.check_tf_variable(reg_name + "-" + os_dname)
-                    os_keys[tf_name] = ins.source_details.boot_volume_id
-                    os_dname = "bootVolume::" + os_dname
+
                 publicip = vnic_info.public_ip
                 if (publicip == None):
                     publicip = "FALSE"
                 else:
                     publicip = "TRUE"
-
-                #Get NSG Details
+                # Get NSG Details
                 nsg_id = vnic_info.nsg_ids
                 nsg_names = ""
                 if (len(nsg_id)):
@@ -215,12 +190,40 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, config,disp
                         nsg_info = network.get_network_security_group(j)
                         nsg_names = nsg_names + "," + nsg_info.data.display_name
                     nsg_names = nsg_names[1:]
-                vs = vcn_name + "_" + subnet_name  # VCN + Subnet Name
-                vs = commonTools.check_tf_variable(vs)
 
-                adding_columns_values(reg_name.title(), AD_name, ins_fd, vs, publicip, privateip, os_dname,
+            key_name = ins_dname + "_" + str(privateip)
+            key_name = commonTools.check_tf_variable(key_name)
+            if ('ssh_authorized_keys' in ins.metadata.keys()):
+                key_name = reg_name + "-" + key_name
+                tf_name = commonTools.check_tf_variable(key_name)
+                instance_keys[tf_name] = repr(ins.metadata['ssh_authorized_keys'])[
+                                         1:-1]  # print metadata of the instance
+                key_name = ins_dname + "_" + str(privateip)
+                key_name = commonTools.check_tf_variable(key_name)
+            else:
+                key_name = reg_name + "-" + key_name
+                tf_name = commonTools.check_tf_variable(key_name)
+                instance_keys[tf_name] = ""
+                key_name = ins_dname + "_" + str(privateip)
+                key_name = ""
+            if (ins.source_details.source_type == "image"):
+                os = compute.get_image(image_id=boot_details)
+                os_dname = os.data.display_name  # Source os name
+                os_dname = commonTools.check_tf_variable(os_dname)
+                tf_name = commonTools.check_tf_variable(reg_name + "-" + os_dname)
+                os_keys[tf_name] = ins.source_details.image_id
+                os_dname = "image::" + os_dname
+            elif (ins.source_details.source_type == "bootVolume"):
+                os_dname = "Boot_" + ins_dname + "_" + str(privateip)
+                os_dname = commonTools.check_tf_variable(os_dname)
+                tf_name = commonTools.check_tf_variable(reg_name + "-" + os_dname)
+                os_keys[tf_name] = ins.source_details.boot_volume_id
+                os_dname = "bootVolume::" + os_dname
+
+            launch_options = ins.launch_options
+            adding_columns_values(reg_name.title(), AD_name, ins_fd, vs, publicip, privateip, os_dname,
                                       ins_shape, key_name, compartment_name, bkp_policy_name, nsg_names, dedicated_host,
-                                      ins, values_for_column_instances, bdet, cpcn,shape_config,vnic_info)
+                                      ins, values_for_column_instances, bdet, cpcn,shape_config,vnic_info,launch_options)
 
 
 def parse_args():
