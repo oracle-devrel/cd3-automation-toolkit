@@ -413,6 +413,30 @@ variable "rule_sets" {
 }
 
 #########################
+##### IP Management #####
+#########################
+
+variable "public_ip_pools" {
+  type    = map(any)
+  default = {}
+}
+
+variable "private_ips" {
+  type    = map(any)
+  default = {}
+}
+
+variable "reserved_ips" {
+  type    = map(any)
+  default = {}
+}
+
+variable "vnic_attachments"{
+  type    = map(any)
+  default = {}
+}
+
+#########################
 ##### VCN Logs ##########
 #########################
 
