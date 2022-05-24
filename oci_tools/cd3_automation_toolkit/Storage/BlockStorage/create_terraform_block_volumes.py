@@ -135,8 +135,6 @@ def create_terraform_block_volumes(inputfile, outdir, prefix,config=DEFAULT_LOCA
             if (columnname == 'Backup Policy'):
                 columnname = 'backup_policy'
                 columnvalue = str(columnvalue).strip()
-                if columnvalue != '':
-                    columnvalue = columnvalue.lower()
 
             if columnname == "Attach Type(iscsi|paravirtualized)":
                 columnname = "attach_type"
