@@ -18,6 +18,6 @@ resource "oci_load_balancer_certificate" "certificate" {
 
   lifecycle {
     create_before_destroy = true # As per hashicorp terraform
-    ignore_changes = [ca_certificate, public_certificate]
+    ignore_changes = [ca_certificate, public_certificate, private_key]
   }
 }
