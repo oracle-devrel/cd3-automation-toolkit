@@ -68,7 +68,7 @@ resource "oci_core_instance" "instance" {
     display_name              = var.display_name
     freeform_tags             = var.freeform_tags
     hostname_label            = var.hostname_label
-    nsg_ids                   = var.nsg_ids == [] ? null : local.nsg_ids
+    nsg_ids                   = length(var.nsg_ids) != 0  ? (local.nsg_ids==[] ? ["INVALID NSG Name"] : local.nsg_ids) : null
     private_ip                = var.private_ip
     subnet_id                 = var.subnet_id
     vlan_id                   = var.vlan_id
@@ -141,4 +141,7 @@ resource "oci_core_volume_backup_policy_assignment" "volume_backup_policy_assign
   count     = var.boot_tf_policy != "" ? 1 : 0
   asset_id  = data.oci_core_boot_volumes.all_boot_volumes[0].boot_volumes.0.id
   policy_id = local.current_policy_id
+  lifecycle {
+    create_before_destroy = true
+  }
 }
