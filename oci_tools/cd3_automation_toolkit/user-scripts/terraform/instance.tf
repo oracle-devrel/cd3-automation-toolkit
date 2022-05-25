@@ -51,7 +51,7 @@ module "instances" {
   boot_tf_policy = each.value.backup_policy != "" ? each.value.backup_policy : ""
   policy_tf_compartment_id = each.value.policy_compartment_id != "" ? (length(regexall("ocid1.compartment.oc1*", each.value.policy_compartment_id)) > 0 ? each.value.policy_compartment_id : var.compartment_ocids[each.value.policy_compartment_id]) : ""
 
- # Optional parameters to to enable and test.
+  ## Optional parameters to to enable and test ##
   # extended_metadata    = each.value.extended_metadata
   # skip_source_dest_check = each.value.skip_source_dest_check != null ? each.value.skip_source_dest_check : null
   # baseline_ocpu_utilization = each.value.baseline_ocpu_utilization
