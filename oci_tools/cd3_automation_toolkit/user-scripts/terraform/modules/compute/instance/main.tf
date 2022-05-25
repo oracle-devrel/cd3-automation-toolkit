@@ -38,7 +38,7 @@ resource "oci_core_instance" "instance" {
   }
 
   #Optional
-  agent_config {
+  /* agent_config {
     #Optional
     are_all_plugins_disabled = var.all_plugins_disabled
     is_management_disabled   = var.is_management_disabled
@@ -53,7 +53,7 @@ resource "oci_core_instance" "instance" {
       }
     }
   }
-
+  */
   availability_config {
     #Optional
     is_live_migration_preferred = var.is_live_migration_preferred

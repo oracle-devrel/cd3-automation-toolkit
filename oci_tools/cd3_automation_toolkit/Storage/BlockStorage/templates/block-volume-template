@@ -13,7 +13,7 @@ blockvolumes = {
     ## Add block volumes for {{ region|lower }} here ##
 }
 {% else %}
- {{ block_name }} =  {
+ {{ block_tf_name }} =  {
             availability_domain  = {{ availability_domain }}
             compartment_id       = "{{ compartment_tf_name }}"
             display_name         = "{{ block_name }}"

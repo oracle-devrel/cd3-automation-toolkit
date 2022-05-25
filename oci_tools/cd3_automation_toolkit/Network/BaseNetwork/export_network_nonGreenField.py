@@ -714,7 +714,7 @@ def export_networking(inputfile, outdir, _config, network_compartments=[]):
                                                                             lifecycle_state="AVAILABLE")
                             nsglist = [""]
                             for nsg in NSGs.data:
-                                NSGSLs = vnc.list_network_security_group_security_rules(nsg.id)
+                                NSGSLs = vnc.list_network_security_group_security_rules(nsg.id, sort_by = "TIMECREATED")
                                 i = 1
                                 for nsgsl in NSGSLs.data:
                                     nsglist.append(nsg.id)

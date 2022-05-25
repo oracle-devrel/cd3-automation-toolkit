@@ -10,7 +10,7 @@ data "oci_core_subnets" "oci_subnets" {
   for_each = var.instances != null ? var.instances : {}
   compartment_id = each.value.network_compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.network_compartment_id)) > 0 ? each.value.network_compartment_id : var.compartment_ocids[each.value.network_compartment_id]) : var.compartment_ocids[each.value.network_compartment_id]
   display_name   = each.value.subnet_id
-  vcn_id         = data.oci_core_vcns.oci_vcns[each.value.display_name].virtual_networks.*.id[0]
+  vcn_id         = data.oci_core_vcns.oci_vcns[each.key].virtual_networks.*.id[0]
 }
 
 data "oci_core_vcns" "oci_vcns" {
@@ -38,15 +38,16 @@ module "instances" {
   source_type           = each.value.source_type
   source_image_id       = lookup(var.instance_source_ocids, each.value.source_id, null )
   #subnet_id            = length(regexall("ocid1.subnet.oc1*", each.value.subnet_id)) > 0 ? each.value.subnet_id : lookup(var.bmc_subnets, each.value.subnet_id, null )
-  subnet_id             = each.value.subnet_id != "" ? (length(regexall("ocid1.subnet.oc1*", each.value.subnet_id)) > 0 ? each.value.subnet_id : data.oci_core_subnets.oci_subnets[each.value.display_name].subnets.*.id[0]) : null
+  subnet_id             = each.value.subnet_id != "" ? (length(regexall("ocid1.subnet.oc1*", each.value.subnet_id)) > 0 ? each.value.subnet_id : data.oci_core_subnets.oci_subnets[each.key].subnets.*.id[0]) : null
   assign_public_ip      = each.value.assign_public_ip
-  ssh_public_keys       = length(regexall("ssh-rsa*",each.value.ssh_authorized_keys)) > 0 ? each.value.ssh_authorized_keys : lookup(var.instance_ssh_keys, each.value.ssh_authorized_keys, var.instance_ssh_keys["ssh_public_key"] )
-  hostname_label        = each.value.display_name
+  ssh_public_keys       = length(regexall("ssh-rsa*",each.value.ssh_authorized_keys)) > 0 ? each.value.ssh_authorized_keys : lookup(var.instance_ssh_keys, each.value.ssh_authorized_keys, null )
+  hostname_label        = each.key
   nsg_ids               = each.value.nsg_ids != [] ? each.value.nsg_ids : []
   #nsg_ids              = each.value.nsg_ids != [] ? [for nsg in each.value.nsg_ids : length(regexall("ocid1.networksecuritygroup.oc1*",nsg)) > 0 ? nsg : merge(module.nsgs.*...)[nsg]["nsg_tf_id"]] : []
   boot_volume_size_in_gbs = each.value.boot_volume_size_in_gbs != null ? each.value.boot_volume_size_in_gbs : null
   memory_in_gbs         = each.value.memory_in_gbs != null ? each.value.memory_in_gbs : null
   capacity_reservation_id = each.value.capacity_reservation_id != null ? lookup(var.capacity_reservation_ocids, each.value.capacity_reservation_id, null ) : null
+  is_pv_encryption_in_transit_enabled = each.value.is_pv_encryption_in_transit_enabled
 
   boot_tf_policy = each.value.backup_policy != "" ? each.value.backup_policy : ""
   policy_tf_compartment_id = each.value.policy_compartment_id != "" ? (length(regexall("ocid1.compartment.oc1*", each.value.policy_compartment_id)) > 0 ? each.value.policy_compartment_id : var.compartment_ocids[each.value.policy_compartment_id]) : ""
@@ -70,7 +71,6 @@ module "instances" {
   # remote_data_volume_type = each.value.remote_data_volume_type
   # platform_config = each.value.platform_config
   # ipxe_script = each.value.ipxe_script
-  # is_pv_encryption_in_transit_enabled = each.value.is_pv_encryption_in_transit_enabled
   # preserve_boot_volume = each.value.preserve_boot_volume
   # assign_private_dns_record = each.value.assign_private_dns_record
   # vlan_id = each.value.vlan_id

@@ -55,11 +55,9 @@ def volume_attachment_info(compute,ct,volume_id):
                 instance_id = attachments.instance_id
                 attachment_type = attachments.attachment_type
                 attachment_id = attachments.id
-            #compute_info = compute.list_instances(ct.ntk_compartment_ids[ntk_compartment_name])
-            compute_info = compute.get_instance(instance_id=instance_id)#,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name])
-            #for instance in compute_info.data:
-            #if instance_id == compute_info.data.id:
-            instance_name = compute_info.data.display_name
+                compute_info = compute.get_instance(instance_id=instance_id)#,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name])
+                instance_name = compute_info.data.display_name
+
             return attachments,attachment_id, instance_name, attachment_type
 
     #retun empty values if not attached to any instance
