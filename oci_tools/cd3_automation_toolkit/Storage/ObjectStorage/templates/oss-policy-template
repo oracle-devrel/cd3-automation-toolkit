@@ -13,10 +13,10 @@ oss_policies = {
    {{ policy_tf_name }} = {
         name        = "{{ name }}"
 
-        {% if compartment_name == None %}
+        {% if compartment_tf_name == None %}
         compartment_id = "root"
         {% else %}
-        compartment_id = "{{ compartment_name }}"
+        compartment_id = "{{ compartment_tf_name }}"
         {% endif %}
 
         {% if policy_version_date and policy_version_date != "" and policy_version_date != null %}

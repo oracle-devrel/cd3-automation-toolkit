@@ -74,7 +74,7 @@ def create_cis_oss(outdir, prefix, region_name, comp_name, config):
 
     tempPolStr['policy_tf_name']=prefix+"-oss-kms-policy"
     tempPolStr['name'] = prefix + "-oss-kms-policy"
-    tempPolStr['compartment_tf_name']='tenancy_ocid'
+    tempPolStr['compartment_tf_name']='root'
     tempPolStr['description']='Policy allowing OCI OSS service to access Key in the Vault service.'
     tempPolStr['policy_statements'] = ''
     for reg in ct.all_regions:

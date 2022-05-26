@@ -22,12 +22,12 @@ resource "oci_objectstorage_bucket" "bucket" {
   storage_tier          = var.storage_tier
 
   dynamic "retention_rules" {
-    for_each = var.retention_rules != [] ? var.retention_rules : null
+    for_each = var.retention_rules != [] ? var.retention_rules : []
     content {
         display_name = retention_rules.value.display_name
 
         dynamic "duration" {
-          for_each = retention_rules.value.duration != [] ? retention_rules.value.duration : null
+          for_each = retention_rules.value.duration != [] ? retention_rules.value.duration : []
           content {
           #Required
           time_amount = duration.value.time_amount

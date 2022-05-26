@@ -43,16 +43,16 @@ module "oss" {
 
   #Required
   compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
-  name = each.value.bucket_name
+  name = each.value.name
   namespace = data.oci_objectstorage_namespace.bucket_namespace.namespace
 
   #Optional
   access_type = each.value.access_type != "" ? each.value.access_type : null # Defaults to 'NoPublicAccess' as per hashicorp terraform
   auto_tiering = each.value.auto_tiering  != "" ? each.value.auto_tiering : null # Defaults to 'Disabled' as per hashicorp terraform
   defined_tags = each.value.defined_tags  != {} ? each.value.defined_tags : {}
-  freeform_tags = each.value.freeform_tags  != {} ? each.value.access_type : {}
+  freeform_tags = each.value.freeform_tags  != {} ? each.value.freeform_tags : {}
   kms_key_id = each.value.kms_key_id != "" ? merge(module.keys.*...)[each.value.kms_key_id]["key_tf_id"] : null
-  metadata = each.value.metadata != "" ? each.value.metadata : null
+  metadata = each.value.metadata != {} ? each.value.metadata : {}
   object_events_enabled = each.value.object_events_enabled != "" ? each.value.object_events_enabled : null # Defaults to 'false' as per hashicorp terraform
   storage_tier = each.value.storage_tier != "" ? each.value.storage_tier : null # Defaults to 'Standard' as per hashicorp terraform
   retention_rules = each.value.retention_rules != [] ? each.value.retention_rules : []
@@ -65,6 +65,7 @@ module "oss" {
 #############################
 
 data "oci_objectstorage_bucket" "buckets" {
+  depends_on = [module.oss]
   for_each = (var.oss_logs != null || var.oss_logs != {}) ? var.oss_logs : {}
   #Required
   name      = each.value.resource

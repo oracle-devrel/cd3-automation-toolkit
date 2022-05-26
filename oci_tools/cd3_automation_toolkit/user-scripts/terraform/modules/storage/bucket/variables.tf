@@ -52,7 +52,7 @@ variable "kms_key_id" {
 
 variable "metadata" {
   description = "Arbitrary string, up to 4KB, of keys and values for user-defined metadata."
-  type        = string
+  type        = map(any)
 }
 
 variable "object_events_enabled" {
@@ -63,6 +63,11 @@ variable "object_events_enabled" {
 variable "storage_tier" {
   description = "The type of storage tier of this bucket. A bucket is set to 'Standard' tier by default, which means the bucket will be put in the standard storage tier. When 'Archive' tier type is set explicitly, the bucket is put in the Archive Storage tier. The 'storageTier' property is immutable after bucket is created."
   type        = number
+}
+
+variable "versioning" {
+  description = "Set the versioning status on the bucket. By default, a bucket is created with versioning Disabled.Allowed Create values: Enabled, Disabled. Allowed Update values: Enabled, Suspended."
+  type        = string
 }
 
 variable "retention_rules" {}
