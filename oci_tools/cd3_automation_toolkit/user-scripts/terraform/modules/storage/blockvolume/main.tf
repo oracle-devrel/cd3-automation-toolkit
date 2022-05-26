@@ -22,10 +22,20 @@ resource "oci_core_volume" "block_volume" {
 }
 
 resource "oci_core_volume_attachment" "block_vol_instance_attachment" {
-  count           = var.attachment_type != "" && var.attachment_type != null? 1 : 0
+  count           = var.attachment_type != "" && var.attachment_type != null ? 1 : 0
   attachment_type = var.attachment_type
   instance_id     = var.attach_to_instance
   volume_id       = oci_core_volume.block_volume.id
+
+  #optional
+  device                              = var.attachment_device
+  display_name                        = var.attachment_display_name
+  encryption_in_transit_type          = var.encryption_in_transit_type          # Applicable when attachment_type=iscsi
+  is_pv_encryption_in_transit_enabled = var.is_pv_encryption_in_transit_enabled # Applicable when attachment_type=paravirtualized
+  is_read_only                        = var.is_read_only
+  is_shareable                        = var.is_shareable
+  use_chap                            = var.use_chap # Applicable when attachment_type=iscsi
+
 }
 
 // Copyright (c) 2021, 2022, Oracle and/or its affiliates.
@@ -43,7 +53,7 @@ locals {
 
 resource "oci_core_volume_backup_policy_assignment" "volume_backup_policy_assignment" {
   depends_on = [oci_core_volume.block_volume]
-  count     = var.block_tf_policy != "" ? 1 : 0
-  asset_id  = data.oci_core_volumes.all_volumes[0].volumes[0].id
-  policy_id = local.current_policy_id
+  count      = var.block_tf_policy != "" ? 1 : 0
+  asset_id   = data.oci_core_volumes.all_volumes[0].volumes[0].id
+  policy_id  = local.current_policy_id
 }

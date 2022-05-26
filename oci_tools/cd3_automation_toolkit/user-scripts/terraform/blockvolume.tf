@@ -30,4 +30,14 @@ module "blockvolume" {
   size_in_gbs          = each.value.size_in_gbs != null ? each.value.size_in_gbs : null
   block_tf_policy = each.value.backup_policy != "" ? each.value.backup_policy : ""
   policy_tf_compartment_id = each.value.policy_compartment_id != "" ? (length(regexall("ocid1.compartment.oc1*", each.value.policy_compartment_id)) > 0 ? each.value.policy_compartment_id : var.compartment_ocids[each.value.policy_compartment_id]) : ""
+
+
+#Volume Attachment Optional Params
+#  attachment_device         = each.value.attachment_device
+#  attachment_display_name   = each.value.attachment_display_name
+#  encryption_in_transit_type          = each.value.encryption_in_transit_type                  # Applicable when attachment_type=iscsi
+#  is_pv_encryption_in_transit_enabled = each.value.is_pv_encryption_in_transit_enabled         # Applicable when attachment_type=paravirtualized
+#  is_read_only              = each.value.is_read_only
+#  is_shareable              = each.value.is_shareable
+#  use_chap                  = each.value.use_chap
 }
