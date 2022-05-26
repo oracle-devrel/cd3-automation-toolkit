@@ -60,6 +60,48 @@ blockvolumes = {
             policy_compartment_id = ""
             {% endif %}
 
+            {% if attachment_device %}
+            attachment_device = "{{ attachment_device }}"
+            {% else %}
+            attachment_device = null
+            {% endif %}
+
+            {% if encryption_in_transit_type %}
+            encryption_in_transit_type = "{{ encryption_in_transit_type }}"
+            {% else %}
+            encryption_in_transit_type = null
+            {% endif %}
+
+            {% if attachment_display_name %}
+            attachment_display_name = "{{ attachment_display_name }}"
+            {% else %}
+            attachment_display_name = null
+            {% endif %}
+
+            {% if is_read_only %}
+            is_read_only = "{{ is_read_only }}"
+            {% else %}
+            is_read_only = null
+            {% endif %}
+
+            {% if is_pv_encryption_in_transit_enabled %}
+            is_pv_encryption_in_transit_enabled = "{{ is_pv_encryption_in_transit_enabled }}"
+            {% else %}
+            is_pv_encryption_in_transit_enabled = null
+            {% endif %}
+
+            {% if is_shareable %}
+            is_shareable = "{{ is_shareable }}"
+            {% else %}
+            is_shareable = null
+            {% endif %}
+
+            {% if use_chap %}
+            use_chap = "{{ use_chap }}"
+            {% else %}
+            use_chap = null
+            {% endif %}
+
         {#  ##Do not modify below this line##  #}
         {#                                     #}
         {#  ###Section for adding Defined and Freeform Tags###  #}

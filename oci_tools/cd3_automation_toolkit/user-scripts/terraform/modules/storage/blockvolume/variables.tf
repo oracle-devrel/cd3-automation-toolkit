@@ -79,3 +79,34 @@ variable "attachment_type" {
   type        = string
   default     = ""
 }
+
+
+#Volume Attachment Optional Params
+variable "attachment_device" {
+  type    = string
+  default = null
+}
+variable "attachment_display_name" {
+  type    = string
+  default = null
+}
+variable "encryption_in_transit_type" {
+  type    = string
+  default = null
+}
+variable "is_pv_encryption_in_transit_enabled" {
+  type    = bool
+  default = null
+}
+variable "is_read_only" {
+  type    = bool
+  default = null
+}
+variable "is_shareable" {
+  type    = bool
+  default = null
+}
+variable "use_chap" {
+  type    = bool
+  default = null
+}
