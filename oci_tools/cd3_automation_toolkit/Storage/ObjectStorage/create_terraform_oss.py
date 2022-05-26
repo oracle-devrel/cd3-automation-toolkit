@@ -49,6 +49,8 @@ def create_cis_oss(outdir, prefix, region_name, comp_name, config):
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
     template = env.get_template('oss-template')
     policyTemplate = env.get_template('oss-policy-template')
+    oss_auto_tfvars_file = "cis-oss.auto.tfvars"
+    oss_policy_auto_tfvars_file = "cis-osskeyvault-policy.auto.tfvars"
 
     #region_key = ct.region_dict[region_name]
 
@@ -73,7 +75,7 @@ def create_cis_oss(outdir, prefix, region_name, comp_name, config):
     tempPolStr['policy_tf_name']=prefix+"-oss-kms-policy"
     tempPolStr['name'] = prefix + "-oss-kms-policy"
     tempPolStr['compartment_tf_name']='tenancy_ocid'
-    tempPolStr['description']="Policy allowing OCI OSS service to access Key in the Vault service."
+    tempPolStr['description']='Policy allowing OCI OSS service to access Key in the Vault service.'
     tempPolStr['policy_statements'] = ''
     for reg in ct.all_regions:
         actual_policy_statement = "Allow service objectstorage-"+ct.region_dict[reg]+" to use keys in compartment "+comp_name
@@ -90,15 +92,18 @@ def create_cis_oss(outdir, prefix, region_name, comp_name, config):
         os.makedirs(reg_out_dir)
 
     home_reg_out_dir = outdir + "/" + home_region
-    outfile = reg_out_dir + "/cis-oss.tf"
-    outPolfile= home_reg_out_dir+"/cis-osskeyvault-policy.auto.tfvars"
+    outfile = reg_out_dir + "/" + oss_auto_tfvars_file
+    outPolfile= home_reg_out_dir +"/"+ oss_policy_auto_tfvars_file
 
     srcdir = reg_out_dir + "/"
     resource = 'oss'
-    commonTools.backup_file(srcdir, resource, "cis-oss.tf")
-    commonTools.backup_file(srcdir, resource, "cis-osskeyvault-policy.auto.tfvars")
+    commonTools.backup_file(srcdir, resource, oss_auto_tfvars_file)
+    commonTools.backup_file(srcdir, resource, oss_policy_auto_tfvars_file)
 
     if(tfStr!=''):
+        # Generate Final String
+        src = "##Add New Object Storage for " + home_region.lower() + " here##"
+        tfStr = template.render(skeleton=True, count=0, region= home_region.lower()).replace(src, tfStr +"\n" + src)
         tfStr = "".join([s for s in tfStr.strip().splitlines(True) if s.strip("\r\n").strip()])
         oname=open(outfile,'w')
         oname.write(tfStr)

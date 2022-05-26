@@ -165,7 +165,7 @@ def create_path_route_set(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
 
             # Generate Final String
             src = "##Add New Path Route Sets for "+reg.lower()+" here##"
-            prs_str[reg] = prs.render(skeleton=True, count=0, region=reg).replace(src,prs_str[reg])
+            prs_str[reg] = prs.render(skeleton=True, count=0, region=reg).replace(src,prs_str[reg]+"\n"+src)
             finalstring = "".join([s for s in prs_str[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
 
             resource=sheetName

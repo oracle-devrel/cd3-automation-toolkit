@@ -10,7 +10,7 @@
 ############################
 
 vaults = {
-    ## Add New Vaults for {{ region|lower }} here ##
+    ##Add New Vaults for {{ region|lower }} here##
 }{% else %}
 
     {{ vault_tf_name }} = {

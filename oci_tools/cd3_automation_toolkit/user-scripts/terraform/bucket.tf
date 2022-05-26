@@ -3,6 +3,11 @@
 # Create Object Storage Policies
 ############################
 
+data "oci_objectstorage_namespace" "bucket_namespace" {
+  #Optional
+  compartment_id = var.tenancy_ocid
+}
+
 module "oss-policies" {
   source   = "./modules/identity/iam-policy"
   for_each = var.oss_policies != null ? var.oss_policies : {}
@@ -34,31 +39,24 @@ output "oss_policies_id_map" {
 module "oss" {
   source   = "./modules/storage/bucket"
   for_each = (var.oss != null || var.oss != {}) ? var.oss : {}
+  depends_on = [module.keys]
 
   #Required
   compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
   name = each.value.bucket_name
+  namespace = data.oci_objectstorage_namespace.bucket_namespace.namespace
 
   #Optional
-  access_type = each.value.access_type
-  auto_tiering = each.value.auto_tiering
-  defined_tags = each.value.defined_tags
-  freeform_tags = each.value.freeform_tags
-  kms_key_id = each.value.kms_key_id != "" ? merge(module.keys.*...)[each.value.kms_key_id]["key_tf_id"] : ""
-  #kms_key_id = each.value.kms_key_id != "" ? try(merge(module.keys.*...)[each.value.kms_key_id]["key_tf_id"],data.) : ""
-  metadata = each.value.metadata
-  object_events_enabled = each.value.object_events_enabled
-  storage_tier = var.bucket_storage_tier
-  retention_rules {
-    display_name = var.retention_rule_display_name
-    duration {
-        #Required
-        time_amount = var.retention_rule_duration_time_amount
-        time_unit = var.retention_rule_duration_time_unit
-    }
-    time_rule_locked = var.retention_rule_time_rule_locked
-  }
-  versioning = var.bucket_versioning
+  access_type = each.value.access_type != "" ? each.value.access_type : null # Defaults to 'NoPublicAccess' as per hashicorp terraform
+  auto_tiering = each.value.auto_tiering  != "" ? each.value.auto_tiering : null # Defaults to 'Disabled' as per hashicorp terraform
+  defined_tags = each.value.defined_tags  != {} ? each.value.defined_tags : {}
+  freeform_tags = each.value.freeform_tags  != {} ? each.value.access_type : {}
+  kms_key_id = each.value.kms_key_id != "" ? merge(module.keys.*...)[each.value.kms_key_id]["key_tf_id"] : null
+  metadata = each.value.metadata != "" ? each.value.metadata : null
+  object_events_enabled = each.value.object_events_enabled != "" ? each.value.object_events_enabled : null # Defaults to 'false' as per hashicorp terraform
+  storage_tier = each.value.storage_tier != "" ? each.value.storage_tier : null # Defaults to 'Standard' as per hashicorp terraform
+  retention_rules = each.value.retention_rules != [] ? each.value.retention_rules : []
+  versioning = each.value.versioning != "" ? each.value.versioning : null
 }
 
 #############################
@@ -66,16 +64,11 @@ module "oss" {
 # Create Object Storage Log Groups and Logs
 #############################
 
-data "oci_objectstorage_namespace" "objectstorage_namespace" {
-  #Optional
-  compartment_id = var.tenancy_ocid
-}
-
 data "oci_objectstorage_bucket" "buckets" {
   for_each = (var.oss_logs != null || var.oss_logs != {}) ? var.oss_logs : {}
   #Required
   name      = each.value.resource
-  namespace = data.oci_objectstorage_namespace.objectstorage_namespace.namespace
+  namespace = data.oci_objectstorage_namespace.bucket_namespace.namespace
 }
 
 module "oss-log-groups" {

@@ -10,7 +10,7 @@
 ############################
 
 tag_namespaces = {
-    ## Add new tag namespaces for {{ region|lower }} here
+    ##Add New Tag Namespaces for {{ region|lower }} here##
 }{% else %}
 
     {{ namespace_tf_name }} = {

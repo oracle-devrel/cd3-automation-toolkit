@@ -214,7 +214,7 @@ def create_listener(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
                     exit()
 
                 elif columnvalue != '' and str(df.loc[i,'Cipher Suite Name']) == 'nan':
-                    print("\nNOTE: Cipher Suite Name is not specified for Listener -> "+str(df.loc[i,'Listener Name'])+", default value - 'oci-default-ssl-cipher-suite-v1' will be considered.\n")
+                    print("NOTE: Cipher Suite Name is not specified for Listener -> "+str(df.loc[i,'Listener Name'])+", default value - 'oci-default-ssl-cipher-suite-v1' will be considered.")
 
                 else:
                     pass
@@ -232,7 +232,7 @@ def create_listener(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
 
             # Generate Final String
             src = "##Add New Listeners for "+reg.lower()+" here##"
-            listener_str[reg] = listener.render(skeleton=True, count=0, region=reg).replace(src,listener_str[reg])
+            listener_str[reg] = listener.render(skeleton=True, count=0, region=reg).replace(src,listener_str[reg]+"\n"+src)
             finalstring = "".join([s for s in listener_str[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
 
             resource=sheetName

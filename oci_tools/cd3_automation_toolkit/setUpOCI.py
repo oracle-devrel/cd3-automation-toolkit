@@ -285,6 +285,8 @@ def create_network(execute_all=False):
         Option('Modify RouteRules', Network.modify_terraform_routerules, 'Modifiying Route Rules'),
         Option('Modify DRG RouteRules', Network.modify_terraform_drg_routerules, 'Modifiying DRG Route Rules'),
         Option('Add/Modify/Delete Network Security Groups', Network.create_terraform_nsg, 'Processing NSGs Tab'),
+    #    Option('Add/Modify/Delete Reserved and Private IPs', Network.create_terraform_ipmanagement, 'Processing IPManagement Tab'),
+    #    Option('Add/Modify/Delete VNIC-Attachments', Network.create_terraform_vnic_attachment, 'Processing IPManagement Tab')
     ]
     if not execute_all:
         options = show_options(options, quit=True, menu=True, index=1)

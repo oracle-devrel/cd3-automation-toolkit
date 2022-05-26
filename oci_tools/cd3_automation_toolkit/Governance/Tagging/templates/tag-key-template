@@ -9,7 +9,7 @@
 ############################
 
 tag_keys = {
-    ## Add new tag keys for {{ region|lower }} here
+    ##Add New Tag Keys for {{ region|lower }} here##
 }{% else %}
 
     {{ key_tf_name }} = {

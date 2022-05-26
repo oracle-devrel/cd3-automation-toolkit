@@ -241,11 +241,11 @@ def create_backendset_backendservers(inputfile, outdir, prefix, config=DEFAULT_L
         if beset_str[reg] != '':
             # Generate Final String
             src = "##Add New Backend Sets for "+reg.lower()+" here##"
-            beset_str[reg] = beset.render(skeleton=True, count=0, region=reg).replace(src,beset_str[reg])
+            beset_str[reg] = beset.render(skeleton=True, count=0, region=reg).replace(src,beset_str[reg]+"\n"+src)
         if beserver_str[reg] != '':
             # Generate Final String
             src = "##Add New Backends for "+reg.lower()+" here##"
-            beserver_str[reg] = beserver.render(skeleton=True, count=0, region=reg).replace(src,beserver_str[reg])
+            beserver_str[reg] = beserver.render(skeleton=True, count=0, region=reg).replace(src,beserver_str[reg]+"\n"+src)
 
         finalstring = beset_str[reg] + beserver_str[reg]
         finalstring = "".join([s for s in finalstring.strip().splitlines(True) if s.strip("\r\n").strip()])

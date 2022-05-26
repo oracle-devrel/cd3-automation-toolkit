@@ -135,8 +135,6 @@ def create_terraform_block_volumes(inputfile, outdir, prefix,config=DEFAULT_LOCA
             if (columnname == 'Backup Policy'):
                 columnname = 'backup_policy'
                 columnvalue = str(columnvalue).strip()
-                if columnvalue != '':
-                    columnvalue = columnvalue.lower()
 
             if columnname == "Attach Type(iscsi|paravirtualized)":
                 columnname = "attach_type"
@@ -161,7 +159,7 @@ def create_terraform_block_volumes(inputfile, outdir, prefix,config=DEFAULT_LOCA
 
         if tfStr[reg] != '':
             # Generate Final String
-            src = "## Add block volumes for "+reg.lower()+" here ##"
+            src = "##Add New Block Volumes for "+reg.lower()+" here##"
             tfStr[reg] = template.render(count=0, region=reg).replace(src,tfStr[reg])
             tfStr[reg] = "".join([s for s in tfStr[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
 

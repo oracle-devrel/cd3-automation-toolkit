@@ -10,7 +10,7 @@
 ############################
 
 keys = {
-    ## Add New Keys for {{ region|lower }} here ##
+    ##Add New Keys for {{ region|lower }} here##
 }{% else %}
 
     {{ key_tf_name }} = {
