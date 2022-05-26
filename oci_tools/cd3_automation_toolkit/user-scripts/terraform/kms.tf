@@ -30,8 +30,8 @@ module "keys" {
     defined_tags         = each.value.defined_tags
     display_name         = each.value.display_name
     freeform_tags        = each.value.freeform_tags
-    algorithm            = each.value.algorithm != "" ? each.value.algorithm : ""
-    length               = each.value.length != "" ? each.value.length : 256
+    algorithm            = each.value.algorithm != "" ? each.value.algorithm : "AES"
+    length               = each.value.length != "" ? each.value.length : 32
     management_endpoint  = merge(module.vaults.*...)[each.value.management_endpoint]["vault_tf_id"]
     protection_mode      = each.value.protection_mode
 }
