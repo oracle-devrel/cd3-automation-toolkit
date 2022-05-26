@@ -13,8 +13,8 @@
 #  state = "RUNNING"
 #}
 
-module "block-storage" {
-  source               = "./modules/storage/block-storage"
+module "block-volume" {
+  source               = "./modules/storage/block-volume"
   for_each             = var.blockvolumes != null ? var.blockvolumes : {}
   attachment_type      = each.value.attachment_type
   attach_to_instance   = each.value.attach_to_instance != "" ? length(regexall("ocid1.instance.oc1*", each.value.attach_to_instance)) > 0 ? each.value.attach_to_instance : merge(module.instances.*...)[each.value.attach_to_instance]["instance_tf_id"] : ""

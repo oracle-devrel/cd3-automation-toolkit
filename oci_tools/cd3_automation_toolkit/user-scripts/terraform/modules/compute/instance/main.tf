@@ -18,7 +18,7 @@ resource "oci_core_instance" "instance" {
   fault_domain                        = var.fault_domain
   freeform_tags                       = var.freeform_tags
   ipxe_script                         = var.ipxe_script
-  is_pv_encryption_in_transit_enabled = var.is_pv_encryption_in_transit_enabled
+  is_pv_encryption_in_transit_enabled = var.create_is_pv_encryption_in_transit_enabled
   metadata = {
     ssh_authorized_keys = var.ssh_public_keys
   }
@@ -85,7 +85,7 @@ resource "oci_core_instance" "instance" {
     boot_volume_type                    = var.boot_volume_type
     firmware                            = var.firmware
     is_consistent_volume_naming_enabled = var.is_consistent_volume_naming_enabled
-    is_pv_encryption_in_transit_enabled = var.is_pv_encryption_in_transit_enabled
+    is_pv_encryption_in_transit_enabled = var.update_is_pv_encryption_in_transit_enabled
     network_type                        = var.network_type
     remote_data_volume_type             = var.remote_data_volume_type
   }

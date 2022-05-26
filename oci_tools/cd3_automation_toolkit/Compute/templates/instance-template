@@ -73,10 +73,16 @@ instances = {
             {% else %}
             capacity_reservation_id = null
             {% endif %}
-            {% if is_pv_encryption_in_transit_enabled %}
-            is_pv_encryption_in_transit_enabled = {{ is_pv_encryption_in_transit_enabled }}
+            {% if create_is_pv_encryption_in_transit_enabled %}
+            create_is_pv_encryption_in_transit_enabled = {{ create_is_pv_encryption_in_transit_enabled }}
             {% else %}
-            is_pv_encryption_in_transit_enabled = null
+            create_is_pv_encryption_in_transit_enabled = null
+            {% endif %}
+
+            {% if update_is_pv_encryption_in_transit_enabled %}
+            update_is_pv_encryption_in_transit_enabled = {{ update_is_pv_encryption_in_transit_enabled }}
+            {% else %}
+            update_is_pv_encryption_in_transit_enabled = null
             {% endif %}
 
             {% if ssh_key_var_name != '' %}

@@ -124,7 +124,12 @@ variable "ipxe_script" {
   default = null
 }
 
-variable "is_pv_encryption_in_transit_enabled" {
+variable "create_is_pv_encryption_in_transit_enabled" {
+  type    = bool
+  default = null
+}
+
+variable "update_is_pv_encryption_in_transit_enabled" {
   type    = bool
   default = null
 }

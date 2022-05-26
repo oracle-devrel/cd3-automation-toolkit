@@ -47,7 +47,8 @@ module "instances" {
   boot_volume_size_in_gbs = each.value.boot_volume_size_in_gbs != null ? each.value.boot_volume_size_in_gbs : null
   memory_in_gbs         = each.value.memory_in_gbs != null ? each.value.memory_in_gbs : null
   capacity_reservation_id = each.value.capacity_reservation_id != null ? lookup(var.capacity_reservation_ocids, each.value.capacity_reservation_id, null ) : null
-  is_pv_encryption_in_transit_enabled = each.value.is_pv_encryption_in_transit_enabled
+  create_is_pv_encryption_in_transit_enabled = each.value.create_is_pv_encryption_in_transit_enabled
+  update_is_pv_encryption_in_transit_enabled = each.value.update_is_pv_encryption_in_transit_enabled
 
   boot_tf_policy = each.value.backup_policy != "" ? each.value.backup_policy : ""
   policy_tf_compartment_id = each.value.policy_compartment_id != "" ? (length(regexall("ocid1.compartment.oc1*", each.value.policy_compartment_id)) > 0 ? each.value.policy_compartment_id : var.compartment_ocids[each.value.policy_compartment_id]) : ""

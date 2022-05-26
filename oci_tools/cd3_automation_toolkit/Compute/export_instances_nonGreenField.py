@@ -46,10 +46,6 @@ def adding_columns_values(region, ad, fd, vs, publicip, privateip, os_dname, sha
             values_for_column_instances[col_header].append(bkp_policy_name)
         elif (col_header == "NSGs"):
             values_for_column_instances[col_header].append(nsgs)
-        #elif (col_header.lower() == "boot volume size in gbs"):
-        #    values_for_column_instances[col_header].append(bdet.size_in_gbs)
-        #elif (col_header.lower() == "kms key id"):
-        #    values_for_column_instances[col_header].append(bdet.kms_key_id)
         elif (col_header == "Dedicated VM Host"):
             if (d_host == None):
                 values_for_column_instances[col_header].append('')

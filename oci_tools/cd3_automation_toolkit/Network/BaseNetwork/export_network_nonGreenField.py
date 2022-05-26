@@ -48,14 +48,22 @@ def print_nsgsl(values_for_column_nsgs,vnc,region, comp_name, vcn_name, nsg, nsg
     if (nsgsl.destination is not None):
         if ("networksecuritygroup" in nsgsl.destination):
             nsgdestinationtype = "nsg"
-            nsgname = vnc.get_network_security_group(nsgsl.destination).data
+            try:
+                nsgname = vnc.get_network_security_group(nsgsl.destination).data
+            except Exception as e:
+                print("Invalid rule for NSG -"+str(nsg.display_name))
+                return
             nsgdestination = nsgname.display_name
     else:
         nsgdestination=""
     if (nsgsl.source is not None):
         if ("networksecuritygroup" in nsgsl.source):
             nsgsourcetype = "nsg"
-            nsgname = vnc.get_network_security_group(nsgsl.source).data
+            try:
+                nsgname = vnc.get_network_security_group(nsgsl.source).data
+            except Exception as e:
+                print("Invalid rule for NSG - "+str(nsg.display_name))
+                return
             nsgsource = nsgname.display_name
     else:
         nsgsource=""
@@ -702,12 +710,7 @@ def export_networking(inputfile, outdir, _config, network_compartments=[]):
 
                 for vcn in vcns.data:
                     vcn_info = vnc.get_vcn(vcn.id).data
-                    #comp_ocid_done_again = []
                     for ntk_compartment_name_again in comp_list_fetch:
-                    #    if ct.ntk_compartment_ids[ntk_compartment_name_again] not in comp_ocid_done_again:
-                    #        if (input_compartment_names is not None and ntk_compartment_name_again not in input_compartment_names):
-                    #            continue
-                    #        comp_ocid_done_again.append(ct.ntk_compartment_ids[ntk_compartment_name_again])
                             NSGs = oci.pagination.list_call_get_all_results(vnc.list_network_security_groups,
                                                                             compartment_id=ct.ntk_compartment_ids[
                                                                                 ntk_compartment_name_again], vcn_id=vcn.id,

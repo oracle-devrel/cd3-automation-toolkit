@@ -83,7 +83,8 @@
     },
     "Instances" :
 	{
-	    "Boot Volume Size In GBs" : "size_in_gbs"
+	    "Boot Volume Size In GBs" : "size_in_gbs",
+        "Update_Is PV Encryption In Transit Enabled" : "is_pv_encryption_in_transit_enabled"
 	},
 	"DedicatedVMHosts" :
 	{
