@@ -10,7 +10,7 @@
 ############################
 
 blockvolumes = {
-    ## Add block volumes for {{ region|lower }} here ##
+    ##Add New Block Volumes for {{ region|lower }} here##
 }
 {% else %}
  {{ block_tf_name }} =  {

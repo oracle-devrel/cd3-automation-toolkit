@@ -75,13 +75,13 @@ def create_cis_keyvault(outdir, prefix, region_name, comp_name, config=DEFAULT_L
 
     if vaultStr != '':
         # Generate Final String
-        src = "## Add New Vaults for " + region_name + " here ##"
-        vaultStr = vault_template.render(skeleton=True, count=0, region=region_name).replace(src, vaultStr)
+        src = "##Add New Vaults for " + region_name + " here##"
+        vaultStr = vault_template.render(skeleton=True, count=0, region=region_name).replace(src, vaultStr+"\n"+src)
 
     if keyStr != '':
         # Generate Final String
-        src = "## Add New Keys for " + region_name + " here ##"
-        keyStr = key_template.render(skeleton=True, count=0, region=region_name).replace(src, keyStr)
+        src = "##Add New Keys for " + region_name + " here##"
+        keyStr = key_template.render(skeleton=True, count=0, region=region_name).replace(src, keyStr+"\n"+src)
 
     finalstring = vaultStr + keyStr
     finalstring = "".join([s for s in finalstring.strip().splitlines(True) if s.strip("\r\n").strip()])

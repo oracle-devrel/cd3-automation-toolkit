@@ -220,8 +220,8 @@ def create_terraform_instances(inputfile, outdir, prefix, config):
         if tfStr[reg] != '':
 
             # Generate Instances String
-            src = "## Add instances for " + reg.lower() + " here ##"
-            tfStr[reg] = template.render(count=0, region=reg).replace(src, tfStr[reg])
+            src = "##Add New Instances for " + reg.lower() + " here##"
+            tfStr[reg] = template.render(count=0, region=reg).replace(src, tfStr[reg]+"\n"+src)
             tfStr[reg] = "".join([s for s in tfStr[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
 
             resource = sheetName.lower()

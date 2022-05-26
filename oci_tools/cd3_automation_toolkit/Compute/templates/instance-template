@@ -12,7 +12,7 @@
 ############################
 
 instances = {
-    ## Add instances for {{ region|lower }} here ##
+    ##Add New Instances for {{ region|lower }} here##
 }
 {% else %}
    {{ display_tf_name }} =  {

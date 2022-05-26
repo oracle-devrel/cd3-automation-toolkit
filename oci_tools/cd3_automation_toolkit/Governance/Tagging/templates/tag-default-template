@@ -11,7 +11,7 @@
 ########################################################
 
 tag_defaults = {
-    ## Add new tag defaults for {{ region|lower }} here
+    ##Add New Tag Defaults for {{ region|lower }} here##
 }{% else %}
 
     {% for compartments in default_tag_compartment %}

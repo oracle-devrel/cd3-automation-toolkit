@@ -508,8 +508,8 @@ def modify_terraform_routerules(inputfile, outdir, prefix=None, non_gf_tenancy=F
         outfile = outdir + "/" + reg + "/" + prefix + auto_tfvars_filename
         default_outfile = outdir + "/" + reg + "/" + prefix + default_auto_tfvars_filename
 
-        default_rt_tempSkeleton[reg] = default_rt_tempSkeleton[reg].replace(defaultTextToAddSeclistSearch,deftfStr[reg] + defaultTextToAddSeclistSearch)
-        tempSkeleton[reg] = tempSkeleton[reg].replace(textToAddSeclistSearch,tfStr[reg] + textToAddSeclistSearch)
+        default_rt_tempSkeleton[reg] = default_rt_tempSkeleton[reg].replace(defaultTextToAddSeclistSearch,deftfStr[reg] +"\n"+ defaultTextToAddSeclistSearch)
+        tempSkeleton[reg] = tempSkeleton[reg].replace(textToAddSeclistSearch,tfStr[reg] +"\n"+ textToAddSeclistSearch)
 
         if tfStr[reg] != '' :
             tempSkeleton[reg] = "".join([s for s in tempSkeleton[reg].strip().splitlines(True) if s.strip("\r\n").strip()])

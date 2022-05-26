@@ -95,33 +95,33 @@ def create_ruleset(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
             srcStr = "## Add_access_control_method_rules_here ##"
             if control_access == 1:
                 method_str = method.render(tempStr)
-                rs_str = rs_str.replace(srcStr, method_str)
+                rs_str = rs_str.replace(srcStr, method_str+"\n"+srcStr)
             else:
                 pass
 
         if str(df.loc[i, 'Action']).upper() == 'HTTP_HEADER':
             srcStr = "## Add_http_header_rules_here ##"
             header_str = header.render(tempStr)
-            rs_str = rs_str.replace(srcStr, header_str)
+            rs_str = rs_str.replace(srcStr, header_str+"\n"+srcStr)
 
         if str(df.loc[i, 'Action']).upper() == 'ALLOW':
             srcStr = "## Add_access_control_rules_here ##"
             if str(df.loc[i,'Attribute Name'].upper() == 'SOURCE_VCN_IP_ADDRESS') or str(df.loc[i,'Attribute Name'].upper() == 'SOURCE_IP_ADDRESS') or str(df.loc[i,'Attribute Name'].upper() == 'SOURCE_VCN_ID'):
                 acl_str = acl.render(tempStr)
-                rs_str = rs_str.replace(srcStr, acl_str)
+                rs_str = rs_str.replace(srcStr, acl_str+"\n"+srcStr)
 
         if str(df.loc[i, 'Action']).upper() == 'REDIRECT':
             srcStr = "## Add_uri_redirect_rules_here ##"
             if str(df.loc[i,'Attribute Name'].upper() == 'PATH'):
                 uri_str = uri.render(tempStr)
-                rs_str = rs_str.replace(srcStr,uri_str)
+                rs_str = rs_str.replace(srcStr,uri_str+"\n"+srcStr)
 
         if str(df.loc[i,'Action']).upper() == 'EXTEND_HTTP_REQUEST_HEADER_VALUE' or str(df.loc[i,'Action']).upper() == 'EXTEND_HTTP_RESPONSE_HEADER_VALUE' \
                 or  str(df.loc[i,'Action']).upper() == 'ADD_HTTP_REQUEST_HEADER' or str(df.loc[i,'Action']).upper() == 'ADD_HTTP_RESPONSE_HEADER' \
                 or str(df.loc[i,'Action']).upper() == 'REMOVE_HTTP_REQUEST_HEADER'  or str(df.loc[i,'Action']).upper() == 'REMOVE_HTTP_RESPONSE_HEADER':
             srcStr = "## Add_request_response_header_rules_here ##"
             request_str = request.render(tempStr)
-            rs_str = rs_str.replace(srcStr,request_str)
+            rs_str = rs_str.replace(srcStr,request_str+"\n"+srcStr)
 
         return rs_str
 
@@ -319,7 +319,7 @@ def create_ruleset(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
 
             # Generate Final String
             src = "##Add New Rule Sets for "+reg.lower()+" here##"
-            rs_str[reg] = rs.render(skeleton=True, count=0, region=reg).replace(src,rs_str[reg])
+            rs_str[reg] = rs.render(skeleton=True, count=0, region=reg).replace(src,rs_str[reg]+"\n"+src)
             finalstring = "".join([s for s in rs_str[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
 
             resource=sheetName

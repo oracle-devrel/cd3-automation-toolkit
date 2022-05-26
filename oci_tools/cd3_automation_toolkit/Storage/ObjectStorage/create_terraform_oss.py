@@ -99,6 +99,9 @@ def create_cis_oss(outdir, prefix, region_name, comp_name, config):
     commonTools.backup_file(srcdir, resource, "cis-osskeyvault-policy.auto.tfvars")
 
     if(tfStr!=''):
+        # Generate Final String
+        src = "##Add New Object Storage for " + home_region.lower() + " here##"
+        tfStr = template.render(skeleton=True, count=0, region= home_region.lower()).replace(src, tfStr +"\n" + src)
         tfStr = "".join([s for s in tfStr.strip().splitlines(True) if s.strip("\r\n").strip()])
         oname=open(outfile,'w')
         oname.write(tfStr)

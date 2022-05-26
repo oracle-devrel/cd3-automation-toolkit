@@ -232,7 +232,7 @@ def create_listener(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
 
             # Generate Final String
             src = "##Add New Listeners for "+reg.lower()+" here##"
-            listener_str[reg] = listener.render(skeleton=True, count=0, region=reg).replace(src,listener_str[reg])
+            listener_str[reg] = listener.render(skeleton=True, count=0, region=reg).replace(src,listener_str[reg]+"\n"+src)
             finalstring = "".join([s for s in listener_str[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
 
             resource=sheetName

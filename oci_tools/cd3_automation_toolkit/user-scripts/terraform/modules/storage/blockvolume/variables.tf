@@ -34,6 +34,9 @@ variable "freeform_tags" {
 variable "defined_tags" {
   description = "Defined tags for the volume"
   type        = map(string)
+  default = { "Oracle-Tags.CreatedOn" = "$${oci.datetime}",
+    "Oracle-Tags.CreatedBy" = "$${iam.principal.name}"
+  }
 }
 
 variable "display_name" {

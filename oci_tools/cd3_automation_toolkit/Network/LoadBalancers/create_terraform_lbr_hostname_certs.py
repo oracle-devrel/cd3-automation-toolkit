@@ -381,22 +381,22 @@ def create_terraform_lbr_hostname_certs(inputfile, outdir, prefix, config=DEFAUL
         if lbr_str[reg] != '':
             # Generate Final String
             src = "##Add New Load Balancers for "+reg.lower()+" here##"
-            lbr_str[reg] = lbr.render(skeleton=True, count=0, region=reg).replace(src,lbr_str[reg])
+            lbr_str[reg] = lbr.render(skeleton=True, count=0, region=reg).replace(src,lbr_str[reg]+"\n"+src)
 
         if hostname_str[reg] != '':
             # Generate Final String
             src = "##Add New Hostnames for " + reg.lower() + " here##"
-            hostname_str_02[reg] = hostname.render(skeleton=True, count=0, region=reg).replace(src, hostname_str_02[reg])
+            hostname_str_02[reg] = hostname.render(skeleton=True, count=0, region=reg).replace(src, hostname_str_02[reg]+"\n"+src)
 
         if certificate_str[reg] != '':
             # Generate Final String
             src = "##Add New Certificates for " + reg.lower() + " here##"
-            certificate_str[reg] = certficate.render(skeleton=True, count = 0, region=reg).replace(src, certificate_str[reg])
+            certificate_str[reg] = certficate.render(skeleton=True, count = 0, region=reg).replace(src, certificate_str[reg]+"\n"+src)
 
         if cipher_suites[reg] != '':
             # Generate Final String
             src = "##Add New Ciphers for " + reg.lower() + " here##"
-            cipher_suites[reg] = ciphersuite.render(skeleton=True, count = 0, region=reg).replace(src, cipher_suites[reg])
+            cipher_suites[reg] = ciphersuite.render(skeleton=True, count = 0, region=reg).replace(src, cipher_suites[reg]+"\n"+src)
 
         finalstring =  lbr_str[reg] + hostname_str_02[reg] + certificate_str[reg] + cipher_suites[reg]
         finalstring = "".join([s for s in finalstring.strip().splitlines(True) if s.strip("\r\n").strip()])

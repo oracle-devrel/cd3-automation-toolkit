@@ -469,7 +469,7 @@ def create_terraform_route(inputfile, outdir, prefix, non_gf_tenancy, config, mo
                         modifiedroutetableStr[reg] = copy_data_from_file(outfile, rts, modifiedroutetableStr[reg])
                 tempSkeleton[reg] = template.render(count = 0, region = reg, skeleton=True)
                 srcStr = "##Add New Route Tables for "+reg.lower()+" here##"
-                modifiedroutetableStr[reg] = tempSkeleton[reg].replace(srcStr,modifiedroutetableStr[reg])
+                modifiedroutetableStr[reg] = tempSkeleton[reg].replace(srcStr,modifiedroutetableStr[reg]) #+"\n"+srcStr) ----> ToTest, if fails add +"\n"+srcStr
             else:
                 modifiedroutetableStr[reg] = ''
 
