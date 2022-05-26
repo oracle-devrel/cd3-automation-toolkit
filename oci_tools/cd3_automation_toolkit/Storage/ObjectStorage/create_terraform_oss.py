@@ -49,8 +49,8 @@ def create_cis_oss(outdir, prefix, region_name, comp_name, config):
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
     template = env.get_template('oss-template')
     policyTemplate = env.get_template('oss-policy-template')
-    oss_auto_tfvars_file = "cis-oss.auto.tfvars"
-    oss_policy_auto_tfvars_file = "cis-osskeyvault-policy.auto.tfvars"
+    oss_auto_tfvars_filename = "cis-oss.auto.tfvars"
+    oss_policy_auto_tfvars_filename = "cis-osskeyvault-policy.auto.tfvars"
 
     #region_key = ct.region_dict[region_name]
 
@@ -92,27 +92,27 @@ def create_cis_oss(outdir, prefix, region_name, comp_name, config):
         os.makedirs(reg_out_dir)
 
     home_reg_out_dir = outdir + "/" + home_region
-    outfile = reg_out_dir + "/" + oss_auto_tfvars_file
-    outPolfile= home_reg_out_dir +"/"+ oss_policy_auto_tfvars_file
+    outfile = reg_out_dir + "/" + oss_auto_tfvars_filename
+    outPolfile= home_reg_out_dir +"/"+ oss_policy_auto_tfvars_filename
 
     srcdir = reg_out_dir + "/"
     resource = 'oss'
-    commonTools.backup_file(srcdir, resource, oss_auto_tfvars_file)
-    commonTools.backup_file(srcdir, resource, oss_policy_auto_tfvars_file)
+    commonTools.backup_file(srcdir, resource, oss_auto_tfvars_filename)
+    commonTools.backup_file(srcdir, resource, oss_policy_auto_tfvars_filename)
 
     if(tfStr!=''):
         # Generate Final String
         src = "##Add New Object Storage for " + home_region.lower() + " here##"
-        tfStr = template.render(skeleton=True, count=0, region= home_region.lower()).replace(src, tfStr +"\n" + src)
+        tfStr = template.render(count=0, region= home_region.lower()).replace(src, tfStr +"\n" + src)
         tfStr = "".join([s for s in tfStr.strip().splitlines(True) if s.strip("\r\n").strip()])
-        oname=open(outfile,'w')
+        oname=open(outfile,'w+')
         oname.write(tfStr)
         oname.close()
         print(outfile + " containing TF for OSS has been created for region "+region_name)
 
     if (tfPolStr != ''):
         tfPolStr = "".join([s for s in tfPolStr.strip().splitlines(True) if s.strip("\r\n").strip()])
-        oname = open(outPolfile, 'w')
+        oname = open(outPolfile, 'w+')
         oname.write(tfPolStr)
         oname.close()
         print(outPolfile + " containing TF for Policy allow OSS to access Key/Vault has been created for home region " + home_region)

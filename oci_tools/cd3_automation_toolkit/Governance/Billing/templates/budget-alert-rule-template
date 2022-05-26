@@ -1,14 +1,106 @@
-resource "oci_budget_alert_rule" "{{ budget_tf_name }}_alert_rule" {
-    #Required
-    budget_id = oci_budget_budget.{{ budget_tf_name }}.id
-    type = "{{ type }}"
-    threshold_type = "{{ threshold_type }}"
-    threshold = "{{ threshold }}"
+{% if count == 0 %}
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 
+############################
+# Governance
+# Create Budget Alert Rules
+# Allowed Values:
+# compartment_id and network_compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens "--"
+# Example : compartment_id = "ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c" or compartment_id = "Network-root-cpt--Network" where "Network-root-cpt" is the parent of "Network" compartment
+############################
 
-    #Optional
-    description = "{{ description }}"
-    display_name = "{{budget_name}}_alert_rule"
-    message = "{{ message }}"
-    recipients = "{{recipients}}"
-}
+budget_alert_rules = {
+    ##Add New Budget Alert Rules for {{ region|lower }} here##
+}{% else %}
+
+    {{ budget_tf_name }}_alert_rule = {
+
+            {% if budget_tf_name and budget_tf_name != "" %}
+            budget_id = "{{ budget_tf_name }}"
+            {% else %}
+            budget_id = ""
+            {% endif %}
+
+            {% if type and type != "" %}
+            type = "{{ type }}"
+            {% else %}
+            type = ""
+            {% endif %}
+
+            {% if threshold and threshold != "" %}
+            threshold = "{{ threshold }}"
+            {% else %}
+            threshold = ""
+            {% endif %}
+
+            {% if threshold_type and threshold_type != "" %}
+            threshold_type = "{{ threshold_type }}"
+            {% else %}
+            threshold_type = ""
+            {% endif %}
+
+            {% if description and description != "" %}
+            description = "{{ description }}"
+            {% else %}
+            description = ""
+            {% endif %}
+
+            {% if budget_name and budget_name != "" %}
+            display_name = "{{budget_name}}_alert_rule"
+            {% else %}
+            display_name = ""
+            {% endif %}
+
+            {% if message and message != "" %}
+            message = "{{ message }}"
+            {% else %}
+            message = ""
+            {% endif %}
+
+            {% if recipients and recipients != "" %}
+            recipients = "{{ recipients }}"
+            {% else %}
+            recipients = ""
+            {% endif %}
+
+            {#  ##Do not modify below this line##  #}
+            {#                                     #}
+            {#  ###Section for adding Defined and Freeform Tags###  #}
+            {% if defined_tags and defined_tags != 'nan' and defined_tags != '' %}
+          {% if defined_tags[0] %}
+            defined_tags = {
+            {% for tags in defined_tags  %}
+                {% if not loop.last %}
+                    "{{ tags[0]  }}"= "{{ tags[1] }}" ,
+                {% else %}
+                    "{{ tags[0]  }}"= "{{ tags[1] }}"
+                {% endif %}
+            {% endfor %}
+            }
+          {% else %}
+            defined_tags = {}
+          {% endif %}
+          {% else %}
+            defined_tags = {}
+          {% endif %}
+                {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' %}
+                    {% if freeform_tags[0] %}
+            freeform_tags = {
+                        {% for tags in freeform_tags %}
+                            {% if not loop.last  %}
+                    "{{ tags[0] }}"="{{ tags[1] }}",
+                            {% else %}
+                    "{{ tags[0] }}"="{{ tags[1] }}"
+                            {% endif %}
+                        {% endfor %}
+                        }
+                    {% else %}
+            freeform_tags = {}
+                    {% endif %}
+                {% else %}
+            freeform_tags = {}
+                {% endif %}
+            {#  ###Section for adding Defined and Freeform Tags ends here###  #}
+            },
+
+{% endif %}

@@ -39,17 +39,17 @@ def create_cis_budget(outdir, prefix, amount, threshold,config=DEFAULT_LOCATION)
     ct = commonTools()
     ct.get_subscribedregions(configFileName)
 
-
-
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
     template = env.get_template('budget-template')
     template_alert_rule = env.get_template('budget-alert-rule-template')
+    budget_auto_tfvars_filename = "cis-budget.auto.tfvars"
 
     tempStr = {}
 
-    tfStr = ''
+    budgettfStr = ''
+    budgetalerttfStr = ''
 
     budget_name = prefix+"-main-budget"
     tempStr['budget_name'] = budget_name
@@ -58,8 +58,8 @@ def create_cis_budget(outdir, prefix, amount, threshold,config=DEFAULT_LOCATION)
     tempStr['description'] = "Tracks spending from the root compartment and down"
     tempStr['period_start'] = "1"
     tempStr['target_type'] = 'COMPARTMENT'
-    tempStr['target_ocid'] = 'var.tenancy_ocid'
-    tfStr = tfStr + template.render(tempStr)+"\n"
+    tempStr['target_ocid'] = 'root'
+    budgettfStr = budgettfStr + template.render(tempStr)+"\n"
 
     tempStr = {}
     tempStr['budget_name'] = budget_name
@@ -68,23 +68,27 @@ def create_cis_budget(outdir, prefix, amount, threshold,config=DEFAULT_LOCATION)
     tempStr['type']="FORECAST"
     tempStr['threshold']=threshold
     tempStr["description"]="Budget Alert Rule"
-    tfStr = tfStr + template_alert_rule.render(tempStr)
+    budgetalerttfStr = budgetalerttfStr + template_alert_rule.render(tempStr)
 
     # Write TF string to the file in respective region directory
     reg_out_dir = outdir + "/" + ct.home_region
     if not os.path.exists(reg_out_dir):
         os.makedirs(reg_out_dir)
 
-    outfile = reg_out_dir + "/cis-budget.tf"
+    outfile = reg_out_dir + "/" + budget_auto_tfvars_filename
 
     srcdir = reg_out_dir + "/"
     resource = 'budget'
-    commonTools.backup_file(srcdir, resource, "cis-budget.tf")
+    commonTools.backup_file(srcdir, resource, budget_auto_tfvars_filename)
 
+    budgettfStr = template.render(count=0,region=ct.home_region).replace("##Add New Budgets for "+ct.home_region+" here##",budgettfStr)
+    budgetalerttfStr = template_alert_rule.render(count=0, region=ct.home_region).replace("##Add New Budget Alert Rules for " + ct.home_region + " here##", budgetalerttfStr)
+    budgettfStr = budgettfStr + "\n" + budgetalerttfStr
 
-    if(tfStr!=''):
-        oname=open(outfile,'w')
-        oname.write(tfStr)
+    if(budgettfStr!=''):
+        budgettfStr = "".join([s for s in budgettfStr.strip().splitlines(True) if s.strip("\r\n").strip()])
+        oname=open(outfile,'w+')
+        oname.write(budgettfStr)
         oname.close()
         print(outfile + " containing TF for Budget has been created for home region "+ct.home_region)
 
