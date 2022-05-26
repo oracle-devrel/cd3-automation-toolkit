@@ -33,7 +33,7 @@ module "blockvolume" {
 
 
 #Volume Attachment Optional Params
-#  attachment_device         = each.value.attachment_device
+#  device         = each.value.device
 #  attachment_display_name   = each.value.attachment_display_name
 #  encryption_in_transit_type          = each.value.encryption_in_transit_type                  # Applicable when attachment_type=iscsi
 #  is_pv_encryption_in_transit_enabled = each.value.is_pv_encryption_in_transit_enabled         # Applicable when attachment_type=paravirtualized

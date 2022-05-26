@@ -85,7 +85,7 @@ variable "attachment_type" {
 
 
 #Volume Attachment Optional Params
-variable "attachment_device" {
+variable "device" {
   type    = string
   default = null
 }
