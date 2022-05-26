@@ -91,9 +91,9 @@ variable "instance_source_ocids" {
 #
 #################################
 
-############################
-### Fetch Compartments #####
-############################
+##########################
+## Fetch Compartments ####
+##########################
 
 #START_compartment_ocids#
 variable "compartment_ocids" {
@@ -129,7 +129,7 @@ variable "groups" {
 }
 
 #########################
-## Tagging ##
+####### Tagging #########
 #########################
 
 variable "tag_namespaces" {
@@ -151,7 +151,7 @@ variable "tag_defaults" {
 }
 
 #########################
-##### Network ########
+###### Network ##########
 #########################
 
 variable "default_dhcps" {
@@ -299,7 +299,7 @@ variable "boot_backup_policies" {
 }
 
 #########################
-## Database ##
+####### Database ########
 #########################
 
 variable "exa_infra" {
@@ -333,7 +333,7 @@ variable "databases" {
 }
 
 #########################
-## FSS ##
+######### FSS ###########
 #########################
 
 variable "mount_targets" {
@@ -355,7 +355,7 @@ variable "export_options" {
 }
 
 #########################
-## Load Balancers ##
+#### Load Balancers #####
 #########################
 
 variable "load_balancers" {
@@ -450,7 +450,7 @@ variable "vcn_logs" {
   default = {}
 }
 #########################
-## OSS Buckets ##
+###### OSS Buckets ######
 #########################
 
 variable "oss" {
@@ -460,7 +460,7 @@ variable "oss" {
 }
 
 #########################
-## OSS Logs ##
+####### OSS Logs ########
 #########################
 
 variable "oss_log_groups" {
@@ -476,7 +476,7 @@ variable "oss_logs" {
 }
 
 #########################
-## OSS IAM Policies ##
+### OSS IAM Policies ####
 #########################
 
 variable "oss_policies" {
@@ -522,9 +522,24 @@ variable "keys" {
   default = {}
 }
 
+###########################
+######### Budgets #########
+###########################
+
+variable "budgets" {
+  type    = map(any)
+  default = {}
+}
+
+variable "budget_alert_rules" {
+  type    = map(any)
+  default = {}
+}
+
 ##########################
 # Add new variables here #
 ##########################
+
 variable "capacity_reservation_ocids" {
   type = map(any)
   default = {
