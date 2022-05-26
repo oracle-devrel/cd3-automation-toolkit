@@ -19,8 +19,8 @@ module "oss-policies" {
   policy_statements     = each.value.policy_statements
 
   #Optional
-  defined_tags        = each.value.defined_tags
-  freeform_tags       = each.value.freeform_tags
+  defined_tags = each.value.defined_tags  != {} ? each.value.defined_tags : {}
+  freeform_tags = each.value.freeform_tags  != {} ? each.value.freeform_tags : {}
   policy_version_date = each.value.policy_version_date != null ? each.value.policy_version_date : null
 }
 
@@ -37,7 +37,7 @@ output "oss_policies_id_map" {
 
 module "oss-bucket" {
   source   = "./modules/storage/object-storage"
-  for_each = (var.oss != null || var.oss != {}) ? var.oss : {}
+  for_each =  var.oss != null ? var.oss : {}
   depends_on = [module.keys]
 
   #Required
@@ -65,7 +65,7 @@ module "oss-bucket" {
 
 data "oci_objectstorage_bucket" "buckets" {
   depends_on = [module.oss-bucket]
-  for_each = (var.oss_logs != null || var.oss_logs != {}) ? var.oss_logs : {}
+  for_each  = var.oss_logs != null ? var.oss_logs : {}
   #Required
   name      = each.value.resource
   namespace = data.oci_objectstorage_namespace.bucket_namespace.namespace
@@ -73,7 +73,7 @@ data "oci_objectstorage_bucket" "buckets" {
 
 module "oss-log-groups" {
   source   = "./modules/managementservices/log-group"
-  for_each = (var.oss_log_groups != null || var.oss_log_groups != {}) ? var.oss_log_groups : {}
+  for_each =  var.oss_log_groups != null ? var.oss_log_groups : {}
 
   # Log Groups
   #Required
@@ -96,7 +96,7 @@ output "oss_log_group_map" {
 module "oss-logs" {
   source     = "./modules/managementservices/log"
   depends_on = [module.oss-log-groups]
-  for_each   = (var.oss_logs != null || var.oss_logs != {}) ? var.oss_logs : {}
+  for_each   =  var.oss_logs != null ? var.oss_logs : {}
 
   # Logs
   #Required
