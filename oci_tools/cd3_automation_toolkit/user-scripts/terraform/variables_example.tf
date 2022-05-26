@@ -449,6 +449,15 @@ variable "vcn_logs" {
   type    = map(any)
   default = {}
 }
+#########################
+## OSS Buckets ##
+#########################
+
+variable "oss" {
+  description = "To provision Buckets - OSS"
+  type        = map(any)
+  default     = {}
+}
 
 #########################
 ## OSS Logs ##
