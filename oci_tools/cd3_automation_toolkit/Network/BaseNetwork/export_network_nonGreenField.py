@@ -51,7 +51,7 @@ def print_nsgsl(values_for_column_nsgs,vnc,region, comp_name, vcn_name, nsg, nsg
             try:
                 nsgname = vnc.get_network_security_group(nsgsl.destination).data
             except Exception as e:
-                print("Invalid rule for NSG -"+str(nsg.display_name))
+                print("invalid rule for NSG - "+str(nsg.display_name))
                 return
             nsgdestination = nsgname.display_name
     else:
@@ -62,7 +62,7 @@ def print_nsgsl(values_for_column_nsgs,vnc,region, comp_name, vcn_name, nsg, nsg
             try:
                 nsgname = vnc.get_network_security_group(nsgsl.source).data
             except Exception as e:
-                print("Invalid rule for NSG - "+str(nsg.display_name))
+                print("invalid rule for NSG - "+str(nsg.display_name))
                 return
             nsgsource = nsgname.display_name
     else:
