@@ -12,7 +12,6 @@ module "oss-policies" {
   source   = "./modules/identity/iam-policy"
   for_each = var.oss_policies != null ? var.oss_policies : {}
 
-  depends_on            = [module.iam-groups]
   tenancy_ocid          = var.tenancy_ocid
   policy_name           = each.value.name
   policy_compartment_id = each.value.compartment_id != "root" ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : var.tenancy_ocid
@@ -36,8 +35,8 @@ output "oss_policies_id_map" {
 # Create Object Storage
 #############################
 
-module "oss" {
-  source   = "./modules/storage/bucket"
+module "oss-bucket" {
+  source   = "./modules/storage/object-storage"
   for_each = (var.oss != null || var.oss != {}) ? var.oss : {}
   depends_on = [module.keys]
 
@@ -65,7 +64,7 @@ module "oss" {
 #############################
 
 data "oci_objectstorage_bucket" "buckets" {
-  depends_on = [module.oss]
+  depends_on = [module.oss-bucket]
   for_each = (var.oss_logs != null || var.oss_logs != {}) ? var.oss_logs : {}
   #Required
   name      = each.value.resource
@@ -96,7 +95,7 @@ output "oss_log_group_map" {
 
 module "oss-logs" {
   source     = "./modules/managementservices/log"
-  depends_on = [module.subnets, module.oss-log-groups]
+  depends_on = [module.oss-log-groups]
   for_each   = (var.oss_logs != null || var.oss_logs != {}) ? var.oss_logs : {}
 
   # Logs
