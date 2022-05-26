@@ -63,7 +63,7 @@ budgets = {
             {% if target_compartment_id and target_compartment_id != "" %}
             target_compartment_id = "{{ target_compartment_id }}"
             {% else %}
-            target_compartment_id = ""
+            #target_compartment_id = ""
             {% endif %}
 
             {% if target_type and target_type != "" %}
