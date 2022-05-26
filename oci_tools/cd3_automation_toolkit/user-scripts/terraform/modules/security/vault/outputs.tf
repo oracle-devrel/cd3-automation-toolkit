@@ -8,3 +8,7 @@
 output "vault_tf_id" {
   value = oci_kms_vault.vault.id
 }
+
+output "management_endpoint_tf_id" {
+  value = oci_kms_vault.vault.management_endpoint
+}
