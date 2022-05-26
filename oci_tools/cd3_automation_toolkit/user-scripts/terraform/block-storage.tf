@@ -13,8 +13,8 @@
 #  state = "RUNNING"
 #}
 
-module "blockvolume" {
-  source               = "./modules/storage/blockvolume"
+module "block-storage" {
+  source               = "./modules/storage/block-storage"
   for_each             = var.blockvolumes != null ? var.blockvolumes : {}
   attachment_type      = each.value.attachment_type
   attach_to_instance   = each.value.attach_to_instance != "" ? length(regexall("ocid1.instance.oc1*", each.value.attach_to_instance)) > 0 ? each.value.attach_to_instance : merge(module.instances.*...)[each.value.attach_to_instance]["instance_tf_id"] : ""
@@ -33,7 +33,7 @@ module "blockvolume" {
 
 
 #Volume Attachment Optional Params
-#  attachment_device         = each.value.attachment_device
+#  device         = each.value.device
 #  attachment_display_name   = each.value.attachment_display_name
 #  encryption_in_transit_type          = each.value.encryption_in_transit_type                  # Applicable when attachment_type=iscsi
 #  is_pv_encryption_in_transit_enabled = each.value.is_pv_encryption_in_transit_enabled         # Applicable when attachment_type=paravirtualized

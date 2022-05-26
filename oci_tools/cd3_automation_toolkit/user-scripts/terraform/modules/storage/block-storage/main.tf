@@ -28,7 +28,7 @@ resource "oci_core_volume_attachment" "block_vol_instance_attachment" {
   volume_id       = oci_core_volume.block_volume.id
 
   #optional
-  device                              = var.attachment_device
+  device                              = var.device
   display_name                        = var.attachment_display_name
   encryption_in_transit_type          = var.encryption_in_transit_type          # Applicable when attachment_type=iscsi
   is_pv_encryption_in_transit_enabled = var.is_pv_encryption_in_transit_enabled # Applicable when attachment_type=paravirtualized

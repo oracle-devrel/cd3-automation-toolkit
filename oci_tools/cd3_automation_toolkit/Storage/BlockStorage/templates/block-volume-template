@@ -60,10 +60,10 @@ blockvolumes = {
             policy_compartment_id = ""
             {% endif %}
 
-            {% if attachment_device %}
-            attachment_device = "{{ attachment_device }}"
+            {% if device %}
+            device = "{{ device }}"
             {% else %}
-            attachment_device = null
+            device = null
             {% endif %}
 
             {% if encryption_in_transit_type %}
