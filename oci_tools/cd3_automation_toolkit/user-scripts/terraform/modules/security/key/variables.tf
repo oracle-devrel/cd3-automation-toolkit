@@ -34,14 +34,16 @@ variable "curve_id" {
   default = false
 }
 
-variable "freeform_tags" {
-  description = "Free-form tags for the volume"
-  type        = map(string)
+variable "defined_tags" {
+  type = map(any)
+  default = { "Oracle-Tags.CreatedOn" = "$${oci.datetime}",
+    "Oracle-Tags.CreatedBy" = "$${iam.principal.name}"
+  }
 }
 
-variable "defined_tags" {
-  description = "Defined tags for the volume"
-  type        = map(string)
+variable "freeform_tags" {
+  type    = map(any)
+  default = {}
 }
 
 variable "display_name" {

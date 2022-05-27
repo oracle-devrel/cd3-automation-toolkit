@@ -1,3 +1,5 @@
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+
 ############################
 # Module Block - Object Storage
 # Create Object Storage Policies
