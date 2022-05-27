@@ -13,7 +13,7 @@
 #  state = "RUNNING"
 #}
 
-module "block-volume" {
+module "block-volumes" {
   source               = "./modules/storage/block-volume"
   for_each             = var.blockvolumes != null ? var.blockvolumes : {}
   attachment_type      = each.value.attachment_type
