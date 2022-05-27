@@ -1,3 +1,5 @@
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+
 ############################
 # Module Block - Object Storage
 # Create Object Storage Policies
@@ -35,7 +37,7 @@ output "oss_policies_id_map" {
 # Create Object Storage
 #############################
 
-module "oss-bucket" {
+module "oss-buckets" {
   source   = "./modules/storage/object-storage"
   for_each =  var.oss != null ? var.oss : {}
   depends_on = [module.keys]
@@ -64,7 +66,7 @@ module "oss-bucket" {
 #############################
 
 data "oci_objectstorage_bucket" "buckets" {
-  depends_on = [module.oss-bucket]
+  depends_on = [module.oss-buckets]
   for_each  = var.oss_logs != null ? var.oss_logs : {}
   #Required
   name      = each.value.resource

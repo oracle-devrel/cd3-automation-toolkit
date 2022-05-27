@@ -1,3 +1,10 @@
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+
+############################################
+# Module Block - Database
+# Create DB Systems VM BM
+############################################
+
 module "dbsystems-vm-bm" {
   source = "./modules/database/dbsystem-vm-bm"
 
