@@ -163,8 +163,8 @@ def export_tags():
     print("\n\nExecute tf_import_commands_tags_nonGF.sh script created under home region directory to synch TF with OCI Tags\n")
 
 def export_storage():
-    options = [Option("Export Block Storage/Block Backup Policy",export_block_volumes,'Exporting Block Volumes'),
-               Option("Export File Storage", export_fss, 'Exporting FSS')]
+    options = [Option("Export Block Volumes/Block Backup Policy",export_block_volumes,'Exporting Block Volumes'),
+               Option("Export File Systems", export_fss, 'Exporting FSS')]
 
     options = show_options(options, quit=True, menu=True, index=1)
     execute_options(options, inputfile, outdir, prefix, config)
@@ -270,6 +270,10 @@ def export_terraform_drg_routes(inputfile, outdir, prefix, config, non_gf_tenanc
     compartments = get_compartment_list('OCI DRG Rules')
     Network.export_drg_routetable(inputfile, network_compartments=compartments, _config=config, _tf_import_cmd=False,outdir=None)
 
+def export_terraform_nsgs(inputfile, outdir, prefix, config, non_gf_tenancy):
+    compartments = get_compartment_list('OCI NSGs')
+    Network.export_nsg(inputfile, network_compartments=compartments, _config=config, _tf_import_cmd=False, outdir=None)
+
 
 def create_tags():
     options = [Option(None, Governance.create_terraform_tags, 'Processing Tags Tab')]
@@ -281,6 +285,7 @@ def create_network(execute_all=False):
         Option('Modify Network - It will read VCNs, DRGs, Subnets and DHCP sheets and update the TF', modify_terraform_network, 'Modifying Network'),
         Option('Export existing SecRules and RouteRules to cd3', export_terraform_routes_and_secrules, 'Exporting Rules'),
         Option('Export existing DRG RouteRules to cd3', export_terraform_drg_routes,'Exporting DRG Route Rules'),
+        Option('Export existing NSGs to cd3', export_terraform_nsgs, 'Exporting NSGs'),
         Option('Modify SecRules', Network.modify_terraform_secrules, 'Modifiying Security Rules'),
         Option('Modify RouteRules', Network.modify_terraform_routerules, 'Modifiying Route Rules'),
         Option('Modify DRG RouteRules', Network.modify_terraform_drg_routerules, 'Modifiying DRG Route Rules'),
@@ -324,8 +329,8 @@ def create_fss(inputfile, outdir, prefix,config):
 
 def create_storage(execute_all=False):
     options = [
-        Option('Add/Modify/Delete Block Storage/Block Backup Policy', create_block_volumes, ''),
-        Option('Add/Modify/Delete File Storage', create_fss, '')]
+        Option('Add/Modify/Delete Block Volumes/Block Backup Policy', create_block_volumes, ''),
+        Option('Add/Modify/Delete File Systems', create_fss, '')]
     options = show_options(options, quit=True, menu=True, index=1)
     if not execute_all:
         execute_options(options, inputfile, outdir, prefix, config)
