@@ -94,12 +94,12 @@ def print_blockvolumes(region, BVOLS, bvol, compute, ct, values_for_column, ntk_
                 volume_comp = comp_name
                 comp_done_ids.append(volume_compartment_id)
 
-        importCommands[region.lower()].write("\nterraform import \"module.block-volume[\\\"" + block_tf_name + "\\\"].oci_core_volume.block_volume\" " + str(blockvols.id))
+        importCommands[region.lower()].write("\nterraform import \"module.block-volumes[\\\"" + block_tf_name + "\\\"].oci_core_volume.block_volume\" " + str(blockvols.id))
         if attachment_id != '':
-            importCommands[region.lower()].write("\nterraform import \"module.block-volume[\\\"" + block_tf_name + "\\\"].oci_core_volume_attachment.block_vol_instance_attachment[0]\" " + str(attachment_id))
+            importCommands[region.lower()].write("\nterraform import \"module.block-volumes[\\\"" + block_tf_name + "\\\"].oci_core_volume_attachment.block_vol_instance_attachment[0]\" " + str(attachment_id))
 
         if asset_assignment_id != '':
-            importCommands[region.lower()].write("\nterraform import \"module.block-volume[\\\"" + block_tf_name + "\\\"].oci_core_volume_backup_policy_assignment.volume_backup_policy_assignment[0]\" " + str(asset_assignment_id))
+            importCommands[region.lower()].write("\nterraform import \"module.block-volumes[\\\"" + block_tf_name + "\\\"].oci_core_volume_backup_policy_assignment.volume_backup_policy_assignment[0]\" " + str(asset_assignment_id))
             pass
         for col_header in values_for_column:
             if col_header == 'Region':
