@@ -536,6 +536,20 @@ variable "budget_alert_rules" {
   default = {}
 }
 
+###########################
+####### Cloud Guard #######
+###########################
+
+variable "cloud_guard_configs" {
+  type    = map(any)
+  default = {}
+}
+
+variable "cloud_guard_targets" {
+  type    = map(any)
+  default = {}
+}
+
 ##########################
 # Add new variables here #
 ##########################
