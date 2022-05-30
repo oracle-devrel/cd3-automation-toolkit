@@ -191,7 +191,7 @@ def export_fss(inputfile, outdir, prefix,config):
     print("\n\nExecute tf_import_commands_fss_nonGF.sh script created under each region directory to synch TF with OCI FSS objects\n")
 
 
-def export_lb():
+def export_loadbalancer():
     compartments = get_compartment_list('LBR objects')
     Network.export_lbr(inputfile, outdir, _config=config, network_compartments=compartments)
     create_lb(inputfile, outdir, prefix, config=config)
@@ -499,7 +499,7 @@ if non_gf_tenancy:
         Option('Export Compute', export_compute, 'Dedicated VM Hosts and Instances'),
         Option('Export Storage', export_storage, 'Storage'),
         Option('Export Databases', export_databases, 'Databases'),
-        Option('Export Load Balancers', export_lb, 'Load Balancers'),
+        Option('Export Load Balancers', export_loadbalancer, 'Load Balancers'),
         Option('Export Management Services', export_management_services, 'Management Services'),
     ]
 
