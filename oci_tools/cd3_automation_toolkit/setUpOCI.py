@@ -5,7 +5,6 @@ import Compute
 import ManagementServices
 import DeveloperServices
 import cd3Validator
-import Security
 import Storage
 import Network
 import Governance
@@ -104,7 +103,7 @@ def get_compartment_list(resource_name):
     compartments = input(compartment_list_str.format(resource_name))
     return list(map(lambda x: x.strip(), compartments.split(','))) if compartments else None
 
-
+################## Export Functions ##########################
 def export_identity():
     Identity.export_identity(inputfile, outdir, _config=config)
     create_identity(execute_all=True)
@@ -128,6 +127,12 @@ def export_network():
     print("\n\nExecute tf_import_commands_network_nonGF.sh script created under each region directory to synch TF with OCI Network objects\n")
 
 
+def export_tags():
+    Governance.export_tags_nongreenfield(inputfile, outdir, _config=config, network_compartments=None)
+    create_tags()
+    print("\n\nExecute tf_import_commands_tags_nonGF.sh script created under home region directory to synch TF with OCI Tags\n")
+
+
 def export_compute():
     options = [Option("Export Dedicated VM Hosts", export_dedicatedvmhosts, 'Exporting Dedicated VM Hosts'),
                Option("Export Instances", export_instances, 'Exporting Instances')]
@@ -140,7 +145,6 @@ def export_dedicatedvmhosts(inputfile, outdir, prefix,config):
     Compute.export_dedicatedvmhosts(inputfile, outdir, _config=config, network_compartments=compartments)
     create_dedicatedvmhosts(inputfile, outdir, prefix, config)
     print("\n\nExecute tf_import_commands_dedicatedvmhosts_nonGF.sh script created under each region directory to synch TF with OCI Dedicated VM Hosts\n")
-
 
 def export_instances(inputfile, outdir, prefix,config):
     compartments = get_compartment_list('Instances')
@@ -156,11 +160,6 @@ def export_instances(inputfile, outdir, prefix,config):
     create_instances(inputfile, outdir, prefix, config)
     print("\n\nExecute tf_import_commands_instances_nonGF.sh script created under each region directory to synch TF with OCI Instances\n")
 
-
-def export_tags():
-    Governance.export_tags_nongreenfield(inputfile, outdir, _config=config, network_compartments=None)
-    create_tags()
-    print("\n\nExecute tf_import_commands_tags_nonGF.sh script created under home region directory to synch TF with OCI Tags\n")
 
 def export_storage():
     options = [Option("Export Block Volumes/Block Backup Policy",export_block_volumes,'Exporting Block Volumes'),
@@ -195,8 +194,9 @@ def export_fss(inputfile, outdir, prefix,config):
 def export_lb():
     compartments = get_compartment_list('LBR objects')
     Network.export_lbr(inputfile, outdir, _config=config, network_compartments=compartments)
-    create_lb()
+    create_lb(inputfile, outdir, prefix, config=config)
     print("\n\nExecute tf_import_commands_lbr_nonGF.sh script created under each region directory to synch TF with OCI LBR objects\n")
+
 
 def export_databases():
     options = [Option("Export Virtual Machine or Bare Metal DB Systems",export_dbsystems_vm_bm,'Exporting VM and BM DB Systems'),
@@ -218,6 +218,7 @@ def export_exa_infra_vmclusters(inputfile, outdir, prefix,config):
     create_exa_infra_vmclusters(inputfile, outdir, prefix,config=config)
     print("\n\nExecute tf_import_commands_exa-infra_nonGF.sh and tf_import_commands_exa-vmclusters_nonGF.sh scripts created under each region directory to synch TF with Exa-Infra and Exa-VMClusters\n")
 
+
 def export_management_services():
     options = [Option("Export Notifications",export_notifications,'Exporting Notifications'),
                Option("Export Events", export_events,'Exporting Events'),
@@ -226,18 +227,17 @@ def export_management_services():
     options = show_options(options, quit=True, menu=True, index=1)
     execute_options(options, inputfile, outdir, prefix, config)
 
-def export_events(inputfile, outdir, prefix,config):
-    compartments = get_compartment_list('Events')
-    ManagementServices.export_events(inputfile, outdir, _config=config, network_compartments=compartments)
-    ManagementServices.create_terraform_events(inputfile, outdir, prefix, config=config)
-    print("\n\nExecute tf_import_commands_events_nonGF.sh script created under each region directory to synch TF with OCI Events\n")
-
 def export_notifications(inputfile, outdir, prefix,config):
     compartments = get_compartment_list('Notifications')
     ManagementServices.export_notifications(inputfile, outdir, _config=config, network_compartments=compartments)
     ManagementServices.create_terraform_notifications(inputfile, outdir, prefix, config=config)
     print("\n\nExecute tf_import_commands_notifications_nonGF.sh script created under each region directory to synch TF with OCI Notifications\n")
 
+def export_events(inputfile, outdir, prefix,config):
+    compartments = get_compartment_list('Events')
+    ManagementServices.export_events(inputfile, outdir, _config=config, network_compartments=compartments)
+    ManagementServices.create_terraform_events(inputfile, outdir, prefix, config=config)
+    print("\n\nExecute tf_import_commands_events_nonGF.sh script created under each region directory to synch TF with OCI Events\n")
 
 def export_alarms(inputfile, outdir, prefix,config):
     compartments = get_compartment_list('Alarms')
@@ -245,7 +245,7 @@ def export_alarms(inputfile, outdir, prefix,config):
     ManagementServices.create_terraform_alarms(inputfile, outdir, prefix,config=config)
     print("\n\nExecute tf_import_commands_alarms_nonGF.sh script created under each region directory to synch TF with OCI Alarms\n")
 
-
+################## Create Functions ##########################
 def create_identity(execute_all=False):
     options = [
         Option('Add/Modify/Delete Compartments', Identity.create_terraform_compartments, 'Processing Compartments Tab'),
@@ -257,20 +257,80 @@ def create_identity(execute_all=False):
     execute_options(options, inputfile, outdir, prefix, config=config)
 
 
+def create_network(execute_all=False):
+    options = [
+        Option('Create Network - overwrites all TF files; reverts all SecLists and RouteTables to original rules', Network.create_all_tf_objects, 'Create All Objects'),
+        Option('Modify Network - It will read VCNs, DRGs, Subnets and DHCP sheets and update the TF', modify_terraform_network, 'Modifying Network'),
+        Option('Enable VCN Flow Logs', create_cis_vcnflow_logs, 'VCN Flow Logs'),
+        Option('Security Rules', export_modify_security_rules, 'Security Rules'),
+        Option('Route Rules', export_modify_route_rules, 'Route Rules'),
+        Option('DRG Route Rules', export_modify_drg_route_rules, 'DRG Route Rules'),
+        Option('Network Security Groups', export_modify_nsgs, 'Network Security Groups')
+    ]
+    if not execute_all:
+        options = show_options(options, quit=True, menu=True, index=1)
+    execute_options(options, inputfile, outdir, prefix, config=config, non_gf_tenancy=non_gf_tenancy)
+
 def modify_terraform_network(inputfile, outdir, prefix, non_gf_tenancy, config):
     Network.create_all_tf_objects(inputfile, outdir, prefix, config=config, non_gf_tenancy=non_gf_tenancy, modify_network=True)
 
+def create_cis_vcnflow_logs(*args,**kwargs):
+    options = [Option(None, ManagementServices.enable_cis_vcnflow_logging, 'Enabling VCN Flow Logs')]
+    execute_options(options, inputfile, outdir, prefix, config=config)
 
-def export_terraform_routes_and_secrules(inputfile, outdir, prefix, config, non_gf_tenancy):
-    compartments = get_compartment_list('OCI Rules')
+def export_modify_security_rules(inputfile, outdir, prefix, non_gf_tenancy, config):
+    execute_all = False
+    options = [
+        Option('Export Security Rules in OCI', export_security_rules, 'Exporting Security Rules in OCI'),
+        Option('Add/Modify/Delete Security Rules', Network.modify_terraform_secrules, 'Processing SecRulesinOCI Tab'),
+    ]
+    if not execute_all:
+        options = show_options(options, quit=True, menu=True, index=1)
+    execute_options(options, inputfile, outdir, prefix, config=config, non_gf_tenancy=non_gf_tenancy)
+
+def export_security_rules(inputfile, outdir, prefix, config, non_gf_tenancy):
+    compartments = get_compartment_list('OCI Security Rules')
     Network.export_seclist(inputfile, network_compartments=compartments, _config=config, _tf_import_cmd=False, outdir=None)
+
+def export_modify_route_rules(inputfile, outdir, prefix, non_gf_tenancy, config):
+    execute_all = False
+    options = [
+        Option('Export Route Rules in OCI', export_route_rules, 'Exporting Route Rules in OCI'),
+        Option('Add/Modify/Delete Route Rules', Network.modify_terraform_routerules, 'Processing RouteRulesinOCI Tab'),
+    ]
+    if not execute_all:
+        options = show_options(options, quit=True, menu=True, index=1)
+    execute_options(options, inputfile, outdir, prefix, config=config, non_gf_tenancy=non_gf_tenancy)
+
+def export_route_rules(inputfile, outdir, prefix, config, non_gf_tenancy):
+    compartments = get_compartment_list('OCI Route Rules')
     Network.export_routetable(inputfile, network_compartments=compartments, _config=config, _tf_import_cmd=False, outdir=None)
 
-def export_terraform_drg_routes(inputfile, outdir, prefix, config, non_gf_tenancy):
-    compartments = get_compartment_list('OCI DRG Rules')
+def export_modify_drg_route_rules(inputfile, outdir, prefix, non_gf_tenancy, config):
+    execute_all = False
+    options = [
+        Option('Export DRG Route Rules in OCI', export_drg_route_rules, 'Exporting DRG Route Rules in OCI'),
+        Option('Add/Modify/Delete DRG Route Rules', Network.modify_terraform_drg_routerules, 'Processing DRGRouteRulesinOCI Tab'),
+    ]
+    if not execute_all:
+        options = show_options(options, quit=True, menu=True, index=1)
+    execute_options(options, inputfile, outdir, prefix, config=config, non_gf_tenancy=non_gf_tenancy)
+
+def export_drg_route_rules(inputfile, outdir, prefix, config, non_gf_tenancy):
+    compartments = get_compartment_list('OCI DRG Route Rules')
     Network.export_drg_routetable(inputfile, network_compartments=compartments, _config=config, _tf_import_cmd=False,outdir=None)
 
-def export_terraform_nsgs(inputfile, outdir, prefix, config, non_gf_tenancy):
+def export_modify_nsgs(inputfile, outdir, prefix, non_gf_tenancy, config):
+    execute_all = False
+    options = [
+        Option('Export NSGs in OCI', export_nsgs, 'Exporting NSGs in OCI'),
+        Option('Add/Modify/Delete NSGs', Network.create_terraform_nsg, 'Processing NSGs Tab'),
+    ]
+    if not execute_all:
+        options = show_options(options, quit=True, menu=True, index=1)
+    execute_options(options, inputfile, outdir, prefix, config=config, non_gf_tenancy=non_gf_tenancy)
+
+def export_nsgs(inputfile, outdir, prefix, config, non_gf_tenancy):
     compartments = get_compartment_list('OCI NSGs')
     Network.export_nsg(inputfile, network_compartments=compartments, _config=config, _tf_import_cmd=False, outdir=None)
 
@@ -279,23 +339,14 @@ def create_tags():
     options = [Option(None, Governance.create_terraform_tags, 'Processing Tags Tab')]
     execute_options(options, inputfile, outdir, prefix,config=config)
 
-def create_network(execute_all=False):
+
+def create_compute():
     options = [
-        Option('Create Network - overwrites all TF files; reverts all SecLists and RouteTables to original rules', Network.create_all_tf_objects, 'Create All Objects'),
-        Option('Modify Network - It will read VCNs, DRGs, Subnets and DHCP sheets and update the TF', modify_terraform_network, 'Modifying Network'),
-        Option('Export existing SecRules and RouteRules to cd3', export_terraform_routes_and_secrules, 'Exporting Rules'),
-        Option('Export existing DRG RouteRules to cd3', export_terraform_drg_routes,'Exporting DRG Route Rules'),
-        Option('Export existing NSGs to cd3', export_terraform_nsgs, 'Exporting NSGs'),
-        Option('Modify SecRules', Network.modify_terraform_secrules, 'Modifiying Security Rules'),
-        Option('Modify RouteRules', Network.modify_terraform_routerules, 'Modifiying Route Rules'),
-        Option('Modify DRG RouteRules', Network.modify_terraform_drg_routerules, 'Modifiying DRG Route Rules'),
-        Option('Add/Modify/Delete Network Security Groups', Network.create_terraform_nsg, 'Processing NSGs Tab'),
-    #    Option('Add/Modify/Delete Reserved and Private IPs', Network.create_terraform_ipmanagement, 'Processing IPManagement Tab'),
-    #    Option('Add/Modify/Delete VNIC-Attachments', Network.create_terraform_vnic_attachment, 'Processing IPManagement Tab')
+        Option('Add/Modify/Delete Dedicated VM Hosts', Compute.create_terraform_dedicatedhosts, 'Processing Dedicated VM Hosts Tab'),
+        Option('Add/Modify/Delete Instances/Boot Backup Policy', create_instances,''),
     ]
-    if not execute_all:
-        options = show_options(options, quit=True, menu=True, index=1)
-    execute_options(options, inputfile, outdir, prefix, config=config, non_gf_tenancy=non_gf_tenancy)
+    options = show_options(options, quit=True, menu=True, index=1)
+    execute_options(options, inputfile, outdir, prefix,config)
 
 def create_instances(inputfile, outdir, prefix,config):
     options = [
@@ -308,13 +359,13 @@ def create_dedicatedvmhosts(inputfile, outdir, prefix,config):
     execute_options(options, inputfile, outdir, prefix,config=config)
 
 
-def create_compute():
+def create_storage(execute_all=False):
     options = [
-        Option('Add/Modify/Delete Dedicated VM Hosts', Compute.create_terraform_dedicatedhosts, 'Processing Dedicated VM Hosts Tab'),
-        Option('Add/Modify/Delete Instances/Boot Backup Policy', create_instances,''),
-    ]
+        Option('Add/Modify/Delete Block Volumes/Block Backup Policy', create_block_volumes, ''),
+        Option('Add/Modify/Delete File Systems', create_fss, '')]
     options = show_options(options, quit=True, menu=True, index=1)
-    execute_options(options, inputfile, outdir, prefix,config)
+    if not execute_all:
+        execute_options(options, inputfile, outdir, prefix, config)
 
 def create_block_volumes(inputfile, outdir, prefix,config):
     options = [
@@ -327,15 +378,15 @@ def create_fss(inputfile, outdir, prefix,config):
     execute_options(options, inputfile, outdir, prefix,config=config)
 
 
-def create_storage(execute_all=False):
+def create_loadbalancer(execute_all=False):
     options = [
-        Option('Add/Modify/Delete Block Volumes/Block Backup Policy', create_block_volumes, ''),
-        Option('Add/Modify/Delete File Systems', create_fss, '')]
+        Option('Add/Modify/Delete Load Balancers', create_lb, 'LBaaS'),
+        Option('Enable LBaaS Logs', enable_lb_logs, 'LBaaS Logs')]
     options = show_options(options, quit=True, menu=True, index=1)
     if not execute_all:
         execute_options(options, inputfile, outdir, prefix, config)
 
-def create_lb():
+def create_lb(inputfile, outdir, prefix, config):
     options = [
          Option(None, Network.create_terraform_lbr_hostname_certs, 'Creating LBR'),
          Option(None, Network.create_backendset_backendservers, 'Creating Backend Sets and Backend Servers'),
@@ -343,6 +394,10 @@ def create_lb():
          Option(None, Network.create_path_route_set, 'Creating Path Route Sets'),
          Option(None, Network.create_ruleset, 'Creating Rule Sets'),
     ]
+    execute_options(options, inputfile, outdir, prefix, config=config)
+
+def enable_lb_logs(inputfile, outdir, prefix, config):
+    options = [Option(None, ManagementServices.enable_load_balancer_logging, 'Enabling LBaaS Logs')]
     execute_options(options, inputfile, outdir, prefix, config=config)
 
 def create_databases(execute_all=False):
@@ -355,11 +410,11 @@ def create_databases(execute_all=False):
         options = show_options(options, quit=True, menu=True, index=1)
     execute_options(options, inputfile, outdir, prefix, config=config)
 
-
 def create_exa_infra_vmclusters(inputfile, outdir, prefix,config):
     options = [Option(None, Database.create_terraform_exa_infra, 'Processing Exa-Infra Tab'),
     Option(None, Database.create_terraform_exa_vmclusters, 'Processing Exa-VM-Clusters Tab')]
     execute_options(options, inputfile, outdir, prefix, config)
+
 
 def create_management_services(execute_all=False):
     options = [
@@ -380,10 +435,14 @@ def create_developer_services(execute_all=False):
     execute_options(options, outdir, prefix, config=config)
 
 
-def create_cis_vcnflow_logs(*args,**kwargs):
-    options = [Option(None, ManagementServices.enable_cis_vcnflow_logging, 'Enabling Flow Logs')]
-    execute_options(options, inputfile, outdir, prefix, config=config)
+def create_cis_features(execute_all=False):
+    options = [Option("Create Key/Vault, Object Storage Bucket and enable Logging for write events to bucket", create_cis_keyvault_oss_log, 'Creating CIS Key/Vault, Object Storage Bucket and enable Logging for write events to bucket'),
+               Option("Create Default Budget",create_cis_budget,'Creating Default Budget'),
+               Option("Enable Cloud Guard", enable_cis_cloudguard, 'Enable Cloud Guard'),]
 
+    if not execute_all:
+        options = show_options(options, quit=True, menu=True, index=1)
+    execute_options(options, outdir, prefix, config=config)
 
 def create_cis_keyvault_oss_log(*args,**kwargs):
     region_name = input("Enter region name eg ashburn where you want to create OSS Bucket and Key/Vault: ")
@@ -399,16 +458,6 @@ def create_cis_budget(*args,**kwargs):
     threshold = input("Enter Threshold Percentage of Budget: ")
     options = [Option(None, Governance.create_cis_budget, 'Creating Budget')]
     execute_options(options, outdir, prefix,amount,threshold, config=config)
-
-def create_cis_features(execute_all=False):
-    options = [Option("Create Key/Vault, Object Storage Bucket and enable Logging for write events to bucket", create_cis_keyvault_oss_log, 'Creating CIS Key/Vault, Object Storage Bucket and enable Logging for write events to bucket'),
-               Option("Create Default Budget",create_cis_budget,'Creating Default Budget'),
-               Option("Enable Cloud Guard", enable_cis_cloudguard, 'Enable Cloud Guard'),
-               Option("Enable VCN Flow Logs", create_cis_vcnflow_logs, 'Enable VCN Flow Logs')]
-
-    if not execute_all:
-        options = show_options(options, quit=True, menu=True, index=1)
-    execute_options(options, outdir, prefix, config=config)
 
 parser = argparse.ArgumentParser(description='Sets Up OCI via TF')
 parser.add_argument('propsfile', help="Full Path of properties file containing input variables. eg setUpOCI.properties")
@@ -467,10 +516,10 @@ else:
         Option('Compute', create_compute, 'Compute'),
         Option('Storage', create_storage, 'Storage'),
         Option('Database', create_databases, 'Databases'),
-        Option('Load Balancers', create_lb, 'Load Balancers'),
+        Option('Load Balancers', create_loadbalancer, 'Load Balancers'),
         Option('Management Services', create_management_services, 'Management Services'),
         Option('Developer Services', create_developer_services, 'Developer Services'),
-        Option('Enable OCI CIS Compliant Features (Key/Vault, OSS, Budget, Cloud-Guard, VCN Flow Logs)', create_cis_features, 'CIS Compliant Features'),
+        Option('Enable OCI CIS Compliant Features (Key/Vault, OSS, Budget, Cloud-Guard)', create_cis_features, 'CIS Compliant Features'),
 
     ]
 
