@@ -505,7 +505,6 @@ def print_listener(region, ct, values_for_column_lis, LBRs, lbr_compartment_name
             if lbr_comp_id == comp_id and lbr_comp_id not in comp_done_ids:
                 lbr_compartment_name = comp_name
                 comp_done_ids.append(lbr_comp_id)
-                print(comp_name)
 
         # Loop through listeners
         for listeners, values in eachlbr.__getattribute__('listeners').items():
