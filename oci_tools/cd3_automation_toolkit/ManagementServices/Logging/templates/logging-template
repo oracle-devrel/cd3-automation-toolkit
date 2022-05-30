@@ -2,7 +2,6 @@
 {% if count == 0 %}
 // Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 
-
 ############################
 # ManagementServices
 # {{ oci_service|upper }} Log Groups - tfvars
@@ -15,7 +14,6 @@
   # Log Group map #
   ##Add New Log Groups for {{ region.lower() }} here##
 }{% else %}{% if loggroup_tf_name != "" and loggroup_tf_name != "nan" and loggroup_tf_name != null %}
-
   {{ loggroup_tf_name }} = {
         compartment_id = "{{ compartment_tf_name }}"
         display_name   = "{{ loggroup_name }}"
@@ -80,6 +78,62 @@
   # Log map #
   ##Add New Logs for {{ region.lower() }} here##
 }{% else %}{% if log_name != "" and log_name != "nan" and log_name != null %}
+
+  {# If the logs are for Load balancers - Access and Error #}
+  {% if lb_log_tf_name and lb_log_tf_name != "" %}
+    {% for type in logtype %}
+    {{ lb_log_tf_name }}-log-{{ type }}  = {
+        display_name = "{{ log_name }}_{{ type }}-log"
+        log_group_id = "{{ log_group_id }}"
+        log_type     = "SERVICE"
+        category    = "{{ type }}"
+        resource    = "{{ resource }}"
+        service     = "{{ service }}"
+        source_type = "OCISERVICE"
+        compartment_id = "{{ compartment_tf_name }}"
+        is_enabled         = true
+        retention_duration = 30
+
+
+    {#  ##Do not modify below this line##  #}
+    {#                                     #}
+    {#  ###Section for adding Defined and Freeform Tags###  #}
+    {% if defined_tags and defined_tags != 'nan' and defined_tags != '' %}
+      {% if defined_tags[0] %}
+        defined_tags = {
+        {% for tags in defined_tags  %}
+            {% if not loop.last %}
+                "{{ tags[0]  }}"= "{{ tags[1] }}" ,
+            {% else %}
+                "{{ tags[0]  }}"= "{{ tags[1] }}"
+            {% endif %}
+        {% endfor %}
+        }
+      {% else %}
+        defined_tags = {}
+        {% endif %} {% else %}
+        defined_tags = {}
+            {% endif %}
+            {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' %}
+                {% if freeform_tags[0] %}
+        freeform_tags = {
+                    {% for tags in freeform_tags %}
+                        {% if not loop.last  %}
+                "{{ tags[0] }}"="{{ tags[1] }}",
+                        {% else %}
+                "{{ tags[0] }}"="{{ tags[1] }}"
+                        {% endif %}
+                    {% endfor %}
+                    }
+                {% endif %}
+            {% else %}
+        freeform_tags = {}
+            {% endif %}
+    {#  ###Section for adding Defined and Freeform Tags ends here###  #}
+      },
+    {% endfor %}
+  {% else %}
+  {# Logs for other services - OSS and VCN Flow Logs #}
   {{ log_tf_name }}  = {
         display_name = "{{ log_name }}"
         log_group_id = "{{ log_group_id }}"
@@ -129,5 +183,7 @@
             {% endif %}
     {#  ###Section for adding Defined and Freeform Tags ends here###  #}
       },
-{% endif %}{% endif %}
+    {% endif %}
+  {% endif %}
+{% endif %}
 {% endif %}

@@ -413,6 +413,22 @@ variable "rule_sets" {
 }
 
 #########################
+####### Load Balancer Logs ########
+#########################
+
+variable "loadbalancer_log_groups" {
+  description = "To provision Log Groups for Load Balancers"
+  type        = map(any)
+  default     = {}
+}
+
+variable "loadbalancer_logs" {
+  description = "To provision Logs for Load Balancers"
+  type        = map(any)
+  default     = {}
+}
+
+#########################
 ##### IP Management #####
 #########################
 
