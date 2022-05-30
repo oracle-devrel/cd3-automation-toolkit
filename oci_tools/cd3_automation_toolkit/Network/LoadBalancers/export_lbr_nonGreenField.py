@@ -505,6 +505,7 @@ def print_listener(region, ct, values_for_column_lis, LBRs, lbr_compartment_name
             if lbr_comp_id == comp_id and lbr_comp_id not in comp_done_ids:
                 lbr_compartment_name = comp_name
                 comp_done_ids.append(lbr_comp_id)
+                print(comp_name)
 
         # Loop through listeners
         for listeners, values in eachlbr.__getattribute__('listeners').items():
@@ -514,13 +515,16 @@ def print_listener(region, ct, values_for_column_lis, LBRs, lbr_compartment_name
                 # If value of Certificate Name is needed, check in ssl_configuration attribute
                 if col_headers == 'Certificate Name or OCID':
                     sslcerts = values.__getattribute__(sheet_dict_lis['UseSSL (y|n)'])
-                    if sslcerts.__getattribute__('certificate_name') != "" and str(sslcerts.__getattribute__('certificate_name')).lower() != "none":
-                        values_for_column_lis[col_headers].append(sslcerts.__getattribute__('certificate_name'))
-                    elif sslcerts.certificate_ids != [] :
-                        certificates = ""
-                        for certificate_ids in sslcerts.certificate_ids:
-                            certificates = certificates + "," + certificate_ids
-                        values_for_column_lis[col_headers].append(certificates.lstrip(","))
+                    if str(sslcerts).lower() != "none":
+                        if sslcerts.__getattribute__('certificate_name') != "" and str(sslcerts.__getattribute__('certificate_name')).lower() != "none":
+                            values_for_column_lis[col_headers].append(sslcerts.__getattribute__('certificate_name'))
+                        elif sslcerts.certificate_ids != [] :
+                            certificates = ""
+                            for certificate_ids in sslcerts.certificate_ids:
+                                certificates = certificates + "," + certificate_ids
+                            values_for_column_lis[col_headers].append(certificates.lstrip(","))
+                        else:
+                            values_for_column_lis[col_headers].append("")
                     else:
                         values_for_column_lis[col_headers].append("")
 
