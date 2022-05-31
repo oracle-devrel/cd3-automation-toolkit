@@ -269,7 +269,7 @@ variable "data_drg_route_table_distributions" {
   type    = map(any)
   default = {}
 }
-De
+
 #########################
 ## Dedicated VM Hosts ##
 #########################

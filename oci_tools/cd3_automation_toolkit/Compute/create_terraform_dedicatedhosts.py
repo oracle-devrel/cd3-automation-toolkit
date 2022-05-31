@@ -38,7 +38,7 @@ def create_terraform_dedicatedhosts(inputfile, outdir, prefix, config):
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
-    template = env.get_template('dedicated-host-template')
+    template = env.get_template('dedicatedvmhosts-template')
 
     filename = inputfile
     configFileName = config
