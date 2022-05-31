@@ -1,9 +1,9 @@
 // Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 
-############################
+#####################################
 # Variables Block - Dedicated VM Host
 # Create Dedicated VM Hosts
-############################
+#####################################
 
 variable "availability_domain" {
   type    = string

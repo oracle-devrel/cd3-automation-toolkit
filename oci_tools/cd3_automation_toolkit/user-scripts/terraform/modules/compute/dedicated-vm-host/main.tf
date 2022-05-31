@@ -1,9 +1,9 @@
 #// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 #
-#############################
+#####################################
 ## Resource Block - Dedicated VM Host
 ## Create Dedicated VM Hosts
-#############################
+#####################################
 
 resource "oci_core_dedicated_vm_host" "dedicated_vm_host" {
   availability_domain     = var.availability_domain
