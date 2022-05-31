@@ -39,7 +39,7 @@ def create_terraform_instances(inputfile, outdir, prefix, config):
     configFileName = config
 
     sheetName = "Instances"
-    auto_tfvars_filename = prefix+'_' + sheetName.lower() + '.auto.tfvars'
+    auto_tfvars_filename = prefix + '_' + sheetName.lower() + '.auto.tfvars'
     ct = commonTools()
     ct.get_subscribedregions(configFileName)
 
@@ -64,7 +64,7 @@ def create_terraform_instances(inputfile, outdir, prefix, config):
         tfStr[eachregion] = ''
         boot_policy_tfStr[eachregion] = ''
 
-    subnets=parseSubnets(filename)
+    subnets = parseSubnets(filename)
 
     for i in df.index:
         region = str(df.loc[i, 'Region'])
@@ -101,8 +101,8 @@ def create_terraform_instances(inputfile, outdir, prefix, config):
         # Check if values are entered for mandatory fields
         if (str(df.loc[i, 'Region']).lower() == 'nan' or str(df.loc[i, 'Display Name']).lower() == 'nan' or str(
                 df.loc[i, 'Shape']).lower() == 'nan' or str(df.loc[i, 'Compartment Name']).lower() == 'nan' or str(
-                df.loc[i, 'Pub Address']).lower() == 'nan' or str(
-                df.loc[i, 'Availability Domain(AD1|AD2|AD3)']).lower() == 'nan' or str(
+            df.loc[i, 'Pub Address']).lower() == 'nan' or str(
+            df.loc[i, 'Availability Domain(AD1|AD2|AD3)']).lower() == 'nan' or str(
             df.loc[i, 'Subnet Name']).lower() == 'nan' or str(df.loc[i, 'Source Details']).lower() == 'nan'):
             print(
                 "\nColumn Region, Shape, Compartment Name, Availability Domain, Display Name, Pub Address, Source Details and Subnet Name cannot be left empty in Instances sheet of CD3..exiting...")
@@ -141,10 +141,12 @@ def create_terraform_instances(inputfile, outdir, prefix, config):
                         vcn_name = subnets.vcn_subnet_map[key][1]
                         subnet_id = subnets.vcn_subnet_map[key][2]
                     except Exception as e:
-                        print("Invalid Subnet Name specified for row "+str(i+3) +". It Doesnt exist in Subnets sheet. Exiting!!!")
+                        print("Invalid Subnet Name specified for row " + str(
+                            i + 3) + ". It Doesnt exist in Subnets sheet. Exiting!!!")
                         exit()
 
-                tempdict = {'network_compartment_id': network_compartment_id, 'vcn_name': vcn_name, 'subnet_id': subnet_id}
+                tempdict = {'network_compartment_id': network_compartment_id, 'vcn_name': vcn_name,
+                            'subnet_id': subnet_id}
 
             if columnname == 'Display Name':
                 columnvalue = columnvalue.strip()
@@ -216,16 +218,14 @@ def create_terraform_instances(inputfile, outdir, prefix, config):
         if not os.path.exists(reg_out_dir):
             os.makedirs(reg_out_dir)
 
-
         if tfStr[reg] != '':
-
             # Generate Instances String
             src = "##Add New Instances for " + reg.lower() + " here##"
-            tfStr[reg] = template.render(count=0, region=reg).replace(src, tfStr[reg]+"\n"+src)
+            tfStr[reg] = template.render(count=0, region=reg).replace(src, tfStr[reg] + "\n" + src)
             tfStr[reg] = "".join([s for s in tfStr[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
 
             resource = sheetName.lower()
-            commonTools.backup_file(reg_out_dir+ "/", resource, auto_tfvars_filename)
+            commonTools.backup_file(reg_out_dir + "/", resource, auto_tfvars_filename)
 
             # Write to TF file
             outfile = reg_out_dir + "/" + auto_tfvars_filename
@@ -234,6 +234,7 @@ def create_terraform_instances(inputfile, outdir, prefix, config):
             print(outfile + " for instances and boot volume backup policy has been created for region " + reg)
             oname.write(tfStr[reg])
             oname.close()
+
 
 if __name__ == '__main__':
     args = parse_args()

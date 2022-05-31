@@ -579,4 +579,10 @@ variable "capacity_reservation_ocids" {
   }
 }
 
+variable "dedicated_hosts" {
+  type        = map(any)
+  description = "To provision new dedicated VM hosts"
+  default     = {}
+}
+
 ######################### END #########################
