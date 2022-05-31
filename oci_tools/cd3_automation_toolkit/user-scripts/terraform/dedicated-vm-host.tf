@@ -1,12 +1,11 @@
 #// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 #
-#############################
-## Module Block - Instances
+###################################
+## Module Block - Dedicated VM Host
 ## Create Dedicated VM Hosts
-#############################
+###################################
 
 module "dedicated-hosts" {
-
   source                = "./modules/compute/dedicated-vm-host"
   for_each              = var.dedicated_hosts != null ? var.dedicated_hosts : {}
 
