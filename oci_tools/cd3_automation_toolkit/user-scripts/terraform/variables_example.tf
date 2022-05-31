@@ -269,6 +269,16 @@ variable "data_drg_route_table_distributions" {
   type    = map(any)
   default = {}
 }
+De
+#########################
+## Dedicated VM Hosts ##
+#########################
+
+variable "dedicated_hosts" {
+  type        = map(any)
+  description = "To provision new dedicated VM hosts"
+  default     = {}
+}
 
 #########################
 ## Instances/Block Volumes ##
@@ -577,12 +587,6 @@ variable "capacity_reservation_ocids" {
     "AD2" : "ocid1.capacityreservation.oc1.iad.anuwcljsmbgqraacm4edb4dbsrqsgtskzjicudhmasmpqe7aopxmjvnukugq",
     "AD3" : "ocid1.capacityreservation.oc1.iad.anuwcljtmbgqraactoi5gwv6ahzutllmjmfgtrabarhcq7wvkx6mz2b7dwga"
   }
-}
-
-variable "dedicated_hosts" {
-  type        = map(any)
-  description = "To provision new dedicated VM hosts"
-  default     = {}
 }
 
 ######################### END #########################

@@ -1,7 +1,7 @@
 // Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 
 ############################
-# Variables Block - Instance
+# Variables Block - Dedicated VM Host
 # Create Dedicated VM Hosts
 ############################
 
