@@ -102,15 +102,15 @@ def create_terraform_notifications(inputfile, outdir, prefix, config=DEFAULT_LOC
             tempStr = {"count": i}
 
         # Check if values are entered for mandatory fields
-        if str(df.loc[i, 'Region']).lower() == 'nan' or str(df.loc[i, 'Compartment Name']).lower() == 'nan' or str(df.loc[i, 'Protocol']).lower() == 'nan' or str(df.loc[i, 'Endpoint']).lower() == 'nan' or str(df.loc[i, 'Topic']).lower() == 'nan' :
-            print("\nThe values for Region, Compartment, Topic, Protocol and Endpoint cannot be left empty. Please enter a value and try again !!")
+        if str(df.loc[i, 'Region']).lower() == 'nan' or str(df.loc[i, 'Compartment Name']).lower() == 'nan' or str(df.loc[i, 'Topic']).lower() == 'nan' :
+            print("\nThe values for Region, Compartment, Topic cannot be left empty. Please enter a value and try again !!")
             exit()
         for columnname in dfcolumns:
             # Column value
             columnvalue = str(df[columnname][i])
+
             # Dont strip for Description
             if columnname == "Description":
-
                 # Check for boolean/null in column values
                 columnvalue = commonTools.check_columnvalue(columnvalue)
 
@@ -161,13 +161,23 @@ def create_terraform_notifications(inputfile, outdir, prefix, config=DEFAULT_LOC
                 Notifications_names[region].append(topic)             
                 # Write all info to TF string
                 tfStr[region]=tfStr[region][:-1]  + notifications_template.render(tempStr)
-                # Write to output
-                #file = outdir + "/" + region + "/" + tf_name_topic + "-notification.tf"
-                #oname = open(file, "w+")
-                #print("Writing to " + file)
-                #oname.write(tfStr[region])
-                #oname.close()
-                #tfStr[region]= ""
+
+        #Empty Topic
+        if(str(df.loc[i, 'Protocol']).lower() == 'nan' and str(df.loc[i, 'Endpoint']).lower() == 'nan'):
+            if(tempStr['count']==0):
+                tfStr1[region] = "############################\n"\
+                             "# ManagementServices\n"\
+                             "# Notifications_Subscriptions - tfvars\n"\
+                             "# Allowed Values:\n"\
+                             "# topic_id can be ocid or the key of notifications_topics (map)\n"\
+                             "# compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens \"--\n"\
+                             "# Example : compartment_id = \"ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c\" or compartment_id = \"Network-root-cpt--Network\" where \"Network-root-cpt\" is the parent of \"Network\" compartment\n"\
+                             "############################\n"\
+                             "notifications_subscriptions = {\n\n"
+
+            #tfStr1[region] = subscriptions_template.render(skeleton=True, count=0)[:-1]
+            continue
+
         subscription = tf_name_topic + "_sub" + str(count)
         tempdict = {'subscription_tf_name': subscription}
         tempStr.update(tempdict)
@@ -179,13 +189,6 @@ def create_terraform_notifications(inputfile, outdir, prefix, config=DEFAULT_LOC
                     tempdict = {'endpoint': endpoint}
                     tempStr.update(tempdict)
                 tfStr1[region]=tfStr1[region][:-1]  + subscriptions_template.render(tempStr)
-                # Write to output
-                #file = outdir + "/" + region + "/" + subscription + "-subscription.tf"
-                #oname = open(file, "w+")
-                #print("Writing to " + file)
-                #oname.write(tfStr[region])
-                #oname.close()
-                #tfStr[region]=""
 
     # Write to output
     for reg in ct.all_regions:
