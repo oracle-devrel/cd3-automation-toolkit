@@ -76,3 +76,5 @@ variable "vcn_names" {
 }
 
 variable "load_balancers" {}
+
+variable "reserved_ips_id" {}

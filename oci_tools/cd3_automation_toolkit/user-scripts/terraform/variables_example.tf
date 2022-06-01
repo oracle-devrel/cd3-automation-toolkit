@@ -412,9 +412,19 @@ variable "rule_sets" {
   default     = {}
 }
 
-#########################
+###########################################
+####### Load Balancer Reserved IPs ########
+###########################################
+
+variable "lbr_reserved_ips" {
+  description = "To provision Load Balancer Reserved IPs"
+  type        = map(any)
+  default     = {}
+}
+
+###################################
 ####### Load Balancer Logs ########
-#########################
+###################################
 
 variable "loadbalancer_log_groups" {
   description = "To provision Log Groups for Load Balancers"

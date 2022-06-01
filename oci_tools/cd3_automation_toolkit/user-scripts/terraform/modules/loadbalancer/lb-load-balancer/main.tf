@@ -25,7 +25,7 @@ resource "oci_load_balancer_load_balancer" "load_balancer" {
     for_each = var.load_balancers[var.key_name].reserved_ips != [] ? var.load_balancers[var.key_name].reserved_ips : []
     content {
       #Optional
-      id = reserved_ips.value.id
+      id = var.reserved_ips_id
     }
   }
 

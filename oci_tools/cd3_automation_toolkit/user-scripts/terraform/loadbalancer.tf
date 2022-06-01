@@ -36,6 +36,7 @@ locals {
 module "load-balancers" {
   source   = "./modules/loadbalancer/lb-load-balancer"
   for_each = var.load_balancers != null ? var.load_balancers : {}
+#  depends_on = [module.lbr-reserved-ips]
 
   #Required
   compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
@@ -55,6 +56,7 @@ module "load-balancers" {
   network_security_group_ids = each.value.nsg_ids
   key_name                   = each.key
   load_balancers             = var.load_balancers
+#  reserved_ips_id            = length(regexall("ocid1.publicip.oc1*", each.value.reserved_ips_id)) > 0 ? each.value.reserved_ips_id : merge(module.lbr-reserved-ips.*...)[each.value.reserved_ips_id]["reserved_ip_tf_id"]
 }
 
 /*
@@ -292,5 +294,32 @@ module "loadbalancer-logs" {
 /*
 output "logs_id" {
   value = [ for k,v in merge(module.loadbalancer-logs.*...) : v.log_tf_id]
+}
+*/
+
+/*
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+
+############################################
+# Module Block - Reserved IPs for LBaaS
+# Create Reserved IPs for LBaaS
+# Allowed Values:
+# Lifetime Values can be one of EPHEMERAL or RESERVED
+############################################
+
+module "lbr-reserved-ips" {
+    source = "./modules/ip/reserved-public-ip"
+    for_each = var.lbr_reserved_ips != null && var.lbr_reserved_ips != {}  ? var.lbr_reserved_ips : {}
+
+    #Required
+    compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
+    lifetime = each.value.lifetime
+
+    #Optional
+    defined_tags         = each.value.defined_tags
+    display_name         = each.value.display_name
+    freeform_tags        = each.value.freeform_tags
+    #private_ip_id        = each.value.private_ip_id != "" ? (length(regexall("ocid1.privateip.oc1*", each.value.private_ip_id)) > 0 ? each.value.private_ip_id : (length(regexall("\\.", each.value.private_ip_id)) == 3 ? local.private_ip_id[0][each.value.private_ip_id] : merge(module.private-ips.*...)[each.value.private_ip_id].private_ip_tf_id)) : null
+    #public_ip_pool_id    = each.value.public_ip_pool_id != "" ? (length(regexall("ocid1.publicippool.oc1*", each.value.public_ip_pool_id)) > 0 ? each.value.public_ip_pool_id : merge(module.public-ip-pools.*...)[each.value.public_ip_pool_id].public_ip_pool_tf_id) : null
 }
 */

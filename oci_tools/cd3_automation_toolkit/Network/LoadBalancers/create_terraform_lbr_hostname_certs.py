@@ -267,6 +267,9 @@ def create_terraform_lbr_hostname_certs(inputfile, outdir, prefix, config=DEFAUL
             if columnname == "LBR Hostname(Name:Hostname)":
                 columnname = "lbr_hostname"
 
+            if columnname == "Reserved IPs (Y|N|OCID)":
+                columnname = "reserved_ips_id"
+
             lbr_subnets_list = []
             network_compartment_id = ''
             vcn_name = ''
