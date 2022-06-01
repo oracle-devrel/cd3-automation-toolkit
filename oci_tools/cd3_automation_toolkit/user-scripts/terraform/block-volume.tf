@@ -22,6 +22,7 @@ module "block-volumes" {
   availability_domain  = each.value.availability_domain != "" && each.value.availability_domain != null ? data.oci_identity_availability_domains.availability_domains.availability_domains[each.value.availability_domain].name : ""
   compartment_id       = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
   vpus_per_gb          = each.value.vpus_per_gb != null ? each.value.vpus_per_gb : null
+  device               = each.value.device
   defined_tags         = each.value.defined_tags
   display_name         = each.value.display_name
   freeform_tags        = each.value.freeform_tags
@@ -33,7 +34,6 @@ module "block-volumes" {
 
 
 #Volume Attachment Optional Params
-#  device         = each.value.device
 #  attachment_display_name   = each.value.attachment_display_name
 #  encryption_in_transit_type          = each.value.encryption_in_transit_type                  # Applicable when attachment_type=iscsi
 #  is_pv_encryption_in_transit_enabled = each.value.is_pv_encryption_in_transit_enabled         # Applicable when attachment_type=paravirtualized

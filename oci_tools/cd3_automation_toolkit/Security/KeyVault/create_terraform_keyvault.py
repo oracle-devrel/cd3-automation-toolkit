@@ -49,8 +49,8 @@ def create_cis_keyvault(outdir, prefix, region_name, comp_name, config=DEFAULT_L
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
-    vault_template = env.get_template('vault-template')
-    key_template = env.get_template('key-template')
+    vault_template = env.get_template('vaults-template')
+    key_template = env.get_template('keys-template')
 
     tempStr = {}
     vaultStr = ''

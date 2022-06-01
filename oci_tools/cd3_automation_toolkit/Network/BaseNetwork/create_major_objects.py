@@ -345,9 +345,8 @@ def create_major_objects(inputfile, outdir, prefix, non_gf_tenancy, config, modi
                 drg_attach_skeleton = drg_attach_template.render(skeleton=True, count=0)[:-1]
                 drgstr_skeleton = drg_template.render(count=0)[:-1]
                 region_included_drg.append(region)
-
-            tempStr['drg_version'] = drg_versions[region, drg_name]
-            drgstr = drg_template.render(tempStr)
+                tempStr['drg_version'] = drg_versions[region, drg_name]
+                drgstr = drg_template.render(tempStr)
 
             if(attachedto=="attached"):
                 drg_attach = drg_attach_template.render(tempStr)

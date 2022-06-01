@@ -271,6 +271,16 @@ variable "data_drg_route_table_distributions" {
 }
 
 #########################
+## Dedicated VM Hosts ##
+#########################
+
+variable "dedicated_hosts" {
+  type        = map(any)
+  description = "To provision new dedicated VM hosts"
+  default     = {}
+}
+
+#########################
 ## Instances/Block Volumes ##
 #########################
 

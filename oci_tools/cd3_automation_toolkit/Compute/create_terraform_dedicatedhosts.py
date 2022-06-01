@@ -14,9 +14,11 @@ import argparse
 import os
 from oci.config import DEFAULT_LOCATION
 from pathlib import Path
+
 sys.path.append(os.getcwd() + "/../..")
 from commonTools import *
 from jinja2 import Environment, FileSystemLoader
+
 
 ######
 # Required Inputs-CD3 excel file, Config file, prefix AND outdir
@@ -32,16 +34,17 @@ def parse_args():
 
 
 # If input is CD3 excel file
-def create_terraform_dedicatedhosts(inputfile, outdir, prefix,config):
+def create_terraform_dedicatedhosts(inputfile, outdir, prefix, config):
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
-    template = env.get_template('dedicated-host-template')
+    template = env.get_template('dedicatedvmhosts-template')
 
     filename = inputfile
     configFileName = config
 
-    sheetName="DedicatedVMHosts"
+    sheetName = "DedicatedVMHosts"
+    auto_tfvars_filename = prefix + '_' + sheetName.lower() + '.auto.tfvars'
     ct = commonTools()
     ct.get_subscribedregions(configFileName)
 
@@ -56,25 +59,23 @@ def create_terraform_dedicatedhosts(inputfile, outdir, prefix,config):
     df = df.dropna(how='all')
     df = df.reset_index(drop=True)
 
-
     # Take backup of files
     for eachregion in ct.all_regions:
-        resource=sheetName.lower()
+        resource = sheetName.lower()
         srcdir = outdir + "/" + eachregion + "/"
-        commonTools.backup_file(srcdir, resource, sheetName.lower()+".tf")
-
+        commonTools.backup_file(srcdir, resource, auto_tfvars_filename)
         tfStr[eachregion] = ''
 
     # List of column headers
     dfcolumns = df.columns.values.tolist()
 
     for i in df.index:
-        region = str(df.loc[i,'Region'])
+        region = str(df.loc[i, 'Region'])
 
         if (region in commonTools.endNames):
             break
 
-        region=region.strip().lower()
+        region = region.strip().lower()
         if region not in ct.all_regions:
             print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
             exit(1)
@@ -84,8 +85,10 @@ def create_terraform_dedicatedhosts(inputfile, outdir, prefix,config):
         tempdict = {}
 
         # Check if values are entered for mandatory fields
-        if (str(df.loc[i, 'Region']).lower() == 'nan' or str(df.loc[i, 'Shape']).lower() == 'nan' or str(df.loc[i, 'Compartment Name']).lower() == 'nan' or str(
-                df.loc[i, 'Availability Domain(AD1|AD2|AD3)']).lower() == 'nan' or str(df.loc[i, 'Display Name']).lower() == 'nan'):
+        if (str(df.loc[i, 'Region']).lower() == 'nan' or str(df.loc[i, 'Shape']).lower() == 'nan' or str(
+                df.loc[i, 'Compartment Name']).lower() == 'nan' or str(
+                df.loc[i, 'Availability Domain(AD1|AD2|AD3)']).lower() == 'nan' or str(
+            df.loc[i, 'Display Name']).lower() == 'nan'):
             print("\nAll Fields are mandatory except Fault Domain. Exiting...")
             exit(1)
 
@@ -98,7 +101,7 @@ def create_terraform_dedicatedhosts(inputfile, outdir, prefix,config):
             columnvalue = commonTools.check_columnvalue(columnvalue)
 
             # Check for multivalued columns
-            tempdict = commonTools.check_multivalues_columnvalue(columnvalue,columnname,tempdict)
+            tempdict = commonTools.check_multivalues_columnvalue(columnvalue, columnname, tempdict)
 
             # Process Defined and Freeform Tags
             if columnname.lower() in commonTools.tagColumns:
@@ -119,28 +122,40 @@ def create_terraform_dedicatedhosts(inputfile, outdir, prefix,config):
                 AD = columnvalue.upper()
                 ad = ADS.index(AD)
                 columnvalue = str(ad)
-                tempdict = {'availability_domain' : columnvalue}
+                tempdict = {'availability_domain': columnvalue}
 
             columnname = commonTools.check_column_headers(columnname)
             tempStr[columnname] = str(columnvalue).strip()
             tempStr.update(tempdict)
 
         # Write all info to TF string; Render template
-        tfStr[region] = tfStr[region] + template.render(tempStr)+"\n"
+        tfStr[region] = tfStr[region] + template.render(tempStr) + "\n"
 
     # Write to output
     for reg in ct.all_regions:
         reg_out_dir = outdir + "/" + reg
-        outfile[reg] = reg_out_dir + "/"+prefix+"_"+sheetName.lower()+".tf"
+        if not os.path.exists(reg_out_dir):
+            os.makedirs(reg_out_dir)
 
-        if(tfStr[reg]!=''):
+        if (tfStr[reg] != ''):
+            src = "##Add New Dedicated VM Host for " + reg.lower() + " here##"
+            tfStr[reg] = template.render(count=0, region=reg).replace(src, tfStr[reg] + "\n" + src)
             tfStr[reg] = "".join([s for s in tfStr[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
-            oname[reg]=open(outfile[reg],'w')
-            oname[reg].write(tfStr[reg])
-            oname[reg].close()
-            print(outfile[reg] + " for dedicated vm hosts has been created for region "+reg)
+
+            resource = sheetName.lower()
+            commonTools.backup_file(reg_out_dir + "/", resource, auto_tfvars_filename)
+
+            # Write to TF file
+            outfile = reg_out_dir + "/" + auto_tfvars_filename
+            tfStr[reg] = "".join([s for s in tfStr[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
+            oname = open(outfile, "w+")
+            print(outfile + " for dedicated vm hosts has been created for region  " + reg)
+            oname.write(tfStr[reg])
+            oname.close()
+
+
 
 if __name__ == '__main__':
     args = parse_args()
     # Execution of the code begins here
-    create_terraform_dedicatedhosts(args.inputfile, args.outdir, args.prefix,args.config)
+    create_terraform_dedicatedhosts(args.inputfile, args.outdir, args.prefix, args.config)

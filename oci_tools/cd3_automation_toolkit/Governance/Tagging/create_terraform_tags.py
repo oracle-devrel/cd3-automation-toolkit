@@ -44,9 +44,9 @@ def create_terraform_tags(inputfile, outdir, prefix, config):
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
-    namespace = env.get_template('tag-namespace-template')
-    tagkey = env.get_template('tag-key-template')
-    defaulttag = env.get_template('tag-default-template')
+    namespace = env.get_template('tags-namespaces-template')
+    tagkey = env.get_template('tags-keys-template')
+    defaulttag = env.get_template('tags-defaults-template')
     namespaces_auto_tfvars_filename = "_" + sheetName.lower() + "-namespaces.auto.tfvars"
     tagkey_auto_tfvars_filename = "_" + sheetName.lower() + "-keys.auto.tfvars"
     default_tags_auto_tfvars_filename = "_" + sheetName.lower() + "-defaults.auto.tfvars"

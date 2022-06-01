@@ -241,12 +241,12 @@ output "rule_sets_id_map" {
 */
 
 #############################
-# Module Block - Network Logging
+# Module Block - LBaaS Logging
 # Create Log Groups and Logs
 #############################
 
 module "loadbalancer-log-groups" {
-  source   = "./modules/logging/log-group"
+  source   = "./modules/managementservices/log-group"
   for_each = (var.loadbalancer_log_groups != null || var.loadbalancer_log_groups != {}) ? var.loadbalancer_log_groups : {}
 
   # Log Groups
@@ -268,8 +268,8 @@ output "log_group_map" {
 */
 
 module "loadbalancer-logs" {
-  source   = "./modules/logging/log"
-  depends_on = [module.load-balancers, module.log-groups]
+  source   = "./modules/managementservices/log"
+  depends_on = [module.load-balancers, module.loadbalancer-log-groups]
   for_each = (var.loadbalancer_logs != null || var.loadbalancer_logs != {}) ? var.loadbalancer_logs : {}
 
   # Logs
