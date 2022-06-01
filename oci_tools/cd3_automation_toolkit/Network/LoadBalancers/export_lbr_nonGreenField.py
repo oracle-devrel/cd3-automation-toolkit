@@ -107,7 +107,7 @@ def insert_values(values_for_column, oci_objs, sheet_dict, region,comp_name, dis
                 values_for_column[col_header].append(subnets)
             elif (col_header == "NSGs"):
                 values_for_column[col_header].append(nsgs)
-            elif (col_header == "Reserved IPs OCID"):
+            elif (col_header == "Reserved IP (Y|N|OCID)"):
                 values_for_column[col_header].append(reserved_ip)
             elif (col_header == 'LBR Hostname(Name:Hostname)'):
                 values_for_column[col_header].append(hostnames)

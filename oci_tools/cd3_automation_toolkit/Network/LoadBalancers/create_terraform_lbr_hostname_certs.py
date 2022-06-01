@@ -240,7 +240,7 @@ def create_terraform_lbr_hostname_certs(inputfile, outdir, prefix, config=DEFAUL
                 columnname = "compartment_tf_name"
                 columnvalue = commonTools.check_tf_variable(columnvalue)
 
-            if columnname == "Reserved IPs OCID" or columnname == "Reserved IPs ID":
+            if columnname == "Reserved IP (Y|N|OCID)":
                 columnname = "reserved_ips_id"
                 if columnvalue != "":
                     if "," in columnvalue:
@@ -267,7 +267,7 @@ def create_terraform_lbr_hostname_certs(inputfile, outdir, prefix, config=DEFAUL
             if columnname == "LBR Hostname(Name:Hostname)":
                 columnname = "lbr_hostname"
 
-            if columnname == "Reserved IPs (Y|N|OCID)":
+            if columnname == "Reserved IP (Y|N|OCID)":
                 columnname = "reserved_ips_id"
 
             lbr_subnets_list = []
