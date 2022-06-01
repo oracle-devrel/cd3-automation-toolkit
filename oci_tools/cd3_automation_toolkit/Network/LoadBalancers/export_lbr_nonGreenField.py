@@ -135,7 +135,7 @@ def insert_values(values_for_column, oci_objs, sheet_dict, region,comp_name, dis
                 values_for_column = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict, values_for_column)
 
 
-def print_lbr_hostname_certs(region, ct, values_for_column_lhc, lbr, LBRs, lbr_compartment_name, vcnname_subname, NSGs):
+def print_lbr_hostname_certs(region, ct, values_for_column_lhc, lbr, LBRs, lbr_compartment_name, network, NSGs):
 
     for eachlbr in LBRs.data:
 
@@ -185,12 +185,16 @@ def print_lbr_hostname_certs(region, ct, values_for_column_lhc, lbr, LBRs, lbr_c
         #Fetch Subnets
         subnet_name_list = ""
         if eachlbr.subnet_ids:
-            for subnet_ids in eachlbr.subnet_ids:
-                for name,id in vcnname_subname.items():
-                    if subnet_ids == id:
-                        subnet_name_list = subnet_name_list+','+name
-                    if (subnet_name_list != "" and subnet_name_list[0] == ','):
-                        subnet_name_list = subnet_name_list.lstrip(',')
+            for subnet_id in eachlbr.subnet_ids:
+                subnet_info = network.get_subnet(subnet_id=subnet_id)
+                subnet_name = subnet_info.data.display_name
+                vcn_id = subnet_info.data.vcn_id
+                vcn_info = network.get_vcn(vcn_id=vcn_id)
+                vcn_name = vcn_info.data.display_name
+                vs = vcn_name + "_" + subnet_name
+                subnet_name_list = subnet_name_list + ',' + vs
+                if (subnet_name_list != "" and subnet_name_list[0] == ','):
+                    subnet_name_list = subnet_name_list.lstrip(',')
         else:
             subnet_name_list = ""
 
@@ -797,31 +801,6 @@ def export_lbr(inputfile, _outdir, network_compartments, _config):
         lbr = LoadBalancerClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
         vcn = VirtualNetworkClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
         region = reg.capitalize()
-        subname_id = {}
-        subname_vcnid = {}
-        vcnname_id = {}
-        vcnname_subname = {}
-
-        for compartments in ct.ntk_compartment_ids:
-            SUBNETs = oci.pagination.list_call_get_all_results(vcn.list_subnets,compartment_id=ct.ntk_compartment_ids[compartments],lifecycle_state="AVAILABLE")
-            VCNs = oci.pagination.list_call_get_all_results(vcn.list_vcns, compartment_id=ct.ntk_compartment_ids[compartments],lifecycle_state="AVAILABLE")
-            for vcns in VCNs.data:
-                vcnname_id.update({vcns.display_name: vcns.id})
-
-            for subnets in SUBNETs.data:
-                subname_id.update({subnets.display_name : subnets.id})
-                subname_vcnid.update({subnets.display_name : subnets.vcn_id})
-
-        for subnets,vcn_ids in subname_vcnid.items():
-            for vcns,ids in vcnname_id.items():
-                if vcn_ids == ids:
-                    subnet_name_re = vcns+"_"+subnets
-                    vcnname_subname.update({subnet_name_re : ids})
-
-        for subnets,sid in subname_id.items():
-            for subnet_rename,vid in vcnname_subname.items():
-                if subnets in subnet_rename:
-                    vcnname_subname[subnet_rename] = sid
 
         for compartment_name in comp_list_fetch:
                 LBRs = oci.pagination.list_call_get_all_results(lbr.list_load_balancers,compartment_id=ct.ntk_compartment_ids[compartment_name],
@@ -829,7 +808,8 @@ def export_lbr(inputfile, _outdir, network_compartments, _config):
                 NSGs = oci.pagination.list_call_get_all_results(vcn.list_network_security_groups,compartment_id=ct.ntk_compartment_ids[compartment_name],
                                                                 lifecycle_state="AVAILABLE")
 
-                values_for_column_lhc = print_lbr_hostname_certs(region, ct, values_for_column_lhc, lbr, LBRs, compartment_name, vcnname_subname,NSGs)
+                network = oci.core.VirtualNetworkClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
+                values_for_column_lhc = print_lbr_hostname_certs(region, ct, values_for_column_lhc, lbr, LBRs, compartment_name, network, NSGs)
                 values_for_column_lis = print_listener(region, ct, values_for_column_lis,LBRs,compartment_name)
                 values_for_column_bss = print_backendset_backendserver(region, ct, values_for_column_bss, lbr,LBRs,compartment_name)
                 values_for_column_rule = print_rule(region, ct, values_for_column_rule, LBRs, compartment_name)
