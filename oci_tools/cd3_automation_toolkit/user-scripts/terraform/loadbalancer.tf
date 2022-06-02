@@ -18,7 +18,7 @@ data "oci_certificates_management_certificates" "certificates_backendsets" {
 data "oci_core_instances" "instances" {
     for_each = var.backends != null ? var.backends : {}
     #Required
-    compartment_id = each.value.instance_compartment != null ? (length(regexall("ocid1.compartment.oc1*", each.value.instance_compartment)) > 0 ? each.value.instance_compartment : var.compartment_ocids[each.value.instance_compartment]) :  var.tenancy_ocid
+    compartment_id = each.value.instance_compartment != null && each.value.instance_compartment !="" ? (length(regexall("ocid1.compartment.oc1*", each.value.instance_compartment)) > 0 ? each.value.instance_compartment : var.compartment_ocids[each.value.instance_compartment]) :  var.tenancy_ocid
 }
 
 data "oci_core_instance" "instance_ip" {
