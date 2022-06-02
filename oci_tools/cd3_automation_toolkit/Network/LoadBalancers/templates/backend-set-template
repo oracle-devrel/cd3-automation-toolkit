@@ -137,7 +137,7 @@ backend_sets = {
             {% endif %}
 
             {% if trusted_certificate_authority_ids and trusted_certificate_authority_ids != "" %}
-            trusted_certificate_authority_ids  = [{{ trusted_certificate_authority_ids }}]
+            trusted_certificate_authority_ids  = ["{{ trusted_certificate_authority_ids }}"]
             {% else %}
             trusted_certificate_authority_ids = []
             {% endif %}
