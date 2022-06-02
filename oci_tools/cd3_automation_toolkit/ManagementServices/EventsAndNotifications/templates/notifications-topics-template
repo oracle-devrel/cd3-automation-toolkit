@@ -1,4 +1,4 @@
-{% if count == 0 %}
+{% if skeleton %}
 // Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 
 ############################
@@ -10,7 +10,9 @@
 ############################
 
 notifications_topics = {
-{% endif %}
+    ##Add New Topics for {{ region|lower }} here##
+}
+{% else %}
   {{ topic_tf_name }} = {
         compartment_id = "{{ compartment_tf_name }}"
         description = "{{ description }}"
@@ -56,4 +58,4 @@ notifications_topics = {
     {#  ###Section for adding Defined and Freeform Tags ends here###  #}
     },
 
-  }
+{% endif %}

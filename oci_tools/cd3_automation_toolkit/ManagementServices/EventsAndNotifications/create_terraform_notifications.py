@@ -178,6 +178,8 @@ def create_terraform_notifications(inputfile, outdir, prefix, config=DEFAULT_LOC
         reg_out_dir = outdir + "/" + reg
         if (tfStr[reg] != ''):
             outfile[reg] = reg_out_dir + "/" + prefix + topics_auto_tfvars_filename
+            srcStr = "##Add New Topics for "+str(reg).lower()+" here##"
+            tfStr[reg] = notifications_template.render(skeleton=True, region=reg).replace(srcStr, tfStr[reg] + "\n" + srcStr)
             tfStr[reg] = "".join([s for s in tfStr[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
             oname[reg] = open(outfile[reg], 'w+')
             oname[reg].write(tfStr[reg])
