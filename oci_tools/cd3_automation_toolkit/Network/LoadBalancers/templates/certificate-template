@@ -9,7 +9,7 @@
 #############################
 
 certificates = {
-  ##Add New Certificates for {{ region.lower() }} here##
+  ##Add New Certificates for {{ region|lower }} here##
 }{% else %}
 
     {{ lbr_tf_name }}_{{ certificate_tf_name }}_cert = {

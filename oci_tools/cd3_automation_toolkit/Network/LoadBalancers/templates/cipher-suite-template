@@ -9,7 +9,7 @@
 #############################
 
 cipher_suites = {
-  ##Add New Ciphers for {{ region.lower() }} here##
+  ##Add New Ciphers for {{ region|lower }} here##
 }{% else %}
     {{ lbr_tf_name }}_{{ cipher_tf_name }} = {
           ciphers          = [{{ ciphers }}]

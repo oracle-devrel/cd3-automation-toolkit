@@ -12,7 +12,7 @@
 #############################
 
 listeners = {
-  ##Add New Listeners for {{ region.lower() }} here##
+  ##Add New Listeners for {{ region|lower }} here##
 }{% else %}
 
     {{ lbr_tf_name }}_{{ listener_tf_name }} = {

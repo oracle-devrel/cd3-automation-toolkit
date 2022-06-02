@@ -10,7 +10,7 @@
 #############################
 
 backends = {
-  ##Add New Backends for {{ region.lower() }} here##
+  ##Add New Backends for {{ region|lower }} here##
 }{% else %}
     {{ lbr_tf_name }}_{{ backend_server_tf_name }} = {
         backendset_name = "{{ lbr_tf_name }}_{{ backend_set_tf_name }}"

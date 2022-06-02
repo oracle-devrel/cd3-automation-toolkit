@@ -9,7 +9,7 @@
 #############################
 
 rule_sets = {
-  ##Add New Rule Sets for {{ region.lower() }} here##
+  ##Add New Rule Sets for {{ region|lower }} here##
 }{% else %}
     {{ lbr_tf_name}}_{{ rule_set_tf_name }} = {
         name = "{{ rule_set_name }}"

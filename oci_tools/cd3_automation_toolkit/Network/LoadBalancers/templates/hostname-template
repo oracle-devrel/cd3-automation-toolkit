@@ -9,7 +9,7 @@
 #############################
 
 hostnames = {
-  ##Add New Hostnames for {{ region.lower() }} here##
+  ##Add New Hostnames for {{ region|lower }} here##
 }{% else %}
   {{ host_tf_name }}_hostname = {
         name               = "{{ name }}"

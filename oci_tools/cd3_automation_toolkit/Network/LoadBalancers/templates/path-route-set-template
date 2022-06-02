@@ -9,7 +9,7 @@
 #############################
 
 path_route_sets = {
-  ##Add New Path Route Sets for {{ region.lower() }} here##
+  ##Add New Path Route Sets for {{ region|lower }} here##
 }{% else %}
    {{ lbr_tf_name }}_{{ path_route_set_tf_name }} = {
         load_balancer_id = "{{ lbr_tf_name }}"
