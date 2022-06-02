@@ -12,6 +12,8 @@ import argparse
 import sys
 import oci
 import os
+
+from oci.certificates import CertificatesClient
 from oci.core.virtual_network_client import VirtualNetworkClient
 from oci.load_balancer.load_balancer_client import LoadBalancerClient
 from oci.config import DEFAULT_LOCATION
@@ -362,6 +364,7 @@ def print_lbr_hostname_certs(region, ct, values_for_column_lhc, lbr, LBRs, lbr_c
     return values_for_column_lhc
 
 def print_backendset_backendserver(region, ct, values_for_column_bss, lbr, LBRs, lbr_compartment_name):
+    certs = CertificatesClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
 
     for eachlbr in LBRs.data:
 
@@ -458,7 +461,6 @@ def print_backendset_backendserver(region, ct, values_for_column_bss, lbr, LBRs,
                         values_for_column_bss[col_headers].append(backendsets)
 
                     elif col_headers == "Certificate Name or OCID":
-
                         if str(backendset_details.ssl_configuration).lower() != "none":
                             certificate_list = backendset_details.ssl_configuration
                             if certificate_list.certificate_ids != []:
@@ -470,6 +472,16 @@ def print_backendset_backendserver(region, ct, values_for_column_bss, lbr, LBRs,
                                 values_for_column_bss[col_headers].append(certificate_list.certificate_name)
                             else:
                                 values_for_column_bss[col_headers].append("")
+                        else:
+                            values_for_column_bss[col_headers].append("")
+
+
+                    elif col_headers == "Trusted Certificate Authority IDs":
+                        ca_cert_list = ""
+                        if certificate_list.trusted_certificate_authority_ids != []:
+                            for certs in certificate_list.trusted_certificate_authority_ids:
+                                ca_cert_list = ca_cert_list + "," + certs
+                            values_for_column_bss[col_headers].append(ca_cert_list.lstrip(','))
                         else:
                             values_for_column_bss[col_headers].append("")
 
@@ -526,6 +538,18 @@ def print_listener(region, ct, values_for_column_lis, LBRs, lbr_compartment_name
                             for certificate_ids in sslcerts.certificate_ids:
                                 certificates = certificates + "," + certificate_ids
                             values_for_column_lis[col_headers].append(certificates.lstrip(","))
+                        else:
+                            values_for_column_lis[col_headers].append("")
+                    else:
+                        values_for_column_lis[col_headers].append("")
+
+                elif col_headers == "Trusted Certificate Authority IDs":
+                    ca_cert_list = ""
+                    if str(sslcerts).lower() != "none":
+                        if sslcerts.trusted_certificate_authority_ids != []:
+                            for certs in sslcerts.trusted_certificate_authority_ids:
+                                ca_cert_list = ca_cert_list + "," + certs
+                            values_for_column_lis[col_headers].append(ca_cert_list.lstrip(','))
                         else:
                             values_for_column_lis[col_headers].append("")
                     else:
