@@ -1,4 +1,4 @@
-{% if count == 0 %}
+{% if skeleton %}
 // Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 
 ############################
@@ -11,7 +11,9 @@
 ############################
 
 notifications_subscriptions = {
-{% endif %}
+  ##Add New Subscriptions for {{ region|lower }} here##
+}
+{% else %}
   {{ subscription_tf_name }} = {
         subscription_name = "{{ subscription_tf_name }}"
         compartment_id = "{{ compartment_tf_name }}"
@@ -59,4 +61,4 @@ notifications_subscriptions = {
     {#  ###Section for adding Defined and Freeform Tags ends here###  #}
     },
 
-  }
+{% endif %}
