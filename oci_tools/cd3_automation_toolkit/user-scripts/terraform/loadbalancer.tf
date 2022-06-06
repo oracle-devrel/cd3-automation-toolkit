@@ -56,7 +56,7 @@ module "load-balancers" {
   network_security_group_ids = each.value.nsg_ids
   key_name                   = each.key
   load_balancers             = var.load_balancers
-#  reserved_ips_id            = length(regexall("ocid1.publicip.oc1*", each.value.reserved_ips_id)) > 0 ? each.value.reserved_ips_id : merge(module.lbr-reserved-ips.*...)[each.value.reserved_ips_id]["reserved_ip_tf_id"]
+  reserved_ips_id            = lower(each.value.reserved_ips_id) != "n" && each.value.reserved_ips_id != "" ? (length(regexall("ocid1.publicip.oc1*", each.value.reserved_ips_id)) > 0 ? [each.value.reserved_ips_id] : [merge(module.lbr-reserved-ips.*...)[join("-",[each.key,"reserved","ip"])].reserved_ip_tf_id]) : []
 }
 
 /*
@@ -297,7 +297,6 @@ output "logs_id" {
 }
 */
 
-/*
 // Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 
 ############################################
@@ -319,7 +318,6 @@ module "lbr-reserved-ips" {
     defined_tags         = each.value.defined_tags
     display_name         = each.value.display_name
     freeform_tags        = each.value.freeform_tags
-    #private_ip_id        = each.value.private_ip_id != "" ? (length(regexall("ocid1.privateip.oc1*", each.value.private_ip_id)) > 0 ? each.value.private_ip_id : (length(regexall("\\.", each.value.private_ip_id)) == 3 ? local.private_ip_id[0][each.value.private_ip_id] : merge(module.private-ips.*...)[each.value.private_ip_id].private_ip_tf_id)) : null
-    #public_ip_pool_id    = each.value.public_ip_pool_id != "" ? (length(regexall("ocid1.publicippool.oc1*", each.value.public_ip_pool_id)) > 0 ? each.value.public_ip_pool_id : merge(module.public-ip-pools.*...)[each.value.public_ip_pool_id].public_ip_pool_tf_id) : null
+    private_ip_id        = each.value.private_ip_id != "" ? (length(regexall("ocid1.privateip.oc1*", each.value.private_ip_id)) > 0 ? each.value.private_ip_id : (length(regexall("\\.", each.value.private_ip_id)) == 3 ? local.private_ip_id[0][each.value.private_ip_id] : merge(module.private-ips.*...)[each.value.private_ip_id].private_ip_tf_id)) : null
+    public_ip_pool_id    = each.value.public_ip_pool_id != "" ? (length(regexall("ocid1.publicippool.oc1*", each.value.public_ip_pool_id)) > 0 ? each.value.public_ip_pool_id : merge(module.public-ip-pools.*...)[each.value.public_ip_pool_id].public_ip_pool_tf_id) : null
 }
-*/

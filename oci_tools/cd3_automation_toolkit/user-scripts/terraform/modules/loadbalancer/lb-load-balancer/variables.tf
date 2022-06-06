@@ -77,4 +77,7 @@ variable "vcn_names" {
 
 variable "load_balancers" {}
 
-variable "reserved_ips_id" {}
+variable "reserved_ips_id" {
+  type    = list(any)
+  default = []
+}

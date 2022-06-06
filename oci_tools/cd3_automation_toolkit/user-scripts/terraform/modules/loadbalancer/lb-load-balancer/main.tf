@@ -22,10 +22,10 @@ resource "oci_load_balancer_load_balancer" "load_balancer" {
   network_security_group_ids = var.network_security_group_ids != [] ? local.nsg_ids : null
 
   dynamic "reserved_ips" {
-    for_each = var.load_balancers[var.key_name].reserved_ips != [] ? var.load_balancers[var.key_name].reserved_ips : []
+    for_each = var.reserved_ips_id != [] ? var.reserved_ips_id : []
     content {
       #Optional
-      id = var.reserved_ips_id
+      id = reserved_ips.value
     }
   }
 

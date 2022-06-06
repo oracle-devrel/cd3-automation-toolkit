@@ -40,6 +40,7 @@ def create_terraform_lbr_hostname_certs(inputfile, outdir, prefix, config=DEFAUL
     hostname = env.get_template('hostname-template')
     certficate = env.get_template('certificate-template')
     ciphersuite =  env.get_template('cipher-suite-template')
+    reserved_ips_template = env.get_template('lb-reserved-ips-template')
     sheetName = "LB-Hostname-Certs"
     lb_auto_tfvars_filename = prefix + "_"+sheetName.lower()+".auto.tfvars"
 
@@ -50,6 +51,7 @@ def create_terraform_lbr_hostname_certs(inputfile, outdir, prefix, config=DEFAUL
     ct.get_subscribedregions(configFileName)
 
     lbr_str = {}
+    reserved_ips_str = {}
     hostname_str = {}
     hostname_str_02 = {}
     certificate_str = {}
@@ -83,6 +85,7 @@ def create_terraform_lbr_hostname_certs(inputfile, outdir, prefix, config=DEFAUL
     for reg in ct.all_regions:
         lbr_str[reg] = ''
         hostname_str[reg] = ''
+        reserved_ips_str[reg] = ''
         certificate_str[reg] = ''
         cipher_suites[reg] = ''
         hostname_str_02[reg] = ''
@@ -379,6 +382,8 @@ def create_terraform_lbr_hostname_certs(inputfile, outdir, prefix, config=DEFAUL
                     hostname_str[region] = ''
         lbr_str[region] = lbr_str[region] + lbr.render(tempStr)
         hostname_str_02[region] = hostname_str_02[region] + hostname_str[region]
+        if tempStr['reserved_ips_id'].lower() == 'y':
+            reserved_ips_str[region] = reserved_ips_str[region] + reserved_ips_template.render(tempStr)
 
     for reg in ct.all_regions:
         if lbr_str[reg] != '':
@@ -401,7 +406,12 @@ def create_terraform_lbr_hostname_certs(inputfile, outdir, prefix, config=DEFAUL
             src = "##Add New Ciphers for " + reg.lower() + " here##"
             cipher_suites[reg] = ciphersuite.render(skeleton=True, count = 0, region=reg).replace(src, cipher_suites[reg]+"\n"+src)
 
-        finalstring =  lbr_str[reg] + hostname_str_02[reg] + certificate_str[reg] + cipher_suites[reg]
+        if reserved_ips_str[reg] != '':
+            # Generate Final String
+            src = "##Add New Load Balancer Reserved IPs for "+ reg.lower() +" here##"
+            reserved_ips_str[reg] = reserved_ips_template.render(skeleton=True, count = 0, region=reg).replace(src, reserved_ips_str[reg]+"\n"+src)
+
+        finalstring =  lbr_str[reg] + hostname_str_02[reg] + certificate_str[reg] + cipher_suites[reg] + reserved_ips_str[reg]
         finalstring = "".join([s for s in finalstring.strip().splitlines(True) if s.strip("\r\n").strip()])
 
         if finalstring != "":
