@@ -40,7 +40,7 @@ def create_terraform_lbr_hostname_certs(inputfile, outdir, prefix, config=DEFAUL
     hostname = env.get_template('hostname-template')
     certficate = env.get_template('certificate-template')
     ciphersuite =  env.get_template('cipher-suite-template')
-    reserved_ips_template = env.get_template('lb-reserved-ips-template')
+    reserved_ips_template = env.get_template('lbr-reserved-ips-template')
     sheetName = "LB-Hostname-Certs"
     lb_auto_tfvars_filename = prefix + "_"+sheetName.lower()+".auto.tfvars"
 
