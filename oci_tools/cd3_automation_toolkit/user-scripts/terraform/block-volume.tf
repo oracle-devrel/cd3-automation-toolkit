@@ -18,7 +18,7 @@ module "block-volumes" {
   for_each             = var.blockvolumes != null ? var.blockvolumes : {}
   attachment_type      = each.value.attachment_type
   attach_to_instance   = each.value.attach_to_instance != "" ? length(regexall("ocid1.instance.oc1*", each.value.attach_to_instance)) > 0 ? each.value.attach_to_instance : merge(module.instances.*...)[each.value.attach_to_instance]["instance_tf_id"] : ""
-  #attach_to_instance   = length(each.value.attach_to_instance) > 0 ? [data.oci_core_instances.instance[each.value.display_name].instances[0].id] : []
+  #attach_to_instance  = length(each.value.attach_to_instance) > 0 ? [data.oci_core_instances.instance[each.value.display_name].instances[0].id] : []
   availability_domain  = each.value.availability_domain != "" && each.value.availability_domain != null ? data.oci_identity_availability_domains.availability_domains.availability_domains[each.value.availability_domain].name : ""
   compartment_id       = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
   vpus_per_gb          = each.value.vpus_per_gb != null ? each.value.vpus_per_gb : null
