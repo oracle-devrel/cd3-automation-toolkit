@@ -95,7 +95,7 @@ listeners = {
             {% endif %}
 
             {% if cipher_suite_name %}
-            protocols = [ "{{ ssl_protocols }}" ]
+            protocols = [ {{ ssl_protocols }} ]
             {% else %}
             protocols = []
             {% endif %}
