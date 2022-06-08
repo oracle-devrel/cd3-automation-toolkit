@@ -116,7 +116,7 @@ def enable_cis_vcnflow_logging(filename, outdir, prefix, config=DEFAULT_LOCATION
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
     template = env.get_template('logging-template')
-    auto_tfvars_filename = 'cis-vcnflow-logging.auto.tfvars'
+    auto_tfvars_filename = prefix+'_vcnflow-logging.auto.tfvars'
 
     tfStrLogs = {}
     tempStr = {}
@@ -228,7 +228,7 @@ def enable_load_balancer_logging(filename, outdir, prefix, config=DEFAULT_LOCATI
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
     template = env.get_template('logging-template')
-    auto_tfvars_filename = "load-balancers-logging.auto.tfvars"
+    auto_tfvars_filename = prefix+"_load-balancers-logging.auto.tfvars"
 
     # Read cd3 using pandas dataframe
     df, col_headers = commonTools.read_cd3(filename, "LB-Hostname-Certs")
