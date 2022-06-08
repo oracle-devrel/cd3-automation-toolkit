@@ -132,6 +132,7 @@ def create_ruleset(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
             continue
 
         region = region.strip().lower()
+        reg= region
 
         if region in commonTools.endNames:
             break
