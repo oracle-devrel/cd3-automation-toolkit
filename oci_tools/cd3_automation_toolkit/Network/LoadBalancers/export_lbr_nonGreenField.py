@@ -149,7 +149,7 @@ def print_lbr_hostname_certs(region, ct, values_for_column_lhc, lbr, LBRs, lbr_c
         if eachlbr.ip_addresses != []:
             for ips in eachlbr.ip_addresses:
                 if str(ips.reserved_ip) == "null" or str(ips.reserved_ip) == "None":
-                    reserved_ip = ""
+                    reserved_ip = "N"
                 else:
                     reserved_ip = ips.reserved_ip.id
 
