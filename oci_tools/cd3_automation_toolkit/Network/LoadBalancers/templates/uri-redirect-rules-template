@@ -5,7 +5,12 @@
             operator = "{{ operator }}"
             host = "{{ host }}"
             path = "{{ path }}"
+            {% if port == "" %}
+            port = null
+            {% else %}
             port = "{{ port }}"
+            {% endif %}
+
             protocol = "{{ protocol }}"
             query = "{{ redirect_uri_query }}"
             response_code = "{{ response_code }}"

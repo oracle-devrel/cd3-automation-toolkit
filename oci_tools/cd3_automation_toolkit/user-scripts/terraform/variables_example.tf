@@ -603,9 +603,9 @@ variable "custom_backup_policies" {
 variable "capacity_reservation_ocids" {
   type = map(any)
   default = {
-    "AD1" : "ocid1.capacityreservation.oc1.iad.anuwcljrmbgqraachdisdnhc5z7swiwyzhi6radkn7xxtw6uosysheiadlja",
-    "AD2" : "ocid1.capacityreservation.oc1.iad.anuwcljsmbgqraacm4edb4dbsrqsgtskzjicudhmasmpqe7aopxmjvnukugq",
-    "AD3" : "ocid1.capacityreservation.oc1.iad.anuwcljtmbgqraactoi5gwv6ahzutllmjmfgtrabarhcq7wvkx6mz2b7dwga"
+    "AD1" : "<AD1 Capacity Reservation OCID>",
+    "AD2" : "<AD2 Capacity Reservation OCID>",
+    "AD3" : "<AD3 Capacity Reservation OCID>"
   }
 }
 

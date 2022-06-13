@@ -224,6 +224,7 @@ def create_major_objects(inputfile, outdir, prefix, non_gf_tenancy, config, modi
 
         # Process Rows
         ip=1
+        region_drg_done = []
         for i in df.index:
             region = str(df['Region'][i]).strip()
             if (region in commonTools.endNames):
@@ -238,6 +239,7 @@ def create_major_objects(inputfile, outdir, prefix, non_gf_tenancy, config, modi
             tempdict = {}
             drg_attach = {}
             drg_rt_tf_name = ''
+            drg_name=''
             drg_tf_name = ''
 
             for columnname in dfcolumns:
@@ -345,20 +347,22 @@ def create_major_objects(inputfile, outdir, prefix, non_gf_tenancy, config, modi
                 drg_attach_skeleton = drg_attach_template.render(skeleton=True, count=0)[:-1]
                 drgstr_skeleton = drg_template.render(count=0)[:-1]
                 region_included_drg.append(region)
-                tempStr['drg_version'] = drg_versions[region, drg_name]
-                drgstr = drg_template.render(tempStr)
+            tempStr['drg_version'] = drg_versions[region, drg_name]
+            drgstr = drg_template.render(tempStr)
 
             if(attachedto=="attached"):
                 drg_attach = drg_attach_template.render(tempStr)
             elif(attachedto=="empty"):
                 drg_attach=""
 
-            if (drgstr not in drg_tfStr[region]):
+            #if (drgstr not in drg_tfStr[region]):
+            key = region,drg_name
+            if(key not in region_drg_done):
+                region_drg_done.append(key)
                 drg_tfStr[region] = drg_tfStr[region][:-1] + drgstr #+ drg_attach
             if (drg_attach not in drg_attach_tfStr[region]):
                 drg_attach_tfStr[region] = drg_attach_tfStr[region][:-1] + drg_attach
-            # else:
-            #     tfStr[region] = tfStr[region] + drg_attach
+
         for region in ct.all_regions:
             if region in region_included_drg:
                 drg_attach_tfStr[region] = drg_attach_skeleton + drg_attach_tfStr[region]
