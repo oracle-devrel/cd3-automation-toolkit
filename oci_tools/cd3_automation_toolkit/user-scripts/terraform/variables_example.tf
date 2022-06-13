@@ -485,6 +485,7 @@ variable "vcn_logs" {
   type    = map(any)
   default = {}
 }
+
 #########################
 ###### OSS Buckets ######
 #########################
@@ -582,6 +583,15 @@ variable "cloud_guard_configs" {
 }
 
 variable "cloud_guard_targets" {
+  type    = map(any)
+  default = {}
+}
+
+####################################
+####### Custom Backup Policy #######
+####################################
+
+variable "custom_backup_policies" {
   type    = map(any)
   default = {}
 }
