@@ -8,7 +8,7 @@
 resource "oci_events_rule" "event" {
 
   #Required
-  compartment_id = var.compartment_name
+  compartment_id = var.compartment_id
   display_name   = var.event_name
 
   is_enabled  = var.is_enabled

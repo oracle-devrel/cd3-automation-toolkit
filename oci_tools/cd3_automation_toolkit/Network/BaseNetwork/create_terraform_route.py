@@ -353,6 +353,7 @@ def create_terraform_drg_route(inputfile, outdir, prefix, non_gf_tenancy, config
                 resource = 'DRGRTs'
                 srcdir = outdir + "/" + reg + "/"
                 commonTools.backup_file(srcdir, resource, prefix + drg_rt_auto_tfvars_filename)
+            tempSkeletonDRGRouteTable[reg] = "".join([s for s in tempSkeletonDRGRouteTable[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
             oname_rt = open(rtfile, "w+")
             print("Writing to..." + str(rtfile))
             oname_rt.write(tempSkeletonDRGRouteTable[reg])
@@ -369,6 +370,7 @@ def create_terraform_drg_route(inputfile, outdir, prefix, non_gf_tenancy, config
                 resource = 'DRGRTs'
                 srcdir = outdir + "/" + reg + "/"
                 commonTools.backup_file(srcdir, resource, prefix + drg_distribution_auto_tfvars_template)
+            tempSkeletonDRGDistribution[reg] = "".join([s for s in tempSkeletonDRGDistribution[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
             oname_drg_dis = open(rtdistribution, "w+")
             print("Writing to..." + str(rtdistribution))
             oname_drg_dis.write(tempSkeletonDRGDistribution[reg])
@@ -467,7 +469,7 @@ def create_terraform_route(inputfile, outdir, prefix, non_gf_tenancy, config, mo
                         modifiedroutetableStr[reg] = copy_data_from_file(outfile, rts, modifiedroutetableStr[reg])
                 tempSkeleton[reg] = template.render(count = 0, region = reg, skeleton=True)
                 srcStr = "##Add New Route Tables for "+reg.lower()+" here##"
-                modifiedroutetableStr[reg] = tempSkeleton[reg].replace(srcStr,modifiedroutetableStr[reg])
+                modifiedroutetableStr[reg] = tempSkeleton[reg].replace(srcStr,modifiedroutetableStr[reg]) #+"\n"+srcStr) ----> ToTest, if fails add +"\n"+srcStr
             else:
                 modifiedroutetableStr[reg] = ''
 
@@ -855,26 +857,7 @@ def create_terraform_route(inputfile, outdir, prefix, non_gf_tenancy, config, mo
         if (rt_name == "n"):
             return
 
-        if (AD.strip().lower() != 'regional'):
-            AD = AD.strip().upper()
-            ad = ADS.index(AD)
-            ad_name_int = ad + 1
-            ad_name = str(ad_name_int)
-        else:
-            ad_name = ""
-
-        tempStr['ad_name'] = ad_name
-
-        # check if subnet cidr needs to be attached
-        if (vcnInfo.subnet_name_attach_cidr == 'y'):
-            if (str(ad_name) != ''):
-                name1 = rt_name + "-ad" + str(ad_name)
-            else:
-                name1 = rt_name
-            display_name = name1 + "-" + subnet
-        else:
-            display_name = rt_name
-
+        display_name = rt_name
         tempStr['display_name'] = display_name
 
         vcn_tf_name = commonTools.check_tf_variable(tempStr['vcn_name'])
@@ -1215,6 +1198,7 @@ def create_terraform_route(inputfile, outdir, prefix, non_gf_tenancy, config, mo
             if routetableStr[reg] != '':
                 routetableStr[reg] = routetableStr[reg] + "\n" + skeletonStr
                 tempSkeleton[reg] = tempSkeleton[reg].replace(skeletonStr, routetableStr[reg])
+                tempSkeleton[reg] = "".join([s for s in tempSkeleton[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
                 oname = open(outfile, "w+")
                 oname.write(tempSkeleton[reg])
                 oname.close()
@@ -1241,6 +1225,7 @@ def create_terraform_route(inputfile, outdir, prefix, non_gf_tenancy, config, mo
                     srcdir = outdir + "/" + reg + "/"
                     commonTools.backup_file(srcdir, resource, prefix + auto_tfvars_filename)
 
+                tempSkeleton[reg] = "".join([s for s in tempSkeleton[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
                 oname = open(outfile, "w+")
                 oname.write(tempSkeleton[reg])
                 oname.close()

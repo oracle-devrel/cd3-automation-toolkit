@@ -1,15 +1,20 @@
-items  {
-        #Required
-        action = "{{ action }}"
-        header = "{{ header }}"
-        {% if prefix and prefix !='' %}
-        prefix = "{{ prefix }}"
-        {% endif %}
-        {% if suffix and suffix !='' %}
-        suffix = "{{ suffix }}"
-        {% endif %}
-        {% if value and value != '' %}
-        value = "{{ value }}"
-        {% endif %}
-    }
-    ## Add_rules_here ##
+            {
+            action = "{{ action }}"
+            header = "{{ header }}"
+            {% if prefix and prefix !='' %}
+            prefix = "{{ prefix }}"
+            {% else %}
+            prefix = ""
+            {% endif %}
+            {% if suffix and suffix !='' %}
+            suffix = "{{ suffix }}"
+            {% else %}
+            suffix = ""
+            {% endif %}
+            {% if value and value != '' %}
+            value = "{{ value }}"
+            {% else %}
+            value = ""
+            {% endif %}
+            },
+    ## Add_request_response_header_rules_here ##

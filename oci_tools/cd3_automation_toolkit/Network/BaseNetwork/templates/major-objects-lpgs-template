@@ -3,6 +3,10 @@
 ############################
 # Network
 # Major Objects - LPG - tfvars
+# Allowed Values:
+# vcn_id can be the ocid or the key of vcns (map)
+# compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens "--"
+# Example : compartment_id = "ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c" or compartment_id = "Network-root-cpt--Network" where "Network-root-cpt" is the parent of "Network" compartment
 ############################
 
 lpgs = {
@@ -30,8 +34,8 @@ lpgs = {
 {% endif %}
 {% if lpg_name != "" and lpg_name != "nan" and lpg_name != null %}
                 {{ lpg_tf_name }} = {
-                    compartment_name = "{{ compartment_tf_name }}"
-                    vcn_name     = "{{ vcn_tf_name }}"
+                    compartment_id = "{{ compartment_tf_name }}"
+                    vcn_id     = "{{ vcn_tf_name }}"
                     lpg_name   = "{{ lpg_name }}"
                     {% if rt_tf_name and rt_tf_name != 'nan' and rt_tf_name != '' %}
                     route_table_id = "{{ rt_tf_name }}"

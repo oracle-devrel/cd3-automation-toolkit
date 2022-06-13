@@ -27,6 +27,7 @@ def data_frame(filename,sheetname):
 
     return df
 
+
 class commonTools():
     endNames = {'<END>', '<end>', '<End>'}
     tagColumns = {'freeform tags', 'freeform_tags', 'defined_tags', 'defined tags'}
@@ -379,8 +380,6 @@ class commonTools():
             sheet.cell(3,2).value = onprem_destinations
             sheet.cell(4,2).value = ngw_destinations
             sheet.cell(5,2).value = igw_destinations
-            # Put n for subnet_name_attach_cidr
-            sheet.cell(6, 2).value = 'n'
             try:
                 book.save(cd3file)
                 book.close()
@@ -709,7 +708,6 @@ class parseVCNInfo():
     # all_regions = []
 
     def __init__(self, filename):
-        self.subnet_name_attach_cidr = ''
         self.onprem_destinations = []
         self.ngw_destinations = []
         self.igw_destinations = []
@@ -744,9 +742,30 @@ class parseVCNInfo():
         else:
             self.igw_destinations = igw_destinations.split(",")
 
-        self.subnet_name_attach_cidr = str(values[3]).strip()
-        if (self.subnet_name_attach_cidr.lower() == 'nan'):
-            self.subnet_name_attach_cidr = 'n'
-        else:
-            self.subnet_name_attach_cidr = self.subnet_name_attach_cidr.strip().lower()
 
+class parseSubnets():
+    def __init__(self, filename):
+        self.vcn_subnet_map = {}
+        try:
+            # Read and search for VCN
+            df_subnet = pd.read_excel(filename, sheet_name='Subnets', skiprows=1)
+        except Exception as e:
+            if ("No sheet named" in str(e)):
+                print("\nTab - \"Subnets\" is missing in the CD3. Please make sure to use the right CD3 in properties file...Exiting!!")
+                exit(1)
+            else:
+                print("Error occurred while reading the CD3 excel sheet " + str(e))
+                exit(1)
+
+        # Drop all empty rows
+        df_subnet = df_subnet.dropna(how='all')
+        df_subnet = df_subnet.reset_index(drop=True)
+
+
+        for i in df_subnet.index:
+            region = str(df_subnet['Region'][i]).strip()
+            if (region in commonTools.endNames):  # or str(region).lower()=='nan'):
+                break
+            key = df_subnet.loc[i,'Region'].strip().lower(),df_subnet.loc[i,'VCN Name'].strip()+"_"+df_subnet.loc[i,'Subnet Name'].strip()
+            value = df_subnet.loc[i,'Compartment Name'].strip(), df_subnet.loc[i,'VCN Name'].strip(), df_subnet.loc[i,'Subnet Name'].strip()
+            self.vcn_subnet_map[key] =  value

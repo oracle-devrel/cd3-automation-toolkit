@@ -5,7 +5,7 @@
 # Create Notifications_Subscriptions
 ############################
 
-variable "compartment_name" {
+variable "compartment_id" {
   type = string
 }
 
@@ -20,7 +20,7 @@ variable "protocol" {
   type = string
 }
 
-variable "topic_name" {
+variable "topic_id" {
   type = string
 }
 

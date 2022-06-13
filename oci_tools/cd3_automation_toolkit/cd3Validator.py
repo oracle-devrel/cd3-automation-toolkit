@@ -790,7 +790,7 @@ def validate_blockvols(filename,comp_ids):
     instance_name_check = False
     bv_ad_check = False
 
-    dfvol = data_frame(filename, 'BlockVols')
+    dfvol = data_frame(filename, 'BlockVolumes')
     dfinst = data_frame(filename, 'Instances')
     values_list = dfinst['Display Name'].tolist()
     inst_ad_list = dfinst['Display Name']+'_'+dfinst['Availability Domain(AD1|AD2|AD3)']
@@ -1087,8 +1087,8 @@ def validate_cd3(filename, prefix, outdir,choices, configFileName):
             instances_check = validate_instances(filename,ct.ntk_compartment_ids)
 
         if ('Validate Block Volumes' in options[0]):
-            log("\n============================= Verifying BlockVols Tab ==========================================\n")
-            print("\nProcessing BlockVols Tab..")
+            log("\n============================= Verifying BlockVolumes Tab ==========================================\n")
+            print("\nProcessing BlockVolumes Tab..")
             bvs_check = validate_blockvols(filename,ct.ntk_compartment_ids)
 
     # Prints the final result; once the validation is complete

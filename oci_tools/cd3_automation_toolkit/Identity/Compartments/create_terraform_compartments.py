@@ -251,10 +251,11 @@ def create_terraform_compartments(inputfile, outdir, prefix, config=DEFAULT_LOCA
     outfile[reg] = reg_out_dir + "/" + prefix + auto_tfvars_filename
 
     if (tfStr != ''):
-            oname[reg] = open(outfile[reg], 'w')
-            oname[reg].write(tfStr)
-            oname[reg].close()
-            print(outfile[reg] + " for Compartments has been created for region " + reg)
+        tfStr = "".join([s for s in tfStr.strip().splitlines(True) if s.strip("\r\n").strip()])
+        oname[reg] = open(outfile[reg], 'w')
+        oname[reg].write(tfStr)
+        oname[reg].close()
+        print(outfile[reg] + " for Compartments has been created for region " + reg)
 
 if __name__ == '__main__':
     # Execution of the code begins here

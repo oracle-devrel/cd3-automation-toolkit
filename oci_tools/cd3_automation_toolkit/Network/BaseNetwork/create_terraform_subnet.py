@@ -68,11 +68,8 @@ def create_terraform_subnet(inputfile, outdir, prefix, non_gf_tenancy, config, m
         if (AD.strip().lower() != 'regional'):
             AD = AD.strip().upper()
             ad = ADS.index(AD)
-            ad_name_int = ad + 1
-            ad_name = str(ad_name_int)
             adString = ad
         else:
-            ad_name = ""
             adString = ""
 
         tempStr['availability_domain'] = adString
@@ -81,55 +78,32 @@ def create_terraform_subnet(inputfile, outdir, prefix, non_gf_tenancy, config, m
         name = tempStr['subnet_name']
 
         tempStr['vcn_tf_name'] = vcn_tf_name
-        if (vcnInfo.subnet_name_attach_cidr == 'y'):
-                if (str(ad_name) != ''):
-                        name1 = name + "-ad" + str(ad_name)
-                        namert = rt_name + "-ad" + str(ad_name)
-                else:
-                        name1 = name
-                        namert = rt_name
 
-                display_name = name1 + "-" + subnet
-                rt_display_name=namert+ "-" + subnet
-
-        else:
-                display_name = name
-                rt_display_name=rt_name
+        display_name = name
+        rt_display_name = rt_name
 
         tempStr['display_name'] = display_name
         tempStr['rt_display_name'] = rt_display_name
 
-
-        sl_tf_names=[]
-        seclist_names = tempStr['sl_names']
-        if (vcnInfo.subnet_name_attach_cidr == 'y'):
-                for sl_name in seclist_names:
-                        sl_name=str(sl_name).strip()
-                        if (str(ad_name) != ''):
-                                namesl = str(sl_name) + "-ad" + str(ad_name)
-                        else:
-                                namesl = str(sl_name)
-                        sl_display_name = namesl + "-" + subnet
-                        sl_tf_name=vcn_name+"_"+sl_display_name
-                        sl_tf_names.append(commonTools.check_tf_variable(sl_tf_name))
-        else:
-                for sl_name in seclist_names:
-                        sl_name=str(sl_name).strip()
-                        sl_display_name=str(sl_name)
-                        sl_tf_name = vcn_name + "_" + sl_display_name
-                        sl_tf_names.append(commonTools.check_tf_variable(sl_tf_name))
-
-        subnet_tf_name=vcn_name+"_"+display_name
+        subnet_tf_name = vcn_name + "_" + display_name
         subnet_tf_name = commonTools.check_tf_variable(subnet_tf_name)
+
         if rt_display_name != 'n':
-            rt_tf_name = vcn_name+"_"+rt_display_name
+            rt_tf_name = vcn_name + "_" + rt_display_name
             rt_tf_name = commonTools.check_tf_variable(rt_tf_name)
         else:
             rt_tf_name = ""
 
-
         tempStr['subnet_tf_name'] = subnet_tf_name
         tempStr['rt_tf_name'] = rt_tf_name
+
+        sl_tf_names=[]
+        seclist_names = tempStr['sl_names']
+        for sl_name in seclist_names:
+            sl_name = str(sl_name).strip()
+            sl_display_name = str(sl_name)
+            sl_tf_name = vcn_name + "_" + sl_display_name
+            sl_tf_names.append(commonTools.check_tf_variable(sl_tf_name))
 
         seclist_ids=""
         add_default_seclist =  tempStr['add_default_seclist'].strip()
@@ -337,6 +311,7 @@ def create_terraform_subnet(inputfile, outdir, prefix, non_gf_tenancy, config, m
                 srcStr = "##Add New Subnets for " + reg + " here##"
                 tfStr[reg] = skeletonStr[reg].replace(srcStr, tfStr[reg] + "\n" + srcStr)
 
+                tfStr[reg] = "".join([s for s in tfStr[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
                 oname[reg] = open(outfile[reg], "w")
                 oname[reg].write(tfStr[reg])
                 oname[reg].close()
@@ -359,6 +334,7 @@ def create_terraform_subnet(inputfile, outdir, prefix, non_gf_tenancy, config, m
                 srcStr = "##Add New Subnets for " + reg + " here##"
                 tfStr[reg] = skeletonStr[reg].replace(srcStr, tfStr[reg] + "\n" + srcStr)
 
+                tfStr[reg] = "".join([s for s in tfStr[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
                 oname[reg] = open(outfile[reg], 'w')
                 oname[reg].write(tfStr[reg])
                 oname[reg].close()

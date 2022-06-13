@@ -95,22 +95,17 @@ def create_terraform_notifications(inputfile, outdir, prefix, config=DEFAULT_LOC
             exit(1)
         # temporary dictionary1 and dictionary2
         tempdict = {}
-        if(region not in regions_done):
-            tempStr = {"count": 0}
-            regions_done.append(region)
-        else:
-            tempStr = {"count": i}
 
         # Check if values are entered for mandatory fields
-        if str(df.loc[i, 'Region']).lower() == 'nan' or str(df.loc[i, 'Compartment Name']).lower() == 'nan' or str(df.loc[i, 'Protocol']).lower() == 'nan' or str(df.loc[i, 'Endpoint']).lower() == 'nan' or str(df.loc[i, 'Topic']).lower() == 'nan' :
-            print("\nThe values for Region, Compartment, Topic, Protocol and Endpoint cannot be left empty. Please enter a value and try again !!")
+        if str(df.loc[i, 'Region']).lower() == 'nan' or str(df.loc[i, 'Compartment Name']).lower() == 'nan' or str(df.loc[i, 'Topic']).lower() == 'nan' :
+            print("\nThe values for Region, Compartment, Topic cannot be left empty. Please enter a value and try again !!")
             exit()
         for columnname in dfcolumns:
             # Column value
             columnvalue = str(df[columnname][i])
+
             # Dont strip for Description
             if columnname == "Description":
-
                 # Check for boolean/null in column values
                 columnvalue = commonTools.check_columnvalue(columnvalue)
 
@@ -153,21 +148,19 @@ def create_terraform_notifications(inputfile, outdir, prefix, config=DEFAULT_LOC
             columnname = commonTools.check_column_headers(columnname)
             tempStr[columnname] = str(columnvalue).strip()
             tempStr.update(tempdict)
-           
-        count = 1 
+
+        count = 1
         if(topic in Notifications_names[region]):
                 count = count +  1
         if(topic not in Notifications_names[region]):
                 Notifications_names[region].append(topic)             
                 # Write all info to TF string
                 tfStr[region]=tfStr[region][:-1]  + notifications_template.render(tempStr)
-                # Write to output
-                #file = outdir + "/" + region + "/" + tf_name_topic + "-notification.tf"
-                #oname = open(file, "w+")
-                #print("Writing to " + file)
-                #oname.write(tfStr[region])
-                #oname.close()
-                #tfStr[region]= ""
+
+        #Empty Topic
+        if(str(df.loc[i, 'Protocol']).lower() == 'nan' and str(df.loc[i, 'Endpoint']).lower() == 'nan'):
+            continue
+
         subscription = tf_name_topic + "_sub" + str(count)
         tempdict = {'subscription_tf_name': subscription}
         tempStr.update(tempdict)
@@ -179,27 +172,26 @@ def create_terraform_notifications(inputfile, outdir, prefix, config=DEFAULT_LOC
                     tempdict = {'endpoint': endpoint}
                     tempStr.update(tempdict)
                 tfStr1[region]=tfStr1[region][:-1]  + subscriptions_template.render(tempStr)
-                # Write to output
-                #file = outdir + "/" + region + "/" + subscription + "-subscription.tf"
-                #oname = open(file, "w+")
-                #print("Writing to " + file)
-                #oname.write(tfStr[region])
-                #oname.close()
-                #tfStr[region]=""
 
     # Write to output
     for reg in ct.all_regions:
         reg_out_dir = outdir + "/" + reg
         if (tfStr[reg] != ''):
             outfile[reg] = reg_out_dir + "/" + prefix + topics_auto_tfvars_filename
-            oname[reg] = open(outfile[reg], 'w')
+            srcStr = "##Add New Topics for "+str(reg).lower()+" here##"
+            tfStr[reg] = notifications_template.render(skeleton=True, region=reg).replace(srcStr, tfStr[reg] + "\n" + srcStr)
+            tfStr[reg] = "".join([s for s in tfStr[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
+            oname[reg] = open(outfile[reg], 'w+')
             oname[reg].write(tfStr[reg])
             oname[reg].close()
             print(outfile[reg] + " for Notifications_Topics has been created for region " + reg)
 
         if (tfStr1[reg] != ''):
             outfile[reg] = reg_out_dir + "/" + prefix + subs_auto_tfvars_filename
-            oname[reg] = open(outfile[reg], 'w')
+            srcStr = "##Add New Subscriptions for "+str(reg).lower()+" here##"
+            tfStr1[reg] = subscriptions_template.render(skeleton=True, region=reg).replace(srcStr,tfStr1[reg] + "\n" + srcStr)
+            tfStr1[reg] = "".join([s for s in tfStr1[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
+            oname[reg] = open(outfile[reg], 'w+')
             oname[reg].write(tfStr1[reg])
             oname[reg].close()
             print(outfile[reg] + " for Notifications_Subscriptions has been created for region " + reg)

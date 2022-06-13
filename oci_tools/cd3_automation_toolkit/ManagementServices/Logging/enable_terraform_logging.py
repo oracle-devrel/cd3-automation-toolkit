@@ -48,7 +48,8 @@ def enable_cis_oss_logging(outdir, prefix, region_name, comp_name, config=DEFAUL
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
-    template = env.get_template('oss-logging-template')
+    template = env.get_template('logging-template')
+    auto_tfvars_filename = "cis-oss-logging.auto.tfvars"
 
     tfStr = ''
     tempStr = {}
@@ -57,49 +58,49 @@ def enable_cis_oss_logging(outdir, prefix, region_name, comp_name, config=DEFAUL
     columnvalue = str(compartmentVarName)
 
     tempStr['compartment_tf_name'] = columnvalue
+    tempStr['region'] = region_name
+    tempStr['oci_service'] = 'oss'
 
     loggroup_name = prefix+"-"+region_name+"-oss-log-group"
     log_name = prefix+"-"+region_name+"-oss-log"
-    log_group_id= 'oci_logging_log_group.'+loggroup_name+'.id'
-    resource='oci_objectstorage_bucket.'+prefix+"-"+region_name+"-oss-bucket.name"
+    log_group_id= loggroup_name
+    resource=prefix+"-"+region_name+"-oss-bucket"
 
     tempStr['loggroup_name'] = loggroup_name
     tempStr['loggroup_tf_name'] = loggroup_name
-    tempStr['loggroup'] = 'true'
-    tempStr['logs'] = 'true'
     tempStr['loggroup_desc']='Log Group for OSS bucket'
+    srcStr = "##Add New Log Groups for "+region_name+" here##"
+    logstfStr = template.render(tempStr, count = 0, loggroup = 'true').replace(srcStr, template.render(tempStr, loggroup = 'true')+"\n"+srcStr)
+
     tempStr['log_group_id'] = log_group_id
     tempStr['resource'] = resource
     tempStr['log_name'] = log_name
     tempStr['log_tf_name'] = log_name
     tempStr['category'] = 'write'
     tempStr['service'] = 'objectstorage'
-
-    tfStr = tfStr + template.render(tempStr)
+    srcStr = "##Add New Logs for "+region_name+" here##"
+    loggrouptfStr = template.render(tempStr, count = 0, logs = 'true', loggroup = 'false').replace(srcStr, template.render(tempStr, logs = 'true')+"\n"+srcStr)
 
     # Write TF string to the file in respective region directory
     reg_out_dir = outdir + "/" + region_name
     if not os.path.exists(reg_out_dir):
         os.makedirs(reg_out_dir)
 
-    outfile = reg_out_dir + "/cis-oss-logging.tf"
+    outfile = reg_out_dir + "/"+auto_tfvars_filename
     srcdir = reg_out_dir + "/"
     resource = 'osslog'
-    commonTools.backup_file(srcdir, resource, "cis-oss-logging.tf")
+    commonTools.backup_file(srcdir, resource, auto_tfvars_filename)
 
-    if(tfStr!=''):
+    if(logstfStr + loggrouptfStr!=''):
         oname=open(outfile,'w')
-        oname.write(tfStr)
+        finalStr = logstfStr + loggrouptfStr
+        finalStr = "".join([s for s in finalStr.strip().splitlines(True) if s.strip("\r\n").strip()])
+        oname.write(finalStr)
         oname.close()
         print(outfile + " containing TF for OSS Logging has been created for region "+region_name)
 
 
 def enable_cis_vcnflow_logging(filename, outdir, prefix, config=DEFAULT_LOCATION):
-
-    # Declare variables
-    vcnInfo = parseVCNInfo(filename)
-    ADS = ["AD1", "AD2", "AD3"]
-
 
     # Read cd3 using pandas dataframe
     df, col_headers = commonTools.read_cd3(filename, "Subnets")
@@ -108,17 +109,21 @@ def enable_cis_vcnflow_logging(filename, outdir, prefix, config=DEFAULT_LOCATION
     df = df.dropna(how='all')
     df = df.reset_index(drop=True)
 
+    # List of the column headers
+    dfcolumns = df.columns.values.tolist()
+
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
     template = env.get_template('logging-template')
-    auto_tfvars_filename = 'cis-vcnflow-logging.auto.tfvars'
+    auto_tfvars_filename = prefix+'_vcnflow-logging.auto.tfvars'
 
     tfStrLogs = {}
     tempStr = {}
     outfile={}
     vcns_list = {}
     tfStrLogGroups = {}
+    tempdict = {}
 
     for i in df.index:
         region = str(df.loc[i, 'Region'])
@@ -144,24 +149,14 @@ def enable_cis_vcnflow_logging(filename, outdir, prefix, config=DEFAULT_LOCATION
         subnet = str(df['CIDR Block'][i]).strip()
         AD = str(df['Availability Domain(AD1|AD2|AD3|Regional)'][i]).strip()
 
-        if (AD.strip().lower() != 'regional'):
-            AD = AD.strip().upper()
-            ad = ADS.index(AD)
-            ad_name_int = ad + 1
-            ad_name = str(ad_name_int)
-        else:
-            ad_name = ""
+        for columnname in dfcolumns:
+            if columnname.lower() in commonTools.tagColumns:
+                columnvalue = str(df[columnname][i]).strip()
+                if columnvalue !='nan' and columnvalue!='':
+                    tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)
+                    tempStr.update(tempdict)
 
-        if (vcnInfo.subnet_name_attach_cidr == 'y'):
-                if (str(ad_name) != ''):
-                        name1 = name + "-ad" + str(ad_name)
-                else:
-                        name1 = name
-
-                display_name = name1 + "-" + subnet
-
-        else:
-                display_name = name
+        display_name = name
 
         subnet_tf_name=vcn_name+"_"+display_name
         subnet_tf_name = commonTools.check_tf_variable(subnet_tf_name)
@@ -177,6 +172,8 @@ def enable_cis_vcnflow_logging(filename, outdir, prefix, config=DEFAULT_LOCATION
         log_tf_name = commonTools.check_tf_variable(resource) + "-flow-log"
         log_group_id= loggroup_name
 
+
+        tempStr['oci_service'] = 'vcn'
 
         if vcn_name not in vcns_list[region]:
             tempStr['loggroup_name'] = loggroup_name
@@ -207,21 +204,133 @@ def enable_cis_vcnflow_logging(filename, outdir, prefix, config=DEFAULT_LOCATION
         resource = 'vcnflowlog'
         commonTools.backup_file(srcdir, resource, auto_tfvars_filename)
 
-        tempSkeletonLogs = template.render(tempStr, count=0, region=reg)
         srcStr = "##Add New Logs for " + reg + " here##"
-        tfStrLogs[reg] = tempSkeletonLogs.replace(srcStr, tfStrLogs[reg] + "\n" + srcStr)
+        tfStrLogs[reg] = template.render(tempStr, count=0, region=reg).replace(srcStr, tfStrLogs[reg] + "\n" + srcStr)
 
-        tempSkeletonLogGroup = template.render(tempStr, loggroup= 'true', count=0, region=reg)
         srcStr = "##Add New Log Groups for " + reg + " here##"
-        tfStrLogGroups[reg] = tempSkeletonLogGroup.replace(srcStr, tfStrLogGroups[reg] + "\n" + srcStr)
+        tfStrLogGroups[reg] = template.render(tempStr, loggroup= 'true', count=0, region=reg).replace(srcStr, tfStrLogGroups[reg] + "\n" + srcStr)
 
-        tfStrLogs[reg] = tfStrLogs[reg] + tfStrLogGroups[reg]
+        tfStrLogs[reg] = tfStrLogs[reg] +"\n"+ tfStrLogGroups[reg]
 
         if(tfStrLogs[reg]!=''):
             oname=open(outfile[reg],'w')
+            tfStrLogs[reg] = "".join([s for s in tfStrLogs[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
             oname.write(tfStrLogs[reg])
             oname.close()
             print(outfile[reg] + " for VCN Flow Logs has been created for region "+reg)
+
+def enable_load_balancer_logging(filename, outdir, prefix, config=DEFAULT_LOCATION):
+
+    # Declare variables
+    configFileName = config
+
+    # Load the template file
+    file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
+    env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
+    template = env.get_template('logging-template')
+    auto_tfvars_filename = prefix+"_load-balancers-logging.auto.tfvars"
+
+    # Read cd3 using pandas dataframe
+    df, col_headers = commonTools.read_cd3(filename, "LB-Hostname-Certs")
+
+    # Remove empty rows
+    df = df.dropna(how='all')
+    df = df.reset_index(drop=True)
+
+    # List of the column headers
+    dfcolumns = df.columns.values.tolist()
+
+    ct = commonTools()
+    ct.get_subscribedregions(configFileName)
+
+    tfStrLogs = {}
+    tempStr = {}
+    outfile={}
+    lbr_list = {}
+    tfStrLogGroups = {}
+    tempdict = {}
+
+    for i in df.index:
+        region = str(df.loc[i, 'Region'])
+
+        if (region in commonTools.endNames):
+            break
+
+        region = region.strip().lower()
+        tfStrLogs[region]=''
+        tfStrLogGroups[region] = ''
+        lbr_list[region] = []
+
+    for i in df.index:
+        region = str(df.loc[i, 'Region'])
+
+        if (region in commonTools.endNames):
+            break
+
+        region = region.strip().lower()
+        compartment_var_name = str(df.loc[i, 'Compartment Name']).strip()
+        description = "Log Group for "+str(df['LBR Name'][i]).strip()
+        name = str(df['LBR Name'][i]).strip()
+
+        for columnname in dfcolumns:
+            if columnname.lower() in commonTools.tagColumns:
+                columnvalue = str(df[columnname][i]).strip()
+                if columnvalue !='nan' and columnvalue!='':
+                    tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)
+                    tempStr.update(tempdict)
+
+        compartmentVarName = commonTools.check_tf_variable(compartment_var_name)
+        columnvalue = str(compartmentVarName)
+
+        tempStr['compartment_tf_name'] =  columnvalue
+
+        loggroup_name = commonTools.check_tf_variable(name)+"-log-group"
+        lb_tf_name = commonTools.check_tf_variable(name)
+        tempStr['oci_service'] = 'loadbalancer'
+
+        if loggroup_name not in lbr_list[region]:
+            tempStr['loggroup_name'] = loggroup_name
+            tempStr['loggroup_tf_name'] = loggroup_name
+            tempStr['loggroup_desc'] = description
+            tfStrLogGroups[region] = tfStrLogGroups[region] + template.render(tempStr,loggroup='true')
+            lbr_list[region].append(loggroup_name)
+
+        tempStr['loggroup'] = 'false'
+        tempStr['log_group_id'] = loggroup_name
+        tempStr['resource'] = lb_tf_name
+        tempStr['log_name'] = name
+        tempStr['lb_log_tf_name'] = lb_tf_name
+        tempStr['service'] = 'loadbalancer'
+        tempStr['logtype'] = ['access','error']
+
+        tfStrLogs[region] = tfStrLogs[region] + template.render(tempStr)
+
+    # Write TF string to the file in respective region directory
+    for reg in tfStrLogs.keys():
+        reg_out_dir = outdir + "/" + reg
+        if not os.path.exists(reg_out_dir):
+            os.makedirs(reg_out_dir)
+
+        outfile[reg] = reg_out_dir + "/" + auto_tfvars_filename
+
+        srcdir = reg_out_dir + "/"
+        resource = 'loadbalancerlog'
+        commonTools.backup_file(srcdir, resource, auto_tfvars_filename)
+
+        srcStr = "##Add New Logs for " + reg + " here##"
+        tfStrLogs[reg] = template.render(tempStr, count=0, region=reg).replace(srcStr, tfStrLogs[reg] + "\n" + srcStr)
+
+        srcStr = "##Add New Log Groups for " + reg + " here##"
+        tfStrLogGroups[reg] = template.render(tempStr, loggroup= 'true', count=0, region=reg).replace(srcStr, tfStrLogGroups[reg] + "\n" + srcStr)
+
+        tfStrLogs[reg] = tfStrLogs[reg] +"\n"+ tfStrLogGroups[reg]
+
+        if(tfStrLogs[reg]!=''):
+            oname=open(outfile[reg],'w+')
+            tfStrLogs[reg] = "".join([s for s in tfStrLogs[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
+            oname.write(tfStrLogs[reg])
+            oname.close()
+            print(outfile[reg] + " containing TF for Load Balancer Logging has been created for region "+reg)
 
 
 if __name__ == '__main__':

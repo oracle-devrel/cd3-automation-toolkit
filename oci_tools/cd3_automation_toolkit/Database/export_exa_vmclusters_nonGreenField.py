@@ -71,9 +71,9 @@ def print_exa_vmcluster(region, vnc_client,exa_infra, exa_vmcluster, key_name,va
         elif col_header == 'SSH Key Var Name':
             values_for_column[col_header].append(key_name)
         elif col_header == 'Client Subnet Name':
-            values_for_column[col_header].append(commonTools.check_tf_variable(client_vcn_name+"_"+client_subnet_name))
+            values_for_column[col_header].append(client_vcn_name+"_"+client_subnet_name)
         elif col_header == 'Backup Subnet Name':
-            values_for_column[col_header].append(commonTools.check_tf_variable(backup_vcn_name + "_" + backup_subnet_name))
+            values_for_column[col_header].append(backup_vcn_name + "_" + backup_subnet_name)
         elif (col_header == "NSGs"):
             values_for_column[col_header].append(nsg_names)
         elif (col_header == "Backup Network NSGs"):

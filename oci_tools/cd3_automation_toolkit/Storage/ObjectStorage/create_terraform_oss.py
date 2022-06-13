@@ -49,6 +49,8 @@ def create_cis_oss(outdir, prefix, region_name, comp_name, config):
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
     template = env.get_template('oss-template')
     policyTemplate = env.get_template('oss-policy-template')
+    oss_auto_tfvars_filename = "cis-oss.auto.tfvars"
+    oss_policy_auto_tfvars_filename = "cis-osskeyvault-policy.auto.tfvars"
 
     #region_key = ct.region_dict[region_name]
 
@@ -66,22 +68,23 @@ def create_cis_oss(outdir, prefix, region_name, comp_name, config):
     tempStr['compartment_tf_name'] =  cname
     tempStr['bucket_name'] = oss_name
     tempStr['bucket_tf_name'] = oss_name
-    tempStr['kms_key_id'] = 'oci_kms_key.'+key_name+'.id'
+    tempStr['kms_key_id'] = key_name
     tfStr = tfStr + template.render(tempStr)
 
 
     tempPolStr['policy_tf_name']=prefix+"-oss-kms-policy"
     tempPolStr['name'] = prefix + "-oss-kms-policy"
-    tempPolStr['compartment_tf_name']='tenancy_ocid'
-    tempPolStr['description']="Policy allowing OCI OSS service to access Key in the Vault service."
+    tempPolStr['compartment_tf_name']='root'
+    tempPolStr['description']='Policy allowing OCI OSS service to access Key in the Vault service.'
     tempPolStr['policy_statements'] = ''
     for reg in ct.all_regions:
         actual_policy_statement = "Allow service objectstorage-"+ct.region_dict[reg]+" to use keys in compartment "+comp_name
         tempPolStr['policy_statements'] = "\""+actual_policy_statement + "\","+tempPolStr['policy_statements']
     tfPolStr=tfPolStr + policyTemplate.render(tempPolStr)
     tfPolStr = tfPolStr + """ ]
-                    } \n """
-    tfPolStr = tfPolStr.replace('-#Addstmt]}', '')
+                    } \n
+        } \n"""
+    tfPolStr = tfPolStr.replace('-#Addstmt]', '')
 
     # Write TF string to the file in respective region directory
     reg_out_dir = outdir + "/" + region_name
@@ -89,21 +92,27 @@ def create_cis_oss(outdir, prefix, region_name, comp_name, config):
         os.makedirs(reg_out_dir)
 
     home_reg_out_dir = outdir + "/" + home_region
-    outfile = reg_out_dir + "/cis-oss.tf"
-    outPolfile= home_reg_out_dir+"/cis-osskeyvault-policy.tf"
+    outfile = reg_out_dir + "/" + oss_auto_tfvars_filename
+    outPolfile= home_reg_out_dir +"/"+ oss_policy_auto_tfvars_filename
 
     srcdir = reg_out_dir + "/"
     resource = 'oss'
-    commonTools.backup_file(srcdir, resource, "cis-oss.tf")
+    commonTools.backup_file(srcdir, resource, oss_auto_tfvars_filename)
+    commonTools.backup_file(srcdir, resource, oss_policy_auto_tfvars_filename)
 
     if(tfStr!=''):
-        oname=open(outfile,'w')
+        # Generate Final String
+        src = "##Add New Object Storage for " + home_region.lower() + " here##"
+        tfStr = template.render(count=0, region= home_region.lower()).replace(src, tfStr +"\n" + src)
+        tfStr = "".join([s for s in tfStr.strip().splitlines(True) if s.strip("\r\n").strip()])
+        oname=open(outfile,'w+')
         oname.write(tfStr)
         oname.close()
         print(outfile + " containing TF for OSS has been created for region "+region_name)
 
     if (tfPolStr != ''):
-        oname = open(outPolfile, 'w')
+        tfPolStr = "".join([s for s in tfPolStr.strip().splitlines(True) if s.strip("\r\n").strip()])
+        oname = open(outPolfile, 'w+')
         oname.write(tfPolStr)
         oname.close()
         print(outPolfile + " containing TF for Policy allow OSS to access Key/Vault has been created for home region " + home_region)

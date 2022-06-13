@@ -3,7 +3,7 @@
 # Author: Tharun Karam
 # Oracle Consulting.
 
-import oci
+import re
 import argparse
 import sys
 import oci
@@ -17,7 +17,7 @@ from jinja2 import Environment, FileSystemLoader
 
 def adding_columns_values(region, ad, fd, vs, publicip, privateip, os_dname, shape, key_name, c_name,
                           bkp_policy_name, nsgs, d_host, instance_data, values_for_column_instances,  bdet,
-                          cpcn,shape_config,vnic_info):
+                          cpcn,shape_config,vnic_info,launch_options):
     # print("CPCN=",cpcn)
     for col_header in values_for_column_instances.keys():
         if (col_header == "Region"):
@@ -46,10 +46,6 @@ def adding_columns_values(region, ad, fd, vs, publicip, privateip, os_dname, sha
             values_for_column_instances[col_header].append(bkp_policy_name)
         elif (col_header == "NSGs"):
             values_for_column_instances[col_header].append(nsgs)
-        #elif (col_header.lower() == "boot volume size in gbs"):
-        #    values_for_column_instances[col_header].append(bdet.size_in_gbs)
-        #elif (col_header.lower() == "kms key id"):
-        #    values_for_column_instances[col_header].append(bdet.kms_key_id)
         elif (col_header == "Dedicated VM Host"):
             if (d_host == None):
                 values_for_column_instances[col_header].append('')
@@ -61,7 +57,7 @@ def adding_columns_values(region, ad, fd, vs, publicip, privateip, os_dname, sha
             values_for_column_instances = commonTools.export_tags(instance_data, col_header,
                                                                   values_for_column_instances)
         else:
-            oci_objs = [instance_data, bdet,shape_config,vnic_info,d_host]
+            oci_objs = [instance_data, bdet,shape_config,vnic_info,d_host,launch_options]
             values_for_column_instances = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict_instances,
                                                                            values_for_column_instances)
 
@@ -84,7 +80,7 @@ def find_vnic(ins_id, config,compartment_id):
 
 
 
-def __get_instances_info(compartment_name, compartment_id, reg_name, config):
+def __get_instances_info(compartment_name, compartment_id, reg_name, config,display_names, ad_names):
     config.__setitem__("region", ct.region_dict[reg_name])
     compute = oci.core.ComputeClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
     network = oci.core.VirtualNetworkClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
@@ -95,15 +91,20 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, config):
         ins_details = compute.get_instance(instance_id=ins.id)
         # print(ins_details.data)
         if (ins.lifecycle_state != 'TERMINATED'):
-            # print(ins)
             ins_dname = ins.display_name  # instance display name
             ins_ad = ins.availability_domain  # avalibility domain
             AD_name = AD(ins_ad)
+
+            if (ad_names is not None):
+                if (not any(e in AD_name for e in ad_names)):
+                    continue
+            if (display_names is not None):
+                if (not any(e in ins_dname for e in display_names)):
+                    continue
             ins_fd = ins.fault_domain  # FD
             ins_id = ins.id
             tf_name = commonTools.check_tf_variable(ins_dname)
-            importCommands[reg_name].write(
-                "\nterraform import oci_core_instance." + tf_name + " " + str(ins.id))  # writing into tf file
+            importCommands[reg_name].write("\nterraform import \"module.instances[\\\"" + tf_name + "\\\"].oci_core_instance.instance\" " + str(ins.id))
 
             # Shape Details
             ins_shape = ins.shape
@@ -140,13 +141,10 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, config):
             cpcn = ""
             if bvp != [] and (len(bvp.data)):
                 bkp_pname = bc.get_volume_backup_policy(policy_id=bvp.data[0].policy_id)
-                bpolicy = ins_dname + "_bkupPolicy"
                 bkp_policy_name = bkp_pname.data.display_name.title()  # backup policy name
-                tf_name = commonTools.check_tf_variable(bpolicy)
+                tf_name = commonTools.check_tf_variable(ins_dname)
                 # print(bvp.data[0])
-                importCommands[reg_name].write(
-                    "\nterraform import oci_core_volume_backup_policy_assignment." + tf_name + " " + str(
-                        bvp.data[0].id))
+                importCommands[reg_name].write("\nterraform import \"module.instances[\\\"" + tf_name + "\\\"].oci_core_volume_backup_policy_assignment.volume_backup_policy_assignment[0]\" " + str(bvp.data[0].id))
                 if (bkp_pname.data.display_name not in ["Gold", "Silver", "Bronze"]):
                     bkp_policy_name = bkp_pname.data.display_name
                     for comp_name, comp_id in ct.ntk_compartment_ids.items():
@@ -170,42 +168,17 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, config):
                 vcn_id = subnet_info.data.vcn_id
                 vcn_info = network.get_vcn(vcn_id=vcn_id)
                 vcn_name = vcn_info.data.display_name
+                vs = vcn_name + "_" + subnet_name  # VCN + Subnet Name
+                #vs = commonTools.check_tf_variable(vs)
+
                 privateip = vnic_info.private_ip
-                key_name = ins_dname + "_" + str(privateip)
-                key_name = commonTools.check_tf_variable(key_name)
-                if ('ssh_authorized_keys' in ins.metadata.keys()):
-                    key_name = reg_name + "-" + key_name
-                    tf_name = commonTools.check_tf_variable(key_name)
-                    instance_keys[tf_name] = repr(ins.metadata['ssh_authorized_keys'])[
-                                             1:-1]  # print metadata of the instance
-                    key_name = ins_dname + "_" + str(privateip)
-                    key_name = commonTools.check_tf_variable(key_name)
-                else:
-                    key_name = reg_name + "-" + key_name
-                    tf_name = commonTools.check_tf_variable(key_name)
-                    instance_keys[tf_name] = ""
-                    key_name = ins_dname + "_" + str(privateip)
-                    key_name = ""
-                if (ins.source_details.source_type == "image"):
-                    os = compute.get_image(image_id=boot_details)
-                    os_dname = os.data.display_name  # Source os name
-                    os_dname = commonTools.check_tf_variable(os_dname)
-                    tf_name = commonTools.check_tf_variable(reg_name + "-" + os_dname)
-                    os_keys[tf_name] = ins.source_details.image_id
-                    os_dname = "image::" + os_dname
-                elif (ins.source_details.source_type == "bootVolume"):
-                    os_dname = "Boot_" + ins_dname + "_" + str(privateip)
-                    os_dname = commonTools.check_tf_variable(os_dname)
-                    tf_name = commonTools.check_tf_variable(reg_name + "-" + os_dname)
-                    os_keys[tf_name] = ins.source_details.boot_volume_id
-                    os_dname = "bootVolume::" + os_dname
+
                 publicip = vnic_info.public_ip
                 if (publicip == None):
                     publicip = "FALSE"
                 else:
                     publicip = "TRUE"
-
-                #Get NSG Details
+                # Get NSG Details
                 nsg_id = vnic_info.nsg_ids
                 nsg_names = ""
                 if (len(nsg_id)):
@@ -213,12 +186,40 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, config):
                         nsg_info = network.get_network_security_group(j)
                         nsg_names = nsg_names + "," + nsg_info.data.display_name
                     nsg_names = nsg_names[1:]
-                vs = vcn_name + "_" + subnet_name  # VCN + Subnet Name
-                vs = commonTools.check_tf_variable(vs)
 
-                adding_columns_values(reg_name.title(), AD_name, ins_fd, vs, publicip, privateip, os_dname,
+            key_name = ins_dname + "_" + str(privateip)
+            key_name = commonTools.check_tf_variable(key_name)
+            if ('ssh_authorized_keys' in ins.metadata.keys()):
+                key_name = reg_name + "-" + key_name
+                tf_name = commonTools.check_tf_variable(key_name)
+                instance_keys[tf_name] = repr(ins.metadata['ssh_authorized_keys'])[
+                                         1:-1]  # print metadata of the instance
+                key_name = ins_dname + "_" + str(privateip)
+                key_name = commonTools.check_tf_variable(key_name)
+            else:
+                key_name = reg_name + "-" + key_name
+                tf_name = commonTools.check_tf_variable(key_name)
+                instance_keys[tf_name] = ""
+                key_name = ins_dname + "_" + str(privateip)
+                key_name = ""
+            if (ins.source_details.source_type == "image"):
+                os = compute.get_image(image_id=boot_details)
+                os_dname = os.data.display_name  # Source os name
+                os_dname = commonTools.check_tf_variable(os_dname)
+                tf_name = commonTools.check_tf_variable(reg_name + "-" + os_dname)
+                os_keys[tf_name] = ins.source_details.image_id
+                os_dname = "image::" + os_dname
+            elif (ins.source_details.source_type == "bootVolume"):
+                os_dname = "Boot_" + ins_dname + "_" + str(privateip)
+                os_dname = commonTools.check_tf_variable(os_dname)
+                tf_name = commonTools.check_tf_variable(reg_name + "-" + os_dname)
+                os_keys[tf_name] = ins.source_details.boot_volume_id
+                os_dname = "bootVolume::" + os_dname
+
+            launch_options = ins.launch_options
+            adding_columns_values(reg_name.title(), AD_name, ins_fd, vs, publicip, privateip, os_dname,
                                       ins_shape, key_name, compartment_name, bkp_policy_name, nsg_names, dedicated_host,
-                                      ins, values_for_column_instances, bdet, cpcn,shape_config,vnic_info)
+                                      ins, values_for_column_instances, bdet, cpcn,shape_config,vnic_info,launch_options)
 
 
 def parse_args():
@@ -230,7 +231,7 @@ def parse_args():
     return parser.parse_args()
 
 
-def export_instances(inputfile, outdir, config, network_compartments=[]):
+def export_instances(inputfile, outdir, config, network_compartments=[], display_names=[],ad_names=[]):
     cd3file = inputfile
     input_compartment_names = network_compartments
 
@@ -262,11 +263,6 @@ def export_instances(inputfile, outdir, config, network_compartments=[]):
     print("\nCD3 excel file should not be opened during export process!!!")
     print("Tabs Instances will be overwritten during this export process!!!\n")
 
-    # Load os_ocids template file
-    file_loader = FileSystemLoader(f'{Path(__file__).parent.parent}/templates')
-    env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
-    variable_template = env.get_template('variables-template')
-
     # Create of .sh file
     resource = 'tf_import_' + sheetName.lower()
     file_name = 'tf_import_commands_' + sheetName.lower() + '_nonGF.sh'
@@ -286,11 +282,11 @@ def export_instances(inputfile, outdir, config, network_compartments=[]):
     for reg in ct.all_regions:
         importCommands[reg].write("\n\n######### Writing import for Instances #########\n\n")
         config.__setitem__("region", ct.region_dict[reg])
-        #region = reg.capitalize()
         for ntk_compartment_name in comp_list_fetch:
-           __get_instances_info(ntk_compartment_name, ct.ntk_compartment_ids[ntk_compartment_name], reg, config)
+           __get_instances_info(ntk_compartment_name, ct.ntk_compartment_ids[ntk_compartment_name], reg, config, display_names, ad_names)
 
-    # writing ocids values into os_ocids.tf
+    # writing image ocids and SSH keys into variables file
+    var_data = {}
     for reg in ct.all_regions:
         myocids = {}
         for keys, values in os_keys.items():
@@ -298,30 +294,43 @@ def export_instances(inputfile, outdir, config, network_compartments=[]):
             if (reg == reg_name):
                 os_name = keys[len(reg_name) + 1:]
                 myocids[os_name] = values
-        # print(myocids)
-        f = open(outdir + "/" + reg + "/os_ocids.tf", "w")
-        for keys, values in myocids.items():
-            tempstr = {"var_tf_name": keys, "values": values}
-            #temp_str_test = variable_template.format(**tempstr)
-            temp_str_test = variable_template.render(tempstr)
-            f.write(temp_str_test)
-        f.close()
-    tempstr = {}
-    # writing ssh_keys_metadata into ssh_metadata
-    for reg in ct.all_regions:
-        myocids = {}
+
+        mykeys = {}
         for keys, values in instance_keys.items():
             reg_name = keys.split("-")[0]
             if (reg == reg_name):
                 key_name = keys[len(reg_name) + 1:]
-                myocids[key_name] = values
-        # print(myocids)
-        f = open(outdir + "/" + reg + "/ssh_metadata.tf", "w")
-        for keys, values in myocids.items():
-            tempstr = {"var_tf_name": keys, "values": values}
-            temp_str_test = variable_template.render(tempstr)
-            #temp_str_test = variable_template.format(**tempstr)
-            f.write(temp_str_test)
+                mykeys[key_name] = values
+
+        file = f'{outdir}/{reg}/variables_{reg}.tf'
+        # Read variables file data
+        with open(file, 'r') as f:
+            var_data[reg] = f.read()
+
+        tempStrOcids = ""
+        for k, v in myocids.items():
+            v = "\""+v+"\""
+            tempStrOcids = "\t" + k + " = " + v + "\n" + tempStrOcids
+
+        tempStrOcids = "\n" + tempStrOcids
+        tempStrOcids = "#START_instance_source_ocids#" + tempStrOcids + "\t#instance_source_ocids_END#"
+        var_data[reg] = re.sub('#START_instance_source_ocids#.*?#instance_source_ocids_END#', tempStrOcids, var_data[reg],
+                               flags=re.DOTALL)
+
+        tempStrKeys = ""
+        for k, v in mykeys.items():
+            v = "\"" + v + "\""
+            tempStrKeys = "\t" + k + " = " + v + "\n" + tempStrKeys
+
+        tempStrKeys = "\n" + tempStrKeys
+        tempStrKeys = "#START_instance_ssh_keys#" + tempStrKeys + "\t#instance_ssh_keys_END#"
+        var_data[reg] = re.sub('#START_instance_ssh_keys#.*?#instance_ssh_keys_END#', tempStrKeys,
+                               var_data[reg],
+                               flags=re.DOTALL)
+
+        # Write variables file data
+        with open(file, "w") as f:
+            f.write(var_data[reg])
         f.close()
 
     # write data into file

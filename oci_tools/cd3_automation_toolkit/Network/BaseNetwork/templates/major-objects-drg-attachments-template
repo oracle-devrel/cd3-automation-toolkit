@@ -3,6 +3,8 @@
 ############################
 # Network
 # Major Objects - DRG Attachment - tfvars
+# Allowed Values:
+# vcn_id can be the ocid or the key of vcns (map)
 ############################
 
 drg_attachments = {

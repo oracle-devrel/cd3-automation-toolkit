@@ -26,13 +26,11 @@ compartment_ids={}
 importCommands={}
 
 def  print_notifications(values_for_column_notifications,region, ntk_compartment_name, sbpn, nftn_info, i, fun):
+
     tf_name_nftn = commonTools.check_tf_variable(str(nftn_info.name))
     sbpn_name = nftn_info.name + "_" + "sub" + str(i)
     tf_name_sbpn = commonTools.check_tf_variable(str(sbpn_name))
-    endpoint = sbpn.endpoint
-    if ( "ORACLE_FUNCTIONS" in sbpn.protocol ):
-       endpointname = fun.get_function(endpoint).data
-       endpoint = endpointname.display_name + "::" + endpoint
+
     for col_header in values_for_column_notifications.keys():
         if (col_header == "Region"):
             values_for_column_notifications[col_header].append(region)
@@ -43,19 +41,31 @@ def  print_notifications(values_for_column_notifications,region, ntk_compartment
         elif (col_header == "Topic Description"):
             values_for_column_notifications[col_header].append(nftn_info.description)
         elif (col_header == "Protocol"):
-            values_for_column_notifications[col_header].append(sbpn.protocol)
+            if (i==0):
+                values_for_column_notifications[col_header].append('')
+            else:
+                values_for_column_notifications[col_header].append(sbpn.protocol)
         elif (col_header == "Endpoint"):
-            values_for_column_notifications[col_header].append(endpoint)
+            if (i==0):
+                values_for_column_notifications[col_header].append('')
+            else:
+                endpoint = sbpn.endpoint
+                if ("ORACLE_FUNCTIONS" in sbpn.protocol):
+                    endpointname = fun.get_function(endpoint).data
+                    endpoint = endpointname.display_name + "::" + endpoint
+                values_for_column_notifications[col_header].append(endpoint)
+
         elif col_header.lower() in commonTools.tagColumns:
             values_for_column_notifications = commonTools.export_tags(nftn_info, col_header, values_for_column_notifications)
         else:
             oci_objs = [nftn_info,sbpn]
             values_for_column_notifications = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict_notifications,values_for_column_notifications)
-    if ( i == 1):
+
+    if (i ==0 or i == 1):
        importCommands[region.lower()].write("\nterraform import \"module.notifications-topics[\\\"" + str(tf_name_nftn) + "\\\"].oci_ons_notification_topic.topic\" " + str(nftn_info.topic_id))
 
-    #importCommands[region.lower()].write("\nterraform import oci_ons_subscription." + tf_name_sbpn + " " + str(sbpn.id))
-    importCommands[region.lower()].write("\nterraform import \"module.notifications-subscriptions[\\\"" + str(tf_name_sbpn) + "\\\"].oci_ons_subscription.subscription\" " + str(sbpn.id))
+    if(i!=0):
+        importCommands[region.lower()].write("\nterraform import \"module.notifications-subscriptions[\\\"" + str(tf_name_sbpn) + "\\\"].oci_ons_subscription.subscription\" " + str(sbpn.id))
 
 
 
@@ -294,16 +304,27 @@ def export_notifications(inputfile, outdir, network_compartments=[], _config=DEF
 
         importCommands[reg].write("\n\n######### Writing import for Notifications #########\n\n")
         config.__setitem__("region", ct.region_dict[reg])
-        #comp_ocid_done = []
         ncpc = NotificationControlPlaneClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
         ndpc = NotificationDataPlaneClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
-        evt = EventsClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
         fun = FunctionsManagementClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
         region = reg.capitalize()
         for ntk_compartment_name in comp_list_fetch:
-                sbpns = oci.pagination.list_call_get_all_results(ndpc.list_subscriptions,
-                                                            compartment_id=ct.ntk_compartment_ids[ntk_compartment_name])
+                topics = oci.pagination.list_call_get_all_results(ncpc.list_topics,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name])
 
+                #sbpns = oci.pagination.list_call_get_all_results(ndpc.list_subscriptions,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name])
+                for topic in topics.data:
+                    sbpns = oci.pagination.list_call_get_all_results(ndpc.list_subscriptions,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name],topic_id = topic.topic_id)
+                    i=0
+                    sbpn = None
+                    for sbpn in sbpns.data:
+                        i=i+1
+                        print_notifications(values_for_column_notifications, region, ntk_compartment_name, sbpn,topic, i, fun)
+                    # Empty Topic - No Subscription in the same compartment as Topic's
+                    if(i==0):
+                        print_notifications(values_for_column_notifications, region, ntk_compartment_name, sbpn, topic,i, fun)
+
+
+                '''
                 list_nftn = []
                 i = 0
                 for sbpn in sbpns.data:
@@ -316,7 +337,9 @@ def export_notifications(inputfile, outdir, network_compartments=[], _config=DEF
                      list_nftn.append(nftn_info.topic_id)
                   else:
                      i = i + 1
-                  print_notifications(values_for_column_notifications,region, ntk_compartment_name, sbpn, nftn_info, i, fun)
+                print_notifications(values_for_column_notifications,region, ntk_compartment_name, sbpn, nftn_info, i, fun)
+                '''
+
 
     commonTools.write_to_cd3(values_for_column_notifications, cd3file, sheetName)
     print("Notifications exported to CD3\n")

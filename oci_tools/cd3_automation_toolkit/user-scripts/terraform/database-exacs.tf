@@ -37,8 +37,8 @@ module "exa-vmclusters" {
   depends_on = [module.exa-infra]
   source     = "./modules/database/exa-vmcluster"
 
-  for_each = var.exa_vmclusters != null ? var.exa_vmclusters : {}
-  backup_subnet_id = length(regexall("ocid1.subnet.oc1*", each.value.backup_subnet_id)) > 0 ? each.value.backup_subnet_id : merge(module.subnets.*...)[each.value.backup_subnet_id]["subnet_tf_id"]
+  for_each                  = var.exa_vmclusters != null ? var.exa_vmclusters : {}
+  backup_subnet_id          = length(regexall("ocid1.subnet.oc1*", each.value.backup_subnet_id)) > 0 ? each.value.backup_subnet_id : merge(module.subnets.*...)[each.value.backup_subnet_id]["subnet_tf_id"]
   exadata_infrastructure_id = length(regexall("ocid1.cloudexadatainfrastructure.oc1*", each.value.exadata_infrastructure_id)) > 0 ? each.value.exadata_infrastructure_id : merge(module.exa-infra.*...)[each.value.exadata_infrastructure_id].exainfra_tf_id
   cpu_core_count            = each.value.cpu_core_count
   display_name              = each.value.display_name
@@ -46,9 +46,9 @@ module "exa-vmclusters" {
   gi_version                = each.value.gi_version
   hostname                  = each.value.hostname
   #ssh_public_keys          = length(regexall("ssh-rsa*",each.value.ssh_public_key)) > 0 ? each.value.ssh_public_key : var.ssh_public_key
-  ssh_public_keys           = lookup(var.exacs_ssh_keys, each.value.ssh_public_keys, var.exacs_ssh_keys["ssh_public_key"] )
-  cluster_subnet_id         = length(regexall("ocid1.subnet.oc1*", each.value.cluster_subnet_id)) > 0 ? each.value.cluster_subnet_id : merge(module.subnets.*...)[each.value.cluster_subnet_id]["subnet_tf_id"]
-  backup_network_nsg_ids      = each.value.backup_network_nsg_ids != null ? [for nsg in each.value.backup_network_nsg_ids : length(regexall("ocid1.networksecuritygroup.oc1*",nsg)) > 0 ? nsg : merge(module.nsgs.*...)[nsg]["nsg_tf_id"]] : null
+  ssh_public_keys             = lookup(var.exacs_ssh_keys, each.value.ssh_public_keys, var.exacs_ssh_keys["ssh_public_key"])
+  cluster_subnet_id           = length(regexall("ocid1.subnet.oc1*", each.value.cluster_subnet_id)) > 0 ? each.value.cluster_subnet_id : merge(module.subnets.*...)[each.value.cluster_subnet_id]["subnet_tf_id"]
+  backup_network_nsg_ids      = each.value.backup_network_nsg_ids != null ? [for nsg in each.value.backup_network_nsg_ids : length(regexall("ocid1.networksecuritygroup.oc1*", nsg)) > 0 ? nsg : merge(module.nsgs.*...)[nsg]["nsg_tf_id"]] : null
   cluster_name                = each.value.cluster_name
   data_storage_percentage     = each.value.data_storage_percentage
   defined_tags                = each.value.defined_tags
@@ -57,7 +57,7 @@ module "exa-vmclusters" {
   is_local_backup_enabled     = each.value.is_local_backup_enabled
   is_sparse_diskgroup_enabled = each.value.is_sparse_diskgroup_enabled
   license_model               = each.value.license_model
-  nsg_ids                     = each.value.nsg_ids != null ? [for nsg in each.value.nsg_ids : length(regexall("ocid1.networksecuritygroup.oc1*",nsg)) > 0 ? nsg : merge(module.nsgs.*...)[nsg]["nsg_tf_id"]] : null
+  nsg_ids                     = each.value.nsg_ids != null ? [for nsg in each.value.nsg_ids : length(regexall("ocid1.networksecuritygroup.oc1*", nsg)) > 0 ? nsg : merge(module.nsgs.*...)[nsg]["nsg_tf_id"]] : null
   ocpu_count                  = each.value.ocpu_count
   scan_listener_port_tcp      = each.value.scan_listener_port_tcp
   scan_listener_port_tcp_ssl  = each.value.scan_listener_port_tcp_ssl

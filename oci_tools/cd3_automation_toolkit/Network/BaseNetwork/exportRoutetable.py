@@ -223,10 +223,6 @@ def export_drg_routetable(inputfile, network_compartments, _config, _tf_import_c
         #comp_ocid_done = []
 
         for ntk_compartment_name in comp_list_fetch:
-            #if ct.ntk_compartment_ids[ntk_compartment_name] not in comp_ocid_done:
-            #    if (input_compartment_names is not None and ntk_compartment_name not in input_compartment_names):
-            #        continue
-            #    comp_ocid_done.append(ct.ntk_compartment_ids[ntk_compartment_name])
                 drgs = oci.pagination.list_call_get_all_results(vcn.list_drgs,
                                                                 compartment_id=ct.ntk_compartment_ids[ntk_compartment_name])
                 for drg in drgs.data:

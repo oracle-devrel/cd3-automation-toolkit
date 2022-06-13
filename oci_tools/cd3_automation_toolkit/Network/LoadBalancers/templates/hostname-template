@@ -1,12 +1,19 @@
-#Hostname
-resource "oci_load_balancer_hostname" "{{ host_tf_name }}_hostname" {
-    #Required
-    hostname = "{{ hostname }}"
-    load_balancer_id = oci_load_balancer_load_balancer.{{ lbr_tf_name }}.id
-    name = "{{ name }}"
+{% if (skeleton and count == 0) %}
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 
-    #Optional
-    lifecycle {
-        create_before_destroy = true
-    }
-}
+#############################
+# Network
+# Hostname - tfvars
+# Allowed Values:
+# load_balancer_id can be the ocid or the key of load_balancers (map)
+#############################
+
+hostnames = {
+  ##Add New Hostnames for {{ region|lower }} here##
+}{% else %}
+  {{ host_tf_name }}_hostname = {
+        name               = "{{ name }}"
+        load_balancer_id = "{{ lbr_tf_name }}"
+        hostname           = "{{ hostname }}"
+        },
+{% endif %}

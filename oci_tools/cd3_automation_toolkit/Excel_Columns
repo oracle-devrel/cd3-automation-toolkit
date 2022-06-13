@@ -83,6 +83,8 @@
     },
     "Instances" :
 	{
+	    "Boot Volume Size In GBs" : "size_in_gbs",
+        "Update_Is PV Encryption In Transit Enabled" : "is_pv_encryption_in_transit_enabled"
 	},
 	"DedicatedVMHosts" :
 	{
@@ -99,14 +101,14 @@
 	},
     "LB-Hostname-Certs" :
     {
-        "Shape(100Mbps|400Mbps|8000Mbps|flexible)" : "shape_name",
+        "Shape(10Mbps|100Mbps|400Mbps|8000Mbps|flexible)" : "shape_name",
         "Is Private(True|False)" : "is_private"
     },
     "BackendSet-BackendServer" :
     {
-        "Backend ServerName:Port" : "backend_server_name:port",
+        "Backend ServerComp&ServerName:Port" : "backend_server_name:port",
         "Backend Set Name" : "backend_set_name",
-        "Certificate Name" : "certificates",
+        "Certificate Name or OCID" : "certificates",
         "Backend Policy(LEAST_CONNECTIONS|ROUND_ROBIN|IP_HASH)" : "policy",
         "Backend HealthCheck Protocol(HTTP|TCP)" : "protocol",
         "Backend HealthCheck Port" : "port",

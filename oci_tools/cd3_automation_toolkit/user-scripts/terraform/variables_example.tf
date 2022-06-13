@@ -8,70 +8,62 @@
 ############################
 
 variable "tenancy_ocid" {
-        type = string
-        default = "<TENANCY OCID HERE>"
+  type    = string
+  default = "<TENANCY OCID HERE>"
 }
 
 variable "user_ocid" {
-        type = string
-        default = "<USER OCID HERE>"
+  type    = string
+  default = "<USER OCID HERE>"
 }
 
 variable "fingerprint" {
-        type = string
-        default = "<SSH KEY FINGERPRINT HERE>"
+  type    = string
+  default = "<SSH KEY FINGERPRINT HERE>"
 }
 
 variable "private_key_path" {
-        type = string
-        default = "<SSH PRIVATE KEY FULL PATH HERE>"
+  type    = string
+  default = "<SSH PRIVATE KEY FULL PATH HERE>"
 }
 
 variable "region" {
-        type = string
-        default = "<OCI TENANCY REGION HERE eg: us-phoenix-1 or us-ashburn-1>"
+  type    = string
+  default = "<OCI TENANCY REGION HERE eg: us-phoenix-1 or us-ashburn-1>"
 }
 
 #################################
 # SSH Keys
 #################################
 
-variable "ssh_public_key" {
-	type = string
-	default = "<SSH PUB KEY STRING HERE>"
-}
-
-## instance_ssh_keys variable will be used once the terraform code for instances is also modularized
-#  in future releases. Please use above variable 'ssh_public_key' for the current version.
-
-variable instance_ssh_keys {
-    type = map(any)
-    default = {
+variable "instance_ssh_keys" {
+  type = map(any)
+  default = {
     ssh_public_key = "<SSH PUB KEY STRING HERE>"
     #START_instance_ssh_keys#
     # exported instance ssh keys
     #instance_ssh_keys_END#
-    }
+  }
 }
 
-variable exacs_ssh_keys {
-    type = map(any)
-    default = {
+variable "exacs_ssh_keys" {
+  type = map(any)
+  default = {
     ssh_public_key = ["<SSH PUB KEY STRING HERE>"]
     #START_exacs_ssh_keys#
     # exported exacs ssh keys
     #exacs_ssh_keys_END#
-    }
+  }
 }
 
-variable dbsystem_ssh_keys {
-    type = map(any)
-    default = {
+variable "dbsystem_ssh_keys" {
+  type = map(any)
+  default = {
     ssh_public_key = ["<SSH PUB KEY STRING HERE>"]
     #START_dbsystem_ssh_keys#
     # exported dbsystem ssh keys
     #dbsystem_ssh_keys_END#
-    }
+  }
 }
 
 #################################
@@ -79,31 +71,16 @@ variable dbsystem_ssh_keys {
 # Market Place Images
 #################################
 
-#Example for OS value 'Windows' in Instances sheet
-variable "Windows" {
-        type = string
-        default = "<LATEST WINDOWS OCID HERE>"
-        description = "<WINDOWS DESCRIPTION HERE>"
-}
-
-#Example for OS value 'Linux' in Instances sheet
-variable "Linux"{
-        type = string
-        default = "<LATEST LINUX OCID HERE>"
-        description = "<LINUX DESCRIPTION HERE>"
-}
-
-
-variable instance_source_ocids {
-    type = map(any)
-    default = {
-    Linux = "<LATEST LINUX OCID HERE>"
-    Windows = "<LATEST WINDOWS OCID HERE>"
+variable "instance_source_ocids" {
+  type = map(any)
+  default = {
+    Linux    = "<LATEST LINUX OCID HERE>"
+    Windows  = "<LATEST WINDOWS OCID HERE>"
     PaloAlto = "Palo Alto Networks VM-Series Next Generation Firewall"
     #START_instance_source_ocids#
     # exported instance image ocids
     #instance_source_ocids_END#
-    }
+  }
 }
 
 
@@ -114,14 +91,14 @@ variable instance_source_ocids {
 #
 #################################
 
-############################
-### Fetch Compartments #####
-############################
+##########################
+## Fetch Compartments ####
+##########################
 
 #START_compartment_ocids#
 variable "compartment_ocids" {
-    type = map(any)
-    default = {}
+  type    = map(any)
+  default = {}
 }
 #compartment_ocids_END#
 
@@ -130,14 +107,14 @@ variable "compartment_ocids" {
 #########################
 
 variable "compartments" {
-  type    = map(any)
+  type = map(any)
   default = {
-      root = {},
-      compartment_level1= {},
-      compartment_level2 = {},
-      compartment_level3 = {},
-      compartment_level4 = {},
-      compartment_level5  = {},
+    root               = {},
+    compartment_level1 = {},
+    compartment_level2 = {},
+    compartment_level3 = {},
+    compartment_level4 = {},
+    compartment_level5 = {},
   }
 }
 
@@ -152,16 +129,38 @@ variable "groups" {
 }
 
 #########################
-##### Network ########
+####### Tagging #########
+#########################
+
+variable "tag_namespaces" {
+  description = "To provision Namespaces"
+  type        = map(any)
+  default     = {}
+}
+
+variable "tag_keys" {
+  description = "To provision Tag Keys"
+  type        = map(any)
+  default     = {}
+}
+
+variable "tag_defaults" {
+  description = "To make the Tag keys as default to compartments"
+  type        = map(any)
+  default     = {}
+}
+
+#########################
+###### Network ##########
 #########################
 
 variable "default_dhcps" {
-  type = map(any)
+  type    = map(any)
   default = {}
 }
 
 variable "custom_dhcps" {
-  type = map(any)
+  type    = map(any)
   default = {}
 }
 
@@ -186,14 +185,14 @@ variable "ngws" {
 }
 
 variable "lpgs" {
-        type    = map(any)
-        default = {
-            hub-lpgs = {},
-            spoke-lpgs = {},
-            peer-lpgs = {},
-            none-lpgs  = {},
-            exported-lpgs = {},
-        }
+  type = map(any)
+  default = {
+    hub-lpgs      = {},
+    spoke-lpgs    = {},
+    peer-lpgs     = {},
+    none-lpgs     = {},
+    exported-lpgs = {},
+  }
 }
 
 variable "drgs" {
@@ -202,17 +201,17 @@ variable "drgs" {
 }
 
 variable "seclists" {
-  type = map(any)
+  type    = map(any)
   default = {}
 }
 
 variable "default_seclists" {
-  type = map(any)
+  type    = map(any)
   default = {}
 }
 
 variable "route_tables" {
-  type = map(any)
+  type    = map(any)
   default = {}
 }
 
@@ -222,12 +221,12 @@ variable "default_route_tables" {
 }
 
 variable "nsgs" {
-  type = map(any)
+  type    = map(any)
   default = {}
 }
 
 variable "nsg_rules" {
-  type = map(any)
+  type    = map(any)
   default = {}
 }
 
@@ -272,15 +271,252 @@ variable "data_drg_route_table_distributions" {
 }
 
 #########################
-##### Logging ###########
+## Dedicated VM Hosts ##
 #########################
 
-variable "log_groups" {
+variable "dedicated_hosts" {
+  type        = map(any)
+  description = "To provision new dedicated VM hosts"
+  default     = {}
+}
+
+#########################
+## Instances/Block Volumes ##
+#########################
+
+variable "blockvolumes" {
+  type    = map(any)
+  description = "To provision block volumes"
+  default = {}
+}
+
+variable "block_backup_policies" {
+  type = map(any)
+  description = "To create block volume back policy"
+  default = {}
+}
+
+variable "instances" {
+  type = map(any)
+  description = "Map of instances to be provisioned"
+  default = {}
+}
+
+variable "boot_backup_policies" {
+  type = map(any)
+  description = "Map of boot volume backup policies to be provisioned"
+  default = {}
+}
+
+#########################
+####### Database ########
+#########################
+
+variable "exa_infra" {
+  description = "To provision exadata infrastructure"
+  type        = map(any)
+  default     = {}
+}
+
+variable "exa_vmclusters" {
+  description = "To provision exadata cloud VM cluster"
+  type        = map(any)
+  default     = {}
+}
+
+variable "dbsystems_vm_bm" {
+  description = "To provision DB System"
+  type        = map(any)
+  default     = {}
+}
+
+variable "db_home" {
+  type = map(any)
+  description = "Map of database db home to be provisioned"
+  default = {}
+}
+
+variable "databases" {
+    description = "Map of databases to be provisioned in an existing db_home"
+    type = map(any)
+    default = {}
+}
+
+#########################
+######### FSS ###########
+#########################
+
+variable "mount_targets" {
+  description = "To provision Mount Targets"
+  type        = map(any)
+  default     = {}
+}
+
+variable "fss" {
+  description = "To provision File System Services"
+  type        = map(any)
+  default     = {}
+}
+
+variable "export_options" {
+  description = "To provision Export Sets"
+  type        = map(any)
+  default     = {}
+}
+
+#########################
+#### Load Balancers #####
+#########################
+
+variable "load_balancers" {
+  description = "To provision Load Balancers"
+  type        = map(any)
+  default     = {}
+}
+
+variable "hostnames" {
+  description = "To provision Load Balancer Hostnames"
+  type        = map(any)
+  default     = {}
+}
+
+variable "certificates" {
+  description = "To provision Load Balancer Certificates"
+  type        = map(any)
+  default     = {}
+}
+
+variable "cipher_suites" {
+  description = "To provision Load Balancer Cipher Suites"
+  type        = map(any)
+  default     = {}
+}
+
+variable "backend_sets" {
+  description = "To provision Load Balancer Backend Sets"
+  type        = map(any)
+  default     = {}
+}
+
+variable "backends" {
+  description = "To provision Load Balancer Backends"
+  type        = map(any)
+  default     = {}
+}
+
+variable "listeners" {
+  description = "To provision Load Balancer Listeners"
+  type        = map(any)
+  default     = {}
+}
+
+variable "path_route_sets" {
+  description = "To provision Load Balancer Path Route Sets"
+  type        = map(any)
+  default     = {}
+}
+
+variable "rule_sets" {
+  description = "To provision Load Balancer Rule Sets"
+  type        = map(any)
+  default     = {}
+}
+
+###########################################
+####### Load Balancer Reserved IPs ########
+###########################################
+
+variable "lbr_reserved_ips" {
+  description = "To provision Load Balancer Reserved IPs"
+  type        = map(any)
+  default     = {}
+}
+
+###################################
+####### Load Balancer Logs ########
+###################################
+
+variable "loadbalancer_log_groups" {
+  description = "To provision Log Groups for Load Balancers"
+  type        = map(any)
+  default     = {}
+}
+
+variable "loadbalancer_logs" {
+  description = "To provision Logs for Load Balancers"
+  type        = map(any)
+  default     = {}
+}
+
+#########################
+##### IP Management #####
+#########################
+
+variable "public_ip_pools" {
   type    = map(any)
   default = {}
 }
 
-variable "logs" {
+variable "private_ips" {
+  type    = map(any)
+  default = {}
+}
+
+variable "reserved_ips" {
+  type    = map(any)
+  default = {}
+}
+
+variable "vnic_attachments"{
+  type    = map(any)
+  default = {}
+}
+
+#########################
+##### VCN Logs ##########
+#########################
+
+variable "vcn_log_groups" {
+  type    = map(any)
+  default = {}
+}
+
+variable "vcn_logs" {
+  type    = map(any)
+  default = {}
+}
+
+#########################
+###### OSS Buckets ######
+#########################
+
+variable "oss" {
+  description = "To provision Buckets - OSS"
+  type        = map(any)
+  default     = {}
+}
+
+#########################
+####### OSS Logs ########
+#########################
+
+variable "oss_log_groups" {
+  description = "To provision Log Groups for OSS"
+  type        = map(any)
+  default     = {}
+}
+
+variable "oss_logs" {
+  description = "To provision Logs for OSS"
+  type        = map(any)
+  default     = {}
+}
+
+#########################
+### OSS IAM Policies ####
+#########################
+
+variable "oss_policies" {
   type    = map(any)
   default = {}
 }
@@ -309,30 +545,68 @@ variable "notifications_subscriptions" {
   default = {}
 }
 
-#########################
-## Database ##
-#########################
+############################
+## Key Management Service ##
+############################
 
-variable "exa_infra" {
-  description = "To provision exadata infrastructure"
-  type        = map(any)
-  default     = {}
+variable "vaults" {
+  type    = map(any)
+  default = {}
 }
 
-variable "exa_vmclusters" {
-  description = "To provision exadata cloud VM cluster"
-  type        = map(any)
-  default     = {}
+variable "keys" {
+  type    = map(any)
+  default = {}
 }
 
-variable "dbsystems_vm_bm" {
-  description = "To provision DB System"
-  type        = map(any)
-  default     = {}
+###########################
+######### Budgets #########
+###########################
+
+variable "budgets" {
+  type    = map(any)
+  default = {}
+}
+
+variable "budget_alert_rules" {
+  type    = map(any)
+  default = {}
+}
+
+###########################
+####### Cloud Guard #######
+###########################
+
+variable "cloud_guard_configs" {
+  type    = map(any)
+  default = {}
+}
+
+variable "cloud_guard_targets" {
+  type    = map(any)
+  default = {}
+}
+
+####################################
+####### Custom Backup Policy #######
+####################################
+
+variable "custom_backup_policies" {
+  type    = map(any)
+  default = {}
 }
 
 ##########################
 # Add new variables here #
 ##########################
+
+variable "capacity_reservation_ocids" {
+  type = map(any)
+  default = {
+    "AD1" : "<AD1 Capacity Reservation OCID>",
+    "AD2" : "<AD2 Capacity Reservation OCID>",
+    "AD3" : "<AD3 Capacity Reservation OCID>"
+  }
+}
 
 ######################### END #########################

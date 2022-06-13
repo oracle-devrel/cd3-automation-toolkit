@@ -1,14 +1,121 @@
-resource "oci_budget_budget" "{{ budget_tf_name }}" {
-    #Required
-    amount = {{ amount }}
-    compartment_id = var.tenancy_ocid
-    reset_period = "MONTHLY"
+{% if count == 0 %}
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 
-    #Optional
-    budget_processing_period_start_offset = {{ period_start }}
-    description = "{{ description }}"
-    display_name = "{{ budget_name }}"
+############################
+# Governance
+# Create Budgets
+# Allowed Values:
+# compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens "--"
+# Example : compartment_id = "ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c" or compartment_id = "Network-root-cpt--Network" where "Network-root-cpt" is the parent of "Network" compartment
+# processing_period_type : Valid values are INVOICE and MONTH.
+# target_type : Valid values are COMPARTMENT and TAG
+# targets :  list of compartment OCIDs or list of cost tracking tag identifiers in the form of "{tagNamespace}.{tagKey}.{tagValue}"
+############################
 
-    target_type = "{{ target_type }}"
-    targets = [{{target_ocid}}]
-}
+budgets = {
+    ##Add New Budgets for {{ region|lower }} here##
+}{% else %}
+
+    {{ budget_tf_name }} = {
+
+            {% if compartment_tf_name and compartment_tf_name != "" %}
+            compartment_id = "{{ compartment_tf_name }}"
+            {% else %}
+            compartment_id = "root"
+            {% endif %}
+
+            {% if amount and amount != "" %}
+            amount = {{ amount }}
+            {% else %}
+            amount = ""
+            {% endif %}
+
+            {%  if reset_period and reset_period != "" %}
+            reset_period = "{{ reset_period }}"
+            {% else %}
+            reset_period = "MONTHLY"
+            {% endif %}
+
+            {% if description and description != "" %}
+            description = "{{ description }}"
+            {% else %}
+            description = ""
+            {% endif %}
+
+            {% if period_start and period_start != "" %}
+            budget_processing_period_start_offset = "{{ period_start }}"
+            {% else %}
+            budget_processing_period_start_offset = ""
+            {% endif %}
+
+            {% if budget_name and budget_name != "" %}
+            display_name = "{{ budget_name }}"
+            {% else %}
+            display_name = ""
+            {% endif %}
+
+            {% if processing_period_type and processing_period_type != "" %}
+            processing_period_type = "{{ processing_period_type }}"
+            {% else %}
+            processing_period_type = ""
+            {% endif %}
+
+            {% if target_compartment_id and target_compartment_id != "" %}
+            target_compartment_id = "{{ target_compartment_id }}"
+            {% else %}
+            #target_compartment_id = ""
+            {% endif %}
+
+            {% if target_type and target_type != "" %}
+            target_type = "{{ target_type }}"
+            {% else %}
+            target_type = ""
+            {% endif %}
+
+            {% if target_ocid and target_ocid != [] %}
+            targets = ["{{ target_ocid }}"]
+            {% else %}
+            targets = []
+            {% endif %}
+
+            {#  ##Do not modify below this line##  #}
+            {#                                     #}
+            {#  ###Section for adding Defined and Freeform Tags###  #}
+            {% if defined_tags and defined_tags != 'nan' and defined_tags != '' %}
+          {% if defined_tags[0] %}
+            defined_tags = {
+            {% for tags in defined_tags  %}
+                {% if not loop.last %}
+                    "{{ tags[0]  }}"= "{{ tags[1] }}" ,
+                {% else %}
+                    "{{ tags[0]  }}"= "{{ tags[1] }}"
+                {% endif %}
+            {% endfor %}
+            }
+          {% else %}
+            defined_tags = {}
+          {% endif %}
+          {% else %}
+            defined_tags = {}
+          {% endif %}
+                {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' %}
+                    {% if freeform_tags[0] %}
+            freeform_tags = {
+                        {% for tags in freeform_tags %}
+                            {% if not loop.last  %}
+                    "{{ tags[0] }}"="{{ tags[1] }}",
+                            {% else %}
+                    "{{ tags[0] }}"="{{ tags[1] }}"
+                            {% endif %}
+                        {% endfor %}
+                        }
+                    {% else %}
+            freeform_tags = {}
+                    {% endif %}
+                {% else %}
+            freeform_tags = {}
+                {% endif %}
+            {#  ###Section for adding Defined and Freeform Tags ends here###  #}
+            },
+
+{% endif %}

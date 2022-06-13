@@ -8,11 +8,11 @@
 resource "oci_monitoring_alarm" "alarm" {
 
   # Required
-  compartment_id        = var.compartment_name
+  compartment_id        = var.compartment_id
   display_name          = var.alarm_name
   destinations          = var.destinations
   is_enabled            = var.is_enabled
-  metric_compartment_id = var.metric_compartment_name
+  metric_compartment_id = var.metric_compartment_id
   namespace             = var.namespace
   query                 = var.query
   severity              = var.severity

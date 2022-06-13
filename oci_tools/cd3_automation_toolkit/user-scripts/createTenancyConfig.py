@@ -6,7 +6,6 @@
 # Author: Shruthi Subramanian
 #
 
-import calendar
 import configparser
 import glob
 import argparse
@@ -20,9 +19,6 @@ from distutils import dir_util
 
 sys.path.append(os.getcwd()+"/..")
 from commonTools import *
-
-
-from datetime import datetime
 
 def paginate(operation, *args, **kwargs):
     while True:
@@ -219,9 +215,6 @@ def seek_info():
         with open(variables_example_file, 'r+') as var_eg_file:
             variables_example_file_data = var_eg_file.read().rstrip()
 
-        today = datetime.today()
-        dt = str(today.day) +" "+ calendar.month_name[today.month]+" "+ str(today.year)
-
         variables_example_file_data = variables_example_file_data.replace("<TENANCY OCID HERE>", tenancy)
         variables_example_file_data = variables_example_file_data.replace("<USER OCID HERE>", user)
         variables_example_file_data = variables_example_file_data.replace("<SSH KEY FINGERPRINT HERE>", fingerprint)
@@ -230,10 +223,9 @@ def seek_info():
         variables_example_file_data = variables_example_file_data.replace("<SSH PUB KEY STRING HERE>", ssh_public_key)
         if (windows_image_id != ''):
             variables_example_file_data = variables_example_file_data.replace("<LATEST WINDOWS OCID HERE>", windows_image_id)
-            variables_example_file_data = variables_example_file_data.replace("<WINDOWS DESCRIPTION HERE>", "Latest ocid as on "+dt)
+
         if (linux_image_id != ''):
             variables_example_file_data = variables_example_file_data.replace("<LATEST LINUX OCID HERE>", linux_image_id)
-            variables_example_file_data = variables_example_file_data.replace("<LINUX DESCRIPTION HERE>", "Latest ocid as on "+dt)
 
         f = open(terraform_files+"/"+region+"/variables_" + region + ".tf", "w+")
         f.write(variables_example_file_data)

@@ -1,10 +1,7 @@
-    path_routes {
-        #Required
-        backend_set_name = oci_load_balancer_backend_set.{{ lbr_tf_name }}_{{ backend_set_tf_name }}.name
-        path = "{{ path }}"
-        path_match_type {
+        {
             #Required
+            backend_set_name = "{{ backend_set_tf_name }}"
+            path = "{{ path }}"
             match_type = "{{ match_type }}"
-        }
-    }
-    #Add_Path_Routes_here
+        },
+        #Add_Path_Routes_here

@@ -4,6 +4,9 @@
 ############################
 # Identity
 # Compartments - tfvars
+# Allowed Values:
+# parent_compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens "--"
+# Example : parent_compartment_id = "ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c" or parent_compartment_id = "Network-root-cpt--Network" where "Network-root-cpt" is the parent of "Network" compartment
 ############################
 
 compartments = {
@@ -36,9 +39,9 @@ compartments = {
 {% if compartment_details == True %}
             {{ comp_tf_name }} = {
             {% if parent_compartment == 'var.tenancy_ocid' or parent_compartment == 'root'%}
-                parent_compartment = null
+                parent_compartment_id = null
             {% else %}
-                parent_compartment = "{{ parent_compartment }}"
+                parent_compartment_id = "{{ parent_compartment }}"
             {% endif %}
                 name               = "{{ name }}"
                 description        = "{{ description }}"

@@ -94,6 +94,12 @@
                 {% endif %}
                 stateless = {{ isstateless }}
 
+                {% if destination_type and destination_type != '' %}
+                destination_type = "{{ destination_type }}"
+                {% else %}
+                destination_type = ""
+                {% endif %}
+
                 {% if protocol.lower() == 'icmp' and icmptype != '' %}
                 icmp_options = [{
                     icmp_options_type = "{{ icmptype }}"
@@ -107,12 +113,6 @@
                     icmp_options_type = ""
                     icmp_options_code = ""
                     }]
-                {% endif %}
-
-                {% if destination_type and destination_type != '' %}
-                destination_type = "{{ destination_type }}"
-                {% else %}
-                destination_type = ""
                 {% endif %}
 
                 {% if protocol.lower() == 'udp' %}

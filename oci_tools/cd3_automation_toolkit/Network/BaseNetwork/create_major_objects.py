@@ -224,6 +224,7 @@ def create_major_objects(inputfile, outdir, prefix, non_gf_tenancy, config, modi
 
         # Process Rows
         ip=1
+        region_drg_done = []
         for i in df.index:
             region = str(df['Region'][i]).strip()
             if (region in commonTools.endNames):
@@ -238,6 +239,7 @@ def create_major_objects(inputfile, outdir, prefix, non_gf_tenancy, config, modi
             tempdict = {}
             drg_attach = {}
             drg_rt_tf_name = ''
+            drg_name=''
             drg_tf_name = ''
 
             for columnname in dfcolumns:
@@ -345,7 +347,6 @@ def create_major_objects(inputfile, outdir, prefix, non_gf_tenancy, config, modi
                 drg_attach_skeleton = drg_attach_template.render(skeleton=True, count=0)[:-1]
                 drgstr_skeleton = drg_template.render(count=0)[:-1]
                 region_included_drg.append(region)
-
             tempStr['drg_version'] = drg_versions[region, drg_name]
             drgstr = drg_template.render(tempStr)
 
@@ -354,12 +355,14 @@ def create_major_objects(inputfile, outdir, prefix, non_gf_tenancy, config, modi
             elif(attachedto=="empty"):
                 drg_attach=""
 
-            if (drgstr not in drg_tfStr[region]):
+            #if (drgstr not in drg_tfStr[region]):
+            key = region,drg_name
+            if(key not in region_drg_done):
+                region_drg_done.append(key)
                 drg_tfStr[region] = drg_tfStr[region][:-1] + drgstr #+ drg_attach
             if (drg_attach not in drg_attach_tfStr[region]):
                 drg_attach_tfStr[region] = drg_attach_tfStr[region][:-1] + drg_attach
-            # else:
-            #     tfStr[region] = tfStr[region] + drg_attach
+
         for region in ct.all_regions:
             if region in region_included_drg:
                 drg_attach_tfStr[region] = drg_attach_skeleton + drg_attach_tfStr[region]
@@ -649,18 +652,21 @@ def create_major_objects(inputfile, outdir, prefix, non_gf_tenancy, config, modi
             commonTools.backup_file(srcdir, resource, drg_data_tfvars_filename)
 
             if tfStr[reg] != '':
+                tfStr[reg] = "".join([s for s in tfStr[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
                 oname[reg] = open(outfile[reg], "w+")
                 oname[reg].write(tfStr[reg])
                 oname[reg].close()
                 print(outfile[reg] + " for major objects has been updated for region " + reg)
 
             if dhcp_default_tfStr[reg] != '':
+                dhcp_default_tfStr[reg] = "".join([s for s in dhcp_default_tfStr[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
                 oname_def_dhcp[reg] = open(outfile_dhcp[reg], "w+")
                 oname_def_dhcp[reg].write(dhcp_default_tfStr[reg])
                 oname_def_dhcp[reg].close()
                 print(outfile_dhcp[reg] + " for default DHCP options for VCNs has been updated for region " + reg)
 
             if drg_data[reg] != '':
+                drg_data[reg] = "".join([s for s in drg_data[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
                 oname_oci_drg_data[reg]=open(outfile_oci_drg_data[reg], "w+")
                 oname_oci_drg_data[reg].write(drg_data[reg])
                 oname_oci_drg_data[reg].close()
@@ -686,7 +692,7 @@ def create_major_objects(inputfile, outdir, prefix, non_gf_tenancy, config, modi
 
             if drg_data[reg] != '':
                 commonTools.backup_file(srcdir, resource, drg_data_tfvars_filename)
-
+                drg_data[reg] = "".join([s for s in drg_data[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
                 oname_oci_drg_data[reg] = open(outfile_oci_drg_data[reg], "w+")
                 oname_oci_drg_data[reg].write(drg_data[reg])
                 oname_oci_drg_data[reg].close()
@@ -698,6 +704,7 @@ def create_major_objects(inputfile, outdir, prefix, non_gf_tenancy, config, modi
                 if (dhcp_default_tfStr[reg] != ''):
                     commonTools.backup_file(srcdir, resource, dhcp_auto_tfvars_filename)
 
+                    dhcp_default_tfStr[reg] = "".join([s for s in dhcp_default_tfStr[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
                     oname_def_dhcp[reg] = open(outfile_dhcp[reg], "w+")
                     oname_def_dhcp[reg].write(dhcp_default_tfStr[reg])
                     oname_def_dhcp[reg].close()
@@ -706,7 +713,7 @@ def create_major_objects(inputfile, outdir, prefix, non_gf_tenancy, config, modi
             if (tfStr[reg] != ''):
                 commonTools.backup_file(srcdir, resource, auto_tfvars_filename)
 
-                tfStr[reg] = tfStr[reg]
+                tfStr[reg] = "".join([s for s in tfStr[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
                 oname[reg] = open(outfile[reg], 'w+')
                 oname[reg].write(tfStr[reg])
                 oname[reg].close()

@@ -114,14 +114,6 @@ def create_terraform_seclist(inputfile, outdir, prefix, config, modify_network=F
         if tempStr['seclist_names'].lower() == 'n':
             return
 
-        if (tempStr['availability_domain'].strip().lower() != 'regional'):
-            AD = tempStr['availability_domain'].strip().upper()
-            ad = ADS.index(AD)
-            ad_name_int = ad + 1
-            ad_name = str(ad_name_int)
-        else:
-            ad_name = ""
-
         vcn_name = tempStr['vcn_name']
         vcn_tf_name = commonTools.check_tf_variable(tempStr['vcn_name'])
         tempStr['vcn_tf_name'] = vcn_tf_name
@@ -132,16 +124,7 @@ def create_terraform_seclist(inputfile, outdir, prefix, config, modify_network=F
 
         for sl_name in seclist_names:
             sl_name = sl_name.strip()
-
-            # check if subnet cidr needs to be attached
-            if (vcnInfo.subnet_name_attach_cidr == 'y'):
-                if (str(ad_name) != ''):
-                    name1 = sl_name + "-ad" + str(ad_name)
-                else:
-                    name1 = sl_name
-                display_name = name1 + "-" + tempStr['cidr_block']
-            else:
-                display_name = sl_name
+            display_name = sl_name
             tempStr['display_name'] = display_name
 
             sl_tf_name = vcn_name+ "_" + display_name
@@ -330,6 +313,7 @@ def create_terraform_seclist(inputfile, outdir, prefix, config, modify_network=F
             if reg in region_included:
                 if not modify_network:
                     tempSkeleton[reg] = tempSkeleton[reg].replace(textToAddSeclistSearch,modify_network_seclists[reg] + textToAddSeclistSearch)
+                    tempSkeleton[reg] = "".join([s for s in tempSkeleton[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
                     oname = open(outfile, "w+")
                     oname.write(tempSkeleton[reg])
                     oname.close()
@@ -339,6 +323,7 @@ def create_terraform_seclist(inputfile, outdir, prefix, config, modify_network=F
                     srcdir = outdir + "/" + reg + "/"
                     resource = 'SLs'
                     commonTools.backup_file(srcdir, resource, auto_tfvars_filename)
+                    tempSkeleton[reg] = "".join([s for s in tempSkeleton[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
                     oname = open(outfile, "w+")
                     oname.write(tempSkeleton[reg])
                     oname.close()

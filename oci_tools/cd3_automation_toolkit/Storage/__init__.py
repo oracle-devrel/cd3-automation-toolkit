@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from .BlockStorage import *
-from .FileStorage import *
+from .BlockVolume import *
+from .FileSystem import *
 from .ObjectStorage import *
 

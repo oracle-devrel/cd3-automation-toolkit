@@ -10,6 +10,7 @@ import os
 from .exportRoutetable import export_routetable
 from .exportRoutetable import export_drg_routetable
 from .exportSeclist import export_seclist
+from .exportNSG import export_nsg
 
 sys.path.append(os.getcwd() + "/..")
 from commonTools import *
@@ -48,14 +49,22 @@ def print_nsgsl(values_for_column_nsgs,vnc,region, comp_name, vcn_name, nsg, nsg
     if (nsgsl.destination is not None):
         if ("networksecuritygroup" in nsgsl.destination):
             nsgdestinationtype = "nsg"
-            nsgname = vnc.get_network_security_group(nsgsl.destination).data
+            try:
+                nsgname = vnc.get_network_security_group(nsgsl.destination).data
+            except Exception as e:
+                print("invalid rule for NSG - "+str(nsg.display_name))
+                return
             nsgdestination = nsgname.display_name
     else:
         nsgdestination=""
     if (nsgsl.source is not None):
         if ("networksecuritygroup" in nsgsl.source):
             nsgsourcetype = "nsg"
-            nsgname = vnc.get_network_security_group(nsgsl.source).data
+            try:
+                nsgname = vnc.get_network_security_group(nsgsl.source).data
+            except Exception as e:
+                print("invalid rule for NSG - "+str(nsg.display_name))
+                return
             nsgsource = nsgname.display_name
     else:
         nsgsource=""
@@ -683,7 +692,7 @@ def export_networking(inputfile, outdir, _config, network_compartments=[]):
     print("DRGs exported to CD3\n")
 
     # Fetch NSGs
-    rows = []
+    '''
     print("\nFetching NSGs...")
     for reg in ct.all_regions:
         importCommands[reg].write("\n\n######### Writing import for NSG #########\n\n")
@@ -692,29 +701,20 @@ def export_networking(inputfile, outdir, _config, network_compartments=[]):
         region = reg.capitalize()
         #comp_ocid_done = []
         for ntk_compartment_name in comp_list_fetch:
-            #if ct.ntk_compartment_ids[ntk_compartment_name] not in comp_ocid_done:
-                #if (input_compartment_names is not None and ntk_compartment_name not in input_compartment_names):
-                #    continue
-                #comp_ocid_done.append(ct.ntk_compartment_ids[ntk_compartment_name])
                 vcns = oci.pagination.list_call_get_all_results(vnc.list_vcns,
                                                                 compartment_id=ct.ntk_compartment_ids[ntk_compartment_name],
                                                                 lifecycle_state="AVAILABLE")
 
                 for vcn in vcns.data:
                     vcn_info = vnc.get_vcn(vcn.id).data
-                    #comp_ocid_done_again = []
                     for ntk_compartment_name_again in comp_list_fetch:
-                    #    if ct.ntk_compartment_ids[ntk_compartment_name_again] not in comp_ocid_done_again:
-                    #        if (input_compartment_names is not None and ntk_compartment_name_again not in input_compartment_names):
-                    #            continue
-                    #        comp_ocid_done_again.append(ct.ntk_compartment_ids[ntk_compartment_name_again])
                             NSGs = oci.pagination.list_call_get_all_results(vnc.list_network_security_groups,
                                                                             compartment_id=ct.ntk_compartment_ids[
                                                                                 ntk_compartment_name_again], vcn_id=vcn.id,
                                                                             lifecycle_state="AVAILABLE")
                             nsglist = [""]
                             for nsg in NSGs.data:
-                                NSGSLs = vnc.list_network_security_group_security_rules(nsg.id)
+                                NSGSLs = vnc.list_network_security_group_security_rules(nsg.id, sort_by = "TIMECREATED")
                                 i = 1
                                 for nsgsl in NSGSLs.data:
                                     nsglist.append(nsg.id)
@@ -729,7 +729,7 @@ def export_networking(inputfile, outdir, _config, network_compartments=[]):
 
     commonTools.write_to_cd3(values_for_column_nsgs, cd3file, "NSGs")
     print("NSGs exported to CD3\n")
-
+    '''
     # Fetch DHCP
     print("\nFetching DHCP...")
     for reg in ct.all_regions:
@@ -739,10 +739,6 @@ def export_networking(inputfile, outdir, _config, network_compartments=[]):
         region = reg.capitalize()
         #comp_ocid_done = []
         for ntk_compartment_name in comp_list_fetch:
-        #    if ct.ntk_compartment_ids[ntk_compartment_name] not in comp_ocid_done:
-        #        if (input_compartment_names is not None and ntk_compartment_name not in input_compartment_names):
-        #            continue
-        #        comp_ocid_done.append(ct.ntk_compartment_ids[ntk_compartment_name])
                 vcns = oci.pagination.list_call_get_all_results(vnc.list_vcns,
                                                                 compartment_id=ct.ntk_compartment_ids[ntk_compartment_name],
                                                                 lifecycle_state="AVAILABLE")
@@ -750,10 +746,6 @@ def export_networking(inputfile, outdir, _config, network_compartments=[]):
                     vcn_info = vnc.get_vcn(vcn.id).data
         #            comp_ocid_done_again = []
                     for ntk_compartment_name_again in comp_list_fetch:
-        #                if ct.ntk_compartment_ids[ntk_compartment_name_again] not in comp_ocid_done_again:
-        #                    if (input_compartment_names is not None and ntk_compartment_name_again not in input_compartment_names):
-        #                        continue
-        #                    comp_ocid_done_again.append(ct.ntk_compartment_ids[ntk_compartment_name_again])
                             DHCPs = oci.pagination.list_call_get_all_results(vnc.list_dhcp_options,
                                                                              compartment_id=ct.ntk_compartment_ids[
                                                                                  ntk_compartment_name_again], vcn_id=vcn.id,
@@ -773,10 +765,6 @@ def export_networking(inputfile, outdir, _config, network_compartments=[]):
         region = reg.capitalize()
         #comp_ocid_done = []
         for ntk_compartment_name in comp_list_fetch:
-        #    if ct.ntk_compartment_ids[ntk_compartment_name] not in comp_ocid_done:
-        #        if (input_compartment_names is not None and ntk_compartment_name not in input_compartment_names):
-        #            continue
-        #        comp_ocid_done.append(ct.ntk_compartment_ids[ntk_compartment_name])
                 vcns = oci.pagination.list_call_get_all_results(vnc.list_vcns,
                                                                 compartment_id=ct.ntk_compartment_ids[ntk_compartment_name],
                                                                 lifecycle_state="AVAILABLE")
@@ -784,10 +772,6 @@ def export_networking(inputfile, outdir, _config, network_compartments=[]):
                     vcn_info = vnc.get_vcn(vcn.id).data
         #            comp_ocid_done_again = []
                     for ntk_compartment_name_again in comp_list_fetch:
-        #                if ct.ntk_compartment_ids[ntk_compartment_name_again] not in comp_ocid_done_again:
-        #                    if (input_compartment_names is not None and ntk_compartment_name_again not in input_compartment_names):
-        #                        continue
-        #                    comp_ocid_done_again.append(ct.ntk_compartment_ids[ntk_compartment_name_again])
                             Subnets = oci.pagination.list_call_get_all_results(vnc.list_subnets, compartment_id=ct.ntk_compartment_ids[
                                 ntk_compartment_name_again], vcn_id=vcn.id, lifecycle_state="AVAILABLE")
                             for subnet in Subnets.data:
@@ -834,6 +818,10 @@ def export_networking(inputfile, outdir, _config, network_compartments=[]):
 
     export_drg_routetable(inputfile, network_compartments=network_compartments, _config=input_config_file, _tf_import_cmd=True, outdir=outdir )
     print("DRG RouteRules exported to CD3\n")
+
+    # Fetch NSGs
+    export_nsg(inputfile, network_compartments=network_compartments, _config=input_config_file, _tf_import_cmd=True, outdir=outdir )
+    print("NSGs exported to CD3\n")
 
     for reg in ct.all_regions:
         script_file = f'{outdir}/{reg}/tf_import_commands_network_nonGF.sh'

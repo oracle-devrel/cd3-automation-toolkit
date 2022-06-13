@@ -8,7 +8,7 @@
 resource "oci_ons_notification_topic" "topic" {
 
   #Required
-  compartment_id = var.compartment_name
+  compartment_id = var.compartment_id
   name           = var.topic_name
   description    = var.description
 
