@@ -31,21 +31,21 @@ data "oci_core_network_security_groups" "network_security_groups" {
   vcn_id = data.oci_core_vcns.oci_vcns_instances[var.vcn_names[0]].virtual_networks.*.id[0]
 }
 
-data "oci_core_boot_volumes" "all_boot_volumes" {
-  depends_on = [oci_core_instance.instance]
-  count     = var.boot_tf_policy != "" ? 1 : 0
-  #Required
-  compartment_id = var.compartment_id
-  availability_domain =  var.availability_domain
-  filter {
-    name   = "display_name"
-    values = [join(" ", [var.display_name, "(Boot Volume)"])]
-  }
-  filter {
-    name = "state"
-    values = ["AVAILABLE"]
-  }
-}
+#data "oci_core_boot_volumes" "all_boot_volumes" {
+#  depends_on = [oci_core_instance.instance]
+#  count     = var.boot_tf_policy != "" ? 1 : 0
+#  #Required
+#  compartment_id = var.compartment_id
+#  availability_domain =  var.availability_domain
+#  filter {
+#    name   = "display_name"
+#    values = [join(" ", [var.display_name, "(Boot Volume)"])]
+#  }
+#  filter {
+#    name = "state"
+#    values = ["AVAILABLE"]
+#  }
+#}
 
 data "oci_core_volume_backup_policies" "boot_vol_backup_policy" {
   count     = var.boot_tf_policy != "" ? 1 : 0
