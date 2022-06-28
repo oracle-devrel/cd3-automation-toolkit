@@ -358,7 +358,7 @@ variable "fss" {
   default     = {}
 }
 
-variable "export_options" {
+variable "nfs_export_options" {
   description = "To provision Export Sets"
   type        = map(any)
   default     = {}
