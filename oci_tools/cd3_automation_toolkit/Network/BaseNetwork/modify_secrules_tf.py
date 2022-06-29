@@ -246,7 +246,7 @@ def modify_terraform_secrules(inputfile, outdir, prefix=None, non_gf_tenancy=Fal
                     columnvalue = str(row[columnname])
                     tempdict = {'rule_description': columnvalue}
                 else:
-                    columnvalue = str(row[columnname].strip())
+                    columnvalue = str(row[columnname]).strip()
 
                 # Check for boolean/null in column values
                 columnvalue = commonTools.check_columnvalue(columnvalue)
