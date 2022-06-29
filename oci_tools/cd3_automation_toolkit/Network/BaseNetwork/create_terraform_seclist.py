@@ -109,9 +109,14 @@ def create_terraform_seclist(inputfile, outdir, prefix, config, modify_network=F
         filedata = ""
         region_in_lowercase = tempStr['region'].lower().strip()
         subnet_cidr = tempStr['cidr_block'].strip()
+        seclist_count = 0
 
         # Seclist name specifiied as 'n' - dont create any seclist
         if tempStr['seclist_names'].lower() == 'n':
+            # Create Skeleton Template
+            if seclist_count == 0 and tempStr['count'] == 0:
+                tempSkeleton[region_in_lowercase] = template.render(tempStr,skeleton=True)
+
             return
 
         vcn_name = tempStr['vcn_name']
@@ -119,7 +124,6 @@ def create_terraform_seclist(inputfile, outdir, prefix, config, modify_network=F
         tempStr['vcn_tf_name'] = vcn_tf_name
 
         seclist_names = tempStr['sl_names']
-        seclist_count = 0
         index = 0
 
         for sl_name in seclist_names:
