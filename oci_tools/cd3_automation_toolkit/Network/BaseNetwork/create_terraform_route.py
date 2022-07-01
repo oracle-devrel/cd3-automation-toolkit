@@ -855,6 +855,9 @@ def create_terraform_route(inputfile, outdir, prefix, non_gf_tenancy, config, mo
 
         # Route Table name specifiied as 'n' - dont create any routetable
         if (rt_name == "n"):
+            # Create Skeleton Template
+            if tempStr['count'] == 0:
+                tempSkeleton[region] = template.render(tempStr, skeleton=True)
             return
 
         display_name = rt_name

@@ -41,7 +41,7 @@ module "instances" {
   subnet_id             = each.value.subnet_id != "" ? (length(regexall("ocid1.subnet.oc1*", each.value.subnet_id)) > 0 ? each.value.subnet_id : data.oci_core_subnets.oci_subnets[each.key].subnets.*.id[0]) : null
   assign_public_ip      = each.value.assign_public_ip
   ssh_public_keys       = length(regexall("ssh-rsa*",each.value.ssh_authorized_keys)) > 0 ? each.value.ssh_authorized_keys : lookup(var.instance_ssh_keys, each.value.ssh_authorized_keys, null )
-  hostname_label        = each.key
+  hostname_label        = each.value.hostname_label
   nsg_ids               = each.value.nsg_ids != [] ? each.value.nsg_ids : []
   #nsg_ids              = each.value.nsg_ids != [] ? [for nsg in each.value.nsg_ids : length(regexall("ocid1.networksecuritygroup.oc1*",nsg)) > 0 ? nsg : merge(module.nsgs.*...)[nsg]["nsg_tf_id"]] : []
   boot_volume_size_in_gbs = each.value.boot_volume_size_in_gbs != null ? each.value.boot_volume_size_in_gbs : null
@@ -53,7 +53,7 @@ module "instances" {
   boot_tf_policy = each.value.backup_policy != "" ? each.value.backup_policy : ""
   policy_tf_compartment_id = each.value.policy_compartment_id != "" ? (length(regexall("ocid1.compartment.oc1*", each.value.policy_compartment_id)) > 0 ? each.value.policy_compartment_id : var.compartment_ocids[each.value.policy_compartment_id]) : ""
 
-  ## Optional parameters to to enable and test ##
+  ## Optional parameters to enable and test ##
   # extended_metadata    = each.value.extended_metadata
   # skip_source_dest_check = each.value.skip_source_dest_check != null ? each.value.skip_source_dest_check : null
   # baseline_ocpu_utilization = each.value.baseline_ocpu_utilization
