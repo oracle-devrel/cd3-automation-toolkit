@@ -11,10 +11,10 @@ module "mts" {
   for_each = (var.mount_targets != null || var.mount_targets != {}) ? var.mount_targets : {}
   #Required
   availability_domain = each.value.availability_domain != "" && each.value.availability_domain != null ? data.oci_identity_availability_domains.availability_domains.availability_domains[each.value.availability_domain].name : ""
-  compartment_id = each.value.compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[each.value.compartment_name]) : null
-  network_compartment_id = each.value.network_compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.network_compartment_name)) > 0 ? each.value.network_compartment_name : var.compartment_ocids[each.value.network_compartment_name]) : var.compartment_ocids[each.value.network_compartment_name]
+  compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
+  network_compartment_id = each.value.network_compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.network_compartment_id)) > 0 ? each.value.network_compartment_id : var.compartment_ocids[each.value.network_compartment_id]) : var.compartment_ocids[each.value.network_compartment_id]
 
-  subnet_id = each.value.subnet_name
+  subnet_id = each.value.subnet_id
   vcn_names = [each.value.vcn_name]
 
   #Optional
@@ -36,7 +36,7 @@ module "fss" {
 
   #Required
   availability_domain = each.value.availability_domain != "" && each.value.availability_domain != null ? data.oci_identity_availability_domains.availability_domains.availability_domains[each.value.availability_domain].name : ""
-  compartment_id = each.value.compartment_name != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_name)) > 0 ? each.value.compartment_name : var.compartment_ocids[each.value.compartment_name]) : null
+  compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
 
   #Optional
   defined_tags  = each.value.defined_tags

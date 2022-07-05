@@ -1,3 +1,4 @@
+{% if count == 0 %}
 // Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 
 
@@ -16,10 +17,10 @@ mount_targets = {
 
     {{ mount_target_tf_name }} = {
         availability_domain = "{{ availability_domain }}"
-        compartment_name = "{{ compartment_tf_name }}"
-        network_compartment_name = "{{ network_compartment_tf_name }}"
-        vcn_name = {{ mounttarget_vcnname }}
-        subnet_name = {{ mounttarget_subnetname }}"
+        compartment_id = "{{ compartment_tf_name }}"
+        network_compartment_id = "{{ network_compartment_id }}"
+        vcn_name = "{{ vcn_name }}"
+        subnet_id = "{{ subnet_id }}"
 
         #Optional
         display_name = "{{ mounttarget_name }}"
@@ -42,44 +43,44 @@ mount_targets = {
         nsg_ids = []
         {% endif %}
 
-        {#  ##Do not modify below this line##  #}
-        {#                                     #}
-        {#  ###Section for adding Defined and Freeform Tags###  #}
-        {% if defined_tags and defined_tags != 'nan' and defined_tags != '' %}
-          {% if defined_tags[0] %}
-            defined_tags = {
-            {% for tags in defined_tags  %}
-                {% if not loop.last %}
-                    "{{ tags[0]  }}"= "{{ tags[1] }}" ,
-                {% else %}
-                    "{{ tags[0]  }}"= "{{ tags[1] }}"
-                {% endif %}
-            {% endfor %}
-            }
-          {% else %}
-            defined_tags = {}
+    {#  ##Do not modify below this line##  #}
+    {#                                     #}
+    {#  ###Section for adding Defined and Freeform Tags###  #}
+    {% if defined_tags and defined_tags != 'nan' and defined_tags != '' %}
+      {% if defined_tags[0] %}
+        defined_tags = {
+        {% for tags in defined_tags  %}
+            {% if not loop.last %}
+                "{{ tags[0]  }}"= "{{ tags[1] }}" ,
+            {% else %}
+                "{{ tags[0]  }}"= "{{ tags[1] }}"
             {% endif %}
-           {% else %}
-            defined_tags = {}
-           {% endif %}
-                {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' %}
-                    {% if freeform_tags[0] %}
-            freeform_tags = {
-                        {% for tags in freeform_tags %}
-                            {% if not loop.last  %}
-                    "{{ tags[0] }}"="{{ tags[1] }}",
-                            {% else %}
-                    "{{ tags[0] }}"="{{ tags[1] }}"
-                            {% endif %}
-                        {% endfor %}
-                        }
-                    {% else %}
-            freeform_tags = {}
-                    {% endif %}
+        {% endfor %}
+        }
+      {% else %}
+        defined_tags = {}
+        {% endif %}
+       {% else %}
+        defined_tags = {}
+       {% endif %}
+            {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' %}
+                {% if freeform_tags[0] %}
+        freeform_tags = {
+                    {% for tags in freeform_tags %}
+                        {% if not loop.last  %}
+                "{{ tags[0] }}"="{{ tags[1] }}",
+                        {% else %}
+                "{{ tags[0] }}"="{{ tags[1] }}"
+                        {% endif %}
+                    {% endfor %}
+                    }
                 {% else %}
-            freeform_tags = {}
+        freeform_tags = {}
                 {% endif %}
-        {#  ###Section for adding Defined and Freeform Tags ends here###  #}
+            {% else %}
+        freeform_tags = {}
+            {% endif %}
+    {#  ###Section for adding Defined and Freeform Tags ends here###  #}
         },
 
 {% endif %}
