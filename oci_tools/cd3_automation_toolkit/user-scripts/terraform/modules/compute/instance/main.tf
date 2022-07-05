@@ -103,11 +103,15 @@ resource "oci_core_instance" "instance" {
     }
   }
 
-  shape_config {
-    #Optional
-    baseline_ocpu_utilization = var.baseline_ocpu_utilization
-    memory_in_gbs             = var.memory_in_gbs
-    ocpus                     = var.ocpu_count
+  dynamic "shape_config" {
+    for_each =  var.memory_in_gbs
+
+    content {
+        #Optional
+        baseline_ocpu_utilization = var.baseline_ocpu_utilization
+        memory_in_gbs             = var.memory_in_gbs
+        ocpus                     = var.ocpu_count
+        }
   }
 
   source_details {
