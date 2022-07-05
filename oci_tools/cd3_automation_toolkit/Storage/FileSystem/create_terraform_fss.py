@@ -11,12 +11,8 @@
 
 import sys
 import argparse
-import pandas as pd
 import os
-import shutil
-import datetime
 
-from oci.config import DEFAULT_LOCATION
 from pathlib import Path
 sys.path.append(os.getcwd() + "/../..")
 from commonTools import *
@@ -41,9 +37,7 @@ def create_terraform_fss(inputfile, outdir, prefix,config=DEFAULT_LOCATION):
     sheetName = "FSS"
     ct = commonTools()
     ct.get_subscribedregions(configFileName)
-
-    x = datetime.datetime.now()
-    date = x.strftime("%f").strip()
+    auto_tfvars_filename = prefix + '_' + sheetName.lower() + '.auto.tfvars'
 
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
@@ -141,7 +135,7 @@ def create_terraform_fss(inputfile, outdir, prefix,config=DEFAULT_LOCATION):
     for eachregion in ct.all_regions:
         resource = sheetName.lower()
         srcdir = outdir + "/" + eachregion + "/"
-        commonTools.backup_file(srcdir, resource, sheetName.lower()+".tf")
+        commonTools.backup_file(srcdir, resource, auto_tfvars_filename)
 
     for i in df.index:
 
@@ -320,7 +314,6 @@ def create_terraform_fss(inputfile, outdir, prefix,config=DEFAULT_LOCATION):
             tempStr['uid'] = str(uid[j])
             tempStr['idsquash'] = idsquash[j].strip()
             tempStr['require_ps_port'] = str(require_ps_port[j]).strip().lower()
-
             export_set_info = export_set_info + export.render(tempStr)
 
         tempdict = {'export_set_info': export_set_info}
@@ -348,9 +341,10 @@ def create_terraform_fss(inputfile, outdir, prefix,config=DEFAULT_LOCATION):
 
     for r in ct.all_regions:
         if (tempStr_fss[r] != ""):
-            outfile = outdir + "/" + r + "/"+prefix+"_"+sheetName.lower()+".tf"
+            outfile = outdir + "/" + r + "/"+auto_tfvars_filename
 
-            oname = open(outfile, "w")
+            tempStr_fss[r] = "".join([s for s in tempStr_fss[r].strip().splitlines(True) if s.strip("\r\n").strip()])
+            oname = open(outfile, "w+")
             oname.write(tempStr_fss[r])
             oname.close()
             print(outfile + " for FSS has been created for region " + r)
