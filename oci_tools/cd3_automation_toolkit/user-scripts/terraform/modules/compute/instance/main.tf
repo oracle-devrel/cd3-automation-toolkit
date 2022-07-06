@@ -68,7 +68,7 @@ resource "oci_core_instance" "instance" {
     display_name              = var.display_name
     freeform_tags             = var.freeform_tags
     hostname_label            = var.hostname_label
-    nsg_ids                   = length(var.nsg_ids) != 0  ? (local.nsg_ids==[] ? ["INVALID NSG Name"] : local.nsg_ids) : null
+    nsg_ids                   = length(var.nsg_ids) != 0 ? (local.nsg_ids == [] ? ["INVALID NSG Name"] : local.nsg_ids) : null
     private_ip                = var.private_ip
     subnet_id                 = var.subnet_id
     vlan_id                   = var.vlan_id
@@ -94,7 +94,7 @@ resource "oci_core_instance" "instance" {
     for_each = var.platform_config
     content {
       #Required
-      type                               = platform_config.value["config_type"]
+      type = platform_config.value["config_type"]
       #Optional
       is_measured_boot_enabled           = platform_config.value["is_measured_boot_enabled"]
       is_secure_boot_enabled             = platform_config.value["is_secure_boot_enabled"]
@@ -106,8 +106,8 @@ resource "oci_core_instance" "instance" {
   shape_config {
     #Optional
     baseline_ocpu_utilization = var.baseline_ocpu_utilization
-    memory_in_gbs             = var.memory_in_gbs
-    ocpus                     = var.ocpu_count
+    memory_in_gbs             = var.memory_in_gbs == null ? local.shapes_config[var.shape]["memory_in_gbs"] : var.memory_in_gbs
+    ocpus                     = var.ocpu_count == null ? local.shapes_config[var.shape]["ocpus"] : var.ocpu_count
   }
 
   source_details {
@@ -138,7 +138,7 @@ locals {
 
 resource "oci_core_volume_backup_policy_assignment" "volume_backup_policy_assignment" {
   depends_on = [oci_core_instance.instance]
-  count     = var.boot_tf_policy != "" ? 1 : 0
+  count      = var.boot_tf_policy != "" ? 1 : 0
   #asset_id  = data.oci_core_boot_volumes.all_boot_volumes[0].boot_volumes.0.id
   asset_id  = oci_core_instance.instance.boot_volume_id
   policy_id = local.current_policy_id
