@@ -283,7 +283,7 @@ def create_terraform_lbr_hostname_certs(inputfile, outdir, prefix, config=DEFAUL
                         subnet_tf_name = commonTools.check_tf_variable(str(lbr_subnets[0]).strip())
                         try:
                             key = region, subnet_tf_name
-                            network_compartment_id = subnets.vcn_subnet_map[key][0]
+                            network_compartment_id = commonTools.check_tf_variable(subnets.vcn_subnet_map[key][0])
                             vcn_name = subnets.vcn_subnet_map[key][1]
                             lbr_subnets_list.append(subnets.vcn_subnet_map[key][2])
                         except Exception as e:
@@ -298,7 +298,7 @@ def create_terraform_lbr_hostname_certs(inputfile, outdir, prefix, config=DEFAUL
                             subnet_tf_name = commonTools.check_tf_variable(str(subnet).strip())
                             try:
                                 key = region, subnet_tf_name
-                                network_compartment_id = subnets.vcn_subnet_map[key][0]
+                                network_compartment_id = commonTools.check_tf_variable(subnets.vcn_subnet_map[key][0])
                                 vcn_name = subnets.vcn_subnet_map[key][1]
                                 lbr_subnets_list.append(subnets.vcn_subnet_map[key][2])
                             except Exception as e:

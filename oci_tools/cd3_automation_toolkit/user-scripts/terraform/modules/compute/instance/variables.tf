@@ -104,9 +104,9 @@ variable "network_compartment_id" {
 
 #Optional
 variable "capacity_reservation_id" {
-  type = string
+  type        = string
   description = "The OCID of the compute capacity reservation this instance is launched under"
-  default = null
+  default     = null
 }
 
 variable "kms_key_id" {
@@ -150,9 +150,9 @@ variable "vlan_id" {
 }
 
 variable "skip_source_dest_check" {
-  type = bool
+  type        = bool
   description = "Whether the source/destination check is disabled on the VNIC"
-  default = null
+  default     = null
 }
 
 variable "baseline_ocpu_utilization" {
@@ -252,9 +252,9 @@ variable "remote_data_volume_type" {
 }
 
 variable "platform_config" {
-  type = map(any)
+  type        = map(any)
   description = "Platform config map"
-  default = {}
+  default     = {}
 }
 
 variable "config_type" {
@@ -293,7 +293,7 @@ variable "vcn_names" {
 }
 
 variable "boot_tf_policy" {
-  type = string
+  type    = string
   default = ""
 }
 
