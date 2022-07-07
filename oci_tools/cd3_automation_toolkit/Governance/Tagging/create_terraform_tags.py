@@ -79,7 +79,7 @@ def create_terraform_tags(inputfile, outdir, prefix, config):
     # temporary dictionary1 and dictionary2
     tempStr = {}
     tempdict = {}
-
+    default_tags = []
     key_tf_name=''
 
 
@@ -104,7 +104,6 @@ def create_terraform_tags(inputfile, outdir, prefix, config):
 
         region = region.strip().lower()
 
-        default_tag_compartments = []
         regions = df['Region']
         check_diff_region = []
         values_list = ''
@@ -120,12 +119,8 @@ def create_terraform_tags(inputfile, outdir, prefix, config):
             print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
             exit(1)
 
-        if str(df.loc[i,'Default Tag Compartment']).strip().lower() != 'nan' and str(df.loc[i,'Tag Keys']).strip().lower() == 'nan':
+        if str(df.loc[i,'Default Tag Compartment = Default Tag Value']).strip().lower() != 'nan' and str(df.loc[i,'Tag Keys']).strip().lower() == 'nan':
             print("\nERROR!!! Tag Keys cannot be null when there is a Default Tag Compartment...Exiting!")
-            exit(1)
-
-        if str(df.loc[i,'Default Tag Compartment']).strip().lower() == 'nan' and str(df.loc[i,'Default Tag Value']).strip().lower() != 'nan':
-            print("\nERROR!!! Default Tag Compartment cannot be null when there is a Default Tag Value...Exiting!")
             exit(1)
 
         if str(df.loc[i,'Cost Tracking']).strip().lower() == 'true' and str(df.loc[i,'Tag Keys']).strip().lower() == 'nan':
@@ -146,7 +141,6 @@ def create_terraform_tags(inputfile, outdir, prefix, config):
                     columnvalue = ""
             else:
                 columnvalue = commonTools.check_columnvalue(columnvalue)
-
 
             if "::" in columnvalue:
                 if columnname != "Compartment Name" and columnname != 'Validator' and columnname != 'Default Tag Compartment':
@@ -197,12 +191,6 @@ def create_terraform_tags(inputfile, outdir, prefix, config):
                 if str(columnvalue).lower().strip() != 'true':
                     columnvalue = "false"
 
-            if columnname == 'Default Tag Compartment':
-                for values in str(columnvalue).strip().split(','):
-                    if values != '':
-                        default_tag_compartments.append(commonTools.check_tf_variable(values))
-                tempdict = {'default_tag_compartment': default_tag_compartments}
-
             if columnname == 'Validator':
                 if str(columnvalue).strip() != '' and str(columnvalue).strip().lower() != 'nan':
                     columnname = commonTools.check_column_headers(columnname)
@@ -212,42 +200,65 @@ def create_terraform_tags(inputfile, outdir, prefix, config):
 
                     values_list = multivalues[1].split(',')
                     values_list = [values[1:-1].strip().replace("\"",'') for values in values_list]
-                    if str(df.loc[i,'Default Tag Compartment']).strip() != '' and str(df.loc[i,'Default Tag Compartment']).lower().strip() != 'nan':
-                        if '$' not in str(df.loc[i, 'Default Tag Value']):
-                            if str(df.loc[i, 'Default Tag Value']) not in values_list and str(df.loc[i, 'Default Tag Value']).strip() != '' and str(df.loc[i, 'Default Tag Value']).strip().lower() != 'nan':
-                                print("\nERROR!! Value - "+str(df.loc[i, 'Default Tag Value'])+" in Default Tag Value is not present in Column Validator...Exiting!")
-                                exit()
-                        else:
-                            if '$'+str(df.loc[i, 'Default Tag Value']) not in values_list and str(df.loc[i, 'Default Tag Value']).strip() != '' and str(df.loc[i, 'Default Tag Value']).strip().lower() != 'nan':
-                                print("\nERROR!! Value - "+str(df.loc[i, 'Default Tag Value'])+" in Default Tag Value is not present in Column Validator...Exiting!")
-                                exit()
 
-            if columnname == 'Default Tag Value':
+            if columnname == 'Default Tag Compartment = Default Tag Value':
+                default_value = ''
                 if columnvalue != '' and columnvalue.strip().lower() != 'nan':
-                    is_required = 'false'
-                    if '$' in columnvalue and columnvalue.count('$') == 1:
-                        columnvalue = '$'+columnvalue
-                    tempdict = {'is_required' : is_required}
-                else:
-                    if columnvalue == '' or columnvalue.strip().lower() == 'nan':
-                        if str(df.loc[i,'Default Tag Compartment']).strip() != '' and str(df.loc[i,'Default Tag Compartment']).lower().strip() != 'nan':
-                            if str(df.loc[i,'Validator']).strip() != '' and  str(df.loc[i,'Validator']).strip().lower() != 'nan' and str(df.loc[i,'Validator']).strip() != []:
-                                is_required = 'true'
-                                columnvalue = values_list[0]
-                                tempdict = {'is_required': is_required}
+                    columnvalue = columnvalue.split(";")
+                    for values in columnvalue:
+                        values = values.split("=")
+                        if values != '' and values != [''] :
+                            default_compartment = commonTools.check_tf_variable(values[0]).strip()
+                            try:
+                                if values[1] and values[1] != "" and str(values[1]).lower() != 'nan':
+                                    default_value = values[1]
+                                else:
+                                    default_value = ""
+                            except IndexError as e:
+                                if "list index out of range" in str(e):
+                                    default_value = ""
 
+                            if values_list and values_list != []:
+                                if '$' not in str(default_value):
+                                    if str(default_value) not in values_list and str(default_value) != "nan" and str(default_value) != "":
+                                        print("\nERROR!! Value - "+str(default_value)+" in Default Tag Value is not present in Column Validator...Exiting!")
+                                        exit()
+                                else:
+                                    if '$'+str(default_value) not in values_list:
+                                        print("\nERROR!! Value - "+str(default_value)+" in Default Tag Value is not present in Column Validator...Exiting!")
+                                        exit()
+
+                            if default_value != "" and str(default_value).lower() != "nan":
+                                if '$' in default_value and default_value.count('$') == 1:
+                                    default_value = '$'+default_value
+                                is_required = 'false'
+                                columnvalue = key_tf_name+"="+default_compartment+"="+default_value+"="+is_required
+                                if columnvalue not in default_tags:
+                                    default_tags.append(columnvalue)
                             else:
-                                if str(df.loc[i, 'Validator']).strip() == '' or  str(df.loc[i, 'Validator']).strip().lower() == 'nan':
-                                    is_required = 'true'
-                                    columnvalue = '-'
-                                    tempdict = {'is_required': is_required}
+                                if default_value == '' or default_value.strip().lower() == 'nan':
+                                    if str(df.loc[i,'Validator']).strip() != '' and  str(df.loc[i,'Validator']).strip().lower() != 'nan' and str(df.loc[i,'Validator']).strip() != []:
+                                        is_required_updated = 'true'
+                                        default_value = values_list[0]
+                                        columnvalue = key_tf_name+"="+default_compartment+"="+default_value+"="+is_required_updated
+                                        if columnvalue not in default_tags:
+                                            default_tags.append(columnvalue)
+                                    else:
+                                        if str(df.loc[i, 'Validator']).strip() == '' or  str(df.loc[i, 'Validator']).strip().lower() == 'nan':
+                                            is_required_updated = 'true'
+                                            default_value = '-'
+                                            columnvalue = key_tf_name+"="+default_compartment+"="+default_value+"="+is_required_updated
+                                            if columnvalue not in default_tags:
+                                                default_tags.append(columnvalue)
+
+                tempdict = {'default_tags': default_tags}
 
             columnname = commonTools.check_column_headers(columnname)
             tempStr[columnname] = str(columnvalue).strip()
             tempStr.update(tempdict)
 
-        if str(df.loc[i,'Default Tag Compartment']).strip() != '' and str(df.loc[i,'Default Tag Compartment']).lower().strip() != 'nan':
-            defaulttagtemp[region] = defaulttagtemp[region] + defaulttag.render(tempStr)
+        if str(df.loc[i,'Default Tag Compartment = Default Tag Value']).strip() != '' and str(df.loc[i,'Default Tag Compartment = Default Tag Value']).lower().strip() != 'nan':
+            defaulttagtemp[region] = defaulttag.render(tempStr)
 
         if namespace_tf_name not in tagnamespace_list[region]:
             namespacetemp[region] = namespacetemp[region]+ namespace.render(tempStr)
