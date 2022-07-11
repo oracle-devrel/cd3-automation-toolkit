@@ -83,7 +83,7 @@ nsg_rules = {
                 tcp_options_destination_port_min = "{{ dportmin }}"
                 }]
             {% else %}
-            destination_port_range = [{}]
+            destination_port_range = []
             {% endif %}
         }]
         {% else %}
