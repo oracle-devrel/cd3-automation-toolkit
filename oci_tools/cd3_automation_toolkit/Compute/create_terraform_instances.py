@@ -137,7 +137,7 @@ def create_terraform_instances(inputfile, outdir, prefix, config):
                 else:
                     try:
                         key = region, subnet_tf_name
-                        network_compartment_id = subnets.vcn_subnet_map[key][0]
+                        network_compartment_id = commonTools.check_tf_variable(subnets.vcn_subnet_map[key][0])
                         vcn_name = subnets.vcn_subnet_map[key][1]
                         subnet_id = subnets.vcn_subnet_map[key][2]
                     except Exception as e:
