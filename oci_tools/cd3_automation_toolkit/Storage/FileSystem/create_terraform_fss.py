@@ -11,12 +11,8 @@
 
 import sys
 import argparse
-import pandas as pd
 import os
-import shutil
-import datetime
 
-from oci.config import DEFAULT_LOCATION
 from pathlib import Path
 sys.path.append(os.getcwd() + "/../..")
 from commonTools import *
@@ -41,9 +37,7 @@ def create_terraform_fss(inputfile, outdir, prefix,config=DEFAULT_LOCATION):
     sheetName = "FSS"
     ct = commonTools()
     ct.get_subscribedregions(configFileName)
-
-    x = datetime.datetime.now()
-    date = x.strftime("%f").strip()
+    auto_tfvars_filename = prefix + '_' + sheetName.lower() + '.auto.tfvars'
 
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
@@ -73,11 +67,15 @@ def create_terraform_fss(inputfile, outdir, prefix,config=DEFAULT_LOCATION):
     mount_target_tf_name = ''
     fss_name = ''
     tempdict = {}
+    tempStr_mt = {}
+    tempStr_fse = {}
 
     global value
 
     for r in ct.all_regions:
         tempStr_fss[r] = ''
+        tempStr_mt[r] = ''
+        tempStr_fse[r] = ''
         MT_names[r] = []
         FSS_names[r] = []
 
@@ -141,8 +139,9 @@ def create_terraform_fss(inputfile, outdir, prefix,config=DEFAULT_LOCATION):
     for eachregion in ct.all_regions:
         resource = sheetName.lower()
         srcdir = outdir + "/" + eachregion + "/"
-        commonTools.backup_file(srcdir, resource, sheetName.lower()+".tf")
+        commonTools.backup_file(srcdir, resource, auto_tfvars_filename)
 
+    subnets = parseSubnets(filename)
     for i in df.index:
 
         sourceCIDR = []
@@ -209,7 +208,23 @@ def create_terraform_fss(inputfile, outdir, prefix,config=DEFAULT_LOCATION):
                 tempdict = {'availability_domain': columnvalue}
 
             if columnname == 'MountTarget SubnetName':
-                columnvalue = commonTools.check_tf_variable(columnvalue.strip())
+                subnet_tf_name = columnvalue.strip()
+                if ("ocid1.subnet.oc1" in subnet_tf_name):
+                    network_compartment_id = ""
+                    vcn_name = ""
+                    subnet_id = subnet_tf_name
+                else:
+                    try:
+                        key = region, subnet_tf_name
+                        network_compartment_id = commonTools.check_tf_variable(subnets.vcn_subnet_map[key][0])
+                        vcn_name = subnets.vcn_subnet_map[key][1]
+                        subnet_id = subnets.vcn_subnet_map[key][2]
+                    except Exception as e:
+                        print("Invalid Subnet Name specified for row " + str(i + 3) + ". It Doesnt exist in Subnets sheet. Exiting!!!")
+                        exit()
+
+                tempdict = {'network_compartment_id': network_compartment_id, 'vcn_name': vcn_name,
+                            'subnet_id': subnet_id}
 
             if columnname == "Access (READ_ONLY|READ_WRITE)":
                 columnname = "access"
@@ -301,6 +316,7 @@ def create_terraform_fss(inputfile, outdir, prefix,config=DEFAULT_LOCATION):
                 if columnvalue != '':
                     fss_name = str(columnvalue).strip()
                     fss_tf_name = commonTools.check_tf_variable(fss_name.strip())
+
                 tempdict = {'fss_tf_name': fss_tf_name, 'fss_name': fss_name}
                 tempStr.update(tempdict)
 
@@ -320,7 +336,6 @@ def create_terraform_fss(inputfile, outdir, prefix,config=DEFAULT_LOCATION):
             tempStr['uid'] = str(uid[j])
             tempStr['idsquash'] = idsquash[j].strip()
             tempStr['require_ps_port'] = str(require_ps_port[j]).strip().lower()
-
             export_set_info = export_set_info + export.render(tempStr)
 
         tempdict = {'export_set_info': export_set_info}
@@ -328,7 +343,7 @@ def create_terraform_fss(inputfile, outdir, prefix,config=DEFAULT_LOCATION):
 
         if (str(mount_target_tf_name).strip() not in MT_names[region]):
             MT_names[region].append(str(mount_target_tf_name).strip())
-            tempStr_fss[region] = tempStr_fss[region] + mounttarget.render(tempStr)
+            tempStr_mt[region] = tempStr_mt[region] + mounttarget.render(tempStr)
 
         if (fss_name.strip() not in FSS_names[region]):
             FSS_names[region].append(fss_name.strip())
@@ -344,13 +359,19 @@ def create_terraform_fss(inputfile, outdir, prefix,config=DEFAULT_LOCATION):
         tempStr.update(tempdict)
 
         # FSE_tf_name=commonTools.check_tf_variable(FSE_name)
-        tempStr_fss[region] = tempStr_fss[region] + fses.render(tempStr)
+        tempStr_fse[region] = tempStr_fse[region] + fses.render(tempStr)
 
     for r in ct.all_regions:
         if (tempStr_fss[r] != ""):
-            outfile = outdir + "/" + r + "/"+prefix+"_"+sheetName.lower()+".tf"
+            outfile = outdir + "/" + r + "/"+auto_tfvars_filename
 
-            oname = open(outfile, "w")
+            fssSrcStr = "##Add New FSS for " + r.lower() + " here##"
+            fseSrcStr = "##Add New NFS Export Options for " + r.lower() + " here##"
+            mtSrcStr = "##Add New Mount Targets for " + r.lower() + " here##"
+
+            tempStr_fss[r] = mounttarget.render(count=0, region=r).replace(mtSrcStr,tempStr_mt[r]) + fss.render(count=0, region=r).replace(fssSrcStr,tempStr_fss[r]) + fses.render(count=0, region=r).replace(fseSrcStr,tempStr_fse[r])
+            tempStr_fss[r] = "".join([s for s in tempStr_fss[r].strip().splitlines(True) if s.strip("\r\n").strip()])
+            oname = open(outfile, "w+")
             oname.write(tempStr_fss[r])
             oname.close()
             print(outfile + " for FSS has been created for region " + r)

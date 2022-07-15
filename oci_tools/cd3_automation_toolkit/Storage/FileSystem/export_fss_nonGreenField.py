@@ -74,7 +74,7 @@ def __get_mount_info(cname, compartment_id, reg, availability_domain_name, confi
             export_set_id = mnt.export_set_id  # Export Set Id
             mt_display_name = mnt.display_name  # Mount Target Name
             tf_name = commonTools.check_tf_variable(mt_display_name)
-            importCommands[reg].write("\nterraform import oci_file_storage_mount_target." + tf_name + " " + str(mnt_id))
+            importCommands[reg].write("\nterraform import \"module.mts[\"" + tf_name + "\"].oci_file_storage_mount_target.mount_target\" " + str(mnt_id))
             subnet_id = mnt.subnet_id
             private_ip_ids = mnt.private_ip_ids
             nsg_id = mnt.nsg_ids
@@ -117,7 +117,7 @@ def __get_mount_info(cname, compartment_id, reg, availability_domain_name, confi
                     # print(mt_display_name,"-",str(fs_name))
                     tf_name = commonTools.check_tf_variable(fs_name)
                     importCommands[reg].write(
-                        "\nterraform import oci_file_storage_file_system." + tf_name + " " + str(fs_id))
+                        "\nterraform import \"module.fss[\"" + tf_name + "\"].oci_file_storage_file_system.file_system\" " + str(fs_id))
                     fss.append(str(fs_id))
                 elen = (len(einfo_export_data.export_options))
                 if (elen == 0):
@@ -156,7 +156,7 @@ def __get_mount_info(cname, compartment_id, reg, availability_domain_name, confi
                         # rows.append(new_row)
                 tf_name = commonTools.check_tf_variable("FSE-" + commonTools.check_tf_variable(mt_display_name) + "-" + commonTools.check_tf_variable(fs_name) + "-" + einfo_path[1:])
                 importCommands[reg].write(
-                    "\nterraform import oci_file_storage_export." + tf_name + " " + str(einfo.id))  # exports import
+                    "\nterraform import \"module.fss-export-options[\"" + tf_name + "\"].oci_file_storage_export.export\" " + str(einfo.id))  # exports import
     except Exception as e:
         pass
 

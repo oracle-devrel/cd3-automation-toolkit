@@ -28,29 +28,22 @@ def add_values_in_dict(sample_dict, key, list_of_values):
     sample_dict[key].extend(list_of_values)
     return sample_dict
 
-def  print_tags(values_for_column_tags,region, ntk_compartment_name, tag, tag_key, tag_default_value, tag_default, tag_default_comp):
-    if ( tag_default_value == '' ) :
-     tag_default_comp = ""
-     tag_default_id = ''
-    else:
-     tag_default_id = tag_default.id
-     if (tag_default.is_required is True):
-        tag_default_value = ""
+def  print_tags(values_for_column_tags,region, ntk_compartment_name, tag, tag_key, tag_default_value):
     validator = ''
     tag_key_name = ''
     tag_key_description = ''
     tag_key_is_cost_tracking = ''
     if ( str(tag_key) != "Nan"  ):
-     tag_key_name = tag_key.name
-     tag_key_description = tag_key.description
-     tag_key_is_cost_tracking = tag_key.is_cost_tracking
-     validator = tag_key.validator
-     if ( validator is not None ):
-      validator = str(validator)
-      validator = validator.replace("\n","")
-      validator = validator.split("{  \"validator_type\": \"ENUM\",  \"values\": [    ")
-      validator = validator[1].split("  ]}")
-      validator = "ENUM::" + validator[0].replace("    ","")
+         tag_key_name = tag_key.name
+         tag_key_description = tag_key.description
+         tag_key_is_cost_tracking = tag_key.is_cost_tracking
+         validator = tag_key.validator
+         if ( validator is not None ):
+          validator = str(validator)
+          validator = validator.replace("\n","")
+          validator = validator.split("{  \"validator_type\": \"ENUM\",  \"values\": [    ")
+          validator = validator[1].split("  ]}")
+          validator = "ENUM::" + validator[0].replace("    ","")
 
     for col_header in values_for_column_tags.keys():
         if (col_header == "Region"):
@@ -72,17 +65,22 @@ def  print_tags(values_for_column_tags,region, ntk_compartment_name, tag, tag_ke
             values_for_column_tags[col_header].append(tag_key_is_cost_tracking)
         elif (col_header == "Validator"):
             values_for_column_tags[col_header].append(validator)
-        elif (col_header == "Default Tag Compartment"):
-            if "ocid1.tagdefinition.oc1" in str(tag_default_comp):
-                values_for_column_tags[col_header].append(','.join([str(item) for item in tag_default_comps_map[tag_default_comp]]))
+        elif (col_header == "Default Tag Compartment = Default Tag Value"):
+            if tag_default_value:
+                default_value = ''
+                if len(tag_default_value) != 0:
+                    for value in tag_default_value:
+                        default_value = default_value +";"+ value
+                    values_for_column_tags[col_header].append(str(default_value).lstrip(';'))
+                else:
+                    values_for_column_tags[col_header].append('')
             else:
-                values_for_column_tags[col_header].append(tag_default_comp)
-        elif (col_header == "Default Tag Value"):
-            values_for_column_tags[col_header].append(tag_default_value)
+                values_for_column_tags[col_header].append('')
+
         elif col_header.lower() in commonTools.tagColumns:
             values_for_column_tags = commonTools.export_tags(tag, col_header, values_for_column_tags)
         else:
-            oci_objs = [tag,tag_key,tag_default]
+            oci_objs = [tag,tag_key]#,tag_default]
             values_for_column_tags = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict_tags,values_for_column_tags)
 
     tf_name_namespace = commonTools.check_tf_variable(tagname)
@@ -92,9 +90,10 @@ def  print_tags(values_for_column_tags,region, ntk_compartment_name, tag, tag_ke
         tf_name_namespace_list.append(tag.id)
     if ( str(tag_key) != "Nan" ):
       importCommands[region].write("\nterraform import \"module.tag-keys[\\\""+tf_name_namespace + '_' + tf_name_key + '\\\"].oci_identity_tag.tag\" ' + "tagNamespaces/"+ str(tag.id) +"/tags/\"" + str(tag_key_name) + "\"")
-    if ( tag_default_comp != ''):
-        for comp in tag_default_comps_map[tag_default_comp]:
-            importCommands[region].write("\nterraform import \"module.tag-defaults[\\\""+ tf_name_namespace+'_' +tf_name_key + '_' +commonTools.check_tf_variable(comp).strip()+ '-default'+ '\\\"].oci_identity_tag_default.tag_default\" ' + str(defaultcomp_to_tagid_map[tf_name_key+"-"+commonTools.check_tf_variable(comp)]))
+    if ( tag_default_value != []):
+        if len(tag_default_value) != 0:
+            for value in tag_default_value:
+                importCommands[region].write("\nterraform import \"module.tag-defaults[\\\""+ tf_name_namespace+'_' +tf_name_key + '_' +commonTools.check_tf_variable(value.split("=")[0]).strip()+ '-default'+ '\\\"].oci_identity_tag_default.tag_default\" ' + str(defaultcomp_to_tagid_map[tf_name_key+"-"+commonTools.check_tf_variable(value.split("=")[0])]))
 
 
 def parse_args():
@@ -165,7 +164,8 @@ def export_tags_nongreenfield(inputfile, outdir, _config, network_compartments):
                                                                             lifecycle_state="ACTIVE")
             if tag_defaults.data != []:
                 for tag_default in tag_defaults.data:
-                    add_values_in_dict(tag_default_comps_map, tag_default.tag_definition_id, [ntk_compartment_name])
+                    if tag_default.tag_definition_name != '(deleted tag definition)':
+                        add_values_in_dict(tag_default_comps_map, tag_default.tag_definition_id+"="+tag_default.tag_definition_name, [ntk_compartment_name+"="+tag_default.value])
                     defaultcomp_to_tagid_map.update({ commonTools.check_tf_variable(str(tag_default.tag_definition_name).replace('\\','\\\\'))+"-"+commonTools.check_tf_variable(ntk_compartment_name) : tag_default.id })
 
     comp_ocid_done = []
@@ -175,14 +175,9 @@ def export_tags_nongreenfield(inputfile, outdir, _config, network_compartments):
             tags = oci.pagination.list_call_get_all_results(identity.list_tag_namespaces,
                                                                     compartment_id=ct.ntk_compartment_ids[
                                                                         ntk_compartment_name],lifecycle_state="ACTIVE")
-            tag_defaults = oci.pagination.list_call_get_all_results(identity.list_tag_defaults,
-                                                                            compartment_id=ct.ntk_compartment_ids[
-                                                                                ntk_compartment_name],
-                                                                            lifecycle_state="ACTIVE")
 
             tag_namespace_check = []
             tag_list = []
-            tag_default_comp = ''
             for tag in tags.data:
                 tag_list.append(str(tag.id))
                 tag_keys = oci.pagination.list_call_get_all_results(identity.list_tags, tag_namespace_id=tag.id,
@@ -195,44 +190,31 @@ def export_tags_nongreenfield(inputfile, outdir, _config, network_compartments):
                     tag_key_id = str(tag_key.id)
                     tag_key_check.append(tag_key_id)
                     tag_name_id_map.update({ tag_key.id : tag_key.name })
-                    for tag_default in tag_defaults.data:
-                        if (ct.ntk_compartment_ids[ntk_compartment_name] == tag_default.compartment_id):
-                            tag_default_comp = ntk_compartment_name
-                            if ("::" in ntk_compartment_name):
-                                tag_default_comp = ntk_compartment_name
-                        if (tag_key.id == tag_default.tag_definition_id):
-                            tag_key_id = str(tag_key.id)
-                            tag_default_check.append(tag_key_id)
-                            tag_default_value = tag_default.value
-                            tag_namespace_check.append( str(tag.id))
-                            print_tags(values_for_column_tags, region, ntk_compartment_name, tag, tag_key,
-                                               tag_default_value, tag_default, tag_key_id)
-                check_non_default_tags = [i for i in tag_key_check + tag_default_check if
-                                                  i not in tag_key_check or i not in tag_default_check]
+                    if (tag_key.id+"="+tag_key.name in tag_default_comps_map):
+                        tag_default_check.append(str(tag_key.id))
+                        tag_default_value = tag_default_comps_map[tag_key.id+"="+tag_key.name]
+                        tag_namespace_check.append(str(tag.id))
+                        print_tags(values_for_column_tags, region, ntk_compartment_name, tag, tag_key,tag_default_value)
+
+                check_non_default_tags = [i for i in tag_key_check + tag_default_check if i not in tag_key_check or i not in tag_default_check]
                 for tag_check in check_non_default_tags:
                     for tag_key in tag_keys.data:
                         if (tag_check in tag_key.id):
                             tag_key = identity.get_tag(tag.id, tag_key.name)
                             tag_key = tag_key.data
                             tag_default_value = ''
-                            tag_default = ''
-                            tag_namespace_check.append( str(tag.id))
-                            print_tags(values_for_column_tags, region, ntk_compartment_name, tag, tag_key,
-                                               tag_default_value, tag_default, tag_default_comp)
+                            tag_namespace_check.append(str(tag.id))
+                            print_tags(values_for_column_tags, region, ntk_compartment_name, tag, tag_key,tag_default_value)
 
             tag_namespace_check = list(dict.fromkeys(tag_namespace_check))
             check_non_key_tags = [i for i in tag_list + tag_namespace_check if i not in tag_list or i not in tag_namespace_check]
             for tag_check in check_non_key_tags:
-                tag_key = str(tag_key)
                 tag_key = "Nan"
                 tag_default_value = ''
-                tag_default = ''
-                tag_default_comp = ''
                 for tag in tags.data:
                     if (tag_check in tag.id):
                         tag = identity.get_tag_namespace(tag.id).data
-                        print_tags(values_for_column_tags, region, ntk_compartment_name, tag, tag_key,
-                                       tag_default_value, tag_default, tag_default_comp)
+                        print_tags(values_for_column_tags, region, ntk_compartment_name, tag, tag_key,tag_default_value)
 
     commonTools.write_to_cd3(values_for_column_tags, cd3file, "Tags")
     print("Tags exported to CD3\n")

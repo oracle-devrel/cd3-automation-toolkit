@@ -14,13 +14,13 @@ tag_defaults = {
     ##Add New Tag Defaults for {{ region|lower }} here##
 }{% else %}
 
-    {% for compartments in default_tag_compartment %}
-    {{ key_tf_name }}_{{ compartments }}-default = {
-            tag_definition_id = "{{ key_tf_name }}"
-            compartment_id = "{{ compartments }}"
-            value = "{{ default_tag_value }}"
+    {% for tags in default_tags %}
+    {{ tags.split('=')[0] }}_{{ tags.split('=')[1] }}-default = {
+            tag_definition_id = "{{ tags.split('=')[0] }}"
+            compartment_id = "{{ tags.split('=')[1] }}"
+            value = "{{ tags.split('=')[2] }}"
 
-            is_required =  {{ is_required }}
+            is_required =  {{ tags.split('=')[3] }}
             },
     {% endfor %}
 
