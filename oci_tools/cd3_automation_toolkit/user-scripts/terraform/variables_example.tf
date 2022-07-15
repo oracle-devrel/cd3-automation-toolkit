@@ -422,10 +422,6 @@ variable "rule_sets" {
   default     = {}
 }
 
-###########################################
-####### Load Balancer Reserved IPs ########
-###########################################
-
 variable "lbr_reserved_ips" {
   description = "To provision Load Balancer Reserved IPs"
   type        = map(any)
@@ -447,6 +443,34 @@ variable "loadbalancer_logs" {
   type        = map(any)
   default     = {}
 }
+
+#########################
+## Network Load Balancers ##
+#########################
+
+variable "network_load_balancers" {
+  type        = map(any)
+  default     = {}
+}
+variable "nlb_listeners" {
+  type        = map(any)
+  default     = {}
+}
+
+variable "nlb_backend_sets" {
+  type        = map(any)
+  default     = {}
+}
+variable "nlb_backends" {
+  type        = map(any)
+  default     = {}
+}
+variable "nlb_reserved_ips" {
+  description = "To provision Network Load Balancer Reserved IPs"
+  type        = map(any)
+  default     = {}
+}
+
 
 #########################
 ##### IP Management #####

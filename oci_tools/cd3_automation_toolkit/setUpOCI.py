@@ -192,11 +192,23 @@ def export_fss(inputfile, outdir, prefix,config):
 
 
 def export_loadbalancer():
+    options = [Option("Export Load Balancers", export_lbr,'Exporting LBR Objects'),
+               Option("Export Network Load Balancers", export_nlb,'Exporting NLB Objects')]
+
+    options = show_options(options, quit=True, menu=True, index=1)
+    execute_options(options, inputfile, outdir, prefix, config)
+
+def export_lbr(inputfile, outdir, prefix,config):
     compartments = get_compartment_list('LBR objects')
     Network.export_lbr(inputfile, outdir, _config=config, network_compartments=compartments)
     create_lb(inputfile, outdir, prefix, config=config)
     print("\n\nExecute tf_import_commands_lbr_nonGF.sh script created under each region directory to synch TF with OCI LBR objects\n")
 
+def export_nlb(inputfile, outdir, prefix,config):
+    compartments = get_compartment_list('NLB objects')
+    Network.export_nlb(inputfile, outdir, _config=config, network_compartments=compartments)
+    create_nlb(inputfile, outdir, prefix, config=config)
+    print("\n\nExecute tf_import_commands_nlb_nonGF.sh script created under each region directory to synch TF with OCI NLB objects\n")
 
 def export_databases():
     options = [Option("Export Virtual Machine or Bare Metal DB Systems",export_dbsystems_vm_bm,'Exporting VM and BM DB Systems'),
@@ -381,6 +393,7 @@ def create_fss(inputfile, outdir, prefix,config):
 def create_loadbalancer(execute_all=False):
     options = [
         Option('Add/Modify/Delete Load Balancers', create_lb, 'LBaaS'),
+        Option('Add/Modify/Delete Network Load Balancers', create_nlb, 'NLB'),
         Option('Enable LBaaS Logs', enable_lb_logs, 'LBaaS Logs')]
     options = show_options(options, quit=True, menu=True, index=1)
     if not execute_all:
@@ -398,6 +411,13 @@ def create_lb(inputfile, outdir, prefix, config):
 
 def enable_lb_logs(inputfile, outdir, prefix, config):
     options = [Option(None, ManagementServices.enable_load_balancer_logging, 'Enabling LBaaS Logs')]
+    execute_options(options, inputfile, outdir, prefix, config=config)
+
+def create_nlb(inputfile, outdir, prefix, config):
+    options = [
+         Option(None, Network.create_terraform_nlb_listener, 'Creating NLB and Listeners'),
+         Option(None, Network.create_nlb_backendset_backendservers, 'Creating NLB Backend Sets and Backend Servers'),
+    ]
     execute_options(options, inputfile, outdir, prefix, config=config)
 
 def create_databases(execute_all=False):

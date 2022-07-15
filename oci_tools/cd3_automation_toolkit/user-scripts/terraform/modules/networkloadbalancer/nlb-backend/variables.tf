@@ -1,0 +1,66 @@
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+
+#######################################
+# Variable Block - Network Load Balancer
+# Create Network Load Balancer Backend
+#######################################
+
+
+variable "backend_set_name" {
+  type        = string
+  description = "The name of the backend set to add the backend server to."
+  default     = null
+}
+
+variable "network_load_balancer_id" {
+  type        = string
+  description = "The OCID of network load balancer"
+  default     = null
+}
+
+variable "port" {
+  type        = string
+  description = " The port of the backend server."
+  default     = null
+}
+
+variable "ip_address" {
+  type        = string
+  description = " The IP address of the backend server."
+  default     = null
+}
+
+variable "is_backup" {
+  type        = bool
+  description = "Whether the load balancer should treat this server as a backup unit. If true, the load balancer forwards no ingress traffic to this backend server unless all other backend servers not marked as backup fail the health check policy."
+  default     = false # Default value at random
+}
+
+variable "is_drain" {
+  type        = bool
+  description = "Whether the load balancer should drain this server. Servers marked drain receive no new incoming traffic."
+  default     = false # Default value as per hashicorp terraform
+}
+
+variable "is_offline" {
+  type        = bool
+  description = "Whether the load balancer should treat this server as offline. Offline servers receive no incoming traffic."
+  default     = false # Default value as per hashicorp terraform
+}
+
+variable "name" {
+  type        = string
+  default     = null
+}
+
+variable "target_id" {
+  type        = string
+  default     = null
+}
+
+
+variable "weight" {
+  type        = number
+  description = "The load balancing policy weight assigned to the server. Backend servers with a higher weight receive a larger proportion of incoming traffic. Weight values must be from 1 to 100."
+  default     = 1 # Default value as per hashicorp terraform
+}

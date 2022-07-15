@@ -202,6 +202,25 @@
         "Alarm Name" : "display_name",
         "Trigger Delay Minutes" : "pending_duration"
 
-    }
-
+    },
+    "NLB-Listeners" :
+    {
+        "Is Preserve Source Destination(True|False)" : "is_preserve_source_destination",
+        "Backend Set Name" : "default_backend_set_name",
+        "Listener Name" : "name",
+        "Listener Protocol(UDP|TCP|UDP/TCP|Any)" : "protocol",
+        "Listener Port" : "port"
+    },
+    "NLB-BackendSets-BackendServers" :
+    {
+        "Is Preserve Source(True|False)" : "is_preserve_source",
+        "Backend ServerComp&ServerName:Port" : "backend_server_name:port",
+        "Backend Set Name" : "backend_set_name",
+        "Backend Policy(FIVE_TUPLE|THREE_TUPLE|TWO_TUPLE)" : "policy",
+        "Backend HealthCheck Protocol(HTTP|HTTPS|TCP|UDP)" : "protocol",
+        "Backend HealthCheck Port" : "port",
+        "Backend HealthCheck URL" : "url_path",
+        "Backend HealthCheck Return Code" : "return_code",
+        "Backend HealthCheck Interval In Millis" : "interval_in_millis"
+       }
 }
