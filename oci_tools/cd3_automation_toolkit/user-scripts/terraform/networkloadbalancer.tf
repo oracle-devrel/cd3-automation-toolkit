@@ -35,7 +35,7 @@ module network-load-balancers {
   network_compartment_id = each.value.network_compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.network_compartment_id)) > 0 ? each.value.network_compartment_id : var.compartment_ocids[each.value.network_compartment_id]) : null 
   compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
   display_name = each.value.display_name
-  subnet_id = each.value.subnet_id != "" ? (length(regexall("ocid1.subnet.oc1*", each.value.subnet_id)) > 0 ? each.value.subnet_id : data.oci_core_subnets.oci_nlb_subnets[each.value.display_name].subnets.*.id[0]) : null
+  subnet_id = each.value.subnet_id != "" ? (length(regexall("ocid1.subnet.oc1*", each.value.subnet_id)) > 0 ? each.value.subnet_id : data.oci_core_subnets.oci_nlb_subnets[each.key].subnets.*.id[0]) : null
   is_preserve_source_destination = each.value.is_preserve_source_destination != null ? each.value.is_preserve_source_destination : null
   #is_private = each.value.is_private != null ? each.value.is_private : null
   network_security_group_ids = each.value.nsg_ids != null ? each.value.nsg_ids : null

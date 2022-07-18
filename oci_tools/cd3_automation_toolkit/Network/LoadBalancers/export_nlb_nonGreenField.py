@@ -115,14 +115,18 @@ def print_nlb_listener(region, ct, values_for_column_lis, NLBs, nlb_compartment_
         reserved_ip = ""
         if eachnlb.ip_addresses != []:
             for ips in eachnlb.ip_addresses:
-                if str(ips.reserved_ip) == "null" or str(ips.reserved_ip) == "None":
-                    reserved_ip = "N"
-                else:
-                    reserved_ip = ips.reserved_ip.id
+                if(ips.is_public == True):
+                    if str(ips.reserved_ip) == "null" or str(ips.reserved_ip) == "None":
+                        reserved_ip = "N"
+                    else:
+                        reserved_ip = ips.reserved_ip.id
 
         # Loop through listeners
         for listeners, values in eachnlb.__getattribute__('listeners').items():
             cnt_lsnr = cnt_lsnr + 1
+            print(listeners)
+            print(values.protocol)
+            print("--")
 
             for col_header in values_for_column_lis.keys():
                 if col_header == 'Region':

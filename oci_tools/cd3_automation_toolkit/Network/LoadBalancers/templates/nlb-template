@@ -36,6 +36,13 @@ network_load_balancers = {
         reserved_ips_id = "N"
         {% endif %}
 
+        {% if reserved_ips_id == "Y" %}
+        is_private = false
+        {% else %}
+        is_private = null
+        {% endif %}
+
+
         {% if is_preserve_source_destination and is_preserve_source_destination != "" %}
         is_preserve_source_destination = {{ is_preserve_source_destination }}
         {% else %}

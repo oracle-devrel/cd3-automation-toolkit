@@ -82,7 +82,7 @@ nlb_backend_sets = {
         {% if backend_healthcheck_url and backend_healthcheck_url != '' %}
         url_path = "{{ backend_healthcheck_url }}"
         {% else %}
-        url_path = "\"
+        url_path = "/"
         {% endif %}
         {% else %}
         url_path = null
