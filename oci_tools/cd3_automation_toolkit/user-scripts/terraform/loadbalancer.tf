@@ -23,7 +23,7 @@ data "oci_core_instances" "instances" {
 
 data "oci_core_instance" "instance_ip" {
     for_each = { for k,v in var.backends : k => v.ip_address if length(regexall("IP:*", v.ip_address)) == 0 }
-    instance_id = flatten(distinct(local.instance.ocid))[0][split("NAME:", each.value)[1]][0]
+    instance_id = merge(local.instance.ocid.*...)[split("NAME:", each.value)[1]][0]
 }
 
 locals {

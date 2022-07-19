@@ -19,7 +19,7 @@ data "oci_core_instances" "nlb_instances" {
 
 data "oci_core_instance" "nlb_instance_ip" {
     for_each = { for k,v in var.nlb_backends : k => v.ip_address if length(regexall("IP:*", v.ip_address)) == 0 }
-    instance_id = flatten(distinct(local.nlb_instance.ocid))[0][split("NAME:", each.value)[1]][0]
+    instance_id = merge(local.nlb_instance.ocid.*...)[split("NAME:", each.value)[1]][0]
 }
 
 locals {
