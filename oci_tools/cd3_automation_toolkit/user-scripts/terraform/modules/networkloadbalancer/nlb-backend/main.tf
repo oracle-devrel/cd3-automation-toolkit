@@ -13,7 +13,6 @@ resource "oci_network_load_balancer_backend" "backend" {
 
     #Optional
     ip_address = var.ip_address
-    is_backup = var.is_backup
     is_drain = var.is_drain
     is_offline = var.is_offline
     name = var.name

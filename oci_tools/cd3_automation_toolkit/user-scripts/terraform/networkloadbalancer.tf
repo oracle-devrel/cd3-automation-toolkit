@@ -14,7 +14,7 @@ data "oci_core_subnets" "oci_nlb_subnets" {
 data "oci_core_instances" "nlb_instances" {
     for_each = var.nlb_backends != null ? var.nlb_backends : {}
     #Required
-    compartment_id = each.value.instance_compartment != null ? (length(regexall("ocid1.compartment.oc1*", each.value.instance_compartment)) > 0 ? each.value.instance_compartment : var.compartment_ocids[each.value.instance_compartment]) :  var.tenancy_ocid
+    compartment_id = each.value.instance_compartment != null && each.value.instance_compartment !="" ? (length(regexall("ocid1.compartment.oc1*", each.value.instance_compartment)) > 0 ? each.value.instance_compartment : var.compartment_ocids[each.value.instance_compartment]) :  var.tenancy_ocid
 }
 
 data "oci_core_instance" "nlb_instance_ip" {
@@ -87,14 +87,13 @@ module nlb-backends {
   #ip_address = each.value.ip_address != "" ? (length(regexall("IP:", each.value.ip_address)) > 0 ? split("IP:", each.value.ip_address)[1] : data.oci_core_instance.nlb_instance_ip[each.key].private_ip) : (length(regexall("NAME:", each.value.ip_address)) > 0 ? split("NAME:", each.value.ip_address)[1] : data.oci_core_instance.nlb_instance[each.key].private_ip) : null
   
   
-  is_backup = each.value.is_backup != "" ? each.value.is_backup : "false"
   is_drain = each.value.is_drain != "" ? each.value.is_drain : "false"
   is_offline = each.value.is_offline != "" ? each.value.is_offline : "false"
-  name = each.value.name != "" ? each.value.name : ""
-  #target_id = each.value.target_id != "" ? each.value.target_id : ""
-  target_id = data.oci_core_instance.nlb_instance_ip[each.key].id
-  
   weight = each.value.weight != "" ? each.value.weight : "1"
+
+  name = each.value.name != "" ? each.value.name : ""
+  target_id = data.oci_core_instance.nlb_instance_ip[each.key].id
+
 }
 ############################################
 # Module Block - Reserved IPs for NLBs

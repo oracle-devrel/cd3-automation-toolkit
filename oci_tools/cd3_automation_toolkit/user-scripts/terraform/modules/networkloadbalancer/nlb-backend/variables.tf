@@ -30,11 +30,6 @@ variable "ip_address" {
   default     = null
 }
 
-variable "is_backup" {
-  type        = bool
-  description = "Whether the load balancer should treat this server as a backup unit. If true, the load balancer forwards no ingress traffic to this backend server unless all other backend servers not marked as backup fail the health check policy."
-  default     = false # Default value at random
-}
 
 variable "is_drain" {
   type        = bool

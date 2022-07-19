@@ -23,7 +23,7 @@ from commonTools import *
 importCommands = {}
 oci_obj_names = {}
 
-def print_nlb_backendset_backendserver(region, ct, values_for_column_bss, nlb, NLBs, nlb_compartment_name):
+def print_nlb_backendset_backendserver(region, ct, values_for_column_bss, vcn,nlb, NLBs, nlb_compartment_name):
 
     for eachnlb in NLBs.data:
         cnt_bss = 0
@@ -33,15 +33,28 @@ def print_nlb_backendset_backendserver(region, ct, values_for_column_bss, nlb, N
             cnt_bss = cnt_bss + 1
 
             backend_list = ""
-            backup_list = ""
             backendset_details = nlb.get_backend_set(eachnlb.__getattribute__('id'), backendsets).data
             hc = nlb.get_health_checker(eachnlb.__getattribute__('id'), backendsets).data
 
-            # Process the Backend Server and Backup server details
+            # Process the Backend Server
             for backends in backendset_details.__getattribute__('backends'):
+                print(eachnlb.display_name)
+                print(backends)
                 if str(backends.__getattribute__('name')).lower() != "none":
                     backend_value = str(backends.__getattribute__('name'))
-                    backend_list= backend_list+","+"&"+backend_value
+
+                    if "ocid1.privateip" in backend_value:
+                        private_ip_ocid = backend_value.split(":")[0]
+                        port = backend_value.split(":")[1]
+                        print(private_ip_ocid)
+                        ipaddress = vcn.get_private_ip(private_ip_ocid).data.ip_address
+                        print(ipaddress)
+                        print("-------")
+                        backend = ipaddress+":"+port
+                    else:
+                        backend = backend_value
+                    backend_list= backend_list+","+"&"+backend
+
                 if (backend_list != "" and backend_list[0] == ','):
                     backend_list = backend_list.lstrip(',')
 
@@ -265,7 +278,7 @@ def export_nlb(inputfile, _outdir, network_compartments, _config):
                 #NSGs = oci.pagination.list_call_get_all_results(vcn.list_network_security_groups,compartment_id=ct.ntk_compartment_ids[compartment_name],lifecycle_state="AVAILABLE")
 
                 values_for_column_lis = print_nlb_listener(region, ct, values_for_column_lis,NLBs,compartment_name,vcn)
-                values_for_column_bss = print_nlb_backendset_backendserver(region, ct, values_for_column_bss, nlb,NLBs,compartment_name)
+                values_for_column_bss = print_nlb_backendset_backendserver(region, ct, values_for_column_bss, vcn,nlb,NLBs,compartment_name)
 
                 for eachnlb in NLBs.data:
 

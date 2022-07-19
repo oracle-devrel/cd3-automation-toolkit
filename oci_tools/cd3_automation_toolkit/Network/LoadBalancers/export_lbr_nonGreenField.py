@@ -512,7 +512,7 @@ def print_backendset_backendserver(region, ct, values_for_column_bss, lbr, LBRs,
 
 def print_listener(region, ct, values_for_column_lis, LBRs, lbr_compartment_name):
     for eachlbr in LBRs.data:
-        sslcerts = ''
+        sslcerts = None
 
         #Fetch Compartment Name
         lbr_comp_id = eachlbr.compartment_id
