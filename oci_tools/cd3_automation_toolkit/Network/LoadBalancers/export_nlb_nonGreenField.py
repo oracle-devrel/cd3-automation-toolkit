@@ -13,9 +13,10 @@ import sys
 import oci
 import os
 
-from oci.certificates import CertificatesClient
 from oci.core.virtual_network_client import VirtualNetworkClient
 from oci.network_load_balancer import NetworkLoadBalancerClient
+from oci.core.compute_client import ComputeClient
+
 from oci.config import DEFAULT_LOCATION
 sys.path.append(os.getcwd()+"/..")
 from commonTools import *
@@ -23,7 +24,7 @@ from commonTools import *
 importCommands = {}
 oci_obj_names = {}
 
-def print_nlb_backendset_backendserver(region, ct, values_for_column_bss, vcn,nlb, NLBs, nlb_compartment_name):
+def print_nlb_backendset_backendserver(region, ct, values_for_column_bss,NLBs, nlb_compartment_name,cmpt,vcn,nlb):
 
     for eachnlb in NLBs.data:
         cnt_bss = 0
@@ -38,22 +39,32 @@ def print_nlb_backendset_backendserver(region, ct, values_for_column_bss, vcn,nl
 
             # Process the Backend Server
             for backends in backendset_details.__getattribute__('backends'):
-                print(eachnlb.display_name)
-                print(backends)
                 if str(backends.__getattribute__('name')).lower() != "none":
                     backend_value = str(backends.__getattribute__('name'))
 
                     if "ocid1.privateip" in backend_value:
                         private_ip_ocid = backend_value.split(":")[0]
                         port = backend_value.split(":")[1]
-                        print(private_ip_ocid)
-                        ipaddress = vcn.get_private_ip(private_ip_ocid).data.ip_address
-                        print(ipaddress)
-                        print("-------")
-                        backend = ipaddress+":"+port
+                        private_ip = vcn.get_private_ip(private_ip_ocid).data
+                        vnic_ocid = private_ip.vnic_id
+                        vnic = vcn.get_vnic(vnic_ocid).data
+                        vnic_found = 0
+                        for k,v in ct.ntk_compartment_ids.items():
+                            vnic_attachments = oci.pagination.list_call_get_all_results(cmpt.list_vnic_attachments, compartment_id = v,vnic_id=vnic_ocid)
+                            for vnic_attachment in vnic_attachments.data:
+                                instance_ocid = vnic_attachment.instance_id
+                                instance = cmpt.get_instance(instance_ocid).data
+                                instance_display_name = instance.display_name
+                                instance_comp_name = k
+                                vnic_found = 1
+                            if vnic_found==1:
+                                break
+
+                        backend = instance_comp_name+"&"+instance_display_name+":"+port
+                        backend_list = backend_list + "," + backend
                     else:
                         backend = backend_value
-                    backend_list= backend_list+","+"&"+backend
+                        backend_list= backend_list+","+"&"+backend
 
                 if (backend_list != "" and backend_list[0] == ','):
                     backend_list = backend_list.lstrip(',')
@@ -137,9 +148,6 @@ def print_nlb_listener(region, ct, values_for_column_lis, NLBs, nlb_compartment_
         # Loop through listeners
         for listeners, values in eachnlb.__getattribute__('listeners').items():
             cnt_lsnr = cnt_lsnr + 1
-            print(listeners)
-            print(values.protocol)
-            print("--")
 
             for col_header in values_for_column_lis.keys():
                 if col_header == 'Region':
@@ -270,15 +278,17 @@ def export_nlb(inputfile, _outdir, network_compartments, _config):
         config.__setitem__("region", ct.region_dict[reg])
         nlb = NetworkLoadBalancerClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
         vcn = VirtualNetworkClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
+        cmpt = ComputeClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
+
         region = reg.capitalize()
+
 
         for compartment_name in comp_list_fetch:
                 NLBs = oci.pagination.list_call_get_all_results(nlb.list_network_load_balancers,compartment_id=ct.ntk_compartment_ids[compartment_name],
                                                                 lifecycle_state="ACTIVE")
-                #NSGs = oci.pagination.list_call_get_all_results(vcn.list_network_security_groups,compartment_id=ct.ntk_compartment_ids[compartment_name],lifecycle_state="AVAILABLE")
 
                 values_for_column_lis = print_nlb_listener(region, ct, values_for_column_lis,NLBs,compartment_name,vcn)
-                values_for_column_bss = print_nlb_backendset_backendserver(region, ct, values_for_column_bss, vcn,nlb,NLBs,compartment_name)
+                values_for_column_bss = print_nlb_backendset_backendserver(region, ct, values_for_column_bss,NLBs,compartment_name,cmpt,vcn,nlb)
 
                 for eachnlb in NLBs.data:
 
@@ -286,7 +296,7 @@ def export_nlb(inputfile, _outdir, network_compartments, _config):
                     nlb_info = eachnlb
                     nlb_display_name = nlb_info.display_name
                     tf_name = commonTools.check_tf_variable(nlb_display_name)
-                    importCommands[reg].write("\nterraform import \"module.network-load-balancers[\\\""+str(tf_name)+"\\\"].oci_network_load_balancer_network_load_balancer.oci_network_load_balancer_network_load_balancer\" " + nlb_info.id)
+                    importCommands[reg].write("\nterraform import \"module.network-load-balancers[\\\""+str(tf_name)+"\\\"].oci_network_load_balancer_network_load_balancer.network_load_balancer\" " + nlb_info.id)
 
                     for listeners in eachnlb.listeners:
                         listener_tf_name = commonTools.check_tf_variable(listeners)

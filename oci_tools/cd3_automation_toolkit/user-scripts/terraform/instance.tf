@@ -36,7 +36,7 @@ module "instances" {
   fault_domain          = each.value.fault_domain
   freeform_tags         = each.value.freeform_tags
   source_type           = each.value.source_type
-  source_image_id       = lookup(var.instance_source_ocids, each.value.source_id, null )
+  source_image_id       = length(regexall("ocid1.image.oc1*", each.value.source_id)) > 0 ? each.value.source_id : lookup(var.instance_source_ocids, each.value.source_id, null )
   subnet_id             = each.value.subnet_id != "" ? (length(regexall("ocid1.subnet.oc1*", each.value.subnet_id)) > 0 ? each.value.subnet_id : data.oci_core_subnets.oci_subnets[each.key].subnets.*.id[0]) : null
   assign_public_ip      = each.value.assign_public_ip
   ssh_public_keys       = length(regexall("ssh-rsa*",each.value.ssh_authorized_keys)) > 0 ? each.value.ssh_authorized_keys : lookup(var.instance_ssh_keys, each.value.ssh_authorized_keys, null )

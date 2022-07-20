@@ -35,7 +35,5 @@ nlb_backends = {
         {% else %}
         weight  = ""
         {% endif %}
-
-        name = "{{ name }}"
     },
 {% endif %}
