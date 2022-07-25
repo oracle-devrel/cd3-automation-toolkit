@@ -91,7 +91,7 @@ def create_terraform_instances(inputfile, outdir, prefix, config):
                     shape_error = 1
 
         if (shape_error == 1):
-            print("\nERROR!!! " + display_name + " is missing ocpus for Flex shape....Exiting!")
+            print("\nERROR!!! " + display_name + " is missing ocpus for Flex/Micro shape....Exiting!")
             exit(1)
 
         # temporary dictionary1 and dictionary2
@@ -124,7 +124,7 @@ def create_terraform_instances(inputfile, outdir, prefix, config):
                 tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)
 
             if columnname == 'Shape':
-                if ".Flex" not in columnvalue:
+                if ".Flex" not in columnvalue and ".Micro" not in columnvalue:
                     columnvalue = columnvalue.strip()
                     tempdict = {'shape': [columnvalue]}
 
