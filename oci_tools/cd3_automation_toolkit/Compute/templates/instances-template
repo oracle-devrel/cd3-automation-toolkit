@@ -54,7 +54,7 @@ instances = {
             {% if hostname_label %}
             hostname_label         = "{{ hostname_label }}"
             {% else %}
-            hostname_label         = "{{ display_tf_name }}"
+            hostname_label         = null
             {% endif %}
             {% if nsg_ids %}
             nsg_ids          = [{{ nsg_ids }}]
