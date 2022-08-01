@@ -132,7 +132,7 @@ module "backend-sets" {
   response_body_regex = each.value.response_body_regex
   retries             = each.value.retries != "" ? each.value.retries : null
   return_code         = each.value.return_code != "" ? each.value.return_code : null
-  timeout_in_millis   = each.value.return_code != "" ? each.value.timeout_in_millis : null
+  timeout_in_millis   = each.value.timeout_in_millis != "" ? each.value.timeout_in_millis : null
   url_path            = each.value.url_path != "" ? each.value.url_path : null
 
   load_balancer_id = length(regexall("ocid1.loadbalancer.oc1*", each.value.load_balancer_id)) > 0 ? each.value.load_balancer_id : merge(module.load-balancers.*...)[each.value.load_balancer_id]["load_balancer_tf_id"]
