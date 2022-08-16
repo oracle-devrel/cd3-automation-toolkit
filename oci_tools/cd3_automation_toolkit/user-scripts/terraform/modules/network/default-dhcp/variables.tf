@@ -27,6 +27,11 @@ variable "freeform_tags" {
   default = {}
 }
 
+variable "custom_dns_servers" {
+  type    = list(any)
+  default = [""]
+}
+
 variable "search_domain_names" {
   type    = map(any)
   default = {}

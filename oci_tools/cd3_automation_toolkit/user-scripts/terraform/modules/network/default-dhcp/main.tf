@@ -13,6 +13,7 @@ resource "oci_core_default_dhcp_options" "default_dhcp_option" {
   options {
     type        = "DomainNameServer"
     server_type = var.server_type
+    custom_dns_servers = var.custom_dns_servers
   }
 
   dynamic "options" {

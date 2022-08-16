@@ -78,6 +78,9 @@ def create_terraform_seclist(inputfile, outdir, prefix, config, modify_network=F
 
         # Start processing each seclist
         for i in dfseclist.index:
+            region = dfseclist.loc[i, 'Region']
+            if (region in commonTools.endNames):
+                break
             seclists_tf_from_secRulesInOCI_sheet_name = "#"+commonTools.check_tf_variable(dfseclist.loc[i, 'Region']).lower()+"_"+commonTools.check_tf_variable(dfseclist.loc[i, 'VCN Name'])+"_"+commonTools.check_tf_variable(dfseclist.loc[i, 'SecList Name'])+"#"
             if seclists_tf_from_secRulesInOCI_sheet_name not in seclists_from_secRulesInOCI_sheet:
                 seclists_from_secRulesInOCI_sheet.append(seclists_tf_from_secRulesInOCI_sheet_name)

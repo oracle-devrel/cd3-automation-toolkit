@@ -12,6 +12,12 @@ default_dhcps = {
 
     {{ dhcp_tf_name }} = {
             server_type          = "{{ server_type }}"
+            {% if custom_dns_server and custom_dns_server != '' %}
+            custom_dns_servers = [ {{ custom_dns_server }} ]
+            {% else %}
+            custom_dns_servers  = []
+            {% endif %}
+
             {% if search_domain %}
             search_domain        =  {
                 {% if search_domain != "" %}
