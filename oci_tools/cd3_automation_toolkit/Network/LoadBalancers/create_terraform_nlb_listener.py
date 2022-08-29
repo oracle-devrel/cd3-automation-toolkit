@@ -202,7 +202,7 @@ def create_terraform_nlb_listener(inputfile, outdir, prefix, config=DEFAULT_LOCA
                 if columnvalue == "UDP/TCP":
                     columnvalue = "TCP_AND_UDP"
 
-            if columnname == 'Is Preserve Source Destination(True|False) ':
+            if columnname == 'Is Preserve Source Destination(True|False)':
                 columnname = 'is_preserve_source_destination'
 
             columnname = commonTools.check_column_headers(columnname)

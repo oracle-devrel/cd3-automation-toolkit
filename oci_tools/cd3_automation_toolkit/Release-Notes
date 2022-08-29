@@ -302,6 +302,6 @@ CD3 Automation Toolkit Tag v9.1
 1. Terraform Modules for Instances, Block Volumes, Tags, CIS features, LBaaS
 2. Introduced new columns for PV encryption in Instances/Block Volumes.
 3. Introduced new columns for Min/Max bandwidth for flexible shapes load balancers,
-   reserved public IP. Support for OCI certificate management certiifcates for Listeners,
+   reserved public IP. Support for OCI certificate management certificates for Listeners,
    BackendSets.
 4. Bug fixes

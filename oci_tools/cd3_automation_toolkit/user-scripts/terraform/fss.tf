@@ -7,7 +7,7 @@
 
 module "mts" {
   #Required
-  source   = "./modules/storage/file-storage-service/mount-target"
+  source   = "./modules/storage/file-storage/mount-target"
   for_each = (var.mount_targets != null || var.mount_targets != {}) ? var.mount_targets : {}
   #Required
   availability_domain = each.value.availability_domain != "" && each.value.availability_domain != null ? data.oci_identity_availability_domains.availability_domains.availability_domains[each.value.availability_domain].name : ""
@@ -31,7 +31,7 @@ module "mts" {
 
 module "fss" {
   #Required
-  source   = "./modules/storage/file-storage-service/fss"
+  source   = "./modules/storage/file-storage/fss"
   for_each = (var.fss != null || var.fss != {}) ? var.fss : {}
 
   #Required
@@ -48,7 +48,7 @@ module "fss" {
 
 module "fss-export-options" {
   #Required
-  source   = "./modules/storage/file-storage-service/export-option"
+  source   = "./modules/storage/file-storage/export-option"
   for_each = (var.nfs_export_options != null || var.nfs_export_options != {}) ? var.nfs_export_options : {}
 
   #Required
