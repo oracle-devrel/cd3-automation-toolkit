@@ -98,9 +98,6 @@ def create_terraform_groups(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
             else:
                 columnvalue = str(df[columnname][i]).strip()
 
-            # Check for boolean/null in column values
-            columnvalue = commonTools.check_columnvalue(columnvalue)
-
             # Check for multivalued columns
             tempdict = commonTools.check_multivalues_columnvalue(columnvalue,columnname,tempdict)
 
@@ -117,7 +114,13 @@ def create_terraform_groups(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
             if columnname == 'Description':
                 if columnvalue == "" or columnvalue == 'nan':
                     columnvalue = df.loc[i,'Name']
+                    tempdict = {'description': columnvalue }
+                else:
+                    columnvalue = commonTools.check_columnvalue(columnvalue)
                     tempdict = {'description': columnvalue}
+
+            # Check for boolean/null in column values
+            columnvalue = commonTools.check_columnvalue(columnvalue)
 
             columnname = commonTools.check_column_headers(columnname)
             tempStr[columnname] = str(columnvalue).strip()
