@@ -44,7 +44,7 @@ nlb_backend_sets = {
         interval_in_millis = null
         {% endif %}
 
-        {% if port and port != '' %}
+        {% if backend_healthcheck_port and backend_healthcheck_port != '' %}
         port = "{{ backend_healthcheck_port }}"
         {% else %}
         port = null

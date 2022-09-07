@@ -92,6 +92,7 @@ def validate_cd3(execute_all=False):
         Option("Validate Network(VCNs, Subnets, DHCP, DRGs)", None, None),
         Option("Validate Instances", None, None),
         Option("Validate Block Volumes", None, None),
+        Option("Validate FSS", None, None),
     ]
     if not execute_all:
         options = show_options(options, quit=True, menu=False, index=1)

@@ -141,8 +141,7 @@ def create_terraform_instances(inputfile, outdir, prefix, config):
                         vcn_name = subnets.vcn_subnet_map[key][1]
                         subnet_id = subnets.vcn_subnet_map[key][2]
                     except Exception as e:
-                        print("Invalid Subnet Name specified for row " + str(
-                            i + 3) + ". It Doesnt exist in Subnets sheet. Exiting!!!")
+                        print("Invalid Subnet Name specified for row " + str(i + 3) + ". It Doesnt exist in Subnets sheet. Exiting!!!")
                         exit()
 
                 tempdict = {'network_compartment_id': network_compartment_id, 'vcn_name': vcn_name,
