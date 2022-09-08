@@ -41,14 +41,16 @@ def print_nlb_backendset_backendserver(region, ct, values_for_column_bss,NLBs, n
             for backends in backendset_details.__getattribute__('backends'):
                 if str(backends.__getattribute__('name')).lower() != "none":
                     backend_value = str(backends.__getattribute__('name'))
+                    port = str(backends.__getattribute__('port'))
 
                     if "ocid1.privateip" in backend_value:
                         private_ip_ocid = backend_value.split(":")[0]
-                        port = backend_value.split(":")[1]
+                        #port = backend_value.split(":")[1]
                         private_ip = vcn.get_private_ip(private_ip_ocid).data
                         vnic_ocid = private_ip.vnic_id
                         vnic = vcn.get_vnic(vnic_ocid).data
                         vnic_found = 0
+                        instance_comp_name = None
                         for k,v in ct.ntk_compartment_ids.items():
                             vnic_attachments = oci.pagination.list_call_get_all_results(cmpt.list_vnic_attachments, compartment_id = v,vnic_id=vnic_ocid)
                             for vnic_attachment in vnic_attachments.data:
@@ -65,7 +67,6 @@ def print_nlb_backendset_backendserver(region, ct, values_for_column_bss,NLBs, n
                     else:
                         backend = backend_value
                         backend_list= backend_list+","+"&"+backend
-
                 if (backend_list != "" and backend_list[0] == ','):
                     backend_list = backend_list.lstrip(',')
 
@@ -300,18 +301,18 @@ def export_nlb(inputfile, _outdir, network_compartments, _config):
 
                     for listeners in eachnlb.listeners:
                         listener_tf_name = commonTools.check_tf_variable(listeners)
-                        importCommands[reg].write("\nterraform import \"module.nlb-listeners[\\\""+str(tf_name)+"_" + str(listener_tf_name) +"\\\"].oci_network_load_balancer_listener.listener\" networkloadBalancers/" + nlb_info.id + "/listeners/" + listeners)
+                        importCommands[reg].write("\nterraform import \"module.nlb-listeners[\\\""+str(tf_name)+"_" + str(listener_tf_name) +"\\\"].oci_network_load_balancer_listener.listener\" networkLoadBalancers/" + nlb_info.id + "/listeners/" + listeners)
 
                     for backendsets, values in eachnlb.backend_sets.items():
                         backendsets_tf_name = commonTools.check_tf_variable(backendsets)
-                        importCommands[reg].write("\nterraform import \"module.nlb-backend-sets[\\\""+str(tf_name)+"_" + str(backendsets_tf_name) +"\\\"].oci_network_load_balancer_backend_set.backend_set\" networkloadBalancers/" + nlb_info.id + "/backendSets/" + backendsets)
+                        importCommands[reg].write("\nterraform import \"module.nlb-backend-sets[\\\""+str(tf_name)+"_" + str(backendsets_tf_name) +"\\\"].oci_network_load_balancer_backend_set.backend_set\" networkLoadBalancers/" + nlb_info.id + "/backendSets/" + backendsets)
 
                         cnt = 0
                         for keys in values.backends:
                             cnt = cnt + 1
                             backendservers_name = keys.name
                             backendservers_tf_name = commonTools.check_tf_variable(keys.ip_address+"-"+str(cnt))
-                            importCommands[reg].write("\nterraform import \"module.nlb-backends[\\\""+str(tf_name)+"_" + backendsets_tf_name + "_" + backendservers_tf_name +"\\\"].oci_network_load_balancer_backend.backend\" networkloadBalancers/" + nlb_info.id + "/backendSets/" + backendsets + "/backends/" + backendservers_name)
+                            importCommands[reg].write("\nterraform import \"module.nlb-backends[\\\""+str(tf_name)+"_" + backendsets_tf_name + "_" + backendservers_tf_name +"\\\"].oci_network_load_balancer_backend.backend\" networkLoadBalancers/" + nlb_info.id + "/backendSets/" + backendsets + "/backends/" + backendservers_name)
 
 
     commonTools.write_to_cd3(values_for_column_lis, cd3file, "NLB-Listeners")

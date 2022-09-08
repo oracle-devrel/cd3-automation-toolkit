@@ -95,12 +95,14 @@ variable "instance_source_ocids" {
 ## Fetch Compartments ####
 ##########################
 
-#START_compartment_ocids#
 variable "compartment_ocids" {
   type    = map(any)
-  default = {}
+  default = {
+    #START_compartment_ocids#
+    # compartment ocids
+    #compartment_ocids_END#
+  }
 }
-#compartment_ocids_END#
 
 #########################
 ##### Identity ##########

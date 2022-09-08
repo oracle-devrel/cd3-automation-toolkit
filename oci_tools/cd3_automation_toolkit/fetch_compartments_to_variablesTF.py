@@ -5,12 +5,6 @@ from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
 from commonTools import *
 
-#Load the template file
-file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
-env = Environment(loader=file_loader,keep_trailing_newline=True)
-var_template = env.get_template('module-variables-template')
-
-
 def parse_args():
     parser = argparse.ArgumentParser(description="Fetches Compartment name/ocid info from OCI and pushes to variables.tf file of each region used by TF")
     parser.add_argument('outdir', help='Output directory for creation of TF files')
@@ -49,17 +43,15 @@ def fetch_compartments(outdir, config=DEFAULT_LOCATION):
     print("Fetching Compartment Info...Please wait...")
     ct.get_network_compartment_ids(config['tenancy'], "root", configFileName)
 
-    compVarsStr = ""
-    for name, ocid in ct.ntk_compartment_ids.items():
-        comp_tf_name = commonTools.check_tf_variable(name)
-        comp_ocids.append(comp_tf_name + "::" + ocid)
-        str1 = var_template.render(var_tf_name=comp_tf_name, values=ocid)
-        compVarsStr = compVarsStr + str1
+    compocidsStr = ''
+    for k,v in ct.ntk_compartment_ids.items():
+        k = commonTools.check_tf_variable(k)
+        v = "\"" + v + "\""
+        compocidsStr = "\t" + k + " = " + v + "\n" + compocidsStr
 
-    # Write compartment_ocids list variable to the file
-    compocidsStr = var_template.render(compartment_ocids_list='true', comp_ocids=comp_ocids)
+    compocidsStr = "\n" + compocidsStr
 
-    finalCompStr = "#START_compartment_ocids#" + compocidsStr + compVarsStr + "#compartment_ocids_END#"
+    finalCompStr = "#START_compartment_ocids#" + compocidsStr +  "\t#compartment_ocids_END#"
 
     for reg in ct.all_regions:
         var_data[reg] = re.sub('#START_compartment_ocids#.*?#compartment_ocids_END#', finalCompStr,var_data[reg], flags=re.DOTALL)

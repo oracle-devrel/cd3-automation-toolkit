@@ -166,6 +166,7 @@ def create_nlb_backendset_backendservers(inputfile, outdir, prefix, config=DEFAU
                 e = servername.count(".")
                 if (e == 3):
                     backend_server_ip_address = "IP:"+servername
+                    servername = ""
                 else:
                     backend_server_ip_address = "NAME:" + servername
 

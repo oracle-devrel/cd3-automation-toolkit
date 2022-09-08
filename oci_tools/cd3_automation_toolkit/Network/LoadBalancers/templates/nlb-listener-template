@@ -19,7 +19,7 @@ nlb_listeners = {
         network_load_balancer_id = "{{ nlb_tf_name }}"
 
         port = "{{ listener_port }}"
-        protocol = "{{ protocol }}"
+        protocol = "{{ protocol|upper }}"
         default_backend_set_name = "{{ nlb_tf_name }}_{{ backend_set_tf_name }}"
 
         {% if ip_version and ip_version != "" %}
