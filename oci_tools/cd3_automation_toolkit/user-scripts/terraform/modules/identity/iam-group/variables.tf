@@ -17,24 +17,16 @@ variable "group_name" {
   default     = null
 }
 
-// The description is only used if group_create = true.
 variable "group_description" {
   type        = string
   description = "The description you assign to the Group. Does not have to be unique, and it's changeable. "
   default     = null
 }
 
-variable "group_create" {
-  type        = bool
-  description = "(Deprecated) Create the group or not. If true, the user must have permissions to create the group; If false, group data will be returned about the group if it exists, if not found, then an empty string will be returned for the group ID."
-  default     = true
-}
-
 variable "matching_rule" {
   type    = string
   default = ""
 }
-
 
 variable "defined_tags" {
   type = map(any)

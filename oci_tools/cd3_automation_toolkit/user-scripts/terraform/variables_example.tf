@@ -109,7 +109,62 @@ variable "compartment_ocids" {
 #########################
 
 variable "compartments" {
-  type = map(any)
+  type = object({
+    root = optional(map(object({
+      tenancy_ocid          = optional(string)
+      parent_compartment_id = string
+      name                  = string
+      description           = optional(string)
+      enable_delete         = optional(bool)
+      defined_tags          = optional(map(any))
+      freeform_tags         = optional(map(any))
+    })))
+    compartment_level1 = optional(map(object({
+      tenancy_ocid          = optional(string)
+      parent_compartment_id = string
+      name                  = string
+      description           = optional(string)
+      enable_delete         = optional(bool)
+      defined_tags          = optional(map(any))
+      freeform_tags         = optional(map(any))
+    })))
+    compartment_level2 = optional(map(object({
+      tenancy_ocid          = optional(string)
+      parent_compartment_id = string
+      name                  = string
+      description           = optional(string)
+      enable_delete         = optional(bool)
+      defined_tags          = optional(map(any))
+      freeform_tags         = optional(map(any))
+    })))
+    compartment_level3 = optional(map(object({
+      tenancy_ocid          = optional(string)
+      parent_compartment_id = string
+      name                  = string
+      description           = optional(string)
+      enable_delete         = optional(bool)
+      defined_tags          = optional(map(any))
+      freeform_tags         = optional(map(any))
+    })))
+    compartment_level4 = optional(map(object({
+      tenancy_ocid          = optional(string)
+      parent_compartment_id = string
+      name                  = string
+      description           = optional(string)
+      enable_delete         = optional(bool)
+      defined_tags          = optional(map(any))
+      freeform_tags         = optional(map(any))
+    })))
+    compartment_level5 = optional(map(object({
+      tenancy_ocid          = optional(string)
+      parent_compartment_id = string
+      name                  = string
+      description           = optional(string)
+      enable_delete         = optional(bool)
+      defined_tags          = optional(map(any))
+      freeform_tags         = optional(map(any))
+    })))
+  })
   default = {
     root               = {},
     compartment_level1 = {},
@@ -121,12 +176,26 @@ variable "compartments" {
 }
 
 variable "policies" {
-  type    = map(any)
+  type = map(object({
+      name                = string
+      compartment_id      = string
+      policy_description  = string
+      policy_statements   = list(string)
+      policy_version_date = optional(string)
+      defined_tags        = optional(map(any))
+      freeform_tags       = optional(map(any))
+  }))
   default = {}
 }
 
 variable "groups" {
-  type    = map(any)
+  type = map(object({
+      group_name        = string
+      group_description = string
+      matching_rule     = optional(string)
+      defined_tags      = optional(map(any))
+      freeform_tags     = optional(map(any))
+  }))
   default = {}
 }
 
@@ -228,18 +297,19 @@ variable "nsgs" {
 }
 
 variable "nsg_rules" {
-    type  = map(object({
-         nsg_id = string
-         direction = string
-         protocol = string
-         description =  optional(string)
-         stateless =  optional(string)
-         source_type = optional(string)
-         destination_type = optional(string)
-         destination = optional(string)
-         source = optional(string)
-         options = optional(any)
-    }))
+  type = map(object({
+    nsg_id           = string
+    direction        = string
+    protocol         = string
+    description      = optional(string)
+    stateless        = optional(string)
+    source_type      = optional(string)
+    destination_type = optional(string)
+    destination      = optional(string)
+    source           = optional(string)
+    options          = optional(map(any))
+  }))
+  default = {}
 }
 
 variable "subnets" {

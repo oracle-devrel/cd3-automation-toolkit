@@ -15,7 +15,7 @@ resource "oci_identity_compartment" "compartment" {
   #Optional
   defined_tags  = var.defined_tags
   freeform_tags = var.freeform_tags
-  enable_delete = (var.enable_delete != "" ||  var.enable_delete != "null")  ?  var.enable_delete : false
+  enable_delete = var.enable_delete
 
   lifecycle {
     ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"]]

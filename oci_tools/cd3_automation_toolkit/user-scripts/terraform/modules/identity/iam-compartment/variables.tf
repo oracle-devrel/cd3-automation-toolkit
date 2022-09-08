@@ -29,12 +29,6 @@ variable "compartment_description" {
   default     = null
 }
 
-variable "compartment_create" {
-  type        = bool
-  description = "(Deprecated) Create the compartment or not. If true, the compartment will be managed by this module, and the user must have permissions to create the compartment; If false, compartment data will be returned about the compartment if it exists, if not found, then an empty string will be returned for the compartment ID."
-  default     = true
-}
-
 variable "enable_delete" {
   type        = bool
   description = "Enable compartment delete on destroy. If true, compartment will be deleted when `terraform destroy` is executed; If false, compartment will not be deleted on `terraform destroy` execution"

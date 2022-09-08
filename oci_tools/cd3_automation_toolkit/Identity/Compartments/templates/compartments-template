@@ -46,8 +46,7 @@ compartments = {
                 name               = "{{ name }}"
                 description        = "{{ description }}"
                 {% if enable_delete and enable_delete != 'nan' and enable_delete != '' %}
-                enable_delete = {{ enable_delete }} {% else %}
-                enable_delete = "false" {# Defaults to false - set as per terraform hashicorp #}
+                enable_delete = {{ enable_delete }}
                 {% endif %}
 
             {#  ##Do not modify below this line##  #}
@@ -64,11 +63,7 @@ compartments = {
                     {% endif %}
                 {% endfor %}
                 }
-              {% else %}
-                defined_tags = {}
                 {% endif %}
-               {% else %}
-                defined_tags = {}
                {% endif %}
                     {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' %}
                         {% if freeform_tags[0] %}
@@ -81,11 +76,7 @@ compartments = {
                                 {% endif %}
                             {% endfor %}
                             }
-                        {% else %}
-                freeform_tags = {}
                         {% endif %}
-                    {% else %}
-                freeform_tags = {}
                     {% endif %}
             {#  ###Section for adding Defined and Freeform Tags ends here###  #}
               },
