@@ -24,7 +24,7 @@ resource "oci_core_network_security_group_security_rule" "nsg_rule" {
   # ICMP Options
   # If type and no code
   dynamic "icmp_options" {
-    for_each = var.nsg_rules_details[var.key_name].icmp_options[0].icmp_code == "" && var.nsg_rules_details[var.key_name].icmp_options[0].icmp_type != "" ? var.nsg_rules_details[var.key_name].icmp_options : []
+    for_each = try((var.nsg_rules_details[var.key_name].icmp_options[0].icmp_code == "" && var.nsg_rules_details[var.key_name].icmp_options[0].icmp_type != "" ? var.nsg_rules_details[var.key_name].icmp_options : []),[])
 
     content {
       type = icmp_options.value.icmp_type
@@ -34,7 +34,7 @@ resource "oci_core_network_security_group_security_rule" "nsg_rule" {
   # ICMP Options
   # If type and code
   dynamic "icmp_options" {
-    for_each = var.nsg_rules_details[var.key_name].icmp_options[0].icmp_code != "" && var.nsg_rules_details[var.key_name].icmp_options[0].icmp_type != "" ? var.nsg_rules_details[var.key_name].icmp_options : []
+    for_each = try((var.nsg_rules_details[var.key_name].icmp_options[0].icmp_code != "" && var.nsg_rules_details[var.key_name].icmp_options[0].icmp_type != "" ? var.nsg_rules_details[var.key_name].icmp_options : []),[])
 
     content {
       type = icmp_options.value.icmp_type
@@ -45,12 +45,12 @@ resource "oci_core_network_security_group_security_rule" "nsg_rule" {
 
   # TCP Options
   dynamic "tcp_options" {
-    for_each = var.nsg_rules_details[var.key_name].tcp_options != [] ? var.nsg_rules_details[var.key_name].tcp_options : []
+    for_each = try((var.nsg_rules_details[var.key_name].tcp_options != [] ? var.nsg_rules_details[var.key_name].tcp_options : []),[])
 
     content {
       #Optional
       dynamic "source_port_range" {
-        for_each = tcp_options.value["source_port_range"] != [] ? tcp_options.value["source_port_range"] : []
+        for_each = try((tcp_options.value["source_port_range"] != [] ? tcp_options.value["source_port_range"] : []),[])
 
         content {
           #Required
@@ -61,7 +61,7 @@ resource "oci_core_network_security_group_security_rule" "nsg_rule" {
       }
 
       dynamic "destination_port_range" {
-        for_each = tcp_options.value["destination_port_range"] != [] ? tcp_options.value["destination_port_range"] : []
+        for_each = try((tcp_options.value["destination_port_range"] != [] ? tcp_options.value["destination_port_range"] : []),[])
 
         content {
           #Required
@@ -75,12 +75,12 @@ resource "oci_core_network_security_group_security_rule" "nsg_rule" {
 
   # UDP Options
   dynamic "udp_options" {
-    for_each = var.nsg_rules_details[var.key_name].udp_options != [] ? var.nsg_rules_details[var.key_name].udp_options : []
+    for_each = try((var.nsg_rules_details[var.key_name].udp_options != [] ? var.nsg_rules_details[var.key_name].udp_options : []),[])
 
     content {
       #Optional
       dynamic "source_port_range" {
-        for_each = udp_options.value["source_port_range"] != [] ? udp_options.value["source_port_range"] : []
+        for_each = try((udp_options.value["source_port_range"] != [] ? udp_options.value["source_port_range"] : []),[])
 
         content {
           #Required
@@ -94,7 +94,7 @@ resource "oci_core_network_security_group_security_rule" "nsg_rule" {
 
       #Optional
       dynamic "destination_port_range" {
-        for_each = udp_options.value["destination_port_range"] != [] ? udp_options.value["destination_port_range"] : []
+        for_each = try((udp_options.value["destination_port_range"] != [] ? udp_options.value["destination_port_range"] : []),[])
 
         content {
           #Required

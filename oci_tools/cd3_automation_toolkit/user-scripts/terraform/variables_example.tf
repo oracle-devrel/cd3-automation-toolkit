@@ -228,8 +228,18 @@ variable "nsgs" {
 }
 
 variable "nsg_rules" {
-  type    = map(any)
-  default = {}
+    type  = map(object({
+         nsg_id = string
+         direction = string
+         protocol = string
+         description =  optional(string)
+         stateless =  optional(string)
+         source_type = optional(string)
+         destination_type = optional(string)
+         destination = optional(string)
+         source = optional(string)
+         options = optional(any)
+    }))
 }
 
 variable "subnets" {
