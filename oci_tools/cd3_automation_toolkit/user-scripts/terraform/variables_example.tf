@@ -252,8 +252,8 @@ variable "igws" {
   type    = map(object({
       compartment_id    = string
       vcn_id            = string
-      enabled           = optional(bool)
-      display_name      = optional(string)
+      enable_igw        = optional(bool)
+      igw_name          = optional(string)
       defined_tags      = optional(map(any))
       freeform_tags     = optional(map(any))
   }))
