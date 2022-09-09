@@ -266,7 +266,15 @@ variable "sgws" {
 }
 
 variable "ngws" {
-  type    = map(any)
+  type    = map(object({
+      compartment_id    = string
+      vcn_id            = string
+      block_traffic     = optional(bool)
+      public_ip_id      = optional(string)
+      ngw_name          = optional(string)
+      defined_tags      = optional(map(any))
+      freeform_tags     = optional(map(any))
+  }))
   default = {}
 }
 

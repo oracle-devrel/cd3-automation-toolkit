@@ -46,7 +46,7 @@ module "vcns" {
   cidr_blocks    = each.value.cidr_blocks
   display_name   = each.value.display_name
   dns_label      = (each.value.dns_label == "n") ? null : each.value.dns_label
-  is_ipv6enabled = each.value.is_ipv6enabled
+  is_ipv6enabled = each.value.is_ipv6enabled  # Defaults to false by terraform hashicorp
   defined_tags   = each.value.defined_tags
   freeform_tags  = each.value.freeform_tags
 
@@ -74,7 +74,7 @@ module "igws" {
   vcn_id         = length(regexall("ocid1.vcn.oc1*", each.value.vcn_id)) > 0 ? each.value.vcn_id : merge(module.vcns.*...)[each.value.vcn_id]["vcn_tf_id"]
 
   #Optional
-  enabled       = each.value.enable_igw
+  enabled       = each.value.enable_igw  # Defaults to true by terraform hashicorp
   defined_tags  = each.value.defined_tags
   display_name  = each.value.igw_name != null ? each.value.igw_name : null
   freeform_tags = each.value.freeform_tags
@@ -102,10 +102,10 @@ module "ngws" {
   vcn_id         = length(regexall("ocid1.vcn.oc1*", each.value.vcn_id)) > 0 ? each.value.vcn_id : merge(module.vcns.*...)[each.value.vcn_id]["vcn_tf_id"]
 
   #Optional
-  #block_traffic = each.value.block_traffic != null ? each.value.block_traffic : false   # Defaults to false by terraform hashicorp
+  block_traffic = each.value.block_traffic  # Defaults to false by terraform hashicorp
   public_ip_id  = each.value.public_ip_id
   defined_tags  = each.value.defined_tags
-  display_name  = each.value.ngw_name != null ? each.value.ngw_name : null
+  display_name  = each.value.ngw_name
   freeform_tags = each.value.freeform_tags
 }
 
