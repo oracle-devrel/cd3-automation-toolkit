@@ -7,6 +7,7 @@
 
 data "oci_core_subnets" "oci_nlb_subnets" {
   for_each = var.network_load_balancers != null ? var.network_load_balancers : {}
+  depends_on = [module.subnets]
   compartment_id = each.value.network_compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.network_compartment_id)) > 0 ? each.value.network_compartment_id : var.compartment_ocids[each.value.network_compartment_id]) : var.compartment_ocids[each.value.network_compartment_id]
   display_name   = each.value.subnet_id
 }
@@ -19,25 +20,48 @@ data "oci_core_instances" "nlb_instances" {
 
 data "oci_core_instance" "nlb_instance_ip" {
     for_each = { for k,v in var.nlb_backends : k => v.ip_address if length(regexall("IP:*", v.ip_address)) == 0 }
-    instance_id = merge(local.nlb_instance.ocid.*...)[split("NAME:", each.value)[1]][0]
+    instance_id = merge(local.nlb_instance_ocid.ocid.*...)[split("NAME:", each.value)[1]][0]
+}
+
+data "oci_core_vnic_attachments" "nlb_instance_vnic_attachments" {
+    for_each = { for k,v in var.nlb_backends : k => v if length(regexall("IP:*", v.ip_address)) == 0 }
+
+    compartment_id = each.value.instance_compartment != null && each.value.instance_compartment !="" ? (length(regexall("ocid1.compartment.oc1*", each.value.instance_compartment)) > 0 ? each.value.instance_compartment : var.compartment_ocids[each.value.instance_compartment]) :  var.tenancy_ocid
+    instance_id = merge(local.nlb_instance_ocid.ocid.*...)[split("NAME:", each.value.ip_address)[1]][0]
+}
+
+# Filter on VNIC OCID
+data "oci_core_private_ips" "private_ips_by_ip_address" {
+    for_each = { for k,v in var.nlb_backends : k => v.ip_address if length(regexall("IP:*", v.ip_address)) == 0 }
+
+    vnic_id = merge(local.nlb_instance_vnic_ocid.vnic_ocids.*...)[merge(local.nlb_instance_ocid.ocid.*...)[split("NAME:", each.value)[1]][0]][0]
 }
 
 locals {
-    nlb_instance = {
-        for instances in data.oci_core_instances.nlb_instances:
-           "ocid" => { for instance in instances.instances : instance.display_name => instance.id... }...
+    nlb_instance_ocid = {
+       for instances in data.oci_core_instances.nlb_instances:
+          "ocid" => { for instance in instances.instances : instance.display_name => instance.id... }...
     }
+    nlb_instance_vnic_ocid = {
+       for vnics in data.oci_core_vnic_attachments.nlb_instance_vnic_attachments:
+          "vnic_ocids" => { for vnic in vnics.vnic_attachments : vnic.instance_id => vnic.vnic_id... }...
+    }
+    nlb_private_ip_ocid = {
+        for private_ips in data.oci_core_private_ips.private_ips_by_ip_address:
+           "private_ocids" => { for private_ip in private_ips.private_ips : private_ip.vnic_id => private_ip.id... }...
+    }
+
 }
 
 module network-load-balancers {
   source = "./modules/networkloadbalancer/nlb"
   for_each = var.network_load_balancers != null ? var.network_load_balancers : {}
-  network_compartment_id = each.value.network_compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.network_compartment_id)) > 0 ? each.value.network_compartment_id : var.compartment_ocids[each.value.network_compartment_id]) : null 
+  network_compartment_id = each.value.network_compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.network_compartment_id)) > 0 ? each.value.network_compartment_id : var.compartment_ocids[each.value.network_compartment_id]) : null
   compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
   display_name = each.value.display_name
   subnet_id = each.value.subnet_id != "" ? (length(regexall("ocid1.subnet.oc1*", each.value.subnet_id)) > 0 ? each.value.subnet_id : data.oci_core_subnets.oci_nlb_subnets[each.key].subnets.*.id[0]) : null
   is_preserve_source_destination = each.value.is_preserve_source_destination != null ? each.value.is_preserve_source_destination : null
-  #is_private = each.value.is_private != null ? each.value.is_private : null
+  is_private = each.value.is_private != null ? each.value.is_private : null
   network_security_group_ids = each.value.nsg_ids != null ? each.value.nsg_ids : null
   nlb_ip_version = each.value.nlb_ip_version != null ? each.value.nlb_ip_version : null
   vcn_name = each.value.vcn_name
@@ -85,16 +109,17 @@ module nlb-backends {
   port = each.value.port
   ip_address = each.value.ip_address != "" ? (length(regexall("IP:", each.value.ip_address)) > 0 ? split("IP:", each.value.ip_address)[1] : data.oci_core_instance.nlb_instance_ip[each.key].private_ip) : null
   #ip_address = each.value.ip_address != "" ? (length(regexall("IP:", each.value.ip_address)) > 0 ? split("IP:", each.value.ip_address)[1] : data.oci_core_instance.nlb_instance_ip[each.key].private_ip) : (length(regexall("NAME:", each.value.ip_address)) > 0 ? split("NAME:", each.value.ip_address)[1] : data.oci_core_instance.nlb_instance[each.key].private_ip) : null
-  
-  
+
+
   is_drain = each.value.is_drain != "" ? each.value.is_drain : "false"
   is_offline = each.value.is_offline != "" ? each.value.is_offline : "false"
   weight = each.value.weight != "" ? each.value.weight : "1"
 
-  name = each.value.name != "" ? each.value.name : ""
-  target_id = data.oci_core_instance.nlb_instance_ip[each.key].id
+  name = length(regexall("IP:", each.value.ip_address)) > 0 ? join(":",[split("IP:", each.value.ip_address)[1],each.value.port]) : join(":",[merge(local.nlb_private_ip_ocid.private_ocids.*...)[merge(local.nlb_instance_vnic_ocid.vnic_ocids.*...)[merge(local.nlb_instance_ocid.ocid.*...)[split("NAME:", each.value.ip_address)[1]][0]][0]][0],each.value.port])
+  target_id =  length(regexall("IP:*", each.value.ip_address)) == 0 ? merge(local.nlb_private_ip_ocid.private_ocids.*...)[merge(local.nlb_instance_vnic_ocid.vnic_ocids.*...)[merge(local.nlb_instance_ocid.ocid.*...)[split("NAME:", each.value.ip_address)[1]][0]][0]][0] : null
 
 }
+
 ############################################
 # Module Block - Reserved IPs for NLBs
 # Create Reserved IPs for NLBs

@@ -36,7 +36,7 @@ network_load_balancers = {
         reserved_ips_id = "N"
         {% endif %}
 
-        {% if reserved_ips_id == "Y" %}
+        {% if reserved_ips_id == "Y" or 'ocid1.publicip' in reserved_ips_id %}
         is_private = false
         {% else %}
         is_private = null

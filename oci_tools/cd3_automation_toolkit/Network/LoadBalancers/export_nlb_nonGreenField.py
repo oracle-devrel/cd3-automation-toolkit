@@ -28,17 +28,25 @@ def print_nlb_backendset_backendserver(region, ct, values_for_column_bss,NLBs, n
 
     for eachnlb in NLBs.data:
         cnt_bss = 0
+        nlb_display_name = eachnlb.display_name
+        tf_name = commonTools.check_tf_variable(nlb_display_name)
 
         # Loop through Backend Sets
         for backendsets in eachnlb.__getattribute__('backend_sets'):
             cnt_bss = cnt_bss + 1
+
+            backendsets_tf_name = commonTools.check_tf_variable(backendsets)
+            importCommands[reg].write("\nterraform import \"module.nlb-backend-sets[\\\"" + str(tf_name) + "_" + str(backendsets_tf_name) + "\\\"].oci_network_load_balancer_backend_set.backend_set\" networkLoadBalancers/" + eachnlb.id + "/backendSets/" + backendsets)
 
             backend_list = ""
             backendset_details = nlb.get_backend_set(eachnlb.__getattribute__('id'), backendsets).data
             hc = nlb.get_health_checker(eachnlb.__getattribute__('id'), backendsets).data
 
             # Process the Backend Server
+            cnt_bes = 0
             for backends in backendset_details.__getattribute__('backends'):
+                cnt_bes = cnt_bes+1
+
                 if str(backends.__getattribute__('name')).lower() != "none":
                     backend_value = str(backends.__getattribute__('name'))
                     port = str(backends.__getattribute__('port'))
@@ -64,9 +72,18 @@ def print_nlb_backendset_backendserver(region, ct, values_for_column_bss,NLBs, n
 
                         backend = instance_comp_name+"&"+instance_display_name+":"+port
                         backend_list = backend_list + "," + backend
+
+                        backendservers_name = instance_display_name +"-"+str(cnt_bes)
+                        backendservers_tf_name = commonTools.check_tf_variable(backendservers_name)
                     else:
                         backend = backend_value
                         backend_list= backend_list+","+"&"+backend
+
+                        backendservers_name = backend.split(":")[0] +"-"+str(cnt_bes)
+                        backendservers_tf_name = commonTools.check_tf_variable(backendservers_name)
+
+                    importCommands[reg].write("\nterraform import \"module.nlb-backends[\\\"" + str(tf_name) + "_" + backendsets_tf_name + "_" + backendservers_tf_name + "\\\"].oci_network_load_balancer_backend.backend\" networkLoadBalancers/" + eachnlb.id + "/backendSets/" + backendsets + "/backends/" + backend_value)
+
                 if (backend_list != "" and backend_list[0] == ','):
                     backend_list = backend_list.lstrip(',')
 
@@ -115,6 +132,12 @@ def print_nlb_backendset_backendserver(region, ct, values_for_column_bss,NLBs, n
 
 def print_nlb_listener(region, ct, values_for_column_lis, NLBs, nlb_compartment_name,vcn):
     for eachnlb in NLBs.data:
+
+        importCommands[reg] = open(outdir + "/" + reg + "/tf_import_commands_nlb_nonGF.sh", "a")
+        nlb_display_name = eachnlb.display_name
+        tf_name = commonTools.check_tf_variable(nlb_display_name)
+        importCommands[reg].write("\nterraform import \"module.network-load-balancers[\\\"" + str(tf_name) + "\\\"].oci_network_load_balancer_network_load_balancer.network_load_balancer\" " + eachnlb.id)
+
         cnt_lsnr = 0
 
         #Fetch subnet
@@ -149,6 +172,9 @@ def print_nlb_listener(region, ct, values_for_column_lis, NLBs, nlb_compartment_
         # Loop through listeners
         for listeners, values in eachnlb.__getattribute__('listeners').items():
             cnt_lsnr = cnt_lsnr + 1
+
+            listener_tf_name = commonTools.check_tf_variable(listeners)
+            importCommands[reg].write("\nterraform import \"module.nlb-listeners[\\\"" + str(tf_name) + "_" + str(listener_tf_name) + "\\\"].oci_network_load_balancer_listener.listener\" networkLoadBalancers/" + eachnlb.id + "/listeners/" + listeners)
 
             for col_header in values_for_column_lis.keys():
                 if col_header == 'Region':
@@ -215,8 +241,6 @@ def print_nlb_listener(region, ct, values_for_column_lis, NLBs, nlb_compartment_
                     values_for_column_lis = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict_lis,values_for_column_lis)
 
     return values_for_column_lis
-
-
 
 def export_nlb(inputfile, _outdir, network_compartments, _config):
     global tf_import_cmd
@@ -290,30 +314,6 @@ def export_nlb(inputfile, _outdir, network_compartments, _config):
 
                 values_for_column_lis = print_nlb_listener(region, ct, values_for_column_lis,NLBs,compartment_name,vcn)
                 values_for_column_bss = print_nlb_backendset_backendserver(region, ct, values_for_column_bss,NLBs,compartment_name,cmpt,vcn,nlb)
-
-                for eachnlb in NLBs.data:
-
-                    importCommands[reg] = open(outdir + "/" + reg + "/tf_import_commands_nlb_nonGF.sh", "a")
-                    nlb_info = eachnlb
-                    nlb_display_name = nlb_info.display_name
-                    tf_name = commonTools.check_tf_variable(nlb_display_name)
-                    importCommands[reg].write("\nterraform import \"module.network-load-balancers[\\\""+str(tf_name)+"\\\"].oci_network_load_balancer_network_load_balancer.network_load_balancer\" " + nlb_info.id)
-
-                    for listeners in eachnlb.listeners:
-                        listener_tf_name = commonTools.check_tf_variable(listeners)
-                        importCommands[reg].write("\nterraform import \"module.nlb-listeners[\\\""+str(tf_name)+"_" + str(listener_tf_name) +"\\\"].oci_network_load_balancer_listener.listener\" networkLoadBalancers/" + nlb_info.id + "/listeners/" + listeners)
-
-                    for backendsets, values in eachnlb.backend_sets.items():
-                        backendsets_tf_name = commonTools.check_tf_variable(backendsets)
-                        importCommands[reg].write("\nterraform import \"module.nlb-backend-sets[\\\""+str(tf_name)+"_" + str(backendsets_tf_name) +"\\\"].oci_network_load_balancer_backend_set.backend_set\" networkLoadBalancers/" + nlb_info.id + "/backendSets/" + backendsets)
-
-                        cnt = 0
-                        for keys in values.backends:
-                            cnt = cnt + 1
-                            backendservers_name = keys.name
-                            backendservers_tf_name = commonTools.check_tf_variable(keys.ip_address+"-"+str(cnt))
-                            importCommands[reg].write("\nterraform import \"module.nlb-backends[\\\""+str(tf_name)+"_" + backendsets_tf_name + "_" + backendservers_tf_name +"\\\"].oci_network_load_balancer_backend.backend\" networkLoadBalancers/" + nlb_info.id + "/backendSets/" + backendsets + "/backends/" + backendservers_name)
-
 
     commonTools.write_to_cd3(values_for_column_lis, cd3file, "NLB-Listeners")
     commonTools.write_to_cd3(values_for_column_bss, cd3file, "NLB-BackendSets-BackendServers")
