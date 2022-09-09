@@ -23,7 +23,7 @@ from jinja2 import Environment, FileSystemLoader
 def parse_args():
     # Read the input arguments
     parser = argparse.ArgumentParser(description="Creates TF files for NLB")
-    parser.add_argument("inputfile",help="Full Path to the CD3 excel file. eg CD3-DRGv2-template.xlsx in example folder")
+    parser.add_argument("inputfile",help="Full Path to the CD3 excel file. eg CD3-CIS-template.xlsx in example folder")
     parser.add_argument("outdir", help="directory path for output tf files ")
     parser.add_argument('prefix', help='TF files prefix')
     parser.add_argument("--config", default=DEFAULT_LOCATION, help="Config file name")
