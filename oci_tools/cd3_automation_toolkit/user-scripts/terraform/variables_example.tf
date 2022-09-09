@@ -236,12 +236,27 @@ variable "custom_dhcps" {
 }
 
 variable "vcns" {
-  type    = map(any)
+  type    = map(object({
+      compartment_id    = string
+      cidr_blocks       = optional(list(string))
+      display_name      = optional(string)
+      dns_label         = optional(string)
+      is_ipv6enabled    = optional(string)
+      defined_tags      = optional(map(any))
+      freeform_tags     = optional(map(any))
+  }))
   default = {}
 }
 
 variable "igws" {
-  type    = map(any)
+  type    = map(object({
+      compartment_id    = string
+      vcn_id            = string
+      enabled           = optional(bool)
+      display_name      = optional(string)
+      defined_tags      = optional(map(any))
+      freeform_tags     = optional(map(any))
+  }))
   default = {}
 }
 
@@ -313,7 +328,22 @@ variable "nsg_rules" {
 }
 
 variable "subnets" {
-  type    = map(any)
+  type    = map(object({
+      compartment_id    = string
+      vcn_id            = string
+      cidr_block        = string
+      display_name      = optional(string)
+      dns_label         = optional(string)
+      ipv6cidr_block    = optional(string)
+      defined_tags      = optional(map(any))
+      freeform_tags     = optional(map(any))
+      prohibit_internet_ingress  = optional(string)
+      prohibit_public_ip_on_vnic = optional(string)
+      availability_domain = optional(string)
+      dhcp_options_id     = optional(string)
+      route_table_id      = optional(string)
+      security_list_ids   = optional(list(string))
+  }))
   default = {}
 }
 

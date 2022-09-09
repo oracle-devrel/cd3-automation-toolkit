@@ -606,13 +606,13 @@ module "subnets" {
   cidr_block     = each.value.cidr_block
 
   #Optional
-  dns_label                    = (each.value.dns_label != null && each.value.dns_label != "") ? each.value.dns_label : null
-  ipv6cidr_block               = (each.value.ipv6cidr_block != null && each.value.ipv6cidr_block != "") ? each.value.ipv6cidr_block : null
+  dns_label                    = each.value.dns_label
+  ipv6cidr_block               = each.value.ipv6cidr_block
   defined_tags                 = each.value.defined_tags
-  display_name                 = each.value.display_name != null ? each.value.display_name : null
+  display_name                 = each.value.display_name
   freeform_tags                = each.value.freeform_tags
-  prohibit_internet_ingress    = (each.value.prohibit_internet_ingress != null && each.value.prohibit_internet_ingress != "") ? each.value.prohibit_internet_ingress : null
-  prohibit_public_ip_on_vnic   = (each.value.prohibit_public_ip_on_vnic != null && each.value.prohibit_public_ip_on_vnic != "") ? each.value.prohibit_public_ip_on_vnic : null
+  prohibit_internet_ingress    = each.value.prohibit_internet_ingress
+  prohibit_public_ip_on_vnic   = each.value.prohibit_public_ip_on_vnic
   availability_domain          = each.value.availability_domain != "" && each.value.availability_domain != null ? data.oci_identity_availability_domains.availability_domains.availability_domains[each.value.availability_domain].name : ""
   dhcp_options_id              = length(regexall("ocid1.dhcpoptions.oc1*", each.value.dhcp_options_id)) > 0 ? each.value.dhcp_options_id : (each.value.dhcp_options_id == "" ? merge(module.vcns.*...)[each.value.vcn_id]["vcn_default_dhcp_id"] : merge(module.custom-dhcps.*...)[each.value.dhcp_options_id]["custom_dhcp_tf_id"])
   route_table_id               = length(regexall("ocid1.routetable.oc1*", each.value.route_table_id)) > 0 ? each.value.route_table_id : (each.value.route_table_id == "" ? merge(module.vcns.*...)[each.value.vcn_id]["vcn_default_route_table_id"] : merge(module.route-tables.*...)[each.value.route_table_id]["route_table_ids"])

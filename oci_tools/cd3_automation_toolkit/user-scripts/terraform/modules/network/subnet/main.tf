@@ -13,16 +13,16 @@ resource "oci_core_subnet" "subnet" {
   vcn_id         = var.vcn_id
 
   #Optional
-  availability_domain        = (var.availability_domain != "" && var.availability_domain != null) ? var.availability_domain : ""
+  availability_domain        = var.availability_domain
   defined_tags               = var.defined_tags
-  dhcp_options_id            = (var.dhcp_options_id != "" && var.dhcp_options_id != null) ? var.dhcp_options_id : null
+  dhcp_options_id            = var.dhcp_options_id
   display_name               = var.display_name
   dns_label                  = var.dns_label
   freeform_tags              = var.freeform_tags
   ipv6cidr_block             = var.ipv6cidr_block
   prohibit_internet_ingress  = var.prohibit_internet_ingress
   prohibit_public_ip_on_vnic = var.prohibit_public_ip_on_vnic
-  route_table_id             = (var.route_table_id != "" && var.route_table_id != null) ? var.route_table_id : null
+  route_table_id             = var.route_table_id
   security_list_ids          = var.security_list_ids != []  ? [ for sl in var.security_list_ids : (length(regexall("ocid1.securitylist.oc1*", sl)) > 0 ? sl : ( sl == "" ? var.vcn_default_security_list_id : var.custom_security_list_id[sl]["seclist_tf_id"]))] : []
 
   lifecycle {
