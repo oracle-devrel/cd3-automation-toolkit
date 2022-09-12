@@ -209,8 +209,8 @@ def create_terraform_lbr_hostname_certs(inputfile, outdir, prefix, config=DEFAUL
         if region in commonTools.endNames:
             break
 
-        if region not in ct.all_regions:
-            print("\nInvalid Region; It should be one of the values mentioned in VCN Info tab...Exiting!!")
+        if region != 'nan' and region not in ct.all_regions:
+            print("\nInvalid Region; It should be one of the regions tenancy is subscribed to...Exiting!!")
             exit()
 
         # temporary dictionaries
@@ -389,7 +389,7 @@ def create_terraform_lbr_hostname_certs(inputfile, outdir, prefix, config=DEFAUL
             src = "##Add New Load Balancers for "+reg.lower()+" here##"
             lbr_str[reg] = lbr.render(skeleton=True, count=0, region=reg).replace(src,lbr_str[reg]+"\n"+src)
 
-        if hostname_str[reg] != '':
+        if hostname_str_02[reg] != '':
             # Generate Final String
             src = "##Add New Hostnames for " + reg.lower() + " here##"
             hostname_str_02[reg] = hostname.render(skeleton=True, count=0, region=reg).replace(src, hostname_str_02[reg]+"\n"+src)
