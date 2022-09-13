@@ -231,7 +231,17 @@ variable "default_dhcps" {
 }
 
 variable "custom_dhcps" {
-  type    = map(any)
+  type    = map(object({
+      compartment_id    = string
+      server_type       = string
+      vcn_id            = string
+      custom_dns_servers = list(any)
+      domain_name_type  = optional(string)
+      display_name      = optional(string)
+      search_domain      = optional(map(any))
+      defined_tags      = optional(map(any))
+      freeform_tags     = optional(map(any))
+  }))
   default = {}
 }
 
