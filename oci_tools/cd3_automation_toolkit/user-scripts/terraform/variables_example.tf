@@ -226,7 +226,14 @@ variable "tag_defaults" {
 #########################
 
 variable "default_dhcps" {
-  type    = map(any)
+  type    = map(object({
+      server_type       = string
+      manage_default_resource_id   = optional(string)
+      custom_dns_servers = list(any)
+      search_domain      = optional(map(any))
+      defined_tags      = optional(map(any))
+      freeform_tags     = optional(map(any))
+  }))
   default = {}
 }
 
