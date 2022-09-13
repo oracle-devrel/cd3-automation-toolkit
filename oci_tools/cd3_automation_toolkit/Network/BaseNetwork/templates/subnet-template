@@ -20,15 +20,15 @@ subnets = {
         compartment_id= "{{ compartment_tf_name }}"
         vcn_id = "{{ vcn_tf_name }}"
 
-        {% if display_name != '' and if display_name != 'nan' %}
+        {% if display_name != '' and display_name != 'nan' %}
         display_name = "{{ display_name }}"
         {% endif %}
 
-        {% if availability_domain != '' and if availability_domain != 'nan' %}
+        {% if availability_domain != '' and availability_domain != 'nan' %}
         availability_domain = "{{ availability_domain }}"
         {% endif %}
 
-        {% if prohibit_public_ip_on_vnic != '' and if prohibit_public_ip_on_vnic != 'nan' %}
+        {% if prohibit_public_ip_on_vnic != '' and prohibit_public_ip_on_vnic != 'nan' %}
         prohibit_public_ip_on_vnic = "{{ prohibit_public_ip_on_vnic }}"
         {% endif %}
 
@@ -45,7 +45,8 @@ subnets = {
         {% endif %}
 
         {% if dhcp_options_name != '' and dhcp_options_name != 'nan' %}
-        dhcp_options_id = "{{ dhcp_options_name }}"
+        dhcp_options_id = "{{ dhcp_options_name }}" {% else %}
+        dhcp_options_id = ""
         {% endif %}
 
         {% if seclist_ids != '' %}

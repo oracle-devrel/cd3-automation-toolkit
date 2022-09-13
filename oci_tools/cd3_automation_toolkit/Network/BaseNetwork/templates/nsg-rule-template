@@ -43,7 +43,11 @@ nsg_rules = {
         source = "{{ source }}"
         {% endif %}
 
-        {% if protocol != "" %}
+        {% if protocol == "all" %}
+        options = {
+             all = []
+        }
+        {% elif protocol != "" %}
         options = {
             {% if protocol == 'icmp' %}
             {% if icmptype !='' and  icmpcode != '' %}

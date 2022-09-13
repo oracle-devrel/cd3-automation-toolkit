@@ -331,8 +331,7 @@ variable "nsg_rules" {
     destination      = optional(string)
     source           = optional(string)
     options          = optional(map(any))
-  }))
-  default = {}
+  	}))
 }
 
 variable "subnets" {
