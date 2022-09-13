@@ -641,7 +641,7 @@ module "nsgs" {
   vcn_id         = length(regexall("ocid1.vcn.oc1*", each.value.vcn_id)) > 0 ? each.value.vcn_id : merge(module.vcns.*...)[each.value.vcn_id]["vcn_tf_id"]
 
   defined_tags  = each.value.defined_tags
-  display_name  = each.value.display_name != null ? each.value.display_name : null
+  display_name  = each.value.display_name
   freeform_tags = each.value.freeform_tags
 }
 

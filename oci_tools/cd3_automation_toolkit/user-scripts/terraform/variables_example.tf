@@ -354,17 +354,47 @@ variable "default_seclists" {
 }
 
 variable "route_tables" {
-  type    = map(any)
+  type    = map(object({
+    compartment_id = string
+    vcn_id         = string
+    display_name   = optional(string)
+    defined_tags   = optional(map(any))
+    freeform_tags  = optional(map(any))
+    route_rules_igw = optional(list(any))
+    route_rules_sgw = optional(list(any))
+    route_rules_ngw = optional(list(any))
+    route_rules_drg = optional(list(any))
+    route_rules_lpg = optional(list(any))
+    route_rules_ip = optional(list(any))
+  }))
   default = {}
 }
 
 variable "default_route_tables" {
-  type    = map(any)
+  type    = map(object({
+    compartment_id = string
+    vcn_id         = string
+    display_name   = optional(string)
+    defined_tags   = optional(map(any))
+    freeform_tags  = optional(map(any))
+    route_rules_igw = optional(list(any))
+    route_rules_sgw = optional(list(any))
+    route_rules_ngw = optional(list(any))
+    route_rules_drg = optional(list(any))
+    route_rules_lpg = optional(list(any))
+    route_rules_ip = optional(list(any))
+  }))
   default = {}
 }
 
 variable "nsgs" {
-  type    = map(any)
+  type    = map(object({
+    compartment_id = string
+    vcn_id         = string
+    display_name   = optional(string)
+    defined_tags   = optional(map(any))
+    freeform_tags  = optional(map(any))
+  }))
   default = {}
 }
 
