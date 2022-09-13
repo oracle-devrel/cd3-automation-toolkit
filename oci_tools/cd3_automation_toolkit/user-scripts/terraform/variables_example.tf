@@ -290,7 +290,12 @@ variable "lpgs" {
 }
 
 variable "drgs" {
-  type    = map(any)
+  type    = map(object({
+      compartment_id    = string
+      display_name      = optional(string)
+      defined_tags      = optional(map(any))
+      freeform_tags     = optional(map(any))
+  }))
   default = {}
 }
 
@@ -332,6 +337,7 @@ variable "nsg_rules" {
     source           = optional(string)
     options          = optional(map(any))
   	}))
+  default = {}
 }
 
 variable "subnets" {
