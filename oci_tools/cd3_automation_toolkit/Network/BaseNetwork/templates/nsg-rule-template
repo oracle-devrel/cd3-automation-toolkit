@@ -43,13 +43,14 @@ nsg_rules = {
         source = "{{ source }}"
         {% endif %}
 
-        {% if protocol == "all" %}
+        {% if protocol != "" %}
         options = {
-             all = []
-        }
-        {% elif protocol != "" %}
-        options = {
-            {% if protocol == 'icmp' %}
+
+            {% if protocol.lower() == "all" %}
+            all = []
+            {% endif %}
+
+            {% if protocol.lower() == 'icmp' %}
             {% if icmptype !='' and  icmpcode != '' %}
             icmp = [{
                 type = "{{ icmptype }}"
@@ -62,7 +63,7 @@ nsg_rules = {
             {% endif %}
             {% endif %}
 
-            {% if protocol == 'tcp' %}
+            {% if protocol.lower() == 'tcp' %}
             {% if (dportmax and dportmin) or (sportmax and sportmin)  %}
             tcp = [{
                 {% if sportmax and sportmin %}
@@ -82,7 +83,7 @@ nsg_rules = {
             {% endif %}
             {% endif %}
 
-            {% if protocol == 'udp' %}
+            {% if protocol.lower() == 'udp' %}
             {% if (dportmax and dportmin) or (sportmax and sportmin)  %}
             udp = [{
                 {% if dportmax and dportmin %}

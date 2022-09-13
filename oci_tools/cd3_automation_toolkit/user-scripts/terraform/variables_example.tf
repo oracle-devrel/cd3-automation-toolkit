@@ -290,22 +290,66 @@ variable "lpgs" {
 }
 
 variable "drgs" {
-  type    = map(object({
-      compartment_id    = string
-      display_name      = optional(string)
-      defined_tags      = optional(map(any))
-      freeform_tags     = optional(map(any))
+  type = map(object({
+    compartment_id = string
+    display_name   = optional(string)
+    defined_tags   = optional(map(any))
+    freeform_tags  = optional(map(any))
   }))
   default = {}
 }
 
 variable "seclists" {
-  type    = map(any)
+  type = map(object({
+    compartment_id = string
+    vcn_id         = string
+    display_name   = optional(string)
+    defined_tags   = optional(map(any))
+    freeform_tags  = optional(map(any))
+    ingress_sec_rules = optional(list(object({
+      protocol    = optional(string)
+      stateless   = optional(string)
+      description = optional(string)
+      source      = optional(string)
+      source_type = optional(string)
+      options     = optional(map(any))
+    })))
+    egress_sec_rules = optional(list(object({
+      protocol         = optional(string)
+      stateless        = optional(string)
+      description      = optional(string)
+      destination      = optional(string)
+      destination_type = optional(string)
+      options          = optional(map(any))
+    })))
+  }))
   default = {}
 }
 
 variable "default_seclists" {
-  type    = map(any)
+  type = map(object({
+    compartment_id = string
+    vcn_id         = string
+    display_name   = optional(string)
+    defined_tags   = optional(map(any))
+    freeform_tags  = optional(map(any))
+    ingress_sec_rules = optional(list(object({
+      protocol    = optional(string)
+      stateless   = optional(string)
+      description = optional(string)
+      source      = optional(string)
+      source_type = optional(string)
+      options     = optional(map(any))
+    })))
+    egress_sec_rules = optional(list(object({
+      protocol         = optional(string)
+      stateless        = optional(string)
+      description      = optional(string)
+      destination      = optional(string)
+      destination_type = optional(string)
+      options          = optional(map(any))
+    })))
+  }))
   default = {}
 }
 
@@ -336,26 +380,25 @@ variable "nsg_rules" {
     destination      = optional(string)
     source           = optional(string)
     options          = optional(map(any))
-  	}))
-  default = {}
+  }))
 }
 
 variable "subnets" {
-  type    = map(object({
-      compartment_id    = string
-      vcn_id            = string
-      cidr_block        = string
-      display_name      = optional(string)
-      dns_label         = optional(string)
-      ipv6cidr_block    = optional(string)
-      defined_tags      = optional(map(any))
-      freeform_tags     = optional(map(any))
-      prohibit_internet_ingress  = optional(string)
-      prohibit_public_ip_on_vnic = optional(string)
-      availability_domain = optional(string)
-      dhcp_options_id     = optional(string)
-      route_table_id      = optional(string)
-      security_list_ids   = optional(list(string))
+  type = map(object({
+    compartment_id             = string
+    vcn_id                     = string
+    cidr_block                 = string
+    display_name               = optional(string)
+    dns_label                  = optional(string)
+    ipv6cidr_block             = optional(string)
+    defined_tags               = optional(map(any))
+    freeform_tags              = optional(map(any))
+    prohibit_internet_ingress  = optional(string)
+    prohibit_public_ip_on_vnic = optional(string)
+    availability_domain        = optional(string)
+    dhcp_options_id            = optional(string)
+    route_table_id             = optional(string)
+    security_list_ids          = optional(list(string))
   }))
   default = {}
 }

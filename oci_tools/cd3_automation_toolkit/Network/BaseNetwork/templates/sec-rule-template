@@ -5,9 +5,8 @@
 
                 {% if rule_description != '' %}
                 description = "{{ rule_description }}"
-                {% else %}
-                description = ""
                 {% endif %}
+
                 stateless = {{ isstateless }}
 
                 {% if source_type and source_type != '' %}
@@ -16,69 +15,64 @@
                 source_type = ""
                 {% endif %}
 
-                {% if protocol.lower() == 'icmp' and icmptype != '' %}
-                icmp_options = [{
-                    icmp_options_type = "{{ icmptype }}"
-                    {% if icmpcode != '' %}
-                    icmp_options_code = {{ icmpcode }}
-                    {% else %}
-                    icmp_options_code = ""
+                options = {
+                    {% if protocol.lower() == "all" %}
+                    all = []
                     {% endif %}
-                }]{% else %}
-                icmp_options = [{
-                    icmp_options_type = ""
-                    icmp_options_code = ""
-                }]
-                {% endif %}
 
-                {% if protocol.lower() == 'udp' %}
-                {% if (dportmax and dportmin) or (sportmax and sportmin) %}
-                udp_options = [{
-                    {% if dportmax and dportmin %}
-                    udp_options_destination_port_range_max = "{{ dportmax }}"
-                    udp_options_destination_port_range_min = "{{ dportmin }}"
-                    {% else %}
-                    udp_options_destination_port_range_max = null
-                    udp_options_destination_port_range_min = null
+                    {% if protocol.lower() == 'icmp' and icmptype != '' %}
+                    icmp = [{
+                        type = "{{ icmptype }}"
+                        {% if icmpcode != '' %}
+                        code = {{ icmpcode }}
+                        {% else %}
+                        code = ""
+                        {% endif %}
+                    }]
                     {% endif %}
-                    {% if sportmax and sportmin %}
-                    udp_source_ports = [{
-                        udp_options_source_port_range_max = "{{ sportmax }}"
-                        udp_options_source_port_range_min = "{{ sportmin }}"
-                    }]{% else %}
-                    udp_source_ports = []
+
+                    {% if protocol.lower() == 'udp' %}
+                    {% if (dportmax and dportmin) or (sportmax and sportmin) %}
+                    udp = [{
+                        {% if dportmax and dportmin %}
+                        destination_port_range_max = "{{ dportmax }}"
+                        destination_port_range_min = "{{ dportmin }}"
+                        {% else %}
+                        destination_port_range_max = null
+                        destination_port_range_min = null
+                        {% endif %}
+                        {% if sportmax and sportmin %}
+                        udp_source_ports = [{
+                            max = "{{ sportmax }}"
+                            min = "{{ sportmin }}"
+                        }]
+                        {% endif %}
+                    }]
                     {% endif %}
-                }]{% else %}
-                udp_options = []
-                {% endif %}{% else %}
-                udp_options = []
-                {% endif %}
+                    {% endif %}
 
 
 
-                {% if protocol.lower() == 'tcp' %}
-                {% if (dportmax and dportmin) or (sportmax and sportmin) %}
-                tcp_options = [{
-                    {% if dportmax and dportmin %}
-                    tcp_options_destination_port_range_max = "{{ dportmax }}"
-                    tcp_options_destination_port_range_min = "{{ dportmin }}"
-                    {% else %}
-                    tcp_options_destination_port_range_max = null
-                    tcp_options_destination_port_range_min = null
+                    {% if protocol.lower() == 'tcp' %}
+                    {% if (dportmax and dportmin) or (sportmax and sportmin) %}
+                    tcp = [{
+                        {% if dportmax and dportmin %}
+                        destination_port_range_max = "{{ dportmax }}"
+                        destination_port_range_min = "{{ dportmin }}"
+                        {% else %}
+                        destination_port_range_max = null
+                        destination_port_range_min = null
+                        {% endif %}
+                        {% if sportmax and sportmin %}
+                        tcp_source_ports = [{
+                            max = "{{ sportmax }}"
+                            min = "{{ sportmin }}"
+                        }]
+                        {% endif %}
+                    }]
                     {% endif %}
-                    {% if sportmax and sportmin %}
-                    tcp_source_ports = [{
-                        tcp_options_source_port_range_max = "{{ sportmax }}"
-                        tcp_options_source_port_range_min = "{{ sportmin }}"
-                    }]{% else %}
-                    tcp_source_ports = []
                     {% endif %}
-                }]{% else %}
-                tcp_options = []
-                {% endif %}{% else %}
-                tcp_options = []
-                {% endif %}
-
+                }
 
              },
             {% endif %}
@@ -87,11 +81,11 @@
              {
                 protocol = "{{ protocol_code }}"
                 destination = "{{ destination }}"
+
                 {% if rule_description != '' %}
                 description = "{{ rule_description }}"
-                {% else %}
-                description = ""
                 {% endif %}
+
                 stateless = {{ isstateless }}
 
                 {% if destination_type and destination_type != '' %}
@@ -100,67 +94,63 @@
                 destination_type = ""
                 {% endif %}
 
-                {% if protocol.lower() == 'icmp' and icmptype != '' %}
-                icmp_options = [{
-                    icmp_options_type = "{{ icmptype }}"
-                    {% if icmpcode != '' %}
-                    icmp_options_code = {{ icmpcode }}
-                    {% else %}
-                    icmp_options_code = ""
+                options = {
+                    {% if protocol.lower() == "all" %}
+                    all = []
                     {% endif %}
-                }]{% else %}
-                icmp_options = [{
-                    icmp_options_type = ""
-                    icmp_options_code = ""
+
+                    {% if protocol.lower() == 'icmp' and icmptype != '' %}
+                    icmp = [{
+                        type = "{{ icmptype }}"
+                        {% if icmpcode != '' %}
+                        code = {{ icmpcode }}
+                        {% else %}
+                        code = ""
+                        {% endif %}
                     }]
-                {% endif %}
+                    {% endif %}
 
-                {% if protocol.lower() == 'udp' %}
-                {% if (dportmax and dportmin) or (sportmax and sportmin) %}
-                udp_options = [{
-                    {% if dportmax and dportmin %}
-                    udp_options_destination_port_range_max = "{{ dportmax }}"
-                    udp_options_destination_port_range_min = "{{ dportmin }}"
-                    {% else %}
-                    udp_options_destination_port_range_max = null
-                    udp_options_destination_port_range_min = null
+                    {% if protocol.lower() == 'udp' %}
+                    {% if (dportmax and dportmin) or (sportmax and sportmin) %}
+                    udp = [{
+                        {% if dportmax and dportmin %}
+                        destination_port_range_max = "{{ dportmax }}"
+                        destination_port_range_min = "{{ dportmin }}"
+                        {% else %}
+                        destination_port_range_max = null
+                        destination_port_range_min = null
+                        {% endif %}
+                        {% if sportmax and sportmin %}
+                        udp_source_ports = [{
+                            max = "{{ sportmax }}"
+                            min = "{{ sportmin }}"
+                        }]
+                        {% endif %}
+                    }]
                     {% endif %}
-                    {% if sportmax and sportmin %}
-                    udp_source_ports = [{
-                        udp_options_source_port_range_max = "{{ sportmax }}"
-                        udp_options_source_port_range_min = "{{ sportmin }}"
-                    }]{% else %}
-                    udp_source_ports = []
                     {% endif %}
-                }]{% else %}
-                udp_options = []
-                {% endif %}{% else %}
-                udp_options = []
-                {% endif %}
 
 
 
-                {% if protocol.lower() == 'tcp' %}
-                {% if (dportmax and dportmin) or (sportmax and sportmin) %}
-                tcp_options = [{
-                    {% if dportmax and dportmin %}
-                    tcp_options_destination_port_range_max = "{{ dportmax }}"
-                    tcp_options_destination_port_range_min = "{{ dportmin }}"
-                    {% else %}
-                    tcp_options_destination_port_range_max = null
-                    tcp_options_destination_port_range_min = null
+                    {% if protocol.lower() == 'tcp' %}
+                    {% if (dportmax and dportmin) or (sportmax and sportmin) %}
+                    tcp = [{
+                        {% if dportmax and dportmin %}
+                        destination_port_range_max = "{{ dportmax }}"
+                        destination_port_range_min = "{{ dportmin }}"
+                        {% else %}
+                        destination_port_range_max = null
+                        destination_port_range_min = null
+                        {% endif %}
+                        {% if sportmax and sportmin %}
+                        tcp_source_ports = [{
+                            max = "{{ sportmax }}"
+                            min = "{{ sportmin }}"
+                        }]
+                        {% endif %}
+                    }]
                     {% endif %}
-                    {% if sportmax and sportmin %}
-                    tcp_source_ports = [{
-                        tcp_options_source_port_range_max = "{{ sportmax }}"
-                        tcp_options_source_port_range_min = "{{ sportmin }}"
-                    }]{% else %}
-                    tcp_source_ports = []
                     {% endif %}
-                }]{% else %}
-                tcp_options = []
-                {% endif %}{% else %}
-                tcp_options = []
-                {% endif %}
+                }
              },
             {% endif %}
