@@ -15,6 +15,11 @@ from glob import glob
 from Security.CloudGuard import *
 from Security.KeyVault import *
 from Storage.ObjectStorage import *
+import requests
+import oci
+import pytz
+from datetime import datetime
+import subprocess
 
 
 def show_options(options, quit=False, menu=False, extra=None, index=0):
@@ -480,6 +485,82 @@ def create_cis_budget(*args,**kwargs):
     options = [Option(None, Governance.create_cis_budget, 'Creating Budget')]
     execute_options(options, outdir, prefix,amount,threshold, config=config)
 
+def initiate_cis_scan(execute_all=False):
+    options = [
+        Option("Download the script", start_cis_download, 'Download CIS scan'),
+        Option("Start CIS scan", start_cis_scan_custom, 'Execute CIS scan'),
+    ]
+
+    if not execute_all:
+        options = show_options(options, quit=True, menu=True, index=1)
+    execute_options(options, inputfile, outdir, prefix, config=config)
+
+def start_cis_download(*args,**kwargs):
+    print("Downloading the file as 'cis_reports.py'")
+    resp = requests.get("https://raw.githubusercontent.com/oracle-quickstart/oci-cis-landingzone-quickstart/main/scripts/cis_reports.py")
+    resp_contents = resp.text
+    with open("cis_reports.py", "w") as fd:
+        fd.write(resp_contents)
+    print("Download completed")
+    showPostScanOptions(inputfile, outdir, prefix, config=config)
+
+def start_cis_scan_custom(*args,**kwargs):
+
+    script_usage = """
+usage: cis_reports.py [-h] [-t CONFIG_PROFILE] [-p PROXY] [--output-to-bucket OUTPUT_BUCKET]
+              [--report-directory REPORT_DIRECTORY] [--print-to-screen PRINT_TO_SCREEN]
+              [--level LEVEL] [--regions REGIONS] [--raw] [-ip] [-dt]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -t CONFIG_PROFILE     Config file section to use (tenancy profile)
+  -p PROXY              Set Proxy (i.e. www-proxy-server.com:80)
+  --output-to-bucket OUTPUT_BUCKET
+                        Set Output bucket name (i.e. my-reporting-bucket)
+  --report-directory REPORT_DIRECTORY
+                        Set Output report directory by default it is the current date (i.e.
+                        reports-date)
+  --print-to-screen PRINT_TO_SCREEN
+                        Set to False if you want to see only non-compliant findings (i.e. False)
+  --level LEVEL         CIS Recommendation Level options are: 1 or 2. Set to 2 by default
+  --regions REGIONS     Regions to run the compliance checks on, by default it will run in all
+                        regions. Sample input: us-ashburn-1,ca-toronto-1,eu-frankfurt-1
+  --raw                 Outputs all resource data into CSV files
+  -ip                   Use Instance Principals for Authentication
+  -dt                   Use Delegation Token for Authentication in Cloud Shell
+    """
+    cmd = "python3 cis_reports.py"
+    print("{}".format(script_usage))
+    user_input = input("Please provide the arguments: {} ".format(cmd))
+    cmd = "{} {}".format(cmd, user_input)
+    print("Running the command: {}".format(cmd))
+    split = str.split(cmd)
+
+    out_rep = outdir + '/cis_report'
+    if not os.path.exists(out_rep):
+        os.makedirs(out_rep)
+    out = ['--report-directory', out_rep]
+    split.extend(out)
+    print("Scan started!")
+    execute(split)
+    showPostScanOptions(inputfile, outdir, prefix, config=config)
+
+def execute(command):
+    popen = subprocess.Popen(command, stdout=subprocess.PIPE,bufsize=1)
+    lines_iterator = iter(popen.stdout.readline, b"")
+    while popen.poll() is None:
+        for line in lines_iterator:
+            nline = line.rstrip()
+            print(nline.decode("latin"), end="\r\n", flush=True)# yield line
+
+def showPostScanOptions(inputfile, outdir, prefix, config, execute_all=False):
+    options = [
+        Option("Run CIS script with arguments", start_cis_scan_custom, 'Execute CIS scan')
+    ]
+    if not execute_all:
+        options = show_options(options, quit=True, menu=True, index=1)
+    execute_options(options, inputfile, outdir, prefix, config=config)
+
 parser = argparse.ArgumentParser(description='Sets Up OCI via TF')
 parser.add_argument('propsfile', help="Full Path of properties file containing input variables. eg setUpOCI.properties")
 args = parser.parse_args()
@@ -514,6 +595,7 @@ if not os.path.exists(outdir):
 
 if non_gf_tenancy:
     inputs = [
+        Option('CIS compliance script', initiate_cis_scan, 'Execute CIS scan'),
         Option('Export Identity', export_identity, 'Identity'),
         Option('Export Tags', export_tags, 'Tagging'),
         Option('Export Network', export_network, 'Network'),
@@ -524,8 +606,8 @@ if non_gf_tenancy:
         Option('Export Management Services', export_management_services, 'Management Services'),
     ]
 
-    verify_outdir_is_empty()
-    fetch_compartments(outdir, config)
+    # verify_outdir_is_empty()
+    # fetch_compartments(outdir, config)
     print("\nnon_gf_tenancy in properties files is set to true..Export existing OCI objects and Synch with TF state")
     print("Process will fetch objects from OCI in the specified compartment from all regions tenancy is subscribed to\n")
 else:
