@@ -1,4 +1,6 @@
 import argparse
+import os
+
 import Database
 import Identity
 import Compute
@@ -94,6 +96,7 @@ def validate_cd3(execute_all=False):
         Option("Validate Compartments", None, None),
         Option("Validate Groups", None, None),
         Option("Validate Policies", None, None),
+        Option("Validate Tags", None, None),
         Option("Validate Network(VCNs, Subnets, DHCP, DRGs)", None, None),
         Option("Validate Instances", None, None),
         Option("Validate Block Volumes", None, None),
@@ -488,7 +491,7 @@ def create_cis_budget(*args,**kwargs):
 def initiate_cis_scan(execute_all=False):
     options = [
         Option("Download the script", start_cis_download, 'Download CIS scan'),
-        Option("Start CIS scan", start_cis_scan_custom, 'Execute CIS scan'),
+        Option("Start CIS scan", start_cis_scan, 'Execute CIS scan'),
     ]
 
     if not execute_all:
@@ -496,15 +499,17 @@ def initiate_cis_scan(execute_all=False):
     execute_options(options, inputfile, outdir, prefix, config=config)
 
 def start_cis_download(*args,**kwargs):
-    print("Downloading the file as 'cis_reports.py'")
+    print("Downloading the script file as 'cis_reports.py' at location "+os.getcwd())
     resp = requests.get("https://raw.githubusercontent.com/oracle-quickstart/oci-cis-landingzone-quickstart/main/scripts/cis_reports.py")
     resp_contents = resp.text
     with open("cis_reports.py", "w") as fd:
         fd.write(resp_contents)
-    print("Download completed")
+    print("Download complete!!")
     showPostScanOptions(inputfile, outdir, prefix, config=config)
 
-def start_cis_scan_custom(*args,**kwargs):
+def start_cis_scan(*args,**kwargs):
+
+    '''
 
     script_usage = """
 usage: cis_reports.py [-h] [-t CONFIG_PROFILE] [-p PROXY] [--output-to-bucket OUTPUT_BUCKET]
@@ -529,9 +534,10 @@ optional arguments:
   -ip                   Use Instance Principals for Authentication
   -dt                   Use Delegation Token for Authentication in Cloud Shell
     """
-    cmd = "python3 cis_reports.py"
-    print("{}".format(script_usage))
-    user_input = input("Please provide the arguments: {} ".format(cmd))
+    '''
+    cmd = "python cis_reports.py"
+    #print("{}".format(script_usage))
+    user_input = input("Enter the command to execute the script: <{}> ".format(cmd))
     cmd = "{} {}".format(cmd, user_input)
     print("Running the command: {}".format(cmd))
     split = str.split(cmd)
@@ -555,7 +561,7 @@ def execute(command):
 
 def showPostScanOptions(inputfile, outdir, prefix, config, execute_all=False):
     options = [
-        Option("Run CIS script with arguments", start_cis_scan_custom, 'Execute CIS scan')
+        Option("Run CIS script with arguments", start_cis_scan, 'Execute CIS scan')
     ]
     if not execute_all:
         options = show_options(options, quit=True, menu=True, index=1)
@@ -595,7 +601,7 @@ if not os.path.exists(outdir):
 
 if non_gf_tenancy:
     inputs = [
-        Option('CIS compliance script', initiate_cis_scan, 'Execute CIS scan'),
+        Option('CIS Compliance Checking Script', initiate_cis_scan, 'Execute CIS scan'),
         Option('Export Identity', export_identity, 'Identity'),
         Option('Export Tags', export_tags, 'Tagging'),
         Option('Export Network', export_network, 'Network'),
@@ -606,8 +612,8 @@ if non_gf_tenancy:
         Option('Export Management Services', export_management_services, 'Management Services'),
     ]
 
-    # verify_outdir_is_empty()
-    # fetch_compartments(outdir, config)
+    verify_outdir_is_empty()
+    fetch_compartments(outdir, config)
     print("\nnon_gf_tenancy in properties files is set to true..Export existing OCI objects and Synch with TF state")
     print("Process will fetch objects from OCI in the specified compartment from all regions tenancy is subscribed to\n")
 else:
@@ -630,7 +636,7 @@ else:
 menu = True
 while menu:
     if non_gf_tenancy:
-        options = show_options(inputs, quit=True, index=1)
+        options = show_options(inputs, quit=True, index=0)
     else:
         options = show_options(inputs, quit=True, extra='\nSee example folder for sample input files\n', index=0)
     if 'q' in options:
