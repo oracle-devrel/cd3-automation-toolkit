@@ -962,9 +962,6 @@ def validate_compartments(filename):
     # Read the Compartments tab from excel
     dfcomp = data_frame(filename,'Compartments')
 
-    #Collect Compartment Names in a list
-    #comp_list = df['Name'].tolist()
-
     for i in dfcomp.index:
         region = str(dfcomp.loc[i, 'Region']).strip().lower()
         # Encountered <End>
@@ -979,9 +976,6 @@ def validate_compartments(filename):
         if str(dfcomp.loc[i, 'Name']).strip().lower() == 'nan':
             log(f'ROW {i+3} : Empty value at column "Name".')
             comp_empty_check = True
-        #if str(df.loc[i, 'Parent Compartment']).strip() not in comp_list and str(df.loc[i, 'Parent Compartment']).strip().lower() !='root' and str(df.loc[i, 'Parent Compartment']).strip().lower() !='nan':
-        #    logging.log(60, "ROW " + str(i + 3) + " : Invalid value for column Parent Compartment; It should be one of the values in column Name")
-        #    parent_comp_check = True
 
     if (comp_empty_check == True or parent_comp_check == True or comp_invalid_check == True):
         print("Null or Wrong value Check failed!!")
@@ -1094,6 +1088,74 @@ def validate_policies(filename,comp_ids):
     else:
         return False
 
+def validate_tags(filename,comp_ids):
+
+    tag_empty_check = False
+    tag_invalid_check = False
+    tag_comp_check  = False
+
+    # Read the Compartments tab from excel
+    dftag = data_frame(filename,'Tags')
+
+    for i in dftag.index:
+        region = str(dftag.loc[i, 'Region']).strip().lower()
+        # Encountered <End>
+        if (region in commonTools.endNames):
+            break
+        if region == 'nan':
+            log(f'ROW {i+3} : Empty value at column "Region".')
+            tag_empty_check = True
+        elif region!=ct.home_region:
+            log(f'ROW {i+3} : Region specified is not the Home Region.')
+            tag_invalid_check = True
+
+        # Check for invalid Compartment Name
+        comp_name = str(dftag.loc[i, 'Compartment Name']).strip()
+        if comp_name.lower() == 'nan' or comp_name == '':
+            log(f'ROW {i + 3} : Empty value at column "Compartment Name".')
+            tag_empty_check = True
+        else:
+            try:
+                comp_id = comp_ids[comp_name]
+            except KeyError:
+                log(f'ROW {i + 3} : Compartment {comp_name} doesnot exist in OCI.')
+                tag_comp_check = True
+
+        # List of the column headers
+        dfcolumns = dftag.columns.values.tolist()
+
+        for columnname in dfcolumns:
+            # Column value
+            if 'description' in columnname.lower():
+                columnvalue = str(dftag[columnname][i])
+            else:
+                columnvalue = str(dftag[columnname][i]).strip()
+
+            if columnname == 'Tag Namespace':
+                columnvalue = str(columnvalue).strip()
+                if columnvalue == '' or columnvalue == 'nan':
+                    log(f'ROW {i + 3} : Empty value at column "Tag Namespace".')
+                    tag_empty_check = True
+
+                if ' ' in columnvalue or '.' in columnvalue:
+                    log(f'ROW {i+3} : Spaces and Periods are not allowed in Tag Namespaces.')
+                    tag_invalid_check = True
+
+            if columnname == 'Tag Keys':
+                columnvalue = str(columnvalue).strip()
+                if columnvalue == '' or columnvalue == 'nan':
+                    log(f'ROW {i + 3} : Empty value at column "Tag Keys".')
+                    tag_empty_check = True
+
+                if ' ' in columnvalue or '.' in columnvalue:
+                    log(f'ROW {i+3} : Spaces and Periods are not allowed in Tag Keys.')
+                    tag_invalid_check = True
+
+    if (tag_empty_check == True or  tag_invalid_check == True or tag_comp_check == True):
+        print("Null or Wrong value Check failed!!")
+        return True
+    else:
+        return False
 
 def validate_cd3(filename, prefix, outdir,choices, configFileName):
     CD3_LOG_LEVEL = 60
@@ -1158,7 +1220,10 @@ def validate_cd3(filename, prefix, outdir,choices, configFileName):
             log("\n============================= Verifying Policies Tab ==========================================\n")
             print("\nProcessing Policies Tab..")
             policies_check = validate_policies(filename,ct.ntk_compartment_ids)
-
+        if ('Validate Tags' in options[0]):
+            log("\n============================= Verifying Tags Tab ==========================================\n")
+            print("\nProcessing Tags Tab..")
+            tags_check = validate_tags(filename,ct.ntk_compartment_ids)
         # CD3 Validation begins here for Network
         if ('Validate Network(VCNs, Subnets, DHCP, DRGs)' in options[0]):
             val_net=True
@@ -1192,11 +1257,11 @@ def validate_cd3(filename, prefix, outdir,choices, configFileName):
         if ('Validate FSS' in options[0]):
             log("\n============================= Verifying FSS Tab ==========================================\n")
             print("\nProcessing FSS Tab..")
-            bvs_check = validate_fss(filename,ct.ntk_compartment_ids,subnetobj,vcn_subnet_list,vcn_nsg_list)
+            fss_check = validate_fss(filename,ct.ntk_compartment_ids,subnetobj,vcn_subnet_list,vcn_nsg_list)
 
 
     # Prints the final result; once the validation is complete
-    if any([comp_check, groups_check, policies_check, instances_check, bvs_check,vcn_check, vcn_cidr_check, vcn_peer_check, subnet_check, subnet_cidr_check, dhcp_check, drgv2_check]):
+    if any([comp_check, groups_check, policies_check, tags_check, instances_check, bvs_check,fss_check, vcn_check, vcn_cidr_check, vcn_peer_check, subnet_check, subnet_cidr_check, dhcp_check, drgv2_check]):
         log("=======")
         log("Summary:")
         log("=======")
