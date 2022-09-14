@@ -23,20 +23,15 @@ drg_route_distribution_statements = {
         {
         {% if statements[0].upper() != 'ALL' %}
         match_type = "{{ statements[0].upper() }}"
+
         {% if statements[0] == 'DRG_ATTACHMENT_TYPE' %}
         attachment_type = "{{ statements[1].upper() }}"
-        {% else %}
-        attachment_type =""
         {% endif %}
+
         {% if statements[0] == 'DRG_ATTACHMENT_ID' %}
         drg_attachment_id = "{{ statements[1] }}"
-        {% else %}
-        drg_attachment_id = ""
         {% endif %}
-        {% else %}
-        match_type = ""
-        attachment_type =""
-        drg_attachment_id = ""
+
         {% endif %}
         },
         ]

@@ -466,12 +466,27 @@ variable "drg_route_rules" {
 }
 
 variable "drg_route_distributions" {
-  type    = map(any)
+  type    = map(object({
+      distribution_type = string
+      drg_id            = string
+      defined_tags      = optional(string)
+      freeform_tags     = optional(string)
+      display_name      = optional(string)
+  }))
   default = {}
 }
 
 variable "drg_route_distribution_statements" {
-  type    = map(any)
+  type = map(object({
+    drg_route_distribution_id = string
+    action                    = string
+    match_criteria            = optional(list(object({
+      match_type              = string
+      attachment_type         = optional(string)
+      drg_attachment_id       = optional(string)
+    })))
+    priority                  = optional(string)
+  }))
   default = {}
 }
 

@@ -16,7 +16,7 @@ custom_dhcps = {
 {% else %}
     {{ dhcp_tf_name }} = {
             compartment_id           = "{{ compartment_tf_name }}"
-            server_type                = "{{ server_type }}"
+            server_type              = "{{ server_type }}"
 
             {% if custom_dns_server and custom_dns_server != '' %}
             custom_dns_servers = [ {{ custom_dns_server }} ]
@@ -27,7 +27,8 @@ custom_dhcps = {
             {% endif %}
 
             display_name     = "{{ dhcp_option_name }}"
-            vcn_id         = "{{ vcn_tf_name }}"
+            vcn_id           = "{{ vcn_tf_name }}"
+
             search_domain        =  {
                 {% if search_domain != "" %}
                 names = ["{{ search_domain }}"]
