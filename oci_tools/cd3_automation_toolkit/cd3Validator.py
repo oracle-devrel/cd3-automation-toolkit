@@ -1223,7 +1223,7 @@ def validate_cd3(filename, prefix, outdir,choices, configFileName):
         if ('Validate Tags' in options[0]):
             log("\n============================= Verifying Tags Tab ==========================================\n")
             print("\nProcessing Tags Tab..")
-            policies_check = validate_tags(filename,ct.ntk_compartment_ids)
+            tags_check = validate_tags(filename,ct.ntk_compartment_ids)
         # CD3 Validation begins here for Network
         if ('Validate Network(VCNs, Subnets, DHCP, DRGs)' in options[0]):
             val_net=True
@@ -1257,11 +1257,11 @@ def validate_cd3(filename, prefix, outdir,choices, configFileName):
         if ('Validate FSS' in options[0]):
             log("\n============================= Verifying FSS Tab ==========================================\n")
             print("\nProcessing FSS Tab..")
-            bvs_check = validate_fss(filename,ct.ntk_compartment_ids,subnetobj,vcn_subnet_list,vcn_nsg_list)
+            fss_check = validate_fss(filename,ct.ntk_compartment_ids,subnetobj,vcn_subnet_list,vcn_nsg_list)
 
 
     # Prints the final result; once the validation is complete
-    if any([comp_check, groups_check, policies_check, instances_check, bvs_check,vcn_check, vcn_cidr_check, vcn_peer_check, subnet_check, subnet_cidr_check, dhcp_check, drgv2_check]):
+    if any([comp_check, groups_check, policies_check, tags_check, instances_check, bvs_check,fss_check, vcn_check, vcn_cidr_check, vcn_peer_check, subnet_check, subnet_cidr_check, dhcp_check, drgv2_check]):
         log("=======")
         log("Summary:")
         log("=======")
