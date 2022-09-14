@@ -18,7 +18,9 @@ tag_namespaces = {
             description = "{{ description }}"
             name = "{{ tag_namespace }}"
 
-            is_retired = "false" {#  Default Value  #}
+            {% if is_retired  and is_retired != '' %}
+            is_retired = {{ is_retired }}
+            {% endif %}
 
             {#  ##Do not modify below this line##  #}
             {#                                     #}
