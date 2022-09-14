@@ -226,6 +226,10 @@ variable "tag_keys" {
       freeform_tags    = optional(map(any))
       is_cost_tracking = optional(string)
       is_retired       = optional(string)
+      validator = optional(list(object({
+            validator_type = optional(string)
+            validator_values = optional(list(any))
+            })))
   }))
   default     = {}
 }
@@ -233,7 +237,7 @@ variable "tag_keys" {
 variable "tag_defaults" {
   description = "To make the Tag keys as default to compartments"
   type        = map(object({
-      tag_namespace_id   = string
+      compartment_id   = string
       tag_definition_id  = string
       value              = string
       is_required        = optional(string)
