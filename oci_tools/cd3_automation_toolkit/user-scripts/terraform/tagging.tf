@@ -17,7 +17,7 @@ module "tag-namespaces" {
   #Optional
   defined_tags  = each.value.defined_tags
   freeform_tags = each.value.freeform_tags
-  is_retired    = each.value.is_retired != "" ? each.value.is_retired : false
+  is_retired    = each.value.is_retired
 
 }
 
@@ -33,9 +33,9 @@ module "tag-keys" {
   #Optional
   defined_tags     = each.value.defined_tags
   freeform_tags    = each.value.freeform_tags
-  is_cost_tracking = each.value.is_cost_tracking != "" ? each.value.is_cost_tracking : false
+  is_cost_tracking = each.value.is_cost_tracking
   key_name         = each.key
-  is_retired       = each.value.is_retired != "" ? each.value.is_retired : false
+  is_retired       = each.value.is_retired
   tag_keys         = var.tag_keys
 }
 
@@ -49,5 +49,5 @@ module "tag-defaults" {
   value             = each.value.value
 
   #Optional
-  is_required = each.value.is_required != "" ? each.value.is_required : false
+  is_required = each.value.is_required
 }

@@ -177,24 +177,24 @@ variable "compartments" {
 
 variable "policies" {
   type = map(object({
-      name                = string
-      compartment_id      = string
-      policy_description  = string
-      policy_statements   = list(string)
-      policy_version_date = optional(string)
-      defined_tags        = optional(map(any))
-      freeform_tags       = optional(map(any))
+    name                = string
+    compartment_id      = string
+    policy_description  = string
+    policy_statements   = list(string)
+    policy_version_date = optional(string)
+    defined_tags        = optional(map(any))
+    freeform_tags       = optional(map(any))
   }))
   default = {}
 }
 
 variable "groups" {
   type = map(object({
-      group_name        = string
-      group_description = string
-      matching_rule     = optional(string)
-      defined_tags      = optional(map(any))
-      freeform_tags     = optional(map(any))
+    group_name        = string
+    group_description = string
+    matching_rule     = optional(string)
+    defined_tags      = optional(map(any))
+    freeform_tags     = optional(map(any))
   }))
   default = {}
 }
@@ -205,20 +205,44 @@ variable "groups" {
 
 variable "tag_namespaces" {
   description = "To provision Namespaces"
-  type        = map(any)
-  default     = {}
+  type = map(object({
+    compartment_id = string
+    description    = string
+    name           = string
+    defined_tags   = optional(map(any))
+    freeform_tags  = optional(map(any))
+    is_retired     = optional(string)
+  }))
+  default = {}
 }
 
 variable "tag_keys" {
   description = "To provision Tag Keys"
-  type        = map(any)
-  default     = {}
+  type = map(object({
+    tag_namespace_id = string
+    description      = string
+    name             = string
+    defined_tags     = optional(map(any))
+    freeform_tags    = optional(map(any))
+    is_cost_tracking = optional(string)
+    is_retired       = optional(string)
+    validator = optional(list(object({
+      validator_type   = optional(string)
+      validator_values = optional(list(any))
+    })))
+  }))
+  default = {}
 }
 
 variable "tag_defaults" {
   description = "To make the Tag keys as default to compartments"
-  type        = map(any)
-  default     = {}
+  type = map(object({
+    compartment_id    = string
+    tag_definition_id = string
+    value             = string
+    is_required       = optional(string)
+  }))
+  default = {}
 }
 
 #########################
@@ -226,22 +250,54 @@ variable "tag_defaults" {
 #########################
 
 variable "default_dhcps" {
-  type    = map(any)
+  type = map(object({
+    server_type                = string
+    manage_default_resource_id = optional(string)
+    custom_dns_servers         = optional(list(any))
+    search_domain              = optional(map(any))
+    defined_tags               = optional(map(any))
+    freeform_tags              = optional(map(any))
+  }))
   default = {}
 }
 
 variable "custom_dhcps" {
-  type    = map(any)
+  type = map(object({
+    compartment_id     = string
+    server_type        = string
+    vcn_id             = string
+    custom_dns_servers = list(any)
+    domain_name_type   = optional(string)
+    display_name       = optional(string)
+    search_domain      = optional(map(any))
+    defined_tags       = optional(map(any))
+    freeform_tags      = optional(map(any))
+  }))
   default = {}
 }
 
 variable "vcns" {
-  type    = map(any)
+  type = map(object({
+    compartment_id = string
+    cidr_blocks    = optional(list(string))
+    display_name   = optional(string)
+    dns_label      = optional(string)
+    is_ipv6enabled = optional(string)
+    defined_tags   = optional(map(any))
+    freeform_tags  = optional(map(any))
+  }))
   default = {}
 }
 
 variable "igws" {
-  type    = map(any)
+  type = map(object({
+    compartment_id = string
+    vcn_id         = string
+    enable_igw     = optional(bool)
+    igw_name       = optional(string)
+    defined_tags   = optional(map(any))
+    freeform_tags  = optional(map(any))
+  }))
   default = {}
 }
 
@@ -251,7 +307,15 @@ variable "sgws" {
 }
 
 variable "ngws" {
-  type    = map(any)
+  type = map(object({
+    compartment_id = string
+    vcn_id         = string
+    block_traffic  = optional(bool)
+    public_ip_id   = optional(string)
+    ngw_name       = optional(string)
+    defined_tags   = optional(map(any))
+    freeform_tags  = optional(map(any))
+  }))
   default = {}
 }
 
@@ -267,17 +331,66 @@ variable "lpgs" {
 }
 
 variable "drgs" {
-  type    = map(any)
+  type = map(object({
+    compartment_id = string
+    display_name   = optional(string)
+    defined_tags   = optional(map(any))
+    freeform_tags  = optional(map(any))
+  }))
   default = {}
 }
 
 variable "seclists" {
-  type    = map(any)
+  type = map(object({
+    compartment_id = string
+    vcn_id         = string
+    display_name   = optional(string)
+    defined_tags   = optional(map(any))
+    freeform_tags  = optional(map(any))
+    ingress_sec_rules = optional(list(object({
+      protocol    = optional(string)
+      stateless   = optional(string)
+      description = optional(string)
+      source      = optional(string)
+      source_type = optional(string)
+      options     = optional(map(any))
+    })))
+    egress_sec_rules = optional(list(object({
+      protocol         = optional(string)
+      stateless        = optional(string)
+      description      = optional(string)
+      destination      = optional(string)
+      destination_type = optional(string)
+      options          = optional(map(any))
+    })))
+  }))
   default = {}
 }
 
 variable "default_seclists" {
-  type    = map(any)
+  type = map(object({
+    compartment_id = string
+    vcn_id         = string
+    display_name   = optional(string)
+    defined_tags   = optional(map(any))
+    freeform_tags  = optional(map(any))
+    ingress_sec_rules = optional(list(object({
+      protocol    = optional(string)
+      stateless   = optional(string)
+      description = optional(string)
+      source      = optional(string)
+      source_type = optional(string)
+      options     = optional(map(any))
+    })))
+    egress_sec_rules = optional(list(object({
+      protocol         = optional(string)
+      stateless        = optional(string)
+      description      = optional(string)
+      destination      = optional(string)
+      destination_type = optional(string)
+      options          = optional(map(any))
+    })))
+  }))
   default = {}
 }
 
@@ -292,7 +405,13 @@ variable "default_route_tables" {
 }
 
 variable "nsgs" {
-  type    = map(any)
+  type    = map(object({
+    compartment_id = string
+    vcn_id         = string
+    display_name   = optional(string)
+    defined_tags   = optional(map(any))
+    freeform_tags  = optional(map(any))
+  }))
   default = {}
 }
 
@@ -313,7 +432,22 @@ variable "nsg_rules" {
 }
 
 variable "subnets" {
-  type    = map(any)
+  type = map(object({
+    compartment_id             = string
+    vcn_id                     = string
+    cidr_block                 = string
+    display_name               = optional(string)
+    dns_label                  = optional(string)
+    ipv6cidr_block             = optional(string)
+    defined_tags               = optional(map(any))
+    freeform_tags              = optional(map(any))
+    prohibit_internet_ingress  = optional(string)
+    prohibit_public_ip_on_vnic = optional(string)
+    availability_domain        = optional(string)
+    dhcp_options_id            = optional(string)
+    route_table_id             = optional(string)
+    security_list_ids          = optional(list(string))
+  }))
   default = {}
 }
 
@@ -333,12 +467,27 @@ variable "drg_route_rules" {
 }
 
 variable "drg_route_distributions" {
-  type    = map(any)
+  type    = map(object({
+      distribution_type = string
+      drg_id            = string
+      defined_tags      = optional(string)
+      freeform_tags     = optional(string)
+      display_name      = optional(string)
+  }))
   default = {}
 }
 
 variable "drg_route_distribution_statements" {
-  type    = map(any)
+  type = map(object({
+    drg_route_distribution_id = string
+    action                    = string
+    match_criteria            = optional(list(object({
+      match_type              = string
+      attachment_type         = optional(string)
+      drg_attachment_id       = optional(string)
+    })))
+    priority                  = optional(string)
+  }))
   default = {}
 }
 

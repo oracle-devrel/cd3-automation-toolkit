@@ -24,7 +24,6 @@ variable "key_name" {}
 variable "is_cost_tracking" {
   type        = bool
   description = "Indicates whether the tag is enabled for cost tracking."
-  default     = false
 }
 
 variable "tag_namespace_id" {
@@ -48,7 +47,6 @@ variable "name" {
 variable "is_retired" {
   type        = bool
   description = "Enable to retire the tag key."
-  default     = false
 }
 
 variable "defined_tags" {
