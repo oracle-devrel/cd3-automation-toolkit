@@ -230,7 +230,7 @@ def create_terraform_tags(inputfile, outdir, prefix, config):
 
                             if default_value != "" and str(default_value).lower() != "nan":
                                 if '$' in default_value and default_value.count('$') == 1:
-                                    default_value = '$'+default_value
+                                    default_value = '$'+str(default_value).strip()
                                 is_required = 'false'
                                 columnvalue = key_tf_name+"="+default_compartment+"="+default_value+"="+is_required
                                 if columnvalue not in default_tags:
