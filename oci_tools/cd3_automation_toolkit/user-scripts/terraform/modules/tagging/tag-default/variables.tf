@@ -26,6 +26,5 @@ variable "value" {
 variable "is_required" {
   type        = bool
   description = "If true, a value is set during resource creation (either by the user creating the resource or another tag defualt). If no value is set, resource creation is blocked."
-  default     = false
 }
 

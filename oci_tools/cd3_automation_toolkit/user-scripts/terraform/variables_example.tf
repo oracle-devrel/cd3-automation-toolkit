@@ -205,19 +205,39 @@ variable "groups" {
 
 variable "tag_namespaces" {
   description = "To provision Namespaces"
-  type        = map(any)
+  type        = map(object({
+      compartment_id = string
+      description    = string
+      name           = string
+      defined_tags   = optional(map(any))
+      freeform_tags  = optional(map(any))
+      is_retired     = optional(string)
+  }))
   default     = {}
 }
 
 variable "tag_keys" {
   description = "To provision Tag Keys"
-  type        = map(any)
+  type        = map(object({
+      tag_namespace_id = string
+      description      = string
+      name             = string
+      defined_tags     = optional(map(any))
+      freeform_tags    = optional(map(any))
+      is_cost_tracking = optional(string)
+      is_retired       = optional(string)
+  }))
   default     = {}
 }
 
 variable "tag_defaults" {
   description = "To make the Tag keys as default to compartments"
-  type        = map(any)
+  type        = map(object({
+      tag_namespace_id   = string
+      tag_definition_id  = string
+      value              = string
+      is_required        = optional(string)
+  }))
   default     = {}
 }
 
@@ -428,6 +448,7 @@ variable "nsg_rules" {
     source           = optional(string)
     options          = optional(map(any))
   }))
+  default = {}
 }
 
 variable "subnets" {

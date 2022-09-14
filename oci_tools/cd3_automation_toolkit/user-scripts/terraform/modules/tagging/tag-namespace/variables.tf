@@ -32,7 +32,6 @@ variable "name" {
 variable "is_retired" {
   type        = bool
   description = "Enable to retire the namespace."
-  default     = false
 }
 
 variable "defined_tags" {
