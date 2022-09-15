@@ -230,24 +230,24 @@ def create_terraform_tags(inputfile, outdir, prefix, config):
 
                             if default_value != "" and str(default_value).lower() != "nan":
                                 if '$' in default_value and default_value.count('$') == 1:
-                                    default_value = '$'+default_value
-                                is_required = 'false'
-                                columnvalue = key_tf_name+"="+default_compartment+"="+default_value+"="+is_required
+                                    default_value = '$'+str(default_value).strip()
+                                #is_required = 'false' #Uncomment this line if needed
+                                columnvalue = key_tf_name+"="+default_compartment+"="+default_value#+"="+is_required #Uncomment this if needed
                                 if columnvalue not in default_tags:
                                     default_tags.append(columnvalue)
                             else:
                                 if default_value == '' or default_value.strip().lower() == 'nan':
                                     if str(df.loc[i,'Validator']).strip() != '' and  str(df.loc[i,'Validator']).strip().lower() != 'nan' and str(df.loc[i,'Validator']).strip() != []:
-                                        is_required_updated = 'true'
+                                        #is_required_updated = 'true' #Uncomment this if needed
                                         default_value = values_list[0]
-                                        columnvalue = key_tf_name+"="+default_compartment+"="+default_value+"="+is_required_updated
+                                        columnvalue = key_tf_name+"="+default_compartment+"="+default_value#+"="+is_required_updated #Uncomment this if needed
                                         if columnvalue not in default_tags:
                                             default_tags.append(columnvalue)
                                     else:
                                         if str(df.loc[i, 'Validator']).strip() == '' or  str(df.loc[i, 'Validator']).strip().lower() == 'nan':
-                                            is_required_updated = 'true'
+                                            #is_required_updated = 'true' #Uncomment this if needed
                                             default_value = '-'
-                                            columnvalue = key_tf_name+"="+default_compartment+"="+default_value+"="+is_required_updated
+                                            columnvalue = key_tf_name+"="+default_compartment+"="+default_value#+"="+is_required_updated #Uncomment this if needed
                                             if columnvalue not in default_tags:
                                                 default_tags.append(columnvalue)
 

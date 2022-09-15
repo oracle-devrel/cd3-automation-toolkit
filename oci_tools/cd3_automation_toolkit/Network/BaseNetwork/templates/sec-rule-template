@@ -7,7 +7,9 @@
                 description = "{{ rule_description }}"
                 {% endif %}
 
+                {% if isstateless.lower() == 'true' %}
                 stateless = {{ isstateless }}
+                {% endif %}
 
                 {% if source_type and source_type != '' %}
                 source_type = "{{ source_type }}"
@@ -86,7 +88,9 @@
                 description = "{{ rule_description }}"
                 {% endif %}
 
+                {% if isstateless.lower() == 'true' %}
                 stateless = {{ isstateless }}
+                {% endif %}
 
                 {% if destination_type and destination_type != '' %}
                 destination_type = "{{ destination_type }}"
@@ -120,12 +124,14 @@
                         destination_port_range_max = null
                         destination_port_range_min = null
                         {% endif %}
+
                         {% if sportmax and sportmin %}
                         udp_source_ports = [{
                             max = "{{ sportmax }}"
                             min = "{{ sportmin }}"
                         }]
                         {% endif %}
+
                     }]
                     {% endif %}
                     {% endif %}

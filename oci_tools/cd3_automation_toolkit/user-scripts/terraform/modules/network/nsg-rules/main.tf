@@ -49,24 +49,24 @@ resource "oci_core_network_security_group_security_rule" "nsg_rule" {
     content {
       #Optional
       dynamic "source_port_range" {
-        for_each = try((tcp_options.value["source_port_range"] != [] ? tcp_options.value["source_port_range"] : []), [])
+        for_each = try((tcp_options.value.source_port_range_max != "" || tcp_options.value.source_port_range_min != "" ? tcp_options.value : []), [])
 
         content {
           #Required
-          max = tcp_options.value["source_port_range"][0].max != "" ? tcp_options.value["source_port_range"][0].max : ""
+          max = source_port_range.value.source_port_range_max != "" ? source_port_range.value.source_port_range_max : ""
 
-          min = tcp_options.value["source_port_range"][0].min != "" ? tcp_options.value["source_port_range"][0].min : ""
+          min = source_port_range.value.source_port_range_min != "" ? source_port_range.value.source_port_range_min : ""
         }
       }
 
       dynamic "destination_port_range" {
-        for_each = try((tcp_options.value["destination_port_range"] != [] ? tcp_options.value["destination_port_range"] : []), [])
+        for_each = try((tcp_options.value.destination_port_range_max != "" || tcp_options.value.destination_port_range_min != "" ? tcp_options.value : []), [])
 
         content {
           #Required
-          max = tcp_options.value["destination_port_range"][0].max != "" ? tcp_options.value["destination_port_range"][0].max : ""
+          max = destination_port_range.value.destination_port_range_max != "" ? destination_port_range.value.destination_port_range_max : ""
 
-          min = tcp_options.value["destination_port_range"][0].min != "" ? tcp_options.value["destination_port_range"][0].min : ""
+          min = destination_port_range.value.destination_port_range_min != "" ? destination_port_range.value.destination_port_range_min : ""
         }
       }
     }
@@ -79,28 +79,24 @@ resource "oci_core_network_security_group_security_rule" "nsg_rule" {
     content {
       #Optional
       dynamic "source_port_range" {
-        for_each = try((udp_options.value["source_port_range"] != [] ? udp_options.value["source_port_range"] : []), [])
+        for_each = try((udp_options.value.source_port_range_max != "" || udp_options.value.source_port_range_min != "" ? udp_options.value : []), [])
 
         content {
           #Required
-          max = udp_options.value["source_port_range"][0].max != "" ? udp_options.value["source_port_range"][0].max : ""
+          max = source_port_range.value.source_port_range_max != "" ? source_port_range.value.source_port_range_max : ""
 
-          min = udp_options.value["source_port_range"][0].min != "" ? udp_options.value["source_port_range"][0].min : ""
+          min = source_port_range.value.source_port_range_min != "" ? source_port_range.value.source_port_range_min : ""
         }
-
       }
 
-
-      #Optional
       dynamic "destination_port_range" {
-        for_each = try((udp_options.value["destination_port_range"] != [] ? udp_options.value["destination_port_range"] : []), [])
+        for_each = try((udp_options.value.destination_port_range_max != "" || udp_options.value.destination_port_range_min != "" ? udp_options.value : []), [])
 
         content {
           #Required
-          max = udp_options.value["destination_port_range"][0].max != "" ? udp_options.value["destination_port_range"][0].max : ""
+          max = destination_port_range.value.destination_port_range_max != "" ? destination_port_range.value.destination_port_range_max : ""
 
-
-          min = udp_options.value["destination_port_range"][0].min != "" ? udp_options.value["destination_port_range"][0].min : ""
+          min = destination_port_range.value.destination_port_range_min != "" ? destination_port_range.value.destination_port_range_min : ""
         }
       }
     }
