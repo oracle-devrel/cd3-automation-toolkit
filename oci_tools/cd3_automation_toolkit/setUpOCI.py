@@ -591,8 +591,8 @@ if non_gf_tenancy:
         Option('Export Management Services', export_management_services, 'Management Services'),
     ]
 
-    #verify_outdir_is_empty()
-    #fetch_compartments(outdir, config)
+    verify_outdir_is_empty()
+    fetch_compartments(outdir, config)
     print("\nnon_gf_tenancy in properties files is set to true..Export existing OCI objects and Synch with TF state")
     print("Process will fetch objects from OCI in the specified compartment from all regions tenancy is subscribed to\n")
 else:
