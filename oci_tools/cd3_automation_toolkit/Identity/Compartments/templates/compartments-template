@@ -16,7 +16,7 @@ compartments = {
 
     compartment_level1 = {
             {{ compartment_level1 }}
-            }
+            },
 
     compartment_level2 = {
             {{ compartment_level2 }}
