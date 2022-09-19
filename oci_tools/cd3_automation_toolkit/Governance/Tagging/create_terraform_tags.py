@@ -119,7 +119,7 @@ def create_terraform_tags(inputfile, outdir, prefix, config):
             print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
             exit(1)
 
-        if str(df.loc[i,'Default Tag Compartment = Default Tag Value']).strip().lower() != 'nan' and str(df.loc[i,'Tag Keys']).strip().lower() == 'nan':
+        if str(df.loc[i,'Default Tag Compartment=Default Tag Value']).strip().lower() != 'nan' and str(df.loc[i,'Tag Keys']).strip().lower() == 'nan':
             print("\nERROR!!! Tag Keys cannot be null when there is a Default Tag Compartment...Exiting!")
             exit(1)
 
@@ -201,7 +201,7 @@ def create_terraform_tags(inputfile, outdir, prefix, config):
                     values_list = multivalues[1].split(',')
                     values_list = [values[1:-1].strip().replace("\"",'') for values in values_list]
 
-            if columnname == 'Default Tag Compartment = Default Tag Value':
+            if columnname == 'Default Tag Compartment=Default Tag Value':
                 default_value = ''
                 if columnvalue != '' and columnvalue.strip().lower() != 'nan':
                     columnvalue = columnvalue.split(";")
@@ -257,7 +257,7 @@ def create_terraform_tags(inputfile, outdir, prefix, config):
             tempStr[columnname] = str(columnvalue).strip()
             tempStr.update(tempdict)
 
-        if str(df.loc[i,'Default Tag Compartment = Default Tag Value']).strip() != '' and str(df.loc[i,'Default Tag Compartment = Default Tag Value']).lower().strip() != 'nan':
+        if str(df.loc[i,'Default Tag Compartment=Default Tag Value']).strip() != '' and str(df.loc[i,'Default Tag Compartment=Default Tag Value']).lower().strip() != 'nan':
             defaulttagtemp[region] = defaulttag.render(tempStr)
 
         if namespace_tf_name not in tagnamespace_list[region]:

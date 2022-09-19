@@ -22,8 +22,7 @@
         "Tag Keys" : "name",
         "Tag Description" : "description",
         "Cost Tracking" : "is_cost_tracking",
-        "Validator" : "validator",
-        "Default Tag Value" : "value"
+        "Validator" : "validator"
     },
 
     "VCNs" :

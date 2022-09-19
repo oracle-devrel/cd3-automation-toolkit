@@ -1,3 +1,4 @@
+
             {% if rule_type.lower() == 'ingress' %}
              {  #{{ seclist_tf_name }}_{{ source }}#
                 protocol = "{{ protocol_code }}"
@@ -13,8 +14,6 @@
 
                 {% if source_type and source_type != '' %}
                 source_type = "{{ source_type }}"
-                {% else %}
-                source_type = ""
                 {% endif %}
 
                 options = {
@@ -22,56 +21,55 @@
                     all = []
                     {% endif %}
 
-                    {% if protocol.lower() == 'icmp' and icmptype != '' %}
+                    {% if protocol.lower() == 'icmp' %}
+                    {% if icmptype != '' or icmpcode != '' %}
                     icmp = [{
-                        type = "{{ icmptype }}"
-                        {% if icmpcode != '' %}
-                        code = {{ icmpcode }}
-                        {% else %}
-                        code = ""
+                        {% if icmptype != '' %}
+                        icmp_type = "{{ icmptype }}"
                         {% endif %}
-                    }]
+
+                        {% if icmpcode != '' %}
+                        icmp_code = {{ icmpcode }}
+                        {% endif %}
+                    ]}
+                    {% elif icmptype == "" and icmpcode == "" %}
+                    icmp = []
+                    {% endif %}
                     {% endif %}
 
                     {% if protocol.lower() == 'udp' %}
                     {% if (dportmax and dportmin) or (sportmax and sportmin) %}
                     udp = [{
                         {% if dportmax and dportmin %}
-                        destination_port_range_max = "{{ dportmax }}"
-                        destination_port_range_min = "{{ dportmin }}"
-                        {% else %}
-                        destination_port_range_max = null
-                        destination_port_range_min = null
+                        udp_destination_port_range_max = "{{ dportmax }}"
+                        udp_destination_port_range_min = "{{ dportmin }}"
                         {% endif %}
+
                         {% if sportmax and sportmin %}
-                        udp_source_ports = [{
-                            max = "{{ sportmax }}"
-                            min = "{{ sportmin }}"
-                        }]
+                        udp_source_port_max = "{{ sportmax }}"
+                        udp_source_port_min = "{{ sportmin }}"
                         {% endif %}
                     }]
+                    {% else %}
+                    udp = []
                     {% endif %}
                     {% endif %}
-
-
 
                     {% if protocol.lower() == 'tcp' %}
                     {% if (dportmax and dportmin) or (sportmax and sportmin) %}
-                    tcp = [{
+                    tcp= [{
                         {% if dportmax and dportmin %}
-                        destination_port_range_max = "{{ dportmax }}"
-                        destination_port_range_min = "{{ dportmin }}"
-                        {% else %}
-                        destination_port_range_max = null
-                        destination_port_range_min = null
+                        tcp_destination_port_range_max = "{{ dportmax }}"
+                        tcp_destination_port_range_min = "{{ dportmin }}"
                         {% endif %}
+
                         {% if sportmax and sportmin %}
-                        tcp_source_ports = [{
-                            max = "{{ sportmax }}"
-                            min = "{{ sportmin }}"
-                        }]
+                        tcp_source_port_range_max = "{{ sportmax }}"
+                        tcp_source_port_range_min = "{{ sportmin }}"
                         {% endif %}
                     }]
+                    {% else %}
+                    tcp = []
                     {% endif %}
                     {% endif %}
                 }
@@ -79,7 +77,7 @@
              },
             {% endif %}
 
-            {% if rule_type.lower() == 'egress' %}
+             {% if rule_type.lower() == 'egress' %}
              {
                 protocol = "{{ protocol_code }}"
                 destination = "{{ destination }}"
@@ -94,8 +92,6 @@
 
                 {% if destination_type and destination_type != '' %}
                 destination_type = "{{ destination_type }}"
-                {% else %}
-                destination_type = ""
                 {% endif %}
 
                 options = {
@@ -103,58 +99,55 @@
                     all = []
                     {% endif %}
 
-                    {% if protocol.lower() == 'icmp' and icmptype != '' %}
+                    {% if protocol.lower() == 'icmp' %}
+                    {% if icmptype != '' or icmpcode != '' %}
                     icmp = [{
-                        type = "{{ icmptype }}"
-                        {% if icmpcode != '' %}
-                        code = {{ icmpcode }}
-                        {% else %}
-                        code = ""
+                        {% if icmptype != '' %}
+                        icmp_type = "{{ icmptype }}"
                         {% endif %}
-                    }]
+
+                        {% if icmpcode != '' %}
+                        icmp_code = {{ icmpcode }}
+                        {% endif %}
+                    ]}
+                    {% elif icmptype == "" and icmpcode == "" %}
+                    icmp = []
+                    {% endif %}
                     {% endif %}
 
                     {% if protocol.lower() == 'udp' %}
                     {% if (dportmax and dportmin) or (sportmax and sportmin) %}
                     udp = [{
                         {% if dportmax and dportmin %}
-                        destination_port_range_max = "{{ dportmax }}"
-                        destination_port_range_min = "{{ dportmin }}"
-                        {% else %}
-                        destination_port_range_max = null
-                        destination_port_range_min = null
+                        udp_destination_port_range_max = "{{ dportmax }}"
+                        udp_destination_port_range_min = "{{ dportmin }}"
                         {% endif %}
 
                         {% if sportmax and sportmin %}
-                        udp_source_ports = [{
-                            max = "{{ sportmax }}"
-                            min = "{{ sportmin }}"
-                        }]
+                        udp_source_port_max = "{{ sportmax }}"
+                        udp_source_port_min = "{{ sportmin }}"
                         {% endif %}
-
                     }]
+                    {% else %}
+                    udp = []
                     {% endif %}
                     {% endif %}
-
-
 
                     {% if protocol.lower() == 'tcp' %}
                     {% if (dportmax and dportmin) or (sportmax and sportmin) %}
-                    tcp = [{
+                    tcp= [{
                         {% if dportmax and dportmin %}
-                        destination_port_range_max = "{{ dportmax }}"
-                        destination_port_range_min = "{{ dportmin }}"
-                        {% else %}
-                        destination_port_range_max = null
-                        destination_port_range_min = null
+                        tcp_destination_port_range_max = "{{ dportmax }}"
+                        tcp_destination_port_range_min = "{{ dportmin }}"
                         {% endif %}
+
                         {% if sportmax and sportmin %}
-                        tcp_source_ports = [{
-                            max = "{{ sportmax }}"
-                            min = "{{ sportmin }}"
-                        }]
+                        tcp_source_port_range_max = "{{ sportmax }}"
+                        tcp_source_port_range_min = "{{ sportmin }}"
                         {% endif %}
                     }]
+                    {% else %}
+                    tcp = []
                     {% endif %}
                     {% endif %}
                 }

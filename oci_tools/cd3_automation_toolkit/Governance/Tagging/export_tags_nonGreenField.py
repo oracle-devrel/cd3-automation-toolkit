@@ -65,7 +65,7 @@ def  print_tags(values_for_column_tags,region, ntk_compartment_name, tag, tag_ke
             values_for_column_tags[col_header].append(tag_key_is_cost_tracking)
         elif (col_header == "Validator"):
             values_for_column_tags[col_header].append(validator)
-        elif (col_header == "Default Tag Compartment = Default Tag Value"):
+        elif (col_header == "Default Tag Compartment=Default Tag Value"):
             if tag_default_value:
                 default_value = ''
                 if len(tag_default_value) != 0:
