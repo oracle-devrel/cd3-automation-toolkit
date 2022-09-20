@@ -81,11 +81,44 @@ Comments preceed with <b>##</b>.
 - <b>Syntax</b>
   
     ````
-  
+    igws = {
+        key = {
+            # Required
+            compartment_id = string
+            vcn_id         = string
+    
+            # Optional
+            enable_igw     = bool
+            igw_name       = string
+            defined_tags   = map
+            freeform_tags  = map
+        },
+    }
     ````
 - <b>Example</b>
     ````
+    ############################
+    # Network
+    # Major Objects - IGW - tfvars
+    # Allowed Values:
+    # vcn_id can be the ocid or the key of vcns (map)
+    # compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens "--"
+    # Example : compartment_id = "ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c" or compartment_id = "Network-root-cpt--Network" where "Network-root-cpt" is the parent of "Network" compartment
+    ############################
+    igws = {
+        vcn1_igw = {
+              # Required
+              compartment_id = "Network"
+              vcn_id     = "vcn1"
   
+              # Optional
+              igw_name   = "igw"
+              defined_tags = {
+                      "Oracle-Tags.CreatedOn"= "2022-09-06T07:27:39.937Z" ,
+                      "Oracle-Tags.CreatedBy"= "oracleidentitycloudservice/abc@oracle.com"
+              }
+        },
+    }
     ````
   
 
