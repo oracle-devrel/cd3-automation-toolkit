@@ -211,7 +211,7 @@ variable "tag_namespaces" {
     name           = string
     defined_tags   = optional(map(any))
     freeform_tags  = optional(map(any))
-    is_retired     = optional(string)
+    is_retired     = optional(bool)
   }))
   default = {}
 }
@@ -224,8 +224,8 @@ variable "tag_keys" {
     name             = string
     defined_tags     = optional(map(any))
     freeform_tags    = optional(map(any))
-    is_cost_tracking = optional(string)
-    is_retired       = optional(string)
+    is_cost_tracking = optional(bool)
+    is_retired       = optional(bool)
     validator = optional(list(object({
       validator_type   = optional(string)
       validator_values = optional(list(any))
@@ -240,7 +240,7 @@ variable "tag_defaults" {
     compartment_id    = string
     tag_definition_id = string
     value             = string
-    is_required       = optional(string)
+    is_required       = optional(bool)
   }))
   default = {}
 }

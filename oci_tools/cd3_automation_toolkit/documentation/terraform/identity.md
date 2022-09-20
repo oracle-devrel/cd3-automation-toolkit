@@ -103,15 +103,15 @@ Comments preceed with <b>##</b>.
   
 - <b>Example:</b>
   ````
-  ############################
-  # Identity
-  # Compartments - tfvars
-  # Allowed Values:
-  # parent_compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens "--"
-  # Example : parent_compartment_id = "ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c" or parent_compartment_id = "Network-root-cpt--Network" where "Network-root-cpt" is the parent of "Network" compartment
-  ############################
+    ############################
+    # Identity
+    # Compartments - tfvars
+    # Allowed Values:
+    # parent_compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens "--"
+    # Example : parent_compartment_id = "ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c" or parent_compartment_id = "Network-root-cpt--Network" where "Network-root-cpt" is the parent of "Network" compartment
+    ############################
 
-  compartments = {
+    compartments = {
         root = {
             Network = {
                 # Required
@@ -129,7 +129,7 @@ Comments preceed with <b>##</b>.
                 # Required
                 parent_compartment_id = root
                 name                  = "Database"
-  
+    
                 # Optional
                 description           = "Compartment for all database related resources."
                 defined_tags          = {
@@ -142,7 +142,7 @@ Comments preceed with <b>##</b>.
                 # Required
                 parent_compartment_id = root
                 name                  = "AppDev"
-  
+    
                 # Optional
                 description           = "Compartment for all resources related to application development: functions, OKE, API Gateway, streaming, notifications."
                 defined_tags          = {
@@ -157,7 +157,7 @@ Comments preceed with <b>##</b>.
                 # Required
                 parent_compartment_id = AppDev
                 name                  = "Non-Prod"
-  
+    
                 # Optional
                 description           = "Compartment for all the non-prod application resources."
                 enable_delete         = true
@@ -170,7 +170,7 @@ Comments preceed with <b>##</b>.
                 # Required
                 parent_compartment_id = AppDev
                 name                  = "Prod"
-  
+    
                 # Optional
                 description           = "Compartment for all the prod application resources."
                 enable_delete         = true
@@ -182,7 +182,7 @@ Comments preceed with <b>##</b>.
             },
     
         ## Similar values can be entered for the compartment levels below.
-  
+    
         compartment_level2 = {},
     
         compartment_level3 = {},
@@ -216,12 +216,12 @@ Comments preceed with <b>##</b>.
   
 - <b>Example:</b>
   ````
-  ############################
-  # Identity
-  # Groups/Dynamic Groups - tfvars
-  ############################
-  
-  groups = {
+    ############################
+    # Identity
+    # Groups/Dynamic Groups - tfvars
+    ############################
+    
+    groups = {
     # Normal Group
     Administrators = {
         # Required
@@ -248,7 +248,7 @@ Comments preceed with <b>##</b>.
         # Optional 
         matching_rule     = "Any {Any {instance.compartment.id = 'ocid1.compartment.oc1..aaaaaaaasfwefuhwkjfew2rrcxx37d5ntq7r53wtaq'},Any {instance.compartment.id = 'ocid1.compartment.oc1..aaz2ylwikr5rg4slidxzec7aijanq'}}" # Can be null or "" for regular groups
     },
-  }
+    }
   ````
 
 3. Policies
@@ -276,15 +276,15 @@ Comments preceed with <b>##</b>.
   
 - <b>Example:</b>
   ````
-  ############################
-  # Identity
-  # Policies - tfvars
-  # Allowed Values:
-  # compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens "--"
-  # Example : compartment_id = "ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c" or compartment_id = "Network-root-cpt--Network" where "Network-root-cpt" is the parent of "Network" compartment
-  ############################
-  
-  policies = {
+    ############################
+    # Identity
+    # Policies - tfvars
+    # Allowed Values:
+    # compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens "--"
+    # Example : compartment_id = "ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c" or compartment_id = "Network-root-cpt--Network" where "Network-root-cpt" is the parent of "Network" compartment
+    ############################
+    
+    policies = {
        CD3_Instances_Policy = {
             # Required
             name               = "CD3_Instances_Policy"
@@ -305,7 +305,7 @@ Comments preceed with <b>##</b>.
                     "Oracle-Tags.CreatedBy"= "oracleidentitycloudservice/abc@oracle.com"
             }
        },
-  }
+    }
   ````
   
 
