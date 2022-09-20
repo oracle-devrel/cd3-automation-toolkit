@@ -254,7 +254,7 @@ variable "default_dhcps" {
     server_type                = string
     manage_default_resource_id = optional(string)
     custom_dns_servers         = optional(list(any))
-    search_domain              = optional(map(any))
+    search_domain              = optional(map(list(any)))
     defined_tags               = optional(map(any))
     freeform_tags              = optional(map(any))
   }))
@@ -269,7 +269,7 @@ variable "custom_dhcps" {
     custom_dns_servers = list(any)
     domain_name_type   = optional(string)
     display_name       = optional(string)
-    search_domain      = optional(map(any))
+    search_domain      = optional(map(list(any)))
     defined_tags       = optional(map(any))
     freeform_tags      = optional(map(any))
   }))
@@ -302,7 +302,14 @@ variable "igws" {
 }
 
 variable "sgws" {
-  type    = map(any)
+  type    = map(object({
+    compartment_id = string
+    vcn_id         = string
+    service        = optional(string)
+    sgw_name       = optional(string)
+    defined_tags   = optional(map(any))
+    freeform_tags  = optional(map(any))
+  }))
   default = {}
 }
 
