@@ -8,11 +8,72 @@ Comments preceed with <b>##</b>.
 - <b>Syntax</b>
   
     ````
-  
+    vcns = {
+        ## key - Is a unique value to reference the resources respectively
+        key = {
+            # Required
+            compartment_id = string
+          
+            # Optional
+            cidr_blocks    = list
+            display_name   = string
+            dns_label      = string
+            is_ipv6enabled = bool
+            defined_tags   = map
+            freeform_tags  = map
+        },
+    }
     ````
 - <b>Example</b>
     ````
+    ############################
+    # Network
+    # Major Objects - VCNs, IGW, NGW, SGW, LPG, DRG - tfvars
+    # Allowed Values:
+    # compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens "--"
+    # Example : compartment_id = "ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c" or compartment_id = "Network-root-cpt--Network" where "Network-root-cpt" is the parent of "Network" compartment
+    ############################
+    vcns = {
+          vcn3 = {
+                # Required
+                compartment_id = "Network"
   
+                # Optional
+                cidr_blocks      = ["10.3.0.0/16"]
+                display_name     = "vcn3"
+                dns_label      = "vcn3"
+                defined_tags = {
+                        "Oracle-Tags.CreatedOn"= "2022-09-06T07:27:40.005Z" ,
+                        "Oracle-Tags.CreatedBy"= "oracleidentitycloudservice/abc@oracle.com"
+                }
+              },
+          vcn2 = {
+                # Required
+                compartment_id = "Network"
+  
+                # Optional
+                cidr_blocks      = ["10.2.0.0/16"]
+                display_name     = "vcn2"
+                dns_label      = "vcn2"
+                defined_tags = {
+                        "Oracle-Tags.CreatedOn"= "2022-09-06T07:27:39.936Z" ,
+                        "Oracle-Tags.CreatedBy"= "oracleidentitycloudservice/abc@oracle.com"
+                }
+              },
+          vcn1 = {
+                # Required
+                compartment_id = "Network"
+  
+                # Optional
+                cidr_blocks      = ["10.1.0.0/16"]
+                display_name     = "vcn1"
+                dns_label      = "vcn1"
+                defined_tags = {
+                        "Oracle-Tags.CreatedOn"= "2022-09-06T07:27:39.937Z" ,
+                        "Oracle-Tags.CreatedBy"= "oracleidentitycloudservice/abc@oracle.com"
+                }
+              },
+    }
     ````
   
 
