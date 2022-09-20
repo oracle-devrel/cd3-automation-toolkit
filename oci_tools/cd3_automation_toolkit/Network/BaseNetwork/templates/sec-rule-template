@@ -31,7 +31,7 @@
                         {% if icmpcode != '' %}
                         icmp_code = {{ icmpcode }}
                         {% endif %}
-                    ]}
+                    }]
                     {% elif icmptype == "" and icmpcode == "" %}
                     icmp = []
                     {% endif %}
@@ -109,7 +109,7 @@
                         {% if icmpcode != '' %}
                         icmp_code = {{ icmpcode }}
                         {% endif %}
-                    ]}
+                    }]
                     {% elif icmptype == "" and icmpcode == "" %}
                     icmp = []
                     {% endif %}
