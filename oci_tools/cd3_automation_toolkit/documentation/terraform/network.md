@@ -4,27 +4,147 @@ These are the syntax and sample format for providing inputs to the modules via <
 Comments preceed with <b>##</b>.
 
 ## NETWORK
-a) Virtual Cloud Networks (VCNs)
+1. Virtual Cloud Networks (VCNs)
+- <b>Syntax</b>
+  
+    ````
+  
+    ````
+- <b>Example</b>
+    ````
+  
+    ````
+  
 
-b) Internet Gateways (IGWs)
+2. Internet Gateways (IGWs)
+- <b>Syntax</b>
+  
+    ````
+  
+    ````
+- <b>Example</b>
+    ````
+  
+    ````
+  
 
-c) Network Address Translation Gateways (NGWs)
+3. Network Address Translation Gateways (NGWs)
+- <b>Syntax</b>
+  
+    ````
+  
+    ````
+- <b>Example</b>
+    ````
+  
+    ````
+  
 
-d) Service Gateways (SGWs)
+4. Service Gateways (SGWs)
+- <b>Syntax</b>
+  
+    ````
+  
+    ````
+- <b>Example</b>
+    ````
+  
+    ````
+  
 
-e) Drynamic Routing Gateways (DRGs)
+5. Drynamic Routing Gateways (DRGs)
+- <b>Syntax</b>
+  
+    ````
+  
+    ````
+- <b>Example</b>
+    ````
+  
+    ````
+  
 
-f) Subnets
+6. Subnets
+- <b>Syntax</b>
+  
+    ````
+  
+    ````
+- <b>Example</b>
+    ````
+  
+    ````
+  
 
-g) Security Lists (SLs)
+7. Security Lists (SLs)
+- <b>Syntax</b>
+  
+    ````
+  
+    ````
+- <b>Example</b>
+    ````
+  
+    ````
+  
 
-h) Route Tables (RTs)
+8. Route Tables (RTs)
+- <b>Syntax</b>
+  
+    ````
+  
+    ````
+- <b>Example</b>
+    ````
+  
+    ````
+  
 
-i) DHCP Options
+9. DHCP Options
+- <b>Syntax</b>
+  
+    ````
+  
+    ````
+- <b>Example</b>
+    ````
+  
+    ````
+  
 
-j) Network Security Groups (NSGs)
+10. Network Security Groups (NSGs)
+- <b>Syntax</b>
+  
+    ````
+  
+    ````
+- <b>Example</b>
+    ````
+  
+    ````
+  
 
-k) DRG Route Distributions
+11. DRG Route Distributions
+- <b>Syntax</b>
+  
+    ````
+  
+    ````
+- <b>Example</b>
+    ````
+  
+    ````
+  
 
-l) DRG Route Tables
+13. DRG Route Tables
+- <b>Syntax</b>
+  
+    ````
+  
+    ````
+- <b>Example</b>
+    ````
+  
+    ````
+  
 

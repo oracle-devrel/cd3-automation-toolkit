@@ -4,9 +4,38 @@ These are the syntax and sample format for providing inputs to the modules via <
 Comments preceed with <b>##</b>.
 
 ## TAGS
-a) Tag Keys
+1. Tag Keys
+- <b>Syntax</b>
+  
+    ````
+  
+    ````
+- <b>Example</b>
+    ````
+  
+    ````
+  
 
-b) Defined Tags
+2. Defined Tags
+- <b>Syntax</b>
+  
+    ````
+  
+    ````
+- <b>Example</b>
+    ````
+  
+    ````
+  
 
-c) Default Tags
- 
+3. Default Tags
+ - <b>Syntax</b>
+  
+    ````
+  
+    ````
+- <b>Example</b>
+    ````
+  
+    ````
+  
