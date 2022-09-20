@@ -1191,6 +1191,8 @@ def validate_cd3(filename, prefix, outdir,choices, configFileName):
     dhcp_check = False
     drgv2_check = False
     bvs_check = False
+    tags_check = False
+    fss_check = False
     instances_check = False
 
     config = oci.config.from_file(file_location=configFileName)
