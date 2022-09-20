@@ -16,7 +16,7 @@ resource "oci_core_dhcp_options" "custom_dhcp_option" {
   }
 
   dynamic "options" {
-    for_each = try(var.search_domain_names != null ? var.search_domain_names : [] ,[])
+    for_each = try(var.search_domain_names != null ? var.search_domain_names : [], [])
     content {
       type                = "SearchDomain"
       search_domain_names = options.value

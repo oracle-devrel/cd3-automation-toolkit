@@ -96,7 +96,7 @@ variable "instance_source_ocids" {
 ##########################
 
 variable "compartment_ocids" {
-  type    = map(any)
+  type = map(any)
   default = {
     #START_compartment_ocids#
     # compartment ocids
@@ -278,13 +278,16 @@ variable "custom_dhcps" {
 
 variable "vcns" {
   type = map(object({
-    compartment_id = string
-    cidr_blocks    = optional(list(string))
-    display_name   = optional(string)
-    dns_label      = optional(string)
-    is_ipv6enabled = optional(string)
-    defined_tags   = optional(map(any))
-    freeform_tags  = optional(map(any))
+    compartment_id                   = string
+    cidr_blocks                      = optional(list(string))
+    byoipv6cidr_details              = optional(list(map(any)))
+    display_name                     = optional(string)
+    dns_label                        = optional(string)
+    is_ipv6enabled                   = optional(bool)
+    defined_tags                     = optional(map(any))
+    freeform_tags                    = optional(map(any))
+    ipv6private_cidr_blocks          = optional(list(string))
+    is_oracle_gua_allocation_enabled = optional(bool)
   }))
   default = {}
 }
@@ -297,12 +300,13 @@ variable "igws" {
     igw_name       = optional(string)
     defined_tags   = optional(map(any))
     freeform_tags  = optional(map(any))
+    route_table_id = optional(string)
   }))
   default = {}
 }
 
 variable "sgws" {
-  type    = map(object({
+  type = map(object({
     compartment_id = string
     vcn_id         = string
     service        = optional(string)
@@ -412,7 +416,7 @@ variable "default_route_tables" {
 }
 
 variable "nsgs" {
-  type    = map(object({
+  type = map(object({
     compartment_id = string
     vcn_id         = string
     display_name   = optional(string)
@@ -474,12 +478,12 @@ variable "drg_route_rules" {
 }
 
 variable "drg_route_distributions" {
-  type    = map(object({
-      distribution_type = string
-      drg_id            = string
-      defined_tags      = optional(string)
-      freeform_tags     = optional(string)
-      display_name      = optional(string)
+  type = map(object({
+    distribution_type = string
+    drg_id            = string
+    defined_tags      = optional(string)
+    freeform_tags     = optional(string)
+    display_name      = optional(string)
   }))
   default = {}
 }
@@ -488,12 +492,12 @@ variable "drg_route_distribution_statements" {
   type = map(object({
     drg_route_distribution_id = string
     action                    = string
-    match_criteria            = optional(list(object({
-      match_type              = string
-      attachment_type         = optional(string)
-      drg_attachment_id       = optional(string)
+    match_criteria = optional(list(object({
+      match_type        = string
+      attachment_type   = optional(string)
+      drg_attachment_id = optional(string)
     })))
-    priority                  = optional(string)
+    priority = optional(string)
   }))
   default = {}
 }
@@ -523,27 +527,27 @@ variable "dedicated_hosts" {
 #########################
 
 variable "blockvolumes" {
-  type    = map(any)
+  type        = map(any)
   description = "To provision block volumes"
-  default = {}
+  default     = {}
 }
 
 variable "block_backup_policies" {
-  type = map(any)
+  type        = map(any)
   description = "To create block volume back policy"
-  default = {}
+  default     = {}
 }
 
 variable "instances" {
-  type = map(any)
+  type        = map(any)
   description = "Map of instances to be provisioned"
-  default = {}
+  default     = {}
 }
 
 variable "boot_backup_policies" {
-  type = map(any)
+  type        = map(any)
   description = "Map of boot volume backup policies to be provisioned"
-  default = {}
+  default     = {}
 }
 
 #########################
@@ -569,15 +573,15 @@ variable "dbsystems_vm_bm" {
 }
 
 variable "db_home" {
-  type = map(any)
+  type        = map(any)
   description = "Map of database db home to be provisioned"
-  default = {}
+  default     = {}
 }
 
 variable "databases" {
-    description = "Map of databases to be provisioned in an existing db_home"
-    type = map(any)
-    default = {}
+  description = "Map of databases to be provisioned in an existing db_home"
+  type        = map(any)
+  default     = {}
 }
 
 #########################
@@ -687,21 +691,21 @@ variable "loadbalancer_logs" {
 #########################
 
 variable "network_load_balancers" {
-  type        = map(any)
-  default     = {}
+  type    = map(any)
+  default = {}
 }
 variable "nlb_listeners" {
-  type        = map(any)
-  default     = {}
+  type    = map(any)
+  default = {}
 }
 
 variable "nlb_backend_sets" {
-  type        = map(any)
-  default     = {}
+  type    = map(any)
+  default = {}
 }
 variable "nlb_backends" {
-  type        = map(any)
-  default     = {}
+  type    = map(any)
+  default = {}
 }
 variable "nlb_reserved_ips" {
   description = "To provision Network Load Balancer Reserved IPs"
@@ -729,7 +733,7 @@ variable "reserved_ips" {
   default = {}
 }
 
-variable "vnic_attachments"{
+variable "vnic_attachments" {
   type    = map(any)
   default = {}
 }

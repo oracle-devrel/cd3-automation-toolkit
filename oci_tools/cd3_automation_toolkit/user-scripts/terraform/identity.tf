@@ -49,7 +49,7 @@ module "sub-compartments-level2" {
   compartment_name        = each.value.name
   compartment_description = each.value.description
 
-  enable_delete           = each.value.enable_delete
+  enable_delete = each.value.enable_delete
 
   #Optional
   defined_tags  = each.value.defined_tags

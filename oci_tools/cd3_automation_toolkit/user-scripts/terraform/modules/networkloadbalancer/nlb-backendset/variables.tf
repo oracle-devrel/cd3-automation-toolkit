@@ -77,6 +77,6 @@ variable "ip_version" {
 }
 
 variable "is_preserve_source" {
-    type    = bool
-    default = null
+  type    = bool
+  default = null
 }

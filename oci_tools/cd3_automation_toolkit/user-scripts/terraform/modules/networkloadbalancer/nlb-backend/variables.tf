@@ -44,13 +44,13 @@ variable "is_offline" {
 }
 
 variable "name" {
-  type        = string
-  default     = null
+  type    = string
+  default = null
 }
 
 variable "target_id" {
-  type        = string
-  default     = null
+  type    = string
+  default = null
 }
 
 

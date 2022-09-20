@@ -36,12 +36,12 @@ variable "defined_tags" {
 
 variable "description" {
   description = "The description of the budget."
-  type    = string
+  type        = string
 }
 
 variable "display_name" {
   description = "The displayName of the budget. Avoid entering confidential information."
-  type    = string
+  type        = string
 }
 
 variable "freeform_tags" {

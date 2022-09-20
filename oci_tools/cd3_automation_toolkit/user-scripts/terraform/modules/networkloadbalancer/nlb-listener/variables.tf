@@ -34,7 +34,7 @@ variable "protocol" {
 }
 
 variable "ip_version" {
-  type        = string
-  default     = null
+  type    = string
+  default = null
 }
 

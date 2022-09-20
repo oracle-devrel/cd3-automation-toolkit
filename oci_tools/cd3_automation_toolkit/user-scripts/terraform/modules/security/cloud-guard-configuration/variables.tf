@@ -18,18 +18,18 @@ variable "reporting_region" {
 
 variable "self_manage_resources" {
   description = "Identifies if Oracle managed resources will be created by customers. If no value is specified false is the default."
-  type    = bool
-  default = null
+  type        = bool
+  default     = null
 }
 
 variable "status" {
   description = "Status of Cloud Guard Tenant. Allowed Values are DISABLED, ENABLED"
-  type    = string
-  default = "ENABLED"
+  type        = string
+  default     = "ENABLED"
 }
 
 variable "tenancy_ocid" {
   description = "OCID of the tenancy"
-  type    = string
-  default = null
+  type        = string
+  default     = null
 }

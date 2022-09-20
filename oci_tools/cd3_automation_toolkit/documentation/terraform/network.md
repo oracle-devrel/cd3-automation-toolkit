@@ -18,9 +18,15 @@ Comments preceed with <b>##</b>.
             cidr_blocks    = list
             display_name   = string
             dns_label      = string
+            byoipv6cidr_details = [{
+                byoipv6range_id = string
+                ipv6cidr_block = string
+            }]
             is_ipv6enabled = bool
             defined_tags   = map
             freeform_tags  = map
+            ipv6private_cidr_blocks = list
+            is_oracle_gua_allocation_enabled = bool
         },
     }
     ````
@@ -92,6 +98,7 @@ Comments preceed with <b>##</b>.
             igw_name       = string
             defined_tags   = map
             freeform_tags  = map
+            route_table_id = string
         },
     }
     ````

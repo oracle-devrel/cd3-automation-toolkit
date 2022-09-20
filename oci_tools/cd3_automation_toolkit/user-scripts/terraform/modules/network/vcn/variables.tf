@@ -44,5 +44,20 @@ variable "freeform_tags" {
 
 variable "is_ipv6enabled" {
   type    = bool
-  default = "false"
+  default = false
+}
+
+variable "ipv6private_cidr_blocks" {
+  type    = list(any)
+  default = []
+}
+
+variable "is_oracle_gua_allocation_enabled" {
+  type    = bool
+  default = false
+}
+
+variable "byoipv6cidr_details" {
+  type    = list(any)
+  default = [{}]
 }

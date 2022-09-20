@@ -16,27 +16,27 @@ data "oci_certificates_management_certificates" "certificates_backendsets" {
 */
 
 data "oci_core_instances" "instances" {
-    for_each = var.backends != null ? var.backends : {}
-    #Required
-    compartment_id = each.value.instance_compartment != null && each.value.instance_compartment !="" ? (length(regexall("ocid1.compartment.oc1*", each.value.instance_compartment)) > 0 ? each.value.instance_compartment : var.compartment_ocids[each.value.instance_compartment]) :  var.tenancy_ocid
+  for_each = var.backends != null ? var.backends : {}
+  #Required
+  compartment_id = each.value.instance_compartment != null && each.value.instance_compartment != "" ? (length(regexall("ocid1.compartment.oc1*", each.value.instance_compartment)) > 0 ? each.value.instance_compartment : var.compartment_ocids[each.value.instance_compartment]) : var.tenancy_ocid
 }
 
 data "oci_core_instance" "instance_ip" {
-    for_each = { for k,v in var.backends : k => v.ip_address if length(regexall("IP:*", v.ip_address)) == 0 }
-    instance_id = merge(local.instance.ocid.*...)[split("NAME:", each.value)[1]][0]
+  for_each    = { for k, v in var.backends : k => v.ip_address if length(regexall("IP:*", v.ip_address)) == 0 }
+  instance_id = merge(local.instance.ocid.*...)[split("NAME:", each.value)[1]][0]
 }
 
 locals {
-    instance = {
-        for instances in data.oci_core_instances.instances:
-           "ocid" => { for instance in instances.instances : instance.display_name => instance.id... }...
-    }
+  instance = {
+    for instances in data.oci_core_instances.instances :
+    "ocid" => { for instance in instances.instances : instance.display_name => instance.id... }...
+  }
 }
 
 module "load-balancers" {
   source   = "./modules/loadbalancer/lb-load-balancer"
   for_each = var.load_balancers != null ? var.load_balancers : {}
-#  depends_on = [module.lbr-reserved-ips]
+  #  depends_on = [module.lbr-reserved-ips]
 
   #Required
   compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
@@ -56,7 +56,7 @@ module "load-balancers" {
   network_security_group_ids = each.value.nsg_ids
   key_name                   = each.key
   load_balancers             = var.load_balancers
-  reserved_ips_id            = lower(each.value.reserved_ips_id) != "n" && each.value.reserved_ips_id != "" ? (length(regexall("ocid1.publicip.oc1*", each.value.reserved_ips_id)) > 0 ? [each.value.reserved_ips_id] : [merge(module.lbr-reserved-ips.*...)[join("-",[each.key,"reserved","ip"])].reserved_ip_tf_id]) : []
+  reserved_ips_id            = lower(each.value.reserved_ips_id) != "n" && each.value.reserved_ips_id != "" ? (length(regexall("ocid1.publicip.oc1*", each.value.reserved_ips_id)) > 0 ? [each.value.reserved_ips_id] : [merge(module.lbr-reserved-ips.*...)[join("-", [each.key, "reserved", "ip"])].reserved_ip_tf_id]) : []
 }
 
 /*
@@ -135,13 +135,13 @@ module "backend-sets" {
   timeout_in_millis   = each.value.timeout_in_millis != "" ? each.value.timeout_in_millis : null
   url_path            = each.value.url_path != "" ? each.value.url_path : null
 
-  load_balancer_id = length(regexall("ocid1.loadbalancer.oc1*", each.value.load_balancer_id)) > 0 ? each.value.load_balancer_id : merge(module.load-balancers.*...)[each.value.load_balancer_id]["load_balancer_tf_id"]
-  name             = each.value.name
-  policy           = each.value.policy
-  backend_sets     = var.backend_sets
-  certificate_name = each.value.certificate_name != "" ? merge(module.certificates.*...)[each.value.certificate_name]["certificate_tf_name"] : ""
+  load_balancer_id  = length(regexall("ocid1.loadbalancer.oc1*", each.value.load_balancer_id)) > 0 ? each.value.load_balancer_id : merge(module.load-balancers.*...)[each.value.load_balancer_id]["load_balancer_tf_id"]
+  name              = each.value.name
+  policy            = each.value.policy
+  backend_sets      = var.backend_sets
+  certificate_name  = each.value.certificate_name != "" ? merge(module.certificates.*...)[each.value.certificate_name]["certificate_tf_name"] : ""
   cipher_suite_name = each.value.cipher_suite_name != "" && length(regexall("oci-default-ssl", each.value.cipher_suite_name)) < 0 ? merge(module.cipher-suites.*...)[each.value.cipher_suite_name]["cipher_suite_tf_name"] : ""
-  key_name         = each.key
+  key_name          = each.key
 
 }
 
@@ -268,9 +268,9 @@ output "log_group_map" {
 */
 
 module "loadbalancer-logs" {
-  source   = "./modules/managementservices/log"
+  source     = "./modules/managementservices/log"
   depends_on = [module.load-balancers, module.loadbalancer-log-groups]
-  for_each = (var.loadbalancer_logs != null || var.loadbalancer_logs != {}) ? var.loadbalancer_logs : {}
+  for_each   = (var.loadbalancer_logs != null || var.loadbalancer_logs != {}) ? var.loadbalancer_logs : {}
 
   # Logs
   #Required
@@ -307,17 +307,17 @@ output "logs_id" {
 ############################################
 
 module "lbr-reserved-ips" {
-    source = "./modules/ip/reserved-public-ip"
-    for_each = var.lbr_reserved_ips != null && var.lbr_reserved_ips != {}  ? var.lbr_reserved_ips : {}
+  source   = "./modules/ip/reserved-public-ip"
+  for_each = var.lbr_reserved_ips != null && var.lbr_reserved_ips != {} ? var.lbr_reserved_ips : {}
 
-    #Required
-    compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
-    lifetime = each.value.lifetime
+  #Required
+  compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
+  lifetime       = each.value.lifetime
 
-    #Optional
-    defined_tags         = each.value.defined_tags
-    display_name         = each.value.display_name
-    freeform_tags        = each.value.freeform_tags
-    #private_ip_id        = each.value.private_ip_id != "" ? (length(regexall("ocid1.privateip.oc1*", each.value.private_ip_id)) > 0 ? each.value.private_ip_id : (length(regexall("\\.", each.value.private_ip_id)) == 3 ? local.private_ip_id[0][each.value.private_ip_id] : merge(module.private-ips.*...)[each.value.private_ip_id].private_ip_tf_id)) : null
-    #public_ip_pool_id    = each.value.public_ip_pool_id != "" ? (length(regexall("ocid1.publicippool.oc1*", each.value.public_ip_pool_id)) > 0 ? each.value.public_ip_pool_id : merge(module.public-ip-pools.*...)[each.value.public_ip_pool_id].public_ip_pool_tf_id) : null
+  #Optional
+  defined_tags  = each.value.defined_tags
+  display_name  = each.value.display_name
+  freeform_tags = each.value.freeform_tags
+  #private_ip_id        = each.value.private_ip_id != "" ? (length(regexall("ocid1.privateip.oc1*", each.value.private_ip_id)) > 0 ? each.value.private_ip_id : (length(regexall("\\.", each.value.private_ip_id)) == 3 ? local.private_ip_id[0][each.value.private_ip_id] : merge(module.private-ips.*...)[each.value.private_ip_id].private_ip_tf_id)) : null
+  #public_ip_pool_id    = each.value.public_ip_pool_id != "" ? (length(regexall("ocid1.publicippool.oc1*", each.value.public_ip_pool_id)) > 0 ? each.value.public_ip_pool_id : merge(module.public-ip-pools.*...)[each.value.public_ip_pool_id].public_ip_pool_tf_id) : null
 }

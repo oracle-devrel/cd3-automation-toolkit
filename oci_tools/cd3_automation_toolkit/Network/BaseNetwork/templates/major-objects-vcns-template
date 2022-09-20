@@ -29,6 +29,21 @@ vcns = {
         is_ipv6enabled = {{ is_ipv6enabled }}
         {% endif %}
 
+        {% if byoipv6cidr_details and byoipv6cidr_details != [] %}
+        byoipv6cidr_details = [{
+            byoipv6range_id = "{{ byoipv6range_id }}"
+            ipv6cidr_block = "{{ ipv6cidr_block }}"
+        }]
+        {% endif %}
+
+        {% if ipv6private_cidr_blocks and ipv6private_cidr_blocks != [] %}
+        ipv6private_cidr_blocks = [ {{ ipv6private_cidr_blocks }} ]
+        {% endif %}
+
+        {% if is_oracle_gua_allocation_enabled and is_oracle_gua_allocation_enabled != "" %}
+        is_oracle_gua_allocation_enabled = {{ is_oracle_gua_allocation_enabled }}
+        {% endif %}
+
     {#  ##Do not modify below this line##  #}
     {#                                     #}
     {#  ###Section for adding Defined and Freeform Tags###  #}

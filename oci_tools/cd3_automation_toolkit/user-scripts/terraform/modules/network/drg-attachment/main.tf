@@ -13,7 +13,7 @@ resource "oci_core_drg_attachment" "drg_attachment" {
   freeform_tags      = var.freeform_tags
 
   dynamic "network_details" {
-	for_each = var.drg_attachments[var.key_name].network_details != [] ? var.drg_attachments[var.key_name].network_details : []
+    for_each = var.drg_attachments[var.key_name].network_details != [] ? var.drg_attachments[var.key_name].network_details : []
 
     content {
       #Required

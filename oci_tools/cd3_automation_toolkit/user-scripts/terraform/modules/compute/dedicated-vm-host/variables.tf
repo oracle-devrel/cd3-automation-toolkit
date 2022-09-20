@@ -26,7 +26,7 @@ variable "freeform_tags" {
   default = {}
 }
 variable "display_name" {
-  type = string
+  type    = string
   default = null
 }
 variable "fault_domain" {

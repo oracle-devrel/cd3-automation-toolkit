@@ -21,10 +21,10 @@ variable "export_path" {
 }
 
 variable "key_name" {
-  type = string
+  type    = string
   default = null
 }
 
 variable "nfs_export_options" {
-  type    = map(any)
+  type = map(any)
 }

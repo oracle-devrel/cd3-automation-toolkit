@@ -11,13 +11,13 @@ resource "oci_core_default_dhcp_options" "default_dhcp_option" {
   manage_default_resource_id = var.manage_default_resource_id
 
   options {
-    type        = "DomainNameServer"
-    server_type = var.server_type
+    type               = "DomainNameServer"
+    server_type        = var.server_type
     custom_dns_servers = var.custom_dns_servers
   }
 
   dynamic "options" {
-    for_each = try(var.search_domain_names != null ? var.search_domain_names : [] ,[])
+    for_each = try(var.search_domain_names != null ? var.search_domain_names : [], [])
     content {
       type                = "SearchDomain"
       search_domain_names = options.value

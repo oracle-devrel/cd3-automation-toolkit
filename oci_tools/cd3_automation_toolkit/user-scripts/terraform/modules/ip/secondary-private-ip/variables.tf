@@ -21,21 +21,21 @@ variable "display_name" {
 }
 
 variable "vnic_id" {
-  type        = string
-  default     = null
+  type    = string
+  default = null
 }
 
 variable "hostname_label" {
-  type        = string
-  default     = null
+  type    = string
+  default = null
 }
 
 variable "ip_address" {
-  type        = string
-  default     = null
+  type    = string
+  default = null
 }
 
 variable "vlan_id" {
-  type        = string
-  default     = null
+  type    = string
+  default = null
 }

@@ -6,35 +6,35 @@
 #########################################
 
 variable "compartment_id" {
-  type        = string
-  default     = null
+  type    = string
+  default = null
 }
 
 variable "network_compartment_id" {}
 
 variable "subnet_id" {
-  type        = string
-  default     = null
+  type    = string
+  default = null
 }
 
 variable "vcn_name" {
-  type        = string
-  default     = null
+  type    = string
+  default = null
 }
 
 variable "display_name" {
-  type        = string
-  default     = null
+  type    = string
+  default = null
 }
 
 variable "is_preserve_source_destination" {
-  type        = bool
-  default     = false
+  type    = bool
+  default = false
 }
 
 variable "is_private" {
-  type        = bool
-  default     = true
+  type    = bool
+  default = true
 }
 
 variable "network_security_group_ids" {
@@ -44,8 +44,8 @@ variable "network_security_group_ids" {
 }
 
 variable "nlb_ip_version" {
-  type        = string
-  default     = null
+  type    = string
+  default = null
 }
 
 variable "reserved_ips_id" {
@@ -60,6 +60,6 @@ variable "defined_tags" {
   }
 }
 variable "freeform_tags" {
-  type = map(any)
+  type    = map(any)
   default = {}
 }

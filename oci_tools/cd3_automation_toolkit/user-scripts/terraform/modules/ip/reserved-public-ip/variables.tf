@@ -18,8 +18,8 @@ variable "lifetime" {
 
 variable "private_ip_id" {
   description = "The OCID of the private IP to assign the public IP to."
-  type    = string
-  default = null
+  type        = string
+  default     = null
 }
 
 variable "freeform_tags" {
