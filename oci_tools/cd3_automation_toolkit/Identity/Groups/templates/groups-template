@@ -4,7 +4,6 @@
 ############################
 # Identity
 # Groups - tfvars
-# matching_rule can be null or "" for regular groups
 ############################
 
 groups = {
