@@ -195,7 +195,7 @@ Comments preceed with <b>##</b>.
     
 2. Groups/Dynamic Groups
 
-   &#9432; The parameter that differentiate dynamic groups from normal groups is <b> matching_rule </b>. Normal Groups will be created when you <b>omit</b> this parameter or pass it as <b>""</b> or <b>null</b>.
+   &#9432; The parameter that differentiate dynamic groups from normal groups is <b> matching_rule </b>. Normal Groups will be created when you <b>omit</b> this parameter or pass it as <b>""</b> or <b>null</b>. All the groups are created in the root compartment.
 - <b>Syntax</b>
   
     ````
