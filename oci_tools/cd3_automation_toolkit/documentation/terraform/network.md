@@ -3,6 +3,8 @@ These are the syntax and sample format for providing inputs to the modules via <
 <b>"key"</b> must be unique to every resource that is created.
 Comments preceed with <b>##</b>.
 
+Points to Note:
+- To attach Route Table to the Gateways like IGW, SGW etc, please make sure to have the route tables created in the OCI tenancy first, and then edit the auto.tfvars file to add the route table keys/ocids to the gateway resources as per need.Uncomment teh parameter - route_table_id for the respective gateway module calls in network.tf file.
 ## NETWORK
 1. Virtual Cloud Networks (VCNs)
 - <b>Syntax</b>
@@ -99,7 +101,6 @@ Comments preceed with <b>##</b>.
             defined_tags   = map
             freeform_tags  = map
             route_table_id = string
-        },
     }
     ````
 - <b>Example</b>
