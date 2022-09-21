@@ -266,7 +266,7 @@ variable "custom_dhcps" {
     compartment_id     = string
     server_type        = string
     vcn_id             = string
-    custom_dns_servers = list(any)
+    custom_dns_servers = optional(list(any))
     domain_name_type   = optional(string)
     display_name       = optional(string)
     search_domain      = optional(map(list(any)))
