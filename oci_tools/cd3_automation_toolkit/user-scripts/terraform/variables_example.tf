@@ -8,28 +8,24 @@
 ############################
 
 variable "tenancy_ocid" {
-  type    = string
-  default = "<TENANCY OCID HERE>"
+        type = string
+        default = "ocid1.tenancy.oc1..aaaaaaaa5ob2e73i4bavdqrbrch25oldljvpmbcuxiies2dgpwdinmrmel3a"
 }
-
 variable "user_ocid" {
-  type    = string
-  default = "<USER OCID HERE>"
+        type = string
+        default = "ocid1.user.oc1..aaaaaaaa256k7tr4x72ryx24cnsgrzffvrq74exofelwcn7suwt4ft5fbqma"
 }
-
 variable "fingerprint" {
-  type    = string
-  default = "<SSH KEY FINGERPRINT HERE>"
+        type = string
+        default = "41:9d:86:ff:a2:cb:16:d3:ff:97:19:81:96:b3:9b:59"
 }
-
 variable "private_key_path" {
-  type    = string
-  default = "<SSH PRIVATE KEY FULL PATH HERE>"
+        type = string
+        default = "/Users/divyadas/.oci/oci_api_key_private.pem"
 }
-
 variable "region" {
-  type    = string
-  default = "<OCI TENANCY REGION HERE eg: us-phoenix-1 or us-ashburn-1>"
+        type = string
+        default = "us-phoenix-1"
 }
 
 #################################
@@ -98,12 +94,14 @@ variable "instance_source_ocids" {
 variable "compartment_ocids" {
   type = map(any)
   default = {
-    #START_compartment_ocids#
-    # compartment ocids
-    #compartment_ocids_END#
+      #Database = "ocid1.compartment.oc1..aaaaaaaaqvgtf726ykp74e63svygvjvwsxsp3dbugo6sm4ukb4cnvjctifvq",
+      root = "ocid1.tenancy.oc1..aaaaaaaa5ob2e73i4bavdqrbrch25oldljvpmbcuxiies2dgpwdinmrmel3a",
+      Network = "ocid1.compartment.oc1..aaaaaaaaof3ylxg3u5v4l2uaxk4ztbl4zaxdtuh6uxncnc6m27darhleeura",
+      Platform = "ocid1.compartment.oc1..aaaaaaaavwpx4rmjja4l5c2njcisbn3epeapoo6kccjn2aty3gsfhvfr76va",
+      Divya = "ocid1.compartment.oc1..aaaaaaaajskuofo7maggjcz3fagmuikfknjooqp7dngbfhctcvgdirvbr2ta"
+      #Security = "ocid1.compartment.oc1..aaaaaaaaf77j3j5jbsqeeofex3swqeo3c2nasm7nry5l5ta4kr7pa5ee2v4a"
   }
 }
-
 #########################
 ##### Identity ##########
 #########################
@@ -582,6 +580,26 @@ variable "databases" {
   description = "Map of databases to be provisioned in an existing db_home"
   type        = map(any)
   default     = {}
+}
+
+####################################
+####### Autonomous Database ########
+####################################
+
+variable "adb" {
+  type = map(object({
+    data_storage_size_in_tbs   = optional(number)
+    db_name        = string
+    db_version     = optional(string)
+    db_workload    = optional(string)
+    display_name   = optional(string)
+    compartment_id = string
+    admin_password = optional(string)
+    cpu_core_count = optional(number)
+    defined_tags   = optional(map(any))
+    freeform_tags  = optional(map(any))
+  }))
+  default = {}
 }
 
 #########################

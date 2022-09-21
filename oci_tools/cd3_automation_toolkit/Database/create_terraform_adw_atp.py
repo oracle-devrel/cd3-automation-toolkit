@@ -6,7 +6,7 @@
 #
 # Author: Kartikey Rajput
 # Oracle Consulting
-# Modified (TF Upgrade): Kartikey Rajput
+# Modified (TF Upgrade): Divya Das
 #
 
 import sys
@@ -35,6 +35,7 @@ def parse_args():
 def create_terraform_adw_atp(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
     filename = inputfile
     configFileName = config
+    sheetName = "ADB"
 
     ct = commonTools()
     ct.get_subscribedregions(configFileName)
@@ -49,7 +50,7 @@ def create_terraform_adw_atp(inputfile, outdir, prefix, config=DEFAULT_LOCATION)
     template = env.get_template('adw-atp-template')
 
     # Read cd3 using pandas dataframe
-    df, col_headers = commonTools.read_cd3(filename, "ADW_ATP")
+    df, col_headers = commonTools.read_cd3(filename, sheetName)
 
     #Remove empty rows
     df = df.dropna(how='all')
@@ -62,8 +63,8 @@ def create_terraform_adw_atp(inputfile, outdir, prefix, config=DEFAULT_LOCATION)
     for reg in ct.all_regions:
         tfStr[reg] = ''
         srcdir = outdir + "/" + reg + "/"
-        resource = 'ATP_ADW'
-        commonTools.backup_file(srcdir, resource, "ATP-ADW.tf")
+        resource = sheetName.lower()
+        commonTools.backup_file(srcdir, resource, "adb.auto.tfvars")
 
     # Iterate over rows
     for i in df.index:
@@ -87,7 +88,7 @@ def create_terraform_adw_atp(inputfile, outdir, prefix, config=DEFAULT_LOCATION)
         if str(df.loc[i, 'Region']).lower() == 'nan' or \
                 str(df.loc[i, 'Compartment Name']).lower() == 'nan' or \
                 str(df.loc[i, 'CPU Count']).lower() == 'nan' or \
-                str(df.loc[i, 'Size in TB']).lower() == 'nan' or \
+                str(df.loc[i, 'Data Storage Size in TB']).lower() == 'nan' or \
                 str(df.loc[i, 'DB Name']).lower() == 'nan':
             print("\nAll the fields are mandatory. Please enter a value and try again !!")
             print("\n** Exiting **")
@@ -136,14 +137,17 @@ def create_terraform_adw_atp(inputfile, outdir, prefix, config=DEFAULT_LOCATION)
         reg_out_dir = outdir + "/" + reg
         if not os.path.exists(reg_out_dir):
             os.makedirs(reg_out_dir)
-        outfile[reg] = reg_out_dir + "/ATP-ADW.tf"
+        outfile[reg] = reg_out_dir + "/adb.auto.tfvars"
+
 
         if(tfStr[reg]!=''):
+            src = "##Add New ADB for " + reg.lower() + " here##"
+            tfStr[reg] = template.render(count=0, region=reg).replace(src, tfStr[reg] + "\n" + src)
             tfStr[reg] = "".join([s for s in tfStr[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
             oname[reg]=open(outfile[reg],'w')
             oname[reg].write(tfStr[reg])
             oname[reg].close()
-            print(outfile[reg] + " containing TF for ATP_ADW has been created for region "+reg)
+            print(outfile[reg] + " containing TF for ADB has been created for region "+reg)
 
 if __name__ == '__main__':
     # Execution of the code begins here

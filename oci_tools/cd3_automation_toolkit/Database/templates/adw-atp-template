@@ -1,40 +1,59 @@
-{##section to select adw/atp##}
-    resource "oci_database_autonomous_database" "{{ display_tf_name }}"{
-	    display_name             = "{{ display_name }}"
-        compartment_id           = var.{{ compartment_name }}
-        admin_password           = "{{ admin_password }}"
-        cpu_core_count           = "{{ cpu_count }}"
-        data_storage_size_in_tbs = "{{ size_in_tb }}"
-        db_name                  = "{{ db_name }}"
-        db_version               = "19c"
-        {% if autonomous_value == 'adw' %}
-        db_workload              = "DW"
-        {% elif autonomous_value == 'atp' %}
-        db_workload              = "OLTP"
-        {% endif %}
+{% if count == 0 %}
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 
-        {#  ##Do not modify below this line##  #}
-        {#                                     #}
-        {#  ###Section for adding Defined and Freeform Tags###  #}
-        {% if defined_tags and defined_tags != 'nan' and defined_tags != '' %}
-        {% if defined_tags[0] %}
-        defined_tags = {
-        {% for tags in defined_tags  %}   {% if not loop.last %}
-        "{{ tags[0]  }}"= "{{ tags[1] }}" ,
-        {% else %}
-        "{{ tags[0]  }}"= "{{ tags[1] }}"
-        {% endif %}{% endfor %}
-        }
-        {% endif %} {% endif %}
-        {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' %}
-        {% if freeform_tags[0] %}
-        freeform_tags = {
-        {% for tags in freeform_tags %} {% if not loop.last  %}
-        "{{ tags[0] }}"="{{ tags[1] }}",
-        {% else %}
-        "{{ tags[0] }}"="{{ tags[1] }}"
-        {% endif %} {% endfor %}
-        }
-        {% endif %} {% endif %}
-        {#  ###Section for adding Defined and Freeform Tags ends here###  #}
-	}
+############################
+# ADB
+# ADB - tfvars
+# Allowed Values:
+# compartment_id and network_compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens "--"
+# Example : compartment_id = "ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c" or compartment_id = "Network-root-cpt--Network" where "Network-root-cpt" is the parent of "Network" compartment
+############################
+
+adb = {
+       ##Add New ADB for {{ region|lower }} here##
+}
+{% else %}
+
+     {{ display_tf_name }} =  {
+
+            display_name             = "{{ display_name }}"
+            compartment_id           = "{{ compartment_name }}"
+            admin_password           = "{{ admin_password }}"
+            cpu_core_count           = "{{ cpu_count }}"
+            data_storage_size_in_tbs = "{{ data_storage_size_in_tb }}"
+            db_name                  = "{{ db_name }}"
+            db_version               = "19c"
+            {% if autonomous_value == 'adw' %}
+            db_workload              = "DW"
+            {% elif autonomous_value == 'atp' %}
+            db_workload              = "OLTP"
+            {% endif %}
+
+            {#  ##Do not modify below this line##  #}
+            {#                                     #}
+            {#  ###Section for adding Defined and Freeform Tags###  #}
+            {% if defined_tags and defined_tags != 'nan' and defined_tags != '' %}
+            {% if defined_tags[0] %}
+            defined_tags = {
+            {% for tags in defined_tags  %}   {% if not loop.last %}
+            "{{ tags[0]  }}"= "{{ tags[1] }}" ,
+            {% else %}
+            "{{ tags[0]  }}"= "{{ tags[1] }}"
+            {% endif %}{% endfor %}
+            }
+            {% endif %} {% endif %}
+            {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' %}
+            {% if freeform_tags[0] %}
+            freeform_tags = {
+            {% for tags in freeform_tags %} {% if not loop.last  %}
+            "{{ tags[0] }}"="{{ tags[1] }}",
+            {% else %}
+            "{{ tags[0] }}"="{{ tags[1] }}"
+            {% endif %} {% endfor %}
+            }
+            {% endif %} {% endif %}
+            {#  ###Section for adding Defined and Freeform Tags ends here###  #}
+        },
+
+{% endif %}
+
