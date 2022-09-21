@@ -45,7 +45,7 @@ module "vcns" {
   #Optional
   cidr_blocks                      = each.value.cidr_blocks
   display_name                     = each.value.display_name
-  byoipv6cidr_details              = each.value.byoipv6cidr_details
+  byoipv6cidr_details              = each.value.byoipv6cidr_details != null ? each.value.byoipv6cidr_details : []
   dns_label                        = (each.value.dns_label == "n") ? null : each.value.dns_label
   is_ipv6enabled                   = each.value.is_ipv6enabled # Defaults to false by terraform hashicorp
   defined_tags                     = each.value.defined_tags
