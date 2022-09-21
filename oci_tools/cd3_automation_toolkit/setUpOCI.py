@@ -519,7 +519,7 @@ def start_cis_scan(outdir, prefix, config):
     else:
         commonTools.backup_file(outdir, resource, out_rep)
 
-    out = ['--report-directory', out_rep,"--config", config]
+    out = ["-c", config, '--report-directory', out_rep]
     cmd = cmd +" "+ out[0] + " "+out[1] + " "+ out[2] + " " +out[3]
     split.extend(out)
     print("Executing: "+cmd)
