@@ -354,7 +354,7 @@ module "custom-dhcps" {
   vcn_id         = length(regexall("ocid1.vcn.oc1*", each.value.vcn_id)) > 0 ? each.value.vcn_id : merge(module.vcns.*...)[each.value.vcn_id]["vcn_tf_id"]
 
   server_type         = each.value.server_type
-  custom_dns_servers  = each.value.custom_dns_servers
+  custom_dns_servers  = each.value.custom_dns_servers != null ? each.value.custom_dns_servers : []
   search_domain_names = each.value.search_domain
 
   #Optional
