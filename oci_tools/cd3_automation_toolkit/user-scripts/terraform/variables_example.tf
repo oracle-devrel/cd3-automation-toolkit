@@ -572,6 +572,22 @@ variable "dbsystems_vm_bm" {
   default     = {}
 }
 
+variable "adb" {
+  type = map(object({
+    data_storage_size_in_tbs   = optional(number)
+    db_name        = string
+    db_version     = optional(string)
+    db_workload    = optional(string)
+    display_name   = optional(string)
+    compartment_id = string
+    admin_password = optional(string)
+    cpu_core_count = optional(number)
+    defined_tags   = optional(map(any))
+    freeform_tags  = optional(map(any))
+  }))
+  default = {}
+}
+
 variable "db_home" {
   type        = map(any)
   description = "Map of database db home to be provisioned"

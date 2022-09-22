@@ -430,7 +430,7 @@ def create_databases(execute_all=False):
     options = [
         Option('Add/Modify/Delete Virtual Machine or Bare Metal DB Systems', Database.create_terraform_dbsystems_vm_bm, 'Processing DBSystems-VM-BM Tab'),
         Option('Add/Modify/Delete EXA Infra and EXA VM Cluster', create_exa_infra_vmclusters, ''),
-        Option('Add/Modify/Delete ADW/ATP', Database.create_terraform_adw_atp, 'Processing ADW/ATP Tab'),
+        Option('Add/Modify/Delete ADB', Database.create_terraform_adb, 'Processing ADB Tab'),
     ]
     if not execute_all:
         options = show_options(options, quit=True, menu=True, index=1)
@@ -511,6 +511,7 @@ def start_cis_scan(outdir, prefix, config):
     dirname = prefix + "_cis_report"
     resource = "cis_report"
     out_rep = outdir + '/'+ dirname
+    #config = "--config "+ config
     commonTools.backup_file(outdir, resource, dirname)
 
     if not os.path.exists(out_rep):
@@ -518,8 +519,8 @@ def start_cis_scan(outdir, prefix, config):
     else:
         commonTools.backup_file(outdir, resource, out_rep)
 
-    out = ['--report-directory', out_rep]
-    cmd = cmd +" "+ out[0] + " "+out[1]
+    out = ["-c", config, '--report-directory', out_rep]
+    cmd = cmd +" "+ out[0] + " "+out[1] + " "+ out[2] + " " +out[3]
     split.extend(out)
     print("Executing: "+cmd)
     print("Scan started!")
