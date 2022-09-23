@@ -137,14 +137,14 @@ def create_terraform_instances(inputfile, outdir, prefix, config):
                 else:
                     try:
                         key = region, subnet_tf_name
-                        network_compartment_id = commonTools.check_tf_variable(subnets.vcn_subnet_map[key][0])
+                        network_compartment_id = subnets.vcn_subnet_map[key][0]
                         vcn_name = subnets.vcn_subnet_map[key][1]
                         subnet_id = subnets.vcn_subnet_map[key][2]
                     except Exception as e:
                         print("Invalid Subnet Name specified for row " + str(i + 3) + ". It Doesnt exist in Subnets sheet. Exiting!!!")
                         exit()
 
-                tempdict = {'network_compartment_id': network_compartment_id, 'vcn_name': vcn_name,
+                tempdict = {'network_compartment_id': commonTools.check_tf_variable(network_compartment_id), 'vcn_name': vcn_name,
                             'subnet_id': subnet_id}
 
             if columnname == 'Display Name':

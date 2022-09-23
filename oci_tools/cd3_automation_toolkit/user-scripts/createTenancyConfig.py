@@ -6,14 +6,13 @@
 # Author: Shruthi Subramanian
 #
 
-import configparser
 import glob
 import argparse
 import logging
 import os
-import shutil
 import sys
-import oci
+import time
+
 import distutils
 from distutils import dir_util
 
@@ -86,6 +85,7 @@ def seek_info():
     config_file_path = customer_tenancy_dir+"/"+prefix+"_config"
     auto_keys_dir = user_dir+"/tenancies/keys"
     modules_dir = user_dir +"/oci_tools/cd3_automation_toolkit/user-scripts/terraform"
+    documentation_dir = user_dir +"/oci_tools/cd3_automation_toolkit/documentation"
     variables_example_file = modules_dir +"/variables_example.tf"
     setupoci_props_file_path = customer_tenancy_dir + "/" + prefix + "_setUpOCI.properties"
 
@@ -95,22 +95,27 @@ def seek_info():
     # 1. Move the newly created PEM keys to /cd3user/tenancies/<customer_name>/
     files = glob.glob(auto_keys_dir+"/*")
 
-    # If the keys are auto-generated
     if os.path.exists(auto_keys_dir):
-        print("Moving the key files to "+customer_tenancy_dir)
+        print("Copying the key files to "+customer_tenancy_dir)
         if files:
             for f in files:
-                try:
-                    shutil.move(f,customer_tenancy_dir)
-                except shutil.Error as e:
-                    shutil.move(customer_tenancy_dir+"/oci_api_private.pem", customer_tenancy_dir+"/oci_api_private_pem_backup")
-                    shutil.move(f, customer_tenancy_dir)
-                key_path = customer_tenancy_dir + "/oci_api_private.pem"
-            shutil.rmtree(auto_keys_dir)
-        else:
-            print("Key file not found. Please make sure to specify the right path in the properties file.....Exiting!!!")
-            exit(0)
-
+                if os.path.exists(f):
+                    filename = f.split('/')[-1]
+                    if os.path.exists(customer_tenancy_dir+"/"+filename):
+                        shutil.move(customer_tenancy_dir+"/"+filename,customer_tenancy_dir+"/"+filename+"_backup")
+                    shutil.copyfile(f,customer_tenancy_dir + "/" + filename)
+                    key_path = customer_tenancy_dir + "/oci_api_private.pem"
+                else:
+                    print("Key files not found. Please make sure to specify the right path in the properties file.....Exiting!!!")
+                    exit(0)
+        shutil.move(auto_keys_dir,auto_keys_dir+"_backup_"+time.strftime("%H%M%S"))
+    else:
+        print("\n")
+        print("=================================================================")
+        print("\"Keys\" directory NOT FOUND in " + customer_tenancy_dir + ". \n"
+              "Please generate the keys using the command \"python createAPIKey.py\" \n(OR)\nIf the keys already exist:\n- Create a folder named \"Keys\" in " + customer_tenancy_dir + "\n- Place the keys with names oci_api_public.pem and oci_api_private.pem respectively and\n!! Try Again !!")
+        print("=================================================================")
+        exit(0)
 
     # If the private key is empty or if the private key is already present in the tenancy folder; initialize it to the default path;
     if (key_path == '' or key_path == "\n" or customer_tenancy_dir+ '/oci_api_private.pem' in key_path):
@@ -236,6 +241,9 @@ def seek_info():
 
         # 8. Remove the terraform example variable file from outdir
         os.remove(terraform_files +"/" + region + "/variables_example.tf")
+
+        # 9. Copy documentation folder to outdir
+        distutils.dir_util.copy_tree(documentation_dir+"/", customer_tenancy_dir+"/documentation")
 
     # Logging information
     logging.basicConfig(filename=customer_tenancy_dir+'/cmds.log', format='%(message)s', filemode='w', level=logging.INFO)

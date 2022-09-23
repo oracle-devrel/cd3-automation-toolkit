@@ -162,7 +162,7 @@ def create_terraform_nlb_listener(inputfile, outdir, prefix, config=DEFAULT_LOCA
                         except Exception as e:
                                 print("Invalid Subnet Name specified for row " + str(i + 3) + ". It Doesnt exist in Subnets sheet. Exiting!!!")
                                 exit()
-                        tempdict = {'network_compartment_tf_name': network_compartment_id, 'vcn_tf_name': vcn_name,'nlb_subnet': nlb_subnet}
+                        tempdict = {'network_compartment_tf_name': commonTools.check_tf_variable(network_compartment_id), 'vcn_tf_name': vcn_name,'nlb_subnet': nlb_subnet}
 
             if columnname == "NSGs":
                 if columnvalue != '' and columnvalue != 'nan':

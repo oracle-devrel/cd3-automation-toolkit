@@ -242,6 +242,7 @@ def create_terraform_lbr_hostname_certs(inputfile, outdir, prefix, config=DEFAUL
             if columnname == "Compartment Name":
                 columnname = "compartment_tf_name"
                 columnvalue = commonTools.check_tf_variable(columnvalue)
+                tempdict = {'compartment_tf_name': columnvalue}
 
             if columnname == "Reserved IP (Y|N|OCID)":
                 columnname = "reserved_ips_id"
@@ -283,13 +284,13 @@ def create_terraform_lbr_hostname_certs(inputfile, outdir, prefix, config=DEFAUL
                         subnet_tf_name = commonTools.check_tf_variable(str(lbr_subnets[0]).strip())
                         try:
                             key = region, subnet_tf_name
-                            network_compartment_id = commonTools.check_tf_variable(subnets.vcn_subnet_map[key][0])
+                            network_compartment_id = subnets.vcn_subnet_map[key][0]
                             vcn_name = subnets.vcn_subnet_map[key][1]
                             lbr_subnets_list.append(subnets.vcn_subnet_map[key][2])
                         except Exception as e:
                             print("Invalid Subnet Name specified for row " + str(i + 3) + ". It Doesnt exist in Subnets sheet. Exiting!!!")
                             exit()
-                    tempdict = {'network_compartment_tf_name': network_compartment_id, 'vcn_tf_name': vcn_name,'lbr_subnets': json.dumps(lbr_subnets_list)}
+                    tempdict = {'network_compartment_tf_name': commonTools.check_tf_variable(network_compartment_id), 'vcn_tf_name': vcn_name,'lbr_subnets': json.dumps(lbr_subnets_list)}
                 elif len(lbr_subnets) == 2:
                     for subnet in lbr_subnets:
                         if "ocid1.subnet.oc1" in subnet:
@@ -298,13 +299,13 @@ def create_terraform_lbr_hostname_certs(inputfile, outdir, prefix, config=DEFAUL
                             subnet_tf_name = commonTools.check_tf_variable(str(subnet).strip())
                             try:
                                 key = region, subnet_tf_name
-                                network_compartment_id = commonTools.check_tf_variable(subnets.vcn_subnet_map[key][0])
+                                network_compartment_id = subnets.vcn_subnet_map[key][0]
                                 vcn_name = subnets.vcn_subnet_map[key][1]
                                 lbr_subnets_list.append(subnets.vcn_subnet_map[key][2])
                             except Exception as e:
                                 print("Invalid Subnet Name specified for row " + str(i + 3) + ". It Doesnt exist in Subnets sheet. Exiting!!!")
                                 exit()
-                    tempdict = {'network_compartment_tf_name': network_compartment_id, 'vcn_tf_name': vcn_name,'lbr_subnets': json.dumps(lbr_subnets_list) }
+                    tempdict = {'network_compartment_tf_name': commonTools.check_tf_variable(network_compartment_id), 'vcn_tf_name': vcn_name,'lbr_subnets': json.dumps(lbr_subnets_list) }
 
             if columnname == "NSGs":
                 if columnvalue != '':
@@ -378,6 +379,7 @@ def create_terraform_lbr_hostname_certs(inputfile, outdir, prefix, config=DEFAUL
                             c += 1
                 else:
                     hostname_str[region] = ''
+
         lbr_str[region] = lbr_str[region] + lbr.render(tempStr)
         hostname_str_02[region] = hostname_str_02[region] + hostname_str[region]
         if tempStr['reserved_ips_id'].lower() == 'y':
