@@ -481,8 +481,8 @@ variable "drg_route_distributions" {
   type = map(object({
     distribution_type = string
     drg_id            = string
-    defined_tags      = optional(map)
-    freeform_tags     = optional(map)
+    defined_tags      = optional(map(any))
+    freeform_tags     = optional(map(any))
     display_name      = optional(string)
   }))
   default = {}
