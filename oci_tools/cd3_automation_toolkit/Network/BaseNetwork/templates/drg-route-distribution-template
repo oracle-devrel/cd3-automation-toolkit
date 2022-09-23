@@ -36,11 +36,7 @@ drg_route_distributions = {
             {% endif %}
         {% endfor %}
         }
-      {% else %}
-        defined_tags = {}
         {% endif %}
-       {% else %}
-        defined_tags = {}
        {% endif %}
             {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' and freeform_tags != [['nan']] %}
                 {% if freeform_tags[0] %}
@@ -53,11 +49,7 @@ drg_route_distributions = {
                         {% endif %}
                     {% endfor %}
                     }
-                {% else %}
-        freeform_tags = {}
                 {% endif %}
-            {% else %}
-        freeform_tags = {}
             {% endif %}
     {#  ###Section for adding Defined and Freeform Tags ends here###  #}
 },

@@ -4,4 +4,4 @@
             attribute_value = {{ attribute_value }}
             description = "{{ description }}"
             },
-    ## Add_access_control_rules_here ##
+    ## Add_access_control_rules_here_for_{{ lbr_tf_name }}_{{ rule_set_tf_name }} ##

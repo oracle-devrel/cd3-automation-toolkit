@@ -482,8 +482,8 @@ variable "drg_route_distributions" {
     distribution_type = string
     drg_id            = string
     defined_tags      = optional(string)
-    freeform_tags     = optional(string)
-    display_name      = optional(string)
+    freeform_tags     = optional(map)
+    display_name      = optional(map)
   }))
   default = {}
 }
