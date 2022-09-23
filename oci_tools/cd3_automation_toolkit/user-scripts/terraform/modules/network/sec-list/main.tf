@@ -74,7 +74,7 @@ resource "oci_core_security_list" "security_list" {
           max = udp_options.value.udp_destination_port_range_max != null ? udp_options.value.udp_destination_port_range_max : null
           min = udp_options.value.udp_destination_port_range_min != null ? udp_options.value.udp_destination_port_range_min : null
           dynamic "source_port_range" {
-            for_each = try((udp_options.value.tcp_source_port_range_min != "" || udp_options.value.tcp_source_port_range_max != "" != [] ? udp_options.value : []), [])
+            for_each = try((udp_options.value.udp_source_port_range_min != "" || udp_options.value.udp_source_port_range_max != "" != [] ? udp_options.value : []), [])
             content {
               #Required
               max = source_port_range.value.udp_source_port_range_max != null ? source_port_range.value.udp_source_port_range_max : null
@@ -144,7 +144,7 @@ resource "oci_core_security_list" "security_list" {
           max = udp_options.value.udp_destination_port_range_max != null ? udp_options.value.udp_destination_port_range_max : null
           min = udp_options.value.udp_destination_port_range_min != null ? udp_options.value.udp_destination_port_range_min : null
           dynamic "source_port_range" {
-            for_each = try((udp_options.value.tcp_source_port_range_min != "" || udp_options.value.tcp_source_port_range_max != "" != [] ? udp_options.value : []), [])
+            for_each = try((udp_options.value.udp_source_port_range_min != "" || udp_options.value.udp_source_port_range_max != "" != [] ? udp_options.value : []), [])
             content {
               #Required
               max = source_port_range.value.udp_source_port_range_max != null ? source_port_range.value.udp_source_port_range_max : null
