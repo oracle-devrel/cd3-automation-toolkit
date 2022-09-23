@@ -113,7 +113,7 @@ def seek_info():
         print("\n")
         print("=================================================================")
         print("\"Keys\" directory NOT FOUND in " + auto_keys_dir + ". \n"
-              "Please generate the keys using the command \"python createAPIKey.py\" \n(OR)\nIf the keys already exist:\n- Create a folder named \"Keys\" in " + auto_keys_dir + "\n- Place the keys with names oci_api_public.pem and oci_api_private.pem respectively and\n!! Try Again !!")
+              "Please generate the keys using the command \"python createAPIKey.py\" \n(OR)\nIf the keys already exist:\n- Create a folder named \"Keys\" in " + auto_keys_dir + "\n- Place the keys with names oci_api_public.pem and oci_api_private.pem respectively\n!! Try Again !!")
         print("=================================================================")
         exit(0)
 
