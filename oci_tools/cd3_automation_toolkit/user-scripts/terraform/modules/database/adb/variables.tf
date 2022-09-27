@@ -89,7 +89,7 @@ variable "network_compartment_id" {
   default     = ""
 }
 
-variable "nsg_ids" {
+variable "network_security_group_ids" {
   description = "NSGs to be attahced to ADB"
   type        = any
   default     = ""

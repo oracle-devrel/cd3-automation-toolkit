@@ -37,6 +37,7 @@ def create_terraform_adb(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
     filename = inputfile
     configFileName = config
     sheetName = "ADB"
+    auto_tfvars_filename = '_' + sheetName.lower() + '.auto.tfvars'
 
     ct = commonTools()
     ct.get_subscribedregions(configFileName)
@@ -65,7 +66,7 @@ def create_terraform_adb(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
         tfStr[reg] = ''
         srcdir = outdir + "/" + reg + "/"
         resource = sheetName.lower()
-        commonTools.backup_file(srcdir, resource, "adb.auto.tfvars")
+        commonTools.backup_file(srcdir, resource, auto_tfvars_filename)
 
     # Iterate over rows
     for i in df.index:
@@ -116,10 +117,10 @@ def create_terraform_adb(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
             if columnname.lower() in commonTools.tagColumns:
                 tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)
 
-            if columnname == "Display Name":
+            if columnname == "ADB Display Name":
                 display_tf_name = columnvalue.strip()
                 display_tf_name = commonTools.check_tf_variable(display_tf_name)
-                tempdict = {'db_system_display_name': display_tf_name}
+                tempdict = {'display_tf_name': display_tf_name}
 
             if columnname == 'Database Workload':
                 columnvalue = columnvalue.strip()
@@ -211,7 +212,7 @@ def create_terraform_adb(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
         reg_out_dir = outdir + "/" + reg
         if not os.path.exists(reg_out_dir):
             os.makedirs(reg_out_dir)
-        outfile[reg] = reg_out_dir + "/adb.auto.tfvars"
+        outfile[reg] = reg_out_dir + "/" + prefix + auto_tfvars_filename
 
 
         if(tfStr[reg]!=''):
@@ -222,7 +223,7 @@ def create_terraform_adb(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
             oname[reg].write(tfStr[reg])
             oname[reg].close()
             print(outfile[reg] + " containing TF for ADB has been created for region "+reg)
-            
+                        
 if __name__ == '__main__':
     # Execution of the code begins here
     args = parse_args()

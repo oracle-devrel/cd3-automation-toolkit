@@ -4,21 +4,10 @@
 ## Module Block - Autonomous database
 ## Create autonomous database
 #############################
-data "oci_core_subnets" "oci_subnets" {
-  for_each = { for key, value in var.adb : key => value if var.adb[key].subnet_id != null }
-  compartment_id = each.value.network_compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.network_compartment_id)) > 0 ? each.value.network_compartment_id : var.compartment_ocids[each.value.network_compartment_id]) : var.compartment_ocids[each.value.network_compartment_id]
-  display_name   = each.value.subnet_id
-  vcn_id         = data.oci_core_vcns.oci_vcns[each.key].virtual_networks.*.id[0]
-}
 
-data "oci_core_vcns" "oci_vcns" {
-  for_each = { for key, value in var.adb : key => value if var.adb[key].subnet_id != null}
-  compartment_id = each.value.network_compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.network_compartment_id)) > 0 ? each.value.network_compartment_id : var.compartment_ocids[each.value.network_compartment_id]) : var.compartment_ocids[each.value.network_compartment_id]
-  display_name   = each.value.vcn_name
-}
 
 module "adb" {
-  source   = "./modules/adb"
+  source   = "./modules/database/adb"
   for_each = var.adb != null ? var.adb : {}
   admin_password        = each.value.admin_password
   character_set         = each.value.character_set
@@ -34,9 +23,9 @@ module "adb" {
   license_model         = each.value.license_model
   ncharacter_set        = each.value.ncharacter_set
   network_compartment_id= each.value.network_compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.network_compartment_id)) > 0 ? each.value.network_compartment_id : var.compartment_ocids[each.value.network_compartment_id]) : null
-  nsg_ids               = each.value.nsg_ids
+  network_security_group_ids = each.value.nsg_ids
   freeform_tags         = each.value.freeform_tags
-  subnet_id             = each.value.subnet_id != null ? (length(regexall("ocid1.subnet.oc1*", each.value.subnet_id)) > 0 ? each.value.subnet_id : data.oci_core_subnets.oci_subnets[each.key].subnets.*.id[0]) : null
+  subnet_id             = each.value.subnet_id
   vcn_name              = each.value.vcn_name
   whitelisted_ips       = each.value.whitelisted_ips
 }

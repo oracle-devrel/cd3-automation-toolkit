@@ -22,8 +22,8 @@ resource "oci_database_autonomous_database" "autonomous_database" {
     display_name          = var.display_name
     license_model         = var.license_model
     ncharacter_set        = var.ncharacter_set
-    nsg_ids               = length(var.nsg_ids) != 0 ? (local.nsg_ids == [] ? ["INVALID NSG Name"] : local.nsg_ids) : null
+    nsg_ids               = length(var.network_security_group_ids) != 0 ? (local.nsg_ids == [] ? ["INVALID NSG Name"] : local.nsg_ids) : null
     freeform_tags         = var.freeform_tags
-    subnet_id             = var.subnet_id
+    subnet_id             = data.oci_core_subnets.oci_subnets_adb.subnets[0].id
     whitelisted_ips       = var.whitelisted_ips    
 }
