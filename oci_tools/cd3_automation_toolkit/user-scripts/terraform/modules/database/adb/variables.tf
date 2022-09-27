@@ -10,6 +10,10 @@ variable "admin_password" {
   type        = string
 }
 
+variable "character_set" {
+  type        = string
+}
+
 variable "compartment_id" {
   description = "Compartment OCID to provision the volume"
   type        = string
@@ -17,6 +21,17 @@ variable "compartment_id" {
 
 variable "cpu_core_count" {
   description = "The number of OCPU cores to be made available to the database"
+  type        = number
+}
+
+variable "database_edition" {
+  description = "The database edition of ADB"
+  type        = string
+  default     = ""
+}
+
+variable "data_storage_size_in_tbs" {
+  description = "Data storage size for the DB"
   type        = number
 }
 
@@ -43,11 +58,6 @@ variable "display_name" {
   type        = string
 }
 
-variable "data_storage_size_in_tbs" {
-  description = "Data storage size for the DB"
-  type        = number
-}
-
 variable "db_version" {
   description = "the version of DB"
   type        = string
@@ -60,3 +70,44 @@ variable "db_workload" {
   type        = string
   default     = ""
 }
+
+variable "license_model" {
+  description = "The license model for ADB"
+  type        = string
+  default     = ""
+}
+
+variable "ncharacter_set" {
+  description = "The ncharacter set of ADB"
+  type        = string
+  default     = ""
+}
+
+variable "network_compartment_id" {
+  description = "The network compartment of the subnet"
+  type        = string
+  default     = ""
+}
+
+variable "nsg_ids" {
+  description = "NSGs to be attahced to ADB"
+  type        = any
+  default     = ""
+}
+
+variable "subnet_id" {
+  description = "The subnet name into which the ADB will be launched"
+  type        = string
+  default     = ""
+}
+
+variable "vcn_name" {
+  type    = string
+  default = ""
+}
+
+variable "whitelisted_ips" {
+  type    = list(string)
+  default = []
+}
+
