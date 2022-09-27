@@ -572,22 +572,6 @@ variable "dbsystems_vm_bm" {
   default     = {}
 }
 
-variable "adb" {
-  type = map(object({
-    data_storage_size_in_tbs   = optional(number)
-    db_name        = string
-    db_version     = optional(string)
-    db_workload    = optional(string)
-    display_name   = optional(string)
-    compartment_id = string
-    admin_password = optional(string)
-    cpu_core_count = optional(number)
-    defined_tags   = optional(map(any))
-    freeform_tags  = optional(map(any))
-  }))
-  default = {}
-}
-
 variable "db_home" {
   type        = map(any)
   description = "Map of database db home to be provisioned"
@@ -598,6 +582,35 @@ variable "databases" {
   description = "Map of databases to be provisioned in an existing db_home"
   type        = map(any)
   default     = {}
+}
+
+####################################
+####### Autonomous Database ########
+####################################
+
+variable "adb" {
+  type = map(object({
+    admin_password = optional(string)
+    character_set  = optional(string)
+    compartment_id = string
+    cpu_core_count = optional(number)
+    database_edition = optional(string)
+    data_storage_size_in_tbs   = optional(number)
+    db_name        = string
+    db_version     = optional(string)
+    db_workload    = optional(string)
+    display_name   = optional(string)
+    license_model  = optional(string)
+    ncharacter_set = optional(string)
+    network_compartment_id = optional(string)
+    nsg_ids        = optional(list(string))
+    subnet_id      = optional(string)
+    vcn_name       = optional(string)
+    whitelisted_ips = optional(list(string))
+    defined_tags   = optional(map(any))
+    freeform_tags  = optional(map(any))
+  }))
+  default = {}
 }
 
 #########################

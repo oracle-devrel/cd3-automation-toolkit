@@ -33,6 +33,7 @@ def parse_args():
 
 #If input is cd3 file
 def create_terraform_adb(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
+
     filename = inputfile
     configFileName = config
     sheetName = "ADB"
@@ -58,7 +59,7 @@ def create_terraform_adb(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
 
     # List of the column headers
     dfcolumns = df.columns.values.tolist()
-
+    subnets = parseSubnets(filename)
     # Initialise empty TF string for each region
     for reg in ct.all_regions:
         tfStr[reg] = ''
@@ -118,12 +119,85 @@ def create_terraform_adb(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
             if columnname == "Display Name":
                 display_tf_name = columnvalue.strip()
                 display_tf_name = commonTools.check_tf_variable(display_tf_name)
-                tempdict = {'display_tf_name': display_tf_name}
+                tempdict = {'db_system_display_name': display_tf_name}
 
-            if columnname == 'ADW or ATP':
+            if columnname == 'Database Workload':
                 columnvalue = columnvalue.strip()
                 autonomous_value = commonTools.check_tf_variable(columnvalue).lower()
                 tempdict = {'autonomous_value': autonomous_value}
+
+            if columnname == 'NSGs':
+                if columnvalue != '' and columnvalue.strip().lower() != 'nan':
+                    nsg_str = ""
+                    nsg = ""
+                    NSGs = columnvalue.split(",")
+                    k = 0
+                    while k < len(NSGs):
+                        if "ocid" in NSGs[k].strip():
+                            nsg = "\"" + NSGs[k].strip() + "\""
+                        else:
+                            nsg = "\"" + commonTools.check_tf_variable(NSGs[k].strip()) + "\""
+
+                        nsg_str = nsg_str + str(nsg)
+                        if (k != len(NSGs) - 1):
+                            nsg_str = nsg_str + ","
+                        k += 1
+                    tempdict = {'nsg_ids': nsg_str}
+                    tempStr.update(tempdict)
+                continue
+
+
+            if columnname == "Subnet Name":
+                if columnvalue != '':
+                    subnet_tf_name = columnvalue.strip()
+                    if ("ocid1.subnet.oc1" in subnet_tf_name):
+                        network_compartment_id = ""
+                        vcn_name = ""
+                        subnet_id = subnet_tf_name
+                    else:
+                        try:
+                            key = region, subnet_tf_name
+                            network_compartment_id = commonTools.check_tf_variable(subnets.vcn_subnet_map[key][0])
+                            vcn_name = subnets.vcn_subnet_map[key][1]
+                            subnet_id = subnets.vcn_subnet_map[key][2]
+                        except Exception as e:
+                            print("Invalid Subnet Name specified for row " + str(
+                                i + 3) + ". It Doesnt exist in Subnets sheet. Exiting!!!")
+                            exit()
+                else:
+                    subnet_id = ""
+                    vcn_name = ""
+                    network_compartment_id = ""
+
+                tempdict = {'network_compartment_id': network_compartment_id, 'vcn_name': vcn_name,
+                            'subnet_id': subnet_id}
+
+            if columnname == "License Model" and columnvalue.strip() == "LICENSE_INCLUDED":
+                license_model = columnvalue.strip()
+                database_edition = ""
+                tempdict = {'license_model' : license_model, 'database_edition': database_edition}
+                tempStr.update(tempdict)
+
+            if columnname == 'Whitelisted IP Addresses':
+                if columnvalue != '':
+                    nsg_str = []
+                    subnet_id = ""
+                    vcn_name = ""
+                    network_compartment_id = ""
+                    WLs = columnvalue.split(",")
+                    k=0
+                    wl_str = ""
+                    while k<len(WLs):
+                        wl_str = wl_str + '"'+ str(WLs[k].strip())+'"'
+                        if (k != len(WLs) - 1):
+                            wl_str = wl_str + ","
+                        k +=1
+                else:
+                    wl_str = ""
+                tempdict = {'whitelisted_ips': wl_str,'network_compartment_id': network_compartment_id, 'vcn_name': vcn_name,
+                            'subnet_id': subnet_id }
+                tempStr.update(tempdict)
+
 
             columnname = commonTools.check_column_headers(columnname)
             tempStr[columnname] = str(columnvalue).strip()
@@ -148,7 +222,7 @@ def create_terraform_adb(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
             oname[reg].write(tfStr[reg])
             oname[reg].close()
             print(outfile[reg] + " containing TF for ADB has been created for region "+reg)
-
+            
 if __name__ == '__main__':
     # Execution of the code begins here
     args = parse_args()

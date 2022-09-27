@@ -14,12 +14,17 @@ adb = {
 }
 {% else %}
 
-     {{ display_tf_name }} =  {
+     {{ adb_display_name }} =  {
 
-            display_name             = "{{ display_name }}"
-            compartment_id           = "{{ compartment_name }}"
             admin_password           = "{{ admin_password }}"
+            character_set            = "{{ character_set }}"
+            compartment_id           = "{{ compartment_name }}"
             cpu_core_count           = "{{ cpu_count }}"
+            {% if database_edition == "" %}
+            database_edition         = null
+            {% else %}
+            database_edition         = "{{ database_edition }}" #Only for BYOL license model
+            {% endif %}
             data_storage_size_in_tbs = "{{ data_storage_size_in_tb }}"
             db_name                  = "{{ db_name }}"
             db_version               = "19c"
@@ -27,6 +32,30 @@ adb = {
             db_workload              = "DW"
             {% elif autonomous_value == 'atp' %}
             db_workload              = "OLTP"
+            {% elif autonomous_value == 'json' %}
+            db_workload              = "AJD"
+            {% elif autonomous_value == 'apex' %}
+            db_workload              = "APEX"
+            {% endif %}
+            display_name             = "{{ adb_display_name }}"
+            license_model            = "{{ license_model }}"
+            ncharacter_set           = "{{ ncharacter_set }}"
+            {% if network_compartment_id == "" %}
+            network_compartment_id   = null
+            {% else %}
+            network_compartment_id   = "{{ network_compartment_id }}"
+            {% endif %}
+            nsg_ids                  = [{{ nsg_ids }}]
+            whitelisted_ips          = [{{ whitelisted_ips }}]
+            {% if subnet_id == "" %}
+            subnet_id                = null
+            {% else %}
+            subnet_id                = "{{ subnet_id }}"
+            {% endif %}
+            {% if vcn_name == "" %}
+            vcn_name                 = null
+            {% else %}
+            vcn_name                 = "{{ vcn_name }}"
             {% endif %}
 
             {#  ##Do not modify below this line##  #}
