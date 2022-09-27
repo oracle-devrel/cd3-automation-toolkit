@@ -13,7 +13,7 @@ resource "oci_logging_log_group" "log_group" {
 
   #Optional
   defined_tags  = var.defined_tags
-  description   = join(" ", ["Log group for", var.description])
+  description   = var.description
   freeform_tags = var.freeform_tags
 
   lifecycle {
