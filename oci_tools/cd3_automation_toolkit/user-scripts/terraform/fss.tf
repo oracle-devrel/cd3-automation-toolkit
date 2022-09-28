@@ -25,7 +25,7 @@ module "mts" {
   ip_address     = each.value.ip_address
   #nsg_ids = [for nsg in each.value.nsg_ids : length(regexall("ocid1.networksecuritygroup.oc1*",nsg)) > 0 ? nsg : merge(module.nsgs.*...)[nsg]["nsg_tf_id"]]
   #nsg_ids = each.value.nsg_ids == [] ? null : ([for nsg in each.value.nsg_ids : (length(regexall("ocid1.networksecuritygroup.oc1*",nsg)) > 0 ? nsg : data.oci_core_network_security_groups.network_security_groups[nsg].network_security_groups[*].id)])
-  network_security_group_ids = each.value.nsg_ids == [] ? null : each.value.nsg_ids
+  network_security_group_ids = each.value.nsg_ids
 
 }
 
