@@ -539,10 +539,35 @@ variable "block_backup_policies" {
 }
 
 variable "instances" {
-  type        = map(any)
-  description = "Map of instances to be provisioned"
-  default     = {}
-}
+  type        = map(object({
+    availability_domain  = string
+    compartment_id       = string
+    shape                = string
+    display_name         = string
+    boot_volume_size_in_gbs = optional(number)
+    fault_domain         = optional(string)
+    dedicated_vm_host_id = optional(string)
+    source_id        =  string
+    source_type      = optional(string)
+    network_compartment_id = string
+    vcn_name         = string
+    subnet_id        = string
+    assign_public_ip = optional(bool)
+    private_ip       = optional(string)
+    hostname_label         = optional(string)
+    nsg_ids          = optional(list(string))
+    ocpus            = optional(number)
+    memory_in_gbs = optional(number)
+    capacity_reservation_id = optional(string)
+    create_is_pv_encryption_in_transit_enabled = optional(bool)
+    update_is_pv_encryption_in_transit_enabled = optional(bool)
+    ssh_authorized_keys  = optional(string)
+    backup_policy           = optional(string)
+    policy_compartment_id = optional(string)
+    defined_tags   = optional(map(any))
+    freeform_tags  = optional(map(any))
+  }))
+
 
 variable "boot_backup_policies" {
   type        = map(any)

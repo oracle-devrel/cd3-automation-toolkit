@@ -299,8 +299,8 @@ def create_cis_vcnflow_logs(*args,**kwargs):
 def export_modify_security_rules(inputfile, outdir, prefix, non_gf_tenancy, config):
     execute_all = False
     options = [
-        Option('Export Security Rules in OCI', export_security_rules, 'Exporting Security Rules in OCI'),
-        Option('Add/Modify/Delete Security Rules', Network.modify_terraform_secrules, 'Processing SecRulesinOCI Tab'),
+        Option('Export Security Rules (From OCI into SecRulesinOCI sheet)', export_security_rules, 'Exporting Security Rules in OCI'),
+        Option('Add/Modify/Delete Security Rules (Reads SecRulesinOCI sheet)', Network.modify_terraform_secrules, 'Processing SecRulesinOCI Tab'),
     ]
     if not execute_all:
         options = show_options(options, quit=True, menu=True, index=1)
@@ -313,8 +313,8 @@ def export_security_rules(inputfile, outdir, prefix, config, non_gf_tenancy):
 def export_modify_route_rules(inputfile, outdir, prefix, non_gf_tenancy, config):
     execute_all = False
     options = [
-        Option('Export Route Rules in OCI', export_route_rules, 'Exporting Route Rules in OCI'),
-        Option('Add/Modify/Delete Route Rules', Network.modify_terraform_routerules, 'Processing RouteRulesinOCI Tab'),
+        Option('Export Route Rules (From OCI into RouteRulesinOCI sheet)', export_route_rules, 'Exporting Route Rules in OCI'),
+        Option('Add/Modify/Delete Route Rules (Reads RouteRulesinOCI sheet)', Network.modify_terraform_routerules, 'Processing RouteRulesinOCI Tab'),
     ]
     if not execute_all:
         options = show_options(options, quit=True, menu=True, index=1)
@@ -327,8 +327,8 @@ def export_route_rules(inputfile, outdir, prefix, config, non_gf_tenancy):
 def export_modify_drg_route_rules(inputfile, outdir, prefix, non_gf_tenancy, config):
     execute_all = False
     options = [
-        Option('Export DRG Route Rules in OCI', export_drg_route_rules, 'Exporting DRG Route Rules in OCI'),
-        Option('Add/Modify/Delete DRG Route Rules', Network.modify_terraform_drg_routerules, 'Processing DRGRouteRulesinOCI Tab'),
+        Option('Export DRG Route Rules (From OCI into DRGRouteRulesinOCI sheet)', export_drg_route_rules, 'Exporting DRG Route Rules in OCI'),
+        Option('Add/Modify/Delete DRG Route Rules (Reads DRGRouteRulesinOCI sheet)', Network.modify_terraform_drg_routerules, 'Processing DRGRouteRulesinOCI Tab'),
     ]
     if not execute_all:
         options = show_options(options, quit=True, menu=True, index=1)
@@ -341,8 +341,8 @@ def export_drg_route_rules(inputfile, outdir, prefix, config, non_gf_tenancy):
 def export_modify_nsgs(inputfile, outdir, prefix, non_gf_tenancy, config):
     execute_all = False
     options = [
-        Option('Export NSGs in OCI', export_nsgs, 'Exporting NSGs in OCI'),
-        Option('Add/Modify/Delete NSGs', Network.create_terraform_nsg, 'Processing NSGs Tab'),
+        Option('Export NSGs (From OCI into NSGs sheet)', export_nsgs, 'Exporting NSGs in OCI'),
+        Option('Add/Modify/Delete NSGs (Reads NSGs sheet)', Network.create_terraform_nsg, 'Processing NSGs Tab'),
     ]
     if not execute_all:
         options = show_options(options, quit=True, menu=True, index=1)

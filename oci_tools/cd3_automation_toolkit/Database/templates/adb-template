@@ -14,7 +14,7 @@ adb = {
 }
 {% else %}
 
-     {{ adb_display_name }} =  {
+     {{ display_tf_name }} =  {
 
             admin_password           = "{{ admin_password }}"
             character_set            = "{{ character_set }}"
