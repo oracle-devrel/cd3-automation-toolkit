@@ -35,6 +35,12 @@ data "oci_core_vcns" "oci_vcns_instances" {
   display_name   = each.value
 }
 
+data "oci_core_subnets" "oci_subnets_instances" {
+  compartment_id = var.network_compartment_id != null ? var.network_compartment_id : var.compartment_id
+  display_name   = var.subnet_id
+  vcn_id         = data.oci_core_vcns.oci_vcns_instances[var.vcn_names[0]].virtual_networks.*.id[0]
+}
+
 data "oci_core_dedicated_vm_hosts" "existing_vm_host" {
   count          = var.dedicated_vm_host_name != null ? 1 : 0
   compartment_id = var.compartment_id
