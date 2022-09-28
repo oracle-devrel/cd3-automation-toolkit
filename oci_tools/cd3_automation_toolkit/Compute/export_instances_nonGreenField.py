@@ -110,7 +110,7 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, config,disp
             ins_shape = ins.shape
             shape_config=None
 
-            if ('Flex' in ins_shape):
+            if ('.Flex' in ins_shape or ".Micro" in ins_shape):
                 #ocpu = ins.shape_config
                 shape_config = ins.shape_config
                 ocpus_n = str(shape_config.ocpus)

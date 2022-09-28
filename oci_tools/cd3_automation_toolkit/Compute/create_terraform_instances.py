@@ -82,13 +82,14 @@ def create_terraform_instances(inputfile, outdir, prefix, config):
         shapeField = shapeField.strip()
         shape_error = 0
 
-        if (shapeField.lower() != "nan" and ".Flex" in shapeField):
-            if ("::" not in shapeField):
-                shape_error = 1
-            else:
-                shapeField = shapeField.split("::")
-                if (shapeField[1].strip() == ""):
+        if (shapeField.lower() != "nan"):
+            if ".Micro" in shapeField or ".Flex" in shapeField:
+                if ("::" not in shapeField):
                     shape_error = 1
+                else:
+                    shapeField = shapeField.split("::")
+                    if (shapeField[1].strip() == ""):
+                        shape_error = 1
 
         if (shape_error == 1):
             print("\nERROR!!! " + display_name + " is missing ocpus for Flex/Micro shape....Exiting!")

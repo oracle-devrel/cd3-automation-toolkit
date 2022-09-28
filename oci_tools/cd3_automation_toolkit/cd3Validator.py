@@ -876,11 +876,12 @@ def validate_blockvols(filename,comp_ids):
             log(f'ROW {i+3} : Field "Attached To Instance" is empty for Attachment Type {dfvol.loc[i,"Attach Type(iscsi|paravirtualized)"]}.')
             bvs_invalid_check = True
 
-        # Cross check the instance names in Instances and Block Volumes sheet
-        instance_name_check = compare_values([x for x in values_list],str(dfvol.loc[i, 'Attached To Instance']),[i, 'Attached To Instance', 'Instances'])
+        if(str(dfvol.loc[i, 'Attached To Instance']).strip().lower() != 'nan' and str(dfvol.loc[i, 'Attach Type(iscsi|paravirtualized)']).strip().lower() != 'nan'):
+            # Cross check the instance names in Instances and Block Volumes sheet
+            instance_name_check = compare_values([x for x in values_list],str(dfvol.loc[i, 'Attached To Instance']),[i, 'Attached To Instance', 'Instances'])
 
-        # Cross check the ADs in Instances and Block Volumes sheet
-        bv_ad_check = compare_values([str(x).lower() for x in inst_ad_list.tolist()],str(dfvol.loc[i, 'Attached To Instance']).lower()+'_'+str(dfvol.loc[i, 'Availability Domain(AD1|AD2|AD3)']).lower(),[i, 'Availability Domain(AD1|AD2|AD3)', 'Instances'])
+            # Cross check the ADs in Instances and Block Volumes sheet
+            bv_ad_check = compare_values([str(x).lower() for x in inst_ad_list.tolist()],str(dfvol.loc[i, 'Attached To Instance']).lower()+'_'+str(dfvol.loc[i, 'Availability Domain(AD1|AD2|AD3)']).lower(),[i, 'Availability Domain(AD1|AD2|AD3)', 'Instances'])
 
     if any([bvs_empty_check, bvs_comp_check, bvs_invalid_check, instance_name_check, bv_ad_check]):
         print("Null or Wrong value Check failed!!")
@@ -1195,6 +1196,9 @@ def validate_cd3(filename, prefix, outdir,choices, configFileName):
     fss_check = False
     instances_check = False
 
+    if not os.path.exists(filename):
+        print("\nCD3 excel sheet not found at "+filename +"\nExiting!!")
+        exit()
     config = oci.config.from_file(file_location=configFileName)
     ct.get_subscribedregions(configFileName)
     ct.get_network_compartment_ids(config['tenancy'], "root", configFileName)
