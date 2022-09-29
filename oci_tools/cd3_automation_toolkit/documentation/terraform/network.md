@@ -90,6 +90,7 @@ Points to Note:
   
     ````
     igws = {
+        ## key - Is a unique value to reference the resources respectively
         key = {
             # Required
             compartment_id = string
@@ -134,11 +135,58 @@ Points to Note:
 - <b>Syntax</b>
   
     ````
-  
+    ngws = {
+          ## key - Is a unique value to reference the resources respectively
+          key = {
+              # Required
+              compartment_id = string
+              vcn_id         = string
+    
+              # Optional
+              ngw_name       = string
+              public_ip_id   = string
+              block_traffic  = bool
+              defined_tags   = map
+              freeform_tags  = map
+              route_table_id = string
+          }
+    }
     ````
 - <b>Example</b>
     ````
+  ############################
+  # Network
+  # Major Objects - NGW - tfvars
+  # Allowed Values:
+  # vcn_id can be the ocid or the key of vcns (map)
+  # compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens "--"
+  # Example : compartment_id = "ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c" or compartment_id = "Network-root-cpt--Network" where "Network-root-cpt" is the parent of "Network" compartment
+  ############################
+  ngws = {
+        ## key - Is a unique value to reference the resources respectively
+        vcn1_ngw = {
+            # Required
+            compartment_id = "Network"
+            vcn_id         = "vcn1"
+      
+            # Optional
+            ngw_name       = "vcn1_ngw"
+            block_traffic  = false
+        },
   
+        vcn2_ngw = {
+            # Required
+            compartment_id = "Network"
+            vcn_id         = "vcn2"
+    
+            # Optional
+            ngw_name       = "vcn2_ngw"
+            defined_tags = {
+                  "Oracle-Tags.CreatedOn"= "2022-09-06T07:27:39.937Z" ,
+                  "Oracle-Tags.CreatedBy"= "oracleidentitycloudservice/abc@oracle.com"
+            }
+        }
+  }
     ````
   
 
@@ -146,11 +194,50 @@ Points to Note:
 - <b>Syntax</b>
   
     ````
-  
+    sgws = {
+          ## key - Is a unique value to reference the resources respectively
+          key = {
+              # Required
+              compartment_id = string
+              vcn_id         = string
+      
+              # Optional
+              service        = string         # Possible values for service: "", "all", "objectstorage"
+              sgw_name       = string
+              defined_tags   = map
+              freeform_tags  = map
+              route_table_id = string
+          }
+    }
     ````
 - <b>Example</b>
     ````
-  
+  ############################
+  # Network
+  # Major Objects - SGW - tfvars
+  # Allowed Values:
+  # vcn_id can be the ocid or the key of vcns (map)
+  # compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens "--"
+  # Example : compartment_id = "ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c" or compartment_id = "Network-root-cpt--Network" where "Network-root-cpt" is the parent of "Network" compartment
+  ############################
+  sgws = {
+         vcn1_sgw = {
+              # Required
+              compartment_id = "Network"
+              
+              # Optional
+              vcn_id         = "vcn1"
+              sgw_name       = "vcn1_sgw"
+         },
+         vcn2_sgw = {
+              # Required
+              compartment_id = "Network"
+ 
+              # Optional
+              vcn_id         = "vcn2"
+              sgw_name       = "vcn2_sgw"
+         },
+  }
     ````
   
 
@@ -158,11 +245,42 @@ Points to Note:
 - <b>Syntax</b>
   
     ````
+    drgs = {
+          ## key - Is a unique value to reference the resources respectively
+          key = {
+              # Required
+              compartment_id    = string
   
+              # Optional
+              display_name      = string
+              defined_tags      = map
+              freeform_tags     = map
+          },
+    }
     ````
 - <b>Example</b>
     ````
-  
+    ############################
+    # Network
+    # Major Objects - DRG - tfvars
+    # Allowed Values:
+    # compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens "--"
+    # Example : compartment_id = "ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c" or compartment_id = "Network-root-cpt--Network" where "Network-root-cpt" is the parent of "Network" compartment
+    ############################
+    drgs = {
+         vcn1_drg = {
+              compartment_id     = "Network"
+              display_name       = "vcn1_drg"
+         },
+         vcn2_drg = {
+              compartment_id     = "Network"
+              display_name       = "vcn2_drg"
+              defined_tags = {
+                      "Oracle-Tags.CreatedOn"= "2022-09-06T07:27:39.937Z" ,
+                      "Oracle-Tags.CreatedBy"= "oracleidentitycloudservice/abc@oracle.com"
+              } 
+         }
+    }
     ````
   
 
@@ -238,7 +356,7 @@ Points to Note:
     ````
   
 
-13. DRG Route Tables
+12. DRG Route Tables
 - <b>Syntax</b>
   
     ````
