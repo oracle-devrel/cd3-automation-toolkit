@@ -27,7 +27,6 @@ variable "cpu_core_count" {
 variable "database_edition" {
   description = "The database edition of ADB"
   type        = string
-  default     = ""
 }
 
 variable "data_storage_size_in_tbs" {
@@ -61,26 +60,24 @@ variable "display_name" {
 variable "db_version" {
   description = "the version of DB"
   type        = string
-  default     = "19c"
 }
 
 
 variable "db_workload" {
   description = "The type of autonomous database-ATP or ADW"
   type        = string
-  default     = ""
 }
 
 variable "license_model" {
   description = "The license model for ADB"
   type        = string
-  default     = ""
+
 }
 
 variable "ncharacter_set" {
   description = "The ncharacter set of ADB"
   type        = string
-  default     = ""
+
 }
 
 variable "network_compartment_id" {
@@ -110,4 +107,3 @@ variable "whitelisted_ips" {
   type    = list(string)
   default = []
 }
-

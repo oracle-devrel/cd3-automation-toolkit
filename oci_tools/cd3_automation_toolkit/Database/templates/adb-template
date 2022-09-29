@@ -16,18 +16,31 @@ adb = {
 
      {{ display_tf_name }} =  {
 
-            admin_password           = "{{ admin_password }}"
-            character_set            = "{{ character_set }}"
             compartment_id           = "{{ compartment_name }}"
-            cpu_core_count           = "{{ cpu_count }}"
+            db_name                  = "{{ db_name }}"
+            display_name             = "{{ adb_display_name }}"
+
+            admin_password           = "{{ admin_password }}"
+
+            {% if character_set != "" and character_set != "nan" %}
+            character_set            = "{{ character_set }}"
+            {% endif %}
+
+            {% if ncharacter_set != "" and ncharacter_set != "nan" %}
+            ncharacter_set           = "{{ ncharacter_set }}"
+            {% endif %}
+
+            cpu_core_count           = {{ cpu_core_count }}
+
             {% if database_edition == "" %}
             database_edition         = null
             {% else %}
             database_edition         = "{{ database_edition }}" #Only for BYOL license model
             {% endif %}
-            data_storage_size_in_tbs = "{{ data_storage_size_in_tb }}"
-            db_name                  = "{{ db_name }}"
+
+            data_storage_size_in_tbs = {{ data_storage_size_in_tb }}
             db_version               = "19c"
+
             {% if autonomous_value == 'adw' %}
             db_workload              = "DW"
             {% elif autonomous_value == 'atp' %}
@@ -37,16 +50,16 @@ adb = {
             {% elif autonomous_value == 'apex' %}
             db_workload              = "APEX"
             {% endif %}
-            display_name             = "{{ adb_display_name }}"
+
             license_model            = "{{ license_model }}"
-            ncharacter_set           = "{{ ncharacter_set }}"
+            whitelisted_ips          = [{{ whitelisted_ips }}]
+
             {% if network_compartment_id == "" %}
             network_compartment_id   = null
             {% else %}
             network_compartment_id   = "{{ network_compartment_id }}"
             {% endif %}
             nsg_ids                  = [{{ nsg_ids }}]
-            whitelisted_ips          = [{{ whitelisted_ips }}]
             {% if subnet_id == "" %}
             subnet_id                = null
             {% else %}
