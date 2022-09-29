@@ -8,6 +8,7 @@
 module "adb" {
   source   = "./modules/database/adb"
   for_each = var.adb != null ? var.adb : {}
+  # depends_on = [module.vcns, module.subnets]
   admin_password        = each.value.admin_password
   character_set         = each.value.character_set
   compartment_id        = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
