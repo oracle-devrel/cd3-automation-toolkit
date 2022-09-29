@@ -567,6 +567,7 @@ variable "instances" {
     defined_tags = optional(map(any))
     freeform_tags = optional(map(any))
   }))
+    default     = {}
 }
 
 variable "boot_backup_policies" {

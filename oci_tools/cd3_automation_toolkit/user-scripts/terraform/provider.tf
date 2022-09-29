@@ -14,7 +14,6 @@ provider "oci" {
 }
 
 terraform {
-  experiments = [module_variable_optional_attrs]
   required_providers {
     oci = {
       source  = "hashicorp/oci"
