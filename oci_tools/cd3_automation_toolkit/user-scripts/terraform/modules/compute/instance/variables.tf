@@ -192,15 +192,9 @@ variable "is_monitoring_disabled" {
 }
 
 variable "plugins_details" {
-  type = list(object({
-    name          = string,
-    desired_state = string
-  }))
+  type        = map(any)
+  default     = {}
   description = "The configuration of plugins associated with this instance"
-  default = [{
-    name          = "Management Agent",
-    desired_state = "DISABLED"
-  }]
 }
 
 variable "is_live_migration_preferred" {
