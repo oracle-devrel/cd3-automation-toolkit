@@ -4,7 +4,7 @@ These are the syntax and sample format for providing inputs to the modules via <
 Comments preceed with <b>##</b>.
 
 Points to Note:
-- To associate Route Table to the Gateways like IGW, SGW etc, please make sure to have the route tables created in the OCI tenancy first, and then edit the auto.tfvars file to add the route table keys/ocids to the gateway resources as per need.Uncomment the parameter - route_table_id for the respective gateway module calls in network.tf file.
+- To associate Route Table to the Gateways like IGW, SGW etc, please make sure to have the route tables created in the OCI tenancy first, and then edit the auto.tfvars file to add the route table keys/ocids to the gateway resources as per need.Uncomment the parameter - route_table_id for the respective gateway module calls in network.tf and main.tf files.
 ## NETWORK
 1. Virtual Cloud Networks (VCNs)
 - <b>Syntax</b>
@@ -228,6 +228,10 @@ Points to Note:
               # Optional
               vcn_id         = "vcn1"
               sgw_name       = "vcn1_sgw"
+              freeform_tags  = {
+                  "Environment" = "Dev",
+                  "Application" = "SPX"
+              }
          },
          vcn2_sgw = {
               # Required
@@ -288,11 +292,76 @@ Points to Note:
 - <b>Syntax</b>
   
     ````
-  
+    subnets = {
+        ## key - Is a unique value to reference the resources respectively
+        key = {
+            # Required
+            compartment_id             = string
+            vcn_id                     = string
+            cidr_block                 = string
+            
+            # Optional
+            display_name               = string
+            dns_label                  = string
+            ipv6cidr_block             = string
+            defined_tags               = map
+            freeform_tags              = map
+            prohibit_internet_ingress  = string
+            prohibit_public_ip_on_vnic = string
+            availability_domain        = string
+            dhcp_options_id            = string
+            route_table_id             = string
+            security_list_ids          = list
+        }
+    }
     ````
 - <b>Example</b>
     ````
+  #############################
+  # Network
+  # Major Objects - Subnets - tfvars
+  # Allowed Values:
+  # vcn_id, route_table_id, dhcp_options_id can be the ocid or the key of vcns (map), route_tables (map) and dhcp_options (map) respectively
+  # security_list_ids can be a list of ocids or the key of security_lists (map)
+  # compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens "--"
+  # Example : compartment_id = "ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c" or compartment_id = "Network-root-cpt--Network" where "Network-root-cpt" is the parent of "Network" compartment
+  #############################
+  subnets = {
   
+      vcn1_subnet1 = {
+          # Required
+          cidr_block                 = "10.201.4.0/28"
+          compartment_id             = "Network"
+          vcn_id                     = "vcn1"
+  
+          # Optional
+          display_name               = "subnet1"
+          prohibit_public_ip_on_vnic = "true"
+          route_table_id             = "vcn1-hub-rt"
+          dns_label                  = "phxvcnosubnetdn"
+          dhcp_options_id            = "vcn1-hub-dhcp"
+          security_list_ids          = ["vcn1-hub-sl"]
+          freeform_tags              = {
+                  "Environment" = "Dev",
+                  "Application" = "SPX"
+          }
+        },
+      vcn2_subnet1 = {
+          # Required
+          cidr_block                 = "10.201.4.0/28"
+          compartment_id             = "Network"
+          vcn_id                     = "vcn2"
+  
+          # Optional
+          display_name               = "subnet1"
+          prohibit_public_ip_on_vnic = "true"
+          route_table_id             = "vcn2-hub-rt"
+          dns_label                  = "phxvcntsubnetdn"
+          dhcp_options_id            = "vcn2-hub-dhcp"
+          security_list_ids          = ["vcn1-hub-sl"]
+        },
+  
+    }
     ````
   
 
