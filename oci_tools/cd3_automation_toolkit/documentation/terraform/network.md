@@ -327,7 +327,6 @@ Points to Note:
   # Example : compartment_id = "ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c" or compartment_id = "Network-root-cpt--Network" where "Network-root-cpt" is the parent of "Network" compartment
   #############################
   subnets = {
-  
       vcn1_subnet1 = {
           # Required
           cidr_block                 = "10.201.4.0/28"
@@ -360,7 +359,6 @@ Points to Note:
           dhcp_options_id            = "vcn2-hub-dhcp"
           security_list_ids          = ["vcn1-hub-sl"]
         },
-  
     }
     ````
   
@@ -369,11 +367,86 @@ Points to Note:
 - <b>Syntax</b>
   
     ````
+    seclists = {
+          ## key - Is a unique value to reference the resources respectively
+          key = {
+              # Required
+              compartment_id = string
+              vcn_id         = string
+              
+              # Optional
+              display_name   = string
+              defined_tags   = map
+              freeform_tags  = map
+              ingress_sec_rules = [{
+                protocol    = string
+                stateless   = string
+                description = string
+                source      = string
+                source_type = string
+                options     = {
+                    all = []
+                    icmp = [{
+                        icmp_type = string
+                        icmp_code = number
+                    }]
+                    udp = [{
+                        udp_destination_port_range_max = string
+                        udp_destination_port_range_min = string
   
+                        udp_source_port_range_max = string
+                        udp_source_port_range_min = string
+                    }]
+                    tcp = [{
+                        tcp_destination_port_range_max = string
+                        tcp_destination_port_range_min = string
+  
+                        tcp_source_port_range_max = string
+                        tcp_source_port_range_min = string
+                    }]
+                }
+              }]
+              egress_sec_rules = [{
+                protocol         = string
+                stateless        = string
+                description      = string
+                destination      = string
+                destination_type = string
+                options     = {
+                    all = []
+                    icmp = [{
+                        icmp_type = string
+                        icmp_code = number
+                    }]
+                    udp = [{
+                        udp_destination_port_range_max = string
+                        udp_destination_port_range_min = string
+  
+                        udp_source_port_range_max = string
+                        udp_source_port_range_min = string
+                    }]
+                    tcp = [{
+                        tcp_destination_port_range_max = string
+                        tcp_destination_port_range_min = string
+  
+                        tcp_source_port_range_max = string
+                        tcp_source_port_range_min = string
+                    }]
+                }
+              }]
+          }
+    }
     ````
 - <b>Example</b>
     ````
-  
+  ############################
+  # Network
+  # Major Objects - Security List - tfvars
+  # Allowed Values:
+  # vcn_id can be the ocid or the key of vcns (map)
+  # compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens "--"
+  # Example : compartment_id = "ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c" or compartment_id = "Network-root-cpt--Network" where "Network-root-cpt" is the parent of "Network" compartment
+  ############################
     ````
   
 
