@@ -38,7 +38,7 @@ resource "oci_core_instance" "instance" {
   }
 
   #Optional
-  /* agent_config {
+  agent_config {
     #Optional
     are_all_plugins_disabled = var.all_plugins_disabled
     is_management_disabled   = var.is_management_disabled
@@ -53,7 +53,6 @@ resource "oci_core_instance" "instance" {
       }
     }
   }
-  */
   availability_config {
     #Optional
     is_live_migration_preferred = var.is_live_migration_preferred
@@ -70,7 +69,7 @@ resource "oci_core_instance" "instance" {
     hostname_label            = var.hostname_label
     nsg_ids                   = length(var.nsg_ids) != 0 ? (local.nsg_ids == [] ? ["INVALID NSG Name"] : local.nsg_ids) : null
     private_ip                = var.private_ip
-    subnet_id                 = data.oci_core_subnets.oci_subnets_instances.subnets[0].id
+    subnet_id                 = var.subnet_id != "" ? (length(regexall("ocid1.subnet.oc1*", var.subnet_id)) > 0 ? var.subnet_id : data.oci_core_subnets.oci_subnets_instances.subnets[0].id) : null
     vlan_id                   = var.vlan_id
     skip_source_dest_check    = var.skip_source_dest_check
   }
