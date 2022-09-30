@@ -20,3 +20,10 @@ data "oci_core_vcns" "oci_vcns_nlbs" {
   compartment_id = var.network_compartment_id != null ? var.network_compartment_id : var.compartment_id
   display_name   = var.vcn_name
 }
+
+data "oci_core_subnets" "oci_subnets_nlbs" {
+  compartment_id = var.network_compartment_id != null ? var.network_compartment_id : var.compartment_id
+  display_name   = var.subnet_id
+  vcn_id         = data.oci_core_vcns.oci_vcns_nlbs.virtual_networks[0].id
+}
+

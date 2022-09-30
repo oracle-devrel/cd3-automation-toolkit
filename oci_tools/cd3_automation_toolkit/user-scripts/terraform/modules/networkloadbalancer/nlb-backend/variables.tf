@@ -6,6 +6,12 @@
 #######################################
 
 
+variable "instance_compartment" {
+  type        = string
+  description = "The compartment of the instance"
+  default     = null
+}
+
 variable "backend_set_name" {
   type        = string
   description = "The name of the backend set to add the backend server to."
