@@ -17,7 +17,7 @@ resource "oci_core_volume" "block_volume" {
   size_in_gbs          = var.size_in_gbs
 
   lifecycle {
-    ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"], freeform_tags]
+    ignore_changes = [freeform_tags]
   }
 }
 

@@ -18,7 +18,4 @@ resource "oci_core_nat_gateway" "nat_gateway" {
   freeform_tags = var.freeform_tags
   public_ip_id  = var.public_ip_id
 
-  lifecycle {
-    ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"]]
-  }
 }

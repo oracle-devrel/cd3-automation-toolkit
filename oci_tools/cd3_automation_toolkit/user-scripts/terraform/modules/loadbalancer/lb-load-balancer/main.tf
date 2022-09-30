@@ -39,7 +39,7 @@ resource "oci_load_balancer_load_balancer" "load_balancer" {
   }
 
   lifecycle {
-    ignore_changes = [reserved_ips, defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"]]
+    ignore_changes = [reserved_ips]
   }
 
 }

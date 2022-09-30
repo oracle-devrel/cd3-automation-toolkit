@@ -30,8 +30,4 @@ resource "oci_core_service_gateway" "service_gateway" {
   freeform_tags = var.freeform_tags
   #route_table_id = (var.route_table_id != "" && var.route_table_id != null) ? var.route_table_id : null
 
-  lifecycle {
-    ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"]]
-  }
-
 }

@@ -30,6 +30,5 @@ resource "oci_core_vcn" "vcn" {
   is_oracle_gua_allocation_enabled = var.is_oracle_gua_allocation_enabled
   lifecycle {
     create_before_destroy = true
-    ignore_changes        = [defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"]]
   }
 }

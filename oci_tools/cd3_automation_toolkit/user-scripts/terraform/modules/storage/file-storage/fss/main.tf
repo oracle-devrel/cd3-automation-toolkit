@@ -16,7 +16,4 @@ resource "oci_file_storage_file_system" "file_system" {
   freeform_tags      = var.freeform_tags
   kms_key_id         = var.kms_key_id
   source_snapshot_id = var.source_snapshot_id
-  lifecycle {
-    ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"]]
-  }
 }

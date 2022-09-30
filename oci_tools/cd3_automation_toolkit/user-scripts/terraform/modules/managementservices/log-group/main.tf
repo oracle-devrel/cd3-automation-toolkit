@@ -16,8 +16,5 @@ resource "oci_logging_log_group" "log_group" {
   description   = var.description
   freeform_tags = var.freeform_tags
 
-  lifecycle {
-    ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"]]
-  }
 }
 

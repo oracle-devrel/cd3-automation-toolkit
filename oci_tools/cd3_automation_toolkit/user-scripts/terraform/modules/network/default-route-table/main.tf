@@ -120,7 +120,6 @@ resource "oci_core_default_route_table" "default_route_table" {
 
   lifecycle {
     create_before_destroy = true
-    ignore_changes        = [defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"]]
   }
 
 }

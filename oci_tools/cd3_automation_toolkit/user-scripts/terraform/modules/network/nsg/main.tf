@@ -16,7 +16,4 @@ resource "oci_core_network_security_group" "network_security_group" {
   display_name  = var.display_name
   freeform_tags = var.freeform_tags
 
-  lifecycle {
-    ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"]]
-  }
 }

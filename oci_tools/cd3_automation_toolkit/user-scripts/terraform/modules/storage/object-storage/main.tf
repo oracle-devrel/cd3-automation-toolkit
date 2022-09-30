@@ -40,8 +40,4 @@ resource "oci_objectstorage_bucket" "bucket" {
   }
 
   versioning = var.versioning
-
-  lifecycle {
-    ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"], freeform_tags]
-  }
 }
