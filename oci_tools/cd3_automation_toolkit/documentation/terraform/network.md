@@ -1053,7 +1053,7 @@ Points to Note:
   
             # Optional
             # IGW Rules
-            route_rules_igw  = [] # If there are no IGW Rules
+            route_rules_igw  = [] # When there are no IGW Rules
             (OR)
             route_rules_igw  = [{
                   network_entity_id = string
@@ -1063,7 +1063,7 @@ Points to Note:
             }]
   
             # SGW Rules
-            route_rules_sgw  = [] # If there are no SGW Rules
+            route_rules_sgw  = [] # When there are no SGW Rules
             (OR)
             route_rules_sgw  = [{
                   network_entity_id = string
@@ -1073,7 +1073,7 @@ Points to Note:
             }]
   
             # NGW Rules
-            route_rules_ngw  = [] # If there are no NGW Rules
+            route_rules_ngw  = [] # When there are no NGW Rules
             (OR)
             route_rules_ngw  = [{
                   network_entity_id = string
@@ -1083,7 +1083,7 @@ Points to Note:
             }]
   
             # DRG Rules
-            route_rules_drg  = [] # If there are no DRG Rules
+            route_rules_drg  = [] # When there are no DRG Rules
             (OR)
             route_rules_drg  = [{
                   network_entity_id = string
@@ -1093,7 +1093,7 @@ Points to Note:
             }]
   
             # LPG Rules
-            route_rules_lpg  = [] # If there are no LPG Rules
+            route_rules_lpg  = [] # When there are no LPG Rules
             (OR)
             route_rules_lpg  = [{
                   network_entity_id = string
@@ -1103,7 +1103,7 @@ Points to Note:
             }]
   
             # IP Rules
-            route_rules_ip   = [] # If there are no IP Rules
+            route_rules_ip   = [] # When there are no IP Rules
             (OR)
             route_rules_ip   = [{
                   network_entity_id = string
@@ -1111,7 +1111,7 @@ Points to Note:
                   destination       = string
                   destination_type  = string
             }]
-  
+            # set the tags to {} when not needed; example-> defined_tags = {}
             defined_tags     = map
             freeform_tags    = map
   }
@@ -1253,7 +1253,7 @@ Points to Note:
   
             # Optional
             # IGW Rules
-            route_rules_igw  = [] # If there are no IGW Rules
+            route_rules_igw  = [] # When there are no IGW Rules
             (OR)
             route_rules_igw  = [{
                   network_entity_id = string
@@ -1263,7 +1263,7 @@ Points to Note:
             }]
   
             # SGW Rules
-            route_rules_sgw  = [] # If there are no SGW Rules
+            route_rules_sgw  = [] # When there are no SGW Rules
             (OR)
             route_rules_sgw  = [{
                   network_entity_id = string
@@ -1273,7 +1273,7 @@ Points to Note:
             }]
   
             # NGW Rules
-            route_rules_ngw  = [] # If there are no NGW Rules
+            route_rules_ngw  = [] # When there are no NGW Rules
             (OR)
             route_rules_ngw  = [{
                   network_entity_id = string
@@ -1283,7 +1283,7 @@ Points to Note:
             }]
   
             # DRG Rules
-            route_rules_drg  = [] # If there are no DRG Rules
+            route_rules_drg  = [] # When there are no DRG Rules
             (OR)
             route_rules_drg  = [{
                   network_entity_id = string
@@ -1293,7 +1293,7 @@ Points to Note:
             }]
   
             # LPG Rules
-            route_rules_lpg  = [] # If there are no LPG Rules
+            route_rules_lpg  = [] # When there are no LPG Rules
             (OR)
             route_rules_lpg  = [{
                   network_entity_id = string
@@ -1303,7 +1303,7 @@ Points to Note:
             }]
   
             # IP Rules
-            route_rules_ip   = [] # If there are no IP Rules
+            route_rules_ip   = [] # When there are no IP Rules
             (OR)
             route_rules_ip   = [{
                   network_entity_id = string
@@ -1311,7 +1311,7 @@ Points to Note:
                   destination       = string
                   destination_type  = string
             }]
-  
+            # set the tags to {} when not needed; example-> defined_tags = {}
             defined_tags     = map
             freeform_tags    = map
   }
@@ -1651,7 +1651,7 @@ Points to Note:
                 icmp_code = string   #  icmp_code = "" if you want to pass only the type
             }] 
           (OR)
-          # If there are no ICMP rules
+          # When there are no ICMP rules
           icmp_options = [{
                 icmp_type = ""
                 icmp_code = ""
@@ -1664,7 +1664,7 @@ Points to Note:
                   tcp_options_source_port_min = string
                   }]
               (OR) 
-              # If there are no Source Port Range
+              # When there are no Source Port Range
               source_port_range = []
   
               destination_port_range = [{
@@ -1672,11 +1672,11 @@ Points to Note:
                   tcp_options_destination_port_min = string
                   }]
               (OR) 
-              # If there are no Destination Port Range
+              # When there are no Destination Port Range
               destination_port_range = []
               }]
           (OR) 
-          # If there are no TCP Options
+          # When there are no TCP Options
           tcp_options = []
   
           # UDP Options 
@@ -1686,7 +1686,7 @@ Points to Note:
                   udp_options_source_port_min = string
                   }]
               (OR) 
-              # If there are no Source Port Range
+              # When there are no Source Port Range
               source_port_range = []
   
               destination_port_range = [{
@@ -1694,11 +1694,11 @@ Points to Note:
                   udp_options_destination_port_min = string
                   }]
               (OR) 
-              # If there are no Destination Port Range
+              # When there are no Destination Port Range
               destination_port_range = []
               }]
           (OR) 
-          # If there are no UDP Options
+          # When there are no UDP Options
           udp_options = []
     
       }
@@ -1790,4 +1790,106 @@ Points to Note:
   }
     ````
   
+20. Local Peering Gateways (LPGs)
+- <b>Syntax</b>
+    ````
+    lpgs = {
+        ## key - Is a unique value to reference the resources respectively
+        key = {
+  
+            # LPGs of Hub VCN
+            hub-lpgs      = {
+                # Required
+                compartment_id = string
+                vcn_id         = string
+                lpg_name       = string
+  
+                # Optional
+                route_table_id = string
+                peer_id        = string
+                # set the tags to {} when not needed; example-> defined_tags = {}
+                defined_tags    = map
+                freeform_tags   = map
+            },
+            (OR)
+            # When there are no LPGs in Hub VCN
+            hub-lpgs      = {}, 
+  
+            # LPGs of Spoke VCN
+            spoke-lpgs    = {
+                # Required
+                compartment_id = string
+                vcn_id         = string
+                lpg_name       = string
+  
+                # Optional
+                route_table_id = string
+                peer_id        = string
+                # set the tags to {} when not needed; example-> defined_tags = {}
+                defined_tags    = map
+                freeform_tags   = map
+            },
+            (OR)
+            # When there are no LPGs in Spoke VCN
+            spoke-lpgs      = {},  
+  
+            # LPGs of Peer VCN
+            peer-lpgs     = {
+                # Required
+                compartment_id = string
+                vcn_id         = string
+                lpg_name       = string
+  
+                # Optional
+                route_table_id = string
+                peer_id        = string
+                # set the tags to {} when not needed; example-> defined_tags = {}
+                defined_tags    = map
+                freeform_tags   = map
+            },
+            (OR)
+            # When there are no LPGs in Peer VCN
+            peer-lpgs      = {}, 
+  
+            # LPGs of VCN that are declared as neither hub nor spoke
+            none-lpgs     = {
+                # Required
+                compartment_id = string
+                vcn_id         = string
+                lpg_name       = string
+  
+                # Optional
+                route_table_id = string
+                peer_id        = string
+                # set the tags to {} when not needed; example-> defined_tags = {}
+                defined_tags    = map
+                freeform_tags   = map
+            },
+            (OR)
+            # When there are no LPGs in a VCN that is neither hub nor spoke
+            none-lpgs      = {}, 
+  
+            # LPGs of VCN Exported by the toolkit
+            exported-lpgs = {
+                # Required
+                compartment_id = string
+                vcn_id         = string
+                lpg_name       = string
+  
+                # Optional
+                route_table_id = string
+                peer_id        = string
+                # set the tags to {} when not needed; example-> defined_tags = {}
+                defined_tags    = map
+                freeform_tags   = map
+            }, 
+            (OR)
+            # When there are no LPGs in the VCNs that are exported by the toolkit
+            exported-lpgs      = {}, 
+        }
+    }
+    ````
+- <b>Example</b>
+    ````
+    ````
 
