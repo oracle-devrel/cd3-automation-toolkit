@@ -245,7 +245,7 @@ Points to Note:
     ````
   
 
-5. Drynamic Routing Gateways (DRGs)
+5. Dynamic Routing Gateways (DRGs)
 - <b>Syntax</b>
   
     ````
@@ -287,8 +287,284 @@ Points to Note:
     }
     ````
   
+6. Dynamic Routing Gateway Attachements (DRG Attachments)
+- <b>Syntax</b>
+  
+    ````
+    drg_attachments = {
+          ## key - Is a unique value to reference the resources respectively
+          key = {
+              # Required
+              drg_id            = string
+              display_name      = string
+   
+              # Optional
+              # Required only for DRG V2; Set drg_route_table_id = "" and network_details = [] when using DRG V1
+              drg_route_table_id = string 
+              network_details    = [{
+                  id                 = string
+                  type               = string
+                  vcn_route_table_id = string
+              }]
+  
+              # Required only for DRG v1; Set route_table_id = "" and vcn_id = "" when using DRG V2
+              route_table_id     = string 
+              vcn_id             = string
+              
+              # Optional; set them to {} when not needed; example-> defined_tags = {}
+              defined_tags       = map
+              freeform_tags      = map
+          },
+    }
+    ````
+- <b>Example</b>
+    ````
+  ############################
+  # Network
+  # Major Objects - DRG Attachment - tfvars
+  # Allowed Values:
+  # vcn_id can be the ocid or the key of vcns (map)
+  ############################
+  drg_attachments = {
+        vcn2_drg_attach = {
+  
+              # Required
+              drg_id = "vcn2_drg"
+              display_name = "vcn2_drg_attach"
+      
+              # Optional
+              # DRG v2
+              drg_route_table_id = "vcn2_drg_rt"
+              # Required only for DRG V2; Set drg_route_table_id = "" and network_details = [] when using DRG V1
+              network_details = [{
+              id = "Svcs"
+              type = "VCN"
+              vcn_route_table_id = "Svcs_Route-Table-associated-with-vcn2_drg"
+              }]
+              # Set DRGv1 params to null
+              route_table_id =""
+              vcn_id = ""
+              defined_tags = {
+                      "Oracle-Tags.CreatedOn"= "2022-02-28T05:46:42.914Z" ,
+                      "Oracle-Tags.CreatedBy"= "abc@oracle.com"
+              }
+              freeform_tags = {}
+        },
+  }
+    ````
 
-6. Subnets
+7. DRG Route Distributions
+- <b>Syntax</b>
+  
+    ````
+  drg_route_distributions = {
+      ## key - Is a unique value to reference the resources respectively
+      key = {
+          # Required
+          distribution_type = string
+          drg_id            = string
+  
+          # Optional
+          defined_tags      = map
+          freeform_tags     = map
+          display_name      = string
+      }
+  }   
+    ````
+- <b>Example</b>
+    ````
+  #################################
+  # Network
+  # DRG Route Distributions - tfvars
+  # Allowed Values:
+  # drg_id can be the ocid or the key of drgs (map)
+  #################################
+  drg_route_distributions = {
+      # DRG Distribution for Region - ashburn
+      vcn2_drg_import_routes_01 = {
+            distribution_type = "IMPORT"
+            drg_id = "vcn2_drg"
+            display_name = "vcn2_drg_import_routes_01"
+            defined_tags = {
+                "Oracle-Tags.CreatedOn"= "2022-02-28T05:46:42.914Z" ,
+                "Oracle-Tags.CreatedBy"= "abc@oracle.com"
+            }
+            freeform_tags = {}
+      },
+      vcn1_drg_import_routes_01 = {
+            distribution_type = "IMPORT"
+            drg_id = "vcn1_drg"
+            display_name = "vcn1_drg_import_routes_01"
+            defined_tags = {
+                "Oracle-Tags.CreatedOn"= "2022-02-28T05:46:42.914Z" ,
+                "Oracle-Tags.CreatedBy"= "abc@oracle.com"
+            }
+            freeform_tags = {}
+      },
+  }
+    ````
+
+8. DRG Route Distribution Statements
+- <b>Syntax</b>
+  
+    ````
+  drg_route_distribution_statements = {
+      ## key - Is a unique value to reference the resources respectively
+      key = {
+          # Required
+          drg_route_distribution_id = string
+          action            = string
+  
+          # Optional
+          match_criteria = [{
+              # Required
+              match_type        = string
+            
+              # Optional
+              attachment_type   = string
+              drg_attachment_id = string
+          }]
+          priority      = map
+          action        = map
+      }
+  }
+    ````
+- <b>Example</b>
+    ````
+  ##########################################
+  # Module Block - Network
+  # Create DRG Route Distribution Statements
+  # Allowed Values:
+  # drg_route_distribution_id can be the ocid or the key of drg_route_distributions (map)
+  ##########################################
+  drg_route_distribution_statements = {
+      # DRG Distribution Statement for Region - ashburn
+      vcn2_drg_import_route_01_statement1 = {
+            drg_route_distribution_id = "vcn2_drg_import_routes_01"
+            match_criteria = [
+            {
+            match_type = "DRG_ATTACHMENT_TYPE"
+            attachment_type = "VCN"
+            drg_attachment_id = ""
+            },
+            ]
+            priority = "1"
+            action = "ACCEPT"
+      },
+      vcn1_drg_import_routes_01_statement1 = {
+            drg_route_distribution_id = "vcn1_drg_import_routes_01"
+            match_criteria = [
+            {
+            match_type = "DRG_ATTACHMENT_TYPE"
+            attachment_type = "IPSEC_TUNNEL"
+            drg_attachment_id = ""
+            },
+            ]
+            priority = "2"
+            action = "ACCEPT"
+      },
+  }
+    ````
+
+9. DRG Route Tables
+- <b>Syntax</b>
+  
+    ````
+  drg_route_tables = {
+      ## key - Is a unique value to reference the resources respectively
+      key = {
+          # Required
+          drg_id            = string
+          display_name      = string
+  
+          # Optional
+          import_drg_route_distribution_id = string
+          is_ecmp_enabled                  = bool
+          # set the tags to {} when not needed; example-> defined_tags = {}
+          defined_tags                     = map
+          freeform_tags                    = map
+      }
+  }
+    ````
+- <b>Example</b>
+    ````
+  #################################
+  # Network
+  # DRG Route Tables - tfvars
+  # Allowed Values:
+  # drg_id can be ocid or the key of drgs (map)
+  #################################
+  drg_route_tables = {
+      # DRG Route Tables for Region - ashburn
+      # Start of #ashburn_vcn1_drg_static# #
+      vcn1_drg_static = {
+            drg_id = "vcn1_drg"
+            display_name = "vcn1_drg_static"
+            import_drg_route_distribution_id = ""
+            is_ecmp_enabled = "false"
+            defined_tags = {}
+            freeform_tags = {}
+      },
+      # End of #ashburn_vcn1_drg_static# #
+      # Start of #ashburn_vcn2_drg_static# #
+      vcn2_drg_static = {
+            drg_id = "vcn2_drg"
+            display_name = "vcn2_drg_static"
+            import_drg_route_distribution_id = "vcn2_drg_import_routes_01"
+            is_ecmp_enabled = "false"
+             defined_tags = {
+                "Oracle-Tags.CreatedOn"= "2022-02-28T05:46:42.914Z" ,
+                "Oracle-Tags.CreatedBy"= "abc@oracle.com"
+            }
+            freeform_tags = {}
+      },
+  }
+ 
+    ````
+  
+10. DRG Route Rules
+- <b>Syntax</b>
+  
+    ````
+  drg_route_rules = {
+      ## key - Is a unique value to reference the resources respectively
+      key = {
+          # Required
+          drg_route_table_id = string
+          destination        = string
+          destination_type   = string
+          next_hop_drg_attachment_id = string
+      }
+  }
+    ````
+- <b>Example</b>
+    ````
+  #################################
+  # Network
+  # DRG Route Rules - tfvars
+  # Allowed Values:
+  # drg_route_table_id and next_hop_drg_attachment_id can be the ocid or the key of drg_route_tables (map) and the key of drg_attachments (map) respectively
+  #################################
+  drg_route_rules = {
+      # DRG Route Rules for Region - ashburn
+      vcn1_drg_static_route_rule1 = {
+              #Required
+              drg_route_table_id = "vcn1_drg_static"
+              destination = "10.0.8.0/23"
+              destination_type = "CIDR_BLOCK"
+              next_hop_drg_attachment_id = "vcn1_drg_attach"
+      },
+      vcn1_drg_static_route_rule2 = {
+              #Required
+              drg_route_table_id = "vcn1_drg_static"
+              destination = "10.0.4.0/22"
+              destination_type = "CIDR_BLOCK"
+              next_hop_drg_attachment_id = "vcn1_drg_attach2"
+      },
+  }
+    ````
+  
+11. Subnets
 - <b>Syntax</b>
   
     ````
@@ -361,9 +637,8 @@ Points to Note:
         },
     }
     ````
-  
 
-7. Security Lists (SLs)
+12. Security Lists (SLs)
 - <b>Syntax</b>
   
     ````
@@ -553,9 +828,217 @@ Points to Note:
     # End of #phoenix_vcn3_subnet3-2# #
   }
     ````
-  
 
-8. Route Tables (RTs)
+13. Default Security Lists (Default SLs)
+- <b>Syntax</b>
+  
+    ````
+    default_seclists = {
+          ## key - Is a unique value to reference the resources respectively
+          key = {
+              # Required
+              compartment_id = string
+              vcn_id         = string
+              
+              # Optional
+              display_name   = string
+              defined_tags   = map
+              freeform_tags  = map
+              ingress_sec_rules = [{
+                protocol    = string
+                stateless   = string
+                description = string
+                source      = string
+                source_type = string
+                options     = {
+                    all = [] # for protocol = all
+                    icmp = [{
+                        icmp_type = string
+                        icmp_code = number
+                    }] 
+                    (or)
+                    icmp = [] # for all ICMP option
+                    udp = [{
+                        udp_destination_port_range_max = string
+                        udp_destination_port_range_min = string
+  
+                        udp_source_port_range_max = string
+                        udp_source_port_range_min = string
+                    }]
+                    (or)
+                    udp = [] # for all UDP option
+                    tcp = [{
+                        tcp_destination_port_range_max = string
+                        tcp_destination_port_range_min = string
+  
+                        tcp_source_port_range_max = string
+                        tcp_source_port_range_min = string
+                    }]
+                    (or)
+                    tcp = [] # for all TCP option
+                }
+              }]
+              egress_sec_rules = [{
+                protocol         = string
+                stateless        = string
+                description      = string
+                destination      = string
+                destination_type = string
+                options     = {
+                    all = []
+                    icmp = [{
+                        icmp_type = string
+                        icmp_code = number
+                    }] 
+                    (or)
+                    icmp = [] # for all ICMP option
+                    udp = [{
+                        udp_destination_port_range_max = string
+                        udp_destination_port_range_min = string
+  
+                        udp_source_port_range_max = string
+                        udp_source_port_range_min = string
+                    }]
+                    (or)
+                    udp = [] # for all UDP option
+                    tcp = [{
+                        tcp_destination_port_range_max = string
+                        tcp_destination_port_range_min = string
+  
+                        tcp_source_port_range_max = string
+                        tcp_source_port_range_min = string
+                    }]
+                    (or)
+                    tcp = [] # for all TCP option
+                }
+              }]
+          }
+    }
+    ````
+- <b>Example</b>
+  ````
+  // Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+  ############################
+  # Network
+  # Major Objects - Default Security List - tfvars
+  # Allowed Values:
+  # vcn_id can be the ocid or the key of vcns (map)
+  # compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens "--"
+  # Example : compartment_id = "ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c" or compartment_id = "Network-root-cpt--Network" where "Network-root-cpt" is the parent of "Network" compartment
+  ############################
+  default_seclists = {
+  
+    # Seclist map #
+    # Start of #phoenix_vcn3_subnet3-1# #
+    vcn3_subnet3-1 = {
+          compartment_id = "Network"
+          vcn_id     = "vcn3"
+          display_name     = "Default Security List for subnet3-1"
+          ingress_sec_rules = [
+               {  #vcn3_subnet3-1_10.3.1.0/24#
+                  protocol = "all"
+                  source = "10.3.1.0/24"
+                  options = {
+                      all = []
+                  }
+               },
+               {  #vcn3_subnet3-1_10.3.1.0/24#
+                  protocol = "6"
+                  source = "10.3.2.0/24"
+                  options = {
+                      tcp= [{
+                          tcp_destination_port_range_max = "22"
+                          tcp_destination_port_range_min = "22"
+  
+                          tcp_source_port_range_max = "22"
+                          tcp_source_port_range_min = "22"
+                      }]
+                  }
+               },
+               {  #vcn3_subnet3-1_10.3.1.0/24#
+                  protocol = "17"
+                  source = "10.3.1.0/24"
+                  options = {
+                    udp = [{
+                        udp_destination_port_range_max = "7003"
+                        udp_destination_port_range_min = "7003"
+                    }]
+                  }
+               },
+  ####ADD_NEW_INGRESS_SEC_RULES #phoenix_vcn3_subnet3-1# ####
+          ]
+          egress_sec_rules = [
+               {
+                  protocol = "all"
+                  destination = "0.0.0.0/0"
+                  options = {
+                      all = []
+                  }
+               },
+  ####ADD_NEW_EGRESS_SEC_RULES #phoenix_vcn3_subnet3-1# ####
+          ]
+          defined_tags = {
+                  "Oracle-Tags.CreatedOn"= "2022-09-06T07:27:48.895Z" ,
+                  "Oracle-Tags.CreatedBy"= "oracleidentitycloudservice/suruchi.singla@oracle.com"
+          }
+        },
+    # End of #phoenix_vcn3_subnet3-1# #
+    # Start of #phoenix_vcn3_subnet3-2# #
+    vcn3_subnet3-2 = {
+          compartment_id = "Network"
+          vcn_id     = "vcn3"
+          display_name     = "Default Security List for subnet3-2"
+          ingress_sec_rules = [
+               {  #vcn3_subnet3-2_10.3.2.0/24#
+                  protocol = "6"
+                  source = "0.0.0.0/0"
+                  options = {
+                      icmp= [{
+                        icmp_type = "2"
+                        icmp_code = "-1"
+                      }]
+                  }
+               },
+  ####ADD_NEW_INGRESS_SEC_RULES #phoenix_vcn3_subnet3-2# ####
+          ]
+          egress_sec_rules = [
+               {
+                  protocol = "all"
+                  destination = "0.0.0.0/0"
+                  options = {
+                      all = []
+                  }
+               },
+  ####ADD_NEW_EGRESS_SEC_RULES #phoenix_vcn3_subnet3-2# ####
+          ]
+          defined_tags = {
+                  "Oracle-Tags.CreatedOn"= "2022-09-06T07:27:48.895Z" ,
+                  "Oracle-Tags.CreatedBy"= "oracleidentitycloudservice/suruchi.singla@oracle.com"
+          }
+        },
+    # End of #phoenix_vcn3_subnet3-2# #
+    # Start of #phoenix_vcn3_subnet4-2# #
+  Customer1Zone_Default-Security-List-for-Customer1Zone = {
+        compartment_id = "Network"
+        vcn_id     = "vcn3"
+        display_name     = "Default Security List for subnet4-2"
+        ingress_sec_rules = [
+        ####ADD_NEW_INGRESS_SEC_RULES #phoenix_vcn3_Default-Security-List-for-subnet4-2# ####
+        ]
+        egress_sec_rules = [
+        ####ADD_NEW_EGRESS_SEC_RULES #phoenix_vcn3_Default-Security-List-for-subnet4-2# ####
+        ]
+        defined_tags = {
+                "Oracle-Tags.CreatedOn"= "2022-02-28T05:46:42.861Z" ,
+                "Oracle-Tags.CreatedBy"= "john.saleh@oracle.com"
+        }
+        freeform_tags = {}
+      },
+  # End of #phoenix_vcn3_subnet4-2# #
+  }
+    ````
+
+14. Route Tables (RTs)
 - <b>Syntax</b>
   
     ````
@@ -571,7 +1054,7 @@ Points to Note:
             # Optional
             # IGW Rules
             route_rules_igw  = [] # If there are no IGW Rules
-            (or)
+            (OR)
             route_rules_igw  = [{
                   network_entity_id = string
                   description       = string
@@ -581,7 +1064,7 @@ Points to Note:
   
             # SGW Rules
             route_rules_sgw  = [] # If there are no SGW Rules
-            (or)
+            (OR)
             route_rules_sgw  = [{
                   network_entity_id = string
                   description       = string
@@ -591,7 +1074,7 @@ Points to Note:
   
             # NGW Rules
             route_rules_ngw  = [] # If there are no NGW Rules
-            (or)
+            (OR)
             route_rules_ngw  = [{
                   network_entity_id = string
                   description       = string
@@ -601,7 +1084,7 @@ Points to Note:
   
             # DRG Rules
             route_rules_drg  = [] # If there are no DRG Rules
-            (or)
+            (OR)
             route_rules_drg  = [{
                   network_entity_id = string
                   description       = string
@@ -611,7 +1094,7 @@ Points to Note:
   
             # LPG Rules
             route_rules_lpg  = [] # If there are no LPG Rules
-            (or)
+            (OR)
             route_rules_lpg  = [{
                   network_entity_id = string
                   description       = string
@@ -621,7 +1104,7 @@ Points to Note:
   
             # IP Rules
             route_rules_ip   = [] # If there are no IP Rules
-            (or)
+            (OR)
             route_rules_ip   = [{
                   network_entity_id = string
                   description       = string
@@ -645,14 +1128,14 @@ Points to Note:
   # Example : compartment_id = "ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c" or compartment_id = "Network-root-cpt--Network" where "Network-root-cpt" is the parent of "Network" compartment
   ############################
   
-  route_tables = {
+  default_route_tables = {
     # Route Table map #
     # Start of #ashburn_vcn_app-subnet-rtable# #
       vcn_app-subnet-rtable = {
           # Required
           compartment_id = "fc-network-cmp"
-          vcn_id     = "fc-0-vcn"
-          display_name     = "fc-0-nonprod-app-subnet-rtable"
+          vcn_id     = "vcn1"
+          display_name     = "vcn_app-subnet-rtable"
   
           # Optional
           route_rules_igw = [
@@ -664,7 +1147,7 @@ Points to Note:
           route_rules_ngw = [
                   ## Start Route Rule ashburn_vcn_app-subnet-rtable-natgw_0.0.0.0/0
               {
-                    network_entity_id = "fc-0-vcn_fc-0-vcn-natgw"
+                    network_entity_id = "vcn-natgw"
                     description       = ""
                     destination       = "0.0.0.0/0"
                     destination_type  = "CIDR_BLOCK"
@@ -673,14 +1156,14 @@ Points to Note:
       ####ADD_NEW_NGW_RULES #ashburn_vcn_app-subnet-rtable# ####
           ]
           route_rules_drg = [
-                  ## Start Route Rule ashburn_vcn_app-subnet-rtable-drg_10.10.212.0/22
+                  ## Start Route Rule ashburn_vcn_app-subnet-rtable-drg_10.0.2.0/22
               {
-                    network_entity_id = "fc-drg"
+                    network_entity_id = "vcn-drg"
                     description       = ""
-                    destination       = "10.10.212.0/22"
+                    destination       = "10.0.2.0/22"
                     destination_type  = "CIDR_BLOCK"
                    },
-              ## End Route Rule ashburn_vcn_app-subnet-rtable-drg_10.10.212.0/22
+              ## End Route Rule ashburn_vcn_app-subnet-rtable-drg_10.0.2.0/22
       ####ADD_NEW_DRG_RULES #ashburn_vcn_app-subnet-rtable# ####
           ]
           route_rules_lpg = [
@@ -691,72 +1174,271 @@ Points to Note:
           ]
           defined_tags = {
                   "Oracle-Tags.CreatedOn"= "2022-08-23T15:03:30.750Z" ,
-                  "Oracle-Tags.CreatedBy"= "oracleidentitycloudservice/kevin.waters@oracle.com"
+                  "Oracle-Tags.CreatedBy"= "abc@oracle.com"
           }
           freeform_tags = {}
         },
     # End of #ashburn_vcn_app-subnet-rtable# #
-    # Start of #ashburn_vcn_fc-dmz-subnet-rtable# #
-      fc-0-vcn_fc-0-dmz-subnet-rtable = {
+    # Start of #ashburn_vcn_dmz-subnet-rtable# #
+      dmz-subnet-rtable = {
           # Required
           compartment_id = "fc-network-cmp"
-          vcn_id     = "fc-0-vcn"
-          display_name     = "fc-0-dmz-subnet-rtable"
+          vcn_id     = "vcn2"
+          display_name     = "dmz-subnet-rtable"
   
           # Optional
           route_rules_igw = [
-                  ## Start Route Rule ashburn_vcn_fc-dmz-subnet-rtable-igw_0.0.0.0/0
+                  ## Start Route Rule ashburn_vcn_dmz-subnet-rtable-igw_0.0.0.0/0
               {
-                    network_entity_id = "fc-0-vcn_fc-0-vcn-igw"
+                    network_entity_id = "vcn-igw"
                     description       = ""
                     destination       = "0.0.0.0/0"
                     destination_type  = "CIDR_BLOCK"
                    },
-              ## End Route Rule ashburn_vcn_fc-dmz-subnet-rtable-igw_0.0.0.0/0
-      ####ADD_NEW_IGW_RULES #ashburn_vcn_fc-dmz-subnet-rtable# ####
+              ## End Route Rule ashburn_vcn_dmz-subnet-rtable-igw_0.0.0.0/0
+      ####ADD_NEW_IGW_RULES #ashburn_vcn_dmz-subnet-rtable# ####
           ]
           route_rules_sgw = [
-      ####ADD_NEW_SGW_RULES #ashburn_vcn_fc-dmz-subnet-rtable# ####
+      ####ADD_NEW_SGW_RULES #ashburn_vcn_dmz-subnet-rtable# ####
           ]
           route_rules_ngw = [
-      ####ADD_NEW_NGW_RULES #ashburn_vcn_fc-dmz-subnet-rtable# ####
+      ####ADD_NEW_NGW_RULES #ashburn_vcn_dmz-subnet-rtable# ####
           ]
           route_rules_drg = [
-                  ## Start Route Rule ashburn_vcn_fc-dmz-subnet-rtable-drg_10.10.212.0/22
+                  ## Start Route Rule ashburn_vcn_dmz-subnet-rtable-drg_10.0.2.0/22
               {
-                    network_entity_id = "fc-drg"
+                    network_entity_id = "vcn-drg"
                     description       = ""
-                    destination       = "10.10.212.0/22"
+                    destination       = "10.0.2.0/22"
                     destination_type  = "CIDR_BLOCK"
                    },
-              ## End Route Rule ashburn_vcn_fc-dmz-subnet-rtable-drg_10.10.212.0/22
-              ## Start Route Rule ashburn_vcn_fc-dmz-subnet-rtable-drg_10.13.212.0/23
+              ## End Route Rule ashburn_vcn_dmz-subnet-rtable-drg_10.0.2.0/22
+              ## Start Route Rule ashburn_vcn_dmz-subnet-rtable-drg_10.3.2.0/23
               {
-                    network_entity_id = "fc-drg"
+                    network_entity_id = "vcn-drg"
                     description       = "Route to Freight internal"
-                    destination       = "10.13.212.0/23"
+                    destination       = "10.3.2.0/23"
                     destination_type  = "CIDR_BLOCK"
                    },
-              ## End Route Rule ashburn_vcn_fc-dmz-subnet-rtable-drg_10.13.212.0/23
-      ####ADD_NEW_DRG_RULES #ashburn_vcn_fc-dmz-subnet-rtable# ####
+              ## End Route Rule ashburn_vcn_dmz-subnet-rtable-drg_10.3.2.0/23
+      ####ADD_NEW_DRG_RULES #ashburn_vcn_dmz-subnet-rtable# ####
           ]
           route_rules_lpg = [
-      ####ADD_NEW_LPG_RULES #ashburn_vcn_fc-dmz-subnet-rtable# ####
+      ####ADD_NEW_LPG_RULES #ashburn_vcn_dmz-subnet-rtable# ####
           ]
           route_rules_ip = [
-      ####ADD_NEW_IP_RULES #ashburn_vcn_fc-dmz-subnet-rtable# ####
+      ####ADD_NEW_IP_RULES #ashburn_vcn_dmz-subnet-rtable# ####
           ]
           defined_tags = {
                   "Oracle-Tags.CreatedOn"= "2022-08-23T12:42:06.703Z" ,
-                  "Oracle-Tags.CreatedBy"= "oracleidentitycloudservice/kevin.waters@oracle.com"
+                  "Oracle-Tags.CreatedBy"= "abc@oracle.com"
+          }
+          freeform_tags = {}
+        },
+  }
+    ````
+
+15. Default Route Tables (Default RTs)
+- <b>Syntax</b>
+  
+    ````
+  default_route_tables = {
+        ## key - Is a unique value to reference the resources respectively
+        key = {
+  
+            # Required
+            compartment_id   = string
+            vcn_id           = string
+            display_name     = string
+  
+            # Optional
+            # IGW Rules
+            route_rules_igw  = [] # If there are no IGW Rules
+            (OR)
+            route_rules_igw  = [{
+                  network_entity_id = string
+                  description       = string
+                  destination       = string
+                  destination_type  = string
+            }]
+  
+            # SGW Rules
+            route_rules_sgw  = [] # If there are no SGW Rules
+            (OR)
+            route_rules_sgw  = [{
+                  network_entity_id = string
+                  description       = string
+                  destination       = string
+                  destination_type  = string
+            }]
+  
+            # NGW Rules
+            route_rules_ngw  = [] # If there are no NGW Rules
+            (OR)
+            route_rules_ngw  = [{
+                  network_entity_id = string
+                  description       = string
+                  destination       = string
+                  destination_type  = string
+            }]
+  
+            # DRG Rules
+            route_rules_drg  = [] # If there are no DRG Rules
+            (OR)
+            route_rules_drg  = [{
+                  network_entity_id = string
+                  description       = string
+                  destination       = string
+                  destination_type  = string
+            }]
+  
+            # LPG Rules
+            route_rules_lpg  = [] # If there are no LPG Rules
+            (OR)
+            route_rules_lpg  = [{
+                  network_entity_id = string
+                  description       = string
+                  destination       = string
+                  destination_type  = string
+            }]
+  
+            # IP Rules
+            route_rules_ip   = [] # If there are no IP Rules
+            (OR)
+            route_rules_ip   = [{
+                  network_entity_id = string
+                  description       = string
+                  destination       = string
+                  destination_type  = string
+            }]
+  
+            defined_tags     = map
+            freeform_tags    = map
+  }
+    ````
+- <b>Example</b>
+    ````
+  // Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+  ############################
+  # Network
+  # Major Objects - Default Route Table - tfvars
+  # Allowed Values:
+  # vcn_id can be the ocid or the key of vcns (map)
+  # compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens "--"
+  # Example : compartment_id = "ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c" or compartment_id = "Network-root-cpt--Network" where "Network-root-cpt" is the parent of "Network" compartment
+  ############################
+  
+  default_route_tables = {
+    # Route Table map #
+    # Start of #ashburn_vcn_app-subnet-rtable# #
+      vcn_app-subnet-rtable = {
+          # Required
+          compartment_id = "fc-network-cmp"
+          vcn_id     = "vcn1"
+          display_name     = "Default Route Table for vcn_app-subnet-rtable"
+  
+          # Optional
+          route_rules_igw = [
+      ####ADD_NEW_IGW_RULES #ashburn_vcn_app-subnet-rtable# ####
+          ]
+          route_rules_sgw = [
+      ####ADD_NEW_SGW_RULES #ashburn_vcn_app-subnet-rtable# ####
+          ]
+          route_rules_ngw = [
+                  ## Start Route Rule ashburn_vcn_app-subnet-rtable-natgw_0.0.0.0/0
+              {
+                    network_entity_id = "vcn-natgw"
+                    description       = ""
+                    destination       = "0.0.0.0/0"
+                    destination_type  = "CIDR_BLOCK"
+                   },
+              ## End Route Rule ashburn_vcn_app-subnet-rtable-natgw_0.0.0.0/0
+      ####ADD_NEW_NGW_RULES #ashburn_vcn_app-subnet-rtable# ####
+          ]
+          route_rules_drg = [
+                  ## Start Route Rule ashburn_vcn_app-subnet-rtable-drg_10.0.2.0/22
+              {
+                    network_entity_id = "vcn-drg"
+                    description       = ""
+                    destination       = "10.0.2.0/22"
+                    destination_type  = "CIDR_BLOCK"
+                   },
+              ## End Route Rule ashburn_vcn_app-subnet-rtable-drg_10.0.2.0/22
+      ####ADD_NEW_DRG_RULES #ashburn_vcn_app-subnet-rtable# ####
+          ]
+          route_rules_lpg = [
+      ####ADD_NEW_LPG_RULES #ashburn_vcn_app-subnet-rtable# ####
+          ]
+          route_rules_ip = [
+      ####ADD_NEW_IP_RULES #ashburn_vcn_app-subnet-rtable# ####
+          ]
+          defined_tags = {
+                  "Oracle-Tags.CreatedOn"= "2022-08-23T15:03:30.750Z" ,
+                  "Oracle-Tags.CreatedBy"= "abc@oracle.com"
+          }
+          freeform_tags = {}
+        },
+    # End of #ashburn_vcn_app-subnet-rtable# #
+    # Start of #ashburn_vcn_dmz-subnet-rtable# #
+      dmz-subnet-rtable = {
+          # Required
+          compartment_id = "fc-network-cmp"
+          vcn_id     = "vcn2"
+          display_name     = "Default Route Table for dmz-subnet-rtable"
+  
+          # Optional
+          route_rules_igw = [
+                  ## Start Route Rule ashburn_vcn_dmz-subnet-rtable-igw_0.0.0.0/0
+              {
+                    network_entity_id = "vcn-igw"
+                    description       = ""
+                    destination       = "0.0.0.0/0"
+                    destination_type  = "CIDR_BLOCK"
+                   },
+              ## End Route Rule ashburn_vcn_dmz-subnet-rtable-igw_0.0.0.0/0
+      ####ADD_NEW_IGW_RULES #ashburn_vcn_dmz-subnet-rtable# ####
+          ]
+          route_rules_sgw = [
+      ####ADD_NEW_SGW_RULES #ashburn_vcn_dmz-subnet-rtable# ####
+          ]
+          route_rules_ngw = [
+      ####ADD_NEW_NGW_RULES #ashburn_vcn_dmz-subnet-rtable# ####
+          ]
+          route_rules_drg = [
+                  ## Start Route Rule ashburn_vcn_dmz-subnet-rtable-drg_10.0.2.0/22
+              {
+                    network_entity_id = "vcn-drg"
+                    description       = ""
+                    destination       = "10.0.2.0/22"
+                    destination_type  = "CIDR_BLOCK"
+                   },
+              ## End Route Rule ashburn_vcn_dmz-subnet-rtable-drg_10.0.2.0/22
+              ## Start Route Rule ashburn_vcn_dmz-subnet-rtable-drg_10.3.2.0/23
+              {
+                    network_entity_id = "vcn-drg"
+                    description       = "Route to Freight internal"
+                    destination       = "10.3.2.0/23"
+                    destination_type  = "CIDR_BLOCK"
+                   },
+              ## End Route Rule ashburn_vcn_dmz-subnet-rtable-drg_10.3.2.0/23
+      ####ADD_NEW_DRG_RULES #ashburn_vcn_dmz-subnet-rtable# ####
+          ]
+          route_rules_lpg = [
+      ####ADD_NEW_LPG_RULES #ashburn_vcn_dmz-subnet-rtable# ####
+          ]
+          route_rules_ip = [
+      ####ADD_NEW_IP_RULES #ashburn_vcn_dmz-subnet-rtable# ####
+          ]
+          defined_tags = {
+                  "Oracle-Tags.CreatedOn"= "2022-08-23T12:42:06.703Z" ,
+                  "Oracle-Tags.CreatedBy"= "abc@oracle.com"
           }
           freeform_tags = {}
         },
   }
     ````
   
-
-9. Custom DHCP Options
+16. Custom DHCP Options
 - <b>Syntax</b>
   
     ````
@@ -827,7 +1509,7 @@ Points to Note:
   }
     ````
 
-10. Default DHCP Options
+17. Default DHCP Options
 - <b>Syntax</b>
   
     ````
@@ -882,41 +1564,230 @@ Points to Note:
   }
     ````
   
-
-
-10. Network Security Groups (NSGs)
+18. Network Security Groups (NSGs)
 - <b>Syntax</b>
-  
     ````
+    nsgs = {
+        ## key - Is a unique value to reference the resources respectively
+        key = {
+            # Required
+            compartment_id = string
+            vcn_id         = string
   
+            # Optional
+            display_name   = string
+            defined_tags   = string
+            freeform_tags  = string
+        }   
+    }
     ````
 - <b>Example</b>
     ````
+  ############################
+  # Network
+  # Network Security Group - tfvars
+  # Allowed Values:
+  # vcn_id can be the ocid or vcns map key
+  # compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens "--"
+  # Example : compartment_id = "ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c" or compartment_id = "Network-root-cpt--Network" where "Network-root-cpt" is the parent of "Network" compartment
+  ############################
+  nsgs = {
+      # NSG map #
+      ##Add New NSGs for phoenix here##
+      # Start of phoenix_NSG1-1 #
+      NSG1-1 = {
+            # Required
+            compartment_id   = "Network"
+            vcn_id           = "vcn1"
   
+            # Optional
+            display_name     = "NSG1-1"
+            defined_tags = {
+                    "Oracle-Tags.CreatedOn"= "2022-09-30T10:48:50.016Z" ,
+                    "Oracle-Tags.CreatedBy"= "abc@oracle.com"
+            }
+        },
+      # End of phoenix_NSG1-1 #
+      # Start of phoenix_NSG1-2 #
+      NSG1-2 = {
+            # Required
+            compartment_id   = "Network"
+            vcn_id           = "vcn2"
+
+            # Optional
+            display_name     = "NSG1-2"
+            defined_tags = {
+                    "Oracle-Tags.CreatedOn"= "2022-09-29T09:18:01.888Z" ,
+                    "Oracle-Tags.CreatedBy"= "abc@oracle.com"
+            }
+        },
+      # End of phoenix_NSG1-2 #
+  }
     ````
   
-
-11. DRG Route Distributions
+19. Network Security Group Rules (NSG Rules)
 - <b>Syntax</b>
   
     ````
+  nsg_rules = {
+      ## key - Is a unique value to reference the resources respectively
+      key = {
+          # Required
+          nsg_id          = string
+          direction       = string
+          protocol        = string
+   
+          # Optional
+          description     = string
+          stateless       = string
+          source_type     = string
+          source          = string
+          destinaion_type = string
+          destination     = string
   
+          # ICMP Options
+          icmp_options    = [{
+                icmp_type = string 
+                icmp_code = string   #  icmp_code = "" if you want to pass only the type
+            }] 
+          (OR)
+          # If there are no ICMP rules
+          icmp_options = [{
+                icmp_type = ""
+                icmp_code = ""
+            }]
+ 
+          # TCP Options 
+          tcp_options = [{
+              source_port_range = [{
+                  tcp_options_source_port_max = string
+                  tcp_options_source_port_min = string
+                  }]
+              (OR) 
+              # If there are no Source Port Range
+              source_port_range = []
+  
+              destination_port_range = [{
+                  tcp_options_destination_port_max = string
+                  tcp_options_destination_port_min = string
+                  }]
+              (OR) 
+              # If there are no Destination Port Range
+              destination_port_range = []
+              }]
+          (OR) 
+          # If there are no TCP Options
+          tcp_options = []
+  
+          # UDP Options 
+          udp_options = [{
+              source_port_range = [{
+                  udp_options_source_port_max = string
+                  udp_options_source_port_min = string
+                  }]
+              (OR) 
+              # If there are no Source Port Range
+              source_port_range = []
+  
+              destination_port_range = [{
+                  udp_options_destination_port_max = string
+                  udp_options_destination_port_min = string
+                  }]
+              (OR) 
+              # If there are no Destination Port Range
+              destination_port_range = []
+              }]
+          (OR) 
+          # If there are no UDP Options
+          udp_options = []
+    
+      }
+  }
     ````
 - <b>Example</b>
     ````
+  ############################
+  # Network
+  # Network Security Group Rules
+  # Allowed Values:
+  # nsg_id can be ocid or the key of nsgs (map)
+  ############################
+  nsg_rules = {
+      # NSG Rule map #
+      ##Add New NSG Rules for ashburn here##
+      dns_nsg_rule1 =  {
+            # Required
+            nsg_id = "dns_nsg"
+            direction = "INGRESS"
+            protocol = "UDP"
+    
+            # Optional
+            description = "dns_nsg_rule1"
+            stateless = "false"
+            source_type = "CIDR_BLOCK"
+            destination_type = null
+            destination = ""
+            source = "10.0.0.0/14"
+            icmp_options = [{
+                icmp_type = ""
+                icmp_code = ""
+            }]
+            tcp_options = []
+            udp_options = [{
+                destination_port_range  = [{
+                    udp_options_destination_port_max = "53"
+                    udp_options_destination_port_min = "53"
+                }]
+                source_port_range = []
+            }]
+       },
+      dns_nsg_rule2 =  {
+            # Required
+            nsg_id = "dns_nsg"
+            direction = "INGRESS"
+            protocol = "ICMP"
   
-    ````
+            # Optional
+            description = " "
+            stateless = "false"
+            source_type = "CIDR_BLOCK"
+            destination_type = null
+            destination = ""
+            source = "10.0.0.0/14"
+            icmp_options = [{
+                icmp_type = ""
+                icmp_code = ""
+            }]
+            tcp_options = []
+            udp_options = []
+       },
+      dns_nsg_rule3 =  {
+            # Required
+            nsg_id = "dns_nsg"
+            direction = "EGRESS"
+            protocol = "TCP"
   
-
-12. DRG Route Tables
-- <b>Syntax</b>
-  
-    ````
-  
-    ````
-- <b>Example</b>
-    ````
-  
+            # Optional
+            description = "dns_nsg_rule3"
+            stateless = "false"
+            source_type = null
+            destination_type = "CIDR_BLOCK"
+            destination = "10.0.0.0/32"
+            source = ""
+            icmp_options = [{
+                icmp_type = ""
+                icmp_code = ""
+            }]
+            tcp_options = [{
+                source_port_range = []
+                destination_port_range = [{
+                    tcp_options_destination_port_max = "53"
+                    tcp_options_destination_port_min = "53"
+                    }]
+            }]
+            udp_options = []
+      },
+  }
     ````
   
 
