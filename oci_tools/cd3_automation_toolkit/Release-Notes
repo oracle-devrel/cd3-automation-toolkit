@@ -305,3 +305,16 @@ CD3 Automation Toolkit Tag v9.1
    reserved public IP. Support for OCI certificate management certificates for Listeners,
    BackendSets.
 4. Bug fixes
+
+---------------------------------
+CD3 Automation Toolkit Tag v9.2
+---------------------------------
+1. Terraform modules for FSS and ADB(Modified the input sheet for ADB to include more features)
+2. Included new service - Network Load Balancers
+3. Enhanced Tags sheet to include Default Tags for Multiple Compartments.
+4. Enhanced CD3 Validator for FSS, NSGs column for each tab.
+5. Included CIS compliance checker script as part of setUpOCI Menu option
+6. Cleanup of variables_<region>.tf file
+7. Updated CD3 templates in example folder with latest CIS data
+8. Bug fixes wrt multiple services like Instances, Notifications etc
+9. Introduced documentation folder containing terraform and toolkit user guide in outdir of each customer
