@@ -29,5 +29,3 @@ resource "oci_network_load_balancer_backend_set" "backend_set" {
   ip_version         = var.ip_version
   is_preserve_source = var.is_preserve_source
 }
-
-#terraform import "module.nlb-backend-sets[\"ash1-np-ade-bs\"].oci_network_load_balancer_backend_set.backend_set" networkLoadBalancers/ocid1.networkloadbalancer.oc1.iad.amaaaaaambgqraaahshwlidpo4euy6b6tmkfg534ortljx3ncdsxahgwelma/backendSets/ash1-np-ade-bs

@@ -154,7 +154,4 @@ resource "oci_core_default_security_list" "default_security_list" {
       }
     }
   }
-  lifecycle {
-    ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"]]
-  }
 }

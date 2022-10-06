@@ -16,7 +16,4 @@ resource "oci_core_private_ip" "private_ip" {
   vlan_id        = var.vlan_id
   vnic_id        = var.vnic_id
 
-  lifecycle {
-    ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"], freeform_tags]
-  }
 }

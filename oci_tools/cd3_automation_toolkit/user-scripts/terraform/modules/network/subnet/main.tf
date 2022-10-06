@@ -25,7 +25,4 @@ resource "oci_core_subnet" "subnet" {
   route_table_id             = var.route_table_id
   security_list_ids          = var.security_list_ids != [] ? [for sl in var.security_list_ids : (length(regexall("ocid1.securitylist.oc1*", sl)) > 0 ? sl : (sl == "" ? var.vcn_default_security_list_id : var.custom_security_list_id[sl]["seclist_tf_id"]))] : []
 
-  lifecycle {
-    ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"]]
-  }
 }

@@ -425,7 +425,12 @@ variable "nsgs" {
   }))
   default = {}
 }
- 
+
+variable "nsg_rules" {
+  type = map(any)
+  default = {}
+}
+/*
 variable "nsg_rules" {
   type = map(object({
     nsg_id           = string
@@ -440,7 +445,7 @@ variable "nsg_rules" {
     options          = optional(map(any))
   }))
   default = {}
-}
+}*/
  
 variable "subnets" {
   type = map(object({

@@ -119,7 +119,7 @@ resource "oci_core_instance" "instance" {
   }
 
   lifecycle {
-    ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"], create_vnic_details[0].defined_tags["Oracle-Tags.CreatedOn"], create_vnic_details[0].defined_tags["Oracle-Tags.CreatedBy"]]
+    ignore_changes = [create_vnic_details[0].defined_tags["Oracle-Tags.CreatedOn"], create_vnic_details[0].defined_tags["Oracle-Tags.CreatedBy"]]
   }
 }
 

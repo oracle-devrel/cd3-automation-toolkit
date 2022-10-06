@@ -19,9 +19,3 @@ resource "oci_network_load_balancer_backend" "backend" {
   target_id  = length(regexall("IP:*", var.ip_address)) == 0 ? merge(local.nlb_private_ip_ocid.private_ocids.*...)[merge(local.nlb_instance_vnic_ocid.vnic_ocids.*...)[merge(local.nlb_instance_ocid.ocid.*...)[split("NAME:", var.ip_address)[1]][0]][0]][0] : null
   weight     = var.weight
 }
-
-#terraform import "module.nlb-backends[\"ash1-adenp01a\"].oci_network_load_balancer_backend.backend" networkLoadBalancers/ocid1.networkloadbalancer.oc1.iad.amaaaaaambgqraaahshwlidpo4euy6b6tmkfg534ortljx3ncdsxahgwelma/backendSets/ash1-np-ade-bs/backend/ash1-adenp01a
-#terraform import "module.nlb-backends[\"ash1-adenp01a\"].oci_network_load_balancer_backend.backend" networkLoadBalancers/ocid1.networkloadbalancer.oc1.iad.amaaaaaambgqraaahshwlidpo4euy6b6tmkfg534ortljx3ncdsxahgwelma/backendSets/ash1-np-ade-bs/backends/ocid1.privateip.oc1.iad.abuwcljrcwi75bfnlje6wqbr6vodykjbj2voahnunflpbkvuhlgffbdyjbda:5432
-#terraform import "module.nlb-backends[\"ash1-adenp01c\"].oci_network_load_balancer_backend.backend" networkLoadBalancers/ocid1.networkloadbalancer.oc1.iad.amaaaaaambgqraaahshwlidpo4euy6b6tmkfg534ortljx3ncdsxahgwelma/backendSets/ash1-np-ade-bs/backends/ash1-adenp01c
-#terraform import "module.nlb-backends[\"ash1-adenp01b\"].oci_network_load_balancer_backend.backend" networkLoadBalancers/ocid1.networkloadbalancer.oc1.iad.amaaaaaambgqraaahshwlidpo4euy6b6tmkfg534ortljx3ncdsxahgwelma/backendSets/ash1-np-ade-bs/backends/ash1-adenp01b
-#oci nlb backend-set get --backend-set-name ash1-np-ade-bs --network-load-balancer-id ocid1.networkloadbalancer.oc1.iad.amaaaaaambgqraaahshwlidpo4euy6b6tmkfg534ortljx3ncdsxahgwelma

@@ -18,7 +18,4 @@ resource "oci_file_storage_mount_target" "mount_target" {
   hostname_label = var.hostname_label
   ip_address     = var.ip_address
   nsg_ids        = var.network_compartment_id != [] ? local.nsg_ids : null
-  lifecycle {
-    ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"]]
-  }
 }

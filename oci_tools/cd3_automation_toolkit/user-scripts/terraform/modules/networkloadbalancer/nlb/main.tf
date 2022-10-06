@@ -26,8 +26,6 @@ resource "oci_network_load_balancer_network_load_balancer" "network_load_balance
     }
   }
   lifecycle {
-    ignore_changes = [reserved_ips, defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"]]
+    ignore_changes = [reserved_ips]
   }
 }
-
-#terraform import "module.network-load-balancers[\"ash1-np-ade-nlb\"].oci_network_load_balancer_network_load_balancer.network_load_balancer" ocid1.networkloadbalancer.oc1.iad.amaaaaaambgqraaahshwlidpo4euy6b6tmkfg534ortljx3ncdsxahgwelma

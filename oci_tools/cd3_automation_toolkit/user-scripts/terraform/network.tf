@@ -657,7 +657,8 @@ output "nsg_id_map" {
 */
 
 module "nsg-rules" {
-  source     = "./modules/network/nsg-rule"
+//  source     = "./modules/network/nsg-rule"
+  source     = "./modules/network/nsg-rules"
   for_each   = (var.nsg_rules != null || var.nsg_rules != {}) ? var.nsg_rules : {}
   depends_on = [module.nsgs]
 

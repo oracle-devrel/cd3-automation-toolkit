@@ -21,7 +21,5 @@ resource "oci_budget_budget" "budget" {
   #target_compartment_id  = var.target_compartment_id
   target_type = var.target_type
   targets     = var.targets
-  lifecycle {
-    ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"], freeform_tags]
-  }
+
 }

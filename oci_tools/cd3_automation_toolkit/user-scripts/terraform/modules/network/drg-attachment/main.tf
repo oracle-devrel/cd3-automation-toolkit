@@ -23,8 +23,4 @@ resource "oci_core_drg_attachment" "drg_attachment" {
       route_table_id = (network_details.value.vcn_route_table_id != "" && network_details.value.vcn_route_table_id != null) ? (length(regexall("ocid1*", network_details.value.vcn_route_table_id)) > 0 ? network_details.value.vcn_route_table_id : (length(regexall(".Default-Route-Table-for*", network_details.value.vcn_route_table_id))) > 0 ? var.default_route_table_tf_id[network_details.value.vcn_route_table_id]["vcn_default_route_table_id"] : var.route_table_tf_id[network_details.value.vcn_route_table_id]["route_table_ids"]) : null
     }
   }
-
-  lifecycle {
-    ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"]]
-  }
 }

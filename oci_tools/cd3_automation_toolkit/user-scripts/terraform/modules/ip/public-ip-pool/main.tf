@@ -13,8 +13,4 @@ resource "oci_core_public_ip_pool" "public_ip_pool" {
   defined_tags  = var.defined_tags
   display_name  = var.display_name
   freeform_tags = var.freeform_tags
-
-  lifecycle {
-    ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"], freeform_tags]
-  }
 }

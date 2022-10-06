@@ -19,7 +19,5 @@ resource "oci_budget_alert_rule" "alert_rule" {
   freeform_tags = var.freeform_tags
   message       = var.message
   recipients    = var.recipients
-  lifecycle {
-    ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"], freeform_tags]
-  }
+
 }

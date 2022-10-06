@@ -23,8 +23,4 @@ resource "oci_kms_key" "key" {
   defined_tags    = var.defined_tags
   freeform_tags   = var.freeform_tags
   protection_mode = var.protection_mode != "" ? var.protection_mode : null
-
-  lifecycle {
-    ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"]]
-  }
 }

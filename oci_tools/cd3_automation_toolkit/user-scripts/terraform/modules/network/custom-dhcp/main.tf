@@ -31,7 +31,4 @@ resource "oci_core_dhcp_options" "custom_dhcp_option" {
   domain_name_type = var.domain_name_type
   freeform_tags    = var.freeform_tags
 
-  lifecycle {
-    ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"]]
-  }
 }
