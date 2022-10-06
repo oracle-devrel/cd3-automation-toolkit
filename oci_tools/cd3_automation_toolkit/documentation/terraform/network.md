@@ -1891,5 +1891,43 @@ Points to Note:
     ````
 - <b>Example</b>
     ````
+  ############################
+  # Network
+  # Major Objects - LPG - tfvars
+  # Allowed Values:
+  # vcn_id can be the ocid or the key of vcns (map)
+  # compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens "--"
+  # Example : compartment_id = "ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c" or compartment_id = "Network-root-cpt--Network" where "Network-root-cpt" is the parent of "Network" compartment
+  ############################
+  lpgs = {
+      hub-lpgs = {
+                  },
+      spoke-lpgs = {
+                  },
+      peer-lpgs = {
+                      test_test_lpg0 = {
+                      compartment_id = "CTDOKE"
+                      vcn_id     = "test"
+                      lpg_name   = "test_lpg0"
+                      route_table_id = ""
+                      peer_id = "lab-one-oke-vcn-dr_lab-one-oke-vcn-dr_lpg0"
+                      defined_tags = {}
+                      freeform_tags = {}
+               },
+                  },
+      none-lpgs  = {
+                  },
+      exported-lpgs = {
+                      lab-one-oke-vcn-dr_lab-one-oke-vcn-dr_lpg0 = {
+                      compartment_id = "CTDOKE"
+                      vcn_id     = "lab-one-oke-vcn-dr"
+                      lpg_name   = "lab-one-oke-vcn-dr_lpg0"
+                      route_table_id = ""
+                      peer_id = ""
+                      defined_tags = {}
+                      freeform_tags = {}
+               },
+                  },
+  }
     ````
 
