@@ -60,8 +60,8 @@ def fetch_compartments(outdir, config=DEFAULT_LOCATION):
         with open(var_files[reg], "w") as f:
             f.write(var_data[reg])
 
-        if ("linux" in sys.platform):
-            os.system("dos2unix " + var_files[reg])
+        # if ("linux" in sys.platform):
+        #     os.system("dos2unix " + var_files[reg])
 
     print("Compartment info written to all region specific variables files under outdir folder")
 

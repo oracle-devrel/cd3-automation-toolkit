@@ -1144,9 +1144,9 @@ def validate_tags(filename,comp_ids):
 
             if columnname == 'Tag Keys':
                 columnvalue = str(columnvalue).strip()
-                if columnvalue == '' or columnvalue == 'nan':
-                    log(f'ROW {i + 3} : Empty value at column "Tag Keys".')
-                    tag_empty_check = True
+                # if columnvalue == '' or columnvalue == 'nan':
+                #     log(f'ROW {i + 3} : Empty value at column "Tag Keys".')
+                #     tag_empty_check = True
 
                 if ' ' in columnvalue or '.' in columnvalue:
                     log(f'ROW {i+3} : Spaces and Periods are not allowed in Tag Keys.')
