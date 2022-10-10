@@ -15,20 +15,19 @@ ngws = {
         compartment_id = "{{ compartment_tf_name }}"
         vcn_id     = "{{ vcn_tf_name }}"
         ngw_name     = "{{ ngw_name }}"
+
         {% if public_ip_id and public_ip_id != 'nan' and public_ip_id != ''%}
-        public_ip_id = {{ public_ip_id }} {% else %}
-        public_ip_id = ""
+        public_ip_id = {{ public_ip_id }}
         {% endif %}
+
         {% if block_traffic and block_traffic != 'nan' and block_traffic != ''%}
         block_traffic = {{ block_traffic }}
-        {% else %}
-        block_traffic = "false"
-        {% endif %} {# Defaults to false - set as per terraform hashicorp #}
+        {% endif %}
 
     {#  ##Do not modify below this line##  #}
     {#                                     #}
     {#  ###Section for adding Defined and Freeform Tags###  #}
-    {% if defined_tags and defined_tags != 'nan' and defined_tags != '' %}
+    {% if defined_tags and defined_tags != 'nan' and defined_tags != '' and defined_tags != [['nan']]  %}
       {% if defined_tags[0] %}
         defined_tags = {
         {% for tags in defined_tags  %}
@@ -39,13 +38,9 @@ ngws = {
             {% endif %}
         {% endfor %}
         }
-      {% else %}
-        defined_tags = {}
         {% endif %}
-       {% else %}
-        defined_tags = {}
        {% endif %}
-            {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' %}
+            {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' and freeform_tags != [['nan']]   %}
                 {% if freeform_tags[0] %}
         freeform_tags = {
                     {% for tags in freeform_tags %}
@@ -56,11 +51,7 @@ ngws = {
                         {% endif %}
                     {% endfor %}
                     }
-                {% else %}
-        freeform_tags = {}
                 {% endif %}
-            {% else %}
-        freeform_tags = {}
             {% endif %}
     {#  ###Section for adding Defined and Freeform Tags ends here###  #}
       },

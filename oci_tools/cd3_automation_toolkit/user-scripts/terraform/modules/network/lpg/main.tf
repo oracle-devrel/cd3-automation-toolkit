@@ -18,7 +18,4 @@ resource "oci_core_local_peering_gateway" "local_peering_gateway" {
   peer_id        = var.peer_id
   route_table_id = var.route_table_id
 
-  lifecycle {
-    ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"]]
-  }
 }

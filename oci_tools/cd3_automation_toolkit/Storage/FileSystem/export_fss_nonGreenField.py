@@ -8,7 +8,6 @@ import sys
 import oci
 import re
 import os
-from oci.identity import IdentityClient
 from oci.config import DEFAULT_LOCATION
 from commonTools import *
 
@@ -74,7 +73,7 @@ def __get_mount_info(cname, compartment_id, reg, availability_domain_name, confi
             export_set_id = mnt.export_set_id  # Export Set Id
             mt_display_name = mnt.display_name  # Mount Target Name
             tf_name = commonTools.check_tf_variable(mt_display_name)
-            importCommands[reg].write("\nterraform import oci_file_storage_mount_target." + tf_name + " " + str(mnt_id))
+            importCommands[reg].write("\nterraform import \"module.mts[\\\"" + tf_name + "\\\"].oci_file_storage_mount_target.mount_target\" " + str(mnt_id))
             subnet_id = mnt.subnet_id
             private_ip_ids = mnt.private_ip_ids
             nsg_id = mnt.nsg_ids
@@ -88,14 +87,13 @@ def __get_mount_info(cname, compartment_id, reg, availability_domain_name, confi
             mnt_sub_name = subnet_info.data.display_name  # Subnet-Name
             vnc_name = vnc_info.get_vcn(subnet_info.data.vcn_id).data.display_name  # vcn-Name
             vplussubnet = vnc_name + "_" + mnt_sub_name
-            #vplussubnet =  commonTools.check_tf_variable(vplussubnet)
+
             for ips in private_ip_ids:
                 private_address = vnc_info.get_private_ip(ips)
                 mnt_p_ip = private_address.data.ip_address  # Private IP
                 mnt_p_hostname = private_address.data.hostname_label
             export_set_info = file_system.get_export_set(export_set_id=export_set_id)
-            # tf_name = commonTools.check_tf_variable(mt_display_name+"-"+"ES")
-            # importCommands[reg].write("\nterraform import oci_file_storage_export_set." + tf_name + " " + str(export_set_id))
+
             es_details = file_system.get_export_set(export_set_id=export_set_id)
             bytes = (str(es_details.data.max_fs_stat_bytes))
             files = (str(es_details.data.max_fs_stat_files))
@@ -117,7 +115,7 @@ def __get_mount_info(cname, compartment_id, reg, availability_domain_name, confi
                     # print(mt_display_name,"-",str(fs_name))
                     tf_name = commonTools.check_tf_variable(fs_name)
                     importCommands[reg].write(
-                        "\nterraform import oci_file_storage_file_system." + tf_name + " " + str(fs_id))
+                        "\nterraform import \"module.fss[\\\"" + tf_name + "\\\"].oci_file_storage_file_system.file_system\" " + str(fs_id))
                     fss.append(str(fs_id))
                 elen = (len(einfo_export_data.export_options))
                 if (elen == 0):
@@ -155,8 +153,7 @@ def __get_mount_info(cname, compartment_id, reg, availability_domain_name, confi
                         # new_row=("","","","","","","","","","",einfo_path,einfo_export_data.export_options[rw].source,einfo_export_data.export_options[rw].access,einfo_export_data.export_options[rw].anonymous_gid,einfo_export_data.export_options[rw].anonymous_uid,einfo_export_data.export_options[rw].identity_squash,einfo_export_data.export_options[rw].require_privileged_source_port)
                         # rows.append(new_row)
                 tf_name = commonTools.check_tf_variable("FSE-" + commonTools.check_tf_variable(mt_display_name) + "-" + commonTools.check_tf_variable(fs_name) + "-" + einfo_path[1:])
-                importCommands[reg].write(
-                    "\nterraform import oci_file_storage_export." + tf_name + " " + str(einfo.id))  # exports import
+                importCommands[reg].write("\nterraform import \"module.fss-export-options[\\\"" + tf_name + "\\\"].oci_file_storage_export.export\" " + str(einfo.id))  # exports import
     except Exception as e:
         pass
 
@@ -182,19 +179,14 @@ def export_fss(inputfile, outdir, network_compartments=[], config=DEFAULT_LOCATI
     configFileName = config
     config = oci.config.from_file(file_location=configFileName)
 
-    global idc, compute, file_system, ct, vnc_info, importCommands, rows,  all_ads, input_compartment_list, AD, df, values_for_column_fss, sheet_dict_instances
+    global file_system, ct, vnc_info, importCommands, rows,  all_ads, input_compartment_list, AD, df, values_for_column_fss, sheet_dict_instances
 
-    idc = IdentityClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
-    compute = oci.core.ComputeClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
     file_system = oci.file_storage.FileStorageClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
     ct = commonTools()
     vnc_info = oci.core.VirtualNetworkClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
     importCommands = {}
     rows = []
-    #all_regions = []
     all_ads = []
-    #all_compartments = []
-    #input_compartment_list = network_compartments
     ct.get_subscribedregions(configFileName)
     ct.get_network_compartment_ids(config['tenancy'],"root",configFileName)
 

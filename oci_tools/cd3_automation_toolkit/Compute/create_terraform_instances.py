@@ -82,16 +82,17 @@ def create_terraform_instances(inputfile, outdir, prefix, config):
         shapeField = shapeField.strip()
         shape_error = 0
 
-        if (shapeField.lower() != "nan" and ".Flex" in shapeField):
-            if ("::" not in shapeField):
-                shape_error = 1
-            else:
-                shapeField = shapeField.split("::")
-                if (shapeField[1].strip() == ""):
+        if (shapeField.lower() != "nan"):
+            if ".Micro" in shapeField or ".Flex" in shapeField:
+                if ("::" not in shapeField):
                     shape_error = 1
+                else:
+                    shapeField = shapeField.split("::")
+                    if (shapeField[1].strip() == ""):
+                        shape_error = 1
 
         if (shape_error == 1):
-            print("\nERROR!!! " + display_name + " is missing ocpus for Flex shape....Exiting!")
+            print("\nERROR!!! " + display_name + " is missing ocpus for Flex/Micro shape....Exiting!")
             exit(1)
 
         # temporary dictionary1 and dictionary2
@@ -124,7 +125,7 @@ def create_terraform_instances(inputfile, outdir, prefix, config):
                 tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)
 
             if columnname == 'Shape':
-                if ".Flex" not in columnvalue:
+                if ".Flex" not in columnvalue and ".Micro" not in columnvalue:
                     columnvalue = columnvalue.strip()
                     tempdict = {'shape': [columnvalue]}
 
@@ -141,11 +142,10 @@ def create_terraform_instances(inputfile, outdir, prefix, config):
                         vcn_name = subnets.vcn_subnet_map[key][1]
                         subnet_id = subnets.vcn_subnet_map[key][2]
                     except Exception as e:
-                        print("Invalid Subnet Name specified for row " + str(
-                            i + 3) + ". It Doesnt exist in Subnets sheet. Exiting!!!")
+                        print("Invalid Subnet Name specified for row " + str(i + 3) + ". It Doesnt exist in Subnets sheet. Exiting!!!")
                         exit()
 
-                tempdict = {'network_compartment_id': network_compartment_id, 'vcn_name': vcn_name,
+                tempdict = {'network_compartment_id': commonTools.check_tf_variable(network_compartment_id), 'vcn_name': vcn_name,
                             'subnet_id': subnet_id}
 
             if columnname == 'Display Name':

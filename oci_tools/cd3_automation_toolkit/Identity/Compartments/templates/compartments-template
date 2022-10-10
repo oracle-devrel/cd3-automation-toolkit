@@ -16,7 +16,7 @@ compartments = {
 
     compartment_level1 = {
             {{ compartment_level1 }}
-            }
+            },
 
     compartment_level2 = {
             {{ compartment_level2 }}
@@ -46,14 +46,13 @@ compartments = {
                 name               = "{{ name }}"
                 description        = "{{ description }}"
                 {% if enable_delete and enable_delete != 'nan' and enable_delete != '' %}
-                enable_delete = {{ enable_delete }} {% else %}
-                enable_delete = "false" {# Defaults to false - set as per terraform hashicorp #}
+                enable_delete = {{ enable_delete }}
                 {% endif %}
 
             {#  ##Do not modify below this line##  #}
             {#                                     #}
             {#  ###Section for adding Defined and Freeform Tags###  #}
-            {% if defined_tags and defined_tags != 'nan' and defined_tags != '' %}
+            {% if defined_tags and defined_tags != 'nan' and defined_tags != '' and defined_tags != [['nan']] %}
               {% if defined_tags[0] %}
                 defined_tags = {
                 {% for tags in defined_tags  %}
@@ -64,13 +63,9 @@ compartments = {
                     {% endif %}
                 {% endfor %}
                 }
-              {% else %}
-                defined_tags = {}
                 {% endif %}
-               {% else %}
-                defined_tags = {}
                {% endif %}
-                    {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' %}
+                    {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' and freeform_tags != [['nan']] %}
                         {% if freeform_tags[0] %}
                 freeform_tags = {
                             {% for tags in freeform_tags %}
@@ -81,11 +76,7 @@ compartments = {
                                 {% endif %}
                             {% endfor %}
                             }
-                        {% else %}
-                freeform_tags = {}
                         {% endif %}
-                    {% else %}
-                freeform_tags = {}
                     {% endif %}
             {#  ###Section for adding Defined and Freeform Tags ends here###  #}
               },

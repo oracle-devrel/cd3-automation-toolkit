@@ -11,15 +11,24 @@ resource "oci_core_vcn" "vcn" {
   compartment_id = var.compartment_id
 
   #Optional
-  cidr_blocks    = var.cidr_blocks
-  defined_tags   = var.defined_tags
-  display_name   = var.display_name
-  dns_label      = var.dns_label
-  freeform_tags  = var.freeform_tags
-  is_ipv6enabled = var.is_ipv6enabled
-
+  dynamic "byoipv6cidr_details" {
+    for_each = try(var.byoipv6cidr_details != [] ? var.byoipv6cidr_details : [], [])
+    content {
+      #Required
+      byoipv6range_id = byoipv6cidr_details.value.byoipv6range_id
+      ipv6cidr_block  = byoipv6cidr_details.value.ipv6cidr_block
+    }
+  }
+  #Optional
+  cidr_blocks                      = var.cidr_blocks
+  defined_tags                     = var.defined_tags
+  display_name                     = var.display_name
+  dns_label                        = var.dns_label
+  freeform_tags                    = var.freeform_tags
+  is_ipv6enabled                   = var.is_ipv6enabled
+  ipv6private_cidr_blocks          = var.ipv6private_cidr_blocks
+  is_oracle_gua_allocation_enabled = var.is_oracle_gua_allocation_enabled
   lifecycle {
     create_before_destroy = true
-    ignore_changes        = [defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"]]
   }
 }

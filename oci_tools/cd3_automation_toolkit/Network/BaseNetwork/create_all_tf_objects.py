@@ -57,7 +57,7 @@ def create_all_tf_objects(inputfile, outdir, prefix, config, non_gf_tenancy, mod
     with section('Process Subnets for Subnets creation'):
         create_terraform_subnet(inputfile, outdir, prefix, non_gf_tenancy, config, modify_network)
 
-    print('\n\nMake sure to export all SecRules, RouteRules and DRG RouteRules to CD3. Use sub-options 3,4 under option 3(Network) of Main Menu for the same.')
+    print('\n\nMake sure to export all SecRules, RouteRules and DRG RouteRules to CD3. Use sub-options 4,5,6 under option 3(Network) of Main Menu for the same.')
 
 
 if __name__ == '__main__':

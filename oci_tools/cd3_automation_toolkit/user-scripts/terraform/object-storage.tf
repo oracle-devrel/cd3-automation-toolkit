@@ -21,8 +21,8 @@ module "oss-policies" {
   policy_statements     = each.value.policy_statements
 
   #Optional
-  defined_tags = each.value.defined_tags  != {} ? each.value.defined_tags : {}
-  freeform_tags = each.value.freeform_tags  != {} ? each.value.freeform_tags : {}
+  defined_tags        = each.value.defined_tags != {} ? each.value.defined_tags : {}
+  freeform_tags       = each.value.freeform_tags != {} ? each.value.freeform_tags : {}
   policy_version_date = each.value.policy_version_date != null ? each.value.policy_version_date : null
 }
 
@@ -38,26 +38,26 @@ output "oss_policies_id_map" {
 #############################
 
 module "oss-buckets" {
-  source   = "./modules/storage/object-storage"
-  for_each =  var.oss != null ? var.oss : {}
+  source     = "./modules/storage/object-storage"
+  for_each   = var.oss != null ? var.oss : {}
   depends_on = [module.keys]
 
   #Required
   compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
-  name = each.value.name
-  namespace = data.oci_objectstorage_namespace.bucket_namespace.namespace
+  name           = each.value.name
+  namespace      = data.oci_objectstorage_namespace.bucket_namespace.namespace
 
   #Optional
-  access_type = each.value.access_type != "" ? each.value.access_type : null # Defaults to 'NoPublicAccess' as per hashicorp terraform
-  auto_tiering = each.value.auto_tiering  != "" ? each.value.auto_tiering : null # Defaults to 'Disabled' as per hashicorp terraform
-  defined_tags = each.value.defined_tags  != {} ? each.value.defined_tags : {}
-  freeform_tags = each.value.freeform_tags  != {} ? each.value.freeform_tags : {}
-  kms_key_id = each.value.kms_key_id != "" ? merge(module.keys.*...)[each.value.kms_key_id]["key_tf_id"] : null
-  metadata = each.value.metadata != {} ? each.value.metadata : {}
+  access_type           = each.value.access_type != "" ? each.value.access_type : null   # Defaults to 'NoPublicAccess' as per hashicorp terraform
+  auto_tiering          = each.value.auto_tiering != "" ? each.value.auto_tiering : null # Defaults to 'Disabled' as per hashicorp terraform
+  defined_tags          = each.value.defined_tags != {} ? each.value.defined_tags : {}
+  freeform_tags         = each.value.freeform_tags != {} ? each.value.freeform_tags : {}
+  kms_key_id            = each.value.kms_key_id != "" ? merge(module.keys.*...)[each.value.kms_key_id]["key_tf_id"] : null
+  metadata              = each.value.metadata != {} ? each.value.metadata : {}
   object_events_enabled = each.value.object_events_enabled != "" ? each.value.object_events_enabled : null # Defaults to 'false' as per hashicorp terraform
-  storage_tier = each.value.storage_tier != "" ? each.value.storage_tier : null # Defaults to 'Standard' as per hashicorp terraform
-  retention_rules = each.value.retention_rules != [] ? each.value.retention_rules : []
-  versioning = each.value.versioning != "" ? each.value.versioning : null
+  storage_tier          = each.value.storage_tier != "" ? each.value.storage_tier : null                   # Defaults to 'Standard' as per hashicorp terraform
+  retention_rules       = each.value.retention_rules != [] ? each.value.retention_rules : []
+  versioning            = each.value.versioning != "" ? each.value.versioning : null
 }
 
 #############################
@@ -67,7 +67,7 @@ module "oss-buckets" {
 
 data "oci_objectstorage_bucket" "buckets" {
   depends_on = [module.oss-buckets]
-  for_each  = var.oss_logs != null ? var.oss_logs : {}
+  for_each   = var.oss_logs != null ? var.oss_logs : {}
   #Required
   name      = each.value.resource
   namespace = data.oci_objectstorage_namespace.bucket_namespace.namespace
@@ -75,7 +75,7 @@ data "oci_objectstorage_bucket" "buckets" {
 
 module "oss-log-groups" {
   source   = "./modules/managementservices/log-group"
-  for_each =  var.oss_log_groups != null ? var.oss_log_groups : {}
+  for_each = var.oss_log_groups != null ? var.oss_log_groups : {}
 
   # Log Groups
   #Required
@@ -98,7 +98,7 @@ output "oss_log_group_map" {
 module "oss-logs" {
   source     = "./modules/managementservices/log"
   depends_on = [module.oss-log-groups]
-  for_each   =  var.oss_logs != null ? var.oss_logs : {}
+  for_each   = var.oss_logs != null ? var.oss_logs : {}
 
   # Logs
   #Required

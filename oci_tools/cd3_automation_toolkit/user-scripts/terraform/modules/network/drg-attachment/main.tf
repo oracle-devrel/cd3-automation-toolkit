@@ -13,7 +13,7 @@ resource "oci_core_drg_attachment" "drg_attachment" {
   freeform_tags      = var.freeform_tags
 
   dynamic "network_details" {
-	for_each = var.drg_attachments[var.key_name].network_details != [] ? var.drg_attachments[var.key_name].network_details : []
+    for_each = var.drg_attachments[var.key_name].network_details != [] ? var.drg_attachments[var.key_name].network_details : []
 
     content {
       #Required
@@ -22,9 +22,5 @@ resource "oci_core_drg_attachment" "drg_attachment" {
       #Optional
       route_table_id = (network_details.value.vcn_route_table_id != "" && network_details.value.vcn_route_table_id != null) ? (length(regexall("ocid1*", network_details.value.vcn_route_table_id)) > 0 ? network_details.value.vcn_route_table_id : (length(regexall(".Default-Route-Table-for*", network_details.value.vcn_route_table_id))) > 0 ? var.default_route_table_tf_id[network_details.value.vcn_route_table_id]["vcn_default_route_table_id"] : var.route_table_tf_id[network_details.value.vcn_route_table_id]["route_table_ids"]) : null
     }
-  }
-
-  lifecycle {
-    ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"]]
   }
 }

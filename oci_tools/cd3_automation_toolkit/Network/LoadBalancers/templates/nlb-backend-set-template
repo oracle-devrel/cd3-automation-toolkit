@@ -1,0 +1,104 @@
+{% if (skeleton and count == 0) %}
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+
+#############################
+# Network
+# Network Load Balancers Backend Sets - tfvars
+# Allowed Values:
+# network_load_balancer_id can be ocid or the key of network_load_balancers (map)
+#############################
+
+nlb_backend_sets = {
+  ##Add New Backend Sets for {{ region|lower }} here##
+}{% else %}
+
+    {{ nlb_tf_name }}_{{ backend_set_tf_name }} = {
+
+        name = "{{ backend_set_name }}"
+        network_load_balancer_id = "{{ nlb_tf_name }}"
+
+        policy = "{{ backend_policy }}"
+
+        {% if is_preserve_source != '' %}
+        is_preserve_source  = {{ is_preserve_source  }}
+        {% else %}
+        is_preserve_source = true
+        {% endif %}
+
+        {% if ip_version and ip_version != "" %}
+        ip_version = {{ ip_version }}
+        {% else %}
+        ip_version = ""
+        {% endif %}
+
+        {% if backend_healthcheck_protocol and backend_healthcheck_protocol != "" %}
+        protocol = "{{ backend_healthcheck_protocol }}"
+        {% else %}
+        protocol = "HTTP"
+        {% endif %}
+
+
+        {% if interval_in_millis and interval_in_millis != '' and interval_in_millis != 'nan' %}
+        interval_in_millis = "{{ interval_in_millis }}"
+        {% else %}
+        interval_in_millis = null
+        {% endif %}
+
+        {% if backend_healthcheck_port and backend_healthcheck_port != '' %}
+        port = "{{ backend_healthcheck_port }}"
+        {% else %}
+        port = null
+        {% endif %}
+
+        {% if response_body_regex and response_body_regex != '' %}
+        response_body_regex = "{{ response_body_regex }}"
+        {% else %}
+        response_body_regex = null
+        {% endif %}
+
+        {% if retries and retries != '' %}
+        retries = "{{ retries }}"
+        {% else %}
+        retries = null
+        {% endif %}
+
+        {% if request_data and request_data != '' %}
+        request_data = "{{ request_data }}"
+        {% else %}
+        request_data = null
+        {% endif %}
+
+        {% if response_data and response_data != '' %}
+        response_data = "{{ response_data }}"
+        {% else %}
+        response_data = null
+        {% endif %}
+
+        {% if timeout_in_millis and timeout_in_millis != '' %}
+        timeout_in_millis = "{{ timeout_in_millis }}"
+        {% else %}
+        timeout_in_millis = null
+        {% endif %}
+
+        {% if backend_healthcheck_protocol == '' or  backend_healthcheck_protocol == 'HTTP' %}
+        {% if backend_healthcheck_return_code and backend_healthcheck_return_code != '' %}
+        return_code = "{{ backend_healthcheck_return_code }}"
+        {% else %}
+        return_code = 200
+        {% endif %}
+        {% else %}
+        return_code = null
+        {% endif %}
+
+        {% if backend_healthcheck_protocol == '' or  backend_healthcheck_protocol == 'HTTP' %}
+        {% if backend_healthcheck_url and backend_healthcheck_url != '' %}
+        url_path = "{{ backend_healthcheck_url }}"
+        {% else %}
+        url_path = "/"
+        {% endif %}
+        {% else %}
+        url_path = null
+        {% endif %}
+
+    },
+{% endif %}

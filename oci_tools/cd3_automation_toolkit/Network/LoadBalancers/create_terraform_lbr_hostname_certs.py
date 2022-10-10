@@ -209,8 +209,8 @@ def create_terraform_lbr_hostname_certs(inputfile, outdir, prefix, config=DEFAUL
         if region in commonTools.endNames:
             break
 
-        if region not in ct.all_regions:
-            print("\nInvalid Region; It should be one of the values mentioned in VCN Info tab...Exiting!!")
+        if region != 'nan' and region not in ct.all_regions:
+            print("\nInvalid Region; It should be one of the regions tenancy is subscribed to...Exiting!!")
             exit()
 
         # temporary dictionaries
@@ -242,6 +242,7 @@ def create_terraform_lbr_hostname_certs(inputfile, outdir, prefix, config=DEFAUL
             if columnname == "Compartment Name":
                 columnname = "compartment_tf_name"
                 columnvalue = commonTools.check_tf_variable(columnvalue)
+                tempdict = {'compartment_tf_name': columnvalue}
 
             if columnname == "Reserved IP (Y|N|OCID)":
                 columnname = "reserved_ips_id"
@@ -289,7 +290,7 @@ def create_terraform_lbr_hostname_certs(inputfile, outdir, prefix, config=DEFAUL
                         except Exception as e:
                             print("Invalid Subnet Name specified for row " + str(i + 3) + ". It Doesnt exist in Subnets sheet. Exiting!!!")
                             exit()
-                    tempdict = {'network_compartment_tf_name': network_compartment_id, 'vcn_tf_name': vcn_name,'lbr_subnets': json.dumps(lbr_subnets_list)}
+                    tempdict = {'network_compartment_tf_name': commonTools.check_tf_variable(network_compartment_id), 'vcn_tf_name': vcn_name,'lbr_subnets': json.dumps(lbr_subnets_list)}
                 elif len(lbr_subnets) == 2:
                     for subnet in lbr_subnets:
                         if "ocid1.subnet.oc1" in subnet:
@@ -304,7 +305,7 @@ def create_terraform_lbr_hostname_certs(inputfile, outdir, prefix, config=DEFAUL
                             except Exception as e:
                                 print("Invalid Subnet Name specified for row " + str(i + 3) + ". It Doesnt exist in Subnets sheet. Exiting!!!")
                                 exit()
-                    tempdict = {'network_compartment_tf_name': network_compartment_id, 'vcn_tf_name': vcn_name,'lbr_subnets': json.dumps(lbr_subnets_list) }
+                    tempdict = {'network_compartment_tf_name': commonTools.check_tf_variable(network_compartment_id), 'vcn_tf_name': vcn_name,'lbr_subnets': json.dumps(lbr_subnets_list) }
 
             if columnname == "NSGs":
                 if columnvalue != '':
@@ -378,6 +379,7 @@ def create_terraform_lbr_hostname_certs(inputfile, outdir, prefix, config=DEFAUL
                             c += 1
                 else:
                     hostname_str[region] = ''
+
         lbr_str[region] = lbr_str[region] + lbr.render(tempStr)
         hostname_str_02[region] = hostname_str_02[region] + hostname_str[region]
         if tempStr['reserved_ips_id'].lower() == 'y':
@@ -389,7 +391,7 @@ def create_terraform_lbr_hostname_certs(inputfile, outdir, prefix, config=DEFAUL
             src = "##Add New Load Balancers for "+reg.lower()+" here##"
             lbr_str[reg] = lbr.render(skeleton=True, count=0, region=reg).replace(src,lbr_str[reg]+"\n"+src)
 
-        if hostname_str[reg] != '':
+        if hostname_str_02[reg] != '':
             # Generate Final String
             src = "##Add New Hostnames for " + reg.lower() + " here##"
             hostname_str_02[reg] = hostname.render(skeleton=True, count=0, region=reg).replace(src, hostname_str_02[reg]+"\n"+src)

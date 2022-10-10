@@ -31,7 +31,4 @@ resource "oci_logging_log" "log" {
   is_enabled         = var.log_is_enabled
   retention_duration = var.log_retention_duration
 
-  lifecycle {
-    ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"]]
-  }
 }

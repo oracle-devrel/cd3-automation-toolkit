@@ -16,19 +16,19 @@ rule_sets = {
         load_balancer_id = "{{ lbr_tf_name }}"
 
         access_control_rules = [
-    ## Add_access_control_rules_here ##
+    ## Add_access_control_rules_here_for_{{ lbr_tf_name }}_{{ rule_set_tf_name }} ##
         ]
         access_control_method_rules = [
-    ## Add_access_control_method_rules_here ##
+    ## Add_access_control_method_rules_here_for_{{ lbr_tf_name }}_{{ rule_set_tf_name }} ##
         ]
         http_header_rules = [
-    ## Add_http_header_rules_here ##
+    ## Add_http_header_rules_here_for_{{ lbr_tf_name }}_{{ rule_set_tf_name }} ##
         ]
         uri_redirect_rules = [
-    ## Add_uri_redirect_rules_here ##
+    ## Add_uri_redirect_rules_here_for_{{ lbr_tf_name }}_{{ rule_set_tf_name }} ##
         ]
         request_response_header_rules = [
-    ## Add_request_response_header_rules_here ##
+    ## Add_request_response_header_rules_here_for_{{ lbr_tf_name }}_{{ rule_set_tf_name }} ##
         ]
     },
 {% endif %}

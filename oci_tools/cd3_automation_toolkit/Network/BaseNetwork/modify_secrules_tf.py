@@ -246,7 +246,7 @@ def modify_terraform_secrules(inputfile, outdir, prefix=None, non_gf_tenancy=Fal
                     columnvalue = str(row[columnname])
                     tempdict = {'rule_description': columnvalue}
                 else:
-                    columnvalue = str(row[columnname].strip())
+                    columnvalue = str(row[columnname]).strip()
 
                 # Check for boolean/null in column values
                 columnvalue = commonTools.check_columnvalue(columnvalue)
@@ -285,6 +285,17 @@ def modify_terraform_secrules(inputfile, outdir, prefix=None, non_gf_tenancy=Fal
 
         default_seclist_tempSkeleton[reg] = default_seclist_tempSkeleton[reg].replace(defaultTextToAddSeclistSearch,deftfStr[reg] +"\n"+ defaultTextToAddSeclistSearch)
         tempSkeleton[reg] = tempSkeleton[reg].replace(textToAddSeclistSearch,sectfStr[reg] + textToAddSeclistSearch)
+        none_rule = """[
+        ####ADD_NEW_"""
+        optional_data = """[
+           {
+            options = {
+                none = []
+                }
+            }
+        ####ADD_NEW_"""
+        default_seclist_tempSkeleton[reg] = default_seclist_tempSkeleton[reg].replace(none_rule,optional_data)
+        tempSkeleton[reg] = tempSkeleton[reg].replace(none_rule,optional_data)
 
         if sectfStr[reg] != '':
             tempSkeleton[reg] = "".join([s for s in tempSkeleton[reg].strip().splitlines(True) if s.strip("\r\n").strip()])

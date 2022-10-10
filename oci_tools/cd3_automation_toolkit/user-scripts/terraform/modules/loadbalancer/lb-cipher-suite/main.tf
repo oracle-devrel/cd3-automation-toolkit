@@ -15,5 +15,5 @@ resource "oci_load_balancer_ssl_cipher_suite" "ssl_cipher_suite" {
 
   lifecycle {
     ignore_changes = [ciphers]
-    }
+  }
 }

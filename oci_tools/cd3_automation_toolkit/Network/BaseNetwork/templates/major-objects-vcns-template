@@ -13,17 +13,41 @@ vcns = {
 {% endif %}
   {{ vcn_tf_name }} = {
         compartment_id = "{{ compartment_tf_name }}"
+        {% if cidr_blocks != "" and cidr_blocks != "nan" %}
         cidr_blocks      = {{ cidr_blocks }}
+        {% endif %}
+
+        {% if vcn_name != "" and vcn_name != "nan" %}
         display_name     = "{{ vcn_name }}"
+        {% endif %}
+
+        {% if dns_label != "" and dns_label != "nan" %}
         dns_label      = "{{ dns_label }}"
+        {% endif %}
+
         {% if is_ipv6enabled and is_ipv6enabled != 'nan' and is_ipv6enabled != ''%}
-        is_ipv6enabled = {{ is_ipv6enabled }} {% else %}
-        is_ipv6enabled = "false" {% endif %} {#  Default Value  #}
+        is_ipv6enabled = {{ is_ipv6enabled }}
+        {% endif %}
+
+        {% if byoipv6cidr_details and byoipv6cidr_details != [] %}
+        byoipv6cidr_details = [{
+            byoipv6range_id = "{{ byoipv6range_id }}"
+            ipv6cidr_block = "{{ ipv6cidr_block }}"
+        }]
+        {% endif %}
+
+        {% if ipv6private_cidr_blocks and ipv6private_cidr_blocks != [] %}
+        ipv6private_cidr_blocks = [ {{ ipv6private_cidr_blocks }} ]
+        {% endif %}
+
+        {% if is_oracle_gua_allocation_enabled and is_oracle_gua_allocation_enabled != "" %}
+        is_oracle_gua_allocation_enabled = {{ is_oracle_gua_allocation_enabled }}
+        {% endif %}
 
     {#  ##Do not modify below this line##  #}
     {#                                     #}
     {#  ###Section for adding Defined and Freeform Tags###  #}
-    {% if defined_tags and defined_tags != 'nan' and defined_tags != '' %}
+    {% if defined_tags and defined_tags != 'nan' and defined_tags != '' and defined_tags != [['nan']] %}
       {% if defined_tags[0] %}
         defined_tags = {
         {% for tags in defined_tags  %}
@@ -34,13 +58,9 @@ vcns = {
             {% endif %}
         {% endfor %}
         }
-      {% else %}
-        defined_tags = {}
         {% endif %}
-       {% else %}
-        defined_tags = {}
        {% endif %}
-            {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' %}
+            {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' and freeform_tags != [['nan']] %}
                 {% if freeform_tags[0] %}
         freeform_tags = {
                     {% for tags in freeform_tags %}
@@ -51,11 +71,7 @@ vcns = {
                         {% endif %}
                     {% endfor %}
                     }
-                {% else %}
-        freeform_tags = {}
                 {% endif %}
-            {% else %}
-        freeform_tags = {}
             {% endif %}
     {#  ###Section for adding Defined and Freeform Tags ends here###  #}
       },

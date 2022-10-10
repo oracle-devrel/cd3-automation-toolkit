@@ -140,6 +140,23 @@ def validate_cidr(cidr_list):
                 cidroverlap_check = True
     return any([cidroverlap_check, cidrdup_check, cidr_check])
 
+#validate NSGs columns for services - Instances, FSS etc
+def validate_nsgs_column(i,region,columnvalue,subnet_name,subnetobj,vcn_nsg_list):
+    vcn_nsg_check = False
+    vcn_name = None
+    key = region,subnet_name
+    try:
+        vcn_name = subnetobj.vcn_subnet_map[key][1]
+    except Exception as e:
+        pass
+
+    NSGs = columnvalue.split(",")
+    for nsg in NSGs:
+        nsg = region + "_" + str(vcn_name) + "_" + nsg
+        # Cross check the NSG names in Instances and NSGs sheet
+        vcn_nsg_check = compare_values(vcn_nsg_list.tolist(), nsg, [i, 'NSGs', 'NSGs'])
+    return vcn_nsg_check
+
 
 # Fetch the dhcp list and vcn cidrs for cross validation of values
 def fetch_vcn_cidrs(filename):
@@ -678,15 +695,14 @@ def validate_drgv2(filename, comp_ids, vcnobj):
         return False
 
 
-def validate_instances(filename,comp_ids):
+def validate_instances(filename,comp_ids,subnetobj,vcn_subnet_list,vcn_nsg_list):
     inst_empty_check = False
     inst_invalid_check = False
     inst_comp_check = False
     vcn_subnet_check = False
+    vcn_nsg_check= False
 
     dfinst = data_frame(filename, 'Instances')
-    dfsub = data_frame(filename, 'Subnets')
-    vcn_subnet_list = dfsub['VCN Name'].astype(str)+'_'+dfsub['Subnet Name']
     dfcolumns = dfinst.columns.values.tolist()
 
     for i in dfinst.index:
@@ -713,9 +729,6 @@ def validate_instances(filename,comp_ids):
             except KeyError:
                 log(f'ROW {i+3} : Compartment {comp_name} doesnot exist in OCI.')
                 inst_comp_check = True
-
-        # Cross check the VCN names in Instances and VCNs sheet
-        vcn_subnet_check = compare_values(vcn_subnet_list.tolist(),str(dfinst.loc[i, 'Subnet Name']), [i,'Subnet Name <vcn-name_subnet-name>', 'Subnets'])
 
         for columnname in dfcolumns:
             # Column value
@@ -746,10 +759,18 @@ def validate_instances(filename,comp_ids):
                     log(f'ROW {i+3} : Wrong value at column "Pub Address" - {columnvalue}.')
                     inst_invalid_check = True
 
-            if columnname == 'Display Name' or columnname == 'Subnet Name':
+            if columnname == 'Display Name':
                 if columnvalue.lower()=='nan':
-                    log(f'ROW {i+3} : Empty value at column Display Name/Subnet Name.')
+                    log(f'ROW {i+3} : Empty value at column Display Name')
                     inst_empty_check = True
+
+            if columnname == 'Subnet Name':
+                if columnvalue.lower()=='nan':
+                    log(f'ROW {i+3} : Empty value at column Subnet Name.')
+                    inst_empty_check = True
+                else:
+                    # Cross check the VCN names in Instances and VCNs sheet
+                    vcn_subnet_check = compare_values(vcn_subnet_list.tolist(), columnvalue,[i, 'Subnet Name <vcn-name_subnet-name>', 'Subnets'])
 
             if columnname == 'Source Details':
                 if columnvalue.lower()== 'nan':
@@ -775,13 +796,16 @@ def validate_instances(filename,comp_ids):
                             log(f'ROW {i+3} : Wrong value at column Shape - {columnvalue}.Valid format for Flex Shapes is VM.Standard.E3.Flex::<ocpus>.')
                             inst_invalid_check = True
 
-    if any([inst_empty_check, inst_comp_check, inst_invalid_check, vcn_subnet_check]):
+            if vcn_subnet_check==False and columnname == "NSGs":
+                subnet_name = str(dfinst.loc[i, "Subnet Name"]).strip()
+                if(columnvalue!='nan'):
+                    vcn_nsg_check = validate_nsgs_column(i,region,columnvalue,subnet_name,subnetobj,vcn_nsg_list)
+
+    if any([inst_empty_check, inst_comp_check, inst_invalid_check, vcn_subnet_check,vcn_nsg_check]):
         print("Null or Wrong value Check failed!!")
         return True
     else:
         return False
-
-
 
 def validate_blockvols(filename,comp_ids):
     bvs_empty_check = False
@@ -852,17 +876,84 @@ def validate_blockvols(filename,comp_ids):
             log(f'ROW {i+3} : Field "Attached To Instance" is empty for Attachment Type {dfvol.loc[i,"Attach Type(iscsi|paravirtualized)"]}.')
             bvs_invalid_check = True
 
-        # Cross check the instance names in Instances and Block Volumes sheet
-        instance_name_check = compare_values([x for x in values_list],str(dfvol.loc[i, 'Attached To Instance']),[i, 'Attached To Instance', 'Instances'])
+        if(str(dfvol.loc[i, 'Attached To Instance']).strip().lower() != 'nan' and str(dfvol.loc[i, 'Attach Type(iscsi|paravirtualized)']).strip().lower() != 'nan'):
+            # Cross check the instance names in Instances and Block Volumes sheet
+            instance_name_check = compare_values([x for x in values_list],str(dfvol.loc[i, 'Attached To Instance']),[i, 'Attached To Instance', 'Instances'])
 
-        # Cross check the ADs in Instances and Block Volumes sheet
-        bv_ad_check = compare_values([str(x).lower() for x in inst_ad_list.tolist()],str(dfvol.loc[i, 'Attached To Instance']).lower()+'_'+str(dfvol.loc[i, 'Availability Domain(AD1|AD2|AD3)']).lower(),[i, 'Availability Domain(AD1|AD2|AD3)', 'Instances'])
+            # Cross check the ADs in Instances and Block Volumes sheet
+            bv_ad_check = compare_values([str(x).lower() for x in inst_ad_list.tolist()],str(dfvol.loc[i, 'Attached To Instance']).lower()+'_'+str(dfvol.loc[i, 'Availability Domain(AD1|AD2|AD3)']).lower(),[i, 'Availability Domain(AD1|AD2|AD3)', 'Instances'])
 
     if any([bvs_empty_check, bvs_comp_check, bvs_invalid_check, instance_name_check, bv_ad_check]):
         print("Null or Wrong value Check failed!!")
         return True
     else:
         return False
+
+def validate_fss(filename,comp_ids,subnetobj,vcn_subnet_list,vcn_nsg_list):
+    fss_empty_check = False
+    fss_invalid_check = False
+    fss_comp_check = False
+    vcn_subnet_check = False
+    vcn_nsg_check= False
+
+    df_fss = data_frame(filename, 'FSS')
+    dfcolumns = df_fss.columns.values.tolist()
+
+    for i in df_fss.index:
+        region = str(df_fss.loc[i, 'Region']).strip().lower()
+        # Encountered <End>
+        if (region in commonTools.endNames):
+            break
+
+        comp_name = str(df_fss.loc[i, 'Compartment Name']).strip()
+        ad_name = str(df_fss.loc[i, 'Availability Domain(AD1|AD2|AD3)']).strip()
+        mt_name = str(df_fss.loc[i, 'MountTarget Name']).strip()
+        mt_subnet_name = str(df_fss.loc[i, 'MountTarget SubnetName']).strip()
+        my_list = [region, comp_name.lower(),ad_name.lower(),mt_name.lower(),mt_subnet_name.lower()]
+
+        if all(j == 'nan' for j in my_list):
+            pass
+        elif 'nan' in my_list:
+            log(f'ROW {i + 3} : Empty value for any of the columns "Region", "Compartment Name", "Availability Domain(AD1|AD2|AD3)", "MountTarget Name", "MountTarget SubnetName"')
+            fss_empty_check = True
+
+        if region!='nan' and region not in ct.all_regions:
+            log(f'ROW {i+3} : "Region" {region} is not subscribed for tenancy.')
+            fss_invalid_check = True
+
+        # Check for invalid Compartment Name
+        if comp_name.lower()!='nan':
+            try:
+                comp_id = comp_ids[comp_name]
+            except KeyError:
+                log(f'ROW {i+3} : Compartment {comp_name} doesnot exist in OCI.')
+                fss_comp_check = True
+
+        for columnname in dfcolumns:
+            # Column value
+            columnvalue = str(df_fss.loc[i, columnname]).strip()
+            if (columnname == 'Availability Domain(AD1|AD2|AD3)'):
+                if columnvalue.lower()!='nan' and columnvalue.upper() not in ["AD1", "AD2", "AD3"]:
+                    log(f'ROW {i+3} : Wrong value at column "Availability Domain" - {columnvalue}.')
+                    fss_invalid_check = True
+
+            if columnname == 'MountTarget SubnetName':
+                # Cross check the VCN names in Instances and VCNs sheet
+                if(columnvalue!='nan'):
+                    vcn_subnet_check = compare_values(vcn_subnet_list.tolist(), columnvalue,[i, 'Subnet Name <vcn-name_subnet-name>', 'Subnets'])
+
+            if vcn_subnet_check==False and columnname == "NSGs":
+                subnet_name = str(df_fss.loc[i, "MountTarget SubnetName"]).strip()
+                if (columnvalue != 'nan'):
+                    vcn_nsg_check = validate_nsgs_column(i,region,columnvalue,subnet_name,subnetobj,vcn_nsg_list)
+
+    if any([fss_empty_check, fss_comp_check, fss_invalid_check, vcn_subnet_check,vcn_nsg_check]):
+        print("Null or Wrong value Check failed!!")
+        return True
+    else:
+        return False
+
+
 
 def validate_compartments(filename):
 
@@ -871,9 +962,6 @@ def validate_compartments(filename):
     parent_comp_check= False
     # Read the Compartments tab from excel
     dfcomp = data_frame(filename,'Compartments')
-
-    #Collect Compartment Names in a list
-    #comp_list = df['Name'].tolist()
 
     for i in dfcomp.index:
         region = str(dfcomp.loc[i, 'Region']).strip().lower()
@@ -889,9 +977,6 @@ def validate_compartments(filename):
         if str(dfcomp.loc[i, 'Name']).strip().lower() == 'nan':
             log(f'ROW {i+3} : Empty value at column "Name".')
             comp_empty_check = True
-        #if str(df.loc[i, 'Parent Compartment']).strip() not in comp_list and str(df.loc[i, 'Parent Compartment']).strip().lower() !='root' and str(df.loc[i, 'Parent Compartment']).strip().lower() !='nan':
-        #    logging.log(60, "ROW " + str(i + 3) + " : Invalid value for column Parent Compartment; It should be one of the values in column Name")
-        #    parent_comp_check = True
 
     if (comp_empty_check == True or parent_comp_check == True or comp_invalid_check == True):
         print("Null or Wrong value Check failed!!")
@@ -1004,6 +1089,74 @@ def validate_policies(filename,comp_ids):
     else:
         return False
 
+def validate_tags(filename,comp_ids):
+
+    tag_empty_check = False
+    tag_invalid_check = False
+    tag_comp_check  = False
+
+    # Read the Compartments tab from excel
+    dftag = data_frame(filename,'Tags')
+
+    for i in dftag.index:
+        region = str(dftag.loc[i, 'Region']).strip().lower()
+        # Encountered <End>
+        if (region in commonTools.endNames):
+            break
+        if region == 'nan':
+            log(f'ROW {i+3} : Empty value at column "Region".')
+            tag_empty_check = True
+        elif region!=ct.home_region:
+            log(f'ROW {i+3} : Region specified is not the Home Region.')
+            tag_invalid_check = True
+
+        # Check for invalid Compartment Name
+        comp_name = str(dftag.loc[i, 'Compartment Name']).strip()
+        if comp_name.lower() == 'nan' or comp_name == '':
+            log(f'ROW {i + 3} : Empty value at column "Compartment Name".')
+            tag_empty_check = True
+        else:
+            try:
+                comp_id = comp_ids[comp_name]
+            except KeyError:
+                log(f'ROW {i + 3} : Compartment {comp_name} doesnot exist in OCI.')
+                tag_comp_check = True
+
+        # List of the column headers
+        dfcolumns = dftag.columns.values.tolist()
+
+        for columnname in dfcolumns:
+            # Column value
+            if 'description' in columnname.lower():
+                columnvalue = str(dftag[columnname][i])
+            else:
+                columnvalue = str(dftag[columnname][i]).strip()
+
+            if columnname == 'Tag Namespace':
+                columnvalue = str(columnvalue).strip()
+                if columnvalue == '' or columnvalue == 'nan':
+                    log(f'ROW {i + 3} : Empty value at column "Tag Namespace".')
+                    tag_empty_check = True
+
+                if ' ' in columnvalue or '.' in columnvalue:
+                    log(f'ROW {i+3} : Spaces and Periods are not allowed in Tag Namespaces.')
+                    tag_invalid_check = True
+
+            if columnname == 'Tag Keys':
+                columnvalue = str(columnvalue).strip()
+                # if columnvalue == '' or columnvalue == 'nan':
+                #     log(f'ROW {i + 3} : Empty value at column "Tag Keys".')
+                #     tag_empty_check = True
+
+                if ' ' in columnvalue or '.' in columnvalue:
+                    log(f'ROW {i+3} : Spaces and Periods are not allowed in Tag Keys.')
+                    tag_invalid_check = True
+
+    if (tag_empty_check == True or  tag_invalid_check == True or tag_comp_check == True):
+        print("Null or Wrong value Check failed!!")
+        return True
+    else:
+        return False
 
 def validate_cd3(filename, prefix, outdir,choices, configFileName):
     CD3_LOG_LEVEL = 60
@@ -1039,11 +1192,25 @@ def validate_cd3(filename, prefix, outdir,choices, configFileName):
     dhcp_check = False
     drgv2_check = False
     bvs_check = False
+    tags_check = False
+    fss_check = False
     instances_check = False
 
+    if not os.path.exists(filename):
+        print("\nCD3 excel sheet not found at "+filename +"\nExiting!!")
+        exit()
     config = oci.config.from_file(file_location=configFileName)
     ct.get_subscribedregions(configFileName)
     ct.get_network_compartment_ids(config['tenancy'], "root", configFileName)
+
+    vcnobj = parseVCNs(filename)
+    subnetobj = parseSubnets(filename)
+
+    dfsub = data_frame(filename, 'Subnets')
+    vcn_subnet_list = dfsub['VCN Name'].astype(str)+'_'+dfsub['Subnet Name']
+
+    dfnsg = data_frame(filename, 'NSGs')
+    vcn_nsg_list = dfnsg['Region'].astype(str).str.lower() + '_' + dfnsg['VCN Name'].astype(str) + '_' + dfnsg['NSG Name']
 
     val_net=False
     for options in choices:
@@ -1059,11 +1226,13 @@ def validate_cd3(filename, prefix, outdir,choices, configFileName):
             log("\n============================= Verifying Policies Tab ==========================================\n")
             print("\nProcessing Policies Tab..")
             policies_check = validate_policies(filename,ct.ntk_compartment_ids)
-
+        if ('Validate Tags' in options[0]):
+            log("\n============================= Verifying Tags Tab ==========================================\n")
+            print("\nProcessing Tags Tab..")
+            tags_check = validate_tags(filename,ct.ntk_compartment_ids)
         # CD3 Validation begins here for Network
         if ('Validate Network(VCNs, Subnets, DHCP, DRGs)' in options[0]):
             val_net=True
-            vcnobj = parseVCNs(filename)
 
             log("\n============================= Verifying VCNs Tab ==========================================\n")
             print("\nProcessing VCNs Tab..")
@@ -1084,15 +1253,21 @@ def validate_cd3(filename, prefix, outdir,choices, configFileName):
         if ('Validate Instances' in options[0]):
             log("\n============================= Verifying Instances Tab ==========================================\n")
             print("\nProcessing Instances Tab..")
-            instances_check = validate_instances(filename,ct.ntk_compartment_ids)
+            instances_check = validate_instances(filename,ct.ntk_compartment_ids,subnetobj,vcn_subnet_list,vcn_nsg_list)
 
         if ('Validate Block Volumes' in options[0]):
             log("\n============================= Verifying BlockVolumes Tab ==========================================\n")
             print("\nProcessing BlockVolumes Tab..")
             bvs_check = validate_blockvols(filename,ct.ntk_compartment_ids)
 
+        if ('Validate FSS' in options[0]):
+            log("\n============================= Verifying FSS Tab ==========================================\n")
+            print("\nProcessing FSS Tab..")
+            fss_check = validate_fss(filename,ct.ntk_compartment_ids,subnetobj,vcn_subnet_list,vcn_nsg_list)
+
+
     # Prints the final result; once the validation is complete
-    if any([comp_check, groups_check, policies_check, instances_check, bvs_check,vcn_check, vcn_cidr_check, vcn_peer_check, subnet_check, subnet_cidr_check, dhcp_check, drgv2_check]):
+    if any([comp_check, groups_check, policies_check, tags_check, instances_check, bvs_check,fss_check, vcn_check, vcn_cidr_check, vcn_peer_check, subnet_check, subnet_cidr_check, dhcp_check, drgv2_check]):
         log("=======")
         log("Summary:")
         log("=======")

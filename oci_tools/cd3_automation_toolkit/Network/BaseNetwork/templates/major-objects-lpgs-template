@@ -45,7 +45,7 @@ lpgs = {
                     {% if 'spoke' in hub_spoke_peer_none.lower() or 'exported' in hub_spoke_peer_none.lower() %}
                     peer_id = ""
                     {% else %}
-                    peer_id = "##peer_id for lpg {{ vcn_tf_name }}_{{ lpg_tf_name }}##"
+                    peer_id = "##peer_id for lpg {{ lpg_tf_name }}##"
                     {% endif %}
 
                 {#  ##Do not modify below this line##  #}

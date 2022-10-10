@@ -83,6 +83,7 @@ def create_terraform_notifications(inputfile, outdir, prefix, config=DEFAULT_LOC
         commonTools.backup_file(srcdir, resource, subs_auto_tfvars_filename)
 
     # Iterate over rows
+    count = 1
     for i in df.index:
         region = str(df.loc[i, 'Region']).strip()
         region=region.strip().lower()
@@ -149,10 +150,10 @@ def create_terraform_notifications(inputfile, outdir, prefix, config=DEFAULT_LOC
             tempStr[columnname] = str(columnvalue).strip()
             tempStr.update(tempdict)
 
-        count = 1
         if(topic in Notifications_names[region]):
                 count = count +  1
         if(topic not in Notifications_names[region]):
+                count = 1
                 Notifications_names[region].append(topic)             
                 # Write all info to TF string
                 tfStr[region]=tfStr[region][:-1]  + notifications_template.render(tempStr)

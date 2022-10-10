@@ -1,4 +1,6 @@
 import argparse
+import sys
+
 import Database
 import Identity
 import Compute
@@ -15,6 +17,8 @@ from glob import glob
 from Security.CloudGuard import *
 from Security.KeyVault import *
 from Storage.ObjectStorage import *
+import requests
+import subprocess
 
 
 def show_options(options, quit=False, menu=False, extra=None, index=0):
@@ -89,9 +93,11 @@ def validate_cd3(execute_all=False):
         Option("Validate Compartments", None, None),
         Option("Validate Groups", None, None),
         Option("Validate Policies", None, None),
+        Option("Validate Tags", None, None),
         Option("Validate Network(VCNs, Subnets, DHCP, DRGs)", None, None),
         Option("Validate Instances", None, None),
         Option("Validate Block Volumes", None, None),
+        Option("Validate FSS", None, None),
     ]
     if not execute_all:
         options = show_options(options, quit=True, menu=False, index=1)
@@ -192,11 +198,23 @@ def export_fss(inputfile, outdir, prefix,config):
 
 
 def export_loadbalancer():
+    options = [Option("Export Load Balancers", export_lbr,'Exporting LBR Objects'),
+               Option("Export Network Load Balancers", export_nlb,'Exporting NLB Objects')]
+
+    options = show_options(options, quit=True, menu=True, index=1)
+    execute_options(options, inputfile, outdir, prefix, config)
+
+def export_lbr(inputfile, outdir, prefix,config):
     compartments = get_compartment_list('LBR objects')
     Network.export_lbr(inputfile, outdir, _config=config, network_compartments=compartments)
     create_lb(inputfile, outdir, prefix, config=config)
     print("\n\nExecute tf_import_commands_lbr_nonGF.sh script created under each region directory to synch TF with OCI LBR objects\n")
 
+def export_nlb(inputfile, outdir, prefix,config):
+    compartments = get_compartment_list('NLB objects')
+    Network.export_nlb(inputfile, outdir, _config=config, network_compartments=compartments)
+    create_nlb(inputfile, outdir, prefix, config=config)
+    print("\n\nExecute tf_import_commands_nlb_nonGF.sh script created under each region directory to synch TF with OCI NLB objects\n")
 
 def export_databases():
     options = [Option("Export Virtual Machine or Bare Metal DB Systems",export_dbsystems_vm_bm,'Exporting VM and BM DB Systems'),
@@ -281,8 +299,8 @@ def create_cis_vcnflow_logs(*args,**kwargs):
 def export_modify_security_rules(inputfile, outdir, prefix, non_gf_tenancy, config):
     execute_all = False
     options = [
-        Option('Export Security Rules in OCI', export_security_rules, 'Exporting Security Rules in OCI'),
-        Option('Add/Modify/Delete Security Rules', Network.modify_terraform_secrules, 'Processing SecRulesinOCI Tab'),
+        Option('Export Security Rules (From OCI into SecRulesinOCI sheet)', export_security_rules, 'Exporting Security Rules in OCI'),
+        Option('Add/Modify/Delete Security Rules (Reads SecRulesinOCI sheet)', Network.modify_terraform_secrules, 'Processing SecRulesinOCI Tab'),
     ]
     if not execute_all:
         options = show_options(options, quit=True, menu=True, index=1)
@@ -295,8 +313,8 @@ def export_security_rules(inputfile, outdir, prefix, config, non_gf_tenancy):
 def export_modify_route_rules(inputfile, outdir, prefix, non_gf_tenancy, config):
     execute_all = False
     options = [
-        Option('Export Route Rules in OCI', export_route_rules, 'Exporting Route Rules in OCI'),
-        Option('Add/Modify/Delete Route Rules', Network.modify_terraform_routerules, 'Processing RouteRulesinOCI Tab'),
+        Option('Export Route Rules (From OCI into RouteRulesinOCI sheet)', export_route_rules, 'Exporting Route Rules in OCI'),
+        Option('Add/Modify/Delete Route Rules (Reads RouteRulesinOCI sheet)', Network.modify_terraform_routerules, 'Processing RouteRulesinOCI Tab'),
     ]
     if not execute_all:
         options = show_options(options, quit=True, menu=True, index=1)
@@ -309,8 +327,8 @@ def export_route_rules(inputfile, outdir, prefix, config, non_gf_tenancy):
 def export_modify_drg_route_rules(inputfile, outdir, prefix, non_gf_tenancy, config):
     execute_all = False
     options = [
-        Option('Export DRG Route Rules in OCI', export_drg_route_rules, 'Exporting DRG Route Rules in OCI'),
-        Option('Add/Modify/Delete DRG Route Rules', Network.modify_terraform_drg_routerules, 'Processing DRGRouteRulesinOCI Tab'),
+        Option('Export DRG Route Rules (From OCI into DRGRouteRulesinOCI sheet)', export_drg_route_rules, 'Exporting DRG Route Rules in OCI'),
+        Option('Add/Modify/Delete DRG Route Rules (Reads DRGRouteRulesinOCI sheet)', Network.modify_terraform_drg_routerules, 'Processing DRGRouteRulesinOCI Tab'),
     ]
     if not execute_all:
         options = show_options(options, quit=True, menu=True, index=1)
@@ -323,8 +341,8 @@ def export_drg_route_rules(inputfile, outdir, prefix, config, non_gf_tenancy):
 def export_modify_nsgs(inputfile, outdir, prefix, non_gf_tenancy, config):
     execute_all = False
     options = [
-        Option('Export NSGs in OCI', export_nsgs, 'Exporting NSGs in OCI'),
-        Option('Add/Modify/Delete NSGs', Network.create_terraform_nsg, 'Processing NSGs Tab'),
+        Option('Export NSGs (From OCI into NSGs sheet)', export_nsgs, 'Exporting NSGs in OCI'),
+        Option('Add/Modify/Delete NSGs (Reads NSGs sheet)', Network.create_terraform_nsg, 'Processing NSGs Tab'),
     ]
     if not execute_all:
         options = show_options(options, quit=True, menu=True, index=1)
@@ -381,6 +399,7 @@ def create_fss(inputfile, outdir, prefix,config):
 def create_loadbalancer(execute_all=False):
     options = [
         Option('Add/Modify/Delete Load Balancers', create_lb, 'LBaaS'),
+        Option('Add/Modify/Delete Network Load Balancers', create_nlb, 'NLB'),
         Option('Enable LBaaS Logs', enable_lb_logs, 'LBaaS Logs')]
     options = show_options(options, quit=True, menu=True, index=1)
     if not execute_all:
@@ -400,11 +419,18 @@ def enable_lb_logs(inputfile, outdir, prefix, config):
     options = [Option(None, ManagementServices.enable_load_balancer_logging, 'Enabling LBaaS Logs')]
     execute_options(options, inputfile, outdir, prefix, config=config)
 
+def create_nlb(inputfile, outdir, prefix, config):
+    options = [
+         Option(None, Network.create_terraform_nlb_listener, 'Creating NLB and Listeners'),
+         Option(None, Network.create_nlb_backendset_backendservers, 'Creating NLB Backend Sets and Backend Servers'),
+    ]
+    execute_options(options, inputfile, outdir, prefix, config=config)
+
 def create_databases(execute_all=False):
     options = [
         Option('Add/Modify/Delete Virtual Machine or Bare Metal DB Systems', Database.create_terraform_dbsystems_vm_bm, 'Processing DBSystems-VM-BM Tab'),
         Option('Add/Modify/Delete EXA Infra and EXA VM Cluster', create_exa_infra_vmclusters, ''),
-        Option('Add/Modify/Delete ADW/ATP', Database.create_terraform_adw_atp, 'Processing ADW/ATP Tab'),
+        Option('Add/Modify/Delete ADB', Database.create_terraform_adb, 'Processing ADB Tab'),
     ]
     if not execute_all:
         options = show_options(options, quit=True, menu=True, index=1)
@@ -435,14 +461,14 @@ def create_developer_services(execute_all=False):
     execute_options(options, outdir, prefix, config=config)
 
 
-def create_cis_features(execute_all=False):
-    options = [Option("Create Key/Vault, Object Storage Bucket and enable Logging for write events to bucket", create_cis_keyvault_oss_log, 'Creating CIS Key/Vault, Object Storage Bucket and enable Logging for write events to bucket'),
+def create_cis_features():
+    options = [Option('CIS Compliance Checking Script', initiate_cis_scan, 'CIS Compliance Checking'),
+               Option("Create Key/Vault, Object Storage Bucket and enable Logging for write events to bucket", create_cis_keyvault_oss_log, 'Creating CIS Key/Vault, Object Storage Bucket and enable Logging for write events to bucket'),
                Option("Create Default Budget",create_cis_budget,'Creating Default Budget'),
                Option("Enable Cloud Guard", enable_cis_cloudguard, 'Enable Cloud Guard'),]
 
-    if not execute_all:
-        options = show_options(options, quit=True, menu=True, index=1)
-    execute_options(options, outdir, prefix, config=config)
+    options = show_options(options, quit=True, menu=True, index=1)
+    execute_options(options, outdir, prefix, config)
 
 def create_cis_keyvault_oss_log(*args,**kwargs):
     region_name = input("Enter region name eg ashburn where you want to create OSS Bucket and Key/Vault: ")
@@ -458,6 +484,69 @@ def create_cis_budget(*args,**kwargs):
     threshold = input("Enter Threshold Percentage of Budget: ")
     options = [Option(None, Governance.create_cis_budget, 'Creating Budget')]
     execute_options(options, outdir, prefix,amount,threshold, config=config)
+
+def initiate_cis_scan(outdir, prefix, config):
+    options = [
+        Option("CD3 Image already contains the latest CIS compliance checking script available at the time of cd3 image release.\n   Download latest only if new version of the script is available", start_cis_download, 'Download CIS script'),
+        Option("Execute compliance checking script", start_cis_scan, 'Execute CIS script'),
+    ]
+    options = show_options(options, quit=True, menu=True, index=1)
+    execute_options(options, outdir, prefix, config)
+
+def start_cis_download(outdir, prefix, config):
+    print("Downloading the script file as 'cis_reports.py' at location "+os.getcwd())
+    resp = requests.get("https://raw.githubusercontent.com/oracle-quickstart/oci-cis-landingzone-quickstart/main/scripts/cis_reports.py")
+    resp_contents = resp.text
+    with open("cis_reports.py", "w") as fd:
+        fd.write(resp_contents)
+    print("Download complete!!")
+
+def start_cis_scan(outdir, prefix, config):
+    cmd = "python cis_reports.py"
+    user_input = input("Enter command to execute the script. Press Enter to execute {} : ".format(cmd))
+    if user_input!='':
+        cmd = "{}".format(user_input)
+    split = str.split(cmd)
+
+    dirname = prefix + "_cis_report"
+    resource = "cis_report"
+    out_rep = outdir + '/'+ dirname
+    #config = "--config "+ config
+    commonTools.backup_file(outdir, resource, dirname)
+
+    if not os.path.exists(out_rep):
+        os.makedirs(out_rep)
+    else:
+        commonTools.backup_file(outdir, resource, out_rep)
+
+    out = ["-c", config, '--report-directory', out_rep]
+    cmd = cmd +" "+ out[0] + " "+out[1] + " "+ out[2] + " " +out[3]
+    split.extend(out)
+    print("Executing: "+cmd)
+    print("Scan started!")
+    execute(split)
+
+def execute(command):
+    export_cmd_windows = "set OCI_CONFIG_HOME="+config
+    export_cmd_linux = "export OCI_CONFIG_HOME=" + config
+    export_cmd = ""
+    if "linux" in sys.platform:
+        export_cmd = export_cmd_linux
+    elif "win" in sys.platform:
+        export_cmd = export_cmd_windows
+
+    if export_cmd == "":
+        print("Failed to get OS details. Exiting!!")
+        exit()
+
+    split_export_cmd = str.split(export_cmd)
+    #subprocess.Popen(split_export_cmd, stdout=subprocess.PIPE,bufsize=1)
+    popen = subprocess.Popen(command, stdout=subprocess.PIPE,bufsize=1)
+    lines_iterator = iter(popen.stdout.readline, b"")
+    while popen.poll() is None:
+        for line in lines_iterator:
+            nline = line.rstrip()
+            print(nline.decode("latin"), end="\r\n", flush=True)# yield line
 
 parser = argparse.ArgumentParser(description='Sets Up OCI via TF')
 parser.add_argument('propsfile', help="Full Path of properties file containing input variables. eg setUpOCI.properties")
@@ -519,7 +608,7 @@ else:
         Option('Load Balancers', create_loadbalancer, 'Load Balancers'),
         Option('Management Services', create_management_services, 'Management Services'),
         Option('Developer Services', create_developer_services, 'Developer Services'),
-        Option('Enable OCI CIS Compliant Features (Key/Vault, OSS, Budget, Cloud-Guard)', create_cis_features, 'CIS Compliant Features'),
+        Option('CIS Compliance Features', create_cis_features, 'CIS Compliance Features'),
 
     ]
 

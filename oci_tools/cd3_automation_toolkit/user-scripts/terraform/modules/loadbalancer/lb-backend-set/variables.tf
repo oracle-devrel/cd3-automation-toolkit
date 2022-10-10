@@ -115,11 +115,11 @@ variable "network_security_group_ids" {
 }
 
 variable "certificate_name" {
-  type        = string
-  default     = null
+  type    = string
+  default = null
 }
 
 variable "cipher_suite_name" {
-  type        = string
-  default     = null
+  type    = string
+  default = null
 }

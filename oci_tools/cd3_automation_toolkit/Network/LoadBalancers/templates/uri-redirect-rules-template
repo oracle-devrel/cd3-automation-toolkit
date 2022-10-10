@@ -15,4 +15,4 @@
             query = "{{ redirect_uri_query }}"
             response_code = "{{ response_code }}"
             },
-    ## Add_uri_redirect_rules_here ##
+    ## Add_uri_redirect_rules_here_for_{{ lbr_tf_name }}_{{ rule_set_tf_name }} ##

@@ -76,14 +76,14 @@ resource "oci_load_balancer_rule_set" "rule_set" {
   dynamic "items" {
     for_each = var.rule_sets[var.key_name].request_response_header_rules != [] ? var.rule_sets[var.key_name].request_response_header_rules : []
     content {
-            #Required
-            action = items.value.action
-            header = items.value.header
-            prefix = items.value.prefix
-            suffix = items.value.suffix
-            value  = items.value.value
-       }
+      #Required
+      action = items.value.action
+      header = items.value.header
+      prefix = items.value.prefix
+      suffix = items.value.suffix
+      value  = items.value.value
     }
+  }
 
   load_balancer_id = var.load_balancer_id
   name             = var.name

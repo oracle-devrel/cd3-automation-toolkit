@@ -24,24 +24,20 @@ resource "oci_objectstorage_bucket" "bucket" {
   dynamic "retention_rules" {
     for_each = var.retention_rules != [] ? var.retention_rules : []
     content {
-        display_name = retention_rules.value.display_name
+      display_name = retention_rules.value.display_name
 
-        dynamic "duration" {
-          for_each = retention_rules.value.duration != [] ? retention_rules.value.duration : []
-          content {
+      dynamic "duration" {
+        for_each = retention_rules.value.duration != [] ? retention_rules.value.duration : []
+        content {
           #Required
           time_amount = duration.value.time_amount
           time_unit   = duration.value.time_unit
-          }
         }
-
-        time_rule_locked = retention_rules.value.time_rule_locked
       }
+
+      time_rule_locked = retention_rules.value.time_rule_locked
     }
+  }
 
   versioning = var.versioning
-
-  lifecycle {
-    ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"], freeform_tags]
-  }
 }

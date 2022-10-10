@@ -16,7 +16,7 @@ resource "oci_identity_tag" "tag" {
   freeform_tags    = var.freeform_tags
   is_cost_tracking = var.is_cost_tracking
   dynamic "validator" {
-    for_each = var.tag_keys[var.key_name].validator[0].validator_type != "" ? var.tag_keys[var.key_name].validator : []
+    for_each = try((var.tag_keys[var.key_name].validator[0].validator_type != "" ? var.tag_keys[var.key_name].validator : []), [])
     content {
       #Required
       validator_type = validator.value.validator_type
@@ -24,7 +24,4 @@ resource "oci_identity_tag" "tag" {
     }
   }
   is_retired = var.is_retired
-  lifecycle {
-    ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"]]
-  }
 }

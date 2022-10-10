@@ -18,20 +18,20 @@ variable "vault_type" {
 
 variable "algorithm" {
   description = "The algorithm used by a key's key versions to encrypt or decrypt."
-  type    = string
-  default = "AES"
+  type        = string
+  default     = "AES"
 }
 
 variable "length" {
   description = "The length of the key in bytes, expressed as an integer. Supported values include the following: AES: 16, 24, or 32 RSA: 256, 384, or 512 ECDSA: 32, 48, or 66"
-  type    = number
-  default = 256
+  type        = number
+  default     = 256
 }
 
 variable "curve_id" {
   description = "Supported curve IDs for ECDSA keys."
-  type    = string
-  default = false
+  type        = string
+  default     = false
 }
 
 variable "defined_tags" {

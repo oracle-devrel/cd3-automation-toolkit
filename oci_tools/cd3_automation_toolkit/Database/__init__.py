@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from .create_terraform_adw_atp import create_terraform_adw_atp
+from .create_terraform_adb import create_terraform_adb
 from .create_terraform_exa_infra import create_terraform_exa_infra
 from .create_terraform_exa_vmclusters import create_terraform_exa_vmclusters
 from .create_terraform_dbsystems_vm_bm import create_terraform_dbsystems_vm_bm

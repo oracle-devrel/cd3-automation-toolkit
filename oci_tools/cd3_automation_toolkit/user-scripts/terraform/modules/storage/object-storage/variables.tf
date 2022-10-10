@@ -28,8 +28,8 @@ variable "access_type" {
 
 variable "auto_tiering" {
   description = "Set the auto tiering status on the bucket. By default, a bucket is created with auto tiering Disabled"
-  type    = string
-  default = false
+  type        = string
+  default     = false
 }
 
 variable "freeform_tags" {

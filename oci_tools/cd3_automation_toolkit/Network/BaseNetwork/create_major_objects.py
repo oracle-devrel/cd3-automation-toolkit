@@ -89,6 +89,7 @@ def create_major_objects(inputfile, outdir, prefix, non_gf_tenancy, config, modi
         for key, value in peering_dict.items():
             #region = vcns.vcn_region[left_vcn]
             left_vcn=key[0]
+            left_vcn_tf_name = commonTools.check_tf_variable(left_vcn)
             region = key[1]
             outfile = outdir + "/" + region + "/" + prefix + auto_tfvars_filename
 
@@ -107,7 +108,8 @@ def create_major_objects(inputfile, outdir, prefix, non_gf_tenancy, config, modi
 
                     print("\nERROR!!! Insufficient LPGs declared for either " + left_vcn + " or " + right_vcn + ". Check lpg_required column in VCNs tab..Exiting!")
                     exit(1)
-                searchString = """##peer_id for lpg """ + left_vcn + "_" + vcns.vcn_lpg_names[left_vcn,region][0] + "##"
+
+                searchString = """##peer_id for lpg """ + left_vcn_tf_name + "_" + commonTools.check_tf_variable(vcns.vcn_lpg_names[left_vcn,region][0]) + "##"
                 vcns.vcn_lpg_names[left_vcn,region].pop(0)
                 lpg_name = vcns.vcn_lpg_names[right_vcn,region][0]
                 lpg_tf_name = right_vcn + "_" + lpg_name

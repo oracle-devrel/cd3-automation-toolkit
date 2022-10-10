@@ -12,12 +12,10 @@ resource "oci_core_internet_gateway" "internet_gateway" {
   vcn_id         = var.vcn_id
 
   #Optional
-  enabled       = var.enabled
-  defined_tags  = var.defined_tags
-  display_name  = var.display_name
-  freeform_tags = var.freeform_tags
+  enabled        = var.enabled
+  defined_tags   = var.defined_tags
+  display_name   = var.display_name
+  freeform_tags  = var.freeform_tags
+  route_table_id = var.route_table_id
 
-  lifecycle {
-    ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"]]
-  }
 }

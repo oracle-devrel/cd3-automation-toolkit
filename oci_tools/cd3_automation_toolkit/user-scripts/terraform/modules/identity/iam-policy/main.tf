@@ -18,7 +18,4 @@ resource "oci_identity_policy" "policy" {
   freeform_tags = var.freeform_tags
   version_date  = var.policy_version_date
 
-  lifecycle {
-    ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"]]
-  }
 }

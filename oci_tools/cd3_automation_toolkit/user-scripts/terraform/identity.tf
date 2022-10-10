@@ -14,7 +14,6 @@ module "iam-compartments" {
   compartment_id          = each.value.parent_compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.parent_compartment_id)) > 0 ? each.value.parent_compartment_id : try(var.compartment_ocids[each.value.parent_compartment_id], zipmap(data.oci_identity_compartments.compartments.compartments.*.name, data.oci_identity_compartments.compartments.compartments.*.id)[each.value.parent_compartment_id])) : var.tenancy_ocid
   compartment_name        = each.value.name
   compartment_description = each.value.description
-  compartment_create      = true
   enable_delete           = each.value.enable_delete
 
   #Optional
@@ -32,7 +31,6 @@ module "sub-compartments-level1" {
   compartment_id          = length(regexall("ocid1.compartment.oc1*", each.value.parent_compartment_id)) > 0 ? each.value.parent_compartment_id : try(merge(module.iam-compartments.*...)[each.value.parent_compartment_id]["compartment_tf_id"], var.compartment_ocids[each.value.parent_compartment_id], zipmap(data.oci_identity_compartments.compartments.compartments.*.name, data.oci_identity_compartments.compartments.compartments.*.id)[each.value.parent_compartment_id])
   compartment_name        = each.value.name
   compartment_description = each.value.description
-  compartment_create      = true
   enable_delete           = each.value.enable_delete
 
   #Optional
@@ -50,8 +48,8 @@ module "sub-compartments-level2" {
   compartment_id          = length(regexall("ocid1.compartment.oc1*", each.value.parent_compartment_id)) > 0 ? each.value.parent_compartment_id : try(merge(module.sub-compartments-level1.*...)[each.value.parent_compartment_id]["compartment_tf_id"], var.compartment_ocids[each.value.parent_compartment_id], zipmap(data.oci_identity_compartments.compartments.compartments.*.name, data.oci_identity_compartments.compartments.compartments.*.id)[each.value.parent_compartment_id])
   compartment_name        = each.value.name
   compartment_description = each.value.description
-  compartment_create      = true
-  enable_delete           = each.value.enable_delete
+
+  enable_delete = each.value.enable_delete
 
   #Optional
   defined_tags  = each.value.defined_tags
@@ -68,7 +66,6 @@ module "sub-compartments-level3" {
   compartment_id          = length(regexall("ocid1.compartment.oc1*", each.value.parent_compartment_id)) > 0 ? each.value.parent_compartment_id : try(merge(module.sub-compartments-level2.*...)[each.value.parent_compartment_id]["compartment_tf_id"], var.compartment_ocids[each.value.parent_compartment_id], zipmap(data.oci_identity_compartments.compartments.compartments.*.name, data.oci_identity_compartments.compartments.compartments.*.id)[each.value.parent_compartment_id])
   compartment_name        = each.value.name
   compartment_description = each.value.description
-  compartment_create      = true
   enable_delete           = each.value.enable_delete
 
   #Optional
@@ -86,7 +83,6 @@ module "sub-compartments-level4" {
   compartment_id          = length(regexall("ocid1.compartment.oc1*", each.value.parent_compartment_id)) > 0 ? each.value.parent_compartment_id : try(merge(module.sub-compartments-level3.*...)[each.value.parent_compartment_id]["compartment_tf_id"], var.compartment_ocids[each.value.parent_compartment_id], zipmap(data.oci_identity_compartments.compartments.compartments.*.name, data.oci_identity_compartments.compartments.compartments.*.id)[each.value.parent_compartment_id])
   compartment_name        = each.value.name
   compartment_description = each.value.description
-  compartment_create      = true
   enable_delete           = each.value.enable_delete
 
   #Optional
@@ -104,7 +100,6 @@ module "sub-compartments-level5" {
   compartment_id          = length(regexall("ocid1.compartment.oc1*", each.value.parent_compartment_id)) > 0 ? each.value.parent_compartment_id : try(merge(module.sub-compartments-level4.*...)[each.value.parent_compartment_id]["compartment_tf_id"], var.compartment_ocids[each.value.parent_compartment_id], zipmap(data.oci_identity_compartments.compartments.compartments.*.name, data.oci_identity_compartments.compartments.compartments.*.id)[each.value.parent_compartment_id])
   compartment_name        = each.value.name
   compartment_description = each.value.description
-  compartment_create      = true
   enable_delete           = each.value.enable_delete
 
   #Optional
@@ -164,12 +159,12 @@ output "sub_compartments_level5_map" {
 
 module "iam-groups" {
   source   = "./modules/identity/iam-group"
-  for_each = var.groups != null ? var.groups : {}
+  for_each = var.groups
 
   tenancy_ocid      = var.tenancy_ocid
   group_name        = each.value.group_name
   group_description = each.value.group_description
-  matching_rule     = (each.value.matching_rule != null && each.value.matching_rule != "") ? each.value.matching_rule : ""
+  matching_rule     = each.value.matching_rule
 
   #Optional
   defined_tags  = each.value.defined_tags
@@ -194,7 +189,7 @@ output "dynamic_group_id_map" {
 
 module "iam-policies" {
   source   = "./modules/identity/iam-policy"
-  for_each = var.policies != null ? var.policies : {}
+  for_each = var.policies
 
   depends_on            = [module.iam-groups]
   tenancy_ocid          = var.tenancy_ocid
@@ -206,7 +201,7 @@ module "iam-policies" {
   #Optional
   defined_tags        = each.value.defined_tags
   freeform_tags       = each.value.freeform_tags
-  policy_version_date = each.value.policy_version_date != null ? each.value.policy_version_date : null
+  policy_version_date = each.value.policy_version_date
 }
 
 /*

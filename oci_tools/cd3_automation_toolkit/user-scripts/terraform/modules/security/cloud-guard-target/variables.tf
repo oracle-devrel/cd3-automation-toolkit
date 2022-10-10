@@ -18,20 +18,20 @@ variable "display_name" {
 
 variable "target_resource_id" {
   description = "Resource ID which the target uses to monitor."
-  type    = string
-  default = null
+  type        = string
+  default     = null
 }
 
 variable "target_resource_type" {
   description = "possible type of targets(compartment/HCMCloud/ERPCloud)"
-  type    = string
-  default = null
+  type        = string
+  default     = null
 }
 
 variable "state" {
   description = "The current state of the DetectorRule. Allowed Values: ACTIVE, CREATING, DELETED, DELETING, FAILED, INACTIVE, UPDATING"
-  type    = string
-  default = null
+  type        = string
+  default     = null
 }
 
 variable "description" {

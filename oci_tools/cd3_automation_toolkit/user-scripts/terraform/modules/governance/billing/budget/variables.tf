@@ -47,12 +47,12 @@ variable "freeform_tags" {
 
 variable "description" {
   description = "The description of the budget."
-  type    = string
+  type        = string
 }
 
 variable "display_name" {
   description = "The displayName of the budget. Avoid entering confidential information."
-  type    = string
+  type        = string
 }
 
 /*
@@ -68,5 +68,5 @@ variable "target_type" {
 
 variable "targets" {
   description = "The list of targets on which the budget is applied. If targetType is 'COMPARTMENT', the targets contain the list of compartment OCIDs. If targetType is 'TAG', the targets contain the list of cost tracking tag identifiers in the form of '{tagNamespace}.{tagKey}.{tagValue}'. Curerntly, the array should contain exactly one item."
-  type        = list
+  type        = list(any)
 }

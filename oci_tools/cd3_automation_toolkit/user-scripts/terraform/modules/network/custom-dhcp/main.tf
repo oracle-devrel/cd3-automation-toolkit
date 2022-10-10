@@ -16,7 +16,7 @@ resource "oci_core_dhcp_options" "custom_dhcp_option" {
   }
 
   dynamic "options" {
-    for_each = var.search_domain_names
+    for_each = try(var.search_domain_names != null ? var.search_domain_names : [], [])
     content {
       type                = "SearchDomain"
       search_domain_names = options.value
@@ -31,7 +31,4 @@ resource "oci_core_dhcp_options" "custom_dhcp_option" {
   domain_name_type = var.domain_name_type
   freeform_tags    = var.freeform_tags
 
-  lifecycle {
-    ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"]]
-  }
 }

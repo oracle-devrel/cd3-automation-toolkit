@@ -95,6 +95,7 @@ class commonTools():
                     self.all_regions.append(k)
 
 
+
     #Get Compartment OCIDs
     def get_network_compartment_ids(self,c_id, c_name,configFileName):
         # Get config client
@@ -207,6 +208,7 @@ class commonTools():
     #Export extra fields
     def export_extra_columns(oci_objs, col_header, sheet_dict, values_for_column):
         value = ""
+
         if (col_header in sheet_dict.keys()):
             # Check if property exists for any object on that sheet
             for oci_obj in oci_objs:
@@ -276,7 +278,7 @@ class commonTools():
         columnvalue = str(columnvalue).strip()
         columnname = commonTools.check_column_headers(columnname)
         if "::" in columnvalue:
-            if ".Flex" in columnvalue:
+            if ".Flex" in columnvalue or ".Micro" in columnvalue:
                 columnname = commonTools.check_column_headers(columnname)
                 multivalues = columnvalue.split("::")
                 multivalues = [str(part).strip() for part in multivalues if part]

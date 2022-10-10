@@ -37,3 +37,7 @@ variable "freeform_tags" {
   default = {}
 }
 
+variable "route_table_id" {
+  type    = string
+  default = null
+}

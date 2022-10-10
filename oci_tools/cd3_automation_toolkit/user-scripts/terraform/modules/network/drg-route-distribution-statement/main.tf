@@ -21,7 +21,7 @@ resource "oci_core_drg_route_distribution_statement" "drg_route_distribution_sta
 
       #Optional
       attachment_type   = match_criteria.value.attachment_type
-      drg_attachment_id = length(regexall("ocid1.drgattachment.oc1*", match_criteria.value.drg_attachment_id)) > 0 ? match_criteria.value.drg_attachment_id : (match_criteria.value.drg_attachment_id != "" && match_criteria.value.drg_attachment_id != null ? var.drg_attachment_ids[match_criteria.value.drg_attachment_id]["drg_attachment_tf_id"] : null)
+      drg_attachment_id = match_criteria.value.drg_attachment_id != "" && match_criteria.value.drg_attachment_id != null ? (length(regexall("ocid1.drgattachment.oc1*", match_criteria.value.drg_attachment_id)) > 0 ? match_criteria.value.drg_attachment_id : var.drg_attachment_ids[match_criteria.value.drg_attachment_id]["drg_attachment_tf_id"] ) : ""
     }
   }
 }

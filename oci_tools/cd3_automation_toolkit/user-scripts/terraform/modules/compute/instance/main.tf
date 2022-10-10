@@ -38,7 +38,7 @@ resource "oci_core_instance" "instance" {
   }
 
   #Optional
-  /* agent_config {
+  agent_config {
     #Optional
     are_all_plugins_disabled = var.all_plugins_disabled
     is_management_disabled   = var.is_management_disabled
@@ -53,7 +53,6 @@ resource "oci_core_instance" "instance" {
       }
     }
   }
-  */
   availability_config {
     #Optional
     is_live_migration_preferred = var.is_live_migration_preferred
@@ -68,9 +67,9 @@ resource "oci_core_instance" "instance" {
     display_name              = var.display_name
     freeform_tags             = var.freeform_tags
     hostname_label            = var.hostname_label
-    nsg_ids                   = length(var.nsg_ids) != 0  ? (local.nsg_ids==[] ? ["INVALID NSG Name"] : local.nsg_ids) : null
+    nsg_ids                   = length(var.nsg_ids) != 0 ? (local.nsg_ids == [] ? ["INVALID NSG Name"] : local.nsg_ids) : null
     private_ip                = var.private_ip
-    subnet_id                 = var.subnet_id
+    subnet_id                 = var.subnet_id != "" ? (length(regexall("ocid1.subnet.oc1*", var.subnet_id)) > 0 ? var.subnet_id : data.oci_core_subnets.oci_subnets_instances.subnets[0].id) : null
     vlan_id                   = var.vlan_id
     skip_source_dest_check    = var.skip_source_dest_check
   }
@@ -94,7 +93,7 @@ resource "oci_core_instance" "instance" {
     for_each = var.platform_config
     content {
       #Required
-      type                               = platform_config.value["config_type"]
+      type = platform_config.value["config_type"]
       #Optional
       is_measured_boot_enabled           = platform_config.value["is_measured_boot_enabled"]
       is_secure_boot_enabled             = platform_config.value["is_secure_boot_enabled"]
@@ -106,8 +105,8 @@ resource "oci_core_instance" "instance" {
   shape_config {
     #Optional
     baseline_ocpu_utilization = var.baseline_ocpu_utilization
-    memory_in_gbs             = var.memory_in_gbs
-    ocpus                     = var.ocpu_count
+    memory_in_gbs             = var.memory_in_gbs == null ? local.shapes_config[var.shape]["memory_in_gbs"] : var.memory_in_gbs
+    ocpus                     = var.ocpu_count == null ? local.shapes_config[var.shape]["ocpus"] : var.ocpu_count
   }
 
   source_details {
@@ -120,7 +119,7 @@ resource "oci_core_instance" "instance" {
   }
 
   lifecycle {
-    ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"], create_vnic_details[0].defined_tags["Oracle-Tags.CreatedOn"], create_vnic_details[0].defined_tags["Oracle-Tags.CreatedBy"]]
+    ignore_changes = [create_vnic_details[0].defined_tags["Oracle-Tags.CreatedOn"], create_vnic_details[0].defined_tags["Oracle-Tags.CreatedBy"]]
   }
 }
 
@@ -138,8 +137,9 @@ locals {
 
 resource "oci_core_volume_backup_policy_assignment" "volume_backup_policy_assignment" {
   depends_on = [oci_core_instance.instance]
-  count     = var.boot_tf_policy != "" ? 1 : 0
-  asset_id  = data.oci_core_boot_volumes.all_boot_volumes[0].boot_volumes.0.id
+  count      = var.boot_tf_policy != "" ? 1 : 0
+  #asset_id  = data.oci_core_boot_volumes.all_boot_volumes[0].boot_volumes.0.id
+  asset_id  = oci_core_instance.instance.boot_volume_id
   policy_id = local.current_policy_id
   lifecycle {
     create_before_destroy = true

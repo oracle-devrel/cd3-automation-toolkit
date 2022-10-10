@@ -110,7 +110,7 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, config,disp
             ins_shape = ins.shape
             shape_config=None
 
-            if ('Flex' in ins_shape):
+            if ('.Flex' in ins_shape or ".Micro" in ins_shape):
                 #ocpu = ins.shape_config
                 shape_config = ins.shape_config
                 ocpus_n = str(shape_config.ocpus)
@@ -194,6 +194,7 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, config,disp
                 tf_name = commonTools.check_tf_variable(key_name)
                 instance_keys[tf_name] = repr(ins.metadata['ssh_authorized_keys'])[
                                          1:-1]  # print metadata of the instance
+
                 key_name = ins_dname + "_" + str(privateip)
                 key_name = commonTools.check_tf_variable(key_name)
             else:
@@ -324,9 +325,11 @@ def export_instances(inputfile, outdir, config, network_compartments=[], display
 
         tempStrKeys = "\n" + tempStrKeys
         tempStrKeys = "#START_instance_ssh_keys#" + tempStrKeys + "\t#instance_ssh_keys_END#"
+        if ("\\n" in tempStrKeys):
+            tempStrKeys = tempStrKeys.replace("\\n", "\\\\n")
+
         var_data[reg] = re.sub('#START_instance_ssh_keys#.*?#instance_ssh_keys_END#', tempStrKeys,
-                               var_data[reg],
-                               flags=re.DOTALL)
+                               var_data[reg],flags=re.DOTALL)
 
         # Write variables file data
         with open(file, "w") as f:

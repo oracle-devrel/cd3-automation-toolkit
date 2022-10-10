@@ -43,12 +43,15 @@ module "vcns" {
   compartment_id = length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : try(zipmap(data.oci_identity_compartments.compartments.compartments.*.name, data.oci_identity_compartments.compartments.compartments.*.id)[each.value.compartment_id], var.compartment_ocids[each.value.compartment_id])
 
   #Optional
-  cidr_blocks    = each.value.cidr_blocks
-  display_name   = each.value.display_name
-  dns_label      = (each.value.dns_label == "n") ? null : each.value.dns_label
-  is_ipv6enabled = each.value.is_ipv6enabled
-  defined_tags   = each.value.defined_tags
-  freeform_tags  = each.value.freeform_tags
+  cidr_blocks                      = each.value.cidr_blocks
+  display_name                     = each.value.display_name
+  byoipv6cidr_details              = each.value.byoipv6cidr_details != null ? each.value.byoipv6cidr_details : []
+  dns_label                        = (each.value.dns_label == "n") ? null : each.value.dns_label
+  is_ipv6enabled                   = each.value.is_ipv6enabled # Defaults to false by terraform hashicorp
+  defined_tags                     = each.value.defined_tags
+  freeform_tags                    = each.value.freeform_tags
+  ipv6private_cidr_blocks          = each.value.ipv6private_cidr_blocks
+  is_oracle_gua_allocation_enabled = each.value.is_oracle_gua_allocation_enabled
 
 }
 
@@ -67,17 +70,19 @@ module "igws" {
   source   = "./modules/network/igw"
   for_each = (var.igws != null || var.igws != {}) ? var.igws : {}
 
-  depends_on = [module.vcns]
+  depends_on = [module.vcns] #,module.route-tables]
 
   #Required
   compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
   vcn_id         = length(regexall("ocid1.vcn.oc1*", each.value.vcn_id)) > 0 ? each.value.vcn_id : merge(module.vcns.*...)[each.value.vcn_id]["vcn_tf_id"]
 
   #Optional
-  enabled       = each.value.enable_igw
+  enabled       = each.value.enable_igw # Defaults to true by terraform hashicorp
   defined_tags  = each.value.defined_tags
   display_name  = each.value.igw_name != null ? each.value.igw_name : null
   freeform_tags = each.value.freeform_tags
+  #route_table_id = each.value.route_table_id == null || each.value.route_table_id == "" ? merge(module.vcns.*...)[each.value.vcn_id]["vcn_default_route_table_id"] : (length(regexall("ocid1.routetable.oc1*", each.value.route_table_id)) > 0 ? each.value.route_table_id : merge(module.route-tables.*...)[each.value.route_table_id]["route_table_ids"])
+
 }
 
 /*
@@ -102,10 +107,10 @@ module "ngws" {
   vcn_id         = length(regexall("ocid1.vcn.oc1*", each.value.vcn_id)) > 0 ? each.value.vcn_id : merge(module.vcns.*...)[each.value.vcn_id]["vcn_tf_id"]
 
   #Optional
-  #block_traffic = each.value.block_traffic != null ? each.value.block_traffic : false   # Defaults to false by terraform hashicorp
+  block_traffic = each.value.block_traffic # Defaults to false by terraform hashicorp
   public_ip_id  = each.value.public_ip_id
   defined_tags  = each.value.defined_tags
-  display_name  = each.value.ngw_name != null ? each.value.ngw_name : null
+  display_name  = each.value.ngw_name
   freeform_tags = each.value.freeform_tags
 }
 
@@ -274,7 +279,7 @@ module "drgs" {
 
   #Optional
   defined_tags  = each.value.defined_tags
-  display_name  = each.value.display_name != null ? each.value.display_name : null
+  display_name  = each.value.display_name
   freeform_tags = each.value.freeform_tags
 }
 
@@ -320,6 +325,7 @@ module "default-dhcps" {
   #Required
   manage_default_resource_id = length(regexall("ocid1.dhcpoptions.oc1*", each.value.manage_default_resource_id)) > 0 ? each.value.manage_default_resource_id : merge(module.vcns.*...)[each.value.manage_default_resource_id]["vcn_default_dhcp_id"]
   server_type                = each.value.server_type
+  custom_dns_servers         = each.value.custom_dns_servers
   search_domain_names        = each.value.search_domain
 
   #Optional
@@ -348,7 +354,7 @@ module "custom-dhcps" {
   vcn_id         = length(regexall("ocid1.vcn.oc1*", each.value.vcn_id)) > 0 ? each.value.vcn_id : merge(module.vcns.*...)[each.value.vcn_id]["vcn_tf_id"]
 
   server_type         = each.value.server_type
-  custom_dns_servers  = each.value.custom_dns_servers
+  custom_dns_servers  = each.value.custom_dns_servers != null ? each.value.custom_dns_servers : []
   search_domain_names = each.value.search_domain
 
   #Optional
@@ -501,7 +507,7 @@ module "drg-route-tables" {
   defined_tags                     = each.value.defined_tags == {} ? null : each.value.defined_tags
   freeform_tags                    = each.value.freeform_tags == {} ? null : each.value.freeform_tags
   display_name                     = each.value.display_name != null ? each.value.display_name : null
-  import_drg_route_distribution_id = each.value.import_drg_route_distribution_id != null && each.value.import_drg_route_distribution_id != "" ? (length(regexall("ocid1.drgroutedistribution.oc1*", each.value.import_drg_route_distribution_id)) > 0 ? each.value.import_drg_route_distribution_id : (length(regexall(".Autogenerated-Import-Route-Distribution-for*", each.value.import_drg_route_distribution_id)) > 0 ? data.oci_core_drg_route_distributions.drg_route_distributions[each.value.drg_route_distribution_id].drg_route_distributions[0].id : merge(module.drg-route-distributions.*...)[each.value.import_drg_route_distribution_id]["drg_route_distribution_tf_id"])) : null
+  import_drg_route_distribution_id = each.value.import_drg_route_distribution_id != null && each.value.import_drg_route_distribution_id != "" ? (length(regexall("ocid1.drgroutedistribution.oc1*", each.value.import_drg_route_distribution_id)) > 0 ? each.value.import_drg_route_distribution_id : (length(regexall(".Autogenerated-Import-Route-Distribution-for*", each.value.import_drg_route_distribution_id)) > 0 ? data.oci_core_drg_route_distributions.drg_route_distributions[each.value.import_drg_route_distribution_id].drg_route_distributions[0].id : merge(module.drg-route-distributions.*...)[each.value.import_drg_route_distribution_id]["drg_route_distribution_tf_id"])) : null
   is_ecmp_enabled                  = each.value.is_ecmp_enabled != null ? each.value.is_ecmp_enabled : false
 }
 
@@ -554,7 +560,7 @@ module "drg-route-distributions" {
   #Optional
   defined_tags  = each.value.defined_tags
   freeform_tags = each.value.freeform_tags
-  display_name  = each.value.display_name != null ? each.value.display_name : null
+  display_name  = each.value.display_name
 }
 
 /*
@@ -575,8 +581,8 @@ module "drg-route-distribution-statements" {
   #Required
   key_name                          = each.key
   drg_route_distribution_id         = each.value.drg_route_distribution_id != null && each.value.drg_route_distribution_id != "" ? (length(regexall("ocid1.drgroutedistribution.oc1*", each.value.drg_route_distribution_id)) > 0 ? each.value.drg_route_distribution_id : (length(regexall(".Autogenerated-Import-Route-Distribution-for*", each.value.drg_route_distribution_id)) > 0 ? data.oci_core_drg_route_distributions.drg_route_distributions[each.value.drg_route_distribution_id].drg_route_distributions[0].id : merge(module.drg-route-distributions.*...)[each.value.drg_route_distribution_id]["drg_route_distribution_tf_id"])) : null
-  priority                          = each.value.priority != null && each.value.priority != "" ? each.value.priority : null
-  action                            = each.value.action != null ? each.value.action : null
+  priority                          = each.value.priority
+  action                            = each.value.action
   drg_attachment_ids                = merge(module.drg-attachments.*...)
   drg_route_distribution_statements = var.drg_route_distribution_statements
 }
@@ -605,16 +611,16 @@ module "subnets" {
   cidr_block     = each.value.cidr_block
 
   #Optional
-  dns_label                    = (each.value.dns_label != null && each.value.dns_label != "") ? each.value.dns_label : null
-  ipv6cidr_block               = (each.value.ipv6cidr_block != null && each.value.ipv6cidr_block != "") ? each.value.ipv6cidr_block : null
+  dns_label                    = each.value.dns_label
+  ipv6cidr_block               = each.value.ipv6cidr_block
   defined_tags                 = each.value.defined_tags
-  display_name                 = each.value.display_name != null ? each.value.display_name : null
+  display_name                 = each.value.display_name
   freeform_tags                = each.value.freeform_tags
-  prohibit_internet_ingress    = (each.value.prohibit_internet_ingress != null && each.value.prohibit_internet_ingress != "") ? each.value.prohibit_internet_ingress : null
-  prohibit_public_ip_on_vnic   = (each.value.prohibit_public_ip_on_vnic != null && each.value.prohibit_public_ip_on_vnic != "") ? each.value.prohibit_public_ip_on_vnic : null
+  prohibit_internet_ingress    = each.value.prohibit_internet_ingress
+  prohibit_public_ip_on_vnic   = each.value.prohibit_public_ip_on_vnic
   availability_domain          = each.value.availability_domain != "" && each.value.availability_domain != null ? data.oci_identity_availability_domains.availability_domains.availability_domains[each.value.availability_domain].name : ""
-  dhcp_options_id              = length(regexall("ocid1.dhcpoptions.oc1*", each.value.dhcp_options_id)) > 0 ? each.value.dhcp_options_id : (each.value.dhcp_options_id == "" ? merge(module.vcns.*...)[each.value.vcn_id]["vcn_default_dhcp_id"] : merge(module.custom-dhcps.*...)[each.value.dhcp_options_id]["custom_dhcp_tf_id"])
-  route_table_id               = length(regexall("ocid1.routetable.oc1*", each.value.route_table_id)) > 0 ? each.value.route_table_id : (each.value.route_table_id == "" ? merge(module.vcns.*...)[each.value.vcn_id]["vcn_default_route_table_id"] : merge(module.route-tables.*...)[each.value.route_table_id]["route_table_ids"])
+  dhcp_options_id              = each.value.dhcp_options_id == null || each.value.dhcp_options_id == "" ? merge(module.vcns.*...)[each.value.vcn_id]["vcn_default_dhcp_id"] : (length(regexall("ocid1.dhcpoptions.oc1*", each.value.dhcp_options_id)) > 0 ? each.value.dhcp_options_id : merge(module.custom-dhcps.*...)[each.value.dhcp_options_id]["custom_dhcp_tf_id"])
+  route_table_id               = each.value.route_table_id == null || each.value.route_table_id == "" ? merge(module.vcns.*...)[each.value.vcn_id]["vcn_default_route_table_id"] : (length(regexall("ocid1.routetable.oc1*", each.value.route_table_id)) > 0 ? each.value.route_table_id : merge(module.route-tables.*...)[each.value.route_table_id]["route_table_ids"])
   security_list_ids            = length(each.value.security_list_ids) == 0 ? [merge(module.vcns.*...)[each.value.vcn_id]["vcn_default_security_list_id"]] : each.value.security_list_ids
   vcn_default_security_list_id = merge(module.vcns.*...)[each.value.vcn_id]["vcn_default_security_list_id"]
   custom_security_list_id      = merge(module.security-lists.*...)
@@ -640,7 +646,7 @@ module "nsgs" {
   vcn_id         = length(regexall("ocid1.vcn.oc1*", each.value.vcn_id)) > 0 ? each.value.vcn_id : merge(module.vcns.*...)[each.value.vcn_id]["vcn_tf_id"]
 
   defined_tags  = each.value.defined_tags
-  display_name  = each.value.display_name != null ? each.value.display_name : null
+  display_name  = each.value.display_name
   freeform_tags = each.value.freeform_tags
 }
 
@@ -651,7 +657,7 @@ output "nsg_id_map" {
 */
 
 module "nsg-rules" {
-  source     = "./modules/network/nsg-rules"
+  source     = "./modules/network/nsg-rule"
   for_each   = (var.nsg_rules != null || var.nsg_rules != {}) ? var.nsg_rules : {}
   depends_on = [module.nsgs]
 

@@ -65,11 +65,11 @@ variable "key_name" {
 variable "listeners" {}
 
 variable "certificate_name" {
-  type        = string
-  default     = null
+  type    = string
+  default = null
 }
 
 variable "cipher_suite_name" {
-  type        = string
-  default     = null
+  type    = string
+  default = null
 }
