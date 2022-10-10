@@ -487,7 +487,7 @@ def create_cis_budget(*args,**kwargs):
 
 def initiate_cis_scan(outdir, prefix, config):
     options = [
-        Option("Download the latest compliance checking script", start_cis_download, 'Download CIS script'),
+        Option("CD3 Image already contains the latest CIS compliance checking script available at the time of cd3 image release.\n   Download latest only if new version of the script is available", start_cis_download, 'Download CIS script'),
         Option("Execute compliance checking script", start_cis_scan, 'Execute CIS script'),
     ]
     options = show_options(options, quit=True, menu=True, index=1)

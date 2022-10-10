@@ -5,54 +5,6 @@
 # Create Network Load Balancer
 #######################################
 
-//data "oci_core_subnets" "oci_nlb_subnets" {
-//  for_each       = var.network_load_balancers != null ? var.network_load_balancers : {}
-//  depends_on     = [module.subnets]
-//  compartment_id = each.value.network_compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.network_compartment_id)) > 0 ? each.value.network_compartment_id : var.compartment_ocids[each.value.network_compartment_id]) : var.compartment_ocids[each.value.network_compartment_id]
-//  display_name   = each.value.subnet_id
-//}
-
-# data "oci_core_instances" "nlb_instances" {
-#   for_each = var.nlb_backends != null ? var.nlb_backends : {}
-#   #Required
-#   compartment_id = each.value.instance_compartment != null && each.value.instance_compartment != "" ? (length(regexall("ocid1.compartment.oc1*", each.value.instance_compartment)) > 0 ? each.value.instance_compartment : var.compartment_ocids[each.value.instance_compartment]) : var.tenancy_ocid
-# }
-
-# data "oci_core_instance" "nlb_instance_ip" {
-#   for_each    = { for k, v in var.nlb_backends : k => v.ip_address if length(regexall("IP:*", v.ip_address)) == 0 }
-#   instance_id = merge(local.nlb_instance_ocid.ocid.*...)[split("NAME:", each.value)[1]][0]
-# }
-
-# data "oci_core_vnic_attachments" "nlb_instance_vnic_attachments" {
-#   for_each = { for k, v in var.nlb_backends : k => v if length(regexall("IP:*", v.ip_address)) == 0 }
-
-#   compartment_id = each.value.instance_compartment != null && each.value.instance_compartment != "" ? (length(regexall("ocid1.compartment.oc1*", each.value.instance_compartment)) > 0 ? each.value.instance_compartment : var.compartment_ocids[each.value.instance_compartment]) : var.tenancy_ocid
-#   instance_id    = merge(local.nlb_instance_ocid.ocid.*...)[split("NAME:", each.value.ip_address)[1]][0]
-# }
-
-# # Filter on VNIC OCID
-# data "oci_core_private_ips" "private_ips_by_ip_address" {
-#   for_each = { for k, v in var.nlb_backends : k => v.ip_address if length(regexall("IP:*", v.ip_address)) == 0 }
-
-#   vnic_id = merge(local.nlb_instance_vnic_ocid.vnic_ocids.*...)[merge(local.nlb_instance_ocid.ocid.*...)[split("NAME:", each.value)[1]][0]][0]
-# }
-
-# locals {
-#   nlb_instance_ocid = {
-#     for instances in data.oci_core_instances.nlb_instances :
-#     "ocid" => { for instance in instances.instances : instance.display_name => instance.id... }...
-#   }
-#   nlb_instance_vnic_ocid = {
-#     for vnics in data.oci_core_vnic_attachments.nlb_instance_vnic_attachments :
-#     "vnic_ocids" => { for vnic in vnics.vnic_attachments : vnic.instance_id => vnic.vnic_id... }...
-#   }
-#   nlb_private_ip_ocid = {
-#     for private_ips in data.oci_core_private_ips.private_ips_by_ip_address :
-#     "private_ocids" => { for private_ip in private_ips.private_ips : private_ip.vnic_id => private_ip.id... }...
-#   }
-
-# }
-
 module "network-load-balancers" {
   source                         = "./modules/networkloadbalancer/nlb"
   for_each                       = var.network_load_balancers != null ? var.network_load_balancers : {}
@@ -108,7 +60,7 @@ module "nlb-backends" {
   network_load_balancer_id = length(regexall("ocid1.loadbalancer.oc1*", each.value.network_load_balancer_id)) > 0 ? each.value.network_load_balancer_id : merge(module.network-load-balancers.*...)[each.value.network_load_balancer_id]["network_load_balancer_tf_id"]
   port                     = each.value.port
   ip_address               = each.value.ip_address
-  instance_compartment     = each.value.instance_compartment != null ? (length(regexall("ocid1.compartment.oc1*", each.value.instance_compartment)) > 0 ? each.value.instance_compartment : var.compartment_ocids[each.value.instance_compartment]) : null
+  instance_compartment     = each.value.instance_compartment != "" ? (length(regexall("ocid1.compartment.oc1*", each.value.instance_compartment)) > 0 ? each.value.instance_compartment : var.compartment_ocids[each.value.instance_compartment]) : var.tenancy_ocid
   #ip_address = each.value.ip_address != "" ? (length(regexall("IP:", each.value.ip_address)) > 0 ? split("IP:", each.value.ip_address)[1] : data.oci_core_instance.nlb_instance_ip[each.key].private_ip) : (length(regexall("NAME:", each.value.ip_address)) > 0 ? split("NAME:", each.value.ip_address)[1] : data.oci_core_instance.nlb_instance[each.key].private_ip) : null
 
 
