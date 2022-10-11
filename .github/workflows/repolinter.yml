@@ -1,7 +1,6 @@
 name: Repolinter
 on:
   pull_request_target:
-  
 jobs:
   run_repolinter:
     name: Run Repolinter on pull request
