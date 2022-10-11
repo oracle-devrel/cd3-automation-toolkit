@@ -1,0 +1,12 @@
+{% if source %}
+{
+            #Required
+            source = "{{ source }}"
+
+            #Optional
+            access = "{{ access }}"
+            anonymous_gid = "{{ gid }}"
+            anonymous_uid = "{{ uid }}"
+            identity_squash = "{{ idsquash }}"
+            require_privileged_source_port = "{{ require_ps_port }}"
+        },{% endif %}

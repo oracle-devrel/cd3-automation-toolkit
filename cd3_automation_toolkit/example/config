@@ -1,0 +1,7 @@
+[DEFAULT]
+tenancy = <Tenancy OCID>
+fingerprint = <fingerprint>
+user = <User OCID>
+key_file = <Key File Path eg D:/key/oci_api_private.pem>
+region = <eg us-phoenix-1>
+

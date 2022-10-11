@@ -1,4 +1,0 @@
-fdk
-requests
-Splunk-HEC
-oci

@@ -1,0 +1,32 @@
+
+{% if (skeleton and count == 0) %}
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+
+#############################
+# Network
+# Listeners - tfvars
+# Allowed Values:
+# Protocols -
+# network_load_balancer_id can be the ocid or the key of load_balancers (map)
+#############################
+
+nlb_listeners = {
+  ##Add New Listeners for {{ region|lower }} here##
+}{% else %}
+
+    {{ nlb_tf_name }}_{{ listener_tf_name }} = {
+        name = "{{ listener_name }}"
+        network_load_balancer_id = "{{ nlb_tf_name }}"
+
+        port = "{{ listener_port }}"
+        protocol = "{{ protocol|upper }}"
+        default_backend_set_name = "{{ nlb_tf_name }}_{{ backend_set_tf_name }}"
+
+        {% if ip_version and ip_version != "" %}
+        ip_version = {{ ip_version }}
+        {% else %}
+        ip_version = ""
+        {% endif %}
+
+    },
+{% endif %}
