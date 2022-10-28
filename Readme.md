@@ -10,4 +10,4 @@
 
   https://github.com/oracle-devrel/cd3-automation-toolkit/blob/develop/cd3_automation_toolkit/documentation/user_guide/01%20CD3%20Automation%20Toolkit%20-%20End%20to%20End%20Process.pdf
 
-Note : image_tag should be replaced with suiteable tag as per your requirements/standards.
+Note : ${image_tag} should be replaced with suitable tag as per your requirements/standards.
