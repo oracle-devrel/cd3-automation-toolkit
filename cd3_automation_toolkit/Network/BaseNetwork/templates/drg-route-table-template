@@ -6,6 +6,8 @@
 # DRG Route Tables - tfvars
 # Allowed Values:
 # drg_id can be ocid or the key of drgs (map)
+# Sample import command for Default Route Table:
+# terraform import "module.drg-route-tables[\"<<drg route table name>>\"].oci_core_drg_route_table.drg_route_table" <<drg route table ocid>>
 #################################
 drg_route_tables = {
 

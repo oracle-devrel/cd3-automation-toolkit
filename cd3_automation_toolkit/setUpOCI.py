@@ -101,7 +101,7 @@ def validate_cd3(execute_all=False):
     ]
     if not execute_all:
         options = show_options(options, quit=True, menu=False, index=1)
-    cd3Validator.validate_cd3(inputfile, prefix,outdir, options, config)
+    cd3Validator.validate_cd3(inputfile, prefix, outdir, options, config)
     print("Exiting CD3 Validation...")
 
 def get_compartment_list(resource_name):
@@ -260,7 +260,7 @@ def export_events(inputfile, outdir, prefix,config):
 def export_alarms(inputfile, outdir, prefix,config):
     compartments = get_compartment_list('Alarms')
     ManagementServices.export_alarms(inputfile, outdir, _config=config, network_compartments=compartments)
-    ManagementServices.create_terraform_alarms(inputfile, outdir, prefix,config=config)
+    ManagementServices.create_terraform_alarms(inputfile, outdir, prefix, config=config)
     print("\n\nExecute tf_import_commands_alarms_nonGF.sh script created under each region directory to synch TF with OCI Alarms\n")
 
 ################## Create Functions ##########################
@@ -336,7 +336,7 @@ def export_modify_drg_route_rules(inputfile, outdir, prefix, non_gf_tenancy, con
 
 def export_drg_route_rules(inputfile, outdir, prefix, config, non_gf_tenancy):
     compartments = get_compartment_list('OCI DRG Route Rules')
-    Network.export_drg_routetable(inputfile, network_compartments=compartments, _config=config, _tf_import_cmd=False,outdir=None)
+    Network.export_drg_routetable(inputfile, network_compartments=compartments, _config=config, _tf_import_cmd=False, outdir=None)
 
 def export_modify_nsgs(inputfile, outdir, prefix, non_gf_tenancy, config):
     execute_all = False
@@ -438,7 +438,7 @@ def create_databases(execute_all=False):
 
 def create_exa_infra_vmclusters(inputfile, outdir, prefix,config):
     options = [Option(None, Database.create_terraform_exa_infra, 'Processing Exa-Infra Tab'),
-    Option(None, Database.create_terraform_exa_vmclusters, 'Processing Exa-VM-Clusters Tab')]
+               Option(None, Database.create_terraform_exa_vmclusters, 'Processing Exa-VM-Clusters Tab')]
     execute_options(options, inputfile, outdir, prefix, config)
 
 

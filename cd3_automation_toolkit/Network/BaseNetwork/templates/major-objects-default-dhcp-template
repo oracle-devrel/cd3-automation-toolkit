@@ -5,6 +5,8 @@
 # Major Objects - Default DHCP - tfvars
 # Allowed Values:
 # manage_default_resource_id can be the ocid or the key of vcns (map)
+# Sample import command for Default DHCP:
+# terraform import "module.default-dhcps[\"<<default dhcp name>>\"].oci_core_default_dhcp_options.default_dhcp_option" <<default dhcp ocid>>
 ############################
 
 default_dhcps = {

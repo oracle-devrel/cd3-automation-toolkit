@@ -4,6 +4,8 @@
 ############################
 # Network
 # Major Objects - Default Security List - tfvars
+# Sample import command for Default Security List:
+# terraform import "module.default-security-lists[\"<<default security list name>>\"].oci_core_default_security_list.default_security_list" <<default security list ocid>>
 ############################
 
 default_seclists = {

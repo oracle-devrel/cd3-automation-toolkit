@@ -33,6 +33,6 @@ variable "custom_dns_servers" {
 }
 
 variable "search_domain_names" {
-  type    = map(any)
-  default = {}
+  type    = list(any)
+  default = []
 }

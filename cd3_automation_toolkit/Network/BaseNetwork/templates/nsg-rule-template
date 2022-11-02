@@ -4,6 +4,8 @@
 ############################
 # Network
 # Network Security Group Rules
+# Sample import command for Network Security Group Rules:
+# terraform import "module.nsg-rules[\"<<nsg rule name>>\"].oci_core_network_security_group_security_rule.nsg_rule" networkSecurityGroups/<<nsg ocid>>/securityRules/ECD177
 ############################
 
 nsg_rules = {

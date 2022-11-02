@@ -4,6 +4,8 @@
 ############################
 # Network
 # Major Objects - Default Route Table - tfvars
+# Sample import command for Default Route Table:
+# terraform import "module.default-route-tables[\"<<default route table name>>\"].oci_core_default_route_table.default_route_table" <<default route table ocid>>
 ############################
 
 default_route_tables = {

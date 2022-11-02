@@ -6,6 +6,8 @@
 # Create DRG Route Distribution Statements
 # Allowed Values:
 # drg_route_distribution_id can be the ocid or the key of drg_route_distributions (map)
+# Sample import command for DRG Route Distribution Statements:
+# terraform import "module.drg-route-distribution-statements[\"<<drg route distribution statement name>>\"].oci_core_drg_route_distribution_statement.drg_route_distribution_statement" drgRouteDistributions/<<drg route distribution ocid>>
 ##########################################
 
 drg_route_distribution_statements = {

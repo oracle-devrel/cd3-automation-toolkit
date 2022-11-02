@@ -132,6 +132,10 @@ def create_resource_manager(outdir, prefix, config=DEFAULT_LOCATION):
             for line in origfile:
                 if 'version' in line or 'tenancy_ocid' in line or "user_ocid" in line or "fingerprint" in line or "private_key_path" in line:
                     pass
+                elif 'terraform {' in line:
+                    experimental_line = "experiments = [module_variable_optional_attrs]"
+                    line = line+"\n  "+experimental_line+"\n  "
+                    newfile.write(line)
                 else:
                     newfile.write(line)
 

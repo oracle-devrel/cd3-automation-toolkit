@@ -5,6 +5,8 @@
 # Major Objects - DRG Attachment - tfvars
 # Allowed Values:
 # vcn_id can be the ocid or the key of vcns (map)
+# Sample import command for DRG Attachment:
+# terraform import "module.drg-attachments[\"<<drg attachment name>>\"].oci_core_drg_attachment.drg_attachment" <<drg attachment ocid>>
 ############################
 
 drg_attachments = {

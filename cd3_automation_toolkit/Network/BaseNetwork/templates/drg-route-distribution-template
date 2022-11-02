@@ -6,6 +6,8 @@
 # DRG Route Distributions - tfvars
 # Allowed Values:
 # drg_id can be the ocid or the key of drgs (map)
+# Sample import command for drg route distribution:
+# terraform import "module.drg-route-distributions[\"<<drg route distribution name>>\"].oci_core_drg_route_distribution.drg_route_distribution" <<drg route distribution ocid>>
 #################################
 
 drg_route_distributions = {

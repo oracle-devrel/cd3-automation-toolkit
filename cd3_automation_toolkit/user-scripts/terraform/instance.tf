@@ -5,21 +5,6 @@
 ## Create Instance
 #############################
 
-//data "oci_core_subnets" "oci_subnets" {
-//  # depends_on = [module.subnets] # Uncomment to create Network and Instances together
-//  for_each       = var.instances != null ? var.instances : {}
-//  compartment_id = each.value.network_compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.network_compartment_id)) > 0 ? each.value.network_compartment_id : var.compartment_ocids[each.value.network_compartment_id]) : var.compartment_ocids[each.value.network_compartment_id]
-//  display_name   = each.value.subnet_id
-//  vcn_id         = data.oci_core_vcns.oci_vcns[each.key].virtual_networks.*.id[0]
-//}
-//
-//data "oci_core_vcns" "oci_vcns" {
-//  # depends_on = [module.vcns] # Uncomment to create Network and Instances together
-//  for_each       = var.instances != null ? var.instances : {}
-//  compartment_id = each.value.network_compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.network_compartment_id)) > 0 ? each.value.network_compartment_id : var.compartment_ocids[each.value.network_compartment_id]) : var.compartment_ocids[each.value.network_compartment_id]
-//  display_name   = each.value.vcn_name
-//}
-
 module "instances" {
   source                 = "./modules/compute/instance"
   for_each               = var.instances != null ? var.instances : {}

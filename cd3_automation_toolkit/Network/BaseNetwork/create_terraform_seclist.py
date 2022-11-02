@@ -177,7 +177,7 @@ def create_terraform_seclist(inputfile, outdir, prefix, config, modify_network=F
                 tempStr['rule_type'] = "ingress"
                 tempStr['source'] = subnet_cidr
                 tempStr['protocol_code'] = 'all'
-                tempStr['protocol'] = ''
+                tempStr['protocol'] = 'all'
                 tempStr['isstateless'] = "false"
 
                 if "#"+sl_tf_name+"_"+subnet_cidr+"#" not in modify_network_seclists[region_in_lowercase]:
@@ -203,7 +203,7 @@ def create_terraform_seclist(inputfile, outdir, prefix, config, modify_network=F
                     for rule in rule_type:
                         tempStr['destination'] = '0.0.0.0/0'
                         tempStr['protocol_code'] = 'all'
-                        tempStr['protocol'] = ''
+                        tempStr['protocol'] = 'all'
                         tempStr['source'] = subnet_cidr
                         tempStr['rule_type'] = rule
                         tempStr['isstateless'] = "false"
@@ -320,6 +320,16 @@ def create_terraform_seclist(inputfile, outdir, prefix, config, modify_network=F
             if reg in region_included:
                 if not modify_network:
                     tempSkeleton[reg] = tempSkeleton[reg].replace(textToAddSeclistSearch,modify_network_seclists[reg] + textToAddSeclistSearch)
+                    none_rule = """[
+        ####ADD_NEW_"""
+                    optional_data = """[
+           {
+            options = {
+                none = []
+                }
+            }
+####ADD_NEW_"""
+                    tempSkeleton[reg] = tempSkeleton[reg].replace(none_rule, optional_data)
                     tempSkeleton[reg] = "".join([s for s in tempSkeleton[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
                     oname = open(outfile, "w+")
                     oname.write(tempSkeleton[reg])
@@ -330,6 +340,16 @@ def create_terraform_seclist(inputfile, outdir, prefix, config, modify_network=F
                     srcdir = outdir + "/" + reg + "/"
                     resource = 'SLs'
                     commonTools.backup_file(srcdir, resource, auto_tfvars_filename)
+                    none_rule = """[
+        ####ADD_NEW_"""
+                    optional_data = """[
+                               {
+                                options = {
+                                    none = []
+                                    }
+                                }
+####ADD_NEW_"""
+                    tempSkeleton[reg] = tempSkeleton[reg].replace(none_rule, optional_data)
                     tempSkeleton[reg] = "".join([s for s in tempSkeleton[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
                     oname = open(outfile, "w+")
                     oname.write(tempSkeleton[reg])
