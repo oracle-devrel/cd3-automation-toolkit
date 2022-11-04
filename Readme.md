@@ -3,7 +3,7 @@
 ### Introduction
 The CD3 Automation toolkit has been developed to help in automating the OCI resource object management. 
 <br>
-It reads input data in the form of CD3 Excel sheets and renders the template instead of handling the task through the OCI console manually. This simplifies the management of the company's infrastructure as code.
+It reads input data in the form of CD3 Excel sheets and generates the terraform files instead of handling the task through the OCI console manually. This simplifies the management of the company's infrastructure as code.
 <br>
 <img width="434" alt="image" src="https://user-images.githubusercontent.com/103475219/199982639-3b78c9cc-1b30-4a78-bafb-75ceb05309c0.png">
 <br>
