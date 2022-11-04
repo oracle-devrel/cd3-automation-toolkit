@@ -11,6 +11,7 @@ It reads input data in the form of CD3 Excel sheets and renders the template ins
 * Change directory to cd3-automation-toolkit(i.e. cloned repo).
 * Run docker build -t cd3toolkit:${image_tag} -f Dockerfile --pull --no-cache .
 <br>
+
 ### To run the CD3 container and exec into it
 * Run docker run -it -d -v <path_in_local_system_where_the_files_must_be_generated>:/cd3user/tenancies <image_name>:<image_tag> /bin/bash
 * Run docker ps
