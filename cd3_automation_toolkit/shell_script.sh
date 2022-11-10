@@ -11,7 +11,6 @@ sudo yum -y install centos-release-scl
 
 sudo yum -y install rh-python38
 
-
 echo "source scl_source enable rh-python38" >> /cd3user/.bashrc
 source /cd3user/.bashrc
 python -m pip install --user --upgrade pip
