@@ -46,7 +46,7 @@ class commonTools():
         # When called from wthin OCSWorkVM or user-scripts
         dir=os.getcwd()
         if ("OCSWorkVM" in os.getcwd() or 'user-scripts' in os.getcwd()):
-            os.chdir("../oci_tools/")
+            os.chdir("../")
         regionFileName="OCI_Regions"
         protocolFileName="OCI_Protocols"
         excelColumnName="Excel_Columns"
