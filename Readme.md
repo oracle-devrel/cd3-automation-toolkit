@@ -27,5 +27,5 @@ https://github.com/oracle-devrel/cd3-automation-toolkit/blob/develop/cd3_automat
 <br><br>
 Note : ${image_tag} should be replaced with suitable tag as per your requirements/standards.
 
-The above steps have been tested on Windows (Git Bash) and MacOS.
+       The above steps have been tested on Windows (Git Bash) and MacOS.
 
