@@ -24,7 +24,7 @@ RUN sudo yum install -y oracle-softwarecollection-release-el7 \
 
 
 WORKDIR /cd3user/
-RUN  /cd3user/oci_tools/cd3_automation_toolkit/shell_script.sh \
+RUN sed -i -e 's/\r$//' /cd3user/oci_tools/cd3_automation_toolkit/shell_script.sh \
     && sudo chown -R cd3user:cd3user /cd3user/ && sudo yum clean all && sudo rm -rf /var/cache/yum /root/ocswork \
     && sudo rm -rf /cd3user/oci_tools/Dockerfile && sudo rm -rf /cd3user/oci_tools/Readme.md \
     && sudo rm -rf /cd3user/oci_tools/.git && sudo rm -rf /cd3user/oci_tools/.gitignore
