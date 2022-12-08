@@ -662,26 +662,26 @@ Points to Note:
                 options     = {
                     all = [] # for protocol = all
                     icmp = [{
-                        icmp_type = string
-                        icmp_code = number
+                        type = string
+                        code = number
                     }] 
                     (or)
                     icmp = [] # for all ICMP option
                     udp = [{
-                        udp_destination_port_range_max = string
-                        udp_destination_port_range_min = string
+                        destination_port_range_max = string
+                        destination_port_range_min = string
   
-                        udp_source_port_range_max = string
-                        udp_source_port_range_min = string
+                        source_port_range_max = string
+                        source_port_range_min = string
                     }]
                     (or)
                     udp = [] # for all UDP option
                     tcp = [{
-                        tcp_destination_port_range_max = string
-                        tcp_destination_port_range_min = string
+                        destination_port_range_max = string
+                        destination_port_range_min = string
   
-                        tcp_source_port_range_max = string
-                        tcp_source_port_range_min = string
+                        source_port_range_max = string
+                        source_port_range_min = string
                     }]
                     (or)
                     tcp = [] # for all TCP option
@@ -696,26 +696,26 @@ Points to Note:
                 options     = {
                     all = []
                     icmp = [{
-                        icmp_type = string
-                        icmp_code = number
+                        type = string
+                        code = number
                     }] 
                     (or)
                     icmp = [] # for all ICMP option
                     udp = [{
-                        udp_destination_port_range_max = string
-                        udp_destination_port_range_min = string
+                        destination_port_range_max = string
+                        destination_port_range_min = string
   
-                        udp_source_port_range_max = string
-                        udp_source_port_range_min = string
+                        source_port_range_max = string
+                        source_port_range_min = string
                     }]
                     (or)
                     udp = [] # for all UDP option
                     tcp = [{
-                        tcp_destination_port_range_max = string
-                        tcp_destination_port_range_min = string
+                        destination_port_range_max = string
+                        destination_port_range_min = string
   
-                        tcp_source_port_range_max = string
-                        tcp_source_port_range_min = string
+                        source_port_range_max = string
+                        source_port_range_min = string
                     }]
                     (or)
                     tcp = [] # for all TCP option
@@ -756,11 +756,11 @@ Points to Note:
                   source = "10.3.2.0/24"
                   options = {
                       tcp= [{
-                          tcp_destination_port_range_max = "22"
-                          tcp_destination_port_range_min = "22"
+                          destination_port_range_max = "22"
+                          destination_port_range_min = "22"
   
-                          tcp_source_port_range_max = "22"
-                          tcp_source_port_range_min = "22"
+                          source_port_range_max = "22"
+                          source_port_range_min = "22"
                       }]
                   }
                },
@@ -769,8 +769,8 @@ Points to Note:
                   source = "10.3.1.0/24"
                   options = {
                     udp = [{
-                        udp_destination_port_range_max = "7003"
-                        udp_destination_port_range_min = "7003"
+                        destination_port_range_max = "7003"
+                        destination_port_range_min = "7003"
                     }]
                   }
                },
@@ -803,8 +803,8 @@ Points to Note:
                   source = "0.0.0.0/0"
                   options = {
                       icmp= [{
-                        icmp_type = "2"
-                        icmp_code = "-1"
+                        type = "2"
+                        code = "-1"
                       }]
                   }
                },
@@ -853,26 +853,26 @@ Points to Note:
                 options     = {
                     all = [] # for protocol = all
                     icmp = [{
-                        icmp_type = string
-                        icmp_code = number
+                        type = string
+                        code = number
                     }] 
                     (or)
                     icmp = [] # for all ICMP option
                     udp = [{
-                        udp_destination_port_range_max = string
-                        udp_destination_port_range_min = string
+                        destination_port_range_max = string
+                        destination_port_range_min = string
   
-                        udp_source_port_range_max = string
-                        udp_source_port_range_min = string
+                        source_port_range_max = string
+                        source_port_range_min = string
                     }]
                     (or)
                     udp = [] # for all UDP option
                     tcp = [{
-                        tcp_destination_port_range_max = string
-                        tcp_destination_port_range_min = string
+                        destination_port_range_max = string
+                        destination_port_range_min = string
   
-                        tcp_source_port_range_max = string
-                        tcp_source_port_range_min = string
+                        source_port_range_max = string
+                        source_port_range_min = string
                     }]
                     (or)
                     tcp = [] # for all TCP option
@@ -887,26 +887,26 @@ Points to Note:
                 options     = {
                     all = []
                     icmp = [{
-                        icmp_type = string
-                        icmp_code = number
+                        type = string
+                        code = number
                     }] 
                     (or)
                     icmp = [] # for all ICMP option
                     udp = [{
-                        udp_destination_port_range_max = string
-                        udp_destination_port_range_min = string
+                        destination_port_range_max = string
+                        destination_port_range_min = string
   
-                        udp_source_port_range_max = string
-                        udp_source_port_range_min = string
+                        source_port_range_max = string
+                        source_port_range_min = string
                     }]
                     (or)
                     udp = [] # for all UDP option
                     tcp = [{
-                        tcp_destination_port_range_max = string
-                        tcp_destination_port_range_min = string
+                        destination_port_range_max = string
+                        destination_port_range_min = string
   
-                        tcp_source_port_range_max = string
-                        tcp_source_port_range_min = string
+                        source_port_range_max = string
+                        source_port_range_min = string
                     }]
                     (or)
                     tcp = [] # for all TCP option
@@ -947,11 +947,11 @@ Points to Note:
                   source = "10.3.2.0/24"
                   options = {
                       tcp= [{
-                          tcp_destination_port_range_max = "22"
-                          tcp_destination_port_range_min = "22"
+                          destination_port_range_max = "22"
+                          destination_port_range_min = "22"
   
-                          tcp_source_port_range_max = "22"
-                          tcp_source_port_range_min = "22"
+                          source_port_range_max = "22"
+                          source_port_range_min = "22"
                       }]
                   }
                },
@@ -960,8 +960,8 @@ Points to Note:
                   source = "10.3.1.0/24"
                   options = {
                     udp = [{
-                        udp_destination_port_range_max = "7003"
-                        udp_destination_port_range_min = "7003"
+                        destination_port_range_max = "7003"
+                        destination_port_range_min = "7003"
                     }]
                   }
                },
@@ -994,8 +994,8 @@ Points to Note:
                   source = "0.0.0.0/0"
                   options = {
                       icmp= [{
-                        icmp_type = "2"
-                        icmp_code = "-1"
+                        type = "2"
+                        code = "-1"
                       }]
                   }
                },
@@ -1646,60 +1646,65 @@ Points to Note:
           destination     = string
   
           # ICMP Options
-          icmp_options    = [{
-                icmp_type = string 
-                icmp_code = string   #  icmp_code = "" if you want to pass only the type
+          icmp    = [{
+                type = string 
+                code = string   #  icmp_code = "" if you want to pass only the type
             }] 
           (OR)
           # When there are no ICMP rules
-          icmp_options = [{
-                icmp_type = ""
-                icmp_code = ""
+          icmp = [{
+                type = ""
+                code = ""
             }]
+          (OR) # When there are no ICMP Options
+          icmp = []
  
           # TCP Options 
-          tcp_options = [{
-              source_port_range = [{
-                  tcp_options_source_port_max = string
-                  tcp_options_source_port_min = string
-                  }]
-              (OR) 
-              # When there are no Source Port Range
-              source_port_range = []
+          tcp = [{
   
-              destination_port_range = [{
-                  tcp_options_destination_port_max = string
-                  tcp_options_destination_port_min = string
-                  }]
-              (OR) 
-              # When there are no Destination Port Range
-              destination_port_range = []
-              }]
+                  # To specify only source values
+                  source_port_range_max = string
+                  source_port_range_min = string
+  
+                  (OR) # To specify only destination values
+  
+                  destination_port_range_max = string
+                  destination_port_range_min = string
+                  
+                  (OR) # To specify both source and destination values
+  
+                  source_port_range_max = string
+                  source_port_range_min = string
+  
+                  destination_port_range_max = string
+                  destination_port_range_min = string
+          }]
           (OR) 
           # When there are no TCP Options
-          tcp_options = []
+          tcp = []
   
           # UDP Options 
-          udp_options = [{
-              source_port_range = [{
-                  udp_options_source_port_max = string
-                  udp_options_source_port_min = string
-                  }]
-              (OR) 
-              # When there are no Source Port Range
-              source_port_range = []
+          udp = [{
+                  # To specify only source values
+                  source_port_range_max = string
+                  source_port_range_min = string
   
-              destination_port_range = [{
-                  udp_options_destination_port_max = string
-                  udp_options_destination_port_min = string
-                  }]
-              (OR) 
-              # When there are no Destination Port Range
-              destination_port_range = []
+                  (OR) # To specify only destination values
+  
+                  destination_port_range_max = string
+                  destination_port_range_min = string
+                  
+                  (OR) # To specify both source and destination values
+  
+                  source_port_range_max = string
+                  source_port_range_min = string
+  
+                  destination_port_range_max = string
+                  destination_port_range_min = string
               }]
           (OR) 
           # When there are no UDP Options
-          udp_options = []
+          udp = []
     
       }
   }
@@ -1719,7 +1724,7 @@ Points to Note:
             # Required
             nsg_id = "dns_nsg"
             direction = "INGRESS"
-            protocol = "UDP"
+            protocol = "17"
     
             # Optional
             description = "dns_nsg_rule1"
@@ -1728,24 +1733,16 @@ Points to Note:
             destination_type = null
             destination = ""
             source = "10.0.0.0/14"
-            icmp_options = [{
-                icmp_type = ""
-                icmp_code = ""
-            }]
-            tcp_options = []
-            udp_options = [{
-                destination_port_range  = [{
-                    udp_options_destination_port_max = "53"
-                    udp_options_destination_port_min = "53"
-                }]
-                source_port_range = []
+            udp = [{
+                destination_port_range_max = "53"
+                destination_port_range_min = "53"
             }]
        },
       dns_nsg_rule2 =  {
             # Required
             nsg_id = "dns_nsg"
             direction = "INGRESS"
-            protocol = "ICMP"
+            protocol = "1"
   
             # Optional
             description = " "
@@ -1754,18 +1751,13 @@ Points to Note:
             destination_type = null
             destination = ""
             source = "10.0.0.0/14"
-            icmp_options = [{
-                icmp_type = ""
-                icmp_code = ""
-            }]
-            tcp_options = []
-            udp_options = []
+            icmp = []
        },
       dns_nsg_rule3 =  {
             # Required
             nsg_id = "dns_nsg"
             direction = "EGRESS"
-            protocol = "TCP"
+            protocol = "6"
   
             # Optional
             description = "dns_nsg_rule3"
@@ -1774,18 +1766,10 @@ Points to Note:
             destination_type = "CIDR_BLOCK"
             destination = "10.0.0.0/32"
             source = ""
-            icmp_options = [{
-                icmp_type = ""
-                icmp_code = ""
+            tcp = [{
+              destination_port_range_max = "53"
+              destination_port_range_min = "53"
             }]
-            tcp_options = [{
-                source_port_range = []
-                destination_port_range = [{
-                    tcp_options_destination_port_max = "53"
-                    tcp_options_destination_port_min = "53"
-                    }]
-            }]
-            udp_options = []
       },
   }
     ````

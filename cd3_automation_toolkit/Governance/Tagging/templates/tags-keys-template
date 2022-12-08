@@ -6,6 +6,8 @@
 # Create Tag Keys
 # Allowed Values:
 # tag_namespace_id can be the ocid or the key of tag_namespaces (map)
+# Sample import command for Tag Keys:
+# terraform import "module.tag-keys[\"<<tag_keys terraform variable name>>\"].oci_identity_tag.tag" tagNamespaces/<<tag namespace ocid>>/tags/"<<tag key>>"
 ############################
 
 tag_keys = {

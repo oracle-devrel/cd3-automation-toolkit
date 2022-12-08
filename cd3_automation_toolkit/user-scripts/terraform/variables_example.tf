@@ -40,6 +40,8 @@ variable "instance_ssh_keys" {
   type = map(any)
   default = {
     ssh_public_key = "<SSH PUB KEY STRING HERE>"
+    # Use '\n' as the delimiter to add multiple ssh keys.
+    # Example: ssh_public_key = "ssh-rsa AAXXX......yhdlo\nssh-rsa AAxxskj...edfwf"
     #START_instance_ssh_keys#
     # exported instance ssh keys
     #instance_ssh_keys_END#
@@ -50,6 +52,8 @@ variable "exacs_ssh_keys" {
   type = map(any)
   default = {
     ssh_public_key = ["<SSH PUB KEY STRING HERE>"]
+    # Use ',' as the delimiter to add multiple ssh keys.
+    # Example: ssh_public_key = ["ssh-rsa AAXXX......yhdlo","ssh-rsa AAxxskj...edfwf"]
     #START_exacs_ssh_keys#
     # exported exacs ssh keys
     #exacs_ssh_keys_END#
@@ -60,6 +64,8 @@ variable "dbsystem_ssh_keys" {
   type = map(any)
   default = {
     ssh_public_key = ["<SSH PUB KEY STRING HERE>"]
+    # Use ',' as the delimiter to add multiple ssh keys.
+    # Example: ssh_public_key = ["ssh-rsa AAXXX......yhdlo","ssh-rsa AAxxskj...edfwf"]
     #START_dbsystem_ssh_keys#
     # exported dbsystem ssh keys
     #dbsystem_ssh_keys_END#
@@ -427,11 +433,6 @@ variable "nsgs" {
 }
 
 variable "nsg_rules" {
-  type = map(any)
-  default = {}
-}
-/*
-variable "nsg_rules" {
   type = map(object({
     nsg_id           = string
     direction        = string
@@ -445,7 +446,7 @@ variable "nsg_rules" {
     options          = optional(map(any))
   }))
   default = {}
-}*/
+}
  
 variable "subnets" {
   type = map(object({
@@ -532,29 +533,102 @@ variable "dedicated_hosts" {
 #########################
  
 variable "blockvolumes" {
-  type        = map(any)
   description = "To provision block volumes"
+  type        =  map(object({
+    availability_domain       = string
+    compartment_id            = string
+    display_name              = string
+    size_in_gbs               = optional(string)
+    is_auto_tune_enabled      = optional(string)
+    vpus_per_gb               = optional(string)
+    kms_key_id                = optional(string)
+    attach_to_instance        = optional(string)
+    attachment_type           = optional(string)
+    backup_policy             = optional(string)
+    policy_compartment_id     = optional(string)
+    device                    = optional(string)
+    encryption_in_transit_type= optional(string)
+    attachment_display_name   = optional(string)
+    is_read_only              = optional(bool)
+    is_pv_encryption_in_transit_enabled = optional(bool)
+    is_shareable              = optional(bool)
+    use_chap                  = optional(bool)
+    defined_tags              = optional(map(any))
+    freeform_tags             = optional(map(any))
+  }))
   default     = {}
 }
- 
+
 variable "block_backup_policies" {
   type        = map(any)
   description = "To create block volume back policy"
   default     = {}
 }
- 
+
 variable "instances" {
-  type        = map(any)
   description = "Map of instances to be provisioned"
-  default     = {}
+  type        = map(object({
+    availability_domain       = string
+    compartment_id            = string
+    shape                     = string
+    source_id                 = string
+    source_type               = string
+    vcn_name                  = string
+    subnet_id                 = string
+    network_compartment_id    = string
+    display_name              = optional(string)
+    assign_public_ip          = optional(bool)
+    boot_volume_size_in_gbs   = optional(string)
+    fault_domain              = optional(string)
+    dedicated_vm_host_id      = optional(string)
+    private_ip                = optional(string)
+    hostname_label            = optional(string)
+    nsg_ids                   = optional(list(string))
+    ocpus                     = optional(string)
+    memory_in_gbs             = optional(number)
+    capacity_reservation_id   = optional(string)
+    create_is_pv_encryption_in_transit_enabled = optional(bool)
+    update_is_pv_encryption_in_transit_enabled = optional(bool)
+    ssh_authorized_keys       = optional(string)
+    backup_policy             = optional(string)
+    policy_compartment_id     = optional(string)
+    network_type              = optional(string)
+    extended_metadata         = optional(string)
+    skip_source_dest_check    = optional(bool)
+    baseline_ocpu_utilization = optional(string)
+    preemptible_instance_config = optional(string)
+    all_plugins_disabled      = optional(bool)
+    is_management_disabled    = optional(bool)
+    is_monitoring_disabled    = optional(bool)
+    plugins_details           = optional(map(any))
+    is_live_migration_preferred = optional(bool)
+    recovery_action          = optional(string)
+    are_legacy_imds_endpoints_disabled = optional(bool)
+    boot_volume_type          = optional(string)
+    firmware                  = optional(string)
+    is_consistent_volume_naming_enabled = optional(bool)
+    remote_data_volume_type   = optional(string)
+    platform_config           = optional(map(any))
+    ipxe_script               = optional(string)
+    firmware                  = optional(string)
+    preserve_boot_volume      = optional(bool)
+    vlan_id                   = optional(string)
+    kms_key_id                = optional(string)
+    vnic_display_name         = optional(string)
+    vnic_defined_tags         = optional(map(any))
+    vnic_freeform_tags        = optional(map(any))
+    defined_tags              = optional(map(any))
+    freeform_tags             = optional(map(any))
+  }))
+  default = {}
 }
- 
+
 variable "boot_backup_policies" {
   type        = map(any)
   description = "Map of boot volume backup policies to be provisioned"
   default     = {}
 }
- 
+
 #########################
 ####### Database ########
 #########################

@@ -294,3 +294,18 @@ variable "boot_tf_policy" {
 variable "policy_tf_compartment_id" {
   default = ""
 }
+
+variable "vnic_defined_tags" {
+  type    = map(string)
+  default = {}
+}
+
+variable "vnic_display_name" {
+  type    = string
+  default = ""
+}
+
+variable "vnic_freeform_tags" {
+  type    = map(string)
+  default = {}
+}

@@ -5,7 +5,7 @@ The CD3 Automation toolkit has been developed to help in automating the OCI reso
 <br>
 It reads input data in the form of CD3 Excel sheets and generates the terraform files instead of handling the task through the OCI console manually. This simplifies the management of the company's infrastructure as code.
 <br>
-<img width="434" alt="image" src="https://user-images.githubusercontent.com/103475219/199982639-3b78c9cc-1b30-4a78-bafb-75ceb05309c0.png">
+![img.png](img.png)
 <br><br>
 ### To build an image
 
@@ -28,4 +28,3 @@ https://github.com/oracle-devrel/cd3-automation-toolkit/blob/develop/cd3_automat
 Note : ${image_tag} should be replaced with suitable tag as per your requirements/standards.
 
        The above steps have been tested on Windows (Git Bash) and MacOS.
-

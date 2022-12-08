@@ -21,12 +21,12 @@ module "instances" {
   fault_domain           = each.value.fault_domain
   freeform_tags          = each.value.freeform_tags
   source_type            = each.value.source_type
-  source_image_id        = length(regexall("ocid1.image.oc1*", each.value.source_id)) > 0 ? each.value.source_id : lookup(var.instance_source_ocids, each.value.source_id, null)
+  source_image_id        = length(regexall("ocid1.image.oc1*", each.value.source_id)) > 0 || length(regexall("ocid1.bootvolume.oc1*", each.value.source_id)) > 0 ? each.value.source_id : lookup(var.instance_source_ocids, each.value.source_id, null)
   subnet_id              = each.value.subnet_id
   assign_public_ip       = each.value.assign_public_ip
-  ssh_public_keys        = length(regexall("ssh-rsa*", each.value.ssh_authorized_keys)) > 0 ? each.value.ssh_authorized_keys : lookup(var.instance_ssh_keys, each.value.ssh_authorized_keys, null)
+  ssh_public_keys        = each.value.ssh_authorized_keys!= null? (length(regexall("ssh-rsa*", each.value.ssh_authorized_keys)) > 0 ? each.value.ssh_authorized_keys : lookup(var.instance_ssh_keys, each.value.ssh_authorized_keys, null)) : null
   hostname_label         = each.value.hostname_label
-  nsg_ids                = each.value.nsg_ids != [] ? each.value.nsg_ids : []
+  nsg_ids                = each.value.nsg_ids != null ? each.value.nsg_ids : []
   #nsg_ids              = each.value.nsg_ids != [] ? [for nsg in each.value.nsg_ids : length(regexall("ocid1.networksecuritygroup.oc1*",nsg)) > 0 ? nsg : merge(module.nsgs.*...)[nsg]["nsg_tf_id"]] : []
   boot_volume_size_in_gbs                    = each.value.boot_volume_size_in_gbs != null ? each.value.boot_volume_size_in_gbs : null
   memory_in_gbs                              = each.value.memory_in_gbs != null ? each.value.memory_in_gbs : null
@@ -34,8 +34,8 @@ module "instances" {
   create_is_pv_encryption_in_transit_enabled = each.value.create_is_pv_encryption_in_transit_enabled
   update_is_pv_encryption_in_transit_enabled = each.value.update_is_pv_encryption_in_transit_enabled
 
-  boot_tf_policy           = each.value.backup_policy != "" ? each.value.backup_policy : ""
-  policy_tf_compartment_id = each.value.policy_compartment_id != "" ? (length(regexall("ocid1.compartment.oc1*", each.value.policy_compartment_id)) > 0 ? each.value.policy_compartment_id : var.compartment_ocids[each.value.policy_compartment_id]) : ""
+  boot_tf_policy           = each.value.backup_policy != null ? each.value.backup_policy : null
+  policy_tf_compartment_id = each.value.policy_compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.policy_compartment_id)) > 0 ? each.value.policy_compartment_id : var.compartment_ocids[each.value.policy_compartment_id]) : null
 
   ## Optional parameters to enable and test ##
   # extended_metadata    = each.value.extended_metadata
@@ -60,4 +60,10 @@ module "instances" {
   # assign_private_dns_record = each.value.assign_private_dns_record
   # vlan_id = each.value.vlan_id
   # kms_key_id = each.value.kms_key_id
+
+  # VNIC Details
+  # vnic_defined_tags = each.value.vnic_defined_tags
+  # vnic_freeform_tags = each.value.vnic_freeform_tags
+  # vnic_display_name = each.value.vnic_display_name
 }
+

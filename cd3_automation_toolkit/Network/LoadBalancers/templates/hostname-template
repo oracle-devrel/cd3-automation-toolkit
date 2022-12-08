@@ -6,6 +6,8 @@
 # Hostname - tfvars
 # Allowed Values:
 # load_balancer_id can be the ocid or the key of load_balancers (map)
+# Sample import command for Hostname:
+# terraform import "module.hostnames[\"<<hostnames terraform variable name>>\"].oci_load_balancer_hostname.hostname" loadBalancers/<<loadbalancer ocid>>/hostnames/<<hostname>>
 #############################
 
 hostnames = {

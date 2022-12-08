@@ -6,6 +6,8 @@
 # Network Load Balancers Backend Sets - tfvars
 # Allowed Values:
 # network_load_balancer_id can be ocid or the key of network_load_balancers (map)
+# Sample import command for Network Load Balancer Backendset:
+# terraform import "module.nlb-backend-sets[\"<<backendset terraform variable name>>\"].oci_network_load_balancer_backend_set.backend_set" networkLoadBalancers/<<network loadbalancer ocid>>/backendSets/<<backendset name>>
 #############################
 
 nlb_backend_sets = {

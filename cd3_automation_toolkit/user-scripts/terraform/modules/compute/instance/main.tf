@@ -1,5 +1,5 @@
-#// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
-#
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+
 #############################
 ## Resource Block - Instance
 ## Create Instance and Boot Volume Backup Policy
@@ -63,9 +63,9 @@ resource "oci_core_instance" "instance" {
     #Optional
     assign_private_dns_record = var.assign_private_dns_record
     assign_public_ip          = var.assign_public_ip
-    defined_tags              = var.defined_tags
-    display_name              = var.display_name
-    freeform_tags             = var.freeform_tags
+    defined_tags              = var.vnic_defined_tags != {} ? var.vnic_defined_tags : var.defined_tags
+    display_name              = var.vnic_display_name != "" && var.vnic_display_name != null ? var.vnic_display_name : var.display_name
+    freeform_tags             = var.vnic_freeform_tags != {} ? var.vnic_freeform_tags : var.freeform_tags
     hostname_label            = var.hostname_label
     nsg_ids                   = length(var.nsg_ids) != 0 ? (local.nsg_ids == [] ? ["INVALID NSG Name"] : local.nsg_ids) : null
     private_ip                = var.private_ip
@@ -110,11 +110,11 @@ resource "oci_core_instance" "instance" {
   }
 
   source_details {
-
-    source_id   = var.source_image_id
+    source_id   = length(regexall("ocid1.image.oc1*", var.source_image_id)) > 0 || length(regexall("ocid1.bootvolume.oc1*", var.source_image_id)) > 0 || var.source_image_id == null ? var.source_image_id : data.oci_core_app_catalog_listing_resource_version.catalog_listing.0.listing_resource_id
     source_type = var.source_type
     #Optional
-    boot_volume_size_in_gbs = var.boot_volume_size_in_gbs
+    #boot_volume_size_in_gbs = var.boot_volume_size_in_gbs
+    boot_volume_size_in_gbs = var.source_type == "image" ? var.boot_volume_size_in_gbs : null
     kms_key_id              = var.kms_key_id
   }
 
@@ -131,17 +131,40 @@ resource "oci_core_instance" "instance" {
 ####################################
 
 locals {
-  policy_tf_compartment_id = var.policy_tf_compartment_id != "" ? var.policy_tf_compartment_id : ""
-  current_policy_id        = var.boot_tf_policy != "" ? (lower(var.boot_tf_policy) == "gold" || lower(var.boot_tf_policy) == "silver" || lower(var.boot_tf_policy) == "bronze" ? data.oci_core_volume_backup_policies.boot_vol_backup_policy[0].volume_backup_policies.0.id : data.oci_core_volume_backup_policies.boot_vol_custom_policy[0].volume_backup_policies.0.id) : ""
+  policy_tf_compartment_id = var.policy_tf_compartment_id != null && var.policy_tf_compartment_id != "" ? var.policy_tf_compartment_id : null
+  current_policy_id        = var.boot_tf_policy != null ? (lower(var.boot_tf_policy) == "gold" || lower(var.boot_tf_policy) == "silver" || lower(var.boot_tf_policy) == "bronze" ? data.oci_core_volume_backup_policies.boot_vol_backup_policy[0].volume_backup_policies.0.id : data.oci_core_volume_backup_policies.boot_vol_custom_policy[0].volume_backup_policies.0.id) : null
 }
 
 resource "oci_core_volume_backup_policy_assignment" "volume_backup_policy_assignment" {
   depends_on = [oci_core_instance.instance]
-  count      = var.boot_tf_policy != "" ? 1 : 0
+  count      = var.boot_tf_policy != null ? 1 : 0
   #asset_id  = data.oci_core_boot_volumes.all_boot_volumes[0].boot_volumes.0.id
   asset_id  = oci_core_instance.instance.boot_volume_id
   policy_id = local.current_policy_id
   lifecycle {
     create_before_destroy = true
   }
+}
+
+################################
+# Resource Block - Instances
+# Market Place Images
+################################
+
+resource "oci_marketplace_accepted_agreement" "accepted_agreement" {
+  count = length(regexall("ocid1.image.oc1*", var.source_image_id)) > 0 || length(regexall("ocid1.bootvolume.oc1*", var.source_image_id)) > 0 || var.source_image_id == null ? 0 : 1
+  #Required
+  agreement_id    = oci_marketplace_listing_package_agreement.listing_package_agreement.0.agreement_id
+  compartment_id  = var.compartment_id
+  listing_id      = data.oci_marketplace_listing.listing.0.id
+  package_version = data.oci_marketplace_listing.listing.0.default_package_version
+  signature       = oci_marketplace_listing_package_agreement.listing_package_agreement.0.signature
+}
+
+resource "oci_marketplace_listing_package_agreement" "listing_package_agreement" {
+  count = length(regexall("ocid1.image.oc1*", var.source_image_id)) > 0 || length(regexall("ocid1.bootvolume.oc1*", var.source_image_id)) > 0  || var.source_image_id == null ? 0 : 1
+  #Required
+  agreement_id    = data.oci_marketplace_listing_package_agreements.listing_package_agreements.0.agreements[0].id
+  listing_id      = data.oci_marketplace_listing.listing.0.id
+  package_version = data.oci_marketplace_listing.listing.0.default_package_version
 }

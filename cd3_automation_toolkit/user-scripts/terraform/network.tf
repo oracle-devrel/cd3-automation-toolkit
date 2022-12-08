@@ -326,7 +326,7 @@ module "default-dhcps" {
   manage_default_resource_id = length(regexall("ocid1.dhcpoptions.oc1*", each.value.manage_default_resource_id)) > 0 ? each.value.manage_default_resource_id : merge(module.vcns.*...)[each.value.manage_default_resource_id]["vcn_default_dhcp_id"]
   server_type                = each.value.server_type
   custom_dns_servers         = each.value.custom_dns_servers
-  search_domain_names        = each.value.search_domain.names
+  search_domain_names        = each.value.search_domain != null ? each.value.search_domain.names : []
 
   #Optional
   defined_tags  = each.value.defined_tags

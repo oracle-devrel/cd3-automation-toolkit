@@ -8,12 +8,12 @@
 # parent_compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens "--"
 # Example : parent_compartment_id = "ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c" or parent_compartment_id = "Network-root-cpt--Network" where "Network-root-cpt" is the parent of "Network" compartment
 # Sample import command for compartments:
-# terraform import "module.iam-compartments[\"<<compartment name>>\"].oci_identity_compartment.compartment" <<compartment ocid>>
-# terraform import "module.sub-compartments-level1[\"<<parent compartment name>>--<<level1 child compartment name>>\"].oci_identity_compartment.compartment" <<parent compartment ocid>>
-# terraform import "module.sub-compartments-level2[\"<<parent compartment name>>--<<level1 child compartment name>>--<<level2 child compartment name>>\"].oci_identity_compartment.compartment" <<parent compartment ocid>>
-# terraform import "module.sub-compartments-level3[\"<<parent compartment name>>--<<level1 child compartment name>>--<<level2 child compartment name>>--<<level3 child compartment name>>\"].oci_identity_compartment.compartment" <<parent compartment ocid>>
-# terraform import "module.sub-compartments-level4[\"<<parent compartment name>>--<<level1 child compartment name>>--<<level2 child compartment name>>--<<level3 child compartment name>>--<<level4 child compartment name>>\"].oci_identity_compartment.compartment" <<parent compartment ocid>>
-# terraform import "module.sub-compartments-level5[\"<<parent compartment name>>--<<level1 child compartment name>>--<<level2 child compartment name>>--<<level3 child compartment name>>--<<level4 child compartment name>>--<<level5 child compartment name>>\"].oci_identity_compartment.compartment" <<parent compartment ocid>>
+# terraform import "module.iam-compartments[\"<<compartment variable name>>\"].oci_identity_compartment.compartment" <<compartment ocid>>
+# terraform import "module.sub-compartments-level1[\"<<compartment variable name>>\"].oci_identity_compartment.compartment" <<compartment ocid>>
+# terraform import "module.sub-compartments-level2[\"<<compartment variable name>>\"].oci_identity_compartment.compartment" <<compartment ocid>>
+# terraform import "module.sub-compartments-level3[\"<<compartment variable name>>\"].oci_identity_compartment.compartment" <<compartment ocid>>
+# terraform import "module.sub-compartments-level4[\"<<compartment variable name>>\"].oci_identity_compartment.compartment" <<compartment ocid>>
+# terraform import "module.sub-compartments-level5[\"<<compartment variable name>>\"].oci_identity_compartment.compartment" <<compartment ocid>>
 ############################
 
 compartments = {

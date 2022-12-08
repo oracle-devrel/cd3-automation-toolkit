@@ -59,23 +59,6 @@ def recursive_process_filedata(common_rt, modifiedroutetableStr, reg, processed_
             processed_rt.append(rt)
     return modifiedroutetableStr[reg]
 
-def copy_data_from_file(outfile, region_rts_name, modifiedroutetableStr):
-    start = "# Start of " + region_rts_name + " #"
-    end = "# End of " + region_rts_name + " #"
-    copy = False
-
-    with open(outfile) as infile:
-        for lines in infile:
-            if start in lines:
-                modifiedroutetableStr = modifiedroutetableStr + "\n" + start + "\n"
-                copy = True
-            elif end in lines:
-                modifiedroutetableStr = modifiedroutetableStr + "\n" + end + "\n"
-                copy = False
-            elif copy:
-                modifiedroutetableStr = modifiedroutetableStr + lines
-    return modifiedroutetableStr
-
 def merge_or_generate_route_rule(reg, tempStr, modifiedroutetableStr,routetableStr, start_rule, data, modify_network, routerule, gateway):
     replace_str = "####ADD_NEW_" + gateway + "_RULES " + reg.lower() + "_" + tempStr['rt_tf_name'] + " ####"
     if modify_network:
@@ -190,7 +173,7 @@ def create_terraform_drg_route(inputfile, outdir, prefix, non_gf_tenancy, config
                     # for the RTs in RouteRulesInOCI sheet, see if the start string is there in filedata, if yes, retain it, if no delete the remaining information.
                     for drgrts in drgrts_from_DRGRouteRulesInOCI_sheet:
                         if "# Start of " + drgrts + " #" in filedata and "# Start of " + drgrts + " #" not in modifiedroutetableStr[reg]:
-                            modifiedroutetableStr[reg] = copy_data_from_file(rtfile, drgrts, modifiedroutetableStr[reg])
+                            modifiedroutetableStr[reg] = ct.copy_data_from_file(rtfile, drgrts, modifiedroutetableStr[reg])
                     tempSkeletonDRGRouteTable[reg] = drg_rt_template.render(count=0, region=reg, skeleton=True)
                     srcStr = "###Add route tables here for " + reg.lower() + " ###"
                     if modifiedroutetableStr[reg] != '':
@@ -466,7 +449,7 @@ def create_terraform_route(inputfile, outdir, prefix, non_gf_tenancy, config, mo
                 # for the RTs in RouteRulesInOCI sheet, see if the start string is there in filedata, if yes, retain it, if no delete the remaining information.
                 for rts in rts_from_RouteRulesInOCI_sheet:
                     if "# Start of " + rts + " #" in filedata and "# Start of " + rts + " #" not in modifiedroutetableStr[reg]:
-                        modifiedroutetableStr[reg] = copy_data_from_file(outfile, rts, modifiedroutetableStr[reg])
+                        modifiedroutetableStr[reg] = ct.copy_data_from_file(outfile, rts, modifiedroutetableStr[reg])
                 tempSkeleton[reg] = template.render(count = 0, region = reg, skeleton=True)
                 srcStr = "##Add New Route Tables for "+reg.lower()+" here##"
                 modifiedroutetableStr[reg] = tempSkeleton[reg].replace(srcStr,modifiedroutetableStr[reg]) #+"\n"+srcStr) ----> ToTest, if fails add +"\n"+srcStr

@@ -7,6 +7,8 @@
 # Allowed Values:
 # backendset_name must be the key of backend_sets (map)
 # load_balancer_id can be ocid or the key of load_balancers (map)
+# Sample import command for Backend Sets:
+# terraform import "module.backends[\"<<backends terraform variable name>>\"].oci_load_balancer_backend.backend" loadBalancers/<<loadbalancer ocid>>/backendSets/<<backendset name>>/backends/<<backend server name or ip>>:<<port>>
 #############################
 
 backends = {

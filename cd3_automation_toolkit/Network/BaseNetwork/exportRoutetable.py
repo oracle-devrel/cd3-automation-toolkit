@@ -204,6 +204,7 @@ def export_drg_routetable(inputfile, network_compartments, _config, _tf_import_c
     else:
         input_compartment_names = None
     '''
+    print("\nFetching DRG Route Rules...")
 
     # Check Compartments
     comp_list_fetch = commonTools.get_comp_list_for_export(network_compartments,ct.ntk_compartment_ids)
@@ -211,14 +212,16 @@ def export_drg_routetable(inputfile, network_compartments, _config, _tf_import_c
     if tf_import_cmd_drg:
         importCommands_drg = {}
         for reg in ct.all_regions:
-            importCommands_drg[reg] = open(outdir + "/" + reg + "/tf_import_commands_network_nonGF.sh", "a")
+            if (os.path.exists(outdir + "/" + reg + "/tf_import_commands_network_drg_routerules_nonGF.sh")):
+                commonTools.backup_file(outdir + "/" + reg, "tf_import_network",
+                                        "tf_import_commands_network_drg_routerules_nonGF.sh")
+            importCommands_drg[reg] = open(outdir + "/" + reg + "/tf_import_commands_network_drg_routerules_nonGF.sh", "w")
+            importCommands_drg[reg].write("#!/bin/bash")
             importCommands_drg[reg].write("\n\n######### Writing import for DRG Route Tables #########\n\n")
-
-    print("\nFetching DRG Route Rules...")
 
     for reg in ct.all_regions:
         config.__setitem__("region", commonTools().region_dict[reg])
-        vcn = VirtualNetworkClient(config)
+        vcn = VirtualNetworkClient(config, timeout=(30,120))
         region = reg.capitalize()
         #comp_ocid_done = []
 
@@ -257,8 +260,11 @@ def export_drg_routetable(inputfile, network_compartments, _config, _tf_import_c
                                              drg_rt_rules, region, ntk_compartment_name)
 
     commonTools.write_to_cd3(values_for_column_drg, cd3file, "DRGRouteRulesinOCI")
+    print("DRG RouteRules exported to CD3\n")
+
     if tf_import_cmd_drg:
         for reg in ct.all_regions:
+            importCommands_drg[reg].write('\n\nterraform plan\n')
             importCommands_drg[reg].close()
 
 
@@ -305,6 +311,7 @@ def export_routetable(inputfile, network_compartments, _config, _tf_import_cmd, 
     else:
         input_compartment_names = None
     '''
+    print("\nFetching Route Rules...")
 
     # Check Compartments
     comp_list_fetch = commonTools.get_comp_list_for_export(network_compartments, ct.ntk_compartment_ids)
@@ -312,10 +319,12 @@ def export_routetable(inputfile, network_compartments, _config, _tf_import_cmd, 
     if tf_import_cmd:
         importCommands={}
         for reg in ct.all_regions:
-            importCommands[reg] = open(outdir + "/" + reg + "/tf_import_commands_network_nonGF.sh", "a")
+            if (os.path.exists(outdir + "/" + reg + "/tf_import_commands_network_routerules_nonGF.sh")):
+                commonTools.backup_file(outdir + "/" + reg, "tf_import_network",
+                                        "tf_import_commands_network_routerules_nonGF.sh")
+            importCommands[reg] = open(outdir + "/" + reg + "/tf_import_commands_network_routerules_nonGF.sh", "a")
+            importCommands[reg].write("#!/bin/bash")
             importCommands[reg].write("\n\n######### Writing import for Route Tables #########\n\n")
-
-    print("\nFetching Route Rules...")
 
     for reg in ct.all_regions:
         config.__setitem__("region", commonTools().region_dict[reg])
@@ -342,11 +351,13 @@ def export_routetable(inputfile, network_compartments, _config, _tf_import_cmd, 
                             routetables = oci.pagination.list_call_get_all_results(vcn.list_route_tables, compartment_id=ct.ntk_compartment_ids[ntk_compartment_name_again], vcn_id=vcn_id, lifecycle_state='AVAILABLE')
                             print_routetables(routetables,region,vcn_name,ntk_compartment_name_again)
     commonTools.write_to_cd3(values_for_column,cd3file,"RouteRulesinOCI")
+    print("RouteRules exported to CD3\n")
 
     if tf_import_cmd:
         commonTools.write_to_cd3(values_for_vcninfo, cd3file, "VCN Info")
         for reg in ct.all_regions:
             importCommands[reg].close()
+
 
 if __name__=="__main__":
     args = parse_args()

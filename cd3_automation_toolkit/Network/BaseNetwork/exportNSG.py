@@ -195,6 +195,8 @@ def export_nsg(inputfile, network_compartments, _config, _tf_import_cmd, outdir)
     config = oci.config.from_file(_config)
     ct.get_network_compartment_ids(config['tenancy'],"root", _config)
 
+    print("\nFetching NSGs...")
+
     # Check Compartments
     comp_list_fetch = commonTools.get_comp_list_for_export(network_compartments, ct.ntk_compartment_ids)
 
@@ -204,11 +206,14 @@ def export_nsg(inputfile, network_compartments, _config, _tf_import_cmd, outdir)
     if tf_import_cmd:
         importCommands={}
         for reg in ct.all_regions:
-            importCommands[reg] = open(outdir + "/" + reg + "/tf_import_commands_network_nonGF.sh", "a")
+            if (os.path.exists(outdir + "/" + reg + "/tf_import_commands_network_nsg_nonGF.sh")):
+                commonTools.backup_file(outdir + "/" + reg, "tf_import_network",
+                                        "tf_import_commands_network_nsg_nonGF.sh")
+            importCommands[reg] = open(outdir + "/" + reg + "/tf_import_commands_network_nsg_nonGF.sh", "w")
+            importCommands[reg].write("#!/bin/bash")
             importCommands[reg].write("\n\n######### Writing import for NSG #########\n\n")
 
 
-    print("\nFetching NSGs...")
     for reg in ct.all_regions:
         config.__setitem__("region", commonTools().region_dict[reg])
         vnc = VirtualNetworkClient(config)
@@ -246,10 +251,13 @@ def export_nsg(inputfile, network_compartments, _config, _tf_import_cmd, outdir)
                                     nsg.id))
 
     commonTools.write_to_cd3(values_for_column_nsgs, cd3file, "NSGs")
+    print("NSGs exported to CD3\n")
 
     if tf_import_cmd:
         for reg in ct.all_regions:
+            importCommands[reg].write('\n\nterraform plan\n')
             importCommands[reg].close()
+
 
 if __name__=="__main__":
     args = parse_args()

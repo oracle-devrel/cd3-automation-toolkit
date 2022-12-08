@@ -8,7 +8,7 @@
 # compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens "--"
 # Example : compartment_id = "ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c" or compartment_id = "Network-root-cpt--Network" where "Network-root-cpt" is the parent of "Network" compartment
 # Sample import command for IGW:
-# terraform import "module.igws[\"<<igw name>>\"].oci_core_internet_gateway.internet_gateway" <<igw ocid>>
+# terraform import "module.igws[\"<<igws terraform variable name>>\"].oci_core_internet_gateway.internet_gateway" <<igw ocid>>
 ############################
 
 igws = {

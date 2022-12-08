@@ -6,6 +6,8 @@
 # Path Route Set - tfvars
 # Allowed Values:
 # load_balancer_id can be the ocid or the key of load_balancers (map)
+# Sample import command for Path Route Set:
+# terraform import "module.path-route-sets[\"<<path_route_sets terraform variable name>>\"].oci_load_balancer_path_route_set.path_route_set" loadBalancers/<<loadbalancer ocid>>/pathRouteSets/<<path route set name>>
 #############################
 
 path_route_sets = {

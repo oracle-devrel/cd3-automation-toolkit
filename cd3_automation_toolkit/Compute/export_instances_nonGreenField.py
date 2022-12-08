@@ -17,7 +17,7 @@ from jinja2 import Environment, FileSystemLoader
 
 def adding_columns_values(region, ad, fd, vs, publicip, privateip, os_dname, shape, key_name, c_name,
                           bkp_policy_name, nsgs, d_host, instance_data, values_for_column_instances,  bdet,
-                          cpcn,shape_config,vnic_info,launch_options):
+                          cpcn,shape_config,vnic_info,vnic_defined_tags,vnic_freeform_tags,launch_options):
     # print("CPCN=",cpcn)
     for col_header in values_for_column_instances.keys():
         if (col_header == "Region"):
@@ -46,6 +46,12 @@ def adding_columns_values(region, ad, fd, vs, publicip, privateip, os_dname, sha
             values_for_column_instances[col_header].append(bkp_policy_name)
         elif (col_header == "NSGs"):
             values_for_column_instances[col_header].append(nsgs)
+        elif (col_header == "VNIC Defined Tags"):
+            values_for_column_instances[col_header].append(vnic_defined_tags)
+        elif (col_header == "VNIC Freeform Tags"):
+            values_for_column_instances[col_header].append(vnic_freeform_tags)
+        elif (col_header == "VNIC Display Name"):
+            values_for_column_instances[col_header].append(vnic_info.display_name)
         elif (col_header == "Dedicated VM Host"):
             if (d_host == None):
                 values_for_column_instances[col_header].append('')
@@ -87,6 +93,8 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, config,disp
     bc = oci.core.BlockstorageClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
     instance_info = oci.pagination.list_call_get_all_results(compute.list_instances, compartment_id=compartment_id)
     # print(instance_info.data)
+    vnic_defined_tags=""
+    vnic_freeform_tags=""
     for ins in instance_info.data:
         ins_details = compute.get_instance(instance_id=ins.id)
         # print(ins_details.data)
@@ -95,12 +103,23 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, config,disp
             ins_ad = ins.availability_domain  # avalibility domain
             AD_name = AD(ins_ad)
 
+            #Continue to next one if AD names donot match the filter
             if (ad_names is not None):
                 if (not any(e in AD_name for e in ad_names)):
                     continue
+
+            # Continue to next one if display names donot match the filter
             if (display_names is not None):
                 if (not any(e in ins_dname for e in display_names)):
                     continue
+
+            # Continue to next one if it's an OKE instance
+            if 'oke-' in ins_dname:
+                ins_defined_tags = ins.defined_tags
+                created_by = ins_defined_tags['Oracle-Tags']['CreatedBy']
+                if created_by == 'oke':
+                    continue
+
             ins_fd = ins.fault_domain  # FD
             ins_id = ins.id
             tf_name = commonTools.check_tf_variable(ins_dname)
@@ -156,9 +175,21 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, config,disp
             ins_vnic = find_vnic(ins_id, config, compartment_id)
             vnic_info=None
             for lnic in ins_vnic.data:
+                # print(lnic)
                 subnet_id = lnic.subnet_id
                 vnic_id = lnic.vnic_id
                 vnic_info = network.get_vnic(vnic_id=vnic_id).data
+
+                # print(vnic_info)
+
+                for namespace,tagkey in vnic_info.defined_tags.items():
+                    for tag,value in tagkey.items():
+                        vnic_defined_tags=vnic_defined_tags+";"+namespace+"."+tag+"="+value
+                        vnic_defined_tags=vnic_defined_tags.lstrip(';')
+
+                for tag,value in vnic_info.freeform_tags.items():
+                    vnic_freeform_tags=vnic_freeform_tags+";"+tag+"="+value
+                    vnic_freeform_tags=vnic_freeform_tags.lstrip(';')
 
                 #Get only primary VNIC details
                 if (vnic_info.is_primary == False):
@@ -220,7 +251,7 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, config,disp
             launch_options = ins.launch_options
             adding_columns_values(reg_name.title(), AD_name, ins_fd, vs, publicip, privateip, os_dname,
                                       ins_shape, key_name, compartment_name, bkp_policy_name, nsg_names, dedicated_host,
-                                      ins, values_for_column_instances, bdet, cpcn,shape_config,vnic_info,launch_options)
+                                      ins, values_for_column_instances, bdet, cpcn,shape_config, vnic_info, vnic_defined_tags, vnic_freeform_tags, launch_options)
 
 
 def parse_args():

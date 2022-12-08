@@ -24,50 +24,50 @@ resource "oci_core_network_security_group_security_rule" "nsg_rule" {
   # ICMP Options
   # If type and no code
   dynamic "icmp_options" {
-    for_each = var.nsg_rules_details[var.key_name].icmp_options[0].icmp_code == "" && var.nsg_rules_details[var.key_name].icmp_options[0].icmp_type != "" ? var.nsg_rules_details[var.key_name].icmp_options : []
+    for_each = try((var.nsg_rules_details[var.key_name].options.icmp.0.code == null ? var.nsg_rules_details[var.key_name].options.icmp : []), try(var.nsg_rules_details[var.key_name].options.icmp.0.type != null ? var.nsg_rules_details[var.key_name].options.icmp : []),[])
 
     content {
-      type = icmp_options.value.icmp_type
+      type = var.nsg_rules_details[var.key_name].options.icmp.0.type
     }
   }
 
   # ICMP Options
   # If type and code
   dynamic "icmp_options" {
-    for_each = var.nsg_rules_details[var.key_name].icmp_options[0].icmp_code != "" && var.nsg_rules_details[var.key_name].icmp_options[0].icmp_type != "" ? var.nsg_rules_details[var.key_name].icmp_options : []
+    for_each = try((var.nsg_rules_details[var.key_name].options.icmp.0.code != null && var.nsg_rules_details[var.key_name].options.icmp.0.type != null ? var.nsg_rules_details[var.key_name].options.icmp : []), [])
 
     content {
-      type = icmp_options.value.icmp_type
-      code = icmp_options.value.icmp_code
+      type = var.nsg_rules_details[var.key_name].options.icmp.0.type
+      code = var.nsg_rules_details[var.key_name].options.icmp.0.code
     }
   }
 
 
   # TCP Options
   dynamic "tcp_options" {
-    for_each = var.nsg_rules_details[var.key_name].tcp_options != [] ? var.nsg_rules_details[var.key_name].tcp_options : []
+    for_each = try(var.nsg_rules_details[var.key_name].options.tcp , [])
 
     content {
       #Optional
       dynamic "source_port_range" {
-        for_each = tcp_options.value["source_port_range"] != [] ? tcp_options.value["source_port_range"] : []
+        for_each = try(var.nsg_rules_details[var.key_name].options.tcp.0.source_port_range_max != null || var.nsg_rules_details[var.key_name].options.tcp.0.source_port_range_min != null ? var.nsg_rules_details[var.key_name].options.tcp : [], [])
 
         content {
           #Required
-          max = tcp_options.value["source_port_range"][0].tcp_options_source_port_max != "" ? tcp_options.value["source_port_range"][0].tcp_options_source_port_max : ""
+          max = var.nsg_rules_details[var.key_name].options.tcp.0.source_port_range_max != null ? var.nsg_rules_details[var.key_name].options.tcp.0.source_port_range_max : null
 
-          min = tcp_options.value["source_port_range"][0].tcp_options_source_port_min != "" ? tcp_options.value["source_port_range"][0].tcp_options_source_port_min : ""
+          min = var.nsg_rules_details[var.key_name].options.tcp.0.source_port_range_min != null ? var.nsg_rules_details[var.key_name].options.tcp.0.source_port_range_min : null
         }
       }
 
       dynamic "destination_port_range" {
-        for_each = tcp_options.value["destination_port_range"] != [] ? tcp_options.value["destination_port_range"] : []
+        for_each = try((var.nsg_rules_details[var.key_name].options.tcp.0.destination_port_range_max != null || var.nsg_rules_details[var.key_name].options.tcp.0.destination_port_range_min != null ? var.nsg_rules_details[var.key_name].options.tcp : []), [])
 
         content {
           #Required
-          max = tcp_options.value["destination_port_range"][0].tcp_options_destination_port_max != "" ? tcp_options.value["destination_port_range"][0].tcp_options_destination_port_max : ""
+          max = var.nsg_rules_details[var.key_name].options.tcp.0.destination_port_range_max != null ? var.nsg_rules_details[var.key_name].options.tcp.0.destination_port_range_max : null
 
-          min = tcp_options.value["destination_port_range"][0].tcp_options_destination_port_min != "" ? tcp_options.value["destination_port_range"][0].tcp_options_destination_port_min : ""
+          min = var.nsg_rules_details[var.key_name].options.tcp.0.destination_port_range_min != null ? var.nsg_rules_details[var.key_name].options.tcp.0.destination_port_range_min : null
         }
       }
     }
@@ -75,33 +75,29 @@ resource "oci_core_network_security_group_security_rule" "nsg_rule" {
 
   # UDP Options
   dynamic "udp_options" {
-    for_each = var.nsg_rules_details[var.key_name].udp_options != [] ? var.nsg_rules_details[var.key_name].udp_options : []
+    for_each = try((var.nsg_rules_details[var.key_name].options.udp != [] ? var.nsg_rules_details[var.key_name].options.udp : []), [])
 
     content {
       #Optional
       dynamic "source_port_range" {
-        for_each = udp_options.value["source_port_range"] != [] ? udp_options.value["source_port_range"] : []
+        for_each = try((var.nsg_rules_details[var.key_name].options.udp.0.source_port_range_max != null || var.nsg_rules_details[var.key_name].options.udp.0.source_port_range_min != null ? var.nsg_rules_details[var.key_name].options.udp : []), [])
 
         content {
           #Required
-          max = udp_options.value["source_port_range"][0].udp_options_source_port_max != "" ? udp_options.value["source_port_range"][0].udp_options_source_port_max : ""
+          max = var.nsg_rules_details[var.key_name].options.udp.0.source_port_range_max != null ? var.nsg_rules_details[var.key_name].options.udp.0.source_port_range_max : null
 
-          min = udp_options.value["source_port_range"][0].udp_options_source_port_min != "" ? udp_options.value["source_port_range"][0].udp_options_source_port_min : ""
+          min = var.nsg_rules_details[var.key_name].options.udp.0.source_port_range_min != null ? var.nsg_rules_details[var.key_name].options.udp.0.source_port_range_min : null
         }
-
       }
 
-
-      #Optional
       dynamic "destination_port_range" {
-        for_each = udp_options.value["destination_port_range"] != [] ? udp_options.value["destination_port_range"] : []
+        for_each = try((var.nsg_rules_details[var.key_name].options.udp.0.destination_port_range_max != null || var.nsg_rules_details[var.key_name].options.udp.0.destination_port_range_min != null ? var.nsg_rules_details[var.key_name].options.udp : []), [])
 
         content {
           #Required
-          max = udp_options.value["destination_port_range"][0].udp_options_destination_port_max != "" ? udp_options.value["destination_port_range"][0].udp_options_destination_port_max : ""
+          max = var.nsg_rules_details[var.key_name].options.udp.0.destination_port_range_max != null ? var.nsg_rules_details[var.key_name].options.udp.0.destination_port_range_max : null
 
-
-          min = udp_options.value["destination_port_range"][0].udp_options_destination_port_min != "" ? udp_options.value["destination_port_range"][0].udp_options_destination_port_min : ""
+          min = var.nsg_rules_details[var.key_name].options.udp.0.destination_port_range_min != null ? var.nsg_rules_details[var.key_name].options.udp.0.destination_port_range_min : null
         }
       }
     }

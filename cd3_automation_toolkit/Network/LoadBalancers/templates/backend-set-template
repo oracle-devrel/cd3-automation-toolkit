@@ -7,6 +7,8 @@
 # Allowed Values:
 # load_balancer_id can be ocid or the key of load_balancers (map)
 # protocols in ssl configuration defaults to "TLSv1","TLSv1.1","TLSv1.2"
+# Sample import command for Backend Sets:
+# terraform import "module.backend-sets[\"<<backend_sets terraform variable name>>\"].oci_load_balancer_backend_set.backend_set" loadBalancers/<<loadbalancer ocid>>/backendSets/<<backendset name>>
 #############################
 
 backend_sets = {

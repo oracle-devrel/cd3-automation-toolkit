@@ -318,3 +318,13 @@ CD3 Automation Toolkit Tag v9.2
 7. Updated CD3 templates in example folder with latest CIS data
 8. Bug fixes wrt multiple services like Instances, Notifications etc
 9. Introduced documentation folder containing terraform and toolkit user guide in outdir of each customer
+----------------------------------
+CD3 Automation Toolkit Tag v9.2.1
+----------------------------------
+1. Sample terraform import command included as part of output tfvars file for each OCI resource managed
+   by Toolkit.
+2. Split Export of Network options to chose export of different components separately eg Major Objects,
+   Subnets, NSGs etc.
+3. Include support for Marketplace Images for Instances.
+4. Few bug fixes/enhancements wrt export of Instances/NSGs, making null values for NSGs/Instances optional
+   in tfvars

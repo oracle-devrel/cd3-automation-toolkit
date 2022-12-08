@@ -54,81 +54,6 @@ def modify_terraform_secrules(inputfile, outdir, prefix=None, non_gf_tenancy=Fal
     default_auto_tfvars_filename = "_default-seclists.auto.tfvars"
     vcns = parseVCNs(secrulesfilename)
 
-    def skipCommentedLine(lines):
-        """
-        A filter which skip/strip the comments and yield the
-        rest of the lines
-        :param lines: any object which we can iterate through such as a file
-        object, list, tuple, or generator
-        """
-        for line in lines:
-            comment_pattern = re.compile(r'\s*#.*$')
-            line = re.sub(comment_pattern, '', line)
-            if line:
-                yield line
-
-    def get_protocol(strprotocol):
-        if str(strprotocol).lower() == "all":
-            return "all"
-        else:
-            protocol_dict = commonTools().protocol_dict
-            for k, v in protocol_dict.items():
-                if (strprotocol).lower() == v.lower():
-                    return k
-
-    def create_ingress_rule_string(tempStr,ingress_rule,tempdict2):
-
-        rule_desc = tempStr['rule_description']
-        protocol = tempStr['protocol'].lower().strip()
-        isstateless = str(tempStr['isstateless'].lower())
-        if (str(rule_desc).lower() == "nan" or str(rule_desc).lower() == ""):
-            rule_desc = ""
-            tempdict2 ={'rule_description' : rule_desc}
-        else:
-            rule_desc = str(rule_desc)
-            tempdict2 = {'rule_description': rule_desc}
-        tempStr.update(tempdict2)
-
-        if ("services-in-oracle-services-network" in tempStr['source'] or "objectstorage" in tempStr['source']):
-            source_type = "SERVICE_CIDR_BLOCK"
-            tempdict2 = {'source_type' : source_type}
-        tempStr.update(tempdict2)
-
-        tempdict2 = {'protocol_code': get_protocol(protocol),'isstateless':isstateless}
-        tempStr.update(tempdict2)
-
-        ingress_rule = ingress_rule + secrule.render(tempStr)
-        ingress_rule = ingress_rule + "\n" + "####ADD_NEW_INGRESS_SEC_RULES " + region_seclist_name + " ####"
-        return ingress_rule
-
-
-    def create_egress_rule_string(tempStr,egress_rule,tempdict2):
-
-        rule_desc = tempStr['rule_description']
-        protocol = tempStr['protocol'].lower().strip()
-        isstateless = str(tempStr['isstateless'].lower())
-
-        if (str(rule_desc).lower() == "nan"):
-            rule_desc = ""
-            tempdict2 ={'rule_description' : rule_desc}
-        else:
-            rule_desc = str(rule_desc)
-            tempdict2 ={'rule_description' : rule_desc}
-        tempStr.update(tempdict2)
-
-        if ("services-in-oracle-services-network" in tempStr['destination'] or "objectstorage" in tempStr['destination']):
-            destination_type = "SERVICE_CIDR_BLOCK"
-            tempdict2 = {'destination_type': destination_type}
-        tempStr.update(tempdict2)
-
-        tempDict2 = {'protocol_code': get_protocol(protocol),'isstateless':isstateless}
-        tempStr.update(tempDict2)
-
-        egress_rule = egress_rule + secrule.render(tempStr)
-        egress_rule = egress_rule + "\n" + "####ADD_NEW_EGRESS_SEC_RULES " + region_seclist_name + " ####"
-        return egress_rule
-
-
     def generate_security_rules(region_seclist_name,processed_seclist,tfStr,region,tempStr, ingress_rule, tempdict2, egress_rule):
         if region_seclist_name not in processed_seclist:
             tfStr[region] = tfStr[region] + seclist.render(tempStr,
@@ -138,11 +63,11 @@ def modify_terraform_secrules(inputfile, outdir, prefix=None, non_gf_tenancy=Fal
             processed_seclist.append(region_seclist_name)
 
         if str(row['Rule Type']).lower() == 'ingress':
-            new_ingress_sec_rule = create_ingress_rule_string(tempStr, ingress_rule, tempdict2)
+            new_ingress_sec_rule = ct.create_ingress_rule_string(secrule, tempStr, ingress_rule, tempdict2, region_seclist_name)
             tfStr[region] = tfStr[region].replace("####ADD_NEW_INGRESS_SEC_RULES " + region_seclist_name + " ####", new_ingress_sec_rule)
 
         if str(row['Rule Type']).lower() == 'egress':
-            new_egress_sec_rule = create_egress_rule_string(tempStr, egress_rule, tempdict2)
+            new_egress_sec_rule = ct.create_egress_rule_string(secrule, tempStr, egress_rule, tempdict2, region_seclist_name)
             tfStr[region] = tfStr[region].replace("####ADD_NEW_EGRESS_SEC_RULES " + region_seclist_name + " ####", new_egress_sec_rule)
 
         return tfStr[region]
@@ -151,7 +76,7 @@ def modify_terraform_secrules(inputfile, outdir, prefix=None, non_gf_tenancy=Fal
     df, col_headers = commonTools.read_cd3(secrulesfilename, "SecRulesinOCI")
     df = df.to_csv('out.csv')
 
-    totalRowCount = sum(1 for row in csv.DictReader(skipCommentedLine(open('out.csv'))))
+    totalRowCount = sum(1 for row in csv.DictReader(ct.skipCommentedLine(open('out.csv'))))
     i = 0
     region_included = []
     tempSkeleton = {}
@@ -174,7 +99,7 @@ def modify_terraform_secrules(inputfile, outdir, prefix=None, non_gf_tenancy=Fal
         commonTools.backup_file(outdir + "/" + reg, resource, prefix + default_auto_tfvars_filename)
 
     with open('out.csv') as secrulesfile:
-        reader = csv.DictReader(skipCommentedLine(secrulesfile))
+        reader = csv.DictReader(ct.skipCommentedLine(secrulesfile))
         ingress_rule = ''
         egress_rule = ''
         processed_seclist = []

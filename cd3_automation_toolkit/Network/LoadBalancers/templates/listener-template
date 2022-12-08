@@ -9,6 +9,8 @@
 # protocols in ssl configuration defaults to "TLSv1.2"
 # load_balancer_id can be the ocid or the key of load_balancers (map)
 # default_backend_set_name,hostname_names,path_route_set_name,rule_set_names,cipher_suite_name,certificate_name must be the key of the respective maps
+# Sample import command for Listeners:
+# terraform import "module.listeners[\"<<listeners terraform variable name>>\"].oci_load_balancer_listener.listener" loadBalancers/<<loadbalancer ocid>>/listeners/<<listener name>>
 #############################
 
 listeners = {

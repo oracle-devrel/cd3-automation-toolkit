@@ -91,23 +91,6 @@ def create_terraform_seclist(inputfile, outdir, prefix, config, modify_network=F
         modify_network_seclists[reg] = ''
         tempSecListModifyNetwork[reg] = ''
 
-    def copy_data_from_file(outfile, region_seclist_name, modify_network_seclists):
-        start = "# Start of " + region_seclist_name + " #"
-        end = "# End of " + region_seclist_name + " #"
-        copy = False
-
-        with open(outfile) as infile:
-            for lines in infile:
-                if start in lines:
-                    modify_network_seclists = modify_network_seclists + "\n" + start + "\n"
-                    copy = True
-                elif end in lines:
-                    modify_network_seclists = modify_network_seclists + "\n" + end + "\n"
-                    copy = False
-                elif copy:
-                    modify_network_seclists = modify_network_seclists + lines
-        return modify_network_seclists
-
     def processSubnet(tempStr):
         filedata = ""
         region_in_lowercase = tempStr['region'].lower().strip()
@@ -161,11 +144,11 @@ def create_terraform_seclist(inputfile, outdir, prefix, config, modify_network=F
                 # If seclist is present in auto.tfvars but not in modify_network_seclists
                 if start in filedata:
                     if start not in modify_network_seclists[region_in_lowercase]:
-                        modify_network_seclists[region_in_lowercase] = copy_data_from_file(outfile,region_seclist_name,modify_network_seclists[region_in_lowercase])
+                        modify_network_seclists[region_in_lowercase] = ct.copy_data_from_file(outfile,region_seclist_name,modify_network_seclists[region_in_lowercase])
 
                 for seclists in seclists_from_secRulesInOCI_sheet:
                     if "# Start of " + seclists + " #" in filedata and "# Start of " + seclists + " #" not in modify_network_seclists[region_in_lowercase]:
-                        modify_network_seclists[region_in_lowercase] = copy_data_from_file(outfile, seclists,modify_network_seclists[region_in_lowercase])
+                        modify_network_seclists[region_in_lowercase] = ct.copy_data_from_file(outfile, seclists,modify_network_seclists[region_in_lowercase])
 
             # Create Seclist for all the unique names in Subnet Sheet
             if (start not in modify_network_seclists[region_in_lowercase] and region_seclist_name not in common_seclist):

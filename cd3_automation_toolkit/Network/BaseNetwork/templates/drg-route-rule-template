@@ -7,7 +7,7 @@
 # Allowed Values:
 # drg_route_table_id and next_hop_drg_attachment_id can be the ocid or the key of drg_route_tables (map) and the key of drg_attachments (map) respectively
 # Sample import command for DRG Route Rules:
-# terraform import "module.drg-route-rules[\"<<drg route rule name>>\"].oci_core_drg_route_table_route_rule.drg_route_rule" drgRouteTables/<<drg route table ocid>>
+# terraform import "module.drg-route-rules[\"<<drg_route_rules terraform variable name>>\"].oci_core_drg_route_table_route_rule.drg_route_rule" drgRouteTables/<<drg route table ocid>>/routeRules/<<drg route rule ocid>>
 #################################
 
 drg_route_rules = {

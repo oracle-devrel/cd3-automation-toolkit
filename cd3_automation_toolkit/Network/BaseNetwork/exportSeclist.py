@@ -253,6 +253,7 @@ def export_seclist(inputfile, network_compartments, _config, _tf_import_cmd, out
     else:
         input_compartment_names = None
     '''
+    print("\nFetching Security Rules...")
 
     # Check Compartments
     comp_list_fetch = commonTools.get_comp_list_for_export(network_compartments, ct.ntk_compartment_ids)
@@ -263,11 +264,14 @@ def export_seclist(inputfile, network_compartments, _config, _tf_import_cmd, out
     if tf_import_cmd:
         importCommands={}
         for reg in ct.all_regions:
-            importCommands[reg] = open(outdir + "/" + reg + "/tf_import_commands_network_nonGF.sh", "a")
+            if (os.path.exists(outdir + "/" + reg + "/tf_import_commands_network_secrules_nonGF.sh")):
+                commonTools.backup_file(outdir + "/" + reg, "tf_import_network",
+                                        "tf_import_commands_network_major-objects_nonGF.sh")
+            importCommands[reg] = open(outdir + "/" + reg + "/tf_import_commands_network_secrules_nonGF.sh", "w")
+            importCommands[reg].write("#!/bin/bash")
             importCommands[reg].write("\n\n######### Writing import for Security Lists #########\n\n")
 
 
-    print("\nFetching Security Rules...")
     for reg in ct.all_regions:
         config.__setitem__("region", commonTools().region_dict[reg])
         vcn = VirtualNetworkClient(config)
@@ -292,6 +296,7 @@ def export_seclist(inputfile, network_compartments, _config, _tf_import_cmd, out
                             print_secrules(seclists,region,vcn_name,ntk_compartment_name_again)
 
     commonTools.write_to_cd3(values_for_column,cd3file,"SecRulesinOCI")
+    print("SecRules exported to CD3\n")
     if tf_import_cmd:
         for reg in ct.all_regions:
             importCommands[reg].close()

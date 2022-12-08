@@ -4,7 +4,7 @@
 #############################
 
 data "oci_core_vcns" "oci_vcns_nsgs" {
-  # depends_on = [module.vcns] # Uncomment to create Network and Instances together
+  # depends_on = [module.vcns] # Uncomment to create Network and NSGs together
   for_each       = var.nsgs != null ? var.nsgs : {}
   compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
   display_name   = each.value.vcn_id
@@ -16,8 +16,8 @@ module "nsgs" {
 
   #Required
   compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
-  vcn_id         = length(regexall("ocid1.vcn.oc1*", each.value.vcn_id)) > 0 ? each.value.vcn_id : flatten(data.oci_core_vcns.oci_vcns_nsgs[each.key].virtual_networks.*.id)[0]
-
+  #vcn_id         = length(regexall("ocid1.vcn.oc1*", each.value.vcn_id)) > 0 ? each.value.vcn_id : flatten(data.oci_core_vcns.oci_vcns_nsgs[each.key].virtual_networks.*.id)[0]
+  vcn_id        = flatten(data.oci_core_vcns.oci_vcns_nsgs[each.key].virtual_networks.*.id)[0]
   defined_tags  = each.value.defined_tags
   display_name  = each.value.display_name
   freeform_tags = each.value.freeform_tags

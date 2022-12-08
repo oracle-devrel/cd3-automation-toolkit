@@ -5,8 +5,8 @@
 # Identity
 # Groups - tfvars
 # Sample import command for groups:
-# terraform import "module.iam-groups[\"<<group name>>\"].oci_identity_group.group[0]" <<ocid of group>>
-# terraform import "module.iam-groups[\"<<dynamic group name>>\"].oci_identity_dynamic_group.dynamic_group[0]" <<dynamic group ocid>>
+# terraform import "module.iam-groups[\"<<groups terraform variable name>>\"].oci_identity_group.group[0]" <<group ocid>>
+# terraform import "module.iam-groups[\"<<dynamic group terraform variable name>>\"].oci_identity_dynamic_group.dynamic_group[0]" <<dynamic group ocid>>
 ############################
 
 groups = {

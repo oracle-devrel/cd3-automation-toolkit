@@ -11,6 +11,8 @@
 # ip_mode can be one of IPV4 or IPV6
 # shape can be one of 100Mbps|10Mbps|10Mbps-Micro|400Mbps|8000Mbps|flexible
 # reserved_ips_id accepts OCID (to use the existing reserved IP) or 'Y' to create a new Reserved IP or 'N' for Ephemeral IP; Defaults to "".
+# Sample import command for Load Balancers:
+# terraform import "module.load-balancers[\"<<load_balancers terraform variable name>>\"].oci_load_balancer_load_balancer.load_balancer" <<loadbalancer ocid>>
 #############################
 
 load_balancers = {

@@ -10,6 +10,8 @@
 # Example : compartment_id = "ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c" or compartment_id = "Network-root-cpt--Network" where "Network-root-cpt" is the parent of "Network" compartment
 # ip_mode can be one of IPV4 or IPV6
 # reserved_ips_id accepts OCID (to use the existing reserved IP) or 'Y' to create a new Reserved IP or 'N' for Ephemeral IP; Defaults to "".
+# Sample import command for Network LoadBalancers:
+# terraform import "module.network-load-balancers[\"<<network loadbalancer terraform variable name>>\"].oci_network_load_balancer_network_load_balancer.network_load_balancer" <<network loadbalancer ocid>>
 #############################
 
 network_load_balancers = {

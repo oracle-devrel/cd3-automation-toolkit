@@ -7,6 +7,8 @@
 # Allowed Values:
 # backend_set_name must be the key of backend_set_name (map)
 # network_load_balancer_id can be ocid or the key of network_load_balancers (map)
+# Sample import command for Network Load Balancer Backend:
+# terraform import "module.nlb-backends[\"<<backend terraform variable name>>\"].oci_network_load_balancer_backend.backend" networkLoadBalancers/<<netwrok loadbalancer ocid>>/backendSets/<<backendset name>>/backends/<<backend name>>
 #############################
 
 nlb_backends = {

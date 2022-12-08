@@ -6,6 +6,8 @@
 # Cipher Suites - tfvars
 # Allowed Values:
 # load_balancer_id can be ocid or the key of load_balancers (map)
+# Sample import command for Cipher Suites:
+# terraform import "module.cipher-suites[\"<<cipher_suites terraform variable name>>\"].oci_load_balancer_ssl_cipher_suite.ssl_cipher_suite" loadBalancers/<<loadbalancer ocid>>/sslCipherSuites/<<cipher suite name>>
 #############################
 
 cipher_suites = {

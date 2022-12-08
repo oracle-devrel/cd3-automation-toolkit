@@ -22,7 +22,7 @@ oci_obj_names = {}
 
 def print_dedicatedvmhosts(region, dedicatedvmhost, values_for_column, ntk_compartment_name):
     dedicatedvmhost_tf_name = commonTools.check_tf_variable(dedicatedvmhost.display_name)
-    importCommands[region.lower()].write("\nterraform import oci_core_dedicated_vm_host." + dedicatedvmhost_tf_name + " " + str(dedicatedvmhost.id))
+    importCommands[region.lower()].write("\nterraform import \"module.dedicated-hosts[\\\"" +dedicatedvmhost_tf_name+ "\\\"].oci_core_dedicated_vm_host.dedicated_vm_host\" " + str(dedicatedvmhost.id))
 
     for col_header in values_for_column:
         if col_header == 'Region':

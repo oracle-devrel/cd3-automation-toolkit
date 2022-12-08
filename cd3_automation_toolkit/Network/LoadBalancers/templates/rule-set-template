@@ -6,6 +6,8 @@
 # Rule Set - tfvars
 # Allowed Values:
 # load_balancer_id can be the ocid or the key of load_balancers (map)
+# Sample import command for Rule Set:
+# terraform import "module.rule-sets[\"<<rule_sets terraform variable name>>\"].oci_load_balancer_rule_set.rule_set" loadBalancers/<<loadbalancer ocid>>/ruleSets/<<rule set name>>
 #############################
 
 rule_sets = {

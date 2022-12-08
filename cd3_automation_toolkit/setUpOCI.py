@@ -117,6 +117,27 @@ def export_identity():
 
 
 def export_network():
+    options = [Option("Export all Network Components", export_networking,
+                      'Exporting Network Components'),
+               Option("Export Network components for VCNs, DRGs and DRGRouteRulesinOCI Tabs", export_major_objects,
+                      'Exporting VCNs, DRGs and DRGRouteRulesinOCI Tabs'),
+               Option("Export Network components for DHCP Tab", export_dhcp,
+                      'Exporting DHCP Tab'),
+               Option("Export Network components for SecRulesinOCI Tab", export_secrules,
+                      'Exporting SecRulesinOCI Tab'),
+               Option("Export Network components for RouteRulesinOCI Tab", export_routerules,
+                      'Exporting RouteRulesinOCI Tab'),
+               Option("Export Network components for Subnets Tab", export_subnets,
+                      'Exporting Subnets Tab'),
+               Option("Export Network components for NSGs Tab", export_nsg,
+                      'Exporting NSGs Tab')
+
+               ]
+    options = show_options(options, quit=True, menu=True, index=1)
+    execute_options(options, inputfile, outdir, prefix, config)
+
+
+def export_networking(inputfile, outdir, prefix,config):
     compartments = get_compartment_list('Network Objects')
     Network.export_networking(inputfile, outdir, _config=config, network_compartments=compartments)
     options = [
@@ -125,13 +146,72 @@ def export_network():
         Option(None, Network.create_terraform_subnet, 'Processing Subnets Tab'),
         Option(None, Network.modify_terraform_secrules, 'Processing SecRulesinOCI Tab'),
         Option(None, Network.modify_terraform_routerules, 'Processing RouteRulesinOCI Tab'),
-        Option(None, Network.create_terraform_drg_route, 'Processing DRGs tab for DRG Route Tables and Route Distribution creation'),
+        Option(None, Network.create_terraform_drg_route,
+               'Processing DRGs tab for DRG Route Tables and Route Distribution creation'),
         Option(None, Network.modify_terraform_drg_routerules, 'Processing DRGRouteRulesinOCI Tab'),
         Option(None, Network.create_terraform_nsg, 'Processing NSGs Tab'),
     ]
     execute_options(options, inputfile, outdir, prefix, non_gf_tenancy, config=config)
-    print("\n\nExecute tf_import_commands_network_nonGF.sh script created under each region directory to synch TF with OCI Network objects\n")
+    print("\n\nExecute tf_import_commands_network_*_nonGF.sh script created under each region directory to synch TF with OCI Network objects\n")
 
+def export_major_objects(inputfile, outdir, prefix,config):
+    compartments = get_compartment_list('VCN Major Objects')
+    Network.export_major_objects(inputfile, outdir, _config=config, network_compartments=compartments,ct=None)
+    Network.export_drg_routetable(inputfile, network_compartments=compartments, _config=config, _tf_import_cmd=True, outdir=outdir )
+    options = [
+        Option(None, Network.create_major_objects, 'Processing VCNs and DRGs Tab'),
+        Option(None, Network.create_terraform_drg_route, 'Processing DRGRouteRulesinOCI Tab'),
+
+    ]
+    execute_options(options, inputfile, outdir, prefix, non_gf_tenancy, config=config)
+    print("\n\nExecute tf_import_commands_network_major-objects_nonGF.sh and tf_import_commands_network_drg_routerules_nonGF.sh scripts created under each region directory to synch TF with OCI Network objects\n")
+
+def export_dhcp(inputfile, outdir, prefix,config):
+    compartments = get_compartment_list('DHCP')
+    Network.export_dhcp(inputfile, outdir, _config=config, network_compartments=compartments,ct=None)
+    options = [
+        Option(None, Network.create_terraform_dhcp_options, 'Processing DHCP Tab'),
+        ]
+    execute_options(options, inputfile, outdir, prefix, non_gf_tenancy, config=config)
+    print("\n\nExecute tf_import_commands_network_dhcp_nonGF.sh script created under each region directory to synch TF with OCI Network objects\n")
+
+def export_secrules(inputfile, outdir, prefix,config):
+    compartments = get_compartment_list('SecRulesInOCI')
+    Network.export_seclist(inputfile, network_compartments=compartments, _config=config, _tf_import_cmd=True, outdir=outdir)
+    options = [
+        Option(None, Network.modify_terraform_secrules, 'Processing SecRulesinOCI Tab'),
+        ]
+    execute_options(options, inputfile, outdir, prefix, non_gf_tenancy, config=config)
+    print("\n\nExecute tf_import_commands_network_secrules_nonGF.sh script created under each region directory to synch TF with OCI Network objects\n")
+
+def export_routerules(inputfile, outdir, prefix,config):
+    compartments = get_compartment_list('RouteRulesInOCI')
+    Network.export_routetable(inputfile, network_compartments=compartments, _config=config, _tf_import_cmd=True, outdir=outdir)
+    options = [
+        Option(None, Network.modify_terraform_routerules, 'Processing RouteRulesinOCI Tab'),
+        ]
+    execute_options(options, inputfile, outdir, prefix, non_gf_tenancy, config=config)
+    print("\n\nExecute tf_import_commands_network_routerules_nonGF.sh script created under each region directory to synch TF with OCI Network objects\n")
+
+
+def export_subnets(inputfile, outdir, prefix,config):
+    compartments = get_compartment_list('Subnets')
+    Network.export_subnets(inputfile, outdir, _config=config, network_compartments=compartments,ct=None)
+    options = [
+        Option(None, Network.create_terraform_subnet, 'Processing Subnets Tab'),
+        ]
+    execute_options(options, inputfile, outdir, prefix, non_gf_tenancy, config=config)
+    print("\n\nExecute tf_import_commands_network_subnets_nonGF.sh script created under each region directory to synch TF with OCI Network objects\n")
+
+
+def export_nsg(inputfile, outdir, prefix,config):
+    compartments = get_compartment_list('NSGs')
+    Network.export_nsg(inputfile, network_compartments=compartments, _config=config, _tf_import_cmd=True, outdir=outdir)
+    options = [
+        Option(None, Network.create_terraform_nsg, 'Processing NSGs Tab'),
+        ]
+    execute_options(options, inputfile, outdir, prefix, non_gf_tenancy, config=config)
+    print("\n\nExecute tf_import_commands_network_nsg_nonGF.sh script created under each region directory to synch TF with OCI Network objects\n")
 
 def export_tags():
     Governance.export_tags_nongreenfield(inputfile, outdir, _config=config, network_compartments=None)
@@ -141,7 +221,7 @@ def export_tags():
 
 def export_compute():
     options = [Option("Export Dedicated VM Hosts", export_dedicatedvmhosts, 'Exporting Dedicated VM Hosts'),
-               Option("Export Instances", export_instances, 'Exporting Instances')]
+               Option("Export Instances (excludes instances launched by OKE)", export_instances, 'Exporting Instances')]
 
     options = show_options(options, quit=True, menu=True, index=1)
     execute_options(options, inputfile, outdir, prefix, config)

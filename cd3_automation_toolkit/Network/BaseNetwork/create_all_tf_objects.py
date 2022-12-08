@@ -15,6 +15,7 @@ import sys
 from oci.config import DEFAULT_LOCATION
 from commonTools import section
 from .create_major_objects import create_major_objects
+from .create_terraform_defaults import create_terraform_defaults
 from .create_terraform_dhcp_options import create_terraform_dhcp_options
 from .create_terraform_route import create_terraform_route
 from .create_terraform_route import create_terraform_drg_route
@@ -41,6 +42,7 @@ def create_all_tf_objects(inputfile, outdir, prefix, config, non_gf_tenancy, mod
 
     with section('Process VCNs Tab and DRGs Tab'):
         create_major_objects(inputfile, outdir, prefix, non_gf_tenancy, config, modify_network)
+        create_terraform_defaults(inputfile, outdir, prefix, non_gf_tenancy, config, modify_network)
 
     with section('Process DHCP Tab'):
         create_terraform_dhcp_options(inputfile, outdir, prefix, non_gf_tenancy, config, modify_network)
