@@ -1,0 +1,23 @@
+{% if (skeleton and count == 0) %}
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+
+#############################
+# Network
+# Path Route Set - tfvars
+# Allowed Values:
+# load_balancer_id can be the ocid or the key of load_balancers (map)
+# Sample import command for Path Route Set:
+# terraform import "module.path-route-sets[\"<<path_route_sets terraform variable name>>\"].oci_load_balancer_path_route_set.path_route_set" loadBalancers/<<loadbalancer ocid>>/pathRouteSets/<<path route set name>>
+#############################
+
+path_route_sets = {
+  ##Add New Path Route Sets for {{ region|lower }} here##
+}{% else %}
+   {{ lbr_tf_name }}_{{ path_route_set_tf_name }} = {
+        load_balancer_id = "{{ lbr_tf_name }}"
+        name = "{{ path_route_set_name }}"
+        path_routes = [
+{{ path_routes }}
+            ]
+      },
+{% endif %}

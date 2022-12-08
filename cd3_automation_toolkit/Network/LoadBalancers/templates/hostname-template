@@ -1,0 +1,21 @@
+{% if (skeleton and count == 0) %}
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+
+#############################
+# Network
+# Hostname - tfvars
+# Allowed Values:
+# load_balancer_id can be the ocid or the key of load_balancers (map)
+# Sample import command for Hostname:
+# terraform import "module.hostnames[\"<<hostnames terraform variable name>>\"].oci_load_balancer_hostname.hostname" loadBalancers/<<loadbalancer ocid>>/hostnames/<<hostname>>
+#############################
+
+hostnames = {
+  ##Add New Hostnames for {{ region|lower }} here##
+}{% else %}
+  {{ host_tf_name }}_hostname = {
+        name               = "{{ name }}"
+        load_balancer_id = "{{ lbr_tf_name }}"
+        hostname           = "{{ hostname }}"
+        },
+{% endif %}

@@ -1,0 +1,21 @@
+{% if (skeleton and count == 0) %}
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+
+#############################
+# Network
+# Cipher Suites - tfvars
+# Allowed Values:
+# load_balancer_id can be ocid or the key of load_balancers (map)
+# Sample import command for Cipher Suites:
+# terraform import "module.cipher-suites[\"<<cipher_suites terraform variable name>>\"].oci_load_balancer_ssl_cipher_suite.ssl_cipher_suite" loadBalancers/<<loadbalancer ocid>>/sslCipherSuites/<<cipher suite name>>
+#############################
+
+cipher_suites = {
+  ##Add New Ciphers for {{ region|lower }} here##
+}{% else %}
+    {{ lbr_tf_name }}_{{ cipher_tf_name }} = {
+          ciphers          = [{{ ciphers }}]
+          name             = "{{ cipher_suite_name }}"
+          load_balancer_id = "{{ lbr_tf_name }}"
+    },
+{% endif %}

@@ -1,0 +1,250 @@
+{% if count == 0 %}
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+
+############################
+# Instances
+# Instance - tfvars
+# Allowed Values:
+# vcn_name must be the name of the VCN as in OCI
+# subnet_id can be the ocid of the subnet or the name as in OCI
+# compartment_id and network_compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens "--"
+# Example : compartment_id = "ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c" or compartment_id = "Network-root-cpt--Network" where "Network-root-cpt" is the parent of "Network" compartment
+# Sample import command for Instance and volume backup policy:
+# terraform import "module.instances[\"<<instances terraform variable name>>\"].oci_core_instance.instance" <<instance ocid>>
+# terraform import "module.instances[\"<<instances terraform variable name>>\"].oci_core_volume_backup_policy_assignment.volume_backup_policy_assignment[0]" <<volume backup policy ocid>>
+############################
+
+instances = {
+    ##Add New Instances for {{ region|lower }} here##
+}
+{% else %}
+   {{ display_tf_name }} =  {
+            availability_domain  = {{ availability_domain }}
+            compartment_id       = "{{ compartment_tf_name }}"
+            shape                = "{{ shape[0] }}"
+            display_name         = "{{ display_name }}"
+
+            {% if boot_volume_size_in_gbs %}
+            boot_volume_size_in_gbs = {{ boot_volume_size_in_gbs }}
+            {% endif %}
+
+            {% if fault_domain %}
+            fault_domain         = "{{ fault_domain }}"
+            {% endif %}
+
+            {% if dedicated_vm_host_tf %}
+            dedicated_vm_host_id = "{{ dedicated_vm_host_tf }}"
+            {% endif %}
+
+            source_id        =  "{{ source_details[1] }}"
+            source_type      = "{{ source_details[0] }}"
+
+            network_compartment_id = "{{network_compartment_id}}"
+            vcn_name         = "{{vcn_name}}"
+            subnet_id        = "{{ subnet_id }}"
+
+            {% if pub_address %}
+            assign_public_ip = {{ pub_address }}
+            {% endif %}
+
+            {% if ip_address %}
+            private_ip       = "{{ ip_address }}"
+            {% endif %}
+
+            {% if hostname_label %}
+            hostname_label         = "{{ hostname_label }}"
+            {% endif %}
+
+            {% if nsg_ids %}
+            nsg_ids          = [{{ nsg_ids }}]
+            {% endif %}
+
+            {% if shape[1] and shape[1] != '' %}
+            ocpus            = "{{ shape[1] }}"
+            {% endif %}
+
+            {% if memory_in_gbs %}
+            memory_in_gbs = {{ memory_in_gbs }}
+            {% endif %}
+
+            {% if capacity_reservation_id %}
+            capacity_reservation_id = "{{ capacity_reservation_id }}"
+            {% endif %}
+
+            {% if create_is_pv_encryption_in_transit_enabled %}
+            create_is_pv_encryption_in_transit_enabled = {{ create_is_pv_encryption_in_transit_enabled }}
+            {% endif %}
+
+            {% if update_is_pv_encryption_in_transit_enabled %}
+            update_is_pv_encryption_in_transit_enabled = {{ update_is_pv_encryption_in_transit_enabled }}
+
+            {% endif %}
+
+            {% if ssh_key_var_name != '' %}
+            ssh_authorized_keys  = "{{ ssh_key_var_name }}"
+            {% endif %}
+
+            {% if backup_policy %}
+            backup_policy          = "{{ backup_policy }}"
+            {% endif %}
+
+            {% if custom_policy_compartment_name %}
+            policy_compartment_id = "{{ custom_policy_compartment_name }}"
+            {% endif %}
+
+          {#  ##All optional params required for TF root module is below ##  #}
+          {#  {% if extended_metadata %}
+            extended_metadata = "{{ extended_metadata }}"
+            {% endif %}
+
+            {% if skip_source_dest_check %}
+            skip_source_dest_check = {{ skip_source_dest_check }}
+            {% endif %}
+
+            {% if baseline_ocpu_utilization %}
+            baseline_ocpu_utilization = "{{ baseline_ocpu_utilization }}"
+            {% endif %}
+
+            {% if preemptible_instance_config %}
+            preemptible_instance_config = "{{ preemptible_instance_config }}"
+            {% endif %}
+
+            {% if all_plugins_disabled %}
+            all_plugins_disabled = {{ all_plugins_disabled }}
+            {% endif %}
+
+            {% if is_management_disabled %}
+            is_management_disabled = {{ is_management_disabled }}
+            {% endif %}
+
+            {% if is_monitoring_disabled %}
+            is_monitoring_disabled = {{ is_monitoring_disabled }}
+            {% endif %}
+
+            {% if plugins_details %}
+            plugins_details = "{{ plugins_details }}"
+            {% endif %}
+
+            {% if is_live_migration_preferred %}
+            is_live_migration_preferred = {{ is_live_migration_preferred }}
+            {% endif %}
+
+            {% if recovery_action %}
+            recovery_action = "{{ recovery_action }}"
+            {% endif %}
+
+            {% if are_legacy_imds_endpoints_disabled %}
+            are_legacy_imds_endpoints_disabled = {{ are_legacy_imds_endpoints_disabled }}
+            {% endif %}
+
+            {% if boot_volume_type %}
+            boot_volume_type = "{{ boot_volume_type }}"
+            {% endif %}
+
+            {% if firmware %}
+            firmware = "{{ firmware }}"
+            {% endif %}
+
+            {% if is_consistent_volume_naming_enabled %}
+            is_consistent_volume_naming_enabled = {{ is_consistent_volume_naming_enabled }}
+            {% endif %}
+
+            {% if network_type %}
+            network_type = "{{ network_type }}"
+            {% endif %}
+
+            {% if remote_data_volume_type %}
+            remote_data_volume_type = "{{ remote_data_volume_type }}"
+            {% endif %}
+
+            {% if platform_config %}
+            platform_config = "{{ platform_config }}"
+            {% endif %}
+
+            {% if ipxe_script %}
+            ipxe_script = "{{ ipxe_script }}"
+            {% endif %}
+
+            {% if assign_private_dns_record %}
+            firmware = {{ assign_private_dns_record }}
+            {% endif %}
+
+            {% if preserve_boot_volume %}
+            preserve_boot_volume = {{ preserve_boot_volume }}
+            {% endif %}
+
+            {% if vlan_id %}
+            vlan_id = "{{ vlan_id }}"
+            {% endif %}
+
+            {% if kms_key_id %}
+            kms_key_id = "{{ kms_key_id }}"
+            {% endif %}
+
+            {% if vnic_display_name %}
+            vnic_display_name = "{{ vnic_display_name }}"
+            {% endif %}
+
+            ## Section for adding VNIC Defined and Freeform Tags
+            {% if vnic_defined_tags and vnic_defined_tags != 'nan' and vnic_defined_tags != '' %}
+            {% if vnic_defined_tags[0] %}
+            vnic_defined_tags = {
+            {% for tags in vnic_defined_tags  %}
+                {% if not loop.last %}
+                    "{{ tags[0]  }}"= "{{ tags[1] }}" ,
+                {% else %}
+                    "{{ tags[0]  }}"= "{{ tags[1] }}"
+                {% endif %}
+            {% endfor %}
+            }
+            {% endif %}
+            {% endif %}
+            {% if vnic_freeform_tags and vnic_freeform_tags != 'nan' and vnic_freeform_tags != '' %}
+            {% if vnic_freeform_tags[0] %}
+            vnic_freeform_tags = {
+            {% for tags in vnic_freeform_tags %}
+                {% if not loop.last  %}
+                    "{{ tags[0] }}"="{{ tags[1] }}",
+                            {% else %}
+                    "{{ tags[0] }}"="{{ tags[1] }}"
+                {% endif %}
+            {% endfor %}
+            }
+            {% endif %}
+            {% endif %}
+
+            #}
+
+        {#  ##Do not modify below this line##  #}
+        {#                                     #}
+        {#  ###Section for adding Defined and Freeform Tags###  #}
+        {% if defined_tags and defined_tags != 'nan' and defined_tags != '' and defined_tags != [['nan']] %}
+          {% if defined_tags[0] %}
+            defined_tags = {
+            {% for tags in defined_tags  %}
+                {% if not loop.last %}
+                    "{{ tags[0]  }}"= "{{ tags[1] }}" ,
+                {% else %}
+                    "{{ tags[0]  }}"= "{{ tags[1] }}"
+                {% endif %}
+            {% endfor %}
+            }
+            {% endif %}
+           {% endif %}
+                {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' and freeform_tags != [['nan']] %}
+                    {% if freeform_tags[0] %}
+            freeform_tags = {
+                        {% for tags in freeform_tags %}
+                            {% if not loop.last  %}
+                    "{{ tags[0] }}"="{{ tags[1] }}",
+                            {% else %}
+                    "{{ tags[0] }}"="{{ tags[1] }}"
+                            {% endif %}
+                        {% endfor %}
+                        }
+                    {% endif %}
+                {% endif %}
+        {#  ###Section for adding Defined and Freeform Tags ends here###  #}
+
+    },
+{% endif %}

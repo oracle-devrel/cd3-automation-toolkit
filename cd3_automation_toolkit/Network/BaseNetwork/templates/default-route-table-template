@@ -1,0 +1,15 @@
+{% if (skeleton and count == 0) %}
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+
+############################
+# Network
+# Major Objects - Default Route Table - tfvars
+# Sample import command for Default Route Table:
+# terraform import "module.default-route-tables[\"<<default_route_table terraform variable name>>\"].oci_core_default_route_table.default_route_table" <<default route table ocid>>
+############################
+
+default_route_tables = {
+  # Route Table map #
+  ##Add New Default Route Tables for {{ region.lower() }} here##
+}
+{% endif %}

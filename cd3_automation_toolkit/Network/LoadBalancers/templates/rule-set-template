@@ -1,0 +1,36 @@
+{% if (skeleton and count == 0) %}
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+
+#############################
+# Network
+# Rule Set - tfvars
+# Allowed Values:
+# load_balancer_id can be the ocid or the key of load_balancers (map)
+# Sample import command for Rule Set:
+# terraform import "module.rule-sets[\"<<rule_sets terraform variable name>>\"].oci_load_balancer_rule_set.rule_set" loadBalancers/<<loadbalancer ocid>>/ruleSets/<<rule set name>>
+#############################
+
+rule_sets = {
+  ##Add New Rule Sets for {{ region|lower }} here##
+}{% else %}
+    {{ lbr_tf_name}}_{{ rule_set_tf_name }} = {
+        name = "{{ rule_set_name }}"
+        load_balancer_id = "{{ lbr_tf_name }}"
+
+        access_control_rules = [
+    ## Add_access_control_rules_here_for_{{ lbr_tf_name }}_{{ rule_set_tf_name }} ##
+        ]
+        access_control_method_rules = [
+    ## Add_access_control_method_rules_here_for_{{ lbr_tf_name }}_{{ rule_set_tf_name }} ##
+        ]
+        http_header_rules = [
+    ## Add_http_header_rules_here_for_{{ lbr_tf_name }}_{{ rule_set_tf_name }} ##
+        ]
+        uri_redirect_rules = [
+    ## Add_uri_redirect_rules_here_for_{{ lbr_tf_name }}_{{ rule_set_tf_name }} ##
+        ]
+        request_response_header_rules = [
+    ## Add_request_response_header_rules_here_for_{{ lbr_tf_name }}_{{ rule_set_tf_name }} ##
+        ]
+    },
+{% endif %}

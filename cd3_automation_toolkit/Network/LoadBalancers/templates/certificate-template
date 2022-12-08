@@ -1,0 +1,27 @@
+{% if (skeleton and count == 0) %}
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+
+#############################
+# Network
+# Certificates - tfvars
+# Allowed Values:
+# load_balancer_id can be ocid or the key of load_balancers (map)
+# Sample import command for Certificates:
+# terraform import "module.certificates[\"<<certificates terraform variable name>>\"].oci_load_balancer_certificate.certificate" loadBalancers/<<loadbalancer ocid>>/certificates/<<certificate name>>
+#############################
+
+certificates = {
+  ##Add New Certificates for {{ region|lower }} here##
+}{% else %}
+
+    {{ lbr_tf_name }}_{{ certificate_tf_name }}_cert = {
+      certificate_name = "{{ certificate_name }}"
+      load_balancer_id = "{{ lbr_tf_name }}"
+
+      ca_certificate     = "{{ ca_cert }}"
+      passphrase         = "{{ passphrase }}"
+      private_key        = "{{ private_key }}"
+      public_certificate = "{{ public_cert }}"
+    },
+
+{% endif %}

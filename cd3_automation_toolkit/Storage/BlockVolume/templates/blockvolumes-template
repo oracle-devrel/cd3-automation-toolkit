@@ -1,0 +1,116 @@
+{% if count == 0 %}
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+
+############################
+# Block Volumes
+# Block Volumes - tfvars
+# Allowed Values:
+# compartment_id and policy_compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens "--"
+# Example : compartment_id = "ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c" or compartment_id = "Network-root-cpt--Network" where "Network-root-cpt" is the parent of "Network" compartment
+# Sample import command for block volume:
+# terraform import "module.block-volumes[\"<<blockvolumes terraform variable name>>\"].oci_core_volume.block_volume" <<block volume ocid>>
+# terraform import "module.block-volumes[\"<<blockvolumes terraform variable name>>\"].oci_core_volume_attachment.block_vol_instance_attachment[0]" <<block volume attachment ocid>>
+# terraform import "module.block-volumes[\"<<blockvolumes terraform variable name>>\"].oci_core_volume_backup_policy_assignment.volume_backup_policy_assignment[0]" <<block volume policy assignment ocid>>
+############################
+
+blockvolumes = {
+    ##Add New Block Volumes for {{ region|lower }} here##
+}
+{% else %}
+ {{ block_tf_name }} =  {
+            availability_domain  = {{ availability_domain }}
+            compartment_id       = "{{ compartment_tf_name }}"
+            display_name         = "{{ block_name }}"
+
+            {% if size_in_gbs %}
+            size_in_gbs          = {{ size_in_gbs }}
+            {% endif %}
+
+            {% if is_auto_tune_enabled %}
+            is_auto_tune_enabled = {{ is_auto_tune_enabled }}
+            {% endif %}
+
+            {% if vpus_per_gb %}
+            vpus_per_gb          = {{ vpus_per_gb }}
+            {% endif %}
+
+            {% if kms_key_id %}
+            kms_key_id           = "{{ kms_key_id }}"
+            {% endif %}
+
+            {% if attached_to_instance %}
+            attach_to_instance = "{{ attached_to_instance }}"
+            {% endif %}
+
+            {% if attach_type %}
+            attachment_type = "{{ attach_type }}"
+            {% endif %}
+
+            {% if backup_policy %}
+            backup_policy          = "{{ backup_policy }}"
+            {% endif %}
+
+            {% if custom_policy_compartment_name %}
+            policy_compartment_id = "{{ custom_policy_compartment_name }}"
+            {% endif %}
+
+            {% if device %}
+            device = "{{ device }}"
+            {% endif %}
+
+            {% if encryption_in_transit_type %}
+            encryption_in_transit_type = "{{ encryption_in_transit_type }}"
+            {% endif %}
+
+            {% if attachment_display_name %}
+            attachment_display_name = "{{ attachment_display_name }}"
+            {% endif %}
+
+            {% if is_read_only %}
+            is_read_only = "{{ is_read_only }}"
+            {% endif %}
+
+            {% if is_pv_encryption_in_transit_enabled %}
+            is_pv_encryption_in_transit_enabled = "{{ is_pv_encryption_in_transit_enabled }}"
+            {% endif %}
+
+            {% if is_shareable %}
+            is_shareable = "{{ is_shareable }}"
+            {% endif %}
+
+            {% if use_chap %}
+            use_chap = "{{ use_chap }}"
+            {% endif %}
+
+        {#  ##Do not modify below this line##  #}
+        {#                                     #}
+        {#  ###Section for adding Defined and Freeform Tags###  #}
+        {% if defined_tags and defined_tags != 'nan' and defined_tags != '' %}
+          {% if defined_tags[0] %}
+            defined_tags = {
+            {% for tags in defined_tags  %}
+                {% if not loop.last %}
+                    "{{ tags[0]  }}"= "{{ tags[1] }}" ,
+                {% else %}
+                    "{{ tags[0]  }}"= "{{ tags[1] }}"
+                {% endif %}
+            {% endfor %}
+            }
+            {% endif %}
+           {% endif %}
+                {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' %}
+                    {% if freeform_tags[0] %}
+            freeform_tags = {
+                        {% for tags in freeform_tags %}
+                            {% if not loop.last  %}
+                    "{{ tags[0] }}"="{{ tags[1] }}",
+                            {% else %}
+                    "{{ tags[0] }}"="{{ tags[1] }}"
+                            {% endif %}
+                        {% endfor %}
+                        }
+                    {% endif %}
+                {% endif %}
+        {#  ###Section for adding Defined and Freeform Tags ends here###  #}
+        },
+{% endif %}
