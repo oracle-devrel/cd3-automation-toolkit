@@ -1,0 +1,107 @@
+{% if count == 0 %}
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+
+############################
+# ADB
+# ADB - tfvars
+# Allowed Values:
+# compartment_id and network_compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens "--"
+# Example : compartment_id = "ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c" or compartment_id = "Network-root-cpt--Network" where "Network-root-cpt" is the parent of "Network" compartment
+############################
+
+adb = {
+       ##Add New ADB for {{ region|lower }} here##
+}
+{% else %}
+
+     {{ display_tf_name }} =  {
+
+            compartment_id           = "{{ compartment_name }}"
+            db_name                  = "{{ db_name }}"
+            display_name             = "{{ adb_display_name }}"
+
+            admin_password           = "{{ admin_password }}"
+
+            {% if character_set != "" and character_set != "nan" %}
+            character_set            = "{{ character_set }}"
+            {% endif %}
+
+            {% if ncharacter_set != "" and ncharacter_set != "nan" %}
+            ncharacter_set           = "{{ ncharacter_set }}"
+            {% endif %}
+
+            cpu_core_count           = {{ cpu_core_count }}
+
+            {% if database_edition == "" %}
+            database_edition         = null
+            {% else %}
+            database_edition         = "{{ database_edition }}" #Only for BYOL license model
+            {% endif %}
+
+            data_storage_size_in_tbs = {{ data_storage_size_in_tb }}
+            db_version               = "19c"
+
+            {% if autonomous_value == 'adw' %}
+            db_workload              = "DW"
+            {% elif autonomous_value == 'atp' %}
+            db_workload              = "OLTP"
+            {% elif autonomous_value == 'json' %}
+            db_workload              = "AJD"
+            {% elif autonomous_value == 'apex' %}
+            db_workload              = "APEX"
+            {% endif %}
+
+            license_model            = "{{ license_model }}"
+            whitelisted_ips          = [{{ whitelisted_ips }}]
+
+            {% if network_compartment_id == "" %}
+            network_compartment_id   = null
+            {% else %}
+            network_compartment_id   = "{{ network_compartment_id }}"
+            {% endif %}
+            nsg_ids                  = [{{ nsg_ids }}]
+            {% if subnet_id == "" %}
+            subnet_id                = null
+            {% else %}
+            subnet_id                = "{{ subnet_id }}"
+            {% endif %}
+            {% if vcn_name == "" %}
+            vcn_name                 = null
+            {% else %}
+            vcn_name                 = "{{ vcn_name }}"
+            {% endif %}
+
+        {#  ##Do not modify below this line##  #}
+        {#                                     #}
+        {#  ###Section for adding Defined and Freeform Tags###  #}
+        {% if defined_tags and defined_tags != 'nan' and defined_tags != '' and defined_tags != [['nan']] %}
+          {% if defined_tags[0] %}
+            defined_tags = {
+            {% for tags in defined_tags  %}
+                {% if not loop.last %}
+                    "{{ tags[0]  }}"= "{{ tags[1] }}" ,
+                {% else %}
+                    "{{ tags[0]  }}"= "{{ tags[1] }}"
+                {% endif %}
+            {% endfor %}
+            }
+            {% endif %}
+           {% endif %}
+                {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' and freeform_tags != [['nan']] %}
+                    {% if freeform_tags[0] %}
+            freeform_tags = {
+                        {% for tags in freeform_tags %}
+                            {% if not loop.last  %}
+                    "{{ tags[0] }}"="{{ tags[1] }}",
+                            {% else %}
+                    "{{ tags[0] }}"="{{ tags[1] }}"
+                            {% endif %}
+                        {% endfor %}
+                        }
+                    {% endif %}
+                {% endif %}
+        {#  ###Section for adding Defined and Freeform Tags ends here###  #}
+        },
+
+{% endif %}
+

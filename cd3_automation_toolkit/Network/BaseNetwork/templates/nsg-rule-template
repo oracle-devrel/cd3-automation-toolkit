@@ -1,0 +1,115 @@
+{% if skeleton %}
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+
+############################
+# Network
+# Network Security Group Rules
+# Sample import command for Network Security Group Rules:
+# terraform import "module.nsg-rules[\"<<nsg_rules terraform variable name>>\"].oci_core_network_security_group_security_rule.nsg_rule" networkSecurityGroups/<<nsg ocid>>/securityRules/<<nsg rule ocid>>
+############################
+
+nsg_rules = {
+  # NSG Rule map #
+  ##Add New NSG Rules for {{ region.lower() }} here##
+{% else %}
+{% if nsg_tf_name != '' %}
+
+   {{ nsg_rule_tf_name }} =  {
+        nsg_id = "{{ nsg_tf_name }}"
+        direction = "{{ direction }}"
+        protocol = "{{ protocol_code }}"
+
+        {% if rule_description and rule_description != ''  %}
+        {% if "\n" in rule_description %}
+        description = <<-EOF
+"{{ rule_description }}"
+EOF
+        {% elif rule_description != ' ' %}
+        description = "{{ rule_description }}"
+        {% endif %}
+        {% endif %}
+
+        {% if isstateless and isstateless.lower() != "false" %}
+        stateless = "{{ isstateless.lower() }}"
+        {% endif %}
+
+        {% if source_type and source_type != '' %}
+        source_type = "{{ source_type }}"
+        {% endif %}
+
+        {% if destination_type and destination_type != '' %}
+        destination_type = "{{ destination_type }}"
+        {% endif %}
+
+        {% if destination and destination != '' %}
+        destination = "{{ destination }}"
+        {% endif %}
+
+        {% if source and source != '' %}
+        source = "{{ source }}"
+        {% endif %}
+
+        {% if protocol != "" %}
+        options = {
+
+            {% if protocol.lower() == "all" %}
+            all = []
+            {% endif %}
+
+            {% if protocol.lower() == 'icmp' %}
+            {% if icmptype !='' and  icmpcode != '' %}
+            icmp = [{
+                    type = "{{ icmptype }}"
+                    code = "{{ icmpcode }}"
+            }]
+                {% elif icmptype !='' and  icmpcode == '' %}
+            icmp = [{
+                    type = "{{ icmptype }}"
+            }]
+            {% else %}
+            icmp = []
+            {% endif %}
+            {% endif %}
+
+            {% if protocol.lower() == 'tcp' %}
+            {% if (dportmax and dportmin) or (sportmax and sportmin)  %}
+            tcp = [{
+                {% if sportmax and sportmin %}
+                source_port_range_max = "{{ sportmax }}"
+                source_port_range_min = "{{ sportmin }}"
+                {% endif %}
+
+                {% if dportmax and dportmin %}
+                destination_port_range_max = "{{ dportmax }}"
+                destination_port_range_min = "{{ dportmin }}"
+                {% endif %}
+            }]
+            {% else %}
+            tcp = []
+            {% endif %}
+            {% endif %}
+
+            {% if protocol.lower() == 'udp' %}
+            {% if (dportmax and dportmin) or (sportmax and sportmin)  %}
+            udp = [{
+                {% if sportmax and sportmin %}
+                source_port_range_max = "{{ sportmax }}"
+                source_port_range_min = "{{ sportmin }}"
+                {% endif %}
+
+                {% if dportmax and dportmin %}
+                destination_port_range_max = "{{ dportmax }}"
+                destination_port_range_min = "{{ dportmin }}"
+                {% endif %}
+            }]
+            {% else %}
+            udp = []
+            {% endif %}
+            {% endif %}
+        }
+        {% endif %}
+
+   },
+
+{% endif %}
+{% endif %}

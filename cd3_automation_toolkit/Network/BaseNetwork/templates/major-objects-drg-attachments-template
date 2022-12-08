@@ -1,0 +1,91 @@
+{% if skeleton %}
+
+############################
+# Network
+# Major Objects - DRG Attachment - tfvars
+# Allowed Values:
+# vcn_id can be the ocid or the key of vcns (map)
+# Sample import command for DRG Attachment:
+# terraform import "module.drg-attachments[\"<<drg_attachments terraform variable name>>\"].oci_core_drg_attachment.drg_attachment" <<drg attachment ocid>>
+############################
+
+drg_attachments = {
+{% endif %}
+{% if drg_attach_tf_name != '' and drg_attach_tf_name != null %}
+   {{ drg_attach_tf_name }} = {
+        drg_id = "{{ drg_tf_name }}"
+        display_name = "{{ drg_attach_display_name }}"
+
+        {% if drg_version == 'DRGv2' %}
+        #DRG v2
+        {% if drg_rt_tf_name !='' %}
+        drg_route_table_id = "{{ drg_rt_tf_name }}"
+        {% else %}
+        drg_route_table_id = ""
+        {% endif %}
+
+        #Required
+        network_details = [{
+        id = "{{ network_id }}"
+        type = "{{ network_type }}"
+        {% if network_type == 'VCN' and vcn_drg_rt_tf_name !='' %}
+        vcn_route_table_id = "{{ vcn_drg_rt_tf_name }}"
+        {% else %}
+        vcn_route_table_id =  ""
+        {% endif %}
+        }]
+        #set DRGv1 params to null
+        route_table_id =""
+        vcn_id = ""
+
+        {% else %}
+        #DRG v1
+        route_table_id = "{{ vcn_drg_rt_tf_name }}"
+        vcn_id = "{{ vcn_id }}"
+        #set DRGv2 params to null
+        drg_route_table_id = ""
+        network_details = []
+        {% endif %}
+
+    {#  ##Do not modify below this line##  #}
+    {#                                     #}
+    {#  ###Section for adding Defined and Freeform Tags###  #}
+    {% if defined_tags and defined_tags != 'nan' and defined_tags != '' %}
+      {% if defined_tags[0] %}
+        defined_tags = {
+        {% for tags in defined_tags  %}
+            {% if not loop.last %}
+                "{{ tags[0]  }}"= "{{ tags[1] }}" ,
+            {% else %}
+                "{{ tags[0]  }}"= "{{ tags[1] }}"
+            {% endif %}
+        {% endfor %}
+        }
+      {% else %}
+        defined_tags = {}
+        {% endif %}
+       {% else %}
+        defined_tags = {}
+       {% endif %}
+            {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' %}
+                {% if freeform_tags[0] %}
+        freeform_tags = {
+                    {% for tags in freeform_tags %}
+                        {% if not loop.last  %}
+                "{{ tags[0] }}"="{{ tags[1] }}",
+                        {% else %}
+                "{{ tags[0] }}"="{{ tags[1] }}"
+                        {% endif %}
+                    {% endfor %}
+                    }
+                {% else %}
+        freeform_tags = {}
+                {% endif %}
+            {% else %}
+        freeform_tags = {}
+            {% endif %}
+    {#  ###Section for adding Defined and Freeform Tags ends here###  #}
+        },
+
+{% endif %}
+}

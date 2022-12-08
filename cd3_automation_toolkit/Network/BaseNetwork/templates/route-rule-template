@@ -1,0 +1,15 @@
+            {% if (rt_tf_name and  rt_tf_name != '' and rt_tf_name != null) or (lpg_route_rules) %}
+            ## Start Route Rule {{ region.lower() }}_{{ rt_tf_name }}_{{ network_entity_id }}_{{ destination }}
+            {
+                  network_entity_id = "{{ network_entity_id }}"
+                  {% if description != '' %}
+                  description       = "{{ description }}"
+                  {% else %}
+                  description       = ""
+                  {% endif %}
+                  destination       = "{{ destination }}"
+                  destination_type  = "{{ destination_type }}"
+                 },
+            ## End Route Rule {{ region.lower() }}_{{ rt_tf_name }}_{{ network_entity_id }}_{{ destination }}
+            {% endif %}
+

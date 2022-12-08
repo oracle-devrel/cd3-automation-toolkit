@@ -1,0 +1,7 @@
+            {
+            #Required
+            action = "{{ action }}"
+            are_invalid_characters_allowed = {{ allow_invalid_characters }}
+            http_large_header_size_in_kb = {{ http_header_size }}
+            },
+    ## Add_http_header_rules_here_for_{{ lbr_tf_name }}_{{ rule_set_tf_name }} ##
