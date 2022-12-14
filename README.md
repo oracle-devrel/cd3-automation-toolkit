@@ -3,8 +3,6 @@
 
 [![License: UPL](https://img.shields.io/badge/license-UPL-green)](https://img.shields.io/badge/license-UPL-green) [![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=oracle-devrel_cd3-automation-toolkit)](https://sonarcloud.io/dashboard?id=oracle-devrel_cd3-automation-toolkit)
 
-## THIS IS A NEW, BLANK REPO THAT IS NOT READY FOR USE YET.  PLEASE CHECK BACK SOON!
-
 ## Introduction
 The CD3 Automation toolkit has been developed to help in automating the OCI resource object management. 
 <br>
@@ -36,15 +34,6 @@ https://github.com/oracle-devrel/cd3-automation-toolkit/blob/develop/cd3_automat
 Note : ${image_tag} should be replaced with suitable tag as per your requirements/standards.
 
        The above steps have been tested on Windows (Git Bash) and MacOS.
-
-### Prerequisites
-MISSING
-
-## Notes/Issues
-MISSING
-
-## URLs
-* Nothing at this time
 
 ## Contributing
 This project is open source.  Please submit your contributions by forking this repository and submitting a pull request!  Oracle appreciates any contributions that are made by the open source community.
