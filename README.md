@@ -11,18 +11,21 @@ It reads input data in the form of CD3 Excel sheets and generates the terraform 
 <img width="434" alt="image" src="https://user-images.githubusercontent.com/103475219/199982639-3b78c9cc-1b30-4a78-bafb-75ceb05309c0.png">
 <br><br>
 
+`To ease the execution of toolkit, we have provided the steps to build an image which encloses the code base and its package dependencies. Follow the steps provided below to clone the repo and build the image.`
+<br><br>
+
 ## Getting Started
 
 ### To clone the repo
-* Click on the "Code" button located towards the top right side of the repo page.
-* Copy the HTTPS link and run the git clone command as below inside the directory where the repo needs to be cloned:
+* Open your terminal and change the directory to the one where you want to download the git repo.
+* Run the git clone command as shown below:
        git clone https://github.com/oracle-devrel/cd3-automation-toolkit
-* Once the cloning command completes successfully, the repo will replicate to the local directory
+* Once the cloning command completes successfully, the repo will replicate to the local directory. 
 * Run command "git pull" or "git pull <repo_web_url> main" to replicate any new changes to the repo upon a new release
 
 ### To build an image
 
-* Change directory to cd3-automation-toolkit(i.e. cloned repo).
+* Change directory to cd3-automation-toolkit(i.e. the cloned repo in your local).
 * Run docker build -t cd3toolkit:${image_tag} -f Dockerfile --pull --no-cache .
 <br><br>
 ### To save the image (Optional)
