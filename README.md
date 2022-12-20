@@ -13,6 +13,13 @@ It reads input data in the form of CD3 Excel sheets and generates the terraform 
 
 ## Getting Started
 
+### To clone the repo
+* Click on the "Code" button located towards the top right side of the repo page.
+* Copy the HTTPS link and run the git clone command as below inside the directory where the repo needs to be cloned:
+       git clone https://github.com/oracle-devrel/cd3-automation-toolkit
+* Once the cloning command completes successfully, the repo will replicate to the local directory
+* Run command "git pull" or "git pull <<weburl>> main" to replicate any new changes to the repo upon a new release
+
 ### To build an image
 
 * Change directory to cd3-automation-toolkit(i.e. cloned repo).
