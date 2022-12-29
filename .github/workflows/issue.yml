@@ -2,7 +2,7 @@ name: CD3 Project automation for Issues
 
 on:
   issues:
-    types: [opened, edited, labeled, unlabeled, assigned, unassigned]
+    types: [labeled]
 
 jobs:
   add-to-project:
