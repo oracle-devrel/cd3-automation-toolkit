@@ -6,9 +6,9 @@
 ## Introduction
 CD3 stands for Cloud Deployment Design Deliverable.
 The CD3 Automation toolkit has been developed to help in automating the OCI resource object management. 
-<br>
-It reads input data in the form of CD3 Excel sheets and generates the terraform files instead of handling the task through the OCI console manually. This simplifies the management of the company's infrastructure as code.
-<br>
+<br><br>
+It reads input data in the form of CD3 Excel sheets and generates the terraform files instead of handling the task through the OCI console manually. The toolkit also reverse engineers the components in OCI back to the Excel sheet and Terraform configuration. This generated Terraform code can be used by the OCI Resource Manager or leveraged by the organisations’ CI/CD processes.
+<br><br>
 <img width="715" alt="Screenshot 2022-12-30 at 11 57 41 AM" src="https://user-images.githubusercontent.com/103475219/210041258-258601c4-dd1d-48a1-b6d7-df1bda764190.png">
 <br><br>
 
@@ -37,10 +37,8 @@ Minimum requirement for the user to get started is to have the ability to read t
 ### To build an image
 
 * Change directory to cd3-automation-toolkit(i.e. the cloned repo in your local).
-* Run docker build -t cd3toolkit:${image_tag} -f Dockerfile --pull --no-cache .
-
-<b>Note</b> : <i>${image_tag} should be replaced with suitable tag as per your requirements/standards.</i>
-<br>
+* Run docker build -t cd3toolkit:${image_tag} -f Dockerfile --pull --no-cache .<br/>
+<br  /><b>Note</b> : <i>${image_tag} should be replaced with suitable tag as per your requirements/standards.</i>
 
 ### To save the image (Optional)
 * Run docker save cd3toolkit:${image_tag} | gzip > cd3toolkit_${image_tag}.tar.gz
@@ -51,13 +49,15 @@ Minimum requirement for the user to get started is to have the ability to read t
 * Run docker ps
 * Run docker exec -it <container_id> bash
 <br><br>
-Follow the toolkit docs i.e. from section "Configuring the Docker Container to connect to OCI Tenancy" of "01 CD3 Automation Tookit - End to End Process" inside cd3_automation_toolkit/documentation/user_guide to know HOW TO use to toolkit further.
-<br><br>
-https://github.com/oracle-devrel/cd3-automation-toolkit/blob/develop/cd3_automation_toolkit/documentation/user_guide/01%20CD3%20Automation%20Toolkit%20-%20End%20to%20End%20Process.pdf
-<br><br>
-Please download the document from Github.
+Follow the toolkit docs i.e. from the section <i>"Configuring the Docker Container to connect to OCI Tenancy"</i> in 
+<a href="https://github.com/oracle-devrel/cd3-automation-toolkit/blob/develop/cd3_automation_toolkit/documentation/user_guide/01%20CD3%20Automation%20Toolkit%20-%20End%20to%20End%20Process.pdf">CD3 Automation Tookit - End To End Process Documentation</a>. Please download the document from Github.
 <br>
-<b>Note</b> : <i>The above steps have been tested on Windows (Git Bash) and MacOS.</i>
+<i>CD3 Quick Start template can be found at <b><a href="https://github.com/oracle-devrel/cd3-automation-toolkit/blob/develop/cd3_automation_toolkit/example/CD3-CIS-template.xlsx">CD3 CIS Template</a></b></i>
+<br>
+<i>CD3 Sample Excel templates can be found at <b><a href="https://github.com/oracle-devrel/cd3-automation-toolkit/tree/develop/cd3_automation_toolkit/example">Excel Templates</a> </b></i>
+<br>
+<br>
+<b>Note</b> : <i>The above steps have been tested on Windows (Git Bash) and MacOS.</i><br/>
 
 ## Contributing
 This project is open source.  Please submit your contributions by forking this repository and submitting a pull request!  Oracle appreciates any contributions that are made by the open source community.
