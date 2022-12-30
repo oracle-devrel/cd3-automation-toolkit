@@ -21,9 +21,9 @@ It reads input data in the form of CD3 Excel sheets and generates the terraform 
 
 ## Getting Started
 
-### Pre-requisite
+### Pre-requisites
 * Git
-* Any docker cli compatible platform such as docker or rancher.
+* Any docker cli compatible platform such as Docker or Rancher.
 * OCI Tenancy Access Requirement - 
 Appropriate IAM policies must be in place for each of the resources that the user may try to create.
 Minimum requirement for the user to get started is to have the ability to read to the tenancy.
@@ -33,17 +33,19 @@ Minimum requirement for the user to get started is to have the ability to read t
 * Run the git clone command as shown below:
        git clone https://github.com/oracle-devrel/cd3-automation-toolkit
 * Once the cloning command completes successfully, the repo will replicate to the local directory. 
-* Run command "git pull" or "git pull <repo_web_url> main" to replicate any new changes to the repo upon a new release
 
 ### To build an image
 
 * Change directory to cd3-automation-toolkit(i.e. the cloned repo in your local).
 * Run docker build -t cd3toolkit:${image_tag} -f Dockerfile --pull --no-cache .
-<br><br>
-### To save the image (Optional)
 
+<b>Note</b> : <i>${image_tag} should be replaced with suitable tag as per your requirements/standards.</i>
+<br>
+
+### To save the image (Optional)
 * Run docker save cd3toolkit:${image_tag} | gzip > cd3toolkit_${image_tag}.tar.gz
-<br><br>
+
+
 ### To run the CD3 container and exec into it
 * Run docker run -it -d -v <path_in_local_system_where_the_files_must_be_generated>:/cd3user/tenancies <image_name>:<image_tag>
 * Run docker ps
@@ -55,9 +57,7 @@ https://github.com/oracle-devrel/cd3-automation-toolkit/blob/develop/cd3_automat
 <br><br>
 Please download the document from Github.
 <br>
-Note : ${image_tag} should be replaced with suitable tag as per your requirements/standards.
-
-       The above steps have been tested on Windows (Git Bash) and MacOS.
+<b>Note</b> : <i>The above steps have been tested on Windows (Git Bash) and MacOS.</i>
 
 ## Contributing
 This project is open source.  Please submit your contributions by forking this repository and submitting a pull request!  Oracle appreciates any contributions that are made by the open source community.
