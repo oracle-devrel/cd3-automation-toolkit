@@ -14,6 +14,10 @@ It reads input data in the form of CD3 Excel sheets and generates the terraform 
 `To ease the execution of toolkit, we have provided the steps to build an image which encloses the code base and its package dependencies. Follow the steps provided below to clone the repo and build the image.`
 <br><br>
 
+#### OCI Services Supported by CD3
+<img width="748" alt="Screenshot 2022-12-30 at 1 05 59 PM" src="https://user-images.githubusercontent.com/103475219/210046038-91acacfd-5d65-4bc3-a1a8-90d425d2e3d3.png">
+
+
 ## Getting Started
 
 ### To clone the repo
