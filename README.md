@@ -8,7 +8,7 @@ The CD3 Automation toolkit has been developed to help in automating the OCI reso
 <br>
 It reads input data in the form of CD3 Excel sheets and generates the terraform files instead of handling the task through the OCI console manually. This simplifies the management of the company's infrastructure as code.
 <br>
-<img width="434" alt="image" src="https://user-images.githubusercontent.com/103475219/199982639-3b78c9cc-1b30-4a78-bafb-75ceb05309c0.png">
+<img width="715" alt="Screenshot 2022-12-30 at 11 57 41 AM" src="https://user-images.githubusercontent.com/103475219/210041258-258601c4-dd1d-48a1-b6d7-df1bda764190.png">
 <br><br>
 
 `To ease the execution of toolkit, we have provided the steps to build an image which encloses the code base and its package dependencies. Follow the steps provided below to clone the repo and build the image.`
@@ -41,6 +41,8 @@ Follow the toolkit docs i.e. from section "Configuring the Docker Container to c
 <br><br>
 https://github.com/oracle-devrel/cd3-automation-toolkit/blob/develop/cd3_automation_toolkit/documentation/user_guide/01%20CD3%20Automation%20Toolkit%20-%20End%20to%20End%20Process.pdf
 <br><br>
+Please download the document from Github.
+<br>
 Note : ${image_tag} should be replaced with suitable tag as per your requirements/standards.
 
        The above steps have been tested on Windows (Git Bash) and MacOS.
