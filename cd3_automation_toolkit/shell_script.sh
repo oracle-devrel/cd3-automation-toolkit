@@ -20,7 +20,7 @@ python -m pip install --user oci-cli
 python -m pip install --user pycryptodomex==3.10.1
 python -m pip install --user regex
 python -m pip install --user pandas==1.1.5
-python -m pip install --user openpyxl==3.0.5
+python -m pip install --user openpyxl==3.0.7
 python -m pip install --user xlrd==1.2.0
 python -m pip install --user xlsxwriter==1.3.7
 python -m pip install --user wget
