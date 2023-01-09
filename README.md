@@ -37,7 +37,7 @@ Minimum requirement for the user to get started is to have the ability to read t
 ### To build an image
 
 * Change directory to cd3-automation-toolkit(i.e. the cloned repo in your local).
-* Run docker build -t cd3toolkit:${image_tag} -f Dockerfile --pull --no-cache .<br/>
+* Run docker build --platform linux/amd64 -t cd3toolkit:${image_tag} -f Dockerfile --pull --no-cache .<br/>
 <br  /><b>Note</b> : <i>${image_tag} should be replaced with suitable tag as per your requirements/standards.</i>
 
 ### To save the image (Optional)
@@ -45,7 +45,7 @@ Minimum requirement for the user to get started is to have the ability to read t
 
 
 ### To run the CD3 container and exec into it
-* Run docker run -it -d -v <path_in_local_system_where_the_files_must_be_generated>:/cd3user/tenancies <image_name>:<image_tag>
+* Run docker run --platform linux/amd64 -it -d -v <path_in_local_system_where_the_files_must_be_generated>:/cd3user/tenancies <image_name>:<image_tag>
 * Run docker ps
 * Run docker exec -it <container_id> bash
 <br><br>
