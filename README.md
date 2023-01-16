@@ -15,9 +15,18 @@ It reads input data in the form of CD3 Excel sheets and generates the terraform 
 <br><br>
 
 #### OCI Services Currently Supported by CD3
-<img width="748" alt="Screenshot 2022-12-30 at 1 05 59 PM" src="https://user-images.githubusercontent.com/103475219/210046038-91acacfd-5d65-4bc3-a1a8-90d425d2e3d3.png">
 
-
+| OCI Services | Details |
+| --------- | ----------- |
+| IAM | Compartments, Groups, Dynamic Groups, Policies |
+| Network | VCNs, Subnets, DRGs, IGWs, NGWs, LPGs, Route Tables, DRG Route, Tables, Security Lists, Network Security Groups, Application Load Balancer, Network Load Balancers |
+| Governance | Tags (Namespaces, Tag Keys, Defined Tags, Default Tags, Cost Tracking) |
+| Compute | Instances – VM, BM, Dedicated VM Hosts |
+| Storage | FSS, Block and Boot Volumes, Backup Policies |
+| Database | Exa Infra, ExaCS, DB Systems VM and BM, ATP, ADW |
+| Management Services | Events, Notifications, Alarms, Service Connector Hub (SCH) |
+| Developer Services | Resource Manager, Oracle Kubernetes Engine (OKE) |
+| CIS Landing Zone Compliance | Download CIS Report Script, Execute CIS Report Script, VCN Flow Logs, Cloud Guard, Object Storage, Key Vault, Budget |
 
 ## Getting Started
 
