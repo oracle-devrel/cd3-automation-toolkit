@@ -31,6 +31,12 @@ def print_nlb_backendset_backendserver(region, ct, values_for_column_bss,NLBs, n
         nlb_display_name = eachnlb.display_name
         tf_name = commonTools.check_tf_variable(nlb_display_name)
 
+        # Filter out the NLBs provisioned by oke
+        eachnlb_defined_tags = eachnlb.defined_tags
+        created_by = eachnlb_defined_tags['Oracle-Tags']['CreatedBy']
+        if 'ocid1.cluster' in created_by:
+            continue
+
         # Loop through Backend Sets
         for backendsets in eachnlb.__getattribute__('backend_sets'):
             cnt_bss = cnt_bss + 1
@@ -132,6 +138,12 @@ def print_nlb_backendset_backendserver(region, ct, values_for_column_bss,NLBs, n
 
 def print_nlb_listener(region, ct, values_for_column_lis, NLBs, nlb_compartment_name,vcn):
     for eachnlb in NLBs.data:
+
+        #Filter out the NLBs provisioned by oke
+        eachnlb_defined_tags = eachnlb.defined_tags
+        created_by = eachnlb_defined_tags['Oracle-Tags']['CreatedBy']
+        if 'ocid1.cluster' in created_by:
+            continue
 
         importCommands[reg] = open(outdir + "/" + reg + "/tf_import_commands_nlb_nonGF.sh", "a")
         nlb_display_name = eachnlb.display_name
@@ -325,9 +337,6 @@ def export_nlb(inputfile, _outdir, network_compartments, _config):
         script_file = f'{outdir}/{reg}/tf_import_commands_nlb_nonGF.sh'
         with open(script_file, 'a') as importCommands[reg]:
             importCommands[reg].write('\n\nterraform plan\n')
-        if "linux" in sys.platform:
-            os.chmod(script_file, 0o755)
-
 
 def parse_args():
     # Read the arguments

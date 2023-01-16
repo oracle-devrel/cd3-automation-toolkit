@@ -23,6 +23,14 @@ variable "hostname" {
   type    = string
   default = ""
 }
+variable "vcn_names" {
+  type    = list
+  default = []
+}
+variable "network_compartment_id" {
+  type    = string
+  default = ""
+}
 variable "ssh_public_keys" {
   type    = list(any)
   default = []

@@ -16,7 +16,7 @@ resource "oci_database_db_system" "database_db_system" {
 
   #Optional
   node_count = var.node_count
-  nsg_ids    = var.nsg_ids
+  nsg_ids    = var.nsg_ids != null ? (local.nsg_ids == null ? ["INVALID NSG Name"] : local.nsg_ids) : null
   #private_ip       = var.private_ip
   #sparse_diskgroup = var.sparse_diskgroup
   time_zone = var.time_zone

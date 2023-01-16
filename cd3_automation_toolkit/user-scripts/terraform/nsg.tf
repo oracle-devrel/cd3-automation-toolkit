@@ -7,7 +7,7 @@ data "oci_core_vcns" "oci_vcns_nsgs" {
   # depends_on = [module.vcns] # Uncomment to create Network and NSGs together
   for_each       = var.nsgs != null ? var.nsgs : {}
   compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
-  display_name   = each.value.vcn_id
+  display_name   = each.value.vcn_name
 }
 
 module "nsgs" {

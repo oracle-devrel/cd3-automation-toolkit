@@ -123,9 +123,6 @@ def export_dedicatedvmhosts(inputfile, _outdir, _config, network_compartments=[]
                 dedicatedvmhost=compute_client.get_dedicated_vm_host(dedicatedvmhost.id).data
                 print_dedicatedvmhosts(region, dedicatedvmhost,values_for_column, ntk_compartment_name)
 
-        if "linux" in sys.platform:
-            os.chmod(script_file, 0o755)
-
     commonTools.write_to_cd3(values_for_column, cd3file, "DedicatedVMHosts")
 
     print("Dedicated VM Hosts exported to CD3\n")

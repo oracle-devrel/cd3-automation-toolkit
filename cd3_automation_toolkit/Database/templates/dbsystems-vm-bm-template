@@ -7,7 +7,7 @@
 # Allowed Values:
 # subnet_id and nsg_ids can be ocids or the key of subnets (map) and nsgs (map)
 # compartment_id and network_compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens "--"
-# Example : compartment_id = "ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c" or compartment_id = "Network-root-cpt--Network" where "Network-root-cpt" is the parent of "Network" compartment
+# Example : compartment_id = "ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c" or compartment_id = "Database--Prod" where "Database" is the parent of "Prod" compartment
 # Sample import command for DBSystem-VM-BM:
 # terraform import "module.dbsystems-vm-bm[\"<<dbsystems_vm_bm terraform variable name>>\"].oci_database_db_system.database_db_system" <<dbsystem ocid>>
 ############################
@@ -18,7 +18,9 @@ dbsystems_vm_bm = {
             availability_domain  = {{ availability_domain }}
             compartment_id       = "{{ compartment_name }}"
             shape                = "{{ shape }}"
-            subnet_id            = "{{ subnet_name }}"
+            network_compartment_id   = "{{ network_compartment_id }}"
+            vcn_name             = "{{ vcn_name }}"
+            subnet_id            = "{{ subnet_id }}"
             hostname             = "{{ hostname_prefix }}"
 
             {% if cpu_core_count %}

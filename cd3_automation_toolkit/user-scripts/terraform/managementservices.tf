@@ -104,3 +104,37 @@ output "notifications-topics" {
   value = [ for k,v in merge(module.notifications-topics.*...) : v.topic_tf_id ]
 }
 */
+
+####################################
+## Module Block - Service Connector
+## Create Service Connectors
+####################################
+
+module "service-connectors" {
+  source = "./modules/managementservices/service-connector"
+
+  for_each   = var.service_connectors
+
+  compartment_id               = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
+  logs_compartment_id          = var.tenancy_ocid
+  source_monitoring_details    = each.value.source_details.source_kind == "monitoring" ? each.value.source_details.source_monitoring_details : {}
+  log_group_names              = each.value.source_details.source_kind == "logging" ? flatten([for key in each.value.source_details.source_log_group_names :  join("&", tolist( [lookup(var.compartment_ocids,split("&", key)[0],"null" ),split("&", key)[1]]  ) )  ]) : []
+  display_name                 = each.value.display_name
+  description                  = each.value.description
+  source_kind                  = each.value.source_details.source_kind
+  target_kind                  = each.value.target_details.target_kind
+
+  stream_id                    = each.value.target_details.target_kind == "streaming" ? { for k, v in each.value.target_details.target_stream_name : lookup(var.compartment_ocids,k,"null" ) => v } : {}
+  source_stream_id             = each.value.source_details.source_kind == "streaming" ? { for k, v in each.value.source_details.source_stream_name : lookup(var.compartment_ocids,k,"null" ) => v }: {}
+  bucket_name                  = each.value.target_details.target_kind == "objectStorage" ? each.value.target_details.target_bucket_name : ""
+  object_name_prefix           = each.value.target_details.target_kind == "objectStorage" ? each.value.target_details.target_object_name_prefix : ""
+
+  topic_id                     = each.value.target_details.target_kind == "notifications" ? { for k, v in each.value.target_details.target_topic_name : lookup(var.compartment_ocids,k,"null" ) => v }: {}
+  enable_formatted_messaging   = each.value.target_details.target_kind == "notifications" ? each.value.target_details.enable_formatted_messaging : false
+  destination_log_group_id     = each.value.target_details.target_kind =="loggingAnalytics" ? { for k, v in each.value.target_details.target_log_group_name : lookup(var.compartment_ocids,k,"null" ) => v } : {}
+  target_log_source_identifier = each.value.source_details.source_kind == "streaming" && each.value.target_details.target_kind =="loggingAnalytics" ? each.value.target_details.target_log_source_identifier : ""
+
+  #Optional
+  defined_tags                 = try(each.value["defined_tags"], {})
+  freeform_tags                = try(each.value["freeform_tags"], {})
+}

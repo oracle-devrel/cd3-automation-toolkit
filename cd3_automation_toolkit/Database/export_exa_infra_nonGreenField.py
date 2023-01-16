@@ -126,9 +126,6 @@ def export_exa_infra(inputfile, _outdir, _config, network_compartments=[]):
             for exa_infra in exa_infras.data:
                 print_exa_infra(region, exa_infra,values_for_column, ntk_compartment_name)
 
-        if "linux" in sys.platform:
-            os.chmod(script_file, 0o755)
-
     commonTools.write_to_cd3(values_for_column, cd3file, sheetName)
 
     print("Exadata Infra exported to CD3\n")
