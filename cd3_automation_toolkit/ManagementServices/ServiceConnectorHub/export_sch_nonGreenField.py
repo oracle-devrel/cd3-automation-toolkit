@@ -183,10 +183,8 @@ def get_service_connectors(region, SCH_LIST, sch_client, log_client, la_client, 
                 elif col_header == 'Target Topic Name' and target_kind == "notifications":
                     values_for_column[col_header].append(target_topic_string)
                 elif col_header == 'Target Bucket Name' and target_kind == "objectStorage":
-                    target_bucket_name = target_bucket_name
                     values_for_column[col_header].append(target_bucket_name)
                 elif col_header == 'Target Object Name Prefix' and target_kind == "objectStorage":
-                    target_object_name_prefix = target_object_name_prefix
                     values_for_column[col_header].append(target_object_name_prefix)
 
                 # elif col_header == 'Stream Partitions' and target_kind == "streaming":
@@ -291,8 +289,7 @@ def export_service_connectors(inputfile, _outdir, _config, network_compartments=
         script_file = f'{outdir}/{reg}/' + file_name
         with open(script_file, 'a') as importCommands[reg]:
             importCommands[reg].write('\n\nterraform plan\n')
-        if "linux" in sys.platform:
-            os.chmod(script_file, 0o755)
+
 
 
 if __name__ == '__main__':

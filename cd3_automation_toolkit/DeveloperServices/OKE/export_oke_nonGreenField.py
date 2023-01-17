@@ -273,7 +273,6 @@ def export_oke(inputfile, outdir, network_compartments, _config=DEFAULT_LOCATION
         print("\nAcceptable cd3 format: .xlsx")
         exit()
 
-    outdir = outdir
     configFileName = _config
     config = oci.config.from_file(file_location=configFileName)
 
