@@ -39,8 +39,8 @@ Minimum requirement for the user to get started is to have the ability to read t
 
 ### To clone the repo
 * Open your terminal and change the directory to the one where you want to download the git repo.
-* Run the git clone command as shown below:
-       git clone https://github.com/oracle-devrel/cd3-automation-toolkit
+* Run the git clone command as shown below:<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; git clone https://github.com/oracle-devrel/cd3-automation-toolkit
 * Once the cloning command completes successfully, the repo will replicate to the local directory. 
 
 ### To build an image
