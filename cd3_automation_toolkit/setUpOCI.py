@@ -1,6 +1,5 @@
 import argparse
-import sys
-
+import configparser
 import Database
 import Identity
 import Compute
@@ -60,8 +59,6 @@ def execute_options(options, *args, **kwargs):
 
 
 def verify_outdir_is_empty():
-    ct = commonTools()
-    ct.get_subscribedregions(config)
 
     print("\nChecking if the specified outdir contains tf files related to the OCI components being exported...")
     tf_list = {}
@@ -135,6 +132,10 @@ def export_network():
                ]
     options = show_options(options, quit=True, menu=True, index=1)
     execute_options(options, inputfile, outdir, prefix, config)
+
+    print("=====================================================================================================================")
+    print("NOTE: Make sure to execute tf_import_commands_network_major-objects_nonGF.sh before executing the other scripts.")
+    print("=====================================================================================================================")
 
 
 def export_networking(inputfile, outdir, prefix,config):
@@ -320,7 +321,8 @@ def export_exa_infra_vmclusters(inputfile, outdir, prefix,config):
 def export_management_services():
     options = [Option("Export Notifications",export_notifications,'Exporting Notifications'),
                Option("Export Events", export_events,'Exporting Events'),
-               Option("Export Alarms", export_alarms, 'Exporting Alarms')]
+               Option("Export Alarms", export_alarms, 'Exporting Alarms'),
+               Option("Export Service Connectors", export_service_connectors, 'Exporting Service Connectors')]
 
     options = show_options(options, quit=True, menu=True, index=1)
     execute_options(options, inputfile, outdir, prefix, config)
@@ -343,6 +345,38 @@ def export_alarms(inputfile, outdir, prefix,config):
     ManagementServices.create_terraform_alarms(inputfile, outdir, prefix, config=config)
     print("\n\nExecute tf_import_commands_alarms_nonGF.sh script created under each region directory to synch TF with OCI Alarms\n")
 
+def export_service_connectors(inputfile, outdir, prefix, config):
+    compartments = get_compartment_list('Service Connectors')
+    ManagementServices.export_service_connectors(inputfile, outdir, _config=config, network_compartments=compartments)
+    ManagementServices.create_service_connectors(inputfile, outdir, prefix, config=config)
+    print("\n\nExecute tf_import_commands_serviceconnectors_nonGF.sh script created under each region directory to synch TF with OCI Service Connectors\n")
+
+def export_development_services():
+    options = [Option("Export OKE cluster and Nodepools", export_oke, 'Exporting OKE'),
+               ]
+    options = show_options(options, quit=True, menu=True, index=1)
+    execute_options(options, inputfile, outdir, prefix, config)
+
+
+def export_oke(inputfile, outdir, prefix, config):
+    compartments = get_compartment_list('OKE')
+    DeveloperServices.export_oke(inputfile, outdir, _config=config, network_compartments=compartments)
+    DeveloperServices.create_terraform_oke(inputfile, outdir, prefix, config=config)
+    print(
+        "\n\nExecute tf_import_commands_oke_nonGF.sh script created under each region directory to synch TF with OKE\n")
+
+
+def cd3_services():
+    options = [
+        Option('Fetch Compartments OCIDs to variables file', fetch_compartments,'Fetch Compartments OCIDs'),
+        Option('Fetch Protocols to OCI_Protocols', fetch_protocols, 'Fetch Protocols'),
+    ]
+    options = show_options(options, quit=True, menu=True, index=1)
+    execute_options(options, outdir, config=config)
+
+def fetch_protocols(outdir,config):
+    cd3service.fetch_protocols()
+
 ################## Create Functions ##########################
 def create_identity(execute_all=False):
     options = [
@@ -352,6 +386,7 @@ def create_identity(execute_all=False):
     ]
     if not execute_all:
         options = show_options(options, quit=True, menu=True, index=1)
+
     execute_options(options, inputfile, outdir, prefix, config=config)
 
 
@@ -527,6 +562,8 @@ def create_management_services(execute_all=False):
         Option("Add/Modify/Delete Notifications", ManagementServices.create_terraform_notifications, 'Setting up Notifications'),
         Option("Add/Modify/Delete Events", ManagementServices.create_terraform_events, 'Setting up Events'),
         Option("Add/Modify/Delete Alarms", ManagementServices.create_terraform_alarms, 'Setting up Alarms'),
+        Option("Add/Modify/Delete ServiceConnectors", ManagementServices.create_service_connectors,
+               'Setting up SCHs'),
     ]
     if not execute_all:
         options = show_options(options, quit=True, menu=True, index=1)
@@ -535,11 +572,16 @@ def create_management_services(execute_all=False):
 
 def create_developer_services(execute_all=False):
     options = [
-        Option("Upload current terraform files/state to Resource Manager", DeveloperServices.create_resource_manager, 'Creating RM Stack')]
+        Option("Upload current terraform files/state to Resource Manager", create_rm_stack, 'Creating RM Stack'),
+        Option("Add/Modify/Delete OKE Cluster and Nodepools", DeveloperServices.create_terraform_oke, 'Creating OKE cluster and Nodepool')
+    ]
     if not execute_all:
         options = show_options(options, quit=True, menu=True, index=1)
-    execute_options(options, outdir, prefix, config=config)
+    execute_options(options, inputfile, outdir, prefix, config=config)
 
+def create_rm_stack(inputfile, outdir, prefix, config):
+    region = input('Enter the Region to create/upload Resource Manager Stack. Multiple regions can be specified as comma separated values.\nPress \'Enter\' to specify all the subscribed regions : ')
+    DeveloperServices.create_resource_manager(outdir, prefix, region, config)
 
 def create_cis_features():
     options = [Option('CIS Compliance Checking Script', initiate_cis_scan, 'CIS Compliance Checking'),
@@ -660,6 +702,47 @@ extra = ''
 if not os.path.exists(outdir):
     os.makedirs(outdir)
 
+## Fetch OCI_regions
+cd3service = cd3Services()
+cd3service.fetch_regions(config)
+
+## Check if fetch compartments script needs to be run
+run_fetch_script = 0
+ct = commonTools()
+
+## Fetch Subscribed Regions
+ct.get_subscribedregions(config)
+home_region = ct.home_region
+var_file = f'{outdir}/{home_region}/variables_{home_region}.tf'
+try:
+    # read variables file
+    with open(var_file, 'r') as f:
+        var_data = f.read()
+    f.close()
+except FileNotFoundError as e:
+    exit_menu(f'\nVariables file not found in region - {home_region}.......Exiting!!!\n')
+
+fetchcompinfo_data = "run_fetch_script=0"
+try:
+    # read fetchcompinfo.safe
+    fetch_comp_file = f'{outdir}/fetchcompinfo.safe'
+    with open(fetch_comp_file, 'r') as f:
+        fetchcompinfo_data = f.read()
+    f.close()
+except FileNotFoundError as e:
+    fetchcompinfo_data = "run_fetch_script=1"
+
+if "# compartment ocids" in var_data or "run_fetch_script=1" in fetchcompinfo_data:
+    run_fetch_script = 1
+if (run_fetch_script == 1):
+    print("Script to fetch the compartment OCIDs into variables file has not been executed.")
+    user_input = input("Do you want to run it now? (y|n):")
+    if(user_input.lower() == 'y'):
+        fetch_compartments(outdir, config=config)
+else:
+    print("Make sure to execute the script for 'Fetch Compartment OCIDs to variables file' under 'CD3 Services' menu option atleast once before you continue!\n")
+
+
 if non_gf_tenancy:
     inputs = [
         Option('Export Identity', export_identity, 'Identity'),
@@ -670,10 +753,12 @@ if non_gf_tenancy:
         Option('Export Databases', export_databases, 'Databases'),
         Option('Export Load Balancers', export_loadbalancer, 'Load Balancers'),
         Option('Export Management Services', export_management_services, 'Management Services'),
+        Option('Export Developer Services', export_development_services, 'Development Services'),
+        Option('CD3 Services', cd3_services, 'CD3 Services')
     ]
 
     verify_outdir_is_empty()
-    fetch_compartments(outdir, config)
+    #fetch_compartments(outdir, config)
     print("\nnon_gf_tenancy in properties files is set to true..Export existing OCI objects and Synch with TF state")
     print("Process will fetch objects from OCI in the specified compartment from all regions tenancy is subscribed to\n")
 else:
@@ -689,7 +774,7 @@ else:
         Option('Management Services', create_management_services, 'Management Services'),
         Option('Developer Services', create_developer_services, 'Developer Services'),
         Option('CIS Compliance Features', create_cis_features, 'CIS Compliance Features'),
-
+        Option('CD3 Services', cd3_services,'CD3 Services')
     ]
 
 # Run menu

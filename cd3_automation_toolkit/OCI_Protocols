@@ -60,11 +60,14 @@
 58:IPv6-ICMP
 59:IPv6-NoNxt
 60:IPv6-Opts
+61:any host internal protocol
 62:CFTP
+63:any local network
 64:SAT-EXPAK
 65:KRYPTOLAN
 66:RVD
 67:IPPC
+68:any distributed file system
 69:SAT-MON
 70:VISA
 71:IPCV
@@ -96,6 +99,7 @@
 96:SCC-SP
 97:ETHERIP
 98:ENCAP
+99:any private encryption scheme
 100:GMTP
 101:IFMP
 102:PNNI
@@ -110,6 +114,7 @@
 111:IPX-in-IP
 112:VRRP
 113:PGM
+114:any 0-hop protocol
 115:L2TP
 116:DDX
 117:IATP
@@ -119,7 +124,7 @@
 121:SMP
 122:SM
 123:PTP
-124:ISIS over IPv4
+124:ISIS
 125:FIRE
 126:CRTP
 127:CRUDP
@@ -139,8 +144,8 @@
 141:WESP
 142:ROHC
 143:Ethernet
-61:any host internal protocol
-63:any local network
-68:any distributed file system
-99:any private encryption scheme
-114:any 0-hop protocol
+144:AGGFRAG
+145-252:Unassigned
+253:Use for experimentation and testing
+254:Use for experimentation and testing
+255:Reserved

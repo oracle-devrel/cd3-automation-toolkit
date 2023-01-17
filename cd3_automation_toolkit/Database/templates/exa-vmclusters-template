@@ -7,7 +7,7 @@
 # Allowed Values:
 # cluster_subnet_id, backup_subnet_id and exadata_infrastructure_id can be ocids or the key of subnets (map) and exa_infra (map) respectively
 # compartment_id and network_compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens "--"
-# Example : compartment_id = "ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c" or compartment_id = "Network-root-cpt--Network" where "Network-root-cpt" is the parent of "Network" compartment
+# Example : compartment_id = "ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c" or compartment_id = "Database--Prod" where "Database" is the parent of "Prod" compartment
 # Sample import command for ExaVMClusters:
 # terraform import "module.exa-vmclusters[\"<<exa_vmclusters terraform variable name>>\"].oci_database_cloud_vm_cluster.exa_vmcluster" <<exavmcluster ocid>>
 ############################
@@ -18,6 +18,8 @@ exa_vmclusters = {
          {{ vm_cluster_display_tf_name }} = {
             compartment_id           = "{{ compartment_name }}"
             exadata_infrastructure_id= "{{ exadata_infra_display_tf_name }}"
+            network_compartment_id   = "{{ network_compartment_id }}"
+            vcn_name                 = "{{ vcn_name }}"
             cluster_subnet_id        = "{{ client_subnet_name }}"
             gi_version               = "{{ oracle_grid_infrastructure_version }}"
             hostname                 = "{{ hostname_prefix }}"

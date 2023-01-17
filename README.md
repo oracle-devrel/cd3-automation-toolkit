@@ -9,15 +9,24 @@ The CD3 Automation toolkit has been developed to help in automating the OCI reso
 It reads input data in the form of CD3 Excel sheets and generates the terraform files instead of handling the task through the OCI console manually. The toolkit also reverse engineers the components in OCI back to the Excel sheet and Terraform configuration. This generated Terraform code can be used by the OCI Resource Manager or leveraged by the organisations’ CI/CD processes.
 <br><br>
 <img width="748" alt="Screenshot 2022-12-30 at 11 57 41 AM" src="https://user-images.githubusercontent.com/111430850/210614513-5d2e97a6-3c1e-4a2b-a793-3a1b6410c856.png">
-<br><br>
-
-`To ease the execution of toolkit, we have provided the steps to build an image which encloses the code base and its package dependencies. Follow the steps provided below to clone the repo and build the image.`
-<br><br>
+<br>
 
 #### OCI Services Currently Supported by CD3
-<img width="748" alt="Screenshot 2022-12-30 at 1 05 59 PM" src="https://user-images.githubusercontent.com/103475219/210046038-91acacfd-5d65-4bc3-a1a8-90d425d2e3d3.png">
 
+| OCI Services | Details |
+| --------- | ----------- |
+| IAM | Compartments, Groups, Dynamic Groups, Policies |
+| Network | VCNs, Subnets, DRGs, IGWs, NGWs, LPGs, Route Tables, DRG Route, Tables, Security Lists, Network Security Groups, Application Load Balancer, Network Load Balancers |
+| Governance | Tags (Namespaces, Tag Keys, Defined Tags, Default Tags, Cost Tracking) |
+| Compute | Instances – VM, BM, Dedicated VM Hosts |
+| Storage | FSS, Block and Boot Volumes, Backup Policies |
+| Database | Exa Infra, ExaCS, DB Systems VM and BM, ATP, ADW |
+| Management Services | Events, Notifications, Alarms, Service Connector Hub (SCH) |
+| Developer Services | Resource Manager, Oracle Kubernetes Engine (OKE) |
+| CIS Landing Zone Compliance | Download CIS Report Script, Execute CIS Report Script, VCN Flow Logs, Cloud Guard, Object Storage, Key Vault, Budget |
 
+`To ease the execution of toolkit, we have provided the steps to build an image which encloses the code base and its package dependencies. Follow the steps provided below to clone the repo and build the image.`
+<br>
 
 ## Getting Started
 

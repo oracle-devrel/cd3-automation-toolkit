@@ -214,8 +214,6 @@ def export_blockvolumes(inputfile, _outdir, _config, network_compartments=[], di
         script_file = f'{outdir}/{reg}/' + file_name
         with open(script_file, 'a') as importCommands[reg]:
             importCommands[reg].write('\n\nterraform plan\n')
-        if "linux" in sys.platform:
-            os.chmod(script_file, 0o755)
 
 if __name__ == '__main__':
     args = parse_args()

@@ -167,7 +167,7 @@ def NSGtemplate(region, prefix,nsgParser, key, value, outdir, columnname):
     nsg_tf_name = commonTools.check_tf_variable(str(key[2]))
     vcn_tf_name = commonTools.check_tf_variable(str(key[1]))
     tempDict = {'compartment_tf_name': compartment_tf_name, 'display_name': str(key[2]), 'nsg_tf_name': nsg_tf_name,
-                'vcn_tf_name': vcn_tf_name, 'region' : region}
+                'vcn_tf_name': vcn_tf_name, 'vcn_name' : str(key[1]), 'region' : region}
 
     # Dictionary of column headers : column value
     updatedcols = []
@@ -258,8 +258,7 @@ def getProtocolNumber(protocol):
                 return k
 
 def parse_args():
-    parser = argparse.ArgumentParser(
-        description='Create NSG and its NSG rules based on inputs given in vcn-info.properties, separated by regions.')
+    parser = argparse.ArgumentParser(description='Create NSG and its NSG rules based on inputs given in vcn-info.properties, separated by regions.')
     parser.add_argument('inputfile', help='Full Path of cd3 excel file or csv containing NSG info')
     parser.add_argument('outdir', help='Output directory')
     parser.add_argument('prefix', help='customer name/prefix for all file names')

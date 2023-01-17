@@ -266,7 +266,7 @@ def export_seclist(inputfile, network_compartments, _config, _tf_import_cmd, out
         for reg in ct.all_regions:
             if (os.path.exists(outdir + "/" + reg + "/tf_import_commands_network_secrules_nonGF.sh")):
                 commonTools.backup_file(outdir + "/" + reg, "tf_import_network",
-                                        "tf_import_commands_network_major-objects_nonGF.sh")
+                                        "tf_import_commands_network_secrules_nonGF.sh")
             importCommands[reg] = open(outdir + "/" + reg + "/tf_import_commands_network_secrules_nonGF.sh", "w")
             importCommands[reg].write("#!/bin/bash")
             importCommands[reg].write("\n\n######### Writing import for Security Lists #########\n\n")

@@ -280,9 +280,6 @@ def export_identity(inputfile, outdir, _config, network_compartments=[]):
 
     with open(script_file, 'a') as importCommands[ct.home_region]:
         importCommands[ct.home_region].write('\n\nterraform plan\n')
-    if "linux" in sys.platform:
-        os.chmod(script_file, 0o755)
-
 
 if __name__=="__main__":
     args = parse_args()

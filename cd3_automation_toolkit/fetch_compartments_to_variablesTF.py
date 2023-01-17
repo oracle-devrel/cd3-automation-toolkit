@@ -63,7 +63,14 @@ def fetch_compartments(outdir, config=DEFAULT_LOCATION):
         # if ("linux" in sys.platform):
         #     os.system("dos2unix " + var_files[reg])
 
-    print("Compartment info written to all region specific variables files under outdir folder")
+    print("Compartment info written to all region specific variables files under outdir folder\n")
+
+    # update fetchcompinfo.safe
+    fetch_comp_file = f'{outdir}/fetchcompinfo.safe'
+    with open(fetch_comp_file, 'w+') as f:
+        f.write('run_fetch_script=0')
+    f.close()
+
 
 if __name__ == '__main__':
     args = parse_args()

@@ -61,6 +61,7 @@ def create_terraform_exa_vmclusters(inputfile, outdir, prefix, config=DEFAULT_LO
 
     # List of the column headers
     dfcolumns = df.columns.values.tolist()
+    subnets = parseSubnets(filename)
 
     # Initialise empty TF string for each region
     for reg in ct.all_regions:
@@ -143,10 +144,44 @@ def create_terraform_exa_vmclusters(inputfile, outdir, prefix, config=DEFAULT_LO
                 tempdict = {'exadata_infra_display_tf_name': display_tf_name}
 
             if columnname == 'Client Subnet Name':
-                columnvalue = commonTools.check_tf_variable(columnvalue)
+                subnet_tf_name = columnvalue.strip()
+                if ("ocid1.subnet.oc1" in subnet_tf_name):
+                    network_compartment_id = ""
+                    vcn_name = ""
+                    subnet_id = subnet_tf_name
+                else:
+                    try:
+                        key = region, subnet_tf_name
+                        network_compartment_id = subnets.vcn_subnet_map[key][0]
+                        vcn_name = subnets.vcn_subnet_map[key][1]
+                        subnet_id = subnets.vcn_subnet_map[key][2]
+                    except Exception as e:
+                        print("Invalid Subnet Name specified for row " + str(
+                            i + 3) + ". It Doesnt exist in Subnets sheet. Exiting!!!")
+                        exit()
+
+                tempdict = {'network_compartment_id': commonTools.check_tf_variable(network_compartment_id),
+                            'vcn_name': vcn_name,
+                            'client_subnet_name': subnet_id}
 
             if columnname == 'Backup Subnet Name':
-                columnvalue = commonTools.check_tf_variable(columnvalue)
+                subnet_tf_name = columnvalue.strip()
+                if ("ocid1.subnet.oc1" in subnet_tf_name):
+                    network_compartment_id = ""
+                    vcn_name = ""
+                    subnet_id = subnet_tf_name
+                else:
+                    try:
+                        key = region, subnet_tf_name
+                        network_compartment_id = subnets.vcn_subnet_map[key][0]
+                        vcn_name = subnets.vcn_subnet_map[key][1]
+                        subnet_id = subnets.vcn_subnet_map[key][2]
+                    except Exception as e:
+                        print("Invalid Subnet Name specified for row " + str(
+                            i + 3) + ". It Doesnt exist in Subnets sheet. Exiting!!!")
+                        exit()
+
+                tempdict = {'backup_subnet_name': subnet_id}
 
             if columnname == 'NSGs':
                 if columnvalue != '':

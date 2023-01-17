@@ -222,8 +222,6 @@ def export_tags_nongreenfield(inputfile, outdir, _config, network_compartments):
     script_file = f'{outdir}/{ct.home_region}/tf_import_commands_tags_nonGF.sh'
     with open(script_file, 'a') as importCommands[ct.home_region]:
         importCommands[ct.home_region].write('\n\nterraform plan\n')
-    if "linux" in sys.platform:
-        os.chmod(script_file, 0o755)
 
 if __name__=="__main__":
     args = parse_args()

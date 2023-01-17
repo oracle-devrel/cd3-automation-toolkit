@@ -67,9 +67,9 @@ resource "oci_core_instance" "instance" {
     display_name              = var.vnic_display_name != "" && var.vnic_display_name != null ? var.vnic_display_name : var.display_name
     freeform_tags             = var.vnic_freeform_tags != {} ? var.vnic_freeform_tags : var.freeform_tags
     hostname_label            = var.hostname_label
-    nsg_ids                   = length(var.nsg_ids) != 0 ? (local.nsg_ids == [] ? ["INVALID NSG Name"] : local.nsg_ids) : null
+    nsg_ids                   = var.nsg_ids != null ? (local.nsg_ids == [] ? ["INVALID NSG Name"] : local.nsg_ids) : null
     private_ip                = var.private_ip
-    subnet_id                 = var.subnet_id != "" ? (length(regexall("ocid1.subnet.oc1*", var.subnet_id)) > 0 ? var.subnet_id : data.oci_core_subnets.oci_subnets_instances.subnets[0].id) : null
+    subnet_id                 = var.subnet_id
     vlan_id                   = var.vlan_id
     skip_source_dest_check    = var.skip_source_dest_check
   }

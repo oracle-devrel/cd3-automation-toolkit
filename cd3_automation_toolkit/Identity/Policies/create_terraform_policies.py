@@ -139,6 +139,8 @@ def create_terraform_policies(inputfile, outdir, prefix, config=DEFAULT_LOCATION
                 policy_desc=commonTools.check_columnvalue(policy_desc)
 
             policy_statement = str(df.loc[i, "Policy Statements"])
+            if "\"" in policy_statement:
+                policy_statement = policy_statement.replace("\"","\\\"")
             actual_policy_statement = policy_statement
 
             # assign groups in policy statements

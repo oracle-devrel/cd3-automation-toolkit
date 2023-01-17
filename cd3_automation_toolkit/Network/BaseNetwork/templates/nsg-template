@@ -21,7 +21,7 @@ nsgs = {
   # Start of {{ region.lower() }}_{{ nsg_tf_name }} #
   {{ nsg_tf_name }} = {
         compartment_id = "{{ compartment_tf_name }}"
-        vcn_id     = "{{ vcn_tf_name }}"
+        vcn_name     = "{{ vcn_name }}"
         display_name     = "{{ display_name }}"
 
     {#  ##Do not modify below this line##  #}

@@ -8,10 +8,6 @@
 #
 
 import argparse
-import os
-import shutil
-import datetime
-import oci
 import time
 import csv
 import base64
@@ -31,7 +27,7 @@ def create_rm(region,comp_name,ocs_stack,ct,rm_stack_name,rm_ocids_file,create_r
     print("\nCreating a new Resource Manager Stack for " + region + ".......................")
     stackdetails = CreateStackDetails()
     zipConfigSource = CreateZipUploadConfigSourceDetails()
-    stackdetails.description = "Created using Automation Tool Kit"
+    stackdetails.description = "Created using CD3 Automation Tool Kit"
     stackdetails.terraform_version = "1.0.x"
     try:
         stackdetails.compartment_id = ct.ntk_compartment_ids[comp_name]
@@ -91,11 +87,12 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Creates Resource Manager and performs terraform plan or apply")
     parser.add_argument('outdir', help='Output directory for creation of TF files')
     parser.add_argument('prefix', help='TF files prefix')
+    parser.add_argument('regions', help='Region to create (or) update the Resource Manager stack for')
     parser.add_argument("--configFileName", help="Config file name", required=False)
     return parser.parse_args()
 
 
-def create_resource_manager(outdir, prefix, config=DEFAULT_LOCATION):
+def create_resource_manager(outdir, prefix,regions, config=DEFAULT_LOCATION):
 
     configFileName = config
     config = oci.config.from_file(file_location=configFileName)
@@ -104,12 +101,14 @@ def create_resource_manager(outdir, prefix, config=DEFAULT_LOCATION):
     ct.get_subscribedregions(configFileName)
     ct.get_network_compartment_ids(config['tenancy'],"root",configFileName)
 
-    new_config = config
-    new_config.__setitem__("region", str(ct.region_dict[ct.home_region]))
-    ocs_stack = oci.resource_manager.ResourceManagerClient(new_config)
-
     x = datetime.datetime.now()
     date = x.strftime("%f").strip()
+
+    if regions != "":
+        regions = regions.split(',')
+
+    else:
+        regions = ct.all_regions
 
     #1. Copy files to RM directory
     rm_dir = outdir+'/RM/'
@@ -127,7 +126,8 @@ def create_resource_manager(outdir, prefix, config=DEFAULT_LOCATION):
         shutil.copytree(outdir, rm_dir, ignore=shutil.ignore_patterns('*.terraform.lock.hcl','*.terraform', 'provider.tf','*.zip*'))
 
     #2. Change the provider.tf to include just the region variable in all the subscribed regions
-    for region in ct.all_regions:
+    for region in regions:
+        region=region.strip().lower()
         with open(outdir+'/'+region+'/provider.tf') as origfile, open(rm_dir+'/'+region + '/provider.tf', 'w') as newfile:
             for line in origfile:
                 if 'version' in line or 'tenancy_ocid' in line or "user_ocid" in line or "fingerprint" in line or "private_key_path" in line:
@@ -141,8 +141,8 @@ def create_resource_manager(outdir, prefix, config=DEFAULT_LOCATION):
 
     skipline = False
 
-
-    for region in ct.all_regions:
+    for region in regions:
+        region=region.strip().lower()
         with open(outdir+'/'+region+'/variables_' + region + '.tf') as origfile, open(rm_dir+'/'+region + '/variables_' + region + '.tf','w') as newfile:
             for line in origfile:
                 if "user_ocid"  in line or "fingerprint"  in line or "private_key_path" in line:
@@ -172,9 +172,14 @@ def create_resource_manager(outdir, prefix, config=DEFAULT_LOCATION):
     else:
         comp_name = input("Resource Manager Compartment Name: ")
 
-    for region in ct.all_regions:
+    for region in regions:
+        region=region.strip().lower()
         shutil.make_archive(region, 'zip', region)
         rm_name = prefix + "-" + region
+
+        new_config = config
+        new_config.__setitem__("region", str(ct.region_dict[region]))
+        ocs_stack = oci.resource_manager.ResourceManagerClient(new_config)
 
         if rm_name_ocid_map != {}:
             if region in rm_region_name_map.keys():
@@ -244,4 +249,4 @@ def create_resource_manager(outdir, prefix, config=DEFAULT_LOCATION):
 
 if __name__ == '__main__':
     args = parse_args()
-    create_resource_manager(args.outdir, args.prefix, args.config)
+    create_resource_manager(args.outdir, args.prefix, args.regions, args.config)

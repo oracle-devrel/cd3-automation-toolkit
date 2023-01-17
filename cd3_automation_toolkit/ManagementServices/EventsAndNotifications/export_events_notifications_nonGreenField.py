@@ -244,9 +244,6 @@ def export_events(inputfile, outdir, network_compartments=[], _config=DEFAULT_LO
     for reg in ct.all_regions:
         with open(script_file, 'a') as importCommands[reg]:
             importCommands[reg].write('\n\nterraform plan\n')
-        if "linux" in sys.platform:
-            os.chmod(script_file, 0o755)
-
 
 def export_notifications(inputfile, outdir, network_compartments=[], _config=DEFAULT_LOCATION):
     global rows
@@ -313,6 +310,7 @@ def export_notifications(inputfile, outdir, network_compartments=[], _config=DEF
 
                 #sbpns = oci.pagination.list_call_get_all_results(ndpc.list_subscriptions,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name])
                 for topic in topics.data:
+                    #subscriptions get created in same comp as topic
                     sbpns = oci.pagination.list_call_get_all_results(ndpc.list_subscriptions,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name],topic_id = topic.topic_id)
                     i=0
                     sbpn = None
@@ -347,9 +345,6 @@ def export_notifications(inputfile, outdir, network_compartments=[], _config=DEF
     for reg in ct.all_regions:
         with open(script_file, 'a') as importCommands[reg]:
             importCommands[reg].write('\n\nterraform plan\n')
-        if "linux" in sys.platform:
-            os.chmod(script_file, 0o755)
-
 
 if __name__=="__main__":
     args = parse_args()

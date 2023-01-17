@@ -22,7 +22,7 @@ resource "oci_core_volume" "block_volume" {
 }
 
 resource "oci_core_volume_attachment" "block_vol_instance_attachment" {
-  count           = var.attachment_type != "" && var.attachment_type != null ? 1 : 0
+  count           = var.attachment_type != null ? 1 : 0
   attachment_type = var.attachment_type
   instance_id     = var.attach_to_instance
   volume_id       = oci_core_volume.block_volume.id
@@ -47,7 +47,7 @@ resource "oci_core_volume_attachment" "block_vol_instance_attachment" {
 
 locals {
   #existing_volume_id       = length(data.oci_core_volumes.all_volumes[0].volumes) > 0 ? length(regexall("ocid1.volume.oc1*", data.oci_core_volumes.all_volumes[0].volumes[0].id)) > 0 ? data.oci_core_volumes.all_volumes[0].volumes[0].id : "" : ""
-  policy_tf_compartment_id = var.policy_tf_compartment_id != "" ? var.policy_tf_compartment_id : ""
+  policy_tf_compartment_id = var.policy_tf_compartment_id != null ? var.policy_tf_compartment_id : null
   current_policy_id        = var.block_tf_policy != null ? (lower(var.block_tf_policy) == "gold" || lower(var.block_tf_policy) == "silver" || lower(var.block_tf_policy) == "bronze" ? data.oci_core_volume_backup_policies.block_vol_backup_policy[0].volume_backup_policies.0.id : data.oci_core_volume_backup_policies.block_vol_custom_policy[0].volume_backup_policies.0.id) : ""
 }
 

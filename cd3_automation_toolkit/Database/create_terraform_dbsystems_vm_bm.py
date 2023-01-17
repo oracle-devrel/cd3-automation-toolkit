@@ -44,6 +44,7 @@ def create_terraform_dbsystems_vm_bm(inputfile, outdir, prefix, config=DEFAULT_L
     oname = {}
     tfStr = {}
     ADS = ["AD1", "AD2", "AD3"]
+    subnets = parseSubnets(filename)
 
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
@@ -157,10 +158,28 @@ def create_terraform_dbsystems_vm_bm(inputfile, outdir, prefix, config=DEFAULT_L
                 tempdict = {'display_tf_name': display_tf_name}
 
             if columnname == 'Subnet Name':
-                columnvalue = commonTools.check_tf_variable(columnvalue)
+                subnet_tf_name = columnvalue.strip()
+                if ("ocid1.subnet.oc1" in subnet_tf_name):
+                    network_compartment_id = ""
+                    vcn_name = ""
+                    subnet_id = subnet_tf_name
+                else:
+                    try:
+                        key = region, subnet_tf_name
+                        network_compartment_id = subnets.vcn_subnet_map[key][0]
+                        vcn_name = subnets.vcn_subnet_map[key][1]
+                        subnet_id = subnets.vcn_subnet_map[key][2]
+                    except Exception as e:
+                        print("Invalid Subnet Name specified for row " + str(
+                            i + 3) + ". It Doesnt exist in Subnets sheet. Exiting!!!")
+                        exit()
 
-            if columnname == 'Backup Subnet Name':
-                columnvalue = commonTools.check_tf_variable(columnvalue)
+                tempdict = {'network_compartment_id': commonTools.check_tf_variable(network_compartment_id),
+                            'vcn_name': vcn_name,
+                            'subnet_id': subnet_id}
+
+            # if columnname == 'Backup Subnet Name':
+            #     columnvalue = commonTools.check_tf_variable(columnvalue)
 
 
             if columnname == 'Availability Domain(AD1|AD2|AD3)':

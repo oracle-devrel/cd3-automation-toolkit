@@ -37,11 +37,6 @@ def create_terraform_compartments(inputfile, outdir, prefix, config=DEFAULT_LOCA
     filename = inputfile
     configFileName = config
 
-    ct = commonTools()
-    ct.get_subscribedregions(configFileName)
-    config = oci.config.from_file(file_location=configFileName)
-    ct.get_network_compartment_ids(config['tenancy'],"root",configFileName)
-
     sheetName = 'Compartments'
     auto_tfvars_filename = '_'+sheetName.lower()+'.auto.tfvars'
     outfile = {}
@@ -62,6 +57,11 @@ def create_terraform_compartments(inputfile, outdir, prefix, config=DEFAULT_LOCA
 
     # List of the column headers
     dfcolumns = df.columns.values.tolist()
+
+    ct = commonTools()
+    ct.get_subscribedregions(configFileName)
+    config = oci.config.from_file(file_location=configFileName)
+    ct.get_network_compartment_ids(config['tenancy'], "root", configFileName)
 
     srcdir = outdir + "/" + ct.home_region + "/"
     resource = sheetName.lower()
@@ -256,6 +256,11 @@ def create_terraform_compartments(inputfile, outdir, prefix, config=DEFAULT_LOCA
         oname[reg].write(tfStr)
         oname[reg].close()
         print(outfile[reg] + " for Compartments has been created for region " + reg)
+
+        fetch_comp_file = f'{outdir}/fetchcompinfo.safe'
+        with open(fetch_comp_file, 'w') as f:
+            f.write('run_fetch_script=1')
+        f.close()
 
 if __name__ == '__main__':
     # Execution of the code begins here

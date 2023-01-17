@@ -328,3 +328,16 @@ CD3 Automation Toolkit Tag v9.2.1
 3. Include support for Marketplace Images for Instances.
 4. Few bug fixes/enhancements wrt export of Instances/NSGs, making null values for NSGs/Instances optional
    in tfvars
+
+----------------------------------
+CD3 Automation Toolkit Tag v10
+----------------------------------
+1. Support for new services - OKE and SCH. New tab for 'OKE' is included in CD3-CIS-template.xlsx
+   New tab for 'ServiceConnectors' is added to CD3-CIS-ManagementServices-template.xlsx
+2. Added the script to fetch regions subscribed to the tenancy. This will be executed automatically every time
+   setUpOCI is executed.
+3. Introduced a new option in setUpOCI menu called 'CD3 Services' to execute 'Fetch Compartments' and 'Fetch Protocols'
+   Scripts.
+4. Modified the setUpOCI workflow to prompt the user to execute 'Fetch Compartments' script in case
+   it has not been executed previously.
+5. Bug fixes wrt Instances, DB Systems

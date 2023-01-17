@@ -1,0 +1,125 @@
+{% if count == 0 %}
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+
+############################
+# ManagementServices
+# Service Connector Hub - tfvars
+# Allowed Values:
+# compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens "--"
+# Example : compartment_id = "ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c" or compartment_id = "Security--Prod" where "Security" is the parent of "Prod" compartment
+# Sample import command for service connectors:
+# terraform import "module.service-connectors[\"<<sch terraform variable name>>\"].oci_sch_service_connector.service_connector" <<sch ocid>>
+
+############################
+
+service_connectors= {
+  # Service Connector Hub map #
+  ##Add New SCH for {{ region|lower }} here##
+}
+
+{% else %}
+  {{ serviceconnector_tf_name }} = {
+        compartment_id      = "{{ compartment_tf_name }}"
+        display_name        = "{{ serviceconnector_name }}"
+
+        {% if description  != "" %}
+        description         = "{{ description }}"
+        {% else %}
+        description         = null
+        {% endif %}
+
+        source_details = {
+          {% if source_kind == "logging" %}
+                source_kind               = "logging"
+                source_log_group_names    = {{ source_log_group_names }}
+
+          {% elif source_kind == "streaming" %}
+                source_kind               = "streaming"
+                source_stream_name        = {{ source_stream_name }}
+
+          {% elif source_kind == "monitoring" %}
+                source_kind               = "monitoring"
+                source_monitoring_details = {{ source_monitoring_details }}
+          {% endif %}
+        }
+
+        target_details = {
+          {% if target_kind   == "objectStorage" %}
+                target_kind                = "objectStorage"
+                target_bucket_name         =  "{{ target_bucket_name }}"
+
+              {% if target_object_name_prefix %}
+                target_object_name_prefix  = "{{ target_object_name_prefix }}"
+              {% else %}
+                target_object_name_prefix  = ""
+              {% endif %}
+
+          {% elif target_kind == "streaming" %}
+                target_kind                = "streaming"
+                target_stream_name         = {{ target_stream_name }}
+
+          {% elif target_kind == "loggingAnalytics" %}
+                target_kind                = "loggingAnalytics"
+                target_log_group_name      = {{ target_log_group_name }}
+
+              {%if target_log_source_identifier %}
+                target_log_source_identifier = "{{ target_log_source_identifier }}"
+              {% endif %}
+
+
+          {% elif target_kind == "notifications" %}
+                target_kind                = "notifications"
+                target_topic_name          = {{ target_topic_name }}
+
+               {%if enable_formatted_messaging %}
+                  enable_formatted_messaging = {{ enable_formatted_messaging }}
+               {% elif source_kind == "streaming" %}
+                  enable_formatted_messaging = false
+               {% else %}
+                  enable_formatted_messaging = true
+               {% endif %}
+
+          {% endif %}
+        }
+
+    {#  ##Do not modify below this line##  #}
+    {#                                     #}
+    {#  ###Section for adding Defined and Freeform Tags###  #}
+    {% if defined_tags and defined_tags != 'nan' and defined_tags != '' %}
+      {% if defined_tags[0] %}
+        defined_tags = {
+        {% for tags in defined_tags  %}
+            {% if not loop.last %}
+                "{{ tags[0]  }}"= "{{ tags[1] }}" ,
+            {% else %}
+                "{{ tags[0]  }}"= "{{ tags[1] }}"
+            {% endif %}
+        {% endfor %}
+        }
+      {% else %}
+        defined_tags = {}
+        {% endif %}
+       {% else %}
+        defined_tags = {}
+       {% endif %}
+            {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' %}
+                {% if freeform_tags[0] %}
+        freeform_tags = {
+                    {% for tags in freeform_tags %}
+                        {% if not loop.last  %}
+                "{{ tags[0] }}"="{{ tags[1] }}",
+                        {% else %}
+                "{{ tags[0] }}"="{{ tags[1] }}"
+                        {% endif %}
+                    {% endfor %}
+                    }
+                {% else %}
+        freeform_tags = {}
+                {% endif %}
+            {% else %}
+        freeform_tags = {}
+            {% endif %}
+    {#  ###Section for adding Defined and Freeform Tags ends here###  #}
+      },
+
+{% endif %}

@@ -93,8 +93,7 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, config,disp
     bc = oci.core.BlockstorageClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
     instance_info = oci.pagination.list_call_get_all_results(compute.list_instances, compartment_id=compartment_id)
     # print(instance_info.data)
-    vnic_defined_tags=""
-    vnic_freeform_tags=""
+
     for ins in instance_info.data:
         ins_details = compute.get_instance(instance_id=ins.id)
         # print(ins_details.data)
@@ -181,7 +180,8 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, config,disp
                 vnic_info = network.get_vnic(vnic_id=vnic_id).data
 
                 # print(vnic_info)
-
+                vnic_defined_tags = ""
+                vnic_freeform_tags = ""
                 for namespace,tagkey in vnic_info.defined_tags.items():
                     for tag,value in tagkey.items():
                         vnic_defined_tags=vnic_defined_tags+";"+namespace+"."+tag+"="+value
@@ -372,8 +372,6 @@ def export_instances(inputfile, outdir, config, network_compartments=[], display
         script_file = f'{outdir}/{reg}/tf_import_commands_instances_nonGF.sh'
         with open(script_file, 'a') as importCommands[reg]:
             importCommands[reg].write('\n\nterraform plan\n')
-        if "linux" in sys.platform:
-            os.chmod(script_file, 0o755)
 
     commonTools.write_to_cd3(values_for_column_instances, cd3file, "Instances")
     print("{0} Instance Details exported into CD3.\n".format(len(values_for_column_instances["Region"])))

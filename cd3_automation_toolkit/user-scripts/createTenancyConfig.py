@@ -12,7 +12,7 @@ import logging
 import os
 import sys
 import time
-
+import configparser
 import distutils
 from distutils import dir_util
 
@@ -35,8 +35,6 @@ def seek_info():
     args = parser.parse_args()
     config = configparser.RawConfigParser()
     config.read(args.propsfile)
-
-    ct = commonTools()
 
     # 1. Creation of Config File -
     print("=================================================================")
@@ -95,39 +93,49 @@ def seek_info():
     # 1. Move the newly created PEM keys to /cd3user/tenancies/<customer_name>/
     files = glob.glob(auto_keys_dir+"/*")
 
-    if os.path.exists(auto_keys_dir):
-        print("Copying the key files to "+customer_tenancy_dir)
-        if files:
-            for f in files:
-                if os.path.exists(f):
-                    filename = f.split('/')[-1]
-                    if os.path.exists(customer_tenancy_dir+"/"+filename):
-                        shutil.move(customer_tenancy_dir+"/"+filename,customer_tenancy_dir+"/"+filename+"_backup")
-                    shutil.copyfile(f,customer_tenancy_dir + "/" + filename)
-                    key_path = customer_tenancy_dir + "/oci_api_private.pem"
-                else:
-                    print("Key files not found. Please make sure to specify the right path in the properties file.....Exiting!!!")
-                    exit(0)
-        shutil.move(auto_keys_dir,auto_keys_dir+"_backup_"+time.strftime("%H%M%S"))
+    # If the private key is empty or if the private key is already present in the tenancy folder; initialize it to the default path;
+    if (key_path == '' or key_path == "\n"):
+        print("key_path field is empty in tenancyconfig.properties. Defaulting to " + user_dir + "/tenancies/keys/oci_api_private.pem")
+        if os.path.exists(auto_keys_dir):
+            print("Copying the key files to " + customer_tenancy_dir)
+            if files:
+                for f in files:
+                    if os.path.exists(f):
+                        filename = f.split('/')[-1]
+                        if os.path.exists(customer_tenancy_dir + "/" + filename):
+                            shutil.move(customer_tenancy_dir + "/" + filename,
+                                        customer_tenancy_dir + "/" + filename + "_backup")
+                        shutil.copyfile(f, customer_tenancy_dir + "/" + filename)
+                        key_path = customer_tenancy_dir + "/oci_api_private.pem"
+                    else:
+                        print("Key files not found. Please make sure to specify the right path in the properties file.....Exiting!!!")
+                        exit(0)
+        else:
+            print("Directory - "+auto_keys_dir+" does not exist. Please make sure to specify the right path in the properties file.....Exiting!!!")
+            exit(0)
+        shutil.move(auto_keys_dir, auto_keys_dir + "_backup_" + time.strftime("%H%M%S"))
+
+    # If the key - oci_api_private.pem is already present in the tenancy folder
+    elif customer_tenancy_dir + '/oci_api_private.pem' in key_path:
+        key_path = customer_tenancy_dir + "/oci_api_private.pem"
+
+    # If the private key is elsewhere; move it to the tenancy folder
+    elif auto_keys_dir + "/oci_api_private.pem" not in key_path:
+        try:
+            shutil.move(key_path, customer_tenancy_dir + '/oci_api_private.pem')
+        except FileNotFoundError as e:
+            print(
+                "Key file not found. Please make sure to specify the right path in the properties file.....Exiting!!!")
+            exit(0)
+        key_path = customer_tenancy_dir + "/oci_api_private.pem"
     else:
         print("\n")
         print("=================================================================")
-        print("\"keys\" directory NOT FOUND in " + user_dir +"/tenancies/" + ". \n"
-              "Please generate the keys using the command \"python createAPIKey.py\" \n(OR)\nIf the keys already exist:\n- Create a folder named \"keys\" in " + user_dir +"/tenancies/" + "\n- Place the keys with names oci_api_public.pem and oci_api_private.pem respectively\n!! Try Again !!")
+        print("\"keys\" directory NOT FOUND in " + user_dir + "/tenancies/" + ". \n"
+             "Please generate the keys using the command \"python createAPIKey.py\" \n(OR)\nIf the keys already exist:\n- Create a folder named \"keys\" in " + user_dir + "/tenancies/" + "\n- Place the keys with names oci_api_public.pem and oci_api_private.pem respectively\n!! Try Again !!")
         print("=================================================================")
         exit(0)
 
-    # If the private key is empty or if the private key is already present in the tenancy folder; initialize it to the default path;
-    if (key_path == '' or key_path == "\n" or customer_tenancy_dir+ '/oci_api_private.pem' in key_path):
-        key_path = customer_tenancy_dir + "/oci_api_private.pem"
-    # If the private key is elsewhere; move it to the tenancy folder
-    elif auto_keys_dir+"/oci_api_private.pem" not in key_path:
-        try:
-            shutil.move(key_path, customer_tenancy_dir+'/oci_api_private.pem')
-        except FileNotFoundError as e:
-            print("Key file not found. Please make sure to specify the right path in the properties file.....Exiting!!!")
-            exit(0)
-        key_path = customer_tenancy_dir+"/oci_api_private.pem"
 
     if not os.path.exists(terraform_files):
         os.makedirs(terraform_files)
@@ -142,6 +150,10 @@ def seek_info():
                "key_file = "+key_path+"\n"
                "region = "+region+"\n")
     file.close()
+
+    # Fetch OCI_regions
+    cd3service = cd3Services()
+    cd3service.fetch_regions(configFileName=config_file_path)
 
     # 3. Fetch AD Names -
     print('Fetching AD names from tenancy and writing to config file if it does not exist.............')
@@ -161,6 +173,7 @@ def seek_info():
         i = i + 1
     conf_file.close()
 
+    ct = commonTools()
     # 4. Generate setUpOCI.properties file
     ct.get_subscribedregions(config_file_path)
 
@@ -261,8 +274,6 @@ def seek_info():
     logging.info("cd "+user_dir+"/oci_tools/cd3_automation_toolkit/")
     print("python setUpOCI.py "+customer_tenancy_dir + "/" +prefix+"_setUpOCI.properties")
     logging.info("python setUpOCI.py "+customer_tenancy_dir + "/" +prefix+"_setUpOCI.properties")
-    print("python fetch_compartments_to_variablesTF.py "+terraform_files + " --config "+customer_tenancy_dir + "/"+prefix+"_config")
-    logging.info("python fetch_compartments_to_variablesTF.py "+terraform_files + " --config "+customer_tenancy_dir + "/"+prefix+"_config")
     print("==================================================================================================================================")
 
 if __name__ == '__main__':

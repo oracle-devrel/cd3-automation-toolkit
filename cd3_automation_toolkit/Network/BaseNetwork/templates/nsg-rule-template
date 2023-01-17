@@ -54,9 +54,8 @@ EOF
 
             {% if protocol.lower() == "all" %}
             all = []
-            {% endif %}
 
-            {% if protocol.lower() == 'icmp' %}
+            {% elif protocol.lower() == 'icmp' %}
             {% if icmptype !='' and  icmpcode != '' %}
             icmp = [{
                     type = "{{ icmptype }}"
@@ -69,9 +68,8 @@ EOF
             {% else %}
             icmp = []
             {% endif %}
-            {% endif %}
 
-            {% if protocol.lower() == 'tcp' %}
+            {% elif protocol.lower() == 'tcp' %}
             {% if (dportmax and dportmin) or (sportmax and sportmin)  %}
             tcp = [{
                 {% if sportmax and sportmin %}
@@ -87,9 +85,8 @@ EOF
             {% else %}
             tcp = []
             {% endif %}
-            {% endif %}
 
-            {% if protocol.lower() == 'udp' %}
+            {% elif protocol.lower() == 'udp' %}
             {% if (dportmax and dportmin) or (sportmax and sportmin)  %}
             udp = [{
                 {% if sportmax and sportmin %}
@@ -105,6 +102,9 @@ EOF
             {% else %}
             udp = []
             {% endif %}
+
+            {% else %}
+            none = []
             {% endif %}
         }
         {% endif %}

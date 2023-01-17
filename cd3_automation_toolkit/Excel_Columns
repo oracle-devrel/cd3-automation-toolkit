@@ -150,6 +150,23 @@
         "Compartment Name" : "compartment_id",
         "LBR Name" : "display_name"
     },
+    "OKE":
+    {
+        "Region" : "region",
+        "Compartment Name" : "compartment_id",
+        "Cluster Name" : "name",
+        "Cluster Kubernetes Version" : "kubernetes_version",
+        "Network Type" : "",
+        "Pod Security Policies Enforced" : "is_pod_security_policy_enabled",
+        "Load Balancer Subnets" : "service_lb_subnet_ids",
+        "API Endpoint Subnet" : "subnet_id",
+        "API Endpoint Pub Address" : "public_endpoint",
+        "Service CIDR Block" : "services_cidr",
+        "Pod CIDR Block" : "pods_cidr",
+        "API Endpoint NSGs" : "nsg_ids",
+        "CompartmentName&Node Pool Name" : "nodepool_display_name"
+    },
+
     "DBSystems-VM-BM" :
 	{
 	    "DB System Display Name" : "display_name",
@@ -202,6 +219,10 @@
         "Trigger Delay Minutes" : "pending_duration"
 
     },
+    "ServiceConnectors" :
+	{
+	    "Display Name" : "display_name"
+	},
     "NLB-Listeners" :
     {
         "Is Preserve Source Destination(True|False)" : "is_preserve_source_destination",

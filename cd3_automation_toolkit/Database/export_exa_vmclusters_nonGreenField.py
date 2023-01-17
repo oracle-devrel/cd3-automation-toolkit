@@ -201,8 +201,6 @@ def export_exa_vmclusters(inputfile, _outdir, _config, network_compartments=[]):
 
         with open(script_file, 'a') as importCommands[reg]:
             importCommands[reg].write('\n\nterraform plan\n')
-        if "linux" in sys.platform:
-            os.chmod(script_file, 0o755)
 
     commonTools.write_to_cd3(values_for_column, cd3file, sheetName)
 

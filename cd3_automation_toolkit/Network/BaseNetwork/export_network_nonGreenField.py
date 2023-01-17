@@ -470,7 +470,7 @@ def export_major_objects(inputfile, outdir, _config, ct,network_compartments=[])
                 vcn_info = vcn
                 # Fetch VCN components assuming components are in same comp as VCN
 
-                # DRG attachemnt is in same compartment as VCN by default
+                # DRG attachment is in same compartment as VCN by default
                 DRG_Attachments = oci.pagination.list_call_get_all_results(vnc.list_drg_attachments,
                                                                            compartment_id=ct.ntk_compartment_ids[
                                                                                ntk_compartment_name], vcn_id=vcn.id)

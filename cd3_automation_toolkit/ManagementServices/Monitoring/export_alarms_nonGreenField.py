@@ -24,6 +24,7 @@ oci_obj_names = {}
 
 def print_alarms(region, alarm, ncpclient,values_for_column, ntk_compartment_name):
     alarm_tf_name = commonTools.check_tf_variable(alarm.display_name)
+    comp_tf_name = commonTools.check_tf_variable(ntk_compartment_name)
     suppression = alarm.suppression
 
     #query= alarm.query
@@ -69,7 +70,7 @@ def print_alarms(region, alarm, ncpclient,values_for_column, ntk_compartment_nam
 
     if(skip_row == 0):
         #importCommands[region.lower()].write("\nterraform import oci_monitoring_alarm." + alarm_tf_name + " " + str(alarm.id))
-        importCommands[region.lower()].write("\nterraform import \"module.alarms[\\\"" + str(alarm_tf_name) + "\\\"].oci_monitoring_alarm.alarm\" " + str(alarm.id))
+        importCommands[region.lower()].write("\nterraform import \"module.alarms[\\\"" + str(comp_tf_name+"_"+alarm_tf_name) + "\\\"].oci_monitoring_alarm.alarm\" " + str(alarm.id))
 
 def parse_args():
     # Read the arguments
@@ -154,8 +155,6 @@ def export_alarms(inputfile, _outdir, _config, network_compartments=[]):
 
         with open(script_file, 'a') as importCommands[reg]:
             importCommands[reg].write('\n\nterraform plan\n')
-        if "linux" in sys.platform:
-            os.chmod(script_file, 0o755)
 
     commonTools.write_to_cd3(values_for_column, cd3file, sheetName)
     print(str(len(values_for_column["Region"])) +" Alarms exported to CD3\n")

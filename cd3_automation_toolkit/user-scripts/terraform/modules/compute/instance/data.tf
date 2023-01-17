@@ -6,7 +6,7 @@
 #############################
 
 locals {
-  nsg_ids = flatten(tolist([for nsg in var.nsg_ids : (length(regexall("ocid1.networksecuritygroup.oc1*", nsg)) > 0 ? [nsg] : data.oci_core_network_security_groups.network_security_groups[nsg].network_security_groups[*].id)]))
+  nsg_ids = var.nsg_ids != null ? flatten(tolist([for nsg in var.nsg_ids : (length(regexall("ocid1.networksecuritygroup.oc1*", nsg)) > 0 ? [nsg] : data.oci_core_network_security_groups.network_security_groups[nsg].network_security_groups[*].id)])) : null
 
   ADs = [
     for ad in data.oci_identity_availability_domains.ads.availability_domains : ad.name
@@ -34,12 +34,12 @@ data "oci_core_vcns" "oci_vcns_instances" {
   compartment_id = var.network_compartment_id != null ? var.network_compartment_id : var.compartment_id
   display_name   = each.value
 }
-
-data "oci_core_subnets" "oci_subnets_instances" {
-  compartment_id = var.network_compartment_id != null ? var.network_compartment_id : var.compartment_id
-  display_name   = var.subnet_id
-  vcn_id         = data.oci_core_vcns.oci_vcns_instances[var.vcn_names[0]].virtual_networks.*.id[0]
-}
+//
+//data "oci_core_subnets" "oci_subnets_instances" {
+//  compartment_id = var.network_compartment_id != null ? var.network_compartment_id : var.compartment_id
+//  display_name   = var.subnet_id
+//  vcn_id         = data.oci_core_vcns.oci_vcns_instances[var.vcn_names[0]].virtual_networks.*.id[0]
+//}
 
 data "oci_core_dedicated_vm_hosts" "existing_vm_host" {
   count          = var.dedicated_vm_host_name != null ? 1 : 0
@@ -49,7 +49,7 @@ data "oci_core_dedicated_vm_hosts" "existing_vm_host" {
 }
 
 data "oci_core_network_security_groups" "network_security_groups" {
-  for_each       = { for nsg in var.nsg_ids : nsg => nsg }
+  for_each       = var.nsg_ids != null ? { for nsg in var.nsg_ids : nsg => nsg } : {}
   compartment_id = var.network_compartment_id != null ? var.network_compartment_id : var.compartment_id
   display_name   = each.value
   vcn_id         = data.oci_core_vcns.oci_vcns_instances[var.vcn_names[0]].virtual_networks.*.id[0]
