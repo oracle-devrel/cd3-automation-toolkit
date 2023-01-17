@@ -46,17 +46,18 @@ Minimum requirement for the user to get started is to have the ability to read t
 ### To build an image
 
 * Change directory to cd3-automation-toolkit(i.e. the cloned repo in your local).
-* Run docker build --platform linux/amd64 -t cd3toolkit:${image_tag} -f Dockerfile --pull --no-cache .<br/>
-<br  /><b>Note</b> : <i>${image_tag} should be replaced with suitable tag as per your requirements/standards.</i>
+* Run <i>"docker build --platform linux/amd64 -t cd3toolkit:${image_tag} -f Dockerfile --pull --no-cache ."</i><br/>
+<br  /><b>Note</b> : ${image_tag} should be replaced with suitable tag as per your requirements/standards.
+<br  />&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;The period at the end of the docker build command is required.
 
 ### To save the image (Optional)
-* Run docker save cd3toolkit:${image_tag} | gzip > cd3toolkit_${image_tag}.tar.gz
+* Run  <i>"docker save cd3toolkit:${image_tag} | gzip > cd3toolkit_${image_tag}.tar.gz"</i>
 
 
 ### To run the CD3 container and exec into it
-* Run docker run --platform linux/amd64 -it -d -v <path_in_local_system_where_the_files_must_be_generated>:/cd3user/tenancies <image_name>:<image_tag>
-* Run docker ps
-* Run docker exec -it <container_id> bash
+* Run  <i>"docker run --platform linux/amd64 -it -d -v <path_in_local_system_where_the_files_must_be_generated>:/cd3user/tenancies <image_name>:<image_tag>"</i>
+* Run  <i>"docker ps"</i>
+* Run  <i>"docker exec -it <container_id> bash"</i>
 <br><br>
 Follow the toolkit docs i.e. from the section <i>"Configuring the Docker Container to connect to OCI Tenancy"</i> in 
 <a href="https://github.com/oracle-devrel/cd3-automation-toolkit/blob/develop/cd3_automation_toolkit/documentation/user_guide/01%20CD3%20Automation%20Toolkit%20-%20End%20to%20End%20Process.pdf">CD3 Automation Tookit - End To End Process Documentation</a>. Please download the document from Github.
