@@ -32,7 +32,7 @@ It reads input data in the form of CD3 Excel sheets and generates the terraform 
 
 ### Pre-requisites
 * Git
-* Any docker cli compatible platform such as Docker or Rancher.
+* Any docker CLI compatible platform such as Docker or Rancher.
 * Local Directory - A directory in your local system that will be shared with the container to hold the generated Terraform files.
 * OCI Tenancy Access Requirement - 
 Appropriate IAM policies must be in place for each of the resources that the user may try to create.
@@ -57,7 +57,7 @@ Minimum requirement for the user to get started is to have the ability to read t
 
 
 ### To run the CD3 container and exec into it
-* Run  <i>"docker run --platform linux/amd64 -it -d -v <local_directory_path_in_system_where_the_files_must_be_generated>:/cd3user/tenancies <image_name>:<image_tag>"</i>
+* Run  <i>"docker run --platform linux/amd64 -it -d -v <directory_in_local_system_where_the_files_must_be_generated>:/cd3user/tenancies <image_name>:<image_tag>"</i>
 * Run  <i>"docker ps"</i>
 * Run  <i>"docker exec -it <container_id> bash"</i>
 <br><br>
