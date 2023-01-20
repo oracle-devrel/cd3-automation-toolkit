@@ -25,9 +25,9 @@ Description of the Generated files:
 | --------------- | ------------ | --------------- |
 | Config File | ```/cd3user/tenancies/<customer_name>/<customer_name>_config``` | Customer specific Config file is required for OCI API calls. |
 | setUpOCI.properties | ```/cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties``` | Customer Specific properties files will be created. |
-| Region baseddirectories | ```/rcd3user/tenancies/<customer_name>/terraform_files``` | Tenancy'ssubscribed regionsbased directories forthe generation andsegregation ofterraform files. |
+| Region based directories | ```/rcd3user/tenancies/<customer_name>/terraform_files``` | Tenancy's subscribed regions based directories for the generation and segregation of terraform files. |
 | Variables File,Provider File, Rootand Sub modules | ```/cd3user/tenancies/<customer_name>/terraform_files/<region>``` | Required for terraform to work. |
-| Public and PrivateKey Pairs | Copied from ```/cd3user/tenancies/keys/```<br>to<br>```/cd3user/tenancies/<customer_name>/``` | API Keys that were previously generated are moved to customer specific out directory locations for easy access. |
-| A log file with thecommands toexecute | ```/cd3user/tenancies/<customer_name>/cmds.log``` | This file contains acopy of the Commands to execute section of the console output. |
+| Public and Private Key Pairs | Copied from ```/cd3user/tenancies/keys/```<br>to<br>```/cd3user/tenancies/<customer_name>/``` | API Keys that were previously generated are moved to customer specific out directory locations for easy access. |
+| A log file with the commands to execute | ```/cd3user/tenancies/<customer_name>/cmds.log``` | This file contains a copy of the Commands to execute section of the console output. |
 | Documentation folder | ```/cd3user/tenancies/<customer_name>/documentation/user_guide/``` ```/cd3user/tenancies/<customer_name>/documentation/terraform/``` | These folders contain the PDF and.md files with instructions on how to use the toolkit and edit the .auto.tfvars. |
   
