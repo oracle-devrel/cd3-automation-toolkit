@@ -105,10 +105,3 @@ Below are the steps that will help to configure the Automation Tool Kit to suppo
 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;The terraform plan should show that infrastructure is up-to-date with no changes required for all regions.
   
 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <img src = "https://user-images.githubusercontent.com/122371432/213680328-ff972472-5c96-424e-b616-9f4c217eb4ca.png" width =50% height=50%>
-
-
-
-
-
-
-
