@@ -1,8 +1,8 @@
 **Running the Automation Toolkit**
 
-Complete the execution of the above scripts.  Next, Choose the appropriate CD3 Excel Sheet from below and update the setUpOCI.properties file at /cd3user/tenancies/<customer\_name>/<customer\_name>\_setUpOCI.properties. Finally, run the commands displayed in the console output. These commands are also made available in the cmds.log file of the output directory for future reference.
+Once the previous script createTenancyConfig.py has been run successfully, next step is to choose the appropriate CD3 Excel Sheet and update the setUpOCI.properties file at /cd3user/tenancies/<customer\_name>/<customer\_name>\_setUpOCI.properties. Finally, run the commands displayed in the console output. These commands are also made available in the cmds.log file of the output directory for future reference.
 
-**Excel Sheet Templates -  CIS Landing Zone**
+**Excel Sheet Templates - CIS Landing Zone**
 
 Below are the CD3 templates for the latest release having standardised IAM Components (compartments, groups and policies), Network Components and Events & Notifications Rules as per CIS Landing Zone and the CIS Foundations Benchmark for Oracle Cloud.
 
@@ -21,7 +21,7 @@ Details on how to fill the data into the excel sheet can be found in the Blue se
 Here is the CIS Landing Zone quick start template by NACE Security Team also: https://www.ateam-oracle.com/cis-oci-landing-zone-quickstart-template
 
 
-> The Excel Templates can also be found at cd3_automation_toolkit/example in the Git repository or at /cd3user/oci_tools/cd3_automation_toolkit/example inside the container.
+> The Excel Templates can also be found at /cd3user/oci_tools/cd3_automation_toolkit/example inside the container.
 
 
 **setUpOCI.properties**
