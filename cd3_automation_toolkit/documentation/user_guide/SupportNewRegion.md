@@ -7,7 +7,7 @@ Alternately, manually edit the file at **/cd3user/oci_tools/cd3_automation_toolk
 eg<br>
 **langley:us-langley-1**
 
-You should use <Region> value in the CD3 excel sheet. Outdir for terraform will also be created with name as <Region>
+You should use value specified for 'Region' in the CD3 excel sheet. Outdir for terraform will also be created with name as 'Region' from above file
 
 **Automation Toolkit can support new protocols in SecurityLists or NSGs.**<br> 
 To update the OCI_Protocols file, Choose the option **"Fetch Protocols to OCI_Protocols"** from **"CD3 Services"** in setUpOCI menu.
