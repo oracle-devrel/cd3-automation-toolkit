@@ -61,22 +61,13 @@ Minimum requirement for the user to get started is to have the ability to read t
 * Run  <i>"docker ps"</i>
 * Run  <i>"docker exec -it <container_id> bash"</i>
 
-### User Guide
+## User Guide
 
 * [Recommendations](/cd3_automation_toolkit/documentation/user_guide/Recommendations.md)
-* Configuring the Docker Container to connect to OCI Tenancy
-* Running the Automation Toolkit
-* Steps to execute Automation Toolkit Workflows
-
-Follow the toolkit docs i.e. from the section <i>"Configuring the Docker Container to connect to OCI Tenancy"</i> in 
-<a href="https://github.com/oracle-devrel/cd3-automation-toolkit/blob/develop/cd3_automation_toolkit/documentation/user_guide/01%20CD3%20Automation%20Toolkit%20-%20End%20to%20End%20Process.pdf">CD3 Automation Tookit - End To End Process Documentation</a>. Please download the document from Github.
-<br>
-<i>CD3 Quick Start template can be found at <b><a href="https://github.com/oracle-devrel/cd3-automation-toolkit/blob/develop/cd3_automation_toolkit/example/CD3-CIS-template.xlsx">CD3 CIS Template</a></b></i>
-<br>
-<i>CD3 Sample Excel templates can be found at <b><a href="https://github.com/oracle-devrel/cd3-automation-toolkit/tree/develop/cd3_automation_toolkit/example">Excel Templates</a> </b></i>
-<br>
-<br>
-<b>Note</b> : <i>The above steps have been tested on Windows (Git Bash) and MacOS.</i><br/>
+* [Configuring the Docker Container to connect to OCI Tenancy](/cd3_automation_toolkit/documentation/user_guide/ConfiguringDockerContainer.md)
+* [Running the Automation Toolkit](/cd3_automation_toolkit/documentation/user_guide/RunningautomationToolkit.md)
+* [Steps to execute Automation Toolkit Workflows](/cd3_automation_toolkit/documentation/user_guide/workflows.md)
+* [Excel Templates](/cd3-automation-toolkit/tree/dip-documentation/cd3_automation_toolkit/example)
 
 ## Contributing
 This project is open source.  Please submit your contributions by raising an <b>Issue</b> or through <b>Discussion topic</b> in this repository. Currently, we do not accept any pull requests. Oracle appreciates any contributions that are made by the open source community.
