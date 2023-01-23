@@ -64,8 +64,8 @@ Minimum requirement for the user to get started is to have the ability to read t
 ## User Guide
 
 * [Configuring the Docker Container to connect to OCI Tenancy](/cd3_automation_toolkit/documentation/user_guide/ConfiguringDockerContainer.md)
-* [Running the Automation Toolkit](/cd3_automation_toolkit/documentation/user_guide/RunningautomationToolkit.md)
-* [Steps to execute Automation Toolkit Workflows](/cd3_automation_toolkit/documentation/user_guide/workflows.md)
+* [Running the Automation Toolkit](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md)
+* [Steps to execute Automation Toolkit Workflows](/cd3_automation_toolkit/documentation/user_guide/Workflows.md)
 * [Recommendations](/cd3_automation_toolkit/documentation/user_guide/Recommendations.md)
 * [Excel Templates](/cd3-automation-toolkit/tree/dip-documentation/cd3_automation_toolkit/example)
 
