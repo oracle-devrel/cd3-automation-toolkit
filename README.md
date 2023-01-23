@@ -60,7 +60,14 @@ Minimum requirement for the user to get started is to have the ability to read t
 * Run  <i>"docker run --platform linux/amd64 -it -d -v <directory_in_local_system_where_the_files_must_be_generated>:/cd3user/tenancies <image_name>:<image_tag>"</i>
 * Run  <i>"docker ps"</i>
 * Run  <i>"docker exec -it <container_id> bash"</i>
-<br><br>
+
+### User Guide
+
+* [Recommendations](/cd3_automation_toolkit/documentation/user_guide/Recommendations.md)
+* Configuring the Docker Container to connect to OCI Tenancy
+* Running the Automation Toolkit
+* Steps to execute Automation Toolkit Workflows
+
 Follow the toolkit docs i.e. from the section <i>"Configuring the Docker Container to connect to OCI Tenancy"</i> in 
 <a href="https://github.com/oracle-devrel/cd3-automation-toolkit/blob/develop/cd3_automation_toolkit/documentation/user_guide/01%20CD3%20Automation%20Toolkit%20-%20End%20to%20End%20Process.pdf">CD3 Automation Tookit - End To End Process Documentation</a>. Please download the document from Github.
 <br>
