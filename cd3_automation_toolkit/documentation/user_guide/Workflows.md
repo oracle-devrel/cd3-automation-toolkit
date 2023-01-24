@@ -9,13 +9,7 @@ Below are the steps that will help to configure the Automation Tool Kit to suppo
 
 **Step 1**: 
 
-The CD3 Template can be found at location  - /cd3user/oci_tools/cd3_automation_toolkit/example.
-
-For the Core OCI Objects (IAM, Tags, Networking, Instances, LBR, Storage, Databases) - use the **CD3-SingleVCN-template.xlsx** file or **CD3-HubSpoke-template.xlsx** or **CD3-CIS-template.xlsx** based on the requirement.
- 
-For Events, Notifications, Alarms and Service Connector Hub - use the **CD3-CIS-ManagementServices-template.xlsx** file.
-
-
+Chose the appropriate CD3 Excel sheet template from [Excel Templates](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md#excel-sheet-templates)
 
 **Step 2**:
 
@@ -72,15 +66,7 @@ Below are the steps that will help to configure the Automation Tool Kit to suppo
 
 **Step 1:** 
  
-Choose the right CD3 format for exporting the contents from OCI.
-  
-   
-Two different formats of CD3 to be used : (An example of these files can be found at location - /cd3user/oci_tools/cd3_automation        _toolkit/example or can be downloaded from cd3)
-
-**CD3-Blank-template.xlsx** - Use this format of the Excel sheet to export objects like Network Components, Identity Components,         Core Infra Components , DB Components and Tags. 
-
-**CD3-CIS-ManagementServices-template.xlsx** - Use this format of the Excel sheet to export Events, Notifications, Alarms and           Service Connector Hub.
-
+Chose the appropriate CD3 Excel sheet template from [Excel Templates](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md#excel-sheet-templates)
  
 **Step 2:** 
  
