@@ -68,12 +68,13 @@ Minimum requirement for the user to get started is to have the ability to read t
 * [Automation Toolkit Workflows](/cd3_automation_toolkit/documentation/user_guide/Workflows.md)
 * [Excel Templates](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md#excel-sheet-templates)
 * [Recommendations](/cd3_automation_toolkit/documentation/user_guide/Recommendations.md)
+* Known Behaviour Of Automation Toolkit
 
 ## Additional Information :blue_book:
-* Scenario Based Workflows
-* Support for Additional Attributes
+* Scenario Based Use Cases
 * [CIS Features](/cd3_automation_toolkit/documentation/user_guide/CISFeatures.md)
-* Known Behaviour Of Automation Toolkit
+* [OCI Resource Manager Upload](/cd3_automation_toolkit/documentation/user_guide/ResourceManagerUpload.md)
+* Support for Additional Attributes
 * [Support For CD3 Validator](/cd3_automation_toolkit/documentation/user_guide/SupportForCD3Validator.md)
 * [Support For New Region and Protocol](/cd3_automation_toolkit/documentation/user_guide/SupportNewRegionProtocol.md)
 * [Release-Info](/cd3_automation_toolkit/documentation/user_guide/ReleaseInfo.md)
