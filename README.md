@@ -67,7 +67,7 @@ Minimum requirement for the user to get started is to have the ability to read t
 * [Running the Automation Toolkit](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md)
 * [Steps to execute Automation Toolkit Workflows](/cd3_automation_toolkit/documentation/user_guide/Workflows.md)
 * [Recommendations](/cd3_automation_toolkit/documentation/user_guide/Recommendations.md)
-* [Excel Templates](/cd3-automation-toolkit/tree/dip-documentation/cd3_automation_toolkit/example)
+* [Excel Templates](/cd3_automation_toolkit/example)
 
 ## Contributing
 This project is open source.  Please submit your contributions by raising an <b>Issue</b> or through <b>Discussion topic</b> in this repository. Currently, we do not accept any pull requests. Oracle appreciates any contributions that are made by the open source community.
