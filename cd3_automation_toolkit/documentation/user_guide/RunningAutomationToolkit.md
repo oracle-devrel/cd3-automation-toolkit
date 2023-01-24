@@ -12,11 +12,11 @@ Details on how to fill the data into the excel sheet can be found in the Blue se
 
 |Excel Sheet| Purpose                                                                                                                    | 
 |-----------|----------------------------------------------------------------------------------------------------------------------------|
-| [CD3-Blank-template.xlsx](cd3-automation-toolkit/cd3_automation_toolkit/example/CD3-Blank-template.xlsx)   | 	Choose this template while exporting the existing resources to the CD3 and Terraform.| 
-| [CD3-CIS-template.xlsx](cd3-automation-toolkit/cd3_automation_toolkit/example/CD3-CIS-template.xlsx) | This template has auto-filled in data of CIS Landing Zone. Choose this template while using a tenancy that supports DRGV2. |
-|[CD3-HubSpoke-template](cd3-automation-toolkit/cd3_automation_toolkit/example/CD3-HubSpoke-template.xlsx) | This template has auto-filled in data for a Hub and Spoke model of networking. The user must only modify the region according to requirement and execute the toolkit to generate the terraform files.|
-|[CD3-CIS-ManagementServices-template.xlsx](cd3-automation-toolkit/cd3_automation_toolkit/example/CD3-CIS-ManagementServices-template.xlsx) | This template has auto-filled in data of CIS Landing Zone. Choose this template while creating the components of Events, Alarms and Notifications.|
-|[CD3-SingleVCN-template](cd3-automation-toolkit/cd3_automation_toolkit/example/CD3-SingleVCN-template.xlsx)| This template has auto-filled in data for a Single VCN model of networking. The user must only modify the region xlsx  according to requirement and execute the toolkit to generate the terraform files.|
+| [CD3-Blank-template.xlsx](/cd3-automation-toolkit/cd3_automation_toolkit/example/CD3-Blank-template.xlsx)   | 	Choose this template while exporting the existing resources to the CD3 and Terraform.| 
+| [CD3-CIS-template.xlsx](/cd3-automation-toolkit/cd3_automation_toolkit/example/CD3-CIS-template.xlsx) | This template has auto-filled in data of CIS Landing Zone. Choose this template while using a tenancy that supports DRGV2. |
+|[CD3-HubSpoke-template](/cd3-automation-toolkit/cd3_automation_toolkit/example/CD3-HubSpoke-template.xlsx) | This template has auto-filled in data for a Hub and Spoke model of networking. The user must only modify the region according to requirement and execute the toolkit to generate the terraform files.|
+|[CD3-CIS-ManagementServices-template.xlsx](/cd3-automation-toolkit/cd3_automation_toolkit/example/CD3-CIS-ManagementServices-template.xlsx) | This template has auto-filled in data of CIS Landing Zone. Choose this template while creating the components of Events, Alarms and Notifications.|
+|[CD3-SingleVCN-template](/cd3-automation-toolkit/cd3_automation_toolkit/example/CD3-SingleVCN-template.xlsx)| This template has auto-filled in data for a Single VCN model of networking. The user must only modify the region xlsx  according to requirement and execute the toolkit to generate the terraform files.|
 
 Here is the CIS Landing Zone quick start template by NACE Security Team also: https://www.ateam-oracle.com/cis-oci-landing-zone-quickstart-template
 
