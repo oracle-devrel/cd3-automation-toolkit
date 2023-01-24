@@ -236,10 +236,8 @@ Below are the highlights of this release:
 4. Extra properties specific to OCItoOCI project have been removed from ocswork.properties and a new file ocswork_ocic.properties has been added to accomodate that.
 5. Support for multiple OCSWork VMs via separate config_for_delete files. A new input parameter has been added to ocswork.properties file.
 6. Support for Reserved Public IP for OCSWork VM. Reserved public IP will be assigned to OCSWork VM which you cna chose to retain also while destroying OCSWork VM.
-7. 
-  &nbsp; &nbsp;&nbsp; &nbsp; a. Regions property has been removed and now tenancy's subscribed regions will be fetched using API and terraform directories would &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; be created based on that. It would be good to subscribe tenancy to all required regions before setting up OCS Work VM or else &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;create the region directory manually.
-  
-  &nbsp; &nbsp; &nbsp; &nbsp;b. Regions property has been removed from VCN Info tab of CD3 as well.
+7. a. Regions property has been removed and now tenancy's subscribed regions will be fetched using API and terraform directories would be created based on that. It would be good to subscribe tenancy to all required regions before setting up OCS Work VM or else create the region directory manually.
+b. Regions property has been removed from VCN Info tab of CD3 as well.
   
 8. CD3 Validator has been introduced. This will validate Networking tabs as of now. It will check for any Null Values, CIDR overlaps etc. 
 9. Support for Flex shapes for Instances. Please refer to CD3-template.xlsx under example folder for sample input data.
