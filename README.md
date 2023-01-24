@@ -25,7 +25,7 @@ It reads input data in the form of CD3 Excel sheets and generates the terraform 
 | Developer Services | Resource Manager, Oracle Kubernetes Engine (OKE) |
 | CIS Landing Zone Compliance | Download CIS Report Script, Execute CIS Report Script, VCN Flow Logs, Cloud Guard, Object Storage, Key Vault, Budget |
 
-`To ease the execution of toolkit, we have provided the steps to build an image which encloses the code base and its package dependencies. Follow the steps provided below to clone the repo and build the image.`
+`To ease the execution of toolkit, we have provided the steps to build an image which encloses the code base and its package dependencies. Follow the steps provided below under 'Getting Started' to clone the repo and build the image. Then Follow the User Guides to start using the toolkit.`
 <br>
 
 ## Getting Started
@@ -61,7 +61,7 @@ Minimum requirement for the user to get started is to have the ability to read t
 * Run  <i>"docker ps"</i>
 * Run  <i>"docker exec -it <container_id> bash"</i>
 
-## User Guide :bookmark:
+## User Guides :bookmark:
 
 * [Configuring the Docker Container to connect to OCI Tenancy](/cd3_automation_toolkit/documentation/user_guide/ConfiguringDockerContainer.md)
 * [Running the Automation Toolkit](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md)
