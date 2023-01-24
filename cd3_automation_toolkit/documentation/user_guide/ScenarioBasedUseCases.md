@@ -1,8 +1,8 @@
-# Scenario Based UseCases
+## Scenario Based UseCases
 
 This page will give you an insight into the usual usecases that can be performed with Automation Toolkit.
 
-## NOTE:
+### NOTE:
 
 1. Automation Tool Kit DOES NOT support the creation/export of duplicate resources.
 2. DO NOT modify/remove any commented rows or column names. You may re-arrange the columns if needed (except NSGs).
