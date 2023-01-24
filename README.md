@@ -67,7 +67,8 @@ Minimum requirement for the user to get started is to have the ability to read t
 * [Running the Automation Toolkit](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md)
 * [Automation Toolkit Workflows](/cd3_automation_toolkit/documentation/user_guide/Workflows.md)
 * [Excel Templates](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md#excel-sheet-templates)
-* [Recommendations](/cd3_automation_toolkit/documentation/user_guide/Recommendations.md)
+* [Recommendations while using the Toolkit](/cd3_automation_toolkit/documentation/user_guide/Recommendations.md)
+* Restructuring Terraform Out Directory
 * Known Behaviour Of Automation Toolkit
 
 ## Additional Information :blue_book:
