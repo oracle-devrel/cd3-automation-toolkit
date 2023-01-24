@@ -71,7 +71,7 @@ Minimum requirement for the user to get started is to have the ability to read t
 * Known Behaviour Of Automation Toolkit
 
 ## Additional Information :blue_book:
-* Scenario Based Use Cases
+* [Scenario Based Use Cases](/cd3_automation_toolkit/documentation/user_guide/ScenarioBasedUseCases.md)
 * [CIS Features](/cd3_automation_toolkit/documentation/user_guide/CISFeatures.md)
 * [OCI Resource Manager Upload](/cd3_automation_toolkit/documentation/user_guide/ResourceManagerUpload.md)
 * Support for Additional Attributes
