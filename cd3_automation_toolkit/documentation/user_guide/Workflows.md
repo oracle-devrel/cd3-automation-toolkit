@@ -8,23 +8,19 @@ CD3 Automation Tool Kit supports 2 main workflows:
 Below are the steps that will help to configure the Automation Tool Kit to support the Green Field Tenancies:
 
 **Step 1**: 
-
-Chose the appropriate CD3 Excel sheet template from [Excel Templates](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md#excel-sheet-templates)
+<br>Chose the appropriate CD3 Excel sheet template from [Excel Templates](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md#excel-sheet-templates)
 
 **Step 2**:
-
-Fill the CD3 Excel with appropriate values specific to the client and put at the appropriate location.
-              
-Modify/Review [setUpOCI.properties](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md#setUpOCI-properties) with **non_gf_tenancy** set to **false** as shown below:
+<br>Fill the CD3 Excel with appropriate values specific to the client and put at the appropriate location.
+<br>Modify/Review [setUpOCI.properties](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md#setUpOCI-properties) with **non_gf_tenancy** set to **false** as shown below:
 
 <img src = "https://user-images.githubusercontent.com/122371432/213668401-9e795546-6683-42ab-8ce0-9c9c72b84079.png" width=75% height=75%>
 
 
 
 **Step 3**:
-
-Execute the SetUpOCI.py script to start creating the terraform configuration files.
-        
+<br>Execute the SetUpOCI.py script to start creating the terraform configuration files.
+    
 Command to Execute:
 **python setUpOCI.py <path_to_setupOCI.properties>**
 <br>```python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties```
@@ -39,8 +35,7 @@ Choose the resources by specifying a single option (for choosing one of these re
 
 
 **Step 4:** 
-
-Change your directory to /cd3user/tenancies/<customer_name>/terraform_files/region_dir/  and Execute:
+<br>Change your directory to /cd3user/tenancies/<customer_name>/terraform_files/region_dir/  and Execute:
 
 **terraform init**  - To initialize and prepare your working/out directory soTerraform can run the configuration.<br>
 **terraform plan**  - To preview any changes before you apply them.<br>
@@ -66,20 +61,16 @@ Change your directory to /cd3user/tenancies/<customer_name>/terraform_files/regi
 Below are the steps that will help to configure the Automation Tool Kit to support the Non - Green Field Tenancies:
 
 **Step 1:** 
- 
-Chose the appropriate CD3 Excel sheet template from [Excel Templates](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md#excel-sheet-templates)
+<br>Chose the appropriate CD3 Excel sheet template from [Excel Templates](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md#excel-sheet-templates)
  
 **Step 2:** 
- 
-Put CD3 Excel at the appropriate location.
-              
-Modify/Review [setUpOCI.properties](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md#setUpOCI-properties) with **non_gf_tenancy** set to **true**  as shown below:
+<br>Put CD3 Excel at the appropriate location.
+<br>Modify/Review [setUpOCI.properties](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md#setUpOCI-properties) with **non_gf_tenancy** set to **true**  as shown below:
 <img src = "https://user-images.githubusercontent.com/122371432/213680179-ae2e78b8-f508-47b1-8fb5-23d635d78648.png" width=75% height=75%>
 
   
 **Step 3:** 
- 
-Execute the SetUpOCI.py script to start exporting the resources to CD3 and creating the terraform configuration files.
+<br>Execute the SetUpOCI.py script to start exporting the resources to CD3 and creating the terraform configuration files.
 
 Command to Execute:
 **python setUpOCI.py <path_to_setupOCI.properties>**
@@ -94,7 +85,7 @@ Choose the resources by specifying a single option (for choosing one of these re
   
 Make sure to execute **"Fetch Compartments OCIDs to variables file"** from **CD3 Services** in setUpOCI menu at least once. This will       ensure that the variables file in outdir is updated with the OCID information of all the compartments.
   
-Tabs- Exported OCI data will over-write to the specific CD3 sheets while the other sheets remain intact.
+> Toolkit will over-write the specific tabs of CD3 Excel sheet with exported data for that resource in OCI while the other tabs remain intact.
  
  </br>
 
