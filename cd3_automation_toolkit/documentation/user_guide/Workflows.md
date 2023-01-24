@@ -13,9 +13,9 @@ Chose the appropriate CD3 Excel sheet template from [Excel Templates](/cd3_autom
 
 **Step 2**:
 
-Fill the CD3 file with appropriate values specific to the client and put at the appropriate location.
+Fill the CD3 Excel with appropriate values specific to the client and put at the appropriate location.
               
-Modify/Review **setUpOCI.properties**: (**non_gf_tenancy** set to **false**)
+Modify/Review [setUpOCI.properties](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md#setUpOCI-properties) with **non_gf_tenancy** set to **false**
 
 <img src = "https://user-images.githubusercontent.com/122371432/213668401-9e795546-6683-42ab-8ce0-9c9c72b84079.png" width=75% height=75%>
 
@@ -70,12 +70,9 @@ Chose the appropriate CD3 Excel sheet template from [Excel Templates](/cd3_autom
  
 **Step 2:** 
  
-Fill up/review the **setUpOCI.properties** file.
-  
-Once the CD3 format is chosen, fill the sheets with appropriate values and put it at the appropriate location.
-         
-Modify **setUpOCI.properties** as shown below: (**non_gf_tenancy** set to **true**)
-
+Put CD3 Excel at the appropriate location.
+              
+Modify/Review [setUpOCI.properties](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md#setUpOCI-properties) with **non_gf_tenancy** set to **true**
 <img src = "https://user-images.githubusercontent.com/122371432/213680179-ae2e78b8-f508-47b1-8fb5-23d635d78648.png" width=75% height=75%>
 
   
