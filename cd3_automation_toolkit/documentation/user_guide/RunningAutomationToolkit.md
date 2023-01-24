@@ -16,10 +16,10 @@ Details on how to fill the data into the excel sheet can be found in the Blue se
 |[CD3-CIS-ManagementServices-template.xlsx](/cd3_automation_toolkit/example) | This template has auto-filled in data of CIS Landing Zone. Choose this template while creating the components of Events, Alarms and Notifications.|
 |[CD3-SingleVCN-template](/cd3_automation_toolkit/example)| This template has auto-filled in data for a Single VCN model of networking. The user must only modify the region xlsx  according to requirement and execute the toolkit to generate the terraform files.|
 
-Here is the CIS Landing Zone quick start template by NACE Security Team also: https://www.ateam-oracle.com/cis-oci-landing-zone-quickstart-template
-
 
 > The Excel Templates can also be found at /cd3user/oci_tools/cd3_automation_toolkit/example inside the container.
+
+<br>Here is the CIS Landing Zone quick start template by NACE Security Team also: https://www.ateam-oracle.com/cis-oci-landing-zone-quickstart-template
 
 
 ### **setUpOCI.properties**
