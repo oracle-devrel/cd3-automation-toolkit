@@ -72,7 +72,7 @@ non_gf_tenancy=false
     →  a shell script containing the import commands to import the state of exported components to the tfstate file.
 
    
-   Once the export (including the execution of **tf_import_commands_<resource>_nonGF.sh**) is complete, switch the value of **non_gf_tenancy** back to **false**. 
+   Once the export (including the execution of **tf_import_commands_`<resource>`_nonGF.sh**) is complete, switch the value of **non_gf_tenancy** back to **false**. 
 
 
    This allows the Tool Kit to support the tenancy as Green Field from this point onwards.
