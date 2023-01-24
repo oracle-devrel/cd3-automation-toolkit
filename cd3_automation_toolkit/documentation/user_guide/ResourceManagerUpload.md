@@ -1,7 +1,7 @@
 ## OCI Resource Manager Upload
 
 
-Included is an option in setUpOCI Menu to upload the terraform outdir into OCI Resource Manager:
+There is an option included in setUpOCI Menu to upload the terraform outdir into OCI Resource Manager.
 
 On choosing **"Developer Services"** in the SetUpOCI menu, choose **"Upload current terraform files/state to Resource Manager"** sub-option to upload the terraform outdir into OCI Resource Manager.
 
@@ -20,7 +20,7 @@ Example:
 
 <img width="800" alt="image" src="https://user-images.githubusercontent.com/122371432/214032479-a4754a66-dcf9-4540-a627-dcc8393a062b.png">
 
-To use an existing Resource Manager stack, enter the details in the format provided above to your outdir/rm_ocids.csv" file. 
+To use an existing Resource Manager stack, enter the details in the format provided above into your outdir/rm_ocids.csv" file. 
 
 
 Sample Execution:
