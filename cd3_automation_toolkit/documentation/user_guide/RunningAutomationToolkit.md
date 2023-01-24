@@ -6,15 +6,15 @@ Once the previous script 'createTenancyConfig.py' has been run successfully, nex
 
 Below are the CD3 templates for the latest release having standardised IAM Components (compartments, groups and policies), Network Components and Events & Notifications Rules as per CIS Foundations Benchmark for Oracle Cloud.
 
-Details on how to fill the data into the excel sheet can be found in the Blue section of each sheet inside the excel file.
+Details on how to fill the data into the excel sheet can be found in the Blue section of each sheet inside the excel file. Make appropriate changes to the templates eg region and use them as is for deployment.
 
 |Excel Sheet| Purpose                                                                                                                    | 
 |-----------|----------------------------------------------------------------------------------------------------------------------------|
 | [CD3-Blank-template.xlsx](/cd3_automation_toolkit/example)   | 	Choose this template while exporting the existing resources from OCI into the CD3 and Terraform.| 
-| [CD3-CIS-template.xlsx](/cd3_automation_toolkit/example) | This template has auto-filled in data of CIS Landing Zone. Choose this template while using a tenancy that supports DRGV2. |
-|[CD3-HubSpoke-template](/cd3_automation_toolkit/example) | This template has auto-filled in data for a Hub and Spoke model of networking. The user must only modify the region according to requirement and execute the toolkit to generate the terraform files.|
-|[CD3-SingleVCN-template](/cd3_automation_toolkit/example)| This template has auto-filled in data for a Single VCN model of networking. The user must only modify the region xlsx  according to requirement and execute the toolkit to generate the terraform files.|
-|[CD3-CIS-ManagementServices-template.xlsx](/cd3_automation_toolkit/example) | This template has auto-filled in data of CIS Landing Zone. Choose this template while creating the components of Events, Alarms and Notifications.|
+| [CD3-CIS-template.xlsx](/cd3_automation_toolkit/example) | This template has auto-filled in data of CIS Landing Zone for DRGv2. Choose this template to create Core OCI Objects (IAM, Tags, Networking, Instances, LBR, Storage, Databases) |
+|[CD3-HubSpoke-template](/cd3_automation_toolkit/example) | This template has auto-filled in data for a Hub and Spoke model of networking. Choose this template to create Core OCI Objects (IAM, Tags, Networking, Instances, LBR, Storage, Databases)|
+|[CD3-SingleVCN-template](/cd3_automation_toolkit/example)| This template has auto-filled in data for a Single VCN model of networking. Choose this template to create Core OCI Objects (IAM, Tags, Networking, Instances, LBR, Storage, Databases)|
+|[CD3-CIS-ManagementServices-template.xlsx](/cd3_automation_toolkit/example) | This template has auto-filled in data of CIS Landing Zone. Choose this template while creating the components of Events, Alarms, Notifications and Service Connectors|
 
 
 > The Excel Templates can also be found at /cd3user/oci_tools/cd3_automation_toolkit/example inside the container.
