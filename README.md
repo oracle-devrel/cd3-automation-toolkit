@@ -70,10 +70,10 @@ Minimum requirement for the user to get started is to have the ability to read t
 * [Recommendations](/cd3_automation_toolkit/documentation/user_guide/Recommendations.md)
 
 ## Additional Information :blue_book:
-* [Scenario Based Workflows]()
-* [Support for Additional Attributes]()
+* Scenario Based Workflows
+* Support for Additional Attributes
 * [CIS Features](/cd3_automation_toolkit/documentation/user_guide/CISFeatures.md)
-* [Known Behaviour Of Automation Toolkit]()
+* Known Behaviour Of Automation Toolkit
 * [Support For CD3 Validator](/cd3_automation_toolkit/documentation/user_guide/SupportForCD3Validator.md)
 * [Support New Region Protocol](/cd3_automation_toolkit/documentation/user_guide/SupportNewRegionProtocol.md)
 * [Release-Info](/cd3_automation_toolkit/documentation/user_guide/ReleaseInfo.md)
