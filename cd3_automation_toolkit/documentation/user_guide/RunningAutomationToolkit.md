@@ -1,8 +1,8 @@
-# **Running the Automation Toolkit**
+## **Running the Automation Toolkit**
 
 Once the previous script createTenancyConfig.py has been run successfully, next step is to choose the appropriate CD3 Excel Sheet and update the setUpOCI.properties file at /cd3user/tenancies/<customer\_name>/<customer\_name>\_setUpOCI.properties. Finally, run the commands displayed in the console output. These commands are also made available in the cmds.log file of the output directory for future reference.
 
-## **Excel Sheet Templates**
+### **Excel Sheet Templates**
 
 Below are the CD3 templates for the latest release having standardised IAM Components (compartments, groups and policies), Network Components and Events & Notifications Rules as per CIS Foundations Benchmark for Oracle Cloud.
 
@@ -22,7 +22,7 @@ Here is the CIS Landing Zone quick start template by NACE Security Team also: ht
 > The Excel Templates can also be found at /cd3user/oci_tools/cd3_automation_toolkit/example inside the container.
 
 
-## **setUpOCI.properties**
+### **setUpOCI.properties**
 
 Before we start with the steps to execute the Automation Toolkit, kindly update the properties file which is the input to the Toolkit. 
 
@@ -59,15 +59,6 @@ non_gf_tenancy=false
 | cd3file |Path to the CD3 input file |/cd3user/tenancies/<customer\_name>/testCD3. xlsx |
 |non\_gf\_tenancy |Specify if its a Non Green field tenancy or not (**True** or **False**)| False|
 
-**Execution Steps:**
-
-| Steps                                                                                                                                                                                        | Command |
-|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------|
-| Change Directory to that of cd3_automation_toolkit                                                                                                                                           | ```cd /cd3user/oci_tools/cd3_automation_toolkit/```|
-| Edit the setUpOCI.properties at location: _/cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties__ with appropriate values.                                                | Place Excel sheet at appropriate location in your docker and provide the corresponding path in: /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties__ file |
-| Execute the setUpOCI Script                                                                                                                                                                  | ```python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties``` |
-| **Additional Information**: Execute the command to fetch the details of the compartments if it already exists/created in OCI. These details will be written to the terraform variables file. | Choose **"Fetch Compartments OCIDs to variables file"** from CD3 Services in setUpOCI menu.|
-
 Choose the right option by setting the property non_gf_tenancy of setUpOCI.properties , to toggle between the two workflows:
 1. Set the property **non_gf_tenancy**  to **false** for supporting **Green Field Tenancies** 
 
@@ -85,4 +76,14 @@ Choose the right option by setting the property non_gf_tenancy of setUpOCI.prope
 
 
    This allows the Tool Kit to support the tenancy as Green Field from this point onwards.
+
+### **Execution Steps:**
+
+| Steps                                                                                                                                                                                        | Command |
+|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------|
+| Change Directory to that of cd3_automation_toolkit                                                                                                                                           | ```cd /cd3user/oci_tools/cd3_automation_toolkit/```|
+| Edit the setUpOCI.properties at location: _/cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties__ with appropriate values.                                                | Place Excel sheet at appropriate location in your docker and provide the corresponding path in: /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties__ file |
+| Execute the setUpOCI Script                                                                                                                                                                  | ```python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties``` |
+| **Additional Information**: Execute the command to fetch the details of the compartments if it already exists/created in OCI. These details will be written to the terraform variables file. | Choose **"Fetch Compartments OCIDs to variables file"** from CD3 Services in setUpOCI menu.|
+
 
