@@ -1,6 +1,6 @@
 ## **Running the Automation Toolkit**
 
-Once the previous script createTenancyConfig.py has been run successfully, next step is to choose the appropriate CD3 Excel Sheet and update the setUpOCI.properties file at /cd3user/tenancies/<customer\_name>/<customer\_name>\_setUpOCI.properties. Finally, run the commands displayed in the console output. These commands are also made available in the cmds.log file of the output directory for future reference.
+Once the previous script 'createTenancyConfig.py' has been run successfully, next step is to choose the appropriate CD3 Excel Sheet and update the setUpOCI.properties file at /cd3user/tenancies/<customer\_name>/<customer\_name>\_setUpOCI.properties. Finally, run the commands displayed in the console output of the previous script. These commands are also made available in the cmds.log file of the output directory for future reference.
 
 ### **Excel Sheet Templates**
 
@@ -59,7 +59,7 @@ non_gf_tenancy=false
 | cd3file |Path to the CD3 input file |/cd3user/tenancies/<customer\_name>/testCD3. xlsx |
 |non\_gf\_tenancy |Specify if its a Non Green field tenancy or not (**True** or **False**)| False|
 
-Choose the right option by setting the property non_gf_tenancy of setUpOCI.properties , to toggle between the two workflows:
+**More information about non_gf_tenancy flag:**
 1. Set the property **non_gf_tenancy**  to **false** for supporting **Green Field Tenancies** 
 
     →  this will help to **create** new resources
