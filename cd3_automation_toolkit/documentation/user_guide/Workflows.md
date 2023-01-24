@@ -65,7 +65,7 @@ Change your directory to /cd3user/tenancies/<customer_name>/terraform_files/regi
   >Course of actions involved in Exporting objects from OCI-     
   > * Automation Tool Kit fetches the data for the cd3 supported services from all the regions the tenancy is subscribed to. Data is written to appropriate sheets of the CD3 based on the resources being exported.
   > * Tool Kit then generates the TF configuration files/auto.tfvars files for these exported resources.
-  > * It also generates a shell script - tf_import_commands_<resource>_nonGF.sh that has the import commands, to import the state of the resources to tfstate file.(This helps to manage the resources via Terraform in future). 
+  > * It also generates a shell script - tf_import_commands_`<resource>`_nonGF.sh that has the import commands, to import the state of the resources to tfstate file.(This helps to manage the resources via Terraform in future). 
 
   
 Below are the steps that will help to configure the Automation Tool Kit to support the Non - Green Field Tenancies:
@@ -119,7 +119,7 @@ a. Excel sheet with the resource details from OCI
   
 b. Terraform Configuration files - *.auto.tfvars
   
-c. Shell Script with import commands - tf_import_commands_<resource>_nonGF.sh 
+c. Shell Script with import commands - tf_import_commands_`<resource>`_nonGF.sh 
       
 **Action:** Execute the tf_import_commands_<resource>_nonGF.sh files that are generated in the outdir.
   
