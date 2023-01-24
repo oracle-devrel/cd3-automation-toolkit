@@ -2,7 +2,7 @@
 **Automation Toolkit can support new regions launched by OCI.**<br>
 CD3 Automation Toolkit automatically updates the OCI_Region file on every execution.
 
-Alternately, manually edit the file at **/cd3user/oci_tools/cd3_automation_toolkit/OCI_Regions**; add new region in belowformat:
+Alternately, manually edit the file at **/cd3user/oci_tools/cd3_automation_toolkit/OCI_Regions**; add new region in below format:
 **#Region:Region_Key**<br>
 eg<br>
 **langley:us-langley-1**
