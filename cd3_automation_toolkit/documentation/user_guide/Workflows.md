@@ -27,6 +27,7 @@ Execute the SetUpOCI.py script to start creating the terraform configuration fil
         
 Command to Execute:
 **python setUpOCI.py <path_to_setupOCI.properties>**
+<br>```python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties```
          
 Example execution of the wrapper script:
    
@@ -82,6 +83,7 @@ Execute the SetUpOCI.py script to start exporting the resources to CD3 and creat
 
 Command to Execute:
 **python setUpOCI.py <path_to_setupOCI.properties>**
+<br>```python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties```
   
 Example execution of the wrapper script:
   
@@ -104,7 +106,7 @@ b. Terraform Configuration files - *.auto.tfvars
   
 c. Shell Script with import commands - tf_import_commands_`<resource>`_nonGF.sh 
       
-**Action:** Execute the tf_import_commands_<resource>_nonGF.sh files that are generated in the outdir.
+**Action:** Execute the tf_import_commands_`<resource>`_nonGF.sh files that are generated in the outdir.
   
 The terraform plan should show that infrastructure is up-to-date with no changes required for all regions.
   
