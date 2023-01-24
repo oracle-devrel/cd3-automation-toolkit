@@ -9,7 +9,7 @@ Below are the steps that will help to configure the Automation Tool Kit to suppo
 
 **Step 1**: 
 
-The CD3 Template can be found at location  - /cd3user/oci_tools/cd3_automation_toolkit/example or can be downloaded from cd3.
+The CD3 Template can be found at location  - /cd3user/oci_tools/cd3_automation_toolkit/example.
 
 For the Core OCI Objects (IAM, Tags, Networking, Instances, LBR, Storage, Databases) - use the **CD3-SingleVCN-template.xlsx** file or **CD3-HubSpoke-template.xlsx** or **CD3-CIS-template.xlsx** based on the requirement.
  
@@ -45,14 +45,10 @@ Choose the resources by specifying a single option (for choosing one of these re
 
 **Step 4:** 
 
-Change your directory to /cd3user/tenancies/<customer_name>/terraform_files/<region>/.
-               
-Execute:
+Change your directory to /cd3user/tenancies/<customer_name>/terraform_files/region_dir/  and Execute:
 
-**terraform init** - To initialize and prepare your working/out directory soTerraform can run the configuration.
-  
-**terraform plan** - To preview any changes before you apply them.
-  
+**terraform init**  - To initialize and prepare your working/out directory soTerraform can run the configuration.<br>
+**terraform plan**  - To preview any changes before you apply them.<br>
 **terraform apply** - To make the changes defined by Terraform configuration to create, update, or destroy resources in OCI.
   
 > **Note**  
