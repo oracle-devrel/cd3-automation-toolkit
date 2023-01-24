@@ -12,7 +12,6 @@ This is a major release with below updates:
 4. Modified the setUpOCI workflow to prompt the user to execute 'Fetch Compartments' script in case it has not been executed previously.
 5. Bug fixes wrt Instances, DB Systems
 
-</br>
 
 ### Automation Toolkit Release v9.2.1 & Docker Image Release v5.2.1
 
@@ -25,7 +24,7 @@ This is a minor release with below updates:
 3. Include support for Marketplace Images for Instances.
 4. Few bug fixes/enhancements wrt export of Instances/NSGs, making null values for NSGs/Instances optional in tfvars
 
-</br>
+## Previous Versions released before making it available on GitHub
 
 ### Automation Toolkit Release v9.2 & Docker Image Release v5.2
 
@@ -42,8 +41,6 @@ This is a major release with existing services converted into terraform modules 
 7. Updated CD3 templates in example folder with latest CIS data
 8. Bug fixes wrt multiple services like Instances, Notifications etc
 9. Introduced documentation folder containing terraform and toolkit user guide in outdir of each customer
-  
- </br>
  
 ### Automation Toolkit Release v9.1 & Docker Image Release v5.1
 
@@ -57,15 +54,12 @@ This is a major release with existing services converted into terraform modules 
 4. Removed support for subnet_name_attach_cidr parameter from CD3 excel's 'VCN Info' sheet.
 5. Bug fixes
 
-</br>
-
 ### Automation Toolkit Release v9.0.2 & Docker Image Release v5.0.2
 
 #### Date - April 29, 2022
 
 This is a minor release with bug fixes related to Networking and Identity Policies.
 
-</br>
 
 ### Automation Toolkit Release v9.0.1 & Docker Image Release v5.0.1
 
@@ -79,7 +73,6 @@ This is a minor release.
 4. Bug fix for NSG ICMP rules not having only ICMP type
 5. Modified output template files to adjust the spacing
 
-</br>
 
 ### Automation Toolkit Release v9.0 & Docker Image Release v5.0
 
@@ -99,8 +92,6 @@ This is a major release.
 10. Updated OCI_regions to include all regions
 11. Deprecation of OCSWorkVM.
 
-</br>
-
 ### Automation Toolkit Release v8.0.3 & Docker Image Release v4.0.3
 
 #### Date - Nov 26 , 2021
@@ -110,8 +101,6 @@ This is a minor release.
 1. Bug fix for Availability Domain values while export of block volumes, FSS
 2. Bug fix for DRG Route Rules export error - 'Too Many requests'
 3. Bug fix for export of Tags having spaces in the values
-
-</br>
 
 ### Automation Toolkit Release v8.0.2 & Docker Image Release v4.0.2
 
@@ -124,8 +113,6 @@ This is a minor release.
 3. Bug fix for terraform variable name for route table names
 4. Allow case insensitive for Security Rule Types/Protocols
 5. Allow flexible shapes in LBR CD3
-
-</br>
 
 ### Automation Toolkit Release v8.0 & Docker Image Release v4.0
 
@@ -142,10 +129,7 @@ This is a major release.
 7. Included export of additional objects for Instances and Block Volumes
 8. CD3 templates are compliant to latest CIS Landing Zone
 9. Upgrade terraform version to 1.0.0
-10. Please note that since this release is upgrading the terraform version so previous version's terraform state will not be compatible with the new tf files. Recommendation is to keep using old code setup for eixsting customers and new code setup for new customers. Or else export everything using new code and then import into the new terraform state.
-
-
-</br>
+10. Please note that since this release is upgrading the terraform version so previous version's terraform state will not be compatible with the new tf files. Recommendation is to keep using old code setup for eixsting customers and new code setup for new customers. Or else export everything using new code and then import into the new terraform state
 
 ### Automation Toolkit Release v7.2 & Docker Image Release v3.2
 
@@ -161,9 +145,6 @@ This is a minor release.
 6. Accept key value along with key var name in Instances Sheet
 7. Updated CD3 Templates as per CIS
 
-
-</br>
-
 ### Release v7.1.2
 
 #### Date - Apr 12, 2021
@@ -175,8 +156,6 @@ This is a minor release.
 3. Removed installation of Development Tools from shell script on OCSVM.
 4. Added CD3 validation for DNS Label length for VCN and Subnets
 
-</br>
-
 ### Release v7.1.1
 
 #### This is a minor release.
@@ -184,8 +163,6 @@ This is a minor release.
 1. Bug fix for CD3 Network components validator - included check for invalid CIDR range having host bits set
 2. Bug fix for Security List Rules - allow all ports for TCP/UDP
 3. Removed unwanted packages from shell script - cfgparse, ipaddr, pycrypto, gcc
-
-</br>
 
 ### Release v7.1
 
@@ -212,13 +189,10 @@ Below are the highlights of this release:
 
 4. CD3 templates as per CIS Standards
   
-  
-  </br>
-  
- ### Release v7.0.1
+   
+### Release v7.0.1
 
 This is a minor release.
-
 
 xrld package's latest release was not compatible and giving below issue with CD3:
   
@@ -229,10 +203,7 @@ It has been fixed by installing lower version of xlrd package.
 pip3 install xlrd==1.2.0
 
 It has been corrected and pushed to the master branch.
-  
-  
-</br>
-  
+    
 ### Major Release v7.0
 
 #### Date - Oct 9, 2020
@@ -247,18 +218,12 @@ It has been corrected and pushed to the master branch.
 8. Support to create and export LBR Components- Cipher Suites, Rule Set and Path Route Set
 9. Support to attach or export 'Custom Backup Policy Attachments' to Block and Boot Volumes
   
-
- ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-  </br>
-  
 ### Release v6.1.1
 
 creatOCSWork.py picks up latest Linux OCID and launches the OCSWork VM. However Linux 8 does not support many packages required by automation toolkit.
 
 Hence modified the code to launch Linux 7.8 incase **ocs_vm_source_image_ocid** is left empty in ocswork.properties.
-
- </br>
-  
+ 
 ### Release v6.1
 
 #### Date - July 31, 2020
@@ -284,9 +249,6 @@ Below are the highlights of this release:
 13. Support for NSG export/import. Export process for non-greenfield tenancies will support export of NSGs and their import into terraform.
 14. GIT repo has been moved to OCI. SSH key needs to be setup for access to the repo.
 Private key is copied over to /root/.ssh folder. It is up to the developers if they want to keep the private key there for any future GIT updates or if they want to remove the key for security reasons.
-
-
- </br>
   
 ### Release v6.0.1
 
@@ -295,8 +257,6 @@ Private key is copied over to /root/.ssh folder. It is up to the developers if t
 There was a bug in v6.0 where TF for Instances, FSS, LBR etc was not getting correct subnet name as created for subnets using NEtworking.
 
 It has been corrected and pushed to the master branch.
-
-</br>
 
 ### Major Release v6.0
 
@@ -312,17 +272,9 @@ Below are the highlights of this release:
 
 **ATTENTION!!! Below SecLists are not attached to any subnet; If you want to delete any of them, remove the TF file!!!**
 
-  </br>
-  
-### Previous Versions
-
-</br>
-
 ### Release v5.0.1
 
 There was a bug in LPGs creation/peering. Corrected that and pushed as v5.0.1
-
-</br>
 
 ### Major Release v5.0
 
@@ -363,11 +315,7 @@ If any change is required to be done in default sec rules or route rules, they c
 
 CSV support for this version is still under progress.
   
- ----------------------------------------------------------------------------------------------------------------------------------------
-
-  </br>
-  
-  ### Major Release v4.0
+### Major Release v4.0
 
 > **Note** 
  >This version would require you to change your excel file and use the latest one since there is a column addition in the existing sheet.
@@ -381,4 +329,3 @@ CSV support for this version is still under progress.
 6. Modified DB Systems creation code. Separated tabs for DB system - VM, BM and Exa
 7. Fixed some minor issues with existing code
 
-----------------------------------------------------------------------------------------------------------------------------------------
