@@ -1,4 +1,4 @@
-# Scenario Based Workflow
+# Scenario Based UseCases
 
 This page will give you an insight into the Automation Toolkit Workflows that must be followed for flawless execution and usage of the toolkit.
 
