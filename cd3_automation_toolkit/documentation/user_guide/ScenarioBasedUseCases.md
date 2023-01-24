@@ -38,7 +38,7 @@ This page will give you an insight into the usual usecases that can be performed
 | Add new components after export of non-greenfield tenancy - For Networking - VCN/DHCP/DRG/IGW/NGW/SGW/LPG/Subnet | **Steps** <li>Modify the setUpOCI.properties file to set non_gf_tenancy to "false".</li><li>Add the data to the appropriate Excel sheets.</li><li>Execute setUpOCI.py and choose "Network".</li><li>Choose sub-menu option  "Modify Network".</li>|
 | To Export Instances in batches using different filters | **Steps** <li>Modify the setUpOCI.properties file to set non_gf_tenancy to "true".</li><li>Choose "Export Compute".</li><li>Specify the prefix of the instances to export or specify the AD to export.</li><li>Once the execution completes, take a backup of the files generated for instances in out directory( *_instances.tfvars and tf_import_cmds_instances_nonGF.sh) and a backup of the 'Instances' tab of the Input CD3 Excel Sheet.</li><li>Repeat steps from 1 to 4 to export next set of Instances using another filter.</li><li>Once you export all the required instances using multiple filters, move the files from backup to the out directory and then execute all the shell scripts generated for Instances. Consolidate the data of exported instances from the Excel sheet backups.</li> |
 
-### Sample of CD3 after export:
+### Sample of CD3 Excel after export:
 
 (DO NOT Modify the highlighted columns)
 
