@@ -1,3 +1,5 @@
+`To ease the execution of toolkit, we have provided the steps to build an image which encloses the code base and its package dependencies. Follow the steps provided below  to clone the repo and build the image.`
+<br>
 ## To clone the repo
 * Open your terminal and change the directory to the one where you want to download the git repo.
 * Run the git clone command as shown below:<br/>
