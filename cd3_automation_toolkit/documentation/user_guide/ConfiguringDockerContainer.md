@@ -20,7 +20,7 @@ If the key pair does not exist, create them using the below command:
 - Click Add Public Key.</li><li>Paste the contents of the PEM public key in the dialog box and click Add.</li></ul>
 
 **Step 4**:
-<br>Enter the details to **tenancyconfig.properties** file 
+<br>Enter the details to **tenancyconfig.properties** file.
 ```
 [Default]
 # Mandatory Fields
