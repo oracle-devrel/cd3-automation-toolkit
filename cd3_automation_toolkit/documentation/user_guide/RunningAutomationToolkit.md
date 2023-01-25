@@ -32,22 +32,22 @@ Make sure to use/modify the properties file at /cd3user/tenancies /<customer\_na
 
 ```
 [Default]
- 
-#Input variables required to run setUpOCI script
-#path to output directory where terraform file will be generated. eg /cd3user/tenancies/<customer_tenancy_name>/terraform_files when running from cd3toolkit docker container 
-outdir=/cd3user/tenancies/demotenancy/terraform_files
 
-#prefix for output terraform files eg client name prefix=demotenancy
+#Input variables required to run setUpOCI script
+
+#path to output directory where terraform file will be generated. eg /cd3user/tenancies/<customer_tenancy_name>/terraform_files
+outdir=/cd3user/tenancies/<customer_tenancy_name>/terraform_files
+
+#prefix for output terraform files eg client name
 prefix=
 
-#input config file for Python API communication with OCI eg example\config; Leave it blank if code is being executed from OCS Work VM
+#input config file for Python API communication with OCI eg example\config;
 config_file=
 
-#params required if input data format is cd3
-#path to cd3 excel eg example\CD3-template.xlsx cd3file=/cd3user/tenancies/demotenancy/CD3-demotenancy-template.xlsx
+#path to cd3 excel eg example\CD3-template.xlsx
 cd3file=
 
-#Is it a Non Green Field tenancy 
+#Is it Non GreenField tenancy
 non_gf_tenancy=false
 ```
 
