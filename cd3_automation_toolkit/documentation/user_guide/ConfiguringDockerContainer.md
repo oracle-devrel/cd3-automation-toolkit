@@ -24,7 +24,7 @@ If the key pair does not exist, create them using the below command:
 ```
 [Default]
 #Mandatory Fields
-#Friendly name for the Customer Tenancy eg: gctenancy; The generated .auto.tfvars will be prefixed with this customer name
+#Friendly name for the Customer Tenancy eg: demotenancy; The generated .auto.tfvars will be prefixed with this customer name
 customer_name=
 tenancy_ocid=
 fingerprint=
