@@ -10,7 +10,7 @@ Once you are inside the container, follow the below steps to configure the docke
 **Step 2**:
 <br> Create API PEM Key.
 If the key pair does not exist, create them using the below command:
-<br>```cd python createAPIKey.pys```
+<br>```python createAPIKey.pys```
 
 **Step 3**:
 <br>Upload the Public key to **"APIkeys"** under user settings inOCI Console. Pre-requisite to use the complete functionality of the Automation Toolkit is to have the user as an administrator to the tenancy.
