@@ -8,12 +8,13 @@
 2. [Pre-requisites](#pre-requisites)
 3. [Launch Docker container](/cd3_automation_toolkit/documentation/user_guide/GettingStarted.md)
 4. [Connect container to OCI Tenancy](/cd3_automation_toolkit/documentation/user_guide/ConfiguringDockerContainer.md)
-5. [Running the Automation Toolkit](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md)
-6. [Automation Toolkit Workflows](/cd3_automation_toolkit/documentation/user_guide/Workflows.md)
-7. [Recommendations](/cd3_automation_toolkit/documentation/user_guide/Recommendations.md)
-8. [Creating independent tfstate files for each resource](/cd3_automation_toolkit/documentation/user_guide/RestructuringOutDirectory.md)
-9. [Expected Behaviour Of Automation Toolkit](/cd3_automation_toolkit/documentation/user_guide/KnownBehaviour.md)
-10. Learn More...
+5. [Quick Start](/cd3_automation_toolkit/documentation/user_guide/Quickstart.md)
+6. [Running the Automation Toolkit](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md)
+7. [Automation Toolkit Workflows](/cd3_automation_toolkit/documentation/user_guide/Workflows.md)
+8. [Recommendations](/cd3_automation_toolkit/documentation/user_guide/Recommendations.md)
+9. [Creating independent tfstate files for each resource](/cd3_automation_toolkit/documentation/user_guide/RestructuringOutDirectory.md)
+10. [Expected Behaviour Of Automation Toolkit](/cd3_automation_toolkit/documentation/user_guide/KnownBehaviour.md)
+11. Learn More...
     - CD3 Excel Information
       - [Excel Templates](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md#excel-sheet-templates)
       - CD3 Excelsheet Tabs
@@ -22,8 +23,8 @@
     - [Additional CIS Compliance Features](/cd3_automation_toolkit/documentation/user_guide/CISFeatures.md)
     - [OCI Resource Manager Upload](/cd3_automation_toolkit/documentation/user_guide/ResourceManagerUpload.md)
     - Support for Additional Attributes
-10. [Automation Toolkit Learning Videos](/cd3_automation_toolkit/documentation/user_guide/LearningVideos.md)
-11. FAQ 
+12. [Automation Toolkit Learning Videos](/cd3_automation_toolkit/documentation/user_guide/LearningVideos.md)
+13. FAQ 
 
 ## Introduction
 CD3 stands for <b>C</b>loud <b>D</b>eployment <b>D</b>esign <b>D</b>eliverable.
