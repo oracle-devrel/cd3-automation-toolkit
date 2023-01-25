@@ -11,7 +11,7 @@
 5. [Running the Automation Toolkit](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md)
 6. [Automation Toolkit Workflows](/cd3_automation_toolkit/documentation/user_guide/Workflows.md)
 7. [Recommendations](/cd3_automation_toolkit/documentation/user_guide/Recommendations.md)
-8. Creating independent tfstate files for each resource
+8. [Creating independent tfstate files for each resource](/cd3_automation_toolkit/documentation/user_guide/RestructuringOutDirectory.md)
 9. [Expected Behaviour Of Automation Toolkit](/cd3_automation_toolkit/documentation/user_guide/KnownBehaviour.md)
 10. Learn More...
     - CD3 Excel Information
