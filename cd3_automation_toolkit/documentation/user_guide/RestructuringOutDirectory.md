@@ -6,7 +6,7 @@ This document explains about one such use case.
 
 ### Background:
 
-The customer is utilising OCI services like IAM, Tags, Network, 800+ NSG rules, DNS Zones/views, 200+ Compute Instances, Block Volumes, File Storage, Object Storage, LBaaS, Network Load Balancers, OKE clusters etc in a single datacenter. 3 such data centers have already been deployed for them.
+The customer is utilising OCI services like IAM, Tags, Network, 800+ NSG rules, DNS Zones/views, 200+ Compute Instances, Block Volumes, File Storage, Object Storage, LBaaS, Network Load Balancers, OKE clusters etc in a single datacenter. Same infrastructure needs to be deployed in multiple datacenters.
 
 ### Requirements:
 
