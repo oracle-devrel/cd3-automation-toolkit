@@ -14,7 +14,7 @@
    - Adding new VCNs as None is allowed. Gateways will be created as specified in VCNs sheet.
    - The addition of new Subnets to exported VCNs and new VCNs is allowed.
   
-## Known Behaviour of Terraform
+## Terraform Behavior
 - Create a Load Balancer with Reserved IP: When you create a LBaaS with reserved ip as "Y" and do a terraform apply, everything will go smooth and be in sync for the first time. If you do a terraform plan immediately (post apply), you will find that the plan changes the private ip of load balancer to null.
 
 
