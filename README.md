@@ -2,6 +2,27 @@
 
 [![License: UPL](https://img.shields.io/badge/license-UPL-green)](https://img.shields.io/badge/license-UPL-green) [![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=oracle-devrel_cd3-automation-toolkit)](https://sonarcloud.io/dashboard?id=oracle-devrel_cd3-automation-toolkit)
 
+## Table of Contents :bookmark:
+
+1. [Introduction](/cd3-automation-toolkit#cd3-automation-toolkit)
+2. [Pre-requisites](/cd3-automation-toolkit#pre-requisites)
+3. [Getting Started](/cd3_automation_toolkit/documentation/user_guide/GettingStarted.md)
+4. [Connect container to OCI Tenancy](/cd3_automation_toolkit/documentation/user_guide/ConfiguringDockerContainer.md)
+5. [Running the Automation Toolkit](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md)
+6. [Automation Toolkit Workflows](/cd3_automation_toolkit/documentation/user_guide/Workflows.md)
+7. Learn More...
+   - [Excel Templates](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md#excel-sheet-templates)
+   - [Recommendations while using the Toolkit](/cd3_automation_toolkit/documentation/user_guide/Recommendations.md)
+   - Restructuring Terraform Out Directory
+   - Known Behaviour Of Automation Toolkit
+   - [Scenario Based Use Cases](/cd3_automation_toolkit/documentation/user_guide/ScenarioBasedUseCases.md)
+   - [CIS Features](/cd3_automation_toolkit/documentation/user_guide/CISFeatures.md)
+   - [OCI Resource Manager Upload](/cd3_automation_toolkit/documentation/user_guide/ResourceManagerUpload.md)
+   - Support for Additional Attributes
+   - [Support For CD3 Validator](/cd3_automation_toolkit/documentation/user_guide/SupportForCD3Validator.md)
+   - [Support For New Region and Protocol](/cd3_automation_toolkit/documentation/user_guide/SupportNewRegionProtocol.md)
+   - [Release-Info](/cd3_automation_toolkit/documentation/user_guide/ReleaseInfo.md)
+
 ## Introduction
 CD3 stands for <b>C</b>loud <b>D</b>eployment <b>D</b>esign <b>D</b>eliverable.
 The CD3 Automation toolkit has been developed to help in automating the OCI resource object management. 
@@ -28,59 +49,13 @@ It reads input data in the form of CD3 Excel sheets and generates the terraform 
 `To ease the execution of toolkit, we have provided the steps to build an image which encloses the code base and its package dependencies. Follow the steps provided below under 'Getting Started' to clone the repo and build the image. Then Follow the User Guides to start using the toolkit.`
 <br>
 
-## Getting Started
-
-### Pre-requisites
+## Pre-requisites
 * Git
 * Any docker CLI compatible platform such as Docker or Rancher.
 * Local Directory - A directory in your local system that will be shared with the container to hold the generated Terraform files.
 * OCI Tenancy Access Requirement - 
 Appropriate IAM policies must be in place for each of the resources that the user may try to create.
 Minimum requirement for the user to get started is to have the ability to read to the tenancy.
-
-
-### To clone the repo
-* Open your terminal and change the directory to the one where you want to download the git repo.
-* Run the git clone command as shown below:<br/>
-&nbsp; &nbsp; &nbsp; &nbsp; git clone https://github.com/oracle-devrel/cd3-automation-toolkit
-* Once the cloning command completes successfully, the repo will replicate to the local directory. 
-
-### To build an image
-
-* Change directory to cd3-automation-toolkit(i.e. the cloned repo in your local).
-* Run <i>"docker build --platform linux/amd64 -t cd3toolkit:${image_tag} -f Dockerfile --pull --no-cache ."</i><br/>
-<br  /><b>Note</b> : ${image_tag} should be replaced with suitable tag as per your requirements/standards.
-<br  />&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;The period at the end of the docker build command is required.
-
-### To save the image (Optional)
-* Run  <i>"docker save cd3toolkit:${image_tag} | gzip > cd3toolkit_${image_tag}.tar.gz"</i>
-
-
-### To run the CD3 container and exec into it
-* Run  <i>"docker run --platform linux/amd64 -it -d -v <directory_in_local_system_where_the_files_must_be_generated>:/cd3user/tenancies <image_name>:<image_tag>"</i>
-* Run  <i>"docker ps"</i>
-* Run  <i>"docker exec -it <container_id> bash"</i>
-
-## User Guides :bookmark:
-
-1. [Getting Started](/cd3_automation_toolkit/documentation/user_guide/GettingStarted.md)
-2. [Connect container to OCI Tenancy](/cd3_automation_toolkit/documentation/user_guide/ConfiguringDockerContainer.md)
-3. [Running the Automation Toolkit](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md)
-4. [Automation Toolkit Workflows](/cd3_automation_toolkit/documentation/user_guide/Workflows.md)
-
-## Additional Information :blue_book:
-* [Excel Templates](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md#excel-sheet-templates)
-* [Recommendations while using the Toolkit](/cd3_automation_toolkit/documentation/user_guide/Recommendations.md)
-* Restructuring Terraform Out Directory
-* Known Behaviour Of Automation Toolkit
-
-* [Scenario Based Use Cases](/cd3_automation_toolkit/documentation/user_guide/ScenarioBasedUseCases.md)
-* [CIS Features](/cd3_automation_toolkit/documentation/user_guide/CISFeatures.md)
-* [OCI Resource Manager Upload](/cd3_automation_toolkit/documentation/user_guide/ResourceManagerUpload.md)
-* Support for Additional Attributes
-* [Support For CD3 Validator](/cd3_automation_toolkit/documentation/user_guide/SupportForCD3Validator.md)
-* [Support For New Region and Protocol](/cd3_automation_toolkit/documentation/user_guide/SupportNewRegionProtocol.md)
-* [Release-Info](/cd3_automation_toolkit/documentation/user_guide/ReleaseInfo.md)
 
 ## Contributing
 This project is open source.  Please submit your contributions by raising an <b>Issue</b> or through <b>Discussion topic</b> in this repository. Currently, we do not accept any pull requests. Oracle appreciates any contributions that are made by the open source community.
