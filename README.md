@@ -24,7 +24,7 @@
    - [Support For CD3 Validator](/cd3_automation_toolkit/documentation/user_guide/SupportForCD3Validator.md)
    - [Support For New Region and Protocol](/cd3_automation_toolkit/documentation/user_guide/SupportNewRegionProtocol.md)
    - [Release-Info](/cd3_automation_toolkit/documentation/user_guide/ReleaseInfo.md)
-8. Automation Toolkit Learning Videos(/cd3_automation_toolkit/documentation/user_guide/LearningVideos.md)
+8. [Automation Toolkit Learning Videos](/cd3_automation_toolkit/documentation/user_guide/LearningVideos.md)
 9. FAQ 
 
 ## Introduction
