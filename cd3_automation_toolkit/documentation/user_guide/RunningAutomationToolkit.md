@@ -75,7 +75,7 @@ non_gf_tenancy=false
 <br>```cd /cd3user/oci_tools/cd3_automation_toolkit/```
 
 **Step 2**:
-<br>Place Excel sheet at appropriate location in your container and provide the corresponding path in _cd3file_ parmeter of: /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties file
+<br>Place Excel sheet at appropriate location in your container and provide the corresponding path in _cd3file_ parmeter of: _/cd3user/tenancies /<customer\_name>/<customer\_name>\_setUpOCI.properties_ file
 
 **Step 3**
 <br>Execute the command to fetch the details of the compartments if it already exists/created in OCI. These details will be written to the terraform variables file. Choose **"Fetch Compartments OCIDs to variables file"** from CD3 Services in setUpOCI menu.
