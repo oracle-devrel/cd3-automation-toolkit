@@ -8,7 +8,7 @@ CD3 Automation Tool Kit supports 2 main workflows:
 Below are the steps that will help to configure the Automation Tool Kit to support the Green Field Tenancies:
 
 **Step 1**: 
-<br>Chose the appropriate CD3 Excel sheet template from [Excel Templates](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md#excel-sheet-templates)
+<br>Choose the appropriate CD3 Excel sheet template from [Excel Templates](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md#excel-sheet-templates)
 
 **Step 2**:
 <br>Fill the CD3 Excel with appropriate values specific to the client and put at the appropriate location.
@@ -43,7 +43,7 @@ Choose the resources by specifying a single option (for choosing one of these re
   
 > **Note**  
 
->Make sure to execute **"Fetch Compartments OCIDs to variables file"** from **CD3 Services** in setUpOCI menu after you create Compartments. This will ensure that the variables file in outdir is updated with the OCID information of all the compartments.
+>Execute **"Fetch Compartments OCIDs to variables file"** from **CD3 Services** in setUpOCI menu after you create Compartments. This is a required step everytime you create a compartment via toolkit or via the OCI console.
   
   
  </br> 
