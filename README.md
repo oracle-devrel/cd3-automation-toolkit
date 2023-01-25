@@ -11,7 +11,9 @@
 5. [Running the Automation Toolkit](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md)
 6. [Automation Toolkit Workflows](/cd3_automation_toolkit/documentation/user_guide/Workflows.md)
 7. Learn More...
-   - [Excel Templates](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md#excel-sheet-templates)
+   - CD3 Excel Information
+     - [Excel Templates](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md#excel-sheet-templates)
+     - CD3 Excelsheet TAB
    - [Recommendations while using the Toolkit](/cd3_automation_toolkit/documentation/user_guide/Recommendations.md)
    - Restructuring Terraform Out Directory
    - Known Behaviour Of Automation Toolkit
@@ -22,6 +24,7 @@
    - [Support For CD3 Validator](/cd3_automation_toolkit/documentation/user_guide/SupportForCD3Validator.md)
    - [Support For New Region and Protocol](/cd3_automation_toolkit/documentation/user_guide/SupportNewRegionProtocol.md)
    - [Release-Info](/cd3_automation_toolkit/documentation/user_guide/ReleaseInfo.md)
+8. FAQ 
 
 ## Introduction
 CD3 stands for <b>C</b>loud <b>D</b>eployment <b>D</b>esign <b>D</b>eliverable.
