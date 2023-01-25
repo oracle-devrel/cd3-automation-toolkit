@@ -11,9 +11,10 @@ Once you are inside the container, follow the below steps to configure the docke
 <br> Create API PEM Key.
 If the key pair does not exist, create them using the below command:
 <br>```python createAPIKey.pys```
+<br> → This will generate the public/private key pair at _/cd3user/tenancies/keys/_
 
 **Step 3**:
-<br>Upload the Public key to **"APIkeys"** under user settings inOCI Console. Pre-requisite to use the complete functionality of the Automation Toolkit is to have the user as an administrator to the tenancy.
+<br>Upload the Public key to **"APIkeys"** under user settings in OCI Console. Pre-requisite to use the complete functionality of the Automation Toolkit is to have the user as an administrator to the tenancy.
 - Open the Console, and sign in as the user.
 - View the details for the user who will be calling the API with the key pair.
 - Open the Profile menu (User menu icon) and click User Settings.
@@ -50,7 +51,7 @@ ssh_public_key=
 Example execution of the script:
 <br><img src = "https://user-images.githubusercontent.com/103508105/214566973-ba3446a7-c460-4028-8c45-c7b4e73d3b3c.png" width=70% height=70%>
 
-**Files created on successfully completing the above steps - Description of the Generated files:**
+**→ Files created on successfully completing the above steps - Description of the Generated files:**
 
 | Files Generated | At File Path | Comment/Purpose |
 | --------------- | ------------ | --------------- |
