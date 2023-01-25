@@ -1,7 +1,7 @@
 ## Connect Docker container to OCI Tenancy
 
-Once you are inside the conatiner, follow the below steps to configure the docker container to connect to a tenancy:
-> ***Repeat this process for every new customer. Same container can be connected to multiple OCI tenancies.***
+Once you are inside the container, follow the below steps to configure the docker container to connect to a tenancy:
+> ***Same container can be connected to multiple OCI tenancies. Repeat this process for every new customer.***
 
 **Commands to execute inside the container:**
 | Steps | Command |
