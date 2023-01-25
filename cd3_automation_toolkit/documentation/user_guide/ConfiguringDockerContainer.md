@@ -45,6 +45,9 @@ ssh_public_key=
 **Note** - If the API Keys were generated and added to the OCI console using previous steps, it might take a couple of seconds to reflect. Thus, running the above command immediately might result in Authentication Errors.<br>In such cases, please retry after a minute.
 <br>
 
+Example execution of the script:
+<br><img src = "https://user-images.githubusercontent.com/103508105/214566973-ba3446a7-c460-4028-8c45-c7b4e73d3b3c.png" width=70% height=70%>
+
 **Files created on successfully completing the above steps - Description of the Generated files:**
 
 | Files Generated | At File Path | Comment/Purpose |
