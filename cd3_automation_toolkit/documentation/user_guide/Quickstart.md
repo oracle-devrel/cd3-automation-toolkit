@@ -2,7 +2,7 @@
 
 **After launching the Docker Container and connecting it to the OCI Tenancy, follow the below steps to quickly provision a compartment on OCI**.
 1. Pick up the excel [CD3-SingleVCN-template](/cd3_automation_toolkit/example) and add in the required compartment details in specified Comaprtments tab.
-   Details on how to fill the data into the excel sheet can be found in the Blue section of each sheet inside the excel file. Make appropriate changes to the template eg region. Place Excel sheet at appropriate location in your docker.
+   Details on how to fill the data into the excel sheet can be found in the Blue section of each sheet inside the excel file. Make appropriate changes to the template eg region. Place Excel sheet at appropriate location in your docker container.
    
 2. Edit the setUpOCI.properties at location: _/cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties with appropriate values. 
    - Provide the CD3 excel sheet path in: /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties file.
