@@ -17,7 +17,7 @@
    
    ```python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties```
    
- 4. Once _setupOCI.py_ is executed with the required options, <customer_name>_compartmetns.auto.tfvars file will be generated under the folder 									
+ 4. Once _setupOCI.py_ is executed with the required options, <customer_name>_compartments.auto.tfvars file will be generated under the folder 									
     ```/cd3user/tenancies/<customer_name>/terraform_files/<Region>/```
     
    	Navigate to the above path and execute the terraform commands:
@@ -30,5 +30,4 @@
 
    
  4. Choose _"Fetch Compartments OCIDs to variables file"_ from CD3 Services in _setUpOCI_ menu. Execute the command to fetch the details of the compartments if it already exists/ created in OCI. These details will be written to the terraform variables file.
-    
 
