@@ -1,4 +1,4 @@
-## CD3 Quick start
+## CD3 Quick start - Create a Compartment
 
 **Once the Docker container has been launched and connected to the OCI Tenancy, follow the below steps to quickly provision a compartment on OCI. Detailed instructions can be found at** [Running the Automation Toolkit](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md) 
 1. Use the excel [CD3-SingleVCN-template](/cd3_automation_toolkit/example) and fill the required Compartment details in the 'Compartments' tab.
@@ -29,5 +29,5 @@
        _terraform apply_
 
    
- 4. Choose _"Fetch Compartments OCIDs to variables file"_ from CD3 Services in _setUpOCI_ menu. Execute the command to fetch the details of the compartments if it already exists/ created in OCI. These details will be written to the terraform variables file.
+ 4. Choose _"Fetch Compartments OCIDs to variables file"_ from CD3 Services in _setUpOCI_ menu. Execute the command to fetch the details of the                 compartments if it already exists/ created in OCI. These details will be written to the terraform variables file.
 
