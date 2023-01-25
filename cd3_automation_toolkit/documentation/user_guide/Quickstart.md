@@ -1,10 +1,10 @@
 ## CD3 QUICKSTART
 
 **After launching the Docker Container and connecting it to the OCI Tenancy, follow the below steps to quickly provision a compartment on OCI. Detailed instructions can be found at [RunningAutomationToolkit](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md)** 
-1. Pick up the excel [CD3-SingleVCN-template](/cd3_automation_toolkit/example) and add in the required compartment details in specified Comaprtments tab.
-   Details on how to fill the data into the excel sheet can be found in the Blue section of each sheet inside the excel file. Make appropriate changes to the template eg region. Place Excel sheet at appropriate location in your docker container.
+1. Pick up the excel [CD3-SingleVCN-template](/cd3_automation_toolkit/example) and add in the required compartment details in 'Comaprtments' tab.
+   Make appropriate changes to the template eg region. Place Excel sheet at appropriate location in your docker container.
    
-2. Edit the setUpOCI.properties at location: _/cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties with appropriate values. 
+2. Edit the setUpOCI.properties at location: /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties with appropriate values. 
    - Provide the CD3 excel sheet path in: /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties file.
    - Change the _non_gf_tenancy_ parameter_ value to _false_.
    We will be using a Greenfield workflow for this Quickstart.A Greenfield tenancy is an Empty OCI tenancy (or) any OCI tenancy where we need not to modify / use any existing resources.
