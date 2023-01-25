@@ -6,7 +6,7 @@
    
 2. Edit the setUpOCI.properties at location: /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties with appropriate values. 
    - Update the _cd3file_ parameter to specify the CD3 excel sheet path.
-   - Change the _non_gf_tenancy_ parameter_ value to _false_.
+   - Change the _non_gf_tenancy_ parameter value to _false_.
    We will be using a Greenfield workflow for this Quickstart.A Greenfield tenancy is an Empty OCI tenancy (or) any OCI tenancy where we need not to modify / use any existing resources.
    
    For more information on types of Workflows, refer to [Workflows.md](/cd3_automation_toolkit/documentation/user_guide/Workflows.md)
