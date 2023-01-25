@@ -20,11 +20,11 @@
    
    ```python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties```
    
- 4.Choose option to create compartments under 'Identity' from the displayed menu. Once the exececution is successful, _<customer\_name>\_compartments.auto.tfvars_ file will be generated under the folder _/cd3user/tenancies/<customer\_name>/terraform_files/<region_dir>_
+4. Choose option to create compartments under 'Identity' from the displayed menu. Once the exececution is successful, _<customer\_name>\_compartments.auto.tfvars_ file will be generated under the folder _/cd3user/tenancies/<customer\_name>/terraform_files/<region_dir>_
     
    Navigate to the above path and execute the terraform commands:<br>
        <br>_terraform init_
        <br>_terraform plan_
        <br>_terraform apply_
    
- 4. Choose _Fetch Compartments OCIDs to variables file_ under _CD3 Services_ in setUpOCI menu. Execute the command to fetch the details of the                 compartments if it already exists/ created in OCI. These details will be written to the terraform variables file.
+5. Choose _Fetch Compartments OCIDs to variables file_ under _CD3 Services_ in setUpOCI menu. Execute the command to fetch the details of the                 compartments if it already exists/ created in OCI. These details will be written to the terraform variables file.
