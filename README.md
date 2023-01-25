@@ -19,7 +19,7 @@
       - CD3 Excelsheet Tabs
     - [CD3 Validator Features](/cd3_automation_toolkit/documentation/user_guide/SupportForCD3Validator.md)
     - [Scenario Based Use Cases](/cd3_automation_toolkit/documentation/user_guide/ScenarioBasedUseCases.md)
-    - [CIS Features](/cd3_automation_toolkit/documentation/user_guide/CISFeatures.md)
+    - [Additional CIS Compliance Features](/cd3_automation_toolkit/documentation/user_guide/CISFeatures.md)
     - [OCI Resource Manager Upload](/cd3_automation_toolkit/documentation/user_guide/ResourceManagerUpload.md)
     - Support for Additional Attributes
 10. [Automation Toolkit Learning Videos](/cd3_automation_toolkit/documentation/user_guide/LearningVideos.md)
