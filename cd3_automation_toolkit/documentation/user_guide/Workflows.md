@@ -14,7 +14,7 @@ Below are the steps that will help to configure the Automation Tool Kit to suppo
 <br>Fill the CD3 Excel with appropriate values specific to the client and put at the appropriate location.
 <br>Modify/Review [setUpOCI.properties](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md#setupociproperties) with **non_gf_tenancy** set to **false** as shown below:
 
-<img src = "https://user-images.githubusercontent.com/122371432/213668401-9e795546-6683-42ab-8ce0-9c9c72b84079.png" width=75% height=75%>
+<img src = "https://user-images.githubusercontent.com/103508105/214644389-0539165c-4253-451b-b035-4ae3f5a80a59.png" width=75% height=75%>
 
 
 
@@ -22,10 +22,11 @@ Below are the steps that will help to configure the Automation Tool Kit to suppo
 <br>Execute the SetUpOCI.py script to start creating the terraform configuration files.
     
 Command to Execute:
-**python setUpOCI.py <path_to_setupOCI.properties>**
+<br>```cd /cd3user/oci_tools/cd3_automation_toolkit/```
+<br>**python setUpOCI.py <path_to_setupOCI.properties> ie**
 <br>```python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties```
          
-Example execution of the wrapper script:
+→ Example execution of the wrapper script:
    
 <img src = "https://user-images.githubusercontent.com/122371432/213680074-be73042e-8672-44f5-b2cf-619998805724.png" width=50% height=50%>
 
@@ -35,7 +36,7 @@ Choose the resources by specifying a single option (for choosing one of these re
 
 
 **Step 4:** 
-<br>Change your directory to /cd3user/tenancies/<customer_name>/terraform_files/region_dir/  and Execute:
+<br>Change your directory to _/cd3user/tenancies/<customer\_name>/terraform\_files/region\_dir/_  and Execute:
 
 **terraform init**  - To initialize and prepare your working/out directory soTerraform can run the configuration.<br>
 **terraform plan**  - To preview any changes before you apply them.<br>
@@ -66,17 +67,18 @@ Below are the steps that will help to configure the Automation Tool Kit to suppo
 **Step 2:** 
 <br>Put CD3 Excel at the appropriate location.
 <br>Modify/Review [setUpOCI.properties](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md#setupociproperties) with **non_gf_tenancy** set to **true**  as shown below:
-<img src = "https://user-images.githubusercontent.com/122371432/213680179-ae2e78b8-f508-47b1-8fb5-23d635d78648.png" width=75% height=75%>
+<img src = "https://user-images.githubusercontent.com/103508105/214645849-464ea32f-31b9-4c4a-8d0c-31e4e3cb541b.png" width=75% height=75%>
 
   
 **Step 3:** 
 <br>Execute the SetUpOCI.py script to start exporting the resources to CD3 and creating the terraform configuration files.
 
 Command to Execute:
-**python setUpOCI.py <path_to_setupOCI.properties>**
+<br>```cd /cd3user/oci_tools/cd3_automation_toolkit/```
+<br>**python setUpOCI.py <path_to_setupOCI.properties> ie**
 <br>```python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties```
   
-Example execution of the wrapper script:
+→ Example execution of the wrapper script:
   
 <img src = "https://user-images.githubusercontent.com/122371432/213680233-002cce49-65c3-4cab-8f38-ef56f04fe266.png" width=50% height=50%>
 
