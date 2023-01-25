@@ -59,23 +59,15 @@ non_gf_tenancy=false
 | cd3file |Path to the CD3 input file |/cd3user/tenancies/<customer\_name>/testCD3. xlsx |
 |non\_gf\_tenancy |Specify if its a Non Green field tenancy or not (**True** or **False**)| False|
 
-**More information about non_gf_tenancy flag:**
-1. Set the property **non_gf_tenancy**  to **false** for supporting **Green Field Tenancies** 
-
-    →  this will help to **create** new resources
-2. Set the property  **non_gf_tenancy**  to **true** for supporting  **Non - Green Field Tenancies**
-
-    →  this will help to **export** existing resources **from OCI to CD3**,
-
-    →  create the terraform configuration files for them and 
-
-    →  a shell script containing the import commands to import the state of exported components to the tfstate file.
-
-   
-   Once the export (including the execution of **tf_import_commands_`<resource>`_nonGF.sh**) is complete, switch the value of **non_gf_tenancy** back to **false**. 
-
-
-   This allows the Tool Kit to support the tenancy as Green Field from this point onwards.
+> **More information about non_gf_tenancy flag:**
+>1. Set the property **non_gf_tenancy**  to **false** for supporting **Green Field Tenancies.** 
+>   <br>→  this will help to **create** new resources in OCI.
+>2. Set the property  **non_gf_tenancy**  to **true** for supporting  **Non - Green Field Tenancies**
+>   <br>→  this will help to **export** existing resources **from OCI to CD3 Excel Sheet,**
+>   <br>→  create the terraform configuration files for them and 
+>   <br>→  create a shell script containing the import commands to import the state of exported components to the tfstate file.
+>   <br>Once the export (including the execution of **tf_import_commands_`<resource>`_nonGF.sh**) is complete, switch the value of **non_gf_tenancy** back to **false**. 
+>   This allows the Tool Kit to support the tenancy as Green Field from this point onwards.
 
 ### **Execution Steps:**
 **Step 1**:
