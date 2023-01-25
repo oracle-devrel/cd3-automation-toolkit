@@ -5,7 +5,7 @@
 ## Table of Contents :bookmark:
 
 1. [Introduction](#introduction)
-2. [Pre-requisites](/cd3-automation-toolkit#pre-requisites)
+2. [Pre-requisites](#pre-requisites)
 3. [Getting Started](/cd3_automation_toolkit/documentation/user_guide/GettingStarted.md)
 4. [Connect container to OCI Tenancy](/cd3_automation_toolkit/documentation/user_guide/ConfiguringDockerContainer.md)
 5. [Running the Automation Toolkit](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md)
