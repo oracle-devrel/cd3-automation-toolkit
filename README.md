@@ -17,12 +17,11 @@
     - CD3 Excel Information
       - [Excel Templates](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md#excel-sheet-templates)
       - CD3 Excelsheet Tabs
+    - [CD3 Validator Features](/cd3_automation_toolkit/documentation/user_guide/SupportForCD3Validator.md)
     - [Scenario Based Use Cases](/cd3_automation_toolkit/documentation/user_guide/ScenarioBasedUseCases.md)
     - [CIS Features](/cd3_automation_toolkit/documentation/user_guide/CISFeatures.md)
     - [OCI Resource Manager Upload](/cd3_automation_toolkit/documentation/user_guide/ResourceManagerUpload.md)
     - Support for Additional Attributes
-    - [Support For CD3 Validator](/cd3_automation_toolkit/documentation/user_guide/SupportForCD3Validator.md)
-    - [Support For New Region and Protocol](/cd3_automation_toolkit/documentation/user_guide/SupportNewRegionProtocol.md)
 10. [Automation Toolkit Learning Videos](/cd3_automation_toolkit/documentation/user_guide/LearningVideos.md)
 11. FAQ 
 
