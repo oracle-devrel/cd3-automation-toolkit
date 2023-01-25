@@ -6,7 +6,7 @@
 
 1. [Introduction](#introduction)
 2. [Pre-requisites](#pre-requisites)
-3. [Getting Started](/cd3_automation_toolkit/documentation/user_guide/GettingStarted.md)
+3. [Launch Docker container](/cd3_automation_toolkit/documentation/user_guide/GettingStarted.md)
 4. [Connect container to OCI Tenancy](/cd3_automation_toolkit/documentation/user_guide/ConfiguringDockerContainer.md)
 5. [Running the Automation Toolkit](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md)
 6. [Automation Toolkit Workflows](/cd3_automation_toolkit/documentation/user_guide/Workflows.md)
