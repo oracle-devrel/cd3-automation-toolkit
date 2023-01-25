@@ -14,7 +14,7 @@
    - CD3 Excel Information
      - [Excel Templates](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md#excel-sheet-templates)
      - CD3 Excelsheet Tabs
-   - [Recommendations while using the Toolkit](/cd3_automation_toolkit/documentation/user_guide/Recommendations.md)
+   - [Recommendations](/cd3_automation_toolkit/documentation/user_guide/Recommendations.md)
    - Restructuring Terraform Out Directory
    - Known Behaviour Of Automation Toolkit
    - [Scenario Based Use Cases](/cd3_automation_toolkit/documentation/user_guide/ScenarioBasedUseCases.md)
