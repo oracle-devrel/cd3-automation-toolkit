@@ -1,5 +1,5 @@
 
-## CIS Features
+## Additional CIS Compliance Features
 
 Below CIS Features have been included as part of Automation Toolkit. These are not part of CD3 Excel sheet but just included into setUpOCI Menu "**CIS Compliance Features**".
 
