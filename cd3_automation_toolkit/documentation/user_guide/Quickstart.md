@@ -5,7 +5,7 @@
 
    Make appropriate changes to the template. For Eg: Update the _Region_ value to your tenancy's home region.
    
-   Once all the required data is filled in the Excel sheet, place it at the location ```/cd3user/tenancies/<customer_name>/``` which is also mapped to your    local directory.
+   Once all the required data is filled in the Excel sheet, place it at the location _/cd3user/tenancies/<customer\_name>/_ which is also mapped to your    local directory.
    
 2. Edit the _setUpOCI.properties_ at location:_/cd3user/tenancies /<customer\_name>/<customer\_name>\_setUpOCI.properties_ with appropriate values. 
    - Update the _cd3file_ parameter to specify the CD3 excel sheet path.
