@@ -5,7 +5,7 @@
 2. DO NOT modify/remove any commented rows or column names. You may re-arrange the columns if needed (except NSGs).
 3. A double colon (::) or Semi-Colon (;) has a special meaning in the Tool Kit. Do not use them in the OCI data / values.
 4. Do not include any unwanted space in cells you fill in; do not place any empty rows in between.
-5. Any entry made/moved post \<END> in any of the Tabs, of CD3 will not be processed. Any resources created by the automation & then moved after the \<END> will cause the resources to be removed. 
+5. Any entry made/moved post \<END> in any of the tabs of CD3 will not be processed. Any resources created by the automation & then moved after the \<END> will cause the resources to be removed. 
 6. The components that get created as part of VCNs Tab (Example: IGW, SGW, LPG, NGW, DRG) will have the same set of Tags attached to them.
 7. Automation Tool Kit does not support sharing of Block Volumes.
 8. Some points to consider while modifying networking components are:
