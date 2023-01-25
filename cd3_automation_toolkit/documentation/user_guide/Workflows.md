@@ -90,16 +90,13 @@ Make sure to execute **"Fetch Compartments OCIDs to variables file"** from **CD3
  </br>
 
 **Expected Outputs:**
-  
-a. Excel sheet with the resource details from OCI
-  
-b. Terraform Configuration files - *.auto.tfvars
-  
+<br>a. Excel sheet with the resource details from OCI  
+b. Terraform Configuration files - *.auto.tfvars  
 c. Shell Script with import commands - tf_import_commands_`<resource>`_nonGF.sh 
       
-**Action:** Execute the tf_import_commands_`<resource>`_nonGF.sh files that are generated in the outdir.
-  
-The terraform plan should show that infrastructure is up-to-date with no changes required for all regions.
+**Action:**
+<br>Execute the tf_import_commands_`<resource>`_nonGF.sh files that are generated in the outdir.
+<br>The terraform plan should show that infrastructure is up-to-date with no changes required for all regions.
   
 <img src = "https://user-images.githubusercontent.com/122371432/213680328-ff972472-5c96-424e-b616-9f4c217eb4ca.png" width =50% height=50%>
 
