@@ -63,15 +63,17 @@ Minimum requirement for the user to get started is to have the ability to read t
 
 ## User Guides :bookmark:
 
-* [Connect container to OCI Tenancy](/cd3_automation_toolkit/documentation/user_guide/ConfiguringDockerContainer.md)
-* [Running the Automation Toolkit](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md)
-* [Automation Toolkit Workflows](/cd3_automation_toolkit/documentation/user_guide/Workflows.md)
+1. [Getting Started](/cd3_automation_toolkit/documentation/user_guide/GettingStarted.md)
+2. [Connect container to OCI Tenancy](/cd3_automation_toolkit/documentation/user_guide/ConfiguringDockerContainer.md)
+3. [Running the Automation Toolkit](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md)
+4. [Automation Toolkit Workflows](/cd3_automation_toolkit/documentation/user_guide/Workflows.md)
+
+## Additional Information :blue_book:
 * [Excel Templates](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md#excel-sheet-templates)
 * [Recommendations while using the Toolkit](/cd3_automation_toolkit/documentation/user_guide/Recommendations.md)
 * Restructuring Terraform Out Directory
 * Known Behaviour Of Automation Toolkit
 
-## Additional Information :blue_book:
 * [Scenario Based Use Cases](/cd3_automation_toolkit/documentation/user_guide/ScenarioBasedUseCases.md)
 * [CIS Features](/cd3_automation_toolkit/documentation/user_guide/CISFeatures.md)
 * [OCI Resource Manager Upload](/cd3_automation_toolkit/documentation/user_guide/ResourceManagerUpload.md)
