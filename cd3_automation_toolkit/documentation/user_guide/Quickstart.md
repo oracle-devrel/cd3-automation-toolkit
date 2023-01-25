@@ -1,6 +1,6 @@
 ## CD3 QUICKSTART
 
-**After launching the Docker Container and connecting it to the OCI Tenancy, follow the below steps to quickly provision a compartment on OCI. Detailed instructions can be found at [RunningAutomationToolkit](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md)** 
+**After launching the Docker Container and connecting it to the OCI Tenancy, follow the below steps to quickly provision a compartment on OCI. Detailed instructions can be found at [Running Automation Toolkit](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md)** 
 1. Pick up the excel [CD3-SingleVCN-template](/cd3_automation_toolkit/example) and add in the required compartment details in 'Comaprtments' tab.
    Make appropriate changes to the template eg region. Place Excel sheet at appropriate location in your docker container.
    
