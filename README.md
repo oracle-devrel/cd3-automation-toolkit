@@ -16,7 +16,7 @@
      - CD3 Excelsheet Tabs
    - [Recommendations](/cd3_automation_toolkit/documentation/user_guide/Recommendations.md)
    - Restructuring Terraform Out Directory
-   - Known Behaviour Of Automation Toolkit
+   - [Known Behaviour Of Automation Toolkit](/cd3_automation_toolkit/documentation/user_guide/KnownBehaviour.md)
    - [Scenario Based Use Cases](/cd3_automation_toolkit/documentation/user_guide/ScenarioBasedUseCases.md)
    - [CIS Features](/cd3_automation_toolkit/documentation/user_guide/CISFeatures.md)
    - [OCI Resource Manager Upload](/cd3_automation_toolkit/documentation/user_guide/ResourceManagerUpload.md)
