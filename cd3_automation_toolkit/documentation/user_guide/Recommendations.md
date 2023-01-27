@@ -6,8 +6,8 @@
 3. Preparing the out directory to support a newly subscribed region at a later point in time involves -
     * **Taking** a **backup** of the **existing out directory**.
     * **Copying** all the terraform **modules** and .tf files, **except** the **.auto.tfvars** and **.tfstate** files from existing region.
-    * **Modifying** the **name** of **variables file** (variables_<region>.tf)
-    * **Modifying** the **region parameter** in **variables_<region>.tf**
+    * **Modifying** the **name** of **variables file** (variables_\<region>.tf)
+    * **Modifying** the **region parameter** in **variables_\<region>.tf**
 4. Preparing the out directory to support a new version release involves -
     * **Taking** a **backup** of the **existing out directory (Optional)**
     * **Copying** all the terraform **modules** and **.tf** files (Except variables_example.tf) from **/cd3user/oci_tools/cd3_automation_toolkit/user-scripts/terraform/** to region specific directories in out directory.
