@@ -105,7 +105,7 @@ c. Shell Script with import commands - tf_import_commands_`<resource>`_nonGF.sh
 <br><br>
 <div align='center'>
 
-| <a href="/README.md#table-of-contents-bookmark">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/Recommendations.md">Next :arrow_forward:</a> |
+| <a href="/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/Recommendations.md">Next :arrow_forward:</a> |
 | :---- | -------: |
   
 </div>
