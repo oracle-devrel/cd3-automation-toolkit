@@ -51,3 +51,20 @@ under \<region> directory.
 Once terraform apply is done, you can view the resources under Governance -> Tag Namespaces for the region.
 
 On re-running the same option you will find the previously existing files being backed up under directory →   \<outdir>/\<region>/backup_Tagging/\<Date>-\<Month>-\<Time>.
+
+## Create Network
+
+**Pre-requisite:**
+
+Run the script **fetch_compartments_to_variablesTF.py**
+Execute CD3 Validator, to avoid any errors during the creation of VCN objects. (Check out Support for CD3 Validator for the details)
+
+Fetch Compartments to Varaibles TF file:
+
+This script will fetch OCIDs of all compartments that exist in the tenancy and place them in variables_<region>.tf directory.
+
+Command used to execute from OCSWork VM: (Fetch Compartments) - python fetch_compartments_to_variablesTF.py /cd3user/tenancies/<customer_name>/terraform_files
+
+For other workstations - example: laptop, specify the path of 'outdir' and path of 'config' file for Python OCI - python fetch_compartments_to_variablesTF.py <path to outdir> --configFileName <path to config file>
+
+To create network objects like VCN, subnets etc in OCI; VCNs, VCN Info, Subnets and DHCP tabs of CD3 are required to be configured.
