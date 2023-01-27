@@ -68,7 +68,7 @@ ssh_public_key=
 <br><br>
 <div align='center'>
 
-| <a href="/README.md#table-of-contents-bookmark">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/Quickstart.md">Next :arrow_forward:</a> |
+| <a href="/cd3_automation_toolkit/documentation/user_guide/GettingStarted.md">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/Quickstart.md">Next :arrow_forward:</a> |
 | :---- | -------: |
   
 </div>
