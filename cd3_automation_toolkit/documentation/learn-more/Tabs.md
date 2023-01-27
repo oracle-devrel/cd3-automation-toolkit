@@ -1,3 +1,0 @@
-## Compartments
-## Groups
-## Policies
