@@ -37,11 +37,7 @@
   
   <img src = "https://user-images.githubusercontent.com/122371432/214502914-61aeb3b6-923a-481e-95a2-f2d5d78e6e45.png" width =50% height=50%>
   
-- When you execute export of Security Rules, Route Rules, DRG Route Rules and run a Terraform plan, it should have synced up TF state with OCI console and should only show changes to add default security list of each VCN to the terraform.
-
-  From now on, you can use cd3 to add rules to the default security list and default route tables as well.
-
-  Similarly, it will create TF for only those DRGs which are part of CD3 and skip Route Tables for the DRGs created outside of CD3. This will also synch DRG rules in your tenancy with the terraform state.
+- Toolkit will create TF for only those DRGs which are part of CD3 and skip Route Tables for the DRGs created outside of CD3. This will also synch DRG rules in your tenancy with the terraform state.
   
   > **Note**
   > When there are changes made in the OCI console manually, the above options of export and modify can be helpful to sync up the contents/objects in OCI to TF.
@@ -54,7 +50,7 @@
 
 - Export process for non greenfield tenancies v6.0 or higher doesn't support OCI objects having duplicate names like for Policies, for VCNs having same names with in a region or subnets having same names within a VCN. You will get output similiar to below when terraform plan is run (Option 3 with non-gf_tenancy set to true)
   
-  _Error: Duplicate resource "oci_identity_policy" configuration_
+  ***_Error: Duplicate resource "oci_identity_policy" configuration_***
   
 - Export process for non greenfield tenancies v6.0 or higher will try to revert SGW for a VCN to point to all services if it was existing for just object storage. You will get output similiar to below when terraform plan is run (Option 3 with non-gf_tenancy set to true).
 
