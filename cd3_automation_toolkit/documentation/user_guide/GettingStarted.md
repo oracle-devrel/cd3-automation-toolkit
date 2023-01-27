@@ -24,4 +24,4 @@ To ease the execution of toolkit, we have provided the steps to build an image w
 * Run  ```docker ps```
 * Run  ```docker exec -it <container_id> bash```
 
-[:arrow_backward:](/cd3-automation-toolkit/README.md#table-of-contents-bookmark)
+[:arrow_backward:](/README.md#table-of-contents-bookmark)
