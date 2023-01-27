@@ -11,7 +11,7 @@ Once you are inside the container, follow the below steps to configure the docke
 <br> Create API PEM Key.<br>
 If the key pair does not exist, create them using the below command:
 <br>```python createAPIKey.py```
-<br> → This will generate the public/private key pair at **_/cd3user/tenancies/keys/_**
+<br> → This will generate the public/private key pair (***_oci_api_public.pem_*** and ***_oci_api_private.pem_***) at **_/cd3user/tenancies/keys/_**
 <br> → In case you already have the keys, rename the private key file to **_oci_api_private.pem_** and place it at **_/cd3user/tenancies/keys_** for smooth functioning.
 
 **Step 3**:
