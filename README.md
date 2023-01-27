@@ -17,7 +17,7 @@
 11. [Learn More...](/cd3_automation_toolkit/documentation/user_guide/learn_more)
     - CD3 Excel Information
       - [Excel Templates](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md#excel-sheet-templates)
-      - [CD3 Excelsheet Tabs](/cd3_automation_toolkit/documentation/user_guide/learn_more/CD3ExcelInfo.md)
+      - [CD3 Excelsheet Tabs](/cd3_automation_toolkit/documentation/user_guide/learn_more/CD3ExcelTabs.md)
     - [CD3 Validator Features](/cd3_automation_toolkit/documentation/user_guide/learn_more/SupportForCD3Validator.md)
     - [Scenario Based Use Cases](/cd3_automation_toolkit/documentation/user_guide/learn_more/ScenarioBasedUseCases.md)
     - [Additional CIS Compliance Features](/cd3_automation_toolkit/documentation/user_guide/learn_more/CISFeatures.md)
