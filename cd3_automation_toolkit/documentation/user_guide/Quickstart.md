@@ -28,3 +28,5 @@
        <br>_terraform apply_
    
 5. Choose _Fetch Compartments OCIDs to variables file_ under _CD3 Services_ in setUpOCI menu. Execute the command to fetch the details of the                 compartments if it already exists/ created in OCI. These details will be written to the terraform variables file.
+
+6. Repeat the above process (except Step 5) to create other components in OCI.
