@@ -23,6 +23,5 @@ To ease the execution of toolkit, we have provided the steps to build an image w
 * Run  ```docker run --platform linux/amd64 -it -d -v <directory_in_local_system_where_the_files_must_be_generated>:/cd3user/tenancies <image_name>:<image_tag>```
 * Run  ```docker ps```
 * Run  ```docker exec -it <container_id> bash```
-  
-  
- 
+
+[:arrow_backward:](/cd3-automation-toolkit/README.md#table-of-contents-bookmark)
