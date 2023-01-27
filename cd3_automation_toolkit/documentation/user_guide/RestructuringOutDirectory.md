@@ -57,7 +57,7 @@ This solution can also be integrated with any CI/CD pipeline.
 <br><br>
 <div align='center'>
 
-| <a href="/cd3_automation_toolkit/documentation/user_guide/Recommendations.md">:arrow_backward: Prev</a> | <a href="[/cd3_automation_toolkit/documentation/user_guide/KnownBehaviour.md)">Next :arrow_forward:</a> |
+| <a href="/cd3_automation_toolkit/documentation/user_guide/Recommendations.md">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/KnownBehaviour.md">Next :arrow_forward:</a> |
 | :---- | -------: |
   
 </div>
