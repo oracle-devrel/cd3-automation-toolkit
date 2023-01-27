@@ -2,7 +2,7 @@
 
 CD3 Automation Toolkit generates all the output terraform files in a single region directory. So all OCI components like - network, instances, LBaaS, Databases etc are maintained in a single tfstate file. This may not be a viable option for customers having huge infrastructure.
 
-This document explains about one such use case.
+This document lays out how to organise separate TF files for each of the resources.
 
 ### Background:
 
