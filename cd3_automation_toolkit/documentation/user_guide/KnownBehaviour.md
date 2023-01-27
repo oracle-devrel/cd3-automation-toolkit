@@ -29,7 +29,7 @@
   ![image](https://user-images.githubusercontent.com/122371432/214502222-09eb5bb2-4a21-43fa-89b9-6540324c7f75.png)
   
   
-- While exporting and synching the tfstate file for LBaaS Objects, the user may be notified that a few components will be modified on apply. In such scenarios, add the attributes that the Terraform notifies to be changed to the appropriate CD3 Tab of Load Balancer and Jinja2 Templates (as a non-default attribute) and re-run the export. (To learn about how to add attributes, refer Support for additional attributes - _Flat TF Files_ )
+- While exporting and synching the tfstate file for LBaaS Objects, the user may be notified that a few components will be modified on apply. In such scenarios, add the attributes that the Terraform notifies to be changed to the appropriate CD3 Tab of Load Balancer and uncomment the parameter from Jinja2 Templates and Terraform (.tf) files. Re-run the export.
 
 - Add a new column - "Freeform Tags" to the CD3 Excel Sheets as per necessity, to export the tags associated with the resource as well. If executed as-is, Terraform may prompt you to modify resources based on Tags.
   
