@@ -26,4 +26,5 @@ To ease the execution of toolkit, we have provided the steps to build an image w
 
   [:arrow_backward:](/README.md#table-of-contents-bookmark)
   
-  <p style='text-align: right;'><a href="/cd3_automation_toolkit/documentation/user_guide/ConfiguringDockerContainer.md">:arrow_forward:</a></p>
+  <p align='right'><a href="/cd3_automation_toolkit/documentation/user_guide/ConfiguringDockerContainer.md">:arrow_forward:</a></p>
+  
