@@ -25,5 +25,4 @@ To ease the execution of toolkit, we have provided the steps to build an image w
 * Run  ```docker exec -it <container_id> bash```
 
   [:arrow_backward:](/README.md#table-of-contents-bookmark)                                                                                          
-  <div style="text-align: right"> <a href="[:arrow_forward:]">/cd3_automation_toolkit/documentation/user_guide/ConfiguringDockerContainer.md</a> [:arrow_forward:]</div>
-<a href="/cd3_automation_toolkit/documentation/user_guide/ConfiguringDockerContainer.md">[:arrow_forward:]</a>
+ <a href="/cd3_automation_toolkit/documentation/user_guide/ConfiguringDockerContainer.md">:arrow_forward:</a>
