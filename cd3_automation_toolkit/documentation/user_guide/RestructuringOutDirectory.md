@@ -1,21 +1,19 @@
 ## Restructuring Terraform Out Directory
 
-CD3 Automation Toolkit generates all the output terraform files in a single region directory. So all OCI components like - network, instances, LBaaS, Databases etc are maintained in a single tfstate file. This may not be a viable option if you are planning to build a huge infrastructure.
+CD3 Automation Toolkit generates all the output terraform files in a single region directory. OCI components like - network, instances, LBaaS, Databases etc are maintained in a single tfstate file. This may not be a viable option if you are planning to build a huge infrastructure.
 
 This document explains how to organise separate TF files for each of the resources.
 
 
 ### Requirements:
 
-If there is a need to spin up multiple data centers in future, the terraform code should be reusable/repeatable with minimal changes.
-
 Segregation of duties with terraform stacks is the main focus. Each service owner should be able to handle their services without stepping onto other's tfstate files.
 
-Managing this huge infrastructure using a single tfstate file will take a plethora of time for terraform refresh while applying any small change. So different tfstate files are needed for different services.
+Managing a large infrastructure using a single tfstate file will take a plethora of time for terraform refresh while applying any small change. So different tfstate files are needed for different services.
 
 ### Solution:
 
-Here are the steps to be followed to deliver the above requirements for Terraform using CD3 Automation Toolkit:
+Below are steps that will split the resources into individual terraform files:
 
 1. CD3 Automation Toolkit produces the out directory as shown in the screenshot below. Please note the changes for instances while re-organising  the directory structure.
 
