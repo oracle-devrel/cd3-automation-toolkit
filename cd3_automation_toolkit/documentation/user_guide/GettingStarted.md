@@ -24,4 +24,4 @@ To ease the execution of toolkit, we have provided the steps to build an image w
 * Run  ```docker ps```
 * Run  ```docker exec -it <container_id> bash```
 
- <div align="left"><a href="/README.md#table-of-contents-bookmark">:arrow_backward: Back to Table of Contents</a><div align="right"><a href="/cd3_automation_toolkit/documentation/user_guide/ConfiguringDockerContainer.md">:arrow_forward:</a></div>
+ <div align="left"><a href="/README.md#table-of-contents-bookmark">:arrow_backward: Back to Table of Contents</a><div align="right"><a href="/cd3_automation_toolkit/documentation/user_guide/ConfiguringDockerContainer.md">:arrow_forward: Connect Docker container to OCI Tenancy</a></div>
