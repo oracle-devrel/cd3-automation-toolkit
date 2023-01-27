@@ -1,3 +1,4 @@
+# Getting Started
 To ease the execution of toolkit, we have provided the steps to build an image which encloses the code base and its package dependencies. Follow the steps provided below  to clone the repo, build the image and finally launch the container.
 <br>
 
