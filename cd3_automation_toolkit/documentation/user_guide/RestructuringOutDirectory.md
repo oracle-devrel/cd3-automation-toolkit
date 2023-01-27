@@ -54,3 +54,10 @@ Below are steps that will split the resources into individual terraform files:
 </br>
 This solution can also be integrated with any CI/CD pipeline. 
 
+<br><br>
+<div align='center'>
+
+| <a href="/README.md#table-of-contents-bookmark">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/KnownBehaviour.md">Next :arrow_forward:</a> |
+| :---- | -------: |
+  
+</div>
