@@ -15,13 +15,13 @@
 9. [Creating independent tfstate files for each resource](/cd3_automation_toolkit/documentation/user_guide/RestructuringOutDirectory.md)
 10. [Expected Behaviour Of Automation Toolkit](/cd3_automation_toolkit/documentation/user_guide/KnownBehaviour.md)
 11. [Learn More...](/cd3_automation_toolkit/documentation/user_guide/learn_more)
-    - [CD3 Excel Information](/cd3_automation_toolkit/documentation/user_guide/learn_more/CD3ExcelInfo.md)
+    - CD3 Excel Information
       - [Excel Templates](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md#excel-sheet-templates)
-      - [CD3 Excelsheet Tabs](/cd3_automation_toolkit/documentation/user_guide/learn_more/Tabs.md)
-    - [CD3 Validator Features](/cd3_automation_toolkit/documentation/user_guide/SupportForCD3Validator.md)
-    - [Scenario Based Use Cases](/cd3_automation_toolkit/documentation/user_guide/ScenarioBasedUseCases.md)
-    - [Additional CIS Compliance Features](/cd3_automation_toolkit/documentation/user_guide/CISFeatures.md)
-    - [OCI Resource Manager Upload](/cd3_automation_toolkit/documentation/user_guide/ResourceManagerUpload.md)
+      - [CD3 Excelsheet Tabs](/cd3_automation_toolkit/documentation/user_guide/learn_more/CD3ExcelInfo.md)
+    - [CD3 Validator Features](/cd3_automation_toolkit/documentation/user_guide/learn_more/SupportForCD3Validator.md)
+    - [Scenario Based Use Cases](/cd3_automation_toolkit/documentation/user_guide/learn_more/ScenarioBasedUseCases.md)
+    - [Additional CIS Compliance Features](/cd3_automation_toolkit/documentation/user_guide/learn_more/CISFeatures.md)
+    - [OCI Resource Manager Upload](/cd3_automation_toolkit/documentation/user_guide/learn_more/ResourceManagerUpload.md)
     - Support for Additional Attributes
 12. [Automation Toolkit Learning Videos](/cd3_automation_toolkit/documentation/user_guide/LearningVideos.md)
 13. FAQ 
