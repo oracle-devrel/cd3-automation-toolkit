@@ -100,3 +100,11 @@
 - When there is a change to any of the instance parameters, the volume policy assignment will get recreated. Example: If you want to add a NSG to the instance, you will be notified on a read to the boot volume ocids, modification to the instance and, a create and destruction of the policy assignment. Screenshot below for reference. This behaviour is expected and in order to not have the backup policy recreated, comment the depends_on statement in modules/compute/data.tf at line around 35.
 
    ![image](https://user-images.githubusercontent.com/122371432/214506185-58c8702f-de87-4fb1-8a29-1a7623b699c4.png)
+   
+  <br><br>
+<div align='center'>
+
+| <a href="/cd3_automation_toolkit/documentation/user_guide/RestructuringOutDirectory.md">:arrow_backward: Prev</a> | <a href="README.md#table-of-contents-bookmark">Next :arrow_forward:</a> |
+| :---- | -------: |
+  
+</div>  
