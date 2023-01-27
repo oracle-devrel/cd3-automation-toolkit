@@ -22,7 +22,7 @@
     - [Scenario Based Use Cases](/cd3_automation_toolkit/documentation/user_guide/learn_more/ScenarioBasedUseCases.md)
     - [Additional CIS Compliance Features](/cd3_automation_toolkit/documentation/user_guide/learn_more/CISFeatures.md)
     - [OCI Resource Manager Upload](/cd3_automation_toolkit/documentation/user_guide/learn_more/ResourceManagerUpload.md)
-    - Support for Additional Attributes
+    - [Support for Additional Attributes](/cd3_automation_toolkit/documentation/user_guide/learn_more/SupportforAdditionalAttributes.md.md)
 12. [Automation Toolkit Learning Videos](/cd3_automation_toolkit/documentation/user_guide/LearningVideos.md)
 13. FAQ 
 
