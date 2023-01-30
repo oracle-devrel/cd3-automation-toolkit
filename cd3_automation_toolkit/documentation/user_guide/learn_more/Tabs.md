@@ -7,7 +7,7 @@ Once terraform apply is done, you can view the resources under Identity -> Compa
 
 On re-running the same option you will find the previously existing files being backed up under directory →   \<outdir>/\<region>/backup_compartments/\<Date>-\<Month>-\<Time>.
 
-_***Note***_
+**NOTE -**
 <blockquote>
 - Automation Tool Kit generates the TF Configuration files for all the compartments in the tenancy. 
   If some compartment was already existing in OCI then on Terraform Apply, the user will see logs which indicate creation of that compartment - this can be ignored as Terraform will only modify the existing Compartments (with additional information, if there are any eg description) and not create a new/duplicate one.<br>
