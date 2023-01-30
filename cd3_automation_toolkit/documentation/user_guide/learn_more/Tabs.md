@@ -7,10 +7,17 @@ Once terraform apply is done, you can view the resources under Identity -> Compa
 
 On re-running the same option you will find the previously existing files being backed up under directory →   \<outdir>/\<region>/backup_compartments/\<Date>-\<Month>-\<Time>.
 
-**Notes:**
-
-Automation Tool Kit generates the TF Configuration files for all the compartments in the tenancy. If some compartment was already existing in OCI then on Terraform Apply, the user will see logs which indicate creation of that compartment - this can be ignored as Terraform will only modify the existing Compartments (with additional information, if there are any eg description) and not create a new/duplicate one.
-If you have been given admin access to only one compartment in a tenancy (rather than full admin access) - then you should create the sub-compartments from OCI console, run fetch_compartments_to_variablesTF.py script and then proceed with execution of further objects.
+_***Note***_
+<blockquote>
+- Automation Tool Kit generates the TF Configuration files for all the compartments in the tenancy. 
+  If some compartment was already existing in OCI then on Terraform Apply, the user will see logs which indicate creation of that compartment - this can be ignored as Terraform will only modify the existing Compartments (with additional information, if there are any eg description) and not create a new/duplicate one.<br>
+<br> - Terraform destroy on compartments will not delete them from OCI Console by default. Inorder to destroy them from OCI either - 
+ <br> <ul>
+  <li>Add an additional column - <b><i>enable_delete</i></b> to Compartments Tab of CD3 Excel sheet with the value <b>"true"</b> for the compartments that needs to be deleted on terraform destroy. Execute the toolkit menu option to Create Compartments.</li>
+  <br>(OR)<br><br>
+  <li>Add <b><i>enable_delete = true</i></b> parameter to each of the compartment that needs to be deleted in <b><i>*_compartments.auto.tfvars</i></b></li>
+  </ul>
+</blockquote>
 
 ## Groups Tab
 
