@@ -36,4 +36,4 @@ Below TF file is created:
 
 | File name | Description|
 |---|---|
-|cis-vcnflow-logging.auto.tfvars |TF variables file containing log group for each VCN and logs for eachsubnet in that VCN.|
+|<customer_name>_vcnflow-logging.auto.tfvars |TF variables file containing log group for each VCN and logs for eachsubnet in that VCN.|
