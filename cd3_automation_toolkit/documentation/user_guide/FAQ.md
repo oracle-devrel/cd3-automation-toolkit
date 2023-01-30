@@ -39,6 +39,8 @@ Please refer the screenshots below -
 ![image](https://user-images.githubusercontent.com/103508105/215455637-4bcaac18-269d-4029-b273-2214b719563f.png)
 <br>           - Alternately, please attach a data disk and map the container (/cd3user/tenancies) on a folder that is created on the data disk (your local folder).
 
+<br><br>
+<div align='center'>
 
-
-
+| <a href="/README.md#table-of-contents-bookmark">:arrow_backward: Prev</a> | <a href="">Next :arrow_forward:</a> |
+| :---- | -------: |
