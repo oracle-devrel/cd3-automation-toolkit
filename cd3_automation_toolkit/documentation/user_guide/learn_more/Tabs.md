@@ -142,3 +142,9 @@ Output files generated:
 |\<prefix>_default-dhcp.auto.tfvars	|Contains TF for default DHCP options of each VCN in each region |
 |<br>\<prefix>_nsgs.auto.tfvars<br>\<prefix>_nsg-rules.auto.tfvars</br></br>| Contains TF for NSGs in each region |
 
+
+## Export and Modify Rules
+
+
+
+
