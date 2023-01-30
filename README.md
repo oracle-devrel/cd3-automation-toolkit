@@ -13,8 +13,8 @@
    - [Green Field Tenancies](/cd3_automation_toolkit/documentation/user_guide/GreenField.md)
    - [Non-Green Field Tenancies](/cd3_automation_toolkit/documentation/user_guide/NonGreenField.md)
 7. MUST READ...
-   - [Network for Green Field Tenancies](/cd3_automation_toolkit/documentation/user_guide/learn_more/NetworkingScenariosGF.md)
-   - [Network for Non Green Field Tenancies](/cd3_automation_toolkit/documentation/user_guide/learn_more/NetworkingScenariosNGF.md)
+   - [Managing Network for Green Field Tenancies](/cd3_automation_toolkit/documentation/user_guide/learn_more/NetworkingScenariosGF.md)
+   - [Managing Network for Non Green Field Tenancies](/cd3_automation_toolkit/documentation/user_guide/learn_more/NetworkingScenariosNGF.md)
 8. [Creating independent tfstate files for each resource](/cd3_automation_toolkit/documentation/user_guide/RestructuringOutDirectory.md)
 9. [Expected Behaviour Of Automation Toolkit](/cd3_automation_toolkit/documentation/user_guide/KnownBehaviour.md)
 10. [FAQs](/cd3_automation_toolkit/documentation/user_guide/FAQ.md)
