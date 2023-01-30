@@ -1,4 +1,4 @@
-## **Running the Automation Toolkit**
+# **Running the Automation Toolkit**
 
 Once the previous script 'createTenancyConfig.py' has been run successfully, next step is to choose the appropriate CD3 Excel Sheet and update the setUpOCI.properties file at _/cd3user/tenancies/<customer\_name>/<customer\_name>\_setUpOCI.properties_. Finally, run the commands displayed in the console output of the previous script. These commands are also made available in the cmds.log file of the output directory for future reference.
 
