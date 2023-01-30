@@ -1,4 +1,4 @@
-# **Essentials of Automation Toolkit**
+# **Getting Started with Automation Toolkit**
 There are 2 main inputs to the Automation Toolkit.
 - CD3 Excel Sheet
 - setUpOCI.properties
