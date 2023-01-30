@@ -82,7 +82,7 @@ Script to fetch the compartment OCIDs into variables file has not been executed.
 Do you want to run it now? (y|n):
 ```
 → This prompt appears for the very first time when you run the toolkit or when any new compartments are created using the toolkit. Enter 'y' to fetch the details of compartment OCIDs into variables file.
-→ After fetching the compartment details, the toolkit will display the menu options.
+<br>→ After fetching the compartment details, the toolkit will display the menu options.
 
 <br><br>
 <div align='center'>
