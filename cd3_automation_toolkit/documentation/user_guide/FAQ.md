@@ -1,6 +1,6 @@
 ## Frequently Asked Questions
  
-**Q 1. Is there a way to verify the inpit CD3 Excel sheet for any typos/miskates?**
+**Q 1. Is there a way to verify the input CD3 Excel sheet for any typos/miskates?**
 <br> **Ans**  Yes, please choose 'Validate CD3' option in setUpOCI menu in GreenField workflow. You can choose to validate specific tabs of the Excel sheet. Please see
 [CD3 Validator Features](/cd3_automation_toolkit/documentation/user_guide/learn_more/SupportForCD3Validator.md#support-for-cd3-validator) for more details.
 
