@@ -10,10 +10,11 @@
 **Q 3. If I am already using the toolkit and my OCI tenancy has been subscribed to a new region, how do i use the new region with toolkit?**
 <br> **Ans** Follow below steps to start using the newly subscribed region with the toolkit:
 <br>           - Take backup of the existing out directory.
-<br>           - Create a new directory for the region say 'london' along with outher region directories.
+<br>           - Create a new directory for the region say 'london' along with other region directories.
 <br>           - Copy all the terraform modules and .tf files, except the .auto.tfvars and .tfstate files from existing region directory to the new one
 <br>           - Modify the name of variables file (eg variables_london.tf)
-<br>           - Modify the region parameter in tis variables_london.tf
+<br>           - Modify the region parameter in this variables_london.tf
+<br>           - Modify Image OCIDs in this variables file according to new region.
 
 
 **Q 4. How do I upgrade an existing version of the toolkit to the new one without disrupting my existing tenancy files/directories?**
