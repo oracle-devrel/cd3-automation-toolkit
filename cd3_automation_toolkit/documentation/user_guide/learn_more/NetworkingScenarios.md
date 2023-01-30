@@ -105,7 +105,7 @@ Follow the below steps to add, update or delete the following components:
    
    This completes the modification of Security Rules, Route Rules and DRG Route Rules in OCI. Verify the components in console.
 
-### 4. Modify Network
+### 5. Modify Network
 
 **NOTE-** Follow the below steps to add a new or modify the existing Networking components - VCNs, Subnets, DHCP and DRG.
 
@@ -168,7 +168,7 @@ Subnets tab:
 
 ### 2. Add a new or modify the existing networking components
 Export the Networking components by following the steps [above](#export-network).
-Follow the [process](#add-a-new-or-modify-the-existing-networking-components) to add new components such as VCN/DHCP/DRG/IGW/NGW/SGW/LPG/Subnet etc.
+Follow the [process](#modify-network) to add new components such as VCN/DHCP/DRG/IGW/NGW/SGW/LPG/Subnet etc.
 
    
 
