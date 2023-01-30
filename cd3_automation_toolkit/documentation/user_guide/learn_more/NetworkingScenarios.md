@@ -115,7 +115,7 @@ Follow the below steps to add, update or delete the following components:
    
    ```python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties```
    
-3. To Validate the CD3 excel Tabs - Choose option _'Validate CD3'_ and _'Validate Network(VCNs, Subnets, DHCP, DRGs)'_ from sub-menu to check for syntax errors in Excel sheet. Examine the log file generated at /cd3user/tenancies/<customer_name>/<customer_name>\_cd3validator.logs. If there are errors, please rectify them accordingly and proceed to the next step.
+3. To Validate the CD3 excel Tabs - Choose option _'Validate CD3'_ and _'Validate Network(VCNs, Subnets, DHCP, DRGs)'_ from sub-menu to check for syntax errors in Excel sheet. Examine the log file generated at _/cd3user/tenancies/<customer\_name>/<customer\_name>\_cd3validator.logs_. If there are errors, please rectify them accordingly and proceed to the next step.
 
 4. Choose option to _'Modify Network'_ under _'Network'_ from the displayed menu. Once the execution is successful, multiple .tfvars related to networking like _<customer\_name>\_major-objects.auto.tfvars_ and more will be generated under the folder _/cd3user/tenancies/<customer\_name>/terraform_files/<region_dir>_
     
