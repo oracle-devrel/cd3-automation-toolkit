@@ -1,0 +1,57 @@
+# Non-Green Field Tenancies
+
+  > **Note**
+   
+  >Course of actions involved in Exporting objects from OCI-     
+  > * Automation Tool Kit fetches the data for the supported services. You can chose to filter the data based on region and the compartment. Exported data is written to appropriate sheets of the CD3 based on the resources being exported.
+  > * Tool Kit then generates the TF configuration files/auto.tfvars files for these exported resources.
+  > * It also generates a shell script - tf_import_commands_`<resource>`_nonGF.sh that has the import commands, to import the state of the resources to tfstate file.(This helps to manage the resources via Terraform in future). 
+
+  
+Below are the steps that will help to configure the Automation Tool Kit to support the Non - Green Field Tenancies:
+
+**Step 1:** 
+<br>Chose the appropriate CD3 Excel sheet template from [Excel Templates](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md#excel-sheet-templates)
+ 
+**Step 2:** 
+<br>Put CD3 Excel at the appropriate location.
+<br>Modify/Review [setUpOCI.properties](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md#setupociproperties) with **non_gf_tenancy** set to **true**  as shown below:
+<img src = "https://user-images.githubusercontent.com/103508105/214645849-464ea32f-31b9-4c4a-8d0c-31e4e3cb541b.png" width=75% height=75%>
+
+  
+**Step 3:** 
+<br>Execute the SetUpOCI.py script to start exporting the resources to CD3 and creating the terraform configuration files.
+
+Command to Execute:
+<br>```cd /cd3user/oci_tools/cd3_automation_toolkit/```
+<br>**python setUpOCI.py <path_to_setupOCI.properties> ie**
+<br>```python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties```
+  
+→ Example execution of the wrapper script:
+  
+<img src = "https://user-images.githubusercontent.com/122371432/213680233-002cce49-65c3-4cab-8f38-ef56f04fe266.png" width=50% height=50%>
+
+
+Choose the resources by specifying a single option (for choosing one of these resources) or comma-separated values (to choose multiple resources) as shown in the sample screenshot above.
+  
+Make sure to execute **"Fetch Compartments OCIDs to variables file"** from **CD3 Services** in setUpOCI menu at least once. This will       ensure that the variables file in outdir is updated with the OCID information of all the compartments.
+  
+> Toolkit will over-write the specific tabs of CD3 Excel sheet with exported data for that resource in OCI while the other tabs remain intact.
+ 
+ </br>
+
+**Expected Outputs:**
+<br>a. Excel sheet with the resource details from OCI  
+b. Terraform Configuration files - *.auto.tfvars  
+c. Shell Script with import commands - tf_import_commands_`<resource>`_nonGF.sh 
+      
+**Action:**
+<br>Execute the tf_import_commands_`<resource>`_nonGF.sh files that are generated in the outdir.
+<br>The terraform plan should show that infrastructure is up-to-date with no changes required for all regions.
+  
+<img src = "https://user-images.githubusercontent.com/122371432/213680328-ff972472-5c96-424e-b616-9f4c217eb4ca.png" width =50% height=50%>
+
+> **Note**<br>
+>   Once the export (including the execution of **tf_import_commands_`<resource>`_nonGF.sh**) is complete, switch the value of **non_gf_tenancy** back to **false**. 
+>   This allows the Tool Kit to support the tenancy as Green Field from this point onwards.
+
