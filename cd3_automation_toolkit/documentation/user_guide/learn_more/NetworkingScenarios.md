@@ -132,7 +132,7 @@ Follow the below steps to export the Networking components that includes VCNs, S
        <br>_terraform init_
        <br>_Execute the shell scirpts of networking components_
        <br>_terraform plan_
-       <br>&nbsp;&nbsp;→ <BR>- Terraform Plan must show that all the components are in sync.
+       <br>&nbsp;&nbsp;→ Terraform Plan must show that all the components are in sync.
    
 This completes the export of Networking components from OCI.
   
