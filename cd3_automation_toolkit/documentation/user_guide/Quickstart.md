@@ -1,4 +1,4 @@
-## Quick start - Create a Compartment
+## Quick start - Create a Compartment (Greenfield Workflow)
 
 **Once the Docker container has been launched and connected to the OCI Tenancy, follow the below steps to quickly provision a compartment on OCI. Detailed instructions can be found at** [Running the Automation Toolkit](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md) 
 1. Use the excel [CD3-SingleVCN-template](/cd3_automation_toolkit/example) and fill the required Compartment details in the 'Compartments' tab.
@@ -9,9 +9,9 @@
    
 2. Edit the _setUpOCI.properties_ at location:_/cd3user/tenancies /<customer\_name>/<customer\_name>\_setUpOCI.properties_ with appropriate values. 
    - Update the _cd3file_ parameter to specify the CD3 excel sheet path.
-   - Set the _non_gf_tenancy_ parameter value to _false_.
-   
-   We will be using a Greenfield workflow for this Quickstart. A Greenfield tenancy is an Empty OCI tenancy (or) any OCI tenancy where we need not modify / use any existing resources. For more information on types of Workflows, refer to [Automation Toolkit Workflows](/cd3_automation_toolkit/documentation/user_guide/Workflows.md)
+   - Set the _non_gf_tenancy_ parameter value to _false_. (for Greenfield Workflow.)
+  
+     <blockquote>For more information on types of Workflows, refer to <a href = /cd3_automation_toolkit/documentation/user_guide/Workflows.md> Automation Toolkit Workflows</a></blockquote>
    
 3. Change Directory to 'cd3_automation_toolkit' :
     ```cd /cd3user/oci_tools/cd3_automation_toolkit/```
