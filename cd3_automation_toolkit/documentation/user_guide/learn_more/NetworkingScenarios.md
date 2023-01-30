@@ -59,7 +59,7 @@ Once you have the Networking components created in OCI for the first time,the us
  
  Once the execution is successful, RouteRulesInOCI, SecRulesInOCI, DRGRouteRulesInOCI tabs of the excel sheet will be updated according to the choice made previously.
  
- At this point, we only have our Excle sheet Tabs updated, proceed to the next step to create the Terraform Files for the same.
+ At this point, we only have our Excel sheet Tabs updated, proceed to the next step to create the Terraform Files for the same.
  
 4. Choose _'Network'_ from the displayed menu. Choose one or combination of the below sub-options as per requriement:
    - Security Rules
