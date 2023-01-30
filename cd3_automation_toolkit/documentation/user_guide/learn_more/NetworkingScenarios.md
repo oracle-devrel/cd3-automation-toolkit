@@ -60,7 +60,7 @@ Once you have the Networking components created in OCI for the first time, expor
        <br>_terraform plan_
        <br>_terraform apply_
    
-   This completes the export of Security Rules, Route Rules and DRG Route Rules from OCI. Terraform plan/apply should be in sync with OCI.
+This completes the export of Security Rules, Route Rules and DRG Route Rules from OCI. Terraform plan/apply should be in sync with OCI.
     
 ***Note***: The user may choose to add, modify or delete rules in OCI Console manually at this point. Once all the desired changes are complete, repeat the above process to sync the Terraform files with OCI.
 
@@ -94,7 +94,7 @@ Follow the below steps to add, update or delete the following components:
        <br>_terraform plan_
        <br>_terraform apply_
    
-   This completes the modification of Security Rules, Route Rules and DRG Route Rules in OCI. Verify the components in console.
+This completes the modification of Security Rules, Route Rules and DRG Route Rules in OCI. Verify the components in console.
 
 
 ## Non-Greenfield Workflow
@@ -158,7 +158,7 @@ Follow the below steps to create a Network using an existing DRG in OCI.
      
      <br>_terraform apply_
    
-   This completes the creation of Networking components by using the existing DRG in OCI. Verify the components in console.
+This completes the creation of Networking components by using the existing DRG in OCI. Verify the components in console.
 
 ### Add a New or Modify the existing Networking components
 
