@@ -1,6 +1,7 @@
 # **Essentials of Automation Toolkit**
-
-Once the previous script 'createTenancyConfig.py' has been run successfully, next step is to choose the appropriate CD3 Excel Sheet and update the setUpOCI.properties file at _/cd3user/tenancies/<customer\_name>/<customer\_name>\_setUpOCI.properties_. Finally, run the commands displayed in the console output of the previous script. These commands are also made available in the cmds.log file of the output directory for future reference.
+There are 2 main inputs to the Automation Toolkit.
+- CD3 Excel Sheet
+- setUpOCI.properties
 
 ### **Excel Sheet Templates**
 
@@ -23,8 +24,6 @@ Details on how to fill data into the excel sheet can be found in the Blue sectio
 
 
 ### **setUpOCI.properties**
-
-Before we start with the steps to execute the Automation Toolkit, kindly update the properties file which is the input to the Toolkit. 
 
 **Current Version:  setUpOCI.properties v10**
 
@@ -62,6 +61,8 @@ non_gf_tenancy=false
 <blockquote>For more information on usage of non_gf_tenancy flag, refer to <a href = /cd3_automation_toolkit/documentation/user_guide/Workflows.md> Automation Toolkit Workflows</a></blockquote>
 
 ### **Execution Steps Overview:**
+Choose the appropriate CD3 Excel Sheet and update the setUpOCI.properties file at _/cd3user/tenancies/<customer\_name>/<customer\_name>\_setUpOCI.properties_ and run the commands below:
+
 **Step 1**:
 <br>Change Directory to 'cd3_automation_toolkit'
 <br>```cd /cd3user/oci_tools/cd3_automation_toolkit/```
@@ -70,11 +71,17 @@ non_gf_tenancy=false
 <br>Place Excel sheet at appropriate location in your container and provide the corresponding path in _cd3file_ parmeter of: _/cd3user/tenancies /<customer\_name>/<customer\_name>\_setUpOCI.properties_ file
 
 **Step 3**
-<br>Execute the command to fetch the details of the compartments if it already exists/created in OCI. These details will be written to the terraform variables file. Choose **"Fetch Compartments OCIDs to variables file"** from CD3 Services in setUpOCI menu.
-
-**Step 4**
 <br>
 Execute the setUpOCI Script:                                                                                                                                           <br>```python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties```
+<br> → Example execution of the script:
+
+```
+[cd3user@25260a87b137 cd3_automation_toolkit]$ python setUpOCI.py /cd3user/tenancies/demotenancy/demotenancy_setUpOCI.properties
+Updated OCI_Regions file !!!
+Script to fetch the compartment OCIDs into variables file has not been executed.
+Do you want to run it now? (y|n):
+```
+<br> → This prompt appears for the very first time when you run the toolkit or when any new compartments are created using the toolkit. Enter 'y' to fetch the details of compartment OCIDs into variables file.
 
 <br><br>
 <div align='center'>
