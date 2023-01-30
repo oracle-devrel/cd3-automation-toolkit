@@ -44,7 +44,7 @@ Once you have the Networking components created in OCI for the first time, expor
    
    ```python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties```
    
-2. Choose _'Network'_ from the displayed menu. Choose one or more combination of the below sub-options as per requriement:
+2. Choose _'Network'_ from the displayed menu. Choose below sub-options:
    - Security Rules
       - Export Security Rules (From OCI into SecRulesinOCI sheet)
    - Route Rules
@@ -54,7 +54,7 @@ Once you have the Networking components created in OCI for the first time, expor
  
     Once the execution is successful, 'RouteRulesInOCI', 'SecRulesInOCI', 'DRGRouteRulesInOCI' tabs of the excel sheet will be updated with the rules exported from OCI. At this point, we only have our Excel sheet Tabs updated, proceed to the next step to create the Terraform Files for the same.
  
-3. Choose _'Network'_ from the displayed menu. Choose one or combination of the below sub-options as per requriement:
+3. Choose _'Network'_ from the displayed menu. Choose below sub-options:
    - Security Rules
       - Add/Modify/Delete Security Rules (Reads SecRulesinOCI sheet)
    - Route Rules
@@ -94,7 +94,7 @@ Follow the below steps to add, update or delete the following components:
    - DRG Route Rules
       - Add/Modify/Delete DRG Route Rules (Reads DRGRouteRulesinOCI sheet)
 
-   Once the execution is successful, _<customer\_name>\_seclists.auto.tfvars_, _<customer\_name>\routetables.auto.tfvars_ and _<customer\_name>\drg-routetables.auto.tfvars_ file will be generated under the folder _/cd3user/tenancies/<customer\_name>/terraform_files/<region_dir>_
+   Once the execution is successful, _<customer\_name>\_seclists.auto.tfvars_, _<customer\_name>\_routetables.auto.tfvars_ and _<customer\_name>\_drg-routetables.auto.tfvars_ file will be generated under the folder _/cd3user/tenancies/<customer\_name>/terraform_files/<region_dir>_
 
    **NOTE**: This will create TF for only those Security Lists and Route Tables in VCNs which are part of cd3 and skip any VCNs that have been created outside of cd3 execution.
 
@@ -130,9 +130,9 @@ Follow the below steps to export the Networking components that includes VCNs, S
     
    Navigate to the above path and execute the terraform commands:<br>
        <br>_terraform init_
-       <br>_Execute the shell scirpts of networking components
+       <br>_Execute the shell scirpts of networking components_
        <br>_terraform plan_
-       <BR>- Terraform Plan must show that all the components are in sync.
+       <br>&nbsp;&nbsp;→ <BR>- Terraform Plan must show that all the components are in sync.
    
 This completes the export of Networking components from OCI.
   
