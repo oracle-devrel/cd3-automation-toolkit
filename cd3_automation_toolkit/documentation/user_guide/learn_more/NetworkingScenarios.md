@@ -73,7 +73,7 @@ Once you have the Networking components created in OCI for the first time, expor
     
 **NOTE-**: The user may also choose to add, modify or delete rules in OCI Console manually at any point of time. Once all the desired changes are complete wrt rules, repeat the above process to sync the Terraform files with OCI.
 
-### 3. Add, Update, Delete Security Rules, Route Rules and DRG Route Rules
+### 4. Add, Update, Delete Security Rules, Route Rules and DRG Route Rules
 
 Follow the below steps to add, update or delete the following components:
 - Security Lists and Security Rules
