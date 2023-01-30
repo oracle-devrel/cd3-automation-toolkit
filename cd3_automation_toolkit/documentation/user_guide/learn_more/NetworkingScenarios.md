@@ -1,12 +1,12 @@
 # Networking Scenarios 
 
-## Greenfield Workflows
+## Greenfield Tenancies
 
 **NOTE-**
 Before you start with Network Creation, make sure you have run 'Fetch Compartments OCIDs to variables file'.
 
 ### 1. Create Network
-Once the necessary identity components (Compartments, Groups, Policies) are provisioned in OCI, follow the below steps to create the Network that includes VCNs, Subnets, DHCP, DRG, Security List, Route Tables, DRG Route Tables, NSGs, etc.
+Follow the below steps to create Network that includes VCNs, Subnets, DHCP, DRG, Security List, Route Tables, DRG Route Tables, NSGs, etc.
 
 1. Choose appropriate excel sheet from [Excel Templates](/cd3_automation_toolkit/documentation/user_guide/Essentials_of_Automation_Toolkit.md#excel-sheet-templates) and fill the required Network details in the Networking Tabs - VCNs, DRGs, VCN Info, DHCP, Subnets, NSGs tabs.
    
@@ -16,17 +16,26 @@ Once the necessary identity components (Compartments, Groups, Policies) are prov
    
 3. Choose option _'Validate CD3'_ and then _'Validate Network(VCNs, Subnets, DHCP, DRGs)'_ to check for syntax errors in Excel sheet. Examine the log file generated at _/cd3user/tenancies/<customer\_name>/<customer\_name>\_cd3validator.log_. If there are errors, please rectify them accordingly and proceed to the next step.
 
-4. Choose option to _'Create Network'_ under _'Network'_ from the displayed menu. Once the execution is successful, multiple .tfvars related to networking like _<customer\_name>\_major-objects.auto.tfvars_ will be generated under the folder _/cd3user/tenancies/<customer\_name>/terraform_files/<region_dir>_
+4. Choose option to _'Create Network'_ under _'Network'_ from the displayed menu. Once the execution is successful, multiple .tfvars related to networking like _<customer\_name>\_major-objects.auto.tfvars_ and more will be generated under the folder _/cd3user/tenancies/<customer\_name>/terraform_files/<region_dir>_
     
-   Navigate to the above path and execute the terraform commands:<br>
+5. Navigate to the above path and execute the terraform commands:<br>
        <br>_terraform init_
        <br>_terraform plan_
        <br>_terraform apply_
    
 This completes the creation of Networking components in OCI. Verify the components in console. 
+### 2. Use an existing DRG in OCI while creating the network
+In some scenarios, a DRG has already been created in the tenancy and rest of the Network components still need to be created. In such cases, generate the networking related tfvars using same process mentioned above till Step 4.
 
+For Step5, Navigate to the outdir path and execute the terraform commands:<br>
+       <br>_terraform init_
+       <br>_terraform import "module.drgs[\"&lt;&lt;drgs terraform variable name&gt;&gt;\"].oci_core_drg.drg"_
+       <br>&nbsp;&nbsp;→ This will Import the DRG into your state file.       
+       _terraform plan_
+       <br>&nbsp;&nbsp;→ Terraform Plan will indicate to add all the other components except DRG.
+       <br>_terraform apply_
 
-### 2. Export the Security, Route Rules and DRG Route Rules into CD3
+### 3. Export the Security, Route Rules and DRG Route Rules into CD3
 Once you have the Networking components created in OCI for the first time, export the rules to the CD3 Excel Sheet using the following steps: 
  
 **NOTE**: Make sure to close your Excel sheet during the export process.
@@ -97,12 +106,12 @@ Follow the below steps to add, update or delete the following components:
    This completes the modification of Security Rules, Route Rules and DRG Route Rules in OCI. Verify the components in console.
 
 
-## Non-Greenfield Workflow
+## Non-Greenfield Tenancies
 ### 1. Export Network
 
 Follow the below steps to export the Networking components that includes VCNs, Subnets, DHCP, DRG, Security List, Route Tables, DRG Route Tables, NSGs, etc to CD3 Excel Sheets and Terraform state.
 
-1. Use the 'CD3-Blank-Template.xlsx' (/cd3_automation_toolkit/example) to export the networking resources into the Tabs - VCNs, DRGs, VCN Info, DHCP, Subnets, NSGs, RouteRulesInOCI, SecRulesInOCI,DRGRouteRulesInOCI tabs.
+1. Use the [CD3-Blank-Template.xlsx](/cd3_automation_toolkit/example) to export the networking resources into the Tabs - VCNs, DRGs, VCN Info, DHCP, Subnets, NSGs, RouteRulesInOCI, SecRulesInOCI,DRGRouteRulesInOCI tabs.
    
 2. Execute the _setupOCI.py_ file with _non_gf_tenancy_ parameter value to _true_:
    
@@ -132,57 +141,7 @@ Export the Networking components by following the steps [above](#export-network)
 Follow the [process](#add-a-new-or-modify-the-existing-networking-components) to add new components such as VCN/DHCP/DRG/IGW/NGW/SGW/LPG/Subnet etc.
 
    
-## Other Scenarios
-### Use an existing DRG in OCI while creating the network
 
-Follow the below steps to create a Network using an existing DRG in OCI.
-
-1. Modify the excel template ([Sample Templates](/cd3_automation_toolkit/example) with the required Network details in the Tabs - VCNs, DRGs, VCN Info, DHCP, Subnets, etc.
-
-2. Execute the _setupOCI.py_ file with _non_gf_tenancy_ parameter value to _false_:
-   
-   ```python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties```
-   
-3. Choose option _'Create Network'_ from _'Network'_ of the displayed menu. 
-
-   Once the execution is successful, _<customer\_name>\_compartments.auto.tfvars_ file will be generated under the folder _/cd3user/tenancies/<customer\_name>/terraform_files/<region_dir>_
-    
-   Navigate to the above path and execute the terraform commands:<br>
-       <br>_terraform init_
-       <br> - Import the DRG into your state file. Execute:
-       <blockquote>
-       terraform import "module.drgs[\"&lt;&lt;drgs terraform variable name&gt;&gt;\"].oci_core_drg.drg" &lt;&lt;drg ocid&gt;&gt; </blockquote>
-       
-     <br>_terraform plan_
-     <br>- Terraform Plan will indicate to add all the other components except DRG.
-     
-     <br>_terraform apply_
-   
-   This completes the creation of Networking components by using the existing DRG in OCI. Verify the components in console.
-
-### Add a New or Modify the existing Networking components
-
-Follow the below steps to add a new or modify the existing Networking components such as VCNs, Subnets, DHCP and DRG.
-
-1.  Modify the excel template ([Sample Templates](/cd3_automation_toolkit/example) with the required Network details in the Tabs - VCNs, DRGs, VCN Info, DHCP and Subnets tabs.
-    Once the Excel sheet is updated, place it at the location _/cd3user/tenancies/<customer\_name>/_ which is also mapped to your local directory.
-   
-2. Execute the _setupOCI.py_ file with _non_gf_tenancy_ parameter value to _false_:
-   
-   ```python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties```
-   
-3. To Validate the CD3 excel Tabs - Choose option _'Validate CD3'_ and _'Validate Network(VCNs, Subnets, DHCP, DRGs)'_ from sub-menu to check for syntax errors in Excel sheet. Examine the log file generated at /cd3user/tenancies/<customer_name>/<customer_name>\_cd3validator.logs. If there are errors, please rectify them accordingly and proceed to the next step.
-
-4. Choose option to _'Modify Network'_ under _'Network'_ from the displayed menu. Once the execution is successful, _<customer\_name>\_compartments.auto.tfvars_ file will be generated under the folder _/cd3user/tenancies/<customer\_name>/terraform_files/<region_dir>_
-    
-   ***Note***: Make sure to export Sec Rules, Route Rules, DRG Route Rules to CD3 Excel Sheet before executing this option.
-
-   Navigate to the above path and execute the terraform commands:<br>
-       <br>_terraform init_
-       <br>_terraform plan_
-       <br>_terraform apply_
-   
-This completes the addition of new Networking components in OCI. Verify the components in console.
 
 <br><br>
 <div align='center'>
