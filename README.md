@@ -8,7 +8,7 @@
 2. [Pre-requisites](#pre-requisites)
 3. [Launch Docker container](/cd3_automation_toolkit/documentation/user_guide/Launch_Docker_container.md)
 4. [Connect container to OCI Tenancy](/cd3_automation_toolkit/documentation/user_guide/Connect_container_to_OCI_Tenancy.md)
-5. [Essentials of Automation Toolkit](/cd3_automation_toolkit/documentation/user_guide/Essentials_of_Automation_Toolkit.md.md)
+5. [Essentials of Automation Toolkit](/cd3_automation_toolkit/documentation/user_guide/Essentials_of_Automation_Toolkit.md)
 6. [Automation Toolkit Workflows](/cd3_automation_toolkit/documentation/user_guide/Workflows.md)
 7. [Quick Start - Green Field](/cd3_automation_toolkit/documentation/user_guide/QuickstartGF.md)
 8. [Quick Start - Non Green Field](/cd3_automation_toolkit/documentation/user_guide/QuickstartNGF.md)
@@ -17,7 +17,7 @@
 11. [FAQs](/cd3_automation_toolkit/documentation/user_guide/FAQ.md)
 12. Learn More...
     - CD3 Excel Information
-      - [Excel Templates](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md#excel-sheet-templates)
+      - [Excel Templates](/cd3_automation_toolkit/documentation/user_guide/Essentials_of_Automation_Toolkit.md#excel-sheet-templates)
       - [CD3 Excelsheet Tabs](/cd3_automation_toolkit/documentation/user_guide/learn_more/CD3ExcelTabs.md)
     - [CD3 Validator Features](/cd3_automation_toolkit/documentation/user_guide/learn_more/SupportForCD3Validator.md)
     - [Scenario Based Use Cases](/cd3_automation_toolkit/documentation/user_guide/learn_more/ScenarioBasedUseCases.md)
