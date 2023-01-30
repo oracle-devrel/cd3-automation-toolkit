@@ -62,7 +62,7 @@ Follow the below steps to add a new or modify the existing Networking components
    
 This completes the modification of Networking components in OCI. Verify the components in console.
 
-### 3. Export the Security, Route Rules and DRG Route Rules into CD3 Excel Sheet
+### 3. Export the Security, Route Rules and DRG Route Rules
 Once you have the Networking components created in OCI, the user may also choose to add, modify or delete rules in OCI Console manually at any point in time. Once all the desired changes are complete with respect to rules, follow the process to export the rules to the same CD3 Excel Sheet as the one used to Create Network and sync the Terraform files with OCI.
 
 **NOTE**: Make sure to close your Excel sheet during the export process.
