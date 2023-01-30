@@ -69,7 +69,7 @@ ssh_public_key=
 <br><br>
 <div align='center'>
 
-| <a href="/cd3_automation_toolkit/documentation/user_guide/GettingStarted.md">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md">Next :arrow_forward:</a> |
+| <a href="/cd3_automation_toolkit/documentation/user_guide/Launch_Docker_container.md">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/Essentials_of_Automation_Toolkit.md">Next :arrow_forward:</a> |
 | :---- | -------: |
   
 </div>
