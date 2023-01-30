@@ -19,7 +19,15 @@ Below tf files are created
 |cis-oss.auto.tfvars |TF variables file for creating OSS bucket using above key (instead of Oracle Managed Keys). This is also created under specified region directory.|
 |cis-oss-logging.auto.tfvars|TF variables file for enabling logging for write events of the above created bucket. This is also created under specified region directory.|
 
-**3. Enable Cloud guard**
+**3. Create Default Budget:**
+
+This option will ask for monthly budget (in US$) and Threshold percentage of Budget and bellow tf files are created:
+
+| File name | Description|
+|---|---|
+|cis-budget.auto.tfvars |TF variables file for crating budget.|
+
+**4. Enable Cloud guard**
 
 This will enable cloud guard for tenancy from home region, creates Oracle Managed detector and responder recipes. Also creates a target for root compartment with the default Oracle Managed recipes.
 Below TF file is created:
@@ -28,7 +36,7 @@ Below TF file is created:
 |---|---|
 |cis-cloudguard.auto.tf |vars TF variables file for enabling cloud guard and creating target for root compartment. |
 
-**4. Enable VCN Flow Logs**
+**5. Enable VCN Flow Logs**
 
 This will enable Flow logs for all the subnets mentioned in Subnets' tab of CD3 Excel sheet. Log group for each VCN is created under the same compartment as specified for VCN and all subnets are added as logs to this log group.
 
