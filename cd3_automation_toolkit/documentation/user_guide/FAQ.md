@@ -21,10 +21,10 @@
 <br> **Ans** Please look at the latest release information under <a href = https://github.com/oracle-devrel/cd3-automation-toolkit/releases>Releases. </a>
 
 **Q How do I delete a compartment from OCI using the toolkit?**
-<br> Terraform destroy on compartments or removing the compartments details from <i><customer_name>_compartments.auto.tfvars</i> will not delete them from OCI Console by default. Inorder to destroy them from OCI either - 
-<br>           - Add an additional column - <i>enable_delete</i> to Compartments Tab of CD3 Excel sheet with the value <i>TRUE</i> for the compartments that needs to be deleted on terraform destroy. Execute the toolkit menu option to Create Compartments.</li>
+<br> Terraform destroy on compartments or removing the compartments details from _<customer\_name>\_compartments.auto.tfvars_ will not delete them from OCI Console by default. Inorder to destroy them from OCI either - 
+<br>           - Add an additional column - _enable\_delete_ to Compartments Tab of CD3 Excel sheet with the value _TRUE_ for the compartments that needs to be deleted on terraform destroy. Execute the toolkit menu option to Create Compartments.</li>
   <br>(OR)
-<br>           - Add <i>enable_delete = true</i> parameter to each of the compartment that needs to be deleted in <i><customer_name>_compartments.auto.tfvars</i>
+<br>           - Add _enable\_delete = true_ parameter to each of the compartment that needs to be deleted in _<customer\_name>\_compartments.auto.tfvars_
  
 
 **Q 5. I am getting 'Permission Denied' error while executing any commands inside the container.**
