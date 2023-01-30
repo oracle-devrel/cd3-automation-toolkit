@@ -1,4 +1,4 @@
-## Automation Toolkit Workflows
+# Automation Toolkit Workflows
 CD3 Automation Tool Kit supports 2 main workflows:
 1.	Greenfield Tenancies. - Empty OCI tenancy (or) do not need to modify / use any existing resources.
 2.	Non-Greenfield Tenancies - Need to use / manage existing resources.  Export existing resources into CD3 & TF State, then use the Greenfield workflow.
