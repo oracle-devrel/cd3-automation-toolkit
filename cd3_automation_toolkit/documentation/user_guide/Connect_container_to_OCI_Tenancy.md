@@ -53,6 +53,7 @@ ssh_public_key=
 → Example execution of the script:
 <br><img src = "https://user-images.githubusercontent.com/103508105/214566973-ba3446a7-c460-4028-8c45-c7b4e73d3b3c.png" width=70% height=70%>
 
+## Appendix
 → Files created on successful execution of above steps - Description of the Generated files:
 
 | Files Generated | At File Path | Comment/Purpose |
