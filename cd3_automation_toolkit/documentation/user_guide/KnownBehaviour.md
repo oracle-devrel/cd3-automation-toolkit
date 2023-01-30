@@ -104,7 +104,7 @@
   <br><br>
 <div align='center'>
 
-| <a href="/cd3_automation_toolkit/documentation/user_guide/RestructuringOutDirectory.md">:arrow_backward: Prev</a> | <a href="/README.md#table-of-contents-bookmark">Next :arrow_forward:</a> |
+| <a href="/cd3_automation_toolkit/documentation/user_guide/RestructuringOutDirectory.md">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/FAQ.md">Next :arrow_forward:</a> |
 | :---- | -------: |
   
 </div>  
