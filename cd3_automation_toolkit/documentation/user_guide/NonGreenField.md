@@ -82,7 +82,7 @@ Follow the below steps to quickly export Identity components from OCI.
 <br><br>
 <div align='center'>
 
-| <a href="/cd3_automation_toolkit/documentation/user_guide/Essentials_of_Automation_Toolkit.md">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/learn_more/NetworkingScenarios.md">Next :arrow_forward:</a> |
+| <a href="/cd3_automation_toolkit/documentation/user_guide/GreenField.md">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/learn_more/NetworkingScenarios.md">Next :arrow_forward:</a> |
 | :---- | -------: |
   
 </div>
