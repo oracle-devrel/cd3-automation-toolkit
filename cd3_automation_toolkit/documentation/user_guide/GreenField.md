@@ -4,7 +4,7 @@
 Below are the steps that will help to configure the Automation Tool Kit to support the Green Field Tenancies:
 
 **Step 1**: 
-<br>Choose the appropriate CD3 Excel sheet template from [Excel Templates](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md#excel-sheet-templates)
+<br>Choose the appropriate CD3 Excel sheet template from [Excel Templates](/cd3_automation_toolkit/documentation/user_guide/Essentials_of_Automation_Toolkit.md#excel-sheet-templates)
 
 **Step 2**:
 <br>Fill the CD3 Excel with appropriate values specific to the client and put at the appropriate location.
