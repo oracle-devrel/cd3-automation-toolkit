@@ -25,7 +25,7 @@
     - [OCI Resource Manager Upload](/cd3_automation_toolkit/documentation/user_guide/learn_more/ResourceManagerUpload.md)
     - [Support for Additional Attributes](/cd3_automation_toolkit/documentation/user_guide/learn_more/SupportforAdditionalAttributes.md)
 12. [Automation Toolkit Learning Videos](/cd3_automation_toolkit/documentation/user_guide/LearningVideos.md)
-13. FAQ 
+13. FAQ(/cd3_automation_toolkit/documentation/user_guide/FAQ.md)
 
 ## Introduction
 CD3 stands for <b>C</b>loud <b>D</b>eployment <b>D</b>esign <b>D</b>eliverable.
