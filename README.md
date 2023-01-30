@@ -1,4 +1,4 @@
-# cd3-automation-toolkit
+# CD3-Automation-Toolkit
 
 [![License: UPL](https://img.shields.io/badge/license-UPL-green)](https://img.shields.io/badge/license-UPL-green) [![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=oracle-devrel_cd3-automation-toolkit)](https://sonarcloud.io/dashboard?id=oracle-devrel_cd3-automation-toolkit)
 
@@ -57,6 +57,8 @@ It reads input data in the form of CD3 Excel sheet and generates the terraform f
 * OCI Tenancy Access Requirement - 
 Appropriate IAM policies must be in place for each of the resources that the user may try to create.
 Minimum requirement for the user to get started is to have the ability to read to the tenancy.
+
+[Click here](/cd3_automation_toolkit/documentation/user_guide/Launch_Docker_container.md) to get started and create your OCI Infra!!! 
 
 ## Contributing
 This project is open source.  Please submit your contributions by raising an <b>Issue</b> or through <b>Discussion topic</b> in this repository. Currently, we do not accept any pull requests. Oracle appreciates any contributions that are made by the open source community.
