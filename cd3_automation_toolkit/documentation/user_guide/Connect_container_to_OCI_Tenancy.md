@@ -1,7 +1,7 @@
 # Connect Docker container to OCI Tenancy
 
 
-> ***Same container can be connected to multiple OCI tenancies. Repeat this process for every new customer.***
+> ***Same container can be connected to multiple OCI tenancies. Repeat this process for every new OCI tenancy.***
 
 ### **Step 1 - Exec into the Container**:
 * Run  ```docker ps```.
