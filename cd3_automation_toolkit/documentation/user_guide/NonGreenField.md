@@ -7,7 +7,7 @@
   > * Tool Kit then generates the TF configuration files/auto.tfvars files for these exported resources.
   > * It also generates a shell script - tf_import_commands_`<resource>`_nonGF.sh that has the import commands, to import the state of the resources to tfstate file.(This helps to manage the resources via Terraform in future). 
 
-  
+## Detailed Steps
 Below are the steps that will help to configure the Automation Tool Kit to support the Non - Green Field Tenancies:
 
 **Step 1:** 
