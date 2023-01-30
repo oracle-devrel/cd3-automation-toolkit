@@ -7,7 +7,7 @@ CD3 Automation Tool Kit supports 2 main workflows:
 <br><br>
 <div align='center'>
 
-| <a href="/cd3_automation_toolkit/documentation/user_guide/Essentials_of_Automation_Toolkit.md">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/RestructuringOutDirectory.md">Next :arrow_forward:</a> |
+| <a href="/cd3_automation_toolkit/documentation/user_guide/Essentials_of_Automation_Toolkit.md">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/GreenField.md">Next :arrow_forward:</a> |
 | :---- | -------: |
   
 </div>
