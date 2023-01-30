@@ -1,4 +1,4 @@
-# **Running the Automation Toolkit**
+# **Essentials of Automation Toolkit**
 
 Once the previous script 'createTenancyConfig.py' has been run successfully, next step is to choose the appropriate CD3 Excel Sheet and update the setUpOCI.properties file at _/cd3user/tenancies/<customer\_name>/<customer\_name>\_setUpOCI.properties_. Finally, run the commands displayed in the console output of the previous script. These commands are also made available in the cmds.log file of the output directory for future reference.
 
@@ -59,17 +59,9 @@ non_gf_tenancy=false
 | cd3file |Path to the CD3 input file |/cd3user/tenancies/<customer\_name>/testCD3. xlsx |
 |non\_gf\_tenancy |Specify if its a Non Green field tenancy or not (**True** or **False**)| False|
 
-> **More information about non_gf_tenancy flag:**
->1. Set the property **non_gf_tenancy**  to **false** for supporting **Green Field Tenancies.** 
->   <br>→  this will help to **create** new resources in OCI.
->2. Set the property  **non_gf_tenancy**  to **true** for supporting  **Non - Green Field Tenancies**
->   <br>→  this will help to **export** existing resources **from OCI to CD3 Excel Sheet,**
->   <br>→  create the terraform configuration files for them and 
->   <br>→  create a shell script containing the import commands to import the state of exported components to the tfstate file.
->   <br>Once the export (including the execution of **tf_import_commands_`<resource>`_nonGF.sh**) is complete, switch the value of **non_gf_tenancy** back to **false**. 
->   This allows the Tool Kit to support the tenancy as Green Field from this point onwards.
+<blockquote>For more information on usage of non_gf_tenancy flag, refer to <a href = /cd3_automation_toolkit/documentation/user_guide/Workflows.md> Automation Toolkit Workflows</a></blockquote>
 
-### **Execution Steps:**
+### **Execution Steps Overview:**
 **Step 1**:
 <br>Change Directory to 'cd3_automation_toolkit'
 <br>```cd /cd3user/oci_tools/cd3_automation_toolkit/```
