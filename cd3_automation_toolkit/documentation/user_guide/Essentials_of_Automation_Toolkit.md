@@ -87,7 +87,7 @@ Do you want to run it now? (y|n):
 <br><br>
 <div align='center'>
 
-| <a href="/cd3_automation_toolkit/documentation/user_guide/Quickstart.md">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/Workflows.md">Next :arrow_forward:</a> |
+| <a href="/cd3_automation_toolkit/documentation/user_guide/Connect_container_to_OCI_Tenancy.md">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/Workflows.md">Next :arrow_forward:</a> |
 | :---- | -------: |
   
 </div>
