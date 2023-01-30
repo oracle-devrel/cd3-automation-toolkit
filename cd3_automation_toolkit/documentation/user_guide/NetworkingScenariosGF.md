@@ -1,11 +1,13 @@
 # Networking Scenarios 
 
-## Table of Contents :bookmark:
-
-1. [Create Network](#create-network)
-2. [Use an existing DRG in OCI while creating the network](#pre-requisites)
-
 ## Greenfield Tenancies
+- [Create Network](#create-network)
+- [Use an existing DRG in OCI while creating the network](#use-an-existing-drg-in-oci-while-creating-the-network)
+- [Modify Network](#modify-network)
+- [Modify Security Rules, Route Rules and DRG Route Rules](#modify-security-rules-route-rules-and-drg-route-rules)
+- [Sync manual changes done in OCI of Security Rules, Route Rules and DRG Route Rules with CD3 Excel Sheet and Terraform](#sync-manual-changes-done-in-oci-of-security-rules-route-rules-and-drg-route-rules-with-cd3-excel-sheet-and-terraform)
+- [Add/Modify/Delete NSGs](#addmodifydelete-nsgs)
+
 
 **NOTE-**
 Before you start with Network Creation, make sure you have run 'Fetch Compartments OCIDs to variables file'.
