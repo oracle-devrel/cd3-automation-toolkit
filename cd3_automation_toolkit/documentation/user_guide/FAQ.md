@@ -18,7 +18,7 @@
 
 
 **Q 4. How do I upgrade an existing version of the toolkit to the new one without disrupting my existing tenancy files/directories?**
-<br> **Ans** 
+<br> **Ans** Please look at the latest release information under <a href = https://github.com/oracle-devrel/cd3-automation-toolkit/releases>Releases </a>
 
 **Q 5. I am getting 'Permission Denied' error while executing any commands inside the container.**
 <br> **Ans** When you are running the docker container from a Linux OS, if the outdir is on the root, you may get a permission denied error while executing steps like createAPIKey.py. In such scenarios, please follow the steps given below -
