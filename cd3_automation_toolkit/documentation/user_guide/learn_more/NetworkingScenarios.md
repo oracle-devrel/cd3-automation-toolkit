@@ -86,7 +86,7 @@ Follow the below steps to add, update or delete the following components:
    
    ```python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties```
    
-4. Choose _'Network'_ from the displayed menu. Choose one or combination of the below sub-options as per requriement:
+4. Choose _'Network'_ from the displayed menu. Choose below sub-options:
    - Security Rules
       - Add/Modify/Delete Security Rules (Reads SecRulesinOCI sheet)
    - Route Rules
@@ -107,7 +107,7 @@ Follow the below steps to add, update or delete the following components:
 
 ### 5. Modify Network
 
-**NOTE-** Follow the below steps to add a new or modify the existing Networking components - VCNs, Subnets, DHCP and DRG.
+Follow the below steps to add a new or modify the existing Networking components - VCNs, Subnets, DHCP and DRG.
 
 1.  Modify your excel sheet to update required data in the Tabs - VCNs, DRGs, VCN Info, DHCP and Subnets.
    
@@ -127,6 +127,28 @@ Follow the below steps to add, update or delete the following components:
        <br>_terraform apply_
    
 This completes the modification of Networking components in OCI. Verify the components in console.
+
+### 5. Add/Modify/Delete NSGs
+Follow the below steps to update NSGs.
+
+1.  Modify your excel sheet to update required data in the Tabs - NSGs.
+   
+2. Execute the _setupOCI.py_ file with _non_gf_tenancy_ parameter value to _false_:
+   
+   ```python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties```
+   
+3. Choose _'Network'_ from the displayed menu. Choose below sub-option:
+   - Network Security Groups
+      - Add/Modify/Delete NSGs (Reads NSGs sheet)
+     Once the execution is successful,  _<customer\_name>\_nsgs.auto.tfvars_ and more will be generated under the folder _/cd3user/tenancies/<customer\_name>/terraform_files/<region_dir>_. Existing files will move into respective backup folders.
+    
+4. Navigate to the above path and execute the terraform commands:<br>
+       <br>_terraform init_
+       <br>_terraform plan_
+       <br>_terraform apply_
+   
+This completes the modification of NSGs in OCI. Verify the components in console.
+
 ## Non-Greenfield Tenancies
 ### 1. Export Network
 
