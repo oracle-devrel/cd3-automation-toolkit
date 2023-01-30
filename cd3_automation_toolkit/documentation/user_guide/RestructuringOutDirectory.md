@@ -1,4 +1,4 @@
-## Restructuring Terraform Out Directory
+# Restructuring Terraform Out Directory
 
 CD3 Automation Toolkit generates all the output terraform files in a single region directory. OCI components like - network, instances, LBaaS, Databases etc are maintained in a single tfstate file. This may not be a viable option if you are planning to build a huge infrastructure.
 
