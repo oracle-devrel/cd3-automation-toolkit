@@ -51,8 +51,10 @@ Terraform destroy on compartments or removing the compartments details from _<cu
 
 When you are running the docker container from a Linux OS, if the outdir is on the root, you may get a permission denied error while executing steps like createAPIKey.py. In such scenarios, please follow the steps given below -
 <br><br>**Error Screenshot:**
+
 ![image](https://user-images.githubusercontent.com/103508105/215454472-2367c5d5-2dce-4248-a7fd-c57f1104267e.png)
 <br><br>**Solution:**
+
 <br>Please change:
 <br>           - selinux mode from Enforcing to Permissive
 <br>           - change the owner of folders in /cd3user/tenancies to that of cd3user. 
