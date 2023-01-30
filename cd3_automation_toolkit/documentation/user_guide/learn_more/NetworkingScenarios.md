@@ -71,7 +71,7 @@ Follow the below steps to add, update or delete the following components:
 - Route Table and Route Rules
 - DRG Route Table and DRG Route Rules
 
-1. Modify the excel template ([Sample Templates](/cd3_automation_toolkit/example) with the required Network details in the Tabs - RouteRulesInOCI, SecRulesInOCI, DRGRouteRulesInOCI tabs.
+1. Modify your excel sheet to update required data in the Tabs - RouteRulesInOCI, SecRulesInOCI, DRGRouteRulesInOCI tabs.
 
 2. Execute the _setupOCI.py_ file with _non_gf_tenancy_ parameter value to _false_:
    
@@ -85,7 +85,7 @@ Follow the below steps to add, update or delete the following components:
    - DRG Route Rules
       - Add/Modify/Delete DRG Route Rules (Reads DRGRouteRulesinOCI sheet)
 
-   Once the execution is successful, _<customer\_name>\_compartments.auto.tfvars_ file will be generated under the folder _/cd3user/tenancies/<customer\_name>/terraform_files/<region_dir>_
+   Once the execution is successful, _<customer\_name>\_seclists.auto.tfvars_, _<customer\_name>\routetables.auto.tfvars_ and _<customer\_name>\drg-routetables.auto.tfvars_ file will be generated under the folder _/cd3user/tenancies/<customer\_name>/terraform_files/<region_dir>_
 
    **NOTE**: This will create TF for only those Security Lists and Route Tables in VCNs which are part of cd3 and skip any VCNs that have been created outside of cd3 execution.
 
@@ -117,7 +117,7 @@ Follow the below steps to export the Networking components that includes VCNs, S
    - Export Network components for Subnets Tab
    - Export Network components for NSGs Tab
    
-   Once the execution is successful, _<customer\_name>\_compartments.auto.tfvars_  and _tf\_import\_commands\_network\_<service_name>\_nonGF.sh files will be generated under the folder _/cd3user/tenancies/<customer\_name>/terraform_files/<region_dir>_
+   Once the execution is successful, _<customer\_name>\_compartments.auto.tfvars_ and _tf\_import\_commands\_network\_<service_name>\_nonGF.sh files will be generated under the folder _/cd3user/tenancies/<customer\_name>/terraform_files/<region_dir>_
     
    Navigate to the above path and execute the terraform commands:<br>
        <br>_terraform init_
