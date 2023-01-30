@@ -11,20 +11,20 @@
 <br>```cd /cd3user/oci_tools/cd3_automation_toolkit/user-scripts/```
 
 ### **Step 2 - Create API PEM Key**:
-<br>If the key pair does not exist, create them using the below command:
+RSA key pair in PEM format (minimum 2048 bits) is needed to use OCI APIs. If the key pair does not exist, create them using the below command:
 <br>```python createAPIKey.py```
 <br> → This will generate the public/private key pair (***_oci_api_public.pem_*** and ***_oci_api_private.pem_***) at **_/cd3user/tenancies/keys/_**
 <br> → In case you already have the keys, you should copy the private key file inside the container and rename it to **_oci_api_private.pem_**.
 
 ### **Step 3 - Upload the Public key**:
-<br>Upload the Public key to **"APIkeys"** under user settings in OCI Console. Pre-requisite to use the complete functionality of the Automation Toolkit is to have the user as an administrator to the tenancy.
+Upload the Public key to **"APIkeys"** under user settings in OCI Console. Pre-requisite to use the complete functionality of the Automation Toolkit is to have the user as an administrator to the tenancy.
 - Open the Console, and sign in as the user.
 <br> View the details for the user who will be calling the API with the key pair.
 - Open the Profile menu (User menu icon) and click User Settings.
 - Click Add Public Key.</li><li>Paste the contents of the PEM public key in the dialog box and click Add.</li></ul>
 
 ### **Step 4 - Edit tenancyconfig.properties**:
-<br>Enter the details to **tenancyconfig.properties** file.
+Enter the details to **tenancyconfig.properties** file.
 ```
 [Default]
 # Mandatory Fields
@@ -45,7 +45,7 @@ region=
 ssh_public_key=
 ```
 ### **Step 5 - Initialise the environment**:
-<br>Initialise your environment to use the Automation Toolkit.
+Initialise your environment to use the Automation Toolkit.
 <br>```python createTenancyConfig.py tenancyconfig.properties```
 
 **Note** - If the API Keys were generated and added to the OCI console using previous steps, it might take a couple of seconds to reflect. Thus, running the above command immediately might result in Authentication Errors.<br>In such cases, please retry after a minute.
