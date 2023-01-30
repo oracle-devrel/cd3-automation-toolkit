@@ -1,5 +1,5 @@
 ## Quick start - Export Identity (Non Greenfield Workflow)
-Once the Docker container has been launched and connected to the OCI Tenancy, follow the below steps to quickly provision a compartment on OCI.
+Once the Docker container has been launched and connected to the OCI Tenancy, follow the below steps to quickly export Identity components from OCI.
 
 1. Use the excel [CD3-Blank-template](/cd3_automation_toolkit/example) and place it at the location _/cd3user/tenancies/<customer\_name>/_ which is also mapped to your local directory.
 
