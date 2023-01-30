@@ -36,7 +36,7 @@ Choose the resources by specifying a single option (for choosing one of these re
 
 
 **Step 4:** 
-<br>Change your directory to _/cd3user/tenancies/<customer\_name>/terraform\_files/region\_dir/_  and Execute:
+<br>Change your directory to _/cd3user/tenancies/<customer\_name>/terraform\_files/<region\_dir>/_  and Execute:
 
 **terraform init**  - To initialize and prepare your working/out directory soTerraform can run the configuration.<br>
 **terraform plan**  - To preview any changes before you apply them.<br>
