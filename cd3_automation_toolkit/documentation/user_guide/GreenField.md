@@ -1,4 +1,6 @@
 # Green Field Tenancies
+
+## Detailed Steps
 Below are the steps that will help to configure the Automation Tool Kit to support the Green Field Tenancies:
 
 **Step 1**: 
