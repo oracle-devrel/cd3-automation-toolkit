@@ -151,6 +151,9 @@ Follow the below steps to update NSGs.
 This completes the modification of NSGs in OCI. Verify the components in console.
 
 ## Non-Greenfield Tenancies
+**NOTE-**
+Before you start with Network Export, make sure you have run 'Fetch Compartments OCIDs to variables file'.
+
 ### 1. Export Network
 
 Follow the below steps to export the Networking components that includes VCNs, Subnets, DHCP, DRG, Security List, Route Tables, DRG Route Tables, NSGs, etc to CD3 Excel Sheet and create the Terraform state.
