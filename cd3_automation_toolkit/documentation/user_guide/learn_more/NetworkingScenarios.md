@@ -156,7 +156,16 @@ Follow the below steps to export the Networking components that includes VCNs, S
        <br>&nbsp;&nbsp;→ Terraform Plan must show that all the components are in sync.
    
 This completes the export of Networking components from OCI.
-  
+
+**Sample of CD3 Excel after export:**
+(DO NOT Modify the highlighted columns)
+
+VCNs tab:
+![image](https://user-images.githubusercontent.com/115973871/214372501-65e68d60-bedd-4df9-bf84-a2316d0f6c62.png)
+
+Subnets tab:
+![image](https://user-images.githubusercontent.com/115973871/214372535-69714cbc-1980-4dd5-ae52-e20441903d8a.png)
+
 ### 2. Add a new or modify the existing networking components
 Export the Networking components by following the steps [above](#export-network).
 Follow the [process](#add-a-new-or-modify-the-existing-networking-components) to add new components such as VCN/DHCP/DRG/IGW/NGW/SGW/LPG/Subnet etc.
