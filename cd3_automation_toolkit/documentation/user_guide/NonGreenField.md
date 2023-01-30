@@ -3,7 +3,7 @@
   > **Note**
    
   >Course of actions involved in Exporting objects from OCI-     
-  > * Automation Tool Kit fetches the data for the supported services. You can chose to filter the data based on region and the compartment. Exported data is written to appropriate sheets of the CD3 based on the resources being exported.
+  > * Automation Tool Kit fetches the data for the supported services. You can chose to export the data from a specific region or the compartment. Exported data is written to appropriate sheets of the CD3 Excel Sheet based on the resources being exported.
   > * Tool Kit then generates the TF configuration files/auto.tfvars files for these exported resources.
   > * It also generates a shell script - tf_import_commands_`<resource>`_nonGF.sh that has the import commands, to import the state of the resources to tfstate file.(This helps to manage the resources via Terraform in future). 
 
