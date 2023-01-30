@@ -35,7 +35,7 @@ This completes the creation of Networking components in OCI. Verify the componen
 ## 2. Export the Security, Route Rules and DRG Route Rules into CD3
 Once you have the Networking components created in OCI for the first time,the user may choose to add, modify or delete rules in OCI Console manually at this point. Once all the desired changes are complete, export these rules to the CD3 Excel Sheets using the following steps - 
  
-***Note***: Make sure to close your Excle sheet during the export process.
+***Note***: Make sure to close your Excel sheet during the export process.
             Since we are doing an export, no modifications are expected to be done to the CD3 Excel sheets.
             
 1. Verify the values in _setUpOCI.properties_ at location:_/cd3user/tenancies /<customer\_name>/<customer\_name>\_setUpOCI.properties_ with appropriate values. 
