@@ -56,7 +56,7 @@ c. Shell Script with import commands - tf_import_commands_`<resource>`_nonGF.sh
 >   This allows the Tool Kit to support the tenancy as Green Field from this point onwards.
 
 ## Example - Export Identity
-Once the Docker container has been launched and connected to the OCI Tenancy, follow the below steps to quickly export Identity components from OCI.
+Follow the below steps to quickly export Identity components from OCI.
 
 1. Use the excel [CD3-Blank-template](/cd3_automation_toolkit/example) and place it at the location _/cd3user/tenancies/<customer\_name>/_ which is also mapped to your local directory.
 
@@ -64,8 +64,6 @@ Once the Docker container has been launched and connected to the OCI Tenancy, fo
    - Update the _cd3file_ parameter to specify the CD3 excel sheet path.
    - Set the _non_gf_tenancy_ parameter value to _true_. (for Non Greenfield Workflow.)
      
-     <blockquote>For more information on types of Workflows, refer to <a href = /cd3_automation_toolkit/documentation/user_guide/Workflows.md> Automation Toolkit Workflows</a></blockquote>
-
 3. Change Directory to 'cd3_automation_toolkit' :
     ```cd /cd3user/oci_tools/cd3_automation_toolkit/```
     
@@ -75,7 +73,7 @@ Once the Docker container has been launched and connected to the OCI Tenancy, fo
  4. Choose option 'Export Identity' from the displayed menu. Once the execution is successful, you will see:
       <ul>
       <li><b>Filled in tabs</b>-<i>Compartments, Groups, Polecies of Excel sheet</i></li>
-      <li><i>tf_import_commands_identity.sh</i></li>
+      <li><i>tf_import_commands_identity_nonGF.sh</i></li>
       <li><i>&lt;customer_name>_compartments.auto.tfvars, &lt;customer_name>_groups.auto.tfvars, &lt;customer_name>_policies.auto.tfvars</i></li>
       </ul>
    
