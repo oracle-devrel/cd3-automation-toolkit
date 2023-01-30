@@ -35,7 +35,7 @@ For Step5, Navigate to the outdir path and execute the terraform commands:<br>
        <br>&nbsp;&nbsp;→ Terraform Plan will indicate to add all the other components except DRG.
        <br>_terraform apply_
 
-### 3. Export the Security, Route Rules and DRG Route Rules into CD3
+### 3. Export the Security, Route Rules and DRG Route Rules into CD3 Excel Sheet
 Once you have the Networking components created in OCI for the first time, export the rules to the CD3 Excel Sheet using the following steps: 
  
 **NOTE**: Make sure to close your Excel sheet during the export process.
