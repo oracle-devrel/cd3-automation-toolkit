@@ -167,8 +167,8 @@ Subnets tab:
 ![image](https://user-images.githubusercontent.com/115973871/214372535-69714cbc-1980-4dd5-ae52-e20441903d8a.png)
 
 ### 2. Add a new or modify the existing networking components
-Export the Networking components by following the steps [above](#export-network).
-Follow the [process](#modify-network) to add new components such as VCN/DHCP/DRG/IGW/NGW/SGW/LPG/Subnet etc.
+Export the Networking components by following the steps [above](#1-export-network).
+Follow the [process](#5-modify-network) to add new components such as VCN/DHCP/DRG/IGW/NGW/SGW/LPG/Subnet etc.
 
    
 
