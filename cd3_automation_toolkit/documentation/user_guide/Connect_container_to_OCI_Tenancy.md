@@ -4,7 +4,8 @@
 > ***Same container can be connected to multiple OCI tenancies. Repeat this process for every new customer.***
 
 **Step 1 - Exec into the Container**:
-* Run  ```docker ps```
+* Run  ```docker ps```.
+<br> → Note down the container ID from this cmd output.
 * Run  ```docker exec -it <container_id> bash```
 <br>Change Directory to 'user-scripts'
 <br>```cd /cd3user/oci_tools/cd3_automation_toolkit/user-scripts/```
