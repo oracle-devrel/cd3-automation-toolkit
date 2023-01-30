@@ -2,18 +2,21 @@
 
 ## Greenfield Workflows
 
+**NOTE-**
+Before you start with Network Creation, make sure you have run 'Fetch Compartments OCIDs to variables file'.
+
 ### 1. Create Network
 Once the necessary identity components (Compartments, Groups, Policies) are provisioned in OCI, follow the below steps to create the Network that includes VCNs, Subnets, DHCP, DRG, Security List, Route Tables, DRG Route Tables, NSGs, etc.
 
-1. Use the excel [Sample Templates](/cd3_automation_toolkit/example) and fill the required Network details in the Networking Tabs - VCNs, DRGs, VCN Info, DHCP, Subnets, NSGs tabs.
+1. Choose appropriate excel sheet from [Excel Templates](/cd3_automation_toolkit/documentation/user_guide/Essentials_of_Automation_Toolkit.md#excel-sheet-templates) and fill the required Network details in the Networking Tabs - VCNs, DRGs, VCN Info, DHCP, Subnets, NSGs tabs.
    
 2. Execute the _setupOCI.py_ file with _non_gf_tenancy_ parameter value to _false_:
    
    ```python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties```
    
-3. Choose option _'Validate CD3'_ and _'Validate Network(VCNs, Subnets, DHCP, DRGs)'_ from sub-menu to check for syntax errors in Excel sheet. Examine the log file generated at /cd3user/tenancies/<customer_name>/<customer_name>\_cd3validator.logs. If there are errors, please rectify them accordingly and proceed to the next step.
+3. Choose option _'Validate CD3'_ and then _'Validate Network(VCNs, Subnets, DHCP, DRGs)'_ to check for syntax errors in Excel sheet. Examine the log file generated at _/cd3user/tenancies/<customer\_name>/<customer\_name>\_cd3validator.log_. If there are errors, please rectify them accordingly and proceed to the next step.
 
-4. Choose option to _'Create Network'_ under _'Network'_ from the displayed menu. Once the execution is successful, _<customer\_name>\_compartments.auto.tfvars_ file will be generated under the folder _/cd3user/tenancies/<customer\_name>/terraform_files/<region_dir>_
+4. Choose option to _'Create Network'_ under _'Network'_ from the displayed menu. Once the execution is successful, multiple .tfvars related to networking like _<customer\_name>\_major-objects.auto.tfvars_ will be generated under the folder _/cd3user/tenancies/<customer\_name>/terraform_files/<region_dir>_
     
    Navigate to the above path and execute the terraform commands:<br>
        <br>_terraform init_
@@ -24,16 +27,15 @@ This completes the creation of Networking components in OCI. Verify the componen
 
 
 ### 2. Export the Security, Route Rules and DRG Route Rules into CD3
-Once you have the Networking components created in OCI for the first time, export the rules to the CD3 Excel Sheets using the following steps - 
+Once you have the Networking components created in OCI for the first time, export the rules to the CD3 Excel Sheet using the following steps: 
  
-***Note***: Make sure to close your Excel sheet during the export process.
-            Since we are doing an export, no modifications are expected to be done to the CD3 Excel sheets.
-            
+**NOTE**: Make sure to close your Excel sheet during the export process.
+                       
 1. Execute the _setupOCI.py_ file with _non_gf_tenancy_ parameter value to _false_:
    
    ```python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties```
    
-2. Choose _'Network'_ from the displayed menu. Choose one or combination of the below sub-options as per requriement:
+2. Choose _'Network'_ from the displayed menu. Choose one or more combination of the below sub-options as per requriement:
    - Security Rules
       - Export Security Rules (From OCI into SecRulesinOCI sheet)
    - Route Rules
@@ -41,9 +43,7 @@ Once you have the Networking components created in OCI for the first time, expor
    - DRG Route Rules
       - Export DRG Route Rules (From OCI into DRGRouteRulesinOCI sheet)
  
-    Once the execution is successful, RouteRulesInOCI, SecRulesInOCI, DRGRouteRulesInOCI tabs of the excel sheet will be updated according to the choice made previously.
-
-    At this point, we only have our Excel sheet Tabs updated, proceed to the next step to create the Terraform Files for the same.
+    Once the execution is successful, 'RouteRulesInOCI', 'SecRulesInOCI', 'DRGRouteRulesInOCI' tabs of the excel sheet will be updated with the rules exported from OCI. At this point, we only have our Excel sheet Tabs updated, proceed to the next step to create the Terraform Files for the same.
  
 3. Choose _'Network'_ from the displayed menu. Choose one or combination of the below sub-options as per requriement:
    - Security Rules
@@ -53,16 +53,16 @@ Once you have the Networking components created in OCI for the first time, expor
    - DRG Route Rules
       - Add/Modify/Delete DRG Route Rules (Reads DRGRouteRulesinOCI sheet)
 
-   Once the execution is successful, _<customer\_name>\_compartments.auto.tfvars_ file will be generated under the folder _/cd3user/tenancies/<customer\_name>/terraform_files/<region_dir>_
+   Once the execution is successful, _<customer\_name>\_seclists.auto.tfvars_,  _<customer\_name>\routetables.auto.tfvars_ and  _<customer\_name>\drg-routetables.auto.tfvars_ file will be generated under the folder _/cd3user/tenancies/<customer\_name>/terraform_files/<region_dir>_
     
    Navigate to the above path and execute the terraform commands:<br>
        <br>_terraform init_
        <br>_terraform plan_
        <br>_terraform apply_
    
-This completes the export of Security Rules, Route Rules and DRG Route Rules from OCI. Terraform plan/apply should be in sync with OCI.
+   This completes the export of Security Rules, Route Rules and DRG Route Rules from OCI. Terraform plan/apply should be in sync with OCI.
     
-***Note***: The user may choose to add, modify or delete rules in OCI Console manually at this point. Once all the desired changes are complete, repeat the above process to sync the Terraform files with OCI.
+**NOTE-**: The user may also choose to add, modify or delete rules in OCI Console manually at any point of time. Once all the desired changes are complete wrt rules, repeat the above process to sync the Terraform files with OCI.
 
 ### 3. Add, Update, Delete New Security Rules, Route Rules and DRG Route Rules
 
@@ -87,14 +87,14 @@ Follow the below steps to add, update or delete the following components:
 
    Once the execution is successful, _<customer\_name>\_compartments.auto.tfvars_ file will be generated under the folder _/cd3user/tenancies/<customer\_name>/terraform_files/<region_dir>_
 
-   ***Note***: This will create TF for only those Security Lists and Route Tables in VCNs which are part of cd3 and skip any VCNs that have been created outside of cd3 execution.
+   **NOTE**: This will create TF for only those Security Lists and Route Tables in VCNs which are part of cd3 and skip any VCNs that have been created outside of cd3 execution.
 
       Navigate to the above path and execute the terraform commands:<br>
        <br>_terraform init_
        <br>_terraform plan_
        <br>_terraform apply_
    
-This completes the modification of Security Rules, Route Rules and DRG Route Rules in OCI. Verify the components in console.
+   This completes the modification of Security Rules, Route Rules and DRG Route Rules in OCI. Verify the components in console.
 
 
 ## Non-Greenfield Workflow
@@ -158,7 +158,7 @@ Follow the below steps to create a Network using an existing DRG in OCI.
      
      <br>_terraform apply_
    
-This completes the creation of Networking components by using the existing DRG in OCI. Verify the components in console.
+   This completes the creation of Networking components by using the existing DRG in OCI. Verify the components in console.
 
 ### Add a New or Modify the existing Networking components
 
