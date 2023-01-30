@@ -13,7 +13,7 @@
 <br>If the key pair does not exist, create them using the below command:
 <br>```python createAPIKey.py```
 <br> → This will generate the public/private key pair (***_oci_api_public.pem_*** and ***_oci_api_private.pem_***) at **_/cd3user/tenancies/keys/_**
-<br> → In case you already have the keys, you should rename the private key file to **_oci_api_private.pem_** and place it inside the container.
+<br> → In case you already have the keys, you should copy the private key file inside the container and rename it to **_oci_api_private.pem_**.
 
 **Step 3 - Upload the Public key**:
 <br>Upload the Public key to **"APIkeys"** under user settings in OCI Console. Pre-requisite to use the complete functionality of the Automation Toolkit is to have the user as an administrator to the tenancy.
