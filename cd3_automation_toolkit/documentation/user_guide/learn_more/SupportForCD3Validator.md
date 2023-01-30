@@ -1,4 +1,4 @@
-## Support for CD3 Validator
+## CD3 Validator Features
 With version v9.0 we have introduced validator for Multiple VCN CIDRs in Networking Tab.
 CD3 Validator helps you validate the Compartments, Groups, Policies, Network component entries, Instances, Block Volumes, FSS in your CD3 to ensure error free, smooth creation of the resources when Terraform is applied.
 Below is a list of checks done by the CD3 Validator:
