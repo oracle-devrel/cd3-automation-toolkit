@@ -140,7 +140,8 @@ Follow the below steps to update NSGs.
 3. Choose _'Network'_ from the displayed menu. Choose below sub-option:
    - Network Security Groups
       - Add/Modify/Delete NSGs (Reads NSGs sheet)
-     Once the execution is successful,  _<customer\_name>\_nsgs.auto.tfvars_ and more will be generated under the folder _/cd3user/tenancies/<customer\_name>/terraform_files/<region_dir>_. Existing files will move into respective backup folders.
+    
+     Once the execution is successful,  _<customer\_name>\_nsgs.auto.tfvars_ will be generated under the folder _/cd3user/tenancies/<customer\_name>/terraform_files/<region_dir>_. Existing files will move into respective backup folders.
     
 4. Navigate to the above path and execute the terraform commands:<br>
        <br>_terraform init_
