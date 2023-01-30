@@ -95,6 +95,42 @@ Follow the below steps to add, update or delete the following components:
        <br>_terraform apply_
    
    This completes the modification of Security Rules, Route Rules and DRG Route Rules in OCI. Verify the components in console.
+
+
+## Non-Greenfield Workflow
+### 1. Export Network
+
+Follow the below steps to export the Networking components that includes VCNs, Subnets, DHCP, DRG, Security List, Route Tables, DRG Route Tables, NSGs, etc to CD3 Excel Sheets and Terraform state.
+
+1. Use the _'CD3-Blank-Template.xlsx_' [Sample Templates](/cd3_automation_toolkit/example) to export the required resources into the Networking Tabs - VCNs, DRGs, VCN Info, DHCP, Subnets, NSGs, RouteRulesInOCI, SecRulesInOCI,DRGRouteRulesInOCI tabs.
+   
+2. Execute the _setupOCI.py_ file with _non_gf_tenancy_ parameter value to _true_:
+   
+   ```python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties```
+   
+3. Choose one of the below available sub-options from _'Export Network'_ of the main menu. 
+   - Export all Network Components
+   - Export Network components for VCNs, DRGs and DRGRouteRulesinOCI Tabs
+   - Export Network components for DHCP Tab
+   - Export Network components for SecRulesinOCI Tab
+   - Export Network components for RouteRulesinOCI Tab
+   - Export Network components for Subnets Tab
+   - Export Network components for NSGs Tab
+   
+   Once the execution is successful, _<customer\_name>\_compartments.auto.tfvars_  and _tf\_import\_commands\_network\_<service_name>\_nonGF.sh files will be generated under the folder _/cd3user/tenancies/<customer\_name>/terraform_files/<region_dir>_
+    
+   Navigate to the above path and execute the terraform commands:<br>
+       <br>_terraform init_
+       <br>_Execute the shell scirpts of networking components
+       <br>_terraform plan_
+       <BR>- Terraform Plan must show that all the components are in sync.
+   
+This completes the export of Networking components from OCI.
+  
+### 2. Add a new or modify the existing networking components
+Export the Networking components by following the steps [above](#export-network).
+Follow the [process](#add-a-new-or-modify-the-existing-networking-components) to add new components such as VCN/DHCP/DRG/IGW/NGW/SGW/LPG/Subnet etc.
+
    
 ## Other Scenarios
 ### Use an existing DRG in OCI while creating the network
@@ -147,42 +183,6 @@ Follow the below steps to add a new or modify the existing Networking components
        <br>_terraform apply_
    
 This completes the addition of new Networking components in OCI. Verify the components in console.
-
-
-## Non-Greenfield Workflow
-### 1. Export Network
-
-Follow the below steps to export the Networking components that includes VCNs, Subnets, DHCP, DRG, Security List, Route Tables, DRG Route Tables, NSGs, etc to CD3 Excel Sheets and Terraform state.
-
-1. Use the _'CD3-Blank-Template.xlsx_' [Sample Templates](/cd3_automation_toolkit/example) to export the required resources into the Networking Tabs - VCNs, DRGs, VCN Info, DHCP, Subnets, NSGs, RouteRulesInOCI, SecRulesInOCI,DRGRouteRulesInOCI tabs.
-   
-2. Execute the _setupOCI.py_ file with _non_gf_tenancy_ parameter value to _true_:
-   
-   ```python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties```
-   
-3. Choose one of the below available sub-options from _'Export Network'_ of the main menu. 
-   - Export all Network Components
-   - Export Network components for VCNs, DRGs and DRGRouteRulesinOCI Tabs
-   - Export Network components for DHCP Tab
-   - Export Network components for SecRulesinOCI Tab
-   - Export Network components for RouteRulesinOCI Tab
-   - Export Network components for Subnets Tab
-   - Export Network components for NSGs Tab
-   
-   Once the execution is successful, _<customer\_name>\_compartments.auto.tfvars_  and _tf\_import\_commands\_network\_<service_name>\_nonGF.sh files will be generated under the folder _/cd3user/tenancies/<customer\_name>/terraform_files/<region_dir>_
-    
-   Navigate to the above path and execute the terraform commands:<br>
-       <br>_terraform init_
-       <br>_Execute the shell scirpts of networking components
-       <br>_terraform plan_
-       <BR>- Terraform Plan must show that all the components are in sync.
-   
-This completes the export of Networking components from OCI.
-  
-### 2. Add a new or modify the existing networking components
-Export the Networking components by following the steps [above](#export-network).
-Follow the [process](#add-a-new-or-modify-the-existing-networking-components) to add new components such as VCN/DHCP/DRG/IGW/NGW/SGW/LPG/Subnet etc.
-
 
 <br><br>
 <div align='center'>
