@@ -102,7 +102,7 @@ Follow the below steps to add, update or delete the following components:
 
 Follow the below steps to export the Networking components that includes VCNs, Subnets, DHCP, DRG, Security List, Route Tables, DRG Route Tables, NSGs, etc to CD3 Excel Sheets and Terraform state.
 
-1. Use the _'CD3-Blank-Template.xlsx_' [Sample Templates](/cd3_automation_toolkit/example) to export the required resources into the Networking Tabs - VCNs, DRGs, VCN Info, DHCP, Subnets, NSGs, RouteRulesInOCI, SecRulesInOCI,DRGRouteRulesInOCI tabs.
+1. Use the 'CD3-Blank-Template.xlsx' (/cd3_automation_toolkit/example) to export the networking resources into the Tabs - VCNs, DRGs, VCN Info, DHCP, Subnets, NSGs, RouteRulesInOCI, SecRulesInOCI,DRGRouteRulesInOCI tabs.
    
 2. Execute the _setupOCI.py_ file with _non_gf_tenancy_ parameter value to _true_:
    
@@ -117,7 +117,7 @@ Follow the below steps to export the Networking components that includes VCNs, S
    - Export Network components for Subnets Tab
    - Export Network components for NSGs Tab
    
-   Once the execution is successful, _<customer\_name>\_compartments.auto.tfvars_ and _tf\_import\_commands\_network\_<service_name>\_nonGF.sh files will be generated under the folder _/cd3user/tenancies/<customer\_name>/terraform_files/<region_dir>_
+   Once the execution is successful, networking related .tfvars files and .sh files containing import statements will be generated under the folder _/cd3user/tenancies/<customer\_name>/terraform_files/<region_dir>_
     
    Navigate to the above path and execute the terraform commands:<br>
        <br>_terraform init_
