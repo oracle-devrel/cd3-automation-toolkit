@@ -105,7 +105,28 @@ Follow the below steps to add, update or delete the following components:
    
    This completes the modification of Security Rules, Route Rules and DRG Route Rules in OCI. Verify the components in console.
 
+### 4. Modify Network
 
+**NOTE-** Follow the below steps to add a new or modify the existing Networking components - VCNs, Subnets, DHCP and DRG.
+
+1.  Modify your excel sheet to update required data in the Tabs - VCNs, DRGs, VCN Info, DHCP and Subnets.
+   
+2. Execute the _setupOCI.py_ file with _non_gf_tenancy_ parameter value to _false_:
+   
+   ```python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties```
+   
+3. To Validate the CD3 excel Tabs - Choose option _'Validate CD3'_ and _'Validate Network(VCNs, Subnets, DHCP, DRGs)'_ from sub-menu to check for syntax errors in Excel sheet. Examine the log file generated at /cd3user/tenancies/<customer_name>/<customer_name>\_cd3validator.logs. If there are errors, please rectify them accordingly and proceed to the next step.
+
+4. Choose option to _'Modify Network'_ under _'Network'_ from the displayed menu. Once the execution is successful, multiple .tfvars related to networking like _<customer\_name>\_major-objects.auto.tfvars_ and more will be generated under the folder _/cd3user/tenancies/<customer\_name>/terraform_files/<region_dir>_
+    
+   **Note-**: Make sure to export Sec Rules, Route Rules, DRG Route Rules to CD3 Excel Sheet before executing this option.
+
+5. Navigate to the above path and execute the terraform commands:<br>
+       <br>_terraform init_
+       <br>_terraform plan_
+       <br>_terraform apply_
+   
+This completes the modification of Networking components in OCI. Verify the components in console.
 ## Non-Greenfield Tenancies
 ### 1. Export Network
 
