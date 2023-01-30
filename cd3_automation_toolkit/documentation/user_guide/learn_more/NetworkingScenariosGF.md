@@ -6,7 +6,13 @@
 Before you start with Network Creation, make sure you have run 'Fetch Compartments OCIDs to variables file'.
 
 ### 1. Create Network
-Follow the below steps to create Network that includes VCNs, Subnets, DHCP, DRG, Security List, Route Tables, DRG Route Tables, NSGs, etc.
+Creation of Networking components using Automation Toolkit involes four simple steps.
+ - Feeding the details of networking resources to Excel.
+ - Running the toolkit to generate auto.tfvars.
+ - Executing Terraform commands to provision the resources in OCI.
+ - Exporting the details of Security Rules and Route Rules to CD3 Excel Sheet.
+
+Below are the steps in detail to create Network that includes VCNs, Subnets, DHCP, DRG, Security List, Route Tables, DRG Route Tables, NSGs, etc.
 
 1. Choose appropriate excel sheet from [Excel Templates](/cd3_automation_toolkit/documentation/user_guide/Essentials_of_Automation_Toolkit.md#excel-sheet-templates) and fill the required Network details in the Networking Tabs - VCNs, DRGs, VCN Info, DHCP, Subnets, NSGs tabs.
    
@@ -39,11 +45,24 @@ Follow the below steps to create Network that includes VCNs, Subnets, DHCP, DRG,
 
 This completes the steps for Creating the Network in OCI and exporting the default rules to the CD3 Excel Sheet using the Automation Toolkit.
 
+### 1a. Use an existing DRG in OCI while creating the network
+In some scenarios, a DRG has already been created in the tenancy and rest of the Network components still need to be created. In such cases, generate the networking related tfvars using same process mentioned above till Step 4.
+
+ - For Step 5, Navigate to the outdir path and execute the terraform commands:<br>
+       <br>_terraform init_
+       <br>_terraform import "module.drgs[\"&lt;&lt;drgs terraform variable name&gt;&gt;\"].oci_core_drg.drg" &lt;&lt;drg-ocid&gt;&gt;_
+       <br>&nbsp;&nbsp;→ This will Import the DRG into your state file.       
+       _terraform plan_
+       <br>&nbsp;&nbsp;→ Terraform Plan will indicate to add all the other components except DRG.
+       <br>_terraform apply_
+
+   Continue executing the remaining steps of [Create Network](#1-create-network).
+
 ### 2. Modify Network
 
-Follow the below steps to add a new or modify the existing Networking components - VCNs, Subnets, DHCP and DRG.
+Follow the below steps to add a new or modify the existing Networking components like the VCNs, Subnets, DHCP and DRG.
 
-1.  Modify your excel sheet to update required data in the Tabs - VCNs, DRGs, VCN Info, DHCP and Subnets.
+1. Modify your excel sheet to update required data in the Tabs - VCNs, DRGs, VCN Info, DHCP and Subnets.
    
 2. Execute the _setupOCI.py_ file with _non_gf_tenancy_ parameter value to _false_:
    
@@ -152,18 +171,6 @@ Follow the below steps to update NSGs.
        <br>_terraform apply_
    
 This completes the modification of NSGs in OCI. Verify the components in console.
-
-
-### 6. Use an existing DRG in OCI while creating the network
-In some scenarios, a DRG has already been created in the tenancy and rest of the Network components still need to be created. In such cases, generate the networking related tfvars using same process mentioned above till Step 4.
-
-For Step5, Navigate to the outdir path and execute the terraform commands:<br>
-       <br>_terraform init_
-       <br>_terraform import "module.drgs[\"&lt;&lt;drgs terraform variable name&gt;&gt;\"].oci_core_drg.drg" &lt;&lt;drg-ocid&gt;&gt;_
-       <br>&nbsp;&nbsp;→ This will Import the DRG into your state file.       
-       _terraform plan_
-       <br>&nbsp;&nbsp;→ Terraform Plan will indicate to add all the other components except DRG.
-       <br>_terraform apply_
 
 
 <br><br>
