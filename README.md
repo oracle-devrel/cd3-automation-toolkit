@@ -15,8 +15,8 @@
 9. [Creating independent tfstate files for each resource](/cd3_automation_toolkit/documentation/user_guide/RestructuringOutDirectory.md)
 10. [Expected Behaviour Of Automation Toolkit](/cd3_automation_toolkit/documentation/user_guide/KnownBehaviour.md)
 11. [FAQs](/cd3_automation_toolkit/documentation/user_guide/FAQ.md)
-11. [Learn More...](/cd3_automation_toolkit/documentation/user_guide/learn_more)
-    - [CD3 Excel Information](/cd3_automation_toolkit/documentation/user_guide/learn_more/CD3ExcelInfo.md)
+12. Learn More...
+    - CD3 Excel Information
       - [Excel Templates](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md#excel-sheet-templates)
       - [CD3 Excelsheet Tabs](/cd3_automation_toolkit/documentation/user_guide/learn_more/CD3ExcelTabs.md)
     - [CD3 Validator Features](/cd3_automation_toolkit/documentation/user_guide/learn_more/SupportForCD3Validator.md)
