@@ -77,7 +77,7 @@ Follow the below steps to quickly export Identity components from OCI.
       <li><i>&lt;customer_name>_compartments.auto.tfvars, &lt;customer_name>_groups.auto.tfvars, &lt;customer_name>_policies.auto.tfvars</i></li>
       </ul>
    
- 5. Execute _tf\_import\_commands\_identity.sh_ to start importing the identity components into tfstate file.
+ 5. Execute _tf\_import\_commands\_identity_nonGF.sh_ to start importing the identity components into tfstate file.
  6. Repeat the above process (except Step 5) to export other components from OCI.
 <br><br>
 <div align='center'>
