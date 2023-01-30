@@ -117,7 +117,7 @@ Follow the below steps to add, update or delete the following components:
    This completes the modification of Security Rules, Route Rules and DRG Route Rules in OCI. Verify the components in console.
 
 
-### 4. Export the Security Rules, Route Rules and DRG Route Rules to sync the manual changes in OCI with CD3 Excel Sheet and Terraform
+### 4. Sync  manual changes to the Security Rules, Route Rules and DRG Route Rules done in OCI with CD3 Excel Sheet and Terraform
 Follow the below process to export the rules to the same CD3 Excel Sheet as the one used to Create Network, and to sync the Terraform files with OCI whenever an user adds, modifies or deletes rules in OCI Console manually.
 
 **NOTE**: Make sure to close your Excel sheet during the export process.
