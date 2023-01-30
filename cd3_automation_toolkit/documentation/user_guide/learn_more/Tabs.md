@@ -11,7 +11,7 @@ _***Note***_
 <blockquote>
 - Automation Tool Kit generates the TF Configuration files for all the compartments in the tenancy. 
   If some compartment was already existing in OCI then on Terraform Apply, the user will see logs which indicate creation of that compartment - this can be ignored as Terraform will only modify the existing Compartments (with additional information, if there are any eg description) and not create a new/duplicate one.<br>
-<br> - Terraform destroy on compartments will not delete them from OCI Console by default. Inorder to destroy them from OCI either - 
+<br> - Terraform destroy on compartments or removing the compartments details from <b><i>*_compartments.auto.tfvars</i></b> will not delete them from OCI Console by default. Inorder to destroy them from OCI either - 
  <br> <ul>
   <li>Add an additional column - <b><i>enable_delete</i></b> to Compartments Tab of CD3 Excel sheet with the value <b>"true"</b> for the compartments that needs to be deleted on terraform destroy. Execute the toolkit menu option to Create Compartments.</li>
   <br>(OR)<br><br>
