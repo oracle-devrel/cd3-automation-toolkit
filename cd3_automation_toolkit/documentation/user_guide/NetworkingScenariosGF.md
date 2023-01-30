@@ -1,17 +1,22 @@
 # Networking Scenarios 
 
+## Table of Contents :bookmark:
+
+1. [Create Network](#create-network)
+2. [Use an existing DRG in OCI while creating the network](#pre-requisites)
+
 ## Greenfield Tenancies
 
 **NOTE-**
 Before you start with Network Creation, make sure you have run 'Fetch Compartments OCIDs to variables file'.
 
-### 1. Create Network
+### Create Network
 Creation of Networking components using Automation Toolkit involes four simple steps.
  - Add the networking resource details to appropriate Excel Sheets.
  - Running the toolkit to generate auto.tfvars.
  - Executing Terraform commands to provision the resources in OCI.
- - Exporting the details of Security Rules and Route Rules to CD3 Excel Sheet as they are generated automatically by the toolkit and needs to be updated in CD3 Excel sheet,
-
+ - Exporting the automatically generated Security Rules and Route Rules by the toolkit to CD3 Excel Sheet.
+ 
 Below are the steps in detail to create Network that includes VCNs, Subnets, DHCP, DRG, Security List, Route Tables, DRG Route Tables, NSGs, etc.
 
 1. Choose appropriate excel sheet from [Excel Templates](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md#excel-sheet-templates) and fill the required Network details in the Networking Tabs - VCNs, DRGs, VCN Info, DHCP, Subnets, NSGs tabs.
@@ -45,7 +50,7 @@ Below are the steps in detail to create Network that includes VCNs, Subnets, DHC
 
 This completes the steps for Creating the Network in OCI and exporting the default rules to the CD3 Excel Sheet using the Automation Toolkit.
 
-### 1a. Use an existing DRG in OCI while creating the network
+### Use an existing DRG in OCI while creating the network
 In some scenarios, a DRG has already been created in the tenancy and rest of the Network components still need to be created. In such cases, generate the networking related tfvars using same process mentioned above till Step 4.
 
  - For Step 5, Navigate to the outdir path and execute the terraform commands:<br>
@@ -56,13 +61,15 @@ In some scenarios, a DRG has already been created in the tenancy and rest of the
        <br>&nbsp;&nbsp;→ Terraform Plan will indicate to add all the other components except DRG.
        <br>_terraform apply_
 
-   Continue executing the remaining steps of [Create Network](#1-create-network).
+   Continue executing the remaining steps (from Step 6) of [Create Network](#1-create-network).
 
-### 2. Modify Network
+### Modify Network 
 Modifying the Networking components using Automation Toolkit involves three simple steps.
  - Add/modify the details of networking components like the VCNs, Subnets, DHCP and DRG in Excel Sheet.
  - Running the toolkit to generate auto.tfvars.
  - Executing Terraform commands to provision/modify the resources in OCI.
+
+ ***Note***: Follow [these steps](#3-modify-security-rules-route-rules-and-drg-route-rules) to modify Security Rules, Route Rules and DRG Route Rules
 
 _Steps in detail_:
 1. Modify your excel sheet to update required data in the Tabs - VCNs, DRGs, VCN Info, DHCP and Subnets.
@@ -84,7 +91,7 @@ _Steps in detail_:
    
 This completes the modification of Networking components in OCI. Verify the components in console.
 
-### 3. Modify Security Rules, Route Rules and DRG Route Rules
+### Modify Security Rules, Route Rules and DRG Route Rules
 
 Follow the below steps to add, update or delete the following components:
 - Security Lists and Security Rules
@@ -117,7 +124,7 @@ Follow the below steps to add, update or delete the following components:
    This completes the modification of Security Rules, Route Rules and DRG Route Rules in OCI. Verify the components in console.
 
 
-### 4. Export the Security Rules, Route Rules and DRG Route Rules to sync the manual changes in OCI with CD3 Excel Sheet and Terraform
+### Sync manual changes done in OCI of Security Rules, Route Rules and DRG Route Rules with CD3 Excel Sheet and Terraform
 Follow the below process to export the rules to the same CD3 Excel Sheet as the one used to Create Network, and to sync the Terraform files with OCI whenever an user adds, modifies or deletes rules in OCI Console manually.
 
 **NOTE**: Make sure to close your Excel sheet during the export process.
@@ -154,7 +161,7 @@ Follow the below process to export the rules to the same CD3 Excel Sheet as the 
    This completes the export of Security Rules, Route Rules and DRG Route Rules from OCI. Terraform plan/apply should be in sync with OCI.
     
 
-### 5. Add/Modify/Delete NSGs
+### Add/Modify/Delete NSGs
 Follow the below steps to update NSGs.
 
 1.  Modify your excel sheet to update required data in the Tabs - NSGs.
