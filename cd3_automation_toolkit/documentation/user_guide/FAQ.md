@@ -15,7 +15,8 @@
 <br>           - Modify the name of variables file (eg variables_london.tf)
 <br>           - Modify the region parameter in tis variables_london.tf
 
-**Q 4. How do I upgrade to the new version of toolkit for my existing OCI tenancies?**
+
+**Q 4. How do I upgrade an existing version of the toolkit to the new one without disrupting my existing tenancy files/directories?**
 <br> **Ans** 
 
 **Q 5. I am getting 'Permission Denied' error while executing any commands inside the container.**
