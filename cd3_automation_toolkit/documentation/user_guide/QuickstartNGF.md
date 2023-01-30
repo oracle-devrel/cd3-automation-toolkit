@@ -15,9 +15,15 @@ Once the Docker container has been launched and connected to the OCI Tenancy, fo
    and execute the _setupOCI.py_ file:
    
    ```python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties```
- 4. Choose option 'Export Identity' from the displayed menu. Once the execution is successful, 
-    
+ 4. Choose option 'Export Identity' from the displayed menu. Once the execution is successful, you will see: <br>
+   <br>_Filled in tabs - Compartments, Groups, Polecies of Excel sheet_
+   <br>_tf\_import\_commands\_identity.sh_
+   <br>_<customer_name>.compartments.auto.tfvars, _<customer_name>.groups.auto.tfvars, _<customer_name>.policies.auto.tfvars_
+   
+ 5. Execute _tf\_import\_commands\_identity.sh_ to start importing the identity components into tfstate file.
+ 6. Repeat the above process (except Step 5) to export other components from OCI.
 
+    
 <br><br>
 <div align='center'>
 
