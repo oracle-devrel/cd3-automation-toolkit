@@ -128,7 +128,7 @@ Follow the below steps to add a new or modify the existing Networking components
    
 This completes the modification of Networking components in OCI. Verify the components in console.
 
-### 5. Add/Modify/Delete NSGs
+### 6. Add/Modify/Delete NSGs
 Follow the below steps to update NSGs.
 
 1.  Modify your excel sheet to update required data in the Tabs - NSGs.
@@ -190,8 +190,8 @@ Subnets tab:
 ![image](https://user-images.githubusercontent.com/115973871/214372535-69714cbc-1980-4dd5-ae52-e20441903d8a.png)
 
 ### 2. Add a new or modify the existing networking components
-Export the Networking components by following the steps [above](#1-export-network).
-Follow the [process](#5-modify-network) to add new components such as VCN/DHCP/DRG/IGW/NGW/SGW/LPG/Subnet etc.
+1. Export the Networking components by following the steps [above](#1-export-network). (Note that here _non\_gf\_tenancy_ flag is set to true)
+2. Follow the [process](#5-modify-network) to add new components such as VCN/DHCP/DRG/IGW/NGW/SGW/LPG/Subnet etc. (Note that here _non\_gf\_tenancy_ flag is set to true)
 
    
 
