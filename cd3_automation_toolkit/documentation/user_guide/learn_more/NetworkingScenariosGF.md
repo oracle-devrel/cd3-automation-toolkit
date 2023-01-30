@@ -59,9 +59,12 @@ In some scenarios, a DRG has already been created in the tenancy and rest of the
    Continue executing the remaining steps of [Create Network](#1-create-network).
 
 ### 2. Modify Network
+Modifying the Networking components using Automation Toolkit involes three simple steps.
+ - Add/modify the details of networking components like the VCNs, Subnets, DHCP and DRG in Excel Sheet.
+ - Running the toolkit to generate auto.tfvars.
+ - Executing Terraform commands to provision/modify the resources in OCI.
 
-Follow the below steps to add a new or modify the existing Networking components like the VCNs, Subnets, DHCP and DRG.
-
+_Steps in detail_:
 1. Modify your excel sheet to update required data in the Tabs - VCNs, DRGs, VCN Info, DHCP and Subnets.
    
 2. Execute the _setupOCI.py_ file with _non_gf_tenancy_ parameter value to _false_:
