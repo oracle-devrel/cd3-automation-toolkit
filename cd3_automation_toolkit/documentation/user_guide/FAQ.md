@@ -24,12 +24,11 @@
 ![image](https://user-images.githubusercontent.com/103508105/215454472-2367c5d5-2dce-4248-a7fd-c57f1104267e.png)
 <br><br>**Solution:**
 <br>Please change:
-- selinux mode from Enforcing to Permissive
-- change the owner of folders in /cd3user/tenancies to that of cd3user. 
+<br>           - selinux mode from Enforcing to Permissive
+<br>           - change the owner of folders in /cd3user/tenancies to that of cd3user. 
 Please refer the screenshots below -
 ![image](https://user-images.githubusercontent.com/103508105/215455637-4bcaac18-269d-4029-b273-2214b719563f.png)
-
-- Alternately, please attach a data disk and map the container (/cd3user/tenancies) on a folder that is created on the data disk (your local folder).
+<br>           - Alternately, please attach a data disk and map the container (/cd3user/tenancies) on a folder that is created on the data disk (your local folder).
 
 
 
