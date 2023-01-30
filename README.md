@@ -12,9 +12,9 @@
 6. [Automation Toolkit Workflows](/cd3_automation_toolkit/documentation/user_guide/Workflows.md)
 7. [Quick Start - Green Field](/cd3_automation_toolkit/documentation/user_guide/QuickstartGF.md)
 8. [Quick Start - Non Greeen Field](/cd3_automation_toolkit/documentation/user_guide/QuickstartNGF.md)
-8. [Recommendations](/cd3_automation_toolkit/documentation/user_guide/Recommendations.md)
 9. [Creating independent tfstate files for each resource](/cd3_automation_toolkit/documentation/user_guide/RestructuringOutDirectory.md)
 10. [Expected Behaviour Of Automation Toolkit](/cd3_automation_toolkit/documentation/user_guide/KnownBehaviour.md)
+11. [FAQs](/cd3_automation_toolkit/documentation/user_guide/FAQ.md)
 11. [Learn More...](/cd3_automation_toolkit/documentation/user_guide/learn_more)
     - [CD3 Excel Information](/cd3_automation_toolkit/documentation/user_guide/learn_more/CD3ExcelInfo.md)
       - [Excel Templates](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md#excel-sheet-templates)
@@ -25,7 +25,6 @@
     - [OCI Resource Manager Upload](/cd3_automation_toolkit/documentation/user_guide/learn_more/ResourceManagerUpload.md)
     - [Support for Additional Attributes](/cd3_automation_toolkit/documentation/user_guide/learn_more/SupportforAdditionalAttributes.md)
 12. [Automation Toolkit Learning Videos](/cd3_automation_toolkit/documentation/user_guide/LearningVideos.md)
-13. [FAQ](/cd3_automation_toolkit/documentation/user_guide/FAQ.md)
 
 ## Introduction
 CD3 stands for <b>C</b>loud <b>D</b>eployment <b>D</b>esign <b>D</b>eliverable.
