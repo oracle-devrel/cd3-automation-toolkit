@@ -19,7 +19,7 @@ Once the Docker container has been launched and connected to the OCI Tenancy, fo
       <ul>
       <li><b>Filled in tabs</b>-<i>Compartments, Groups, Polecies of Excel sheet</i></li>
       <li><i>tf_import_commands_identity.sh</i></li>
-      <li><i><customer_name>_compartments.auto.tfvars, <customer_name>_groups.auto.tfvars, <customer_name>_policies.auto.tfvars</i></li>
+      <li><i>&lt;customer_name>_compartments.auto.tfvars, &lt;customer_name>_groups.auto.tfvars, &lt;customer_name>_policies.auto.tfvars</i></li>
       </ul>
    
  5. Execute _tf\_import\_commands\_identity.sh_ to start importing the identity components into tfstate file.
