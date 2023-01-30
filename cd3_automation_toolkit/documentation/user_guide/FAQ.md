@@ -14,3 +14,5 @@
 <br>           - Copy all the terraform modules and .tf files, except the .auto.tfvars and .tfstate files from existing region directory to the new one
 <br>           - Modify the name of variables file (eg variables_london.tf)
 <br>           - Modify the region parameter in tis variables_london.tf
+
+**Q 4. How do I upgrade to the new version of toolkit for my existing OCI tenancies?**
