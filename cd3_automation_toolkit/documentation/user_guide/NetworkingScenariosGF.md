@@ -64,7 +64,8 @@ In some scenarios, a DRG has already been created in the tenancy and rest of the
        <br>_terraform apply_
 
    Continue executing the remaining steps (from Step 6) of [Create Network](#1-create-network).
-
+<br><br>[Go back to Networking Scenarios](#greenfield-tenancies)
+   
 ### Modify Network 
 Modifying the Networking components using Automation Toolkit involves three simple steps.
  - Add/modify the details of networking components like the VCNs, Subnets, DHCP and DRG in Excel Sheet.
@@ -92,7 +93,7 @@ _Steps in detail_:
        <br>_terraform apply_
    
 This completes the modification of Networking components in OCI. Verify the components in console.
-
+<br><br>[Go back to Networking Scenarios](#greenfield-tenancies)
 ### Modify Security Rules, Route Rules and DRG Route Rules
 
 Follow the below steps to add, update or delete the following components:
@@ -125,7 +126,7 @@ Follow the below steps to add, update or delete the following components:
    
    This completes the modification of Security Rules, Route Rules and DRG Route Rules in OCI. Verify the components in console.
 
-
+<br><br>[Go back to Networking Scenarios](#greenfield-tenancies)
 ### Sync manual changes done in OCI of Security Rules, Route Rules and DRG Route Rules with CD3 Excel Sheet and Terraform
 Follow the below process to export the rules to the same CD3 Excel Sheet as the one used to Create Network, and to sync the Terraform files with OCI whenever an user adds, modifies or deletes rules in OCI Console manually.
 
@@ -162,7 +163,7 @@ Follow the below process to export the rules to the same CD3 Excel Sheet as the 
    
    This completes the export of Security Rules, Route Rules and DRG Route Rules from OCI. Terraform plan/apply should be in sync with OCI.
     
-
+<br><br>[Go back to Networking Scenarios](#greenfield-tenancies)
 ### Add/Modify/Delete NSGs
 Follow the below steps to update NSGs.
 
@@ -185,7 +186,7 @@ Follow the below steps to update NSGs.
    
 This completes the modification of NSGs in OCI. Verify the components in console.
 
-
+<br><br>[Go back to Networking Scenarios](#greenfield-tenancies)
 <br><br>
 <div align='center'>
 
