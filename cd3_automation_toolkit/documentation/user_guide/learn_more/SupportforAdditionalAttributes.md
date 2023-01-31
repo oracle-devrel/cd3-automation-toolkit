@@ -15,11 +15,12 @@
 
 <img src =https://user-images.githubusercontent.com/115973871/215402830-d7856e2d-0bd9-43b9-94bd-df039a90b942.png width=50% height=50%>
 
-<li>Uncomment the parameter in **instances.tf** file as shown below.</li>
+
+Uncomment the parameter in **instances.tf** file as shown below.
 
 <img src =https://user-images.githubusercontent.com/115973871/215402973-72857dbd-5efd-40d9-8a7f-3541eb85af66.png width=50% height=50%>
 
-<li>Uncomment the parameter in **cd3_automation_toolkit\Compute\templates\instance-template** . Any line that is between {# <and> #} are commented in Jinja templates. From the screenshot below we note that the condition for **preserve_boot_volume**  is within the Jinja comments. Copy the highlighted line and place it after/outside line 184 (**#}**) as per below screenshot.</li>
+Uncomment the parameter in **cd3_automation_toolkit\Compute\templates\instance-template** . Any line that is between {# <and> #} are commented in Jinja templates. From the screenshot below we note that the condition for **preserve_boot_volume**  is within the Jinja comments. Copy the highlighted line and place it after/outside line 184 (**#}**) as per below screenshot.
 
 **Before**
   
@@ -29,7 +30,9 @@
 
 <img src =https://user-images.githubusercontent.com/115973871/215403345-fa24edf5-73d5-4417-ae71-9df216ec95bb.png width=50% height=50%>
 
-<li>Apart from the above changes, optionally, update the **instance_ssh_keys** and **instance_source_ocids** in your variables file before executing the toolkit to generate the auto.tfvars for instances.</li>
+
+Apart from the above changes, optionally, update the **instance_ssh_keys** and **instance_source_ocids** in your variables file before executing the toolkit to generate the auto.tfvars for instances.
+
 
 
 **Exemple 2 : To Add Freeform Tags**
