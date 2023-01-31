@@ -1,6 +1,10 @@
 # Networking Scenarios
 
 ## Non-Greenfield Tenancies
+- [Export Network](#non-greenfield-tenancies)
+- [Add a new or modify the existing networking components](#add-a-new-or-modify-the-existing-networking-components)
+
+
 **NOTE-**
 Before you start with Network Export, make sure you have run 'Fetch Compartments OCIDs to variables file'.
 
