@@ -64,8 +64,8 @@ In some scenarios, a DRG has already been created in the tenancy and rest of the
        <br>_terraform apply_
 
    Continue executing the remaining steps (from Step 6) of [Create Network](#1-create-network).
+
 <br><br>[Go back to Networking Scenarios](#greenfield-tenancies)
-   
 ### Modify Network 
 Modifying the Networking components using Automation Toolkit involves three simple steps.
  - Add/modify the details of networking components like the VCNs, Subnets, DHCP and DRG in Excel Sheet.
@@ -93,6 +93,7 @@ _Steps in detail_:
        <br>_terraform apply_
    
 This completes the modification of Networking components in OCI. Verify the components in console.
+
 <br><br>[Go back to Networking Scenarios](#greenfield-tenancies)
 ### Modify Security Rules, Route Rules and DRG Route Rules
 
@@ -124,7 +125,7 @@ Follow the below steps to add, update or delete the following components:
        <br>_terraform plan_
        <br>_terraform apply_
    
-   This completes the modification of Security Rules, Route Rules and DRG Route Rules in OCI. Verify the components in console.
+   This completes the modification of Security Rules, Route Rules and DRG Route Rules in OCI. Verify the components in console.<br>
 
 <br><br>[Go back to Networking Scenarios](#greenfield-tenancies)
 ### Sync manual changes done in OCI of Security Rules, Route Rules and DRG Route Rules with CD3 Excel Sheet and Terraform
