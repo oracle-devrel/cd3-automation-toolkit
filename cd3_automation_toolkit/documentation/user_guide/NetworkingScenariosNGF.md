@@ -46,11 +46,12 @@ VCNs tab:
 Subnets tab:
 ![image](https://user-images.githubusercontent.com/115973871/214372535-69714cbc-1980-4dd5-ae52-e20441903d8a.png)
 
+<br><br>[Go back to Networking Scenarios](#non-greenfield-tenancies)
 ### Add a new or modify the existing networking components
 1. Export the Networking components by following the steps [above](#1-export-network). (Note that here _non\_gf\_tenancy_ flag is set to true)
 2. Follow the [process](/cd3_automation_toolkit/documentation/user_guide/NetworkingScenariosGF.md#modify-network) to add new components such as VCN/DHCP/DRG/IGW/NGW/SGW/LPG/Subnet etc. (Note that here _non\_gf\_tenancy_ flag is set to false)
 
-   
+<br><br>[Go back to Networking Scenarios](#non-greenfield-tenancies)
 
 
 <br><br>
