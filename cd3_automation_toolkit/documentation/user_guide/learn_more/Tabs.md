@@ -145,4 +145,52 @@ Output files generated:
 
 ## Export and Modify Rules
 
+You can export existing security rules and route rules in OCI. On choosing **"Network"** in the SetUpOCI menu and **"Export existing secrules and RouteRules to CD3"** and **"Export existing DRG Routerules to CD3**" submenu will allow to export existing security and route rules.
+
+On choosing this option, you will get a prompt to enter the Compartment Name for which you want to export the rules. When left blank, rules will be exported for all Compartments in the tenancy.
+
+Exported rules are written to 'SecRulesinOCI', ‘RouteRulesinOCI’ and 'DRGRouteRulesinOCI' tab of the cd3 excel. 
+
+**DO NOT** open your CD3 file during the export process.
+
+This option is useful when you want to present the CD3 to the customer as the Actual Representation of OCI console.(i.e provide the contents of OCI in the CD3 excel)
+
+**<ins>Modify Rules</ins>**
+
+On choosing **"Network"** in the SetUpOCI menu and **"Modify SecRules"** and **"modify RouteRules"** and **"Modify DRG RouteRules"** submenu will allow to modify existing route rules and security rules in OCI tenancy.
+
+**SecRulesinOCI tab** – The tool reads this sheet and deletes(backs up to the backup directory) all existing security rules in OCI and replace them with the contents of this Tab.
+
+**RouteRulesinOCI tab** – The tool reads this sheet and deletes(backs up to the backup directory) all existing route rules in OCI and replace them with the contents of this Tab.
+
+**DRGRouteRulesinOCI tab** – The tool reads this sheet and deletes(backs up to the backup directory) all existing DRG route rules in OCI and replace them with the contents of this Tab.
+
+
+## Modify Network
+
+<ins>Modify Network</ins>
+
+Using this option, one can add/remove/update a subnet, a DHCP option or a VCN or DRG to your existing network.
+
+Use this option if you have modified any route rules or security rules else you can still continue using Create Network option for any changes.
+
+On choosing **"Network"** in the SetUpOCI menu and **"Modify Network - Add/Remove/Modify any network object; updates TF files with changes; this option should be used after modification have been done to SecRules or RouteRules"** submenu allow to modify network objects in OCI Tenancy.
+
+## DedicatedVMHosts Tab
+
+Fill up the details in **'DedicatedVMHosts'** sheet and follow the options below.
+
+On choosing **"Compute"** in the SetUpOCI menu and **"Add/Modify/Delete Dedicated VM Hosts"** submenu will allow to launch your VM on a dedicated host.
+
+
+
+Output terraform file generated: \<outdir>/\<region>/dedicated_vm_hosts.tf under \<region> directory.
+
+Once terraform apply is done, you can view the resources under Compute -> Dedicated Virtual Machine Hosts for the region.
+
+If you want to update or add new dedicated VM hosts, update the 'DedicatedVMHosts' tab in cd3 and rerun using setUpOCI.
+
+On re-running the same option you will find the previously existing files being backed up under directory →   \<outdir>/\<region>/backup_dedicatedvmhosts/\<Date>-\<Month>-\<Time>.
+
+
 
