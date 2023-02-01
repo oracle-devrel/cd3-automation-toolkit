@@ -21,7 +21,7 @@ On re-running the same option you will find the previously existing files being 
 
 ## Groups Tab
 
-Use this Tab to create compartments in the OCI tenancy. On choosing "Identity" in the SetUpOCI menu will allow to create groups in the OCI tenancy.
+Use this Tab to create groups in the OCI tenancy. On choosing "Identity" in the SetUpOCI menu will allow to create groups in the OCI tenancy.
 
 Automation toolkit supports creation and export of Dynamic Groups as well.
   
@@ -33,7 +33,7 @@ On re-running the same option you will find the previously existing files being 
 
 ## Policies Tab
 
-Use this Tab to create compartments in the OCI tenancy. On choosing "Identity" in the SetUpOCI menu will allow to create policies in the OCI tenancy.
+Use this Tab to create policies in the OCI tenancy. On choosing "Identity" in the SetUpOCI menu will allow to create policies in the OCI tenancy.
 
 Output terraform files generated: \<outdir>/\<region>/\<prefix>_policies.auto.tfvars where \<region> directory is the home region.
 
