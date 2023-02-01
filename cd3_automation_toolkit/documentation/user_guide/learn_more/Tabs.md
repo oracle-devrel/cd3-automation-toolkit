@@ -302,7 +302,7 @@ Automation Tool Kit allows you to create Load Balancers with all the features su
 
 | Resource | Tab Name |
 |---|---|
-|Load Balancers<br>Hostnames<br>Cipher Suites<br>Certificates| LB-Hostanme-Certs |
+|Load Balancers<br>Hostnames<br>Cipher Suites<br>Certificates| LB-Hostname-Certs |
 |Backend Sets and Backend Servers|BackendSet-BackendServer|
 |Rule Set|RuleSet|
 |Path Route Set|PathRouteSet|
