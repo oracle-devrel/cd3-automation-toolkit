@@ -257,3 +257,80 @@ Output terraform file generated: \<outdir>/\<region>/\<prefix>_instances.auto.tf
 Once the terraform apply is complete, view the resources under Compute -> Instances for the region.
 
 On re-running the same option you will find the previously existing files being backed up under directory →   \<outdir>/\<region>/backup_instances/\<Date>-\<Month>-\<Time>.
+
+## BlocksVolumes Tab
+
+This tab in cd3 excel sheet is used when you need to create block volumes and attach the same to the instances in the OCI tenancy. 
+
+Automation Tool Kit does not support sharing of volumes at the moment. While export of block volumes, if the block volume is attached to multiple instances, it will just fetch details about one attachment.
+
+On choosing **"Storage"** in the SetUpOCI menu and **"Add/Modify/Delete Block Storage/Block Backup Policy"** submenu will allow to create block volumes in OCI Tenancy.
+
+On completion of execution, you will be able to find the output terraform file generated at : 
+
+-→  \<outdir>/\<region>/\<prefix>_blockvolume.auto.tfvars
+
+-→  \<outdir>/\<region>/\<prefix>_block-backup-policy.auto.tfvars  under  appropriate \<region> directory.
+
+Once terraform apply is done, you can view the resources under Block Storage -> Block Volumes  in OCI console.
+
+On re-running the option to create Block Volumes you will find the previously existing files being backed up under directory:
+
+  \<outdir>/\<region>/backup_blockvolumes/\<Date>-\<Month>-\<Time>   and   \<outdir>/\<region>/backup_BlockBackupPolicy/\<Date>-\<Month>-\<Time>.
+
+
+## FSS Tab
+
+On choosing **"Storage"** in the SetUpOCI menu and **"Add/Modify/Delete File Storage"** submenu will allow to create file system storage on OCI tenancy.
+
+Note:   Freeform and Defined Tags - If specified, applies to FSS object only and not to other components like Mount Target.
+
+Once this is complete you will find the generated output terraform files in location :
+
+---> \<outdir>/\<region>/FSS.tf
+
+under \<region> directory.
+
+Once terraform apply is done, you can view the resources under File Storage → File Systems for the region.
+
+On re-running the same option you will find the previously existing files being backed up under directory →   \<outdir>/\<region>/backup_FSS/\<Date>-\<Month>-\<Time>.
+
+
+## Load Balancers
+
+Automation Tool Kit allows you to create Load Balancers with all the features supported by Oracle. Components that you can create using the Tool Kit includes:
+
+| Resource | Tab Name |
+|---|---|
+|Load Balancers<br>Hostnames<br>Cipher Suites<br>Certificates| LB-Hostanme-Certs |
+|Backend Sets and Backend Servers|BackendSet-BackendServer|
+|Rule Set|RuleSet|
+|Path Route Set|PathRouteSet|
+|Listeners|LB-Listeners|
+
+NOTE : While exporting and synching the tfstate file for LBR objects, the user may be notified that a few components will be modified on apply. In such scenarios, add the attributes that the Terraform notifies to be changed to the appropriate CD3 Tab of Load Balancer and Jinja2 Templates (as a non-default attribute) and re-run the export.
+
+On choosing "Load Balancers" in the SetUpOCI menu will allow to create load balancers in OCI tenancy.
+
+**Load Balancers, Hostnames , Certificates and Cipher Suites:**
+
+Use the tab LB-Hostanme-Certs of CD3 Excel to create the following components of Load Balancer:
+
+Load Balancers
+Hostnames
+Cipher Suites
+Certificates
+
+Certificates, Hostnames and Cipher Suites are optional. Leave the related columns empty if they are not required.
+
+**LB-Hostanme-Certs**
+
+Once this is complete you will find the generated output terraform files in location :
+
+---> \<outdir>/\<region>/\<prefix>_lb-hostname-certs.auto.tfvars
+
+under \<region> directory.
+
+Once terraform apply is done, you can view the resources under Networking → Load Balancers for the region.
+
+On re-running the same option you will find the previously existing files being backed up under directory →   \<outdir>/\<region>/backup_LB-Hostname-Certs/\<Date>-\<Month>-\<Time>.
