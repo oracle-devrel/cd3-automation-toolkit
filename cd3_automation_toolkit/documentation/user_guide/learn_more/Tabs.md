@@ -145,8 +145,4 @@ Output files generated:
 
 ## Export and Modify Rules
 
-You can export existing security rules and route rules in OCI. On choosing "Network" in the SetUpOCI menu and "Export existing secrules and RouteRules to CD3" and "Export existing DRG Routerules to CD3" submenu will allow to export existing security and route rules.
-
-
-
 
