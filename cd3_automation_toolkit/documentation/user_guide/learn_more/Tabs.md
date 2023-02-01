@@ -314,7 +314,7 @@ On choosing "Load Balancers" in the SetUpOCI menu will allow to create load bala
 
 **Load Balancers, Hostnames , Certificates and Cipher Suites:**
 
-Use the tab LB-Hostanme-Certs of CD3 Excel to create the following components of Load Balancer:
+Use the tab LB-Hostname-Certs of CD3 Excel to create the following components of Load Balancer:
 
 Load Balancers
 Hostnames
@@ -323,7 +323,7 @@ Certificates
 
 Certificates, Hostnames and Cipher Suites are optional. Leave the related columns empty if they are not required.
 
-**LB-Hostanme-Certs**
+**LB-Hostname-Certs**
 
 Once this is complete you will find the generated output terraform files in location :
 
