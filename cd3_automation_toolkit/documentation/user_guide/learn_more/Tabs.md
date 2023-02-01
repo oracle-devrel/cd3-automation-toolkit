@@ -107,6 +107,7 @@ This contains information about DHCP options to be created for each VCN.
 1. Name of the VCNs, subnets etc are all case sensitive. Specify the same names in all required places. Avoid trailing spaces for a resource Name.
 
 2. Default Route Rules created are :
+
 a.   Based on the values entered in columns  ‘configure SGW route’, ‘configure NGW route’, ‘configure IGW route’, 'configure Onprem route' and 'configure VCNPeering route'  in Subnets sheet; if the value entered is ‘y’, it will create a route for the object in that subnet
       eg if ‘configure IGW’ in Subnets sheet is ‘y’ then it will read parameter ‘igw_destination’ in VCN Info tab and create a rule in the subnet with destination object as IGW of the VCN and destination CIDR as value of igw_destnation field.
       If comma separated values are entered in the igw_destination in VCN Info tab then the tool creates route rule for each destination cidr for IGW in that subnet.
@@ -116,7 +117,9 @@ b.  For a hub spoke model, tool automatically creates route tables attached with
      ‘onprem_destinations’ in VCN Info tab specifies the On Prem Network CIDRs.
 
 3. The below Default Security Rules are created:
+
 a. Egress rule allowing all protocols for 0.0.0.0/0 is opened.
+
 b. Ingress rule allowing all protocols for subnet CIDR is opened. This is to allow communication between VMs with in the same subnet.
 
 4. Default Security List of the VCN is attached to the subnet if ‘add_default_seclist’ parameter in Subnets tab is set to ‘y’.
@@ -192,5 +195,65 @@ If you want to update or add new dedicated VM hosts, update the 'DedicatedVMHost
 
 On re-running the same option you will find the previously existing files being backed up under directory →   \<outdir>/\<region>/backup_dedicatedvmhosts/\<Date>-\<Month>-\<Time>.
 
+## Instances Tab
 
 
+<ins>CD3 Tab Specifications:</ins>
+
+1. "Display Name" column is case sensitive. Specified value will be the display name of Instance in OCI console.
+
+2. Optional columns can also be left blank - like Fault Domain, IP Address. They will take default values when left empty.
+
+3. Leave columns: Backup Policy, NSGs, DedicatedVMHost blank if instance doesn't need to be part of any of these. Instances can be made a part of Backup Policy and NSGs later by choosing appropriate option in setUpOCI menu.
+
+4. For column SSH Key Var Name accepts SSH key value directly or the name of variable decalred in variables.tf containing the key value. Make sure to have an entry in variables_\<region>.tf file with the name you enter in SSH Key Var Name field of the Excel sheet and put the value as SSK key value.
+Ex: If you enter the SSH Key Var Name as ocs_public, make an entry in variables_\<region>.tf file as shown below:
+
+  
+variable "\<value entered in SSH Key Var Name field of Excel sheet>"; here it will be as below:
+  
+    variable  'ocs_public'  {
+    default = "<paste your public key here>"
+    }
+
+The value accepts multiple keys seperated by \n
+
+
+6. Enter subnet name column value as: \<vcn-name>_\<subnet-name>
+
+7. Source Details column of the excel sheet accepts both image and boot volume as the source for instance to be launched.
+Format - 
+
+image::\<variable containing ocid of image> or
+bootVolume::\<variable containing ocid of boot volume>
+
+Make sure to have an entry in variables_\<region>.tf file for the value you enter in Source Details field of the Excel sheet.
+Ex: If you enter the Source Details as image::Linux, make an entry in variables_\<region>.tf file as shown below:
+
+variable "\<value entered in Source Details field of Excel sheet>"; here it will be:
+
+    variable 'Linux' {
+    default = "<ocid of the image/bootVolume to launch the instance from>"
+    }
+
+8. Mention shape to be used in Shape column of the excel sheet. If Flex shape is to be used format is:
+
+shape::ocpus
+
+eg: VM.Standard.E3.Flex::5
+
+
+9. Custom Policy Compartment Name : Specify the compartment name where the Custom Policy is created.
+
+10. While export of instances, it will fetch details for only the primary VNIC attached to the instance
+
+
+On choosing **"Compute"** in the SetUpOCI menu and **"Add/Modify/Delete Instances/Boot Backup Policy"** submenu will allow to launch your VM on OCI tenancy.
+
+
+
+Output terraform file generated: \<outdir>/\<region>/\<prefix>_instances.auto.tfvars and \<outdir>/\<region>/\<prefix>_boot-backup-policy.auto.tfvars  under  appropriate \<region> directory.
+
+Once the terraform apply is complete, view the resources under Compute -> Instances for the region.
+
+On re-running the same option you will find the previously existing files being backed up under directory →   \<outdir>/\<region>/backup_instances/\<Date>-\<Month>-\<Time>.
