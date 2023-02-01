@@ -334,3 +334,111 @@ under \<region> directory.
 Once terraform apply is done, you can view the resources under Networking → Load Balancers for the region.
 
 On re-running the same option you will find the previously existing files being backed up under directory →   \<outdir>/\<region>/backup_LB-Hostname-Certs/\<Date>-\<Month>-\<Time>.
+
+## Backend Set and Backend Servers Tab
+
+Use the tab **BackendSet-BackendServer** of CD3 Excel to create the following components of Load Balancer:
+
+- Backend Sets
+- Backend Servers
+
+
+Once this is complete you will find the generated output terraform files in location :
+
+---> \<outdir>/\<region>/\<prefix>_backendset-backendserver.auto.tfvars
+
+under \<region> directory.
+
+Once terraform apply is done, you can view the resources under Networking→Load Balancers for the region.
+
+On re-running the same option you will find the previously existing files being backed up under directory →   \<outdir>/\<region>/backup_BackendSet-BackendServer/\<Date>-\<Month>-\<Time>.
+
+## RuleSet Tab
+
+Use the tab **RuleSet** of CD3 Excel to create the following components of Load Balancer:
+
+- Rule Sets
+- RuleSet 
+
+Once this is complete you will find the generated output terraform files in location :
+
+---> \<outdir>/\<region>/\<prefix>_ruleset.auto.tfvars
+
+under \<region> directory.
+
+Once terraform apply is done, you can view the resources under Networking→Load Balancers for the region.
+
+On re-running the same option you will find the previously existing files being backed up under directory →   \<outdir>/\<region>/backup_RuleSet/\<Date>-\<Month>-\<Time>.
+
+## Path Route Set Tab
+
+Use the tab **PathRouteSet** of CD3 Excel to create the following components of Load Balancer:
+
+- Path Route Sets
+- PathRouteSet:
+
+Once this is complete you will find the generated output terraform files in location :
+
+---> \<outdir>/\<region>/\<prefix>_pathrouteset.auto.tfvars
+
+under \<region> directory.
+
+Once terraform apply is done, you can view the resources under Networking→Load Balancers for the region.
+
+On re-running the same option you will find the previously existing files being backed up under directory →   \<outdir>/\<region>/backup_PathRouteSet/\<Date>-\<Month>-\<Time>.
+
+## LB Listeners Tab
+
+Use the tab **LB-Listener** of CD3 Excel to create the following components of Load Balancer:
+
+- Path Route Sets
+- LB-Listener:
+
+Once this is complete you will find the generated output terraform files in location :
+
+---> \<outdir>/\<region>/\<prefix>_lb-listener.auto.tfvars
+
+under \<region> directory.
+
+Once terraform apply is done, you can view the resources under Networking→Load Balancers for the region.
+
+On re-running the same option you will find the previously existing files being backed up under directory →   \<outdir>/\<region>/backup_LB-Listener/\<Date>-\<Month>-\<Time>.
+
+## DBSystems-VM-BM Tab
+
+This helps you to create DB Systems hosted on Virtual Machine and Bare Metal. This can be configured based on the shape chosen in the tab.
+
+On choosing **"Database"** in the SetUpOCI menu and **"Add/Modify/Delete Virtual Machine or Bare Metal DB Systems"** submenu will allow to create DB Systems hosted on Virtual Machine and Bare Metal.
+
+Output terraform file generated: 
+
+\<outdir>/\<region>/\<prefix>_dbsystem-vm-bm.auto.tfvars under where \<region> directory is the region specified for the DB System.
+
+
+
+Once terraform apply is done, you can view the resources under **Bare Metal, VM, and Exadata-> DB Systems** in OCI console.
+
+On re-running the same option you will find the previously existing files being backed up under directory →   \<outdir>/\<region>/backup_dbsystems-vm-bm/\<Date>-\<Month>-\<Time>.
+
+## ExaCS
+
+You can create ExaCS in OCI by utilizing Exa-Infra and Exa-VM Cluster tabs in CD3 excel sheet.
+
+On choosing **"Database"** in the SetUpOCI menu and **"Add/Modify/Delete EXA Infra and EXA VM Cluster"** submenu will allow to create ExaCS in OCI tenancy.
+
+
+Output terraform file generated: 
+
+\<outdir>/\<region>/\<prefix>_exa-infra.auto.tfvars under where \<region> directory is the region hosting the Exa Infra.
+
+\<outdir>/\<region>/\<prefix>_exa-vmclusters.auto.tfvars under where \<region> directory is the region hosting the Exa VM Clusters.
+
+
+Once terraform apply is done, you can view the resources under Bare Metal, VM, and Exadata-> Exadata Infrastructure and Exadara VM Clusters in OCI console.
+
+
+On re-running the same option you will find the previously existing files being backed up under directory →   \<outdir>/\<region>/backup_exa-infra/\<Date>-\<Month>-\<Time>
+
+and \<outdir>/\<region>/backup_exa-vmclusters/\<Date>-\<Month>-\<Time>
+
+
