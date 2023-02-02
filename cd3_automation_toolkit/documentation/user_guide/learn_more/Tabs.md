@@ -125,17 +125,6 @@ Output files generated:
 |\<prefix>_default-dhcp.auto.tfvars	|Contains TF for default DHCP options of each VCN in each region |
 |<br>\<prefix>_nsgs.auto.tfvars<br>\<prefix>_nsg-rules.auto.tfvars</br></br>| Contains TF for NSGs in each region |
 
-
-## Modify Network
-
-<ins>Modify Network</ins>
-
-Using this option, one can add/remove/update a subnet, a DHCP option or a VCN or DRG to your existing network.
-
-Use this option if you have modified any route rules or security rules else you can still continue using Create Network option for any changes.
-
-On choosing **"Network"** in the SetUpOCI menu and **"Modify Network - Add/Remove/Modify any network object; updates TF files with changes; this option should be used after modification have been done to SecRules or RouteRules"** submenu allow to modify network objects in OCI Tenancy.
-
 ## DedicatedVMHosts Tab
 
 Fill up the details in **'DedicatedVMHosts'** sheet and follow the options below.
