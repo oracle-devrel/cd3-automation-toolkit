@@ -133,7 +133,7 @@ On choosing **"Compute"** in the SetUpOCI menu and **"Add/Modify/Delete Dedicate
 
 
 
-Output terraform file generated: \<outdir>/\<region>/dedicated_vm_hosts.tf under \<region> directory.
+Output terraform file generated: <outdir>\<region>\<prefix>_dedicatedvmhosts.auto.tfvars.
 
 Once terraform apply is done, you can view the resources under Compute -> Dedicated Virtual Machine Hosts for the region.
 
