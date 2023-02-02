@@ -402,7 +402,7 @@ On re-running the same option you will find the previously existing files being 
 and \<outdir>/\<region>/backup_exa-vmclusters/\<Date>-\<Month>-\<Time>
 
 
-## ADW_ATP Tab
+## ADB Tab
 
 Use this Tab to create Autonomous Database Warehouse or Autonomous Database Transaction Processing in the OCI tenancy.
 
