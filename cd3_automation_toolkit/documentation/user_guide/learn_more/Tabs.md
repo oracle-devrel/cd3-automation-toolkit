@@ -402,3 +402,106 @@ On re-running the same option you will find the previously existing files being 
 and \<outdir>/\<region>/backup_exa-vmclusters/\<Date>-\<Month>-\<Time>
 
 
+## ADW_ATP Tab
+
+Use this Tab to create Autonomous Database Warehouse or Autonomous Database Transaction Processing in the OCI tenancy.
+
+On choosing **"Database"** in the SetUpOCI menu and **"Add/Modify/Delete ADW/ATP"** submenu will allow to create Autonomous Database Warehouse or Autonomous Database Transaction Processing in the OCI tenancy.
+
+
+Output terraform file generated:  \<outdir>/\<region>/ATP-ADW.tf under where \<region> directory is the home region.
+
+Once terraform apply is done, you can view the resources under **Autonomous Database -> Autonomous Databases** in OCI console.
+
+On re-running the same option you will find the previously existing files being backed up under directory →   \<outdir>/\<region>/backup_adb/\<Date>-\<Month>-\<Time>
+
+
+## Notifications Tab
+
+On choosing **"Management Services"** in the SetUpOCI menu and **"Add/Modify/Delete Notification"** and **"Add/Modify/Delete Events"** submenu will allow to manage events and notifications in OCI tenancy.
+
+Output terraform file generated: \<outdir>/\<region>/\<customer_name>_notifications.auto.tfvars and \<outdir>/\<region>/\<customer_name>_events.auto.tfvars under \<region> directory.
+
+Once the terraform apply is complete, view the resources under **Application Integration-> Notifications & Application Integration-> Events** for the region in OCI Console.
+
+Further, on re-running the same option you will find the previously existing files being backed up under directory →   \<outdir>/\<region>/backup_events/\<Date>-\<Month>-\<Time> or \<outdir>/\<region>/backup_notifications/\<Date>-\<Month>-\<Time>
+
+Note: 
+
+- Notifications can not be configured for a particular resource OCID at the moment.
+- Export of Notifications supports ONS and FAAS(will put OCID for the function in the CD3). It will skip the event export if action type is OSS.
+- Export of notifications will export the subscriptions and the topics these subscriptions are part of. So any topic which is not having any subscription inside it will not be exported.
+
+
+## Alarms Tab
+
+Please make sure to use **CD3-ManagementServices-template.xlsx** under example folder of GIT as input file for creating/exporting Alarms.
+
+On choosing **"Management Services"** in the SetUpOCI menu and **"Add/Modify/Delete Alarms"** submenu will allow to manage alarms in OCI tenancy.
+
+Output terraform file generated: \<outdir>/\<region>/\<customer_name>_alarms.auto.tfvars under \<region> directory.
+
+Once the terraform apply is complete, view the resources under **Observability & Management→  Monitoring → Alarms Definition** for the region in OCI Console.
+
+Further, on re-running the same option you will find the previously existing files being backed up under directory →   \<outdir>/\<region>/backup_alarms/\<Date>-\<Month>-\<Time>/
+
+
+## ServiceConnectors Tab
+
+Please make sure to use **CD3-ManagementServices-template.xlsx** under example folder of GIT as input file for creating/exporting Service connectors.
+
+The service connector resources provisioning can be initiated by updating the corresponding excel sheet tab.
+
+**CIS LZ recommends to create SCH to collect audit logs for all compartments, VCN Flow Logs and Object Storage Logs and send to a particular target that can be read by SIEM. CD3 SCH automation is aligned with CIZ LZ and allow the user to deploy/provision the recommended approach by filling in the suitable data in excel sheet.**
+
+Output terraform file generated: \<outdir>/\<region>/\<customer_name>_serviceconnectors.auto.tfvars under \<region> directory.
+
+Once the terraform apply is complete, view the resources under **service connectors window** for the region in OCI Console.
+
+Further, on re-running the same option you will find the previously existing files being backed up under directory →   \<outdir>/\<region>/backup_serviceconnectors/\<Date>-\<Month>-\<Time>/
+
+Note - 
+
+- The service connector resources created via automation will not have the corresponding IAM policies between source and destination entities. It has to be created separately.
+- The user will get an option to create the **IAM policy** when you click on **Edit** for the respective service connector provisioned through terraform like in below screenshot:
+
+![image](https://user-images.githubusercontent.com/115973871/216242750-d84a79bf-5799-4e51-ba40-ca82a00d04aa.png)
+
+- Also, When the target kind is **'notifications'** the value for formatted messages parameter is set to **'true'** as default. Its set to **'false'** only when the source is 'streaming'.
+
+
+## OKE
+
+On choosing **"Developer Services"** in the SetUpOCI menu and **"Add/Modify/Delete OKE Cluster and Nodepools"** submenu will allow to manage oke components in OCI tenancy.
+
+On completion of execution, you will be able to find the output terraform file generated at : 
+
+-→  \<outdir>/\<region>/\<prefix>_oke_clusters.auto.tfvars
+
+-→  \<outdir>/\<region>/\<prefix>_oke_nodepools.auto.tfvars  under  appropriate \<region> directory.
+
+Once terraform apply is done, you can view the resources under **Developer Services -> Kubernetes Clusters (OKE)** for the region in OCI console.
+
+On re-running the option to create oke clusters and noodepools you will find the previously existing files being backed up under directory:
+
+\<outdir>/\<region>/backup_oke/\<Date>-\<Month>-\<Time>.
+
+
+Notes:
+
+- Current version of the toolkit support only single availability domain placement for the nodepool. So if a cluster is exported with nodepools having multiple placement configuration, the terraform plan will show changes similar to:
+
+![image](https://user-images.githubusercontent.com/115973871/216243984-9379741e-6e40-45fb-a4b6-948ace78f7a4.png)
+
+<img src=https://user-images.githubusercontent.com/115973871/216244050-88ad6797-1fe1-4198-9172-c3c3f33d810d.png width=50% height=50%>
+
+
+To avoid this, an ignore statement as shown below is added to ignore any changes to the placement configuration in nodepool.
+
+      ignore_changes = [node_config_details[0].placement_configs,kubernetes_version, defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"],node_config_details[0].defined_tags["Oracle-Tags.CreatedOn"],node_config_details[0].defined_tags["Oracle-Tags.CreatedBy"]]}
+
+
+**Known Observed behaviours:**
+
+- It has been observerd that the order of kubernetes labels change randomly during an export. In such situations a terraform plan detects it as a change to the kubernetes labels.
+
