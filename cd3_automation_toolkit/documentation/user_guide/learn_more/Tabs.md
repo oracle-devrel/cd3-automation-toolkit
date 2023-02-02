@@ -415,7 +415,6 @@ Note:
 
 - Notifications can not be configured for a particular resource OCID at the moment.
 - Export of Notifications supports ONS and FAAS(will put OCID for the function in the CD3). It will skip the event export if action type is OSS.
-- Export of notifications will export the subscriptions and the topics these subscriptions are part of. So any topic which is not having any subscription inside it will not be exported.
 
 
 ## Alarms Tab
