@@ -59,23 +59,6 @@ Once terraform apply is done, you can view the resources under Governance -> Tag
 
 On re-running the same option you will find the previously existing files being backed up under directory →   \<outdir>/\<region>/backup_Tagging/\<Date>-\<Month>-\<Time>.
 
-## Create Network
-
-**Pre-requisite:**
-
-Run the script **fetch_compartments_to_variablesTF.py**
-Execute CD3 Validator, to avoid any errors during the creation of VCN objects. (Check out Support for CD3 Validator for the details)
-
-<ins>Fetch Compartments to Varaibles TF file:</ins>
-
-This script will fetch OCIDs of all compartments that exist in the tenancy and place them in variables_\<region>.tf directory.
-
-Command used to execute from OCSWork VM: (Fetch Compartments) - python fetch_compartments_to_variablesTF.py /cd3user/tenancies/<customer_name>/terraform_files
-
-For other workstations - example: laptop, specify the path of 'outdir' and path of 'config' file for Python OCI - python fetch_compartments_to_variablesTF.py \<path to outdir> --configFileName \<path to config file>
-
-To create network objects like VCN, subnets etc in OCI; VCNs, VCN Info, Subnets and DHCP tabs of CD3 are required to be configured.
-
 ## a. VCNs Tab
 
 **Note:**
@@ -144,29 +127,6 @@ Output files generated:
 |\<prefix>_subnets.auto.tfvars|	Contains TF for all subnets for all VCNs.|
 |\<prefix>_default-dhcp.auto.tfvars	|Contains TF for default DHCP options of each VCN in each region |
 |<br>\<prefix>_nsgs.auto.tfvars<br>\<prefix>_nsg-rules.auto.tfvars</br></br>| Contains TF for NSGs in each region |
-
-
-## Export and Modify Rules
-
-You can export existing security rules and route rules in OCI. On choosing **"Network"** in the SetUpOCI menu and **"Export existing secrules and RouteRules to CD3"** and **"Export existing DRG Routerules to CD3**" submenu will allow to export existing security and route rules.
-
-On choosing this option, you will get a prompt to enter the Compartment Name for which you want to export the rules. When left blank, rules will be exported for all Compartments in the tenancy.
-
-Exported rules are written to 'SecRulesinOCI', ‘RouteRulesinOCI’ and 'DRGRouteRulesinOCI' tab of the cd3 excel. 
-
-**DO NOT** open your CD3 file during the export process.
-
-This option is useful when you want to present the CD3 to the customer as the Actual Representation of OCI console.(i.e provide the contents of OCI in the CD3 excel)
-
-**<ins>Modify Rules</ins>**
-
-On choosing **"Network"** in the SetUpOCI menu and **"Modify SecRules"** and **"modify RouteRules"** and **"Modify DRG RouteRules"** submenu will allow to modify existing route rules and security rules in OCI tenancy.
-
-**SecRulesinOCI tab** – The tool reads this sheet and deletes(backs up to the backup directory) all existing security rules in OCI and replace them with the contents of this Tab.
-
-**RouteRulesinOCI tab** – The tool reads this sheet and deletes(backs up to the backup directory) all existing route rules in OCI and replace them with the contents of this Tab.
-
-**DRGRouteRulesinOCI tab** – The tool reads this sheet and deletes(backs up to the backup directory) all existing DRG route rules in OCI and replace them with the contents of this Tab.
 
 
 ## Modify Network
