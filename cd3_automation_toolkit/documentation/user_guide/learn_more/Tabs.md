@@ -369,7 +369,7 @@ On re-running the same option you will find the previously existing files being 
 
 You can create ExaCS in OCI by utilizing Exa-Infra and Exa-VM Cluster tabs in CD3 excel sheet.
 
-On choosing **"Database"** in the SetUpOCI menu and **"Add/Modify/Delete EXA Infra and EXA VM Cluster"** submenu will allow to create ExaCS in OCI tenancy.
+On choosing **"Database"** in the SetUpOCI menu and **"Add/Modify/Delete EXA Infra and EXA VM Clusters"** submenu will allow to create ExaCS in OCI tenancy.
 
 
 Output terraform file generated: 
@@ -391,7 +391,7 @@ and \<outdir>/\<region>/backup_exa-vmclusters/\<Date>-\<Month>-\<Time>
 
 Use this Tab to create Autonomous Database Warehouse or Autonomous Database Transaction Processing in the OCI tenancy.
 
-On choosing **"Database"** in the SetUpOCI menu and **"Add/Modify/Delete ADW/ATP"** submenu will allow to create Autonomous Database Warehouse or Autonomous Database Transaction Processing in the OCI tenancy.
+On choosing **"Database"** in the SetUpOCI menu and **"Add/Modify/Delete ADBs"** submenu will allow to create Autonomous Database Warehouse or Autonomous Database Transaction Processing in the OCI tenancy.
 
 
 Output terraform file generated:  \<outdir>/\<region>/ATP-ADW.tf under where \<region> directory is the home region.
