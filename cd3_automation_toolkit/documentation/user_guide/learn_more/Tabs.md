@@ -394,15 +394,16 @@ Use this Tab to create Autonomous Database Warehouse or Autonomous Database Tran
 On choosing **"Database"** in the SetUpOCI menu and **"Add/Modify/Delete ADBs"** submenu will allow to create Autonomous Database Warehouse or Autonomous Database Transaction Processing in the OCI tenancy.
 
 
-Output terraform file generated:  \<outdir>/\<region>/<prefix>_adb.auto.tfvars under where \<region> directory is the home region.
+Output terraform file generated:  \<outdir>/\<region>/<prefix>_adb.auto.tfvars under where \<region> directory.
 
 Once terraform apply is done, you can view the resources under **Oracle Database -> Autonomous Database** in OCI console.
 
 On re-running the same option you will find the previously existing files being backed up under directory →   \<outdir>/\<region>/backup_adb/\<Date>-\<Month>-\<Time>
 
-Notes:
-  - Currently the CD3 support ADB creation only in Shared Infra
-
+**NOTE -**
+<blockquote>
+  - Currently toolkit supports ADB creation in Shared Infra only,
+  </blockquote>
 
 ## Notifications Tab
 
