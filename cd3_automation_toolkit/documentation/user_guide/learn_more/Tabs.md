@@ -396,12 +396,12 @@ On choosing **"Database"** in the SetUpOCI menu and **"Add/Modify/Delete ADBs"**
 
 Output terraform file generated:  \<outdir>/\<region>/<prefix>_adb.auto.tfvars under where \<region> directory is the home region.
 
-Once terraform apply is done, you can view the resources under **Autonomous Database -> Autonomous Databases** in OCI console.
+Once terraform apply is done, you can view the resources under **Oracle Database -> Autonomous Database** in OCI console.
 
 On re-running the same option you will find the previously existing files being backed up under directory →   \<outdir>/\<region>/backup_adb/\<Date>-\<Month>-\<Time>
 
 Notes:
-  - Currently the CD3 support ADBs only in Shared Infra
+  - Currently the CD3 support ADB creation only in Shared Infra
 
 
 ## Notifications Tab
