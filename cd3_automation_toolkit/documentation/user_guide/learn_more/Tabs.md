@@ -394,7 +394,7 @@ Use this Tab to create Autonomous Database Warehouse or Autonomous Database Tran
 On choosing **"Database"** in the SetUpOCI menu and **"Add/Modify/Delete ADBs"** submenu will allow to create Autonomous Database Warehouse or Autonomous Database Transaction Processing in the OCI tenancy.
 
 
-Output terraform file generated:  \<outdir>/\<region>/<prefix>_adb.auto.tfvars under where \<region> directory.
+Output terraform file generated:  \<outdir>/\<region>/<prefix>_adb.auto.tfvars under where \<region> directory is the region hosting the respective ADB.
 
 Once terraform apply is done, you can view the resources under **Oracle Database -> Autonomous Database** in OCI console.
 
