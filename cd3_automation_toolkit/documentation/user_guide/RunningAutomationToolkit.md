@@ -19,7 +19,7 @@ Details on how to fill data into the excel sheet can be found in the Blue sectio
 
 
 > The Excel Templates can also be found at _/cd3user/oci_tools/cd3_automation_toolkit/example_ inside the container.
-> After deploying the infra using any of the template, please run [CIS compliance checker script]([cd3_automation_toolkit/documentation/user_guide/learn_more/CISFeatures.md](/cd3_automation_toolkit/documentation/user_guide/learn_more/CISFeatures.md#1-run-cis-compliance-checker-script))
+> After deploying the infra using any of the template, please run [CIS compliance checker script](/cd3_automation_toolkit/documentation/user_guide/learn_more/CISFeatures.md#1-run-cis-compliance-checker-script))
 
 
 ### **setUpOCI.properties**
