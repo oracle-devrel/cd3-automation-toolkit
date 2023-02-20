@@ -20,8 +20,6 @@ Details on how to fill data into the excel sheet can be found in the Blue sectio
 
 > The Excel Templates can also be found at _/cd3user/oci_tools/cd3_automation_toolkit/example_ inside the container.
 
-<br>Here is the CIS Landing Zone quick start template by NACE Security Team also: https://www.ateam-oracle.com/cis-oci-landing-zone-quickstart-template
-
 
 ### **setUpOCI.properties**
 
