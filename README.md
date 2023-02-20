@@ -43,14 +43,14 @@ It reads input data in the form of CD3 Excel sheet and generates the terraform f
 
 | OCI Services | Details |
 | --------- | ----------- |
-| IAM | Compartments, Groups, Dynamic Groups, Policies |
-| Network | VCNs, Subnets, DRGs, IGWs, NGWs, LPGs, Route Tables, DRG Route, Tables, Security Lists, Network Security Groups, Application Load Balancer, Network Load Balancers |
-| Governance | Tags (Namespaces, Tag Keys, Defined Tags, Default Tags, Cost Tracking) |
-| Compute | Instances – VM, BM, Dedicated VM Hosts |
-| Storage | FSS, Block and Boot Volumes, Backup Policies |
-| Database | Exa Infra, ExaCS, DB Systems VM and BM, ATP, ADW |
-| Management Services | Events, Notifications, Alarms, Service Connector Hub (SCH) |
-| Developer Services | Resource Manager, Oracle Kubernetes Engine (OKE) |
+| [IAM/Identity](/cd3_automation_toolkit/documentation/user_guide/learn_more/CD3ExcelTabs.md#iamidentity) | Compartments, Groups, Dynamic Groups, Policies |
+| [Network](/cd3_automation_toolkit/documentation/user_guide/learn_more/CD3ExcelTabs.md#network) | VCNs, Subnets, DRGs, IGWs, NGWs, LPGs, Route Tables, DRG Route, Tables, Security Lists, Network Security Groups, Application Load Balancer, Network Load Balancers |
+| [Governance](/cd3_automation_toolkit/documentation/user_guide/learn_more/CD3ExcelTabs.md#governance) | Tags (Namespaces, Tag Keys, Defined Tags, Default Tags, Cost Tracking) |
+| [Compute](/cd3_automation_toolkit/documentation/user_guide/learn_more/CD3ExcelTabs.md#compute) | Instances – VM, BM, Dedicated VM Hosts |
+| [Storage]((/cd3_automation_toolkit/documentation/user_guide/learn_more/CD3ExcelTabs.md#storage) | FSS, Block and Boot Volumes, Backup Policies |
+| [Database](/cd3_automation_toolkit/documentation/user_guide/learn_more/CD3ExcelTabs.md#database) | Exa Infra, ExaCS, DB Systems VM and BM, ATP, ADW |
+| [Management Services](/cd3_automation_toolkit/documentation/user_guide/learn_more/CD3ExcelTabs.md#management-services) | Events, Notifications, Alarms, Service Connector Hub (SCH) |
+| [Developer Services](/cd3_automation_toolkit/documentation/user_guide/learn_more/CD3ExcelTabs.md#developer-services) | Resource Manager, Oracle Kubernetes Engine (OKE) |
 | CIS Landing Zone Compliance | Download CIS Report Script, Execute CIS Report Script, VCN Flow Logs, Cloud Guard, Object Storage, Key Vault, Budget |
 
 
