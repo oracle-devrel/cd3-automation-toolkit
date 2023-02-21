@@ -491,5 +491,5 @@ To avoid this, an ignore statement as shown below is added to ignore any changes
 
 **Known Observed behaviours:**
 
-- It has been observerd that the order of kubernetes labels change randomly during an export. In such situations a terraform plan detects it as a change to the kubernetes labels.
+- It has been observed that the order of kubernetes labels change randomly during an export. In such situations a terraform plan detects it as a change to the kubernetes labels.
 
