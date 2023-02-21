@@ -1,13 +1,12 @@
 
 ## Additional CIS Compliance Features
 
-Below CIS Features have been included as part of Automation Toolkit. These are not part of CD3 Excel sheet but just included into setUpOCI Menu "**CIS Compliance Features**". 
-
+These are some additional "**CIS Compliance Features**" which are not part of CD3 Excel sheet but just included into setUpOCI Menu.
 
 #### **1. Run CIS compliance checker script**
 
-You can choose to run CIS compliance checker script against your tennacy using the Automation Toolkit itself. It also enables you to download the latet script if needed. Folder with name _<customer\_name>\_cis\_report_ gets created under _/cd3user/tenancies/<customer\_name>/_ and it contains all the reports genertaed by the script.
-<br>As a best practice, the script should be executed after every deployment in the tenancy. And the output report should be analysed to minimise the reported anomalies as per the design requirements.
+You can choose to run CIS compliance checker script against your tennacy using the Automation Toolkit itself. It also enables you to download the latest script if needed. Folder with name _<customer\_name>\_cis\_report_ gets created under _/cd3user/tenancies/<customer\_name>/_ and it contains all the reports genertaed by the script.
+<br>As a best practice, the script should be executed after every deployment in the tenancy. The output report should be analysed to minimise the reported anomalies as per the design requirements.
 
 #### **2. Create Key/Vault, Object Storage Bucket and enable Logging for write events to bucket:**
 
