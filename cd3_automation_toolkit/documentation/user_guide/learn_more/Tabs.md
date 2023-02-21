@@ -423,7 +423,7 @@ Note:
 
 ## Alarms Tab
 
-Please make sure to use **CD3-ManagementServices-template.xlsx** under example folder of GIT as input file for creating/exporting Alarms.
+Use **CD3-ManagementServices-template.xlsx** under example folder of GIT as input file for creating/exporting Alarms.
 
 On choosing **"Management Services"** in the SetUpOCI menu and **"Add/Modify/Delete Alarms"** submenu will allow to manage alarms in OCI tenancy.
 
@@ -436,7 +436,7 @@ Further, on re-running the same option you will find the previously existing fil
 
 ## ServiceConnectors Tab
 
-Please make sure to use **CD3-ManagementServices-template.xlsx** under example folder of GIT as input file for creating/exporting Service connectors.
+Use **CD3-ManagementServices-template.xlsx** under example folder of GIT as input file for creating/exporting Service connectors.
 
 The service connector resources provisioning can be initiated by updating the corresponding excel sheet tab.
 
@@ -491,5 +491,5 @@ To avoid this, an ignore statement as shown below is added to ignore any changes
 
 **Known Observed behaviours:**
 
-- It has been observerd that the order of kubernetes labels change randomly during an export. In such situations a terraform plan detects it as a change to the kubernetes labels.
+- It has been observed that the order of kubernetes labels change randomly during an export. In such situations a terraform plan detects it as a change to the kubernetes labels.
 
