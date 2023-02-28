@@ -24,7 +24,7 @@ Details on how to fill data into the excel sheet can be found in the Blue sectio
 
 ### **setUpOCI.properties**
 
-**Current Version:  setUpOCI.properties v10**
+**Current Version:  setUpOCI.properties v10.1**
 
 Make sure to use/modify the properties file at _/cd3user/tenancies /<customer\_name>/<customer\_name>\_setUpOCI.properties_ during executions.
 
