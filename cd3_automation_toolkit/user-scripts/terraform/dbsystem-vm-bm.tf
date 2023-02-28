@@ -32,7 +32,6 @@ module "dbsystems-vm-bm" {
   shape               = each.value.shape
   #ssh_public_key     = length(regexall("ssh-rsa*",each.value.ssh_public_key)) > 0 ? each.value.ssh_public_key : var.ssh_public_key
   ssh_public_keys = lookup(var.dbsystem_ssh_keys, each.value.ssh_public_keys, var.dbsystem_ssh_keys["ssh_public_key"])
-//  subnet_id       = length(regexall("ocid1.subnet.oc1*", each.value.subnet_id)) > 0 ? each.value.subnet_id : merge(module.subnets.*...)[each.value.subnet_id]["subnet_tf_id"]
   network_compartment_id  = each.value.network_compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.network_compartment_id)) > 0 ? each.value.network_compartment_id : var.compartment_ocids[each.value.network_compartment_id]) : null
   vcn_names               = [each.value.vcn_name]
   subnet_id               = each.value.subnet_id != "" ? (length(regexall("ocid1.subnet.oc1*", each.value.subnet_id)) > 0 ? each.value.subnet_id : data.oci_core_subnets.oci_dbsystems_subnets[each.key].subnets.*.id[0]) : null

@@ -213,14 +213,19 @@ def print_secrules(seclists,region,vcn_name,comp_name):
 def parse_args():
     parser = argparse.ArgumentParser(description='Export Security list on OCI to CD3')
     parser.add_argument('inputfile', help='path of CD3 excel file to export rules to')
-    parser.add_argument('--network-compartments', nargs='*', help='comma seperated Compartments for which to export Networking Objects')
+    parser.add_argument('--export-compartments', nargs='*', help='comma seperated Compartments for which to export Networking Objects')
     parser.add_argument('--config', default=DEFAULT_LOCATION, help='Config file name')
     parser.add_argument('--tf-import-cmd', default=False, action='store_action', help='write tf import commands')
     parser.add_argument('--outdir', default=None, required=False, help='outdir for TF import commands script')
+    parser.add_argument("--export_regions", nargs='*', help="comma seperated Regions for which to export Networking Objects",
+                        required=False)
+    parser.add_argument("--service_dir", nargs='*',
+                        help="subdirectory under region directory in case of separate out directory structure",
+                        required=False)
     return parser.parse_args()
 
 
-def export_seclist(inputfile, network_compartments, _config, _tf_import_cmd, outdir):
+def export_seclist(inputfile, export_compartments,export_regions,service_dir, _config, _tf_import_cmd, outdir,ct):
     global tf_import_cmd
     global values_for_column
     global sheet_dict
@@ -239,68 +244,49 @@ def export_seclist(inputfile, network_compartments, _config, _tf_import_cmd, out
 
     # Read CD3
     df, values_for_column = commonTools.read_cd3(cd3file,"SecRulesinOCI")
-
-    ct = commonTools()
-    ct.get_subscribedregions(_config)
     config = oci.config.from_file(_config)
-    ct.get_network_compartment_ids(config['tenancy'],"root", _config)
 
-    '''
-    input_compartment_list = network_compartments
-    if(input_compartment_list is not None):
-        #input_compartment_names = input_compartment_list.split(",")
-        input_compartment_names = [x.strip() for x in input_compartment_list]
-    else:
-        input_compartment_names = None
-    '''
+    if ct == None:
+        ct = commonTools()
+        ct.get_subscribedregions(_config)
+        ct.get_network_compartment_ids(config['tenancy'],"root", _config)
+
     print("\nFetching Security Rules...")
-
-    # Check Compartments
-    comp_list_fetch = commonTools.get_comp_list_for_export(network_compartments, ct.ntk_compartment_ids)
 
     # Get dict for columns from Excel_Columns
     sheet_dict=ct.sheet_dict["SecRulesinOCI"]
 
     if tf_import_cmd:
         importCommands={}
-        for reg in ct.all_regions:
-            if (os.path.exists(outdir + "/" + reg + "/tf_import_commands_network_secrules_nonGF.sh")):
-                commonTools.backup_file(outdir + "/" + reg, "tf_import_network",
+        for reg in export_regions:
+            if (os.path.exists(outdir + "/" + reg + "/" + service_dir+ "/tf_import_commands_network_secrules_nonGF.sh")):
+                commonTools.backup_file(outdir + "/" + reg+ "/" + service_dir, "tf_import_network",
                                         "tf_import_commands_network_secrules_nonGF.sh")
-            importCommands[reg] = open(outdir + "/" + reg + "/tf_import_commands_network_secrules_nonGF.sh", "w")
+            importCommands[reg] = open(outdir + "/" + reg + "/" + service_dir+ "/tf_import_commands_network_secrules_nonGF.sh", "w")
             importCommands[reg].write("#!/bin/bash")
             importCommands[reg].write("\n\n######### Writing import for Security Lists #########\n\n")
 
 
-    for reg in ct.all_regions:
+    for reg in export_regions:
         config.__setitem__("region", commonTools().region_dict[reg])
         vcn = VirtualNetworkClient(config)
         region = reg.capitalize()
         #comp_ocid_done = []
-        for ntk_compartment_name in comp_list_fetch:
-        #    if ct.ntk_compartment_ids[ntk_compartment_name] not in comp_ocid_done:
-        #        if (input_compartment_names is not None and ntk_compartment_name not in input_compartment_names):
-        #            continue
-        #        comp_ocid_done.append(ct.ntk_compartment_ids[ntk_compartment_name])
+        for ntk_compartment_name in export_compartments:
                 vcns = oci.pagination.list_call_get_all_results(vcn.list_vcns,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name],lifecycle_state="AVAILABLE")
                 for v in vcns.data:
                     vcn_id = v.id
                     vcn_name=v.display_name
-        #            comp_ocid_done_again = []
-                    for ntk_compartment_name_again in comp_list_fetch:
-        #                if ct.ntk_compartment_ids[ntk_compartment_name_again] not in comp_ocid_done_again:
-        #                    if (input_compartment_names is not None and ntk_compartment_name_again not in input_compartment_names):
-        #                        continue
-        #                    comp_ocid_done_again.append(ct.ntk_compartment_ids[ntk_compartment_name_again])
+                    for ntk_compartment_name_again in export_compartments:
                             seclists = oci.pagination.list_call_get_all_results(vcn.list_security_lists,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name_again], vcn_id=vcn_id, lifecycle_state='AVAILABLE',sort_by='DISPLAYNAME')
                             print_secrules(seclists,region,vcn_name,ntk_compartment_name_again)
 
     commonTools.write_to_cd3(values_for_column,cd3file,"SecRulesinOCI")
     print("SecRules exported to CD3\n")
     if tf_import_cmd:
-        for reg in ct.all_regions:
+        for reg in export_regions:
             importCommands[reg].close()
 
 if __name__=="__main__":
     args = parse_args()
-    export_seclist(args.inputfile, args.network_compartments, args.config, args.tf_import_cmd, args.outdir)
+    export_seclist(args.inputfile, args.export_compartments, args.config, args.tf_import_cmd, args.outdir,args.export_regions, args.service_dir)

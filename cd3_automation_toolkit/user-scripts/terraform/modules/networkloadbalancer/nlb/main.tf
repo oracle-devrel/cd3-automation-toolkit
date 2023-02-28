@@ -10,10 +10,10 @@ resource "oci_network_load_balancer_network_load_balancer" "network_load_balance
   #Required
   compartment_id                 = var.compartment_id
   display_name                   = var.display_name
-  subnet_id                      = var.subnet_id != null ? (length(regexall("ocid1.subnet.oc1*", var.subnet_id)) > 0 ? var.subnet_id : data.oci_core_subnets.oci_subnets_nlbs.subnets[0].id) : null
+  subnet_id                      = var.subnet_id
   is_preserve_source_destination = var.is_preserve_source_destination
   is_private                     = var.is_private
-  network_security_group_ids     = var.network_security_group_ids != [] ? local.nsg_ids : null
+  network_security_group_ids     = var.network_security_group_ids != null ? (local.nsg_ids == [] ? ["INVALID NSG Name"] : local.nsg_ids) : null
   nlb_ip_version                 = var.nlb_ip_version
   defined_tags                   = var.defined_tags
   freeform_tags                  = var.freeform_tags

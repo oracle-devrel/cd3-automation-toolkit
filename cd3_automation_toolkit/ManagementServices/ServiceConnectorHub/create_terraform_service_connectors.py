@@ -22,13 +22,14 @@ def parse_args():
     parser = argparse.ArgumentParser(description='Creates SCH TF file')
     parser.add_argument('inputfile', help='Full Path of input CD3 excel file')
     parser.add_argument('outdir', help='Output directory for creation of TF files')
+    parser.add_argument('service_dir', help='Structured out directory for creation of TF files')
     parser.add_argument('prefix', help='TF files prefix')
     parser.add_argument('--config', default=DEFAULT_LOCATION, help='Config file name')
     return parser.parse_args()
 
 
 # If input is CD3 excel file
-def create_service_connectors(inputfile, outdir, prefix, config):
+def create_service_connectors(inputfile, outdir, service_dir, prefix, config):
     tfStr = {}
 
     filename = inputfile
@@ -55,7 +56,7 @@ def create_service_connectors(inputfile, outdir, prefix, config):
     # Take backup of files
     for eachregion in ct.all_regions:
         resource = sheetName.lower()
-        srcdir = outdir + "/" + eachregion + "/"
+        srcdir = outdir + "/" + eachregion + "/" + service_dir + "/"
         commonTools.backup_file(srcdir, resource, auto_tfvars_filename)
         tfStr[eachregion] = ''
 
@@ -176,6 +177,10 @@ def create_service_connectors(inputfile, outdir, prefix, config):
             if columnname == 'Source Log Group Names':
                 source_log_group_names = columnvalue.strip()
                 source_log_group_list = source_log_group_names.replace(" ", "").replace("::", "--").split(",")
+                for index, item in enumerate(source_log_group_list):
+                    if len(item.split("&")) == 2:
+                        source_log_group_list[index] = f"{item}&all"
+
                 source_log_group_list = json.dumps(source_log_group_list)
                 tempdict = {'source_log_group_names': source_log_group_list}
 
@@ -194,6 +199,25 @@ def create_service_connectors(inputfile, outdir, prefix, config):
                 target_object_name_prefix = columnvalue.strip()
                 tempdict = {'target_object_name_prefix': target_object_name_prefix}
 
+            if columnname == 'Target Function Details':
+                target_function_details = columnvalue.strip()
+                target_function_details = target_function_details.replace(" ", "").replace("::", "--").split(",")
+
+                target_function_details = json.dumps(target_function_details)
+                tempdict = {'target_function_details': target_function_details}
+
+            if columnname == 'Target Monitoring Details' and columnvalue != "":
+                target_monitoring_details = columnvalue.strip().replace(" ", "")
+                target_monitoring_details = dict(item.split("&") for item in target_monitoring_details.split(";"))
+                target_monitoring_details = {
+                    json.dumps(key): '[' + ','.join(['"' + x + '"' for x in val[1:-1].split(',')]) + ']' for
+                    key, val in target_monitoring_details.items()}
+
+                target_monitoring_details = "{" + ", ".join(
+                    ["{}:{}".format(k, v) for k, v in target_monitoring_details.items()]) + "}"
+                target_monitoring_details = str(target_monitoring_details).replace(', ', ',\n').replace("::", "--")
+                tempdict = {'target_monitoring_details': target_monitoring_details}
+
             if columnname == 'Source Monitoring Details' and columnvalue != "":
                 # loop through the columnvalue
                 monitoring_details = columnvalue.strip().replace(" ", "")
@@ -205,12 +229,12 @@ def create_service_connectors(inputfile, outdir, prefix, config):
 
                 monitoring_details = "{" + ", ".join(
                     ["{}:{}".format(k, v) for k, v in monitoring_details.items()]) + "}"
-                monitoring_details = str(monitoring_details).replace(', ', ',\n')
+                monitoring_details = str(monitoring_details).replace(', ', ',\n').replace('::', "--")
                 tempdict = {'source_monitoring_details': monitoring_details}
 
                 # split compartment_name and metric namespaces by separator
                 # form the below format for each entry and append to source_monitoring_details dict
-                #   "Ulag" = ["oci_computeagent","oci_blockstorage"]
+                #   "comp_name" = ["oci_computeagent","oci_blockstorage"]
                 # if repeated entry check for membership and modify the previous one or create a new key/value pair.
 
             columnname = commonTools.check_column_headers(columnname)
@@ -223,7 +247,7 @@ def create_service_connectors(inputfile, outdir, prefix, config):
     # Write TF string to the file in respective region directory
     for reg in ct.all_regions:
 
-        reg_out_dir = outdir + "/" + reg
+        reg_out_dir = outdir + "/" + reg + "/" + service_dir
         if not os.path.exists(reg_out_dir):
             os.makedirs(reg_out_dir)
 
@@ -248,4 +272,4 @@ def create_service_connectors(inputfile, outdir, prefix, config):
 if __name__ == '__main__':
     args = parse_args()
     # Execution of the code begins here
-    create_service_connectors(args.inputfile, args.outdir, args.prefix, args.config)
+    create_service_connectors(args.inputfile, args.outdir, args.service_dir, args.prefix, args.config)

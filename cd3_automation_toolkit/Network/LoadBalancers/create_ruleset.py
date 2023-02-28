@@ -26,13 +26,14 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Creates Rule Set TF files for LBR")
     parser.add_argument("inputfile",help="Full Path to the CD3 excel file. eg CD3-template.xlsx in example folder")
     parser.add_argument("outdir", help="directory path for output tf files ")
+    parser.add_argument("service_dir", help="subdirectory under region directory in case of separate out directory structure")
     parser.add_argument('prefix', help='TF files prefix')
     parser.add_argument("--configFileName", default=DEFAULT_LOCATION, help="Config file name")
     return parser.parse_args()
 
 
 # If input file is CD3
-def create_ruleset(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
+def create_ruleset(inputfile, outdir, service_dir, prefix, config=DEFAULT_LOCATION):
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True)
@@ -249,7 +250,7 @@ def create_ruleset(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
                 if columnvalue != '':
                     columnvalue = str(columnvalue).strip().split(',')
                     for values in columnvalue:
-                        values = values.split(':')
+                        values = values.split(':',1)
                         if values[0].lower() == 'suffix':
                             suffix = values[1]
                         if values[0].lower() == 'prefix':
@@ -324,10 +325,10 @@ def create_ruleset(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
             finalstring = "".join([s for s in rs_str[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
 
             resource=sheetName
-            srcdir = outdir + "/" + reg + "/"
+            srcdir = outdir + "/" + reg + "/" + service_dir + "/"
             commonTools.backup_file(srcdir, resource, lb_auto_tfvars_filename)
 
-            outfile = outdir + "/" + reg + "/" + lb_auto_tfvars_filename
+            outfile = srcdir + lb_auto_tfvars_filename
 
             # Write to TF file
             oname = open(outfile, "w+")
@@ -339,4 +340,4 @@ def create_ruleset(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
 if __name__ == '__main__':
     # Execution of the code begins here
     args = parse_args()
-    create_ruleset(args.inputfile, args.outdir, args.prefix, args.config)
+    create_ruleset(args.inputfile, args.outdir, args.service_dir, args.prefix, args.config)

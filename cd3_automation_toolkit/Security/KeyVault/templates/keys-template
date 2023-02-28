@@ -22,20 +22,16 @@ keys = {
             algorithm = "{{ algorithm }}"
             {% if length and length != "" %}
             length = {{ length }}
-            {% else %}
-            length = ""
             {% endif %}
 
             {% if protection_mode and protection_mode != "" %}
             protection_mode = "{{ protection_mode }}"
-            {% else %}
-            protection_mode = ""
             {% endif %}
 
             {#  ##Do not modify below this line##  #}
             {#                                     #}
             {#  ###Section for adding Defined and Freeform Tags###  #}
-            {% if defined_tags and defined_tags != 'nan' and defined_tags != '' %}
+            {% if defined_tags and defined_tags != 'nan' and defined_tags != '' and defined_tags != [['nan']] %}
           {% if defined_tags[0] %}
             defined_tags = {
             {% for tags in defined_tags  %}
@@ -46,13 +42,9 @@ keys = {
                 {% endif %}
             {% endfor %}
             }
-          {% else %}
-            defined_tags = {}
           {% endif %}
-          {% else %}
-            defined_tags = {}
           {% endif %}
-                {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' %}
+                {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' and freeform_tags != [['nan']] %}
                     {% if freeform_tags[0] %}
             freeform_tags = {
                         {% for tags in freeform_tags %}
@@ -63,11 +55,7 @@ keys = {
                             {% endif %}
                         {% endfor %}
                         }
-                    {% else %}
-            freeform_tags = {}
                     {% endif %}
-                {% else %}
-            freeform_tags = {}
                 {% endif %}
             {#  ###Section for adding Defined and Freeform Tags ends here###  #}
             },

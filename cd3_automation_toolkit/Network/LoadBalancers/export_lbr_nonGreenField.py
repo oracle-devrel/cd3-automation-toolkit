@@ -137,7 +137,7 @@ def insert_values(values_for_column, oci_objs, sheet_dict, region,comp_name, dis
                 values_for_column = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict, values_for_column)
 
 
-def print_lbr_hostname_certs(region, ct, values_for_column_lhc, lbr, LBRs, lbr_compartment_name, network, NSGs):
+def print_lbr_hostname_certs(region, ct, values_for_column_lhc, lbr, LBRs, lbr_compartment_name, network):
 
     for eachlbr in LBRs.data:
 
@@ -146,9 +146,11 @@ def print_lbr_hostname_certs(region, ct, values_for_column_lhc, lbr, LBRs, lbr_c
 
         # Filter out the LBs provisioned by oke
         eachlbr_defined_tags = eachlbr.defined_tags
-        created_by = eachlbr_defined_tags['Oracle-Tags']['CreatedBy']
-        if 'ocid1.cluster' in created_by:
-            continue
+        if 'Oracle-Tags' in eachlbr_defined_tags.keys():
+            if 'CreatedBy' in eachlbr_defined_tags['Oracle-Tags'].keys():
+                created_by = eachlbr_defined_tags['Oracle-Tags']['CreatedBy']
+                if 'ocid1.cluster' in created_by:
+                    continue
 
         # Fetch reserved IP address
         reserved_ip = ""
@@ -179,16 +181,20 @@ def print_lbr_hostname_certs(region, ct, values_for_column_lhc, lbr, LBRs, lbr_c
                 hostname_name_list = hostname_name_list.lstrip(',')
 
         #Fetch NSGs
-        nsg_name = ""
-        if eachlbr.network_security_group_ids:
-            for nsg_ids in eachlbr.network_security_group_ids:
-                for nsgs in NSGs.data:
-                    id = nsgs.id
-                    if nsg_ids == id:
-                        nsg_name = nsgs.display_name + "," + nsg_name
-        else:
-            nsg_name = ""
-        nsg_name = nsg_name[:-1]
+        nsg_detail = ""
+        #if eachlbr.network_security_group_ids:
+        for nsg_id in eachlbr.network_security_group_ids:
+            #for nsgs in NSGs.data:
+            #   id = nsgs.id
+            #    if nsg_ids == id:
+            #        nsg_name = nsgs.display_name + "," + nsg_name
+            nsg_info = network.get_network_security_group(nsg_id).data
+            nsg_name = nsg_info.display_name
+            nsg_detail = nsg_name + "," + nsg_detail
+        if (nsg_detail != ""):
+            nsg_detail = nsg_detail[:-1]
+
+        nsg_name = nsg_detail
 
         #Fetch Subnets
         subnet_name_list = ""
@@ -376,9 +382,11 @@ def print_backendset_backendserver(region, ct, values_for_column_bss, lbr, LBRs,
 
         # Filter out the LBs provisioned by oke
         eachlbr_defined_tags = eachlbr.defined_tags
-        created_by = eachlbr_defined_tags['Oracle-Tags']['CreatedBy']
-        if 'ocid1.cluster' in created_by:
-            continue
+        if 'Oracle-Tags' in eachlbr_defined_tags.keys():
+            if 'CreatedBy' in eachlbr_defined_tags['Oracle-Tags'].keys():
+                created_by = eachlbr_defined_tags['Oracle-Tags']['CreatedBy']
+                if 'ocid1.cluster' in created_by:
+                    continue
 
         # Loop through Backend Sets
 
@@ -528,9 +536,11 @@ def print_listener(region, ct, values_for_column_lis, LBRs, lbr_compartment_name
 
         # Filter out the LBs provisioned by oke
         eachlbr_defined_tags = eachlbr.defined_tags
-        created_by = eachlbr_defined_tags['Oracle-Tags']['CreatedBy']
-        if 'ocid1.cluster' in created_by:
-            continue
+        if 'Oracle-Tags' in eachlbr_defined_tags.keys():
+            if 'CreatedBy' in eachlbr_defined_tags['Oracle-Tags'].keys():
+                created_by = eachlbr_defined_tags['Oracle-Tags']['CreatedBy']
+                if 'ocid1.cluster' in created_by:
+                    continue
 
         #Fetch Compartment Name
         lbr_comp_id = eachlbr.compartment_id
@@ -637,9 +647,12 @@ def print_rule(region, ct, values_for_column_rule, LBRs, lbr_compartment_name):
 
         # Filter out the LBs provisioned by oke
         eachlbr_defined_tags = eachlbr.defined_tags
-        created_by = eachlbr_defined_tags['Oracle-Tags']['CreatedBy']
-        if 'ocid1.cluster' in created_by:
-            continue
+        if 'Oracle-Tags' in eachlbr_defined_tags.keys():
+            if 'CreatedBy' in eachlbr_defined_tags['Oracle-Tags'].keys():
+                created_by = eachlbr_defined_tags['Oracle-Tags']['CreatedBy']
+                if 'ocid1.cluster' in created_by:
+                    continue
+
 
         #Fetch Compartment Name
         lbr_comp_id = eachlbr.compartment_id
@@ -722,11 +735,15 @@ def print_rule(region, ct, values_for_column_rule, LBRs, lbr_compartment_name):
                             values_for_column_rule[col_headers].append("")
 
                     elif col_headers == "Suffix or Prefix (suffix:<value>|prefix:<value>)":
+                        combined_suffix=''
+                        combined_prefix=''
                         try:
                             suffix_val = eachitem.suffix
-                            combined_suffix = "suffix:" + suffix_val
+                            if suffix_val != "" and suffix_val != 'nan' and suffix_val != None:
+                                combined_suffix = "suffix:" + suffix_val
                             prefix_val = eachitem.prefix
-                            combined_prefix = "prefix:" + prefix_val
+                            if prefix_val != "" and prefix_val != 'nan' and prefix_val != None:
+                                combined_prefix = "prefix:" + prefix_val
                             combination = combined_suffix + "," + combined_prefix
                             values_for_column_rule[col_headers].append(combination)
                         except AttributeError as e:
@@ -744,9 +761,11 @@ def print_prs(region, ct, values_for_column_prs, LBRs, lbr_compartment_name):
 
         # Filter out the LBs provisioned by oke
         eachlbr_defined_tags = eachlbr.defined_tags
-        created_by = eachlbr_defined_tags['Oracle-Tags']['CreatedBy']
-        if 'ocid1.cluster' in created_by:
-            continue
+        if 'Oracle-Tags' in eachlbr_defined_tags.keys():
+            if 'CreatedBy' in eachlbr_defined_tags['Oracle-Tags'].keys():
+                created_by = eachlbr_defined_tags['Oracle-Tags']['CreatedBy']
+                if 'ocid1.cluster' in created_by:
+                    continue
 
         #Fetch Compartment Name
         lbr_comp_id = eachlbr.compartment_id
@@ -781,7 +800,7 @@ def print_prs(region, ct, values_for_column_prs, LBRs, lbr_compartment_name):
 
     return values_for_column_prs
 
-def export_lbr(inputfile, _outdir, network_compartments, _config):
+def export_lbr(inputfile, _outdir, service_dir, export_compartments, export_regions,_config,ct):
     global tf_import_cmd
     global sheet_dict
     global importCommands
@@ -811,10 +830,11 @@ def export_lbr(inputfile, _outdir, network_compartments, _config):
     outdir = _outdir
     configFileName = _config
     config = oci.config.from_file(file_location=configFileName)
-
-    ct = commonTools()
-    ct.get_subscribedregions(configFileName)
-    ct.get_network_compartment_ids(config['tenancy'],"root",configFileName)
+    
+    if ct==None:
+        ct = commonTools()
+        ct.get_subscribedregions(configFileName)
+        ct.get_network_compartment_ids(config['tenancy'],"root",configFileName)
 
     # Read CD3
     df, values_for_column_lhc= commonTools.read_cd3(cd3file,"LB-Hostname-Certs")
@@ -831,19 +851,15 @@ def export_lbr(inputfile, _outdir, network_compartments, _config):
     sheet_dict_rule = ct.sheet_dict["RuleSet"]
     sheet_dict_prs = ct.sheet_dict["PathRouteSet"]
 
-
-    # Check Compartments
-    comp_list_fetch = commonTools.get_comp_list_for_export(network_compartments, ct.ntk_compartment_ids)
-
     print("\nCD3 excel file should not be opened during export process!!!")
     print("Tabs- LB-Hostname-Certs, BackendSet-BackendServer, LB-Listener, RuleSet, PathRouteSet will be overwritten during export process!!!\n")
 
     # Create backups
-    for reg in ct.all_regions:
+    for reg in export_regions:
         resource='tf_import_lbr'
-        if (os.path.exists(outdir + "/" + reg + "/tf_import_commands_lbr_nonGF.sh")):
-            commonTools.backup_file(outdir + "/" + reg, resource, "tf_import_commands_lbr_nonGF.sh")
-        importCommands[reg] = open(outdir + "/" + reg + "/tf_import_commands_lbr_nonGF.sh", "w")
+        if (os.path.exists(outdir + "/" + reg + "/" + service_dir + "/tf_import_commands_lbr_nonGF.sh")):
+            commonTools.backup_file(outdir + "/" + reg + "/" + service_dir, resource, "tf_import_commands_lbr_nonGF.sh")
+        importCommands[reg] = open(outdir + "/" + reg + "/" + service_dir + "/tf_import_commands_lbr_nonGF.sh", "w")
         importCommands[reg].write("#!/bin/bash")
         importCommands[reg].write("\n")
         importCommands[reg].write("terraform init")
@@ -851,21 +867,18 @@ def export_lbr(inputfile, _outdir, network_compartments, _config):
     # Fetch LBR Details
     print("\nFetching details of Load Balancer...")
 
-    for reg in ct.all_regions:
+    for reg in export_regions:
         importCommands[reg].write("\n\n######### Writing import for Load Balancer Objects #########\n\n")
         config.__setitem__("region", ct.region_dict[reg])
         lbr = LoadBalancerClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
         vcn = VirtualNetworkClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
         region = reg.capitalize()
 
-        for compartment_name in comp_list_fetch:
+        for compartment_name in export_compartments:
                 LBRs = oci.pagination.list_call_get_all_results(lbr.list_load_balancers,compartment_id=ct.ntk_compartment_ids[compartment_name],
                                                                 lifecycle_state="ACTIVE")
-                NSGs = oci.pagination.list_call_get_all_results(vcn.list_network_security_groups,compartment_id=ct.ntk_compartment_ids[compartment_name],
-                                                                lifecycle_state="AVAILABLE")
-
                 network = oci.core.VirtualNetworkClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
-                values_for_column_lhc = print_lbr_hostname_certs(region, ct, values_for_column_lhc, lbr, LBRs, compartment_name, network, NSGs)
+                values_for_column_lhc = print_lbr_hostname_certs(region, ct, values_for_column_lhc, lbr, LBRs, compartment_name, network)
                 values_for_column_lis = print_listener(region, ct, values_for_column_lis,LBRs,compartment_name)
                 values_for_column_bss = print_backendset_backendserver(region, ct, values_for_column_bss, lbr,LBRs,compartment_name)
                 values_for_column_rule = print_rule(region, ct, values_for_column_rule, LBRs, compartment_name)
@@ -875,11 +888,14 @@ def export_lbr(inputfile, _outdir, network_compartments, _config):
 
                     # Filter out the LBs provisioned by oke
                     eachlbr_defined_tags = eachlbr.defined_tags
-                    created_by = eachlbr_defined_tags['Oracle-Tags']['CreatedBy']
-                    if 'ocid1.cluster' in created_by:
-                        continue
+                    if 'Oracle-Tags' in eachlbr_defined_tags.keys():
+                        if 'CreatedBy' in eachlbr_defined_tags['Oracle-Tags'].keys():
+                            created_by = eachlbr_defined_tags['Oracle-Tags']['CreatedBy']
+                            if 'ocid1.cluster' in created_by:
+                                continue
 
-                    importCommands[reg] = open(outdir + "/" + reg + "/tf_import_commands_lbr_nonGF.sh", "a")
+
+                    importCommands[reg] = open(outdir + "/" + reg + "/" + service_dir + "/tf_import_commands_lbr_nonGF.sh", "a")
                     lbr_info = eachlbr
                     lbr_display_name = lbr_info.display_name
                     tf_name = commonTools.check_tf_variable(lbr_display_name)
@@ -929,8 +945,8 @@ def export_lbr(inputfile, _outdir, network_compartments, _config):
     print("LBRs exported to CD3\n")
 
     # writing data
-    for reg in ct.all_regions:
-        script_file = f'{outdir}/{reg}/tf_import_commands_lbr_nonGF.sh'
+    for reg in export_regions:
+        script_file = f'{outdir}/{reg}/{service_dir}/tf_import_commands_lbr_nonGF.sh'
         with open(script_file, 'a') as importCommands[reg]:
             importCommands[reg].write('\n\nterraform plan\n')
 
@@ -939,11 +955,13 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Export LBR on OCI to CD3")
     parser.add_argument("inputfile", help="path of CD3 excel file to export network objects to")
     parser.add_argument("outdir", help="path to out directory containing script for TF import commands")
-    parser.add_argument("--network-compartments", nargs='*', help="comma seperated Compartments for which to export LBR Objects", required=False)
+    parser.add_argument("service_dir", help="subdirectory under region directory in case of separate out directory structure")
+    parser.add_argument("--export-compartments", nargs='*', help="comma seperated Compartments for which to export LBR Objects", required=False)
     parser.add_argument("--config", default=DEFAULT_LOCATION, help="Config file name")
+    parser.add_argument("--export-regions", nargs='*',help="comma seperated Regions for which to export Networking Objects", required=False)
     return parser.parse_args()
 
 if __name__ == '__main__':
     args = parse_args()
     # Execution of the code begins here
-    export_lbr(args.inputfile, args.outdir, args.network_compartments, args.config)
+    export_lbr(args.inputfile, args.outdir, args.service_dir, args.export_compartments, args.config,args.export_regions)

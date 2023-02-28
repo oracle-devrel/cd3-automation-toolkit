@@ -20,7 +20,7 @@ resource "oci_core_drg_attachment" "drg_attachment" {
       id   = length(regexall("ocid1.*", network_details.value.id)) > 0 ? network_details.value.id : var.vcns_tf_id[network_details.value.id]["vcn_tf_id"]
       type = network_details.value.type
       #Optional
-      route_table_id = (network_details.value.vcn_route_table_id != "" && network_details.value.vcn_route_table_id != null) ? (length(regexall("ocid1*", network_details.value.vcn_route_table_id)) > 0 ? network_details.value.vcn_route_table_id : (length(regexall(".Default-Route-Table-for*", network_details.value.vcn_route_table_id))) > 0 ? var.default_route_table_tf_id[network_details.value.vcn_route_table_id]["vcn_default_route_table_id"] : var.route_table_tf_id[network_details.value.vcn_route_table_id]["route_table_ids"]) : null
+      route_table_id = (network_details.value.vcn_route_table_id != "" && network_details.value.vcn_route_table_id != null) ? (length(regexall("ocid1*", network_details.value.vcn_route_table_id)) > 0 ? network_details.value.vcn_route_table_id : (length(regexall(".Default-Route-Table-for*", network_details.value.vcn_route_table_id))) > 0 ? var.default_route_table_tf_id[network_details.value.vcn_route_table_id]["default_route_table_tf_id"] : var.route_table_tf_id[network_details.value.vcn_route_table_id]["route_table_ids"]) : null
     }
   }
 }

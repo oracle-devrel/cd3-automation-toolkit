@@ -31,3 +31,8 @@ variable "freeform_tags" {
   type    = map(any)
   default = {}
 }
+
+variable "network_compartment_id" {
+  type    = string
+  default = null
+}

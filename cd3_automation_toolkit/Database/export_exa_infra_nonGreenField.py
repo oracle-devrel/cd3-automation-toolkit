@@ -9,7 +9,6 @@
 #
 
 import argparse
-import sys
 import oci
 import os
 
@@ -53,13 +52,16 @@ def parse_args():
     # Read the arguments
     parser = argparse.ArgumentParser(description="Export Block Volumes on OCI to CD3")
     parser.add_argument("inputfile", help="path of CD3 excel file to export Block Volume objects to")
-    parser.add_argument("outdir", help="path to out directory containing script for TF import commands")
+    parser.add_argument("outdir", help="directory path for output tf files ")
+    parser.add_argument("service_dir", help="subdirectory under region directory in case of separate out directory structure")
     parser.add_argument("--config", default=DEFAULT_LOCATION, help="Config file name")
-    parser.add_argument("--network-compartments", nargs='*', required=False, help="comma seperated Compartments for which to export Block Volume Objects")
+    parser.add_argument("--export-compartments", nargs='*', required=False, help="comma seperated Compartments for which to export Block Volume Objects")
+    parser.add_argument("--export-regions", nargs='*', help="comma seperated Regions for which to export Networking Objects",
+                        required=False)
     return parser.parse_args()
 
 
-def export_exa_infra(inputfile, _outdir, _config, network_compartments=[]):
+def export_exa_infra(inputfile, _outdir, service_dir, _config, ct, export_compartments=[], export_regions=[]):
     global tf_import_cmd
     global sheet_dict
     global importCommands
@@ -81,19 +83,16 @@ def export_exa_infra(inputfile, _outdir, _config, network_compartments=[]):
     config = oci.config.from_file(file_location=configFileName)
 
     sheetName = "EXA-Infra"
-    ct = commonTools()
-    ct.get_subscribedregions(configFileName)
-    ct.get_network_compartment_ids(config['tenancy'],"root",configFileName)
+    if ct==None:
+        ct = commonTools()
+        ct.get_subscribedregions(configFileName)
+        ct.get_network_compartment_ids(config['tenancy'],"root",configFileName)
 
     # Read CD3
     df, values_for_column= commonTools.read_cd3(cd3file,sheetName)
 
     # Get dict for columns from Excel_Columns
     sheet_dict=ct.sheet_dict[sheetName]
-
-    # Check Compartments
-    global comp_list_fetch
-    comp_list_fetch = commonTools.get_comp_list_for_export(network_compartments, ct.ntk_compartment_ids)
 
     print("\nCD3 excel file should not be opened during export process!!!")
     print("Tabs- EXA-Infra  will be overwritten during export process!!!\n")
@@ -102,10 +101,10 @@ def export_exa_infra(inputfile, _outdir, _config, network_compartments=[]):
     resource = 'tf_import_' + sheetName.lower()
     file_name = 'tf_import_commands_' + sheetName.lower() + '_nonGF.sh'
 
-    for reg in ct.all_regions:
-        script_file = f'{outdir}/{reg}/' + file_name
+    for reg in export_regions:
+        script_file = f'{outdir}/{reg}/{service_dir}/' + file_name
         if (os.path.exists(script_file)):
-            commonTools.backup_file(outdir + "/" + reg, resource, file_name)
+            commonTools.backup_file(outdir + "/" + reg + "/" + service_dir, resource, file_name)
         importCommands[reg] = open(script_file, "w")
         importCommands[reg].write("#!/bin/bash")
         importCommands[reg].write("\n")
@@ -114,14 +113,14 @@ def export_exa_infra(inputfile, _outdir, _config, network_compartments=[]):
     # Fetch Block Volume Details
     print("\nFetching details of Exadata Infra...")
 
-    for reg in ct.all_regions:
+    for reg in export_regions:
         importCommands[reg].write("\n\n######### Writing import for Exadata Infra #########\n\n")
         config.__setitem__("region", ct.region_dict[reg])
         region = reg.capitalize()
 
         db_client = oci.database.DatabaseClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
 
-        for ntk_compartment_name in comp_list_fetch:
+        for ntk_compartment_name in export_compartments:
             exa_infras = oci.pagination.list_call_get_all_results(db_client.list_cloud_exadata_infrastructures,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name], lifecycle_state="AVAILABLE")
             for exa_infra in exa_infras.data:
                 print_exa_infra(region, exa_infra,values_for_column, ntk_compartment_name)
@@ -134,4 +133,4 @@ def export_exa_infra(inputfile, _outdir, _config, network_compartments=[]):
 if __name__ == '__main__':
     args = parse_args()
     # Execution of the code begins here
-    export_exa_infra(args.inputfile, args.outdir, args.config, args.network_compartments)
+    export_exa_infra(args.inputfile, args.outdir, args.service_dir, args.config, args.export_compartments, args.export_regions)

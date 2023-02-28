@@ -162,13 +162,18 @@ def print_routetables(routetables,region,vcn_name,comp_name):
 def parse_args():
     parser = argparse.ArgumentParser(description='Export Route Table on OCI to CD3')
     parser.add_argument('cd3file', help='path of CD3 excel file to export rules to')
-    parser.add_argument('--network-compartment', nargs='*', help='comma seperated Compartments for which to export Networking Objects')
+    parser.add_argument('--export-compartments', nargs='*', help='comma seperated Compartments for which to export Networking Objects')
     parser.add_argument('--config', default=DEFAULT_LOCATION, help='Config file name')
     parser.add_argument('--tf-import-cmd', default=False, action='store_true', help='write tf import commands')
     parser.add_argument('--outdir', default=None, required=False, help='outdir for TF import commands script')
+    parser.add_argument("--export_regions", nargs='*', help="comma seperated Regions for which to export Networking Objects",
+                        required=False)
+    parser.add_argument("--service_dir", nargs='*',
+                        help="subdirectory under region directory in case of separate out directory structure",
+                        required=False)
     args = parser.parse_args()
 
-def export_drg_routetable(inputfile, network_compartments, _config, _tf_import_cmd, outdir):
+def export_drg_routetable(inputfile, export_compartments, export_regions, service_dir, _config, _tf_import_cmd, outdir,ct):
     # Read the arguments
     global tf_import_cmd_drg
     global values_for_column_drg
@@ -188,44 +193,35 @@ def export_drg_routetable(inputfile, network_compartments, _config, _tf_import_c
 
     # Read CD3
     df, values_for_column_drg = commonTools.read_cd3(cd3file, "DRGRouteRulesinOCI")
-
-    ct = commonTools()
-    ct.get_subscribedregions(_config)
     config = oci.config.from_file(_config)
-    ct.get_network_compartment_ids(config['tenancy'], "root", _config)
+
+    if ct == None:
+        ct = commonTools()
+        ct.get_subscribedregions(_config)
+        ct.get_network_compartment_ids(config['tenancy'], "root", _config)
 
     # Get dict for columns from Excel_Columns
     sheet_dict_drg = ct.sheet_dict["DRGRouteRulesinOCI"]
 
-    '''
-    input_compartment_list = network_compartments
-    if (input_compartment_list is not None):
-        input_compartment_names = [x.strip() for x in input_compartment_list]
-    else:
-        input_compartment_names = None
-    '''
     print("\nFetching DRG Route Rules...")
-
-    # Check Compartments
-    comp_list_fetch = commonTools.get_comp_list_for_export(network_compartments,ct.ntk_compartment_ids)
 
     if tf_import_cmd_drg:
         importCommands_drg = {}
-        for reg in ct.all_regions:
-            if (os.path.exists(outdir + "/" + reg + "/tf_import_commands_network_drg_routerules_nonGF.sh")):
-                commonTools.backup_file(outdir + "/" + reg, "tf_import_network",
+        for reg in export_regions:
+            if (os.path.exists(outdir + "/" + reg + "/" + service_dir+ "/tf_import_commands_network_drg_routerules_nonGF.sh")):
+                commonTools.backup_file(outdir + "/" + reg+ "/" + service_dir, "tf_import_network",
                                         "tf_import_commands_network_drg_routerules_nonGF.sh")
-            importCommands_drg[reg] = open(outdir + "/" + reg + "/tf_import_commands_network_drg_routerules_nonGF.sh", "w")
+            importCommands_drg[reg] = open(outdir + "/" + reg + "/" + service_dir+ "/tf_import_commands_network_drg_routerules_nonGF.sh", "w")
             importCommands_drg[reg].write("#!/bin/bash")
             importCommands_drg[reg].write("\n\n######### Writing import for DRG Route Tables #########\n\n")
 
-    for reg in ct.all_regions:
+    for reg in export_regions:
         config.__setitem__("region", commonTools().region_dict[reg])
         vcn = VirtualNetworkClient(config, timeout=(30,120))
         region = reg.capitalize()
         #comp_ocid_done = []
 
-        for ntk_compartment_name in comp_list_fetch:
+        for ntk_compartment_name in export_compartments:
                 drgs = oci.pagination.list_call_get_all_results(vcn.list_drgs,
                                                                 compartment_id=ct.ntk_compartment_ids[ntk_compartment_name])
                 for drg in drgs.data:
@@ -256,6 +252,7 @@ def export_drg_routetable(inputfile, network_compartments, _config, _tf_import_c
 
                         #drg_rt_rules = vcn.list_drg_route_rules(drg_route_table_id)
                         drg_rt_rules = oci.pagination.list_call_get_all_results(vcn.list_drg_route_rules, drg_route_table_id)
+                        #drg_rt_rules = None
                         print_drg_routerules(drg_route_table_info, drg_display_name,drg_route_table_name, import_drg_route_distribution_name,
                                              drg_rt_rules, region, ntk_compartment_name)
 
@@ -263,12 +260,12 @@ def export_drg_routetable(inputfile, network_compartments, _config, _tf_import_c
     print("DRG RouteRules exported to CD3\n")
 
     if tf_import_cmd_drg:
-        for reg in ct.all_regions:
+        for reg in export_regions:
             importCommands_drg[reg].write('\n\nterraform plan\n')
             importCommands_drg[reg].close()
 
 
-def export_routetable(inputfile, network_compartments, _config, _tf_import_cmd, outdir):
+def export_routetable(inputfile, export_compartments,export_regions, service_dir, _config, _tf_import_cmd, outdir,ct):
     # Read the arguments
     global tf_import_cmd
     global values_for_column
@@ -295,59 +292,38 @@ def export_routetable(inputfile, network_compartments, _config, _tf_import_cmd, 
     # Read CD3
     df,values_for_column=commonTools.read_cd3(cd3file,"RouteRulesinOCI")
 
-    ct = commonTools()
-    ct.get_subscribedregions(_config)
-    config = oci.config.from_file(_config)
-    ct.get_network_compartment_ids(config['tenancy'], "root", _config)
-
-
     # Get dict for columns from Excel_Columns
     sheet_dict=ct.sheet_dict["RouteRulesinOCI"]
+    config = oci.config.from_file(_config)
 
-    '''
-    input_compartment_list = network_compartments
-    if(input_compartment_list is not None):
-        input_compartment_names = [x.strip() for x in input_compartment_list]
-    else:
-        input_compartment_names = None
-    '''
+    if ct == None:
+        ct = commonTools()
+        ct.get_subscribedregions(_config)
+        ct.get_network_compartment_ids(config['tenancy'], "root", _config)
+
     print("\nFetching Route Rules...")
-
-    # Check Compartments
-    comp_list_fetch = commonTools.get_comp_list_for_export(network_compartments, ct.ntk_compartment_ids)
-
     if tf_import_cmd:
         importCommands={}
-        for reg in ct.all_regions:
-            if (os.path.exists(outdir + "/" + reg + "/tf_import_commands_network_routerules_nonGF.sh")):
-                commonTools.backup_file(outdir + "/" + reg, "tf_import_network",
+        for reg in export_regions:
+            if (os.path.exists(outdir + "/" + reg + "/" + service_dir+ "/tf_import_commands_network_routerules_nonGF.sh")):
+                commonTools.backup_file(outdir + "/" + reg+ "/" + service_dir, "tf_import_network",
                                         "tf_import_commands_network_routerules_nonGF.sh")
-            importCommands[reg] = open(outdir + "/" + reg + "/tf_import_commands_network_routerules_nonGF.sh", "a")
+            importCommands[reg] = open(outdir + "/" + reg + "/" + service_dir+ "/tf_import_commands_network_routerules_nonGF.sh", "a")
             importCommands[reg].write("#!/bin/bash")
             importCommands[reg].write("\n\n######### Writing import for Route Tables #########\n\n")
 
-    for reg in ct.all_regions:
+    for reg in export_regions:
         config.__setitem__("region", commonTools().region_dict[reg])
         vcn = VirtualNetworkClient(config)
         region = reg.capitalize()
         #comp_ocid_done = []
 
-        for ntk_compartment_name in comp_list_fetch:
-        #    if ct.ntk_compartment_ids[ntk_compartment_name] not in comp_ocid_done:
-        #        if (input_compartment_names is not None and ntk_compartment_name not in input_compartment_names):
-        #            continue
-        #        comp_ocid_done.append(ct.ntk_compartment_ids[ntk_compartment_name])
+        for ntk_compartment_name in export_compartments:
                 vcns = oci.pagination.list_call_get_all_results(vcn.list_vcns,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name],lifecycle_state="AVAILABLE")
                 for v in vcns.data:
                     vcn_id = v.id
                     vcn_name=v.display_name
-                    #comp_ocid_done_again = []
-
-                    for ntk_compartment_name_again in comp_list_fetch:
-                    #    if ct.ntk_compartment_ids[ntk_compartment_name_again] not in comp_ocid_done_again:
-                    #        if (input_compartment_names is not None and ntk_compartment_name_again not in input_compartment_names):
-                    #            continue
-                    #        comp_ocid_done_again.append(ct.ntk_compartment_ids[ntk_compartment_name_again])
+                    for ntk_compartment_name_again in export_compartments:
                             routetables = oci.pagination.list_call_get_all_results(vcn.list_route_tables, compartment_id=ct.ntk_compartment_ids[ntk_compartment_name_again], vcn_id=vcn_id, lifecycle_state='AVAILABLE')
                             print_routetables(routetables,region,vcn_name,ntk_compartment_name_again)
     commonTools.write_to_cd3(values_for_column,cd3file,"RouteRulesinOCI")
@@ -355,12 +331,12 @@ def export_routetable(inputfile, network_compartments, _config, _tf_import_cmd, 
 
     if tf_import_cmd:
         commonTools.write_to_cd3(values_for_vcninfo, cd3file, "VCN Info")
-        for reg in ct.all_regions:
+        for reg in export_regions:
             importCommands[reg].close()
 
 
 if __name__=="__main__":
     args = parse_args()
-    export_routetable(args.inputfile, args.network_compartments, args.config, args.tf_import_cmd, args.outdir)
-    export_drg_routetable(args.inputfile, args.network_compartments, args.config, args.tf_import_cmd, args.outdir)
+    export_routetable(args.inputfile, args.export_compartments, args.config, args.tf_import_cmd, args.outdir,args.export_regions,args.service_dir)
+    export_drg_routetable(args.inputfile, args.export_compartments, args.config, args.tf_import_cmd, args.outdir,args.export_regions,args.service_dir)
 

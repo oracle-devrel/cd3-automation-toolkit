@@ -26,6 +26,7 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Create EXA Home terraform file")
     parser.add_argument('inputfile', help='Full Path of input CD3 excel file')
     parser.add_argument('outdir', help='Output directory for creation of TF files')
+    parser.add_argument("service_dir", help="subdirectory under region directory in case of separate out directory structure")
     parser.add_argument('prefix', help='TF files prefix')
     parser.add_argument('--config', default=DEFAULT_LOCATION, help='Config file name')
 
@@ -33,7 +34,7 @@ def parse_args():
 
 
 # If input is cd3 file
-def create_terraform_exa_vmclusters(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
+def create_terraform_exa_vmclusters(inputfile, outdir, service_dir, prefix, config=DEFAULT_LOCATION):
     filename = inputfile
     configFileName = config
 
@@ -66,7 +67,7 @@ def create_terraform_exa_vmclusters(inputfile, outdir, prefix, config=DEFAULT_LO
     # Initialise empty TF string for each region
     for reg in ct.all_regions:
         tfStr[reg] = ''
-        srcdir = outdir + "/" + reg + "/"
+        srcdir = outdir + "/" + reg + "/" + service_dir + "/"
         resource = sheetName.lower()
         commonTools.backup_file(srcdir, resource, auto_tfvars_filename)
 
@@ -250,7 +251,7 @@ def create_terraform_exa_vmclusters(inputfile, outdir, prefix, config=DEFAULT_LO
 
     # Write TF string to the file in respective region directory
     for reg in ct.all_regions:
-        reg_out_dir = outdir + "/" + reg
+        reg_out_dir = outdir + "/" + reg + "/" + service_dir
         if not os.path.exists(reg_out_dir):
             os.makedirs(reg_out_dir)
         outfile[reg] = reg_out_dir + "/" + prefix + auto_tfvars_filename
@@ -266,4 +267,4 @@ def create_terraform_exa_vmclusters(inputfile, outdir, prefix, config=DEFAULT_LO
 if __name__ == '__main__':
     args = parse_args()
     # Execution of the code begins here
-    create_terraform_exa_vmclusters(args.inputfile, args.outdir, args.prefix, args.config)
+    create_terraform_exa_vmclusters(args.inputfile, args.outdir, args.service_dir, args.prefix, args.config)

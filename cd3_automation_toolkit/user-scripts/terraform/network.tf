@@ -40,7 +40,8 @@ module "vcns" {
   for_each = var.vcns != null ? var.vcns : {}
 
   #Required
-  compartment_id = length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : try(zipmap(data.oci_identity_compartments.compartments.compartments.*.name, data.oci_identity_compartments.compartments.compartments.*.id)[each.value.compartment_id], var.compartment_ocids[each.value.compartment_id])
+  #compartment_id = length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : try(zipmap(data.oci_identity_compartments.compartments.compartments.*.name, data.oci_identity_compartments.compartments.compartments.*.id)[each.value.compartment_id], var.compartment_ocids[each.value.compartment_id])
+  compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
 
   #Optional
   cidr_blocks                      = each.value.cidr_blocks
@@ -645,11 +646,11 @@ module "vcn-log-groups" {
   #Required
   compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
 
-  display_name = each.value.display_name != null ? each.value.display_name : null
+  display_name = each.value.display_name
 
   #Optional
   defined_tags  = each.value.defined_tags
-  description   = each.value.description != null ? each.value.description : null
+  description   = each.value.description
   freeform_tags = each.value.freeform_tags
 }
 
@@ -667,7 +668,7 @@ module "vcn-logs" {
   # Logs
   #Required
   compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
-  display_name   = each.value.display_name != null ? each.value.display_name : null
+  display_name   = each.value.display_name
   log_group_id   = length(regexall("ocid1.loggroup.oc1*", each.value.log_group_id)) > 0 ? each.value.log_group_id : merge(module.vcn-log-groups.*...)[each.value.log_group_id]["log_group_tf_id"]
 
   log_type = each.value.log_type

@@ -18,25 +18,28 @@ backends = {
         backendset_name = "{{ lbr_tf_name }}_{{ backend_set_tf_name }}"
         load_balancer_id = "{{ lbr_tf_name }}"
 
+        {% if instance_tf_compartment %}
         instance_compartment = "{{ instance_tf_compartment }}"
+        {% endif %}
+
         ip_address = "{{ backend_server_ip_address }}" # Format -->  "IP:<ip_address>" or "NAME:<server_name>"
 
         port = "{{ serverport }}"
+
+        {% if backup %}
         backup = "{{ backup }}"
+        {% endif %}
+
         {% if drain and drain != '' %}
         drain   = "{{ drain }}"
-        {% else %}
-        drain   = ""
         {% endif %}
+
         {% if offline and offline != '' %}
         offline = "{{ offline }}"
-        {% else %}
-        offline = ""
         {% endif %}
+
         {% if weight and weight != '' %}
         weight  = "{{ weight }}"
-        {% else %}
-        weight  = ""
         {% endif %}
         },
 {% endif %}

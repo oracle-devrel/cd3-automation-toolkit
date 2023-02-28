@@ -28,13 +28,14 @@ def parse_args():
     parser = argparse.ArgumentParser(description='Create Dedicated VM Hosts terraform file')
     parser.add_argument('inputfile', help='Full Path of input CD3 excel file')
     parser.add_argument('outdir', help='Output directory for creation of TF files')
+    parser.add_argument("service_dir",help="subdirectory under region directory in case of separate out directory structure")
     parser.add_argument('prefix', help='TF files prefix')
     parser.add_argument('--config', default=DEFAULT_LOCATION, help='Config file name')
     return parser.parse_args()
 
 
 # If input is CD3 excel file
-def create_terraform_dedicatedhosts(inputfile, outdir, prefix, config):
+def create_terraform_dedicatedhosts(inputfile, outdir, service_dir,prefix, config):
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
@@ -62,7 +63,7 @@ def create_terraform_dedicatedhosts(inputfile, outdir, prefix, config):
     # Take backup of files
     for eachregion in ct.all_regions:
         resource = sheetName.lower()
-        srcdir = outdir + "/" + eachregion + "/"
+        srcdir = outdir + "/" + eachregion + "/" + service_dir + "/"
         commonTools.backup_file(srcdir, resource, auto_tfvars_filename)
         tfStr[eachregion] = ''
 
@@ -133,7 +134,7 @@ def create_terraform_dedicatedhosts(inputfile, outdir, prefix, config):
 
     # Write to output
     for reg in ct.all_regions:
-        reg_out_dir = outdir + "/" + reg
+        reg_out_dir = outdir + "/" + reg + "/" + service_dir
         if not os.path.exists(reg_out_dir):
             os.makedirs(reg_out_dir)
 
@@ -158,4 +159,4 @@ def create_terraform_dedicatedhosts(inputfile, outdir, prefix, config):
 if __name__ == '__main__':
     args = parse_args()
     # Execution of the code begins here
-    create_terraform_dedicatedhosts(args.inputfile, args.outdir, args.prefix, args.config)
+    create_terraform_dedicatedhosts(args.inputfile, args.outdir, args.service_dir,args.prefix, args.config)

@@ -29,13 +29,14 @@ def parse_args():
     parser = argparse.ArgumentParser(description='Create major-objects (VCN, IGW, NGW, DRG, LPGs etc for the VCN) terraform file')
     parser.add_argument('inputfile',help='Full Path of input file eg: cd3 excel file')
     parser.add_argument('outdir', help='Output directory for creation of TF files')
+    parser.add_argument("service_dir",help="subdirectory under region directory in case of separate out directory structure")
     parser.add_argument('prefix', help='customer name/prefix for all file names')
     parser.add_argument('non_gf_tenancy')
     parser.add_argument('--modify-network', default=False, action='store_true', help='modify network')
     parser.add_argument('--config', default=DEFAULT_LOCATION, help='Config file name')
     return parser.parse_args()
 
-def create_default_routetable(inputfile, outdir, prefix, non_gf_tenancy, config, modify_network):
+def create_default_routetable(inputfile, outdir, service_dir, prefix, non_gf_tenancy, config, modify_network):
 
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
@@ -179,7 +180,7 @@ def create_default_routetable(inputfile, outdir, prefix, non_gf_tenancy, config,
                                                        routetableStr=defrt, tempStr=tempStr, common_rt=common_rt)
         else:
 
-            default_outfile = outdir + "/" + region + "/" + prefix + default_routetable_auto_tfvars_filename
+            default_outfile = outdir + "/" + region + "/" + service_dir +"/" +prefix + default_routetable_auto_tfvars_filename
 
             # Read the file if it exists
             if os.path.exists(default_outfile):
@@ -203,12 +204,12 @@ def create_default_routetable(inputfile, outdir, prefix, non_gf_tenancy, config,
     for reg in ct.all_regions:
 
         defaultTextToAddSeclistSearch = "##Add New Default Route Tables for " + reg + " here##"
-        default_outfile = outdir + "/" + reg + "/" + prefix + default_routetable_auto_tfvars_filename
+        default_outfile = outdir + "/" + reg + "/" + service_dir + "/" + prefix + default_routetable_auto_tfvars_filename
 
         if defrt[reg] != '':
             # Backup existing seclist files in ash and phx dir
             resource = "RTs"
-            commonTools.backup_file(outdir + "/" + reg, resource, prefix + default_routetable_auto_tfvars_filename)
+            commonTools.backup_file(outdir + "/" + reg + "/" + service_dir, resource, prefix + default_routetable_auto_tfvars_filename)
 
             default_rt_tempSkeleton[reg] = default_rt_tempSkeleton[reg].replace(defaultTextToAddSeclistSearch,defrt[reg] + "\n" + defaultTextToAddSeclistSearch)
             default_rt_tempSkeleton[reg] = "".join([s for s in default_rt_tempSkeleton[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
@@ -218,7 +219,7 @@ def create_default_routetable(inputfile, outdir, prefix, non_gf_tenancy, config,
             oname.close()
             print(default_outfile + " for default route tables has been created for region " + reg)
 
-def create_default_seclist(inputfile, outdir, prefix, non_gf_tenancy, config, modify_network):
+def create_default_seclist(inputfile, outdir, service_dir, prefix, non_gf_tenancy, config, modify_network):
 
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
@@ -243,11 +244,7 @@ def create_default_seclist(inputfile, outdir, prefix, non_gf_tenancy, config, mo
     df = df.dropna(how='all')
     df = df.reset_index(drop=True)
 
-    # List of the column headers
-    dfcolumns = df.columns.values.tolist()
     region_included = []
-    defSLs_from_subnet_sheet = []
-
     deftfStr = {}
     default_seclist_tempSkeleton = {}
 
@@ -287,48 +284,23 @@ def create_default_seclist(inputfile, outdir, prefix, non_gf_tenancy, config, mo
 
         # temporary dictionary1 and dictionary2
         tempStr = {}
-        tempdict = {}
 
         tempStr.update({'count': 1})
         if region not in region_included:
             tempStr.update({'count': 0})
             region_included.append(region)
+            defSLs_from_subnet_sheet = []
             default_seclist_tempSkeleton[region] = default_seclist.render(tempStr, skeleton=True, region=region)
 
-        for columnname in dfcolumns:
-
-            # Column value
-            columnvalue = str(df[columnname][i]).strip()
-            # Check for boolean/null in column values
-            columnvalue = commonTools.check_columnvalue(columnvalue)
-
-            # Check for multivalued columns
-            tempdict = commonTools.check_multivalues_columnvalue(columnvalue, columnname, tempdict)
-
-            # Process Defined Tags and Freeform Tags
-            if columnname.lower() in commonTools.tagColumns:
-                tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)
-
-            if columnname == 'Compartment Name':
-                compartment_var_name = columnvalue.strip()
-                compartment_var_name = commonTools.check_tf_variable(compartment_var_name)
-                tempdict = {'compartment_tf_name': compartment_var_name}
-
-            if columnname == "CIDR Blocks":
-                cidr_blocks = [x.strip() for x in columnvalue.split(',')]
-                cidr = cidr_blocks
-                # reverses the order while exporting into excel so use reverse to avoid terraform change
-                if (non_gf_tenancy):
-                    cidr_blocks.reverse()
-                cidr_blocks = json.dumps(cidr_blocks)
-                tempdict = {'cidr_blocks': cidr_blocks}
-
-            columnname = commonTools.check_column_headers(columnname)
-            tempStr[columnname] = str(columnvalue).strip()
-            tempStr.update(tempdict)
+        cidr_blocks = str(df['CIDR Blocks'][i]).lower().strip()
+        cidr_blocks = [x.strip() for x in cidr_blocks.split(',')]
+        # reverses the order while exporting into excel so use reverse to avoid terraform change
+        if (non_gf_tenancy):
+            cidr_blocks.reverse()
+            cidr_blocks = json.dumps(cidr_blocks)
 
         default_ingress = {}
-        for x in list(cidr):
+        for x in list(cidr_blocks):
             default_ingress.update({'default_ingress' + x: {
                 'protocol': 'icmp',
                 'source': x,
@@ -366,26 +338,23 @@ def create_default_seclist(inputfile, outdir, prefix, non_gf_tenancy, config, mo
         }
         defaults.update(default_ingress)
 
-        region = tempStr['region'].lower().strip()
-        vcn_name = tempStr['vcn_name'].strip()
+        vcn_name = str(df['VCN Name'][i]).strip()
         vcn_tf_name = commonTools.check_tf_variable(vcn_name)
-        tempStr['vcn_tf_name'] = vcn_tf_name
-        compartment_var_name = str(tempStr['compartment_name']).strip()
-
-        # Added to check if compartment name is compatible with TF variable name syntax
+        compartment_var_name = str(df['Compartment Name'][i]).strip()
         compartment_var_name = commonTools.check_tf_variable(compartment_var_name)
 
-        # Create TF object for default default seclist options
+        # Create TF object for default seclist options
         display_name = 'Default Security List for ' + vcn_name
         seclistname = vcn_name + "_" + display_name
         seclist_tf_name = commonTools.check_tf_variable(seclistname)
+
         tempdict = {'vcn_tf_name': vcn_tf_name, 'compartment_tf_name': compartment_var_name,
                     'seclist_tf_name': seclist_tf_name,
                     'isstateless': 'false', 'region': region, 'display_name': display_name}
 
         tempStr.update(tempdict)
-
         tempStr.update({'destination': ''})
+
         region_seclist_name = "#" + region + "_" + tempStr['seclist_tf_name'] + "#"
         processed_seclist = []
         ingress_rule = ''
@@ -403,7 +372,7 @@ def create_default_seclist(inputfile, outdir, prefix, non_gf_tenancy, config, mo
                                                            ingress_rule=ingress_rule, tempdict2=tempdict2,
                                                            egress_rule=egress_rule)
         else:
-            default_outfile = outdir + "/" + region + "/" + prefix + default_seclist_auto_tfvars_filename
+            default_outfile = outdir + "/" + region + "/" + service_dir + "/" +prefix + default_seclist_auto_tfvars_filename
 
             # Read the file if it exists
             if os.path.exists(default_outfile):
@@ -412,13 +381,14 @@ def create_default_seclist(inputfile, outdir, prefix, non_gf_tenancy, config, mo
                     filedata = file.read()
                 file.close()
 
-                # for the SLs in Subnet sheet, see if the start string is there in filedata, if yes, retain it
-                for defSLs in defSLs_from_subnet_sheet:
-                    if "# Start of " + defSLs + " #" in filedata and "# Start of " + defSLs + " #" not in deftfStr[region]:
-                        deftfStr[region] = ct.copy_data_from_file(default_outfile, defSLs, deftfStr[region])
+                # for the this SL, see if the start string is there in filedata, if yes, retain seclist as is
+                if "# Start of " + region_seclist_name + " #" in filedata and "# Start of " + region_seclist_name + " #" not in deftfStr[region]:
+                    deftfStr[region] = ct.copy_data_from_file(default_outfile, region_seclist_name, deftfStr[region])
+
 
             # Check if the defSL from Subnets sheet is there in deftfStr once the data form previous auto.tfvars are copied;
             # render template and add only new ones.
+
             for defSLs in defSLs_from_subnet_sheet:
                 if "# Start of " + defSLs + " #" not in deftfStr[region]:
                     for rule in defaults.keys():
@@ -432,12 +402,12 @@ def create_default_seclist(inputfile, outdir, prefix, non_gf_tenancy, config, mo
 
     for reg in ct.all_regions:
         defaultTextToAddSeclistSearch = "##Add New Default Seclists for " + reg + " here##"
-        default_outfile = outdir + "/" + reg + "/" + prefix + default_seclist_auto_tfvars_filename
+        default_outfile = outdir + "/" + reg + "/" + service_dir +"/"+ prefix + default_seclist_auto_tfvars_filename
 
         if deftfStr[reg] != '':
             # Backup existing seclist files in ash and phx dir
             resource = "SLs"
-            commonTools.backup_file(outdir + "/" + reg, resource, prefix + default_seclist_auto_tfvars_filename)
+            commonTools.backup_file(outdir + "/" + reg + "/" + service_dir, resource, prefix + default_seclist_auto_tfvars_filename)
 
             default_seclist_tempSkeleton[reg] = default_seclist_tempSkeleton[reg].replace(
                 defaultTextToAddSeclistSearch, deftfStr[reg] + "\n" + defaultTextToAddSeclistSearch)
@@ -449,13 +419,11 @@ def create_default_seclist(inputfile, outdir, prefix, non_gf_tenancy, config, mo
             oname.close()
             print(default_outfile + " for default seclist has been created for region " + reg)
 
-def create_terraform_defaults(inputfile, outdir, prefix, non_gf_tenancy, config, modify_network):
+def create_terraform_defaults(inputfile, outdir, service_dir, prefix, non_gf_tenancy, config, modify_network):
 
-    create_default_seclist(inputfile, outdir, prefix, non_gf_tenancy, config, modify_network)
-    create_default_routetable(inputfile, outdir, prefix, non_gf_tenancy, config, modify_network)
+    create_default_seclist(inputfile, outdir, service_dir, prefix, non_gf_tenancy, config, modify_network)
+    create_default_routetable(inputfile, outdir, service_dir, prefix, non_gf_tenancy, config, modify_network)
 
 if __name__ == '__main__':
     args = parse_args()
-    create_terraform_defaults(args.inputfile, args.outdir, prefix=args.prefix, non_gf_tenancy=args.non_gf_tenancy, modify_network=args.modify_network, config=args.config)
-    # create_default_seclist(args.inputfile, args.outdir, prefix=args.prefix, non_gf_tenancy=args.non_gf_tenancy, modify_network=args.modify_network, config=args.config)
-    # create_default_routetable(args.inputfile, args.outdir, prefix=args.prefix, non_gf_tenancy=args.non_gf_tenancy, modify_network=args.modify_network, config=args.config)
+    create_terraform_defaults(args.inputfile, args.outdir, args.service_dir, prefix=args.prefix, non_gf_tenancy=args.non_gf_tenancy, modify_network=args.modify_network, config=args.config)

@@ -26,12 +26,13 @@ def parse_args():
     # Read the arguments
     parser = argparse.ArgumentParser(description="Create Groups terraform file")
     parser.add_argument('outdir', help='Output directory for creation of TF files')
+    parser.add_argument("service_dir",help="subdirectory under region directory in case of separate out directory structure")
     parser.add_argument('prefix', help='TF files prefix')
     parser.add_argument("--configFileName", help="Config file name", required=False)
     return parser.parse_args()
 
 
-def enable_cis_cloudguard(outdir, prefix, config=DEFAULT_LOCATION):
+def enable_cis_cloudguard(outdir, service_dir,prefix, config=DEFAULT_LOCATION):
     configFileName = config
     ct = commonTools()
     ct.get_subscribedregions(configFileName)
@@ -72,7 +73,7 @@ def enable_cis_cloudguard(outdir, prefix, config=DEFAULT_LOCATION):
     targettfStr = targettfStr + cgtargettemplate.render(tempStr)
 
     # Write TF string to the file in respective region directory
-    reg_out_dir = outdir + "/" + home_region
+    reg_out_dir = outdir + "/" + home_region + "/" + service_dir
     if not os.path.exists(reg_out_dir):
         os.makedirs(reg_out_dir)
 
@@ -105,4 +106,4 @@ def enable_cis_cloudguard(outdir, prefix, config=DEFAULT_LOCATION):
 if __name__ == '__main__':
     # Execution of the code begins here
     args = parse_args()
-    enable_cis_cloudguard(args.outdir, args.prefix, args.config)
+    enable_cis_cloudguard(args.outdir, args.service_dir, args.prefix, args.config)

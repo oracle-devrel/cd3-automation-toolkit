@@ -19,7 +19,7 @@ resource "oci_load_balancer_load_balancer" "load_balancer" {
   freeform_tags              = var.freeform_tags
   ip_mode                    = var.ip_mode
   is_private                 = var.is_private
-  network_security_group_ids = var.network_security_group_ids != [] ? local.nsg_ids : null
+  network_security_group_ids = var.network_security_group_ids != null ? (local.nsg_ids == [] ? ["INVALID NSG Name"] : local.nsg_ids) : null
 
   dynamic "reserved_ips" {
     for_each = var.reserved_ips_id != [] ? var.reserved_ips_id : []
@@ -30,7 +30,7 @@ resource "oci_load_balancer_load_balancer" "load_balancer" {
   }
 
   dynamic "shape_details" {
-    for_each = var.load_balancers[var.key_name].shape_details != [] ? var.load_balancers[var.key_name].shape_details : []
+    for_each = var.load_balancers[var.key_name].shape_details != null ? var.load_balancers[var.key_name].shape_details : []
     content {
       #Required
       maximum_bandwidth_in_mbps = shape_details.value.maximum_bandwidth_in_mbps

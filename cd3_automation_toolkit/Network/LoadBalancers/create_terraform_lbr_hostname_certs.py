@@ -26,13 +26,14 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Creates TF files for LBR")
     parser.add_argument("inputfile",help="Full Path to the CD3 excel file. eg CD3-template.xlsx in example folder")
     parser.add_argument("outdir", help="directory path for output tf files ")
+    parser.add_argument("service_dir", help="subdirectory under region directory in case of separate out directory structure")
     parser.add_argument('prefix', help='TF files prefix')
     parser.add_argument("--config", default=DEFAULT_LOCATION, help="Config file name")
     return parser.parse_args()
 
 
 # If input file is CD3
-def create_terraform_lbr_hostname_certs(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
+def create_terraform_lbr_hostname_certs(inputfile, outdir, service_dir, prefix, config=DEFAULT_LOCATION):
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True)
@@ -281,31 +282,29 @@ def create_terraform_lbr_hostname_certs(inputfile, outdir, prefix, config=DEFAUL
                     if ("ocid1.subnet.oc1" in str(lbr_subnets[0]).strip()):
                         lbr_subnets_list.append(str(lbr_subnets[0]).strip())
                     else:
-                        subnet_tf_name = commonTools.check_tf_variable(str(lbr_subnets[0]).strip())
                         try:
-                            key = region, subnet_tf_name
+                            key = region, str(lbr_subnets[0]).strip()
                             network_compartment_id = subnets.vcn_subnet_map[key][0]
                             vcn_name = subnets.vcn_subnet_map[key][1]
                             lbr_subnets_list.append(subnets.vcn_subnet_map[key][2])
                         except Exception as e:
                             print("Invalid Subnet Name specified for row " + str(i + 3) + ". It Doesnt exist in Subnets sheet. Exiting!!!")
                             exit()
-                    tempdict = {'network_compartment_tf_name': commonTools.check_tf_variable(network_compartment_id), 'vcn_tf_name': vcn_name,'lbr_subnets': json.dumps(lbr_subnets_list)}
+                    tempdict = {'network_compartment_tf_name': commonTools.check_tf_variable(network_compartment_id), 'vcn_name': vcn_name,'lbr_subnets': json.dumps(lbr_subnets_list)}
                 elif len(lbr_subnets) == 2:
                     for subnet in lbr_subnets:
                         if "ocid1.subnet.oc1" in subnet:
                             lbr_subnets_list.append(str(subnet).strip())
                         else:
-                            subnet_tf_name = commonTools.check_tf_variable(str(subnet).strip())
                             try:
-                                key = region, subnet_tf_name
+                                key = region, str(subnet).strip()
                                 network_compartment_id = subnets.vcn_subnet_map[key][0]
                                 vcn_name = subnets.vcn_subnet_map[key][1]
                                 lbr_subnets_list.append(subnets.vcn_subnet_map[key][2])
                             except Exception as e:
                                 print("Invalid Subnet Name specified for row " + str(i + 3) + ". It Doesnt exist in Subnets sheet. Exiting!!!")
                                 exit()
-                    tempdict = {'network_compartment_tf_name': commonTools.check_tf_variable(network_compartment_id), 'vcn_tf_name': vcn_name,'lbr_subnets': json.dumps(lbr_subnets_list) }
+                    tempdict = {'network_compartment_tf_name': commonTools.check_tf_variable(network_compartment_id), 'vcn_name': vcn_name,'lbr_subnets': json.dumps(lbr_subnets_list) }
 
             if columnname == "NSGs":
                 if columnvalue != '':
@@ -416,11 +415,11 @@ def create_terraform_lbr_hostname_certs(inputfile, outdir, prefix, config=DEFAUL
 
         if finalstring != "":
             resource = sheetName.lower()
-            srcdir = outdir + "/" + reg + "/"
+            srcdir = outdir + "/" + reg + "/" + service_dir + "/"
             commonTools.backup_file(srcdir, resource, lb_auto_tfvars_filename)
 
             # Write to TF file
-            outfile = outdir + "/" + reg + "/" + lb_auto_tfvars_filename
+            outfile = srcdir + lb_auto_tfvars_filename
             oname = open(outfile, "w+")
             print("Writing to ..."+outfile)
             oname.write(finalstring)
@@ -429,4 +428,4 @@ def create_terraform_lbr_hostname_certs(inputfile, outdir, prefix, config=DEFAUL
 if __name__ == '__main__':
     # Execution of the code begins here
     args = parse_args()
-    create_terraform_lbr_hostname_certs(args.inputfile, args.outdir, args.prefix, args.config)
+    create_terraform_lbr_hostname_certs(args.inputfile, args.outdir, args.service_dir, args.prefix, args.config)

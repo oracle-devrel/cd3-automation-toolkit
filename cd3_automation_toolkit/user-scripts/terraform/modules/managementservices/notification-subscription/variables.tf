@@ -9,13 +9,10 @@ variable "compartment_id" {
   type = string
 }
 
-variable "subscription_name" {
-  type = string
-}
-
 variable "endpoint" {
   type = string
 }
+
 variable "protocol" {
   type = string
 }

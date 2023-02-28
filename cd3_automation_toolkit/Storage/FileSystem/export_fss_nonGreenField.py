@@ -4,9 +4,7 @@
 # Oracle Consulting.
 
 import argparse
-import sys
 import oci
-import re
 import os
 from oci.config import DEFAULT_LOCATION
 from commonTools import *
@@ -163,12 +161,14 @@ def parse_args():
     parser.add_argument("inputfile", help="path of CD3 excel file to export FileSystem objects to")
     parser.add_argument("outdir", help="path to out directory containing script for TF import commands")
     parser.add_argument("--config", default=DEFAULT_LOCATION, help="Config file name")
-    parser.add_argument("--network-compartments", nargs='*', required=False, help="comma seperated Compartments for which to export FileSystem Objects")
+    parser.add_argument("--export-compartments", nargs='*', required=False, help="comma seperated Compartments for which to export FileSystem Objects")
+    parser.add_argument("--export-regions", nargs='*', help="comma seperated Regions for which to export Networking Objects",
+                        required=False)
     return parser.parse_args()
 
 
-def export_fss(inputfile, outdir, network_compartments=[], config=DEFAULT_LOCATION):
-    input_compartment_names = network_compartments
+def export_fss(inputfile, outdir, service_dir, ct, config=DEFAULT_LOCATION, export_compartments=[], export_regions=[]):
+    input_compartment_names = export_compartments
     cd3file = inputfile
 
     if ('.xls' not in cd3file):
@@ -179,17 +179,19 @@ def export_fss(inputfile, outdir, network_compartments=[], config=DEFAULT_LOCATI
     configFileName = config
     config = oci.config.from_file(file_location=configFileName)
 
-    global file_system, ct, vnc_info, importCommands, rows,  all_ads, input_compartment_list, AD, df, values_for_column_fss, sheet_dict_instances
+    global file_system, vnc_info, importCommands, rows,  all_ads, input_compartment_list, AD, df, values_for_column_fss, sheet_dict_instances
 
     file_system = oci.file_storage.FileStorageClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
-    ct = commonTools()
+    if ct==None:
+        ct = commonTools()
+        ct.get_subscribedregions(configFileName)
+        ct.get_network_compartment_ids(config['tenancy'], "root", configFileName)
+
     vnc_info = oci.core.VirtualNetworkClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
     importCommands = {}
     rows = []
     all_ads = []
-    ct.get_subscribedregions(configFileName)
-    ct.get_network_compartment_ids(config['tenancy'],"root",configFileName)
-
+    
     print("\nCD3 excel file should not be opened during export process!!!")
     print("Tabs FSS will be overwritten during this export process!!!\n")
 
@@ -200,7 +202,7 @@ def export_fss(inputfile, outdir, network_compartments=[], config=DEFAULT_LOCATI
     sheet_dict_instances = ct.sheet_dict[sheetName]
 
     # Fetch all ADs in all Subscribed Regions
-    for reg in ct.all_regions:
+    for reg in export_regions:
         config.__setitem__("region", ct.region_dict[reg])
         ads = oci.identity.IdentityClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
         for aval in ads.list_availability_domains(compartment_id=config['tenancy']).data:
@@ -209,37 +211,33 @@ def export_fss(inputfile, outdir, network_compartments=[], config=DEFAULT_LOCATI
     # backup of .sh file
     resource = 'tf_import_' + sheetName.lower()
     file_name = 'tf_import_commands_' + sheetName.lower() + '_nonGF.sh'
-    for reg in ct.all_regions:
-        script_file = f'{outdir}/{reg}/' + file_name
+    for reg in export_regions:
+        script_file = f'{outdir}/{reg}/{service_dir}/' + file_name
         if (os.path.exists(script_file)):
-            commonTools.backup_file(outdir + "/" + reg, resource, file_name)
+            commonTools.backup_file(outdir + "/" + reg + "/" + service_dir + "/", resource, file_name)
         importCommands[reg] = open(script_file, "w")
         importCommands[reg].write("#!/bin/bash")
         importCommands[reg].write("\n")
         importCommands[reg].write("terraform init")
 
-    # Check Compartments
-    global comp_list_fetch
-    comp_list_fetch = commonTools.get_comp_list_for_export(network_compartments, ct.ntk_compartment_ids)
-
-    for reg in ct.all_regions:
+    for reg in export_regions:
         config.__setitem__("region", ct.region_dict[reg])
-        for ntk_compartment_name in comp_list_fetch:
+        for ntk_compartment_name in export_compartments:
             ads = oci.identity.IdentityClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
             for aval in ads.list_availability_domains(compartment_id=config['tenancy']).data:
                 __get_mount_info(ntk_compartment_name, ct.ntk_compartment_ids[ntk_compartment_name], reg, aval.name, config)
-
 
 
     commonTools.write_to_cd3(values_for_column_fss, cd3file, sheetName)
     print("FSS objects exported to CD3.\n")
 
     # writing data
-    for reg in ct.all_regions:
-        script_file = f'{outdir}/{reg}/' + file_name
+    for reg in export_regions:
+        script_file = f'{outdir}/{reg}/{service_dir}/' + file_name
         with open(script_file, 'a') as importCommands[reg]:
             importCommands[reg].write('\n\nterraform plan\n')
 
 if __name__ == "__main__":
     args = parse_args()
-    export_fss(args.inputfile, args.outdir, args.network_compartments, args.config)
+    export_fss(args.inputfile, args.outdir, args.config, args.export_compartments, args.export_regions)
+

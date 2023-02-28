@@ -18,10 +18,18 @@ certificates = {
       certificate_name = "{{ certificate_name }}"
       load_balancer_id = "{{ lbr_tf_name }}"
 
+      {% if ca_cert %}
       ca_certificate     = "{{ ca_cert }}"
+      {% endif %}
+      {% if passphrase %}
       passphrase         = "{{ passphrase }}"
+      {% endif %}
+      {% if private_key %}
       private_key        = "{{ private_key }}"
+      {% endif %}
+      {% if public_cert %}
       public_certificate = "{{ public_cert }}"
+      {% endif %}
     },
 
 {% endif %}

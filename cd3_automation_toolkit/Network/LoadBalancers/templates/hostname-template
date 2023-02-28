@@ -15,7 +15,7 @@ hostnames = {
 }{% else %}
   {{ host_tf_name }}_hostname = {
         name               = "{{ name }}"
-        load_balancer_id = "{{ lbr_tf_name }}"
+        load_balancer_id   = "{{ lbr_tf_name }}"
         hostname           = "{{ hostname }}"
         },
 {% endif %}

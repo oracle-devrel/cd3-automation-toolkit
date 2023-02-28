@@ -261,7 +261,7 @@ def print_oke(values_for_column_oke, reg, compartment_name, compartment_name_nod
             values_for_column_oke = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict_oke,values_for_column_oke)
 
 
-def export_oke(inputfile, outdir, network_compartments, _config=DEFAULT_LOCATION):
+def export_oke(inputfile, outdir,service_dir, ct, _config=DEFAULT_LOCATION, export_compartments=[], export_regions=[]):
     global importCommands
     global tf_import_cmd
     global values_for_column_oke
@@ -273,32 +273,34 @@ def export_oke(inputfile, outdir, network_compartments, _config=DEFAULT_LOCATION
         print("\nAcceptable cd3 format: .xlsx")
         exit()
 
-    outdir = outdir
     configFileName = _config
     config = oci.config.from_file(file_location=configFileName)
 
+    sheetName = "OKE"
+    resource = 'tf_import_' + sheetName.lower()
+    file_name = 'tf_import_commands_' + sheetName.lower() + '_nonGF.sh'
+
     importCommands={}
-    ct = commonTools()
-    ct.get_subscribedregions(configFileName)
-    ct.get_network_compartment_ids(config['tenancy'], "root", configFileName)
+
+    if ct==None:
+        ct = commonTools()
+        ct.get_subscribedregions(configFileName)
+        ct.get_network_compartment_ids(config['tenancy'], "root", configFileName)
 
     df, values_for_column_oke = commonTools.read_cd3(cd3file, "OKE")
 
     # Get dict for columns from Excel_Columns
     sheet_dict_oke = ct.sheet_dict["OKE"]
 
-    # Check Compartments
-    comp_list_fetch = commonTools.get_comp_list_for_export(network_compartments, ct.ntk_compartment_ids)
-
     print("\nCD3 excel file should not be opened during export process!!!")
     print("Tab - OKE will be overwritten during export process!!!\n")
 
     # Create backups
-    for reg in ct.all_regions:
-        resource = 'tf_import_oke'
-        if os.path.exists(outdir + "/" + reg + "/tf_import_commands_oke_nonGF.sh"):
-            commonTools.backup_file(outdir + "/" + reg, resource, "tf_import_commands_oke_nonGF.sh")
-        importCommands[reg] = open(outdir + "/" + reg + "/tf_import_commands_oke_nonGF.sh", "w")
+    for reg in export_regions:
+        script_file = f'{outdir}/{reg}/{service_dir}/' + file_name
+        if os.path.exists(script_file):
+            commonTools.backup_file(outdir + "/" + reg+"/"+service_dir, resource, file_name)
+        importCommands[reg] = open(script_file, "w")
         importCommands[reg].write("#!/bin/bash")
         importCommands[reg].write("\n")
         importCommands[reg].write("terraform init")
@@ -308,13 +310,13 @@ def export_oke(inputfile, outdir, network_compartments, _config=DEFAULT_LOCATION
 
     tempImageDict = {}
     tempsshDict = {}
-    for reg in ct.all_regions:
+    for reg in export_regions:
         importCommands[reg].write("\n\n######### Writing import for OKE Objects #########\n\n")
         config.__setitem__("region", ct.region_dict[reg])
         oke = ContainerEngineClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
         network = VirtualNetworkClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
 
-        for compartment_name in comp_list_fetch:
+        for compartment_name in export_compartments:
             clusterList = []
             clusterResponse = oci.pagination.list_call_get_all_results(oke.list_clusters,
                                                                        compartment_id=ct.ntk_compartment_ids[
@@ -326,12 +328,12 @@ def export_oke(inputfile, outdir, network_compartments, _config=DEFAULT_LOCATION
                 nodepool_count = 0
                 nodepool_info = None
 
-                importCommands[reg] = open(outdir + "/" + reg + "/tf_import_commands_oke_nonGF.sh", "a")
+                importCommands[reg] = open(script_file, "a")
                 cluster_display_name = cluster_info.name
                 cluster_tf_name = commonTools.check_tf_variable(cluster_display_name)
                 importCommands[reg].write("\nterraform import \"module.clusters[\\\"" + str(cluster_tf_name) + "\\\"].oci_containerengine_cluster.cluster\" " + cluster_info.id)
 
-                for compartment_name_nodepool in comp_list_fetch:
+                for compartment_name_nodepool in export_compartments:
                     nodepoolList = []
                     nodepoolResponse = oci.pagination.list_call_get_all_results(oke.list_node_pools,cluster_id=cluster_info.id,compartment_id=ct.ntk_compartment_ids[compartment_name_nodepool],sort_by="TIME_CREATED")
                     nodepoolList.extend(nodepoolResponse.data)
@@ -339,7 +341,7 @@ def export_oke(inputfile, outdir, network_compartments, _config=DEFAULT_LOCATION
                         empty_cluter = False
                         nodepool_count=nodepool_count+1
 
-                        importCommands[reg] = open(outdir + "/" + reg + "/tf_import_commands_oke_nonGF.sh", "a")
+                        importCommands[reg] = open(script_file, "a")
                         nodepool_display_name = nodepool_info.name
                         np_tf_name = commonTools.check_tf_variable(nodepool_display_name)
                         importCommands[reg].write("\nterraform import \"module.nodepools[\\\"" + str(cluster_tf_name) + "_" + str(np_tf_name) + "\\\"].oci_containerengine_node_pool.nodepool\" " + nodepool_info.id)
@@ -360,7 +362,7 @@ def export_oke(inputfile, outdir, network_compartments, _config=DEFAULT_LOCATION
 
     # write oke image ocids and ssh keys
     var_data = {}
-    for reg in ct.all_regions:
+    for reg in export_regions:
         myocids = {}
         for keys, values in tempImageDict.items():
             reg_name = keys.split("::")[0]
@@ -375,7 +377,7 @@ def export_oke(inputfile, outdir, network_compartments, _config=DEFAULT_LOCATION
                 key_name = "\"" + keys[len(reg_name) + 2:] + "\""
                 mykeys[key_name] = values
 
-        file = f'{outdir}/{reg}/variables_{reg}.tf'
+        file = f'{outdir}/{reg}/{service_dir}/variables_{reg}.tf'
         # Read variables file data
         with open(file, 'r') as f:
             var_data[reg] = f.read()
@@ -411,8 +413,8 @@ def export_oke(inputfile, outdir, network_compartments, _config=DEFAULT_LOCATION
         f.close()
 
     # writing data
-    for reg in ct.all_regions:
-        script_file = f'{outdir}/{reg}/tf_import_commands_oke_nonGF.sh'
+    for reg in export_regions:
+        script_file = f'{outdir}/{reg}/{service_dir}/tf_import_commands_oke_nonGF.sh'
         with open(script_file, 'a') as importCommands[reg]:
             importCommands[reg].write('\n\nterraform plan\n')
 
@@ -424,14 +426,17 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Export OKE to CD3")
     parser.add_argument("inputfile", help="path of CD3 excel file to export OKE to")
     parser.add_argument("outdir", help="path to out directory containing script for TF import commands")
+    parser.add_argument("service_dir",help="subdirectory under region directory in case of separate out directory structure")
     parser.add_argument("--network-compartments", nargs='*',
                         help="comma seperated Compartments for which to export OKE Objects", required=False)
     parser.add_argument("--config", default=DEFAULT_LOCATION, help="Config file name")
+    parser.add_argument("--regions", nargs='*', help="comma seperated Regions for which to export Networking Objects",
+                        required=False)
     return parser.parse_args()
 
 
 if __name__ == '__main__':
     args = parse_args()
     # Execution of the code begins here
-    export_oke(args.inputfile, args.outdir, args.network_compartments, args.config)
+    export_oke(args.inputfile, args.outdir, args.service_dir,args.export_compartments, args.config, args.export_regions)
 

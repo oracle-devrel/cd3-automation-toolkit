@@ -12,36 +12,52 @@ def parse_args():
     return parser.parse_args()
 
 
-def fetch_compartments(outdir, config=DEFAULT_LOCATION):
+def fetch_compartments(outdir, outdir_struct, config=DEFAULT_LOCATION):
     configFileName = config
     config = oci.config.from_file(config)
 
     var_files={}
     var_data = {}
-    comp_ocids = []
-    comp_tf_name = ''
 
     ct = commonTools()
     ct.get_subscribedregions(configFileName)
+    home_region = ct.home_region
 
     print("outdir specified should contain region directories and then variables_<region>.tf file inside the region directories eg /cd3user/tenancies/<customer_tenancy_name>/terraform_files")
     print("Verifying out directory and Taking backup of existing variables files...Please wait...")
 
-    for region in ct.all_regions:
-        file = f'{outdir}/{region}/variables_{region}.tf'
-        var_files[region]=file
-        try:
-            # Read variables file data
-            with open(file, 'r') as f:
-                var_data[region] = f.read()
-        except FileNotFoundError as e:
-            exit_menu(f'\nVariables file not found in region - {region}.......Exiting!!!\n')
-        # Backup the existing Routes tf file
-        shutil.copy(file, file + "_backup")
-
-
-    print("Fetching Compartment Info...Please wait...")
+    print("\nFetching Compartment Info...Please wait...")
     ct.get_network_compartment_ids(config['tenancy'], "root", configFileName)
+
+    print("\nWriting to variables files...")
+
+    home_region_services = ['identity', 'tagging', 'budget', 'cloud-guard']
+    for region in ct.all_regions:
+        # Fetch variables file inside region directories - single outdir
+        if outdir_struct == '':
+            file = f'{outdir}/{region}/variables_{region}.tf'
+            var_files[region]=file
+            try:
+                # Read variables file data
+                with open(file, 'r') as f:
+                    var_data[region] = f.read()
+            except FileNotFoundError as e:
+                print(f'\nVariables file not found in - {region}.......')
+                print("Continuing")
+
+        # Fetch variables file inside service directories - separate outdir
+        else:
+            for k, v in outdir_struct.items():
+                if ((k not in home_region_services) or ((k in home_region_services) and region == home_region)) and v != '':
+                    file = f'{outdir}/{region}/{v}/variables_{region}.tf'
+                    var_files[region + "-" + v] = file
+                    try:
+                        # Read variables file data
+                        with open(file, 'r') as f:
+                            var_data[region + "-" + v] = f.read()
+                    except FileNotFoundError as e:
+                        print(f'\nVariables file not found in - {region}/{v}/.......')
+                        print("Continuing")
 
     compocidsStr = ''
     for k,v in ct.ntk_compartment_ids.items():
@@ -53,17 +69,19 @@ def fetch_compartments(outdir, config=DEFAULT_LOCATION):
 
     finalCompStr = "#START_compartment_ocids#" + compocidsStr +  "\t#compartment_ocids_END#"
 
-    for reg in ct.all_regions:
-        var_data[reg] = re.sub('#START_compartment_ocids#.*?#compartment_ocids_END#', finalCompStr,var_data[reg], flags=re.DOTALL)
+
+    for k, v in var_data.items():
+        var_data[k] = re.sub('#START_compartment_ocids#.*?#compartment_ocids_END#', finalCompStr,
+                               var_data[k], flags=re.DOTALL)
 
         # Write variables file data
-        with open(var_files[reg], "w") as f:
-            f.write(var_data[reg])
+        with open(var_files[k], "w") as f:
+            # Backup the existing Routes tf file
+            file = var_files[k]
+            shutil.copy(file, file + "_backup")
+            f.write(var_data[k])
 
-        # if ("linux" in sys.platform):
-        #     os.system("dos2unix " + var_files[reg])
-
-    print("Compartment info written to all region specific variables files under outdir folder\n")
+    print("\nCompartment info written to all variables files under outdir...\n")
 
     # update fetchcompinfo.safe
     fetch_comp_file = f'{outdir}/fetchcompinfo.safe'

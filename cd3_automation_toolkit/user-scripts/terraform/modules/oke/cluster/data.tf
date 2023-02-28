@@ -22,13 +22,6 @@ data "oci_core_vcns" "oci_vcns_clusters" {
   display_name   = each.value
 }
 
-data "oci_core_subnets" "oci_subnets_clusters" {
-  for_each       = { for subnet in [var.endpoint_subnet_id] : subnet => subnet }
-  compartment_id = var.network_compartment_id != null ? var.network_compartment_id : var.compartment_id
-  display_name   = each.value
-  vcn_id         = data.oci_core_vcns.oci_vcns_clusters[var.vcn_names[0]].virtual_networks.*.id[0]
-}
-
 data "oci_core_subnets" "oci_subnets_cluster_lbs" {
   for_each       = { for subnet in var.service_lb_subnet_ids : subnet => subnet }
   compartment_id = var.network_compartment_id != null ? var.network_compartment_id : var.compartment_id

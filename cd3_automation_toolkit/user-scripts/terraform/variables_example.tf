@@ -444,6 +444,7 @@ variable "default_route_tables" {
 variable "nsgs" {
   type = map(object({
     compartment_id = string
+    network_compartment_id = string
     vcn_name         = string
     display_name   = optional(string)
     defined_tags   = optional(map(any))
@@ -543,7 +544,15 @@ variable "data_drg_route_table_distributions" {
 #########################
 
 variable "dedicated_hosts" {
-  type        = map(any)
+  type       = map(object({
+    availability_domain     = string
+    compartment_id          = string
+    vm_host_shape = string
+    defined_tags            = optional(map(any))
+    display_name            = optional(string)
+    fault_domain            = optional(string)
+    freeform_tags           = optional(map(any))
+  }))
   description = "To provision new dedicated VM hosts"
   default     = {}
 }
@@ -718,19 +727,46 @@ variable "adb" {
 
 variable "mount_targets" {
   description = "To provision Mount Targets"
-  type        = map(any)
+  type        = map(object({
+    availability_domain        = string
+    compartment_id             = string
+    network_compartment_id     = string
+    vcn_name                   = string
+    subnet_id                  = string
+    display_name               = optional(string)
+    ip_address                 = optional(string)
+    hostname_label             = optional(string)
+    nsg_ids                    = optional(list(any))
+    defined_tags               = optional(map(any))
+    freeform_tags              = optional(map(any))
+  }))
   default     = {}
 }
 
 variable "fss" {
   description = "To provision File System Services"
-  type        = map(any)
+  type        = map(object({
+    availability_domain        = string
+    compartment_id             = string
+    display_name               = optional(string)
+    source_snapshot_name       = optional(string)
+    kms_key_name               = optional(string)
+    defined_tags               = optional(map(any))
+    freeform_tags              = optional(map(any))
+  }))
   default     = {}
 }
 
 variable "nfs_export_options" {
   description = "To provision Export Sets"
-  type        = map(any)
+  type        = map(object({
+    export_set_id              = string
+    file_system_id             = string
+    path                       = string
+    export_options             = optional(list(any))
+    defined_tags               = optional(map(any))
+    freeform_tags              = optional(map(any))
+  }))
   default     = {}
 }
 
@@ -740,61 +776,207 @@ variable "nfs_export_options" {
 
 variable "load_balancers" {
   description = "To provision Load Balancers"
-  type        = map(any)
+  type        = map(object({
+    compartment_id             = string
+    vcn_name                   = string
+    shape                      = string
+    subnet_ids                 = list(any)
+    network_compartment_id     = string
+    display_name               = string
+    shape_details              = optional(list(map(any)))
+    nsg_ids                    = optional(list(any))
+    is_private                 = optional(bool)
+    ip_mode                    = optional(string)
+    defined_tags               = optional(map(any))
+    freeform_tags              = optional(map(any))
+    reserved_ips_id            = optional(string)
+  }))
   default     = {}
 }
 
 variable "hostnames" {
   description = "To provision Load Balancer Hostnames"
-  type        = map(any)
+  type        = map(object({
+    load_balancer_id           = string
+    hostname                   = string
+    name                       = string
+  }))
   default     = {}
 }
 
 variable "certificates" {
   description = "To provision Load Balancer Certificates"
-  type        = map(any)
+  type        = map(object({
+     certificate_name           = string
+     load_balancer_id           = string
+     ca_certificate             = optional(string)
+     passphrase                 = optional(string)
+     private_key                = optional(string)
+     public_certificate         = optional(string)
+     }))
   default     = {}
 }
 
 variable "cipher_suites" {
   description = "To provision Load Balancer Cipher Suites"
-  type        = map(any)
+  type        = map(object({
+      ciphers          = list(string)
+      name             = string
+      load_balancer_id =  optional(string)
+   }))
   default     = {}
 }
 
 variable "backend_sets" {
   description = "To provision Load Balancer Backend Sets"
-  type        = map(any)
+  type        = map(object({
+    name                     = string
+    load_balancer_id         = string
+    policy                   = string
+    protocol                 = optional(string)
+    interval_ms              = optional(string)
+    port                     = optional(string)
+    response_body_regex      = optional(string)
+    retries                  = optional(string)
+    return_code              = optional(string)
+    timeout_in_millis        = optional(string)
+    url_path                 = optional(string)
+    lb_cookie_session        = optional(list(object({
+      cookie_name = optional(string)
+      disable_fallback   = optional(string)
+      path = optional(string)
+      domain = optional(string)
+      is_http_only = optional(string)
+      is_secure = optional(string)
+      max_age_in_seconds = optional(string)
+    })))
+    session_persistence_configuration      = optional(list(object({
+      cookie_name = optional(string)
+      disable_fallback = optional(string)
+    })))
+    certificate_name        = optional(string)
+    cipher_suite_name       = optional(string)
+    ssl_configuration       = optional(list(object({
+      certificate_ids   = optional(list(any))
+      server_order_preference = optional(string)
+      trusted_certificate_authority_ids = optional(list(any))
+      verify_peer_certificate = optional(string)
+      verify_depth = optional(string)
+      protocols = optional(list(any))
+      })))
+    }))
   default     = {}
 }
 
 variable "backends" {
   description = "To provision Load Balancer Backends"
-  type        = map(any)
+  type        = map(object({
+    backendset_name  = string
+    ip_address       = string
+    load_balancer_id = string
+    port             = string
+    instance_compartment = optional(string)
+    backup           = optional(string)
+    drain            = optional(string)
+    offline          = optional(string)
+    weight           = optional(string)
+}))
   default     = {}
 }
 
 variable "listeners" {
   description = "To provision Load Balancer Listeners"
-  type        = map(any)
+  type        =  map(object({
+    name                       = string
+    load_balancer_id           = string
+    port                       = string
+    protocol                   = string
+    default_backend_set_name   = string
+    connection_configuration   = optional(list(map(any)))
+    hostname_names             = optional(list(any))
+    path_route_set_name        = optional(string)
+    rule_set_names             = optional(list(any))
+    routing_policy_name        = optional(string)
+    certificate_name           = optional(string)
+    cipher_suite_name          = optional(string)
+    ssl_configuration       = optional(list(object({
+      certificate_ids   = optional(list(any))
+      server_order_preference = optional(string)
+      trusted_certificate_authority_ids = optional(list(any))
+      verify_peer_certificate = optional(string)
+      verify_depth = optional(string)
+      protocols = optional(list(any))
+    })))
+  }))
   default     = {}
 }
 
 variable "path_route_sets" {
   description = "To provision Load Balancer Path Route Sets"
-  type        = map(any)
+  type        = map(object({
+     name                     = string
+     load_balancer_id         = string
+     path_routes     = optional(list(map(any)))
+  }))
   default     = {}
 }
 
 variable "rule_sets" {
   description = "To provision Load Balancer Rule Sets"
-  type        = map(any)
+  type        = map(object({
+     name                     = string
+     load_balancer_id         = string
+     access_control_rules     = optional(list(object({
+        action   = string
+        attribute_name  = optional(string)
+        attribute_value  = optional(string)
+        description      = optional(string)
+     })))
+     access_control_method_rules = optional(list(object({
+        action   = string
+        allowed_methods  = optional(list(any))
+        status_code  = optional(string)
+     })))
+     http_header_rules        = optional(list(object({
+        action   = string
+        are_invalid_characters_allowed  = optional(bool)
+        http_large_header_size_in_kb  = optional(string)
+     })))
+     uri_redirect_rules       = optional(list(object({
+        action   = string
+        attribute_name  = optional(string)
+        attribute_value  = optional(string)
+        operator         = optional(string)
+        host  = optional(string)
+        path         = optional(string)
+        port  = optional(string)
+        protocol  = optional(string)
+        query         = optional(string)
+        response_code  = optional(string)
+     })))
+     request_response_header_rules = optional(list(object({
+        action   = string
+        header  = optional(string)
+        prefix  = optional(string)
+        suffix  = optional(string)
+        value   = optional(string)
+     })))
+  }))
   default     = {}
 }
 
 variable "lbr_reserved_ips" {
   description = "To provision Load Balancer Reserved IPs"
-  type        = map(any)
+  type        = map(object({
+     compartment_id           = string
+     display_name             = string
+     lifetime                 = string
+     private_ip_id            = optional(string)
+     public_ip_pool_id        = optional(string)
+     lifetime                 = optional(string)
+     defined_tags             = optional(map(any))
+     freeform_tags            = optional(map(any))
+  }))
   default     = {}
 }
 
@@ -804,13 +986,32 @@ variable "lbr_reserved_ips" {
 
 variable "loadbalancer_log_groups" {
   description = "To provision Log Groups for Load Balancers"
-  type        = map(any)
+  type        = map(object({
+     compartment_id           = string
+     display_name             = string
+     description              = optional(string)
+     defined_tags             = optional(map(any))
+     freeform_tags            = optional(map(any))
+  }))
   default     = {}
 }
 
 variable "loadbalancer_logs" {
   description = "To provision Logs for Load Balancers"
-  type        = map(any)
+  type        = map(object({
+     display_name             = string
+     log_group_id             = string
+     log_type                 = string
+     compartment_id           = optional(string)
+     category                 = optional(string)
+     resource                 = optional(string)
+     service                  = optional(string)
+     source_type              = optional(string)
+     is_enabled               = optional(bool)
+     retention_duration       = optional(number)
+     defined_tags             = optional(map(any))
+     freeform_tags            = optional(map(any))
+  }))
   default     = {}
 }
 
@@ -819,25 +1020,78 @@ variable "loadbalancer_logs" {
 #########################
 
 variable "network_load_balancers" {
-  type    = map(any)
+  type    = map(object({
+    display_name = string
+    compartment_id = string
+    network_compartment_id = string
+    vcn_name = string
+    subnet_id = string
+    is_private = optional(bool)
+    reserved_ips_id = string
+    is_preserve_source_destination = optional(bool)
+    nlb_ip_version = optional(string)
+    nsg_ids = optional(list(string))
+    defined_tags = optional(map(any))
+    freeform_tags = optional(map(any))
+  }))
   default = {}
 }
 variable "nlb_listeners" {
-  type    = map(any)
+  type    = map(object({
+    name = string
+    network_load_balancer_id = string
+    default_backend_set_name = string
+    port = number
+    protocol = string
+    ip_version = optional(string)
+  }))
   default = {}
 }
 
 variable "nlb_backend_sets" {
-  type    = map(any)
+  type    = map(object({
+    name = string
+    network_load_balancer_id = string
+    policy = string
+    protocol = string
+    return_code = number
+    interval_in_millis = optional(number)
+    port = optional(number)
+    response_body_regex = optional(string)
+    retries = optional(number)
+    timeout_in_millis = optional(number)
+    url_path = optional(string)
+    is_preserve_source = optional(bool)
+    ip_version = optional(string)
+  }))
   default = {}
 }
 variable "nlb_backends" {
-  type    = map(any)
+  type    = map(object({
+    name = optional(string)
+    backend_set_name = string
+    network_load_balancer_id = string
+    port = number
+    ip_address = string
+    instance_compartment = string
+    is_drain = optional(bool)
+    is_offline = optional(bool)
+    weight = optional(number)
+    target_id = optional(string)
+  }))
   default = {}
 }
 variable "nlb_reserved_ips" {
   description = "To provision Network Load Balancer Reserved IPs"
-  type        = map(any)
+  type        = map(object({
+    compartment_id = string
+    lifetime       = string
+    defined_tags = optional(map(any))
+    freeform_tags = optional(map(any))
+    display_name      = optional(string)
+    private_ip_id     = optional(string)
+    public_ip_pool_id = optional(string)
+  }))
   default     = {}
 }
 
@@ -871,12 +1125,31 @@ variable "vnic_attachments" {
 #########################
 
 variable "vcn_log_groups" {
-  type    = map(any)
+  type        = map(object({
+     compartment_id           = string
+     display_name             = string
+     description              = optional(string)
+     defined_tags             = optional(map(any))
+     freeform_tags            = optional(map(any))
+  }))
   default = {}
 }
 
 variable "vcn_logs" {
-  type    = map(any)
+  type    = map(object({
+     display_name             = string
+     log_group_id             = string
+     log_type                 = string
+     compartment_id           = optional(string)
+     category                 = optional(string)
+     resource                 = optional(string)
+     service                  = optional(string)
+     source_type              = optional(string)
+     is_enabled               = optional(bool)
+     retention_duration       = optional(number)
+     defined_tags             = optional(map(any))
+     freeform_tags            = optional(map(any))
+  }))
   default = {}
 }
 
@@ -896,13 +1169,32 @@ variable "oss" {
 
 variable "oss_log_groups" {
   description = "To provision Log Groups for OSS"
-  type        = map(any)
+  type        = map(object({
+     compartment_id           = string
+     display_name             = string
+     description              = optional(string)
+     defined_tags             = optional(map(any))
+     freeform_tags            = optional(map(any))
+  }))
   default     = {}
 }
 
 variable "oss_logs" {
   description = "To provision Logs for OSS"
-  type        = map(any)
+  type        = map(object({
+     display_name             = string
+     log_group_id             = string
+     log_type                 = string
+     compartment_id           = optional(string)
+     category                 = optional(string)
+     resource                 = optional(string)
+     service                  = optional(string)
+     source_type              = optional(string)
+     is_enabled               = optional(bool)
+     retention_duration       = optional(number)
+     defined_tags             = optional(map(any))
+     freeform_tags            = optional(map(any))
+  }))
   default     = {}
 }
 
@@ -920,22 +1212,72 @@ variable "oss_policies" {
 #########################
 
 variable "alarms" {
-  type    = map(any)
+  type    = map(object({
+    compartment_id         = string
+    destinations           = list(string)
+    alarm_name             = string
+    is_enabled             = bool
+    metric_compartment_id  = string
+    namespace              = string
+    query                  = string
+    severity               = string
+    body                   = optional(string)
+    message_format         = optional(string)
+    defined_tags           = optional(map(any))
+    freeform_tags          = optional(map(any))
+    is_notifications_per_metric_dimension_enabled = optional(bool)
+    metric_compartment_id_in_subtree = optional(string)
+    trigger_delay_minutes        = optional(string)
+    repeat_notification_duration = optional(string)
+    resolution             = optional(string)
+    resource_group         = optional(string)
+    suppression            = optional(map(any))
+    }))
   default = {}
 }
 
 variable "events" {
-  type    = map(any)
+  type    = map(object({
+    event_name             = string
+    compartment_id         = string
+    description            = string
+    is_enabled             = bool
+    condition              = string
+    actions                = optional(list(object({
+      action_type = string
+      is_enabled  = string
+      description = optional(string)
+      function_id = optional(string)
+      stream_id   = optional(string)
+      topic_id    = optional(string)
+    })))
+    message_format         = optional(string)
+    defined_tags           = optional(map(any))
+    freeform_tags          = optional(map(any))
+    }))
   default = {}
 }
 
 variable "notifications_topics" {
-  type    = map(any)
+  type    = map(object({
+    compartment_id         = string
+    topic_name             = string
+    description            = optional(string)
+    defined_tags           = optional(map(any))
+    freeform_tags          = optional(map(any))
+    }))
   default = {}
 }
 
 variable "notifications_subscriptions" {
-  type    = map(any)
+  type    = map(object({
+    compartment_id         = string
+    endpoint               = string
+    protocol               = string
+    topic_id               = string
+    defined_tags           = optional(map(any))
+    freeform_tags          = optional(map(any))
+    }))
   default = {}
 }
 
@@ -1013,12 +1355,27 @@ variable nodepools {
 ############################
 
 variable "vaults" {
-  type    = map(any)
+  type    = map(object({
+    compartment_id = string
+    display_name   = string
+    vault_type     = string
+    freeform_tags  = optional(map(any))
+    defined_tags   = optional(map(any))
+  }))
   default = {}
 }
 
 variable "keys" {
-  type    = map(any)
+  type    =  map(object({
+    compartment_id         = string
+    display_name           = string
+    management_endpoint    = string
+    algorithm              = optional(string)
+    length                 = optional(string)
+    protection_mode        = optional(string)
+    freeform_tags  = optional(map(any))
+    defined_tags   = optional(map(any))
+  }))
   default = {}
 }
 
@@ -1027,12 +1384,35 @@ variable "keys" {
 ###########################
 
 variable "budgets" {
-  type    = map(any)
+  type    = map(object({
+    amount         = string
+    compartment_id = string
+    reset_period   = string
+    budget_processing_period_start_offset = optional(number)
+    defined_tags                          = optional(map(any))
+    description                           = optional(string)
+    display_name                          = optional(string)
+    freeform_tags                         = optional(map(any))
+    processing_period_type                = optional(string)
+    target_type                           = optional(string)
+    targets                               = optional(list(any))
+  }))
   default = {}
 }
 
 variable "budget_alert_rules" {
-  type    = map(any)
+  type    = map(object({
+    budget_id      = string
+    threshold      = string
+    threshold_type = string
+    type           = string
+    defined_tags   = optional(map(any))
+    description    = optional(string)
+    display_name   = optional(string)
+    freeform_tags  = optional(map(any))
+    message        = optional(string)
+    recipients     = optional(string)
+    }))
   default = {}
 }
 
@@ -1041,12 +1421,29 @@ variable "budget_alert_rules" {
 ###########################
 
 variable "cloud_guard_configs" {
-  type    = map(any)
+  type    = map(object({
+    compartment_id        = string
+    reporting_region      = string
+    status                = string
+    self_manage_resources = optional(string)
+
+  }))
   default = {}
 }
 
 variable "cloud_guard_targets" {
-  type    = map(any)
+  type    = map(object({
+    compartment_id        = string
+    display_name          = string
+    target_resource_id    = string
+    target_resource_type  = string
+    description           = optional(string)
+    state                 = optional(string)
+    target_detector_recipes  = optional(list(any))
+    target_responder_recipes = optional(list(any))
+    freeform_tags            = optional(map(any))
+    defined_tags             = optional(map(any))
+  }))
   default = {}
 }
 

@@ -36,13 +36,14 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Creates TF files for Events")
     parser.add_argument('inputfile', help='Full Path of input CD3 excel file')
     parser.add_argument('outdir', help='Output directory for creation of TF files')
+    parser.add_argument('service_dir', help='Structured out directory for creation of TF files')
     parser.add_argument('prefix', help='TF files prefix')
     parser.add_argument('--config', default=DEFAULT_LOCATION, help='Config file name')
     return parser.parse_args()
 
 
 #If input is CD3 excel file
-def create_terraform_events(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
+def create_terraform_events(inputfile, outdir, service_dir, prefix, config=DEFAULT_LOCATION):
     filename = inputfile
 
     configFileName = config
@@ -76,28 +77,22 @@ def create_terraform_events(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
     dfcolumns = df.columns.values.tolist()
     region_list = df['Region'].tolist()
 
-
     # Take backup of files
     for eachregion in ct.all_regions:
         resource=sheetName.lower()
-        srcdir = outdir + "/" + eachregion + "/"
+        srcdir = outdir + "/" + eachregion + "/" + service_dir + "/"
         commonTools.backup_file(srcdir, resource, auto_tfvars_filename)
 
         tfStr[eachregion] = ''
         Events_names[eachregion] = []
 
-        # Take backup of files
-        resource = sheetName.lower()
-        srcdir = outdir + "/" + eachregion + "/"
-        commonTools.backup_file(srcdir, resource, auto_tfvars_filename)
-
     regions_done_count =[]
-
+    region = None
     # Iterate over rows
+    i=0
     for i in df.index:
         region = str(df.loc[i, 'Region'])
         region=region.strip().lower()
-        
         # Encountered <End>
         if (region in commonTools.endNames):
             break
@@ -200,14 +195,14 @@ def create_terraform_events(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
             tempStr[columnname] = str(columnvalue).strip()
             tempStr.update(tempdict)
 
+
         if(event_name not in Events_names[region]):
             prev_row_region = str(region_list[i-1]).strip().lower()
-            if (region != prev_row_region):
+            if (i!=0 and region != prev_row_region):
                 tfStr[prev_row_region] = tfStr[prev_row_region][:-1] + event_data
             else:
                 tfStr[region] =tfStr[region][:-1] + event_data
 
-            event_data = ""
             if (region not in regions_done_count):
                 tempdict = {"count": 0}
                 regions_done_count.append(region)
@@ -233,8 +228,8 @@ def create_terraform_events(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
             actions = actions_template.render(tempStr)
             event_data = event_data.replace("#ADD_Actions", actions)
 
-
         elif(event_name in Events_names[region]):
+            prev_row_region = str(region_list[i - 1]).strip().lower()
             if( topic_name == temp_topic):
              if( temp_action != action_is_enabled ):
               temp_action = action_is_enabled
@@ -254,10 +249,13 @@ def create_terraform_events(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
             event_data = events_template.render(tempStr)
             event_data = event_data.replace("#ADD_Actions", actions)
 
-    tfStr[region] = tfStr[region][:-1] + event_data
+    if(i!=0 and region in commonTools.endNames):
+        tfStr[prev_row_region] = tfStr[prev_row_region][:-1] + event_data
+    if(region!=None and region not in commonTools.endNames):
+        tfStr[region] = tfStr[region][:-1] + event_data
     # Write to output
     for reg in ct.all_regions:
-        reg_out_dir = outdir + "/" + reg
+        reg_out_dir = outdir + "/" + reg + "/" + service_dir
         if (tfStr[reg] != ''):
             tfStr[reg] = "".join([s for s in tfStr[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
             outfile[reg] = reg_out_dir + "/" + prefix + auto_tfvars_filename
@@ -270,4 +268,4 @@ def create_terraform_events(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
 if __name__ == '__main__':
     # Execution of the code begins here
     args = parse_args()
-    create_terraform_events(args.inputfile, args.outdir, args.prefix, args.config)
+    create_terraform_events(args.inputfile, args.outdir, args.service_dir, args.prefix, args.config)

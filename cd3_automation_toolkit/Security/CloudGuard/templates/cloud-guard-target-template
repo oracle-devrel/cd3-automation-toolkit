@@ -30,14 +30,10 @@ cloud_guard_targets = {
             #Optional
             {% if description and description != "" %}
             description = "{{cg_target_desc}}"
-            {% else %}
-            description = ""
             {%endif %}
 
             {% if state and state != "" %}
             state = "{{ state }}"
-            {% else %}
-            state = ""
             {%endif %}
 
             {% if target_detector_recipes and target_detector_recipes != '' %}
@@ -46,17 +42,13 @@ cloud_guard_targets = {
             {% if not loop.last %}
             {
             detector_recipe_id = "{{ recipes }}"
-            detector_rules = []
             },
             {% else %}
             {
             detector_recipe_id = "{{ recipes }}"
-            detector_rules = []
             }
             {% endif %}{% endfor %}
             ]
-            {% else %}
-            target_detector_recipes = []
             {% endif %}
 
             {% if target_responder_recipes and target_responder_recipes != '' %}
@@ -65,23 +57,19 @@ cloud_guard_targets = {
             {% if not loop.last %}
             {
             responder_recipe_id = "{{ recipes }}"
-            responder_rules = []
             },
             {% else %}
             {
             responder_recipe_id = "{{ recipes }}"
-            responder_rules =[]
             }
             {% endif %}{% endfor %}
             ]
-            {% else %}
-            target_responder_recipes = []
             {% endif %}
 
-            {#  ##Do not modify below this line##  #}
-            {#                                     #}
-            {#  ###Section for adding Defined and Freeform Tags###  #}
-            {% if defined_tags and defined_tags != 'nan' and defined_tags != '' %}
+        {#  ##Do not modify below this line##  #}
+        {#                                     #}
+        {#  ###Section for adding Defined and Freeform Tags###  #}
+        {% if defined_tags and defined_tags != 'nan' and defined_tags != '' and defined_tags != [['nan']] %}
           {% if defined_tags[0] %}
             defined_tags = {
             {% for tags in defined_tags  %}
@@ -92,13 +80,9 @@ cloud_guard_targets = {
                 {% endif %}
             {% endfor %}
             }
-          {% else %}
-            defined_tags = {}
-          {% endif %}
-          {% else %}
-            defined_tags = {}
-          {% endif %}
-                {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' %}
+            {% endif %}
+           {% endif %}
+                {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' and freeform_tags != [['nan']] %}
                     {% if freeform_tags[0] %}
             freeform_tags = {
                         {% for tags in freeform_tags %}
@@ -109,13 +93,9 @@ cloud_guard_targets = {
                             {% endif %}
                         {% endfor %}
                         }
-                    {% else %}
-            freeform_tags = {}
                     {% endif %}
-                {% else %}
-            freeform_tags = {}
                 {% endif %}
-            {#  ###Section for adding Defined and Freeform Tags ends here###  #}
+         {#  ###Section for adding Defined and Freeform Tags ends here###  #}
 
 
 

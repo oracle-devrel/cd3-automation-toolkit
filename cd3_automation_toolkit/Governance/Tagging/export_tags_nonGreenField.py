@@ -100,12 +100,12 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Export Tags on OCI to CD3")
     parser.add_argument("inputfile", help="path of CD3 excel file to export tag objects to")
     parser.add_argument("outdir", help="path to out directory containing script for TF import commands")
+    parser.add_argument("service_dir", help="subdirectory under region directory in case of separate out directory structure")
     parser.add_argument("--config", default=DEFAULT_LOCATION, help="Config file name")
-    parser.add_argument("--network-compartments", default=[], nargs='*', help="comma seperated Compartments for which to export Identity Objects", required=False)
+    parser.add_argument("--export-compartments", default=[], nargs='*', help="comma seperated Compartments for which to export Identity Objects", required=False)
     return parser.parse_args()
 
-
-def export_tags_nongreenfield(inputfile, outdir, _config, network_compartments):
+def export_tags_nongreenfield(inputfile, outdir, service_dir, _config, export_compartments,ct):
     global tf_import_cmd
     global values_for_column_tags
     global sheet_dict_tags
@@ -124,10 +124,11 @@ def export_tags_nongreenfield(inputfile, outdir, _config, network_compartments):
 
     # Read CD3
     df, values_for_column_tags = commonTools.read_cd3(cd3file, "Tags")
+    if ct==None:
+        ct = commonTools()
+        ct.get_subscribedregions(configFileName)
+        ct.get_network_compartment_ids(config['tenancy'],"root",configFileName)
 
-    ct = commonTools()
-    ct.get_subscribedregions(configFileName)
-    ct.get_network_compartment_ids(config['tenancy'],"root",configFileName)
     tag_default_comps_map = {}
     tag_name_id_map = {}
     defaultcomp_to_tagid_map = {}
@@ -140,9 +141,9 @@ def export_tags_nongreenfield(inputfile, outdir, _config, network_compartments):
     print("Tabs- Tags would be overwritten during export process!!!\n")
 
     # Create backups
-    if (os.path.exists(outdir + "/" + ct.home_region + "/tf_import_commands_tags_nonGF.sh")):
-               commonTools.backup_file(outdir + "/" + ct.home_region, "tf_import_tags", "tf_import_commands_tags_nonGF.sh")
-    importCommands[ct.home_region] = open(outdir + "/" + ct.home_region + "/tf_import_commands_tags_nonGF.sh", "w")
+    if (os.path.exists(outdir + "/" + ct.home_region + "/" + service_dir + "/tf_import_commands_tags_nonGF.sh")):
+               commonTools.backup_file(outdir + "/" + ct.home_region + "/" + service_dir, "tf_import_tags", "tf_import_commands_tags_nonGF.sh")
+    importCommands[ct.home_region] = open(outdir + "/" + ct.home_region + "/" + service_dir + "/tf_import_commands_tags_nonGF.sh", "w")
     importCommands[ct.home_region].write("#!/bin/bash")
     importCommands[ct.home_region].write("\n")
     importCommands[ct.home_region].write("terraform init")
@@ -155,7 +156,7 @@ def export_tags_nongreenfield(inputfile, outdir, _config, network_compartments):
     region = ct.home_region.lower()
     comp_ocid_done = []
 
-    for ntk_compartment_name in ct.ntk_compartment_ids:
+    for ntk_compartment_name in export_compartments:
         if ct.ntk_compartment_ids[ntk_compartment_name] not in comp_ocid_done:
             comp_ocid_done.append(ct.ntk_compartment_ids[ntk_compartment_name])
             tag_defaults = oci.pagination.list_call_get_all_results(identity.list_tag_defaults,
@@ -169,7 +170,7 @@ def export_tags_nongreenfield(inputfile, outdir, _config, network_compartments):
                     defaultcomp_to_tagid_map.update({ commonTools.check_tf_variable(str(tag_default.tag_definition_name).replace('\\','\\\\'))+"-"+commonTools.check_tf_variable(ntk_compartment_name) : tag_default.id })
 
     comp_ocid_done = []
-    for ntk_compartment_name in ct.ntk_compartment_ids:
+    for ntk_compartment_name in export_compartments:
         if ct.ntk_compartment_ids[ntk_compartment_name] not in comp_ocid_done:
             comp_ocid_done.append(ct.ntk_compartment_ids[ntk_compartment_name])
             tags = oci.pagination.list_call_get_all_results(identity.list_tag_namespaces,
@@ -219,10 +220,10 @@ def export_tags_nongreenfield(inputfile, outdir, _config, network_compartments):
     commonTools.write_to_cd3(values_for_column_tags, cd3file, "Tags")
     print("Tags exported to CD3\n")
 
-    script_file = f'{outdir}/{ct.home_region}/tf_import_commands_tags_nonGF.sh'
+    script_file = f'{outdir}/{ct.home_region}/{service_dir}/tf_import_commands_tags_nonGF.sh'
     with open(script_file, 'a') as importCommands[ct.home_region]:
         importCommands[ct.home_region].write('\n\nterraform plan\n')
 
 if __name__=="__main__":
     args = parse_args()
-    export_tags_nongreenfield(args.inputfile, args.outdir, args.config, args.network_compartments)
+    export_tags_nongreenfield(args.inputfile, args.outdir, args.service_dir, args.config, args.export_compartments)

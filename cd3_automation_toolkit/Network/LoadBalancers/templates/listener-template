@@ -33,38 +33,29 @@ listeners = {
 
             {% if backend_tcp_proxy_protocol_version and backend_tcp_proxy_protocol_version != '' %}
             backend_tcp_proxy_protocol_version = "{{ backend_tcp_proxy_protocol_version }}"
-            {% else %}
-            backend_tcp_proxy_protocol_version = ""
             {% endif %}
-            }]{% else %}
-        connection_configuration = []
+
+            }]
         {% endif %}
 
         hostname_names = [{{ lbr_hostnames }}]
 
         {% if path_route_set_tf_name and  path_route_set_tf_name != '' %}
         path_route_set_name = "{{ path_route_set_tf_name }}"
-        {% else %}
-        path_route_set_name = null
         {% endif %}
 
         rule_set_names = [{{ rule_set_names }}]
+
         {% if routing_policy_name and routing_policy_name != '' %}
         routing_policy_name = {{ routing_policy_name }}
-        {% else %}
-        routing_policy_name = ""
         {% endif %}
 
         {% if certificate_tf_name and certificate_tf_name != "" and certificate_tf_name != 'nan' %}
         certificate_name = "{{ lbr_tf_name }}_{{ certificate_tf_name }}"
-        {% else %}
-        certificate_name = ""
         {% endif %}
 
         {% if cipher_suite_name and cipher_suite_name != "" %}
         cipher_suite_name = "{{ cipher_suite_name }}"
-        {% else %}
-        cipher_suite_name = ""
         {% endif %}
 
         {% if usessl|lower == 'y' %}
@@ -72,37 +63,26 @@ listeners = {
 
             {% if certificate_ids and certificate_ids != "" %}
             certificate_ids  = ["{{ certificate_ids }}"]
-            {% else %}
-            certificate_ids = []
             {% endif %}
 
             {% if server_order_preference and server_order_preference != "" %}
             server_order_preference  = "{{ server_order_preference }}"
-            {% else %}
-            server_order_preference = ""
             {% endif %}
 
             {% if trusted_certificate_authority_ids and trusted_certificate_authority_ids != "" %}
             trusted_certificate_authority_ids  = ["{{ trusted_certificate_authority_ids }}"]
-            {% else %}
-            trusted_certificate_authority_ids = []
             {% endif %}
 
             {% if verify_peer_certificate %}
             verify_peer_certificate = {{  verify_peer_certificate }}
             verify_depth = {{ verify_depth }}
-            {% else %}
-            verify_peer_certificate = null
-            verify_depth = null
             {% endif %}
 
             {% if cipher_suite_name %}
             protocols = [ {{ ssl_protocols }} ]
-            {% else %}
-            protocols = []
             {% endif %}
-        }] {% else %}
-        ssl_configuration  = []
+
+        }]
             {% endif %}
     },
 {% endif %}

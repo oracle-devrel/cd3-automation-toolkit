@@ -10,6 +10,7 @@ import glob
 import argparse
 import logging
 import os
+import shutil
 import sys
 import time
 import configparser
@@ -69,6 +70,9 @@ def seek_info():
         if (region == '' or key_path == "\n"):
             region = "us-ashburn-1"
 
+        outdir_structure_file = config.get('Default', 'outdir_structure_file').strip()
+
+
         ssh_public_key = config.get('Default', 'ssh_public_key').strip()
 
     except Exception as e:
@@ -82,20 +86,42 @@ def seek_info():
     terraform_files = customer_tenancy_dir+"/terraform_files/"
     config_file_path = customer_tenancy_dir+"/"+prefix+"_config"
     auto_keys_dir = user_dir+"/tenancies/keys"
-    modules_dir = user_dir +"/oci_tools/cd3_automation_toolkit/user-scripts/terraform"
-    documentation_dir = user_dir +"/oci_tools/cd3_automation_toolkit/documentation"
+    toolkit_dir = user_dir +"/oci_tools/cd3_automation_toolkit"
+    modules_dir = toolkit_dir+"/user-scripts/terraform"
+    #documentation_dir = toolkit_dir+"/documentation"
     variables_example_file = modules_dir +"/variables_example.tf"
+    setupoci_props_toolkit_file_path =toolkit_dir + "/setUpOCI.properties"
     setupoci_props_file_path = customer_tenancy_dir + "/" + prefix + "_setUpOCI.properties"
+    _outdir_structure_file = ''
+    if (outdir_structure_file != '' and outdir_structure_file != "\n"):
+        if not os.path.isfile(outdir_structure_file):
+            print("Invalid outdir_structure_file. Please provide correct file path......Exiting !!")
+            exit(1)
+        else:
+            outdir_config = configparser.RawConfigParser()
+            outdir_config.read(outdir_structure_file)
+            for key, value in outdir_config.items("Default"):
+                if value == '':
+                    print("Out Directory is missing for one or more parameters, for eg. " + key)
+                    print("Please check " + outdir_structure_file)
+                    exit(1)
+            if not os.path.exists(customer_tenancy_dir):
+                os.makedirs(customer_tenancy_dir)
+            _outdir_structure_file = customer_tenancy_dir + "/" + prefix + "_outdir_structure_file"
+            shutil.copyfile(outdir_structure_file, _outdir_structure_file)
+        print("Using different directories for OCI services as per the input outdir_structure_file..........")
+    else:
+        if not os.path.exists(customer_tenancy_dir):
+            os.makedirs(customer_tenancy_dir)
+        print("Using single out directory for resources..........")
 
-    if not os.path.exists(customer_tenancy_dir):
-        os.makedirs(customer_tenancy_dir)
 
     # 1. Move the newly created PEM keys to /cd3user/tenancies/<customer_name>/
     files = glob.glob(auto_keys_dir+"/*")
 
     # If the private key is empty or if the private key is already present in the tenancy folder; initialize it to the default path;
-    if (key_path == '' or key_path == "\n"):
-        print("key_path field is empty in tenancyconfig.properties. Defaulting to " + user_dir + "/tenancies/keys/oci_api_private.pem")
+    if (key_path == '' or key_path == "\n") or (auto_keys_dir + "/oci_api_private.pem" in key_path):
+        print("key_path field is empty or default in tenancyconfig.properties. Using " + user_dir + "/tenancies/keys/oci_api_private.pem")
         if os.path.exists(auto_keys_dir):
             print("Copying the key files to " + customer_tenancy_dir)
             if files:
@@ -141,7 +167,7 @@ def seek_info():
         os.makedirs(terraform_files)
 
     # 2. Create config file
-    print("Creating the Tenancy specific config, terraform provider , variables and properties files.................")
+    print("Creating the Tenancy specific config.................")#, terraform provider , variables and properties files.................")
     file = open(config_file_path, "w")
     file.write("[DEFAULT]\n"
                "tenancy = "+tenancy+"\n"
@@ -151,11 +177,11 @@ def seek_info():
                "region = "+region+"\n")
     file.close()
 
-    # Fetch OCI_regions
+    # 2. Fetch OCI_regions
     cd3service = cd3Services()
     cd3service.fetch_regions(configFileName=config_file_path)
 
-    # 3. Fetch AD Names -
+    # 3. Fetch AD Names and write to config file
     print('Fetching AD names from tenancy and writing to config file if it does not exist.............')
     try:
         python_config = oci.config.from_file(file_location=config_file_path)
@@ -174,33 +200,31 @@ def seek_info():
     conf_file.close()
 
     ct = commonTools()
-    # 4. Generate setUpOCI.properties file
-    ct.get_subscribedregions(config_file_path)
 
-    setupoci_props_file = open(setupoci_props_file_path, "w")
-    setupoci_props_file.write("[Default]\n"
-                              "\n"
-                              "#Input variables required to run setUpOCI script\n"
-                              "\n"
-                              "#path to output directory where terraform file will be generated. eg /cd3user/tenancies/<customer_tenancy_name>/terraform_files when running from OCS VM\n"
-                              "outdir="+terraform_files+"\n"
-                              "\n"
-                              "#prefix for output terraform files eg client name\n"
-                              "prefix="+prefix+"\n"
-                              "\n"
-                              "#input config file for Python API communication with OCI eg example\config; Leave it blank if code is being executed from OCS Work VM\n"
-                              "config_file="+config_file_path+"\n"
-                              "\n"
-                              "#params required if input data format is cd3\n"
-                              "#path to cd3 excel eg example\CD3-Flat-template.xlsx\n"
-                              "cd3file=\n"
-                              "\n"
-                              "#Is it Non GreenField tenancy\n"
-                              "non_gf_tenancy=false \n""")
-    setupoci_props_file.close()
+    # 4. Generate setUpOCI.properties file
+    print("Creating the Tenancy specific setUpOCI.properties.................")
+    with open(setupoci_props_toolkit_file_path, 'r+') as setUpOci_file:
+        setupoci_props_toolkit_file_data = setUpOci_file.read().rstrip()
+
+    setupoci_props_toolkit_file_data = setupoci_props_toolkit_file_data.replace("outdir=", "outdir="+terraform_files)
+    setupoci_props_toolkit_file_data = setupoci_props_toolkit_file_data.replace("prefix=", "prefix="+prefix)
+    setupoci_props_toolkit_file_data = setupoci_props_toolkit_file_data.replace("config_file=", "config_file="+config_file_path)
+    setupoci_props_toolkit_file_data = setupoci_props_toolkit_file_data.replace("outdir_structure_file=", "outdir_structure_file="+_outdir_structure_file)
+
+    f = open(setupoci_props_file_path, "w+")
+    f.write(setupoci_props_toolkit_file_data)
+    f.close()
+
+    ct.get_subscribedregions(config_file_path)
+    home_region = ct.home_region
 
     # 5. Fetch Subscribed regions and create the TF related files
+    print("Creating the Tenancy specific region directories, terraform provider , variables files.................")
+
     for region in ct.all_regions:
+        if not os.path.exists(terraform_files+region):
+            os.mkdir(terraform_files+region)
+
         linux_image_id = ''
         windows_image_id = ''
 
@@ -220,14 +244,11 @@ def seek_info():
                 if ("Gen2-GPU" not in image.display_name):
                     windows_image_id= image.id
                     break
-        except:
-            print("!!! Authorization failed !!! Cannot fetch the list of images available for Windows and Oracle Linux to write to variables.tf file !!!\n"
-                  "Please make sure to have Read Access to the Tenancy at the minimum and try again !!!")
-            print("Exiting........!!!")
-            exit()
-
-        if not os.path.exists(terraform_files+region):
-            os.mkdir(terraform_files+region)
+        except Exception as e:
+            print(e)
+            print("!!! Could not fetch the list of images for Windows and Oracle Linux to write to variables_"+region+".tf file!!!\n"
+                  "Please make sure to have Read Access to the Tenancy at the minimum !!!")
+            print("\nContinuing without fetching Image OCIDs........!!!")
 
         # 6. Read variables.tf from examples folder and copy the variables as string
         with open(variables_example_file, 'r+') as var_eg_file:
@@ -252,11 +273,49 @@ def seek_info():
         # 7. Copy the terraform modules and variables file to outdir
         distutils.dir_util.copy_tree(modules_dir, terraform_files +"/" + region)
 
+        # Manage multiple outdir
+        if (outdir_structure_file == '' or outdir_structure_file == "\n"):
+            pass
+        else:
+            region_dir = terraform_files + "/" + region + "/"
+            for service, service_dir in outdir_config.items("Default"):
+                service = service.strip().lower()
+                service_dir = service_dir.strip()
+
+                # Keep the .tf file in default region directory if directory name is empty
+                if service_dir=="" or service_dir == "\n":
+                    continue
+                #if (service != 'identity' and service != 'tagging') or ((service == 'identity' or service == 'tagging') and region == home_region):
+                home_region_services = ['identity', 'tagging', 'budget', 'cloud-guard']
+                if (region != home_region) and (service in home_region_services):
+                    os.remove(region_dir + service + ".tf")
+
+                if (service not in home_region_services) or ((service in home_region_services) and region == home_region):
+                    region_service_dir = region_dir + service_dir
+                    if not os.path.exists(region_service_dir):
+                        os.mkdir(region_service_dir)
+                    with open(region_dir + service + ".tf", 'r+') as tf_file:
+                        module_data = tf_file.read().rstrip()
+                        module_data = module_data.replace("\"./modules", "\"../modules")
+
+                    f = open(region_service_dir + "/" + service + ".tf", "w+")
+                    f.write(module_data)
+                    f.close()
+                    os.remove(region_dir + service + ".tf")
+
+                    shutil.copyfile(region_dir + "variables_" + region + ".tf", region_service_dir + "/" + "variables_" + region + ".tf")
+                    shutil.copyfile(region_dir + "provider.tf", region_service_dir + "/" + "provider.tf")
+                    shutil.copyfile(region_dir + "oci-data.tf", region_service_dir + "/" + "oci-data.tf")
+
+            os.remove(terraform_files + "/" + region + "/" + "variables_" + region + ".tf")
+            os.remove(terraform_files + "/" + region + "/" + "provider.tf")
+            os.remove(terraform_files + "/" + region + "/" + "oci-data.tf")
+
         # 8. Remove the terraform example variable file from outdir
-        os.remove(terraform_files +"/" + region + "/variables_example.tf")
+        os.remove(terraform_files + "/" + region + "/variables_example.tf")
 
         # 9. Copy documentation folder to outdir
-        distutils.dir_util.copy_tree(documentation_dir+"/", customer_tenancy_dir+"/documentation")
+        #distutils.dir_util.copy_tree(documentation_dir+"/", customer_tenancy_dir+"/documentation")
 
     # Logging information
     logging.basicConfig(filename=customer_tenancy_dir+'/cmds.log', format='%(message)s', filemode='w', level=logging.INFO)

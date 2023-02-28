@@ -10,9 +10,7 @@
 import argparse
 import sys
 import oci
-import re
 import json
-from oci.identity import IdentityClient
 from oci.ons import NotificationControlPlaneClient
 from oci.events import EventsClient
 from oci.ons import NotificationDataPlaneClient
@@ -162,12 +160,15 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Export Notifications on OCI to CD3")
     parser.add_argument("inputfile", help="path of CD3 excel file to export events and notifications objects to")
     parser.add_argument("outdir", help="path to out directory containing script for TF import commands")
-    parser.add_argument("--network-compartments", nargs='*', help="comma seperated Compartments for which to export Identity Objects", required=False)
+    parser.add_argument('service_dir', help='Structured out directory for creation of TF files')
+    parser.add_argument("--export-compartments", nargs='*', help="comma seperated Compartments for which to export Identity Objects", required=False)
     parser.add_argument("--config", default=DEFAULT_LOCATION, help="Config file name" )
+    parser.add_argument("--export-regions", nargs='*', help="comma seperated Regions for which to export Networking Objects",
+                        required=False)
     return parser.parse_args()
 
 
-def export_events(inputfile, outdir, network_compartments=[], _config=DEFAULT_LOCATION):
+def export_events(inputfile, outdir, service_dir, ct,export_compartments=[], export_regions=[], _config=DEFAULT_LOCATION):
     global rows
     global tf_import_cmd
     global values_for_column_events
@@ -190,15 +191,13 @@ def export_events(inputfile, outdir, network_compartments=[], _config=DEFAULT_LO
     # Read CD3
     df, values_for_column_events = commonTools.read_cd3(cd3file, sheetName)
 
-    ct = commonTools()
-    ct.get_subscribedregions(configFileName)
-    ct.get_network_compartment_ids(config['tenancy'],"root",configFileName)
+    if ct==None:
+        ct = commonTools()
+        ct.get_subscribedregions(configFileName)
+        ct.get_network_compartment_ids(config['tenancy'],"root",configFileName)
 
     # Get dict for columns from Excel_Columns
     sheet_dict_events = ct.sheet_dict[sheetName]
-
-    # Check Compartments
-    comp_list_fetch = commonTools.get_comp_list_for_export(network_compartments, ct.ntk_compartment_ids)
 
     print("\nCD3 excel file should not be opened during export process!!!")
     print("Tabs- Events would be overwritten during export process!!!\n")
@@ -207,10 +206,10 @@ def export_events(inputfile, outdir, network_compartments=[], _config=DEFAULT_LO
     resource = 'tf_import_' + sheetName.lower()
     file_name = 'tf_import_commands_' + sheetName.lower() + '_nonGF.sh'
 
-    for reg in ct.all_regions:
-        script_file = f'{outdir}/{reg}/'+file_name
+    for reg in export_regions:
+        script_file = f'{outdir}/{reg}/{service_dir}/' + file_name
         if (os.path.exists(script_file)):
-                commonTools.backup_file(outdir + "/" + reg, resource, file_name)
+                commonTools.backup_file(outdir + "/" + reg +"/" + service_dir, resource, file_name)
         importCommands[reg] = open(script_file, "w")
         importCommands[reg].write("#!/bin/bash")
         importCommands[reg].write("\n")
@@ -218,7 +217,7 @@ def export_events(inputfile, outdir, network_compartments=[], _config=DEFAULT_LO
 
     # Fetch Events
     print("\nFetching Events...")
-    for reg in ct.all_regions:
+    for reg in export_regions:
         importCommands[reg].write("\n\n######### Writing import for Events #########\n\n")
         config.__setitem__("region", ct.region_dict[reg])
         # comp_ocid_done = []
@@ -226,7 +225,7 @@ def export_events(inputfile, outdir, network_compartments=[], _config=DEFAULT_LO
         fun = FunctionsManagementClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
         evt = EventsClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
         region = reg.capitalize()
-        for ntk_compartment_name in comp_list_fetch:
+        for ntk_compartment_name in export_compartments:
             evts = oci.pagination.list_call_get_all_results(evt.list_rules, compartment_id=ct.ntk_compartment_ids[
                 ntk_compartment_name], lifecycle_state="ACTIVE")
             for event in evts.data:
@@ -241,11 +240,11 @@ def export_events(inputfile, outdir, network_compartments=[], _config=DEFAULT_LO
     commonTools.write_to_cd3(values_for_column_events, cd3file, sheetName)
     print("Events exported to CD3\n")
 
-    for reg in ct.all_regions:
+    for reg in export_regions:
         with open(script_file, 'a') as importCommands[reg]:
             importCommands[reg].write('\n\nterraform plan\n')
 
-def export_notifications(inputfile, outdir, network_compartments=[], _config=DEFAULT_LOCATION):
+def export_notifications(inputfile, outdir, service_dir, ct, export_compartments=[], _config=DEFAULT_LOCATION,export_regions=[]):
     global rows
     global tf_import_cmd
     global values_for_column_events
@@ -268,16 +267,13 @@ def export_notifications(inputfile, outdir, network_compartments=[], _config=DEF
     # Read CD3
     df, values_for_column_notifications = commonTools.read_cd3(cd3file, sheetName)
 
-    ct = commonTools()
-    ct.get_subscribedregions(configFileName)
-    ct.get_network_compartment_ids(config['tenancy'],"root",configFileName)
+    if ct==None:
+        ct = commonTools()
+        ct.get_subscribedregions(configFileName)
+        ct.get_network_compartment_ids(config['tenancy'],"root",configFileName)
 
     # Get dict for columns from Excel_Columns
     sheet_dict_notifications = ct.sheet_dict[sheetName]
-
-
-    # Check Compartments
-    comp_list_fetch = commonTools.get_comp_list_for_export(network_compartments, ct.ntk_compartment_ids)
 
     print("\nCD3 excel file should not be opened during export process!!!")
     print("Tabs- Notifications would be overwritten during export process!!!\n")
@@ -286,10 +282,10 @@ def export_notifications(inputfile, outdir, network_compartments=[], _config=DEF
     resource = 'tf_import_' + sheetName.lower()
     file_name = 'tf_import_commands_' + sheetName.lower() + '_nonGF.sh'
 
-    for reg in ct.all_regions:
-        script_file = f'{outdir}/{reg}/'+file_name
+    for reg in export_regions:
+        script_file = f'{outdir}/{reg}/{service_dir}/' + file_name
         if (os.path.exists(script_file)):
-                commonTools.backup_file(outdir + "/" + reg, resource, file_name)
+                commonTools.backup_file(outdir + "/" + reg +"/" + service_dir, resource, file_name)
         importCommands[reg] = open(script_file, "w")
         importCommands[reg].write("#!/bin/bash")
         importCommands[reg].write("\n")
@@ -297,15 +293,14 @@ def export_notifications(inputfile, outdir, network_compartments=[], _config=DEF
 
     # Fetch Notifications & Subscriptions
     print("\nFetching Notifications - Topics & Subscriptions...")
-    for reg in ct.all_regions:
-
+    for reg in export_regions:
         importCommands[reg].write("\n\n######### Writing import for Notifications #########\n\n")
         config.__setitem__("region", ct.region_dict[reg])
         ncpc = NotificationControlPlaneClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
         ndpc = NotificationDataPlaneClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
         fun = FunctionsManagementClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
         region = reg.capitalize()
-        for ntk_compartment_name in comp_list_fetch:
+        for ntk_compartment_name in export_compartments:
                 topics = oci.pagination.list_call_get_all_results(ncpc.list_topics,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name])
 
                 #sbpns = oci.pagination.list_call_get_all_results(ndpc.list_subscriptions,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name])
@@ -342,11 +337,11 @@ def export_notifications(inputfile, outdir, network_compartments=[], _config=DEF
     commonTools.write_to_cd3(values_for_column_notifications, cd3file, sheetName)
     print("Notifications exported to CD3\n")
 
-    for reg in ct.all_regions:
+    for reg in export_regions:
         with open(script_file, 'a') as importCommands[reg]:
             importCommands[reg].write('\n\nterraform plan\n')
 
 if __name__=="__main__":
     args = parse_args()
-    export_notifications(args.inputfile, args.outdir, args.network_compartments, args.config)
-    export_events(args.inputfile, args.outdir, args.network_compartments, args.config)
+    export_notifications(args.inputfile, args.outdir, args.service_dir, args.export_compartments, args.config,args.export_regions)
+    export_events(args.inputfile, args.outdir, args.service_dir, args.export_compartments, args.config,args.export_regions)

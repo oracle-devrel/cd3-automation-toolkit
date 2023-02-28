@@ -9,7 +9,7 @@ resource "oci_load_balancer_rule_set" "rule_set" {
 
   # Access Control Rules
   dynamic "items" {
-    for_each = var.rule_sets[var.key_name].access_control_rules != [] ? var.rule_sets[var.key_name].access_control_rules : []
+    for_each = var.rule_sets[var.key_name].access_control_rules != null ? var.rule_sets[var.key_name].access_control_rules : []
     content {
       #Required
       action = items.value.action
@@ -24,31 +24,31 @@ resource "oci_load_balancer_rule_set" "rule_set" {
 
   # Access Control Method Rules
   dynamic "items" {
-    for_each = var.rule_sets[var.key_name].access_control_method_rules != [] ? var.rule_sets[var.key_name].access_control_method_rules : []
+    for_each = var.rule_sets[var.key_name].access_control_method_rules != null ? var.rule_sets[var.key_name].access_control_method_rules : []
     content {
       #Required
       action = items.value.action
 
       #Optional
       allowed_methods = items.value.allowed_methods
-      status_code     = items.value.status_code != "" ? items.value.status_code : "405" #Default value as per hashicorp terraform
+      status_code     = items.value.status_code
     }
   }
 
   # HTTP Header Rules
   dynamic "items" {
-    for_each = var.rule_sets[var.key_name].http_header_rules != [] ? var.rule_sets[var.key_name].http_header_rules : []
+    for_each = var.rule_sets[var.key_name].http_header_rules != null ? var.rule_sets[var.key_name].http_header_rules : []
     content {
       #Required
       action                         = items.value.action
       are_invalid_characters_allowed = items.value.are_invalid_characters_allowed
-      http_large_header_size_in_kb   = items.value.http_large_header_size_in_kb != "" ? items.value.http_large_header_size_in_kb : 8
+      http_large_header_size_in_kb   = items.value.http_large_header_size_in_kb
     }
   }
 
   # URI Redirect Rules
   dynamic "items" {
-    for_each = var.rule_sets[var.key_name].uri_redirect_rules != [] ? var.rule_sets[var.key_name].uri_redirect_rules : []
+    for_each = var.rule_sets[var.key_name].uri_redirect_rules != null ? var.rule_sets[var.key_name].uri_redirect_rules : []
     content {
       #Required
       action = items.value.action
@@ -74,7 +74,7 @@ resource "oci_load_balancer_rule_set" "rule_set" {
 
   # Request Response Header Rules
   dynamic "items" {
-    for_each = var.rule_sets[var.key_name].request_response_header_rules != [] ? var.rule_sets[var.key_name].request_response_header_rules : []
+    for_each = var.rule_sets[var.key_name].request_response_header_rules != null ? var.rule_sets[var.key_name].request_response_header_rules : []
     content {
       #Required
       action = items.value.action

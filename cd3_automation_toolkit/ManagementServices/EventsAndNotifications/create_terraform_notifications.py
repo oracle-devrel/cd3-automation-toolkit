@@ -27,13 +27,14 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Creates TF files for Notifications")
     parser.add_argument('inputfile', help='Full Path of input CD3 excel file')
     parser.add_argument('outdir', help='Output directory for creation of TF files')
+    parser.add_argument('service_dir', help='Structured out directory for creation of TF files')
     parser.add_argument('prefix', help='TF files prefix')
     parser.add_argument('--config', default=DEFAULT_LOCATION, help='Config file name')
     return parser.parse_argss()
 
 
 #If input is cd3 file
-def create_terraform_notifications(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
+def create_terraform_notifications(inputfile, outdir, service_dir, prefix, config=DEFAULT_LOCATION):
     filename = inputfile
     outdir = outdir
     sheetName="Notifications"
@@ -78,7 +79,7 @@ def create_terraform_notifications(inputfile, outdir, prefix, config=DEFAULT_LOC
 
         # Take backup of files
         resource = sheetName.lower()
-        srcdir = outdir + "/" + eachregion + "/"
+        srcdir = outdir + "/" + eachregion + "/" + service_dir + "/"
         commonTools.backup_file(srcdir, resource, topics_auto_tfvars_filename)
         commonTools.backup_file(srcdir, resource, subs_auto_tfvars_filename)
 
@@ -176,7 +177,7 @@ def create_terraform_notifications(inputfile, outdir, prefix, config=DEFAULT_LOC
 
     # Write to output
     for reg in ct.all_regions:
-        reg_out_dir = outdir + "/" + reg
+        reg_out_dir = outdir + "/" + reg + "/" + service_dir
         if (tfStr[reg] != ''):
             outfile[reg] = reg_out_dir + "/" + prefix + topics_auto_tfvars_filename
             srcStr = "##Add New Topics for "+str(reg).lower()+" here##"
@@ -201,4 +202,4 @@ def create_terraform_notifications(inputfile, outdir, prefix, config=DEFAULT_LOC
 if __name__ == '__main__':
     # Execution of the code begins here
     args = parse_args()
-    create_terraform_notifications(args.inputfile, args.outdir, args.prefix, args.config)
+    create_terraform_notifications(args.inputfile, args.outdir, args.service_dir, args.prefix, args.config)
