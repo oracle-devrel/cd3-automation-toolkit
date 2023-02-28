@@ -70,7 +70,8 @@ Initialise your environment to use the Automation Toolkit.
 | --------------- | ------------ | --------------- |
 | Config File | ```/cd3user/tenancies/<customer_name>/<customer_name>_config``` | Customer specific Config file is required for OCI API calls. |
 | setUpOCI.properties | ```/cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties``` | Customer Specific properties files will be created. |
-| Region based directories | ```/rcd3user/tenancies/<customer_name>/terraform_files``` | Tenancy's subscribed regions based directories for the generation of terraform files.<br>Each region directory will contain individual directory for each service based on the parameter 'outdir_structure_file' |
+| outdir_structure_file | ```/cd3user/tenancies/<customer_name>/<customer_name>_outdir_structure_file``` | Customer Specific properties file for outdir structure |
+| Region based directories | ```/cd3user/tenancies/<customer_name>/terraform_files``` | Tenancy's subscribed regions based directories for the generation of terraform files.<br>Each region directory will contain individual directory for each service based on the parameter 'outdir_structure_file' |
 | Variables File,Provider File, Root and Sub modules | ```/cd3user/tenancies/<customer_name>/terraform_files/<region>``` | Required for terraform to work. |
 | Public and Private Key Pair | Copied from ```/cd3user/tenancies/keys/```<br>to<br>```/cd3user/tenancies/<customer_name>/``` | API Keys that were previously generated are moved to customer specific out directory locations for easy access. |
 | A log file with the commands to execute | ```/cd3user/tenancies/<customer_name>/cmds.log``` | This file contains a copy of the Commands to execute section of the console output. |
