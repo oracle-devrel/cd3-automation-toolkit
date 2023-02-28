@@ -39,7 +39,7 @@ It reads input data in the form of CD3 Excel sheet and generates the terraform f
 </kbd>
 <br>
 
-#### OCI Services Currently Supported by CD3
+#### OCI Services Currently Supported by Automation Toolkit
 
 | OCI Services | Details |
 | --------- | ----------- |
