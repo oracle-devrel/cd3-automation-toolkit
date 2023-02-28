@@ -60,7 +60,8 @@ Initialise your environment to use the Automation Toolkit.
 <br>
 
 → Example execution of the script:
-<br><img src = "https://user-images.githubusercontent.com/103508105/214566973-ba3446a7-c460-4028-8c45-c7b4e73d3b3c.png" width=70% height=70%>
+<br> ![image](https://user-images.githubusercontent.com/103508105/221942089-5c52b221-96f1-4a73-9a10-46159ae4a75c.png)
+
 
 ## Appendix
 → Files created on successful execution of above steps - Description of the Generated files:
