@@ -34,12 +34,12 @@ Make sure to use/modify the properties file at _/cd3user/tenancies /<customer\_n
 #Input variables required to run setUpOCI script
 
 #path to output directory where terraform file will be generated. eg /cd3user/tenancies/<customer_name>/terraform_files
-outdir=/cd3user/tenancies/<customer_name>/terraform_files
+outdir=
 
-#prefix for output terraform files eg customer name like demotenancy
+#prefix for output terraform files eg <customer_name> like demotenancy
 prefix=
 
-#input config file for Python API communication with OCI eg example\config;
+#input config file for Python API communication with OCI eg /cd3user/tenancies/<customer_name>/<customer_name>_config;
 config_file=
 
 #path to cd3 excel eg /cd3user/tenancies/<customer_name>\CD3-Customer.xlsx
@@ -47,6 +47,9 @@ cd3file=
 
 #Is it Non GreenField tenancy
 non_gf_tenancy=false
+
+# Leave it blank if you want single outdir or specify outdir_structure_file.properties containing directory structure for OCI services.
+outdir_structure_file=
 ```
 
 | Variable | Description | Example |
