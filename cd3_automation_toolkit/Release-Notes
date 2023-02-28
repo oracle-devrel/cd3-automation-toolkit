@@ -355,6 +355,6 @@ CD3 Automation Toolkit Tag v10.1
 3. Upgrade Service Connectors to support Monitoring as Source/Target and Functions as Target.
 4. Added Functionality for export of ADBs.
 5. Terraform code update to make Null values as optional in tfvars for all components.
-5. Performance tuning has been done wrt Fetch Compartments during Non-Greenfield workflow.The script will be exceuted
+6. Performance tuning has been done wrt Fetch Compartments during Non-Greenfield workflow.The script will be exceuted
    only once when you select multiple export options simultaneously.
-6. Bug fixes wrt Networking, Excel sheet templates etc
+7. Bug fixes wrt Networking, Excel sheet templates etc
