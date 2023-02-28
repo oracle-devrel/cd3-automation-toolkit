@@ -54,11 +54,12 @@ outdir_structure_file=
 
 | Variable | Description | Example |
 |---|---|---|
-|outdir|Path to output directory where terraform files will be generated| /cd3user/tenancies/<customer\_name> /terraform\_files|
+|outdir|Path to output directory where terraform files will be generated| /cd3user/tenancies/<customer\_name>/terraform\_files|
 |prefix|Prefix for output terraform files|\<customer\_name>|
 |config\_file|Python config file|/cd3user/tenancies/<customer\_name>/config|
 | cd3file |Path to the CD3 input file |/cd3user/tenancies/<customer\_name>/testCD3. xlsx |
 |non\_gf\_tenancy |Specify if its a Non Green field tenancy or not (**True** or **False**)| False|
+|outdir\_structure\_file |Parameter specifying single outdir or different for different services|Blank or <customer\_name>_gc2_outdir_structure_file|
 
 <blockquote>For more information on usage of non_gf_tenancy flag, refer to <a href = /cd3_automation_toolkit/documentation/user_guide/Workflows.md> Automation Toolkit Workflows</a></blockquote>
 
