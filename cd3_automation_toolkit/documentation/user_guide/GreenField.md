@@ -10,8 +10,7 @@ Below are the steps that will help to configure the Automation Tool Kit to suppo
 <br>Fill the CD3 Excel with appropriate values specific to the client and put at the appropriate location.
 <br>Modify/Review [setUpOCI.properties](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md#setupociproperties) with **non_gf_tenancy** set to **false** as shown below:
 
-<img src = "https://user-images.githubusercontent.com/103508105/214644389-0539165c-4253-451b-b035-4ae3f5a80a59.png" width=75% height=75%>
-
+![image](https://user-images.githubusercontent.com/103508105/221797142-c780dbd6-883f-450f-9929-dce81d32079e.png)
 
 
 **Step 3**:
