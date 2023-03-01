@@ -23,6 +23,7 @@ data "oci_core_vcns" "oci_vcns" {
 module "instances" {
   source                 = "./modules/compute/instance"
   for_each               = var.instances != null ? var.instances : {}
+  # depends_on           = [module.dedicated-hosts]   # Uncomment to create DVH and Instances together
   availability_domain    = each.value.availability_domain != "" && each.value.availability_domain != null ? data.oci_identity_availability_domains.availability_domains.availability_domains[each.value.availability_domain].name : ""
   compartment_id         = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
   network_compartment_id = each.value.network_compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.network_compartment_id)) > 0 ? each.value.network_compartment_id : var.compartment_ocids[each.value.network_compartment_id]) : null

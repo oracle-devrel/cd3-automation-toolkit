@@ -245,12 +245,6 @@ def create_terraform_lbr_hostname_certs(inputfile, outdir, service_dir, prefix, 
                 columnvalue = commonTools.check_tf_variable(columnvalue)
                 tempdict = {'compartment_tf_name': columnvalue}
 
-            if columnname == "Reserved IP (Y|N|OCID)":
-                columnname = "reserved_ips_id"
-                if columnvalue != "":
-                    if "," in columnvalue:
-                        columnvalue = columnvalue.split(",")
-
             if columnname == "LBR Name":
                 if columnvalue != '':
                     lbr_tf_name = commonTools.check_tf_variable(columnvalue)

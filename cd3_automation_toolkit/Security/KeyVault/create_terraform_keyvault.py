@@ -25,13 +25,17 @@ def parse_args():
     # Read the arguments
     parser = argparse.ArgumentParser(description="Create Key/Vault terraform file")
     parser.add_argument('outdir', help='Output directory for creation of TF files')
+    parser.add_argument("service_dir",
+                        help="subdirectory under region directory in case of separate out directory structure")
+    parser.add_argument("service_dir_iam",
+                        help="subdirectory under region directory in case of separate out directory structure for identity")
     parser.add_argument('prefix', help='TF files prefix')
     parser.add_argument("region_name", help="region name")
     parser.add_argument("comp_name", help="compartment name")
     parser.add_argument("--configFileName", help="Config file name", required=False)
     return parser.parse_args()
 
-def create_cis_keyvault(outdir, prefix, region_name, comp_name, config=DEFAULT_LOCATION):
+def create_cis_keyvault(outdir, service_dir, service_dir_iam, prefix, region_name, comp_name, config=DEFAULT_LOCATION):
 
     # Declare variables
     configFileName = config
@@ -69,6 +73,7 @@ def create_cis_keyvault(outdir, prefix, region_name, comp_name, config=DEFAULT_L
     tempStr['vault_name'] = vault_name
     tempStr['vault_tf_name'] = vault_name
     tempStr['management_endpoint'] = vault_name
+    tempStr['algorithm'] = "AES"
 
     vaultStr = vaultStr + vault_template.render(tempStr)
     keyStr= keyStr + key_template.render(tempStr)
@@ -88,11 +93,11 @@ def create_cis_keyvault(outdir, prefix, region_name, comp_name, config=DEFAULT_L
 
     if finalstring != "":
         resource = "keyvault"
-        srcdir = outdir + "/" + region_name + "/"
+        srcdir = outdir + "/" + region_name + "/" + service_dir +"/"
         commonTools.backup_file(srcdir, resource, auto_tfvars_filename)
 
         # Write to TF file
-        outfile = outdir + "/" + region_name + "/" + auto_tfvars_filename
+        outfile = outdir + "/" + region_name + "/" + service_dir + "/" + auto_tfvars_filename
         oname = open(outfile, "w+")
         print(outfile + " containing TF for Key/Vault has been created for region "+region_name)
         oname.write(finalstring)
@@ -101,4 +106,4 @@ def create_cis_keyvault(outdir, prefix, region_name, comp_name, config=DEFAULT_L
 if __name__ == '__main__':
     # Execution of the code begins here
     args = parse_args()
-    create_cis_keyvault(args.outdir, args.prefix, args.config, args.region_name, args.comp_name)
+    create_cis_keyvault(args.outdir, args.service_dir, args.service_dir_iam, args.prefix, args.config, args.region_name, args.comp_name)

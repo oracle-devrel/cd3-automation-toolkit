@@ -812,13 +812,20 @@ def create_cis_features():
     execute_options(options, outdir, prefix, config)
 
 def create_cis_keyvault_oss_log(*args,**kwargs):
+    if len(outdir_struct) != 0:
+        service_dir = outdir_struct['kms']
+        service_dir_iam = outdir_struct['identity']
+    else:
+        service_dir = ""
+        service_dir_iam= ""
+
     region_name = input("Enter region name eg ashburn where you want to create OSS Bucket and Key/Vault: ")
     comp_name = input("Enter name of compartment as it appears in OCI Console: ")
 
     options = [Option(None, Security.create_cis_keyvault, 'Creating KeyVault'),
                Option(None, Storage.create_cis_oss, 'Creating Object Storage Bucket'),
                Option(None, ManagementServices.enable_cis_oss_logging, 'Enabling Logging for write events to bucket')]
-    execute_options(options, outdir, prefix,region_name, comp_name, config=config)
+    execute_options(options, outdir, service_dir, service_dir_iam,prefix,region_name, comp_name, config=config)
 
 def create_cis_budget(*args,**kwargs):
     if len(outdir_struct) != 0:

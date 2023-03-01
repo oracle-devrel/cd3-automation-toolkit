@@ -58,7 +58,7 @@ module "load-balancers" {
   network_security_group_ids = each.value.nsg_ids
   key_name                   = each.key
   load_balancers             = var.load_balancers
-  reserved_ips_id            = lower(each.value.reserved_ips_id) != "n" && each.value.reserved_ips_id != null ? (length(regexall("ocid1.publicip.oc1*", each.value.reserved_ips_id)) > 0 ? [each.value.reserved_ips_id] : [merge(module.lbr-reserved-ips.*...)[join("-", [each.key, "reserved", "ip"])].reserved_ip_tf_id]) : []
+  reserved_ips_id            = each.value.reserved_ips_id != null ? (lower(each.value.reserved_ips_id) != "n" ? (length(regexall("ocid1.publicip.oc1*", each.value.reserved_ips_id)) > 0 ? [each.value.reserved_ips_id] : [merge(module.lbr-reserved-ips.*...)[join("-", [each.key, "reserved", "ip"])].reserved_ip_tf_id]) : []) : []
 }
 
 /*
