@@ -915,17 +915,16 @@ def execute(command):
 parser = argparse.ArgumentParser(description='Sets Up OCI via TF')
 parser.add_argument('propsfile', help="Full Path of properties file containing input variables. eg setUpOCI.properties")
 args = parser.parse_args()
-config = configparser.RawConfigParser()
-config.read(args.propsfile)
+config1 = configparser.RawConfigParser()
+config1.read(args.propsfile)
 
 #Read Config file Variables
 try:
-    non_gf_tenancy = config.get('Default', 'non_gf_tenancy').strip().lower() == 'true'
-    inputfile = config.get('Default','cd3file').strip()
-    outdir = config.get('Default', 'outdir').strip()
-    prefix = config.get('Default', 'prefix').strip()
-    outdir_structure = config.get('Default', 'outdir_structure_file').strip()
-    config = config.get('Default', 'config_file').strip() or DEFAULT_LOCATION
+    non_gf_tenancy = config1.get('Default', 'non_gf_tenancy').strip().lower() == 'true'
+    inputfile = config1.get('Default','cd3file').strip()
+    outdir = config1.get('Default', 'outdir').strip()
+    prefix = config1.get('Default', 'prefix').strip()
+    config = config1.get('Default', 'config_file').strip() or DEFAULT_LOCATION
 
     if not outdir:
         exit_menu('input outdir location cannot be left blank. Exiting... ')
@@ -936,8 +935,12 @@ try:
     elif '.xls' not in inputfile:
         exit_menu('valid formats for input cd3file are either .xls or .xlsx')
 except Exception as e:
-    #exit_menu(e + "Check if input properties exist and try again..exiting...")
     exit_menu(str(e) + ". Check input properties file and try again. Exiting... ")
+
+try:
+    outdir_structure = config1.get('Default', 'outdir_structure_file').strip()
+except Exception as e:
+    outdir_structure = ''
 
 Option = namedtuple('Option', ['name', 'callback', 'text'])
 extra = ''
