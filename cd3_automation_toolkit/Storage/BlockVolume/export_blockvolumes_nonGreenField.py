@@ -212,7 +212,7 @@ def export_blockvolumes(inputfile, _outdir, service_dir, _config, ct, export_com
 
     # writing data
     for reg in export_regions:
-        script_file = f'{outdir}/{reg}/' + file_name
+        script_file = f'{outdir}/{reg}/{service_dir}/' + file_name
         with open(script_file, 'a') as importCommands[reg]:
             importCommands[reg].write('\n\nterraform plan\n')
 

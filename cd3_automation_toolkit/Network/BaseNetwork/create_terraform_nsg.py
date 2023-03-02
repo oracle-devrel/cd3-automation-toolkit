@@ -206,7 +206,8 @@ def create_terraform_nsg(inputfile, outdir, service_dir, prefix, non_gf_tenancy,
         for columnname in dfcolumns:
 
             # Column value
-            columnvalue = str(df[columnname][i]).strip()
+            if (columnname != 'Rule Description'):
+                columnvalue = str(df[columnname][i]).strip()
 
             # Check for boolean/null in column values
             columnvalue = commonTools.check_columnvalue(columnvalue)

@@ -34,7 +34,7 @@ def fetch_compartments(outdir, outdir_struct, config=DEFAULT_LOCATION):
     home_region_services = ['identity', 'tagging', 'budget', 'cloud-guard']
     for region in ct.all_regions:
         # Fetch variables file inside region directories - single outdir
-        if outdir_struct == '':
+        if len(outdir_struct) == 0:
             file = f'{outdir}/{region}/variables_{region}.tf'
             var_files[region]=file
             try:

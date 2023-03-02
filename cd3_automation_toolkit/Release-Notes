@@ -354,7 +354,8 @@ CD3 Automation Toolkit Tag v10.1
    Non-Greenfield workflow.
 3. Upgrade Service Connectors to support Monitoring as Source/Target and Functions as Target.
 4. Added Functionality for export of ADBs.
-5. Terraform code update to make Null values as optional in tfvars for all components.
-6. Performance tuning has been done wrt Fetch Compartments during Non-Greenfield workflow.The script will be exceuted
+5. Python code re do for creation of NSGs - Supports duplicate NSG names across different regions.
+6. Terraform code update to make Null values as optional in tfvars for all components.
+7. Performance tuning has been done wrt Fetch Compartments during Non-Greenfield workflow.The script will be exceuted
    only once when you select multiple export options simultaneously.
-7. Bug fixes wrt Networking, Excel sheet templates etc
+8. Bug fixes wrt Networking, Tagging, Excel sheet templates etc

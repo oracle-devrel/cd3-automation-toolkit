@@ -66,7 +66,7 @@ def common_headers(region, headers, values_for_column, eachlbr, excel_header_map
                 pass
     return values_for_column
 
-def print_certs(obj, reg, outdir):
+def print_certs(obj, reg, outdir,service_dir):
 
     cname = ""
     pname = ""
@@ -77,13 +77,13 @@ def print_certs(obj, reg, outdir):
     #print(obj.certificate_name, outdir, reg)
 
     if str(ca_certificate).lower() != "none":
-        cname = outdir + "/" + str(reg).lower() + "/"+ str(obj.certificate_name) + "-ca-certificate.cert"
+        cname = outdir + "/"  + str(reg).lower() + "/"+ service_dir +"/" + str(obj.certificate_name) + "-ca-certificate.cert"
         ca_cert = open(cname, "w")
         ca_cert.write(ca_certificate)
         ca_cert.close()
 
     if str(public_certificate).lower() != "none":
-        pname = outdir + "/" + str(reg).lower() + "/"+ str(obj.certificate_name) + "-public_certificate.cert"
+        pname = outdir + "/"  + str(reg).lower() + "/"+ service_dir +"/" +  str(obj.certificate_name) + "-public_certificate.cert"
         public_cert = open(pname, "w")
         public_cert.write(public_certificate)
         public_cert.close()
@@ -137,7 +137,7 @@ def insert_values(values_for_column, oci_objs, sheet_dict, region,comp_name, dis
                 values_for_column = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict, values_for_column)
 
 
-def print_lbr_hostname_certs(region, ct, values_for_column_lhc, lbr, LBRs, lbr_compartment_name, network):
+def print_lbr_hostname_certs(region, ct, values_for_column_lhc, lbr, LBRs, lbr_compartment_name, network,service_dir):
 
     for eachlbr in LBRs.data:
 
@@ -257,7 +257,7 @@ def print_lbr_hostname_certs(region, ct, values_for_column_lhc, lbr, LBRs, lbr_c
 
             for certificates, details in certs.items():
                 # Get cert info
-                cert_name,ca_cert,public_cert = print_certs(details,region,outdir)
+                cert_name,ca_cert,public_cert = print_certs(details,region,outdir,service_dir)
 
                 cert_ct = cert_ct + 1
                 if (cert_ct == 1):
@@ -295,7 +295,7 @@ def print_lbr_hostname_certs(region, ct, values_for_column_lhc, lbr, LBRs, lbr_c
                         for cert, cert_details in certs.items():
                             if i == j:
                                 #Insert values of certs and cipher till they are equal
-                                cert_name, ca_cert, public_cert = print_certs(cert_details, region, outdir)
+                                cert_name, ca_cert, public_cert = print_certs(cert_details, region, outdir,service_dir)
 
                                 if i != 0:
                                     insert_values(values_for_column_lhc, oci_objs, sheet_dict_lhc, '','','',
@@ -320,7 +320,7 @@ def print_lbr_hostname_certs(region, ct, values_for_column_lhc, lbr, LBRs, lbr_c
                 else:
                     for cert, cert_details in certs.items():
                         # Fetch Cert values
-                        cert_name, ca_cert, public_cert = print_certs(cert_details, region, outdir)
+                        cert_name, ca_cert, public_cert = print_certs(cert_details, region, outdir,service_dir)
                         j = 0
                         for cipher, cipher_details in ciphers.items():
                             cipher_suites = ''
@@ -363,7 +363,7 @@ def print_lbr_hostname_certs(region, ct, values_for_column_lhc, lbr, LBRs, lbr_c
                         j = 0
                         for cert, cert_details in certs.items():
                             if i == j:
-                                cert_name, ca_cert, public_cert = print_certs(cert_details, region, outdir)
+                                cert_name, ca_cert, public_cert = print_certs(cert_details, region, outdir,service_dir)
                                 if i != 0:
                                     insert_values(values_for_column_lhc, oci_objs, sheet_dict_lhc, '','','','',
                                                   '', '', '', '',
@@ -878,7 +878,7 @@ def export_lbr(inputfile, _outdir, service_dir, export_compartments, export_regi
                 LBRs = oci.pagination.list_call_get_all_results(lbr.list_load_balancers,compartment_id=ct.ntk_compartment_ids[compartment_name],
                                                                 lifecycle_state="ACTIVE")
                 network = oci.core.VirtualNetworkClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
-                values_for_column_lhc = print_lbr_hostname_certs(region, ct, values_for_column_lhc, lbr, LBRs, compartment_name, network)
+                values_for_column_lhc = print_lbr_hostname_certs(region, ct, values_for_column_lhc, lbr, LBRs, compartment_name, network,service_dir)
                 values_for_column_lis = print_listener(region, ct, values_for_column_lis,LBRs,compartment_name)
                 values_for_column_bss = print_backendset_backendserver(region, ct, values_for_column_bss, lbr,LBRs,compartment_name)
                 values_for_column_rule = print_rule(region, ct, values_for_column_rule, LBRs, compartment_name)

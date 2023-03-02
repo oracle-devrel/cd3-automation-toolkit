@@ -227,6 +227,13 @@ def create_resource_manager(outdir, outdir_struct,prefix,regions, config=DEFAULT
 
     svcs = []
     for region in regions:
+        comp_name = ""
+        comp_id = rm_region_comp_map[region]
+        for nm, id in ct.ntk_compartment_ids.items():
+            if id == comp_id:
+                comp_name = nm
+                break
+
         print("\nStart creating Stacks for "+region+ " region...")
         region_dir = outdir + "/" + region
         rm_dir = region_dir + '/RM/'
