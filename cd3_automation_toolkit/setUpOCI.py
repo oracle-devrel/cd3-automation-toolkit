@@ -288,7 +288,7 @@ def export_subnets(inputfile, outdir, service_dir,prefix,config,export_regions, 
     print("\n\nExecute tf_import_commands_network_subnets_nonGF.sh script created under each region directory to synch TF with OCI Network objects\n")
 
 
-def export_nsg(inputfile, outdir, prefix,service_dir,config,export_regions,ct):
+def export_nsg(inputfile, outdir, prefix,service_dir_nt,config,export_regions,ct):
     if len(outdir_struct) != 0:
         service_dir = outdir_struct['nsg']
     else:
@@ -606,7 +606,7 @@ def export_drg_route_rules(inputfile, outdir, service_dir, prefix, config, non_g
     Network.export_drg_routetable(inputfile, export_compartments=compartments, export_regions= export_regions,service_dir=service_dir, _config=config, _tf_import_cmd=False, outdir=None,ct=ct)
 
 
-def export_modify_nsgs(inputfile, outdir, service_dir, prefix, non_gf_tenancy, config):
+def export_modify_nsgs(inputfile, outdir, service_dir_nt, prefix, non_gf_tenancy, config):
     if len(outdir_struct) != 0:
         service_dir = outdir_struct['nsg']
     else:
@@ -650,7 +650,7 @@ def create_compute():
     options = show_options(options, quit=True, menu=True, index=1)
     execute_options(options, inputfile, outdir, service_dir,prefix,config)
 
-def create_instances(inputfile, outdir, service_dir,prefix,config):
+def create_instances(inputfile, outdir, service_dir_nt,prefix,config):
     if len(outdir_struct) != 0:
         service_dir = outdir_struct['instance']
     else:
@@ -749,14 +749,14 @@ def create_databases(execute_all=False):
         options = show_options(options, quit=True, menu=True, index=1)
     execute_options(options, inputfile, outdir, service_dir, prefix, config=config)
 
-def create_terraform_dbsystems_vm_bm(inputfile, outdir,service_dir, prefix,config):
+def create_terraform_dbsystems_vm_bm(inputfile, outdir,service_dir_nt, prefix,config):
     if len(outdir_struct) != 0:
         service_dir = outdir_struct['dbsystem-vm-bm']
     else:
         service_dir = ""
     Database.create_terraform_dbsystems_vm_bm(inputfile, outdir, service_dir, prefix, config=config)
 
-def create_exa_infra_vmclusters(inputfile, outdir,service_dir, prefix,config):
+def create_exa_infra_vmclusters(inputfile, outdir,service_dir_nt, prefix,config):
     if len(outdir_struct) != 0:
         service_dir = outdir_struct['database-exacs']
     else:
@@ -1010,7 +1010,6 @@ if (run_fetch_script == 1):
 else:
     print("Make sure to execute the script for 'Fetch Compartments OCIDs to variables file' under 'CD3 Services' menu option atleast once before you continue!")
 
-service_dir=''
 ## Menu Options
 if non_gf_tenancy:
     inputs = [
