@@ -727,7 +727,7 @@ def export_networking(inputfile, outdir, service_dir, _config, ct,export_compart
     export_drg_routetable(inputfile, export_compartments=export_compartments, export_regions=export_regions, service_dir=service_dir,  _config=input_config_file, _tf_import_cmd=True, outdir=outdir,ct=ct)
 
     # Fetch NSGs
-    export_nsg(inputfile, export_compartments=export_compartments, export_regions=export_regions, service_dir=service_dir, _config=input_config_file, _tf_import_cmd=True, outdir=outdir,ct=ct)
+    #export_nsg(inputfile, export_compartments=export_compartments, export_regions=export_regions, service_dir=service_dir, _config=input_config_file, _tf_import_cmd=True, outdir=outdir,ct=ct)
 
 
 if __name__=="__main__":

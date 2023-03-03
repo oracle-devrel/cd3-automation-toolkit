@@ -197,8 +197,8 @@ def export_network():
         service_dir = outdir_struct['network']
     else:
         service_dir = ""
-    options = [Option("Export all Network Components", export_networking,
-                      'Exporting Network Components'),
+    options = [Option("Export all Network Components except NSGs", export_networking,
+                      'Exporting Network Components except NSGs'),
                Option("Export Network components for VCNs, DRGs and DRGRouteRulesinOCI Tabs", export_major_objects,
                       'Exporting VCNs, DRGs and DRGRouteRulesinOCI Tabs'),
                Option("Export Network components for DHCP Tab", export_dhcp,
@@ -233,7 +233,7 @@ def export_networking(inputfile, outdir, service_dir, prefix,config,export_regio
         Option(None, Network.create_terraform_drg_route,
                'Processing DRGs tab for DRG Route Tables and Route Distribution creation'),
         Option(None, Network.modify_terraform_drg_routerules, 'Processing DRGRouteRulesinOCI Tab'),
-        Option(None, Network.create_terraform_nsg, 'Processing NSGs Tab'),
+        #Option(None, Network.create_terraform_nsg, 'Processing NSGs Tab'),
     ]
     execute_options(options, inputfile, outdir, service_dir,prefix, non_gf_tenancy, config=config)
     print("\n\nExecute tf_import_commands_network_*_nonGF.sh script created under each region directory to synch TF with OCI Network objects\n")
