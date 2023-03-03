@@ -209,3 +209,25 @@ output "policies_id_map" {
   value = [ for k,v in merge(module.iam-policies.*...) : v.policies_id_map]
 }
 */
+
+module "oss-policies" {
+  source   = "./modules/identity/iam-policy"
+  for_each = var.oss_policies != null ? var.oss_policies : {}
+
+  tenancy_ocid          = var.tenancy_ocid
+  policy_name           = each.value.name
+  policy_compartment_id = each.value.compartment_id != "root" ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : var.tenancy_ocid
+  policy_description    = each.value.policy_description
+  policy_statements     = each.value.policy_statements
+
+  #Optional
+  defined_tags        = each.value.defined_tags != {} ? each.value.defined_tags : {}
+  freeform_tags       = each.value.freeform_tags != {} ? each.value.freeform_tags : {}
+  policy_version_date = each.value.policy_version_date != null ? each.value.policy_version_date : null
+}
+
+/*
+output "oss_policies_id_map" {
+  value = [ for k,v in merge(module.oss-policies.*...) : v.policies_id_map]
+}
+*/

@@ -7,6 +7,7 @@
 # Author: Divya Das
 # Oracle Consulting
 #
+import os
 import pprint
 import re
 import json
@@ -27,13 +28,14 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Creates TF files for LBR")
     parser.add_argument("inputfile",help="Full Path to the CD3 excel file. eg CD3-template.xlsx in example folder")
     parser.add_argument("outdir", help="directory path for output tf files ")
+    parser.add_argument("service_dir",help="subdirectory under region directory in case of separate out directory structure")
     parser.add_argument('prefix', help='TF files prefix')
     parser.add_argument("--config", default=DEFAULT_LOCATION, help="Config file name")
     return parser.parse_args()
 
 
 # If input file is CD3
-def create_terraform_oke(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
+def create_terraform_oke(inputfile, outdir, service_dir, prefix, config=DEFAULT_LOCATION):
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True)
@@ -373,7 +375,7 @@ def create_terraform_oke(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
         cluster_str[region] = cluster_str[region] + cluster.render(tempStr)
 
     for reg in ct.all_regions:
-        reg_out_dir = outdir + "/" + reg
+        reg_out_dir = outdir + "/" + reg + "/" + service_dir
         if not os.path.exists(reg_out_dir):
             os.makedirs(reg_out_dir)
 
@@ -413,4 +415,4 @@ def create_terraform_oke(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
 if __name__ == '__main__':
     # Execution of the code begins here
     args = parse_args()
-    create_terraform_oke(args.inputfile, args.outdir, args.prefix, args.config)
+    create_terraform_oke(args.inputfile, args.outdir, args.service_dir, args.prefix, args.config)

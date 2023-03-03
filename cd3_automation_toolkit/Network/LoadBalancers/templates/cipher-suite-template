@@ -16,6 +16,8 @@ cipher_suites = {
     {{ lbr_tf_name }}_{{ cipher_tf_name }} = {
           ciphers          = [{{ ciphers }}]
           name             = "{{ cipher_suite_name }}"
+          {% if lbr_tf_name %}
           load_balancer_id = "{{ lbr_tf_name }}"
+          {% endif %}
     },
 {% endif %}

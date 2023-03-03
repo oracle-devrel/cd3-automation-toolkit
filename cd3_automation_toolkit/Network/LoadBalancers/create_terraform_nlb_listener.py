@@ -25,13 +25,14 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Creates TF files for NLB")
     parser.add_argument("inputfile",help="Full Path to the CD3 excel file. eg CD3-CIS-template.xlsx in example folder")
     parser.add_argument("outdir", help="directory path for output tf files ")
+    parser.add_argument("service_dir", help="subdirectory under region directory in case of separate out directory structure")
     parser.add_argument('prefix', help='TF files prefix')
     parser.add_argument("--config", default=DEFAULT_LOCATION, help="Config file name")
     return parser.parse_args()
 
 
 # If input file is CD3
-def create_terraform_nlb_listener(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
+def create_terraform_nlb_listener(inputfile, outdir, service_dir, prefix, config=DEFAULT_LOCATION):
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True)
@@ -148,21 +149,21 @@ def create_terraform_nlb_listener(inputfile, outdir, prefix, config=DEFAULT_LOCA
             network_compartment_id = ''
             vcn_name = ''
             if columnname == 'Subnet Name':
-                nlb_subnet = str(columnvalue).strip()
-                if(nlb_subnet != "" and nlb_subnet != 'nan'):
-                    if ("ocid1.subnet.oc1" in nlb_subnet):
-                        pass
-                    else:
-                        subnet_tf_name = commonTools.check_tf_variable(nlb_subnet)
-                        try:
-                            key = region, subnet_tf_name
-                            network_compartment_id = subnets.vcn_subnet_map[key][0]
-                            vcn_name = subnets.vcn_subnet_map[key][1]
-                            nlb_subnet = subnets.vcn_subnet_map[key][2]
-                        except Exception as e:
-                                print("Invalid Subnet Name specified for row " + str(i + 3) + ". It Doesnt exist in Subnets sheet. Exiting!!!")
-                                exit()
-                        tempdict = {'network_compartment_tf_name': commonTools.check_tf_variable(network_compartment_id), 'vcn_tf_name': vcn_name,'nlb_subnet': nlb_subnet}
+                subnet_tf_name = str(columnvalue).strip()
+                if ("ocid1.subnet.oc1" in subnet_tf_name):
+                    network_compartment_id = ""
+                    vcn_name = ""
+                    subnet_id = subnet_tf_name
+                else:
+                    try:
+                        key = region, subnet_tf_name
+                        network_compartment_id = subnets.vcn_subnet_map[key][0]
+                        vcn_name = subnets.vcn_subnet_map[key][1]
+                        subnet_id = subnets.vcn_subnet_map[key][2]
+                    except Exception as e:
+                        print("Invalid Subnet Name specified for row " + str(i + 3) + ". It Doesnt exist in Subnets sheet. Exiting!!!")
+                        exit()
+                tempdict = {'network_compartment_tf_name': commonTools.check_tf_variable(network_compartment_id), 'vcn_name': vcn_name,'subnet_id': subnet_id}
 
             if columnname == "NSGs":
                 if columnvalue != '' and columnvalue != 'nan':
@@ -241,11 +242,11 @@ def create_terraform_nlb_listener(inputfile, outdir, prefix, config=DEFAULT_LOCA
 
         if finalstring != "":
             resource = sheetName.lower()
-            srcdir = outdir + "/" + reg + "/"
+            srcdir = outdir + "/" + reg + "/" + service_dir + "/"
             commonTools.backup_file(srcdir, resource, nlb_auto_tfvars_filename)
 
             # Write to TF file
-            outfile = outdir + "/" + reg + "/" + nlb_auto_tfvars_filename
+            outfile = srcdir + nlb_auto_tfvars_filename
             oname = open(outfile, "w+")
             print("Writing to ..."+outfile)
             oname.write(finalstring)
@@ -254,4 +255,4 @@ def create_terraform_nlb_listener(inputfile, outdir, prefix, config=DEFAULT_LOCA
 if __name__ == '__main__':
     # Execution of the code begins here
     args = parse_args()
-    create_terraform_nlb_listener(args.inputfile, args.outdir, args.prefix, args.config)
+    create_terraform_nlb_listener(args.inputfile, args.outdir, args.service_dir, args.prefix, args.config)

@@ -25,13 +25,14 @@ def parse_args():
     # Read the arguments
     parser = argparse.ArgumentParser(description="Create Budget terraform file")
     parser.add_argument('outdir', help='Output directory for creation of TF files')
+    parser.add_argument("service_dir",help="subdirectory under region directory in case of separate out directory structure")
     parser.add_argument('prefix', help='TF files prefix')
     parser.add_argument("amount", help="budget amount")
     parser.add_argument("threshold", help="budget threshold percentage")
     parser.add_argument("--configFileName", help="Config file name", required=False)
     return parser.parse_args()
 
-def create_cis_budget(outdir, prefix, amount, threshold,config=DEFAULT_LOCATION):
+def create_cis_budget(outdir, service_dir, prefix, amount, threshold,config=DEFAULT_LOCATION):
 
     # Declare variables
     configFileName = config
@@ -71,7 +72,7 @@ def create_cis_budget(outdir, prefix, amount, threshold,config=DEFAULT_LOCATION)
     budgetalerttfStr = budgetalerttfStr + template_alert_rule.render(tempStr)
 
     # Write TF string to the file in respective region directory
-    reg_out_dir = outdir + "/" + ct.home_region
+    reg_out_dir = outdir + "/" + ct.home_region + "/" + service_dir
     if not os.path.exists(reg_out_dir):
         os.makedirs(reg_out_dir)
 
@@ -95,4 +96,4 @@ def create_cis_budget(outdir, prefix, amount, threshold,config=DEFAULT_LOCATION)
 if __name__ == '__main__':
     # Execution of the code begins here
     args = parse_args()
-    create_cis_budget(args.outdir, args.prefix, args.config, args.amount,args.threshold)
+    create_cis_budget(args.outdir, args.service_dir, args.prefix, args.config, args.amount,args.threshold)

@@ -27,13 +27,14 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Create vars files for the each row in csv file.")
     parser.add_argument('inputfile', help='Full Path of input CD3 excel file')
     parser.add_argument('outdir', help='Output directory for creation of TF files')
+    parser.add_argument('service_dir', help='subdirectory under region directory in case of separate out directory structure')
     parser.add_argument('prefix', help='TF files prefix')
     parser.add_argument('--config', default=DEFAULT_LOCATION, help='Config file name')
     return parser.parse_args()
 
 
 # If input in cd3 file
-def create_terraform_tags(inputfile, outdir, prefix, config):
+def create_terraform_tags(inputfile, outdir, service_dir, prefix, config):
     filename = inputfile
     configFileName = config
 
@@ -64,17 +65,18 @@ def create_terraform_tags(inputfile, outdir, prefix, config):
 
 
     # Take backup of files
-    for reg in ct.all_regions:
-        resource= sheetName.lower()
-        srcdir = outdir + "/" + reg + "/"
-        commonTools.backup_file(srcdir, resource, namespaces_auto_tfvars_filename)
-        commonTools.backup_file(srcdir, resource, tagkey_auto_tfvars_filename)
-        commonTools.backup_file(srcdir, resource, default_tags_auto_tfvars_filename)
+    #for reg in ct.all_regions:
+    reg = ct.home_region
+    resource = sheetName.lower()
+    srcdir = outdir + "/" + reg + "/" + service_dir + "/"
+    commonTools.backup_file(srcdir, resource, namespaces_auto_tfvars_filename)
+    commonTools.backup_file(srcdir, resource, tagkey_auto_tfvars_filename)
+    commonTools.backup_file(srcdir, resource, default_tags_auto_tfvars_filename)
 
-        tagnamespace_list[reg] = []
-        defaulttagtemp[reg] = ''
-        namespacetemp[reg] = ''
-        tagkeytemp[reg] = ''
+    tagnamespace_list[reg] = []
+    defaulttagtemp[reg] = ''
+    namespacetemp[reg] = ''
+    tagkeytemp[reg] = ''
 
     # temporary dictionary1 and dictionary2
     tempStr = {}
@@ -114,9 +116,9 @@ def create_terraform_tags(inputfile, outdir, prefix, config):
             if (regions[j] not in check_diff_region and regions[j] not in commonTools.endNames and str(regions[j]).lower() != "nan"):
                 check_diff_region.append(regions[j])
 
-        # If some invalid region is specified in a row which is not part of VCN Info Tab
-        if region not in ct.all_regions:
-            print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
+        # If some invalid region is specified in a row
+        if region != ct.home_region:
+            print("\nERROR!!! Invalid Region; It should be Home Region of the tenancy..Exiting!")
             exit(1)
 
         if str(df.loc[i,'Default Tag Compartment=Default Tag Value']).strip().lower() != 'nan' and str(df.loc[i,'Tag Keys']).strip().lower() == 'nan':
@@ -185,7 +187,7 @@ def create_terraform_tags(inputfile, outdir, prefix, config):
                 description_keys = str(columnvalue)
                 if columnvalue == '':
                     description_keys =  "Create Tag Key "+key_tf_name+" for Namespace - "+namespace_tf_name
-                tempdict = {'description_keys' : description_keys}
+                tempdict = {'description_keys' : description_keys.replace('$','$$')}
 
             if columnname == 'Cost Tracking':
                 if str(columnvalue).lower().strip() != 'true':
@@ -230,7 +232,7 @@ def create_terraform_tags(inputfile, outdir, prefix, config):
 
                             if default_value != "" and str(default_value).lower() != "nan":
                                 if '$' in default_value and default_value.count('$') == 1:
-                                    default_value = '$'+str(default_value).strip()
+                                    default_value = str(default_value).strip().replace('$','$$')
                                 #is_required = 'false' #Uncomment this line if needed
                                 columnvalue = key_tf_name+"="+default_compartment+"="+default_value#+"="+is_required #Uncomment this if needed
                                 if columnvalue not in default_tags:
@@ -269,39 +271,39 @@ def create_terraform_tags(inputfile, outdir, prefix, config):
             tagkeytemp[region] = tagkeytemp[region] + tagkey.render(tempStr)
 
     # Write TF string to the file in respective region directory
-    for reg in ct.all_regions:
+    #for reg in ct.all_regions:
 
-        if defaulttagtemp[reg] != '':
+    if defaulttagtemp[reg] != '':
 
-            defaulttagtemp[reg] = defaulttag.render(tempStr, count = 0).replace("##Add New Tag Defaults for "+reg.lower()+" here##", defaulttagtemp[reg]+"\n"+"##Add New Tag Defaults for "+reg.lower()+" here##")
-            defaulttagtemp[reg] = "".join([s for s in defaulttagtemp[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
-            outfile = outdir + "/" + reg + "/" + prefix + default_tags_auto_tfvars_filename
-            oname = open(outfile, "w+")
-            print("Writing to "+outfile)
-            oname.write(defaulttagtemp[reg])
-            oname.close()
+        defaulttagtemp[reg] = defaulttag.render(tempStr, count = 0).replace("##Add New Tag Defaults for "+reg.lower()+" here##", defaulttagtemp[reg]+"\n"+"##Add New Tag Defaults for "+reg.lower()+" here##")
+        defaulttagtemp[reg] = "".join([s for s in defaulttagtemp[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
+        outfile = outdir + "/" + reg + "/" + service_dir + "/" + prefix + default_tags_auto_tfvars_filename
+        oname = open(outfile, "w+")
+        print("Writing to "+outfile)
+        oname.write(defaulttagtemp[reg])
+        oname.close()
 
-        if namespacetemp[reg] != '':
+    if namespacetemp[reg] != '':
 
-            namespacetemp[reg] = namespace.render(tempStr, count = 0).replace("##Add New Tag Namespaces for "+reg.lower()+" here##", namespacetemp[reg]+"\n"+"##Add New Tag Namespaces for "+reg.lower()+" here##")
-            namespacetemp[reg] = "".join([s for s in namespacetemp[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
-            outfile = outdir + "/" + reg + "/" + prefix + namespaces_auto_tfvars_filename
-            oname = open(outfile, "w+")
-            print("Writing to "+outfile)
-            oname.write(namespacetemp[reg])
-            oname.close()
+        namespacetemp[reg] = namespace.render(tempStr, count = 0).replace("##Add New Tag Namespaces for "+reg.lower()+" here##", namespacetemp[reg]+"\n"+"##Add New Tag Namespaces for "+reg.lower()+" here##")
+        namespacetemp[reg] = "".join([s for s in namespacetemp[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
+        outfile = outdir + "/" + reg + "/" + service_dir + "/" + prefix + namespaces_auto_tfvars_filename
+        oname = open(outfile, "w+")
+        print("Writing to "+outfile)
+        oname.write(namespacetemp[reg])
+        oname.close()
 
-        if tagkeytemp[reg] != '':
+    if tagkeytemp[reg] != '':
 
-            tagkeytemp[reg] = tagkey.render(tempStr, count = 0).replace("##Add New Tag Keys for "+reg.lower()+" here##", tagkeytemp[reg]+"\n"+"##Add New Tag Keys for "+reg.lower()+" here##")
-            tagkeytemp[reg] = "".join([s for s in tagkeytemp[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
-            outfile = outdir + "/" + reg + "/" + prefix + tagkey_auto_tfvars_filename
-            oname = open(outfile, "w+")
-            print("Writing to "+outfile)
-            oname.write(tagkeytemp[reg])
-            oname.close()
+        tagkeytemp[reg] = tagkey.render(tempStr, count = 0).replace("##Add New Tag Keys for "+reg.lower()+" here##", tagkeytemp[reg]+"\n"+"##Add New Tag Keys for "+reg.lower()+" here##")
+        tagkeytemp[reg] = "".join([s for s in tagkeytemp[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
+        outfile = outdir + "/" + reg + "/" + service_dir + "/" + prefix + tagkey_auto_tfvars_filename
+        oname = open(outfile, "w+")
+        print("Writing to "+outfile)
+        oname.write(tagkeytemp[reg])
+        oname.close()
 
 if __name__ == '__main__':
     args = parse_args()
     # Execution of the code begins here
-    create_terraform_tags(args.file, args.outdir, args.prefix,args.config)
+    create_terraform_tags(args.file, args.outdir, args.service_dir, args.prefix, args.config)

@@ -23,7 +23,7 @@ resource "oci_containerengine_node_pool" "nodepool" {
     placement_configs {
       #Required
       availability_domain = data.oci_identity_availability_domains.ads.availability_domains[var.availability_domain].name
-      subnet_id = length(regexall("ocid1.subnet.oc1*", var.subnet_id)) > 0 ? var.subnet_id : data.oci_core_subnets.oci_subnets_workers[var.subnet_id].subnets.*.id[0]
+      subnet_id = var.subnet_id
     }
     node_pool_pod_network_option_details {
       #Required
@@ -31,9 +31,8 @@ resource "oci_containerengine_node_pool" "nodepool" {
 
       #Optional
       max_pods_per_node = var.max_pods_per_node
-      #pod_nsg_ids = var.pod_nsg_ids != null ? local.pod_nsg_ids : null
       pod_nsg_ids = var.pod_nsg_ids != null ? (local.pod_nsg_ids == [] ?  ["INVALID POD NSG Name"] : local.pod_nsg_ids) : null
-      pod_subnet_ids = var.pod_subnet_ids != null ? (length(regexall("ocid1.subnet.oc1*", var.pod_subnet_ids)) > 0 ? [var.pod_subnet_ids] : [data.oci_core_subnets.oci_subnets_pods[var.pod_subnet_ids].subnets.*.id[0]]) : null
+      pod_subnet_ids = var.pod_subnet_ids != null ? [var.pod_subnet_ids]: null
       }
     size = var.size
     nsg_ids = var.worker_nsg_ids != null ? (local.nodepool_nsg_ids == [] ? ["INVALID WORKER NSG Name"] : local.nodepool_nsg_ids) : null

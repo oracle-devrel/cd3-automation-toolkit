@@ -23,14 +23,10 @@ nlb_backend_sets = {
 
         {% if is_preserve_source != '' %}
         is_preserve_source  = {{ is_preserve_source  }}
-        {% else %}
-        is_preserve_source = true
         {% endif %}
 
         {% if ip_version and ip_version != "" %}
         ip_version = {{ ip_version }}
-        {% else %}
-        ip_version = ""
         {% endif %}
 
         {% if backend_healthcheck_protocol and backend_healthcheck_protocol != "" %}
@@ -42,26 +38,18 @@ nlb_backend_sets = {
 
         {% if interval_in_millis and interval_in_millis != '' and interval_in_millis != 'nan' %}
         interval_in_millis = "{{ interval_in_millis }}"
-        {% else %}
-        interval_in_millis = null
         {% endif %}
 
         {% if backend_healthcheck_port and backend_healthcheck_port != '' %}
         port = "{{ backend_healthcheck_port }}"
-        {% else %}
-        port = null
         {% endif %}
 
         {% if response_body_regex and response_body_regex != '' %}
         response_body_regex = "{{ response_body_regex }}"
-        {% else %}
-        response_body_regex = null
         {% endif %}
 
         {% if retries and retries != '' %}
         retries = "{{ retries }}"
-        {% else %}
-        retries = null
         {% endif %}
 
         {% if request_data and request_data != '' %}
@@ -78,19 +66,16 @@ nlb_backend_sets = {
 
         {% if timeout_in_millis and timeout_in_millis != '' %}
         timeout_in_millis = "{{ timeout_in_millis }}"
-        {% else %}
-        timeout_in_millis = null
         {% endif %}
 
-        {% if backend_healthcheck_protocol == '' or  backend_healthcheck_protocol == 'HTTP' %}
+        {% if backend_healthcheck_protocol == '' or  backend_healthcheck_protocol == 'HTTP' or  backend_healthcheck_protocol == 'HTTPS' %}
         {% if backend_healthcheck_return_code and backend_healthcheck_return_code != '' %}
         return_code = "{{ backend_healthcheck_return_code }}"
         {% else %}
         return_code = 200
         {% endif %}
-        {% else %}
-        return_code = null
         {% endif %}
+
 
         {% if backend_healthcheck_protocol == '' or  backend_healthcheck_protocol == 'HTTP' %}
         {% if backend_healthcheck_url and backend_healthcheck_url != '' %}
@@ -98,8 +83,6 @@ nlb_backend_sets = {
         {% else %}
         url_path = "/"
         {% endif %}
-        {% else %}
-        url_path = null
         {% endif %}
 
     },

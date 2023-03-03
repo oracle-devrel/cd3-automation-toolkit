@@ -23,12 +23,13 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Export Identity Objects in OCI to CD3")
     parser.add_argument("inputfile", help="path of CD3 excel file to export identity objects to")
     parser.add_argument("outdir", help="path to out directory containing script for TF import commands")
+    parser.add_argument("service_dir", help="subdirectory under region directory in case of separate out directory structure")
     parser.add_argument("--config", default=DEFAULT_LOCATION, help="Config file name")
-    parser.add_argument("--network-compartments", required=False, nargs='*', help="comma seperated Compartments for which to export Identity Objects")
+    parser.add_argument("--export-compartments", required=False, nargs='*', help="comma seperated Compartments for which to export Identity Objects")
     return parser.parse_args()
 
 
-def export_identity(inputfile, outdir, _config, network_compartments=[]):
+def export_identity(inputfile, outdir, service_dir, _config, ct, export_compartments=[]):
     global values_for_column_comps
     global values_for_column_groups
     global values_for_column_policies
@@ -39,7 +40,7 @@ def export_identity(inputfile, outdir, _config, network_compartments=[]):
     global cd3file
 
     cd3file = inputfile
-    input_compartment_list = network_compartments
+    #input_compartment_list = export_compartments
 
     if('.xls' not in cd3file):
         print("\nAcceptable cd3 format: .xlsx")
@@ -61,9 +62,10 @@ def export_identity(inputfile, outdir, _config, network_compartments=[]):
     df, values_for_column_groups = commonTools.read_cd3(cd3file, sheetName_groups)
     df, values_for_column_policies = commonTools.read_cd3(cd3file, sheetName_policies)
 
-    ct = commonTools()
-    ct.get_subscribedregions(configFileName)
-    ct.get_network_compartment_ids(config['tenancy'],"root",configFileName)
+    if ct==None:
+        ct = commonTools()
+        ct.get_subscribedregions(configFileName)
+        ct.get_network_compartment_ids(config['tenancy'],"root",configFileName)
 
     # Get dict for columns from Excel_Columns
     sheet_dict_comps = ct.sheet_dict[sheetName_comps]
@@ -77,9 +79,9 @@ def export_identity(inputfile, outdir, _config, network_compartments=[]):
     # Create backup
     resource = 'tf_import_identity'
     file_name='tf_import_commands_identity_nonGF.sh'
-    script_file = f'{outdir}/{ct.home_region}/'+file_name
+    script_file = f'{outdir}/{ct.home_region}/{service_dir}/'+file_name
     if(os.path.exists(script_file)):
-        commonTools.backup_file(outdir + "/" + ct.home_region,resource,file_name)
+        commonTools.backup_file(outdir + "/" + ct.home_region + "/" + service_dir,resource,file_name)
     importCommands[ct.home_region] = open(script_file, "w")
     importCommands[ct.home_region].write("#!/bin/bash")
     importCommands[ct.home_region].write("\n")
@@ -283,4 +285,4 @@ def export_identity(inputfile, outdir, _config, network_compartments=[]):
 
 if __name__=="__main__":
     args = parse_args()
-    export_identity(args.inputfile, args.outdir, args.config, args.network_compartments)
+    export_identity(args.inputfile, args.outdir, args.service_dir, args.config, args.export_compartments)

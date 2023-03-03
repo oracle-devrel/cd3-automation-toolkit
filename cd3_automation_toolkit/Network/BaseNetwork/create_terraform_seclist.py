@@ -31,6 +31,7 @@ def parse_args():
                                                  'and add_ping_sec_rules_onprem respectively. Any other rules should be put in manually.')
     parser.add_argument('inputfile', help='Full Path of input file. eg cd3 excel file')
     parser.add_argument('outdir', help='Output directory')
+    parser.add_argument("service_dir",help="subdirectory under region directory in case of separate out directory structure")
     parser.add_argument('prefix', help='customer name/prefix for all file names')
     parser.add_argument('--modify-network', action='store_true', help="modify networking")
     parser.add_argument('--config', default=DEFAULT_LOCATION, help='Config file name')
@@ -38,7 +39,7 @@ def parse_args():
 
 
 # If the input is CD3
-def create_terraform_seclist(inputfile, outdir, prefix, config, modify_network=False):
+def create_terraform_seclist(inputfile, outdir, service_dir, prefix, config, modify_network=False):
 
     def purge(dir, pattern):
         for f in os.listdir(dir):
@@ -91,7 +92,7 @@ def create_terraform_seclist(inputfile, outdir, prefix, config, modify_network=F
         modify_network_seclists[reg] = ''
         tempSecListModifyNetwork[reg] = ''
 
-    def processSubnet(tempStr):
+    def processSubnet(tempStr, service_dir):
         filedata = ""
         region_in_lowercase = tempStr['region'].lower().strip()
         subnet_cidr = tempStr['cidr_block'].strip()
@@ -121,7 +122,7 @@ def create_terraform_seclist(inputfile, outdir, prefix, config, modify_network=F
             sl_tf_name = commonTools.check_tf_variable(sl_tf_name)
             tempStr['seclist_tf_name'] = sl_tf_name
 
-            outfile = outdir + "/" + region_in_lowercase + "/" + prefix + auto_tfvars_filename
+            outfile = outdir + "/" + region_in_lowercase + "/" + service_dir +"/" + prefix + auto_tfvars_filename
 
             # Create Skeleton Template
             if seclist_count == 0 and tempStr['count'] == 0:
@@ -210,7 +211,7 @@ def create_terraform_seclist(inputfile, outdir, prefix, config, modify_network=F
     # Purge existing seclist files
     if not modify_network:
         for reg in ct.all_regions:
-            purge(outdir + "/" + reg, prefix + auto_tfvars_filename)
+            purge(outdir + "/" + reg + "/" +service_dir + "/", prefix + auto_tfvars_filename)
 
     # Read cd3 using pandas dataframe
     df, col_headers = commonTools.read_cd3(filename, "Subnets")
@@ -293,11 +294,11 @@ def create_terraform_seclist(inputfile, outdir, prefix, config, modify_network=F
             tempStr.update({'count': 0})
             region_included.append(region)
 
-        processSubnet(tempStr)
+        processSubnet(tempStr,service_dir)
 
     for reg in ct.all_regions:
         textToAddSeclistSearch = "##Add New Seclists for "+reg+" here##"
-        outfile = outdir + "/" + reg + "/" + prefix + auto_tfvars_filename
+        outfile = outdir + "/" + reg + "/" + service_dir + "/" +prefix + auto_tfvars_filename
 
         if modify_network_seclists[reg] != '':
             if reg in region_included:
@@ -320,7 +321,7 @@ def create_terraform_seclist(inputfile, outdir, prefix, config, modify_network=F
                     print(outfile + " containing seclists has been created for region " + reg)
                 else:
                     tempSkeleton[reg] = tempSkeleton[reg].replace(textToAddSeclistSearch,modify_network_seclists[reg] + textToAddSeclistSearch)
-                    srcdir = outdir + "/" + reg + "/"
+                    srcdir = outdir + "/" + reg + "/" + service_dir + "/"
                     resource = 'SLs'
                     commonTools.backup_file(srcdir, resource, auto_tfvars_filename)
                     none_rule = """[
@@ -340,15 +341,15 @@ def create_terraform_seclist(inputfile, outdir, prefix, config, modify_network=F
                     print(outfile + " containing seclists has been updated for region " + reg)
             else:
                 if reg not in region_included:
-                    srcdir = outdir + "/" + reg + "/"
+                    srcdir = outdir + "/" + reg + "/" + service_dir +"/"
                     resource = 'SLs'
                     commonTools.backup_file(srcdir, resource, 'seclists.auto.tfvars')
         else:
-            srcdir = outdir + "/" + reg + "/"
+            srcdir = outdir + "/" + reg + "/" + service_dir +"/"
             resource = 'SLs'
             commonTools.backup_file(srcdir, resource, 'seclists.auto.tfvars')
 
 if __name__ == '__main__':
     args = parse_args()
     # Execution of the code begins here
-    create_terraform_seclist(args.inputfile, args.outdir, args.prefix, args.config, args.modify_network)
+    create_terraform_seclist(args.inputfile, args.outdir, args.service_dir, args.prefix, args.config, args.modify_network)

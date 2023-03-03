@@ -338,6 +338,24 @@ CD3 Automation Toolkit Tag v10
    setUpOCI is executed.
 3. Introduced a new option in setUpOCI menu called 'CD3 Services' to execute 'Fetch Compartments' and 'Fetch Protocols'
    Scripts.
-4. Modified the setUpOCI workflow to prompt the user to execute 'Fetch Compartments' script in case
-   it has not been executed previously.
+4. Modified the setUpOCI workflow to prompt the user to execute 'Fetch Compartments' script for the very first time
+   running the toolkit or if any new compartments are created.
 5. Bug fixes wrt Instances, DB Systems
+
+----------------------------------
+CD3 Automation Toolkit Tag v10.1
+----------------------------------
+1. Support for separating the out directory for terraform files generated for each resource. Single outdir can also
+   be used if required. A new parameter 'outdir_structure_file' has been introduced in tenancyconfig.properties to
+   achieve this config.
+   Please note that this can be configured only at the time of setting up the tenancy. If for any reason, you need to change the
+   directory structure, you will need to re run createTenancy.py again.
+2. Support to export data from a particular region instead of all subscribed regions has been added to the
+   Non-Greenfield workflow.
+3. Upgrade Service Connectors to support Monitoring as Source/Target and Functions as Target.
+4. Added Functionality for export of ADBs.
+5. Python code re do for creation of NSGs - Supports duplicate NSG names across different regions.
+6. Terraform code update to make Null values as optional in tfvars for all components.
+7. Performance tuning has been done wrt Fetch Compartments during Non-Greenfield workflow. The script will be executed
+   only once when you select multiple export options simultaneously.
+8. Bug fixes wrt Networking, Tagging, Excel sheet templates etc

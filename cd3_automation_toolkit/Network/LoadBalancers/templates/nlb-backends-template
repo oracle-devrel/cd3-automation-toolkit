@@ -21,22 +21,15 @@ nlb_backends = {
         instance_compartment = "{{ instance_tf_compartment }}"
         ip_address = "{{ backend_server_ip_address }}" # Format -->  "IP:<ip_address>" or "NAME:<server_name>"
         port = "{{ serverport }}"
-        #name = "{{ servername }}"
 
         {% if is_drain and is_drain != '' %}
         is_drain   = "{{ is_drain }}"
-        {% else %}
-        is_drain   = ""
         {% endif %}
         {% if is_offline and is_offline != '' %}
         is_offline = "{{ is_offline }}"
-        {% else %}
-        is_offline = ""
         {% endif %}
         {% if weight and weight != '' %}
         weight  = "{{ weight }}"
-        {% else %}
-        weight  = ""
         {% endif %}
     },
 {% endif %}

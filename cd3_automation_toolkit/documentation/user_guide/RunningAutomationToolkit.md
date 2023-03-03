@@ -19,12 +19,12 @@ Details on how to fill data into the excel sheet can be found in the Blue sectio
 
 
 > The Excel Templates can also be found at _/cd3user/oci_tools/cd3_automation_toolkit/example_ inside the container.
-> After deploying the infra using any of the template, please run [CIS compliance checker script](/cd3_automation_toolkit/documentation/user_guide/learn_more/CISFeatures.md#1-run-cis-compliance-checker-script))
+> After deploying the infra using any of the templates, please run [CIS compliance checker script](/cd3_automation_toolkit/documentation/user_guide/learn_more/CISFeatures.md#1-run-cis-compliance-checker-script))
 
 
 ### **setUpOCI.properties**
 
-**Current Version:  setUpOCI.properties v10**
+**Current Version:  setUpOCI.properties v10.1**
 
 Make sure to use/modify the properties file at _/cd3user/tenancies /<customer\_name>/<customer\_name>\_setUpOCI.properties_ during executions.
 
@@ -34,12 +34,12 @@ Make sure to use/modify the properties file at _/cd3user/tenancies /<customer\_n
 #Input variables required to run setUpOCI script
 
 #path to output directory where terraform file will be generated. eg /cd3user/tenancies/<customer_name>/terraform_files
-outdir=/cd3user/tenancies/<customer_name>/terraform_files
+outdir=
 
-#prefix for output terraform files eg customer name like demotenancy
+#prefix for output terraform files eg <customer_name> like demotenancy
 prefix=
 
-#input config file for Python API communication with OCI eg example\config;
+#input config file for Python API communication with OCI eg /cd3user/tenancies/<customer_name>/<customer_name>_config;
 config_file=
 
 #path to cd3 excel eg /cd3user/tenancies/<customer_name>\CD3-Customer.xlsx
@@ -47,15 +47,19 @@ cd3file=
 
 #Is it Non GreenField tenancy
 non_gf_tenancy=false
+
+# Leave it blank if you want single outdir or specify outdir_structure_file.properties containing directory structure for OCI services.
+outdir_structure_file=
 ```
 
 | Variable | Description | Example |
 |---|---|---|
-|outdir|Path to output directory where terraform files will be generated| /cd3user/tenancies/<customer\_name> /terraform\_files|
+|outdir|Path to output directory where terraform files will be generated| /cd3user/tenancies/<customer\_name>/terraform\_files|
 |prefix|Prefix for output terraform files|\<customer\_name>|
 |config\_file|Python config file|/cd3user/tenancies/<customer\_name>/config|
 | cd3file |Path to the CD3 input file |/cd3user/tenancies/<customer\_name>/testCD3. xlsx |
 |non\_gf\_tenancy |Specify if its a Non Green field tenancy or not (**True** or **False**)| False|
+|outdir\_structure\_file |Parameter specifying single outdir or different for different services|Blank or <customer\_name>_gc2_outdir_structure_file|
 
 <blockquote>For more information on usage of non_gf_tenancy flag, refer to <a href = /cd3_automation_toolkit/documentation/user_guide/Workflows.md> Automation Toolkit Workflows</a></blockquote>
 

@@ -32,13 +32,14 @@ def parse_args():
     parser = argparse.ArgumentParser(description='Create DHCP options terraform file')
     parser.add_argument('inputfile',help='Full Path of input file. It could be CD3 excel file')
     parser.add_argument('outdir', help='Output directory for creation of TF files')
+    parser.add_argument("service_dir",help="subdirectory under region directory in case of separate out directory structure")
     parser.add_argument('prefix', help='customer name/prefix for all file names')
     parser.add_argument('--modify-network', action='store_true', help='Modify network')
     parser.add_argument('non_gf_tenancy')
     parser.add_argument('--config', default=DEFAULT_LOCATION, help='Config file name')
     return parser.parse_args()
 
-def create_terraform_dhcp_options(inputfile, outdir, prefix, non_gf_tenancy, config, modify_network=False):
+def create_terraform_dhcp_options(inputfile, outdir, service_dir, prefix, non_gf_tenancy, config, modify_network=False):
     outfile = {}
     deffile = {}
     oname = {}
@@ -183,7 +184,7 @@ def create_terraform_dhcp_options(inputfile, outdir, prefix, non_gf_tenancy, con
     if (modify_network == 'true'):
         for reg in ct.all_regions:
 
-            reg_out_dir = outdir + "/" + reg
+            reg_out_dir = outdir + "/" + reg + "/" +service_dir
             if not os.path.exists(reg_out_dir):
                 os.makedirs(reg_out_dir)
 
@@ -198,7 +199,7 @@ def create_terraform_dhcp_options(inputfile, outdir, prefix, non_gf_tenancy, con
             x = datetime.datetime.now()
             date = x.strftime("%f").strip()
 
-            srcdir = outdir + "/" + reg + "/"
+            srcdir = outdir + "/" + reg + "/" + service_dir
 
             if(custom[reg]!=''):
                 if (os.path.exists(outfile[reg])):
@@ -235,7 +236,7 @@ def create_terraform_dhcp_options(inputfile, outdir, prefix, non_gf_tenancy, con
 
     elif (modify_network == 'false'):
         for reg in ct.all_regions:
-            reg_out_dir = outdir + "/" + reg
+            reg_out_dir = outdir + "/" + reg +"/" +service_dir
 
             if not os.path.exists(reg_out_dir):
                 os.makedirs(reg_out_dir)
@@ -248,7 +249,7 @@ def create_terraform_dhcp_options(inputfile, outdir, prefix, non_gf_tenancy, con
             def_dhcp_auto_tfvars_filename = '_default-dhcp.auto.tfvars'
             deffile[reg] = reg_out_dir + "/" +prefix +def_dhcp_auto_tfvars_filename
 
-            srcdir = outdir + "/" + reg + "/"
+            srcdir = outdir + "/" + reg + "/" + service_dir
 
             # Remove the files from other regions if there are any in outdir that is not in CD3.
             if reg not in region_included_for_custom_dhcp:
@@ -283,4 +284,4 @@ def create_terraform_dhcp_options(inputfile, outdir, prefix, non_gf_tenancy, con
 if __name__ == '__main__':
     args = parse_args()
     # Execution of the code begins here
-    create_terraform_dhcp_options(args.inputfile, args.outdir, args.prefix, args.non_gf_tenancy, args.config, args.modify_network)
+    create_terraform_dhcp_options(args.inputfile, args.outdir, args.service_dir, args.prefix, args.non_gf_tenancy, args.config, args.modify_network)

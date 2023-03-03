@@ -17,56 +17,40 @@ budget_alert_rules = {
 
             {% if budget_tf_name and budget_tf_name != "" %}
             budget_id = "{{ budget_tf_name }}"
-            {% else %}
-            budget_id = ""
             {% endif %}
 
             {% if type and type != "" %}
             type = "{{ type }}"
-            {% else %}
-            type = ""
             {% endif %}
 
             {% if threshold and threshold != "" %}
             threshold = "{{ threshold }}"
-            {% else %}
-            threshold = ""
             {% endif %}
 
             {% if threshold_type and threshold_type != "" %}
             threshold_type = "{{ threshold_type }}"
-            {% else %}
-            threshold_type = ""
             {% endif %}
 
             {% if description and description != "" %}
             description = "{{ description }}"
-            {% else %}
-            description = ""
             {% endif %}
 
             {% if budget_name and budget_name != "" %}
             display_name = "{{budget_name}}_alert_rule"
-            {% else %}
-            display_name = ""
             {% endif %}
 
             {% if message and message != "" %}
             message = "{{ message }}"
-            {% else %}
-            message = ""
             {% endif %}
 
             {% if recipients and recipients != "" %}
             recipients = "{{ recipients }}"
-            {% else %}
-            recipients = ""
             {% endif %}
 
-            {#  ##Do not modify below this line##  #}
-            {#                                     #}
-            {#  ###Section for adding Defined and Freeform Tags###  #}
-            {% if defined_tags and defined_tags != 'nan' and defined_tags != '' %}
+        {#  ##Do not modify below this line##  #}
+        {#                                     #}
+        {#  ###Section for adding Defined and Freeform Tags###  #}
+        {% if defined_tags and defined_tags != 'nan' and defined_tags != '' and defined_tags != [['nan']] %}
           {% if defined_tags[0] %}
             defined_tags = {
             {% for tags in defined_tags  %}
@@ -77,13 +61,9 @@ budget_alert_rules = {
                 {% endif %}
             {% endfor %}
             }
-          {% else %}
-            defined_tags = {}
-          {% endif %}
-          {% else %}
-            defined_tags = {}
-          {% endif %}
-                {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' %}
+            {% endif %}
+           {% endif %}
+                {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' and freeform_tags != [['nan']] %}
                     {% if freeform_tags[0] %}
             freeform_tags = {
                         {% for tags in freeform_tags %}
@@ -94,13 +74,9 @@ budget_alert_rules = {
                             {% endif %}
                         {% endfor %}
                         }
-                    {% else %}
-            freeform_tags = {}
                     {% endif %}
-                {% else %}
-            freeform_tags = {}
                 {% endif %}
-            {#  ###Section for adding Defined and Freeform Tags ends here###  #}
+        {#  ###Section for adding Defined and Freeform Tags ends here###  #}
             },
 
 {% endif %}

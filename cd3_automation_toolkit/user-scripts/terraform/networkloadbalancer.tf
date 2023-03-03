@@ -5,22 +5,36 @@
 # Create Network Load Balancer
 #######################################
 
+data "oci_core_subnets" "oci_subnets_nlb" {
+  # depends_on = [module.subnets] # Uncomment to create Network and NLBs together
+  for_each       = var.network_load_balancers != null ? var.network_load_balancers : {}
+  compartment_id = each.value.network_compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.network_compartment_id)) > 0 ? each.value.network_compartment_id : var.compartment_ocids[each.value.network_compartment_id]) : var.compartment_ocids[each.value.network_compartment_id]
+  display_name   = each.value.subnet_id
+  vcn_id         = data.oci_core_vcns.oci_vcns_nlb[each.key].virtual_networks.*.id[0]
+}
+
+data "oci_core_vcns" "oci_vcns_nlb" {
+  # depends_on = [module.vcns] # Uncomment to create Network and NLBs together
+  for_each       = var.network_load_balancers != null ? var.network_load_balancers : {}
+  compartment_id = each.value.network_compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.network_compartment_id)) > 0 ? each.value.network_compartment_id : var.compartment_ocids[each.value.network_compartment_id]) : var.compartment_ocids[each.value.network_compartment_id]
+  display_name   = each.value.vcn_name
+}
+
 module "network-load-balancers" {
   source                         ="./modules/networkloadbalancer/nlb"
   for_each                       = var.network_load_balancers != null ? var.network_load_balancers : {}
   network_compartment_id         = each.value.network_compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.network_compartment_id)) > 0 ? each.value.network_compartment_id : var.compartment_ocids[each.value.network_compartment_id]) : null
   compartment_id                 = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
   display_name                   = each.value.display_name
-  subnet_id                      = each.value.subnet_id
-  is_preserve_source_destination = each.value.is_preserve_source_destination != null ? each.value.is_preserve_source_destination : null
-  is_private                     = each.value.is_private != null ? each.value.is_private : null
-  network_security_group_ids     = each.value.nsg_ids != null ? each.value.nsg_ids : null
-  nlb_ip_version                 = each.value.nlb_ip_version != null ? each.value.nlb_ip_version : null
+  subnet_id                      = each.value.subnet_id != "" ? (length(regexall("ocid1.subnet.oc1*", each.value.subnet_id)) > 0 ? each.value.subnet_id : data.oci_core_subnets.oci_subnets_nlb[each.key].subnets.*.id[0]) : null
+  is_preserve_source_destination = each.value.is_preserve_source_destination
+  is_private                     = each.value.is_private
+  network_security_group_ids     = each.value.nsg_ids
+  nlb_ip_version                 = each.value.nlb_ip_version
   vcn_name                       = each.value.vcn_name
   defined_tags                   = each.value.defined_tags
   freeform_tags                  = each.value.freeform_tags
-  reserved_ips_id                = lower(each.value.reserved_ips_id) != "n" && each.value.reserved_ips_id != "" ? (length(regexall("ocid1.publicip.oc1*", each.value.reserved_ips_id)) > 0 ? [each.value.reserved_ips_id] : [merge(module.nlb-reserved-ips.*...)[join("-", [each.key, "reserved", "ip"])].reserved_ip_tf_id]) : []
-
+  reserved_ips_id                = each.value.reserved_ips_id != "" && lower(each.value.reserved_ips_id) != "n" ? (length(regexall("ocid1.publicip.oc1*", each.value.reserved_ips_id)) > 0 ? [each.value.reserved_ips_id] : [merge(module.nlb-reserved-ips.*...)[join("-", [each.key, "reserved", "ip"])].reserved_ip_tf_id]) : []
 }
 
 module "nlb-listeners" {
@@ -40,17 +54,17 @@ module "nlb-backend-sets" {
   name                     = each.value.name
   network_load_balancer_id = length(regexall("ocid1.loadbalancer.oc1*", each.value.network_load_balancer_id)) > 0 ? each.value.network_load_balancer_id : merge(module.network-load-balancers.*...)[each.value.network_load_balancer_id]["network_load_balancer_tf_id"]
   policy                   = each.value.policy
-  ip_version               = each.value.ip_version != null ? each.value.ip_version : null
-  is_preserve_source       = each.value.is_preserve_source != null ? each.value.is_preserve_source : null
+  ip_version               = each.value.ip_version
+  is_preserve_source       = each.value.is_preserve_source
   #healthcheck parameters
   protocol            = each.value.protocol
-  interval_in_millis  = each.value.interval_in_millis != null ? each.value.interval_in_millis : null
-  port                = each.value.port != null ? each.value.port : null
-  response_body_regex = each.value.response_body_regex != null ? each.value.response_body_regex : null
-  retries             = each.value.retries != null ? each.value.retries : null
-  return_code         = each.value.return_code != null ? each.value.return_code : null
-  timeout_in_millis   = each.value.timeout_in_millis != null ? each.value.timeout_in_millis : null
-  url_path            = each.value.url_path != null ? each.value.url_path : null
+  interval_in_millis  = each.value.interval_in_millis
+  port                = each.value.port
+  response_body_regex = each.value.response_body_regex
+  retries             = each.value.retries
+  return_code         = each.value.return_code
+  timeout_in_millis   = each.value.timeout_in_millis
+  url_path            = each.value.url_path
 }
 
 module "nlb-backends" {

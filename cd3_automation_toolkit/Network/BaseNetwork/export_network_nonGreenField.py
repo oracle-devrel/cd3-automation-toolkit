@@ -69,8 +69,9 @@ def print_drgv2(values_for_column_drgv2,region, comp_name, vcn_info,drg_info,drg
                             statement_val=statement_val+"\n"+ match_type+"::"+attachment_type+"::"+str(priority)
                         elif(match_type=="DRG_ATTACHMENT_ID"):
                             drg_attachment_id=stmt.match_criteria[0].drg_attachment_id
-
                             statement_val = statement_val+"\n"+ match_type + "::" + drg_attachment_id + "::" + str(priority)
+                        elif(match_type == "MATCH_ALL"):
+                            statement_val = statement_val + "\n" + match_type + "::" +  "::" + str(priority)
                     else:
                         statement_val = statement_val+"\n"+ "ALL::::"+str(priority)+ "\n"
             values_for_column_drgv2[col_header].append(statement_val)
@@ -242,21 +243,18 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Export Network Objects in OCI to CD3")
     parser.add_argument("inputfile", help="path of CD3 excel file to export network objects to")
     parser.add_argument("outdir", help="path to out directory containing script for TF import commands")
+    parser.add_argument("service_dir",help="subdirectory under region directory in case of separate out directory structure")
     parser.add_argument("--configFileName", default=DEFAULT_LOCATION, help="Config file name")
-    parser.add_argument("--network-compartments", nargs='*', help="comma seperated Compartments for which to export Networking Objects", required=False)
+    parser.add_argument("--export-compartments", nargs='*', help="comma seperated Compartments for which to export Networking Objects", required=False)
+    parser.add_argument("--export-regions", nargs='*',help="comma seperated Regions for which to export Networking Objects", required=False)
     return parser.parse_args()
 
-def export_major_objects(inputfile, outdir, _config, ct,network_compartments=[]):
+def export_major_objects(inputfile, outdir, service_dir, _config, ct,export_compartments=[], export_regions=[]):
     global sheet_dict_vcns
     global sheet_dict_drgv2
 
     input_config_file = _config
     config = oci.config.from_file(file_location=input_config_file)
-
-    if ct==None:
-        ct = commonTools()
-        ct.get_subscribedregions(input_config_file)
-        ct.get_network_compartment_ids(config['tenancy'], "root", input_config_file)
 
     cd3file = inputfile
     if ('.xls' not in cd3file):
@@ -275,26 +273,23 @@ def export_major_objects(inputfile, outdir, _config, ct,network_compartments=[])
     sheet_dict_drgv2 = ct.sheet_dict["DRGs"]
 
     print("Fetching VCN Major Objects...")
-    # Check Compartments
-    comp_list_fetch = commonTools.get_comp_list_for_export(network_compartments, ct.ntk_compartment_ids)
-
 
     # Create backups
-    for reg in ct.all_regions:
-        if (os.path.exists(outdir + "/" + reg + "/tf_import_commands_network_major-objects_nonGF.sh")):
-            commonTools.backup_file(outdir + "/" + reg, "tf_import_network", "tf_import_commands_network_major-objects_nonGF.sh")
-        if (os.path.exists(outdir + "/" + reg + "/obj_names.safe")):
-            commonTools.backup_file(outdir + "/" + reg, "obj_names", "obj_names.safe")
-        importCommands[reg] = open(outdir + "/" + reg + "/tf_import_commands_network_major-objects_nonGF.sh", "w")
+    for reg in export_regions:
+        if (os.path.exists(outdir + "/" + reg + "/" + service_dir + "/tf_import_commands_network_major-objects_nonGF.sh")):
+            commonTools.backup_file(outdir + "/" + reg+"/"+service_dir, "tf_import_network", "tf_import_commands_network_major-objects_nonGF.sh")
+        if (os.path.exists(outdir + "/" + reg + "/" + service_dir + "/obj_names.safe")):
+            commonTools.backup_file(outdir + "/" + reg+ "/" + service_dir, "obj_names", "obj_names.safe")
+        importCommands[reg] = open(outdir + "/" + reg + "/"+service_dir + "/tf_import_commands_network_major-objects_nonGF.sh", "w")
         importCommands[reg].write("#!/bin/bash")
         importCommands[reg].write("\n")
         importCommands[reg].write("terraform init")
-        oci_obj_names[reg] = open(outdir + "/" + reg + "/obj_names.safe", "w")
+        oci_obj_names[reg] = open(outdir + "/" + reg +"/" +service_dir + "/obj_names.safe", "w")
 
     print("Tabs- VCNs and DRGs would be overwritten during export process!!!\n")
 
     # Fetch DRGs
-    for reg in ct.all_regions:
+    for reg in export_regions:
         importCommands[reg].write("\n######### Writing import for DRGs #########\n")
         config.__setitem__("region", ct.region_dict[reg])
         vnc = VirtualNetworkClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
@@ -303,7 +298,7 @@ def export_major_objects(inputfile, outdir, _config, ct,network_compartments=[])
         drg_rt_ocid = []
         drg_comp_name = ''
         drg_version = "DRGv2"
-        for ntk_compartment_name in comp_list_fetch:
+        for ntk_compartment_name in export_compartments:
             # drgs = oci.pagination.list_call_get_all_results(vnc.list_drgs,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name])
             # for drg in drgs.data:
             DRG_Attachments = oci.pagination.list_call_get_all_results(vnc.list_drg_attachments,
@@ -452,13 +447,13 @@ def export_major_objects(inputfile, outdir, _config, ct,network_compartments=[])
     print("DRGs exported to CD3\n")
 
     # Fetch VCNs
-    for reg in ct.all_regions:
+    for reg in export_regions:
         importCommands[reg].write("\n######### Writing import for VCNs #########\n")
         config.__setitem__("region", ct.region_dict[reg])
         vnc = VirtualNetworkClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
         region = reg.capitalize()
         comp_ocid_done = []
-        for ntk_compartment_name in comp_list_fetch:
+        for ntk_compartment_name in export_compartments:
             # if ct.ntk_compartment_ids[ntk_compartment_name] not in comp_ocid_done:
             # if (input_compartment_names is not None and ntk_compartment_name not in input_compartment_names):
             #    continue
@@ -557,13 +552,13 @@ def export_major_objects(inputfile, outdir, _config, ct,network_compartments=[])
     commonTools.write_to_cd3(values_for_column_vcns, cd3file, "VCNs")
     print("VCNs exported to CD3\n")
 
-    for reg in ct.all_regions:
+    for reg in export_regions:
         importCommands[reg].close()
         oci_obj_names[reg].close()
 
 
 
-def export_dhcp(inputfile, outdir, _config, ct,network_compartments=[]):
+def export_dhcp(inputfile, outdir, service_dir, _config, ct,export_compartments=[], export_regions=[]):
     global sheet_dict_dhcp
     input_config_file = _config
     config = oci.config.from_file(file_location=input_config_file)
@@ -586,33 +581,30 @@ def export_dhcp(inputfile, outdir, _config, ct,network_compartments=[]):
 
     print("Fetching DHCP...")
 
-    # Check Compartments
-    comp_list_fetch = commonTools.get_comp_list_for_export(network_compartments, ct.ntk_compartment_ids)
-
     # Create backups
-    for reg in ct.all_regions:
-        if (os.path.exists(outdir + "/" + reg + "/tf_import_commands_network_dhcp_nonGF.sh")):
-            commonTools.backup_file(outdir + "/" + reg, "tf_import_network",
+    for reg in export_regions:
+        if (os.path.exists(outdir + "/" + reg +"/" +service_dir + "/tf_import_commands_network_dhcp_nonGF.sh")):
+            commonTools.backup_file(outdir + "/" + reg +"/" + service_dir, "tf_import_network",
                                     "tf_import_commands_network_dhcp_nonGF.sh")
-        importCommands[reg] = open(outdir + "/" + reg + "/tf_import_commands_network_dhcp_nonGF.sh", "w")
+        importCommands[reg] = open(outdir + "/" + reg +"/" +service_dir + "/tf_import_commands_network_dhcp_nonGF.sh", "w")
         importCommands[reg].write("#!/bin/bash")
         importCommands[reg].write("\n")
 
     print("Tab- DHCP would be overwritten during export process!!!")
-    for reg in ct.all_regions:
+    for reg in export_regions:
         importCommands[reg].write("\n\n######### Writing import for DHCP #########\n\n")
         config.__setitem__("region", ct.region_dict[reg])
         vnc = VirtualNetworkClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
         region = reg.capitalize()
         #comp_ocid_done = []
-        for ntk_compartment_name in comp_list_fetch:
+        for ntk_compartment_name in export_compartments:
                 vcns = oci.pagination.list_call_get_all_results(vnc.list_vcns,
                                                                 compartment_id=ct.ntk_compartment_ids[ntk_compartment_name],
                                                                 lifecycle_state="AVAILABLE")
                 for vcn in vcns.data:
                     vcn_info = vnc.get_vcn(vcn.id).data
         #            comp_ocid_done_again = []
-                    for ntk_compartment_name_again in comp_list_fetch:
+                    for ntk_compartment_name_again in export_compartments:
                             DHCPs = oci.pagination.list_call_get_all_results(vnc.list_dhcp_options,
                                                                              compartment_id=ct.ntk_compartment_ids[
                                                                                  ntk_compartment_name_again], vcn_id=vcn.id,
@@ -622,10 +614,10 @@ def export_dhcp(inputfile, outdir, _config, ct,network_compartments=[]):
                                 print_dhcp(values_for_column_dhcp,region, ntk_compartment_name_again, vcn_info.display_name, dhcp_info)
     commonTools.write_to_cd3(values_for_column_dhcp, cd3file, "DHCP")
     print("DHCP exported to CD3\n")
-    for reg in ct.all_regions:
+    for reg in export_regions:
         importCommands[reg].close()
 
-def export_subnets(inputfile, outdir, _config, ct, network_compartments=[]):
+def export_subnets(inputfile, outdir, service_dir, _config, ct, export_compartments=[], export_regions=[]):
     global sheet_dict_subnets
     input_config_file = _config
     config = oci.config.from_file(file_location=input_config_file)
@@ -648,33 +640,30 @@ def export_subnets(inputfile, outdir, _config, ct, network_compartments=[]):
 
     print("Fetching Subnets...")
 
-    # Check Compartments
-    comp_list_fetch = commonTools.get_comp_list_for_export(network_compartments, ct.ntk_compartment_ids)
-
     # Create backups
-    for reg in ct.all_regions:
-        if (os.path.exists(outdir + "/" + reg + "/tf_import_commands_network_subnets_nonGF.sh")):
-            commonTools.backup_file(outdir + "/" + reg, "tf_import_network",
+    for reg in export_regions:
+        if (os.path.exists(outdir + "/" + reg + "/" +service_dir + "/tf_import_commands_network_subnets_nonGF.sh")):
+            commonTools.backup_file(outdir + "/" + reg +"/" + service_dir , "tf_import_network",
                                     "tf_import_commands_network_subnets_nonGF.sh")
-        importCommands[reg] = open(outdir + "/" + reg + "/tf_import_commands_network_subnets_nonGF.sh", "w")
+        importCommands[reg] = open(outdir + "/" + reg + "/" + service_dir+ "/tf_import_commands_network_subnets_nonGF.sh", "w")
         importCommands[reg].write("#!/bin/bash")
         importCommands[reg].write("\n")
 
     print("Tab- Subnets would be overwritten during export process!!!")
-    for reg in ct.all_regions:
+    for reg in export_regions:
         importCommands[reg].write("\n\n######### Writing import for Subnets #########\n\n")
         config.__setitem__("region", ct.region_dict[reg])
         vnc = VirtualNetworkClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
         region = reg.capitalize()
         # comp_ocid_done = []
-        for ntk_compartment_name in comp_list_fetch:
+        for ntk_compartment_name in export_compartments:
             vcns = oci.pagination.list_call_get_all_results(vnc.list_vcns,
                                                             compartment_id=ct.ntk_compartment_ids[ntk_compartment_name],
                                                             lifecycle_state="AVAILABLE")
             for vcn in vcns.data:
                 vcn_info = vnc.get_vcn(vcn.id).data
                 #            comp_ocid_done_again = []
-                for ntk_compartment_name_again in comp_list_fetch:
+                for ntk_compartment_name_again in export_compartments:
                     Subnets = oci.pagination.list_call_get_all_results(vnc.list_subnets,
                                                                        compartment_id=ct.ntk_compartment_ids[
                                                                            ntk_compartment_name_again], vcn_id=vcn.id,
@@ -710,42 +699,37 @@ def export_subnets(inputfile, outdir, _config, ct, network_compartments=[]):
                                       rt_name, sl_names, add_def_seclist)
     commonTools.write_to_cd3(values_for_column_subnets, cd3file, "Subnets")
     print("Subnets exported to CD3\n")
-    for reg in ct.all_regions:
+    for reg in export_regions:
         importCommands[reg].write('\n\nterraform plan\n')
         importCommands[reg].close()
 
-def export_networking(inputfile, outdir, _config, network_compartments=[]):
-    global ct
+def export_networking(inputfile, outdir, service_dir, _config, ct,export_compartments=[], export_regions=[]):
+
     input_config_file = _config
     config = oci.config.from_file(file_location=input_config_file)
-    input_compartment_names = network_compartments
-
-    ct = commonTools()
-    ct.get_subscribedregions(input_config_file)
-    ct.get_network_compartment_ids(config['tenancy'],"root",input_config_file)
 
     print("\nCD3 excel file should not be opened during export process!!!\n")
 
     # Fetch Major Objects
-    export_major_objects(inputfile, network_compartments=network_compartments, _config=input_config_file, outdir=outdir,ct=ct)
+    export_major_objects(inputfile, export_compartments=export_compartments, export_regions=export_regions, service_dir=service_dir, _config=input_config_file, outdir=outdir,ct=ct)
 
     # Fetch DHCP
-    export_dhcp(inputfile, network_compartments=network_compartments, _config=input_config_file,outdir=outdir,ct=ct)
+    export_dhcp(inputfile, export_compartments=export_compartments, export_regions=export_regions, service_dir=service_dir, _config=input_config_file,outdir=outdir,ct=ct)
 
     # Fetch Subnets
-    export_subnets(inputfile, network_compartments=network_compartments, _config=input_config_file, outdir=outdir,ct=ct)
+    export_subnets(inputfile, export_compartments=export_compartments, export_regions=export_regions, service_dir=service_dir, _config=input_config_file, outdir=outdir,ct=ct)
 
     # Fetch RouteRules and SecRules
-    export_seclist(inputfile, network_compartments=network_compartments, _config=input_config_file, _tf_import_cmd=True, outdir=outdir )
+    export_seclist(inputfile, export_compartments=export_compartments, export_regions=export_regions, service_dir=service_dir, _config=input_config_file, _tf_import_cmd=True, outdir=outdir,ct=ct)
 
-    export_routetable(inputfile, network_compartments=network_compartments, _config=input_config_file, _tf_import_cmd=True, outdir=outdir )
+    export_routetable(inputfile, export_compartments=export_compartments, export_regions=export_regions, service_dir=service_dir, _config=input_config_file, _tf_import_cmd=True, outdir=outdir,ct=ct)
 
-    export_drg_routetable(inputfile, network_compartments=network_compartments, _config=input_config_file, _tf_import_cmd=True, outdir=outdir )
+    export_drg_routetable(inputfile, export_compartments=export_compartments, export_regions=export_regions, service_dir=service_dir,  _config=input_config_file, _tf_import_cmd=True, outdir=outdir,ct=ct)
 
     # Fetch NSGs
-    export_nsg(inputfile, network_compartments=network_compartments, _config=input_config_file, _tf_import_cmd=True, outdir=outdir )
+    export_nsg(inputfile, export_compartments=export_compartments, export_regions=export_regions, service_dir=service_dir, _config=input_config_file, _tf_import_cmd=True, outdir=outdir,ct=ct)
 
 
 if __name__=="__main__":
     args = parse_args()
-    export_networking(args.inputfile, args.outdir, args.config, args.network_compartments)
+    export_networking(args.inputfile, args.outdir, args.service_dir, args.config, args.export_compartments, args.export_regions)

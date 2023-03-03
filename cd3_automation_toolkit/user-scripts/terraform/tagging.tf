@@ -6,7 +6,7 @@
 ############################
 
 module "tag-namespaces" {
-  source   = "./modules/tagging/tag-namespace"
+  source   = "./modules/governance/tagging/tag-namespace"
   for_each = (var.tag_namespaces != null || var.tag_namespaces != {}) ? var.tag_namespaces : {}
 
   #Required
@@ -22,7 +22,7 @@ module "tag-namespaces" {
 }
 
 module "tag-keys" {
-  source   = "./modules/tagging/tag-key"
+  source   = "./modules/governance/tagging/tag-key"
   for_each = (var.tag_keys != null || var.tag_keys != {}) ? var.tag_keys : {}
 
   #Required
@@ -40,7 +40,7 @@ module "tag-keys" {
 }
 
 module "tag-defaults" {
-  source   = "./modules/tagging/tag-default"
+  source   = "./modules/governance/tagging/tag-default"
   for_each = (var.tag_defaults != null || var.tag_defaults != {}) ? var.tag_defaults : {}
 
   #Required

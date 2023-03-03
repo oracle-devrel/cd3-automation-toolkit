@@ -6,6 +6,7 @@
 #######################################
 
 data "oci_core_instances" "nlb_instances" {
+  state = "RUNNING"
   compartment_id = var.instance_compartment
 }
 

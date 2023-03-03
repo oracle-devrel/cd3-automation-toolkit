@@ -27,12 +27,13 @@ def parse_args():
     parser = argparse.ArgumentParser(description='Create Compartments terraform file')
     parser.add_argument('inputfile', help='Full Path of input CD3 excel file')
     parser.add_argument('outdir', help='Output directory for creation of TF files')
+    parser.add_argument('service_dir', help='Structured out directory for creation of TF files')
     parser.add_argument('prefix', help='TF files prefix')
     parser.add_argument('--config', default=DEFAULT_LOCATION, help='Config file name')
     return parser.parse_args()
 
 # If input in cd3 file
-def create_terraform_compartments(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
+def create_terraform_compartments(inputfile, outdir, service_dir, prefix, config=DEFAULT_LOCATION):
     # Declare variables
     filename = inputfile
     configFileName = config
@@ -63,7 +64,7 @@ def create_terraform_compartments(inputfile, outdir, prefix, config=DEFAULT_LOCA
     config = oci.config.from_file(file_location=configFileName)
     ct.get_network_compartment_ids(config['tenancy'], "root", configFileName)
 
-    srcdir = outdir + "/" + ct.home_region + "/"
+    srcdir = outdir + "/" + ct.home_region + "/" + service_dir + "/"
     resource = sheetName.lower()
     commonTools.backup_file(srcdir, resource, auto_tfvars_filename)
 
@@ -108,7 +109,7 @@ def create_terraform_compartments(inputfile, outdir, prefix, config=DEFAULT_LOCA
 
         region = region.strip().lower()
 
-        # If some invalid region is specified in a row which is not part of VCN Info Tab
+        # If some invalid region is specified in a row
         if region != ct.home_region:
             print("\nERROR!!! Invalid Region; It should be Home Region of the tenancy..Exiting!")
             exit(1)
@@ -243,7 +244,7 @@ def create_terraform_compartments(inputfile, outdir, prefix, config=DEFAULT_LOCA
     tfStr = tfStr + template.render(count=0,root=root_compartments,compartment_level1=sub_compartments_level1,compartment_level2=sub_compartments_level2,compartment_level3=sub_compartments_level3,compartment_level4=sub_compartments_level4,compartment_level5=sub_compartments_level5)
 
     # Write TF string to the file in respective region directory
-    reg_out_dir = outdir + "/" + ct.home_region
+    reg_out_dir = outdir + "/" + ct.home_region + "/" + service_dir
     if not os.path.exists(reg_out_dir):
         os.makedirs(reg_out_dir)
 
@@ -265,4 +266,4 @@ def create_terraform_compartments(inputfile, outdir, prefix, config=DEFAULT_LOCA
 if __name__ == '__main__':
     # Execution of the code begins here
     args = parse_args()
-    create_terraform_compartments(args.inputfile, args.outdir, args.prefix, args.config)
+    create_terraform_compartments(args.inputfile, args.outdir, args.service_dir, args.prefix, args.config)

@@ -17,6 +17,7 @@ path_route_sets = {
         load_balancer_id = "{{ lbr_tf_name }}"
         name = "{{ path_route_set_name }}"
         path_routes = [
+        #Path_routes_for_{{ lbr_tf_name }}_{{ path_route_set_tf_name }}_here
 {{ path_routes }}
             ]
       },

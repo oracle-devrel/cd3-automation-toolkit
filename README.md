@@ -18,7 +18,8 @@
 8. [Creating independent tfstate files for each resource](/cd3_automation_toolkit/documentation/user_guide/RestructuringOutDirectory.md)
 9. [Expected Behaviour Of Automation Toolkit](/cd3_automation_toolkit/documentation/user_guide/KnownBehaviour.md)
 10. [FAQs](/cd3_automation_toolkit/documentation/user_guide/FAQ.md)
-11. Learn More...
+11. [Steps to Upgrade Your Toolkit](/cd3_automation_toolkit/documentation/user_guide/Upgrade_Toolkit.md)
+12. Learn More...
     - CD3 Excel Information
       - [Excel Templates](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md#excel-sheet-templates)
       - [Toolkit Supported OCI Services](/cd3_automation_toolkit/documentation/user_guide/learn_more/CD3ExcelTabs.md)
@@ -26,7 +27,7 @@
     - [Additional CIS Compliance Features](/cd3_automation_toolkit/documentation/user_guide/learn_more/CISFeatures.md)
     - [OCI Resource Manager Upload](/cd3_automation_toolkit/documentation/user_guide/learn_more/ResourceManagerUpload.md)
     - [Support for Additional Attributes](/cd3_automation_toolkit/documentation/user_guide/learn_more/SupportforAdditionalAttributes.md)
-12. [Automation Toolkit Learning Videos](/cd3_automation_toolkit/documentation/user_guide/LearningVideos.md)
+13. [Automation Toolkit Learning Videos](/cd3_automation_toolkit/documentation/user_guide/LearningVideos.md)
 
 ## Introduction
 CD3 stands for <b>C</b>loud <b>D</b>eployment <b>D</b>esign <b>D</b>eliverable.
@@ -39,7 +40,7 @@ It reads input data in the form of CD3 Excel sheet and generates the terraform f
 </kbd>
 <br>
 
-#### OCI Services Currently Supported by CD3
+#### OCI Services Currently Supported by Automation Toolkit
 
 | OCI Services | Details |
 | --------- | ----------- |
@@ -62,7 +63,7 @@ It reads input data in the form of CD3 Excel sheet and generates the terraform f
 Appropriate IAM policies must be in place for each of the resources that the user may try to create.
 Minimum requirement for the user to get started is to have the ability to read to the tenancy.
 
-[Click here](/cd3_automation_toolkit/documentation/user_guide/Launch_Docker_container.md) to get started and manage your OCI Infra!!! 
+[Click here](/cd3_automation_toolkit/documentation/user_guide/Launch_Docker_container.md) to get started and manage your OCI Infra!
 
 ## Contributing
 This project is open source.  Please submit your contributions by raising an <b>Issue</b> or through <b>Discussion topic</b> in this repository. Currently, we do not accept any pull requests. Oracle appreciates any contributions that are made by the open source community.

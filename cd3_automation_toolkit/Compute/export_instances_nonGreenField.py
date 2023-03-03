@@ -68,14 +68,6 @@ def adding_columns_values(region, ad, fd, vs, publicip, privateip, os_dname, sha
                                                                            values_for_column_instances)
 
 
-def find_boot(ins_ad, ins_id, config):
-    compute = oci.core.ComputeClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
-    for comp in comp_list_fetch:
-        bl = compute.list_boot_volume_attachments(availability_domain=ins_ad, compartment_id=ct.ntk_compartment_ids[comp], instance_id=ins_id)
-        if (len(bl.data)):
-            return bl
-
-
 def find_vnic(ins_id, config,compartment_id):
     compute = oci.core.ComputeClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
     #for comp in all_compartments:
@@ -86,7 +78,7 @@ def find_vnic(ins_id, config,compartment_id):
 
 
 
-def __get_instances_info(compartment_name, compartment_id, reg_name, config,display_names, ad_names):
+def __get_instances_info(compartment_name, compartment_id, reg_name, config,display_names, ad_names,ct):
     config.__setitem__("region", ct.region_dict[reg_name])
     compute = oci.core.ComputeClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
     network = oci.core.VirtualNetworkClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
@@ -115,9 +107,11 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, config,disp
             # Continue to next one if it's an OKE instance
             if 'oke-' in ins_dname:
                 ins_defined_tags = ins.defined_tags
-                created_by = ins_defined_tags['Oracle-Tags']['CreatedBy']
-                if created_by == 'oke':
-                    continue
+                if 'Oracle-Tags' in ins_defined_tags.keys():
+                    if 'CreatedBy' in ins_defined_tags['Oracle-Tags'].keys():
+                        created_by = ins_defined_tags['Oracle-Tags']['CreatedBy']
+                        if created_by == 'oke':
+                            continue
 
             ins_fd = ins.fault_domain  # FD
             ins_id = ins.id
@@ -142,7 +136,9 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, config,disp
                 dedicated_host=compute.get_dedicated_vm_host(dedicated_host_id)
 
             # Boot Volume and its BackUp Policy Details
-            boot_check = find_boot(ins_ad, ins_id, config)
+            boot_check = compute.list_boot_volume_attachments(availability_domain=ins_ad,
+                                                          compartment_id=compartment_id,
+                                                          instance_id=ins_id)
             boot_id = boot_check.data[0].boot_volume_id
             try:
                 bdet = bc.get_boot_volume(boot_volume_id=boot_id).data
@@ -258,14 +254,17 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Export Instances in OCI to CD3")
     parser.add_argument("inputfile", help="path of CD3 excel file to export Instance objects to")
     parser.add_argument("outdir", help="path to out directory containing script for TF import commands")
+    parser.add_argument("service_dir",help="subdirectory under region directory in case of separate out directory structure")
     parser.add_argument("--config", default=DEFAULT_LOCATION, help="Config file name")
-    parser.add_argument("--network-compartments", nargs='*', required=False, help="comma seperated Compartments for which to export Instance Objects")
+    parser.add_argument("--export-compartments", nargs='*', required=False, help="comma seperated Compartments for which to export Instance Objects")
+    parser.add_argument("--export-regions", nargs='*', help="comma seperated Regions for which to export Networking Objects",
+                   required=False)
+
     return parser.parse_args()
 
 
-def export_instances(inputfile, outdir, config, network_compartments=[], display_names=[],ad_names=[]):
+def export_instances(inputfile, outdir, service_dir,config,ct, export_compartments=[], export_regions=[],display_names=[],ad_names=[]):
     cd3file = inputfile
-    input_compartment_names = network_compartments
 
     if ('.xls' not in cd3file):
         print("\nAcceptable cd3 format: .xlsx")
@@ -274,18 +273,20 @@ def export_instances(inputfile, outdir, config, network_compartments=[], display
     configFileName = config
     config = oci.config.from_file(file_location=configFileName)
 
-    global instance_keys, user_data_in, os_keys, ct, importCommands, idc, rows, AD, values_for_column_instances, df, sheet_dict_instances  # declaring global variables
+    global instance_keys, user_data_in, os_keys, importCommands, idc, rows, AD, values_for_column_instances, df, sheet_dict_instances  # declaring global variables
 
     instance_keys = {}  # dict name
     os_keys = {}  # os_ocids
     user_data_in = {}  # user data for exports
 
     sheetName= "Instances"
-    ct = commonTools()
     importCommands = {}
     rows = []
-    ct.get_subscribedregions(configFileName)
-    ct.get_network_compartment_ids(config['tenancy'], "root", configFileName)
+
+    if ct==None:
+        ct = commonTools()
+        ct.get_subscribedregions(configFileName)
+        ct.get_network_compartment_ids(config['tenancy'], "root", configFileName)
 
     AD = lambda ad: "AD1" if ("AD-1" in ad or "ad-1" in ad) else ("AD2" if ("AD-2" in ad or "ad-2" in ad) else ("AD3" if ("AD-3" in ad or "ad-3" in ad) else " NULL"))  # Get shortend AD
 
@@ -293,33 +294,29 @@ def export_instances(inputfile, outdir, config, network_compartments=[], display
     sheet_dict_instances = ct.sheet_dict[sheetName]
 
     print("\nCD3 excel file should not be opened during export process!!!")
-    print("Tabs Instances will be overwritten during this export process!!!\n")
+    print("Tabs- Instances will be overwritten during this export process!!!\n")
 
     # Create of .sh file
     resource = 'tf_import_' + sheetName.lower()
     file_name = 'tf_import_commands_' + sheetName.lower() + '_nonGF.sh'
-    for reg in ct.all_regions:
-        script_file = f'{outdir}/{reg}/' + file_name
+    for reg in export_regions:
+        script_file = f'{outdir}/{reg}/{service_dir}/' + file_name
         if (os.path.exists(script_file)):
-            commonTools.backup_file(outdir + "/" + reg, resource, file_name)
+            commonTools.backup_file(outdir + "/" + reg+"/"+service_dir, resource, file_name)
         importCommands[reg] = open(script_file, "w")
         importCommands[reg].write("#!/bin/bash")
         importCommands[reg].write("\n")
         importCommands[reg].write("terraform init")
 
-    # Check Compartments
-    global comp_list_fetch
-    comp_list_fetch = commonTools.get_comp_list_for_export(network_compartments, ct.ntk_compartment_ids)
-
-    for reg in ct.all_regions:
+    for reg in export_regions:
         importCommands[reg].write("\n\n######### Writing import for Instances #########\n\n")
         config.__setitem__("region", ct.region_dict[reg])
-        for ntk_compartment_name in comp_list_fetch:
-           __get_instances_info(ntk_compartment_name, ct.ntk_compartment_ids[ntk_compartment_name], reg, config, display_names, ad_names)
+        for ntk_compartment_name in export_compartments:
+           __get_instances_info(ntk_compartment_name, ct.ntk_compartment_ids[ntk_compartment_name], reg, config, display_names, ad_names,ct)
 
     # writing image ocids and SSH keys into variables file
     var_data = {}
-    for reg in ct.all_regions:
+    for reg in export_regions:
         myocids = {}
         for keys, values in os_keys.items():
             reg_name = keys.split("-")[0]
@@ -334,7 +331,7 @@ def export_instances(inputfile, outdir, config, network_compartments=[], display
                 key_name = keys[len(reg_name) + 1:]
                 mykeys[key_name] = values
 
-        file = f'{outdir}/{reg}/variables_{reg}.tf'
+        file = f'{outdir}/{reg}/{service_dir}/variables_{reg}.tf'
         # Read variables file data
         with open(file, 'r') as f:
             var_data[reg] = f.read()
@@ -368,8 +365,8 @@ def export_instances(inputfile, outdir, config, network_compartments=[], display
         f.close()
 
     # write data into file
-    for reg in ct.all_regions:
-        script_file = f'{outdir}/{reg}/tf_import_commands_instances_nonGF.sh'
+    for reg in export_regions:
+        script_file = f'{outdir}/{reg}/{service_dir}/tf_import_commands_instances_nonGF.sh'
         with open(script_file, 'a') as importCommands[reg]:
             importCommands[reg].write('\n\nterraform plan\n')
 
@@ -380,4 +377,4 @@ def export_instances(inputfile, outdir, config, network_compartments=[], display
 if __name__ == '__main__':
     # Execution of the code begins here
     args = parse_args()
-    export_instances(args.inputfile, args.outdir, args.config, args.network_compartments)
+    export_instances(args.inputfile, args.outdir, args.service_dir,args.config, args.export_compartments, args.export_regions)

@@ -26,8 +26,6 @@ nlb_listeners = {
 
         {% if ip_version and ip_version != "" %}
         ip_version = {{ ip_version }}
-        {% else %}
-        ip_version = ""
         {% endif %}
 
     },

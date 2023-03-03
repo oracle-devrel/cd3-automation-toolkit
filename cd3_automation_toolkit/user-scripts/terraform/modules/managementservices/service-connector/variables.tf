@@ -29,6 +29,14 @@ variable "source_monitoring_details" {
   type    = map(any)
   default = {}
 }
+variable "target_monitoring_details" {
+  type    = map(any)
+  default = {}
+}
+variable "function_details" {
+  type    = list(string)
+  default = null
+}
 variable "display_name" {
   type    = string
   default = null

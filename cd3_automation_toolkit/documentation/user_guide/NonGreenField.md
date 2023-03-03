@@ -16,7 +16,7 @@ Below are the steps that will help to configure the Automation Tool Kit to suppo
 **Step 2:** 
 <br>Put CD3 Excel at the appropriate location.
 <br>Modify/Review [setUpOCI.properties](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md#setupociproperties) with **non_gf_tenancy** set to **true**  as shown below:
-<img src = "https://user-images.githubusercontent.com/103508105/214645849-464ea32f-31b9-4c4a-8d0c-31e4e3cb541b.png" width=75% height=75%>
+![image](https://user-images.githubusercontent.com/103508105/221798771-9bca7a1a-5ef3-4587-8138-97f65c4d7cf1.png)
 
   
 **Step 3:** 

@@ -242,5 +242,10 @@
         "Backend HealthCheck URL" : "url_path",
         "Backend HealthCheck Return Code" : "return_code",
         "Backend HealthCheck Interval In Millis" : "interval_in_millis"
-       }
+       },
+       "ADB" :
+    {
+        "ADB Display Name" : "display_name"
+
+        }
 }

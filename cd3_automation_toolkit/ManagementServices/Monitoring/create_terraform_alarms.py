@@ -24,13 +24,14 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Creates TF files for Alarms")
     parser.add_argument('inputfile', help='Full Path of input CD3 excel file')
     parser.add_argument('outdir', help='Output directory for creation of TF files')
+    parser.add_argument('service_dir', help='Structured out directory for creation of TF files')
     parser.add_argument('prefix', help='TF files prefix')
     parser.add_argument('--config', default=DEFAULT_LOCATION, help='Config file name')
     return parser.parse_args()
 
 
 #If input is CD3 excel file
-def create_terraform_alarms(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
+def create_terraform_alarms(inputfile, outdir, service_dir, prefix, config=DEFAULT_LOCATION):
     filename = inputfile
     configFileName = config
 
@@ -64,7 +65,7 @@ def create_terraform_alarms(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
     # Take backup of files
     for eachregion in ct.all_regions:
         resource=sheetName.lower()
-        srcdir = outdir + "/" + eachregion + "/"
+        srcdir = outdir + "/" + eachregion + "/" + service_dir + "/"
         commonTools.backup_file(srcdir, resource, auto_tfvars_filename)
         tfStr[eachregion] = ''
 
@@ -181,7 +182,7 @@ def create_terraform_alarms(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
 
     # Write to output
     for reg in ct.all_regions:
-        reg_out_dir = outdir + "/" + reg
+        reg_out_dir = outdir + "/" + reg +"/" + service_dir
         if(tfStr[reg]!=''):
             outfile[reg] = reg_out_dir + "/" + prefix + auto_tfvars_filename
             tfStr[reg] = "".join([s for s in tfStr[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
@@ -193,4 +194,4 @@ def create_terraform_alarms(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
 if __name__ == '__main__':
     # Execution of the code begins here
     args = parse_args()
-    create_terraform_alarms(args.inputfile, args.outdir, args.prefix, args.config)
+    create_terraform_alarms(args.inputfile, args.outdir, args.service_dir, args.prefix, args.config)

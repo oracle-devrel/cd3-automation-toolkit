@@ -9,10 +9,8 @@
 #
 
 import argparse
-import sys
 import oci
 import os
-from pathlib import Path
 from commonTools import *
 
 
@@ -22,7 +20,7 @@ importCommands = {}
 oci_obj_names = {}
 
 
-def print_alarms(region, alarm, ncpclient,values_for_column, ntk_compartment_name):
+def print_alarms(region, alarm, ncpclient,values_for_column, ntk_compartment_name,ct):
     alarm_tf_name = commonTools.check_tf_variable(alarm.display_name)
     comp_tf_name = commonTools.check_tf_variable(ntk_compartment_name)
     suppression = alarm.suppression
@@ -77,19 +75,21 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Export Block Volumes on OCI to CD3")
     parser.add_argument("inputfile", help="path of CD3 excel file to export Block Volume objects to")
     parser.add_argument("outdir", help="path to out directory containing script for TF import commands")
+    parser.add_argument("service_dir", help="Structured out directory for creation of TF files")
     parser.add_argument("--config", default=DEFAULT_LOCATION, help="Config file name")
-    parser.add_argument("--network-compartments", nargs='*', required=False, help="comma seperated Compartments for which to export Block Volume Objects")
+    parser.add_argument("--export-compartments", nargs='*', required=False, help="comma seperated Compartments for which to export Block Volume Objects")
+    parser.add_argument("--export-regions", nargs='*', help="comma seperated Regions for which to export Networking Objects",
+                        required=False)
     return parser.parse_args()
 
 
-def export_alarms(inputfile, _outdir, _config, network_compartments=[]):
+def export_alarms(inputfile, _outdir, service_dir, _config, ct, export_compartments=[],export_regions=[]):
     global tf_import_cmd
     global sheet_dict
     global importCommands
     global config
     global cd3file
     global reg
-    global ct
     global outdir
     global values_for_column
 
@@ -105,9 +105,11 @@ def export_alarms(inputfile, _outdir, _config, network_compartments=[]):
     config = oci.config.from_file(file_location=configFileName)
 
     sheetName="Alarms"
-    ct = commonTools()
-    ct.get_subscribedregions(configFileName)
-    ct.get_network_compartment_ids(config['tenancy'],"root",configFileName)
+    
+    if ct==None:
+        ct = commonTools()
+        ct.get_subscribedregions(configFileName)
+        ct.get_network_compartment_ids(config['tenancy'],"root",configFileName)
 
     # Read CD3
     df, values_for_column= commonTools.read_cd3(cd3file,sheetName)
@@ -115,20 +117,16 @@ def export_alarms(inputfile, _outdir, _config, network_compartments=[]):
     # Get dict for columns from Excel_Columns
     sheet_dict=ct.sheet_dict[sheetName]
 
-    # Check Compartments
-    global comp_list_fetch
-    comp_list_fetch = commonTools.get_comp_list_for_export(network_compartments, ct.ntk_compartment_ids)
-
     print("\nCD3 excel file should not be opened during export process!!!")
     print("Tabs- Alarms  will be overwritten during export process!!!\n")
 
     # Create backups
     resource = 'tf_import_' + sheetName.lower()
     file_name = 'tf_import_commands_' + sheetName.lower() + '_nonGF.sh'
-    for reg in ct.all_regions:
-        script_file = f'{outdir}/{reg}/' + file_name
+    for reg in export_regions:
+        script_file = f'{outdir}/{reg}/{service_dir}/' + file_name
         if (os.path.exists(script_file)):
-            commonTools.backup_file(outdir + "/" + reg, resource, file_name)
+            commonTools.backup_file(outdir + "/" + reg +"/" + service_dir, resource, file_name)
         importCommands[reg] = open(script_file, "w")
         importCommands[reg].write("#!/bin/bash")
         importCommands[reg].write("\n")
@@ -137,7 +135,7 @@ def export_alarms(inputfile, _outdir, _config, network_compartments=[]):
     # Fetch Block Volume Details
     print("\nFetching details of Alarms...")
 
-    for reg in ct.all_regions:
+    for reg in export_regions:
         importCommands[reg].write("\n\n######### Writing import for Alarms #########\n\n")
         config.__setitem__("region", ct.region_dict[reg])
         region = reg.capitalize()
@@ -145,12 +143,12 @@ def export_alarms(inputfile, _outdir, _config, network_compartments=[]):
         mclient = oci.monitoring.MonitoringClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
         ncpclient = oci.ons.NotificationControlPlaneClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
 
-        for ntk_compartment_name in comp_list_fetch:
+        for ntk_compartment_name in export_compartments:
             alarms = oci.pagination.list_call_get_all_results(mclient.list_alarms,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name], lifecycle_state="ACTIVE")
 
             for alarmSummary in alarms.data:
                 alarm=mclient.get_alarm(alarmSummary.id).data
-                print_alarms(region, alarm,ncpclient,values_for_column, ntk_compartment_name)
+                print_alarms(region, alarm,ncpclient,values_for_column, ntk_compartment_name,ct)
 
 
         with open(script_file, 'a') as importCommands[reg]:
@@ -163,4 +161,4 @@ def export_alarms(inputfile, _outdir, _config, network_compartments=[]):
 if __name__ == '__main__':
     args = parse_args()
     # Execution of the code begins here
-    export_alarms(args.inputfile, args.outdir, args.config, args.network_compartments)
+    export_alarms(args.inputfile, args.outdir, args.config, args.service_dir, args.export_compartments,args.export_regions)

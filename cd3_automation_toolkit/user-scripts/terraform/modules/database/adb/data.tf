@@ -21,10 +21,3 @@ data "oci_core_network_security_groups" "network_security_groups_adb" {
   display_name   = each.value
   vcn_id         = data.oci_core_vcns.oci_vcns_adb.virtual_networks[0].id
 }
-
-data "oci_core_subnets" "oci_subnets_adb" {
-  count = var.subnet_id != null ? 1 : 0
-  compartment_id = var.network_compartment_id != null ? var.network_compartment_id : var.compartment_id
-  display_name   = var.subnet_id
-  vcn_id         = data.oci_core_vcns.oci_vcns_adb.virtual_networks[0].id
-}

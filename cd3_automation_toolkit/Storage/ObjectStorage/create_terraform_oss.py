@@ -25,12 +25,14 @@ def parse_args():
     # Read the arguments
     parser = argparse.ArgumentParser(description="Create Groups terraform file")
     parser.add_argument('outdir', help='Output directory for creation of TF files')
+    parser.add_argument("service_dir",help="subdirectory under region directory in case of separate out directory structure for kms/oss")
+    parser.add_argument("service_dir_iam",help="subdirectory under region directory in case of separate out directory structure for identity")
     parser.add_argument('prefix', help='TF files prefix')
     parser.add_argument("region_name", help="region name")
     parser.add_argument("comp_name", help="compartment name")
     parser.add_argument("--configFileName", deafult=DEFAULT_LOCATION, help="Config file name", required=False)
 
-def create_cis_oss(outdir, prefix, region_name, comp_name, config):
+def create_cis_oss(outdir, service_dir, service_dir_iam, prefix, region_name, comp_name, config):
     # Declare variables
     configFileName = config
     comp_name = comp_name.strip()
@@ -78,7 +80,7 @@ def create_cis_oss(outdir, prefix, region_name, comp_name, config):
     tempPolStr['description']='Policy allowing OCI OSS service to access Key in the Vault service.'
     tempPolStr['policy_statements'] = ''
     for reg in ct.all_regions:
-        actual_policy_statement = "Allow service objectstorage-"+ct.region_dict[reg]+" to use keys in compartment "+comp_name
+        actual_policy_statement = "allow service objectstorage-"+ct.region_dict[reg]+" to use keys in compartment "+comp_name
         tempPolStr['policy_statements'] = "\""+actual_policy_statement + "\","+tempPolStr['policy_statements']
     tfPolStr=tfPolStr + policyTemplate.render(tempPolStr)
     tfPolStr = tfPolStr + """ ]
@@ -87,15 +89,15 @@ def create_cis_oss(outdir, prefix, region_name, comp_name, config):
     tfPolStr = tfPolStr.replace('-#Addstmt]', '')
 
     # Write TF string to the file in respective region directory
-    reg_out_dir = outdir + "/" + region_name
+    reg_out_dir = outdir + "/" + region_name + "/" + service_dir
     if not os.path.exists(reg_out_dir):
         os.makedirs(reg_out_dir)
 
-    home_reg_out_dir = outdir + "/" + home_region
+    home_reg_out_dir = outdir + "/" + home_region + "/" + service_dir_iam
     outfile = reg_out_dir + "/" + oss_auto_tfvars_filename
     outPolfile= home_reg_out_dir +"/"+ oss_policy_auto_tfvars_filename
 
-    srcdir = reg_out_dir + "/"
+    srcdir = reg_out_dir
     resource = 'oss'
     commonTools.backup_file(srcdir, resource, oss_auto_tfvars_filename)
     commonTools.backup_file(srcdir, resource, oss_policy_auto_tfvars_filename)
@@ -129,4 +131,4 @@ def create_cis_oss(outdir, prefix, region_name, comp_name, config):
 
 if __name__ == '__main__':
     args = parse_args()
-    create_cis_oss(args.outdir, args.prefix, args.region_name, args.comp_name, args.config)
+    create_cis_oss(args.outdir, args.service_dir, args.service_dir_iam,args.prefix, args.region_name, args.comp_name, args.config)

@@ -18,7 +18,7 @@ resource "oci_containerengine_cluster" "cluster" {
   endpoint_config {
     is_public_ip_enabled = var.is_public_ip_enabled
     nsg_ids              = var.nsg_ids != null ? (local.endpoint_nsg_ids == [] ? ["INVALID ENDPOINT NSG Name"] : local.endpoint_nsg_ids) : null
-    subnet_id            = var.endpoint_subnet_id != "" ? (length(regexall("ocid1.subnet.oc1*", var.endpoint_subnet_id)) > 0 ? var.endpoint_subnet_id : data.oci_core_subnets.oci_subnets_clusters[var.endpoint_subnet_id].subnets.*.id[0]) : null
+    subnet_id            = var.endpoint_subnet_id
   }
 
   options {

@@ -21,47 +21,36 @@ backend_sets = {
         load_balancer_id = "{{ lbr_tf_name }}"
         policy = "{{ backend_policy }}"
 
+        {% if backend_healthcheck_protocol and backend_healthcheck_protocol != '' %}
         protocol = "{{ backend_healthcheck_protocol }}"
+        {% endif %}
+
         {% if interval_in_millis and interval_in_millis != '' and interval_in_millis != 'nan' %}
         interval_ms = "{{ interval_in_millis }}"
-        {% else %}
-        interval_ms = ""
         {% endif %}
 
         {% if port != '' %}
         port = "{{ backend_healthcheck_port }}"
-        {% else %}
-        port = ""
         {% endif %}
 
         {% if response_body_regex and response_body_regex != '' %}
         response_body_regex = "{{ response_body_regex }}"
-        {% else %}
-        response_body_regex = ""
         {% endif %}
 
         {% if retries and retries != '' %}
         retries = "{{ retries }}"
-        {% else %}
-        retries = ""
         {% endif %}
 
         {% if return_code and return_code != '' %}
         return_code = "{{ return_code }}"
-        {% else %}
-        return_code = ""
         {% endif %}
 
         {% if timeout_in_millis and timeout_in_millis != '' %}
         timeout_in_millis = "{{ timeout_in_millis }}"
-        {% else %}
-        timeout_in_millis = ""
         {% endif %}
 
         {% if backend_healthcheck_protocol == 'HTTP' %}
         url_path = "{{ backend_healthcheck_url }}"
-        {% else %}
-        url_path = ""
         {% endif %}
 
         {% if session == "LB" %}
@@ -72,32 +61,22 @@ backend_sets = {
 
             {% if domain and domain != "" %}
             domain = "{{ domain }}"
-            {% else %}
-            domain = ""
             {% endif %}
 
             {% if is_http_only and is_http_only != "" %}
             is_http_only = "{{ is_http_only }}"
-            {% else %}
-            is_http_only = ""
             {% endif %}
 
             {% if is_secure and is_secure != "" %}
             is_secure = "{{ is_secure }}"
-            {% else %}
-            is_secure = ""
             {% endif %}
 
             {% if max_age_in_seconds and max_age_in_seconds != "" %}
             max_age_in_seconds = "{{ max_age_in_seconds }}"
-            {% else %}
-            max_age_in_seconds = ""
             {% endif %}
         }]
-        session_persistence_configuration = []
 
         {% elif session == "Backend Server" %}
-        lb_cookie_session = []
         session_persistence_configuration = [{
             #Required
             cookie_name = "{{ cookie_name }}"
@@ -105,22 +84,16 @@ backend_sets = {
             #Optional
             disable_fallback = "{{ disable_fallback }}"
 
-        }]{% else %}
-        lb_cookie_session = []
-        session_persistence_configuration = []
+        }]
         {% endif %}
 
         {% if certificate_tf_name and certificate_tf_name != "" and certificate_tf_name != 'nan' %}
         certificate_name = "{{ lbr_tf_name }}_{{ certificate_tf_name }}"
-        {% else %}
-        certificate_name = ""
         {% endif %}
 
 
         {% if cipher_suite_name and cipher_suite_name != "" %}
         cipher_suite_name = "{{ cipher_suite_name }}"
-        {% else %}
-        cipher_suite_name = ""
         {% endif %}
 
         {% if usessl|lower == 'y' %}
@@ -128,37 +101,25 @@ backend_sets = {
 
             {% if certificate_ids and certificate_ids != "" %}
             certificate_ids  = ["{{ certificate_ids }}"]
-            {% else %}
-            certificate_ids = []
             {% endif %}
 
             {% if server_order_preference and server_order_preference != "" %}
             server_order_preference  = "{{ server_order_preference }}"
-            {% else %}
-            server_order_preference = ""
             {% endif %}
 
             {% if trusted_certificate_authority_ids and trusted_certificate_authority_ids != "" %}
             trusted_certificate_authority_ids  = ["{{ trusted_certificate_authority_ids }}"]
-            {% else %}
-            trusted_certificate_authority_ids = []
             {% endif %}
 
             {% if verify_peer_certificate %}
             verify_peer_certificate = {{  verify_peer_certificate }}
             verify_depth = {{ verify_depth }}
-            {% else %}
-            verify_peer_certificate = null
-            verify_depth = null
             {% endif %}
 
             {% if cipher_suite_name %}
             protocols = [ {{ ssl_protocols }} ]
-            {% else %}
-            protocols = []
             {% endif %}
-        }] {% else %}
-        ssl_configuration  = []
+        }]
         {% endif %}
     },
 {% endif %}

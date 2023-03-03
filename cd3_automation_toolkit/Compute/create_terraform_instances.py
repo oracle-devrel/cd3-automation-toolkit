@@ -24,13 +24,14 @@ def parse_args():
     parser = argparse.ArgumentParser(description='Creates Instances TF file')
     parser.add_argument('inputfile', help='Full Path of input CD3 excel file')
     parser.add_argument('outdir', help='Output directory for creation of TF files')
+    parser.add_argument("service_dir",help="subdirectory under region directory in case of separate out directory structure")
     parser.add_argument('prefix', help='TF files prefix')
     parser.add_argument('--config', default=DEFAULT_LOCATION, help='Config file name')
     return parser.parse_args()
 
 
 # If input is CD3 excel file
-def create_terraform_instances(inputfile, outdir, prefix, config):
+def create_terraform_instances(inputfile, outdir, service_dir,prefix, config):
     boot_policy_tfStr = {}
     tfStr = {}
     ADS = ["AD1", "AD2", "AD3"]
@@ -59,7 +60,7 @@ def create_terraform_instances(inputfile, outdir, prefix, config):
     # Take backup of files
     for eachregion in ct.all_regions:
         resource = sheetName.lower()
-        srcdir = outdir + "/" + eachregion + "/"
+        srcdir = outdir + "/" + eachregion+ "/" + service_dir + "/"
         commonTools.backup_file(srcdir, resource, auto_tfvars_filename)
         tfStr[eachregion] = ''
         boot_policy_tfStr[eachregion] = ''
@@ -106,7 +107,7 @@ def create_terraform_instances(inputfile, outdir, prefix, config):
             df.loc[i, 'Availability Domain(AD1|AD2|AD3)']).lower() == 'nan' or str(
             df.loc[i, 'Subnet Name']).lower() == 'nan' or str(df.loc[i, 'Source Details']).lower() == 'nan'):
             print(
-                "\nColumn Region, Shape, Compartment Name, Availability Domain, Display Name, Pub Address, Source Details and Subnet Name cannot be left empty in Instances sheet of CD3..exiting...")
+                "\nOne/All of the Column/Columns from Region, Shape, Compartment Name, Availability Domain, Display Name, Pub Address, Source Details and Subnet Name is empty in Instances sheet of CD3..exiting...Please check.")
             exit(1)
 
         for columnname in dfcolumns:
@@ -214,7 +215,7 @@ def create_terraform_instances(inputfile, outdir, prefix, config):
     # Write TF string to the file in respective region directory
     for reg in ct.all_regions:
 
-        reg_out_dir = outdir + "/" + reg
+        reg_out_dir = outdir + "/" + reg + "/" + service_dir
         if not os.path.exists(reg_out_dir):
             os.makedirs(reg_out_dir)
 

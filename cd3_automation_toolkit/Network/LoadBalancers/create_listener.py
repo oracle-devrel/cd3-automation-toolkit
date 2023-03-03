@@ -26,13 +26,14 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Creates Listener TF files for LBR")
     parser.add_argument("inputfile",help="Full Path to the CD3 excel file. eg CD3-template.xlsx in example folder")
     parser.add_argument("outdir", help="directory path for output tf files ")
+    parser.add_argument("service_dir", help="subdirectory under region directory in case of separate out directory structure")
     parser.add_argument('prefix', help='TF files prefix')
     parser.add_argument("--configFileName", default=DEFAULT_LOCATION, help="Config file name")
     return parser.parse_args()
 
 
 # If input file is CD3
-def create_listener(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
+def create_listener(inputfile, outdir, service_dir, prefix, config=DEFAULT_LOCATION):
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True)
@@ -236,11 +237,11 @@ def create_listener(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
             finalstring = "".join([s for s in listener_str[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
 
             resource=sheetName
-            srcdir = outdir + "/" + reg + "/"
+            srcdir = outdir + "/" + reg + "/" + service_dir + "/"
             commonTools.backup_file(srcdir, resource, lb_auto_tfvars_filename)
 
             # Write to TF file
-            outfile = outdir + "/" + reg + "/" + lb_auto_tfvars_filename
+            outfile = srcdir + lb_auto_tfvars_filename
             oname = open(outfile, "w+")
             print("Writing to " + outfile)
             oname.write(finalstring)
@@ -249,4 +250,4 @@ def create_listener(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
 if __name__ == '__main__':
     # Execution of the code begins here
     args = parse_args()
-    create_listener(args.inputfile, args.outdir, args.prefix, args.config)
+    create_listener(args.inputfile, args.outdir, args.service_dir, args.prefix, args.config)

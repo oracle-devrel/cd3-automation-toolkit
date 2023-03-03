@@ -33,9 +33,11 @@ def print_nlb_backendset_backendserver(region, ct, values_for_column_bss,NLBs, n
 
         # Filter out the NLBs provisioned by oke
         eachnlb_defined_tags = eachnlb.defined_tags
-        created_by = eachnlb_defined_tags['Oracle-Tags']['CreatedBy']
-        if 'ocid1.cluster' in created_by:
-            continue
+        if 'Oracle-Tags' in eachnlb_defined_tags.keys():
+            if 'CreatedBy' in eachnlb_defined_tags['Oracle-Tags'].keys():
+                created_by = eachnlb_defined_tags['Oracle-Tags']['CreatedBy']
+                if 'ocid1.cluster' in created_by:
+                    continue
 
         # Loop through Backend Sets
         for backendsets in eachnlb.__getattribute__('backend_sets'):
@@ -139,11 +141,13 @@ def print_nlb_backendset_backendserver(region, ct, values_for_column_bss,NLBs, n
 def print_nlb_listener(region, ct, values_for_column_lis, NLBs, nlb_compartment_name,vcn):
     for eachnlb in NLBs.data:
 
-        #Filter out the NLBs provisioned by oke
+        # Filter out the NLBs provisioned by oke
         eachnlb_defined_tags = eachnlb.defined_tags
-        created_by = eachnlb_defined_tags['Oracle-Tags']['CreatedBy']
-        if 'ocid1.cluster' in created_by:
-            continue
+        if 'Oracle-Tags' in eachnlb_defined_tags.keys():
+            if 'CreatedBy' in eachnlb_defined_tags['Oracle-Tags'].keys():
+                created_by = eachnlb_defined_tags['Oracle-Tags']['CreatedBy']
+                if 'ocid1.cluster' in created_by:
+                    continue
 
         importCommands[reg] = open(outdir + "/" + reg + "/tf_import_commands_nlb_nonGF.sh", "a")
         nlb_display_name = eachnlb.display_name
@@ -254,7 +258,7 @@ def print_nlb_listener(region, ct, values_for_column_lis, NLBs, nlb_compartment_
 
     return values_for_column_lis
 
-def export_nlb(inputfile, _outdir, network_compartments, _config):
+def export_nlb(inputfile, _outdir, service_dir, export_compartments, export_regions, _config,ct):
     global tf_import_cmd
     global sheet_dict
     global importCommands
@@ -277,10 +281,10 @@ def export_nlb(inputfile, _outdir, network_compartments, _config):
     outdir = _outdir
     configFileName = _config
     config = oci.config.from_file(file_location=configFileName)
-
-    ct = commonTools()
-    ct.get_subscribedregions(configFileName)
-    ct.get_network_compartment_ids(config['tenancy'],"root",configFileName)
+    if ct==None:
+        ct = commonTools()
+        ct.get_subscribedregions(configFileName)
+        ct.get_network_compartment_ids(config['tenancy'],"root",configFileName)
 
     # Read CD3
     df, values_for_column_bss = commonTools.read_cd3(cd3file, "NLB-BackendSets-BackendServers")
@@ -291,18 +295,15 @@ def export_nlb(inputfile, _outdir, network_compartments, _config):
     sheet_dict_bss = ct.sheet_dict["NLB-BackendSets-BackendServers"]
     sheet_dict_lis = ct.sheet_dict["NLB-Listeners"]
 
-    # Check Compartments
-    comp_list_fetch = commonTools.get_comp_list_for_export(network_compartments, ct.ntk_compartment_ids)
-
     print("\nCD3 excel file should not be opened during export process!!!")
     print("Tabs- NLB-Listeners, NLB-BackendSets-BackendServers will be overwritten during export process!!!\n")
 
     # Create backups
-    for reg in ct.all_regions:
+    for reg in export_regions:
         resource='tf_import_nlb'
-        if (os.path.exists(outdir + "/" + reg + "/tf_import_commands_nlb_nonGF.sh")):
-            commonTools.backup_file(outdir + "/" + reg, resource, "tf_import_commands_nlb_nonGF.sh")
-        importCommands[reg] = open(outdir + "/" + reg + "/tf_import_commands_nlb_nonGF.sh", "w")
+        if (os.path.exists(outdir + "/" + reg + "/" + service_dir + "/tf_import_commands_nlb_nonGF.sh")):
+            commonTools.backup_file(outdir + "/" + reg + "/" + service_dir, resource, "tf_import_commands_nlb_nonGF.sh")
+        importCommands[reg] = open(outdir + "/" + reg + "/" + service_dir + "/tf_import_commands_nlb_nonGF.sh", "w")
         importCommands[reg].write("#!/bin/bash")
         importCommands[reg].write("\n")
         importCommands[reg].write("terraform init")
@@ -310,7 +311,7 @@ def export_nlb(inputfile, _outdir, network_compartments, _config):
     # Fetch NLB Details
     print("\nFetching details of Network Load Balancer...")
 
-    for reg in ct.all_regions:
+    for reg in export_regions:
         importCommands[reg].write("\n\n######### Writing import for Network Load Balancer Objects #########\n\n")
         config.__setitem__("region", ct.region_dict[reg])
         nlb = NetworkLoadBalancerClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
@@ -320,7 +321,7 @@ def export_nlb(inputfile, _outdir, network_compartments, _config):
         region = reg.capitalize()
 
 
-        for compartment_name in comp_list_fetch:
+        for compartment_name in export_compartments:
                 NLBs = oci.pagination.list_call_get_all_results(nlb.list_network_load_balancers,compartment_id=ct.ntk_compartment_ids[compartment_name],
                                                                 lifecycle_state="ACTIVE")
 
@@ -333,8 +334,8 @@ def export_nlb(inputfile, _outdir, network_compartments, _config):
     print("NLBs exported to CD3\n")
 
     # writing data
-    for reg in ct.all_regions:
-        script_file = f'{outdir}/{reg}/tf_import_commands_nlb_nonGF.sh'
+    for reg in export_regions:
+        script_file = f'{outdir}/{reg}/{service_dir}/tf_import_commands_nlb_nonGF.sh'
         with open(script_file, 'a') as importCommands[reg]:
             importCommands[reg].write('\n\nterraform plan\n')
 
@@ -343,11 +344,14 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Export NLB on OCI to CD3")
     parser.add_argument("inputfile", help="path of CD3 excel file to export network objects to")
     parser.add_argument("outdir", help="path to out directory containing script for TF import commands")
+    parser.add_argument("service_dir", help="subdirectory under region directory in case of separate out directory structure")
     parser.add_argument("--network-compartments", nargs='*', help="comma seperated Compartments for which to export NLB Objects", required=False)
     parser.add_argument("--config", default=DEFAULT_LOCATION, help="Config file name")
+    parser.add_argument("--export-regions", nargs='*', help="comma seperated Regions for which to export Networking Objects",
+                        required=False)
     return parser.parse_args()
 
 if __name__ == '__main__':
     args = parse_args()
     # Execution of the code begins here
-    export_nlb(args.inputfile, args.outdir, args.network_compartments, args.config)
+    export_nlb(args.inputfile, args.outdir, args.service_dir, args.export_compartments, args.config,args.export_regions)

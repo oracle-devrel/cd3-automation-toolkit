@@ -26,14 +26,14 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Creates TF files for Block Volumes")
     parser.add_argument('inputfile', help='Full Path of input CD3 excel file')
     parser.add_argument('outdir', help='Output directory for creation of TF files')
+    parser.add_argument('service_dir', help='Structured out directory for creation of TF files')
     parser.add_argument('prefix', help='TF files prefix')
     parser.add_argument('--config', default=DEFAULT_LOCATION, help='Config file name')
     return parser.parse_args()
 
 
-
 # If input is CD3 excel file
-def create_terraform_block_volumes(inputfile, outdir, prefix,config=DEFAULT_LOCATION):
+def create_terraform_block_volumes(inputfile, outdir, service_dir, prefix,config=DEFAULT_LOCATION):
     filename = inputfile
     configFileName = config
     tfStr = {}
@@ -153,7 +153,7 @@ def create_terraform_block_volumes(inputfile, outdir, prefix,config=DEFAULT_LOCA
     # Write TF string to the file in respective region directory
     for reg in ct.all_regions:
 
-        reg_out_dir = outdir + "/" + reg
+        reg_out_dir = outdir + "/" + reg + "/" + service_dir
         if not os.path.exists(reg_out_dir):
             os.makedirs(reg_out_dir)
 
@@ -178,4 +178,4 @@ def create_terraform_block_volumes(inputfile, outdir, prefix,config=DEFAULT_LOCA
 if __name__ == '__main__':
     args = parse_args()
     # Execution of the code begins here
-    create_terraform_block_volumes(args.file, args.outdir, args.prefix, args.config)
+    create_terraform_block_volumes(args.inputfile, args.outdir, args.prefix, args.config)

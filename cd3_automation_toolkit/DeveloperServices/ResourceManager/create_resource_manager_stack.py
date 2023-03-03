@@ -8,6 +8,8 @@
 #
 
 import argparse
+import os
+import shutil
 import time
 import csv
 import base64
@@ -18,29 +20,24 @@ from oci.resource_manager.models import UpdateStackDetails
 from oci.resource_manager.models import CreateZipUploadConfigSourceDetails
 from oci.resource_manager.models import UpdateZipUploadConfigSourceDetails
 
-rm_name_ocid_map = {}
-rm_region_name_map = {}
+rm_region_service_map ={}
+rm_region_comp_map = {}
 comp_name = ''
 stack_ocid = ''
+tfStr ={}
 
-def create_rm(region,comp_name,ocs_stack,ct,rm_stack_name,rm_ocids_file,create_rm_flag):
-    print("\nCreating a new Resource Manager Stack for " + region + ".......................")
+def create_rm(service_rm_name, comp_id,ocs_stack,svcs):
     stackdetails = CreateStackDetails()
     zipConfigSource = CreateZipUploadConfigSourceDetails()
-    stackdetails.description = "Created using CD3 Automation Tool Kit"
+    if svcs == []:
+        stackdetails.description = "Created by Automation Tool Kit"
+    else:
+        stackdetails.description = "Created by Automation Tool Kit for services - "+ ','.join(svcs)
     stackdetails.terraform_version = "1.0.x"
-    try:
-        stackdetails.compartment_id = ct.ntk_compartment_ids[comp_name]
-    except KeyError as fe:
-        print("Compartment specified for the stack previously doesn't exist in OCI")
-        print("Removing rm_ocids.csv file from outdir")
-        if os.path.exists(rm_ocids_file):
-            os.remove(rm_ocids_file)
-        comp_name = input("Enter a new Compartment Name for Resource Manager: ")
-        stackdetails.compartment_id = ct.ntk_compartment_ids[comp_name]
+    stackdetails.compartment_id = comp_id
+    stackdetails.display_name = service_rm_name
 
-    stackdetails.display_name = rm_stack_name + "-" + region
-    with open(region + ".zip", 'rb') as file:
+    with open(service_rm_name + ".zip", 'rb') as file:
         zipContents = file.read()
         encodedZip = base64.b64encode(zipContents).decode('ascii')
     zipConfigSource.config_source_type = 'ZIP_UPLOAD'
@@ -48,52 +45,57 @@ def create_rm(region,comp_name,ocs_stack,ct,rm_stack_name,rm_ocids_file,create_r
     stackdetails.config_source = zipConfigSource
     mstack = ocs_stack.create_stack(create_stack_details=stackdetails)
     stack_ocid = mstack.data.id
-    print("Resource Manager Stack is created for " + region + " region. ")
+
     print("Resource Manager Stack OCID: "+ stack_ocid)
-    print("Resource Manager Stack Name: "+rm_stack_name+"-"+region)
-    write_to_ocids_file(rm_ocids_file, region, rm_stack_name+"-"+region, stack_ocid,create_rm_flag,comp_name)
+    print("Resource Manager Stack Name: "+service_rm_name)
     return stack_ocid
 
-def write_to_ocids_file(rm_ocids_file, rm_region, rm_name,rm_ocid,create_rm_flag,comp_name):
-    #If the file exists
-    if os.path.exists(rm_ocids_file):
-        #If the RM is created newly or If there is no data in the file:
-        if create_rm_flag == 1 or  os.stat(rm_ocids_file).st_size == 0:
-            with open(rm_ocids_file, 'a+') as n:
-                n.write(comp_name+";"+rm_region+";"+rm_name + ";" + rm_ocid + '\n')
-            n.close()
-        else:
-            #If there is data in the file; Take a back up of existing file and update the existing RM details
-            if create_rm_flag == 0:
-                os.replace(rm_ocids_file, rm_ocids_file + "_backup")
-                with open(rm_ocids_file + "_backup", 'r+') as f:
-                    with open(rm_ocids_file, 'w+') as n:
-                        for line in f:
-                            if rm_name in line and comp_name in line:
-                                n.write(line.replace(line, comp_name+";"+rm_region+";"+rm_name + ";" + rm_ocid + '\n'))
-                            else:
-                                n.write(line)
-                    n.close()
-                f.close()
+def update_rm(service_rm_name,service_rm_ocid,ocs_stack,svcs):
+    updatestackdetails = UpdateStackDetails()
+    zipConfigSource = UpdateZipUploadConfigSourceDetails()
+    zipConfigSource.config_source_type = 'ZIP_UPLOAD'
+    updatestackdetails.display_name = service_rm_name
+
+    with open(service_rm_name + ".zip", 'rb') as file:
+        zipContents = file.read()
+        encodedZip = base64.b64encode(zipContents).decode('ascii')
+    zipConfigSource.config_source_type = 'ZIP_UPLOAD'
+    zipConfigSource.zip_file_base64_encoded = encodedZip
+    updatestackdetails.config_source = zipConfigSource
+    updatestackdetails.terraform_version = "1.0.x"
+    if svcs == []:
+        updatestackdetails.description = "Updated by Automation Tool Kit"
     else:
-        #If file does not exist create a new one
-        if create_rm_flag == 1:
-            with open(rm_ocids_file, 'w+') as n:
-                n.write(comp_name+";"+rm_region+";"+rm_name + ";" + rm_ocid + '\n')
-            n.close()
+        updatestackdetails.description = "Updated by Automation Tool Kit for services - "+ ','.join(svcs)
+    mstack = ocs_stack.update_stack(stack_id=service_rm_ocid, update_stack_details=updatestackdetails)
+    stack_ocid = mstack.data.id
+
+    time.sleep(5)
+    return stack_ocid
+
 
 def parse_args():
     # Read the input arguments
     parser = argparse.ArgumentParser(description="Creates Resource Manager and performs terraform plan or apply")
     parser.add_argument('outdir', help='Output directory for creation of TF files')
     parser.add_argument('prefix', help='TF files prefix')
+    parser.add_argument("outdir_struct",help="out directory structure dictionary")
     parser.add_argument('regions', help='Region to create (or) update the Resource Manager stack for')
     parser.add_argument("--configFileName", help="Config file name", required=False)
     return parser.parse_args()
 
 
-def create_resource_manager(outdir, prefix,regions, config=DEFAULT_LOCATION):
+def create_resource_manager(outdir, outdir_struct,prefix,regions, config=DEFAULT_LOCATION):
 
+    # Get list of services for one directory
+    dir_svc_map = {}
+    for svc, dir in outdir_struct.items():
+        dir_svc_map[dir]=[]
+
+    for svc,dir in outdir_struct.items():
+        dir_svc_map[dir].append(svc)
+
+    print("Fetching Compartment Detail. Please wait...")
     configFileName = config
     config = oci.config.from_file(file_location=configFileName)
 
@@ -104,149 +106,284 @@ def create_resource_manager(outdir, prefix,regions, config=DEFAULT_LOCATION):
     x = datetime.datetime.now()
     date = x.strftime("%f").strip()
 
-    if regions != "":
-        regions = regions.split(',')
-
-    else:
-        regions = ct.all_regions
-
-    #1. Copy files to RM directory
-    rm_dir = outdir+'/RM/'
-    rm_dir_zip = outdir+'/'+prefix+'.zip'
-
-    #Take a backup of zip file if it exists
-    if os.path.exists(rm_dir_zip):
-        shutil.copy(rm_dir_zip,rm_dir_zip+"_backup")
-
-    #Copy all the TF files to RM directory
-    try:
-        shutil.copytree(outdir, rm_dir, ignore=shutil.ignore_patterns('*.terraform.lock.hcl','*.terraform','provider.tf','*.zip*'))
-    except FileExistsError as fe:
-        shutil.rmtree(rm_dir)
-        shutil.copytree(outdir, rm_dir, ignore=shutil.ignore_patterns('*.terraform.lock.hcl','*.terraform', 'provider.tf','*.zip*'))
-
-    #2. Change the provider.tf to include just the region variable in all the subscribed regions
     for region in regions:
         region=region.strip().lower()
-        with open(outdir+'/'+region+'/provider.tf') as origfile, open(rm_dir+'/'+region + '/provider.tf', 'w') as newfile:
-            for line in origfile:
-                if 'version' in line or 'tenancy_ocid' in line or "user_ocid" in line or "fingerprint" in line or "private_key_path" in line:
+
+        region_dir=outdir + "/" + region
+        rm_dir = region_dir + '/RM/'
+
+        # 1. Copy all the TF files for specified regions to RM directory
+        try:
+            shutil.copytree(region_dir, rm_dir, ignore=shutil.ignore_patterns('*.terraform.lock.hcl','*.terraform','provider.tf','*.zip*','*.safe*','*.log*','*cis_report','*.csv*','*cd3validator', 'variables_*.tf*'))
+        except FileExistsError as fe:
+            shutil.rmtree(rm_dir)
+            shutil.copytree(region_dir, rm_dir, ignore=shutil.ignore_patterns('*.terraform.lock.hcl','*.terraform','provider.tf','*.zip*','*.safe*','*.log*','*cis_report','*.csv*','*cd3validator', 'variables_*.tf*'))
+
+        #2. Change the provider.tf and variables_<region>.tf to include just the region variable in all stacks for specified regions
+        tfStr[region]=''
+
+        # Copy provider.tf to each region dir within RM
+        if len(outdir_struct.items())==0:
+            try:
+                with open(region_dir + '/provider.tf') as origfile, open(rm_dir + '/provider.tf', 'w') as newfile:
+                    for line in origfile:
+                        if 'version' in line or 'tenancy_ocid' in line or "user_ocid" in line or "fingerprint" in line or "private_key_path" in line:
+                            pass
+                        elif 'terraform {' in line:
+                            experimental_line = "experiments = [module_variable_optional_attrs]"
+                            line = line + "\n  " + experimental_line + "\n  "
+                            newfile.write(line)
+                        else:
+                            newfile.write(line)
+            except FileNotFoundError as e:
+                pass
+
+            # Copy variables_<region>.tf to each region directory within RM
+            skipline = False
+            try:
+                with open(region_dir + '/variables_' + region + '.tf') as origfile, open(rm_dir + '/variables_' + region + '.tf', 'w') as newfile:
+                    for line in origfile:
+                        if "user_ocid" in line or "fingerprint" in line or "private_key_path" in line:
+                            skipline = True
+                        if not skipline:
+                            newfile.write(line)
+                        if skipline:
+                            if ('}' in line):
+                                skipline = False
+            except FileNotFoundError as e:
+                pass
+        else:
+            for service,service_dir in outdir_struct.items():
+                #Copy provider.tf to each service_dir
+                try:
+                    with open(region_dir+'/'+service_dir+'/provider.tf') as origfile, open(rm_dir+'/'+service_dir+ '/provider.tf', 'w') as newfile:
+                        for line in origfile:
+                            if 'version' in line or 'tenancy_ocid' in line or "user_ocid" in line or "fingerprint" in line or "private_key_path" in line:
+                                pass
+                            elif 'terraform {' in line:
+                                experimental_line = "experiments = [module_variable_optional_attrs]"
+                                line = line+"\n  "+experimental_line+"\n  "
+                                newfile.write(line)
+                            else:
+                                newfile.write(line)
+                except FileNotFoundError as e:
                     pass
-                elif 'terraform {' in line:
-                    experimental_line = "experiments = [module_variable_optional_attrs]"
-                    line = line+"\n  "+experimental_line+"\n  "
-                    newfile.write(line)
-                else:
-                    newfile.write(line)
 
-    skipline = False
+                #Copy variables_<region>.tf to each service_dir
+                skipline = False
+                try:
+                    with open(region_dir+'/'+service_dir+'/variables_' + region + '.tf') as origfile, open(rm_dir + '/'+ service_dir +'/variables_' + region + '.tf','w') as newfile:
+                        for line in origfile:
+                            if "user_ocid"  in line or "fingerprint"  in line or "private_key_path" in line:
+                                skipline = True
+                            if not skipline:
+                                newfile.write(line)
+                            if skipline:
+                                if ('}' in line):
+                                    skipline = False
+                except FileNotFoundError as e:
+                    pass
 
+    #3. Read existing rm_ocids.csv file and get the data in map;
     for region in regions:
-        region=region.strip().lower()
-        with open(outdir+'/'+region+'/variables_' + region + '.tf') as origfile, open(rm_dir+'/'+region + '/variables_' + region + '.tf','w') as newfile:
-            for line in origfile:
-                if "user_ocid"  in line or "fingerprint"  in line or "private_key_path" in line:
-                    skipline = True
-                if not skipline:
-                    newfile.write(line)
-                if skipline:
-                    if ('}' in line):
-                        skipline = False
+        rm_ocids_file = outdir+'/'+region+'/rm_ocids.csv'
+        comp_name = ''
+        rm_region = region
+        if os.path.exists(rm_ocids_file):
+            with open(rm_ocids_file) as csv_file:
+                csv_reader = csv.reader(csv_file, delimiter=';')
+                for row in csv_reader:
+                    if (len(row)==0):
+                        continue
+                    rm_region = row[0]
+                    comp_name = row[1]
+                    rm_name = row[2]
+                    rm_ocid = row[3]
 
+                    rm_region_service_map.update({(rm_region,rm_name):rm_ocid})
+            # assuming all stacks in that region are in same comp; picking the one from last row
+            if comp_name == '':
+                comp_name = input("Enter Resource Manager Compartment Name for "+region +" region: ")
+        else:
+            comp_name = input("Enter Resource Manager Compartment Name for "+region +" region: ")
 
-    #4. Create RM if not present and store the ocid in a tempfile;
-    os.chdir(rm_dir)
-    rm_ocids_file = outdir+'/rm_ocids.csv'
-    if os.path.exists(rm_ocids_file):
-        with open(rm_ocids_file) as csv_file:
-            csv_reader = csv.reader(csv_file, delimiter=';')
-            for row in csv_reader:
-                comp_name = row[0]
-                rm_region = row[1]
-                rm_name = row[2]
-                rm_ocid = row[3]
-                rm_region_name_map.update({rm_region: rm_name})
-                rm_name_ocid_map.update({rm_name:rm_ocid})
-        if comp_name == '':
-            comp_name = input("Resource Manager Compartment Name: ")
-    else:
-        comp_name = input("Resource Manager Compartment Name: ")
+        try:
+            comp_id = ct.ntk_compartment_ids[comp_name]
+        except KeyError as e:
+            print("Compartment Name "+comp_name +" does not exist in OCI. Please Try Again")
+            if os.path.exists(rm_ocids_file):
+                print("Removing rm_ocids.csv file for region "+region)
+                os.remove(rm_ocids_file)
+            comp_name = input("Enter a new Compartment Name for Resource Manager for "+region +" region: ")
+            try:
+                comp_id = ct.ntk_compartment_ids[comp_name]
+            except Exception as e:
+                print("Invalid Compartment Name. Please Try again. Exiting...")
 
+        rm_region_comp_map.update({rm_region: comp_id})
+
+    # Start creating stacks
+    cwd = os.getcwd()
+
+    svcs = []
     for region in regions:
-        region=region.strip().lower()
-        shutil.make_archive(region, 'zip', region)
-        rm_name = prefix + "-" + region
+        comp_name = ""
+        comp_id = rm_region_comp_map[region]
+        for nm, id in ct.ntk_compartment_ids.items():
+            if id == comp_id:
+                comp_name = nm
+                break
 
+        print("\nStart creating Stacks for "+region+ " region...")
+        region_dir = outdir + "/" + region
+        rm_dir = region_dir + '/RM/'
+        os.chdir(rm_dir)
+        region=region.strip().lower()
         new_config = config
         new_config.__setitem__("region", str(ct.region_dict[region]))
         ocs_stack = oci.resource_manager.ResourceManagerClient(new_config)
 
-        if rm_name_ocid_map != {}:
-            if region in rm_region_name_map.keys():
-                ocid = rm_name_ocid_map[rm_region_name_map[region]]
-                try:
-                    status = ocs_stack.get_stack(ocid).data
-                    if status.lifecycle_state == "ACTIVE":
-                        print("\nResource Manager ("+rm_region_name_map[region]+") "+ ocid + " for region " + region + " exists in '" + comp_name + "' Compartment.Updating the same.................")
-                        updatestackdetails = UpdateStackDetails()
-                        zipConfigSource = UpdateZipUploadConfigSourceDetails()
-                        zipConfigSource.config_source_type = 'ZIP_UPLOAD'
-                        updatestackdetails.display_name = rm_region_name_map[region]
-                        with open(region + ".zip", 'rb') as file:
-                            zipContents = file.read()
-                            encodedZip = base64.b64encode(zipContents).decode('ascii')
-                        zipConfigSource.config_source_type = 'ZIP_UPLOAD'
-                        zipConfigSource.zip_file_base64_encoded = encodedZip
-                        updatestackdetails.config_source = zipConfigSource
-                        updatestackdetails.terraform_version = "1.0.x"
-                        updatestackdetails.description = "Updated by Automation Tool Kit"
-                        mstack = ocs_stack.update_stack(stack_id=ocid, update_stack_details=updatestackdetails)
-                        stack_ocid = mstack.data.id
-                        time.sleep(5)
+        #Process files in region directory - single outdir
+        if len(outdir_struct.items())==0:
+            rm_name = prefix + "-" + region
+            shutil.make_archive(rm_name, 'zip', rm_dir)
 
+            if (region, rm_name) in rm_region_service_map.keys():
+                try:
+                    rm_ocid = rm_region_service_map[(region, rm_name)]
+                    status = ocs_stack.get_stack(rm_ocid).data
+
+                    if status.lifecycle_state == "ACTIVE":
+                        print("Resource Manager Stack " + rm_name + " with ocid " + rm_ocid + " for region " + region + " exists in '" + comp_name + "' Compartment.\nUpdating the same.................")
+                        stack_ocid = update_rm(rm_name, rm_ocid, ocs_stack,svcs)
                 except Exception as e:
-                    print("\nResource Manager ("+rm_name+") "+ ocid + " for region " + region + " created previously in compartment '" + comp_name + "' is inactive/terminated!!")
-                    create_rm_flag = 0
-                    stack_ocid = create_rm(region, comp_name, ocs_stack, ct, prefix, rm_ocids_file,create_rm_flag)
+                    print("Resource Manager " + rm_name + " for region " + region + " created previously in compartment '" + comp_name + "' is inactive/terminated!!. Creating a new one...")
+                    comp_id = rm_region_comp_map[region]
+                    stack_ocid = create_rm(rm_name, comp_id, ocs_stack,svcs)
 
             else:
-                create_rm_flag = 1
-                stack_ocid = create_rm(region, comp_name, ocs_stack, ct, prefix, rm_ocids_file, create_rm_flag)
+                print("Resource Manager stack does not exist for for region " + region + ". Creating a new one...")
+                comp_id = rm_region_comp_map[region]
+                stack_ocid = create_rm(rm_name, comp_id, ocs_stack,svcs)
 
+            tfStr[region] = tfStr[region] + region + ";" + comp_name + ";" + rm_name + ";" + stack_ocid + "\n"
+            tfstate_file = rm_dir + '/' +  'terraform.tfstate'
+            if os.path.exists(tfstate_file):
+                create_job_details = oci.resource_manager.models.CreateJobDetails()
+                createjoboperationdetails = oci.resource_manager.models.CreateImportTfStateJobOperationDetails()
+                createjoboperationdetails.operation = "IMPORT_TF_STATE"
+                with open(tfstate_file, 'rb') as file:
+                    encodetfstate = file.read()
+                    encodetfstate = base64.b64encode(encodetfstate).decode('ascii')
+                createjoboperationdetails.tf_state_base64_encoded = encodetfstate
+                create_job_details.display_name = rm_name + "-TFImport"
+                create_job_details.job_operation_details = createjoboperationdetails
+                create_job_details.operation = "IMPORT_TF_STATE"
+                create_job_details.stack_id = stack_ocid
+                print("Uploading Terraform State file to Resource Manager for stack " + rm_name + "..............")
+                ocs_stack.create_job(create_job_details)
+
+            rm_dir_zip = region_dir + '/' + prefix + '-' + region +'.zip'
+            # Take a backup of zip file if it exists
+            if os.path.exists(rm_dir_zip):
+                shutil.copy(rm_dir_zip, rm_dir_zip + "_backup")
+
+            base_name = prefix + "-" + region
+            os.chdir("../")
+            shutil.make_archive(base_name, 'zip', rm_dir)
+
+        #Process service_dirs - separate outdir
         else:
-            create_rm_flag = 1
-            stack_ocid = create_rm(region, comp_name, ocs_stack, ct, prefix,rm_ocids_file,create_rm_flag)
+            service_dir_processed = []
+            for service, service_dir in outdir_struct.items():
+                svcs = dir_svc_map[service_dir]
+                if(service_dir in service_dir_processed):
+                    continue
+                if(not os.path.exists(rm_dir+"/"+service_dir)):
+                    print("\nDirectory for services - "+ ','.join(svcs) +" does not exist in region "+region)
+                    continue
 
-        # 5. Terraform state import if it exists
-        tfstate_file = rm_dir + '/' + region + '/terraform.tfstate'
-        if os.path.exists(outdir+'/'+region+'/terraform.tfstate'):
-            create_job_details = oci.resource_manager.models.CreateJobDetails()
-            createjoboperationdetails = oci.resource_manager.models.CreateImportTfStateJobOperationDetails()
-            createjoboperationdetails.operation = "IMPORT_TF_STATE"
-            with open(tfstate_file,'rb') as file:
-                encodetfstate = file.read()
-                encodetfstate = base64.b64encode(encodetfstate).decode('ascii')
-            createjoboperationdetails.tf_state_base64_encoded = encodetfstate
-            create_job_details.display_name = rm_name + "-TFImport"
-            create_job_details.job_operation_details = createjoboperationdetails
-            create_job_details.operation = "IMPORT_TF_STATE"
-            create_job_details.stack_id = stack_ocid
-            print("\nUploading Terraform State file to Resource Manager for region "+region+"..............\n")
-            ocs_stack.create_job(create_job_details)
+                print("\nProcessing Directory "+service_dir+"...")
+                service_dir_processed.append(service_dir)
 
-    os.chdir("../..")
-    base_name = outdir+'/'+prefix
-    shutil.make_archive(base_name,'zip',rm_dir)
+                shutil.copytree(rm_dir + "/modules", rm_dir+"/"+ service_dir+"/modules")
 
-    # Remove the contents of RM directory;
-    if os.path.exists(rm_dir):
-        #remove existing RM dir
-        shutil.rmtree(rm_dir)
+                for svc in svcs:
+                    with open(service_dir+"/"+ svc + ".tf", 'r') as tf_file:
+                        module_data = tf_file.read().rstrip()
+                        module_data = module_data.replace("\"../modules", "\"./modules")
+                    f = open(service_dir+"/"+ svc + ".tf", "w+")
+                    f.write(module_data)
+                    f.close()
 
-    print("\nProcess Completed !!!\n"
-          "Terraform Configuration (and/or) State files are uploaded to  Resource Manager Stack in "+comp_name+" Compartment.")
+                service_rm_name = prefix + "-" + region + "-" + service_dir
+                shutil.make_archive(service_rm_name, 'zip', service_dir)
 
+                if (region,service_rm_name) in rm_region_service_map.keys():
+                    try:
+                        service_rm_ocid = rm_region_service_map[(region,service_rm_name)]
+                        status = ocs_stack.get_stack(service_rm_ocid).data
+
+                        if status.lifecycle_state == "ACTIVE":
+                            print("Resource Manager Stack "+service_rm_name +" with ocid "+ service_rm_ocid + " for region " + region + " exists in '" + comp_name + "' Compartment.\nUpdating the same.................")
+                            stack_ocid = update_rm(service_rm_name,service_rm_ocid,ocs_stack, svcs)
+                    except Exception as e:
+                        print("Resource Manager "+ service_rm_name + " for region " + region + " created previously in compartment '" + comp_name + "' is inactive/terminated!!. Creating a new one...")
+                        comp_id = rm_region_comp_map[region]
+                        stack_ocid = create_rm(service_rm_name, comp_id, ocs_stack,svcs)
+
+                else:
+                    print("Resource Manager stack does not exist for services - "+ ','.join(svcs)+" for region "+ region+". Creating a new one...")
+                    comp_id = rm_region_comp_map[region]
+                    stack_ocid = create_rm(service_rm_name,comp_id, ocs_stack,svcs)
+
+                tfStr[region] = tfStr[region] + region +";" +comp_name + ";" + service_rm_name + ";" + stack_ocid+"\n"
+
+                # 5. Terraform state import if it exists
+                tfstate_file = rm_dir + '/' +service_dir+ '/terraform.tfstate'
+                if os.path.exists(tfstate_file):
+                    create_job_details = oci.resource_manager.models.CreateJobDetails()
+                    createjoboperationdetails = oci.resource_manager.models.CreateImportTfStateJobOperationDetails()
+                    createjoboperationdetails.operation = "IMPORT_TF_STATE"
+                    with open(tfstate_file,'rb') as file:
+                        encodetfstate = file.read()
+                        encodetfstate = base64.b64encode(encodetfstate).decode('ascii')
+                    createjoboperationdetails.tf_state_base64_encoded = encodetfstate
+                    create_job_details.display_name = service_rm_name + "-TFImport"
+                    create_job_details.job_operation_details = createjoboperationdetails
+                    create_job_details.operation = "IMPORT_TF_STATE"
+                    create_job_details.stack_id = stack_ocid
+                    print("Uploading Terraform State file to Resource Manager for stack "+service_rm_name+"..............")
+                    ocs_stack.create_job(create_job_details)
+
+                shutil.rmtree(rm_dir + "/" + service_dir)
+
+            rm_dir_zip = region_dir + '/' + prefix + '-' + region + '-stacks.zip'
+            # Take a backup of zip file if it exists
+            if os.path.exists(rm_dir_zip):
+                shutil.copy(rm_dir_zip, rm_dir_zip + "_backup")
+
+            base_name = prefix + "-" + region + "-stacks"
+            shutil.rmtree("modules")
+            os.chdir("../")
+            shutil.make_archive(base_name, 'zip', rm_dir)
+
+        # Remove the contents of RM directory;
+        if os.path.exists(rm_dir):
+            # remove existing RM dir
+            shutil.rmtree(rm_dir)
+
+        # write data to rm_ocids file
+        rm_ocids_file = outdir+'/'+region+'/rm_ocids.csv'
+        with open (rm_ocids_file, "w") as f:
+            f.write(tfStr[region])
+
+        print("\nProcess Completed for region "+region +"!!!\n"
+              "Terraform Configuration (and/or) State files are uploaded to  respective Resource Manager Stacks in " + comp_name + " Compartment.")
+        print("=====================================================================================================================")
+
+    os.chdir(cwd)
 
 if __name__ == '__main__':
     args = parse_args()
-    create_resource_manager(args.outdir, args.prefix, args.regions, args.config)
+    create_resource_manager(args.outdir, args.outdir_struct,args.prefix, args.regions, args.config)

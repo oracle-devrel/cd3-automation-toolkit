@@ -9,7 +9,6 @@
 #
 
 import argparse
-import sys
 import oci
 import os
 import json
@@ -58,7 +57,6 @@ def print_exa_vmcluster(region, vnc_client,exa_infra, exa_vmcluster, key_name,va
 
     maintenance_window = exa_infra.maintenance_window
 
-    #importCommands[region.lower()].write("\nterraform import oci_database_cloud_vm_cluster." + exa_vmcluster_tf_name + " " + str(exa_vmcluster.id))
     importCommands[region.lower()].write("\nterraform import \"module.exa-vmclusters[\\\"" + exa_vmcluster_tf_name + "\\\"].oci_database_cloud_vm_cluster.exa_vmcluster\" " + str(exa_vmcluster.id))
 
     for col_header in values_for_column:
@@ -90,12 +88,15 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Export Block Volumes on OCI to CD3")
     parser.add_argument("inputfile", help="path of CD3 excel file to export Block Volume objects to")
     parser.add_argument("outdir", help="path to out directory containing script for TF import commands")
+    parser.add_argument("service_dir", help="subdirectory under region directory in case of separate out directory structure")
     parser.add_argument("--config", default=DEFAULT_LOCATION, help="Config file name")
-    parser.add_argument("--network-compartments", nargs='*', required=False, help="comma seperated Compartments for which to export Block Volume Objects")
+    parser.add_argument("--export-compartments", nargs='*', required=False, help="comma seperated Compartments for which to export Block Volume Objects")
+    parser.add_argument("--export-regions", nargs='*', help="comma seperated Regions for which to export Networking Objects",
+                        required=False)
     return parser.parse_args()
 
 
-def export_exa_vmclusters(inputfile, _outdir, _config, network_compartments=[]):
+def export_exa_vmclusters(inputfile, _outdir, service_dir, _config, ct, export_compartments=[],export_regions=[]):
     global tf_import_cmd
     global sheet_dict
     global importCommands
@@ -117,9 +118,11 @@ def export_exa_vmclusters(inputfile, _outdir, _config, network_compartments=[]):
     config = oci.config.from_file(file_location=configFileName)
 
     sheetName = 'EXA-VMClusters'
-    ct = commonTools()
-    ct.get_subscribedregions(configFileName)
-    ct.get_network_compartment_ids(config['tenancy'],"root",configFileName)
+    if ct==None:
+        ct = commonTools()
+        ct.get_subscribedregions(configFileName)
+        ct.get_network_compartment_ids(config['tenancy'],"root",configFileName)
+    
     var_data ={}
 
     # Read CD3
@@ -127,10 +130,6 @@ def export_exa_vmclusters(inputfile, _outdir, _config, network_compartments=[]):
 
     # Get dict for columns from Excel_Columns
     sheet_dict=ct.sheet_dict[sheetName]
-
-    # Check Compartments
-    global comp_list_fetch
-    comp_list_fetch = commonTools.get_comp_list_for_export(network_compartments, ct.ntk_compartment_ids)
 
     print("\nCD3 excel file should not be opened during export process!!!")
     print("Tabs- Exa-VMClusters  will be overwritten during export process!!!\n")
@@ -143,10 +142,10 @@ def export_exa_vmclusters(inputfile, _outdir, _config, network_compartments=[]):
     resource = 'tf_import_' + sheetName.lower()
     file_name = 'tf_import_commands_' + sheetName.lower() + '_nonGF.sh'
 
-    for reg in ct.all_regions:
-        script_file = f'{outdir}/{reg}/' + file_name
+    for reg in export_regions:
+        script_file = f'{outdir}/{reg}/{service_dir}/' + file_name
         if (os.path.exists(script_file)):
-            commonTools.backup_file(outdir + "/" + reg, resource, file_name)
+            commonTools.backup_file(outdir + "/" + reg + "/" + service_dir, resource, file_name)
         importCommands[reg] = open(script_file, "w")
         importCommands[reg].write("#!/bin/bash")
         importCommands[reg].write("\n")
@@ -155,7 +154,7 @@ def export_exa_vmclusters(inputfile, _outdir, _config, network_compartments=[]):
     # Fetch Block Volume Details
     print("\nFetching details of Exadata VM Clusters...")
 
-    for reg in ct.all_regions:
+    for reg in export_regions:
         var_data[reg] = ""
 
         importCommands[reg].write("\n\n######### Writing import for Exadata VM Clusters #########\n\n")
@@ -166,10 +165,10 @@ def export_exa_vmclusters(inputfile, _outdir, _config, network_compartments=[]):
         vnc_client = oci.core.VirtualNetworkClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
 
         db={}
-        for ntk_compartment_name in comp_list_fetch:
+        for ntk_compartment_name in export_compartments:
             exa_infras = oci.pagination.list_call_get_all_results(db_client.list_cloud_exadata_infrastructures,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name], lifecycle_state="AVAILABLE")
             for exa_infra in exa_infras.data:
-                for ntk_compartment_name_again in comp_list_fetch:
+                for ntk_compartment_name_again in export_compartments:
                     exa_vmclusters = oci.pagination.list_call_get_all_results(db_client.list_cloud_vm_clusters,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name_again], cloud_exadata_infrastructure_id=exa_infra.id, lifecycle_state="AVAILABLE")
                     for exa_vmcluster in exa_vmclusters.data:
                         # Get ssh keys for exa vm cluster
@@ -180,7 +179,7 @@ def export_exa_vmclusters(inputfile, _outdir, _config, network_compartments=[]):
 
                         print_exa_vmcluster(region, vnc_client, exa_infra,exa_vmcluster,key_name, values_for_column, ntk_compartment_name_again)
 
-        file = f'{outdir}/{reg}/variables_{reg}.tf'
+        file = f'{outdir}/{reg}/{service_dir}/variables_{reg}.tf'
         # Read variables file data
         with open(file, 'r') as f:
             var_data[reg] = f.read()
@@ -210,4 +209,4 @@ def export_exa_vmclusters(inputfile, _outdir, _config, network_compartments=[]):
 if __name__ == '__main__':
     args = parse_args()
     # Execution of the code begins here
-    export_exa_vmclusters(args.inputfile, args.outdir, args.config, args.network_compartments)
+    export_exa_vmclusters(args.inputfile, args.outdir, args.service_dir, args.config, args.export_compartments,args.export_regions)

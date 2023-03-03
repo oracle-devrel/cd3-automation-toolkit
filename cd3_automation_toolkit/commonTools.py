@@ -134,31 +134,6 @@ class commonTools():
         del idc
         del config
 
-    def get_comp_list_for_export(input_compartment_names, ntk_compartment_ids):
-
-        remove_comps = []
-        comp_list_fetch = []
-        if input_compartment_names is not None:
-            for x in range(0, len(input_compartment_names)):
-                if (input_compartment_names[x] not in ntk_compartment_ids.keys()):
-                    print("Input compartment: " + input_compartment_names[x] + " doesn't exist in OCI")
-                    remove_comps.append(input_compartment_names[x])
-
-            input_compartment_names = [x for x in input_compartment_names if x not in remove_comps]
-            if (len(input_compartment_names) == 0):
-                print("None of the input compartments specified exist in OCI..Exiting!!!")
-                exit(1)
-            else:
-                print("Fetching for Compartments... " + str(input_compartment_names))
-                comp_list_fetch = input_compartment_names
-        else:
-            print("Fetching for all Compartments...")
-            comp_ocids = []
-            for key, val in ntk_compartment_ids.items():
-                if val not in comp_ocids:
-                    comp_ocids.append(val)
-                    comp_list_fetch.append(key)
-        return comp_list_fetch
 
     #Check value exported
     #If None - replace with ""
@@ -881,10 +856,17 @@ class parseSubnets():
 class cd3Services():
 
     #Get OCI Cloud Regions
+    regions_list = ""
     def fetch_regions(self,configFileName=DEFAULT_LOCATION):
         config = oci.config.from_file(file_location=configFileName)
         idc = IdentityClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
-        regions_list = idc.list_regions().data
+        try:
+            regions_list = idc.list_regions().data
+        except Exception as e:
+            print(e)
+            if ('NotAuthenticated' in str(e)):
+                print("\nInvalid Credetials - check your keypair/fingerprint/region...Exiting!!!")
+                exit()
 
         if ("OCSWorkVM" in os.getcwd() or 'user-scripts' in os.getcwd()):
             os.chdir("../")

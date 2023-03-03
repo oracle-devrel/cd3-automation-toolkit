@@ -1,6 +1,13 @@
             {
             action = "{{ action }}"
+
+            {% if method_list and method_list != '' %}
             allowed_methods = {{ method_list }}
+            {% endif %}
+
+            {% if status_code and status_code != '' %}
             status_code = "{{ status_code }}"
+            {% endif %}
+
             },
     ## Add_access_control_method_rules_here_for_{{ lbr_tf_name }}_{{ rule_set_tf_name }} ##

@@ -24,13 +24,14 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Creates TF files for FSS")
     parser.add_argument('inputfile', help='Full Path of input CD3 excel file')
     parser.add_argument('outdir', help='Output directory for creation of TF files')
+    parser.add_argument('service_dir', help='Structured out directory for creation of TF files')
     parser.add_argument('prefix', help='TF files prefix')
     parser.add_argument('--config', default=DEFAULT_LOCATION, help='Config file name')
     return parser.parse_args()
 
 
 # If input is csv file; convert to excel
-def create_terraform_fss(inputfile, outdir, prefix,config=DEFAULT_LOCATION):
+def create_terraform_fss(inputfile, outdir, service_dir, prefix,config=DEFAULT_LOCATION):
     filename = inputfile
     configFileName = config
 
@@ -139,7 +140,7 @@ def create_terraform_fss(inputfile, outdir, prefix,config=DEFAULT_LOCATION):
     # Take backup of files
     for eachregion in ct.all_regions:
         resource = sheetName.lower()
-        srcdir = outdir + "/" + eachregion + "/"
+        srcdir = outdir + "/" + eachregion + "/" + service_dir + "/"
         commonTools.backup_file(srcdir, resource, auto_tfvars_filename)
 
     subnets = parseSubnets(filename)
@@ -360,7 +361,7 @@ def create_terraform_fss(inputfile, outdir, prefix,config=DEFAULT_LOCATION):
 
     for r in ct.all_regions:
         if (tempStr_fss[r] != ""):
-            outfile = outdir + "/" + r + "/"+auto_tfvars_filename
+            outfile = outdir + "/" + r + "/" + service_dir + "/"+auto_tfvars_filename
 
             fssSrcStr = "##Add New FSS for " + r.lower() + " here##"
             fseSrcStr = "##Add New NFS Export Options for " + r.lower() + " here##"

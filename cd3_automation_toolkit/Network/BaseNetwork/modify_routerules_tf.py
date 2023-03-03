@@ -29,12 +29,13 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Updates routelist for subnet. It accepts input file which contains new rules to be added to the existing rule list of the subnet.")
     parser.add_argument("inputfile", help="Required; Full Path to input route file (CD3 excel file) containing rules to be updated; See example folder for sample format: add_routes-example.txt")
     parser.add_argument("outdir",help="directory path for output tf files ")
+    parser.add_argument("service_dir",help="subdirectory under region directory in case of separate out directory structure")
     parser.add_argument('non_gf_tenancy')
     parser.add_argument("--config", default=DEFAULT_LOCATION, help="Config file name")
     return parser.parse_args()
 
 
-def modify_terraform_drg_routerules(inputfile, outdir, prefix=None, non_gf_tenancy=False, config=DEFAULT_LOCATION):
+def modify_terraform_drg_routerules(inputfile, outdir, service_dir,prefix=None, non_gf_tenancy=False, config=DEFAULT_LOCATION):
     filename = inputfile
     configFileName = config
 
@@ -76,8 +77,8 @@ def modify_terraform_drg_routerules(inputfile, outdir, prefix=None, non_gf_tenan
 
         # Backup existing route table files in ash and phx dir
         resource = "DRGRTs"
-        commonTools.backup_file(outdir + "/" + reg, resource, auto_tfvars_filename)
-        commonTools.backup_file(outdir + "/" + reg, resource, rule_auto_tfvars_filename)
+        commonTools.backup_file(outdir + "/" + reg + "/" + service_dir, resource, auto_tfvars_filename)
+        commonTools.backup_file(outdir + "/" + reg + "/" + service_dir, resource, rule_auto_tfvars_filename)
 
 
         # Create Skeleton Template
@@ -232,8 +233,8 @@ def modify_terraform_drg_routerules(inputfile, outdir, prefix=None, non_gf_tenan
                 rts_done[region].append(drg_rt_tf_name)
 
     for reg in ct.all_regions:
-        outfile = outdir + "/" + reg + "/" + prefix + auto_tfvars_filename
-        ruleoutfile = outdir + "/" + reg + "/" + prefix + rule_auto_tfvars_filename
+        outfile = outdir + "/" + reg + "/" + service_dir+ "/"  + prefix + auto_tfvars_filename
+        ruleoutfile = outdir + "/" + reg + "/" + service_dir+ "/" + prefix + rule_auto_tfvars_filename
 
         rtskeletonStr = "###Add route tables here for "+reg.lower()+" ###"
         rrskeletonStr = "###Add route rules here for "+reg.lower()+" ###"
@@ -258,7 +259,7 @@ def modify_terraform_drg_routerules(inputfile, outdir, prefix=None, non_gf_tenan
             oname_rt.write(tempSkeletonDRGRouteRule[reg])
             oname_rt.close()
 
-def modify_terraform_routerules(inputfile, outdir, prefix=None, non_gf_tenancy=False, config=DEFAULT_LOCATION):
+def modify_terraform_routerules(inputfile, outdir, service_dir,prefix=None, non_gf_tenancy=False, config=DEFAULT_LOCATION):
     filename = inputfile
     configFileName = config
 
@@ -346,8 +347,8 @@ def modify_terraform_routerules(inputfile, outdir, prefix=None, non_gf_tenancy=F
 
         # Backup existing route table files in ash and phx dir
         resource = "RTs"
-        commonTools.backup_file(outdir + "/" + reg, resource, prefix + auto_tfvars_filename)
-        commonTools.backup_file(outdir + "/" + reg, resource, prefix + default_auto_tfvars_filename)
+        commonTools.backup_file(outdir + "/" + reg + "/" + service_dir, resource, prefix + auto_tfvars_filename)
+        commonTools.backup_file(outdir + "/" + reg+ "/" + service_dir, resource, prefix + default_auto_tfvars_filename)
 
     # temporary dictionary1 and dictionary2
     tempStr = {}
@@ -505,8 +506,8 @@ def modify_terraform_routerules(inputfile, outdir, prefix=None, non_gf_tenancy=F
         textToAddSeclistSearch = "##Add New Route Tables for " + reg + " here##"
         defaultTextToAddSeclistSearch = "##Add New Default Route Tables for " + reg + " here##"
 
-        outfile = outdir + "/" + reg + "/" + prefix + auto_tfvars_filename
-        default_outfile = outdir + "/" + reg + "/" + prefix + default_auto_tfvars_filename
+        outfile = outdir + "/" + reg + "/" + service_dir + "/" + prefix + auto_tfvars_filename
+        default_outfile = outdir + "/" + reg + "/" + service_dir + "/" + prefix + default_auto_tfvars_filename
 
         default_rt_tempSkeleton[reg] = default_rt_tempSkeleton[reg].replace(defaultTextToAddSeclistSearch,deftfStr[reg] +"\n"+ defaultTextToAddSeclistSearch)
         tempSkeleton[reg] = tempSkeleton[reg].replace(textToAddSeclistSearch,tfStr[reg] +"\n"+ textToAddSeclistSearch)
@@ -528,6 +529,6 @@ def modify_terraform_routerules(inputfile, outdir, prefix=None, non_gf_tenancy=F
 if __name__ == '__main__':
     args = parse_args()
     # Execution of the code begins here
-    modify_terraform_routerules(args.inputfile, args.outdir, prefix=None, non_gf_tenancy=args.non_gf_tenancy, config=args.config)
-    modify_terraform_drg_routerules(args.inputfile, args.outdir, prefix=None, non_gf_tenancy=args.non_gf_tenancy, config=args.config)
+    modify_terraform_routerules(args.inputfile, args.outdir, args.service_dir, prefix=None, non_gf_tenancy=args.non_gf_tenancy, config=args.config)
+    modify_terraform_drg_routerules(args.inputfile, args.outdir, args.service_dir,prefix=None, non_gf_tenancy=args.non_gf_tenancy, config=args.config)
 

@@ -29,26 +29,20 @@ mount_targets = {
 
         {% if mounttarget_ip and mounttarget_ip != "" %}
         ip_address = "{{ mounttarget_ip }}"
-        {% else %}
-        ip_address = ""
         {% endif %}
 
         {% if mounttarget_hostname and mounttarget_hostname != "" %}
         hostname_label = "{{ mounttarget_hostname }}"
-        {% else %}
-        hostname_label = ""
         {% endif %}
 
         {% if nsgs and nsgs != [] %}
         nsg_ids = [{{ nsgs }}]
-        {% else %}
-        nsg_ids = []
         {% endif %}
 
     {#  ##Do not modify below this line##  #}
     {#                                     #}
     {#  ###Section for adding Defined and Freeform Tags###  #}
-    {% if defined_tags and defined_tags != 'nan' and defined_tags != '' %}
+    {% if defined_tags and defined_tags != 'nan' and defined_tags != '' and defined_tags != [['nan']] %}
       {% if defined_tags[0] %}
         defined_tags = {
         {% for tags in defined_tags  %}
@@ -59,13 +53,9 @@ mount_targets = {
             {% endif %}
         {% endfor %}
         }
-      {% else %}
-        defined_tags = {}
         {% endif %}
-       {% else %}
-        defined_tags = {}
        {% endif %}
-            {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' %}
+            {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' and freeform_tags != [['nan']] %}
                 {% if freeform_tags[0] %}
         freeform_tags = {
                     {% for tags in freeform_tags %}
@@ -76,13 +66,9 @@ mount_targets = {
                         {% endif %}
                     {% endfor %}
                     }
-                {% else %}
-        freeform_tags = {}
                 {% endif %}
-            {% else %}
-        freeform_tags = {}
             {% endif %}
-    {#  ###Section for adding Defined and Freeform Tags ends here###  #}
+     {#  ###Section for adding Defined and Freeform Tags ends here###  #}
         },
 
 {% endif %}

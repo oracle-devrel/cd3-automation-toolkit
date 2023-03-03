@@ -23,20 +23,16 @@ lbr_reserved_ips = {
 
             {% if private_ip_tf_name and private_ip_tf_name != "" and private_ip_tf_name != "nan" %}
             private_ip_id  = "{{ private_ip_tf_name }}"
-            {% else %}
-            private_ip_id = ""
             {% endif %}
 
             {% if public_ip_pool_tf_name and public_ip_pool_tf_name != "" and public_ip_pool_tf_name != "nan" %}
             public_ip_pool_id = "{{ public_ip_pool_tf_name }}"
-            {% else %}
-            public_ip_pool_id = ""
             {% endif %}
 
-            {#  ##Do not modify below this line##  #}
-            {#                                     #}
-            {#  ###Section for adding Defined and Freeform Tags###  #}
-            {% if defined_tags and defined_tags != 'nan' and defined_tags != '' %}
+        {#  ##Do not modify below this line##  #}
+        {#                                     #}
+        {#  ###Section for adding Defined and Freeform Tags###  #}
+        {% if defined_tags and defined_tags != 'nan' and defined_tags != '' and defined_tags != [['nan']] %}
           {% if defined_tags[0] %}
             defined_tags = {
             {% for tags in defined_tags  %}
@@ -47,13 +43,9 @@ lbr_reserved_ips = {
                 {% endif %}
             {% endfor %}
             }
-          {% else %}
-            defined_tags = {}
-          {% endif %}
-          {% else %}
-            defined_tags = {}
-          {% endif %}
-                {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' %}
+            {% endif %}
+           {% endif %}
+                {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' and freeform_tags != [['nan']] %}
                     {% if freeform_tags[0] %}
             freeform_tags = {
                         {% for tags in freeform_tags %}
@@ -64,13 +56,9 @@ lbr_reserved_ips = {
                             {% endif %}
                         {% endfor %}
                         }
-                    {% else %}
-            freeform_tags = {}
                     {% endif %}
-                {% else %}
-            freeform_tags = {}
                 {% endif %}
-            {#  ###Section for adding Defined and Freeform Tags ends here###  #}
+         {#  ###Section for adding Defined and Freeform Tags ends here###  #}
             },
           {% endif %}
 

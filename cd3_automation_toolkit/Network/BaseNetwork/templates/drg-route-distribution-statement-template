@@ -34,6 +34,9 @@ drg_route_distribution_statements = {
         drg_attachment_id = "{{ statements[1] }}"
         {% endif %}
 
+        {% else %}
+        match_type = "MATCH_ALL"
+
         {% endif %}
         },
         ]

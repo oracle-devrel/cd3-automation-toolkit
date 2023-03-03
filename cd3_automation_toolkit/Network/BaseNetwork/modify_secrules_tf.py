@@ -26,12 +26,13 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Takes in an input file mentioning sec rules to be added for the subnet. See update_seclist-example.csv/CD3 for format under example folder. It will then take backup of all existing sec list files in outdir and create new one with modified rules")
     parser.add_argument("inputfile",help="Full Path of input file: It could be either the properties file eg CD3 excel file")
     parser.add_argument("outdir", help="directory path for output tf files ")
+    parser.add_argument("service_dir",help="subdirectory under region directory in case of separate out directory structure")
     parser.add_argument("--config", default=DEFAULT_LOCATION, help="Config file name")
     parser.add_argument('non_gf_tenancy', default=False)
     return parser.parse_args()
 
 
-def modify_terraform_secrules(inputfile, outdir, prefix=None, non_gf_tenancy=False, config=DEFAULT_LOCATION):
+def modify_terraform_secrules(inputfile, outdir, service_dir,prefix=None, non_gf_tenancy=False, config=DEFAULT_LOCATION):
 
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
@@ -95,8 +96,8 @@ def modify_terraform_secrules(inputfile, outdir, prefix=None, non_gf_tenancy=Fal
 
         # Backup existing seclist files in ash and phx dir
         resource = "SLs"
-        commonTools.backup_file(outdir + "/" + reg, resource, prefix+auto_tfvars_filename)
-        commonTools.backup_file(outdir + "/" + reg, resource, prefix + default_auto_tfvars_filename)
+        commonTools.backup_file(outdir + "/" + reg + "/" + service_dir, resource, prefix+auto_tfvars_filename)
+        commonTools.backup_file(outdir + "/" + reg + "/" + service_dir, resource, prefix + default_auto_tfvars_filename)
 
     with open('out.csv') as secrulesfile:
         reader = csv.DictReader(ct.skipCommentedLine(secrulesfile))
@@ -205,8 +206,8 @@ def modify_terraform_secrules(inputfile, outdir, prefix=None, non_gf_tenancy=Fal
         textToAddSeclistSearch = "##Add New Seclists for " + reg + " here##"
         defaultTextToAddSeclistSearch = "##Add New Default Seclists for " + reg + " here##"
 
-        outfile = outdir + "/" + reg + "/" + prefix + auto_tfvars_filename
-        default_outfile = outdir + "/" + reg + "/" + prefix + default_auto_tfvars_filename
+        outfile = outdir + "/" + reg + "/" + service_dir+ "/" + prefix + auto_tfvars_filename
+        default_outfile = outdir + "/" + reg + "/" + service_dir+ "/" + prefix + default_auto_tfvars_filename
 
         default_seclist_tempSkeleton[reg] = default_seclist_tempSkeleton[reg].replace(defaultTextToAddSeclistSearch,deftfStr[reg] +"\n"+ defaultTextToAddSeclistSearch)
         tempSkeleton[reg] = tempSkeleton[reg].replace(textToAddSeclistSearch,sectfStr[reg] + textToAddSeclistSearch)
@@ -242,4 +243,4 @@ def modify_terraform_secrules(inputfile, outdir, prefix=None, non_gf_tenancy=Fal
 if __name__ == '__main__':
     # Execution of the code begins here
     args = parse_args()
-    modify_terraform_secrules(args.inputfile, args.outdir, prefix=None, non_gf_tenancy=args.non_gf_tenancy, config=args.config)
+    modify_terraform_secrules(args.inputfile, args.outdir, args.service_dir,prefix=None, non_gf_tenancy=args.non_gf_tenancy, config=args.config)

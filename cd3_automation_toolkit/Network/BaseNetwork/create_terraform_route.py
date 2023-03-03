@@ -30,6 +30,7 @@ def parse_args():
     parser = argparse.ArgumentParser(description='Creates route tables containing default routes for each subnet based on inputs given in CD3 excel sheet.')
     parser.add_argument('inputfile', help='Full Path of input file. eg: cd3 excel file')
     parser.add_argument('outdir', help='Output directory for creation of TF files')
+    parser.add_argument("service_dir",help="subdirectory under region directory in case of separate out directory structure")
     parser.add_argument('prefix', help='customer name/prefix for all file names')
     parser.add_argument('--modify-network', action='store_true', help='Modify: true or false',default=False)
     parser.add_argument('non_gf_tenancy')
@@ -96,7 +97,7 @@ def merge_or_generate_route_rule(reg, tempStr, modifiedroutetableStr,routetableS
                 data = routerule.render(tempStr, lpg_route_rules=True, region='lpg_route_rules')
     return data
 
-def create_terraform_drg_route(inputfile, outdir, prefix, non_gf_tenancy, config, modify_network=False):
+def create_terraform_drg_route(inputfile, outdir, service_dir, prefix, non_gf_tenancy, config, modify_network=False):
     filename = inputfile
     configFileName = config
     drgv2 = parseDRGs(filename)
@@ -160,7 +161,7 @@ def create_terraform_drg_route(inputfile, outdir, prefix, non_gf_tenancy, config
             modifiedroutetableStr[reg] = ''
             tempSkeletonDRGRouteTable[reg] = ''
 
-            rtfile = outdir + "/" + reg + "/" + prefix + drg_rt_auto_tfvars_filename
+            rtfile = outdir + "/" + reg + "/" + service_dir + "/" + prefix + drg_rt_auto_tfvars_filename
 
             if modify_network:
                 # Read the file if it exists
@@ -188,8 +189,8 @@ def create_terraform_drg_route(inputfile, outdir, prefix, non_gf_tenancy, config
             if not modify_network:
                 drg_routetablefiles.setdefault(reg, [])
                 drg_routedistributionfiles.setdefault(reg, [])
-                purge(outdir + "/" + reg, prefix + drg_distribution_auto_tfvars_template)
-                purge(outdir + "/" + reg, prefix + drg_rt_auto_tfvars_filename)
+                purge(outdir + "/" + reg + "/" + service_dir, prefix + drg_distribution_auto_tfvars_template)
+                purge(outdir + "/" + reg + "/" + service_dir, prefix + drg_rt_auto_tfvars_filename)
 
         # List of the column headers
         dfcolumns = df.columns.values.tolist()
@@ -294,8 +295,8 @@ def create_terraform_drg_route(inputfile, outdir, prefix, non_gf_tenancy, config
         tempSkeletonDRGDistributionStmt[reg] = drg_rd_stmt_template.render(tempStr, skeleton=True, region=reg)
 
         # Create Skeleton Template
-        rtdistribution = outdir + "/" + reg + "/" + prefix + drg_distribution_auto_tfvars_template
-        rtfile = outdir + "/" + reg + "/" + prefix + drg_rt_auto_tfvars_filename
+        rtdistribution = outdir + "/" + reg + "/" + service_dir + "/" + prefix + drg_distribution_auto_tfvars_template
+        rtfile = outdir + "/" + reg + "/" + service_dir + "/" + prefix + drg_rt_auto_tfvars_filename
 
         if not modify_network:
 
@@ -334,7 +335,7 @@ def create_terraform_drg_route(inputfile, outdir, prefix, non_gf_tenancy, config
         if drg_rt[reg] != '' :
             if (os.path.exists(rtfile)):
                 resource = 'DRGRTs'
-                srcdir = outdir + "/" + reg + "/"
+                srcdir = outdir + "/" + reg + "/" + service_dir +"/"
                 commonTools.backup_file(srcdir, resource, prefix + drg_rt_auto_tfvars_filename)
             tempSkeletonDRGRouteTable[reg] = "".join([s for s in tempSkeletonDRGRouteTable[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
             oname_rt = open(rtfile, "w+")
@@ -345,13 +346,13 @@ def create_terraform_drg_route(inputfile, outdir, prefix, non_gf_tenancy, config
             if drg_rt[reg] == '':
                 if (os.path.exists(rtfile)):
                     resource = 'DRGRTs'
-                    srcdir = outdir + "/" + reg + "/"
+                    srcdir = outdir + "/" + reg + "/" + service_dir +"/"
                     commonTools.backup_file(srcdir, resource, prefix + drg_rt_auto_tfvars_filename)
 
         if drg_rd_stmt[reg] != '' or drg_rd[reg] != '':
             if (os.path.exists(rtdistribution)):
                 resource = 'DRGRTs'
-                srcdir = outdir + "/" + reg + "/"
+                srcdir = outdir + "/" + reg + "/" + service_dir +"/"
                 commonTools.backup_file(srcdir, resource, prefix + drg_distribution_auto_tfvars_template)
             tempSkeletonDRGDistribution[reg] = "".join([s for s in tempSkeletonDRGDistribution[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
             oname_drg_dis = open(rtdistribution, "w+")
@@ -363,7 +364,7 @@ def create_terraform_drg_route(inputfile, outdir, prefix, non_gf_tenancy, config
                 # Backup the existing files
                 if (os.path.exists(rtdistribution)):
                     resource = 'DRGRTs'
-                    srcdir = outdir + "/" + reg + "/"
+                    srcdir = outdir + "/" + reg + "/" + service_dir +"/"
                     commonTools.backup_file(srcdir, resource, prefix + drg_distribution_auto_tfvars_template)
 
 
@@ -375,7 +376,7 @@ def purge(dir, pattern):
 
 
 # If input in cd3 file
-def create_terraform_route(inputfile, outdir, prefix, non_gf_tenancy, config, modify_network):
+def create_terraform_route(inputfile, outdir, service_dir, prefix, non_gf_tenancy, config, modify_network):
     filename = inputfile
     configFileName = config
 
@@ -407,7 +408,7 @@ def create_terraform_route(inputfile, outdir, prefix, non_gf_tenancy, config, mo
     if not modify_network:
         for reg in ct.all_regions:
             routetablefiles.setdefault(reg, [])
-            purge(outdir + "/" + reg, prefix + auto_tfvars_filename)
+            purge(outdir + "/" + reg + "/"+service_dir, prefix + auto_tfvars_filename)
 
     # Option "Modify Network"
     elif modify_network:
@@ -434,7 +435,7 @@ def create_terraform_route(inputfile, outdir, prefix, non_gf_tenancy, config, mo
         lpgStrCommon[reg] = ''
         modifiedroutetableStr[reg] = ''
 
-        outfile = outdir + "/" + reg + "/" + prefix + auto_tfvars_filename
+        outfile = outdir + "/" + reg + "/" + service_dir + "/"+prefix + auto_tfvars_filename
 
         # Option Modify Network as True
         if modify_network:
@@ -520,8 +521,8 @@ def create_terraform_route(inputfile, outdir, prefix, non_gf_tenancy, config, mo
             return
 
         drg_rt_name = ""
-        if (os.path.exists(outdir + "/" + region + "/obj_names.safe")):
-            with open(outdir + "/" + region + "/obj_names.safe") as f:
+        if (os.path.exists(outdir + "/" + region + "/" + service_dir + "/obj_names.safe")):
+            with open(outdir + "/" + region + "/" + service_dir + "/obj_names.safe") as f:
                 for line in f:
                     if ("drginfo::::" + vcn_with_drg + "::::" + drg_name in line):
                         drg_rt_name = line.split("::::")[3].strip()
@@ -537,7 +538,7 @@ def create_terraform_route(inputfile, outdir, prefix, non_gf_tenancy, config, mo
             rt_display = drg_rt_name
 
         rt_tf_name = commonTools.check_tf_variable(rt_var)
-        outfile = outdir + "/" + region + "/" + prefix + auto_tfvars_filename
+        outfile = outdir + "/" + region + "/" +  service_dir + "/" + prefix + auto_tfvars_filename
 
         region_rt_name = "#"+region + "_" + rt_tf_name+"#"
 
@@ -619,8 +620,8 @@ def create_terraform_route(inputfile, outdir, prefix, non_gf_tenancy, config, mo
     def createLPGRtTableString(compartment_var_name, hub_vcn_name, peering_dict, region, tempStr):
         region=region.lower()
         # Retain exported route tables associated with exported LPGs
-        if (os.path.exists(outdir + "/" + region + "/obj_names.safe")):
-            with open(outdir + "/" + region + "/obj_names.safe") as f:
+        if (os.path.exists(outdir + "/" + region + "/" + service_dir + "/obj_names.safe")):
+            with open(outdir + "/" + region + "/"+ service_dir + "/obj_names.safe") as f:
                 for line in f:
                     if ("lpginfo::::" + hub_vcn_name in line):
                         lpg_rt_name = line.split("::::")[3].strip()
@@ -1176,7 +1177,7 @@ def create_terraform_route(inputfile, outdir, prefix, non_gf_tenancy, config, mo
 
     # Write the contents to file
     for reg in ct.all_regions:
-        outfile = outdir + "/" + reg + "/" + prefix + auto_tfvars_filename
+        outfile = outdir + "/" + reg + "/" + service_dir + "/" + prefix + auto_tfvars_filename
         skeletonStr = "##Add New Route Tables for " + reg.lower() + " here##"
 
         # Option if Modify Network is FALSE
@@ -1208,7 +1209,7 @@ def create_terraform_route(inputfile, outdir, prefix, non_gf_tenancy, config, mo
                 # Backup the existing files and create new ones
                 if (os.path.exists(outfile)):
                     resource = 'RTs'
-                    srcdir = outdir + "/" + reg + "/"
+                    srcdir = outdir + "/" + reg + "/" + service_dir +"/"
                     commonTools.backup_file(srcdir, resource, prefix + auto_tfvars_filename)
 
                 tempSkeleton[reg] = "".join([s for s in tempSkeleton[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
@@ -1219,7 +1220,7 @@ def create_terraform_route(inputfile, outdir, prefix, non_gf_tenancy, config, mo
             else:
                 # Remove the files from other regions if there are no data
                 resource = 'RTs'
-                srcdir = outdir + "/" + reg + "/"
+                srcdir = outdir + "/" + reg + "/" + service_dir +"/"
                 commonTools.backup_file(srcdir, resource, prefix + auto_tfvars_filename)
                 commonTools.backup_file(srcdir, resource, prefix + '_default-routetables.auto.tfvars')
 
@@ -1230,5 +1231,5 @@ def create_terraform_route(inputfile, outdir, prefix, non_gf_tenancy, config, mo
 if __name__ == '__main__':
     args = parse_args()
     # Execution of the code begins here
-    create_terraform_route(args.inputfile, args.outdir, args.prefix, args.non_gf_tenancy, args.config, modify_network=args.modify_network)
-    create_terraform_drg_route(args.inputfile, args.outdir, args.prefix, args.non_gf_tenancy, args.config, modify_network=args.modify_network)
+    create_terraform_route(args.inputfile, args.outdir, args.service_dir, args.prefix, args.non_gf_tenancy, args.config, modify_network=args.modify_network)
+    create_terraform_drg_route(args.inputfile, args.outdir, args.service_dir, args.prefix, args.non_gf_tenancy, args.config, modify_network=args.modify_network)

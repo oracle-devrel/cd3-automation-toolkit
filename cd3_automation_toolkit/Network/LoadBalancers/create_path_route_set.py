@@ -26,18 +26,19 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Creates Path Route Set TF files for LBR")
     parser.add_argument("inputfile", help="Full Path to the CD3 excel file. eg CD3-template.xlsx in example folder")
     parser.add_argument("outdir", help="directory path for output tf files ")
+    parser.add_argument("service_dir", help="subdirectory under region directory in case of separate out directory structure")
     parser.add_argument('prefix', help='TF files prefix')
     parser.add_argument("--config", default=DEFAULT_LOCATION, help="Config file name")
     return parser.parse_args()
 
 
 # If input file is CD3
-def create_path_route_set(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
+def create_path_route_set(inputfile, outdir, service_dir, prefix, config=DEFAULT_LOCATION):
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True)
     prs = env.get_template('path-route-set-template')
-    pathroutes = env.get_template('path-route-rules-template')
+    pathrouterules = env.get_template('path-route-rules-template')
     filename = inputfile
     configFileName = config
     sheetName = "PathRouteSet"
@@ -77,8 +78,6 @@ def create_path_route_set(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
     # List of the column headers
     dfcolumns = df.columns.values.tolist()
     path_route_set_list = []
-
-    srcStr = "#Add_Path_Routes_here"
 
     for i in df.index:
         region = str(df.loc[i, 'Region'])
@@ -143,37 +142,49 @@ def create_path_route_set(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
         if lbr_path_route_set_name != '':
             if lbr_path_route_set_name not in path_route_set_list:
                 path_route_set_list.append(lbr_path_route_set_name)
-                rule_str = pathroutes.render(tempStr)
-                tempdict2 = {'path_routes': rule_str}
-                tempStr.update(tempdict2)
 
                 # Render Path Route Set Template
                 prs_str[region] = prs_str[region] + prs.render(tempStr)
 
-            else:
-                rule_str[region] = rule_str[region] + pathroutes.render(tempStr)
-                tempdict2 = {'path_routes': rule_str[region]}
-                tempStr.update(tempdict2)
+            srcStr = "#Add_Rules_for_" + lbr_path_route_set_name + "_here"
+            replacestr = "#Path_routes_for_" + lbr_path_route_set_name + "_here"
+            if lbr_path_route_set_name in path_route_set_list:
 
-                #Add the additional Path Routes to the existing Path Route Set
-                prs_str[region] = prs_str[region].replace(srcStr,rule_str[region])
+                if srcStr in rule_str[region]:
+
+                    # Create the remaining rules
+                    rule_str[region] = rule_str[region].replace(srcStr, pathrouterules.render(tempStr))
+
+                    if replacestr in prs_str[region]:
+                        # Add the first rule to the final string
+                        prs_str[region] = prs_str[region].replace(replacestr, rule_str[region])
+                    else:
+                        # Add the last rule to the final string
+                        prs_str[region] = prs_str[region].replace(srcStr, pathrouterules.render(tempStr))
+
+                else:
+                    # Create the first rule
+                    rule_str[region] = pathrouterules.render(tempStr)
+
+            tempdict2 = {'path_routes': rule_str[region]}
+            tempStr.update(tempdict2)
+
 
     # Take backup of files
     for reg in ct.all_regions:
 
         if prs_str[reg] != '':
-
             # Generate Final String
             src = "##Add New Path Route Sets for "+reg.lower()+" here##"
             prs_str[reg] = prs.render(skeleton=True, count=0, region=reg).replace(src,prs_str[reg]+"\n"+src)
             finalstring = "".join([s for s in prs_str[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
 
             resource=sheetName
-            srcdir = outdir + "/" + reg + "/"
+            srcdir = outdir + "/" + reg + "/" + service_dir + "/"
             commonTools.backup_file(srcdir, resource, lb_auto_tfvars_filename)
 
             # Write to TF file
-            outfile = outdir + "/" + reg + "/" + lb_auto_tfvars_filename
+            outfile = srcdir + lb_auto_tfvars_filename
             oname = open(outfile, "w+")
             print("Writing to " + outfile)
             oname.write(finalstring)
@@ -183,4 +194,4 @@ def create_path_route_set(inputfile, outdir, prefix, config=DEFAULT_LOCATION):
 if __name__ == '__main__':
     # Execution of the code begins here
     args = parse_args()
-    create_path_route_set(args.inputfile, args.outdir, args.prefix, args.config)
+    create_path_route_set(args.inputfile, args.outdir, args.service_dir, args.prefix, args.config)

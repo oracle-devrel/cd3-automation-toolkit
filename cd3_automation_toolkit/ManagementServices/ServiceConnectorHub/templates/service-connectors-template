@@ -58,6 +58,14 @@ service_connectors= {
                 target_kind                = "streaming"
                 target_stream_name         = {{ target_stream_name }}
 
+          {% elif target_kind == "monitoring" %}
+                target_kind               = "monitoring"
+                target_monitoring_details = {{ target_monitoring_details }}
+
+          {% elif target_kind == "functions" %}
+                target_kind               = "functions"
+                target_function_details   = {{ target_function_details }}
+
           {% elif target_kind == "loggingAnalytics" %}
                 target_kind                = "loggingAnalytics"
                 target_log_group_name      = {{ target_log_group_name }}
@@ -65,7 +73,6 @@ service_connectors= {
               {%if target_log_source_identifier %}
                 target_log_source_identifier = "{{ target_log_source_identifier }}"
               {% endif %}
-
 
           {% elif target_kind == "notifications" %}
                 target_kind                = "notifications"

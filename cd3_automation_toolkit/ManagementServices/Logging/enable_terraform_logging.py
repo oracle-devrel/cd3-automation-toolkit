@@ -26,11 +26,15 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Create Groups terraform file")
     parser.add_argument('outdir', help='Output directory for creation of TF files')
     parser.add_argument('prefix', help='TF files prefix')
+    parser.add_argument("service_dir",
+                        help="subdirectory under region directory in case of separate out directory structure for kms/oss")
+    parser.add_argument("service_dir_iam",
+                        help="subdirectory under region directory in case of separate out directory structure for identity")
     parser.add_argument("comp_name", help="compartment name")
     parser.add_argument("region_name", help="region name")
     parser.add_argument("--configFileName", help="Config file name", required=False)
 
-def enable_cis_oss_logging(outdir, prefix, region_name, comp_name, config=DEFAULT_LOCATION):
+def enable_cis_oss_logging(outdir, service_dir, service_dir_iam,prefix, region_name, comp_name, config=DEFAULT_LOCATION):
 
     # Declare variables
     configFileName = config
@@ -82,7 +86,7 @@ def enable_cis_oss_logging(outdir, prefix, region_name, comp_name, config=DEFAUL
     loggrouptfStr = template.render(tempStr, count = 0, logs = 'true', loggroup = 'false').replace(srcStr, template.render(tempStr, logs = 'true')+"\n"+srcStr)
 
     # Write TF string to the file in respective region directory
-    reg_out_dir = outdir + "/" + region_name
+    reg_out_dir = outdir + "/" + region_name +"/" + service_dir
     if not os.path.exists(reg_out_dir):
         os.makedirs(reg_out_dir)
 
@@ -100,7 +104,7 @@ def enable_cis_oss_logging(outdir, prefix, region_name, comp_name, config=DEFAUL
         print(outfile + " containing TF for OSS Logging has been created for region "+region_name)
 
 
-def enable_cis_vcnflow_logging(filename, outdir, prefix, config=DEFAULT_LOCATION):
+def enable_cis_vcnflow_logging(filename, outdir, service_dir, prefix, config=DEFAULT_LOCATION):
 
     # Read cd3 using pandas dataframe
     df, col_headers = commonTools.read_cd3(filename, "Subnets")
@@ -194,7 +198,7 @@ def enable_cis_vcnflow_logging(filename, outdir, prefix, config=DEFAULT_LOCATION
 
     # Write TF string to the file in respective region directory
     for reg in tfStrLogs.keys():
-        reg_out_dir = outdir + "/" + reg
+        reg_out_dir = outdir + "/" + reg +"/" + service_dir
         if not os.path.exists(reg_out_dir):
             os.makedirs(reg_out_dir)
 
@@ -219,7 +223,7 @@ def enable_cis_vcnflow_logging(filename, outdir, prefix, config=DEFAULT_LOCATION
             oname.close()
             print(outfile[reg] + " for VCN Flow Logs has been created for region "+reg)
 
-def enable_load_balancer_logging(filename, outdir, prefix, config=DEFAULT_LOCATION):
+def enable_load_balancer_logging(filename, outdir, service_dir, prefix, config=DEFAULT_LOCATION):
 
     # Declare variables
     configFileName = config
@@ -307,7 +311,7 @@ def enable_load_balancer_logging(filename, outdir, prefix, config=DEFAULT_LOCATI
 
     # Write TF string to the file in respective region directory
     for reg in tfStrLogs.keys():
-        reg_out_dir = outdir + "/" + reg
+        reg_out_dir = outdir + "/" + reg + "/" + service_dir
         if not os.path.exists(reg_out_dir):
             os.makedirs(reg_out_dir)
 
@@ -336,4 +340,4 @@ def enable_load_balancer_logging(filename, outdir, prefix, config=DEFAULT_LOCATI
 if __name__ == '__main__':
     # Execution of the code begins here
     args = parse_args()
-    enable_cis_oss_logging(args.outdir, args.prefix, args.config, args.region_name, args.comp_name)
+    enable_cis_oss_logging(args.outdir, args.service_dir, args.service_dir_iam,args.prefix, args.config, args.service_dir, args.region_name, args.comp_name)

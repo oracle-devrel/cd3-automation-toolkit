@@ -19,14 +19,14 @@ resource "oci_cloud_guard_target" "target" {
   state         = var.state
 
   dynamic "target_detector_recipes" {
-    for_each = var.target_detector_recipes != [] ? var.target_detector_recipes : []
+    for_each = var.target_detector_recipes != null ? var.target_detector_recipes : []
     content {
       #Required
       detector_recipe_id = local.recipes[target_detector_recipes.value.detector_recipe_id]
 
       #Optional
       dynamic "detector_rules" {
-        for_each = target_detector_recipes.value.detector_rules != [] ? target_detector_recipes.value.detector_rules : []
+        for_each = try(target_detector_recipes.value.detector_rules, [])
         content {
           #Required
           details {
@@ -43,14 +43,14 @@ resource "oci_cloud_guard_target" "target" {
     }
   }
   dynamic "target_responder_recipes" {
-    for_each = var.target_responder_recipes != [] ? var.target_responder_recipes : []
+    for_each = var.target_responder_recipes != null ? var.target_responder_recipes : []
     content {
       #Required
       responder_recipe_id = local.recipes[target_responder_recipes.value.responder_recipe_id]
 
       #Optional
       dynamic "responder_rules" {
-        for_each = target_responder_recipes.value.responder_rules != [] ? target_responder_recipes.value.responder_rules : []
+        for_each = try(target_responder_recipes.value.responder_rules, [])
         content {
           #Required
           details {

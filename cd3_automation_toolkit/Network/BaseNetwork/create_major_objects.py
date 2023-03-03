@@ -33,6 +33,7 @@ def parse_args():
     parser = argparse.ArgumentParser(description='Create major-objects (VCN, IGW, NGW, DRG, LPGs etc for the VCN) terraform file')
     parser.add_argument('inputfile',help='Full Path of input file eg: cd3 excel file')
     parser.add_argument('outdir', help='Output directory for creation of TF files')
+    parser.add_argument("service_dir",help="subdirectory under region directory in case of separate out directory structure")
     parser.add_argument('prefix', help='customer name/prefix for all file names')
     parser.add_argument('non_gf_tenancy')
     parser.add_argument('--modify-network', default=False, action='store_true', help='modify network')
@@ -42,7 +43,7 @@ def parse_args():
 
 
 
-def create_major_objects(inputfile, outdir, prefix, non_gf_tenancy, config, modify_network=False):
+def create_major_objects(inputfile, outdir, service_dir, prefix, non_gf_tenancy, config, modify_network=False):
     # Declare Variables
     filename = inputfile
     configFileName = config
@@ -91,7 +92,7 @@ def create_major_objects(inputfile, outdir, prefix, non_gf_tenancy, config, modi
             left_vcn=key[0]
             left_vcn_tf_name = commonTools.check_tf_variable(left_vcn)
             region = key[1]
-            outfile = outdir + "/" + region + "/" + prefix + auto_tfvars_filename
+            outfile = outdir + "/" + region + "/" + service_dir + "/" + prefix + auto_tfvars_filename
 
             right_vcns = value.split(",")
             for right_vcn in right_vcns:
@@ -148,9 +149,9 @@ def create_major_objects(inputfile, outdir, prefix, non_gf_tenancy, config, modi
         # Get DRG version and Create oci-drg-data
         for region in drgv2.drg_names.keys():
             for drg in drgv2.drg_names[region]:
-                if (os.path.exists(outdir + "/" + region + "/obj_names.safe")):
+                if (os.path.exists(outdir + "/" + region +  "/"+service_dir + "/obj_names.safe")):
                     prevline = ""
-                    with open(outdir + "/" + region + "/obj_names.safe") as f:
+                    with open(outdir + "/" + region + "/"+service_dir +"/obj_names.safe") as f:
                         for line in f:
                             if (drg in line):
                                 if prevline!= "\n":
@@ -280,8 +281,8 @@ def create_major_objects(inputfile, outdir, prefix, non_gf_tenancy, config, modi
 
                             # Get DRG Attach Name
                             drg_attach_name=''
-                            if (os.path.exists(outdir + "/" + region + "/obj_names.safe")):
-                                with open(outdir + "/" + region + "/obj_names.safe") as f:
+                            if (os.path.exists(outdir + "/" + region + "/"+service_dir + "/obj_names.safe")):
+                                with open(outdir + "/" + region + "/"+service_dir + "/obj_names.safe") as f:
                                     for line in f:
                                         if ("drgattachinfo::::" + vcn_name + "::::" + drg_name in line):
                                             drg_attach_name = line.split("::::")[3].strip()
@@ -302,8 +303,8 @@ def create_major_objects(inputfile, outdir, prefix, non_gf_tenancy, config, modi
                             tempStr.update(tempdict)
                             # Get VCN DRG RT table
                             vcn_drg_rt_name = ""
-                            if (os.path.exists(outdir + "/" + region + "/obj_names.safe")):
-                                with open(outdir + "/" + region + "/obj_names.safe") as f:
+                            if (os.path.exists(outdir + "/" + region + "/"+service_dir + "/obj_names.safe")):
+                                with open(outdir + "/" + region + "/"+service_dir + "/obj_names.safe") as f:
                                     for line in f:
                                         if ("drginfo::::" + vcn_name + "::::" + drg_name in line):
                                             vcn_drg_rt_name = line.split("::::")[3].strip()
@@ -464,8 +465,8 @@ def create_major_objects(inputfile, outdir, prefix, non_gf_tenancy, config, modi
                 rt_var = ''
                 if (hub_spoke_none.lower() == 'hub' or 'peer' in hub_spoke_none.lower() ) :
                     lpg_rt_name = ""
-                    if (os.path.exists(outdir + "/" + region + "/obj_names.safe")):
-                        with open(outdir + "/" + region + "/obj_names.safe") as f:
+                    if (os.path.exists(outdir + "/" + region + "/"+service_dir + "/obj_names.safe")):
+                        with open(outdir + "/" + region + "/"+service_dir + "/obj_names.safe") as f:
                             for line in f:
                                 if ("lpginfo::::" + vcn_name + "::::" + lpg_name in line):
                                     lpg_rt_name = line.split("::::")[3].strip()
@@ -636,7 +637,7 @@ def create_major_objects(inputfile, outdir, prefix, non_gf_tenancy, config, modi
 
         if modify_network:
             tfStr[reg] = vcn_tfStr[reg] + igw_tfStr[reg] + ngw_tfStr[reg] + sgw_tfStr[reg] + lpg_tfStr[reg] + drg_tfStr[reg] + drg_attach_tfStr[reg]
-            reg_out_dir = outdir + "/" + reg
+            reg_out_dir = outdir + "/" + reg + "/"+service_dir
 
             if not os.path.exists(reg_out_dir):
                 os.makedirs(reg_out_dir)
@@ -680,7 +681,7 @@ def create_major_objects(inputfile, outdir, prefix, non_gf_tenancy, config, modi
 
             tfStr[reg] = vcn_tfStr[reg] + igw_tfStr[reg] + ngw_tfStr[reg] + sgw_tfStr[reg] + lpg_tfStr[reg] + drg_tfStr[reg] + drg_attach_tfStr[reg]
 
-            reg_out_dir = outdir + "/" + reg
+            reg_out_dir = outdir + "/" + reg + "/"+service_dir
 
             if not os.path.exists(reg_out_dir):
                 os.makedirs(reg_out_dir)
@@ -725,4 +726,4 @@ def create_major_objects(inputfile, outdir, prefix, non_gf_tenancy, config, modi
 
 if __name__ == '__main__':
     args = parse_args()
-    create_major_objects(args.inputfile, args.outdir, prefix=args.prefix, non_gf_tenancy=args.non_gf_tenancy, modify_network=args.modify_network, config=args.config)
+    create_major_objects(args.inputfile, args.outdir, args.service_dir, prefix=args.prefix, non_gf_tenancy=args.non_gf_tenancy, modify_network=args.modify_network, config=args.config)

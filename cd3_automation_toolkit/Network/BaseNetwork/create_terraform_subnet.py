@@ -31,6 +31,7 @@ def parse_args():
                                      'Create terraform files for subnets.')
     parser.add_argument('inputfile', help='Full Path of input file. eg  cd3 excel file')
     parser.add_argument('outdir', help='Output directory for creation of TF files')
+    parser.add_argument("service_dir",help="subdirectory under region directory in case of separate out directory structure")
     parser.add_argument('prefix', help='customer name/prefix for all file names')
     parser.add_argument('--modify-network', action='store_true', help='modify network: true or false')
     parser.add_argument('non_gf_tenancy')
@@ -39,7 +40,7 @@ def parse_args():
 
 
 #If input is CD3
-def create_terraform_subnet(inputfile, outdir, prefix, non_gf_tenancy, config, modify_network=False):
+def create_terraform_subnet(inputfile, outdir, service_dir, prefix, non_gf_tenancy, config, modify_network=False):
     filename = inputfile
     configFileName = config
 
@@ -295,7 +296,7 @@ def create_terraform_subnet(inputfile, outdir, prefix, non_gf_tenancy, config, m
 
     if modify_network:
         for reg in ct.all_regions:
-            reg_out_dir = outdir + "/" + reg
+            reg_out_dir = outdir + "/" + reg + "/" + service_dir
             if not os.path.exists(reg_out_dir):
                     os.makedirs(reg_out_dir)
 
@@ -319,14 +320,14 @@ def create_terraform_subnet(inputfile, outdir, prefix, non_gf_tenancy, config, m
 
     elif not modify_network:
         for reg in ct.all_regions:
-            reg_out_dir = outdir + "/" + reg
+            reg_out_dir = outdir + "/" + reg + "/" + service_dir
             if not os.path.exists(reg_out_dir):
                     os.makedirs(reg_out_dir)
 
             srcdir = reg_out_dir + "/"
             resource = 'subnets'
             commonTools.backup_file(srcdir, resource, prefix + auto_tfvars_filename)
-            outfile[reg] = reg_out_dir + "/" + prefix + auto_tfvars_filename
+            outfile[reg] = reg_out_dir + "/" +  "/"+prefix + auto_tfvars_filename
 
             # Create Skeleton Template
             if tfStr[reg] != '':
@@ -343,4 +344,4 @@ def create_terraform_subnet(inputfile, outdir, prefix, non_gf_tenancy, config, m
 if __name__ == '__main__':
     args = parse_args()
     # Execution of the code begins here
-    create_terraform_subnet(args.inputfile, args.outdir, args.prefix, args.non_gf_tenancy, args.config, modify_network=args.modify_network)
+    create_terraform_subnet(args.inputfile, args.outdir, args.service_dir,args.prefix, args.non_gf_tenancy, args.config, modify_network=args.modify_network)

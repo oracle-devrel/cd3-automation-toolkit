@@ -1,6 +1,6 @@
 # Networking Scenarios 
 
-## Greenfield Tenancies
+## Greenfield Tenancies (Managing Network for Green Field Tenancies)
 - [Create Network](#create-network)
 - [Use an existing DRG in OCI while creating the network](#use-an-existing-drg-in-oci-while-creating-the-network)
 - [Modify Network](#modify-network)
