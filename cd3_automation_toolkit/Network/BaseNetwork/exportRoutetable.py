@@ -337,6 +337,7 @@ def export_routetable(inputfile, export_compartments,export_regions, service_dir
 
 if __name__=="__main__":
     args = parse_args()
-    export_routetable(args.inputfile, args.export_compartments, args.config, args.tf_import_cmd, args.outdir,args.export_regions,args.service_dir)
-    export_drg_routetable(args.inputfile, args.export_compartments, args.config, args.tf_import_cmd, args.outdir,args.export_regions,args.service_dir)
+    ct = None
+    export_routetable(args.inputfile, args.export_compartments, args.config, args.tf_import_cmd, args.outdir,args.export_regions,args.service_dir, ct)
+    export_drg_routetable(args.inputfile, args.export_compartments, args.config, args.tf_import_cmd, args.outdir,args.export_regions,args.service_dir, ct)
 

@@ -289,4 +289,5 @@ def export_seclist(inputfile, export_compartments,export_regions,service_dir, _c
 
 if __name__=="__main__":
     args = parse_args()
-    export_seclist(args.inputfile, args.export_compartments, args.config, args.tf_import_cmd, args.outdir,args.export_regions, args.service_dir)
+    ct = None
+    export_seclist(args.inputfile, args.export_compartments, args.config, args.tf_import_cmd, args.outdir,args.export_regions, args.service_dir, ct)

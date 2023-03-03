@@ -240,4 +240,4 @@ def create_terraform_instances(inputfile, outdir, service_dir,prefix, config):
 if __name__ == '__main__':
     args = parse_args()
     # Execution of the code begins here
-    create_terraform_instances(args.inputfile, args.outdir, args.prefix, args.config)
+    create_terraform_instances(args.inputfile, args.outdir, args.service_dir, args.prefix, args.config)

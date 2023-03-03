@@ -340,4 +340,4 @@ def enable_load_balancer_logging(filename, outdir, service_dir, prefix, config=D
 if __name__ == '__main__':
     # Execution of the code begins here
     args = parse_args()
-    enable_cis_oss_logging(args.outdir, args.service_dir, args.service_dir_iam,args.prefix, args.config, args.service_dir, args.region_name, args.comp_name)
+    enable_cis_oss_logging(args.outdir, args.service_dir, args.service_dir_iam,args.prefix, args.config, args.region_name, args.comp_name)

@@ -963,5 +963,6 @@ def parse_args():
 
 if __name__ == '__main__':
     args = parse_args()
+    ct = None
     # Execution of the code begins here
-    export_lbr(args.inputfile, args.outdir, args.service_dir, args.export_compartments, args.config,args.export_regions)
+    export_lbr(args.inputfile, args.outdir, args.service_dir, args.export_compartments, args.config,args.export_regions, ct)
