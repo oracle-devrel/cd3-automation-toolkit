@@ -266,4 +266,5 @@ def export_nsg(inputfile, export_compartments, export_regions, service_dir, _con
 
 if __name__=="__main__":
     args = parse_args()
-    export_nsg(args.inputfile, args.export_compartments, args.config, args.tf_import_cmd, args.outdir,args.regions,args.service_dir)
+    ct = None
+    export_nsg(args.inputfile, args.export_compartments, args.config, args.tf_import_cmd, args.outdir,args.regions,args.service_dir, ct)

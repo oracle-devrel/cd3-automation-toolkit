@@ -226,4 +226,5 @@ def export_tags_nongreenfield(inputfile, outdir, service_dir, _config, export_co
 
 if __name__=="__main__":
     args = parse_args()
-    export_tags_nongreenfield(args.inputfile, args.outdir, args.service_dir, args.config, args.export_compartments)
+    ct = None
+    export_tags_nongreenfield(args.inputfile, args.outdir, args.service_dir, args.config, args.export_compartments, ct)
