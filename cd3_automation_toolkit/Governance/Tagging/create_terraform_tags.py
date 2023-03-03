@@ -116,9 +116,9 @@ def create_terraform_tags(inputfile, outdir, service_dir, prefix, config):
             if (regions[j] not in check_diff_region and regions[j] not in commonTools.endNames and str(regions[j]).lower() != "nan"):
                 check_diff_region.append(regions[j])
 
-        # If some invalid region is specified in a row which is not part of VCN Info Tab
-        if region not in ct.all_regions:
-            print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
+        # If some invalid region is specified in a row
+        if region != ct.home_region:
+            print("\nERROR!!! Invalid Region; It should be Home Region of the tenancy..Exiting!")
             exit(1)
 
         if str(df.loc[i,'Default Tag Compartment=Default Tag Value']).strip().lower() != 'nan' and str(df.loc[i,'Tag Keys']).strip().lower() == 'nan':

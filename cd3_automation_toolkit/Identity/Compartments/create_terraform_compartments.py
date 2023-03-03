@@ -109,7 +109,7 @@ def create_terraform_compartments(inputfile, outdir, service_dir, prefix, config
 
         region = region.strip().lower()
 
-        # If some invalid region is specified in a row which is not part of VCN Info Tab
+        # If some invalid region is specified in a row
         if region != ct.home_region:
             print("\nERROR!!! Invalid Region; It should be Home Region of the tenancy..Exiting!")
             exit(1)

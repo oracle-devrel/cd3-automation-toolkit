@@ -356,6 +356,6 @@ CD3 Automation Toolkit Tag v10.1
 4. Added Functionality for export of ADBs.
 5. Python code re do for creation of NSGs - Supports duplicate NSG names across different regions.
 6. Terraform code update to make Null values as optional in tfvars for all components.
-7. Performance tuning has been done wrt Fetch Compartments during Non-Greenfield workflow.The script will be exceuted
+7. Performance tuning has been done wrt Fetch Compartments during Non-Greenfield workflow. The script will be executed
    only once when you select multiple export options simultaneously.
 8. Bug fixes wrt Networking, Tagging, Excel sheet templates etc

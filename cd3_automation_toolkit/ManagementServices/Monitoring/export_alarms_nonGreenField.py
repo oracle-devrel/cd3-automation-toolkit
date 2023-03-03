@@ -20,7 +20,7 @@ importCommands = {}
 oci_obj_names = {}
 
 
-def print_alarms(region, alarm, ncpclient,values_for_column, ntk_compartment_name):
+def print_alarms(region, alarm, ncpclient,values_for_column, ntk_compartment_name,ct):
     alarm_tf_name = commonTools.check_tf_variable(alarm.display_name)
     comp_tf_name = commonTools.check_tf_variable(ntk_compartment_name)
     suppression = alarm.suppression
@@ -34,7 +34,6 @@ def print_alarms(region, alarm, ncpclient,values_for_column, ntk_compartment_nam
     #    statistic = query[query.rfind(".") + 1:query.rfind("(")]
 
     skip_row=0
-    ct = commonTools()
     for col_header in values_for_column:
         if col_header == 'Region':
             values_for_column[col_header].append(region)
@@ -149,7 +148,7 @@ def export_alarms(inputfile, _outdir, service_dir, _config, ct, export_compartme
 
             for alarmSummary in alarms.data:
                 alarm=mclient.get_alarm(alarmSummary.id).data
-                print_alarms(region, alarm,ncpclient,values_for_column, ntk_compartment_name)
+                print_alarms(region, alarm,ncpclient,values_for_column, ntk_compartment_name,ct)
 
 
         with open(script_file, 'a') as importCommands[reg]:

@@ -48,8 +48,6 @@ def volume_attachment_info(compute,ct,volume_id,export_compartments):
     attachments=None
     for ntk_compartment_name in export_compartments:
         attach_info = compute.list_volume_attachments(compartment_id = ct.ntk_compartment_ids[ntk_compartment_name], volume_id = volume_id)
-        print(attach_info.data)
-        print("-----------")
         for attachments in attach_info.data:
             lifecycle_state = attachments.lifecycle_state
             if lifecycle_state == 'ATTACHED':
