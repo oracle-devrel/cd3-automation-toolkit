@@ -1010,7 +1010,7 @@ if (run_fetch_script == 1):
 else:
     print("Make sure to execute the script for 'Fetch Compartments OCIDs to variables file' under 'CD3 Services' menu option atleast once before you continue!")
 
-
+service_dir=''
 ## Menu Options
 if non_gf_tenancy:
     inputs = [
