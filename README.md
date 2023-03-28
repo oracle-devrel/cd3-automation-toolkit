@@ -18,8 +18,9 @@
 8. [Grouping of generated Terraform files](/cd3_automation_toolkit/documentation/user_guide/RestructuringOutDirectory.md)
 9. [Expected Behaviour Of Automation Toolkit](/cd3_automation_toolkit/documentation/user_guide/KnownBehaviour.md)
 10. [FAQs](/cd3_automation_toolkit/documentation/user_guide/FAQ.md)
-11. [Steps to Upgrade Your Toolkit](/cd3_automation_toolkit/documentation/user_guide/Upgrade_Toolkit.md)
-12. Learn More...
+11. [What's new in this release!!](https://github.com/oracle-devrel/cd3-automation-toolkit/releases/tag/v10.1)
+12. [Steps to Upgrade Your Toolkit](/cd3_automation_toolkit/documentation/user_guide/Upgrade_Toolkit.md)
+13. Learn More...
     - CD3 Excel Information
       - [Excel Templates](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md#excel-sheet-templates)
       - [Toolkit Supported OCI Services](/cd3_automation_toolkit/documentation/user_guide/learn_more/CD3ExcelTabs.md)
@@ -27,7 +28,8 @@
     - [Additional CIS Compliance Features](/cd3_automation_toolkit/documentation/user_guide/learn_more/CISFeatures.md)
     - [OCI Resource Manager Upload](/cd3_automation_toolkit/documentation/user_guide/learn_more/ResourceManagerUpload.md)
     - [Support for Additional Attributes](/cd3_automation_toolkit/documentation/user_guide/learn_more/SupportforAdditionalAttributes.md)
-13. [Automation Toolkit Learning Videos](/cd3_automation_toolkit/documentation/user_guide/LearningVideos.md)
+14. [Automation Toolkit Learning Videos](/cd3_automation_toolkit/documentation/user_guide/LearningVideos.md)
+
 
 ## Introduction
 CD3 stands for <b>C</b>loud <b>D</b>eployment <b>D</b>esign <b>D</b>eliverable.
