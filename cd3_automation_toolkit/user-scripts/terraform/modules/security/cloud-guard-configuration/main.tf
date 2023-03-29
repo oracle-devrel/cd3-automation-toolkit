@@ -14,3 +14,9 @@ resource "oci_cloud_guard_cloud_guard_configuration" "cloud_guard_configuration"
   #Optional
   self_manage_resources = var.self_manage_resources
 }
+
+resource "time_sleep" "wait_60_seconds" {
+  depends_on = [oci_cloud_guard_cloud_guard_configuration.cloud_guard_configuration]
+  create_duration = "60s"
+}
+

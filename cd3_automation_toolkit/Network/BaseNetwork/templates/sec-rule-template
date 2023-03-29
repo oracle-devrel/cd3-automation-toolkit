@@ -39,15 +39,24 @@
                     {% elif protocol.lower() == 'udp' %}
                     {% if (dportmax and dportmin) or (sportmax and sportmin) %}
                     udp = [{
-                        {% if dportmax and dportmin %}
-                        destination_port_range_max = "{{ dportmax }}"
-                        destination_port_range_min = "{{ dportmin }}"
-                        {% endif %}
 
-                        {% if sportmax and sportmin %}
+                        {% if sportmax and sportmin and dportmax and dportmin%}
                         source_port_range_max = "{{ sportmax }}"
                         source_port_range_min = "{{ sportmin }}"
+                        destination_port_range_max = "{{ dportmax }}"
+                        destination_port_range_min = "{{ dportmin }}"
+
+                        {% elif dportmax and dportmin %}
+                        destination_port_range_max = "{{ dportmax }}"
+                        destination_port_range_min = "{{ dportmin }}"
+
+                        {% elif sportmax and sportmin %}
+                        source_port_range_max = "{{ sportmax }}"
+                        source_port_range_min = "{{ sportmin }}"
+                        destination_port_range_max = null
+                        destination_port_range_min = null
                         {% endif %}
+
                     }]
                     {% else %}
                     udp = []
@@ -56,14 +65,21 @@
                     {% elif protocol.lower() == 'tcp' %}
                     {% if (dportmax and dportmin) or (sportmax and sportmin) %}
                     tcp= [{
-                        {% if dportmax and dportmin %}
-                        destination_port_range_max = "{{ dportmax }}"
-                        destination_port_range_min = "{{ dportmin }}"
-                        {% endif %}
-
-                        {% if sportmax and sportmin %}
+                        {% if sportmax and sportmin and dportmax and dportmin%}
                         source_port_range_max = "{{ sportmax }}"
                         source_port_range_min = "{{ sportmin }}"
+                        destination_port_range_max = "{{ dportmax }}"
+                        destination_port_range_min = "{{ dportmin }}"
+
+                        {% elif dportmax and dportmin %}
+                        destination_port_range_max = "{{ dportmax }}"
+                        destination_port_range_min = "{{ dportmin }}"
+
+                        {% elif sportmax and sportmin %}
+                        source_port_range_max = "{{ sportmax }}"
+                        source_port_range_min = "{{ sportmin }}"
+                        destination_port_range_max = null
+                        destination_port_range_min = null
                         {% endif %}
                     }]
                     {% else %}
@@ -117,14 +133,21 @@
                     {% elif protocol.lower() == 'udp' %}
                     {% if (dportmax and dportmin) or (sportmax and sportmin) %}
                     udp = [{
-                        {% if dportmax and dportmin %}
-                        destination_port_range_max = "{{ dportmax }}"
-                        destination_port_range_min = "{{ dportmin }}"
-                        {% endif %}
-
-                        {% if sportmax and sportmin %}
+                        {% if sportmax and sportmin and dportmax and dportmin%}
                         source_port_range_max = "{{ sportmax }}"
                         source_port_range_min = "{{ sportmin }}"
+                        destination_port_range_max = "{{ dportmax }}"
+                        destination_port_range_min = "{{ dportmin }}"
+
+                        {% elif dportmax and dportmin %}
+                        destination_port_range_max = "{{ dportmax }}"
+                        destination_port_range_min = "{{ dportmin }}"
+
+                        {% elif sportmax and sportmin %}
+                        source_port_range_max = "{{ sportmax }}"
+                        source_port_range_min = "{{ sportmin }}"
+                        destination_port_range_max = null
+                        destination_port_range_min = null
                         {% endif %}
                     }]
                     {% else %}
@@ -134,14 +157,21 @@
                     {% elif protocol.lower() == 'tcp' %}
                     {% if (dportmax and dportmin) or (sportmax and sportmin) %}
                     tcp= [{
-                        {% if dportmax and dportmin %}
-                        destination_port_range_max = "{{ dportmax }}"
-                        destination_port_range_min = "{{ dportmin }}"
-                        {% endif %}
-
-                        {% if sportmax and sportmin %}
+                       {% if sportmax and sportmin and dportmax and dportmin%}
                         source_port_range_max = "{{ sportmax }}"
                         source_port_range_min = "{{ sportmin }}"
+                        destination_port_range_max = "{{ dportmax }}"
+                        destination_port_range_min = "{{ dportmin }}"
+
+                        {% elif dportmax and dportmin %}
+                        destination_port_range_max = "{{ dportmax }}"
+                        destination_port_range_min = "{{ dportmin }}"
+
+                        {% elif sportmax and sportmin %}
+                        source_port_range_max = "{{ sportmax }}"
+                        source_port_range_min = "{{ sportmin }}"
+                        destination_port_range_max = null
+                        destination_port_range_min = null
                         {% endif %}
                     }]
                     {% else %}

@@ -9,6 +9,7 @@
 
 import argparse
 import os
+from zipfile import ZipFile
 import shutil
 import time
 import csv
@@ -102,7 +103,6 @@ def create_resource_manager(outdir, outdir_struct,prefix,regions, config=DEFAULT
     ct = commonTools()
     ct.get_subscribedregions(configFileName)
     ct.get_network_compartment_ids(config['tenancy'],"root",configFileName)
-
     x = datetime.datetime.now()
     date = x.strftime("%f").strip()
 
@@ -246,7 +246,20 @@ def create_resource_manager(outdir, outdir_struct,prefix,regions, config=DEFAULT
         #Process files in region directory - single outdir
         if len(outdir_struct.items())==0:
             rm_name = prefix + "-" + region
-            shutil.make_archive(rm_name, 'zip', rm_dir)
+            #shutil.make_archive(rm_name, 'zip', rm_dir)
+            zip_name = rm_name + ".zip"
+            # Fix for make_archive huge zip file issue - Ulag
+            file_paths = []
+            for root, directories, files in os.walk(rm_dir):
+                for filename in files:
+                    rel_dir = os.path.relpath(root, rm_dir)
+                    filepath = os.path.join(rel_dir, filename)
+                    file_paths.append(filepath)
+
+            with ZipFile(zip_name, 'w') as zipp:
+                for file in file_paths:
+                    if zip_name not in file and 'terraform.tfstate' not in file:
+                        zipp.write(file)
 
             if (region, rm_name) in rm_region_service_map.keys():
                 try:
@@ -286,15 +299,16 @@ def create_resource_manager(outdir, outdir_struct,prefix,regions, config=DEFAULT
             rm_dir_zip = region_dir + '/' + prefix + '-' + region +'.zip'
             # Take a backup of zip file if it exists
             if os.path.exists(rm_dir_zip):
-                shutil.copy(rm_dir_zip, rm_dir_zip + "_backup")
+                shutil.move(rm_dir_zip, rm_dir_zip + "_backup")
 
-            base_name = prefix + "-" + region
             os.chdir("../")
-            shutil.make_archive(base_name, 'zip', rm_dir)
+            #shutil.make_archive(base_name, 'zip', rm_dir)
+            shutil.move(rm_dir+"/"+zip_name,region_dir)
 
         #Process service_dirs - separate outdir
         else:
             service_dir_processed = []
+
             for service, service_dir in outdir_struct.items():
                 svcs = dir_svc_map[service_dir]
                 if(service_dir in service_dir_processed):
@@ -317,8 +331,24 @@ def create_resource_manager(outdir, outdir_struct,prefix,regions, config=DEFAULT
                     f.close()
 
                 service_rm_name = prefix + "-" + region + "-" + service_dir
-                shutil.make_archive(service_rm_name, 'zip', service_dir)
+                #shutil.make_archive(service_rm_name, 'zip', service_dir)
 
+                zip_name = service_rm_name + ".zip"
+                # Fix for make_archive huge zip file issue - Ulag
+                file_paths = []
+
+                for root, directories, files in os.walk(service_dir):
+                    for filename in files:
+                        rel_dir = os.path.relpath(root, service_dir)
+                        filepath = os.path.join(rel_dir, filename)
+                        file_paths.append(filepath)
+
+                with ZipFile(zip_name, 'w') as zipp:
+                    for file in file_paths:
+                        if zip_name not in file and 'terraform.tfstate' not in file:
+                            os.chdir(rm_dir + "/" + service_dir)
+                            zipp.write(file)
+                            os.chdir("../")
                 if (region,service_rm_name) in rm_region_service_map.keys():
                     try:
                         service_rm_ocid = rm_region_service_map[(region,service_rm_name)]
@@ -361,7 +391,7 @@ def create_resource_manager(outdir, outdir_struct,prefix,regions, config=DEFAULT
             rm_dir_zip = region_dir + '/' + prefix + '-' + region + '-stacks.zip'
             # Take a backup of zip file if it exists
             if os.path.exists(rm_dir_zip):
-                shutil.copy(rm_dir_zip, rm_dir_zip + "_backup")
+                shutil.move(rm_dir_zip, rm_dir_zip + "_backup")
 
             base_name = prefix + "-" + region + "-stacks"
             shutil.rmtree("modules")

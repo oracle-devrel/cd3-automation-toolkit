@@ -189,18 +189,12 @@ def create_terraform_exa_vmclusters(inputfile, outdir, service_dir, prefix, conf
                     db_nsgs = str(columnvalue).strip().split(",")
                     if len(db_nsgs) == 1:
                         for nsg in db_nsgs:
-                            if "ocid" in nsg.strip():
-                                nsg_id = "\"" + nsg.strip() + "\""
-                            else:
-                                nsg_id = "\"" + commonTools.check_tf_variable(str(nsg).strip()) + "\""
+                            nsg_id = "\"" + nsg.strip() + "\""
 
                     elif len(db_nsgs) >= 2:
                         c = 1
                         for nsg in db_nsgs:
-                            if "ocid" in nsg.strip():
-                                data = "\"" + nsg.strip() + "\""
-                            else:
-                                data = "\"" + commonTools.check_tf_variable(str(nsg).strip()) + "\""
+                            data = "\"" + nsg.strip() + "\""
 
                             if c == len(db_nsgs):
                                 nsg_id = nsg_id + data
@@ -215,18 +209,12 @@ def create_terraform_exa_vmclusters(inputfile, outdir, service_dir, prefix, conf
                     backup_nsgs = str(columnvalue).strip().split(",")
                     if len(backup_nsgs) == 1:
                         for nsgs in backup_nsgs:
-                            if "ocid" in nsgs.strip():
-                                backup_nsg_id = "\"" + nsgs.strip() + "\""
-                            else:
-                                backup_nsg_id = "\"" + commonTools.check_tf_variable(str(nsgs).strip()) + "\""
+                            backup_nsg_id = "\"" + nsgs.strip() + "\""
 
                     elif len(backup_nsgs) >= 2:
                         c = 1
                         for nsgs in backup_nsgs:
-                            if "ocid" in nsgs.strip():
-                                data = "\"" + nsgs.strip() + "\""
-                            else:
-                                data = "\"" + commonTools.check_tf_variable(str(nsgs).strip()) + "\""
+                            data = "\"" + nsgs.strip() + "\""
 
                             if c == len(backup_nsgs):
                                 backup_nsg_id = backup_nsg_id + data

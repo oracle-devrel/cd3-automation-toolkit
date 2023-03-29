@@ -225,7 +225,10 @@ def create_terraform_drg_route(inputfile, outdir, service_dir, prefix, non_gf_te
 
             for columnname in dfcolumns:
                 # Column value
-                columnvalue = str(df[columnname][i]).strip()
+                if (columnname != 'Rule Description'):
+                    columnvalue = str(df[columnname][i]).strip()
+                else:
+                    columnvalue = str(df[columnname][i])
 
                 # Check for boolean/null in column values
                 columnvalue = commonTools.check_columnvalue(columnvalue)
@@ -1037,9 +1040,11 @@ def create_terraform_route(inputfile, outdir, service_dir, prefix, non_gf_tenanc
                 pass
 
         for columnname in dfcolumns:
-
             # Column value
-            columnvalue = str(df[columnname][i]).strip()
+            if (columnname != 'Rule Description'):
+                columnvalue = str(df[columnname][i]).strip()
+            else:
+                columnvalue = str(df[columnname][i])
 
             # Check for boolean/null in column values
             columnvalue = commonTools.check_columnvalue(columnvalue)

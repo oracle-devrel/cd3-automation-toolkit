@@ -22,6 +22,7 @@ module "cloud-guard-targets" {
   source   = "./modules/security/cloud-guard-target"
   for_each = var.cloud_guard_targets != null ? var.cloud_guard_targets : {}
 
+  depends_on = [module.cloud-guard-configurations]
   #Required
   tenancy_ocid         = var.tenancy_ocid
   compartment_id       = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : var.tenancy_ocid

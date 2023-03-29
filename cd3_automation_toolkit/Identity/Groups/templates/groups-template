@@ -15,7 +15,13 @@ groups = {
         group_name        = "{{ name }}"
         group_description = "{{ description }}"
         {% if matching_rule != "" %}
-        matching_rule     = "{{ matching_rule }}" # Can be null or "" for regular groups
+            {% if '\n' not in matching_rule %}
+                matching_rule     = "{{ matching_rule }}" # Can be null or "" for regular groups
+            {% else %}
+                matching_rule = <<-EOF
+                {{ matching_rule }}
+                EOF
+            {% endif %}
         {% endif %}
 
     {#  ##Do not modify below this line##  #}

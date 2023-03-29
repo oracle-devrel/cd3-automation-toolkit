@@ -135,10 +135,7 @@ def create_terraform_adb(inputfile, outdir, service_dir, prefix, config=DEFAULT_
                     NSGs = columnvalue.split(",")
                     k = 0
                     while k < len(NSGs):
-                        if "ocid" in NSGs[k].strip():
-                            nsg = "\"" + NSGs[k].strip() + "\""
-                        else:
-                            nsg = "\"" + commonTools.check_tf_variable(NSGs[k].strip()) + "\""
+                        nsg = "\"" + NSGs[k].strip() + "\""
 
                         nsg_str = nsg_str + str(nsg)
                         if (k != len(NSGs) - 1):

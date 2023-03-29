@@ -286,7 +286,7 @@ def seek_info():
                 if service_dir=="" or service_dir == "\n":
                     continue
                 #if (service != 'identity' and service != 'tagging') or ((service == 'identity' or service == 'tagging') and region == home_region):
-                home_region_services = ['identity', 'tagging', 'budget', 'cloud-guard']
+                home_region_services = ['identity', 'tagging', 'budget']
                 if (region != home_region) and (service in home_region_services):
                     os.remove(region_dir + service + ".tf")
 

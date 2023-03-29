@@ -285,22 +285,22 @@ class commonTools():
             columnname = commonTools.check_column_headers(columnname)
             multivalues = columnvalue.split(";")
             multivalues = [part.split("=") for part in multivalues if part]
-            for value in multivalues:
+            """for value in multivalues:
                 try:
                     value[1] = value[1].replace("\\","\\\\")
                 except IndexError as e:
-                    pass
+                    pass"""
             tempdict = {columnname: multivalues}
         else:
             # If there is only one tag; split them only by "="; each key-value pair is stored as a list
             columnname = commonTools.check_column_headers(columnname)
             multivalues = columnvalue.split("=")
             multivalues = [str(part).strip() for part in multivalues if part]
-            if multivalues != []:
+            """if multivalues != []:
                 try:
                     multivalues[1] = multivalues[1].replace("\\","\\\\")
                 except IndexError as e:
-                    pass
+                    pass"""
             tempdict = {columnname: [multivalues]}
         return tempdict
 
