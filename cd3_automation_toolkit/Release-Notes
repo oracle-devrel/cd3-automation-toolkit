@@ -2,7 +2,7 @@
 CD3 Automation Toolkit Tag v10.2
 ----------------------------------
 1. Bug fixes - tfvars template change for Security Rules to include source port range, RM stack zip file,
-   nsg TF variable check, added ignore life cycle changes for ECMP, multi-line and tags issue for Identity Components.
+   nsg TF variable check, encoding issue with cis_reports.py, added ignore life cycle changes for ECMP, multi-line and tags issue for Identity Components.
 2. Restrict directory permissions for cd3user inside the container.
 3. Fix python package versions in shell scrip while launching container.
 4. Allowed cloud guard to be enabled from any region and fixed terraform for cloud guard.
