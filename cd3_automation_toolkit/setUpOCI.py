@@ -288,7 +288,7 @@ def export_subnets(inputfile, outdir, service_dir,prefix,config,export_regions, 
     print("\n\nExecute tf_import_commands_network_subnets_nonGF.sh script created under each region directory to synch TF with OCI Network objects\n")
 
 
-def export_nsg(inputfile, outdir, prefix,service_dir_nt,config,export_regions,ct):
+def export_nsg(inputfile, outdir, service_dir_nt, prefix,config,export_regions,ct):
     if len(outdir_struct) != 0:
         service_dir = outdir_struct['nsg']
     else:
