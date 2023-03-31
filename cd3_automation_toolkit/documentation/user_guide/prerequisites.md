@@ -8,7 +8,7 @@
 <br><br>
 <div align='center'>
 
-| <a href="/README.md#table-of-contents-bookmark">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/Launch_Docker_container.md">Next :arrow_forward:</a> |
+| <a href="/README.md#table-of-contents-bookmark">:arrow_backward: Main Menu</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/Launch_Docker_container.md">Next :arrow_forward:</a> |
 | :---- | -------: |
   
 </div>
