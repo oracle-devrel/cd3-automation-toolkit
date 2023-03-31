@@ -9,7 +9,7 @@
 
   Let's Begin!!
 
-3. [Pre-requisites](#pre-requisites)
+3. [Pre-requisites](/cd3_automation_toolkit/documentation/user_guide/prerequisites.md)
 4. [Launch Docker container](/cd3_automation_toolkit/documentation/user_guide/Launch_Docker_container.md)
 5. [Connect container to OCI Tenancy](/cd3_automation_toolkit/documentation/user_guide/Connect_container_to_OCI_Tenancy.md)
 6. [Getting Started with Automation Toolkit](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md)
