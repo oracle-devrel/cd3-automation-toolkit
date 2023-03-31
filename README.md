@@ -2,14 +2,18 @@
 
 [![License: UPL](https://img.shields.io/badge/license-UPL-green)](https://img.shields.io/badge/license-UPL-green) [![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=oracle-devrel_cd3-automation-toolkit)](https://sonarcloud.io/dashboard?id=oracle-devrel_cd3-automation-toolkit)
 
-## Table of Contents :bookmark:
 
+
+<ul>
 
   <li> <a href= "#introduction">Introduction</a></li>
 
-  <li> <a href = "https://github.com/oracle-devrel/cd3-automation-toolkit/releases/tag/v10.1">What's new in this release!!</a></li>
+  <li> <a href = "https://github.com/oracle-devrel/cd3-automation-toolkit/releases/tag/v10.1">What's new in this release</a></li>
+  <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md#excel-sheet-templates">Excel Templates</a></li>
   
-### Let's Begin
+</ul>
+
+### New Users
 
 <ul>
   
@@ -23,35 +27,40 @@
   <ul>
   <li> <a href="/cd3_automation_toolkit/documentation/user_guide/GreenField.md">Green Field Tenancies</a>
     <ul>
-      <li> <a href="/cd3_automation_toolkit/documentation/user_guide/NetworkingScenariosGF.md"<b> Must Read :</b> Managing Network for Greenfield</a></li>
+      <li> <a href="/cd3_automation_toolkit/documentation/user_guide/NetworkingScenariosGF.md"</a><b> Must Read :</b> Managing Network for Greenfield Tenancies</li>
     </ul>
     </ul>
   </li>
   <ul>
   <li> <a href="/cd3_automation_toolkit/documentation/user_guide/NonGreenField.md">Non Greenfield Tenancies</a>
     <ul>
-      <li><a href ="/cd3_automation_toolkit/documentation/user_guide/NetworkingScenariosNGF.md"<b> Must Read : </b> Managing Network for Non-Greenfield Tenancies</li>
+      <li><a href ="/cd3_automation_toolkit/documentation/user_guide/NetworkingScenariosNGF.md"</a><b> Must Read : </b> Managing Network for Non-Greenfield Tenancies</li>
     </ul>
   </ul>
-  <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/RestructuringOutDirectory.md">Grouping of generated Terraform files</a></li>
-  <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/KnownBehaviour.md">Expected Behaviour Of Automation Toolkit</a></li>
-  <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/FAQ.md">FAQs</a></li>
-  <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/Upgrade_Toolkit.md">Steps to Upgrade Your Toolkit</a></li>
   
+  
+ </ul>
+ 
+ ### Existing Users
+
+<ul>
+ 
+  <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/Upgrade_Toolkit.md">Steps to Upgrade Your Toolkit</a></li>
+ 
 </ul> 
 
 ### Learn More...
 
-<ul>
-   <li> CD3 Excel Information</li>
-    <ul>
-      <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md#excel-sheet-templates">Excel Templates</a></li>
-      <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/learn_more/CD3ExcelTabs.md">Toolkit Supported OCI Services</a></li>
-     </ul>
-      
+   <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/FAQ.md">FAQs</a></li>
+   <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/KnownBehaviour.md">Expected Behaviour Of Automation Toolkit</a></li>
+   <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/learn_more/CD3ExcelTabs.md">Toolkit Supported OCI Services</a></li>
    <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/learn_more/SupportForCD3Validator.md">CD3 Validator Features</a></li>
    <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/learn_more/CISFeatures.md">Additional CIS Compliance Features</a></li>
-   <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/learn_more/ResourceManagerUpload.md">OCI Resource Manager Upload</a></li>
+   <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/RestructuringOutDirectory.md">Grouping of generated Terraform files</a></li>
+  
+  <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/learn_more/ResourceManagerUpload.md">OCI Resource Manager Upload</a></li>
+  
+   
    <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/learn_more/SupportforAdditionalAttributes.md">Support for Additional Attributes</a></li>
    <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/LearningVideos.md">Automation Toolkit Learning Videos</a></li>
  
