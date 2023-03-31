@@ -23,7 +23,7 @@ Follow below steps to start using the newly subscribed region with the toolkit:
 
 **4. How do I upgrade an existing version of the toolkit to the new one without disrupting my existing tenancy files/directories?**
 <br>  
-Please look at the latest release information under <a href = https://github.com/oracle-devrel/cd3-automation-toolkit/releases>Releases. </a>
+Please look at [Steps to Upgrade Your Toolkit.](/cd3-automation-toolkit/blob/main/cd3_automation_toolkit/documentation/user_guide/Upgrade_Toolkit.md#steps-to-upgrade-your-toolkit-for-existing-customers)
 
 **5. How do I export instances in batches using different filters?**
 <br>  
