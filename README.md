@@ -61,7 +61,7 @@ It reads input data in the form of CD3 Excel sheet and generates the terraform f
 
 Check out [what's new in this release!!](https://github.com/oracle-devrel/cd3-automation-toolkit/releases/tag/v10.1)
 
-[Click here](/cd3_automation_toolkit/documentation/user_guide/Launch_Docker_container.md) to get started and manage your OCI Infra!
+[Click here](/cd3_automation_toolkit/documentation/user_guide/prerequisites.md) to get started and manage your OCI Infra!
 
 ## Contributing
 This project is open source.  Please submit your contributions by raising an <b>Issue</b> or through <b>Discussion topic</b> in this repository. Currently, we do not accept any pull requests. Oracle appreciates any contributions that are made by the open source community.
