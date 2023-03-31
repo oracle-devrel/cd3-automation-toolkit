@@ -101,7 +101,7 @@
     }
   ```
   
-- If the description field is having any newlines in the tenancy then the export of the compoennt and tf synch will show output similair to below:
+- If the description field is having any newlines in the tenancy then the export of the component and tf synch will show output similair to below:
   
   ```
   # module.iam-policies[“ConnectorPolicy_notifications_2023-03-06T21-54-41-655Z”].oci_identity_policy.policy will be updated in-place
