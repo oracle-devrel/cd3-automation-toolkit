@@ -2,7 +2,7 @@
 
 ### NOTE:
 1. Automation Tool Kit DOES NOT support the creation/export of duplicate resources.
-2. DO NOT modify/remove any commented rows or column names. You may re-arrange the columns if needed (except NSGs).
+2. DO NOT modify/remove any commented rows or column names. You may re-arrange the columns if needed.
 3. A double colon (::) or Semi-Colon (;) has a special meaning in the Tool Kit. Do not use them in the OCI data / values.
 4. Do not include any unwanted space in cells you fill in; do not place any empty rows in between.
 5. Any entry made/moved post \<END> in any of the tabs of CD3 will not be processed. Any resources created by the automation & then moved after the \<END> will cause the resources to be removed. 
