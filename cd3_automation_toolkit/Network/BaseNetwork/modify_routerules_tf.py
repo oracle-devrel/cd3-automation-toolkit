@@ -462,7 +462,10 @@ def modify_terraform_routerules(inputfile, outdir, service_dir,prefix=None, non_
                             obj_tf_name = commonTools.check_tf_variable(obj_tf_name)
                         else:
                             obj_tf_name = dest_objs[1].strip()
-                    if ('ngw' in dest_objs[0].lower().strip()):
+                    if ('privateip' in dest_objs[0].lower().strip()):
+                        tempdict = {'resource': 'IP', 'network_entity_id': dest_objs[0].lower().strip()}
+                        tempStr.update(tempdict)
+                    elif ('ngw' in dest_objs[0].lower().strip()):
                         tempdict = {'resource' : 'NGW','network_entity_id': obj_tf_name }
                         tempStr.update(tempdict)
                     elif ('sgw' in dest_objs[0].lower().strip()):
@@ -479,9 +482,7 @@ def modify_terraform_routerules(inputfile, outdir, service_dir,prefix=None, non_
                         dest_obj = commonTools.check_tf_variable(dest_objs[1].strip())
                         tempdict = {'resource': 'DRG','network_entity_id': dest_obj}
                         tempStr.update(tempdict)
-                    elif('privateip' in dest_objs[0].lower().strip()):
-                        tempdict = {'resource': 'IP','network_entity_id': dest_objs[0].lower().strip() }
-                        tempStr.update(tempdict)
+
                 else:
                     tempStr.update({'network_entity_id' : ''})
 
