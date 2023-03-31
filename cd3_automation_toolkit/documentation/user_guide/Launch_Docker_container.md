@@ -26,7 +26,7 @@ To ease the execution of toolkit, we have provided the steps to build an image w
 <br><br>
 <div align='center'>
 
-| <a href="/README.md#table-of-contents-bookmark">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/Connect_container_to_OCI_Tenancy.md">Next :arrow_forward:</a> |
+| <a href="/cd3_automation_toolkit/documentation/user_guide/prerequisites.md">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/Connect_container_to_OCI_Tenancy.md">Next :arrow_forward:</a> |
 | :---- | -------: |
   
 </div>
