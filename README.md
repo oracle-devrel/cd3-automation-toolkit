@@ -5,20 +5,23 @@
 ## Table of Contents :bookmark:
 
 1. [Introduction](#introduction)
-2. [Pre-requisites](#pre-requisites)
-3. [Launch Docker container](/cd3_automation_toolkit/documentation/user_guide/Launch_Docker_container.md)
-4. [Connect container to OCI Tenancy](/cd3_automation_toolkit/documentation/user_guide/Connect_container_to_OCI_Tenancy.md)
-5. [Getting Started with Automation Toolkit](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md)
-6. [Using the Automation Toolkit](/cd3_automation_toolkit/documentation/user_guide/Workflows.md)
+2. [What's new in this release!!](https://github.com/oracle-devrel/cd3-automation-toolkit/releases/tag/v10.1)
+
+  Let's Begin!!
+
+3. [Pre-requisites](#pre-requisites)
+4. [Launch Docker container](/cd3_automation_toolkit/documentation/user_guide/Launch_Docker_container.md)
+5. [Connect container to OCI Tenancy](/cd3_automation_toolkit/documentation/user_guide/Connect_container_to_OCI_Tenancy.md)
+6. [Getting Started with Automation Toolkit](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md)
+7. [Using the Automation Toolkit](/cd3_automation_toolkit/documentation/user_guide/Workflows.md)
    - [Green Field Tenancies](/cd3_automation_toolkit/documentation/user_guide/GreenField.md)
    - [Non-Green Field Tenancies](/cd3_automation_toolkit/documentation/user_guide/NonGreenField.md)
-7. MUST READ...
+8. MUST READ...
    - [Managing Network for Green Field Tenancies](/cd3_automation_toolkit/documentation/user_guide/NetworkingScenariosGF.md)
    - [Managing Network for Non Green Field Tenancies](/cd3_automation_toolkit/documentation/user_guide/NetworkingScenariosNGF.md)
-8. [Grouping of generated Terraform files](/cd3_automation_toolkit/documentation/user_guide/RestructuringOutDirectory.md)
-9. [Expected Behaviour Of Automation Toolkit](/cd3_automation_toolkit/documentation/user_guide/KnownBehaviour.md)
-10. [FAQs](/cd3_automation_toolkit/documentation/user_guide/FAQ.md)
-11. [What's new in this release!!](https://github.com/oracle-devrel/cd3-automation-toolkit/releases/tag/v10.1)
+9. [Grouping of generated Terraform files](/cd3_automation_toolkit/documentation/user_guide/RestructuringOutDirectory.md)
+10. [Expected Behaviour Of Automation Toolkit](/cd3_automation_toolkit/documentation/user_guide/KnownBehaviour.md)
+11. [FAQs](/cd3_automation_toolkit/documentation/user_guide/FAQ.md)
 12. [Steps to Upgrade Your Toolkit](/cd3_automation_toolkit/documentation/user_guide/Upgrade_Toolkit.md)
 13. Learn More...
     - CD3 Excel Information
