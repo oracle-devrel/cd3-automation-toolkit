@@ -57,7 +57,7 @@ In some scenarios, a DRG has already been created in the tenancy and rest of the
 
  - For Step 5, Navigate to the outdir path and execute the terraform commands:<br>
        <br>_terraform init_
-       <br>_terraform import "module.drgs[\"&lt;&lt;drgs terraform variable name&gt;&gt;\"].oci_core_drg.drg" &lt;&lt;drg-ocid&gt;&gt;_
+       <br>_terraform import "module.drgs[\\"&lt;&lt;drgs terraform variable name&gt;&gt;\\"].oci_core_drg.drg" &lt;&lt;drg-ocid&gt;&gt;_
        <br>&nbsp;&nbsp;→ This will Import the DRG into your state file.       
        _terraform plan_
        <br>&nbsp;&nbsp;→ Terraform Plan will indicate to add all the other components except DRG.

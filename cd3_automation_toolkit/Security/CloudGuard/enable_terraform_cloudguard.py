@@ -32,12 +32,12 @@ def parse_args():
     return parser.parse_args()
 
 
-def enable_cis_cloudguard(outdir, service_dir,prefix, config=DEFAULT_LOCATION):
+def enable_cis_cloudguard(outdir, service_dir,prefix,region, config=DEFAULT_LOCATION):
     configFileName = config
     ct = commonTools()
     ct.get_subscribedregions(configFileName)
-    home_region=ct.home_region
-    home_region_key = ct.region_dict[home_region]
+    #home_region=ct.home_region
+    region_key = ct.region_dict[region]
 
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
@@ -59,7 +59,7 @@ def enable_cis_cloudguard(outdir, service_dir,prefix, config=DEFAULT_LOCATION):
     cg_target_comp_tf_name='root'
 
     tempStr['compartment_tf_name'] = str(compartment_id).strip()
-    tempStr['home_region'] = home_region_key
+    tempStr['region'] = region_key
     tempStr['cg_tf_name'] = cg_tf_name
     tempStr['cg_target_tf_name'] = cg_target_tf_name
     tempStr['cg_target_name'] = cg_target_name
@@ -73,7 +73,7 @@ def enable_cis_cloudguard(outdir, service_dir,prefix, config=DEFAULT_LOCATION):
     targettfStr = targettfStr + cgtargettemplate.render(tempStr)
 
     # Write TF string to the file in respective region directory
-    reg_out_dir = outdir + "/" + home_region + "/" + service_dir
+    reg_out_dir = outdir + "/" + region + "/" + service_dir
     if not os.path.exists(reg_out_dir):
         os.makedirs(reg_out_dir)
 
@@ -85,13 +85,13 @@ def enable_cis_cloudguard(outdir, service_dir,prefix, config=DEFAULT_LOCATION):
 
     if configtfStr != '':
         # Generate Final String
-        src = "##Add New Cloud Guard Configurations for " + home_region + " here##"
-        configtfStr = cgconfigtemplate.render(skeleton=True, count=0, region=home_region).replace(src, configtfStr+"\n"+src)
+        src = "##Add New Cloud Guard Configurations for " + region + " here##"
+        configtfStr = cgconfigtemplate.render(skeleton=True, count=0, region=region).replace(src, configtfStr+"\n"+src)
 
     if targettfStr != '':
         # Generate Final String
-        src = "##Add New Cloud Guard Targets for " + home_region + " here##"
-        targettfStr = cgtargettemplate.render(skeleton=True, count=0, region=home_region).replace(src, targettfStr+"\n"+src)
+        src = "##Add New Cloud Guard Targets for " + region + " here##"
+        targettfStr = cgtargettemplate.render(skeleton=True, count=0, region=region).replace(src, targettfStr+"\n"+src)
 
     finalstring = configtfStr + "\n" + targettfStr
     finalstring = "".join([s for s in finalstring.strip().splitlines(True) if s.strip("\r\n").strip()])
@@ -100,8 +100,8 @@ def enable_cis_cloudguard(outdir, service_dir,prefix, config=DEFAULT_LOCATION):
         oname=open(outfile,'w+')
         oname.write(finalstring)
         oname.close()
-        print(outfile + " containing TF for cloud-guard has been created for region "+home_region)
-        print("TF has been generated in Home Region Directory.\nOnce you apply the Terraform, Cloud Guard will be enabled from Home Region and Target will be created with Oracle Managed Recipes for root compartment.")
+        print(outfile + " containing TF for cloud-guard has been created for region "+region)
+        print("Once you apply the Terraform, Cloud Guard will be enabled from the specified Region and Target will be created with Oracle Managed Recipes for root compartment.")
 
 if __name__ == '__main__':
     # Execution of the code begins here

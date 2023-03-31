@@ -75,7 +75,7 @@ def print_dbsystem_vm_bm(region, db_system_vm_bm, count,db_home, database ,vnc_c
             elif col_header == 'Compartment Name':
                 values_for_column[col_header].append(ntk_compartment_name)
             elif col_header == 'Subnet Name':
-                values_for_column[col_header].append(commonTools.check_tf_variable(vcn_name + "_" + sub_name))
+                values_for_column[col_header].append(vcn_name + "_" + sub_name)
             elif col_header == 'DB Admin Password':
                 values_for_column[col_header].append('nullval')
             elif col_header == 'SSH Key Var Name':

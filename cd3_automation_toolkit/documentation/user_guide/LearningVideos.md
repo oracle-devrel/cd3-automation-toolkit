@@ -10,3 +10,5 @@
 * [Management Services - CD3 Automation Toolkit Part 8](https://www.youtube.com/watch?v=wFkECxy209s&list=PLPIzp-E1msrbJ3WawXVhzimQnLw5iafcp&index=10)
 * [Non-Greenfield Tenancies - CD3 Automation Toolkit Part 9](https://www.youtube.com/watch?v=l_lUEF3XYoM&list=PLPIzp-E1msrbJ3WawXVhzimQnLw5iafcp&index=11)
 * [Support for Additional Attributes - CD3 Automation toolkit Part 10](https://www.youtube.com/watch?v=6bWWbchS2vk&list=PLPIzp-E1msrbJ3WawXVhzimQnLw5iafcp&index=12)
+
+  <br>[Here](https://www.youtube.com/playlist?list=PLPIzp-E1msrbJ3WawXVhzimQnLw5iafcp) is the Youtube playlist link for all these videos.

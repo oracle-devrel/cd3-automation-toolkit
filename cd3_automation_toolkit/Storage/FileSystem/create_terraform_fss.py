@@ -262,18 +262,12 @@ def create_terraform_fss(inputfile, outdir, service_dir, prefix,config=DEFAULT_L
                     fss_nsgs = str(columnvalue).strip().split(",")
                     if len(fss_nsgs) == 1:
                         for nsgs in fss_nsgs:
-                            if "ocid" in nsgs.strip():
-                                nsg_id = "\"" + nsgs.strip() + "\""
-                            else:
-                                nsg_id = "\"" + commonTools.check_tf_variable(str(nsgs).strip()) + "\""
+                            nsg_id = "\"" + nsgs.strip() + "\""
 
                     elif len(fss_nsgs) >= 2:
                         c = 1
                         for nsgs in fss_nsgs:
-                            if "ocid" in nsgs.strip():
-                                data = "\"" + nsgs.strip() + "\""
-                            else:
-                                data = "\""+ commonTools.check_tf_variable(str(nsgs).strip()) + "\""
+                            data = "\"" + nsgs.strip() + "\""
 
                             if c == len(fss_nsgs):
                                 nsg_id = nsg_id + data

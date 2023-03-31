@@ -170,18 +170,12 @@ def create_terraform_nlb_listener(inputfile, outdir, service_dir, prefix, config
                     nlb_nsgs = str(columnvalue).strip().split(",")
                     if len(nlb_nsgs) == 1:
                         for nsgs in nlb_nsgs:
-                            if "ocid" in nsgs.strip():
-                                nsg_id = "\"" + nsgs.strip() + "\""
-                            else:
-                                nsg_id = "\"" + commonTools.check_tf_variable(str(nsgs).strip()) + "\""
+                            nsg_id = "\"" + nsgs.strip() + "\""
 
                     elif len(nlb_nsgs) >=2 :
                         c = 1
                         for nsgs in nlb_nsgs:
-                            if "ocid" in nsgs.strip():
-                                data = "\"" + nsgs.strip() + "\""
-                            else:
-                                data = "\""+ commonTools.check_tf_variable(str(nsgs).strip()) + "\""
+                            data = "\"" + nsgs.strip() + "\""
 
                             if c == len(nlb_nsgs):
                                 nsg_id = nsg_id + data

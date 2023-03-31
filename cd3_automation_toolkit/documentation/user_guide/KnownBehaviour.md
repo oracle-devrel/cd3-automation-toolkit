@@ -2,7 +2,7 @@
 
 ### NOTE:
 1. Automation Tool Kit DOES NOT support the creation/export of duplicate resources.
-2. DO NOT modify/remove any commented rows or column names. You may re-arrange the columns if needed (except NSGs).
+2. DO NOT modify/remove any commented rows or column names. You may re-arrange the columns if needed.
 3. A double colon (::) or Semi-Colon (;) has a special meaning in the Tool Kit. Do not use them in the OCI data / values.
 4. Do not include any unwanted space in cells you fill in; do not place any empty rows in between.
 5. Any entry made/moved post \<END> in any of the tabs of CD3 will not be processed. Any resources created by the automation & then moved after the \<END> will cause the resources to be removed. 
@@ -56,10 +56,7 @@
   
   The service api is designed in such a way that it expects an empty list for match all. And it sends back an empty list in the response every time. Hence this behaviour from terraform side. This can be safely ignored.
 
-- Export process for non greenfield tenancies v6.0 or higher doesn't support OCI objects having duplicate names like for Policies, for VCNs having same names with in a region or subnets having same names within a VCN. You will get output similiar to below when terraform plan is run (Option 3 with non-gf_tenancy set to true)
-  
-  ***_Error: Duplicate resource "oci_identity_policy" configuration_***
-  
+ 
 - Export process for non greenfield tenancies v6.0 or higher will try to revert SGW for a VCN to point to all services if it was existing for just object storage. You will get output similiar to below when terraform plan is run (Option 3 with non-gf_tenancy set to true).
 
   ```
@@ -104,13 +101,28 @@
     }
   ```
   
-### Modification Process
-- When there is a change to any of the instance parameters, the volume policy assignment will get recreated. Example: If you want to add a NSG to the instance, you will be notified on a read to the boot volume ocids, modification to the instance and, a create and destruction of the policy assignment. Screenshot below for reference. This behaviour is expected and in order to not have the backup policy recreated, comment the depends_on statement in modules/compute/data.tf at line around 35.
-
-   ![image](https://user-images.githubusercontent.com/122371432/214506185-58c8702f-de87-4fb1-8a29-1a7623b699c4.png)
-   
-  <br><br>
-<div align='center'>
+- If the description field is having any newlines in the tenancy then the export of the component and tf synch will show output similair to below:
+  
+  ```
+  # module.iam-policies[“ConnectorPolicy_notifications_2023-03-06T21-54-41-655Z”].oci_identity_policy.policy will be updated in-place
+  ~ resource “oci_identity_policy” “policy” {
+   ~ description  = <<-**EOT**
+      This policy is created for the ‘OCI_To_Sentinel’ service connector
+      Date: Mon, 06 Mar 2023 21:54:41 GMT
+      User: oracleidentitycloudservice/abc@oracle.com
+      Tenant: test
+      Connection Source: notifications
+    **EOT**
+    id       = “ocid1.policy.oc1..aaaaaaaa5gct2n6vz4arggmeow27rivu5vro6jjb6ccuq5u2phulghgwx”
+    name      = “ConnectorPolicy_notifications_2023-03-06T21.54.41.655Z”
+    # (9 unchanged attributes hidden)
+    # (1 unchanged block hidden)
+  }
+  Plan: 0 to add, 1 to change, 0 to destroy.
+  ```
+  
+ This is how terraform handles newlines in the fields. Pleage ignore this and proceed with terraform apply.
+  
 
 | <a href="/cd3_automation_toolkit/documentation/user_guide/RestructuringOutDirectory.md">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/FAQ.md">Next :arrow_forward:</a> |
 | :---- | -------: |

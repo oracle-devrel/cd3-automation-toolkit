@@ -31,7 +31,7 @@ def fetch_compartments(outdir, outdir_struct, config=DEFAULT_LOCATION):
 
     print("\nWriting to variables files...")
 
-    home_region_services = ['identity', 'tagging', 'budget', 'cloud-guard']
+    home_region_services = ['identity', 'tagging', 'budget']
     for region in ct.all_regions:
         # Fetch variables file inside region directories - single outdir
         if len(outdir_struct) == 0:

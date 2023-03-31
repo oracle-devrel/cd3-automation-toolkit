@@ -288,7 +288,7 @@ def export_subnets(inputfile, outdir, service_dir,prefix,config,export_regions, 
     print("\n\nExecute tf_import_commands_network_subnets_nonGF.sh script created under each region directory to synch TF with OCI Network objects\n")
 
 
-def export_nsg(inputfile, outdir, prefix,service_dir_nt,config,export_regions,ct):
+def export_nsg(inputfile, outdir, service_dir_nt, prefix,config,export_regions,ct):
     if len(outdir_struct) != 0:
         service_dir = outdir_struct['nsg']
     else:
@@ -844,8 +844,9 @@ def enable_cis_cloudguard(*args,**kwargs):
     else:
         service_dir = ""
 
+    region = input("Enter Reporting Region for Cloud Guard eg london: ")
     options = [Option(None, Security.enable_cis_cloudguard, 'Enabling Cloud Guard')]
-    execute_options(options, outdir, service_dir, prefix,config=config)
+    execute_options(options, outdir, service_dir, prefix,region,config=config)
 
 def initiate_cis_scan(outdir, prefix, config):
     options = [
@@ -859,7 +860,7 @@ def start_cis_download(outdir, prefix, config):
     print("Downloading the script file as 'cis_reports.py' at location "+os.getcwd())
     resp = requests.get("https://raw.githubusercontent.com/oracle-quickstart/oci-cis-landingzone-quickstart/main/scripts/cis_reports.py")
     resp_contents = resp.text
-    with open("cis_reports.py", "w") as fd:
+    with open("cis_reports.py", "w", encoding="utf-8") as fd:
         fd.write(resp_contents)
     print("Download complete!!")
 

@@ -208,6 +208,8 @@ def create_terraform_nsg(inputfile, outdir, service_dir, prefix, non_gf_tenancy,
             # Column value
             if (columnname != 'Rule Description'):
                 columnvalue = str(df[columnname][i]).strip()
+            else:
+                columnvalue = str(df[columnname][i])
 
             # Check for boolean/null in column values
             columnvalue = commonTools.check_columnvalue(columnvalue)
@@ -229,7 +231,12 @@ def create_terraform_nsg(inputfile, outdir, service_dir, prefix, non_gf_tenancy,
                 tempdict = {'compartment_tf_name': compartment_var_name}
 
             columnname = commonTools.check_column_headers(columnname)
-            tempStr[columnname] = str(columnvalue).strip()
+            if (columnname != 'rule_description'):
+                tempStr[columnname] = str(columnvalue).strip()
+
+            else:
+                tempStr[columnname] = columnvalue
+
             tempStr.update(tempdict)
             tempStr.update({"nsg_tf_name":nsg_tf_name})
 

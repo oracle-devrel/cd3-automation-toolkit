@@ -17,7 +17,7 @@ variable "import_drg_route_distribution_id" {
 
 variable "is_ecmp_enabled" {
   type    = bool
-  default = false
+  default = null
 }
 
 variable "defined_tags" {

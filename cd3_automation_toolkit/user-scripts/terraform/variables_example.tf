@@ -495,7 +495,14 @@ variable "drg_attachments" {
 }
 
 variable "drg_route_tables" {
-  type    = map(any)
+  type = map(object({
+    drg_id            = string
+    display_name      = optional(string)
+    defined_tags      = optional(map(any))
+    freeform_tags     = optional(map(any))
+ 	is_ecmp_enabled   = optional(bool)
+	import_drg_route_distribution_id  = optional(string)
+  }))
   default = {}
 }
 

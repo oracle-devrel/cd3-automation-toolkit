@@ -1,4 +1,4 @@
-# Restructuring Terraform Out Directory (Creating independent tfstate files for each resource)
+# Grouping of generated Terraform files (Creating independent tfstate files for each resource)
 CD3 Automation Toolkit used to generate all the output terraform files in a single region directory earlier.
 OCI components like - network, instances, LBaaS, Databases etc were maintained in a single tfstate file.
 This was not a viable option for tenancies requiring huge infrastructure.

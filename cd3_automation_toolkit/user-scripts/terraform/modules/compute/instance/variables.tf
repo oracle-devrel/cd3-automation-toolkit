@@ -158,7 +158,7 @@ variable "skip_source_dest_check" {
 variable "baseline_ocpu_utilization" {
   type        = string
   description = "The baseline OCPU utilization for a subcore burstable VM instance"
-  default     = ""
+  default     = null
 }
 
 variable "memory_in_gbs" {
@@ -236,7 +236,7 @@ variable "is_consistent_volume_naming_enabled" {
 variable "network_type" {
   type        = string
   description = "Emulation type for the physical network interface card (NIC)"
-  default     = "PARAVIRTUALIZED"
+  default     = null
 }
 
 variable "remote_data_volume_type" {

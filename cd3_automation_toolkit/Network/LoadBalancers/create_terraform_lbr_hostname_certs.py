@@ -305,18 +305,12 @@ def create_terraform_lbr_hostname_certs(inputfile, outdir, service_dir, prefix, 
                     lbr_nsgs = str(columnvalue).strip().split(",")
                     if len(lbr_nsgs) == 1:
                         for nsgs in lbr_nsgs:
-                            if "ocid" in nsgs.strip():
-                                nsg_id = "\"" + nsgs.strip() + "\""
-                            else:
-                                nsg_id = "\"" + commonTools.check_tf_variable(str(nsgs).strip()) + "\""
+                            nsg_id = "\"" + nsgs.strip() + "\""
 
                     elif len(lbr_nsgs) >=2 :
                         c = 1
                         for nsgs in lbr_nsgs:
-                            if "ocid" in nsgs.strip():
-                                data = "\"" + nsgs.strip() + "\""
-                            else:
-                                data = "\""+ commonTools.check_tf_variable(str(nsgs).strip()) + "\""
+                            data = "\"" + nsgs.strip() + "\""
 
                             if c == len(lbr_nsgs):
                                 nsg_id = nsg_id + data

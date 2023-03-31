@@ -187,7 +187,7 @@ def create_backendset_backendservers(inputfile, outdir, service_dir, prefix, con
                     exit()
 
                 elif columnvalue != '' and str(df.loc[i, 'Cipher Suite Name']) == 'nan':
-                    print("\nNOTE: Cipher Suite Name is not specified for Listener -> " + str(df.loc[i, 'Listener Name']) + ", default value - 'oci-default-ssl-cipher-suite-v1' will be considered.\n")
+                    print("\nNOTE: Cipher Suite Name is not specified for Backend Set -> " + str(df.loc[i, 'Backend Set Name']) + ", default value - 'oci-default-ssl-cipher-suite-v1' will be considered.\n")
                 else:
                     pass
 
