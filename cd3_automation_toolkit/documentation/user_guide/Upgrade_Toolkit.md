@@ -1,5 +1,9 @@
 # Steps to Upgrade Your Toolkit (For Existing Customers):
 
+## Upgrade to Release v10.2 from v10.1
+1. Follow the steps in [Launch Docker Container](/cd3_automation_toolkit/documentation/user_guide/Launch_Docker_container.md) to build new image with latest code and launch the container by specifying same path for <directory_in_local_system_where_the_files_must_be_generated> to keep using same outdir.
+2. There are minor upgrades to terraform modules. In order to use the latest modules, copy the contents(modules directory and all .tf files from _/cd3user/oci_tools/cd3\_automation\_toolkit/user-scripts/terraform_ <b>to</b> _/cd3user/tenancies/<customer\_name>/terraform\_files/<region\_dir>_. Move existing _variables\_\<region\>.tf_ to some backup and Copy OCI Connect Variables block from  this file into _variables\_example.tf_ file and rename it to  _variables\_\<region\>.tf_
+
 ## Upgrade to Release v10.1 from v10
 1. Follow the steps in [Launch Docker Container](/cd3_automation_toolkit/documentation/user_guide/Launch_Docker_container.md) to build new image with latest code and launch the container by specifying same path for <directory_in_local_system_where_the_files_must_be_generated> to keep using same outdir.
 2. There are minor upgrades to terraform modules. In order to use the latest modules, copy the contents(modules directory and all .tf files except variables_example.tf) from _/cd3user/oci_tools/cd3\_automation\_toolkit/user-scripts/terraform_ <b>to</b> _/cd3user/tenancies/<customer\_name>/terraform\_files/<region\_dir>_.
@@ -16,5 +20,6 @@
 <br><br>
 <div align='center'>
 
-| <a href="/cd3_automation_toolkit/documentation/user_guide/FAQ.md">:arrow_backward: Prev</a> | <a href="/README.md#table-of-contents-bookmark">Next :arrow_forward:</a> |
-| :---- | -------: |
+| <a href="/README.md#table-of-contents-bookmark">Main menu</a> |
+| :---- | 
+ </div>

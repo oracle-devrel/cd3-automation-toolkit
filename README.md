@@ -2,33 +2,71 @@
 
 [![License: UPL](https://img.shields.io/badge/license-UPL-green)](https://img.shields.io/badge/license-UPL-green) [![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=oracle-devrel_cd3-automation-toolkit)](https://sonarcloud.io/dashboard?id=oracle-devrel_cd3-automation-toolkit)
 
-## Table of Contents :bookmark:
 
-1. [Introduction](#introduction)
-2. [Pre-requisites](#pre-requisites)
-3. [Launch Docker container](/cd3_automation_toolkit/documentation/user_guide/Launch_Docker_container.md)
-4. [Connect container to OCI Tenancy](/cd3_automation_toolkit/documentation/user_guide/Connect_container_to_OCI_Tenancy.md)
-5. [Getting Started with Automation Toolkit](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md)
-6. [Using the Automation Toolkit](/cd3_automation_toolkit/documentation/user_guide/Workflows.md)
-   - [Green Field Tenancies](/cd3_automation_toolkit/documentation/user_guide/GreenField.md)
-   - [Non-Green Field Tenancies](/cd3_automation_toolkit/documentation/user_guide/NonGreenField.md)
-7. MUST READ...
-   - [Managing Network for Green Field Tenancies](/cd3_automation_toolkit/documentation/user_guide/NetworkingScenariosGF.md)
-   - [Managing Network for Non Green Field Tenancies](/cd3_automation_toolkit/documentation/user_guide/NetworkingScenariosNGF.md)
-8. [Grouping of generated Terraform files](/cd3_automation_toolkit/documentation/user_guide/RestructuringOutDirectory.md)
-9. [Expected Behaviour Of Automation Toolkit](/cd3_automation_toolkit/documentation/user_guide/KnownBehaviour.md)
-10. [FAQs](/cd3_automation_toolkit/documentation/user_guide/FAQ.md)
-11. [What's new in this release!!](https://github.com/oracle-devrel/cd3-automation-toolkit/releases/tag/v10.1)
-12. [Steps to Upgrade Your Toolkit](/cd3_automation_toolkit/documentation/user_guide/Upgrade_Toolkit.md)
-13. Learn More...
-    - CD3 Excel Information
-      - [Excel Templates](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md#excel-sheet-templates)
-      - [Toolkit Supported OCI Services](/cd3_automation_toolkit/documentation/user_guide/learn_more/CD3ExcelTabs.md)
-    - [CD3 Validator Features](/cd3_automation_toolkit/documentation/user_guide/learn_more/SupportForCD3Validator.md)
-    - [Additional CIS Compliance Features](/cd3_automation_toolkit/documentation/user_guide/learn_more/CISFeatures.md)
-    - [OCI Resource Manager Upload](/cd3_automation_toolkit/documentation/user_guide/learn_more/ResourceManagerUpload.md)
-    - [Support for Additional Attributes](/cd3_automation_toolkit/documentation/user_guide/learn_more/SupportforAdditionalAttributes.md)
-14. [Automation Toolkit Learning Videos](/cd3_automation_toolkit/documentation/user_guide/LearningVideos.md)
+
+<ul>
+
+  <li> <a href= "#introduction">Introduction</a></li>
+
+  <li> <a href = "https://github.com/oracle-devrel/cd3-automation-toolkit/releases/tag/v10.2">What's new in this release</a></li>
+  <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/learn_more/CD3ExcelTabs.md">Toolkit Supported OCI Services</a></li>
+  <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md#excel-sheet-templates">Excel Templates</a></li>
+  
+</ul>
+
+### New Users
+
+<ul>
+  
+  <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/prerequisites.md">Prerequisites</a></li>
+  <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/Launch_Docker_container.md">Launch Docker container</a></li>
+  <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/Connect_container_to_OCI_Tenancy.md">Connect container to OCI Tenancy</a></li>
+  <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md">Getting Started with Automation Toolkit</a></li>
+
+
+  <li> <a href="/cd3_automation_toolkit/documentation/user_guide/Workflows.md">Using the Automation Toolkit</a>
+  <ul>
+  <li> <a href="/cd3_automation_toolkit/documentation/user_guide/GreenField.md">Green Field Tenancies</a>
+    <ul>
+      <li> <a href="/cd3_automation_toolkit/documentation/user_guide/NetworkingScenariosGF.md"</a><b> Must Read :</b> Managing Network for Greenfield Tenancies</li>
+    </ul>
+    </ul>
+  </li>
+  <ul>
+  <li> <a href="/cd3_automation_toolkit/documentation/user_guide/NonGreenField.md">Non Greenfield Tenancies</a>
+    <ul>
+      <li><a href ="/cd3_automation_toolkit/documentation/user_guide/NetworkingScenariosNGF.md"</a><b> Must Read : </b> Managing Network for Non-Greenfield Tenancies</li>
+    </ul>
+  </ul>
+  
+  
+ </ul>
+ 
+ ### Existing Users
+
+<ul>
+ 
+  <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/Upgrade_Toolkit.md">Steps to Upgrade Your Toolkit</a></li>
+ 
+</ul> 
+
+### Learn More...
+
+<ul>
+
+   <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/RestructuringOutDirectory.md">Grouping of generated Terraform files</a></li>
+   <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/learn_more/ResourceManagerUpload.md">OCI Resource Manager Upload</a></li>
+   <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/learn_more/CISFeatures.md">Additional CIS Compliance Features</a></li>
+   <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/learn_more/SupportForCD3Validator.md">CD3 Validator Features</a></li>
+ 
+   
+   <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/learn_more/SupportforAdditionalAttributes.md">Support for Additional Attributes</a></li>
+   <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/LearningVideos.md">Automation Toolkit Learning Videos</a></li>
+   <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/KnownBehaviour.md">Expected Behaviour Of Automation Toolkit</a></li>
+   <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/FAQ.md">FAQs</a></li>
+ 
+</ul>
+  
 
 
 ## Introduction
@@ -57,15 +95,7 @@ It reads input data in the form of CD3 Excel sheet and generates the terraform f
 | [CIS Landing Zone Compliance](/cd3_automation_toolkit/documentation/user_guide/learn_more/CISFeatures.md#additional-cis-compliance-features) | Download and Execute CIS Compliance Check Script, VCN Flow Logs, Cloud Guard, Object Storage, Key Vault, Budget |
 
 
-## Pre-requisites
-* Git
-* Any docker CLI compatible platform such as Docker or Rancher.
-* Local Directory - A directory in your local system that will be shared with the container to hold the generated Terraform files.
-* OCI Tenancy Access Requirement - 
-Appropriate IAM policies must be in place for each of the resources that the user may try to create.
-Minimum requirement for the user to get started is to have the ability to read to the tenancy.
-
-[Click here](/cd3_automation_toolkit/documentation/user_guide/Launch_Docker_container.md) to get started and manage your OCI Infra!
+[Click here](/cd3_automation_toolkit/documentation/user_guide/prerequisites.md) to get started and manage your OCI Infra!
 
 ## Contributing
 This project is open source.  Please submit your contributions by raising an <b>Issue</b> or through <b>Discussion topic</b> in this repository. Currently, we do not accept any pull requests. Oracle appreciates any contributions that are made by the open source community.

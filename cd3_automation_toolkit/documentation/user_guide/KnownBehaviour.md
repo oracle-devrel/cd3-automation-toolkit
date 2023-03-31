@@ -124,7 +124,4 @@
  This is how terraform handles newlines in the fields. Pleage ignore this and proceed with terraform apply.
   
 
-| <a href="/cd3_automation_toolkit/documentation/user_guide/RestructuringOutDirectory.md">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/FAQ.md">Next :arrow_forward:</a> |
-| :---- | -------: |
-  
-</div>  
+

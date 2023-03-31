@@ -68,8 +68,4 @@ Please refer the screenshots below -
 ![image](https://user-images.githubusercontent.com/103508105/215455637-4bcaac18-269d-4029-b273-2214b719563f.png)
 <br>           - Alternately, please attach a data disk and map the container (/cd3user/tenancies) on a folder that is created on the data disk (your local folder).
 
-<br><br>
-<div align='center'>
 
-| <a href="/cd3_automation_toolkit/documentation/user_guide/KnownBehaviour.md">:arrow_backward: Prev</a> | <a href="https://github.com/oracle-devrel/cd3-automation-toolkit/releases/tag/v10.1">Next :arrow_forward:</a> |
-| :---- | -------: |
