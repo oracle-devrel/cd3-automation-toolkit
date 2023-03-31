@@ -59,14 +59,7 @@ It reads input data in the form of CD3 Excel sheet and generates the terraform f
 | [Developer Services](/cd3_automation_toolkit/documentation/user_guide/learn_more/CD3ExcelTabs.md#developer-services) | Resource Manager, Oracle Kubernetes Engine (OKE) |
 | [CIS Landing Zone Compliance](/cd3_automation_toolkit/documentation/user_guide/learn_more/CISFeatures.md#additional-cis-compliance-features) | Download and Execute CIS Compliance Check Script, VCN Flow Logs, Cloud Guard, Object Storage, Key Vault, Budget |
 
-
-## Pre-requisites
-* Git
-* Any docker CLI compatible platform such as Docker or Rancher.
-* Local Directory - A directory in your local system that will be shared with the container to hold the generated Terraform files.
-* OCI Tenancy Access Requirement - 
-Appropriate IAM policies must be in place for each of the resources that the user may try to create.
-Minimum requirement for the user to get started is to have the ability to read to the tenancy.
+Check out [what's new in this release!!](https://github.com/oracle-devrel/cd3-automation-toolkit/releases/tag/v10.1)
 
 [Click here](/cd3_automation_toolkit/documentation/user_guide/Launch_Docker_container.md) to get started and manage your OCI Infra!
 
