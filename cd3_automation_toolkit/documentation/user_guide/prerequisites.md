@@ -1,4 +1,4 @@
-## Prerequisites
+# Prerequisites
 
 - Git
 - Any docker CLI compatible platform such as Docker or Rancher.
