@@ -1,3 +1,5 @@
+## Prerequisites
+
 - Git
 - Any docker CLI compatible platform such as Docker or Rancher.
 - Local Directory - A directory in your local system that will be shared with the container to hold the generated Terraform files.
