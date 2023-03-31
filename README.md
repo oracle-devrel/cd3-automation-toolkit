@@ -7,7 +7,7 @@
 1. [Introduction](#introduction)
 2. [What's new in this release!!](https://github.com/oracle-devrel/cd3-automation-toolkit/releases/tag/v10.1)
 
-  Let's Begin!!
+  &nbsp;&nbsp;&nbsp;&nbsp;Let's Begin !!
 
 3. [Pre-requisites](/cd3_automation_toolkit/documentation/user_guide/prerequisites.md)
 4. [Launch Docker container](/cd3_automation_toolkit/documentation/user_guide/Launch_Docker_container.md)
