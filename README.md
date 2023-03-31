@@ -58,12 +58,11 @@
    <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/learn_more/ResourceManagerUpload.md">OCI Resource Manager Upload</a></li>
    <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/learn_more/CISFeatures.md">Additional CIS Compliance Features</a></li>
    <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/learn_more/SupportForCD3Validator.md">CD3 Validator Features</a></li>
-   
-   <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/KnownBehaviour.md">Expected Behaviour Of Automation Toolkit</a></li>
-  
+ 
    
    <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/learn_more/SupportforAdditionalAttributes.md">Support for Additional Attributes</a></li>
    <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/LearningVideos.md">Automation Toolkit Learning Videos</a></li>
+   <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/KnownBehaviour.md">Expected Behaviour Of Automation Toolkit</a></li>
    <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/FAQ.md">FAQs</a></li>
  
 </ul>
@@ -95,7 +94,6 @@ It reads input data in the form of CD3 Excel sheet and generates the terraform f
 | [Developer Services](/cd3_automation_toolkit/documentation/user_guide/learn_more/CD3ExcelTabs.md#developer-services) | Resource Manager, Oracle Kubernetes Engine (OKE) |
 | [CIS Landing Zone Compliance](/cd3_automation_toolkit/documentation/user_guide/learn_more/CISFeatures.md#additional-cis-compliance-features) | Download and Execute CIS Compliance Check Script, VCN Flow Logs, Cloud Guard, Object Storage, Key Vault, Budget |
 
-Check out [what's new in this release!!](https://github.com/oracle-devrel/cd3-automation-toolkit/releases/tag/v10.1)
 
 [Click here](/cd3_automation_toolkit/documentation/user_guide/prerequisites.md) to get started and manage your OCI Infra!
 
