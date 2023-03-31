@@ -49,7 +49,7 @@ Terraform destroy on compartments or removing the compartments details from _<cu
 **7. I am getting Timeout Error during export of DRG Route Rules while exporting Network Components.**
 <br>
 
-Toolkit exports all Dynamic as well as Static DRG route Rules and timesout if there is a large number of dynamic rules. As a workaround, edit line no 220in file  _/cd3user/oci\_tools/cd3\_automation\_toolkit\Network\BaseNetwork\exportRoutetable.py_. <br>
+Toolkit exports all Dynamic as well as Static DRG route Rules and timesout if there is a large number of dynamic rules. As a workaround, edit line no 220 in file  _/cd3user/oci\_tools/cd3\_automation\_toolkit\Network\BaseNetwork\exportRoutetable.py_. <br>
 Change _vcn = VirtualNetworkClient(config, timeout=(30,120))_ to _vcn = VirtualNetworkClient(config, timeout=(90,300))_
 
 **8. I am getting 'Permission Denied' error while executing any commands inside the container.**
