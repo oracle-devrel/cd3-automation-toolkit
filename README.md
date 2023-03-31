@@ -30,7 +30,7 @@
   <ul>
   <li> <a href="/cd3_automation_toolkit/documentation/user_guide/NonGreenField.md">Non Greenfield Tenancies</a>
     <ul>
-      <li><a href ="/cd3_automation_toolkit/documentation/user_guide/NetworkingScenariosGF.md"<b> Must Read : </b> Managing Network for Non-Greenfield Tenancies</li>
+      <li><a href ="/cd3_automation_toolkit/documentation/user_guide/NetworkingScenariosNGF.md"<b> Must Read : </b> Managing Network for Non-Greenfield Tenancies</li>
     </ul>
   </ul>
   <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/RestructuringOutDirectory.md">Grouping of generated Terraform files</a></li>
