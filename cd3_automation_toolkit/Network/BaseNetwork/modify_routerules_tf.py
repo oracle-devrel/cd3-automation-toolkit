@@ -462,27 +462,26 @@ def modify_terraform_routerules(inputfile, outdir, service_dir,prefix=None, non_
                             obj_tf_name = commonTools.check_tf_variable(obj_tf_name)
                         else:
                             obj_tf_name = dest_objs[1].strip()
-                    if ('privateip' in dest_objs[0].lower().strip()):
-                        tempdict = {'resource': 'IP', 'network_entity_id': dest_objs[0].lower().strip()}
-                        tempStr.update(tempdict)
-                    elif ('ngw' in dest_objs[0].lower().strip()):
+                    if (dest_objs[0].lower().strip().startswith('ngw')):
                         tempdict = {'resource' : 'NGW','network_entity_id': obj_tf_name }
                         tempStr.update(tempdict)
-                    elif ('sgw' in dest_objs[0].lower().strip()):
+                    elif (dest_objs[0].lower().strip().startswith('sgw')):
                         tempdict = {'resource': 'SGW','network_entity_id': obj_tf_name}
                         tempStr.update(tempdict)
-                    elif ('igw' in dest_objs[0].lower().strip()):
+                    elif (dest_objs[0].lower().strip().startswith('igw')):
                         tempdict = {'resource': 'IGW','network_entity_id': obj_tf_name}
                         tempStr.update(tempdict)
-                    elif ('lpg' in dest_objs[0].lower().strip()):
+                    elif (dest_objs[0].lower().strip().startswith('lpg')):
                         tempdict = {'resource': 'LPG','network_entity_id': obj_tf_name}
                         tempStr.update(tempdict)
-                    elif ('drg' in dest_objs[0].lower().strip()):
+                    elif (dest_objs[0].lower().strip().startswith('drg')):
                         # dest_obj = "${oci_core_drg." + vcn_tf_name+"_"+obj_tf_name + ".id}"
                         dest_obj = commonTools.check_tf_variable(dest_objs[1].strip())
                         tempdict = {'resource': 'DRG','network_entity_id': dest_obj}
                         tempStr.update(tempdict)
-
+                    elif('privateip' in dest_objs[0].lower().strip()):
+                        tempdict = {'resource': 'IP','network_entity_id': dest_objs[0].lower().strip() }
+                        tempStr.update(tempdict)
                 else:
                     tempStr.update({'network_entity_id' : ''})
 
