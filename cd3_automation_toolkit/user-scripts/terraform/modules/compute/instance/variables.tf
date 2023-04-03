@@ -236,7 +236,7 @@ variable "is_consistent_volume_naming_enabled" {
 variable "network_type" {
   type        = string
   description = "Emulation type for the physical network interface card (NIC)"
-  default     = null
+  default     = "PARAVIRTUALIZED"
 }
 
 variable "remote_data_volume_type" {
