@@ -167,7 +167,9 @@ The value accepts multiple keys seperated by \n
 
 6. Enter subnet name column value as: \<vcn-name>_\<subnet-name>
 
-7. Source Details column of the excel sheet accepts both image and boot volume as the source for instance to be launched.
+7. Enter remote execute script(Ansible/Shell) name. Format is, ansible_<script_name> or shell_<script_name> without ext (NOTE: shell script should be named with *.sh and ansible with *.yaml inside scripts folder within the region dir)  
+
+8. Source Details column of the excel sheet accepts both image and boot volume as the source for instance to be launched.
 Format - 
 
 image::\<variable containing ocid of image> or
@@ -182,16 +184,16 @@ variable "\<value entered in Source Details field of Excel sheet>"; here it will
     default = "<ocid of the image/bootVolume to launch the instance from>"
     }
 
-8. Mention shape to be used in Shape column of the excel sheet. If Flex shape is to be used format is:
+9. Mention shape to be used in Shape column of the excel sheet. If Flex shape is to be used format is:
 
 shape::ocpus
 
 eg: VM.Standard.E3.Flex::5
 
 
-9. Custom Policy Compartment Name : Specify the compartment name where the Custom Policy is created.
+10. Custom Policy Compartment Name : Specify the compartment name where the Custom Policy is created.
 
-10. While export of instances, it will fetch details for only the primary VNIC attached to the instance
+11. While export of instances, it will fetch details for only the primary VNIC attached to the instance
 
 
 On choosing **"Compute"** in the SetUpOCI menu and **"Add/Modify/Delete Instances/Boot Backup Policy"** submenu will allow to launch your VM on OCI tenancy.
