@@ -213,6 +213,7 @@ Follow the below steps to update VLANs.
 6.  Again make sure to export the Route Rules in OCI into excel and terraform. Please follow procedure specified in [Sync manual changes done in OCI of Security Rules, Route Rules and DRG Route Rules with CD3 Excel Sheet and Terraform](#sync-manual-changes-done-in-oci-of-security-rules-route-rules-and-drg-route-rules-with-cd3-excel-sheet-and-terraform) 
 
 This completes the modification of VLANs in OCI. Verify the components in console.
+
 <br>[Go back to Networking Scenarios](#greenfield-tenancies)
 <br><br>
 <div align='center'>
