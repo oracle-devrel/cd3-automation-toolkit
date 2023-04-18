@@ -7,6 +7,7 @@
 - [Modify Security Rules, Route Rules and DRG Route Rules](#modify-security-rules-route-rules-and-drg-route-rules)
 - [Sync manual changes done in OCI of Security Rules, Route Rules and DRG Route Rules with CD3 Excel Sheet and Terraform](#sync-manual-changes-done-in-oci-of-security-rules-route-rules-and-drg-route-rules-with-cd3-excel-sheet-and-terraform)
 - [Add/Modify/Delete NSGs](#addmodifydelete-nsgs)
+- [Add/Modify/Delete VLANs](#addmodifydelete-vlans)
 
 
 **NOTE-**
@@ -188,6 +189,33 @@ Follow the below steps to update NSGs.
 This completes the modification of NSGs in OCI. Verify the components in console.
 
 <br>[Go back to Networking Scenarios](#greenfield-tenancies)
+
+### Add/Modify/Delete VLANs
+Follow the below steps to update VLANs.
+
+1.  Modify your excel sheet to update required data in the Tabs - SubnetsVLANs.
+2.  Make sure that the route rules have been exported from OCI into RouteRulesinOCI sheet and terraform for the route rules is in synch with console.
+   
+2. Execute the _setupOCI.py_ file with _non_gf_tenancy_ parameter value to _false_:
+   
+   ```python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties```
+   
+3. Choose _'Network'_ from the displayed menu. Choose below sub-option:
+   - Add/Modify/Delete VLANs (Reads SubnetsVLANs sheet)
+    
+     Once the execution is successful,  _<customer\_name>\_vlans.auto.tfvars_ will be generated under the folder _/cd3user/tenancies/<customer\_name>/terraform_files/<region_dir>_. Existing files will move into respective backup folders.
+    
+4. Navigate to the above path and execute the terraform commands:<br>
+       <br>_terraform init_
+       <br>_terraform plan_
+       <br>_terraform apply_
+   
+This completes the modification of VLANs in OCI. Verify the components in console.
+
+<br>[Go back to Networking Scenarios](#greenfield-tenancies)
+
+
+
 <br><br>
 <div align='center'>
 
