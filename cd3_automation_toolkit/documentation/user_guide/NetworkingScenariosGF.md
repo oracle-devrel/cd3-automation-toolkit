@@ -203,7 +203,7 @@ Follow the below steps to update VLANs.
 3. Choose _'Network'_ from the displayed menu. Choose below sub-option:
    - Add/Modify/Delete VLANs (Reads SubnetsVLANs sheet)
     
-     Once the execution is successful,  _<customer\_name>\_vlans.auto.tfvars_ will be generated under the folder _/cd3user/tenancies/<customer\_name>/terraform_files/<region_dir>_. Existing files will move into respective backup folders.
+     Once the execution is successful,  _<customer\_name>\_vlans.auto.tfvars_ will be generated under the folder _/cd3user/tenancies/<customer\_name>/terraform_files/<region_dir>_. Existing files will move into respective backup folders.  _<customer\_name>\drg-routetables.auto.tfvars_ file will alsobe updated with the route table information specified for each VLAN.
     
 4. Navigate to the above path and execute the terraform commands:<br>
        <br>_terraform init_
@@ -211,6 +211,7 @@ Follow the below steps to update VLANs.
        <br>_terraform apply_
    
 This completes the modification of VLANs in OCI. Verify the components in console.
+5.  Again make sure to export the Route Rules in OCI into excel and terraform. Please follow procedure specified in [Sync manual changes done in OCI of Security Rules, Route Rules and DRG Route Rules with CD3 Excel Sheet and Terraform](#sync-manual-changes-done-in-oci-of-security-rules-route-rules-and-drg-route-rules-with-cd3-excel-sheet-and-terraform) 
 
 <br>[Go back to Networking Scenarios](#greenfield-tenancies)
 
