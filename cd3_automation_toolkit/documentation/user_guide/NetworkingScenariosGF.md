@@ -194,7 +194,7 @@ This completes the modification of NSGs in OCI. Verify the components in console
 Follow the below steps to update VLANs.
 
 1.  Modify your excel sheet to update required data in the Tabs - SubnetsVLANs.
-2.  Make sure that the route rules have been exported from OCI into RouteRulesinOCI sheet and terraform for the route rules is in synch with console.
+2.  Make sure that the RouteRulesinOCI sheet and corresponing terraform is in synch with route rules in OCI console. If not, please follow procedure specified in [Sync manual changes done in OCI of Security Rules, Route Rules and DRG Route Rules with CD3 Excel Sheet and Terraform](#sync-manual-changes-done-in-oci-of-security-rules-route-rules-and-drg-route-rules-with-cd3-excel-sheet-and-terraform) 
    
 2. Execute the _setupOCI.py_ file with _non_gf_tenancy_ parameter value to _false_:
    
