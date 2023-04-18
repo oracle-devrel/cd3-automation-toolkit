@@ -167,7 +167,7 @@ The value accepts multiple keys seperated by \n
 
 6. Enter subnet name column value as: \<vcn-name>_\<subnet-name>
 
-7. Enter remote execute script(Ansible/Shell) name. Format is, ansible_<script_name> or shell_<script_name> without ext (NOTE: shell script should be named with *.sh and ansible with *.yaml inside scripts folder within the region dir)  
+7. Enter remote execute script(Ansible/Shell) name. Format is, ansible_<script_name> or shell_<script_name> without ext (NOTE: shell script should be named with *.sh and ansible with *.yaml inside scripts folder within the region/service dir)  
 
 8. Source Details column of the excel sheet accepts both image and boot volume as the source for instance to be launched.
 Format - 
