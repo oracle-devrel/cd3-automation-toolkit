@@ -88,25 +88,27 @@ This contains information about DHCP options to be created for each VCN.
 **Notes:**
 
 1. Name of the VCNs, subnets etc are all case sensitive. Specify the same names in all required places. Avoid trailing spaces for a resource Name.
-
-2. Default Route Rules created are :
+2. A subnet or a vlan will be created based on the column - 'Subnet or VLAN'. When VLAN is specified, vlan tag can also be specified with sytanx as VLAN::<vlan_tag>
+3. Column NSGs is read only for type VLAN.
+4. Columns - DHCP Option Name, Seclist Names, Add Default Seclist and DNS Label are applicable only for type Subnet.
+5. Default Route Rules created are :
 
    a. Based on the values entered in columns  ‘configure SGW route’, ‘configure NGW route’, ‘configure IGW route’, 'configure Onprem route' and 'configure VCNPeering route'  in Subnets sheet; if the value entered is ‘y’, it will create a route for the object in that subnet eg if ‘configure IGW’ in Subnets sheet is ‘y’ then it will read parameter ‘igw_destination’ in VCN Info tab and create a rule in the subnet with destination object as IGW of the VCN and destination CIDR as value of igw_destnation field. If comma separated values are entered in the igw_destination in VCN Info tab then the tool creates route rule for each destination cidr for IGW in that subnet.Tool works similarly for ‘configure NGW’ in Subnets tab and ‘ngw_destination’ in VCN Info tab. For SGW, route rule is added either 'all services' or object storage in that region.
 
    b.  For a hub spoke model, tool automatically creates route tables attached with the DRG and each LPG in the hub VCN peered with spoke VCN.
      ‘onprem_destinations’ in VCN Info tab specifies the On Prem Network CIDRs.
 
-3. The below Default Security Rules are created:
+6. The below Default Security Rules are created:
 
    a.  Egress rule allowing all protocols for 0.0.0.0/0 is opened.
 
    b.  Ingress rule allowing all protocols for subnet CIDR is opened. This is to allow communication between VMs with in the same subnet.
 
-4. Default Security List of the VCN is attached to the subnet if ‘add_default_seclist’ parameter in Subnets tab is set to ‘y’.
+7. Default Security List of the VCN is attached to the subnet if ‘add_default_seclist’ parameter in Subnets tab is set to ‘y’.
 
-5. Components- IGW, NGW, DRG, SGW, LPGs and NSGs are created in same compartment as the VCN.
+8. Components- IGW, NGW, DRG, SGW, LPGs and NSGs are created in same compartment as the VCN.
 
-6. VCN names need to be unique for the same region. Automation ToolKit does not support duplicate values at the moment. However you can have same VCN names across different regions.
+9. VCN names need to be unique for the same region. Automation ToolKit does not support duplicate values at the moment. However you can have same VCN names across different regions.
       
 
 Output terraform files are generated under \<outdir>/\<region> directory.
@@ -122,6 +124,7 @@ Output files generated:
 | <br>\<prefix>_routetables.auto.tfvars<br>\<prefix>_default-routetables.auto.tfvars<br>\<prefix>_drg-routetables.auto.tfvars<br>\<prefix>_drg-distributions.auto.tfvars<br>\<prefix>_drg-data.auto.tfvars</br></br></br></br></br> | <br>Separate file for each route table name is created.<br>Contains TF for route rules in each route table.</br></br> |
 | <br>\<prefix>_seclists.auto.tfvars<br>\<prefix>_default-seclists.auto.tfvars</br></br> | <br>Separate file for each security list name is created.<br>Contains TF for security rules in each security list. |
 |\<prefix>_subnets.auto.tfvars|	Contains TF for all subnets for all VCNs.|
+|\<prefix>_vlans.auto.tfvars|	Contains TF for all VLANs for all VCNs.|
 |\<prefix>_default-dhcp.auto.tfvars	|Contains TF for default DHCP options of each VCN in each region |
 |<br>\<prefix>_nsgs.auto.tfvars<br>\<prefix>_nsg-rules.auto.tfvars</br></br>| Contains TF for NSGs in each region |
 
