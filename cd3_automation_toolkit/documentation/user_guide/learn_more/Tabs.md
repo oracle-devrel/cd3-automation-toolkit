@@ -83,7 +83,7 @@ This is an important tab and contains general information about networking to be
 ## d. DHCP tab
 This contains information about DHCP options to be created for each VCN.
 
-## e. Subnets tab
+## e. SubnetsVLANs tab
 
 **Notes:**
 
