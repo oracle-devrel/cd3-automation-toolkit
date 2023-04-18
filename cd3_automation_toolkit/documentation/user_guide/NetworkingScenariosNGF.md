@@ -41,7 +41,7 @@ This completes the export of Networking components from OCI.
 <br>(DO NOT Modify the highlighted columns)
 
 (Showing old images below)
-VCNs tab:
+<br>VCNs tab:
 ![image](https://user-images.githubusercontent.com/115973871/214372501-65e68d60-bedd-4df9-bf84-a2316d0f6c62.png)
 
 Subnets tab:
