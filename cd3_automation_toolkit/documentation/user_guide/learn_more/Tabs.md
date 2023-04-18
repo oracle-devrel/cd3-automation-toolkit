@@ -153,21 +153,26 @@ On re-running the same option you will find the previously existing files being 
 3. Leave columns: Backup Policy, NSGs, DedicatedVMHost blank if instance doesn't need to be part of any of these. Instances can be made a part of Backup Policy and NSGs later by choosing appropriate option in setUpOCI menu.
 
 4. For column SSH Key Var Name accepts SSH key value directly or the name of variable decalred in variables.tf containing the key value. Make sure to have an entry in variables_\<region>.tf file with the name you enter in SSH Key Var Name field of the Excel sheet and put the value as SSK key value.
-Ex: If you enter the SSH Key Var Name as ocs_public, make an entry in variables_\<region>.tf file as shown below:
+Ex: If you enter the SSH Key Var Name as ssh_public_key, make an entry in variables_\<region>.tf file as shown below:
 
   
 variable "\<value entered in SSH Key Var Name field of Excel sheet>"; here it will be as below:
   
-    variable  'ocs_public'  {
-    default = "<paste your public key here>"
-    }
-
-The value accepts multiple keys seperated by \n
+    variable  'instance_ssh_keys'  {
+    type = map(any)
+    default = {
+    ssh_public_key = "<SSH PUB KEY STRING HERE>"
+    # Use '\n' as the delimiter to add multiple ssh keys.
+    # Example: ssh_public_key = "ssh-rsa AAXXX......yhdlo\nssh-rsa AAxxskj...edfwf"
+    #START_instance_ssh_keys#
+    # exported instance ssh keys
+    #instance_ssh_keys_END#
+   }
 
 
 6. Enter subnet name column value as: \<vcn-name>_\<subnet-name>
 
-7. Enter remote execute script(Ansible/Shell) name. Format is, ansible_<script_name> or shell_<script_name> without ext (NOTE: shell script should be named with *.sh and ansible with *.yaml inside scripts folder within the region/service dir). This feature is tested against OL8.  
+7. Enter remote execute script(Ansible/Shell) name. Format is, ansible_<script_name> or shell_<script_name> without extention. (NOTE: shell script should be named with *.sh and ansible with *.yaml inside 'scripts' folder within the region/service dir). This feature is tested against OL8.  
 
 8. Source Details column of the excel sheet accepts both image and boot volume as the source for instance to be launched.
 Format - 
@@ -180,8 +185,14 @@ Ex: If you enter the Source Details as image::Linux, make an entry in variables_
 
 variable "\<value entered in Source Details field of Excel sheet>"; here it will be:
 
-    variable 'Linux' {
-    default = "<ocid of the image/bootVolume to launch the instance from>"
+    variable 'instance_source_ocids' {
+     type = map(any)
+     Linux    = "<LATEST LINUX OCID HERE>"
+     Windows  = "<LATEST WINDOWS OCID HERE>"
+     PaloAlto = "Palo Alto Networks VM-Series Next Generation Firewall"
+     #START_instance_source_ocids#
+     # exported instance image ocids
+     #instance_source_ocids_END#
     }
 
 9. Mention shape to be used in Shape column of the excel sheet. If Flex shape is to be used format is:
