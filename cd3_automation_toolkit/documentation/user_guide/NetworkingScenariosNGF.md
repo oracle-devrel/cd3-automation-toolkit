@@ -24,7 +24,7 @@ Follow the below steps to export the Networking components that includes VCNs, S
    - Export Network components for DHCP Tab
    - Export Network components for SecRulesinOCI Tab
    - Export Network components for RouteRulesinOCI Tab
-   - Export Network components for Subnets Tab
+   - Export Network components for SubnetsVLANs Tab
    - Export Network components for NSGs Tab
    
    Once the execution is successful, networking related .tfvars files and .sh files containing import statements will be generated under the folder _/cd3user/tenancies/<customer\_name>/terraform_files/<region_dir>_
