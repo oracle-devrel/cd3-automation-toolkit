@@ -309,3 +309,8 @@ variable "vnic_freeform_tags" {
   type    = map(string)
   default = {}
 }
+
+variable "cloud_init_script" {
+  type    = string
+  default = null
+}

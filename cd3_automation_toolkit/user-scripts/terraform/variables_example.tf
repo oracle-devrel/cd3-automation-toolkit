@@ -612,6 +612,7 @@ variable "instances" {
     vcn_name                  = string
     subnet_id                 = string
     network_compartment_id    = string
+    cloud_init_script         = optional(string)
     display_name              = optional(string)
     assign_public_ip          = optional(bool)
     boot_volume_size_in_gbs   = optional(string)

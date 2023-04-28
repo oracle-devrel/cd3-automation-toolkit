@@ -52,6 +52,8 @@ module "instances" {
 
   boot_tf_policy           = each.value.backup_policy != null ? each.value.backup_policy : null
   policy_tf_compartment_id = each.value.policy_compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.policy_compartment_id)) > 0 ? each.value.policy_compartment_id : var.compartment_ocids[each.value.policy_compartment_id]) : null
+  cloud_init_script        = each.value.cloud_init_script
+
 
   ## Optional parameters to enable and test ##
   # extended_metadata    = each.value.extended_metadata

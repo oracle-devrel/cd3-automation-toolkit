@@ -21,6 +21,7 @@ resource "oci_core_instance" "instance" {
   is_pv_encryption_in_transit_enabled = var.create_is_pv_encryption_in_transit_enabled
   metadata = {
     ssh_authorized_keys = var.ssh_public_keys
+    user_data = var.cloud_init_script != null ? "${base64encode(file(var.cloud_init_script))}" : null
   }
   preserve_boot_volume = var.preserve_boot_volume
 
