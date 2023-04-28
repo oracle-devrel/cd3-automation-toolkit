@@ -24,7 +24,7 @@ Upload the Public key to **"APIkeys"** under user settings in OCI Console. Pre-r
 - Click Add Public Key.</li><li>Paste the contents of the PEM public key in the dialog box and click Add.</li></ul>
 
 ### **Step 4 - Edit tenancyconfig.properties**:
-Enter the details to **tenancyconfig.properties** file.
+Enter the details to **tenancyconfig.properties** file. Please make sure to review 'outdir_structure_file' parameter as per requirements. It is recommended to use seperate outdir structure in case the tenancy has large number of objects.
 ```
 [Default]
 # Mandatory Fields
@@ -42,7 +42,10 @@ key_path=
 # Region ; defaults to us-ashburn-1 when left empty.
 region=
 
-# Leave it blank if you want single outdir or specify absolute path for outdir_structure_file.properties containing directory structure for OCI services.
+# The outdir_structure_file defines the grouping of the terraform auto.tf.vars for the various generated resources.
+# To have all the files generated in the corresponding region, leave this variable blank.
+# To group resources into different directories within each region - specify the absolute path to the file.
+# The default file is specified below. You can make changes to the grouping in the below file to suit your deployment"
 outdir_structure_file=
 #or
 #outdir_structure_file=/cd3user/oci_tools/cd3_automation_toolkit/user-scripts/outdir_structure_file.properties
