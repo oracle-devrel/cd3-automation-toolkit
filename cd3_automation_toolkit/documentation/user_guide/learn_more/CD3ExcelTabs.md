@@ -95,3 +95,8 @@ Click on the links below to know about the specifics of each tab in the excel sh
 
 <a href="/cd3_automation_toolkit/documentation/terraform/oke.md">Click here to view sample auto.tfvars for OKE components- Clusters, Nodepools</a> 
  
+ 
+ #### Buckets
+ 
+ - [Buckets](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/develop/cd3_automation_toolkit/documentation/user_guide/learn_more/Tabs.md#Buckets-tab)
+
