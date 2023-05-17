@@ -3,8 +3,8 @@ These are the syntax and sample format for providing inputs to the modules via <
 <b>"key"</b> must be unique to every resource that is created.
 Comments preceed with <b>##</b>.
 
-## Storage
-1. Block Volumes
+
+## 1. Block Volumes
 - <b>Syntax</b>
 
     ````
@@ -95,7 +95,7 @@ Comments preceed with <b>##</b>.
  
 
 
-2. Buckets
+## 2. Buckets
 - <b>Syntax</b>
 
   ````
