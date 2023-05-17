@@ -47,7 +47,7 @@ Click on the links below to know about the specifics of each tab in the excel sh
  
  - [LB-Listener](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/develop/cd3_automation_toolkit/documentation/user_guide/learn_more/Tabs.md#lb-listeners-tab)
 
-<a href="/cd3_automation_toolkit/documentation/terraform/network.md">Click here to view sample auto.tfvars for all Load Balancer components- Cipher suits,Backend sets, rule sets etc.,</a>
+<a href="/cd3_automation_toolkit/documentation/terraform/loadbalancer.md">Click here to view sample auto.tfvars for all Load Balancer components- Cipher suits,Backend sets, rule sets etc.,</a>
 
 
 #### Compute
