@@ -508,4 +508,67 @@ To avoid this, an ignore statement as shown below is added to ignore any changes
 **Known Observed behaviours:**
 
 - It has been observed that the order of kubernetes labels change randomly during an export. In such situations a terraform plan detects it as a change to the kubernetes labels.
+  
+  
+## Buckets Tab
+  
+This tab in cd3 excel sheet is used when you need to create Object storage buckets in the OCI tenancy.
+
+On choosing "Storage" in the SetUpOCI menu and "Add/Modify/Delete Buckets" submenu will allow to create buckets in OCI Tenancy.
+
+On completion of execution, you will be able to find the output terraform file generated at :
+  
+-→  \<outdir>/\<region>/\<prefix>_buckets.auto.tfvars under appropriate \<region> directory.
+
+Once terraform apply is done, you can view the resources under Object Storage -> Buckets in OCI console.
+
+On re-running the option to create Buckets you will find the previously existing files being backed up under directory:
+
+\<outdir>/\<region>/backup_buckets/\<Date>-\<Month>-\<Time>.
+
+> **_NOTE:_**  Currently the creation of buckets with indefinite retention rule is not supported, only export is supported.
+  
+**CD3 Tab specifications:**
+  
+1. The Region, Compartment Name and Bucket Name fields are mandatory.
+2. **Storage Tier:** Once created, this cannot be modified unless you delete and re-create the bucket.
+3. **Object Versioning:** Once enabled, this can only be suspended and cannot be disabled while modifying.
+4. **Retention Rule:** To enable retention rule:
+  
+     4.1.   &nbsp; The versioning should be disabled.
+  
+     4.2.   &nbsp; Specify the value in the format *RuleName::TimeAmount::TimeUnit::Retention Rule Lock Enabled*.Multiple rules are seperated by &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;newline in the same cell(\n is not supported).  
+  
+     4.3.   &nbsp; Retention Rule Lock Enabled: The time format of the lock should be as per RFC standards. Ex: YYYY-MM-DDThh:mm:ssZ  (provide &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the value only if you want to  have the time rule locked enabled).
+  
+     4.4.   &nbsp; TimeAmount: It should be number of Days/Years. Maximun value is 500.
+  
+     4.5.   &nbsp; TimeUnit: It should be either in DAYS and YEARS.
+  
+  
+5.  **Replication Policy:**  To enable replication policy: 
+  
+     5.1.   &nbsp; The destination bucket should be already created in the tenancy and cannot have versioning enabled.
+  
+     5.2.   &nbsp; The destination bucket cannot have retention rules. 
+  
+     5.3.   &nbsp; The format should be *PolicyName::DestinationRegion::DestinationBucketName*.
+  
+
+6.  **Lifecycle Policy Name:**  Name of the lifecycle policy. Multiple rules can be mentioned in new rows keeping all other details same.
+  
+7.  **Lifecycle Target and Action:**  For Multipart-uploads,  Object filters are not required and Rule Period can only be in Days.
+ 
+  
+    > **_NOTE:_**  If you have Auto-tiering mode set to Enabled, you cannot create a object lifecycle policy rule with the action set as Infrequent Access. 
+  
+8. **Lifecycle Rule Period:** Its a combination of TimeAmount (It should be number of Days/Years) and TimeUnit (It should be either in DAYS and YEARS). The format should be                      *TimeAmount::TimeUnit*
+  
+9. **Lifecyle Exclusion Patterns/Lifecycle Inclusion Patterns/Lifecycle Inclusion Prefixes:** Add the object name filter patterns here.
+  
+  
+  
+  
+  
+
 
