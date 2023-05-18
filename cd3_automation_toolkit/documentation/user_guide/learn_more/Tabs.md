@@ -296,9 +296,9 @@ Once terraform apply is done, you can view the resources under Networking → Lo
 
 On re-running the same option you will find the previously existing files being backed up under directory →   \<outdir>/\<region>/backup_LB-Hostname-Certs/\<Date>-\<Month>-\<Time>.
 
-## Backend Set and Backend Servers Tab
+## LB-Backend Set and Backend Servers Tab
 
-Use the tab **BackendSet-BackendServer** of CD3 Excel to create the following components of Load Balancer:
+Use the tab **LB-BackendSet-BackendServer** of CD3 Excel to create the following components of Load Balancer:
 
 - Backend Sets
 - Backend Servers
@@ -314,9 +314,9 @@ Once terraform apply is done, you can view the resources under Networking→Load
 
 On re-running the same option you will find the previously existing files being backed up under directory →   \<outdir>/\<region>/backup_BackendSet-BackendServer/\<Date>-\<Month>-\<Time>.
 
-## RuleSet Tab
+## LB-RuleSet Tab
 
-Use the tab **RuleSet** of CD3 Excel to create the following components of Load Balancer:
+Use the tab **LB-RuleSet** of CD3 Excel to create the following components of Load Balancer:
 
 - Rule Sets
 - RuleSet 
@@ -331,9 +331,9 @@ Once terraform apply is done, you can view the resources under Networking→Load
 
 On re-running the same option you will find the previously existing files being backed up under directory →   \<outdir>/\<region>/backup_RuleSet/\<Date>-\<Month>-\<Time>.
 
-## Path Route Set Tab
+## LB-Path Route Set Tab
 
-Use the tab **PathRouteSet** of CD3 Excel to create the following components of Load Balancer:
+Use the tab **LB-PathRouteSet** of CD3 Excel to create the following components of Load Balancer:
 
 - Path Route Sets
 - PathRouteSet:
@@ -348,7 +348,7 @@ Once terraform apply is done, you can view the resources under Networking→Load
 
 On re-running the same option you will find the previously existing files being backed up under directory →   \<outdir>/\<region>/backup_PathRouteSet/\<Date>-\<Month>-\<Time>.
 
-## LB Listeners Tab
+## LB-Listeners Tab
 
 Use the tab **LB-Listener** of CD3 Excel to create the following components of Load Balancer:
 
