@@ -9,7 +9,7 @@ A new parameter 'outdir_structure_file' has been introduced in tenancyconfig.pro
 
 Let us see how to enable independent service directories for the generated terraform files:
 
-1. Go to */cd3user/oci_tools/cd3_automation_toolkit/user-scripts -> tenancyconfig.properties*. Enter required config details. You can choose to enable or disable multiple service outdirectories depending on your requirement. To enable it, uncomment the *outdir_structure_file* parameter which has the pre-defined path to *outdir_structure_file.properties*. Refer to the screenshot below:
+1. Go to ``` /cd3user/oci_tools/cd3_automation_toolkit/user-scripts/tenancyconfig.properties```. Enter required config details. You can choose to enable or disable multiple service outdirectories depending on your requirement. To enable it, uncomment the *outdir_structure_file* parameter which has the pre-defined path to *outdir_structure_file.properties*. Refer to the screenshot below:
 
    ![image](https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/0c4ecb2f-6e35-4c93-9976-4aed2e74aca6)
 
@@ -22,17 +22,21 @@ Let us see how to enable independent service directories for the generated terra
   
    <img width="953" alt="image" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/cf6eb85d-30ad-4de4-8164-963a36076128">
 
-   Here, the network and nsg directories have been renamed to demo_network and demo_nsg respectively. The next steps to run the toolkit remain the same as before.
+   Here, the network and nsg directories have been renamed to **demo_network** and **demo_nsg** respectively. The next steps to run the toolkit remain the same as specified in                  [Greenfield.md](/cd3_automation_toolkit/documentation/user_guide/Greenfield.md)
+
   
- 3. Run *python createTenancyConfig.py tenancyconfig.properties* from user-scripts folder.
+ 3. Run ```python createTenancyConfig.py tenancyconfig.properties ``` from user-scripts folder.
   
- 4.	Go to */cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties* file and add the CD3 Excel path. 
-    
-     Run *python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties* from /cd3user/oci-tools/cd3_automation_toolkit.
+ 4.	Go to ```/cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.propertiesfile ``` and add the CD3 Excel path. 
+      
+     Change to the below directory
+     <br>```cd /cd3user/oci_tools/cd3_automation_toolkit/```
+   
+     Run the script<br>```python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties```
      
      Select required options.(Selected Network here to verify files under demo_network folder) auto.tfvars for the respective services are created.
   
-  5. Go to the region directory */cd3user/tenancies/orasenatdoracledigital04/terraform_files/\<region>/* . We can see that all the service specific folders got created along with                  **demo_network** and **demo_nsg**
+  5. Go to the region directory ```/cd3user/tenancies/orasenatdoracledigital04/terraform_files/\<region>/``` . We can see that all the service specific folders got created along with                  **demo_network** and **demo_nsg**.
   
      <img width="953" alt="image" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/ff018b02-225b-4fc1-89c1-c671978b3fa4">
    
