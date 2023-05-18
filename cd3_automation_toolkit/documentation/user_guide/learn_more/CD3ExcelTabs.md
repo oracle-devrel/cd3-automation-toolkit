@@ -39,11 +39,11 @@ Click on the links below to know about the specifics of each tab in the excel sh
 
  - [LB-Hostname-Certs Tab](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/develop/cd3_automation_toolkit/documentation/user_guide/learn_more/Tabs.md#lb-hostname-certs-tab)
  
- - [Backend Set and Backend Servers](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/develop/cd3_automation_toolkit/documentation/user_guide/learn_more/Tabs.md#backend-set-and-backend-servers-tab)
+ - [LB-Backend Set and Backend Servers](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/develop/cd3_automation_toolkit/documentation/user_guide/learn_more/Tabs.md#backend-set-and-backend-servers-tab)
  
- - [RuleSet](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/develop/cd3_automation_toolkit/documentation/user_guide/learn_more/Tabs.md#ruleset-tab)
+ - [LB-RuleSet](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/develop/cd3_automation_toolkit/documentation/user_guide/learn_more/Tabs.md#ruleset-tab)
  
- - [PathRouteSet](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/develop/cd3_automation_toolkit/documentation/user_guide/learn_more/Tabs.md#path-route-set-tab)
+ - [LB-PathRouteSet](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/develop/cd3_automation_toolkit/documentation/user_guide/learn_more/Tabs.md#path-route-set-tab)
  
  - [LB-Listener](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/develop/cd3_automation_toolkit/documentation/user_guide/learn_more/Tabs.md#lb-listeners-tab)
 
