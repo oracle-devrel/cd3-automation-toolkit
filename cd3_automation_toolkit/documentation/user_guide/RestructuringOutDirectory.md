@@ -22,7 +22,7 @@ Let us see how to enable independent service directories for the generated terra
   
    <img width="953" alt="image" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/cf6eb85d-30ad-4de4-8164-963a36076128">
 
-   Here, the network and nsg directories have been renamed to **demo_network** and **demo_nsg** respectively. The next steps to run the toolkit remain the same as specified in                  [Greenfield.md](/cd3_automation_toolkit/documentation/user_guide/Greenfield.md)
+   Here, the network and nsg directories have been renamed to **demo_network** and **demo_nsg** respectively. The next steps to run the toolkit remain the same as specified in                  [Greenfield.md](/cd3_automation_toolkit/documentation/user_guide/GreenField.md)
 
   
  3. Run ```python createTenancyConfig.py tenancyconfig.properties ``` from user-scripts folder.
