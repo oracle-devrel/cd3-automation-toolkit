@@ -155,7 +155,7 @@ On re-running the same option you will find the previously existing files being 
 
 3. Leave columns: Backup Policy, NSGs, DedicatedVMHost blank if instance doesn't need to be part of any of these. Instances can be made a part of Backup Policy and NSGs later by choosing appropriate option in setUpOCI menu.
 
-4. For column SSH Key Var Name accepts SSH key value directly or the name of variable decalred in variables.tf containing the key value. Make sure to have an entry in variables_\<region>.tf file with the name you enter in SSH Key Var Name field of the Excel sheet and put the value as SSK key value.
+4. For column SSH Key Var Name accepts SSH key value directly or the name of variable declared in variables.tf containing the key value. Make sure to have an entry in variables_\<region>.tf file with the name you enter in SSH Key Var Name field of the Excel sheet and put the value as SSK key value.
 Ex: If you enter the SSH Key Var Name as ssh_public_key, make an entry in variables_\<region>.tf file as shown below:
 
   
