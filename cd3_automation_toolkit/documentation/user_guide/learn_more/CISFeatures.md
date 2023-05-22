@@ -27,7 +27,7 @@ This option will ask for monthly budget (in US$) and Threshold percentage of Bud
 
 #### **4. Enable Cloud guard**
 
-This will enable Cloud guard for tenancy from home region, creates Oracle Managed detector and responder recipes. Creates a target for root compartment with the default Oracle Managed recipes. It also supports creation of cloned detector and responder recipes and attaches the recipes to the target.
+This will enable Cloud guard for the tenancy from specified reporting region, clones the Oracle Managed detector and responder recipes. Creates a target for root compartment with the cloned recipes.
 
 Below TF file is created:
 
