@@ -175,9 +175,11 @@ variable "\<value entered in SSH Key Var Name field of Excel sheet>"; here it wi
 
 6. Enter subnet name column value as: \<vcn-name>_\<subnet-name>
 
-7. Enter remote execute script(Ansible/Shell) name. Format is, ansible_<script_name> or shell_<script_name> without extention. (NOTE: shell script should be named with *.sh and ansible with *.yaml inside 'scripts' folder within the region/service dir). This feature is tested against OL8.  
+7. Enter remote execute script(Ansible/Shell) name. Shell scripts should be named with *.sh and ansible with *.yaml or *.yml inside 'scripts' folder within the region/service dir. This feature is tested against OL8.  
 
-8. Source Details column of the excel sheet accepts both image and boot volume as the source for instance to be launched.
+8. Create a column called 'Cloud Init Script' to execute scripts (located under 'scripts' folder within the region/service dir) as part of cloud-init.   
+
+9. Source Details column of the excel sheet accepts both image and boot volume as the source for instance to be launched.
 Format - 
 
 image::\<variable containing ocid of image> or
