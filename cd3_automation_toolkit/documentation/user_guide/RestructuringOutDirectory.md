@@ -9,7 +9,7 @@ This can be configured while [connecting your container to the OCI tenancy](/cd3
 
 A new parameter 'outdir_structure_file' has been introduced in tenancyconfig.properties using which can be used to configure single outdir or different outdir for each service.
 
-To enable independent service directories for the generated Terraform files, please follow the below steps:
+To enable independent service directories for the generated Terraform files, follow the below steps:
 
 1. Go to ``` /cd3user/oci_tools/cd3_automation_toolkit/user-scripts/tenancyconfig.properties```. Enter required config details. 
 
