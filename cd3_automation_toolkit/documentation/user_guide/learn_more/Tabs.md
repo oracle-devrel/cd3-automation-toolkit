@@ -550,7 +550,9 @@ On re-running the option to create Buckets you will find the previously existing
   
 5.  **Replication Policy:**  To enable replication policy: 
   
-     5.1.   &nbsp; The destination bucket should be already created in the tenancy and cannot have versioning enabled.
+     5.1.   &nbsp; There should be a policy in place to allow region object storage service to manage objects for the bucket.
+  
+     5.2    &nbsp; The destination bucket should be already created in the tenancy and cannot have versioning enabled.
   
      5.2.   &nbsp; The destination bucket cannot have retention rules. 
   
