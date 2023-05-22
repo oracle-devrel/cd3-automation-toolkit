@@ -56,7 +56,7 @@ To enable independent service directories for the generated Terraform files, fol
      
      Similarly for all the services, their respective auto.tfvars and tfstate files get grouped under their assigned directories. This makes it much easier to manage OCI resources using          terraform for large-scale infrastructures.
    
-      Likewise, While doing an export from OCI to terraform, update the tenancyconfig.properties file with path to outdir_structure_file.properties similar to step1 and then follow the        steps to run the toolkit for [Non-green field tenancies](/cd3_automation_toolkit/documentation/user_guide/NonGreenField.md). With this, all the .sh files with import                      commands of a particular OCI service are grouped and can be easily managed.
+     Likewise, While doing an export from OCI to terraform, update the *tenancyconfig.properties* file with path to *outdir_structure_file.properties* similar to step1 and then follow the      steps to run the toolkit for [Non-green field tenancies](/cd3_automation_toolkit/documentation/user_guide/NonGreenField.md). With this, all the .sh files with import                      commands of a particular OCI service are grouped and can be easily managed.
   
     
   
