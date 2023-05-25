@@ -12,7 +12,7 @@ Click on the links below to know about the specifics of each tab in the excel sh
 
  - [Users](/cd3_automation_toolkit/documentation/user_guide/learn_more/Tabs.md#Users-Tab)
 
- - [Network Sources](/cd3_automation_toolkit/documentation/user_guide/learn_more/Tabs.md#Network Sources Tab)
+ - [Network Sources](/cd3_automation_toolkit/documentation/user_guide/learn_more/Tabs.md#Network-Sources-Tab)
 
 <a href="/cd3_automation_toolkit/documentation/terraform/identity.md"> Click here to view sample auto.tfvars for the Identity components</a> 
 
