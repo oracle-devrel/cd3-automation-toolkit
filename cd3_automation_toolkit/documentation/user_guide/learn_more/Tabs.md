@@ -19,6 +19,8 @@ On re-running the same option you will find the previously existing files being 
   </ul>
 </blockquote>
 
+
+
 ## Groups Tab
 
 Use this Tab to create groups in the OCI tenancy. On choosing "Identity" in the SetUpOCI menu will allow to create groups in the OCI tenancy.
@@ -31,6 +33,7 @@ Once terraform apply is done, you can view the resources under Identity -> Group
 
 On re-running the same option you will find the previously existing files being backed up under directory →   \<outdir>/\<region>/backup_groups/\<Date>-\<Month>-\<Time>.
 
+
 ## Policies Tab
 
 Use this Tab to create policies in the OCI tenancy. On choosing "Identity" in the SetUpOCI menu will allow to create policies in the OCI tenancy.
@@ -40,6 +43,30 @@ Output terraform files generated: \<outdir>/\<region>/\<prefix>_policies.auto.tf
 Once terraform apply is done, you can view the resources under Identity -> Policies in OCI console.
 
 On re-running the same option you will find the previously existing files being backed up under directory →   \<outdir>/\<region>/backup_policies/\<Date>-\<Month>-\<Time>.
+
+
+## Users Tab
+
+Use this Tab to create local users in the OCI tenancy. On choosing "Identity" in the SetUpOCI menu and "Add/Modify/Delete Users" submenu will allow to create users in the OCI tenancy.
+
+Output terraform file generated: \<outdir>/\<region>/\<prefix>_users.auto.tfvars where \<region> directory is the home region.
+  
+Once terraform apply is done, you can view the resources under Identity & Security -> Users in OCI console.
+  
+On re-running the same option you will find the previously existing files being backed up under directory → \<outdir>/\<region>/backup_users/\<Date>-<Month>-<Time>.
+  
+   
+## Network Sources Tab
+  
+Use this Tab to create Network Source in the OCI tenancy. On choosing "Identity" in the SetUpOCI menu and "Add/Modify/Delete Network Sources" submenu will allow to create Network Sources in the OCI tenancy.
+  
+Output terraform file generated: \<outdir>/\<region>/\<prefix>_networksources.auto.tfvars where \<region> directory is the home region.
+  
+Once terraform apply is done, you can view the resources under Identity & Security -> Network Sources in OCI console.
+  
+On re-running the same option you will find the previously existing files being backed up under directory → \<outdir>/\<region>/backup_networksources/\<Date>-<Month>-<Time>.
+  
+    
 
 ## Tags Tab
 
