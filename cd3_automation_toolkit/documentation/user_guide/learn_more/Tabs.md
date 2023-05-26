@@ -155,6 +155,41 @@ Output files generated:
 |\<prefix>_default-dhcp.auto.tfvars	|Contains TF for default DHCP options of each VCN in each region |
 |<br>\<prefix>_nsgs.auto.tfvars<br>\<prefix>_nsg-rules.auto.tfvars</br></br>| Contains TF for NSGs in each region |
 
+## DNS-Views-Zones-Records-Tab
+Below are the details about specific columns to fill the sheet for DNS-Views-Zones-Records-Tab
+1. "Compartment Name"- Compartment name for the  Views/Zones
+2. "View Name"- Should be unique in a region
+3. "Zone" - Zone Name under the specified view
+4. "Domain" - Full domain name (including zone name)
+5. "RDATA" - Provide multi values as per the supported RType, separated by newline
+6. "Defined Tags" - Specify the defined tag key and its value in the format - <Namespace>.<TagKey>=<Value>  else leave it empty.
+    Multiple Tag Key , Values can be specified using semi-colon (;) as the delimeter. 
+    Example: Operations.CostCenter=01;Users.Name=user01
+7. There must be only Single Row  for Domain and RType combination
+8. Rows are duplicated in case of multiple child resources
+
+Output terraform files are generated under \<outdir>/\<region> directory.
+
+Once terraform apply is done, you can view the resources under Networking -> DNS management in OCI console
+## DNS-Resolvers-Tab
+Below are the details about specific columns to fill the sheet for DNS-Resolvers-Tab
+1. "Compartment Name" - Compartment name for VCN
+2. "Display Name" -  Display Name is same as the VCN Name by default.
+3. "Associated Private Views" - Format: <view_compartment>@<view_name. Multiple views are seperated by newline in the same cell(\n is not supported).
+4. "Endpoint Display Name" - Provide endpoint display name, new row need to be created for each endpoint in a resolver. Duplicate Names are not allowed for a single resolver.
+5. "Endpoint Type:IP Address" - Format Type:IP, Type could be Forwarding or Listening. IP can be left as null if not predefined.
+6. "Endpoint NSGs"- NSGs attached to the endpint.
+7. "Rules" - Format: Type::Clients::Destination IP. Multiple rules are seperated by newline in the same cell(\n is not supported)(Rules are processed only for Forwarding Endpoints)
+8. "Defined Tags" - Specify the defined tag key and its value in the format - <Namespace>.<TagKey>=<Value>  else leave it empty.
+   Multiple Tag Key , Values can be specified using semi colon (;) as the delimeter. 
+   Example: Operations.CostCenter=01;Users.Name=user01 
+9. Associated Private Views can be null/blank
+
+Output terraform files are generated under \<outdir>/\<region> directory.
+
+Once terraform apply is done, you can view the resources under Networking -> Virtual Cloud Network -> VCN Information in OCI console
+
+
 ## DedicatedVMHosts Tab
 
 Fill up the details in **'DedicatedVMHosts'** sheet and follow the options below.
