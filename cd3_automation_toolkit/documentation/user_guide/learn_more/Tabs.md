@@ -161,7 +161,10 @@ Below are the details about specific columns to fill the sheet for DNS-Views-Zon
 2. "View Name"- Should be unique in a region
 3. "Zone" - Zone Name under the specified view
 4. "Domain" - Full domain name (including zone name)
-5. "RDATA" - Provide multi values as per the supported RType, separated by newline
+5. "RType" -  Select the RType from the list
+6. "RDATA" - Provide multi values as supported by the specified RType, separated by newline.
+    <a href="https://docs.oracle.com/en-us/iaas/Content/DNS/Reference/supporteddnsresource.htm">Click here to read more about RType and RDATA. </a> 
+
 6. "Defined Tags" - Specify the defined tag key and its value in the format - <Namespace>.<TagKey>=<Value>  else leave it empty.
     Multiple Tag Key , Values can be specified using semi-colon (;) as the delimeter. 
     Example: Operations.CostCenter=01;Users.Name=user01
@@ -172,6 +175,7 @@ Output terraform files are generated under \<outdir>/\<region> directory.
 
 Once terraform apply is done, you can view the resources under Networking -> DNS management in OCI console
 ## DNS-Resolvers-Tab
+Existing Resolvers need to be exported first before making any changes to those.
 Below are the details about specific columns to fill the sheet for DNS-Resolvers-Tab
 1. "Compartment Name" - Compartment name for VCN
 2. "Display Name" -  Display Name is same as the VCN Name by default.

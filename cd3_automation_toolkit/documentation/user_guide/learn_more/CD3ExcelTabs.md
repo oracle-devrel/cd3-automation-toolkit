@@ -38,7 +38,7 @@ Click on the links below to know about the specifics of each tab in the excel sh
 
 <a href="/cd3_automation_toolkit/documentation/terraform/network.md">Click here to view sample auto.tfvars for all Network components- VCNs, Subnets, Gateways etc.,</a> 
 
-#### DNS
+#### Private-DNS
   
  - [DNS-Views-Zones-Records](/cd3_automation_toolkit/documentation/user_guide/learn_more/Tabs.md#DNS-Views-Zones-Records-Tab)
   
