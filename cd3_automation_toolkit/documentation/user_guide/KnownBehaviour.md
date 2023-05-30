@@ -121,7 +121,7 @@
   Plan: 0 to add, 1 to change, 0 to destroy.
   ```
   
- This is how terraform handles newlines in the fields. Pleage ignore this and proceed with terraform apply.
+  This is how terraform handles newlines in the fields. Pleage ignore this and proceed with terraform apply.
   
 - You might come across below error during export of NSGs(while runnig terraform import commands for NSGs)
   ![image](https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/5a50cdb5-b6cf-49fa-b488-1419d32c6b13)
