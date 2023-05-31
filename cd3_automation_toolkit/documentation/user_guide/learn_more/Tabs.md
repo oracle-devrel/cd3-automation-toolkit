@@ -606,6 +606,15 @@ Below TF file is created:
 
   
 ## SDDCs Tab
+Use this tab to create OCVS in your tenancy. On choosing "Software-Defined Data Centers - OCVS" in setUpOCI menu, the toolkit will read SDDCs tab and SDDCs-Network tab. The output terraform files will be generated at :
+-→  \<outdir>/\<region>/\<prefix>_sddcs.auto.tfvars under appropriate \<region> directory.
+
+Once terraform apply is done, you can view the resources under Hybrid -> Software-Defined Data Centers in OCI console.
+
+On re-running the option to create OCVS you will find the previously existing files being backed up under directory:
+
+\<outdir>/\<region>/backup_sddcs/\<Date>-\<Month>-\<Time>.
+  
   
 ## Buckets Tab
   
