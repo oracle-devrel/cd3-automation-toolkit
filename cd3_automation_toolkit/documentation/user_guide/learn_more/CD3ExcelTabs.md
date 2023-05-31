@@ -103,8 +103,7 @@ Click on the links below to know about the specifics of each tab in the excel sh
  - [ServiceConnectors](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/develop/cd3_automation_toolkit/documentation/user_guide/learn_more/Tabs.md#serviceconnectors-tab) 
 
 
-<a href="/cd3_automation_toolkit/documentation/terraform/sch.md">Click here to view sample auto.tfvars for Service Connector</a> 
-
+<a href="/cd3_automation_toolkit/documentation/terraform/sch.md">Click here to view sample auto.tfvars for Service Connectors</a> 
 
  
  #### Developer Services
@@ -112,6 +111,20 @@ Click on the links below to know about the specifics of each tab in the excel sh
  - [OKE](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/develop/cd3_automation_toolkit/documentation/user_guide/learn_more/Tabs.md#oke-tab)
 
 <a href="/cd3_automation_toolkit/documentation/terraform/oke.md">Click here to view sample auto.tfvars for OKE components- Clusters, Nodepools</a> 
+
+ #### Logging Services
+ 
+ - [VCN Flow Logs](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/develop/cd3_automation_toolkit/documentation/user_guide/learn_more/Tabs.md#vcnflowlogs-tab)
+ - [LBaaS Logs](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/develop/cd3_automation_toolkit/documentation/user_guide/learn_more/Tabs.md#lbaaslogs-tab)
+- [OSS Logs](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/develop/cd3_automation_toolkit/documentation/user_guide/learn_more/Tabs.md#osslogs-tab)
+
+<a href="/cd3_automation_toolkit/documentation/terraform/oke.md">Click here to view sample auto.tfvars for Logging components </a> 
+
+ #### SDDCs
+ 
+ - [OCVS](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/develop/cd3_automation_toolkit/documentation/user_guide/learn_more/Tabs.md#ocvs-tab)
+<a href="/cd3_automation_toolkit/documentation/terraform/oke.md">Click here to view sample auto.tfvars for OCVS </a> 
+ 
  
  
 
