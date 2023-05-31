@@ -114,15 +114,15 @@ Click on the links below to know about the specifics of each tab in the excel sh
 
  #### Logging Services
  
- - [VCN Flow Logs](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/develop/cd3_automation_toolkit/documentation/user_guide/learn_more/Tabs.md#vcnflowlogs-tab)
- - [LBaaS Logs](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/develop/cd3_automation_toolkit/documentation/user_guide/learn_more/Tabs.md#lbaaslogs-tab)
-- [OSS Logs](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/develop/cd3_automation_toolkit/documentation/user_guide/learn_more/Tabs.md#osslogs-tab)
+ - [VCN Flow Logs](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/develop/cd3_automation_toolkit/documentation/user_guide/learn_more/Tabs.md#vcn-flow-logs)
+ - [LBaaS Logs](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/develop/cd3_automation_toolkit/documentation/user_guide/learn_more/Tabs.md#lbaas-logs)
+- [OSS Logs](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/develop/cd3_automation_toolkit/documentation/user_guide/learn_more/Tabs.md#oss-logs)
 
 <a href="/cd3_automation_toolkit/documentation/terraform/oke.md">Click here to view sample auto.tfvars for Logging components </a> 
 
  #### SDDCs
  
- - [OCVS](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/develop/cd3_automation_toolkit/documentation/user_guide/learn_more/Tabs.md#ocvs-tab)
+ - [OCVS](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/develop/cd3_automation_toolkit/documentation/user_guide/learn_more/Tabs.md#sddcs-tab)
  
 <a href="/cd3_automation_toolkit/documentation/terraform/oke.md">Click here to view sample auto.tfvars for OCVS </a> 
  
