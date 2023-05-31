@@ -35,12 +35,3 @@ Below TF file is created:
 |---|---|
 |cis-cloudguard.auto.tf |vars TF variables file for enabling cloud guard and creating target for root compartment. |
 
-#### **5. Enable VCN Flow Logs**
-
-This will enable Flow logs for all the subnets mentioned in Subnets' tab of CD3 Excel sheet. Log group for each VCN is created under the same compartment as specified for VCN and all subnets are added as logs to this log group.
-
-Below TF file is created:
-
-| File name | Description|
-|---|---|
-|<customer_name>_vcnflow-logging.auto.tfvars |TF variables file containing log group for each VCN and logs for eachsubnet in that VCN.|
