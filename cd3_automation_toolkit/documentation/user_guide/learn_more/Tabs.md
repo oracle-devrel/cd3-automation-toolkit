@@ -577,6 +577,35 @@ To avoid this, an ignore statement as shown below is added to ignore any changes
 
 - It has been observed that the order of kubernetes labels change randomly during an export. In such situations a terraform plan detects it as a change to the kubernetes labels.
   
+## VCN FLow Logs
+This will enable Flow logs for all the subnets mentioned in 'SubnetsVLANs' tab of CD3 Excel sheet. Log group for each VCN is created under the same compartment as specified for VCN and all subnets are added as logs to this log group.
+
+Below TF file is created:
+
+| File name | Description|
+|---|---|
+|<customer_name>_vcnflow-logging.auto.tfvars |TF variables file containing log group for each VCN and logs for eachsubnet in that VCN.|
+  
+## LBaaS Logs
+This will enable LBaaS logs for all the LBs mentioned in 'LB-Hostname-Certs' tab of CD3 Excel sheet. Log group for each LBaaS is created under the same compartment as specified for LBaaS and access and error log types are added as logs to this log group.
+
+Below TF file is created:
+
+| File name | Description|
+|---|---|
+|<customer_name>_load-balancers-logging.auto.tfvars |TF variables file containing log group for each LBaaS and its error and access logs.| 
+
+## OSS Logs
+This will enable OSS Bucket logs for all the buckets mentioned in 'Buckets' tab of CD3 Excel sheet. Log group for each bucket is created under the same compartment as specified for bucket and write log type is added as logs to this log group.
+
+Below TF file is created:
+
+| File name | Description|
+|---|---|
+|<customer_name>_buckets-logging.auto.tfvars |TF variables file containing log group for each bucket and its write logs.| 
+
+  
+## SDDCs Tab
   
 ## Buckets Tab
   
