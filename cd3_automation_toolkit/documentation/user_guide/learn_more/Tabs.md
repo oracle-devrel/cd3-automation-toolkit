@@ -98,8 +98,8 @@ On re-running the same option you will find the previously existing files being 
 
 **Note:**
 
-1. Only VCN attachements are supported via CD3 as of now for DRGv2. Please create attachments for RPC, VC and IPSec via OCI console.
-2. Network export will also export only VCN attachments to CD3 excel sheet as of now.
+1. Only VCN and RPC attachments are supported via CD3 as of now for DRGv2. Please create attachments for VC and IPSec via OCI console.
+2. Network export will also export only VCN and RPC attachments to CD3 excel sheet as of now.
 3. You can create a Route Table for DRG which is not attached to any attachment by keeping 'Attached To' column in DRGs tab empty.
 4. You can create an Import Route Distribution which is attached to some Route Table in DRG.
 
@@ -114,7 +114,7 @@ This contains information about DHCP options to be created for each VCN.
 
 **Notes:**
 
-1. Name of the VCNs, subnets etc are all case sensitive. Specify the same names in all required places. Avoid trailing spaces for a resource Name.
+1. Name of the VCNs, subnets etc are all case-sensitive. Specify the same names in all required places. Avoid trailing spaces for a resource Name.
 2. A subnet or a vlan will be created based on the column - 'Subnet or VLAN'. When VLAN is specified, vlan tag can also be specified with sytanx as VLAN::<vlan_tag>
 3. Column NSGs is read only for type VLAN.
 4. Columns - DHCP Option Name, Seclist Names, Add Default Seclist and DNS Label are applicable only for type Subnet.

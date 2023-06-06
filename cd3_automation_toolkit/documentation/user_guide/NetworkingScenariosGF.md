@@ -2,6 +2,7 @@
 
 ## Greenfield Tenancies (Managing Network for Green Field Tenancies)
 - [Create Network](#create-network)
+- [Create RPC](#create-rpc)
 - [Use an existing DRG in OCI while creating the network](#use-an-existing-drg-in-oci-while-creating-the-network)
 - [Modify Network](#modify-network)
 - [Modify Security Rules, Route Rules and DRG Route Rules](#modify-security-rules-route-rules-and-drg-route-rules)
@@ -14,7 +15,7 @@
 Before you start with Network Creation, make sure you have run 'Fetch Compartments OCIDs to variables file'.
 
 ### Create Network
-Creation of Networking components using Automation Toolkit involes four simple steps.
+Creation of Networking components using Automation Toolkit involves four simple steps.
  - Add the networking resource details to appropriate Excel Sheets.
  - Running the toolkit to generate auto.tfvars.
  - Executing Terraform commands to provision the resources in OCI.
@@ -52,6 +53,15 @@ Below are the steps in detail to create Network that includes VCNs, Subnets, DHC
       - Export DRG Route Rules (From OCI into DRGRouteRulesinOCI sheet)
 
 This completes the steps for Creating the Network in OCI and exporting the default rules to the CD3 Excel Sheet using the Automation Toolkit.
+
+### Create RPC 
+Remote VCN peering is the process of connecting two VCNs in different regions (but the same tenancy). The peering allows the VCNs' resources to communicate using private IP addresses without routing the traffic over the internet or through your on-premises network.
+ 
+   - CD3 toolkit can manage the provisioning and import of RPC's into the terraform state files.
+   - The source and target RPC details to be entered in DRG sheet for establishing a connection. Please check the example in excel file for reference.
+   - Global directory which is inside the customer outdir will have all RPC related files and scripts.
+   - The RPC resources(modules,provider configurations etc) are generated dynamically for the tenancy and can work along only with CD3 automation toolkit.
+   - Choose option 'Network' and then 'Customer Connectivity' for creating RPC in GreenField workflow.
 
 ### Use an existing DRG in OCI while creating the network
 In some scenarios, a DRG has already been created in the tenancy and rest of the Network components still need to be created. In such cases, generate the networking related tfvars using same process mentioned above till Step 4.
