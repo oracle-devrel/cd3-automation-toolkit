@@ -28,9 +28,10 @@ Follow the below steps to export the Networking components that includes VCNs, S
    - Export Network components for NSGs Tab
    
    Once the execution is successful, networking related .tfvars files and .sh files containing import statements will be generated under the folder _/cd3user/tenancies/<customer\_name>/terraform_files/<region_dir>_
+   
    Also,The RPC related .tfvars and .sh files containing import statements will be generated in Global directory which is inside the /cd3user/tenancies/<customer\_name>/terraform_files/ folder. 
 
-   NOTE: The **oci_core_drg_attachment_management** for RPC resources will be shown as created, but it doesn't actually create any resources and can be safely ignored.
+   **NOTE:** The **oci_core_drg_attachment_management** for RPC resources will be shown as created at the end of import process, but it doesn't actually create any resources and can be safely ignored.
     
    Navigate to the above path and execute the terraform commands:<br>
        <br>_terraform init_
