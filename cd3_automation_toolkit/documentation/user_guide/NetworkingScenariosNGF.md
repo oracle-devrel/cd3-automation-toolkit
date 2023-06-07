@@ -33,7 +33,7 @@ Follow the below steps to export the Networking components that includes VCNs, S
 
    **NOTE:** The **oci_core_drg_attachment_management** for RPC resources will be shown as created at the end of import process, but it doesn't actually create any resources and can be safely ignored.
 
-![rpc.png](..%2F..%2F..%2F..%2F..%2F..%2F..%2F..%2Frpc.png)
+<img width="870" alt="rpc" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103548537/1a5d94a8-3309-4edf-84b4-f0e824e0c7d7">
     
    Navigate to the above path and execute the terraform commands:<br>
        <br>_terraform init_
