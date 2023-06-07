@@ -40,7 +40,7 @@ module "instances" {
   source_image_id        = length(regexall("ocid1.image.oc1*", each.value.source_id)) > 0 || length(regexall("ocid1.bootvolume.oc1*", each.value.source_id)) > 0 ? each.value.source_id : lookup(var.instance_source_ocids, each.value.source_id, null)
   subnet_id              = each.value.subnet_id != "" ? (length(regexall("ocid1.subnet.oc1*", each.value.subnet_id)) > 0 ? each.value.subnet_id : data.oci_core_subnets.oci_subnets[each.key].subnets.*.id[0]) : null
   assign_public_ip       = each.value.assign_public_ip
-  ssh_public_keys        = each.value.ssh_authorized_keys!= null? (length(regexall("ssh-rsa*", each.value.ssh_authorized_keys)) > 0 ? each.value.ssh_authorized_keys : lookup(var.instance_ssh_keys, each.value.ssh_authorized_keys, null)) : null
+  ssh_public_keys        = each.value.ssh_authorized_keys != null ? (length(regexall("ssh-rsa*", each.value.ssh_authorized_keys)) > 0 ? each.value.ssh_authorized_keys : lookup(var.instance_ssh_keys, each.value.ssh_authorized_keys, null)) : null
   hostname_label         = each.value.hostname_label
   nsg_ids                = each.value.nsg_ids
   #nsg_ids              = each.value.nsg_ids != [] ? [for nsg in each.value.nsg_ids : length(regexall("ocid1.networksecuritygroup.oc1*",nsg)) > 0 ? nsg : merge(module.nsgs.*...)[nsg]["nsg_tf_id"]] : []
@@ -52,6 +52,9 @@ module "instances" {
 
   boot_tf_policy           = each.value.backup_policy != null ? each.value.backup_policy : null
   policy_tf_compartment_id = each.value.policy_compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.policy_compartment_id)) > 0 ? each.value.policy_compartment_id : var.compartment_ocids[each.value.policy_compartment_id]) : null
+  remote_execute           = each.value.remote_execute != null ? each.value.remote_execute : null
+  bastion_ip               = each.value.bastion_ip != null ? each.value.bastion_ip : null
+  cloud_init_script        = each.value.cloud_init_script !=null ? each.value.cloud_init_script : null
 
   ## Optional parameters to enable and test ##
   # extended_metadata    = each.value.extended_metadata

@@ -97,6 +97,16 @@ class commonTools():
                     self.home_region = k
                 if (rs.region_name == v):
                     self.all_regions.append(k)
+                    break
+
+        # return subs region list to caller
+        subs_region_list = []
+        for reg in regionsubscriptions.data:
+            status = getattr(reg, 'status')
+            if status == "READY":
+                region_name = getattr(reg, 'region_name')
+                subs_region_list.append(region_name.split("-")[1])
+        return subs_region_list
 
     #Get Compartment OCIDs
     def get_network_compartment_ids(self,c_id, c_name,configFileName):
@@ -134,6 +144,68 @@ class commonTools():
         del idc
         del config
 
+    def get_compartment_map(self, var_file, resource_name):
+        var_ocids = {}
+        try:
+            with open(var_file, 'r') as f:
+                soc = False
+                for line in f:
+                    if not soc:
+                        if line.strip().startswith('#START_compartment_ocids#'):
+                            soc = True
+                    elif line.strip().startswith('#compartment_ocids_END#'):
+                        soc = False
+                    else:
+                        line_items = str(line.strip()).split('=')
+                        key = str(line_items[0]).strip()
+                        value = str(line_items[1]).strip()
+                        val=value.split('"')[1]
+                        var_ocids[key] = val
+                        self.ntk_compartment_ids[key.replace('--', '::')] = val
+
+            f.close()
+            if len(var_ocids) == 0:
+                print("Please make sure to execute the script for 'Fetch Compartments OCIDs to variables file' under 'CD3 Services' menu option first and re-run this.")
+                exit(1)
+
+        except Exception as e:
+            print(str(e))
+            print("Exiting!!!")
+            #print("Please fetch compartments first from CD3 Services option from main menu")
+            exit(1)
+
+        if resource_name == "Identity Objects" or resource_name == "Tagging Objects":
+            input_compartment_names = None
+        else:
+            compartment_list_str = "Enter name of Compartment as it appears in OCI (comma separated without spaces if multiple)for which you want to export {};\nPress 'Enter' to export from all the Compartments: "
+            compartments = input(compartment_list_str.format(resource_name))
+            input_compartment_names = list(map(lambda x: x.strip(), compartments.split(','))) if compartments else None
+
+        comp_list_fetch = []
+        print("\n")
+
+        if input_compartment_names is not None:
+            for comp_name in input_compartment_names:
+                var_comp_name = comp_name.replace('::', '--')
+
+                if var_comp_name not in var_ocids.keys():
+                    print("Please check if " + comp_name + " exists in OCI.\nIf yes then Please make sure to execute the script for 'Fetch Compartments OCIDs to variables file' under 'CD3 Services' menu option first and re-run this")
+                    exit(1)
+                else:
+                    #self.ntk_compartment_ids[comp_name] = var_ocids[var_comp_name]
+                    comp_list_fetch.append(comp_name)
+
+            print("Fetching " + resource_name + " for Compartments " + str(comp_list_fetch))
+        else:
+            print("Fetching " + resource_name + " for all Compartments...")
+            comp_ocids = []
+            for key, val in var_ocids.items():
+                if val not in comp_ocids:
+                    comp_ocids.append(val)
+                    #self.ntk_compartment_ids[key.replace('--', '::')] = val
+                    comp_list_fetch.append(key.replace('--', '::'))
+
+        return comp_list_fetch
 
     #Check value exported
     #If None - replace with ""
@@ -403,10 +475,16 @@ class commonTools():
         else:
             large = sheet_max_rows
 
+        df, values_for_column_sheet = commonTools.read_cd3(cd3file, sheet_name)
+
         #Put Data
         j=0
         for i in range(0,large):
             for col_name in values_for_column.keys():
+                #Check if column name to be populated in present in the sheet.
+                if col_name not in values_for_column_sheet:
+                    continue
+                # Data
                 if(i>=rows_len):
                     sheet.cell(row=i+3, column=j+1).value = ""
                 else:
@@ -831,10 +909,10 @@ class parseSubnets():
         self.vcn_subnet_map = {}
         try:
             # Read and search for VCN
-            df_subnet = pd.read_excel(filename, sheet_name='Subnets', skiprows=1)
+            df_subnet = pd.read_excel(filename, sheet_name='SubnetsVLANs', skiprows=1)
         except Exception as e:
             if ("No sheet named" in str(e)):
-                print("\nTab - \"Subnets\" is missing in the CD3. Please make sure to use the right CD3 in properties file...Exiting!!")
+                print("\nTab - \"SubnetsVLANs\" is missing in the CD3. Please make sure to use the right CD3 in properties file...Exiting!!")
                 exit(1)
             else:
                 print("Error occurred while reading the CD3 excel sheet " + str(e))
@@ -849,8 +927,8 @@ class parseSubnets():
             region = str(df_subnet['Region'][i]).strip()
             if (region in commonTools.endNames):  # or str(region).lower()=='nan'):
                 break
-            key = df_subnet.loc[i,'Region'].strip().lower(),df_subnet.loc[i,'VCN Name'].strip()+"_"+df_subnet.loc[i,'Subnet Name'].strip()
-            value = df_subnet.loc[i,'Compartment Name'].strip(), df_subnet.loc[i,'VCN Name'].strip(), df_subnet.loc[i,'Subnet Name'].strip()
+            key = df_subnet.loc[i,'Region'].strip().lower(),df_subnet.loc[i,'VCN Name'].strip()+"_"+df_subnet.loc[i,'Display Name'].strip()
+            value = df_subnet.loc[i,'Compartment Name'].strip(), df_subnet.loc[i,'VCN Name'].strip(), df_subnet.loc[i,'Display Name'].strip()
             self.vcn_subnet_map[key] =  value
 
 class cd3Services():

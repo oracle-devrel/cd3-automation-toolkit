@@ -2,4 +2,6 @@
 
 from .BaseNetwork import *
 from .LoadBalancers import *
+from .DNS import *
+from .Global import *
 #from .IPManagement import *

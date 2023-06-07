@@ -6,7 +6,7 @@
 # OCI
 #
 ############################
- 
+
 variable "tenancy_ocid" {
   type    = string
   default = "<TENANCY OCID HERE>"
@@ -56,6 +56,16 @@ variable "oke_ssh_keys" {
     # Example: ssh_public_key = "ssh-rsa AAXXX......yhdlo\nssh-rsa AAxxskj...edfwf"
     #START_oke_ssh_keys#
 	#oke_ssh_keys_END#
+  }
+}
+variable "sddc_ssh_keys" {
+  type = map(any)
+  default = {
+    ssh_public_key = "<SSH PUB KEY STRING HERE>"
+    # Use '\n' as the delimiter to add multiple ssh keys.
+    # Example: ssh_public_key = "ssh-rsa AAXXX......yhdlo\nssh-rsa AAxxskj...edfwf"
+    #START_sddc_ssh_keys#
+	#sddc_ssh_keys_END#
   }
 }
 
@@ -221,6 +231,31 @@ variable "groups" {
     matching_rule     = optional(string)
     defined_tags      = optional(map(any))
     freeform_tags     = optional(map(any))
+  }))
+  default = {}
+}
+
+variable "users" {
+  type = map(object({
+    name        	= string
+    description 	= string
+	email		 	= string
+	disable_capabilities = optional(list(string))
+	group_membership = optional(list(string))
+    defined_tags    = optional(map(any))
+    freeform_tags   = optional(map(any))
+  }))
+  default = {}
+}
+
+variable "networkSources" {
+  type = map(object({
+    name        = string
+    description = string
+	public_source_list = optional(list(string))
+    defined_tags      = optional(map(any))
+    freeform_tags     = optional(map(any))
+	virtual_source_list = optional(list(map(any)))
   }))
   default = {}
 }
@@ -489,7 +524,29 @@ variable "subnets" {
   default = {}
 }
 
+variable "vlans" {
+  type    = map(object({
+    cidr_block                 = string
+    compartment_id             = string
+    network_compartment_id     = string
+    vcn_name                     = string
+    display_name               = optional(string)
+    nsg_ids                    = optional(list(string))
+    route_table_name           = optional(string)
+    vlan_tag                   = optional(string)
+    availability_domain        = optional(string)
+    freeform_tags              = optional(map(any))
+    defined_tags               = optional(map(any))
+  } ))
+  default = {}
+}
+
 variable "drg_attachments" {
+  type    = map(any)
+  default = {}
+}
+
+variable "drg_other_attachments" {
   type    = map(any)
   default = {}
 }
@@ -542,6 +599,30 @@ variable "data_drg_route_tables" {
 }
 
 variable "data_drg_route_table_distributions" {
+  type    = map(any)
+  default = {}
+}
+
+####################
+####### DNS  #######
+####################
+
+variable "zones" {
+  type    = map(any)
+  default = {}
+}
+
+variable "views" {
+  type    = map(any)
+  default = {}
+}
+
+variable "rrsets" {
+  type    = map(any)
+  default = {}
+}
+
+variable "resolvers" {
   type    = map(any)
   default = {}
 }
@@ -625,6 +706,9 @@ variable "instances" {
     capacity_reservation_id   = optional(string)
     create_is_pv_encryption_in_transit_enabled = optional(bool)
     update_is_pv_encryption_in_transit_enabled = optional(bool)
+    remote_execute            = optional(string)
+    bastion_ip                = optional(string)
+    cloud_init_script         = optional(string)
     ssh_authorized_keys       = optional(string)
     backup_policy             = optional(string)
     policy_compartment_id     = optional(string)
@@ -1164,10 +1248,9 @@ variable "vcn_logs" {
 ###### OSS Buckets ######
 #########################
 
-variable "oss" {
-  description = "To provision Buckets - OSS"
-  type        = map(any)
-  default     = {}
+variable "buckets" {
+  type    = map(any)
+  default = {}
 }
 
 #########################
@@ -1356,6 +1439,49 @@ variable nodepools {
   default = {}
 }
 
+##################################
+############## SDDCs #############
+##################################
+variable "sddcs" {
+  type    = map(object({
+		  compartment_id 						= string
+		  availability_domain 					= string
+	      network_compartment_id    			= string
+		  vcn_name      						= string
+	      esxi_hosts_count 						= number
+		  nsx_edge_uplink1vlan_id       		= string
+          nsx_edge_uplink2vlan_id       		= string
+          nsx_edge_vtep_vlan_id         		= string
+		  nsx_vtep_vlan_id              		= string
+		  provisioning_subnet_id        		= string
+	      ssh_authorized_keys           		= string
+		  vmotion_vlan_id               		= string
+	      vmware_software_version       		= string
+		  vsan_vlan_id                  		= string
+		  vsphere_vlan_id               		= string
+		  capacity_reservation_id       		= optional(string)
+		  defined_tags 							= optional(map(any))
+	      display_name   						= optional(string)
+	      freeform_tags 						= optional(map(any))
+		  hcx_action                    		= optional(string)
+		  hcx_vlan_id                   		= optional(string)
+		  initial_host_ocpu_count       		= optional(number)
+	      initial_host_shape_name       		= optional(string)
+	      initial_sku                   		= optional(string)
+	      instance_display_name_prefix  		= optional(string)
+          is_hcx_enabled                		= optional(bool)
+	      is_shielded_instance_enabled  		= optional(bool)
+		  is_single_host_sddc           		= optional(bool)
+          provisioning_vlan_id          		= optional(string)
+	      refresh_hcx_license_status    		= optional(bool)
+          replication_vlan_id           		= optional(string)
+          reserving_hcx_on_premise_license_keys = optional(string)
+          workload_network_cidr         		= optional(string)
+
+  } ))
+	default = {}
+
+}
 
 ############################
 ## Key Management Service ##
@@ -1444,6 +1570,7 @@ variable "cloud_guard_targets" {
     display_name          = string
     target_resource_id    = string
     target_resource_type  = string
+    prefix                = string
     description           = optional(string)
     state                 = optional(string)
     target_detector_recipes  = optional(list(any))
@@ -1463,10 +1590,6 @@ variable "custom_backup_policies" {
   default = {}
 }
 
-##########################
-# Add new variables here #
-##########################
-
 variable "capacity_reservation_ocids" {
   type = map(any)
   default = {
@@ -1475,4 +1598,8 @@ variable "capacity_reservation_ocids" {
     "AD3" : "<AD3 Capacity Reservation OCID>"
   }
 }
+
+##########################
+# Add new variables here #
+##########################
 ######################### END #########################

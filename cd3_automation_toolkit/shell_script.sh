@@ -15,8 +15,9 @@ sudo yum -y install rh-python38
 echo "source scl_source enable rh-python38" >> /cd3user/.bashrc
 source /cd3user/.bashrc
 python -m pip install --user --upgrade pip
-python -m pip install --user oci==2.95.0
-python -m pip install --user oci-cli==3.23.4
+#non needed
+#python -m pip install --user oci==2.104.1
+python -m pip install --user oci-cli==3.28.2
 python -m pip install --user pycryptodomex==3.10.1
 python -m pip install --user regex==2022.10.31
 python -m pip install --user pandas==1.1.5

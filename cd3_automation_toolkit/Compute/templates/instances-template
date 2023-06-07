@@ -32,6 +32,18 @@ instances = {
             fault_domain         = "{{ fault_domain }}"
             {% endif %}
 
+            {% if remote_execute %}
+            remote_execute       = "{{ remote_execute }}"
+            {% endif %}
+
+            {% if bastion_ip %}
+            bastion_ip           = "{{ bastion_ip }}"
+            {% endif %}
+
+            {% if cloud_init_script %}
+            cloud_init_script    = "{{ cloud_init_script }}"
+            {% endif %}
+
             {% if dedicated_vm_host_tf %}
             dedicated_vm_host_id = "{{ dedicated_vm_host_tf }}"
             {% endif %}
@@ -52,7 +64,7 @@ instances = {
             {% endif %}
 
             {% if hostname_label %}
-            hostname_label         = "{{ hostname_label }}"
+            hostname_label   = "{{ hostname_label }}"
             {% endif %}
 
             {% if nsg_ids %}
@@ -64,7 +76,7 @@ instances = {
             {% endif %}
 
             {% if memory_in_gbs %}
-            memory_in_gbs = {{ memory_in_gbs }}
+            memory_in_gbs    = {{ memory_in_gbs }}
             {% endif %}
 
             {% if capacity_reservation_id %}

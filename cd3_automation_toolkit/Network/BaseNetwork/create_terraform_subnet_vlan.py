@@ -12,8 +12,6 @@
 import sys
 import re
 import argparse
-import shutil
-import datetime
 import os
 sys.path.append(os.getcwd()+"/../../..")
 from oci.config import DEFAULT_LOCATION
@@ -35,12 +33,13 @@ def parse_args():
     parser.add_argument('prefix', help='customer name/prefix for all file names')
     parser.add_argument('--modify-network', action='store_true', help='modify network: true or false')
     parser.add_argument('non_gf_tenancy')
+    parser.add_argument('subnet_vlan')
     parser.add_argument('--configFileName', default=DEFAULT_LOCATION, help='Config file name')
     args = parser.parse_args()
 
 
 #If input is CD3
-def create_terraform_subnet(inputfile, outdir, service_dir, prefix, non_gf_tenancy, config, modify_network=False):
+def create_terraform_subnet_vlan(inputfile, outdir, service_dir, prefix, non_gf_tenancy, config, network_vlan_in_setupoci, modify_network=False):
     filename = inputfile
     configFileName = config
 
@@ -50,8 +49,10 @@ def create_terraform_subnet(inputfile, outdir, service_dir, prefix, non_gf_tenan
 
     fname = None
     outfile={}
+    vlan_outfile={}
     oname={}
     tfStr={}
+    tfStr_vlan={}
     skeletonStr = {}
     ADS = ["AD1", "AD2", "AD3"]
 
@@ -59,12 +60,13 @@ def create_terraform_subnet(inputfile, outdir, service_dir, prefix, non_gf_tenan
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
     template = env.get_template('subnet-template')
+    vlan_template = env.get_template('vlan-template')
     auto_tfvars_filename = '_subnets.auto.tfvars'
+    vlan_auto_tfvars_filename = '_vlans.auto.tfvars'
     region_included = []
 
     def processSubnet(tempStr):
         region = tempStr['region'].lower().strip()
-        subnet = tempStr['cidr_block']
         AD = tempStr['availability_domain'].strip()
         if (AD.strip().lower() != 'regional'):
             AD = AD.strip().upper()
@@ -76,7 +78,7 @@ def create_terraform_subnet(inputfile, outdir, service_dir, prefix, non_gf_tenan
         tempStr['availability_domain'] = adString
 
         vcn_tf_name = commonTools.check_tf_variable(tempStr['vcn_name'].strip())
-        name = tempStr['subnet_name']
+        name = tempStr['display_name']
 
         tempStr['vcn_tf_name'] = vcn_tf_name
 
@@ -140,11 +142,46 @@ def create_terraform_subnet(inputfile, outdir, service_dir, prefix, non_gf_tenan
 
         tfStr[region]= tfStr[region] +"\n"+ template.render(tempStr)
 
+
+    def processVlan(tempStr):
+        region = tempStr['region'].lower().strip()
+        AD = tempStr['availability_domain'].strip()
+        if (AD.strip().lower() != 'regional'):
+            AD = AD.strip().upper()
+            ad = ADS.index(AD)
+            adString = ad
+        else:
+            adString = ""
+
+        tempStr['availability_domain'] = adString
+
+        vcn_name = tempStr['vcn_name'].strip()
+        name = tempStr['display_name']
+        display_name = name
+        rt_display_name = rt_name
+
+        tempStr['display_name'] = display_name
+        tempStr['rt_display_name'] = rt_display_name
+
+        vlan_tf_name = vcn_name + "_" + display_name
+        vlan_tf_name = commonTools.check_tf_variable(vlan_tf_name)
+        tempStr['vlan_tf_name'] = vlan_tf_name
+
+
+        '''
+        nsg_names = tempStr['nsg_names']
+        for nsg_name in nsg_names:
+            nsg_name = str(nsg_name).strip()
+            nsg_display_name = str(nsg_name)
+        '''
+
+        tfStr_vlan[region]= tfStr_vlan[region] +"\n"+ vlan_template.render(tempStr)
+
     vcnInfo = parseVCNInfo(filename)
     vcns = parseVCNs(filename)
 
     # Read cd3 using pandas dataframe
-    df, col_headers = commonTools.read_cd3(filename, "Subnets")
+    df, col_headers = commonTools.read_cd3(filename, "SubnetsVLANs")
 
     df = df.dropna(how='all')
     df = df.reset_index(drop=True)
@@ -152,6 +189,7 @@ def create_terraform_subnet(inputfile, outdir, service_dir, prefix, non_gf_tenan
     for reg in ct.all_regions:
         tfStr[reg] = ''
         skeletonStr[reg] = ''
+        tfStr_vlan[reg] = ''
 
     # temporary dictionary1, dictionary2
     tempStr = {}
@@ -182,19 +220,15 @@ def create_terraform_subnet(inputfile, outdir, service_dir, prefix, non_gf_tenan
 
         # Check if values are entered for mandatory fields
         if (str(df.loc[i, 'Region']).lower() == 'nan' or str(df.loc[i, 'Compartment Name']).lower() == 'nan' or str(
-                        df.loc[i, 'VCN Name']).lower() == 'nan' or str(df.loc[i, 'Subnet Name']).lower() == 'nan' or str(df.loc[i, 'CIDR Block']).lower() == 'nan'):
-            print("\nColumn Values Region, Compartment Name, VCN Name, Subnet Name and CIDR Block cannot be left empty in VCNs sheet in CD3..exiting...")
+                        df.loc[i, 'VCN Name']).lower() == 'nan' or str(df.loc[i, 'Display Name']).lower() == 'nan' or str(df.loc[i, 'CIDR Block']).lower() == 'nan'):
+            print("\nColumn Values Region, Compartment Name, VCN Name, Display Name and CIDR Block cannot be left empty in SubnetsVLANs sheet in CD3..exiting...")
             exit(1)
 
-        if (str(df.loc[i,'Availability Domain(AD1|AD2|AD3|Regional)']).lower =='nan' or str(
-                        df.loc[i, 'Type(private|public)']).lower() == 'nan' or str(df.loc[i,'Add Default Seclist']).lower() == 'nan'):
-            print("\nColumn Values Add Default Seclist, Availability Domain and Type cannot be left empty in VCNs sheet in CD3..exiting...")
-            exit(1)
 
         if (str(df.loc[i, 'Configure IGW Route(y|n)']).lower() == 'nan' or str(df.loc[i, 'Configure NGW Route(y|n)']).lower() == 'nan' or str(
                         df.loc[i, 'Configure SGW Route(n|object_storage|all_services)']).lower() == 'nan' or str(df.loc[i, 'Configure OnPrem Route(y|n)']).lower() == 'nan' or str(
                         df.loc[i,'Configure VCNPeering Route(y|n)']).lower() == 'nan'):
-            print("\nColumn Values Configure IGW/SGW/On-Prem/VCN route cannot be left empty in VCNs sheet in CD3..exiting...")
+            print("\nColumn Values Configure IGW/SGW/On-Prem/VCN route cannot be left empty in SubnetsVLANs sheet in CD3..exiting...")
             exit(1)
 
         for columnname in dfcolumns:
@@ -240,7 +274,7 @@ def create_terraform_subnet(inputfile, outdir, service_dir, prefix, non_gf_tenan
                 # check if subnet_dns_label is not given by user in input use subnet name
                 if (str(dnslabel).lower() == 'nan' or str(dnslabel).lower() == ''):
                     regex = re.compile('[^a-zA-Z0-9]')
-                    subnet_dns = regex.sub('', df.loc[i,'Subnet Name'])
+                    subnet_dns = regex.sub('', df.loc[i,'Display Name'])
                     # truncate all digits from start of dns_label
                     index = 0
                     for c in subnet_dns:
@@ -262,7 +296,7 @@ def create_terraform_subnet(inputfile, outdir, service_dir, prefix, non_gf_tenan
                 rt_name = columnvalue
                 if (str(rt_name).lower() == 'nan' or str(rt_name).lower() == ''):
                     # route table name not provided; use subnet name as route table name
-                    rt_name = str(df.loc[i,'Subnet Name']).strip()
+                    rt_name = str(df.loc[i,'Display Name']).strip()
                     tempdict = {'rt_name': rt_name}
                 else:
                     rt_name = columnvalue.strip()
@@ -273,13 +307,32 @@ def create_terraform_subnet(inputfile, outdir, service_dir, prefix, non_gf_tenan
             if columnname == 'Seclist Names':
                 if str(columnvalue).lower() == 'nan' or str(columnvalue).lower() == '':
                     # seclist name not provided; use subnet name as seclist name
-                    sl_names.append(df.loc[i,'Subnet Name'].strip())
+                    sl_names.append(df.loc[i,'Display Name'].strip())
                     tempdict = {'sl_names': sl_names}
                 else:
                     sl_names = columnvalue.split(",")
                     tempdict = {'sl_names': sl_names}
 
                 tempStr.update(tempdict)
+
+            if columnname == 'NSGs':
+                if columnvalue != '' and columnvalue.strip().lower() != 'nan':
+                    nsg = ""
+                    nsg_str = ""
+
+                    NSGs = columnvalue.split(",")
+                    k = 0
+                    while k < len(NSGs):
+                        nsg = "\"" + NSGs[k].strip() + "\""
+                        nsg_str = nsg_str + str(nsg)
+                        if (k != len(NSGs) - 1):
+                            nsg_str = nsg_str + ","
+                        k += 1
+                    tempdict = {'nsg_ids': nsg_str}
+                    tempStr.update(tempdict)
+                else:
+                    tempdict = {'nsg_ids': ''}
+                    tempStr.update(tempdict)
 
             if columnname == 'Type(private|public)':
                 columnname = 'type'
@@ -289,59 +342,126 @@ def create_terraform_subnet(inputfile, outdir, service_dir, prefix, non_gf_tenan
             tempStr[columnname] = str(columnvalue).strip()
             tempStr.update(tempdict)
 
-        processSubnet(tempStr)
+        subnet_vlan_in_excel = str(df.loc[i,'Subnet or VLAN']).strip()
+
+        if network_vlan_in_setupoci=="network" and subnet_vlan_in_excel.lower().startswith('subnet'):
+            processSubnet(tempStr)
+        elif network_vlan_in_setupoci=="vlan" and subnet_vlan_in_excel.lower().startswith('vlan'):
+            vlan_details = subnet_vlan_in_excel.split("::")
+            if len(vlan_details)==2:
+                vlan_tag = vlan_details[1]
+            else:
+                vlan_tag = ""
+            tempdict = {'vlan_tag': vlan_tag}
+            tempStr.update(tempdict)
+            processVlan(tempStr)
 
     if fname != None:
         fname.close()
 
+    if len(service_dir) != 0:
+        service_dir_network = service_dir['network']
+        service_dir_vlan=service_dir['vlan']
+    else:
+        service_dir_network = ""
+        service_dir_vlan = ""
     if modify_network:
-        for reg in ct.all_regions:
-            reg_out_dir = outdir + "/" + reg + "/" + service_dir
-            if not os.path.exists(reg_out_dir):
-                    os.makedirs(reg_out_dir)
+            #resource = 'subnets'
+            if(network_vlan_in_setupoci=='network'):
+                for reg in ct.all_regions:
+                    reg_out_dir = outdir + "/" + reg + "/" + service_dir_network
+                    if not os.path.exists(reg_out_dir):
+                        os.makedirs(reg_out_dir)
 
-            srcdir = reg_out_dir + "/"
-            resource = 'subnets'
-            commonTools.backup_file(srcdir, resource, prefix + auto_tfvars_filename)
+                    srcdir = reg_out_dir + "/"
 
-            outfile[reg] = reg_out_dir + "/" + prefix + auto_tfvars_filename
+                    commonTools.backup_file(srcdir, 'subnets', prefix + auto_tfvars_filename)
+                    outfile[reg] = reg_out_dir + "/" + prefix + auto_tfvars_filename
+                    srcStr = "##Add New Subnets for " + reg + " here##"
+                    # Create Skeleton Template
+                    if tfStr[reg] != '':
+                        skeletonStr[reg] = template.render(tempStr, skeleton=True, count=0, region=reg)
+                        tfStr[reg] = skeletonStr[reg].replace(srcStr, tfStr[reg] + "\n" + srcStr)
+                        tfStr[reg] = "".join([s for s in tfStr[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
+                        oname[reg] = open(outfile[reg], "w")
+                        oname[reg].write(tfStr[reg])
+                        oname[reg].close()
+                        print(outfile[reg] + " for Subnets has been updated for region " + reg)
 
-            # Create Skeleton Template
-            if tfStr[reg] != '':
-                skeletonStr[reg] = template.render(tempStr, skeleton=True, count=0, region=reg)
-                srcStr = "##Add New Subnets for " + reg + " here##"
-                tfStr[reg] = skeletonStr[reg].replace(srcStr, tfStr[reg] + "\n" + srcStr)
+            #  resource = 'vlans'
+            if (network_vlan_in_setupoci == 'vlan'):
+                for reg in ct.all_regions:
+                    reg_out_dir = outdir + "/" + reg + "/" + service_dir_vlan
+                    if not os.path.exists(reg_out_dir):
+                        os.makedirs(reg_out_dir)
 
-                tfStr[reg] = "".join([s for s in tfStr[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
-                oname[reg] = open(outfile[reg], "w")
-                oname[reg].write(tfStr[reg])
-                oname[reg].close()
-                print(outfile[reg] + " for Subnets has been updated for region " + reg)
+                    srcdir = reg_out_dir + "/"
+
+                    commonTools.backup_file(srcdir, 'vlans', prefix + vlan_auto_tfvars_filename)
+                    vlan_outfile[reg] = reg_out_dir + "/" + prefix + vlan_auto_tfvars_filename
+                    srcStr = "##Add New VLANs for " + reg + " here##"
+                    # Create Skeleton Template
+                    if tfStr_vlan[reg] != '':
+
+                        skeletonStr[reg] = vlan_template.render(tempStr, skeleton=True, count=0, region=reg)
+                        tfStr_vlan[reg] = skeletonStr[reg].replace(srcStr, tfStr_vlan[reg] + "\n" + srcStr)
+
+                        tfStr_vlan[reg] = "".join([s for s in tfStr_vlan[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
+                        oname[reg] = open(vlan_outfile[reg], "w")
+                        oname[reg].write(tfStr_vlan[reg])
+                        oname[reg].close()
+                        print(vlan_outfile[reg] + " for VLANs has been created for region " + reg)
+
 
     elif not modify_network:
-        for reg in ct.all_regions:
-            reg_out_dir = outdir + "/" + reg + "/" + service_dir
-            if not os.path.exists(reg_out_dir):
+        # resource = 'subnets'
+        if (network_vlan_in_setupoci == 'network'):
+            for reg in ct.all_regions:
+                reg_out_dir = outdir + "/" + reg + "/" + service_dir_network
+                if not os.path.exists(reg_out_dir):
+                        os.makedirs(reg_out_dir)
+
+                srcdir = reg_out_dir + "/"
+                commonTools.backup_file(srcdir, 'subnets', prefix + auto_tfvars_filename)
+
+                outfile[reg] = reg_out_dir + "/" +  "/"+prefix + auto_tfvars_filename
+
+                # Create Skeleton Template
+                if tfStr[reg] != '':
+                    skeletonStr[reg] = template.render(tempStr, skeleton=True, count=0, region=reg)
+                    srcStr = "##Add New Subnets for " + reg + " here##"
+                    tfStr[reg] = skeletonStr[reg].replace(srcStr, tfStr[reg] + "\n" + srcStr)
+
+                    tfStr[reg] = "".join([s for s in tfStr[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
+                    oname[reg] = open(outfile[reg], 'w')
+                    oname[reg].write(tfStr[reg])
+                    oname[reg].close()
+                    print(outfile[reg] + " for Subnets has been created for region " + reg)
+        #  resource = 'vlans'
+        if (network_vlan_in_setupoci == 'vlan'):
+            for reg in ct.all_regions:
+                reg_out_dir = outdir + "/" + reg + "/" + service_dir_vlan
+                if not os.path.exists(reg_out_dir):
                     os.makedirs(reg_out_dir)
 
-            srcdir = reg_out_dir + "/"
-            resource = 'subnets'
-            commonTools.backup_file(srcdir, resource, prefix + auto_tfvars_filename)
-            outfile[reg] = reg_out_dir + "/" +  "/"+prefix + auto_tfvars_filename
+                srcdir = reg_out_dir + "/"
 
-            # Create Skeleton Template
-            if tfStr[reg] != '':
-                skeletonStr[reg] = template.render(tempStr, skeleton=True, count=0, region=reg)
-                srcStr = "##Add New Subnets for " + reg + " here##"
-                tfStr[reg] = skeletonStr[reg].replace(srcStr, tfStr[reg] + "\n" + srcStr)
+                commonTools.backup_file(srcdir, 'vlans', prefix + vlan_auto_tfvars_filename)
+                vlan_outfile[reg] = reg_out_dir + "/" + prefix + vlan_auto_tfvars_filename            # Create Skeleton Template
+                if tfStr_vlan[reg] != '':
+                    skeletonStr[reg] = vlan_template.render(tempStr, skeleton=True, count=0, region=reg)
+                    srcStr = "##Add New VLANs for " + reg + " here##"
+                    tfStr_vlan[reg] = skeletonStr[reg].replace(srcStr, tfStr_vlan[reg] + "\n" + srcStr)
 
-                tfStr[reg] = "".join([s for s in tfStr[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
-                oname[reg] = open(outfile[reg], 'w')
-                oname[reg].write(tfStr[reg])
-                oname[reg].close()
-                print(outfile[reg] + " for Subnets has been created for region " + reg)
+                    tfStr_vlan[reg] = "".join(
+                        [s for s in tfStr_vlan[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
+                    oname[reg] = open(vlan_outfile[reg], "w")
+                    oname[reg].write(tfStr_vlan[reg])
+                    oname[reg].close()
+                    print(vlan_outfile[reg] + " for VLANs has been created for region " + reg)
+
 
 if __name__ == '__main__':
     args = parse_args()
     # Execution of the code begins here
-    create_terraform_subnet(args.inputfile, args.outdir, args.service_dir,args.prefix, args.non_gf_tenancy, args.config, modify_network=args.modify_network)
+    create_terraform_subnet_vlan(args.inputfile, args.outdir, args.service_dir,args.prefix, args.non_gf_tenancy, args.config, modify_network=args.modify_network)

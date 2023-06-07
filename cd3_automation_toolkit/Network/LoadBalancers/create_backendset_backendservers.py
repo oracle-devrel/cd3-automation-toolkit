@@ -41,7 +41,7 @@ def create_backendset_backendservers(inputfile, outdir, service_dir, prefix, con
     beserver = env.get_template('backends-template')
     filename = inputfile
     configFileName = config
-    sheetName = "BackendSet-BackendServer"
+    sheetName = "LB-BackendSet-BackendServer"
     lb_auto_tfvars_filename = prefix + "_"+sheetName.lower()+".auto.tfvars"
 
     ct = commonTools()
@@ -253,7 +253,7 @@ def create_backendset_backendservers(inputfile, outdir, service_dir, prefix, con
 
         if finalstring != "":
 
-            resource = sheetName
+            resource = sheetName.lower()
             srcdir = outdir + "/" + reg + "/" + service_dir + "/"
             commonTools.backup_file(srcdir, resource, lb_auto_tfvars_filename)
 

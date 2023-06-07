@@ -1,37 +1,41 @@
+{% if count == 0 %}
 // Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 
 ############################
-# Object Storage Service
-# Policies - tfvars
+# Global Services
+# Remote Peering Connection - tfvars
 # Allowed Values:
 # compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens "--"
-# Example : compartment_id = "ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c" or compartment_id = "Network-root-cpt--Network" where "Network-root-cpt" is the parent of "Network" compartment
+# Example : compartment_id = "ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c" or compartment_id = "Security--Prod" where "Security" is the parent of "Prod" compartment
+# Sample import command for remote peering connection:
+# terraform import "module.rpc[\"<<rpc terraform variable name>>\"].oci_core_remote_peering_connection.<<requester_region>>_<<accepter_region>>_requester_rpc" <<requester rpc ocid>>
+# terraform import "module.rpc[\"<<rpc terraform variable name>>\"].oci_core_remote_peering_connection.<<accepter_region>>_<<requester_region>>_accepter_rpc" <<accepter rpc ocid>>
 ############################
 
-oss_policies = {
+drg_other_attachments= {
+  # Remote Peering Connection map #
+  ##Add New RPC for global here##
+}
 
-   {{ policy_tf_name }} = {
-        name        = "{{ name }}"
+{% else %}
+  {{ rpc_tf_name }} = {
+        requester_compartment_id = "{{ requester_compartment_name }}"
+        accepter_compartment_id  = "{{ accepter_compartment_name }}"
+        display_name             = "{{ rpc_name }}"
+        requester_region         = { "region" : "{{ requester_region }}" }
+        accepter_region          = { "region" : "{{ accepter_region }}" }
+        requester_drg_name       = "{{ requester_drg_name }}"
+        accepter_drg_name        = "{{ accepter_drg_name }}"
+        requester_drg_rt_name    = "{{ requester_drg_rt_name }}"
+        accepter_drg_rt_name     = "{{ accepter_drg_rt_name }}"
+        accepter_rpc_display_name= "{{ accepter_rpc_display_name }}"
 
-        {% if compartment_tf_name == None %}
-        compartment_id = "root"
+        {% if description  != "" %}
+        description         = "{{ rpc_description }}"
         {% else %}
-        compartment_id = "{{ compartment_tf_name }}"
+        description         = null
         {% endif %}
 
-        {% if policy_version_date and policy_version_date != "" and policy_version_date != null %}
-        policy_version_date = "{{ policy_version_date }}"
-        {% else %}
-        policy_version_date = null
-        {% endif %}
-
-        {% if '\n' not in description %}
-        policy_description = "{{ description }}"
-        {% else %}
-        policy_description = <<-EOF
-{{ description }}
-EOF
-    {% endif %}
 
     {#  ##Do not modify below this line##  #}
     {#                                     #}
@@ -71,4 +75,6 @@ EOF
         freeform_tags = {}
             {% endif %}
     {#  ###Section for adding Defined and Freeform Tags ends here###  #}
-        policy_statements = [ {{ policy_statements }} -#Addstmt]
+      },
+
+{% endif %}

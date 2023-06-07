@@ -41,7 +41,7 @@ def create_path_route_set(inputfile, outdir, service_dir, prefix, config=DEFAULT
     pathrouterules = env.get_template('path-route-rules-template')
     filename = inputfile
     configFileName = config
-    sheetName = "PathRouteSet"
+    sheetName = "LB-PathRouteSet"
     lb_auto_tfvars_filename = prefix + "_"+sheetName.lower()+".auto.tfvars"
 
 
@@ -69,16 +69,16 @@ def create_path_route_set(inputfile, outdir, service_dir, prefix, config=DEFAULT
     df = pd.concat([dffill, dfdrop], axis=1)
     prs_str = {}
     rule_str = {}
+    path_route_set_list = {}
 
     # Take backup of files
     for reg in ct.all_regions:
         prs_str[reg] = ''
         rule_str[reg] = ''
+        path_route_set_list[reg] = []
 
     # List of the column headers
     dfcolumns = df.columns.values.tolist()
-    path_route_set_list = []
-
     for i in df.index:
         region = str(df.loc[i, 'Region'])
 
@@ -140,24 +140,24 @@ def create_path_route_set(inputfile, outdir, service_dir, prefix, config=DEFAULT
         lbr_path_route_set_name = lbr_tf_name+"_"+path_route_set_tf_name
 
         if lbr_path_route_set_name != '':
-            if lbr_path_route_set_name not in path_route_set_list:
-                path_route_set_list.append(lbr_path_route_set_name)
+            if lbr_path_route_set_name not in path_route_set_list[region]:
+                rule_str[region] = ''
+                path_route_set_list[region].append(lbr_path_route_set_name)
 
                 # Render Path Route Set Template
                 prs_str[region] = prs_str[region] + prs.render(tempStr)
 
             srcStr = "#Add_Rules_for_" + lbr_path_route_set_name + "_here"
             replacestr = "#Path_routes_for_" + lbr_path_route_set_name + "_here"
-            if lbr_path_route_set_name in path_route_set_list:
-
+            if lbr_path_route_set_name in path_route_set_list[region]:
                 if srcStr in rule_str[region]:
-
                     # Create the remaining rules
                     rule_str[region] = rule_str[region].replace(srcStr, pathrouterules.render(tempStr))
 
                     if replacestr in prs_str[region]:
                         # Add the first rule to the final string
                         prs_str[region] = prs_str[region].replace(replacestr, rule_str[region])
+
                     else:
                         # Add the last rule to the final string
                         prs_str[region] = prs_str[region].replace(srcStr, pathrouterules.render(tempStr))
@@ -165,21 +165,18 @@ def create_path_route_set(inputfile, outdir, service_dir, prefix, config=DEFAULT
                 else:
                     # Create the first rule
                     rule_str[region] = pathrouterules.render(tempStr)
-
-            tempdict2 = {'path_routes': rule_str[region]}
-            tempStr.update(tempdict2)
+                    prs_str[region] = prs_str[region].replace(replacestr, rule_str[region])
 
 
     # Take backup of files
     for reg in ct.all_regions:
-
         if prs_str[reg] != '':
             # Generate Final String
             src = "##Add New Path Route Sets for "+reg.lower()+" here##"
             prs_str[reg] = prs.render(skeleton=True, count=0, region=reg).replace(src,prs_str[reg]+"\n"+src)
             finalstring = "".join([s for s in prs_str[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
 
-            resource=sheetName
+            resource=sheetName.lower()
             srcdir = outdir + "/" + reg + "/" + service_dir + "/"
             commonTools.backup_file(srcdir, resource, lb_auto_tfvars_filename)
 

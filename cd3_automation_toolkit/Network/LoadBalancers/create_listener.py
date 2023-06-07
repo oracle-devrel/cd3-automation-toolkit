@@ -236,7 +236,7 @@ def create_listener(inputfile, outdir, service_dir, prefix, config=DEFAULT_LOCAT
             listener_str[reg] = listener.render(skeleton=True, count=0, region=reg).replace(src,listener_str[reg]+"\n"+src)
             finalstring = "".join([s for s in listener_str[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
 
-            resource=sheetName
+            resource=sheetName.lower()
             srcdir = outdir + "/" + reg + "/" + service_dir + "/"
             commonTools.backup_file(srcdir, resource, lb_auto_tfvars_filename)
 

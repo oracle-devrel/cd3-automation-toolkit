@@ -6,7 +6,8 @@
 #############################
 data "oci_core_subnets" "oci_subnets_adb" {
   # depends_on = [module.subnets] # Uncomment to create Network and FSS together
-  for_each       = var.adb != null ? var.adb : {}
+  #for_each       = var.adb != null ? var.adb : {}
+  for_each       = { for k,v in var.adb : k =>v if v.vcn_name !=null }
   compartment_id = each.value.network_compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.network_compartment_id)) > 0 ? each.value.network_compartment_id : var.compartment_ocids[each.value.network_compartment_id]) : var.compartment_ocids[each.value.network_compartment_id]
   display_name   = each.value.subnet_id
   vcn_id         = data.oci_core_vcns.oci_vcns_adb[each.key].virtual_networks.*.id[0]
@@ -14,7 +15,8 @@ data "oci_core_subnets" "oci_subnets_adb" {
 
 data "oci_core_vcns" "oci_vcns_adb" {
   # depends_on = [module.vcns] # Uncomment to create Network and FSS together
-  for_each       = var.adb != null ? var.adb : {}
+  #for_each       = var.adb != null ? var.adb : {}
+  for_each       = { for k,v in var.adb : k =>v if v.vcn_name !=null }
   compartment_id = each.value.network_compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.network_compartment_id)) > 0 ? each.value.network_compartment_id : var.compartment_ocids[each.value.network_compartment_id]) : var.compartment_ocids[each.value.network_compartment_id]
   display_name   = each.value.vcn_name
 }
@@ -39,8 +41,8 @@ module "adb" {
   network_compartment_id= each.value.network_compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.network_compartment_id)) > 0 ? each.value.network_compartment_id : var.compartment_ocids[each.value.network_compartment_id]) : null
   network_security_group_ids = each.value.nsg_ids
   freeform_tags         = each.value.freeform_tags
-  subnet_id             = length(regexall("ocid1.subnet.oc1*", each.value.subnet_id)) > 0 ? each.value.subnet_id : data.oci_core_subnets.oci_subnets_adb[each.key].subnets.*.id[0]
-  vcn_name              = each.value.vcn_name
+  subnet_id             = each.value.subnet_id != null ? (length(regexall("ocid1.subnet.oc1*", each.value.subnet_id)) > 0 ? each.value.subnet_id : data.oci_core_subnets.oci_subnets_adb[each.key].subnets.*.id[0]): null
+  vcn_name              = each.value.vcn_name != null ? each.value.vcn_name : null
   whitelisted_ips       = each.value.whitelisted_ips
 
   #Optional parameters for ADB

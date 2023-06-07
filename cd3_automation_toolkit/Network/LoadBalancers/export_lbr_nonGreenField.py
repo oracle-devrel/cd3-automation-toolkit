@@ -838,21 +838,21 @@ def export_lbr(inputfile, _outdir, service_dir, export_compartments, export_regi
 
     # Read CD3
     df, values_for_column_lhc= commonTools.read_cd3(cd3file,"LB-Hostname-Certs")
-    df, values_for_column_bss = commonTools.read_cd3(cd3file, "BackendSet-BackendServer")
+    df, values_for_column_bss = commonTools.read_cd3(cd3file, "LB-BackendSet-BackendServer")
     df, values_for_column_lis = commonTools.read_cd3(cd3file, "LB-Listener")
-    df, values_for_column_rule = commonTools.read_cd3(cd3file, "RuleSet")
-    df, values_for_column_prs = commonTools.read_cd3(cd3file, "PathRouteSet")
+    df, values_for_column_rule = commonTools.read_cd3(cd3file, "LB-RuleSet")
+    df, values_for_column_prs = commonTools.read_cd3(cd3file, "LB-PathRouteSet")
 
     # Get dict for columns from Excel_Columns
     sheet_dict_common=ct.sheet_dict["Common-LBR-Headers"]
     sheet_dict_lhc = ct.sheet_dict["LB-Hostname-Certs"]
-    sheet_dict_bss = ct.sheet_dict["BackendSet-BackendServer"]
+    sheet_dict_bss = ct.sheet_dict["LB-BackendSet-BackendServer"]
     sheet_dict_lis = ct.sheet_dict["LB-Listener"]
-    sheet_dict_rule = ct.sheet_dict["RuleSet"]
-    sheet_dict_prs = ct.sheet_dict["PathRouteSet"]
+    sheet_dict_rule = ct.sheet_dict["LB-RuleSet"]
+    sheet_dict_prs = ct.sheet_dict["LB-PathRouteSet"]
 
     print("\nCD3 excel file should not be opened during export process!!!")
-    print("Tabs- LB-Hostname-Certs, BackendSet-BackendServer, LB-Listener, RuleSet, PathRouteSet will be overwritten during export process!!!\n")
+    print("Tabs- LB-Hostname-Certs, LB-BackendSet-BackendServer, LB-Listener, LB-RuleSet, LB-PathRouteSet will be overwritten during export process!!!\n")
 
     # Create backups
     for reg in export_regions:
@@ -937,10 +937,10 @@ def export_lbr(inputfile, _outdir, service_dir, export_compartments, export_regi
                         importCommands[reg].write("\nterraform import \"module.cipher-suites[\\\""+str(tf_name)+"_" + ciphers_tf_name +"\\\"].oci_load_balancer_ssl_cipher_suite.ssl_cipher_suite\" loadBalancers/" + lbr_info.id + "/sslCipherSuites/" + ciphers)
 
     commonTools.write_to_cd3(values_for_column_lhc, cd3file, "LB-Hostname-Certs")
-    commonTools.write_to_cd3(values_for_column_bss, cd3file, "BackendSet-BackendServer")
+    commonTools.write_to_cd3(values_for_column_bss, cd3file, "LB-BackendSet-BackendServer")
     commonTools.write_to_cd3(values_for_column_lis, cd3file, "LB-Listener")
-    commonTools.write_to_cd3(values_for_column_rule,cd3file, "RuleSet")
-    commonTools.write_to_cd3(values_for_column_prs, cd3file, "PathRouteSet")
+    commonTools.write_to_cd3(values_for_column_rule,cd3file, "LB-RuleSet")
+    commonTools.write_to_cd3(values_for_column_prs, cd3file, "LB-PathRouteSet")
 
     print("LBRs exported to CD3\n")
 

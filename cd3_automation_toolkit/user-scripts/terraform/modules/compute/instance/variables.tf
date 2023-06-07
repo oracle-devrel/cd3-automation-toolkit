@@ -158,7 +158,7 @@ variable "skip_source_dest_check" {
 variable "baseline_ocpu_utilization" {
   type        = string
   description = "The baseline OCPU utilization for a subcore burstable VM instance"
-  default     = null
+  default     = ""
 }
 
 variable "memory_in_gbs" {
@@ -308,4 +308,26 @@ variable "vnic_display_name" {
 variable "vnic_freeform_tags" {
   type    = map(string)
   default = {}
+}
+
+variable "ssh_private_key_file_path" {
+  type = string
+  default = null
+}
+
+variable "remote_execute" {
+  type = string
+  description = "To execute a script remotely post provisioning instance(shell/ansible)"
+  default = null
+}
+
+variable "bastion_ip" {
+  type = string
+  description = "Bastion IP to connect the host privately"
+  default = null
+}
+
+variable "cloud_init_script" {
+  type    = string
+  default = null
 }

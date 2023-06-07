@@ -97,7 +97,7 @@ def merge_or_generate_route_rule(reg, tempStr, modifiedroutetableStr,routetableS
                 data = routerule.render(tempStr, lpg_route_rules=True, region='lpg_route_rules')
     return data
 
-def create_terraform_drg_route(inputfile, outdir, service_dir, prefix, non_gf_tenancy, config, modify_network=False):
+def create_terraform_drg_route(inputfile, outdir, service_dir, prefix, non_gf_tenancy, config,network_connectivity_in_setupoci, modify_network):
     filename = inputfile
     configFileName = config
     drgv2 = parseDRGs(filename)
@@ -202,11 +202,30 @@ def create_terraform_drg_route(inputfile, outdir, service_dir, prefix, non_gf_te
             drg_rt_dstrb_res_name = ''
             region = str(df.loc[i, 'Region']).strip()
 
+            if str(df.loc[i, 'Attached To']).lower().startswith("rpc"):
+                vcn_connectivity_in_excel = "connectivity"
+            elif str(df.loc[i, 'Attached To']).lower().startswith("vcn"):
+                vcn_connectivity_in_excel = "vcn"
+
             if (region in commonTools.endNames):
                 break
 
             DRG_RT = str(df.loc[i, 'DRG RT Name']).strip()
             DRG_RD = str(df.loc[i, 'Import DRG Route Distribution Name']).strip()
+
+            #Greenfield workflow
+            if not non_gf_tenancy:
+                # skip RPC rows while create network
+                if not modify_network and vcn_connectivity_in_excel.lower().startswith('connectivity'):
+                    continue
+
+                # skip RPC rows while running option modify network
+                #if modify_network and network_connectivity_in_setupoci == 'network' and vcn_connectivity_in_excel.lower().startswith('connectivity'):
+                #    continue
+
+                # skip VCN rows while running option Create Connectivity
+        #        if modify_network and network_connectivity_in_setupoci == 'connectivity' and vcn_connectivity_in_excel.startswith('vcn'):
+        #            continue
 
             # Dont create any route table or route distribution name if left empty - attach Auto Generated ones
             if (DRG_RT.lower() == 'nan' and DRG_RD.lower() == 'nan'):  # and DRG_RD_stmts.lower()=='nan'):
@@ -379,7 +398,7 @@ def purge(dir, pattern):
 
 
 # If input in cd3 file
-def create_terraform_route(inputfile, outdir, service_dir, prefix, non_gf_tenancy, config, modify_network):
+def create_terraform_route(inputfile, outdir, service_dir, prefix, non_gf_tenancy, config, network_vlan_in_setupoci,modify_network):
     filename = inputfile
     configFileName = config
 
@@ -459,7 +478,6 @@ def create_terraform_route(inputfile, outdir, service_dir, prefix, non_gf_tenanc
                 modifiedroutetableStr[reg] = tempSkeleton[reg].replace(srcStr,modifiedroutetableStr[reg]) #+"\n"+srcStr) ----> ToTest, if fails add +"\n"+srcStr
             else:
                 modifiedroutetableStr[reg] = ''
-
      # Get Hub VCN name and create route rules for LPGs as per Section VCN_PEERING
     def createLPGRouteRules(peering_dict):
         ruleStr = ''
@@ -977,7 +995,7 @@ def create_terraform_route(inputfile, outdir, service_dir, prefix, non_gf_tenanc
         print("\nonprem_destinations field is empty in VCN Info Sheet.. It will create empty route tables!!\n")
 
     # Read cd3 using pandas dataframe
-    df, col_headers = commonTools.read_cd3(filename, "Subnets")
+    df, col_headers = commonTools.read_cd3(filename, "SubnetsVLANs")
     region_included = []
 
     df = df.dropna(how='all')
@@ -1002,6 +1020,18 @@ def create_terraform_route(inputfile, outdir, service_dir, prefix, non_gf_tenanc
     for i in df.index:
         # Get subnet data
         region = str(df.loc[i, 'Region'])
+        subnet_vlan_in_excel = str(df.loc[i, 'Subnet or VLAN']).strip()
+
+        #skip VLAN rows while create network
+        if not modify_network and subnet_vlan_in_excel.lower().startswith('vlan'):
+            continue
+        #skip VLAN rows while running option modify network
+        if modify_network and network_vlan_in_setupoci == 'network' and subnet_vlan_in_excel.lower().startswith('vlan'):
+            continue
+
+        # skip Subnet rows while running option Add/Modify/Delete VLANs
+        if modify_network and network_vlan_in_setupoci == 'vlan' and subnet_vlan_in_excel.startswith('subnet'):
+            continue
 
         if (region in commonTools.endNames):
             break
@@ -1011,25 +1041,30 @@ def create_terraform_route(inputfile, outdir, service_dir, prefix, non_gf_tenanc
             print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
             exit(1)
 
+
         vcn_name = str(df['VCN Name'][i]).strip()
         check = vcn_name.strip(), region
 
         if (check not in vcns.vcn_names):
-            print("\nERROR!!! " + vcn_name + " specified in Subnets tab has not been declared in VCNs tab..Exiting!")
+            print("\nERROR!!! " + vcn_name + " specified in SubnetsVLANs tab has not been declared in VCNs tab..Exiting!")
             exit(1)
 
-        if (str(df.loc[i, 'Region']).lower() == 'nan' or str(df.loc[i, 'Compartment Name']).lower() == 'nan' or str(
-                df.loc[i, 'VCN Name']).lower() == 'nan' or
-                str(df.loc[i, 'Subnet Name']).lower() == 'nan' or str(df.loc[i, 'CIDR Block']).lower() == 'nan' or str(
-                    df.loc[i, 'Availability Domain(AD1|AD2|AD3|Regional)']).lower() == 'nan' or
-                str(df.loc[i, 'Type(private|public)']).lower() == 'nan' or str(
-                    df.loc[i, 'Configure SGW Route(n|object_storage|all_services)']).lower() == 'nan' or str(
-                    df.loc[i, 'Configure NGW Route(y|n)']).lower() == 'nan' or
-                str(df.loc[i, 'Configure IGW Route(y|n)']).lower() == 'nan' or str(
-                    df.loc[i, 'Configure OnPrem Route(y|n)']).lower() == 'nan' or str(
-                    df.loc[i, 'Configure VCNPeering Route(y|n)']).lower() == 'nan'):
+        if (str(df.loc[i, 'Region']).lower() == 'nan' or str(df.loc[i, 'Compartment Name']).lower() == 'nan' or
+                str(df.loc[i, 'VCN Name']).lower() == 'nan' or
+                str(df.loc[i, 'Display Name']).lower() == 'nan' or str(df.loc[i, 'CIDR Block']).lower() == 'nan' or
+                str(df.loc[i, 'Availability Domain(AD1|AD2|AD3|Regional)']).lower() == 'nan' or
+                str(df.loc[i, 'Configure SGW Route(n|object_storage|all_services)']).lower() == 'nan' or
+                str(df.loc[i, 'Configure NGW Route(y|n)']).lower() == 'nan' or
+                str(df.loc[i, 'Configure IGW Route(y|n)']).lower() == 'nan' or
+                str(df.loc[i, 'Configure OnPrem Route(y|n)']).lower() == 'nan' or
+                str(df.loc[i, 'Configure VCNPeering Route(y|n)']).lower() == 'nan'):
             print("\nERROR!!! Column Values (except DHCP Option Name, Route Table Name, Seclist Name or DNS Label) or Rows cannot be left empty in Subnets sheet in CD3..Exiting!")
             exit(1)
+        if (str(df.loc[i,'Subnet or VLAN']).strip().lower()=='subnet'):
+            if str(df.loc[i, 'Type(private|public)']).lower() == 'nan' or str(df.loc[i, 'Add Default Seclist']).lower() == 'nan':
+                print("\nERROR!!! Column Values - Type(private|public) and Add Default Seclist cannot be left empty for Subnet row..Exiting!")
+                exit(1)
+
 
         if modify_network:
             if (df.loc[i, 'Configure SGW Route(n|object_storage|all_services)']).lower() == '-' or str( df.loc[i, 'Configure NGW Route(y|n)']).lower() == '-' or \
@@ -1097,7 +1132,7 @@ def create_terraform_route(inputfile, outdir, service_dir, prefix, non_gf_tenanc
                     rt_name = columnvalue.strip()
                     tempdict = {'route_table_name': rt_name}
                 else:
-                    rt_name = str(df.loc[i, 'Subnet Name']).strip()
+                    rt_name = str(df.loc[i, 'Display Name']).strip()
                     tempdict = {'route_table_name': rt_name}
 
             columnname = commonTools.check_column_headers(columnname)
@@ -1134,7 +1169,6 @@ def create_terraform_route(inputfile, outdir, service_dir, prefix, non_gf_tenanc
             routetableStr[r] = routetableStr[r].replace(srcStr, lpgruleStr)
 
     # Create Route Table associated with DRG(in VCN) for each VCN attached to DRG
-
     for key in vcns.vcns_having_drg.keys():
         vcn = key[0]
         if (vcn in vcns.hub_vcn_names):

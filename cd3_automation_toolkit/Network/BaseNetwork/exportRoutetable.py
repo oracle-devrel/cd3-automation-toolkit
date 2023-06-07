@@ -115,7 +115,6 @@ def insert_values_drg(routetable,import_drg_route_distribution_name,values_for_c
 def print_drg_routerules(drg_rt_info,drg_display_name,drg_route_table_name,import_drg_route_distribution_name,drg_rules,region,comp_name):
     drg_rt_name = drg_display_name + "_" + drg_route_table_name
     drg_rt_tf_name = commonTools.check_tf_variable(drg_rt_name)
-
     if (not drg_rules.data):
         insert_values_drg(drg_rt_info, import_drg_route_distribution_name,values_for_column_drg, region, comp_name, drg_display_name, None)
         if not tf_import_cmd_drg:
@@ -251,7 +250,7 @@ def export_drg_routetable(inputfile, export_compartments, export_regions, servic
 
 
                         #drg_rt_rules = vcn.list_drg_route_rules(drg_route_table_id)
-                        drg_rt_rules = oci.pagination.list_call_get_all_results(vcn.list_drg_route_rules, drg_route_table_id)
+                        drg_rt_rules = oci.pagination.list_call_get_all_results(vcn.list_drg_route_rules, drg_route_table_id,route_type="STATIC")
                         #drg_rt_rules = None
                         print_drg_routerules(drg_route_table_info, drg_display_name,drg_route_table_name, import_drg_route_distribution_name,
                                              drg_rt_rules, region, ntk_compartment_name)

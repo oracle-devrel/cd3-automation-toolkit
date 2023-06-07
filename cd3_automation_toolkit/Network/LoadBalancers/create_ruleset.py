@@ -46,7 +46,7 @@ def create_ruleset(inputfile, outdir, service_dir, prefix, config=DEFAULT_LOCATI
 
     filename = inputfile
     configFileName = config
-    sheetName = "RuleSet"
+    sheetName = "LB-RuleSet"
     lb_auto_tfvars_filename = prefix + "_"+sheetName.lower()+".auto.tfvars"
     rs_str = {}
 
@@ -324,7 +324,7 @@ def create_ruleset(inputfile, outdir, service_dir, prefix, config=DEFAULT_LOCATI
             rs_str[reg] = rs.render(skeleton=True, count=0, region=reg).replace(src,rs_str[reg]+"\n"+src)
             finalstring = "".join([s for s in rs_str[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
 
-            resource=sheetName
+            resource=sheetName.lower()
             srcdir = outdir + "/" + reg + "/" + service_dir + "/"
             commonTools.backup_file(srcdir, resource, lb_auto_tfvars_filename)
 

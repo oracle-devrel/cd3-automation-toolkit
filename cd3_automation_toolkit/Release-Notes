@@ -1,4 +1,18 @@
 ----------------------------------
+CD3 Automation Toolkit Tag v11
+----------------------------------
+1. New Services - Buckets, OCVS, VLANs, RPC, Private DNS, Users
+2. Added support for Remote Execution of shell and ansible scripts after terraform
+   provisioning of the instances.
+3. Added support for executing cloud-init script for instances.
+4. Updated cloud guard to create cloned recipes and use them for the 'root' target.
+5. Python tuning wrt fetch compartments script. The toolkit will rely on variables_<region>.tf file
+   in the home region for compartment OCIDs instead of fetching it from OCI everytime.
+6. Bug fix for path route sets looping issue with LBaaS.
+7. Bug fix for ADB export of ADBs with Secured Access from anywhere.
+8. Bug fix for RM stack upload
+
+----------------------------------
 CD3 Automation Toolkit Tag v10.2
 ----------------------------------
 1. Bug fixes - tfvars template change for Security Rules to include source port range, RM stack zip file,

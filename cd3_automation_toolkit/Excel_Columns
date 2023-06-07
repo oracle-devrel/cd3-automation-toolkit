@@ -43,9 +43,8 @@
         "Custom DNS Server" : "custom_dns_servers"
 
     },
-    "Subnets" :
+    "SubnetsVLANs" :
     {
-        "Subnet Name" : "display_name",
         "CIDR Block" : "cidr_block",
         "Availability Domain(AD1|AD2|AD3|Regional)" : "availability_domain",
         "Type(private|public)" : "prohibit_public_ip_on_vnic"
@@ -103,7 +102,7 @@
         "Shape(10Mbps|100Mbps|400Mbps|8000Mbps|flexible)" : "shape_name",
         "Is Private(True|False)" : "is_private"
     },
-    "BackendSet-BackendServer" :
+    "LB-BackendSet-BackendServer" :
     {
         "Backend ServerComp&ServerName:Port" : "backend_server_name:port",
         "Backend Set Name" : "backend_set_name",
@@ -131,7 +130,7 @@
         "Listener Port" : "port",
         "Idle Time Out (in Seconds)" : "idle_timeout"
     },
-    "RuleSet" :
+    "LB-RuleSet" :
     {
         "Description of Access Control Rule" : "description",
         "Allow Invalid Characters (TRUE|FALSE)" : "are_invalid_characters_allowed",
@@ -140,7 +139,7 @@
         "Redirect URI Protocol:Path" : "protocol",
         "Redirect URI Query" : "query"
     },
-    "PathRouteSet":
+    "LB-PathRouteSet":
     {
         "Path Route Set Name" : "name"
     },
@@ -242,10 +241,26 @@
         "Backend HealthCheck URL" : "url_path",
         "Backend HealthCheck Return Code" : "return_code",
         "Backend HealthCheck Interval In Millis" : "interval_in_millis"
-       },
-       "ADB" :
+    },
+    "ADB" :
     {
         "ADB Display Name" : "display_name"
+    },
+    "SDDCs" :
+    {
+        "SDDC Name"  : "display_name",
+        "Enable HCX" : "is_hcx_enabled",
+        "Pricing Interval" : "initial_sku",
+        "SDDC Hardware Type" : "initial_host_shape_name",
+        "Number of OCPU cores"  : "initial_host_ocpu_count",
+        "Number of ESXi hosts"  : "esxi_hosts_count",
+        "Prefix for ESXi Hosts" : "instance_display_name_prefix",
+        "Enable Shielded instance" : "is_shielded_instance_enabled",
+        "Availability Domain(AD1|AD2|AD3|multi-AD)" : "compute_availability_domain",
+        "SDDC workload CIDR"    : "workload_network_cidr"
+    },
+    "Buckets" : {},
+    "DNS-Views-Zones-Records" : {},
+    "DNS-Resolvers" : {}
 
-        }
 }

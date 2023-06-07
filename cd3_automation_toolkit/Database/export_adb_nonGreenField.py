@@ -24,9 +24,7 @@ oci_obj_names = {}
 
 
 def print_adbs(region, vnc_client, adb, values_for_column, ntk_compartment_name):
-    # def print_exa_infra(region, exa_infra, values_for_column, ntk_compartment_name):
     adb_tf_name = commonTools.check_tf_variable(adb.display_name)
-    # maintenance_window = exa_infra.maintenance_window
 
     adb_subnet_id = adb.subnet_id
 
@@ -56,7 +54,6 @@ def print_adbs(region, vnc_client, adb, values_for_column, ntk_compartment_name)
             whitelisted_ips = whitelisted_ips + "," + ip
 
         whitelisted_ips = whitelisted_ips[1:]
-    # importCommands[region.lower()].write("\nterraform import oci_database_cloud_exadata_infrastructure." + exa_infra_tf_name + " " + str(exa_infra.id))
     importCommands[region.lower()].write(
         "\nterraform import \"module.adb[\\\"" + adb_tf_name + "\\\"].oci_database_autonomous_database.autonomous_database\" " + str(adb.id))
 

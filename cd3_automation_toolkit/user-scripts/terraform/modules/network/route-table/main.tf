@@ -29,7 +29,7 @@ resource "oci_core_route_table" "route_table" {
       network_entity_id = (route_rules.value["network_entity_id"] != null && length(regexall("ocid1.privateip.oc1*", route_rules.value["network_entity_id"])) > 0) ? route_rules.value["network_entity_id"] : ""
 
       #Optional
-      description      = route_rules.value["description"]
+      description      = route_rules.value["description"] != "" ? route_rules.value["description"] : null
       destination      = route_rules.value["destination"]
       destination_type = route_rules.value["destination_type"]
     }
@@ -44,7 +44,7 @@ resource "oci_core_route_table" "route_table" {
       network_entity_id = (route_rules.value["network_entity_id"] != null && length(regexall("ocid1.localpeeringgateway.oc1*", route_rules.value["network_entity_id"])) > 0) ? route_rules.value["network_entity_id"] : try(var.hub_lpg_id[route_rules.value["network_entity_id"]]["lpg_tf_id"], var.spoke_lpg_id[route_rules.value["network_entity_id"]]["lpg_tf_id"], var.peer_lpg_id[route_rules.value["network_entity_id"]]["lpg_tf_id"], var.none_lpg_id[route_rules.value["network_entity_id"]]["lpg_tf_id"], var.exported_lpg_id[route_rules.value["network_entity_id"]]["lpg_tf_id"], var.drg_id[route_rules.value["network_entity_id"]]["drg_tf_id"])
 
       #Optional
-      description      = route_rules.value["description"]
+      description      = route_rules.value["description"] != "" ? route_rules.value["description"] : null
       destination      = route_rules.value["destination"]
       destination_type = route_rules.value["destination_type"]
     }
@@ -59,7 +59,7 @@ resource "oci_core_route_table" "route_table" {
       network_entity_id = (route_rules.value["network_entity_id"] != null && length(regexall("ocid1.internetgateway.oc1*", route_rules.value["network_entity_id"])) > 0) ? route_rules.value["network_entity_id"] : var.igw_id[route_rules.value["network_entity_id"]]["igw_tf_id"]
 
       #Optional
-      description      = route_rules.value["description"]
+      description      = route_rules.value["description"] != "" ? route_rules.value["description"] : null
       destination      = route_rules.value["destination"]
       destination_type = route_rules.value["destination_type"]
     }
@@ -77,7 +77,7 @@ resource "oci_core_route_table" "route_table" {
       #length(regexall("ocid1.drg.oc1*", route_rules.value["network_entity_id"])) > 0 ? route_rules.value["network_entity_id"] : null
 
       #Optional
-      description      = route_rules.value["description"]
+      description      = route_rules.value["description"] != "" ? route_rules.value["description"] : null
       destination      = route_rules.value["destination"]
       destination_type = route_rules.value["destination_type"]
     }
@@ -95,7 +95,7 @@ resource "oci_core_route_table" "route_table" {
       #length(regexall("ocid1.drg.oc1*", route_rules.value["network_entity_id"])) > 0 ? route_rules.value["network_entity_id"] : null
 
       #Optional
-      description      = route_rules.value["description"]
+      description      = route_rules.value["description"] != "" ? route_rules.value["description"] : null
       destination      = route_rules.value["destination"]
       destination_type = route_rules.value["destination_type"]
     }
@@ -113,7 +113,7 @@ resource "oci_core_route_table" "route_table" {
       #length(regexall("ocid1.drg.oc1*", route_rules.value["network_entity_id"])) > 0 ? route_rules.value["network_entity_id"] : null
 
       #Optional
-      description      = route_rules.value["description"]
+      description      = route_rules.value["description"] != "" ? route_rules.value["description"] : null
       destination      = contains(split("-", route_rules.value["destination"]), "all") == true ? (contains(split("-", data.oci_core_services.oci_services.services.0.cidr_block), "all") == true ? data.oci_core_services.oci_services.services.0.cidr_block : data.oci_core_services.oci_services.services.1.cidr_block) : (contains(split("-", data.oci_core_services.oci_services.services.0.cidr_block), "objectstorage") == true ? data.oci_core_services.oci_services.services.0.cidr_block : data.oci_core_services.oci_services.services.1.cidr_block)
       destination_type = route_rules.value["destination_type"]
     }

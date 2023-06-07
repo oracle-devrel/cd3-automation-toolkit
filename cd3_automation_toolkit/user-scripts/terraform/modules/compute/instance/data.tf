@@ -18,6 +18,9 @@ locals {
       ocpus         = shape.ocpus
     }
   }
+
+  remote_execute_script = var.remote_execute == null ? "SCRIPT-NOT-SET" : var.remote_execute
+  cloud_init_script = var.cloud_init_script == null ? "SCRIPT-NOT-SET" : var.cloud_init_script
 }
 
 data "oci_identity_availability_domains" "ads" {
