@@ -230,7 +230,6 @@ def export_rpc_resource(inputfile, export_compartments, _outdir, service_dir, _c
         importCommands[region].write("terraform init")
 
         # Fetch RPC Details
-        print("\nFetching details of RPC...")
         DEST_RPC_LIST = {}
         importCommands[region].write("\n\n######### Writing import for RPC #########\n\n")
         config.__setitem__("region", ct.region_dict[region])
