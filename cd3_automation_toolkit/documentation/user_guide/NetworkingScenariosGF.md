@@ -226,7 +226,7 @@ Remote VCN peering is the process of connecting two VCNs in different regions (b
    - Global directory which is inside the customer outdir will have all RPC related files and scripts.
    - The RPC resources(modules,provider configurations etc) are generated dynamically for the tenancy and can work along only with CD3 automation toolkit.
    - Choose option 'Network' and then 'Customer Connectivity' for creating RPC in GreenField workflow.
-   - Output files are created under _/cd3user/tenancies/<customer\_name>/terraform_files/global/rpc_ directpry
+   - Output files are created under _/cd3user/tenancies/<customer\_name>/terraform_files/global/rpc_ directory
 
 <br>[Go back to Networking Scenarios](#networking-scenarios)
 <br><br>
