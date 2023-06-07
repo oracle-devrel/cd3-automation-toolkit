@@ -107,7 +107,7 @@ def create_resource_manager(outdir, outdir_struct,prefix,regions, config=DEFAULT
     x = datetime.datetime.now()
     date = x.strftime("%f").strip()
 
-    save_outdir_struct = outdir_struct
+    save_outdir_struct = outdir_struct.copy()
     for region in regions:
         region=region.strip().lower()
 
@@ -116,7 +116,7 @@ def create_resource_manager(outdir, outdir_struct,prefix,regions, config=DEFAULT
         if region == 'global':
             outdir_struct = {'rpc':'rpc'}
         else:
-            outdir_struct = save_outdir_struct
+            outdir_struct = save_outdir_struct.copy()
 
         rm_dir = region_dir + '/RM/'
 
@@ -231,8 +231,8 @@ def create_resource_manager(outdir, outdir_struct,prefix,regions, config=DEFAULT
     cwd = os.getcwd()
 
     svcs = []
-    save_outdir_struct = outdir_struct
-    save_dir_svc_map = dir_svc_map
+
+    save_dir_svc_map = dir_svc_map.copy()
 
     for region in regions:
         print("\nStart creating Stacks for "+region+ " region...")
@@ -242,8 +242,8 @@ def create_resource_manager(outdir, outdir_struct,prefix,regions, config=DEFAULT
             dir_svc_map['rpc']=['rpc']
 
         else:
-            outdir_struct = save_outdir_struct
-            dir_svc_map = save_dir_svc_map
+            outdir_struct = save_outdir_struct.copy()
+            dir_svc_map = save_dir_svc_map.copy()
 
         rm_dir = region_dir + '/RM/'
 
@@ -344,7 +344,10 @@ def create_resource_manager(outdir, outdir_struct,prefix,regions, config=DEFAULT
                     with open(service_dir+"/"+ svc + ".tf", 'r') as tf_file:
                         module_data = tf_file.read().rstrip()
                         module_data = module_data.replace("\"../modules", "\"./modules")
-                    f = open(service_dir+"/"+ svc + ".tf", "w+")
+                    if svc == 'rpc':
+                        f = open(service_dir+"/"+ svc + "-temp.tf", "w+")
+                    else:
+                        f = open(service_dir + "/" + svc + ".tf", "w+")
                     f.write(module_data)
                     f.close()
 
@@ -358,6 +361,7 @@ def create_resource_manager(outdir, outdir_struct,prefix,regions, config=DEFAULT
                                         newfile.write(line)
                         except FileNotFoundError as e:
                             pass
+
                         os.remove(service_dir+"/"+ svc + "-temp.tf")
 
                 service_rm_name = prefix + "-" + region + "-" + service_dir
