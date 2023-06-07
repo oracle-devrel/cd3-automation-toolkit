@@ -221,8 +221,7 @@ Remote VCN peering is the process of connecting two VCNs in different regions (b
  
    - Modify your excel sheet to update required data in the Tabs - DRGs.
    - The source and target RPC details to be entered in DRG sheet for establishing a connection. Please check the example in excel file for reference.
-   - Make sure that the DRGRouteRulesinOCI sheet and corresponing terraform is in synch with DRG route rules in OCI console. If not, please follow procedure specified in [Sync manual changes done in OCI of Security Rules, Route Rules and DRG Route Rules with CD3 Excel Sheet and Terraform](#sync-manual-changes-done-in-oci-of-security-rules-route-rules-and-drg-route-rules-with-cd3-excel-sheet-and-terraform) 
-  
+   - Make sure that the DRGRouteRulesinOCI sheet and corresponding to terraform is in synch with DRG route rules in OCI console. If not, please follow procedure specified in [Sync manual changes done in OCI of Security Rules, Route Rules and DRG Route Rules with CD3 Excel Sheet and Terraform](#sync-manual-changes-done-in-oci-of-security-rules-route-rules-and-drg-route-rules-with-cd3-excel-sheet-and-terraform)
    - Global directory which is inside the customer outdir will have all RPC related files and scripts.
    - The RPC resources(modules,provider configurations etc) are generated dynamically for the tenancy and can work along only with CD3 automation toolkit.
    - Choose option 'Network' and then 'Customer Connectivity' for creating RPC in GreenField workflow.
