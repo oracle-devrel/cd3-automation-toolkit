@@ -7,7 +7,7 @@ Before you start with configuring remote execution for OCI instance(s) please en
 
 Remote execution should be used as the **last resort or only during initial provisioning** for a given OCI instance(s). This feature cannot be used for export of instances.
 
- - Add the 'Remote Execute' columm to the excel sheet for the corresponding instance entry. Format is: bastion_ip@<scriptname> 
+ - Add the **'Remote Execute'** columm to the excel sheet for the corresponding instance entry. Format is: bastion_ip@<scriptname> 
  - Please skip bastion_ip if there is direct connectivity with target servers via VPN.
  - Scripts folder should have the **ansible script files** or **shell script files** and ssh-keys for instances and bastion host. The *.yaml or *.yml extensions will be considered for the ansible script files and .sh extensions will be considered for shell scripts files.
  - For block-volume attachment configuration via ansible playbook the device name is must, and it's currently set to "/dev/oracleoci/oraclevdb" in the sample ansible playbook.
@@ -18,7 +18,7 @@ Remote execution should be used as the **last resort or only during initial prov
 
 ## Managing Cloud Init
  
- - Add the 'Cloud Init Script' column to the excel sheet for the corresponding instance entry.
+ - Add the **'Cloud Init Script'** column to the excel sheet for the corresponding instance entry.
  - Scripts folder should have the relevant script files and ssh-keys for instances. The *sh extension(s) will be considered for the script files.
  - Common scenarios like security hardening and other common scripts can be executed against the OCI instances during provisioning.
  - Running the CD3 automation toolkit will generate auto.tfvars.
