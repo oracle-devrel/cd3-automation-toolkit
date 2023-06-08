@@ -68,7 +68,7 @@ Click on the links below to know about the specifics of each tab in the excel sh
  
  - [Instances](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/develop/cd3_automation_toolkit/documentation/user_guide/learn_more/Tabs.md#instances-tab)
 
-<a href="/cd3_automation_toolkit/documentation/terraform/network.md">Click here to view sample auto.tfvars for Compute components-Virtual Machine</a> 
+<a href="/cd3_automation_toolkit/documentation/terraform/compute.md">Click here to view sample auto.tfvars for Compute components-Virtual Machine</a> 
  
 #### Storage
  
