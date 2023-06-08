@@ -37,7 +37,7 @@ sddcs = {
           provisioning_vlan_id          = string
           workload_network_cidr         = string
           defined_tags                  = map
-                    
+         }           
     }
 ```
 <br>
