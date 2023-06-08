@@ -6,7 +6,41 @@ These are the syntax and sample format for providing inputs to the modules via <
 
 - **Syntax**
 
-
+```
+sddcs = {
+## key - Is a unique value to reference the resources respectively
+      key =  {
+          compartment_id                = string
+          display_name                  = string
+          availability_domain           = string
+          is_hcx_enabled                = bool
+          vmware_software_version       = string
+          initial_sku                   = string
+          initial_host_shape_name       = string
+          initial_host_ocpu_count       = string
+          esxi_hosts_count              = string
+          instance_display_name_prefix  = string
+          is_shielded_instance_enabled  = bool
+          ssh_authorized_keys           = string
+          network_compartment_id        = string
+          vcn_name                      = string
+          provisioning_subnet_id        = string
+          nsx_edge_uplink1vlan_id       = string
+          nsx_edge_uplink2vlan_id       = string
+          nsx_edge_vtep_vlan_id         = string
+          nsx_vtep_vlan_id              = string
+          vmotion_vlan_id               = string
+          vsan_vlan_id                  = string
+          vsphere_vlan_id               = string
+          hcx_vlan_id                   = string
+          replication_vlan_id           = string
+          provisioning_vlan_id          = string
+          workload_network_cidr         = string
+          defined_tags                  = map
+                    
+    }
+```
+<br>
 
 - **Example**
 
