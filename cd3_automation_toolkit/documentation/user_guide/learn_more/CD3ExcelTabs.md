@@ -118,7 +118,7 @@ Click on the links below to know about the specifics of each tab in the excel sh
  - [LBaaS Logs](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/develop/cd3_automation_toolkit/documentation/user_guide/learn_more/Tabs.md#lbaas-logs)
 - [OSS Logs](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/develop/cd3_automation_toolkit/documentation/user_guide/learn_more/Tabs.md#oss-logs)
 
-<a href="/cd3_automation_toolkit/documentation/terraform/oke.md">Click here to view sample auto.tfvars for Logging components </a> 
+<a href="/cd3_automation_toolkit/documentation/terraform/logging.md">Click here to view sample auto.tfvars for Logging components </a> 
 
  #### SDDCs Tab
  
