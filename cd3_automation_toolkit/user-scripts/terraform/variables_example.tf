@@ -1145,7 +1145,7 @@ variable "nlb_backend_sets" {
     network_load_balancer_id = string
     policy = string
     protocol = string
-    return_code = number
+    return_code = optional(number)
     interval_in_millis = optional(number)
     port = optional(number)
     response_body_regex = optional(string)
