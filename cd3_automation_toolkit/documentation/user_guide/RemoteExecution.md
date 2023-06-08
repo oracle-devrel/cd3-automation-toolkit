@@ -14,6 +14,8 @@ Remote execution should be used as the **last resort or only during initial prov
  - Common scenarios like security hardening and other common shell scripts can be executed against the OCI instances during provisioning.
  - Running the CD3 automation toolkit will generate auto.tfvars.
  - Execute Terraform commands to provision the instances in OCI. Remote executioner will also run after the instance provisioning.
+
+ The users can refer to the ```default.yaml``` file which is inside /cd3user/tenancies/<customer_name>/terraform_files/<region>/scripts dir for provisioning the custom playbooks.
  
 
 ## Managing Cloud Init
@@ -24,8 +26,6 @@ Remote execution should be used as the **last resort or only during initial prov
  - Running the CD3 automation toolkit will generate auto.tfvars.
  - Execute Terraform commands to provision the instances in OCI and run cloud-init scripts during provisioning.
 
-
-The users can refer to the ```default.yaml``` file which is inside /cd3user/tenancies/<customer_name>/terraform_files/<region>/scripts dir for provisioning the custom playbooks.
 
 <br><br>
 <div align='center'>
