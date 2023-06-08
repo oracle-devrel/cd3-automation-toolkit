@@ -29,7 +29,7 @@
   <li> <a href="/cd3_automation_toolkit/documentation/user_guide/GreenField.md">Green Field Tenancies</a>
     <ul>
       <li> <a href="/cd3_automation_toolkit/documentation/user_guide/NetworkingScenariosGF.md"</a><b> Must Read :</b> Managing Network for Greenfield Tenancies</li>
-      <li> <a href="/cd3_automation_toolkit/documentation/user_guide/RemoteExecution.md"</a><b> Must Read :</b> Remote Execution for OCI instances</li>
+      <li> <a href="/cd3_automation_toolkit/documentation/user_guide/RemoteExecution.md"</a><b> Must Read :</b> Remote Execution/Cloud Init for OCI compute instances</li>
     </ul>
     </ul>
   </li>
