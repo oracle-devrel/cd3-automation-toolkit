@@ -338,20 +338,22 @@ def create_resource_manager(outdir, outdir_struct,prefix,regions, config=DEFAULT
                 print("\nProcessing Directory "+service_dir+"...")
                 service_dir_processed.append(service_dir)
 
-                shutil.copytree(rm_dir + "/modules", rm_dir+"/"+ service_dir+"/modules")
+                if (os.path.exists(rm_dir + "/modules")):
+                    shutil.copytree(rm_dir + "/modules", rm_dir+"/"+ service_dir+"/modules")
 
                 for svc in svcs:
-                    with open(service_dir+"/"+ svc + ".tf", 'r') as tf_file:
-                        module_data = tf_file.read().rstrip()
-                        module_data = module_data.replace("\"../modules", "\"./modules")
-                    if svc == 'rpc':
-                        f = open(service_dir+"/"+ svc + "-temp.tf", "w+")
-                    else:
-                        f = open(service_dir + "/" + svc + ".tf", "w+")
-                    f.write(module_data)
-                    f.close()
+                    if os.path.exists(service_dir+"/"+ svc + ".tf"):
+                        with open(service_dir+"/"+ svc + ".tf", 'r') as tf_file:
+                            module_data = tf_file.read().rstrip()
+                            module_data = module_data.replace("\"../modules", "\"./modules")
+                        if svc == 'rpc':
+                            f = open(service_dir+"/"+ svc + "-temp.tf", "w+")
+                        else:
+                            f = open(service_dir + "/" + svc + ".tf", "w+")
+                        f.write(module_data)
+                        f.close()
 
-                    if svc == 'rpc':
+                    if svc == 'rpc' and os.path.exists(service_dir+"/"+ svc + ".tf"):
                         try:
                             with open(service_dir+"/"+ svc + "-temp.tf",'r') as origfile, open(service_dir+"/"+ svc + ".tf", 'w') as newfile:
                                 for line in origfile:
@@ -432,7 +434,8 @@ def create_resource_manager(outdir, outdir_struct,prefix,regions, config=DEFAULT
                 shutil.move(rm_dir_zip, rm_dir_zip + "_backup")
 
             base_name = prefix + "-" + region + "-stacks"
-            shutil.rmtree("modules")
+            if (os.path.exists(os.path.join(os.getcwd(),"modules"))):
+                shutil.rmtree("modules")
             os.chdir("../")
             shutil.make_archive(base_name, 'zip', rm_dir)
 

@@ -307,6 +307,7 @@ def get_rpc_resources(source_region, SOURCE_RPC_LIST, dest_rpc_dict, rpc_source_
     dest_rpc_comp_name = ""
     dest_rpc_display_name = ""
     dest_import_rt_statements = None
+    import_rt_statements = None
     rpc_safe_file = {}
 
     # set source region
@@ -351,11 +352,10 @@ def get_rpc_resources(source_region, SOURCE_RPC_LIST, dest_rpc_dict, rpc_source_
             # Fetch source DRG import route distribution id, name
             src_drg_rt_dist = rpc_source_client.get_drg_route_table(drg_route_table_id=source_drg_rt_id)
             src_drg_rt_import_dist_id = getattr(src_drg_rt_dist.data, 'import_drg_route_distribution_id')
-            import_rt_info = rpc_source_client.get_drg_route_distribution(
-                drg_route_distribution_id=src_drg_rt_import_dist_id)
-            drg_rt_import_dist_name = getattr(import_rt_info.data, "display_name")
-            import_rt_statements = rpc_source_client.list_drg_route_distribution_statements(
-                drg_route_distribution_id=src_drg_rt_import_dist_id)
+            if (src_drg_rt_import_dist_id!=None):
+                import_rt_info = rpc_source_client.get_drg_route_distribution(drg_route_distribution_id=src_drg_rt_import_dist_id)
+                drg_rt_import_dist_name = getattr(import_rt_info.data, "display_name")
+                import_rt_statements = rpc_source_client.list_drg_route_distribution_statements(drg_route_distribution_id=src_drg_rt_import_dist_id)
 
             # Check for duplicate rpc entry in safe file first
             fo = open(f'{rpc_file}').read()
@@ -399,11 +399,10 @@ def get_rpc_resources(source_region, SOURCE_RPC_LIST, dest_rpc_dict, rpc_source_
                                     dest_drg_rt_dist = client.get_drg_route_table(drg_route_table_id=dest_drg_rt_id)
                                     dest_drg_rt_import_dist_id = getattr(dest_drg_rt_dist.data,
                                                                          'import_drg_route_distribution_id')
-                                    dest_import_rt_info = client.get_drg_route_distribution(
-                                        drg_route_distribution_id=dest_drg_rt_import_dist_id)
-                                    dest_drg_rt_import_dist_name = getattr(dest_import_rt_info.data, "display_name")
-                                    dest_import_rt_statements = client.list_drg_route_distribution_statements(
-                                        drg_route_distribution_id=dest_drg_rt_import_dist_id)
+                                    if dest_drg_rt_import_dist_id!=None:
+                                        dest_import_rt_info = client.get_drg_route_distribution(drg_route_distribution_id=dest_drg_rt_import_dist_id)
+                                        dest_drg_rt_import_dist_name = getattr(dest_import_rt_info.data, "display_name")
+                                        dest_import_rt_statements = client.list_drg_route_distribution_statements(drg_route_distribution_id=dest_drg_rt_import_dist_id)
 
                                 importCommands_rpc["global"].write(
                                     "\nterraform import \"module.rpcs[\\\"" + rpc_tf_name + f"\\\"].oci_core_remote_peering_connection.{source_region.lower()}_{region.lower()}_requester_rpc[\\\"region\\\"]\" " + str(
@@ -703,7 +702,6 @@ def export_major_objects(inputfile, outdir, service_dir, _config, ct, export_com
                 # RPC
                 elif attach_type.upper() == "REMOTE_PEERING_CONNECTION" and rpc_execution:
                     # Fetch RPC Details
-                    print("\nFetching details of RPC...")
                     drg_route_table_id = drg_attachment_info.drg_route_table_id
 
                     if (drg_route_table_id is not None):
