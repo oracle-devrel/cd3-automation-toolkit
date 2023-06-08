@@ -21,7 +21,7 @@ Remote execution should be used as the **last resort or only during initial prov
 ## Managing Cloud Init
  
  - Add the **'Cloud Init Script'** column to the excel sheet for the corresponding instance entry.
- - Scripts folder should have the relevant script files and ssh-keys for instances. The *sh extension(s) will be considered for the script files.
+ - Scripts folder should have the relevant script files for instances. The *.sh extension(s) will be considered for the script files.
  - Common scenarios like security hardening and other common scripts can be executed against the OCI instances during provisioning.
  - Running the CD3 automation toolkit will generate auto.tfvars.
  - Execute Terraform commands to provision the instances in OCI and run cloud-init scripts during provisioning.
