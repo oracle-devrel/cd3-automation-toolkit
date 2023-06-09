@@ -21,11 +21,10 @@ Example:
 <img width="800" alt="image" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/e95572de-2cb0-46f9-ae26-21391c9fee8b">
 </kbd>
 
-To use an existing Resource Manager stack, enter the details in the format provided above into your _outdir/<region_dir>/rm_ocids.csv_" file. 
-
+To use an existing Resource Manager stack, enter the details in the format provided above into your _outdir/<region_dir>/rm_ocids.csv_ file. 
 
 Sample Execution:
 
 <kbd>
-<img width="800" height="600" alt="image" src="(https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/e3d7417e-ce1c-464a-8a1d-5cdfd7862835))">
+<img width="800" height="600" alt="image" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/e3d7417e-ce1c-464a-8a1d-5cdfd7862835">
 </kbd>
