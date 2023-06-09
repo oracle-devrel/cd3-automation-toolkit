@@ -39,7 +39,7 @@ Comments preceed with <b>##</b>.
 - <b>Example</b>
    ````
   // Copyright (c) 2021, 2022, 2023 Oracle and/or its affiliates.
-  ############################
+  #############################
   # DNS
   # DNS Views - tfvars
   # Allowed Values:
