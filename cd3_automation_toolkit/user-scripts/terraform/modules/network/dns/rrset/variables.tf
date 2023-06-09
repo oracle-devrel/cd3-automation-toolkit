@@ -22,7 +22,7 @@ variable "rrset_zone" {
 }
 
 variable "rrset_ttl" {
-  type = number
+  type    = number
   default = null
 }
 variable "rrset_rdata" {

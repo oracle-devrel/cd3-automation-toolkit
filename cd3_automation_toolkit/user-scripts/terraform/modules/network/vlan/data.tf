@@ -13,10 +13,10 @@ data "oci_core_network_security_groups" "network_security_groups" {
   for_each       = var.nsg_ids != null ? { for nsg in var.nsg_ids : nsg => nsg } : {}
   compartment_id = var.network_compartment_id != null ? var.network_compartment_id : var.compartment_id
   display_name   = each.value
-  vcn_id =var.vcn_id
+  vcn_id         = var.vcn_id
 }
 
 data "oci_core_vcn" "vcns" {
-    #Required
-    vcn_id = var.vcn_id
+  #Required
+  vcn_id = var.vcn_id
 }

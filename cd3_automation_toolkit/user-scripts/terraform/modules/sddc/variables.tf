@@ -42,7 +42,7 @@ variable "sddc_enabled" {
 variable "display_name" {
   description = "(Optional) (Updatable) A descriptive name for the SDDC. SDDC name requirements are 1-16 character length limit, Must start with a letter, Must be English letters, numbers, - only, No repeating hyphens, Must be unique within the region. Avoid entering confidential information."
   type        = string
-  default     =null
+  default     = null
 }
 
 variable "esxi_hosts_count" {
@@ -63,8 +63,8 @@ variable "initial_sku" {
 
 variable "workload_network_cidr" {
   description = "(Optional) The CIDR block for the IP addresses that VMware VMs in the SDDC use to run application workloads."
-  type = string
-  default = null
+  type        = string
+  default     = null
 }
 
 variable "ssh_authorized_keys" {
@@ -93,7 +93,7 @@ variable "provisioning_subnet_id" {
 variable "nsx_edge_uplink1vlan_id" {
   description = "The OCID of the VLAN to use for the NSX Edge Uplink 1 component of the VMware environment"
   type        = string
-  default     =null
+  default     = null
 
 }
 
@@ -157,37 +157,37 @@ variable "replication_vlan_id" {
   type        = string
   default     = null
 }
-variable "esxi_hardware_type"  {
+variable "esxi_hardware_type" {
   description = "The hardware type for esxi."
   type        = string
   default     = null
 }
 
-variable "capacity_reservation_id"  {
+variable "capacity_reservation_id" {
   description = "Reservation id of ocvs allocated capacity."
   type        = string
   default     = null
 }
 
-variable "initial_host_ocpu_count"  {
+variable "initial_host_ocpu_count" {
   description = "initial_host_ocpu_count."
   type        = string
   default     = null
 }
 
-variable "initial_host_shape_name"  {
+variable "initial_host_shape_name" {
   description = "initial_host_shape_name."
   type        = string
   default     = null
 }
 
-variable "is_shielded_instance_enabled"  {
+variable "is_shielded_instance_enabled" {
   description = "is_shielded_instance_enabled"
   type        = string
   default     = null
 }
 
-variable "is_single_host_sddc"  {
+variable "is_single_host_sddc" {
   description = "is_single_host_sddc"
   type        = string
   default     = null
@@ -196,7 +196,7 @@ variable "is_single_host_sddc"  {
 variable "defined_tags" {
   description = "Reservation id of ocvs allocated capacity."
   type        = map(any)
-  default     = {
+  default = {
     "Oracle-Tags.CreatedOn" = "$$(oci.datetime)",
     "Oracle-Tags-CreatedBy" = "$${iam.principal.name}"
   }

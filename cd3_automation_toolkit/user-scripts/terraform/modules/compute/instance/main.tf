@@ -21,7 +21,7 @@ resource "oci_core_instance" "instance" {
   is_pv_encryption_in_transit_enabled = var.create_is_pv_encryption_in_transit_enabled
   metadata = {
     ssh_authorized_keys = var.ssh_public_keys
-    user_data = fileexists("${path.root}/scripts/${local.cloud_init_script}") ? "${base64encode(file("${path.root}/scripts/${local.cloud_init_script}"))}" : null
+    user_data           = fileexists("${path.root}/scripts/${local.cloud_init_script}") ? "${base64encode(file("${path.root}/scripts/${local.cloud_init_script}"))}" : null
   }
   preserve_boot_volume = var.preserve_boot_volume
 
@@ -126,20 +126,20 @@ resource "oci_core_instance" "instance" {
 
 
 resource "null_resource" "ansible-remote-exec" {
-  count = var.remote_execute == null ? 0 : ( (length(regexall(".yaml", local.remote_execute_script))>0) || (length(regexall(".yml", local.remote_execute_script))>0) ? 1 : 0 )
+  count = var.remote_execute == null ? 0 : ((length(regexall(".yaml", local.remote_execute_script)) > 0) || (length(regexall(".yml", local.remote_execute_script)) > 0) ? 1 : 0)
 
   connection {
-      type        = "ssh"
-      timeout     = "10m"
-      agent       = false
-      host        = oci_core_instance.instance.private_ip
-      user        = "opc"
-      private_key = fileexists("${path.root}/scripts/server-ssh-key") ? file("${path.root}/scripts/server-ssh-key") : ""
+    type        = "ssh"
+    timeout     = "10m"
+    agent       = false
+    host        = oci_core_instance.instance.private_ip
+    user        = "opc"
+    private_key = fileexists("${path.root}/scripts/server-ssh-key") ? file("${path.root}/scripts/server-ssh-key") : ""
 
-      bastion_host        = var.bastion_ip
-      bastion_user        = "opc"
-      bastion_private_key = fileexists("${path.root}/scripts/bastion-ssh-key") ? file("${path.root}/scripts/bastion-ssh-key") : ""
-    }
+    bastion_host        = var.bastion_ip
+    bastion_user        = "opc"
+    bastion_private_key = fileexists("${path.root}/scripts/bastion-ssh-key") ? file("${path.root}/scripts/bastion-ssh-key") : ""
+  }
 
   #This has been tested only OL8 version. For other OS it might need changes accordingly.
   provisioner "file" {
@@ -149,33 +149,33 @@ resource "null_resource" "ansible-remote-exec" {
 
   provisioner "remote-exec" {
     inline = [
-          "sudo dnf install -y epel-release",
-          "sudo dnf install ansible -y",
-          "sudo ansible --version",
-          "sudo chmod 777 /home/opc/${local.remote_execute_script}",
-          "sudo touch /etc/cron.d/ansible",
-          "sudo chmod 600 /etc/cron.d/ansible",
-          "sudo /bin/bash -c '/bin/echo \"* * * * * root ansible-playbook /home/opc/${local.remote_execute_script}\" >> /etc/cron.d/ansible'"
-          #"sudo /bin/bash -c '/bin/echo \"1 * * * * root nice -n -20 ansible-playbook /home/opc/${local.remote_execute_script}\" >> /etc/cron.d/ansible'"
-          #"sudo /bin/bash -c '/bin/echo \"2 * * * * sudo ansible-playbook /home/opc/${local.remote_execute_script} >> /home/opc/ansible.log 2>&1\" >> /etc/crontab'"
+      "sudo dnf install -y epel-release",
+      "sudo dnf install ansible -y",
+      "sudo ansible --version",
+      "sudo chmod 777 /home/opc/${local.remote_execute_script}",
+      "sudo touch /etc/cron.d/ansible",
+      "sudo chmod 600 /etc/cron.d/ansible",
+      "sudo /bin/bash -c '/bin/echo \"* * * * * root ansible-playbook /home/opc/${local.remote_execute_script}\" >> /etc/cron.d/ansible'"
+      #"sudo /bin/bash -c '/bin/echo \"1 * * * * root nice -n -20 ansible-playbook /home/opc/${local.remote_execute_script}\" >> /etc/cron.d/ansible'"
+      #"sudo /bin/bash -c '/bin/echo \"2 * * * * sudo ansible-playbook /home/opc/${local.remote_execute_script} >> /home/opc/ansible.log 2>&1\" >> /etc/crontab'"
     ]
   }
 }
 
 resource "null_resource" "shell-remote-exec" {
-  count = var.remote_execute == null ? 0 : ( (length(regexall(".sh", local.remote_execute_script))>0) ? 1 : 0 )
+  count = var.remote_execute == null ? 0 : ((length(regexall(".sh", local.remote_execute_script)) > 0) ? 1 : 0)
   connection {
-      type        = "ssh"
-      agent       = false
-      timeout     = "10m"
-      host        = oci_core_instance.instance.private_ip
-      user        = "opc"
-      private_key = fileexists("${path.root}/scripts/server-ssh-key") ? file("${path.root}/scripts/server-ssh-key") : ""
+    type        = "ssh"
+    agent       = false
+    timeout     = "10m"
+    host        = oci_core_instance.instance.private_ip
+    user        = "opc"
+    private_key = fileexists("${path.root}/scripts/server-ssh-key") ? file("${path.root}/scripts/server-ssh-key") : ""
 
-      bastion_host        = var.bastion_ip
-      bastion_user        = "opc"
-      bastion_private_key = fileexists("${path.root}/scripts/bastion-ssh-key") ? file("${path.root}/scripts/bastion-ssh-key") : ""
-    }
+    bastion_host        = var.bastion_ip
+    bastion_user        = "opc"
+    bastion_private_key = fileexists("${path.root}/scripts/bastion-ssh-key") ? file("${path.root}/scripts/bastion-ssh-key") : ""
+  }
   #Enable to remotely execute a shell script.
   provisioner "file" {
     source      = fileexists("${path.root}/scripts/${local.remote_execute_script}") ? "${path.root}/scripts/${local.remote_execute_script}" : "${path.root}/scripts/default.sh"
@@ -183,10 +183,10 @@ resource "null_resource" "shell-remote-exec" {
   }
   provisioner "remote-exec" {
     inline = [
-          "chmod 777 /home/opc/${local.remote_execute_script}",
-          "sudo yum install -y dos2unix",
-          "dos2unix /home/opc/${local.remote_execute_script}",
-          "/home/opc/${local.remote_execute_script}"
+      "chmod 777 /home/opc/${local.remote_execute_script}",
+      "sudo yum install -y dos2unix",
+      "dos2unix /home/opc/${local.remote_execute_script}",
+      "/home/opc/${local.remote_execute_script}"
     ]
   }
 }
@@ -212,7 +212,7 @@ resource "oci_core_volume_backup_policy_assignment" "volume_backup_policy_assign
   policy_id = local.current_policy_id
   lifecycle {
     create_before_destroy = true
-    ignore_changes = [timeouts]
+    ignore_changes        = [timeouts]
   }
 }
 
@@ -232,7 +232,7 @@ resource "oci_marketplace_accepted_agreement" "accepted_agreement" {
 }
 
 resource "oci_marketplace_listing_package_agreement" "listing_package_agreement" {
-  count = length(regexall("ocid1.image.oc1*", var.source_image_id)) > 0 || length(regexall("ocid1.bootvolume.oc1*", var.source_image_id)) > 0  || var.source_image_id == null ? 0 : 1
+  count = length(regexall("ocid1.image.oc1*", var.source_image_id)) > 0 || length(regexall("ocid1.bootvolume.oc1*", var.source_image_id)) > 0 || var.source_image_id == null ? 0 : 1
   #Required
   agreement_id    = data.oci_marketplace_listing_package_agreements.listing_package_agreements.0.agreements[0].id
   listing_id      = data.oci_marketplace_listing.listing.0.id

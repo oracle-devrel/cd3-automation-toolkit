@@ -40,7 +40,7 @@ resource "oci_core_default_security_list" "default_security_list" {
 
       # If type and no code
       dynamic "icmp_options" {
-        for_each = try((ingress_security_rules.value.options.icmp.0.code == null ? ingress_security_rules.value.options.icmp : []), try(ingress_security_rules.value.options.icmp.0.type != null ? ingress_security_rules.value.options.icmp :[]),[])
+        for_each = try((ingress_security_rules.value.options.icmp.0.code == null ? ingress_security_rules.value.options.icmp : []), try(ingress_security_rules.value.options.icmp.0.type != null ? ingress_security_rules.value.options.icmp : []), [])
         content {
           #Required
           type = ingress_security_rules.value.options.icmp.0.type
@@ -109,7 +109,7 @@ resource "oci_core_default_security_list" "default_security_list" {
 
       # If type and no code
       dynamic "icmp_options" {
-        for_each = try((egress_security_rules.value.options.icmp.0.code == null ? egress_security_rules.value.options.icmp : []), try(egress_security_rules.value.options.icmp.0.type != null ? egress_security_rules.value.options.icmp :[]),[])
+        for_each = try((egress_security_rules.value.options.icmp.0.code == null ? egress_security_rules.value.options.icmp : []), try(egress_security_rules.value.options.icmp.0.type != null ? egress_security_rules.value.options.icmp : []), [])
         content {
           #Required
           type = egress_security_rules.value.options.icmp.0.type

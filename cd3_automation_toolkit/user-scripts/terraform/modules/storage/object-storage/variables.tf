@@ -46,13 +46,13 @@ variable "defined_tags" {
 }
 
 #variable "kms_key_id" {
-  #description = "The OCID of a master encryption key used to call the Key Management service to generate a data encryption key or to encrypt or decrypt a data #encryption key."
-  #type        = string
+#description = "The OCID of a master encryption key used to call the Key Management service to generate a data encryption key or to encrypt or decrypt a data #encryption key."
+#type        = string
 #}
 
 #variable "metadata" {
-  #description = "Arbitrary string, up to 4KB, of keys and values for user-defined metadata."
-  #type        = map(any)
+#description = "Arbitrary string, up to 4KB, of keys and values for user-defined metadata."
+#type        = map(any)
 #}
 
 
@@ -82,24 +82,24 @@ variable "bucket" {
 variable "replpol_name" {
   description = "Replication policy name."
   type        = string
-  default = ""
+  default     = ""
 }
 variable "replication_policy" {
   description = "Replication policy detail."
   type        = map(any)
-  default = {}
+  default     = {}
 }
 
 variable "destination_bucket_name" {
   description = "Destination Bucket name to replicate to."
   type        = string
-  default = ""
+  default     = ""
 }
 
 variable "destination_region_name" {
   description = "Destination region to replicate to."
   type        = string
-  default = ""
+  default     = ""
 }
 
 variable "lifecycle_policy" {}

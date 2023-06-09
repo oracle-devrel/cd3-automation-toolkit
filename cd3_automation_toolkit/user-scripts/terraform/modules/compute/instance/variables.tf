@@ -311,20 +311,20 @@ variable "vnic_freeform_tags" {
 }
 
 variable "ssh_private_key_file_path" {
-  type = string
+  type    = string
   default = null
 }
 
 variable "remote_execute" {
-  type = string
+  type        = string
   description = "To execute a script remotely post provisioning instance(shell/ansible)"
-  default = null
+  default     = null
 }
 
 variable "bastion_ip" {
-  type = string
+  type        = string
   description = "Bastion IP to connect the host privately"
-  default = null
+  default     = null
 }
 
 variable "cloud_init_script" {

@@ -24,6 +24,6 @@ resource "oci_core_drg_attachment" "drg_attachment" {
     }
   }
   lifecycle {
-   ignore_changes = [timeouts]
+    ignore_changes = [timeouts]
   }
 }

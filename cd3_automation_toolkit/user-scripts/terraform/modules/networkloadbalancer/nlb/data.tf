@@ -10,7 +10,7 @@ locals {
 }
 
 data "oci_core_network_security_groups" "network_security_groups" {
-  for_each       = var.network_security_group_ids != null ? { for nsg in var.network_security_group_ids : nsg => nsg } :{}
+  for_each       = var.network_security_group_ids != null ? { for nsg in var.network_security_group_ids : nsg => nsg } : {}
   compartment_id = var.network_compartment_id != null ? var.network_compartment_id : var.compartment_id
   display_name   = each.value
   vcn_id         = data.oci_core_vcns.oci_vcns_nlbs.virtual_networks[0].id

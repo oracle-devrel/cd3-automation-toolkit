@@ -36,7 +36,7 @@ resource "oci_core_volume_attachment" "block_vol_instance_attachment" {
   is_shareable                        = var.is_shareable
   use_chap                            = var.use_chap # Applicable when attachment_type=iscsi
   lifecycle {
-   ignore_changes = [timeouts]
+    ignore_changes = [timeouts]
   }
 }
 
@@ -59,6 +59,6 @@ resource "oci_core_volume_backup_policy_assignment" "volume_backup_policy_assign
   asset_id   = data.oci_core_volumes.all_volumes[0].volumes[0].id
   policy_id  = local.current_policy_id
   lifecycle {
-  ignore_changes = [timeouts]
+    ignore_changes = [timeouts]
   }
 }

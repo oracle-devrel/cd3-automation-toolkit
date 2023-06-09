@@ -7,18 +7,18 @@
 
 variable "cidr_block" {
   description = "VLAN CIDR Block"
-  type    = string
-  default = null
+  type        = string
+  default     = null
 }
 variable "compartment_id" {
   description = "VLAN Compartment"
-  type    = string
-  default = null
+  type        = string
+  default     = null
 }
 variable "vcn_id" {
   description = "VLAN VCN ID"
-  type    = string
-  default = null
+  type        = string
+  default     = null
 }
 variable "availability_domain" {
   type    = string
@@ -27,23 +27,23 @@ variable "availability_domain" {
 
 variable "display_name" {
   description = "VLAN Display Name"
-  type    = string
-  default = null
+  type        = string
+  default     = null
 }
 variable "nsg_ids" {
   description = "VLAN NSG ID"
-  type    = list(string)
-  default = []
+  type        = list(string)
+  default     = []
 }
 variable "route_table_id" {
   description = "VLAN Route Table ID"
-  type    = string
-  default = null
+  type        = string
+  default     = null
 }
 variable "vlan_tag" {
   description = "VLAN Tag"
-  type    = string
-  default = null
+  type        = string
+  default     = null
 }
 variable "freeform_tags" {
   type    = map(any)

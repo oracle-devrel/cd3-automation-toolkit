@@ -38,8 +38,8 @@ output "oss_policies_id_map" {
 #############################
 
 module "oss-buckets" {
-  source     = "./modules/storage/object-storage"
-  for_each   = var.buckets != null ? var.buckets : {}
+  source   = "./modules/storage/object-storage"
+  for_each = var.buckets != null ? var.buckets : {}
 
   #Required
   compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
@@ -47,10 +47,10 @@ module "oss-buckets" {
   namespace      = data.oci_objectstorage_namespace.bucket_namespace.namespace
 
   #Optional
-  access_type           = each.value.access_type != "" ? each.value.access_type : null   # Defaults to 'NoPublicAccess' as per hashicorp terraform
-  auto_tiering          = each.value.auto_tiering != "" ? each.value.auto_tiering : null # Defaults to 'Disabled' as per hashicorp terraform
-  defined_tags          = each.value.defined_tags != {} ? each.value.defined_tags : {}
-  freeform_tags         = each.value.freeform_tags != {} ? each.value.freeform_tags : {}
+  access_type   = each.value.access_type != "" ? each.value.access_type : null   # Defaults to 'NoPublicAccess' as per hashicorp terraform
+  auto_tiering  = each.value.auto_tiering != "" ? each.value.auto_tiering : null # Defaults to 'Disabled' as per hashicorp terraform
+  defined_tags  = each.value.defined_tags != {} ? each.value.defined_tags : {}
+  freeform_tags = each.value.freeform_tags != {} ? each.value.freeform_tags : {}
   #kms_key_id           = each.value.kms_key_id != "" ? each.value.kms_key_id : null
   #metadata             = each.value.metadata != {} ? each.value.metadata : {}
   object_events_enabled = each.value.object_events_enabled != "" ? each.value.object_events_enabled : null # Defaults to 'false' as per hashicorp terraform
@@ -113,7 +113,7 @@ module "oss-logs" {
   log_type = each.value.log_type
   #Required
   source_category        = each.value.category
-  source_resource       = length(regexall("ocid1.*", each.value.resource)) > 0 ? each.value.resource : data.oci_objectstorage_bucket.buckets[each.key].name
+  source_resource        = length(regexall("ocid1.*", each.value.resource)) > 0 ? each.value.resource : data.oci_objectstorage_bucket.buckets[each.key].name
   source_service         = each.value.service
   source_type            = each.value.source_type
   defined_tags           = each.value.defined_tags

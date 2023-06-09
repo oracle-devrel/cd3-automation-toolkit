@@ -22,7 +22,7 @@ resource "oci_load_balancer_listener" "listener" {
 
       #Optional
       #backend_tcp_proxy_protocol_version = var.protocol != "TCP" ? null : (connection_configuration.value.backend_tcp_proxy_protocol_version != null ? connection_configuration.value.backend_tcp_proxy_protocol_version : 2)
-      backend_tcp_proxy_protocol_version = var.protocol != "TCP" ? null : (try (connection_configuration.value.backend_tcp_proxy_protocol_version , 0))
+      backend_tcp_proxy_protocol_version = var.protocol != "TCP" ? null : (try(connection_configuration.value.backend_tcp_proxy_protocol_version, 0))
     }
   }
   hostname_names      = var.hostname_names

@@ -36,20 +36,20 @@ variable "resolver_freeform_tags" {
 }
 
 variable "endpoint_names" {
-type = map
-default = {
-#    endpoint1 = {
-#    forwarding = true
-#    listening = false
-#    resolver_id = ""
-#    subnet_id = ""
-#    scope = "PRIVATE"
-#    endpoint_type = "VNIC"
-#    forwarding_address = null
-#    listening_address = null
-#    nsg_ids = []
+  type = map(any)
+  default = {
+    #    endpoint1 = {
+    #    forwarding = true
+    #    listening = false
+    #    resolver_id = ""
+    #    subnet_id = ""
+    #    scope = "PRIVATE"
+    #    endpoint_type = "VNIC"
+    #    forwarding_address = null
+    #    listening_address = null
+    #    nsg_ids = []
 
-}
+  }
 
 
 }

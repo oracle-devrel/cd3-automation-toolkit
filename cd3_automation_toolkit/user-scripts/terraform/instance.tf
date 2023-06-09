@@ -21,8 +21,8 @@ data "oci_core_vcns" "oci_vcns" {
 }
 
 module "instances" {
-  source                 = "./modules/compute/instance"
-  for_each               = var.instances != null ? var.instances : {}
+  source   = "./modules/compute/instance"
+  for_each = var.instances != null ? var.instances : {}
   # depends_on           = [module.dedicated-hosts]   # Uncomment to create DVH and Instances together
   availability_domain    = each.value.availability_domain != "" && each.value.availability_domain != null ? data.oci_identity_availability_domains.availability_domains.availability_domains[each.value.availability_domain].name : ""
   compartment_id         = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
@@ -54,7 +54,7 @@ module "instances" {
   policy_tf_compartment_id = each.value.policy_compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.policy_compartment_id)) > 0 ? each.value.policy_compartment_id : var.compartment_ocids[each.value.policy_compartment_id]) : null
   remote_execute           = each.value.remote_execute != null ? each.value.remote_execute : null
   bastion_ip               = each.value.bastion_ip != null ? each.value.bastion_ip : null
-  cloud_init_script        = each.value.cloud_init_script !=null ? each.value.cloud_init_script : null
+  cloud_init_script        = each.value.cloud_init_script != null ? each.value.cloud_init_script : null
 
   ## Optional parameters to enable and test ##
   # extended_metadata    = each.value.extended_metadata

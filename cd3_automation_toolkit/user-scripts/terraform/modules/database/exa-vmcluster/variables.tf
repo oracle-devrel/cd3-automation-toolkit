@@ -24,7 +24,7 @@ variable "hostname" {
   default = ""
 }
 variable "vcn_names" {
-  type    = list
+  type    = list(any)
   default = []
 }
 variable "network_compartment_id" {
