@@ -7,5 +7,5 @@
 
 output "cg_config_tf_id" {
   depends_on = [time_sleep.wait_60_seconds]
-  value = oci_cloud_guard_cloud_guard_configuration.cloud_guard_configuration.id
+  value      = oci_cloud_guard_cloud_guard_configuration.cloud_guard_configuration.id
 }

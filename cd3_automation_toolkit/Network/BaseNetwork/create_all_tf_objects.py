@@ -20,7 +20,7 @@ from .create_terraform_dhcp_options import create_terraform_dhcp_options
 from .create_terraform_route import create_terraform_route
 from .create_terraform_route import create_terraform_drg_route
 from .create_terraform_seclist import create_terraform_seclist
-from .create_terraform_subnet import create_terraform_subnet
+from .create_terraform_subnet_vlan import create_terraform_subnet_vlan
 
 
 def parse_args():
@@ -37,30 +37,35 @@ def parse_args():
     return parser.parse_args()
 
 
-def create_all_tf_objects(inputfile, outdir, service_dir,prefix, config, non_gf_tenancy, modify_network=False):
+def create_all_tf_objects(inputfile, outdir, service_dir,prefix, config, non_gf_tenancy, modify_network=False,network_vlan_in_setupoci="network",network_connectivity_in_setupoci='network'):
     if not os.path.exists(outdir):
         os.makedirs(outdir)
-
+    if len(service_dir) != 0:
+        service_dir_network = service_dir['network']
+    else:
+        service_dir_network = ""
     with section('Process VCNs Tab and DRGs Tab'):
-        create_major_objects(inputfile, outdir, service_dir, prefix, non_gf_tenancy, config, modify_network)
-        create_terraform_defaults(inputfile, outdir, service_dir, prefix, non_gf_tenancy, config, modify_network)
-
+        create_major_objects(inputfile, outdir, service_dir_network, prefix, non_gf_tenancy, config, modify_network)
+        create_terraform_defaults(inputfile, outdir, service_dir_network, prefix, non_gf_tenancy, config, modify_network)
     with section('Process DHCP Tab'):
-        create_terraform_dhcp_options(inputfile, outdir, service_dir, prefix, non_gf_tenancy, config, modify_network)
+        create_terraform_dhcp_options(inputfile, outdir, service_dir_network, prefix, non_gf_tenancy, config, modify_network)
 
     with section('Process DRGs tab for DRG Route Tables and Route Distribution creation'):
-        create_terraform_drg_route(inputfile, outdir, service_dir, prefix, non_gf_tenancy, config, modify_network)
+        create_terraform_drg_route(inputfile, outdir, service_dir_network, prefix, non_gf_tenancy, config, network_connectivity_in_setupoci, modify_network)
 
-    with section('Process Subnets tab for Routes creation'):
-        create_terraform_route(inputfile, outdir, service_dir, prefix, non_gf_tenancy,  config,  modify_network)
+    if non_gf_tenancy == False:
+        with section('Process Subnets tab for Routes creation'):
+            create_terraform_route(inputfile, outdir, service_dir_network, prefix, non_gf_tenancy,config,network_vlan_in_setupoci, modify_network)
 
-    with section('Process Subnets for Seclists creation'):
-        create_terraform_seclist(inputfile, outdir, service_dir, prefix, config, modify_network)
+    if non_gf_tenancy == False:
+        with section('Process Subnets for Seclists creation'):
+            create_terraform_seclist(inputfile, outdir, service_dir_network, prefix, config, modify_network)
 
     with section('Process Subnets for Subnets creation'):
-        create_terraform_subnet(inputfile, outdir, service_dir, prefix, non_gf_tenancy, config, modify_network)
+        create_terraform_subnet_vlan(inputfile, outdir, service_dir, prefix, non_gf_tenancy, config, network_vlan_in_setupoci,modify_network)
 
-    print('\n\nMake sure to export all SecRules, RouteRules and DRG RouteRules to CD3. Use sub-options 4,5,6 under option 3(Network) of Main Menu for the same.')
+    if non_gf_tenancy == False:
+        print('\n\nMake sure to export all SecRules, RouteRules and DRG RouteRules to CD3. Use sub-options 4,5,6 under option 3(Network) of Main Menu for the same.')
 
 
 if __name__ == '__main__':

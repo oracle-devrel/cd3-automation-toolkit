@@ -28,6 +28,12 @@ variable "target_resource_type" {
   default     = null
 }
 
+variable "prefix" {
+  description = "prefix for detector and responder recipes display names"
+  type        = string
+  default     = null
+}
+
 variable "state" {
   description = "The current state of the DetectorRule. Allowed Values: ACTIVE, CREATING, DELETED, DELETING, FAILED, INACTIVE, UPDATING"
   type        = string

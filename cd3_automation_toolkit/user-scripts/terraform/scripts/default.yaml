@@ -1,0 +1,39 @@
+- hosts: localhost
+  become: true
+  become_user: root
+  tasks:
+  - name: Pause for one min for blockvol attachment.
+    ansible.builtin.pause:
+      minutes: 1
+
+  - parted:
+     device: /dev/oracleoci/oraclevdb
+     number: 1
+     state: present
+     part_end: 100%
+
+  - name: Create Volume Group on /dev/sdb1
+    lvg: vg=vg01 pvs=/dev/sdb1
+
+  - name: Create LV on VG01
+    lvol: vg=vg01 lv=lv01 size=20G
+  
+  - name: Create xfs on vg01-lv01
+    filesystem: fstype=xfs dev=/dev/vg01/lv01
+
+  - name: Get blkid vg01-lv01
+    shell:
+       "sudo blkid -s UUID -o value /dev/mapper/vg01-lv01"
+    register: disk_blkid_lv01
+
+  - name: mounting new filesystem on /weblogic
+    mount: name=/weblogic src='UUID={{ disk_blkid_lv01.stdout }}' fstype=xfs state=mounted opts='defaults,noatime,_netdev' passno=2
+
+  - name: Pause for 30sec to complete settings.
+    ansible.builtin.pause:
+      seconds: 30
+
+  - name: Removing the cron file post settings.
+    file:
+      path: /etc/cron.d/ansible
+      state: absent

@@ -7,13 +7,15 @@
 - [Modify Security Rules, Route Rules and DRG Route Rules](#modify-security-rules-route-rules-and-drg-route-rules)
 - [Sync manual changes done in OCI of Security Rules, Route Rules and DRG Route Rules with CD3 Excel Sheet and Terraform](#sync-manual-changes-done-in-oci-of-security-rules-route-rules-and-drg-route-rules-with-cd3-excel-sheet-and-terraform)
 - [Add/Modify/Delete NSGs](#addmodifydelete-nsgs)
+- [Add/Modify/Delete VLANs](#addmodifydelete-vlans)
+- [Remote Peering Connections](#rpcs)
 
 
 **NOTE-**
 Before you start with Network Creation, make sure you have run 'Fetch Compartments OCIDs to variables file'.
 
 ### Create Network
-Creation of Networking components using Automation Toolkit involes four simple steps.
+Creation of Networking components using Automation Toolkit involves four simple steps.
  - Add the networking resource details to appropriate Excel Sheets.
  - Running the toolkit to generate auto.tfvars.
  - Executing Terraform commands to provision the resources in OCI.
@@ -52,6 +54,7 @@ Below are the steps in detail to create Network that includes VCNs, Subnets, DHC
 
 This completes the steps for Creating the Network in OCI and exporting the default rules to the CD3 Excel Sheet using the Automation Toolkit.
 
+
 ### Use an existing DRG in OCI while creating the network
 In some scenarios, a DRG has already been created in the tenancy and rest of the Network components still need to be created. In such cases, generate the networking related tfvars using same process mentioned above till Step 4.
 
@@ -65,7 +68,7 @@ In some scenarios, a DRG has already been created in the tenancy and rest of the
 
    Continue executing the remaining steps (from Step 6) of [Create Network](#1-create-network).
 
-<br>[Go back to Networking Scenarios](#greenfield-tenancies)
+<br>[Go back to Networking Scenarios](#networking-scenarios)
 ### Modify Network 
 Modifying the Networking components using Automation Toolkit involves three simple steps.
  - Add/modify the details of networking components like the VCNs, Subnets, DHCP and DRG in Excel Sheet.
@@ -94,7 +97,7 @@ _Steps in detail_:
    
 This completes the modification of Networking components in OCI. Verify the components in console.
 
-<br>[Go back to Networking Scenarios](#greenfield-tenancies)
+<br>[Go back to Networking Scenarios](#networking-scenarios)
 ### Modify Security Rules, Route Rules and DRG Route Rules
 
 Follow the below steps to add, update or delete the following components:
@@ -127,7 +130,7 @@ Follow the below steps to add, update or delete the following components:
    
    This completes the modification of Security Rules, Route Rules and DRG Route Rules in OCI. Verify the components in console.<br>
 
-<br>[Go back to Networking Scenarios](#greenfield-tenancies)
+<br>[Go back to Networking Scenarios](#networking-scenarios)
 ### Sync manual changes done in OCI of Security Rules, Route Rules and DRG Route Rules with CD3 Excel Sheet and Terraform
 Follow the below process to export the rules to the same CD3 Excel Sheet as the one used to Create Network, and to sync the Terraform files with OCI whenever an user adds, modifies or deletes rules in OCI Console manually.
 
@@ -164,7 +167,7 @@ Follow the below process to export the rules to the same CD3 Excel Sheet as the 
    
    This completes the export of Security Rules, Route Rules and DRG Route Rules from OCI. Terraform plan/apply should be in sync with OCI.
     
-<br>[Go back to Networking Scenarios](#greenfield-tenancies)
+<br>[Go back to Networking Scenarios](#networking-scenarios)
 ### Add/Modify/Delete NSGs
 Follow the below steps to update NSGs.
 
@@ -187,7 +190,44 @@ Follow the below steps to update NSGs.
    
 This completes the modification of NSGs in OCI. Verify the components in console.
 
-<br>[Go back to Networking Scenarios](#greenfield-tenancies)
+<br>[Go back to Networking Scenarios](#networking-scenarios)
+
+### Add/Modify/Delete VLANs
+Follow the below steps to update VLANs.
+
+1.  Modify your excel sheet to update required data in the Tabs - SubnetsVLANs.
+2.  Make sure that the RouteRulesinOCI sheet and corresponing terraform is in synch with route rules in OCI console. If not, please follow procedure specified in [Sync manual changes done in OCI of Security Rules, Route Rules and DRG Route Rules with CD3 Excel Sheet and Terraform](#sync-manual-changes-done-in-oci-of-security-rules-route-rules-and-drg-route-rules-with-cd3-excel-sheet-and-terraform) 
+   
+3. Execute the _setupOCI.py_ file with _non_gf_tenancy_ parameter value to _false_:
+   
+   ```python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties```
+   
+4. Choose _'Network'_ from the displayed menu. Choose below sub-option:
+   - Add/Modify/Delete VLANs (Reads SubnetsVLANs sheet)
+    
+     Once the execution is successful,  _<customer\_name>\_vlans.auto.tfvars_ will be generated under the folder _/cd3user/tenancies/<customer\_name>/terraform_files/<region_dir>_. Existing files will move into respective backup folders.  _<customer\_name>\routetables.auto.tfvars_ file will also be updated with the route table information specified for each VLAN.
+    
+5. Navigate to the above path and execute the terraform commands:<br>
+       <br>_terraform init_
+       <br>_terraform plan_
+       <br>_terraform apply_
+   
+6.  Again make sure to export the Route Rules in OCI into excel and terraform. Please follow procedure specified in [Sync manual changes done in OCI of Security Rules, Route Rules and DRG Route Rules with CD3 Excel Sheet and Terraform](#sync-manual-changes-done-in-oci-of-security-rules-route-rules-and-drg-route-rules-with-cd3-excel-sheet-and-terraform) 
+
+This completes the modification of VLANs in OCI. Verify the components in console.
+
+### RPCs
+Remote VCN peering is the process of connecting two VCNs in different regions (but the same tenancy). The peering allows the VCNs' resources to communicate using private IP addresses without routing the traffic over the internet or through your on-premises network.
+ 
+   - Modify your excel sheet to update required data in the Tabs - DRGs.
+   - The source and target RPC details to be entered in DRG sheet for establishing a connection. Please check the example in excel file for reference.
+   - Make sure that the DRGRouteRulesinOCI sheet and corresponding to terraform is in synch with DRG route rules in OCI console. If not, please follow procedure specified in [Sync manual changes done in OCI of Security Rules, Route Rules and DRG Route Rules with CD3 Excel Sheet and Terraform](#sync-manual-changes-done-in-oci-of-security-rules-route-rules-and-drg-route-rules-with-cd3-excel-sheet-and-terraform)
+   - Global directory which is inside the customer outdir will have all RPC related files and scripts.
+   - The RPC resources(modules,provider configurations etc) are generated dynamically for the tenancy and can work along only with CD3 automation toolkit.
+   - Choose option 'Network' and then 'Customer Connectivity' for creating RPC in GreenField workflow.
+   - Output files are created under _/cd3user/tenancies/<customer\_name>/terraform_files/global/rpc_ directory
+
+<br>[Go back to Networking Scenarios](#networking-scenarios)
 <br><br>
 <div align='center'>
 

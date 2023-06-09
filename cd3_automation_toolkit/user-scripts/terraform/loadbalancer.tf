@@ -18,7 +18,7 @@ data "oci_certificates_management_certificates" "certificates_backendsets" {
 data "oci_core_instances" "instances" {
   # depends_on = [module.instances] # Uncomment to create Compute and Load Balancers together
   for_each = var.backends != null ? var.backends : {}
-  state = "RUNNING"
+  state    = "RUNNING"
   #Required
   compartment_id = each.value.instance_compartment != null && each.value.instance_compartment != "" ? (length(regexall("ocid1.compartment.oc1*", each.value.instance_compartment)) > 0 ? each.value.instance_compartment : var.compartment_ocids[each.value.instance_compartment]) : var.tenancy_ocid
 }
@@ -36,7 +36,7 @@ locals {
 }
 
 module "load-balancers" {
-#  depends_on = [module.vcns, module.subnets] # Uncomment to execute Networking and Load Balancer together
+  #  depends_on = [module.vcns, module.subnets] # Uncomment to execute Networking and Load Balancer together
   source   = "./modules/loadbalancer/lb-load-balancer"
   for_each = var.load_balancers != null ? var.load_balancers : {}
 
@@ -142,7 +142,7 @@ module "backend-sets" {
   policy            = each.value.policy
   backend_sets      = var.backend_sets
   certificate_name  = each.value.certificate_name != null ? merge(module.certificates.*...)[each.value.certificate_name]["certificate_tf_name"] : null
-  cipher_suite_name = each.value.cipher_suite_name != null ? (length(regexall("oci-default-ssl", each.value.cipher_suite_name)) < 0 ? merge(module.cipher-suites.*...)[each.value.cipher_suite_name]["cipher_suite_tf_name"] : "" ) : null
+  cipher_suite_name = each.value.cipher_suite_name != null ? (length(regexall("oci-default-ssl", each.value.cipher_suite_name)) < 0 ? merge(module.cipher-suites.*...)[each.value.cipher_suite_name]["cipher_suite_tf_name"] : "") : null
   key_name          = each.key
 
 }
@@ -155,8 +155,8 @@ output "backend_sets_id_map" {
 
 module "backends" {
   depends_on = [module.backend-sets]
-  source   = "./modules/loadbalancer/lb-backend"
-  for_each = var.backends != null ? var.backends : {}
+  source     = "./modules/loadbalancer/lb-backend"
+  for_each   = var.backends != null ? var.backends : {}
 
   #Required
   backendset_name  = merge(module.backend-sets.*...)[each.value.backendset_name].backend_set_tf_name
@@ -207,8 +207,8 @@ output "listeners_id_map" {
 
 module "path-route-sets" {
   depends_on = [module.backend-sets]
-  source   = "./modules/loadbalancer/lb-path-route-set"
-  for_each = var.path_route_sets != null ? var.path_route_sets : {}
+  source     = "./modules/loadbalancer/lb-path-route-set"
+  for_each   = var.path_route_sets != null ? var.path_route_sets : {}
 
   #Required
   load_balancer_id = length(regexall("ocid1.loadbalancer.oc1*", each.value.load_balancer_id)) > 0 ? each.value.load_balancer_id : merge(module.load-balancers.*...)[each.value.load_balancer_id]["load_balancer_tf_id"]
@@ -322,7 +322,7 @@ module "lbr-reserved-ips" {
   defined_tags  = each.value.defined_tags
   display_name  = each.value.display_name
   freeform_tags = each.value.freeform_tags
-  private_ip_id        = each.value.private_ip_id
+  private_ip_id = each.value.private_ip_id
   #private_ip_id        = each.value.private_ip_id != null ? (length(regexall("ocid1.privateip.oc1*", each.value.private_ip_id)) > 0 ? each.value.private_ip_id : (length(regexall("\\.", each.value.private_ip_id)) == 3 ? local.private_ip_id[0][each.value.private_ip_id] : merge(module.private-ips.*...)[each.value.private_ip_id].private_ip_tf_id)) : null
   #public_ip_pool_id    = each.value.public_ip_pool_id != null ? (length(regexall("ocid1.publicippool.oc1*", each.value.public_ip_pool_id)) > 0 ? each.value.public_ip_pool_id : merge(module.public-ip-pools.*...)[each.value.public_ip_pool_id].public_ip_pool_tf_id) : null
 }

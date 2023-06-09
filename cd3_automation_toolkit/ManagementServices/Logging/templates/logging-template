@@ -55,7 +55,6 @@
 
 {% if logs == 'true' or loggroup == 'false' %}
 {% if count == 0 %}
-// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 
 
 ############################
@@ -75,17 +74,16 @@
   {% if lb_log_tf_name and lb_log_tf_name != "" %}
     {% for type in logtype %}
     {{ lb_log_tf_name }}-log-{{ type }}  = {
-        display_name = "{{ log_name }}_{{ type }}-log"
-        log_group_id = "{{ log_group_id }}"
-        log_type     = "SERVICE"
-        category    = "{{ type }}"
-        resource    = "{{ resource }}"
-        service     = "{{ service }}"
-        source_type = "OCISERVICE"
-        compartment_id = "{{ compartment_tf_name }}"
-        is_enabled         = true
-        retention_duration = 30
-
+        display_name        = "{{ log_name }}_{{ type }}-log"
+        log_group_id        = "{{ log_group_id }}"
+        log_type            = "SERVICE"
+        category            = "{{ type }}"
+        resource            = "{{ resource }}"
+        service             = "{{ service }}"
+        source_type         = "OCISERVICE"
+        compartment_id      = "{{ compartment_tf_name }}"
+        is_enabled          = true
+        retention_duration  = 30
 
     {#  ##Do not modify below this line##  #}
     {#                                     #}
@@ -122,17 +120,16 @@
   {% else %}
   {# Logs for other services - OSS and VCN Flow Logs #}
   {{ log_tf_name }}  = {
-        display_name = "{{ log_name }}"
-        log_group_id = "{{ log_group_id }}"
-        log_type     = "SERVICE"
-        category    = "{{ category }}"
-        resource    = "{{ resource }}"
-        service     = "{{ service }}"
-        source_type = "OCISERVICE"
-        compartment_id = "{{ compartment_tf_name }}"
-        is_enabled         = true
-        retention_duration = 30
-
+        display_name        = "{{ log_name }}"
+        log_group_id        = "{{ log_group_id }}"
+        log_type            = "SERVICE"
+        category            = "{{ category }}"
+        resource            = "{{ resource }}"
+        service             = "{{ service }}"
+        source_type         = "OCISERVICE"
+        compartment_id      = "{{ compartment_tf_name }}"
+        is_enabled          = true
+        retention_duration  = 30
 
     {#  ##Do not modify below this line##  #}
     {#                                     #}

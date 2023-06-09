@@ -29,6 +29,7 @@ module "cloud-guard-targets" {
   display_name         = each.value.display_name
   target_resource_id   = each.value.target_resource_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.target_resource_id)) > 0 ? each.value.target_resource_id : var.compartment_ocids[each.value.target_resource_id]) : each.value.target_resource_id
   target_resource_type = each.value.target_resource_type != null ? each.value.target_resource_type : "COMPARTMENT"
+  prefix               = each.value.prefix
 
   #Optional
   defined_tags             = each.value.defined_tags

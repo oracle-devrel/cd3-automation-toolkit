@@ -1,0 +1,102 @@
+{% if count == 0 %}
+// Copyright (c) 2021, 2022, 2023 Oracle and/or its affiliates.
+
+############################
+# DNS
+# DNS Resolvers - tfvars
+# Allowed Values:
+# view_id can be the ocid of the view or the name as in OCI
+# compartment_id and view_compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens "--"
+# Example : compartment_id = "ocid1.compartment.oc1..aaaaaaaah6jy3xf3c" or compartment_id = "AppDev--Prod" where "AppDev" is the parent of "Prod" compartment
+# Sample import command for dns-resolver :
+# terraform import "module.dns-resolvers[\"<<dns-resolver terraform variable name>>\"].oci_dns_resolver.resolver" <<dns-resolver ocid>>
+# terraform import "module.dns-resolvers[\"<<dns-resolver-endpoint terraform variable name>>\"].oci_dns_resolver_endpoint.resolver_endpoint" <<resolverId/{resolverId}/name/{resolverEndpointName}>>
+
+############################
+
+resolvers = {
+    ##Add New resolvers for {{ region|lower }} here##
+}
+{% else %}
+   "{{ resolver_tf_name }}" =  {
+            vcn_name = "{{ res_vcn_name }}"
+			network_compartment_id = "{{ net_compartment_name }}"
+            {% if res_scope %}
+            scope = "{{ res_scope }}""
+            {% endif %}
+            display_name = "{{ res_display_name }}"
+
+			views = {
+                {% for view in res_views %}
+                "{{ res_vcn_name | replace("\ ","_") }}_order{{ loop.index }}" = {
+                    view_id = "{{ view.view_id }}"
+                    view_compartment_id = "{{ view.compartment_id }}"
+                }
+                {% endfor %}
+			}
+
+
+			endpoint_names = {
+                {% for endpoint in res_endpoints %}
+                "{{ endpoint.name }}" = {
+                    is_forwarding = {{ endpoint.is_forwarding }}
+                    is_listening = {{ endpoint.is_listening }}
+                    name = "{{ endpoint.name }}"
+                    subnet_name = "{{ endpoint.subnet_name }}"
+                    forwarding_address = "{{ endpoint.forwarding_address }}"
+                    listening_address = "{{ endpoint.listening_address }}"
+                    {% if endpoint.nsg_ids %}
+                    nsg_ids = {{ endpoint.nsg_ids | replace("\'","\"") }}
+                    {% else %}
+                    nsg_ids = []
+                    {% endif %}
+                }
+                {% endfor %}
+
+			}
+			resolver_rules = {
+                {% for resolver_rule in res_resolver_rules %}
+                "{{ resolver_rule.rule_id }}" = {
+                    client_address_conditions = {{ resolver_rule.client_address_conditions | replace("\'","\"") }}
+                    destination_addresses = {{ resolver_rule.destination_addresses | replace("\'","\"") }}
+                    qname_cover_conditions = {{ resolver_rule.qname_cover_conditions | replace("\'","\"") }}
+                    source_endpoint_name = "{{ resolver_rule.source_endpoint_name }}"
+
+                }
+                {% endfor %}
+			}
+
+
+        {#  ##Do not modify below this line##  #}
+        {#                                     #}
+        {#  ###Section for adding Defined and Freeform Tags###  #}
+        {% if defined_tags and defined_tags != 'nan' and defined_tags != '' and defined_tags != [['nan']] %}
+          {% if defined_tags[0] %}
+            defined_tags = {
+            {% for tags in defined_tags  %}
+                {% if not loop.last %}
+                    "{{ tags[0]  }}"= "{{ tags[1] }}" ,
+                {% else %}
+                    "{{ tags[0]  }}"= "{{ tags[1] }}"
+                {% endif %}
+            {% endfor %}
+            }
+            {% endif %}
+           {% endif %}
+                {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' and freeform_tags != [['nan']] %}
+                    {% if freeform_tags[0] %}
+            freeform_tags = {
+                        {% for tags in freeform_tags %}
+                            {% if not loop.last  %}
+                    "{{ tags[0] }}"="{{ tags[1] }}",
+                            {% else %}
+                    "{{ tags[0] }}"="{{ tags[1] }}"
+                            {% endif %}
+                        {% endfor %}
+                        }
+                    {% endif %}
+                {% endif %}
+        {#  ###Section for adding Defined and Freeform Tags ends here###  #}
+
+    },
+{% endif %}

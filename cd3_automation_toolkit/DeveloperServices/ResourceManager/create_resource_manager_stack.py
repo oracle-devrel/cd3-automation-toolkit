@@ -96,6 +96,7 @@ def create_resource_manager(outdir, outdir_struct,prefix,regions, config=DEFAULT
     for svc,dir in outdir_struct.items():
         dir_svc_map[dir].append(svc)
 
+
     print("Fetching Compartment Detail. Please wait...")
     configFileName = config
     config = oci.config.from_file(file_location=configFileName)
@@ -106,10 +107,17 @@ def create_resource_manager(outdir, outdir_struct,prefix,regions, config=DEFAULT
     x = datetime.datetime.now()
     date = x.strftime("%f").strip()
 
+    save_outdir_struct = outdir_struct.copy()
     for region in regions:
         region=region.strip().lower()
 
         region_dir=outdir + "/" + region
+
+        if region == 'global':
+            outdir_struct = {'rpc':'rpc'}
+        else:
+            outdir_struct = save_outdir_struct.copy()
+
         rm_dir = region_dir + '/RM/'
 
         # 1. Copy all the TF files for specified regions to RM directory
@@ -188,7 +196,6 @@ def create_resource_manager(outdir, outdir_struct,prefix,regions, config=DEFAULT
     for region in regions:
         rm_ocids_file = outdir+'/'+region+'/rm_ocids.csv'
         comp_name = ''
-        rm_region = region
         if os.path.exists(rm_ocids_file):
             with open(rm_ocids_file) as csv_file:
                 csv_reader = csv.reader(csv_file, delimiter=';')
@@ -196,14 +203,13 @@ def create_resource_manager(outdir, outdir_struct,prefix,regions, config=DEFAULT
                     if (len(row)==0):
                         continue
                     rm_region = row[0]
-                    comp_name = row[1]
+                    rm_comp_name = row[1]
                     rm_name = row[2]
                     rm_ocid = row[3]
 
-                    rm_region_service_map.update({(rm_region,rm_name):rm_ocid})
-            # assuming all stacks in that region are in same comp; picking the one from last row
-            if comp_name == '':
-                comp_name = input("Enter Resource Manager Compartment Name for "+region +" region: ")
+                    rm_region_service_map.update({(rm_region,rm_name):(rm_comp_name,rm_ocid)})
+                #put comp name of last stack in the variable
+                comp_name = rm_comp_name
         else:
             comp_name = input("Enter Resource Manager Compartment Name for "+region +" region: ")
 
@@ -220,33 +226,40 @@ def create_resource_manager(outdir, outdir_struct,prefix,regions, config=DEFAULT
             except Exception as e:
                 print("Invalid Compartment Name. Please Try again. Exiting...")
 
-        rm_region_comp_map.update({rm_region: comp_id})
 
     # Start creating stacks
     cwd = os.getcwd()
 
     svcs = []
-    for region in regions:
-        comp_name = ""
-        comp_id = rm_region_comp_map[region]
-        for nm, id in ct.ntk_compartment_ids.items():
-            if id == comp_id:
-                comp_name = nm
-                break
 
+    save_dir_svc_map = dir_svc_map.copy()
+
+    for region in regions:
         print("\nStart creating Stacks for "+region+ " region...")
         region_dir = outdir + "/" + region
+        if region == 'global':
+            outdir_struct = {'rpc':'rpc'}
+            dir_svc_map['rpc']=['rpc']
+
+        else:
+            outdir_struct = save_outdir_struct.copy()
+            dir_svc_map = save_dir_svc_map.copy()
+
         rm_dir = region_dir + '/RM/'
+
         os.chdir(rm_dir)
         region=region.strip().lower()
         new_config = config
-        new_config.__setitem__("region", str(ct.region_dict[region]))
+        if region == 'global':
+            new_config.__setitem__("region", str(ct.region_dict[ct.home_region]))
+        else:
+            new_config.__setitem__("region", str(ct.region_dict[region]))
+
         ocs_stack = oci.resource_manager.ResourceManagerClient(new_config)
 
         #Process files in region directory - single outdir
         if len(outdir_struct.items())==0:
             rm_name = prefix + "-" + region
-            #shutil.make_archive(rm_name, 'zip', rm_dir)
             zip_name = rm_name + ".zip"
             # Fix for make_archive huge zip file issue - Ulag
             file_paths = []
@@ -263,20 +276,25 @@ def create_resource_manager(outdir, outdir_struct,prefix,regions, config=DEFAULT
 
             if (region, rm_name) in rm_region_service_map.keys():
                 try:
-                    rm_ocid = rm_region_service_map[(region, rm_name)]
+                    comp_name,rm_ocid = rm_region_service_map[(region, rm_name)]
                     status = ocs_stack.get_stack(rm_ocid).data
 
                     if status.lifecycle_state == "ACTIVE":
+                        rm_comp_id=status.compartment_id
+                        for nm, id in ct.ntk_compartment_ids.items():
+                            if id == rm_comp_id:
+                                comp_name = nm
+                                break
                         print("Resource Manager Stack " + rm_name + " with ocid " + rm_ocid + " for region " + region + " exists in '" + comp_name + "' Compartment.\nUpdating the same.................")
                         stack_ocid = update_rm(rm_name, rm_ocid, ocs_stack,svcs)
                 except Exception as e:
                     print("Resource Manager " + rm_name + " for region " + region + " created previously in compartment '" + comp_name + "' is inactive/terminated!!. Creating a new one...")
-                    comp_id = rm_region_comp_map[region]
+                    comp_id = ct.ntk_compartment_ids[comp_name]
                     stack_ocid = create_rm(rm_name, comp_id, ocs_stack,svcs)
 
             else:
                 print("Resource Manager stack does not exist for for region " + region + ". Creating a new one...")
-                comp_id = rm_region_comp_map[region]
+                comp_id = ct.ntk_compartment_ids[comp_name]
                 stack_ocid = create_rm(rm_name, comp_id, ocs_stack,svcs)
 
             tfStr[region] = tfStr[region] + region + ";" + comp_name + ";" + rm_name + ";" + stack_ocid + "\n"
@@ -302,7 +320,7 @@ def create_resource_manager(outdir, outdir_struct,prefix,regions, config=DEFAULT
                 shutil.move(rm_dir_zip, rm_dir_zip + "_backup")
 
             os.chdir("../")
-            #shutil.make_archive(base_name, 'zip', rm_dir)
+
             shutil.move(rm_dir+"/"+zip_name,region_dir)
 
         #Process service_dirs - separate outdir
@@ -320,18 +338,35 @@ def create_resource_manager(outdir, outdir_struct,prefix,regions, config=DEFAULT
                 print("\nProcessing Directory "+service_dir+"...")
                 service_dir_processed.append(service_dir)
 
-                shutil.copytree(rm_dir + "/modules", rm_dir+"/"+ service_dir+"/modules")
+                if (os.path.exists(rm_dir + "/modules")):
+                    shutil.copytree(rm_dir + "/modules", rm_dir+"/"+ service_dir+"/modules")
 
                 for svc in svcs:
-                    with open(service_dir+"/"+ svc + ".tf", 'r') as tf_file:
-                        module_data = tf_file.read().rstrip()
-                        module_data = module_data.replace("\"../modules", "\"./modules")
-                    f = open(service_dir+"/"+ svc + ".tf", "w+")
-                    f.write(module_data)
-                    f.close()
+                    if os.path.exists(service_dir+"/"+ svc + ".tf"):
+                        with open(service_dir+"/"+ svc + ".tf", 'r') as tf_file:
+                            module_data = tf_file.read().rstrip()
+                            module_data = module_data.replace("\"../modules", "\"./modules")
+                        if svc == 'rpc':
+                            f = open(service_dir+"/"+ svc + "-temp.tf", "w+")
+                        else:
+                            f = open(service_dir + "/" + svc + ".tf", "w+")
+                        f.write(module_data)
+                        f.close()
+
+                    if svc == 'rpc' and os.path.exists(service_dir+"/"+ svc + ".tf"):
+                        try:
+                            with open(service_dir+"/"+ svc + "-temp.tf",'r') as origfile, open(service_dir+"/"+ svc + ".tf", 'w') as newfile:
+                                for line in origfile:
+                                    if 'tenancy_ocid' in line or "user_ocid" in line or "fingerprint" in line or "private_key_path" in line:
+                                        pass
+                                    else:
+                                        newfile.write(line)
+                        except FileNotFoundError as e:
+                            pass
+
+                        os.remove(service_dir+"/"+ svc + "-temp.tf")
 
                 service_rm_name = prefix + "-" + region + "-" + service_dir
-                #shutil.make_archive(service_rm_name, 'zip', service_dir)
 
                 zip_name = service_rm_name + ".zip"
                 # Fix for make_archive huge zip file issue - Ulag
@@ -351,20 +386,25 @@ def create_resource_manager(outdir, outdir_struct,prefix,regions, config=DEFAULT
                             os.chdir("../")
                 if (region,service_rm_name) in rm_region_service_map.keys():
                     try:
-                        service_rm_ocid = rm_region_service_map[(region,service_rm_name)]
+                        comp_name,service_rm_ocid = rm_region_service_map[(region,service_rm_name)]
                         status = ocs_stack.get_stack(service_rm_ocid).data
 
                         if status.lifecycle_state == "ACTIVE":
+                            rm_comp_id = status.compartment_id
+                            for nm, id in ct.ntk_compartment_ids.items():
+                                if id == rm_comp_id:
+                                    comp_name = nm
+                                    break
                             print("Resource Manager Stack "+service_rm_name +" with ocid "+ service_rm_ocid + " for region " + region + " exists in '" + comp_name + "' Compartment.\nUpdating the same.................")
                             stack_ocid = update_rm(service_rm_name,service_rm_ocid,ocs_stack, svcs)
                     except Exception as e:
                         print("Resource Manager "+ service_rm_name + " for region " + region + " created previously in compartment '" + comp_name + "' is inactive/terminated!!. Creating a new one...")
-                        comp_id = rm_region_comp_map[region]
+                        comp_id = ct.ntk_compartment_ids[comp_name]
                         stack_ocid = create_rm(service_rm_name, comp_id, ocs_stack,svcs)
 
                 else:
                     print("Resource Manager stack does not exist for services - "+ ','.join(svcs)+" for region "+ region+". Creating a new one...")
-                    comp_id = rm_region_comp_map[region]
+                    comp_id = ct.ntk_compartment_ids[comp_name]
                     stack_ocid = create_rm(service_rm_name,comp_id, ocs_stack,svcs)
 
                 tfStr[region] = tfStr[region] + region +";" +comp_name + ";" + service_rm_name + ";" + stack_ocid+"\n"
@@ -394,7 +434,8 @@ def create_resource_manager(outdir, outdir_struct,prefix,regions, config=DEFAULT
                 shutil.move(rm_dir_zip, rm_dir_zip + "_backup")
 
             base_name = prefix + "-" + region + "-stacks"
-            shutil.rmtree("modules")
+            if (os.path.exists(os.path.join(os.getcwd(),"modules"))):
+                shutil.rmtree("modules")
             os.chdir("../")
             shutil.make_archive(base_name, 'zip', rm_dir)
 

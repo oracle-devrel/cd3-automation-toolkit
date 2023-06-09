@@ -5,6 +5,21 @@
 ## Create Cloud Guard Target
 ################################
 
+resource "oci_cloud_guard_detector_recipe" "cloned_detector_recipes" {
+  for_each                  = local.detector_recipes
+  compartment_id            = var.compartment_id
+  display_name              = format("%s%s", var.prefix, trimprefix(each.key, "OCI"))
+  source_detector_recipe_id = each.value
+}
+
+
+resource "oci_cloud_guard_responder_recipe" "cloned_responder_recipes" {
+  for_each                   = local.responder_recipes
+  compartment_id             = var.compartment_id
+  display_name               = format("%s%s", var.prefix, trimprefix(each.key, "OCI"))
+  source_responder_recipe_id = each.value
+}
+
 resource "oci_cloud_guard_target" "target" {
   #Required
   compartment_id       = var.compartment_id
@@ -19,14 +34,14 @@ resource "oci_cloud_guard_target" "target" {
   state         = var.state
 
   dynamic "target_detector_recipes" {
-    for_each = var.target_detector_recipes != null ? var.target_detector_recipes : []
+    for_each = oci_cloud_guard_detector_recipe.cloned_detector_recipes
     content {
       #Required
-      detector_recipe_id = local.recipes[target_detector_recipes.value.detector_recipe_id]
+      detector_recipe_id = target_detector_recipes.value.id
 
       #Optional
       dynamic "detector_rules" {
-        for_each = try(target_detector_recipes.value.detector_rules, [])
+        for_each = try(target_detector_recipes.value.id.value.detector_rules, [])
         content {
           #Required
           details {
@@ -43,11 +58,10 @@ resource "oci_cloud_guard_target" "target" {
     }
   }
   dynamic "target_responder_recipes" {
-    for_each = var.target_responder_recipes != null ? var.target_responder_recipes : []
+    for_each = oci_cloud_guard_responder_recipe.cloned_responder_recipes
     content {
       #Required
-      responder_recipe_id = local.recipes[target_responder_recipes.value.responder_recipe_id]
-
+      responder_recipe_id = target_responder_recipes.value.id
       #Optional
       dynamic "responder_rules" {
         for_each = try(target_responder_recipes.value.responder_rules, [])

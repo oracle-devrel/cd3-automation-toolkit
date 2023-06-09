@@ -87,11 +87,11 @@ module "notifications-subscriptions" {
   source   = "./modules/managementservices/notification-subscription"
   for_each = var.notifications_subscriptions != null ? var.notifications_subscriptions : {}
 
-  depends_on        = [module.notifications-topics]
-  compartment_id    = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
-  endpoint          = each.value.endpoint
-  protocol          = each.value.protocol
-  topic_id          = length(regexall("ocid1.onstopic.oc1*", each.value.topic_id)) > 0 ? each.value.topic_id : merge(module.notifications-topics.*...)[each.value.topic_id]["topic_tf_id"]
+  depends_on     = [module.notifications-topics]
+  compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
+  endpoint       = each.value.endpoint
+  protocol       = each.value.protocol
+  topic_id       = length(regexall("ocid1.onstopic.oc1*", each.value.topic_id)) > 0 ? each.value.topic_id : merge(module.notifications-topics.*...)[each.value.topic_id]["topic_tf_id"]
   #Optional
   defined_tags  = each.value.defined_tags
   freeform_tags = each.value.freeform_tags

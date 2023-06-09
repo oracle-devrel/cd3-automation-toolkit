@@ -19,6 +19,8 @@ On re-running the same option you will find the previously existing files being 
   </ul>
 </blockquote>
 
+
+
 ## Groups Tab
 
 Use this Tab to create groups in the OCI tenancy. On choosing "Identity" in the SetUpOCI menu will allow to create groups in the OCI tenancy.
@@ -31,6 +33,7 @@ Once terraform apply is done, you can view the resources under Identity -> Group
 
 On re-running the same option you will find the previously existing files being backed up under directory →   \<outdir>/\<region>/backup_groups/\<Date>-\<Month>-\<Time>.
 
+
 ## Policies Tab
 
 Use this Tab to create policies in the OCI tenancy. On choosing "Identity" in the SetUpOCI menu will allow to create policies in the OCI tenancy.
@@ -40,6 +43,30 @@ Output terraform files generated: \<outdir>/\<region>/\<prefix>_policies.auto.tf
 Once terraform apply is done, you can view the resources under Identity -> Policies in OCI console.
 
 On re-running the same option you will find the previously existing files being backed up under directory →   \<outdir>/\<region>/backup_policies/\<Date>-\<Month>-\<Time>.
+
+
+## Users Tab
+
+Use this Tab to create local users in the OCI tenancy. On choosing "Identity" in the SetUpOCI menu and "Add/Modify/Delete Users" submenu will allow to create users in the OCI tenancy.
+
+Output terraform file generated: \<outdir>/\<region>/\<prefix>_users.auto.tfvars where \<region> directory is the home region.
+  
+Once terraform apply is done, you can view the resources under Identity & Security -> Users in OCI console.
+  
+On re-running the same option you will find the previously existing files being backed up under directory → \<outdir>/\<region>/backup_users/\<Date>-<Month>-<Time>.
+  
+   
+## Network Sources Tab
+  
+Use this Tab to create Network Source in the OCI tenancy. On choosing "Identity" in the SetUpOCI menu and "Add/Modify/Delete Network Sources" submenu will allow to create Network Sources in the OCI tenancy.
+  
+Output terraform file generated: \<outdir>/\<region>/\<prefix>_networksources.auto.tfvars where \<region> directory is the home region.
+  
+Once terraform apply is done, you can view the resources under Identity & Security -> Network Sources in OCI console.
+  
+On re-running the same option you will find the previously existing files being backed up under directory → \<outdir>/\<region>/backup_networksources/\<Date>-<Month>-<Time>.
+  
+    
 
 ## Tags Tab
 
@@ -71,8 +98,8 @@ On re-running the same option you will find the previously existing files being 
 
 **Note:**
 
-1. Only VCN attachements are supported via CD3 as of now for DRGv2. Please create attachments for RPC, VC and IPSec via OCI console.
-2. Network export will also export only VCN attachments to CD3 excel sheet as of now.
+1. Only VCN and RPC attachments are supported via CD3 as of now for DRGv2. Please create attachments for VC and IPSec via OCI console.
+2. Network export will also export only VCN and RPC attachments to CD3 excel sheet as of now.
 3. You can create a Route Table for DRG which is not attached to any attachment by keeping 'Attached To' column in DRGs tab empty.
 4. You can create an Import Route Distribution which is attached to some Route Table in DRG.
 
@@ -83,30 +110,32 @@ This is an important tab and contains general information about networking to be
 ## d. DHCP tab
 This contains information about DHCP options to be created for each VCN.
 
-## e. Subnets tab
+## e. SubnetsVLANs tab
 
 **Notes:**
 
-1. Name of the VCNs, subnets etc are all case sensitive. Specify the same names in all required places. Avoid trailing spaces for a resource Name.
-
-2. Default Route Rules created are :
+1. Name of the VCNs, subnets etc are all case-sensitive. Specify the same names in all required places. Avoid trailing spaces for a resource Name.
+2. A subnet or a vlan will be created based on the column - 'Subnet or VLAN'. When VLAN is specified, vlan tag can also be specified with sytanx as VLAN::<vlan_tag>
+3. Column NSGs is read only for type VLAN.
+4. Columns - DHCP Option Name, Seclist Names, Add Default Seclist and DNS Label are applicable only for type Subnet.
+5. Default Route Rules created are :
 
    a. Based on the values entered in columns  ‘configure SGW route’, ‘configure NGW route’, ‘configure IGW route’, 'configure Onprem route' and 'configure VCNPeering route'  in Subnets sheet; if the value entered is ‘y’, it will create a route for the object in that subnet eg if ‘configure IGW’ in Subnets sheet is ‘y’ then it will read parameter ‘igw_destination’ in VCN Info tab and create a rule in the subnet with destination object as IGW of the VCN and destination CIDR as value of igw_destnation field. If comma separated values are entered in the igw_destination in VCN Info tab then the tool creates route rule for each destination cidr for IGW in that subnet.Tool works similarly for ‘configure NGW’ in Subnets tab and ‘ngw_destination’ in VCN Info tab. For SGW, route rule is added either 'all services' or object storage in that region.
 
    b.  For a hub spoke model, tool automatically creates route tables attached with the DRG and each LPG in the hub VCN peered with spoke VCN.
      ‘onprem_destinations’ in VCN Info tab specifies the On Prem Network CIDRs.
 
-3. The below Default Security Rules are created:
+6. The below Default Security Rules are created:
 
    a.  Egress rule allowing all protocols for 0.0.0.0/0 is opened.
 
    b.  Ingress rule allowing all protocols for subnet CIDR is opened. This is to allow communication between VMs with in the same subnet.
 
-4. Default Security List of the VCN is attached to the subnet if ‘add_default_seclist’ parameter in Subnets tab is set to ‘y’.
+7. Default Security List of the VCN is attached to the subnet if ‘add_default_seclist’ parameter in Subnets tab is set to ‘y’.
 
-5. Components- IGW, NGW, DRG, SGW, LPGs and NSGs are created in same compartment as the VCN.
+8. Components- IGW, NGW, DRG, SGW, LPGs and NSGs are created in same compartment as the VCN.
 
-6. VCN names need to be unique for the same region. Automation ToolKit does not support duplicate values at the moment. However you can have same VCN names across different regions.
+9. VCN names need to be unique for the same region. Automation ToolKit does not support duplicate values at the moment. However you can have same VCN names across different regions.
       
 
 Output terraform files are generated under \<outdir>/\<region> directory.
@@ -122,8 +151,48 @@ Output files generated:
 | <br>\<prefix>_routetables.auto.tfvars<br>\<prefix>_default-routetables.auto.tfvars<br>\<prefix>_drg-routetables.auto.tfvars<br>\<prefix>_drg-distributions.auto.tfvars<br>\<prefix>_drg-data.auto.tfvars</br></br></br></br></br> | <br>Separate file for each route table name is created.<br>Contains TF for route rules in each route table.</br></br> |
 | <br>\<prefix>_seclists.auto.tfvars<br>\<prefix>_default-seclists.auto.tfvars</br></br> | <br>Separate file for each security list name is created.<br>Contains TF for security rules in each security list. |
 |\<prefix>_subnets.auto.tfvars|	Contains TF for all subnets for all VCNs.|
+|\<prefix>_vlans.auto.tfvars|	Contains TF for all VLANs for all VCNs.|
 |\<prefix>_default-dhcp.auto.tfvars	|Contains TF for default DHCP options of each VCN in each region |
 |<br>\<prefix>_nsgs.auto.tfvars<br>\<prefix>_nsg-rules.auto.tfvars</br></br>| Contains TF for NSGs in each region |
+
+## DNS-Views-Zones-Records-Tab
+Below are the details about specific columns to fill the sheet for DNS-Views-Zones-Records-Tab
+1. "Compartment Name"- Compartment name for the  Views/Zones
+2. "View Name"- Should be unique in a region
+3. "Zone" - Zone Name under the specified view
+4. "Domain" - Full domain name (including zone name)
+5. "RType" -  Select the RType from the list
+6. "RDATA" - Provide multi values as supported by the specified RType, separated by newline.
+    <a href="https://docs.oracle.com/en-us/iaas/Content/DNS/Reference/supporteddnsresource.htm">Click here to read more about RType and RDATA. </a> 
+
+6. "Defined Tags" - Specify the defined tag key and its value in the format - <Namespace>.<TagKey>=<Value>  else leave it empty.
+    Multiple Tag Key , Values can be specified using semi-colon (;) as the delimeter. 
+    Example: Operations.CostCenter=01;Users.Name=user01
+7. There must be only Single Row  for Domain and RType combination
+8. Rows are duplicated in case of multiple child resources
+
+Output terraform files are generated under \<outdir>/\<region> directory.
+
+Once terraform apply is done, you can view the resources under Networking -> DNS management in OCI console
+## DNS-Resolvers-Tab
+Existing Resolvers need to be exported first before making any changes to those.
+Below are the details about specific columns to fill the sheet for DNS-Resolvers-Tab
+1. "Compartment Name" - Compartment name for VCN
+2. "Display Name" -  Display Name is same as the VCN Name by default.
+3. "Associated Private Views" - Format: <view_compartment>@<view_name. Multiple views are seperated by newline in the same cell(\n is not supported).
+4. "Endpoint Display Name" - Provide endpoint display name, new row need to be created for each endpoint in a resolver. Duplicate Names are not allowed for a single resolver.
+5. "Endpoint Type:IP Address" - Format Type:IP, Type could be Forwarding or Listening. IP can be left as null if not predefined.
+6. "Endpoint NSGs"- NSGs attached to the endpint.
+7. "Rules" - Format: Type::Clients::Destination IP. Multiple rules are seperated by newline in the same cell(\n is not supported)(Rules are processed only for Forwarding Endpoints)
+8. "Defined Tags" - Specify the defined tag key and its value in the format - <Namespace>.<TagKey>=<Value>  else leave it empty.
+   Multiple Tag Key , Values can be specified using semi colon (;) as the delimeter. 
+   Example: Operations.CostCenter=01;Users.Name=user01 
+9. Associated Private Views can be null/blank
+
+Output terraform files are generated under \<outdir>/\<region> directory.
+
+Once terraform apply is done, you can view the resources under Networking -> Virtual Cloud Network -> VCN Information in OCI console
+
 
 ## DedicatedVMHosts Tab
 
@@ -152,22 +221,31 @@ On re-running the same option you will find the previously existing files being 
 
 3. Leave columns: Backup Policy, NSGs, DedicatedVMHost blank if instance doesn't need to be part of any of these. Instances can be made a part of Backup Policy and NSGs later by choosing appropriate option in setUpOCI menu.
 
-4. For column SSH Key Var Name accepts SSH key value directly or the name of variable decalred in variables.tf containing the key value. Make sure to have an entry in variables_\<region>.tf file with the name you enter in SSH Key Var Name field of the Excel sheet and put the value as SSK key value.
-Ex: If you enter the SSH Key Var Name as ocs_public, make an entry in variables_\<region>.tf file as shown below:
+4. For column SSH Key Var Name accepts SSH key value directly or the name of variable declared in variables.tf containing the key value. Make sure to have an entry in variables_\<region>.tf file with the name you enter in SSH Key Var Name field of the Excel sheet and put the value as SSK key value.
+Ex: If you enter the SSH Key Var Name as ssh_public_key, make an entry in variables_\<region>.tf file as shown below:
 
   
 variable "\<value entered in SSH Key Var Name field of Excel sheet>"; here it will be as below:
   
-    variable  'ocs_public'  {
-    default = "<paste your public key here>"
-    }
-
-The value accepts multiple keys seperated by \n
+    variable  'instance_ssh_keys'  {
+    type = map(any)
+    default = {
+    ssh_public_key = "<SSH PUB KEY STRING HERE>"
+    # Use '\n' as the delimiter to add multiple ssh keys.
+    # Example: ssh_public_key = "ssh-rsa AAXXX......yhdlo\nssh-rsa AAxxskj...edfwf"
+    #START_instance_ssh_keys#
+    # exported instance ssh keys
+    #instance_ssh_keys_END#
+   }
 
 
 6. Enter subnet name column value as: \<vcn-name>_\<subnet-name>
 
-7. Source Details column of the excel sheet accepts both image and boot volume as the source for instance to be launched.
+7. Enter remote execute script(Ansible/Shell) name. Shell scripts should be named with *.sh and ansible with *.yaml or *.yml inside 'scripts' folder within the region/service dir. This feature is tested against OL8.  
+
+8. Create a column called 'Cloud Init Script' to execute scripts (located under 'scripts' folder within the region/service dir) as part of cloud-init.   
+
+9. Source Details column of the excel sheet accepts both image and boot volume as the source for instance to be launched.
 Format - 
 
 image::\<variable containing ocid of image> or
@@ -178,20 +256,26 @@ Ex: If you enter the Source Details as image::Linux, make an entry in variables_
 
 variable "\<value entered in Source Details field of Excel sheet>"; here it will be:
 
-    variable 'Linux' {
-    default = "<ocid of the image/bootVolume to launch the instance from>"
+    variable 'instance_source_ocids' {
+     type = map(any)
+     Linux    = "<LATEST LINUX OCID HERE>"
+     Windows  = "<LATEST WINDOWS OCID HERE>"
+     PaloAlto = "Palo Alto Networks VM-Series Next Generation Firewall"
+     #START_instance_source_ocids#
+     # exported instance image ocids
+     #instance_source_ocids_END#
     }
 
-8. Mention shape to be used in Shape column of the excel sheet. If Flex shape is to be used format is:
+9. Mention shape to be used in Shape column of the excel sheet. If Flex shape is to be used format is:
 
 shape::ocpus
 
 eg: VM.Standard.E3.Flex::5
 
 
-9. Custom Policy Compartment Name : Specify the compartment name where the Custom Policy is created.
+10. Custom Policy Compartment Name : Specify the compartment name where the Custom Policy is created.
 
-10. While export of instances, it will fetch details for only the primary VNIC attached to the instance
+11. While export of instances, it will fetch details for only the primary VNIC attached to the instance
 
 
 On choosing **"Compute"** in the SetUpOCI menu and **"Add/Modify/Delete Instances/Boot Backup Policy"** submenu will allow to launch your VM on OCI tenancy.
@@ -280,9 +364,9 @@ Once terraform apply is done, you can view the resources under Networking → Lo
 
 On re-running the same option you will find the previously existing files being backed up under directory →   \<outdir>/\<region>/backup_LB-Hostname-Certs/\<Date>-\<Month>-\<Time>.
 
-## Backend Set and Backend Servers Tab
+## LB-Backend Set and Backend Servers Tab
 
-Use the tab **BackendSet-BackendServer** of CD3 Excel to create the following components of Load Balancer:
+Use the tab **LB-BackendSet-BackendServer** of CD3 Excel to create the following components of Load Balancer:
 
 - Backend Sets
 - Backend Servers
@@ -298,9 +382,9 @@ Once terraform apply is done, you can view the resources under Networking→Load
 
 On re-running the same option you will find the previously existing files being backed up under directory →   \<outdir>/\<region>/backup_BackendSet-BackendServer/\<Date>-\<Month>-\<Time>.
 
-## RuleSet Tab
+## LB-RuleSet Tab
 
-Use the tab **RuleSet** of CD3 Excel to create the following components of Load Balancer:
+Use the tab **LB-RuleSet** of CD3 Excel to create the following components of Load Balancer:
 
 - Rule Sets
 - RuleSet 
@@ -315,9 +399,9 @@ Once terraform apply is done, you can view the resources under Networking→Load
 
 On re-running the same option you will find the previously existing files being backed up under directory →   \<outdir>/\<region>/backup_RuleSet/\<Date>-\<Month>-\<Time>.
 
-## Path Route Set Tab
+## LB-Path Route Set Tab
 
-Use the tab **PathRouteSet** of CD3 Excel to create the following components of Load Balancer:
+Use the tab **LB-PathRouteSet** of CD3 Excel to create the following components of Load Balancer:
 
 - Path Route Sets
 - PathRouteSet:
@@ -332,7 +416,7 @@ Once terraform apply is done, you can view the resources under Networking→Load
 
 On re-running the same option you will find the previously existing files being backed up under directory →   \<outdir>/\<region>/backup_PathRouteSet/\<Date>-\<Month>-\<Time>.
 
-## LB Listeners Tab
+## LB-Listeners Tab
 
 Use the tab **LB-Listener** of CD3 Excel to create the following components of Load Balancer:
 
@@ -492,4 +576,107 @@ To avoid this, an ignore statement as shown below is added to ignore any changes
 **Known Observed behaviours:**
 
 - It has been observed that the order of kubernetes labels change randomly during an export. In such situations a terraform plan detects it as a change to the kubernetes labels.
+  
+## VCN FLow Logs
+This will enable Flow logs for all the subnets mentioned in 'SubnetsVLANs' tab of CD3 Excel sheet. Log group for each VCN is created under the same compartment as specified for VCN and all subnets are added as logs to this log group.
+
+Below TF file is created:
+
+| File name | Description|
+|---|---|
+|<customer_name>_vcnflow-logging.auto.tfvars |TF variables file containing log group for each VCN and logs for eachsubnet in that VCN.|
+  
+## LBaaS Logs
+This will enable LBaaS logs for all the LBs mentioned in 'LB-Hostname-Certs' tab of CD3 Excel sheet. Log group for each LBaaS is created under the same compartment as specified for LBaaS and access and error log types are added as logs to this log group.
+
+Below TF file is created:
+
+| File name | Description|
+|---|---|
+|<customer_name>_load-balancers-logging.auto.tfvars |TF variables file containing log group for each LBaaS and its error and access logs.| 
+
+## OSS Logs
+This will enable OSS Bucket logs for all the buckets mentioned in 'Buckets' tab of CD3 Excel sheet. Log group for each bucket is created under the same compartment as specified for bucket and write log type is added as logs to this log group.
+
+Below TF file is created:
+
+| File name | Description|
+|---|---|
+|<customer_name>_buckets-logging.auto.tfvars |TF variables file containing log group for each bucket and its write logs.| 
+
+  
+## SDDCs Tab
+Use this tab to create OCVS in your tenancy. On choosing "Software-Defined Data Centers - OCVS" in setUpOCI menu, the toolkit will read SDDCs tab and SDDCs-Network tab. The output terraform files will be generated at :
+-→  \<outdir>/\<region>/\<prefix>_sddcs.auto.tfvars under appropriate \<region> directory.
+
+Once terraform apply is done, you can view the resources under Hybrid -> Software-Defined Data Centers in OCI console.
+
+On re-running the option to create OCVS you will find the previously existing files being backed up under directory:
+
+\<outdir>/\<region>/backup_sddcs/\<Date>-\<Month>-\<Time>.
+  
+  
+## Buckets Tab
+  
+This tab in cd3 excel sheet is used when you need to create Object storage buckets in the OCI tenancy.
+
+On choosing "Storage" in the SetUpOCI menu and "Add/Modify/Delete Buckets" submenu will allow to create buckets in OCI Tenancy.
+
+On completion of execution, you will be able to find the output terraform file generated at :
+  
+-→  \<outdir>/\<region>/\<prefix>_buckets.auto.tfvars under appropriate \<region> directory.
+
+Once terraform apply is done, you can view the resources under Object Storage -> Buckets in OCI console.
+
+On re-running the option to create Buckets you will find the previously existing files being backed up under directory:
+
+\<outdir>/\<region>/backup_buckets/\<Date>-\<Month>-\<Time>.
+
+> **_NOTE:_**  Currently the creation of buckets with indefinite retention rule is not supported, only export is supported.
+  
+**CD3 Tab specifications:**
+  
+1. The Region, Compartment Name and Bucket Name fields are mandatory.
+2. **Storage Tier:** Once created, this cannot be modified unless you delete and re-create the bucket.
+3. **Object Versioning:** Once enabled, this can only be suspended and cannot be disabled while modifying.
+4. **Retention Rule:** To enable retention rule:
+  
+     4.1.   &nbsp; The versioning should be disabled.
+  
+     4.2.   &nbsp; Specify the value in the format *RuleName::TimeAmount::TimeUnit::Retention Rule Lock Enabled*.Multiple rules are seperated by &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;newline in the same cell(\n is not supported).  
+  
+     4.3.   &nbsp; Retention Rule Lock Enabled: The time format of the lock should be as per RFC standards. Ex: YYYY-MM-DDThh:mm:ssZ  (provide &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the value only if you want to  have the time rule locked enabled).
+  
+     4.4.   &nbsp; TimeAmount: It should be number of Days/Years. Maximun value is 500.
+  
+     4.5.   &nbsp; TimeUnit: It should be either in DAYS and YEARS.
+  
+  
+5.  **Replication Policy:**  To enable replication policy: 
+  
+     5.1.   &nbsp; There should be a policy in place to allow region object storage service to manage objects for the bucket.
+  
+     5.2    &nbsp; The destination bucket should be already created in the tenancy and cannot have versioning enabled.
+  
+     5.2.   &nbsp; The destination bucket cannot have retention rules. 
+  
+     5.3.   &nbsp; The format should be *PolicyName::DestinationRegion::DestinationBucketName*.
+  
+
+6.  **Lifecycle Policy Name:**  Name of the lifecycle policy. Multiple rules can be mentioned in new rows keeping all other details same.
+  
+7.  **Lifecycle Target and Action:**  For Multipart-uploads,  Object filters are not required and Rule Period can only be in Days.
+ 
+  
+    > **_NOTE:_**  If you have Auto-tiering mode set to Enabled, you cannot create a object lifecycle policy rule with the action set as Infrequent Access. 
+  
+8. **Lifecycle Rule Period:** Its a combination of TimeAmount (It should be number of Days/Years) and TimeUnit (It should be either in DAYS and YEARS). The format should be                      *TimeAmount::TimeUnit*
+  
+9. **Lifecyle Exclusion Patterns/Lifecycle Inclusion Patterns/Lifecycle Inclusion Prefixes:** Add the object name filter patterns here.
+  
+  
+  
+  
+  
+
 

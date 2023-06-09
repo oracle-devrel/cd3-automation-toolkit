@@ -1,0 +1,79 @@
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+
+##################################
+# Variable Block - RPC
+# Create Remote Peering Connection
+##################################
+
+variable "requester_compartment_id" {
+  type    = string
+  default = null
+}
+variable "accepter_compartment_id" {
+  type    = string
+  default = null
+}
+variable "defined_tags" {
+  type = map(any)
+  default = { "Oracle-Tags.CreatedOn" = "$${oci.datetime}",
+    "Oracle-Tags.CreatedBy" = "$${iam.principal.name}"
+  }
+}
+variable "display_name" {
+  type    = string
+  default = null
+}
+variable "accepter_rpc_display_name" {
+  type    = string
+  default = null
+}
+variable "freeform_tags" {
+  type    = map(any)
+  default = {}
+}
+variable "attachment_type" {
+  type    = string
+  default = "REMOTE_PEERING_CONNECTION"
+}
+variable "network_id" {
+  type = string
+  default = null
+}
+
+
+#Requester side variables
+variable "requester_drg_name" {
+  type    = string
+  default = null
+}
+variable "requester_drg_rt_name" {
+  type    = string
+  default = null
+}
+variable "requester_peer_id" {
+  type = string
+  default = null
+}
+variable "requester_peer_region_name" {
+  type = string
+  default = null
+}
+
+#Accepter side variables
+variable "accepter_drg_name" {
+  type    = string
+  default = null
+}
+variable "accepter_drg_rt_name" {
+  type    = string
+  default = null
+}
+
+variable "requester_region" {
+  type = map(string)
+  default = {}
+}
+variable "accepter_region" {
+  type = map(string)
+  default = {}
+}

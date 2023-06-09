@@ -34,80 +34,120 @@ def parse_args():
     parser.add_argument("region_name", help="region name")
     parser.add_argument("--configFileName", help="Config file name", required=False)
 
-def enable_cis_oss_logging(outdir, service_dir, service_dir_iam,prefix, region_name, comp_name, config=DEFAULT_LOCATION):
+def enable_cis_oss_logging(filename, outdir, service_dir, prefix, config=DEFAULT_LOCATION):
 
-    # Declare variables
-    configFileName = config
-    region_name=region_name.strip().lower()
-    comp_name = comp_name.strip()
+    # Read cd3 using pandas dataframe
+    df, col_headers = commonTools.read_cd3(filename, "Buckets")
 
-    ct = commonTools()
-    ct.get_subscribedregions(configFileName)
+    # Remove empty rows
+    df = df.dropna(how='all')
+    df = df.reset_index(drop=True)
 
-    if region_name not in ct.all_regions:
-        print("Invalid Region!! Tenancy is not subscribed to this region. Please try again")
-        exit()
-
+    # List of the column headers
+    dfcolumns = df.columns.values.tolist()
 
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
     template = env.get_template('logging-template')
-    auto_tfvars_filename = "cis-oss-logging.auto.tfvars"
+    auto_tfvars_filename = prefix+'_buckets-logging.auto.tfvars'
 
-    tfStr = ''
+    tfStrLogs = {}
     tempStr = {}
+    outfile = {}
+    buckets_list = {}
+    tfStrLogGroups = {}
+    tempdict = {}
 
-    compartmentVarName = commonTools.check_tf_variable(comp_name)
-    columnvalue = str(compartmentVarName)
 
-    tempStr['compartment_tf_name'] = columnvalue
-    tempStr['region'] = region_name
-    tempStr['oci_service'] = 'oss'
+    for i in df.index:
+        region = str(df.loc[i, 'Region'])
 
-    loggroup_name = prefix+"-"+region_name+"-oss-log-group"
-    log_name = prefix+"-"+region_name+"-oss-log"
-    log_group_id= loggroup_name
-    resource=prefix+"-"+region_name+"-oss-bucket"
+        if (region in commonTools.endNames):
+            break
 
-    tempStr['loggroup_name'] = loggroup_name
-    tempStr['loggroup_tf_name'] = loggroup_name
-    tempStr['loggroup_desc']='Log Group for OSS bucket'
-    srcStr = "##Add New Log Groups for "+region_name+" here##"
-    logstfStr = template.render(tempStr, count = 0, loggroup = 'true').replace(srcStr, template.render(tempStr, loggroup = 'true')+"\n"+srcStr)
+        region = region.strip().lower()
+        tfStrLogs[region] = ''
+        tfStrLogGroups[region] = ''
+        buckets_list[region] = []
 
-    tempStr['log_group_id'] = log_group_id
-    tempStr['resource'] = resource
-    tempStr['log_name'] = log_name
-    tempStr['log_tf_name'] = log_name
-    tempStr['category'] = 'write'
-    tempStr['service'] = 'objectstorage'
-    srcStr = "##Add New Logs for "+region_name+" here##"
-    loggrouptfStr = template.render(tempStr, count = 0, logs = 'true', loggroup = 'false').replace(srcStr, template.render(tempStr, logs = 'true')+"\n"+srcStr)
+    for i in df.index:
+        region = str(df.loc[i, 'Region'])
+        if (region in commonTools.endNames):
+            break
+
+        region_name = region.strip().lower()
+        compartment_var_name = str(df.loc[i, 'Compartment Name']).strip()
+        bucket_name = str(df['Bucket Name'][i]).strip()
+        bucket_tf_name = commonTools.check_tf_variable(bucket_name)
+
+        for columnname in dfcolumns:
+            if columnname.lower() in commonTools.tagColumns:
+                columnvalue = str(df[columnname][i]).strip()
+                if columnvalue != 'nan' and columnvalue != '':
+                    tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)
+                    tempStr.update(tempdict)
+
+        compartmentVarName = commonTools.check_tf_variable(compartment_var_name)
+        columnvalue = str(compartmentVarName)
+
+        tempStr['compartment_tf_name'] = columnvalue
+        tempStr['region'] = region_name
+        tempStr['oci_service'] = 'oss'
+
+        loggroup_name = bucket_name+"-bucket-log-group"
+        loggroup_tf_name = commonTools.check_tf_variable(bucket_name)+"-bucket-log-group"
+        log_name = bucket_name+"-write-log"
+        log_tf_name = commonTools.check_tf_variable(bucket_name)+"-write-log"
+        log_group_id= loggroup_tf_name
+        resource=bucket_name
+
+        if bucket_name not in buckets_list[region_name]:
+            tempStr['loggroup_name'] = loggroup_name
+            tempStr['loggroup_tf_name'] = loggroup_tf_name
+            tempStr['loggroup_desc']='Log Group for OSS bucket'
+            tfStrLogGroups[region_name] = tfStrLogGroups[region_name] + template.render(tempStr, loggroup='true')
+            buckets_list[region_name].append(bucket_name)
+
+            tempStr['loggroup'] = 'false'
+            tempStr['log_group_id'] = log_group_id
+            tempStr['resource'] = resource
+            tempStr['log_name'] = log_name
+            tempStr['log_tf_name'] = log_tf_name
+            tempStr['category'] = 'write'
+            tempStr['service'] = 'objectstorage'
+            tfStrLogs[region_name] = tfStrLogs[region_name] + template.render(tempStr)
 
     # Write TF string to the file in respective region directory
-    reg_out_dir = outdir + "/" + region_name +"/" + service_dir
-    if not os.path.exists(reg_out_dir):
-        os.makedirs(reg_out_dir)
+    for reg in tfStrLogs.keys():
+        reg_out_dir = outdir + "/" + reg +"/" + service_dir
+        if not os.path.exists(reg_out_dir):
+            os.makedirs(reg_out_dir)
 
-    outfile = reg_out_dir + "/"+auto_tfvars_filename
-    srcdir = reg_out_dir + "/"
-    resource = 'osslog'
-    commonTools.backup_file(srcdir, resource, auto_tfvars_filename)
+        outfile[reg] = reg_out_dir + "/"+auto_tfvars_filename
+        srcdir = reg_out_dir + "/"
+        resource = 'osslog'
+        commonTools.backup_file(srcdir, resource, auto_tfvars_filename)
 
-    if(logstfStr + loggrouptfStr!=''):
-        oname=open(outfile,'w')
-        finalStr = logstfStr + loggrouptfStr
-        finalStr = "".join([s for s in finalStr.strip().splitlines(True) if s.strip("\r\n").strip()])
-        oname.write(finalStr)
-        oname.close()
-        print(outfile + " containing TF for OSS Logging has been created for region "+region_name)
+        srcStr = "##Add New Logs for " + reg + " here##"
+        tfStrLogs[reg] = template.render(tempStr, count=0, region=reg).replace(srcStr, tfStrLogs[reg] + "\n" + srcStr)
 
+        srcStr = "##Add New Log Groups for " + reg + " here##"
+        tfStrLogGroups[reg] = template.render(tempStr, loggroup= 'true', count=0, region=reg).replace(srcStr, tfStrLogGroups[reg] + "\n" + srcStr)
+
+        tfStrLogs[reg] = tfStrLogs[reg] +"\n"+ tfStrLogGroups[reg]
+
+        if(tfStrLogs[reg]!=''):
+            oname=open(outfile[reg],'w')
+            tfStrLogs[reg] = "".join([s for s in tfStrLogs[reg].strip().splitlines(True) if s.strip("\r\n").strip()])
+            oname.write(tfStrLogs[reg])
+            oname.close()
+            print(outfile[reg] + " for OSS Bucket Logs has been created for region "+reg)
 
 def enable_cis_vcnflow_logging(filename, outdir, service_dir, prefix, config=DEFAULT_LOCATION):
 
     # Read cd3 using pandas dataframe
-    df, col_headers = commonTools.read_cd3(filename, "Subnets")
+    df, col_headers = commonTools.read_cd3(filename, "SubnetsVLANs")
 
     # Remove empty rows
     df = df.dropna(how='all')
@@ -146,12 +186,14 @@ def enable_cis_vcnflow_logging(filename, outdir, service_dir, prefix, config=DEF
         if (region in commonTools.endNames):
             break
 
+        subnet_vlan_in_excel = str(df.loc[i, 'Subnet or VLAN']).strip()
+        if subnet_vlan_in_excel.lower().startswith('vlan'):
+            continue
+
         region = region.strip().lower()
         compartment_var_name = str(df.loc[i, 'Compartment Name']).strip()
         vcn_name = str(df['VCN Name'][i]).strip()
-        name = str(df['Subnet Name'][i]).strip()
-        subnet = str(df['CIDR Block'][i]).strip()
-        AD = str(df['Availability Domain(AD1|AD2|AD3|Regional)'][i]).strip()
+        name = str(df['Display Name'][i]).strip()
 
         for columnname in dfcolumns:
             if columnname.lower() in commonTools.tagColumns:

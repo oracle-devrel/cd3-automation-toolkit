@@ -18,6 +18,9 @@ locals {
       ocpus         = shape.ocpus
     }
   }
+
+  remote_execute_script = var.remote_execute == null ? "SCRIPT-NOT-SET" : var.remote_execute
+  cloud_init_script     = var.cloud_init_script == null ? "SCRIPT-NOT-SET" : var.cloud_init_script
 }
 
 data "oci_identity_availability_domains" "ads" {
@@ -95,7 +98,7 @@ data "oci_core_volume_backup_policies" "boot_vol_custom_policy" {
 ################################
 
 data "oci_marketplace_listing_package_agreements" "listing_package_agreements" {
-  count = length(regexall("ocid1.image.oc1*", var.source_image_id)) > 0 || length(regexall("ocid1.bootvolume.oc1*", var.source_image_id)) > 0  || var.source_image_id == null ? 0 : 1
+  count = length(regexall("ocid1.image.oc1*", var.source_image_id)) > 0 || length(regexall("ocid1.bootvolume.oc1*", var.source_image_id)) > 0 || var.source_image_id == null ? 0 : 1
   #Required
   listing_id      = data.oci_marketplace_listing.listing.0.id
   package_version = data.oci_marketplace_listing.listing.0.default_package_version
@@ -105,7 +108,7 @@ data "oci_marketplace_listing_package_agreements" "listing_package_agreements" {
 }
 
 data "oci_marketplace_listing_package" "listing_package" {
-  count = length(regexall("ocid1.image.oc1*", var.source_image_id)) > 0 || length(regexall("ocid1.bootvolume.oc1*", var.source_image_id)) > 0  || var.source_image_id == null ? 0 : 1
+  count = length(regexall("ocid1.image.oc1*", var.source_image_id)) > 0 || length(regexall("ocid1.bootvolume.oc1*", var.source_image_id)) > 0 || var.source_image_id == null ? 0 : 1
   #Required
   listing_id      = data.oci_marketplace_listing.listing.0.id
   package_version = data.oci_marketplace_listing.listing.0.default_package_version
@@ -115,7 +118,7 @@ data "oci_marketplace_listing_package" "listing_package" {
 }
 
 data "oci_marketplace_listing_packages" "listing_packages" {
-  count = length(regexall("ocid1.image.oc1*", var.source_image_id)) > 0 || length(regexall("ocid1.bootvolume.oc1*", var.source_image_id))  > 0  || var.source_image_id == null ? 0 : 1
+  count = length(regexall("ocid1.image.oc1*", var.source_image_id)) > 0 || length(regexall("ocid1.bootvolume.oc1*", var.source_image_id)) > 0 || var.source_image_id == null ? 0 : 1
   #Required
   listing_id = data.oci_marketplace_listing.listing.0.id
 
@@ -124,21 +127,21 @@ data "oci_marketplace_listing_packages" "listing_packages" {
 }
 
 data "oci_marketplace_listings" "listings" {
-  count = length(regexall("ocid1.image.oc1*", var.source_image_id)) > 0 || length(regexall("ocid1.bootvolume.oc1*", var.source_image_id)) > 0 || var.source_image_id == null ? 0 : 1
-  name = [var.source_image_id]
-  is_featured = true  # Comment this line for GovCloud
+  count          = length(regexall("ocid1.image.oc1*", var.source_image_id)) > 0 || length(regexall("ocid1.bootvolume.oc1*", var.source_image_id)) > 0 || var.source_image_id == null ? 0 : 1
+  name           = [var.source_image_id]
+  is_featured    = true # Comment this line for GovCloud
   compartment_id = var.compartment_id
 }
 
 data "oci_marketplace_listing" "listing" {
-  count = length(regexall("ocid1.image.oc1*", var.source_image_id)) > 0 || length(regexall("ocid1.bootvolume.oc1*", var.source_image_id)) > 0 || var.source_image_id == null ? 0 : 1
+  count          = length(regexall("ocid1.image.oc1*", var.source_image_id)) > 0 || length(regexall("ocid1.bootvolume.oc1*", var.source_image_id)) > 0 || var.source_image_id == null ? 0 : 1
   listing_id     = data.oci_marketplace_listings.listings.0.listings[0].id
   compartment_id = var.compartment_id
 }
 
 data "oci_core_app_catalog_listing_resource_version" "catalog_listing" {
-  count = length(regexall("ocid1.image.oc1*", var.source_image_id)) > 0 || length(regexall("ocid1.bootvolume.oc1*", var.source_image_id))  > 0  || var.source_image_id == null ? 0 : 1
-  listing_id = data.oci_marketplace_listing_package.listing_package.0.app_catalog_listing_id
+  count            = length(regexall("ocid1.image.oc1*", var.source_image_id)) > 0 || length(regexall("ocid1.bootvolume.oc1*", var.source_image_id)) > 0 || var.source_image_id == null ? 0 : 1
+  listing_id       = data.oci_marketplace_listing_package.listing_package.0.app_catalog_listing_id
   resource_version = data.oci_marketplace_listing_package.listing_package.0.app_catalog_listing_resource_version
 }
 

@@ -35,7 +35,9 @@ resource "oci_core_volume_attachment" "block_vol_instance_attachment" {
   is_read_only                        = var.is_read_only
   is_shareable                        = var.is_shareable
   use_chap                            = var.use_chap # Applicable when attachment_type=iscsi
-
+  lifecycle {
+    ignore_changes = [timeouts]
+  }
 }
 
 // Copyright (c) 2021, 2022, Oracle and/or its affiliates.
@@ -56,4 +58,7 @@ resource "oci_core_volume_backup_policy_assignment" "volume_backup_policy_assign
   count      = var.block_tf_policy != null ? 1 : 0
   asset_id   = data.oci_core_volumes.all_volumes[0].volumes[0].id
   policy_id  = local.current_policy_id
+  lifecycle {
+    ignore_changes = [timeouts]
+  }
 }

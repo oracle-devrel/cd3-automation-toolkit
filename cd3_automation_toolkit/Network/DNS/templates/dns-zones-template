@@ -1,0 +1,77 @@
+{% if count == 0 %}
+
+############################
+# DNS
+# DNS Zones - tfvars
+# Allowed Values:
+# view_id can be the ocid of the view or the name as in OCI
+# compartment_id and view_compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens "--"
+# Example : compartment_id = "ocid1.compartment.oc1..aaaaaaaah6jy3xf3c" or compartment_id = "AppDev--Prod" where "AppDev" is the parent of "Prod" compartment
+# Sample import command for dns-zone :
+# terraform import "module.dns-zones[\"<<dns-zone terraform variable name>>\"].oci_dns_zone.zone" <<dns-zone ocid>>
+############################
+
+zones = {
+    ##Add New DNS Zones for {{ region|lower }} here##
+}
+{% else %}
+   {% if display_name != "" and display_name != "nan" and display_name != null %}
+
+   "{{ zone_tf_name }}" =  {
+            compartment_id       = "{{ view_compartment_name }}"
+            display_name         = "{{ display_name }}"
+            zone_type            = "{{ zone_type }}"
+            {% if zone_scope %}
+            zone_scope = {{ zone_scope }}
+            {% endif %}
+
+
+            {% if view_id %}
+            view_compartment_id = "{{ view_compartment_name }}"
+            view_id = "{{ view_id }}"
+            {% endif %}
+
+
+            {% if external_masters_address != [] %}
+
+            {% for masters_address in external_masters_address %}
+            {% endfor %}
+            {% endif %}
+
+
+        {#  ##Do not modify below this line##  #}
+        {#                                     #}
+        {#  ###Section for adding Defined and Freeform Tags###  #}
+        {% if defined_tags and defined_tags != 'nan' and defined_tags != '' and defined_tags != [['nan']] %}
+          {% if defined_tags[0] %}
+            defined_tags = {
+            {% for tags in defined_tags  %}
+                {% if not loop.last %}
+                    "{{ tags[0]  }}"= "{{ tags[1] }}" ,
+                {% else %}
+                    "{{ tags[0]  }}"= "{{ tags[1] }}"
+                {% endif %}
+            {% endfor %}
+            }
+          {% endif %}
+        {% endif %}
+        {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' and freeform_tags != [['nan']] %}
+            {% if freeform_tags[0] %}
+            freeform_tags = {
+                        {% for tags in freeform_tags %}
+                            {% if not loop.last  %}
+                    "{{ tags[0] }}"="{{ tags[1] }}",
+                            {% else %}
+                    "{{ tags[0] }}"="{{ tags[1] }}"
+                            {% endif %}
+                        {% endfor %}
+                        }
+            {% endif %}
+        {% endif %}
+        {#  ###Section for adding Defined and Freeform Tags ends here###  #}
+
+    },
+
+   {% endif %}
+{% endif %}
+

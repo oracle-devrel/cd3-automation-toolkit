@@ -69,8 +69,8 @@ module "exa-vmclusters" {
   gi_version                = each.value.gi_version
   hostname                  = each.value.hostname
   #ssh_public_keys          = length(regexall("ssh-rsa*",each.value.ssh_public_key)) > 0 ? each.value.ssh_public_key : var.ssh_public_key
-  ssh_public_keys             = lookup(var.exacs_ssh_keys, each.value.ssh_public_keys, var.exacs_ssh_keys["ssh_public_key"])
-//  cluster_subnet_id           = length(regexall("ocid1.subnet.oc1*", each.value.cluster_subnet_id)) > 0 ? each.value.cluster_subnet_id : merge(module.subnets.*...)[each.value.cluster_subnet_id]["subnet_tf_id"]
+  ssh_public_keys = lookup(var.exacs_ssh_keys, each.value.ssh_public_keys, var.exacs_ssh_keys["ssh_public_key"])
+  //  cluster_subnet_id           = length(regexall("ocid1.subnet.oc1*", each.value.cluster_subnet_id)) > 0 ? each.value.cluster_subnet_id : merge(module.subnets.*...)[each.value.cluster_subnet_id]["subnet_tf_id"]
   network_compartment_id      = each.value.network_compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.network_compartment_id)) > 0 ? each.value.network_compartment_id : var.compartment_ocids[each.value.network_compartment_id]) : null
   vcn_names                   = [each.value.vcn_name]
   cluster_subnet_id           = each.value.cluster_subnet_id != "" ? (length(regexall("ocid1.subnet.oc1*", each.value.cluster_subnet_id)) > 0 ? each.value.cluster_subnet_id : data.oci_core_subnets.oci_exacs_subnets[each.key].subnets.*.id[0]) : null
@@ -83,10 +83,10 @@ module "exa-vmclusters" {
   is_local_backup_enabled     = each.value.is_local_backup_enabled
   is_sparse_diskgroup_enabled = each.value.is_sparse_diskgroup_enabled
   license_model               = each.value.license_model
-//  nsg_ids                     = each.value.nsg_ids != null ? [for nsg in each.value.nsg_ids : length(regexall("ocid1.networksecuritygroup.oc1*", nsg)) > 0 ? nsg : merge(module.nsgs.*...)[nsg]["nsg_tf_id"]] : null
-  nsg_ids                     = each.value.nsg_ids != null ? each.value.nsg_ids : []
-  ocpu_count                  = each.value.ocpu_count
-  scan_listener_port_tcp      = each.value.scan_listener_port_tcp
-  scan_listener_port_tcp_ssl  = each.value.scan_listener_port_tcp_ssl
-  time_zone                   = each.value.time_zone
+  //  nsg_ids                     = each.value.nsg_ids != null ? [for nsg in each.value.nsg_ids : length(regexall("ocid1.networksecuritygroup.oc1*", nsg)) > 0 ? nsg : merge(module.nsgs.*...)[nsg]["nsg_tf_id"]] : null
+  nsg_ids                    = each.value.nsg_ids != null ? each.value.nsg_ids : []
+  ocpu_count                 = each.value.ocpu_count
+  scan_listener_port_tcp     = each.value.scan_listener_port_tcp
+  scan_listener_port_tcp_ssl = each.value.scan_listener_port_tcp_ssl
+  time_zone                  = each.value.time_zone
 }

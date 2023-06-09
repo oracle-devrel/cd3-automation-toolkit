@@ -2,10 +2,12 @@
 # Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 # This script is to export Identity Objects from OCI
-#put them into CD3 Excel and create TF files
+# put them into CD3 Excel and create TF files
 
-#Author: Suruchi
-#Oracle Consulting
+# Author: Suruchi
+# Updated by Shruthi Subramanian
+# Users export code updated by Gaurav Goyal
+# Oracle Consulting
 #
 
 import argparse
@@ -40,7 +42,6 @@ def export_identity(inputfile, outdir, service_dir, _config, ct, export_compartm
     global cd3file
 
     cd3file = inputfile
-    #input_compartment_list = export_compartments
 
     if('.xls' not in cd3file):
         print("\nAcceptable cd3 format: .xlsx")
@@ -49,8 +50,6 @@ def export_identity(inputfile, outdir, service_dir, _config, ct, export_compartm
 
     configFileName = _config
     config = oci.config.from_file(file_location=configFileName)
-    #config = oci.config.from_file()
-
     importCommands={}
 
     sheetName_comps = "Compartments"
@@ -62,17 +61,11 @@ def export_identity(inputfile, outdir, service_dir, _config, ct, export_compartm
     df, values_for_column_groups = commonTools.read_cd3(cd3file, sheetName_groups)
     df, values_for_column_policies = commonTools.read_cd3(cd3file, sheetName_policies)
 
-    if ct==None:
-        ct = commonTools()
-        ct.get_subscribedregions(configFileName)
-        ct.get_network_compartment_ids(config['tenancy'],"root",configFileName)
-
     # Get dict for columns from Excel_Columns
     sheet_dict_comps = ct.sheet_dict[sheetName_comps]
     sheet_dict_groups = ct.sheet_dict[sheetName_groups]
     sheet_dict_policies = ct.sheet_dict[sheetName_policies]
 
-    print("Fetching for all Compartments...")
     print("\nCD3 excel file should not be opened during export process!!!")
     print("Tabs- Compartments, Groups, Policies would be overwritten during export process!!!\n")
 
@@ -163,9 +156,12 @@ def export_identity(inputfile, outdir, service_dir, _config, ct, export_compartm
     groups = oci.pagination.list_call_get_all_results(idc.list_groups,compartment_id=config['tenancy'])
     dyngroups=oci.pagination.list_call_get_all_results(idc.list_dynamic_groups,compartment_id=config['tenancy'])
     index = 0
+    groupsDict = {}
+
     for group in groups.data:
         grp_info=group
         if(grp_info.lifecycle_state == "ACTIVE"):
+            groupsDict[grp_info.id] = grp_info.name
             grp_display_name=grp_info.name
             tf_name=commonTools.check_tf_variable(grp_display_name)
             importCommands[ct.home_region].write("\nterraform import \"module.iam-groups[\\\""+str(tf_name)+"\\\"].oci_identity_group.group[0]\" "+grp_info.id)
@@ -182,6 +178,7 @@ def export_identity(inputfile, outdir, service_dir, _config, ct, export_compartm
     for group in dyngroups.data:
         grp_info=group
         if(grp_info.lifecycle_state == "ACTIVE"):
+            groupsDict[grp_info.id] = grp_info.name
             grp_display_name=grp_info.name
             tf_name=commonTools.check_tf_variable(grp_display_name)
             importCommands[ct.home_region].write("\nterraform import \"module.iam-groups[\\\""+str(tf_name)+"\\\"].oci_identity_dynamic_group.dynamic_group[0]\" "+grp_info.id)
@@ -204,7 +201,7 @@ def export_identity(inputfile, outdir, service_dir, _config, ct, export_compartm
     importCommands[ct.home_region].write("\n\n######### Writing import for Policies #########\n\n")
     comp_ocid_done = []
     index = 0
-    for ntk_compartment_name in ct.ntk_compartment_ids:
+    for ntk_compartment_name in export_compartments:
         if ct.ntk_compartment_ids[ntk_compartment_name] not in comp_ocid_done:
             comp_ocid_done.append(ct.ntk_compartment_ids[ntk_compartment_name])
             policies = oci.pagination.list_call_get_all_results(idc.list_policies, compartment_id=ct.ntk_compartment_ids[ntk_compartment_name])

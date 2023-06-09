@@ -18,10 +18,10 @@ module "nsgs" {
 
   #Required
   compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
-  vcn_id        = flatten(data.oci_core_vcns.oci_vcns_nsgs[each.key].virtual_networks.*.id)[0]
-  defined_tags  = each.value.defined_tags
-  display_name  = each.value.display_name
-  freeform_tags = each.value.freeform_tags
+  vcn_id         = flatten(data.oci_core_vcns.oci_vcns_nsgs[each.key].virtual_networks.*.id)[0]
+  defined_tags   = each.value.defined_tags
+  display_name   = each.value.display_name
+  freeform_tags  = each.value.freeform_tags
 }
 
 /*

@@ -1,0 +1,42 @@
+{% if count == 0 %}
+
+############################
+# DNS
+# DNS Records - tfvars
+# Allowed Values:
+# view_id can be the ocid of the view or the name as in OCI
+# compartment_id and view_compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens "--"
+# Example : compartment_id = "ocid1.compartment.oc1..aaaaaaaah6jy3xf3c" or compartment_id = "AppDev--Prod" where "AppDev" is the parent of "Prod" compartment
+# Sample import command for dns-rrset :
+# terraform import "module.dns-rrsets[\"<<dns-rrset terraform variable name>>\"].oci_dns_rrset.rrset" <<dns-rrset ocid>>
+############################
+
+rrsets = {
+    ##Add New rrsets for {{ region|lower }} here##
+}
+{% else %}
+   {% if rrset_domain_name != "" and rrset_domain_name != "nan" and rrset_domain_name != null %}
+
+   "{{ rrset_tf_name }}" =  {
+            zone_id = "{{ rrset_zone_name}}"
+            domain         = "{{ rrset_domain_name }}"
+			{% if rrset_view %}
+            view_id = "{{ rrset_view }}"
+            {% endif %}
+            {% if rrset_view_compartment %}
+            view_compartment_id = "{{ rrset_view_compartment }}"
+            compartment_id = "{{ rrset_view_compartment }}"
+            {% endif %}
+            rtype = "{{ rrset_rtype}}"
+            ttl = {{ rrset_ttl }}
+            {% if rrset_rdata %}
+            rdata = {{ rrset_rdata | replace("\'","\"")  }}
+            {% endif %}
+            {% if rrset_scope %}
+            scope = "{{ rrset_scope }}"
+            {% endif %}
+
+    },
+   {% endif %}
+{% endif %}
+

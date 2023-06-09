@@ -11,7 +11,7 @@ variable "admin_password" {
 }
 
 variable "character_set" {
-  type        = string
+  type = string
 }
 
 variable "compartment_id" {

@@ -7,120 +7,172 @@
 # Allowed Values:
 # compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens "--"
 # Example : compartment_id = "ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c" or compartment_id = "Network-root-cpt--Network" where "Network-root-cpt" is the parent of "Network" compartment
-# versioning : Allowed Create values: Enabled, Disabled. Allowed Update values: Enabled, Suspended.
+# Sample import commands:
+# importCommands[region.lower()].write(f'\nterraform import "module.oss-buckets[\\"{variable name of the bucket}\\"].oci_objectstorage_bucket.bucket" 'f'n/{namespace name}/b/{bucket name}')
+# importCommands[region.lower()].write(f'\nterraform import "module.oss-buckets[\\"{variable name of the bucket}\\"].oci_objectstorage_replication_policy.replication_policy[0]" 'f'n/{namespace name}/b/{bucket name}/replicationPolicies/{replication policy id}')
+# importCommands[region.lower()].write(f'\nterraform import "module.oss-buckets[\\"{variable name of the bucket}\\"].oci_objectstorage_object_lifecycle_policy.lifecycle_policy" 'f'n/{namespace name}/b/{bucket name}/l')
+
 ############################
 
-oss = {
-    ##Add New Object Storage for {{ region|lower }} here##
+buckets = {
+     ##Add New OSS Buckets for {{ region|lower }} here##
 }
 {% else %}
- {{ bucket_tf_name }} =  {
-            compartment_id       = "{{ compartment_tf_name }}"
-            name         = "{{ bucket_name }}"
+   {{ bucket_tf_name }} =  {
+                compartment_id        = "{{ compartment_tf_name }}"
+                name                  = "{{ bucket_name }}"
 
-            {% if access_type and access_type != "" %}
-            access_type          = "{{ access_type }}"
-            {% else %}
-            access_type          = ""
-            {% endif %}
-
-            {% if auto_tiering and auto_tiering != "" %}
-            auto_tiering = {{ auto_tiering }}
-            {% else %}
-            auto_tiering = ""
-            {% endif %}
-
-            {% if kms_key_id and kms_key_id != "" %}
-            kms_key_id           = "{{ kms_key_id }}"
-            {% else %}
-            kms_key_id           = ""
-            {% endif %}
-
-            {% if metadata and metadata != "" %}
-            metadata = {"{{ metadata }}"}
-            {% else %}
-            metadata = {}
-            {% endif %}
-
-            {% if object_events_enabled and object_events_enabled != "" %}
-            object_events_enabled = "{{ object_events_enabled }}"
-            {% else %}
-            object_events_enabled = ""
-            {% endif %}
-
-            {% if storage_tier and storage_tier != "" %}
-            storage_tier          = "{{ storage_tier }}"
-            {% else %}
-            storage_tier           = ""
-            {% endif %}
-
-            {% if retention_rule_display_name and retention_rule_display_name != "" %}
-            retention_rule = [{
-                display_name = "{{ retention_rule_display_name }}"
-
-                {% if time_amount and time_amount != "" %}
-                duration = [{
-                    time_amount = "{{ time_amount }}"
-                    time_unit = "{{ time_unit }}"
-                }]
-                {% else %}
-                duration = []
+                {% if access_type and access_type != "" %}
+                access_type           = "{{ access_type }}"
                 {% endif %}
 
-                {% if time_rule_locked and time_rule_locked != "" %}
-                time_rule_locked = "{{ time_rule_locked }}"
-                {% else %}
-                time_rule_locked = ""
+                {% if metadata and metadata != "" %}
+                metadata              = "{{ metadata }}"
                 {% endif %}
-            }]
-            {% else %}
-            retention_rules = []
-            {% endif %}
 
-            {% if versioning and versioning != "" %}
-            versioning          = "{{ versioning }}"
-            {% else %}
-            versioning           = ""
-            {% endif %}
-
-        {#  ##Do not modify below this line##  #}
-        {#                                     #}
-        {#  ###Section for adding Defined and Freeform Tags###  #}
-        {% if defined_tags and defined_tags != 'nan' and defined_tags != '' %}
-          {% if defined_tags[0] %}
-            defined_tags = {
-            {% for tags in defined_tags  %}
-                {% if not loop.last %}
-                    "{{ tags[0]  }}"= "{{ tags[1] }}" ,
-                {% else %}
-                    "{{ tags[0]  }}"= "{{ tags[1] }}"
+                {% if kms_key_id and kms_key_id != "" %}
+                kms_key_id            = "{{ kms_key_id }}"
                 {% endif %}
-            {% endfor %}
-            }
-          {% else %}
-            defined_tags = {}
-            {% endif %}
-           {% else %}
-            defined_tags = {}
-           {% endif %}
-                {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' %}
-                    {% if freeform_tags[0] %}
-            freeform_tags = {
-                        {% for tags in freeform_tags %}
-                            {% if not loop.last  %}
-                    "{{ tags[0] }}"="{{ tags[1] }}",
-                            {% else %}
-                    "{{ tags[0] }}"="{{ tags[1] }}"
-                            {% endif %}
-                        {% endfor %}
-                        }
+
+                {% if auto_tiering and auto_tiering != "" %}
+                auto_tiering          = "{{ auto_tiering }}"
+                {% endif %}
+
+                {% if object_events_enabled and object_events_enabled != "" %}
+                object_events_enabled = "{{ object_events_enabled }}"
+                {% endif %}
+
+                {% if storage_tier and storage_tier != "" %}
+                storage_tier          = "{{ storage_tier }}"
+                {% endif %}
+
+                {% if retention_rules %}
+                retention_rules =[
+                {% for rule in retention_rules %}
+                {% if rule['retention_rule_display_name'] and rule['retention_rule_display_name'] != 'nan' %}
+                {
+                    display_name    = "{{ rule['retention_rule_display_name'] }}"
+                    {% if rule['time_amount'] and rule['time_amount'] != '' %}
+                    duration = [{
+                        time_amount = {{ rule['time_amount'] }},
+                        time_unit   = "{{ rule['time_unit'] }}"
+                    }]
                     {% else %}
-            freeform_tags = {}
+                    duration = []
                     {% endif %}
-                {% else %}
-            freeform_tags = {}
+                    time_rule_locked = "{% if rule['time_rule_locked'] %}{{ rule['time_rule_locked'] }}{% endif %}"
+                },
                 {% endif %}
-        {#  ###Section for adding Defined and Freeform Tags ends here###  #}
-        },
-{% endif %}
+                {% endfor %}
+                ]
+                {% else %}
+                retention_rules = []
+                {% endif %}
 
+                {% if replication_policy_name and replication_policy_name != "nan" %}
+                replication_policy = {
+                    name                    = "{{ replication_policy_name }}"
+                    destination_bucket_name = "{{ destination_bucket }}"
+                    destination_region_name = "{{ destination_region }}"
+                }
+
+                {% else %}
+                replication_policy = {}
+                {% endif %}
+
+                {% if lifecycle_rules %}
+                lifecycle_policy   = {
+                    rules = [
+                      {% for rule in lifecycle_rules %}
+                        {% if rule['name'] and rule['name'] != "nan" %}
+                          {% if rule['target'] != "multipart-uploads" %}
+                            {
+                              name        = "{{ rule.name }}"
+                              action      = "{{ rule.action }}"
+                              is_enabled  = "{{ rule.is_enabled }}"
+                              Time_Amount = {{ rule.time_amount }}
+                              Time_Unit   = "{{ rule.time_unit }}"
+                              target      = "{{ rule.target }}"
+                              {% if rule.exclusion_patterns %}
+                              exclusion_patterns = ["{{ rule.exclusion_patterns }}"]
+                              {% else %}
+                              exclusion_patterns = []
+                              {% endif %}
+                              {% if rule.inclusion_patterns %}
+                              inclusion_patterns = ["{{ rule.inclusion_patterns }}"]
+                              {% else %}
+                              inclusion_patterns = []
+                              {% endif %}
+                              {% if rule.inclusion_prefixes %}
+                              inclusion_prefixes = ["{{ rule.inclusion_prefixes }}"]
+                              {% else %}
+                              inclusion_prefixes = []
+                              {% endif %}
+                            },
+                          {% else %}
+                            {
+                              name        = "{{ rule.name }}"
+                              action      = "{{ rule['action'] }}"
+                              is_enabled  = "{{ rule['is_enabled'] }}"
+                              Time_Amount = {{ rule.time_amount }}
+                              Time_Unit   = "DAYS"
+                              target      = "{{ rule['target'] }}"
+                              exclusion_patterns = []
+                              inclusion_patterns = []
+                              inclusion_prefixes = []
+                            },
+                          {% endif %}
+                        {% endif %}
+                      {% endfor %}
+                    ]
+                  }
+                {% else %}
+                lifecycle_policy = {
+                    rules = []
+                  }
+                {% endif %}
+
+                {% if versioning and versioning != "" %}
+                versioning          = "{{ versioning }}"
+                {% endif %}
+
+            {#  ##Do not modify below this line##  #}
+            {#                                     #}
+            {#  ###Section for adding Defined and Freeform Tags###  #}
+            {% if defined_tags and defined_tags != 'nan' and defined_tags != '' %}
+              {% if defined_tags[0] %}
+                defined_tags = {
+                {% for tags in defined_tags  %}
+                    {% if not loop.last %}
+                        "{{ tags[0]  }}"= "{{ tags[1] }}" ,
+                    {% else %}
+                        "{{ tags[0]  }}"= "{{ tags[1] }}"
+                    {% endif %}
+                {% endfor %}
+                }
+              {% else %}
+                defined_tags = {}
+                {% endif %}
+               {% else %}
+                defined_tags = {}
+               {% endif %}
+                    {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' %}
+                        {% if freeform_tags[0] %}
+                freeform_tags = {
+                            {% for tags in freeform_tags %}
+                                {% if not loop.last  %}
+                        "{{ tags[0] }}"="{{ tags[1] }}",
+                                {% else %}
+                        "{{ tags[0] }}"="{{ tags[1] }}"
+                                {% endif %}
+                            {% endfor %}
+                            }
+                        {% else %}
+                freeform_tags = {}
+                        {% endif %}
+                    {% else %}
+                freeform_tags = {}
+                    {% endif %}
+            {#  ###Section for adding Defined and Freeform Tags ends here###  #}
+           },
+{% endif %}

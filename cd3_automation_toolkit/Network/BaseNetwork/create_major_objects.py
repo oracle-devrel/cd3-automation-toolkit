@@ -208,8 +208,7 @@ def create_major_objects(inputfile, outdir, service_dir, prefix, non_gf_tenancy,
                 exit(1)
 
             if drg not in vcns.vcns_having_drg.values():
-                print("\nERROR!!! Invalid DRG Name. It should be one of the values defined in VCNs tab..Exiting!")
-                exit(1)
+                print("WARNING!!! "+drg+" is not declared in VCNs tab. Please verify the data or ignore if you are exporting network components(having RPC) from a single region.\n")
 
             attached_to = str(df['Attached To'][i]).strip()
             if(attached_to.lower()!='nan'):
@@ -236,6 +235,10 @@ def create_major_objects(inputfile, outdir, service_dir, prefix, non_gf_tenancy,
             if region not in ct.all_regions:
                 print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
                 exit(1)
+
+            #Skip RPC attachments
+            if str(df.loc[i, 'Attached To']).lower().startswith("rpc"):
+                continue
 
             # temporary dictionary1 and dictionary2
             tempStr = {}
@@ -366,9 +369,11 @@ def create_major_objects(inputfile, outdir, service_dir, prefix, non_gf_tenancy,
             if (drg_attach not in drg_attach_tfStr[region]):
                 drg_attach_tfStr[region] = drg_attach_tfStr[region][:-1] + drg_attach
 
+
         for region in ct.all_regions:
             if region in region_included_drg:
-                drg_attach_tfStr[region] = drg_attach_skeleton + drg_attach_tfStr[region]
+                if(drg_attach_tfStr[region]!=''):
+                    drg_attach_tfStr[region] = drg_attach_skeleton + drg_attach_tfStr[region]
                 drg_tfStr[region] = drgstr_skeleton + drg_tfStr[region]
 
     def processVCN(tempStr):

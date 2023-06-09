@@ -24,7 +24,7 @@ resource "oci_core_network_security_group_security_rule" "nsg_rule" {
   # ICMP Options
   # If type and no code
   dynamic "icmp_options" {
-    for_each = try((var.nsg_rules_details[var.key_name].options.icmp.0.code == null ? var.nsg_rules_details[var.key_name].options.icmp : []), try(var.nsg_rules_details[var.key_name].options.icmp.0.type != null ? var.nsg_rules_details[var.key_name].options.icmp : []),[])
+    for_each = try((var.nsg_rules_details[var.key_name].options.icmp.0.code == null ? var.nsg_rules_details[var.key_name].options.icmp : []), try(var.nsg_rules_details[var.key_name].options.icmp.0.type != null ? var.nsg_rules_details[var.key_name].options.icmp : []), [])
 
     content {
       type = var.nsg_rules_details[var.key_name].options.icmp.0.type
@@ -45,7 +45,7 @@ resource "oci_core_network_security_group_security_rule" "nsg_rule" {
 
   # TCP Options
   dynamic "tcp_options" {
-    for_each = try(var.nsg_rules_details[var.key_name].options.tcp , [])
+    for_each = try(var.nsg_rules_details[var.key_name].options.tcp, [])
 
     content {
       #Optional

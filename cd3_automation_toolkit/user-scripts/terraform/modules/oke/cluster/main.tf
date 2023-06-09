@@ -25,7 +25,7 @@ resource "oci_containerengine_cluster" "cluster" {
     add_ons {
       #Optional
       is_kubernetes_dashboard_enabled = var.is_kubernetes_dashboard_enabled
-      is_tiller_enabled = var.is_tiller_enabled
+      is_tiller_enabled               = var.is_tiller_enabled
     }
     admission_controller_options {
       is_pod_security_policy_enabled = var.is_pod_security_policy_enabled
@@ -37,7 +37,7 @@ resource "oci_containerengine_cluster" "cluster" {
     }
     service_lb_subnet_ids = flatten(tolist([for subnet in var.service_lb_subnet_ids : (length(regexall("ocid1.subnet.oc1*", subnet)) > 0 ? [subnet] : data.oci_core_subnets.oci_subnets_cluster_lbs[subnet].subnets[*].id)]))
   }
-  
+
   lifecycle {
     ignore_changes = [defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"]]
   }

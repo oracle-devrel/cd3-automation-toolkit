@@ -1,0 +1,74 @@
+{% if count == 0 %}
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+
+############################
+# Identity
+# Network Sources - tfvars
+# Sample import command for network sources:
+# terraform import "module.iam-network-sources[\"<<terraform variable name>>\"].oci_identity_network_source.network_source" <<id>>
+############################
+
+networkSources = {
+{% endif %}
+  {{ tf_name }} = {
+        name        = "{{ name }}"
+        description = "{{ description }}"
+        {% if public_source_list  %}
+        public_source_list  = [{{ public_source_list  }}]
+        {% endif %}
+        {% if services  %}
+        services  = [{{ services  }}]
+        {% endif %}
+        {% if virtual_source_list   %}
+        virtual_source_list   = [
+        {% for vcnIP in virtual_source_list %}
+
+            {
+                vcn_name = ["{{ vcnIP.vcn_id }}"]
+                network_compartment_id = ["{{ vcnIP.CompartmentName }}"]
+                ip_ranges = [
+                {% for IP in vcnIP.ip_ranges %}
+                   {% if not loop.last %}
+                        "{{ IP }}",
+                   {% else %}
+                        "{{ IP }}"
+                    {% endif %}
+                 {% endfor %}
+                ]
+            },
+            {% endfor %}
+        ]
+        {% endif %}
+    {#  ##Do not modify below this line##  #}
+    {#                                     #}
+    {#  ###Section for adding Defined and Freeform Tags###  #}
+    {% if defined_tags and defined_tags != 'nan' and defined_tags != '' and defined_tags != [['nan']] %}
+      {% if defined_tags[0] %}
+        defined_tags = {
+        {% for tags in defined_tags  %}
+            {% if not loop.last %}
+                "{{ tags[0]  }}"= "{{ tags[1] }}" ,
+            {% else %}
+                "{{ tags[0]  }}"= "{{ tags[1] }}"
+            {% endif %}
+        {% endfor %}
+        }
+        {% endif %}
+       {% endif %}
+            {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' and freeform_tags != [['nan']] %}
+                {% if freeform_tags[0] %}
+        freeform_tags = {
+                    {% for tags in freeform_tags %}
+                        {% if not loop.last  %}
+                "{{ tags[0] }}"="{{ tags[1] }}",
+                        {% else %}
+                "{{ tags[0] }}"="{{ tags[1] }}"
+                        {% endif %}
+                    {% endfor %}
+                    }
+                {% endif %}
+            {% endif %}
+    {#  ###Section for adding Defined and Freeform Tags ends here###  #}
+    },
+
+  }

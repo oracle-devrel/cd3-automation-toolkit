@@ -1,4 +1,9 @@
-# Steps to Upgrade Your Toolkit (For Existing Customers):
+# Steps to Upgrade Your Toolkit (For Existing Customers using older versions):
+
+## Upgrade to Release v11
+1. Follow the steps in [Launch Docker Container](/cd3_automation_toolkit/documentation/user_guide/Launch_Docker_container.md) to build new image with latest code and launch the container by specifying new path for <directory_in_local_system_where_the_files_must_be_generated> to create a fresh outdir.
+2. Use Non Greenfield workflow to export the required OCI services into new excel sheet and the tfvars. Run terraform import commands also.
+3. Once terraform is in synch, Switch to Greenfield workflow and use for any future modifications to the infra.
 
 ## Upgrade to Release v10.2 from v10.1
 1. Follow the steps in [Launch Docker Container](/cd3_automation_toolkit/documentation/user_guide/Launch_Docker_container.md) to build new image with latest code and launch the container by specifying same path for <directory_in_local_system_where_the_files_must_be_generated> to keep using same outdir.

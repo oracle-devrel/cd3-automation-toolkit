@@ -203,7 +203,7 @@ def validate_subnets(filename, comp_ids, vcnobj):
 
     log("Start Null or Wrong value check in each row-----------------")
 
-    dfsub = data_frame(filename, 'Subnets')
+    dfsub = data_frame(filename, 'SubnetsVLANs')
     dfdhcp = data_frame(filename, 'DHCP')
     # List of the column headers
     dfcolumns = dfsub.columns.values.tolist()
@@ -251,7 +251,7 @@ def validate_subnets(filename, comp_ids, vcnobj):
 
         # Check if the dns_label field has special characters or if it has greater than 15 characters or is duplicate
         dns_value = str(dfsub.loc[i, 'DNS Label']).strip()
-        dns_subnetname = str(dfsub.loc[i, 'Subnet Name']).strip()
+        dns_subnetname = str(dfsub.loc[i, 'Display Name']).strip()
         dns_vcn = str(dfsub.loc[i, 'VCN Name']).strip()
 
         if (dns_value.lower() == "nan"):
@@ -764,13 +764,13 @@ def validate_instances(filename,comp_ids,subnetobj,vcn_subnet_list,vcn_nsg_list)
                     log(f'ROW {i+3} : Empty value at column Display Name')
                     inst_empty_check = True
 
-            if columnname == 'Subnet Name':
+            if columnname == 'Display Name':
                 if columnvalue.lower()=='nan':
-                    log(f'ROW {i+3} : Empty value at column Subnet Name.')
+                    log(f'ROW {i+3} : Empty value at column Display Name.')
                     inst_empty_check = True
                 else:
                     # Cross check the VCN names in Instances and VCNs sheet
-                    vcn_subnet_check = compare_values(vcn_subnet_list.tolist(), columnvalue,[i, 'Subnet Name <vcn-name_subnet-name>', 'Subnets'])
+                    vcn_subnet_check = compare_values(vcn_subnet_list.tolist(), columnvalue,[i, 'Display Name <vcn-name_subnet-name>', 'SubnetsVLANs'])
 
             if columnname == 'Source Details':
                 if columnvalue.lower()== 'nan':
@@ -797,7 +797,7 @@ def validate_instances(filename,comp_ids,subnetobj,vcn_subnet_list,vcn_nsg_list)
                             inst_invalid_check = True
 
             if vcn_subnet_check==False and columnname == "NSGs":
-                subnet_name = str(dfinst.loc[i, "Subnet Name"]).strip()
+                subnet_name = str(dfinst.loc[i, "Display Name"]).strip()
                 if(columnvalue!='nan'):
                     vcn_nsg_check = validate_nsgs_column(i,region,columnvalue,subnet_name,subnetobj,vcn_nsg_list)
 
@@ -940,7 +940,7 @@ def validate_fss(filename,comp_ids,subnetobj,vcn_subnet_list,vcn_nsg_list):
             if columnname == 'MountTarget SubnetName':
                 # Cross check the VCN names in Instances and VCNs sheet
                 if(columnvalue!='nan'):
-                    vcn_subnet_check = compare_values(vcn_subnet_list.tolist(), columnvalue,[i, 'Subnet Name <vcn-name_subnet-name>', 'Subnets'])
+                    vcn_subnet_check = compare_values(vcn_subnet_list.tolist(), columnvalue,[i, 'Display Name <vcn-name_subnet-name>', 'SubnetsVLANs'])
 
             if vcn_subnet_check==False and columnname == "NSGs":
                 subnet_name = str(df_fss.loc[i, "MountTarget SubnetName"]).strip()
@@ -1206,8 +1206,8 @@ def validate_cd3(filename, prefix, outdir,choices, configFileName):
     vcnobj = parseVCNs(filename)
     subnetobj = parseSubnets(filename)
 
-    dfsub = data_frame(filename, 'Subnets')
-    vcn_subnet_list = dfsub['VCN Name'].astype(str)+'_'+dfsub['Subnet Name']
+    dfsub = data_frame(filename, 'SubnetsVLANs')
+    vcn_subnet_list = dfsub['VCN Name'].astype(str)+'_'+dfsub['Display Name']
 
     dfnsg = data_frame(filename, 'NSGs')
     vcn_nsg_list = dfnsg['Region'].astype(str).str.lower() + '_' + dfnsg['VCN Name'].astype(str) + '_' + dfnsg['NSG Name']
@@ -1238,8 +1238,8 @@ def validate_cd3(filename, prefix, outdir,choices, configFileName):
             print("\nProcessing VCNs Tab..")
             vcn_check, vcn_cidr_check, vcn_peer_check = validate_vcns(filename, ct.ntk_compartment_ids, vcnobj, config)
 
-            log("============================= Verifying Subnets Tab ==========================================\n")
-            print("\nProcessing Subnets Tab..")
+            log("============================= Verifying SubnetsVLANs Tab ==========================================\n")
+            print("\nProcessing SubnetsVLANs Tab..")
             subnet_check, subnet_cidr_check = validate_subnets(filename, ct.ntk_compartment_ids, vcnobj)
 
             log("============================= Verifying DHCP Tab ==========================================\n")

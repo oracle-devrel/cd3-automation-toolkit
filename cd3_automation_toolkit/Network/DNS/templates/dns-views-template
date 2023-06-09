@@ -1,0 +1,59 @@
+{% if count == 0 %}
+// Copyright (c) 2021, 2022, 2023 Oracle and/or its affiliates.
+
+############################
+# DNS
+# DNS Views - tfvars
+# Allowed Values:
+# view_id can be the ocid of the view or the name as in OCI
+# compartment_id and view_compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens "--"
+# Example : compartment_id = "ocid1.compartment.oc1..aaaaaaaah6jy3xf3c" or compartment_id = "AppDev--Prod" where "AppDev" is the parent of "Prod" compartment
+# Sample import command for dns-view :
+# terraform import "module.dns-views[\"<<dns-view terraform variable name>>\"].oci_dns_view.view" <<dns-view ocid>>
+############################
+
+views = {
+    ##Add New DNS Views for {{ region|lower }} here##
+}
+{% else %}
+   {% if view_display_name != "" and view_display_name != "nan" and view_display_name != null %}
+   "{{ display_tf_name }}" =  {
+            compartment_id       = "{{ view_compartment_name }}"
+            display_name         = "{{ view_display_name }}"
+            {% if view_scope %}
+            scope = "{{ view_scope }}"
+            {% endif %}
+            {#  ##Do not modify below this line##  #}
+            {#                                     #}
+            {#  ###Section for adding Defined and Freeform Tags###  #}
+            {% if defined_tags and defined_tags != 'nan' and defined_tags != '' and defined_tags != [['nan']] %}
+            {% if defined_tags[0] %}
+            defined_tags = {
+                {% for tags in defined_tags  %}
+                    {% if not loop.last %}
+                        "{{ tags[0]  }}"= "{{ tags[1] }}" ,
+                    {% else %}
+                        "{{ tags[0]  }}"= "{{ tags[1] }}"
+                    {% endif %}
+                {% endfor %}
+                }
+                {% endif %}
+               {% endif %}
+                    {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' and freeform_tags != [['nan']] %}
+                        {% if freeform_tags[0] %}
+            freeform_tags = {
+                            {% for tags in freeform_tags %}
+                                {% if not loop.last  %}
+                        "{{ tags[0] }}"="{{ tags[1] }}",
+                                {% else %}
+                        "{{ tags[0] }}"="{{ tags[1] }}"
+                                {% endif %}
+                            {% endfor %}
+                            }
+                        {% endif %}
+                    {% endif %}
+            {#  ###Section for adding Defined and Freeform Tags ends here###  #}
+
+    },
+    {% endif %}
+{% endif %}

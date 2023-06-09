@@ -4,7 +4,7 @@ These are the syntax and sample format for providing inputs to the modules via <
 Comments preceed with <b>##</b>.
 
 ## IDENTITY
-1. Compartments
+**1. Compartments**
 - <b>Syntax</b>
   
     ````
@@ -193,7 +193,7 @@ Comments preceed with <b>##</b>.
     }
   ````
     
-2. Groups/Dynamic Groups
+**2. Groups/Dynamic Groups**
 
    &#9432; The parameter that differentiate dynamic groups from normal groups is <b> matching_rule </b>. Normal Groups will be created when you <b>omit</b> this parameter or pass it as <b>""</b> or <b>null</b>. All the groups are created in the root compartment.
 - <b>Syntax</b>
@@ -251,7 +251,7 @@ Comments preceed with <b>##</b>.
     }
   ````
 
-3. Policies
+**3. Policies**
 
    &#9432; The parameter that differentiate dynamic groups from normal groups is <b> matching_rule </b>. Normal Groups will be created when you <b>omit</b> this parameter or pass it as <b>""</b> or <b>null</b>.
 - <b>Syntax</b>
@@ -308,4 +308,111 @@ Comments preceed with <b>##</b>.
     }
   ````
   
+ 
+**4. Users**
+
+- <b>Syntax</b>
+  
+    ````
+  users = {
+     ## key - Is a unique value to reference the resources respectively
+     key = {
+    # Required
+      name                  = string
+      description           = string
+      email                 = string
+      group_membership      = list(string)
+    disable_capabilities  = list(string)
+
+      # Optional
+      defined_tags          = map
+      },
+  }
+    ````
+    
+- <b>Example:</b>
+
+    ````
+      ############################
+      # Identity
+      # Users - tfvars
+      ############################
+      users = {
+         testUser = {
+          # Required
+          name                 = "testUser"
+          description          = "this is a test user"
+          email                = "testUser@oracle.com"
+          group_membership     = ["OSAdmin","Administrators"]
+          disable_capabilities = ["can_use_console_password","can_use_customer_secret_keys"]
+
+          # Optional
+              defined_tags = {
+                      "Oracle-Tags.CreatedOn"= "2023-05-23T07:19:18.918Z" ,
+                      "Oracle-Tags.CreatedBy"= "oracleidentitycloudservice/abc@oracle.com"
+                }      
+            }            
+        }
+   ````
+
+
+**5. Network Sources**
+
+- <b>Syntax</b>
+
+    ````
+      networkSources = {
+         ## key - Is a unique value to reference the resources respectively
+         key = {
+            # Required
+            name                  = string
+            description           = string
+            public_source_list    = list(string)
+            virtual_source_list   = list(map)
+
+          # Optional
+          defined_tags          = map
+          },
+        }
+ 
+    ````
+
+- <b>Example</b>
+
+       
+     ````
+        ############################
+        # Identity
+        # Network Sources - tfvars
+        ############################
+        networkSources = {
+           networkSourcesExample = {
+            # Required
+            name                 = "myNetworkSource"
+            description          = "this is a network source"
+            public_source_list   = ["192.0.2.0/24","192.0.3.0/26"]
+            virtual_source_list  =
+              [
+                {
+                  vcn_name               = ["VCN1"],
+                  network_compartment_id = ["NetworkCompartment"],
+                  ip_ranges              = [ "10.169.0.0/16"]
+                },
+                {
+                  vcn_name 			         = ["VCN2"],
+                  network_compartment_id = ["NetworkCompartment"],
+                  ip_ranges              = ["172.16.2.0/24", "172.16.2.0/26"]
+                }
+              ]
+
+		  # Optional
+          defined_tags = {
+                  "Oracle-Tags.CreatedOn"= "2023-05-23T07:19:18.918Z" ,
+                  "Oracle-Tags.CreatedBy"= "oracleidentitycloudservice/abc@oracle.com"
+		            }
+          }
+       }
+       
+    ````
+ 
 

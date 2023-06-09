@@ -24,14 +24,15 @@ def parse_args():
     parser = argparse.ArgumentParser(description='Creates Instances TF file')
     parser.add_argument('inputfile', help='Full Path of input CD3 excel file')
     parser.add_argument('outdir', help='Output directory for creation of TF files')
-    parser.add_argument("service_dir",help="subdirectory under region directory in case of separate out directory structure")
+    parser.add_argument("service_dir",
+                        help="subdirectory under region directory in case of separate out directory structure")
     parser.add_argument('prefix', help='TF files prefix')
     parser.add_argument('--config', default=DEFAULT_LOCATION, help='Config file name')
     return parser.parse_args()
 
 
 # If input is CD3 excel file
-def create_terraform_instances(inputfile, outdir, service_dir,prefix, config):
+def create_terraform_instances(inputfile, outdir, service_dir, prefix, config):
     boot_policy_tfStr = {}
     tfStr = {}
     ADS = ["AD1", "AD2", "AD3"]
@@ -60,7 +61,7 @@ def create_terraform_instances(inputfile, outdir, service_dir,prefix, config):
     # Take backup of files
     for eachregion in ct.all_regions:
         resource = sheetName.lower()
-        srcdir = outdir + "/" + eachregion+ "/" + service_dir + "/"
+        srcdir = outdir + "/" + eachregion + "/" + service_dir + "/"
         commonTools.backup_file(srcdir, resource, auto_tfvars_filename)
         tfStr[eachregion] = ''
         boot_policy_tfStr[eachregion] = ''
@@ -143,10 +144,12 @@ def create_terraform_instances(inputfile, outdir, service_dir,prefix, config):
                         vcn_name = subnets.vcn_subnet_map[key][1]
                         subnet_id = subnets.vcn_subnet_map[key][2]
                     except Exception as e:
-                        print("Invalid Subnet Name specified for row " + str(i + 3) + ". It Doesnt exist in Subnets sheet. Exiting!!!")
+                        print("Invalid Subnet Name specified for row " + str(
+                            i + 3) + ". It Doesnt exist in Subnets sheet. Exiting!!!")
                         exit()
 
-                tempdict = {'network_compartment_id': commonTools.check_tf_variable(network_compartment_id), 'vcn_name': vcn_name,
+                tempdict = {'network_compartment_id': commonTools.check_tf_variable(network_compartment_id),
+                            'vcn_name': vcn_name,
                             'subnet_id': subnet_id}
 
             if columnname == 'Display Name':
@@ -158,6 +161,15 @@ def create_terraform_instances(inputfile, outdir, service_dir,prefix, config):
                 compartment_var_name = columnvalue.strip()
                 compartment_var_name = commonTools.check_tf_variable(compartment_var_name)
                 tempdict = {'compartment_tf_name': compartment_var_name}
+
+            if columnname == 'Remote Execute':
+                if columnvalue != "":
+                    if ("@" in columnvalue):
+                        remote_execute = columnvalue.strip().split("@")
+                        tempdict = {'remote_execute': remote_execute[1],
+                                'bastion_ip': remote_execute[0]}
+                    else:
+                        tempdict = {'remote_execute': columnvalue.strip() }
 
             if columnname == 'Custom Policy Compartment Name':
                 if columnvalue != "":
@@ -196,7 +208,7 @@ def create_terraform_instances(inputfile, outdir, service_dir,prefix, config):
             if columnname == "SSH Key Var Name":
                 if columnvalue.strip() != '' and columnvalue.strip().lower() != 'nan':
                     if "ssh-rsa" in columnvalue.strip():
-                        ssh_key_var_name = "\"" + columnvalue.strip() + "\""
+                        ssh_key_var_name = columnvalue.strip()
                     else:
                         ssh_key_var_name = columnvalue.strip()
                     tempdict = {'ssh_key_var_name': ssh_key_var_name}

@@ -6,20 +6,20 @@
 ############################
 
 provider "oci" {
-  tenancy_ocid     = var.tenancy_ocid
-  user_ocid        = var.user_ocid
-  fingerprint      = var.fingerprint
-  private_key_path = var.private_key_path
-  region           = var.region
+  tenancy_ocid        = var.tenancy_ocid
+  user_ocid           = var.user_ocid
+  fingerprint         = var.fingerprint
+  private_key_path    = var.private_key_path
+  region              = var.region
   ignore_defined_tags = ["Oracle-Tags.CreatedBy", "Oracle-Tags.CreatedOn"]
 }
 
 terraform {
   required_providers {
     oci = {
-      source  = "hashicorp/oci"
+      source = "hashicorp/oci"
       #version = ">= 4.0.0"
-      version = "4.109.0"
+      version = "4.120.0"
     }
   }
 }

@@ -10,7 +10,7 @@ from .create_terraform_nsg import create_terraform_nsg
 from .create_terraform_route import create_terraform_route
 from .create_terraform_route import create_terraform_drg_route
 from .create_terraform_seclist import create_terraform_seclist
-from .create_terraform_subnet import create_terraform_subnet
+from .create_terraform_subnet_vlan import create_terraform_subnet_vlan
 from .modify_routerules_tf import modify_terraform_routerules
 from .modify_secrules_tf import modify_terraform_secrules
 from .modify_routerules_tf import modify_terraform_drg_routerules
@@ -21,7 +21,7 @@ from .exportNSG import export_nsg
 from .export_network_nonGreenField import export_networking
 from .export_network_nonGreenField import export_major_objects
 from .export_network_nonGreenField import export_dhcp
-from .export_network_nonGreenField import export_subnets
+from .export_network_nonGreenField import export_subnets_vlans
 
 __all__ = [
     'create_all_tf_objects',
@@ -34,7 +34,7 @@ __all__ = [
     'create_terraform_defaults',
     'create_default_routetable',
     'create_default_seclist',
-    'create_terraform_subnet',
+    'create_terraform_subnet_vlan',
     'modify_terraform_routerules',
     'modify_terraform_drg_routerules',
     'modify_terraform_secrules',
@@ -45,5 +45,5 @@ __all__ = [
     'export_nsg',
     'export_major_objects',
     'export_dhcp',
-    'export_subnets'
+    'export_subnets_vlans'
 ]

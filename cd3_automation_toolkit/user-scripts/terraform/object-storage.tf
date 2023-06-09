@@ -10,15 +10,36 @@ data "oci_objectstorage_namespace" "bucket_namespace" {
   compartment_id = var.tenancy_ocid
 }
 
+module "oss-policies" {
+  source   = "./modules/identity/iam-policy"
+  for_each = var.oss_policies != null ? var.oss_policies : {}
+
+  tenancy_ocid          = var.tenancy_ocid
+  policy_name           = each.value.name
+  policy_compartment_id = each.value.compartment_id != "root" ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : var.tenancy_ocid
+  policy_description    = each.value.policy_description
+  policy_statements     = each.value.policy_statements
+
+  #Optional
+  defined_tags        = each.value.defined_tags != {} ? each.value.defined_tags : {}
+  freeform_tags       = each.value.freeform_tags != {} ? each.value.freeform_tags : {}
+  policy_version_date = each.value.policy_version_date != null ? each.value.policy_version_date : null
+}
+
+/*
+output "oss_policies_id_map" {
+  value = [ for k,v in merge(module.oss-policies.*...) : v.policies_id_map]
+}
+*/
+
 #############################
 # Module Block - Object Storage
 # Create Object Storage
 #############################
 
 module "oss-buckets" {
-  source     = "./modules/storage/object-storage"
-  for_each   = var.oss != null ? var.oss : {}
-  depends_on = [module.keys]
+  source   = "./modules/storage/object-storage"
+  for_each = var.buckets != null ? var.buckets : {}
 
   #Required
   compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
@@ -26,16 +47,21 @@ module "oss-buckets" {
   namespace      = data.oci_objectstorage_namespace.bucket_namespace.namespace
 
   #Optional
-  access_type           = each.value.access_type != "" ? each.value.access_type : null   # Defaults to 'NoPublicAccess' as per hashicorp terraform
-  auto_tiering          = each.value.auto_tiering != "" ? each.value.auto_tiering : null # Defaults to 'Disabled' as per hashicorp terraform
-  defined_tags          = each.value.defined_tags != {} ? each.value.defined_tags : {}
-  freeform_tags         = each.value.freeform_tags != {} ? each.value.freeform_tags : {}
-  kms_key_id            = each.value.kms_key_id != "" ? merge(module.keys.*...)[each.value.kms_key_id]["key_tf_id"] : null
-  metadata              = each.value.metadata != {} ? each.value.metadata : {}
+  access_type   = each.value.access_type != "" ? each.value.access_type : null   # Defaults to 'NoPublicAccess' as per hashicorp terraform
+  auto_tiering  = each.value.auto_tiering != "" ? each.value.auto_tiering : null # Defaults to 'Disabled' as per hashicorp terraform
+  defined_tags  = each.value.defined_tags != {} ? each.value.defined_tags : {}
+  freeform_tags = each.value.freeform_tags != {} ? each.value.freeform_tags : {}
+  #kms_key_id           = each.value.kms_key_id != "" ? each.value.kms_key_id : null
+  #metadata             = each.value.metadata != {} ? each.value.metadata : {}
   object_events_enabled = each.value.object_events_enabled != "" ? each.value.object_events_enabled : null # Defaults to 'false' as per hashicorp terraform
   storage_tier          = each.value.storage_tier != "" ? each.value.storage_tier : null                   # Defaults to 'Standard' as per hashicorp terraform
-  retention_rules       = each.value.retention_rules != [] ? each.value.retention_rules : []
   versioning            = each.value.versioning != "" ? each.value.versioning : null
+  retention_rules       = each.value.retention_rules
+  bucket                = each.value.name
+  replication_policy    = coalesce(each.value.replication_policy, null)
+  lifecycle_policy      = each.value.lifecycle_policy
+  rules                 = each.value.lifecycle_policy.rules
+
 }
 
 #############################

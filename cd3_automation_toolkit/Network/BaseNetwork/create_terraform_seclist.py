@@ -214,7 +214,7 @@ def create_terraform_seclist(inputfile, outdir, service_dir, prefix, config, mod
             purge(outdir + "/" + reg + "/" +service_dir + "/", prefix + auto_tfvars_filename)
 
     # Read cd3 using pandas dataframe
-    df, col_headers = commonTools.read_cd3(filename, "Subnets")
+    df, col_headers = commonTools.read_cd3(filename, "SubnetsVLANs")
 
     df = df.dropna(how='all')
     df = df.reset_index(drop=True)
@@ -233,6 +233,11 @@ def create_terraform_seclist(inputfile, outdir, service_dir, prefix, config, mod
         if region not in ct.all_regions:
             print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
             exit(1)
+
+        # Skip row if it's a VLAN
+        subnet_vlan_in_excel = str(df.loc[i, 'Subnet or VLAN']).strip()
+        if 'vlan' in subnet_vlan_in_excel.lower():
+            continue
 
         # temporary dictionary1, dictionary2, string  and list
         tempStr = {}
@@ -281,7 +286,7 @@ def create_terraform_seclist(inputfile, outdir, service_dir, prefix, config, mod
                 if columnvalue.lower() != 'nan' and columnvalue.lower() != '':
                     sl_names = columnvalue.split(",")
                 else:
-                    sl_names.append(str(df.loc[i,'Subnet Name']).strip())
+                    sl_names.append(str(df.loc[i,'Display Name']).strip())
                 compartment_var_name = compartment_var_name.strip()
                 tempdict = {'compartment_tf_name' : compartment_var_name, 'sl_names' : sl_names}
 

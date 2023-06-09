@@ -10,6 +10,10 @@ Click on the links below to know about the specifics of each tab in the excel sh
   
  - [Policies](/cd3_automation_toolkit/documentation/user_guide/learn_more/Tabs.md#Policies-Tab)
 
+ - [Users](/cd3_automation_toolkit/documentation/user_guide/learn_more/Tabs.md#Users-Tab)
+
+ - [Network Sources](/cd3_automation_toolkit/documentation/user_guide/learn_more/Tabs.md#Network-Sources-Tab)
+
 <a href="/cd3_automation_toolkit/documentation/terraform/identity.md"> Click here to view sample auto.tfvars for the Identity components</a> 
 
 #### Governance
@@ -28,24 +32,34 @@ Click on the links below to know about the specifics of each tab in the excel sh
   
  - [DHCP](/cd3_automation_toolkit/documentation/user_guide/learn_more/Tabs.md#d-DHCP-Tab)
   
- - [Subnets](/cd3_automation_toolkit/documentation/user_guide/learn_more/Tabs.md#e-Subnets-Tab)
+ - [SubnetsVLANs](/cd3_automation_toolkit/documentation/user_guide/learn_more/Tabs.md#e-SubnetsVLANs-Tab)
+ 
+  
 
 <a href="/cd3_automation_toolkit/documentation/terraform/network.md">Click here to view sample auto.tfvars for all Network components- VCNs, Subnets, Gateways etc.,</a> 
 
+#### Private-DNS
+  
+ - [DNS-Views-Zones-Records](/cd3_automation_toolkit/documentation/user_guide/learn_more/Tabs.md#DNS-Views-Zones-Records-Tab)
+  
+ - [DNS-Resolvers](/cd3_automation_toolkit/documentation/user_guide/learn_more/Tabs.md#DNS-Resolvers-Tab)
+  
+
+<a href="/cd3_automation_toolkit/documentation/terraform/dns.md">Click here to view sample auto.tfvars for all DNS components </a> 
 
 #### Load Balancer
 
  - [LB-Hostname-Certs Tab](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/develop/cd3_automation_toolkit/documentation/user_guide/learn_more/Tabs.md#lb-hostname-certs-tab)
  
- - [Backend Set and Backend Servers](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/develop/cd3_automation_toolkit/documentation/user_guide/learn_more/Tabs.md#backend-set-and-backend-servers-tab)
+ - [LB-Backend Set and Backend Servers](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/develop/cd3_automation_toolkit/documentation/user_guide/learn_more/Tabs.md#backend-set-and-backend-servers-tab)
  
- - [RuleSet](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/develop/cd3_automation_toolkit/documentation/user_guide/learn_more/Tabs.md#ruleset-tab)
+ - [LB-RuleSet](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/develop/cd3_automation_toolkit/documentation/user_guide/learn_more/Tabs.md#ruleset-tab)
  
- - [PathRouteSet](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/develop/cd3_automation_toolkit/documentation/user_guide/learn_more/Tabs.md#path-route-set-tab)
+ - [LB-PathRouteSet](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/develop/cd3_automation_toolkit/documentation/user_guide/learn_more/Tabs.md#path-route-set-tab)
  
  - [LB-Listener](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/develop/cd3_automation_toolkit/documentation/user_guide/learn_more/Tabs.md#lb-listeners-tab)
 
-<a href="/cd3_automation_toolkit/documentation/terraform/network.md">Click here to view sample auto.tfvars for all Load Balancer components- Cipher suits,Backend sets, rule sets etc.,</a>
+<a href="/cd3_automation_toolkit/documentation/terraform/loadbalancer.md">Click here to view sample auto.tfvars for all Load Balancer components- Cipher suits,Backend sets, rule sets etc.,</a>
 
 
 #### Compute
@@ -54,15 +68,21 @@ Click on the links below to know about the specifics of each tab in the excel sh
  
  - [Instances](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/develop/cd3_automation_toolkit/documentation/user_guide/learn_more/Tabs.md#instances-tab)
 
-<a href="/cd3_automation_toolkit/documentation/terraform/network.md">Click here to view sample auto.tfvars for Compute components-Virtual Machine</a> 
+<a href="/cd3_automation_toolkit/documentation/terraform/compute.md">Click here to view sample auto.tfvars for Compute components-Virtual Machine</a> 
  
 #### Storage
  
- - [BlocksVolumes](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/develop/cd3_automation_toolkit/documentation/user_guide/learn_more/Tabs.md#blocksvolumes-tab)
+ - [BlockVolumes](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/develop/cd3_automation_toolkit/documentation/user_guide/learn_more/Tabs.md#blocksvolumes-tab)
+ 
+ <a href="/cd3_automation_toolkit/documentation/terraform/storage.md">Click here to view sample auto.tfvars for Block Volumes </a> 
 
  - [FSS](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/develop/cd3_automation_toolkit/documentation/user_guide/learn_more/Tabs.md#fss-tab)
  
- <a href="/cd3_automation_toolkit/documentation/terraform/storage.md">Click here to view sample auto.tfvars for Storage components- Block Volume </a> 
+ - [Object Storage Buckets](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/develop/cd3_automation_toolkit/documentation/user_guide/learn_more/Tabs.md#Buckets-tab)
+ 
+ <a href="/cd3_automation_toolkit/documentation/terraform/storage.md#2-Buckets">Click here to view sample auto.tfvars for Object Storage Buckets</a> 
+ 
+ 
  
  #### Database
  - [DBSystems-VM-BM](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/develop/cd3_automation_toolkit/documentation/user_guide/learn_more/Tabs.md#dbsystems-vm-bm-tab)
@@ -83,8 +103,7 @@ Click on the links below to know about the specifics of each tab in the excel sh
  - [ServiceConnectors](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/develop/cd3_automation_toolkit/documentation/user_guide/learn_more/Tabs.md#serviceconnectors-tab) 
 
 
-<a href="/cd3_automation_toolkit/documentation/terraform/sch.md">Click here to view sample auto.tfvars for Service Connector</a> 
-
+<a href="/cd3_automation_toolkit/documentation/terraform/sch.md">Click here to view sample auto.tfvars for Service Connectors</a> 
 
  
  #### Developer Services
@@ -92,4 +111,24 @@ Click on the links below to know about the specifics of each tab in the excel sh
  - [OKE](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/develop/cd3_automation_toolkit/documentation/user_guide/learn_more/Tabs.md#oke-tab)
 
 <a href="/cd3_automation_toolkit/documentation/terraform/oke.md">Click here to view sample auto.tfvars for OKE components- Clusters, Nodepools</a> 
+
+ #### Logging Services
  
+ - [VCN Flow Logs](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/develop/cd3_automation_toolkit/documentation/user_guide/learn_more/Tabs.md#vcn-flow-logs)
+ - [LBaaS Logs](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/develop/cd3_automation_toolkit/documentation/user_guide/learn_more/Tabs.md#lbaas-logs)
+- [OSS Logs](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/develop/cd3_automation_toolkit/documentation/user_guide/learn_more/Tabs.md#oss-logs)
+
+<a href="/cd3_automation_toolkit/documentation/terraform/logging.md">Click here to view sample auto.tfvars for Logging components </a> 
+
+ #### SDDCs Tab
+ 
+ - [OCVS](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/develop/cd3_automation_toolkit/documentation/user_guide/learn_more/Tabs.md#sddcs-tab)
+ 
+<a href="/cd3_automation_toolkit/documentation/terraform/sddc.md">Click here to view sample auto.tfvars for OCVS </a> 
+ 
+ 
+ 
+
+ 
+ 
+

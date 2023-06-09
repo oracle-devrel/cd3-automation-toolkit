@@ -13,92 +13,56 @@
 
 cloud_guard_targets = {
     ##Add New Cloud Guard Targets for {{ region|lower }} here##
-}{% else %}
-
+    }{% else %}
+    
     {{ cg_target_tf_name }} = {
-            #Required
-            compartment_id = "{{ compartment_tf_name }}"
-            display_name = "{{cg_target_name }}"
-            target_resource_id = "{{cg_target_comp_tf_name}}"
-
-            {% if target_resource_type and target_resource_type != "" %}
-            target_resource_type = "{{ target_resource_type }}"
-            {% else %}
-            target_resource_type = "COMPARTMENT"
-            {%endif %}
-
-            #Optional
-            {% if description and description != "" %}
-            description = "{{cg_target_desc}}"
-            {%endif %}
-
-            {% if state and state != "" %}
-            state = "{{ state }}"
-            {%endif %}
-
-            {% if target_detector_recipes and target_detector_recipes != '' %}
-            target_detector_recipes = [
-            {% for recipes in target_detector_recipes  %}
-            {% if not loop.last %}
-            {
-            detector_recipe_id = "{{ recipes }}"
-            },
-            {% else %}
-            {
-            detector_recipe_id = "{{ recipes }}"
-            }
-            {% endif %}{% endfor %}
-            ]
-            {% endif %}
-
-            {% if target_responder_recipes and target_responder_recipes != '' %}
-            target_responder_recipes = [
-            {% for recipes in target_responder_recipes  %}
-            {% if not loop.last %}
-            {
-            responder_recipe_id = "{{ recipes }}"
-            },
-            {% else %}
-            {
-            responder_recipe_id = "{{ recipes }}"
-            }
-            {% endif %}{% endfor %}
-            ]
-            {% endif %}
-
-        {#  ##Do not modify below this line##  #}
-        {#                                     #}
-        {#  ###Section for adding Defined and Freeform Tags###  #}
-        {% if defined_tags and defined_tags != 'nan' and defined_tags != '' and defined_tags != [['nan']] %}
-          {% if defined_tags[0] %}
-            defined_tags = {
-            {% for tags in defined_tags  %}
-                {% if not loop.last %}
-                    "{{ tags[0]  }}"= "{{ tags[1] }}" ,
-                {% else %}
-                    "{{ tags[0]  }}"= "{{ tags[1] }}"
-                {% endif %}
-            {% endfor %}
-            }
-            {% endif %}
-           {% endif %}
-                {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' and freeform_tags != [['nan']] %}
-                    {% if freeform_tags[0] %}
-            freeform_tags = {
-                        {% for tags in freeform_tags %}
-                            {% if not loop.last  %}
-                    "{{ tags[0] }}"="{{ tags[1] }}",
-                            {% else %}
-                    "{{ tags[0] }}"="{{ tags[1] }}"
-                            {% endif %}
-                        {% endfor %}
-                        }
-                    {% endif %}
-                {% endif %}
-         {#  ###Section for adding Defined and Freeform Tags ends here###  #}
-
-
-
-           },
-
-{% endif %}
+    #Required
+    compartment_id = "{{ compartment_tf_name }}"
+    display_name = "{{cg_target_name }}"
+    target_resource_id = "{{cg_target_comp_tf_name}}"
+    {% if target_resource_type and target_resource_type != "" %}
+    target_resource_type = "{{ target_resource_type }}"
+    {% else %}
+    target_resource_type = "COMPARTMENT"
+    {%endif %}
+    prefix = "{{ prefix }}"
+    #Optional
+    {% if description and description != "" %}
+    description = "{{cg_target_desc}}"
+    {%endif %}
+    {% if state and state != "" %}
+    state = "{{ state }}"
+    {%endif %}
+    {# ##Do not modify below this line## #}
+    {# #}
+    {# ###Section for adding Defined and Freeform Tags### #}
+    {% if defined_tags and defined_tags != 'nan' and defined_tags != '' and defined_tags != [['nan']] %}
+    {% if defined_tags[0] %}
+    defined_tags = {
+    {% for tags in defined_tags %}
+    {% if not loop.last %}
+    "{{ tags[0] }}"= "{{ tags[1] }}" ,
+    {% else %}
+    "{{ tags[0] }}"= "{{ tags[1] }}"
+    {% endif %}
+    {% endfor %}
+    }
+    {% endif %}
+    {% endif %}
+    {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' and freeform_tags != [['nan']] %}
+    {% if freeform_tags[0] %}
+    freeform_tags = {
+    {% for tags in freeform_tags %}
+    {% if not loop.last %}
+    "{{ tags[0] }}"="{{ tags[1] }}",
+    {% else %}
+    "{{ tags[0] }}"="{{ tags[1] }}"
+    {% endif %}
+    {% endfor %}
+    }
+    {% endif %}
+    {% endif %}
+    {# ###Section for adding Defined and Freeform Tags ends here### #}
+    },
+    
+    {% endif %}

@@ -1,0 +1,120 @@
+{% if count == 0 %}
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+
+############################
+# SDDCs
+# SDDC - tfvars
+# Allowed Values:
+# vcn_name must be the name of the VCN as in OCI
+# vlan_name must be the name of the vlan as in OCI
+# subnet_id can be the ocid of the subnet or the name as in OCI
+# compartment_id and network_compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens "--"
+# Example : compartment_id = "ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c" or compartment_id = "AppDev--Prod" where "AppDev" is the parent of "Prod" compartment
+# Sample import command for SDDC:
+# terraform import "module.sddc[\"<<sddc terraform variable name>>\"].oci_ocvp_sddc.sddc" <<sddc ocid>>
+############################
+sddcs = {
+   ##Add New SDDCs for {{ region|lower }} here##
+
+}
+{% else %}
+   {{ display_tf_name }} =  {
+
+          compartment_id                = "{{ compartment_tf_name }}"
+          display_name                  = "{{ display_name  }}"
+          {% if availability_domain == "multi-AD"  %}
+          availability_domain           =  "{{ availability_domain }}"
+          {% else %}
+          availability_domain           =  {{ availability_domain }}
+          {% endif %}
+          {% if enable_hcx  %}
+          is_hcx_enabled                = "{{ enable_hcx }}"
+          {% endif %}
+          {% if hcx_license_type|upper == "ENTERPRISE" %}
+          hcx_action                    = "UPGRADE"
+          {% endif %}
+
+          vmware_software_version       = "{{ vmware_software_version }}"
+          initial_sku                   = "{{ pricing_interval }}"
+          {% if sddc_hardware_type   %}
+          initial_host_shape_name       = "{{ sddc_hardware_type}}"
+          {% endif %}
+          {% if  number_of_ocpu_cores  %}
+          initial_host_ocpu_count       = "{{ number_of_ocpu_cores }}"
+          {% endif %}
+          esxi_hosts_count              = {{ number_of_esxi_hosts }}
+          {% if prefix_for_esxi_hosts %}
+          instance_display_name_prefix  = "{{ prefix_for_esxi_hosts }}"
+          {% endif %}
+          {% if enable_shielded_instance %}
+          is_shielded_instance_enabled  = "{{ enable_shielded_instance }}"
+          {% endif %}
+
+          {% if ssh_key_var_name != '' %}
+          ssh_authorized_keys           = "{{ ssh_key_var_name }}"
+          {% endif %}
+
+          {% if refresh_hcx_license_status %}
+          refresh_hcx_license_status    = {{ refresh_hcx_license_status }}
+          {% endif %}
+          {% if reserving_hcx_on_premise_license_keys %}
+          reserving_hcx_on_premise_license_keys = {{ "reserving_hcx_on_premise_license_keys" }}
+          {% endif %}
+
+          {% if  capacity_reservation_id  %}
+          capacity_reservation_id       = "{{ capacity_reservation_id  }}"
+          {% endif %}
+
+          network_compartment_id        = "{{ network_compartment_id }}"
+          vcn_name                      = "{{ vcn_name }}"
+
+          provisioning_subnet_id        = "{{ provisioning_subnet }}"
+          nsx_edge_uplink1vlan_id       = "{{ nsx_edge_uplink1_vlan }}"
+          nsx_edge_uplink2vlan_id       = "{{ nsx_edge_uplink2_vlan }}"
+          nsx_edge_vtep_vlan_id         = "{{ nsx_edge_vtep_vlan }}"
+          nsx_vtep_vlan_id              = "{{ nsx_vtep_vlan }}"
+          vmotion_vlan_id               = "{{ vmotion_vlan }}"
+          vsan_vlan_id                  = "{{ vsan_vlan }}"
+          vsphere_vlan_id               = "{{ vsphere_vlan }}"
+          {% if  hcx_vlan  %}
+          hcx_vlan_id                   = "{{ hcx_vlan }}"
+          {% endif %}
+
+          replication_vlan_id           = "{{ replication_net_vlan  }}"
+          provisioning_vlan_id          = "{{ provisioning_net_vlan }}"
+
+          workload_network_cidr         = "{{ sddc_workload_cidr }}"
+
+        {#  ##Do not modify below this line##  #}
+        {#                                     #}
+        {#  ###Section for adding Defined and Freeform Tags###  #}
+        {% if defined_tags and defined_tags != 'nan' and defined_tags != '' and defined_tags != [['nan']] %}
+          {% if defined_tags[0] %}
+            defined_tags = {
+            {% for tags in defined_tags  %}
+                {% if not loop.last %}
+                    "{{ tags[0]  }}"= "{{ tags[1] }}" ,
+                {% else %}
+                    "{{ tags[0]  }}"= "{{ tags[1] }}"
+                {% endif %}
+            {% endfor %}
+            }
+            {% endif %}
+           {% endif %}
+                {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' and freeform_tags != [['nan']] %}
+                    {% if freeform_tags[0] %}
+            freeform_tags = {
+                        {% for tags in freeform_tags %}
+                            {% if not loop.last  %}
+                    "{{ tags[0] }}"="{{ tags[1] }}",
+                            {% else %}
+                    "{{ tags[0] }}"="{{ tags[1] }}"
+                            {% endif %}
+                        {% endfor %}
+                        }
+                    {% endif %}
+                {% endif %}
+        {#  ###Section for adding Defined and Freeform Tags ends here###  #}
+
+    },
+{% endif %}

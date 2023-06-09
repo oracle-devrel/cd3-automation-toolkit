@@ -105,6 +105,11 @@ def seek_info():
                     print("Out Directory is missing for one or more parameters, for eg. " + key)
                     print("Please check " + outdir_structure_file)
                     exit(1)
+                """if key == 'dns':
+                    outdir_config.set('Default', 'dns-resolver', value)
+                    outdir_config.set('Default', 'dns-rrset', value)
+                    outdir_config.set('Default', 'dns-view', value)
+                    outdir_config.set('Default', 'dns-zone', value)"""
             if not os.path.exists(customer_tenancy_dir):
                 os.makedirs(customer_tenancy_dir)
             _outdir_structure_file = customer_tenancy_dir + "/" + prefix + "_outdir_structure_file"
@@ -270,6 +275,15 @@ def seek_info():
         f.write(variables_example_file_data)
         f.close()
 
+        # Global dir for RPC related
+        if region == ct.home_region:
+            if not os.path.exists(f"{terraform_files}/global/rpc"):
+                os.makedirs(f"{terraform_files}/global/rpc")
+            shutil.copyfile(modules_dir + "/provider.tf", f"{terraform_files}/global/rpc/provider.tf")
+            f = open(terraform_files + "/" + "global/rpc" + "/variables_" + "global" + ".tf", "w+")
+            f.write(variables_example_file_data)
+            f.close()
+
         # 7. Copy the terraform modules and variables file to outdir
         distutils.dir_util.copy_tree(modules_dir, terraform_files +"/" + region)
 
@@ -294,6 +308,8 @@ def seek_info():
                     region_service_dir = region_dir + service_dir
                     if not os.path.exists(region_service_dir):
                         os.mkdir(region_service_dir)
+                    if (service == 'instance'):
+                        shutil.move(region_dir + 'scripts',region_service_dir+'/')
                     with open(region_dir + service + ".tf", 'r+') as tf_file:
                         module_data = tf_file.read().rstrip()
                         module_data = module_data.replace("\"./modules", "\"../modules")
