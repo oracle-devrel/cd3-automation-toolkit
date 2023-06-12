@@ -1,4 +1,5 @@
 # Automation Toolkit Learning Videos
+
 * [CD3 Automation Toolkit Explained in 1 minute](https://www.youtube.com/watch?v=TSNu0pUHYsE&list=PLPIzp-E1msrbJ3WawXVhzimQnLw5iafcp&index=1)
 * [Introduction to Automation Toolkit Part 1](https://www.youtube.com/watch?v=rwxjbYWNbTo&t=57s)
 * [How to Install and Configure Rancher Desktop Part 2](https://www.youtube.com/watch?v=2QNAOJpeJZc)
@@ -11,5 +12,7 @@
 * [Management Services - CD3 Automation Toolkit Part 9](https://www.youtube.com/watch?v=wFkECxy209s&list=PLPIzp-E1msrbJ3WawXVhzimQnLw5iafcp&index=10)
 * [Non-Greenfield Tenancies - CD3 Automation Toolkit Part 10](https://www.youtube.com/watch?v=l_lUEF3XYoM&list=PLPIzp-E1msrbJ3WawXVhzimQnLw5iafcp&index=11)
 * [Support for Additional Attributes - CD3 Automation toolkit Part 11](https://www.youtube.com/watch?v=6bWWbchS2vk&list=PLPIzp-E1msrbJ3WawXVhzimQnLw5iafcp&index=12)
+* [Provisioning of OCI Object Storage Buckets - CD3 Automation toolkit Part 12](https://youtu.be/1lVQw3pDp4U)
+* [Configuring OCI Private DNS - CD3 Automation toolkit Part 13](https://youtu.be/RE-36ip68ZE)
 
   <br>[Here](https://www.youtube.com/playlist?list=PLPIzp-E1msrbJ3WawXVhzimQnLw5iafcp) is the Youtube playlist link for all these videos.
