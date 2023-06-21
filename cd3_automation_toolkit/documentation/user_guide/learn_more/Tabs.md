@@ -593,6 +593,24 @@ The column "SSH Key Var Name" accepts SSH key value directly or the name of vari
       }
     }
 
+- For source details column, the format should be as below
+
+  image::\<variable containing ocid of image> 
+
+  Make sure to have an entry in variables_\<region>.tf file for the value you enter in Source Details field of the Excel sheet.
+
+  Eg: If you enter the Source Details as image::Linux, make an entry in variables_\<region>.tf file under the **oke_source_ocids** variable as shown below:
+
+            variable "oke_source_ocids" {
+              type = map(any)
+              default = {
+                Linux = "<OKE LINUX OCID HERE>"
+                #START_oke_source_ocids#
+                # exported oke image ocids
+                #oke_source_ocids_END#
+              }
+            }
+            
 On choosing **"Developer Services"** in the SetUpOCI menu and **"Add/Modify/Delete OKE Cluster and Nodepools"** submenu will allow to manage oke components in OCI tenancy.
 
 On completion of execution, you will be able to find the output terraform file generated at : 
