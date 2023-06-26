@@ -7,7 +7,7 @@ Provisioning of compute instances using Automation Toolkit involves the below st
 - Executing Terraform commands to provision the resources in OCI.
 
 
-Follow below steps to add VM details in the Instances sheet:
+Note below points while adding VM details in the Instances sheet:
 
 1. "Display Name" column is case sensitive. Specified value will be the display name of Instance in OCI console.
 
