@@ -15,6 +15,7 @@ Note below points while adding VM details in the Instances sheet:
 
 3. Leave columns: Backup Policy, NSGs, DedicatedVMHost blank if instance doesn't need to be part of any of these. Instances can be made a part of Backup Policy and NSGs later by choosing appropriate option in setUpOCI menu.
 
+ 4.
  >Note:
 The column "SSH Key Var Name" accepts SSH key value directly or the name of variable declared in *variables.tf* under the  **instance_ssh_keys** variable containing the key value. Make sure to have an entry in variables_\<region>.tf file with the name you enter in SSH Key Var Name field of the Excel sheet and put the value as SSH key value.
 
@@ -33,9 +34,9 @@ The column "SSH Key Var Name" accepts SSH key value directly or the name of vari
       }
     }
 
-4. Enter subnet name column value as: \<vcn-name>_\<subnet-name>
+5. Enter subnet name column value as: \<vcn-name>_\<subnet-name>
 
-5. Source Details column of the excel sheet accepts both image and boot volume as the source for instance to be launched.
+6. Source Details column of the excel sheet accepts both image and boot volume as the source for instance to be launched.
 
    Format:
    
@@ -56,16 +57,18 @@ Ex: If you enter the Source Details as image::Linux, make an entry in variables_
      #instance_source_ocids_END#
     }
 
-6. Mention shape to be used in Shape column of the excel sheet. If Flex shape is to be used format is:
+7. Mention shape to be used in Shape column of the excel sheet. If Flex shape is to be used format is:
 
          shape::ocpus
 
          eg: VM.Standard.E3.Flex::5
 
 
-7. Custom Policy Compartment Name : Specify the compartment name where the Custom Policy is created.
+8. Custom Policy Compartment Name : Specify the compartment name where the Custom Policy is created.
+9. Create_Is PV Encryption In Transit Enabled attribute should be set to True to enable encryption for new instances. Default is False.
+10. Update_Is PV Encryption In Transit Enabled attribute should be set to True to enable encryption for existing instances.
 
-8. While export of instances, it will fetch details for only the primary VNIC attached to the instance.
+10. While export of instances, it will fetch details for only the primary VNIC attached to the instance.
    
 
 ## Remote Execution/Cloud Init Scenarios 
