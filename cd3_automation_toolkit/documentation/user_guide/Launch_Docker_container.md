@@ -26,6 +26,7 @@ To ease the execution of toolkit, we have provided the steps to build an image w
      * ```wsl -d wsl-vpnkit service wsl-vpnkit start```
       Sample Output -
       ![image](https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/b7011281-6f30-4c4a-a29b-e50db6d3dcf8)
+* Connect to the VPN.
 
 ## Run the CD3 container
 * Run  ```docker run --platform linux/amd64 -it -d -v <directory_in_local_system_where_the_files_must_be_generated>:/cd3user/tenancies <image_name>:<image_tag>```
