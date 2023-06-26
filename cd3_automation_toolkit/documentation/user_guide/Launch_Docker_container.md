@@ -25,7 +25,8 @@ To ease the execution of toolkit, we have provided the steps to build an image w
 * Run wsl-vpnkit using below command in PowerShell:
      * ```wsl -d wsl-vpnkit service wsl-vpnkit start```
       Sample Output -
-      ![image](https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/b7011281-6f30-4c4a-a29b-e50db6d3dcf8)
+      ![image](https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/7da84241-7680-44d4-9ef8-ae8c6580752e)
+
 * Connect to the VPN.
 
 ## Run the CD3 container
