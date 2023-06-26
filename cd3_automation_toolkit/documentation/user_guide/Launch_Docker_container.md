@@ -18,7 +18,7 @@ To ease the execution of toolkit, we have provided the steps to build an image w
 ## Save the image (Optional)
 * Run  ```docker save cd3toolkit:${image_tag} | gzip > cd3toolkit_${image_tag}.tar.gz```
 
-## To Run CD3 container alongwith VPN (Applicable for VPN users only)
+## Run CD3 container alongwith VPN (Applicable for VPN users only)
 * Download **wsl-vpnkit.tar.gz** from https://github.com/sakai135/wsl-vpnkit from latest Release under Releases.
 * Go to the dir where .gz file is downloaded and Install using below cmd in Powershell:
      * ```wsl --import wsl-vpnkit --version 2 $env:USERPROFILE\wsl-vpnkit wsl-vpnkit.tar.gz```
