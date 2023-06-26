@@ -18,14 +18,14 @@ To ease the execution of toolkit, we have provided the steps to build an image w
 ## Save the image (Optional)
 * Run  ```docker save cd3toolkit:${image_tag} | gzip > cd3toolkit_${image_tag}.tar.gz```
 
-## Run CD3 in VPN (Applicable for VPN users only)
-* Connect to the VPN.
-* Ensure Rancher Desktop is running if docker cli is not directly available and user is making use of Rancher Desktop.
-* Download and Install the **wsl-vpnkit** from https://github.com/sakai135/wsl-vpnkit
-* Run below command in PowerShell,
+## To Run CD3 container alongwith VPN (Applicable for VPN users only)
+* Download **wsl-vpnkit.tar.gz** from https://github.com/sakai135/wsl-vpnkit from latest Release under Releases.
+* Go to the dir where .gz file is downloaded and Install using below cmd in Powershell:
+     * ```wsl --import wsl-vpnkit --version 2 $env:USERPROFILE\wsl-vpnkit wsl-vpnkit.tar.gz```
+* Run wsl-vpnkit using below command in PowerShell:
      * ```wsl -d wsl-vpnkit service wsl-vpnkit start```
-* Test CD3 related commands from inside the container.
-* The wsl-vpnkit should be in running state for CD3 to work without any issues when user is connected to VPN.
+      Sample Output -
+      ![image](https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/b7011281-6f30-4c4a-a29b-e50db6d3dcf8)
 
 ## Run the CD3 container
 * Run  ```docker run --platform linux/amd64 -it -d -v <directory_in_local_system_where_the_files_must_be_generated>:/cd3user/tenancies <image_name>:<image_tag>```
