@@ -37,6 +37,7 @@
   <li> <a href="/cd3_automation_toolkit/documentation/user_guide/NonGreenField.md">Non Greenfield Tenancies</a>
     <ul>
       <li><a href ="/cd3_automation_toolkit/documentation/user_guide/NetworkingScenariosNGF.md"</a><b> Must Read : </b> Managing Network for Non-Greenfield Tenancies</li>
+       <li><a href = "/cd3_automation_toolkit/documentation/user_guide/ComputeNGF.md"</a><b>  Must Read : </b> Managing Compute Instances for Non-Greenfield Tenancies </li> 
     </ul>
   </ul>
   
