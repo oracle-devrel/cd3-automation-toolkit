@@ -25,6 +25,5 @@ Follow the below steps to export OCI compute Instances to CD3 Excel file and cre
 11. Execute the .sh file ( *sh tf_import_commands_instances_nonGF.sh*) to generate terraform state file.
 
     
-This is how OCI Instances can be exported to CD3 toolkit.
-    
+
 
