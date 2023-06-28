@@ -19,15 +19,16 @@ To ease the execution of toolkit, we have provided the steps to build an image w
 * Run  ```docker save cd3toolkit:${image_tag} | gzip > cd3toolkit_${image_tag}.tar.gz```
 
 ## Run CD3 container alongwith VPN (Applicable for VPN users only)
-* Download **wsl-vpnkit.tar.gz** from https://github.com/sakai135/wsl-vpnkit from latest Release under Releases.
-* Go to the dir where .gz file is downloaded and Install using below cmd in Powershell:
-     * ```wsl --import wsl-vpnkit --version 2 $env:USERPROFILE\wsl-vpnkit wsl-vpnkit.tar.gz```
-* Run wsl-vpnkit using below command in PowerShell:
-     * ```wsl -d wsl-vpnkit service wsl-vpnkit start```
-      Sample Output -
-      ![image](https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/7da84241-7680-44d4-9ef8-ae8c6580752e)
-
 * Connect to the VPN.
+* Execute the **Rancher deskop** and ensure the version **1.9** is used if not please install the latest.
+* Enable **Networking Tunnel** in Rancher settings as shown in the screenshot below,
+     <img width="746" alt="image" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103548537/22e71261-63dc-4218-a3f6-9ef98df820e2">
+* Login to the CD3 docker container.
+* Run the following cmd to set the proxy,
+     ```export http_proxy=http://www-proxy-brmdc.us.oracle.com:80/
+		export https_proxy=http://www-proxy-brmdc.us.oracle.com:80/
+		export no_proxy=localhost,127.0.0.1/16,.us.oracle.com,.oraclecorp.com```
+* Run the CD3 related commands and proceed further.
 
 ## Run the CD3 container
 * Run  ```docker run --platform linux/amd64 -it -d -v <directory_in_local_system_where_the_files_must_be_generated>:/cd3user/tenancies <image_name>:<image_tag>```
