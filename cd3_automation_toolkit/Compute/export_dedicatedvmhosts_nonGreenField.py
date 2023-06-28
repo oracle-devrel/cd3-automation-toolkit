@@ -8,7 +8,6 @@
 # Oracle Consulting
 #
 
-import argparse
 import oci
 import os
 
@@ -44,20 +43,7 @@ def print_dedicatedvmhosts(region, dedicatedvmhost, values_for_column, ntk_compa
             oci_objs = [dedicatedvmhost]
             values_for_column = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict, values_for_column)
 
-
-def parse_args():
-    # Read the arguments
-    parser = argparse.ArgumentParser(description="Export Block Volumes on OCI to CD3")
-    parser.add_argument("inputfile", help="path of CD3 excel file to export Block Volume objects to")
-    parser.add_argument("outdir", help="path to out directory containing script for TF import commands")
-    parser.add_argument("service_dir",help="subdirectory under region directory in case of separate out directory structure")
-    parser.add_argument("--config", default=DEFAULT_LOCATION, help="Config file name")
-    parser.add_argument("--export-compartments", nargs='*', required=False, help="comma seperated Compartments for which to export Block Volume Objects")
-    parser.add_argument("--export-regions", nargs='*', help="comma seperated Regions for which to export Networking Objects",
-                        required=False)
-    return parser.parse_args()
-
-
+# Execution of the code begins here
 def export_dedicatedvmhosts(inputfile, _outdir, service_dir, _config, ct, export_compartments=[], export_regions=[]):
     global tf_import_cmd
     global sheet_dict
@@ -125,9 +111,3 @@ def export_dedicatedvmhosts(inputfile, _outdir, service_dir, _config, ct, export
     commonTools.write_to_cd3(values_for_column, cd3file, "DedicatedVMHosts")
 
     print("Dedicated VM Hosts exported to CD3\n")
-
-
-if __name__ == '__main__':
-    args = parse_args()
-    # Execution of the code begins here
-    export_dedicatedvmhosts(args.inputfile, args.outdir, args.service_dir,args.config, args.export_compartments, args.export_regions)

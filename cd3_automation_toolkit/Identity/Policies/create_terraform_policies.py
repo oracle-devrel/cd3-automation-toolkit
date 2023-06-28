@@ -9,7 +9,6 @@
 # Modified (TF Upgrade): Shruthi Subramanian
 #
 
-import argparse
 import os
 from pathlib import Path
 from oci.config import DEFAULT_LOCATION
@@ -20,20 +19,7 @@ from commonTools import *
 ######
 # Required Inputs- CD3 excel file, Config file, prefix AND outdir
 ######
-
-
-def parse_args():
-    # Read the arguments
-    parser = argparse.ArgumentParser(description="Create Compartments terraform file")
-    parser.add_argument('inputfile', help='Full Path of input CD3 excel file')
-    parser.add_argument('outdir', help='Output directory for creation of TF files')
-    parser.add_argument('service_dir', help='Structured out directory for creation of TF files')
-    parser.add_argument('prefix', help='TF files prefix')
-    parser.add_argument('--config', default=DEFAULT_LOCATION, help='Config file name')
-    return parser.parse_args()
-
-
-# If input is cd3 file
+# Execution of the code begins here
 def create_terraform_policies(inputfile, outdir, service_dir, prefix, config=DEFAULT_LOCATION):
     # Declare variables
     filename = inputfile
@@ -232,8 +218,3 @@ def create_terraform_policies(inputfile, outdir, service_dir, prefix, config=DEF
     oname[reg].write(tempStr)
     oname[reg].close()
     print(outfile[reg] + " for Policies has been created for region " + reg)
-
-if __name__ == '__main__':
-    # Execution of the code begins here
-    args = parse_args()
-    create_terraform_policies(args.inputfile, args.outdir, args.service_dir, args.prefix, args.config)

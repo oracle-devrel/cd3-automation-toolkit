@@ -7,7 +7,6 @@
 # Oracle Consulting
 #
 
-import argparse
 import math
 from pathlib import Path
 from oci.config import DEFAULT_LOCATION
@@ -17,16 +16,6 @@ from commonTools import *
 ######
 # Required Inputs- CD3 excel file, Config file, prefix AND outdir
 ######
-def parse_args():
-    parser = argparse.ArgumentParser(description="Create NSGs terraform file")
-    parser.add_argument('inputfile', help='Full Path of input CD3 excel file')
-    parser.add_argument('outdir', help='Output directory for creation of TF files')
-    parser.add_argument("service_dir",help="subdirectory under region directory in case of separate out directory structure")
-    parser.add_argument('prefix', help='TF files prefix')
-    parser.add_argument('--config', default=DEFAULT_LOCATION, help='Config file name')
-    return parser.parse_args()
-
-
 def directionOptionals(row, tempStr):
     destination_type = str(row['Destination Type']).strip()
     source_type = str(row['Source Type']).strip()
@@ -133,7 +122,7 @@ def statelessOptional(row, tempStr):
     return tempStr
 
 
-#If input is cd3 file
+# Execution of the code begins here
 def create_terraform_nsg(inputfile, outdir, service_dir, prefix, non_gf_tenancy,config=DEFAULT_LOCATION):
     # Read the arguments
     filename = inputfile
@@ -289,8 +278,3 @@ def create_terraform_nsg(inputfile, outdir, service_dir, prefix, non_gf_tenancy,
 
             with open(reg_out_dir +  "/" + prefix + nsg_rules_auto_tfvars_filename, 'a+') as f:
                 f.write("\n"+"}")
-
-if __name__ == '__main__':
-    args = parse_args()
-    # Execution of the code begins here
-    create_terraform_nsg(args.inputfile, args.outdir, args.service_dir,args.prefix,args.non_gf_tenancy, config=args.config)

@@ -10,7 +10,6 @@
 #
 
 import sys
-import argparse
 import os
 from oci.config import DEFAULT_LOCATION
 from pathlib import Path
@@ -21,18 +20,7 @@ from commonTools import *
 ######
 # Required Inputs-CD3 excel file, Config file, prefix AND outdir
 ######
-def parse_args():
-    # Read the arguments
-    parser = argparse.ArgumentParser(description="Creates TF files for Block Volumes")
-    parser.add_argument('inputfile', help='Full Path of input CD3 excel file')
-    parser.add_argument('outdir', help='Output directory for creation of TF files')
-    parser.add_argument('service_dir', help='Structured out directory for creation of TF files')
-    parser.add_argument('prefix', help='TF files prefix')
-    parser.add_argument('--config', default=DEFAULT_LOCATION, help='Config file name')
-    return parser.parse_args()
-
-
-# If input is CD3 excel file
+# Execution of the code begins here
 def create_terraform_block_volumes(inputfile, outdir, service_dir, prefix,config=DEFAULT_LOCATION):
     filename = inputfile
     configFileName = config
@@ -173,9 +161,3 @@ def create_terraform_block_volumes(inputfile, outdir, service_dir, prefix,config
             print(outfile + " for Block Volume and its Backup Policy has been created for region " + reg)
             oname.write(tfStr[reg])
             oname.close()
-
-
-if __name__ == '__main__':
-    args = parse_args()
-    # Execution of the code begins here
-    create_terraform_block_volumes(args.inputfile, args.outdir, args.prefix, args.config)

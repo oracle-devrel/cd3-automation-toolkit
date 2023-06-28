@@ -10,7 +10,6 @@
 #
 
 import sys
-import argparse
 import os
 
 from pathlib import Path
@@ -19,18 +18,8 @@ from commonTools import *
 from jinja2 import Environment, FileSystemLoader
 
 
-def parse_args():
-    # Read input arguments
-    parser = argparse.ArgumentParser(description="Creates TF files for FSS")
-    parser.add_argument('inputfile', help='Full Path of input CD3 excel file')
-    parser.add_argument('outdir', help='Output directory for creation of TF files')
-    parser.add_argument('service_dir', help='Structured out directory for creation of TF files')
-    parser.add_argument('prefix', help='TF files prefix')
-    parser.add_argument('--config', default=DEFAULT_LOCATION, help='Config file name')
-    return parser.parse_args()
-
-
 # If input is csv file; convert to excel
+# Execution of the code begins here
 def create_terraform_fss(inputfile, outdir, service_dir, prefix,config=DEFAULT_LOCATION):
     filename = inputfile
     configFileName = config
@@ -368,8 +357,3 @@ def create_terraform_fss(inputfile, outdir, service_dir, prefix,config=DEFAULT_L
             oname.close()
             print(outfile + " for FSS has been created for region " + r)
 
-
-if __name__ == '__main__':
-    # Execution of the code begins here
-    args = parse_args()
-    create_terraform_fss(args.inputfile, args.outdir, args.prefix,args.config)

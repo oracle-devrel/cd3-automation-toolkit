@@ -10,12 +10,9 @@
 #
 
 import sys
-import argparse
-import shutil
 import datetime
 import os
 from pathlib import Path
-from oci.config import DEFAULT_LOCATION
 sys.path.append(os.getcwd() + "/../../..")
 from jinja2 import Environment, FileSystemLoader
 from commonTools import *
@@ -27,18 +24,7 @@ from commonTools import *
 # Modify Network
 # Outdir
 ######
-def parse_args():
-    # Read the nput arguments
-    parser = argparse.ArgumentParser(description='Create DHCP options terraform file')
-    parser.add_argument('inputfile',help='Full Path of input file. It could be CD3 excel file')
-    parser.add_argument('outdir', help='Output directory for creation of TF files')
-    parser.add_argument("service_dir",help="subdirectory under region directory in case of separate out directory structure")
-    parser.add_argument('prefix', help='customer name/prefix for all file names')
-    parser.add_argument('--modify-network', action='store_true', help='Modify network')
-    parser.add_argument('non_gf_tenancy')
-    parser.add_argument('--config', default=DEFAULT_LOCATION, help='Config file name')
-    return parser.parse_args()
-
+# Execution of the code begins here
 def create_terraform_dhcp_options(inputfile, outdir, service_dir, prefix, non_gf_tenancy, config, modify_network=False):
     outfile = {}
     deffile = {}
@@ -280,8 +266,3 @@ def create_terraform_dhcp_options(inputfile, outdir, service_dir, prefix, non_gf
                 defname[reg].close()
                 print(deffile[reg] + " for Default DHCP Options has been created for region " + reg)
 
-
-if __name__ == '__main__':
-    args = parse_args()
-    # Execution of the code begins here
-    create_terraform_dhcp_options(args.inputfile, args.outdir, args.service_dir, args.prefix, args.non_gf_tenancy, args.config, args.modify_network)

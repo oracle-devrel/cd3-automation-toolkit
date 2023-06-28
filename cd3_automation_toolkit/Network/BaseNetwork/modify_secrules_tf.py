@@ -9,9 +9,7 @@
 # Modified (TF Upgrade): Shruthi Subramanian
 #
 
-import argparse
 import csv
-import re
 import sys
 import os
 from oci.config import DEFAULT_LOCATION
@@ -19,19 +17,7 @@ from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
 sys.path.append(os.getcwd() + "/../../..")
 from commonTools import *
-
-
-def parse_args():
-    # Read the input arguments
-    parser = argparse.ArgumentParser(description="Takes in an input file mentioning sec rules to be added for the subnet. See update_seclist-example.csv/CD3 for format under example folder. It will then take backup of all existing sec list files in outdir and create new one with modified rules")
-    parser.add_argument("inputfile",help="Full Path of input file: It could be either the properties file eg CD3 excel file")
-    parser.add_argument("outdir", help="directory path for output tf files ")
-    parser.add_argument("service_dir",help="subdirectory under region directory in case of separate out directory structure")
-    parser.add_argument("--config", default=DEFAULT_LOCATION, help="Config file name")
-    parser.add_argument('non_gf_tenancy', default=False)
-    return parser.parse_args()
-
-
+# Execution of the code begins here
 def modify_terraform_secrules(inputfile, outdir, service_dir,prefix=None, non_gf_tenancy=False, config=DEFAULT_LOCATION):
 
     # Load the template file
@@ -239,8 +225,3 @@ def modify_terraform_secrules(inputfile, outdir, service_dir,prefix=None, non_gf
 
 
     os.remove('out.csv')
-
-if __name__ == '__main__':
-    # Execution of the code begins here
-    args = parse_args()
-    modify_terraform_secrules(args.inputfile, args.outdir, args.service_dir,prefix=None, non_gf_tenancy=args.non_gf_tenancy, config=args.config)

@@ -7,8 +7,6 @@
 # Author: Shruthi Subramanian
 # Oracle Consulting
 #
-
-import argparse
 import sys
 import oci
 import os
@@ -16,7 +14,6 @@ import os
 from oci.certificates import CertificatesClient
 from oci.core.virtual_network_client import VirtualNetworkClient
 from oci.load_balancer.load_balancer_client import LoadBalancerClient
-from oci.config import DEFAULT_LOCATION
 sys.path.append(os.getcwd()+"/..")
 from commonTools import *
 
@@ -799,7 +796,7 @@ def print_prs(region, ct, values_for_column_prs, LBRs, lbr_compartment_name):
                                                                                  values_for_column_prs)
 
     return values_for_column_prs
-
+# Execution of the code begins here
 def export_lbr(inputfile, _outdir, service_dir, export_compartments, export_regions,_config,ct):
     global tf_import_cmd
     global sheet_dict
@@ -949,20 +946,3 @@ def export_lbr(inputfile, _outdir, service_dir, export_compartments, export_regi
         script_file = f'{outdir}/{reg}/{service_dir}/tf_import_commands_lbr_nonGF.sh'
         with open(script_file, 'a') as importCommands[reg]:
             importCommands[reg].write('\n\nterraform plan\n')
-
-def parse_args():
-    # Read the arguments
-    parser = argparse.ArgumentParser(description="Export LBR on OCI to CD3")
-    parser.add_argument("inputfile", help="path of CD3 excel file to export network objects to")
-    parser.add_argument("outdir", help="path to out directory containing script for TF import commands")
-    parser.add_argument("service_dir", help="subdirectory under region directory in case of separate out directory structure")
-    parser.add_argument("--export-compartments", nargs='*', help="comma seperated Compartments for which to export LBR Objects", required=False)
-    parser.add_argument("--config", default=DEFAULT_LOCATION, help="Config file name")
-    parser.add_argument("--export-regions", nargs='*',help="comma seperated Regions for which to export Networking Objects", required=False)
-    return parser.parse_args()
-
-if __name__ == '__main__':
-    args = parse_args()
-    ct = None
-    # Execution of the code begins here
-    export_lbr(args.inputfile, args.outdir, args.service_dir, args.export_compartments, args.config,args.export_regions, ct)

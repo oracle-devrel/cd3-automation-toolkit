@@ -10,7 +10,6 @@
 #
 
 import sys
-import argparse
 import os
 from oci.config import DEFAULT_LOCATION
 from pathlib import Path
@@ -23,18 +22,9 @@ from jinja2 import Environment, FileSystemLoader
 ######
 # Required Inputs-CD3 excel file, Config file, prefix AND outdir
 ######
-def parse_args():
-    # Read input arguments
-    parser = argparse.ArgumentParser(description='Create Dedicated VM Hosts terraform file')
-    parser.add_argument('inputfile', help='Full Path of input CD3 excel file')
-    parser.add_argument('outdir', help='Output directory for creation of TF files')
-    parser.add_argument("service_dir",help="subdirectory under region directory in case of separate out directory structure")
-    parser.add_argument('prefix', help='TF files prefix')
-    parser.add_argument('--config', default=DEFAULT_LOCATION, help='Config file name')
-    return parser.parse_args()
-
 
 # If input is CD3 excel file
+# Execution of the code begins here
 def create_terraform_dedicatedhosts(inputfile, outdir, service_dir,prefix, config):
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
@@ -153,10 +143,3 @@ def create_terraform_dedicatedhosts(inputfile, outdir, service_dir,prefix, confi
             print(outfile + " for dedicated vm hosts has been created for region  " + reg)
             oname.write(tfStr[reg])
             oname.close()
-
-
-
-if __name__ == '__main__':
-    args = parse_args()
-    # Execution of the code begins here
-    create_terraform_dedicatedhosts(args.inputfile, args.outdir, args.service_dir,args.prefix, args.config)

@@ -10,9 +10,7 @@
 #
 
 import sys
-import argparse
 import os
-
 from oci.config import DEFAULT_LOCATION
 from pathlib import Path
 sys.path.append(os.getcwd()+"/../../..")
@@ -23,18 +21,7 @@ from jinja2 import Environment, FileSystemLoader
 # Takes in input  CD3 excel which contains routerules to be updated for the subnet and updates the routes tf file created using BaseNetwork TF generation.
 # ######
 
-# If the input is CD3
-def parse_args():
-    # Read the input arguments
-    parser = argparse.ArgumentParser(description="Updates routelist for subnet. It accepts input file which contains new rules to be added to the existing rule list of the subnet.")
-    parser.add_argument("inputfile", help="Required; Full Path to input route file (CD3 excel file) containing rules to be updated; See example folder for sample format: add_routes-example.txt")
-    parser.add_argument("outdir",help="directory path for output tf files ")
-    parser.add_argument("service_dir",help="subdirectory under region directory in case of separate out directory structure")
-    parser.add_argument('non_gf_tenancy')
-    parser.add_argument("--config", default=DEFAULT_LOCATION, help="Config file name")
-    return parser.parse_args()
-
-
+# Execution of the code begins here for drg route table
 def modify_terraform_drg_routerules(inputfile, outdir, service_dir,prefix=None, non_gf_tenancy=False, config=DEFAULT_LOCATION):
     filename = inputfile
     configFileName = config
@@ -258,7 +245,7 @@ def modify_terraform_drg_routerules(inputfile, outdir, service_dir,prefix=None, 
             print("Writing to..." + str(ruleoutfile))
             oname_rt.write(tempSkeletonDRGRouteRule[reg])
             oname_rt.close()
-
+# Execution of the code begins here for route rule modification
 def modify_terraform_routerules(inputfile, outdir, service_dir,prefix=None, non_gf_tenancy=False, config=DEFAULT_LOCATION):
     filename = inputfile
     configFileName = config
@@ -525,10 +512,3 @@ def modify_terraform_routerules(inputfile, outdir, service_dir,prefix=None, non_
             oname.write(default_rt_tempSkeleton[reg])
             oname.close()
             print(default_outfile + " for default route tables has been created for region " + reg)
-
-if __name__ == '__main__':
-    args = parse_args()
-    # Execution of the code begins here
-    modify_terraform_routerules(args.inputfile, args.outdir, args.service_dir, prefix=None, non_gf_tenancy=args.non_gf_tenancy, config=args.config)
-    modify_terraform_drg_routerules(args.inputfile, args.outdir, args.service_dir,prefix=None, non_gf_tenancy=args.non_gf_tenancy, config=args.config)
-

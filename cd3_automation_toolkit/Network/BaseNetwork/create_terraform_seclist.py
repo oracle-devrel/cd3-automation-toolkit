@@ -10,10 +10,8 @@
 #
 
 import sys
-import argparse
 import re
 import os
-from oci.config import DEFAULT_LOCATION
 from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
 sys.path.append(os.getcwd() + '/../../..')
@@ -22,23 +20,7 @@ from commonTools import *
 ######
 # Required Inputs-CD3 excel file, Config file, Modify Network AND outdir
 ######
-def parse_args():
-    # Read the input arguments
-    parser = argparse.ArgumentParser(description='Creates a terraform sec list resource with name for each subnet'
-                                                 'identified in the subnet input file.  This creates open egress (0.0.0.0/0) and '
-                                                 'All protocols within subnet ingress rules.  This also opens ping between peered VCNs'
-                                                 ' and ping from On-Prem to hub VCN based on the input property add_ping_sec_rules_vcnpeering '
-                                                 'and add_ping_sec_rules_onprem respectively. Any other rules should be put in manually.')
-    parser.add_argument('inputfile', help='Full Path of input file. eg cd3 excel file')
-    parser.add_argument('outdir', help='Output directory')
-    parser.add_argument("service_dir",help="subdirectory under region directory in case of separate out directory structure")
-    parser.add_argument('prefix', help='customer name/prefix for all file names')
-    parser.add_argument('--modify-network', action='store_true', help="modify networking")
-    parser.add_argument('--config', default=DEFAULT_LOCATION, help='Config file name')
-    return parser.parse_args()
-
-
-# If the input is CD3
+# Execution of the code begins here
 def create_terraform_seclist(inputfile, outdir, service_dir, prefix, config, modify_network=False):
 
     def purge(dir, pattern):
@@ -356,8 +338,3 @@ def create_terraform_seclist(inputfile, outdir, service_dir, prefix, config, mod
             srcdir = outdir + "/" + reg + "/" + service_dir +"/"
             resource = 'SLs'
             commonTools.backup_file(srcdir, resource, 'seclists.auto.tfvars')
-
-if __name__ == '__main__':
-    args = parse_args()
-    # Execution of the code begins here
-    create_terraform_seclist(args.inputfile, args.outdir, args.service_dir, args.prefix, args.config, args.modify_network)

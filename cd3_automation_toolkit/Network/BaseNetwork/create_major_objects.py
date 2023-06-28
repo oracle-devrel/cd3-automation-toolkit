@@ -8,14 +8,10 @@
 # Oracle Consulting
 # Modified (TF Upgrade): Shruthi Subramanian
 #
-
-import sys
-import argparse
 import re
 import os
 import json
 from pathlib import Path
-from oci.config import DEFAULT_LOCATION
 from jinja2 import Environment, FileSystemLoader
 #sys.path.append(os.getcwd() + "/../../..")
 from commonTools import *
@@ -28,21 +24,7 @@ from commonTools import *
 # Modify Network
 # prefix
 ######
-def parse_args():
-    # Read input arguments
-    parser = argparse.ArgumentParser(description='Create major-objects (VCN, IGW, NGW, DRG, LPGs etc for the VCN) terraform file')
-    parser.add_argument('inputfile',help='Full Path of input file eg: cd3 excel file')
-    parser.add_argument('outdir', help='Output directory for creation of TF files')
-    parser.add_argument("service_dir",help="subdirectory under region directory in case of separate out directory structure")
-    parser.add_argument('prefix', help='customer name/prefix for all file names')
-    parser.add_argument('non_gf_tenancy')
-    parser.add_argument('--modify-network', default=False, action='store_true', help='modify network')
-    parser.add_argument('--config', default=DEFAULT_LOCATION, help='Config file name')
-    return parser.parse_args()
-
-
-
-
+# Code execution starts here
 def create_major_objects(inputfile, outdir, service_dir, prefix, non_gf_tenancy, config, modify_network=False):
     # Declare Variables
     filename = inputfile
@@ -728,7 +710,3 @@ def create_major_objects(inputfile, outdir, service_dir, prefix, non_gf_tenancy,
                 print(outfile[reg] + " for major objects has been created for region " + reg)
 
     establishPeering(vcns.peering_dict)
-
-if __name__ == '__main__':
-    args = parse_args()
-    create_major_objects(args.inputfile, args.outdir, args.service_dir, prefix=args.prefix, non_gf_tenancy=args.non_gf_tenancy, modify_network=args.modify_network, config=args.config)

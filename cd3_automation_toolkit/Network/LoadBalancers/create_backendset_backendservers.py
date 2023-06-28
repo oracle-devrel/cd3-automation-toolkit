@@ -8,10 +8,6 @@
 # Oracle Consulting
 # Modified (TF Upgrade): Shruthi Subramanian
 #
-
-import sys
-import argparse
-import os
 import pandas as pd
 from oci.config import DEFAULT_LOCATION
 from pathlib import Path
@@ -21,18 +17,7 @@ from jinja2 import Environment, FileSystemLoader
 ######
 # Required Inputs-CD3 excel file, Config file AND outdir
 ######
-def parse_args():
-    # Read the input arguments
-    parser = argparse.ArgumentParser(description='Creates Backend Set and Backend Server TF files for LBR')
-    parser.add_argument('inputfile',help='Full Path to the CD3 excel file. eg CD3-template.xlsx in example folder')
-    parser.add_argument('outdir', help='directory path for output tf files ')
-    parser.add_argument("service_dir", help="subdirectory under region directory in case of separate out directory structure")
-    parser.add_argument('prefix', help='TF files prefix')
-    parser.add_argument('--configFileName', default=DEFAULT_LOCATION, help="Config file name")
-    return parser.parse_args()
-
-
-# If input file is CD3
+# Execution of the code begins here
 def create_backendset_backendservers(inputfile, outdir, service_dir, prefix, config=DEFAULT_LOCATION):
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
@@ -263,8 +248,3 @@ def create_backendset_backendservers(inputfile, outdir, service_dir, prefix, con
             print("Writing to " + outfile)
             oname.write(finalstring)
             oname.close()
-
-if __name__ == '__main__':
-    # Execution of the code begins here
-    args = parse_args()
-    create_backendset_backendservers(args.inputfile, args.outdir, args.service_dir, args.prefix, args.config)

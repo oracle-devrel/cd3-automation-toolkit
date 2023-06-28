@@ -1,14 +1,13 @@
 #!/usr/bin/python3
 # Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 #
-# This script will produce a Terraform file that will be used to export OCI core components
+# This script will produce a Terraform file that will be used to export OCI Management components
 # Export Alarms
 #
 # Author: Suruchi
 # Oracle Consulting
 #
 
-import argparse
 import oci
 import os
 from commonTools import *
@@ -70,19 +69,7 @@ def print_alarms(region, alarm, ncpclient,values_for_column, ntk_compartment_nam
         #importCommands[region.lower()].write("\nterraform import oci_monitoring_alarm." + alarm_tf_name + " " + str(alarm.id))
         importCommands[region.lower()].write("\nterraform import \"module.alarms[\\\"" + str(comp_tf_name+"_"+alarm_tf_name) + "\\\"].oci_monitoring_alarm.alarm\" " + str(alarm.id))
 
-def parse_args():
-    # Read the arguments
-    parser = argparse.ArgumentParser(description="Export Block Volumes on OCI to CD3")
-    parser.add_argument("inputfile", help="path of CD3 excel file to export Block Volume objects to")
-    parser.add_argument("outdir", help="path to out directory containing script for TF import commands")
-    parser.add_argument("service_dir", help="Structured out directory for creation of TF files")
-    parser.add_argument("--config", default=DEFAULT_LOCATION, help="Config file name")
-    parser.add_argument("--export-compartments", nargs='*', required=False, help="comma seperated Compartments for which to export Block Volume Objects")
-    parser.add_argument("--export-regions", nargs='*', help="comma seperated Regions for which to export Networking Objects",
-                        required=False)
-    return parser.parse_args()
-
-
+# Execution of the code begins here
 def export_alarms(inputfile, _outdir, service_dir, _config, ct, export_compartments=[],export_regions=[]):
     global tf_import_cmd
     global sheet_dict
@@ -157,8 +144,3 @@ def export_alarms(inputfile, _outdir, service_dir, _config, ct, export_compartme
     commonTools.write_to_cd3(values_for_column, cd3file, sheetName)
     print(str(len(values_for_column["Region"])) +" Alarms exported to CD3\n")
 
-
-if __name__ == '__main__':
-    args = parse_args()
-    # Execution of the code begins here
-    export_alarms(args.inputfile, args.outdir, args.config, args.service_dir, args.export_compartments,args.export_regions)

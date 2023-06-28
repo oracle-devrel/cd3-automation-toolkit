@@ -1,11 +1,10 @@
 #!/usr/bin/python3
 # Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 #
-# This script will produce a Terraform file that will be used to set up OCI core components
+# This script will produce a Terraform file that will be used to set up OCI Network components
 # DNS-Resolvers
 #
 
-import argparse
 import os
 from jinja2 import Environment, FileSystemLoader
 from oci.config import DEFAULT_LOCATION
@@ -16,18 +15,7 @@ from commonTools import *
 ######
 # Required Inputs- CD3 excel file, Config file, prefix AND outdir
 ######
-def parse_args():
-    # Read the arguments
-    parser = argparse.ArgumentParser(description="Create DNS-Resolver terraform file")
-    parser.add_argument("inputfile", help="Full Path of input file. It could be CD3 excel file")
-    parser.add_argument("outdir", help="directory path for output tf files ")
-    parser.add_argument("service_dir", help="subdirectory under region directory in case of separate out directory structure")
-    parser.add_argument("prefix", help="customer name/prefix for all file names")
-    parser.add_argument("--config", default=DEFAULT_LOCATION, help="Config file name")
-    return parser.parse_args()
-
-
-# If input is cd3 file
+# Execution of the code begins here
 def create_terraform_dns_resolvers(inputfile, outdir, service_dir, prefix, config=DEFAULT_LOCATION):
     filename = inputfile
     configFileName = config
@@ -331,8 +319,3 @@ def create_terraform_dns_resolvers(inputfile, outdir, service_dir, prefix, confi
             oname[reg].close()
             print(outfile[reg] + " containing TF for DNS Resolvers has been created for region " + reg)
 
-
-if __name__ == '__main__':
-    # Execution of the code begins here
-    args = parse_args()
-    create_terraform_dns_resolvers(args.inputfile, args.outdir, args.service_dir, args.prefix, args.config)

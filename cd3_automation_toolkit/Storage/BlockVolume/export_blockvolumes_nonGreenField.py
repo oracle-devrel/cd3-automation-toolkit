@@ -8,12 +8,10 @@
 # Oracle Consulting
 #
 
-import argparse
 import oci
 import os
 from oci.core.blockstorage_client import BlockstorageClient
 from oci.core.compute_client import ComputeClient
-from oci.config import DEFAULT_LOCATION
 from commonTools import *
 
 importCommands = {}
@@ -129,20 +127,7 @@ def print_blockvolumes(region, BVOLS, bvol, compute, ct, values_for_column, ntk_
                 oci_objs = [blockvols,attachments]
                 values_for_column = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict, values_for_column)
 
-
-def parse_args():
-    # Read the arguments
-    parser = argparse.ArgumentParser(description="Export Block Volumes on OCI to CD3")
-    parser.add_argument("inputfile", help="path of CD3 excel file to export Block Volume objects to")
-    parser.add_argument("outdir", help="path to out directory containing script for TF import commands")
-    parser.add_argument('service_dir', help='Structured out directory for creation of TF files')
-    parser.add_argument("--config", default=DEFAULT_LOCATION, help="Config file name")
-    parser.add_argument("--export-compartments", nargs='*', required=False, help="comma seperated Compartments for which to export Block Volume Objects")
-    parser.add_argument("--export-regions", nargs='*', help="comma seperated Regions for which to export Networking Objects",
-                        required=False)
-    return parser.parse_args()
-
-
+# Execution of the code begins here
 def export_blockvolumes(inputfile, _outdir, service_dir, _config, ct, export_compartments=[], export_regions=[], display_names = [], ad_names = []):
     global tf_import_cmd
     global sheet_dict
@@ -214,7 +199,3 @@ def export_blockvolumes(inputfile, _outdir, service_dir, _config, ct, export_com
         with open(script_file, 'a') as importCommands[reg]:
             importCommands[reg].write('\n\nterraform plan\n')
 
-if __name__ == '__main__':
-    args = parse_args()
-    # Execution of the code begins here
-    export_blockvolumes(args.inputfile, args.outdir, args.config, args.service_dir, args.network_compartments,args.regions)

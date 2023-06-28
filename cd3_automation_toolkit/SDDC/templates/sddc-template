@@ -43,6 +43,9 @@ sddcs = {
           initial_host_ocpu_count       = "{{ number_of_ocpu_cores }}"
           {% endif %}
           esxi_hosts_count              = {{ number_of_esxi_hosts }}
+          {% if number_of_esxi_hosts == "1" %}
+          is_single_host_sddc           = "true"
+          {% endif %}
           {% if prefix_for_esxi_hosts %}
           instance_display_name_prefix  = "{{ prefix_for_esxi_hosts }}"
           {% endif %}

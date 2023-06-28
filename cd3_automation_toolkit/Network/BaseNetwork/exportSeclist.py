@@ -1,10 +1,7 @@
 #!/usr/bin/python3
 
-
-import argparse
 import sys
 import oci
-from oci.config import DEFAULT_LOCATION
 from oci.core.virtual_network_client import VirtualNetworkClient
 import os
 sys.path.append(os.getcwd()+"/../../..")
@@ -209,22 +206,7 @@ def print_secrules(seclists,region,vcn_name,comp_name):
             if not tf_import_cmd:
                 print(printstr)
 
-
-def parse_args():
-    parser = argparse.ArgumentParser(description='Export Security list on OCI to CD3')
-    parser.add_argument('inputfile', help='path of CD3 excel file to export rules to')
-    parser.add_argument('--export-compartments', nargs='*', help='comma seperated Compartments for which to export Networking Objects')
-    parser.add_argument('--config', default=DEFAULT_LOCATION, help='Config file name')
-    parser.add_argument('--tf-import-cmd', default=False, action='store_action', help='write tf import commands')
-    parser.add_argument('--outdir', default=None, required=False, help='outdir for TF import commands script')
-    parser.add_argument("--export_regions", nargs='*', help="comma seperated Regions for which to export Networking Objects",
-                        required=False)
-    parser.add_argument("--service_dir", nargs='*',
-                        help="subdirectory under region directory in case of separate out directory structure",
-                        required=False)
-    return parser.parse_args()
-
-
+# Execution of the code begins here
 def export_seclist(inputfile, export_compartments,export_regions,service_dir, _config, _tf_import_cmd, outdir,ct):
     global tf_import_cmd
     global values_for_column
@@ -286,8 +268,3 @@ def export_seclist(inputfile, export_compartments,export_regions,service_dir, _c
     if tf_import_cmd:
         for reg in export_regions:
             importCommands[reg].close()
-
-if __name__=="__main__":
-    args = parse_args()
-    ct = None
-    export_seclist(args.inputfile, args.export_compartments, args.config, args.tf_import_cmd, args.outdir,args.export_regions, args.service_dir, ct)

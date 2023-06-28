@@ -7,8 +7,6 @@
 # Author: Suruchi Singla
 # Oracle Consulting
 #
-
-import argparse
 import sys
 import oci
 import os
@@ -16,8 +14,6 @@ import os
 from oci.core.virtual_network_client import VirtualNetworkClient
 from oci.network_load_balancer import NetworkLoadBalancerClient
 from oci.core.compute_client import ComputeClient
-
-from oci.config import DEFAULT_LOCATION
 sys.path.append(os.getcwd()+"/..")
 from commonTools import *
 
@@ -258,6 +254,7 @@ def print_nlb_listener(region, ct, values_for_column_lis, NLBs, nlb_compartment_
 
     return values_for_column_lis
 
+# Execution of the code begins here
 def export_nlb(inputfile, _outdir, service_dir, export_compartments, export_regions, _config,ct):
     global tf_import_cmd
     global sheet_dict
@@ -339,20 +336,3 @@ def export_nlb(inputfile, _outdir, service_dir, export_compartments, export_regi
         with open(script_file, 'a') as importCommands[reg]:
             importCommands[reg].write('\n\nterraform plan\n')
 
-def parse_args():
-    # Read the arguments
-    parser = argparse.ArgumentParser(description="Export NLB on OCI to CD3")
-    parser.add_argument("inputfile", help="path of CD3 excel file to export network objects to")
-    parser.add_argument("outdir", help="path to out directory containing script for TF import commands")
-    parser.add_argument("service_dir", help="subdirectory under region directory in case of separate out directory structure")
-    parser.add_argument("--network-compartments", nargs='*', help="comma seperated Compartments for which to export NLB Objects", required=False)
-    parser.add_argument("--config", default=DEFAULT_LOCATION, help="Config file name")
-    parser.add_argument("--export-regions", nargs='*', help="comma seperated Regions for which to export Networking Objects",
-                        required=False)
-    return parser.parse_args()
-
-if __name__ == '__main__':
-    args = parse_args()
-    ct = None
-    # Execution of the code begins here
-    export_nlb(args.inputfile, args.outdir, args.service_dir, args.export_compartments, args.config,args.export_regions, ct)

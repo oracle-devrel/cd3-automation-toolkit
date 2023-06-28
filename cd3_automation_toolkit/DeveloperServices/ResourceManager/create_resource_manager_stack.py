@@ -74,19 +74,8 @@ def update_rm(service_rm_name,service_rm_ocid,ocs_stack,svcs):
     time.sleep(5)
     return stack_ocid
 
-
-def parse_args():
-    # Read the input arguments
-    parser = argparse.ArgumentParser(description="Creates Resource Manager and performs terraform plan or apply")
-    parser.add_argument('outdir', help='Output directory for creation of TF files')
-    parser.add_argument('prefix', help='TF files prefix')
-    parser.add_argument("outdir_struct",help="out directory structure dictionary")
-    parser.add_argument('regions', help='Region to create (or) update the Resource Manager stack for')
-    parser.add_argument("--configFileName", help="Config file name", required=False)
-    return parser.parse_args()
-
-
-def create_resource_manager(outdir, outdir_struct,prefix,regions, config=DEFAULT_LOCATION):
+# Execution of the code begins here
+def create_resource_manager(outdir,var_file, outdir_struct,prefix,regions, config=DEFAULT_LOCATION):
 
     # Get list of services for one directory
     dir_svc_map = {}
@@ -103,7 +92,10 @@ def create_resource_manager(outdir, outdir_struct,prefix,regions, config=DEFAULT
 
     ct = commonTools()
     ct.get_subscribedregions(configFileName)
-    ct.get_network_compartment_ids(config['tenancy'],"root",configFileName)
+    #ct.get_network_compartment_ids(config['tenancy'],"root",configFileName)
+    ct.get_compartment_map(var_file,'RM')
+    print("Proceeding further...")
+
     x = datetime.datetime.now()
     date = x.strftime("%f").strip()
 
@@ -454,7 +446,3 @@ def create_resource_manager(outdir, outdir_struct,prefix,regions, config=DEFAULT
         print("=====================================================================================================================")
 
     os.chdir(cwd)
-
-if __name__ == '__main__':
-    args = parse_args()
-    create_resource_manager(args.outdir, args.outdir_struct,args.prefix, args.regions, args.config)

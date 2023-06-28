@@ -4,29 +4,12 @@
 # This script will produce a Terraform file that will be used to export OCI core components
 # Export DNS views-zones-rrsets
 #
-
-
-import argparse
 import oci
 import os
-from oci.config import DEFAULT_LOCATION
 from commonTools import *
 
 importCommands = {}
 oci_obj_names = {}
-#r_map = {}
-
-def parse_args():
-    # Read the arguments
-    parser = argparse.ArgumentParser(description="Export DNS views-zones-rrsets on OCI to CD3")
-    parser.add_argument("inputfile", help="path of CD3 excel file to export DNS views-zones-rrsets objects to")
-    parser.add_argument("outdir", help="path to out directory containing script for TF import commands")
-    parser.add_argument('service_dir', help='Structured out directory for creation of TF files')
-    parser.add_argument("--config", default=DEFAULT_LOCATION, help="Config file name")
-    parser.add_argument("--export-compartments", nargs='*', required=False, help="comma seperated Compartments for which to export Block Volume Objects")
-    parser.add_argument("--export-regions", nargs='*', help="comma seperated Regions for which to export Networking Objects",
-                        required=False)
-    return parser.parse_args()
 
 
 def get_rrset(zone_data,dns_client,record_default):
@@ -113,6 +96,7 @@ def print_empty_view(region, ntk_compartment_name, view_data, values_for_column)
         elif col_header.lower() in commonTools.tagColumns:
             values_for_column = commonTools.export_tags(view_data, col_header, values_for_column)
 
+# Execution of the code begins here
 def export_dns_views_zones_rrsets(inputfile, _outdir, service_dir, _config, ct, dns_filter, export_compartments=[], export_regions=[]):
     global tf_import_cmd
     global sheet_dict
@@ -217,8 +201,3 @@ def export_dns_views_zones_rrsets(inputfile, _outdir, service_dir, _config, ct, 
         script_file = f'{outdir}/{reg}/{service_dir}/' + file_name
         with open(script_file, 'a') as importCommands[reg]:
             importCommands[reg].write('\n\nterraform plan\n')
-
-if __name__ == '__main__':
-    args = parse_args()
-    # Execution of the code begins here
-    export_dns_views_zones_rrsets(args.inputfile, args.outdir, args.config, args.service_dir, args.network_compartments,args.regions)

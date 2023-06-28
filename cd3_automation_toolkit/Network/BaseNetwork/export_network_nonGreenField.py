@@ -1,11 +1,8 @@
 #!/usr/bin/python3
 
-
-import argparse
 import sys
 import oci
 from oci.core.virtual_network_client import VirtualNetworkClient
-from oci.config import DEFAULT_LOCATION
 import os
 from .exportRoutetable import export_routetable
 from .exportRoutetable import export_drg_routetable
@@ -514,21 +511,6 @@ def get_rpc_resources(source_region, SOURCE_RPC_LIST, dest_rpc_dict, rpc_source_
 
     # Close the safe_file post updates
     rpc_safe_file["global"].close()
-
-
-def parse_args():
-    parser = argparse.ArgumentParser(description="Export Network Objects in OCI to CD3")
-    parser.add_argument("inputfile", help="path of CD3 excel file to export network objects to")
-    parser.add_argument("outdir", help="path to out directory containing script for TF import commands")
-    parser.add_argument("service_dir",
-                        help="subdirectory under region directory in case of separate out directory structure")
-    parser.add_argument("--configFileName", default=DEFAULT_LOCATION, help="Config file name")
-    parser.add_argument("--export-compartments", nargs='*',
-                        help="comma seperated Compartments for which to export Networking Objects", required=False)
-    parser.add_argument("--export-regions", nargs='*',
-                        help="comma seperated Regions for which to export Networking Objects", required=False)
-    return parser.parse_args()
-
 
 def export_major_objects(inputfile, outdir, service_dir, _config, ct, export_compartments=[], export_regions=[]):
     global sheet_dict_vcns
@@ -1119,7 +1101,7 @@ def export_subnets_vlans(inputfile, outdir, service_dir, _config, ct, export_com
         importCommands_vlan[reg].write('\n\nterraform plan\n')
         importCommands_vlan[reg].close()
 
-
+# Execution of the code begins here
 def export_networking(inputfile, outdir, service_dir, _config, ct, export_compartments=[], export_regions=[]):
     input_config_file = _config
     config = oci.config.from_file(file_location=input_config_file)
@@ -1162,9 +1144,3 @@ def export_networking(inputfile, outdir, service_dir, _config, ct, export_compar
     # Fetch NSGs
     export_nsg(inputfile, export_compartments=export_compartments, export_regions=export_regions,
                service_dir=service_dir_nsg, _config=input_config_file, _tf_import_cmd=True, outdir=outdir, ct=ct)
-
-
-if __name__ == "__main__":
-    args = parse_args()
-    export_networking(args.inputfile, args.outdir, args.service_dir, args.config, args.export_compartments,
-                      args.export_regions)

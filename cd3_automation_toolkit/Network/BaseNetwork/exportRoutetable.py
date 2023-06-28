@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 
-import argparse
 import sys
 import oci
 from oci.core.virtual_network_client import VirtualNetworkClient
@@ -156,22 +155,7 @@ def print_routetables(routetables,region,vcn_name,comp_name):
             if not tf_import_cmd:
                 print(dn + "," +str(rule.destination)+","+desc)
 
-
-
-def parse_args():
-    parser = argparse.ArgumentParser(description='Export Route Table on OCI to CD3')
-    parser.add_argument('cd3file', help='path of CD3 excel file to export rules to')
-    parser.add_argument('--export-compartments', nargs='*', help='comma seperated Compartments for which to export Networking Objects')
-    parser.add_argument('--config', default=DEFAULT_LOCATION, help='Config file name')
-    parser.add_argument('--tf-import-cmd', default=False, action='store_true', help='write tf import commands')
-    parser.add_argument('--outdir', default=None, required=False, help='outdir for TF import commands script')
-    parser.add_argument("--export_regions", nargs='*', help="comma seperated Regions for which to export Networking Objects",
-                        required=False)
-    parser.add_argument("--service_dir", nargs='*',
-                        help="subdirectory under region directory in case of separate out directory structure",
-                        required=False)
-    args = parser.parse_args()
-
+# Execution of the code begins here for drg route table
 def export_drg_routetable(inputfile, export_compartments, export_regions, service_dir, _config, _tf_import_cmd, outdir,ct):
     # Read the arguments
     global tf_import_cmd_drg
@@ -263,7 +247,7 @@ def export_drg_routetable(inputfile, export_compartments, export_regions, servic
             importCommands_drg[reg].write('\n\nterraform plan\n')
             importCommands_drg[reg].close()
 
-
+# Execution of the code begins here for route table export
 def export_routetable(inputfile, export_compartments,export_regions, service_dir, _config, _tf_import_cmd, outdir,ct):
     # Read the arguments
     global tf_import_cmd
@@ -332,11 +316,4 @@ def export_routetable(inputfile, export_compartments,export_regions, service_dir
         commonTools.write_to_cd3(values_for_vcninfo, cd3file, "VCN Info")
         for reg in export_regions:
             importCommands[reg].close()
-
-
-if __name__=="__main__":
-    args = parse_args()
-    ct = None
-    export_routetable(args.inputfile, args.export_compartments, args.config, args.tf_import_cmd, args.outdir,args.export_regions,args.service_dir, ct)
-    export_drg_routetable(args.inputfile, args.export_compartments, args.config, args.tf_import_cmd, args.outdir,args.export_regions,args.service_dir, ct)
 

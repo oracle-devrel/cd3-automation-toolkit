@@ -1,16 +1,13 @@
 #!/usr/bin/python3
 # Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 #
-# This script will produce a Terraform file that will be used to set up OCI core components
-# Instances
+# This script will produce a Terraform file that will be used to set up OCI Management components
+# Alarms
 #
 # Author: Suruchi
 # Oracle Consulting
 
 #
-
-import argparse
-import os
 import datetime
 from commonTools import *
 from oci.config import DEFAULT_LOCATION
@@ -18,19 +15,7 @@ from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
 
 
-
-def parse_args():
-    # Read the input arguments
-    parser = argparse.ArgumentParser(description="Creates TF files for Alarms")
-    parser.add_argument('inputfile', help='Full Path of input CD3 excel file')
-    parser.add_argument('outdir', help='Output directory for creation of TF files')
-    parser.add_argument('service_dir', help='Structured out directory for creation of TF files')
-    parser.add_argument('prefix', help='TF files prefix')
-    parser.add_argument('--config', default=DEFAULT_LOCATION, help='Config file name')
-    return parser.parse_args()
-
-
-#If input is CD3 excel file
+# Execution of the code begins here
 def create_terraform_alarms(inputfile, outdir, service_dir, prefix, config=DEFAULT_LOCATION):
     filename = inputfile
     configFileName = config
@@ -190,8 +175,3 @@ def create_terraform_alarms(inputfile, outdir, service_dir, prefix, config=DEFAU
             oname[reg].write(tfStr[reg])
             oname[reg].close()
             print(outfile[reg] + " for Alarms has been created for region "+reg)
-
-if __name__ == '__main__':
-    # Execution of the code begins here
-    args = parse_args()
-    create_terraform_alarms(args.inputfile, args.outdir, args.service_dir, args.prefix, args.config)

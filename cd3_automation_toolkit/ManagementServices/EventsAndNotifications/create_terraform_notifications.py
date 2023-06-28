@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 #
-# This script will produce a Terraform file that will be used to set up OCI solutions components
+# This script will produce a Terraform file that will be used to set up OCI Management components
 # Notifications & Subscriptions
 #
 #Author: Shravanthi Lingam
@@ -9,10 +9,6 @@
 #shravanthi.lingam@oracle.com
 # Modified (TF Upgrade): Shravanthi Lingam
 #
-
-import sys
-import argparse
-import os
 import datetime
 from jinja2 import Environment, FileSystemLoader
 from oci.config import DEFAULT_LOCATION
@@ -22,18 +18,8 @@ from commonTools import *
 ######
 # Required Inputs- CD3 excel file, Config file, prefix AND outdir
 ######
-def parse_args():
-    # Read the arguments
-    parser = argparse.ArgumentParser(description="Creates TF files for Notifications")
-    parser.add_argument('inputfile', help='Full Path of input CD3 excel file')
-    parser.add_argument('outdir', help='Output directory for creation of TF files')
-    parser.add_argument('service_dir', help='Structured out directory for creation of TF files')
-    parser.add_argument('prefix', help='TF files prefix')
-    parser.add_argument('--config', default=DEFAULT_LOCATION, help='Config file name')
-    return parser.parse_argss()
 
-
-#If input is cd3 file
+# Execution of the code begins here
 def create_terraform_notifications(inputfile, outdir, service_dir, prefix, config=DEFAULT_LOCATION):
     filename = inputfile
     outdir = outdir
@@ -198,8 +184,3 @@ def create_terraform_notifications(inputfile, outdir, service_dir, prefix, confi
             oname[reg].close()
             print(outfile[reg] + " for Notifications_Subscriptions has been created for region " + reg)
 
-
-if __name__ == '__main__':
-    # Execution of the code begins here
-    args = parse_args()
-    create_terraform_notifications(args.inputfile, args.outdir, args.service_dir, args.prefix, args.config)
