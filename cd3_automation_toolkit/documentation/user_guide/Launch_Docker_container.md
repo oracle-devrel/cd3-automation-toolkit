@@ -27,9 +27,12 @@ To ease the execution of toolkit, we have provided the steps to build an image w
      
 * Login to the CD3 docker container.
 * Run the following cmd to set the proxy,
-     ```export http_proxy=http://www-proxy-brmdc.us.oracle.com:80/
-	export https_proxy=http://www-proxy-brmdc.us.oracle.com:80/
-	export no_proxy=localhost,127.0.0.1/16,.us.oracle.com,.oraclecorp.com```
+
+  ```
+     export http_proxy=http://www-proxy-brmdc.us.oracle.com:80/
+     export https_proxy=http://www-proxy-brmdc.us.oracle.com:80/
+     export no_proxy=localhost,127.0.0.1/16,.us.oracle.com,.oraclecorp.com
+     ```
 * Run the CD3 related commands and proceed further.
 
 ## Run the CD3 container
