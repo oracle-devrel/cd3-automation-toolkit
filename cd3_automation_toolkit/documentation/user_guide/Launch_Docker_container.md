@@ -22,12 +22,14 @@ To ease the execution of toolkit, we have provided the steps to build an image w
 * Connect to the VPN.
 * Execute the **Rancher deskop** and ensure the version **1.9** is used if not please install the latest.
 * Enable **Networking Tunnel** in Rancher settings as shown in the screenshot below,
+  
      <img width="746" alt="image" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103548537/22e71261-63dc-4218-a3f6-9ef98df820e2">
+     
 * Login to the CD3 docker container.
 * Run the following cmd to set the proxy,
      ```export http_proxy=http://www-proxy-brmdc.us.oracle.com:80/
-		export https_proxy=http://www-proxy-brmdc.us.oracle.com:80/
-		export no_proxy=localhost,127.0.0.1/16,.us.oracle.com,.oraclecorp.com```
+	export https_proxy=http://www-proxy-brmdc.us.oracle.com:80/
+	export no_proxy=localhost,127.0.0.1/16,.us.oracle.com,.oraclecorp.com```
 * Run the CD3 related commands and proceed further.
 
 ## Run the CD3 container
