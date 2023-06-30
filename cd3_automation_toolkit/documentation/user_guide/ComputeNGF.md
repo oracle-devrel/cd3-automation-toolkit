@@ -22,7 +22,8 @@ Follow the below steps to export OCI compute Instances to CD3 Excel file and cre
 8. Upon executing, the "Instances" sheet in input CD3 Excel is populated with the VMs details.
 9. The tf_import_commands_instances_nonGF.sh script, tfvars file are generated for the Instances under folder */cd3user/tenancies/<customer_name>/terraform_files/<region_dir>*. If you are using multiple outdirectories, they'll be located under the */cd3user/tenancies/<customer_name>/terraform_files/<region_dir>compute* folder.
 10. The associated ssh public keys are placed under variables_<region>.tf under the "instance_ssh_keys" variable.
-11. Execute the .sh file ( *sh tf_import_commands_instances_nonGF.sh*) to generate terraform state file.
+11. While export of instances, it will fetch details for only the primary VNIC attached to the instance.
+12. Execute the .sh file ( *sh tf_import_commands_instances_nonGF.sh*) to generate terraform state file.
 
     
 
