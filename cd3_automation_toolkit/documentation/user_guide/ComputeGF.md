@@ -67,8 +67,6 @@ Ex: If you enter the Source Details as image::Linux, make an entry in variables_
 8. Custom Policy Compartment Name : Specify the compartment name where the Custom Policy is created.
 9. Create_Is PV Encryption In Transit Enabled attribute should be set to True to enable encryption for new instances. Default is False.
 10. Update_Is PV Encryption In Transit Enabled attribute should be set to True to enable encryption for existing instances.
-
-10. While export of instances, it will fetch details for only the primary VNIC attached to the instance.
    
 
 ## Remote Execution/Cloud Init Scenarios 
