@@ -9,8 +9,6 @@
 # Modified (TF if (columnvalue not in ckeys):Upgrade): Shruthi Subramanian
 #
 
-# import sys
-import argparse
 import os
 from oci.config import DEFAULT_LOCATION
 from jinja2 import Environment, FileSystemLoader
@@ -21,18 +19,7 @@ import oci
 ######
 # Required Inputs-CD3 excel file, Config file, prefix AND outdir
 ######
-
-def parse_args():
-    # Read the arguments
-    parser = argparse.ArgumentParser(description='Create Compartments terraform file')
-    parser.add_argument('inputfile', help='Full Path of input CD3 excel file')
-    parser.add_argument('outdir', help='Output directory for creation of TF files')
-    parser.add_argument('service_dir', help='Structured out directory for creation of TF files')
-    parser.add_argument('prefix', help='TF files prefix')
-    parser.add_argument('--config', default=DEFAULT_LOCATION, help='Config file name')
-    return parser.parse_args()
-
-# If input in cd3 file
+# Execution of the code begins here
 def create_terraform_compartments(inputfile, outdir, service_dir, prefix, config=DEFAULT_LOCATION):
     # Declare variables
     filename = inputfile
@@ -61,10 +48,13 @@ def create_terraform_compartments(inputfile, outdir, service_dir, prefix, config
 
     ct = commonTools()
     ct.get_subscribedregions(configFileName)
-    config = oci.config.from_file(file_location=configFileName)
-    ct.get_network_compartment_ids(config['tenancy'], "root", configFileName)
+    #config = oci.config.from_file(file_location=configFileName)
+    #ct.get_network_compartment_ids(config['tenancy'], "root", configFileName)
+    home_region = ct.home_region
 
-    srcdir = outdir + "/" + ct.home_region + "/" + service_dir + "/"
+    srcdir = outdir + "/" + home_region + "/" + service_dir + "/"
+    var_file = f'{srcdir}/variables_{home_region}.tf'
+    ct.get_compartment_map(var_file, 'Compartments')
     resource = sheetName.lower()
     commonTools.backup_file(srcdir, resource, auto_tfvars_filename)
 
@@ -262,8 +252,3 @@ def create_terraform_compartments(inputfile, outdir, service_dir, prefix, config
         with open(fetch_comp_file, 'w') as f:
             f.write('run_fetch_script=1')
         f.close()
-
-if __name__ == '__main__':
-    # Execution of the code begins here
-    args = parse_args()
-    create_terraform_compartments(args.inputfile, args.outdir, args.service_dir, args.prefix, args.config)

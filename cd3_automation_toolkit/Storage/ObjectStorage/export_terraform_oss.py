@@ -1,15 +1,11 @@
 #!/usr/bin/python3
 # Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 #
-# This script is to export Identity Objects from OCI
-#put them into CD3 Excel and create TF files
+# This script is to export Buckets from OCI
 
 #Author: Ranjini Rajendran
 #Oracle Consulting
 
-
-import argparse
-import json
 import sys
 import oci
 import re
@@ -22,7 +18,6 @@ from commonTools import *
 from jinja2 import Environment, FileSystemLoader
 sys.path.append(os.getcwd()+"/..")
 from commonTools import *
-import datetime
 from dateutil import parser
 
 
@@ -153,20 +148,7 @@ def print_buckets(region, outdir, service_dir, bucket_data, values_for_column, n
 ######
 # Required Inputs- CD3 excel file, Config file, prefix AND outdir
 ######
-
-
-def parse_args():
-    parser = argparse.ArgumentParser(description="Export Buckets information to CD3")
-    parser.add_argument('inputfile', help='Full Path of input CD3 excel file')
-    parser.add_argument('outdir', help='Output directory for creation of TF files')
-    parser.add_argument('service_dir', help='Structured out directory for creation of TF files')
-    parser.add_argument('--config', default=DEFAULT_LOCATION, help='Config file name')
-    parser.add_argument("--export-compartments", nargs='*', required=False, help="comma seperated Compartments for which to export buckets")
-    parser.add_argument("--export-regions", nargs='*', help="comma seperated Regions for which to export buckets",
-                        required=False)
-    return parser.parse_args()
-
-#If input is cd3 file
+# Execution of the code begins here
 def export_buckets(inputfile, _outdir, service_dir, ct, _config=DEFAULT_LOCATION, export_compartments=[],export_regions=[]):
     global tf_import_cmd
     global sheet_dict
@@ -352,8 +334,3 @@ def export_buckets(inputfile, _outdir, service_dir, ct, _config=DEFAULT_LOCATION
         script_file = f'{outdir}/{reg}/{service_dir}/' + file_name
         with open(script_file, 'a') as importCommands[reg]:
             importCommands[reg].write('\n\nterraform plan\n')
-
-if __name__ == '__main__':
-    args = parse_args()
-    # Execution of the code begins here
-    export_buckets(args.inputfile, args.outdir, args.service_dir, args.config, args.export_compartments,args.export_regions)

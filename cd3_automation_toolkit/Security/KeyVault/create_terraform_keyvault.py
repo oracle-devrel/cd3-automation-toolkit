@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 #
-# This script will produce a Terraform file that will be used to set up OCI core components
+# This script will produce a Terraform file that will be used to set up OCI Security components
 # Key/Vault
 #
 # Author: Suruchi Singla
@@ -9,8 +9,6 @@
 # Modified (TF Upgrade): Shruthi Subramanian
 #
 
-import argparse
-import os
 from jinja2 import Environment, FileSystemLoader
 from pathlib import Path
 from oci.config import DEFAULT_LOCATION
@@ -19,22 +17,7 @@ from commonTools import *
 ######
 # Required Inputs- Config file, prefix AND outdir
 ######
-
-def parse_args():
-
-    # Read the arguments
-    parser = argparse.ArgumentParser(description="Create Key/Vault terraform file")
-    parser.add_argument('outdir', help='Output directory for creation of TF files')
-    parser.add_argument("service_dir",
-                        help="subdirectory under region directory in case of separate out directory structure")
-    parser.add_argument("service_dir_iam",
-                        help="subdirectory under region directory in case of separate out directory structure for identity")
-    parser.add_argument('prefix', help='TF files prefix')
-    parser.add_argument("region_name", help="region name")
-    parser.add_argument("comp_name", help="compartment name")
-    parser.add_argument("--configFileName", help="Config file name", required=False)
-    return parser.parse_args()
-
+# Execution of the code begins here
 def create_cis_keyvault(outdir, service_dir, service_dir_iam, prefix, region_name, comp_name, config=DEFAULT_LOCATION):
 
     # Declare variables
@@ -102,8 +85,3 @@ def create_cis_keyvault(outdir, service_dir, service_dir_iam, prefix, region_nam
         print(outfile + " containing TF for Key/Vault has been created for region "+region_name)
         oname.write(finalstring)
         oname.close()
-
-if __name__ == '__main__':
-    # Execution of the code begins here
-    args = parse_args()
-    create_cis_keyvault(args.outdir, args.service_dir, args.service_dir_iam, args.prefix, args.config, args.region_name, args.comp_name)

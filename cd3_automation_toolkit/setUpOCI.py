@@ -258,13 +258,14 @@ def validate_cd3(execute_all=False):
         Option("Validate Policies", None, None),
         Option("Validate Tags", None, None),
         Option("Validate Network(VCNs, SubnetsVLANs, DHCP, DRGs)", None, None),
+        Option("Validate DNS", None, None),
         Option("Validate Instances", None, None),
         Option("Validate Block Volumes", None, None),
         Option("Validate FSS", None, None),
     ]
     if not execute_all:
         options = show_options(options, quit=True, menu=False, index=1)
-    cd3Validator.validate_cd3(inputfile, prefix, outdir, options, config)
+    cd3Validator.validate_cd3(inputfile, var_file, prefix, outdir, options, config)
     print("Exiting CD3 Validation...")
 
 
@@ -1081,7 +1082,7 @@ def create_developer_services(execute_all=False):
 
 def create_rm_stack(inputfile, outdir, prefix, config):
     regions = get_region_list(rm = True)
-    DeveloperServices.create_resource_manager(outdir, outdir_struct, prefix, regions, config)
+    DeveloperServices.create_resource_manager(outdir,var_file, outdir_struct, prefix, regions, config)
 
 def create_oke(inputfile, outdir, prefix, config):
     if len(outdir_struct) != 0:

@@ -7,8 +7,6 @@
 # Author: Divya Das
 # Oracle Consulting
 #
-
-import argparse
 import sys
 import oci
 import os
@@ -260,7 +258,7 @@ def print_oke(values_for_column_oke, reg, compartment_name, compartment_name_nod
             oci_objs = [cluster_info,nodepool_info]
             values_for_column_oke = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict_oke,values_for_column_oke)
 
-
+# Execution of the code begins here
 def export_oke(inputfile, outdir,service_dir, ct, _config=DEFAULT_LOCATION, export_compartments=[], export_regions=[]):
     global importCommands
     global tf_import_cmd
@@ -420,23 +418,3 @@ def export_oke(inputfile, outdir,service_dir, ct, _config=DEFAULT_LOCATION, expo
 
     commonTools.write_to_cd3(values_for_column_oke, cd3file, "OKE")
     print("OKE exported to CD3\n")
-
-def parse_args():
-    # Read the arguments
-    parser = argparse.ArgumentParser(description="Export OKE to CD3")
-    parser.add_argument("inputfile", help="path of CD3 excel file to export OKE to")
-    parser.add_argument("outdir", help="path to out directory containing script for TF import commands")
-    parser.add_argument("service_dir",help="subdirectory under region directory in case of separate out directory structure")
-    parser.add_argument("--network-compartments", nargs='*',
-                        help="comma seperated Compartments for which to export OKE Objects", required=False)
-    parser.add_argument("--config", default=DEFAULT_LOCATION, help="Config file name")
-    parser.add_argument("--regions", nargs='*', help="comma seperated Regions for which to export Networking Objects",
-                        required=False)
-    return parser.parse_args()
-
-
-if __name__ == '__main__':
-    args = parse_args()
-    # Execution of the code begins here
-    export_oke(args.inputfile, args.outdir, args.service_dir,args.export_compartments, args.config, args.export_regions)
-

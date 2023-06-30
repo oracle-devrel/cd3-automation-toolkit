@@ -146,6 +146,7 @@ class commonTools():
 
     def get_compartment_map(self, var_file, resource_name):
         var_ocids = {}
+        ntk_only_resources = ["Validator", "RM", "Compartments"]
         try:
             with open(var_file, 'r') as f:
                 soc = False
@@ -173,39 +174,41 @@ class commonTools():
             print("Exiting!!!")
             #print("Please fetch compartments first from CD3 Services option from main menu")
             exit(1)
-
-        if resource_name == "Identity Objects" or resource_name == "Tagging Objects":
-            input_compartment_names = None
+        if resource_name in ntk_only_resources:
+            pass
         else:
-            compartment_list_str = "Enter name of Compartment as it appears in OCI (comma separated without spaces if multiple)for which you want to export {};\nPress 'Enter' to export from all the Compartments: "
-            compartments = input(compartment_list_str.format(resource_name))
-            input_compartment_names = list(map(lambda x: x.strip(), compartments.split(','))) if compartments else None
+            if resource_name == "Identity Objects" or resource_name == "Tagging Objects":
+                input_compartment_names = None
+            else:
+                compartment_list_str = "Enter name of Compartment as it appears in OCI (comma separated without spaces if multiple)for which you want to export {};\nPress 'Enter' to export from all the Compartments: "
+                compartments = input(compartment_list_str.format(resource_name))
+                input_compartment_names = list(map(lambda x: x.strip(), compartments.split(','))) if compartments else None
 
-        comp_list_fetch = []
-        print("\n")
+            comp_list_fetch = []
+            print("\n")
 
-        if input_compartment_names is not None:
-            for comp_name in input_compartment_names:
-                var_comp_name = comp_name.replace('::', '--')
+            if input_compartment_names is not None:
+                for comp_name in input_compartment_names:
+                    var_comp_name = comp_name.replace('::', '--')
 
-                if var_comp_name not in var_ocids.keys():
-                    print("Please check if " + comp_name + " exists in OCI.\nIf yes then Please make sure to execute the script for 'Fetch Compartments OCIDs to variables file' under 'CD3 Services' menu option first and re-run this")
-                    exit(1)
-                else:
-                    #self.ntk_compartment_ids[comp_name] = var_ocids[var_comp_name]
-                    comp_list_fetch.append(comp_name)
+                    if var_comp_name not in var_ocids.keys():
+                        print("Please check if " + comp_name + " exists in OCI.\nIf yes then Please make sure to execute the script for 'Fetch Compartments OCIDs to variables file' under 'CD3 Services' menu option first and re-run this")
+                        exit(1)
+                    else:
+                        #self.ntk_compartment_ids[comp_name] = var_ocids[var_comp_name]
+                        comp_list_fetch.append(comp_name)
 
-            print("Fetching " + resource_name + " for Compartments " + str(comp_list_fetch))
-        else:
-            print("Fetching " + resource_name + " for all Compartments...")
-            comp_ocids = []
-            for key, val in var_ocids.items():
-                if val not in comp_ocids:
-                    comp_ocids.append(val)
-                    #self.ntk_compartment_ids[key.replace('--', '::')] = val
-                    comp_list_fetch.append(key.replace('--', '::'))
+                print("Fetching " + resource_name + " for Compartments " + str(comp_list_fetch))
+            else:
+                print("Fetching " + resource_name + " for all Compartments...")
+                comp_ocids = []
+                for key, val in var_ocids.items():
+                    if val not in comp_ocids:
+                        comp_ocids.append(val)
+                        #self.ntk_compartment_ids[key.replace('--', '::')] = val
+                        comp_list_fetch.append(key.replace('--', '::'))
 
-        return comp_list_fetch
+            return comp_list_fetch
 
     #Check value exported
     #If None - replace with ""

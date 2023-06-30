@@ -10,9 +10,6 @@
 # Modified Rework: Stefen Ramirez (stefen.ramirez@oracle.com)
 
 import os
-import argparse
-import sys
-from oci.config import DEFAULT_LOCATION
 from commonTools import section
 from .create_major_objects import create_major_objects
 from .create_terraform_defaults import create_terraform_defaults
@@ -22,21 +19,7 @@ from .create_terraform_route import create_terraform_drg_route
 from .create_terraform_seclist import create_terraform_seclist
 from .create_terraform_subnet_vlan import create_terraform_subnet_vlan
 
-
-def parse_args():
-    parser = argparse.ArgumentParser(
-        description='Creates terraform files for network resources based on given inputs; See example folder for sample input files')
-    parser.add_argument('inputfile',
-                        help='Full Path of input file either props file. eg vcn-info.properties or cd3 excel file')
-    parser.add_argument('outdir', help='Output directory for creation of TF files')
-    parser.add_argument('prefix', help='customer name/prefix for all file names')
-    parser.add_argument("service_dir",help="subdirectory under region directory in case of separate out directory structure")
-    parser.add_argument('--modify-network', action='store_true', help='modify network')
-    parser.add_argument('non_gf_tenancy')
-    parser.add_argument('--config', default=DEFAULT_LOCATION, help='Config file name')
-    return parser.parse_args()
-
-
+# Execution starts here
 def create_all_tf_objects(inputfile, outdir, service_dir,prefix, config, non_gf_tenancy, modify_network=False,network_vlan_in_setupoci="network",network_connectivity_in_setupoci='network'):
     if not os.path.exists(outdir):
         os.makedirs(outdir)
@@ -67,8 +50,3 @@ def create_all_tf_objects(inputfile, outdir, service_dir,prefix, config, non_gf_
     if non_gf_tenancy == False:
         print('\n\nMake sure to export all SecRules, RouteRules and DRG RouteRules to CD3. Use sub-options 4,5,6 under option 3(Network) of Main Menu for the same.')
 
-
-if __name__ == '__main__':
-    args = parse_args()
-    create_all_tf_objects(args.inputfile, args.outdir, args.service_dir, args.prefix, config=args.config, non_gf_tenancy=args.non_gf_tenancy,
-                          modify_network=args.modify_network)

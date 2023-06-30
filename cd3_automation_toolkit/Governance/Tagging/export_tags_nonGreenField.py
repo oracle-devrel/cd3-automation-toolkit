@@ -1,8 +1,7 @@
 #!/usr/bin/python3
 # Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 #
-# This script will produce a Terraform file that will be used to set up OCI solutions components
-# Notifications & Subscriptions
+# This script will produce a Terraform file that will be used to export Tags
 #
 #Author: Shravanthi Lingam
 #Oracle Consulting
@@ -11,10 +10,10 @@ import argparse
 import sys
 import oci
 from oci.identity import IdentityClient
-from oci.config import DEFAULT_LOCATION
 import os
-sys.path.append(os.getcwd()+"/..")
 from commonTools import *
+
+sys.path.append(os.getcwd()+"/..")
 
 compartment_ids={}
 importCommands={}
@@ -95,16 +94,7 @@ def  print_tags(values_for_column_tags,region, ntk_compartment_name, tag, tag_ke
             for value in tag_default_value:
                 importCommands[region].write("\nterraform import \"module.tag-defaults[\\\""+ tf_name_namespace+'_' +tf_name_key + '_' +commonTools.check_tf_variable(value.split("=")[0]).strip()+ '-default'+ '\\\"].oci_identity_tag_default.tag_default\" ' + str(defaultcomp_to_tagid_map[tf_name_key+"-"+commonTools.check_tf_variable(value.split("=")[0])]))
 
-
-def parse_args():
-    parser = argparse.ArgumentParser(description="Export Tags on OCI to CD3")
-    parser.add_argument("inputfile", help="path of CD3 excel file to export tag objects to")
-    parser.add_argument("outdir", help="path to out directory containing script for TF import commands")
-    parser.add_argument("service_dir", help="subdirectory under region directory in case of separate out directory structure")
-    parser.add_argument("--config", default=DEFAULT_LOCATION, help="Config file name")
-    parser.add_argument("--export-compartments", default=[], nargs='*', help="comma seperated Compartments for which to export Identity Objects", required=False)
-    return parser.parse_args()
-
+# Execution of the code begins here
 def export_tags_nongreenfield(inputfile, outdir, service_dir, _config, export_compartments,ct):
     global tf_import_cmd
     global values_for_column_tags
@@ -224,7 +214,3 @@ def export_tags_nongreenfield(inputfile, outdir, service_dir, _config, export_co
     with open(script_file, 'a') as importCommands[ct.home_region]:
         importCommands[ct.home_region].write('\n\nterraform plan\n')
 
-if __name__=="__main__":
-    args = parse_args()
-    ct = None
-    export_tags_nongreenfield(args.inputfile, args.outdir, args.service_dir, args.config, args.export_compartments, ct)

@@ -238,3 +238,29 @@ resource "oci_marketplace_listing_package_agreement" "listing_package_agreement"
   listing_id      = data.oci_marketplace_listing.listing.0.id
   package_version = data.oci_marketplace_listing.listing.0.default_package_version
 }
+
+#------ Get Image Agreement 
+resource "oci_core_app_catalog_listing_resource_version_agreement" "mp_image_agreement" {
+  count      = length(regexall("ocid1.image.oc1*", var.source_image_id)) > 0 || length(regexall("ocid1.bootvolume.oc1*", var.source_image_id)) > 0 || var.source_image_id == null ? 0 : 1
+  listing_id = data.oci_marketplace_listing_package.listing_package.0.app_catalog_listing_id
+  #listing_resource_version = data.oci_marketplace_listing_package.listing_package.0.app_catalog_listing_resource_version
+  listing_resource_version = data.oci_core_app_catalog_listing_resource_versions.app_catalog_listing_resource_versions.0.app_catalog_listing_resource_versions[0].listing_resource_version
+}
+
+
+
+# ------ Accept Terms and Subscribe to the image, placing the image in a particular compartment
+resource "oci_core_app_catalog_subscription" "mp_image_subscription" {
+  count                    = length(regexall("ocid1.image.oc1*", var.source_image_id)) > 0 || length(regexall("ocid1.bootvolume.oc1*", var.source_image_id)) > 0 || var.source_image_id == null ? 0 : 1
+  compartment_id           = var.compartment_id
+  eula_link                = oci_core_app_catalog_listing_resource_version_agreement.mp_image_agreement[0].eula_link
+  listing_id               = oci_core_app_catalog_listing_resource_version_agreement.mp_image_agreement[0].listing_id
+  listing_resource_version = oci_core_app_catalog_listing_resource_version_agreement.mp_image_agreement[0].listing_resource_version
+  oracle_terms_of_use_link = oci_core_app_catalog_listing_resource_version_agreement.mp_image_agreement[0].oracle_terms_of_use_link
+  signature                = oci_core_app_catalog_listing_resource_version_agreement.mp_image_agreement[0].signature
+  time_retrieved           = oci_core_app_catalog_listing_resource_version_agreement.mp_image_agreement[0].time_retrieved
+
+  timeouts {
+    create = "20m"
+  }
+}

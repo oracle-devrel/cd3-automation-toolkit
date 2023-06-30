@@ -7,8 +7,6 @@
 # Author: Gaurav Goyal
 # Oracle Consulting
 #
-
-import argparse
 import os
 from pathlib import Path
 from oci.config import DEFAULT_LOCATION
@@ -18,16 +16,7 @@ from commonTools import *
 ######
 # Required Inputs- CD3 excel file, Config file, prefix AND outdir
 ######
-def parse_args():
-    parser = argparse.ArgumentParser(description="Create Users terraform file")
-    parser.add_argument('inputfile', help='Full Path of input CD3 excel file')
-    parser.add_argument('outdir', help='Output directory for creation of TF files')
-    parser.add_argument('service_dir', help='Structured out directory for creation of TF files')
-    parser.add_argument('prefix', help='TF files prefix')
-    parser.add_argument('--config', default=DEFAULT_LOCATION, help='Config file name')
-    return parser.parse_args()
-
-#If input is cd3 file
+# Execution of the code begins here
 def create_terraform_users(inputfile, outdir, service_dir, prefix, config=DEFAULT_LOCATION):
     # Read the arguments
     filename = inputfile
@@ -188,9 +177,3 @@ def create_terraform_users(inputfile, outdir, service_dir, prefix, config=DEFAUL
         oname[reg].write(tfStr[reg])
         oname[reg].close()
         print(outfile[reg] + " for Users has been created for region "+reg)
-
-
-if __name__ == '__main__':
-    args = parse_args()
-    # Execution of the code begins here
-    create_terraform_users(args.inputfile, args.outdir, args.service_dir, args.prefix, config=args.config)

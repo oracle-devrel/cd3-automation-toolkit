@@ -1,13 +1,12 @@
 #!/usr/bin/python3
 # Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 #
-# This script will produce a Terraform file that will be used to set up OCI Events and Notifications components
-# Notifications & Subscriptions
+# This script will produce a Terraform file that will be used to set up OCI Management components
+# Events, Notifications & Subscriptions
 #
 #Author: Shravanthi Lingam
 #Oracle Consulting
 #
-import argparse
 import sys
 import oci
 import json
@@ -155,19 +154,7 @@ def events_rows(values_for_column_events, region, ntk_compartment_name, event_na
             oci_objs = [event,event_info]
             values_for_column_events = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict_events,values_for_column_events)
 
-
-def parse_args():
-    parser = argparse.ArgumentParser(description="Export Notifications on OCI to CD3")
-    parser.add_argument("inputfile", help="path of CD3 excel file to export events and notifications objects to")
-    parser.add_argument("outdir", help="path to out directory containing script for TF import commands")
-    parser.add_argument('service_dir', help='Structured out directory for creation of TF files')
-    parser.add_argument("--export-compartments", nargs='*', help="comma seperated Compartments for which to export Identity Objects", required=False)
-    parser.add_argument("--config", default=DEFAULT_LOCATION, help="Config file name" )
-    parser.add_argument("--export-regions", nargs='*', help="comma seperated Regions for which to export Networking Objects",
-                        required=False)
-    return parser.parse_args()
-
-
+# Execution for Events export starts here
 def export_events(inputfile, outdir, service_dir, ct,export_compartments=[], export_regions=[], _config=DEFAULT_LOCATION):
     global rows
     global tf_import_cmd
@@ -244,6 +231,7 @@ def export_events(inputfile, outdir, service_dir, ct,export_compartments=[], exp
         with open(script_file, 'a') as importCommands[reg]:
             importCommands[reg].write('\n\nterraform plan\n')
 
+# Execution for Notifications export starts here
 def export_notifications(inputfile, outdir, service_dir, ct, export_compartments=[], _config=DEFAULT_LOCATION,export_regions=[]):
     global rows
     global tf_import_cmd
@@ -340,8 +328,3 @@ def export_notifications(inputfile, outdir, service_dir, ct, export_compartments
     for reg in export_regions:
         with open(script_file, 'a') as importCommands[reg]:
             importCommands[reg].write('\n\nterraform plan\n')
-
-if __name__=="__main__":
-    args = parse_args()
-    export_notifications(args.inputfile, args.outdir, args.service_dir, args.export_compartments, args.config,args.export_regions)
-    export_events(args.inputfile, args.outdir, args.service_dir, args.export_compartments, args.config,args.export_regions)

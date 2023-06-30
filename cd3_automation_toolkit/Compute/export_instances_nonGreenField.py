@@ -4,7 +4,6 @@
 # Oracle Consulting.
 
 import re
-import argparse
 import sys
 import oci
 import os
@@ -249,20 +248,7 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, config,disp
                                       ins_shape, key_name, compartment_name, bkp_policy_name, nsg_names, dedicated_host,
                                       ins, values_for_column_instances, bdet, cpcn,shape_config, vnic_info, vnic_defined_tags, vnic_freeform_tags, launch_options)
 
-
-def parse_args():
-    parser = argparse.ArgumentParser(description="Export Instances in OCI to CD3")
-    parser.add_argument("inputfile", help="path of CD3 excel file to export Instance objects to")
-    parser.add_argument("outdir", help="path to out directory containing script for TF import commands")
-    parser.add_argument("service_dir",help="subdirectory under region directory in case of separate out directory structure")
-    parser.add_argument("--config", default=DEFAULT_LOCATION, help="Config file name")
-    parser.add_argument("--export-compartments", nargs='*', required=False, help="comma seperated Compartments for which to export Instance Objects")
-    parser.add_argument("--export-regions", nargs='*', help="comma seperated Regions for which to export Networking Objects",
-                   required=False)
-
-    return parser.parse_args()
-
-
+# Execution of the code begins here
 def export_instances(inputfile, outdir, service_dir,config,ct, export_compartments=[], export_regions=[],display_names=[],ad_names=[]):
     cd3file = inputfile
 
@@ -373,8 +359,3 @@ def export_instances(inputfile, outdir, service_dir,config,ct, export_compartmen
     commonTools.write_to_cd3(values_for_column_instances, cd3file, "Instances")
     print("{0} Instance Details exported into CD3.\n".format(len(values_for_column_instances["Region"])))
 
-
-if __name__ == '__main__':
-    # Execution of the code begins here
-    args = parse_args()
-    export_instances(args.inputfile, args.outdir, args.service_dir,args.config, args.export_compartments, args.export_regions)

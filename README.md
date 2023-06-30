@@ -8,7 +8,7 @@
 
   <li> <a href= "#introduction">Introduction</a></li>
 
-  <li> <a href = "https://github.com/oracle-devrel/cd3-automation-toolkit/releases/tag/v11">What's new in this release</a></li>
+  <li> <a href = "https://github.com/oracle-devrel/cd3-automation-toolkit/releases/tag/v11.1">What's new in this release</a></li>
   <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/learn_more/CD3ExcelTabs.md">Toolkit Supported OCI Services</a></li>
   <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md#excel-sheet-templates">Excel Templates</a></li>
   
@@ -29,7 +29,7 @@
   <li> <a href="/cd3_automation_toolkit/documentation/user_guide/GreenField.md">Green Field Tenancies</a>
     <ul>
       <li> <a href="/cd3_automation_toolkit/documentation/user_guide/NetworkingScenariosGF.md"</a><b> Must Read :</b> Managing Network for Greenfield Tenancies</li>
-      <li> <a href="/cd3_automation_toolkit/documentation/user_guide/RemoteExecution.md"</a><b> Must Read :</b> Remote Execution/Cloud Init for OCI compute instances</li>
+      <li> <a href="/cd3_automation_toolkit/documentation/user_guide/ComputeGF.md"</a><b> Must Read :</b> Managing Compute Instances for Greefield Tenancies</li>
     </ul>
     </ul>
   </li>
@@ -37,6 +37,7 @@
   <li> <a href="/cd3_automation_toolkit/documentation/user_guide/NonGreenField.md">Non Greenfield Tenancies</a>
     <ul>
       <li><a href ="/cd3_automation_toolkit/documentation/user_guide/NetworkingScenariosNGF.md"</a><b> Must Read : </b> Managing Network for Non-Greenfield Tenancies</li>
+       <li><a href = "/cd3_automation_toolkit/documentation/user_guide/ComputeNGF.md"</a><b>  Must Read : </b> Managing Compute Instances for Non-Greenfield Tenancies </li> 
     </ul>
   </ul>
   

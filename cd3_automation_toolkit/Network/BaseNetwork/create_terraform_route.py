@@ -10,12 +10,9 @@
 #
 
 import sys
-import argparse
 import re
 import os
 from pathlib import Path
-from oci.config import DEFAULT_LOCATION
-
 sys.path.append(os.getcwd() + "/../../..")
 from commonTools import *
 from jinja2 import Environment, FileSystemLoader
@@ -24,18 +21,6 @@ from jinja2 import Environment, FileSystemLoader
 ######
 # Required Inputs-CD3 excel file, Config file, Modify Network AND outdir
 ######
-
-def parse_args():
-    # Read the input arguments
-    parser = argparse.ArgumentParser(description='Creates route tables containing default routes for each subnet based on inputs given in CD3 excel sheet.')
-    parser.add_argument('inputfile', help='Full Path of input file. eg: cd3 excel file')
-    parser.add_argument('outdir', help='Output directory for creation of TF files')
-    parser.add_argument("service_dir",help="subdirectory under region directory in case of separate out directory structure")
-    parser.add_argument('prefix', help='customer name/prefix for all file names')
-    parser.add_argument('--modify-network', action='store_true', help='Modify: true or false',default=False)
-    parser.add_argument('non_gf_tenancy')
-    parser.add_argument('--config', default=DEFAULT_LOCATION, help='Config file name')
-    return parser.parse_args()
 
 def read_infile_data(modifiedroutetableStr, reg, start, end):
     modifiedroutetableStr[reg] = re.sub(start+'.*?'+end, '',modifiedroutetableStr[reg] , flags=re.DOTALL)
@@ -97,6 +82,7 @@ def merge_or_generate_route_rule(reg, tempStr, modifiedroutetableStr,routetableS
                 data = routerule.render(tempStr, lpg_route_rules=True, region='lpg_route_rules')
     return data
 
+# Execution of the code begins here for drg routes
 def create_terraform_drg_route(inputfile, outdir, service_dir, prefix, non_gf_tenancy, config,network_connectivity_in_setupoci, modify_network):
     filename = inputfile
     configFileName = config
@@ -397,7 +383,7 @@ def purge(dir, pattern):
             os.remove(os.path.join(dir, f))
 
 
-# If input in cd3 file
+# Execution of the code begins here for route creation
 def create_terraform_route(inputfile, outdir, service_dir, prefix, non_gf_tenancy, config, network_vlan_in_setupoci,modify_network):
     filename = inputfile
     configFileName = config
@@ -1266,9 +1252,3 @@ def create_terraform_route(inputfile, outdir, service_dir, prefix, non_gf_tenanc
     if (fname != None):
         fname.close()
 
-
-if __name__ == '__main__':
-    args = parse_args()
-    # Execution of the code begins here
-    create_terraform_route(args.inputfile, args.outdir, args.service_dir, args.prefix, args.non_gf_tenancy, args.config, modify_network=args.modify_network)
-    create_terraform_drg_route(args.inputfile, args.outdir, args.service_dir, args.prefix, args.non_gf_tenancy, args.config, modify_network=args.modify_network)

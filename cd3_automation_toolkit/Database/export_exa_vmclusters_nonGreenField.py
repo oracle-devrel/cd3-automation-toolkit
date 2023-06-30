@@ -1,20 +1,17 @@
 #!/usr/bin/python3
 # Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 #
-# This script will produce a Terraform file that will be used to export OCI core components
-# Export Block Volume Components
+# This script will produce a Terraform file that will be used to export OCI Database
+# EXA VM Cluster
 #
 # Author: Shruthi Subramanian
 # Oracle Consulting
 #
 
-import argparse
 import oci
 import os
 import json
 import re
-
-from oci.config import DEFAULT_LOCATION
 from pathlib import Path
 from commonTools import *
 from jinja2 import Environment, FileSystemLoader
@@ -82,18 +79,7 @@ def print_exa_vmcluster(region, vnc_client,exa_infra, exa_vmcluster, key_name,va
             oci_objs = [exa_vmcluster,exa_infra]
             values_for_column = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict, values_for_column)
 
-
-def parse_args():
-    # Read the arguments
-    parser = argparse.ArgumentParser(description="Export Block Volumes on OCI to CD3")
-    parser.add_argument("inputfile", help="path of CD3 excel file to export Block Volume objects to")
-    parser.add_argument("outdir", help="path to out directory containing script for TF import commands")
-    parser.add_argument("service_dir", help="subdirectory under region directory in case of separate out directory structure")
-    parser.add_argument("--config", default=DEFAULT_LOCATION, help="Config file name")
-    parser.add_argument("--export-compartments", nargs='*', required=False, help="comma seperated Compartments for which to export Block Volume Objects")
-    parser.add_argument("--export-regions", nargs='*', help="comma seperated Regions for which to export Networking Objects",
-                        required=False)
-    return parser.parse_args()
+# Execution of the code begins here
 
 
 def export_exa_vmclusters(inputfile, _outdir, service_dir, _config, ct, export_compartments=[],export_regions=[]):
@@ -205,8 +191,3 @@ def export_exa_vmclusters(inputfile, _outdir, service_dir, _config, ct, export_c
 
     print("Exadata VM Clusters exported to CD3\n")
 
-
-if __name__ == '__main__':
-    args = parse_args()
-    # Execution of the code begins here
-    export_exa_vmclusters(args.inputfile, args.outdir, args.service_dir, args.config, args.export_compartments,args.export_regions)

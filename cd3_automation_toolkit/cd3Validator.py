@@ -9,10 +9,8 @@
 # Modified (TF Upgrade): Shruthi Subramanian
 #
 
-import argparse
 import logging
 import ipaddress
-from collections import namedtuple
 from functools import partial
 from oci.core.virtual_network_client import VirtualNetworkClient
 from commonTools import *
@@ -694,7 +692,127 @@ def validate_drgv2(filename, comp_ids, vcnobj):
     else:
         return False
 
+def validate_dns(filename,comp_ids):
+    mandat_val_check = False
+    dns_empty_check = False
+    vcn_name_check = False
+    subnet_check = False
+    nsg_check = False
+    endpoint_type_check = False
+    dfdns = data_frame(filename, 'DNS-Views-Zones-Records')
+    dfdnscolumns = dfdns.columns.values.tolist()
+    dfres = data_frame(filename, 'DNS-Resolvers')
+    dfrescolumns = dfres.columns.values.tolist()
+    log(f'Checking for DNS-Views-Zones-Records')
+    for i in dfdns.index:
+        region = str(dfdns.loc[i, 'Region']).strip().lower()
+        # Encountered <End>
+        if (region in commonTools.endNames):
+            break
 
+        if region == 'nan':
+            log(f'ROW {i + 3} : Empty value at column "Region".')
+            mandat_val_check = True
+        elif region not in ct.all_regions:
+            log(f'ROW {i + 3} : "Region" {region} is not subscribed for tenancy.')
+            mandat_val_check = True
+
+        # Check for invalid Compartment Name
+        comp_name = str(dfdns.loc[i, 'Compartment Name']).strip()
+        if comp_name.lower() == 'nan':
+            log(f'ROW {i + 3} : Empty value at column "Compartment Name".')
+            mandat_val_check = True
+        else:
+            try:
+                comp_id = comp_ids[comp_name]
+            except KeyError:
+                log(f'ROW {i + 3} : Compartment {comp_name} does not exist in OCI.')
+                mandat_val_check = True
+
+        view_name = str(dfdns.loc[i, 'View Name']).strip()
+        if view_name.lower() == 'nan':
+            log(f'ROW {i + 3} : Empty value at column "View Name".')
+            mandat_val_check = True
+        zone_name = str(dfdns.loc[i, 'Zone']).strip()
+        domain_name = str(dfdns.loc[i, 'Domain']).strip()
+        rtype = str(dfdns.loc[i, 'RType']).strip()
+        rdata = str(dfdns.loc[i, 'RDATA']).strip()
+        ttl = str(dfdns.loc[i, 'TTL']).strip()
+        if zone_name.lower() != 'nan' and (domain_name.lower() == 'nan' or rtype.lower() == 'nan' or rdata.lower() == 'nan' or ttl.lower() == 'nan'):
+            log(f'ROW {i + 3} : Please validate domain, rtype, rdata and ttl for zone {zone_name}. It can not be null')
+            mandat_val_check = True
+
+        if (domain_name.lower() != 'nan' or rtype.lower() != 'nan' or rdata.lower() != 'nan' or ttl.lower() != 'nan') and zone_name.lower == 'nan':
+            log(f'ROW {i + 3} : Zone name can not be null')
+            mandat_val_check = True
+
+        # Add Existing Zone check
+        # Add Existing Domain check
+    log(f'Checking for DNS-Resolvers')
+    for i in dfres.index:
+        region = str(dfres.loc[i, 'Region']).strip().lower()
+        # Encountered <End>
+        if (region in commonTools.endNames):
+            break
+
+        if region == 'nan':
+            log(f'ROW {i + 3} : Empty value at column "Region".')
+            mandat_val_check = True
+        elif region not in ct.all_regions:
+            log(f'ROW {i + 3} : "Region" {region} is not subscribed for tenancy.')
+            mandat_val_check = True
+
+        # Check for invalid Compartment Name
+        comp_name = str(dfres.loc[i, 'Compartment Name']).strip()
+        if comp_name.lower() == 'nan':
+            log(f'ROW {i + 3} : Empty value at column "Compartment Name".')
+            mandat_val_check = True
+        else:
+            try:
+                comp_id = comp_ids[comp_name]
+            except KeyError:
+                log(f'ROW {i + 3} : Compartment {comp_name} doesnot exist in OCI.')
+                mandat_val_check = True
+        vcn_name = str(dfres.loc[i, 'VCN Name']).strip()
+        if vcn_name.lower() == 'nan':
+            log(f'ROW {i + 3} : Empty value at column "VCN Name".')
+            vcn_name_check = True
+
+        e_name = str(dfres.loc[i, 'Endpoint Display Name']).strip()
+        e_s_name = str(dfres.loc[i, 'Endpoint Subnet Name']).strip()
+        e_type = str(dfres.loc[i, 'Endpoint Type:IP Address']).strip()
+        e_n = str(dfres.loc[i, 'Endpoint NSGs']).strip()
+        if e_name.lower() != 'nan' and (e_s_name.lower() == 'nan' or e_type.lower() == 'nan'):
+            log(f'ROW {i + 3} : Please validate Endpoint Subnet, Endpoint Type:IP Address for Endpoint {e_name}. It can not be null')
+            mandat_val_check = True
+
+        if (e_s_name.lower() != 'nan' or e_type.lower() != 'nan' or e_n.lower() != 'nan') and e_name.lower() == 'nan':
+            log(f'ROW {i + 3} : Endpoint name can not be null if other Endpoint parameters are passed.')
+            mandat_val_check = True
+
+        v_detail = str(dfres.loc[i, 'Associated Private Views']).strip()
+        if v_detail != 'nan':
+            try:
+                v_comp = v_detail.split('@')[0]
+                v_name = v_detail.split('@')[1]
+            except KeyError:
+                log(f'ROW {i+3} : Incorrect format for Associated Private Views')
+                mandat_val_check = True
+            try:
+                comp_id = comp_ids[v_comp]
+            except KeyError:
+                log(f'ROW {i + 3} : Compartment {v_comp} does not exist in OCI.')
+                mandat_val_check = True
+
+        # Add Endpoint listener/forwarder Ip check with respect to subnet
+        # Add subnet/vcn existence check
+        # Endpoint NSG check
+
+    if any([mandat_val_check, dns_empty_check, vcn_name_check, subnet_check, nsg_check, endpoint_type_check]):
+        print("Null or Wrong value Check failed!!")
+        return True
+    else:
+        return False
 def validate_instances(filename,comp_ids,subnetobj,vcn_subnet_list,vcn_nsg_list):
     inst_empty_check = False
     inst_invalid_check = False
@@ -727,7 +845,7 @@ def validate_instances(filename,comp_ids,subnetobj,vcn_subnet_list,vcn_nsg_list)
             try:
                 comp_id = comp_ids[comp_name]
             except KeyError:
-                log(f'ROW {i+3} : Compartment {comp_name} doesnot exist in OCI.')
+                log(f'ROW {i+3} : Compartment {comp_name} does not exist in OCI.')
                 inst_comp_check = True
 
         for columnname in dfcolumns:
@@ -764,13 +882,13 @@ def validate_instances(filename,comp_ids,subnetobj,vcn_subnet_list,vcn_nsg_list)
                     log(f'ROW {i+3} : Empty value at column Display Name')
                     inst_empty_check = True
 
-            if columnname == 'Display Name':
+            if columnname == 'Subnet Name':
                 if columnvalue.lower()=='nan':
-                    log(f'ROW {i+3} : Empty value at column Display Name.')
+                    log(f'ROW {i+3} : Empty value at column Subnet Name.')
                     inst_empty_check = True
                 else:
                     # Cross check the VCN names in Instances and VCNs sheet
-                    vcn_subnet_check = compare_values(vcn_subnet_list.tolist(), columnvalue,[i, 'Display Name <vcn-name_subnet-name>', 'SubnetsVLANs'])
+                    vcn_subnet_check = compare_values(vcn_subnet_list.tolist(), columnvalue,[i, 'Subnet Name', 'SubnetsVLANs'])
 
             if columnname == 'Source Details':
                 if columnvalue.lower()== 'nan':
@@ -791,7 +909,7 @@ def validate_instances(filename,comp_ids,subnetobj,vcn_subnet_list,vcn_nsg_list)
                         log(f'ROW {i+3} : Wrong value at column Shape - {columnvalue}. Valid format for Flex Shapes is VM.Standard.E3.Flex::<ocpus>.')
                         inst_invalid_check = True
                     else:
-                        shape= columnvalue.split("::")
+                        shape = columnvalue.split("::")
                         if len(shape)!=2:
                             log(f'ROW {i+3} : Wrong value at column Shape - {columnvalue}.Valid format for Flex Shapes is VM.Standard.E3.Flex::<ocpus>.')
                             inst_invalid_check = True
@@ -1158,7 +1276,7 @@ def validate_tags(filename,comp_ids):
     else:
         return False
 
-def validate_cd3(filename, prefix, outdir,choices, configFileName):
+def validate_cd3(filename, var_file, prefix, outdir, choices, configFileName):
     CD3_LOG_LEVEL = 60
     logging.addLevelName(CD3_LOG_LEVEL, "custom")
     file=prefix+"_cd3Validator.log"
@@ -1195,13 +1313,16 @@ def validate_cd3(filename, prefix, outdir,choices, configFileName):
     tags_check = False
     fss_check = False
     instances_check = False
+    dns_check = False
 
     if not os.path.exists(filename):
         print("\nCD3 excel sheet not found at "+filename +"\nExiting!!")
         exit()
     config = oci.config.from_file(file_location=configFileName)
     ct.get_subscribedregions(configFileName)
-    ct.get_network_compartment_ids(config['tenancy'], "root", configFileName)
+    #ct.get_network_compartment_ids(config['tenancy'], "root", configFileName)
+    print("Getting Compartments OCIDs...")
+    ct.get_compartment_map(var_file,'Validator')
 
     vcnobj = parseVCNs(filename)
     subnetobj = parseSubnets(filename)
@@ -1231,7 +1352,7 @@ def validate_cd3(filename, prefix, outdir,choices, configFileName):
             print("\nProcessing Tags Tab..")
             tags_check = validate_tags(filename,ct.ntk_compartment_ids)
         # CD3 Validation begins here for Network
-        if ('Validate Network(VCNs, Subnets, DHCP, DRGs)' in options[0]):
+        if ('Validate Network(VCNs, SubnetsVLANs, DHCP, DRGs)' in options[0]):
             val_net=True
 
             log("\n============================= Verifying VCNs Tab ==========================================\n")
@@ -1250,6 +1371,11 @@ def validate_cd3(filename, prefix, outdir,choices, configFileName):
             print("\nProcessing DRGs Tab..")
             drgv2_check = validate_drgv2(filename, ct.ntk_compartment_ids, vcnobj)
 
+        if ('Validate DNS' in options[0]):
+            log("\n============================= Verifying DNS Tab ==========================================\n")
+            print("\nProcessing DNS Tab..")
+            dns_check = validate_dns(filename,ct.ntk_compartment_ids)
+
         if ('Validate Instances' in options[0]):
             log("\n============================= Verifying Instances Tab ==========================================\n")
             print("\nProcessing Instances Tab..")
@@ -1267,7 +1393,7 @@ def validate_cd3(filename, prefix, outdir,choices, configFileName):
 
 
     # Prints the final result; once the validation is complete
-    if any([comp_check, groups_check, policies_check, tags_check, instances_check, bvs_check,fss_check, vcn_check, vcn_cidr_check, vcn_peer_check, subnet_check, subnet_cidr_check, dhcp_check, drgv2_check]):
+    if any([comp_check, groups_check, policies_check, tags_check, instances_check, dns_check, bvs_check,fss_check, vcn_check, vcn_cidr_check, vcn_peer_check, subnet_check, subnet_cidr_check, dhcp_check, drgv2_check]):
         log("=======")
         log("Summary:")
         log("=======")
@@ -1294,24 +1420,4 @@ def validate_cd3(filename, prefix, outdir,choices, configFileName):
         print("Invalid Choice....Exiting!!")
         exit(1)
     print("Please check the log file at "+customer_tenancy_dir+"/"+file+"\n")
-
-
-def parse_args():
-    parser = argparse.ArgumentParser(description="CD3 Validator")
-    parser.add_argument("cd3file", help="Full Path of CD3 file")
-    parser.add_argument('outdir', help='Output directory for creation of TF files')
-    parser.add_argument('prefix', help='customer name/prefix for all file names')
-    parser.add_argument("validate_cd3file", help="Validate Options; comma seperated")
-    parser.add_argument("--config", default=DEFAULT_LOCATION, help="Path to config file")
-    return parser.parse_args()
-
-if __name__ == '__main__':
-    # Execution of the code begins here
-    args = parse_args()
-    filename = args.cd3file
-    configFileName = args.config
-    outdir  = args.outdir
-    prefix = args.prefix
-    validate_options = args.validate_cd3file
-    validate_cd3(filename, prefix,outdir,validate_options, configFileName)
 

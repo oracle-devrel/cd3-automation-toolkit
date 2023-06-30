@@ -8,12 +8,9 @@
 # Oracle Consulting
 #
 
-import argparse
 import oci
 import os
 from commonTools import *
-
-from oci.config import DEFAULT_LOCATION
 
 importCommands = {}
 oci_obj_names = {}
@@ -216,22 +213,7 @@ def get_service_connectors(region, SCH_LIST, sch_client, log_client, la_client, 
                 values_for_column = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict,
                                                                      values_for_column)
 
-
-def parse_args():
-    # Read the arguments
-    parser = argparse.ArgumentParser(description="Export Service Connectors  on OCI to CD3")
-    parser.add_argument("inputfile", help="path of CD3 excel file to export Service Connectors objects to")
-    parser.add_argument("outdir", help="path to out directory containing script for TF import commands")
-    parser.add_argument('service_dir', help='Structured out directory for creation of TF files')
-    parser.add_argument("--config", default=DEFAULT_LOCATION, help="Config file name")
-    parser.add_argument("--export-compartments", nargs='*', required=False,
-                        help="comma seperated Compartments for which to export Service Connector Objects")
-    parser.add_argument("--export-regions", nargs='*', help="comma seperated Regions for which to export Networking Objects",
-                        required=False)
-
-    return parser.parse_args()
-
-
+# Execution of the code begins here
 def export_service_connectors(inputfile, _outdir, service_dir, _config, ct, export_compartments=[],export_regions=[]):
     global tf_import_cmd
     global sheet_dict
@@ -311,8 +293,3 @@ def export_service_connectors(inputfile, _outdir, service_dir, _config, ct, expo
         with open(script_file, 'a') as importCommands[reg]:
             importCommands[reg].write('\n\nterraform plan\n')
 
-
-if __name__ == '__main__':
-    args = parse_args()
-    # Execution of the code begins here
-    export_service_connectors(args.inputfile, args.outdir, args.service_dir, args.config, args.export_compartments,args.export_regions)

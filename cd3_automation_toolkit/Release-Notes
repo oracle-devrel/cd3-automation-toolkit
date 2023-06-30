@@ -1,4 +1,13 @@
 ----------------------------------
+CD3 Automation Toolkit Tag v11.1
+----------------------------------
+1. Python code tuning for fetch compartment OCIDs for RM stack upload and CD3Validator.
+2. Python code cleanup
+3. Sheet name fix for NLB in CD3-Blank-template.xlsx
+4. SDDC template fix
+5. Support for VPN along with CD3 docker container
+
+-----------------------------------
 CD3 Automation Toolkit Tag v11
 ----------------------------------
 1. New Services - Buckets, OCVS, VLANs, RPC, Private DNS, Users

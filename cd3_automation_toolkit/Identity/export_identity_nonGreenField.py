@@ -2,7 +2,7 @@
 # Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 #
 # This script is to export Identity Objects from OCI
-# put them into CD3 Excel and create TF files
+# Compartments, Groups, Policies
 
 # Author: Suruchi
 # Updated by Shruthi Subramanian
@@ -10,27 +10,14 @@
 # Oracle Consulting
 #
 
-import argparse
 import sys
 import oci
-import re
 from oci.identity import IdentityClient
-from oci.config import DEFAULT_LOCATION
 import os
 sys.path.append(os.getcwd()+"/..")
 from commonTools import *
 
-
-def parse_args():
-    parser = argparse.ArgumentParser(description="Export Identity Objects in OCI to CD3")
-    parser.add_argument("inputfile", help="path of CD3 excel file to export identity objects to")
-    parser.add_argument("outdir", help="path to out directory containing script for TF import commands")
-    parser.add_argument("service_dir", help="subdirectory under region directory in case of separate out directory structure")
-    parser.add_argument("--config", default=DEFAULT_LOCATION, help="Config file name")
-    parser.add_argument("--export-compartments", required=False, nargs='*', help="comma seperated Compartments for which to export Identity Objects")
-    return parser.parse_args()
-
-
+# Execution of the code begins here
 def export_identity(inputfile, outdir, service_dir, _config, ct, export_compartments=[]):
     global values_for_column_comps
     global values_for_column_groups
@@ -280,6 +267,3 @@ def export_identity(inputfile, outdir, service_dir, _config, ct, export_compartm
     with open(script_file, 'a') as importCommands[ct.home_region]:
         importCommands[ct.home_region].write('\n\nterraform plan\n')
 
-if __name__=="__main__":
-    args = parse_args()
-    export_identity(args.inputfile, args.outdir, args.service_dir, args.config, args.export_compartments)

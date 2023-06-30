@@ -11,9 +11,7 @@ import shutil
 from oci.identity import IdentityClient
 import oci
 import sys
-import argparse
 import os
-from oci.config import DEFAULT_LOCATION
 from pathlib import Path
 
 sys.path.append(os.getcwd() + "/../..")
@@ -22,17 +20,6 @@ from jinja2 import Environment, FileSystemLoader
 
 # Setting current working dir.
 owd = os.getcwd()
-
-
-def parse_args():
-    parser = argparse.ArgumentParser(description='Creates SCH TF file')
-    parser.add_argument('inputfile', help='Full Path of input CD3 excel file')
-    parser.add_argument('outdir', help='Output directory for creation of TF files')
-    parser.add_argument('service_dir', help='Structured out directory for creation of TF files')
-    parser.add_argument('prefix', help='TF files prefix')
-    parser.add_argument('--config', default=DEFAULT_LOCATION, help='Config file name')
-    return parser.parse_args()
-
 
 def find_subscribed_regions(inputfile, outdir, service_dir, prefix, config):
     subs_region_list = []
@@ -102,7 +89,7 @@ def find_subscribed_regions(inputfile, outdir, service_dir, prefix, config):
     return True
 
 
-# If input is CD3 excel file
+# Execution of the code begins here
 def create_rpc_resource(inputfile, outdir, service_dir, prefix, non_gf_tenancy, config, modify_network=False):
     # Call pre-req func
     rpc_safe_file = {}
@@ -174,7 +161,9 @@ def create_rpc_resource(inputfile, outdir, service_dir, prefix, non_gf_tenancy, 
                 exit(1)
 
             requester_drg_name = str(df.loc[i, 'DRG Name']).strip()
-            existing_line = f"{str(df.loc[i, 'Attached To'])}::{requester_drg_name}"
+            target_details = str(df.loc[i, 'Attached To'])
+            attached_to = target_details.replace(target_details.split("::")[1], target_details.split("::")[1].lower())
+            existing_line = f"{attached_to}::{requester_drg_name}"
 
             # match = re.findall(existing_line, fo)
             # if match:
@@ -215,6 +204,7 @@ def create_rpc_resource(inputfile, outdir, service_dir, prefix, non_gf_tenancy, 
                             display_tf_name = commonTools.check_tf_variable(columnvalue)
                             accepter_rpc_display_name = df.loc[i + 1, 'RPC Display Name']
                             accepter_compartment_name = df.loc[i + 1, 'Compartment Name']
+                            accepter_compartment_name = str(accepter_compartment_name)
                             accepter_compartment_name = commonTools.check_tf_variable(accepter_compartment_name)
                             tempdict = {'rpc_tf_name': display_tf_name, 'rpc_name':columnvalue,
                                         'accepter_rpc_display_name': accepter_rpc_display_name,
@@ -222,6 +212,7 @@ def create_rpc_resource(inputfile, outdir, service_dir, prefix, non_gf_tenancy, 
 
                         if columnname == 'Compartment Name':
                             compartment_var_name = columnvalue.strip()
+                            compartment_var_name = str(compartment_var_name)
                             compartment_var_name = commonTools.check_tf_variable(compartment_var_name)
                             tempdict = {'requester_compartment_name': compartment_var_name}
 
@@ -293,8 +284,3 @@ def create_rpc_resource(inputfile, outdir, service_dir, prefix, non_gf_tenancy, 
         oname.write(tfStr["global"])
         oname.close()
 
-
-if __name__ == '__main__':
-    args = parse_args()
-    # Execution of the code begins here
-    create_rpc_resource(args.inputfile, args.outdir, args.service_dir, args.prefix, args.config)

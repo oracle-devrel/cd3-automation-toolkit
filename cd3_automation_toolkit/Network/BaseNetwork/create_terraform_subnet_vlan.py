@@ -11,10 +11,8 @@
 
 import sys
 import re
-import argparse
 import os
 sys.path.append(os.getcwd()+"/../../..")
-from oci.config import DEFAULT_LOCATION
 from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
 from commonTools import *
@@ -22,23 +20,7 @@ from commonTools import *
 ######
 # Required Inputs-CD3 excel file, Config file, prefix AND outdir
 ######
-
-def parse_args():
-    # Read the input arguments
-    parser = argparse.ArgumentParser(description='Takes in a list of subnet names with format \"name,subnet CIDR,Availability Domain, Public|Private subnet,dhcp-options\". '
-                                     'Create terraform files for subnets.')
-    parser.add_argument('inputfile', help='Full Path of input file. eg  cd3 excel file')
-    parser.add_argument('outdir', help='Output directory for creation of TF files')
-    parser.add_argument("service_dir",help="subdirectory under region directory in case of separate out directory structure")
-    parser.add_argument('prefix', help='customer name/prefix for all file names')
-    parser.add_argument('--modify-network', action='store_true', help='modify network: true or false')
-    parser.add_argument('non_gf_tenancy')
-    parser.add_argument('subnet_vlan')
-    parser.add_argument('--configFileName', default=DEFAULT_LOCATION, help='Config file name')
-    args = parser.parse_args()
-
-
-#If input is CD3
+# Execution of the code begins here
 def create_terraform_subnet_vlan(inputfile, outdir, service_dir, prefix, non_gf_tenancy, config, network_vlan_in_setupoci, modify_network=False):
     filename = inputfile
     configFileName = config
@@ -459,9 +441,3 @@ def create_terraform_subnet_vlan(inputfile, outdir, service_dir, prefix, non_gf_
                     oname[reg].write(tfStr_vlan[reg])
                     oname[reg].close()
                     print(vlan_outfile[reg] + " for VLANs has been created for region " + reg)
-
-
-if __name__ == '__main__':
-    args = parse_args()
-    # Execution of the code begins here
-    create_terraform_subnet_vlan(args.inputfile, args.outdir, args.service_dir,args.prefix, args.non_gf_tenancy, args.config, modify_network=args.modify_network)

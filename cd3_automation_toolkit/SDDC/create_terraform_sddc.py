@@ -5,26 +5,12 @@
 # SDDC
 
 
-from oci.config import DEFAULT_LOCATION
 from pathlib import Path
-import argparse
 import os
 from commonTools import *
 from jinja2 import Environment, FileSystemLoader
 
-
-def parse_args():
-    parser = argparse.ArgumentParser(description='Creates sddc TF file')
-    parser.add_argument('inputfile', help='Full Path of input CD3 excel file')
-    parser.add_argument('outdir', help='Output directory for creation of TF files')
-    parser.add_argument("service_dir",
-                        help="subdirectory under region directory in case of separate out directory structure")
-    parser.add_argument('prefix', help='TF files prefix')
-    parser.add_argument('--config', default=DEFAULT_LOCATION, help='Config file name')
-    return parser.parse_args()
-
-
-# If input is CD3 excel file
+# Execution of the code begins here
 def create_terraform_sddc(inputfile, outdir, service_dir, prefix, config):
     tfStr = {}
     filename = inputfile
@@ -199,12 +185,6 @@ def create_terraform_sddc(inputfile, outdir, service_dir, prefix, config):
             print(outfile + " for OCVS cluster has been created for region " + reg)
             oname.write(tfStr[reg])
             oname.close()
-
-if __name__ == '__main__':
-    args = parse_args()
-    # Execution of the code begins here
-    create_terraform_sddc(args.inputfile, args.outdir, args.service_dir, args.prefix, args.config)
-
 
 
 

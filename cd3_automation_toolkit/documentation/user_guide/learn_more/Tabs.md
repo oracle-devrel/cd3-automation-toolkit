@@ -1,4 +1,5 @@
 ## Compartments Tab
+
 Use this Tab to create compartments in the OCI tenancy. On choosing "Identity" in the SetUpOCI menu will allow to create compartments in the OCI tenancy.
 
 Output terraform file generated:  \<outdir>/\<region>/\<prefix>_compartments.auto.tfvars where \<region> directory is the home region.
@@ -221,11 +222,11 @@ On re-running the same option you will find the previously existing files being 
 
 3. Leave columns: Backup Policy, NSGs, DedicatedVMHost blank if instance doesn't need to be part of any of these. Instances can be made a part of Backup Policy and NSGs later by choosing appropriate option in setUpOCI menu.
 
-4. For column SSH Key Var Name accepts SSH key value directly or the name of variable declared in variables.tf containing the key value. Make sure to have an entry in variables_\<region>.tf file with the name you enter in SSH Key Var Name field of the Excel sheet and put the value as SSK key value.
-Ex: If you enter the SSH Key Var Name as ssh_public_key, make an entry in variables_\<region>.tf file as shown below:
+ >Note:
+The column "SSH Key Var Name" accepts SSH key value directly or the name of variable declared in *variables.tf* under the  **instance_ssh_keys** variable containing the key value. Make sure to have an entry in variables_\<region>.tf file with the name you enter in SSH Key Var Name field of the Excel sheet and put the value as SSH key value.
 
-  
-variable "\<value entered in SSH Key Var Name field of Excel sheet>"; here it will be as below:
+>For Eg: If you enter the SSH Key Var Name as **ssh_public_key**, make an entry in variables_\<region>.tf file as shown below:
+
   
     variable  'instance_ssh_keys'  {
     type = map(any)
@@ -236,8 +237,8 @@ variable "\<value entered in SSH Key Var Name field of Excel sheet>"; here it wi
     #START_instance_ssh_keys#
     # exported instance ssh keys
     #instance_ssh_keys_END#
-   }
-
+      }
+    }
 
 6. Enter subnet name column value as: \<vcn-name>_\<subnet-name>
 
@@ -252,9 +253,8 @@ image::\<variable containing ocid of image> or
 bootVolume::\<variable containing ocid of boot volume>
 
 Make sure to have an entry in variables_\<region>.tf file for the value you enter in Source Details field of the Excel sheet.
-Ex: If you enter the Source Details as image::Linux, make an entry in variables_\<region>.tf file as shown below:
+Ex: If you enter the Source Details as image::Linux, make an entry in variables_\<region>.tf file under the **instance_source_ocids** variable as shown below:
 
-variable "\<value entered in Source Details field of Excel sheet>"; here it will be:
 
     variable 'instance_source_ocids' {
      type = map(any)
@@ -268,7 +268,7 @@ variable "\<value entered in Source Details field of Excel sheet>"; here it will
 
 9. Mention shape to be used in Shape column of the excel sheet. If Flex shape is to be used format is:
 
-shape::ocpus
+   shape::ocpus
 
 eg: VM.Standard.E3.Flex::5
 
@@ -281,14 +281,13 @@ eg: VM.Standard.E3.Flex::5
 On choosing **"Compute"** in the SetUpOCI menu and **"Add/Modify/Delete Instances/Boot Backup Policy"** submenu will allow to launch your VM on OCI tenancy.
 
 
-
 Output terraform file generated: \<outdir>/\<region>/\<prefix>_instances.auto.tfvars and \<outdir>/\<region>/\<prefix>_boot-backup-policy.auto.tfvars  under  appropriate \<region> directory.
 
 Once the terraform apply is complete, view the resources under Compute -> Instances for the region.
 
 On re-running the same option you will find the previously existing files being backed up under directory →   \<outdir>/\<region>/backup_instances/\<Date>-\<Month>-\<Time>.
 
-## BlocksVolumes Tab
+## BlockVolumes Tab
 
 This tab in cd3 excel sheet is used when you need to create block volumes and attach the same to the instances in the OCI tenancy. 
 
@@ -437,13 +436,29 @@ On re-running the same option you will find the previously existing files being 
 
 This helps you to create DB Systems hosted on Virtual Machine and Bare Metal. This can be configured based on the shape chosen in the tab.
 
+
+>Note:
+The column "SSH Key Var Name" accepts SSH key value directly or the name of variable declared in *variables.tf* under the  **dbsystem_ssh_keys** variable containing the key value. Make sure to have an entry in variables_\<region>.tf file with the name you enter in SSH Key Var Name field of the Excel sheet and put the value as SSH key value.
+
+>For Eg: If you enter the SSH Key Var Name as **ssh_public_key**, make an entry in variables_\<region>.tf file as shown below:
+
+    variable "dbsystem_ssh_keys" {
+    type = map(any)
+    default = {
+    ssh_public_key = "<SSH PUB KEY STRING HERE>"
+    # Use ',' as the delimiter to add multiple ssh keys.
+    # Example: ssh_public_key = ["ssh-rsa AAXXX......yhdlo","ssh-rsa AAxxskj...edfwf"]
+    #START_dbsystem_ssh_keys#
+    # exported dbsystem ssh keys
+    #dbsystem_ssh_keys_END#
+       }
+    }
+  
 On choosing **"Database"** in the SetUpOCI menu and **"Add/Modify/Delete Virtual Machine or Bare Metal DB Systems"** submenu will allow to create DB Systems hosted on Virtual Machine and Bare Metal.
 
 Output terraform file generated: 
 
-\<outdir>/\<region>/\<prefix>_dbsystem-vm-bm.auto.tfvars under where \<region> directory is the region specified for the DB System.
-
-
+\<outdir>/\<region>/\<prefix>_dbsystem-vm-bm.auto.tfvars under where \<region> directory is the region specified for the DB System.  
 
 Once terraform apply is done, you can view the resources under **Bare Metal, VM, and Exadata-> DB Systems** in OCI console.
 
@@ -453,8 +468,25 @@ On re-running the same option you will find the previously existing files being 
 
 You can create ExaCS in OCI by utilizing Exa-Infra and Exa-VM Cluster tabs in CD3 excel sheet.
 
-On choosing **"Database"** in the SetUpOCI menu and **"Add/Modify/Delete EXA Infra and EXA VM Clusters"** submenu will allow to create ExaCS in OCI tenancy.
 
+>Note:
+The column "SSH Key Var Name" accepts SSH key value directly or the name of variable declared in *variables.tf* under the  **exacs_ssh_keys** variable containing the key value. Make sure to have an entry in variables_\<region>.tf file with the name you enter in SSH Key Var Name field of the Excel sheet and put the value as SSH key value.
+
+>For Eg: If you enter the SSH Key Var Name as **ssh_public_key**, make an entry in variables_\<region>.tf file as shown below:
+
+      variable "exacs_ssh_keys" {
+        type = map(any)
+        default = {
+          ssh_public_key = "<SSH PUB KEY STRING HERE>"
+          # Use ',' as the delimiter to add multiple ssh keys.
+          # Example: ssh_public_key = ["ssh-rsa AAXXX......yhdlo","ssh-rsa AAxxskj...edfwf"]
+          #START_exacs_ssh_keys#
+          # exported exacs ssh keys
+          #exacs_ssh_keys_END#
+        }
+      }
+
+On choosing **"Database"** in the SetUpOCI menu and **"Add/Modify/Delete EXA Infra and EXA VM Clusters"** submenu will allow to create ExaCS in OCI tenancy.
 
 Output terraform file generated: 
 
@@ -544,6 +576,42 @@ Note -
 
 ## OKE Tab
 
+Use this tab to create OKE components in OCI.
+
+>Note:
+The column "SSH Key Var Name" accepts SSH key value directly or the name of variable declared in *variables.tf* under the  **oke_ssh_keys** variable containing the key value. Make sure to have an entry in variables_\<region>.tf file with the name you enter in SSH Key Var Name field of the Excel sheet and put the value as SSH key value.
+
+>For Eg: If you enter the SSH Key Var Name as **ssh_public_key**, make an entry in variables_\<region>.tf file as shown below:
+
+    variable "oke_ssh_keys" {
+    type = map(any)
+    default = {
+        ssh_public_key = "<SSH PUB KEY STRING HERE>"
+        # Use '\n' as the delimiter to add multiple ssh keys.
+        # Example: ssh_public_key = "ssh-rsa AAXXX......yhdlo\nssh-rsa AAxxskj...edfwf"
+        #START_oke_ssh_keys#
+        #oke_ssh_keys_END#
+      }
+    }
+
+- For source details column, the format should be as below
+
+  image::\<variable containing ocid of image> 
+
+  Make sure to have an entry in variables_\<region>.tf file for the value you enter in Source Details field of the Excel sheet.
+
+  Eg: If you enter the Source Details as image::Linux, make an entry in variables_\<region>.tf file under the **oke_source_ocids** variable as shown below:
+
+            variable "oke_source_ocids" {
+              type = map(any)
+              default = {
+                Linux = "<OKE LINUX OCID HERE>"
+                #START_oke_source_ocids#
+                # exported oke image ocids
+                #oke_source_ocids_END#
+              }
+            }
+            
 On choosing **"Developer Services"** in the SetUpOCI menu and **"Add/Modify/Delete OKE Cluster and Nodepools"** submenu will allow to manage oke components in OCI tenancy.
 
 On completion of execution, you will be able to find the output terraform file generated at : 
@@ -606,7 +674,26 @@ Below TF file is created:
 
   
 ## SDDCs Tab
-Use this tab to create OCVS in your tenancy. On choosing "Software-Defined Data Centers - OCVS" in setUpOCI menu, the toolkit will read SDDCs tab and SDDCs-Network tab. The output terraform files will be generated at :
+Use this tab to create OCVS in your tenancy. 
+
+>Note:
+The column "SSH Key Var Name" accepts SSH key value directly or the name of variable declared in *variables.tf* under the  **sddc_ssh_keys** variable containing the key value. Make sure to have an entry in variables_\<region>.tf file with the name you enter in SSH Key Var Name field of the Excel sheet and put the value as SSH key value.
+
+>For Eg: If you enter the SSH Key Var Name as **ssh_public_key**, make an entry in variables_\<region>.tf file as shown below:
+
+    variable "sddc_ssh_keys" {
+    type = map(any)
+    default = {
+        ssh_public_key = "<SSH PUB KEY STRING HERE>"
+        # Use '\n' as the delimiter to add multiple ssh keys.
+        # Example: ssh_public_key = "ssh-rsa AAXXX......yhdlo\nssh-rsa AAxxskj...edfwf"
+        #START_sddc_ssh_keys#
+        #sddc_ssh_keys_END#
+      }
+    }
+
+
+On choosing "Software-Defined Data Centers - OCVS" in setUpOCI menu, the toolkit will read SDDCs tab and SDDCs-Network tab. The output terraform files will be generated at :
 -→  \<outdir>/\<region>/\<prefix>_sddcs.auto.tfvars under appropriate \<region> directory.
 
 Once terraform apply is done, you can view the resources under Hybrid -> Software-Defined Data Centers in OCI console.

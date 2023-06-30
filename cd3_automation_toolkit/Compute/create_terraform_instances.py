@@ -10,7 +10,6 @@
 #
 
 import sys
-import argparse
 import os
 from oci.config import DEFAULT_LOCATION
 from pathlib import Path
@@ -20,18 +19,8 @@ from commonTools import *
 from jinja2 import Environment, FileSystemLoader
 
 
-def parse_args():
-    parser = argparse.ArgumentParser(description='Creates Instances TF file')
-    parser.add_argument('inputfile', help='Full Path of input CD3 excel file')
-    parser.add_argument('outdir', help='Output directory for creation of TF files')
-    parser.add_argument("service_dir",
-                        help="subdirectory under region directory in case of separate out directory structure")
-    parser.add_argument('prefix', help='TF files prefix')
-    parser.add_argument('--config', default=DEFAULT_LOCATION, help='Config file name')
-    return parser.parse_args()
-
-
 # If input is CD3 excel file
+# Execution of the code begins here
 def create_terraform_instances(inputfile, outdir, service_dir, prefix, config):
     boot_policy_tfStr = {}
     tfStr = {}
@@ -244,8 +233,3 @@ def create_terraform_instances(inputfile, outdir, service_dir, prefix, config):
             oname.write(tfStr[reg])
             oname.close()
 
-
-if __name__ == '__main__':
-    args = parse_args()
-    # Execution of the code begins here
-    create_terraform_instances(args.inputfile, args.outdir, args.service_dir, args.prefix, args.config)

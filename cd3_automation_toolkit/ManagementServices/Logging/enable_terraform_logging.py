@@ -1,15 +1,14 @@
 #!/usr/bin/python3
 # Copyright (c) 2016, 2019, Oracle and/or its affiliates. All rights reserved.
 #
-# This script will produce a Terraform file that will be used to set up OCI core components
-# Groups
+# This script will produce a Terraform file that will be used to set up OCI Management components
+# Logging
 #
 # Author: Suruchi Singla
 # Oracle Consulting
 # Modified (TF Upgrade): Shruthi Subramanian
 #
 
-import argparse
 import os
 from jinja2 import Environment, FileSystemLoader
 from pathlib import Path
@@ -19,21 +18,7 @@ from commonTools import *
 ######
 # Required Inputs- Config file, prefix AND outdir
 ######
-
-def parse_args():
-
-    # Read the arguments
-    parser = argparse.ArgumentParser(description="Create Groups terraform file")
-    parser.add_argument('outdir', help='Output directory for creation of TF files')
-    parser.add_argument('prefix', help='TF files prefix')
-    parser.add_argument("service_dir",
-                        help="subdirectory under region directory in case of separate out directory structure for kms/oss")
-    parser.add_argument("service_dir_iam",
-                        help="subdirectory under region directory in case of separate out directory structure for identity")
-    parser.add_argument("comp_name", help="compartment name")
-    parser.add_argument("region_name", help="region name")
-    parser.add_argument("--configFileName", help="Config file name", required=False)
-
+# Execution of the code begins here
 def enable_cis_oss_logging(filename, outdir, service_dir, prefix, config=DEFAULT_LOCATION):
 
     # Read cd3 using pandas dataframe
@@ -378,8 +363,3 @@ def enable_load_balancer_logging(filename, outdir, service_dir, prefix, config=D
             oname.close()
             print(outfile[reg] + " containing TF for Load Balancer Logging has been created for region "+reg)
 
-
-if __name__ == '__main__':
-    # Execution of the code begins here
-    args = parse_args()
-    enable_cis_oss_logging(args.outdir, args.service_dir, args.service_dir_iam,args.prefix, args.config, args.region_name, args.comp_name)
