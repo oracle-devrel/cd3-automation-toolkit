@@ -9,10 +9,8 @@
 # Modified (TF Upgrade): Shruthi Subramanian
 #
 
-import argparse
 import logging
 import ipaddress
-from collections import namedtuple
 from functools import partial
 from oci.core.virtual_network_client import VirtualNetworkClient
 from commonTools import *
@@ -1422,24 +1420,4 @@ def validate_cd3(filename, var_file, prefix, outdir, choices, configFileName):
         print("Invalid Choice....Exiting!!")
         exit(1)
     print("Please check the log file at "+customer_tenancy_dir+"/"+file+"\n")
-
-
-def parse_args():
-    parser = argparse.ArgumentParser(description="CD3 Validator")
-    parser.add_argument("cd3file", help="Full Path of CD3 file")
-    parser.add_argument('outdir', help='Output directory for creation of TF files')
-    parser.add_argument('prefix', help='customer name/prefix for all file names')
-    parser.add_argument("validate_cd3file", help="Validate Options; comma seperated")
-    parser.add_argument("--config", default=DEFAULT_LOCATION, help="Path to config file")
-    return parser.parse_args()
-
-if __name__ == '__main__':
-    # Execution of the code begins here
-    args = parse_args()
-    filename = args.cd3file
-    configFileName = args.config
-    outdir  = args.outdir
-    prefix = args.prefix
-    validate_options = args.validate_cd3file
-    validate_cd3(filename, prefix,outdir,validate_options, configFileName)
 
