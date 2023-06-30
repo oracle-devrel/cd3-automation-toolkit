@@ -21,7 +21,7 @@ To ease the execution of toolkit, we have provided the steps to build an image w
 ## Run CD3 container alongwith VPN (Applicable for VPN users only)
 * Connect to the VPN.
 * Execute the **Rancher deskop** and ensure the version **1.9** is used if not please install the latest.
-* Enable **Networking Tunnel** in Rancher settings as shown in the screenshot below,
+* Enable **Networking Tunnel** under Rancher settings as shown in the screenshot below,
   
      <img width="746" alt="image" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103548537/22e71261-63dc-4218-a3f6-9ef98df820e2">
      
