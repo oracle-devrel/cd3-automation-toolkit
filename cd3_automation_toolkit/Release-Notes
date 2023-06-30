@@ -5,6 +5,7 @@ CD3 Automation Toolkit Tag v11.1
 2. Python code cleanup
 3. Sheet name fix for NLB in CD3-Blank-template.xlsx
 4. SDDC template fix
+5. Support for VPN along with CD3 docker container
 
 -----------------------------------
 CD3 Automation Toolkit Tag v11

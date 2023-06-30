@@ -127,16 +127,21 @@ data "oci_marketplace_listing_packages" "listing_packages" {
 }
 
 data "oci_marketplace_listings" "listings" {
-  count          = length(regexall("ocid1.image.oc1*", var.source_image_id)) > 0 || length(regexall("ocid1.bootvolume.oc1*", var.source_image_id)) > 0 || var.source_image_id == null ? 0 : 1
-  name           = [var.source_image_id]
-  is_featured    = true # Comment this line for GovCloud
-  compartment_id = var.compartment_id
+  count             = length(regexall("ocid1.image.oc1*", var.source_image_id)) > 0 || length(regexall("ocid1.bootvolume.oc1*", var.source_image_id)) > 0 || var.source_image_id == null ? 0 : 1
+  name              = [var.source_image_id]
+  #is_featured      = true  # Comment this line for GovCloud
+  compartment_id    = var.compartment_id
 }
 
 data "oci_marketplace_listing" "listing" {
   count          = length(regexall("ocid1.image.oc1*", var.source_image_id)) > 0 || length(regexall("ocid1.bootvolume.oc1*", var.source_image_id)) > 0 || var.source_image_id == null ? 0 : 1
   listing_id     = data.oci_marketplace_listings.listings.0.listings[0].id
   compartment_id = var.compartment_id
+}
+
+data "oci_core_app_catalog_listing_resource_versions" "app_catalog_listing_resource_versions" {
+  count      = length(regexall("ocid1.image.oc1*", var.source_image_id)) > 0 || length(regexall("ocid1.bootvolume.oc1*", var.source_image_id)) > 0 || var.source_image_id == null ? 0 : 1
+  listing_id = data.oci_marketplace_listing_package.listing_package.0.app_catalog_listing_id
 }
 
 data "oci_core_app_catalog_listing_resource_version" "catalog_listing" {
