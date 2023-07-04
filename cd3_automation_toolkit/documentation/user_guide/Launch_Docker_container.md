@@ -25,13 +25,8 @@ To ease the execution of toolkit, we have provided the steps to build an image w
   
      <img width="746" alt="image" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103548537/22e71261-63dc-4218-a3f6-9ef98df820e2">
      
-* Login to the CD3 docker container using next section and run below cmds to set the proxy,
+* Login to the CD3 docker container using next section and set the proxies which helps to connect internet(if any) from container.
 
-  ```
-     export http_proxy=http://www-proxy-brmdc.us.oracle.com:80/
-     export https_proxy=http://www-proxy-brmdc.us.oracle.com:80/
-     export no_proxy=localhost,127.0.0.1/16,.us.oracle.com,.oraclecorp.com
-     ```
 ## Run the CD3 container
 * Run  ```docker run --platform linux/amd64 -it -d -v <directory_in_local_system_where_the_files_must_be_generated>:/cd3user/tenancies <image_name>:<image_tag>```
 * Run  ```docker ps```
