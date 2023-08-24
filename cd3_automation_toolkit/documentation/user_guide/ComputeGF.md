@@ -71,7 +71,6 @@ Ex: If you enter the Source Details as image::Linux, make an entry in variables_
     Valid values are Enabled or Disabled
 
 ## Remote Execution/Cloud Init Scenarios 
- Su
 ## Managing Remote Execution
 
 **NOTE-**
