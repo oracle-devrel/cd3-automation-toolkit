@@ -693,6 +693,9 @@ The column "SSH Key Var Name" accepts SSH key value directly or the name of vari
     }
 
 
+Management and Workload Datastore volumes must be existing or created separately as part of **BlockVolumes** Tab.
+All the Network related information for SDDCs will be provided in **SDDCs-Network** , where the vlan should be created in **SubnetsVLANs**
+
 On choosing "Software-Defined Data Centers - OCVS" in setUpOCI menu, the toolkit will read SDDCs tab and SDDCs-Network tab. The output terraform files will be generated at :
 -→  \<outdir>/\<region>/\<prefix>_sddcs.auto.tfvars under appropriate \<region> directory.
 
