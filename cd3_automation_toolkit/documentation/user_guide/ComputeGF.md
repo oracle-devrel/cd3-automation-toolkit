@@ -66,10 +66,12 @@ Ex: If you enter the Source Details as image::Linux, make an entry in variables_
 8. Custom Policy Compartment Name : Specify the compartment name where the Custom Policy is created.
 9. Create_Is PV Encryption In Transit Enabled attribute should be set to True to enable encryption for new instances. Default is False.
 10. Update_Is PV Encryption In Transit Enabled attribute should be set to True to enable encryption for existing instances.
-   
+11. Add any additonal attributes (not part of excel sheet already) as per  [this](/cd3_automation_toolkit/documentation/user_guide/learn_more/SupportforAdditionalAttributes.md#support-for-additional-attributes).
+12. To enable or disable a plugin for the instance add new column with name as <b>'Plugin \<plugin-name-in-console>' </b> eg 'Plugin Bastion'.
+    Valid values are Enabled or Disabled
 
 ## Remote Execution/Cloud Init Scenarios 
-
+ Su
 ## Managing Remote Execution
 
 **NOTE-**
