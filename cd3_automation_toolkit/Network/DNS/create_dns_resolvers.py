@@ -73,6 +73,7 @@ def create_terraform_dns_resolvers(inputfile, outdir, service_dir, prefix, confi
             exit(1)
         r_vcn = str(df.loc[r, 'VCN Name']).lower().replace("\ ", "_")
         e_name = str(df.loc[r, 'Endpoint Display Name'])
+        e_type = str(df.loc[r, 'Endpoint Type:IP Address']).split(':')[0].lower()
         res_key = r_region + "_" + r_vcn
         temprule = []
         if (r_region != prevregion) or (r_vcn != prevvcn):
@@ -106,13 +107,9 @@ def create_terraform_dns_resolvers(inputfile, outdir, service_dir, prefix, confi
                         'qname_cover_conditions': qname_cover_conditions, 'source_endpoint_name': e_name.strip()}
             temprule.append(temp_rdict)
             r_index += 1
-        if temprule != []:
-            if res_key not in e_done:
-                rules[res_key] = temprule
-                e_done.append(res_key)
-            else:
-                for rule in temprule:
-                    rules[res_key].append(rule)
+
+        if e_type == 'forwarding':
+            rules[res_key] = temprule
 
     # Loop to get endpoint map
     for e in df.index:
@@ -126,8 +123,7 @@ def create_terraform_dns_resolvers(inputfile, outdir, service_dir, prefix, confi
             exit(1)
 
         e_vcn = str(df.loc[e, 'VCN Name'])
-        vcn_key = e_region + "_" + str(e_vcn.replace("\ ", "_"))
-        #e_endpoint = str(df.loc[e, 'Endpoint Display Name'])
+        vcn_key = e_region + "_" + str(e_vcn.replace("\ ", "_")).lower()
 
         tmp_edict = {}
         endpointdict = {}
@@ -197,6 +193,8 @@ def create_terraform_dns_resolvers(inputfile, outdir, service_dir, prefix, confi
                 endpoints[vcn_key] = endpoint_list
             else:
                 endpoints[vcn_key].append(endpointdict)
+
+    # Main loop to generate tfvars
     for i in df.index:
         region = str(df.loc[i, 'Region']).strip()
 
@@ -234,8 +232,7 @@ def create_terraform_dns_resolvers(inputfile, outdir, service_dir, prefix, confi
             e_type = e_type.strip()
 
         tempStr['resolver_tf_name'] = vcn_name
-        vcn_key = region.lower() + "_" + str(vcn_name.replace("\ ", "_"))
-        res_key = region.lower() + "_" + str(vcn_name.replace("\ ", "_")).lower()
+        vcn_key = region.lower() + "_" + str(vcn_name.replace("\ ", "_")).lower()
 
         for columnname in dfcolumns:
             # Column value
@@ -285,11 +282,10 @@ def create_terraform_dns_resolvers(inputfile, outdir, service_dir, prefix, confi
 
             if columnname == 'Rules':
                 try:
-                    res_rules = rules[res_key]
+                    res_rules = rules[vcn_key]
                 except:
                     res_rules = []
-                if e_type == 'forwarding':
-                    tempdict = {'res_resolver_rules': res_rules}
+                tempdict = {'res_resolver_rules': res_rules}
 
             # Process Defined and Freeform Tags
             if columnname.lower() in commonTools.tagColumns:

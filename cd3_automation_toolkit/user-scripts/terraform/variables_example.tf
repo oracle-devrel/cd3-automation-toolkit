@@ -255,7 +255,8 @@ variable "networkSources" {
     public_source_list  = optional(list(string))
     defined_tags        = optional(map(any))
     freeform_tags       = optional(map(any))
-    virtual_source_list = optional(list(map(any)))
+    virtual_source_list = optional(list(map(list(string))))
+
   }))
   default = {}
 }
@@ -705,7 +706,6 @@ variable "instances" {
     memory_in_gbs                              = optional(number)
     capacity_reservation_id                    = optional(string)
     create_is_pv_encryption_in_transit_enabled = optional(bool)
-    update_is_pv_encryption_in_transit_enabled = optional(bool)
     remote_execute                             = optional(string)
     bastion_ip                                 = optional(string)
     cloud_init_script                          = optional(string)
@@ -713,13 +713,14 @@ variable "instances" {
     backup_policy                              = optional(string)
     policy_compartment_id                      = optional(string)
     network_type                               = optional(string)
-    extended_metadata                          = optional(string)
+    #extended_metadata                          = optional(string)
     skip_source_dest_check                     = optional(bool)
     baseline_ocpu_utilization                  = optional(string)
-    preemptible_instance_config                = optional(string)
+    #preemptible_instance_config                = optional(string)
     all_plugins_disabled                       = optional(bool)
     is_management_disabled                     = optional(bool)
     is_monitoring_disabled                     = optional(bool)
+    assign_private_dns_record                  = optional(string)
     plugins_details                            = optional(map(any))
     is_live_migration_preferred                = optional(bool)
     recovery_action                            = optional(string)
@@ -728,7 +729,8 @@ variable "instances" {
     firmware                                   = optional(string)
     is_consistent_volume_naming_enabled        = optional(bool)
     remote_data_volume_type                    = optional(string)
-    platform_config                            = optional(map(any))
+    platform_config                            = optional(list(map(any)))
+    launch_options                             = optional(list(map(any)))
     ipxe_script                                = optional(string)
     firmware                                   = optional(string)
     preserve_boot_volume                       = optional(bool)
@@ -1477,6 +1479,8 @@ variable "sddcs" {
     replication_vlan_id                   = optional(string)
     reserving_hcx_on_premise_license_keys = optional(string)
     workload_network_cidr                 = optional(string)
+    management_datastore                  = optional(list(string),[])
+    workload_datastore                    = optional(list(string),[])
 
   }))
   default = {}

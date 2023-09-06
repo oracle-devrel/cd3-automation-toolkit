@@ -76,6 +76,30 @@ exa_vmclusters = {
             data_storage_percentage  = null
             {% endif %}
 
+            {% if db_node_storage_size_in_gbs %}
+            db_node_storage_size_in_gbs = {{ db_node_storage_size_in_gbs }}
+            {% else %}
+            db_node_storage_size_in_gbs  = null
+            {% endif %}
+
+            {% if memory_size_in_gbs %}
+            memory_size_in_gbs       = {{ memory_size_in_gbs }}
+            {% else %}
+            memory_size_in_gbs  = null
+            {% endif %}
+
+            {% if data_storage_size_in_tbs %}
+            data_storage_size_in_tbs = {{ data_storage_size_in_tbs }}
+            {% else %}
+            data_storage_size_in_tbs  = null
+            {% endif %}
+
+            {% if db_servers %}
+            db_servers               = [{{ db_servers }}]
+            {% else %}
+            db_servers               = []
+            {% endif %}
+
             {% if nsgs %}
             nsg_ids                  = [{{ nsgs }}]
             {% else %}

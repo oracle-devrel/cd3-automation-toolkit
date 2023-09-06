@@ -13,6 +13,31 @@ locals {
       vcn_id         = data.oci_core_vcns.oci_vcns_sddc[key].virtual_networks.*.id[0]
     }
   ]])
+
+  ds_vols = flatten([
+    for key, val in var.sddcs : [
+    for item in (try (concat(val.management_datastore, val.workload_datastore),[])): {
+    volume_compartment_id = split("@", item)[0]
+    volume_display_name = split("@", item)[1]
+    }
+        ]
+  ])
+  management_datastores = { for key,val in var.sddcs : key =>
+   try([for value in val.management_datastore: data.oci_core_volumes.ds_volumes[split("@", value)[1]].volumes.*.id[0]],[])
+  }
+
+ workload_datastores = {for key,val in var.sddcs: key =>
+ try([for value in val.workload_datastore: data.oci_core_volumes.ds_volumes[split("@", value)[1]].volumes.*.id[0]],[])
+             }
+ }
+
+
+data "oci_core_volumes" "ds_volumes" {
+    for_each = {for value in local.ds_vols : value.volume_display_name => value.volume_compartment_id if local.ds_vols != null }
+    compartment_id = each.value != null ? (length(regexall("ocid1.compartment.oc1*", each.value)) > 0 ? each.value : var.compartment_ocids[each.value]) : var.compartment_ocids[each.value]
+    display_name = each.key
+    state = "AVAILABLE"
+
 }
 
 
@@ -31,14 +56,14 @@ data "oci_core_subnets" "oci_subnets_sddc" {
   vcn_id         = data.oci_core_vcns.oci_vcns_sddc[each.key].virtual_networks.*.id[0]
 }
 
-
 data "oci_core_vlans" "sddc_vlan_id" {
   #Required
-  for_each       = { for vlan in local.vlan_config : vlan.display_name => vlan }
+  for_each       = { for vlan in local.vlan_config : vlan.display_name => vlan if vlan.display_name != null}
   compartment_id = each.value.compartment_id
   display_name   = each.key
   vcn_id         = each.value.vcn_id
 }
+
 
 module "sddcs" {
   #depends_on = [module.vlans]
@@ -59,14 +84,14 @@ module "sddcs" {
   vsan_vlan_id                = each.value.vsan_vlan_id != null ? (length(regexall("ocid1.vlan.oc1*", each.value.vsan_vlan_id)) > 0 ? each.value.vsan_vlan_id : data.oci_core_vlans.sddc_vlan_id[each.value.vsan_vlan_id].vlans[0].id) : null
   vsphere_vlan_id             = each.value.vsphere_vlan_id != null ? (length(regexall("ocid1.vlan.oc1*", each.value.vsphere_vlan_id)) > 0 ? each.value.vsphere_vlan_id : data.oci_core_vlans.sddc_vlan_id[each.value.vsphere_vlan_id].vlans[0].id) : null
   #Optional
+  initial_host_ocpu_count               = each.value.initial_host_ocpu_count != "" ? each.value.initial_host_ocpu_count : null
+  initial_host_shape_name               = each.value.initial_host_shape_name != "" ? each.value.initial_host_shape_name : null
   capacity_reservation_id               = each.value.capacity_reservation_id != "" ? each.value.capacity_reservation_id : null
   display_name                          = each.value.display_name != "" ? each.value.display_name : null
   defined_tags                          = each.value.defined_tags != {} ? each.value.defined_tags : {}
   freeform_tags                         = each.value.freeform_tags != {} ? each.value.freeform_tags : {}
   hcx_action                            = each.value.hcx_action != "" ? each.value.hcx_action : null
   hcx_vlan_id                           = each.value.hcx_vlan_id != null ? (length(regexall("ocid1.vlan.oc1*", each.value.hcx_vlan_id)) > 0 ? each.value.hcx_vlan_id : data.oci_core_vlans.sddc_vlan_id[each.value.hcx_vlan_id].vlans[0].id) : null
-  initial_host_ocpu_count               = each.value.initial_host_ocpu_count != "" ? each.value.initial_host_ocpu_count : null
-  initial_host_shape_name               = each.value.initial_host_shape_name != "" ? each.value.initial_host_shape_name : null
   initial_sku                           = each.value.initial_sku != "" ? each.value.initial_sku : null
   instance_display_name_prefix          = each.value.instance_display_name_prefix != "" ? each.value.instance_display_name_prefix : null
   is_hcx_enabled                        = each.value.is_hcx_enabled != "" ? each.value.is_hcx_enabled : null
@@ -77,4 +102,7 @@ module "sddcs" {
   replication_vlan_id                   = each.value.replication_vlan_id != null ? (length(regexall("ocid1.vlan.oc1*", each.value.replication_vlan_id)) > 0 ? each.value.replication_vlan_id : data.oci_core_vlans.sddc_vlan_id[each.value.replication_vlan_id].vlans[0].id) : null
   reserving_hcx_on_premise_license_keys = each.value.reserving_hcx_on_premise_license_keys != "" ? each.value.reserving_hcx_on_premise_license_keys : null
   workload_network_cidr                 = each.value.workload_network_cidr != "" ? each.value.workload_network_cidr : null
+  management_datastore                  = local.management_datastores[each.key] != null ? local.management_datastores[each.key] : []
+  workload_datastore                    = local.workload_datastores[each.key] != null ? local.workload_datastores[each.key] : []
+
 }

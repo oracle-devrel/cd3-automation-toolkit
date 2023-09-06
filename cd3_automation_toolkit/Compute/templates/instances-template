@@ -87,9 +87,78 @@ instances = {
             create_is_pv_encryption_in_transit_enabled = {{ create_is_pv_encryption_in_transit_enabled }}
             {% endif %}
 
-            {% if update_is_pv_encryption_in_transit_enabled %}
-            update_is_pv_encryption_in_transit_enabled = {{ update_is_pv_encryption_in_transit_enabled }}
+            {% if plugin_match %}
+            plugins_details = {
+                    {% if plugin_bastion %}
+                        Bastion = "{{ plugin_bastion.upper() }}",
+                    {% endif %}
+                    {% if plugin_management_agent %}
+                        "Management Agent" =  "{{ plugin_management_agent.upper() }}",
+                    {% endif %}
+                    {% if plugin_vulnerability_scanning %}
+                        "Vulnerability Scanning" = "{{ plugin_vulnerability_scanning.upper() }}"
+                    {% endif %}
+                    {% if plugin_oracle_java_management_service %}
+                        "Oracle Java Management Service" = "{{ plugin_oracle_java_management_service.upper() }}"
+                    {% endif %}
+                    {% if plugin_os_management_service_agent %}
+                        "OS Management Service Agent"  = "{{ plugin_os_management_service_agent.upper() }}"
+                    {% endif %}
+                    {% if plugin_custom_logs_monitoring %}
+                        "Custom Logs Monitoring" = "{{ plugin_custom_logs_monitoring.upper() }}"
+                    {% endif %}
+                    {% if plugin_compute_rdma_gpu_monitoring %}
+                        "Compute RDMA GPU Monitoring" = "{{ plugin_compute_rdma_gpu_monitoring.upper() }}"
+                    {% endif %}
+                    {% if plugin_compute_instance_run_command %}
+                        "Compute Instance Run Command" = "{{ plugin_compute_instance_run_command.upper() }}"
+                    {% endif %}
+                    {% if plugin_compute_instance_monitoring %}
+                        "Compute Instance Monitoring" = "{{ plugin_compute_instance_monitoring.upper() }}"
+                    {% endif %}
+                    {% if plugin_compute_hpc_rdma_authentication %}
+                        "Compute HPC RDMA Authentication" = "{{ plugin_compute_hpc_rdma_authentication.upper() }}"
+                    {% endif %}
+                    {% if plugin_block_volume_management %}
+                        "Block Volume Management" = "{{ plugin_block_volume_management.upper() }}"
+                    {% endif %}
+                    {% if plugin_compute_hpc_rdma_auto_configuration %}
+                        "Compute HPC RDMA Auto-Configuration" = "{{ plugin_compute_hpc_rdma_auto_configuration.upper() }}"
+                    {% endif %}
+            }
+            {% endif %}
 
+            {% if network_type or update_is_pv_encryption_in_transit_enabled %}
+            launch_options = [{
+              {% if firmware %}
+                    firmware = "{{ firmware }}",
+              {% endif %}
+              {% if is_consistent_volume_naming_enabled %}
+                    is_consistent_volume_naming_enabled = "{{is_consistent_volume_naming_enabled}}",
+              {% endif %}
+              {% if update_is_pv_encryption_in_transit_enabled %}
+                    is_pv_encryption_in_transit_enabled = {{update_is_pv_encryption_in_transit_enabled}},
+              {% endif %}
+                    network_type = "{{network_type}}"
+            }]
+            {% endif %}
+
+            {% if platform_config_type %}
+            platform_config = [{
+                    config_type = "{{platform_config_type}}"
+              {% if is_secure_boot_enabled %}
+                    is_secure_boot_enabled = {{ is_secure_boot_enabled }},
+              {% endif %}
+              {% if is_measured_boot_enabled %}
+                    is_measured_boot_enabled = {{ is_measured_boot_enabled }},
+              {% endif %}
+              {% if is_trusted_platform_module_enabled %}
+                    is_trusted_platform_module_enabled = {{ is_trusted_platform_module_enabled }},
+              {% endif %}
+              {% if numa_nodes_per_socket %}
+                    numa_nodes_per_socket = "{{ numa_nodes_per_socket }}"
+              {% endif %}
+            }]
             {% endif %}
 
             {% if ssh_key_var_name != '' %}
@@ -105,7 +174,7 @@ instances = {
             {% endif %}
 
           {#  ##All optional params required for TF root module is below ##  #}
-          {#  {% if extended_metadata %}
+            {% if extended_metadata %}
             extended_metadata = "{{ extended_metadata }}"
             {% endif %}
 
@@ -133,10 +202,6 @@ instances = {
             is_monitoring_disabled = {{ is_monitoring_disabled }}
             {% endif %}
 
-            {% if plugins_details %}
-            plugins_details = "{{ plugins_details }}"
-            {% endif %}
-
             {% if is_live_migration_preferred %}
             is_live_migration_preferred = {{ is_live_migration_preferred }}
             {% endif %}
@@ -151,26 +216,6 @@ instances = {
 
             {% if boot_volume_type %}
             boot_volume_type = "{{ boot_volume_type }}"
-            {% endif %}
-
-            {% if firmware %}
-            firmware = "{{ firmware }}"
-            {% endif %}
-
-            {% if is_consistent_volume_naming_enabled %}
-            is_consistent_volume_naming_enabled = {{ is_consistent_volume_naming_enabled }}
-            {% endif %}
-
-            {% if network_type %}
-            network_type = "{{ network_type }}"
-            {% endif %}
-
-            {% if remote_data_volume_type %}
-            remote_data_volume_type = "{{ remote_data_volume_type }}"
-            {% endif %}
-
-            {% if platform_config %}
-            platform_config = "{{ platform_config }}"
             {% endif %}
 
             {% if ipxe_script %}

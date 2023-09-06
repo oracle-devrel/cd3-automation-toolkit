@@ -29,16 +29,14 @@ network_load_balancers = {
         nsg_ids= [{{ nsgs }}]
         {% endif %}
 
+        {% if is_private %}
+        is_private = {{ is_private }}
+        {% endif %}
+
         {% if reserved_ips_id and reserved_ips_id != "" %}
         reserved_ips_id = "{{ reserved_ips_id }}"
         {% else %}
         reserved_ips_id = "N"
-        {% endif %}
-
-        {% if reserved_ips_id == "Y" or 'ocid1.publicip' in reserved_ips_id %}
-        is_private = false
-        {% else %}
-        is_private = true
         {% endif %}
 
 

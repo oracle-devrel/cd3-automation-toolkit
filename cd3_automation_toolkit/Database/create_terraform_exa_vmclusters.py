@@ -80,6 +80,7 @@ def create_terraform_exa_vmclusters(inputfile, outdir, service_dir, prefix, conf
         tempStr = {}
         tempdict = {}
         nsg_id = ''
+        db_server_id = ''
         backup_nsg_id = ''
 
         # Check if values are entered for mandatory fields
@@ -187,6 +188,25 @@ def create_terraform_exa_vmclusters(inputfile, outdir, service_dir, prefix, conf
                                 nsg_id = nsg_id + data + ","
                             c += 1
                 columnvalue = nsg_id
+
+            if columnname == 'DB Servers':
+                if columnvalue != '':
+                    db_servers = str(columnvalue).strip().split(",")
+                    if len(db_servers) == 1:
+                        for db_server in db_servers:
+                            db_server_id = "\"" + db_server.strip() + "\""
+
+                    elif len(db_servers) >= 2:
+                        c = 1
+                        for db_server in db_servers:
+                            data = "\"" + db_server.strip() + "\""
+
+                            if c == len(db_servers):
+                                db_server_id = db_server_id + data
+                            else:
+                                db_server_id = db_server_id + data + ","
+                            c += 1
+                columnvalue = db_server_id
 
 
             if columnname == 'Backup Network NSGs':

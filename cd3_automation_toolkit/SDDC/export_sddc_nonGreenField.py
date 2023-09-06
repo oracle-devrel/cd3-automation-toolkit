@@ -8,9 +8,19 @@ import sys
 import oci
 import json
 from oci.core.virtual_network_client import VirtualNetworkClient
+from oci.core.blockstorage_client import BlockstorageClient
 import os
 sys.path.append(os.getcwd() + "/..")
 from commonTools import *
+
+
+def get_volume_data(config, volume_id, ct):
+    bvol = BlockstorageClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
+    volume_data = bvol.get_volume(volume_id).data
+    vol_name = volume_data.display_name
+    comp_list = list(ct.ntk_compartment_ids.values())
+    vol_comp = list(ct.ntk_compartment_ids.keys())[comp_list.index(volume_data.compartment_id)]
+    return vol_comp+'@'+vol_name
 
 # Execution of the code begins here
 def export_sddc(inputfile, outdir, service_dir,config,ct, export_compartments=[], export_regions=[],display_names=[],ad_names=[]):
@@ -76,7 +86,10 @@ def export_sddc(inputfile, outdir, service_dir,config,ct, export_compartments=[]
                                                                         ntk_compartment_name],lifecycle_state="ACTIVE")
 
             for sddc in sddcs.data:
+                mgmt_vols = []
+                wkld_vols = []
                 sddc = sddc_client.get_sddc(sddc_id=sddc.id).data
+
                 if sddc.lifecycle_state=='DELETED':
                     continue
                 tf_name = commonTools.check_tf_variable(sddc.display_name)
@@ -87,6 +100,12 @@ def export_sddc(inputfile, outdir, service_dir,config,ct, export_compartments=[]
                 ssh_key = json.dumps(ssh_key)
                 sddc_keys[key_name] = ssh_key
                 importCommands[reg].write("\nterraform import \"module.sddcs[\\\"" + tf_name + "\\\"].oci_ocvp_sddc.sddc\" " + sddc.id)
+                if 'Standard' in sddc.initial_host_shape_name:
+                    for item in sddc.datastores:
+                        if item.datastore_type == "MANAGEMENT":
+                            mgmt_vols = item.block_volume_ids
+                        if item.datastore_type == "WORKLOAD":
+                            wkld_vols = item.block_volume_ids
 
                 for col_header in values_for_column_sddc.keys():
                     if (col_header == "Region"):
@@ -103,6 +122,17 @@ def export_sddc(inputfile, outdir, service_dir,config,ct, export_compartments=[]
                         elif ("AD-3" in value or "ad-3" in value):
                             ad = "AD3"
                         values_for_column_sddc[col_header].append(ad)
+                    elif col_header == 'Management Block Volumes':
+                        mgmt_vol_data = ""
+                        for vol_id in mgmt_vols:
+                            mgmt_vol_data = mgmt_vol_data+","+get_volume_data(config, volume_id=vol_id, ct=ct)
+                        values_for_column_sddc[col_header].append(mgmt_vol_data[1:])
+                    elif col_header == 'Workload Block Volumes':
+                        wkld_vol_data = ""
+                        for vol_id in wkld_vols:
+                            wkld_vol_data = wkld_vol_data+","+get_volume_data(config, volume_id=vol_id, ct=ct)
+                        values_for_column_sddc[col_header].append(wkld_vol_data[1:])
+
                     elif col_header == 'SSH Key Var Name':
                         values_for_column_sddc[col_header].append(key_name)
                     elif (col_header == "Provisioning Subnet"):

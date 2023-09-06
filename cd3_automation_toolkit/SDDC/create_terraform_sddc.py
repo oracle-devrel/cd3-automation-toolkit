@@ -61,6 +61,7 @@ def create_terraform_sddc(inputfile, outdir, service_dir, prefix, config):
     for i in df.index:
         region = str(df.loc[i, 'Region'])
         region = region.strip().lower()
+        sddc_hw_type = str(df.loc[i, 'SDDC Hardware Type'])
 
         if region in commonTools.endNames:
             break
@@ -68,9 +69,13 @@ def create_terraform_sddc(inputfile, outdir, service_dir, prefix, config):
             print("\nERROR!!! Invalid Region; It should be one of the regions tenancy is subscribed to..Exiting!")
             exit(1)
         sddc_name = str(df.loc[i, 'SDDC Name']).strip()
+        sddc_compartment = str(df.loc[i, 'Compartment Name']).strip()
+        sddc_compartment = commonTools.check_tf_variable(sddc_compartment)
 
         tempStr = {}
         tempdict = {}
+        mgmt_volumes = []
+        workload_volumes = []
 
         # Check if values are entered for mandatory fields
 
@@ -123,6 +128,27 @@ def create_terraform_sddc(inputfile, outdir, service_dir, prefix, config):
                 else:
                     adString = "multi-AD"
                 tempdict = {columnname: adString}
+
+            if columnname == 'Management Block Volumes':
+                if columnvalue != "":
+                    columnvalue = columnvalue.split(',')
+                    for item in columnvalue:
+                        if '@' in item:
+                            mgmt_volumes.append(item)
+                        else:
+                            mgmt_volumes.append(sddc_compartment+'@'+item)
+                tempdict = {'mgmt_data': mgmt_volumes}
+
+            if columnname == 'Workload Block Volumes':
+                if columnvalue != "":
+                    columnvalue = columnvalue.split(',')
+                    for item in columnvalue:
+                        if '@' in item:
+                            workload_volumes.append(item)
+                        else:
+                            workload_volumes.append(sddc_compartment + '@' + item)
+                tempdict = {'workload_data': workload_volumes}
+
 
             columnname = commonTools.check_column_headers(columnname)
             tempStr[columnname] = str(columnvalue).strip()

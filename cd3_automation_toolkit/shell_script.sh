@@ -16,8 +16,8 @@ echo "source scl_source enable rh-python38" >> /cd3user/.bashrc
 source /cd3user/.bashrc
 python -m pip install --user --upgrade pip
 #non needed
-#python -m pip install --user oci==2.104.1
-python -m pip install --user oci-cli==3.28.2
+#python -m pip install --user oci==2.110.1
+python -m pip install --user oci-cli==3.31.0
 python -m pip install --user pycryptodomex==3.10.1
 python -m pip install --user regex==2022.10.31
 python -m pip install --user pandas==1.1.5
@@ -36,3 +36,5 @@ source /cd3user/.bashrc
 
 
 yes | sudo rpm -iUvh https://yum.oracle.com/repo/OracleLinux/OL7/developer/x86_64/getPackage/terraform-1.3.0-1.el7.x86_64.rpm
+curl -L -o opa https://openpolicyagent.org/downloads/v0.55.0/opa_linux_amd64_static
+sudo chmod +x opa && sudo mv opa /usr/local/sbin/

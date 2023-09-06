@@ -129,10 +129,10 @@ variable "create_is_pv_encryption_in_transit_enabled" {
   default = null
 }
 
-variable "update_is_pv_encryption_in_transit_enabled" {
-  type    = bool
-  default = null
-}
+#variable "update_is_pv_encryption_in_transit_enabled" {
+#  type    = bool
+#  default = null
+#}
 
 variable "preserve_boot_volume" {
   type    = bool
@@ -193,7 +193,7 @@ variable "is_monitoring_disabled" {
 
 variable "plugins_details" {
   type        = map(any)
-  default     = {}
+  default     = null
   description = "The configuration of plugins associated with this instance"
 }
 
@@ -236,7 +236,7 @@ variable "is_consistent_volume_naming_enabled" {
 variable "network_type" {
   type        = string
   description = "Emulation type for the physical network interface card (NIC)"
-  default     = "PARAVIRTUALIZED"
+  default     = null
 }
 
 variable "remote_data_volume_type" {
@@ -246,9 +246,15 @@ variable "remote_data_volume_type" {
 }
 
 variable "platform_config" {
-  type        = map(any)
-  description = "Platform config map"
-  default     = {}
+  type        = list(map(any))
+  description = "Platform config list of map"
+  default     = []
+}
+
+variable "launch_options" {
+  type = list(map(any))
+  description = "Launch config list of map"
+  default = []
 }
 
 variable "config_type" {

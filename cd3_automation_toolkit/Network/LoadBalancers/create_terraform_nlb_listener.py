@@ -125,6 +125,9 @@ def create_terraform_nlb_listener(inputfile, outdir, service_dir, prefix, config
                     if "," in columnvalue:
                         columnvalue = columnvalue.split(",")
 
+            if columnname == "Is Private(True|False)":
+                columnname = 'is_private'
+
             if columnname == "NLB Name":
                 if columnvalue != '' and columnvalue != 'nan':
                     nlb_name = columnvalue

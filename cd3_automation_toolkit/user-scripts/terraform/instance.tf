@@ -21,9 +21,8 @@ data "oci_core_vcns" "oci_vcns" {
 }
 
 module "instances" {
-  source   = "./modules/compute/instance"
-  for_each = var.instances != null ? var.instances : {}
-  # depends_on           = [module.dedicated-hosts]   # Uncomment to create DVH and Instances together
+  source                 = "./modules/compute/instance"
+  for_each               = var.instances != null ? var.instances : {}
   availability_domain    = each.value.availability_domain != "" && each.value.availability_domain != null ? data.oci_identity_availability_domains.availability_domains.availability_domains[each.value.availability_domain].name : ""
   compartment_id         = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
   network_compartment_id = each.value.network_compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.network_compartment_id)) > 0 ? each.value.network_compartment_id : var.compartment_ocids[each.value.network_compartment_id]) : null
@@ -48,40 +47,34 @@ module "instances" {
   memory_in_gbs                              = each.value.memory_in_gbs != null ? each.value.memory_in_gbs : null
   capacity_reservation_id                    = each.value.capacity_reservation_id != null ? lookup(var.capacity_reservation_ocids, each.value.capacity_reservation_id, null) : null
   create_is_pv_encryption_in_transit_enabled = each.value.create_is_pv_encryption_in_transit_enabled
-  update_is_pv_encryption_in_transit_enabled = each.value.update_is_pv_encryption_in_transit_enabled
 
   boot_tf_policy           = each.value.backup_policy != null ? each.value.backup_policy : null
   policy_tf_compartment_id = each.value.policy_compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.policy_compartment_id)) > 0 ? each.value.policy_compartment_id : var.compartment_ocids[each.value.policy_compartment_id]) : null
   remote_execute           = each.value.remote_execute != null ? each.value.remote_execute : null
   bastion_ip               = each.value.bastion_ip != null ? each.value.bastion_ip : null
   cloud_init_script        = each.value.cloud_init_script != null ? each.value.cloud_init_script : null
+  launch_options           = each.value.launch_options
+  plugins_details          = each.value.plugins_details
+  platform_config          = each.value.platform_config
+  is_live_migration_preferred = each.value.is_live_migration_preferred
 
-  ## Optional parameters to enable and test ##
   # extended_metadata    = each.value.extended_metadata
-  # skip_source_dest_check = each.value.skip_source_dest_check != null ? each.value.skip_source_dest_check : null
-  # baseline_ocpu_utilization = each.value.baseline_ocpu_utilization
+  skip_source_dest_check = each.value.skip_source_dest_check != null ? each.value.skip_source_dest_check : null
+  baseline_ocpu_utilization = each.value.baseline_ocpu_utilization
   # preemptible_instance_config = each.value.preemptible_instance_config
-  # all_plugins_disabled = each.value.all_plugins_disabled
-  # is_management_disabled  = each.value.is_management_disabled
-  # is_monitoring_disabled = each.value.is_monitoring_disabled
-  # plugins_details = each.value.plugins_details
-  # is_live_migration_preferred = each.value.is_live_migration_preferred
-  # recovery_action = each.value.recovery_action
-  # are_legacy_imds_endpoints_disabled = each.value.are_legacy_imds_endpoints_disabled
-  # boot_volume_type = each.value.boot_volume_type
-  # firmware = each.value.firmware
-  # is_consistent_volume_naming_enabled = each.value.is_consistent_volume_naming_enabled
-  # network_type = each.value.network_type
-  # remote_data_volume_type = each.value.remote_data_volume_type
-  # platform_config = each.value.platform_config
-  # ipxe_script = each.value.ipxe_script
-  # preserve_boot_volume = each.value.preserve_boot_volume
-  # assign_private_dns_record = each.value.assign_private_dns_record
-  # vlan_id = each.value.vlan_id
-  # kms_key_id = each.value.kms_key_id
+  all_plugins_disabled = each.value.all_plugins_disabled
+  is_management_disabled  = each.value.is_management_disabled
+  is_monitoring_disabled = each.value.is_monitoring_disabled
+  recovery_action = each.value.recovery_action
+  are_legacy_imds_endpoints_disabled = each.value.are_legacy_imds_endpoints_disabled
+  ipxe_script = each.value.ipxe_script
+  preserve_boot_volume = each.value.preserve_boot_volume
+  assign_private_dns_record = each.value.assign_private_dns_record
+  vlan_id = each.value.vlan_id
+  kms_key_id = each.value.kms_key_id
 
   # VNIC Details
-  # vnic_defined_tags = each.value.vnic_defined_tags
-  # vnic_freeform_tags = each.value.vnic_freeform_tags
-  # vnic_display_name = each.value.vnic_display_name
+  vnic_defined_tags = each.value.vnic_defined_tags
+  vnic_freeform_tags = each.value.vnic_freeform_tags
+  vnic_display_name = each.value.vnic_display_name
 }

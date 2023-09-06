@@ -38,7 +38,16 @@ sddcs = {
           initial_sku                   = "{{ pricing_interval }}"
           {% if sddc_hardware_type   %}
           initial_host_shape_name       = "{{ sddc_hardware_type}}"
+          {% if 'Standard' in sddc_hardware_type  %}
+          {% if mgmt_data %}
+          management_datastore          = {{ mgmt_data | replace("\'","\"")  }}
           {% endif %}
+          {% if workload_data %}
+          workload_datastore            = {{ workload_data | replace("\'","\"")  }}
+          {% endif %}
+          {% endif %}
+          {% endif %}
+
           {% if  number_of_ocpu_cores  %}
           initial_host_ocpu_count       = "{{ number_of_ocpu_cores }}"
           {% endif %}
@@ -93,7 +102,7 @@ sddcs = {
         {#  ###Section for adding Defined and Freeform Tags###  #}
         {% if defined_tags and defined_tags != 'nan' and defined_tags != '' and defined_tags != [['nan']] %}
           {% if defined_tags[0] %}
-            defined_tags = {
+          defined_tags = {
             {% for tags in defined_tags  %}
                 {% if not loop.last %}
                     "{{ tags[0]  }}"= "{{ tags[1] }}" ,
