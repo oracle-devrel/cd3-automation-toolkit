@@ -21,7 +21,7 @@ locals {
 
   platform_configs = {
     for shape in data.oci_core_shapes.present_ad.shapes : shape.name => {
-      config_type = element(flatten(shape.platform_config_options[*].type),0)
+      config_type = length(shape.platform_config_options) > 0 ? element(flatten(shape.platform_config_options[*].type),0) : ""
     } if shape.name == var.shape
   }
 
