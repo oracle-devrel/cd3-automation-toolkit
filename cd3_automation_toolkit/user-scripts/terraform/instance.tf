@@ -55,7 +55,7 @@ module "instances" {
   cloud_init_script        = each.value.cloud_init_script != null ? each.value.cloud_init_script : null
   launch_options           = each.value.launch_options
   plugins_details          = each.value.plugins_details
-  platform_config          = each.value.platform_config
+  platform_config          = each.value.platform_config != null ? each.value.platform_config : null
   is_live_migration_preferred = each.value.is_live_migration_preferred
 
   # extended_metadata    = each.value.extended_metadata
