@@ -69,8 +69,8 @@ Please refer the screenshots below -
 <br>           - Alternately, please attach a data disk and map the container (/cd3user/tenancies) on a folder that is created on the data disk (your local folder).
 
 
-**9. Ordering changes observed during terraform plan for OCI compute plugin's.**
-
+**9. Terraform plan changes the order of plugins for OCI compute plugins.**
+![image](https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103548537/4879d074-6353-4de8-83e0-7cf4b61c8cad)
 
 It only changes the order of plugin's and won't change anything in OCI console.
 <br> 
