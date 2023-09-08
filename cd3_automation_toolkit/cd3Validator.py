@@ -330,7 +330,7 @@ def validate_subnets(filename, comp_ids, vcnobj):
             cidr=vcncidrlist[(vcn,region)]
             if("," in cidr):
                 for x in cidr.split(','):
-                    x.strip()
+                    x=x.strip()
                     try:
                         vcn_cidr = ipaddress.ip_network(x)
                     except ValueError:
@@ -443,7 +443,7 @@ def validate_vcns(filename, comp_ids, vcnobj, config):  # ,vcn_cidrs,vcn_compart
             cidr_list.append(entry)
         else:
             for x in str(dfv.loc[i, 'CIDR Blocks']).strip().split(','):
-                x.strip()
+                x=x.strip()
                 entry=(x,i+3)
                 cidr_list.append(entry)
 
