@@ -9,13 +9,13 @@ As part of CD3, we have meticulously developed a comprehensive set of policies t
 
 Our carefully crafted policies act as gatekeepers, preventing any IAC deployments that do not align with the stringent security and compliance guidelines set by the CIS benchmarks for OCI. By leveraging our policies, you can ensure that your infrastructure deployments remain impervious to any potential vulnerabilities or non-compliance issues.
 
+
 #### **Run OPA inside CD3 container**
 
- 1. First, ensure you have OPA installed inside CD3 containers.
-
- 2. Open your command line interface inside CD3 container and run OPA. You should see all available options for OPA.
+ 1. Open your command line interface inside CD3 container and run OPA. You should see all available options for OPA.
 
         opa --help
+    Currently CD3 container has OPA version 0.55.0 installed.
 
  3. Generate the terraform plan output in json format since OPA accepts that format alone for evaluation.
    
