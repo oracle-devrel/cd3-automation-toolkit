@@ -34,7 +34,9 @@ Choose the resources by specifying a single option (for choosing one of these re
 <br>Change your directory to _/cd3user/tenancies/<customer\_name>/terraform\_files/<region\_dir>/_  and Execute:
 
 **terraform init**  - To initialize and prepare your working/out directory soTerraform can run the configuration.<br>
-**terraform plan**  - To preview any changes before you apply them.<br>
+
+**terraform plan**  - To preview any changes before you apply them. Run the plan against [OPA policies](/cd3_automation_toolkit/documentation/user_guide/learn_more/OPAForCompliance.md) for compliance against CIS.
+
 **terraform apply** - To make the changes defined by Terraform configuration to create, update, or destroy resources in OCI.
   
 > **Note**  
