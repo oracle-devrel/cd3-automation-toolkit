@@ -28,6 +28,7 @@
   <ul>
   <li> <a href="/cd3_automation_toolkit/documentation/user_guide/GreenField.md">Green Field Tenancies</a>
     <ul>
+      <li> <a href="/cd3_automation_toolkit/documentation/user_guide/learn_more/OPAForCompliance.md"</a> Enforcing OPA (Open Policy Agent) policies for Terraform </li>
       <li> <a href="/cd3_automation_toolkit/documentation/user_guide/NetworkingScenariosGF.md"</a><b> Must Read :</b> Managing Network for Greenfield Tenancies</li>
       <li> <a href="/cd3_automation_toolkit/documentation/user_guide/ComputeGF.md"</a><b> Must Read :</b> Managing Compute Instances for Greefield Tenancies</li>
     </ul>
