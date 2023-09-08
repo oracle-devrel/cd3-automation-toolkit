@@ -36,5 +36,21 @@ resource "oci_ocvp_sddc" "sddc" {
   provisioning_vlan_id         = var.provisioning_vlan_id
   replication_vlan_id          = var.replication_vlan_id
   workload_network_cidr        = var.workload_network_cidr
+  dynamic "datastores" {
+  for_each = length(var.management_datastore) != 0 ? [1] : []
+  content {
+  datastore_type = "MANAGEMENT"
+  block_volume_ids = var.management_datastore
+  }
+  }
+  dynamic "datastores" {
+  for_each = length(var.workload_datastore) != 0 ? [1] : []
+  content {
+  datastore_type = "WORKLOAD"
+  block_volume_ids = var.workload_datastore
+  }
+  }
+
+
 }
 

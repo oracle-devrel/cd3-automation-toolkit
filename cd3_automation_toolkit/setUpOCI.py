@@ -262,6 +262,7 @@ def validate_cd3(execute_all=False):
         Option("Validate Instances", None, None),
         Option("Validate Block Volumes", None, None),
         Option("Validate FSS", None, None),
+        Option("Validate Buckets", None, None)
     ]
     if not execute_all:
         options = show_options(options, quit=True, menu=False, index=1)
@@ -271,14 +272,13 @@ def validate_cd3(execute_all=False):
 
 ################## Export Identity ##########################
 def export_identityOptions():
-
     if len(outdir_struct) != 0:
         service_dir = outdir_struct['identity']
     else:
         service_dir = ""
     options = [Option("Export Compartments/Groups/Policies", export_compartmentPoliciesGroups, 'Exporting Compartments/Groups/Policies'),
                Option("Export Users", export_users, 'Exporting Users'),
-               #Option("Export Network Sources", export_networkSources, 'Exporting Network Sources')
+               Option("Export Network Sources", export_networkSources, 'Exporting Network Sources')
     ]
     options = show_options(options, quit=True, menu=True, index=1)
     execute_options(options, inputfile, outdir, service_dir, config, ct)
@@ -320,7 +320,7 @@ def export_network():
         service_dir = ""
 
     options = [Option("Export all Network Components", export_networking,
-                      'Exporting Network Components except NSGs'),
+                      'Exporting all Network Components'),
                Option("Export Network components for 'VCNs', 'DRGs' and 'DRGRouteRulesinOCI' Tabs", export_major_objects,
                       'Exporting VCNs, DRGs and DRGRouteRulesinOCI Tabs'),
                Option("Export Network components for 'DHCP' Tab", export_dhcp,
@@ -750,7 +750,7 @@ def create_identity(execute_all=False):
         Option('Add/Modify/Delete Groups', Identity.create_terraform_groups, 'Processing Groups Tab'),
         Option('Add/Modify/Delete Policies', Identity.create_terraform_policies, 'Processing Policies Tab'),
         Option('Add/Modify/Delete Users', Identity.Users.create_terraform_users, 'Processing Users Tab'),
-        #Option('Add/Modify/Delete Network Sources', Identity.NetworkSources.create_terraform_networkSources, 'Processing NetworkSources Tab')
+        Option('Add/Modify/Delete Network Sources', Identity.NetworkSources.create_terraform_networkSources, 'Processing NetworkSources Tab')
     ]
     if not execute_all:
         options = show_options(options, quit=True, menu=True, index=1)

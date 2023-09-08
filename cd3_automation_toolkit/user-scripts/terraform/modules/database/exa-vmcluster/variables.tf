@@ -50,6 +50,21 @@ variable "cluster_name" {
 variable "data_storage_percentage" {
   type = number
 }
+
+variable "memory_size_in_gbs" {
+  type = number
+}
+variable "data_storage_size_in_tbs" {
+  type = number
+}
+variable "db_node_storage_size_in_gbs" {
+  type = number
+}
+variable "db_servers" {
+  type    = list(string)
+  default = []
+}
+
 variable "defined_tags" {
   type    = map(string)
   default = {}

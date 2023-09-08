@@ -20,7 +20,7 @@ importCommands = {}
 oci_obj_names = {}
 
 
-def print_exa_vmcluster(region, vnc_client,exa_infra, exa_vmcluster, key_name,values_for_column, ntk_compartment_name):
+def print_exa_vmcluster(region, vnc_client,exa_infra, exa_vmcluster, key_name,values_for_column, ntk_compartment_name, db_servers):
     exa_infra_tf_name = commonTools.check_tf_variable(exa_infra.display_name)
     exa_vmcluster_tf_name = commonTools.check_tf_variable(exa_vmcluster.display_name)
 
@@ -54,6 +54,7 @@ def print_exa_vmcluster(region, vnc_client,exa_infra, exa_vmcluster, key_name,va
 
     maintenance_window = exa_infra.maintenance_window
 
+
     importCommands[region.lower()].write("\nterraform import \"module.exa-vmclusters[\\\"" + exa_vmcluster_tf_name + "\\\"].oci_database_cloud_vm_cluster.exa_vmcluster\" " + str(exa_vmcluster.id))
 
     for col_header in values_for_column:
@@ -73,6 +74,8 @@ def print_exa_vmcluster(region, vnc_client,exa_infra, exa_vmcluster, key_name,va
             values_for_column[col_header].append(nsg_names)
         elif (col_header == "Backup Network NSGs"):
             values_for_column[col_header].append(backup_nsg_names)
+        elif (col_header == "DB Servers"):
+            values_for_column[col_header].append(db_servers)
         elif col_header.lower() in commonTools.tagColumns:
             values_for_column = commonTools.export_tags(exa_vmcluster, col_header, values_for_column)
         else:
@@ -163,7 +166,14 @@ def export_exa_vmclusters(inputfile, _outdir, service_dir, _config, ct, export_c
                         db_ssh_keys = json.dumps(db_ssh_keys)
                         db[key_name] = db_ssh_keys
 
-                        print_exa_vmcluster(region, vnc_client, exa_infra,exa_vmcluster,key_name, values_for_column, ntk_compartment_name_again)
+                        db_serverids = exa_vmcluster.db_servers
+                        db_servers = ''
+                        if (db_serverids is not None and len(db_serverids)):
+                            for db_server in db_serverids:
+                                db_server_name = db_client.get_db_server(exa_infra.id, db_server).data.display_name
+                                db_servers = db_server_name +","+db_servers
+
+                        print_exa_vmcluster(region, vnc_client, exa_infra,exa_vmcluster,key_name, values_for_column, ntk_compartment_name_again,db_servers)
 
         file = f'{outdir}/{reg}/{service_dir}/variables_{reg}.tf'
         # Read variables file data

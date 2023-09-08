@@ -337,4 +337,4 @@ def create_terraform_seclist(inputfile, outdir, service_dir, prefix, config, mod
         else:
             srcdir = outdir + "/" + reg + "/" + service_dir +"/"
             resource = 'SLs'
-            commonTools.backup_file(srcdir, resource, 'seclists.auto.tfvars')
+            commonTools.backup_file(srcdir, resource, '_seclists.auto.tfvars')

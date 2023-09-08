@@ -84,6 +84,8 @@ def export_users(inputfile, outdir, service_dir, _config, ct):
     index = 0
     for user in users.data:
         user_info = user
+        if (user_info.identity_provider_id != None):
+            continue
         if (user_info.lifecycle_state == "ACTIVE"):
             username = user_info.name
             tf_name = commonTools.check_tf_variable(username)

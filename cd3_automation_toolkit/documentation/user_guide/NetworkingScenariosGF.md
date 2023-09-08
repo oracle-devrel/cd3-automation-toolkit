@@ -56,7 +56,7 @@ This completes the steps for Creating the Network in OCI and exporting the defau
 
 
 ### Use an existing DRG in OCI while creating the network
-In some scenarios, a DRG has already been created in the tenancy and rest of the Network components still need to be created. In such cases, generate the networking related tfvars using same process mentioned above till Step 4.
+In some scenarios, a DRG has already been created in the tenancy and rest of the Network components still need to be created. In such cases, generate the networking related tfvars using same process mentioned above till Step 4. Use same name for DRG in DRGs tab as present in OCI console.
 
  - For Step 5, Navigate to the outdir path and execute the terraform commands:<br>
        <br>_terraform init_

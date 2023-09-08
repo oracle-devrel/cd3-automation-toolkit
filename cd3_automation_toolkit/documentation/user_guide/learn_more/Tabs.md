@@ -66,7 +66,8 @@ Output terraform file generated: \<outdir>/\<region>/\<prefix>_networksources.au
 Once terraform apply is done, you can view the resources under Identity & Security -> Network Sources in OCI console.
   
 On re-running the same option you will find the previously existing files being backed up under directory → \<outdir>/\<region>/backup_networksources/\<Date>-<Month>-<Time>.
-  
+
+Note - Network Source creation/updation is supported only in the home region.  
     
 
 ## Tags Tab
@@ -692,6 +693,9 @@ The column "SSH Key Var Name" accepts SSH key value directly or the name of vari
       }
     }
 
+
+Management and Workload Datastore volumes must be existing or created separately as part of **BlockVolumes** Tab.
+All the Network related information for SDDCs will be provided in **SDDCs-Network** , where the vlan should be created in **SubnetsVLANs**
 
 On choosing "Software-Defined Data Centers - OCVS" in setUpOCI menu, the toolkit will read SDDCs tab and SDDCs-Network tab. The output terraform files will be generated at :
 -→  \<outdir>/\<region>/\<prefix>_sddcs.auto.tfvars under appropriate \<region> directory.

@@ -463,7 +463,12 @@ def modify_terraform_routerules(inputfile, outdir, service_dir,prefix=None, non_
                         tempStr.update(tempdict)
                     elif (dest_objs[0].lower().strip().startswith('drg')):
                         # dest_obj = "${oci_core_drg." + vcn_tf_name+"_"+obj_tf_name + ".id}"
-                        dest_obj = commonTools.check_tf_variable(dest_objs[1].strip())
+
+                        if "ocid1." not in dest_objs[1].strip():
+                            dest_obj = commonTools.check_tf_variable(dest_objs[1].strip())
+                        else:
+                            dest_obj = dest_objs[1].strip()
+
                         tempdict = {'resource': 'DRG','network_entity_id': dest_obj}
                         tempStr.update(tempdict)
                     elif('privateip' in dest_objs[0].lower().strip()):

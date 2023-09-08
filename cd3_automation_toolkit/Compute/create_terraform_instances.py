@@ -11,6 +11,7 @@
 
 import sys
 import os
+import fnmatch
 from oci.config import DEFAULT_LOCATION
 from pathlib import Path
 
@@ -100,6 +101,9 @@ def create_terraform_instances(inputfile, outdir, service_dir, prefix, config):
                 "\nOne/All of the Column/Columns from Region, Shape, Compartment Name, Availability Domain, Display Name, Pub Address, Source Details and Subnet Name is empty in Instances sheet of CD3..exiting...Please check.")
             exit(1)
 
+        # Perform the plugin match
+        plugin_match = None
+        plugin_column = fnmatch.filter(df.columns.tolist(), 'Plugin*')
         for columnname in dfcolumns:
 
             # Column value
@@ -114,6 +118,20 @@ def create_terraform_instances(inputfile, outdir, service_dir, prefix, config):
             # Process Defined and Freeform Tags
             if columnname.lower() in commonTools.tagColumns:
                 tempdict = commonTools.split_tag_values(columnname, columnvalue, tempdict)
+
+            if columnname in plugin_column:
+                columnvalue = columnvalue.strip()
+                if columnvalue != "":
+                    plugin_match = True
+                    tempdict = {'plugin_match': plugin_match}
+
+            if columnname == 'Network Type':
+                network_type = columnvalue.strip()
+                tempdict = {'network_type': network_type}
+
+            if columnname == 'Platform Config Type':
+                network_type = columnvalue.strip()
+                tempdict = {'platform_config_type': network_type}
 
             if columnname == 'Shape':
                 if ".Flex" not in columnvalue and ".Micro" not in columnvalue:
@@ -156,9 +174,9 @@ def create_terraform_instances(inputfile, outdir, service_dir, prefix, config):
                     if ("@" in columnvalue):
                         remote_execute = columnvalue.strip().split("@")
                         tempdict = {'remote_execute': remote_execute[1],
-                                'bastion_ip': remote_execute[0]}
+                                    'bastion_ip': remote_execute[0]}
                     else:
-                        tempdict = {'remote_execute': columnvalue.strip() }
+                        tempdict = {'remote_execute': columnvalue.strip()}
 
             if columnname == 'Custom Policy Compartment Name':
                 if columnvalue != "":
@@ -232,4 +250,3 @@ def create_terraform_instances(inputfile, outdir, service_dir, prefix, config):
             print(outfile + " for instances and boot volume backup policy has been created for region " + reg)
             oname.write(tfStr[reg])
             oname.close()
-

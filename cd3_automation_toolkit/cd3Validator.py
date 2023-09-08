@@ -330,7 +330,7 @@ def validate_subnets(filename, comp_ids, vcnobj):
             cidr=vcncidrlist[(vcn,region)]
             if("," in cidr):
                 for x in cidr.split(','):
-                    x.strip()
+                    x=x.strip()
                     try:
                         vcn_cidr = ipaddress.ip_network(x)
                     except ValueError:
@@ -443,7 +443,7 @@ def validate_vcns(filename, comp_ids, vcnobj, config):  # ,vcn_cidrs,vcn_compart
             cidr_list.append(entry)
         else:
             for x in str(dfv.loc[i, 'CIDR Blocks']).strip().split(','):
-                x.strip()
+                x=x.strip()
                 entry=(x,i+3)
                 cidr_list.append(entry)
 
@@ -1276,6 +1276,225 @@ def validate_tags(filename,comp_ids):
     else:
         return False
 
+def validate_buckets(filename, comp_ids):
+    # Initialize the flag to False for each bucket
+    buckets_empty_check = False
+    buckets_invalid_check = False
+    buckets_comp_check = False
+    bucket_reg_check = False
+    bucket_name_check = False
+
+    # Read the Compartments tab from excel
+    dfbuckets = data_frame(filename, 'Buckets')
+
+    for i in dfbuckets.index:
+        region = str(dfbuckets.loc[i, 'Region']).strip().lower()
+        lifecycle_all_columns = ['Lifecycle Policy Name', 'Lifecycle Target and Action',
+                                       'Lifecycle Policy Enabled', 'Lifecycle Rule Period','Lifecyle Exclusion Patterns','Lifecyle Inclusion Patterns','Lifecyle Inclusion Prefixes']
+
+        lifecycle_mandatory_columns = ['Lifecycle Policy Name','Lifecycle Target and Action','Lifecycle Policy Enabled','Lifecycle Rule Period']
+        lifecycle_input = False
+        for columns in lifecycle_all_columns:
+            column_value = str(dfbuckets.loc[i, columns]).strip().lower()
+            if column_value != 'nan':
+                lifecycle_input = True
+                data_column = columns
+        if lifecycle_input == True:
+            for columns in lifecycle_mandatory_columns:
+                column_value = str(dfbuckets.loc[i, columns]).strip().lower()
+                if column_value == 'nan':
+                    log(f'ROW {i + 3} : {columns} cannot be empty as column {data_column} has data.')
+                    buckets_invalid_check = True
+
+
+        # Encountered <End>
+        if (region in commonTools.endNames):
+            break
+        if region == 'nan':
+            log(f'ROW {i + 3} : Empty value at column "Region".')
+            buckets_empty_check = True
+        elif region not in ct.all_regions:
+            log(f'ROW {i + 3} : "Region" {region} is not subscribed for tenancy.')
+            bucket_reg_check = True
+
+        # Check for invalid Compartment Name
+        comp_name = str(dfbuckets.loc[i, 'Compartment Name']).strip()
+        if comp_name.lower() == 'nan' or comp_name == '':
+            log(f'ROW {i + 3} : Empty value at column "Compartment Name".')
+            buckets_empty_check = True
+        else:
+            try:
+                comp_id = comp_ids[comp_name]
+            except KeyError:
+                log(f'ROW {i + 3} : Compartment {comp_name} does not exist in OCI.')
+                buckets_comp_check = True
+
+        # Check for invalid Bucket Name
+        bucket_name = str(dfbuckets.loc[i, 'Bucket Name']).strip()
+        if bucket_name.lower() == 'nan' or bucket_name == '':
+            log(f'ROW {i + 3} : Empty value at column "Bucket Name".')
+            buckets_empty_check = True
+        else:
+            if re.match("^[A-Za-z0-9_.-]*$", bucket_name.lower()):
+                bucket_name_check = False
+            else:
+                bucket_name_check = True
+                log(f'ROW {i + 3} : "Bucket Name" can only contain letters (upper or lower case), numbers, hyphens, underscores, and periods.')
+
+
+        # List of the column headers
+        dfcolumns = dfbuckets.columns.values.tolist()
+
+        for columnname in dfcolumns:
+            # Column value
+            columnvalue = str(dfbuckets.loc[i, columnname]).strip()
+
+            if columnname == 'Storage Tier':
+                if columnvalue.lower() not in ['standard','archive']:
+                    log(f'ROW {i + 3} : Value of "Storage Tier" can be only either "Standard" or "Archive".')
+                    buckets_invalid_check = True
+
+
+            if columnname == 'Auto Tiering':
+                if columnvalue.lower() not in ['enabled','disabled']:
+                    log(f'ROW {i + 3} : Value of "Auto Tiering" can be only either "Enabled" or "Disabled".')
+                    buckets_invalid_check = True
+
+
+            if columnname == 'Object Versioning':
+                if columnvalue.lower() not in ['enabled','disabled']:
+                    log(f'ROW {i + 3} : Value of "Object Versioning" can be only either "Enabled" or "Disabled".')
+                    buckets_invalid_check = True
+
+            if columnname == 'Emit Object Events':
+                if columnvalue.lower() not in ['enabled','disabled']:
+                    log(f'ROW {i + 3} : Value of "Emit Object Events" can be only either "Enabled" or "Disabled".')
+                    buckets_invalid_check = True
+
+
+            if columnname == 'Visibility':
+                if columnvalue.lower() not in ['private','public']:
+                    log(f'ROW {i + 3} : Value of "Visibility" can be only either "Private" or "Public".')
+                    buckets_invalid_check = True
+
+            #Check for valid destination region for enabling the replication policy
+            if columnname == 'Replication Policy':
+                columnvalue= columnvalue.split("::")
+                if len(columnvalue) == 3 and all(columnvalue):
+                 replication_policy_name = columnvalue[0]
+                 destination_region = columnvalue[1].lower()
+                 if destination_region in ct.region_dict:
+                     destination_region = ct.region_dict[destination_region]
+                 else:
+                    log(f'ROW {i + 3} : The "Destination_region" of replication policy is not a valid region.')
+                    buckets_invalid_check = True
+
+            #Check for the retention policy details
+            if columnname == 'Retention Rules':
+                rule_values = columnvalue.split("\n")
+                retention_rules = []
+                for rule in rule_values:
+                    rule_components = rule.split("::")
+                    if len(rule_components) >= 1:
+                        retention_rule_display_name = rule_components[0]
+                        time_unit = None
+                        time_amount = None
+                        time_rule_locked = None
+
+                        if len(rule_components) >= 2:
+                            if rule_components[1].lower() == 'indefinite':
+                                time_amount = None
+                            else:
+                                time_amount = rule_components[1]
+                                if not time_amount.isdigit():
+                                    log(f'ROW {i + 3} : "time_amount" of retention rule is not in valid format. It should be an "integer" or "indefinite".')
+                                    buckets_invalid_check = True
+                                    continue
+                                else:
+                                    time_amount = int(time_amount)
+
+                        if len(rule_components) >= 3:
+                            time_unit = rule_components[2].upper()
+                            if time_unit not in ('DAYS', 'YEARS'):
+                                log(f'ROW {i + 3} : "time_unit" of retention rule is not in valid format. It should be either DAYS or YEARS.')
+                                buckets_invalid_check = True
+                            else:
+                                # If time_unit is valid, set the flag to True for processing time_rule_locked
+                                process_time_rule_locked = True
+
+                        if len(rule_components) == 4 and process_time_rule_locked:
+                            time_rule_locked = rule_components[3]
+                            if time_rule_locked.endswith(".000Z"):
+                                time_rule_locked = time_rule_locked[:-5] + "Z"
+                            elif not re.match(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z|\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z",time_rule_locked):
+                                # Convert from "dd-mm-yyyy" to "YYYY-MM-DDThh:mm:ssZ" format
+                                if re.match(r"\d{2}-\d{2}-\d{4}", time_rule_locked):
+                                    try:
+                                        datetime_obj = datetime.datetime.strptime(time_rule_locked, "%d-%m-%Y")
+                                        time_rule_locked = datetime_obj.strftime("%Y-%m-%dT%H:%M:%SZ")
+                                    except ValueError:
+                                        log(f'ROW {i + 3} : "time_rule_locked" of retention rule is not in valid format. It should be in the format "dd-mm-yyyy".')
+                                        buckets_invalid_check = True
+                                        continue
+                                else:
+                                    log(f'ROW {i + 3} : "time_rule_locked" of retention rule is not in valid format. It should be in the format "dd-mm-yyyy".')
+                                    buckets_invalid_check = True
+                                    continue
+
+            # Check for the Lifecycle Policy Details
+            if lifecycle_input == True:
+                # Define the valid options for the "Lifecycle Target and Action" column
+                valid_options = [
+                    'objects::ARCHIVE',
+                    'objects::INFREQUENT_ACCESS',
+                    'objects::Delete',
+                    'previous-object-versions::Archive',
+                    'previous-object-versions::Delete',
+                    'multipart-uploads::Abort'
+                ]
+
+
+                # Check if "Lifecycle Target and Action" is empty
+                if columnname == 'Lifecycle Target and Action':
+                    if columnvalue != 'nan' and columnvalue not in valid_options:
+                        log(f'ROW {i + 3} : Invalid value in "Lifecycle Target and Action" column. '
+                            f'Allowed options are: {", ".join(valid_options)}.')
+                        buckets_invalid_check = True
+
+                # Check if "Lifecycle Policy Enabled" is empty
+                if columnname == 'Lifecycle Policy Enabled':
+                    if columnvalue != 'nan' and columnvalue.lower() not in ['true', 'false']:
+                      log(f'ROW {i + 3} : "Lifecycle Policy Enabled" must be either "TRUE" or "FALSE".')
+                      buckets_invalid_check = True
+
+                # Check if "Lifecycle Rule Period" is empty
+                if columnname == 'Lifecycle Rule Period':
+                    # Merge the checks for "Lifecycle Rule Period"
+                    if columnvalue != 'nan':
+                        columnvalue = columnvalue.upper()
+                        columnvalue = columnvalue.split("::")
+                        if len(columnvalue) == 2:
+                            time_amount = columnvalue[0]
+                            time_unit = columnvalue[1].lower()
+                            # Check that time_amount is an integer
+                            if not time_amount.isdigit():
+                                log(f'ROW {i + 3} : Invalid time unit. "Lifecycle Rule Period" must be an integer value.')
+                                buckets_invalid_check = True
+
+                            # Check that time_unit is either "DAYS" or "YEARS"
+                            if time_unit not in ['days','years']:
+                                log(f'ROW {i + 3} : Invalid time amount. "Lifecycle Rule Period" must be "DAYS" or "YEARS".')
+                                buckets_invalid_check = True
+                        else:
+                            log(f'ROW {i + 3} : Invalid format for  "Lifecycle Rule Period" ')
+                            buckets_invalid_check = True
+
+    if (buckets_empty_check == True or buckets_invalid_check == True or buckets_comp_check == True or bucket_reg_check == True or bucket_name_check == True):
+        print("Null or Wrong value Check failed!!")
+        return True
+    else:
+        return False
+
 def validate_cd3(filename, var_file, prefix, outdir, choices, configFileName):
     CD3_LOG_LEVEL = 60
     logging.addLevelName(CD3_LOG_LEVEL, "custom")
@@ -1314,6 +1533,7 @@ def validate_cd3(filename, var_file, prefix, outdir, choices, configFileName):
     fss_check = False
     instances_check = False
     dns_check = False
+    buckets_check = False
 
     if not os.path.exists(filename):
         print("\nCD3 excel sheet not found at "+filename +"\nExiting!!")
@@ -1351,6 +1571,7 @@ def validate_cd3(filename, var_file, prefix, outdir, choices, configFileName):
             log("\n============================= Verifying Tags Tab ==========================================\n")
             print("\nProcessing Tags Tab..")
             tags_check = validate_tags(filename,ct.ntk_compartment_ids)
+
         # CD3 Validation begins here for Network
         if ('Validate Network(VCNs, SubnetsVLANs, DHCP, DRGs)' in options[0]):
             val_net=True
@@ -1391,9 +1612,13 @@ def validate_cd3(filename, var_file, prefix, outdir, choices, configFileName):
             print("\nProcessing FSS Tab..")
             fss_check = validate_fss(filename,ct.ntk_compartment_ids,subnetobj,vcn_subnet_list,vcn_nsg_list)
 
+        if ('Validate Buckets' in options[0]):
+            log("\n============================= Verifying Buckets Tab ==========================================\n")
+            print("\nProcessing Buckets Tab..")
+            buckets_check = validate_buckets(filename,ct.ntk_compartment_ids)
 
     # Prints the final result; once the validation is complete
-    if any([comp_check, groups_check, policies_check, tags_check, instances_check, dns_check, bvs_check,fss_check, vcn_check, vcn_cidr_check, vcn_peer_check, subnet_check, subnet_cidr_check, dhcp_check, drgv2_check]):
+    if any([comp_check, groups_check, policies_check, tags_check, instances_check, dns_check, bvs_check,fss_check, vcn_check, vcn_cidr_check, vcn_peer_check, subnet_check, subnet_cidr_check, dhcp_check, drgv2_check,buckets_check]):
         log("=======")
         log("Summary:")
         log("=======")

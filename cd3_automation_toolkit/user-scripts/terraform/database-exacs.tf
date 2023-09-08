@@ -77,6 +77,10 @@ module "exa-vmclusters" {
   backup_network_nsg_ids      = each.value.backup_network_nsg_ids != null ? each.value.backup_network_nsg_ids : []
   cluster_name                = each.value.cluster_name
   data_storage_percentage     = each.value.data_storage_percentage
+  db_node_storage_size_in_gbs = each.value.db_node_storage_size_in_gbs != null ? each.value.db_node_storage_size_in_gbs : null
+  memory_size_in_gbs          = each.value.memory_size_in_gbs != null ? each.value.memory_size_in_gbs : null
+  data_storage_size_in_tbs    = each.value.data_storage_size_in_tbs != null ? each.value.data_storage_size_in_tbs : null
+  db_servers                  = each.value.db_servers != [] ? each.value.db_servers : []
   defined_tags                = each.value.defined_tags
   domain                      = each.value.domain
   freeform_tags               = each.value.freeform_tags

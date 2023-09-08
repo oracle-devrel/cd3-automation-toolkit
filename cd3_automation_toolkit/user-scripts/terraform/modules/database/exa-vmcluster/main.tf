@@ -21,6 +21,10 @@ resource "oci_database_cloud_vm_cluster" "exa_vmcluster" {
   backup_network_nsg_ids      = var.backup_network_nsg_ids != null ? (local.backup_nsg_ids == null ? ["INVALID NSG Name"] : local.backup_nsg_ids) : null
   cluster_name                = var.cluster_name
   data_storage_percentage     = var.data_storage_percentage
+  db_node_storage_size_in_gbs = var.db_node_storage_size_in_gbs == " " ? null : var.db_node_storage_size_in_gbs
+  memory_size_in_gbs          = var.memory_size_in_gbs == " " ? null : var.memory_size_in_gbs
+  data_storage_size_in_tbs    = var.data_storage_size_in_tbs == " " ? null : var.data_storage_size_in_tbs
+  db_servers                  = var.db_servers == [] ? null : local.db_servers
   domain                      = var.domain
   is_local_backup_enabled     = var.is_local_backup_enabled
   is_sparse_diskgroup_enabled = var.is_sparse_diskgroup_enabled

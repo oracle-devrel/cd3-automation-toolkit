@@ -19,6 +19,13 @@ locals {
     }
   }
 
+  platform_configs = {
+    for shape in data.oci_core_shapes.present_ad.shapes : shape.name => {
+      config_type = length(shape.platform_config_options) > 0 ? element(flatten(shape.platform_config_options[*].type),0) : ""
+    } if shape.name == var.shape
+  }
+
+  plugins_config        = var.plugins_details != null ? var.plugins_details : {}
   remote_execute_script = var.remote_execute == null ? "SCRIPT-NOT-SET" : var.remote_execute
   cloud_init_script     = var.cloud_init_script == null ? "SCRIPT-NOT-SET" : var.cloud_init_script
 }

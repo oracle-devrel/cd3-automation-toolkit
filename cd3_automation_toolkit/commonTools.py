@@ -300,7 +300,7 @@ class commonTools():
         # replace special characters and spaces with '_' and convert to lowercase
         # replaces multiple occurrence of '_' to just 1
         var_name = var_name.strip()
-        var_name = re.sub('[@!#$%^&*<>?/}{~: \n()|]', '_', var_name).lower()
+        var_name = re.sub('[@!#$%^&*<>?/}{~: \n()|-]', '_', var_name).lower()
         var_name = re.sub('_+', '_', var_name).lower()
         return var_name
 

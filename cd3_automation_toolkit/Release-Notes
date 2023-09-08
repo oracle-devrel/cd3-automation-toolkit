@@ -1,4 +1,14 @@
 ----------------------------------
+CD3 Automation Toolkit Tag v12
+----------------------------------
+1. Introduced new service -Network Sources
+2. Added support for multiple Exa VM Clusters on single Exa Infra
+3. Added support for OCVS standard shapes
+4. Revisited Instance Terraform to support plugins, additional attributes like secure boot etc.
+5. Added validator for buckets
+6. Bug fix wrt NLB, DNS Resolver
+
+----------------------------------
 CD3 Automation Toolkit Tag v11.1
 ----------------------------------
 1. Python code tuning for fetch compartment OCIDs for RM stack upload and CD3Validator.

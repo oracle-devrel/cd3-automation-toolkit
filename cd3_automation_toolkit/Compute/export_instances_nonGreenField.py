@@ -7,22 +7,17 @@ import re
 import sys
 import oci
 import os
-from oci.config import DEFAULT_LOCATION
-from pathlib import Path
 sys.path.append(os.getcwd() + "/..")
 from commonTools import *
-from jinja2 import Environment, FileSystemLoader
 
 
 def adding_columns_values(region, ad, fd, vs, publicip, privateip, os_dname, shape, key_name, c_name,
-                          bkp_policy_name, nsgs, d_host, instance_data, values_for_column_instances,  bdet,
-                          cpcn,shape_config,vnic_info,vnic_defined_tags,vnic_freeform_tags,launch_options):
-    # print("CPCN=",cpcn)
+                          bkp_policy_name, nsgs, d_host, instance_data, values_for_column_instances, bdet,
+                          cpcn, shape_config, vnic_info, vnic_defined_tags, vnic_freeform_tags, launch_options,avail_config,ins_options,
+                          platform_config, plugin_config):
     for col_header in values_for_column_instances.keys():
         if (col_header == "Region"):
             values_for_column_instances[col_header].append(region)
-        #elif (col_header == "Hostname"):
-        #    values_for_column_instances[col_header].append(hostname)
         elif (col_header == "Availability Domain(AD1|AD2|AD3)"):
             values_for_column_instances[col_header].append(ad)
         elif (col_header == "Fault Domain"):
@@ -51,7 +46,16 @@ def adding_columns_values(region, ad, fd, vs, publicip, privateip, os_dname, sha
             values_for_column_instances[col_header].append(vnic_freeform_tags)
         elif (col_header == "VNIC Display Name"):
             values_for_column_instances[col_header].append(vnic_info.display_name)
-        elif (col_header == "Dedicated VM Host"):
+
+        elif(col_header.lower().startswith("plugin")):
+            col_temp = col_header.lower().replace("plugin","")
+            col_temp=col_temp.strip()
+            col_temp=col_temp.strip("_")
+            col_temp=col_temp.replace(" ","_")
+            col_temp = col_temp.replace("-", "_")
+            values_for_column_instances[col_header].append(plugin_config.get(col_temp))
+
+        elif(col_header == "Dedicated VM Host"):
             if (d_host == None):
                 values_for_column_instances[col_header].append('')
             else:
@@ -62,12 +66,12 @@ def adding_columns_values(region, ad, fd, vs, publicip, privateip, os_dname, sha
             values_for_column_instances = commonTools.export_tags(instance_data, col_header,
                                                                   values_for_column_instances)
         else:
-            oci_objs = [instance_data, bdet,shape_config,vnic_info,d_host,launch_options]
+            oci_objs = [instance_data, bdet, shape_config, vnic_info, d_host, launch_options, avail_config, ins_options, platform_config]
             values_for_column_instances = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict_instances,
                                                                            values_for_column_instances)
 
 
-def find_vnic(ins_id, config,compartment_id):
+def find_vnic(ins_id, config, compartment_id):
     compute = oci.core.ComputeClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
     #for comp in all_compartments:
     net = oci.pagination.list_call_get_all_results(compute.list_vnic_attachments, compartment_id=compartment_id,
@@ -76,8 +80,7 @@ def find_vnic(ins_id, config,compartment_id):
         return net
 
 
-
-def __get_instances_info(compartment_name, compartment_id, reg_name, config,display_names, ad_names,ct):
+def __get_instances_info(compartment_name, compartment_id, reg_name, config, display_names, ad_names, ct):
     config.__setitem__("region", ct.region_dict[reg_name])
     compute = oci.core.ComputeClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
     network = oci.core.VirtualNetworkClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
@@ -244,9 +247,21 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, config,disp
                 os_dname = "bootVolume::" + os_dname
 
             launch_options = ins.launch_options
+            avail_config = ins.availability_config
+            ins_options = ins.instance_options
+            platform_data = ins.platform_config
+            plugins_config = getattr(ins.agent_config, 'plugins_config')
+            plugin_config = {}
+            if plugins_config is not None:
+                for item in plugins_config:
+                    plugin_config[getattr(item, 'name').lower().replace(" ","_").replace("-","_")] = getattr(item, 'desired_state')
+
             adding_columns_values(reg_name.title(), AD_name, ins_fd, vs, publicip, privateip, os_dname,
-                                      ins_shape, key_name, compartment_name, bkp_policy_name, nsg_names, dedicated_host,
-                                      ins, values_for_column_instances, bdet, cpcn,shape_config, vnic_info, vnic_defined_tags, vnic_freeform_tags, launch_options)
+                                  ins_shape, key_name, compartment_name, bkp_policy_name, nsg_names, dedicated_host,
+                                  ins, values_for_column_instances, bdet, cpcn, shape_config, vnic_info,
+                                  vnic_defined_tags, vnic_freeform_tags, launch_options,avail_config,ins_options,
+                                  platform_data, plugin_config)
+
 
 # Execution of the code begins here
 def export_instances(inputfile, outdir, service_dir,config,ct, export_compartments=[], export_regions=[],display_names=[],ad_names=[]):

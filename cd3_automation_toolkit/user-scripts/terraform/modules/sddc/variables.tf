@@ -227,6 +227,16 @@ variable "network_compartment_id" {
   default     = null
 }
 
+variable "management_datastore" {
+ type = list(string)
+ default = []
+}
+
+variable "workload_datastore" {
+ type = list(string)
+ default = []
+}
+
 
 
 
