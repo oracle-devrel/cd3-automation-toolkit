@@ -127,3 +127,8 @@
   ![image](https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/5a50cdb5-b6cf-49fa-b488-1419d32c6b13)
   This occurs when NSG and the VCN are in different compartments. In such cases, please modify <prefix>_nsgs.auto.tfvars, specify the compartment name of the VCN in network_compartment_id field of the problematic NSG.
 
+- Terraform ordering changes observed during plan phase for OCI compute plugin's.
+  ![image](https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103548537/f6a2d481-5e79-484b-a24e-a8329e8b6626)
+
+  It changes the order of plugin's in terraform state file and doesn't change anything in OCI for compute resource.
+
