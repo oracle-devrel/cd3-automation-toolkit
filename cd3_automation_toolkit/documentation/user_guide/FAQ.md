@@ -71,5 +71,7 @@ Please refer the screenshots below -
 
 **9. Ordering changes observed during terraform plan for OCI compute plugin's.**
 
+![image](https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103548537/acb3299b-5e1a-4f85-87aa-66a4288729db)
+
 It only changes the order of plugin's and won't change anything in OCI console.
 <br> 
