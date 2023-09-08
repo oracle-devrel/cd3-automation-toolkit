@@ -22,13 +22,14 @@ Our carefully crafted policies act as gatekeepers, preventing any IAC deployment
          terraform plan -out tfplan.binary
 	     terraform show -json tfplan.binary > tfplan.json
 
- 4. Run the following command to evaluate the "deny_ingress_for_sl.rego" policy with a pretty output format:
+ 4. Run the terraform plan against all the available OPA rules. It should return an empty array which means the plan has no non-compliant action against CIS benchmarks.
 
-         opa eval -f pretty -d <OPA_POLICY_BUNDLE_DIR>/Networking/oci_deny_ingress_for_sl.rego -i <the_plan_json_file> data.terraform.deny
+        opa eval -f pretty -b /cd3user/oci_tools/cd3_automation_toolkit/user-scripts/OPA -i tfplan.json data.terraform.deny --fail-defined
 
-    This command will analyze the "tfplan.json" input file against the policy and display the evaluation results with a user-friendly format.
+    
+Alternatively, run the following command to evaluate just a sinle OPA rule say "deny_ingress_for_sl.rego" policy with a pretty output format:
+
+        opa eval -f pretty -d /cd3user/oci_tools/cd3_automation_toolkit/user-scripts/OPA/Networking/oci_deny_ingress_for_sl.rego -i tfplan.json data.terraform.deny
 
 
- 5. Also, We can run only one cmd which will run the terraform plan against all the available OPA rules.It should return an empty array which means the plan has no non-compliant action against CIS benchmarks.
-
-         opa eval -f pretty -b <<OPA_POLICY_BUNDLE_DIR>> -i <the_plan_json_file> data.terraform.deny --fail-defined
+This command will analyze the "tfplan.json" input file against the policy and display the evaluation results with a user-friendly format.
