@@ -1277,17 +1277,36 @@ def validate_tags(filename,comp_ids):
         return False
 
 def validate_buckets(filename, comp_ids):
+    # Initialize the flag to False for each bucket
     buckets_empty_check = False
     buckets_invalid_check = False
     buckets_comp_check = False
-    # Initialize the flag to False for each bucket
-    lifecycle_policy_name_specified = False
+    bucket_reg_check = False
+    bucket_name_check = False
 
     # Read the Compartments tab from excel
     dfbuckets = data_frame(filename, 'Buckets')
 
     for i in dfbuckets.index:
         region = str(dfbuckets.loc[i, 'Region']).strip().lower()
+        lifecycle_all_columns = ['Lifecycle Policy Name', 'Lifecycle Target and Action',
+                                       'Lifecycle Policy Enabled', 'Lifecycle Rule Period','Lifecyle Exclusion Patterns','Lifecyle Inclusion Patterns','Lifecyle Inclusion Prefixes']
+
+        lifecycle_mandatory_columns = ['Lifecycle Policy Name','Lifecycle Target and Action','Lifecycle Policy Enabled','Lifecycle Rule Period']
+        lifecycle_input = False
+        for columns in lifecycle_all_columns:
+            column_value = str(dfbuckets.loc[i, columns]).strip().lower()
+            if column_value != 'nan':
+                lifecycle_input = True
+                data_column = columns
+        if lifecycle_input == True:
+            for columns in lifecycle_mandatory_columns:
+                column_value = str(dfbuckets.loc[i, columns]).strip().lower()
+                if column_value == 'nan':
+                    log(f'ROW {i + 3} : {columns} cannot be empty as column {data_column} has data.')
+                    buckets_invalid_check = True
+
+
         # Encountered <End>
         if (region in commonTools.endNames):
             break
@@ -1296,7 +1315,7 @@ def validate_buckets(filename, comp_ids):
             buckets_empty_check = True
         elif region not in ct.all_regions:
             log(f'ROW {i + 3} : "Region" {region} is not subscribed for tenancy.')
-            buckets_comp_check = True
+            bucket_reg_check = True
 
         # Check for invalid Compartment Name
         comp_name = str(dfbuckets.loc[i, 'Compartment Name']).strip()
@@ -1307,7 +1326,7 @@ def validate_buckets(filename, comp_ids):
             try:
                 comp_id = comp_ids[comp_name]
             except KeyError:
-                log(f'ROW {i + 3} : Compartment {comp_name} doesnot exist in OCI.')
+                log(f'ROW {i + 3} : Compartment {comp_name} does not exist in OCI.')
                 buckets_comp_check = True
 
         # Check for invalid Bucket Name
@@ -1315,6 +1334,13 @@ def validate_buckets(filename, comp_ids):
         if bucket_name.lower() == 'nan' or bucket_name == '':
             log(f'ROW {i + 3} : Empty value at column "Bucket Name".')
             buckets_empty_check = True
+        else:
+            if re.match("^[A-Za-z0-9_.-]*$", bucket_name.lower()):
+                bucket_name_check = False
+            else:
+                bucket_name_check = True
+                log(f'ROW {i + 3} : "Bucket Name" can only contain letters (upper or lower case), numbers, hyphens, underscores, and periods.')
+
 
         # List of the column headers
         dfcolumns = dfbuckets.columns.values.tolist()
@@ -1324,58 +1350,35 @@ def validate_buckets(filename, comp_ids):
             columnvalue = str(dfbuckets.loc[i, columnname]).strip()
 
             if columnname == 'Storage Tier':
-                columnvalue = str(columnvalue).strip()
-                if columnvalue != 'Standard' and columnvalue != 'Archive':
+                if columnvalue.lower() not in ['standard','archive']:
                     log(f'ROW {i + 3} : Value of "Storage Tier" can be only either "Standard" or "Archive".')
                     buckets_invalid_check = True
 
-                if ' ' in columnvalue or '.' in columnvalue:
-                    log(f'ROW {i + 3} : Spaces and Periods are not allowed in Storage Tier.')
-                    buckets_invalid_check = True
 
             if columnname == 'Auto Tiering':
-                columnvalue = str(columnvalue).strip()
-                if columnvalue != 'Enabled' and columnvalue != 'Disabled':
+                if columnvalue.lower() not in ['enabled','disabled']:
                     log(f'ROW {i + 3} : Value of "Auto Tiering" can be only either "Enabled" or "Disabled".')
                     buckets_invalid_check = True
 
-                if ' ' in columnvalue or '.' in columnvalue:
-                    log(f'ROW {i + 3} : Spaces and Periods are not allowed in Auto Tiering.')
-                    buckets_invalid_check = True
 
             if columnname == 'Object Versioning':
-                columnvalue = str(columnvalue).strip()
-                if columnvalue != 'Enabled' and columnvalue != 'Disabled':
+                if columnvalue.lower() not in ['enabled','disabled']:
                     log(f'ROW {i + 3} : Value of "Object Versioning" can be only either "Enabled" or "Disabled".')
                     buckets_invalid_check = True
 
-                if ' ' in columnvalue or '.' in columnvalue:
-                    log(f'ROW {i + 3} : Spaces and Periods are not allowed in Object Versioning.')
-                    buckets_invalid_check = True
-
             if columnname == 'Emit Object Events':
-                columnvalue = str(columnvalue).strip()
-                if columnvalue != 'Enabled' and columnvalue != 'Disabled':
+                if columnvalue.lower() not in ['enabled','disabled']:
                     log(f'ROW {i + 3} : Value of "Emit Object Events" can be only either "Enabled" or "Disabled".')
                     buckets_invalid_check = True
 
-                if ' ' in columnvalue or '.' in columnvalue:
-                    log(f'ROW {i + 3} : Spaces and Periods are not allowed in Emit Object Events.')
-                    buckets_invalid_check = True
 
             if columnname == 'Visibility':
-                columnvalue = str(columnvalue).strip()
-                if columnvalue != 'Private' and columnvalue != 'Public':
+                if columnvalue.lower() not in ['private','public']:
                     log(f'ROW {i + 3} : Value of "Visibility" can be only either "Private" or "Public".')
-                    buckets_invalid_check = True
-
-                if ' ' in columnvalue or '.' in columnvalue:
-                    log(f'ROW {i + 3} : Spaces and Periods are not allowed in Visibility.')
                     buckets_invalid_check = True
 
             #Check for valid destination region for enabling the replication policy
             if columnname == 'Replication Policy':
-                columnvalue = str(columnvalue).strip()
                 columnvalue= columnvalue.split("::")
                 if len(columnvalue) == 3 and all(columnvalue):
                  replication_policy_name = columnvalue[0]
@@ -1388,7 +1391,6 @@ def validate_buckets(filename, comp_ids):
 
             #Check for the retention policy details
             if columnname == 'Retention Rules':
-                columnvalue = str(dfbuckets[columnname][i])
                 rule_values = columnvalue.split("\n")
                 retention_rules = []
                 for rule in rule_values:
@@ -1440,52 +1442,35 @@ def validate_buckets(filename, comp_ids):
                                     continue
 
             # Check for the Lifecycle Policy Details
-            if columnname == 'Lifecycle Policy Name':
-                columnvalue = str(dfbuckets[columnname][i])
-                if columnvalue != "":
-                    lifecycle_policy_name = columnvalue
-                    lifecycle_policy_name_specified = True
+            if lifecycle_input == True:
+                # Define the valid options for the "Lifecycle Target and Action" column
+                valid_options = [
+                    'objects::ARCHIVE',
+                    'objects::INFREQUENT_ACCESS',
+                    'objects::Delete',
+                    'previous-object-versions::Archive',
+                    'previous-object-versions::Delete',
+                    'multipart-uploads::Abort'
+                ]
 
-            # Check if Lifecycle Policy Name is empty
-            # Define the valid options for the "Lifecycle Target and Action" column
-            valid_options = [
-                'objects::ARCHIVE',
-                'objects::INFREQUENT_ACCESS',
-                'objects::Delete',
-                'previous-object-versions::Archive',
-                'previous-object-versions::Delete',
-                'multipart-uploads::Abort'
-            ]
 
-            if lifecycle_policy_name_specified:
                 # Check if "Lifecycle Target and Action" is empty
                 if columnname == 'Lifecycle Target and Action':
-                    columnvalue = str(dfbuckets[columnname][i])
-                    if columnvalue == 'nan':
-                        log(f'ROW {i + 3} : "Lifecycle Target and Action" cannot be empty.')
-                        buckets_invalid_check = True
-                    elif columnvalue not in valid_options:
+                    if columnvalue != 'nan' and columnvalue not in valid_options:
                         log(f'ROW {i + 3} : Invalid value in "Lifecycle Target and Action" column. '
                             f'Allowed options are: {", ".join(valid_options)}.')
                         buckets_invalid_check = True
 
                 # Check if "Lifecycle Policy Enabled" is empty
                 if columnname == 'Lifecycle Policy Enabled':
-                    columnvalue = str(dfbuckets[columnname][i])
-                    if columnvalue == 'nan':
-                      log(f'ROW {i + 3} : "Lifecycle Policy Enabled" cannot be empty.')
-                      buckets_invalid_check = True
-                    elif columnvalue not in ['True', 'False']:
-                      log(f'ROW {i + 3} : "Lifecycle Policy Enabled" must be either "True" or "False".')
+                    if columnvalue != 'nan' and columnvalue.lower() not in ['true', 'false']:
+                      log(f'ROW {i + 3} : "Lifecycle Policy Enabled" must be either "TRUE" or "FALSE".')
                       buckets_invalid_check = True
 
                 # Check if "Lifecycle Rule Period" is empty
                 if columnname == 'Lifecycle Rule Period':
                     # Merge the checks for "Lifecycle Rule Period"
-                    if columnvalue == 'nan':
-                        log(f'ROW {i + 3} : "Lifecycle Rule Period" cannot be empty.')
-                        buckets_invalid_check = True
-                    else:
+                    if columnvalue != 'nan':
                         columnvalue = columnvalue.upper()
                         columnvalue = columnvalue.split("::")
                         if len(columnvalue) == 2:
@@ -1497,11 +1482,14 @@ def validate_buckets(filename, comp_ids):
                                 buckets_invalid_check = True
 
                             # Check that time_unit is either "DAYS" or "YEARS"
-                            if time_unit not in ["DAYS", "YEARS"]:
+                            if time_unit not in ['days','years']:
                                 log(f'ROW {i + 3} : Invalid time amount. "Lifecycle Rule Period" must be "DAYS" or "YEARS".')
                                 buckets_invalid_check = True
+                        else:
+                            log(f'ROW {i + 3} : Invalid format for  "Lifecycle Rule Period" ')
+                            buckets_invalid_check = True
 
-    if (buckets_empty_check == True or buckets_invalid_check == True or buckets_comp_check == True):
+    if (buckets_empty_check == True or buckets_invalid_check == True or buckets_comp_check == True or bucket_reg_check == True or bucket_name_check == True):
         print("Null or Wrong value Check failed!!")
         return True
     else:
