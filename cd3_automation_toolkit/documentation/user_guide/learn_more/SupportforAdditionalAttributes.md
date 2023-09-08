@@ -16,7 +16,7 @@
 <img src =https://user-images.githubusercontent.com/115973871/215402830-d7856e2d-0bd9-43b9-94bd-df039a90b942.png width=50% height=50%>
 
 
-Uncomment the parameter in **instance.tf** file as shown below.
+Uncomment the parameter in **instance.tf** file if not already uncommented.
 
 <img src =https://user-images.githubusercontent.com/115973871/215402973-72857dbd-5efd-40d9-8a7f-3541eb85af66.png width=50% height=50%>
 
