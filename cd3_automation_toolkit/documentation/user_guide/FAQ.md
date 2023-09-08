@@ -67,10 +67,3 @@ When you are running the docker container from a Linux OS, if the outdir is on t
 Please refer the screenshots below -
 ![image](https://user-images.githubusercontent.com/103508105/215455637-4bcaac18-269d-4029-b273-2214b719563f.png)
 <br>           - Alternately, please attach a data disk and map the container (/cd3user/tenancies) on a folder that is created on the data disk (your local folder).
-
-
-**9. Terraform plan changes the order of plugins for OCI compute plugins.**
-![image](https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103548537/4879d074-6353-4de8-83e0-7cf4b61c8cad)
-
-It only changes the order of plugin's and won't change anything in OCI console.
-<br> 
