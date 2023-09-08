@@ -69,3 +69,7 @@ Please refer the screenshots below -
 <br>           - Alternately, please attach a data disk and map the container (/cd3user/tenancies) on a folder that is created on the data disk (your local folder).
 
 
+**9. Ordering changes observed during terraform plan for OCI compute plugin's.**
+
+It only changes the order of plugin's and won't change anything in OCI console.
+<br> 
