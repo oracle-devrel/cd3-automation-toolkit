@@ -6,7 +6,8 @@ CD3 Automation Toolkit Tag v12
 3. Added support for OCVS standard shapes
 4. Revisited Instance Terraform to support plugins, additional attributes like secure boot etc.
 5. Added validator for buckets
-6. Bug fix wrt NLB, DNS Resolver
+6. Bug fix for NLB, DNS Resolver.
+7. Introduced alpha release of OPA policies
 
 ----------------------------------
 CD3 Automation Toolkit Tag v11.1
