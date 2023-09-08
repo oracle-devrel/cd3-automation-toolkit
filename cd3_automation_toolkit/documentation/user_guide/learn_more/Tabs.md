@@ -66,7 +66,8 @@ Output terraform file generated: \<outdir>/\<region>/\<prefix>_networksources.au
 Once terraform apply is done, you can view the resources under Identity & Security -> Network Sources in OCI console.
   
 On re-running the same option you will find the previously existing files being backed up under directory → \<outdir>/\<region>/backup_networksources/\<Date>-<Month>-<Time>.
-  
+
+Note - Network Source creation/updation is supported only in the home region.  
     
 
 ## Tags Tab
