@@ -37,8 +37,7 @@ enforce_data_in_transit_encryption {
     resource_type := input.planned_values.root_module.child_modules[_].resources[_].type
     resource := input.planned_values.root_module.child_modules[_].resources[_].instances[_].attributes
 
-    (resource_type == "oci_autonomous_database" ||
-     resource_type == "oci_load_balancer_listener") &&
+    resource_type == "oci_autonomous_database"
     resource.is_ssl_enabled
 }
 
