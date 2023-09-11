@@ -16,7 +16,6 @@ enforce_container_engine_config {
     container.is_private_cluster
     container.is_encryption_enabled
     container.is_pod_security_policy_enabled
-    #container.defined_tags["cis.cis-benchmark"] == "true"
 }
 
 #To enforce secure configuration for container instances
@@ -30,7 +29,6 @@ enforce_container_instance_config {
     container.is_image_signature_verification_enabled
     container.is_kubernetes_dashboard_disabled
     container.is_node_public_access_disabled
-    #container.defined_tags["cis.cis-benchmark"] == "true"
 }
 
 #To enforce secure configuration for container clusters

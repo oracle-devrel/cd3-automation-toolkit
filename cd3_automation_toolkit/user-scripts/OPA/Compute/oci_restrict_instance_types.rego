@@ -20,13 +20,13 @@ allowed_instance_types = {
 default allow = false
 
 # Deny creation of instances with disallowed instance types
-deny {
+deny_instances {
     input.resource.type == "oci_compute_instance"
     instance_type := input.resource.conf.instance_type
-    not instance_types.allowed_instance_types[instance_type]
+    not instance_type.allowed_instance_types[instance_type]
 }
 
 # Allow all other resource types
 allow {
-    not deny
+    not deny_instances
 }
