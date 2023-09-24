@@ -42,7 +42,7 @@ prefix=
 #input config file for Python API communication with OCI eg /cd3user/tenancies/<customer_name>/<customer_name>_config;
 config_file=
 
-#path to cd3 excel eg /cd3user/tenancies/<customer_name>\CD3-Customer.xlsx
+#path to cd3 excel eg /cd3user/tenancies/<customer_name>/CD3-Customer.xlsx
 cd3file=
 
 #Is it Non GreenField tenancy
