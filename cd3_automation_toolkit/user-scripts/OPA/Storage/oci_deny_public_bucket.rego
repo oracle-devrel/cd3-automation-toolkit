@@ -5,11 +5,15 @@ package terraform
 #Ensure versioning is enabled for buckets.
 import input as tfplan
 
+
 deny[reason] {
 	r = tfplan.resource_changes[_]
 	r.mode == "managed"
 	r.type == "oci_objectstorage_bucket"
 	r.change.after.access_type == "ObjectRead"
+#	r.change.after.kms_key_id == null
+#    r.change.after.versioning == "Disabled"
+
 	reason := sprintf("%-40s :: OCI buckets must be private as per CIS standard's",
 	                    [r.address])
 }
@@ -19,6 +23,7 @@ deny[reason] {
 	r.mode == "managed"
 	r.type == "oci_objectstorage_bucket"
 	r.change.after.kms_key_id == null
+
 	reason := sprintf("%-40s :: OCI buckets must be encrypted with CMK as per CIS standard's",
 	                    [r.address])
 }
@@ -27,7 +32,8 @@ deny[reason] {
 	r = tfplan.resource_changes[_]
 	r.mode == "managed"
 	r.type == "oci_objectstorage_bucket"
-        r.change.after.versioning == "Disabled"
+   r.change.after.versioning == "Disabled"
+
 	reason := sprintf("%-40s :: OCI buckets should be private/versioning enabled/encrypted with CMK as per CIS standard's",
 	                    [r.address])
 }

@@ -14,26 +14,36 @@ locals {
     }
   ]])
 
-  ds_vols = flatten([
-    for key, val in var.sddcs : [
-    for item in (try (concat(val.management_datastore, val.workload_datastore),[])): {
-    volume_compartment_id = split("@", item)[0]
-    volume_display_name = split("@", item)[1]
-    }
-        ]
-  ])
-  management_datastores = { for key,val in var.sddcs : key =>
-   try([for value in val.management_datastore: data.oci_core_volumes.ds_volumes[split("@", value)[1]].volumes.*.id[0]],[])
+  ds_vols = flatten([ for key, val in var.sddcs : [
+  for item in concat(local.mgmt_vols[val.display_name],local.wkld_vols[val.display_name]): {
+  volume_display_name = item.volume_display_name
+  volume_compartment_id = item.volume_compartment_id
+  }
+  ]])
+
+  mgmt_vols = { for key, val in var.sddcs :
+     val.display_name =>  try([for item in val.management_datastore: {
+    volume_compartment_id = try(split("@", item)[0],null)
+    volume_display_name = try(split("@", item)[1],null)
+    }],[])}
+
+  wkld_vols = { for key, val in var.sddcs :
+     val.display_name => try([ for item in val.workload_datastore:
+    {
+    volume_compartment_id = try(split("@", item)[0],null)
+    volume_display_name = try(split("@", item)[1],null)
+     }] ,[])}
+
+ management_datastores = { for key,val in var.sddcs : key => (val.management_datastore != null ? [for value in val.management_datastore: data.oci_core_volumes.ds_volumes[split("@", value)[1]].volumes.*.id[0]] : [])
   }
 
- workload_datastores = {for key,val in var.sddcs: key =>
- try([for value in val.workload_datastore: data.oci_core_volumes.ds_volumes[split("@", value)[1]].volumes.*.id[0]],[])
+ workload_datastores = {for key,val in var.sddcs: key => (val.workload_datastore != null ? [for value in val.workload_datastore: data.oci_core_volumes.ds_volumes[split("@", value)[1]].volumes.*.id[0]] : [])
              }
  }
 
 
 data "oci_core_volumes" "ds_volumes" {
-    for_each = {for value in local.ds_vols : value.volume_display_name => value.volume_compartment_id if local.ds_vols != null }
+    for_each = {for value in local.ds_vols : value.volume_display_name => value.volume_compartment_id if value.volume_display_name != null }
     compartment_id = each.value != null ? (length(regexall("ocid1.compartment.oc1*", each.value)) > 0 ? each.value : var.compartment_ocids[each.value]) : var.compartment_ocids[each.value]
     display_name = each.key
     state = "AVAILABLE"
