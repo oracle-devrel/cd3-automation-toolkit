@@ -1,4 +1,10 @@
 ----------------------------------
+CD3 Automation Toolkit Tag v12.1
+----------------------------------
+1. Bug fix for SDDC
+2. Bug fix for OPA rules
+
+----------------------------------
 CD3 Automation Toolkit Tag v12
 ----------------------------------
 1. Introduced new service -Network Sources
