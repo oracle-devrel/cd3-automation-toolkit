@@ -1479,8 +1479,8 @@ variable "sddcs" {
     replication_vlan_id                   = optional(string)
     reserving_hcx_on_premise_license_keys = optional(string)
     workload_network_cidr                 = optional(string)
-    management_datastore                  = optional(list(string),[])
-    workload_datastore                    = optional(list(string),[])
+    management_datastore                  = optional(list(string))
+    workload_datastore                    = optional(list(string))
 
   }))
   default = {}

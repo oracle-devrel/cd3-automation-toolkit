@@ -156,9 +156,9 @@ resource "null_resource" "ansible-remote-exec" {
     inline = [
       "sudo dnf install -y epel-release",
       "sudo dnf install ansible -y",
-      "sudo ansible --version",
       "sudo ansible-galaxy collection install community.general",
       "sudo ansible-galaxy collection install ansible.posix",
+      "sudo ansible --version",
       "sudo chmod 777 /home/opc/${local.remote_execute_script}",
       "sudo touch /etc/cron.d/ansible",
       "sudo chmod 600 /etc/cron.d/ansible",
