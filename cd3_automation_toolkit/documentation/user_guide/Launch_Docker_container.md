@@ -29,6 +29,7 @@ To ease the execution of toolkit, we have provided the steps to build an image w
 
 ## Run the CD3 container
 * Run  ```docker run --platform linux/amd64 -it -d -v <directory_in_local_system_where_the_files_must_be_generated>:/cd3user/tenancies <image_name>:<image_tag>```
+<br>eg for Windows: ```docker run --platform linux/amd64 -it -d -v D:/docker-projects:/cd3user/tenancies cd3toolkit:v12.1```
 * Run  ```docker ps```
 
 <br><br>
