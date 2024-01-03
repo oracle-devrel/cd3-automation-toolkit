@@ -10,7 +10,7 @@ Follow below steps to use API key-based authentication -
 1. Create API PEM Key - RSA key pair in PEM format (minimum 2048 bits) is needed to use OCI APIs.
    <br>
    If the key pair does not exist, create them using below command inside docker container:
-   <br>```cd /cd3user/oci_tools/cd3_automation_toolkit/user_scripts```
+   <br>```cd /cd3user/oci_tools/cd3_automation_toolkit/user-scripts/```
    <br>```python createAPIKey.py```
    <br>
 → This will generate the public/private key pair (oci_api_public.pem and oci_api_private.pem) at /cd3user/tenancies/keys/
