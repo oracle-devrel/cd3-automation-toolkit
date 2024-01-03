@@ -7,8 +7,6 @@
 * Run  ```docker ps```.
 <br> → Note down the container ID from this cmd output.
 * Run  ```docker exec -it <container_id> bash```
-<br>Change Directory to 'user-scripts'
-<br>```cd /cd3user/oci_tools/cd3_automation_toolkit/user-scripts/```
 
 <a href = "/cd3_automation_toolkit/documentation/user_guide/Auth_Mechanisms_in_OCI.md">**Step 2 - Choose Authentication Mechanism**</a>
 
