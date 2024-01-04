@@ -97,8 +97,8 @@ Initialise your environment to use the Automation Toolkit.
 **Note** - If the API Keys were generated and added to the OCI console using previous steps, it might take a couple of seconds to reflect. Thus, running the above command immediately might result in Authentication Errors.<br>In such cases, please retry after a minute.
 <br>
 
-→ Example execution of the script:
-<br> ![image](https://user-images.githubusercontent.com/103508105/221942089-5c52b221-96f1-4a73-9a10-46159ae4a75c.png)
+→ Example execution of the script when using Advanced Parameters for CI/CD:
+<img width="1183" alt="Screenshot 2024-01-04 at 7 40 17 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/3b6d60fd-424f-42a7-86ce-a49c7eba5554">
 
 
 ## Appendix
@@ -106,13 +106,15 @@ Initialise your environment to use the Automation Toolkit.
 
 | Files Generated | At File Path | Comment/Purpose |
 | --------------- | ------------ | --------------- |
-| Config File | ```/cd3user/tenancies/<customer_name>/<customer_name>_config``` | Customer specific Config file is required for OCI API calls. |
+| Config File | ```/cd3user/tenancies/<customer_name>/<customer_name>_config``` | Customer specific Config file is required for OCI API calls. This will have data based on authentication mechanism chosen. |
 | setUpOCI.properties | ```/cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties``` | Customer Specific properties files will be created. |
-| outdir_structure_file | ```/cd3user/tenancies/<customer_name>/<customer_name>_outdir_structure_file``` | Customer Specific properties file for outdir structure.<br> This file will not be generated if 'outdir_structure_file' parameter was set to empty(single outdir) in tenancyconfig.properties while running createTenancy.py |
+| outdir_structure_file.properties | ```/cd3user/tenancies/<customer_name>/<customer_name>_outdir_structure_file``` | Customer Specific properties file for outdir structure.<br> This file will not be generated if 'outdir_structure_file' parameter was set to empty(single outdir) in tenancyconfig.properties while running createTenancy.py |
 | Region based directories | ```/cd3user/tenancies/<customer_name>/terraform_files``` | Tenancy's subscribed regions based directories for the generation of terraform files.<br>Each region directory will contain individual directory for each service based on the parameter 'outdir_structure_file' |
 | Variables File,Provider File, Root and Sub modules | ```/cd3user/tenancies/<customer_name>/terraform_files/<region>``` | Required for terraform to work. |
+| GIT Config File | ```/cd3user/tenancies/<customer_name>/<customer_name>_git_config``` | Customer specific GIT Config file for OCI Dev Ops GIT operations |
+| S3 Credentials File | ```/cd3user/tenancies/<customer_name>/<customer_name>_s3_credentials``` | This file contains access key and secret for S3 compatible OS bucket to manage remote terraform state. |
 | Public and Private Key Pair | Copied from ```/cd3user/tenancies/keys/```<br>to<br>```/cd3user/tenancies/<customer_name>/``` | API Keys that were previously generated are moved to customer specific out directory locations for easy access. |
-| A log file with the commands to execute | ```/cd3user/tenancies/<customer_name>/cmds.log``` | This file contains a copy of the Commands to execute section of the console output. |
+| out file | ```/cd3user/tenancies/<customer_name>/createTenancyConfig.out``` | This file contains a copy of information displayed as the console output. |
 
 
 <br><br>
