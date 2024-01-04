@@ -29,16 +29,16 @@
   <li> <a href="/cd3_automation_toolkit/documentation/user_guide/GreenField.md">Create resources in OCI (Greenfield Workflow)</a>
     <ul>
       <li> <a href="/cd3_automation_toolkit/documentation/user_guide/learn_more/OPAForCompliance.md"</a> Enforcing OPA (Open Policy Agent) policies for Terraform </li>
-      <li> <a href="/cd3_automation_toolkit/documentation/user_guide/NetworkingScenariosGF.md"</a><b> Must Read :</b> Managing Network for Greenfield Tenancies</li>
-      <li> <a href="/cd3_automation_toolkit/documentation/user_guide/ComputeGF.md"</a><b> Must Read :</b> Managing Compute Instances for Greefield Tenancies</li>
+      <li> <a href="/cd3_automation_toolkit/documentation/user_guide/NetworkingScenariosGF.md"</a><b> Must Read :</b> Managing Network for Greenfield Workflow</li>
+      <li> <a href="/cd3_automation_toolkit/documentation/user_guide/ComputeGF.md"</a><b> Must Read :</b> Managing Compute Instances for Greefield Workflow</li>
     </ul>
     </ul>
   </li>
   <ul>
   <li> <a href="/cd3_automation_toolkit/documentation/user_guide/NonGreenField.md">Export Resources from OCI (Non-Greenfield Workflow)</a>
     <ul>
-      <li><a href ="/cd3_automation_toolkit/documentation/user_guide/NetworkingScenariosNGF.md"</a><b> Must Read : </b> Managing Network for Non-Greenfield Tenancies</li>
-       <li><a href = "/cd3_automation_toolkit/documentation/user_guide/ComputeNGF.md"</a><b>  Must Read : </b> Managing Compute Instances for Non-Greenfield Tenancies </li> 
+      <li><a href ="/cd3_automation_toolkit/documentation/user_guide/NetworkingScenariosNGF.md"</a><b> Must Read : </b> Managing Network for Non-Greenfield Workflow</li>
+       <li><a href = "/cd3_automation_toolkit/documentation/user_guide/ComputeNGF.md"</a><b>  Must Read : </b> Managing Compute Instances for Non-Greenfield Workflow </li> 
     </ul>
   </ul>
   
