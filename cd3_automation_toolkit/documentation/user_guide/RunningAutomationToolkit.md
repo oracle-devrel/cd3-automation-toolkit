@@ -1,7 +1,5 @@
 # **Getting Started with Automation Toolkit**
-There are 2 main inputs to the Automation Toolkit.
-- CD3 Excel Sheet
-- setUpOCI.properties
+CD3 Excel sheet is the main input for Automation Toolkit.
 
 ### **Excel Sheet Templates**
 
