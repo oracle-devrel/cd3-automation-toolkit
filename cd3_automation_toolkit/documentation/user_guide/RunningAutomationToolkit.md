@@ -24,7 +24,7 @@ Details on how to fill data into the excel sheet can be found in the Blue sectio
 
 ### **setUpOCI.properties**
 
-**Current Version:  setUpOCI.properties v10.1**
+**Current Version:  setUpOCI.properties v12.2**
 
 Make sure to use/modify the properties file at _/cd3user/tenancies /<customer\_name>/<customer\_name>\_setUpOCI.properties_ during executions.
 
@@ -39,29 +39,34 @@ outdir=
 #prefix for output terraform files eg <customer_name> like demotenancy
 prefix=
 
+# auth mechanism for OCI APIs - api_key,instance_principal,session_token
+auth_mechanism=
+
 #input config file for Python API communication with OCI eg /cd3user/tenancies/<customer_name>/<customer_name>_config;
 config_file=
 
-#path to cd3 excel eg /cd3user/tenancies/<customer_name>/CD3-Customer.xlsx
-cd3file=
-
-#Is it Non GreenField tenancy
-non_gf_tenancy=false
-
 # Leave it blank if you want single outdir or specify outdir_structure_file.properties containing directory structure for OCI services.
 outdir_structure_file=
+
+#path to cd3 excel eg /cd3user/tenancies/<customer_name>\CD3-Customer.xlsx
+cd3file=
+
+#specify create_resources to create new resources in OCI(greenfield workflow)
+#specify export_resources to export resources from OCI(non-greenfield workflow)
+workflow_type=create_resources
 ```
 
 | Variable | Description | Example |
 |---|---|---|
 |outdir|Path to output directory where terraform files will be generated| /cd3user/tenancies/<customer\_name>/terraform\_files|
 |prefix|Prefix for output terraform files|\<customer\_name>|
+|auth_mechanism|Authentication Mechanism for OCI APIs|\api_key|
 |config\_file|Python config file|/cd3user/tenancies/<customer\_name>/config|
-| cd3file |Path to the CD3 input file |/cd3user/tenancies/<customer\_name>/testCD3. xlsx |
-|non\_gf\_tenancy |Specify if its a Non Green field tenancy or not (**True** or **False**)| False|
-|outdir\_structure\_file |Parameter specifying single outdir or different for different services|Blank or <customer\_name>_gc2_outdir_structure_file|
+|outdir\_structure\_file |Parameter specifying single outdir or different for different services|Blank or <customer\_name>_gc2_outdir_structure_file.properties|
+| cd3file |Path to the Excel input file |/cd3user/tenancies/<customer\_name>/testCD3. xlsx |
+|workflow\_type |greenfield workflow or non-greenfield workflow| create_resources for greenfield workflow|
 
-<blockquote>For more information on usage of non_gf_tenancy flag, refer to <a href = /cd3_automation_toolkit/documentation/user_guide/Workflows.md> Automation Toolkit Workflows</a></blockquote>
+<blockquote>For more information on usage of workflow_type parameter, refer to <a href = /cd3_automation_toolkit/documentation/user_guide/Workflows.md> Automation Toolkit Workflows</a></blockquote>
 
 ### **Execution Steps Overview:**
 Choose the appropriate CD3 Excel Sheet and update the setUpOCI.properties file at _/cd3user/tenancies/<customer\_name>/<customer\_name>\_setUpOCI.properties_ and run the commands below:
