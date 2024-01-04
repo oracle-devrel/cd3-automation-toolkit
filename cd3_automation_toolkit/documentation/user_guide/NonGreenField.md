@@ -1,4 +1,4 @@
-# Non-Green Field Tenancies
+# Export Resources from OCI (Non-Greenfield Workflow)
 
   > **Note**
    
