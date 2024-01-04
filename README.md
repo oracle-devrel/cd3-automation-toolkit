@@ -24,7 +24,7 @@
   <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md">Getting Started with Automation Toolkit</a></li>
 
 
-  <li> <a href="/cd3_automation_toolkit/documentation/user_guide/Workflows.md">Using the Automation Toolkit</a>
+  <li> <a href="/cd3_automation_toolkit/documentation/user_guide/Workflows.md">Using the Automation Toolkit via CLI</a>
   <ul>
   <li> <a href="/cd3_automation_toolkit/documentation/user_guide/GreenField.md">Green Field Tenancies</a>
     <ul>
