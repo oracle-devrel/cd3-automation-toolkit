@@ -14,7 +14,7 @@
 * Fill the input parameters in **tenancyconfig.properties** file at /cd3user/oci_tools/cd3_automation_toolkit/user-scripts/. 
 * Please make sure you have the details ready for the authentication mechanism you have chosen. <br>
 * Please make sure to review 'outdir_structure_file' parameter as per requirements. It is recommended to use seperate outdir structure in case the tenancy has large number of objects. <br>
-* Please make sure to review Advanced Parameters Section for CI/CD setup.
+* Please make sure to review Advanced Parameters Section for CI/CD setup and be ready with user details that will be used to connect to DevOps Repo in OCI.
 ```
 [Default]
 
