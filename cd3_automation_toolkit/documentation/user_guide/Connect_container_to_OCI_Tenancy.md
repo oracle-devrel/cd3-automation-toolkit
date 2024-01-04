@@ -114,6 +114,7 @@ Initialise your environment to use the Automation Toolkit.
 | GIT Config File | ```/cd3user/tenancies/<customer_name>/<customer_name>_git_config``` | Customer specific GIT Config file for OCI Dev Ops GIT operations |
 | S3 Credentials File | ```/cd3user/tenancies/<customer_name>/<customer_name>_s3_credentials``` | This file contains access key and secret for S3 compatible OS bucket to manage remote terraform state. |
 | Public and Private Key Pair | Copied from ```/cd3user/tenancies/keys/```<br>to<br>```/cd3user/tenancies/<customer_name>/``` | API Key for authentication mechanism as API_Key are moved to customer specific out directory locations for easy access. |
+| Jenkins Home | ```/cd3user/tenancies/jenkins_home``` | This folder contains jenkins specific data. Single Jenkins instance can be setup for a single container. |
 | out file | ```/cd3user/tenancies/<customer_name>/createTenancyConfig.out``` | This file contains a copy of information displayed as the console output. |
 
 
