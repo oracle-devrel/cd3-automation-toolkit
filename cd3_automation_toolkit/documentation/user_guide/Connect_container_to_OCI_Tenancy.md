@@ -110,10 +110,10 @@ Initialise your environment to use the Automation Toolkit.
 | setUpOCI.properties | ```/cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties``` | Customer Specific properties files will be created. |
 | outdir_structure_file.properties | ```/cd3user/tenancies/<customer_name>/<customer_name>_outdir_structure_file``` | Customer Specific properties file for outdir structure.<br> This file will not be generated if 'outdir_structure_file' parameter was set to empty(single outdir) in tenancyconfig.properties while running createTenancy.py |
 | Region based directories | ```/cd3user/tenancies/<customer_name>/terraform_files``` | Tenancy's subscribed regions based directories for the generation of terraform files.<br>Each region directory will contain individual directory for each service based on the parameter 'outdir_structure_file' |
-| Variables File,Provider File, Root and Sub modules | ```/cd3user/tenancies/<customer_name>/terraform_files/<region>``` | Required for terraform to work. |
+| Variables File,Provider File, Root and Sub terraform modules | ```/cd3user/tenancies/<customer_name>/terraform_files/<region>``` | Required for terraform to work. Variables file and Provider file will be genrated based on authentication mechanism chosen.|
 | GIT Config File | ```/cd3user/tenancies/<customer_name>/<customer_name>_git_config``` | Customer specific GIT Config file for OCI Dev Ops GIT operations |
 | S3 Credentials File | ```/cd3user/tenancies/<customer_name>/<customer_name>_s3_credentials``` | This file contains access key and secret for S3 compatible OS bucket to manage remote terraform state. |
-| Public and Private Key Pair | Copied from ```/cd3user/tenancies/keys/```<br>to<br>```/cd3user/tenancies/<customer_name>/``` | API Keys that were previously generated are moved to customer specific out directory locations for easy access. |
+| Public and Private Key Pair | Copied from ```/cd3user/tenancies/keys/```<br>to<br>```/cd3user/tenancies/<customer_name>/``` | API Key for authentication mechanism as API_Key are moved to customer specific out directory locations for easy access. |
 | out file | ```/cd3user/tenancies/<customer_name>/createTenancyConfig.out``` | This file contains a copy of information displayed as the console output. |
 
 
