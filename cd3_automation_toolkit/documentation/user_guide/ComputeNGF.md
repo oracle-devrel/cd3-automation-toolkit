@@ -1,4 +1,4 @@
-# Managing Compute Instances for Non-Greenfield tenancies
+# Exporting Compute Instances from OCI
 
 Follow the below steps to export OCI compute Instances to CD3 Excel file and create the terraform state:
 
