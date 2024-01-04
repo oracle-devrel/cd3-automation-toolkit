@@ -1,4 +1,4 @@
-# Green Field Tenancies
+# Create resources in OCI (Greenfield Workflow)
 
 ## Detailed Steps
 Below are the steps that will help to configure the Automation Tool Kit to support the Green Field Tenancies:
