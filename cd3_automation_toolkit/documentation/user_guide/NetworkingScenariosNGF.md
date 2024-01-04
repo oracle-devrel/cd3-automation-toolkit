@@ -1,6 +1,6 @@
 # Networking Scenarios
 
-## Managing Network for Non-Greenfield Workflow)
+## Managing Network for Non-Greenfield Workflow
 - [Export Network](#non-greenfield-tenancies)
 - [Add a new or modify the existing networking components](#add-a-new-or-modify-the-existing-networking-components)
 
