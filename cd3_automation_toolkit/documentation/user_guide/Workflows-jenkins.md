@@ -12,6 +12,8 @@
 
 * Access Jenkins URL using -
   - https://\<IP of the Jenkins Host\>:8443/
+    Notes  - 8443 is the port mapped with local system while docker container creation.
+           - Network Connectivity should be allowed on this host and port.
   - It will prompt you to create first user to access Jenkins URL. This will be the admin user.
     
   
