@@ -30,7 +30,8 @@ Follow below steps to use API key-based authentication -
    
 ## Session token-based authentication
 Follow below steps to use Session token-based authentication - 
-1. Set Up Config file inside the container. This is needed to generate session token. You can skip this step if you already have a valid config for a user.
+1. Set Up Config file inside the container. This is needed to generate session token. You can skip this step if you already have a valid config(with API key and Session Token) for a user. In that case, you can copy the config file inside the container at /cd3user/.oci
+
    <br> ```oci session authenticate --no-browser```
    <br> Follow the questions and proceed to generate the config file and public/pruivate key pair at /cd3user/.oci
 
