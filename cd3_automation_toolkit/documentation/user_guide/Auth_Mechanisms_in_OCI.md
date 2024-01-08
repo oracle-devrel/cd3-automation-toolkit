@@ -33,7 +33,7 @@ Follow below steps to use Session token-based authentication -
 1. Set Up Config file inside the container. This is needed to generate session token. You can skip this step if you already have a valid config(with API key and Session Token) for a user. In that case, you can copy the config file inside the container at /cd3user/.oci
 
    <br> ```oci session authenticate --no-browser```
-   <br> Follow the questions and proceed to generate the config file and public/pruivate key pair at /cd3user/.oci
+   <br> Follow the questions and proceed to generate the config file and public/private key pair at /cd3user/.oci
 
    <img width="509" alt="Screenshot 2024-01-04 at 4 43 08 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/d97b6407-8032-40a3-a5d1-98778be867af">
 2. Upload the generated public key to OCI Console for a user.
