@@ -1,6 +1,6 @@
 # Using the Automation Toolkit via Jenkins
 
-### ** Jenkins Configuration**
+### **Jenkins Configuration**
 * Validation of createTenancyConfig.py output:
   - jenkins.properties file should have been created under /cd3user/tenancies/jenkins_home  as per input parameters in tenancyConfig.properties<br>
   - An Object Storage bucket should have been created in OCI in the specified compartment to manage remote state. <br>
