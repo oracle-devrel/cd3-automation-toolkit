@@ -11,7 +11,7 @@
 ```/usr/share/jenkins/jenkins.sh &```
 
 * Access Jenkins URL using -
-  - https://<IP of the Jenkins Host>:8443/
+  - https://\<IP of the Jenkins Host\>:8443/
   - It will prompt you to create first user to access Jenkins URL. This will be the admin user.
     
   
