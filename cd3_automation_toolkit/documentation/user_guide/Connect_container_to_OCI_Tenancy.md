@@ -98,8 +98,10 @@ Initialise your environment to use the Automation Toolkit.
 **Note** - If the API Keys were generated and added to the OCI console using previous steps, it might take a couple of seconds to reflect. Thus, running the above command immediately might result in Authentication Errors.<br>In such cases, please retry after a minute.
 <br>
 
-→ Example execution of the script when using Advanced Parameters for CI/CD:
-<img width="1183" alt="Screenshot 2024-01-04 at 7 40 17 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/3b6d60fd-424f-42a7-86ce-a49c7eba5554">
+→ Example execution of the script with Advanced Parameters for CI/CD:
+
+<img width="1212" alt="Screenshot 2024-01-09 at 6 44 02 AM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/70d754ea-d61a-4f71-9562-b07ef548885f">
+
 
 
 ## Appendix
