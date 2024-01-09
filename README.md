@@ -24,6 +24,14 @@
   <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md">Getting Started with Automation Toolkit</a></li>
 
   <li> <a href="/cd3_automation_toolkit/documentation/user_guide/Workflows-jenkins.md">Using the Automation Toolkit via Jenkins</a>
+    <ul> 
+      <li> <a href="">Initilization of Jenkins environment</a>
+      <li> <a href="">Running SetUpOCI pipeline</a>
+         <ul> 
+           <li> <a href="">Create resources in OCI (Greenfield Workflow)</a>
+           <li> <a href="">Export Resources from OCI (Non-Greenfield Workflow)</a>             
+         </ul>
+    </ul>
   <li> <a href="/cd3_automation_toolkit/documentation/user_guide/Workflows.md">Using the Automation Toolkit via CLI</a>
   <ul>
   <li> <a href="/cd3_automation_toolkit/documentation/user_guide/GreenField.md">Create resources in OCI (Greenfield Workflow)</a>
