@@ -20,7 +20,7 @@
 [Default]
 
 ##################################################################################################################
-                            ## Mandatory Parameters ##
+                            ## Required Parameters ##
 ##################################################################################################################
 
 # Friendly name for the Customer Tenancy eg: demotenancy; The generated .auto.tfvars files will be prefixed with this
@@ -28,6 +28,8 @@
 customer_name=
 
 tenancy_ocid=
+
+# Example: us-phoenix-1
 region=
 
 # Auth Mechanism for OCI APIs - api_key,instance_principal,session_token
@@ -36,7 +38,8 @@ auth_mechanism=api_key
 
 ##################################################################################################################
                             ## Auth Details Parameters ##
-# Required only for API_Key; Leave below params empty if 'instance_principal' or 'session_token' is used
+# Required only for ${auth_mechanism} as api_key; Leave below params empty if 'instance_principal' or 'session_token'
+# is used
 ##################################################################################################################
 
 user_ocid=
@@ -49,33 +52,46 @@ fingerprint=
 ##################################################################################################################
 
 # The outdir_structure_file defines the grouping of the terraform auto.tf.vars for the various generated resources.
-# To have all the files generated in the corresponding region, leave this variable blank.
+# To have all the files generated in a single directory in the corresponding region, leave this variable blank.
 # To group resources into different directories within each region - specify the absolute path to the file.
 # The default file is specified below. You can make changes to the grouping in the below file to suit your deployment
 #outdir_structure_file=
 #or
 outdir_structure_file=/cd3user/oci_tools/cd3_automation_toolkit/user-scripts/outdir_structure_file.properties
 
-# Optional Fields
-# SSH Key for launched instances
+# SSH Key for launched instances; Use '\n' as the delimiter to add multiple ssh keys.
+# Example: "ssh-rsa AAXXX......yhdlo\nssh-rsa AAxxskj...edfwf"
+# Optional
 ssh_public_key=
 
 ##################################################################################################################
                             ## Advanced Parameters for DevOps ##
 # Needed for Jenkins Configuration
+# Below OCI Objects - Remote State Bucket Name and DevOps Project/Repo and a Notification Topic will be created/fetched
+# from region specified in ${region} above.
 ##################################################################################################################
+
+
+# Compartment OCID where Bucket and DevOps Project/repo will be created; defaults to root if left empty.
+compartment_ocid=
 
 # Remote state configuration
 # Enter yes if remote state needs to be configured, else tfstate will be stored on local filesystem.
-use_remote_state=yes
-# bucket with name (${customer_name}-tfstate-bucket) will be created in ${region} if left empty.
+use_remote_state=no
+
+# If left empty then Bucket with name ${customer_name}-tfstate-bucket will be created/reused in ${region}.
 remote_state_bucket_name=
 
 # OCI DevOps GIT configuration
-# Enter yes generated terraform_files need to be stored in OCI DevOps GIT Repo else they will be stored on local
-# filesystem.
-# Will enforce 'yes' for use_remote_state in case below is set to 'yes'
-use_oci_devops_git=yes
+# Enter yes if generated terraform_files need to be stored in OCI DevOps GIT Repo else they will be stored on local
+# filesystem. Will enforce 'yes' for use_remote_state in case below is set to 'yes'
+use_oci_devops_git=no
+
+# If left empty then DevOps items  with names ${customer_name}-automation-toolkit-project/repo/topic will be created/reused
+# in ${region}.
+# Format: <project_name/repo_name>
+oci_devops_git_repo_name=
+
 # User Details to perform GIT operations in OCI Devops GIT Repo; Mandatory when using $(auth_mechanism) as instance_principal
 # or session_token
 # Format: <domainName>/<userName>@<tenancyName> Refer to 'Setting up SSH Authentication' under
@@ -87,9 +103,6 @@ oci_devops_git_user=
 # When left empty, same key file from $(key_path) used for $(auth_mechanism) as api_key will be copied to
 # /cd3user/tenancies/<customer_name>/ and used for GIT Operations.
 oci_devops_git_key=
-
-# Compartment OCID where above OCI objects will be created; defaults to root if left empty.
-compartment_ocid=
 ```
 ### **Step 5 - Initialise the environment**:
 Initialise your environment to use the Automation Toolkit.
