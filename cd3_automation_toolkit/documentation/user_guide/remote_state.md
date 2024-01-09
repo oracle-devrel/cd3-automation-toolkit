@@ -23,6 +23,7 @@
   }  
   ```
 
-* For single outdir, tfstate for all subscribed regions will be stored as ```<region>\tfstate``` eg ```london\terraform.tfstate``` for london ```phoenix\terraform.tfstate``` for phoenix.
+* For single outdir, tfstate for all subscribed regions will be stored as ```<region>\terraform.tfstate``` eg ```london\terraform.tfstate``` for london ```phoenix\terraform.tfstate``` for phoenix.
+* For multi outdir, tfstate for all services in all subscribed regions will be stored as ```<region>\<service_dir_name>\terraform.tfstate``` eg ```london\tagging\terraform.tfstate``` for tagging dir in london region
 
 
