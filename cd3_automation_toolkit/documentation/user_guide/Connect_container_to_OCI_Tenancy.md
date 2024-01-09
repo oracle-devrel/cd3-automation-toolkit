@@ -19,36 +19,34 @@
 ```
 [Default]
 
-####################################################################################
+##################################################################################################################
                             ## Mandatory Parameters ##
-####################################################################################
+##################################################################################################################
 
-# Friendly name for the Customer Tenancy eg: demotenancy; The generated .auto.tfvars files will be prefixed with this customer_name.
+# Friendly name for the Customer Tenancy eg: demotenancy; The generated .auto.tfvars files will be prefixed with this
+# customer_name.
 customer_name=
 
-# Tenancy OCID
 tenancy_ocid=
-
-# Region; defaults to us-ashburn-1 when left empty.
 region=
 
 # Auth Mechanism for OCI APIs - api_key,instance_principal,session_token
 # Please make sure to add IAM policies for user/instance_principal before executing createTenancyConfig.py
 auth_mechanism=api_key
 
-####################################################################################
+##################################################################################################################
                             ## Auth Details Parameters ##
-####################################################################################
-
 # Required only for API_Key; Leave below params empty if 'instance_principal' or 'session_token' is used
+##################################################################################################################
+
 user_ocid=
 #Path of API Private Key (PEM Key) File; Defaults to /cd3user/tenancies/keys/oci_api_private.pem when left empty
 key_path=
 fingerprint=
 
-####################################################################################
+##################################################################################################################
                             ## Deployment Parameters ##
-####################################################################################
+##################################################################################################################
 
 # The outdir_structure_file defines the grouping of the terraform auto.tf.vars for the various generated resources.
 # To have all the files generated in the corresponding region, leave this variable blank.
@@ -62,9 +60,10 @@ outdir_structure_file=/cd3user/oci_tools/cd3_automation_toolkit/user-scripts/out
 # SSH Key for launched instances
 ssh_public_key=
 
-####################################################################################
+##################################################################################################################
                             ## Advanced Parameters for DevOps ##
-####################################################################################
+# Needed for Jenkins Configuration
+##################################################################################################################
 
 # Remote state configuration
 # Enter yes if remote state needs to be configured, else tfstate will be stored on local filesystem.
@@ -73,15 +72,17 @@ use_remote_state=yes
 remote_state_bucket_name=
 
 # OCI DevOps GIT configuration
-# Enter yes if OCI DevOps GIT Repo needs to be configured for generated terraform_files else they will be stored only
-# on local filesystem
+# Enter yes generated terraform_files need to be stored in OCI DevOps GIT Repo else they will be stored on local
+# filesystem.
 # Will enforce 'yes' for use_remote_state in case below is set to 'yes'
 use_oci_devops_git=yes
 # User Details to perform GIT operations in OCI Devops GIT Repo; Mandatory when using $(auth_mechanism) as instance_principal
 # or session_token
-# Format: <domainName>/<userName>@<tenancyName>
-# Refer to 'Setting up SSH Authentication' under https://docs.oracle.com/en-us/iaas/Content/devops/using/ssh_auth.htm
-# When left empty, user name will be fetched from $(user_ocid) for $(auth_mechanism) as api_key.
+# Format: <domainName>/<userName>@<tenancyName> Refer to 'Setting up SSH Authentication' under
+# https://docs.oracle.com/en-us/iaas/Content/devops/using/ssh_auth.htm
+# When left empty, it will be fetched from $(user_ocid) for $(auth_mechanism) as api_key.
+# Customer Secret Key will also be configured for this user for S3 credentials of the bucket when $(auth_mechanism) is
+# instance_principal or session_token
 oci_devops_git_user=
 # When left empty, same key file from $(key_path) used for $(auth_mechanism) as api_key will be copied to
 # /cd3user/tenancies/<customer_name>/ and used for GIT Operations.
@@ -89,7 +90,6 @@ oci_devops_git_key=
 
 # Compartment OCID where above OCI objects will be created; defaults to root if left empty.
 compartment_ocid=
-
 ```
 ### **Step 5 - Initialise the environment**:
 Initialise your environment to use the Automation Toolkit.
