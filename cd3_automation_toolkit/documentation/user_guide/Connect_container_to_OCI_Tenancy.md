@@ -113,7 +113,8 @@ Initialise your environment to use the Automation Toolkit.
 
 → Example execution of the script with Advanced Parameters for CI/CD:
 
-<img width="1212" alt="Screenshot 2024-01-09 at 6 44 02 AM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/70d754ea-d61a-4f71-9562-b07ef548885f">
+<img width="1124" alt="Screenshot 2024-01-10 at 5 54 02 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/7f7cfce9-51ad-4510-9c86-c85b51cd90a6">
+
 
 
 
