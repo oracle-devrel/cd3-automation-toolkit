@@ -1,4 +1,4 @@
-# Running SetUpOCI Pipeline
+# Running setUpOCI Pipeline
 
 ## Detailed Steps
 Below are the steps that will help to build with required parameters.
