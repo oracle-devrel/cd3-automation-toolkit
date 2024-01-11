@@ -26,7 +26,7 @@
   <li> <a href="/cd3_automation_toolkit/documentation/user_guide/Workflows-jenkins.md">Using the Automation Toolkit via Jenkins</a>
     <ul> 
       <li> <a href="">Initilization of Jenkins environment</a>
-      <li> <a href="/cd3_automation_toolkit/documentation/user_guide/Running_SetUpOCI_Pipeline.md">Running SetUpOCI pipeline</a>
+      <li> <a href="/cd3_automation_toolkit/documentation/user_guide/Running_SetUpOCI_Pipeline.md">Running setUpOCI pipeline</a>
          <ul> 
            <li> <a href="">Create resources in OCI (Greenfield Workflow)</a>
            <li> <a href="">Export Resources from OCI (Non-Greenfield Workflow)</a>             
