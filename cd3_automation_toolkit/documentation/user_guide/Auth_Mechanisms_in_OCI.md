@@ -30,22 +30,20 @@ Follow below steps to use API key-based authentication -
    
 ## Session token-based authentication
 Follow below steps to use Session token-based authentication - 
-1. Set Up Config file inside the container. This is needed to generate session token. You can skip this step if you already have a valid config(with API key and Session Token) for a user. In that case, you can copy the config file inside the container at /cd3user/.oci
+1. You could use below command to create config inside the container. This is needed to generate session token. You can skip this step, if you already have a valid config(with API key and Session Token) and uploaded the public key to OCI for a user. In that case, you can copy the config file inside the container at /cd3user/.oci
+   <br>```oci setup config```
 
-   <br> ```oci session authenticate --no-browser```
-   <br> Follow the questions and proceed to generate the config file and public/private key pair at default location - /cd3user/.oci
-
-   <img width="509" alt="Screenshot 2024-01-04 at 4 43 08 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/d97b6407-8032-40a3-a5d1-98778be867af">
-2. Upload the generated public key to OCI Console for a user.
-3. Run the same cmd again. This time it will use the above config file and generate a session token for the private key.
-   <br> ```oci session authenticate --no-browser```
+      <img width="509" alt="Screenshot 2024-01-04 at 4 43 08 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/d97b6407-8032-40a3-a5d1-98778be867af">
+      
+2. Execute ```oci session authenticate --no-browser``` to generate session token for the private key.
    <br> Follow the questions. Enter 'DEFAULT' for the profile name and proceed to generate the config file and session token at default location /cd3user/.oci
-   
+ 
    <img width="721" alt="Screenshot 2024-01-04 at 4 49 53 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/3f65e41c-971f-4e17-8e23-a839317d8912">
-   
+3. Token will be generated at default location /cd3user/.oci     
+
    <img width="512" alt="Screenshot 2024-01-04 at 4 55 17 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/0b3446f6-b69a-49cd-858a-7a14380c4552">
 
-   ```Please note that createTenancyConfig.py script will use the config file located at /cd3user/.oci path. And toolkit supports profile name as DEFAULT only``` The User should have administrator access to the tenacy to use complete functionlaity of the toolkit.
+   ```Please note that createTenancyConfig.py script will use the config file located at /cd3user/.oci path. And toolkit supports profile name as DEFAULT only. Generated session token will have maximum 60 minutes validity. You will have to follow from step 1 if required new session token after expiry.``` The User should have administrator access to the tenacy to use complete functionlaity of the toolkit.
 
 ## Instance principal
 Follow below steps to use Instance Principal authentication - 
