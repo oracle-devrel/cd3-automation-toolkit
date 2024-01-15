@@ -55,7 +55,7 @@ Follow below steps to use Instance Principal authentication -
 <br><br>
 <div align='center'>
 
-| <a href="/cd3_automation_toolkit/documentation/user_guide/Connect_container_to_OCI_Tenancy.md">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/Connect_container_to_OCI_Tenancy.md">Next :arrow_forward:</a> |
+| <a href="/cd3_automation_toolkit/documentation/user_guide/Connect_container_to_OCI_Tenancy.md#step-1---exec-into-the-container">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/Connect_container_to_OCI_Tenancy.md#step-3---edit-tenancyconfigproperties">Next :arrow_forward:</a> |
 | :---- | -------: |
   
 </div>
