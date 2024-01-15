@@ -79,7 +79,8 @@ compartment_ocid=
 # Enter yes if remote state needs to be configured, else tfstate will be stored on local filesystem.
 use_remote_state=no
 
-# If left empty then Bucket with name ${customer_name}-tfstate-bucket will be created/reused in ${region}.
+# Specify bucket name if you want to use existing bucket else leave empty.
+# If left empty, Bucket with name ${customer_name}-tfstate-bucket will be created/reused in ${region}.
 remote_state_bucket_name=
 
 # OCI DevOps GIT configuration
@@ -87,15 +88,14 @@ remote_state_bucket_name=
 # filesystem. Will enforce 'yes' for use_remote_state in case below is set to 'yes'
 use_oci_devops_git=no
 
-# If left empty then DevOps items  with names ${customer_name}-automation-toolkit-project/repo/topic will be created/reused
+# Specify Repo name if you want to use existing OCI Devops GIT Repository else leave empty Format: <project_name/repo_name>
+# If left empty, DevOps items  with names ${customer_name}-automation-toolkit-project/repo/topic will be created/reused
 # in ${region}.
-# Format: <project_name/repo_name>
 oci_devops_git_repo_name=
 
 # User Details to perform GIT operations in OCI Devops GIT Repo; Mandatory when using $(auth_mechanism) as instance_principal
 # or session_token
-# Format: <domainName>/<userName>@<tenancyName> Refer to 'Setting up SSH Authentication' under
-# https://docs.oracle.com/en-us/iaas/Content/devops/using/ssh_auth.htm
+# Format: <domainName>/<userName>@<tenancyName> eg identitycloudervice/devopsuser@oracle.com@ocitenant
 # When left empty, it will be fetched from $(user_ocid) for $(auth_mechanism) as api_key.
 # Customer Secret Key will also be configured for this user for S3 credentials of the bucket when $(auth_mechanism) is
 # instance_principal or session_token
