@@ -30,7 +30,7 @@ Follow below steps to use API key-based authentication -
    
 ## Session token-based authentication
 Follow below steps to use Session token-based authentication - 
-1. You could use below command to create config inside the container. This is needed to generate session token. You can skip this step, if you already have a valid config(with API key) and uploaded the public key to OCI for a user. In that case, you can copy the config file inside the container at /cd3user/.oci
+1. Use below command to create config inside the container. This is needed to generate session token. You can skip this step, if you already have a valid config(with API key) and uploaded the public key to OCI for a user. In that case, you can copy the config file and private API Key inside the container at /cd3user/.oci
    <br>```oci setup config```
 
       <img width="509" alt="Screenshot 2024-01-04 at 4 43 08 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/d97b6407-8032-40a3-a5d1-98778be867af">
