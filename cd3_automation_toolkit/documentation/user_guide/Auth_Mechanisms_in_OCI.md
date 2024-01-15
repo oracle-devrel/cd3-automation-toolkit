@@ -43,7 +43,7 @@ Follow below steps to use Session token-based authentication -
 
    <img width="512" alt="Screenshot 2024-01-04 at 4 55 17 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/0b3446f6-b69a-49cd-858a-7a14380c4552">
 
-   ```Please note that createTenancyConfig.py script will use the config file located at /cd3user/.oci path. And toolkit supports profile name as DEFAULT only. Generated session token will have maximum 60 minutes validity. You will have to follow from step 1 if required new session token after expiry.``` The User should have administrator access to the tenacy to use complete functionlaity of the toolkit.
+```Please note that createTenancyConfig.py script will use the config file located at /cd3user/.oci path. And toolkit supports profile name as DEFAULT only. Generated session token will have maximum 60 minutes validity. You will have to follow from step 1 if required new session token after expiry.``` The User should have administrator access to the tenacy to use complete functionlaity of the toolkit.
 
 ## Instance principal
 Follow below steps to use Instance Principal authentication - 
