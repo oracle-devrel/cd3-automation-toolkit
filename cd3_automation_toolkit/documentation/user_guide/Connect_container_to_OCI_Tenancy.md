@@ -1,7 +1,7 @@
 # Connect Docker container to OCI Tenancy
 
 
-> ***It is re***
+> ***It is suggested to create a dedicated container for a single tenancy.***
 
 ### **Step 1 - Exec into the Container**:
 * Run  ```docker ps```.
