@@ -36,7 +36,7 @@ Follow below steps to use Session token-based authentication -
       <img width="509" alt="Screenshot 2024-01-04 at 4 43 08 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/d97b6407-8032-40a3-a5d1-98778be867af">
       
 2. Execute ```oci session authenticate --no-browser``` to generate session token for the private key.
-   <br> Follow the questions. Enter 'DEFAULT' for the profile name and proceed to generate the config file and session token at default location /cd3user/.oci
+   <br> Follow the questions. Enter 'DEFAULT' for the profile name and proceed to update the config file with session token information at default location /cd3user/.oci
  
    <img width="721" alt="Screenshot 2024-01-04 at 4 49 53 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/3f65e41c-971f-4e17-8e23-a839317d8912">
 3. Token will be generated at default location /cd3user/.oci     
