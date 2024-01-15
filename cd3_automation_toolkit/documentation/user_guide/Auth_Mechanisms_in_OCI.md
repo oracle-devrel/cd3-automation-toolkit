@@ -50,3 +50,12 @@ Follow below steps to use Instance Principal authentication -
 1. Launch and Instance in the tenancy and set up the toolkit docker container on that instance.
 2. Create Dynamic Group for this instance.
 3. Write IAM policy to assign privileges to this dynamic group. The dynamic group(conytaining the instance) should have administrator access to the tenacy to use complete functionlaity of the toolkit.
+
+
+<br><br>
+<div align='center'>
+
+| <a href="/cd3_automation_toolkit/documentation/user_guide/Connect_container_to_OCI_Tenancy.md">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/Connect_container_to_OCI_Tenancy.md">Next :arrow_forward:</a> |
+| :---- | -------: |
+  
+</div>
