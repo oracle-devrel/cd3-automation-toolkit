@@ -23,8 +23,8 @@ Follow below steps to generate tfvars using setUpOCI pipeline. These will explai
 <img width="291" alt="image" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/111430850/e6037357-2da5-4be1-a453-0abc9cb061fd">
 
 **Step 5**:
-<br>Review the stages in build and repeat the above process to execute other options.
-<img width="1213" alt="Screenshot 2024-01-16 at 11 10 13 AM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/817d6752-dfca-4f5a-ab52-a91c13e6105b">
+<br>Review the stages in build as per workflow chosen and repeat the above process to execute other options.
+
  
 <br><br>
 <div align='center'>
