@@ -1,7 +1,7 @@
 # Create resources in OCI (Greenfield Workflow)
 
 ## Detailed Steps
-Below are the steps that will help to configure the Automation Tool Kit to create new resources in Tenancies:
+Below are the steps that will help to configure the Automation Tool Kit to create new resources in tenancies:
 
 **Step 1**: 
 <br>Choose the appropriate CD3 Excel sheet template from [Excel Templates](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md#excel-sheet-templates)
