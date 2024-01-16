@@ -23,7 +23,7 @@ Select the workflow as 'Create Resources in OCI(Greenfield Workflow). Choose sin
 
 <img width="395" alt="Screenshot 2024-01-16 at 2 44 38 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/ca32dec6-3193-4593-990e-694a78109e28">
 
-Click on Build.
+Click on Build at the bottom.
 
 **Step 5:** 
 setUpOCI pipline is triggered and stages are executed as shown below:
