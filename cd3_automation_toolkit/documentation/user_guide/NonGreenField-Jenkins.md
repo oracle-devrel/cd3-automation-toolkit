@@ -10,11 +10,23 @@
 ## Detailed Steps
 Below are the steps that will help to execute setUpOCI pipeline to export existing resources from tenancies:
 
-**Step 1:** 
-<br>Chose the appropriate CD3 Excel sheet template from [Excel Templates](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md#excel-sheet-templates)
- 
-**Step 2:** 
-Login to Jenkins URL and click on setUpOCI pipeline from Dashboard.
+**Step 1**: 
+<br>Choose the appropriate CD3 Excel sheet template from [Excel Templates](/cd3_automation_toolkit/documentation/user_guide./RunningAutomationToolkit.md#excel-sheet-templates)
+Fill the CD3 Excel with appropriate values specific to the client.
+
+**Step 2**:
+<br>Login to Jenkins URL with user created after initialization and click on setUpOCI pipeline from Dashboard. Click on 'Build with Parameters' from left side menu.
+<img width="872" alt="Screenshot 2024-01-16 at 10 56 42 AM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/7c71d75d-b3cd-478c-8275-b6385e3b427b">
+
+
+**Step 3**:
+<br>Upload the above chosen excel sheet in Excel_Template section.
+
+<img width="348" alt="Screenshot 2024-01-16 at 11 04 47 AM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/25d720c5-fa23-49a4-b80e-663eae179753">
+
+**Step 4:** 
+Select the workflow as 'Export Resources from OCI(Non-Greenfield Workflow). Choose single or multiple MainOptions as required and then corresponding SubOptions.
+<br>Below screenshot shows export of Network and Compute.
   
 **Step 3:** 
 Execute setUpOCI pipeline with workflow selected as 'Export Resources from OCI(Non-Greenfield Workflow). Choose single or multiple options as required. Below screenshot shows export of Identity and Tags.
