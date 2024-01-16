@@ -11,8 +11,7 @@ Fill the CD3 Excel with appropriate values specific to the client.
 <br> Login to Jenkins URL and click on setUpOCI pipeline from Dashboard.
 
 **Step 3**:
-<br>Click on Build with Parameters for SetUpOCI.py pipeline and select workflow as 'Create Resources in OCI(Greenfield Workflow). Choose single or multiple options as required. Below 
-screenshot shows creation of Compartments (under Identity) and Tags.
+<br>Execute setUpOCI pipeline with workflow selected as 'Create Resources in OCI(Greenfield Workflow). Choose single or multiple options as required. Below screenshot shows creation of Compartments (under Identity) and Tags.
 
 <img width="395" alt="Screenshot 2024-01-16 at 2 44 38 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/ca32dec6-3193-4593-990e-694a78109e28">
 
