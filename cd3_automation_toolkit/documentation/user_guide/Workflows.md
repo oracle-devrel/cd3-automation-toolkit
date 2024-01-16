@@ -79,7 +79,7 @@ Do you want to run it now? (y|n):
 <br><br>
 <div align='center'>
 
-| <a href="/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/GreenField.md">Next :arrow_forward:</a> |
+| <a href="/cd3_automation_toolkit/documentation/user_guide/NonGreenField-Jenkins.md">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/GreenField.md">Next :arrow_forward:</a> |
 | :---- | -------: |
   
 </div>
