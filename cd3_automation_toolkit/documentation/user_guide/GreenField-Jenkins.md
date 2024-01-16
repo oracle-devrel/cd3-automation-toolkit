@@ -23,7 +23,7 @@ setUpOCI pipline is triggered and stages are executed as shown below:
 <img width="1203" alt="Screenshot 2024-01-16 at 3 25 55 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/dbc39fdd-422e-4ab3-a95b-10a84e80a441">
 
 **Step 5:** 
-Terraform pipelines are auto triggered based on the services selected. Click on Logs for Stage: phoenix/identity adn click on the pipeline link
+Terraform pipelines are auto triggered based on the services selected. Click on Logs for Stage: phoenix/identity and click on the pipeline link
 <img width="1511" alt="Screenshot 2024-01-16 at 3 27 49 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/7c434f24-7da9-4e15-b0ff-3750f6ca4b39">
 
  <br><br>
