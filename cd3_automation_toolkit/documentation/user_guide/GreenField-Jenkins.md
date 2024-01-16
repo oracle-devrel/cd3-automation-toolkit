@@ -4,8 +4,8 @@
 Below are the steps that will help to execute setUpOCI pipeline to create new resources in tenancies:
 
 **Step 1**: 
-<br>Choose the appropriate CD3 Excel sheet template from [Excel Templates](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md#excel-sheet-templates)
-And fill the CD3 Excel with appropriate values specific to the client.
+<br>Choose the appropriate CD3 Excel sheet template from [Excel Templates](/cd3_automation_toolkit/documentation/user_guide./RunningAutomationToolkit.md#excel-sheet-templates)
+Fill the CD3 Excel with appropriate values specific to the client.
 
 **Step 2**:
 <br> Login to Jenkins URL and click on setUpOCI pipeline from Dashboard.
@@ -30,7 +30,7 @@ Terraform pipelines are auto triggered based on the services selected. Click on 
 
 <div align='center'>
 
-| <a href="/cd3_automation_toolkit/documentation/user_guide/Workflows-Jenkins.md">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/NetworkingScenariosGF.md">Next :arrow_forward:</a> |
+| <a href="/cd3_automation_toolkit/documentation/user_guide/Running_SetUpOCI_Pipeline.md">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/NonGreenField-Jenkins.md">Next :arrow_forward:</a> |
 | :---- | -------: |
   
 </div>
