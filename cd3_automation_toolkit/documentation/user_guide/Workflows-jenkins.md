@@ -18,7 +18,7 @@
   - It will prompt you to create first user to access Jenkins URL. This will be the admin user.
   - Once you login, here is the Jenkins dashboard:
     
- <img width="1486" alt="Screenshot 2024-01-16 at 10 52 07 AM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/aa7af678-1875-4bfc-bb1c-e7cfd4765d8e">
+ <img width="1486" alt="Screenshot 2024-01-16 at 10 52 07 AM" style="border: 2px solid #555" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/618f4461-0bff-4df7-a2f1-d524f424e6a6">
 
 
 <br><br>
