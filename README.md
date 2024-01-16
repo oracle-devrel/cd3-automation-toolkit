@@ -27,8 +27,8 @@
     <ul> 
       <li> <a href="/cd3_automation_toolkit/documentation/user_guide/Running_SetUpOCI_Pipeline.md">Running setUpOCI pipeline</a>
          <ul> 
-           <li> <a href="">Create resources in OCI (Greenfield Workflow)</a>
-           <li> <a href="">Export Resources from OCI (Non-Greenfield Workflow)</a>             
+           <li> <a href="/cd3_automation_toolkit/documentation/user_guide/GreenField-Jenkins.md">Create resources in OCI (Greenfield Workflow)</a>
+           <li> <a href="/cd3_automation_toolkit/documentation/user_guide/NonGreenField-Jenkins.md">Export Resources from OCI (Non-Greenfield Workflow)</a>             
          </ul>
     </ul>
   <li> <a href="/cd3_automation_toolkit/documentation/user_guide/Workflows.md">Using the Automation Toolkit via CLI</a>
