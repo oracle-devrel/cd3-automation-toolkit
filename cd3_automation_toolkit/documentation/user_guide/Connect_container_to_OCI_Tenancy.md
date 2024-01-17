@@ -16,7 +16,8 @@
 * Please make sure to use same customer_name for a tenancy even if the script needs to be executed multiple times.
 * Please make sure to review 'outdir_structure_file' parameter as per requirements. It is recommended to use seperate outdir structure in case the tenancy has large number of objects. <br>
 * Please make sure to review Advanced Parameters Section for CI/CD setup and be ready with user details that will be used to connect to DevOps Repo in OCI.
-```
+ 
+```console       
 [Default]
 
 ##################################################################################################################
@@ -26,7 +27,6 @@
 # Friendly name for the Customer Tenancy eg: demotenancy; The generated .auto.tfvars files will be prefixed with this
 # customer_name.
 customer_name=
-
 tenancy_ocid=
 
 # Example: us-phoenix-1
@@ -34,6 +34,7 @@ region=
 
 # Auth Mechanism for OCI APIs - api_key,instance_principal,session_token
 # Please make sure to add IAM policies for user/instance_principal before executing createTenancyConfig.py
+
 auth_mechanism=api_key
 
 ##################################################################################################################
@@ -43,7 +44,9 @@ auth_mechanism=api_key
 ##################################################################################################################
 
 user_ocid=
-#Path of API Private Key (PEM Key) File; Defaults to /cd3user/tenancies/keys/oci_api_private.pem when left empty
+
+# Path of API Private Key (PEM Key) File; Defaults to /cd3user/tenancies/keys/oci_api_private.pem when left empty
+
 key_path=
 fingerprint=
 
@@ -71,7 +74,6 @@ ssh_public_key=
 # from region specified in ${region} above.
 ##################################################################################################################
 
-
 # Compartment OCID where Bucket and DevOps Project/repo will be created; defaults to root if left empty.
 compartment_ocid=
 
@@ -89,17 +91,15 @@ remote_state_bucket_name=
 use_oci_devops_git=no
 
 # Specify Repo name if you want to use existing OCI Devops GIT Repository else leave empty Format: <project_name/repo_name>
-# If left empty, DevOps items  with names ${customer_name}-automation-toolkit-project/repo/topic will be created/reused
-# in ${region}.
+# If left empty, DevOps items  with names ${customer_name}-automation-toolkit-project/repo/topic will be created/reused in ${region}.
 oci_devops_git_repo_name=
 
-# User Details to perform GIT operations in OCI Devops GIT Repo; Mandatory when using $(auth_mechanism) as instance_principal
-# or session_token
+# User Details to perform GIT operations in OCI Devops GIT Repo; Mandatory when using $(auth_mechanism) as instance_principal or session_token
 # Format: <domainName>/<userName>@<tenancyName> eg identitycloudervice/devopsuser@oracle.com@ocitenant
 # When left empty, it will be fetched from $(user_ocid) for $(auth_mechanism) as api_key.
-# Customer Secret Key will also be configured for this user for S3 credentials of the bucket when $(auth_mechanism) is
-# instance_principal or session_token
+# Customer Secret Key will also be configured for this user for S3 credentials of the bucket when $(auth_mechanism) is instance_principal or session_token
 oci_devops_git_user=
+
 # When left empty, same key file from $(key_path) used for $(auth_mechanism) as api_key will be copied to
 # /cd3user/tenancies/<customer_name>/ and used for GIT Operations.
 oci_devops_git_key=
