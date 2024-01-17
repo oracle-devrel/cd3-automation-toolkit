@@ -91,13 +91,16 @@ remote_state_bucket_name=
 use_oci_devops_git=no
 
 # Specify Repo name if you want to use existing OCI Devops GIT Repository else leave empty Format: <project_name/repo_name>
-# If left empty, DevOps items  with names ${customer_name}-automation-toolkit-project/repo/topic will be created/reused in ${region}.
+# If left empty, DevOps items  with names ${customer_name}-automation-toolkit-project/repo/topic will be created/reused
+# in ${region}.
 oci_devops_git_repo_name=
 
-# User Details to perform GIT operations in OCI Devops GIT Repo; Mandatory when using $(auth_mechanism) as instance_principal or session_token
+# User Details to perform GIT operations in OCI Devops GIT Repo; Mandatory when using $(auth_mechanism) as instance_principal
+# or session_token
 # Format: <domainName>/<userName>@<tenancyName> eg identitycloudervice/devopsuser@oracle.com@ocitenant
 # When left empty, it will be fetched from $(user_ocid) for $(auth_mechanism) as api_key.
-# Customer Secret Key will also be configured for this user for S3 credentials of the bucket when $(auth_mechanism) is instance_principal or session_token
+# Customer Secret Key will also be configured for this user for S3 credentials of the bucket when $(auth_mechanism)
+# is instance_principal or session_token
 oci_devops_git_user=
 
 # When left empty, same key file from $(key_path) used for $(auth_mechanism) as api_key will be copied to
