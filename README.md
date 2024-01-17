@@ -46,7 +46,8 @@
        <li><a href = "/cd3_automation_toolkit/documentation/user_guide/ComputeNGF.md"</a><b>  Must Read : </b> Managing Compute Instances for Non-Greenfield Workflow </li> 
     </ul>
   </ul>
-  <li> <a href="/cd3_automation_toolkit/documentation/user_guide/remote_state.md">Remote Management of Terraform State File</a>
+  <li> <a href="/cd3_automation_toolkit/documentation/user_guide/cli_jenkins.md">Switch between CLI and Jenkins</a></li>
+  <li> <a href="/cd3_automation_toolkit/documentation/user_guide/remote_state.md">Remote Management of Terraform State File</a></li>
  </ul>
  
  ### Existing Users
