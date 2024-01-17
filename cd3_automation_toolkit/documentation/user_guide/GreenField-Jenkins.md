@@ -29,6 +29,7 @@ Click on Build at the bottom.
 
 **Step 5:** 
 <br>setUpOCI pipline is triggered and stages are executed as shown below:
+
 <img width="1202" alt="Screenshot 2024-01-17 at 11 57 14 AM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/2eeb8419-82ca-4b7b-97fa-095dd9d4f4c3">
 
 
