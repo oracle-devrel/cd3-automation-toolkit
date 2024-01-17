@@ -22,13 +22,26 @@ Chose CD3-Blank-template.xlsx for an empty sheet.
 **Step 3**:
 <br>Upload the above chosen excel sheet in Excel_Template section.
 
+
 <img width="348" alt="Screenshot 2024-01-16 at 11 04 47 AM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/25d720c5-fa23-49a4-b80e-663eae179753">
 
 **Step 4:** 
-Select the workflow as 'Export Resources from OCI(Non-Greenfield Workflow). Choose single or multiple MainOptions as required and then corresponding SubOptions.
+<br>Select the workflow as 'Export Resources from OCI(Non-Greenfield Workflow). Choose single or multiple MainOptions as required and then corresponding SubOptions.
 <br>Below screenshot shows export of Network and Compute.
-  
-**Step 3:** 
+
+<img width="554" alt="Screenshot 2024-01-17 at 7 11 42 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/9fe46cac-85ad-41df-b5dc-98e2bff9a3a0">
+
+**Step 5:** 
+<br>Specify region and compartment from where you want to export the data.
+<br>It also asks for service specific filters like display name patterns for compute. Leave empty if no filter needs to be specified.
+
+<img width="835" alt="Screenshot 2024-01-17 at 7 10 56 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/15caac4e-847e-4ea5-9ab5-df8c4ecc56af">
+<br>Click on Build at the bottom.<br><br>
+
+
+**Step 6:**
+<br>setUpOCI pipline is triggered and stages are executed as shown below: 
+
 Execute setUpOCI pipeline with workflow selected as 'Export Resources from OCI(Non-Greenfield Workflow). Choose single or multiple options as required. Below screenshot shows export of Identity and Tags.
 Make sure to execute **"Fetch Compartments OCIDs to variables file"** from **CD3 Services** in setUpOCI menu at least once. This will       ensure that the variables file in outdir is updated with the OCID information of all the compartments.
   
