@@ -6,12 +6,13 @@
 There can be scenarios when you need to update the terraform_files folder manually via CLI. Below are some examples:
 
 - You executed setUpOCI script to generate tfvars for some resources via CLI.
-- You updated variables_<region>.tf file to update OCID or SSH Key for compute or database etc.
+- You updated variables_\<region\>.tf file to update image OCID or SSH Key for compute or database etc.
 
-Please folow below steps to synch local terrafor_files folder to OCI DevOps GIT Repo:
+Please folow below steps to synch local terraform_files folder to OCI DevOps GIT Repo:
 
 - ```cd /cd3user/tenancies/<customer_name>/terraform_files```
 - ```git status```
+  <br>Below screenshot shows changes in variables_phoenix.tf file under phoenix/compute folder.
 <img width="556" alt="Screenshot 2024-01-17 at 9 12 39 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/1a40a5b8-622e-49ef-948d-c516d5e8f712">
 
 - ```git add -A .```
