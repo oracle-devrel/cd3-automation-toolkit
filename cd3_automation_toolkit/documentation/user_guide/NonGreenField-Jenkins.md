@@ -42,6 +42,8 @@ Chose CD3-Blank-template.xlsx for an empty sheet.
 **Step 6:**
 <br>setUpOCI pipline is triggered and stages are executed as shown below: 
 
+<img width="1505" alt="Screenshot 2024-01-17 at 9 37 22 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/e0e96b67-e088-47b7-b241-50afdde0d327">
+
 Execute setUpOCI pipeline with workflow selected as 'Export Resources from OCI(Non-Greenfield Workflow). Choose single or multiple options as required. Below screenshot shows export of Identity and Tags.
 Make sure to execute **"Fetch Compartments OCIDs to variables file"** from **CD3 Services** in setUpOCI menu at least once. This will       ensure that the variables file in outdir is updated with the OCID information of all the compartments.
   
