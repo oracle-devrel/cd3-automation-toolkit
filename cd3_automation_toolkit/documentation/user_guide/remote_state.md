@@ -25,5 +25,11 @@
 
 * For single outdir, tfstate for all subscribed regions will be stored as ```<region>\terraform.tfstate``` eg ```london\terraform.tfstate``` for london ```phoenix\terraform.tfstate``` for phoenix.
 * For multi outdir, tfstate for all services in all subscribed regions will be stored as ```<region>\<service_dir_name>\terraform.tfstate``` eg ```london\tagging\terraform.tfstate``` for tagging dir in london region
+  
+> [!IMPORTANT]  
+> If you are using remote state and upload the stack to OCI Resource Manager using <b>Upload current terraform files/state to Resource Manager</b> under <b>Developer Services</b>, then running terraform plan/apply from OCI Resource Manager will not work and show below error:
+> 
+<img width="597" alt="Screenshot 2024-01-17 at 11 38 54 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/1b0cd9fa-1ac0-42c4-9c33-14ad4bf0ddb8">
 
+> You will have to remove backend.tf from the directory, bring the remote state into local and then re-upload the stack.
 
