@@ -12,14 +12,7 @@
 
 **3. If I am already using the toolkit and my OCI tenancy has been subscribed to a new region, how do i use the new region with toolkit?**
 <br>  
-Follow below steps to start using the newly subscribed region with the toolkit:
-<br>           - Take backup of the existing out directory.
-<br>           - Create a new directory for the region say 'london' along with other region directories.
-<br>           - Copy all the terraform modules and .tf files, except the .auto.tfvars and .tfstate files from existing region directory to the new one
-<br>           - Modify the name of variables file (eg variables_london.tf)
-<br>           - Modify the region parameter in this variables_london.tf
-<br>           - Modify Image OCIDs in this variables file according to new region.
-
+Re-run createTenancyConfig.py with same details in tenancyConfig.properties file. It will keep existing region directories as is and create new directory for newly subscribed region.
 
 **4. How do I upgrade an existing version of the toolkit to the new one without disrupting my existing tenancy files/directories?**
 <br>  
@@ -46,13 +39,7 @@ Terraform destroy on compartments or removing the compartments details from _<cu
 <br>           - Add _enable\_delete = true_ parameter to each of the compartment that needs to be deleted in _<customer\_name>\_compartments.auto.tfvars_
  
 
-**7. I am getting Timeout Error during export of DRG Route Rules while exporting Network Components.**
-<br>
-
-Toolkit exports all Dynamic as well as Static DRG route Rules and timesout if there is a large number of dynamic rules. As a workaround, edit line no 220 in file  _/cd3user/oci\_tools/cd3\_automation\_toolkit\Network\BaseNetwork\exportRoutetable.py_. <br>
-Change _vcn = VirtualNetworkClient(config, timeout=(30,120))_ to _vcn = VirtualNetworkClient(config, timeout=(90,300))_
-
-**8. I am getting 'Permission Denied' error while executing any commands inside the container.**
+**7. I am getting 'Permission Denied' error while executing any commands inside the container.**
 <br> 
 
 When you are running the docker container from a Linux OS, if the outdir is on the root, you may get a permission denied error while executing steps like createAPIKey.py. In such scenarios, please follow the steps given below -
