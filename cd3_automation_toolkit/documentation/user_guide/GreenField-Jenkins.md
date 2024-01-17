@@ -29,7 +29,6 @@ Click on Build at the bottom.
 
 **Step 5:** 
 <br>setUpOCI pipline is triggered and stages are executed as shown below:
-
 <img width="1202" alt="Screenshot 2024-01-17 at 11 57 14 AM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/2eeb8419-82ca-4b7b-97fa-095dd9d4f4c3">
 
 
@@ -58,6 +57,7 @@ Terraform pipelines are auto triggered parallely based on the services selected.
 
 **Step 5**:
 <br>Below screenshot shows Stage View after clicking on 'Proceed'. You can login to the OCI console and verify that resources got created as required.
+
 <img width="902" alt="Screenshot 2024-01-17 at 12 13 15 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/9449dcdf-662d-4f8e-a9fe-90a084cb6fe4">
 
 **Step 6**:
