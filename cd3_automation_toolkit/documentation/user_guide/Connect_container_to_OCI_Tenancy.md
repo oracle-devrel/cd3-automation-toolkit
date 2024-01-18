@@ -24,7 +24,7 @@
 <br>```python createTenancyConfig.py tenancyconfig.properties```
 
 > <b>Note</b>
-> * If you are running docker container on a linux VM host, please look at [this](/cd3_automation_toolkit/documentation/user_guide/FAQ.md) under FAQ to avoid any permission issues.
+> * If you are running docker container on a linux VM host, please look at [point no. 7](/cd3_automation_toolkit/documentation/user_guide/FAQ.md) under FAQ to avoid any permission issues.
 > * If the API Keys were generated and added to the OCI console using previous steps, it might take a couple of seconds to reflect. Thus, running the above command immediately might result in Authentication Errors. In such cases, please retry after a minute.
 <br>
 
