@@ -34,22 +34,29 @@ Click on **Build** at the bottom.
 
 <img width="1000" height="400" alt="Screenshot 2024-01-17 at 11 57 14 AM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/b5183bc7-f984-46f9-88f9-f7281e9963fb">
 
+#### setUpOCI Pipeline Stages :
+|Stage Name      | Description  | Possible Outcomes |
+| --------------- | ------------ | ----------------- |
+| <b>Validate Input Parameters</b> | validates input file name/size, selected parameters | Displays Unstable if any of the validation fails. Pipeline stops further execution in that case. |
+| <b>Update setUpOCI.properties</b> | updates <customer_name>_setUpOCI.properties with input filename and workflow_type | Displays Failed if any issue during execution |
+| <b>Execute setUpOCI</b> | executes python code to generate required tfvars files | Displays Failed if any issue during execution |
+| <b>Run Import Commands</b> | This stage is skipped for 'Create Resources in OCI' workflow| |
+| <b>Git Commit</b> | commits the terraform_files folder to OCI DevOps GIT Repo | Pipeline stops further execution if there is nothing to commit |
+| <b>Trigger Terraform Pipelines</b> | corresponding terraform apply pipelines are auto triggered based on the service chosen | |
+
 
 ## Execute terraform Pipelines
 Terraform pipelines are auto triggered parallely based on the services selected.<br><br>
 **Step 1**: 
 <br>Click on 'Logs' for Stage: phoenix/identity and click on the pipeline link.
+<img width="1402" height="400" alt="Screenshot 2024-01-17 at 11 58 15 AM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/9d14e5ae-92ec-4fea-9ad0-4866b17737a1"><br>
 > ***Note - Clicking on Dashboard also shows pipelines that are in running state.***<br>
 > ***Or you can also navigate from Dashboard -> terraform_files -> phoenix -> identity -> terraform_apply***
-
-<img width="1402" height="400" alt="Screenshot 2024-01-17 at 11 58 15 AM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/9d14e5ae-92ec-4fea-9ad0-4866b17737a1"><br>
-
 
 **Step 2**: 
 <br>Stages of the terraform pipeline for apply are shown below:
 
 <img width="830" height="450" alt="Screenshot 2024-01-17 at 12 01 42 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/934bb23d-58d2-4269-88b0-08ffd21c1a61"><br>
-
 
 **Step 3**:
 <br>Review Logs for Terraform Plan and OPA stages by clicking on the stage and then 'Logs'. 
