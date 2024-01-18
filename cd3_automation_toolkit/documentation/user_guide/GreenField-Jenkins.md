@@ -47,7 +47,7 @@ Terraform pipelines are auto triggered parallely based on the services selected.
 <img width="920" alt="Screenshot 2024-01-17 at 12 01 42 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/cd343b15-5df1-4b9c-8bb8-c5b1a0eafe85">
 
 **Step 3**:
-<br>Review Logs for Terraform Plan and OPA stages by clikcing on the stage and then 'Logs'. 
+<br>Review Logs for Terraform Plan and OPA stages by clicking on the stage and then 'Logs'. 
 <img width="1503" alt="Screenshot 2024-01-17 at 12 13 57 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/30672f82-74ef-4821-9072-b5edeb33bd72">
 
 
