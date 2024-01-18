@@ -38,7 +38,7 @@ workflow_type=create_resources
 |outdir|Path to output directory where terraform files will be generated| /cd3user/tenancies/<customer\_name>/terraform\_files|
 |prefix|Prefix for output terraform files|\<customer\_name>|
 |auth_mechanism|Authentication Mechanism for OCI APIs|api_key|
-|config\_file|Python config file|/cd3user/tenancies/<customer\_name>/<customer\_name>_config|
+|config\_file|Python config file|/cd3user/tenancies/<customer\_name>/.config_files/<customer\_name>_config|
 |outdir\_structure\_file |Parameter specifying single outdir or different for different services|Blank or <customer\_name>_outdir_structure_file.properties|
 | cd3file |Path to the Excel input file |/cd3user/tenancies/<customer\_name>/testCD3. xlsx |
 |workflow\_type |greenfield workflow or non-greenfield workflow| create_resources for greenfield workflow. See <a href = /cd3_automation_toolkit/documentation/user_guide/Workflows.md#automation-toolkit-workflows> Automation Toolkit Workflows</a> for more information|
