@@ -1,6 +1,6 @@
 # Create resources in OCI via Jenkins(Greenfield Workflow)
 
-## Execute setUpOCI pipeline
+## Execute setUpOCI Pipeline
 Below are the steps that will help to execute setUpOCI pipeline to create new resources in tenancies:
 
 **Step 1**: 
@@ -32,7 +32,7 @@ Click on Build at the bottom.
 <img width="1202" alt="Screenshot 2024-01-17 at 11 57 14 AM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/2eeb8419-82ca-4b7b-97fa-095dd9d4f4c3">
 
 
-## Execute terraform pipelines
+## Execute terraform Pipelines
 Terraform pipelines are auto triggered parallely based on the services selected.<br><br>
 **Step 1**: 
 <br>Click on 'Logs' for Stage: phoenix/identity and click on the pipeline link.
