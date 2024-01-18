@@ -21,8 +21,6 @@
   <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/prerequisites.md">Prerequisites</a></li>
   <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/Launch_Docker_container.md">Launch Docker container</a></li>
   <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/Connect_container_to_OCI_Tenancy.md">Connect container to OCI Tenancy</a></li>
-  <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md">Getting Started with Automation Toolkit</a></li>
-
   <li> <a href="/cd3_automation_toolkit/documentation/user_guide/Workflows-jenkins.md"</a>Using the Automation Toolkit via Jenkins</li>
          <ul> 
            <li> <a href="/cd3_automation_toolkit/documentation/user_guide/GreenField-Jenkins.md"</a>Create resources in OCI via Jenkins(Greenfield Workflow) </li>
