@@ -17,7 +17,6 @@
            - Network Connectivity should be allowed on this host and port.
   - It will prompt you to create first user to access Jenkins URL. This will be the admin user.
   - Once you login, here is the Jenkins dashboard:
-    
     <br>
      <img width="1486" alt="Screenshot 2024-01-16 at 10 52 07 AM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/4534834b-3ad6-427b-8f13-121c136054d3">
 
