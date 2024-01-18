@@ -16,33 +16,36 @@ Chose CD3-Blank-template.xlsx for an empty sheet.
 
 **Step 2**:
 <br>Login to Jenkins URL with user created after initialization and click on setUpOCI pipeline from Dashboard. Click on 'Build with Parameters' from left side menu.
-<img width="872" alt="Screenshot 2024-01-16 at 10 56 42 AM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/7c71d75d-b3cd-478c-8275-b6385e3b427b">
+
+<img width="702" height="400" alt="Screenshot 2024-01-16 at 10 56 42 AM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/b571ac92-fc75-4e4b-b0e0-9d2de73b5faa"><br>
 
 
 **Step 3**:
 <br>Upload the above chosen excel sheet in Excel_Template section.
 
+<img width="348" alt="Screenshot 2024-01-16 at 11 04 47 AM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/3bf84fe7-b317-4120-83db-49f52ed65e95"><br>
 
-<img width="348" alt="Screenshot 2024-01-16 at 11 04 47 AM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/25d720c5-fa23-49a4-b80e-663eae179753">
 
 **Step 4:** 
-<br>Select the workflow as 'Export Resources from OCI(Non-Greenfield Workflow). Choose single or multiple MainOptions as required and then corresponding SubOptions.
+<br>Select the workflow as 'Export Resources from OCI'(Non-Greenfield Workflow). Choose single or multiple MainOptions as required and then corresponding SubOptions.
 <br>Below screenshot shows export of Network and Compute.
 
-<img width="554" alt="Screenshot 2024-01-17 at 7 11 42 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/9fe46cac-85ad-41df-b5dc-98e2bff9a3a0">
+<img width="554" alt="Screenshot 2024-01-17 at 7 11 42 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/5c45bc0b-890c-4c93-b129-a15ab3be2d53"><br>
+
 
 **Step 5:** 
 <br>Specify region and compartment from where you want to export the data.
 <br>It also asks for service specific filters like display name patterns for compute. Leave empty if no filter needs to be specified.
 
-<img width="835" alt="Screenshot 2024-01-17 at 7 10 56 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/15caac4e-847e-4ea5-9ab5-df8c4ecc56af">
-<br>Click on Build at the bottom.<br><br>
+<img width="835" alt="Screenshot 2024-01-17 at 7 10 56 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/96205ab2-1517-4a79-9bab-72c3b94f6852"><br>
+<br>Click on **Build** at the bottom.<br><br>
 
 
 **Step 6:**
-<br>setUpOCI pipline is triggered and stages are executed as shown below: 
+<br>setUpOCI pipeline is triggered and stages are executed as shown below: 
 
-<img width="1505" alt="Screenshot 2024-01-17 at 9 37 22 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/e0e96b67-e088-47b7-b241-50afdde0d327">
+<img width="1505" alt="Screenshot 2024-01-17 at 9 37 22 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/d110c5ee-91ae-4e9e-bfb8-607adba026ac"><br>
+
 
 Execute setUpOCI pipeline with workflow selected as 'Export Resources from OCI(Non-Greenfield Workflow). Choose single or multiple options as required. Below screenshot shows export of Identity and Tags.
 Make sure to execute **"Fetch Compartments OCIDs to variables file"** from **CD3 Services** in setUpOCI menu at least once. This will       ensure that the variables file in outdir is updated with the OCID information of all the compartments.
@@ -51,13 +54,18 @@ Make sure to execute **"Fetch Compartments OCIDs to variables file"** from **CD3
  
  </br>
 
-**Expected Outputs:**
-<br>a. Excel sheet with the resource details from OCI  
-b. Terraform Configuration files - *.auto.tfvars  
-c. Shell Script with import commands - tf_import_commands_`<resource>`_nonGF.sh 
-      
+**Expected Outputs:**<br>
+<ol type="a">
+  <li> Excel sheet with the resource details from OCI.</li>
+  <li> Terraform Configuration files - *.auto.tfvars.</li>
+  <li> Shell Script with import commands - **tf_import_commands_`<resource>`_nonGF.sh**</li>
+</ul>
+    
+<br>
+    
 **Action:**
-<br>Execute the tf_import_commands_`<resource>`_nonGF.sh files that are generated in the outdir.
+
+<br>Execute the **tf_import_commands_`<resource>`_nonGF.sh** files that are generated in the outdir.
 <br>The terraform plan should show that infrastructure is up-to-date with no changes required for all regions.
   
 <img src = "https://user-images.githubusercontent.com/122371432/213680328-ff972472-5c96-424e-b616-9f4c217eb4ca.png" width =50% height=50%>
@@ -69,16 +77,16 @@ c. Shell Script with import commands - tf_import_commands_`<resource>`_nonGF.sh
 ## Example - Export Identity
 Follow the below steps to quickly export Identity components from OCI.
 
-1. Use the excel [CD3-Blank-template](/cd3_automation_toolkit/example) and place it at the location _/cd3user/tenancies/<customer\_name>/_ which is also mapped to your local directory.
+1. Use the Excel [CD3-Blank-template](/cd3_automation_toolkit/example) and place it at the location **_/cd3user/tenancies/<customer\_name>/_** which is also mapped to your local directory.
 
-2. Edit the _setUpOCI.properties_ at location:_/cd3user/tenancies /<customer\_name>/<customer\_name>\_setUpOCI.properties_ with appropriate values. 
-   - Update the _cd3file_ parameter to specify the CD3 excel sheet path.
-   - Set the _non_gf_tenancy_ parameter value to _true_. (for Non Greenfield Workflow.)
+2. Edit the **_setUpOCI.properties_** at location: **_/cd3user/tenancies /<customer\_name>/<customer\_name>\_setUpOCI.properties_** with appropriate values. 
+   - Update the **_cd3file_** parameter to specify the CD3 excel sheet path.
+   - Set the **_non_gf_tenancy_** parameter value to **_true_**. (for Non Greenfield Workflow.)
      
 3. Change Directory to 'cd3_automation_toolkit' :
     ```cd /cd3user/oci_tools/cd3_automation_toolkit/```
     
-   and execute the _setupOCI.py_ file:
+   and execute the **_setupOCI.py_** file:
    
    ```python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties```
  4. Choose option 'Export Identity' from the displayed menu. Once the execution is successful, you will see:
@@ -88,7 +96,7 @@ Follow the below steps to quickly export Identity components from OCI.
       <li><i>&lt;customer_name>_compartments.auto.tfvars, &lt;customer_name>_groups.auto.tfvars, &lt;customer_name>_policies.auto.tfvars</i></li>
       </ul>
    
- 5. Execute _tf\_import\_commands\_identity_nonGF.sh_ to start importing the identity components into tfstate file.
+ 5. Execute **_tf\_import\_commands\_identity_nonGF.sh_** to start importing the identity components into tfstate file.
  6. Repeat the above process (except Step 5) to export other components from OCI.
 <br><br>
 <div align='center'>
