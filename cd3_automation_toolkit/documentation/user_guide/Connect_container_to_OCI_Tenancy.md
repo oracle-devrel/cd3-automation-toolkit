@@ -8,8 +8,9 @@
 <br> → Note down the container ID from this cmd output.
 * Run  ```docker exec -it <container_id> bash```
 
-### <a href = "/cd3_automation_toolkit/documentation/user_guide/Auth_Mechanisms_in_OCI.md">**Step 2 - Choose Authentication Mechanism**</a>
-
+### **Step 2 - Choose Authentication Mechanism**</a>
+* Please click [here](/cd3_automation_toolkit/documentation/user_guide/Auth_Mechanisms_in_OCI.md) to configure any one of the available authentication mechanisms.
+  
 ### **Step 3 - Edit tenancyconfig.properties**:
 * Run ```cd /cd3user/oci_tools/cd3_automation_toolkit/user-scripts/```
 * Fill the input parameters in **tenancyconfig.properties** file. 
