@@ -28,7 +28,7 @@ To ease the execution of toolkit, we have provided the steps to build an image w
 * Login to the CD3 docker container using next section and set the proxies which helps to connect internet(if any) from container.
 
 ## Run the CD3 container
-* Run  ```docker run --platform linux/amd64 -it -p 8443:8443 -d -v <directory_in_local_system_where_the_files_must_be_generated>:/cd3user/tenancies <image_name>:<image_tag>```
+* Run  ```docker run --platform linux/amd64 -it -p <port_number_in_local_system>:8443 -d -v <directory_in_local_system_where_the_files_must_be_generated>:/cd3user/tenancies <image_name>:<image_tag>```
 <br>eg for Mac: docker run --platform linux/amd64 -it -p 8443:8443 -d -v /Users/mount_path:/cd3user/tenancies cd3toolkit:v2024.1.0
 <br>eg for Windows: docker run --platform linux/amd64 -it -p 8443:8443 -d -v D:/mount_path:/cd3user/tenancies cd3toolkit:v2024.1.0
 > <b>Note</b> - For Mac users, please make sure to create mount directory under /Users only to avoid any prmission issues.
