@@ -12,7 +12,7 @@ To ease the execution of toolkit, we have provided the steps to build an image w
 
 * Change directory to 'cd3-automation-toolkit'(i.e. the cloned repo in your local).
 * Run ```docker build --platform linux/amd64 -t cd3toolkit:${image_tag} -f Dockerfile --pull --no-cache .```<br/>
-<br  /><b>Note</b> : ${image_tag} should be replaced with suitable tag as per your requirements/standards.
+<br  /><b>Note</b> : ${image_tag} should be replaced with suitable tag as per your requirements/standards. eg v2024.1.0
 <br  />&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;The period (.) at the end of the docker build command is required.
 
 ## Save the image (Optional)
