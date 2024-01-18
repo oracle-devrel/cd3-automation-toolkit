@@ -38,7 +38,7 @@ Choose **CD3-Blank-template.xlsx** for an empty sheet.
 <br>It also asks for service specific filters like display name patterns for compute. Leave empty if no filter is needed.
 
 <img width="835" alt="Screenshot 2024-01-17 at 7 10 56 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/96205ab2-1517-4a79-9bab-72c3b94f6852"><br>
-<br>Click on **Build** at the bottom.<br><br>
+<br>Click on **Build** at the bottom.<br>
 
 
 **Step 6:**
