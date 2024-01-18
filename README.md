@@ -10,7 +10,7 @@
 
   <li> <a href = "https://github.com/oracle-devrel/cd3-automation-toolkit/releases/tag/v12.1">What's new in this release</a></li>
   <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/learn_more/CD3ExcelTabs.md">Toolkit Supported OCI Services</a></li>
-  <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md#excel-sheet-templates">Excel Templates</a></li>
+  <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/ExcelTemplates.md">Excel Templates</a></li>
   
 </ul>
 
