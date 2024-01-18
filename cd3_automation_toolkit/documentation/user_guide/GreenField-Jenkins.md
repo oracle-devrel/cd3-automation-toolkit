@@ -32,7 +32,7 @@ Click on **Build** at the bottom.
 **Step 5:** 
 <br>setUpOCI pipeline is triggered and stages are executed as shown below:
 
-<img width="700" height="300" alt="Screenshot 2024-01-17 at 11 57 14 AM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/b5183bc7-f984-46f9-88f9-f7281e9963fb">
+<img width="1000" height="400" alt="Screenshot 2024-01-17 at 11 57 14 AM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/b5183bc7-f984-46f9-88f9-f7281e9963fb">
 
 
 ## Execute terraform Pipelines
@@ -48,7 +48,7 @@ Terraform pipelines are auto triggered parallely based on the services selected.
 **Step 2**: 
 <br>Stages of the terraform pipeline for apply are shown below:
 
-<img width="920" height="430" alt="Screenshot 2024-01-17 at 12 01 42 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/934bb23d-58d2-4269-88b0-08ffd21c1a61"><br>
+<img width="830" height="450" alt="Screenshot 2024-01-17 at 12 01 42 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/934bb23d-58d2-4269-88b0-08ffd21c1a61"><br>
 
 
 **Step 3**:
