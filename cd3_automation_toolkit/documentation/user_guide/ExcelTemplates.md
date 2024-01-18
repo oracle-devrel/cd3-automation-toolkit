@@ -1,7 +1,5 @@
-# **Getting Started with Automation Toolkit**
+# **Excel Sheet Templates**
 CD3 Excel sheet is the main input for Automation Toolkit.
-
-### **Excel Sheet Templates**
 
 Below are the CD3 templates for the latest release having standardised IAM Components (compartments, groups and policies), Network Components and Events & Notifications Rules as per CIS Foundations Benchmark for Oracle Cloud.
 
