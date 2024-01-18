@@ -18,7 +18,7 @@
 * Please make sure to review 'outdir_structure_file' parameter as per requirements. It is recommended to use seperate outdir structure in case the tenancy has large number of objects. <br>
 * Please make sure to review Advanced Parameters Section for CI/CD setup and be ready with user details that will be used to connect to DevOps Repo in OCI.
  
-### **Step 5 - Initialise the environment**:
+### **Step 4 - Initialise the environment**:
 Initialise your environment to use the Automation Toolkit.
 <br>```python createTenancyConfig.py tenancyconfig.properties```
 
