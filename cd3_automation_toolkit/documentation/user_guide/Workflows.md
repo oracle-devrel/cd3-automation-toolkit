@@ -1,7 +1,7 @@
 # Using the Automation Toolkit via CLI
 
 ### **Prepare setUpOCI.properties**
-**Current Version:  setUpOCI.properties v12.2**
+**Current Version:  setUpOCI.properties v2024.1.0**
 
 Make sure to use/modify the properties file at _/cd3user/tenancies /<customer\_name>/<customer\_name>\_setUpOCI.properties_ during executions.
 
@@ -19,7 +19,7 @@ prefix=
 # auth mechanism for OCI APIs - api_key,instance_principal,session_token
 auth_mechanism=
 
-#input config file for Python API communication with OCI eg /cd3user/tenancies/<customer_name>/<customer_name>_config;
+#input config file for Python API communication with OCI eg /cd3user/tenancies/<customer_name>/.config_files/<customer_name>_config;
 config_file=
 
 # Leave it blank if you want single outdir or specify outdir_structure_file.properties containing directory structure for OCI services.
