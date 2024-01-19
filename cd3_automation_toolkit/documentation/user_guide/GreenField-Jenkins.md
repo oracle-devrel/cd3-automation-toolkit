@@ -41,7 +41,7 @@ Click on **Build** at the bottom.
 | <b>Update setUpOCI.properties</b> | updates <customer_name>_setUpOCI.properties with input filename and workflow_type | Displays Failed if any issue during execution |
 | <b>Execute setUpOCI</b> | executes python code to generate required tfvars files | Displays Failed if any issue during execution |
 | <b>Run Import Commands</b> | This stage is skipped for 'Create Resources in OCI' workflow| |
-| <b>Git Commit</b> | commits the terraform_files folder to OCI DevOps GIT Repo | Pipeline stops further execution if there is nothing to commit |
+| <b>Git Commit</b> | commits the terraform_files folder to OCI DevOps GIT Repo | Pipeline stops further execution if there is nothing to commit. <b>In some cases when tfvars was generated in previous execution, you can navigate to terrafom apply pipeline and trigger that manually </b>|
 | <b>Trigger Terraform Pipelines</b> | corresponding terraform apply pipelines are auto triggered based on the service chosen | |
 
 
