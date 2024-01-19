@@ -1,7 +1,7 @@
 # Switch between using the toolkit via CLI and Jenkins UI
 
 > **Note -** 
-  >***It is suggested to stick to using the toolkit either via CLI or via Jenkins.***
+  >***It is recommended to stick to using the toolkit either via CLI or via Jenkins.***
 
 There can be scenarios when you need to update the terraform_files folder manually via CLI. Below are some examples:
 
