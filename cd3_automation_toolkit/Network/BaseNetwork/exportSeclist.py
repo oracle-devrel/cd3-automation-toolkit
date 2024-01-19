@@ -207,12 +207,11 @@ def print_secrules(seclists,region,vcn_name,comp_name):
                 print(printstr)
 
 # Execution of the code begins here
-def export_seclist(inputfile, export_compartments,export_regions,service_dir, _config, _tf_import_cmd, outdir,ct):
+def export_seclist(inputfile, outdir, service_dir,config,signer, ct, export_compartments,export_regions,_tf_import_cmd):
     global tf_import_cmd
     global values_for_column
     global sheet_dict
     global importCommands
-    global config
 
     cd3file = inputfile
 
@@ -226,12 +225,6 @@ def export_seclist(inputfile, export_compartments,export_regions,service_dir, _c
 
     # Read CD3
     df, values_for_column = commonTools.read_cd3(cd3file,"SecRulesinOCI")
-    config = oci.config.from_file(_config)
-
-    if ct == None:
-        ct = commonTools()
-        ct.get_subscribedregions(_config)
-        ct.get_network_compartment_ids(config['tenancy'],"root", _config)
 
     print("\nFetching Security Rules...")
 
@@ -246,12 +239,14 @@ def export_seclist(inputfile, export_compartments,export_regions,service_dir, _c
                                         "tf_import_commands_network_secrules_nonGF.sh")
             importCommands[reg] = open(outdir + "/" + reg + "/" + service_dir+ "/tf_import_commands_network_secrules_nonGF.sh", "w")
             importCommands[reg].write("#!/bin/bash")
+            importCommands[reg].write("\n")
+            importCommands[reg].write("terraform init")
             importCommands[reg].write("\n\n######### Writing import for Security Lists #########\n\n")
 
 
     for reg in export_regions:
         config.__setitem__("region", commonTools().region_dict[reg])
-        vcn = VirtualNetworkClient(config)
+        vcn = VirtualNetworkClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
         region = reg.capitalize()
         #comp_ocid_done = []
         for ntk_compartment_name in export_compartments:
@@ -267,4 +262,5 @@ def export_seclist(inputfile, export_compartments,export_regions,service_dir, _c
     print("SecRules exported to CD3\n")
     if tf_import_cmd:
         for reg in export_regions:
+            importCommands[reg].write('\n\nterraform plan\n')
             importCommands[reg].close()

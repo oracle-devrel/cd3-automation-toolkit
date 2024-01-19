@@ -143,6 +143,11 @@ variable "is_pv_encryption_in_transit_enabled" {
   description = "Whether in-transit encryptions is enabled for data in persistent volume"
 }
 
+variable "kms_key_id" {
+  type    = string
+  default = null
+}
+
 variable "node_defined_tags" {
   type = map(any)
   default = { "Oracle-Tags.CreatedOn" = "$${oci.datetime}",

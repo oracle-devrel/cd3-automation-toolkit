@@ -32,6 +32,8 @@ buckets = {
 
                 {% if kms_key_id and kms_key_id != "" %}
                 kms_key_id            = "{{ kms_key_id }}"
+                {% else %}
+                kms_key_id            = null
                 {% endif %}
 
                 {% if auto_tiering and auto_tiering != "" %}

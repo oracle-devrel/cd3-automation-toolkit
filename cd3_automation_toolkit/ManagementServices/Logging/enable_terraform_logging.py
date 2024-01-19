@@ -19,7 +19,7 @@ from commonTools import *
 # Required Inputs- Config file, prefix AND outdir
 ######
 # Execution of the code begins here
-def enable_cis_oss_logging(filename, outdir, service_dir, prefix, config=DEFAULT_LOCATION):
+def enable_cis_oss_logging(filename, outdir, service_dir, prefix, ct):
 
     # Read cd3 using pandas dataframe
     df, col_headers = commonTools.read_cd3(filename, "Buckets")
@@ -129,7 +129,7 @@ def enable_cis_oss_logging(filename, outdir, service_dir, prefix, config=DEFAULT
             oname.close()
             print(outfile[reg] + " for OSS Bucket Logs has been created for region "+reg)
 
-def enable_cis_vcnflow_logging(filename, outdir, service_dir, prefix, config=DEFAULT_LOCATION):
+def enable_cis_vcnflow_logging(filename, outdir, service_dir, prefix, act):
 
     # Read cd3 using pandas dataframe
     df, col_headers = commonTools.read_cd3(filename, "SubnetsVLANs")
@@ -250,10 +250,9 @@ def enable_cis_vcnflow_logging(filename, outdir, service_dir, prefix, config=DEF
             oname.close()
             print(outfile[reg] + " for VCN Flow Logs has been created for region "+reg)
 
-def enable_load_balancer_logging(filename, outdir, service_dir, prefix, config=DEFAULT_LOCATION):
+def enable_load_balancer_logging(filename, outdir, service_dir, prefix, ct):
 
     # Declare variables
-    configFileName = config
 
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
@@ -271,8 +270,6 @@ def enable_load_balancer_logging(filename, outdir, service_dir, prefix, config=D
     # List of the column headers
     dfcolumns = df.columns.values.tolist()
 
-    ct = commonTools()
-    ct.get_subscribedregions(configFileName)
 
     tfStrLogs = {}
     tempStr = {}

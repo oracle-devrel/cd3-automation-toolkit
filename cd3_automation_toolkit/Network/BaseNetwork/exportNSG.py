@@ -158,14 +158,11 @@ def print_nsg(values_for_column_nsgs,region, comp_name, vcn_name, nsg):
         importCommands[region.lower()].write("\nterraform import \"module.nsgs[\\\"" + tf_name +  "\\\"].oci_core_network_security_group.network_security_group\" " + str(nsg.id))
 
 # Execution of the code begins here
-def export_nsg(inputfile, export_compartments, export_regions, service_dir, _config, _tf_import_cmd, outdir,ct):
+def export_nsg(inputfile, outdir, service_dir,config,signer, ct, export_compartments,export_regions,_tf_import_cmd):
     global tf_import_cmd
     global values_for_column_nsgs
     global sheet_dict_nsgs
     global importCommands
-    global config
-    input_config_file = _config
-    config = oci.config.from_file(file_location=input_config_file)
     cd3file = inputfile
 
     if '.xls' not in cd3file:
@@ -178,11 +175,6 @@ def export_nsg(inputfile, export_compartments, export_regions, service_dir, _con
 
     # Read CD3
     df, values_for_column_nsgs = commonTools.read_cd3(cd3file,"NSGs")
-
-    if ct == None:
-        ct = commonTools()
-        ct.get_subscribedregions(input_config_file)
-        ct.get_network_compartment_ids(config['tenancy'], "root", input_config_file)
 
     print("\nFetching NSGs...")
 
@@ -204,7 +196,7 @@ def export_nsg(inputfile, export_compartments, export_regions, service_dir, _con
 
     for reg in export_regions:
         config.__setitem__("region", commonTools().region_dict[reg])
-        vnc = VirtualNetworkClient(config)
+        vnc = VirtualNetworkClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
         region = reg.capitalize()
         nsglist = [""]
         for ntk_compartment_name in export_compartments:

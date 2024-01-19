@@ -21,7 +21,7 @@ from commonTools import *
 # Required Inputs-CD3 excel file, Config file, Modify Network AND outdir
 ######
 # Execution of the code begins here
-def create_terraform_seclist(inputfile, outdir, service_dir, prefix, config, modify_network=False):
+def create_terraform_seclist(inputfile, outdir, service_dir, prefix,ct, modify_network=False):
 
     def purge(dir, pattern):
         for f in os.listdir(dir):
@@ -31,10 +31,7 @@ def create_terraform_seclist(inputfile, outdir, service_dir, prefix, config, mod
 
 
     filename = inputfile
-    configFileName = config
 
-    ct = commonTools()
-    ct.get_subscribedregions(configFileName)
     tempSkeleton = {}
     tempSecList = {}
     modify_network_seclists = {}
@@ -231,7 +228,7 @@ def create_terraform_seclist(inputfile, outdir, service_dir, prefix, config, mod
         # Check if values are entered for mandatory fields
         if str(df.loc[i, 'Region']).lower() == 'nan' or str(df.loc[i, 'Compartment Name']).lower() == 'nan' or str(df.loc[i,'VCN Name']).lower() == 'nan':
             print("\nThe values for Region, Compartment Name and VCN Name cannot be left empty in Subnets Tab. Please enter a value and try again !!")
-            exit()
+            exit(1)
 
         for columnname in dfcolumns:
             # Column value

@@ -7,8 +7,8 @@ package terraform
 
 import input as tfplan
 
-#UPDATE the required tags here.
-required_tags = ["owner", "department"]
+#UPDATE the required tags here or pass it while calling the rule
+#required_tags = ["owner", "department"]
 
 
 array_contains(arr, elem) {
@@ -34,6 +34,7 @@ get_tags(resource) = labels {
 
 deny[reason] {
     resource := tfplan.resource_changes[_]
+    required_tags := input.required_tags
     action := resource.change.actions[count(resource.change.actions) - 1]
     array_contains(["create", "update"], action)
     tags := get_tags(resource)

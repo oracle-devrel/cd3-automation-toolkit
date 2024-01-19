@@ -63,6 +63,7 @@ module "clusters" {
   pods_cidr                       = each.value.pods_cidr
   services_cidr                   = each.value.services_cidr
   service_lb_subnet_ids           = each.value.service_lb_subnet_ids
+  kms_key_id                      = each.value.cluster_kms_key_id
   defined_tags                    = each.value.defined_tags
   freeform_tags                   = each.value.freeform_tags
 }
@@ -94,6 +95,7 @@ module "nodepools" {
   source_type                         = each.value.source_type
   boot_volume_size_in_gbs             = each.value.boot_volume_size_in_gbs
   ssh_public_key                      = each.value.ssh_public_key != null ? (length(regexall("ssh-rsa*", each.value.ssh_public_key)) > 0 ? each.value.ssh_public_key : lookup(var.oke_ssh_keys, each.value.ssh_public_key, null)) : null
+  kms_key_id                          = each.value.nodepool_kms_key_id
   node_defined_tags                   = each.value.node_defined_tags
   node_freeform_tags                  = each.value.node_freeform_tags
   nodepool_defined_tags               = each.value.nodepool_defined_tags

@@ -51,6 +51,7 @@ def merge_or_generate_route_rule(reg, tempStr, modifiedroutetableStr,routetableS
         end_rule = "## End Route Rule " + tempStr['region'].lower() + "_" + tempStr['rt_tf_name'] + "_" + tempStr[
             'network_entity_id'] + "_" + tempStr['destination']
         if start_rule in modifiedroutetableStr[reg]:  # If the rule is present in filedata
+
             if start_rule not in routetableStr[reg]:  # But the rule is not in routetableStr then add it to filedata
                 if routerule.render(tempStr).strip() != '':
                     if reg != 'lpg_route_rules':
@@ -83,13 +84,10 @@ def merge_or_generate_route_rule(reg, tempStr, modifiedroutetableStr,routetableS
     return data
 
 # Execution of the code begins here for drg routes
-def create_terraform_drg_route(inputfile, outdir, service_dir, prefix, non_gf_tenancy, config,network_connectivity_in_setupoci, modify_network):
+def create_terraform_drg_route(inputfile, outdir, service_dir, prefix, ct, non_gf_tenancy,network_connectivity_in_setupoci, modify_network):
     filename = inputfile
-    configFileName = config
     drgv2 = parseDRGs(filename)
     common_rt = []
-    ct = commonTools()
-    ct.get_subscribedregions(configFileName)
 
     drg_routetablefiles = {}
     drg_routedistributionfiles = {}
@@ -384,13 +382,10 @@ def purge(dir, pattern):
 
 
 # Execution of the code begins here for route creation
-def create_terraform_route(inputfile, outdir, service_dir, prefix, non_gf_tenancy, config, network_vlan_in_setupoci,modify_network):
+def create_terraform_route(inputfile, outdir, service_dir, prefix, ct, non_gf_tenancy, network_vlan_in_setupoci,modify_network):
     filename = inputfile
-    configFileName = config
 
-    ct = commonTools()
     tempSkeleton = {}
-    ct.get_subscribedregions(configFileName)
     common_rt = []
     routetablefiles = {}
     tempStr = {}
@@ -463,7 +458,7 @@ def create_terraform_route(inputfile, outdir, service_dir, prefix, non_gf_tenanc
                 srcStr = "##Add New Route Tables for "+reg.lower()+" here##"
                 modifiedroutetableStr[reg] = tempSkeleton[reg].replace(srcStr,modifiedroutetableStr[reg]) #+"\n"+srcStr) ----> ToTest, if fails add +"\n"+srcStr
             else:
-                modifiedroutetableStr[reg] = ''
+                 modifiedroutetableStr[reg] = ''
      # Get Hub VCN name and create route rules for LPGs as per Section VCN_PEERING
     def createLPGRouteRules(peering_dict):
         ruleStr = ''
@@ -947,6 +942,7 @@ def create_terraform_route(inputfile, outdir, service_dir, prefix, non_gf_tenanc
             if data_ngw !=  '':
                 data_ngw = data_ngw + "\n" + ngwStr
                 routetableStr[region] = routetableStr[region].replace(ngwStr, data_ngw)
+
         # IGW Rules
         if configure_igw.strip() == 'y' and vcn_igw != 'n':
             igwStr = "####ADD_NEW_IGW_RULES " + region_rt_name + " ####"
@@ -1016,7 +1012,7 @@ def create_terraform_route(inputfile, outdir, service_dir, prefix, non_gf_tenanc
             continue
 
         # skip Subnet rows while running option Add/Modify/Delete VLANs
-        if modify_network and network_vlan_in_setupoci == 'vlan' and subnet_vlan_in_excel.startswith('subnet'):
+        if modify_network and network_vlan_in_setupoci == 'vlan' and subnet_vlan_in_excel.lower().startswith('subnet'):
             continue
 
         if (region in commonTools.endNames):
@@ -1044,7 +1040,7 @@ def create_terraform_route(inputfile, outdir, service_dir, prefix, non_gf_tenanc
                 str(df.loc[i, 'Configure IGW Route(y|n)']).lower() == 'nan' or
                 str(df.loc[i, 'Configure OnPrem Route(y|n)']).lower() == 'nan' or
                 str(df.loc[i, 'Configure VCNPeering Route(y|n)']).lower() == 'nan'):
-            print("\nERROR!!! Column Values (except DHCP Option Name, Route Table Name, Seclist Name or DNS Label) or Rows cannot be left empty in Subnets sheet in CD3..Exiting!")
+            print("\nERROR!!! Column Values (except DHCP Option Name, Route Table Name, Seclist Name or DNS Label) or Rows cannot be left empty in SubnetsVLANs sheet in CD3..Exiting!")
             exit(1)
         if (str(df.loc[i,'Subnet or VLAN']).strip().lower()=='subnet'):
             if str(df.loc[i, 'Type(private|public)']).lower() == 'nan' or str(df.loc[i, 'Add Default Seclist']).lower() == 'nan':

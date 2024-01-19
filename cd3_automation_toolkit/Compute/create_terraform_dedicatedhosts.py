@@ -25,19 +25,16 @@ from jinja2 import Environment, FileSystemLoader
 
 # If input is CD3 excel file
 # Execution of the code begins here
-def create_terraform_dedicatedhosts(inputfile, outdir, service_dir,prefix, config):
+def create_terraform_dedicatedhosts(inputfile, outdir, service_dir,prefix, ct):
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
     template = env.get_template('dedicatedvmhosts-template')
 
     filename = inputfile
-    configFileName = config
 
     sheetName = "DedicatedVMHosts"
     auto_tfvars_filename = prefix + '_' + sheetName.lower() + '.auto.tfvars'
-    ct = commonTools()
-    ct.get_subscribedregions(configFileName)
 
     outfile = {}
     oname = {}

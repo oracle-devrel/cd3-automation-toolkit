@@ -11,13 +11,9 @@ from commonTools import *
 from jinja2 import Environment, FileSystemLoader
 
 # Execution of the code begins here
-def create_terraform_sddc(inputfile, outdir, service_dir, prefix, config):
+def create_terraform_sddc(inputfile, outdir, service_dir, prefix, ct):
     tfStr = {}
     filename = inputfile
-    configFileName = config
-    ct = commonTools()
-    ct.get_subscribedregions(configFileName)
-
 
     ADS = ["AD1", "AD2", "AD3"]
 
@@ -91,7 +87,7 @@ def create_terraform_sddc(inputfile, outdir, service_dir, prefix, config):
 
         if (len(df1.index) !=1):
             print("SDDC " + sddc_name +" for region "+region +" does not have a single row in "+sheetNamenetwork + " sheet. Exiting!!!")
-            exit()
+            exit(1)
 
         # List of column headers
         dfcolumns1 = df1.columns.values.tolist()
@@ -176,7 +172,7 @@ def create_terraform_sddc(inputfile, outdir, service_dir, prefix, config):
                         subnet_id = subnets.vcn_subnet_map[key][2]
                     except Exception as e:
                         print("Invalid Subnet Name specified for row " + str(i + 3) + ". It Doesnt exist in SubnetsVLANs sheet. Exiting!!!")
-                        exit()
+                        exit(1)
 
                 tempdict = {'network_compartment_id': commonTools.check_tf_variable(network_compartment_id),
                             'vcn_name': vcn_name,'provisioning_subnet': subnet_id}

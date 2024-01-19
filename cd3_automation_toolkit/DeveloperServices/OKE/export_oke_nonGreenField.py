@@ -259,20 +259,16 @@ def print_oke(values_for_column_oke, reg, compartment_name, compartment_name_nod
             values_for_column_oke = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict_oke,values_for_column_oke)
 
 # Execution of the code begins here
-def export_oke(inputfile, outdir,service_dir, ct, _config=DEFAULT_LOCATION, export_compartments=[], export_regions=[]):
+def export_oke(inputfile, outdir,service_dir, config, signer, ct, export_compartments=[], export_regions=[]):
     global importCommands
     global tf_import_cmd
     global values_for_column_oke
     global sheet_dict_oke
-    global config
 
     cd3file = inputfile
     if ('.xls' not in cd3file):
         print("\nAcceptable cd3 format: .xlsx")
         exit()
-
-    configFileName = _config
-    config = oci.config.from_file(file_location=configFileName)
 
     sheetName = "OKE"
     resource = 'tf_import_' + sheetName.lower()
@@ -280,10 +276,6 @@ def export_oke(inputfile, outdir,service_dir, ct, _config=DEFAULT_LOCATION, expo
 
     importCommands={}
 
-    if ct==None:
-        ct = commonTools()
-        ct.get_subscribedregions(configFileName)
-        ct.get_network_compartment_ids(config['tenancy'], "root", configFileName)
 
     df, values_for_column_oke = commonTools.read_cd3(cd3file, "OKE")
 
@@ -311,8 +303,8 @@ def export_oke(inputfile, outdir,service_dir, ct, _config=DEFAULT_LOCATION, expo
     for reg in export_regions:
         importCommands[reg].write("\n\n######### Writing import for OKE Objects #########\n\n")
         config.__setitem__("region", ct.region_dict[reg])
-        oke = ContainerEngineClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
-        network = VirtualNetworkClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
+        oke = ContainerEngineClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
+        network = VirtualNetworkClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
 
         for compartment_name in export_compartments:
             clusterList = []

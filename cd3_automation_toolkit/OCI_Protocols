@@ -83,7 +83,6 @@
 81:VMTP
 82:SECURE-VMTP
 83:VINES
-84:TTP
 84:IPTM
 85:NSFNET-IGP
 86:DGP
@@ -145,7 +144,8 @@
 142:ROHC
 143:Ethernet
 144:AGGFRAG
-145-252:Unassigned
+145:NSH
+146-252:Unassigned
 253:Use for experimentation and testing
 254:Use for experimentation and testing
 255:Reserved

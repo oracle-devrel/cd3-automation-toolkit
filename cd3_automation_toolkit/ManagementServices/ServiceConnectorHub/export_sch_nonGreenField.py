@@ -16,7 +16,7 @@ importCommands = {}
 oci_obj_names = {}
 
 
-def get_service_connectors(region, SCH_LIST, sch_client, log_client, la_client, identity_client, stream_client,
+def get_service_connectors(config,region, SCH_LIST, sch_client, log_client, la_client, identity_client, stream_client,
                            notification_client, func_client, ct, values_for_column, ntk_compartment_name):
     volume_comp = ""
     log_source_list = []
@@ -214,14 +214,12 @@ def get_service_connectors(region, SCH_LIST, sch_client, log_client, la_client, 
                                                                      values_for_column)
 
 # Execution of the code begins here
-def export_service_connectors(inputfile, _outdir, service_dir, _config, ct, export_compartments=[],export_regions=[]):
+def export_service_connectors(inputfile, outdir, service_dir, config, signer, ct, export_compartments=[],export_regions=[]):
     global tf_import_cmd
     global sheet_dict
     global importCommands
-    global config
     global cd3file
     global reg
-    global outdir
     global valuesforcolumn
 
     cd3file = inputfile
@@ -229,16 +227,7 @@ def export_service_connectors(inputfile, _outdir, service_dir, _config, ct, expo
         print("\nAcceptable cd3 format: .xlsx")
         exit()
 
-    outdir = _outdir
-    configFileName = _config
-    config = oci.config.from_file(file_location=configFileName)
-
     sheetName = "ServiceConnectors"
-    if ct==None:
-        ct = commonTools()
-        ct.get_subscribedregions(configFileName)
-        ct.get_network_compartment_ids(config['tenancy'], "root", configFileName)
-
     # Read CD3
     df, values_for_column = commonTools.read_cd3(cd3file, sheetName)
 
@@ -267,21 +256,20 @@ def export_service_connectors(inputfile, _outdir, service_dir, _config, ct, expo
         importCommands[reg].write("\n\n######### Writing import for Service Connectors #########\n\n")
         config.__setitem__("region", ct.region_dict[reg])
         region = reg.capitalize()
-        sch_client = oci.sch.ServiceConnectorClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
-        log_client = oci.logging.LoggingManagementClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
-        la_client = oci.log_analytics.LogAnalyticsClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
-        identity_client = oci.identity.IdentityClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
-        stream_client = oci.streaming.StreamAdminClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
-        notification_client = oci.ons.NotificationControlPlaneClient(config,
-                                                                     retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
-        func_client = oci.functions.FunctionsManagementClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
+        sch_client = oci.sch.ServiceConnectorClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
+        log_client = oci.logging.LoggingManagementClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
+        la_client = oci.log_analytics.LogAnalyticsClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
+        identity_client = oci.identity.IdentityClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
+        stream_client = oci.streaming.StreamAdminClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
+        notification_client = oci.ons.NotificationControlPlaneClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
+        func_client = oci.functions.FunctionsManagementClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
 
         for ntk_compartment_name in export_compartments:
             SCH_LIST = oci.pagination.list_call_get_all_results(sch_client.list_service_connectors,
                                                                 compartment_id=ct.ntk_compartment_ids[
                                                                     ntk_compartment_name], lifecycle_state="ACTIVE",
                                                                 sort_by="timeCreated")
-            get_service_connectors(region, SCH_LIST, sch_client, log_client, la_client, identity_client,
+            get_service_connectors(config,region, SCH_LIST, sch_client, log_client, la_client, identity_client,
                                    stream_client, notification_client, func_client, ct, values_for_column, ntk_compartment_name)
 
     commonTools.write_to_cd3(values_for_column, cd3file, sheetName)

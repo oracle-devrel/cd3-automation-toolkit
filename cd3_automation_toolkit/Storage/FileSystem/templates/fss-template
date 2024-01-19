@@ -24,8 +24,8 @@ fss = {
         #Optional
         display_name = "{{ fss_name }}"
 
-        {% if kms_key_name and kms_key_name != "" %}
-        kms_key_name = "{{ kms_key_name }}"
+        {% if kms_key_id and kms_key_id != "" %}
+        kms_key_id = "{{ kms_key_id }}"
         {% endif %}
 
         {% if source_snapshot_name and source_snapshot_name != "" %}

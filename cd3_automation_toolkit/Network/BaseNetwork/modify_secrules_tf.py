@@ -18,7 +18,7 @@ from jinja2 import Environment, FileSystemLoader
 sys.path.append(os.getcwd() + "/../../..")
 from commonTools import *
 # Execution of the code begins here
-def modify_terraform_secrules(inputfile, outdir, service_dir,prefix=None, non_gf_tenancy=False, config=DEFAULT_LOCATION):
+def modify_terraform_secrules(inputfile, outdir, service_dir,prefix, ct, non_gf_tenancy):
 
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
@@ -28,10 +28,6 @@ def modify_terraform_secrules(inputfile, outdir, service_dir,prefix=None, non_gf
     seclist = env.get_template('seclist-template')
 
     secrulesfilename = inputfile
-    configFileName = config
-
-    ct = commonTools()
-    ct.get_subscribedregions(configFileName)
 
     seclists_done = {}
     default_ruleStr = {}

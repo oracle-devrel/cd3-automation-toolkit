@@ -16,14 +16,13 @@ sys.path.append(os.getcwd()+"/..")
 from commonTools import *
 
 # Execution of the code begins here
-def export_users(inputfile, outdir, service_dir, _config, ct):
+def export_users(inputfile, outdir, service_dir, config, signer, ct):
     global values_for_column_comps
     global values_for_column_groups
     global values_for_column_policies
     global sheet_dict_comps
     global sheet_dict_groups
     global sheet_dict_policies
-    global config
     global cd3file
 
     cd3file = inputfile
@@ -33,8 +32,6 @@ def export_users(inputfile, outdir, service_dir, _config, ct):
         exit()
 
 
-    configFileName = _config
-    config = oci.config.from_file(file_location=configFileName)
     importCommands={}
 
     sheetName_users = "Users"
@@ -58,7 +55,7 @@ def export_users(inputfile, outdir, service_dir, _config, ct):
     importCommands[ct.home_region].write("terraform init")
 
     config.__setitem__("region", ct.region_dict[ct.home_region])
-    idc=IdentityClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
+    idc=IdentityClient(config=config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
 
     #retrieve group information..this is required to get group name for user-groupmembership
     groups = oci.pagination.list_call_get_all_results(idc.list_groups, compartment_id=config['tenancy'])

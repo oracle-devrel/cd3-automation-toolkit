@@ -19,13 +19,8 @@ from commonTools import *
 # Required Inputs- Config file, prefix AND outdir
 ######
 # Execution of the code begins here
-def create_cis_budget(outdir, service_dir, prefix, amount, threshold,config=DEFAULT_LOCATION):
+def create_cis_budget(outdir, service_dir, prefix, ct, amount, threshold):
 
-    # Declare variables
-    configFileName = config
-
-    ct = commonTools()
-    ct.get_subscribedregions(configFileName)
 
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')

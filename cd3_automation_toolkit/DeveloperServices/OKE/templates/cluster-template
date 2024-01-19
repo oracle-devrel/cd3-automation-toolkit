@@ -46,6 +46,10 @@ clusters = {
         services_cidr = "{{ service_cidr_block }}"
         {% endif %}
         service_lb_subnet_ids = {{ oke_lb_subnets }}
+        {% if cluster_kms_key_id %}
+        cluster_kms_key_id = "{{ cluster_kms_key_id }}"
+        {% endif %}
+
         {#  ##Do not modify below this line##  #}
         {#                                     #}
     {#  ##Do not modify below this line##  #}

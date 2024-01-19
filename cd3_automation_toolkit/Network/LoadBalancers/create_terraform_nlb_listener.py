@@ -17,7 +17,7 @@ from jinja2 import Environment, FileSystemLoader
 ######
 
 # Execution of the code begins here
-def create_terraform_nlb_listener(inputfile, outdir, service_dir, prefix, config=DEFAULT_LOCATION):
+def create_terraform_nlb_listener(inputfile, outdir, service_dir, prefix, ct):
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True)
@@ -29,10 +29,6 @@ def create_terraform_nlb_listener(inputfile, outdir, service_dir, prefix, config
     nlb_auto_tfvars_filename = prefix + "_"+sheetName.lower()+".auto.tfvars"
 
     filename = inputfile
-    configFileName = config
-
-    ct = commonTools()
-    ct.get_subscribedregions(configFileName)
 
     nlb_str = {}
     reserved_ips_str = {}
@@ -70,7 +66,7 @@ def create_terraform_nlb_listener(inputfile, outdir, service_dir, prefix, config
 
         if region != 'nan' and region not in ct.all_regions:
             print("\nInvalid Region; It should be one of the regions tenancy is subscribed to...Exiting!!")
-            exit()
+            exit(1)
 
         # Check for empty values
         empty_nlb = 0
@@ -152,7 +148,7 @@ def create_terraform_nlb_listener(inputfile, outdir, service_dir, prefix, config
                         subnet_id = subnets.vcn_subnet_map[key][2]
                     except Exception as e:
                         print("Invalid Subnet Name specified for row " + str(i + 3) + ". It Doesnt exist in Subnets sheet. Exiting!!!")
-                        exit()
+                        exit(1)
                 tempdict = {'network_compartment_tf_name': commonTools.check_tf_variable(network_compartment_id), 'vcn_name': vcn_name,'subnet_id': subnet_id}
 
             if columnname == "NSGs":

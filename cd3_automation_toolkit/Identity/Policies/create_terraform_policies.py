@@ -20,14 +20,11 @@ from commonTools import *
 # Required Inputs- CD3 excel file, Config file, prefix AND outdir
 ######
 # Execution of the code begins here
-def create_terraform_policies(inputfile, outdir, service_dir, prefix, config=DEFAULT_LOCATION):
+def create_terraform_policies(inputfile, outdir, service_dir, prefix, ct):
     # Declare variables
     filename = inputfile
-    configFileName = config
     sheetName = 'Policies'
     auto_tfvars_filename = '_' + sheetName.lower() + '.auto.tfvars'
-    ct = commonTools()
-    ct.get_subscribedregions(configFileName)
 
     outfile = {}
     oname = {}

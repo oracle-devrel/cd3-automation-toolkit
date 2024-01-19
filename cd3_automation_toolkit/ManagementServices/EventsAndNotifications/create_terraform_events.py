@@ -27,15 +27,12 @@ def extend_event(service_name, resources, listeventid):
 
 
 # Execution of the code begins here
-def create_terraform_events(inputfile, outdir, service_dir, prefix, config=DEFAULT_LOCATION):
+def create_terraform_events(inputfile, outdir, service_dir, prefix, ct):
     filename = inputfile
 
-    configFileName = config
     sheetName = "Events"
     auto_tfvars_filename = '_' + sheetName.lower() + '.auto.tfvars'
 
-    ct = commonTools()
-    ct.get_subscribedregions(configFileName)
     tempStr={}
     event_data = ""
     Events_names={}
@@ -90,7 +87,7 @@ def create_terraform_events(inputfile, outdir, service_dir, prefix, config=DEFAU
         # Check if values are entered for mandatory fields
         if str(df.loc[i, 'Region']).lower() == 'nan' or str(df.loc[i, 'Compartment Name']).lower() == 'nan' or str(df.loc[i, 'Event Name']).lower() == 'nan' or str(df.loc[i, 'Action Type']).lower() == 'nan' or str(df.loc[i, 'Action is Enabled']).lower() == 'nan' or str(df.loc[i, 'Service Name']).lower() == 'nan' or str(df.loc[i, 'Resource']).lower() == 'nan' or str(df.loc[i, 'Event is Enabled']).lower() == 'nan'or str(df.loc[i, 'Topic']).lower() == 'nan' :
             print("\nThe values for Region, Compartment, Topic, Protocol and Endpoint cannot be left empty. Please enter a value and try again !!")
-            exit()
+            exit(1)
 
         for columnname in dfcolumns:
             # Column value

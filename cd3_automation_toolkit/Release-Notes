@@ -1,3 +1,14 @@
+-------------------------------------
+CD3 Automation Toolkit Tag v2024.1.0
+Jan 31st, 2024
+-------------------------------------
+1. Support for multiple Authentication Mechanisms for OCI SDK - API Key, Session Token, Instance Principal
+2. Support for toolkit via CI/CD pipelines for setUpOCI as well as terraform actions
+3. Support for Remote State Management for terraform state using Object Storage bucket
+4. Migrated oci terraform provider from hashicorp/oci to oracle/oci and updated to latest version
+5. Replaced parameter in setUpOCI.properties - 'non_gf_tenancy' with 'workflow_type'. Valid values - 'create_resources' or 'export_resources'
+6. Moved toolkit configuration files into /cd3user/tenancies/<customer_name>/.config_files folder
+
 ----------------------------------
 CD3 Automation Toolkit Tag v12.1
 ----------------------------------

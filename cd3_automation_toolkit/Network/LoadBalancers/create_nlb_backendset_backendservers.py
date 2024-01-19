@@ -16,19 +16,16 @@ from jinja2 import Environment, FileSystemLoader
 # Required Inputs-CD3 excel file, Config file AND outdir
 ######
 # Execution of the code begins here
-def create_nlb_backendset_backendservers(inputfile, outdir, service_dir, prefix, config=DEFAULT_LOCATION):
+def create_nlb_backendset_backendservers(inputfile, outdir, service_dir, prefix, ct):
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True)
     beset = env.get_template('nlb-backend-set-template')
     beserver = env.get_template('nlb-backends-template')
     filename = inputfile
-    configFileName = config
     sheetName = "NLB-BackendSets-BackendServers"
     lb_auto_tfvars_filename = prefix + "_"+sheetName.lower()+".auto.tfvars"
 
-    ct = commonTools()
-    ct.get_subscribedregions(configFileName)
     beset_str = {}
     beserver_str = {}
     nlb_tf_name = ''
@@ -65,7 +62,7 @@ def create_nlb_backendset_backendservers(inputfile, outdir, service_dir, prefix,
 
         if region != 'nan' and region not in ct.all_regions:
             print("\nInvalid Region; It should be one of the values mentioned in VCN Info tab...Exiting!!")
-            exit()
+            exit(1)
 
         # temporary dictionaries
         tempStr= {}

@@ -44,14 +44,12 @@ def print_dedicatedvmhosts(region, dedicatedvmhost, values_for_column, ntk_compa
             values_for_column = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict, values_for_column)
 
 # Execution of the code begins here
-def export_dedicatedvmhosts(inputfile, _outdir, service_dir, _config, ct, export_compartments=[], export_regions=[]):
+def export_dedicatedvmhosts(inputfile, outdir, service_dir, config, signer, ct, export_compartments=[], export_regions=[]):
     global tf_import_cmd
     global sheet_dict
     global importCommands
-    global config
     global cd3file
     global reg
-    global outdir
     global values_for_column
 
 
@@ -60,16 +58,7 @@ def export_dedicatedvmhosts(inputfile, _outdir, service_dir, _config, ct, export
         print("\nAcceptable cd3 format: .xlsx")
         exit()
 
-
-    outdir = _outdir
-    configFileName = _config
-    config = oci.config.from_file(file_location=configFileName)
-
     sheetName="DedicatedVMHosts"
-    if ct==None:
-        ct = commonTools()
-        ct.get_subscribedregions(configFileName)
-        ct.get_network_compartment_ids(config['tenancy'],"root",configFileName)
 
     # Read CD3
     df, values_for_column= commonTools.read_cd3(cd3file,sheetName)
@@ -100,13 +89,19 @@ def export_dedicatedvmhosts(inputfile, _outdir, service_dir, _config, ct, export
         config.__setitem__("region", ct.region_dict[reg])
         region = reg.capitalize()
 
-        compute_client = oci.core.ComputeClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
+        compute_client = oci.core.ComputeClient(config=config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY, signer=signer)
 
         for ntk_compartment_name in export_compartments:
             dedicatedvmhosts = oci.pagination.list_call_get_all_results(compute_client.list_dedicated_vm_hosts,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name], lifecycle_state="ACTIVE")
             for dedicatedvmhost in dedicatedvmhosts.data:
                 dedicatedvmhost=compute_client.get_dedicated_vm_host(dedicatedvmhost.id).data
                 print_dedicatedvmhosts(region, dedicatedvmhost,values_for_column, ntk_compartment_name)
+
+    # write data into file
+    for reg in export_regions:
+        script_file = f'{outdir}/{reg}/{service_dir}/'+file_name
+        with open(script_file, 'a') as importCommands[reg]:
+            importCommands[reg].write('\n\nterraform plan\n')
 
     commonTools.write_to_cd3(values_for_column, cd3file, "DedicatedVMHosts")
 

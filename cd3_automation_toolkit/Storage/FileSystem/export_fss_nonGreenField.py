@@ -54,10 +54,10 @@ def add_column_data(reg, cname, AD_name, mt_display_name, vplussubnet, mnt_p_ip,
                                                                      values_for_column_fss)
 
 
-def __get_mount_info(cname, compartment_id, reg, availability_domain_name, config):
-    file_system = oci.file_storage.FileStorageClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
-    network = oci.core.VirtualNetworkClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
-    vnc_info = oci.core.VirtualNetworkClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
+def __get_mount_info(cname, compartment_id, reg, availability_domain_name,signer):
+    file_system = oci.file_storage.FileStorageClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
+    network = oci.core.VirtualNetworkClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
+    vnc_info = oci.core.VirtualNetworkClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
     global exports_ids
     AD_name = AD(availability_domain_name)
     try:
@@ -155,7 +155,7 @@ def __get_mount_info(cname, compartment_id, reg, availability_domain_name, confi
         pass
 
 # Execution of the code begins here
-def export_fss(inputfile, outdir, service_dir, ct, config=DEFAULT_LOCATION, export_compartments=[], export_regions=[]):
+def export_fss(inputfile, outdir, service_dir, config1, signer1, ct, export_compartments=[], export_regions=[]):
     input_compartment_names = export_compartments
     cd3file = inputfile
 
@@ -164,18 +164,13 @@ def export_fss(inputfile, outdir, service_dir, ct, config=DEFAULT_LOCATION, expo
         exit()
 
     sheetName = "FSS"
-    configFileName = config
-    config = oci.config.from_file(file_location=configFileName)
 
-    global file_system, vnc_info, importCommands, rows,  all_ads, input_compartment_list, AD, df, values_for_column_fss, sheet_dict_instances
+    global file_system, vnc_info, importCommands, rows,  all_ads, input_compartment_list, AD, df, values_for_column_fss, sheet_dict_instances, config, signer
+    config=config1
+    signer=signer1
+    file_system = oci.file_storage.FileStorageClient(config=config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
 
-    file_system = oci.file_storage.FileStorageClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
-    if ct==None:
-        ct = commonTools()
-        ct.get_subscribedregions(configFileName)
-        ct.get_network_compartment_ids(config['tenancy'], "root", configFileName)
-
-    vnc_info = oci.core.VirtualNetworkClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
+    vnc_info = oci.core.VirtualNetworkClient(config=config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
     importCommands = {}
     rows = []
     all_ads = []
@@ -192,7 +187,7 @@ def export_fss(inputfile, outdir, service_dir, ct, config=DEFAULT_LOCATION, expo
     # Fetch all ADs in all Subscribed Regions
     for reg in export_regions:
         config.__setitem__("region", ct.region_dict[reg])
-        ads = oci.identity.IdentityClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
+        ads = oci.identity.IdentityClient(config=config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
         for aval in ads.list_availability_domains(compartment_id=config['tenancy']).data:
             all_ads.append(aval.name)
 
@@ -211,9 +206,9 @@ def export_fss(inputfile, outdir, service_dir, ct, config=DEFAULT_LOCATION, expo
     for reg in export_regions:
         config.__setitem__("region", ct.region_dict[reg])
         for ntk_compartment_name in export_compartments:
-            ads = oci.identity.IdentityClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
+            ads = oci.identity.IdentityClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
             for aval in ads.list_availability_domains(compartment_id=config['tenancy']).data:
-                __get_mount_info(ntk_compartment_name, ct.ntk_compartment_ids[ntk_compartment_name], reg, aval.name, config)
+                __get_mount_info(ntk_compartment_name, ct.ntk_compartment_ids[ntk_compartment_name], reg, aval.name,signer)
 
 
     commonTools.write_to_cd3(values_for_column_fss, cd3file, sheetName)

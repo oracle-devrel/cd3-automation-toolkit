@@ -22,18 +22,15 @@ from jinja2 import Environment, FileSystemLoader
 
 # If input is CD3 excel file
 # Execution of the code begins here
-def create_terraform_instances(inputfile, outdir, service_dir, prefix, config):
+def create_terraform_instances(inputfile, outdir, service_dir, prefix, ct):
     boot_policy_tfStr = {}
     tfStr = {}
     ADS = ["AD1", "AD2", "AD3"]
 
     filename = inputfile
-    configFileName = config
 
     sheetName = "Instances"
     auto_tfvars_filename = prefix + '_' + sheetName.lower() + '.auto.tfvars'
-    ct = commonTools()
-    ct.get_subscribedregions(configFileName)
 
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
@@ -153,7 +150,7 @@ def create_terraform_instances(inputfile, outdir, service_dir, prefix, config):
                     except Exception as e:
                         print("Invalid Subnet Name specified for row " + str(
                             i + 3) + ". It Doesnt exist in Subnets sheet. Exiting!!!")
-                        exit()
+                        exit(1)
 
                 tempdict = {'network_compartment_id': commonTools.check_tf_variable(network_compartment_id),
                             'vcn_name': vcn_name,

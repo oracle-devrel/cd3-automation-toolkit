@@ -47,14 +47,12 @@ def print_exa_infra(region, exa_infra, values_for_column, ntk_compartment_name):
 # Execution of the code begins here
 
 
-def export_exa_infra(inputfile, _outdir, service_dir, _config, ct, export_compartments=[], export_regions=[]):
+def export_exa_infra(inputfile, outdir, service_dir, config, signer, ct, export_compartments=[], export_regions=[]):
     global tf_import_cmd
     global sheet_dict
     global importCommands
-    global config
     global cd3file
     global reg
-    global outdir
     global values_for_column
 
 
@@ -64,17 +62,7 @@ def export_exa_infra(inputfile, _outdir, service_dir, _config, ct, export_compar
         exit()
 
 
-    outdir = _outdir
-    configFileName = _config
-    config = oci.config.from_file(file_location=configFileName)
-
     sheetName = "EXA-Infra"
-    if ct==None:
-        ct = commonTools()
-        ct.get_subscribedregions(configFileName)
-        ct.get_network_compartment_ids(config['tenancy'],"root",configFileName)
-
-    # Read CD3
     df, values_for_column= commonTools.read_cd3(cd3file,sheetName)
 
     # Get dict for columns from Excel_Columns
@@ -104,13 +92,17 @@ def export_exa_infra(inputfile, _outdir, service_dir, _config, ct, export_compar
         config.__setitem__("region", ct.region_dict[reg])
         region = reg.capitalize()
 
-        db_client = oci.database.DatabaseClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
+        db_client = oci.database.DatabaseClient(config=config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY, signer=signer)
 
         for ntk_compartment_name in export_compartments:
             exa_infras = oci.pagination.list_call_get_all_results(db_client.list_cloud_exadata_infrastructures,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name], lifecycle_state="AVAILABLE")
             for exa_infra in exa_infras.data:
                 print_exa_infra(region, exa_infra,values_for_column, ntk_compartment_name)
 
+    for reg in export_regions:
+        script_file = f'{outdir}/{reg}/{service_dir}/' + file_name
+        with open(script_file, 'a') as importCommands[reg]:
+            importCommands[reg].write('\n\nterraform plan\n')
     commonTools.write_to_cd3(values_for_column, cd3file, sheetName)
 
     print("Exadata Infra exported to CD3\n")

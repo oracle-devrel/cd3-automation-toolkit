@@ -97,15 +97,13 @@ def print_empty_view(region, ntk_compartment_name, view_data, values_for_column)
             values_for_column = commonTools.export_tags(view_data, col_header, values_for_column)
 
 # Execution of the code begins here
-def export_dns_views_zones_rrsets(inputfile, _outdir, service_dir, _config, ct, dns_filter, export_compartments=[], export_regions=[]):
+def export_dns_views_zones_rrsets(inputfile, outdir, service_dir, config, signer, ct, dns_filter, export_compartments=[], export_regions=[]):
     global tf_import_cmd
     global sheet_dict
     global importCommands
-    global config
     global values_for_vcninfo
     global cd3file
     global reg
-    global outdir
     global values_for_column
 
     cd3file = inputfile
@@ -113,19 +111,11 @@ def export_dns_views_zones_rrsets(inputfile, _outdir, service_dir, _config, ct, 
         print("\nAcceptable cd3 format: .xlsx")
         exit()
 
-    outdir = _outdir
-    configFileName = _config
-    config = oci.config.from_file(file_location=configFileName)
-
     view_default = dns_filter
     zone_default = dns_filter
     record_default = dns_filter
 
     sheetName = "DNS-Views-Zones-Records"
-    if ct==None:
-        ct = commonTools()
-        ct.get_subscribedregions(configFileName)
-        ct.get_network_compartment_ids(config['tenancy'],"root",configFileName)
 
     # Read CD3
     df, values_for_column= commonTools.read_cd3(cd3file,sheetName)
@@ -155,7 +145,7 @@ def export_dns_views_zones_rrsets(inputfile, _outdir, service_dir, _config, ct, 
         importCommands[reg].write("\n\n######### Writing import for DNS Views/Zones/RRsets #########\n\n")
         config.__setitem__("region", ct.region_dict[reg])
         region = reg.capitalize()
-        dns_client = oci.dns.DnsClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
+        dns_client = oci.dns.DnsClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY, signer=signer)
         # Same compartment will be used to export view/zones
         for ntk_compartment_name in export_compartments:
             views = oci.pagination.list_call_get_all_results(dns_client.list_views, compartment_id=ct.ntk_compartment_ids[ntk_compartment_name], lifecycle_state="ACTIVE")

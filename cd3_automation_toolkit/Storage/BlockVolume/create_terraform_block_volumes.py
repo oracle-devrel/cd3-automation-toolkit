@@ -21,15 +21,12 @@ from commonTools import *
 # Required Inputs-CD3 excel file, Config file, prefix AND outdir
 ######
 # Execution of the code begins here
-def create_terraform_block_volumes(inputfile, outdir, service_dir, prefix,config=DEFAULT_LOCATION):
+def create_terraform_block_volumes(inputfile, outdir, service_dir, prefix,ct):
     filename = inputfile
-    configFileName = config
     tfStr = {}
 
     sheetName="BlockVolumes"
     auto_tfvars_filename = prefix + '_' + sheetName.lower() + '.auto.tfvars'
-    ct = commonTools()
-    ct.get_subscribedregions(configFileName)
 
     ADS = ["AD1", "AD2", "AD3"]
 

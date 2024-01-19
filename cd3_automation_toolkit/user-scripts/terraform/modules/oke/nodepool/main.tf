@@ -37,6 +37,7 @@ resource "oci_containerengine_node_pool" "nodepool" {
     size                                = var.size
     nsg_ids                             = var.worker_nsg_ids != null ? (local.nodepool_nsg_ids == [] ? ["INVALID WORKER NSG Name"] : local.nodepool_nsg_ids) : null
     is_pv_encryption_in_transit_enabled = var.is_pv_encryption_in_transit_enabled
+    kms_key_id                          = var.kms_key_id
     defined_tags                        = var.node_defined_tags
   }
 

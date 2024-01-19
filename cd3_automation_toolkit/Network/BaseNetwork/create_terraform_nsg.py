@@ -123,16 +123,13 @@ def statelessOptional(row, tempStr):
 
 
 # Execution of the code begins here
-def create_terraform_nsg(inputfile, outdir, service_dir, prefix, non_gf_tenancy,config=DEFAULT_LOCATION):
+def create_terraform_nsg(inputfile, outdir, service_dir, prefix, ct):
     # Read the arguments
     filename = inputfile
-    configFileName = config
 
     sheetName = 'NSGs'
     nsg_auto_tfvars_filename = '_' + sheetName.lower() + '.auto.tfvars'
     nsg_rules_auto_tfvars_filename = '_nsg-rules.auto.tfvars'
-    ct = commonTools()
-    ct.get_subscribedregions(configFileName)
 
     outfile = {}
     oname = {}

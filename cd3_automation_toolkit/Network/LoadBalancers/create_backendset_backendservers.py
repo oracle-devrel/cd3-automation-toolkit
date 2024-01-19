@@ -18,19 +18,16 @@ from jinja2 import Environment, FileSystemLoader
 # Required Inputs-CD3 excel file, Config file AND outdir
 ######
 # Execution of the code begins here
-def create_backendset_backendservers(inputfile, outdir, service_dir, prefix, config=DEFAULT_LOCATION):
+def create_backendset_backendservers(inputfile, outdir, service_dir, prefix, ct):
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True)
     beset = env.get_template('backend-set-template')
     beserver = env.get_template('backends-template')
     filename = inputfile
-    configFileName = config
     sheetName = "LB-BackendSet-BackendServer"
     lb_auto_tfvars_filename = prefix + "_"+sheetName.lower()+".auto.tfvars"
 
-    ct = commonTools()
-    ct.get_subscribedregions(configFileName)
     beset_str = {}
     beserver_str = {}
 
@@ -74,7 +71,7 @@ def create_backendset_backendservers(inputfile, outdir, service_dir, prefix, con
 
         if region not in ct.all_regions:
             print("\nInvalid Region; It should be one of the values mentioned in VCN Info tab...Exiting!!")
-            exit()
+            exit(1)
 
         # temporary dictionaries
         tempStr= {}
@@ -154,7 +151,7 @@ def create_backendset_backendservers(inputfile, outdir, service_dir, prefix, con
                 if str(columnvalue).lower() == 'true':
                     if str(df.loc[i,'Verify Depth']) == '' or str(df.loc[i,'Verify Depth']) == 'nan':
                         print("\nVerify Depth cannot be left empty when Verify Peer Certificate has a value... Exiting!!!")
-                        exit()
+                        exit(1)
 
             if columnname == 'SSL Protocols':
                 tls_versions_list = ''
@@ -169,7 +166,7 @@ def create_backendset_backendservers(inputfile, outdir, service_dir, prefix, con
 
                 elif columnvalue == '' and str(df.loc[i, 'Cipher Suite Name']) != 'nan':
                     print("\nSSL Protocols are mandatory when custom CipherSuiteName is provided..... Exiting !!")
-                    exit()
+                    exit(1)
 
                 elif columnvalue != '' and str(df.loc[i, 'Cipher Suite Name']) == 'nan':
                     print("\nNOTE: Cipher Suite Name is not specified for Backend Set -> " + str(df.loc[i, 'Backend Set Name']) + ", default value - 'oci-default-ssl-cipher-suite-v1' will be considered.\n")

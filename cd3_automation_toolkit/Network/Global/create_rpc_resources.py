@@ -21,14 +21,12 @@ from jinja2 import Environment, FileSystemLoader
 # Setting current working dir.
 owd = os.getcwd()
 
-def find_subscribed_regions(inputfile, outdir, service_dir, prefix, config):
+def find_subscribed_regions(inputfile, outdir, service_dir, prefix, config,signer,auth_mechanism):
     subs_region_list = []
     new_subs_region_list = []
     subs_region_pairs = []
 
-    ct = commonTools()
-    config = oci.config.from_file(file_location=config)
-    idc = IdentityClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
+    idc = IdentityClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
     regionsubscriptions = idc.list_region_subscriptions(tenancy_id=config['tenancy'])
 
     for reg in regionsubscriptions.data:
@@ -63,6 +61,17 @@ def find_subscribed_regions(inputfile, outdir, service_dir, prefix, config):
         with open("rpc.tf", "w") as fh:
             fh.write(output)
 
+        with open("rpc.tf", "r+") as provider_file:
+            provider_file_data = provider_file.read().rstrip()
+        if auth_mechanism == 'instance_principal':
+            provider_file_data = provider_file_data.replace("provider \"oci\" {", "provider \"oci\" {\nauth = \"InstancePrincipal\"")
+        if auth_mechanism == 'session_token':
+            provider_file_data = provider_file_data.replace("provider \"oci\" {", "provider \"oci\" {\nauth = \"SecurityToken\"\nconfig_file_profile = \"DEFAULT\"")
+
+        f = open("rpc.tf", "w+")
+        f.write(provider_file_data)
+        f.close()
+
         # For generating provider config
         file_loader_rpc = FileSystemLoader(f'{Path(__file__).parent}/templates/rpc-module')
         env_rpc = Environment(loader=file_loader_rpc, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
@@ -90,22 +99,21 @@ def find_subscribed_regions(inputfile, outdir, service_dir, prefix, config):
 
 
 # Execution of the code begins here
-def create_rpc_resource(inputfile, outdir, service_dir, prefix, non_gf_tenancy, config, modify_network=False):
+def create_rpc_resource(inputfile, outdir, service_dir, prefix, auth_mechanism, config_file,ct, non_gf_tenancy):
     # Call pre-req func
     rpc_safe_file = {}
-    find_subscribed_regions(inputfile, outdir, service_dir, prefix, config)
+    config, signer = ct.authenticate(auth_mechanism, config_file)
+    find_subscribed_regions(inputfile, outdir, service_dir, prefix, config,signer,auth_mechanism)
+
     os.chdir(owd)
 
     tfStr = {}
     requester_drg_name = ''
     accepter_drg_rt_name = ''
     filename = inputfile
-    configFileName = config
 
     sheetName = "DRGs"
     auto_tfvars_filename = prefix + '_' + "rpcs" + '.auto.tfvars'
-    ct = commonTools()
-    ct.get_subscribedregions(configFileName)
 
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')

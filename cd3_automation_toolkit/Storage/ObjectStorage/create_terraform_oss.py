@@ -18,18 +18,14 @@ from commonTools import *
 ######
 
 # Execution of the code begins here
-def create_terraform_oss(inputfile, outdir, service_dir, prefix,config):
+def create_terraform_oss(inputfile, outdir, service_dir, prefix, ct):
 
     # Declare variables
     filename = inputfile
-    configFileName = config
     prefix = prefix
     outdir = outdir
 
     #Get subscribed regions and home region
-
-    ct = commonTools()
-    ct.get_subscribedregions(configFileName)
 
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
@@ -180,7 +176,7 @@ def create_terraform_oss(inputfile, outdir, service_dir, prefix,config):
 
         if str(df.loc[i, 'Region']).lower() == 'nan' or str(df.loc[i, 'Compartment Name']).lower() == 'nan' or str(df.loc[i, 'Bucket Name']).lower() == 'nan':
             print("\nThe values for Region, Compartment Name and Bucket Name cannot be left empty. Please enter a value and try again !!")
-            exit()
+            exit(1)
 
         for columnname in dfcolumns:
             # Column value

@@ -14,8 +14,7 @@ sys.path.append(os.getcwd() + "/..")
 from commonTools import *
 
 
-def get_volume_data(config, volume_id, ct):
-    bvol = BlockstorageClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
+def get_volume_data(bvol, volume_id, ct):
     volume_data = bvol.get_volume(volume_id).data
     vol_name = volume_data.display_name
     comp_list = list(ct.ntk_compartment_ids.values())
@@ -23,15 +22,12 @@ def get_volume_data(config, volume_id, ct):
     return vol_comp+'@'+vol_name
 
 # Execution of the code begins here
-def export_sddc(inputfile, outdir, service_dir,config,ct, export_compartments=[], export_regions=[],display_names=[],ad_names=[]):
+def export_sddc(inputfile, outdir, service_dir,config,signer, ct, export_compartments=[], export_regions=[]):
     cd3file = inputfile
 
     if ('.xls' not in cd3file):
         print("\nAcceptable cd3 format: .xlsx")
         exit()
-
-    configFileName = config
-    config = oci.config.from_file(file_location=configFileName)
 
     global importCommands, values_for_column_sddc, df, sheet_dict_sddc  # declaring global variables
 
@@ -39,10 +35,6 @@ def export_sddc(inputfile, outdir, service_dir,config,ct, export_compartments=[]
     sheetNameNetwork = "SDDCs-Network"
     importCommands = {}
 
-    if ct==None:
-        ct = commonTools()
-        ct.get_subscribedregions(configFileName)
-        ct.get_network_compartment_ids(config['tenancy'], "root", configFileName)
     var_data = {}
 
     AD = lambda ad: "AD1" if ("AD-1" in ad or "ad-1" in ad) else ("AD2" if ("AD-2" in ad or "ad-2" in ad) else ("AD3" if ("AD-3" in ad or "ad-3" in ad) else " NULL"))  # Get shortend AD
@@ -75,8 +67,9 @@ def export_sddc(inputfile, outdir, service_dir,config,ct, export_compartments=[]
         script_file = f'{outdir}/{reg}/{service_dir}/' + file_name
         importCommands[reg].write("\n######### Writing import for VCNs #########\n")
         config.__setitem__("region", ct.region_dict[reg])
-        sddc_client = oci.ocvp.SddcClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
-        vnc = VirtualNetworkClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
+        sddc_client = oci.ocvp.SddcClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
+        vnc = VirtualNetworkClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
+        bvol = BlockstorageClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
 
         region = reg.capitalize()
         sddc_keys = {}
@@ -125,12 +118,12 @@ def export_sddc(inputfile, outdir, service_dir,config,ct, export_compartments=[]
                     elif col_header == 'Management Block Volumes':
                         mgmt_vol_data = ""
                         for vol_id in mgmt_vols:
-                            mgmt_vol_data = mgmt_vol_data+","+get_volume_data(config, volume_id=vol_id, ct=ct)
+                            mgmt_vol_data = mgmt_vol_data+","+get_volume_data(bvol, volume_id=vol_id, ct=ct)
                         values_for_column_sddc[col_header].append(mgmt_vol_data[1:])
                     elif col_header == 'Workload Block Volumes':
                         wkld_vol_data = ""
                         for vol_id in wkld_vols:
-                            wkld_vol_data = wkld_vol_data+","+get_volume_data(config, volume_id=vol_id, ct=ct)
+                            wkld_vol_data = wkld_vol_data+","+get_volume_data(bvol, volume_id=vol_id, ct=ct)
                         values_for_column_sddc[col_header].append(wkld_vol_data[1:])
 
                     elif col_header == 'SSH Key Var Name':

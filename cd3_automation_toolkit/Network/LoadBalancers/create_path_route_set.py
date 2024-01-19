@@ -18,20 +18,15 @@ from jinja2 import Environment, FileSystemLoader
 # Required Inputs-CD3 excel file, Config file AND outdir
 ######
 # Execution of the code begins here
-def create_path_route_set(inputfile, outdir, service_dir, prefix, config=DEFAULT_LOCATION):
+def create_path_route_set(inputfile, outdir, service_dir, prefix, ct):
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True)
     prs = env.get_template('path-route-set-template')
     pathrouterules = env.get_template('path-route-rules-template')
     filename = inputfile
-    configFileName = config
     sheetName = "LB-PathRouteSet"
     lb_auto_tfvars_filename = prefix + "_"+sheetName.lower()+".auto.tfvars"
-
-
-    ct = commonTools()
-    ct.get_subscribedregions(configFileName)
 
     # Read cd3 using pandas dataframe
     df, col_headers = commonTools.read_cd3(filename, sheetName)

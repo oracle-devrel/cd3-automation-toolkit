@@ -16,7 +16,7 @@ resource "oci_objectstorage_bucket" "bucket" {
   auto_tiering  = var.auto_tiering
   freeform_tags = var.freeform_tags
   defined_tags  = var.defined_tags
-  #kms_key_id            = var.kms_key_id
+  kms_key_id            = var.kms_key_id
   #metadata              = var.metadata
   object_events_enabled = var.object_events_enabled
   storage_tier          = var.storage_tier

@@ -18,10 +18,8 @@ from commonTools import *
 # Required Inputs- Config file, prefix AND outdir
 ######
 # Execution of the code begins here
-def enable_cis_cloudguard(outdir, service_dir,prefix,region, config=DEFAULT_LOCATION):
-    configFileName = config
-    ct = commonTools()
-    ct.get_subscribedregions(configFileName)
+def enable_cis_cloudguard(outdir, service_dir,prefix, ct, region):
+
     #home_region=ct.home_region
     region_key = ct.region_dict[region]
 

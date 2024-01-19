@@ -21,13 +21,8 @@ from commonTools import *
 # Required Inputs-CD3 excel file, Config file, prefix AND outdir
 ######
 # Execution of the code begins here
-def create_terraform_subnet_vlan(inputfile, outdir, service_dir, prefix, non_gf_tenancy, config, network_vlan_in_setupoci, modify_network=False):
+def create_terraform_subnet_vlan(inputfile, outdir, service_dir, prefix, ct, non_gf_tenancy, network_vlan_in_setupoci, modify_network=False):
     filename = inputfile
-    configFileName = config
-
-    ct = commonTools()
-    ct.get_subscribedregions(configFileName)
-
 
     fname = None
     outfile={}

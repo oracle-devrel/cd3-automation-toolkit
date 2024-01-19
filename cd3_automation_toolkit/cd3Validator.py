@@ -15,44 +15,18 @@ from functools import partial
 from oci.core.virtual_network_client import VirtualNetworkClient
 from commonTools import *
 
-
+'''
 def get_vcn_ids(compartment_ids, config):
     # Fetch the VCN ID
     for region in ct.all_regions:
         config.__setitem__("region", ct.region_dict[region])
-        vnc = VirtualNetworkClient(config)
+        vnc = VirtualNetworkClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
         for comp_id in compartment_ids.values():
             vcn_list = oci.pagination.list_call_get_all_results(vnc.list_vcns, compartment_id=comp_id)
             for vcn in vcn_list.data:
                 # if(vcn.lifecycle_state == 'ACTIVE'):
                 vcn_ids[vcn.display_name] = vcn.id
     return vcn_ids
-
-# Check for unique values across two sheets
-def compare_values(list_to_check,value_to_check,index):
-    if (value_to_check not in list_to_check):
-        if 'Availability Domain(AD1|AD2|AD3)' in index[1]:
-            log(f'ROW {index[0] + 3} : Invalid value for column "{index[1]}".')
-        else:
-            log(f'ROW {index[0] + 3} : Invalid value for column "{index[1]}". {value_to_check} does not exist in {index[2]} tab.')
-        return True
-    return False
-
-# Checks for special characters in dns_label name
-def checklabel(lable, count):
-    present = False
-    lable = str(lable).strip()
-    if (lable == "Nan") or (lable == "") or (lable == "NaN") or (lable == "nan"):
-        pass
-    else:
-        regex = re.compile('[@_!#$%^&* ()<>?/\|}{~:]')
-        if (regex.search(lable) == None):
-            pass
-        else:
-            log(f'ROW {count+2} : "DNS Label" value has special characters.')
-            present = True
-    return present
-
 
 # Shows LPG Peering that will be established based on hub_spoke_peer_none column
 def showPeering(vcnsob):
@@ -81,6 +55,33 @@ def showPeering(vcnsob):
             vcnsob.vcn_lpg_names[right_vcn,region].pop(0)
             log(f'{left_vcn_lpg} of VCN {left_vcn} peers with {right_vcn_lpg} of VCN {right_vcn}.')
 
+    return present
+
+'''
+
+# Check for unique values across two sheets
+def compare_values(list_to_check,value_to_check,index):
+    if (value_to_check not in list_to_check):
+        if 'Availability Domain(AD1|AD2|AD3)' in index[1]:
+            log(f'ROW {index[0] + 3} : Invalid value for column "{index[1]}".')
+        else:
+            log(f'ROW {index[0] + 3} : Invalid value for column "{index[1]}". {value_to_check} does not exist in {index[2]} tab.')
+        return True
+    return False
+
+# Checks for special characters in dns_label name
+def checklabel(lable, count):
+    present = False
+    lable = str(lable).strip()
+    if (lable == "Nan") or (lable == "") or (lable == "NaN") or (lable == "nan"):
+        pass
+    else:
+        regex = re.compile('[@_!#$%^&* ()<>?/\|}{~:]')
+        if (regex.search(lable) == None):
+            pass
+        else:
+            log(f'ROW {count+2} : "DNS Label" value has special characters.')
+            present = True
     return present
 
 
@@ -366,8 +367,8 @@ def validate_subnets(filename, comp_ids, vcnobj):
 
 
 # Check if VCNs tab is compliant
-def validate_vcns(filename, comp_ids, vcnobj, config):  # ,vcn_cidrs,vcn_compartment_ids):
-    vcn_ids = get_vcn_ids(comp_ids, config)
+def validate_vcns(filename, comp_ids, vcnobj):# config):  # ,vcn_cidrs,vcn_compartment_ids):
+    #vcn_ids = get_vcn_ids(comp_ids, config)
 
     dfv = data_frame(filename, 'VCNs')
 
@@ -381,6 +382,7 @@ def validate_vcns(filename, comp_ids, vcnobj, config):  # ,vcn_cidrs,vcn_compart
     vcn_reg_check = False
     vcn_vcnname_check = False
     vcn_dns_length =  False
+    vcn_peer_check = False
 
     vcn_check = False
 
@@ -467,6 +469,7 @@ def validate_vcns(filename, comp_ids, vcnobj, config):  # ,vcn_cidrs,vcn_compart
         print("VCN CIDRs Check failed!!")
     log("End VCN CIDRs Check--------------------------------------\n")
 
+    '''
     log("Start LPG Peering Check---------------------------------------------")
     log("Current Status of LPGs in OCI for each VCN listed in VCNs tab:")
     oci_vcn_lpgs = {}
@@ -501,7 +504,7 @@ def validate_vcns(filename, comp_ids, vcnobj, config):  # ,vcn_cidrs,vcn_compart
         vcn_lpg_str = ""
 
         config.__setitem__("region", ct.region_dict[region])
-        vnc = oci.core.VirtualNetworkClient(config)
+        vnc = oci.core.VirtualNetworkClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
 
         lpg_list = vnc.list_local_peering_gateways(compartment_id=comp_id, vcn_id=vcn_id)
 
@@ -522,6 +525,7 @@ def validate_vcns(filename, comp_ids, vcnobj, config):  # ,vcn_cidrs,vcn_compart
     log("Link: https://confluence.oraclecorp.com/confluence/display/NAC/Support+for+Non-GreenField+Tenancies")
 
     log("End LPG Peering Check---------------------------------------------\n")
+    '''
 
     return vcn_check, vcn_cidr_check, vcn_peer_check
 
@@ -1083,6 +1087,8 @@ def validate_compartments(filename):
 
     for i in dfcomp.index:
         region = str(dfcomp.loc[i, 'Region']).strip().lower()
+        parent_comp = str(dfcomp.loc[i, 'Parent Compartment']).strip().split("::")[-1]
+
         # Encountered <End>
         if (region in commonTools.endNames):
             break
@@ -1095,6 +1101,10 @@ def validate_compartments(filename):
         if str(dfcomp.loc[i, 'Name']).strip().lower() == 'nan':
             log(f'ROW {i+3} : Empty value at column "Name".')
             comp_empty_check = True
+        if(str(dfcomp.loc[i, 'Name']).strip() == parent_comp):
+            log(f'ROW {i + 3} : Name cannot be same as Parent Compartment Name')
+            comp_invalid_check = True
+
 
     if (comp_empty_check == True or parent_comp_check == True or comp_invalid_check == True):
         print("Null or Wrong value Check failed!!")
@@ -1201,6 +1211,15 @@ def validate_policies(filename,comp_ids):
             log(f'ROW {i+3} : Empty value at column "Region" and "Name".')
             policies_empty_check = True
 
+        statement = str(dfp.loc[i, 'Policy Statements']).strip().lower()
+        words = statement.split()
+        if ('to' in words):
+            verb = words[words.index('to') + 1]
+            if verb not in ['inspect', 'read', 'use', 'manage']:
+                log(f'ROW {i + 3} : Invalid verb used in Policy Statement')
+                policies_invalid_check = True
+
+
     if policies_empty_check == True or policies_comp_check == True or policies_invalid_check == True:
         print("Null or Wrong value Check failed!!")
         return True
@@ -1244,11 +1263,19 @@ def validate_tags(filename,comp_ids):
         dfcolumns = dftag.columns.values.tolist()
 
         for columnname in dfcolumns:
+            columnvalue = str(dftag[columnname][i])
             # Column value
-            if 'description' in columnname.lower():
-                columnvalue = str(dftag[columnname][i])
-            else:
-                columnvalue = str(dftag[columnname][i]).strip()
+            if columnname == "Tag Description":
+                columnvalue = columnvalue.lower()
+                if str(dftag.loc[i, 'Tag Keys']).strip().lower() != 'nan':
+                    if columnvalue == '' or columnvalue == 'nan':
+                        log(f'ROW {i + 3} : Empty value at column  "Tag Description".')
+                        tag_empty_check = True
+            if columnname == "Namespace Description":
+                columnvalue = columnvalue.lower()
+                if columnvalue == '' or columnvalue == 'nan':
+                    log(f'ROW {i + 3} : Empty value at column  "Namespace Description".')
+                    tag_empty_check = True
 
             if columnname == 'Tag Namespace':
                 columnvalue = str(columnvalue).strip()
@@ -1259,6 +1286,9 @@ def validate_tags(filename,comp_ids):
                 if ' ' in columnvalue or '.' in columnvalue:
                     log(f'ROW {i+3} : Spaces and Periods are not allowed in Tag Namespaces.')
                     tag_invalid_check = True
+                if columnvalue.lower().startswith('oci') or columnvalue.lower().startswith('orcl'):
+                    log(f'ROW {i + 3} : Tag Namespaces cannot start with oci or orcl')
+                    tag_invalid_check = True
 
             if columnname == 'Tag Keys':
                 columnvalue = str(columnvalue).strip()
@@ -1268,6 +1298,9 @@ def validate_tags(filename,comp_ids):
 
                 if ' ' in columnvalue or '.' in columnvalue:
                     log(f'ROW {i+3} : Spaces and Periods are not allowed in Tag Keys.')
+                    tag_invalid_check = True
+                if columnvalue.lower().startswith('oci') or columnvalue.lower().startswith('orcl'):
+                    log(f'ROW {i + 3} : Tag Definition Names cannot start with oci or orcl')
                     tag_invalid_check = True
 
     if (tag_empty_check == True or  tag_invalid_check == True or tag_comp_check == True):
@@ -1495,7 +1528,7 @@ def validate_buckets(filename, comp_ids):
     else:
         return False
 
-def validate_cd3(filename, var_file, prefix, outdir, choices, configFileName):
+def validate_cd3(choices, filename, var_file, prefix, outdir, ct1): #config1, signer1, ct1):
     CD3_LOG_LEVEL = 60
     logging.addLevelName(CD3_LOG_LEVEL, "custom")
     file=prefix+"_cd3Validator.log"
@@ -1507,8 +1540,10 @@ def validate_cd3(filename, var_file, prefix, outdir, choices, configFileName):
     global log
     log = partial(logger.log, CD3_LOG_LEVEL)
 
-    global ct
-    ct = commonTools()
+    global ct #, config, signer
+    ct=ct1
+    #config=config1
+    #signer =signer1
     global compartment_ids
     compartment_ids = {}
     global vcn_ids
@@ -1537,9 +1572,8 @@ def validate_cd3(filename, var_file, prefix, outdir, choices, configFileName):
 
     if not os.path.exists(filename):
         print("\nCD3 excel sheet not found at "+filename +"\nExiting!!")
-        exit()
-    config = oci.config.from_file(file_location=configFileName)
-    ct.get_subscribedregions(configFileName)
+        exit(1)
+
     #ct.get_network_compartment_ids(config['tenancy'], "root", configFileName)
     print("Getting Compartments OCIDs...")
     ct.get_compartment_map(var_file,'Validator')
@@ -1577,8 +1611,10 @@ def validate_cd3(filename, var_file, prefix, outdir, choices, configFileName):
             val_net=True
 
             log("\n============================= Verifying VCNs Tab ==========================================\n")
+            log("\n====================== Note: LPGs will npt be verified ====================================\n")
             print("\nProcessing VCNs Tab..")
-            vcn_check, vcn_cidr_check, vcn_peer_check = validate_vcns(filename, ct.ntk_compartment_ids, vcnobj, config)
+            print("NOTE: LPGs will not be verified")
+            vcn_check, vcn_cidr_check, vcn_peer_check = validate_vcns(filename, ct.ntk_compartment_ids, vcnobj) #, config)
 
             log("============================= Verifying SubnetsVLANs Tab ==========================================\n")
             print("\nProcessing SubnetsVLANs Tab..")

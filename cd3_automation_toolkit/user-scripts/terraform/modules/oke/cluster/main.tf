@@ -9,6 +9,7 @@ resource "oci_containerengine_cluster" "cluster" {
   vcn_id             = data.oci_core_vcns.oci_vcns_clusters[var.vcn_names[0]].virtual_networks.*.id[0]
   defined_tags       = var.defined_tags
   freeform_tags      = var.freeform_tags
+  kms_key_id         = var.kms_key_id
 
   cluster_pod_network_options {
     #Required

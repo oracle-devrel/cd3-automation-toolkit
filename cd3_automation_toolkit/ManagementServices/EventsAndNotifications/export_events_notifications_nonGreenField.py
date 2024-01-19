@@ -155,7 +155,7 @@ def events_rows(values_for_column_events, region, ntk_compartment_name, event_na
             values_for_column_events = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict_events,values_for_column_events)
 
 # Execution for Events export starts here
-def export_events(inputfile, outdir, service_dir, ct,export_compartments=[], export_regions=[], _config=DEFAULT_LOCATION):
+def export_events(inputfile, outdir, service_dir, config, signer, ct,export_compartments=[], export_regions=[]):
     global rows
     global tf_import_cmd
     global values_for_column_events
@@ -163,13 +163,10 @@ def export_events(inputfile, outdir, service_dir, ct,export_compartments=[], exp
     global sheet_dict_events
     global sheet_dict_notifications
     global importCommands
-    global config
 
     sheetName = "Events"
 
     cd3file = inputfile
-    configFileName = _config
-    config = oci.config.from_file(file_location=configFileName)
 
     if ('.xls' not in cd3file):
         print("\nAcceptable cd3 format: .xlsx")
@@ -177,11 +174,6 @@ def export_events(inputfile, outdir, service_dir, ct,export_compartments=[], exp
 
     # Read CD3
     df, values_for_column_events = commonTools.read_cd3(cd3file, sheetName)
-
-    if ct==None:
-        ct = commonTools()
-        ct.get_subscribedregions(configFileName)
-        ct.get_network_compartment_ids(config['tenancy'],"root",configFileName)
 
     # Get dict for columns from Excel_Columns
     sheet_dict_events = ct.sheet_dict[sheetName]
@@ -208,9 +200,9 @@ def export_events(inputfile, outdir, service_dir, ct,export_compartments=[], exp
         importCommands[reg].write("\n\n######### Writing import for Events #########\n\n")
         config.__setitem__("region", ct.region_dict[reg])
         # comp_ocid_done = []
-        ncpc = NotificationControlPlaneClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
-        fun = FunctionsManagementClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
-        evt = EventsClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
+        ncpc = NotificationControlPlaneClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
+        fun = FunctionsManagementClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
+        evt = EventsClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
         region = reg.capitalize()
         for ntk_compartment_name in export_compartments:
             evts = oci.pagination.list_call_get_all_results(evt.list_rules, compartment_id=ct.ntk_compartment_ids[
@@ -232,7 +224,7 @@ def export_events(inputfile, outdir, service_dir, ct,export_compartments=[], exp
             importCommands[reg].write('\n\nterraform plan\n')
 
 # Execution for Notifications export starts here
-def export_notifications(inputfile, outdir, service_dir, ct, export_compartments=[], _config=DEFAULT_LOCATION,export_regions=[]):
+def export_notifications(inputfile, outdir, service_dir, config, signer, ct, export_compartments=[], export_regions=[]):
     global rows
     global tf_import_cmd
     global values_for_column_events
@@ -240,25 +232,16 @@ def export_notifications(inputfile, outdir, service_dir, ct, export_compartments
     global sheet_dict_events
     global sheet_dict_notifications
     global importCommands
-    global config
 
     sheetName = "Notifications"
 
     cd3file = inputfile
-    configFileName = _config
-    config = oci.config.from_file(file_location=configFileName)
-
     if ('.xls' not in cd3file):
         print("\nAcceptable cd3 format: .xlsx")
         exit()
 
     # Read CD3
     df, values_for_column_notifications = commonTools.read_cd3(cd3file, sheetName)
-
-    if ct==None:
-        ct = commonTools()
-        ct.get_subscribedregions(configFileName)
-        ct.get_network_compartment_ids(config['tenancy'],"root",configFileName)
 
     # Get dict for columns from Excel_Columns
     sheet_dict_notifications = ct.sheet_dict[sheetName]
@@ -284,9 +267,9 @@ def export_notifications(inputfile, outdir, service_dir, ct, export_compartments
     for reg in export_regions:
         importCommands[reg].write("\n\n######### Writing import for Notifications #########\n\n")
         config.__setitem__("region", ct.region_dict[reg])
-        ncpc = NotificationControlPlaneClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
-        ndpc = NotificationDataPlaneClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
-        fun = FunctionsManagementClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
+        ncpc = NotificationControlPlaneClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
+        ndpc = NotificationDataPlaneClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
+        fun = FunctionsManagementClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
         region = reg.capitalize()
         for ntk_compartment_name in export_compartments:
                 topics = oci.pagination.list_call_get_all_results(ncpc.list_topics,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name])

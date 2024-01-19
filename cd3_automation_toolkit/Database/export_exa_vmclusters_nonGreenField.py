@@ -85,14 +85,12 @@ def print_exa_vmcluster(region, vnc_client,exa_infra, exa_vmcluster, key_name,va
 # Execution of the code begins here
 
 
-def export_exa_vmclusters(inputfile, _outdir, service_dir, _config, ct, export_compartments=[],export_regions=[]):
+def export_exa_vmclusters(inputfile, outdir, service_dir, config, signer, ct, export_compartments=[],export_regions=[]):
     global tf_import_cmd
     global sheet_dict
     global importCommands
-    global config
     global cd3file
     global reg
-    global outdir
     global values_for_column
 
 
@@ -102,16 +100,8 @@ def export_exa_vmclusters(inputfile, _outdir, service_dir, _config, ct, export_c
         exit()
 
 
-    outdir = _outdir
-    configFileName = _config
-    config = oci.config.from_file(file_location=configFileName)
-
     sheetName = 'EXA-VMClusters'
-    if ct==None:
-        ct = commonTools()
-        ct.get_subscribedregions(configFileName)
-        ct.get_network_compartment_ids(config['tenancy'],"root",configFileName)
-    
+
     var_data ={}
 
     # Read CD3
@@ -150,8 +140,8 @@ def export_exa_vmclusters(inputfile, _outdir, service_dir, _config, ct, export_c
         config.__setitem__("region", ct.region_dict[reg])
         region = reg.capitalize()
 
-        db_client = oci.database.DatabaseClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
-        vnc_client = oci.core.VirtualNetworkClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
+        db_client = oci.database.DatabaseClient(config=config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY, signer=signer)
+        vnc_client = oci.core.VirtualNetworkClient(config=config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY, signer=signer)
 
         db={}
         for ntk_compartment_name in export_compartments:

@@ -373,7 +373,7 @@ def print_lbr_hostname_certs(region, ct, values_for_column_lhc, lbr, LBRs, lbr_c
     return values_for_column_lhc
 
 def print_backendset_backendserver(region, ct, values_for_column_bss, lbr, LBRs, lbr_compartment_name):
-    certs = CertificatesClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
+    certs = CertificatesClient(config=config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
 
     for eachlbr in LBRs.data:
 
@@ -797,15 +797,13 @@ def print_prs(region, ct, values_for_column_prs, LBRs, lbr_compartment_name):
 
     return values_for_column_prs
 # Execution of the code begins here
-def export_lbr(inputfile, _outdir, service_dir, export_compartments, export_regions,_config,ct):
+def export_lbr(inputfile, outdir, service_dir, config1,signer1, ct, export_compartments, export_regions):
     global tf_import_cmd
     global sheet_dict
     global importCommands
-    global config
     global values_for_vcninfo
     global cd3file
     global reg
-    global outdir
     global values_for_column_lhc
     global values_for_column_bss
     global values_for_column_lis
@@ -818,20 +816,15 @@ def export_lbr(inputfile, _outdir, service_dir, export_compartments, export_regi
     global sheet_dict_rule
     global sheet_dict_prs
     global listener_to_cd3
+    global config,signer
+    signer=signer1
+    config=config1
 
     cd3file = inputfile
     if ('.xls' not in cd3file):
         print("\nAcceptable cd3 format: .xlsx")
         exit()
 
-    outdir = _outdir
-    configFileName = _config
-    config = oci.config.from_file(file_location=configFileName)
-    
-    if ct==None:
-        ct = commonTools()
-        ct.get_subscribedregions(configFileName)
-        ct.get_network_compartment_ids(config['tenancy'],"root",configFileName)
 
     # Read CD3
     df, values_for_column_lhc= commonTools.read_cd3(cd3file,"LB-Hostname-Certs")
@@ -867,14 +860,14 @@ def export_lbr(inputfile, _outdir, service_dir, export_compartments, export_regi
     for reg in export_regions:
         importCommands[reg].write("\n\n######### Writing import for Load Balancer Objects #########\n\n")
         config.__setitem__("region", ct.region_dict[reg])
-        lbr = LoadBalancerClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
-        vcn = VirtualNetworkClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
+        lbr = LoadBalancerClient(config=config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
+        network = oci.core.VirtualNetworkClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
+
         region = reg.capitalize()
 
         for compartment_name in export_compartments:
                 LBRs = oci.pagination.list_call_get_all_results(lbr.list_load_balancers,compartment_id=ct.ntk_compartment_ids[compartment_name],
                                                                 lifecycle_state="ACTIVE")
-                network = oci.core.VirtualNetworkClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
                 values_for_column_lhc = print_lbr_hostname_certs(region, ct, values_for_column_lhc, lbr, LBRs, compartment_name, network,service_dir)
                 values_for_column_lis = print_listener(region, ct, values_for_column_lis,LBRs,compartment_name)
                 values_for_column_bss = print_backendset_backendserver(region, ct, values_for_column_bss, lbr,LBRs,compartment_name)

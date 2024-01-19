@@ -19,15 +19,11 @@ from commonTools import *
 # Required Inputs- CD3 excel file, Config file, prefix AND outdir
 ######
 # Execution of the code begins here
-def create_terraform_adb(inputfile, outdir, service_dir, prefix, config=DEFAULT_LOCATION):
+def create_terraform_adb(inputfile, outdir, service_dir, prefix, ct):
 
     filename = inputfile
-    configFileName = config
     sheetName = "ADB"
     auto_tfvars_filename = '_' + sheetName.lower() + '.auto.tfvars'
-
-    ct = commonTools()
-    ct.get_subscribedregions(configFileName)
 
     outfile = {}
     oname = {}
@@ -81,7 +77,7 @@ def create_terraform_adb(inputfile, outdir, service_dir, prefix, config=DEFAULT_
                 str(df.loc[i, 'DB Name']).lower() == 'nan':
             print("\nRegion, Compartment Name, CPU Core Count, Data Storage Size in TB and DB Name fields are mandatory. Please enter a value and try again !!")
             print("\n** Exiting **")
-            exit()
+            exit(1)
 
         for columnname in dfcolumns:
             # Column value
@@ -148,7 +144,7 @@ def create_terraform_adb(inputfile, outdir, service_dir, prefix, config=DEFAULT_
                         except Exception as e:
                             print("Invalid Subnet Name specified for row " + str(
                                 i + 3) + ". It Doesnt exist in Subnets sheet. Exiting!!!")
-                            exit()
+                            exit(1)
                 else:
                     subnet_id = ""
                     vcn_name = ""

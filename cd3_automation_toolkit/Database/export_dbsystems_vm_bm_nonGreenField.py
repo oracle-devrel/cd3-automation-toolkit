@@ -96,14 +96,12 @@ def print_dbsystem_vm_bm(region, db_system_vm_bm, count,db_home, database ,vnc_c
 
 # Execution of the code begins here
 
-def export_dbsystems_vm_bm(inputfile, _outdir, service_dir, _config, ct, export_compartments=[], export_regions=[]):
+def export_dbsystems_vm_bm(inputfile, outdir, service_dir, config, signer, ct, export_compartments=[], export_regions=[]):
     global tf_import_cmd
     global sheet_dict
     global importCommands
-    global config
     global cd3file
     global reg
-    global outdir
     global values_for_column
 
 
@@ -113,16 +111,7 @@ def export_dbsystems_vm_bm(inputfile, _outdir, service_dir, _config, ct, export_
         exit()
 
 
-    outdir = _outdir
-    configFileName = _config
-    config = oci.config.from_file(file_location=configFileName)
-
     sheetName = 'DBSystems-VM-BM'
-    if ct==None:
-        ct = commonTools()
-        ct.get_subscribedregions(configFileName)
-        ct.get_network_compartment_ids(config['tenancy'],"root",configFileName)
-
     var_data = {}
 
     # Read CD3
@@ -160,8 +149,8 @@ def export_dbsystems_vm_bm(inputfile, _outdir, service_dir, _config, ct, export_
         config.__setitem__("region", ct.region_dict[reg])
         region = reg.capitalize()
 
-        db_client = oci.database.DatabaseClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
-        vnc_client = oci.core.VirtualNetworkClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
+        db_client = oci.database.DatabaseClient(config=config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
+        vnc_client = oci.core.VirtualNetworkClient(config=config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
 
         db = {}
         for ntk_compartment_name in export_compartments:

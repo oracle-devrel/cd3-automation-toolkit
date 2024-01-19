@@ -8,7 +8,7 @@
 terraform {
   required_providers {
     oci = {
-      source = "hashicorp/oci"
+      source = "oracle/oci"
       configuration_aliases = [
         {% for region in subscribed_regions %}
           {% set region_keys = region.split('-') %}
