@@ -37,7 +37,7 @@ This command will analyze the "tfplan.json" input file against the policy and di
 <br><br>
 <div align='center'>
 
-| <a href="/cd3_automation_toolkit/documentation/user_guide/GreenField.md">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/learn_more/NetworkingScenariosGF.md">Next :arrow_forward:</a> |
+| <a href="/cd3_automation_toolkit/documentation/user_guide/GreenField.md">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/NetworkingScenariosGF.md">Next :arrow_forward:</a> |
 | :---- | -------: |
   
 </div>
