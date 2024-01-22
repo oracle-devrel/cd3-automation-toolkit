@@ -24,8 +24,9 @@
 
 ## **Introduction to Jenkins**
 On the Jenkins dashboard, you will see -
-  - setUpOCI pipeline
-  - terraform_files folder
+1. setUpOCI Pipeline
+2. terraform_files Folder
+3. Region based Views
 
 ### setUpOCI Pipeline
 
