@@ -231,7 +231,7 @@ Remote VCN peering is the process of connecting two VCNs in different regions (b
 <br><br>
 <div align='center'>
 
-| <a href="/cd3_automation_toolkit/documentation/user_guide/OPAForCompliance.md">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/ComputeGF.md">Next :arrow_forward:</a> |
+| <a href="/cd3_automation_toolkit/documentation/user_guide/learn_more/OPAForCompliance.md">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/ComputeGF.md">Next :arrow_forward:</a> |
 | :---- | -------: |
   
 </div>
