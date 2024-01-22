@@ -7,10 +7,12 @@
   - Customer Secret Key should have been configured for the user for S3 credentials of the bucket. <br>
   - A DevOps Project, Repo and Topic should have been created in OCI in the specified compartment to store terraform_files. <br>
 
+
+### **Initialization of Jenkins**
+
 * Execute below cmd to start Jenkins - <br>
 ```/usr/share/jenkins/jenkins.sh &```
 
-### **Initialization of Jenkins**
 * Access Jenkins URL using -
   - https://\<IP of the Jenkins Host\>:8443/
     Notes  - 8443 is the port mapped with local system while docker container creation.
