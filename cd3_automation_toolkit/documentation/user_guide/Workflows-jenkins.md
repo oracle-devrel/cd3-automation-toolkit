@@ -46,7 +46,7 @@ This is equivalent to running setUpOCI.py from CLI. The process of invoking the 
 
 This is equivalent to /cd3user/tenancies/<customer_name>/terraform_files folder on your local system.
 You will see region directories inside this and all service directories further inside the region directories.
-Inside each service directory, you will see pipelines for terraform-apply and terraform-destroy
+Inside each service directory, you will see pipelines for terraform-apply and terraform-destroy.
 
 #### terraform-apply Pipeline Stages :
 
