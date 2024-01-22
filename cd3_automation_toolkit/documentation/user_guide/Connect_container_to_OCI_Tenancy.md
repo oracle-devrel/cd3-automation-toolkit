@@ -1,4 +1,4 @@
-# Connect Docker container to OCI Tenancy
+# Connect container to OCI Tenancy
 
 
 > ***It is suggested to create a dedicated container for a single tenancy.***
