@@ -41,7 +41,7 @@ This is equivalent to running setUpOCI.py from CLI. Below table shows the stages
 | <b>Validate Input Parameters</b> | Validates input file name/size, selected parameters | Displays Unstable if any of the validation fails. Pipeline stops further execution in that case. |
 | <b>Update setUpOCI.properties</b> | Updates <customer_name>_setUpOCI.properties with input filename and workflow_type | Displays Failed if any issue during execution |
 | <b>Execute setUpOCI</b> | Executes python code to generate required tfvars files. The console output for this stage is similar to setUpOCI.py execution via CLI | Displays Failed if any issue during execution |
-| <b>Run Import Commands</b> | Based on the workflow_type as 'Export Resources from OCI', this stage invokes execution of tf_import_cmds shell scripts which will import the exported objects into tfstate. <b> This stage is skipped for 'Create Resources in OCI' workflow </b>| Displays Failed if any issue during execution |
+| <b>Run Import Commands</b> | Based on the workflow_type as 'Export Resources from OCI', this stage invokes execution of tf_import_commands_* shell scripts which will import the exported objects into tfstate. <b> This stage is skipped for 'Create Resources in OCI' workflow </b>| Displays Failed if any issue during execution |
 | <b>Git Commit</b> | Commits the terraform_files folder to OCI DevOps GIT Repo. This will trigger respective terraform_pipelines| Pipeline stops further execution if there is nothing to commit. <b>In some cases when tfvars was generated in previous execution, you can navigate to terrafom apply pipeline and trigger that manually </b>|
 | <b>Trigger Terraform Pipelines</b> | Corresponding terraform apply pipelines are auto triggered based on the service chosen | |
 
