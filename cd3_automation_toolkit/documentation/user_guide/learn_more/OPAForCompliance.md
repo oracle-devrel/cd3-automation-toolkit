@@ -33,3 +33,11 @@ Alternatively, run the following command to evaluate just a sinle OPA rule say "
 
 
 This command will analyze the "tfplan.json" input file against the policy and display the evaluation results with a user-friendly format.
+
+<br><br>
+<div align='center'>
+
+| <a href="/cd3_automation_toolkit/documentation/user_guide/GreenField.md">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/learn_more/NetworkingScenariosGF.md">Next :arrow_forward:</a> |
+| :---- | -------: |
+  
+</div>
