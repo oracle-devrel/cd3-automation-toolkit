@@ -58,7 +58,7 @@ Inside each service directory, you will see pipelines for terraform-apply and te
 | Checkout SCM | Checks out the latest terraform_files folder from DevOpsGIT repo | |
 | Terraform Plan | Runs terraform plan against the checked out code and saves it in tfplan.out | Pipeline stops further execution if terraform plan shows no changes. Displays Failed if any issue while executing terraform plan |
 | OPA | Runs the above genrated terraform plan against Open Policies and displays the violations if any | Displays Unstable if any OPA rule is violated |
-| Get Approval | Approval Stage for reviewing the terraform plan. There is 24 hours timeout for this stage. | Proceed - goes ahead with Terraform Apply stage. Abort - pipeline is aborted and stops furter execution |
+| Get Approval | Approval Stage for reviewing the terraform plan. There is 24 hours timeout for this stage. | Proceed - goes ahead with Terraform Apply stage. <br> Abort - pipeline is aborted and stops furter execution |
 |Terraform Apply | Applies the terraform configurations | Displays Failed if any issue while executing terraform apply |
 
 <br><br>
