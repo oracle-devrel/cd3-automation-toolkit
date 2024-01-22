@@ -34,17 +34,6 @@ Click on **Build** at the bottom.
 
 <img width="1000" height="400" alt="Screenshot 2024-01-17 at 11 57 14 AM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/b5183bc7-f984-46f9-88f9-f7281e9963fb">
 
-### setUpOCI Pipeline Stages :
-|Stage Name      | Description  | Possible Outcomes |
-| --------------- | ------------ | ----------------- |
-| <b>Validate Input Parameters</b> | validates input file name/size, selected parameters | Displays Unstable if any of the validation fails. Pipeline stops further execution in that case. |
-| <b>Update setUpOCI.properties</b> | updates <customer_name>_setUpOCI.properties with input filename and workflow_type | Displays Failed if any issue during execution |
-| <b>Execute setUpOCI</b> | executes python code to generate required tfvars files | Displays Failed if any issue during execution |
-| <b>Run Import Commands</b> | This stage is skipped for 'Create Resources in OCI' workflow| |
-| <b>Git Commit</b> | commits the terraform_files folder to OCI DevOps GIT Repo | Pipeline stops further execution if there is nothing to commit. <b>In some cases when tfvars was generated in previous execution, you can navigate to terrafom apply pipeline and trigger that manually </b>|
-| <b>Trigger Terraform Pipelines</b> | corresponding terraform apply pipelines are auto triggered based on the service chosen | |
-
-
 ## Execute terraform Pipelines
 Terraform pipelines are auto triggered parallely based on the services selected.<br><br>
 **Step 1**: 
