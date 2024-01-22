@@ -51,6 +51,7 @@
 | S3 Credentials File | ```/cd3user/tenancies/<customer_name>/.config_files/<customer_name>_s3_credentials``` | This file contains access key and secret for S3 compatible OS bucket to manage remote terraform state. This is generated only if use_remote_state is set to yes |
 | Jenkins Home | ```/cd3user/tenancies/jenkins_home``` | This folder contains jenkins specific data. ```Single Jenkins instance can be setup for a single container.```|
 
+The next pages will guide you to use the toolkit either via CLI or via Jenkins. Please proceed further.
 
 <br><br>
 <div align='center'>
