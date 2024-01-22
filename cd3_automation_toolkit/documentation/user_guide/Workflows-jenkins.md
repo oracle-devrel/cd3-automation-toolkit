@@ -28,7 +28,7 @@ On the Jenkins dashboard, you will see -
 2. terraform_files Folder
 3. Region based Views
 
-The invocation/execution of these stages is explained in the next pages.
+The process of invocation/execution of these stages is explained in the next pages.
 
 ### setUpOCI Pipeline
 
