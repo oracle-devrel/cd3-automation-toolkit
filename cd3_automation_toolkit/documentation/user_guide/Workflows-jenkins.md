@@ -3,14 +3,14 @@
 ### **Pre-reqs for Jenkins Configuration**
 * Validation of createTenancyConfig.py output:
   - jenkins.properties file should have been created under /cd3user/tenancies/jenkins_home  as per input parameters in tenancyConfig.properties<br>
-  - An Object Storage bucket should have been created in OCI in the specified compartment to manage remote state. <br>
+  - An Object Storage bucket should have been created in OCI in the specified compartment to manage tfstate remotely. <br>
   - Customer Secret Key should have been configured for the user for S3 credentials of the bucket. <br>
-  - A DevOps Project, Repo and Topic should have been created in OCI in the specified compartment. <br>
+  - A DevOps Project, Repo and Topic should have been created in OCI in the specified compartment to store terraform_files. <br>
 
 * Execute below cmd to start Jenkins - <br>
 ```/usr/share/jenkins/jenkins.sh &```
 
-### **Jenkins Initialization**
+### **Initialization of Jenkins**
 * Access Jenkins URL using -
   - https://\<IP of the Jenkins Host\>:8443/
     Notes  - 8443 is the port mapped with local system while docker container creation.
@@ -20,6 +20,7 @@
     <br>
      <img width="1486" alt="Screenshot 2024-01-16 at 10 52 07 AM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/4534834b-3ad6-427b-8f13-121c136054d3">
 
+### **Introduction of Jenkins**
 
 <br><br>
 <div align='center'>
