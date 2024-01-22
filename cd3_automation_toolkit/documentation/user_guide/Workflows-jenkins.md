@@ -14,8 +14,8 @@
 ```/usr/share/jenkins/jenkins.sh &```
 
 * Access Jenkins URL using -
-  - https://\<IP of the Jenkins Host\>:8443/
-    Notes  - 8443 is the port mapped with local system while docker container creation.
+  - https://\<IP of the Jenkins Host\>:<Port>/ <br>
+    Notes  - <Port> is the port mapped with local system while docker container creation eg 8443
            - Network Connectivity should be allowed on this host and port.
   - It will prompt you to create first user to access Jenkins URL. This will be the admin user.
   - Once you login, here is the Jenkins dashboard:
@@ -32,6 +32,7 @@ On the Jenkins dashboard, you will see -
 This is equivalent to running setUpOCI.py from CLI. The process of invoking the pipeline (by providding required input parameters) is explained in the next page. Below table shows the stages executed in this pipeline along with their description:
 
 #### setUpOCI Pipeline Stages :
+
 |Stage Name      | Description  | Possible Outcomes |
 | --------------- | ------------ | ----------------- |
 | <b>Validate Input Parameters</b> | validates input file name/size, selected parameters | Displays Unstable if any of the validation fails. Pipeline stops further execution in that case. |
@@ -41,8 +42,21 @@ This is equivalent to running setUpOCI.py from CLI. The process of invoking the 
 | <b>Git Commit</b> | commits the terraform_files folder to OCI DevOps GIT Repo. This will trigger respective terraform_pipelines| Pipeline stops further execution if there is nothing to commit. <b>In some cases when tfvars was generated in previous execution, you can navigate to terrafom apply pipeline and trigger that manually </b>|
 | <b>Trigger Terraform Pipelines</b> | corresponding terraform apply pipelines are auto triggered based on the service chosen | |
 
+### terraform_files Folder
 
+This is equivalent to /cd3user/tenancies/<customer_name>/terraform_files folder on your local system.
+You will see region directories inside this and all service directories further inside the region directories.
+Inside each service directory, you will see pipelines for terraform-apply and terraform-destroy
 
+#### terraform-apply Pipeline Stages :
+
+|Stage Name      | Description  | Possible Outcomes |
+| --------------- | ------------ | ----------------- |
+| Checkout SCM | Checks out the latest terraform_files folder from DevOpsGIT repo | |
+| Terraform Plan | Runs terraform plan against the checked out code and saves it in tfplan.out | Pipeline stops further execution if terraform plan shows no changes. Displays Failed if any issue while executing terraform plan |
+| OPA | Runs the above genrated terraform plan against Open Policies and displays the violations if any | Displays Unstable if any OPA rule is violated |
+| Get Approval | Approval Stage for reviewing the terraform plan. There is 24 hours timeout for this stage. | Proceed - goes ahead with Terraform Apply stage. Abort - pipeline is aborted and stops furter execution |
+|Terraform Apply | Applies the terraform configurations | Displays Failed if any issue while executing terraform apply |
 
 <br><br>
 <div align='center'>
