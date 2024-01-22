@@ -28,9 +28,11 @@ On the Jenkins dashboard, you will see -
 2. terraform_files Folder
 3. Region based Views
 
+The invocation/execution of these stages is explained in the next pages.
+
 ### setUpOCI Pipeline
 
-This is equivalent to running setUpOCI.py from CLI. The process of invoking the pipeline (by providding required input parameters) is explained in the next page. Below table shows the stages executed in this pipeline along with their description:
+This is equivalent to running setUpOCI.py from CLI. Below table shows the stages executed in this pipeline along with their description:
 
 #### setUpOCI Pipeline Stages :
 
