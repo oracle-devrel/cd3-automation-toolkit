@@ -1,6 +1,6 @@
 # Using the Automation Toolkit via Jenkins
 
-### **Pre-reqs for Jenkins Configuration**
+## **Pre-reqs for Jenkins Configuration**
 * Validation of createTenancyConfig.py output:
   - jenkins.properties file should have been created under /cd3user/tenancies/jenkins_home  as per input parameters in tenancyConfig.properties<br>
   - An Object Storage bucket should have been created in OCI in the specified compartment to manage tfstate remotely. <br>
@@ -8,7 +8,7 @@
   - A DevOps Project, Repo and Topic should have been created in OCI in the specified compartment to store terraform_files. <br>
 
 
-### **Initialization of Jenkins**
+## **Initialization of Jenkins**
 
 * Execute below cmd to start Jenkins - <br>
 ```/usr/share/jenkins/jenkins.sh &```
@@ -22,7 +22,27 @@
     <br>
      <img width="1486" alt="Screenshot 2024-01-16 at 10 52 07 AM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/4534834b-3ad6-427b-8f13-121c136054d3">
 
-### **Introduction of Jenkins**
+## **Introduction of Jenkins**
+On the Jenkins dashboard, you will see -
+  - setUpOCI pipeline
+  - terraform_files folder
+
+### setUpOCI Pipeline
+
+This is equivalent to running setUpOCI.py from CLI. The process of invoking the pipeline (by providding required input parameters) is explained in the next page. Below table shows the stages executed in this pipeline along with their description:
+
+#### setUpOCI Pipeline Stages :
+|Stage Name      | Description  | Possible Outcomes |
+| --------------- | ------------ | ----------------- |
+| <b>Validate Input Parameters</b> | validates input file name/size, selected parameters | Displays Unstable if any of the validation fails. Pipeline stops further execution in that case. |
+| <b>Update setUpOCI.properties</b> | updates <customer_name>_setUpOCI.properties with input filename and workflow_type | Displays Failed if any issue during execution |
+| <b>Execute setUpOCI</b> | executes python code to generate required tfvars files. The console output for this stage is similar to setUpOCI.py execution via CLI | Displays Failed if any issue during execution |
+| <b>Run Import Commands</b> | Based on the workflow_type as 'Export Resources from OCI', this stage invokes execution of tf_import_cmds shell scripts which will import the exported objects into tfstate. <b> This stage is skipped for 'Create Resources in OCI' workflow </b>| Displays Failed if any issue during execution |
+| <b>Git Commit</b> | commits the terraform_files folder to OCI DevOps GIT Repo. This will trigger respective terraform_pipelines| Pipeline stops further execution if there is nothing to commit. <b>In some cases when tfvars was generated in previous execution, you can navigate to terrafom apply pipeline and trigger that manually </b>|
+| <b>Trigger Terraform Pipelines</b> | corresponding terraform apply pipelines are auto triggered based on the service chosen | |
+
+
+
 
 <br><br>
 <div align='center'>
