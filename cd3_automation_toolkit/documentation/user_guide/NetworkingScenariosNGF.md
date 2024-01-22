@@ -64,7 +64,7 @@ Subnets tab:
 <br><br>
 <div align='center'>
 
-| <a href="/cd3_automation_toolkit/documentation/user_guide/NonGreenField.md">:arrow_backward: Prev</a> | <a href="/README.md#table-of-contents-bookmark">Main Menu :arrow_forward:</a> |
+| <a href="/cd3_automation_toolkit/documentation/user_guide/NonGreenField.md">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/ComputeNGF.md">Next :arrow_forward:</a> |
 | :---- | -------: |
   
 </div>
