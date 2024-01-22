@@ -51,15 +51,20 @@ This is equivalent to /cd3user/tenancies/<customer_name>/terraform_files folder 
 You will see region directories inside this and all service directories further inside the region directories.
 Inside each service directory, you will see pipelines for terraform-apply and terraform-destroy.
 
+You can navigate to any service directory path and invoke the terraform-apply pipeline.
+
 #### terraform-apply Pipeline Stages :
 
 |Stage Name      | Description  | Possible Outcomes |
 | --------------- | ------------ | ----------------- |
-| Checkout SCM | Checks out the latest terraform_files folder from DevOpsGIT repo | |
+| Checkout SCM | Checks out the latest terraform_files folder from DevOps GIT repo | |
 | Terraform Plan | Runs terraform plan against the checked out code and saves it in tfplan.out | Pipeline stops further execution if terraform plan shows no changes. Displays Failed if any issue while executing terraform plan |
 | OPA | Runs the above genrated terraform plan against Open Policies and displays the violations if any | Displays Unstable if any OPA rule is violated |
 | Get Approval | Approval Stage for reviewing the terraform plan. There is 24 hours timeout for this stage. | Proceed - goes ahead with Terraform Apply stage. <br> Abort - pipeline is aborted and stops furter execution |
 |Terraform Apply | Applies the terraform configurations | Displays Failed if any issue while executing terraform apply |
+
+### Region Based Views
+When you click on any of the view, it displays all terraform-apply and terraform-destroy pipelines in single screen. This can also be used to trigger the terraform pipelines.
 
 <br><br>
 <div align='center'>
