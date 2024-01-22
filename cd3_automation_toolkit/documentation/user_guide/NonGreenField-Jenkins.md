@@ -1,12 +1,5 @@
 # Export Resources from OCI via Jenkins(Non-Greenfield Workflow)
 
-  > **Note**
-   
-  >Course of actions involved in Exporting objects from OCI-     
-  > * Automation ToolKit fetches the data for the supported services. You can chose to export the data from a specific region or the compartment. Exported data is written to appropriate sheets of the input Excel Sheet based on the resources being exported.
-  > * Toolkit then generates the TF configuration files/auto.tfvars files for these exported resources.
-  > * It also generates a shell script - tf_import_commands_`<resource>`_nonGF.sh that has the import commands, to import the state of the resources to tfstate file.(This helps to manage the resources via Terraform in future). 
-
 ## Detailed Steps
 Below are the steps that will help to execute setUpOCI pipeline to export existing resources from tenancies:
 
@@ -45,33 +38,33 @@ Choose **CD3-Blank-template.xlsx** for an empty sheet.
 <br>setUpOCI pipeline is triggered and stages are executed as shown below: 
 
 <img width="1505" alt="Screenshot 2024-01-17 at 9 37 22 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/d110c5ee-91ae-4e9e-bfb8-607adba026ac"><br>
+</br>
 
-Execute setUpOCI pipeline with workflow selected as **Export Resources from OCI**(Non-Greenfield Workflow). Choose single or multiple options as required. Below screenshot shows export of Identity and Tags.
-Make sure to execute **"Fetch Compartments OCIDs to variables file"** from **CD3 Services** in setUpOCI menu at least once. This will       ensure that the variables file in outdir is updated with the OCID information of all the compartments.
-  
-> Toolkit will over-write the specific tabs of CD3 Excel sheet with exported data for that resource in OCI while the other tabs remain intact.
- 
- </br>
-
-**Expected Outputs:**<br>
+**Expected Output of 'Execute setUpOCI' stage:**<br>
 <ol type="a">
-  <li> Excel sheet with the resource details from OCI.</li>
-  <li> Terraform Configuration files - *.auto.tfvars.</li>
-  <li> Shell Script with import commands - <b>tf_import_commands_&lt;resource&gt;_nonGF.sh</b> </li>
+  <li>It will overwrite the specific tabs of Excel sheet with the exported resource details from OCI.</li>
+  <li>It will generate Terraform Configuration files - *.auto.tfvars.</li>
+  <li>It will generate shell scripts with import commands - <b>tf_import_commands_&lt;resource&gt;_nonGF.sh</b> </li>
 </ul>
+</ol>
+
+**Expected Output of 'Run Import Commands' stage:**<br>
+<ol type="a">
+  <li>It will execute shell scripts with import commands(<b>tf_import_commands_&lt;resource&gt;_nonGF.sh</b>) generated in the previous stage </li>
+</ul>
+</ol>
+
+**Expected Output of Terraform Pipelines:**<br>
+<ol type="a">
+  <li>Respective pipelines will get triggered based on the services chosen for export. </li>
+  <li> If 'Run Import Commands' stage was successful (ie tf_import_commands_&lt;resource&gt;_nonGF.sh ran successfully for all services chosen for export), respective terraform pipelines triggered should have 'Terraform Plan' stage show as 'No Changes'  </li>
+</ul>
+</ol>
     
 <br>
     
-**Action:**
-
-<br>Execute the **tf_import_commands_`<resource>`_nonGF.sh** files that are generated in the outdir.
-<br>The terraform plan should show that infrastructure is up-to-date with no changes required for all regions.
-  
-<img src = "https://user-images.githubusercontent.com/122371432/213680328-ff972472-5c96-424e-b616-9f4c217eb4ca.png" width =50% height=50%>
-
 > **Note:**<br>
->   Once the export (including the execution of **tf_import_commands_`<resource>`_nonGF.sh**) is complete, switch the value of **non_gf_tenancy** back to **false**. 
->   This allows the Tool Kit to support the tenancy as Green Field from this point onwards.
+>   You can now use Toolkit to create more resources in the tenancy.
 
 ## Example - Export Identity
 Follow the below steps to quickly export Identity components from OCI.
