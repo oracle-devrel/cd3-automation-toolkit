@@ -4,11 +4,11 @@
 Below are the steps that will help to configure the Automation Tool Kit to create new resources in tenancies:
 
 **Step 1**: 
-<br>Choose the appropriate CD3 Excel sheet template from [Excel Templates](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md#excel-sheet-templates)
+<br>Choose the appropriate Excel sheet template from [Excel Templates](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md#excel-sheet-templates)
 
 **Step 2**:
-<br>Fill the CD3 Excel with appropriate values specific to the client and put at the appropriate location.
-<br>Modify/Review [setUpOCI.properties](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md#setupociproperties) with **non_gf_tenancy** set to **false** as shown below:
+<br>Fill the Excel with appropriate values specific to the client and put at the appropriate location.
+<br>Modify/Review [setUpOCI.properties](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md#setupociproperties) with **workflow_type** set to **export_resources** as shown below:
 
 ![image](https://user-images.githubusercontent.com/103508105/221797142-c780dbd6-883f-450f-9929-dce81d32079e.png)
 
