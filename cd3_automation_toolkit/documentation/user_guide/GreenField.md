@@ -9,9 +9,31 @@ Below are the steps that will help to configure the Automation Tool Kit to creat
 **Step 2**:
 <br>Fill the Excel with appropriate values specific to the client and put at the appropriate location.
 <br>Modify/Review [setUpOCI.properties](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md#setupociproperties) with **workflow_type** set to **create_resources** as shown below:
+```ini
+#Input variables required to run setUpOCI script
 
-![image](https://user-images.githubusercontent.com/103508105/221797142-c780dbd6-883f-450f-9929-dce81d32079e.png)
+#path to output directory where terraform file will be generated. eg /cd3user/tenancies/<customer_name>/terraform_files
+outdir=/cd3user/tenancies/demotenancy/terraform_files/
 
+#prefix for output terraform files eg <customer_name> like demotenancy
+prefix=demotenancy
+
+# auth mechanism for OCI APIs - api_key,instance_principal,session_token
+auth_mechanism=api_key
+
+#input config file for Python API communication with OCI eg /cd3user/tenancies/<customer_name>/.config_files/<customer_name>_config;
+config_file=/cd3user/tenancies/demotenancy/.config_files/demotenancy_oci_config
+
+# Leave it blank if you want single outdir or specify outdir_structure_file.properties containing directory structure for OCI services.
+outdir_structure_file=/cd3user/tenancies/demotenancy/demotenancy_outdir_structure_file.properties
+
+#path to cd3 excel eg /cd3user/tenancies/<customer_name>/CD3-Customer.xlsx
+cd3file=/cd3user/tenancies/demotenancy/CD3-Blank-template.xlsx
+
+#specify create_resources to create new resources in OCI(greenfield workflow)
+#specify export_resources to export resources from OCI(non-greenfield workflow)
+workflow_type=create_resources
+```
 
 **Step 3**:
 <br>Execute the SetUpOCI.py script to start creating the terraform configuration files.
