@@ -56,7 +56,7 @@ Choose **CD3-Blank-template.xlsx** for an empty sheet.
 
 **Expected Output of Terraform Pipelines:**<br>
 <ol type="a">
-  <li>Respective pipelines will get triggered based on the services chosen for export. </li>
+  <li>Respective pipelines will get triggered automatically from setUpOCI pipeline based on the services chosen for export. You could also trigger manually when required.</li>
   <li> If 'Run Import Commands' stage was successful (ie tf_import_commands_&lt;resource&gt;_nonGF.sh ran successfully for all services chosen for export), respective terraform pipelines triggered should have 'Terraform Plan' stage show as 'No Changes'  </li>
 </ul>
 </ol>
