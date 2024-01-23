@@ -42,7 +42,7 @@
   <li> <a href="/cd3_automation_toolkit/documentation/user_guide/Workflows-jenkins.md"</a>Using the Automation Toolkit via Jenkins
          <ul> 
            <li> <a href="/cd3_automation_toolkit/documentation/user_guide/GreenField-Jenkins.md"</a>Create resources in OCI via Jenkins(Greenfield Workflow) </li>
-           <li> <a href="/cd3_automation_toolkit/documentation/user_guide/GreenField-Jenkins.md"</a><b>  Must Read : </b> Creation of resources - Instances/OKE/SDDC/Database </li>
+           <li> <a href="/cd3_automation_toolkit/documentation/user_guide/GreenField-Jenkins.md"</a><b>  Must Read : </b> Creation of Resources - Instances/OKE/SDDC/Database </li>
            <li> <a href="/cd3_automation_toolkit/documentation/user_guide/NonGreenField-Jenkins.md"</a>Export Resources from OCI via Jenkins(Non-Greenfield Workflow) </li>             
          </ul>
    </li> 
