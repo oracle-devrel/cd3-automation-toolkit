@@ -24,6 +24,6 @@ There can be scenarios when you need to update the terraform_files folder manual
 
 - ```git push```
   
-    <img width="2000" height="370" alt="Screenshot 2024-01-17 at 9 14 24 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/69ecca46-ff55-4e3f-ad0b-36e18d7347e3">
+    <img width="1500" height="300" alt="Screenshot 2024-01-17 at 9 14 24 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/69ecca46-ff55-4e3f-ad0b-36e18d7347e3">
 
 
