@@ -75,7 +75,7 @@ c. Shell Script with import commands - tf_import_commands_`<resource>`_nonGF.sh
 <img src = "https://user-images.githubusercontent.com/122371432/213680328-ff972472-5c96-424e-b616-9f4c217eb4ca.png" width =50% height=50%>
 
 > **Note**<br>
->   Once the export (including the execution of **tf_import_commands_`<resource>`_nonGF.sh**) is complete, switch the value of **workflow_type** back to **false**. 
+>   Once the export (including the execution of **tf_import_commands_`<resource>`_nonGF.sh**) is complete, switch the value of **workflow_type** back to **create_resources**. 
 >   This allows the Tool Kit to support the tenancy as Green Field from this point onwards.
 
 ## Example - Export Identity
