@@ -26,4 +26,10 @@ Please folow below steps to synch local terraform_files folder to OCI DevOps GIT
   
     <img width="1500" height="300" alt="Screenshot 2024-01-17 at 9 14 24 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/69ecca46-ff55-4e3f-ad0b-36e18d7347e3">
 
+<br><br>
+<div align='center'>
 
+| <a href="/cd3_automation_toolkit/documentation/user_guide/NonGreenField-Jenkins.md">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/remote_state.md">:arrow_forward: Automation Toolkit via CLI</a> |
+| :---- | -------: |
+  
+</div>
