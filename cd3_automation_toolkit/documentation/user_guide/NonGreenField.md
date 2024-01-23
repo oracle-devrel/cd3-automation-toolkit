@@ -15,7 +15,7 @@ Below are the steps that will help to configure the Automation Tool Kit to suppo
  
 **Step 2:** 
 <br>Put CD3 Excel at the appropriate location.
-<br>Modify/Review [setUpOCI.properties](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md#setupociproperties) with **workflow_type** set to **true**  as shown below:
+<br>Modify/Review [setUpOCI.properties](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md#setupociproperties) with **workflow_type** set to **export_resources**  as shown below:
 ```ini
 #Input variables required to run setUpOCI script
 
@@ -85,7 +85,7 @@ Follow the below steps to quickly export Identity components from OCI.
 
 2. Edit the _setUpOCI.properties_ at location:_/cd3user/tenancies /<customer\_name>/<customer\_name>\_setUpOCI.properties_ with appropriate values. 
    - Update the _cd3file_ parameter to specify the CD3 excel sheet path.
-   - Set the _workflow_type_ parameter value to _true_. (for Non Greenfield Workflow.)
+   - Set the _workflow_type_ parameter value to _export_resources_. (for Non Greenfield Workflow.)
      
 3. Change Directory to 'cd3_automation_toolkit' :
     ```cd /cd3user/oci_tools/cd3_automation_toolkit/```
