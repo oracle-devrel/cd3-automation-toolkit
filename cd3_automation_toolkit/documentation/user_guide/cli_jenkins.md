@@ -8,7 +8,7 @@ There can be scenarios when you need to update the terraform_files folder manual
 - You executed setUpOCI script to generate tfvars for some resources via CLI.
 - You updated variables_\<region\>.tf file to update image OCID or SSH Key for compute or database etc.
 
-  Please folow below steps to synch local terraform_files folder to OCI DevOps GIT Repo:
+Please folow below steps to synch local terraform_files folder to OCI DevOps GIT Repo:
 
 - ```cd /cd3user/tenancies/<customer_name>/terraform_files```
 - ```git status```
