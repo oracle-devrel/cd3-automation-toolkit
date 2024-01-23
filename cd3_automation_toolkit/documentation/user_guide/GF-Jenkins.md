@@ -16,7 +16,7 @@ This file needs to be updated with required details(like input SSH keys or sourc
 <br><br>
 <div align='center'>
 
-| <a href="/cd3_automation_toolkit/documentation/user_guide/NetworkingScenariosGF.md">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/NonGreenField.md">Next :arrow_forward:</a> |
+| <a href="/cd3_automation_toolkit/documentation/user_guide/GreenField-Jenkins.md">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/NonGreenField-Jenkins.md">Next :arrow_forward:</a> |
 | :---- | -------: |
   
 </div>
