@@ -73,7 +73,7 @@ Terraform pipelines are auto triggered parallely from setUpOCI pipeline based on
 
 <div align='center'>
 
-| <a href="/cd3_automation_toolkit/documentation/user_guide/Workflows-jenkins.md">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/NonGreenField-Jenkins.md">Next :arrow_forward:</a> |
+| <a href="/cd3_automation_toolkit/documentation/user_guide/Workflows-jenkins.md">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/GF-Jenkins.md">Next :arrow_forward:</a> |
 | :---- | -------: |
   
 </div>
