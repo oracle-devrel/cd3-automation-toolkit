@@ -1,19 +1,24 @@
 # Expected Behaviour Of Automation Toolkit
 
-### NOTE:
-1. Automation Tool Kit DOES NOT support the creation/export of duplicate resources.
-2. DO NOT modify/remove any commented rows or column names. You may re-arrange the columns if needed.
-3. A double colon (::) or Semi-Colon (;) has a special meaning in the Tool Kit. Do not use them in the OCI data / values.
-4. Do not include any unwanted space in cells you fill in; do not place any empty rows in between.
-5. Any entry made/moved post \<END> in any of the tabs of CD3 will not be processed. Any resources created by the automation & then moved after the \<END> will cause the resources to be removed. 
-6. The components that get created as part of VCNs Tab (Example: IGW, SGW, LPG, NGW, DRG) will have the same set of Tags attached to them.
-7. Automation Tool Kit does not support sharing of Block Volumes.
-8. Some points to consider while modifying networking components are:
-   - Converting the exported VCN to Hub/Spoke/Peer VCN is not allowed. Route Table rules based on the peering for new LPGs to existing VCNs will not be auto populated. Users are requested to add an entry to the RouteRulesInOCI sheet to support the peering rules.
-   - Adding a new VCN as Hub and other new VCNs as Spoke/Peer is allowed. Gateways will be created as specified in VCNs sheet. 
-   - Adding new VCNs as None is allowed. Gateways will be created as specified in VCNs sheet.
-   - The addition of new Subnets to exported VCNs and new VCNs is allowed.
-9. When you have exported Identity and Network services together in single outdirectory for the first time and executing identity import script. You might see import failure with below error message. Execute Major network import script first then run Identity import script. 
+> [!NOTE]  
+> 1. Automation Tool Kit DOES NOT support the creation/export of duplicate resources.<br>
+> 2. Automation Tool Kit does not support sharing of Block Volumes.
+
+> [!TIP]
+> 1. DO NOT modify/remove any commented rows or column names. You may re-arrange the columns if needed.
+> 2. A double colon (::) or Semi-Colon (;) has a special meaning in the Tool Kit. Do not use them in the OCI data / values.
+> 3. Do not include any unwanted space in cells you fill in; do not place any empty rows in between.
+> 4. Any entry made/moved post \<END> in any of the tabs of CD3 will not be processed. Any resources created by the automation & then moved after the \<END> will cause the resources to be removed.
+> 5. The components that get created as part of VCNs Tab (Example: IGW, SGW, LPG, NGW, DRG) will have the same set of Tags attached to them.
+
+> [!IMPORTANT]  
+> Some points to consider while modifying networking components are:
+> 1. Converting the exported VCN to Hub/Spoke/Peer VCN is not allowed. Route Table rules based on the peering for new LPGs to existing VCNs will not be auto populated. Users are requested to add an entry to the RouteRulesInOCI sheet to support the peering rules.
+> 2. Adding a new VCN as Hub and other new VCNs as Spoke/Peer is allowed. Gateways will be created as specified in VCNs sheet.
+> 3. Adding new VCNs as None is allowed. Gateways will be created as specified in VCNs sheet.
+> 4. The addition of new Subnets to exported VCNs and new VCNs is allowed.
+
+When you have exported Identity and Network services together in single outdirectory for the first time and executing identity import script. You might see import failure with below error message. Execute Major network import script first then run Identity import script. 
 
 ```
 !!!!!!!!!!!!!!!!!!!!!!!!!!! TERRAFORM CRASH !!!!!!!!!!!!!!!!!!!!!!!!!!!!
