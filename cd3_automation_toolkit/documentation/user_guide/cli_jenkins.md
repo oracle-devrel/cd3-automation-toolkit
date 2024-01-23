@@ -29,7 +29,7 @@ Please folow below steps to synch local terraform_files folder to OCI DevOps GIT
 <br><br>
 <div align='center'>
 
-| <a href="/cd3_automation_toolkit/documentation/user_guide/NonGreenField-Jenkins.md">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/remote_state.md">:arrow_forward: Automation Toolkit via CLI</a> |
+| <a href="/cd3_automation_toolkit/documentation/user_guide/NonGreenField-Jenkins.md">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/remote_state.md">:arrow_forward: Next</a> |
 | :---- | -------: |
   
 </div>
