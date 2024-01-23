@@ -40,7 +40,7 @@ Below are the steps in detail to create Network that includes VCNs, Subnets, DHC
        
    This completes the creation of Networking components in OCI. Verify the components in console. However the details of the default security lists and default route tables may not be available in the CD3 Excel sheet yet. Inorder to export that data please follow the below steps:
 
-6. Execute the _setupOCI.py_ file with _non_gf_tenancy_ parameter value to _false_:
+6. Execute the _setupOCI.py_ file with _workflow_type_ parameter value to _create_resources_:
    
    ```python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties```
    
@@ -136,7 +136,7 @@ Follow the below process to export the rules to the same CD3 Excel Sheet as the 
 
 **NOTE**: Make sure to close your Excel sheet during the export process.
                        
-1. Execute the _setupOCI.py_ file with _non_gf_tenancy_ parameter value to _false_:
+1. Execute the _setupOCI.py_ file with _workflow_type_ parameter value to _create_resources_:
    
    ```python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties```
    
@@ -173,7 +173,7 @@ Follow the below steps to update NSGs.
 
 1.  Modify your excel sheet to update required data in the Tabs - NSGs.
    
-2. Execute the _setupOCI.py_ file with _non_gf_tenancy_ parameter value to _false_:
+2. Execute the _setupOCI.py_ file with _workflow_type_ parameter value to _create_resources_:
    
    ```python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties```
    
@@ -198,7 +198,7 @@ Follow the below steps to update VLANs.
 1.  Modify your excel sheet to update required data in the Tabs - SubnetsVLANs.
 2.  Make sure that the RouteRulesinOCI sheet and corresponing terraform is in synch with route rules in OCI console. If not, please follow procedure specified in [Sync manual changes done in OCI of Security Rules, Route Rules and DRG Route Rules with CD3 Excel Sheet and Terraform](#sync-manual-changes-done-in-oci-of-security-rules-route-rules-and-drg-route-rules-with-cd3-excel-sheet-and-terraform) 
    
-3. Execute the _setupOCI.py_ file with _non_gf_tenancy_ parameter value to _false_:
+3. Execute the _setupOCI.py_ file with _workflow_type_ parameter value to _create_resources_:
    
    ```python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties```
    
