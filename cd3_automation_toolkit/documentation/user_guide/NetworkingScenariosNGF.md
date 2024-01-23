@@ -55,7 +55,7 @@ Subnets tab:
 
 <br>[Go back to Networking Scenarios](#networking-scenarios)
 ### Add a new or modify the existing networking components
-1. Export the Networking components by following the steps [above](#1-export-network). (Note that here _workflow_type_ flag is set to create_resources)
+1. Export the Networking components by following the steps [above](#1-export-network). (Note that here _workflow_type_ flag is set to export_resources)
 2. Follow the [process](/cd3_automation_toolkit/documentation/user_guide/NetworkingScenariosGF.md#modify-network) to add new components such as VCN/DHCP/DRG/IGW/NGW/SGW/LPG/Subnet etc. (Note that here _workflow_type_ flag is set to create_resources)
 
 <br>[Go back to Networking Scenarios](#networking-scenarios)
