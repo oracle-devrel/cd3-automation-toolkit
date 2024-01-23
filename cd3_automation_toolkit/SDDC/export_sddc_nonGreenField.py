@@ -82,6 +82,10 @@ def export_sddc(inputfile, outdir, service_dir,config,signer, ct, export_compart
                 mgmt_vols = []
                 wkld_vols = []
                 sddc = sddc_client.get_sddc(sddc_id=sddc.id).data
+                sddc_init_config1 = sddc.initial_configuration.initial_cluster_configurations
+                sddc_init_config=sddc_init_config1[0]
+                sddc_network=sddc_init_config.network_configuration
+                sddc_datastores=  sddc_init_config.datastores
 
                 if sddc.lifecycle_state=='DELETED':
                     continue
@@ -93,8 +97,8 @@ def export_sddc(inputfile, outdir, service_dir,config,signer, ct, export_compart
                 ssh_key = json.dumps(ssh_key)
                 sddc_keys[key_name] = ssh_key
                 importCommands[reg].write("\nterraform import \"module.sddcs[\\\"" + tf_name + "\\\"].oci_ocvp_sddc.sddc\" " + sddc.id)
-                if 'Standard' in sddc.initial_host_shape_name:
-                    for item in sddc.datastores:
+                if 'Standard' in sddc_init_config.initial_host_shape_name:
+                    for item in sddc_datastores:
                         if item.datastore_type == "MANAGEMENT":
                             mgmt_vols = item.block_volume_ids
                         if item.datastore_type == "WORKLOAD":
@@ -106,7 +110,7 @@ def export_sddc(inputfile, outdir, service_dir,config,signer, ct, export_compart
                     elif (col_header == "Compartment Name"):
                         values_for_column_sddc[col_header].append(ntk_compartment_name)
                     elif ("Availability Domain" in col_header):
-                        value = sddc.__getattribute__(sheet_dict_sddc[col_header])
+                        value = sddc_init_config.__getattribute__(sheet_dict_sddc[col_header])
                         ad = ""
                         if ("AD-1" in value or "ad-1" in value):
                             ad = "AD1"
@@ -129,52 +133,52 @@ def export_sddc(inputfile, outdir, service_dir,config,signer, ct, export_compart
                     elif col_header == 'SSH Key Var Name':
                         values_for_column_sddc[col_header].append(key_name)
                     elif (col_header == "Provisioning Subnet"):
-                        subnet_id = sddc.provisioning_subnet_id
+                        subnet_id = sddc_network.provisioning_subnet_id
                         subnet_info = vnc.get_subnet(subnet_id)
                         sub_name = subnet_info.data.display_name  # Subnet-Name
                         vcn_name = vnc.get_vcn(subnet_info.data.vcn_id).data.display_name  # vcn-Name
                         values_for_column_sddc[col_header].append(vcn_name+"_"+sub_name)
                     elif(col_header == "NSX Edge Uplink1 VLAN"):
-                        vlan_id = sddc.nsx_edge_uplink1_vlan_id
+                        vlan_id = sddc_network.nsx_edge_uplink1_vlan_id
                         values_for_column_sddc[col_header].append(vnc.get_vlan(vlan_id).data.display_name)
                     elif (col_header == "NSX Edge Uplink1 VLAN"):
-                        vlan_id = sddc.nsx_edge_uplink1_vlan_id
+                        vlan_id = sddc_network.nsx_edge_uplink1_vlan_id
                         values_for_column_sddc[col_header].append(vnc.get_vlan(vlan_id).data.display_name)
                     elif (col_header == "NSX Edge Uplink2 VLAN"):
-                        vlan_id = sddc.nsx_edge_uplink2_vlan_id
+                        vlan_id = sddc_network.nsx_edge_uplink2_vlan_id
                         values_for_column_sddc[col_header].append(vnc.get_vlan(vlan_id).data.display_name)
                     elif (col_header == "NSX Edge VTEP VLAN"):
-                        vlan_id = sddc.nsx_edge_v_tep_vlan_id
+                        vlan_id = sddc_network.nsx_edge_v_tep_vlan_id
                         values_for_column_sddc[col_header].append(vnc.get_vlan(vlan_id).data.display_name)
                     elif (col_header == "NSX VTEP VLAN"):
-                        vlan_id = sddc.nsx_v_tep_vlan_id
+                        vlan_id = sddc_network.nsx_v_tep_vlan_id
                         values_for_column_sddc[col_header].append(vnc.get_vlan(vlan_id).data.display_name)
                     elif (col_header == "vMotion VLAN"):
-                        vlan_id = sddc.vmotion_vlan_id
+                        vlan_id = sddc_network.vmotion_vlan_id
                         values_for_column_sddc[col_header].append(vnc.get_vlan(vlan_id).data.display_name)
                     elif (col_header == "vSAN VLAN"):
-                        vlan_id = sddc.vsan_vlan_id
+                        vlan_id = sddc_network.vsan_vlan_id
                         values_for_column_sddc[col_header].append(vnc.get_vlan(vlan_id).data.display_name)
                     elif (col_header == "vSphere VLAN"):
-                        vlan_id = sddc.vsphere_vlan_id
+                        vlan_id = sddc_network.vsphere_vlan_id
                         values_for_column_sddc[col_header].append(vnc.get_vlan(vlan_id).data.display_name)
                     elif (col_header == "HCX VLAN"):
-                        vlan_id = sddc.hcx_vlan_id
+                        vlan_id = sddc_network.hcx_vlan_id
                         if vlan_id == None:
                             values_for_column_sddc[col_header].append("")
                         else:
                             values_for_column_sddc[col_header].append(vnc.get_vlan(vlan_id).data.display_name)
                     elif (col_header == "Replication Net VLAN"):
-                        vlan_id = sddc.replication_vlan_id
+                        vlan_id = sddc_network.replication_vlan_id
                         values_for_column_sddc[col_header].append(vnc.get_vlan(vlan_id).data.display_name)
                     elif (col_header == "Provisioning Net VLAN"):
-                        vlan_id = sddc.provisioning_vlan_id
+                        vlan_id = sddc_network.provisioning_vlan_id
                         values_for_column_sddc[col_header].append(vnc.get_vlan(vlan_id).data.display_name)
                     elif col_header.lower() in commonTools.tagColumns:
                         values_for_column_sddc = commonTools.export_tags(sddc, col_header,
                                                                            values_for_column_sddc)
                     else:
-                        oci_objs = [sddc]
+                        oci_objs = [sddc,sddc_init_config,sddc_network,sddc_datastores]
                         values_for_column_sddc = commonTools.export_extra_columns(oci_objs, col_header,
                                                                                     sheet_dict_sddc,
                                                                                     values_for_column_sddc)
