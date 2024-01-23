@@ -80,7 +80,7 @@ Modifying the Networking components using Automation Toolkit involves three simp
 _Steps in detail_:
 1. Modify your excel sheet to update required data in the Tabs - VCNs, DRGs, VCN Info, DHCP and Subnets.
    
-2. Execute the _setupOCI.py_ file with _non_gf_tenancy_ parameter value to _false_:
+2. Execute the _setupOCI.py_ file with _workflow_type_ parameter value to _create_resources_:
    
    ```python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties```
    
@@ -107,7 +107,7 @@ Follow the below steps to add, update or delete the following components:
 
 1. Modify your excel sheet to update required data in the Tabs - RouteRulesInOCI, SecRulesInOCI, DRGRouteRulesInOCI tabs.
 
-2. Execute the _setupOCI.py_ file with _non_gf_tenancy_ parameter value to _false_:
+2. Execute the _setupOCI.py_ file with _workflow_type_ parameter value to _create_resources_:
    
    ```python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties```
    
