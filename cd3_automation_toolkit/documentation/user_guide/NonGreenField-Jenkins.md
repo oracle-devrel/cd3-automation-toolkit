@@ -64,7 +64,7 @@ Choose **CD3-Blank-template.xlsx** for an empty sheet.
 <br>
     
 > **Note:**<br>
->   You can now use Toolkit to create more resources in the tenancy.
+>   Once you have exported the required resources and imported into tfstate, you can use the toolkit to modify them or create new on top of them using 'Create Resources in OCI' workflow.
 
 <br><br>
 <div align='center'>
