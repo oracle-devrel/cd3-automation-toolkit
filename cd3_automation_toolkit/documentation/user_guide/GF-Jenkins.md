@@ -4,7 +4,7 @@ Provisioning of OCI resources like - Compute instances, SDDC, OKE and Databases 
 This file needs to be updated with required details(like input SSH keys or source image details) via CLI even when you are using the toolkit via Jenkins.
 
 **Step 1**: 
-<br> Update required data in variables_<region>.tf
+<br> Update required data in variables_\<region\>.tf
 
 **Step 2**: 
 <br>Please follow steps described <a href = "/cd3_automation_toolkit/documentation/user_guide/cli_jenkins.md">here</a> to synch these local changes with DevOps GIT Repo
