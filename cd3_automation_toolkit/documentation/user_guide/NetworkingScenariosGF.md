@@ -25,7 +25,7 @@ Below are the steps in detail to create Network that includes VCNs, Subnets, DHC
 
 1. Choose appropriate excel sheet from [Excel Templates](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md#excel-sheet-templates) and fill the required Network details in the Networking Tabs - VCNs, DRGs, VCN Info, DHCP, Subnets, NSGs tabs.
    
-2. Execute the _setupOCI.py_ file with _non_gf_tenancy_ parameter value to _false_:
+2. Execute the _setupOCI.py_ file with _workflow_type_ parameter value to _create_resources_:
    
    ```python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties```
    
