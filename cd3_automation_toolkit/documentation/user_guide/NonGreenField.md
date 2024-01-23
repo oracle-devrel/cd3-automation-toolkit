@@ -52,7 +52,7 @@ c. Shell Script with import commands - tf_import_commands_`<resource>`_nonGF.sh
 <img src = "https://user-images.githubusercontent.com/122371432/213680328-ff972472-5c96-424e-b616-9f4c217eb4ca.png" width =50% height=50%>
 
 > **Note**<br>
->   Once the export (including the execution of **tf_import_commands_`<resource>`_nonGF.sh**) is complete, switch the value of **non_gf_tenancy** back to **false**. 
+>   Once the export (including the execution of **tf_import_commands_`<resource>`_nonGF.sh**) is complete, switch the value of **workflow_type** back to **false**. 
 >   This allows the Tool Kit to support the tenancy as Green Field from this point onwards.
 
 ## Example - Export Identity
@@ -62,7 +62,7 @@ Follow the below steps to quickly export Identity components from OCI.
 
 2. Edit the _setUpOCI.properties_ at location:_/cd3user/tenancies /<customer\_name>/<customer\_name>\_setUpOCI.properties_ with appropriate values. 
    - Update the _cd3file_ parameter to specify the CD3 excel sheet path.
-   - Set the _non_gf_tenancy_ parameter value to _true_. (for Non Greenfield Workflow.)
+   - Set the _workflow_type_ parameter value to _true_. (for Non Greenfield Workflow.)
      
 3. Change Directory to 'cd3_automation_toolkit' :
     ```cd /cd3user/oci_tools/cd3_automation_toolkit/```
