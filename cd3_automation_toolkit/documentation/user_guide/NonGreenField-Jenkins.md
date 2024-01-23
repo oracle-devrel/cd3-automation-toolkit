@@ -69,7 +69,7 @@ Choose **CD3-Blank-template.xlsx** for an empty sheet.
 <br><br>
 <div align='center'>
 
-| <a href="/cd3_automation_toolkit/documentation/user_guide/GreenField-Jenkins.md">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/Workflows.md">:arrow_forward: Automation Toolkit via CLI</a> |
+| <a href="/cd3_automation_toolkit/documentation/user_guide/GreenField-Jenkins.md">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/cli_jenkins.md">:arrow_forward: Next</a> |
 | :---- | -------: |
   
 </div>
