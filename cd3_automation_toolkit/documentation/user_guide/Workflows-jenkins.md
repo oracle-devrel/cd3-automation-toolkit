@@ -27,6 +27,7 @@ On the Jenkins dashboard, you will see -
 1. setUpOCI Pipeline
 2. terraform_files Folder
 3. Region based Views
+4. Global View
 
 The process of invocation/execution of these stages is explained in the next pages.
 
@@ -65,6 +66,9 @@ You can navigate to any service directory path and invoke the terraform-apply pi
 
 ### Region Based Views
 When you click on any of the view, it displays all terraform-apply and terraform-destroy pipelines in single screen. This can also be used to trigger the terraform pipelines.
+
+### Global View
+When you click on the view, it displays all terraform-apply and terraform-destroy pipelines for global services e.g. RPC.
 
 <br><br>
 <div align='center'>
