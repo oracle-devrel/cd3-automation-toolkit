@@ -39,7 +39,7 @@
        <li><a href = "/cd3_automation_toolkit/documentation/user_guide/ComputeNGF.md"</a><b>  Must Read : </b> Managing Compute Instances for Non-Greenfield Workflow </li> 
     </ul>
   </ul>
-  <li> <a href="/cd3_automation_toolkit/documentation/user_guide/Workflows-jenkins.md"</a>Using the Automation Toolkit via Jenkins
+ <li> <a href="/cd3_automation_toolkit/documentation/user_guide/Workflows-jenkins.md"</a>Using the Automation Toolkit via Jenkins
          <ul> 
            <li> <a href="/cd3_automation_toolkit/documentation/user_guide/GreenField-Jenkins.md"</a>Create resources in OCI via Jenkins(Greenfield Workflow) </li>
            <li> <a href="/cd3_automation_toolkit/documentation/user_guide/GreenField-Jenkins.md"</a><b>  Must Read : </b> Creation of Resources - Instances/OKE/SDDC/Database </li>
