@@ -25,7 +25,7 @@
 
     
 ## **Introduction to Jenkins**
-On the Jenkins dashboard, you will see -
+On the Jenkins dashboard, you will see below items as highlighted in above screenshot -
 1. setUpOCI Pipeline
 2. terraform_files Folder
 3. Region based Views (including Global directory)
