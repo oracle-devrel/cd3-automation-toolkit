@@ -14,14 +14,16 @@
 ```/usr/share/jenkins/jenkins.sh &```
 
 * Access Jenkins URL using -
-  - https://\<IP of the Jenkins Host\>:<Port>/ <br>
-    Notes  - <Port> is the port mapped with local system while docker container creation eg 8443
-           - Network Connectivity should be allowed on this host and port.
+  - https://\<IP of the Jenkins Host\>:\<Port>/ <br>
+    > Notes:
+     > - \<Port> is the port mapped with local system while docker container creation Eg: 8443.
+     > -  Network Connectivity should be allowed on this host and port.
   - It will prompt you to create first user to access Jenkins URL. This will be the admin user.
   - Once you login, here is the Jenkins dashboard:
-    <br>
-     <img width="1486" alt="Screenshot 2024-01-16 at 10 52 07 AM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/4534834b-3ad6-427b-8f13-121c136054d3">
+    
+     <img width="1486" alt="Screenshot 2024-01-16 at 10 52 07 AM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/cbf61a8e-216f-4667-9351-d568a0a38453">
 
+    
 ## **Introduction to Jenkins**
 On the Jenkins dashboard, you will see -
 1. setUpOCI Pipeline
@@ -32,7 +34,7 @@ The process of invocation/execution of these stages is explained in the next pag
 
 ### setUpOCI Pipeline
 
-This is equivalent to running setUpOCI.py from CLI. Below table shows the stages executed in this pipeline along with their description:
+This is equivalent to running *setUpOCI.py* from CLI. Below table shows the stages executed in this pipeline along with their description:
 
 #### setUpOCI Pipeline Stages :
 
@@ -47,9 +49,9 @@ This is equivalent to running setUpOCI.py from CLI. Below table shows the stages
 
 ### terraform_files Folder
 
-This is equivalent to /cd3user/tenancies/<customer_name>/terraform_files folder on your local system.
+This is equivalent to */cd3user/tenancies/<customer_name>/terraform_files* folder on your local system.
 You will see region directories inside this and all service directories further inside the region directories.
-Inside each service directory, you will see pipelines for terraform-apply and terraform-destroy.
+Inside each service directory, you will see pipelines for **terraform-apply** and **terraform-destroy**.
 
 You can navigate to any service directory path and invoke the terraform-apply pipeline.
 
