@@ -32,7 +32,7 @@ On the Jenkins dashboard, you will see below items as highlighted in above scree
 
 The process of invocation/execution of these stages is explained in the next pages.
 
-### setUpOCI Pipeline
+### 1. setUpOCI Pipeline
 
 This is equivalent to running *setUpOCI.py* from CLI. Below table shows the stages executed in this pipeline along with their description:
 
@@ -47,7 +47,7 @@ This is equivalent to running *setUpOCI.py* from CLI. Below table shows the stag
 | <b>Git Commit</b> | Commits the terraform_files folder to OCI DevOps GIT Repo. This will trigger respective terraform_pipelines| Pipeline stops further execution if there is nothing to commit. <b>In some cases when tfvars was generated in previous execution, you can navigate to terrafom-apply pipeline and trigger that manually </b>|
 | <b>Trigger Terraform Pipelines</b> | Corresponding terraform apply pipelines are auto triggered based on the service chosen | |
 
-### terraform_files Folder
+### 2. terraform_files Folder
 
 This is equivalent to */cd3user/tenancies/<customer_name>/terraform_files* folder on your local system.
 You will see region directories inside this and all service directories further inside the region directories.
@@ -65,11 +65,8 @@ You can navigate to any service directory path and invoke the terraform-apply pi
 | Get Approval | Approval Stage for reviewing the terraform plan. There is 24 hours timeout for this stage. | Proceed - goes ahead with Terraform Apply stage. <br> Abort - pipeline is aborted and stops furter execution |
 |Terraform Apply | Applies the terraform configurations | Displays Failed if any issue while executing terraform apply |
 
-### Region Based Views
-When you click on any of the view, it displays all terraform-apply and terraform-destroy pipelines in single screen. This can also be used to trigger the terraform pipelines.
-
-### Global View
-When you click on the view, it displays all terraform-apply and terraform-destroy pipelines for global services e.g. RPC.
+### 3. Region Based Views
+When you click on any of the view, it displays all terraform-apply and terraform-destroy pipelines in single screen. This can also be used to trigger the terraform pipelines. This also includes Global view for global services like RPC
 
 <br><br>
 <div align='center'>
