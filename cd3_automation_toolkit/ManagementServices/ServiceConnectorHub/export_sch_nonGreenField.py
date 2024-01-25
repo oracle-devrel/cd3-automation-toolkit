@@ -16,7 +16,7 @@ importCommands = {}
 oci_obj_names = {}
 
 
-def get_service_connectors(config,region, SCH_LIST, sch_client, log_client, la_client, identity_client, stream_client,
+def get_service_connectors(config,region, SCH_LIST, sch_client, log_client, la_client, stream_client,
                            notification_client, func_client, ct, values_for_column, ntk_compartment_name):
     volume_comp = ""
     log_source_list = []
@@ -122,10 +122,7 @@ def get_service_connectors(config,region, SCH_LIST, sch_client, log_client, la_c
         if target_kind == "loggingAnalytics":
             dest_log_group_id = getattr(target_data, 'log_group_id')
             target_log_source_identifier = getattr(target_data, 'log_source_identifier')
-            dest_logs_compartment_details = la_client.get_log_analytics_log_group(
-                log_analytics_log_group_id=dest_log_group_id, namespace_name=la_client.list_namespaces(
-                    compartment_id=identity_client.get_user(config["user"]).data.compartment_id).data.items[
-                    0].namespace_name)
+            dest_logs_compartment_details = la_client.get_log_analytics_log_group(log_analytics_log_group_id=dest_log_group_id, namespace_name=la_client.list_namespaces(compartment_id=config["tenancy"]).data.items[0].namespace_name)
             target_log_group_name = getattr(dest_logs_compartment_details.data, 'display_name')
             target_comp_id = getattr(dest_logs_compartment_details.data, 'compartment_id')
             target_comp_name = get_comp_details(target_comp_id)
@@ -259,7 +256,6 @@ def export_service_connectors(inputfile, outdir, service_dir, config, signer, ct
         sch_client = oci.sch.ServiceConnectorClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
         log_client = oci.logging.LoggingManagementClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
         la_client = oci.log_analytics.LogAnalyticsClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
-        identity_client = oci.identity.IdentityClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
         stream_client = oci.streaming.StreamAdminClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
         notification_client = oci.ons.NotificationControlPlaneClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
         func_client = oci.functions.FunctionsManagementClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
@@ -269,7 +265,7 @@ def export_service_connectors(inputfile, outdir, service_dir, config, signer, ct
                                                                 compartment_id=ct.ntk_compartment_ids[
                                                                     ntk_compartment_name], lifecycle_state="ACTIVE",
                                                                 sort_by="timeCreated")
-            get_service_connectors(config,region, SCH_LIST, sch_client, log_client, la_client, identity_client,
+            get_service_connectors(config,region, SCH_LIST, sch_client, log_client, la_client,
                                    stream_client, notification_client, func_client, ct, values_for_column, ntk_compartment_name)
 
     commonTools.write_to_cd3(values_for_column, cd3file, sheetName)

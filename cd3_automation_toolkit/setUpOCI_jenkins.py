@@ -495,7 +495,7 @@ def export_management_services(options=[]):
 def export_notifications(inputfile, outdir, service_dir, config, signer, ct, export_regions):
     compartments = ct.get_compartment_map(var_file,'Notifications')
     ManagementServices.export_notifications(inputfile, outdir, service_dir, config,signer,ct, export_compartments=compartments, export_regions=export_regions)
-    ManagementServices.create_terraform_notifications(inputfile, outdir, service_dir, ct)
+    ManagementServices.create_terraform_notifications(inputfile, outdir, service_dir, prefix, ct)
     print("\n\nExecute tf_import_commands_notifications_nonGF.sh script created under each region directory to synch TF with OCI Notifications\n")
 
 
