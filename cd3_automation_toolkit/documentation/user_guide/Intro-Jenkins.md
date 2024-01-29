@@ -9,7 +9,6 @@
    
 <img width="1486" alt="Screenshot 2024-01-16 at 10 52 07 AM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/cbf61a8e-216f-4667-9351-d568a0a38453">
 
-The process of invocation/execution of these stages is explained in the next pages.
 
 ### 1. setUpOCI Pipeline
 
