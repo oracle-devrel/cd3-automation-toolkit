@@ -17,6 +17,7 @@ Choose **CD3-Blank-template.xlsx** for an empty sheet.
 <br>Upload the above chosen Excel sheet in **Excel_Template** section.
 
 <img width="348" alt="Screenshot 2024-01-16 at 11 04 47 AM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/3bf84fe7-b317-4120-83db-49f52ed65e95"><br>
+>This will copy the excel file at `/cd3user/tenancies/<customer_name>` inside the container. It will also take backup of existing excel on the container by appending the current datetime if same filename is uploaded in multiple executions.
 
 
 **Step 4:** 
