@@ -4,20 +4,20 @@
 Execute setUpOCI pipeline to export existing resources from tenancies:
 
 **Step 1**: 
-<br>Choose the appropriate CD3 Excel sheet template from [Excel Templates](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md#excel-sheet-templates).
+<br>Choose the appropriate CD3 Excel sheet template from [Excel Templates](/cd3-automation-toolkit/tree/main/cd3_automation_toolkit/example).
 Choose **CD3-Blank-template.xlsx** for an empty sheet.
 
 **Step 2**:
 <br>Login to Jenkins URL with user created after initialization and click on setUpOCI pipeline from Dashboard. Click on **Build with Parameters** from left side menu.
 
-<img width="702" height="400" alt="Screenshot 2024-01-16 at 10 56 42 AM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/b571ac92-fc75-4e4b-b0e0-9d2de73b5faa"><br>
+<img width="702" height="400" alt="Screenshot 2024-01-16 at 10 56 42 AM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/0674eebb-ca12-4050-97e8-06d67e6cd58f"><br>
 
 
 **Step 3**:
 <br>Upload the above chosen Excel sheet in **Excel_Template** section.
 
 <img width="348" alt="Screenshot 2024-01-16 at 11 04 47 AM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/3bf84fe7-b317-4120-83db-49f52ed65e95"><br>
->This will copy the excel file at `/cd3user/tenancies/<customer_name>` inside the container. It will also take backup of existing excel on the container by appending the current datetime if same filename is uploaded in multiple executions.
+>This will copy the Excel file at `/cd3user/tenancies/<customer_name>` inside the container. It will also take backup of existing Excel on the container by appending the current datetime if same filename is uploaded in multiple executions.
 
 
 **Step 4:** 
@@ -43,15 +43,15 @@ Choose **CD3-Blank-template.xlsx** for an empty sheet.
 
 **Expected Output of 'Execute setUpOCI' stage:**<br>
 <ol type="a">
-  <li>It will overwrite the specific tabs of Excel sheet with the exported resource details from OCI.</li>
-  <li>It will generate Terraform Configuration files - *.auto.tfvars.</li>
-  <li>It will generate shell scripts with import commands - <b>tf_import_commands_&lt;resource&gt;_nonGF.sh</b> </li>
+  <li> Overwrites the specific tabs of Excel sheet with the exported resource details from OCI.</li>
+  <li> Generates Terraform Configuration files - *.auto.tfvars.</li>
+  <li> Generates shell scripts with import commands - <b>tf_import_commands_&lt;resource&gt;_nonGF.sh</b> </li>
 </ul>
 </ol>
 
 **Expected Output of 'Run Import Commands' stage:**<br>
 <ol type="a">
-  <li>It will execute shell scripts with import commands(<b>tf_import_commands_&lt;resource&gt;_nonGF.sh</b>) generated in the previous stage </li>
+  <li>Executes shell scripts with import commands(<b>tf_import_commands_&lt;resource&gt;_nonGF.sh</b>) generated in the previous stage </li>
 </ul>
 </ol>
 
