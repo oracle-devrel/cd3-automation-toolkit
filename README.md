@@ -57,6 +57,10 @@
   <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/Jobs_Migration.md">Migrating Jenkins Jobs</a></li>
 </ul> 
 
+### Videos...
+<li> <a href = "/cd3_automation_toolkit/documentation/user_guide/LearningVideos.md">Automation Toolkit Learning Videos</a></li>
+   
+
 ### Learn More...
 
 <ul>
@@ -68,7 +72,6 @@
  
    
    <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/learn_more/SupportforAdditionalAttributes.md">Support for Additional Attributes</a></li>
-   <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/LearningVideos.md">Automation Toolkit Learning Videos</a></li>
    <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/KnownBehaviour.md">Expected Behaviour Of Automation Toolkit</a></li>
    <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/FAQ.md">FAQs</a></li>
  
