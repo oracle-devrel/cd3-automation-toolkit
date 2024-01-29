@@ -6,8 +6,10 @@
       
       ![image](https://github.com/unamachi/cd3-automation-toolkit/assets/103548537/5a1f54f1-3e50-4ec7-8634-494eec65ce56)
 
-2. Set up Repository SSH Authentication
-    - Ensure SSH authentication is configured and operational on the Customer Jenkins instance. For detailed instructions, refer to the [OCI Code Repository documentation](https://docs.oracle.com/en-us/iaas/Content/devops/using/ssh_auth.htm).
+2. Set up OCI Devops repository SSH Authentication
+    - Ensure SSH authentication is configured and operational on the Customer Jenkins instance. For detailed instructions, refer to the [OCI Code Repository documentation](https://docs.oracle.com/en-us/iaas/Content/devops/using/ssh_auth.htm).<br><br>
+  
+    > Note - Steps to change the GIT repo are explained in next section.
     
 3. Ensure Availability of Ansi Color Plugin
     - Confirm the presence of the Ansi color plugin in the Customer Jenkins instance. This plugin is utilized in Automation Toolkit pipeline Groovy code and is necessary if not already installed. Plugin link: [Ansicolor Plugin](https://plugins.jenkins.io/ansicolor/)
@@ -15,15 +17,12 @@
 4. Install Terraform Binary
     - Make sure the Terraform binary is installed and accessible for the Jenkins user within the Jenkins instance. Installation guide: [Terraform Installation](https://developer.hashicorp.com/terraform/install)
 
-5. Update Optional Attribute Field inside Terraform Provider Block
-    - Include an optional attribute field within the Terraform provider block. This is optional but necessary in case Terraform plan encounters an error.
+5. Update Optional Attribute Field inside Terraform Provider Block at `/cd3user/tenancies/<customer_name>/terraform_files/<region><service_dir>/provider.tf`
+    - Include an  attribute as highlighted below within the Terraform provider block. This is optional but necessary in case Terraform plan encounters an error.
       
       ![image](https://github.com/unamachi/cd3-automation-toolkit/assets/103548537/2e1593ee-e4cc-4439-8ffa-97d39dda16a6)
 
-6. Update the Correct Key Path in Global Variables_<Region> File inside outdir
-    - It varies and depends on user selection during tenancy setup. i.e. single outdir or multi outdir.
-      
-      ![image](https://github.com/unamachi/cd3-automation-toolkit/assets/103548537/d673bb87-0124-44eb-a75c-1d420edc7841)
+6. Update the correct value for private_key_path variable in `/cd3user/tenancies/<customer_name>/terraform_files/<region><service_dir>/variables_<region>.tf`
 
 7. Configure S3 Backend Credentials in Customer Jenkins Instance
     - Update the correct path within the `backend.tf` file for Terraform.
