@@ -54,7 +54,7 @@
 <ul>
  
   <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/Upgrade_Toolkit.md">Steps to Upgrade Your Toolkit</a></li>
- 
+  <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/Jobs_Migration.md">Migrating Jenkins Jobs</a></li>
 </ul> 
 
 ### Learn More...
