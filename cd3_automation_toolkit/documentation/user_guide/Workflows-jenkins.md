@@ -27,7 +27,7 @@ Jenkins integraton with the toolkit is provided to jump start your journey with 
 <br><br>
 <div align='center'>
 
-| <a href="/cd3_automation_toolkit/documentation/user_guide/Workflows.md">:arrow_backward: Automation Toolkit via CLI</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/GreenField-Jenkins.md">Next :arrow_forward:</a> |
+| <a href="/cd3_automation_toolkit/documentation/user_guide/Workflows.md">:arrow_backward: Automation Toolkit via CLI</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/Intro-Jenkins.md">Next :arrow_forward:</a> |
 | :---- | -------: |
   
 </div>
