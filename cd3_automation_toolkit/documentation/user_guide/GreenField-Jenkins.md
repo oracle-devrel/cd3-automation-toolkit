@@ -4,14 +4,14 @@
 Execute setUpOCI pipeline to create new resources in tenancies:
 
 **Step 1**: 
-<br>Choose the appropriate CD3 Excel sheet template from [Excel Templates](/cd3_automation_toolkit/documentation/user_guide./RunningAutomationToolkit.md#excel-sheet-templates)
+<br>Choose the appropriate CD3 Excel sheet template from [Excel Templates](/cd3-automation-toolkit/tree/main/cd3_automation_toolkit/example).
 Fill the CD3 Excel with appropriate values specific to the client.
 
 
 **Step 2**:
-<br>Login to Jenkins URL with user created after initialization and click on setUpOCI pipeline from Dashboard. Click on 'Build with Parameters' from left side menu.
+<br>Login to Jenkins URL with the user created after initialization and click on **setUpOCI pipeline** from Dashboard. Click on **'Build with Parameters'** from left side menu.
 
-<img width="600" height="350" alt="Screenshot 2024-01-16 at 10 56 42 AM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/4e298946-6fb1-477b-9915-96a50c777d99">
+<img width="600" height="350" alt="Screenshot 2024-01-16 at 10 56 42 AM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/0d8e4719-f92f-4fd6-83e7-0cc53ce4692b">
 
 
 **Step 3**:
@@ -19,11 +19,11 @@ Fill the CD3 Excel with appropriate values specific to the client.
 
 <img width="348" alt="Screenshot 2024-01-16 at 11 04 47 AM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/9b7916aa-9dbb-43f8-8758-5f9c14481006"><br>
 
->This will copy the excel file at `/cd3user/tenancies/<customer_name>` inside the container. It will also take backup of existing excel on the container by appending the current datetime if same filename is uploaded in multiple executions.
+>This will copy the Excel file at `/cd3user/tenancies/<customer_name>` inside the container. It will also take backup of existing Excel on the container by appending the current datetime if same filename is uploaded in multiple executions.
 
 
 **Step 4:** 
-<br>Select the workflow as 'Create Resources in OCI(Greenfield Workflow). Choose single or multiple MainOptions as required and then corresponding SubOptions.
+<br>Select the workflow as **Create Resources in OCI(Greenfield Workflow)**. Choose single or multiple MainOptions as required and then corresponding SubOptions.
 <br>Below screenshot shows creation of Compartments (under Identity) and Tags.
 
 <img width="395" alt="Screenshot 2024-01-16 at 2 44 38 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/c55f0486-fba4-4c61-9f05-224b128e0143">
@@ -37,9 +37,11 @@ Click on **Build** at the bottom.
 <img width="1000" height="400" alt="Screenshot 2024-01-17 at 11 57 14 AM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/b5183bc7-f984-46f9-88f9-f7281e9963fb">
 
 ## Execute terraform Pipelines
-Terraform pipelines are auto triggered parallely from setUpOCI pipeline based on the services selected (the last two stages in above screenshot show trigger of terraform pipelines). <br><br>
+Terraform pipelines are auto triggered parallely from setUpOCI pipeline based on the services selected (the last two stages in above screenshot show trigger of terraform pipelines). <br>
+
 **Step 1**: 
-<br>Click on 'Logs' for Stage: phoenix/identity and click on the pipeline link.
+
+Click on 'Logs' for Stage: phoenix/identity and click on the pipeline link.
 <img width="1402" height="400" alt="Screenshot 2024-01-17 at 11 58 15 AM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/9d14e5ae-92ec-4fea-9ad0-4866b17737a1"><br>
 > ***Note - Clicking on Dashboard displays(at bottom left) pipelines that are in running state.***<br>
 > ***Or you can also navigate from Dashboard -> terraform_files -> phoenix -> identity -> terraform_apply***<br>
