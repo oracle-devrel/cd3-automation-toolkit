@@ -8,7 +8,7 @@
   - A DevOps Project, Repo and Topic should have been created in OCI in the specified compartment to store terraform_files. <br>
 
 
-## **Initialization of Jenkins**
+## **Initialization of Jenkins for the toolkit**
 
 * Execute below cmd to start Jenkins - <br>
 ```/usr/share/jenkins/jenkins.sh &```
@@ -24,7 +24,7 @@
      <img width="1486" alt="Screenshot 2024-01-16 at 10 52 07 AM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/cbf61a8e-216f-4667-9351-d568a0a38453">
 
     
-## **Introduction to Jenkins**
+## **Introduction to Jenkins wrt toolkit**
 On the Jenkins dashboard, you will see below items as highlighted in above screenshot -
 1. setUpOCI Pipeline
 2. terraform_files Folder
