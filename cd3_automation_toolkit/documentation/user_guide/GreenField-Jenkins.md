@@ -70,9 +70,10 @@ Click on 'Logs' for Stage: phoenix/identity and click on the pipeline link.
 <img width="702" height="360" alt="Screenshot 2024-01-17 at 12 13 15 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/78f2b3fb-ceef-4f72-874a-35bce1170c56"><br>
 
 **Step 6**:
-<br>Similarly click on 'Logs' for Stage: phoenix/tagging and click on the pipeline link and 'Proceed' or 'Abort' the terraform apply
+<br>Similarly click on 'Logs' for Stage: phoenix/tagging and click on the pipeline link and 'Proceed' or 'Abort' the terraform apply<br><br>
 
 
+> ***Note - Please [read](/cd3_automation_toolkit/documentation/user_guide/KnownBehaviour.md#9) for known behaviour of toolkit while selecting multiple options in setUpOCI pipeline.
 
 <br><br>
 
