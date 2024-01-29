@@ -26,7 +26,7 @@ Jenkins integraton with the toolkit is provided to jump start your journey with 
      <img width="1486" alt="Screenshot 2024-01-16 at 10 52 07 AM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/cbf61a8e-216f-4667-9351-d568a0a38453">
 
     
-## **Introduction to Jenkins wrt toolkit**
+## **Introduction to Jenkins with the toolkit**
 On the Jenkins dashboard, you will see below items as highlighted in above screenshot -
 1. setUpOCI Pipeline
 2. terraform_files Folder
