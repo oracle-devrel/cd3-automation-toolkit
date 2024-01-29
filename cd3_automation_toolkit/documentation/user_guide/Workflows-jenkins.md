@@ -1,5 +1,7 @@
 # Using the Automation Toolkit via Jenkins
 
+A beginner understanding of Jenkins is required to use this. Jenkins integraton iwith the toolkit s provided to jump start your journey with CI/CD for IaC.
+
 ## **Pre-reqs for Jenkins Configuration**
 * Validation of createTenancyConfig.py output:
   - jenkins.properties file should have been created under /cd3user/tenancies/jenkins_home  as per input parameters in tenancyConfig.properties<br>
