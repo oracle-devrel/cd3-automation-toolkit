@@ -17,7 +17,7 @@
 > 2. Adding a new VCN as Hub and other new VCNs as Spoke/Peer is allowed. Gateways will be created as specified in VCNs sheet.
 > 3. Adding new VCNs as None is allowed. Gateways will be created as specified in VCNs sheet.
 > 4. The addition of new Subnets to exported VCNs and new VCNs is allowed.
-> 5. You might come across below error during export of NSGs(while runnig terraform import commands for NSGs). It occurs when NSG and the VCN are in different compartments. In such cases, please modify <prefix>_nsgs.auto.tfvars, specify the compartment name of the VCN in network_compartment_id field of the problematic NSG.
+> 5. You might come across below error during export of NSGs(while runnig terraform import commands for NSGs). It occurs when NSG and the VCN are in different compartments. In such cases, please modify \<customer_name\>_nsgs.auto.tfvars, specify the compartment name of the VCN in network_compartment_id field of the problematic NSG.
     <img src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/5a50cdb5-b6cf-49fa-b488-1419d32c6b13" alt="image" width="600" height="auto">
 > 6. When you have exported Identity and Network services together in single outdirectory for the first time and executing identity import script. You might see import failure with below error message. Execute Major network import script first then run Identity import script.<br> 
      ```
@@ -28,7 +28,8 @@
      ```
 
 ## Terraform Behavior
-- Create a Load Balancer with Reserved IP: When you create a LBaaS with reserved ip as "Y" and do a terraform apply, everything will go smooth and be in sync for the first time. If you do a terraform plan immediately (post apply), you will find that the plan changes the private ip of load balancer to null.
+#### 1.
+Create a Load Balancer with Reserved IP: When you create a LBaaS with reserved ip as "Y" and do a terraform apply, everything will go smooth and be in sync for the first time. If you do a terraform plan immediately (post apply), you will find that the plan changes the private ip of load balancer to null.
 
 
   ![image](https://user-images.githubusercontent.com/122371432/214501615-c84d26bb-1227-42b7-bc86-a6f82020aab0.png)
@@ -40,29 +41,32 @@
   Once you do the above change, and then execute a terraform plan/apply, you will get the below error and it can be ignored.
 
   ![image](https://user-images.githubusercontent.com/122371432/214502222-09eb5bb2-4a21-43fa-89b9-6540324c7f75.png)
-  
-  
-- While exporting and synching the tfstate file for LBaaS Objects, the user may be notified that a few components will be modified on apply. In such scenarios, add the attributes that the Terraform notifies to be changed to the appropriate CD3 Tab of Load Balancer and uncomment the parameter from Jinja2 Templates and Terraform (.tf) files. Re-run the export.
+    
+#### 2. 
+While exporting and synching the tfstate file for LBaaS Objects, the user may be notified that a few components will be modified on apply. In such scenarios, add the attributes that the Terraform notifies to be changed to the appropriate CD3 Tab of Load Balancer and uncomment the parameter from Jinja2 Templates and Terraform (.tf) files. Re-run the export.
 
-- Add a new column - "Freeform Tags" to the CD3 Excel Sheets as per necessity, to export the tags associated with the resource as well. If executed as-is, Terraform may prompt you to modify resources based on Tags.
+#### 3.
+Add a new column - "Freeform Tags" to the CD3 Excel Sheets as per necessity, to export the tags associated with the resource as well. If executed as-is, Terraform may prompt you to modify resources based on Tags.
   
   **Example:**
   
   <img src = "https://user-images.githubusercontent.com/122371432/214502914-61aeb3b6-923a-481e-95a2-f2d5d78e6e45.png" width =50% height=50%>
   
-- Toolkit will create TF for only those DRGs which are part of CD3 and skip Route Tables for the DRGs created outside of CD3. This will also synch DRG rules in your tenancy with the terraform state.
+#### 4.
+Toolkit will create TF for only those DRGs which are part of CD3 and skip Route Tables for the DRGs created outside of CD3. This will also synch DRG rules in your tenancy with the terraform state.
   
   > **Note**
   > When there are changes made in the OCI console manually, the above options of export and modify can be helpful to sync up the contents/objects in OCI to TF.
 
-- Match All criteria specified for Route Distribution Statement In DRGs sheet will show below output each time you do terraform plan:
+#### 5.
+Match All criteria specified for Route Distribution Statement In DRGs sheet will show below output each time you do terraform plan:
 
   ![image](https://user-images.githubusercontent.com/122371432/214504858-2c5ba6af-b030-4f72-b6d9-8bc37b5902cf.png)
   
   The service api is designed in such a way that it expects an empty list for match all. And it sends back an empty list in the response every time. Hence this behaviour from terraform side. This can be safely ignored.
 
- 
-- Export process for non greenfield tenancies v6.0 or higher will try to revert SGW for a VCN to point to all services if it was existing for just object storage. You will get output similiar to below when terraform plan is run (Option 3 with workflow_type set to export_resources).
+#### 6.
+Export process for non greenfield tenancies v6.0 or higher will try to revert SGW for a VCN to point to all services if it was existing for just object storage. You will get output similiar to below when terraform plan is run (Option 3 with workflow_type set to export_resources).
 
   ```
   # oci_core_service_gateway.VCN_sgw will be updated in-place
@@ -106,7 +110,8 @@
     }
   ```
   
-- If the description field is having any newlines in the tenancy then the export of the component and tf synch will show output similair to below:
+#### 7.
+If the description field is having any newlines in the tenancy then the export of the component and tf synch will show output similair to below:
   
   ```
   # module.iam-policies[“ConnectorPolicy_notifications_2023-03-06T21-54-41-655Z”].oci_identity_policy.policy will be updated in-place
@@ -128,7 +133,8 @@
   
   This is how terraform handles newlines in the fields. Pleage ignore this and proceed with terraform apply.
   
-- Terraform ordering changes observed during plan phase for OCI compute plugin's.
+#### 8.
+Terraform ordering changes observed during plan phase for OCI compute plugin's.
   ![image](https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103548537/f6a2d481-5e79-484b-a24e-a8329e8b6626)
 
   It changes the order of plugin's in terraform state file and doesn't change anything in OCI for compute resource.
