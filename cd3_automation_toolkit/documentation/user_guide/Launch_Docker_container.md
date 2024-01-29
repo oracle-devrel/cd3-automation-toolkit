@@ -3,10 +3,10 @@ To ease the execution of toolkit, we have provided the steps to build an image w
 <br>
 
 ## Clone the repo
-* Open your terminal and change the directory to the one where you want to download the git repo.
+* Open your terminal and navigate to the directory where you plan to download the Git repo.
 * Run the git clone command as shown below:<br/>
 &nbsp; &nbsp; &nbsp; &nbsp; ```git clone https://github.com/oracle-devrel/cd3-automation-toolkit```
-* Once the cloning command completes successfully, the repo will replicate to the local directory. 
+* Once the cloning command is executed successfully, the repo will replicate to the local directory. 
 
 ## Build an image
 
@@ -25,13 +25,16 @@ To ease the execution of toolkit, we have provided the steps to build an image w
   
      <img width="746" alt="image" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103548537/22e71261-63dc-4218-a3f6-9ef98df820e2">
      
-* Login to the CD3 docker container using next section and set the proxies which helps to connect internet(if any) from container.
+* Login to the CD3 docker container using next section and set the proxies(if any) which helps to connect internet from the container.
 
 ## Run the container
 * Run  ```docker run --platform linux/amd64 -it -p <port_number_in_local_system>:8443 -d -v <directory_in_local_system_where_the_files_must_be_generated>:/cd3user/tenancies <image_name>:<image_tag>```
-<br>eg for Mac: docker run --platform linux/amd64 -it -p 8443:8443 -d -v /Users/mount_path:/cd3user/tenancies cd3toolkit:v2024.1.0
-<br>eg for Windows: docker run --platform linux/amd64 -it -p 8443:8443 -d -v D:/mount_path:/cd3user/tenancies cd3toolkit:v2024.1.0
-> <b>Note</b> - For Mac users, please make sure to create mount directory under /Users only to avoid any prmission issues.
+  
+  Eg for Mac: ```docker run --platform linux/amd64 -it -p 8443:8443 -d -v /Users/mount_path:/cd3user/tenancies cd3toolkit:v2024.1.0```
+
+  Eg for Windows: ```docker run --platform linux/amd64 -it -p 8443:8443 -d -v D:/mount_path:/cd3user/tenancies cd3toolkit:v2024.1.0```
+> <b>Note:</b>  Mac users need to make sure to create mount directory only under /Users folder to avoid any permission issues.
+
 * Run  ```docker ps```
 
 <br><br>
