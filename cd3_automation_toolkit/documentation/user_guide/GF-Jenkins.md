@@ -1,4 +1,4 @@
-# Updating variables_\<region\>.tf file for provisioning Instances/OKE/SDDC/Database on OCI
+# Provisioning Instances/OKE/SDDC/Database on OCI via Jenkins
 
 Provisioning of OCI resources like - Compute instances, SDDC, OKE and Databases require you to update variables_\<region\>.tf file with input ssh keys and source image details.
 This file needs to be updated with required details(like input SSH keys or source image details) via CLI even when you are using the toolkit via Jenkins.
