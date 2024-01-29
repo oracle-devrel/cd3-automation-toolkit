@@ -1,9 +1,9 @@
 # Using the Automation Toolkit via Jenkins
 
-A beginner understanding of Jenkins is required to use this. Jenkins integraton iwith the toolkit s provided to jump start your journey with CI/CD for IaC.
+Jenkins integraton with the toolkit is provided to jump start your journey with CI/CD for IaC in OCI. A beginner level of understanding of Jenkins is required.
 
 ## **Pre-reqs for Jenkins Configuration**
-* Validation of createTenancyConfig.py output:
+* The configurations are done when you execute createTenancyConfig.py. Please validate them:
   - jenkins.properties file should have been created under /cd3user/tenancies/jenkins_home  as per input parameters in tenancyConfig.properties<br>
   - An Object Storage bucket should have been created in OCI in the specified compartment to manage tfstate remotely. <br>
   - Customer Secret Key should have been configured for the user for S3 credentials of the bucket. <br>
