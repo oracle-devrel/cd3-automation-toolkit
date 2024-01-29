@@ -134,8 +134,26 @@ If the description field is having any newlines in the tenancy then the export o
   This is how terraform handles newlines in the fields. Pleage ignore this and proceed with terraform apply.
   
 #### 8.
-Terraform ordering changes observed during plan phase for OCI compute plugin's.
+Terraform ordering changes observed during plan phase for OCI compute plugins.
   ![image](https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103548537/f6a2d481-5e79-484b-a24e-a8329e8b6626)
 
-  It changes the order of plugin's in terraform state file and doesn't change anything in OCI for compute resource.
+  It changes the order of plugin's in terraform state file and doesn't change anything in OCI console for compute resource.
+
+#### 9.
+- While executing multiple options simultaneously in setUpOCI pipeline (in Jenkins), if one of the services selected is dependent upon another eg
+you may chose 'Network' (Create Network) and 'Compute' (Add Instances) together. In such scenarios, terraform-apply pipeline for compute will fail as shown in below screenshot (last stage in the pipeline) - 
+<img width="1216" alt="Screenshot 2024-01-29 at 11 22 53 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/cbd63490-7e4f-49dc-b813-03881a4c6e67">
+
+- Clicking on 'Logs' for Stage: sanjose/compute and clicking on the pipeline will dispay below - 
+<img width="927" alt="Screenshot 2024-01-29 at 11 25 24 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/dbdb1be7-bca9-4944-9b3c-987f184b8a95">
+
+- Clicking on 'Logs' for Stage Terraform Plan displays - 
+
+<img width="1497" alt="Screenshot 2024-01-29 at 11 26 41 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/e6b7c60b-256e-40b5-a462-92afd0c9cbf5">
+
+- This is expected because pipleine for 'compute' expects network to be already existing in OCI to launch a new instance.
+- To resolve this, Proceed with terraform-apply pipeline for 'network' and once it is successfuly completed, trigger terraform-apply pipeline for 'compute' manually by clicking on 'Build Now' from left menu.
+
+<img width="1223" alt="Screenshot 2024-01-29 at 11 32 13 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/7bd7b4a8-62af-4a98-9250-9d96515cda4d">
+
 
