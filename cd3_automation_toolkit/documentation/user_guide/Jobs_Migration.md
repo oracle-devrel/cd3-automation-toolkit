@@ -42,7 +42,8 @@
 
 # Update the Git URL for all pipeline jobs in the Customer Jenkins(if required).
 
-1. Create `jenkins.properties` File
+1. Remove terraform_files folder <customer_jenkins_home>/jobs folder
+2. Create `jenkins.properties` File
     - Copy the `jenkins.properties` file from Automation Toolkit Jenkins home folder `/cd3users/tenancies/jenkins_home/` to the `/var/jenkins_home/` directory in customer Jenkins Instance (Below is sample content):
 
           git_url= "ssh://devops.scmservice.us-phoenix-1.oci.oraclecloud.com/namespaces/<namespace>/projects/toolkitdemo-automation-toolkit-project/repositories/toolkitdemo-automation-toolkit-repo"
@@ -51,26 +52,26 @@
           outdir_structure=["Multiple_Outdir"]
       
 
-2. Update the `git_url` in the `jenkins.properties` File
+3. Update the `git_url` in the `jenkins.properties` File
     - Open the `jenkins.properties` file located in the `/var/jenkins_home/` directory.
     - Update the `git_url` in the file with the new Git server URL.
       
       ![image](https://github.com/unamachi/cd3-automation-toolkit/assets/103548537/2056b8a3-c27e-481a-893a-a2ffba628c03)
 
 
-3. Copy `01_jenkins-config.groovy` File
+4. Copy `01_jenkins-config.groovy` File
     - Copy the `01_jenkins-config.groovy` file from the Automation Toolkit Jenkins path (`/cd3user/tenancies/jenkins_home/init.groovy.d`) to the init path of the Customer Jenkins instance.
     - Update the path to the groovy file accordingly.
 
       ![image](https://github.com/unamachi/cd3-automation-toolkit/assets/103548537/348db348-7eee-47ed-88f4-32f1ecd25e0b)
 
 
-4. Restart Customer Jenkins Instance
+5. Restart Customer Jenkins Instance
     - Stop and start the Customer Jenkins instance to apply the changes.
     - After that, all Git URLs will be updated and point to new Git Url inside pipeline jobs.
 
       ![image](https://github.com/unamachi/cd3-automation-toolkit/assets/103548537/83dc5e7a-4ceb-44a1-871f-4d9e314a3ce1)
 
-5. Ensure SSH Authentication
+6. Ensure SSH Authentication
     - Confirm that SSH authentication is enabled for the new GIT repository from the Jenkins instance.
     - Alternatively, use the respective authentication method if relying on other methods.
