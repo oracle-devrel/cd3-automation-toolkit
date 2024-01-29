@@ -1,7 +1,7 @@
 # Create resources in OCI via Jenkins(Greenfield Workflow)
 
 ## Execute setUpOCI Pipeline
-Below are the steps that will help to execute setUpOCI pipeline to create new resources in tenancies:
+Execute setUpOCI pipeline to create new resources in tenancies:
 
 **Step 1**: 
 <br>Choose the appropriate CD3 Excel sheet template from [Excel Templates](/cd3_automation_toolkit/documentation/user_guide./RunningAutomationToolkit.md#excel-sheet-templates)
