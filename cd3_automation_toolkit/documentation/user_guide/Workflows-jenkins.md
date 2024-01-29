@@ -10,7 +10,7 @@ Jenkins integraton with the toolkit is provided to jump start your journey with 
   - A DevOps Project, Repo and Topic should have been created in OCI in the specified compartment to store terraform_files. <br>
 
 
-## **Initialization of Jenkins for the toolkit**
+## **Bootstrapping of Jenkins in the toolkit**
 
 * Execute below cmd to start Jenkins - <br>
 ```/usr/share/jenkins/jenkins.sh &```
