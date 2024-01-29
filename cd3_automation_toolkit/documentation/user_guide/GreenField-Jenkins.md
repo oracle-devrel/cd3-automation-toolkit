@@ -19,6 +19,8 @@ Fill the CD3 Excel with appropriate values specific to the client.
 
 <img width="348" alt="Screenshot 2024-01-16 at 11 04 47 AM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/9b7916aa-9dbb-43f8-8758-5f9c14481006"><br>
 
+>This will copy the excel file at `/cd3user/tenancies/<customer_name>` inside the container. It will also take backup of existing excel on the container by appending the current datetime if same filename is uploaded in multiple executions.
+
 
 **Step 4:** 
 <br>Select the workflow as 'Create Resources in OCI(Greenfield Workflow). Choose single or multiple MainOptions as required and then corresponding SubOptions.
