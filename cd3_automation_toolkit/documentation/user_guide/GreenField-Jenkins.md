@@ -37,7 +37,7 @@ Click on **Build** at the bottom.
 <img width="1000" height="400" alt="Screenshot 2024-01-17 at 11 57 14 AM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/b5183bc7-f984-46f9-88f9-f7281e9963fb">
 
 ## Execute terraform Pipelines
-Terraform pipelines are auto triggered parallely from setUpOCI pipeline based on the services selected.You could trigger manually if required to execute Terraform apply.<br><br>
+Terraform pipelines are auto triggered parallely from setUpOCI pipeline based on the services selected (the last two stages in above screenshot show trigger of terraform pipelines). You could trigger manually if required to execute Terraform apply.<br><br>
 **Step 1**: 
 <br>Click on 'Logs' for Stage: phoenix/identity and click on the pipeline link.
 <img width="1402" height="400" alt="Screenshot 2024-01-17 at 11 58 15 AM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/9d14e5ae-92ec-4fea-9ad0-4866b17737a1"><br>
