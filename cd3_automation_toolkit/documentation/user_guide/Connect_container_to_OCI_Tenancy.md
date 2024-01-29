@@ -37,10 +37,9 @@
 <img width="1124" alt="Screenshot 2024-01-10 at 5 54 02 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/f8a6774a-da82-4d93-99b6-1bb4ae99fc37">
 
 
-
-
 ## Appendix
-→ Files created on successful execution of above steps - Description of the Generated files:
+
+<details><summary><b> Description of the files created on successful execution of above steps </b></summary>
 
 | Files Generated | At File Path | Comment/Purpose |
 | --------------- | ------------ | --------------- |
@@ -54,6 +53,8 @@
 | GIT Config File | ```/cd3user/tenancies/<customer_name>/.config_files/<customer_name>_git_config``` | Customer specific GIT Config file for OCI Dev Ops GIT operations. This is generated only if use_oci_devops_git is set to yes |
 | S3 Credentials File | ```/cd3user/tenancies/<customer_name>/.config_files/<customer_name>_s3_credentials``` | This file contains access key and secret for S3 compatible OS bucket to manage remote terraform state. This is generated only if use_remote_state is set to yes |
 | Jenkins Home | ```/cd3user/tenancies/jenkins_home``` | This folder contains jenkins specific data. ```Single Jenkins instance can be setup for a single container.```|
+</details>
+
 
 The next pages will guide you to use the toolkit either via CLI or via Jenkins. Please proceed further.
 
