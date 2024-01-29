@@ -44,7 +44,7 @@
 
 1. Remove terraform_files folder under <customer_jenkins_home>/jobs folder
 2. Create `jenkins.properties` File
-    - Copy the `jenkins.properties` file from Automation Toolkit Jenkins home folder `/cd3users/tenancies/jenkins_home/` to the `/var/jenkins_home/` directory in customer Jenkins Instance (Below is sample content):
+    - Copy the `jenkins.properties` file from Automation Toolkit Jenkins home folder `/cd3users/tenancies/jenkins_home/` to the customer jenkins home (typically `/var/jenkins_home/`) directory in customer Jenkins Instance (Below is sample content):
 
           git_url= "ssh://devops.scmservice.us-phoenix-1.oci.oraclecloud.com/namespaces/<namespace>/projects/toolkitdemo-automation-toolkit-project/repositories/toolkitdemo-automation-toolkit-repo"
           regions=['london', 'phoenix']
