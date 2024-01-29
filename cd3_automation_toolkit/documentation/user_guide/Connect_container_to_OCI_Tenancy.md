@@ -39,7 +39,7 @@
 
 ## Appendix
 
-<details><summary><b> Description of the files created on successful execution of above steps </b></summary>
+<details><summary><b> Expand this to view the details of the files created on successful execution of above steps </b></summary>
 
 | Files Generated | At File Path | Comment/Purpose |
 | --------------- | ------------ | --------------- |
