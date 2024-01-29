@@ -1,4 +1,4 @@
-# Provisioning Instances/OKE/SDDC/Database on OCI via Jenkins
+# Provisioning of Instances/OKE/SDDC/Database on OCI via Jenkins
 
 To provision OCI resources which require input ssh keys and source image details, update variables_\<region\>.tf file using CLI.
 
