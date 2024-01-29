@@ -42,7 +42,7 @@
 
 # Update the Git URL for all pipeline jobs in the Customer Jenkins(if required).
 
-1. Remove terraform_files folder <customer_jenkins_home>/jobs folder
+1. Remove terraform_files folder under <customer_jenkins_home>/jobs folder
 2. Create `jenkins.properties` File
     - Copy the `jenkins.properties` file from Automation Toolkit Jenkins home folder `/cd3users/tenancies/jenkins_home/` to the `/var/jenkins_home/` directory in customer Jenkins Instance (Below is sample content):
 
