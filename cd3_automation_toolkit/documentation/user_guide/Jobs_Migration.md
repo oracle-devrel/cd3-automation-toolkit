@@ -29,13 +29,16 @@
 
       ![image](https://github.com/unamachi/cd3-automation-toolkit/assets/103548537/bfd6d2a2-7384-4bb0-a30b-5b7fd63c0e9b)
 
-8. Job and Pipeline Configuration
+8. Push the above changes to Devops GIT repository so that pipline can get the latest commits/changes and execute it.
+
+9. Stop/Start the Customer Jenkins Instance for the changes to take effect. This is applicable for any configuration changes in Jenkins.
+
+10. Job and Pipeline Configuration
     - Verify that the specified jobs and pipelines, initialized by the Automation Toolkit, are visible in the Customer Jenkins instance.
       
       ![image](https://github.com/unamachi/cd3-automation-toolkit/assets/103548537/3fca2b65-78b0-4528-a821-c43b5950cc90)
 
-
-9. Pipeline Job Output
+11. Pipeline Job Output
     
       ![image](https://github.com/unamachi/cd3-automation-toolkit/assets/103548537/4bb57802-1594-4361-9c54-46022abf190a)
 
