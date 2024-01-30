@@ -32,7 +32,7 @@ This is equivalent to */cd3user/tenancies/<customer_name>/terraform_files* folde
 The region directories, along with all service directories nested inside these region directories, are present under this terraform_files folder.
 Inside each service directory, pipelines for **terraform-apply** and **terraform-destroy** can be found.
 
-The terraform-apply pipeline can be triggered by navigating to any service directory path.
+The terraform pipelines can be triggered by navigating to any service directory path.
 
 <details><summary><b>Expand this to view terraform-apply Pipeline Stages</b> </summary>
 
@@ -43,6 +43,16 @@ The terraform-apply pipeline can be triggered by navigating to any service direc
 | OPA | Runs the above genrated terraform plan against Open Policies and displays the violations if any | Displays Unstable if any OPA rule is violated |
 | Get Approval | Approval Stage for reviewing the terraform plan. There is 24 hours timeout for this stage. | Proceed - goes ahead with Terraform Apply stage. <br> Abort - pipeline is aborted and stops furter execution |
 |Terraform Apply | Applies the terraform configurations | Displays Failed if any issue while executing terraform apply |
+</details>
+
+<details><summary><b>Expand this to view terraform-destroy Pipeline Stages</b> </summary>
+
+|Stage Name      | Description  | Possible Outcomes |
+| --------------- | ------------ | ----------------- |
+| Checkout SCM | Checks out the latest terraform_files folder from DevOps GIT repo | |
+| Terraform Destroy Plan | Runs `terraform plan -destroy` against the checked out code | Displays Failed if any issue in plan output |
+| Get Approval | Approval Stage for reviewing the terraform plan. There is 24 hours timeout for this stage. | Proceed - goes ahead with Terraform Destroy stage. <br> Abort - pipeline is aborted and stops furter execution |
+|Terraform Destroy | Destroys the terraform configurations | Displays Failed if any issue while executing terraform destroy |
 </details>
 
 ### 3. Region Based Views
