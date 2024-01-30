@@ -573,7 +573,10 @@ Note -
 ![image](https://user-images.githubusercontent.com/115973871/216242750-d84a79bf-5799-4e51-ba40-ca82a00d04aa.png)
 
 - Also, When the target kind is **'notifications'** the value for formatted messages parameter is set to **'true'** as default. Its set to **'false'** only when the source is 'streaming'.
+  
+- During export of connectors, The terraform plan will show log-sources ordering as changes and it rearranges the order for log-sources for that service connector if source/target kind is logging.
 
+ ![image](https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103548537/1005724e-ac03-4b45-8e3d-480c8826d065)
 
 ## OKE Tab
 
