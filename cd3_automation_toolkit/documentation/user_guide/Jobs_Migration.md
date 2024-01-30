@@ -19,6 +19,8 @@
 
 5. Update Optional Attribute Field inside Terraform Provider Block at `/cd3user/tenancies/<customer_name>/terraform_files/<region><service_dir>/provider.tf`
     - Include an  attribute as highlighted below within the Terraform provider block. This is optional but necessary in case Terraform plan encounters an error.
+  
+              experiments = [module_variable_optional_attrs]
       
       ![image](https://github.com/unamachi/cd3-automation-toolkit/assets/103548537/2e1593ee-e4cc-4439-8ffa-97d39dda16a6)
 
