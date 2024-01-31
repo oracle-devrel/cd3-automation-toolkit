@@ -10,6 +10,7 @@ Choose **CD3-Blank-template.xlsx** for an empty sheet.
 
 <img width="702" height="400" alt="Screenshot 2024-01-16 at 10 56 42 AM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/0674eebb-ca12-4050-97e8-06d67e6cd58f"><br>
 
+>Note - Only one user at a time using the Jenkins setup is supported in the current release of the toolkit.
 
 **Step 3**:
 <br>Upload the above chosen Excel sheet in **Excel_Template** section.
