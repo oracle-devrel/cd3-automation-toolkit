@@ -65,7 +65,7 @@ Click on 'Logs' for Stage: phoenix/identity and click on the pipeline link.
 
 
 **Step 4**: 
-<br>Click on Get Approval stage and click 'Proceed' to proceed with terraform apply or 'Abort' to cancel the terraform apply. It will wait for 24 hours before aborting the pipeline.
+<br>'Get Approval' stage has timeout of 24 hours, if no action is taken the pipeline will be aborted after 24 hours. Click on this stage and click 'Proceed' to proceed with terraform apply or 'Abort' to cancel the terraform apply.
 
 <img width="920" height="300" alt="Screenshot 2024-01-17 at 12 04 15 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/4082f752-ae72-407e-8b63-5728d4b5b5a8"><br>
 
