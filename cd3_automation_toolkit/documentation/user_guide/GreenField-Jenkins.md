@@ -8,7 +8,7 @@ Execute setUpOCI pipeline to create new resources in tenancies:
 
 **Step 1**: 
 <br>Choose the appropriate CD3 Excel sheet template from [Excel Templates](/cd3-automation-toolkit/tree/main/cd3_automation_toolkit/example).
-Fill the CD3 Excel with appropriate values specific to the client.
+Fill the CD3 Excel with appropriate values.
 
 
 **Step 2**:
@@ -35,7 +35,8 @@ Click on **Build** at the bottom.
 
 
 **Step 5:** 
-<br>setUpOCI pipeline is triggered and stages are executed as shown below:
+<br>setUpOCI pipeline is triggered and stages are executed as shown below.<br>
+This will run the python script to generate the terraform auto.tfvars.  Once created, it will commit to the OCI Devops GIT Repo and then it will also launch terraform-apply pipelines for the services chosen (Stage:phoenix/identity and Stage:phoenix/tagging in the below screenshot).
 
 <img width="1000" height="400" alt="Screenshot 2024-01-17 at 11 57 14 AM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/b5183bc7-f984-46f9-88f9-f7281e9963fb">
 
@@ -46,9 +47,11 @@ Terraform pipelines are auto triggered parallely from setUpOCI pipeline based on
 
 Click on 'Logs' for Stage: phoenix/identity and click on the pipeline link.
 <img width="1402" height="400" alt="Screenshot 2024-01-17 at 11 58 15 AM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/9d14e5ae-92ec-4fea-9ad0-4866b17737a1"><br>
-> ***Note - Clicking on Dashboard displays(at bottom left) pipelines that are in running state.***<br>
-> ***Or you can also navigate from Dashboard -> terraform_files -> phoenix -> identity -> terraform_apply***<br>
-> ***Terraform Pipelines can be triggered manually also.***
+> ***Note - Navigating to Dashboard displays pipelines that are in running state at the bottom left corner.***<br>
+> ***Or you can also navigate from Dashboard using the region based view (Dashboard -> phoenix View -> service specific pipeline)***<br>
+> ***in this example it would be:*** <br>
+> &emsp; ***terraform_files » phoenix » tagging » terraform-apply*** <br>
+> &emsp; ***terraform_files » phoenix » identity » terraform-apply*** <br>
 
 **Step 2**: 
 <br>Stages of the terraform pipeline for apply are shown below:
