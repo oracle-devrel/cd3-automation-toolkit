@@ -71,7 +71,7 @@ Click on 'Logs' for Stage: phoenix/identity and click on the pipeline link.
 
 
 **Step 5**:
-<br>Below screenshot shows Stage View after clicking on 'Proceed'. You can login to the OCI console and verify that resources got created as required.
+<br>Below screenshot shows Stage View after clicking on 'Proceed'. Login to the OCI console and verify that resources got created as required.
 
 <img width="702" height="360" alt="Screenshot 2024-01-17 at 12 13 15 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/78f2b3fb-ceef-4f72-874a-35bce1170c56"><br>
 
