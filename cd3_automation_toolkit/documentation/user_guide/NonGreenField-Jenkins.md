@@ -1,7 +1,5 @@
 # Export Resources from OCI via Jenkins(Non-Greenfield Workflow)
 
-## Detailed Steps
-Execute setUpOCI pipeline to export existing resources from tenancies:
 
 **Step 1**: 
 <br>Choose the appropriate CD3 Excel sheet template from [Excel Templates](/cd3-automation-toolkit/tree/main/cd3_automation_toolkit/example).
