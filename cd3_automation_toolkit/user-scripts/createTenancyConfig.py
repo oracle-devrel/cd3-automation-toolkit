@@ -155,7 +155,7 @@ def update_devops_config(prefix,git_config_file, repo_ssh_url,files_in_repo,dir_
     os.chmod(git_config_file, 0o600)
     file.close()
 
-    # create symlink for Git Config file for SSh operations.
+    # create symlink for Git Config file for SSH operations.
     src = git_config_file
     if not os.path.exists("/cd3user/.ssh"):
         os.makedirs("/cd3user/.ssh")
@@ -380,22 +380,24 @@ try:
     devops_user = config.get('Default', 'oci_devops_git_user').strip()
     devops_user_key = config.get('Default', 'oci_devops_git_key').strip()
 
-    if use_devops == 'yes':
+    if use_devops == 'yes' or remote_state == 'yes':
         #Use remote state if using devops
         remote_state='yes'
 
         # OCI DevOps GIT User and Key are mandatory while using instance_principal or session_token
         if auth_mechanism == 'instance_principal' or auth_mechanism == 'session_token':
-            if devops_user == "" or devops_user == "\n" or devops_user_key == "" or devops_user_key == "\n":
-                print("OCI DevOps GIT User and Key Details cannot be left empty when using instance_principal or session_token...Exiting !!")
+            if devops_user == "" or devops_user == "\n":
+                print("OCI DevOps GIT User cannot be left empty when using instance_principal or session_token...Exiting !!")
                 exit(1)
-
-    # Use same user and key as $user_ocid and $key_path for OCI Devops GIT operations
-    if devops_user == '' or devops_user=="\n":
-        devops_user = user
-    if devops_user_key == '' or devops_user_key=="\n":
-        devops_user_key = config_files+"/"+os.path.basename(key_path)
-
+            if use_devops == 'yes' and devops_user_key == "" or devops_user_key == "\n":
+                print("OCI DevOps GIT Key cannot be left empty when using instance_principal or session_token...Exiting !!")
+                exit(1)
+        if auth_mechanism == 'api_key':
+            # Use same user and key as $user_ocid and $key_path for OCI Devops GIT operations
+            if devops_user == '' or devops_user=="\n":
+                devops_user = user
+            if devops_user_key == '' or devops_user_key=="\n":
+                devops_user_key = config_files+"/"+os.path.basename(key_path)
 
     if remote_state == 'yes':
         # Use same oci_devops_git_user for managing terraform remote state backend
