@@ -32,7 +32,7 @@ This is equivalent to */cd3user/tenancies/<customer_name>/terraform_files* folde
 The region directories, along with all service directories nested inside these region directories, are present under this terraform_files folder.
 Inside each service directory, pipelines for **terraform-apply** and **terraform-destroy** can be found.
 
-The terraform pipelines can be triggered by navigating to any service directory path.
+The terraform pipelines are either triggered automatically from setUpOCI pipeline or they can be triggered manually by navigating to any service directory path.
 
 <details><summary><b>Expand this to view terraform-apply Pipeline Stages</b> </summary>
 
