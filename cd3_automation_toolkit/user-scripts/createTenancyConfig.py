@@ -390,16 +390,11 @@ try:
                 print("OCI DevOps GIT User and Key Details cannot be left empty when using instance_principal or session_token...Exiting !!")
                 exit(1)
 
-        '''if auth_mechanism == 'session_token':
-            if devops_user == "" or devops_user == "\n":
-                print("OCI DevOps GIT User cannot be left empty when using session_token...Exiting !!")
-                exit(1)
-        '''
-        # Use same user and key as $user_ocid and $key_path for OCI Devops GIT operations
-        if devops_user == '' or devops_user=="\n":
-            devops_user = user
-        if devops_user_key == '' or devops_user_key=="\n":
-            devops_user_key = config_files+"/"+os.path.basename(key_path)
+    # Use same user and key as $user_ocid and $key_path for OCI Devops GIT operations
+    if devops_user == '' or devops_user=="\n":
+        devops_user = user
+    if devops_user_key == '' or devops_user_key=="\n":
+        devops_user_key = config_files+"/"+os.path.basename(key_path)
 
 
     if remote_state == 'yes':

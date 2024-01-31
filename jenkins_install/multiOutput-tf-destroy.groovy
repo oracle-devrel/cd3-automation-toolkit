@@ -11,8 +11,8 @@ pipeline {
             }
 
             steps {
+                catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
                 script {
-                    catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
 					def jobName = env.JOB_NAME
                     def parts = jobName.split('/')
 
