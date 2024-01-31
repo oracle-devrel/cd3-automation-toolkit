@@ -1,5 +1,8 @@
 # Create resources in OCI via Jenkins(Greenfield Workflow)
 
+> [!Important]
+> Please [read](/cd3_automation_toolkit/documentation/user_guide/KnownBehaviour.md#9) for known behaviour of toolkit while selecting multiple options in setUpOCI pipeline.
+> 
 ## Execute setUpOCI Pipeline
 Execute setUpOCI pipeline to create new resources in tenancies:
 
@@ -72,8 +75,6 @@ Click on 'Logs' for Stage: phoenix/identity and click on the pipeline link.
 **Step 6**:
 <br>Similarly click on 'Logs' for Stage: phoenix/tagging and click on the pipeline link and 'Proceed' or 'Abort' the terraform apply<br><br>
 
-
-> ***Note - Please [read](/cd3_automation_toolkit/documentation/user_guide/KnownBehaviour.md#9) for known behaviour of toolkit while selecting multiple options in setUpOCI pipeline.
 
 <br><br>
 
