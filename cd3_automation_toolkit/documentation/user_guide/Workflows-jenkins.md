@@ -21,6 +21,7 @@ Jenkins integraton with the toolkit is provided to jump start your journey with 
      > - \<Port> is the port mapped with local system while docker container creation Eg: 8443.
      > -  Network Connectivity should be allowed on this host and port.
   - It will prompt you to create first user to access Jenkins URL. This will be the admin user.
+  - Currently the toolkit supports single user login for the Jenkins setup.
   - Once you login, Jenkins Dashbord will be displayed.
     
      
