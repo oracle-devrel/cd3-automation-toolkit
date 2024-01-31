@@ -12,7 +12,8 @@
 
 ### 1. setUpOCI Pipeline
 
-This is equivalent to running *setUpOCI.py* from CLI. Below table shows the stages executed in this pipeline along with their description:
+This is equivalent to running *setUpOCI.py* from CLI. This will also trigger terraform-apply pipelines for the corresponding services chosen in setUpOCI pipeline.
+Below table shows the stages executed in this pipeline along with their description:
 
 <details><summary><b>Expand this to view setUpOCI Pipeline Stages</b> </summary>
 
