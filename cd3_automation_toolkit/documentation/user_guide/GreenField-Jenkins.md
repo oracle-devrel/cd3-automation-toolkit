@@ -4,7 +4,6 @@
 > Please [read](/cd3_automation_toolkit/documentation/user_guide/KnownBehaviour.md#9) for known behaviour of toolkit while selecting multiple options in setUpOCI pipeline.
 > 
 ## Execute setUpOCI Pipeline
-Execute setUpOCI pipeline to create new resources in tenancies:
 
 **Step 1**: 
 <br>Choose the appropriate CD3 Excel sheet template from [Excel Templates](/cd3-automation-toolkit/tree/main/cd3_automation_toolkit/example).
