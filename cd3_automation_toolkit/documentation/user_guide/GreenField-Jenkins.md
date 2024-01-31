@@ -15,6 +15,8 @@ Fill the CD3 Excel with appropriate values.
 
 <img width="600" height="350" alt="Screenshot 2024-01-16 at 10 56 42 AM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/0d8e4719-f92f-4fd6-83e7-0cc53ce4692b">
 
+>Note - Only one user at a time using the Jenkins setup is supported in the current release of the toolkit.
+
 
 **Step 3**:
 <br>Upload the above filled Excel sheet in **Excel_Template** section.
