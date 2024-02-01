@@ -12,7 +12,7 @@
 
 ### 1. setUpOCI Pipeline
 
-This is equivalent to running *setUpOCI.py* from CLI. This will also trigger terraform-apply pipelines for the corresponding services chosen in setUpOCI pipeline.
+This is equivalent to running *setUpOCI.py* from CLI. This will generate the terraform .auto.tfvars files based on the CD3 excel sheet input for the services chosen, commit them to OCI Devop GIT repo. This will also trigger terraform-apply pipelines for the corresponding services chosen in setUpOCI pipeline.
 Below table shows the stages executed in this pipeline along with their description:
 
 <details><summary><b>Expand this to view setUpOCI Pipeline Stages</b> </summary>
@@ -30,7 +30,7 @@ Below table shows the stages executed in this pipeline along with their descript
 ### 2. terraform_files Folder
 
 This is equivalent to */cd3user/tenancies/<customer_name>/terraform_files* folder on your local system.
-The region directories, along with all service directories nested inside these region directories, are present under this terraform_files folder.
+The region directories along with all service directories, are present under this terraform_files folder.
 Inside each service directory, pipelines for **terraform-apply** and **terraform-destroy** can be found.
 
 The terraform pipelines are either triggered automatically from setUpOCI pipeline or they can be triggered manually by navigating to any service directory path.
