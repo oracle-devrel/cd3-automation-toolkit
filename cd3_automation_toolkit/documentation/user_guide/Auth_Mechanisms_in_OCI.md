@@ -52,7 +52,7 @@ Follow below steps to use Session token-based authentication -
 Follow below steps to use Instance Principal authentication - 
 1. Launch and Instance in the tenancy and set up the toolkit docker container on that instance.
 2. Create Dynamic Group for this instance.
-3. Write IAM policy to assign privileges to this dynamic group. The dynamic group(conytaining the instance) should have administrator access to the tenacy to use complete functionlaity of the toolkit.
+3. Write IAM policy to assign privileges to this dynamic group. The dynamic group(conytaining the instance) should have administrator access to the tenacy to use complete functionality of the toolkit.
 
 
 <br><br>
