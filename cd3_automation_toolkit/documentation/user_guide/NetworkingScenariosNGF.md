@@ -27,7 +27,7 @@ Follow the below steps to export the Networking components that includes VCNs, S
    - Export Network components for SubnetsVLANs Tab
    - Export Network components for NSGs Tab
    
-   Once the execution is successful, networking related .tfvars files and .sh files containing import statements will be generated under the folder _/cd3user/tenancies/<customer\_name>/terraform_files/<region_dir>_
+   Once the execution is successful, networking related .tfvars files and .sh files containing import statements will be generated under the folder _/cd3user/tenancies/<customer\_name>/terraform_files/<region_dir>/<service_dir>_
    
    Also,The RPC related .tfvars and .sh files containing import statements will be generated in global directory which is inside the /cd3user/tenancies/<customer\_name>/terraform_files/ folder. 
 
