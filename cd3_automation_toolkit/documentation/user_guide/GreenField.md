@@ -76,7 +76,7 @@ Follow the below steps to quickly provision a compartment on OCI.
    
 2. Edit the _setUpOCI.properties_ at location:_/cd3user/tenancies /<customer\_name>/<customer\_name>\_setUpOCI.properties_ with appropriate values. 
    - Update the _cd3file_ parameter to specify the CD3 excel sheet path.
-   - Set the _workflow_type_ parameter value to _false_. (for Greenfield Workflow.)
+   - Set the _workflow_type_ parameter value to _create_resources_. (for Greenfield Workflow.)
   
 3. Change Directory to 'cd3_automation_toolkit' :
     ```cd /cd3user/oci_tools/cd3_automation_toolkit/```
