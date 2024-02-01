@@ -1,7 +1,7 @@
 # Connect container to OCI Tenancy
 
 > [!Important]  
-> * It is recommended to execute createTenancyConfig.py always with a single <customer_name> within that container. Even if it is run multiple times with different customer names, Jenkins will only be configured for <customer_name> used while first time successful execution of the script.
+> * It is recommended to execute createTenancyConfig.py with a single <customer_name> within that container. Even if it is run multiple times with different customer names, Jenkins will only be configured for <customer_name> used while first time successful execution of the script.
 > * If there is a new region subscription to the tenancy at a later stage of time, createTenancyConfig.py should be re-run by keeping the same details in tenancyconfig.properties(details like <customer_name>, <auth_mechanism> etc). It will just create a new directory for the new region under `/cd3user/tenancies/<customer_name>/terraform_files` and will keep the existing regions directories as is.
 
 ### **Step 1 - Exec into the Container**:
