@@ -46,7 +46,7 @@ Follow below steps to use Session token-based authentication -
 
 > <b>Note</b>
 > * createTenancyConfig.py script will use the config file located at /cd3user/.oci path. And toolkit supports profile name as DEFAULT only.
-> * Generated session token will have maximum 60 minutes validity. You will have to follow from step 1 if required new session token after expiry. The User should have administrator access to the tenacy to use complete functionlaity of the toolkit.
+> * Generated session token will have maximum 60 minutes validity. You will have to follow from step 1 if new session token is required after expiry. The User should have administrator access to the tenacy to use complete functionlaity of the toolkit.
 
 ## Instance principal
 Follow below steps to use Instance Principal authentication - 
