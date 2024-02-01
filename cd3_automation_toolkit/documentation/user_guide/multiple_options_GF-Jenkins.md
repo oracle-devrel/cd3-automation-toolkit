@@ -15,3 +15,9 @@ eg You may chose 'Network' (Create Network) and 'Compute' (Add Instances) togeth
 - To resolve this, Proceed with terraform-apply pipeline for 'network' and once it is successfuly completed, trigger terraform-apply pipeline for 'compute' manually by clicking on 'Build Now' from left menu.
 
 <img width="1223" alt="Screenshot 2024-01-29 at 11 32 13 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/7bd7b4a8-62af-4a98-9250-9d96515cda4d">
+
+<br><br>
+<div align='center'>
+
+| <a href="/cd3_automation_toolkit/documentation/user_guide/GF-Jenkins.md">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/multiple_options_GF-Jenkins.md">Next :arrow_forward:</a> |
+| :---- | -------: |
