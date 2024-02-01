@@ -30,7 +30,7 @@
 
 > <b>Note</b>
 > * If you are running docker container on a linux VM host, please refer to [point no. 7](/cd3_automation_toolkit/documentation/user_guide/FAQ.md) under FAQ to avoid any permission issues.
-> * If the API Keys were generated and added to the OCI console using previous steps, it might take a couple of seconds to reflect. Thus, running the above command immediately might result in Authentication Errors. In such cases, please retry after a minute.
+> * Running the above command immediately after adding API key to the user profile in OCI might result in Authentication Errors. In such cases, please retry after a minute.
 <br>
 
 → Example execution of the script with Advanced Parameters for CI/CD:
