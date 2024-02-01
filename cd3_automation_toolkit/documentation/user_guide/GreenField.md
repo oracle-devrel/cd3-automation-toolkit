@@ -7,7 +7,7 @@ Configure the Automation Toolkit to create new resources in tenancies:
 <br>Choose the appropriate Excel sheet template from [Excel Templates](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md#excel-sheet-templates)
 
 **Step 2**:
-<br>Fill the Excel with appropriate values specific to the client and put at the appropriate location.
+<br>Fill the Excel with appropriate values and put at the appropriate location.
 <br>Modify/Review [setUpOCI.properties](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md#setupociproperties) with **workflow_type** set to **create_resources** as shown below:
 ```ini
 #Input variables required to run setUpOCI script
