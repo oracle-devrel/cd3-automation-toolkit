@@ -85,7 +85,7 @@ Follow the below steps to quickly provision a compartment on OCI.
    
    ```python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties```
    
-4. Choose option to create compartments under 'Identity' from the displayed menu. Once the execution is successful, _<customer\_name>\_compartments.auto.tfvars_ file will be generated under the folder _/cd3user/tenancies/<customer\_name>/terraform_files/<region_dir>_
+4. Choose option to create compartments under 'Identity' from the displayed menu. Once the execution is successful, _<customer\_name>\_compartments.auto.tfvars_ file will be generated under the folder _/cd3user/tenancies/<customer\_name>/terraform_files/<region_dir>/<service_dir>_
     
    Navigate to the above path and execute the terraform commands:<br>
        <br>_terraform init_
