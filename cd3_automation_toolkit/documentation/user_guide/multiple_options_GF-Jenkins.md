@@ -1,4 +1,4 @@
-# Provisioning multiple services together
+# Provisioning of multiple services together
 You can chose to create multiple OCI resources together by selecting multiple options in setUpOCI pipeline simultaneously. But if one of the services is dependent upon the availability of another service
 eg You may chose 'Network' (Create Network) and 'Compute' (Add Instances) together. In such scenarios, terraform-apply pipeline for compute will fail as shown in below screenshot (last stage in the pipeline) -
 
