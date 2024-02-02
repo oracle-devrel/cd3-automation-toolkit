@@ -355,7 +355,7 @@ if prefixes !=[]:
     else:
         print("WARNING!!! Container has already been successfully connected to the tenancy with these values of customer_name: "+str(list(set(prefixes))))
         print("WARNING!!! Toolkit usage with Jenkins has not been tested with running this script multiple times with different values of customer_name in the properties file")
-        print("Jenkins is configured for the customer_name used for the first successful execution of the script")
+        print("Jenkins is configured for the customer_name used for the first successful execution of the script.")
     inp = input("\nDo you want to proceed (y/n):")
     if inp.lower()=="n":
         exit(1)
@@ -978,6 +978,7 @@ if use_devops == "yes":
 logging.info("\n######################################")
 logging.info("Next Steps for using toolkit via CLI")
 logging.info("######################################")
+logging.info("Modify "+customer_tenancy_dir + "/" +prefix+"_setUpOCI.properties with input values for cd3file and workflow_type")
 logging.info("cd "+user_dir+"/oci_tools/cd3_automation_toolkit/")
 logging.info("python setUpOCI.py "+customer_tenancy_dir + "/" +prefix+"_setUpOCI.properties")
 

@@ -8,6 +8,7 @@ Jan 31st, 2024
 4. Migrated oci terraform provider from hashicorp/oci to oracle/oci and updated to latest version
 5. Replaced parameter in setUpOCI.properties - 'non_gf_tenancy' with 'workflow_type'. Valid values - 'create_resources' or 'export_resources'
 6. Moved toolkit configuration files into /cd3user/tenancies/<customer_name>/.config_files folder
+7. New versioning for the toolkit: <year>.<major_release>.<minor_release>
 
 ----------------------------------
 CD3 Automation Toolkit Tag v12.1
