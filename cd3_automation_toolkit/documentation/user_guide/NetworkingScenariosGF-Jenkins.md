@@ -33,7 +33,7 @@ Below are the steps in detail to create Network that includes VCNs, Subnets, DHC
 5. It will show different stages of execution of _setUpOCI_ pipeline and also launch the _terraform-apply_ pipeline for 'network'.
 6. Click on Proceed for 'Get Approval' stage of the terraform pipeline.
        
-   This completes the creation of Networking components in OCI. Verify the components in console. However the details of the default security lists and default route tables may not be available in the CD3 Excel sheet yet. Inorder to export that data please follow the below steps:
+   This completes the creation of Networking components in OCI. Verify the components in console. However the details of the default security lists and default route tables are not available in the CD3 Excel sheet yet. Inorder to export that data please follow the below steps:
 
 7. Execute the _setupOCI.py_ pipeline with _Workflow_ as _Create Resources in OCI(Greenfield Workflow)_
 8. Choose _'Network'_ from the displayed options. Choose below sub-options: (Make sure to choose all the three optionsfor the first time)
