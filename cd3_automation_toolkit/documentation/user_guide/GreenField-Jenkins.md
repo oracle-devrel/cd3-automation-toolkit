@@ -1,8 +1,5 @@
 # Create resources in OCI via Jenkins(Greenfield Workflow)
 
-> [!Important]
-> Please [read](/cd3_automation_toolkit/documentation/user_guide/KnownBehaviour.md#9) for known behaviour of toolkit while selecting multiple options in setUpOCI pipeline.
-> 
 ## Execute setUpOCI Pipeline
 
 **Step 1**: 
