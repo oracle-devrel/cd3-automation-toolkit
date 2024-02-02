@@ -38,7 +38,8 @@
   <li> <a href="/cd3_automation_toolkit/documentation/user_guide/Intro-Jenkins.md"</a>Introduction to Jenkins with the toolkit</a></li>
   <li> <a href="/cd3_automation_toolkit/documentation/user_guide/GreenField-Jenkins.md"</a>Create resources in OCI via Jenkins(Greenfield Workflow)</li>
     <ul>
-      <li> <a href="/cd3_automation_toolkit/documentation/user_guide/GF-Jenkins.md"</a><b>  Must Read : </b> Creation of Resources - Instances/OKE/SDDC/Database </li>
+      <li> <a href="/cd3_automation_toolkit/documentation/user_guide/GF-Jenkins.md"</a><b>  Must Read : </b> Provisioning of Resources - Instances/OKE/SDDC/Database </li>
+      <li> <a href="/cd3_automation_toolkit/documentation/user_guide/multiple_options_GF-Jenkins.md"</a><b>  Must Read : </b> Provisioning of multiple services together </li>
     </ul>
       <li> <a href="/cd3_automation_toolkit/documentation/user_guide/NonGreenField-Jenkins.md"</a>Export Resources from OCI via Jenkins(Non-Greenfield Workflow) </li>     
   <li> <a href="/cd3_automation_toolkit/documentation/user_guide/cli_jenkins.md">Switch between CLI and Jenkins</a></li>

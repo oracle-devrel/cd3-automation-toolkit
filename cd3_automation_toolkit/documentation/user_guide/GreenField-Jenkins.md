@@ -1,17 +1,18 @@
 # Create resources in OCI via Jenkins(Greenfield Workflow)
 
 ## Execute setUpOCI Pipeline
-Execute setUpOCI pipeline to create new resources in tenancies:
 
 **Step 1**: 
 <br>Choose the appropriate CD3 Excel sheet template from [Excel Templates](/cd3-automation-toolkit/tree/main/cd3_automation_toolkit/example).
-Fill the CD3 Excel with appropriate values specific to the client.
+Fill the CD3 Excel with appropriate values.
 
 
 **Step 2**:
 <br>Login to Jenkins URL with the user created after initialization and click on **setUpOCI pipeline** from Dashboard. Click on **'Build with Parameters'** from left side menu.
 
 <img width="600" height="350" alt="Screenshot 2024-01-16 at 10 56 42 AM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/0d8e4719-f92f-4fd6-83e7-0cc53ce4692b">
+
+>Note - Only one user at a time using the Jenkins setup is supported in the current release of the toolkit.
 
 
 **Step 3**:
@@ -32,7 +33,8 @@ Click on **Build** at the bottom.
 
 
 **Step 5:** 
-<br>setUpOCI pipeline is triggered and stages are executed as shown below:
+<br>setUpOCI pipeline is triggered and stages are executed as shown below.<br>
+This will run the python script to generate the terraform auto.tfvars.  Once created, it will commit to the OCI Devops GIT Repo and then it will also launch terraform-apply pipelines for the services chosen (Stage:phoenix/identity and Stage:phoenix/tagging in the below screenshot).
 
 <img width="1000" height="400" alt="Screenshot 2024-01-17 at 11 57 14 AM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/b5183bc7-f984-46f9-88f9-f7281e9963fb">
 
@@ -43,9 +45,11 @@ Terraform pipelines are auto triggered parallely from setUpOCI pipeline based on
 
 Click on 'Logs' for Stage: phoenix/identity and click on the pipeline link.
 <img width="1402" height="400" alt="Screenshot 2024-01-17 at 11 58 15 AM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/9d14e5ae-92ec-4fea-9ad0-4866b17737a1"><br>
-> ***Note - Clicking on Dashboard displays(at bottom left) pipelines that are in running state.***<br>
-> ***Or you can also navigate from Dashboard -> terraform_files -> phoenix -> identity -> terraform_apply***<br>
-> ***Terraform Pipelines can be triggered manually also.***
+> ***Note - Navigating to Dashboard displays pipelines that are in running state at the bottom left corner.***<br>
+> ***Or you can also navigate from Dashboard using the region based view (Dashboard -> phoenix View -> service specific pipeline)***<br>
+> ***in this example it would be:*** <br>
+> &emsp; ***terraform_files » phoenix » tagging » terraform-apply*** <br>
+> &emsp; ***terraform_files » phoenix » identity » terraform-apply*** <br>
 
 **Step 2**: 
 <br>Stages of the terraform pipeline for apply are shown below:
@@ -59,13 +63,13 @@ Click on 'Logs' for Stage: phoenix/identity and click on the pipeline link.
 
 
 **Step 4**: 
-<br>Click on Get Approval stage and click 'Proceed' to proceed with terraform apply or 'Abort' the terraform apply.
+<br>'Get Approval' stage has timeout of 24 hours, if no action is taken the pipeline will be aborted after 24 hours. Click on this stage and click 'Proceed' to proceed with terraform apply or 'Abort' to cancel the terraform apply.
 
 <img width="920" height="300" alt="Screenshot 2024-01-17 at 12 04 15 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/4082f752-ae72-407e-8b63-5728d4b5b5a8"><br>
 
 
 **Step 5**:
-<br>Below screenshot shows Stage View after clicking on 'Proceed'. You can login to the OCI console and verify that resources got created as required.
+<br>Below screenshot shows Stage View after clicking on 'Proceed'. Login to the OCI console and verify that resources got created as required.
 
 <img width="702" height="360" alt="Screenshot 2024-01-17 at 12 13 15 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/78f2b3fb-ceef-4f72-874a-35bce1170c56"><br>
 
@@ -73,13 +77,11 @@ Click on 'Logs' for Stage: phoenix/identity and click on the pipeline link.
 <br>Similarly click on 'Logs' for Stage: phoenix/tagging and click on the pipeline link and 'Proceed' or 'Abort' the terraform apply<br><br>
 
 
-> ***Note - Please [read](/cd3_automation_toolkit/documentation/user_guide/KnownBehaviour.md#9) for known behaviour of toolkit while selecting multiple options in setUpOCI pipeline.
-
 <br><br>
 
 <div align='center'>
 
-| <a href="/cd3_automation_toolkit/documentation/user_guide/Workflows-jenkins.md">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/GF-Jenkins.md">Next :arrow_forward:</a> |
+| <a href="/cd3_automation_toolkit/documentation/user_guide/Intro-Jenkins.md">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/GF-Jenkins.md">Next :arrow_forward:</a> |
 | :---- | -------: |
   
 </div>

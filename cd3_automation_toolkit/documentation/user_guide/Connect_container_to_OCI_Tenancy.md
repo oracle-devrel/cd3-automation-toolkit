@@ -1,5 +1,9 @@
 # Connect container to OCI Tenancy
 
+> [!Important]  
+> * It is recommended to execute createTenancyConfig.py with a single <customer_name> within that container. Even if it is run multiple times with different customer names, Jenkins will only be configured for <customer_name> used while first time successful execution of the script.
+> * If there is a new region subscription to the tenancy at a later stage of time, createTenancyConfig.py should be re-run by keeping the same details in tenancyconfig.properties(details like <customer_name>, <auth_mechanism> etc). It will just create a new directory for the new region under `/cd3user/tenancies/<customer_name>/terraform_files` and will keep the existing regions directories as is.
+
 ### **Step 1 - Exec into the Container**:
 * Run  ```docker ps```.
 <br> → Note down the container ID from this cmd output.
@@ -18,6 +22,7 @@
        a large number of resources. <br>
     -  Review Advanced Parameters Section for CI/CD setup and be ready with user details that will be used to connect to DevOps Repo in OCI.              Specifying these parameters as **'yes'** in properties file will create Object Storage Bucket and Devops Git Repo/Project/Topic in OCI 
        and enable toolkit usage via Jenkins.
+       > The toolkit supports users in primary IDCS stripes or default domains only for DevOps GIT operations.
 
  
 ### **Step 4 - Initialise the environment**:
@@ -26,7 +31,7 @@
 
 > <b>Note</b>
 > * If you are running docker container on a linux VM host, please refer to [point no. 7](/cd3_automation_toolkit/documentation/user_guide/FAQ.md) under FAQ to avoid any permission issues.
-> * If the API Keys were generated and added to the OCI console using previous steps, it might take a couple of seconds to reflect. Thus, running the above command immediately might result in Authentication Errors. In such cases, please retry after a minute.
+> * Running the above command immediately after adding API key to the user profile in OCI might result in Authentication Errors. In such cases, please retry after a minute.
 <br>
 
 → Example execution of the script with Advanced Parameters for CI/CD:
@@ -54,9 +59,6 @@
 The next pages will guide you to use the toolkit either via CLI or via Jenkins. Please proceed further.
 <br><br>
 
-> [!Important]  
-> * It is recommended to execute createTenancyConfig.py always with a single <customer_name> within that container. Even if it is run multiple times with different customer names, Jenkins will only be configured for <customer_name> used while first time successful execution of the script.
-> * If there is a new region subscription to the tenancy at a later stage of time, createTenancyConfig.py should be re-run by keeping the same details in tenancyconfig.properties(details like <customer_name>, <auth_mechanism> etc). It will just create a new directory for the new region under `/cd3user/tenancies/<customer_name>/terraform_files` and will keep the existing regions directories as is.
 
 <br><br>
 <div align='center'>

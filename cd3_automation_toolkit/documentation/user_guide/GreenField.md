@@ -1,13 +1,10 @@
 # Create resources in OCI (Greenfield Workflow)
 
-## Detailed Steps
-Configure the Automation Toolkit to create new resources in tenancies:
-
 **Step 1**: 
 <br>Choose the appropriate Excel sheet template from [Excel Templates](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md#excel-sheet-templates)
 
 **Step 2**:
-<br>Fill the Excel with appropriate values specific to the client and put at the appropriate location.
+<br>Fill the Excel with appropriate values and put at the appropriate location.
 <br>Modify/Review [setUpOCI.properties](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md#setupociproperties) with **workflow_type** set to **create_resources** as shown below:
 ```ini
 #Input variables required to run setUpOCI script
@@ -79,7 +76,7 @@ Follow the below steps to quickly provision a compartment on OCI.
    
 2. Edit the _setUpOCI.properties_ at location:_/cd3user/tenancies /<customer\_name>/<customer\_name>\_setUpOCI.properties_ with appropriate values. 
    - Update the _cd3file_ parameter to specify the CD3 excel sheet path.
-   - Set the _workflow_type_ parameter value to _false_. (for Greenfield Workflow.)
+   - Set the _workflow_type_ parameter value to _create_resources_. (for Greenfield Workflow.)
   
 3. Change Directory to 'cd3_automation_toolkit' :
     ```cd /cd3user/oci_tools/cd3_automation_toolkit/```
@@ -88,7 +85,7 @@ Follow the below steps to quickly provision a compartment on OCI.
    
    ```python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties```
    
-4. Choose option to create compartments under 'Identity' from the displayed menu. Once the execution is successful, _<customer\_name>\_compartments.auto.tfvars_ file will be generated under the folder _/cd3user/tenancies/<customer\_name>/terraform_files/<region_dir>_
+4. Choose option to create compartments under 'Identity' from the displayed menu. Once the execution is successful, _<customer\_name>\_compartments.auto.tfvars_ file will be generated under the folder _/cd3user/tenancies/<customer\_name>/terraform_files/<region_dir>/<service_dir>_
     
    Navigate to the above path and execute the terraform commands:<br>
        <br>_terraform init_
