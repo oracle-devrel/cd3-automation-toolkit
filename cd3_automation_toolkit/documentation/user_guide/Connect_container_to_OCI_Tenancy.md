@@ -2,7 +2,7 @@
 
 > [!Important]  
 > * It is recommended to execute createTenancyConfig.py with a single <customer_name> within that container. Even if it is run multiple times with different customer names, Jenkins will only be configured for <customer_name> used while first time successful execution of the script.
-> * If there is a new region subscription to the tenancy at a later stage of time, createTenancyConfig.py must be re-run by using the same tenancyconfig.properties file that was originally used to create the configuration. Re-execution will create new directory for the new region under `/cd3user/tenancies/<customer_name>/terraform_files` and will commit the latest terraform_files folder to DevOps GIT repo.
+> * If there is a new region subscription to the tenancy at a later stage of time, createTenancyConfig.py must be re-run by using the same tenancyconfig.properties file that was originally used to create the configuration. Re-execution will create new directory for the new region under `/cd3user/tenancies/<customer_name>/terraform_files` without touching the existing ones and will commit the latest terraform_files folder to DevOps GIT repo.
 
 ### **Step 1 - Exec into the Container**:
 * Run  ```docker ps```.
