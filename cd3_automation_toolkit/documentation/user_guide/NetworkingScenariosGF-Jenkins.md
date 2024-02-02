@@ -28,8 +28,7 @@ Below are the steps in detail to create Network that includes VCNs, Subnets, DHC
 3. Choose option _'Validate CD3'_ and then _'Validate Networks'_ to check for syntax errors in Excel sheet. Examine the log file generated at _/cd3user/tenancies/<customer\_name>/<customer\_name>\_cd3validator.log_. If there are errors, please rectify them accordingly and proceed to the next step.
 
 4. Choose _'Create Network'_ under _'Network'_ from the displayed options. Click on Build.
-
-![tuxpi com 1706881746](https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/8b39e062-5688-4828-97c6-f3f3f2894358)
+![tuxpi com 1706881818](https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/22daf967-838f-4e13-aaca-8df85776f71a)
 
 5. It will show different stages of execution of _setUpOCI_ pipeline and also launch the _terraform-apply_ pipeline for 'network'.
 6. Click on Proceed for 'Get Approval' stage of the terraform pipeline.
