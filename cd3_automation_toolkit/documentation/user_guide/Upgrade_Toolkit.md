@@ -1,5 +1,12 @@
 # Steps to Upgrade Your Toolkit (For Existing Customers using older versions):
 
+## Upgrade to Release v2024.1.0
+This is a major release with introduction of CI/CD using Jenkins.
+1. Follow the steps in [Launch Docker Container](/cd3_automation_toolkit/documentation/user_guide/Launch_Docker_container.md) to build new image with latest code and launch the container by specifying new path for <directory_in_local_system_where_the_files_must_be_generated> to create a fresh outdir.
+2. Use Non Greenfield workflow to export the required OCI services into new excel sheet and the tfvars. Run terraform import commands also.
+3. Once terraform is in synch, Switch to Greenfield workflow and use for any future modifications to the infra.
+3. Once terraform is in synch, Switch to Greenfield workflow and use for any future modifications to the infra.
+
 ## Upgrade to Release v12.1 from v12
 1. Follow the steps in [Launch Docker Container](/cd3_automation_toolkit/documentation/user_guide/Launch_Docker_container.md) to build new image with latest code and launch the container by specifying same path for <directory_in_local_system_where_the_files_must_be_generated> to keep using same outdir.
 2. Copy sddc.tf from _/cd3user/oci_tools/cd3\_automation\_toolkit/user-scripts/terraform_files/_ <b>to</b> _/cd3user/tenancies/<customer\_name>/terraform\_files/<region\_dir>/<ocvs>_.
@@ -7,13 +14,13 @@
 4. Copy the <b>sddcs</b> variable block from _/cd3user/oci_tools/cd3\_automation\_toolkit/user-scripts/terraform_files/variables_example.tf_ and replace it in your variables_\<region>.tf file
    
 ## Upgrade to Release v12
-1. Follow the steps in Launch Docker Container to build new image with latest code and launch the container by specifying new path for <directory_in_local_system_where_the_files_must_be_generated> to create a fresh outdir.
-2. Use Non Greenfield workflow to export the required OCI services into new excel sheet and the tfvars. Run terraform import commands also.
-3. Once terraform is in synch, Switch to Greenfield workflow and use for any future modifications to the infra.
+
 
 
 ## Upgrade to Release v11.1 from v11
-1. Follow the steps in [Launch Docker Container](/cd3_automation_toolkit/documentation/user_guide/Launch_Docker_container.md) to build new image with latest code and launch the container by specifying same path for <directory_in_local_system_where_the_files_must_be_generated> to keep using same outdir.
+1. Follow the steps in [Launch Docker Container](/cd3_automation_toolkit/documentation/user_guide/Launch_Docker_container.md) to build new image with latest code and launch the container by specifying same path for <directory_in_local_system_where_the_files_must_be_generated> to keep using same 1. Follow the steps in Launch Docker Container to build new image with latest code and launch the container by specifying new path for <directory_in_local_system_where_the_files_must_be_generated> to create a fresh outdir.
+2. Use Non Greenfield workflow to export the required OCI services into new excel sheet and the tfvars. Run terraform import commands also.
+3. Once terraform is in synch, Switch to Greenfield workflow and use for any future modifications to the infra.outdir.
    
 ## Upgrade to Release v11
 1. Follow the steps in [Launch Docker Container](/cd3_automation_toolkit/documentation/user_guide/Launch_Docker_container.md) to build new image with latest code and launch the container by specifying new path for <directory_in_local_system_where_the_files_must_be_generated> to create a fresh outdir.
