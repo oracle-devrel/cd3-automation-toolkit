@@ -7,7 +7,7 @@ Jenkins integraton with the toolkit is provided to jump start your journey with 
   - jenkins.properties file is created under _/cd3user/tenancies/jenkins\_home_  as per input parameters in tenancyConfig.properties<br>
   - An Object Storage bucket is created in OCI in the specified compartment to manage tfstate remotely. <br>
   - Customer Secret Key is configured for the user for S3 credentials of the bucket. <br>
-  - A DevOps Project, Repo and Topic are created in OCI in the specified compartment to store terraform_files. <br>
+  - A DevOps Project, Repo and Topic are created in OCI in the specified compartment to store terraform_files. GIT is configured on the container with config file at ```/cd3user/.ssh/config``` <br>
 
 
 ## **Bootstrapping of Jenkins in the toolkit**
