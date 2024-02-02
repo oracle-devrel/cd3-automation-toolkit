@@ -102,6 +102,16 @@ def create_resource_manager(outdir,var_file, outdir_struct,prefix,auth_mechanism
 
         region_dir=outdir + "/" + region
 
+        for path, subdirs, files in os.walk(region_dir):
+            for name in files:
+                filep = os.path.join(path, name)
+                if 'backend.tf' in filep:
+                    f_b=open(filep,"r")
+                    f_d=f_b.read()
+                    if 'This line will be removed when using remote state' not in f_d:
+                        print("Toolkit has been configured to use remote state. OCI Resource Manager does not support that. Exiting!")
+                        exit(1)
+
         if region == 'global':
             outdir_struct = {'rpc':'rpc'}
         else:

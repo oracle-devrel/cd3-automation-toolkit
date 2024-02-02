@@ -99,7 +99,7 @@ def create_devops_resources(config,signer):
     # Create Devops Project
     if toolkit_project_id=='':
         if (toolkit_topic_id==''):
-            print("Topic ID is empty while creating Project - "+project_name+". Please check your input properties file")
+            print("Topic ID is empty for Project - "+project_name+". Please check your input properties file")
             exit(1)
         create_project_response = devops_client.create_project(
             create_project_details=oci.devops.models.CreateProjectDetails(
@@ -152,9 +152,20 @@ def update_devops_config(prefix,git_config_file, repo_ssh_url,files_in_repo,dir_
                 "User "+str(devops_user)+"\n "
                 "IdentityFile "+str(devops_user_key)+"\n")
 
-    os.chmod(git_config_file, 0o600)
     file.close()
 
+    # copy to cd3user home dir
+    if not os.path.exists("/cd3user/.ssh"):
+        os.makedirs("/cd3user/.ssh")
+    shutil.copyfile(git_config_file,'/cd3user/.ssh/config')
+
+    # change permissions of private key file and config file for GIT
+    os.chmod(devops_user_key, 0o600)
+    os.chmod('/cd3user/.ssh/config', 0o600)
+    os.chmod(git_config_file, 0o600)
+
+
+    '''
     # create symlink for Git Config file for SSH operations.
     src = git_config_file
     if not os.path.exists("/cd3user/.ssh"):
@@ -165,6 +176,7 @@ def update_devops_config(prefix,git_config_file, repo_ssh_url,files_in_repo,dir_
     except FileExistsError as e:
         os.unlink(dst)
         os.symlink(src,dst)
+    '''
 
     # create jenkins.properties file
     if not os.path.exists(jenkins_home):
@@ -204,7 +216,16 @@ def update_devops_config(prefix,git_config_file, repo_ssh_url,files_in_repo,dir_
     origin = local_repo.create_remote("origin", repo_ssh_url)
     assert origin.exists()
     assert origin == local_repo.remotes.origin == local_repo.remotes["origin"]
-    origin.fetch()  # assure we actually have data. fetch() returns useful information
+    try:
+        origin.fetch()  # assure we actually have data. fetch() returns useful information
+    except Exception as e:
+        print(str(e))
+        f = open(safe_file, "a")
+        data = prefix + "\t" + "FAIL\t"+current_time+"\n"
+        f.write(data)
+        f.close()
+        exit(1)
+
     # Setup a local tracking branch of a remote branch
     local_repo.create_head("main", origin.refs.main)  # create local branch "main" from remote "main"
     local_repo.heads.main.set_tracking_branch(origin.refs.main)  # set local "main" to track remote "main"
@@ -278,8 +299,9 @@ def update_devops_config(prefix,git_config_file, repo_ssh_url,files_in_repo,dir_
     except Exception as e:
         print(e)
         print("Exiting...")
-        exit()
+        exit(1)
     return commit_id
+
 def create_bucket(config, signer):
     bucket_region = config.get('region').strip()
     buckets_client = ObjectStorageClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY, signer=signer)
@@ -302,8 +324,11 @@ args = parser.parse_args()
 config = configparser.RawConfigParser()
 config.read(args.propsfile)
 
+current_time=str(datetime.datetime.now())
+
 # Initialize Toolkit Variables
 user_dir = "/cd3user"
+safe_file = user_dir + "/tenancies/createTenancyConfig.safe"
 auto_keys_dir = user_dir + "/tenancies/keys"
 toolkit_dir = user_dir +"/oci_tools/cd3_automation_toolkit"
 modules_dir = toolkit_dir + "/user-scripts/terraform"
@@ -315,6 +340,25 @@ prefix = config.get('Default', 'customer_name').strip()
 if prefix == "" or prefix == "\n":
     print("Invalid Customer Name. Please try again......Exiting !!")
     exit(1)
+
+prefixes=[]
+if os.path.exists(safe_file):
+    f=open(safe_file,"r")
+    safe_file_lines = f.readlines()
+    for l in safe_file_lines:
+        if "SUCCESS" in l:
+            prefixes.append(l.split("\t")[0])
+
+if prefixes !=[]:
+    if prefix in prefixes:
+        print("WARNING!!! Container has already been successfuly connected to the tenancy with same customer_name. Please proceed only if you re-running the script for new region subscription")
+    else:
+        print("WARNING!!! Container has already been successfully connected to the tenancy with these values of customer_name: "+str(list(set(prefixes))))
+        print("WARNING!!! Toolkit usage with Jenkins has not been tested with running this script multiple times with different values of customer_name in the properties file")
+        print("Jenkins is configured for the customer_name used for the first successful execution of the script")
+    inp = input("\nDo you want to proceed (y/n):")
+    if inp.lower()=="n":
+        exit(1)
 
 # Initialize Tenancy Variables
 customer_tenancy_dir = user_dir + "/tenancies/" + prefix
@@ -417,7 +461,7 @@ try:
 except Exception as e:
     print(e)
     print('Check if input properties exist and try again..exiting...')
-    exit()
+    exit(1)
 
 
 if not os.path.exists(customer_tenancy_dir):
@@ -426,7 +470,10 @@ if not os.path.exists(config_files):
     os.makedirs(config_files)
 dir_values = []
 
-# 1. Move outdir_structure_file
+# Copy input properties file to customer_tenancy_dir
+shutil.copy(args.propsfile,config_files+"/"+prefix+"_"+args.propsfile)
+
+# 1. Copy outdir_structure_file
 _outdir_structure_file = ''
 if (outdir_structure_file != '' and outdir_structure_file != "\n"):
     if not os.path.isfile(outdir_structure_file):
@@ -512,7 +559,16 @@ tenancy_id=tenancy
 ## Authenticate
 ct = commonTools()
 config, signer = ct.authenticate(auth_mechanism, config_file_path)
-ct.get_subscribedregions(config,signer)
+try:
+    ct.get_subscribedregions(config,signer)
+except Exception as e:
+    print(str(e))
+    f = open(safe_file, "a")
+    data = prefix + "\t" + "FAIL\t" + current_time + "\n"
+    f.write(data)
+    f.close()
+    exit(1)
+
 home_region = ct.home_region
 
 ## Fetch OCI_regions
@@ -579,7 +635,7 @@ if remote_state == "yes":
 
                 create_customer_secret_key_response = identity_client.create_customer_secret_key(create_customer_secret_key_details=oci.identity.models.CreateCustomerSecretKeyDetails(display_name=cred_name),user_id=remote_state_user).data
                 credential_file_data="[default]\naws_access_key_id="+str(create_customer_secret_key_response.id)+"\naws_secret_access_key="+create_customer_secret_key_response.key+"\n"
-            # If S3 Crednetials file exists
+            # If S3 Crednetials file exists, check if it's the same key
             elif os.path.exists(s3_credential_file_path):
                 text = "aws_access_key_id="+customer_secret_key_id+""
                 f = open(f"{s3_credential_file_path}", "r")
@@ -614,7 +670,8 @@ if remote_state == "yes":
             credential_file_data = "[default]\naws_access_key_id=" + str(create_customer_secret_key_response.id) + "\naws_secret_access_key=" + create_customer_secret_key_response.key + "\n"
 
     except Exception as e:
-        print(e)
+        print(str(e))
+        exit(1)
         # Add code to ask domain name/url and generate creds
 
     if credential_file_data!='':
@@ -898,6 +955,11 @@ print("\nThe toolkit has been setup successfully. !!!\n")
 #print("\nPlease use "+prefix+"_setUpOCI.properties file at "+customer_tenancy_dir +" to proceed with the execution of the SetUpOCI script !!!!")
 #print("Update the path of CD3 Excel input file in "+customer_tenancy_dir + "/" +prefix+"_setUpOCI.properties before executing the next command......")
 #print("\nCommands to execute: (Alternately, you may also check the cmds.log in outdir for the same information)")
+f = open(safe_file, "a")
+data=prefix + "\t" + "SUCCESS\t"+current_time+"\n"
+f.write(data)
+f.close()
+
 logging.info("Customer Specific Working Directory Path: "+customer_tenancy_dir+"\n")
 
 if remote_state == 'yes':
