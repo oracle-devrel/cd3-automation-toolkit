@@ -57,7 +57,7 @@ Modifying the Networking components using Automation Toolkit involves three simp
  - Running the the setUpOCI pipeline in the toolkit to generate auto.tfvars.
  - Executing Terraform pipeline to provision/modify the resources in OCI.
 
- ***Note***: Follow [these steps](modify-security-rules-route-rules-and-drg-route-rules) to modify Security Rules, Route Rules and DRG Route Rules
+ ***Note***: Follow [these steps](#modify-security-rules-route-rules-and-drg-route-rules) to modify Security Rules, Route Rules and DRG Route Rules
 
 _Steps in detail_:
 1. Modify your excel sheet to update required data in the Tabs - VCNs, DRGs, VCN Info, DHCP and Subnets.
