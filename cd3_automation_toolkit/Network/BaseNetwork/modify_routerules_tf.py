@@ -22,12 +22,8 @@ from jinja2 import Environment, FileSystemLoader
 # ######
 
 # Execution of the code begins here for drg route table
-def modify_terraform_drg_routerules(inputfile, outdir, service_dir,prefix=None, non_gf_tenancy=False, config=DEFAULT_LOCATION):
+def modify_terraform_drg_routerules(inputfile, outdir, service_dir,prefix, ct, non_gf_tenancy):
     filename = inputfile
-    configFileName = config
-
-    ct = commonTools()
-    ct.get_subscribedregions(configFileName)
 
     #Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
@@ -246,12 +242,8 @@ def modify_terraform_drg_routerules(inputfile, outdir, service_dir,prefix=None, 
             oname_rt.write(tempSkeletonDRGRouteRule[reg])
             oname_rt.close()
 # Execution of the code begins here for route rule modification
-def modify_terraform_routerules(inputfile, outdir, service_dir,prefix=None, non_gf_tenancy=False, config=DEFAULT_LOCATION):
+def modify_terraform_routerules(inputfile, outdir, service_dir,prefix, ct, non_gf_tenancy):
     filename = inputfile
-    configFileName = config
-
-    ct = commonTools()
-    ct.get_subscribedregions(configFileName)
 
     #Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')

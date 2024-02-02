@@ -732,7 +732,6 @@ variable "instances" {
     platform_config                            = optional(list(map(any)))
     launch_options                             = optional(list(map(any)))
     ipxe_script                                = optional(string)
-    firmware                                   = optional(string)
     preserve_boot_volume                       = optional(bool)
     vlan_id                                    = optional(string)
     kms_key_id                                 = optional(string)
@@ -1066,7 +1065,6 @@ variable "lbr_reserved_ips" {
     lifetime          = string
     private_ip_id     = optional(string)
     public_ip_pool_id = optional(string)
-    lifetime          = optional(string)
     defined_tags      = optional(map(any))
     freeform_tags     = optional(map(any))
   }))
@@ -1402,6 +1400,7 @@ variable "clusters" {
     pods_cidr                       = optional(string)
     services_cidr                   = optional(string)
     service_lb_subnet_ids           = optional(list(string))
+    cluster_kms_key_id              = optional(string)
     defined_tags                    = optional(map(any))
     freeform_tags                   = optional(map(any))
   }))
@@ -1433,6 +1432,7 @@ variable "nodepools" {
     source_type                         = string
     boot_volume_size_in_gbs             = optional(number)
     ssh_public_key                      = optional(string)
+    nodepool_kms_key_id                 = optional(string)
     node_defined_tags                   = optional(map(any))
     node_freeform_tags                  = optional(map(any))
     nodepool_defined_tags               = optional(map(any))

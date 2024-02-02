@@ -1,7 +1,9 @@
 #Region:Region_Key
+saltlake:us-saltlake-2
 amsterdam:eu-amsterdam-1
 stockholm:eu-stockholm-1
 abudhabi:me-abudhabi-1
+bogota:sa-bogota-1
 mumbai:ap-mumbai-1
 paris:eu-paris-1
 cardiff:uk-cardiff-1
@@ -29,6 +31,7 @@ santiago:sa-santiago-1
 singapore:ap-singapore-1
 sanjose:us-sanjose-1
 sydney:ap-sydney-1
+valparaiso:sa-valparaiso-1
 vinhedo:sa-vinhedo-1
 chuncheon:ap-chuncheon-1
 montreal:ca-montreal-1

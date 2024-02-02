@@ -16,14 +16,11 @@ from commonTools import *
 # Required Inputs- CD3 excel file, Config file, prefix AND outdir
 ######
 # Execution of the code begins here
-def create_terraform_dns_resolvers(inputfile, outdir, service_dir, prefix, config=DEFAULT_LOCATION):
+def create_terraform_dns_resolvers(inputfile, outdir, service_dir, prefix, ct):
     filename = inputfile
-    configFileName = config
     sheetName = "DNS-Resolvers"
     auto_tfvars_filename = prefix + "_"+sheetName.lower()+".auto.tfvars"
     no_strip_columns = ["Display Name"]
-    ct = commonTools()
-    ct.get_subscribedregions(configFileName)
 
     outfile = {}
     oname = {}
@@ -221,7 +218,7 @@ def create_terraform_dns_resolvers(inputfile, outdir, service_dir, prefix, confi
             print(
                 "\nRegion, Compartment Name, VCN Name fields are mandatory. Please enter a value and try again !!")
             print("\n** Exiting **")
-            exit()
+            exit(1)
 
         # set key for template items
         vcn_name = str(df["VCN Name"][i])

@@ -19,14 +19,11 @@ from commonTools import *
 # Required Inputs- CD3 excel file, Config file, prefix AND outdir
 ######
 # Execution of the code begins here
-def create_terraform_exa_infra(inputfile, outdir, service_dir, prefix, config=DEFAULT_LOCATION):
+def create_terraform_exa_infra(inputfile, outdir, service_dir, prefix, ct):
     filename = inputfile
-    configFileName = config
 
     sheetName = "EXA-Infra"
     auto_tfvars_filename = '_' + sheetName.lower() + '.auto.tfvars'
-    ct = commonTools()
-    ct.get_subscribedregions(configFileName)
 
     outfile = {}
     oname = {}
@@ -85,7 +82,7 @@ def create_terraform_exa_infra(inputfile, outdir, service_dir, prefix, config=DE
                 str(df.loc[i, 'Availability Domain(AD1|AD2|AD3)']).lower() == 'nan' or \
                 str(df.loc[i, 'Shape']).lower() == 'nan':
             print("\nRegion, Compartment Name, Availability Domain(AD1|AD2|AD3), Shape are mandatory fields. Please enter a value and try again.......Exiting!!")
-            exit()
+            exit(1)
 
         #tempdict = {'oracle_db_software_edition' : 'ENTERPRISE_EDITION_EXTREME_PERFORMANCE'}
 

@@ -18,19 +18,15 @@ from commonTools import *
 # Required Inputs- Config file, prefix AND outdir
 ######
 # Execution of the code begins here
-def create_cis_keyvault(outdir, service_dir, service_dir_iam, prefix, region_name, comp_name, config=DEFAULT_LOCATION):
+def create_cis_keyvault(outdir, service_dir, service_dir_iam, prefix, ct, region_name, comp_name):
 
     # Declare variables
-    configFileName = config
     region_name = region_name.strip().lower()
     comp_name = comp_name.strip()
 
-    ct = commonTools()
-    ct.get_subscribedregions(configFileName)
-
     if region_name not in ct.all_regions:
         print("Invalid Region!! Tenancy is not subscribed to this region. Please try again")
-        exit()
+        exit(1)
 
 
     # Load the template file

@@ -134,7 +134,7 @@ def print_nlb_backendset_backendserver(region, ct, values_for_column_bss,NLBs, n
     return values_for_column_bss
 
 
-def print_nlb_listener(region, ct, values_for_column_lis, NLBs, nlb_compartment_name,vcn):
+def print_nlb_listener(region, outdir, values_for_column_lis, NLBs, nlb_compartment_name,vcn):
     for eachnlb in NLBs.data:
 
         # Filter out the NLBs provisioned by oke
@@ -255,15 +255,13 @@ def print_nlb_listener(region, ct, values_for_column_lis, NLBs, nlb_compartment_
     return values_for_column_lis
 
 # Execution of the code begins here
-def export_nlb(inputfile, _outdir, service_dir, export_compartments, export_regions, _config,ct):
+def export_nlb(inputfile, outdir, service_dir, config,signer, ct, export_compartments, export_regions):
     global tf_import_cmd
     global sheet_dict
     global importCommands
-    global config
     global values_for_vcninfo
     global cd3file
     global reg
-    global outdir
     global values_for_column_bss
     global values_for_column_lis
     global sheet_dict_bss
@@ -274,14 +272,6 @@ def export_nlb(inputfile, _outdir, service_dir, export_compartments, export_regi
     if ('.xls' not in cd3file):
         print("\nAcceptable cd3 format: .xlsx")
         exit()
-
-    outdir = _outdir
-    configFileName = _config
-    config = oci.config.from_file(file_location=configFileName)
-    if ct==None:
-        ct = commonTools()
-        ct.get_subscribedregions(configFileName)
-        ct.get_network_compartment_ids(config['tenancy'],"root",configFileName)
 
     # Read CD3
     df, values_for_column_bss = commonTools.read_cd3(cd3file, "NLB-BackendSets-BackendServers")
@@ -311,9 +301,9 @@ def export_nlb(inputfile, _outdir, service_dir, export_compartments, export_regi
     for reg in export_regions:
         importCommands[reg].write("\n\n######### Writing import for Network Load Balancer Objects #########\n\n")
         config.__setitem__("region", ct.region_dict[reg])
-        nlb = NetworkLoadBalancerClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
-        vcn = VirtualNetworkClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
-        cmpt = ComputeClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
+        nlb = NetworkLoadBalancerClient(config=config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
+        vcn = VirtualNetworkClient(config=config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
+        cmpt = ComputeClient(config=config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
 
         region = reg.capitalize()
 
@@ -322,7 +312,7 @@ def export_nlb(inputfile, _outdir, service_dir, export_compartments, export_regi
                 NLBs = oci.pagination.list_call_get_all_results(nlb.list_network_load_balancers,compartment_id=ct.ntk_compartment_ids[compartment_name],
                                                                 lifecycle_state="ACTIVE")
 
-                values_for_column_lis = print_nlb_listener(region, ct, values_for_column_lis,NLBs,compartment_name,vcn)
+                values_for_column_lis = print_nlb_listener(region, outdir, values_for_column_lis,NLBs,compartment_name,vcn)
                 values_for_column_bss = print_nlb_backendset_backendserver(region, ct, values_for_column_bss,NLBs,compartment_name,cmpt,vcn,nlb)
 
     commonTools.write_to_cd3(values_for_column_lis, cd3file, "NLB-Listeners")

@@ -25,7 +25,7 @@ from commonTools import *
 # Outdir
 ######
 # Execution of the code begins here
-def create_terraform_dhcp_options(inputfile, outdir, service_dir, prefix, non_gf_tenancy, config, modify_network=False):
+def create_terraform_dhcp_options(inputfile, outdir, service_dir, prefix, ct, non_gf_tenancy, modify_network=False):
     outfile = {}
     deffile = {}
     oname = {}
@@ -35,11 +35,7 @@ def create_terraform_dhcp_options(inputfile, outdir, service_dir, prefix, non_gf
     defStr = {}
 
     filename = inputfile
-    configFileName = config
     modify_network = str(modify_network).lower()
-
-    ct = commonTools()
-    ct.get_subscribedregions(configFileName)
 
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')

@@ -149,14 +149,12 @@ def print_buckets(region, outdir, service_dir, bucket_data, values_for_column, n
 # Required Inputs- CD3 excel file, Config file, prefix AND outdir
 ######
 # Execution of the code begins here
-def export_buckets(inputfile, _outdir, service_dir, ct, _config=DEFAULT_LOCATION, export_compartments=[],export_regions=[]):
+def export_buckets(inputfile, outdir, service_dir, config, signer, ct, export_compartments=[],export_regions=[]):
     global tf_import_cmd
     global sheet_dict
     global importCommands
-    global config
     global cd3file
     global reg
-    global outdir
     global values_for_column
 
     cd3file = inputfile
@@ -165,15 +163,7 @@ def export_buckets(inputfile, _outdir, service_dir, ct, _config=DEFAULT_LOCATION
         exit()
 
     # Declare variables
-    configFileName = _config
-    outdir = _outdir
-    config = oci.config.from_file(file_location=configFileName)
-
     sheetName = "Buckets"
-    if ct==None:
-        ct = commonTools()
-        ct.get_subscribedregions(configFileName)
-        ct.get_network_compartment_ids(config['tenancy'], "root", configFileName)
 
     # Read CD3
     df, values_for_column = commonTools.read_cd3(cd3file, sheetName)
@@ -205,7 +195,7 @@ def export_buckets(inputfile, _outdir, service_dir, ct, _config=DEFAULT_LOCATION
         importCommands[reg].write("\n\n######### Writing import for Buckets #########\n\n")
         config.__setitem__("region", ct.region_dict[reg])
         region = reg.capitalize()
-        buckets_client = ObjectStorageClient(config, retry_strategy = oci.retry.DEFAULT_RETRY_STRATEGY)
+        buckets_client = ObjectStorageClient(config=config, retry_strategy = oci.retry.DEFAULT_RETRY_STRATEGY, signer=signer)
         namespace = buckets_client.get_namespace().data
         namespace_name = namespace
         for ntk_compartment_name in export_compartments:

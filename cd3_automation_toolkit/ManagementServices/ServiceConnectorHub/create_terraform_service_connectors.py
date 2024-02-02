@@ -16,16 +16,13 @@ from commonTools import *
 from jinja2 import Environment, FileSystemLoader
 
 # Execution of the code begins here
-def create_service_connectors(inputfile, outdir, service_dir, prefix, config):
+def create_service_connectors(inputfile, outdir, service_dir, prefix, ct):
     tfStr = {}
 
     filename = inputfile
-    configFileName = config
 
     sheetName = "ServiceConnectors"
     auto_tfvars_filename = prefix + '_' + sheetName.lower() + '.auto.tfvars'
-    ct = commonTools()
-    ct.get_subscribedregions(configFileName)
 
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')

@@ -25,13 +25,9 @@ from commonTools import *
 # prefix
 ######
 # Code execution starts here
-def create_major_objects(inputfile, outdir, service_dir, prefix, non_gf_tenancy, config, modify_network=False):
+def create_major_objects(inputfile, outdir, service_dir, prefix, ct, non_gf_tenancy, modify_network=False):
     # Declare Variables
     filename = inputfile
-    configFileName = config
-
-    ct = commonTools()
-    ct.get_subscribedregions(configFileName)
 
     outfile = {}
     oname = {}
@@ -110,13 +106,10 @@ def create_major_objects(inputfile, outdir, service_dir, prefix, non_gf_tenancy,
                     f.write(updated_data)
                 f.close()
 
-    def create_drg_and_attachments(inputfile, outdir, config):
+    def create_drg_and_attachments(inputfile, outdir):
         # Declare Variables
         filename = inputfile
-        configFileName = config
 
-        ct = commonTools()
-        ct.get_subscribedregions(configFileName)
         drg_attach_skeleton = ''
         drgstr_skeleton = ''
 
@@ -201,10 +194,10 @@ def create_major_objects(inputfile, outdir, service_dir, prefix, non_gf_tenancy,
                         try:
                             if (vcn_name.lower() != "nan" and vcns.vcns_having_drg[vcn_name,region] != drg):
                                 print("ERROR!!! VCN "+vcn_name +" in column Attached To is not as per DRG Required column of VCNs Tab..Exiting!")
-                                exit()
+                                exit(1)
                         except KeyError:
                             print("ERROR!!! VCN "+vcn_name+" in column Attached To is not as per VCN Name column of VCNs Tab..Exiting!")
-                            exit()
+                            exit(1)
 
         # Process Rows
         ip=1
@@ -617,7 +610,7 @@ def create_major_objects(inputfile, outdir, service_dir, prefix, non_gf_tenancy,
 
         processVCN(tempStr)
 
-    create_drg_and_attachments(inputfile, outdir, config)
+    create_drg_and_attachments(inputfile, outdir)
 
     #Write outfiles
     for reg in ct.all_regions:

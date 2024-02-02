@@ -1,4 +1,4 @@
-# Managing Compute Instances for Non-Greenfield tenancies
+# Exporting Compute Instances from OCI
 
 Follow the below steps to export OCI compute Instances to CD3 Excel file and create the terraform state:
 
@@ -25,7 +25,14 @@ Follow the below steps to export OCI compute Instances to CD3 Excel file and cre
 10. The associated ssh public keys are placed under variables_<region>.tf under the "instance_ssh_keys" variable.
 11. While export of instances, it will fetch details for only the primary VNIC attached to the instance.
 12. Execute the .sh file ( *sh tf_import_commands_instances_nonGF.sh*) to generate terraform state file.
+13. Please [read](/cd3_automation_toolkit/documentation/user_guide/KnownBehaviour.md#8) the known behaviour of toolkit for export of instances having multiple plugins.
 
-    
+<br><br>
+<div align='center'>
+
+| <a href="/cd3_automation_toolkit/documentation/user_guide/NetworkingScenariosNGF.md">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/Workflows-jenkins.md">Next :arrow_forward:</a> |
+| :---- | -------: |
+  
+</div>
 
 

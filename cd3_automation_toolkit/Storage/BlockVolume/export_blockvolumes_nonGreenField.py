@@ -128,15 +128,13 @@ def print_blockvolumes(region, BVOLS, bvol, compute, ct, values_for_column, ntk_
                 values_for_column = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict, values_for_column)
 
 # Execution of the code begins here
-def export_blockvolumes(inputfile, _outdir, service_dir, _config, ct, export_compartments=[], export_regions=[], display_names = [], ad_names = []):
+def export_blockvolumes(inputfile, outdir, service_dir, config, signer, ct, export_compartments=[], export_regions=[], display_names = [], ad_names = []):
     global tf_import_cmd
     global sheet_dict
     global importCommands
-    global config
     global values_for_vcninfo
     global cd3file
     global reg
-    global outdir
     global values_for_column
 
     cd3file = inputfile
@@ -144,17 +142,7 @@ def export_blockvolumes(inputfile, _outdir, service_dir, _config, ct, export_com
         print("\nAcceptable cd3 format: .xlsx")
         exit()
 
-
-    outdir = _outdir
-    configFileName = _config
-    config = oci.config.from_file(file_location=configFileName)
-
     sheetName = "BlockVolumes"
-    if ct==None:
-        ct = commonTools()
-        ct.get_subscribedregions(configFileName)
-        ct.get_network_compartment_ids(config['tenancy'],"root",configFileName)
-
     # Read CD3
     df, values_for_column= commonTools.read_cd3(cd3file,sheetName)
 
@@ -183,8 +171,8 @@ def export_blockvolumes(inputfile, _outdir, service_dir, _config, ct, export_com
         importCommands[reg].write("\n\n######### Writing import for Block Volumes #########\n\n")
         config.__setitem__("region", ct.region_dict[reg])
         region = reg.capitalize()
-        compute = ComputeClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
-        bvol = BlockstorageClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
+        compute = ComputeClient(config=config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
+        bvol = BlockstorageClient(config=config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
 
         for ntk_compartment_name in export_compartments:
                 BVOLS = oci.pagination.list_call_get_all_results(bvol.list_volumes,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name],lifecycle_state="AVAILABLE")

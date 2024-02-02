@@ -15,14 +15,10 @@ from commonTools import *
 # Required Inputs- CD3 excel file, Config file, prefix AND outdir
 ######
 # Execution of the code begins here
-def create_terraform_dns_zones(inputfile, outdir, service_dir, prefix, config=DEFAULT_LOCATION):
+def create_terraform_dns_zones(inputfile, outdir, service_dir, prefix, ct):
     filename = inputfile
-    configFileName = config
     sheetName = "DNS-Views-Zones-Records"
     auto_tfvars_filename = prefix + "_"+sheetName.lower()+".auto.tfvars"
-
-    ct = commonTools()
-    ct.get_subscribedregions(configFileName)
 
     outfile = {}
     oname = {}
@@ -77,7 +73,7 @@ def create_terraform_dns_zones(inputfile, outdir, service_dir, prefix, config=DE
             print(
                 "\nRegion, Compartment Name, View Name fields are mandatory. Please enter a value and try again !!")
             print("\n** Exiting **")
-            exit()
+            exit(1)
 
         # set key for template items
         view_name = str(df["View Name"][i]).strip()

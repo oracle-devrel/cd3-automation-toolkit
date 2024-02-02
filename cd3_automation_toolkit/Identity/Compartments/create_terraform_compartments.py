@@ -20,10 +20,9 @@ import oci
 # Required Inputs-CD3 excel file, Config file, prefix AND outdir
 ######
 # Execution of the code begins here
-def create_terraform_compartments(inputfile, outdir, service_dir, prefix, config=DEFAULT_LOCATION):
+def create_terraform_compartments(inputfile, outdir, service_dir, prefix, ct):
     # Declare variables
     filename = inputfile
-    configFileName = config
 
     sheetName = 'Compartments'
     auto_tfvars_filename = '_'+sheetName.lower()+'.auto.tfvars'
@@ -46,10 +45,6 @@ def create_terraform_compartments(inputfile, outdir, service_dir, prefix, config
     # List of the column headers
     dfcolumns = df.columns.values.tolist()
 
-    ct = commonTools()
-    ct.get_subscribedregions(configFileName)
-    #config = oci.config.from_file(file_location=configFileName)
-    #ct.get_network_compartment_ids(config['tenancy'], "root", configFileName)
     home_region = ct.home_region
 
     srcdir = outdir + "/" + home_region + "/" + service_dir + "/"
@@ -110,7 +105,7 @@ def create_terraform_compartments(inputfile, outdir, service_dir, prefix, config
         # Check if values are entered for mandatory fields
         if str(df.loc[i, 'Region']).lower() == 'nan' or str(df.loc[i, 'Name']).lower() == 'nan':
             print("\nThe values for Region and Name cannot be left empty. Please enter a value and try again !!")
-            exit()
+            exit(1)
 
         var_c_name = ""
         nf=0

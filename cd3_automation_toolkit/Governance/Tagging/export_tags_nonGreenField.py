@@ -95,18 +95,15 @@ def  print_tags(values_for_column_tags,region, ntk_compartment_name, tag, tag_ke
                 importCommands[region].write("\nterraform import \"module.tag-defaults[\\\""+ tf_name_namespace+'_' +tf_name_key + '_' +commonTools.check_tf_variable(value.split("=")[0]).strip()+ '-default'+ '\\\"].oci_identity_tag_default.tag_default\" ' + str(defaultcomp_to_tagid_map[tf_name_key+"-"+commonTools.check_tf_variable(value.split("=")[0])]))
 
 # Execution of the code begins here
-def export_tags_nongreenfield(inputfile, outdir, service_dir, _config, export_compartments,ct):
+def export_tags_nongreenfield(inputfile, outdir, service_dir, config, signer, ct, export_compartments):
     global tf_import_cmd
     global values_for_column_tags
     global sheet_dict_tags
     global importCommands
-    global config
     global tag_default_comps_map
     global defaultcomp_to_tagid_map
 
     cd3file = inputfile
-    configFileName = _config
-    config = oci.config.from_file(file_location=configFileName)
 
     if ('.xls' not in cd3file):
         print("\nAcceptable cd3 format: .xlsx")
@@ -114,10 +111,6 @@ def export_tags_nongreenfield(inputfile, outdir, service_dir, _config, export_co
 
     # Read CD3
     df, values_for_column_tags = commonTools.read_cd3(cd3file, "Tags")
-    if ct==None:
-        ct = commonTools()
-        ct.get_subscribedregions(configFileName)
-        ct.get_network_compartment_ids(config['tenancy'],"root",configFileName)
 
     tag_default_comps_map = {}
     tag_name_id_map = {}
@@ -142,7 +135,7 @@ def export_tags_nongreenfield(inputfile, outdir, service_dir, _config, export_co
     print("\nFetching Tags...")
     importCommands[ct.home_region].write("\n\n######### Writing import for Tags #########\n\n")
     config.__setitem__("region", ct.region_dict[ct.home_region])
-    identity = IdentityClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
+    identity = IdentityClient(config=config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
     region = ct.home_region.lower()
     comp_ocid_done = []
 

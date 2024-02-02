@@ -1,17 +1,36 @@
-# Green Field Tenancies
-
-## Detailed Steps
-Below are the steps that will help to configure the Automation Tool Kit to support the Green Field Tenancies:
+# Create resources in OCI (Greenfield Workflow)
 
 **Step 1**: 
-<br>Choose the appropriate CD3 Excel sheet template from [Excel Templates](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md#excel-sheet-templates)
+<br>Choose the appropriate Excel sheet template from [Excel Templates](/cd3_automation_toolkit/documentation/user_guide/ExcelTemplates.md)
 
 **Step 2**:
-<br>Fill the CD3 Excel with appropriate values specific to the client and put at the appropriate location.
-<br>Modify/Review [setUpOCI.properties](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md#setupociproperties) with **non_gf_tenancy** set to **false** as shown below:
+<br>Fill the Excel with appropriate values and put at the appropriate location.
+<br>Modify/Review _/cd3user/tenancies/<customer\_name>/<customer\_name>\_setUpOCI.properties_ with **workflow_type** set to **create_resources** as shown below:
+```ini
+#Input variables required to run setUpOCI script
 
-![image](https://user-images.githubusercontent.com/103508105/221797142-c780dbd6-883f-450f-9929-dce81d32079e.png)
+#path to output directory where terraform file will be generated. eg /cd3user/tenancies/<customer_name>/terraform_files
+outdir=/cd3user/tenancies/demotenancy/terraform_files/
 
+#prefix for output terraform files eg <customer_name> like demotenancy
+prefix=demotenancy
+
+# auth mechanism for OCI APIs - api_key,instance_principal,session_token
+auth_mechanism=api_key
+
+#input config file for Python API communication with OCI eg /cd3user/tenancies/<customer_name>/.config_files/<customer_name>_config;
+config_file=/cd3user/tenancies/demotenancy/.config_files/demotenancy_oci_config
+
+# Leave it blank if you want single outdir or specify outdir_structure_file.properties containing directory structure for OCI services.
+outdir_structure_file=/cd3user/tenancies/demotenancy/demotenancy_outdir_structure_file.properties
+
+#path to cd3 excel eg /cd3user/tenancies/<customer_name>/CD3-Customer.xlsx
+cd3file=/cd3user/tenancies/demotenancy/CD3-Blank-template.xlsx
+
+#specify create_resources to create new resources in OCI(greenfield workflow)
+#specify export_resources to export resources from OCI(non-greenfield workflow)
+workflow_type=create_resources
+```
 
 **Step 3**:
 <br>Execute the SetUpOCI.py script to start creating the terraform configuration files.
@@ -57,7 +76,7 @@ Follow the below steps to quickly provision a compartment on OCI.
    
 2. Edit the _setUpOCI.properties_ at location:_/cd3user/tenancies /<customer\_name>/<customer\_name>\_setUpOCI.properties_ with appropriate values. 
    - Update the _cd3file_ parameter to specify the CD3 excel sheet path.
-   - Set the _non_gf_tenancy_ parameter value to _false_. (for Greenfield Workflow.)
+   - Set the _workflow_type_ parameter value to _create_resources_. (for Greenfield Workflow.)
   
 3. Change Directory to 'cd3_automation_toolkit' :
     ```cd /cd3user/oci_tools/cd3_automation_toolkit/```
@@ -66,7 +85,7 @@ Follow the below steps to quickly provision a compartment on OCI.
    
    ```python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties```
    
-4. Choose option to create compartments under 'Identity' from the displayed menu. Once the execution is successful, _<customer\_name>\_compartments.auto.tfvars_ file will be generated under the folder _/cd3user/tenancies/<customer\_name>/terraform_files/<region_dir>_
+4. Choose option to create compartments under 'Identity' from the displayed menu. Once the execution is successful, _<customer\_name>\_compartments.auto.tfvars_ file will be generated under the folder _/cd3user/tenancies/<customer\_name>/terraform_files/<region_dir>/<service_dir>_
     
    Navigate to the above path and execute the terraform commands:<br>
        <br>_terraform init_
@@ -80,7 +99,7 @@ Follow the below steps to quickly provision a compartment on OCI.
  <br><br>
 <div align='center'>
 
-| <a href="/cd3_automation_toolkit/documentation/user_guide/Workflows.md">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/NetworkingScenariosGF.md">Next :arrow_forward:</a> |
+| <a href="/cd3_automation_toolkit/documentation/user_guide/Workflows.md">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/learn_more/OPAForCompliance.md">Next :arrow_forward:</a> |
 | :---- | -------: |
   
 </div>

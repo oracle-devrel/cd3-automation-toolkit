@@ -573,7 +573,10 @@ Note -
 ![image](https://user-images.githubusercontent.com/115973871/216242750-d84a79bf-5799-4e51-ba40-ca82a00d04aa.png)
 
 - Also, When the target kind is **'notifications'** the value for formatted messages parameter is set to **'true'** as default. Its set to **'false'** only when the source is 'streaming'.
+  
+- After executing tf_import_commands during export of service connectors, the terraform plan will show log-sources ordering as changes and it rearranges the order for log-sources for that service connector if source/target kind is logging. This can be ignored and you can proceed with terraform apply.
 
+ ![image](https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103548537/1005724e-ac03-4b45-8e3d-480c8826d065)
 
 ## OKE Tab
 
@@ -678,6 +681,7 @@ Below TF file is created:
 Use this tab to create OCVS in your tenancy. 
 
 >Note:
+>As of now the toolkit supports single cluster SDDC.
 The column "SSH Key Var Name" accepts SSH key value directly or the name of variable declared in *variables.tf* under the  **sddc_ssh_keys** variable containing the key value. Make sure to have an entry in variables_\<region>.tf file with the name you enter in SSH Key Var Name field of the Excel sheet and put the value as SSH key value.
 
 >For Eg: If you enter the SSH Key Var Name as **ssh_public_key**, make an entry in variables_\<region>.tf file as shown below:

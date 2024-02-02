@@ -21,17 +21,13 @@ from commonTools import *
 # prefix
 ######
 
-def create_default_routetable(inputfile, outdir, service_dir, prefix, non_gf_tenancy, config, modify_network):
+def create_default_routetable(inputfile, outdir, service_dir, prefix, ct, non_gf_tenancy, modify_network):
 
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
 
     filename = inputfile
-    configFileName = config
     vcnsheetName = "VCNs"
-
-    ct = commonTools()
-    ct.get_subscribedregions(configFileName)
 
     default_routetable_auto_tfvars_filename = "_default-routetables.auto.tfvars"
 
@@ -204,17 +200,13 @@ def create_default_routetable(inputfile, outdir, service_dir, prefix, non_gf_ten
             oname.close()
             print(default_outfile + " for default route tables has been created for region " + reg)
 
-def create_default_seclist(inputfile, outdir, service_dir, prefix, non_gf_tenancy, config, modify_network):
+def create_default_seclist(inputfile, outdir, service_dir, prefix, ct, non_gf_tenancy, modify_network):
 
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True, trim_blocks=True, lstrip_blocks=True)
 
     filename = inputfile
-    configFileName = config
     vcnsheetName = "VCNs"
-
-    ct = commonTools()
-    ct.get_subscribedregions(configFileName)
 
     # seclist templates
     default_seclist = env.get_template('default-seclist-template')
@@ -405,7 +397,7 @@ def create_default_seclist(inputfile, outdir, service_dir, prefix, non_gf_tenanc
             print(default_outfile + " for default seclist has been created for region " + reg)
 
 # Code execution starts here
-def create_terraform_defaults(inputfile, outdir, service_dir, prefix, non_gf_tenancy, config, modify_network):
+def create_terraform_defaults(inputfile, outdir, service_dir, prefix, ct, non_gf_tenancy, modify_network):
 
-    create_default_seclist(inputfile, outdir, service_dir, prefix, non_gf_tenancy, config, modify_network)
-    create_default_routetable(inputfile, outdir, service_dir, prefix, non_gf_tenancy, config, modify_network)
+    create_default_seclist(inputfile, outdir, service_dir, prefix, ct, non_gf_tenancy, modify_network)
+    create_default_routetable(inputfile, outdir, service_dir, prefix, ct, non_gf_tenancy, modify_network)

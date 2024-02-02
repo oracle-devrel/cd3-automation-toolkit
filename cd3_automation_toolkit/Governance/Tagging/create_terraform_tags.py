@@ -21,12 +21,8 @@ from jinja2 import Environment, FileSystemLoader
 # Required Inputs-CD3 excel file, Config file AND outdir
 ######
 # Execution of the code begins here
-def create_terraform_tags(inputfile, outdir, service_dir, prefix, config):
+def create_terraform_tags(inputfile, outdir, service_dir, prefix, ct):
     filename = inputfile
-    configFileName = config
-
-    ct = commonTools()
-    ct.get_subscribedregions(configFileName)
 
     sheetName = "Tags"
     # Load the template file
@@ -211,11 +207,11 @@ def create_terraform_tags(inputfile, outdir, service_dir, prefix, config):
                                 if '$' not in str(default_value):
                                     if str(default_value) not in values_list and str(default_value) != "nan" and str(default_value) != "":
                                         print("\nERROR!! Value - "+str(default_value)+" in Default Tag Value is not present in Column Validator...Exiting!")
-                                        exit()
+                                        exit(1)
                                 else:
                                     if '$'+str(default_value) not in values_list:
                                         print("\nERROR!! Value - "+str(default_value)+" in Default Tag Value is not present in Column Validator...Exiting!")
-                                        exit()
+                                        exit(1)
 
                             if default_value != "" and str(default_value).lower() != "nan":
                                 if '$' in default_value and default_value.count('$') == 1:

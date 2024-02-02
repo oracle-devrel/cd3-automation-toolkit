@@ -88,6 +88,11 @@ variable "service_lb_subnet_ids" {
   default     = []
 }
 
+variable "kms_key_id" {
+  type    = string
+  default = null
+}
+
 variable "defined_tags" {
   type = map(any)
   default = { "Oracle-Tags.CreatedOn" = "$${oci.datetime}",

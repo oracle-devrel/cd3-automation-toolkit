@@ -16,14 +16,12 @@ from jinja2 import Environment, FileSystemLoader
 
 
 # Execution of the code begins here
-def create_terraform_alarms(inputfile, outdir, service_dir, prefix, config=DEFAULT_LOCATION):
+def create_terraform_alarms(inputfile, outdir, service_dir, prefix, ct):
     filename = inputfile
-    configFileName = config
 
     sheetName = 'Alarms'
     auto_tfvars_filename = '_' + sheetName.lower() + '.auto.tfvars'
-    ct = commonTools()
-    ct.get_subscribedregions(configFileName)
+
     x = datetime.datetime.now()
     date = x.strftime("%f").strip()
     tempStr={}
@@ -75,7 +73,7 @@ def create_terraform_alarms(inputfile, outdir, service_dir, prefix, config=DEFAU
         # Check if values are entered for mandatory fields
         if str(df.loc[i, 'Region']).lower() == 'nan' or str(df.loc[i, 'Compartment Name']).lower() == 'nan' or str(df.loc[i, 'Alarm Name']).lower() == 'nan' or str(df.loc[i, 'Destination Topic Name']).lower() == 'nan' or str(df.loc[i, 'Is Enabled']).lower() == 'nan' or str(df.loc[i, 'Metric Compartment Name']).lower() == 'nan' or str(df.loc[i, 'Namespace']).lower() == 'nan' or str(df.loc[i, 'Severity']).lower() == 'nan' or str(df.loc[i, 'Query']).lower() == 'nan':
             print("\nThe values for Region, Compartment, Alarm Name, Destination Topic Name, Is Enabled, Metric Compartment Name, Namespace, Severity and Query cannot be left empty. Please enter a value and try again !!")
-            exit()
+            exit(1)
 
         #metric = str(df.loc[i, 'Metric Name']).strip()
         #interval = str(df.loc[i, 'Interval']).strip()

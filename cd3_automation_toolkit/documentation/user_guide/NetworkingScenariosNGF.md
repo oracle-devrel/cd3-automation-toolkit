@@ -1,6 +1,6 @@
 # Networking Scenarios
 
-## Non-Greenfield Tenancies (Managing Network for Non Green Field Tenancies)
+## Managing Network for Non-Greenfield Workflow
 - [Export Network](#non-greenfield-tenancies)
 - [Add a new or modify the existing networking components](#add-a-new-or-modify-the-existing-networking-components)
 
@@ -14,7 +14,7 @@ Follow the below steps to export the Networking components that includes VCNs, S
 
 1. Use the [CD3-Blank-Template.xlsx](/cd3_automation_toolkit/example) to export the networking resources into the Tabs - VCNs, DRGs, VCN Info, DHCP, Subnets, NSGs, RouteRulesInOCI, SecRulesInOCI,DRGRouteRulesInOCI tabs.
    
-2. Execute the _setupOCI.py_ file with _non_gf_tenancy_ parameter value to _true_:
+2. Execute the _setupOCI.py_ file with _workflow_type_ parameter value to _export_resources_:
    
    ```python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties```
    
@@ -27,7 +27,7 @@ Follow the below steps to export the Networking components that includes VCNs, S
    - Export Network components for SubnetsVLANs Tab
    - Export Network components for NSGs Tab
    
-   Once the execution is successful, networking related .tfvars files and .sh files containing import statements will be generated under the folder _/cd3user/tenancies/<customer\_name>/terraform_files/<region_dir>_
+   Once the execution is successful, networking related .tfvars files and .sh files containing import statements will be generated under the folder _/cd3user/tenancies/<customer\_name>/terraform_files/<region_dir>/<service_dir>_
    
    Also,The RPC related .tfvars and .sh files containing import statements will be generated in global directory which is inside the /cd3user/tenancies/<customer\_name>/terraform_files/ folder. 
 
@@ -55,8 +55,8 @@ Subnets tab:
 
 <br>[Go back to Networking Scenarios](#networking-scenarios)
 ### Add a new or modify the existing networking components
-1. Export the Networking components by following the steps [above](#1-export-network). (Note that here _non\_gf\_tenancy_ flag is set to true)
-2. Follow the [process](/cd3_automation_toolkit/documentation/user_guide/NetworkingScenariosGF.md#modify-network) to add new components such as VCN/DHCP/DRG/IGW/NGW/SGW/LPG/Subnet etc. (Note that here _non\_gf\_tenancy_ flag is set to false)
+1. Export the Networking components by following the steps [above](#export-network). (Note that here _workflow_type_ flag is set to export_resources)
+2. Follow the [process](/cd3_automation_toolkit/documentation/user_guide/NetworkingScenariosGF.md#modify-network) to add new components such as VCN/DHCP/DRG/IGW/NGW/SGW/LPG/Subnet etc. (Note that here _workflow_type_ flag is set to create_resources)
 
 <br>[Go back to Networking Scenarios](#networking-scenarios)
 
@@ -64,7 +64,7 @@ Subnets tab:
 <br><br>
 <div align='center'>
 
-| <a href="/cd3_automation_toolkit/documentation/user_guide/NonGreenField.md">:arrow_backward: Prev</a> | <a href="/README.md#table-of-contents-bookmark">Main Menu :arrow_forward:</a> |
+| <a href="/cd3_automation_toolkit/documentation/user_guide/NonGreenField.md">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/ComputeNGF.md">Next :arrow_forward:</a> |
 | :---- | -------: |
   
 </div>

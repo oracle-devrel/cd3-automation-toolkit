@@ -71,8 +71,8 @@ def adding_columns_values(region, ad, fd, vs, publicip, privateip, os_dname, sha
                                                                            values_for_column_instances)
 
 
-def find_vnic(ins_id, config, compartment_id):
-    compute = oci.core.ComputeClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
+def find_vnic(ins_id, compartment_id):
+    compute = oci.core.ComputeClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
     #for comp in all_compartments:
     net = oci.pagination.list_call_get_all_results(compute.list_vnic_attachments, compartment_id=compartment_id,
                                                        instance_id=ins_id)
@@ -80,11 +80,11 @@ def find_vnic(ins_id, config, compartment_id):
         return net
 
 
-def __get_instances_info(compartment_name, compartment_id, reg_name, config, display_names, ad_names, ct):
+def __get_instances_info(compartment_name, compartment_id, reg_name, display_names, ad_names, ct):
     config.__setitem__("region", ct.region_dict[reg_name])
-    compute = oci.core.ComputeClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
-    network = oci.core.VirtualNetworkClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
-    bc = oci.core.BlockstorageClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
+    compute = oci.core.ComputeClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
+    network = oci.core.VirtualNetworkClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
+    bc = oci.core.BlockstorageClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
     instance_info = oci.pagination.list_call_get_all_results(compute.list_instances, compartment_id=compartment_id)
     # print(instance_info.data)
 
@@ -169,7 +169,7 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, config, dis
                             cpcn = comp_name
 
             # VNIC Details
-            ins_vnic = find_vnic(ins_id, config, compartment_id)
+            ins_vnic = find_vnic(ins_id, compartment_id)
             vnic_info=None
             for lnic in ins_vnic.data:
                 # print(lnic)
@@ -264,17 +264,16 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, config, dis
 
 
 # Execution of the code begins here
-def export_instances(inputfile, outdir, service_dir,config,ct, export_compartments=[], export_regions=[],display_names=[],ad_names=[]):
+def export_instances(inputfile, outdir, service_dir,config1, signer1, ct, export_compartments=[], export_regions=[],display_names=[],ad_names=[]):
     cd3file = inputfile
 
     if ('.xls' not in cd3file):
         print("\nAcceptable cd3 format: .xlsx")
         exit()
 
-    configFileName = config
-    config = oci.config.from_file(file_location=configFileName)
-
-    global instance_keys, user_data_in, os_keys, importCommands, idc, rows, AD, values_for_column_instances, df, sheet_dict_instances  # declaring global variables
+    global instance_keys, user_data_in, os_keys, importCommands, idc, rows, AD, values_for_column_instances, df, sheet_dict_instances, config, signer  # declaring global variables
+    config=config1
+    signer=signer1
 
     instance_keys = {}  # dict name
     os_keys = {}  # os_ocids
@@ -283,11 +282,6 @@ def export_instances(inputfile, outdir, service_dir,config,ct, export_compartmen
     sheetName= "Instances"
     importCommands = {}
     rows = []
-
-    if ct==None:
-        ct = commonTools()
-        ct.get_subscribedregions(configFileName)
-        ct.get_network_compartment_ids(config['tenancy'], "root", configFileName)
 
     AD = lambda ad: "AD1" if ("AD-1" in ad or "ad-1" in ad) else ("AD2" if ("AD-2" in ad or "ad-2" in ad) else ("AD3" if ("AD-3" in ad or "ad-3" in ad) else " NULL"))  # Get shortend AD
 
@@ -313,7 +307,7 @@ def export_instances(inputfile, outdir, service_dir,config,ct, export_compartmen
         importCommands[reg].write("\n\n######### Writing import for Instances #########\n\n")
         config.__setitem__("region", ct.region_dict[reg])
         for ntk_compartment_name in export_compartments:
-           __get_instances_info(ntk_compartment_name, ct.ntk_compartment_ids[ntk_compartment_name], reg, config, display_names, ad_names,ct)
+           __get_instances_info(ntk_compartment_name, ct.ntk_compartment_ids[ntk_compartment_name], reg, display_names, ad_names,ct)
 
     # writing image ocids and SSH keys into variables file
     var_data = {}
@@ -367,7 +361,7 @@ def export_instances(inputfile, outdir, service_dir,config,ct, export_compartmen
 
     # write data into file
     for reg in export_regions:
-        script_file = f'{outdir}/{reg}/{service_dir}/tf_import_commands_instances_nonGF.sh'
+        script_file = f'{outdir}/{reg}/{service_dir}/' + file_name
         with open(script_file, 'a') as importCommands[reg]:
             importCommands[reg].write('\n\nterraform plan\n')
 

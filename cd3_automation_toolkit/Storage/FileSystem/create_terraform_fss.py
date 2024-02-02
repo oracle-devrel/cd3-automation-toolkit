@@ -20,13 +20,11 @@ from jinja2 import Environment, FileSystemLoader
 
 # If input is csv file; convert to excel
 # Execution of the code begins here
-def create_terraform_fss(inputfile, outdir, service_dir, prefix,config=DEFAULT_LOCATION):
+def create_terraform_fss(inputfile, outdir, service_dir, prefix,ct):
     filename = inputfile
-    configFileName = config
 
     sheetName = "FSS"
-    ct = commonTools()
-    ct.get_subscribedregions(configFileName)
+
     auto_tfvars_filename = prefix + '_' + sheetName.lower() + '.auto.tfvars'
 
     # Load the template file
@@ -206,7 +204,7 @@ def create_terraform_fss(inputfile, outdir, service_dir, prefix,config=DEFAULT_L
                         subnet_id = subnets.vcn_subnet_map[key][2]
                     except Exception as e:
                         print("Invalid Subnet Name specified for row " + str(i + 3) + ". It Doesnt exist in Subnets sheet. Exiting!!!")
-                        exit()
+                        exit(1)
 
                 tempdict = {'network_compartment_id': commonTools.check_tf_variable(network_compartment_id), 'vcn_name': vcn_name,
                             'subnet_id': subnet_id}

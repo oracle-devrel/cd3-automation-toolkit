@@ -20,6 +20,7 @@ import collections
 import re
 import json as simplejson
 import warnings
+import threading
 warnings.simplefilter("ignore")
 
 def data_frame(filename,sheetname):
@@ -46,6 +47,21 @@ class commonTools():
         self.region_dict={}
         self.protocol_dict={}
         self.sheet_dict={}
+        self.reg_filter = None
+        self.comp_filter = None
+        self.default_dns = None
+        self.ins_pattern_filter = None
+        self.ins_ad_filter = None
+        self.bv_pattern_filter = None
+        self.bv_ad_filter = None
+        self.orm_reg_filter = None
+        self.orm_comp_filter = None
+        self.vault_region = None
+        self.vault_comp = None
+        self.budget_amount = None
+        self.budget_threshold = None
+        self.cg_region = None
+
 
         # When called from wthin OCSWorkVM or user-scripts
         dir=os.getcwd()
@@ -81,12 +97,82 @@ class commonTools():
         if ("OCSWorkVM" in dir):
             os.chdir(dir)
         #os.chdir(dir)
+    # Get Export filters
+    def get_export_filters(self,export_filters):
+        for i in export_filters:
+            if 'reg_filter' in i:
+                self.reg_filter = (i.split("=")[1])[2:][:-2]
+            if 'comp_filter' in i:
+                self.comp_filter = (i.split("=")[1])[2:][:-2]
+                self.comp_filter = self.comp_filter if self.comp_filter else "null"
+            if 'default_dns' in i:
+                self.default_dns = (i.split("=")[1])[2:][:-2]
+
+            if 'ins_pattern_filter' in i:
+                self.ins_pattern_filter = (i.split("=")[1])[2:][:-2]
+
+            if 'ins_ad_filter' in i:
+                self.ins_ad_filter = (i.split("=")[1])[2:][:-2]
+
+            if 'bv_pattern_filter' in i:
+                self.bv_pattern_filter = (i.split("=")[1])[2:][:-2]
+
+            if 'bv_ad_filter' in i:
+                self.bv_ad_filter = (i.split("=")[1])[2:][:-2]
+
+            if 'orm_region' in i:
+                self.orm_reg_filter = (i.split("=")[1])[2:][:-2]
+
+            if 'orm_compartments' in i:
+                self.orm_comp_filter = (i.split("=")[1])[2:][:-2]
+                self.orm_comp_filter = self.orm_comp_filter if self.orm_comp_filter else "null"
+            if 'vault_region' in i:
+                self.vault_region = (i.split("=")[1])[2:][:-2]
+
+            if 'vault_comp' in i:
+                self.vault_comp = (i.split("=")[1])[2:][:-2]
+
+            if 'budget_amount' in i:
+                self.budget_amount = (i.split("=")[1])[2:][:-2]
+
+            if 'budget_threshold' in i:
+                self.budget_threshold = (i.split("=")[1])[2:][:-2]
+
+            if 'cg_region' in i:
+                self.cg_region = (i.split("=")[1])[2:][:-2]
+
+    # OCI API Authentication
+    def authenticate(self,auth_mechanism,config_file_path=DEFAULT_LOCATION):
+        signer = None
+
+        try:
+            config = oci.config.from_file(file_location=config_file_path)
+        except Exception as e:
+            print(str(e))
+            print(".....Exiting!!!")
+            exit(0)
+
+        if auth_mechanism == 'api_key':
+            signer = oci.signer.Signer(config['tenancy'],config['user'],config['fingerprint'],config['key_file'])
+        elif auth_mechanism == 'session_token':
+            token_file = config['security_token_file']
+            token = None
+            with open(token_file, 'r') as f:
+                token = f.read()
+
+            private_key = oci.signer.load_private_key_from_file(config['key_file'])
+            signer = oci.auth.signers.SecurityTokenSigner(token, private_key)
+        elif auth_mechanism == 'instance_principal':
+            signer = oci.auth.signers.InstancePrincipalsSecurityTokenSigner()
+
+        return config,signer
+
 
     #Get Tenancy Regions
-    def get_subscribedregions(self, configFileName=DEFAULT_LOCATION):
+    def get_subscribedregions(self, config,signer):
         #Get config client
-        config = oci.config.from_file(file_location=configFileName)
-        idc = IdentityClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
+        #config = oci.config.from_file(file_location=configFileName)
+        idc = IdentityClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
         regionsubscriptions = idc.list_region_subscriptions(tenancy_id=config['tenancy'])
         homeregion=""
         for rs in regionsubscriptions.data:
@@ -109,15 +195,11 @@ class commonTools():
         return subs_region_list
 
     #Get Compartment OCIDs
-    def get_network_compartment_ids(self,c_id, c_name,configFileName):
+    def get_network_compartment_ids(self,c_id, c_name,config, signer):
         # Get config client
-        if configFileName == "":
-            config = oci.config.from_file()
-        else:
-            config = oci.config.from_file(file_location=configFileName)
 
         tenancy_id=config['tenancy']
-        idc = IdentityClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
+        idc = IdentityClient(config=config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
         compartments = oci.pagination.list_call_get_all_results(idc.list_compartments,compartment_id=c_id, compartment_id_in_subtree=False)
 
         for c in compartments.data:
@@ -137,7 +219,7 @@ class commonTools():
                         if (c_details.compartment_id != tenancy_id):
                             self.ntk_compartment_ids.pop(c.name)
 
-                self.get_network_compartment_ids(c.id, name,configFileName)
+                self.get_network_compartment_ids(c.id, name,config,signer)
 
         self.ntk_compartment_ids["root"]=tenancy_id
         del tenancy_id
@@ -181,7 +263,10 @@ class commonTools():
                 input_compartment_names = None
             else:
                 compartment_list_str = "Enter name of Compartment as it appears in OCI (comma separated without spaces if multiple)for which you want to export {};\nPress 'Enter' to export from all the Compartments: "
-                compartments = input(compartment_list_str.format(resource_name))
+                if self.comp_filter == "null":
+                    compartments = None
+                else:
+                    compartments = self.comp_filter if self.comp_filter else input(compartment_list_str.format(resource_name))
                 input_compartment_names = list(map(lambda x: x.strip(), compartments.split(','))) if compartments else None
 
             comp_list_fetch = []
@@ -404,7 +489,7 @@ class commonTools():
         except Exception as e:
             print(str(e))
             print("Exiting!!")
-            exit()
+            exit(1)
 
         values_for_column = collections.OrderedDict()
         # values_for_column={}
@@ -422,7 +507,7 @@ class commonTools():
         except Exception as e:
             print(str(e))
             print("Exiting!!")
-            exit()
+            exit(1)
         if (sheet_name == "VCN Info"):
             onprem_destinations = ""
             ngw_destinations = ""
@@ -450,7 +535,7 @@ class commonTools():
             except Exception as e:
                 print(str(e))
                 print("Exiting!!")
-                exit()
+                exit(1)
             return
 
 
@@ -469,7 +554,7 @@ class commonTools():
             except Exception as e:
                 print(str(e))
                 print("Exiting!!")
-                exit()
+                exit(1)
             return
 
         sheet_max_rows = sheet.max_row
@@ -548,7 +633,7 @@ class commonTools():
         except Exception as e:
             print(str(e))
             print("Exiting!!")
-            exit()
+            exit(1)
 
     # def backup_file(src_dir, pattern, overwrite):
     def backup_file(src_dir, resource, pattern):
@@ -863,7 +948,7 @@ def section(title='', header=False, padding=117):
         print(separator * padding)
 
 
-def exit_menu(msg, exit_code=0):
+def exit_menu(msg, exit_code=1):
     print(msg)
     exit(exit_code)
 
@@ -936,18 +1021,19 @@ class parseSubnets():
 
 class cd3Services():
 
+
     #Get OCI Cloud Regions
     regions_list = ""
-    def fetch_regions(self,configFileName=DEFAULT_LOCATION):
-        config = oci.config.from_file(file_location=configFileName)
-        idc = IdentityClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
+    def fetch_regions(self,config,signer):
+        #config = oci.config.from_file(file_location=configFileName)
+        idc = IdentityClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
         try:
             regions_list = idc.list_regions().data
         except Exception as e:
             print(e)
             if ('NotAuthenticated' in str(e)):
                 print("\nInvalid Credetials - check your keypair/fingerprint/region...Exiting!!!")
-                exit()
+                exit(1)
 
         if ("OCSWorkVM" in os.getcwd() or 'user-scripts' in os.getcwd()):
             os.chdir("../")

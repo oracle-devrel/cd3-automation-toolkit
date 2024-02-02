@@ -88,14 +88,12 @@ def print_adbs(region, vnc_client, adb, values_for_column, ntk_compartment_name)
             values_for_column = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict, values_for_column)
 
 # Execution of the code begins here
-def export_adbs(inputfile, _outdir, service_dir, ct, _config=DEFAULT_LOCATION, export_compartments=[],export_regions=[]):
+def export_adbs(inputfile, outdir, service_dir, config, signer, ct, export_compartments=[],export_regions=[]):
     global tf_import_cmd
     global sheet_dict
     global importCommands
-    global config
     global cd3file
     global reg
-    global outdir
     global values_for_column
 
     cd3file = inputfile  # input file
@@ -103,15 +101,7 @@ def export_adbs(inputfile, _outdir, service_dir, ct, _config=DEFAULT_LOCATION, e
         print("\nAcceptable cd3 format: .xlsx")
         exit()
 
-    outdir = _outdir
-    configFileName = _config
-    config = oci.config.from_file(file_location=configFileName)
-
     sheetName = "ADB"
-    if ct==None:
-        ct = commonTools()
-        ct.get_subscribedregions(configFileName)
-        ct.get_network_compartment_ids(config['tenancy'], "root", configFileName)
 
     # Read CD3
     df, values_for_column = commonTools.read_cd3(cd3file, sheetName)
@@ -144,8 +134,8 @@ def export_adbs(inputfile, _outdir, service_dir, ct, _config=DEFAULT_LOCATION, e
         config.__setitem__("region", ct.region_dict[reg])
         region = reg.capitalize()
 
-        adb_client = oci.database.DatabaseClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
-        vnc_client = oci.core.VirtualNetworkClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
+        adb_client = oci.database.DatabaseClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY, signer=signer)
+        vnc_client = oci.core.VirtualNetworkClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY, signer=signer)
         #adbs = {}
 
         for ntk_compartment_name in export_compartments:
@@ -154,6 +144,11 @@ def export_adbs(inputfile, _outdir, service_dir, ct, _config=DEFAULT_LOCATION, e
             for adb in adbs.data:
                 adb = adb_client.get_autonomous_database(adb.id).data
                 print_adbs(region, vnc_client, adb, values_for_column, ntk_compartment_name)
+
+    for reg in export_regions:
+        script_file = f'{outdir}/{reg}/{service_dir}/' + file_name
+        with open(script_file, 'a') as importCommands[reg]:
+            importCommands[reg].write('\n\nterraform plan\n')
 
     commonTools.write_to_cd3(values_for_column, cd3file, "ADB")
 

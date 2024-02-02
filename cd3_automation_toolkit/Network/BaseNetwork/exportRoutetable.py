@@ -8,8 +8,8 @@ sys.path.append(os.getcwd()+"/../../..")
 from commonTools import *
 
 
-def get_network_entity_name(config,network_identity_id):
-    vcn1 = VirtualNetworkClient(config)
+def get_network_entity_name(config,signer,network_identity_id):
+    vcn1 = VirtualNetworkClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
     if('internetgateway' in network_identity_id):
         igw=vcn1.get_internet_gateway(network_identity_id)
         network_identity_name = "igw:"+igw.data.display_name
@@ -71,7 +71,7 @@ def insert_values(routetable,values_for_column,region,comp_name,name,routerule):
 
         elif (routerule != None and col_header == 'Route Destination Object'):
             network_entity_id = routerule.network_entity_id
-            network_entity_name = get_network_entity_name(config, network_entity_id)
+            network_entity_name = get_network_entity_name(config, signer, network_entity_id)
             values_for_column[col_header].append(network_entity_name)
             if ('internetgateway' in network_entity_id):
                 if (routerule.destination not in values_for_vcninfo['igw_destinations']):
@@ -102,7 +102,7 @@ def insert_values_drg(routetable,import_drg_route_distribution_name,values_for_c
 
         elif (routerule != None and col_header == 'Next Hop Attachment'):
             next_hop_attachment_id=routerule.next_hop_drg_attachment_id
-            network_entity_name = get_network_entity_name(config, next_hop_attachment_id)
+            network_entity_name = get_network_entity_name(config, signer, next_hop_attachment_id)
             values_for_column_drg[col_header].append(network_entity_name)
 
         else:
@@ -156,13 +156,16 @@ def print_routetables(routetables,region,vcn_name,comp_name):
                 print(dn + "," +str(rule.destination)+","+desc)
 
 # Execution of the code begins here for drg route table
-def export_drg_routetable(inputfile, export_compartments, export_regions, service_dir, _config, _tf_import_cmd, outdir,ct):
+def export_drg_routetable(inputfile, outdir, service_dir,config1,signer1, ct, export_compartments,export_regions,_tf_import_cmd):
     # Read the arguments
     global tf_import_cmd_drg
     global values_for_column_drg
     global sheet_dict_drg
     global importCommands_drg
     global config
+    config=config1
+    global signer
+    signer=signer1
 
     cd3file = inputfile
     if '.xls' not in cd3file:
@@ -176,12 +179,6 @@ def export_drg_routetable(inputfile, export_compartments, export_regions, servic
 
     # Read CD3
     df, values_for_column_drg = commonTools.read_cd3(cd3file, "DRGRouteRulesinOCI")
-    config = oci.config.from_file(_config)
-
-    if ct == None:
-        ct = commonTools()
-        ct.get_subscribedregions(_config)
-        ct.get_network_compartment_ids(config['tenancy'], "root", _config)
 
     # Get dict for columns from Excel_Columns
     sheet_dict_drg = ct.sheet_dict["DRGRouteRulesinOCI"]
@@ -196,11 +193,13 @@ def export_drg_routetable(inputfile, export_compartments, export_regions, servic
                                         "tf_import_commands_network_drg_routerules_nonGF.sh")
             importCommands_drg[reg] = open(outdir + "/" + reg + "/" + service_dir+ "/tf_import_commands_network_drg_routerules_nonGF.sh", "w")
             importCommands_drg[reg].write("#!/bin/bash")
+            importCommands_drg[reg].write("\n")
+            importCommands_drg[reg].write("terraform init")
             importCommands_drg[reg].write("\n\n######### Writing import for DRG Route Tables #########\n\n")
 
     for reg in export_regions:
         config.__setitem__("region", commonTools().region_dict[reg])
-        vcn = VirtualNetworkClient(config, timeout=(30,120))
+        vcn = VirtualNetworkClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer,timeout=(30,120))
         region = reg.capitalize()
         #comp_ocid_done = []
 
@@ -247,15 +246,19 @@ def export_drg_routetable(inputfile, export_compartments, export_regions, servic
             importCommands_drg[reg].write('\n\nterraform plan\n')
             importCommands_drg[reg].close()
 
+
 # Execution of the code begins here for route table export
-def export_routetable(inputfile, export_compartments,export_regions, service_dir, _config, _tf_import_cmd, outdir,ct):
+def export_routetable(inputfile, outdir, service_dir,config1,signer1, ct, export_compartments,export_regions,_tf_import_cmd):
     # Read the arguments
     global tf_import_cmd
     global values_for_column
     global sheet_dict
     global importCommands
-    global config
     global values_for_vcninfo
+    global config
+    config=config1
+    global signer
+    signer=signer1
 
     cd3file = inputfile
     if '.xls' not in cd3file:
@@ -277,12 +280,6 @@ def export_routetable(inputfile, export_compartments,export_regions, service_dir
 
     # Get dict for columns from Excel_Columns
     sheet_dict=ct.sheet_dict["RouteRulesinOCI"]
-    config = oci.config.from_file(_config)
-
-    if ct == None:
-        ct = commonTools()
-        ct.get_subscribedregions(_config)
-        ct.get_network_compartment_ids(config['tenancy'], "root", _config)
 
     print("\nFetching Route Rules...")
     if tf_import_cmd:
@@ -293,11 +290,13 @@ def export_routetable(inputfile, export_compartments,export_regions, service_dir
                                         "tf_import_commands_network_routerules_nonGF.sh")
             importCommands[reg] = open(outdir + "/" + reg + "/" + service_dir+ "/tf_import_commands_network_routerules_nonGF.sh", "a")
             importCommands[reg].write("#!/bin/bash")
+            importCommands[reg].write("\n")
+            importCommands[reg].write("terraform init")
             importCommands[reg].write("\n\n######### Writing import for Route Tables #########\n\n")
 
     for reg in export_regions:
         config.__setitem__("region", commonTools().region_dict[reg])
-        vcn = VirtualNetworkClient(config)
+        vcn = VirtualNetworkClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
         region = reg.capitalize()
         #comp_ocid_done = []
 
@@ -315,5 +314,6 @@ def export_routetable(inputfile, export_compartments,export_regions, service_dir
     if tf_import_cmd:
         commonTools.write_to_cd3(values_for_vcninfo, cd3file, "VCN Info")
         for reg in export_regions:
+            importCommands[reg].write('\n\nterraform plan\n')
             importCommands[reg].close()
 

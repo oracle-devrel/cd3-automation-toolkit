@@ -16,9 +16,8 @@ sys.path.append(os.getcwd()+"/..")
 from commonTools import *
 
 # Execution of the code begins here
-def export_networkSources(inputfile, outdir, service_dir, _config, ct):
+def export_networkSources(inputfile, outdir, service_dir, config, signer, ct):
     global values_for_column_networkSources
-    global config
     global cd3file
 
     cd3file = inputfile
@@ -26,10 +25,6 @@ def export_networkSources(inputfile, outdir, service_dir, _config, ct):
     if('.xls' not in cd3file):
         print("\nAcceptable cd3 format: .xlsx")
         exit()
-
-
-    configFileName = _config
-    config = oci.config.from_file(file_location=configFileName)
 
     importCommands={}
 
@@ -53,8 +48,7 @@ def export_networkSources(inputfile, outdir, service_dir, _config, ct):
     importCommands[ct.home_region].write("terraform init")
 
     config.__setitem__("region", ct.region_dict[ct.home_region])
-    idc=IdentityClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
-    network = oci.core.VirtualNetworkClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
+    idc=IdentityClient(config=config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
 
     # Fetch Network Sources
     print("\nFetching Network Sources...")

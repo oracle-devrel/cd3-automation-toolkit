@@ -17,15 +17,12 @@ from commonTools import *
 # Required Inputs- CD3 excel file, Config file, prefix AND outdir
 ######
 # Execution of the code begins here
-def create_terraform_users(inputfile, outdir, service_dir, prefix, config=DEFAULT_LOCATION):
+def create_terraform_users(inputfile, outdir, service_dir, prefix, ct):
     # Read the arguments
     filename = inputfile
-    configFileName = config
 
     sheetName = 'Users'
     auto_tfvars_filename = '_' + sheetName.lower() + '.auto.tfvars'
-    ct = commonTools()
-    ct.get_subscribedregions(configFileName)
 
     outfile = {}
     oname = {}
@@ -75,7 +72,7 @@ def create_terraform_users(inputfile, outdir, service_dir, prefix, config=DEFAUL
         # Check if values are entered for mandatory fields
         if str(df.loc[i, 'Region']).lower() == 'nan' or str(df.loc[i, 'User Name']).lower() == 'nan' :
             print("\nThe values for Region and Name cannot be left empty. Please enter a value and try again !!")
-            exit()
+            exit(1)
 
 
         for columnname in dfcolumns:

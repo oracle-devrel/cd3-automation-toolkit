@@ -134,15 +134,13 @@ def print_resolvers(resolver_tf_name, resolver, values_for_column, **value):
             values_for_column = commonTools.export_tags(resolver, col_header, values_for_column)
 
 # Execution of the code begins here
-def export_dns_resolvers(inputfile, _outdir, service_dir, _config, ct, export_compartments=[], export_regions=[]):
+def export_dns_resolvers(inputfile, outdir, service_dir, config, signer, ct, export_compartments=[], export_regions=[]):
     global tf_import_cmd
     global sheet_dict
     global importCommands
-    global config
     global values_for_vcninfo
     global cd3file
     global reg
-    global outdir
     global values_for_column
     global serv_dir
 
@@ -152,15 +150,7 @@ def export_dns_resolvers(inputfile, _outdir, service_dir, _config, ct, export_co
         print("\nAcceptable cd3 format: .xlsx")
         exit()
 
-    outdir = _outdir
-    configFileName = _config
-    config = oci.config.from_file(file_location=configFileName)
-
     sheetName = "DNS-Resolvers"
-    if ct==None:
-        ct = commonTools()
-        ct.get_subscribedregions(configFileName)
-        ct.get_network_compartment_ids(config['tenancy'], "root", configFileName)
     # Read CD3
     df, values_for_column = commonTools.read_cd3(cd3file, sheetName)
 
@@ -189,8 +179,8 @@ def export_dns_resolvers(inputfile, _outdir, service_dir, _config, ct, export_co
         importCommands[reg].write("\n\n######### Writing import for DNS Resolvers #########\n\n")
         config.__setitem__("region", ct.region_dict[reg])
         region = reg.capitalize()
-        dns_client = oci.dns.DnsClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
-        vnc_client = oci.core.VirtualNetworkClient(config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
+        dns_client = oci.dns.DnsClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
+        vnc_client = oci.core.VirtualNetworkClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
 
         for ntk_compartment_name in export_compartments:
             vcns = oci.pagination.list_call_get_all_results(vnc_client.list_vcns, compartment_id=ct.ntk_compartment_ids[ntk_compartment_name], lifecycle_state="AVAILABLE")

@@ -1,4 +1,4 @@
-# Non-Green Field Tenancies
+# Export Resources from OCI (Non-Greenfield Workflow)
 
   > **Note**
    
@@ -7,17 +7,38 @@
   > * Tool Kit then generates the TF configuration files/auto.tfvars files for these exported resources.
   > * It also generates a shell script - tf_import_commands_`<resource>`_nonGF.sh that has the import commands, to import the state of the resources to tfstate file.(This helps to manage the resources via Terraform in future). 
 
-## Detailed Steps
-Below are the steps that will help to configure the Automation Tool Kit to support the Non - Green Field Tenancies:
 
 **Step 1:** 
-<br>Chose the appropriate CD3 Excel sheet template from [Excel Templates](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md#excel-sheet-templates)
+<br>Chose the appropriate CD3 Excel sheet template from [Excel Templates](/cd3_automation_toolkit/documentation/user_guide/ExcelTemplates.md)
  
 **Step 2:** 
 <br>Put CD3 Excel at the appropriate location.
-<br>Modify/Review [setUpOCI.properties](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md#setupociproperties) with **non_gf_tenancy** set to **true**  as shown below:
-![image](https://user-images.githubusercontent.com/103508105/221798771-9bca7a1a-5ef3-4587-8138-97f65c4d7cf1.png)
+<br>Modify/Review _/cd3user/tenancies/<customer\_name>/<customer\_name>\_setUpOCI.properties_ with **workflow_type** set to **export_resources**  as shown below:
+```ini
+#Input variables required to run setUpOCI script
 
+#path to output directory where terraform file will be generated. eg /cd3user/tenancies/<customer_name>/terraform_files
+outdir=/cd3user/tenancies/demotenancy/terraform_files/
+
+#prefix for output terraform files eg <customer_name> like demotenancy
+prefix=demotenancy
+
+# auth mechanism for OCI APIs - api_key,instance_principal,session_token
+auth_mechanism=api_key
+
+#input config file for Python API communication with OCI eg /cd3user/tenancies/<customer_name>/.config_files/<customer_name>_config;
+config_file=/cd3user/tenancies/demotenancy/.config_files/demotenancy_oci_config
+
+# Leave it blank if you want single outdir or specify outdir_structure_file.properties containing directory structure for OCI services.
+outdir_structure_file=/cd3user/tenancies/demotenancy/demotenancy_outdir_structure_file.properties
+
+#path to cd3 excel eg /cd3user/tenancies/<customer_name>/CD3-Customer.xlsx
+cd3file=/cd3user/tenancies/demotenancy/CD3-Blank-template.xlsx
+
+#specify create_resources to create new resources in OCI(greenfield workflow)
+#specify export_resources to export resources from OCI(non-greenfield workflow)
+workflow_type=export_resources
+```
   
 **Step 3:** 
 <br>Execute the SetUpOCI.py script to start exporting the resources to CD3 and creating the terraform configuration files.
@@ -52,7 +73,7 @@ c. Shell Script with import commands - tf_import_commands_`<resource>`_nonGF.sh
 <img src = "https://user-images.githubusercontent.com/122371432/213680328-ff972472-5c96-424e-b616-9f4c217eb4ca.png" width =50% height=50%>
 
 > **Note**<br>
->   Once the export (including the execution of **tf_import_commands_`<resource>`_nonGF.sh**) is complete, switch the value of **non_gf_tenancy** back to **false**. 
+>   Once the export (including the execution of **tf_import_commands_`<resource>`_nonGF.sh**) is complete, switch the value of **workflow_type** back to **create_resources**. 
 >   This allows the Tool Kit to support the tenancy as Green Field from this point onwards.
 
 ## Example - Export Identity
@@ -62,7 +83,7 @@ Follow the below steps to quickly export Identity components from OCI.
 
 2. Edit the _setUpOCI.properties_ at location:_/cd3user/tenancies /<customer\_name>/<customer\_name>\_setUpOCI.properties_ with appropriate values. 
    - Update the _cd3file_ parameter to specify the CD3 excel sheet path.
-   - Set the _non_gf_tenancy_ parameter value to _true_. (for Non Greenfield Workflow.)
+   - Set the _workflow_type_ parameter value to _export_resources_. (for Non Greenfield Workflow.)
      
 3. Change Directory to 'cd3_automation_toolkit' :
     ```cd /cd3user/oci_tools/cd3_automation_toolkit/```

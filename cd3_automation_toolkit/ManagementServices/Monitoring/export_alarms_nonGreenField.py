@@ -70,14 +70,12 @@ def print_alarms(region, alarm, ncpclient,values_for_column, ntk_compartment_nam
         importCommands[region.lower()].write("\nterraform import \"module.alarms[\\\"" + str(comp_tf_name+"_"+alarm_tf_name) + "\\\"].oci_monitoring_alarm.alarm\" " + str(alarm.id))
 
 # Execution of the code begins here
-def export_alarms(inputfile, _outdir, service_dir, _config, ct, export_compartments=[],export_regions=[]):
+def export_alarms(inputfile, outdir, service_dir, config, signer, ct, export_compartments=[],export_regions=[]):
     global tf_import_cmd
     global sheet_dict
     global importCommands
-    global config
     global cd3file
     global reg
-    global outdir
     global values_for_column
 
 
@@ -87,17 +85,8 @@ def export_alarms(inputfile, _outdir, service_dir, _config, ct, export_compartme
         exit()
 
 
-    outdir = _outdir
-    configFileName = _config
-    config = oci.config.from_file(file_location=configFileName)
-
     sheetName="Alarms"
     
-    if ct==None:
-        ct = commonTools()
-        ct.get_subscribedregions(configFileName)
-        ct.get_network_compartment_ids(config['tenancy'],"root",configFileName)
-
     # Read CD3
     df, values_for_column= commonTools.read_cd3(cd3file,sheetName)
 
@@ -127,8 +116,8 @@ def export_alarms(inputfile, _outdir, service_dir, _config, ct, export_compartme
         config.__setitem__("region", ct.region_dict[reg])
         region = reg.capitalize()
 
-        mclient = oci.monitoring.MonitoringClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
-        ncpclient = oci.ons.NotificationControlPlaneClient(config,retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY)
+        mclient = oci.monitoring.MonitoringClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
+        ncpclient = oci.ons.NotificationControlPlaneClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
 
         for ntk_compartment_name in export_compartments:
             alarms = oci.pagination.list_call_get_all_results(mclient.list_alarms,compartment_id=ct.ntk_compartment_ids[ntk_compartment_name], lifecycle_state="ACTIVE")
