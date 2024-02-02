@@ -55,7 +55,7 @@
 | GIT Config File | ```/cd3user/tenancies/<customer_name>/.config_files/<customer_name>_git_config``` | Customer specific GIT Config file for OCI Dev Ops GIT operations. This is generated only if use_oci_devops_git is set to yes |
 | S3 Credentials File | ```/cd3user/tenancies/<customer_name>/.config_files/<customer_name>_s3_credentials``` | This file contains access key and secret for S3 compatible OS bucket to manage remote terraform state. This is generated only if use_remote_state is set to yes |
 | Jenkins Home | ```/cd3user/tenancies/jenkins_home``` | This folder contains jenkins specific data. ```Single Jenkins instance can be setup for a single container.```|
-| tenancyconfig.properties | ```/cd3user/tenancies/<customer_name>/.config_files/<customer_name>_tenancyconfig.properties``` | the input properties file used to execute the script is copied to custome folder to retain for future reference|
+| tenancyconfig.properties | ```/cd3user/tenancies/<customer_name>/.config_files/<customer_name>_tenancyconfig.properties``` | The input properties file used to execute the script is copied to custome folder to retain for future reference. This can be used when the script needs to be re-run with same parameters at later stage.|
 </details>
 The next pages will guide you to use the toolkit either via CLI or via Jenkins. Please proceed further.
 <br><br>
