@@ -2,7 +2,6 @@
 
 ## Managing Network for Greenfield Workflow
 - [Create Network](#create-network)
-- [Use an existing DRG in OCI while creating the network](#use-an-existing-drg-in-oci-while-creating-the-network)
 - [Modify Network](#modify-network)
 - [Modify Security Rules, Route Rules and DRG Route Rules](#modify-security-rules-route-rules-and-drg-route-rules)
 - [Sync manual changes done in OCI of Security Rules, Route Rules and DRG Route Rules with CD3 Excel Sheet and Terraform](#sync-manual-changes-done-in-oci-of-security-rules-route-rules-and-drg-route-rules-with-cd3-excel-sheet-and-terraform)
@@ -29,7 +28,8 @@ Below are the steps in detail to create Network that includes VCNs, Subnets, DHC
 3. Choose option _'Validate CD3'_ and then _'Validate Networks'_ to check for syntax errors in Excel sheet. Examine the log file generated at _/cd3user/tenancies/<customer\_name>/<customer\_name>\_cd3validator.log_. If there are errors, please rectify them accordingly and proceed to the next step.
 
 4. Choose _'Create Network'_ under _'Network'_ from the displayed options. Click on Build.
-   <img width="347" alt="Screenshot 2024-02-02 at 7 46 37 AM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/c16f8d7b-dd8d-484d-b873-f5ad36facfa9">
+   
+<img width="347" alt="Screenshot 2024-02-02 at 7 46 37 AM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/c16f8d7b-dd8d-484d-b873-f5ad36facfa9">
 
 6. It will show different stages of execution of _setUpOCI_ pipeline and also launch the _terraform-apply_ pipeline for 'network'.
 7. Click on Proceed for 'Get Approval' stage of the terraform pipeline.
