@@ -64,7 +64,7 @@ The next pages will guide you to use the toolkit either via CLI or via Jenkins. 
 <br><br>
 <div align='center'>
 
-| <a href="/cd3_automation_toolkit/documentation/user_guide/Launch_Docker_container.md">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/Workflows.md">Automation Toolkit via CLI :arrow_forward:</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/Workflows-Jenkins.md">Automation Toolkit via Jenkins :arrow_forward:</a> |
+| <a href="/cd3_automation_toolkit/documentation/user_guide/Launch_Docker_container.md">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/Workflows.md">Automation Toolkit via CLI :arrow_forward:</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/Workflows-jenkins.md">Automation Toolkit via Jenkins :arrow_forward:</a> |
 | :---- | -------: |-------: |
   
 </div>
