@@ -132,11 +132,9 @@ Follow the below process to export the rules to the same CD3 Excel Sheet as the 
 ### Add/Modify/Delete NSGs
 Follow the below steps to update NSGs.
 
-1.  Modify your excel sheet to update required data in the Tabs - NSGs.
+1. Modify your excel sheet to update required data in the Tabs - NSGs.
    
-2. Execute the _setupOCI.py_ file with _workflow_type_ parameter value to _create_resources_:
-   
-   ```python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties```
+2. Execute the _setupOCI.py_ pipeline with _Workflow_ as _Create Resources in OCI(Greenfield Workflow)_
    
 3. Choose _'Network'_ from the displayed menu. Choose below sub-option:
    - Network Security Groups
@@ -144,10 +142,8 @@ Follow the below steps to update NSGs.
     
      Once the execution is successful,  _<customer\_name>\_nsgs.auto.tfvars_ will be generated under the folder _/cd3user/tenancies/<customer\_name>/terraform_files/<region_dir>/<service_dir>_. Existing files will move into respective backup folders.
     
-4. Navigate to the above path and execute the terraform commands:<br>
-       <br>_terraform init_
-       <br>_terraform plan_
-       <br>_terraform apply_
+4. It will show different stages of execution of _setUpOCI_ pipeline and also launch the _terraform-apply_ pipeline for 'nsg'.
+5. Click on Proceed for 'Get Approval' stage of the terraform pipeline.
    
 This completes the modification of NSGs in OCI. Verify the components in console.
 
@@ -159,20 +155,15 @@ Follow the below steps to update VLANs.
 1.  Modify your excel sheet to update required data in the Tabs - SubnetsVLANs.
 2.  Make sure that the RouteRulesinOCI sheet and corresponing terraform is in synch with route rules in OCI console. If not, please follow procedure specified in [Sync manual changes done in OCI of Security Rules, Route Rules and DRG Route Rules with CD3 Excel Sheet and Terraform](#sync-manual-changes-done-in-oci-of-security-rules-route-rules-and-drg-route-rules-with-cd3-excel-sheet-and-terraform) 
    
-3. Execute the _setupOCI.py_ file with _workflow_type_ parameter value to _create_resources_:
-   
-   ```python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties```
-   
+3. Execute the _setupOCI.py_ pipeline with _Workflow_ as _Create Resources in OCI(Greenfield Workflow)_
 4. Choose _'Network'_ from the displayed menu. Choose below sub-option:
    - Add/Modify/Delete VLANs (Reads SubnetsVLANs sheet)
     
      Once the execution is successful,  _<customer\_name>\_vlans.auto.tfvars_ will be generated under the folder _/cd3user/tenancies/<customer\_name>/terraform_files/<region_dir>/<service_dir>_. Existing files will move into respective backup folders.  _<customer\_name>\routetables.auto.tfvars_ file will also be updated with the route table information specified for each VLAN.
     
-5. Navigate to the above path and execute the terraform commands:<br>
-       <br>_terraform init_
-       <br>_terraform plan_
-       <br>_terraform apply_
-   
+4. It will show different stages of execution of _setUpOCI_ pipeline and also launch the _terraform-apply_ pipeline for 'vlan' and 'network'.
+5. Click on Proceed for 'Get Approval' stage of the terraform pipeline.
+  
 6.  Again make sure to export the Route Rules in OCI into excel and terraform. Please follow procedure specified in [Sync manual changes done in OCI of Security Rules, Route Rules and DRG Route Rules with CD3 Excel Sheet and Terraform](#sync-manual-changes-done-in-oci-of-security-rules-route-rules-and-drg-route-rules-with-cd3-excel-sheet-and-terraform) 
 
 This completes the modification of VLANs in OCI. Verify the components in console.
