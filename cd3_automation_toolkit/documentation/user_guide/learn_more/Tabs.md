@@ -681,6 +681,7 @@ Below TF file is created:
 Use this tab to create OCVS in your tenancy. 
 
 >Note:
+>As of now the toolkit supports single cluster SDDC.
 The column "SSH Key Var Name" accepts SSH key value directly or the name of variable declared in *variables.tf* under the  **sddc_ssh_keys** variable containing the key value. Make sure to have an entry in variables_\<region>.tf file with the name you enter in SSH Key Var Name field of the Excel sheet and put the value as SSH key value.
 
 >For Eg: If you enter the SSH Key Var Name as **ssh_public_key**, make an entry in variables_\<region>.tf file as shown below:
