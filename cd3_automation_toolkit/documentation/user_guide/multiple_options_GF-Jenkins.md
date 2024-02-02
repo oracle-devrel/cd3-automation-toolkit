@@ -18,7 +18,8 @@ You can choose to create multiple OCI resources together by selecting multiple o
 - This is expected because pipleine for 'compute' expects network to be already existing in OCI to launch a new instance.
 - To resolve this, Proceed with terraform-apply pipeline for 'network' and once it is successfuly completed, trigger terraform-apply pipeline for 'compute' manually by clicking on 'Build Now' from left menu.
 
-<img width="1223" alt="Screenshot 2024-01-29 at 11 32 13 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/7bd7b4a8-62af-4a98-9250-9d96515cda4d">
+![tuxpi com 1706871906](https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/c3b7adb9-183b-4b79-bf9e-d492b3a5f7aa)
+
 
 <br><br>
 <div align='center'>
