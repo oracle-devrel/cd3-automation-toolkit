@@ -2,7 +2,7 @@
 
 > [!Important]  
 > * It is recommended to execute createTenancyConfig.py with a single <customer_name> within that container. Even if it is run multiple times with different customer names, Jenkins will only be configured for <customer_name> used while first time successful execution of the script.
-> * If there is a new region subscription to the tenancy at a later stage of time, createTenancyConfig.py should be re-run by keeping the same details in tenancyconfig.properties(details like <customer_name>, <auth_mechanism> etc). It will just create a new directory for the new region under `/cd3user/tenancies/<customer_name>/terraform_files` and will keep the existing regions directories as is.
+> * If there is a new region subscription to the tenancy at a later stage of time, createTenancyConfig.py must be re-run by using the same tenancyconfig.properties file that was originally used to create the configuration. Re-execution will create new directory for the new region under `/cd3user/tenancies/<customer_name>/terraform_files` and will commit the latest terraform_files folder to DevOps GIT repo.
 
 ### **Step 1 - Exec into the Container**:
 * Run  ```docker ps```.
@@ -55,6 +55,7 @@
 | GIT Config File | ```/cd3user/tenancies/<customer_name>/.config_files/<customer_name>_git_config``` | Customer specific GIT Config file for OCI Dev Ops GIT operations. This is generated only if use_oci_devops_git is set to yes |
 | S3 Credentials File | ```/cd3user/tenancies/<customer_name>/.config_files/<customer_name>_s3_credentials``` | This file contains access key and secret for S3 compatible OS bucket to manage remote terraform state. This is generated only if use_remote_state is set to yes |
 | Jenkins Home | ```/cd3user/tenancies/jenkins_home``` | This folder contains jenkins specific data. ```Single Jenkins instance can be setup for a single container.```|
+| tenancyconfig.properties | ```/cd3user/tenancies/<customer_name>/.config_files/<customer_name>_tenancyconfig.properties``` | the input properties file used to execute the script is copied to custome folder to retain for future reference|
 </details>
 The next pages will guide you to use the toolkit either via CLI or via Jenkins. Please proceed further.
 <br><br>
