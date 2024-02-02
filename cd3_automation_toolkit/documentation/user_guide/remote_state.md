@@ -1,11 +1,11 @@
 # Store Terraform State into Object Storage Bucket
 
 > [!Caution]  
-> If you are using remote state and upload the stack to OCI Resource Manager using <b>Upload current terraform files/state to Resource Manager</b> under <b>Developer Services</b>, then running terraform plan/apply from OCI Resource Manager will not work and shows below error:
+> If you are using remote state and upload the stack to OCI Resource Manager using <b>Upload current terraform files/state to Resource Manager</b> under <b>Developer Services</b>, then running terraform plan/apply from OCI Resource Manager will not work and show below error:
 > 
 <img width="597" alt="Screenshot 2024-01-17 at 11 38 54 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/1b0cd9fa-1ac0-42c4-9c33-14ad4bf0ddb8">
 
-> You will have to remove backend.tf from the directory, bring the remote state into local and then re-upload the stack.
+> This option is disabled while using the toolkit via Jenkins. While using it via CLI, you will have to remove backend.tf from the directory, bring the remote state into local and then upload the stack.
 
 <br><br>
 * Toolkit provides the option to store terraform state file(tfstate) into Object Storage bucket.
