@@ -15,6 +15,8 @@
 This is equivalent to running *setUpOCI.py* from CLI. This will generate the terraform .auto.tfvars files based on the CD3 excel sheet input for the services chosen, commit them to OCI Devop GIT repo. This will also trigger terraform-apply pipelines for the corresponding services chosen in setUpOCI pipeline.
 Below table shows the stages executed in this pipeline along with their description:
 
+<br>
+
 <details><summary><b>Expand this to view setUpOCI Pipeline Stages</b> </summary>
 
 |Stage Name      | Description  | Possible Outcomes |
@@ -27,6 +29,8 @@ Below table shows the stages executed in this pipeline along with their descript
 | <b>Trigger Terraform Pipelines</b> | Corresponding terraform apply pipelines are auto triggered based on the service chosen | |
 </details>
 
+<br>
+
 ### 2. terraform_files Folder
 
 This is equivalent to */cd3user/tenancies/<customer_name>/terraform_files* folder on your local system.
@@ -34,6 +38,8 @@ The region directories along with all service directories, are present under thi
 Inside each service directory, pipelines for **terraform-apply** and **terraform-destroy** can be found.
 
 The terraform pipelines are either triggered automatically from setUpOCI pipeline or they can be triggered manually by navigating to any service directory path.
+
+<br>
 
 <details><summary><b>Expand this to view terraform-apply Pipeline Stages</b> </summary>
 
@@ -46,7 +52,10 @@ The terraform pipelines are either triggered automatically from setUpOCI pipelin
 |Terraform Apply | Applies the terraform configurations | Displays Failed if any issue while executing terraform apply |
 </details>
 
-<details><summary><b>Expand this to view terraform-destroy Pipeline Stages</b> </summary>
+<br>
+
+
+<details><summary><b>Expand this to view terraform-destroy Pipeline Stages</b></summary>
 
 |Stage Name      | Description  | Possible Outcomes |
 | --------------- | ------------ | ----------------- |
@@ -55,6 +64,7 @@ The terraform pipelines are either triggered automatically from setUpOCI pipelin
 | Get Approval | Approval Stage for reviewing the terraform plan. There is 24 hours timeout for this stage. | Proceed - goes ahead with Terraform Destroy stage. <br> Abort - pipeline is aborted and stops furter execution |
 |Terraform Destroy | Destroys the terraform configurations | Displays Failed if any issue while executing terraform destroy |
 </details>
+<br>
 
 ### 3. Region Based Views
 When you click on any of the views, it displays all terraform-apply and terraform-destroy pipelines in single screen. This can also be used to trigger the terraform pipelines. This also includes Global view for global services like RPC.
