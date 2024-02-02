@@ -4,15 +4,16 @@
 
 You can choose to create multiple OCI resources together by selecting multiple options in setUpOCI pipeline simultaneously. But if one of the services is dependent upon the availability of another service eg You may chose 'Network' (Create Network) and 'Compute' (Add Instances) together. In such scenarios, terraform-apply pipeline for compute will fail as shown in below screenshot (last stage in the pipeline) -
 ![tuxpi com 1706871371](https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/959dea07-b569-4908-967c-d4d1efbafe04)
+<br>
 
 - Clicking on 'Logs' for Stage: sanjose/compute and clicking on the pipeline will dispay below -
 
 ![tuxpi com 1706871675](https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/65536e92-6612-4c6e-9d79-4a347a5cee9a)
-
+<br>
 
 - Clicking on 'Logs' for Stage Terraform Plan displays - 
 
-<img width="1497" alt="Screenshot 2024-01-29 at 11 26 41 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/e6b7c60b-256e-40b5-a462-92afd0c9cbf5">
+![tuxpi com 1706871787](https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/711e1687-690f-4cbd-8abc-3fd4da108f9f)
 
 - This is expected because pipleine for 'compute' expects network to be already existing in OCI to launch a new instance.
 - To resolve this, Proceed with terraform-apply pipeline for 'network' and once it is successfuly completed, trigger terraform-apply pipeline for 'compute' manually by clicking on 'Build Now' from left menu.
