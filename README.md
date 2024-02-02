@@ -3,7 +3,7 @@
 [![License: UPL](https://img.shields.io/badge/license-UPL-green)](https://img.shields.io/badge/license-UPL-green) [![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=oracle-devrel_cd3-automation-toolkit)](https://sonarcloud.io/dashboard?id=oracle-devrel_cd3-automation-toolkit)
 <ul>
   <li> <a href= "#introduction">Introduction</a></li>
-  <li> <a href = "https://github.com/oracle-devrel/cd3-automation-toolkit/releases/tag/v2401.1.0">What's new in this release</a></li>
+  <li> <a href = "https://github.com/oracle-devrel/cd3-automation-toolkit/releases/tag/v2024.1.0">What's new in this release</a></li>
   <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/learn_more/CD3ExcelTabs.md">Toolkit Supported OCI Services</a></li>
   <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/ExcelTemplates.md">Excel Templates</a></li>  
 </ul>
