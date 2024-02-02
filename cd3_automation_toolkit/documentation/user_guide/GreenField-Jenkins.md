@@ -82,7 +82,7 @@ Click on 'Logs' for Stage: phoenix/identity and click on the pipeline link.
 
 <div align='center'>
 
-| <a href="/cd3_automation_toolkit/documentation/user_guide/Intro-Jenkins.md">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/GF-Jenkins.md">Next :arrow_forward:</a> |
+| <a href="/cd3_automation_toolkit/documentation/user_guide/Intro-Jenkins.md">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/NetworkingScenariosGF-Jenkins.md">Next :arrow_forward:</a> |
 | :---- | -------: |
   
 </div>
