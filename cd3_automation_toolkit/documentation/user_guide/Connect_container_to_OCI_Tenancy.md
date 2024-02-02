@@ -22,6 +22,7 @@
        a large number of resources. <br>
     -  Review Advanced Parameters Section for CI/CD setup and be ready with user details that will be used to connect to DevOps Repo in OCI.              Specifying these parameters as **'yes'** in properties file will create Object Storage Bucket and Devops Git Repo/Project/Topic in OCI 
        and enable toolkit usage via Jenkins.
+       > The toolkit supports users in primary IDCS stripes or default domains only for DevOps GIT operations.
 
  
 ### **Step 4 - Initialise the environment**:
