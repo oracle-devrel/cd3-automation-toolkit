@@ -3,7 +3,7 @@
 ## Execute setUpOCI Pipeline
 
 **Step 1**: 
-<br>Choose the appropriate CD3 Excel sheet template from [Excel Templates](cd3_automation_toolkit/documentation/user_guide/ExcelTemplates.md).
+<br>Choose the appropriate CD3 Excel sheet template from [Excel Templates](/cd3_automation_toolkit/documentation/user_guide/ExcelTemplates.md).
 Fill the CD3 Excel with appropriate values.
 
 
