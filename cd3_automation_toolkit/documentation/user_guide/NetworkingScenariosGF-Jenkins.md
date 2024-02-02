@@ -50,7 +50,7 @@ Below are the steps in detail to create Network that includes VCNs, Subnets, DHC
 
 This completes the steps for Creating the Network in OCI and exporting the default rules to the CD3 Excel Sheet using the Automation Toolkit.
 
-<br>[Go back to Networking Scenarios](#networking-scenarios)
+<br>[Go back to Networking Scenarios](#executing-networking-scenarios-using-toolkit-via-jenkins)
 ### Modify Network 
 Modifying the Networking components using Automation Toolkit involves three simple steps.
  - Add/modify the details of networking components like the VCNs, Subnets, DHCP and DRG in Excel Sheet.
@@ -72,7 +72,7 @@ _Steps in detail_:
    
 This completes the modification of Networking components in OCI. Verify the components in console.
 
-<br>[Go back to Networking Scenarios](#networking-scenarios)
+<br>[Go back to Networking Scenarios](#executing-networking-scenarios-using-toolkit-via-jenkins)
 ### Modify Security Rules, Route Rules and DRG Route Rules
 
 Follow the below steps to add, update or delete the following components:
@@ -101,7 +101,7 @@ Follow the below steps to add, update or delete the following components:
    
    This completes the modification of Security Rules, Route Rules and DRG Route Rules in OCI. Verify the components in console.<br>
 
-<br>[Go back to Networking Scenarios](#networking-scenarios)
+<br>[Go back to Networking Scenarios](#executing-networking-scenarios-using-toolkit-via-jenkins)
 ### Sync manual changes done in OCI of Security Rules, Route Rules and DRG Route Rules with CD3 Excel Sheet and Terraform
 Follow the below process to export the rules to the same CD3 Excel Sheet as the one used to Create Network, and to sync the Terraform files with OCI whenever an user adds, modifies or deletes rules in OCI Console manually.
 
@@ -127,7 +127,7 @@ Follow the below process to export the rules to the same CD3 Excel Sheet as the 
    
    This completes the export of Security Rules, Route Rules and DRG Route Rules from OCI. Terraform plan/apply should be in sync with OCI.
     
-<br>[Go back to Networking Scenarios](#networking-scenarios)
+<br>[Go back to Networking Scenarios](#executing-networking-scenarios-using-toolkit-via-jenkins)
 ### Add/Modify/Delete NSGs
 Follow the below steps to update NSGs.
 
@@ -146,7 +146,7 @@ Follow the below steps to update NSGs.
    
 This completes the modification of NSGs in OCI. Verify the components in console.
 
-<br>[Go back to Networking Scenarios](#networking-scenarios)
+<br>[Go back to Networking Scenarios](#executing-networking-scenarios-using-toolkit-via-jenkins)
 
 ### Add/Modify/Delete VLANs
 Follow the below steps to update VLANs.
@@ -178,7 +178,7 @@ Remote VCN peering is the process of connecting two VCNs in different regions (b
    - Choose option 'Network' and then 'Customer Connectivity' for creating RPC in GreenField workflow.
    - Output files are created under _/cd3user/tenancies/<customer\_name>/terraform_files/global/rpc_ directory
 
-<br>[Go back to Networking Scenarios](#networking-scenarios)
+<br>[Go back to Networking Scenarios](#executing-networking-scenarios-using-toolkit-via-jenkins)
 <br><br>
 <div align='center'>
 
