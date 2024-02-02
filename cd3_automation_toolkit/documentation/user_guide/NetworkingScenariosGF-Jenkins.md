@@ -19,7 +19,7 @@ Creation of Networking components using Automation Toolkit involves four simple 
  - Executing terraform pipeline to provision the resources in OCI.
  - Exporting the automatically generated Security Rules and Route Rules by the toolkit to CD3 Excel Sheet.
  
-Below are the steps in detail to create Network that includes VCNs, Subnets, DHCP, DRG, Security List, Route Tables, DRG Route Tables, NSGs, etc.
+Below are the steps to create Network that includes VCNs, Subnets, DHCP, DRG, Security List, Route Tables, DRG Route Tables, NSGs, etc.
 
 1. Choose appropriate excel sheet from [Excel Templates](/cd3_automation_toolkit/documentation/user_guide/ExcelTemplates.md) and fill the required Network details in the Networking Tabs - VCNs, DRGs, VCN Info, DHCP, Subnets, NSGs tabs.
    
