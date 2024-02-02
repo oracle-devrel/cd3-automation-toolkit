@@ -121,7 +121,7 @@ Follow the below process to export the rules to the same CD3 Excel Sheet as the 
       - Export DRG Route Rules (From OCI into DRGRouteRulesinOCI sheet)
       - Add/Modify/Delete DRG Route Rules (Reads DRGRouteRulesinOCI sheet)
  
-    Once the execution is successful, 'RouteRulesInOCI', 'SecRulesInOCI', 'DRGRouteRulesInOCI' tabs of the excel sheet will be updated with the rules exported from OCI. Once the execution is successful, _<customer\_name>\_seclists.auto.tfvars_,  _<customer\_name>\routetables.auto.tfvars_ and  _<customer\_name>\drg-routetables.auto.tfvars_ file will be generated under the folder _/cd3user/tenancies/<customer\_name>/terraform_files/<region_dir>/<service_dir>_
+    Once the execution is successful, 'RouteRulesInOCI', 'SecRulesInOCI', 'DRGRouteRulesInOCI' tabs of the excel sheet will be updated with the rules exported from OCI. And _<customer\_name>\_seclists.auto.tfvars_,  _<customer\_name>\routetables.auto.tfvars_ and  _<customer\_name>\drg-routetables.auto.tfvars_ file will be generated under the folder _/cd3user/tenancies/<customer\_name>/terraform_files/<region_dir>/<service_dir>_
     
  4. It will show different stages of execution of _setUpOCI_ pipeline and also launch the _terraform-apply_ pipeline for 'network'.
  5. Click on Proceed for 'Get Approval' stage of the terraform pipeline.
