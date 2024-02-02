@@ -102,16 +102,6 @@ It reads input data in the form of CD3 Excel sheet and generates Terraform files
 | [CIS Landing Zone Compliance](/cd3_automation_toolkit/documentation/user_guide/learn_more/CISFeatures.md#additional-cis-compliance-features) | Download and Execute CIS Compliance Check Script, Cloud Guard, Key Vault, Budget |
 [Policy Enforcement](/cd3_automation_toolkit/documentation/user_guide/learn_more/OPAForCompliance.md) | OPA - Open Policy Agent |
 
-#### Tech Stack of the Automation Toolkit
-These are all open source softwares.
-* Excel
-* Docker/Podman CLI
-* Python 3.8
-* Terraform 1.3
-* OPA 0.55
-* GIT 1.8.3.1
-* Jenkins 2.401.1
-
 [Click here](/cd3_automation_toolkit/documentation/user_guide/prerequisites.md) to get started and manage your OCI Infra!
 
 ## Contributing
