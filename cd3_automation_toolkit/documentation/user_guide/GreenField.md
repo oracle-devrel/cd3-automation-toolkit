@@ -5,7 +5,7 @@
 
 **Step 2**:
 <br>Fill the Excel with appropriate values and put at the appropriate location.
-<br>Modify/Review _/cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties_ with **workflow_type** set to **create_resources** as shown below:
+<br>Modify/Review _/cd3user/tenancies/<customer\_name>/<customer\_name>\_setUpOCI.properties_ with **workflow_type** set to **create_resources** as shown below:
 ```ini
 #Input variables required to run setUpOCI script
 
