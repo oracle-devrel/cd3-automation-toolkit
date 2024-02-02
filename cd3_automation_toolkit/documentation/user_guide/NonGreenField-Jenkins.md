@@ -2,7 +2,7 @@
 
 
 **Step 1**: 
-<br>Choose the appropriate CD3 Excel sheet template from [Excel Templates](/cd3-automation-toolkit/tree/main/cd3_automation_toolkit/example).
+<br>Choose the appropriate CD3 Excel sheet template from [Excel Templates](/cd3_automation_toolkit/documentation/user_guide/ExcelTemplates.md)
 Choose **CD3-Blank-template.xlsx** for an empty sheet.
 
 **Step 2**:
