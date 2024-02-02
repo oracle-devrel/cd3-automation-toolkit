@@ -6,12 +6,12 @@ You can choose to create multiple OCI resources together by selecting multiple o
 ![tuxpi com 1706871371](https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/959dea07-b569-4908-967c-d4d1efbafe04)
 <br>
 
-- Clicking on 'Logs' for Stage: sanjose/compute and clicking on the pipeline will dispay below -
+* Clicking on 'Logs' for Stage: sanjose/compute and clicking on the pipeline will dispay below -
 
 ![tuxpi com 1706871675](https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/65536e92-6612-4c6e-9d79-4a347a5cee9a)
 <br>
 
-- Clicking on 'Logs' for Stage Terraform Plan displays - 
+* Clicking on 'Logs' for Stage Terraform Plan displays - 
 
 ![tuxpi com 1706871787](https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/711e1687-690f-4cbd-8abc-3fd4da108f9f)
 
