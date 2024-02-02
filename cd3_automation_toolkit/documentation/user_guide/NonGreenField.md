@@ -9,11 +9,11 @@
 
 
 **Step 1:** 
-<br>Chose the appropriate CD3 Excel sheet template from [Excel Templates](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md#excel-sheet-templates)
+<br>Chose the appropriate CD3 Excel sheet template from [Excel Templates](/cd3_automation_toolkit/documentation/user_guide/ExcelTemplates.md)
  
 **Step 2:** 
 <br>Put CD3 Excel at the appropriate location.
-<br>Modify/Review [setUpOCI.properties](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md#setupociproperties) with **workflow_type** set to **export_resources**  as shown below:
+<br>Modify/Review _/cd3user/tenancies/<customer\_name>/<customer\_name>\_setUpOCI.properties_ with **workflow_type** set to **export_resources**  as shown below:
 ```ini
 #Input variables required to run setUpOCI script
 
