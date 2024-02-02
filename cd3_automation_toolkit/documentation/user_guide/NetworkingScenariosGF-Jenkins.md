@@ -28,16 +28,16 @@ Below are the steps in detail to create Network that includes VCNs, Subnets, DHC
 3. Choose option _'Validate CD3'_ and then _'Validate Networks'_ to check for syntax errors in Excel sheet. Examine the log file generated at _/cd3user/tenancies/<customer\_name>/<customer\_name>\_cd3validator.log_. If there are errors, please rectify them accordingly and proceed to the next step.
 
 4. Choose _'Create Network'_ under _'Network'_ from the displayed options. Click on Build.
-   
-<img width="347" alt="Screenshot 2024-02-02 at 7 46 37 AM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/c16f8d7b-dd8d-484d-b873-f5ad36facfa9">
 
-6. It will show different stages of execution of _setUpOCI_ pipeline and also launch the _terraform-apply_ pipeline for 'network'.
-7. Click on Proceed for 'Get Approval' stage of the terraform pipeline.
+![tuxpi com 1706881746](https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/8b39e062-5688-4828-97c6-f3f3f2894358)
+
+5. It will show different stages of execution of _setUpOCI_ pipeline and also launch the _terraform-apply_ pipeline for 'network'.
+6. Click on Proceed for 'Get Approval' stage of the terraform pipeline.
        
    This completes the creation of Networking components in OCI. Verify the components in console. However the details of the default security lists and default route tables may not be available in the CD3 Excel sheet yet. Inorder to export that data please follow the below steps:
 
-8. Execute the _setupOCI.py_ pipeline with _Workflow_ as _Create Resources in OCI(Greenfield Workflow)_
-9. Choose _'Network'_ from the displayed options. Choose below sub-options: (Make sure to choose all the three optionsfor the first time)
+7. Execute the _setupOCI.py_ pipeline with _Workflow_ as _Create Resources in OCI(Greenfield Workflow)_
+8. Choose _'Network'_ from the displayed options. Choose below sub-options: (Make sure to choose all the three optionsfor the first time)
    - Security Rules
       - Export Security Rules (From OCI into SecRulesinOCI sheet)
    - Route Rules
