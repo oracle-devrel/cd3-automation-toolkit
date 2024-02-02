@@ -69,7 +69,7 @@ Choose **CD3-Blank-template.xlsx** for an empty sheet.
 <br><br>
 <div align='center'>
 
-| <a href="/cd3_automation_toolkit/documentation/user_guide/GF-Jenkins.md">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/cli_jenkins.md">:arrow_forward: Next</a> |
+| <a href="/cd3_automation_toolkit/documentation/user_guide/multiple_options_GF-Jenkins.md">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/cli_jenkins.md">:arrow_forward: Next</a> |
 | :---- | -------: |
   
 </div>
