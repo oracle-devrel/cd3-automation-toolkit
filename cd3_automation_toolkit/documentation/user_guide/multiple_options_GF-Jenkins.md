@@ -18,8 +18,6 @@ You can chose to create multiple OCI resources together by selecting multiple op
 
 <img width="1223" alt="Screenshot 2024-01-29 at 11 32 13 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/7bd7b4a8-62af-4a98-9250-9d96515cda4d">
 
-- 
-- 
 <br><br>
 <div align='center'>
 
