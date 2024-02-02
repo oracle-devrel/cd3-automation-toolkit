@@ -5,7 +5,7 @@
 
 **Step 2**:
 <br>Fill the Excel with appropriate values and put at the appropriate location.
-<br>Modify/Review [setUpOCI.properties](/cd3_automation_toolkit/documentation/user_guide/RunningAutomationToolkit.md#setupociproperties) with **workflow_type** set to **create_resources** as shown below:
+<br>Modify/Review setUpOCI.properties with **workflow_type** set to **create_resources** as shown below:
 ```ini
 #Input variables required to run setUpOCI script
 
