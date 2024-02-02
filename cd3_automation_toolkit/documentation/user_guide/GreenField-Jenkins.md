@@ -25,6 +25,7 @@ Fill the CD3 Excel with appropriate values.
 
 **Step 4:** 
 <br>Select the workflow as **Create Resources in OCI(Greenfield Workflow)**. Choose single or multiple MainOptions as required and then corresponding SubOptions.
+<br> Please [read](/cd3_automation_toolkit/documentation/user_guide/multiple_options_GF-Jenkins.md) while selcting multiple options simultaneously.
 <br>Below screenshot shows creation of Compartments (under Identity) and Tags.
 
 <img width="395" alt="Screenshot 2024-01-16 at 2 44 38 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/c55f0486-fba4-4c61-9f05-224b128e0143">
