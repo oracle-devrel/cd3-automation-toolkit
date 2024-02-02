@@ -66,7 +66,7 @@ In some scenarios, a DRG has already been created in the tenancy and rest of the
        <br>&nbsp;&nbsp;→ Terraform Plan will indicate to add all the other components except DRG.
        <br>_terraform apply_
 
-   Continue executing the remaining steps (from Step 6) of [Create Network](#1-create-network).
+   Continue executing the remaining steps (from Step 6) of [Create Network](#create-network).
 
 <br>[Go back to Networking Scenarios](#networking-scenarios)
 ### Modify Network 
@@ -75,7 +75,7 @@ Modifying the Networking components using Automation Toolkit involves three simp
  - Running the toolkit to generate auto.tfvars.
  - Executing Terraform commands to provision/modify the resources in OCI.
 
- ***Note***: Follow [these steps](#3-modify-security-rules-route-rules-and-drg-route-rules) to modify Security Rules, Route Rules and DRG Route Rules
+ ***Note***: Follow [these steps](#modify-security-rules-route-rules-and-drg-route-rules) to modify Security Rules, Route Rules and DRG Route Rules
 
 _Steps in detail_:
 1. Modify your excel sheet to update required data in the Tabs - VCNs, DRGs, VCN Info, DHCP and Subnets.
