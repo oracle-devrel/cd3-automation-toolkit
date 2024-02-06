@@ -82,7 +82,7 @@ The CD3 Automation toolkit has been developed to help in automating the OCI reso
 It reads input data in the form of CD3 Excel sheet and generates Terraform files which can be used to provision the resources in OCI instead of handling the task through the OCI console manually. The toolkit also reverse engineers the components in OCI back to the Excel sheet and Terraform configuration. The toolkit can be used throughout the lifecycle of tenancy to continuously create or modify existing resources. The generated Terraform code can be used by the OCI Resource Manager or can be integrated into organization's existing devops CI/CD ecosystem.
 <br><br>
 <kbd>
-<img width="923" alt="Screenshot 2024-02-02 at 8 23 51 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/c2d06575-1bcb-4cb3-9c49-682bf19f3ac9">
+<img width="1012" alt="Screenshot 2024-02-06 at 1 03 52 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/16d7f620-f08e-4596-a871-ece3768a870e">
 
 </kbd>
 <br>
