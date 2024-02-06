@@ -1,7 +1,7 @@
 # Export Resources from OCI (Non-Greenfield Workflow)
 
-  > **Note**
-   
+  > **Note**<br>
+  Please make sure that service for which export is done does not have existing tfvars/state file.<br><br>
   >Course of actions involved in Exporting objects from OCI-     
   > * Automation Tool Kit fetches the data for the supported services. You can chose to export the data from a specific region or the compartment. Exported data is written to appropriate sheets of the CD3 Excel Sheet based on the resources being exported.
   > * Tool Kit then generates the TF configuration files/auto.tfvars files for these exported resources.
