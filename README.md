@@ -5,7 +5,7 @@
   <kbd>
 <img width="1018" alt="Screenshot 2024-02-06 at 1 11 21 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/f989efee-45cc-413b-a706-e1bfe7f2a8fc">
 </kbd><br><br>
-  <li> <a href= "introduction">Introduction</a></li>
+  <li> <a href= "#introduction">Introduction</a></li>
   <li> <a href = "https://github.com/oracle-devrel/cd3-automation-toolkit/releases/tag/v2024.1.0">What's new in this release</a></li>
   <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/learn_more/CD3ExcelTabs.md">Toolkit Supported OCI Services</a></li>
   <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/ExcelTemplates.md">Excel Templates</a></li>  
