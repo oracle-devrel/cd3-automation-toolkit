@@ -33,6 +33,8 @@ To ease the execution of toolkit, we have provided the steps to build an image w
   Eg for Mac: ```docker run --platform linux/amd64 -it -p 8443:8443 -d -v /Users/<user_name>/mount_path:/cd3user/tenancies cd3toolkit:v2024.1.0```
 
   Eg for Windows: ```docker run --platform linux/amd64 -it -p 8443:8443 -d -v D:/mount_path:/cd3user/tenancies cd3toolkit:v2024.1.0```
+  
+> Please make sure to use a private server or a bastion connected server with restricted access(i.e. not publicly available) to host the container.
 
 * Run  ```docker ps```
 
