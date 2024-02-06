@@ -35,7 +35,7 @@ Below table shows the stages executed in this pipeline along with their descript
 ### 2. terraform_files Folder
 
 This is equivalent to **/cd3user/tenancies/<customer_name>/terraform_files** folder on your local system.
-The region directories along with all service directories, are present under this terraform_files folder.
+The region directories along with all service directories, are present under this terraform_files folder. The toolkit will generate the .tfvars files for all resources under the service directory.
 Inside each service directory, pipelines for **terraform-apply** and **terraform-destroy** are present.
 
 The terraform pipelines are either triggered automatically from setUpOCI pipeline or they can be triggered manually by navigating to any service directory path.
