@@ -12,5 +12,6 @@
 * [Part 9 - Execute the CD3 Automation toolkit using Jenkins to export resources from OCI](https://www.youtube.com/watch?v=p4NGLAMs5us&list=PLPIzp-E1msrbJ3WawXVhzimQnLw5iafcp&index=10)
 * [Part 10 - Support for Additional Attributes - CD3 Automation toolkit](https://www.youtube.com/watch?v=6bWWbchS2vk&list=PLPIzp-E1msrbJ3WawXVhzimQnLw5iafcp&index=11)
 * [Configuring OCI Private DNS using CD3](https://www.youtube.com/watch?v=9Ie4t4TzgqQ&list=PLPIzp-E1msrbJ3WawXVhzimQnLw5iafcp&index=12)
-* [https://www.youtube.com/watch?v=NOexp3lqxHU&list=PLPIzp-E1msrbJ3WawXVhzimQnLw5iafcp&index=13](https://www.youtube.com/watch?v=NOexp3lqxHU&list=PLPIzp-E1msrbJ3WawXVhzimQnLw5iafcp&index=13)
+* [Provisioning OCI Object storage Buckets using CD3](https://www.youtube.com/watch?v=NOexp3lqxHU&list=PLPIzp-E1msrbJ3WawXVhzimQnLw5iafcp&index=13)
+
 <br>[Here](https://www.youtube.com/playlist?list=PLPIzp-E1msrbJ3WawXVhzimQnLw5iafcp) is the Youtube playlist link for all these videos.
