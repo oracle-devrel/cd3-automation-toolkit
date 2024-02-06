@@ -32,9 +32,10 @@
   }  
   ```
 
-* For single outdir, tfstate for all subscribed regions will be stored as ```<region>/terraform.tfstate``` eg ```london/terraform.tfstate``` for london ```phoenix/terraform.tfstate``` for phoenix.
-* For multi outdir, tfstate for all services in all subscribed regions will be stored as ```<region>/<service_dir_name>/terraform.tfstate``` eg ```london/tagging/terraform.tfstate``` for tagging dir in london region. See below screenshot showing objects in the bucket storing remote state.
+* For single outdir, tfstate for all subscribed regions will be stored as ```<region>/terraform.tfstate``` eg ```london/terraform.tfstate``` for london ```phoenix/terraform.tfstate``` for phoenix. See below screenshot showing objects in the bucket storing remote state:
+  <img width="1297" alt="Screenshot 2024-02-06 at 8 07 45 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/79c6939c-d785-43e7-99a3-41a95cf90cc8">
   
+* For multi outdir, tfstate for all services in all subscribed regions will be stored as ```<region>/<service_dir_name>/terraform.tfstate``` eg ```london/tagging/terraform.tfstate``` for tagging dir in london region. See below screenshot showing objects in the bucket storing remote state:
     <img width="1485" alt="Screenshot 2024-02-06 at 3 57 02 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/ee7dd418-f998-4ee8-bfe9-f7bd7d0e30ff">
 
 <br><br>
