@@ -72,7 +72,7 @@
    <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/learn_more/CISFeatures.md">Additional CIS Compliance Features</a></li>
    <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/learn_more/SupportForCD3Validator.md">CD3 Validator Features</a></li>   
    <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/learn_more/SupportforAdditionalAttributes.md">Support for Additional Attributes</a></li>
-  <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/Jobs_Migration.md">Migrate Automation Toolkit Jenkins configuration to Customer Environment</a></li>
+  <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/Jobs_Migration.md">Migrate Jenkins configuration to Customer Environment</a></li>
 </ul>
   
 ## Introduction
