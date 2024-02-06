@@ -1,8 +1,17 @@
 # CD3 Automation Toolkit
 
 [![License: UPL](https://img.shields.io/badge/license-UPL-green)](https://img.shields.io/badge/license-UPL-green) [![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=oracle-devrel_cd3-automation-toolkit)](https://sonarcloud.io/dashboard?id=oracle-devrel_cd3-automation-toolkit)
-<ul>
-  <li> <a href= "#introduction">Introduction</a></li>
+
+## Introduction
+CD3 stands for <b>C</b>loud <b>D</b>eployment <b>D</b>esign <b>D</b>eliverable.
+The CD3 Automation toolkit has been developed to help in automating the OCI resource object management. 
+<br><br>
+It reads input data in the form of CD3 Excel sheet and generates Terraform files which can be used to provision the resources in OCI instead of handling the task through the OCI console manually. The toolkit also reverse engineers the components in OCI back to the Excel sheet and Terraform configuration. The toolkit can be used throughout the lifecycle of tenancy to continuously create or modify existing resources. The generated Terraform code can be used by the OCI Resource Manager or can be integrated into organization's existing devops CI/CD ecosystem.
+<br><br>
+<kbd>
+<img width="1010" alt="Screenshot 2024-02-06 at 1 05 40 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/3ae4fc42-3c93-4c6c-9e80-6bef1a03c4fc">
+
+</kbd>
   <li> <a href = "https://github.com/oracle-devrel/cd3-automation-toolkit/releases/tag/v2024.1.0">What's new in this release</a></li>
   <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/learn_more/CD3ExcelTabs.md">Toolkit Supported OCI Services</a></li>
   <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/ExcelTemplates.md">Excel Templates</a></li>  
@@ -75,16 +84,7 @@
   <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/Jobs_Migration.md">Migrate Jenkins configuration to Customer Environment</a></li>
 </ul>
   
-## Introduction
-CD3 stands for <b>C</b>loud <b>D</b>eployment <b>D</b>esign <b>D</b>eliverable.
-The CD3 Automation toolkit has been developed to help in automating the OCI resource object management. 
-<br><br>
-It reads input data in the form of CD3 Excel sheet and generates Terraform files which can be used to provision the resources in OCI instead of handling the task through the OCI console manually. The toolkit also reverse engineers the components in OCI back to the Excel sheet and Terraform configuration. The toolkit can be used throughout the lifecycle of tenancy to continuously create or modify existing resources. The generated Terraform code can be used by the OCI Resource Manager or can be integrated into organization's existing devops CI/CD ecosystem.
-<br><br>
-<kbd>
-<img width="1012" alt="Screenshot 2024-02-06 at 1 03 52 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/16d7f620-f08e-4596-a871-ece3768a870e">
 
-</kbd>
 <br>
 
 #### OCI Services Currently Supported by Automation Toolkit
