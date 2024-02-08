@@ -1,7 +1,7 @@
 # Expected Behaviour Of Automation Toolkit
 
 > [!NOTE]  
-> 1. Automation Tool Kit *DOES NOT* support the creation/export of duplicate resources.<br>
+> 1. Automation Tool Kit *DOES NOT* support the creation/export of duplicate named resources.<br>
 > 2. Automation Tool Kit *DOES NOT* support sharing of Block Volumes.
 
 > [!WARNING] 
