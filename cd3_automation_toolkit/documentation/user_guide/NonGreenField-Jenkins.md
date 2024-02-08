@@ -43,7 +43,7 @@ Choose **CD3-Blank-template.xlsx** for an empty sheet.
 
 **Expected Output of 'Execute setUpOCI' stage:**<br>
 <ol type="a">
-  <li> Overwrites the specific tabs of Excel sheet with the exported resource details from OCI. Please download the updated excel sheet with exported data from /cd3user/tenancies/&lt;customer_name&gt; inside the container.</li>
+  <li> Overwrites the specific tabs of Excel sheet with the exported resource details from OCI. <b>Please download the updated excel sheet with exported data from /cd3user/tenancies/&lt;customer_name&gt; inside the container.</b></li>
   <li> Generates Terraform Configuration files - *.auto.tfvars at /cd3user/tenancies/&lt;customer_name&gt;/terraform_files/&lt;region_dir&gt;/&lt;service_dir&gt;</li>
   <li> Generates shell scripts with import commands - <b>tf_import_commands_&lt;resource&gt;_nonGF.sh</b> at same location as tfvars.</b> </li>
 </ul>
