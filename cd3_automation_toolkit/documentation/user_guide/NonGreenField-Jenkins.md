@@ -1,7 +1,7 @@
 # Export Resources from OCI via Jenkins(Non-Greenfield Workflow)
 
->Note: Please make sure that service for which export is done does not have existing tfvars/state file.
-
+>Note: Please make sure that service directory for which export is done does not have existing tfvars/state file.
+>
 **Step 1**: 
 <br>Choose the appropriate CD3 Excel sheet template from [Excel Templates](/cd3_automation_toolkit/documentation/user_guide/ExcelTemplates.md)
 Choose **CD3-Blank-template.xlsx** for an empty sheet.
