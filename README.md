@@ -1,25 +1,25 @@
 # CD3 Automation Toolkit
 
 [![License: UPL](https://img.shields.io/badge/license-UPL-green)](https://img.shields.io/badge/license-UPL-green) [![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=oracle-devrel_cd3-automation-toolkit)](https://sonarcloud.io/dashboard?id=oracle-devrel_cd3-automation-toolkit)
-
-<ul>
-  <kbd>
+<br><br><br>
+<kbd>
 <img width="1049" alt="Screenshot 2024-02-08 at 10 54 19 AM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/eafaef6a-1919-4d8c-adfc-2f8efb2177a4">
-
-  </kbd><br><br>
+</kbd>
+<ul>
+<br>
   <li> <a href= "#introduction">Introduction</a></li>
   <li> <a href = "https://github.com/oracle-devrel/cd3-automation-toolkit/releases/tag/v2024.1.0">What's new in this release</a></li>
   <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/learn_more/CD3ExcelTabs.md">Toolkit Supported OCI Services</a></li>
   <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/ExcelTemplates.md">Excel Templates</a></li>  
 </ul>
 
-
 ### New Users
-<ul>
-  <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/prerequisites.md">Prerequisites</a></li>
-  <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/Launch_Docker_container.md">Launch the container</a></li>
-  <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/Connect_container_to_OCI_Tenancy.md">Connect container to OCI Tenancy</a></li>
-</ul>
+- <a href = "/cd3_automation_toolkit/documentation/user_guide/prerequisites.md">Prerequisites</a></li><br> 
+- [![Deploy_To_OCI](images/DeployToOCI.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oracle-devrel/cd3-automation-toolkit/archive/refs/heads/develop.zip)<br>
+The button will take you directly to Resource Manager in the OCI Tenancy where you can proceed to fill the details and deploy the Work VM for setting up the Automation Toolkit on Podman container. If you are not logged into OCI tenancy, the button takes you to Oracle Cloud initial page where you must enter your tenancy name and login to OCI first.<br>
+- <a href = "/cd3_automation_toolkit/documentation/user_guide/Launch_Docker_container.md">Launch the container</a> - <i> Skip this step if you are deploying Work VM using OCI RM Stack 
+- <a href = "/cd3_automation_toolkit/documentation/user_guide/Connect_container_to_OCI_Tenancy.md">Connect container to OCI Tenancy</a>
+
 
 #### Using the Automation Toolkit via CLI
 <ul>
