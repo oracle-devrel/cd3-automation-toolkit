@@ -10,6 +10,9 @@
 
 <br>
 
+
+(cd3logo -yet to be added)
+
 CD3 stands for **Cloud Deployment Design Deliverable**. The CD3 Automation toolkit enables you to effortlessly Build, Export and Manage OCI (Oracle Cloud Infrastruture) resources within minutes ⚡️ .
 
 <br>
@@ -28,8 +31,8 @@ CD3 stands for **Cloud Deployment Design Deliverable**. The CD3 Automation toolk
 
 ###  How CD3 works?
 
+(Simple Excel to OCI image representation)
 
-(cd3logo -yet to be added)
 
 <br>
 
