@@ -5,7 +5,7 @@
 
 
 
-[What is CD3](#cd3-automation-toolkit) &nbsp;&nbsp;•&nbsp;&nbsp; [Why CD3](#why-cd3) &nbsp;&nbsp;• &nbsp;&nbsp;[How CD3 works](#how-cd3-works)&nbsp;&nbsp; •&nbsp;&nbsp; [Who can use CD3](#👥-who-can-use-the-toolkit) &nbsp;&nbsp;• &nbsp;&nbsp;[Benefits](#💡-benefits-of-cd3) &nbsp;&nbsp;•&nbsp;&nbsp; [OCI services supported by CD3](#🔖-oci-services-currently-supported-by-automation-toolkit) &nbsp;&nbsp;•&nbsp;&nbsp; [High level workflow](#🔄-high-level-workflow) &nbsp;&nbsp;•&nbsp;&nbsp; [Kick-start](#🚀-ready-to-kick-start-your-cd3-journey)&nbsp;&nbsp;  •&nbsp;&nbsp; [Excel templates]()&nbsp;&nbsp; •  &nbsp;&nbsp;[Contributing](#⭐️-contributing) &nbsp;&nbsp;• &nbsp;&nbsp;[License](#⚠️-license)
+[What is CD3](#cd3-automation-toolkit) &nbsp;&nbsp;•&nbsp;&nbsp; [Why CD3](#why-cd3) &nbsp;&nbsp;• &nbsp;&nbsp;[How CD3 works](#how-cd3-works)&nbsp;&nbsp; •&nbsp;&nbsp; [Who can use CD3](#👥-who-can-use-the-toolkit) &nbsp;&nbsp;• &nbsp;&nbsp; [Benefits](#💡-benefits-of-cd3) &nbsp;&nbsp;•&nbsp;&nbsp; [OCI services supported by CD3](#🔖-oci-services-currently-supported-by-automation-toolkit) &nbsp;&nbsp;•&nbsp;&nbsp; [High level workflow](#🔄-high-level-workflow) &nbsp;&nbsp;•&nbsp;&nbsp; [Kick-start](#🚀-ready-to-kick-start-your-cd3-journey) &nbsp;&nbsp;  •&nbsp;&nbsp; [Excel templates]()&nbsp;&nbsp; •  &nbsp;&nbsp; [Contributing](#⭐️-contributing) &nbsp;&nbsp;• &nbsp;&nbsp; [License](#⚠️-license)
 
 
 <br>
@@ -13,6 +13,7 @@
 CD3 stands for **Cloud Deployment Design Deliverable**. The CD3 Automation toolkit enables you to effortlessly Build, Export and Manage OCI (Oracle Cloud Infrastruture) resources within minutes ⚡️ .
 
 <br>
+
 
 ### Why CD3?
 
@@ -27,13 +28,10 @@ CD3 stands for **Cloud Deployment Design Deliverable**. The CD3 Automation toolk
 
 ###  How CD3 works?
 
-<br>
 
 (cd3logo -yet to be added)
 
 <br>
-
-
 
 The toolkit transforms input data from Excel files into Terraform files, enabling seamless creation of infrastructure in OCI.
 
@@ -52,25 +50,15 @@ The toolkit transforms input data from Excel files into Terraform files, enablin
 
 ### 💡 Benefits of CD3:
 
-<style>
-.custom-bullet {
-  list-style-type: none;
-}
 
-.custom-bullet li::before {
-  content: "✅"; /* Replace with your desired custom bullet symbol */
-  margin-right: 0.5em;
-  color: lightgreen
-}
-</style>
+  ✅ Time savings ⏰ 
+  
+  ✅ Faster infrastructure provisioning 🚀
+  
+  ✅ Scalability 📈
+  
+  ✅ Operational efficiency ⚙️
 
-<ul class="custom-bullet">
-  <li>Time savings ⏰ </li>
-  <li>Faster infrastructure provisioning 🚀</li>
-  <li>Scalability 📈</li>
-  <li>Operational efficiency ⚙️</li>
-
-</ul>
 
 <details>
   <summary><b>Click to know more benefits</b></summary>
