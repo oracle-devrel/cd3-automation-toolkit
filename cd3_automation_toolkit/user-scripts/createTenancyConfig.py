@@ -232,13 +232,13 @@ def update_devops_config(prefix,git_config_file, repo_ssh_url,files_in_repo,dir_
     subprocess.run(['git', 'checkout', '-B', 'main','-q'], cwd=devops_dir,stdout=DEVNULL)
     subprocess.run(['git', 'pull', 'origin', 'main','-q'], cwd=devops_dir,stdout=DEVNULL,stderr=DEVNULL)
 
-    subprocess.run(['git', 'add', '-A'], cwd=devops_dir,stdout=DEVNULL)
+    #subprocess.run(['git', 'add', '-A'], cwd=devops_dir,stdout=DEVNULL)
 
     current_status = subprocess.run(['git', 'status','--porcelain'], cwd=devops_dir,capture_output=True).stdout
     current_status = str(current_status).split('\'')[1]
     if current_status and files_in_repo > 0:
         subprocess.run(['git', 'stash','-q'], cwd=devops_dir,stdout=DEVNULL)
-        subprocess.run(['git', 'rebase','origin/main','-q'], cwd=devops_dir,stdout=DEVNULL)
+        #subprocess.run(['git', 'rebase','origin/main','-q'], cwd=devops_dir,stdout=DEVNULL)
         repo_changes = input("\nData in local terraform_files and repo is not same, which changes you want to retain? Enter local or repo, default is local : ")
         if ("repo" in repo_changes.lower()):
             print("Ignoring local changes......")
@@ -261,7 +261,7 @@ def update_devops_config(prefix,git_config_file, repo_ssh_url,files_in_repo,dir_
         subprocess.run(['git', 'commit', '-m','Initial commit from createTenancyConfig.py'], cwd=devops_dir,stdout=DEVNULL)
         commit_id = subprocess.run(['git', 'rev-parse', '--short', 'HEAD'], cwd=devops_dir,capture_output=True).stdout
         commit_id = str(commit_id).split('\'')[1][:-2]
-        subprocess.run(['git', 'push','origin','main'], cwd=devops_dir)
+        subprocess.run(['git', 'push','origin','main'], cwd=devops_dir,stdout=DEVNULL)
         print("Initial Commit to DevOps Repository done with commit id: " + commit_id)
     except git.exc.GitCommandError as e:
         if ("nothing to commit, working directory clean" in str(e)):
