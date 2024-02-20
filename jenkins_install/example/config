@@ -1,5 +1,0 @@
-Host devops.scmservice.*.oci.oraclecloud.com
- StrictHostKeyChecking no
- User <domain_name>/<user_name>@<tenancy_name>
- IdentityFile <key_path>
-
