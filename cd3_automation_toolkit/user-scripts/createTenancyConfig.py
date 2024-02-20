@@ -21,9 +21,11 @@ from oci.object_storage import ObjectStorageClient
 import git
 import glob
 import yaml
+import subprocess
 sys.path.append(os.getcwd()+"/..")
 from commonTools import *
 from copy import deepcopy
+from subprocess import DEVNULL
 
 global topic_name
 global project_name
@@ -203,21 +205,19 @@ def update_devops_config(prefix,git_config_file, repo_ssh_url,files_in_repo,dir_
     with open(yaml_file_path, "w") as yaml_file:
         cfg = yaml.dump(cfg, stream=yaml_file, default_flow_style=False, sort_keys=False)
     # Clean repo config if exists and initiate git repo
-    #if os.path.exists(devops_dir +".git"):
-    #    dir_util.remove_tree(devops_dir +".git")
-    local_repo = git.Repo.init(devops_dir)
+    subprocess.run(['git', 'init'], cwd=devops_dir,stdout=DEVNULL)
     f = open(devops_dir + ".gitignore", "w")
     git_ignore_file_data = ".DS_Store\n*tfstate*\n*terraform*\ntfplan.out\ntfplan.json\n*backup*\ntf_import_commands*\n*cis_report*\n*.safe\n*stacks.zip\n*cd3Validator*"
     f.write(git_ignore_file_data)
     f.close()
-    existing_remote = local_repo.git.remote()
+    # Cleanup existing "origin" remote and create required one
+    existing_remote = subprocess.run(['git', 'remote'], cwd=devops_dir,capture_output=True).stdout
+    existing_remote = str(existing_remote).split('\'')[1][:-2]
     if existing_remote == "origin":
-        local_repo.delete_remote("origin")
-    origin = local_repo.create_remote("origin", repo_ssh_url)
-    assert origin.exists()
-    assert origin == local_repo.remotes.origin == local_repo.remotes["origin"]
+        subprocess.run(['git', 'remote','remove','origin'], cwd=devops_dir,stdout=DEVNULL)
+    subprocess.run(['git', 'remote', 'add', 'origin',repo_ssh_url], cwd=devops_dir,stdout=DEVNULL)
     try:
-        origin.fetch()  # assure we actually have data. fetch() returns useful information
+        subprocess.run(['git', 'fetch','-q'], cwd=devops_dir,stdout=DEVNULL)
     except Exception as e:
         print(str(e))
         f = open(safe_file, "a")
@@ -226,72 +226,42 @@ def update_devops_config(prefix,git_config_file, repo_ssh_url,files_in_repo,dir_
         f.close()
         exit(1)
 
-    # Setup a local tracking branch of a remote branch
-    local_repo.create_head("main", origin.refs.main)  # create local branch "main" from remote "main"
-    local_repo.heads.main.set_tracking_branch(origin.refs.main)  # set local "main" to track remote "main"
-    local_repo_files = glob.glob(devops_dir+'*')
-    local_repo_files.extend(glob.glob(devops_dir + '.*'))
-    if local_repo.git.status("--porcelain") and files_in_repo > 0:
-        repo_changes = input("\nData in local terraform_files and repo is not same, which changes you want to retain? Enter local or repo, default is local : ")
-        if ("repo" in repo_changes.lower()):
-            dir_util.remove_tree(terraform_files)
-            os.makedirs(terraform_files)
-            local_repo = git.Repo.init(devops_dir)
-            existing_remote = local_repo.git.remote()
-            if existing_remote == "origin":
-                local_repo.delete_remote("origin")
-            origin = local_repo.create_remote("origin", repo_ssh_url)
-            assert origin.exists()
-            assert origin == local_repo.remotes.origin == local_repo.remotes["origin"]
-            origin.fetch()  # assure we actually have data. fetch() returns useful information
-            # Setup a local tracking branch of a remote branch
-            local_repo.create_head("main", origin.refs.main)  # create local branch "main" from remote "main"
-            local_repo.heads.main.set_tracking_branch(origin.refs.main)
-            local_repo.heads.main.checkout()
-        else:
-            tmp_dir = customer_tenancy_dir+"/tmp_repo"
-            if os.path.exists(tmp_dir):
-                dir_util.remove_tree(tmp_dir)
-            os.mkdir(tmp_dir)
-            for item in [f for f in local_repo_files if not f.endswith(".git")]:
-                shutil.move(item, tmp_dir+"/")
-            local_repo.heads.main.checkout()
-            local_repo.git.pull()
-            local_repo_files = glob.glob(devops_dir + '*')
-            local_repo_files.extend(glob.glob(devops_dir + '.*'))
-            for item in [f for f in local_repo_files if not f.endswith(".git")]:
-                if os.path.isfile(item):
-                    os.remove(item)
-                else:
-                    dir_util.remove_tree(item)
-            temp_repo_files = glob.glob(tmp_dir + '/*')
-            temp_repo_files.extend(glob.glob(tmp_dir + '/.*'))
-            for item in [f for f in temp_repo_files if not f.endswith(".git")]:
-                item = item.split("/")[-1]
-                if os.path.isfile(tmp_dir+"/"+item):
-                    shutil.copy(tmp_dir+"/"+item, devops_dir+item)
-                else:
-                    dir_util.copy_tree(tmp_dir+"/"+item,devops_dir+item)
-
-            for f in glob.glob(os.environ['JENKINS_INSTALL'] + "/*.groovy"):
-                shutil.copy2(f, devops_dir)
-
-            dir_util.remove_tree(tmp_dir)
-
-    else:
-        local_repo.heads.main.checkout()
-    local_repo.config_writer().set_value("user", "name", devops_user).release()
-    local_repo.config_writer().set_value("user", "email", devops_user).release()
     for f in glob.glob(os.environ['JENKINS_INSTALL'] + "/*.groovy"):
         shutil.copy2(f, devops_dir)
-    #shutil.copy(os.environ['JENKINS_INSTALL'] + "/singleOutput.groovy", devops_dir + "/singleOutput.groovy")
-    local_repo.git.add('--all')
+    # Create local branch "main" from remote "main"
+    subprocess.run(['git', 'checkout', '-B', 'main','-q'], cwd=devops_dir,stdout=DEVNULL)
+    subprocess.run(['git', 'pull', 'origin', 'main','-q'], cwd=devops_dir,stdout=DEVNULL,stderr=DEVNULL)
+
+    subprocess.run(['git', 'add', '-A'], cwd=devops_dir,stdout=DEVNULL)
+
+    current_status = subprocess.run(['git', 'status','--porcelain'], cwd=devops_dir,capture_output=True).stdout
+    current_status = str(current_status).split('\'')[1]
+    if current_status and files_in_repo > 0:
+        subprocess.run(['git', 'stash','-q'], cwd=devops_dir,stdout=DEVNULL)
+        subprocess.run(['git', 'rebase','origin/main','-q'], cwd=devops_dir,stdout=DEVNULL)
+        repo_changes = input("\nData in local terraform_files and repo is not same, which changes you want to retain? Enter local or repo, default is local : ")
+        if ("repo" in repo_changes.lower()):
+            print("Ignoring local changes......")
+            #subprocess.run(['git', 'stash'], cwd=devops_dir,stdout=DEVNULL)
+            #subprocess.run(['git', 'pull','origin','main'], cwd=devops_dir,stdout=DEVNULL)
+            #subprocess.run(['git', 'stash', 'drop', f'stash@{{{0}}}'], cwd=devops_dir,stdout=DEVNULL)
+        else:
+            print("Updating remote with local changes.....")
+            #subprocess.run(['git', 'stash'], cwd=devops_dir,stdout=DEVNULL)
+            #subprocess.run(['git', 'pull','origin','main'], cwd=devops_dir,stdout=DEVNULL)
+            #subprocess.run(['git', 'stash', 'apply', f'stash@{{{0}}}'], cwd=devops_dir,stdout=DEVNULL)
+            subprocess.run(['git', 'stash', 'pop'], cwd=devops_dir,stdout=DEVNULL)
+            subprocess.run(['git', 'add', '-A'], cwd=devops_dir,stdout=DEVNULL)
+            #subprocess.run(['git', 'stash', 'drop', f'stash@{{{0}}}'], cwd=devops_dir,stdout=DEVNULL)
+
+    subprocess.run(['git', 'config','--global','user.email',devops_user], cwd=devops_dir)
+    subprocess.run(['git', 'config', '--global', 'user.name', devops_user], cwd=devops_dir)
     commit_id='None'
     try:
-        msg = local_repo.git.commit('-m', 'Initial commit from createTenancyConfig.py')
-        commit_id = re.search("\[(.*)\]", msg)
-        commit_id = commit_id.group(1).split(" ")[1]
-        local_repo.git.push()
+        subprocess.run(['git', 'commit', '-m','Initial commit from createTenancyConfig.py'], cwd=devops_dir,stdout=DEVNULL)
+        commit_id = subprocess.run(['git', 'rev-parse', '--short', 'HEAD'], cwd=devops_dir,capture_output=True).stdout
+        commit_id = str(commit_id).split('\'')[1][:-2]
+        subprocess.run(['git', 'push','origin','main'], cwd=devops_dir)
         print("Initial Commit to DevOps Repository done with commit id: " + commit_id)
     except git.exc.GitCommandError as e:
         if ("nothing to commit, working directory clean" in str(e)):
@@ -474,6 +444,10 @@ dir_values = []
 shutil.copy(args.propsfile,config_files+"/"+prefix+"_"+args.propsfile)
 
 # 1. Copy outdir_structure_file
+
+# Copy default outdir_structure_file
+shutil.copy('/cd3user/oci_tools/cd3_automation_toolkit/user-scripts/outdir_structure_file.properties', '/cd3user/oci_tools/cd3_automation_toolkit/user-scripts/.outdir_structure_file.properties')
+
 _outdir_structure_file = ''
 if (outdir_structure_file != '' and outdir_structure_file != "\n"):
     if not os.path.isfile(outdir_structure_file):

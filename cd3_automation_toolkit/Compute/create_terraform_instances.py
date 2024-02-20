@@ -101,6 +101,8 @@ def create_terraform_instances(inputfile, outdir, service_dir, prefix, ct):
         # Perform the plugin match
         plugin_match = None
         plugin_column = fnmatch.filter(df.columns.tolist(), 'Plugin*')
+
+        source_details=[]
         for columnname in dfcolumns:
 
             # Column value
@@ -216,6 +218,22 @@ def create_terraform_instances(inputfile, outdir, service_dir, prefix, ct):
                     else:
                         ssh_key_var_name = columnvalue.strip()
                     tempdict = {'ssh_key_var_name': ssh_key_var_name}
+
+            if columnname == "Source Details":
+                if columnvalue.strip() != '' and columnvalue.strip().lower() != 'nan':
+                    if "ocid1.image.oc1" in columnvalue.strip():
+                        ocid = columnvalue.strip()
+                        type = "image"
+                        source_details.append(type)
+                        source_details.append(ocid)
+                    elif "ocid1.bootvolume.oc1" in columnvalue.strip():
+                        ocid = columnvalue.strip()
+                        type = "bootVolume"
+                        source_details.append(type)
+                        source_details.append(ocid)
+                    elif "::" in columnvalue.strip():
+                        source_details = columnvalue.strip().split("::")
+                    tempdict = {'source_details': source_details}
 
             columnname = commonTools.check_column_headers(columnname)
             tempStr[columnname] = str(columnvalue).strip()

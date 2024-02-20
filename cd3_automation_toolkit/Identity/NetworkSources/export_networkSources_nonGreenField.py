@@ -104,7 +104,7 @@ def export_networkSources(inputfile, outdir, service_dir, config, signer, ct):
                 values_for_column_networkSources = commonTools.export_tags(network_source_info, col_header, values_for_column_networkSources)
 
     commonTools.write_to_cd3(values_for_column_networkSources, cd3file, sheetName)
-    print("Network Sources exported to CD3\n")
+    print("{0} Network Sources exported into CD3.\n".format(len(values_for_column_networkSources["Region"])))
 
     with open(script_file, 'a') as importCommands[ct.home_region]:
         importCommands[ct.home_region].write('\n\nterraform plan\n')

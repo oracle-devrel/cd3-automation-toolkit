@@ -118,9 +118,9 @@ def create_terraform_lbr_hostname_certs(inputfile, outdir, service_dir, prefix, 
                     columnname = commonTools.check_column_headers(columnname)
                     if columnvalue != '':
                         cert_name = re.split('/|\\\\', columnvalue)[-1]
-                        if columnvalue != outdir + '/' +region+'/'+ cert_name :
+                        if columnvalue != outdir + '/' +region+ "/"+ service_dir+ '/'+ cert_name :
                             try:
-                                shutil.copy(columnvalue, outdir + '/' +region+'/'+ cert_name)
+                                shutil.copy(columnvalue, outdir + '/' +region+'/'+ service_dir+ "/"+ cert_name)
                             except shutil.SameFileError:
                                 pass
                         tempdict = { columnname : cert_name }

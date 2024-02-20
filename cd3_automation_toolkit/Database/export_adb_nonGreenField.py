@@ -72,7 +72,16 @@ def print_adbs(region, vnc_client, adb, values_for_column, ntk_compartment_name)
         elif col_header == 'Data Storage Size in TB':
             values_for_column[col_header].append(adb.data_storage_size_in_tbs)
         elif col_header == 'Database Workload':
-            values_for_column[col_header].append(adb.db_workload)
+            val= adb.db_workload
+            if adb.db_workload == "DW":
+                val="adw"
+            elif adb.db_workload == "AJD":
+                val="json"
+            elif adb.db_workload == "OLTP":
+                val="atp"
+            elif adb.db_workload == "APEX":
+                val="apex"
+            values_for_column[col_header].append(val)
         elif col_header == 'License Model':
             values_for_column[col_header].append(adb.license_model)
         elif col_header == 'Character Set':
@@ -152,4 +161,5 @@ def export_adbs(inputfile, outdir, service_dir, config, signer, ct, export_compa
 
     commonTools.write_to_cd3(values_for_column, cd3file, "ADB")
 
-    print("ADBs exported to CD3\n")
+    print("{0} ADBs exported into CD3.\n".format(len(values_for_column["Region"])))
+

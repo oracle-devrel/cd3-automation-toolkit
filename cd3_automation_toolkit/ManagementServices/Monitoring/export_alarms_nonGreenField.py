@@ -131,5 +131,6 @@ def export_alarms(inputfile, outdir, service_dir, config, signer, ct, export_com
             importCommands[reg].write('\n\nterraform plan\n')
 
     commonTools.write_to_cd3(values_for_column, cd3file, sheetName)
-    print(str(len(values_for_column["Region"])) +" Alarms exported to CD3\n")
+    print("{0} Alarms exported into CD3.\n".format(len(values_for_column["Region"])))
+
 

@@ -134,7 +134,7 @@ def insert_values(values_for_column, oci_objs, sheet_dict, region,comp_name, dis
                 values_for_column = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict, values_for_column)
 
 
-def print_lbr_hostname_certs(region, ct, values_for_column_lhc, lbr, LBRs, lbr_compartment_name, network,service_dir):
+def print_lbr_hostname_certs(region, ct, outdir, values_for_column_lhc, lbr, LBRs, lbr_compartment_name, network,service_dir):
 
     for eachlbr in LBRs.data:
 
@@ -868,7 +868,7 @@ def export_lbr(inputfile, outdir, service_dir, config1,signer1, ct, export_compa
         for compartment_name in export_compartments:
                 LBRs = oci.pagination.list_call_get_all_results(lbr.list_load_balancers,compartment_id=ct.ntk_compartment_ids[compartment_name],
                                                                 lifecycle_state="ACTIVE")
-                values_for_column_lhc = print_lbr_hostname_certs(region, ct, values_for_column_lhc, lbr, LBRs, compartment_name, network,service_dir)
+                values_for_column_lhc = print_lbr_hostname_certs(region, ct, outdir, values_for_column_lhc, lbr, LBRs, compartment_name, network,service_dir)
                 values_for_column_lis = print_listener(region, ct, values_for_column_lis,LBRs,compartment_name)
                 values_for_column_bss = print_backendset_backendserver(region, ct, values_for_column_bss, lbr,LBRs,compartment_name)
                 values_for_column_rule = print_rule(region, ct, values_for_column_rule, LBRs, compartment_name)
@@ -932,7 +932,8 @@ def export_lbr(inputfile, outdir, service_dir, config1,signer1, ct, export_compa
     commonTools.write_to_cd3(values_for_column_rule,cd3file, "LB-RuleSet")
     commonTools.write_to_cd3(values_for_column_prs, cd3file, "LB-PathRouteSet")
 
-    print("LBRs exported to CD3\n")
+    print("{0} LBRs exported into CD3.\n".format(len(values_for_column_lhc["Region"])))
+
 
     # writing data
     for reg in export_regions:

@@ -306,7 +306,8 @@ def export_notifications(inputfile, outdir, service_dir, config, signer, ct, exp
 
 
     commonTools.write_to_cd3(values_for_column_notifications, cd3file, sheetName)
-    print("Notifications exported to CD3\n")
+    print("{0} Notifications exported into CD3.\n".format(len(values_for_column_notifications["Region"])))
+
 
     for reg in export_regions:
         with open(script_file, 'a') as importCommands[reg]:

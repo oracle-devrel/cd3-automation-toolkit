@@ -179,7 +179,8 @@ def export_blockvolumes(inputfile, outdir, service_dir, config, signer, ct, expo
                 print_blockvolumes(region, BVOLS, bvol, compute, ct, values_for_column, ntk_compartment_name, display_names, ad_names, export_compartments)
 
     commonTools.write_to_cd3(values_for_column, cd3file, sheetName)
-    print("Block Volumes exported to CD3\n")
+    print("{0} Block Volumes exported into CD3.\n".format(len(values_for_column["Region"])))
+
 
     # writing data
     for reg in export_regions:

@@ -196,4 +196,6 @@ def export_dbsystems_vm_bm(inputfile, outdir, service_dir, config, signer, ct, e
             importCommands[reg].write('\n\nterraform plan\n')
 
     commonTools.write_to_cd3(values_for_column, cd3file, sheetName)
-    print("Virtual Machine and Bare Metal DB Systems exported to CD3\n")
+
+    print("{0} Virtual Machine and Bare Metal DB Systems exported into CD3.\n".format(len(values_for_column["Region"])))
+
