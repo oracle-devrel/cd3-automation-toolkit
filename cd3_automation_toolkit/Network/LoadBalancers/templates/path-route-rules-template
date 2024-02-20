@@ -1,7 +1,0 @@
-        {
-            #Required
-            backend_set_name = "{{ backend_set_tf_name }}"
-            path = "{{ path }}"
-            match_type = "{{ match_type }}"
-        },
-        #Add_Rules_for_{{ lbr_tf_name }}_{{ path_route_set_tf_name }}_here
