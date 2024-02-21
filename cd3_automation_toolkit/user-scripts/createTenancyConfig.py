@@ -232,7 +232,7 @@ def update_devops_config(prefix,git_config_file, repo_ssh_url,files_in_repo,dir_
     subprocess.run(['git', 'checkout', '-B', 'main','-q'], cwd=devops_dir,stdout=DEVNULL)
     subprocess.run(['git', 'pull', 'origin', 'main','-q'], cwd=devops_dir,stdout=DEVNULL,stderr=DEVNULL)
 
-    #subprocess.run(['git', 'add', '-A'], cwd=devops_dir,stdout=DEVNULL)
+    subprocess.run(['git', 'add', '-A'], cwd=devops_dir,stdout=DEVNULL)
 
     current_status = subprocess.run(['git', 'status','--porcelain'], cwd=devops_dir,capture_output=True).stdout
     current_status = str(current_status).split('\'')[1]
