@@ -36,7 +36,7 @@ variable "mp_listing_resource_version" {
 ###################################################################
 
 
-# OCI Automation WorkVM WorkVM details
+# CD3 Automation Toolkit WorkVM details
 
 variable "instance_os_version" {
   description = "Instance OS version"
@@ -107,13 +107,13 @@ variable "ssh_public_key" {
 }
 
 variable "subnet_id" {
-  description = "Subnet OCID to use for OCI Automation WorkVM. Private subnets are recommended."
+  description = "Subnet OCID to use for CD3 Automation Toolkit WorkVM. Private subnets are recommended."
   type        = string
   default     = ""
 }
 
 variable "nsg_id" {
-  description = "NSG OCID to use for OCI Automation WorkVM. Private subnets are recommended."
+  description = "NSG OCID to use for CD3 Automation Toolkit WorkVM. Private subnets are recommended."
   type        = string
   default     = ""
 }
@@ -144,25 +144,25 @@ variable "vcn_strategy" {
 }
 
 variable "existing_vcn_id" {
-  description = "VCN OCID to use for OCI Automation WorkVM."
+  description = "VCN OCID to use for CD3 Automation Toolkit WorkVM."
   type        = string
   default     = ""
 }
 
 variable "existing_subnet_id" {
-  description = "Subnet OCID to use for OCI Automation WorkVM. Private subnets are recommended."
+  description = "Subnet OCID to use for CD3 Automation Toolkit WorkVM. Private subnets are recommended."
   type        = string
   default     = ""
 }
 
 variable "existing_nsg_id" {
-  description = "NSG OCID to use for OCI Automation WorkVM. Private subnets are recommended."
+  description = "NSG OCID to use for CD3 Automation Toolkit WorkVM. Private subnets are recommended."
   type        = string
   default     = ""
 }
 
 variable "assign_existing_nsg" {
-  description = "NSG OCID to use for OCI Automation WorkVM. Private subnets are recommended."
+  description = "NSG OCID to use for CD3 Automation Toolkit WorkVM. Private subnets are recommended."
   type        = bool
   default     = false
 }

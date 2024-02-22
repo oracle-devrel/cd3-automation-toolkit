@@ -2,9 +2,9 @@
 # Copyright (c) Oracle and/or its affiliates. All rights reserved.
 #
 
-title: OCI Automation Toolkit WorkVM
-description: OCI Automation Toolkit WorkVM Deployment
-informationalText: Welcome to OCI Automation WorkVM Deployment wizard
+title: CD3 Automation Toolkit WorkVM
+description: CD3 Automation Toolkit WorkVM Deployment
+informationalText: Welcome to CD3 Automation Toolkit WorkVM Deployment wizard
 schemaVersion: 1.1.0
 version: "20190719"
 locale: "en"
@@ -18,7 +18,7 @@ locale: "en"
 # (Optional) if not groups are given, outputs are not grouped at all.
 
 variableGroups:
-- title : OCI Automation Toolkit WorkVM
+- title : CD3 Automation Toolkit WorkVM
   variables:
    - instance_compartment_strategy
    - parent_compartment_ocid
@@ -33,7 +33,7 @@ variableGroups:
    - instance_fd
    - ssh_public_key
 
-- title : "Networking Details for OCI Automation Toolkit WorkVM"
+- title : "Networking Details for CD3 Automation Toolkit WorkVM"
   variables:
   - vcn_strategy
   - vcn_compartment_ocid
@@ -74,7 +74,7 @@ variableGroups:
 variables:
   instance_compartment_strategy:
     type: enum
-    title: Select Compartment for OCI Automation Toolkit Components
+    title: Select Compartment for CD3 Automation Toolkit Components
     description: Use existing or Create new Compartment. Stack must be provisioned in Home region if selecting new compartment
     enum:
     - "Use Existing Compartment"
@@ -83,8 +83,8 @@ variables:
     default: "Use Existing Compartment"
   instance_compartment_ocid:
     type: oci:identity:compartment:id
-    title: Select OCI Automation WorkVM Compartment
-    description: Compartment for OCI Automation Toolkit WorkVM Components
+    title: Select CD3 Automation Toolkit WorkVM Compartment
+    description: Compartment for CD3 Automation Toolkit WorkVM Components
     default: compartment_ocid
     visible:
       eq:
@@ -106,15 +106,15 @@ variables:
       eq:
       - instance_compartment_strategy
       - "Create New Compartment - Stack must be provisioned in home region"
-    title: Enter New Compartment name for OCI Automation WorkVM components - VM, VCN etc
-    description: New Compartment name for OCI Automation WorkVM components - VM, VCN etc
+    title: Enter New Compartment name for CD3 Automation Toolkit WorkVM components - VM, VCN etc
+    description: New Compartment name for CD3 Automation Toolkit WorkVM components - VM, VCN etc
     type: string
     default: null
     required: true
   instance_name:
     visible:
     title: Enter display name/hostname for Automation Toolkit WorkVM
-    description: OCI Automation Toolkit WorkVM display name/hostname
+    description: CD3 Automation Toolkit WorkVM display name/hostname
     type: string
     default: "workvm"
     #pattern: "^([a-z][a-z0-9_-]{1,60})$"
@@ -167,7 +167,7 @@ variables:
   instance_ad:
     type: oci:identity:availabilitydomain:name
     title: Select Availability domain
-    description: The Availability domain in which to create OCI Automation Toolkit WorkVM
+    description: The Availability domain in which to create CD3 Automation Toolkit WorkVM
     dependsOn:
       compartmentId: ${instance_compartment_ocid}
     required: true
@@ -176,7 +176,7 @@ variables:
   instance_fd:
     type: oci:identity:faultdomain:name
     title: Select Fault domain
-    description: The Fault domain in which to create OCI Automation Toolkit WorkVM
+    description: The Fault domain in which to create CD3 Automation Toolkit WorkVM
     required: true
     dependsOn:
       compartmentId: ${instance_compartment_ocid}
@@ -184,14 +184,14 @@ variables:
   ssh_public_key:
     visible:
     title: "Enter SSH Public Key"
-    description: "Use the corresponding private key to access the OCI Automation Toolkit WorkVM instance"
+    description: "Use the corresponding private key to access the CD3 Automation Toolkit WorkVM instance"
     type: oci:core:ssh:publickey
     required: true
 
   #Networking Details variables
   vcn_strategy:
     type: enum
-    title: Network Details for OCI Automation Toolkit WorkVM
+    title: Network Details for CD3 Automation Toolkit WorkVM
     description: Use existing VCN or Create New VCN
     enum:
     - "Create New VCN"
@@ -218,7 +218,7 @@ variables:
       compartmentId: ${vcn_compartment_ocid}
     required: true
     title: Select Existing VCN
-    description: An existing OCI VCN in which to create the OCI Automation Toolkit WorkVM's network resources. Make sure the VCN has valid internet/NAT gateways
+    description: An existing OCI VCN in which to create the CD3 Automation Toolkit WorkVM's network resources. Make sure the VCN has valid internet/NAT gateways
   existing_subnet_id:
     visible:
       eq:
@@ -230,7 +230,7 @@ variables:
       vcnId: ${existing_vcn_id}
     required: true
     title: Select Existing Subnet
-    description: An existing Subnet in which to create the OCI Automation Toolkit WorkVM.
+    description: An existing Subnet in which to create the CD3 Automation Toolkit WorkVM.
   assign_publicip_existing_subnet:
     visible:
       eq:
@@ -405,7 +405,7 @@ variables:
       - "Create New VCN"
     type: string
     default: ''
-    title: Enter Source IP/CIDR from where OCI Automation Toolkit WorkVM will be accessed. (Rule will be created in NSG to allow ssh on port 22 and jenkins on port 8443)
+    title: Enter Source IP/CIDR from where CD3 Automation Toolkit WorkVM will be accessed. (Rule will be created in NSG to allow ssh on port 22 and jenkins on port 8443)
     #pattern: "^(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]).(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]).(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]).(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\/(3[0-2]|[1-2]?[0-9])$"
     description: Example - 10.0.0.0/24. If left empty, security rules need to be added later to allow required access.
     required: false

@@ -261,7 +261,7 @@ def update_devops_config(prefix,git_config_file, repo_ssh_url,files_in_repo,dir_
         subprocess.run(['git', 'commit', '-m','Initial commit from createTenancyConfig.py'], cwd=devops_dir,stdout=DEVNULL)
         commit_id = subprocess.run(['git', 'rev-parse', '--short', 'HEAD'], cwd=devops_dir,capture_output=True).stdout
         commit_id = str(commit_id).split('\'')[1][:-2]
-        subprocess.run(['git', 'push','origin','main'], cwd=devops_dir,stdout=DEVNULL)
+        subprocess.run(['git', 'push','origin','main'], cwd=devops_dir, stdout=DEVNULL)
         print("Initial Commit to DevOps Repository done with commit id: " + commit_id)
     except git.exc.GitCommandError as e:
         if ("nothing to commit, working directory clean" in str(e)):
