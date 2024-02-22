@@ -5,7 +5,7 @@ These are some additional "**CIS Compliance Features**" which are not part of CD
 
 #### **1. Run CIS compliance checker script**
 
-You can choose to run CIS compliance checker script against your tennacy using the Automation Toolkit itself. It also enables you to download the latest script if needed. Folder with name _<customer\_name>\_cis\_report_ gets created under _/cd3user/tenancies/<customer\_name>/_ and it contains all the reports genertaed by the script.
+You can choose to run CIS compliance checker script against your tennacy using the Automation Toolkit itself. It also enables you to download the latest script if needed. Folder with name ```<customer_name>_cis_report``` gets created under ```/cd3user/tenancies/<customer_name>/``` and it contains all the reports genertaed by the script.
 <br>As a best practice, the script should be executed after every deployment in the tenancy. The output report should be analysed to minimise the reported anomalies as per the design requirements.
 
 #### **2. Create Key/Vault:**

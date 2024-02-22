@@ -8,19 +8,17 @@ Provisioning of compute instances using Automation Toolkit involves the below st
 
 Note below points while adding VM details in the Instances sheet:
 
-1. "Display Name" column is case sensitive. Specified value will be the display name of Instance in OCI console.
+1. "Display Name" column is case sensitive. Specified value will be the display name of Instance in OCI console. <br>
+ <br>
+2. Optional columns can also be left blank - like Fault Domain, IP Address. They will take default values when left empty. <br>
+ <br>
+3. Leave columns: Backup Policy, NSGs, DedicatedVMHost blank if instance doesn't need to be part of any of these. Instances can be made a part of Backup Policy and NSGs later by choosing appropriate option in setUpOCI menu. <br>
+ <br>
 
-2. Optional columns can also be left blank - like Fault Domain, IP Address. They will take default values when left empty.
-
-3. Leave columns: Backup Policy, NSGs, DedicatedVMHost blank if instance doesn't need to be part of any of these. Instances can be made a part of Backup Policy and NSGs later by choosing appropriate option in setUpOCI menu.
-
- 4.
- >Note:
-The column "SSH Key Var Name" accepts SSH key value directly or the name of variable declared in *variables.tf* under the  **instance_ssh_keys** variable containing the key value. Make sure to have an entry in variables_\<region>.tf file with the name you enter in SSH Key Var Name field of the Excel sheet and put the value as SSH key value.
+4. The column "SSH Key Var Name" accepts SSH key value directly or the name of variable declared in *variables.tf* under the  **instance_ssh_keys** variable containing the key value. Make sure to have an entry in variables_\<region>.tf file with the name you enter in SSH Key Var Name field of the Excel sheet and put the value as SSH key value. <br>
 
 >For Eg: If you enter the SSH Key Var Name as **ssh_public_key**, make an entry in variables_\<region>.tf file as shown below:
-
-  
+ 
     variable  'instance_ssh_keys'  {
     type = map(any)
     default = {
@@ -31,12 +29,12 @@ The column "SSH Key Var Name" accepts SSH key value directly or the name of vari
     # exported instance ssh keys
     #instance_ssh_keys_END#
       }
-    }
-
-5. Enter subnet name column value as: \<vcn-name>_\<subnet-name>
-
-6. Source Details column of the excel sheet accepts both image and boot volume as the source for instance to be launched.
-
+    } 
+    
+<br>
+5. Enter subnet name column value as: \<vcn-name>_\<subnet-name> <br>
+<br>
+6. Source Details column of the excel sheet accepts both image and boot volume as the source for instance to be launched. <br>
    Format:
    
            image::\<variable containing ocid of image> or
@@ -55,20 +53,26 @@ Ex: If you enter the Source Details as image::Linux, make an entry in variables_
      # exported instance image ocids
      #instance_source_ocids_END#
     }
-
+<br>
 7. Mention shape to be used in Shape column of the excel sheet. If Flex shape is to be used format is:
+
 
          shape::ocpus
 
          eg: VM.Standard.E3.Flex::5
 
-
-8. Custom Policy Compartment Name : Specify the compartment name where the Custom Policy is created.
-9. Create_Is PV Encryption In Transit Enabled attribute should be set to True to enable encryption for new instances. Default is False.
-10. Update_Is PV Encryption In Transit Enabled attribute should be set to True to enable encryption for existing instances.
-11. Add any additonal attributes (not part of excel sheet already) as per  [this](/cd3_automation_toolkit/documentation/user_guide/learn_more/SupportforAdditionalAttributes.md#support-for-additional-attributes).
+<br>
+8. Custom Policy Compartment Name : Specify the compartment name where the Custom Policy is created. <br>
+<br>
+9. Create_Is PV Encryption In Transit Enabled attribute should be set to True to enable encryption for new instances. Default is False. <br>
+<br>
+10. Update_Is PV Encryption In Transit Enabled attribute should be set to True to enable encryption for existing instances. <br>
+<br>
+11. Add any additonal attributes (not part of excel sheet already) as per  [this](SupportforAdditionalAttributes.md). <br>
+<br>
 12. To enable or disable a plugin for the instance add new column with name as <b>'Plugin \<plugin-name-in-console>' </b> eg 'Plugin Bastion'.
-    Valid values are Enabled or Disabled
+    Valid values are Enabled or Disabled <br>
+
 
 ## Remote Execution/Cloud Init Scenarios 
 ## Managing Remote Execution
@@ -86,7 +90,7 @@ Remote execution should be used as the **last resort or only during initial prov
  - Running the CD3 automation toolkit will generate auto.tfvars.
  - Execute Terraform commands to provision the instances in OCI. Remote executioner will also run after the instance provisioning.
 
- The users can refer to the ```default.yaml``` file which is inside /cd3user/tenancies/<customer_name>/terraform_files/<region>/scripts dir for provisioning the custom playbooks.
+ The users can refer to the ```default.yaml``` file which is inside ```/cd3user/tenancies/<customer_name>/terraform_files/<region>/scripts``` dir for provisioning the custom playbooks.
  
 
 ## Managing Cloud Init
@@ -102,18 +106,15 @@ Remote execution should be used as the **last resort or only during initial prov
 
 On choosing **"Compute"** in the SetUpOCI menu and **"Add/Modify/Delete Instances/Boot Backup Policy"** submenu will allow to launch your VM on OCI tenancy.
 
-Output terraform file generated: \<outdir>/\<region>/\<prefix>_instances.auto.tfvars and \<outdir>/\<region>/\<prefix>_boot-backup-policy.auto.tfvars  under  appropriate \<region> directory.
+Output terraform file generated: ```<outdir>/<region>/<prefix>_instances.auto.tfvars``` and ```<outdir>/<region>/<prefix>_boot-backup-policy.auto.tfvars```  under  appropriate <region> directory.
 
 Once the terraform apply is complete, view the resources under Compute -> Instances for the region.
 
-On re-running the same option you will find the previously existing files being backed up under directory →   \<outdir>/\<region>/backup_instances/\<Date>-\<Month>-\<Time>.
+On re-running the same option you will find the previously existing files being backed up under directory →   ```<outdir>/<region>/backup_instances/<Date>-<Month>-<Time>.```
 
 
 
 <br><br>
 <div align='center'>
-
-| <a href="/cd3_automation_toolkit/documentation/user_guide/NetworkingScenariosGF.md">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/NonGreenField.md">Next :arrow_forward:</a> |
-| :---- | -------: |
   
 </div>

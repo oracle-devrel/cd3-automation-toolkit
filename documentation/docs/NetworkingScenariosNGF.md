@@ -12,24 +12,23 @@ Before you start with Network Export, make sure you have run 'Fetch Compartments
 
 Follow the below steps to export the Networking components that includes VCNs, Subnets, DHCP, DRG, Security List, Route Tables, DRG Route Tables, NSGs, etc to CD3 Excel Sheet and create the Terraform state.
 
-1. Use the [CD3-Blank-Template.xlsx](/cd3_automation_toolkit/example) to export the networking resources into the Tabs - VCNs, DRGs, VCN Info, DHCP, Subnets, NSGs, RouteRulesInOCI, SecRulesInOCI,DRGRouteRulesInOCI tabs.
-   
-2. Execute the _setupOCI.py_ file with _workflow_type_ parameter value to _export_resources_:
-   
-   ```python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties```
-   
+1. Use the [CD3-Blank-Template.xlsx](/cd3_automation_toolkit/example) to export the networking resources into the Tabs - VCNs, DRGs, VCN Info, DHCP, Subnets, NSGs, RouteRulesInOCI, SecRulesInOCI,DRGRouteRulesInOCI tabs. <br>
+<br>   
+2. Execute the _setupOCI.py_ file with _workflow_type_ parameter value to _export_resources_: <br>
+   ```python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties```  <br>
+<br>
 3. Choose one of the below available sub-options from _'Export Network'_ of the main menu. 
-   - Export all Network Components
-   - Export Network components for VCNs, DRGs and DRGRouteRulesinOCI Tabs
-   - Export Network components for DHCP Tab
-   - Export Network components for SecRulesinOCI Tab
-   - Export Network components for RouteRulesinOCI Tab
-   - Export Network components for SubnetsVLANs Tab
-   - Export Network components for NSGs Tab
+   >- Export all Network Components
+   >- Export Network components for VCNs, DRGs and DRGRouteRulesinOCI Tabs
+   >- Export Network components for DHCP Tab
+   >- Export Network components for SecRulesinOCI Tab
+   >- Export Network components for RouteRulesinOCI Tab
+   >- Export Network components for SubnetsVLANs Tab
+   >- Export Network components for NSGs Tab
    
-   Once the execution is successful, networking related .tfvars files and .sh files containing import statements will be generated under the folder _/cd3user/tenancies/<customer\_name>/terraform_files/<region_dir>/<service_dir>_
+   Once the execution is successful, networking related .tfvars files and .sh files containing import statements will be generated under the folder ```/cd3user/tenancies/<customer_name>/terraform_files/<region_dir>/<service_dir>```
    
-   Also,The RPC related .tfvars and .sh files containing import statements will be generated in global directory which is inside the /cd3user/tenancies/<customer\_name>/terraform_files/ folder. 
+   Also,The RPC related .tfvars and .sh files containing import statements will be generated in global directory which is inside the ```/cd3user/tenancies/<customer_name>/terraform_files/``` folder. 
 
    **NOTE:** The **oci_core_drg_attachment_management** for RPC resources will be shown as created at the end of import process, but it doesn't actually create any resources and can be safely ignored.
 
@@ -39,7 +38,8 @@ Follow the below steps to export the Networking components that includes VCNs, S
        <br>_terraform init_
        <br>_Execute the shell scirpts of networking components_
        <br>_terraform plan_
-       <br>&nbsp;&nbsp;→ Terraform Plan must show that all the components are in sync.
+
+   → Terraform Plan must show that all the components are in sync.
    
 This completes the export of Networking components from OCI.
 
@@ -62,9 +62,5 @@ Subnets tab:
 
 
 <br><br>
-<div align='center'>
-
-| <a href="/cd3_automation_toolkit/documentation/user_guide/NonGreenField.md">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/ComputeNGF.md">Next :arrow_forward:</a> |
-| :---- | -------: |
-  
+<div align='center'>  
 </div>

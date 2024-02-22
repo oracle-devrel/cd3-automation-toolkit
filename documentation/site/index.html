@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="description" content="None" />
+      <link rel="shortcut icon" href="img/favicon.ico" />
+    <title>CD3 Documentation</title>
+    <link rel="stylesheet" href="css/theme.css" />
+    <link rel="stylesheet" href="css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Introduction";
+        var mkdocs_page_input_path = "README.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="." class="icon icon-home"> CD3 Documentation
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="./search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href=".">Introduction</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#new-users">New Users</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#using-the-automation-toolkit-via-cli">Using the Automation Toolkit via CLI</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#using-the-automation-toolkit-via-jenkins">Using the Automation Toolkit via Jenkins</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#videos">Videos</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#known-behaviour">Known Behaviour</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#learn-more">Learn More...</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#introduction">Introduction</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#oci-services-currently-supported-by-automation-toolkit">OCI Services Currently Supported by Automation Toolkit</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#contributing">Contributing</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#license">License</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Quick Links</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="CD3ExcelTabs/">OCI services supported by toolkit</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="ExcelTemplates/">Excel Templates</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="prerequisites/">Prerequisites</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="Launch_Docker_container/">Launch the container</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="Connect_container_to_OCI_Tenancy/">Connect container to OCI tenancy</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Toolkit Execution with CLI</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="Workflows/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="GreenField/">Create resources in OCI using CLI (Greenfield Workflow)</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="NetworkingScenariosGF/">Create Network resources-CLI</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="ComputeGF/">Create Compute Instances-CLI</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="OPAForCompliance/">OPA integration</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="NonGreenField/">Export Resources from OCI using CLI (Non-Greenfield Workflow)</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="NetworkingScenariosNGF/">Export Network resources-CLI</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="ComputeNGF/">Export Compute Instances-CLI</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Toolkit execution with Jenkins</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="Workflows-jenkins/">Prerequisites</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="Intro-Jenkins/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="GreenField-Jenkins/">Create resources in OCI using Jenkins(Greenfield Workflow)</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="NetworkingScenariosGF-Jenkins/">Create Network resources-Jenkins</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="GF-Jenkins/">Create compute Instances/OKE/SDDC/Database-Jenkins</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="multiple_options_GF-Jenkins/">Provision multiple services together-Jenkins</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="NonGreenField-Jenkins/">Export Resources from OCI using Jenkins(Non-Greenfield Workflow)</a>
+                  </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="cli_jenkins/">Synchronize Changes between CLI and Jenkins</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Beyond the basics</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="RestructuringOutDirectory/">Grouping generated Terraform files</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="ResourceManagerUpload/">OCI Resource Manager Upload</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="SupportforAdditionalAttributes/">Support for Additional Attributes</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="CISFeatures/">Additional CIS Compliance Features</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="SupportForCD3Validator/">CD3 Validator</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="Jobs_Migration/">Migrate jobs to User's Jenkins environment</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="remote_state/">Remote Management of Terraform State</a>
+                  </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="Upgrade_Toolkit/">Upgrade to latest versions</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Known Behaviour</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="KnownBehaviour/">Expected Behaviour of CD3</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="FAQ/">FAQs</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Videos & Tutorials</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="LearningVideos/">Automation Toolkit Learning Videos</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href=".">CD3 Documentation</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Introduction</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="cd3-automation-toolkit">CD3 Automation Toolkit</h1>
+<p><a href="https://img.shields.io/badge/license-UPL-green"><img alt="License: UPL" src="https://img.shields.io/badge/license-UPL-green" /></a> <a href="https://sonarcloud.io/dashboard?id=oracle-devrel_cd3-automation-toolkit"><img alt="Quality gate" src="https://sonarcloud.io/api/project_badges/quality_gate?project=oracle-devrel_cd3-automation-toolkit" /></a></p>
+<ul>
+  <kbd>
+<img width="1018" alt="Screenshot 2024-02-06 at 1 11 21 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/f989efee-45cc-413b-a706-e1bfe7f2a8fc">
+</kbd><br><br>
+  <li> <a href= "#introduction">Introduction</a></li>
+  <li> <a href = "https://github.com/oracle-devrel/cd3-automation-toolkit/releases/tag/v2024.1.0">What's new in this release</a></li>
+  <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/learn_more/CD3ExcelTabs.md">Toolkit Supported OCI Services</a></li>
+  <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/ExcelTemplates.md">Excel Templates</a></li>  
+</ul>
+
+<h3 id="new-users">New Users</h3>
+<ul>
+  <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/prerequisites.md">Prerequisites</a></li>
+  <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/Launch_Docker_container.md">Launch the container</a></li>
+  <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/Connect_container_to_OCI_Tenancy.md">Connect container to OCI Tenancy</a></li>
+</ul>
+
+<h4 id="using-the-automation-toolkit-via-cli">Using the Automation Toolkit via CLI</h4>
+<ul>
+  <li> <a href="/cd3_automation_toolkit/documentation/user_guide/Workflows.md">Before you Begin</a></li>
+  <li> <a href="/cd3_automation_toolkit/documentation/user_guide/GreenField.md">Create resources in OCI (Greenfield Workflow)</a>
+    <ul>
+      <li> <a href="/cd3_automation_toolkit/documentation/user_guide/learn_more/OPAForCompliance.md"</a> Enforcing OPA (Open Policy Agent) policies for Terraform </li>
+      <li> <a href="/cd3_automation_toolkit/documentation/user_guide/NetworkingScenariosGF.md"</a><b> Must Read :</b> Managing Network for Greenfield Workflow</li>
+      <li> <a href="/cd3_automation_toolkit/documentation/user_guide/ComputeGF.md"</a><b> Must Read :</b> Managing Compute Instances for Greefield Workflow</li>
+    </ul>
+  </li>
+  <li> <a href="/cd3_automation_toolkit/documentation/user_guide/NonGreenField.md">Export Resources from OCI (Non-Greenfield Workflow)</a>
+    <ul>
+      <li><a href ="/cd3_automation_toolkit/documentation/user_guide/NetworkingScenariosNGF.md"</a><b> Must Read : </b> Managing Network for Non-Greenfield Workflow</a></li>
+       <li><a href = "/cd3_automation_toolkit/documentation/user_guide/ComputeNGF.md"</a><b>  Must Read : </b> Managing Compute Instances for Non-Greenfield Workflow </a></li> 
+    </ul>
+</ul>
+
+<h4 id="using-the-automation-toolkit-via-jenkins">Using the Automation Toolkit via Jenkins</h4>
+<ul>
+  <li> <a href="/cd3_automation_toolkit/documentation/user_guide/Workflows-jenkins.md"</a>Before you Begin</a></li>
+  <li> <a href="/cd3_automation_toolkit/documentation/user_guide/Intro-Jenkins.md"</a>Introduction to Jenkins with the toolkit</a></li>
+  <li> <a href="/cd3_automation_toolkit/documentation/user_guide/GreenField-Jenkins.md"</a>Create resources in OCI via Jenkins(Greenfield Workflow)</li>
+    <ul>
+      <li> <a href="/cd3_automation_toolkit/documentation/user_guide/NetworkingScenariosGF-Jenkins.md"</a><b> Must Read :</b> Managing Network for Greenfield Workflow</li>
+      <li> <a href="/cd3_automation_toolkit/documentation/user_guide/GF-Jenkins.md"</a><b>  Must Read : </b> Provisioning of Resources - Instances/OKE/SDDC/Database </li>
+      <li> <a href="/cd3_automation_toolkit/documentation/user_guide/multiple_options_GF-Jenkins.md"</a><b>  Must Read : </b> Provisioning of multiple services together </li>
+    </ul>
+      <li> <a href="/cd3_automation_toolkit/documentation/user_guide/NonGreenField-Jenkins.md"</a>Export Resources from OCI via Jenkins(Non-Greenfield Workflow) </li>     
+  <li> <a href="/cd3_automation_toolkit/documentation/user_guide/cli_jenkins.md">Switch between CLI and Jenkins</a></li>
+  <li> <a href="/cd3_automation_toolkit/documentation/user_guide/remote_state.md">Remote Management of Terraform State File</a></li>
+ </ul>
+
+<p>### Existing Users</p>
+<ul> 
+  <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/Upgrade_Toolkit.md">Steps to Upgrade Your Toolkit</a></li>
+
+</ul>
+
+<h3 id="videos">Videos</h3>
+<ul>
+  <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/LearningVideos.md">Automation Toolkit Learning Videos</a></li>
+</ul>
+
+<h3 id="known-behaviour">Known Behaviour</h3>
+<ul>
+  <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/KnownBehaviour.md">Expected Behaviour Of Automation Toolkit</a></li>
+   <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/FAQ.md">FAQs</a></li> 
+</ul>
+
+<h3 id="learn-more">Learn More...</h3>
+<ul>
+   <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/RestructuringOutDirectory.md">Grouping of generated Terraform files</a></li>
+   <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/learn_more/ResourceManagerUpload.md">OCI Resource Manager Upload</a></li>
+   <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/learn_more/CISFeatures.md">Additional CIS Compliance Features</a></li>
+   <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/learn_more/SupportForCD3Validator.md">CD3 Validator Features</a></li>   
+   <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/learn_more/SupportforAdditionalAttributes.md">Support for Additional Attributes</a></li>
+  <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/Jobs_Migration.md">Migrate Jenkins configuration to Customer Environment</a></li>
+</ul>
+
+<p><br></p>
+<h2 id="introduction">Introduction</h2>
+<p>CD3 stands for <b>C</b>loud <b>D</b>eployment <b>D</b>esign <b>D</b>eliverable.
+The CD3 Automation toolkit has been developed to help in automating the OCI resource object management. 
+<br><br>
+It reads input data in the form of CD3 Excel sheet and generates Terraform files which can be used to provision the resources in OCI instead of handling the task through the OCI console manually. The toolkit also reverse engineers the components in OCI back to the Excel sheet and Terraform configuration. The toolkit can be used throughout the lifecycle of tenancy to continuously create or modify existing resources. The generated Terraform code can be used by the OCI Resource Manager or can be integrated into organization's existing devops CI/CD ecosystem.
+<br><br>
+<kbd>
+<img width="1018" alt="Screenshot 2024-02-06 at 1 11 21 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/f989efee-45cc-413b-a706-e1bfe7f2a8fc">
+</kbd>
+<br></p>
+<h4 id="oci-services-currently-supported-by-automation-toolkit">OCI Services Currently Supported by Automation Toolkit</h4>
+<table>
+<thead>
+<tr>
+<th>OCI Services</th>
+<th>Details</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="/cd3_automation_toolkit/documentation/user_guide/learn_more/CD3ExcelTabs.md#iamidentity">IAM/Identity</a></td>
+<td>Compartments, Groups, Dynamic Groups, Policies, Users, Network Sources</td>
+</tr>
+<tr>
+<td><a href="/cd3_automation_toolkit/documentation/user_guide/learn_more/CD3ExcelTabs.md#governance">Governance</a></td>
+<td>Tags (Namespaces, Tag Keys, Defined Tags, Default Tags, Cost Tracking)</td>
+</tr>
+<tr>
+<td><a href="/cd3_automation_toolkit/documentation/user_guide/learn_more/CD3ExcelTabs.md#network">Network</a></td>
+<td>VCNs, Subnets, VLANs, DRGs, IGWs, NGWs, LPGs, Route Tables, DRG Route, Tables, Security Lists, Network Security Groups, Remote Peering Connections, Application Load Balancer, Network Load Balancers</td>
+</tr>
+<tr>
+<td><a href="/cd3_automation_toolkit/documentation/user_guide/learn_more/CD3ExcelTabs.md#private-dns">DNS Management</a></td>
+<td>Private DNS - Views, Zones, rrsets/records and Resolvers</td>
+</tr>
+<tr>
+<td><a href="/cd3_automation_toolkit/documentation/user_guide/learn_more/CD3ExcelTabs.md#compute">Compute</a></td>
+<td>Instances supporting Market Place Images, Remote Exec, Cloud-Init scripts, Dedicated VM Hosts</td>
+</tr>
+<tr>
+<td><a href="/cd3_automation_toolkit/documentation/user_guide/learn_more/CD3ExcelTabs.md#storage">Storage</a></td>
+<td>FSS, Block and Boot Volumes, Backup Policies, Object Storage Buckets and logging for write events</td>
+</tr>
+<tr>
+<td><a href="/cd3_automation_toolkit/documentation/user_guide/learn_more/CD3ExcelTabs.md#database">Database</a></td>
+<td>Exa Infra, ExaCS, DB Systems VM and BM, ATP, ADW</td>
+</tr>
+<tr>
+<td><a href="/cd3_automation_toolkit/documentation/user_guide/learn_more/CD3ExcelTabs.md#management-services">Management Services</a></td>
+<td>Events, Notifications, Alarms, Service Connector Hub (SCH)</td>
+</tr>
+<tr>
+<td><a href="/cd3_automation_toolkit/documentation/user_guide/learn_more/CD3ExcelTabs.md#developer-services">Developer Services</a></td>
+<td>Resource Manager, Oracle Kubernetes Engine (OKE)</td>
+</tr>
+<tr>
+<td><a href="/cd3_automation_toolkit/documentation/user_guide/learn_more/CD3ExcelTabs.md#logging-Services">Logging Services</a></td>
+<td>VCN Flow Logs, LBaaS access and error Logs, OSS Buckets write Logs</td>
+</tr>
+<tr>
+<td><a href="/cd3_automation_toolkit/documentation/user_guide/learn_more/CD3ExcelTabs.md#sddcs-tab">SDDCs </a></td>
+<td>Oracle Cloud VMWare Solutions (Single Cluster is supported as of now. Multi-cluster support will be included in the upcoming release)</td>
+</tr>
+<tr>
+<td><a href="/cd3_automation_toolkit/documentation/user_guide/learn_more/CISFeatures.md#additional-cis-compliance-features">CIS Landing Zone Compliance</a></td>
+<td>Download and Execute CIS Compliance Check Script, Cloud Guard, Key Vault, Budget</td>
+</tr>
+<tr>
+<td><a href="/cd3_automation_toolkit/documentation/user_guide/learn_more/OPAForCompliance.md">Policy Enforcement</a></td>
+<td>OPA - Open Policy Agent</td>
+</tr>
+</tbody>
+</table>
+<p><a href="/cd3_automation_toolkit/documentation/user_guide/prerequisites.md">Click here</a> to get started and manage your OCI Infra!</p>
+<h2 id="contributing">Contributing</h2>
+<p>This project is open source.  Please submit your contributions by raising an <b>Issue</b> or through <b>Discussion topic</b> in this repository. Currently, we do not accept any pull requests. Oracle appreciates any contributions that are made by the open source community.</p>
+<h2 id="license">License</h2>
+<p>Copyright (c) 2022 Oracle and/or its affiliates.</p>
+<p>Licensed under the Universal Permissive License (UPL), Version 1.0.</p>
+<p>See <a href="LICENSE">LICENSE</a> for more details.</p>
+<p>ORACLE AND ITS AFFILIATES DO NOT PROVIDE ANY WARRANTY WHATSOEVER, EXPRESS OR IMPLIED, FOR ANY SOFTWARE, MATERIAL OR CONTENT OF ANY KIND CONTAINED OR PRODUCED WITHIN THIS REPOSITORY, AND IN PARTICULAR SPECIFICALLY DISCLAIM ANY AND ALL IMPLIED WARRANTIES OF TITLE, NON-INFRINGEMENT, MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.  FURTHERMORE, ORACLE AND ITS AFFILIATES DO NOT REPRESENT THAT ANY CUSTOMARY SECURITY REVIEW HAS BEEN PERFORMED WITH RESPECT TO ANY SOFTWARE, MATERIAL OR CONTENT CONTAINED OR PRODUCED WITHIN THIS REPOSITORY. IN ADDITION, AND WITHOUT LIMITING THE FOREGOING, THIRD PARTIES MAY HAVE POSTED SOFTWARE, MATERIAL OR CONTENT TO THIS REPOSITORY WITHOUT ANY REVIEW. USE AT YOUR OWN RISK.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="CD3ExcelTabs/" class="btn btn-neutral float-right" title="OCI services supported by toolkit">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+    
+      <span><a href="CD3ExcelTabs/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = ".";</script>
+    <script src="js/theme_extra.js"></script>
+    <script src="js/theme.js"></script>
+      <script src="search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
+
+<!--
+MkDocs version : 1.5.3
+Build Date UTC : 2024-02-22 09:50:32.435334+00:00
+-->
