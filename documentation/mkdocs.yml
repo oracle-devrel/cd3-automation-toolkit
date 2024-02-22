@@ -1,53 +1,55 @@
 site_name: CD3 Documentation
 nav:
   - Introduction: README.md
-  - OCI services supported by toolkit: CD3ExcelTabs.md
-  - Excel Templates: ExcelTemplates.md
-  - 'New Users':
+  - 'Quick Links':
+    - OCI services supported by toolkit: CD3ExcelTabs.md
+    - Excel Templates: ExcelTemplates.md
+
+  - 'Getting Started':
     - Prerequisites: prerequisites.md
     - Launch the container: Launch_Docker_container.md
     - Connect container to OCI tenancy: Connect_container_to_OCI_Tenancy.md
-  - 'Using the Automation Toolkit via CLI':
-    - Before you Begin: Workflows.md
-    - Create resources in OCI (Greenfield Workflow): GreenField.md
-    - Enforcing OPA (Open Policy Agent) policies for Terraform: OPAForCompliance.md
-    - Must Read- Managing Network for Greenfield Workflow: NetworkingScenariosGF.md
-    - Must Read- Managing Compute Instances for Greefield Workflow: ComputeGF.md
-    - Export Resources from OCI (Non-Greenfield Workflow): NonGreenField.md
-    - Must Read-  Managing Network for Non-Greenfield Workflow: NetworkingScenariosNGF.md
-    - Must Read- Managing Compute Instances for Non-Greenfield Workflow: ComputeNGF.md
-  - 'Using the Automation Toolkit via Jenkins':
-    - Before you Begin: Workflows-jenkins.md
-    - Introduction to Jenkins with the toolkit: Intro-Jenkins.md
-    - Create resources in OCI via Jenkins(Greenfield Workflow): GreenField-Jenkins.md
-    - Must Read- Managing Network for Greenfield Workflow: NetworkingScenariosGF-Jenkins.md
-    - Must Read- Provisioning of Resources - Instances/OKE/SDDC/Database: GF-Jenkins.md
-    - Must Read- Provisioning of multiple services together: multiple_options_GF-Jenkins.md
-    - Export Resources from OCI via Jenkins(Non-Greenfield Workflow): NonGreenField-Jenkins.md
-    - Switch between CLI and Jenkins: cli_jenkins.md
-    - Remote Management of Terraform State File: remote_state.md
-  - 'Existing Users':
-    - Steps to Upgrade Your Toolkit: Upgrade_Toolkit.md
-  - 'Videos':
-    - Automation Toolkit Learning Videos: LearningVideos.md
-  - 'Known Behaviour':
-    - Expected Behaviour Of Automation Toolkit: KnownBehaviour.md
-    - FAQs: FAQ.md
-  - 'Learn More...':
-    - Grouping of generated Terraform files: RestructuringOutDirectory.md
+
+  - 'Toolkit Execution with CLI':
+    - Overview: Workflows.md
+    - Create resources in OCI using CLI (Greenfield Workflow): GreenField.md
+    - Create Network resources-CLI: NetworkingScenariosGF.md
+    - Create Compute Instances-CLI: ComputeGF.md
+    - OPA integration: OPAForCompliance.md
+    - Export Resources from OCI using CLI (Non-Greenfield Workflow): NonGreenField.md
+    - Export Network resources-CLI: NetworkingScenariosNGF.md
+    - Export Compute Instances-CLI: ComputeNGF.md
+
+  - 'Toolkit execution with Jenkins':
+    - Prerequisites: Workflows-jenkins.md
+    - Overview: Intro-Jenkins.md
+    - Create resources in OCI using Jenkins(Greenfield Workflow): GreenField-Jenkins.md
+    - Create Network resources-Jenkins : NetworkingScenariosGF-Jenkins.md
+    - Create compute Instances/OKE/SDDC/Database-Jenkins: GF-Jenkins.md
+    - Provision multiple services together-Jenkins: multiple_options_GF-Jenkins.md
+    - Export Resources from OCI using Jenkins(Non-Greenfield Workflow): NonGreenField-Jenkins.md
+  - Synchronize Changes between CLI and Jenkins: cli_jenkins.md
+
+  - 'Beyond the basics':
+    - Grouping generated Terraform files: RestructuringOutDirectory.md
     - OCI Resource Manager Upload: ResourceManagerUpload.md
-    - Additional CIS Compliance Features: CISFeatures.md
-    - CD3 Validator Features: SupportForCD3Validator.md
     - Support for Additional Attributes: SupportforAdditionalAttributes.md
-    - Migrate Jenkins configuration to Customer Environment: Jobs_Migration.md
+    - Additional CIS Compliance Features: CISFeatures.md
+    - CD3 Validator: SupportForCD3Validator.md
+    - Migrate jobs to User's Jenkins environment: Jobs_Migration.md
+    - Remote Management of Terraform State: remote_state.md
 
+  - Upgrade to latest versions: Upgrade_Toolkit.md
 
-
-  
-
-
-
-
+  - 'Known Behaviour':
+    - Expected Behaviour of CD3: KnownBehaviour.md
+    - FAQs: FAQ.md
+    
+  - 'Videos & Tutorials':
+    - Automation Toolkit Learning Videos: LearningVideos.md
+    - Tutorials: tutorials.md
+    
+    
 
 
 theme: readthedocs

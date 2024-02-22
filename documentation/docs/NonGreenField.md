@@ -2,10 +2,16 @@
 
   > **Note**<br>
   Please make sure that service for which export is done does not have existing tfvars/state file.<br><br>
-  >Course of actions involved in Exporting objects from OCI-     
-  > * Automation Tool Kit fetches the data for the supported services. You can chose to export the data from a specific region or the compartment. Exported data is written to appropriate sheets of the CD3 Excel Sheet based on the resources being exported.
-  > * Tool Kit then generates the TF configuration files/auto.tfvars files for these exported resources.
-  > * It also generates a shell script - tf_import_commands_`<resource>`_nonGF.sh that has the import commands, to import the state of the resources to tfstate file.(This helps to manage the resources via Terraform in future). 
+  >Course of actions involved in Exporting objects from OCI-
+  <br>
+
+  >- Automation Tool Kit fetches the data for the supported services. You can chose to export the data from a specific region or the compartment. Exported data is written to appropriate sheets of the CD3 Excel Sheet based on the resources being exported. <br>
+  <br>
+
+  >- Tool Kit then generates the TF configuration files/auto.tfvars files for these exported resources. <br>
+  <br>
+
+  >- It also generates a shell script - ```tf_import_commands_<resource>_nonGF.sh``` that has the import commands, to import the state of the resources to tfstate file.(This helps to manage the resources via Terraform in future). 
 
 
 **Step 1:** 
@@ -13,7 +19,7 @@
  
 **Step 2:** 
 <br>Put CD3 Excel at the appropriate location.
-<br>Modify/Review _/cd3user/tenancies/<customer\_name>/<customer\_name>\_setUpOCI.properties_ with **workflow_type** set to **export_resources**  as shown below:
+<br>Modify/Review ```/cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties``` with **workflow_type** set to **export_resources**  as shown below:
 ```ini
 #Input variables required to run setUpOCI script
 
@@ -45,7 +51,7 @@ workflow_type=export_resources
 
 Command to Execute:
 <br>```cd /cd3user/oci_tools/cd3_automation_toolkit/```
-<br>**python setUpOCI.py <path_to_setupOCI.properties> ie**
+<br>**python setUpOCI.py ```<path_to_setupOCI.properties>```  ie**
 <br>```python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties```
   
 → Example execution of the wrapper script:
@@ -79,32 +85,29 @@ c. Shell Script with import commands - tf_import_commands_`<resource>`_nonGF.sh
 ## Example - Export Identity
 Follow the below steps to quickly export Identity components from OCI.
 
-1. Use the excel [CD3-Blank-template](/cd3_automation_toolkit/example) and place it at the location _/cd3user/tenancies/<customer\_name>/_ which is also mapped to your local directory.
+1. Use the excel [CD3-Blank-template](/cd3_automation_toolkit/example) and place it at the location ```/cd3user/tenancies/<customer_name>``` which is also mapped to your local directory. <br>
+<br>
 
-2. Edit the _setUpOCI.properties_ at location:_/cd3user/tenancies /<customer\_name>/<customer\_name>\_setUpOCI.properties_ with appropriate values. 
-   - Update the _cd3file_ parameter to specify the CD3 excel sheet path.
-   - Set the _workflow_type_ parameter value to _export_resources_. (for Non Greenfield Workflow.)
+2. Edit the _setUpOCI.properties_ at location:```/cd3user/tenancies <customer_name>/<customer_name>_setUpOCI.properties``` with appropriate values. 
+   >- Update the _cd3file_ parameter to specify the CD3 excel sheet path.
+   >- Set the _workflow_type_ parameter value to _export_resources_. (for Non Greenfield Workflow.)
      
 3. Change Directory to 'cd3_automation_toolkit' :
-    ```cd /cd3user/oci_tools/cd3_automation_toolkit/```
-    
-   and execute the _setupOCI.py_ file:
-   
-   ```python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties```
- 4. Choose option 'Export Identity' from the displayed menu. Once the execution is successful, you will see:
+    ```cd /cd3user/oci_tools/cd3_automation_toolkit/``` and execute the _setupOCI.py_ file: <br>
+    ```python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties``` <br>
+   <br>
+
+4. Choose option 'Export Identity' from the displayed menu. Once the execution is successful, you will see:
       <ul>
-      <li><b>Filled in tabs</b>-<i>Compartments, Groups, Polecies of Excel sheet</i></li>
+      <li><b>Filled in tabs</b>-<i>Compartments, Groups, Policies of Excel sheet</i></li>
       <li><i>tf_import_commands_identity_nonGF.sh</i></li>
       <li><i>&lt;customer_name>_compartments.auto.tfvars, &lt;customer_name>_groups.auto.tfvars, &lt;customer_name>_policies.auto.tfvars</i></li>
       </ul>
    
- 5. Execute _tf\_import\_commands\_identity_nonGF.sh_ to start importing the identity components into tfstate file.
+ 5. Execute _tf\_import\_commands\_identity_nonGF.sh_ to start importing the identity components into tfstate file. <br>
+ <br>
  6. Repeat the above process (except Step 5) to export other components from OCI.
 <br><br>
 <div align='center'>
-
-| <a href="/cd3_automation_toolkit/documentation/user_guide/NetworkingScenariosGF.md">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/NetworkingScenariosNGF.md">Next :arrow_forward:</a> |
-| :---- | -------: |
-  
 </div>
 

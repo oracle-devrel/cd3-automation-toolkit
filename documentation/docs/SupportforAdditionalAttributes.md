@@ -20,7 +20,7 @@ Uncomment the parameter in **instance.tf** file if not already uncommented.
 
 <img src =https://user-images.githubusercontent.com/115973871/215402973-72857dbd-5efd-40d9-8a7f-3541eb85af66.png width=50% height=50%>
 
-Uncomment the parameter in **cd3_automation_toolkit\Compute\templates\instance-template** . Any line that is between {# <and> #} are commented in Jinja templates. From the screenshot below we note that the condition for **preserve_boot_volume**  is within the Jinja comments. Copy the highlighted line and place it after/outside line 184 (**#}**) as per below screenshot.
+Uncomment the parameter in instance-template** . Any line that is between {# <and> #} are commented in Jinja templates. From the screenshot below we note that the condition for **preserve_boot_volume**  is within the Jinja comments. Copy the highlighted line and place it after/outside line 184 (**#}**) as per below screenshot.
 
 **Before**
   

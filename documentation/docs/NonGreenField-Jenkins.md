@@ -1,9 +1,9 @@
 # Export Resources from OCI via Jenkins(Non-Greenfield Workflow)
 
->Note: Please make sure that service for which export is done does not have existing tfvars/state file.
+> **Note:**: Please make sure that service for which export is done does not have existing tfvars/state file.
 
 **Step 1**: 
-<br>Choose the appropriate CD3 Excel sheet template from [Excel Templates](/cd3_automation_toolkit/documentation/user_guide/ExcelTemplates.md)
+<br>Choose the appropriate CD3 Excel sheet template from [Excel Templates](ExcelTemplates.md)
 Choose **CD3-Blank-template.xlsx** for an empty sheet.
 
 **Step 2**:
@@ -11,7 +11,7 @@ Choose **CD3-Blank-template.xlsx** for an empty sheet.
 
 <img width="702" height="400" alt="Screenshot 2024-01-16 at 10 56 42 AM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/0674eebb-ca12-4050-97e8-06d67e6cd58f"><br>
 
->Note - Only one user at a time using the Jenkins setup is supported in the current release of the toolkit.
+> **Note:** - Only one user at a time using the Jenkins setup is supported in the current release of the toolkit.
 
 **Step 3**:
 <br>Upload the above chosen Excel sheet in **Excel_Template** section.
@@ -58,7 +58,7 @@ Choose **CD3-Blank-template.xlsx** for an empty sheet.
 **Expected Output of Terraform Pipelines:**<br>
 <ol type="a">
   <li>Respective pipelines will get triggered automatically from setUpOCI pipeline based on the services chosen for export. You could also trigger manually when required.</li>
-  <li> If 'Run Import Commands' stage was successful (ie tf_import_commands_&lt;resource&gt;_nonGF.sh ran successfully for all services chosen for export), respective terraform pipelines triggered should have 'Terraform Plan' stage show as 'No Changes'  </li>
+  <li> If 'Run Import Commands' stage was successful (ie.. tf_import_commands_&lt;resource&gt;_nonGF.sh ran successfully for all services chosen for export), respective terraform pipelines triggered should have 'Terraform Plan' stage show as 'No Changes'  </li>
 </ul>
 </ol>
     
@@ -66,11 +66,3 @@ Choose **CD3-Blank-template.xlsx** for an empty sheet.
     
 > **Note:**<br>
 >   Once you have exported the required resources and imported into tfstate, you can use the toolkit to modify them or create new on top of them using 'Create Resources in OCI' workflow.
-
-<br><br>
-<div align='center'>
-
-| <a href="/cd3_automation_toolkit/documentation/user_guide/multiple_options_GF-Jenkins.md">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/cli_jenkins.md">:arrow_forward: Next</a> |
-| :---- | -------: |
-  
-</div>

@@ -17,12 +17,13 @@ Our carefully crafted policies act as gatekeepers, preventing any IAC deployment
         opa --help
     Currently CD3 container has OPA version 0.55.0 installed.
 
- 3. Generate the terraform plan output in json format since OPA accepts that format alone for evaluation.
+ 2. Generate the terraform plan output in json format since OPA accepts that format alone for evaluation.
+ 
    
          terraform plan -out tfplan.binary
 	     terraform show -json tfplan.binary > tfplan.json
 
- 4. Run the terraform plan against all the available OPA rules. It should return an empty array which means the plan has no non-compliant action against CIS benchmarks.
+ 3. Run the terraform plan against all the available OPA rules. It should return an empty array which means the plan has no non-compliant action against CIS benchmarks.
 
         opa eval -f pretty -b /cd3user/oci_tools/cd3_automation_toolkit/user-scripts/OPA -i tfplan.json data.terraform.deny --fail-defined
 
@@ -31,13 +32,10 @@ Alternatively, run the following command to evaluate just a sinle OPA rule say "
 
         opa eval -f pretty -d /cd3user/oci_tools/cd3_automation_toolkit/user-scripts/OPA/Networking/oci_deny_ingress_for_sl.rego -i tfplan.json data.terraform.deny
 
-
 This command will analyze the "tfplan.json" input file against the policy and display the evaluation results with a user-friendly format.
 
 <br><br>
 <div align='center'>
 
-| <a href="/cd3_automation_toolkit/documentation/user_guide/GreenField.md">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/NetworkingScenariosGF.md">Next :arrow_forward:</a> |
-| :---- | -------: |
-  
+ 
 </div>

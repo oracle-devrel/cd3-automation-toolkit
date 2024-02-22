@@ -3,7 +3,7 @@
 ## Execute setUpOCI Pipeline
 
 **Step 1**: 
-<br>Choose the appropriate CD3 Excel sheet template from [Excel Templates](/cd3_automation_toolkit/documentation/user_guide/ExcelTemplates.md).
+<br>Choose the appropriate CD3 Excel sheet template from [Excel Templates](ExcelTemplates.md).
 Fill the CD3 Excel with appropriate values.
 
 
@@ -25,7 +25,7 @@ Fill the CD3 Excel with appropriate values.
 
 **Step 4:** 
 <br>Select the workflow as **Create Resources in OCI(Greenfield Workflow)**. Choose single or multiple MainOptions as required and then corresponding SubOptions.
-<br> Please [read](/cd3_automation_toolkit/documentation/user_guide/multiple_options_GF-Jenkins.md) while selcting multiple options simultaneously.
+<br> Please [read](multiple_options_GF-Jenkins.md) while selcting multiple options simultaneously.
 <br>Below screenshot shows creation of Compartments (under Identity) and Tags.
 
 <img width="395" alt="Screenshot 2024-01-16 at 2 44 38 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/c55f0486-fba4-4c61-9f05-224b128e0143">
@@ -48,7 +48,8 @@ Click on 'Logs' for Stage: phoenix/identity and click on the pipeline link.
 <img width="1402" height="400" alt="Screenshot 2024-01-17 at 11 58 15 AM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/9d14e5ae-92ec-4fea-9ad0-4866b17737a1"><br>
 > ***Note - Navigating to Dashboard displays pipelines that are in running state at the bottom left corner.***<br>
 > ***Or you can also navigate from Dashboard using the region based view (Dashboard -> phoenix View -> service specific pipeline)***<br>
-> ***in this example it would be:*** <br>
+<br>
+> ***In this example it would be:*** <br>
 > &emsp; ***terraform_files » phoenix » tagging » terraform-apply*** <br>
 > &emsp; ***terraform_files » phoenix » identity » terraform-apply*** <br>
 
@@ -80,9 +81,4 @@ Click on 'Logs' for Stage: phoenix/identity and click on the pipeline link.
 
 <br><br>
 
-<div align='center'>
-
-| <a href="/cd3_automation_toolkit/documentation/user_guide/Intro-Jenkins.md">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/NetworkingScenariosGF-Jenkins.md">Next :arrow_forward:</a> |
-| :---- | -------: |
-  
-</div>
+<div align='center'></div>
