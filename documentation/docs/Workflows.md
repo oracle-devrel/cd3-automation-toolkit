@@ -3,7 +3,7 @@
 ### **Prepare setUpOCI.properties**
 **Current Version:  setUpOCI.properties v2024.1.0**
 
-Make sure to use/modify the properties file at _/cd3user/tenancies /<customer\_name>/<customer\_name>\_setUpOCI.properties_ during executions.
+Make sure to use/modify the properties file at _/cd3user/tenancies/<customer\_name\>/<customer\_name>\_setUpOCI.properties_ during executions.
 
 ```ini
 [Default]
