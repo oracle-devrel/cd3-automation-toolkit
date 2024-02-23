@@ -12,11 +12,11 @@
 
 <br>
 
-CD3 stands for **Cloud Deployment Design Deliverable**. The CD3 Automation toolkit enables you to effortlessly Build, Export and Manage OCI (Oracle Cloud Infrastruture) resources within minutes ⚡️ .
+CD3 stands for **Cloud Deployment Design Deliverable**. The CD3 Automation toolkit enables you to effortlessly Build, Export and Manage OCI (Oracle Cloud Infrastruture) resources using IaC within minutes ⚡️ .
 
 <br>
 
-Click the below button to quickly launch CD3 toolkit container in OCI and start managing your Infra!!
+Click the below button to quickly launch CD3 toolkit container in OCI and start managing your Infra as Code!!
 <br>
 
 [![Deploy_To_OCI](https://oci-resourcemanager-plugin.plugins.oci.oraclecloud.com/latest/deploy-to-oracle-cloud.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oracle-devrel/cd3-automation-toolkit/archive/refs/heads/develop.zip)
@@ -28,9 +28,9 @@ Click the below button to quickly launch CD3 toolkit container in OCI and start 
 
 ⏳ For Enterprise infrastructures, manual resource provisioning is tedious and error-prone.
 
-📝 While Terraform automates, filling variable values for each module can be cumbersome and requires Terraform expertise.
+📝 Creating Terraform Code for each module/resource can be cumbersome and requires Terraform expertise.
 
-🔁 Manually created configs are hard to reuse for different environments or deployments .
+🔁 Manually created infrastrucutre is hard to rebuild for different environments or regions.
 
 <br>
 
@@ -39,7 +39,7 @@ Click the below button to quickly launch CD3 toolkit container in OCI and start 
 
 The toolkit transforms input data from Excel files into Terraform files, enabling seamless creation of infrastructure in OCI.
 
-**CD3 isn't just about creation!!!** ⬅️ Reverse engineer existing infrastructure back into Excel and gain complete control over your OCI resources lifecycle. 
+**CD3 isn't just about creation!!!** ⬅️ Reverse engineer existing infrastructure back into Excel and IaC(terraform) to gain complete control over your OCI resources lifecycle. 
 
 📜 The generated Terraform code can be used by the OCI Resource Manager or can be integrated into organization's existing Devops CI/CD ecosystem.
 
@@ -47,7 +47,7 @@ The toolkit transforms input data from Excel files into Terraform files, enablin
 
 ## 👥 Who can use the toolkit??
 
-  Anyone who wants to create or export OCI resources without much effort. 
+  Anyone who wants to create/modify or export OCI resources without much effort. 
 
 <br>
 
