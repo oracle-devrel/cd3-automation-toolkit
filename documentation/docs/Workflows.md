@@ -41,29 +41,32 @@ workflow_type=create_resources
 |config\_file|Python config file|/cd3user/tenancies/<customer\_name>/.config_files/<customer\_name>_config|
 |outdir\_structure\_file |Parameter specifying single outdir or different for different services|Blank or <customer\_name>_outdir_structure_file.properties|
 | cd3file |Path to the Excel input file |/cd3user/tenancies/<customer\_name>/testCD3. xlsx |
-|workflow\_type |greenfield workflow or non-greenfield workflow| See <a href = /cd3_automation_toolkit/documentation/user_guide/Workflows.md#automation-toolkit-workflows> Automation Toolkit Workflows</a> for more information|
+|workflow\_type |Create Resources in OCI or Export Resources from OCI | create_resources or export_resources |
 
 
-### **Automation Toolkit Workflows:**
+**Automation Toolkit Workflows:**
+
 CD3 Automation Tool Kit supports 2 main workflows:
-1.	<a href="/cd3_automation_toolkit/documentation/user_guide/GreenField.md">Create Resources in OCI (Greenfield Workflow)</a> - Empty OCI tenancy (or) do not need to modify / use any existing resources.
-2.	<a href="/cd3_automation_toolkit/documentation/user_guide/NonGreenField.md">Export Resources from OCI (Non-Greenfield Workflow)</a> - Need to use / manage existing resources.  Export existing resources into CD3 & TF State, then use the Greenfield workflow.
+
+1.	<a href="/GreenField.md">Create Resources in OCI (Greenfield Workflow)</a> - Empty OCI tenancy (or) do not need to modify / use any existing resources.
+2.	<a href="/NonGreenField.md">Export Resources from OCI (Non-Greenfield Workflow)</a> - Need to use / manage existing resources.  Export existing resources into CD3 & TF State, then use the Greenfield workflow to modify them or create more resources on top of them.
 
 
 
 ### **Execution Steps Overview:**
-Choose the appropriate CD3 Excel Sheet and update the setUpOCI.properties file at _/cd3user/tenancies/<customer\_name>/<customer\_name>\_setUpOCI.properties_ and run the commands below:
+Choose the appropriate CD3 Excel Sheet and update the setUpOCI.properties file at _/cd3user/tenancies/<customer\_name\>/<customer\_name\>_setUpOCI.properties_ and run the commands below:
 
 **Step 1**:
 <br>Change Directory to 'cd3_automation_toolkit'
 <br>```cd /cd3user/oci_tools/cd3_automation_toolkit/```
 
 **Step 2**:
-<br>Place Excel sheet at appropriate location in your container and provide the corresponding path in _cd3file_ parmeter of: _/cd3user/tenancies /<customer\_name>/<customer\_name>\_setUpOCI.properties_ file
+<br>Place Excel sheet at appropriate location in your container and provide the corresponding path in _/cd3user/tenancies/<customer\_name\>/<customer\_name\>_setUpOCI.properties_ file
 
 **Step 3**
 <br>
 Execute the setUpOCI Script:                                                                                                                                           <br>```python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties```
+
 <br> → Example execution of the script:
 
 ```
@@ -75,12 +78,4 @@ Do you want to run it now? (y|n):
 → This prompt appears for the very first time when you run the toolkit or when any new compartments are created using the toolkit. Enter 'y' to fetch the details of compartment OCIDs into variables file.
 <br>→ After fetching the compartment details, the toolkit will display the menu options.
 
-
-<br><br>
-<div align='center'>
-
-| <a href="/cd3_automation_toolkit/documentation/user_guide/Connect_container_to_OCI_Tenancy.md">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/GreenField.md">Next :arrow_forward:</a> |
-| :---- | -------: |
-  
-</div>
 
