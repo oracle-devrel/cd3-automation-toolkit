@@ -45,12 +45,17 @@
               </ul>
               <p class="caption"><span class="caption-text">Quick Links</span></p>
               <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../CD3ExcelTabs/">OCI services supported by toolkit</a>
-                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../ExcelTemplates/">Excel Templates</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../CD3ExcelTabs/">Adding resources data in Excel templates</a>
+                  </li>
               </ul>
-              <p class="caption"><span class="caption-text">Getting Started</span></p>
+              <p class="caption"><span class="caption-text">Getting Started-Deploy to OCI</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../singleclickdeploy/">Single click container launch</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Getting Started-Local system</span></p>
               <ul>
                   <li class="toctree-l1"><a class="reference internal" href="../prerequisites/">Prerequisites</a>
                   </li>
@@ -135,6 +140,8 @@
               <ul>
                   <li class="toctree-l1"><a class="reference internal" href="../LearningVideos/">Automation Toolkit Learning Videos</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../tutorials/">Tutorials</a>
+                  </li>
               </ul>
       </div>
     </div>
@@ -176,7 +183,7 @@
 <p><img src =https://user-images.githubusercontent.com/115973871/215402830-d7856e2d-0bd9-43b9-94bd-df039a90b942.png width=50% height=50%></p>
 <p>Uncomment the parameter in <strong>instance.tf</strong> file if not already uncommented.</p>
 <p><img src =https://user-images.githubusercontent.com/115973871/215402973-72857dbd-5efd-40d9-8a7f-3541eb85af66.png width=50% height=50%></p>
-<p>Uncomment the parameter in <strong>cd3_automation_toolkit\Compute\templates\instance-template</strong> . Any line that is between {# <and> #} are commented in Jinja templates. From the screenshot below we note that the condition for <strong>preserve_boot_volume</strong>  is within the Jinja comments. Copy the highlighted line and place it after/outside line 184 (<strong>#}</strong>) as per below screenshot.</p>
+<p>Uncomment the parameter in instance-template<strong> . Any line that is between {# <and> #} are commented in Jinja templates. From the screenshot below we note that the condition for </strong>preserve_boot_volume<strong>  is within the Jinja comments. Copy the highlighted line and place it after/outside line 184 (</strong>#}**) as per below screenshot.</p>
 <p><strong>Before</strong></p>
 <p><img src =https://user-images.githubusercontent.com/115973871/215403279-c28634cb-58de-4e72-bfe3-1941b7c28d69.png width=50% height=50%></p>
 <p><strong>After</strong></p>

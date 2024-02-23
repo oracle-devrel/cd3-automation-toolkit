@@ -45,12 +45,17 @@
               </ul>
               <p class="caption"><span class="caption-text">Quick Links</span></p>
               <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../CD3ExcelTabs/">OCI services supported by toolkit</a>
-                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../ExcelTemplates/">Excel Templates</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../CD3ExcelTabs/">Adding resources data in Excel templates</a>
+                  </li>
               </ul>
-              <p class="caption"><span class="caption-text">Getting Started</span></p>
+              <p class="caption"><span class="caption-text">Getting Started-Deploy to OCI</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../singleclickdeploy/">Single click container launch</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Getting Started-Local system</span></p>
               <ul>
                   <li class="toctree-l1"><a class="reference internal" href="../prerequisites/">Prerequisites</a>
                   </li>
@@ -133,6 +138,8 @@
               <ul>
                   <li class="toctree-l1"><a class="reference internal" href="../LearningVideos/">Automation Toolkit Learning Videos</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../tutorials/">Tutorials</a>
+                  </li>
               </ul>
       </div>
     </div>
@@ -165,7 +172,7 @@
 <p>There can be scenarios when you need to update the <strong>terraform_files</strong> folder manually via CLI. Below are some examples:</p>
 <ul>
 <li>You executed setUpOCI script to generate tfvars for some resources via CLI.</li>
-<li>You updated <strong>variables_\&lt;region&gt;.tf</strong> file to update image OCID or SSH Key for Compute or Database etc.</li>
+<li>You updated <strong>variables_&lt;region&gt;.tf</strong> file to update image OCID or SSH Key for Compute or Database etc.</li>
 </ul>
 <p>Please folow below steps to sync local terraform_files folder to OCI DevOps GIT Repo:</p>
 <ul>
@@ -173,7 +180,9 @@
 <li><code>git status</code>
   <br>Below screenshot shows changes in variables_phoenix.tf file under phoenix/compute folder.</li>
 </ul>
+<blockquote>
 <p><img width="556" alt="Screenshot 2024-01-17 at 9 12 39 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/e805c930-6aa8-4f16-a65a-e9e8fe1465c4"></p>
+</blockquote>
 <ul>
 <li>
 <p><code>git add -A .</code></p>
@@ -187,13 +196,6 @@
 <p><img width="1500" height="300" alt="Screenshot 2024-01-17 at 9 14 24 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/69ecca46-ff55-4e3f-ad0b-36e18d7347e3"></p>
 </li>
 </ul>
-<p><br><br></p>
-<div align='center'>
-
-| <a href="/cd3_automation_toolkit/documentation/user_guide/NonGreenField-Jenkins.md">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/remote_state.md">:arrow_forward: Next</a> |
-| :---- | -------: |
-
-</div>
               
             </div>
           </div><footer>

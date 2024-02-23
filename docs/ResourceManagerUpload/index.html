@@ -45,12 +45,17 @@
               </ul>
               <p class="caption"><span class="caption-text">Quick Links</span></p>
               <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../CD3ExcelTabs/">OCI services supported by toolkit</a>
-                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../ExcelTemplates/">Excel Templates</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../CD3ExcelTabs/">Adding resources data in Excel templates</a>
+                  </li>
               </ul>
-              <p class="caption"><span class="caption-text">Getting Started</span></p>
+              <p class="caption"><span class="caption-text">Getting Started-Deploy to OCI</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../singleclickdeploy/">Single click container launch</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Getting Started-Local system</span></p>
               <ul>
                   <li class="toctree-l1"><a class="reference internal" href="../prerequisites/">Prerequisites</a>
                   </li>
@@ -133,6 +138,8 @@
               <ul>
                   <li class="toctree-l1"><a class="reference internal" href="../LearningVideos/">Automation Toolkit Learning Videos</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../tutorials/">Tutorials</a>
+                  </li>
               </ul>
       </div>
     </div>
@@ -164,12 +171,11 @@
 <p>On the next prompt, enter the Compartment where the Stack should be created if it is for the first time. The toolkit will create a Stack for the region specified previously under the specified compartment. For global resources, stack will be created in the home region.</p>
 <p>The Stack created will use Terraform 1.0.x. The upload includes terraform.tfstate file as well, if present. This is to sync the OCI Resource Manager Stack to that of your outdir.</p>
 <p>The toolkit also creates a rm_ocids.csv file in the outdir/<region_dir> which has the information on the Resource Manager stack that is created. The format of the data in <strong><em>rm_ocids.csv</em></strong> is as follows - </p>
-<p><strong><em><em><Region_in_lowercase>;<Compartment_Name>;<Resource_Manager_Name>;<Resource_Manager_OCID></em></em></strong></p>
 <p>Example:</p>
 <p><kbd>
 <img width="800" alt="image" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/e95572de-2cb0-46f9-ae26-21391c9fee8b">
 </kbd></p>
-<p>To use an existing Resource Manager stack, enter the details in the format provided above into your <em>outdir/<region_dir>/rm_ocids.csv</em> file. </p>
+<p>To use an existing Resource Manager stack, enter the details in the format provided above into your <code>_outdir/&lt;region_dir&gt;/rm_ocids.csv_</code> file. </p>
 <p>Sample Execution:</p>
 <p><kbd>
 <img width="800" height="600" alt="image" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/e3d7417e-ce1c-464a-8a1d-5cdfd7862835">

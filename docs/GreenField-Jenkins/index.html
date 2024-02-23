@@ -45,12 +45,17 @@
               </ul>
               <p class="caption"><span class="caption-text">Quick Links</span></p>
               <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../CD3ExcelTabs/">OCI services supported by toolkit</a>
-                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../ExcelTemplates/">Excel Templates</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../CD3ExcelTabs/">Adding resources data in Excel templates</a>
+                  </li>
               </ul>
-              <p class="caption"><span class="caption-text">Getting Started</span></p>
+              <p class="caption"><span class="caption-text">Getting Started-Deploy to OCI</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../singleclickdeploy/">Single click container launch</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Getting Started-Local system</span></p>
               <ul>
                   <li class="toctree-l1"><a class="reference internal" href="../prerequisites/">Prerequisites</a>
                   </li>
@@ -137,6 +142,8 @@
               <ul>
                   <li class="toctree-l1"><a class="reference internal" href="../LearningVideos/">Automation Toolkit Learning Videos</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../tutorials/">Tutorials</a>
+                  </li>
               </ul>
       </div>
     </div>
@@ -165,7 +172,7 @@
                 <h1 id="create-resources-in-oci-via-jenkinsgreenfield-workflow">Create resources in OCI via Jenkins(Greenfield Workflow)</h1>
 <h2 id="execute-setupoci-pipeline">Execute setUpOCI Pipeline</h2>
 <p><strong>Step 1</strong>: 
-<br>Choose the appropriate CD3 Excel sheet template from <a href="/cd3_automation_toolkit/documentation/user_guide/ExcelTemplates.md">Excel Templates</a>.
+<br>Choose the appropriate CD3 Excel sheet template from <a href="../ExcelTemplates/">Excel Templates</a>.
 Fill the CD3 Excel with appropriate values.</p>
 <p><strong>Step 2</strong>:
 <br>Login to Jenkins URL with the user created after initialization and click on <strong>setUpOCI pipeline</strong> from Dashboard. Click on <strong>'Build with Parameters'</strong> from left side menu.</p>
@@ -181,7 +188,7 @@ Fill the CD3 Excel with appropriate values.</p>
 </blockquote>
 <p><strong>Step 4:</strong> 
 <br>Select the workflow as <strong>Create Resources in OCI(Greenfield Workflow)</strong>. Choose single or multiple MainOptions as required and then corresponding SubOptions.
-<br> Please <a href="/cd3_automation_toolkit/documentation/user_guide/multiple_options_GF-Jenkins.md">read</a> while selcting multiple options simultaneously.
+<br> Please <a href="../multiple_options_GF-Jenkins/">read</a> while selcting multiple options simultaneously.
 <br>Below screenshot shows creation of Compartments (under Identity) and Tags.</p>
 <p><img width="395" alt="Screenshot 2024-01-16 at 2 44 38 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/c55f0486-fba4-4c61-9f05-224b128e0143"></p>
 <p>Click on <strong>Build</strong> at the bottom.</p>
@@ -197,7 +204,8 @@ This will run the python script to generate the terraform auto.tfvars.  Once cre
 <blockquote>
 <p><strong><em>Note - Navigating to Dashboard displays pipelines that are in running state at the bottom left corner.</em></strong><br>
 <strong><em>Or you can also navigate from Dashboard using the region based view (Dashboard -&gt; phoenix View -&gt; service specific pipeline)</em></strong><br>
-<strong><em>in this example it would be:</em></strong> <br>
+<br>
+<strong><em>In this example it would be:</em></strong> <br>
 &emsp; <strong><em>terraform_files » phoenix » tagging » terraform-apply</em></strong> <br>
 &emsp; <strong><em>terraform_files » phoenix » identity » terraform-apply</em></strong> <br></p>
 </blockquote>
@@ -216,12 +224,7 @@ This will run the python script to generate the terraform auto.tfvars.  Once cre
 <p><strong>Step 6</strong>:
 <br>Similarly click on 'Logs' for Stage: phoenix/tagging and click on the pipeline link and 'Proceed' or 'Abort' the terraform apply<br><br></p>
 <p><br><br></p>
-<div align='center'>
-
-| <a href="/cd3_automation_toolkit/documentation/user_guide/Intro-Jenkins.md">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/NetworkingScenariosGF-Jenkins.md">Next :arrow_forward:</a> |
-| :---- | -------: |
-
-</div>
+<div align='center'></div>
               
             </div>
           </div><footer>

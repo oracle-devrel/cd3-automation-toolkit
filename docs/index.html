@@ -42,41 +42,28 @@
               <ul class="current">
                 <li class="toctree-l1 current"><a class="reference internal current" href=".">Introduction</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#new-users">New Users</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#using-the-automation-toolkit-via-cli">Using the Automation Toolkit via CLI</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#using-the-automation-toolkit-via-jenkins">Using the Automation Toolkit via Jenkins</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#videos">Videos</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#known-behaviour">Known Behaviour</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#learn-more">Learn More...</a>
-    </li>
     <li class="toctree-l2"><a class="reference internal" href="#introduction">Introduction</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#oci-services-currently-supported-by-automation-toolkit">OCI Services Currently Supported by Automation Toolkit</a>
     </li>
-        </ul>
+    <li class="toctree-l2"><a class="reference internal" href="#oci-services-currently-supported-by-automation-toolkit">📌 OCI Services Currently Supported by Automation Toolkit</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#contributing">Contributing</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#license">License</a>
+    <li class="toctree-l2"><a class="reference internal" href="#high-level-workflow">🔄 High level workflow</a>
     </li>
     </ul>
                 </li>
               </ul>
               <p class="caption"><span class="caption-text">Quick Links</span></p>
               <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="CD3ExcelTabs/">OCI services supported by toolkit</a>
-                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="ExcelTemplates/">Excel Templates</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="CD3ExcelTabs/">Adding resources data in Excel templates</a>
+                  </li>
               </ul>
-              <p class="caption"><span class="caption-text">Getting Started</span></p>
+              <p class="caption"><span class="caption-text">Getting Started-Deploy to OCI</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="singleclickdeploy/">Single click container launch</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Getting Started-Local system</span></p>
               <ul>
                   <li class="toctree-l1"><a class="reference internal" href="prerequisites/">Prerequisites</a>
                   </li>
@@ -157,6 +144,8 @@
               <ul>
                   <li class="toctree-l1"><a class="reference internal" href="LearningVideos/">Automation Toolkit Learning Videos</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="tutorials/">Tutorials</a>
+                  </li>
               </ul>
       </div>
     </div>
@@ -183,94 +172,11 @@
               
                 <h1 id="cd3-automation-toolkit">CD3 Automation Toolkit</h1>
 <p><a href="https://img.shields.io/badge/license-UPL-green"><img alt="License: UPL" src="https://img.shields.io/badge/license-UPL-green" /></a> <a href="https://sonarcloud.io/dashboard?id=oracle-devrel_cd3-automation-toolkit"><img alt="Quality gate" src="https://sonarcloud.io/api/project_badges/quality_gate?project=oracle-devrel_cd3-automation-toolkit" /></a></p>
-<ul>
-  <kbd>
-<img width="1018" alt="Screenshot 2024-02-06 at 1 11 21 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/f989efee-45cc-413b-a706-e1bfe7f2a8fc">
-</kbd><br><br>
-  <li> <a href= "#introduction">Introduction</a></li>
-  <li> <a href = "https://github.com/oracle-devrel/cd3-automation-toolkit/releases/tag/v2024.1.0">What's new in this release</a></li>
-  <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/learn_more/CD3ExcelTabs.md">Toolkit Supported OCI Services</a></li>
-  <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/ExcelTemplates.md">Excel Templates</a></li>  
-</ul>
-
-<h3 id="new-users">New Users</h3>
-<ul>
-  <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/prerequisites.md">Prerequisites</a></li>
-  <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/Launch_Docker_container.md">Launch the container</a></li>
-  <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/Connect_container_to_OCI_Tenancy.md">Connect container to OCI Tenancy</a></li>
-</ul>
-
-<h4 id="using-the-automation-toolkit-via-cli">Using the Automation Toolkit via CLI</h4>
-<ul>
-  <li> <a href="/cd3_automation_toolkit/documentation/user_guide/Workflows.md">Before you Begin</a></li>
-  <li> <a href="/cd3_automation_toolkit/documentation/user_guide/GreenField.md">Create resources in OCI (Greenfield Workflow)</a>
-    <ul>
-      <li> <a href="/cd3_automation_toolkit/documentation/user_guide/learn_more/OPAForCompliance.md"</a> Enforcing OPA (Open Policy Agent) policies for Terraform </li>
-      <li> <a href="/cd3_automation_toolkit/documentation/user_guide/NetworkingScenariosGF.md"</a><b> Must Read :</b> Managing Network for Greenfield Workflow</li>
-      <li> <a href="/cd3_automation_toolkit/documentation/user_guide/ComputeGF.md"</a><b> Must Read :</b> Managing Compute Instances for Greefield Workflow</li>
-    </ul>
-  </li>
-  <li> <a href="/cd3_automation_toolkit/documentation/user_guide/NonGreenField.md">Export Resources from OCI (Non-Greenfield Workflow)</a>
-    <ul>
-      <li><a href ="/cd3_automation_toolkit/documentation/user_guide/NetworkingScenariosNGF.md"</a><b> Must Read : </b> Managing Network for Non-Greenfield Workflow</a></li>
-       <li><a href = "/cd3_automation_toolkit/documentation/user_guide/ComputeNGF.md"</a><b>  Must Read : </b> Managing Compute Instances for Non-Greenfield Workflow </a></li> 
-    </ul>
-</ul>
-
-<h4 id="using-the-automation-toolkit-via-jenkins">Using the Automation Toolkit via Jenkins</h4>
-<ul>
-  <li> <a href="/cd3_automation_toolkit/documentation/user_guide/Workflows-jenkins.md"</a>Before you Begin</a></li>
-  <li> <a href="/cd3_automation_toolkit/documentation/user_guide/Intro-Jenkins.md"</a>Introduction to Jenkins with the toolkit</a></li>
-  <li> <a href="/cd3_automation_toolkit/documentation/user_guide/GreenField-Jenkins.md"</a>Create resources in OCI via Jenkins(Greenfield Workflow)</li>
-    <ul>
-      <li> <a href="/cd3_automation_toolkit/documentation/user_guide/NetworkingScenariosGF-Jenkins.md"</a><b> Must Read :</b> Managing Network for Greenfield Workflow</li>
-      <li> <a href="/cd3_automation_toolkit/documentation/user_guide/GF-Jenkins.md"</a><b>  Must Read : </b> Provisioning of Resources - Instances/OKE/SDDC/Database </li>
-      <li> <a href="/cd3_automation_toolkit/documentation/user_guide/multiple_options_GF-Jenkins.md"</a><b>  Must Read : </b> Provisioning of multiple services together </li>
-    </ul>
-      <li> <a href="/cd3_automation_toolkit/documentation/user_guide/NonGreenField-Jenkins.md"</a>Export Resources from OCI via Jenkins(Non-Greenfield Workflow) </li>     
-  <li> <a href="/cd3_automation_toolkit/documentation/user_guide/cli_jenkins.md">Switch between CLI and Jenkins</a></li>
-  <li> <a href="/cd3_automation_toolkit/documentation/user_guide/remote_state.md">Remote Management of Terraform State File</a></li>
- </ul>
-
-<p>### Existing Users</p>
-<ul> 
-  <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/Upgrade_Toolkit.md">Steps to Upgrade Your Toolkit</a></li>
-
-</ul>
-
-<h3 id="videos">Videos</h3>
-<ul>
-  <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/LearningVideos.md">Automation Toolkit Learning Videos</a></li>
-</ul>
-
-<h3 id="known-behaviour">Known Behaviour</h3>
-<ul>
-  <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/KnownBehaviour.md">Expected Behaviour Of Automation Toolkit</a></li>
-   <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/FAQ.md">FAQs</a></li> 
-</ul>
-
-<h3 id="learn-more">Learn More...</h3>
-<ul>
-   <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/RestructuringOutDirectory.md">Grouping of generated Terraform files</a></li>
-   <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/learn_more/ResourceManagerUpload.md">OCI Resource Manager Upload</a></li>
-   <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/learn_more/CISFeatures.md">Additional CIS Compliance Features</a></li>
-   <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/learn_more/SupportForCD3Validator.md">CD3 Validator Features</a></li>   
-   <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/learn_more/SupportforAdditionalAttributes.md">Support for Additional Attributes</a></li>
-  <li> <a href = "/cd3_automation_toolkit/documentation/user_guide/Jobs_Migration.md">Migrate Jenkins configuration to Customer Environment</a></li>
-</ul>
-
 <p><br></p>
 <h2 id="introduction">Introduction</h2>
-<p>CD3 stands for <b>C</b>loud <b>D</b>eployment <b>D</b>esign <b>D</b>eliverable.
-The CD3 Automation toolkit has been developed to help in automating the OCI resource object management. 
-<br><br>
-It reads input data in the form of CD3 Excel sheet and generates Terraform files which can be used to provision the resources in OCI instead of handling the task through the OCI console manually. The toolkit also reverse engineers the components in OCI back to the Excel sheet and Terraform configuration. The toolkit can be used throughout the lifecycle of tenancy to continuously create or modify existing resources. The generated Terraform code can be used by the OCI Resource Manager or can be integrated into organization's existing devops CI/CD ecosystem.
-<br><br>
-<kbd>
-<img width="1018" alt="Screenshot 2024-02-06 at 1 11 21 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/f989efee-45cc-413b-a706-e1bfe7f2a8fc">
-</kbd>
-<br></p>
-<h4 id="oci-services-currently-supported-by-automation-toolkit">OCI Services Currently Supported by Automation Toolkit</h4>
+<p>The CD3 toolkit reads input data in the form of CD3 Excel sheet and generates Terraform files which can be used to provision the resources in OCI instead of handling the task through the OCI console manually. The toolkit also reverse engineers the components in OCI back to the Excel sheet and Terraform configuration. The toolkit can be used throughout the lifecycle of tenancy to continuously create or modify existing resources. The generated Terraform code can be used by the OCI Resource Manager or can be integrated into organization's existing devops CI/CD ecosystem.</p>
+<p><br></p>
+<h2 id="oci-services-currently-supported-by-automation-toolkit">📌 OCI Services Currently Supported by Automation Toolkit</h2>
 <table>
 <thead>
 <tr>
@@ -333,19 +239,43 @@ It reads input data in the form of CD3 Excel sheet and generates Terraform files
 </tr>
 </tbody>
 </table>
-<p><a href="/cd3_automation_toolkit/documentation/user_guide/prerequisites.md">Click here</a> to get started and manage your OCI Infra!</p>
-<h2 id="contributing">Contributing</h2>
-<p>This project is open source.  Please submit your contributions by raising an <b>Issue</b> or through <b>Discussion topic</b> in this repository. Currently, we do not accept any pull requests. Oracle appreciates any contributions that are made by the open source community.</p>
-<h2 id="license">License</h2>
-<p>Copyright (c) 2022 Oracle and/or its affiliates.</p>
-<p>Licensed under the Universal Permissive License (UPL), Version 1.0.</p>
-<p>See <a href="LICENSE">LICENSE</a> for more details.</p>
-<p>ORACLE AND ITS AFFILIATES DO NOT PROVIDE ANY WARRANTY WHATSOEVER, EXPRESS OR IMPLIED, FOR ANY SOFTWARE, MATERIAL OR CONTENT OF ANY KIND CONTAINED OR PRODUCED WITHIN THIS REPOSITORY, AND IN PARTICULAR SPECIFICALLY DISCLAIM ANY AND ALL IMPLIED WARRANTIES OF TITLE, NON-INFRINGEMENT, MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE.  FURTHERMORE, ORACLE AND ITS AFFILIATES DO NOT REPRESENT THAT ANY CUSTOMARY SECURITY REVIEW HAS BEEN PERFORMED WITH RESPECT TO ANY SOFTWARE, MATERIAL OR CONTENT CONTAINED OR PRODUCED WITHIN THIS REPOSITORY. IN ADDITION, AND WITHOUT LIMITING THE FOREGOING, THIRD PARTIES MAY HAVE POSTED SOFTWARE, MATERIAL OR CONTENT TO THIS REPOSITORY WITHOUT ANY REVIEW. USE AT YOUR OWN RISK.</p>
+<p><br></p>
+<h2 id="high-level-workflow">🔄 High level workflow</h2>
+<p><img width="1018" alt="Screenshot 2024-02-06 at 1 11 21 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/f989efee-45cc-413b-a706-e1bfe7f2a8fc"></p>
+<p><br></p>
+<p>First, The Excel file is input to the CD3 Automation toolkit using either CLI or Jenkins.  </p>
+<blockquote>
+<p>Note: 📖 Detailed documentations and videos are provided for both options. Please check the left panel for navigation.</p>
+</blockquote>
+<p>Based on the workflow selected (create/export), the toolkit processes the next steps.</p>
+<p><strong>Create resources:</strong></p>
+<ul>
+<li>
+<p>The input Excel file is processed by the toolkit and terraform *auto.tfvars files are generated for all those reosurces. </p>
+</li>
+<li>
+<p>The generated terraform files can be used to deploy resources in OCI by generating a terraform plan and approving the plan for apply. </p>
+</li>
+</ul>
+<p><strong>Export resources</strong></p>
+<ul>
+<li>
+<p>The input Excel (preferably the Blank template) is processed by the toolkit and resources are exported to CD3 Excel template. </p>
+</li>
+<li>
+<p>The toolkit then generates *auto.tfvars from the exported data in Excel file and also generates shell scripts with terraform import commands for all the reosurces.</p>
+</li>
+<li>
+<p>The shell scripts have to be executed in order to have the updated state file to manage the resources further.</p>
+</li>
+</ul>
+<p><br></p>
+<p>Please refer to the <strong>"GETTING-STARTED"</strong> sections in the navigation panel to start your journey with the toolkit. Happy Automation!!</p>
               
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="CD3ExcelTabs/" class="btn btn-neutral float-right" title="OCI services supported by toolkit">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="ExcelTemplates/" class="btn btn-neutral float-right" title="Excel Templates">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -369,7 +299,7 @@ It reads input data in the form of CD3 Excel sheet and generates Terraform files
     
     
     
-      <span><a href="CD3ExcelTabs/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="ExcelTemplates/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>
@@ -389,5 +319,5 @@ It reads input data in the form of CD3 Excel sheet and generates Terraform files
 
 <!--
 MkDocs version : 1.5.3
-Build Date UTC : 2024-02-22 09:50:32.435334+00:00
+Build Date UTC : 2024-02-23 13:42:19.165860+00:00
 -->

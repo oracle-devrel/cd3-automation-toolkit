@@ -45,12 +45,17 @@
               </ul>
               <p class="caption"><span class="caption-text">Quick Links</span></p>
               <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../CD3ExcelTabs/">OCI services supported by toolkit</a>
-                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../ExcelTemplates/">Excel Templates</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../CD3ExcelTabs/">Adding resources data in Excel templates</a>
+                  </li>
               </ul>
-              <p class="caption"><span class="caption-text">Getting Started</span></p>
+              <p class="caption"><span class="caption-text">Getting Started-Deploy to OCI</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../singleclickdeploy/">Single click container launch</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Getting Started-Local system</span></p>
               <ul>
                   <li class="toctree-l1"><a class="reference internal" href="../prerequisites/">Prerequisites</a>
                   </li>
@@ -133,6 +138,8 @@
               <ul>
                   <li class="toctree-l1"><a class="reference internal" href="../LearningVideos/">Automation Toolkit Learning Videos</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../tutorials/">Tutorials</a>
+                  </li>
               </ul>
       </div>
     </div>
@@ -161,36 +168,49 @@
                 <h1 id="exporting-compute-instances-from-oci">Exporting Compute Instances from OCI</h1>
 <p>Follow the below steps to export OCI compute Instances to CD3 Excel file and create the terraform state:</p>
 <ol>
-<li>Use the <a href="/cd3_automation_toolkit/example">CD3-Blank-Template.xlsx</a> to export existing OCI VM details into the "Instances" sheet.</li>
-<li>Add any additonal attributes (not part of excel sheet already) which needs to be exported as per <a href="/cd3_automation_toolkit/documentation/user_guide/learn_more/SupportforAdditionalAttributes.md#support-for-additional-attributes">this</a>.</li>
-<li>Make sure to export the VCNs and Subnets in which the Instances are present prior to exporting the Instance.</li>
-<li>Execute the <em>setupOCI.py</em> file with <em>non_gf_tenancy</em> parameter value to <em>true</em>:</li>
-</ol>
-<p><code>python setUpOCI.py /cd3user/tenancies/&lt;customer_name&gt;/&lt;customer_name&gt;_setUpOCI.properties</code>
-5. Provide the region from where the Instances have to be exported. Specify comma separated values for multiple regions.
-6. From the output menu, select <strong>Option 5: Export Compute &gt;&gt; Option 2: Export Instances</strong>.
-7. Enter the compartment to which the Instances belong to. If you have to export Instances from multiple compartments, specify comma separated compartment values.
+<li>Use the <a href="/cd3_automation_toolkit/example">CD3-Blank-Template.xlsx</a> to export existing OCI VM details into the "Instances" sheet. <br>
+<br></li>
+<li>Add any additonal attributes (not part of excel sheet already) which needs to be exported as per <a href="../SupportforAdditionalAttributes/">this</a>. <br>
+<br></li>
+<li>Make sure to export the VCNs and Subnets in which the Instances are present prior to exporting the Instance. <br>
+<br></li>
+<li>Execute the <em>setupOCI.py</em> file with <em>non_gf_tenancy</em> parameter value to <em>true</em>: <br>
+   <code>python setUpOCI.py /cd3user/tenancies/&lt;customer_name&gt;/&lt;customer_name&gt;_setUpOCI.properties</code> <br>
+<br>   </li>
+<li>Provide the region from where the Instances have to be exported. Specify comma separated values for multiple regions. <br>
+<br></li>
+<li>From the output menu, select <strong>Option 5: Export Compute &gt;&gt; Option 2: Export Instances</strong>. <br>
+<br></li>
+<li>
+<p>Enter the compartment to which the Instances belong to. If you have to export Instances from multiple compartments, specify comma separated compartment values. <br>
    Specify the compartment name along with hierarchy in the below format:</p>
-<pre><code>    Parent Compartment1::Parent Compartment2::MyCompartment
+<pre><code>Parent Compartment1::Parent Compartment2::MyCompartment &lt;br&gt;
 </code></pre>
-<p>7.To export only specific instances, specify the required filter values</p>
-<pre><code> - Enter comma separated list of display name patterns of the instances: 
- - Enter comma separated list of ADs of the instances eg AD1,AD2,AD3:
-</code></pre>
-<ol>
-<li>Upon executing, the "Instances" sheet in input CD3 Excel is populated with the VMs details.</li>
-<li>The tf_import_commands_instances_nonGF.sh script, tfvars file are generated for the Instances under folder <em>/cd3user/tenancies/<customer_name>/terraform_files/<region_dir></em>. If you are using multiple outdirectories, they'll be located under the <em>/cd3user/tenancies/<customer_name>/terraform_files/<region_dir>compute</em> folder.</li>
-<li>The associated ssh public keys are placed under variables_<region>.tf under the "instance_ssh_keys" variable.</li>
-<li>While export of instances, it will fetch details for only the primary VNIC attached to the instance.</li>
-<li>Execute the .sh file ( <em>sh tf_import_commands_instances_nonGF.sh</em>) to generate terraform state file.</li>
-<li>Please <a href="/cd3_automation_toolkit/documentation/user_guide/KnownBehaviour.md#8">read</a> the known behaviour of toolkit for export of instances having multiple plugins.</li>
+</li>
+<li>
+<p>To export only specific instances, specify the required filter values</p>
+<ul>
+<li>Enter comma separated list of display name patterns of the instances: </li>
+<li>Enter comma separated list of ADs of the instances eg AD1,AD2,AD3: <br>
+<br></li>
+</ul>
+</li>
+<li>
+<p>Upon executing, the "Instances" sheet in input CD3 Excel is populated with the VMs details. <br>
+<br></p>
+</li>
+<li>The tf_import_commands_instances_nonGF.sh script, tfvars file are generated for the Instances under folder <em>/cd3user/tenancies/<customer_name>/terraform_files/<region_dir></em>. If you are using multiple outdirectories, they'll be located under the <em>/cd3user/tenancies/<customer_name>/terraform_files/<region_dir>compute</em> folder. <br>
+<br></li>
+<li>The associated ssh public keys are placed under variables_<region>.tf under the "instance_ssh_keys" variable.  <br>
+<br></li>
+<li>While export of instances, it will fetch details for only the primary VNIC attached to the instance. <br>
+<br></li>
+<li>Execute the .sh file ( <em>sh tf_import_commands_instances_nonGF.sh</em>) to generate terraform state file. <br>
+<br></li>
+<li>Please <a href="../KnownBehaviour/">read</a> the known behaviour of toolkit for export of instances having multiple plugins.</li>
 </ol>
 <p><br><br></p>
 <div align='center'>
-
-| <a href="/cd3_automation_toolkit/documentation/user_guide/NetworkingScenariosNGF.md">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/Workflows-jenkins.md">Next :arrow_forward:</a> |
-| :---- | -------: |
-
 </div>
               
             </div>

@@ -45,12 +45,17 @@
               </ul>
               <p class="caption"><span class="caption-text">Quick Links</span></p>
               <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../CD3ExcelTabs/">OCI services supported by toolkit</a>
-                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../ExcelTemplates/">Excel Templates</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../CD3ExcelTabs/">Adding resources data in Excel templates</a>
+                  </li>
               </ul>
-              <p class="caption"><span class="caption-text">Getting Started</span></p>
+              <p class="caption"><span class="caption-text">Getting Started-Deploy to OCI</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../singleclickdeploy/">Single click container launch</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Getting Started-Local system</span></p>
               <ul>
                   <li class="toctree-l1"><a class="reference internal" href="../prerequisites/">Prerequisites</a>
                   </li>
@@ -135,6 +140,8 @@
               <ul>
                   <li class="toctree-l1"><a class="reference internal" href="../LearningVideos/">Automation Toolkit Learning Videos</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../tutorials/">Tutorials</a>
+                  </li>
               </ul>
       </div>
     </div>
@@ -164,16 +171,27 @@
 <blockquote>
 <p><strong>Note</strong><br>
   Please make sure that service for which export is done does not have existing tfvars/state file.<br><br>
-Course of actions involved in Exporting objects from OCI-   <br />
-* Automation Tool Kit fetches the data for the supported services. You can chose to export the data from a specific region or the compartment. Exported data is written to appropriate sheets of the CD3 Excel Sheet based on the resources being exported.
-* Tool Kit then generates the TF configuration files/auto.tfvars files for these exported resources.
-* It also generates a shell script - tf_import_commands_<code>&lt;resource&gt;</code>_nonGF.sh that has the import commands, to import the state of the resources to tfstate file.(This helps to manage the resources via Terraform in future). </p>
+Course of actions involved in Exporting objects from OCI-
+  <br></p>
+<ul>
+<li>
+<p>Automation Tool Kit fetches the data for the supported services. You can chose to export the data from a specific region or the compartment. Exported data is written to appropriate sheets of the CD3 Excel Sheet based on the resources being exported. <br>
+  <br></p>
+</li>
+<li>
+<p>Tool Kit then generates the TF configuration files/auto.tfvars files for these exported resources. <br>
+  <br></p>
+</li>
+<li>
+<p>It also generates a shell script - <code>tf_import_commands_&lt;resource&gt;_nonGF.sh</code> that has the import commands, to import the state of the resources to tfstate file.(This helps to manage the resources via Terraform in future). </p>
+</li>
+</ul>
 </blockquote>
 <p><strong>Step 1:</strong> 
 <br>Chose the appropriate CD3 Excel sheet template from <a href="/cd3_automation_toolkit/documentation/user_guide/ExcelTemplates.md">Excel Templates</a></p>
 <p><strong>Step 2:</strong> 
 <br>Put CD3 Excel at the appropriate location.
-<br>Modify/Review <em>/cd3user/tenancies/<customer\_name>/<customer\_name>_setUpOCI.properties</em> with <strong>workflow_type</strong> set to <strong>export_resources</strong>  as shown below:</p>
+<br>Modify/Review <code>/cd3user/tenancies/&lt;customer_name&gt;/&lt;customer_name&gt;_setUpOCI.properties</code> with <strong>workflow_type</strong> set to <strong>export_resources</strong>  as shown below:</p>
 <pre><code class="language-ini">#Input variables required to run setUpOCI script
 
 #path to output directory where terraform file will be generated. eg /cd3user/tenancies/&lt;customer_name&gt;/terraform_files
@@ -202,7 +220,7 @@ workflow_type=export_resources
 <br>Execute the SetUpOCI.py script to start exporting the resources to CD3 and creating the terraform configuration files.</p>
 <p>Command to Execute:
 <br><code>cd /cd3user/oci_tools/cd3_automation_toolkit/</code>
-<br><strong>python setUpOCI.py <path_to_setupOCI.properties> ie</strong>
+<br><strong>python setUpOCI.py <code>&lt;path_to_setupOCI.properties&gt;</code>  ie</strong>
 <br><code>python setUpOCI.py /cd3user/tenancies/&lt;customer_name&gt;/&lt;customer_name&gt;_setUpOCI.properties</code></p>
 <p>→ Example execution of the wrapper script:</p>
 <p><img src = "https://user-images.githubusercontent.com/122371432/213680233-002cce49-65c3-4cab-8f38-ef56f04fe266.png" width=50% height=50%></p>
@@ -229,38 +247,40 @@ c. Shell Script with import commands - tf_import_commands_<code>&lt;resource&gt;
 <p>Follow the below steps to quickly export Identity components from OCI.</p>
 <ol>
 <li>
-<p>Use the excel <a href="/cd3_automation_toolkit/example">CD3-Blank-template</a> and place it at the location <em>/cd3user/tenancies/<customer\_name>/</em> which is also mapped to your local directory.</p>
+<p>Use the excel <a href="/cd3_automation_toolkit/example">CD3-Blank-template</a> and place it at the location <code>/cd3user/tenancies/&lt;customer_name&gt;</code> which is also mapped to your local directory. <br>
+<br></p>
 </li>
 <li>
-<p>Edit the <em>setUpOCI.properties</em> at location:<em>/cd3user/tenancies /<customer\_name>/<customer\_name>_setUpOCI.properties</em> with appropriate values. </p>
-</li>
+<p>Edit the <em>setUpOCI.properties</em> at location:<code>/cd3user/tenancies &lt;customer_name&gt;/&lt;customer_name&gt;_setUpOCI.properties</code> with appropriate values. </p>
+<blockquote>
+<ul>
 <li>Update the <em>cd3file</em> parameter to specify the CD3 excel sheet path.</li>
-<li>
-<p>Set the <em>workflow_type</em> parameter value to <em>export_resources</em>. (for Non Greenfield Workflow.)</p>
+<li>Set the <em>workflow_type</em> parameter value to <em>export_resources</em>. (for Non Greenfield Workflow.)</li>
+</ul>
+</blockquote>
 </li>
 <li>
 <p>Change Directory to 'cd3_automation_toolkit' :
-    <code>cd /cd3user/oci_tools/cd3_automation_toolkit/</code></p>
+    <code>cd /cd3user/oci_tools/cd3_automation_toolkit/</code> and execute the <em>setupOCI.py</em> file: <br>
+    <code>python setUpOCI.py /cd3user/tenancies/&lt;customer_name&gt;/&lt;customer_name&gt;_setUpOCI.properties</code> <br>
+   <br></p>
 </li>
-</ol>
-<p>and execute the <em>setupOCI.py</em> file:</p>
-<p><code>python setUpOCI.py /cd3user/tenancies/&lt;customer_name&gt;/&lt;customer_name&gt;_setUpOCI.properties</code>
- 4. Choose option 'Export Identity' from the displayed menu. Once the execution is successful, you will see:
+<li>
+<p>Choose option 'Export Identity' from the displayed menu. Once the execution is successful, you will see:
       <ul>
-      <li><b>Filled in tabs</b>-<i>Compartments, Groups, Polecies of Excel sheet</i></li>
+      <li><b>Filled in tabs</b>-<i>Compartments, Groups, Policies of Excel sheet</i></li>
       <li><i>tf_import_commands_identity_nonGF.sh</i></li>
       <li><i>&lt;customer_name&gt;_compartments.auto.tfvars, &lt;customer_name&gt;_groups.auto.tfvars, &lt;customer_name&gt;_policies.auto.tfvars</i></li>
       </ul></p>
-<ol>
-<li>Execute <em>tf_import_commands_identity_nonGF.sh</em> to start importing the identity components into tfstate file.</li>
+</li>
+<li>
+<p>Execute <em>tf_import_commands_identity_nonGF.sh</em> to start importing the identity components into tfstate file. <br>
+ <br></p>
+</li>
 <li>Repeat the above process (except Step 5) to export other components from OCI.
 <br><br></li>
 </ol>
 <div align='center'>
-
-| <a href="/cd3_automation_toolkit/documentation/user_guide/NetworkingScenariosGF.md">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/NetworkingScenariosNGF.md">Next :arrow_forward:</a> |
-| :---- | -------: |
-
 </div>
               
             </div>

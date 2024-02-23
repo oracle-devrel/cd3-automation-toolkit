@@ -45,12 +45,17 @@
               </ul>
               <p class="caption"><span class="caption-text">Quick Links</span></p>
               <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../CD3ExcelTabs/">OCI services supported by toolkit</a>
-                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../ExcelTemplates/">Excel Templates</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../CD3ExcelTabs/">Adding resources data in Excel templates</a>
+                  </li>
               </ul>
-              <p class="caption"><span class="caption-text">Getting Started</span></p>
+              <p class="caption"><span class="caption-text">Getting Started-Deploy to OCI</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../singleclickdeploy/">Single click container launch</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Getting Started-Local system</span></p>
               <ul>
                   <li class="toctree-l1"><a class="reference internal" href="../prerequisites/">Prerequisites</a>
                   </li>
@@ -133,6 +138,8 @@
               <ul>
                   <li class="toctree-l1"><a class="reference internal" href="../LearningVideos/">Automation Toolkit Learning Videos</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../tutorials/">Tutorials</a>
+                  </li>
               </ul>
       </div>
     </div>
@@ -165,15 +172,22 @@ When utilizing remote state and deploying the stack to OCI Resource Manager thro
 <p><img width="597" alt="Screenshot 2024-01-17 at 11 38 54 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/1b0cd9fa-1ac0-42c4-9c33-14ad4bf0ddb8"></p>
 <p>This option is disabled while using the toolkit via Jenkins. While using it via CLI, you will have to remove backend.tf from the directory, bring the remote state into local and then upload the stack.</p>
 </blockquote>
-<p><br><br>
-* Toolkit provides the option to store terraform state file(tfstate) into Object Storage bucket.
-* This can be achieved by setting <code>use_remote_state=yes</code> under Advanced Parameters in <code>tenancyconfig.properties</code> file while executing <code>createTenancyConfig.py</code>.
-* Upon setting above parameter the script will -
-    - create a versioning enabled bucket in OCI tenancy in the specified region(if you don't specify anything in <code>remote_state_bucket_name</code> parameter to use an existing bucket)
-    - create a new customer secret key for the user, and configure it as S3 credentials to access the bucket. Before executing the createTenancyConfig.py script, ensure that the specified user in the DevOps User Details or identified by the user OCID does not already have the maximum limit of two customer secret keys assigned. </p>
 <ul>
-<li>backend.tf file that gets generated -</li>
+<li>Toolkit provides the option to store terraform state file(tfstate) into Object Storage bucket.</li>
+<li>This can be achieved by setting <code>use_remote_state=yes</code> under Advanced Parameters in <code>tenancyconfig.properties</code> file while executing <code>createTenancyConfig.py</code>.</li>
+<li>
+<p>Upon setting above parameter the script will -</p>
+<ul>
+<li>create a versioning enabled bucket in OCI tenancy in the specified region(if you don't specify anything in <code>remote_state_bucket_name</code> parameter to use an existing bucket)</li>
+<li>create a new customer secret key for the user, and configure it as S3 credentials to access the bucket. Before executing the createTenancyConfig.py script, ensure that the specified user in the DevOps User Details or identified by the user OCID does not already have the maximum limit of two customer secret keys assigned. </li>
 </ul>
+</li>
+<li>
+<p>backend.tf file that gets generated -</p>
+</li>
+</ul>
+<blockquote>
+<blockquote>
 <p><code>terraform {
   backend "s3" {
     key      = "&lt;region_name&gt;/&lt;service_dir_name&gt;/terraform.tfstate"
@@ -187,6 +201,8 @@ When utilizing remote state and deploying the stack to OCI Resource Manager thro
     force_path_style            = true
     }
   }</code></p>
+</blockquote>
+</blockquote>
 <ul>
 <li>
 <p>For single outdir, tfstate for all subscribed regions will be stored as <code>&lt;region&gt;/terraform.tfstate</code> eg <code>london/terraform.tfstate</code> for london <code>phoenix/terraform.tfstate</code> for phoenix. See below screenshot showing objects in the bucket storing remote state:
@@ -197,13 +213,6 @@ When utilizing remote state and deploying the stack to OCI Resource Manager thro
     <img width="1485" alt="Screenshot 2024-02-06 at 3 57 02 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/ee7dd418-f998-4ee8-bfe9-f7bd7d0e30ff"></p>
 </li>
 </ul>
-<p><br><br></p>
-<div align='center'>
-
-| <a href="/cd3_automation_toolkit/documentation/user_guide/cli_jenkins.md">:arrow_backward: Prev</a> |
-| :---- | 
-
-</div>
               
             </div>
           </div><footer>

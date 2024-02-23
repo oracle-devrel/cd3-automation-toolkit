@@ -5,15 +5,15 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>OPA integration - CD3 Documentation</title>
+    <title>OCI SDK Authentication Methods - CD3 Documentation</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
     
       <script>
         // Current page data
-        var mkdocs_page_name = "OPA integration";
-        var mkdocs_page_input_path = "OPAForCompliance.md";
+        var mkdocs_page_name = "OCI SDK Authentication Methods";
+        var mkdocs_page_input_path = "Auth_Mechanisms_in_OCI.md";
         var mkdocs_page_url = null;
       </script>
     
@@ -65,7 +65,7 @@
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">Toolkit Execution with CLI</span></p>
-              <ul class="current">
+              <ul>
                   <li class="toctree-l1"><a class="reference internal" href="../Workflows/">Overview</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../GreenField/">Create resources in OCI using CLI (Greenfield Workflow)</a>
@@ -74,11 +74,7 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../ComputeGF/">Create Compute Instances-CLI</a>
                   </li>
-                  <li class="toctree-l1 current"><a class="reference internal current" href="./">OPA integration</a>
-    <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#run-opa-inside-cd3-container">Run OPA inside CD3 container</a>
-    </li>
-    </ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../OPAForCompliance/">OPA integration</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../NonGreenField/">Export Resources from OCI using CLI (Non-Greenfield Workflow)</a>
                   </li>
@@ -157,8 +153,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
-          <li class="breadcrumb-item">Toolkit Execution with CLI</li>
-      <li class="breadcrumb-item active">OPA integration</li>
+      <li class="breadcrumb-item active">OCI SDK Authentication Methods</li>
     <li class="wy-breadcrumbs-aside">
     </li>
   </ul>
@@ -167,47 +162,75 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h2 id="open-policy-agent-for-terraform">Open Policy Agent for Terraform:</h2>
-<p>OPA is a powerful policy-as-code framework that enables you to define and enforce policies across your infrastructure-as-code (IaC) deployments. With OPA, you can seamlessly integrate policy checks into your Terraform workflows, ensuring that your infrastructure deployments adhere to your organization's security, compliance, and operational requirements.</p>
-<p>By leveraging OPA for Terraform, you can automate policy enforcement, eliminate manual checks, and enforce best practices consistently across your infrastructure-as-code projects. With OPA, you gain enhanced visibility and control over your Terraform deployments, reducing the risk of misconfigurations, security vulnerabilities, and compliance issues. </p>
-<p>As part of CD3, we have meticulously developed a comprehensive set of policies that strictly adhere to the CIS benchmarks. These policies serve as your shield, ensuring that any Infrastructure-as-Code (IAC) deployments made for Oracle Cloud Infrastructure (OCI) meet the highest security and compliance standards.</p>
-<p>Our carefully crafted policies act as gatekeepers, preventing any IAC deployments that do not align with the stringent security and compliance guidelines set by the CIS benchmarks for OCI. By leveraging our policies, you can ensure that your infrastructure deployments remain impervious to any potential vulnerabilities or non-compliance issues.</p>
-<h4 id="run-opa-inside-cd3-container"><strong>Run OPA inside CD3 container</strong></h4>
+                <h1 id="oci-sdk-authentication-methods">OCI SDK Authentication Methods</h1>
+<p>Choose one of the below authentication mechanisms to be used for the toolkit execution -</p>
+<ul>
+<li><a href="#api-key-based-authentication">API key-based authentication</a></li>
+<li><a href="#session-token-based-authentication">Session token-based authentication</a></li>
+<li><a href="#instance-principal">Instance principal</a></li>
+</ul>
+<h2 id="api-key-based-authentication">API key-based authentication</h2>
+<p>Follow below steps to use API key-based authentication - <br></p>
 <ol>
 <li>
-<p>Open your command line interface inside CD3 container and run OPA. You should see all available options for OPA.</p>
-<pre><code>opa --help
-</code></pre>
-<p>Currently CD3 container has OPA version 0.55.0 installed.</p>
+<p>Create API PEM Key
+   <br>RSA key pair in PEM format (minimum 2048 bits) is needed to use OCI APIs. If the key pair does not exist, create them using below command inside docker container:
+   <br><code>cd /cd3user/oci_tools/cd3_automation_toolkit/user-scripts/</code>
+   <br><code>python createAPIKey.py</code>
+   <br>
+→ This will generate the public/private key pair (oci_api_public.pem and oci_api_private.pem) at /cd3user/tenancies/keys/
+   <br><br>
+ In case you already have the keys, you can copy the private key file inside the container at 
+ /cd3user/tenancies/keys/</p>
 </li>
 <li>
-<p>Generate the terraform plan output in json format since OPA accepts that format alone for evaluation.</p>
-<pre><code> terraform plan -out tfplan.binary
- terraform show -json tfplan.binary &gt; tfplan.json
-</code></pre>
-</li>
-<li>
-<p>Run the terraform plan against all the available OPA rules. It should return an empty array which means the plan has no non-compliant action against CIS benchmarks.</p>
-<pre><code>opa eval -f pretty -b /cd3user/oci_tools/cd3_automation_toolkit/user-scripts/OPA -i tfplan.json data.terraform.deny --fail-defined
-</code></pre>
+<p>Upload Public Key
+   <br>
+   Upload the Public key to "APIkeys" under user settings in OCI Console.</p>
+<ul>
+<li>Open the Console, and sign in as the user.</li>
+<li>View the details for the user who will be calling the API with the key pair.</li>
+<li>Open the Profile menu (User menu icon) and click User Settings.</li>
+<li>Click Add Public Key.</li>
+<li>Paste the contents of the PEM public key in the dialog box and click Add.</li>
+</ul>
 </li>
 </ol>
-<p>Alternatively, run the following command to evaluate just a sinle OPA rule say "deny_ingress_for_sl.rego" policy with a pretty output format:</p>
-<pre><code>    opa eval -f pretty -d /cd3user/oci_tools/cd3_automation_toolkit/user-scripts/OPA/Networking/oci_deny_ingress_for_sl.rego -i tfplan.json data.terraform.deny
-</code></pre>
-<p>This command will analyze the "tfplan.json" input file against the policy and display the evaluation results with a user-friendly format.</p>
-<p><br><br></p>
-<div align='center'>
-
-
-</div>
+<p><b>Note:</b></p>
+<ul>
+<li>Please note down these details for next step - User OCID, Private Key path, Fingerprint, Tenancy OCID. The User should have administrator access to the tenancy to use complete functionality of the toolkit.</li>
+</ul>
+<h2 id="session-token-based-authentication">Session token-based authentication</h2>
+<p>Follow below steps to use Session token-based authentication - </p>
+<ol>
+<li>
+<p>Use below command to create config inside the container. This is needed to generate session token. You can skip this step, if you already have a valid config(with API key) and uploaded the public key to OCI for a user. In that case, you can copy the config file and private API Key inside the container at /cd3user/.oci
+   <br><code>oci setup config</code></p>
+<p><img width="509" alt="Screenshot 2024-01-04 at 4 43 08 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/d97b6407-8032-40a3-a5d1-98778be867af"></p>
+</li>
+<li>
+<p>Execute <code>oci session authenticate --no-browser</code> to generate session token for the private key.
+   <br> Follow the questions. Enter 'DEFAULT' for the profile name and proceed to update the config file with session token information at default location /cd3user/.oci</p>
+<p><img width="721" alt="Screenshot 2024-01-04 at 4 49 53 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/3f65e41c-971f-4e17-8e23-a839317d8912">
+3. Token will be generated at default location /cd3user/.oci     </p>
+<p><img width="512" alt="Screenshot 2024-01-04 at 4 55 17 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/0b3446f6-b69a-49cd-858a-7a14380c4552"></p>
+</li>
+</ol>
+<p><b>Note:</b></p>
+<ul>
+<li>createTenancyConfig.py script will use the config file located at /cd3user/.oci path. And toolkit supports profile name as DEFAULT only.</li>
+<li>Generated session token will have maximum 60 minutes validity. You will have to follow from step 1 if new session token is required after expiry. The User should have administrator access to the tenancy to use complete functionality of the toolkit.</li>
+</ul>
+<h2 id="instance-principal">Instance principal</h2>
+<p>Follow below steps to use Instance Principal authentication - </p>
+<ol>
+<li>Launch an Instance in the tenancy and set up the toolkit docker container on that instance.</li>
+<li>Create Dynamic Group for this instance.</li>
+<li>Write IAM policy to assign privileges to this dynamic group. The dynamic group(containing the instance) should have administrator access to the tenancy to use complete functionality of the toolkit.</li>
+</ol>
               
             </div>
           </div><footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../ComputeGF/" class="btn btn-neutral float-left" title="Create Compute Instances-CLI"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../NonGreenField/" class="btn btn-neutral float-right" title="Export Resources from OCI using CLI (Non-Greenfield Workflow)">Next <span class="icon icon-circle-arrow-right"></span></a>
-    </div>
 
   <hr/>
 
@@ -229,10 +252,6 @@
   <span class="rst-current-version" data-toggle="rst-current-version">
     
     
-      <span><a href="../ComputeGF/" style="color: #fcfcfc">&laquo; Previous</a></span>
-    
-    
-      <span><a href="../NonGreenField/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

@@ -45,12 +45,17 @@
               </ul>
               <p class="caption"><span class="caption-text">Quick Links</span></p>
               <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../CD3ExcelTabs/">OCI services supported by toolkit</a>
-                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../ExcelTemplates/">Excel Templates</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../CD3ExcelTabs/">Adding resources data in Excel templates</a>
+                  </li>
               </ul>
-              <p class="caption"><span class="caption-text">Getting Started</span></p>
+              <p class="caption"><span class="caption-text">Getting Started-Deploy to OCI</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../singleclickdeploy/">Single click container launch</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Getting Started-Local system</span></p>
               <ul>
                   <li class="toctree-l1"><a class="reference internal" href="../prerequisites/">Prerequisites</a>
                   </li>
@@ -64,8 +69,6 @@
                   <li class="toctree-l1 current"><a class="reference internal current" href="./">Overview</a>
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#prepare-setupociproperties">Prepare setUpOCI.properties</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#automation-toolkit-workflows">Automation Toolkit Workflows:</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#execution-steps-overview">Execution Steps Overview:</a>
     </li>
@@ -139,6 +142,8 @@
               <ul>
                   <li class="toctree-l1"><a class="reference internal" href="../LearningVideos/">Automation Toolkit Learning Videos</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../tutorials/">Tutorials</a>
+                  </li>
               </ul>
       </div>
     </div>
@@ -167,7 +172,7 @@
                 <h1 id="using-the-automation-toolkit-via-cli">Using the Automation Toolkit via CLI</h1>
 <h3 id="prepare-setupociproperties"><strong>Prepare setUpOCI.properties</strong></h3>
 <p><strong>Current Version:  setUpOCI.properties v2024.1.0</strong></p>
-<p>Make sure to use/modify the properties file at <em>/cd3user/tenancies /<customer\_name>/<customer\_name>_setUpOCI.properties</em> during executions.</p>
+<p>Make sure to use/modify the properties file at <em>/cd3user/tenancies/&lt;customer_name&gt;/<customer\_name>_setUpOCI.properties</em> during executions.</p>
 <pre><code class="language-ini">[Default]
 
 #Input variables required to run setUpOCI script
@@ -235,26 +240,28 @@ workflow_type=create_resources
 </tr>
 <tr>
 <td>workflow_type</td>
-<td>greenfield workflow or non-greenfield workflow</td>
-<td>See <a href = /cd3_automation_toolkit/documentation/user_guide/Workflows.md#automation-toolkit-workflows> Automation Toolkit Workflows</a> for more information</td>
+<td>Create Resources in OCI or Export Resources from OCI</td>
+<td>create_resources or export_resources</td>
 </tr>
 </tbody>
 </table>
-<h3 id="automation-toolkit-workflows"><strong>Automation Toolkit Workflows:</strong></h3>
-<p>CD3 Automation Tool Kit supports 2 main workflows:
-1.  <a href="/cd3_automation_toolkit/documentation/user_guide/GreenField.md">Create Resources in OCI (Greenfield Workflow)</a> - Empty OCI tenancy (or) do not need to modify / use any existing resources.
-2.  <a href="/cd3_automation_toolkit/documentation/user_guide/NonGreenField.md">Export Resources from OCI (Non-Greenfield Workflow)</a> - Need to use / manage existing resources.  Export existing resources into CD3 &amp; TF State, then use the Greenfield workflow.</p>
+<p><strong>Automation Toolkit Workflows:</strong></p>
+<p>CD3 Automation Tool Kit supports 2 main workflows:</p>
+<ol>
+<li><a href="/GreenField.md">Create Resources in OCI (Greenfield Workflow)</a> - Empty OCI tenancy (or) do not need to modify / use any existing resources.</li>
+<li><a href="/NonGreenField.md">Export Resources from OCI (Non-Greenfield Workflow)</a> - Need to use / manage existing resources.  Export existing resources into CD3 &amp; TF State, then use the Greenfield workflow to modify them or create more resources on top of them.</li>
+</ol>
 <h3 id="execution-steps-overview"><strong>Execution Steps Overview:</strong></h3>
-<p>Choose the appropriate CD3 Excel Sheet and update the setUpOCI.properties file at <em>/cd3user/tenancies/<customer\_name>/<customer\_name>_setUpOCI.properties</em> and run the commands below:</p>
+<p>Choose the appropriate CD3 Excel Sheet and update the setUpOCI.properties file at <em>/cd3user/tenancies/&lt;customer_name&gt;/&lt;customer_name&gt;_setUpOCI.properties</em> and run the commands below:</p>
 <p><strong>Step 1</strong>:
 <br>Change Directory to 'cd3_automation_toolkit'
 <br><code>cd /cd3user/oci_tools/cd3_automation_toolkit/</code></p>
 <p><strong>Step 2</strong>:
-<br>Place Excel sheet at appropriate location in your container and provide the corresponding path in <em>cd3file</em> parmeter of: <em>/cd3user/tenancies /<customer\_name>/<customer\_name>_setUpOCI.properties</em> file</p>
+<br>Place Excel sheet at appropriate location in your container and provide the corresponding path in <em>/cd3user/tenancies/&lt;customer_name&gt;/&lt;customer_name&gt;_setUpOCI.properties</em> file</p>
 <p><strong>Step 3</strong>
 <br>
-Execute the setUpOCI Script:                                                                                                                                           <br><code>python setUpOCI.py /cd3user/tenancies/&lt;customer_name&gt;/&lt;customer_name&gt;_setUpOCI.properties</code>
-<br> → Example execution of the script:</p>
+Execute the setUpOCI Script:                                                                                                                                           <br><code>python setUpOCI.py /cd3user/tenancies/&lt;customer_name&gt;/&lt;customer_name&gt;_setUpOCI.properties</code></p>
+<p><br> → Example execution of the script:</p>
 <pre><code>[cd3user@25260a87b137 cd3_automation_toolkit]$ python setUpOCI.py /cd3user/tenancies/demotenancy/demotenancy_setUpOCI.properties
 Updated OCI_Regions file !!!
 Script to fetch the compartment OCIDs into variables file has not been executed.
@@ -262,13 +269,6 @@ Do you want to run it now? (y|n):
 </code></pre>
 <p>→ This prompt appears for the very first time when you run the toolkit or when any new compartments are created using the toolkit. Enter 'y' to fetch the details of compartment OCIDs into variables file.
 <br>→ After fetching the compartment details, the toolkit will display the menu options.</p>
-<p><br><br></p>
-<div align='center'>
-
-| <a href="/cd3_automation_toolkit/documentation/user_guide/Connect_container_to_OCI_Tenancy.md">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/GreenField.md">Next :arrow_forward:</a> |
-| :---- | -------: |
-
-</div>
               
             </div>
           </div><footer>

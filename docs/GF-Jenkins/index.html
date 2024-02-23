@@ -45,12 +45,17 @@
               </ul>
               <p class="caption"><span class="caption-text">Quick Links</span></p>
               <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../CD3ExcelTabs/">OCI services supported by toolkit</a>
-                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../ExcelTemplates/">Excel Templates</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../CD3ExcelTabs/">Adding resources data in Excel templates</a>
+                  </li>
               </ul>
-              <p class="caption"><span class="caption-text">Getting Started</span></p>
+              <p class="caption"><span class="caption-text">Getting Started-Deploy to OCI</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../singleclickdeploy/">Single click container launch</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Getting Started-Local system</span></p>
               <ul>
                   <li class="toctree-l1"><a class="reference internal" href="../prerequisites/">Prerequisites</a>
                   </li>
@@ -133,6 +138,8 @@
               <ul>
                   <li class="toctree-l1"><a class="reference internal" href="../LearningVideos/">Automation Toolkit Learning Videos</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../tutorials/">Tutorials</a>
+                  </li>
               </ul>
       </div>
     </div>
@@ -159,20 +166,13 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="provisioning-of-instancesokesddcdatabase-on-oci-via-jenkins">Provisioning of Instances/OKE/SDDC/Database on OCI via Jenkins</h1>
-<p>To provision OCI resources which require input ssh keys and source image details, update <strong>variables_\&lt;region&gt;.tf</strong> file using CLI.</p>
+<p>To provision OCI resources which require input ssh keys and source image details, update <strong>variables_&lt;region&gt;.tf</strong> file using CLI.</p>
 <p><strong>Step 1</strong>: 
-<br> Update required data in <code>/cd3user/tenancies/&lt;customer_name&gt;/terraform_files/&lt;region&gt;/&lt;service_dir&gt;/variables_&lt;region&gt;.tf</code>.</p>
+<br> Update required data in <code>/cd3user/tenancies/&lt;customer_name&gt;/terraform_files/&lt;region&gt;/&lt;service_dir&gt;/variables_&lt;region&gt;.tf</code></p>
 <p><strong>Step 2</strong>: 
-<br>Execute GIT commands to sync these local changes with DevOps GIT Repo. Here are the <a href = "/cd3_automation_toolkit/documentation/user_guide/cli_jenkins.md">steps.</a></p>
+<br>Execute GIT commands to sync these local changes with DevOps GIT Repo. Here are the <a href="../cli_jenkins/">Steps</a></p>
 <p><strong>Step 3</strong>: 
 <br> Execute setUpOCI pipeline from Jenkins dashboard with workflow type as <strong>Create Resources in OCI(Greenfield Workflow)</strong> and choose the respective options to create required services.</p>
-<p><br><br></p>
-<div align='center'>
-
-| <a href="/cd3_automation_toolkit/documentation/user_guide/GreenField-Jenkins.md">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/multiple_options_GF-Jenkins.md">Next :arrow_forward:</a> |
-| :---- | -------: |
-
-</div>
               
             </div>
           </div><footer>

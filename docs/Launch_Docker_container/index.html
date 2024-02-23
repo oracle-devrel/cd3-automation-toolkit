@@ -45,12 +45,17 @@
               </ul>
               <p class="caption"><span class="caption-text">Quick Links</span></p>
               <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../CD3ExcelTabs/">OCI services supported by toolkit</a>
-                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../ExcelTemplates/">Excel Templates</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../CD3ExcelTabs/">Adding resources data in Excel templates</a>
+                  </li>
               </ul>
-              <p class="caption"><span class="caption-text">Getting Started</span></p>
+              <p class="caption"><span class="caption-text">Getting Started-Deploy to OCI</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../singleclickdeploy/">Single click container launch</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Getting Started-Local system</span></p>
               <ul class="current">
                   <li class="toctree-l1"><a class="reference internal" href="../prerequisites/">Prerequisites</a>
                   </li>
@@ -143,6 +148,8 @@
               <ul>
                   <li class="toctree-l1"><a class="reference internal" href="../LearningVideos/">Automation Toolkit Learning Videos</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../tutorials/">Tutorials</a>
+                  </li>
               </ul>
       </div>
     </div>
@@ -158,7 +165,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
-          <li class="breadcrumb-item">Getting Started</li>
+          <li class="breadcrumb-item">Getting Started-Local system</li>
       <li class="breadcrumb-item active">Launch the container</li>
     <li class="wy-breadcrumbs-aside">
     </li>
@@ -205,21 +212,14 @@
 <ul>
 <li>Run  <code>docker run --platform linux/amd64 -it -p &lt;port_number_in_local_system&gt;:8443 -d -v &lt;directory_in_local_system_where_the_files_must_be_generated&gt;:/cd3user/tenancies &lt;image_name&gt;:&lt;image_tag&gt;</code></li>
 </ul>
+<blockquote>
 <p>Eg for Mac: <code>docker run --platform linux/amd64 -it -p 8443:8443 -d -v /Users/&lt;user_name&gt;/mount_path:/cd3user/tenancies cd3toolkit:v2024.1.0</code></p>
 <p>Eg for Windows: <code>docker run --platform linux/amd64 -it -p 8443:8443 -d -v D:/mount_path:/cd3user/tenancies cd3toolkit:v2024.1.0</code></p>
-<blockquote>
 <p>If you are launching the container on cloud, Please make sure to use a private server or a bastion connected server with restricted access(i.e. not publicly available) to host the container.</p>
 </blockquote>
 <ul>
 <li>Run  <code>docker ps</code></li>
 </ul>
-<p><br><br></p>
-<div align='center'>
-
-| <a href="/cd3_automation_toolkit/documentation/user_guide/prerequisites.md">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/Connect_container_to_OCI_Tenancy.md">Next :arrow_forward:</a> |
-| :---- | -------: |
-
-</div>
               
             </div>
           </div><footer>
