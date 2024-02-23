@@ -58,6 +58,6 @@ Details of the files created on successful execution of above steps -
 | tenancyconfig.properties | ```/cd3user/tenancies/<customer_name>/.config_files/<customer_name>_tenancyconfig.properties``` | The input properties file used to execute the script is copied to custome folder to retain for future reference. This can be used when the script needs to be re-run with same parameters at later stage.|
 
 The next pages will guide you to use the toolkit either via CLI or via Jenkins. Please proceed further.
-<br><br>
+
 
 

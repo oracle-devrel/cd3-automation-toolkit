@@ -28,20 +28,14 @@ To ease the execution of toolkit, we have provided the steps to build an image w
 * Login to the CD3 docker container using next section and set the proxies(if any) which helps to connect internet from the container.
 
 ## Run the container
+
 * Run  ```docker run --platform linux/amd64 -it -p <port_number_in_local_system>:8443 -d -v <directory_in_local_system_where_the_files_must_be_generated>:/cd3user/tenancies <image_name>:<image_tag>```
   
-  Eg for Mac: ```docker run --platform linux/amd64 -it -p 8443:8443 -d -v /Users/<user_name>/mount_path:/cd3user/tenancies cd3toolkit:v2024.1.0```
+  > Eg for Mac: ```docker run --platform linux/amd64 -it -p 8443:8443 -d -v /Users/<user_name>/mount_path:/cd3user/tenancies cd3toolkit:v2024.1.0```
 
-  Eg for Windows: ```docker run --platform linux/amd64 -it -p 8443:8443 -d -v D:/mount_path:/cd3user/tenancies cd3toolkit:v2024.1.0```
+  > Eg for Windows: ```docker run --platform linux/amd64 -it -p 8443:8443 -d -v D:/mount_path:/cd3user/tenancies cd3toolkit:v2024.1.0```
   
 > If you are launching the container on cloud, Please make sure to use a private server or a bastion connected server with restricted access(i.e. not publicly available) to host the container.
 
 * Run  ```docker ps```
 
-<br><br>
-<div align='center'>
-
-| <a href="/cd3_automation_toolkit/documentation/user_guide/prerequisites.md">:arrow_backward: Prev</a> | <a href="/cd3_automation_toolkit/documentation/user_guide/Connect_container_to_OCI_Tenancy.md">Next :arrow_forward:</a> |
-| :---- | -------: |
-  
-</div>

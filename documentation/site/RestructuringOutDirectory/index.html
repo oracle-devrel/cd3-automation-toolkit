@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Grouping generated Terraform files - CD3 Documentation</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Grouping generated Terraform files";
+        var mkdocs_page_input_path = "RestructuringOutDirectory.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> CD3 Documentation
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Introduction</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Quick Links</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../ExcelTemplates/">Excel Templates</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../CD3ExcelTabs/">Adding resources data in Excel templates</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Getting Started-Deploy to OCI</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../singleclickdeploy/">Single click container launch</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Getting Started-Local system</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../prerequisites/">Prerequisites</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../Launch_Docker_container/">Launch the container</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../Connect_container_to_OCI_Tenancy/">Connect container to OCI tenancy</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Toolkit Execution with CLI</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../Workflows/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../GreenField/">Create resources in OCI using CLI (Greenfield Workflow)</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../NetworkingScenariosGF/">Create Network resources-CLI</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../ComputeGF/">Create Compute Instances-CLI</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../OPAForCompliance/">OPA integration</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../NonGreenField/">Export Resources from OCI using CLI (Non-Greenfield Workflow)</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../NetworkingScenariosNGF/">Export Network resources-CLI</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../ComputeNGF/">Export Compute Instances-CLI</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Toolkit execution with Jenkins</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../Workflows-jenkins/">Prerequisites</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../Intro-Jenkins/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../GreenField-Jenkins/">Create resources in OCI using Jenkins(Greenfield Workflow)</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../NetworkingScenariosGF-Jenkins/">Create Network resources-Jenkins</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../GF-Jenkins/">Create compute Instances/OKE/SDDC/Database-Jenkins</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../multiple_options_GF-Jenkins/">Provision multiple services together-Jenkins</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../NonGreenField-Jenkins/">Export Resources from OCI using Jenkins(Non-Greenfield Workflow)</a>
+                  </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../cli_jenkins/">Synchronize Changes between CLI and Jenkins</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Beyond the basics</span></p>
+              <ul class="current">
+                  <li class="toctree-l1 current"><a class="reference internal current" href="./">Grouping generated Terraform files</a>
+    <ul class="current">
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../ResourceManagerUpload/">OCI Resource Manager Upload</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../SupportforAdditionalAttributes/">Support for Additional Attributes</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../CISFeatures/">Additional CIS Compliance Features</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../SupportForCD3Validator/">CD3 Validator</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../Jobs_Migration/">Migrate jobs to User's Jenkins environment</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../remote_state/">Remote Management of Terraform State</a>
+                  </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../Upgrade_Toolkit/">Upgrade to latest versions</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Known Behaviour</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../KnownBehaviour/">Expected Behaviour of CD3</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../FAQ/">FAQs</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Videos & Tutorials</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../LearningVideos/">Automation Toolkit Learning Videos</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../tutorials/">Tutorials</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">CD3 Documentation</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Beyond the basics</li>
+      <li class="breadcrumb-item active">Grouping generated Terraform files</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="grouping-of-generated-terraform-files-creating-independent-tfstate-files-for-each-resource">Grouping of generated Terraform files (Creating independent tfstate files for each resource)</h1>
+<p>The CD3 Automation Toolkit was previously built to generate all the output Terraform files within a designated region directory.
+OCI components like - Network, Instances, LBaaS, Databases etc., were maintained in a single tfstate file.
+This was not a viable option for tenancies requiring huge infrastructure.</p>
+<p>Starting with the Automation Toolkit release v10.1, it is now possible to select separate directories for each Oracle Cloud Infrastructure (OCI) service supported by the toolkit.</p>
+<p>This can be configured while <a href="../Connect_container_to_OCI_Tenancy/">connecting your container to the OCI tenancy</a>.</p>
+<p>A new parameter 'outdir_structure_file' has been introduced in tenancyconfig.properties using which can be used to configure single outdir or different outdir for each service.</p>
+<p>To enable independent service directories for the generated Terraform files, follow the below steps:</p>
+<ol>
+<li>Go to <code>/cd3user/oci_tools/cd3_automation_toolkit/user-scripts/tenancyconfig.properties</code>. Enter required config details. </li>
+</ol>
+<p>Users have the option to enable or disable multiple service outdirectories based on their specific requirements.</p>
+<p>To enable it, uncomment the <em>outdir_structure_file</em> parameter which has the pre-defined path to <em>outdir_structure_file.properties</em>. Refer to the screenshot below:
+   <img alt="image" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/0c4ecb2f-6e35-4c93-9976-4aed2e74aca6" /></p>
+<p><br>
+2. Under the same user-scripts folder, open <em>outdir_structure_file.properties</em> and modify the directory names if required. They are in the                                                    format:<em>OCI_Service_Name=Directory_Name</em>.</p>
+<blockquote>
+<p>Note: 
+* Do not modify the OCI service Names specified on the left hand side.Modify the directory name specified on Right Hand Side
+* Directory will be created for that service under <region> directory. Do not provide absolute path.
+* To make any changes to the directory structure later, it is necessary to rerun the "createTenancy.py" script from scratch.
+* It is mandatory to specify the directory name for each service.</p>
+</blockquote>
+<p><img width="953" alt="image" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/cf6eb85d-30ad-4de4-8164-963a36076128"></p>
+<p>Here, the network and nsg directories have been renamed to <strong>demo_network</strong> and <strong>demo_nsg</strong> respectively. The next steps to run the toolkit remain the same as specified in                  <a href="../GreenField/">Greenfield workflow</a></p>
+<ol>
+<li>
+<p>Run <code>python createTenancyConfig.py tenancyconfig.properties</code> from user-scripts folder.</p>
+</li>
+<li>
+<p>Go to <code>/cd3user/tenancies/&lt;customer_name&gt;/&lt;customer_name&gt;_setUpOCI.propertiesfile</code> and add the CD3 Excel path. </p>
+<p>Change to the below directory
+ <br><code>cd /cd3user/oci_tools/cd3_automation_toolkit/</code></p>
+<p>Run the script<br><code>python setUpOCI.py /cd3user/tenancies/&lt;customer_name&gt;/&lt;customer_name&gt;_setUpOCI.properties</code></p>
+<p>Select required options. <em>(Here,"Network", "nsg" options have been selected to verify the files under the "demo_network", "demo_nsg" folders)</em></p>
+<p><em>auto.tfvars</em> for the respective services are created.</p>
+</li>
+<li>
+<p>Go to the region directory <code>/cd3user/tenancies/&lt;customer_name&gt;/terraform_files/&lt;region&gt;/</code> . It is clear that all the service-specific folders have been created              successfully.</p>
+<p><img width="953" alt="image" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/ff018b02-225b-4fc1-89c1-c671978b3fa4"></p>
+</li>
+<li>
+<p>Navigate to the <strong>demo-network</strong> folder. All the auto.tfvars and tfstate files related to Network service can be seen within the <strong>demo_network</strong> folder. Terraform operations like        terraform init, terraform plan, terraform apply etc., will be executed from within these folders.</p>
+<p><img width="953" alt="image" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/c2eaa16b-03ab-4c91-acfa-8a23843b6bc3"></p>
+<p>Similarly for all the services, their respective auto.tfvars and tfstate files get grouped under their assigned directories. This makes it much easier to manage OCI resources using          terraform for large-scale infrastructures.</p>
+<p>Likewise, While doing an export from OCI to terraform, update the <em>tenancyconfig.properties</em> file with path to <em>outdir_structure_file.properties</em> similar to step1 and then follow the      steps to run the toolkit for <a href="../NonGreenField/">Non-green field tenancies</a>. With this, all the .sh files with import                      commands of a particular OCI service are grouped and can be easily managed.</p>
+</li>
+</ol>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../cli_jenkins/" class="btn btn-neutral float-left" title="Synchronize Changes between CLI and Jenkins"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../ResourceManagerUpload/" class="btn btn-neutral float-right" title="OCI Resource Manager Upload">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../cli_jenkins/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../ResourceManagerUpload/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

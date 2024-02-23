@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>OCI Resource Manager Upload - CD3 Documentation</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "OCI Resource Manager Upload";
+        var mkdocs_page_input_path = "ResourceManagerUpload.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> CD3 Documentation
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Introduction</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Quick Links</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../ExcelTemplates/">Excel Templates</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../CD3ExcelTabs/">Adding resources data in Excel templates</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Getting Started-Deploy to OCI</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../singleclickdeploy/">Single click container launch</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Getting Started-Local system</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../prerequisites/">Prerequisites</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../Launch_Docker_container/">Launch the container</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../Connect_container_to_OCI_Tenancy/">Connect container to OCI tenancy</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Toolkit Execution with CLI</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../Workflows/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../GreenField/">Create resources in OCI using CLI (Greenfield Workflow)</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../NetworkingScenariosGF/">Create Network resources-CLI</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../ComputeGF/">Create Compute Instances-CLI</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../OPAForCompliance/">OPA integration</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../NonGreenField/">Export Resources from OCI using CLI (Non-Greenfield Workflow)</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../NetworkingScenariosNGF/">Export Network resources-CLI</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../ComputeNGF/">Export Compute Instances-CLI</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Toolkit execution with Jenkins</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../Workflows-jenkins/">Prerequisites</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../Intro-Jenkins/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../GreenField-Jenkins/">Create resources in OCI using Jenkins(Greenfield Workflow)</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../NetworkingScenariosGF-Jenkins/">Create Network resources-Jenkins</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../GF-Jenkins/">Create compute Instances/OKE/SDDC/Database-Jenkins</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../multiple_options_GF-Jenkins/">Provision multiple services together-Jenkins</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../NonGreenField-Jenkins/">Export Resources from OCI using Jenkins(Non-Greenfield Workflow)</a>
+                  </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../cli_jenkins/">Synchronize Changes between CLI and Jenkins</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Beyond the basics</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../RestructuringOutDirectory/">Grouping generated Terraform files</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="./">OCI Resource Manager Upload</a>
+    <ul class="current">
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../SupportforAdditionalAttributes/">Support for Additional Attributes</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../CISFeatures/">Additional CIS Compliance Features</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../SupportForCD3Validator/">CD3 Validator</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../Jobs_Migration/">Migrate jobs to User's Jenkins environment</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../remote_state/">Remote Management of Terraform State</a>
+                  </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../Upgrade_Toolkit/">Upgrade to latest versions</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Known Behaviour</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../KnownBehaviour/">Expected Behaviour of CD3</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../FAQ/">FAQs</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Videos & Tutorials</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../LearningVideos/">Automation Toolkit Learning Videos</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../tutorials/">Tutorials</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">CD3 Documentation</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Beyond the basics</li>
+      <li class="breadcrumb-item active">OCI Resource Manager Upload</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h2 id="oci-resource-manager-upload">OCI Resource Manager Upload</h2>
+<p>This option will upload the created Terraform files &amp; the tfstate (if present) to the OCI Resource Manager.</p>
+<p>When prompted, specify the Region to create/upload the terraform files to Resource Manager Stack. Multiple regions can be specified as comma separated values. Specify 'global' to upload RPC related components which reside in 'global' directory.</p>
+<p>On the next prompt, enter the Compartment where the Stack should be created if it is for the first time. The toolkit will create a Stack for the region specified previously under the specified compartment. For global resources, stack will be created in the home region.</p>
+<p>The Stack created will use Terraform 1.0.x. The upload includes terraform.tfstate file as well, if present. This is to sync the OCI Resource Manager Stack to that of your outdir.</p>
+<p>The toolkit also creates a rm_ocids.csv file in the outdir/<region_dir> which has the information on the Resource Manager stack that is created. The format of the data in <strong><em>rm_ocids.csv</em></strong> is as follows - </p>
+<p>Example:</p>
+<p><kbd>
+<img width="800" alt="image" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/e95572de-2cb0-46f9-ae26-21391c9fee8b">
+</kbd></p>
+<p>To use an existing Resource Manager stack, enter the details in the format provided above into your <code>_outdir/&lt;region_dir&gt;/rm_ocids.csv_</code> file. </p>
+<p>Sample Execution:</p>
+<p><kbd>
+<img width="800" height="600" alt="image" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/e3d7417e-ce1c-464a-8a1d-5cdfd7862835">
+</kbd><br><br></p>
+<blockquote>
+<p>[!IMPORTANT]<br />
+If you are using remote state and upload the stack to OCI Resource Manager using <b>Upload current terraform files/state to Resource Manager</b> under <b>Developer Services</b>, then running terraform plan/apply from OCI Resource Manager will not work and show below error:</p>
+<p><img width="597" alt="Screenshot 2024-01-17 at 11 38 54 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/1b0cd9fa-1ac0-42c4-9c33-14ad4bf0ddb8"></p>
+<p>You will have to remove backend.tf from the directory, bring the remote state into local and then re-upload the stack.
+On choosing <strong>"Developer Services"</strong> in the SetUpOCI menu, choose <strong>"Upload current terraform files/state to Resource Manager"</strong> sub-option to upload the terraform outdir into OCI Resource Manager.</p>
+</blockquote>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../RestructuringOutDirectory/" class="btn btn-neutral float-left" title="Grouping generated Terraform files"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../SupportforAdditionalAttributes/" class="btn btn-neutral float-right" title="Support for Additional Attributes">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../RestructuringOutDirectory/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../SupportforAdditionalAttributes/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>OCI SDK Authentication Methods - CD3 Documentation</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "OCI SDK Authentication Methods";
+        var mkdocs_page_input_path = "Auth_Mechanisms_in_OCI.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> CD3 Documentation
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Introduction</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Quick Links</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../ExcelTemplates/">Excel Templates</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../CD3ExcelTabs/">Adding resources data in Excel templates</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Getting Started-Deploy to OCI</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../singleclickdeploy/">Single click container launch</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Getting Started-Local system</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../prerequisites/">Prerequisites</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../Launch_Docker_container/">Launch the container</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../Connect_container_to_OCI_Tenancy/">Connect container to OCI tenancy</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Toolkit Execution with CLI</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../Workflows/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../GreenField/">Create resources in OCI using CLI (Greenfield Workflow)</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../NetworkingScenariosGF/">Create Network resources-CLI</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../ComputeGF/">Create Compute Instances-CLI</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../OPAForCompliance/">OPA integration</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../NonGreenField/">Export Resources from OCI using CLI (Non-Greenfield Workflow)</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../NetworkingScenariosNGF/">Export Network resources-CLI</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../ComputeNGF/">Export Compute Instances-CLI</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Toolkit execution with Jenkins</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../Workflows-jenkins/">Prerequisites</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../Intro-Jenkins/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../GreenField-Jenkins/">Create resources in OCI using Jenkins(Greenfield Workflow)</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../NetworkingScenariosGF-Jenkins/">Create Network resources-Jenkins</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../GF-Jenkins/">Create compute Instances/OKE/SDDC/Database-Jenkins</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../multiple_options_GF-Jenkins/">Provision multiple services together-Jenkins</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../NonGreenField-Jenkins/">Export Resources from OCI using Jenkins(Non-Greenfield Workflow)</a>
+                  </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../cli_jenkins/">Synchronize Changes between CLI and Jenkins</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Beyond the basics</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../RestructuringOutDirectory/">Grouping generated Terraform files</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../ResourceManagerUpload/">OCI Resource Manager Upload</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../SupportforAdditionalAttributes/">Support for Additional Attributes</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../CISFeatures/">Additional CIS Compliance Features</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../SupportForCD3Validator/">CD3 Validator</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../Jobs_Migration/">Migrate jobs to User's Jenkins environment</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../remote_state/">Remote Management of Terraform State</a>
+                  </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../Upgrade_Toolkit/">Upgrade to latest versions</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Known Behaviour</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../KnownBehaviour/">Expected Behaviour of CD3</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../FAQ/">FAQs</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Videos & Tutorials</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../LearningVideos/">Automation Toolkit Learning Videos</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../tutorials/">Tutorials</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">CD3 Documentation</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">OCI SDK Authentication Methods</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="oci-sdk-authentication-methods">OCI SDK Authentication Methods</h1>
+<p>Choose one of the below authentication mechanisms to be used for the toolkit execution -</p>
+<ul>
+<li><a href="#api-key-based-authentication">API key-based authentication</a></li>
+<li><a href="#session-token-based-authentication">Session token-based authentication</a></li>
+<li><a href="#instance-principal">Instance principal</a></li>
+</ul>
+<h2 id="api-key-based-authentication">API key-based authentication</h2>
+<p>Follow below steps to use API key-based authentication - <br></p>
+<ol>
+<li>
+<p>Create API PEM Key
+   <br>RSA key pair in PEM format (minimum 2048 bits) is needed to use OCI APIs. If the key pair does not exist, create them using below command inside docker container:
+   <br><code>cd /cd3user/oci_tools/cd3_automation_toolkit/user-scripts/</code>
+   <br><code>python createAPIKey.py</code>
+   <br>
+→ This will generate the public/private key pair (oci_api_public.pem and oci_api_private.pem) at /cd3user/tenancies/keys/
+   <br><br>
+ In case you already have the keys, you can copy the private key file inside the container at 
+ /cd3user/tenancies/keys/</p>
+</li>
+<li>
+<p>Upload Public Key
+   <br>
+   Upload the Public key to "APIkeys" under user settings in OCI Console.</p>
+<ul>
+<li>Open the Console, and sign in as the user.</li>
+<li>View the details for the user who will be calling the API with the key pair.</li>
+<li>Open the Profile menu (User menu icon) and click User Settings.</li>
+<li>Click Add Public Key.</li>
+<li>Paste the contents of the PEM public key in the dialog box and click Add.</li>
+</ul>
+</li>
+</ol>
+<p><b>Note:</b></p>
+<ul>
+<li>Please note down these details for next step - User OCID, Private Key path, Fingerprint, Tenancy OCID. The User should have administrator access to the tenancy to use complete functionality of the toolkit.</li>
+</ul>
+<h2 id="session-token-based-authentication">Session token-based authentication</h2>
+<p>Follow below steps to use Session token-based authentication - </p>
+<ol>
+<li>
+<p>Use below command to create config inside the container. This is needed to generate session token. You can skip this step, if you already have a valid config(with API key) and uploaded the public key to OCI for a user. In that case, you can copy the config file and private API Key inside the container at /cd3user/.oci
+   <br><code>oci setup config</code></p>
+<p><img width="509" alt="Screenshot 2024-01-04 at 4 43 08 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/d97b6407-8032-40a3-a5d1-98778be867af"></p>
+</li>
+<li>
+<p>Execute <code>oci session authenticate --no-browser</code> to generate session token for the private key.
+   <br> Follow the questions. Enter 'DEFAULT' for the profile name and proceed to update the config file with session token information at default location /cd3user/.oci</p>
+<p><img width="721" alt="Screenshot 2024-01-04 at 4 49 53 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/3f65e41c-971f-4e17-8e23-a839317d8912">
+3. Token will be generated at default location /cd3user/.oci     </p>
+<p><img width="512" alt="Screenshot 2024-01-04 at 4 55 17 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/0b3446f6-b69a-49cd-858a-7a14380c4552"></p>
+</li>
+</ol>
+<p><b>Note:</b></p>
+<ul>
+<li>createTenancyConfig.py script will use the config file located at /cd3user/.oci path. And toolkit supports profile name as DEFAULT only.</li>
+<li>Generated session token will have maximum 60 minutes validity. You will have to follow from step 1 if new session token is required after expiry. The User should have administrator access to the tenancy to use complete functionality of the toolkit.</li>
+</ul>
+<h2 id="instance-principal">Instance principal</h2>
+<p>Follow below steps to use Instance Principal authentication - </p>
+<ol>
+<li>Launch an Instance in the tenancy and set up the toolkit docker container on that instance.</li>
+<li>Create Dynamic Group for this instance.</li>
+<li>Write IAM policy to assign privileges to this dynamic group. The dynamic group(containing the instance) should have administrator access to the tenancy to use complete functionality of the toolkit.</li>
+</ol>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
