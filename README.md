@@ -1,20 +1,23 @@
-# CD3 Automation Toolkit
 
 [![License: UPL](https://img.shields.io/badge/license-UPL-green)](https://img.shields.io/badge/license-UPL-green) [![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=oracle-devrel_cd3-automation-toolkit)](https://sonarcloud.io/dashboard?id=oracle-devrel_cd3-automation-toolkit)
-<ul>
 
 
+# CD3 Automation Toolkit
 
-[What is CD3](#cd3-automation-toolkit) &nbsp;&nbsp;•&nbsp;&nbsp; [Why CD3](#why-cd3) &nbsp;&nbsp;• &nbsp;&nbsp;[How CD3 works](#how-cd3-works)&nbsp;&nbsp; •&nbsp;&nbsp; [Who can use CD3](#👥-who-can-use-the-toolkit) &nbsp;&nbsp;• &nbsp;&nbsp;[Benefits](#💡-benefits-of-cd3) &nbsp;&nbsp;•&nbsp;&nbsp; [OCI services supported by CD3](https://oracle-devrel.github.io/cd3-automation-toolkit/#oci-services-currently-supported-by-automation-toolkit) &nbsp;&nbsp;•&nbsp;&nbsp; [High level workflow](https://oracle-devrel.github.io/cd3-automation-toolkit/#high-level-workflow) &nbsp;&nbsp;•&nbsp;&nbsp; [Kick-start](#🚀-ready-to-kick-start-your-cd3-journey) &nbsp;&nbsp;  •&nbsp;&nbsp; [Excel templates](https://oracle-devrel.github.io/cd3-automation-toolkit/ExcelTemplates)&nbsp;&nbsp; •  &nbsp;&nbsp;[Contributing](#⭐️-contributing) &nbsp;&nbsp;• &nbsp;&nbsp;[License](#⚠️-license)
+<br>
 
+  [Detailed Documentation](https://oracle-devrel.github.io/cd3-automation-toolkit/) &nbsp;•&nbsp; [Excel templates](https://oracle-devrel.github.io/cd3-automation-toolkit/ExcelTemplates)&nbsp;&nbsp; 
+  
 
-(cd3logo -yet to be added)
+  <img width="35%" height="30%" align= "centre" alt="Screenshot 2024-02-06 at 1 11 21 PM" src= "https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/18f4c54a-b8d9-4b25-8eb4-7b1f5e6a4574">
+
+<br>
 
 <br>
 
 CD3 stands for **Cloud Deployment Design Deliverable**. The CD3 Automation toolkit enables you to effortlessly Build, Export and Manage OCI (Oracle Cloud Infrastruture) resources using IaC within minutes ⚡️ .
 
-<br>
+
 
 Click the below button to quickly launch CD3 toolkit container in OCI and start managing your Infra as Code!!
 <br>
@@ -41,7 +44,7 @@ The toolkit transforms input data from Excel files into Terraform files, enablin
 
 **CD3 isn't just about creation!!!** ⬅️ Reverse engineer existing infrastructure back into Excel and IaC(terraform) to gain complete control over your OCI resources lifecycle. 
 
-📜 The generated Terraform code can be used by the OCI Resource Manager or can be integrated into organization's existing Devops CI/CD ecosystem.
+📜 The generated Terraform code can be used by the OCI Resource Manager or can be integrated into organization's existing DevOps CI/CD ecosystem.
 
 <br>
 
@@ -72,14 +75,6 @@ The toolkit transforms input data from Excel files into Terraform files, enablin
 
 **Platform independent 🌐:** CD3 is packaged as a container that can be hosted on any platform.
  
-<br>
-
-##  🚀 Ready to kick start your CD3 journey??
-
-[CLICK HERE!!](https://oracle-devrel.github.io/cd3-automation-toolkit/) to get started and manage your OCI Infra within minutes!
-
-
-
 <br>
 
 ## ⭐️ Contributing
