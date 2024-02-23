@@ -23,7 +23,7 @@ Click the below button to quickly launch CD3 toolkit container in OCI and start 
 
 <br>
 
-### Why CD3?
+## Why CD3?
 
 
 ⏳ For Enterprise infrastructures, manual resource provisioning is tedious and error-prone.
@@ -34,7 +34,7 @@ Click the below button to quickly launch CD3 toolkit container in OCI and start 
 
 <br>
 
-###  How CD3 works?
+##  How CD3 works?
 
 
 The toolkit transforms input data from Excel files into Terraform files, enabling seamless creation of infrastructure in OCI.
@@ -45,13 +45,13 @@ The toolkit transforms input data from Excel files into Terraform files, enablin
 
 <br>
 
-### 👥 Who can use the toolkit??
+## 👥 Who can use the toolkit??
 
   Anyone who wants to create or export OCI resources without much effort. 
 
 <br>
 
-### 💡 Benefits of CD3:
+## 💡 Benefits of CD3:
 
 
    ✅ Time savings ⏰ 
@@ -74,7 +74,7 @@ The toolkit transforms input data from Excel files into Terraform files, enablin
  
 <br>
 
-###  🚀 Ready to kick start your CD3 journey??
+##  🚀 Ready to kick start your CD3 journey??
 
 [CLICK HERE!!](https://oracle-devrel.github.io/cd3-automation-toolkit/) to get started and manage your OCI Infra within minutes!
 
