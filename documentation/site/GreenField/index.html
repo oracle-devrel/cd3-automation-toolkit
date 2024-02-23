@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Create resources in OCI using CLI (Greenfield Workflow) - CD3 Documentation</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Create resources in OCI using CLI (Greenfield Workflow)";
+        var mkdocs_page_input_path = "GreenField.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> CD3 Documentation
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Introduction</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Quick Links</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../ExcelTemplates/">Excel Templates</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../CD3ExcelTabs/">Adding resources data in Excel templates</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Getting Started-Deploy to OCI</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../singleclickdeploy/">Single click container launch</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Getting Started-Local system</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../prerequisites/">Prerequisites</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../Launch_Docker_container/">Launch the container</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../Connect_container_to_OCI_Tenancy/">Connect container to OCI tenancy</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Toolkit Execution with CLI</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../Workflows/">Overview</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="./">Create resources in OCI using CLI (Greenfield Workflow)</a>
+    <ul class="current">
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../NetworkingScenariosGF/">Create Network resources-CLI</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../ComputeGF/">Create Compute Instances-CLI</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../OPAForCompliance/">OPA integration</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../NonGreenField/">Export Resources from OCI using CLI (Non-Greenfield Workflow)</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../NetworkingScenariosNGF/">Export Network resources-CLI</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../ComputeNGF/">Export Compute Instances-CLI</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Toolkit execution with Jenkins</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../Workflows-jenkins/">Prerequisites</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../Intro-Jenkins/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../GreenField-Jenkins/">Create resources in OCI using Jenkins(Greenfield Workflow)</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../NetworkingScenariosGF-Jenkins/">Create Network resources-Jenkins</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../GF-Jenkins/">Create compute Instances/OKE/SDDC/Database-Jenkins</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../multiple_options_GF-Jenkins/">Provision multiple services together-Jenkins</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../NonGreenField-Jenkins/">Export Resources from OCI using Jenkins(Non-Greenfield Workflow)</a>
+                  </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../cli_jenkins/">Synchronize Changes between CLI and Jenkins</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Beyond the basics</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../RestructuringOutDirectory/">Grouping generated Terraform files</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../ResourceManagerUpload/">OCI Resource Manager Upload</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../SupportforAdditionalAttributes/">Support for Additional Attributes</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../CISFeatures/">Additional CIS Compliance Features</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../SupportForCD3Validator/">CD3 Validator</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../Jobs_Migration/">Migrate jobs to User's Jenkins environment</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../remote_state/">Remote Management of Terraform State</a>
+                  </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../Upgrade_Toolkit/">Upgrade to latest versions</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Known Behaviour</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../KnownBehaviour/">Expected Behaviour of CD3</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../FAQ/">FAQs</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Videos & Tutorials</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../LearningVideos/">Automation Toolkit Learning Videos</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../tutorials/">Tutorials</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">CD3 Documentation</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Toolkit Execution with CLI</li>
+      <li class="breadcrumb-item active">Create resources in OCI using CLI (Greenfield Workflow)</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="create-resources-in-oci-greenfield-workflow">Create resources in OCI (Greenfield Workflow)</h1>
+<p><strong>Step 1</strong>: 
+<br>Choose the appropriate Excel sheet template from <a href="/cd3_automation_toolkit/documentation/user_guide/ExcelTemplates.md">Excel Templates</a></p>
+<p><strong>Step 2</strong>:
+<br>Fill the Excel with appropriate values and put at the appropriate location.
+<br>Modify/Review <code>/cd3user/tenancies /&lt;customer_name&gt;/&lt;customer_name&gt;_setUpOCI.properties</code> with <strong>workflow_type</strong> set to <strong>create_resources</strong> as shown below:</p>
+<pre><code class="language-ini">#Input variables required to run setUpOCI script
+
+#path to output directory where terraform file will be generated. eg /cd3user/tenancies/&lt;customer_name&gt;/terraform_files
+outdir=/cd3user/tenancies/demotenancy/terraform_files/
+
+#prefix for output terraform files eg &lt;customer_name&gt; like demotenancy
+prefix=demotenancy
+
+# auth mechanism for OCI APIs - api_key,instance_principal,session_token
+auth_mechanism=api_key
+
+#input config file for Python API communication with OCI eg /cd3user/tenancies/&lt;customer_name&gt;/.config_files/&lt;customer_name&gt;_config;
+config_file=/cd3user/tenancies/demotenancy/.config_files/demotenancy_oci_config
+
+# Leave it blank if you want single outdir or specify outdir_structure_file.properties containing directory structure for OCI services.
+outdir_structure_file=/cd3user/tenancies/demotenancy/demotenancy_outdir_structure_file.properties
+
+#path to cd3 excel eg /cd3user/tenancies/&lt;customer_name&gt;/CD3-Customer.xlsx
+cd3file=/cd3user/tenancies/demotenancy/CD3-Blank-template.xlsx
+
+#specify create_resources to create new resources in OCI(greenfield workflow)
+#specify export_resources to export resources from OCI(non-greenfield workflow)
+workflow_type=create_resources
+</code></pre>
+<p><strong>Step 3</strong>:
+<br>Execute the SetUpOCI.py script to start creating the terraform configuration files.</p>
+<p>Command to Execute:
+<br><code>cd /cd3user/oci_tools/cd3_automation_toolkit/</code>
+<br><code>python setUpOCI.py  &lt;path_to_setupOCI.properties&gt;</code> ie
+<br><code>python setUpOCI.py /cd3user/tenancies/&lt;customer_name&gt;/&lt;customer_name&gt;_setUpOCI.properties</code></p>
+<p>→ Example execution of the wrapper script:</p>
+<p><img src = "https://user-images.githubusercontent.com/122371432/213680074-be73042e-8672-44f5-b2cf-619998805724.png" width=50% height=50%></p>
+<p>Choose the resources by specifying a single option (for choosing one of these resources) or comma-separated values (to choose multiple resources) as shown in the sample screenshot above.</p>
+<p><strong>Step 4:</strong> 
+<br>Change your directory to  <code>/cd3user/tenancies/&lt;customer_name&gt;/terraform_files/&lt;region_dir&gt;/</code>  and Execute:</p>
+<p><strong>terraform init</strong>  - To initialize and prepare your working/out directory so Terraform can run the configuration.<br></p>
+<p><strong>terraform plan</strong>  - To preview any changes before you apply them. Run the plan against <a href="/OPAForCompliance.md">OPA policies</a> for compliance against CIS.</p>
+<p><strong>terraform apply</strong> - To make the changes defined by Terraform configuration to create, update, or destroy resources in OCI.</p>
+<p><b> Note:</b> </p>
+<ul>
+<li>Execute <strong>"Fetch Compartments OCIDs to variables file"</strong> from <strong>CD3 Services</strong> in setUpOCI menu after you create Compartments. This is a required step everytime you create a compartment via toolkit or via the OCI console.</li>
+</ul>
+<p><strong>Example: Create a Compartment</strong></p>
+<p>Follow the below steps to quickly provision a compartment on OCI.</p>
+<ol>
+<li>Use the excel <a href="/cd3_automation_toolkit/example">CD3-SingleVCN-template</a> and fill the required Compartment details in the 'Compartments' tab.<blockquote>
+<ul>
+<li>Make appropriate changes to the template. For Eg: Update the <em>Region</em> value to your tenancy's home region.</li>
+<li>Once all the required data is filled in the Excel sheet, place it at the location <em>/cd3user/tenancies/&lt;customer_name&gt;/</em>  which is also mapped to your local directory.
+ <br>  </li>
+</ul>
+</blockquote>
+</li>
+<li>
+<p>Edit the <em>setUpOCI.properties</em> at location: <em>/cd3user/tenancies/&lt;customer_name&gt;/&lt;customer_name&gt;_setUpOCI.properties</em> with appropriate values. </p>
+<blockquote>
+<ul>
+<li>Update the <em>cd3file</em> parameter to specify the CD3 excel sheet path.</li>
+<li>Set the <em>workflow_type</em> parameter value to <em>create_resources</em>. (for Greenfield Workflow.) <br></li>
+</ul>
+</blockquote>
+</li>
+<li>
+<p>Change Directory to 'cd3_automation_toolkit' : <br>
+   <code>cd /cd3user/oci_tools/cd3_automation_toolkit/</code> <br>
+    and execute the <em>setupOCI.py</em> file: <br>
+   <code>python setUpOCI.py /cd3user/tenancies/&lt;customer_name&gt;/&lt;customer_name&gt;_setUpOCI.properties</code> <br>
+<br>   </p>
+</li>
+<li>
+<p>Choose option to create compartments under 'Identity' from the displayed menu. Once the execution is successful, <em>&lt;customer_name&gt;_compartments.auto.tfvars</em> file will be generated under the folder <em>/cd3user/tenancies/&lt;customer_name&gt;/terraform_files/&lt;region_dir&gt;/&lt;service_dir&gt;</em></p>
+<p>Navigate to the above path and execute the terraform commands:<br></p>
+<blockquote>
+<ul>
+<li><em>terraform init</em></li>
+<li><em>terraform plan</em></li>
+<li><em>terraform apply</em></li>
+</ul>
+</blockquote>
+</li>
+<li>
+<p>Choose <em>Fetch Compartments OCIDs to variables file</em> under <em>CD3 Services</em> in setUpOCI menu.
+    Execute the command to fetch the details of the compartments if it already exists/created in OCI. These details will be written to the terraform variables file. <br>
+<br></p>
+</li>
+<li>Repeat the above process (except Step 5) to create other components in OCI.</li>
+</ol>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../Workflows/" class="btn btn-neutral float-left" title="Overview"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../NetworkingScenariosGF/" class="btn btn-neutral float-right" title="Create Network resources-CLI">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../Workflows/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../NetworkingScenariosGF/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

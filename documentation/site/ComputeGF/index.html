@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Create Compute Instances-CLI - CD3 Documentation</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Create Compute Instances-CLI";
+        var mkdocs_page_input_path = "ComputeGF.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> CD3 Documentation
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Introduction</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Quick Links</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../ExcelTemplates/">Excel Templates</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../CD3ExcelTabs/">Adding resources data in Excel templates</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Getting Started-Deploy to OCI</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../singleclickdeploy/">Single click container launch</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Getting Started-Local system</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../prerequisites/">Prerequisites</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../Launch_Docker_container/">Launch the container</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../Connect_container_to_OCI_Tenancy/">Connect container to OCI tenancy</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Toolkit Execution with CLI</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../Workflows/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../GreenField/">Create resources in OCI using CLI (Greenfield Workflow)</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../NetworkingScenariosGF/">Create Network resources-CLI</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="./">Create Compute Instances-CLI</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#remote-executioncloud-init-scenarios">Remote Execution/Cloud Init Scenarios</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#managing-remote-execution">Managing Remote Execution</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#managing-cloud-init">Managing Cloud Init</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../OPAForCompliance/">OPA integration</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../NonGreenField/">Export Resources from OCI using CLI (Non-Greenfield Workflow)</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../NetworkingScenariosNGF/">Export Network resources-CLI</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../ComputeNGF/">Export Compute Instances-CLI</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Toolkit execution with Jenkins</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../Workflows-jenkins/">Prerequisites</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../Intro-Jenkins/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../GreenField-Jenkins/">Create resources in OCI using Jenkins(Greenfield Workflow)</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../NetworkingScenariosGF-Jenkins/">Create Network resources-Jenkins</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../GF-Jenkins/">Create compute Instances/OKE/SDDC/Database-Jenkins</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../multiple_options_GF-Jenkins/">Provision multiple services together-Jenkins</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../NonGreenField-Jenkins/">Export Resources from OCI using Jenkins(Non-Greenfield Workflow)</a>
+                  </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../cli_jenkins/">Synchronize Changes between CLI and Jenkins</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Beyond the basics</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../RestructuringOutDirectory/">Grouping generated Terraform files</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../ResourceManagerUpload/">OCI Resource Manager Upload</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../SupportforAdditionalAttributes/">Support for Additional Attributes</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../CISFeatures/">Additional CIS Compliance Features</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../SupportForCD3Validator/">CD3 Validator</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../Jobs_Migration/">Migrate jobs to User's Jenkins environment</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../remote_state/">Remote Management of Terraform State</a>
+                  </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../Upgrade_Toolkit/">Upgrade to latest versions</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Known Behaviour</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../KnownBehaviour/">Expected Behaviour of CD3</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../FAQ/">FAQs</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Videos & Tutorials</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../LearningVideos/">Automation Toolkit Learning Videos</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../tutorials/">Tutorials</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">CD3 Documentation</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Toolkit Execution with CLI</li>
+      <li class="breadcrumb-item active">Create Compute Instances-CLI</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="provisioning-compute-instances-on-oci">Provisioning Compute Instances on OCI</h1>
+<p>Provisioning of compute instances using Automation Toolkit involves the below steps:</p>
+<ul>
+<li>Add the VM details to the "Instances" Excel Sheet.</li>
+<li>Running the toolkit to generate auto.tfvars.</li>
+<li>Executing Terraform commands to provision the resources in OCI.</li>
+</ul>
+<p>Note below points while adding VM details in the Instances sheet:</p>
+<ol>
+<li>"Display Name" column is case sensitive. Specified value will be the display name of Instance in OCI console. <br>
+ <br></li>
+<li>Optional columns can also be left blank - like Fault Domain, IP Address. They will take default values when left empty. <br>
+ <br></li>
+<li>
+<p>Leave columns: Backup Policy, NSGs, DedicatedVMHost blank if instance doesn't need to be part of any of these. Instances can be made a part of Backup Policy and NSGs later by choosing appropriate option in setUpOCI menu. <br>
+ <br></p>
+</li>
+<li>
+<p>The column "SSH Key Var Name" accepts SSH key value directly or the name of variable declared in <em>variables.tf</em> under the  <strong>instance_ssh_keys</strong> variable containing the key value. Make sure to have an entry in variables_\<region>.tf file with the name you enter in SSH Key Var Name field of the Excel sheet and put the value as SSH key value. <br></p>
+</li>
+</ol>
+<blockquote>
+<p>For Eg: If you enter the SSH Key Var Name as <strong>ssh_public_key</strong>, make an entry in variables_\<region>.tf file as shown below:</p>
+</blockquote>
+<pre><code>variable  'instance_ssh_keys'  {
+type = map(any)
+default = {
+ssh_public_key = "&lt;SSH PUB KEY STRING HERE&gt;"
+# Use '\n' as the delimiter to add multiple ssh keys.
+# Example: ssh_public_key = "ssh-rsa AAXXX......yhdlo\nssh-rsa AAxxskj...edfwf"
+#START_instance_ssh_keys#
+# exported instance ssh keys
+#instance_ssh_keys_END#
+  }
+}
+</code></pre>
+<p><br>
+5. Enter subnet name column value as: \<vcn-name>_\<subnet-name> <br>
+<br>
+6. Source Details column of the excel sheet accepts both image and boot volume as the source for instance to be launched. <br>
+   Format:</p>
+<pre><code>       image::\&lt;variable containing ocid of image&gt; or
+       bootVolume::\&lt;variable containing ocid of boot volume&gt;
+</code></pre>
+<p>Make sure to have an entry in variables_\<region>.tf file for the value you enter in Source Details field of the Excel sheet.
+Ex: If you enter the Source Details as image::Linux, make an entry in variables_\<region>.tf file under the <strong>instance_source_ocids</strong> variable as shown below:</p>
+<pre><code>variable 'instance_source_ocids' {
+ type = map(any)
+ Linux    = "&lt;LATEST LINUX OCID HERE&gt;"
+ Windows  = "&lt;LATEST WINDOWS OCID HERE&gt;"
+ PaloAlto = "Palo Alto Networks VM-Series Next Generation Firewall"
+ #START_instance_source_ocids#
+ # exported instance image ocids
+ #instance_source_ocids_END#
+}
+</code></pre>
+<p><br>
+7. Mention shape to be used in Shape column of the excel sheet. If Flex shape is to be used format is:</p>
+<pre><code>     shape::ocpus
+
+     eg: VM.Standard.E3.Flex::5
+</code></pre>
+<p><br>
+8. Custom Policy Compartment Name : Specify the compartment name where the Custom Policy is created. <br>
+<br>
+9. Create_Is PV Encryption In Transit Enabled attribute should be set to True to enable encryption for new instances. Default is False. <br>
+<br>
+10. Update_Is PV Encryption In Transit Enabled attribute should be set to True to enable encryption for existing instances. <br>
+<br>
+11. Add any additonal attributes (not part of excel sheet already) as per  <a href="../SupportforAdditionalAttributes/">this</a>. <br>
+<br>
+12. To enable or disable a plugin for the instance add new column with name as <b>'Plugin \<plugin-name-in-console>' </b> eg 'Plugin Bastion'.
+    Valid values are Enabled or Disabled <br></p>
+<h2 id="remote-executioncloud-init-scenarios">Remote Execution/Cloud Init Scenarios</h2>
+<h2 id="managing-remote-execution">Managing Remote Execution</h2>
+<p><strong>NOTE-</strong>
+Before you start with configuring remote execution for OCI instance(s) please ensure network connectivity through Bastion host or direct reach to the OCI instance(s) from where terraform is being invoked.</p>
+<p>Remote execution should be used as the <strong>last resort or only during initial provisioning</strong> for a given OCI instance(s). This feature cannot be used for export of instances.</p>
+<ul>
+<li>Add the <strong>'Remote Execute'</strong> columm to the excel sheet for the corresponding instance entry. Format is: bastion_ip@<scriptname> </li>
+<li>Please skip bastion_ip if there is direct connectivity with target servers via VPN.</li>
+<li>Scripts folder should have the <strong>ansible script files</strong> or <strong>shell script files</strong> and ssh-keys for instances and bastion host. The <em>.yaml or </em>.yml extensions will be considered for the ansible script files and .sh extensions will be considered for shell scripts files.</li>
+<li>For block-volume attachment configuration via ansible playbook the device name is must, and it's currently set to "/dev/oracleoci/oraclevdb" in the sample ansible playbook.</li>
+<li>Common scenarios like security hardening and other common shell scripts can be executed against the OCI instances during provisioning.</li>
+<li>Running the CD3 automation toolkit will generate auto.tfvars.</li>
+<li>Execute Terraform commands to provision the instances in OCI. Remote executioner will also run after the instance provisioning.</li>
+</ul>
+<p>The users can refer to the <code>default.yaml</code> file which is inside <code>/cd3user/tenancies/&lt;customer_name&gt;/terraform_files/&lt;region&gt;/scripts</code> dir for provisioning the custom playbooks.</p>
+<h2 id="managing-cloud-init">Managing Cloud Init</h2>
+<ul>
+<li>Add the <strong>'Cloud Init Script'</strong> column to the excel sheet for the corresponding instance entry.</li>
+<li>Scripts folder should have the relevant script files for instances. The *.sh extension(s) will be considered for the script files.</li>
+<li>Common scenarios like security hardening and other common scripts can be executed against the OCI instances during provisioning.</li>
+<li>Running the CD3 automation toolkit will generate auto.tfvars.</li>
+<li>Execute Terraform commands to provision the instances in OCI and run cloud-init scripts during provisioning.</li>
+</ul>
+<h1 id="executing-the-setupocipy-script">Executing the setUpOCI.py script:</h1>
+<p>On choosing <strong>"Compute"</strong> in the SetUpOCI menu and <strong>"Add/Modify/Delete Instances/Boot Backup Policy"</strong> submenu will allow to launch your VM on OCI tenancy.</p>
+<p>Output terraform file generated: <code>&lt;outdir&gt;/&lt;region&gt;/&lt;prefix&gt;_instances.auto.tfvars</code> and <code>&lt;outdir&gt;/&lt;region&gt;/&lt;prefix&gt;_boot-backup-policy.auto.tfvars</code>  under  appropriate <region> directory.</p>
+<p>Once the terraform apply is complete, view the resources under Compute -&gt; Instances for the region.</p>
+<p>On re-running the same option you will find the previously existing files being backed up under directory →   <code>&lt;outdir&gt;/&lt;region&gt;/backup_instances/&lt;Date&gt;-&lt;Month&gt;-&lt;Time&gt;.</code></p>
+<p><br><br></p>
+<div align='center'>
+
+</div>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../NetworkingScenariosGF/" class="btn btn-neutral float-left" title="Create Network resources-CLI"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../OPAForCompliance/" class="btn btn-neutral float-right" title="OPA integration">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../NetworkingScenariosGF/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../OPAForCompliance/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

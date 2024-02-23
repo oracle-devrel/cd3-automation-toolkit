@@ -2,14 +2,17 @@ site_name: CD3 Documentation
 nav:
   - Introduction: README.md
   - 'Quick Links':
-    - OCI services supported by toolkit: CD3ExcelTabs.md
     - Excel Templates: ExcelTemplates.md
+    - Adding Resources data in Excel templates: CD3ExcelTabs.md
+    
+  - 'Getting Started-Deploy to OCI':
+    - Single click container launch: singleclickdeploy.md
 
-  - 'Getting Started':
+  - 'Getting Started-Local system':
     - Prerequisites: prerequisites.md
     - Launch the container: Launch_Docker_container.md
     - Connect container to OCI tenancy: Connect_container_to_OCI_Tenancy.md
-
+  
   - 'Toolkit Execution with CLI':
     - Overview: Workflows.md
     - Create resources in OCI using CLI (Greenfield Workflow): GreenField.md
