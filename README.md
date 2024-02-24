@@ -6,7 +6,7 @@
 
 <br>
 
-  [Detailed Documentation](https://oracle-devrel.github.io/cd3-automation-toolkit/) &nbsp;•&nbsp; [Excel templates](https://oracle-devrel.github.io/cd3-automation-toolkit/ExcelTemplates)&nbsp;&nbsp; 
+  [User Manual](https://oracle-devrel.github.io/cd3-automation-toolkit/)&nbsp; &nbsp;•&nbsp;&nbsp;[Blogs &Tutorials](https://oracle-devrel.github.io/cd3-automation-toolkit/tutorials/) &nbsp;&nbsp;•&nbsp;&nbsp;                [Watch and learn](https://www.youtube.com/playlist?list=PLPIzp-E1msrbJ3WawXVhzimQnLw5iafcp) &nbsp;&nbsp;•&nbsp;&nbsp;[OCI CD3-Livelabs](https://apexapps.oracle.com/pls/apex/f?p=133:180:112501098061930::::wid:3724)&nbsp;&nbsp;•&nbsp; &nbsp;[Excel templates](https://oracle-devrel.github.io/cd3-automation-toolkit/ExcelTemplates)
   
 
   <img width="35%" height="30%" align= "centre" alt="Screenshot 2024-02-06 at 1 11 21 PM" src= "https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/18f4c54a-b8d9-4b25-8eb4-7b1f5e6a4574">
