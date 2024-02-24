@@ -6,12 +6,21 @@
 
 <br>
 
-  [User Manual](https://oracle-devrel.github.io/cd3-automation-toolkit/)&nbsp; &nbsp;•&nbsp;&nbsp;[Blogs &Tutorials](https://oracle-devrel.github.io/cd3-automation-toolkit/tutorials/) &nbsp;&nbsp;•&nbsp;&nbsp;                [Watch and learn](https://www.youtube.com/playlist?list=PLPIzp-E1msrbJ3WawXVhzimQnLw5iafcp) &nbsp;&nbsp;•&nbsp;&nbsp;[OCI CD3-Livelabs](https://apexapps.oracle.com/pls/apex/f?p=133:180:112501098061930::::wid:3724)&nbsp;&nbsp;•&nbsp; &nbsp;[Excel templates](https://oracle-devrel.github.io/cd3-automation-toolkit/ExcelTemplates)
+  [CD3 Docs](https://oracle-devrel.github.io/cd3-automation-toolkit/)&nbsp; &nbsp;•&nbsp;&nbsp; [Watch & learn](https://www.youtube.com/playlist?list=PLPIzp-E1msrbJ3WawXVhzimQnLw5iafcp) &nbsp;&nbsp;•&nbsp;&nbsp;[Blogs & Tutorials](https://oracle-devrel.github.io/cd3-automation-toolkit/tutorials/) &nbsp;&nbsp;•&nbsp;&nbsp;[OCI CD3-Livelabs](https://apexapps.oracle.com/pls/apex/f?p=133:180:112501098061930::::wid:3724)&nbsp;&nbsp;•&nbsp; &nbsp;[Excel templates](https://oracle-devrel.github.io/cd3-automation-toolkit/ExcelTemplates) &nbsp;&nbsp;•&nbsp; &nbsp;[What's new](https://github.com/oracle-devrel/cd3-automation-toolkit/releases/tag/v2024.1.0)
   
 
-  <img width="35%" height="30%" align= "centre" alt="Screenshot 2024-02-06 at 1 11 21 PM" src= "https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/18f4c54a-b8d9-4b25-8eb4-7b1f5e6a4574">
+<table>
+   <tr><td><img alt="Screenshot 2024-02-06 at 1 11 21 PM" src= "https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/18f4c54a-b8d9-4b25-8eb4-7b1f5e6a4574"></td>
+       <td> <table> <tr><td>IAM/Identity</td><td>Governance</td><td>DNS Management</td><td>Database</td></tr>
+                     <tr><td>Network</td><td>Observability & Management</td><td>Compute</td><td>Developer Services</td></tr>
+                     <tr><td>LBaaS</td><td>Logging Services</td><td>Storage</td><td>SDDCs</td></tr>
+                     <tr><td>CIS Landing Zone Compliance</td><td>Policy Enforcement</td></tr>
+            </table>    
+      </td>
+</table>
 
-<br>
+
+
 
 <br>
 
