@@ -1,34 +1,70 @@
 
 [![License: UPL](https://img.shields.io/badge/license-UPL-green)](https://img.shields.io/badge/license-UPL-green) [![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=oracle-devrel_cd3-automation-toolkit)](https://sonarcloud.io/dashboard?id=oracle-devrel_cd3-automation-toolkit)
 
-
+<br>
+  
 # CD3 Automation Toolkit
 
 <br>
 
-  [CD3 Docs](https://oracle-devrel.github.io/cd3-automation-toolkit/)&nbsp; &nbsp;•&nbsp;&nbsp; [Watch & learn](https://www.youtube.com/playlist?list=PLPIzp-E1msrbJ3WawXVhzimQnLw5iafcp) &nbsp;&nbsp;•&nbsp;&nbsp;[Blogs & Tutorials](https://oracle-devrel.github.io/cd3-automation-toolkit/tutorials/) &nbsp;&nbsp;•&nbsp;&nbsp;[OCI CD3-Livelabs](https://apexapps.oracle.com/pls/apex/f?p=133:180:112501098061930::::wid:3724)&nbsp;&nbsp;•&nbsp; &nbsp;[Excel templates](https://oracle-devrel.github.io/cd3-automation-toolkit/ExcelTemplates) &nbsp;&nbsp;•&nbsp; &nbsp;[What's new](https://github.com/oracle-devrel/cd3-automation-toolkit/releases/tag/v2024.1.0)
-  
+  [CD3 Docs](https://oracle-devrel.github.io/cd3-automation-toolkit/)&nbsp; &nbsp;•&nbsp;&nbsp; [Watch & Learn](https://www.youtube.com/playlist?list=PLPIzp-E1msrbJ3WawXVhzimQnLw5iafcp) &nbsp;&nbsp;•&nbsp;&nbsp;[Blogs & Tutorials](https://oracle-devrel.github.io/cd3-automation-toolkit/tutorials/) &nbsp;&nbsp;•&nbsp;&nbsp;[OCI CD3-Livelabs](https://apexapps.oracle.com/pls/apex/f?p=133:180:112501098061930::::wid:3724)&nbsp;&nbsp;•&nbsp; &nbsp;[Excel templates](https://oracle-devrel.github.io/cd3-automation-toolkit/ExcelTemplates) &nbsp;&nbsp;•&nbsp; &nbsp;[What's new](https://github.com/oracle-devrel/cd3-automation-toolkit/releases/tag/v2024.1.0)
 
-<table>
-   <tr><td><img alt="Screenshot 2024-02-06 at 1 11 21 PM" src= "https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/18f4c54a-b8d9-4b25-8eb4-7b1f5e6a4574"></td>
-       <td> <table> <tr><td>IAM/Identity</td><td>Governance</td><td>DNS Management</td><td>Database</td></tr>
-                     <tr><td>Network</td><td>Observability & Management</td><td>Compute</td><td>Developer Services</td></tr>
-                     <tr><td>LBaaS</td><td>Logging Services</td><td>Storage</td><td>SDDCs</td></tr>
-                     <tr><td>CIS Landing Zone Compliance</td><td>Policy Enforcement</td></tr>
-            </table>    
-      </td>
-</table>
+<br>
 
+
+<img width=30% height=30%; src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/590db5b3-dd19-4994-8791-3ebc1ea3f6e3">
+
+<br>
+
+
+<br>
+
+CD3 stands for **Cloud Deployment Design Deliverable**. The CD3 Automation toolkit enables you to effortlessly Build, Export and Manage OCI (Oracle Cloud Infrastruture) resources by converting Excel templates to fully functional Terraform modules within minutes ⚡️⚡️ .
+
+Additionally, the toolkit also supports seamless resource management using OCI DevOps service and Jenkins pipelines for Terraform.
 
 
 
 <br>
 
-CD3 stands for **Cloud Deployment Design Deliverable**. The CD3 Automation toolkit enables you to effortlessly Build, Export and Manage OCI (Oracle Cloud Infrastruture) resources using IaC within minutes ⚡️ .
+<h2>📌 Toolkit Supported OCI Services</h2>
+
+<table>
+  
+  <tr>
+    <td>IAM/Identity</td>
+    <td>Compute</td>
+    <td>Logging Services</td>
+  </tr>
+  <tr>
+    <td>Governance</td>
+    <td>Storage</td>
+    <td>SDDCs</td>
+  </tr>
+  <tr>
+    <td>Network</td>
+    <td>Database</td>
+    <td>Developer Services</td>
+    
+  </tr>
+  <tr>
+    <td>DNS Management</td>
+    <td>Observability and Management</td>
+    <td>CIS Landing Zone Compliance</td>
+  
+  </tr>
+  <tr>
+  <td>Policy Enforcement</td>
+  </tr>
+</table>
+</tr>
 
 
+</body>
 
-Click the below button to quickly launch CD3 toolkit container in OCI and start managing your Infra as Code!!
+<br>
+
+🚀 Click the below button to quickly launch CD3 toolkit container in Oracle Cloud and start managing your Infra as Code. 
 <br>
 
 [![Deploy_To_OCI](https://oci-resourcemanager-plugin.plugins.oci.oraclecloud.com/latest/deploy-to-oracle-cloud.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oracle-devrel/cd3-automation-toolkit/archive/refs/heads/develop.zip)
@@ -84,6 +120,13 @@ The toolkit transforms input data from Excel files into Terraform files, enablin
 
 **Platform independent 🌐:** CD3 is packaged as a container that can be hosted on any platform.
  
+<br>
+
+
+## Where to get started?
+
+[Click here](https://oracle-devrel.github.io/cd3-automation-toolkit/) to learn how to setup the toolkit and start managing your OCI Infra !!
+
 <br>
 
 ## ⭐️ Contributing
