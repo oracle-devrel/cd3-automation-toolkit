@@ -95,7 +95,7 @@ The toolkit transforms input data from Excel files into Terraform files, enablin
 
 ## 👥 Who can use the toolkit??
 
-  Anyone who wants to create/modify or export OCI resources without much effort. 
+  Anyone who wants to create/modify new resources in OCI or export existing resources from OCI and manage IaC without much effort. 
 
 <br>
 
