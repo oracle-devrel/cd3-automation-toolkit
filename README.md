@@ -102,7 +102,7 @@ The toolkit transforms input data from Excel files into Terraform files, enablin
 ## 💡 Benefits of CD3:
 
 
-   ✅ Time savings ⏰ 
+   ✅ Time saving ⏰ 
   
    ✅ Faster infrastructure provisioning 🚀
   
