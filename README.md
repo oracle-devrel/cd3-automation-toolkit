@@ -33,28 +33,28 @@ Additionally, the toolkit also supports seamless resource management using OCI D
   
   <tr>
     <td>IAM/Identity</td>
-    <td>Compute</td>
-    <td>Logging Services</td>
-  </tr>
-  <tr>
     <td>Governance</td>
-    <td>Storage</td>
-    <td>SDDCs</td>
+    <td>Policy Enforcement using OPA</td>
   </tr>
   <tr>
     <td>Network</td>
+    <td>DNS Management</td>
+    <td>Compute</td>
+  </tr>
+  <tr>
+    <td>Storage</td>
     <td>Database</td>
-    <td>Developer Services</td>
+    <td>SDDCs</td>
     
   </tr>
   <tr>
-    <td>DNS Management</td>
+    <td>Developer Services</td>
+    <td>Logging Services</td>
     <td>Observability and Management</td>
-    <td>CIS Landing Zone Compliance</td>
   
   </tr>
   <tr>
-  <td>Policy Enforcement</td>
+  <td>CIS Landing Zone<br>Compliance</td>
   </tr>
 </table>
 </tr>
