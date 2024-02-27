@@ -1,18 +1,17 @@
 
-# CD3 Automation Toolkit
-
-<img width="35%" height="30%"  alt="Screenshot 2024-02-06 at 1 11 21 PM" src= "https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/18f4c54a-b8d9-4b25-8eb4-7b1f5e6a4574">
-
+# **CD3 Automation Toolkit**  
+<img width="25%" height="30%"  alt="CD3 Logo" src= "/images/CD3-logo.png"> 
+---
 
 The CD3 toolkit reads input data in the form of CD3 Excel sheet and generates Terraform files which can be used to provision the resources in OCI instead of handling the task through the OCI console manually. The toolkit also reverse engineers the components in OCI back to the Excel sheet and Terraform configuration. The toolkit can be used throughout the lifecycle of tenancy to continuously create or modify existing resources. The generated Terraform code can be used by the OCI Resource Manager or can be integrated into organization's existing devops CI/CD ecosystem.
 
 <br>
 
-<iframe width="420" height="345" src="https://www.youtube.com/embed/watch?v=TSNu0pUHYsE&list=PLPIzp-E1msrbJ3WawXVhzimQnLw5iafcp&index=1">
+<iframe width="100%" height="500" src="https://www.youtube.com/embed/watch?v=TSNu0pUHYsE&list=PLPIzp-E1msrbJ3WawXVhzimQnLw5iafcp&index=1">
 </iframe>
 
 
-:fontawesome-brands-youtube:{ style="color: #EE0F0F" } [CD3 Automation Toolkit Explained in 1 minute](https://www.youtube.com/watch?v=TSNu0pUHYsE&list=PLPIzp-E1msrbJ3WawXVhzimQnLw5iafcp&index=1) – :octicons-clock-24: 1m – Understand what is CD3 Automation toolkit.
+:fontawesome-brands-youtube:{ style="color: #EE0F0F" } [CD3 Automation Toolkit Explained in 1 minute](https://www.youtube.com/watch?v=TSNu0pUHYsE&list=PLPIzp-E1msrbJ3WawXVhzimQnLw5iafcp&index=1) – :octicons-clock-24:
 
 <br>
 

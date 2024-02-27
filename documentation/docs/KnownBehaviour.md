@@ -36,7 +36,7 @@
      ```
 
 ## Terraform Behavior
-#### 1.
+**1.**
 Create a Load Balancer with Reserved IP: When you create a LBaaS with reserved ip as "Y" and do a terraform apply, everything will go smooth and be in sync for the first time. If you do a terraform plan immediately (post apply), you will find that the plan changes the private ip of load balancer to null.
 
 
@@ -50,30 +50,30 @@ Create a Load Balancer with Reserved IP: When you create a LBaaS with reserved i
 
   ![image](https://user-images.githubusercontent.com/122371432/214502222-09eb5bb2-4a21-43fa-89b9-6540324c7f75.png)
     
-#### 2. 
+**2.** 
 While exporting and synching the tfstate file for LBaaS Objects, the user may be notified that a few components will be modified on apply. In such scenarios, add the attributes that the Terraform notifies to be changed to the appropriate CD3 Tab of Load Balancer and uncomment the parameter from Jinja2 Templates and Terraform (.tf) files. Re-run the export.
 
-#### 3.
+**3.**
 Add a new column - "Freeform Tags" to the CD3 Excel Sheets as per necessity, to export the tags associated with the resource as well. If executed as-is, Terraform may prompt you to modify resources based on Tags.
   
   **Example:**
   
   <img src = "https://user-images.githubusercontent.com/122371432/214502914-61aeb3b6-923a-481e-95a2-f2d5d78e6e45.png" width =50% height=50%>
   
-#### 4.
+**4.**
 Toolkit will create TF for only those DRGs which are part of CD3 and skip Route Tables for the DRGs created outside of CD3. This will also synch DRG rules in your tenancy with the terraform state.
   
   > **Note**
   > When there are changes made in the OCI console manually, the above options of export and modify can be helpful to sync up the contents/objects in OCI to TF.
 
-#### 5.
+**5.**
 Match All criteria specified for Route Distribution Statement In DRGs sheet will show below output each time you do terraform plan:
 
   ![image](https://user-images.githubusercontent.com/122371432/214504858-2c5ba6af-b030-4f72-b6d9-8bc37b5902cf.png)
   
   The service api is designed in such a way that it expects an empty list for match all. And it sends back an empty list in the response every time. Hence this behaviour from terraform side. This can be safely ignored.
 
-#### 6.
+**6.**
 Export process for non greenfield tenancies v6.0 or higher will try to revert SGW for a VCN to point to all services if it was existing for just object storage. You will get output similiar to below when terraform plan is run (Option 3 with workflow_type set to export_resources).
 
 
@@ -120,7 +120,7 @@ Export process for non greenfield tenancies v6.0 or higher will try to revert SG
 
 
   
-#### 7.
+**7.**
 If the description field is having any newlines in the tenancy then the export of the component and tf synch will show output similar to below:
 
 
@@ -144,7 +144,7 @@ If the description field is having any newlines in the tenancy then the export o
   
   This is how terraform handles newlines in the fields. Pleage ignore this and proceed with terraform apply.
   
-#### 8.
+**8.**
 Terraform ordering changes observed during plan phase for OCI compute plugins.
   ![image](https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103548537/f6a2d481-5e79-484b-a24e-a8329e8b6626)
 

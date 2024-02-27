@@ -19,7 +19,7 @@ Details on how to fill data into the Excel sheet can be found in the Blue sectio
 
 <br>
 
-**CD3 Excel template for OCI Management services:**
+**CD3 Excel template for OCI Observability and Management services:**
 
 
 |Excel Sheet| Purpose                                                                                                                    | 

@@ -1,4 +1,5 @@
-# Prerequisites
+# **Prerequisites**
+---
 
 - Git
 - Any docker CLI compatible platform such as Docker or Rancher. See [How to Install and Configure Rancher Desktop Part 2](https://www.youtube.com/watch?v=2QNAOJpeJZc) for reference.
