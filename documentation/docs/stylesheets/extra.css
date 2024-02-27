@@ -1,0 +1,10 @@
+[data-md-color-scheme="oracle"] {
+    --md-primary-fg-color:        #00796B;
+    --md-primary-fg-color--light: #00796B;
+    --md-primary-fg-color--dark:  #90030C;
+  }
+  :root {
+    --md-primary-fg-color:        #00796B;
+    --md-primary-fg-color--light: #00796B;
+    --md-primary-fg-color--dark:  #90030C;
+  }
