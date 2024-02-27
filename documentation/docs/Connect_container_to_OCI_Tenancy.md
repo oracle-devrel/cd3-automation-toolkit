@@ -1,4 +1,5 @@
-# Connect container to OCI Tenancy
+# **Connect container to OCI Tenancy**
+---
 
 <b>Note:</b>
 

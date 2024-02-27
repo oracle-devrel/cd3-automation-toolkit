@@ -1,4 +1,5 @@
-# Create resources in OCI (Greenfield Workflow)
+# **Create resources in OCI (Greenfield Workflow)**
+---
 
 **Step 1**: 
 <br>Choose the appropriate Excel sheet template from [Excel Templates](/cd3_automation_toolkit/documentation/user_guide/ExcelTemplates.md)

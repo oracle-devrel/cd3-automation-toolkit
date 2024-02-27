@@ -1,4 +1,5 @@
-# Using the Automation Toolkit via CLI
+# **Using the Automation Toolkit via CLI**
+---
 
 ### **Prepare setUpOCI.properties**
 **Current Version:  setUpOCI.properties v2024.1.0**

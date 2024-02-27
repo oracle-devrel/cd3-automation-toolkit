@@ -1,8 +1,10 @@
+# **Getting Started**
+---
 
-## 🔄 **CD3 workflow**
+###<u> **CD3 Toolkit Process</u>**
 
 
-<img width="1049" alt="Screenshot 2024-02-08 at 10 54 19 AM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/eafaef6a-1919-4d8c-adfc-2f8efb2177a4">
+<img width="1049" alt="CD3 Toolkit Process" src="images/CD3-Process.png">
 
 <br>
 
@@ -10,7 +12,6 @@
 First, The Excel file is input to the CD3 Automation toolkit using either CLI or Jenkins.  
 
 >Note: 📖 Detailed documentations and videos are provided for both options. Please check the left panel for navigation.
-
 
 **Create resources:**
 
@@ -28,17 +29,21 @@ First, The Excel file is input to the CD3 Automation toolkit using either CLI or
 
 **Modify resources**
 
-- Resources created or exported using CD3 can be modified at any point of time using the same Excel file.
+- Resources created or exported using toolkit can be modified at any point of time using the same Excel file.
+
+**Excel Sheet Templates**
+
+- Here are the [templates](ExcelTemplates.md).
 
 <br>
 
-## 🔧 **CD3 Architecture with Jenkins**
+###<u> **CD3 Toolkit Architecture</u>**
 
-![CD3 Architecture](image.png)
+![CD3 Architecture](images/CD3-Arch.png)
 
 <br>
 
-## 📌 **OCI Services Currently Supported by Automation Toolkit**
+###<u> **CD3 Toolkit Supported Services in OCI</u>**
 
 | OCI Services | Details |
 | --------- | ----------- |
@@ -55,43 +60,3 @@ First, The Excel file is input to the CD3 Automation toolkit using either CLI or
 | [SDDCs ](CD3ExcelTabs.md#sddcs-tab) | Oracle Cloud VMWare Solutions (Single Cluster is supported as of now. Multi-cluster support will be included in the upcoming release) |
 | [CIS Landing Zone Compliance](CISFeatures.md#additional-cis-compliance-features) | Download and Execute CIS Compliance Check Script, Cloud Guard, Key Vault, Budget |
 [Policy Enforcement](OPAForCompliance.md) | OPA - Open Policy Agent |
-
-<br>
-
-
-
-## 📜  **Excel Sheet Templates**
-CD3 Excel sheet is the main input for Automation Toolkit.
-
-Below are the CD3 templates for the latest release having standardised IAM Components (compartments, groups and policies), Network Components and Events & Notifications Rules as per CIS Foundations Benchmark for Oracle Cloud.
-
-Details on how to fill data into the Excel sheet can be found in the Blue section of each sheet inside the Excel file. Make appropriate changes to the templates eg region and use for deployment.
-
-<br>
-
-**CD3 Excel templates for OCI core services:**
-
-|Excel Sheet  | Purpose                                                                                                                    | 
-|-----------|----------------------------------------------------------------------------------------------------------------------------|
-| [CD3-Blank-template.xlsx](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/main/cd3_automation_toolkit/example/CD3-Blank-template.xlsx)   | 	Choose this template while exporting the existing resources from OCI into the CD3 and Terraform.| 
-| [CD3-CIS-template.xlsx](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/main/cd3_automation_toolkit/example/CD3-CIS-template.xlsx)      | This template has auto-filled in data of CIS Landing Zone for DRGv2. Choose this template to create Core OCI Objects (IAM, Tags, Networking, Instances, LBR, Storage, Databases) |
-|[CD3-HubSpoke-template.xlsx](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/main/cd3_automation_toolkit/example/CD3-HubSpoke-template.xlsx)        | This template has auto-filled in data for a Hub and Spoke model of networking. Choose this template to create Core OCI Objects (IAM, Tags, Networking, Instances, LBR, Storage, Databases)|
-|[CD3-SingleVCN-template.xlsx](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/main/cd3_automation_toolkit/example/CD3-SingleVCN-template.xlsx)      | This template has auto-filled in data for a Single VCN model of networking. Choose this template to create Core OCI Objects (IAM, Tags, Networking, Instances, LBR, Storage, Databases)|
-
-
-
-**CD3 Excel templates for OCI Observability and Management services:** 
-
-
-|Excel Sheet| Purpose                                                                                                                    | 
-|-----------|----------------------------------------------------------------------------------------------------------------------------|
-|[CD3-CIS-ManagementServices-template.xlsx](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/main/cd3_automation_toolkit/example/CD3-CIS-ManagementServices-template.xlsx) | This template has auto-filled in data of CIS Landing Zone. Choose this template while creating the components of Events, Alarms, Notifications and Service Connectors
-
-**NOTE:**
-
-* The Excel Templates can also be found at "_/cd3user/oci_tools/cd3_automation_toolkit/example_" folder  inside the container.
-* After deploying the infra using any of the templates, please run [CIS compliance checker script](CISFeatures.md)
-
-
-Please refer to the **"GETTING-STARTED"** sections in the navigation panel to start your journey with the toolkit. Happy Automation!!
-
