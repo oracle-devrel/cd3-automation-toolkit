@@ -20,7 +20,7 @@ Uncomment the parameter in **instance.tf** file if not already uncommented.
 
 <img src =https://user-images.githubusercontent.com/115973871/215402973-72857dbd-5efd-40d9-8a7f-3541eb85af66.png width=50% height=50%>
 
-Uncomment the parameter in instance-template** . Any line that is between {# <and> #} are commented in Jinja templates. From the screenshot below we note that the condition for **preserve_boot_volume**  is within the Jinja comments. Copy the highlighted line and place it after/outside line 184 (**#}**) as per below screenshot.
+Uncomment the parameter in **cd3_automation_toolkit\Compute\templates\instance-template** . Any line that is between {# <and> #} are commented in Jinja templates. From the screenshot below we note that the condition for **preserve_boot_volume**  is within the Jinja comments. Copy the highlighted line and place it after/outside line 184 (**#}**) as per below screenshot.
 
 **Before**
   
@@ -86,7 +86,7 @@ The following Table maps the Excel Sheet to the Resources to the Templates:
 | Cloud Guard | Cloud Guard | cd3_automation_toolkit\Security\CloudGuard\templates | <br>cloud-guard-config-template<br>cloud-guard-target-template</br></br>|
 | Budgets | Governance: Budgets | cd3_automation_toolkit\Governance\Billing\templates | <br>budget-alert-rule-template<br>budget-template</br></br> |
 | BlockVolumes	| Block Storage: Block Volumes	| cd3_automation_toolkit\Storage\BlockVolume\templates\	| blockvolumes-template |
-| <br>ADB<br>DBSystems-VM-BM<br>EXA-Infra<br>EXA-VMClusters</br></br> | <br>Autonomous Data Warehouse<br>Autonomous Transaction Processing<br>Bare Metal, VM and Exadata Infra, and Exadata VM Clusters</br></br> | cd3_automation_toolkit\Database\templates\ | <br>adb-template<br>dbsystems-vm-bm-template<br>exa-infra-template<br>exa-vmclusters-template</br></br>|
+| <br>ADB<br>DBSystems-VM-BM<br>EXA-Infra<br>EXA-VMClusters</br></br> | <br>Autonomous Data Warehouse<br>Autonomous Transaction Processing<br>Bare Metal, VM and Exadata Infra, <br>and Exadata VM Clusters</br></br> | cd3_automation_toolkit\Database\templates\ | <br>adb-template<br>dbsystems-vm-bm-template<br>exa-infra-template<br>exa-vmclusters-template</br></br>|
 
 
 **CD3-CIS-ManagementServices-template.xlsx**
