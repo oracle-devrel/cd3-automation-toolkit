@@ -1,166 +1,1416 @@
-<!DOCTYPE html>
-<html class="writer-html5" lang="en" >
-<head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>Tabs - CD3 Documentation</title>
-    <link rel="stylesheet" href="../css/theme.css" />
-    <link rel="stylesheet" href="../css/theme_extra.css" />
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
     
-      <script>
-        // Current page data
-        var mkdocs_page_name = "Tabs";
-        var mkdocs_page_input_path = "Tabs.md";
-        var mkdocs_page_url = null;
-      </script>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.9">
     
-    <!--[if lt IE 9]>
-      <script src="../js/html5shiv.min.js"></script>
-    <![endif]-->
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
-      <script>hljs.highlightAll();</script> 
-</head>
+    
+      
+        <title>Tabs - CD3 Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.f2e4d321.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
 
-<body class="wy-body-for-nav" role="document">
 
-  <div class="wy-grid-for-nav">
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
-    <div class="wy-side-scroll">
-      <div class="wy-side-nav-search">
-          <a href=".." class="icon icon-home"> CD3 Documentation
-        </a><div role="search">
-  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
-      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
-  </form>
-</div>
-      </div>
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Open Sans";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
 
-      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul>
-                <li class="toctree-l1"><a class="reference internal" href="..">Introduction</a>
-                </li>
-              </ul>
-              <p class="caption"><span class="caption-text">Quick Links</span></p>
-              <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../ExcelTemplates/">Excel Templates</a>
-                  </li>
-              </ul>
-              <p class="caption"><span class="caption-text">Getting Started-Deploy to OCI</span></p>
-              <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../singleclickdeploy/">Single click container launch</a>
-                  </li>
-              </ul>
-              <p class="caption"><span class="caption-text">Getting Started-Local system</span></p>
-              <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../prerequisites/">Prerequisites</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../Launch_Docker_container/">Launch the container</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../Connect_container_to_OCI_Tenancy/">Connect container to OCI tenancy</a>
-                  </li>
-              </ul>
-              <p class="caption"><span class="caption-text">Toolkit Execution with CLI</span></p>
-              <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../Workflows/">Overview</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../GreenField/">Create resources in OCI using CLI (Greenfield Workflow)</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../NetworkingScenariosGF/">Create Network resources-CLI</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../ComputeGF/">Create Compute Instances-CLI</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../OPAForCompliance/">OPA integration</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../NonGreenField/">Export Resources from OCI using CLI (Non-Greenfield Workflow)</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../NetworkingScenariosNGF/">Export Network resources-CLI</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../ComputeNGF/">Export Compute Instances-CLI</a>
-                  </li>
-              </ul>
-              <p class="caption"><span class="caption-text">Toolkit execution with Jenkins</span></p>
-              <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../Workflows-jenkins/">Prerequisites</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../Intro-Jenkins/">Overview</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../GreenField-Jenkins/">Create resources in OCI using Jenkins(Greenfield Workflow)</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../NetworkingScenariosGF-Jenkins/">Create Network resources-Jenkins</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../GF-Jenkins/">Create compute Instances/OKE/SDDC/Database-Jenkins</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../multiple_options_GF-Jenkins/">Provision multiple services together-Jenkins</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../NonGreenField-Jenkins/">Export Resources from OCI using Jenkins(Non-Greenfield Workflow)</a>
-                  </li>
-              </ul>
-              <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../cli_jenkins/">Synchronize Changes between CLI and Jenkins</a>
-                </li>
-              </ul>
-              <p class="caption"><span class="caption-text">Beyond the basics</span></p>
-              <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../RestructuringOutDirectory/">Grouping generated Terraform files</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../ResourceManagerUpload/">OCI Resource Manager Upload</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../SupportforAdditionalAttributes/">Support for Additional Attributes</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../CISFeatures/">Additional CIS Compliance Features</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../SupportForCD3Validator/">CD3 Validator</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../Jobs_Migration/">Migrate jobs to User's Jenkins environment</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../remote_state/">Remote Management of Terraform State</a>
-                  </li>
-              </ul>
-              <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../Upgrade_Toolkit/">Upgrade to latest versions</a>
-                </li>
-              </ul>
-              <p class="caption"><span class="caption-text">Known Behaviour</span></p>
-              <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../KnownBehaviour/">Expected Behaviour of CD3</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../FAQ/">FAQs</a>
-                  </li>
-              </ul>
-              <p class="caption"><span class="caption-text">Videos & Tutorials</span></p>
-              <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../LearningVideos/">Automation Toolkit Learning Videos</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../tutorials/">Tutorials</a>
-                  </li>
-              </ul>
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#compartments-tab" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="CD3 Documentation" class="md-header__button md-logo" aria-label="CD3 Documentation" data-md-component="logo">
+      
+  <img src="../oci.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            CD3 Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Tabs
+            
+          </span>
+        </div>
       </div>
     </div>
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="..">CD3 Documentation</a>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1M8 13h8v-2H8v2m9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1 0 1.71-1.39 3.1-3.1 3.1h-4V17h4a5 5 0 0 0 5-5 5 5 0 0 0-5-5Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="oracle" data-md-color-primary="teal" data-md-color-accent="teal"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5M7 15a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
         
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256l137.3-137.4c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
       </nav>
-      <div class="wy-nav-content">
-        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
-  <ul class="wy-breadcrumbs">
-    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Tabs</li>
-    <li class="wy-breadcrumbs-aside">
-    </li>
-  </ul>
-  <hr/>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-            <div class="section" itemprop="articleBody">
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/oracle-devrel/cd3-automation-toolkit" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    oracle-devrel/cd3-automation-toolkit
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
               
-                <h2 id="compartments-tab">Compartments Tab</h2>
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="CD3 Documentation" class="md-nav__button md-logo" aria-label="CD3 Documentation" data-md-component="logo">
+      
+  <img src="../oci.png" alt="logo">
+
+    </a>
+    CD3 Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/oracle-devrel/cd3-automation-toolkit" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    oracle-devrel/cd3-automation-toolkit
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CD3%20Overview/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Introduction
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Launch CD3 container in OCI
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Launch CD3 container in OCI
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../singleclickdeploy/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Single click container launch
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Launch CD3 container in Local ENV
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Launch CD3 container in Local ENV
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../prerequisites/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Prerequisites
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Launch_Docker_container/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Launch the container
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Connect container to OCI tenancy
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Connect container to OCI tenancy
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Connect_container_to_OCI_Tenancy/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Connect container to OCI tenancy
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Toolkit Execution with CLI
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Toolkit Execution with CLI
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Workflows/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../GreenField/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Create resources in OCI using CLI (Greenfield Workflow)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../NetworkingScenariosGF/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Create Network resources-CLI
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ComputeGF/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Create Compute Instances-CLI
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OPAForCompliance/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    OPA integration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../NonGreenField/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Export Resources from OCI using CLI (Non-Greenfield Workflow)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../NetworkingScenariosNGF/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Export Network resources-CLI
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ComputeNGF/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Export Compute Instances-CLI
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Toolkit execution with Jenkins
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            Toolkit execution with Jenkins
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Workflows-jenkins/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Prerequisites
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Intro-Jenkins/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../GreenField-Jenkins/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Create resources in OCI using Jenkins(Greenfield Workflow)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../NetworkingScenariosGF-Jenkins/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Create Network resources-Jenkins
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../GF-Jenkins/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Create compute Instances/OKE/SDDC/Database-Jenkins
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../multiple_options_GF-Jenkins/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Provision multiple services together-Jenkins
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../NonGreenField-Jenkins/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Export Resources from OCI using Jenkins(Non-Greenfield Workflow)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cli_jenkins/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Synchronize Changes between CLI and Jenkins
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Beyond the basics
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            Beyond the basics
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RestructuringOutDirectory/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Grouping generated Terraform files
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ResourceManagerUpload/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    OCI Resource Manager Upload
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SupportforAdditionalAttributes/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Support for Additional Attributes
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CISFeatures/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Additional CIS Compliance Features
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SupportForCD3Validator/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CD3 Validator
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Jobs_Migration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Migrate jobs to User's Jenkins environment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../remote_state/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Remote Management of Terraform State
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Upgrade_Toolkit/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Upgrade to latest versions
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_11" >
+        
+          
+          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Known Behaviour
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            Known Behaviour
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../KnownBehaviour/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Expected Behaviour of CD3
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FAQ/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    FAQs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_12" >
+        
+          
+          <label class="md-nav__link" for="__nav_12" id="__nav_12_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Videos & Tutorials
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_12">
+            <span class="md-nav__icon md-icon"></span>
+            Videos & Tutorials
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LearningVideos/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Automation Toolkit Learning Videos
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Tutorials
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+  <h1>Tabs</h1>
+
+<h2 id="compartments-tab">Compartments Tab<a class="headerlink" href="#compartments-tab" title="Permanent link">&para;</a></h2>
 <p>Use this Tab to create compartments in the OCI tenancy. On choosing "Identity" in the SetUpOCI menu will allow to create compartments in the OCI tenancy.</p>
 <p>Output terraform file generated:  <em>&lt;outdir&gt;/&lt;region&gt;/&lt;prefix&gt;_compartments.auto.tfvars</em> where <em>&lt;region&gt;</em> directory is the home region.</p>
 <p>Once terraform apply is done, you can view the resources under Identity -&gt; Compartments in OCI console.</p>
@@ -178,29 +1428,29 @@
   </ul>
 </blockquote>
 
-<h2 id="groups-tab">Groups Tab</h2>
+<h2 id="groups-tab">Groups Tab<a class="headerlink" href="#groups-tab" title="Permanent link">&para;</a></h2>
 <p>Use this Tab to create groups in the OCI tenancy. On choosing "Identity" in the SetUpOCI menu will allow to create groups in the OCI tenancy.</p>
 <p>Automation toolkit supports creation and export of Dynamic Groups as well.</p>
 <p>Output terraform file generated:  <em>&lt;outdir&gt;/&lt;region&gt;/&lt;prefix&gt;_groups.auto.tfvars</em> under where <em>&lt;region&gt;</em> directory is the home region.</p>
 <p>Once terraform apply is done, you can view the resources under Identity -&gt; Groups in OCI console.</p>
 <p>On re-running the same option you will find the previously existing files being backed up under directory →   <em>&lt;outdir&gt;/&lt;region&gt;/backup_groups/&lt;Date&gt;-&lt;Month&gt;-&lt;Time&gt;</em>.</p>
-<h2 id="policies-tab">Policies Tab</h2>
+<h2 id="policies-tab">Policies Tab<a class="headerlink" href="#policies-tab" title="Permanent link">&para;</a></h2>
 <p>Use this Tab to create policies in the OCI tenancy. On choosing "Identity" in the SetUpOCI menu will allow to create policies in the OCI tenancy.</p>
 <p>Output terraform files generated: <em>&lt;outdir&gt;/&lt;region&gt;/&lt;prefix&gt;_policies.auto.tfvars</em> where <em>&lt;region&gt;</em> directory is the home region.</p>
 <p>Once terraform apply is done, you can view the resources under Identity -&gt; Policies in OCI console.</p>
 <p>On re-running the same option you will find the previously existing files being backed up under directory →   <em>&lt;outdir&gt;/&lt;region&gt;/backup_policies/&lt;Date&gt;-&lt;Month&gt;-&lt;Time&gt;</em>.</p>
-<h2 id="users-tab">Users Tab</h2>
+<h2 id="users-tab">Users Tab<a class="headerlink" href="#users-tab" title="Permanent link">&para;</a></h2>
 <p>Use this Tab to create local users in the OCI tenancy. On choosing "Identity" in the SetUpOCI menu and "Add/Modify/Delete Users" submenu will allow to create users in the OCI tenancy.</p>
 <p>Output terraform file generated: <em>&lt;outdir&gt;/&lt;region&gt;/&lt;prefix&gt;_users.auto.tfvars</em> where <em>&lt;region&gt;</em> directory is the home region.</p>
 <p>Once terraform apply is done, you can view the resources under Identity &amp; Security -&gt; Users in OCI console.</p>
 <p>On re-running the same option you will find the previously existing files being backed up under directory → <em>&lt;outdir&gt;/&lt;region&gt;/backup_users/&lt;Date&gt;-&lt;Month&gt;-&lt;Time&gt;</em>.</p>
-<h2 id="network-sources-tab">Network Sources Tab</h2>
+<h2 id="network-sources-tab">Network Sources Tab<a class="headerlink" href="#network-sources-tab" title="Permanent link">&para;</a></h2>
 <p>Use this Tab to create Network Source in the OCI tenancy. On choosing "Identity" in the SetUpOCI menu and "Add/Modify/Delete Network Sources" submenu will allow to create Network Sources in the OCI tenancy.</p>
 <p>Output terraform file generated: <em>&lt;outdir&gt;/&lt;region&gt;/&lt;prefix&gt;_networksources.auto.tfvars</em> where <em>&lt;region&gt;</em> directory is the home region.</p>
 <p>Once terraform apply is done, you can view the resources under Identity &amp; Security -&gt; Network Sources in OCI console.</p>
 <p>On re-running the same option you will find the previously existing files being backed up under directory → <em>&lt;outdir&gt;/&lt;region&gt;/backup_networksources/&lt;Date&gt;-&lt;Month&gt;-&lt;Time&gt;</em>.</p>
 <p>Note - Network Source creation/updation is supported only in the home region.  </p>
-<h2 id="tags-tab">Tags Tab</h2>
+<h2 id="tags-tab">Tags Tab<a class="headerlink" href="#tags-tab" title="Permanent link">&para;</a></h2>
 <p>Use this Tab to create tags - Namespaces, Key-Value pairs, Default and Cost Tracking Tags. On choosing "Tags" in the SetUpOCI menu will allow to create Tags in the OCI tenancy.</p>
 <p>Once this is complete you will find the generated output terraform files in location :</p>
 <p>---&gt; <em>&lt;outdir&gt;/&lt;region&gt;/&lt;prefix&gt;_tags-defaults.auto.tfvars</em></p>
@@ -209,7 +1459,7 @@
 <p>under <em>&lt;region&gt;</em> directory.</p>
 <p>Once terraform apply is done, you can view the resources under Governance -&gt; Tag Namespaces for the region.</p>
 <p>On re-running the same option you will find the previously existing files being backed up under directory →   <em>&lt;outdir&gt;/&lt;region&gt;/backup_Tagging/&lt;Date&gt;-&lt;Month&gt;-&lt;Time&gt;</em>.</p>
-<h2 id="a-vcns-tab">a. VCNs Tab</h2>
+<h2 id="a-vcns-tab">a. VCNs Tab<a class="headerlink" href="#a-vcns-tab" title="Permanent link">&para;</a></h2>
 <p><strong>Note:</strong></p>
 <ol>
 <li>
@@ -219,7 +1469,7 @@
 <p>Declare the DRG for the VCN in 'DRG Required' column of VCNs tab and then declare the attachment in DRGs tab also. Toolkit verifies the declaration in VCNs tab and then creates the DRG while reading the DRGs tab.</p>
 </li>
 </ol>
-<h2 id="b-drgs-tab">b. DRGs Tab</h2>
+<h2 id="b-drgs-tab">b. DRGs Tab<a class="headerlink" href="#b-drgs-tab" title="Permanent link">&para;</a></h2>
 <p><strong>Note:</strong></p>
 <ol>
 <li>Only VCN and RPC attachments are supported via CD3 as of now for DRGv2. Please create attachments for VC and IPSec via OCI console.</li>
@@ -227,11 +1477,11 @@
 <li>You can create a Route Table for DRG which is not attached to any attachment by keeping 'Attached To' column in DRGs tab empty.</li>
 <li>You can create an Import Route Distribution which is attached to some Route Table in DRG.</li>
 </ol>
-<h2 id="c-vcn-info-tab">c. VCN Info tab</h2>
+<h2 id="c-vcn-info-tab">c. VCN Info tab<a class="headerlink" href="#c-vcn-info-tab" title="Permanent link">&para;</a></h2>
 <p>This is an important tab and contains general information about networking to be setup.</p>
-<h2 id="d-dhcp-tab">d. DHCP tab</h2>
+<h2 id="d-dhcp-tab">d. DHCP tab<a class="headerlink" href="#d-dhcp-tab" title="Permanent link">&para;</a></h2>
 <p>This contains information about DHCP options to be created for each VCN.</p>
-<h2 id="e-subnetsvlans-tab">e. SubnetsVLANs tab</h2>
+<h2 id="e-subnetsvlans-tab">e. SubnetsVLANs tab<a class="headerlink" href="#e-subnetsvlans-tab" title="Permanent link">&para;</a></h2>
 <p><strong>Notes:</strong></p>
 <ol>
 <li>Name of the VCNs, subnets etc are all case-sensitive. Specify the same names in all required places. Avoid trailing spaces for a resource Name.</li>
@@ -304,7 +1554,7 @@
 </tr>
 </tbody>
 </table>
-<h2 id="dns-views-zones-records-tab">DNS-Views-Zones-Records-Tab</h2>
+<h2 id="dns-views-zones-records-tab">DNS-Views-Zones-Records-Tab<a class="headerlink" href="#dns-views-zones-records-tab" title="Permanent link">&para;</a></h2>
 <p>Below are the details about specific columns to fill the sheet for DNS-Views-Zones-Records-Tab</p>
 <ol>
 <li>
@@ -341,7 +1591,7 @@
 <p>Output terraform files are generated under <em>&lt;outdir&gt;/&lt;region&gt;</em> directory.</p>
 <p>Once terraform apply is done, you can view the resources under Networking -&gt; DNS management in OCI console
 <br></p>
-<h2 id="dns-resolvers-tab">DNS-Resolvers-Tab</h2>
+<h2 id="dns-resolvers-tab">DNS-Resolvers-Tab<a class="headerlink" href="#dns-resolvers-tab" title="Permanent link">&para;</a></h2>
 <p>Existing Resolvers need to be exported first before making any changes to those.
 Below are the details about specific columns to fill the sheet for DNS-Resolvers-Tab</p>
 <ol>
@@ -377,14 +1627,14 @@ Below are the details about specific columns to fill the sheet for DNS-Resolvers
 </ol>
 <p>Output terraform files are generated under <em>&lt;outdir&gt;/&lt;region&gt;</em> directory.</p>
 <p>Once terraform apply is done, you can view the resources under Networking -&gt; Virtual Cloud Network -&gt; VCN Information in OCI console</p>
-<h2 id="dedicatedvmhosts-tab">DedicatedVMHosts Tab</h2>
+<h2 id="dedicatedvmhosts-tab">DedicatedVMHosts Tab<a class="headerlink" href="#dedicatedvmhosts-tab" title="Permanent link">&para;</a></h2>
 <p>Fill up the details in <strong>'DedicatedVMHosts'</strong> sheet and follow the options below.</p>
 <p>On choosing <strong>"Compute"</strong> in the SetUpOCI menu and <strong>"Add/Modify/Delete Dedicated VM Hosts"</strong> submenu will allow to launch your VM on a dedicated host.</p>
 <p>Output terraform file generated: <em>&lt;outdir&gt;/&lt;region&gt;/&lt;prefix&gt;_dedicatedvmhosts.auto.tfvars</em>.</p>
 <p>Once terraform apply is done, you can view the resources under Compute -&gt; Dedicated Virtual Machine Hosts for the region.</p>
 <p>If you want to update or add new dedicated VM hosts, update the 'DedicatedVMHosts' tab in cd3 and rerun using setUpOCI.</p>
 <p>On re-running the same option you will find the previously existing files being backed up under directory →   <em>&lt;outdir&gt;/&lt;region&gt;/backup_dedicatedvmhosts/&lt;Date&gt;-&lt;Month&gt;-&lt;Time&gt;</em>.</p>
-<h2 id="instances-tab">Instances Tab</h2>
+<h2 id="instances-tab">Instances Tab<a class="headerlink" href="#instances-tab" title="Permanent link">&para;</a></h2>
 <p><ins>CD3 Tab Specifications:</ins></p>
 <ol>
 <li>
@@ -402,24 +1652,24 @@ Below are the details about specific columns to fill the sheet for DNS-Resolvers
 The column "SSH Key Var Name" accepts SSH key value directly or the name of variable declared in <em>variables.tf</em> under the  <strong>instance_ssh_keys</strong> variable containing the key value. Make sure to have an entry in <em>variables_&lt;region&gt;.tf</em> file with the name you enter in SSH Key Var Name field of the Excel sheet and put the value as SSH key value.</p>
 <p>For Eg: If you enter the SSH Key Var Name as <strong>ssh_public_key</strong>, make an entry in <em>variables_&lt;region&gt;.tf</em> file as shown below:</p>
 </blockquote>
-<pre><code>variable  'instance_ssh_keys'  {
+<div class="language-text highlight"><pre><span></span><code>variable  &#39;instance_ssh_keys&#39;  {
 type = map(any)
 default = {
-ssh_public_key = "&lt;SSH PUB KEY STRING HERE&gt;"
-# Use '\n' as the delimiter to add multiple ssh keys.
-# Example: ssh_public_key = "ssh-rsa AAXXX......yhdlo\nssh-rsa AAxxskj...edfwf"
+ssh_public_key = &quot;&lt;SSH PUB KEY STRING HERE&gt;&quot;
+# Use &#39;\n&#39; as the delimiter to add multiple ssh keys.
+# Example: ssh_public_key = &quot;ssh-rsa AAXXX......yhdlo\nssh-rsa AAxxskj...edfwf&quot;
 #START_instance_ssh_keys#
 # exported instance ssh keys
 #instance_ssh_keys_END#
   }
 }
-</code></pre>
+</code></pre></div>
 <ol>
 <li>
 <p>Enter subnet name column value as: <em>&lt;vcn-name&gt;_&lt;subnet-name&gt;</em></p>
 </li>
 <li>
-<p>Enter remote execute script(Ansible/Shell) name. Shell scripts should be named with <em>.sh and ansible with </em>.yaml or *.yml inside 'scripts' folder within the region/service dir. This feature is tested against OL8.  </p>
+<p>Enter remote execute script(Ansible/Shell) name. Shell scripts should be named with *.sh and ansible with *.yaml or *.yml inside 'scripts' folder within the region/service dir. This feature is tested against OL8.  </p>
 </li>
 <li>
 <p>Create a column called 'Cloud Init Script' to execute scripts (located under 'scripts' folder within the region/service dir) as part of cloud-init.   </p>
@@ -433,16 +1683,16 @@ Format - </p>
 bootVolume::&lt;variable containing ocid of boot volume&gt;</p>
 <p>Make sure to have an entry in <em>variables_&lt;region&gt;.tf</em> file for the value you enter in Source Details field of the Excel sheet.
 Ex: If you enter the Source Details as image::Linux, make an entry in <em>variables_&lt;region&gt;.tf</em> file under the <strong>instance_source_ocids</strong> variable as shown below:</p>
-<pre><code>variable 'instance_source_ocids' {
+<div class="language-text highlight"><pre><span></span><code>variable &#39;instance_source_ocids&#39; {
  type = map(any)
- Linux    = "&lt;LATEST LINUX OCID HERE&gt;"
- Windows  = "&lt;LATEST WINDOWS OCID HERE&gt;"
- PaloAlto = "Palo Alto Networks VM-Series Next Generation Firewall"
+ Linux    = &quot;&lt;LATEST LINUX OCID HERE&gt;&quot;
+ Windows  = &quot;&lt;LATEST WINDOWS OCID HERE&gt;&quot;
+ PaloAlto = &quot;Palo Alto Networks VM-Series Next Generation Firewall&quot;
  #START_instance_source_ocids#
  # exported instance image ocids
  #instance_source_ocids_END#
 }
-</code></pre>
+</code></pre></div>
 <ol>
 <li>Mention shape to be used in Shape column of the excel sheet. If Flex shape is to be used format is:</li>
 </ol>
@@ -460,7 +1710,7 @@ Ex: If you enter the Source Details as image::Linux, make an entry in <em>variab
 <p>Output terraform file generated: <em>&lt;outdir&gt;/&lt;region&gt;/&lt;prefix&gt;_instances.auto.tfvars</em> and <em>&lt;outdir&gt;/&lt;region&gt;/&lt;prefix&gt;_boot-backup-policy.auto.tfvars</em>  under  appropriate &lt;region&gt; directory.</p>
 <p>Once the terraform apply is complete, view the resources under Compute -&gt; Instances for the region.</p>
 <p>On re-running the same option you will find the previously existing files being backed up under directory →   <em>&lt;outdir&gt;/&lt;region&gt;/backup_instances/&lt;Date&gt;-&lt;Month&gt;-&lt;Time&gt;</em>.</p>
-<h2 id="blockvolumes-tab">BlockVolumes Tab</h2>
+<h2 id="blockvolumes-tab">BlockVolumes Tab<a class="headerlink" href="#blockvolumes-tab" title="Permanent link">&para;</a></h2>
 <p>This tab in cd3 excel sheet is used when you need to create block volumes and attach the same to the instances in the OCI tenancy. </p>
 <p>Automation Tool Kit does not support sharing of volumes at the moment. While export of block volumes, if the block volume is attached to multiple instances, it will just fetch details about one attachment.</p>
 <p>On choosing <strong>"Storage"</strong> in the SetUpOCI menu and <strong>"Add/Modify/Delete Block Volumes/Block Backup Policy"</strong> submenu will allow to create block volumes in OCI Tenancy.</p>
@@ -470,14 +1720,14 @@ Ex: If you enter the Source Details as image::Linux, make an entry in <em>variab
 <p>Once terraform apply is done, you can view the resources under Block Storage -&gt; Block Volumes  in OCI console.</p>
 <p>On re-running the option to create Block Volumes you will find the previously existing files being backed up under directory:</p>
 <p><em>&lt;outdir&gt;/&lt;region&gt;/backup_blockvolumes/&lt;Date&gt;-&lt;Month&gt;-&lt;Time&gt;</em>   and   <em>&lt;outdir&gt;/&lt;region&gt;/backup_BlockBackupPolicy/&lt;Date&gt;-&lt;Month&gt;-&lt;Time&gt;</em>.</p>
-<h2 id="fss-tab">FSS Tab</h2>
+<h2 id="fss-tab">FSS Tab<a class="headerlink" href="#fss-tab" title="Permanent link">&para;</a></h2>
 <p>On choosing <strong>"Storage"</strong> in the SetUpOCI menu and <strong>"Add/Modify/Delete File Systems"</strong> submenu will allow to create file system storage on OCI tenancy.</p>
 <p>Note:   Freeform and Defined Tags - If specified, applies to FSS object only and not to other components like Mount Target.</p>
 <p>Once this is complete you will find the generated output terraform files in location :</p>
 <p>---&gt; <em>&lt;outdir&gt;/&lt;region&gt;/&lt;prefix&gt;_fss.auto.tfvars</em></p>
 <p>Once terraform apply is done, you can view the resources under File Storage → File Systems for the region.</p>
 <p>On re-running the same option you will find the previously existing files being backed up under directory →   <em>&lt;outdir&gt;/&lt;region&gt;/backup_FSS/&lt;Date&gt;-&lt;Month&gt;-&lt;Time&gt;</em>.</p>
-<h2 id="load-balancers">Load Balancers</h2>
+<h2 id="load-balancers">Load Balancers<a class="headerlink" href="#load-balancers" title="Permanent link">&para;</a></h2>
 <p>Automation Tool Kit allows you to create Load Balancers. Components that you can create using the Tool Kit includes:</p>
 <table>
 <thead>
@@ -518,13 +1768,13 @@ Hostnames
 Cipher Suites
 Certificates</p>
 <p>Certificates, Hostnames and Cipher Suites are optional. Leave the related columns empty if they are not required.</p>
-<h2 id="lb-hostname-certs-tab">LB-Hostname-Certs Tab</h2>
+<h2 id="lb-hostname-certs-tab">LB-Hostname-Certs Tab<a class="headerlink" href="#lb-hostname-certs-tab" title="Permanent link">&para;</a></h2>
 <p>Once this is complete you will find the generated output terraform files in location :</p>
 <p>---&gt; <em>&lt;outdir&gt;/&lt;region&gt;/&lt;prefix&gt;_lb-hostname-certs.auto.tfvars</em></p>
 <p>under <em>&lt;region&gt;</em> directory.</p>
 <p>Once terraform apply is done, you can view the resources under Networking → Load Balancers for the region.</p>
 <p>On re-running the same option you will find the previously existing files being backed up under directory →   <em>&lt;outdir&gt;/&lt;region&gt;/backup_LB-Hostname-Certs/&lt;Date&gt;-&lt;Month&gt;-&lt;Time&gt;</em>.</p>
-<h2 id="lb-backend-set-and-backend-servers-tab">LB-Backend Set and Backend Servers Tab</h2>
+<h2 id="lb-backend-set-and-backend-servers-tab">LB-Backend Set and Backend Servers Tab<a class="headerlink" href="#lb-backend-set-and-backend-servers-tab" title="Permanent link">&para;</a></h2>
 <p>Use the tab <strong>LB-BackendSet-BackendServer</strong> of CD3 Excel to create the following components of Load Balancer:</p>
 <ul>
 <li>Backend Sets</li>
@@ -535,7 +1785,7 @@ Certificates</p>
 <p>under <em>&lt;region&gt;</em> directory.</p>
 <p>Once terraform apply is done, you can view the resources under Networking→Load Balancers for the region.</p>
 <p>On re-running the same option you will find the previously existing files being backed up under directory →   <em>&lt;outdir&gt;/&lt;region&gt;/backup_BackendSet-BackendServer/&lt;Date&gt;-&lt;Month&gt;-&lt;Time&gt;</em>.</p>
-<h2 id="lb-ruleset-tab">LB-RuleSet Tab</h2>
+<h2 id="lb-ruleset-tab">LB-RuleSet Tab<a class="headerlink" href="#lb-ruleset-tab" title="Permanent link">&para;</a></h2>
 <p>Use the tab <strong>LB-RuleSet</strong> of CD3 Excel to create the following components of Load Balancer:</p>
 <ul>
 <li>Rule Sets</li>
@@ -546,7 +1796,7 @@ Certificates</p>
 <p>under <em>&lt;region&gt;</em> directory.</p>
 <p>Once terraform apply is done, you can view the resources under Networking→Load Balancers for the region.</p>
 <p>On re-running the same option you will find the previously existing files being backed up under directory →   <em>&lt;outdir&gt;/&lt;region&gt;/backup_RuleSet/&lt;Date&gt;-&lt;Month&gt;-&lt;Time&gt;</em>.</p>
-<h2 id="lb-path-route-set-tab">LB-Path Route Set Tab</h2>
+<h2 id="lb-path-route-set-tab">LB-Path Route Set Tab<a class="headerlink" href="#lb-path-route-set-tab" title="Permanent link">&para;</a></h2>
 <p>Use the tab <strong>LB-PathRouteSet</strong> of CD3 Excel to create the following components of Load Balancer:</p>
 <ul>
 <li>Path Route Sets</li>
@@ -557,7 +1807,7 @@ Certificates</p>
 <p>under &lt;region&gt; directory.</p>
 <p>Once terraform apply is done, you can view the resources under Networking→Load Balancers for the region.</p>
 <p>On re-running the same option you will find the previously existing files being backed up under directory →   <em>&lt;outdir&gt;/&lt;region&gt;/backup_PathRouteSet/&lt;Date&gt;-&lt;Month&gt;-&lt;Time&gt;</em>.</p>
-<h2 id="lb-listeners-tab">LB-Listeners Tab</h2>
+<h2 id="lb-listeners-tab">LB-Listeners Tab<a class="headerlink" href="#lb-listeners-tab" title="Permanent link">&para;</a></h2>
 <p>Use the tab <strong>LB-Listener</strong> of CD3 Excel to create the following components of Load Balancer:</p>
 <ul>
 <li>Path Route Sets</li>
@@ -568,49 +1818,49 @@ Certificates</p>
 <p>under <em>&lt;region&gt;</em> directory.</p>
 <p>Once terraform apply is done, you can view the resources under Networking→Load Balancers for the region.</p>
 <p>On re-running the same option you will find the previously existing files being backed up under directory →   <em>&lt;outdir&gt;/&lt;region&gt;/backup_LB-Listener/&lt;Date&gt;-&lt;Month&gt;-&lt;Time&gt;</em>.</p>
-<h2 id="dbsystems-vm-bm-tab">DBSystems-VM-BM Tab</h2>
+<h2 id="dbsystems-vm-bm-tab">DBSystems-VM-BM Tab<a class="headerlink" href="#dbsystems-vm-bm-tab" title="Permanent link">&para;</a></h2>
 <p>This helps you to create DB Systems hosted on Virtual Machine and Bare Metal. This can be configured based on the shape chosen in the tab.</p>
 <blockquote>
 <p>Note:
 The column "SSH Key Var Name" accepts SSH key value directly or the name of variable declared in <em>variables.tf</em> under the  <strong>dbsystem_ssh_keys</strong> variable containing the key value. Make sure to have an entry in <em>variables_&lt;region&gt;.tf</em> file with the name you enter in SSH Key Var Name field of the Excel sheet and put the value as SSH key value.</p>
 <p>For Eg: If you enter the SSH Key Var Name as <strong>ssh_public_key</strong>, make an entry in <em>variables_&lt;region&gt;.tf</em> file as shown below:</p>
 </blockquote>
-<pre><code>variable "dbsystem_ssh_keys" {
+<div class="language-text highlight"><pre><span></span><code>variable &quot;dbsystem_ssh_keys&quot; {
 type = map(any)
 default = {
-ssh_public_key = "&lt;SSH PUB KEY STRING HERE&gt;"
-# Use ',' as the delimiter to add multiple ssh keys.
-# Example: ssh_public_key = ["ssh-rsa AAXXX......yhdlo","ssh-rsa AAxxskj...edfwf"]
+ssh_public_key = &quot;&lt;SSH PUB KEY STRING HERE&gt;&quot;
+# Use &#39;,&#39; as the delimiter to add multiple ssh keys.
+# Example: ssh_public_key = [&quot;ssh-rsa AAXXX......yhdlo&quot;,&quot;ssh-rsa AAxxskj...edfwf&quot;]
 #START_dbsystem_ssh_keys#
 # exported dbsystem ssh keys
 #dbsystem_ssh_keys_END#
    }
 }
-</code></pre>
+</code></pre></div>
 <p>On choosing <strong>"Database"</strong> in the SetUpOCI menu and <strong>"Add/Modify/Delete Virtual Machine or Bare Metal DB Systems"</strong> submenu will allow to create DB Systems hosted on Virtual Machine and Bare Metal.</p>
 <p>Output terraform file generated: </p>
 <p><em>&lt;outdir&gt;/&lt;region&gt;/&lt;prefix&gt;_dbsystem-vm-bm.auto.tfvars</em> under where <em>&lt;region&gt;</em> directory is the region specified for the DB System.  </p>
 <p>Once terraform apply is done, you can view the resources under <strong>Bare Metal, VM, and Exadata-&gt; DB Systems</strong> in OCI console.</p>
 <p>On re-running the same option you will find the previously existing files being backed up under directory →   <em>&lt;outdir&gt;/&lt;region&gt;/backup_dbsystems-vm-bm/&lt;Date&gt;-&lt;Month&gt;-&lt;Time&gt;</em>.</p>
-<h2 id="exacs">ExaCS</h2>
+<h2 id="exacs">ExaCS<a class="headerlink" href="#exacs" title="Permanent link">&para;</a></h2>
 <p>You can create ExaCS in OCI by utilizing Exa-Infra and Exa-VM Cluster tabs in CD3 excel sheet.</p>
 <blockquote>
 <p>Note:
 The column "SSH Key Var Name" accepts SSH key value directly or the name of variable declared in <em>variables.tf</em> under the  <strong>exacs_ssh_keys</strong> variable containing the key value. Make sure to have an entry in <em>variables_&lt;region&gt;.tf</em> file with the name you enter in SSH Key Var Name field of the Excel sheet and put the value as SSH key value.</p>
 <p>For Eg: If you enter the SSH Key Var Name as <strong>ssh_public_key</strong>, make an entry in variables_&lt;region&gt;.tf file as shown below:</p>
 </blockquote>
-<pre><code>  variable "exacs_ssh_keys" {
+<div class="language-text highlight"><pre><span></span><code>  variable &quot;exacs_ssh_keys&quot; {
     type = map(any)
     default = {
-      ssh_public_key = "&lt;SSH PUB KEY STRING HERE&gt;"
-      # Use ',' as the delimiter to add multiple ssh keys.
-      # Example: ssh_public_key = ["ssh-rsa AAXXX......yhdlo","ssh-rsa AAxxskj...edfwf"]
+      ssh_public_key = &quot;&lt;SSH PUB KEY STRING HERE&gt;&quot;
+      # Use &#39;,&#39; as the delimiter to add multiple ssh keys.
+      # Example: ssh_public_key = [&quot;ssh-rsa AAXXX......yhdlo&quot;,&quot;ssh-rsa AAxxskj...edfwf&quot;]
       #START_exacs_ssh_keys#
       # exported exacs ssh keys
       #exacs_ssh_keys_END#
     }
   }
-</code></pre>
+</code></pre></div>
 <p>On choosing <strong>"Database"</strong> in the SetUpOCI menu and <strong>"Add/Modify/Delete EXA Infra and EXA VM Clusters"</strong> submenu will allow to create ExaCS in OCI tenancy.</p>
 <p>Output terraform file generated: </p>
 <p><em>&lt;outdir&gt;/&lt;region&gt;/&lt;prefix&gt;_exa-infra.auto.tfvars</em> under where <em>&lt;region&gt;</em> directory is the region hosting the Exa Infra.</p>
@@ -618,7 +1868,7 @@ The column "SSH Key Var Name" accepts SSH key value directly or the name of vari
 <p>Once terraform apply is done, you can view the resources under Bare Metal, VM, and Exadata-&gt; Exadata Infrastructure and Exadara VM Clusters in OCI console.</p>
 <p>On re-running the same option you will find the previously existing files being backed up under directory →   <em>&lt;outdir&gt;/&lt;region&gt;/backup_exa-infra/&lt;Date&gt;-&lt;Month&gt;-&lt;Time&gt;</em></p>
 <p>and <em>&lt;outdir&gt;/&lt;region&gt;/backup_exa-vmclusters/&lt;Date&gt;-&lt;Month&gt;-&lt;Time&gt;</em></p>
-<h2 id="adb-tab">ADB Tab</h2>
+<h2 id="adb-tab">ADB Tab<a class="headerlink" href="#adb-tab" title="Permanent link">&para;</a></h2>
 <p>Use this Tab to create Autonomous Database Warehouse or Autonomous Database Transaction Processing in the OCI tenancy.</p>
 <p>On choosing <strong>"Database"</strong> in the SetUpOCI menu and <strong>"Add/Modify/Delete ADBs"</strong> submenu will allow to create Autonomous Database Warehouse or Autonomous Database Transaction Processing in the OCI tenancy.</p>
 <p>Output terraform file generated:  <em>&lt;outdir&gt;/&lt;region&gt;/&lt;prefix&gt;_adb.auto.tfvars</em> under where <em>&lt;region&gt;</em> directory is the region hosting the respective ADB.</p>
@@ -629,7 +1879,7 @@ The column "SSH Key Var Name" accepts SSH key value directly or the name of vari
   - Currently toolkit supports ADB creation in Shared Infra only,
   </blockquote>
 
-<h2 id="notifications-tab">Notifications Tab</h2>
+<h2 id="notifications-tab">Notifications Tab<a class="headerlink" href="#notifications-tab" title="Permanent link">&para;</a></h2>
 <p>On choosing <strong>"Management Services"</strong> in the SetUpOCI menu and <strong>"Add/Modify/Delete Notification"</strong> and <strong>"Add/Modify/Delete Events"</strong> submenu will allow to manage events and notifications in OCI tenancy.</p>
 <p>Output terraform file generated: <em>&lt;outdir&gt;/&lt;region&gt;/&lt;customer_name&gt;_notifications.auto.tfvars</em> and <em>&lt;outdir&gt;/&lt;region&gt;/<customer_name>_events.auto.tfvars</em> under <em>&lt;region&gt;</em> directory.</p>
 <p>Once the terraform apply is complete, view the resources under <strong>Application Integration-&gt; Notifications &amp; Application Integration-&gt; Events</strong> for the region in OCI Console.</p>
@@ -639,13 +1889,13 @@ The column "SSH Key Var Name" accepts SSH key value directly or the name of vari
 <li>Notifications can not be configured for a particular resource OCID at the moment.</li>
 <li>Export of Notifications supports ONS and FAAS(will put OCID for the function in the CD3). It will skip the event export if action type is OSS.</li>
 </ul>
-<h2 id="alarms-tab">Alarms Tab</h2>
+<h2 id="alarms-tab">Alarms Tab<a class="headerlink" href="#alarms-tab" title="Permanent link">&para;</a></h2>
 <p>Use <strong>CD3-ManagementServices-template.xlsx</strong> under example folder of GIT as input file for creating/exporting Alarms.</p>
 <p>On choosing <strong>"Management Services"</strong> in the SetUpOCI menu and <strong>"Add/Modify/Delete Alarms"</strong> submenu will allow to manage alarms in OCI tenancy.</p>
 <p>Output terraform file generated: <em>&lt;outdir&gt;/&lt;region&gt;/&lt;customer_name&gt;_alarms.auto.tfvars</em> under <em>&lt;region&gt;</em> directory.</p>
 <p>Once the terraform apply is complete, view the resources under <strong>Observability &amp; Management→  Monitoring → Alarms Definition</strong> for the region in OCI Console.</p>
 <p>Further, on re-running the same option you will find the previously existing files being backed up under directory →   <em>&lt;outdir&gt;/&lt;region&gt;/backup_alarms/&lt;Date&gt;-&lt;Month&gt;-&lt;Time&gt;</em></p>
-<h2 id="serviceconnectors-tab">ServiceConnectors Tab</h2>
+<h2 id="serviceconnectors-tab">ServiceConnectors Tab<a class="headerlink" href="#serviceconnectors-tab" title="Permanent link">&para;</a></h2>
 <p>Use <strong>CD3-ManagementServices-template.xlsx</strong> under example folder of GIT as input file for creating/exporting Service connectors.</p>
 <p>The service connector resources provisioning can be initiated by updating the corresponding excel sheet tab.</p>
 <p><strong>CIS LZ recommends to create SCH to collect audit logs for all compartments, VCN Flow Logs and Object Storage Logs and send to a particular target that can be read by SIEM. CD3 SCH automation is aligned with CIZ LZ and allow the user to deploy/provision the recommended approach by filling in the suitable data in excel sheet.</strong></p>
@@ -667,40 +1917,40 @@ The column "SSH Key Var Name" accepts SSH key value directly or the name of vari
 </li>
 </ul>
 <p><img alt="image" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103548537/1005724e-ac03-4b45-8e3d-480c8826d065" /></p>
-<h2 id="oke-tab">OKE Tab</h2>
+<h2 id="oke-tab">OKE Tab<a class="headerlink" href="#oke-tab" title="Permanent link">&para;</a></h2>
 <p>Use this tab to create OKE components in OCI.</p>
 <blockquote>
 <p>Note:
 The column "SSH Key Var Name" accepts SSH key value directly or the name of variable declared in <em>variables.tf</em> under the  <strong>oke_ssh_keys</strong> variable containing the key value. Make sure to have an entry in <em>variables_&lt;region&gt;.tf</em> file with the name you enter in SSH Key Var Name field of the Excel sheet and put the value as SSH key value.</p>
 <p>For Eg: If you enter the SSH Key Var Name as <strong>ssh_public_key</strong>, make an entry in <em>variables_&lt;region&gt;.tf</em> file as shown below:</p>
 </blockquote>
-<pre><code>variable "oke_ssh_keys" {
+<div class="language-text highlight"><pre><span></span><code>variable &quot;oke_ssh_keys&quot; {
 type = map(any)
 default = {
-    ssh_public_key = "&lt;SSH PUB KEY STRING HERE&gt;"
-    # Use '\n' as the delimiter to add multiple ssh keys.
-    # Example: ssh_public_key = "ssh-rsa AAXXX......yhdlo\nssh-rsa AAxxskj...edfwf"
+    ssh_public_key = &quot;&lt;SSH PUB KEY STRING HERE&gt;&quot;
+    # Use &#39;\n&#39; as the delimiter to add multiple ssh keys.
+    # Example: ssh_public_key = &quot;ssh-rsa AAXXX......yhdlo\nssh-rsa AAxxskj...edfwf&quot;
     #START_oke_ssh_keys#
     #oke_ssh_keys_END#
   }
 }
-</code></pre>
+</code></pre></div>
 <ul>
 <li>For source details column, the format should be as below</li>
 </ul>
 <p>image::&lt;variable containing ocid of image&gt; </p>
 <p>Make sure to have an entry in <em>variables_&lt;region&gt;.tf</em> file for the value you enter in Source Details field of the Excel sheet.</p>
 <p>Eg: If you enter the Source Details as image::Linux, make an entry in <em>variables_&lt;region&gt;.tf</em> file under the <strong>oke_source_ocids</strong> variable as shown below:</p>
-<pre><code>        variable "oke_source_ocids" {
+<div class="language-text highlight"><pre><span></span><code>        variable &quot;oke_source_ocids&quot; {
           type = map(any)
           default = {
-            Linux = "&lt;OKE LINUX OCID HERE&gt;"
+            Linux = &quot;&lt;OKE LINUX OCID HERE&gt;&quot;
             #START_oke_source_ocids#
             # exported oke image ocids
             #oke_source_ocids_END#
           }
         }
-</code></pre>
+</code></pre></div>
 <p>On choosing <strong>"Developer Services"</strong> in the SetUpOCI menu and <strong>"Add/Modify/Delete OKE Cluster and Nodepools"</strong> submenu will allow to manage oke components in OCI tenancy.</p>
 <p>On completion of execution, you will be able to find the output terraform file generated at : </p>
 <p>-→  <em>&lt;outdir&gt;/&lt;region&gt;/&lt;prefix&gt;_oke_clusters.auto.tfvars</em></p>
@@ -715,13 +1965,13 @@ default = {
 <p><img alt="image" src="https://user-images.githubusercontent.com/115973871/216243984-9379741e-6e40-45fb-a4b6-948ace78f7a4.png" /></p>
 <p><img src=https://user-images.githubusercontent.com/115973871/216244050-88ad6797-1fe1-4198-9172-c3c3f33d810d.png width=50% height=50%></p>
 <p>To avoid this, an ignore statement as shown below is added to ignore any changes to the placement configuration in nodepool.</p>
-<pre><code>  ignore_changes = [node_config_details[0].placement_configs,kubernetes_version, defined_tags["Oracle-Tags.CreatedOn"], defined_tags["Oracle-Tags.CreatedBy"],node_config_details[0].defined_tags["Oracle-Tags.CreatedOn"],node_config_details[0].defined_tags["Oracle-Tags.CreatedBy"]]
-</code></pre>
+<div class="language-text highlight"><pre><span></span><code>  ignore_changes = [node_config_details[0].placement_configs,kubernetes_version, defined_tags[&quot;Oracle-Tags.CreatedOn&quot;], defined_tags[&quot;Oracle-Tags.CreatedBy&quot;],node_config_details[0].defined_tags[&quot;Oracle-Tags.CreatedOn&quot;],node_config_details[0].defined_tags[&quot;Oracle-Tags.CreatedBy&quot;]]
+</code></pre></div>
 <p><strong>Known Observed behaviours:</strong></p>
 <ul>
 <li>It has been observed that the order of kubernetes labels change randomly during an export. In such situations a terraform plan detects it as a change to the kubernetes labels.</li>
 </ul>
-<h2 id="vcn-flow-logs">VCN FLow Logs</h2>
+<h2 id="vcn-flow-logs">VCN FLow Logs<a class="headerlink" href="#vcn-flow-logs" title="Permanent link">&para;</a></h2>
 <p>This will enable Flow logs for all the subnets mentioned in 'SubnetsVLANs' tab of CD3 Excel sheet. Log group for each VCN is created under the same compartment as specified for VCN and all subnets are added as logs to this log group.</p>
 <p>Below TF file is created:</p>
 <table>
@@ -738,7 +1988,7 @@ default = {
 </tr>
 </tbody>
 </table>
-<h2 id="lbaas-logs">LBaaS Logs</h2>
+<h2 id="lbaas-logs">LBaaS Logs<a class="headerlink" href="#lbaas-logs" title="Permanent link">&para;</a></h2>
 <p>This will enable LBaaS logs for all the LBs mentioned in 'LB-Hostname-Certs' tab of CD3 Excel sheet. Log group for each LBaaS is created under the same compartment as specified for LBaaS and access and error log types are added as logs to this log group.</p>
 <p>Below TF file is created:</p>
 <table>
@@ -755,7 +2005,7 @@ default = {
 </tr>
 </tbody>
 </table>
-<h2 id="oss-logs">OSS Logs</h2>
+<h2 id="oss-logs">OSS Logs<a class="headerlink" href="#oss-logs" title="Permanent link">&para;</a></h2>
 <p>This will enable OSS Bucket logs for all the buckets mentioned in 'Buckets' tab of CD3 Excel sheet. Log group for each bucket is created under the same compartment as specified for bucket and write log type is added as logs to this log group.</p>
 <p>Below TF file is created:</p>
 <table>
@@ -772,7 +2022,7 @@ default = {
 </tr>
 </tbody>
 </table>
-<h2 id="sddcs-tab">SDDCs Tab</h2>
+<h2 id="sddcs-tab">SDDCs Tab<a class="headerlink" href="#sddcs-tab" title="Permanent link">&para;</a></h2>
 <p>Use this tab to create OCVS in your tenancy. </p>
 <blockquote>
 <p>Note:
@@ -780,17 +2030,17 @@ As of now the toolkit supports single cluster SDDC.
 The column "SSH Key Var Name" accepts SSH key value directly or the name of variable declared in <em>variables.tf</em> under the  <strong>sddc_ssh_keys</strong> variable containing the key value. Make sure to have an entry in <em>variables_&lt;region&gt;.tf</em> file with the name you enter in SSH Key Var Name field of the Excel sheet and put the value as SSH key value.</p>
 <p>For Eg: If you enter the SSH Key Var Name as <strong>ssh_public_key</strong>, make an entry in <em>variables_&lt;region&gt;.tf</em> file as shown below:</p>
 </blockquote>
-<pre><code>variable "sddc_ssh_keys" {
+<div class="language-text highlight"><pre><span></span><code>variable &quot;sddc_ssh_keys&quot; {
 type = map(any)
 default = {
-    ssh_public_key = "&lt;SSH PUB KEY STRING HERE&gt;"
-    # Use '\n' as the delimiter to add multiple ssh keys.
-    # Example: ssh_public_key = "ssh-rsa AAXXX......yhdlo\nssh-rsa AAxxskj...edfwf"
+    ssh_public_key = &quot;&lt;SSH PUB KEY STRING HERE&gt;&quot;
+    # Use &#39;\n&#39; as the delimiter to add multiple ssh keys.
+    # Example: ssh_public_key = &quot;ssh-rsa AAXXX......yhdlo\nssh-rsa AAxxskj...edfwf&quot;
     #START_sddc_ssh_keys#
     #sddc_ssh_keys_END#
   }
 }
-</code></pre>
+</code></pre></div>
 <p>Management and Workload Datastore volumes must be existing or created separately as part of <strong>BlockVolumes</strong> Tab.
 All the Network related information for SDDCs will be provided in <strong>SDDCs-Network</strong> , where the vlan should be created in <strong>SubnetsVLANs</strong></p>
 <p>On choosing "Software-Defined Data Centers - OCVS" in setUpOCI menu, the toolkit will read SDDCs tab and SDDCs-Network tab. The output terraform files will be generated at :
@@ -798,7 +2048,7 @@ All the Network related information for SDDCs will be provided in <strong>SDDCs-
 <p>Once terraform apply is done, you can view the resources under Hybrid -&gt; Software-Defined Data Centers in OCI console.</p>
 <p>On re-running the option to create OCVS you will find the previously existing files being backed up under directory:</p>
 <p><em>&lt;outdir&gt;/&lt;region&gt;/backup_sddcs/&lt;Date&gt;-&lt;Month&gt;-&lt;Time&gt;</em>.</p>
-<h2 id="buckets-tab">Buckets Tab</h2>
+<h2 id="buckets-tab">Buckets Tab<a class="headerlink" href="#buckets-tab" title="Permanent link">&para;</a></h2>
 <p>This tab in cd3 excel sheet is used when you need to create Object storage buckets in the OCI tenancy.</p>
 <p>On choosing "Storage" in the SetUpOCI menu and "Add/Modify/Delete Buckets" submenu will allow to create buckets in OCI Tenancy.</p>
 <p>On completion of execution, you will be able to find the output terraform file generated at :</p>
@@ -818,7 +2068,7 @@ All the Network related information for SDDCs will be provided in <strong>SDDCs-
 <p><strong>Retention Rule:</strong> To enable retention rule:</p>
 <p>4.1.   &nbsp; The versioning should be disabled.</p>
 <p>4.2.   &nbsp; Specify the value in the format <em>RuleName::TimeAmount::TimeUnit::Retention Rule Lock Enabled</em>.Multiple rules are seperated by &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;newline in the same cell(\n is not supported).  </p>
-<p>4.3.   &nbsp; Retention Rule Lock Enabled: The time format of the lock should be as per RFC standards. Ex: YYYY-MM-DDThh:mm:ssZ  (provide &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the value only if you want to  have the time rule locked enabled).</p>
+<p>4.3.   &nbsp; Retention Rule Lock Enabled: The time format of the lock should be as per RFC standards. Ex: YYYY-MM-DDThh<img alt="🇲🇲" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.0.3/assets/svg/1f1f2-1f1f2.svg" title=":mm:" />ssZ  (provide &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the value only if you want to  have the time rule locked enabled).</p>
 <p>4.4.   &nbsp; TimeAmount: It should be number of Days/Years. Maximun value is 500.</p>
 <p>4.5.   &nbsp; TimeUnit: It should be either in DAYS and YEARS.</p>
 </li>
@@ -845,43 +2095,97 @@ All the Network related information for SDDCs will be provided in <strong>SDDCs-
 <p><strong>Lifecyle Exclusion Patterns/Lifecycle Inclusion Patterns/Lifecycle Inclusion Prefixes:</strong> Add the object name filter patterns here.</p>
 </li>
 </ol>
-              
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
             </div>
-          </div><footer>
-
-  <hr/>
-
-  <div role="contentinfo">
-    <!-- Copyright etc -->
-  </div>
-
-  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
-</footer>
           
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
         </div>
-      </div>
-
-    </section>
-
-  </div>
-
-  <div class="rst-versions" role="note" aria-label="Versions">
-  <span class="rst-current-version" data-toggle="rst-current-version">
-    
-    
-    
-  </span>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      &copy; 2022 <a href=""  target="_blank" rel="noopener">Mukund Murali</a>
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
 </div>
-    <script src="../js/jquery-3.6.0.min.js"></script>
-    <script>var base_url = "..";</script>
-    <script src="../js/theme_extra.js"></script>
-    <script src="../js/theme.js"></script>
-      <script src="../search/main.js"></script>
-    <script>
-        jQuery(function () {
-            SphinxRtdTheme.Navigation.enable(true);
-        });
-    </script>
-
-</body>
+      
+        <div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/oracle-devrel/cd3-automation-toolkit" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M186.1 328.7c0 20.9-10.9 55.1-36.7 55.1s-36.7-34.2-36.7-55.1 10.9-55.1 36.7-55.1 36.7 34.2 36.7 55.1zM480 278.2c0 31.9-3.2 65.7-17.5 95-37.9 76.6-142.1 74.8-216.7 74.8-75.8 0-186.2 2.7-225.6-74.8-14.6-29-20.2-63.1-20.2-95 0-41.9 13.9-81.5 41.5-113.6-5.2-15.8-7.7-32.4-7.7-48.8 0-21.5 4.9-32.3 14.6-51.8 45.3 0 74.3 9 108.8 36 29-6.9 58.8-10 88.7-10 27 0 54.2 2.9 80.4 9.2 34-26.7 63-35.2 107.8-35.2 9.8 19.5 14.6 30.3 14.6 51.8 0 16.4-2.6 32.7-7.7 48.2 27.5 32.4 39 72.3 39 114.2zm-64.3 50.5c0-43.9-26.7-82.6-73.5-82.6-18.9 0-37 3.4-56 6-14.9 2.3-29.8 3.2-45.1 3.2-15.2 0-30.1-.9-45.1-3.2-18.7-2.6-37-6-56-6-46.8 0-73.5 38.7-73.5 82.6 0 87.8 80.4 101.3 150.4 101.3h48.2c70.3 0 150.6-13.4 150.6-101.3zm-82.6-55.1c-25.8 0-36.7 34.2-36.7 55.1s10.9 55.1 36.7 55.1 36.7-34.2 36.7-55.1-10.9-55.1-36.7-55.1z"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://www.youtube.com/playlist?list=PLPIzp-E1msrbJ3WawXVhzimQnLw5iafcp" target="_blank" rel="noopener" title="www.youtube.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M549.655 124.083c-6.281-23.65-24.787-42.276-48.284-48.597C458.781 64 288 64 288 64S117.22 64 74.629 75.486c-23.497 6.322-42.003 24.947-48.284 48.597-11.412 42.867-11.412 132.305-11.412 132.305s0 89.438 11.412 132.305c6.281 23.65 24.787 41.5 48.284 47.821C117.22 448 288 448 288 448s170.78 0 213.371-11.486c23.497-6.321 42.003-24.171 48.284-47.821 11.412-42.867 11.412-132.305 11.412-132.305s0-89.438-11.412-132.305zm-317.51 213.508V175.185l142.739 81.205-142.739 81.201z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["toc.integrate", "navigation.indexes", "navigation.expand", "navigation.top", "navigation.path", "content.code.copy"], "search": "../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.8fd75fb4.min.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
 </html>
