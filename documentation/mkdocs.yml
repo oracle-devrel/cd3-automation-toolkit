@@ -6,10 +6,11 @@ nav:
   - <b>Getting Started</b>: README.md
     
   - <b>CD3 container in OCI</b>:
+    - Prerequisites: prereqs-stack.md
     - Single click container launch: singleclickdeploy.md
 
   - <b>CD3 container in Local Env</b>:
-    - Prerequisites: prerequisites.md
+    - Prerequisites: prereqs-local.md
     - Launch the container: Launch_Docker_container.md
   
   - <b>Connect container to OCI</b>:
