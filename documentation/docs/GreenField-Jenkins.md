@@ -12,7 +12,8 @@ Fill the CD3 Excel with appropriate values.
 
 <img width="600" height="350" alt="Screenshot 2024-01-16 at 10 56 42 AM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/0d8e4719-f92f-4fd6-83e7-0cc53ce4692b">
 
->Note - Only one user at a time using the Jenkins setup is supported in the current release of the toolkit.
+!!! note
+     Only one user at a time using the Jenkins setup is supported in the current release of the toolkit.
 
 
 **Step 3**:
@@ -20,7 +21,8 @@ Fill the CD3 Excel with appropriate values.
 
 <img width="348" alt="Screenshot 2024-01-16 at 11 04 47 AM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/9b7916aa-9dbb-43f8-8758-5f9c14481006"><br>
 
->This will copy the Excel file at `/cd3user/tenancies/<customer_name>` inside the container. It will also take backup of existing Excel on the container by appending the current datetime if same filename is uploaded in multiple executions.
+!!! info 
+    This will copy the Excel file at `/cd3user/tenancies/<customer_name>` inside the container. It will also take backup of existing Excel on the container by appending the current datetime if same filename is uploaded in multiple executions.
 
 
 **Step 4:** 

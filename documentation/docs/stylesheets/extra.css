@@ -8,3 +8,15 @@
     --md-primary-fg-color--light: #00796B;
     --md-primary-fg-color--dark:  #90030C;
   }
+.md-grid {
+    max-width: 1500px;
+    width: auto; /* This ensures the right side adjusts based on content */
+
+    /* Optional: You may also need to float or use flexbox to control layout */
+    /* Example using float */
+    /*float: left; /* Float the element to the left */
+
+    /* Example using flexbox */
+    display: flex; /* Use flexbox for layout */
+    flex-direction: row; /* Arrange children in a row */
+  } 

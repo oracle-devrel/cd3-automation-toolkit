@@ -1,6 +1,6 @@
 
 # **CD3 Automation Toolkit**  
-<img width="25%" height="30%"  alt="CD3 Logo" src= "/images/CD3-logo.png"> 
+<center><img width="25%" height="30%"  alt="CD3 Logo" src= "/images/CD3-logo.png"> </center>
 ---
 
 The CD3 toolkit reads input data in the form of CD3 Excel sheet and generates Terraform files which can be used to provision the resources in OCI instead of handling the task through the OCI console manually. The toolkit also reverse engineers the components in OCI back to the Excel sheet and Terraform configuration. The toolkit can be used throughout the lifecycle of tenancy to continuously create or modify existing resources. The generated Terraform code can be used by the OCI Resource Manager or can be integrated into organization's existing devops CI/CD ecosystem.
@@ -10,12 +10,16 @@ The CD3 toolkit reads input data in the form of CD3 Excel sheet and generates Te
 <iframe width="100%" height="500" src="https://www.youtube.com/embed/watch?v=TSNu0pUHYsE&list=PLPIzp-E1msrbJ3WawXVhzimQnLw5iafcp&index=1">
 </iframe>
 
-
-:fontawesome-brands-youtube:{ style="color: #EE0F0F" } [CD3 Automation Toolkit Explained in 1 minute](https://www.youtube.com/watch?v=TSNu0pUHYsE&list=PLPIzp-E1msrbJ3WawXVhzimQnLw5iafcp&index=1) – :octicons-clock-24:
-
 <br>
+<style>
+    .grid.cards {
+        border-top-color: #5c926c;
+        border-radius: 0.5rem;
+    }
+</style>
 
-<div class="grid cards" markdown >
+<div class="grid cards" style="border-top-color: #5c926c; border-radius: 1.5rem;" markdown>
+
 
 -   :material-clock-fast:{ .lg .middle } __Getting Started__
 
@@ -69,11 +73,10 @@ The CD3 toolkit reads input data in the form of CD3 Excel sheet and generates Te
     [Migrate jobs to User's Jenkins environment](#)<br>
     [Remote Management of Terraform State](#)<br>
 
--   :material-information:{ .lg .middle } __Troubleshooting Tips__
+-   :material-information:{ .lg .middle } __Known Behaviour__
 
     ---
-    [Expected Behaviour](#)<br>
-    [Common Issues](#)<br>
+    [Expected Behaviour of CD3](#)<br>
     [FAQs](#)<br>
 
 -  :material-school:{ .lg .middle } __Videos & Tutorials__

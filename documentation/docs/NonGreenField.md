@@ -1,17 +1,12 @@
 # Export Resources from OCI (Non-Greenfield Workflow)
 
-  > **Note**<br>
-  Please make sure that service for which export is done does not have existing tfvars/state file.<br><br>
-  >Course of actions involved in Exporting objects from OCI-
-  <br>
-
-  >- Automation Tool Kit fetches the data for the supported services. You can chose to export the data from a specific region or the compartment. Exported data is written to appropriate sheets of the CD3 Excel Sheet based on the resources being exported. <br>
-  <br>
-
-  >- Tool Kit then generates the TF configuration files/auto.tfvars files for these exported resources. <br>
-  <br>
-
-  >- It also generates a shell script - ```tf_import_commands_<resource>_nonGF.sh``` that has the import commands, to import the state of the resources to tfstate file.(This helps to manage the resources via Terraform in future). 
+!!! note
+      Please make sure that service for which export is done does not have existing tfvars/state file.<br><br>
+      Course of actions involved in Exporting objects from OCI-Automation Tool Kit fetches the data for the supported services. You can chose to export the data from a specific region or the compartment. Exported data is written to appropriate sheets of the CD3Excel   Sheet      based on the resources being exported. <br>
+      <br>
+      - Tool Kit then generates the TF configuration files/auto.tfvars files for these exported resources. <br>
+      <br>
+      - It also generates a shell script - ```tf_import_commands_<resource>_nonGF.sh``` that has the import commands, to import the state of the resources to tfstate file.(This helps to manage the resourcesvia        Terraform in future). 
 
 
 **Step 1:** 
@@ -53,17 +48,18 @@ Command to Execute:
 <br>```cd /cd3user/oci_tools/cd3_automation_toolkit/```
 <br>**python setUpOCI.py ```<path_to_setupOCI.properties>```  ie**
 <br>```python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties```
-  
-→ Example execution of the wrapper script:
-  
-<img src = "https://user-images.githubusercontent.com/122371432/213680233-002cce49-65c3-4cab-8f38-ef56f04fe266.png" width=50% height=50%>
+
+!!! example   
+      Example execution of the wrapper script:<br>
+      <img src = "https://user-images.githubusercontent.com/122371432/213680233-002cce49-65c3-4cab-8f38-ef56f04fe266.png" width=50% height=50%>
 
 
 Choose the resources by specifying a single option (for choosing one of these resources) or comma-separated values (to choose multiple resources) as shown in the sample screenshot above.
   
 Make sure to execute **"Fetch Compartments OCIDs to variables file"** from **CD3 Services** in setUpOCI menu at least once. This will       ensure that the variables file in outdir is updated with the OCID information of all the compartments.
   
-> Toolkit will over-write the specific tabs of CD3 Excel sheet with exported data for that resource in OCI while the other tabs remain intact.
+!!! info 
+    Toolkit will over-write the specific tabs of CD3 Excel sheet with exported data for that resource in OCI while the other tabs remain intact.
  
  </br>
 
@@ -78,9 +74,9 @@ c. Shell Script with import commands - tf_import_commands_`<resource>`_nonGF.sh
   
 <img src = "https://user-images.githubusercontent.com/122371432/213680328-ff972472-5c96-424e-b616-9f4c217eb4ca.png" width =50% height=50%>
 
-> **Note**<br>
->   Once the export (including the execution of **tf_import_commands_`<resource>`_nonGF.sh**) is complete, switch the value of **workflow_type** back to **create_resources**. 
->   This allows the Tool Kit to support the tenancy as Green Field from this point onwards.
+!!! note
+      Once the export (including the execution of **tf_import_commands_`<resource>`_nonGF.sh**) is complete, switch the value of **workflow_type** back to **create_resources**. 
+      This allows the Tool Kit to support the tenancy as Green Field from this point onwards.
 
 ## Example - Export Identity
 Follow the below steps to quickly export Identity components from OCI.
