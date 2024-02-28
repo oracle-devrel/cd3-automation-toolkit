@@ -9,7 +9,7 @@
 If not logged into the OCI tenancy, the button will redirect to the Oracle Cloud initial page, prompting entry of the tenancy name and login to OCI first.
 
 
-- [x] Fill in the required details in the Resource manager stack and click on create. After the Apply job is successful, Click on the created Job-->Logs. Scroll down to the end and find the details for the created VM, and commands to be executed to launch the toolkit container.
+- [x] Fill in the required details in the Resource manager stack and click on create. After the Apply job is successful, Click on the created Job-->Logs. Scroll down to the end and find the details for the created VM, and commands to be executed to login to the toolkit container.
 
 
 - [x] Follow [Connect container to tenancy](Connect_container_to_OCI_Tenancy.md) for next steps. 

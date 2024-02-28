@@ -8,15 +8,13 @@
 
 <br>
 
+CD3 Automation toolkit can be used either via CLI or Jenkins.  
+📖 Detailed documentation and videos are provided for both options. Please check the left panel for navigation.
+Excel Sheet is fed as the input to the toolkit.
 
-First, The Excel file is input to the CD3 Automation toolkit using either CLI or Jenkins.  
+###**Create resources**
 
-!!! note
-    📖 Detailed documentations and videos are provided for both options. Please check the left panel for navigation.
-
-###**Create resources:**
-
-- The input Excel file is processed by the toolkit and terraform *auto.tfvars files are generated for all those reosurces. 
+- The filled in input Excel file is processed by the toolkit and terraform *auto.tfvars files are generated for all those resources. 
 
 - The generated terraform files can be used to deploy resources in OCI by generating a terraform plan and approving the plan for apply. 
 
@@ -24,7 +22,7 @@ First, The Excel file is input to the CD3 Automation toolkit using either CLI or
 
 - The input Excel (preferably the Blank template) is processed by the toolkit and resources are exported to CD3 Excel template. 
 
-- The toolkit then generates *auto.tfvars from the exported data in Excel file and also generates shell scripts with terraform import commands for all the reosurces.
+- The toolkit then generates *auto.tfvars from the exported data in Excel file and also generates shell scripts with terraform import commands for all the resources.
 
 - The shell scripts have to be executed in order to have the updated state file to manage the resources further.
 
