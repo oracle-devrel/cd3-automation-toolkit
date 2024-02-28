@@ -14,9 +14,9 @@ To ease the execution of toolkit, we have provided the steps to build an image w
 * Change directory to 'cd3-automation-toolkit'(i.e. the cloned repo in your local).
 * Run ```docker build --platform linux/amd64 -t cd3toolkit:${image_tag} -f Dockerfile --pull --no-cache .```<br/>
 <br  />
-!!! note
-       ${image_tag} should be replaced with suitable tag as per your requirements/standards. eg v2024.1.0
-<br  />&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;The period (.) at the end of the docker build command is required.
+
+- [x] ${image_tag} should be replaced with suitable tag as per your requirements/standards. eg v2024.1.0
+- [x] The period (.) at the end of the docker build command is required.
 
 ### **Save the image (Optional)**
 * Run  ```docker save cd3toolkit:${image_tag} | gzip > cd3toolkit_${image_tag}.tar.gz```
@@ -40,7 +40,8 @@ To ease the execution of toolkit, we have provided the steps to build an image w
 === "Example for Windows "
       ```docker run --platform linux/amd64 -it -p 8443:8443 -d -v D:/mount_path:/cd3user/tenancies cd3toolkit:v2024.1.0```
   
-> If you are launching the container on cloud, Please make sure to use a private server or a bastion connected server with restricted access(i.e. not publicly available) to host the container.
+!!! Tip 
+    If you are launching the container on cloud, Please make sure to use a private server or a bastion connected server with restricted access(i.e. not publicly available) to host the container.
 
 * Run  ```docker ps```
 
