@@ -69,10 +69,11 @@ The CD3 toolkit reads input data in the form of CD3 Excel sheet and generates Te
     [Migrate jobs to User's Jenkins environment](#)<br>
     [Remote Management of Terraform State](#)<br>
 
--   :material-information:{ .lg .middle } __Known Behaviour__
+-   :material-information:{ .lg .middle } __Troubleshooting Tips__
 
     ---
-    [Expected Behaviour of CD3](#)<br>
+    [Expected Behaviour](#)<br>
+    [Common Issues](#)<br>
     [FAQs](#)<br>
 
 -  :material-school:{ .lg .middle } __Videos & Tutorials__
