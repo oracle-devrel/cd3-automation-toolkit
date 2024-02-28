@@ -796,6 +796,7 @@ variable "adb" {
     cpu_core_count           = optional(number)
     database_edition         = optional(string)
     data_storage_size_in_tbs = optional(number)
+    customer_contacts        = optional(list(string))
     db_name                  = string
     db_version               = optional(string)
     db_workload              = optional(string)

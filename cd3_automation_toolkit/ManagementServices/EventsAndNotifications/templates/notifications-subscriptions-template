@@ -24,10 +24,10 @@ notifications_subscriptions = {
     {#  ##Do not modify below this line##  #}
     {#                                     #}
     {#  ###Section for adding Defined and Freeform Tags###  #}
-    {% if defined_tags and defined_tags != 'nan' and defined_tags != '' and defined_tags != [['nan']] %}
-      {% if defined_tags[0] %}
+    {% if subscription_defined_tags and subscription_defined_tags != 'nan' and subscription_defined_tags != '' and subscription_defined_tags != [['nan']] %}
+      {% if subscription_defined_tags[0] %}
         defined_tags = {
-        {% for tags in defined_tags  %}
+        {% for tags in subscription_defined_tags  %}
             {% if not loop.last %}
                 "{{ tags[0]  }}"= "{{ tags[1] }}" ,
             {% else %}
@@ -37,10 +37,10 @@ notifications_subscriptions = {
         }
         {% endif %}
        {% endif %}
-            {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' and freeform_tags != [['nan']] %}
-                {% if freeform_tags[0] %}
+            {% if subscription_freeform_tags and subscription_freeform_tags != 'nan' and subscription_freeform_tags != '' and subscription_freeform_tags != [['nan']] %}
+                {% if subscription_freeform_tags[0] %}
         freeform_tags = {
-                    {% for tags in freeform_tags %}
+                    {% for tags in subscription_freeform_tags %}
                         {% if not loop.last  %}
                 "{{ tags[0] }}"="{{ tags[1] }}",
                         {% else %}

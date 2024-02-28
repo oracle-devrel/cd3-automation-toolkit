@@ -113,7 +113,7 @@ variables:
     required: true
   instance_name:
     visible:
-    title: Enter display name/hostname for Automation Toolkit WorkVM
+    title: Enter display name/hostname for CD3 Automation Toolkit WorkVM
     description: CD3 Automation Toolkit WorkVM display name/hostname
     type: string
     default: "workvm"

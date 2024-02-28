@@ -38,6 +38,7 @@ module "adb" {
   display_name               = each.value.display_name
   license_model              = each.value.license_model
   ncharacter_set             = each.value.ncharacter_set
+  customer_contacts          = each.value.customer_contacts
   network_compartment_id     = each.value.network_compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.network_compartment_id)) > 0 ? each.value.network_compartment_id : var.compartment_ocids[each.value.network_compartment_id]) : null
   network_security_group_ids = each.value.nsg_ids
   freeform_tags              = each.value.freeform_tags

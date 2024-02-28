@@ -9,7 +9,7 @@ pipeline {
         stage('Terraform Plan') {
             when {
                 expression {
-                    return env.GIT_BRANCH == 'origin/main';
+                    return env.GIT_BRANCH == 'origin/develop';
                 }
             }
 
@@ -48,7 +48,7 @@ pipeline {
         stage('OPA') {
             when {
                 allOf{
-                    expression { return env.GIT_BRANCH == 'origin/main'}
+                    expression { return env.GIT_BRANCH == 'origin/develop'}
                     expression { return tf_plan == "Changes" }
 					expression {return currentBuild.result != "FAILURE" }
                 }
@@ -77,7 +77,7 @@ pipeline {
        stage('Get Approval') {
             when {
                 allOf{
-                    expression { return env.GIT_BRANCH == 'origin/main'}
+                    expression { return env.GIT_BRANCH == 'origin/develop'}
                     expression {return tf_plan == "Changes"}
 					expression {return currentBuild.result != "FAILURE" }
                 }
@@ -98,7 +98,7 @@ pipeline {
         stage('Terraform Apply') {
             when {
                 allOf{
-                    expression { return env.GIT_BRANCH == 'origin/main'}
+                    expression { return env.GIT_BRANCH == 'origin/develop'}
                     expression {return tf_plan == "Changes"}
 					expression {return currentBuild.result != "FAILURE" }
                 }
@@ -112,5 +112,52 @@ pipeline {
             }
 			}
         }
+        stage('Git commit to main') {
+        when {
+                expression {
+                    expression {return currentBuild.result != "FAILURE" }
+                }
+            }
+        steps {
+        catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
+            script {
+            try {
+            sh '''
+                mkdir -p ${WORKSPACE}/../${BUILD_NUMBER}
+                cd ${WORKSPACE}/../${BUILD_NUMBER}
+                git clone ${GIT_URL}
+                repo_name=${GIT_URL##*/}
+                cd ${WORKSPACE}/../${BUILD_NUMBER}/${repo_name}
+		        git checkout main
+		        reg=`echo ${JOB_NAME}| cut -d "/" -f2`
+                copy_path=${reg}
+                cp -r ${WORKSPACE}/${copy_path}/* ${copy_path}/
+                git add ${copy_path}*
+                git_status=`git status --porcelain`
+                if [[ $git_status ]];then
+                git commit -m "commit for terraform build - ${BUILD_NUMBER} for "${reg}
+                git push origin main
+                else
+                    echo "Nothing to commit"
+                fi
+                cd ${WORKSPACE}/..
+                rm -rf ${WORKSPACE}/../${BUILD_NUMBER}
+              '''
+
+           } catch(Exception e1) {
+            println(e1)
+            sh '''
+                cd ${WORKSPACE}/..
+                rm -rf ${WORKSPACE}/../${BUILD_NUMBER}
+                exit 1
+            '''
+
+          }
+
+          }
+          }
+        }
+        }
     }
 }
+

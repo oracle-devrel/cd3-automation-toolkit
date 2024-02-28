@@ -417,7 +417,7 @@ pipeline {
             }
         }
         }
-        stage ('Git Commit') {
+        stage ('Git Commit to develop') {
             when{
                 allOf {
                     expression {return ParametersValidation == "Passed" }
@@ -435,10 +435,10 @@ pipeline {
                             cd /cd3user/tenancies/${customer_prefix}/terraform_files
                             echo "-----start timestamp-----"
                             time_stamp="$(date +%m-%d-%Y-%H-%M-%S)"
-                            commit_msg="cd3 commit at ${time_stamp}"
+                            commit_msg="commit for setUpOCI build ${BUILD_NUMBER}"
                             git add -A .
                             git commit -m "${commit_msg}"
-                            git push
+                            git push origin develop
                          ''')
                     }else {
                         echo 'Nothing to commit. Skipping further stages.'

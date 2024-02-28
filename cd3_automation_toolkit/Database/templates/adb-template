@@ -30,6 +30,10 @@ adb = {
             ncharacter_set           = "{{ ncharacter_set }}"
             {% endif %}
 
+            {% if customer_contacts and customer_contacts != "" and customer_contacts != "nan" %}
+            customer_contacts        = {{ customer_contacts | replace("\'","\"") }}
+            {% endif %}
+
             cpu_core_count           = {{ cpu_core_count }}
 
             {% if database_edition == "" %}

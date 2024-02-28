@@ -110,6 +110,10 @@ def create_terraform_adb(inputfile, outdir, service_dir, prefix, ct):
                 autonomous_value = commonTools.check_tf_variable(columnvalue).lower()
                 tempdict = {'autonomous_value': autonomous_value}
 
+            if columnname == 'Customer Contacts':
+                columnvalue = columnvalue.strip().split(",")
+                tempdict = {'customer_contacts': columnvalue}
+
             if columnname == 'NSGs':
                 if columnvalue != '' and columnvalue.strip().lower() != 'nan':
                     nsg_str = ""

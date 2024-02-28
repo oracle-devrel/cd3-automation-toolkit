@@ -118,7 +118,7 @@ def create_terraform_notifications(inputfile, outdir, service_dir, prefix, ct):
                 tempdict = {'topic_tf_name': tf_name_topic}
 
             if columnname == "Description":
-                tempdict = {'topic_description': columnvalue}
+                tempdict = {'description': columnvalue}
 
             if columnname == "Protocol":
                 columnvalue = columnvalue.strip()
@@ -129,7 +129,7 @@ def create_terraform_notifications(inputfile, outdir, service_dir, prefix, ct):
             if columnname == "Endpoint":
                 endpoint = columnvalue.strip()
                 tempdict = {'endpoint': endpoint}
-          
+
             columnname = commonTools.check_column_headers(columnname)
             tempStr[columnname] = str(columnvalue).strip()
             tempStr.update(tempdict)

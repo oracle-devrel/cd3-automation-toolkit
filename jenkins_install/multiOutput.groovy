@@ -8,7 +8,7 @@ pipeline {
         stage('Terraform Plan') {
             when {
                 expression {
-                    return env.GIT_BRANCH == 'origin/main';
+                    return env.GIT_BRANCH == 'origin/develop';
                 }
             }
 
@@ -53,7 +53,7 @@ pipeline {
         stage('OPA') {
             when {
                 allOf{
-                    expression { return env.GIT_BRANCH == 'origin/main'}
+                    expression { return env.GIT_BRANCH == 'origin/develop'}
                     expression { return tf_plan == "Changes" }
 					expression {return currentBuild.result != "FAILURE" }
                 }
@@ -82,7 +82,7 @@ pipeline {
        stage('Get Approval') {
             when {
                 allOf{
-                    expression { return env.GIT_BRANCH == 'origin/main'}
+                    expression { return env.GIT_BRANCH == 'origin/develop'}
                     expression {return tf_plan == "Changes"}
 					expression {return currentBuild.result != "FAILURE" }					
                 }
@@ -102,7 +102,7 @@ pipeline {
         stage('Terraform Apply') {
             when {
                 allOf{
-                    expression { return env.GIT_BRANCH == 'origin/main'}
+                    expression { return env.GIT_BRANCH == 'origin/develop'}
                     expression {return tf_plan == "Changes"}
 					expression {return currentBuild.result != "FAILURE" }
                 }
@@ -116,6 +116,79 @@ pipeline {
             }
 			}
         }
+        stage('Git Commit to main') {
+        when {
+                expression {
+                    expression {return currentBuild.result != "FAILURE" }
+                }
+            }
+        steps {
+        catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
+            script {
+            try {
+            sh '''
+                set +x
+                mkdir -p ${WORKSPACE}/../${BUILD_NUMBER}
+                cd ${WORKSPACE}/../${BUILD_NUMBER}
+                git clone ${GIT_URL}
+                repo_name=${GIT_URL##*/}
+                cd ${WORKSPACE}/../${BUILD_NUMBER}/${repo_name}
+                git checkout main
+                reg=`echo ${JOB_NAME}| cut -d "/" -f2`
+                service=`echo ${JOB_NAME}| cut -d "/" -f3`
+                copy_path=${reg}/${service}
+                cp -r ${WORKSPACE}/${copy_path}/* ${copy_path}/
+                git add ${copy_path}*
+                 '''
+           } catch(Exception e1) {
+            println(e1)
+            sh '''
+                set +x
+                rm -rf ${WORKSPACE}/../${BUILD_NUMBER}
+                exit 1
+            '''
+
+          }
+          sh '''
+                set +x
+                repo_name=${GIT_URL##*/}
+                reg=`echo ${JOB_NAME}| cut -d "/" -f2`
+                service=`echo ${JOB_NAME}| cut -d "/" -f3`
+                cd ${WORKSPACE}/../${BUILD_NUMBER}/${repo_name}
+                git_status=`git status --porcelain`
+                if [[ $git_status ]];then
+                 git commit -m "commit for terraform build - ${BUILD_NUMBER} for "${reg}"/"${service}
+                else
+                    echo "Nothing to commit"
+                fi
+             '''
+           status = sh(script: '''
+                set +x
+                repo_name=${GIT_URL##*/}
+                cd ${WORKSPACE}/../${BUILD_NUMBER}/${repo_name}
+                git pull --no-edit origin main
+                git push --porcelain origin main
+''', returnStatus: true)
+
+          while (status != 0){
+          println("Trying again ...")
+          status = sh(script: '''
+                set +x
+                repo_name=${GIT_URL##*/}
+                cd ${WORKSPACE}/../${BUILD_NUMBER}/${repo_name}
+                git pull --no-edit origin main
+                set -x
+                git push --porcelain origin main
+''', returnStatus: true)
+          }
+          sh '''
+                set +x
+                rm -rf ${WORKSPACE}/../${BUILD_NUMBER}
+            '''
+
+          }
+          }
+        }
+        }
     }
 }
-

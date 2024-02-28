@@ -270,6 +270,9 @@ def update_devops_config(prefix,git_config_file, repo_ssh_url,files_in_repo,dir_
         print(e)
         print("Exiting...")
         exit(1)
+    # Create develop branch from main
+    subprocess.run(['git', 'checkout', '-B', 'develop','main', '-q'], cwd=devops_dir, stdout=DEVNULL)
+    subprocess.run(['git', 'push', 'origin', 'develop'], cwd=devops_dir, stdout=DEVNULL)
     return commit_id
 
 def create_bucket(config, signer):

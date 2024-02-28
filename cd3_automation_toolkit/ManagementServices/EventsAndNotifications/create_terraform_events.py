@@ -89,8 +89,10 @@ def create_terraform_events(inputfile, outdir, service_dir, prefix, ct):
             print("\nThe values for Region, Compartment, Topic, Protocol and Endpoint cannot be left empty. Please enter a value and try again !!")
             exit(1)
 
+        data = "{}"
         for columnname in dfcolumns:
             # Column value
+
             # Dont strip for Description
             columnvalue = str(df[columnname][i])
             if columnname == "Event Description":
@@ -165,6 +167,8 @@ def create_terraform_events(inputfile, outdir, service_dir, prefix, ct):
                 columnvalue = columnvalue.strip()
                 event_is_enabled = commonTools.check_columnvalue(columnvalue)
                 tempdict = {'event_is_enabled': event_is_enabled}
+            if columnname == "Additional Data" or columnname == "AdditionalData":
+                data = columnvalue
 
             if columnname == "Service Name": 
                 service_name = columnvalue.strip()
@@ -192,7 +196,8 @@ def create_terraform_events(inputfile, outdir, service_dir, prefix, ct):
             tempStr.update(tempdict)
 
             Events_names[region].append(event_name)
-            listevent = '{"eventType":[],"data":{}}'
+            listevent = '{"eventType":[]}'
+            #listevent = '{"data":{},"eventType":[]}'
             listeventid = json.loads(listevent)
             temp_topic = topic_name
             temp_action = action_is_enabled
@@ -202,6 +207,12 @@ def create_terraform_events(inputfile, outdir, service_dir, prefix, ct):
             if (str(service_name).lower()!=NaNstr.lower() and str(resources).lower()!=NaNstr.lower()):
                 condition = extend_event(service_name, resources, listeventid)
                 temp = condition
+                if data != "{}":
+                    json_acceptable_string = condition.replace("\\", "")
+                    d = json.loads(json_acceptable_string)
+                    d["data"] = json.loads(data.replace("'", "\""))
+                    condition = json.dumps(d)
+                    condition = condition.replace("\"" , "\\\"").replace("'", "\\\"").replace(" " , "")
                 tempdict = {'condition' : condition}
             tempStr.update(tempdict)
       
@@ -224,6 +235,12 @@ def create_terraform_events(inputfile, outdir, service_dir, prefix, ct):
                 condition = "{}"
             if (str(service_name).lower()!=NaNstr.lower() and str(resources).lower()!=NaNstr.lower()):
                 condition = extend_event(service_name, resources, listeventid)
+            if data != "{}":
+                json_acceptable_string = condition.replace("\\", "")
+                d = json.loads(json_acceptable_string)
+                d["data"] = json.loads(data.replace("'", "\""))
+                condition = json.dumps(d,separators=(',', ':'))
+                condition = condition.replace("\"" , "\\\"").replace("'", "\\\"")
             tempdict = {'condition' : condition}
             tempStr.update(tempdict)
 

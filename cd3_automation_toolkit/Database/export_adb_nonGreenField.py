@@ -17,7 +17,10 @@ oci_obj_names = {}
 
 def print_adbs(region, vnc_client, adb, values_for_column, ntk_compartment_name):
     adb_tf_name = commonTools.check_tf_variable(adb.display_name)
-
+    customer_emails = ""
+    if hasattr(adb,"customer_contacts") and adb.customer_contacts:
+        for item in adb.customer_contacts:
+            customer_emails += ","+item.email
     adb_subnet_id = adb.subnet_id
 
     if (adb_subnet_id is not None):
@@ -66,7 +69,10 @@ def print_adbs(region, vnc_client, adb, values_for_column, ntk_compartment_name)
         elif col_header == 'DB Name':
             values_for_column[col_header].append(adb.db_name)
         elif col_header == 'Database Edition':
-            values_for_column[col_header].append(adb.database_edition)
+            if hasattr(adb, 'database_edition'):
+                values_for_column[col_header].append(adb.database_edition)
+            else:
+                values_for_column[col_header].append("")
         elif col_header == 'CPU Core Count':
             values_for_column[col_header].append(adb.cpu_core_count)
         elif col_header == 'Data Storage Size in TB':
@@ -85,9 +91,17 @@ def print_adbs(region, vnc_client, adb, values_for_column, ntk_compartment_name)
         elif col_header == 'License Model':
             values_for_column[col_header].append(adb.license_model)
         elif col_header == 'Character Set':
-            values_for_column[col_header].append(adb.character_set)
+            if hasattr(adb, 'character_set'):
+                values_for_column[col_header].append(adb.character_set)
+            else:
+                values_for_column[col_header].append("")
         elif col_header == 'nCharacter Set':
-            values_for_column[col_header].append(adb.ncharacter_set)
+            if hasattr(adb, 'ncharacter_set'):
+                values_for_column[col_header].append(adb.ncharacter_set)
+            else:
+                values_for_column[col_header].append("")
+        elif col_header == 'Customer Contacts':
+            values_for_column[col_header].append(customer_emails.lstrip(','))
         elif col_header == "NSGs":
             values_for_column[col_header].append(nsg_names)
         elif col_header.lower() in commonTools.tagColumns:
