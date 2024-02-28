@@ -1,7 +1,7 @@
 # **Getting Started**
 ---
 
-##<u> **CD3 Toolkit Process</u>**
+###<u> **CD3 Toolkit Process</u>**
 
 
 <img width="1049" alt="CD3 Toolkit Process" src="images/CD3-Process.png">
@@ -11,15 +11,16 @@
 
 First, The Excel file is input to the CD3 Automation toolkit using either CLI or Jenkins.  
 
->Note: 📖 Detailed documentations and videos are provided for both options. Please check the left panel for navigation.
+!!! note
+    📖 Detailed documentations and videos are provided for both options. Please check the left panel for navigation.
 
-###**Create resources**
+**Create resources:**
 
 - The input Excel file is processed by the toolkit and terraform *auto.tfvars files are generated for all those reosurces. 
 
 - The generated terraform files can be used to deploy resources in OCI by generating a terraform plan and approving the plan for apply. 
 
-###**Export resources**
+**Export resources**
 
 - The input Excel (preferably the Blank template) is processed by the toolkit and resources are exported to CD3 Excel template. 
 
@@ -27,23 +28,23 @@ First, The Excel file is input to the CD3 Automation toolkit using either CLI or
 
 - The shell scripts have to be executed in order to have the updated state file to manage the resources further.
 
-###**Modify resources**
+**Modify resources**
 
 - Resources created or exported using toolkit can be modified at any point of time using the same Excel file.
 
-###**Excel Sheet Templates**
+**Excel Sheet Templates**
 
 - Here are the [templates](ExcelTemplates.md).
 
 <br>
 
-##<u> **CD3 Toolkit Architecture</u>**
+###<u> **CD3 Toolkit Architecture</u>**
 
 ![CD3 Architecture](images/CD3-Arch.png)
 
 <br>
 
-##<u> **CD3 Toolkit Supported Services in OCI</u>**
+###<u> **CD3 Toolkit Supported Services in OCI</u>**
 
 | OCI Services | Details |
 | --------- | ----------- |

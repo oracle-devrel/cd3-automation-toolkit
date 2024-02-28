@@ -1,12 +1,14 @@
 # Networking Scenarios
 
 ## Managing Network for Non-Greenfield Workflow
-- [Export Network](#non-greenfield-tenancies)
-- [Add a new or modify the existing networking components](#add-a-new-or-modify-the-existing-networking-components)
+- [Networking Scenarios](#networking-scenarios)
+  - [Managing Network for Non-Greenfield Workflow](#managing-network-for-non-greenfield-workflow)
+    - [Export Network](#export-network)
+    - [Add a new or modify the existing networking components](#add-a-new-or-modify-the-existing-networking-components)
 
 
-**NOTE-**
-Before you start with Network Export, make sure you have run 'Fetch Compartments OCIDs to variables file'.
+!!! note
+      Before you start with Network Export, make sure you have run 'Fetch Compartments OCIDs to variables file'.
 
 ### Export Network
 
@@ -18,19 +20,20 @@ Follow the below steps to export the Networking components that includes VCNs, S
    ```python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties```  <br>
 <br>
 3. Choose one of the below available sub-options from _'Export Network'_ of the main menu. 
-   >- Export all Network Components
-   >- Export Network components for VCNs, DRGs and DRGRouteRulesinOCI Tabs
-   >- Export Network components for DHCP Tab
-   >- Export Network components for SecRulesinOCI Tab
-   >- Export Network components for RouteRulesinOCI Tab
-   >- Export Network components for SubnetsVLANs Tab
-   >- Export Network components for NSGs Tab
+      - Export all Network Components
+      - Export Network components for VCNs, DRGs and DRGRouteRulesinOCI Tabs
+      - Export Network components for DHCP Tab
+      - Export Network components for SecRulesinOCI Tab
+      - Export Network components for RouteRulesinOCI Tab
+      - Export Network components for SubnetsVLANs Tab
+      - Export Network components for NSGs Tab
    
    Once the execution is successful, networking related .tfvars files and .sh files containing import statements will be generated under the folder ```/cd3user/tenancies/<customer_name>/terraform_files/<region_dir>/<service_dir>```
    
    Also,The RPC related .tfvars and .sh files containing import statements will be generated in global directory which is inside the ```/cd3user/tenancies/<customer_name>/terraform_files/``` folder. 
 
-   **NOTE:** The **oci_core_drg_attachment_management** for RPC resources will be shown as created at the end of import process, but it doesn't actually create any resources and can be safely ignored.
+!!! note
+       The **oci_core_drg_attachment_management** for RPC resources will be shown as created at the end of import process, but it doesn't actually create any resources and can be safely ignored.
 
 <img width="870" alt="rpc" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103548537/1a5d94a8-3309-4edf-84b4-f0e824e0c7d7">
     
