@@ -1,4 +1,5 @@
 /* Set the various stages of the build */
+def tf_plan = "Changes"
 pipeline {
     agent any
     options {
@@ -25,7 +26,22 @@ pipeline {
                     env.Service = serviceName
         	    
                     sh "cd \"${WORKSPACE}/${env.Region}/${env.Service}\" && terraform init -upgrade"
-          	        sh "cd \"${WORKSPACE}/${env.Region}/${env.Service}\" && terraform plan -destroy"
+          	        //sh "cd \"${WORKSPACE}/${env.Region}/${env.Service}\" && terraform plan -destroy"
+
+
+                    // Run Terraform plan
+                    def terraformPlanOutput = sh(script: "cd \"${WORKSPACE}/${env.Region}/${env.Service}\"  && terraform plan -destroy", returnStdout: true).trim()
+
+                    // Check if the plan contains any changes
+                    if (terraformPlanOutput.contains('No changes.')) {
+                        echo 'No changes in Terraform plan. Skipping further stages.'
+                        tf_plan = "No Changes"
+                    } else {
+                        // If there are changes, proceed with applying the plan
+                        echo "Proceeding with destroy. \n${terraformPlanOutput}"
+
+                    }
+
                 }
 				}
             }
@@ -34,8 +50,11 @@ pipeline {
         /** Approval for Terraform Apply **/
         stage('Get Approval') {
             when {
-                expression { return env.GIT_BRANCH == 'origin/main'; }
+              allOf{
+                expression {return env.GIT_BRANCH == 'origin/main'; }
+                expression {return tf_plan == "Changes" }
 				expression {return currentBuild.result != "FAILURE" }
+			  }
             }
             input {
                 message "Do you want to perform terraform destroy?"
@@ -48,8 +67,11 @@ pipeline {
 
         stage('Terraform Destroy') {
             when {
+             allOf{
                 expression {return env.GIT_BRANCH == 'origin/main'; }
+                expression {return tf_plan == "Changes" }
 				expression {return currentBuild.result != "FAILURE" }
+			  }
             }
 
             steps {
