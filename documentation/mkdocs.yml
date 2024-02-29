@@ -3,9 +3,10 @@ repo_name: oracle-devrel/cd3-automation-toolkit
 repo_url: https://github.com/oracle-devrel/cd3-automation-toolkit
 nav:
   - <b>Overview</b>: 
-    - Introduction: CD3 Overview.md
-    - Architecture: Architecture.md
+    - Introduction: CD3 Overview.md  
+    - Architecture: Architecture.md   
     - Services Supported: Services supported.md
+    - Excel Templates: ExcelTemplates.md
   - <b>Quick Start</b>: Quick Start.md
     
   - <b>Install CD3</b>:
@@ -13,10 +14,8 @@ nav:
     - <b>Launch CD3 Container</b>:
       - RM Stack: singleclickdeploy.md
       - Local: Launch_Docker_container.md
-    - Connect CD3 container to OCI: Connect_container_to_OCI_Tenancy.md
+    - <b>Connect CD3 container to OCI</b>: Connect_container_to_OCI_Tenancy.md
   
-  - <b>Excel Templates</b>: ExcelTemplates.md
-
   - <b>Create & Manage with CD3</b>:
     - Introduction: GreenField.md
     - <b>Using CLI</b>:
@@ -49,9 +48,10 @@ nav:
         - Workflow: NonGreenField-Jenkins.md
 
       
-  - <b>Synchronize Changes between CLI and Jenkins</b>: cli_jenkins.md
+  - <b>Sync between CLI and Jenkins</b>: cli_jenkins.md
 
-  - <b>Upgrade</b>: Upgrade_Toolkit.md
+  - <b>Upgrade CD3</b>:
+    - Steps to Upgrade Toolkit: Upgrade_Toolkit.md
 
   - <b>Beyond the basics</b>:
     - Grouping generated TF files: RestructuringOutDirectory.md
