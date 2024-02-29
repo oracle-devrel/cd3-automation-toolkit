@@ -11,78 +11,39 @@ The CD3 toolkit reads input data in the form of CD3 Excel sheet and generates Te
 </iframe>
 
 <br>
-<style>
-    .grid.cards {
-        border-top-color: #5c926c;
-        border-radius: 0.5rem;
-    }
-</style>
-
-<div class="grid cards" style="border-top-color: #5c926c; border-radius: 1.5rem;" markdown>
+<br>
 
 
--   :material-clock-fast:{ .lg .middle } __Getting Started__
+<u> **CD3 Toolkit Process</u>**
 
-    ---
-    [Introduction](#Introduction)<br>
-    [What's new in this release](#What's_new_in_this_release)<br>
-    [Toolkit Supported OCI Services](#)<br>
-    [Excel Templates](#)<br>
 
--   :material-hammer-screwdriver:{ .lg .middle } __Deploying CD3__
+<img width="1049" alt="CD3 Toolkit Process" src="images/CD3-Process.png">
 
-    ---
-    [Prerequisites](#Prerequisites)<br>
-    [Launch the container](#Launch the container)<br>
-    [Connect container to OCI tenancy](#)<br>
+<br>
 
--   :material-monitor-screenshot:{ .lg .middle } __Toolkit Execution with CLI__
+CD3 Automation toolkit can be used either via CLI or Jenkins.  
+📖 Detailed documentation and videos are provided for both options. Please check the left panel for navigation.
+Excel Sheet is fed as the input to the toolkit.
 
-    ---
-    [Overview](#)<br>
-    [Create resources in OCI using CLI (Greenfield Workflow)](#)<br>
-    [Create Network resources-CLI](#)<br>
-    [Create Compute Instances-CLI](#)<br>
-    [OPA integration](#)<br>
-    [Export Resources from OCI using CLI (Non-Greenfield Workflow)](#)<br>
-    [Export Network resources-CLI](#)<br>
-    [Export Compute Instances-CLI](#)<br>
+**Create resources**
 
--   :material-lightbulb-auto:{ .lg .middle } __Toolkit Execution with Jenkins__
+- The filled in input Excel file is processed by the toolkit and terraform *auto.tfvars files are generated for all those resources. 
 
-    ---
+- The generated terraform files can be used to deploy resources in OCI by generating a terraform plan and approving the plan for apply. 
 
-    [Prerequisites](#)<br>
-    [Overview](#)<br>
-    [Create resources in OCI using Jenkins(Greenfield Workflow))](#)<br>
-    [Create Network resources-Jenkins](#)<br>
-    [Create compute Instances/OKE/SDDC/Database-Jenkins](#)<br>
-    [Provision multiple services together-Jenkins](#)<br>
-    [Export Resources from OCI using Jenkins(Non-Greenfield Workflow)](#)<br>
-    [Synchronize Changes between CLI and Jenkins](#)<br>   
-    
+**Export resources**
 
--   :material-feather:{ .lg .middle } __Beyond the basics__
+- The input Excel (preferably the Blank template) is processed by the toolkit and resources are exported to CD3 Excel template. 
 
-    ---
-    [Grouping generated Terraform files](#Introduction)<br>
-    [OCI Resource Manager Upload](#What's_new_in_this_release)<br>
-    [Support for Additional Attributes](#)<br>
-    [Additional CIS Compliance Features](#)<br>
-    [CD3 Validators](#)<br>
-    [Migrate jobs to User's Jenkins environment](#)<br>
-    [Remote Management of Terraform State](#)<br>
+- The toolkit then generates *auto.tfvars from the exported data in Excel file and also generates shell scripts with terraform import commands for all the resources.
 
--   :material-information:{ .lg .middle } __Troubleshooting Tips__
+- The shell scripts have to be executed in order to have the updated state file to manage the resources further.
 
-    ---
-    [Expected Behaviour of CD3](#)<br>
-    [Common Issues](#)<br>
-    [FAQs](#)<br>
+**Modify resources**
 
--  :material-school:{ .lg .middle } __Videos & Tutorials__
+- Resources created or exported using toolkit can be modified at any point of time using the same Excel file.
 
-    ---
-    [Automation Toolkit Learning Videos](#)<br>
-    [Tutorials](#)<br>
-</div>
+<br>
+
+
+
