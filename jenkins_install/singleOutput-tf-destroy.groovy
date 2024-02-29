@@ -60,7 +60,7 @@ pipeline {
             }
         }
 
-        stage('Terraform Destroy')
+        stage('Terraform Destroy') {
             when {
              allOf{
                 expression {return env.GIT_BRANCH == 'origin/main';}

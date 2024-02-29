@@ -609,12 +609,27 @@ variable "data_drg_route_table_distributions" {
 ####################
 
 variable "zones" {
-  type    = map(any)
-  default = {}
+type    = map(object({
+compartment_id       = string
+display_name         = string
+view_compartment_id = optional(string)
+view_id = optional(string)
+zone_type = optional(string)
+scope = optional(string)
+freeform_tags = optional(map(any))
+defined_tags = optional(map(any))
+}))
+default = {}
 }
 
 variable "views" {
-  type    = map(any)
+type    = map(object({
+compartment_id       = string
+display_name         = string
+scope = optional(string)
+freeform_tags = optional(map(any))
+defined_tags = optional(map(any))
+}))
   default = {}
 }
 
@@ -624,8 +639,17 @@ variable "rrsets" {
 }
 
 variable "resolvers" {
-  type    = map(any)
-  default = {}
+type    = map(object({
+network_compartment_id= string
+vcn_name = string
+display_name         = optional(string)
+views = optional(map(any))
+resolver_rules = optional(map(any))
+endpoint_names = optional(map(any))
+freeform_tags = optional(map(any))
+defined_tags = optional(map(any))
+}))
+default = {}
 }
 
 #########################

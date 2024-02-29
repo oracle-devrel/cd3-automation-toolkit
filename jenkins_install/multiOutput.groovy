@@ -27,9 +27,10 @@ pipeline {
                     env.Region = regionName
                     env.Service = serviceName
 
-                    dir("${WORKSPACE}/${env.Region}/${env.Service}") {
-                            sh 'terraform init -upgrade'							
-                    }                    
+                    //dir("${WORKSPACE}/${env.Region}/${env.Service}") {
+                    //        sh 'terraform init -upgrade'
+                    //}
+                    sh "cd \"${WORKSPACE}/${env.Region}/${env.Service}\" && terraform init -upgrade"
 
                     // Run Terraform plan and capture the output
                     def terraformPlanOutput = sh(script: "cd \"${WORKSPACE}/${env.Region}/${env.Service}\"  && terraform plan -out=tfplan.out", returnStdout: true).trim()

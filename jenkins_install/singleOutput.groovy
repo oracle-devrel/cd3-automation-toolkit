@@ -24,9 +24,7 @@ pipeline {
 
                     // Set environment variables for reuse in subsequent stages
                     env.Region = regionName
-                    dir("${WORKSPACE}/${env.Region}") {
-                            sh 'terraform init -upgrade'
-                    }
+                    sh "cd \"${WORKSPACE}/${env.Region}\" && terraform init -upgrade"
 
                     // Run Terraform plan and capture the output
                     def terraformPlanOutput = sh(script: "cd \"${WORKSPACE}/${env.Region}\" && terraform plan -out=tfplan.out", returnStdout: true).trim()
