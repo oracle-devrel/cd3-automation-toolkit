@@ -207,12 +207,14 @@ def create_terraform_events(inputfile, outdir, service_dir, prefix, ct):
             if (str(service_name).lower()!=NaNstr.lower() and str(resources).lower()!=NaNstr.lower()):
                 condition = extend_event(service_name, resources, listeventid)
                 temp = condition
+                json_acceptable_string = condition.replace("\\", "")
+                d = json.loads(json_acceptable_string)
                 if data != "{}":
-                    json_acceptable_string = condition.replace("\\", "")
-                    d = json.loads(json_acceptable_string)
                     d["data"] = json.loads(data.replace("'", "\""))
-                    condition = json.dumps(d)
-                    condition = condition.replace("\"" , "\\\"").replace("'", "\\\"").replace(" " , "")
+                else:
+                    d["data"] = json.loads(data)
+                condition = json.dumps(d)
+                condition = condition.replace("\"" , "\\\"").replace("'", "\\\"").replace(" " , "")
                 tempdict = {'condition' : condition}
             tempStr.update(tempdict)
       
@@ -235,12 +237,16 @@ def create_terraform_events(inputfile, outdir, service_dir, prefix, ct):
                 condition = "{}"
             if (str(service_name).lower()!=NaNstr.lower() and str(resources).lower()!=NaNstr.lower()):
                 condition = extend_event(service_name, resources, listeventid)
+
+            json_acceptable_string = condition.replace("\\", "")
+            d = json.loads(json_acceptable_string)
             if data != "{}":
-                json_acceptable_string = condition.replace("\\", "")
-                d = json.loads(json_acceptable_string)
                 d["data"] = json.loads(data.replace("'", "\""))
-                condition = json.dumps(d,separators=(',', ':'))
-                condition = condition.replace("\"" , "\\\"").replace("'", "\\\"")
+            else:
+                d["data"] = json.loads(data)
+            condition = json.dumps(d)
+            condition = condition.replace("\"", "\\\"").replace("'", "\\\"").replace(" ", "")
+
             tempdict = {'condition' : condition}
             tempStr.update(tempdict)
 

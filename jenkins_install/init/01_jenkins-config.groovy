@@ -84,7 +84,7 @@ for (os in outdir_structure) {
                         </userRemoteConfigs>
                         <branches>
                                 <hudson.plugins.git.BranchSpec>
-                                        <name>develop</name>
+                                        <name>main</name>
                                 </hudson.plugins.git.BranchSpec>
                         </branches>
                         <configVersion>2</configVersion>
@@ -152,7 +152,7 @@ for (os in outdir_structure) {
                         </userRemoteConfigs>
                         <branches>
                                 <hudson.plugins.git.BranchSpec>
-                                        <name>develop</name>
+                                        <name>main</name>
                                 </hudson.plugins.git.BranchSpec>
                         </branches>
                         <configVersion>2</configVersion>
@@ -219,7 +219,7 @@ for (os in outdir_structure) {
                         </userRemoteConfigs>
                         <branches>
                                 <hudson.plugins.git.BranchSpec>
-                                        <name>develop</name>
+                                        <name>main</name>
                                 </hudson.plugins.git.BranchSpec>
                         </branches>
                         <configVersion>2</configVersion>
