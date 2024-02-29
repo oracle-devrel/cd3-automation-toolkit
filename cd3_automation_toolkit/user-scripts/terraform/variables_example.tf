@@ -634,9 +634,20 @@ defined_tags = optional(map(any))
 }
 
 variable "rrsets" {
-  type    = map(any)
-  default = {}
+type    = map(object({
+compartment_id       = optional(string)
+view_compartment_id = optional(string)
+view_id = optional(string)
+zone_id = string
+domain = string
+rtype = string
+ttl = number
+rdata = optional(list(string))
+scope = optional(string)
+}))
+default = {}
 }
+
 
 variable "resolvers" {
 type    = map(object({
