@@ -1,61 +1,85 @@
 # **Getting Started**
 ---
 
-##<u> **CD3 Toolkit Process</u>**
-
-
 <img width="1049" alt="CD3 Toolkit Process" src="images/CD3-Process.png">
 
 <br>
+!!! tip
+    CD3 Automation toolkit can be used either via CLI or Jenkins.   
+    📖 Detailed documentation and videos are provided for both options. Please check the left    panel for navigation.
 
-CD3 Automation toolkit can be used either via CLI or Jenkins.  
-📖 Detailed documentation and videos are provided for both options. Please check the left panel for navigation.
-Excel Sheet is fed as the input to the toolkit.
+<style>
+    .grid.cards {
+        border-top-color: #5c926c;
+        border-radius: 0.5rem;
+    }
+</style>
 
-###**Create resources**
+<div class="grid cards" style="border-top-color: #5c926c; border-radius: 1.5rem;" markdown>
 
-- The filled in input Excel file is processed by the toolkit and terraform *auto.tfvars files are generated for all those resources. 
 
-- The generated terraform files can be used to deploy resources in OCI by generating a terraform plan and approving the plan for apply. 
+-   :material-clock-fast:{ .lg .middle } __Getting Started__
 
-###**Export resources**
+    ---
+    [Introduction](#Introduction)<br>
+    [What's new in this release](#What's_new_in_this_release)<br>
+    [Toolkit Supported OCI Services](#)<br>
+    [Excel Templates](#)<br>
 
-- The input Excel (preferably the Blank template) is processed by the toolkit and resources are exported to CD3 Excel template. 
+-   :material-hammer-screwdriver:{ .lg .middle } __Deploying CD3__
 
-- The toolkit then generates *auto.tfvars from the exported data in Excel file and also generates shell scripts with terraform import commands for all the resources.
+    ---
+    [Prerequisites](#Prerequisites)<br>
+    [Launch the container](#Launch the container)<br>
+    [Connect container to OCI tenancy](#)<br>
 
-- The shell scripts have to be executed in order to have the updated state file to manage the resources further.
+-   :material-monitor-screenshot:{ .lg .middle } __Toolkit Execution with CLI__
 
-###**Modify resources**
+    ---
+    [Overview](#)<br>
+    [Create resources in OCI using CLI (Greenfield Workflow)](#)<br>
+    [Create Network resources-CLI](#)<br>
+    [Create Compute Instances-CLI](#)<br>
+    [OPA integration](#)<br>
+    [Export Resources from OCI using CLI (Non-Greenfield Workflow)](#)<br>
+    [Export Network resources-CLI](#)<br>
+    [Export Compute Instances-CLI](#)<br>
 
-- Resources created or exported using toolkit can be modified at any point of time using the same Excel file.
+-   :material-lightbulb-auto:{ .lg .middle } __Toolkit Execution with Jenkins__
 
-###**Excel Sheet Templates**
+    ---
 
-- Here are the [templates](ExcelTemplates.md).
+    [Prerequisites](#)<br>
+    [Overview](#)<br>
+    [Create resources in OCI using Jenkins(Greenfield Workflow))](#)<br>
+    [Create Network resources-Jenkins](#)<br>
+    [Create compute Instances/OKE/SDDC/Database-Jenkins](#)<br>
+    [Provision multiple services together-Jenkins](#)<br>
+    [Export Resources from OCI using Jenkins(Non-Greenfield Workflow)](#)<br>
+    [Synchronize Changes between CLI and Jenkins](#)<br>   
+    
 
-<br>
+-   :material-feather:{ .lg .middle } __Beyond the basics__
 
-##<u> **CD3 Toolkit Architecture</u>**
+    ---
+    [Grouping generated Terraform files](#Introduction)<br>
+    [OCI Resource Manager Upload](#What's_new_in_this_release)<br>
+    [Support for Additional Attributes](#)<br>
+    [Additional CIS Compliance Features](#)<br>
+    [CD3 Validators](#)<br>
+    [Migrate jobs to User's Jenkins environment](#)<br>
+    [Remote Management of Terraform State](#)<br>
 
-![CD3 Architecture](images/CD3-Arch.png)
+-   :material-information:{ .lg .middle } __Troubleshooting Tips__
 
-<br>
+    ---
+    [Expected Behaviour of CD3](#)<br>
+    [Common Issues](#)<br>
+    [FAQs](#)<br>
 
-##<u> **CD3 Toolkit Supported Services in OCI</u>**
+-  :material-school:{ .lg .middle } __Videos & Tutorials__
 
-| OCI Services | Details |
-| --------- | ----------- |
-| [IAM/Identity](CD3ExcelTabs.md#iamidentity) | Compartments, Groups, Dynamic Groups, Policies, Users, Network Sources |
-| [Governance](CD3ExcelTabs.md#governance) | Tags (Namespaces, Tag Keys, Defined Tags, Default Tags, Cost Tracking) |
-| [Network](CD3ExcelTabs.md#network) | VCNs, Subnets, VLANs, DRGs, IGWs, NGWs, LPGs, Route Tables, DRG Route, Tables, Security Lists, Network Security Groups, Remote Peering Connections, Application Load Balancer, Network Load Balancers |
-| [DNS Management](CD3ExcelTabs.md#private-dns)                                       | Private DNS - Views, Zones, rrsets/records and Resolvers  |
-| [Compute](CD3ExcelTabs.md#compute) | Instances supporting Market Place Images, Remote Exec, Cloud-Init scripts, Dedicated VM Hosts |
-| [Storage](CD3ExcelTabs.md#storage) | FSS, Block and Boot Volumes, Backup Policies, Object Storage Buckets and logging for write events |
-| [Database](CD3ExcelTabs.md#database) | Exa Infra, ExaCS, DB Systems VM and BM, ATP, ADW |
-| [Observability and Management](CD3ExcelTabs.md#management-services) | Events, Notifications, Alarms, Service Connector Hub (SCH) |
-| [Developer Services](CD3ExcelTabs.md#developer-services) | Resource Manager, Oracle Kubernetes Engine (OKE) |
-| [Logging Services](CD3ExcelTabs.md#logging-Services) | VCN Flow Logs, LBaaS access and error Logs, OSS Buckets write Logs |
-| [SDDCs ](CD3ExcelTabs.md#sddcs-tab) | Oracle Cloud VMWare Solutions (Single Cluster is supported as of now. Multi-cluster support will be included in the upcoming release) |
-| [CIS Landing Zone Compliance](CISFeatures.md#additional-cis-compliance-features) | Download and Execute CIS Compliance Check Script, Cloud Guard, Key Vault, Budget |
-[Policy Enforcement](OPAForCompliance.md) | OPA - Open Policy Agent |
+    ---
+    [Automation Toolkit Learning Videos](#)<br>
+    [Tutorials](#)<br>
+</div>

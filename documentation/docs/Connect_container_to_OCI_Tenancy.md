@@ -6,7 +6,7 @@
     * It is recommended to execute createTenancyConfig.py with a single ```customer_name``` within that container. Even if it is run multiple times with different customer names, Jenkins will only be configured for  ```<customer_name>``` used while first time successful execution of the script.
     * If there is a new region subscription to the tenancy at a later stage of time, createTenancyConfig.py must be re-run by using the same tenancyconfig.properties file that was originally used to create the   configuration. Re-execution will create new directory for the new region under `/cd3user/tenancies/<customer_name>/terraform_files` without touching the existing ones and will commit the latest terraform_files     folder to DevOps GIT repo.
 
-## **Step 1 - Exec into the Container**:
+**Step 1 - Exec into the Container**:
 * Run  ```docker ps```<br>
 → Note down the container ID from this cmd output.<br>
 * Run  ```docker exec -it <container_id> bash```
@@ -17,23 +17,38 @@
 ## **Step 3 - Edit tenancyconfig.properties**:
 * Run ```cd /cd3user/oci_tools/cd3_automation_toolkit/user-scripts/```
 * Fill the input parameters in **tenancyconfig.properties** file.
-* Ensure to:
-    -  Have the details ready for the Authentication mechanism you are planning to use.
-    -  Use the same customer_name for a tenancy even if the script needs to be executed multiple times.
+!!! must-read "Must Read"
+    Ensure to:<br>
+    -  Have the details ready for the Authentication mechanism you are planning to use.<br>
+    -  Use the same customer_name for a tenancy even if the script needs to be executed multiple times.<br>
     -  Review **'outdir_structure_file'** parameter as per requirements. It is recommended to use seperate outdir structure to manage 
        a large number of resources. <br>
-    -  Review Advanced Parameters Section for CI/CD setup and be ready with user details that will be used to connect to DevOps Repo in OCI.              Specifying these parameters as **'yes'** in properties file will create Object Storage Bucket and Devops Git Repo/Project/Topic in OCI and enable toolkit usage via Jenkins. The toolkit supports users in primary IDCS stripes or default domains only for DevOps GIT operations.
+    -  Review Advanced Parameters Section for CI/CD setup and be ready with user details that will be used to connect to DevOps Repo in OCI.              Specifying these parameters as **'yes'** in properties file will create Object Storage Bucket and Devops Git Repo/Project/Topic in OCI and enable toolkit usage via Jenkins. The toolkit supports users in primary IDCS stripes or default domains only for DevOps GIT operations.<br>
+
+``` mermaid
+stateDiagram-v2
+
+  Use: Use Toolkit
+  Create: Create, Manage or Export Resources in OCI
+   state if_state <<choice>>
+    Use --> if_state
+    if_state --> Jenkins
+    if_state --> CLI
+    Jenkins --> Create
+    CLI --> Create
+  
+```
+
 
  
 ## **Step 4 - Initialise the environment**:
 * Initialise your environment to use the Automation Toolkit.
 <br>```python createTenancyConfig.py tenancyconfig.properties```
 
-<b>Note:</b>
-
-* If you are running docker container on a linux VM host, please refer to [point no. 7](FAQ.md) under FAQ to avoid any permission issues.
-* Running the above command immediately after adding API key to the user profile in OCI might result in Authentication Errors. In such cases, please retry after a minute.
-<br>
+!!! note 
+    * If you are running docker container on a linux VM host, please refer to [point no. 7](FAQ.md) under FAQ   to avoid any permission issues.
+    * Running the above command immediately after adding API key to the user profile in OCI might result in     Authentication Errors. In such cases, please retry after a minute.
+    <br>
 
 → Example execution of the script with Advanced Parameters for CI/CD:
 
@@ -62,5 +77,5 @@ Details of the files created on successful execution of above steps -
 
 The next pages will guide you to use the toolkit either via CLI or via Jenkins. Please proceed further.
 
-
+[Use Toolkit with CLI](#){ .md-button } [Use Toolkit with Jenkins](#){ .md-button }
 

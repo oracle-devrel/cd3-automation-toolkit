@@ -1,5 +1,7 @@
-<u> **CD3 Toolkit Architecture**</u>
 
-![CD3 Architecture](images/CD3-Arch.png)
+
+![CD3 Architecture](/images/CD3-Arch.png)
+
+The toolkit runs inside a container with a set of softwares installed as shown in the above diagram.
 
 <br>
