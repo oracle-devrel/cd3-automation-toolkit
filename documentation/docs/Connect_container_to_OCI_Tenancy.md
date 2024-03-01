@@ -7,14 +7,17 @@
     * If there is a new region subscription to the tenancy at a later stage of time, createTenancyConfig.py must be re-run by using the same tenancyconfig.properties file that was originally used to create the   configuration. Re-execution will create new directory for the new region under `/cd3user/tenancies/<customer_name>/terraform_files` without touching the existing ones and will commit the latest terraform_files     folder to DevOps GIT repo.
 
 **Step 1 - Exec into the Container**:
+
 * Run  ```docker ps```<br>
 → Note down the container ID from this cmd output.<br>
 * Run  ```docker exec -it <container_id> bash```
 
-## **Step 2 - Choose Authentication Mechanism for OCI SDK**</a>
+**Step 2 - Choose Authentication Mechanism for OCI SDK**</a>
+
 * Please click [here](Auth_Mechanisms_in_OCI.md) to configure any one of the available authentication mechanisms.
   
-## **Step 3 - Edit tenancyconfig.properties**:
+**Step 3 - Edit tenancyconfig.properties**:
+
 * Run ```cd /cd3user/oci_tools/cd3_automation_toolkit/user-scripts/```
 * Fill the input parameters in **tenancyconfig.properties** file.
 !!! must-read "Must Read"
@@ -41,7 +44,8 @@ stateDiagram-v2
 
 
  
-## **Step 4 - Initialise the environment**:
+**Step 4 - Initialise the environment**:
+
 * Initialise your environment to use the Automation Toolkit.
 <br>```python createTenancyConfig.py tenancyconfig.properties```
 
@@ -55,7 +59,8 @@ stateDiagram-v2
 <img width="1124" alt="Screenshot 2024-01-10 at 5 54 02 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/f8a6774a-da82-4d93-99b6-1bb4ae99fc37">
 
 
-## **Output**
+**Output**
+
 <img src="/images/Connect-container-output.png">
 
 
