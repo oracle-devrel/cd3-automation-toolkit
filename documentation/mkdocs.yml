@@ -2,30 +2,31 @@ site_name: CD3 Documentation
 repo_name: oracle-devrel/cd3-automation-toolkit
 repo_url: https://github.com/oracle-devrel/cd3-automation-toolkit
 nav:
-  - <b>Overview</b>: 
+  - Overview: 
+    - CD3 Overview.md
     - Introduction: CD3 Overview.md  
     - Architecture: Architecture.md   
     - Services Supported: Services supported.md
     - Excel Templates: ExcelTemplates.md
-  - <b>Quick Start</b>: Quick Start.md
-    
-  - <b>Install CD3</b>:
-    - Prerequisites: prereqs-stack.md
-    - <b>Launch CD3 Container</b>:
-      - RM Stack: singleclickdeploy.md
-      - Local: Launch_Docker_container.md
-    - <b>Connect CD3 container to OCI</b>: Connect_container_to_OCI_Tenancy.md
-  
-  - <b>Create & Manage with CD3</b>:
+      
+  - Install CD3 :
+    - install-cd3.md
+    - Prerequisites: prerequisites.md
+    - Launch CD3 Container:
+      - seq_diagram.md
+      - Resource Manager Stack: singleclickdeploy.md
+      - Local Desktop: Launch_Docker_container.md
+    - Connect CD3 container to OCI: Connect_container_to_OCI_Tenancy.md
+  - Create, Update or Export TF with CD3 - CLI: 
     - Introduction: GreenField.md
-    - <b>Using CLI</b>:
+    - Using CLI:
       - Before You Begin: Workflows.md
-      - Workflow: GreenField.md
+      - Creating Resources: GreenField.md
       - OPA integration: OPAForCompliance.md
       - Examples:
         - Create Network: NetworkingScenariosGF.md
         - Create Compute : ComputeGF.md
-    - <b>Using Jenkins</b>: 
+    - Using Jenkins: 
       - Before you Begin: Workflows-jenkins.md
       - Overview: Intro-Jenkins.md
       - Workflow: GreenField-Jenkins.md
@@ -33,27 +34,25 @@ nav:
         - Create Network: NetworkingScenariosGF-Jenkins.md
         - Create Compute/OKE/SDDC/Database : GF-Jenkins.md
         - Provision multiple services together: multiple_options_GF-Jenkins.md
-    
-  
-  - <b>Export & Manage with CD3</b>:
-      - Introduction: NonGreenField.md
-      - <b>Using CLI</b>: 
-        - Before you begin: Workflows.md
-        - Workflow: NonGreenField.md
-        - Examples:
-          - Export Network: NetworkingScenariosNGF.md
-          - Export Compute: ComputeNGF.md
-      - <b>Using Jenkins</b>:
-        - Before you begin:  Workflows-jenkins.md
-        - Workflow: NonGreenField-Jenkins.md
+  - Create, Update or Export TF with CD3 - Jenkins:
+    - Introduction: NonGreenField.md
+    - Using CLI: 
+      - Before you begin: Workflows.md
+      - Workflow: NonGreenField.md
+      - Examples:
+        - Export Network: NetworkingScenariosNGF.md
+        - Export Compute: ComputeNGF.md
+    - Using Jenkins:
+      - Before you begin:  Workflows-jenkins.md
+      - Workflow: NonGreenField-Jenkins.md
 
       
-  - <b>Sync between CLI and Jenkins</b>: cli_jenkins.md
+    - Sync between CLI and Jenkins: cli_jenkins.md
 
-  - <b>Upgrade CD3</b>:
+  - Upgrade CD3:
     - Steps to Upgrade Toolkit: Upgrade_Toolkit.md
 
-  - <b>Beyond the basics</b>:
+  - Additional Features:
     - Grouping generated TF files: RestructuringOutDirectory.md
     - OCI Resource Manager Upload: ResourceManagerUpload.md
     - Support for Additional Attrs: SupportforAdditionalAttributes.md
@@ -64,25 +63,24 @@ nav:
    
 
 
-  - <b>Troubleshooting</b>:
+  - Troubleshooting:
     - Expected Behaviour: KnownBehaviour.md
     - Common Issues: CommonIssues.md
     - FAQs: FAQ.md
     
-  - <b>External References</b>:
+  - External References:
     - Learning Videos: LearningVideos.md
     - Tutorials: tutorials.md
-    
+
   
 # Configuration
 theme:
   name: material
   font:
-    text: Open Sans
+    text: Oracle Sans
   features:
     - toc.integrate
     - navigation.indexes
-    - navigation.expand
     - navigation.top
     - navigation.path
     - content.code.copy
@@ -147,7 +145,7 @@ markdown_extensions:
   - footnotes
   - md_in_html
   - toc:
-      permalink: true
+      permalink: #
   - pymdownx.arithmatex:
       generic: true
   - pymdownx.betterem:
@@ -166,7 +164,7 @@ markdown_extensions:
   - pymdownx.magiclink:
       normalize_issue_symbols: true
       repo_url_shorthand: true
-      user: squidfunk
+      user: Mukund
       repo: mkdocs-material
   - pymdownx.mark
   - pymdownx.smartsymbols
@@ -191,6 +189,7 @@ markdown_extensions:
 plugins:
   - search
   - blog
+  - section-index
   
 
 copyright: |
