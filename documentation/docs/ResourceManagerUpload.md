@@ -16,7 +16,7 @@ The toolkit also creates a rm_ocids.csv file in the outdir/<region_dir> which ha
 Example:
 
 <kbd>
-<img width="800" alt="image" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/e95572de-2cb0-46f9-ae26-21391c9fee8b">
+<img width="800" alt="image" src="/images/RMupload-1.png">
 </kbd>
 
 To use an existing Resource Manager stack, enter the details in the format provided above into your ```_outdir/<region_dir>/rm_ocids.csv_``` file. 
@@ -24,7 +24,7 @@ To use an existing Resource Manager stack, enter the details in the format provi
 Sample Execution:
 
 <kbd>
-<img width="800" height="600" alt="image" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/e3d7417e-ce1c-464a-8a1d-5cdfd7862835">
+<img width="800" height="600" alt="image" src="/images/RMupload-2.png">
 </kbd><br><br>
 
 
@@ -32,7 +32,7 @@ Sample Execution:
 > [!IMPORTANT]  
 > If you are using remote state and upload the stack to OCI Resource Manager using <b>Upload current terraform files/state to Resource Manager</b> under <b>Developer Services</b>, then running terraform plan/apply from OCI Resource Manager will not work and show below error:
 > 
-<img width="597" alt="Screenshot 2024-01-17 at 11 38 54 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/1b0cd9fa-1ac0-42c4-9c33-14ad4bf0ddb8">
+<img width="597" alt="Screenshot 2024-01-17 at 11 38 54 PM" src="/images/RMupload-3.png">
 
 > You will have to remove backend.tf from the directory, bring the remote state into local and then re-upload the stack.
 On choosing **"Developer Services"** in the SetUpOCI menu, choose **"Upload current terraform files/state to Resource Manager"** sub-option to upload the terraform outdir into OCI Resource Manager.

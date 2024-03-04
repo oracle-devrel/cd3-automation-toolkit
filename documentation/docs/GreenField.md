@@ -43,7 +43,7 @@ Command to Execute:
          
 → Example execution of the wrapper script:
    
-<img src = "https://user-images.githubusercontent.com/122371432/213680074-be73042e-8672-44f5-b2cf-619998805724.png" width=50% height=50%>
+<img src = "/images/cliGF-1.png" width=50% height=50%>
 
  
 
