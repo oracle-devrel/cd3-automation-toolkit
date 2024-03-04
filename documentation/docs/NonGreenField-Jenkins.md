@@ -9,14 +9,14 @@ Choose **CD3-Blank-template.xlsx** for an empty sheet.
 **Step 2**:
 <br>Login to Jenkins URL with user created after initialization and click on setUpOCI pipeline from Dashboard. Click on **Build with Parameters** from left side menu.
 
-<img width="702" height="400" alt="Screenshot 2024-01-16 at 10 56 42 AM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/0674eebb-ca12-4050-97e8-06d67e6cd58f"><br>
+<img width="702" height="400" alt="Screenshot 2024-01-16 at 10 56 42 AM" src="/images/jenkinsNGF-1.png"><br>
 
 > **Note:** - Only one user at a time using the Jenkins setup is supported in the current release of the toolkit.
 
 **Step 3**:
 <br>Upload the above chosen Excel sheet in **Excel_Template** section.
 
-<img width="348" alt="Screenshot 2024-01-16 at 11 04 47 AM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/3bf84fe7-b317-4120-83db-49f52ed65e95"><br>
+<img width="348" alt="Screenshot 2024-01-16 at 11 04 47 AM" src="/images/jenkinsNGF-2.png"><br>
 >This will copy the Excel file at `/cd3user/tenancies/<customer_name>` inside the container. It will also take backup of existing Excel on the container by appending the current datetime if same filename is uploaded in multiple executions.
 
 
@@ -24,21 +24,21 @@ Choose **CD3-Blank-template.xlsx** for an empty sheet.
 <br>Select the workflow as **Export Resources from OCI**(Non-Greenfield Workflow). Choose single or multiple MainOptions as required and then corresponding SubOptions.
 <br>Below screenshot shows export of Network and Compute.
 
-<img width="554" alt="Screenshot 2024-01-17 at 7 11 42 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/5c45bc0b-890c-4c93-b129-a15ab3be2d53"><br>
+<img width="554" alt="Screenshot 2024-01-17 at 7 11 42 PM" src="/images/jenkinsNGF-3.png"><br>
 
 
 **Step 5:** 
 <br>Specify region and compartment from where you want to export the data.
 <br>It also asks for service specific filters like display name patterns for compute. Leave empty if no filter is needed.
 
-<img width="835" alt="Screenshot 2024-01-17 at 7 10 56 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/96205ab2-1517-4a79-9bab-72c3b94f6852"><br>
+<img width="835" alt="Screenshot 2024-01-17 at 7 10 56 PM" src="/images/jenkinsNGF-4.png"><br>
 <br>Click on **Build** at the bottom.<br>
 
 
 **Step 6:**
 <br>setUpOCI pipeline is triggered and stages are executed as shown below: 
 
-<img width="1505" alt="Screenshot 2024-01-17 at 9 37 22 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/d110c5ee-91ae-4e9e-bfb8-607adba026ac"><br>
+<img width="1505" alt="Screenshot 2024-01-17 at 9 37 22 PM" src="/images/jenkinsNGF-5.png"><br>
 </br>
 
 **Expected Output of 'Execute setUpOCI' stage:**<br>

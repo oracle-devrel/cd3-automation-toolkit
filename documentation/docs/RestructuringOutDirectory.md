@@ -16,7 +16,7 @@ To enable independent service directories for the generated Terraform files, fol
    Users have the option to enable or disable multiple service outdirectories based on their specific requirements.
 
    To enable it, uncomment the *outdir_structure_file* parameter which has the pre-defined path to *outdir_structure_file.properties*. Refer to the screenshot below:
-   ![image](https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/0c4ecb2f-6e35-4c93-9976-4aed2e74aca6)
+   ![image](/images/grouptf-1.png)
 
 <br>
 2. Under the same user-scripts folder, open *outdir_structure_file.properties* and modify the directory names if required. They are in the                                                    format:*OCI_Service_Name=Directory_Name*.
@@ -26,7 +26,7 @@ To enable independent service directories for the generated Terraform files, fol
    > * To make any changes to the directory structure later, it is necessary to rerun the "createTenancy.py" script from scratch.
    > * It is mandatory to specify the directory name for each service.
   
-   <img width="953" alt="image" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/cf6eb85d-30ad-4de4-8164-963a36076128">
+   <img width="953" alt="image" src="/images/grouptf-2.png">
 
    Here, the network and nsg directories have been renamed to **demo_network** and **demo_nsg** respectively. The next steps to run the toolkit remain the same as specified in                  [Greenfield workflow](GreenField.md)
 
@@ -46,12 +46,12 @@ To enable independent service directories for the generated Terraform files, fol
   
   5. Go to the region directory ```/cd3user/tenancies/<customer_name>/terraform_files/<region>/``` . It is clear that all the service-specific folders have been created              successfully.
   
-     <img width="953" alt="image" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/ff018b02-225b-4fc1-89c1-c671978b3fa4">
+     <img width="953" alt="image" src="/images/grouptf-3.png">
    
   
   6. Navigate to the **demo-network** folder. All the auto.tfvars and tfstate files related to Network service can be seen within the **demo_network** folder. Terraform operations like        terraform init, terraform plan, terraform apply etc., will be executed from within these folders.
   
-      <img width="953" alt="image" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/c2eaa16b-03ab-4c91-acfa-8a23843b6bc3">
+      <img width="953" alt="image" src="/images/grouptf-4.png">
    
      
      Similarly for all the services, their respective auto.tfvars and tfstate files get grouped under their assigned directories. This makes it much easier to manage OCI resources using          terraform for large-scale infrastructures.

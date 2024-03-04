@@ -36,7 +36,7 @@ To ease the execution of toolkit, we have provided the steps to build an image w
 * Make sure you are using version **1.9** for **Rancher deskop**, if not please install the latest.
 * Make sure to Enable **Networking Tunnel** under Rancher settings as shown in the screenshot below,
   
-     <img width="746" alt="image" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103548537/22e71261-63dc-4218-a3f6-9ef98df820e2">
+     <img width="746" alt="image" src="/images/launchcontainer-1.png">
      
 * Login to the CD3 docker container using next section and set the proxies(if any) which helps to connect internet from the container.
 

@@ -56,7 +56,7 @@ stateDiagram-v2
 
 → Example execution of the script with Advanced Parameters for CI/CD:
 
-<img width="1124" alt="Screenshot 2024-01-10 at 5 54 02 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/f8a6774a-da82-4d93-99b6-1bb4ae99fc37">
+> <img width="1124" alt="Screenshot 2024-01-10 at 5 54 02 PM" src="/images/connecttotenancy.png">
 
 
 **Output**

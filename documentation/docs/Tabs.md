@@ -591,13 +591,13 @@ Note -
 - The service connector resources created via automation will not have the corresponding IAM policies between source and destination entities. It has to be created separately.
 - The user will get an option to create the **IAM policy** when you click on **Edit** for the respective service connector provisioned through terraform like in below screenshot:
 
-![image](https://user-images.githubusercontent.com/115973871/216242750-d84a79bf-5799-4e51-ba40-ca82a00d04aa.png)
+![image](/images/tabs-1.png)
 
 - Also, When the target kind is **'notifications'** the value for formatted messages parameter is set to **'true'** as default. Its set to **'false'** only when the source is 'streaming'.
   
 - After executing tf_import_commands during export of service connectors, the terraform plan will show log-sources ordering as changes and it rearranges the order for log-sources for that service connector if source/target kind is logging. This can be ignored and you can proceed with terraform apply.
 
- ![image](https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103548537/1005724e-ac03-4b45-8e3d-480c8826d065)
+ ![image](/images/tabs-2.png)
 
 ## OKE Tab
 
@@ -656,9 +656,9 @@ Notes:
 
 - Current version of the toolkit support only single availability domain placement for the nodepool. So if a cluster is exported with nodepools having multiple placement configuration, the terraform plan will show changes similar to:
 
-![image](https://user-images.githubusercontent.com/115973871/216243984-9379741e-6e40-45fb-a4b6-948ace78f7a4.png)
+![image](/images/tabs-3.png)
 
-<img src=https://user-images.githubusercontent.com/115973871/216244050-88ad6797-1fe1-4198-9172-c3c3f33d810d.png width=50% height=50%>
+<img src= "/images/tabs-4.png" width=50% height=50%>
 
 
 To avoid this, an ignore statement as shown below is added to ignore any changes to the placement configuration in nodepool.

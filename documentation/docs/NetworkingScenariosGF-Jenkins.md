@@ -28,7 +28,7 @@ Below are the steps to create Network that includes VCNs, Subnets, DHCP, DRG, Se
 3. Choose option _'Validate CD3'_ and then _'Validate Networks'_ to check for syntax errors in Excel sheet. Examine the log file generated at ```/cd3user/tenancies/<customer_name>/<customer_name>_cd3validator.log```. If there are errors, please rectify them accordingly and proceed to the next step.
 
 4. Choose _'Create Network'_ under _'Network'_ from the displayed options. Click on Build.
-<img width="347" alt="301705033-c16f8d7b-dd8d-484d-b873-f5ad36facfa9" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/4f9f57e8-2968-43db-8f27-e7318c6d69e2">
+<img width="347" alt="301705033-c16f8d7b-dd8d-484d-b873-f5ad36facfa9" src="/images/jenkinsnetwork-1.png">
 
 5. It will show different stages of execution of _setUpOCI_ pipeline and also launch the _terraform-apply_ pipeline for 'network'.
 6. Click on Proceed for 'Get Approval' stage of the terraform pipeline.
@@ -45,7 +45,7 @@ Below are the steps to create Network that includes VCNs, Subnets, DHCP, DRG, Se
       - Export DRG Route Rules (From OCI into DRGRouteRulesinOCI sheet)
     Click on Build.
         
-  <img width="604" alt="Screenshot 2024-02-02 at 7 45 16 AM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/6d142aa0-7549-4306-a51f-77552d32c2bd">
+  <img width="604" alt="Screenshot 2024-02-02 at 7 45 16 AM" src="/images/jenkinsnetwork-2.png">
 
 
 This completes the steps for Creating the Network in OCI and exporting the default rules to the CD3 Excel Sheet using the Automation Toolkit.

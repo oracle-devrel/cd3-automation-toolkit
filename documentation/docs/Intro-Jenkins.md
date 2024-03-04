@@ -7,7 +7,7 @@
 2. terraform_files Folder
 3. Region based Views (including Global directory)
    
-<img width="1486" alt="Screenshot 2024-01-16 at 10 52 07 AM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/cbf61a8e-216f-4667-9351-d568a0a38453">
+> <img width="1486" alt="Screenshot 2024-01-16 at 10 52 07 AM" src="/images/jenkinsoverview-1.png">
 
 
 ### 1. setUpOCI Pipeline
