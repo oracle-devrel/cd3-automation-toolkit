@@ -2,9 +2,9 @@
 
 Follow the below steps to export OCI compute Instances to CD3 Excel file and create the terraform state:
 
-1. Use the [CD3-Blank-Template.xlsx](/cd3_automation_toolkit/example) to export existing OCI VM details into the "Instances" sheet. <br>
+1. Use the [CD3-Blank-Template.xlsx](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/main/cd3_automation_toolkit/example) to export existing OCI VM details into the "Instances" sheet. <br>
 <br>
-2. Add any additonal attributes (not part of excel sheet already) which needs to be exported as per [this](SupportforAdditionalAttributes.md). <br>
+2. Add any additonal attributes (not part of excel sheet already) which needs to be exported as per [this](additional-attributes.md). <br>
 <br>
 3. Make sure to export the VCNs and Subnets in which the Instances are present prior to exporting the Instance. <br>
 <br>
@@ -36,7 +36,7 @@ Follow the below steps to export OCI compute Instances to CD3 Excel file and cre
 <br>
 12. Execute the .sh file ( *sh tf_import_commands_instances_nonGF.sh*) to generate terraform state file. <br>
 <br>
-13. Please [read](KnownBehaviour.md) the known behaviour of toolkit for export of instances having multiple plugins.
+13. Please [read](knownbehaviour.md) the known behaviour of toolkit for export of instances having multiple plugins.
 
 <br><br>
 <div align='center'>

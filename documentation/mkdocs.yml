@@ -3,73 +3,65 @@ repo_name: oracle-devrel/cd3-automation-toolkit
 repo_url: https://github.com/oracle-devrel/cd3-automation-toolkit
 nav:
   - Overview: 
-    - CD3 Overview.md
-    - Introduction: CD3 Overview.md  
-    - Architecture: Architecture.md   
-    - Services Supported: Services supported.md
-    - Excel Templates: ExcelTemplates.md
+    - cd3-overview.md
+    - Introduction: cd3-overview.md  
+    - Architecture: architecture.md   
+    - Services Supported: supportedservices.md
+    - Excel Templates: exceltemplates.md
       
   - Install CD3 :
     - install-cd3.md
     - Prerequisites: prerequisites.md
     - Launch CD3 Container:
-      - seq_diagram.md
-      - Resource Manager Stack: singleclickdeploy.md
-      - Local Desktop: Launch_Docker_container.md
-    - Connect CD3 container to OCI: Connect_container_to_OCI_Tenancy.md
+      - launch-container.md
+      - Resource Manager Stack: launch-from-rmstack.md
+      - Local System: launch-from-local.md
+    - Connect CD3 container to OCI: connect-container-to-oci-tenancy.md
   - Create, Update or Export TF with CD3 - CLI: 
-    - Introduction: GreenField.md
-    - Using CLI:
-      - Before You Begin: Workflows.md
-      - Creating Resources: GreenField.md
-      - OPA integration: OPAForCompliance.md
-      - Examples:
-        - Create Network: NetworkingScenariosGF.md
-        - Create Compute : ComputeGF.md
-    - Using Jenkins: 
-      - Before you Begin: Workflows-jenkins.md
-      - Overview: Intro-Jenkins.md
-      - Workflow: GreenField-Jenkins.md
-      - Examples:
-        - Create Network: NetworkingScenariosGF-Jenkins.md
-        - Create Compute/OKE/SDDC/Database : GF-Jenkins.md
-        - Provision multiple services together: multiple_options_GF-Jenkins.md
+    - Before You Begin: workflows-cli.md
+    - Create resources  :
+      - Workflow Description: greenfield-cli.md
+      - Examples :
+        - Create Network : createnetwork-cli.md
+        - Create Compute : createcompute-cli.md
+      - OPA integration: opa-integration.md
+    - Export Resources  : 
+      - Workflow Description: nongreenfield-cli.md
+      - Examples :
+        - Export Network : exportnetwork-cli.md
+        - Export Compute : exportcompute-cli.md
+    
   - Create, Update or Export TF with CD3 - Jenkins:
-    - Introduction: NonGreenField.md
-    - Using CLI: 
-      - Before you begin: Workflows.md
-      - Workflow: NonGreenField.md
+    - Before You Begin: workflows-jenkins.md
+    - Overview: jenkinsintro.md
+    - Create resources : 
+      - Workflow Description: greenfield-jenkins.md
       - Examples:
-        - Export Network: NetworkingScenariosNGF.md
-        - Export Compute: ComputeNGF.md
-    - Using Jenkins:
-      - Before you begin:  Workflows-jenkins.md
-      - Workflow: NonGreenField-Jenkins.md
-
-      
-    - Sync between CLI and Jenkins: cli_jenkins.md
+        - Create Network Resources : createnetwork-jenkins.md
+        - Create Compute Resources/OKE/SDDC/Database: createcompute-jenkins.md
+        - Provision multiple services together: multiple-services-jenkins.md
+    - Export Resources : nongreenfield-jenkins.md
+    - Sync between CLI and Jenkins: sync-cli-jenkins.md
 
   - Upgrade CD3:
-    - Steps to Upgrade Toolkit: Upgrade_Toolkit.md
+    - Steps to Upgrade Toolkit: upgrade-toolkit.md
 
   - Additional Features:
-    - Grouping generated TF files: RestructuringOutDirectory.md
-    - OCI Resource Manager Upload: ResourceManagerUpload.md
-    - Support for Additional Attrs: SupportforAdditionalAttributes.md
-    - CIS Compliance Features: CISFeatures.md
-    - CD3 Validator: SupportForCD3Validator.md
-    - Migrate jobs to user's Jenkins: Jobs_Migration.md
-    - Remote Management of Terraform State: remote_state.md
+    - Grouping generated TF files: group-tf-files.md
+    - OCI Resource Manager Upload: resource-manager-upload.md
+    - Support for Additional Attrs: additional-attributes.md
+    - CIS Compliance Features: cisfeatures.md
+    - CD3 Validator: cd3validator.md
+    - Migrate jobs to user's Jenkins: jobs-migration.md
+    - Remote Management of Terraform State: remotestate.md
    
-
-
   - Troubleshooting:
-    - Expected Behaviour: KnownBehaviour.md
-    - Common Issues: CommonIssues.md
-    - FAQs: FAQ.md
+    - Expected Behaviour: knownbehaviour.md
+    - Common Issues: commonissues.md
+    - FAQs: faq.md
     
   - External References:
-    - Learning Videos: LearningVideos.md
+    - Learning Videos: learningvideos.md
     - Tutorials: tutorials.md
 
   

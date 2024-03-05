@@ -10,7 +10,7 @@
 
 
 **Step 1:** 
-<br>Chose the appropriate CD3 Excel sheet template from [Excel Templates](/cd3_automation_toolkit/documentation/user_guide/ExcelTemplates.md)
+<br>Chose the appropriate CD3 Excel sheet template from [Excel Templates](exceltemplates.md)
  
 **Step 2:** 
 <br>Put CD3 Excel at the appropriate location.
@@ -86,7 +86,7 @@ c. Shell Script with import commands - tf_import_commands_`<resource>`_nonGF.sh
 
 Follow the below steps to quickly export Identity components from OCI.
 
-1. Use the excel [CD3-Blank-template](/cd3_automation_toolkit/example) and place it at the location ```/cd3user/tenancies/<customer_name>``` which is also mapped to your local directory. <br>
+1. Use the excel [CD3-Blank-template](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/main/cd3_automation_toolkit/example) and place it at the location ```/cd3user/tenancies/<customer_name>``` which is also mapped to your local directory. <br>
 <br>
 
 2. Edit the _setUpOCI.properties_ at location:```/cd3user/tenancies <customer_name>/<customer_name>_setUpOCI.properties``` with appropriate values. 

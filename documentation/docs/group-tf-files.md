@@ -5,7 +5,7 @@ This was not a viable option for tenancies requiring huge infrastructure.
 
 Starting with the Automation Toolkit release v10.1, it is now possible to select separate directories for each Oracle Cloud Infrastructure (OCI) service supported by the toolkit.
 
-This can be configured while [connecting your container to the OCI tenancy](Connect_container_to_OCI_Tenancy.md).
+This can be configured while [connecting your container to the OCI tenancy](connect-container-to-oci-tenancy.md).
 
 A new parameter 'outdir_structure_file' has been introduced in tenancyconfig.properties using which can be used to configure single outdir or different outdir for each service.
 
@@ -28,7 +28,7 @@ To enable independent service directories for the generated Terraform files, fol
   
    <img width="953" alt="image" src="/images/grouptf-2.png">
 
-   Here, the network and nsg directories have been renamed to **demo_network** and **demo_nsg** respectively. The next steps to run the toolkit remain the same as specified in                  [Greenfield workflow](GreenField.md)
+   Here, the network and nsg directories have been renamed to **demo_network** and **demo_nsg** respectively. The next steps to run the toolkit remain the same as specified in                  [Greenfield workflow](greenfield-cli.md)
 
   
  3. Run ```python createTenancyConfig.py tenancyconfig.properties ``` from user-scripts folder.
@@ -56,7 +56,7 @@ To enable independent service directories for the generated Terraform files, fol
      
      Similarly for all the services, their respective auto.tfvars and tfstate files get grouped under their assigned directories. This makes it much easier to manage OCI resources using          terraform for large-scale infrastructures.
    
-     Likewise, While doing an export from OCI to terraform, update the *tenancyconfig.properties* file with path to *outdir_structure_file.properties* similar to step1 and then follow the      steps to run the toolkit for [Non-green field tenancies](NonGreenField.md). With this, all the .sh files with import                      commands of a particular OCI service are grouped and can be easily managed.
+     Likewise, While doing an export from OCI to terraform, update the *tenancyconfig.properties* file with path to *outdir_structure_file.properties* similar to step1 and then follow the      steps to run the toolkit for [Non-green field tenancies](nongreenfield-cli.md). With this, all the .sh files with import                      commands of a particular OCI service are grouped and can be easily managed.
   
     
   

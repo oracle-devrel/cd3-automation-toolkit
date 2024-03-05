@@ -3,7 +3,7 @@
 > **Note:**: Please make sure that service for which export is done does not have existing tfvars/state file.
 
 **Step 1**: 
-<br>Choose the appropriate CD3 Excel sheet template from [Excel Templates](ExcelTemplates.md)
+<br>Choose the appropriate CD3 Excel sheet template from [Excel Templates](exceltemplates.md)
 Choose **CD3-Blank-template.xlsx** for an empty sheet.
 
 **Step 2**:

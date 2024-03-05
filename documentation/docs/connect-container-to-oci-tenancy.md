@@ -14,7 +14,7 @@
 
 **Step 2 - Choose Authentication Mechanism for OCI SDK**</a>
 
-* Please click [here](Auth_Mechanisms_in_OCI.md) to configure any one of the available authentication mechanisms.
+* Please click [here](authmechanisms.md) to configure any one of the available authentication mechanisms.
   
 **Step 3 - Edit tenancyconfig.properties**:
 
@@ -50,7 +50,7 @@ stateDiagram-v2
 <br>```python createTenancyConfig.py tenancyconfig.properties```
 
 !!! note 
-    * If you are running docker container on a linux VM host, please refer to [point no. 7](FAQ.md) under FAQ   to avoid any permission issues.
+    * If you are running docker container on a linux VM host, please refer to [point no. 7](faq.md) under FAQ   to avoid any permission issues.
     * Running the above command immediately after adding API key to the user profile in OCI might result in     Authentication Errors. In such cases, please retry after a minute.
     <br>
 

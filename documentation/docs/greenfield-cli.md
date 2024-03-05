@@ -2,7 +2,7 @@
 ---
 
 **Step 1**: 
-<br>Choose the appropriate Excel sheet template from [Excel Templates](/cd3_automation_toolkit/documentation/user_guide/ExcelTemplates.md)
+<br>Choose the appropriate Excel sheet template from [Excel Templates](exceltemplates.md)
 
 **Step 2**:
 <br>Fill the Excel with appropriate values and put at the appropriate location.
@@ -55,7 +55,7 @@ Choose the resources by specifying a single option (for choosing one of these re
 
 **terraform init**  - To initialize and prepare your working/out directory so Terraform can run the configuration.<br>
 
-**terraform plan**  - To preview any changes before you apply them. Run the plan against [OPA policies](/OPAForCompliance.md) for compliance against CIS.
+**terraform plan**  - To preview any changes before you apply them. Run the plan against [OPA policies](/opa-integration.md) for compliance against CIS.
 
 **terraform apply** - To make the changes defined by Terraform configuration to create, update, or destroy resources in OCI.
   
@@ -69,7 +69,7 @@ Choose the resources by specifying a single option (for choosing one of these re
 
 Follow the below steps to quickly provision a compartment on OCI.
 
-1. Use the excel [CD3-SingleVCN-template](/cd3_automation_toolkit/example) and fill the required Compartment details in the 'Compartments' tab.
+1. Use the excel [CD3-SingleVCN-template](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/main/cd3_automation_toolkit/example) and fill the required Compartment details in the 'Compartments' tab.
    >- Make appropriate changes to the template. For Eg: Update the _Region_ value to your tenancy's home region.
    >- Once all the required data is filled in the Excel sheet, place it at the location _/cd3user/tenancies/<customer_name\>/_  which is also mapped to your local directory.
  <br>  

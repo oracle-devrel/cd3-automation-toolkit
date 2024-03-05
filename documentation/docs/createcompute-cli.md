@@ -68,7 +68,7 @@ Ex: If you enter the Source Details as image::Linux, make an entry in variables_
 <br>
 10. Update_Is PV Encryption In Transit Enabled attribute should be set to True to enable encryption for existing instances. <br>
 <br>
-11. Add any additonal attributes (not part of excel sheet already) as per  [this](SupportforAdditionalAttributes.md). <br>
+11. Add any additonal attributes (not part of excel sheet already) as per  [this](additional-attributes.md). <br>
 <br>
 12. To enable or disable a plugin for the instance add new column with name as <b>'Plugin \<plugin-name-in-console>' </b> eg 'Plugin Bastion'.
     Valid values are Enabled or Disabled <br>
