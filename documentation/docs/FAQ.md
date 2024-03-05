@@ -3,7 +3,7 @@
 **1. Is there a way to verify my input CD3 Excel sheet for any typos/miskates?**
 <br>   
  	   Yes, please choose 'Validate CD3' option in setUpOCI menu in GreenField workflow. It validates specific tabs of the excel sheet. Please see
- 	   [CD3 Validator Features](SupportForCD3Validator.md) for more details.
+ 	   [CD3 Validator Features](cd3validator.md) for more details.
 
 **2. Can I use an existing outdir to export the data from OCI?**
 <br> 
@@ -16,7 +16,7 @@ Re-run createTenancyConfig.py with same details in tenancyConfig.properties file
 
 **4. How do I upgrade an existing version of the toolkit to the new one without disrupting my existing tenancy files/directories?**
 <br>  
-Please look at [Steps to Upgrade Your Toolkit.](/Upgrade_Toolkit.md)
+Please look at [Steps to Upgrade Your Toolkit.](/upgrade-toolkit.md)
 
 **5. How do I export instances in batches using different filters?**
 <br>  

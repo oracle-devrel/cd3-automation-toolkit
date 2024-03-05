@@ -19,6 +19,6 @@ If not logged into the OCI tenancy, the button will redirect to the Oracle Cloud
     While filling details in the stack, please make sure not to open access to VM from 0.0.0.0/0 and restrict it to the specific CIDR only.
 
 
-- [X] Follow [Connect container to tenancy](Connect_container_to_OCI_Tenancy.md) for next steps. 
+- [X] Follow [Connect container to tenancy](connect-container-to-oci-tenancy.md) for next steps. 
 
-- [X] If you plan to do set up the toolkit container in a local system, Please follow the instructions specified [here](Launch_Docker_container.md)
+- [X] If you plan to do set up the toolkit container in a local system, Please follow the instructions specified [here](launch-from-local.md)

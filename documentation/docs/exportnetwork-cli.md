@@ -14,7 +14,7 @@
 
 Follow the below steps to export the Networking components that includes VCNs, Subnets, DHCP, DRG, Security List, Route Tables, DRG Route Tables, NSGs, etc to CD3 Excel Sheet and create the Terraform state.
 
-1. Use the [CD3-Blank-Template.xlsx](/cd3_automation_toolkit/example) to export the networking resources into the Tabs - VCNs, DRGs, VCN Info, DHCP, Subnets, NSGs, RouteRulesInOCI, SecRulesInOCI,DRGRouteRulesInOCI tabs. <br>
+1. Use the [CD3-Blank-Template.xlsx](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/main/cd3_automation_toolkit/example) to export the networking resources into the Tabs - VCNs, DRGs, VCN Info, DHCP, Subnets, NSGs, RouteRulesInOCI, SecRulesInOCI,DRGRouteRulesInOCI tabs. <br>
 <br>   
 2. Execute the _setupOCI.py_ file with _workflow_type_ parameter value to _export_resources_: <br>
    ```python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties```  <br>
@@ -60,7 +60,7 @@ Subnets tab:
 <br>[Go back to Networking Scenarios](#networking-scenarios)
 ### Add a new or modify the existing networking components
 1. Export the Networking components by following the steps [above](#export-network). (Note that here _workflow_type_ flag is set to export_resources)
-2. Follow the [process](/cd3_automation_toolkit/documentation/user_guide/NetworkingScenariosGF.md#modify-network) to add new components such as VCN/DHCP/DRG/IGW/NGW/SGW/LPG/Subnet etc. (Note that here _workflow_type_ flag is set to create_resources)
+2. Follow the [process](createnetwork-cli.md#modify-network) to add new components such as VCN/DHCP/DRG/IGW/NGW/SGW/LPG/Subnet etc. (Note that here _workflow_type_ flag is set to create_resources)
 
 <br>[Go back to Networking Scenarios](#networking-scenarios)
 

@@ -49,8 +49,8 @@ workflow_type=create_resources
 
 CD3 Automation Tool Kit supports 2 main workflows:
 
-1.	<a href="/GreenField.md">Create Resources in OCI (Greenfield Workflow)</a> - Empty OCI tenancy (or) do not need to modify / use any existing resources.
-2.	<a href="/NonGreenField.md">Export Resources from OCI (Non-Greenfield Workflow)</a> - Need to use / manage existing resources.  Export existing resources into CD3 & TF State, then use the Greenfield workflow to modify them or create more resources on top of them.
+1.	<a href="greenfield-cli.md">Create Resources in OCI (Greenfield Workflow)</a> - Empty OCI tenancy (or) do not need to modify / use any existing resources.
+2.	<a href="nongreenfield-cli.md">Export Resources from OCI (Non-Greenfield Workflow)</a> - Need to use / manage existing resources.  Export existing resources into CD3 & TF State, then use the Greenfield workflow to modify them or create more resources on top of them.
 
 
 

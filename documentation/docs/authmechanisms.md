@@ -37,15 +37,15 @@ Follow below steps to use Session token-based authentication -
 1. Use below command to create config inside the container. This is needed to generate session token. You can skip this step, if you already have a valid config(with API key) and uploaded the public key to OCI for a user. In that case, you can copy the config file and private API Key inside the container at /cd3user/.oci
    <br>```oci setup config```
 
-      <img width="509" alt="Screenshot 2024-01-04 at 4 43 08 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/d97b6407-8032-40a3-a5d1-98778be867af">
+      <img width="509" alt="Screenshot 2024-01-04 at 4 43 08 PM" src="/images/authmechanisms-1.png">
       
 2. Execute ```oci session authenticate --no-browser``` to generate session token for the private key.
    <br> Follow the questions. Enter 'DEFAULT' for the profile name and proceed to update the config file with session token information at default location /cd3user/.oci
  
-     <img width="721" alt="Screenshot 2024-01-04 at 4 49 53 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/3f65e41c-971f-4e17-8e23-a839317d8912">
+     <img width="721" alt="Screenshot 2024-01-04 at 4 49 53 PM" src="/images/authmechanisms-2.png">
 3. Token will be generated at default location /cd3user/.oci     
 
-     <img width="512" alt="Screenshot 2024-01-04 at 4 55 17 PM" src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/103508105/0b3446f6-b69a-49cd-858a-7a14380c4552">
+     <img width="512" alt="Screenshot 2024-01-04 at 4 55 17 PM" src="/images/authmechanisms-3.png">
 
 <b>Note:</b>
 
@@ -60,3 +60,7 @@ Follow below steps to use Instance Principal authentication -
 3. Write IAM policy to assign privileges to this dynamic group. The dynamic group(containing the instance) should have administrator access to the tenancy to use complete functionality of the toolkit.
 
 
+<br>
+
+
+ [Click to continue connecting Container to OCI tenancy](connect-container-to-oci-tenancy.md){ .md-button } 

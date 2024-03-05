@@ -17,4 +17,4 @@ stateDiagram-v2
     
 ```
 
-[Launch with Resource Manager Stack](singleclickdeploy.md){ .md-button } [Launch with Local Desktop](Launch_Docker_container.md){ .md-button }
+[Launch with Resource Manager Stack](launch-from-rmstack.md){ .md-button } [Launch with Local Desktop](launch-from-local.md){ .md-button }
