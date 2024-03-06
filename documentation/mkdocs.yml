@@ -3,6 +3,7 @@ repo_name: oracle-devrel/cd3-automation-toolkit
 repo_url: https://github.com/oracle-devrel/cd3-automation-toolkit
 nav:
   - Overview: 
+    - cd3-overview.md
     - Introduction: cd3-overview.md  
     - Architecture: architecture.md   
     - Services Supported: supportedservices.md
@@ -17,25 +18,32 @@ nav:
       - Local System: launch-from-local.md
     - Connect CD3 container to OCI: connect-container-to-oci-tenancy.md
   - Generate TF with CD3 - CLI: 
+    - cd3-cli.md
     - Before You Begin: cd3-cli.md
     - Create in OCI  :
+      - greenfield-cli.md
       - Steps: greenfield-cli.md
       - OPA integration: opa-integration.md
       - Examples :
+        - createnetwork-cli.md
         - Create Network : createnetwork-cli.md
         - Create Compute : createcompute-cli.md
     - Export from OCI : 
       - Steps: nongreenfield-cli.md
       - Examples :
+        - exportnetwork-cli.md
         - Export Network : exportnetwork-cli.md
         - Export Compute : exportcompute-cli.md
     
   - Create, Update or Export TF with CD3 - Jenkins:
+    - cd3-jenkins.md
     - Before You Begin: cd3-jenkins.md
     - Overview: jenkinsintro.md
     - Create resources : 
+      - greenfield-jenkins.md
       - Workflow Description: greenfield-jenkins.md
       - Examples:
+        - createnetwork-jenkins.md
         - Create Network Resources : createnetwork-jenkins.md
         - Create Compute Resources/OKE/SDDC/Database: createcompute-jenkins.md
         - Provision multiple services together: multiple-services-jenkins.md
@@ -43,9 +51,11 @@ nav:
     - Sync between CLI and Jenkins: sync-cli-jenkins.md
 
   - Upgrade CD3:
+    - upgrade-toolkit.md
     - Steps to Upgrade Toolkit: upgrade-toolkit.md
 
   - Additional Features:
+    - group-tf-files.md
     - Grouping generated TF files: group-tf-files.md
     - OCI Resource Manager Upload: resource-manager-upload.md
     - Support for Additional Attrs: additional-attributes.md
@@ -55,11 +65,13 @@ nav:
     - Remote Management of Terraform State: remotestate.md
    
   - Troubleshooting:
+    - knownbehaviour.md
     - Expected Behaviour: knownbehaviour.md
     - Common Issues: commonissues.md
     - FAQs: faq.md
     
   - External References:
+    - learningvideos.md
     - Learning Videos: learningvideos.md
     - Tutorials: tutorials.md
 
@@ -113,7 +125,8 @@ theme:
     repo: fontawesome/brands/github
     previous: fontawesome/solid/angle-left
     next: fontawesome/solid/angle-right
-  logo: images/oci.png  
+  logo: images/oci.png
+  favicon: images/oci.png  
 extra_css:
 - stylesheets/extra.css
   

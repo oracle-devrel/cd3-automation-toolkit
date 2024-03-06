@@ -27,19 +27,18 @@
     - Review Advanced Parameters Section for CI/CD setup. If you plan to use the toolkit with Jenkins then be ready with user details that will be used to connect to DevOps Repo in OCI.              Specifying these parameters as **'yes'** in properties file will create Object Storage Bucket and Devops Git Repo/Project/Topic in OCI and enable toolkit usage with Jenkins. The toolkit supports users in primary IDCS stripes or default domains only for DevOps GIT operations.<br>
     - Use the same customer_name for a tenancy even if the script needs to be executed multiple times.<br>
 
+<center>
 ``` mermaid
-stateDiagram-v2
+flowchart TD
+    A{Use Toolkit}
+    A ---> B[Jenkins]
+    A ---> C[CLI]
+    B ---> D[Create, Manage or Export Resources in OCI]
+    C ---> D
 
-  Use: Use Toolkit
-  Create: Create, Manage or Export Resources in OCI
-   state if_state <<choice>>
-    Use --> if_state
-    if_state --> Jenkins
-    if_state --> CLI
-    Jenkins --> Create
-    CLI --> Create
-  
+    
 ```
+</center>
 
 
  
@@ -53,31 +52,86 @@ stateDiagram-v2
     * Running the above command immediately after adding API key to the user profile in OCI might result in     Authentication Errors. In such cases, please retry after a minute.
     <br>
 
-→ Example execution of the script with Advanced Parameters for CI/CD:
 
-> <img width="1124" alt="Screenshot 2024-01-10 at 5 54 02 PM" src="/images/connecttotenancy.png">
+→ Example execution of the script with Advanced Parameters for CI/CD
+    <img width="1124" alt="Screenshot 2024-01-10 at 5 54 02 PM" src="/images/connecttotenancy.png">
 
 
 **Output:**
 
+<details>
+    <summary> Details of the files created on successful execution of above steps - </summary>
+    <table>
+        <tr>
+            <th>Files Generated</th>
+            <th>At File Path</th>
+            <th>Comment/Purpose</th>
+        </tr>
+        <tr>
+            <td>setUpOCI.properties</td>
+            <td><mark>/cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties</mark></td>
+            <td>Customer Specific properties</td>
+        </tr>
+        <tr>
+            <td>outdir_structure_file.properties</td>
+            <td>/cd3user/tenancies/<customer_name>/<customer_name>_outdir_structure_file</td>
+            <td>Customer Specific properties file for outdir structure.
+            This file will not be generated if 'outdir_structure_file' parameter was set to empty(single outdir)in tenancyconfig.properties while running createTenancyConfig.py</td>
+        </tr>
+        <tr>
+            <td>Region based directories</td>
+            <td>/cd3user/tenancies/<customer_name>/terraform_files</td>
+            <td>Tenancy's subscribed regions based directories for the generation of terraform files.
+                Each region directorywill contain individual directory for each service based on the parameter 'outdir_structure_file'</td>
+        </tr>
+        <tr>
+            <td>Variables File,Provider File, Root and Sub terraform modules</td>
+            <td>/cd3user/tenancies/<customer_name>/terraform_files/<region></td>
+            <td>Required for terraform to work. Variables file and Provider file willbe genrated based on authentication mechanism chosen.</td>
+        </tr>
+        <tr>
+            <td>out file</td>
+            <td>/cd3user/tenancies/<customer_name>/createTenancyConfig.out</td>
+            <td>This file contains acopy of information displayed as the console output.</td>
+        </tr>
+        <tr>
+            <td>OCI Config File</td>
+            <td>/cd3user/tenancies/<customer_name>/.config_files<customer_name>_oci_config</td>
+            <td>Customer specific Config file for OCI API calls. This will havedata based on authentication mechanism chosen.</td>
+        </tr>
+        <tr>
+            <td>Public and Private Key Pair</td>
+            <td>Copied from /cd3user/tenancies/keys/ to /cd3usertenancies/ <customer_name>/.config_files</td>
+            <td>API Key for authentication mechanism as API_Key arecopied to customer specific out directory locations for easy access.</td>
+        </tr>
+        <tr>
+            <td>GIT Config File</td>
+            <td>/cd3user/tenancies/<customer_name>/.config_files<customer_name>_git_config</td>
+            <td>Customer specific GIT Config file for OCI Dev Ops GIT operations.This is generated only if use_oci_devops_git is set to yes</td>
+        </tr>
+        <tr>
+            <td>S3 Credentials File</td>
+            <td>/cd3user/tenancies/<customer_name>/.config_files/ <customer_name>_s3_credentials</td>
+            <td>This file contains access key and secret for S3 compatible OSbucket to manage remote terraform state. This is generated only if use_remote_state is set to yes</td>
+        </tr>
+        <tr>
+            <td>Jenkins Home</td>
+            <td>/cd3user/tenancies/jenkins_home</td>
+            <td>This folder contains jenkins specific data. Single Jenkins instance can be setup for a single container.</td>
+        </tr>
+        <tr>
+            <td>tenancyconfig.properties</td>
+            <td>/cd3user/tenancies/<customer_name>/.config_files/ <customer_name>_tenancyconfig.properties</td>
+            <td>The input properties file used to execute the script is copied to custome folder to retain for future reference. This can be used when the script needs tobe re-run with same parameters at later stage.</td>
+        </tr>
+        <tr>
+            <td>The next pages will guide you to use the toolkit either via CLI or via Jenkins. Please proceed further.</td>
+            <td></td>
+            <td></td>
+        </tr>
+    </table>
 
-Details of the files created on successful execution of above steps -
+</details>
 
-| Files Generated | At File Path | Comment/Purpose |
-| --------------- | ------------ | --------------- |
-| setUpOCI.properties | ```/cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties``` | Customer Specific properties |
-| outdir_structure_file.properties | ```/cd3user/tenancies/<customer_name>/<customer_name>_outdir_structure_file``` | Customer Specific properties file for outdir structure.<br> This file will not be generated if 'outdir_structure_file' parameter was set to empty(single outdir) in tenancyconfig.properties while running createTenancyConfig.py |
-| Region based directories | ```/cd3user/tenancies/<customer_name>/terraform_files``` | Tenancy's subscribed regions based directories for the generation of terraform files.<br>Each region directory will contain individual directory for each service based on the parameter 'outdir_structure_file' |
-| Variables File,Provider File, Root and Sub terraform modules | ```/cd3user/tenancies/<customer_name>/terraform_files/<region>``` | Required for terraform to work. Variables file and Provider file will be genrated based on authentication mechanism chosen.|
-| out file | ```/cd3user/tenancies/<customer_name>/createTenancyConfig.out``` | This file contains a copy of information displayed as the console output. |
-| OCI Config File | ```/cd3user/tenancies/<customer_name>/.config_files/<customer_name>_oci_config``` | Customer specific Config file for OCI API calls. This will have data based on authentication mechanism chosen. |
-| Public and Private Key Pair | Copied from ```/cd3user/tenancies/keys/```<br>to<br>```/cd3user/tenancies/<customer_name>/.config_files``` | API Key for authentication mechanism as API_Key are copied to customer specific out directory locations for easy access. |
-| GIT Config File | ```/cd3user/tenancies/<customer_name>/.config_files/<customer_name>_git_config``` | Customer specific GIT Config file for OCI Dev Ops GIT operations. This is generated only if use_oci_devops_git is set to yes |
-| S3 Credentials File | ```/cd3user/tenancies/<customer_name>/.config_files/<customer_name>_s3_credentials``` | This file contains access key and secret for S3 compatible OS bucket to manage remote terraform state. This is generated only if use_remote_state is set to yes |
-| Jenkins Home | ```/cd3user/tenancies/jenkins_home``` | This folder contains jenkins specific data. ```Single Jenkins instance can be setup for a single container.```|
-| tenancyconfig.properties | ```/cd3user/tenancies/<customer_name>/.config_files/<customer_name>_tenancyconfig.properties``` | The input properties file used to execute the script is copied to custome folder to retain for future reference. This can be used when the script needs to be re-run with same parameters at later stage.|
-
-The next pages will guide you to use the toolkit either via CLI or via Jenkins. Please proceed further.
 
 [Use Toolkit with CLI](#){ .md-button } [Use Toolkit with Jenkins](#){ .md-button }
-

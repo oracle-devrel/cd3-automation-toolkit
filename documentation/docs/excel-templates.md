@@ -28,8 +28,6 @@ Details on how to fill data into the Excel sheet can be found in the Blue sectio
 
 <br>
 
-**NOTE:**
-
-> The Excel Templates can also be found at "_/cd3user/oci_tools/cd3_automation_toolkit/example_" folder  inside the container.
-
-> After deploying the infra using any of the templates, please run [CIS compliance checker script](cisfeatures.md)
+!!! note 
+    The Excel Templates can also be found at "_/cd3user/oci_tools/cd3_automation_toolkit/example_" folder  inside the container.
+    After deploying the infra using any of the templates, please run [CIS compliance checker script](cisfeatures.md)

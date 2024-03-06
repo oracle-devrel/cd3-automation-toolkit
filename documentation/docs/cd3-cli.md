@@ -5,7 +5,7 @@ To start generating terraform using the toolkit with CLI, make sure below things
 
 1. Login to the CD3 Container.
 
-2. [Read](cd3-overview.md) for workflows supported by the toolkit and chose the workflow.
+2. [Read](launch-container.md) for workflows supported by the toolkit and chose the workflow.
 
 3. Use one of the templates at [Excel Templates](excel-templates.md) based on the workflow chosen.
 
@@ -40,13 +40,48 @@ cd3file=
 workflow_type=create_resources
 ```
 
-| Variable | Description | Example |
-|---|---|---|
-|outdir|Path to output directory where terraform files will be generated| /cd3user/tenancies/<customer\_name>/terraform\_files|
-|prefix|Prefix for output terraform files|\<customer\_name>|
-|auth_mechanism|Authentication Mechanism for OCI APIs|api_key|
-|config\_file|Python config file|/cd3user/tenancies/<customer\_name>/.config_files/<customer\_name>_config|
-|outdir\_structure\_file |Parameter specifying single outdir or different for different services|Blank or <customer\_name>_outdir_structure_file.properties|
-| cd3file |Path to the Excel input file |/cd3user/tenancies/<customer\_name>/testCD3. xlsx |
-|workflow\_type |Create Resources in OCI or Export Resources from OCI | create_resources or export_resources |
-
+<details>
+    <summary> Details of the files created on successful execution of above steps </summary>
+    <table>
+        <tr>
+            <th>Variable</th>
+            <th>Description</th>
+            <th>Example</th>
+        </tr>
+        <tr>
+            <th>outdir</th>
+            <th>Path to output directory where terraform files will be generated</th>
+            <th>/cd3user/tenancies//terraform_files</th>
+        </tr>
+        <tr>
+            <th>prefix</th>
+            <th>Prefix for output terraform files</th>
+            <th>\</th>
+        </tr>
+        <tr>
+            <th>auth_mechanism</th>
+            <th>Authentication Mechanism for OCI APIs</th>
+            <th>api_key</th>
+        </tr>
+        <tr>
+            <th>config_file</th>
+            <th>Python config file	</th>
+            <th>/cd3user/tenancies//.config_files/_config</th>
+        </tr>
+        <tr>
+            <th>outdir_structure_file</th>
+            <th>Parameter specifying single outdir or different for different services</th>
+            <th>Blank or _outdir_structure_file.properties</th>
+        </tr>
+        <tr>
+            <th>cd3file</th>
+            <th>Path to the Excel input file</th>
+            <th>/cd3user/tenancies//testCD3. xlsx</th>
+        </tr>
+        <tr>
+            <th>workflow_type</th>
+            <th>Create Resources in OCI or Export Resources from OCI</th>
+            <th>create_resources or export_resources</th>
+        </tr>
+    </table>
+</details>

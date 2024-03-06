@@ -1,20 +1,15 @@
+<center>
 ``` mermaid
-stateDiagram-v2
-  
-  classDef custom fill:#f00,color:white,font-weight:bold,stroke-width:2px,stroke:teal
+flowchart TD
+    A{Launch 
+    CD3 Container}
+    A ---> B[RM Stack]
+    A ---> C[Local Desktop]
+    B ---> D[Connect Container to tenancy]
+    C ---> D
 
-  start: Launch CD3 Container
-  RM: RM Stack
-  Local: Local Desktop
-  connect: Connect Container to tenancy
-  
-    state if_state <<choice>>
-    start --> if_state
-    if_state --> RM
-    if_state --> Local 
-    RM --> connect
-    Local --> connect
     
 ```
+</center>
 
 [Launch with Resource Manager Stack](launch-from-rmstack.md){ .md-button } [Launch with Local Desktop](launch-from-local.md){ .md-button }
