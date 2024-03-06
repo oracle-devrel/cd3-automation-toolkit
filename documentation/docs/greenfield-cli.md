@@ -1,32 +1,33 @@
-# **Create resources in OCI (Greenfield Workflow)**
+# **Create and Manage Resources in OCI (Greenfield Workflow)**
 ---
 
 **Step 1**: 
-<br>Choose the appropriate Excel sheet template from [Excel Templates](exceltemplates.md)
-
+<br>Choose the appropriate excel sheet template from [Excel Templates](excel-templates.md).
+Fill the excel with appropriate values and copy at _/cd3user/tenancies/<customer_name\>_<br><br>
 **Step 2**:
-<br>Fill the Excel with appropriate values and put at the appropriate location.
-<br>Modify/Review ```/cd3user/tenancies /<customer_name>/<customer_name>_setUpOCI.properties``` with **workflow_type** set to **create_resources** as shown below:
+<br>Modify ```/cd3user/tenancies /<customer_name>/<customer_name>_setUpOCI.properties```.
+<br>Update parameters: **cd3file** parameter to the location of CD3 excel file and  **workflow_type**  to **create_resources** as shown below.
+<br> The other parameters are already updated with correct values.
 ```ini
 #Input variables required to run setUpOCI script
 
 #path to output directory where terraform file will be generated. eg /cd3user/tenancies/<customer_name>/terraform_files
-outdir=/cd3user/tenancies/demotenancy/terraform_files/
+outdir=/cd3user/tenancies/demo/terraform_files/
 
-#prefix for output terraform files eg <customer_name> like demotenancy
-prefix=demotenancy
+#prefix for output terraform files eg <customer_name> like demo
+prefix=demo
 
 # auth mechanism for OCI APIs - api_key,instance_principal,session_token
 auth_mechanism=api_key
 
 #input config file for Python API communication with OCI eg /cd3user/tenancies/<customer_name>/.config_files/<customer_name>_config;
-config_file=/cd3user/tenancies/demotenancy/.config_files/demotenancy_oci_config
+config_file=/cd3user/tenancies/demo/.config_files/demo_oci_config
 
 # Leave it blank if you want single outdir or specify outdir_structure_file.properties containing directory structure for OCI services.
-outdir_structure_file=/cd3user/tenancies/demotenancy/demotenancy_outdir_structure_file.properties
+outdir_structure_file=/cd3user/tenancies/demo/demo_outdir_structure_file.properties
 
 #path to cd3 excel eg /cd3user/tenancies/<customer_name>/CD3-Customer.xlsx
-cd3file=/cd3user/tenancies/demotenancy/CD3-Blank-template.xlsx
+cd3file=/cd3user/tenancies/demo/CD3-demo.xlsx
 
 #specify create_resources to create new resources in OCI(greenfield workflow)
 #specify export_resources to export resources from OCI(non-greenfield workflow)
@@ -34,24 +35,34 @@ workflow_type=create_resources
 ```
 
 **Step 3**:
-<br>Execute the SetUpOCI.py script to start creating the terraform configuration files.
+<br>Execute the setUpOCI.py script to start creating the terraform configuration files.
     
 Command to Execute:
 <br>```cd /cd3user/oci_tools/cd3_automation_toolkit/```
 <br>```python setUpOCI.py  <path_to_setupOCI.properties>``` ie
 <br>```python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties```
          
-→ Example execution of the wrapper script:
-   
-<img src = "/images/cliGF-1.png" width=50% height=50%>
+!!! example  "example execution of the wrapper script"
 
- 
+    Updated OCI_Regions file !!!
+
+    Script to fetch the compartment OCIDs into variables file has not been executed.<br>
+    Do you want to run it now? (y|n):
+
+→ This prompt appears when you run the toolkit for the very first time or when any new compartments are created using the toolkit. Enter 'y' to fetch the details of compartment OCIDs into variables file.
+<br>→ After fetching the compartment details, the toolkit will display the menu options as shown below:
+
+!!! example  "example execution of the wrapper script"   
+    <img src = "/images/cliGF-1.png" width=90% height=90%>
+
 
 Choose the resources by specifying a single option (for choosing one of these resources) or comma-separated values (to choose multiple resources) as shown in the sample screenshot above.
 
+**Expected Outputs:**
+<br>It will generate tfvars files for the services selected at _/cd3user/tenancies/<customer_name\>/terraform_files/<region_dir\>/<service_dir\>/_
 
 **Step 4:** 
-<br>Change your directory to  ```/cd3user/tenancies/<customer_name>/terraform_files/<region_dir>/```  and Execute:
+<br>Change your directory to  ```/cd3user/tenancies/<customer_name>/terraform_files/<region_dir>/<service_dir>```  and Execute:
 
 **terraform init**  - To initialize and prepare your working/out directory so Terraform can run the configuration.<br>
 
@@ -59,38 +70,6 @@ Choose the resources by specifying a single option (for choosing one of these re
 
 **terraform apply** - To make the changes defined by Terraform configuration to create, update, or destroy resources in OCI.
   
-<b> Note:</b> 
+!!! Note
 
-* Execute **"Fetch Compartments OCIDs to variables file"** from **CD3 Services** in setUpOCI menu after you create Compartments. This is a required step everytime you create a compartment via toolkit or via the OCI console.
-   
-
- 
-**Example: Create a Compartment**
-
-Follow the below steps to quickly provision a compartment on OCI.
-
-1. Use the excel [CD3-SingleVCN-template](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/main/cd3_automation_toolkit/example) and fill the required Compartment details in the 'Compartments' tab.
-   >- Make appropriate changes to the template. For Eg: Update the _Region_ value to your tenancy's home region.
-   >- Once all the required data is filled in the Excel sheet, place it at the location _/cd3user/tenancies/<customer_name\>/_  which is also mapped to your local directory.
- <br>  
-2. Edit the _setUpOCI.properties_ at location: _/cd3user/tenancies/<customer_name\>/<customer_name\>_setUpOCI.properties_ with appropriate values. 
-   >- Update the _cd3file_ parameter to specify the CD3 excel sheet path.
-   >- Set the _workflow_type_ parameter value to _create_resources_. (for Greenfield Workflow.) <br>
- 
-3. Change Directory to 'cd3_automation_toolkit' : <br>
-   ```cd /cd3user/oci_tools/cd3_automation_toolkit/``` <br>
-    and execute the _setupOCI.py_ file: <br>
-   ```python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties``` <br>
-<br>   
-4. Choose option to create compartments under 'Identity' from the displayed menu. Once the execution is successful, _<customer_name\>\_compartments.auto.tfvars_ file will be generated under the folder _/cd3user/tenancies/<customer_name\>/terraform_files/<region_dir\>/<service_dir\>_
-
-      Navigate to the above path and execute the terraform commands:<br>
-       >- _terraform init_
-       >- _terraform plan_
-       >- _terraform apply_
-  
-5. Choose _Fetch Compartments OCIDs to variables file_ under _CD3 Services_ in setUpOCI menu.
-    Execute the command to fetch the details of the compartments if it already exists/created in OCI. These details will be written to the terraform variables file. <br>
-<br>
-6. Repeat the above process (except Step 5) to create other components in OCI.
- 
+    Execute **"Fetch Compartments OCIDs to variables file"** from **CD3 Services** in setUpOCI menu after you create Compartments. This is a required step everytime you create a compartment via toolkit or via the OCI console.

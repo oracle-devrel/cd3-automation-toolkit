@@ -14,19 +14,18 @@
 
 **Step 2 - Choose Authentication Mechanism for OCI SDK**</a>
 
-* Please click [here](authmechanisms.md) to configure any one of the available authentication mechanisms.
+* Please click [here](auth-mechanisms.md) to configure any one of the available authentication mechanisms.
   
 **Step 3 - Edit tenancyconfig.properties**:
 
 * Run ```cd /cd3user/oci_tools/cd3_automation_toolkit/user-scripts/```
 * Fill the input parameters in **tenancyconfig.properties** file.
+
 !!! must-read "Must Read"
-    Ensure to:<br>
-    -  Have the details ready for the Authentication mechanism you are planning to use.<br>
-    -  Use the same customer_name for a tenancy even if the script needs to be executed multiple times.<br>
-    -  Review **'outdir_structure_file'** parameter as per requirements. It is recommended to use seperate outdir structure to manage 
-       a large number of resources. <br>
-    -  Review Advanced Parameters Section for CI/CD setup and be ready with user details that will be used to connect to DevOps Repo in OCI.              Specifying these parameters as **'yes'** in properties file will create Object Storage Bucket and Devops Git Repo/Project/Topic in OCI and enable toolkit usage via Jenkins. The toolkit supports users in primary IDCS stripes or default domains only for DevOps GIT operations.<br>
+    - Have the details ready for Authentication mechanism you are planning to use.<br>
+    - Review **'outdir_structure_file'** parameter as per requirements. It is recommended to use separate outdir structure to manage a large number of resources. <br>
+    - Review Advanced Parameters Section for CI/CD setup. If you plan to use the toolkit with Jenkins then be ready with user details that will be used to connect to DevOps Repo in OCI.              Specifying these parameters as **'yes'** in properties file will create Object Storage Bucket and Devops Git Repo/Project/Topic in OCI and enable toolkit usage with Jenkins. The toolkit supports users in primary IDCS stripes or default domains only for DevOps GIT operations.<br>
+    - Use the same customer_name for a tenancy even if the script needs to be executed multiple times.<br>
 
 ``` mermaid
 stateDiagram-v2
@@ -59,9 +58,7 @@ stateDiagram-v2
 > <img width="1124" alt="Screenshot 2024-01-10 at 5 54 02 PM" src="/images/connecttotenancy.png">
 
 
-**Output**
-
-<img src="/images/Connect-container-output.png">
+**Output:**
 
 
 Details of the files created on successful execution of above steps -
