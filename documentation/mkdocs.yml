@@ -3,11 +3,10 @@ repo_name: oracle-devrel/cd3-automation-toolkit
 repo_url: https://github.com/oracle-devrel/cd3-automation-toolkit
 nav:
   - Overview: 
-    - cd3-overview.md
     - Introduction: cd3-overview.md  
     - Architecture: architecture.md   
     - Services Supported: supportedservices.md
-    - Excel Templates: exceltemplates.md
+    - Excel Templates: excel-templates.md
       
   - Install CD3 :
     - install-cd3.md
@@ -17,22 +16,22 @@ nav:
       - Resource Manager Stack: launch-from-rmstack.md
       - Local System: launch-from-local.md
     - Connect CD3 container to OCI: connect-container-to-oci-tenancy.md
-  - Create, Update or Export TF with CD3 - CLI: 
-    - Before You Begin: workflows-cli.md
-    - Create resources  :
-      - Workflow Description: greenfield-cli.md
+  - Generate TF with CD3 - CLI: 
+    - Before You Begin: cd3-cli.md
+    - Create in OCI  :
+      - Steps: greenfield-cli.md
+      - OPA integration: opa-integration.md
       - Examples :
         - Create Network : createnetwork-cli.md
         - Create Compute : createcompute-cli.md
-      - OPA integration: opa-integration.md
-    - Export Resources  : 
-      - Workflow Description: nongreenfield-cli.md
+    - Export from OCI : 
+      - Steps: nongreenfield-cli.md
       - Examples :
         - Export Network : exportnetwork-cli.md
         - Export Compute : exportcompute-cli.md
     
   - Create, Update or Export TF with CD3 - Jenkins:
-    - Before You Begin: workflows-jenkins.md
+    - Before You Begin: cd3-jenkins.md
     - Overview: jenkinsintro.md
     - Create resources : 
       - Workflow Description: greenfield-jenkins.md
