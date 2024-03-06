@@ -18,68 +18,76 @@
 <div class="grid cards" style="border-top-color: #5c926c; border-radius: 1.5rem;" markdown>
 
 
--   :material-clock-fast:{ .lg .middle } __Getting Started__
+-   :material-clock-fast:{ .lg .middle } __Overview__
 
     ---
-    [Introduction](#Introduction)<br>
-    [What's new in this release](#What's_new_in_this_release)<br>
-    [Toolkit Supported OCI Services](#)<br>
-    [Excel Templates](#)<br>
+    [Introduction](cd3-overview.md)<br>
+    [Architecture](architecture.md)<br>
+    [Services Supported](supportedservices.md)<br>
+    [Excel Templates](ExcelTemplates.md)<br>
 
--   :material-hammer-screwdriver:{ .lg .middle } __Deploying CD3__
-
-    ---
-    [Prerequisites](#Prerequisites)<br>
-    [Launch the container](#Launch the container)<br>
-    [Connect container to OCI tenancy](#)<br>
-
--   :material-monitor-screenshot:{ .lg .middle } __Toolkit Execution with CLI__
+-   :material-hammer-screwdriver:{ .lg .middle } __Installing CD3__
 
     ---
-    [Overview](#)<br>
-    [Create resources in OCI using CLI (Greenfield Workflow)](#)<br>
-    [Create Network resources-CLI](#)<br>
-    [Create Compute Instances-CLI](#)<br>
-    [OPA integration](#)<br>
-    [Export Resources from OCI using CLI (Non-Greenfield Workflow)](#)<br>
-    [Export Network resources-CLI](#)<br>
-    [Export Compute Instances-CLI](#)<br>
+    [Prerequisites](prerequisites.md)<br>
+    [Launch the container](launch-container.md)<br>
+    [Launch Resource Manager Stack](launch-from-rmstack.md)<br>
+    [Launch from Local Desktop](launch-from-local.md)<br>
+    [Connect CD3 Container to OCI](connect-container-to-oci-tenancy.md)<br>
 
--   :material-lightbulb-auto:{ .lg .middle } __Toolkit Execution with Jenkins__
+-   :material-monitor-screenshot:{ .lg .middle } __Create, Update or Export TF with CD3 - CLI__
+
+    ---
+    [Before you Begin](workflows-cli.md)<br>
+    [Create Resources from OCI using CLI (Greenfield Workflow)](greenfield-cli.md)<br>
+    [Examples - Create Network](createnetwork-cli.md)<br>
+    [Examples - Create Compute](createcompute-cli.md)<br>
+    [OPA integration](opa-integration.md)<br>
+    [Export Resources from OCI using CLI (Non-Greenfield Workflow)](nongreenfield-cli.md)<br>
+    [Examples - Export Network](exportnetwork-cli.md)<br>
+    [Examples - Export Compute](exportcompute-cli.md)<br>
+
+-   :material-monitor-screenshot:{ .lg .middle } __Create, Update or Export TF with CD3 - Jenkins__
 
     ---
 
-    [Prerequisites](#)<br>
-    [Overview](#)<br>
-    [Create resources in OCI using Jenkins(Greenfield Workflow))](#)<br>
-    [Create Network resources-Jenkins](#)<br>
-    [Create compute Instances/OKE/SDDC/Database-Jenkins](#)<br>
-    [Provision multiple services together-Jenkins](#)<br>
-    [Export Resources from OCI using Jenkins(Non-Greenfield Workflow)](#)<br>
-    [Synchronize Changes between CLI and Jenkins](#)<br>   
+    [Before You Begin](workflows-jenkins.md)<br>
+    [Overview](jenkinsintro.md)<br>
+    [Create Resources from OCI using Jenkins (Greenfield Workflow)](GreenField-Jenkins.md)<br>
+    [Examples - Create Network](createnetwork-jenkins.md)<br>
+    [Examples - Create Compute/OKE/SDDC/Database]( createcompute-jenkins.md)<br>
+    [Provision multiple Services Together](multiple-services-jenkins.md)<br>
+    [Export Resources from OCI using CLI (Non-Greenfield Workflow)](NonGreenField-Jenkins.md)<br>
+    [Examples - Export Network](nongreenfield-jenkins.md)<br>
+    [Synchronize Changes between CLI and Jenkins](sync-cli-jenkins.md)<br>   
     
 
--   :material-feather:{ .lg .middle } __Beyond the basics__
+-   :material-lightbulb-auto:{ .lg .middle } __Upgrade CD3__
 
     ---
-    [Grouping generated Terraform files](#Introduction)<br>
-    [OCI Resource Manager Upload](#What's_new_in_this_release)<br>
-    [Support for Additional Attributes](#)<br>
-    [Additional CIS Compliance Features](#)<br>
-    [CD3 Validators](#)<br>
-    [Migrate jobs to User's Jenkins environment](#)<br>
-    [Remote Management of Terraform State](#)<br>
+    [Steps to Upgrade Toolkit](upgrade-toolkit.md)<br>
 
--   :material-information:{ .lg .middle } __Troubleshooting Tips__
+-   :material-feather:{ .lg .middle } __Additional Features__
 
     ---
-    [Expected Behaviour of CD3](#)<br>
-    [Common Issues](#)<br>
-    [FAQs](#)<br>
+    [Grouping generated TF files](group-tf-files.md)<br>
+    [OCI Resource Manager Upload](resource-manager-upload.md)<br>
+    [Support for Additional Attrs](additional-attributes.md)<br>
+    [CIS Compliance Features](cisfeatures.md)<br>
+    [CD3 Validator](cd3validator.md)<br>
+    [Migrate jobs to user's Jenkins](jobs-migration.md)<br>
+    [Remote Management of Terraform State](remotestate.md)<br>
 
--  :material-school:{ .lg .middle } __Videos & Tutorials__
+-  :material-information:{ .lg .middle } __Troubleshooting__
 
     ---
-    [Automation Toolkit Learning Videos](#)<br>
-    [Tutorials](#)<br>
+    [Expected Behaviour](knownbehaviour.md)<br>
+    [Common Issues](commonissues.md)<br>
+    [FAQs](FAQ.md)<br>
+
+-  :material-school:{ .lg .middle } __External References__
+
+    ---
+    [Learning Videos](learningvideos.md)<br>
+    [Tutorials](tutorials.md)<br>
 </div>
