@@ -100,12 +100,12 @@ resource "oci_core_network_security_group" "nsg" {
 }
 
 resource "oci_core_network_security_group_security_rule" "nsg_rule_1" {
-  count = local.create_nsg_rule
+  count = local.create_nsg_rule == 1 ? length(var.source_cidr) : 0
   #Required
   network_security_group_id = oci_core_network_security_group.nsg[0].id
   direction                 = "INGRESS"
   protocol                  = "6"
-  source                    = var.source_cidr
+  source                    = var.source_cidr[count.index]
   source_type               = "CIDR_BLOCK"
   stateless                 = false
   tcp_options {
@@ -119,12 +119,12 @@ resource "oci_core_network_security_group_security_rule" "nsg_rule_1" {
 }
 
 resource "oci_core_network_security_group_security_rule" "nsg_rule_2" {
-  count = local.create_nsg_rule
+  count = local.create_nsg_rule == 1 ? length(var.source_cidr) : 0
   #Required
   network_security_group_id = oci_core_network_security_group.nsg[0].id
   direction                 = "INGRESS"
   protocol                  = "6"
-  source                    = var.source_cidr
+  source                    = var.source_cidr[count.index]
   source_type               = "CIDR_BLOCK"
   stateless                 = false
   tcp_options {

@@ -223,9 +223,9 @@ variable "existing_drg_id" {
 }
 
 variable "source_cidr" {
-  description = "The CIDR of the new subnet."
-  type        = string
-  default     = ""
+  description = "Source CIDRs"
+  type        = list(string)
+  default     = []
 }
 variable "cloud_init_script" {
   description = "cloud_init_script file name"
