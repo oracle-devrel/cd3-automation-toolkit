@@ -283,24 +283,16 @@
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" >
         
           
-          
-          <div class="md-nav__link md-nav__container">
-            <a href="../cd3-overview/" class="md-nav__link ">
-              
+          <label class="md-nav__link" for="__nav_1" id="__nav_1_label" tabindex="0">
+            
   
   <span class="md-ellipsis">
     Overview
   </span>
   
 
-            </a>
-            
-              
-              <label class="md-nav__link " for="__nav_1" id="__nav_1_label" tabindex="0">
-                <span class="md-nav__icon md-icon"></span>
-              </label>
-            
-          </div>
+            <span class="md-nav__icon md-icon"></span>
+          </label>
         
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_1">
@@ -379,7 +371,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../exceltemplates/" class="md-nav__link">
+      <a href="../excel-templates/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -642,7 +634,7 @@
             
   
   <span class="md-ellipsis">
-    Create, Update or Export TF with CD3 - CLI
+    Generate TF with CD3 - CLI
   </span>
   
 
@@ -652,7 +644,7 @@
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
-            Create, Update or Export TF with CD3 - CLI
+            Generate TF with CD3 - CLI
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -663,7 +655,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../workflows-cli/" class="md-nav__link">
+      <a href="../cd3-cli/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -690,6 +682,8 @@
       
         
       
+        
+      
     
     
     
@@ -704,7 +698,7 @@
             
   
   <span class="md-ellipsis">
-    Create resources
+    Create in OCI
   </span>
   
 
@@ -714,7 +708,7 @@
         <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3_2">
             <span class="md-nav__icon md-icon"></span>
-            Create resources
+            Create in OCI
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -729,7 +723,28 @@
         
   
   <span class="md-ellipsis">
-    Workflow Description
+    Steps
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../opa-integration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    OPA integration
   </span>
   
 
@@ -752,8 +767,6 @@
       
         
       
-        
-      
     
     
     
@@ -761,10 +774,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2_3" >
         
           
-          <label class="md-nav__link" for="__nav_3_2_2" id="__nav_3_2_2_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_3_2_3" id="__nav_3_2_3_label" tabindex="0">
             
   
   <span class="md-ellipsis">
@@ -775,8 +788,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_2_2_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_3_2_2">
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_2_3">
             <span class="md-nav__icon md-icon"></span>
             Examples
           </label>
@@ -815,27 +828,6 @@
   
   <span class="md-ellipsis">
     Create Compute
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../opa-integration/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    OPA integration
   </span>
   
 
@@ -888,7 +880,7 @@
             
   
   <span class="md-ellipsis">
-    Export Resources
+    Export from OCI
   </span>
   
 
@@ -898,7 +890,7 @@
         <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3_3">
             <span class="md-nav__icon md-icon"></span>
-            Export Resources
+            Export from OCI
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -913,7 +905,7 @@
         
   
   <span class="md-ellipsis">
-    Workflow Description
+    Steps
   </span>
   
 
@@ -1083,7 +1075,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../workflows-jenkins/" class="md-nav__link">
+      <a href="../cd3-jenkins/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1845,14 +1837,15 @@
 
 
 <h1 id="single-click-container-launch"><strong>Single Click Container Launch</strong></h1>
-<p><br>
+<p>This will automatically launch the linux compute VM in OCI tenancy and configure Podman container on the VM.
+<br><br>
 <strong>Prerequisites</strong></p>
-<ul>
-<li>The user deploying the stack should have access to launch OCI Resource Manager stack, compute instance and network resources.</li>
-<li>OCI Tenancy Access as defined in <a href="../prerequisites/">Prerequisistes</a>.</li>
-</ul>
-<hr />
 <ul class="task-list">
+<li>The user deploying the stack should have access to launch OCI Resource Manager stack, compute instance and network resources.</li>
+<li>
+<p>OCI Tenancy Access as defined in <a href="../prerequisites/">Prerequisistes</a>.
+<br><br></p>
+</li>
 <li class="task-list-item">
 <p><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Click on below button to directly navigate to Resource Manager stack in the OCI Tenancy and fill in required details to launch CD3 container.<br>
 <a href="https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oracle-devrel/cd3-automation-toolkit/archive/refs/heads/develop.zip"><img alt="Deploy_To_OCI" src="https://oci-resourcemanager-plugin.plugins.oci.oraclecloud.com/latest/deploy-to-oracle-cloud.svg" /></a></p>
@@ -1870,12 +1863,7 @@ If not logged into the OCI tenancy, the button will redirect to the Oracle Cloud
 <p>While filling details in the stack, please make sure not to open access to VM from 0.0.0.0/0 and restrict it to the specific CIDR only.</p>
 </div>
 <ul class="task-list">
-<li class="task-list-item">
-<p><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Follow <a href="Connect_container_to_OCI_Tenancy.md">Connect container to tenancy</a> for next steps. </p>
-</li>
-<li class="task-list-item">
-<p><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> If you plan to do set up the toolkit container in a local system, Please follow the instructions specified <a href="Launch_Docker_container.md">here</a></p>
-</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Follow <a href="../connect-container-to-oci-tenancy/">Connect container to tenancy</a> for next steps. </li>
 </ul>
 
 
