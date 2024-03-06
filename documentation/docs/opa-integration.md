@@ -1,5 +1,4 @@
-
-## Open Policy Agent for Terraform:
+# Open Policy Agent for Terraform
 
 OPA is a powerful policy-as-code framework that enables you to define and enforce policies across your infrastructure-as-code (IaC) deployments. With OPA, you can seamlessly integrate policy checks into your Terraform workflows, ensuring that your infrastructure deployments adhere to your organization's security, compliance, and operational requirements.
 
@@ -10,7 +9,7 @@ As part of CD3, we have meticulously developed a comprehensive set of policies t
 Our carefully crafted policies act as gatekeepers, preventing any IAC deployments that do not align with the stringent security and compliance guidelines set by the CIS benchmarks for OCI. By leveraging our policies, you can ensure that your infrastructure deployments remain impervious to any potential vulnerabilities or non-compliance issues.
 
 
-#### **Run OPA inside CD3 container**
+**Run OPA inside CD3 container**
 
  1. Open your command line interface inside CD3 container and run OPA. You should see all available options for OPA.
 

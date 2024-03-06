@@ -15,9 +15,9 @@ Note below points while adding VM details in the Instances sheet:
 3. Leave columns: Backup Policy, NSGs, DedicatedVMHost blank if instance doesn't need to be part of any of these. Instances can be made a part of Backup Policy and NSGs later by choosing appropriate option in setUpOCI menu. <br>
  <br>
 
-4. The column "SSH Key Var Name" accepts SSH key value directly or the name of variable declared in *variables.tf* under the  **instance_ssh_keys** variable containing the key value. Make sure to have an entry in variables_\<region>.tf file with the name you enter in SSH Key Var Name field of the Excel sheet and put the value as SSH key value. <br>
+4. The column "SSH Key Var Name" accepts SSH key value directly or the name of variable declared in *variables.tf* under the  **instance_ssh_keys** variable containing the key value. Make sure to have an entry in variables_<region\>.tf file with the name you enter in SSH Key Var Name field of the Excel sheet and put the value as SSH key value. <br>
 
->For Eg: If you enter the SSH Key Var Name as **ssh_public_key**, make an entry in variables_\<region>.tf file as shown below:
+>For Eg: If you enter the SSH Key Var Name as **ssh_public_key**, make an entry in variables_<region\>.tf file as shown below:
  
     variable  'instance_ssh_keys'  {
     type = map(any)
@@ -32,7 +32,7 @@ Note below points while adding VM details in the Instances sheet:
     } 
     
 <br>
-5. Enter subnet name column value as: \<vcn-name>_\<subnet-name> <br>
+5. Enter subnet name column value as: <vcn-name\>_<subnet-name\> <br>
 <br>
 6. Source Details column of the excel sheet accepts both image and boot volume as the source for instance to be launched. <br>
    Format:
@@ -40,8 +40,8 @@ Note below points while adding VM details in the Instances sheet:
            image::\<variable containing ocid of image> or
            bootVolume::\<variable containing ocid of boot volume>
 
-Make sure to have an entry in variables_\<region>.tf file for the value you enter in Source Details field of the Excel sheet.
-Ex: If you enter the Source Details as image::Linux, make an entry in variables_\<region>.tf file under the **instance_source_ocids** variable as shown below:
+Make sure to have an entry in variables_<region\>.tf file for the value you enter in Source Details field of the Excel sheet.
+Ex: If you enter the Source Details as image::Linux, make an entry in variables_<region\>.tf file under the **instance_source_ocids** variable as shown below:
 
 
     variable 'instance_source_ocids' {
@@ -58,7 +58,6 @@ Ex: If you enter the Source Details as image::Linux, make an entry in variables_
 
 
          shape::ocpus
-
          eg: VM.Standard.E3.Flex::5
 
 <br>
@@ -70,7 +69,7 @@ Ex: If you enter the Source Details as image::Linux, make an entry in variables_
 <br>
 11. Add any additonal attributes (not part of excel sheet already) as per  [this](additional-attributes.md). <br>
 <br>
-12. To enable or disable a plugin for the instance add new column with name as <b>'Plugin \<plugin-name-in-console>' </b> eg 'Plugin Bastion'.
+12. To enable or disable a plugin for the instance add new column with name as <b>'Plugin <plugin-name-in-console\>' </b> eg 'Plugin Bastion'.
     Valid values are Enabled or Disabled <br>
 
 
