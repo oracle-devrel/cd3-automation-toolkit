@@ -81,6 +81,6 @@ variable "existing_drg_id" {
 
 variable "source_cidr" {
   description = "The CIDR of the new subnet."
-  type        = string
-  default     = ""
+  type        = list(string)
+  default     = []
 }

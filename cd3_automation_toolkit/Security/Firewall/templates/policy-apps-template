@@ -1,0 +1,19 @@
+{% if count == 0 %}
+
+application_list = {
+    ##Add New apps for {{ region|lower }} here##
+}
+{% else %}
+{% if application != "" and applications != "nan" and applications != null %}
+{{ policy_tf_name }}_{{app_name}} = {
+  app_list_name = "{{ app_name }}"
+  network_firewall_policy_id = "{{ policy_tf_name }}"
+  app_type = "{{ app_type }}"
+  icmp_type = "{{icmp_type}}"
+  {% if icmp_code != '' %}
+  icmp_code= "{{ icmp_code }}"
+  {% endif %}
+  },
+
+  {% endif %}
+{% endif %}

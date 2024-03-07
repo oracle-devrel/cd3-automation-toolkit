@@ -1,0 +1,17 @@
+{% if count == 0 %}
+
+address_list = {
+    ##Add New addresses for {{ region|lower }} here##
+}
+{% else %}
+{% if list_name != "" and list_name != "nan" and list_name != null %}
+{{ policy_tf_name }}_{{address_tf_name}} = {
+  address_list_name = "{{ address_tf_name }}"
+  network_firewall_policy_id = "{{ policy_tf_name }}"
+  addresses = [{{ address_list }}]
+  address_type = "{{address_tf_type}}"
+
+  },
+
+  {% endif %}
+{% endif %}

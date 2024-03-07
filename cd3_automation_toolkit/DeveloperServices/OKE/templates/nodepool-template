@@ -109,7 +109,7 @@ nodepools = {
     {#  ###Section for adding Defined and Freeform Tags ends here###  #}
 
         {% if ssh_key_var_name != '' %}
-        ssh_authorized_keys  = "{{ ssh_key_var_name }}"
+        ssh_public_key  = "{{ ssh_key_var_name }}"
         {% endif %}
         {#  ###Section for adding Defined and Freeform Tags###  #}
     {#  ##Do not modify below this line##  #}

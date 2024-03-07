@@ -403,10 +403,14 @@ variables:
       eq:
       - vcn_strategy
       - "Create New VCN"
-    type: string
-    default: ''
+    type: array
+    items:
+      type: string
+    #  pattern: "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
+    minItems: 1
+    uniqueItems: true
+    default: []
     title: Enter Source IP/CIDR from where CD3 Automation Toolkit WorkVM will be accessed. (Rule will be created in NSG to allow ssh on port 22 and jenkins on port 8443)
-    #pattern: "^(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]).(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]).(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]).(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\/(3[0-2]|[1-2]?[0-9])$"
     description: Example - 10.0.0.0/24. If left empty, security rules need to be added later to allow required access.
     required: false
 

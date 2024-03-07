@@ -1,0 +1,15 @@
+{% if count == 0 %}
+
+application_group = {
+    ##Add New application list for {{ region|lower }} here##
+}
+{% else %}
+{% if application_list != "" and application_list != "nan" and application_list != null %}
+{{ policy_tf_name }}_{{applicationlist_tf_name}} = {
+  app_group_name = "{{ applicationlist_tf_name }}"
+  network_firewall_policy_id = "{{ policy_tf_name }}"
+  apps = [{{apps_tf_name}}]
+  },
+
+  {% endif %}
+{% endif %}

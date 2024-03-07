@@ -1,12 +1,13 @@
 -------------------------------------
-CD3 Automation Toolkit Tag v2024.1.1
-Mar 1, 2024
+CD3 Automation Toolkit Tag v2024.2.0
+Mar 15, 2024
 -------------------------------------
 1. One click deployment of toolkit in OCI tenancy using RM stack.
-2. Introduced separate main/develop branches for OCI Devops GIT operations.
-3. Git operations enhancement.
-4. Error handling for service connector export process.
-5. Bug fixes for export code, LBRs, Notifications, Events etc.
+2. Introduced OCI Firewall as a new service using separate CD3 template.
+3. Introduced separate main/develop branches for OCI Devops GIT operations.
+4. Git operations enhancement.
+5. Error handling for service connector export process.
+6. Bug fixes for export code, LBRs, Notifications, Events etc.
 
 -------------------------------------
 CD3 Automation Toolkit Tag v2024.1.0

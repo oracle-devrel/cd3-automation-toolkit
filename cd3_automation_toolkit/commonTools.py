@@ -264,6 +264,16 @@ class commonTools():
         else:
             if resource_name == "Identity Objects" or resource_name == "Tagging Objects":
                 input_compartment_names = None
+            elif resource_name == "Clone Firewall Policy":
+                compartment_list_str = "Enter name of the Compartment (as it appears in OCI) of the Firewall Policy to be cloned: "
+                compartments = input(compartment_list_str.format(resource_name))
+                input_compartment_names = list(
+                    map(lambda x: x.strip(), compartments.split(','))) if compartments else None
+            elif resource_name == "Delete Firewall Policy":
+                compartment_list_str = "Enter name of the Compartment (as it appears in OCI) of the Firewall Policy to be deleted: "
+                compartments = input(compartment_list_str.format(resource_name))
+                input_compartment_names = list(
+                    map(lambda x: x.strip(), compartments.split(','))) if compartments else None
             else:
                 compartment_list_str = "Enter name of Compartment as it appears in OCI (comma separated without spaces if multiple)for which you want to export {};\nPress 'Enter' to export from all the Compartments: "
                 if self.comp_filter == "null":
@@ -657,6 +667,21 @@ class commonTools():
                 elif (overwrite == 'no'):
                     shutil.copyfile(src, dest)
                 """
+
+    # def backup_file(src_dir, pattern, overwrite):
+    def copy_file(src_dir, resource, pattern):
+        dest_dir = str(src_dir) + "/backup_" + resource + "/" + datetime.datetime.now().strftime("%d-%m-%H%M%S").replace('/', '-')
+        for f in os.listdir(str(src_dir)):
+            if f.endswith(pattern):
+                print("Backing up existing " + f + " to " + dest_dir)
+                if not os.path.exists(dest_dir):
+                    # print("\nCreating backup dir " + dest_dir + "\n")
+                    os.makedirs(dest_dir)
+
+                src = os.path.join(str(src_dir), f)
+                # dest = os.path.join(dest_dir, f)
+                # print("backing up ....." + src +"   to  "+dest)
+                shutil.copy(src, dest_dir)
 
     # To copy data from *.auto.tfvars - Used in Modify Network - Seclist, RT, Def Seclist, Def RT to copy the rules/lists that is present in existing *.auto.tfvars
     def copy_data_from_file(self, outfile, region_comp_name, modifiedStr):

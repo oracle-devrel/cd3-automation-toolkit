@@ -335,6 +335,7 @@ pipeline {
 			when{
 			    allOf {
                 expression {return ParametersValidation == "Passed" }
+                expression {return currentBuild.result != "ABORTED" }
                 expression {return currentBuild.result != "FAILURE" }
 			    }
 
@@ -377,6 +378,7 @@ pipeline {
             when{
                 allOf {
                 expression {return ParametersValidation == "Passed" }
+                expression {return currentBuild.result != "ABORTED" }
                 expression {return currentBuild.result != "FAILURE" }
                 }
             }
@@ -387,7 +389,7 @@ pipeline {
 
                         cd /cd3user/oci_tools/cd3_automation_toolkit
                         python --version
-                        python setUpOCI_jenkins.py --main_options "${MainOptions}" --sub_options "${SubOptions}" --sub_child_options "${SubChildOptions}" --add_filter "${AdditionalFilters}" $prop_file
+                        python setUpOCI.py --devops True --main_options "${MainOptions}" --sub_options "${SubOptions}" --sub_child_options "${SubChildOptions}" --add_filter "${AdditionalFilters}" $prop_file
 
                     '''
                 }
@@ -398,7 +400,8 @@ pipeline {
 				allOf {
 				    expression {return "${Workflow}".toLowerCase().contains("export")}
 				    expression {return ParametersValidation == "Passed" }
-				    expression {return currentBuild.result != "FAILURE" }
+				    expression {return currentBuild.result != "ABORTED" }
+                    expression {return currentBuild.result != "FAILURE" }
 
 				}
             }
@@ -421,6 +424,7 @@ pipeline {
             when{
                 allOf {
                     expression {return ParametersValidation == "Passed" }
+                    expression {return currentBuild.result != "ABORTED" }
                     expression {return currentBuild.result != "FAILURE" }
                 }
             }
@@ -452,7 +456,8 @@ pipeline {
 			    allOf{
     				expression {return "${git_status}" > 0}
     				expression {return ParametersValidation == "Passed" }
-    				expression {return currentBuild.result != "FAILURE" }
+    				expression {return currentBuild.result != "ABORTED" }
+                    expression {return currentBuild.result != "FAILURE" }
 			    }
 			}
             steps {

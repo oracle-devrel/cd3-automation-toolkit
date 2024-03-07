@@ -48,7 +48,8 @@ pipeline {
                 allOf{
                     expression { return env.GIT_BRANCH == 'origin/develop'}
                     expression { return tf_plan == "Changes" }
-					expression {return currentBuild.result != "FAILURE" }
+					expression {return currentBuild.result != "ABORTED" }
+                    expression {return currentBuild.result != "FAILURE" }
                 }
             }
 
@@ -77,7 +78,8 @@ pipeline {
                 allOf{
                     expression { return env.GIT_BRANCH == 'origin/develop'}
                     expression {return tf_plan == "Changes"}
-					expression {return currentBuild.result != "FAILURE" }
+					expression {return currentBuild.result != "ABORTED" }
+                    expression {return currentBuild.result != "FAILURE" }
                 }
             }
 
@@ -98,7 +100,8 @@ pipeline {
                 allOf{
                     expression { return env.GIT_BRANCH == 'origin/develop'}
                     expression {return tf_plan == "Changes"}
-					expression {return currentBuild.result != "FAILURE" }
+					expression {return currentBuild.result != "ABORTED" }
+                    expression {return currentBuild.result != "FAILURE" }
                 }
             }
 
@@ -112,8 +115,11 @@ pipeline {
         }
         stage('Git commit to main') {
             when {
+                allOf{
+                    expression {return currentBuild.result != "ABORTED" }
                     expression {return currentBuild.result != "FAILURE" }
-                 }
+                }
+                }
             steps {
                 catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
                 script {

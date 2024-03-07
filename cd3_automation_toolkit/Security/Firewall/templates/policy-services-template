@@ -1,0 +1,17 @@
+{% if count == 0 %}
+
+service = {
+    ##Add New service policy for {{ region|lower }} here##
+}
+{% else %}
+{% if service_name != "" and service_name != "nan" and service_name != null %}
+{{ policy_tf_name }}_{{service_name}} = {
+  service_name = "{{ service_name }}"
+  network_firewall_policy_id = "{{ policy_tf_name }}"
+  port_ranges = {{ port_ranges }}
+  service_type = "{{service_type}}"
+
+  },
+
+  {% endif %}
+{% endif %}

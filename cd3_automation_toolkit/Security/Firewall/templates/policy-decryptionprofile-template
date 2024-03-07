@@ -1,0 +1,56 @@
+{% if count == 0 %}
+
+decryption_profile = {
+    ##Add New Decryption Profile for {{ region|lower }} here##
+}
+{% else %}
+{% if decryption_profile_name != "" and decryption_profile_name != "nan" and decryption_profile_name != null %}
+    {{ policy_tf_name }}_{{decryptionprofile_tf_name}} = {
+          profile_name = "{{ decryptionprofile_tf_name }}"
+          network_firewall_policy_id = "{{ policy_tf_name }}"
+          profile_type = "{{ decryptionprofile_type }}"
+          {% if are_certificate_extensions_restricted != '' %}
+          are_certificate_extensions_restricted = "{{ are_certificate_extensions_restricted }}"
+          {% elif are_certificate_extensions_restricted == '' and profile_type == 'SSL_FORWARD_PROXY' %}
+          are_certificate_extensions_restricted = "true"
+          {% endif %}
+          {% if is_auto_include_alt_name != '' %}
+          is_auto_include_alt_name = "{{ is_auto_include_alt_name }}"
+          {% elif is_auto_include_alt_name == '' and profile_type == 'SSL_FORWARD_PROXY' %}
+          is_auto_include_alt_name = "true"
+          {% endif %}
+          {% if is_expired_certificate_blocked != '' %}
+          is_expired_certificate_blocked = "{{ is_expired_certificate_blocked }}"
+          {% elif is_expired_certificate_blocked == '' and profile_type == 'SSL_FORWARD_PROXY' %}
+          is_expired_certificate_blocked = "true"
+          {% endif %}
+          {% if is_out_of_capacity_blocked != '' %}
+          is_out_of_capacity_blocked = "{{ is_out_of_capacity_blocked }}"
+          {% endif %}
+          {% if is_revocation_status_timeout_blocked != '' %}
+          is_revocation_status_timeout_blocked = "{{ is_revocation_status_timeout_blocked }}"
+          {% endif %}
+          {% if is_unknown_revocation_status_blocked != '' %}
+          is_unknown_revocation_status_blocked = "{{ is_unknown_revocation_status_blocked }}"
+          {% elif is_unknown_revocation_status_blocked == '' and profile_type == 'SSL_FORWARD_PROXY' %}
+          is_unknown_revocation_status_blocked = "true"
+          {% endif %}
+          {% if is_unsupported_cipher_blocked != '' %}
+          is_unsupported_cipher_blocked = "{{ is_unsupported_cipher_blocked }}"
+          {% elif is_unsupported_cipher_blocked == '' %}
+          is_unsupported_cipher_blocked = "true"
+          {% endif %}
+          {% if is_unsupported_version_blocked != '' %}
+          is_unsupported_version_blocked = "{{ is_unsupported_version_blocked }}"
+          {% elif is_unsupported_version_blocked == '' %}
+          is_unsupported_version_blocked = "true"
+          {% endif %}
+          {% if is_untrusted_issuer_blocked != '' %}
+          is_untrusted_issuer_blocked = "{{ is_untrusted_issuer_blocked }}"
+          {% elif is_untrusted_issuer_blocked == '' and profile_type == 'SSL_FORWARD_PROXY' %}
+          is_untrusted_issuer_blocked = "true"
+          {% endif %}
+          },
+
+  {% endif %}
+{% endif %}
