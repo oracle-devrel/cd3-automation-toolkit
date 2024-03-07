@@ -156,7 +156,7 @@ def export_firewall(inputfile, _outdir, service_dir, config, signer, ct, export_
 
             values_for_column_fw = print_firewall(region, ct, values_for_column_fw, fws, compartment_name, vcn, fw)
 
-    commonTools.write_to_cd3(values_for_column_fw, cd3file, sheetname)
+    commonTools.write_to_cd3(values_for_column_fw, cd3file, sheetName)
     # commonTools.write_to_cd3(values_for_column_bss, cd3file, "NLB-BackendSets-BackendServers")
 
     print("Firewalls exported to CD3\n")
