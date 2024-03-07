@@ -1,0 +1,27 @@
+[data-md-color-scheme="oracle"] {
+    --md-primary-fg-color:        #00796B;
+    --md-primary-fg-color--light: #00796B;
+    --md-primary-fg-color--dark:  #90030C;
+  }
+  :root {
+    --md-primary-fg-color:        #00796B;
+    --md-primary-fg-color--light: #00796B;
+    --md-primary-fg-color--dark:  #90030C;
+  }
+
+.md-grid {
+    max-width: 75%;
+    margin-left: 10%;
+    font-family: Arial;
+    width: auto; 
+    display: flex;
+    flex-direction: row; 
+ }
+
+ .md-typeset .md-button {
+  width: 42%;
+ }
+
+.md-typeset mark {
+  background-color:#d7d7d7;
+}
