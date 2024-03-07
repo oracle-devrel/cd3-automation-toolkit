@@ -24,7 +24,7 @@
     [Introduction](cd3-overview.md)<br>
     [Architecture](architecture.md)<br>
     [Services Supported](supportedservices.md)<br>
-    [Excel Templates](ExcelTemplates.md)<br>
+    [Excel Templates](excel-templates.md)<br>
 
 -   :material-hammer-screwdriver:{ .lg .middle } __Installing CD3__
 
@@ -53,12 +53,11 @@
 
     [Before You Begin](workflows-jenkins.md)<br>
     [Overview](jenkinsintro.md)<br>
-    [Create Resources from OCI using Jenkins (Greenfield Workflow)](GreenField-Jenkins.md)<br>
+    [Create Resources from OCI using Jenkins (Greenfield Workflow)](greenfield-jenkins.md)<br>
     [Examples - Create Network](createnetwork-jenkins.md)<br>
     [Examples - Create Compute/OKE/SDDC/Database]( createcompute-jenkins.md)<br>
     [Provision multiple Services Together](multiple-services-jenkins.md)<br>
-    [Export Resources from OCI using CLI (Non-Greenfield Workflow)](NonGreenField-Jenkins.md)<br>
-    [Examples - Export Network](nongreenfield-jenkins.md)<br>
+    [Export Resources from OCI using CLI (Non-Greenfield Workflow)](nongreenfield-jenkins.md)<br>
     [Synchronize Changes between CLI and Jenkins](sync-cli-jenkins.md)<br>   
     
 
@@ -83,7 +82,7 @@
     ---
     [Expected Behaviour](knownbehaviour.md)<br>
     [Common Issues](commonissues.md)<br>
-    [FAQs](FAQ.md)<br>
+    [FAQs](faq.md)<br>
 
 -  :material-school:{ .lg .middle } __External References__
 

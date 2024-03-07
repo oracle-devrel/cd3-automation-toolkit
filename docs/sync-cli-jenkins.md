@@ -15,15 +15,15 @@ Please follow below steps to sync local terraform_files folder to OCI DevOps GIT
 - ```git status```
   <br>Below screenshot shows changes in variables_phoenix.tf file under phoenix/compute folder.
   
-    <img width="556" alt="Screenshot 2024-01-17 at 9 12 39 PM" src="/images/gitstatus.png">
+    <img width="556" alt="Screenshot 2024-01-17 at 9 12 39 PM" src="../images/gitstatus.png">
 
 - ```git add -A .```
 
 - ```git commit -m "msg"```
   
-    <img width="370" alt="Screenshot 2024-01-17 at 9 13 35 PM" src="/images/gitcommit.png">
+    <img width="370" alt="Screenshot 2024-01-17 at 9 13 35 PM" src="../images/gitcommit.png">
 
 - ```git push```
   
-    <img width="1500" height="300" alt="Screenshot 2024-01-17 at 9 14 24 PM" src="/images/gitpush.png">
+    <img width="1500" height="300" alt="Screenshot 2024-01-17 at 9 14 24 PM" src="../images/gitpush.png">
 

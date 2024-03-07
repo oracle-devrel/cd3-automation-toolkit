@@ -68,7 +68,7 @@ python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.p
 
 !!! example  "example execution of the wrapper script"
 
-      <img src = "/images/cliNGF-1.png" width=90% height=90%>
+      <img src = "../images/cliNGF-1.png" width=90% height=90%>
 
 
 Choose the resources by specifying a single option (for choosing one of these resources) or comma-separated values (to choose multiple resources) as shown in the sample screenshot above.
@@ -85,7 +85,7 @@ c. Shell Script with import commands - tf_import_commands_`<resource>`_nonGF.sh
 <br>Execute the tf_import_commands_`<resource>`_nonGF.sh files that are generated in the outdir.
 <br>The terraform plan should show that infrastructure is up-to-date with no changes required for all regions.
   
-<img src = "/images/cliNGF-2.png" width =50% height=50%>
+<img src = "../images/cliNGF-2.png" width =50% height=50%>
 
 !!! note
     - Make sure to execute **Fetch Compartments OCIDs to variables file** from **CD3 Services** in setUpOCI menu at least once. This will ensure that the variables file in outdir is updated with the OCID information of all the compartments.

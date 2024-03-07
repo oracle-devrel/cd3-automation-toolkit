@@ -34,7 +34,7 @@ Follow the below steps to export the Networking components that includes VCNs, S
 !!! note
        The **oci_core_drg_attachment_management** for RPC resources will be shown as created at the end of import process, but it doesn't actually create any resources and can be safely ignored.
 
-<img width="870" alt="rpc" src="/images/clinetworkexport-1.png">
+<img width="870" alt="rpc" src="../images/clinetworkexport-1.png">
     
    Navigate to the above path and execute the terraform commands:
        ```
@@ -55,10 +55,10 @@ This completes the export of Networking components from OCI.
 
 (Showing old images below)
 <br>VCNs tab:
-![image](/images/clinetworkexport-2.png)
+![image](../images/clinetworkexport-2.png)
 
 Subnets tab:
-![image](/images/clinetworkexport-3.png)
+![image](../images/clinetworkexport-3.png)
 
 
 <br>[Go back to Networking Scenarios](#networking-scenarios)

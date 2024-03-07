@@ -16,7 +16,7 @@ Re-run createTenancyConfig.py with same details in tenancyConfig.properties file
 
 **4. How do I upgrade an existing version of the toolkit to the new one without disrupting my existing tenancy files/directories?**
 <br>  
-Please look at [Steps to Upgrade Your Toolkit.](/upgrade-toolkit.md)
+Please look at [Steps to Upgrade Your Toolkit.](upgrade-toolkit.md)
 
 **5. How do I export instances in batches using different filters?**
 <br>  

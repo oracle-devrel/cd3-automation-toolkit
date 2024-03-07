@@ -16,7 +16,7 @@ To enable independent service directories for the generated Terraform files, fol
     Users have the option to enable or disable multiple service outdirectories based on their specific requirements.
 
     To enable it, *outdir_structure_file* parameter which has the pre-defined path to *outdir_structure_file.properties* should be uncommented. Refer to the screenshot below:
-   ![image](/images/grouptf-1.png)
+   ![image](../images/grouptf-1.png)
 
 
 2. Under the same user-scripts folder, open *outdir_structure_file.properties* and modify the directory names if required. They are in the                                                    format:*OCI_Service_Name=Directory_Name*.
@@ -28,7 +28,7 @@ To enable independent service directories for the generated Terraform files, fol
        * It is mandatory to specify the directory name for each service.
   
   
-  <img width="953" alt="image" src="/images/grouptf-2.png">
+  <img width="953" alt="image" src="../images/grouptf-2.png">
 
    
    Here, the network and nsg directories have been renamed to **demo_network** and **demo_nsg** respectively. The next steps to run the toolkit remain the same as specified in                  [Greenfield workflow](greenfield-cli.md)
@@ -49,12 +49,12 @@ To enable independent service directories for the generated Terraform files, fol
   
   5. Go to the region directory ```/cd3user/tenancies/<customer_name>/terraform_files/<region>/``` . It is clear that all the service-specific folders have been created              successfully.
   
-     <img width="953" alt="image" src="/images/grouptf-3.png">
+     <img width="953" alt="image" src="../images/grouptf-3.png">
    
   
   6. Navigate to the **demo-network** folder. All the auto.tfvars and tfstate files related to Network service can be seen within the **demo_network** folder. Terraform operations like        terraform init, terraform plan, terraform apply etc., will be executed from within these folders.
   
-      <img width="953" alt="image" src="/images/grouptf-4.png">
+      <img width="953" alt="image" src="../images/grouptf-4.png">
    
      
      Similarly for all the services, their respective auto.tfvars and tfstate files get grouped under their assigned directories. This makes it much easier to manage OCI resources using          terraform for large-scale infrastructures.

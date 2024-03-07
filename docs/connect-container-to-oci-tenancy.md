@@ -68,7 +68,7 @@ python createTenancyConfig.py tenancyconfig.properties
 
 
 → Example execution of the script with Advanced Parameters for CI/CD
-    <img width="1124" alt="Screenshot 2024-01-10 at 5 54 02 PM" src="/images/connecttotenancy.png">
+    <img width="1124" alt="Screenshot 2024-01-10 at 5 54 02 PM" src="../images/connecttotenancy.png">
 
 
 **Output:**
