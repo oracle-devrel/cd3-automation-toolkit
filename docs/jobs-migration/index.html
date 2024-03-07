@@ -1920,7 +1920,7 @@
 <ul>
 <li>
 <p>Copy the folders from the Automation Toolkit Jenkins home path <code>/cd3user/tenancies/jenkins_home/jobs/</code> to the corresponding home directory in the Customer Jenkins instance (typically <code>/var/jenkins_home</code>).</p>
-<p><img alt="image" src="/images/migratejobs-1.png" /></p>
+<p><img alt="image" src="../images/migratejobs-1.png" /></p>
 </li>
 </ul>
 </li>
@@ -1954,7 +1954,7 @@
 <p>Include an  attribute as highlighted below within the Terraform provider block. This is optional but necessary in case Terraform plan encounters an error.</p>
 <div class="language-text highlight"><pre><span></span><code>  experiments = [module_variable_optional_attrs]
 </code></pre></div>
-<p><img alt="image" src="/images/migratejobs-2.png" /></p>
+<p><img alt="image" src="../images/migratejobs-2.png" /></p>
 </li>
 </ul>
 </li>
@@ -1966,7 +1966,7 @@
 <ul>
 <li>
 <p>Update the correct path within the <code>backend.tf</code> file for Terraform.</p>
-<p><img alt="image" src="/images/migratejobs-3.png" /></p>
+<p><img alt="image" src="../images/migratejobs-3.png" /></p>
 </li>
 </ul>
 </li>
@@ -1981,13 +1981,13 @@
 <ul>
 <li>
 <p>Verify that the specified jobs and pipelines, initialized by the Automation Toolkit, are visible in the Customer Jenkins instance.</p>
-<p><img alt="image" src="/images/migratejobs-4.png" /></p>
+<p><img alt="image" src="../images/migratejobs-4.png" /></p>
 </li>
 </ul>
 </li>
 <li>
 <p>Pipeline Job Output
-        <img alt="image" src="/images/migratejobs-5.png" /></p>
+        <img alt="image" src="../images/migratejobs-5.png" /></p>
 </li>
 </ol>
 <p><br></p>
@@ -2012,7 +2012,7 @@
 <li>Open the <code>jenkins.properties</code> file located in the <code>/var/jenkins_home/</code> directory.</li>
 <li>
 <p>Update the <code>git_url</code> in the file with the new Git server URL.</p>
-<p><img alt="image" src="/images/migratejobs-6.png" /></p>
+<p><img alt="image" src="../images/migratejobs-6.png" /></p>
 </li>
 </ul>
 </li>
@@ -2022,7 +2022,7 @@
 <li>Copy the <code>01_jenkins-config.groovy</code> file from the Automation Toolkit Jenkins path (<code>/cd3user/tenancies/jenkins_home/init.groovy.d</code>) to the init path of the Customer Jenkins instance.</li>
 <li>
 <p>Update the path to the groovy file accordingly.</p>
-<p><img height=1500 width=700 src="/images/migratejobs-7.png"></p>
+<p><img height=1500 width=700 src="../images/migratejobs-7.png"></p>
 </li>
 </ul>
 </li>
@@ -2032,7 +2032,7 @@
 <li>Stop and start the Customer Jenkins instance to apply the changes.</li>
 <li>
 <p>After that, all Git URLs will be updated and point to new Git Url inside pipeline jobs.</p>
-<p><img alt="image" src="/images/migratejobs-8.png" /></p>
+<p><img alt="image" src="../images/migratejobs-8.png" /></p>
 </li>
 </ul>
 </li>

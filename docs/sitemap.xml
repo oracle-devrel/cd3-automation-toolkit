@@ -181,22 +181,27 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/notrequired-3/</loc>
+         <lastmod>2024-03-07</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/notrequired-4/</loc>
+         <lastmod>2024-03-07</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/notrequired-5/</loc>
+         <lastmod>2024-03-07</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/notrequired/</loc>
          <lastmod>2024-03-07</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/opa-integration/</loc>
-         <lastmod>2024-03-07</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/prereqs-local/</loc>
-         <lastmod>2024-03-07</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/prereqs-stack/</loc>
          <lastmod>2024-03-07</lastmod>
          <changefreq>daily</changefreq>
     </url>
@@ -212,11 +217,6 @@
     </url>
     <url>
          <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/resource-manager-upload/</loc>
-         <lastmod>2024-03-07</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/seq_diagram2/</loc>
          <lastmod>2024-03-07</lastmod>
          <changefreq>daily</changefreq>
     </url>

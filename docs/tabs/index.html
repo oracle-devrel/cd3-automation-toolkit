@@ -2396,7 +2396,7 @@ The column "SSH Key Var Name" accepts SSH key value directly or the name of vari
 <li>The service connector resources created via automation will not have the corresponding IAM policies between source and destination entities. It has to be created separately.</li>
 <li>The user will get an option to create the <strong>IAM policy</strong> when you click on <strong>Edit</strong> for the respective service connector provisioned through terraform like in below screenshot:</li>
 </ul>
-<p><img alt="image" src="/images/tabs-1.png" /></p>
+<p><img alt="image" src="../images/tabs-1.png" /></p>
 <ul>
 <li>
 <p>Also, When the target kind is <strong>'notifications'</strong> the value for formatted messages parameter is set to <strong>'true'</strong> as default. Its set to <strong>'false'</strong> only when the source is 'streaming'.</p>
@@ -2405,7 +2405,7 @@ The column "SSH Key Var Name" accepts SSH key value directly or the name of vari
 <p>After executing tf_import_commands during export of service connectors, the terraform plan will show log-sources ordering as changes and it rearranges the order for log-sources for that service connector if source/target kind is logging. This can be ignored and you can proceed with terraform apply.</p>
 </li>
 </ul>
-<p><img alt="image" src="/images/tabs-2.png" /></p>
+<p><img alt="image" src="../images/tabs-2.png" /></p>
 <h2 id="oke-tab">OKE Tab</h2>
 <p>Use this tab to create OKE components in OCI.</p>
 <blockquote>
@@ -2451,8 +2451,8 @@ default = {
 <ul>
 <li>Current version of the toolkit support only single availability domain placement for the nodepool. So if a cluster is exported with nodepools having multiple placement configuration, the terraform plan will show changes similar to:</li>
 </ul>
-<p><img alt="image" src="/images/tabs-3.png" /></p>
-<p><img src= "/images/tabs-4.png" width=50% height=50%></p>
+<p><img alt="image" src="../images/tabs-3.png" /></p>
+<p><img src= "../images/tabs-4.png" width=50% height=50%></p>
 <p>To avoid this, an ignore statement as shown below is added to ignore any changes to the placement configuration in nodepool.</p>
 <div class="language-text highlight"><pre><span></span><code>  ignore_changes = [node_config_details[0].placement_configs,kubernetes_version, defined_tags[&quot;Oracle-Tags.CreatedOn&quot;], defined_tags[&quot;Oracle-Tags.CreatedBy&quot;],node_config_details[0].defined_tags[&quot;Oracle-Tags.CreatedOn&quot;],node_config_details[0].defined_tags[&quot;Oracle-Tags.CreatedBy&quot;]]
 </code></pre></div>

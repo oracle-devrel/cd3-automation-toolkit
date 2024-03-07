@@ -1919,31 +1919,31 @@
 <p>Please make sure that service for which export is done does not have existing tfvars/state file.</p>
 </div>
 <p><strong>Step 1</strong>: 
-<br>Choose the Blank CD3 Excel sheet template from <a href="exceltemplates.md">Excel Templates</a>.</p>
+<br>Choose the Blank CD3 Excel sheet template from <a href="../excel-templates/">Excel Templates</a>.</p>
 <p><strong>Step 2</strong>:
 <br>Login to Jenkins URL with user created after initialization and click on setUpOCI pipeline from Dashboard. Click on <strong>Build with Parameters</strong> from left side menu.</p>
-<p><img width="702" height="400" alt="Screenshot 2024-01-16 at 10 56 42 AM" src="/images/jenkinsNGF-1.png"><br></p>
+<p><img width="702" height="400" alt="Screenshot 2024-01-16 at 10 56 42 AM" src="../images/jenkinsNGF-1.png"><br></p>
 <blockquote>
 <p><strong>Note:</strong> - Only one user at a time using the Jenkins setup is supported in the current release of the toolkit.</p>
 </blockquote>
 <p><strong>Step 3</strong>:
 <br>Upload the above chosen Excel sheet in <strong>Excel_Template</strong> section.</p>
-<p><img width="348" alt="Screenshot 2024-01-16 at 11 04 47 AM" src="/images/jenkinsNGF-2.png"><br></p>
+<p><img width="348" alt="Screenshot 2024-01-16 at 11 04 47 AM" src="../images/jenkinsNGF-2.png"><br></p>
 <blockquote>
 <p>This will copy the Excel file at <code>/cd3user/tenancies/&lt;customer_name&gt;</code> inside the container. It will also take backup of existing Excel on the container by appending the current datetime if same filename is uploaded in multiple executions.</p>
 </blockquote>
 <p><strong>Step 4:</strong> 
 <br>Select the workflow as <strong>Export Resources from OCI</strong>(Non-Greenfield Workflow). Choose single or multiple MainOptions as required and then corresponding SubOptions.
 <br>Below screenshot shows export of Network and Compute.</p>
-<p><img width="554" alt="Screenshot 2024-01-17 at 7 11 42 PM" src="/images/jenkinsNGF-3.png"><br></p>
+<p><img width="554" alt="Screenshot 2024-01-17 at 7 11 42 PM" src="../images/jenkinsNGF-3.png"><br></p>
 <p><strong>Step 5:</strong> 
 <br>Specify region and compartment from where you want to export the data.
 <br>It also asks for service specific filters like display name patterns for compute. Leave empty if no filter is needed.</p>
-<p><img width="835" alt="Screenshot 2024-01-17 at 7 10 56 PM" src="/images/jenkinsNGF-4.png"><br>
+<p><img width="835" alt="Screenshot 2024-01-17 at 7 10 56 PM" src="../images/jenkinsNGF-4.png"><br>
 <br>Click on <strong>Build</strong> at the bottom.<br></p>
 <p><strong>Step 6:</strong>
 <br>setUpOCI pipeline is triggered and stages are executed as shown below: </p>
-<p><img width="1505" alt="Screenshot 2024-01-17 at 9 37 22 PM" src="/images/jenkinsNGF-5.png"><br>
+<p><img width="1505" alt="Screenshot 2024-01-17 at 9 37 22 PM" src="../images/jenkinsNGF-5.png"><br>
 </br></p>
 <p><strong>Expected Output of 'Execute setUpOCI' stage:</strong><br></p>
 <ol type="a">
