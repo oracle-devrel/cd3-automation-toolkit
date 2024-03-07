@@ -11,7 +11,7 @@ To start generating terraform using the toolkit with CLI, make sure below things
 
 4. Review setUpOCI.properties file _/cd3user/tenancies/<customer_name\>/<customer_name\>_setUpOCI.properties_.
 
-_Current Version: v2024.1.0_
+_Current Version: v2024.2.0_
 ```ini
 [Default]
 
