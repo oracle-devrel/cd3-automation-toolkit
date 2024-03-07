@@ -1,4 +1,5 @@
-## CD3 Validator Features
+# CD3 Validator Features
+
 With version v9.0 we have introduced validator for Multiple VCN CIDRs in Networking Tab.
 CD3 Validator helps you validate the Compartments, Groups, Policies, Network component entries, Instances, Block Volumes, FSS in your CD3 to ensure error free, smooth creation of the resources when Terraform is applied.
 Below is a list of checks done by the CD3 Validator:
@@ -14,5 +15,6 @@ Below is a list of checks done by the CD3 Validator:
 | **Block Volumes** | <ul><li>Checks if the Columns - Region and Compartment have valid entries</li><li>Checks for mandatory columns Block Name, Availability Domain, Attach Type.</li><li>Checks for valid values for columns - Availability Domain, Attach Type, Attached to Instance.</li><li>Checks if AD mentioned in Block Volumes sheet is same as AD mentioned in Instances sheet for the instance to which block volume is to be attached.</li></ul> |
 | **FSS** | <ul><li>Checks if the Columns - Region and Compartment have valid entries</li><li>Checks for mandatory columns - Region, Compartment Name, Availability Domain, MountTarget Name, MountTarget SubnetName.</li><li>Checks if Subnet Name specified is valid as per Subnets Tab of CD3</li><li>Checks if the NSG names mentioned in NSGs column are part of NSGs tab of the CD3 excel.</li></ul> |
 
-Log file containing CD3 validator checks is generated at: ```/cd3user/tenancies/<customer_name>/<customer_name>_cd3validator.log```. 
-Expected ERROR in the log file: Compartment Network does not exist in OCI.→ These error mean that the component is not found in OCI. So, please make sure to create the Compartment "Network" before validating other tabs.
+Log file containing CD3 validator checks is generated at: ```/cd3user/tenancies/<customer_name>/<customer_name>_cd3validator.log```. <br>
+**Expected ERROR** in the log file: <br>
+Compartment Network does not exist in OCI.→ This error means that the component is not found in OCI. So, please make sure to create the Compartment "Network" before validating other tabs.

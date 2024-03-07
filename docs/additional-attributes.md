@@ -4,67 +4,65 @@
 
 1. Add the attribute name to the CD3 Excel sheet (based on the resource the attribute belongs to) as given in Terraform Official Documentation.
 2. Uncomment the attribute in .tf files (terraform modules in outdirectory, if they are commented). 
-3. Uncomment the attribute in Jinja template for the resource attribute. (Resource to Jinja template mapping is available here)
+3. Uncomment the attribute in Jinja template for the resource attribute. (Resource to Jinja template mapping is available [here](#resource-to-template-mapping))
 4. Update the variable file for any additional changes like image ocids, ssh public keys, etc
 
 **Example 1: To add an attribute for Instances - (preserve_boot_volume)**
 
-<li>Here is the Terraform Hashicorp documentation for instances - https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/core_instance </li>
-<li>Add an additional column preserve_boot_volume to the Instances Sheet as shown below. Optionally change the underscores to spaces for better readability.
-</li>
+- Here is the Terraform Hashicorp documentation for instances - https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/core_instance 
+- Add an additional column preserve_boot_volume to the Instances Sheet as shown below. Optionally change the underscores to spaces for better readability.
 
-<img src = "/images/additionalattr-1.png" width=50% height=50%>
+    <img src = "/images/additionalattr-1.png" width=50% height=50%>
 
 
-Uncomment the parameter in **instance.tf** file if not already uncommented.
+- Uncomment the parameter in **instance.tf** file if not already uncommented.
 
-<img src = "/images/additionalattr-2.png" width=50% height=50%>
+    <img src = "/images/additionalattr-2.png" width=50% height=50%>
 
-Uncomment the parameter in **cd3_automation_toolkit\Compute\templates\instance-template** . Any line that is between {# <and> #} are commented in Jinja templates. From the screenshot below we note that the condition for **preserve_boot_volume**  is within the Jinja comments. Copy the highlighted line and place it after/outside line 184 (**#}**) as per below screenshot.
+- Uncomment the parameter in **cd3_automation_toolkit\Compute\templates\instance-template** . Any line that is between {# <and> #} are commented in Jinja templates. From the screenshot below we note that the condition for **preserve_boot_volume**  is within the Jinja comments. Copy the highlighted line and place it after/outside line 184 (**#}**) as per below screenshot.
 
-**Before**
+    **Before:**
   
-<img src = "/images/additionalattr-3.png" width=50% height=50%>
+    <img src = "/images/additionalattr-3.png" width=50% height=50%>
 
-**After**
+    **After:**
 
-<img src = "/images/additionalattr-4.png" width=50% height=50%>
-
-
-Apart from the above changes, optionally, update the **instance_ssh_keys** and **instance_source_ocids** in your variables file before executing the toolkit to generate the auto.tfvars for instances.
+    <img src = "/images/additionalattr-4.png" width=50% height=50%>
 
 
+- Apart from the above changes, optionally, update the **instance_ssh_keys** and **instance_source_ocids** in your variables file before executing the toolkit to generate the auto.tfvars for instances.
 
-**Exemple 2 : To Add Freeform Tags**
 
-Automation Tool Kit allows the tagging of resources. To use this option, the user is required to add the below column to the appropriate CD3 sheet.
-Ex: To Tag your Instances, Open the ‘Instances’ sheet of your CD3 and add the below column at the end.
-<li>FreeForm Tags</li>
 
-    Note
+**Example 2 : To Add Freeform Tags**
+
+- Automation Tool Kit allows the tagging of resources. To use this option, the user is required to add the below column to the appropriate CD3 sheet.
+Ex: To Tag your Instances, Open the ‘Instances’ sheet of your CD3 and add the column **FreeForm Tags** at the end.
+
+
+!!! Note
 
     The Tag Values (Default and Freeform Tags) specified will apply to all the resources in the tab.
     Ex: The tags applied to VCNs will not be applied to its objects like IGW, NGW, SGW, LPG, etc
     Empty column values are allowed for FreeForm and Defined Tags; when used it does not attach any tags to the resource. eg: Row 1 in the below example
     Semi Colon is used as Delimiter between multiple tag values (Example as shown below)
 
-Allowed Values for Tags include the following formats: (**Semi-colon** delimited values to be entered)
+- Allowed Values for Tags include the following formats: (**semi-colon** delimited values to be entered)
 
-**Example:**
+    **Example:**
 
-| S.No | Freeform Tags | Defined Tags |
-| --- | --- | --- |
-| 1. | | |
-| 2. | Network=Test1;Network2=Test40 | Operations.CostCenter=01;Users.Name=user01 |
-| 3. | Network=Test2; Network2=Test4 | Application.Env=Dev |
-| 4. | Network= | OS.Version= |
-| 5. | testing | Platform.Usage |
+    | S.No | Freeform Tags | Defined Tags |
+    | --- | --- | --- |
+    | 1. | | |
+    | 2. | Network=Test1;Network2=Test40 | Operations.CostCenter=01;Users.Name=user01 |
+    | 3. | Network=Test2; Network2=Test4 | Application.Env=Dev |
+    | 4. | Network= | OS.Version= |
+    | 5. | testing | Platform.Usage |
 
-    Export of new attributes is only supported if the attribute name of Terraform documentation matches that of the Python SDK. Export may fail to fetch the data incase there is a mismatch of the variable names.
+- Export of new attributes is only supported if the attribute name of Terraform documentation matches that of the Python SDK. Export may fail to fetch the data incase there is a mismatch of the variable names.
 
-## Resource to Template Mapping -
+## Resource to Template Mapping
 
-**Added New options for CIS compliance.**
 
 The following Table maps the Excel Sheet to the Resources to the Templates:
 

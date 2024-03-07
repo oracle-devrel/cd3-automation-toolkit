@@ -13,21 +13,24 @@ To enable independent service directories for the generated Terraform files, fol
 
 1. Go to ``` /cd3user/oci_tools/cd3_automation_toolkit/user-scripts/tenancyconfig.properties```. Enter required config details. 
 
-   Users have the option to enable or disable multiple service outdirectories based on their specific requirements.
+    Users have the option to enable or disable multiple service outdirectories based on their specific requirements.
 
-   To enable it, uncomment the *outdir_structure_file* parameter which has the pre-defined path to *outdir_structure_file.properties*. Refer to the screenshot below:
+    To enable it, *outdir_structure_file* parameter which has the pre-defined path to *outdir_structure_file.properties* should be uncommented. Refer to the screenshot below:
    ![image](/images/grouptf-1.png)
 
-<br>
-2. Under the same user-scripts folder, open *outdir_structure_file.properties* and modify the directory names if required. They are in the                                                    format:*OCI_Service_Name=Directory_Name*.
-   > Note: 
-   > * Do not modify the OCI service Names specified on the left hand side.Modify the directory name specified on Right Hand Side
-   > * Directory will be created for that service under <region> directory. Do not provide absolute path.
-   > * To make any changes to the directory structure later, it is necessary to rerun the "createTenancy.py" script from scratch.
-   > * It is mandatory to specify the directory name for each service.
-  
-   <img width="953" alt="image" src="/images/grouptf-2.png">
 
+2. Under the same user-scripts folder, open *outdir_structure_file.properties* and modify the directory names if required. They are in the                                                    format:*OCI_Service_Name=Directory_Name*.
+
+!!! note
+       * Do not modify the OCI service Names specified on the left hand side.Modify the directory name specified on Right Hand Side only.
+       * Directory will be created for that service under <region> directory. Do not provide absolute path.
+       * To make any changes to the directory structure later, it is necessary to rerun the "createTenancyConfig.py" script from scratch.
+       * It is mandatory to specify the directory name for each service.
+  
+  
+  <img width="953" alt="image" src="/images/grouptf-2.png">
+
+   
    Here, the network and nsg directories have been renamed to **demo_network** and **demo_nsg** respectively. The next steps to run the toolkit remain the same as specified in                  [Greenfield workflow](greenfield-cli.md)
 
   

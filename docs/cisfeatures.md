@@ -1,5 +1,4 @@
-
-## Additional CIS Compliance Features
+#CIS Compliance Features
 
 These are some additional "**CIS Compliance Features**" which are not part of CD3 Excel sheet but just included into setUpOCI Menu.
 
