@@ -1,10 +1,11 @@
 # Export Resources from OCI via Jenkins(Non-Greenfield Workflow)
 
-> **Note:**: Please make sure that service for which export is done does not have existing tfvars/state file.
+!!! Note
+    Please make sure that service for which export is done does not have existing tfvars/state file.
 
 **Step 1**: 
-<br>Choose the appropriate CD3 Excel sheet template from [Excel Templates](exceltemplates.md)
-Choose **CD3-Blank-template.xlsx** for an empty sheet.
+<br>Choose the Blank CD3 Excel sheet template from [Excel Templates](exceltemplates.md).
+
 
 **Step 2**:
 <br>Login to Jenkins URL with user created after initialization and click on setUpOCI pipeline from Dashboard. Click on **Build with Parameters** from left side menu.
@@ -49,6 +50,9 @@ Choose **CD3-Blank-template.xlsx** for an empty sheet.
 </ul>
 </ol>
 
+!!! Important
+    The updated excel sheet containing exported data from OCI is present at ```/cd3user/tenancies/<customer_name>``` inside the container and needs to be copied manually to the local system using scp.
+
 **Expected Output of 'Run Import Commands' stage:**<br>
 <ol type="a">
   <li>Executes shell scripts with import commands(<b>tf_import_commands_&lt;resource&gt;_nonGF.sh</b>) generated in the previous stage </li>
@@ -62,7 +66,8 @@ Choose **CD3-Blank-template.xlsx** for an empty sheet.
 </ul>
 </ol>
     
-<br>
+
     
-> **Note:**<br>
->   Once you have exported the required resources and imported into tfstate, you can use the toolkit to modify them or create new on top of them using 'Create Resources in OCI' workflow.
+!!! note
+    - Make sure to execute **Fetch Compartments OCIDs to variables file** from **CD3 Services** in setUpOCI menu at least once. This will ensure that the variables file in outdir is updated with the OCID information of all the compartments.
+    - Once the export (including the execution of **tf_import_commands_<resource>_nonGF.sh**) is complete, switch the value of **workflow_type** back to **create_resources**. This allows the toolkit to modify these resources or create new ones on top of them.

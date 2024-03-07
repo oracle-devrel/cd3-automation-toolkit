@@ -1,5 +1,5 @@
     
-## **Introduction to Jenkins with the toolkit**
+# Introduction to Jenkins with the toolkit
 
 ### Jenkins Dashbord
 
@@ -16,9 +16,8 @@ This is equivalent to running *setUpOCI.py* from CLI. This will generate the ter
 
 Below table shows the stages executed in this pipeline along with their description:
 
-<br>
 
-<b><i>setUpOCI<i> Pipeline Stages</b>
+<b><i>setUpOCI Pipeline Stages</i></b>
 
 |Stage Name      | Description  | Possible Outcomes |
 | --------------- | ------------ | ----------------- |
@@ -30,7 +29,6 @@ Below table shows the stages executed in this pipeline along with their descript
 | <b>Trigger Terraform Pipelines</b> | Corresponding terraform apply pipelines <br> are auto triggered based on the service chosen | |
 
 
-<br>
 
 ### 2. terraform_files Folder
 
@@ -40,9 +38,8 @@ Inside each service directory, pipelines for **terraform-apply** and **terraform
 
 The terraform pipelines are either triggered automatically from setUpOCI pipeline or they can be triggered manually by navigating to any service directory path.
 
-<br>
 
-<b><i>terraform-apply<i> Pipeline Stages</b>
+<b><i>terraform-apply Pipeline Stages</I></b>
 
 |Stage Name      | Description  | Possible Outcomes |
 | --------------- | ------------ | ----------------- |
@@ -53,10 +50,9 @@ The terraform pipelines are either triggered automatically from setUpOCI pipelin
 |Terraform Apply | Applies the terraform configurations | Displays Failed if any issue <br> while executing terraform apply |
 
 
-<br>
 
 
-<b><i>terraform-destroy<i> Pipeline Stages</b>
+<b><i>terraform-destroy Pipeline Stages</i></b>
 
 |Stage Name      | Description  | Possible Outcomes |
 | --------------- | ------------ | ----------------- |
@@ -65,7 +61,6 @@ The terraform pipelines are either triggered automatically from setUpOCI pipelin
 | Get Approval | Approval Stage for reviewing the terraform plan. <br> There is 24 hours timeout for this stage. | Proceed - goes ahead with Terraform Destroy stage. <br> Abort - pipeline is aborted and stops furter execution |
 |Terraform Destroy | Destroys the terraform configurations | Displays Failed if any issue <br> while executing terraform destroy |
 
-<br>
 
 ### 3. Region Based Views
 When you click on any of the views, it displays all terraform-apply and terraform-destroy pipelines in single screen. This can also be used to trigger the terraform pipelines. This also includes Global view for global services like RPC.
