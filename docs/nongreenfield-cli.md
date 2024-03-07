@@ -44,9 +44,16 @@ workflow_type=export_resources
 <br>Execute the setUpOCI.py script to start exporting the resources to CD3 and creating the terraform configuration files.
 
 Command to Execute:
-<br>```cd /cd3user/oci_tools/cd3_automation_toolkit/```
-<br>```python setUpOCI.py <path_to_setupOCI.properties>```  ie
-<br>```python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties```
+```
+    cd /cd3user/oci_tools/cd3_automation_toolkit/
+```
+```
+    python setUpOCI.py <path_to_setupOCI.properties>
+```  
+ie
+```
+python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties
+```
 
 !!! example  "example execution of the wrapper script"
 
@@ -81,5 +88,5 @@ c. Shell Script with import commands - tf_import_commands_`<resource>`_nonGF.sh
 <img src = "/images/cliNGF-2.png" width =50% height=50%>
 
 !!! note
-    - Make sure to execute **"Fetch Compartments OCIDs to variables file"** from **CD3 Services** in setUpOCI menu at least once. This will       ensure that the variables file in outdir is updated with the OCID information of all the compartments.
-    - Once the export (including the execution of **tf_import_commands_`<resource>`_nonGF.sh**) is complete, switch the value of **workflow_type** back to **create_resources**. This allows the Tool Kit to support the tenancy as Green Field from this point onwards.
+    - Make sure to execute **Fetch Compartments OCIDs to variables file** from **CD3 Services** in setUpOCI menu at least once. This will ensure that the variables file in outdir is updated with the OCID information of all the compartments.
+    - Once the export (including the execution of **tf_import_commands_`<resource>`_nonGF.sh**) is complete, switch the value of **workflow_type** back to **create_resources**. This allows the toolkit to modify these resources or create new ones on top of them.

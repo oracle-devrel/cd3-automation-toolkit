@@ -3,8 +3,9 @@
 Jenkins integration with the toolkit is provided to jump start your journey with CI/CD for IaC in OCI. A beginner level of understanding of Jenkins is required.
 
 ## **Pre-reqs for Jenkins Configuration**
-* The configurations are done when you execute createTenancyConfig.py in [Connect container to OCI Tenancy](connect-container-to-oci-tenancy.md). Please validate them:
-  - jenkins.properties file is created under _/cd3user/tenancies/jenkins\_home_  as per input parameters in tenancyConfig.properties<br>
+The configurations are done when you execute createTenancyConfig.py in [Connect container to OCI Tenancy](connect-container-to-oci-tenancy.md). Validate them here:
+
+  - jenkins.properties file is created under ```/cd3user/tenancies/jenkins_home```  as per input parameters in tenancyconfig.properties<br>
   - An Object Storage bucket is created in OCI in the specified compartment to manage tfstate remotely. <br>
   - Customer Secret Key is configured for the user for S3 credentials of the bucket. <br>
   - A DevOps Project, Repo and Topic are created in OCI in the specified compartment to store terraform_files. GIT is configured on the container with config file at ```/cd3user/.ssh/config``` <br>
