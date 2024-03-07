@@ -38,9 +38,16 @@ workflow_type=create_resources
 <br>Execute the setUpOCI.py script to start creating the terraform configuration files.
     
 Command to Execute:
-<br>```cd /cd3user/oci_tools/cd3_automation_toolkit/```
-<br>```python setUpOCI.py  <path_to_setupOCI.properties>``` ie
-<br>```python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties```
+```
+cd /cd3user/oci_tools/cd3_automation_toolkit/
+```
+```
+python setUpOCI.py  <path_to_setupOCI.properties>
+``` 
+i.e. 
+```
+python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties
+```
          
 !!! example  "example execution of the wrapper script"
 

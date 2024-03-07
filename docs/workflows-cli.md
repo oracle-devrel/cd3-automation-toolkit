@@ -6,7 +6,7 @@
 
 Make sure to use/modify the properties file at _/cd3user/tenancies/<customer\_name\>/<customer\_name>\_setUpOCI.properties_ during executions.
 
-```ini
+```
 [Default]
 
 #Input variables required to run setUpOCI script
