@@ -1,12 +1,13 @@
 # Store Terraform State into Object Storage Bucket
 
-> [!Caution]  
-> When utilizing remote state and deploying the stack to OCI Resource Manager through the **Upload current terraform files/state to Resource Manager** option under **Developer Services**, attempting to execute terraform plan/apply directly from OCI Resource Manager may result in below error.
-> 
-<img width="597" alt="Screenshot 2024-01-17 at 11 38 54 PM" src="/images/remotestate-1.png">
+!!! Caution  
+    - When utilizing remote state and deploying the stack to OCI Resource Manager through the **Upload current terraform files/state to Resource Manager** option under **Developer Services**, attempting to execute terraform plan/apply directly from OCI Resource Manager may result in below error.
 
-> This option is disabled while using the toolkit via Jenkins. While using it via CLI, you will have to remove backend.tf from the directory, bring the remote state into local and then upload the stack.
+    <img width="50%" height="50%" alt="Screenshot 2024-01-17 at 11 38 54 PM" src="/images/remotestate-1.png">
 
+    - This option is disabled while using the toolkit via Jenkins. While using it via CLI, you will have to remove backend.tf from the directory, bring the remote state into local and then upload the stack.
+
+<br>
 
 * Toolkit provides the option to store terraform state file(tfstate) into Object Storage bucket.
 * This can be achieved by setting ```use_remote_state=yes``` under Advanced Parameters in ```tenancyconfig.properties``` file while executing ```createTenancyConfig.py```.
@@ -16,7 +17,7 @@
       
 * backend.tf file that gets generated -
   
->>   ```
+  ```
   terraform {
   backend "s3" {
     key      = "<region_name>/<service_dir_name>/terraform.tfstate"
