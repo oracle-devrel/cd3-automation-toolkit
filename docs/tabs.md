@@ -591,13 +591,13 @@ Note -
 - The service connector resources created via automation will not have the corresponding IAM policies between source and destination entities. It has to be created separately.
 - The user will get an option to create the **IAM policy** when you click on **Edit** for the respective service connector provisioned through terraform like in below screenshot:
 
-![image](/images/tabs-1.png)
+![image](../images/tabs-1.png)
 
 - Also, When the target kind is **'notifications'** the value for formatted messages parameter is set to **'true'** as default. Its set to **'false'** only when the source is 'streaming'.
   
 - After executing tf_import_commands during export of service connectors, the terraform plan will show log-sources ordering as changes and it rearranges the order for log-sources for that service connector if source/target kind is logging. This can be ignored and you can proceed with terraform apply.
 
- ![image](/images/tabs-2.png)
+ ![image](../images/tabs-2.png)
 
 ## OKE Tab
 
@@ -656,9 +656,9 @@ Notes:
 
 - Current version of the toolkit support only single availability domain placement for the nodepool. So if a cluster is exported with nodepools having multiple placement configuration, the terraform plan will show changes similar to:
 
-![image](/images/tabs-3.png)
+![image](../images/tabs-3.png)
 
-<img src= "/images/tabs-4.png" width=50% height=50%>
+<img src= "../images/tabs-4.png" width=50% height=50%>
 
 
 To avoid this, an ignore statement as shown below is added to ignore any changes to the placement configuration in nodepool.

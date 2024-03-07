@@ -18,7 +18,7 @@ The CD3 Automation toolkit reads input data in the form of CD3 Excel sheet and g
 <u> **CD3 Toolkit Process</u>**
 
 
-<img width="1049" alt="CD3 Toolkit Process" src="/images/CD3-Process.png">
+<img width="1049" alt="CD3 Toolkit Process" src="../images/CD3-Process.png">
 
 <br>
 The toolkit supports 2 workflows:<br>

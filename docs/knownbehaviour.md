@@ -19,7 +19,7 @@
     6. The addition of new Subnets to exported VCNs and new VCNs is allowed.
     7. You might come across below error during export of NSGs(while runnig terraform import commands for NSGs). It occurs when NSG and the VCN are in different compartments. In such cases, please modify \<customer_name\>_nsgs.auto.tfvars, specify the compartment name of the VCN in network_compartment_id field of the problematic NSG.
 
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="/images/knownbehaviour-0.png" alt="image" width="600" height="auto">
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/knownbehaviour-0.png" alt="image" width="600" height="auto">
 
       8.. When you have exported Identity and Network services together in single outdirectory for the first time and executing identity import script. You might see import failure with below error message. Execute **Major network import script** first then run Identity import script.<br> 
 
@@ -36,15 +36,15 @@
 Create a Load Balancer with Reserved IP: When you create a LBaaS with reserved ip as "Y" and do a terraform apply, everything will go smooth and be in sync for the first time. If you do a terraform plan immediately (post apply), you will find that the plan changes the private ip of load balancer to null.
 
 
-  ![image](/images/knownbehaviour-1.png)
+  ![image](../images/knownbehaviour-1.png)
 
   This is a behaviour of Terraform.  In these scenarios, please add the private ip ocid to the auto.tfvars as shown below before you run a terraform plan again.
 
-  <img src ="/images/knownbehaviour-2.png" width=75% height=75%>
+  <img src ="../images/knownbehaviour-2.png" width=75% height=75%>
 
   Once you do the above change, and then execute a terraform plan/apply, you will get the below error and it can be ignored.
 
-  ![image](/images/knownbehaviour-3.png)
+  ![image](../images/knownbehaviour-3.png)
     
 **2.** 
 While exporting and synching the tfstate file for LBaaS Objects, the user may be notified that a few components will be modified on apply. In such scenarios, add the attributes that the Terraform notifies to be changed to the appropriate CD3 Tab of Load Balancer and uncomment the parameter from Jinja2 Templates and Terraform (.tf) files. Re-run the export.
@@ -54,7 +54,7 @@ Add a new column - "Freeform Tags" to the CD3 Excel Sheets as per necessity, to 
   
   **Example:**
   
-  <img src = "/images/knownbehaviour-4.png" width =50% height=50%>
+  <img src = "../images/knownbehaviour-4.png" width =50% height=50%>
   
 **4.**
 Toolkit will create TF for only those DRGs which are part of CD3 and skip Route Tables for the DRGs created outside of CD3. This will also synch DRG rules in your tenancy with the terraform state.
@@ -65,7 +65,7 @@ Toolkit will create TF for only those DRGs which are part of CD3 and skip Route 
 **5.**
 Match All criteria specified for Route Distribution Statement In DRGs sheet will show below output each time you do terraform plan:
 
-  ![image](/images/knownbehaviour-5.png)
+  ![image](../images/knownbehaviour-5.png)
   
   The service api is designed in such a way that it expects an empty list for match all. And it sends back an empty list in the response every time. Hence this behaviour from terraform side. This can be safely ignored.
 
@@ -144,7 +144,7 @@ If the description field is having any newlines in the tenancy then the export o
 Terraform ordering changes observed during plan phase for OCI compute plugins.
 
 
-  ![image](/images/knownbehaviour-6.png)
+  ![image](../images/knownbehaviour-6.png)
 
   It changes the order of plugin's in terraform state file and doesn't change anything in OCI console for compute resource.
 

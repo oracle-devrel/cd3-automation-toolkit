@@ -44,7 +44,7 @@ docker save cd3toolkit:${image_tag} | gzip > cd3toolkit_${image_tag}.tar.gz
 * Make sure you are using version **1.9** for **Rancher deskop**, if not please install the latest.
 * Make sure to Enable **Networking Tunnel** under Rancher settings as shown in the screenshot below,
   
-     <img width="746" alt="image" src="/images/launchcontainer-1.png">
+     <img width="746" alt="image" src="../images/launchcontainer-1.png">
      
 * Login to the CD3 docker container using next section and set the proxies(if any) which helps to connect internet from the container.
 

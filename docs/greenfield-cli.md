@@ -60,7 +60,7 @@ python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.p
 <br>→ After fetching the compartment details, the toolkit will display the menu options as shown below:
 
 !!! example  "example execution of the wrapper script"   
-    <img src = "/images/cliGF-1.png" width=90% height=90%>
+    <img src = "../images/cliGF-1.png" width=90% height=90%>
 
 
 Choose the resources by specifying a single option (for choosing one of these resources) or comma-separated values (to choose multiple resources) as shown in the sample screenshot above.
@@ -73,7 +73,7 @@ Choose the resources by specifying a single option (for choosing one of these re
 
 **terraform init**  - To initialize and prepare your working/out directory so Terraform can run the configuration.<br>
 
-**terraform plan**  - To preview any changes before you apply them. Run the plan against [OPA policies](/opa-integration.md) for compliance against CIS.
+**terraform plan**  - To preview any changes before you apply them. Run the plan against [OPA policies](opa-integration.md) for compliance against CIS.
 
 **terraform apply** - To make the changes defined by Terraform configuration to create, update, or destroy resources in OCI.
   

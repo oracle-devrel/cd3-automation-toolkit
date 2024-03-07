@@ -37,15 +37,15 @@ Follow below steps to use Session token-based authentication -
 1. Use below command to create config inside the container. This is needed to generate session token. You can skip this step, if you already have a valid config(with API key) and uploaded the public key to OCI for a user. In that case, you can copy the config file and private API Key inside the container at /cd3user/.oci
    <br>```oci setup config```
 
-      <img width="509" alt="Screenshot 2024-01-04 at 4 43 08 PM" src="/images/authmechanisms-1.png">
+      <img width="509" alt="Screenshot 2024-01-04 at 4 43 08 PM" src="../images/authmechanisms-1.png">
       
 2. Execute ```oci session authenticate --no-browser``` to generate session token for the private key.
    <br> Follow the questions. Enter 'DEFAULT' for the profile name and proceed to update the config file with session token information at default location /cd3user/.oci
  
-     <img width="721" alt="Screenshot 2024-01-04 at 4 49 53 PM" src="/images/authmechanisms-2.png">
+     <img width="721" alt="Screenshot 2024-01-04 at 4 49 53 PM" src="../images/authmechanisms-2.png">
 3. Token will be generated at default location /cd3user/.oci     
 
-     <img width="512" alt="Screenshot 2024-01-04 at 4 55 17 PM" src="/images/authmechanisms-3.png">
+     <img width="512" alt="Screenshot 2024-01-04 at 4 55 17 PM" src="../images/authmechanisms-3.png">
 
 <b>Note:</b>
 
