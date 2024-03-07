@@ -1,6 +1,5 @@
 site_name: CD3 Documentation
 repo_name: oracle-devrel/cd3-automation-toolkit
-site_url: https://oracle-devrel.github.io/cd3-automation-toolkit/
 repo_url: https://github.com/oracle-devrel/cd3-automation-toolkit
 nav:
   - Overview: 
@@ -27,19 +26,20 @@ nav:
       - OPA integration: opa-integration.md
       - Examples :
         - createnetwork-cli.md
-        - Create Network : createnetwork-cli.md
-        - Create Compute : createcompute-cli.md
+        - Network : createnetwork-cli.md
+        - Compute : createcompute-cli.md
     - Export from OCI : 
+      - nongreenfield-cli.md
       - Steps: nongreenfield-cli.md
       - Examples :
         - exportnetwork-cli.md
-        - Export Network : exportnetwork-cli.md
-        - Export Compute : exportcompute-cli.md
+        - Network : exportnetwork-cli.md
+        - Compute : exportcompute-cli.md
     
   - Create, Update or Export TF with CD3 - Jenkins:
     - cd3-jenkins.md
     - Before You Begin: cd3-jenkins.md
-    - Overview: jenkinsintro.md
+    - Introduction: jenkinsintro.md
     - Create resources : 
       - greenfield-jenkins.md
       - Workflow Description: greenfield-jenkins.md
@@ -58,12 +58,13 @@ nav:
   - Additional Features:
     - group-tf-files.md
     - Grouping generated TF files: group-tf-files.md
+    - Remote Management of Terraform State: remotestate.md
     - OCI Resource Manager Upload: resource-manager-upload.md
     - Support for Additional Attrs: additional-attributes.md
     - CIS Compliance Features: cisfeatures.md
     - CD3 Validator: cd3validator.md
     - Migrate jobs to user's Jenkins: jobs-migration.md
-    - Remote Management of Terraform State: remotestate.md
+    
    
   - Troubleshooting:
     - knownbehaviour.md
