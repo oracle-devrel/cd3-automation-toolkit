@@ -1,6 +1,6 @@
 Follow below steps to set up the CD3 Automation Toolkit:
 
-- [Make sure prerequisites are met](prerequisites.md).
+- Make sure [prerequisites](prerequisites.md) are met.
 - [Launch CD3 Container](launch-container.md)
 - [Connect CD3 Container to OCI](connect-container-to-oci-tenancy.md)
 

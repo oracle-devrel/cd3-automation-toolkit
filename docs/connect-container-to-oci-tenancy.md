@@ -8,18 +8,30 @@
 
 **Step 1 - Exec into the Container**:
 
-* Run  ```docker ps```<br>
+* Run  
+```
+docker ps
+```
+&nbsp;
 → Note down the container ID from this cmd output.<br>
-* Run  ```docker exec -it <container_id> bash```
+
+* Run  
+  ```
+  docker exec -it <container_id> bash
+  ```
 
 **Step 2 - Choose Authentication Mechanism for OCI SDK**</a>
 
-* Please click [here](auth-mechanisms.md) to configure any one of the available authentication mechanisms.
+* Please click [here](authmechanisms.md) to configure any one of the available authentication mechanisms.
   
 **Step 3 - Edit tenancyconfig.properties**:
 
-* Run ```cd /cd3user/oci_tools/cd3_automation_toolkit/user-scripts/```
-* Fill the input parameters in **tenancyconfig.properties** file.
+* Run 
+  ```
+  cd /cd3user/oci_tools/cd3_automation_toolkit/user-scripts/
+  ```
+
+* Fill the input parameters in ```tenancyconfig.properties``` file.
 
 !!! must-read "Must Read"
     - Have the details ready for Authentication mechanism you are planning to use.<br>
@@ -45,7 +57,9 @@ flowchart TD
 **Step 4 - Initialise the environment**:
 
 * Initialise your environment to use the Automation Toolkit.
-<br>```python createTenancyConfig.py tenancyconfig.properties```
+```
+python createTenancyConfig.py tenancyconfig.properties
+```
 
 !!! note 
     * If you are running docker container on a linux VM host, please refer to [point no. 7](faq.md) under FAQ   to avoid any permission issues.
@@ -124,14 +138,11 @@ flowchart TD
             <td>/cd3user/tenancies/<customer_name>/.config_files/ <customer_name>_tenancyconfig.properties</td>
             <td>The input properties file used to execute the script is copied to custome folder to retain for future reference. This can be used when the script needs tobe re-run with same parameters at later stage.</td>
         </tr>
-        <tr>
-            <td>The next pages will guide you to use the toolkit either via CLI or via Jenkins. Please proceed further.</td>
-            <td></td>
-            <td></td>
-        </tr>
+        
     </table>
 
 </details>
-
+<br>
+The next pages will guide you to use the toolkit either via CLI or via Jenkins. Please proceed further.
 
 [Use Toolkit with CLI](#){ .md-button } [Use Toolkit with Jenkins](#){ .md-button }
