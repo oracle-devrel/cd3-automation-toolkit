@@ -481,7 +481,7 @@ def export_firewall_policies(prim_options=[]):
     else:
         options = show_options(options, quit=True, menu=True, index=1)
     execute_options(options, inputfile, outdir, config, signer, ct, export_regions)
-    update_path_list(regions_path=regions_path, service_dirs=[service_dir_firewall])
+    update_path_list(regions_path=epxort_regions, service_dirs=[service_dir_firewall])
 
 def export_firewallpolicy(inputfile, outdir, config, signer, ct, export_regions,name_filter=""):
     compartments = ct.get_compartment_map(var_file, 'Firewall Policies')
