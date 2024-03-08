@@ -18,38 +18,38 @@ nav:
       - Resource Manager Stack: launch-from-rmstack.md
       - Local System: launch-from-local.md
     - Connect CD3 container to OCI: connect-container-to-oci-tenancy.md
-  - Generate TF with CD3 - CLI: 
+  - Create, Update or Export with CLI: 
     - cd3-cli.md
     - Before You Begin: cd3-cli.md
     - Create in OCI  :
       - greenfield-cli.md
       - Steps: greenfield-cli.md
       - OPA integration: opa-integration.md
-      - Examples :
+      - Must Read :
         - createnetwork-cli.md
         - Network : createnetwork-cli.md
         - Compute : createcompute-cli.md
     - Export from OCI : 
       - nongreenfield-cli.md
       - Steps: nongreenfield-cli.md
-      - Examples :
+      - Must Read  :
         - exportnetwork-cli.md
         - Network : exportnetwork-cli.md
         - Compute : exportcompute-cli.md
-    
-  - Create, Update or Export TF with CD3 - Jenkins:
+
+  - Create, Update or Export with Jenkins:
     - cd3-jenkins.md
     - Before You Begin: cd3-jenkins.md
     - Introduction: jenkinsintro.md
-    - Create resources : 
+    - Create in OCI : 
       - greenfield-jenkins.md
-      - Workflow Description: greenfield-jenkins.md
-      - Examples:
+      - Steps: greenfield-jenkins.md
+      - Must Read:
         - createnetwork-jenkins.md
         - Create Network Resources : createnetwork-jenkins.md
         - Create Compute Resources/OKE/SDDC/Database: createcompute-jenkins.md
         - Provision multiple services together: multiple-services-jenkins.md
-    - Export Resources : nongreenfield-jenkins.md
+    - Export from OCI : nongreenfield-jenkins.md
     - Sync between CLI and Jenkins: sync-cli-jenkins.md
 
   - Upgrade CD3:
