@@ -3,10 +3,10 @@
 
 !!! note 
 
-    * It is recommended to execute createTenancyConfig.py with a single ```customer_name``` within that container. Even if it is run multiple times with different customer names, Jenkins will only be configured for  ```<customer_name>``` used while first time successful execution of the script.
-    * If there is a new region subscription to the tenancy at a later stage of time, createTenancyConfig.py must be re-run by using the same tenancyconfig.properties file that was originally used to create the   configuration. Re-execution will create new directory for the new region under `/cd3user/tenancies/<customer_name>/terraform_files` without touching the existing ones and will commit the latest terraform_files     folder to DevOps GIT repo.
+    * With the toolkit release v2024.1.0, the toolkit supports single **customer_name** per container.
+    * When a new region is subscribed to the tenancy, rerun createTenancyConfig.py by using the same tenancyconfig.properties file that was originally used. It will create new directory for the new region under `/cd3user/tenancies/<customer_name>/terraform_files` without touching the existing ones and will commit the latest terraform_files folder to DevOps GIT repo.
 
-**Step 1 - Exec into the Container**:
+**Step 1 - Login (Exec) into the Container**:
 
 * Run  
 ```
@@ -22,7 +22,7 @@ docker ps
 
 **Step 2 - Choose Authentication Mechanism for OCI SDK**</a>
 
-* Please click [here](authmechanisms.md) to configure any one of the available authentication mechanisms.
+* Click [here](authmechanisms.md) to configure any one of the available authentication mechanisms.
   
 **Step 3 - Edit tenancyconfig.properties**:
 
@@ -35,9 +35,8 @@ docker ps
 
 !!! must-read "Must Read"
     - Have the details ready for Authentication mechanism you are planning to use.<br>
-    - Review **'outdir_structure_file'** parameter as per requirements. It is recommended to use separate outdir structure to manage a large number of resources. <br>
+    - Review **outdir_structure_file** parameter as per requirements. It is recommended to use separate outdir structure to manage a large number of resources. <br>
     - Review Advanced Parameters Section for CI/CD setup. If you plan to use the toolkit with Jenkins then be ready with user details that will be used to connect to DevOps Repo in OCI.              Specifying these parameters as **'yes'** in properties file will create Object Storage Bucket and Devops Git Repo/Project/Topic in OCI and enable toolkit usage with Jenkins. The toolkit supports users in primary IDCS stripes or default domains only for DevOps GIT operations.<br>
-    - Use the same customer_name for a tenancy even if the script needs to be executed multiple times.<br>
 
 <center>
 ``` mermaid
@@ -62,7 +61,7 @@ python createTenancyConfig.py tenancyconfig.properties
 ```
 
 !!! note 
-    * If you are running docker container on a linux VM host, please refer to [point no. 7](faq.md) under FAQ   to avoid any permission issues.
+    * If you are running container on a linux VM host(without using Resource Manager stack option), please refer to [point no. 7](faq.md) under FAQ   to avoid any permission issues.
     * Running the above command immediately after adding API key to the user profile in OCI might result in     Authentication Errors. In such cases, please retry after a minute.
     <br>
 
@@ -83,12 +82,12 @@ python createTenancyConfig.py tenancyconfig.properties
         </tr>
         <tr>
             <td>setUpOCI.properties</td>
-            <td><mark>/cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties</mark></td>
+            <td>/cd3user/tenancies/<customer\_name>/<customer_name\>_setUpOCI.properties</td>
             <td>Customer Specific properties</td>
         </tr>
         <tr>
             <td>outdir_structure_file.properties</td>
-            <td>/cd3user/tenancies/<customer_name>/<customer_name>_outdir_structure_file</td>
+            <td>/cd3user/tenancies/<customer_name\>/<customer_name>_outdir_structure_file</td>
             <td>Customer Specific properties file for outdir structure.
             This file will not be generated if 'outdir_structure_file' parameter was set to empty(single outdir)in tenancyconfig.properties while running createTenancyConfig.py</td>
         </tr>
