@@ -481,7 +481,7 @@ def export_firewall_policies(prim_options=[]):
     else:
         options = show_options(options, quit=True, menu=True, index=1)
     execute_options(options, inputfile, outdir, config, signer, ct, export_regions)
-    update_path_list(regions_path=epxort_regions, service_dirs=[service_dir_firewall])
+    update_path_list(regions_path=export_regions, service_dirs=[service_dir_firewall])
 
 def export_firewallpolicy(inputfile, outdir, config, signer, ct, export_regions,name_filter=""):
     compartments = ct.get_compartment_map(var_file, 'Firewall Policies')
@@ -515,7 +515,7 @@ def export_compute(prim_options=[]):
 def export_dedicatedvmhosts(inputfile, outdir, config, signer, ct, export_regions):
     compartments = ct.get_compartment_map(var_file,'Dedicated VM Hosts')
     Compute.export_dedicatedvmhosts(inputfile, outdir, service_dir_dedicated_vm_host, config, signer, ct, export_compartments=compartments, export_regions=export_regions)
-    create_dedicatedvmhosts(inputfile, outdir, service_dir_dedicated_vm_host, prefix, ct)
+    create_dedicatedvmhosts(inputfile, outdir, prefix, ct)
     print("\n\nExecute tf_import_commands_dedicatedvmhosts_nonGF.sh script created under each region directory to synch TF with OCI Dedicated VM Hosts\n")
     # Update modified path list
     update_path_list(regions_path=export_regions, service_dirs=[service_dir_dedicated_vm_host])
@@ -537,7 +537,7 @@ def export_instances(inputfile, outdir,config,signer, ct, export_regions):
     ad_names = list(map(lambda x: x.strip(), ad_name_str.split(','))) if ad_name_str else None
 
     Compute.export_instances(inputfile, outdir, service_dir_instance,config,signer,ct, export_compartments=compartments, export_regions=export_regions, display_names = display_names, ad_names = ad_names)
-    create_instances(inputfile, outdir, service_dir_instance,prefix, ct)
+    create_instances(inputfile, outdir,prefix, ct)
     print("\n\nExecute tf_import_commands_instances_nonGF.sh script created under each region directory to synch TF with OCI Instances\n")
     # Update modified path list
     update_path_list(regions_path=export_regions, service_dirs=[service_dir_instance])
@@ -616,7 +616,7 @@ def export_lbr(inputfile, outdir,config, signer, ct, export_regions):
 def export_nlb(inputfile, outdir,config,signer, ct, export_regions):
     compartments = ct.get_compartment_map(var_file,'NLB objects')
     Network.export_nlb(inputfile, outdir, service_dir_networkloadbalancer, config,signer,ct, export_compartments=compartments, export_regions=export_regions)
-    create_nlb(inputfile, outdir,service_dir_networkloadbalancer, prefix, ct)
+    create_nlb(inputfile, outdir, prefix, ct)
     print("\n\nExecute tf_import_commands_nlb_nonGF.sh script created under each region directory to synch TF with OCI NLB objects\n")
     # Update modified path list
     update_path_list(regions_path=export_regions, service_dirs=[service_dir_networkloadbalancer])
@@ -715,7 +715,7 @@ def export_oke(inputfile, outdir, config,signer, ct, export_regions):
     update_path_list(regions_path=export_regions, service_dirs=[service_dir_oke])
 
 
-def export_sddc():
+def export_sddc(prim_options=[]):
     compartments = ct.get_compartment_map(var_file,'SDDCs')
     SDDC.export_sddc(inputfile, outdir, service_dir_sddc,config,signer,ct, export_compartments=compartments, export_regions=export_regions)
     SDDC.create_terraform_sddc(inputfile, outdir, service_dir_sddc, prefix, ct)
@@ -791,7 +791,7 @@ def create_identity(prim_options=[]):
     update_path_list(regions_path=[ct.home_region], service_dirs=[service_dir_identity])
 
 
-def create_tags():
+def create_tags(prim_options=[]):
     options = [Option(None, Governance.create_terraform_tags, 'Processing Tags Tab')]
     execute_options(options, inputfile, outdir, service_dir_tagging, prefix, ct)
     # Update modified path list
@@ -801,8 +801,8 @@ def create_tags():
 def create_network(execute_all=False,prim_options=[]):
     service_dir = outdir_struct
     options = [
-        Option('Create Network - overwrites all TF files; reverts all SecLists and RouteTables to original rules', Network.create_all_tf_objects, 'Create All Objects'),
-        Option('Modify Network - It will read VCNs, DRGs, SubnetsVLANs and DHCP sheets and update the TF', modify_terraform_network, 'Modifying Network'),
+        Option('Create Network', Network.create_all_tf_objects, 'Create All Objects'),
+        Option('Modify Network', modify_terraform_network, 'Modifying Network'),
         Option('Security Rules', export_modify_security_rules, 'Security Rules'),
         Option('Route Rules', export_modify_route_rules, 'Route Rules'),
         Option('DRG Route Rules', export_modify_drg_route_rules, 'DRG Route Rules'),
@@ -953,7 +953,7 @@ def create_compute(prim_options=[]):
     execute_options(options, inputfile, outdir, service_dir,prefix, ct)
 
 
-def create_instances(inputfile, outdir, service_dir_nt,prefix,ct):
+def create_instances(inputfile, outdir,prefix,ct):
     options = [
         Option(None, Compute.create_terraform_instances, 'Processing Instances Tab')
     ]
@@ -962,7 +962,7 @@ def create_instances(inputfile, outdir, service_dir_nt,prefix,ct):
     update_path_list(regions_path=subscribed_regions, service_dirs=[service_dir_instance])
 
 
-def create_dedicatedvmhosts(inputfile, outdir, service_dir, prefix,ct):
+def create_dedicatedvmhosts(inputfile, outdir, prefix,ct):
     options = [Option(None, Compute.create_terraform_dedicatedhosts, 'Processing Dedicated VM Hosts Tab')]
     execute_options(options, inputfile, outdir, service_dir_dedicated_vm_host,prefix, ct)
     # Update modified path list
@@ -1030,7 +1030,7 @@ def create_lb(inputfile, outdir, prefix, ct):
     update_path_list(regions_path=subscribed_regions, service_dirs=[service_dir_loadbalancer])
 
 
-def create_nlb(inputfile, outdir,service_dir, prefix, ct):
+def create_nlb(inputfile, outdir, prefix, ct):
     options = [
          Option(None, Network.create_terraform_nlb_listener, 'Creating NLB and Listeners'),
          Option(None, Network.create_nlb_backendset_backendservers, 'Creating NLB Backend Sets and Backend Servers'),
@@ -1113,7 +1113,7 @@ def create_oke(inputfile, outdir, prefix, auth_mechanism, config_file, ct):
     update_path_list(regions_path=subscribed_regions, service_dirs=[service_dir_oke])
 
 
-def create_sddc():
+def create_sddc(prim_options=[]):
     SDDC.create_terraform_sddc(inputfile, outdir, service_dir_sddc, prefix, ct)
     # Update modified path list
     update_path_list(regions_path=subscribed_regions, service_dirs=[service_dir_sddc])
@@ -1123,7 +1123,7 @@ def create_dns(prim_options=[]):
     options = [
         Option('Add/Modify/Delete DNS Views/Zones/Records', create_terraform_dns,
                'Processing DNS-Views-Zones-Records Tab'),
-        Option('Add/Modify/Delete DNS resovlers', Network.create_terraform_dns_resolvers,
+        Option('Add/Modify/Delete DNS Resolvers', Network.create_terraform_dns_resolvers,
                'Processing DNS-Resolvers Tab')
     ]
     if prim_options:
@@ -1140,13 +1140,16 @@ def create_terraform_dns(inputfile, outdir, service_dir, prefix, ct):
     Network.create_terraform_dns_zones(inputfile, outdir, service_dir, prefix, ct)
     Network.create_terraform_dns_rrsets(inputfile, outdir, service_dir, prefix, ct)
 
-def create_logging():
+def create_logging(prim_options=[]):
     options = [
         Option('Enable VCN Flow Logs', create_cis_vcnflow_logs, 'VCN Flow Logs'),
         Option('Enable LBaaS Logs', enable_lb_logs, 'LBaaS Logs'),
         Option('Enable Object Storage Buckets Write Logs', create_cis_oss_logs, 'OSS Write Logs')
     ]
-    options = show_options(options, quit=True, menu=True, index=1)
+    if prim_options:
+        options = match_options(options, prim_options)
+    else:
+        options = show_options(options, quit=True, menu=True, index=1)
     execute_options(options, inputfile, outdir, prefix, ct)
 
 def create_cis_vcnflow_logs(inputfile, outdir,  prefix, ct):
@@ -1170,13 +1173,16 @@ def create_cis_oss_logs(inputfile, outdir, prefix, ct):
     update_path_list(regions_path=subscribed_regions, service_dirs=[service_dir_loadbalancer])
 
 
-def create_cis_features():
+def create_cis_features(prim_options=[]):
     options = [Option('CIS Compliance Checking Script', initiate_cis_scan, 'CIS Compliance Checking'),
                Option("Create Key/Vault", create_cis_keyvault, 'Creating CIS Key/Vault and enable Logging for write events to bucket'),
                Option("Create Default Budget",create_cis_budget,'Create Default Budget'),
                Option("Enable Cloud Guard", enable_cis_cloudguard, 'Enable Cloud Guard'),]
 
-    options = show_options(options, quit=True, menu=True, index=1)
+    if prim_options:
+        options = match_options(options, prim_options)
+    else:
+        options = show_options(options, quit=True, menu=True, index=1)
     execute_options(options, outdir, prefix, config_file_path)
 
 def create_cis_keyvault(*args,**kwargs):
@@ -1346,26 +1352,26 @@ def delete_firewall_policy(inputfile, outdir, service_dir, config, signer, ct):
 
 def create_firewall_policy(inputfile, outdir, service_dir, prefix, ct,execute_all=False,prim_options=[]):
     options = [
-            Option('create/modify Policy', Security.firewallpolicy_create, 'Processing Firewall-Policy Tab'),
-            Option('create/modify Service', Security.fwpolicy_create_service,
+            Option('Add/Modify Policy', Security.firewallpolicy_create, 'Processing Firewall-Policy Tab'),
+            Option('Add/Modify Service', Security.fwpolicy_create_service,
                    'Processing Firewall-Policy-Serviceslist Tab'),
-            Option('create/modify Service-list', Security.fwpolicy_create_servicelist,
+            Option('Add/Modify Service-list', Security.fwpolicy_create_servicelist,
                    'Processing Firewall-Policy-Servicelist Tab'),
-            Option('create/modify Application', Security.fwpolicy_create_apps,
+            Option('Add/Modify Application', Security.fwpolicy_create_apps,
                    'Processing Firewall-Policy-Applicationlist Tab'),
-            Option('create/modify Application-list', Security.fwpolicy_create_applicationlist,
+            Option('Add/Modify Application-list', Security.fwpolicy_create_applicationlist,
                    'Processing Firewall-Policy-Applicationlist Tab'),
-            Option('create/modify Address-list', Security.fwpolicy_create_address,
+            Option('Add/Modify Address-list', Security.fwpolicy_create_address,
                    'Processing Firewall-Policy-Address Tab'),
-            Option('create/modify Url-list', Security.fwpolicy_create_urllist,
+            Option('Add/Modify Url-list', Security.fwpolicy_create_urllist,
                    'Processing Firewall-Policy-Urllist Tab'),
-            Option('create/modify Security rules', Security.fwpolicy_create_secrules,
+            Option('Add/Modify Security rules', Security.fwpolicy_create_secrules,
                    'Processing Firewall-Policy-Securules Tab'),
-            Option('create/modify Mapped Secrets', Security.fwpolicy_create_secret,
+            Option('Add/Modify Mapped Secrets', Security.fwpolicy_create_secret,
                    'Processing Firewall-Policy-Secrets Tab'),
-            Option('create/modify Decryption Rules', Security.fwpolicy_create_decryptrules,
+            Option('Add/Modify Decryption Rules', Security.fwpolicy_create_decryptrules,
                    'Processing Firewall-Policy-Decrytprofile Tab'),
-            Option('create/modify Decryption Profile', Security.fwpolicy_create_decryptionprofile,
+            Option('Add/Modify Decryption Profile', Security.fwpolicy_create_decryptionprofile,
                    'Processing Firewall-Policy-DecryptRule Tab'),
         ]
     if prim_options:
