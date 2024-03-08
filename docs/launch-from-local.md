@@ -1,6 +1,9 @@
 # **Manual Container Launch**
 
-Use this method if you do not have access to launch work VM in the OCI tenancy. To ease the execution of toolkit, we have provided the steps to build an image which encloses the code base and its package dependencies. Follow the steps provided below  to clone the repo, build the image and finally launch the container.
+!!! Tip
+     Launching CD3 container using OCI Resource Manager stack is preferred method as it reduces the manual effort.
+
+Follow steps provided below  to launch the container from local system.
 <br><br>
 **Prerequisites**
 

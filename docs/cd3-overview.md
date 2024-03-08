@@ -26,23 +26,23 @@ The toolkit supports 2 workflows:<br>
 **1. Create & Manage Resources in OCI (Greenfield Workflow):**
 
 - Use this workflow when there is empty OCI tenancy (or) need to create new resources without any requirement to modify / use any existing resources in tenancy.
-- The filled in input Excel file is fed to the toolkit and terraform *.auto.tfvars files are generated for all resources.
-- Modifying the same excel sheet and re running the toolkit will generate modified terraform *.auto.tfvars files.<br>
+- The filled in input Excel file is fed to the toolkit and terraform tfvars files are generated for all resources.
+- Modifying the same excel sheet and re running the toolkit will generate modified terraform tfvars files.<br>
 - The generated terraform files can be used to deploy resources in OCI by generating a terraform plan and approving the plan for apply. <br>
 
 **2. Export & Manage Resources in OCI (Non-Greenfield Workflow):**
 
-- Use this workflow when there is need to use / manage existing resources with terraform. Export existing resources into CD3 & TF State, then use the Greenfield workflow to modify them or create more resources on top of them.
+- Use this workflow when there is need to use / manage existing resources with terraform which have not been created using CD3. Export these existing resources into CD3 & TF State. Once the export is complete, switch to the Greenfield workflow to create new or manage existing resources .
 - The input Excel (preferably the Blank template) is fed to the toolkit and resources are exported into CD3 Excel template. <br>
-- The toolkit then generates *auto.tfvars from the exported data in Excel file and also generates shell scripts with terraform import commands for all the resources.<br>
+- The toolkit then generates tfvars from the exported data in Excel file and also generates shell scripts with terraform import commands for all the resources.<br>
 - The shell scripts have to be executed in order to have the updated state file to manage the resources further.<br>
-- Modifying the same excel sheet and re running the toolkit will generate modified terraform *.auto.tfvars files.<br>
+- Modifying the same excel sheet and re running the toolkit will generate modified terraform tfvars files.<br>
 
 
 !!! tip
 	CD3 Automation toolkit can be used either via CLI or Jenkins.
   
-	📖 Detailed documentation and videos are provided for both options. Please check the left panel for navigation.
+	📖 Detailed documentation and videos are provided for both options. Check the left panel for navigation.
 
 
 <br>

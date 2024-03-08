@@ -1,7 +1,9 @@
 # **Using the Automation Toolkit with CLI**
 ---
+!!! Important
+    Make sure to read 'Must Read' sections before creating or exporting network and compute resources.
 
-To start generating terraform using the toolkit with CLI, make sure below things are ready:<br>
+To start generating terraform with CLI - <br>
 
 1. Login to the CD3 Container.
 
@@ -41,7 +43,7 @@ workflow_type=create_resources
 ```
 
 <details>
-    <summary> Details of the files created on successful execution of above steps </summary>
+    <summary> Parameter Description </summary>
     <table>
         <tr>
             <th>Variable</th>
