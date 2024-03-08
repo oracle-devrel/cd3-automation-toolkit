@@ -1,4 +1,4 @@
-# Create resources in OCI via Jenkins(Greenfield Workflow)
+# **Create and Manage Resources in OCI (Greenfield Workflow)**
 
 ## Execute setUpOCI Pipeline
 

@@ -15,10 +15,13 @@
 
 ###Create Network
 Creation of Networking components using Automation Toolkit involves four simple steps.
+
  - Add the networking resource details to appropriate Excel Sheets.
  - Running the toolkit to generate auto.tfvars.
  - Executing Terraform commands to provision the resources in OCI.
  - Exporting the automatically generated Security Rules and Route Rules by the toolkit to CD3 Excel Sheet.
+!!! Important
+    Create Network generates custom security rules and route rules in OCI along with default ones. Make sure to export them all into excel sheet after running Create Network.
  
 Below are the steps in detail to create Network that includes VCNs, Subnets, DHCP, DRG, Security List, Route Tables, DRG Route Tables, NSGs, etc.
 
@@ -83,7 +86,8 @@ In some scenarios, a DRG has already been created in the tenancy and rest of the
    Continue executing the remaining steps (from Step 6) of [Create Network](#create-network).
 
 ### Modify Network 
-Modifying the Networking components using Automation Toolkit involves three simple steps.<br>
+Modifying the Networking components using Automation Toolkit involves three simple steps.
+
  - Add/modify the details of networking components like the VCNs, Subnets, DHCP and DRG in Excel Sheet.<br>
  - Running the toolkit to generate auto.tfvars.<br>
  - Executing Terraform commands to provision/modify the resources in OCI.

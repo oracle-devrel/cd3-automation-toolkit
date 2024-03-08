@@ -13,7 +13,7 @@ To start generating terraform with CLI - <br>
 
 4. Review setUpOCI.properties file _/cd3user/tenancies/<customer_name\>/<customer_name\>_setUpOCI.properties_.
 
-_Current Version: v2024.2.0_
+_setUpOCI.properties_
 ```ini
 [Default]
 
