@@ -2,9 +2,6 @@
 
 !!! note
     - Make sure that service for which export is done does not have existing tfvars/state file.<br>
-    - Course of actions involved in exporting objects from OCI-Automation Tool Kit fetches the data for the supported services. You can choose to export the data from a specific region or the compartment. Exported data is written to appropriate sheets of the CD3Excel   Sheet      based on the resources being exported.
-    - Tool Kit then generates the TF configuration files/auto.tfvars files for these exported resources. 
-    - It also generates a shell script - ```tf_import_commands_<resource>_nonGF.sh``` that has the import commands, to import the state of the resources to tfstate file.(This helps to manage the resourcesvia        Terraform in future). 
 
 
 **Step 1:** 
@@ -45,17 +42,14 @@ workflow_type=export_resources
 
 Command to Execute:
 ```
-    cd /cd3user/oci_tools/cd3_automation_toolkit/
+cd /cd3user/oci_tools/cd3_automation_toolkit/
 ```
-```
-    python setUpOCI.py <path_to_setupOCI.properties>
-```  
-ie
+
 ```
 python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties
 ```
 
-!!! example  "example execution of the wrapper script"
+!!! example  "Example Execution"
 
     Updated OCI_Regions file !!!
 
@@ -63,10 +57,15 @@ python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.p
     Do you want to run it now? (y|n):
 
 → This prompt appears when you run the toolkit for the very first time or when any new compartments are created using the toolkit. Enter 'y' to fetch the details of compartment OCIDs into variables file.
+
+!!! Note
+
+    Execute **"Fetch Compartments OCIDs to variables file"** from **CD3 Services** in setUpOCI menu after you create Compartments. This is a required step everytime you create a compartment via toolkit or via the OCI console.
+
 <br>→ After fetching the compartment details, the toolkit will display the menu options as shown below:
 
 
-!!! example  "example execution of the wrapper script"
+!!! example  "Example Execution"
 
       <img src = "../images/cliNGF-1.png" width=90% height=90%>
 
@@ -75,7 +74,7 @@ Choose the resources by specifying a single option (for choosing one of these re
   
 
 **Expected Outputs:**
-<br>a. Excel sheet with the resource details from OCI  
+<br>a. Excel sheet with the resource details from OCI.<br> 
 b. Terraform Configuration files - *.auto.tfvars  
 c. Shell Script with import commands - tf_import_commands_`<resource>`_nonGF.sh 
 !!! info 
@@ -88,5 +87,4 @@ c. Shell Script with import commands - tf_import_commands_`<resource>`_nonGF.sh
 <img src = "../images/cliNGF-2.png" width =50% height=50%>
 
 !!! note
-    - Make sure to execute **Fetch Compartments OCIDs to variables file** from **CD3 Services** in setUpOCI menu at least once. This will ensure that the variables file in outdir is updated with the OCID information of all the compartments.
     - Once the export (including the execution of **tf_import_commands_`<resource>`_nonGF.sh**) is complete, switch the value of **workflow_type** back to **create_resources**. This allows the toolkit to modify these resources or create new ones on top of them.

@@ -4,9 +4,7 @@ OPA is a powerful policy-as-code framework that enables you to define and enforc
 
 By leveraging OPA for Terraform, you can automate policy enforcement, eliminate manual checks, and enforce best practices consistently across your infrastructure-as-code projects. With OPA, you gain enhanced visibility and control over your Terraform deployments, reducing the risk of misconfigurations, security vulnerabilities, and compliance issues. 
 
-As part of CD3, we have meticulously developed a comprehensive set of policies that strictly adhere to the CIS benchmarks. These policies serve as your shield, ensuring that any Infrastructure-as-Code (IAC) deployments made for Oracle Cloud Infrastructure (OCI) meet the highest security and compliance standards.
-
-Our carefully crafted policies act as gatekeepers, preventing any IAC deployments that do not align with the stringent security and compliance guidelines set by the CIS benchmarks for OCI. By leveraging our policies, you can ensure that your infrastructure deployments remain impervious to any potential vulnerabilities or non-compliance issues.
+As part of CD3, we have meticulously developed an initial set of policies. These policies serve as your initial starting point, ensuring that any Infrastructure-as-Code (IAC) deployments made for Oracle Cloud Infrastructure (OCI) meet the organisation's security and compliance standards.
 
 
 **Run OPA inside CD3 container**

@@ -42,14 +42,10 @@ Command to Execute:
 cd /cd3user/oci_tools/cd3_automation_toolkit/
 ```
 ```
-python setUpOCI.py  <path_to_setupOCI.properties>
-``` 
-i.e. 
-```
 python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties
 ```
          
-!!! example  "example execution of the wrapper script"
+!!! example "Example Execution"
 
     Updated OCI_Regions file !!!
 
@@ -57,9 +53,14 @@ python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.p
     Do you want to run it now? (y|n):
 
 → This prompt appears when you run the toolkit for the very first time or when any new compartments are created using the toolkit. Enter 'y' to fetch the details of compartment OCIDs into variables file.
+
+!!! Note
+
+    Execute **"Fetch Compartments OCIDs to variables file"** from **CD3 Services** in setUpOCI menu after you create Compartments. This is a required step everytime you create a compartment via toolkit or via the OCI console.
+
 <br>→ After fetching the compartment details, the toolkit will display the menu options as shown below:
 
-!!! example  "example execution of the wrapper script"   
+!!! example  "Example Execution"  
     <img src = "../images/cliGF-1.png" width=90% height=90%>
 
 
@@ -77,6 +78,3 @@ Choose the resources by specifying a single option (for choosing one of these re
 
 **terraform apply** - To make the changes defined by Terraform configuration to create, update, or destroy resources in OCI.
   
-!!! Note
-
-    Execute **"Fetch Compartments OCIDs to variables file"** from **CD3 Services** in setUpOCI menu after you create Compartments. This is a required step everytime you create a compartment via toolkit or via the OCI console.

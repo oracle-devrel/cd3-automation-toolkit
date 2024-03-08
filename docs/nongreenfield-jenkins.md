@@ -1,4 +1,4 @@
-# Export Resources from OCI via Jenkins(Non-Greenfield Workflow)
+# Export and Manage Resources from OCI (Non-Greenfield Workflow)
 
 !!! Note
     Please make sure that service for which export is done does not have existing tfvars/state file.
