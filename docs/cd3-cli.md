@@ -42,6 +42,7 @@ cd3file=
 workflow_type=create_resources
 ```
 
+
 <details>
     <summary> Parameter Description </summary>
     <table>
@@ -51,39 +52,39 @@ workflow_type=create_resources
             <th>Example</th>
         </tr>
         <tr>
-            <th>outdir</th>
-            <th>Path to output directory where terraform files will be generated</th>
-            <th>/cd3user/tenancies//terraform_files</th>
+            <td>outdir</td>
+            <td>Path to output directory where terraform files will be generated</td>
+            <td>/cd3user/tenancies//terraform_files</td>
         </tr>
         <tr>
-            <th>prefix</th>
-            <th>Prefix for output terraform files</th>
-            <th>\</th>
+            <td>prefix</td>
+            <td>Prefix for output terraform files</td>
+            <td>\</td>
         </tr>
         <tr>
-            <th>auth_mechanism</th>
-            <th>Authentication Mechanism for OCI APIs</th>
-            <th>api_key</th>
+            <td>auth_mechanism</td>
+            <td>Authentication Mechanism for OCI APIs</td>
+            <td>api_key</td>
         </tr>
         <tr>
-            <th>config_file</th>
-            <th>Python config file	</th>
-            <th>/cd3user/tenancies//.config_files/_config</th>
+            <td>config_file</td>
+            <td>Python config file	</td>
+            <td>/cd3user/tenancies//.config_files/_config</td>
         </tr>
         <tr>
-            <th>outdir_structure_file</th>
-            <th>Parameter specifying single outdir or different for different services</th>
-            <th>Blank or _outdir_structure_file.properties</th>
+            <td>outdir_structure_file</td>
+            <td>Parameter specifying single outdir or different for different services</td>
+            <td>Blank or _outdir_structure_file.properties</td>
         </tr>
         <tr>
-            <th>cd3file</th>
-            <th>Path to the Excel input file</th>
-            <th>/cd3user/tenancies//testCD3. xlsx</th>
+            <td>cd3file</td>
+            <td>Path to the Excel input file</td>
+            <td>/cd3user/tenancies//testCD3. xlsx</td>
         </tr>
         <tr>
-            <th>workflow_type</th>
-            <th>Create Resources in OCI or Export Resources from OCI</th>
-            <th>create_resources or export_resources</th>
+            <td>workflow_type</td>
+            <td>Create Resources in OCI or Export Resources from OCI</td>
+            <td>create_resources or export_resources</td>
         </tr>
     </table>
 </details>
