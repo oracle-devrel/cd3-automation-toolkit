@@ -33,7 +33,122 @@ docker ps
 
 * Fill the input parameters in ```tenancyconfig.properties``` file.
 
-!!! must-read "Must Read"
+<br>
+
+**Parameters details**
+
+<details>
+    <summary> Parameter Description </summary>
+    <table>
+        <tr>
+            <th>Parameter</th>
+            <th>Description</th>
+            <th>Example</th>
+        </tr>
+        <tr>
+            <td>customer_name</td>
+            <td>Friendly name for the Customer Tenancy</td>
+            <td>demotenancy</td>
+        </tr>
+        <tr>
+            <td>tenancy_ocid</td>
+            <td>ocid of the tenancy</td>
+            <td>ocid1.tenancy.oc1..aaaaaa...5t</td>
+        </tr>
+        <tr>
+            <td>region</td>
+            <td>OCI Region identifier</td>
+            <td>us-phoenix-1</td>
+        </tr>
+        <tr>
+            <td>auth_mechanism</td>
+            <td>Auth Mechanism for OCI APIs</td>
+            <td>api_key, instance_principal, session_token</td>
+        </tr>
+        <tr>
+            <td>user_ocid</td>
+            <td>Required only if ${auth_mechanism} is selected as api_key.Leave empty if 'instance_principal' or 'session_token' is used</td>
+            <td>ocid1.user.oc1..aaaaa...6a</td>
+        </tr>
+        <tr>
+            <td>key_path</td>
+            <td>Required only if ${auth_mechanism} is selected as api_key.Leave empty if 'instance_principal' or 'session_token' is used. Path of API Private Key (PEM Key) File </td>
+            <td>Defaults to /cd3user/tenancies/keys/oci_api_private.pem when left empty</td>
+        </tr>
+        <tr>
+            <td>fingerprint</td>
+            <td>Required only if ${auth_mechanism} is selected as api_key.Leave empty if 'instance_principal' or 'session_token' is used</td>
+            <td>9f:20:0b:....:8c</td>
+        </tr>
+        <tr>
+            <td>outdir_structure_file</td>
+            <td>The outdir_structure_file defines the grouping of the terraform auto.tf.vars for the various generated resources.To group resources into different directories within each region - specify the absolute path to the file.To have all the files generated in a single directory in the corresponding region, leave this variable blank.</td>
+            <td>Defaults to /cd3user/oci_tools/cd3_automation_toolkit/user-scripts/outdir_structure_file.properties</td>
+        </tr>
+        <tr>
+            <td>ssh_public_key</td>
+            <td>SSH Key for launched instances; Use '\n' as the delimiter to add multiple ssh keys.</td>
+            <td>"ssh-rsa AAXXX......yhdlo\nssh-rsa AAxxskj...edfwf"</td>
+        </tr>
+    </table>
+</details>
+
+
+
+<details>
+    <summary> Advanced parameters for DevOps </summary>
+    <table style="width:100%">
+        <tr>
+            <th style="width:25%">Parameter</th>
+            <th style="width:50%">Description</th>
+            <th style="width:25%">Example</th>
+        </tr>
+        <tr>
+            <td>compartment_ocid</td>
+            <td>Compartment OCID where Bucket and DevOps Project/repo will be created; defaults to root if left empty.</td>
+            <td>ocid1.compartment.oc1..aaaaaaaa7....ga</td>
+        </tr>
+        <tr>
+            <td>use_remote_state</td>
+            <td>Remote state configuration: Enter yes if remote state needs to be configured, else tfstate will be stored on local filesystem. Needs to be set as "yes" for Jenkins. </td>
+            <td>yes/no</td>
+        </tr>
+        <tr>
+            <td>remote_state_bucket_name</td>
+            <td>Specify bucket name if you want to use existing bucket else leave empty.If left empty, Bucket with name ${customer_name}-automation-toolkit-bucket will be created/reused in ${region}.</td>
+            <td>demo_bucket</td>
+        </tr>
+        <tr>
+            <td>use_oci_devops_git</td>
+            <td>OCI DevOps GIT configuration: Enter yes if generated terraform_files need to be stored in OCI DevOps GIT Repo else they will be stored on local filesystem. Will enforce 'yes' for use_remote_state in case this value is set to 'yes'. Needs to be set as "yes" for Jenkins. </td>
+            <td>yes/no</td>
+        </tr>
+        <tr>
+            <td>oci_devops_git_repo_name</td>
+            <td>Specify Repo name if you want to use existing OCI Devops GIT Repository else leave empty Format: <project_name/repo_name\>. If left empty, DevOps items  with names <b>${customer_name}-automation-toolkit-project/repo/topic</b> will be created/reused in ${region}.</td>
+            <td>demo_repo</td>
+        </tr>
+        <tr>
+            <td>oci_devops_git_user</td>
+            <td>User Details to perform GIT operations in OCI Devops GIT Repo. 
+        Mandatory when using $(auth_mechanism) as instance_principal or session_token. 
+        Format: <b>&lt;domainName&gt;/&lt;userName&gt;@&lt;tenancyName&gt;</b>
+        When left empty, it will be fetched from $(user_ocid) for $(auth_mechanism) as api_key. 
+        Customer Secret Key will also be configured for this user for S3 credentials of the bucket when $(auth_mechanism) is instance_principal or session_token</td>
+            <td>oracleidentitycloudservice/devopsuser@oracle.com@ocitenant</td>
+        </tr>
+        <tr>
+            <td>oci_devops_git_key</td>
+            <td>When left empty, same key file from $(key_path) used for $(auth_mechanism) as api_key will be copied to <b>/cd3user/tenancies/&lt;customer_name&gt;/</b> and used for GIT Operations. Make sure the api key file permissions are rw(600) for cd3user</td>
+            <td>/cd3user/tenancies/keys/oci_api_private.pem</td>
+        </tr>
+    </table>
+
+</details>
+
+<br>
+
+!!! Important "Important"
     - Have the details ready for Authentication mechanism you are planning to use.<br>
     - Review **outdir_structure_file** parameter as per requirements. It is recommended to use separate outdir structure to manage a large number of resources. <br>
     - Review Advanced Parameters Section for CI/CD setup. If you plan to use the toolkit with Jenkins then be ready with user details that will be used to connect to DevOps Repo in OCI.              Specifying these parameters as **'yes'** in properties file will create Object Storage Bucket and Devops Git Repo/Project/Topic in OCI and enable toolkit usage with Jenkins. The toolkit supports users in primary IDCS stripes or default domains only for DevOps GIT operations.<br>
@@ -45,9 +160,7 @@ flowchart TD
     A ---> B[Jenkins]
     A ---> C[CLI]
     B ---> D[Create, Manage or Export Resources in OCI]
-    C ---> D
-
-    
+    C ---> D    
 ```
 </center>
 
@@ -66,14 +179,15 @@ python createTenancyConfig.py tenancyconfig.properties
     <br>
 
 
-→ Example execution of the script with Advanced Parameters for CI/CD
+-  Example execution of the script with Advanced Parameters for CI/CD
+
     <img width="1124" alt="Screenshot 2024-01-10 at 5 54 02 PM" src="../images/connecttotenancy.png">
 
 
 **Output:**
 
 <details>
-    <summary> Details of the files created on successful execution of above steps - </summary>
+    <summary> Output files - </summary>
     <table>
         <tr>
             <th>Files Generated</th>
