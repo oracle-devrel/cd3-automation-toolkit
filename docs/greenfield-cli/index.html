@@ -610,7 +610,7 @@
               
   
   <span class="md-ellipsis">
-    Generate TF with CD3 - CLI
+    Create, Update or Export with CLI
   </span>
   
 
@@ -626,7 +626,7 @@
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
-            Generate TF with CD3 - CLI
+            Create, Update or Export with CLI
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -785,7 +785,7 @@
               
   
   <span class="md-ellipsis">
-    Examples
+    Must Read
   </span>
   
 
@@ -801,7 +801,7 @@
         <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_2_3_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3_2_3">
             <span class="md-nav__icon md-icon"></span>
-            Examples
+            Must Read
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -962,7 +962,7 @@
               
   
   <span class="md-ellipsis">
-    Examples
+    Must Read
   </span>
   
 
@@ -978,7 +978,7 @@
         <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_3_2_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3_3_2">
             <span class="md-nav__icon md-icon"></span>
-            Examples
+            Must Read
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -1082,7 +1082,7 @@
               
   
   <span class="md-ellipsis">
-    Create, Update or Export TF with CD3 - Jenkins
+    Create, Update or Export with Jenkins
   </span>
   
 
@@ -1098,7 +1098,7 @@
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
-            Create, Update or Export TF with CD3 - Jenkins
+            Create, Update or Export with Jenkins
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -1173,7 +1173,7 @@
               
   
   <span class="md-ellipsis">
-    Create resources
+    Create in OCI
   </span>
   
 
@@ -1189,7 +1189,7 @@
         <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_4_3">
             <span class="md-nav__icon md-icon"></span>
-            Create resources
+            Create in OCI
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -1204,7 +1204,7 @@
         
   
   <span class="md-ellipsis">
-    Workflow Description
+    Steps
   </span>
   
 
@@ -1245,7 +1245,7 @@
               
   
   <span class="md-ellipsis">
-    Examples
+    Must Read
   </span>
   
 
@@ -1261,7 +1261,7 @@
         <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_3_2_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_4_3_2">
             <span class="md-nav__icon md-icon"></span>
-            Examples
+            Must Read
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -1355,7 +1355,7 @@
         
   
   <span class="md-ellipsis">
-    Export Resources
+    Export from OCI
   </span>
   
 
@@ -1953,21 +1953,22 @@ Fill the excel with appropriate values and copy at <em>/cd3user/tenancies/&lt;cu
 <p>Command to Execute:
 <div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>cd /cd3user/oci_tools/cd3_automation_toolkit/
 </span></code></pre></div>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>python setUpOCI.py  &lt;path_to_setupOCI.properties&gt;
-</span></code></pre></div>
-i.e. 
-<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>python setUpOCI.py /cd3user/tenancies/&lt;customer_name&gt;/&lt;customer_name&gt;_setUpOCI.properties
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>python setUpOCI.py /cd3user/tenancies/&lt;customer_name&gt;/&lt;customer_name&gt;_setUpOCI.properties
 </span></code></pre></div></p>
 <div class="admonition example">
-<p class="admonition-title">example execution of the wrapper script</p>
+<p class="admonition-title">Example Execution</p>
 <p>Updated OCI_Regions file !!!</p>
 <p>Script to fetch the compartment OCIDs into variables file has not been executed.<br>
 Do you want to run it now? (y|n):</p>
 </div>
-<p>→ This prompt appears when you run the toolkit for the very first time or when any new compartments are created using the toolkit. Enter 'y' to fetch the details of compartment OCIDs into variables file.
-<br>→ After fetching the compartment details, the toolkit will display the menu options as shown below:</p>
+<p>→ This prompt appears when you run the toolkit for the very first time or when any new compartments are created using the toolkit. Enter 'y' to fetch the details of compartment OCIDs into variables file.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Execute <strong>"Fetch Compartments OCIDs to variables file"</strong> from <strong>CD3 Services</strong> in setUpOCI menu after you create Compartments. This is a required step everytime you create a compartment via toolkit or via the OCI console.</p>
+</div>
+<p><br>→ After fetching the compartment details, the toolkit will display the menu options as shown below:</p>
 <div class="admonition example">
-<p class="admonition-title">example execution of the wrapper script</p>
+<p class="admonition-title">Example Execution</p>
 <p><img src = "../images/cliGF-1.png" width=90% height=90%></p>
 </div>
 <p>Choose the resources by specifying a single option (for choosing one of these resources) or comma-separated values (to choose multiple resources) as shown in the sample screenshot above.</p>
@@ -1978,10 +1979,6 @@ Do you want to run it now? (y|n):</p>
 <p><strong>terraform init</strong>  - To initialize and prepare your working/out directory so Terraform can run the configuration.<br></p>
 <p><strong>terraform plan</strong>  - To preview any changes before you apply them. Run the plan against <a href="../opa-integration/">OPA policies</a> for compliance against CIS.</p>
 <p><strong>terraform apply</strong> - To make the changes defined by Terraform configuration to create, update, or destroy resources in OCI.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Execute <strong>"Fetch Compartments OCIDs to variables file"</strong> from <strong>CD3 Services</strong> in setUpOCI menu after you create Compartments. This is a required step everytime you create a compartment via toolkit or via the OCI console.</p>
-</div>
 
 
 

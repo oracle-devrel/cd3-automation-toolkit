@@ -604,7 +604,7 @@
               
   
   <span class="md-ellipsis">
-    Generate TF with CD3 - CLI
+    Create, Update or Export with CLI
   </span>
   
 
@@ -620,7 +620,7 @@
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
-            Generate TF with CD3 - CLI
+            Create, Update or Export with CLI
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -767,7 +767,7 @@
               
   
   <span class="md-ellipsis">
-    Examples
+    Must Read
   </span>
   
 
@@ -783,7 +783,7 @@
         <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_2_3_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3_2_3">
             <span class="md-nav__icon md-icon"></span>
-            Examples
+            Must Read
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -944,7 +944,7 @@
               
   
   <span class="md-ellipsis">
-    Examples
+    Must Read
   </span>
   
 
@@ -960,7 +960,7 @@
         <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_3_2_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3_3_2">
             <span class="md-nav__icon md-icon"></span>
-            Examples
+            Must Read
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -1064,7 +1064,7 @@
               
   
   <span class="md-ellipsis">
-    Create, Update or Export TF with CD3 - Jenkins
+    Create, Update or Export with Jenkins
   </span>
   
 
@@ -1080,7 +1080,7 @@
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
-            Create, Update or Export TF with CD3 - Jenkins
+            Create, Update or Export with Jenkins
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -1155,7 +1155,7 @@
               
   
   <span class="md-ellipsis">
-    Create resources
+    Create in OCI
   </span>
   
 
@@ -1171,7 +1171,7 @@
         <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_4_3">
             <span class="md-nav__icon md-icon"></span>
-            Create resources
+            Create in OCI
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -1186,7 +1186,7 @@
         
   
   <span class="md-ellipsis">
-    Workflow Description
+    Steps
   </span>
   
 
@@ -1227,7 +1227,7 @@
               
   
   <span class="md-ellipsis">
-    Examples
+    Must Read
   </span>
   
 
@@ -1243,7 +1243,7 @@
         <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_3_2_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_4_3_2">
             <span class="md-nav__icon md-icon"></span>
-            Examples
+            Must Read
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -1337,7 +1337,7 @@
         
   
   <span class="md-ellipsis">
-    Export Resources
+    Export from OCI
   </span>
   
 
@@ -1905,21 +1905,21 @@
 <li><a href="#instance-principal">Instance principal</a></li>
 </ul>
 <h2 id="api-key-based-authentication">API key-based authentication</h2>
-<p>Follow below steps to use API key-based authentication - <br></p>
 <ol>
 <li>
-<p>Create API PEM Key
+<p>Create API PEM Key<br>
    <br>RSA key pair in PEM format (minimum 2048 bits) is needed to use OCI APIs. If the key pair does not exist, create them using below command inside docker container:
-   <br><code>cd /cd3user/oci_tools/cd3_automation_toolkit/user-scripts/</code>
-   <br><code>python createAPIKey.py</code>
-   <br>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>cd /cd3user/oci_tools/cd3_automation_toolkit/user-scripts/
+</span></code></pre></div>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>python createAPIKey.py
+</span></code></pre></div>
 → This will generate the public/private key pair (oci_api_public.pem and oci_api_private.pem) at /cd3user/tenancies/keys/
    <br><br>
  In case you already have the keys, you can copy the private key file inside the container at 
  /cd3user/tenancies/keys/</p>
 </li>
 <li>
-<p>Upload Public Key
+<p>Upload Public Key<br>
    <br>
    Upload the Public key to "APIkeys" under user settings in OCI Console.</p>
 <ul>
@@ -1936,28 +1936,32 @@
 <li>Please note down these details for next step - User OCID, Private Key path, Fingerprint, Tenancy OCID. The User should have administrator access to the tenancy to use complete functionality of the toolkit.</li>
 </ul>
 <h2 id="session-token-based-authentication">Session token-based authentication</h2>
-<p>Follow below steps to use Session token-based authentication - </p>
 <ol>
-<li>
-<p>Use below command to create config inside the container. This is needed to generate session token. You can skip this step, if you already have a valid config(with API key) and uploaded the public key to OCI for a user. In that case, you can copy the config file and private API Key inside the container at /cd3user/.oci
-   <br><code>oci setup config</code></p>
-<p><img width="509" alt="Screenshot 2024-01-04 at 4 43 08 PM" src="../images/authmechanisms-1.png"></p>
-</li>
-<li>
-<p>Execute <code>oci session authenticate --no-browser</code> to generate session token for the private key.
-   <br> Follow the questions. Enter 'DEFAULT' for the profile name and proceed to update the config file with session token information at default location /cd3user/.oci</p>
-<p><img width="721" alt="Screenshot 2024-01-04 at 4 49 53 PM" src="../images/authmechanisms-2.png">
-3. Token will be generated at default location /cd3user/.oci     </p>
-<p><img width="512" alt="Screenshot 2024-01-04 at 4 55 17 PM" src="../images/authmechanisms-3.png"></p>
-</li>
+<li>Use below command to create config inside the container. This is needed to generate session token. You can skip this step, if you already have a valid config(with API key) and uploaded the public key to OCI for a user. In that case, you can copy the config file and private API Key inside the container at /cd3user/.oci<br></li>
 </ol>
-<p><b>Note:</b></p>
+<p><div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>oci setup config
+</span></code></pre></div>
+<br>
+<img width="509" alt="Screenshot 2024-01-04 at 4 43 08 PM" src="../images/authmechanisms-1.png"></p>
+<ol>
+<li>Execute below cmd to generate session token for the private key.</li>
+</ol>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>oci session authenticate --no-browser
+</span></code></pre></div>
+<p>&nbsp;&nbsp; Follow the questions. Enter 'DEFAULT' for the profile name and proceed to update the config file with session token information at default location /cd3user/.oci
+<br><br></p>
+<p>&nbsp;&amp;nbsp<img width="721" alt="Screenshot 2024-01-04 at 4 49 53 PM" src="../images/authmechanisms-2.png">
+<br>
+3.  Token will be generated at default location /cd3user/.oci  <br><br>   </p>
+<p><img width="512" alt="Screenshot 2024-01-04 at 4 55 17 PM" src="../images/authmechanisms-3.png"></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
 <ul>
 <li>createTenancyConfig.py script will use the config file located at /cd3user/.oci path. And toolkit supports profile name as DEFAULT only.</li>
 <li>Generated session token will have maximum 60 minutes validity. You will have to follow from step 1 if new session token is required after expiry. The User should have administrator access to the tenancy to use complete functionality of the toolkit.</li>
 </ul>
+</div>
 <h2 id="instance-principal">Instance principal</h2>
-<p>Follow below steps to use Instance Principal authentication - </p>
 <ol>
 <li>Launch an Instance in the tenancy and set up the toolkit docker container on that instance.</li>
 <li>Create Dynamic Group for this instance.</li>

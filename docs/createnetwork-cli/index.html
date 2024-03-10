@@ -610,7 +610,7 @@
               
   
   <span class="md-ellipsis">
-    Generate TF with CD3 - CLI
+    Create, Update or Export with CLI
   </span>
   
 
@@ -626,7 +626,7 @@
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
-            Generate TF with CD3 - CLI
+            Create, Update or Export with CLI
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -777,7 +777,7 @@
               
   
   <span class="md-ellipsis">
-    Examples
+    Must Read
   </span>
   
 
@@ -793,7 +793,7 @@
         <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_2_3_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_3_2_3">
             <span class="md-nav__icon md-icon"></span>
-            Examples
+            Must Read
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -1066,7 +1066,7 @@
               
   
   <span class="md-ellipsis">
-    Examples
+    Must Read
   </span>
   
 
@@ -1082,7 +1082,7 @@
         <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_3_2_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3_3_2">
             <span class="md-nav__icon md-icon"></span>
-            Examples
+            Must Read
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -1186,7 +1186,7 @@
               
   
   <span class="md-ellipsis">
-    Create, Update or Export TF with CD3 - Jenkins
+    Create, Update or Export with Jenkins
   </span>
   
 
@@ -1202,7 +1202,7 @@
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
-            Create, Update or Export TF with CD3 - Jenkins
+            Create, Update or Export with Jenkins
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -1277,7 +1277,7 @@
               
   
   <span class="md-ellipsis">
-    Create resources
+    Create in OCI
   </span>
   
 
@@ -1293,7 +1293,7 @@
         <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_4_3">
             <span class="md-nav__icon md-icon"></span>
-            Create resources
+            Create in OCI
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -1308,7 +1308,7 @@
         
   
   <span class="md-ellipsis">
-    Workflow Description
+    Steps
   </span>
   
 
@@ -1349,7 +1349,7 @@
               
   
   <span class="md-ellipsis">
-    Examples
+    Must Read
   </span>
   
 
@@ -1365,7 +1365,7 @@
         <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_3_2_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_4_3_2">
             <span class="md-nav__icon md-icon"></span>
-            Examples
+            Must Read
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -1459,7 +1459,7 @@
         
   
   <span class="md-ellipsis">
-    Export Resources
+    Export from OCI
   </span>
   
 
@@ -2035,11 +2035,17 @@
 <p>Before you start with Network Creation, make sure you have run 'Fetch Compartments OCIDs to variables file'.</p>
 </div>
 <h3 id="create-network">Create Network</h3>
-<p>Creation of Networking components using Automation Toolkit involves four simple steps.
- - Add the networking resource details to appropriate Excel Sheets.
- - Running the toolkit to generate auto.tfvars.
- - Executing Terraform commands to provision the resources in OCI.
- - Exporting the automatically generated Security Rules and Route Rules by the toolkit to CD3 Excel Sheet.</p>
+<p>Creation of Networking components using Automation Toolkit involves four simple steps.</p>
+<ul>
+<li>Add the networking resource details to appropriate Excel Sheets.</li>
+<li>Running the toolkit to generate auto.tfvars.</li>
+<li>Executing Terraform commands to provision the resources in OCI.</li>
+<li>Exporting the automatically generated Security Rules and Route Rules by the toolkit to CD3 Excel Sheet.</li>
+</ul>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Create Network generates custom security rules and route rules in OCI along with default ones. Make sure to export them all into excel sheet after running Create Network.</p>
+</div>
 <p>Below are the steps in detail to create Network that includes VCNs, Subnets, DHCP, DRG, Security List, Route Tables, DRG Route Tables, NSGs, etc.</p>
 <ol>
 <li>
@@ -2099,10 +2105,12 @@ This completes the creation of Networking components in OCI. Verify the componen
 </ul>
 <p>Continue executing the remaining steps (from Step 6) of <a href="#create-network">Create Network</a>.</p>
 <h3 id="modify-network">Modify Network</h3>
-<p>Modifying the Networking components using Automation Toolkit involves three simple steps.<br>
- - Add/modify the details of networking components like the VCNs, Subnets, DHCP and DRG in Excel Sheet.<br>
- - Running the toolkit to generate auto.tfvars.<br>
- - Executing Terraform commands to provision/modify the resources in OCI.</p>
+<p>Modifying the Networking components using Automation Toolkit involves three simple steps.</p>
+<ul>
+<li>Add/modify the details of networking components like the VCNs, Subnets, DHCP and DRG in Excel Sheet.<br></li>
+<li>Running the toolkit to generate auto.tfvars.<br></li>
+<li>Executing Terraform commands to provision/modify the resources in OCI.</li>
+</ul>
 <p>Follow <a href="#modify-security-rules-route-rules-and-drg-route-rules">these steps</a> to modify Security Rules, Route Rules and DRG Route Rules</p>
 <p><em>Steps in detail</em>:</p>
 <ol>

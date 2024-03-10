@@ -620,7 +620,7 @@
               
   
   <span class="md-ellipsis">
-    Generate TF with CD3 - CLI
+    Create, Update or Export with CLI
   </span>
   
 
@@ -636,7 +636,7 @@
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
-            Generate TF with CD3 - CLI
+            Create, Update or Export with CLI
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -783,7 +783,7 @@
               
   
   <span class="md-ellipsis">
-    Examples
+    Must Read
   </span>
   
 
@@ -799,7 +799,7 @@
         <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_2_3_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3_2_3">
             <span class="md-nav__icon md-icon"></span>
-            Examples
+            Must Read
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -960,7 +960,7 @@
               
   
   <span class="md-ellipsis">
-    Examples
+    Must Read
   </span>
   
 
@@ -976,7 +976,7 @@
         <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_3_2_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3_3_2">
             <span class="md-nav__icon md-icon"></span>
-            Examples
+            Must Read
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -1080,7 +1080,7 @@
               
   
   <span class="md-ellipsis">
-    Create, Update or Export TF with CD3 - Jenkins
+    Create, Update or Export with Jenkins
   </span>
   
 
@@ -1096,7 +1096,7 @@
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
-            Create, Update or Export TF with CD3 - Jenkins
+            Create, Update or Export with Jenkins
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -1171,7 +1171,7 @@
               
   
   <span class="md-ellipsis">
-    Create resources
+    Create in OCI
   </span>
   
 
@@ -1187,7 +1187,7 @@
         <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_4_3">
             <span class="md-nav__icon md-icon"></span>
-            Create resources
+            Create in OCI
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -1202,7 +1202,7 @@
         
   
   <span class="md-ellipsis">
-    Workflow Description
+    Steps
   </span>
   
 
@@ -1243,7 +1243,7 @@
               
   
   <span class="md-ellipsis">
-    Examples
+    Must Read
   </span>
   
 
@@ -1259,7 +1259,7 @@
         <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_3_2_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_4_3_2">
             <span class="md-nav__icon md-icon"></span>
-            Examples
+            Must Read
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -1353,7 +1353,7 @@
         
   
   <span class="md-ellipsis">
-    Export Resources
+    Export from OCI
   </span>
   
 
@@ -1916,7 +1916,8 @@
 <h1 id="cd3-automation-toolkit"><strong>CD3 Automation Toolkit</strong></h1>
 <hr />
 <p><img width="25%" height="30%"  alt="CD3 Logo" src= "../images/CD3-logo.png"> </p>
-<p>The CD3 Automation toolkit reads input data in the form of CD3 Excel sheet and generates Terraform files which can be used to provision the resources in OCI instead of handling the task through the OCI console manually. The toolkit also reverse engineers the components in OCI back to the Excel sheet and Terraform configuration. The toolkit can be used throughout the lifecycle of tenancy to continuously create or modify existing resources. The generated Terraform code can be used by the OCI Resource Manager or can be integrated into organization's existing devops CI/CD ecosystem.</p>
+<p>CD3 stands for <strong>Cloud Deployment Design Deliverable</strong>. The CD3 Automation toolkit enables you to effortlessly Build, Export and Manage OCI (Oracle Cloud Infrastruture) resources by converting Excel templates to fully functional Terraform modules within minutes ⚡️⚡️ .</p>
+<p>Additionally, the toolkit also supports seamless resource management using OCI DevOps GIT service and Jenkins Pipelines.</p>
 <p><br></p>
 <iframe width="100%" height="500" src="https://www.youtube.com/embed/watch?v=TSNu0pUHYsE&list=PLPIzp-E1msrbJ3WawXVhzimQnLw5iafcp&index=1">
 </iframe>
@@ -1930,22 +1931,22 @@ The toolkit supports 2 workflows:<br></p>
 <p><strong>1. Create &amp; Manage Resources in OCI (Greenfield Workflow):</strong></p>
 <ul>
 <li>Use this workflow when there is empty OCI tenancy (or) need to create new resources without any requirement to modify / use any existing resources in tenancy.</li>
-<li>The filled in input Excel file is fed to the toolkit and terraform *.auto.tfvars files are generated for all resources.</li>
-<li>Modifying the same excel sheet and re running the toolkit will generate modified terraform *.auto.tfvars files.<br></li>
+<li>The filled in input Excel file is fed to the toolkit and terraform tfvars files are generated for all resources.</li>
+<li>Modifying the same excel sheet and re running the toolkit will generate modified terraform tfvars files.<br></li>
 <li>The generated terraform files can be used to deploy resources in OCI by generating a terraform plan and approving the plan for apply. <br></li>
 </ul>
 <p><strong>2. Export &amp; Manage Resources in OCI (Non-Greenfield Workflow):</strong></p>
 <ul>
-<li>Use this workflow when there is need to use / manage existing resources with terraform. Export existing resources into CD3 &amp; TF State, then use the Greenfield workflow to modify them or create more resources on top of them.</li>
+<li>Use this workflow when there is need to use / manage existing resources with terraform which have not been created using CD3. Export these existing resources into CD3 &amp; TF State. Once the export is complete, switch to the Greenfield workflow to create new or manage existing resources .</li>
 <li>The input Excel (preferably the Blank template) is fed to the toolkit and resources are exported into CD3 Excel template. <br></li>
-<li>The toolkit then generates *auto.tfvars from the exported data in Excel file and also generates shell scripts with terraform import commands for all the resources.<br></li>
+<li>The toolkit then generates tfvars from the exported data in Excel file and also generates shell scripts with terraform import commands for all the resources.<br></li>
 <li>The shell scripts have to be executed in order to have the updated state file to manage the resources further.<br></li>
-<li>Modifying the same excel sheet and re running the toolkit will generate modified terraform *.auto.tfvars files.<br></li>
+<li>Modifying the same excel sheet and re running the toolkit will generate modified terraform tfvars files.<br></li>
 </ul>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <p>CD3 Automation toolkit can be used either via CLI or Jenkins.</p>
-<p>📖 Detailed documentation and videos are provided for both options. Please check the left panel for navigation.</p>
+<p>📖 Detailed documentation and videos are provided for both options. Check the left panel for navigation.</p>
 </div>
 <p><br></p>
 

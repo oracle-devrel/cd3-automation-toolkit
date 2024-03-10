@@ -622,7 +622,7 @@
               
   
   <span class="md-ellipsis">
-    Generate TF with CD3 - CLI
+    Create, Update or Export with CLI
   </span>
   
 
@@ -638,7 +638,7 @@
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
-            Generate TF with CD3 - CLI
+            Create, Update or Export with CLI
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -785,7 +785,7 @@
               
   
   <span class="md-ellipsis">
-    Examples
+    Must Read
   </span>
   
 
@@ -801,7 +801,7 @@
         <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_2_3_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3_2_3">
             <span class="md-nav__icon md-icon"></span>
-            Examples
+            Must Read
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -962,7 +962,7 @@
               
   
   <span class="md-ellipsis">
-    Examples
+    Must Read
   </span>
   
 
@@ -978,7 +978,7 @@
         <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_3_2_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3_3_2">
             <span class="md-nav__icon md-icon"></span>
-            Examples
+            Must Read
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -1082,7 +1082,7 @@
               
   
   <span class="md-ellipsis">
-    Create, Update or Export TF with CD3 - Jenkins
+    Create, Update or Export with Jenkins
   </span>
   
 
@@ -1098,7 +1098,7 @@
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
-            Create, Update or Export TF with CD3 - Jenkins
+            Create, Update or Export with Jenkins
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -1173,7 +1173,7 @@
               
   
   <span class="md-ellipsis">
-    Create resources
+    Create in OCI
   </span>
   
 
@@ -1189,7 +1189,7 @@
         <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_4_3">
             <span class="md-nav__icon md-icon"></span>
-            Create resources
+            Create in OCI
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -1204,7 +1204,7 @@
         
   
   <span class="md-ellipsis">
-    Workflow Description
+    Steps
   </span>
   
 
@@ -1245,7 +1245,7 @@
               
   
   <span class="md-ellipsis">
-    Examples
+    Must Read
   </span>
   
 
@@ -1261,7 +1261,7 @@
         <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_3_2_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_4_3_2">
             <span class="md-nav__icon md-icon"></span>
-            Examples
+            Must Read
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -1355,7 +1355,7 @@
         
   
   <span class="md-ellipsis">
-    Export Resources
+    Export from OCI
   </span>
   
 
@@ -1922,7 +1922,7 @@
 <ul class="task-list">
 <li>The user deploying the stack should have access to launch OCI Resource Manager stack, compute instance and network resources.</li>
 <li>
-<p>OCI Tenancy Access as defined in <a href="../prerequisites/">Prerequisistes</a>.
+<p>OCI Tenancy Access as defined in <a href="../prerequisites/">Prerequisites</a>.
 <br><br></p>
 </li>
 <li class="task-list-item">
@@ -1930,19 +1930,23 @@
 <a href="https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oracle-devrel/cd3-automation-toolkit/archive/refs/heads/develop.zip"><img alt="Deploy_To_OCI" src="https://oci-resourcemanager-plugin.plugins.oci.oraclecloud.com/latest/deploy-to-oracle-cloud.svg" /></a></p>
 </li>
 <li class="task-list-item">
-<p><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> This action will initiate the deployment of the Work VM in the tenancy and configure the Automation Toolkit on a Podman container within that VM. 
-If not logged into the OCI tenancy, the button will redirect to the Oracle Cloud initial page, prompting entry of the tenancy name and login to OCI first.</p>
+<p><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> This action will initiate the deployment of the Work VM in the tenancy after logging in  and configure the Automation Toolkit on a Podman container within that VM. </p>
 </li>
 <li class="task-list-item">
-<p><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Fill in the required details in the Resource manager stack and click on create. After the Apply job is successful, Click on the created Job&rarr;Logs. Scroll down to the end and find the details for the created VM, and commands to be executed to login to the toolkit container.</p>
+<p><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Enter the required details in the Resource manager stack and click on create.</p>
 </li>
 </ul>
-<div class="admonition caution">
-<p class="admonition-title">Caution</p>
-<p>While filling details in the stack, please make sure not to open access to VM from 0.0.0.0/0 and restrict it to the specific CIDR only.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>While filling details in the stack, the recommended way is not to enable access to VM from 0.0.0.0/0 and restrict it to the specific CIDR only.</p>
 </div>
 <ul class="task-list">
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Follow <a href="../connect-container-to-oci-tenancy/">Connect container to tenancy</a> for next steps. </li>
+<li class="task-list-item">
+<p><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> After the Apply job is successful, click on it and scroll down to the end of logs and find the details for the created VM, and commands to be executed to login to the toolkit container.</p>
+</li>
+<li class="task-list-item">
+<p><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Follow <a href="../connect-container-to-oci-tenancy/">Connect container to tenancy</a> for next steps. </p>
+</li>
 </ul>
 
 
