@@ -33,9 +33,8 @@ docker ps
 
 * Fill the input parameters in ```tenancyconfig.properties``` file.
 
-<br>
 
-**Parameters details**
+_tenancyconfig.properties_
 
 <details>
     <summary> Parameter Description </summary>
@@ -196,49 +195,49 @@ python createTenancyConfig.py tenancyconfig.properties
         </tr>
         <tr>
             <td>setUpOCI.properties</td>
-            <td>/cd3user/tenancies/<customer\_name>/<customer_name\>_setUpOCI.properties</td>
+            <td>/cd3user/tenancies/&lt;customer_name&gt;/&lt;customer_name>_setUpOCI.properties</td>
             <td>Customer Specific properties</td>
         </tr>
         <tr>
             <td>outdir_structure_file.properties</td>
-            <td>/cd3user/tenancies/<customer_name\>/<customer_name>_outdir_structure_file</td>
+            <td>/cd3user/tenancies/&lt;customer_name&gt;/&lt;customer_name&gt;_outdir_structure_file</td>
             <td>Customer Specific properties file for outdir structure.
             This file will not be generated if 'outdir_structure_file' parameter was set to empty(single outdir)in tenancyconfig.properties while running createTenancyConfig.py</td>
         </tr>
         <tr>
             <td>Region based directories</td>
-            <td>/cd3user/tenancies/<customer_name>/terraform_files</td>
+            <td>/cd3user/tenancies/&lt;customer_name&gt;/terraform_files</td>
             <td>Tenancy's subscribed regions based directories for the generation of terraform files.
                 Each region directorywill contain individual directory for each service based on the parameter 'outdir_structure_file'</td>
         </tr>
         <tr>
             <td>Variables File,Provider File, Root and Sub terraform modules</td>
-            <td>/cd3user/tenancies/<customer_name>/terraform_files/<region></td>
+            <td>/cd3user/tenancies/&lt;customer_name&gt;/terraform_files/&lt;region></td>
             <td>Required for terraform to work. Variables file and Provider file willbe genrated based on authentication mechanism chosen.</td>
         </tr>
         <tr>
             <td>out file</td>
-            <td>/cd3user/tenancies/<customer_name>/createTenancyConfig.out</td>
+            <td>/cd3user/tenancies/&lt;customer_name&gt;/createTenancyConfig.out</td>
             <td>This file contains acopy of information displayed as the console output.</td>
         </tr>
         <tr>
             <td>OCI Config File</td>
-            <td>/cd3user/tenancies/<customer_name>/.config_files<customer_name>_oci_config</td>
+            <td>/cd3user/tenancies/&lt;customer_name&gt;/.config_files/&lt;customer_name&gt;_oci_config</td>
             <td>Customer specific Config file for OCI API calls. This will havedata based on authentication mechanism chosen.</td>
         </tr>
         <tr>
             <td>Public and Private Key Pair</td>
-            <td>Copied from /cd3user/tenancies/keys/ to /cd3usertenancies/ <customer_name>/.config_files</td>
+            <td>Copied from /cd3user/tenancies/keys/ to /cd3usertenancies/&lt;customer_name&gt;/.config_files</td>
             <td>API Key for authentication mechanism as API_Key arecopied to customer specific out directory locations for easy access.</td>
         </tr>
         <tr>
             <td>GIT Config File</td>
-            <td>/cd3user/tenancies/<customer_name>/.config_files<customer_name>_git_config</td>
+            <td>/cd3user/tenancies/&lt;customer_name&gt;/.config_files/&lt;customer_name&gt;_git_config</td>
             <td>Customer specific GIT Config file for OCI Dev Ops GIT operations.This is generated only if use_oci_devops_git is set to yes</td>
         </tr>
         <tr>
             <td>S3 Credentials File</td>
-            <td>/cd3user/tenancies/<customer_name>/.config_files/ <customer_name>_s3_credentials</td>
+            <td>/cd3user/tenancies/&lt;customer_name&gt;/.config_files/&lt;customer_name&gt;_s3_credentials</td>
             <td>This file contains access key and secret for S3 compatible OSbucket to manage remote terraform state. This is generated only if use_remote_state is set to yes</td>
         </tr>
         <tr>
@@ -248,7 +247,7 @@ python createTenancyConfig.py tenancyconfig.properties
         </tr>
         <tr>
             <td>tenancyconfig.properties</td>
-            <td>/cd3user/tenancies/<customer_name>/.config_files/ <customer_name>_tenancyconfig.properties</td>
+            <td>/cd3user/tenancies/&lt;customer_name&gt;/.config_files/&lt;customer_name&gt;_tenancyconfig.properties</td>
             <td>The input properties file used to execute the script is copied to custome folder to retain for future reference. This can be used when the script needs tobe re-run with same parameters at later stage.</td>
         </tr>
         

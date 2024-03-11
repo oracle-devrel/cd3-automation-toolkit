@@ -1,4 +1,5 @@
-## OCI Services currently supported by Automation Toolkit
+
+# OCI Services currently supported by Automation Toolkit
 
 Click on the links below to know about the specifics of each tab in the excel sheet.
 
@@ -14,7 +15,7 @@ Click on the links below to know about the specifics of each tab in the excel sh
 
  - [Network Sources](tabs.md#Network-Sources-Tab)
 
-<a href="/terraform/identity.md"> Click here to view sample auto.tfvars for the Identity components</a> 
+<a href="../terraform/identity"> Click here to view sample auto.tfvars for the Identity components</a> 
 	
 
 
@@ -22,7 +23,7 @@ Click on the links below to know about the specifics of each tab in the excel sh
 
  - [Tags](tabs.md#Tags-Tab)
 
-<a href="/terraform/governance.md">Click here to view sample auto.tfvars for Governance components</a> 
+<a href="../terraform/governance">Click here to view sample auto.tfvars for Governance components</a> 
 
 #### Network
   
@@ -38,7 +39,7 @@ Click on the links below to know about the specifics of each tab in the excel sh
  
   
 
-<a href="/terraform/network.md">Click here to view sample auto.tfvars for all Network components- VCNs, Subnets, Gateways etc.,</a> 
+<a href="../terraform/network">Click here to view sample auto.tfvars for all Network components- VCNs, Subnets, Gateways etc.,</a> 
 
 #### Private-DNS
   
@@ -47,7 +48,7 @@ Click on the links below to know about the specifics of each tab in the excel sh
  - [DNS-Resolvers](tabs.md#DNS-Resolvers-Tab)
   
 
-<a href="/terraform/dns.md">Click here to view sample auto.tfvars for all DNS components </a> 
+<a href="../terraform/dns.">Click here to view sample auto.tfvars for all DNS components </a> 
 
 #### Load Balancer
 
@@ -61,7 +62,7 @@ Click on the links below to know about the specifics of each tab in the excel sh
  
  - [LB-Listener](tabs.md#lb-listeners-tab)
 
-<a href="/terraform/loadbalancer.md">Click here to view sample auto.tfvars for all Load Balancer components- Cipher suits,Backend sets, rule sets etc.,</a>
+<a href="../terraform/loadbalancer">Click here to view sample auto.tfvars for all Load Balancer components- Cipher suits,Backend sets, rule sets etc.,</a>
 
 
 #### Compute
@@ -70,19 +71,19 @@ Click on the links below to know about the specifics of each tab in the excel sh
  
  - [Instances](tabs.md#instances-tab)
 
-<a href="/terraform/compute.md">Click here to view sample auto.tfvars for Compute components-Virtual Machine</a> 
+<a href="../terraform/compute">Click here to view sample auto.tfvars for Compute components-Virtual Machine</a> 
  
 #### Storage
  
  - [BlockVolumes](tabs.md#blocksvolumes-tab)
  
- <a href="/terraform/storage.md">Click here to view sample auto.tfvars for Block Volumes </a> 
+ <a href="../terraform/storage">Click here to view sample auto.tfvars for Block Volumes </a> 
 
  - [FSS](tabs.md#fss-tab)
  
  - [Object Storage Buckets](tabs.md#Buckets-tab)
  
- <a href="/terraform/storage.md#2-Buckets">Click here to view sample auto.tfvars for Object Storage Buckets</a> 
+ <a href="../terraform/storage.md#2-Buckets">Click here to view sample auto.tfvars for Object Storage Buckets</a> 
  
 
 #### Database
@@ -99,19 +100,19 @@ Click on the links below to know about the specifics of each tab in the excel sh
  
  - [Alarms](tabs.md#alarms-tab)
 
-<a href="/terraform/managementservices.md">Click here to view sample auto.tfvars for management services Alarms, Notifications, Events etc.,</a> 
+<a href="../terraform/managementservices">Click here to view sample auto.tfvars for management services Alarms, Notifications, Events etc.,</a> 
  
  - [ServiceConnectors](tabs.md#serviceconnectors-tab) 
 
 
-<a href="/terraform/sch.md">Click here to view sample auto.tfvars for Service Connectors</a> 
+<a href="../terraform/sch">Click here to view sample auto.tfvars for Service Connectors</a> 
 
  
 #### Developer Services
  
  - [OKE]( tabs.md#oke-tab)
 
-<a href="/terraform/oke.md">Click here to view sample auto.tfvars for OKE components- Clusters, Nodepools</a> 
+<a href="../terraform/oke">Click here to view sample auto.tfvars for OKE components- Clusters, Nodepools</a> 
 
 #### Logging Services
  
@@ -119,13 +120,13 @@ Click on the links below to know about the specifics of each tab in the excel sh
  - [LBaaS Logs]( tabs.md#lbaas-logs)
 - [OSS Logs]( tabs.md#oss-logs)
 
-<a href="/terraform/logging.md">Click here to view sample auto.tfvars for Logging components </a> 
+<a href="../terraform/logging">Click here to view sample auto.tfvars for Logging components </a> 
 
 #### SDDCs Tab
  
  - [OCVS]( tabs.md#sddcs-tab)
    
-<a href="/terraform/sddc.md">Click here to view sample auto.tfvars for OCVS </a> 
+<a href="../terraform/sddc">Click here to view sample auto.tfvars for OCVS </a> 
  
  
  
