@@ -1,13 +1,14 @@
-## auto.tfvars syntax for Compute Module
+# auto.tfvars syntax for Compute Module
 These are the syntax and sample format for providing inputs to the modules via <b>*.auto.tfvars</b> files.
 <b>"key"</b> must be unique to every resource that is created.
 Comments preceed with <b>##</b>.
 
-## Compute
-1. Virtual Machines (VMs)
+
+**1. Virtual Machines (VMs)**
+
 - <b>Syntax</b>
 
-  ````
+```
   instances = {
       ## key - Is a unique value to reference the resources respectively
       key = {
@@ -67,9 +68,10 @@ Comments preceed with <b>##</b>.
           freeform_tags             = map
       },
   }
-    ````
+```
+
 - <b>Example</b>
-    ````
+```
     // Copyright (c) 2021, 2022, Oracle and/or its affiliates.
     ############################
     # Instances
@@ -149,4 +151,4 @@ Comments preceed with <b>##</b>.
         },
     ##Add New Instances for phoenix here##
     }
-    ````
+```

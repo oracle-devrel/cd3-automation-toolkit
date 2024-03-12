@@ -1,13 +1,13 @@
-## auto.tfvars syntax for Load Balancer Module
+# auto.tfvars syntax for Load Balancer Module
 These are the syntax and sample format for providing inputs to the modules via <b>*.auto.tfvars</b> files.
 <b>"key"</b> must be unique to every resource that is created.
 Comments preceed with <b>##</b>.
 
-## Load Balancers
-1. Load Balancers (LBR)
+**1. Load Balancers (LBR)**
+
 - <b>Syntax</b>
 
-  ````
+```
   load_balancers = {
       ## key - Is a unique value to reference the resources respectively
       key = {
@@ -29,9 +29,10 @@ Comments preceed with <b>##</b>.
           freeform_tags              = map
       },
   }
-    ````
+```
+
 - <b>Example</b>
-  ````
+```
     // Copyright (c) 2021, 2022, Oracle and/or its affiliates.
     #############################
     # Network
@@ -87,11 +88,12 @@ Comments preceed with <b>##</b>.
             },
     ##Add New Load Balancers for london here##
     }
-    ````
+```
   
-2. Hostname
+**2. Hostname**
+
 - <b>Syntax</b>
-  ````
+```
    hostnames = {
       ## key - Is a unique value to reference the resources respectively
       key = {
@@ -102,9 +104,10 @@ Comments preceed with <b>##</b>.
           name                       = string
       },      
    }
-  ````
+```
+
 - <b>Example</b>
-  ````
+```
     // Copyright (c) 2021, 2022, Oracle and/or its affiliates.
     #############################
     # Network
@@ -124,11 +127,12 @@ Comments preceed with <b>##</b>.
         hostname           = "lbrhostname01"
         },     
     }
-  ````
+```
 
-3. Load Balancer Reserved IP 
+**3. Load Balancer Reserved IP**
+
 - <b>Syntax</b>
-  ````
+```
    lbr_reserved_ips = {
       ## key - Is a unique value to reference the resources respectively
      key = {
@@ -145,9 +149,11 @@ Comments preceed with <b>##</b>.
           freeform_tags            = map
       }
    }
-  ````
+```
+
 - <b>Example</b>
-  ````
+
+```
   // Copyright (c) 2021, 2022, Oracle and/or its affiliates.
   ############################
   # Network
@@ -174,10 +180,12 @@ Comments preceed with <b>##</b>.
      },
   ##Add New Load Balancer Reserved IPs for london here##
   }
-  ````
-4. Certificates
+```
+
+**4. Certificates**
+
 - <b>Syntax</b>
-  ````
+```
   certificates = {
       ## key - Is a unique value to reference the resources respectively
       key = {
@@ -192,9 +200,10 @@ Comments preceed with <b>##</b>.
           public_certificate         = string
      }
   }
-  ````
+```
+
 - <b>Example</b>
-  ````
+```
   // Copyright (c) 2021, 2022, Oracle and/or its affiliates.
   #############################
   # Network
@@ -229,10 +238,12 @@ Comments preceed with <b>##</b>.
      },
   ##Add New Certificates for london here##
   }
-  ````
-5. Cipher Suites
+```
+
+**5. Cipher Suites**
+
 - <b>Syntax</b>
-  ````
+```
   cipher_suites = {
       ## key - Is a unique value to reference the resources respectively
       key = {
@@ -242,9 +253,10 @@ Comments preceed with <b>##</b>.
           load_balancer_id = string # Key of load balancer created by terraform
      }
   }
-  ````
+```
+
 - <b>Example</b>
-  ````
+```
   // Copyright (c) 2021, 2022, Oracle and/or its affiliates.
   #############################
   # Network
@@ -264,10 +276,12 @@ Comments preceed with <b>##</b>.
      },
   ##Add New Ciphers for london here##
   }
-  ````
-6. Backend Sets
+```
+
+**6. Backend Sets**
+
 - <b>Syntax</b>
-  ````
+```
   backend_sets = {
       ## key - Is a unique value to reference the resources respectively
       key = {
@@ -310,9 +324,10 @@ Comments preceed with <b>##</b>.
           }]
       }
   }
-  ````
+```
+
 - <b>Example</b>
-  ````
+```
   // Copyright (c) 2021, 2022, Oracle and/or its affiliates.
   #############################
   # Network
@@ -363,10 +378,12 @@ Comments preceed with <b>##</b>.
      },
   ##Add New Backend Sets for london here##
   }
-  ````
-7. Backends
+```
+
+**7. Backends**
+
 - <b>Syntax</b>
-  ````
+```
   backends = {
       ## key - Is a unique value to reference the resources respectively
       key = {
@@ -384,9 +401,10 @@ Comments preceed with <b>##</b>.
           weight               = string
      }
   }
-  ````
+```
+
 - <b>Example</b>
-  ````
+```
   // Copyright (c) 2021, 2022, Oracle and/or its affiliates.
   #############################
   # Network
@@ -420,10 +438,12 @@ Comments preceed with <b>##</b>.
          },
   ##Add New Backends for london here##
   }
-  ````
-8. Rule Sets
+```
+
+**8. Rule Sets**
+
 - <b>Syntax</b>
-  ````
+```
   rule_sets = {
       ## key - Is a unique value to reference the resources respectively
       key = {
@@ -480,9 +500,10 @@ Comments preceed with <b>##</b>.
          }]
      }
   }
-  ````
+```
+
 - <b>Example</b>
-  ````
+```
   // Copyright (c) 2021, 2022, Oracle and/or its affiliates.
   #############################
   # Network
@@ -560,10 +581,12 @@ Comments preceed with <b>##</b>.
      },
   ##Add New Rule Sets for london here##
   }
-  ````
-9. Path Route Sets
+```
+
+**9. Path Route Sets**
+
 - <b>Syntax</b>
-  ````
+```
   path_route_sets = {
       ## key - Is a unique value to reference the resources respectively
       key = {
@@ -577,9 +600,10 @@ Comments preceed with <b>##</b>.
          }]
      }
   }
-  ````
+```
+
 - <b>Example</b>
-  ````
+```
   // Copyright (c) 2021, 2022, Oracle and/or its affiliates.
   #############################
   # Network
@@ -638,10 +662,12 @@ Comments preceed with <b>##</b>.
        },
   ##Add New Path Route Sets for london here##
   }
-  ````
-10. Listeners
+```
+
+**10. Listeners**
+
 - <b>Syntax</b>
-  ````
+```
   listeners = {
       ## key - Is a unique value to reference the resources respectively
       key = {
@@ -673,9 +699,10 @@ Comments preceed with <b>##</b>.
          }]
      }
   }
-  ````
+```
+
 - <b>Example</b>
-  ````
+```
   // Copyright (c) 2021, 2022, Oracle and/or its affiliates.
   #############################
   # Network
@@ -707,4 +734,4 @@ Comments preceed with <b>##</b>.
      },
   ##Add New Listeners for london here##
   }
-  ````
+```

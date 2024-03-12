@@ -1,12 +1,13 @@
-## auto.tfvars syntax for OKE Module
+# auto.tfvars syntax for OKE Module
 These are the syntax and sample format for providing inputs to the modules via <b>*.auto.tfvars</b> files.
 <b>"key"</b> must be unique to every resource that is created.Comments preceed with <b>##</b>.
 
-## OKE
-1. Clusters
+
+**1. Clusters**
+
 - <b>Syntax</b>
 
-  ````
+```
   clusters = {
       ## key - Is a unique value to reference the resources respectively
       key = {
@@ -29,9 +30,10 @@ These are the syntax and sample format for providing inputs to the modules via <
         freeform_tags = optional(map(any))
       }
   }
-    ````
+```
+
 - <b>Example</b>
-    ````
+```
     // Copyright (c) 2021, 2022, Oracle and/or its affiliates.
     ############################
     # Developer Services
@@ -65,12 +67,13 @@ These are the syntax and sample format for providing inputs to the modules via <
       },
   ##Add New Cluster for phoenix here##
   }
+```
 
+**2. Nodepools**
 
-2. Nodepools
 - <b>Syntax</b>
 
-  ````
+```
   nodepools = {
       ## key - Is a unique value to reference the resources respectively
       key = {
@@ -103,9 +106,10 @@ These are the syntax and sample format for providing inputs to the modules via <
         nodepool_freeform_tags = optional(map(any))
       },
   }
-    ````
+```
+
 - <b>Example</b>
-    ````
+```
     // Copyright (c) 2021, 2022, Oracle and/or its affiliates.
     ############################
     # Developer Services
@@ -141,3 +145,4 @@ These are the syntax and sample format for providing inputs to the modules via <
         }
     },  ##Add New nodepool for phoenix here##
   }
+```
