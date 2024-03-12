@@ -1,17 +1,19 @@
-## auto.tfvars syntax for Identity Module
+# auto.tfvars syntax for Identity Module
 These are the syntax and sample format for providing inputs to the modules via <b>*.auto.tfvars</b> files.
 <b>"key"</b> must be unique to every resource that is created.
 Comments preceed with <b>##</b>.
 
-## IDENTITY
+
 **1. Compartments**
+
 - <b>Syntax</b>
   
-    ````
-  compartments = {
+```
+compartments = {
         root = {
             ## key - Is a unique value to reference the resources respectively
-            key = { 
+            key = {
+
                 # Required
                 parent_compartment_id = string
                 name                  = string
@@ -99,7 +101,7 @@ Comments preceed with <b>##</b>.
                 },
             },
     }
-  ````
+```
   
 - <b>Example:</b>
   ````
@@ -196,10 +198,11 @@ Comments preceed with <b>##</b>.
 **2. Groups/Dynamic Groups**
 
    &#9432; The parameter that differentiate dynamic groups from normal groups is <b> matching_rule </b>. Normal Groups will be created when you <b>omit</b> this parameter or pass it as <b>""</b> or <b>null</b>. All the groups are created in the root compartment.
+
 - <b>Syntax</b>
   
-    ````
-  groups = {
+```
+groups = {
      ## key - Is a unique value to reference the resources respectively
      key = {
         # Required
@@ -212,7 +215,7 @@ Comments preceed with <b>##</b>.
         freeform_tags         = map 
         },
      }
-    ````
+```
   
 - <b>Example:</b>
   ````
@@ -253,10 +256,9 @@ Comments preceed with <b>##</b>.
 
 **3. Policies**
 
-   &#9432; The parameter that differentiate dynamic groups from normal groups is <b> matching_rule </b>. Normal Groups will be created when you <b>omit</b> this parameter or pass it as <b>""</b> or <b>null</b>.
 - <b>Syntax</b>
   
-    ````
+```
   policies = {
      ## key - Is a unique value to reference the resources respectively
      key = {
@@ -272,7 +274,7 @@ Comments preceed with <b>##</b>.
         freeform_tags         = map 
         },
      }
-    ````
+```
   
 - <b>Example:</b>
   ````
@@ -313,26 +315,26 @@ Comments preceed with <b>##</b>.
 
 - <b>Syntax</b>
   
-    ````
+```
   users = {
      ## key - Is a unique value to reference the resources respectively
-     key = {
-    # Required
+      key = {
+      # Required
       name                  = string
       description           = string
       email                 = string
       group_membership      = list(string)
-    disable_capabilities  = list(string)
+      disable_capabilities  = list(string)
 
       # Optional
       defined_tags          = map
       },
   }
-    ````
+```
     
 - <b>Example:</b>
 
-    ````
+```
       ############################
       # Identity
       # Users - tfvars
@@ -353,14 +355,14 @@ Comments preceed with <b>##</b>.
                 }      
             }            
         }
-   ````
+```
 
 
 **5. Network Sources**
 
 - <b>Syntax</b>
 
-    ````
+```
       networkSources = {
          ## key - Is a unique value to reference the resources respectively
          key = {
@@ -375,12 +377,12 @@ Comments preceed with <b>##</b>.
           },
         }
  
-    ````
+```
 
 - <b>Example</b>
 
        
-     ````
+```
         ############################
         # Identity
         # Network Sources - tfvars
@@ -413,6 +415,6 @@ Comments preceed with <b>##</b>.
           }
        }
        
-    ````
+```
  
 

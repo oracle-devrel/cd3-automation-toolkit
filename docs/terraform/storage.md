@@ -1,13 +1,14 @@
-## auto.tfvars syntax for Storage Module (Block Volumes, Object Storage Buckets)
+# auto.tfvars syntax for Storage Module 
 These are the syntax and sample format for providing inputs to the modules via <b>*.auto.tfvars</b> files.
 <b>"key"</b> must be unique to every resource that is created.
 Comments preceed with <b>##</b>.
 
 
-## 1. Block Volumes
+**1. Block Volumes**
+
 - <b>Syntax</b>
 
-    ````
+```
     blockvolumes = {
             ## key - Is a unique value to reference the resources respectively
             key = {
@@ -37,9 +38,10 @@ Comments preceed with <b>##</b>.
         }
     }
     
-    ````
-  - <b>Example</b>
-    ````
+```
+
+- <b>Example</b>
+```
     // Copyright (c) 2021, 2022, Oracle and/or its affiliates.
 
     ############################
@@ -89,16 +91,13 @@ Comments preceed with <b>##</b>.
             }
         }
     }
-    ````
+```
     
-    
- 
+**2. Buckets**
 
-
-## 2. Buckets
 - <b>Syntax</b>
 
-  ````
+```
   buckets = {
     Bucket Name = {
                   compartment_id        = string
@@ -142,9 +141,10 @@ Comments preceed with <b>##</b>.
                   freeform_tags = {}
             }
     
-   ````
+```
+
 - <b>Example</b>
-  ````
+```
   // Copyright (c) 2021, 2022, Oracle and/or its affiliates.
   ############################
   # Object Storage Service
@@ -209,5 +209,4 @@ Comments preceed with <b>##</b>.
             },
   ##Add New OSS Buckets for phoenix here##
   }
-   
-    ````
+```

@@ -1,13 +1,13 @@
-## Definition of auto.tfvars file for Service Connectors Module
+# auto.tfvars file for Service Connectors Module
 These are the syntax and sample format for providing inputs to the modules via <b>*.auto.tfvars</b> files.
 <b>"key"</b> must be unique to every resource that is created.Comments proceed with <b>##</b>.
 
-## Service Connectors
 
-1. service_connectors
+**1. service_connectors**
+
 - <b>Syntax</b>
 
-  ````
+```
   service_connectors = {
       ## key - Is a unique value to reference the resources respectively
       key = {
@@ -35,9 +35,10 @@ These are the syntax and sample format for providing inputs to the modules via <
       }
   }
   
-    ````
+```
+
 - <b>Example</b>
-    ````
+```
     // Copyright (c) 2021, 2022, Oracle and/or its affiliates.
     #############################
     # Management Services
@@ -126,3 +127,4 @@ These are the syntax and sample format for providing inputs to the modules via <
         }
   ##Add New SCH for phoenix here##
   }  
+```

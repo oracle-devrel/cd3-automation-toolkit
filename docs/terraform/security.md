@@ -1,14 +1,14 @@
-## auto.tfvars syntax for Security Module
+# auto.tfvars syntax for Security Module
 These are the syntax and sample format for providing inputs to the modules via <b>*.auto.tfvars</b> files.
 <b>"key"</b> must be unique to every resource that is created.
 Comments preceed with <b>##</b>.
 
 
-## Security Services
-1. Cloud Guard Configs
+**1. Cloud Guard Configs**
+
 - <b>Syntax</b>
 
-  ````
+```
   cloud_guard_configs = {
   ## key - Is a unique value to reference the resources respectively
       key = {
@@ -21,9 +21,10 @@ Comments preceed with <b>##</b>.
          self_manage_resources  = string
       },
   }
-  ````
+```
+
 - <b>Example</b>
-  ````
+```
     // Copyright (c) 2021, 2022, Oracle and/or its affiliates.
     ############################
     # Security
@@ -45,10 +46,12 @@ Comments preceed with <b>##</b>.
                },
     ##Add New Cloud Guard Configurations for phoenix here##
     }
-  ````
-2. Cloud Guard Targets
+```
+
+**2. Cloud Guard Targets**
+
 - <b>Syntax</b>
-   ````
+```
     cloud_guard_targets = {
     ## key - Is a unique value to reference the resources respectively
         key = {
@@ -73,9 +76,10 @@ Comments preceed with <b>##</b>.
           defined_tags             = map
         },
     }
-    ````
+```
+
 - <b>Example</b>
-  ````
+```
    // Copyright (c) 2021, 2022, Oracle and/or its affiliates.
     ############################
     # Security
@@ -114,12 +118,13 @@ Comments preceed with <b>##</b>.
                },
     ##Add New Cloud Guard Targets for phoenix here##
     }
-  ````
+```
 
-3. Vault
+**3. Vault**
+
 - <b>Syntax</b>
 
-  ````
+```
   vaults = {
   ## key - Is a unique value to reference the resources respectively
       key = {
@@ -133,9 +138,10 @@ Comments preceed with <b>##</b>.
          freeform_tags          = map
       },
   }
-  ````
+```
+
 - <b>Example</b>
-  ````
+```
     // Copyright (c) 2021, 2022, Oracle and/or its affiliates.
     ############################
     # Security
@@ -152,11 +158,13 @@ Comments preceed with <b>##</b>.
                 },
     ##Add New Vaults for phoenix here##
     }
-  ````
-4. Keys
+```
+
+**4. Keys**
+
 - <b>Syntax</b>
 
-  ````
+```
   keys = {
   ## key - Is a unique value to reference the resources respectively
       key = {
@@ -173,9 +181,10 @@ Comments preceed with <b>##</b>.
          protection_mode        = string
       },
   }
-  ````
+```
+
 - <b>Example</b>
-  ````
+```
   // Copyright (c) 2021, 2022, Oracle and/or its affiliates.
     ############################
     # Security
@@ -194,4 +203,4 @@ Comments preceed with <b>##</b>.
                 },
     ##Add New Keys for phoenix here##
     }
-  ````
+```

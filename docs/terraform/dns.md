@@ -1,12 +1,13 @@
-## auto.tfvars syntax for DNS Module
+# auto.tfvars syntax for DNS Module
 These are the syntax and sample format for providing inputs to the modules via <b>*.auto.tfvars</b> files.
 <b>"key"</b> must be unique to every resource that is created.
 Comments preceed with <b>##</b>.
-## DNS
-1. DNS View-Zones-Records
+
+**1. DNS View-Zones-Records**
+
 - <b>Syntax</b>
   
-    ````
+```
     views = {
   ## key - Is a unique value to reference the resources respectively
        key =  {
@@ -35,9 +36,10 @@ Comments preceed with <b>##</b>.
             rdata               = list(string)
        },
   }
-    ````
+```
+
 - <b>Example</b>
-   ````
+```
   // Copyright (c) 2021, 2022, 2023 Oracle and/or its affiliates.
   #############################
   # DNS
@@ -130,13 +132,14 @@ Comments preceed with <b>##</b>.
       },
   ##Add New rrsets for phoenix here##
   }
-   ````
+```
   
 
-2. DNS-Resolvers
-   - <b>Syntax</b>
+**2. DNS-Resolvers**
+
+- <b>Syntax</b>
   
-       ````
+```
        resolvers = {
            ## key - vcn name to reference the resources respectively
            key = {
@@ -170,9 +173,11 @@ Comments preceed with <b>##</b>.
                }
            }
        }
-       ````
-   - <b>Example</b>
-     ````
+```
+
+- <b>Example</b>
+
+```
      ############################
      # DNS
      # DNS Resolvers - tfvars
@@ -284,5 +289,5 @@ Comments preceed with <b>##</b>.
                  }
          },
      }
-     ````
+```
  

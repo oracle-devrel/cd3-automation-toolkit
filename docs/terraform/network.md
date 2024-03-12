@@ -1,15 +1,16 @@
-## auto.tfvars syntax for Network Module
+# auto.tfvars syntax for Network Module
 These are the syntax and sample format for providing inputs to the modules via <b>*.auto.tfvars</b> files.
 <b>"key"</b> must be unique to every resource that is created.
 Comments preceed with <b>##</b>.
 
 Points to Note:
 - To associate Route Table to the Gateways like IGW, SGW etc, please make sure to have the route tables created in the OCI tenancy first, and then edit the auto.tfvars file to add the route table keys/ocids to the gateway resources as per need.Uncomment the parameter - route_table_id for the respective gateway module calls in network.tf and main.tf files.
-## NETWORK
-1. Virtual Cloud Networks (VCNs)
+
+**1. Virtual Cloud Networks (VCNs)**
+
 - <b>Syntax</b>
   
-    ````
+```
     vcns = {
         ## key - Is a unique value to reference the resources respectively
         key = {
@@ -31,9 +32,10 @@ Points to Note:
             is_oracle_gua_allocation_enabled = bool
         },
     }
-    ````
+```
+
 - <b>Example</b>
-    ````
+```
     ############################
     # Network
     # Major Objects - VCNs, IGW, NGW, SGW, LPG, DRG - tfvars
@@ -82,13 +84,14 @@ Points to Note:
                 }
               },
     }
-    ````
+```
   
 
-2. Internet Gateways (IGWs)
+**2. Internet Gateways (IGWs)**
+
 - <b>Syntax</b>
   
-    ````
+```
     igws = {
         ## key - Is a unique value to reference the resources respectively
         key = {
@@ -103,9 +106,10 @@ Points to Note:
             freeform_tags  = map
             route_table_id = string
     }
-    ````
+```
+
 - <b>Example</b>
-    ````
+```
     ############################
     # Network
     # Major Objects - IGW - tfvars
@@ -128,13 +132,14 @@ Points to Note:
               }
         },
     }
-    ````
+```
   
 
-3. Network Address Translation Gateways (NGWs)
+**3. Network Address Translation Gateways (NGWs)**
+
 - <b>Syntax</b>
   
-    ````
+```
     ngws = {
           ## key - Is a unique value to reference the resources respectively
           key = {
@@ -151,9 +156,11 @@ Points to Note:
               route_table_id = string
           }
     }
-    ````
+```
+
 - <b>Example</b>
-    ````
+
+```
   ############################
   # Network
   # Major Objects - NGW - tfvars
@@ -187,13 +194,14 @@ Points to Note:
             }
         }
   }
-    ````
+```
   
 
-4. Service Gateways (SGWs)
+**4. Service Gateways (SGWs)**
+
 - <b>Syntax</b>
   
-    ````
+```
     sgws = {
           ## key - Is a unique value to reference the resources respectively
           key = {
@@ -209,9 +217,10 @@ Points to Note:
               route_table_id = string
           }
     }
-    ````
+```
+
 - <b>Example</b>
-    ````
+```
   ############################
   # Network
   # Major Objects - SGW - tfvars
@@ -242,13 +251,14 @@ Points to Note:
               sgw_name       = "vcn2_sgw"
          },
   }
-    ````
+```
   
 
-5. Dynamic Routing Gateways (DRGs)
+**5. Dynamic Routing Gateways (DRGs)**
+
 - <b>Syntax</b>
   
-    ````
+```
     drgs = {
           ## key - Is a unique value to reference the resources respectively
           key = {
@@ -261,9 +271,10 @@ Points to Note:
               freeform_tags     = map
           },
     }
-    ````
+```
+
 - <b>Example</b>
-    ````
+```
     ############################
     # Network
     # Major Objects - DRG - tfvars
@@ -285,12 +296,13 @@ Points to Note:
               } 
          }
     }
-    ````
+```
   
-6. Dynamic Routing Gateway Attachements (DRG Attachments)
+**6. Dynamic Routing Gateway Attachements (DRG Attachments)**
+
 - <b>Syntax</b>
   
-    ````
+```
     drg_attachments = {
           ## key - Is a unique value to reference the resources respectively
           key = {
@@ -316,9 +328,10 @@ Points to Note:
               freeform_tags      = map
           },
     }
-    ````
+```
+
 - <b>Example</b>
-    ````
+```
   ############################
   # Network
   # Major Objects - DRG Attachment - tfvars
@@ -351,12 +364,13 @@ Points to Note:
               freeform_tags = {}
         },
   }
-    ````
+```
 
-7. DRG Route Distributions
+**7. DRG Route Distributions**
+
 - <b>Syntax</b>
   
-    ````
+```
   drg_route_distributions = {
       ## key - Is a unique value to reference the resources respectively
       key = {
@@ -370,9 +384,10 @@ Points to Note:
           display_name      = string
       }
   }   
-    ````
+```
+
 - <b>Example</b>
-    ````
+```
   #################################
   # Network
   # DRG Route Distributions - tfvars
@@ -402,12 +417,13 @@ Points to Note:
             freeform_tags = {}
       },
   }
-    ````
+```
 
-8. DRG Route Distribution Statements
+**8. DRG Route Distribution Statements**
+
 - <b>Syntax</b>
   
-    ````
+```
   drg_route_distribution_statements = {
       ## key - Is a unique value to reference the resources respectively
       key = {
@@ -428,9 +444,10 @@ Points to Note:
           action        = map
       }
   }
-    ````
+```
+
 - <b>Example</b>
-    ````
+```
   ##########################################
   # Module Block - Network
   # Create DRG Route Distribution Statements
@@ -464,12 +481,13 @@ Points to Note:
             action = "ACCEPT"
       },
   }
-    ````
+```
 
-9. DRG Route Tables
+**9. DRG Route Tables**
+
 - <b>Syntax</b>
-  
-    ````
+
+```
   drg_route_tables = {
       ## key - Is a unique value to reference the resources respectively
       key = {
@@ -485,9 +503,10 @@ Points to Note:
           freeform_tags                    = map
       }
   }
-    ````
+```
+
 - <b>Example</b>
-    ````
+```
   #################################
   # Network
   # DRG Route Tables - tfvars
@@ -519,13 +538,13 @@ Points to Note:
             freeform_tags = {}
       },
   }
- 
-    ````
+```
   
-10. DRG Route Rules
+**10. DRG Route Rules**
+
 - <b>Syntax</b>
   
-    ````
+```
   drg_route_rules = {
       ## key - Is a unique value to reference the resources respectively
       key = {
@@ -536,9 +555,10 @@ Points to Note:
           next_hop_drg_attachment_id = string
       }
   }
-    ````
+```
+
 - <b>Example</b>
-    ````
+```
   #################################
   # Network
   # DRG Route Rules - tfvars
@@ -562,12 +582,13 @@ Points to Note:
               next_hop_drg_attachment_id = "vcn1_drg_attach2"
       },
   }
-    ````
+```
   
-11. Subnets
+**11. Subnets**
+
 - <b>Syntax</b>
   
-    ````
+```
     subnets = {
         ## key - Is a unique value to reference the resources respectively
         key = {
@@ -590,9 +611,10 @@ Points to Note:
             security_list_ids          = list
         }
     }
-    ````
+```
+
 - <b>Example</b>
-    ````
+```
   #############################
   # Network
   # Major Objects - Subnets - tfvars
@@ -636,12 +658,13 @@ Points to Note:
           security_list_ids          = ["vcn1-hub-sl"]
         },
     }
-    ````
+```
 
-12. Security Lists (SLs)
+**12. Security Lists (SLs)**
+
 - <b>Syntax</b>
   
-    ````
+```
     seclists = {
           ## key - Is a unique value to reference the resources respectively
           key = {
@@ -723,9 +746,10 @@ Points to Note:
               }]
           }
     }
-    ````
+```
+
 - <b>Example</b>
-  ````
+```
   // Copyright (c) 2021, 2022, Oracle and/or its affiliates.
   ############################
   # Network
@@ -827,12 +851,13 @@ Points to Note:
         },
     # End of #phoenix_vcn3_subnet3-2# #
   }
-    ````
+```
 
-13. Default Security Lists (Default SLs)
+**13. Default Security Lists (Default SLs)**
+
 - <b>Syntax</b>
   
-    ````
+```
     default_seclists = {
           ## key - Is a unique value to reference the resources respectively
           key = {
@@ -914,9 +939,11 @@ Points to Note:
               }]
           }
     }
-    ````
+```
+
 - <b>Example</b>
-  ````
+
+```
   // Copyright (c) 2021, 2022, Oracle and/or its affiliates.
   ############################
   # Network
@@ -1036,12 +1063,13 @@ Points to Note:
       },
   # End of #phoenix_vcn3_subnet4-2# #
   }
-    ````
+```
 
-14. Route Tables (RTs)
+**14. Route Tables (RTs)**
+
 - <b>Syntax</b>
   
-    ````
+```
   route_tables = {
         ## key - Is a unique value to reference the resources respectively
         key = {
@@ -1115,9 +1143,10 @@ Points to Note:
             defined_tags     = map
             freeform_tags    = map
   }
-    ````
+```
+
 - <b>Example</b>
-    ````
+```
   // Copyright (c) 2021, 2022, Oracle and/or its affiliates.
   ############################
   # Network
@@ -1236,12 +1265,13 @@ Points to Note:
           freeform_tags = {}
         },
   }
-    ````
+```
 
-15. Default Route Tables (Default RTs)
+**15. Default Route Tables (Default RTs)**
+
 - <b>Syntax</b>
   
-    ````
+```
   default_route_tables = {
         ## key - Is a unique value to reference the resources respectively
         key = {
@@ -1315,9 +1345,10 @@ Points to Note:
             defined_tags     = map
             freeform_tags    = map
   }
-    ````
+```
+
 - <b>Example</b>
-    ````
+```
   // Copyright (c) 2021, 2022, Oracle and/or its affiliates.
   ############################
   # Network
@@ -1436,12 +1467,13 @@ Points to Note:
           freeform_tags = {}
         },
   }
-    ````
+```
   
-16. Custom DHCP Options
+**16. Custom DHCP Options**
+
 - <b>Syntax</b>
   
-    ````
+```
   custom_dhcps = {
       ## key - Is a unique value to reference the resources respectively
       key = {
@@ -1461,9 +1493,10 @@ Points to Note:
           freeform_tags               = map
       }
   }
-    ````
+```
+
 - <b>Example</b>
-    ````
+```
   ############################
   # Network
   # Custom DHCP - tfvars
@@ -1507,12 +1540,13 @@ Points to Note:
       }
     },
   }
-    ````
+```
 
-17. Default DHCP Options
+**17. Default DHCP Options**
+
 - <b>Syntax</b>
   
-    ````
+```
   default_dhcps = {
       ## key - Is a unique value to reference the resources respectively
       key = {
@@ -1529,9 +1563,10 @@ Points to Note:
           freeform_tags               = map
       }
   }
-    ````
+```
+
 - <b>Example</b>
-    ````
+```
   ############################
   # Network
   # Major Objects - Default DHCP - tfvars
@@ -1562,11 +1597,12 @@ Points to Note:
             }
     },
   }
-    ````
+```
   
-18. Network Security Groups (NSGs)
+**18. Network Security Groups (NSGs)**
+
 - <b>Syntax</b>
-    ````
+```
     nsgs = {
         ## key - Is a unique value to reference the resources respectively
         key = {
@@ -1580,9 +1616,10 @@ Points to Note:
             freeform_tags  = string
         }   
     }
-    ````
+```
+
 - <b>Example</b>
-    ````
+```
   ############################
   # Network
   # Network Security Group - tfvars
@@ -1623,12 +1660,13 @@ Points to Note:
         },
       # End of phoenix_NSG1-2 #
   }
-    ````
+```
   
-19. Network Security Group Rules (NSG Rules)
+**19. Network Security Group Rules (NSG Rules)**
+
 - <b>Syntax</b>
   
-    ````
+```
   nsg_rules = {
       ## key - Is a unique value to reference the resources respectively
       key = {
@@ -1708,9 +1746,10 @@ Points to Note:
     
       }
   }
-    ````
+```
+
 - <b>Example</b>
-    ````
+```
   ############################
   # Network
   # Network Security Group Rules
@@ -1772,11 +1811,12 @@ Points to Note:
             }]
       },
   }
-    ````
+```
   
-20. Local Peering Gateways (LPGs)
+**20. Local Peering Gateways (LPGs)**
+
 - <b>Syntax</b>
-    ````
+```
     lpgs = {
         ## key - Is a unique value to reference the resources respectively
         key = {
@@ -1872,9 +1912,10 @@ Points to Note:
             exported-lpgs      = {}, 
         }
     }
-    ````
+```
+
 - <b>Example</b>
-    ````
+```
   ############################
   # Network
   # Major Objects - LPG - tfvars
@@ -1913,5 +1954,5 @@ Points to Note:
                },
                   },
   }
-    ````
+```
 
