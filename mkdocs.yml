@@ -1,6 +1,7 @@
 site_name: CD3 Documentation
-
 site_url: https://oracle-devrel.github.io/cd3-automation-toolkit
+repo_name: oracle-devrel/cd3-automation-toolkit
+repo_url: https://github.com/oracle-devrel/cd3-automation-toolkit
 
 nav:
   - Overview: 
