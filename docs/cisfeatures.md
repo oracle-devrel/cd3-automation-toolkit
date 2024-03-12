@@ -34,3 +34,5 @@ Below TF file is created:
 |---|---|
 |cis-cloudguard.auto.tf |vars TF variables file for enabling cloud guard and creating target for root compartment. |
 
+<a href="../terraform/security">Click here to view sample auto.tfvars for Security components </a> 
+

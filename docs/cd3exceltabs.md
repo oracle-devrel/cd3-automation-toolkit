@@ -48,7 +48,7 @@ Click on the links below to know about the specifics of each tab in the excel sh
  - [DNS-Resolvers](tabs.md#DNS-Resolvers-Tab)
   
 
-<a href="../terraform/dns.">Click here to view sample auto.tfvars for all DNS components </a> 
+<a href="../terraform/dns">Click here to view sample auto.tfvars for all DNS components </a> 
 
 #### Load Balancer
 
@@ -94,7 +94,7 @@ Click on the links below to know about the specifics of each tab in the excel sh
  - [ADB](tabs.md#adb-tab)
  
  
-#### Management Services
+#### Monitoring Services
  
  - [Notifications](tabs.md#notifications-tab)
  
@@ -108,12 +108,6 @@ Click on the links below to know about the specifics of each tab in the excel sh
 <a href="../terraform/sch">Click here to view sample auto.tfvars for Service Connectors</a> 
 
  
-#### Developer Services
- 
- - [OKE]( tabs.md#oke-tab)
-
-<a href="../terraform/oke">Click here to view sample auto.tfvars for OKE components- Clusters, Nodepools</a> 
-
 #### Logging Services
  
  - [VCN Flow Logs]( tabs.md#vcn-flow-logs)
@@ -121,6 +115,14 @@ Click on the links below to know about the specifics of each tab in the excel sh
 - [OSS Logs]( tabs.md#oss-logs)
 
 <a href="../terraform/logging">Click here to view sample auto.tfvars for Logging components </a> 
+
+
+#### Developer Services
+ 
+ - [OKE]( tabs.md#oke-tab)
+
+<a href="../terraform/oke">Click here to view sample auto.tfvars for OKE components- Clusters, Nodepools</a> 
+
 
 #### SDDCs Tab
  
