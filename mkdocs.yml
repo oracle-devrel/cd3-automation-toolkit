@@ -17,7 +17,7 @@ nav:
     - Launch CD3 Container:
       - launch-container.md
       - Resource Manager Stack: launch-from-rmstack.md
-      - Local System: launch-from-local.md
+      - Manual Container Launch: launch-from-local.md
     - Connect CD3 container to OCI: connect-container-to-oci-tenancy.md
   - Create, Update or Export with CLI: 
     - cd3-cli.md
@@ -196,9 +196,8 @@ markdown_extensions:
   
 plugins:
   - search
-  - blog
   - section-index
-  
+
 
 copyright: |
   &copy; 2022 <a href=""  target="_blank" rel="noopener">Mukund Murali</a>
