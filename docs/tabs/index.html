@@ -551,7 +551,7 @@
         
   
   <span class="md-ellipsis">
-    Local System
+    Manual Container Launch
   </span>
   
 
@@ -1978,7 +1978,7 @@
 <p><strong>Note:</strong></p>
 <ol>
 <li>
-<p>Please mention value for column 'Hub/Spoke/Peer/None' in VCNs tab as None for utilizing DRGv2 functionality (where DRG is directly attached to all VCNs and hub/spoke model is not required)</p>
+<p>Please mention value for column 'Hub/Spoke/Peer/None' in VCNs tab as None for utilising DRGv2 functionality (where DRG is directly attached to all VCNs and hub/spoke model is not required)</p>
 </li>
 <li>
 <p>Declare the DRG for the VCN in 'DRG Required' column of VCNs tab and then declare the attachment in DRGs tab also. Toolkit verifies the declaration in VCNs tab and then creates the DRG while reading the DRGs tab.</p>
@@ -2005,7 +2005,7 @@
 <li>Columns - DHCP Option Name, Seclist Names, Add Default Seclist and DNS Label are applicable only for type Subnet.</li>
 <li>Default Route Rules created are :</li>
 </ol>
-<p>a. Based on the values entered in columns  ‘configure SGW route’, ‘configure NGW route’, ‘configure IGW route’, 'configure Onprem route' and 'configure VCNPeering route'  in Subnets sheet; if the value entered is ‘y’, it will create a route for the object in that subnet eg if ‘configure IGW’ in Subnets sheet is ‘y’ then it will read parameter ‘igw_destination’ in VCN Info tab and create a rule in the subnet with destination object as IGW of the VCN and destination CIDR as value of igw_destnation field. If comma separated values are entered in the igw_destination in VCN Info tab then the tool creates route rule for each destination cidr for IGW in that subnet.Tool works similarly for ‘configure NGW’ in Subnets tab and ‘ngw_destination’ in VCN Info tab. For SGW, route rule is added either 'all services' or object storage in that region.</p>
+<p>a. Based on the values entered in columns ‘configure SGW route’, ‘configure NGW route’, ‘configure IGW route’, 'configure Onprem route' and 'configure VCNPeering route'  in Subnets sheet; if the value entered is ‘y’, it will create a route for the object in that subnet eg if ‘configure IGW’ in Subnets sheet is ‘y’ then it will read parameter ‘igw_destination’ in VCN Info tab and create a rule in the subnet with destination object as IGW of the VCN and destination CIDR as value of igw_destnation field. If comma separated values are entered in the igw_destination in VCN Info tab then the tool creates route rule for each destination cidr for IGW in that subnet.Tool works similarly for ‘configure NGW’ in Subnets tab and ‘ngw_destination’ in VCN Info tab. For SGW, route rule is added either 'all services' or object storage in that region.</p>
 <p>b.  For a hub spoke model, tool automatically creates route tables attached with the DRG and each LPG in the hub VCN peered with spoke VCN.
      ‘onprem_destinations’ in VCN Info tab specifies the On Prem Network CIDRs.</p>
 <ol>

@@ -551,7 +551,7 @@
         
   
   <span class="md-ellipsis">
-    Local System
+    Manual Container Launch
   </span>
   
 
@@ -1929,69 +1929,91 @@
 <h4 id="iamidentity">IAM/Identity</h4>
 <ul>
 <li>
-<p><a href="../tabs/#Compartments-Tab">Compartments</a></p>
+<p><a href="../tabs/#compartments-tab">Compartments</a></p>
 </li>
 <li>
-<p><a href="../tabs/#Groups-Tab">Groups</a></p>
+<p><a href="../tabs/#groups-tab">Groups</a></p>
 </li>
 <li>
-<p><a href="../tabs/#Policies-Tab">Policies</a></p>
+<p><a href="../tabs/#policies-tab">Policies</a></p>
 </li>
 <li>
-<p><a href="../tabs/#Users-Tab">Users</a></p>
+<p><a href="../tabs/#users-tab">Users</a></p>
 </li>
 <li>
-<p><a href="../tabs/#Network-Sources-Tab">Network Sources</a></p>
+<p><a href="../tabs/#network-sources-tab">Network Sources</a></p>
 </li>
 </ul>
 <p><a href="../terraform/identity"> Click here to view sample auto.tfvars for the Identity components</a> </p>
 <h4 id="governance">Governance</h4>
 <ul>
-<li><a href="../tabs/#Tags-Tab">Tags</a></li>
+<li><a href="../tabs/#tags-tab">Tags</a></li>
 </ul>
 <p><a href="../terraform/governance">Click here to view sample auto.tfvars for Governance components</a> </p>
 <h4 id="network">Network</h4>
 <ul>
 <li>
-<p><a href="../tabs/#a-VCNs-Tab">VCNs</a></p>
+<p><a href="../tabs/#a-vcns-tab">VCNs</a></p>
 </li>
 <li>
-<p><a href="../tabs/#b-DRGs-Tab">DRGs</a></p>
+<p><a href="../tabs/#b-drgs-tab">DRGs</a></p>
 </li>
 <li>
-<p><a href="../tabs/#c-VCN-Info-Tab">VCN Info</a></p>
+<p><a href="../tabs/#c-vcn-info-tab">VCN Info</a></p>
 </li>
 <li>
-<p><a href="../tabs/#d-DHCP-Tab">DHCP</a></p>
+<p><a href="../tabs/#d-dhcp-tab">DHCP</a></p>
 </li>
 <li>
-<p><a href="../tabs/#e-SubnetsVLANs-Tab">SubnetsVLANs</a></p>
+<p><a href="../tabs/#e-subnetsvlans-tab">SubnetsVLANs</a></p>
 </li>
 </ul>
 <p><a href="../terraform/network">Click here to view sample auto.tfvars for all Network components- VCNs, Subnets, Gateways etc.,</a> </p>
+<h4 id="network-firewall">Network Firewall</h4>
+<p>Below are the tabs in CD3-Firewall-template.xlsx. Please go through blue section of each tab to know about details that need to be filled for that tab. On choosing "OCI Firewall" in the SetUpOCI menu will allow to create Firewall in the OCI tenancy. It is recommended to execute Validator for the firewall before proceeding to create the firewall.</p>
+<ul>
+<li>Firewall</li>
+<li>Firewall-Policy</li>
+<li>Firewall-Policy-Applicationlist</li>
+<li>Firewall-Policy-Servicelist</li>
+<li>Firewall-Policy-Urllist</li>
+<li>Firewall-Policy-Address</li>
+<li>Firewall-Policy-Secrets</li>
+<li>Firewall-Policy-Decryptprofile</li>
+<li>Firewall-Policy-DecryptRule</li>
+<li>Firewall-Policy-Secrules</li>
+</ul>
+<p>Once this is complete you will find the generated output terraform files in location :</p>
+<p>---&gt; <strong>&lt;outdir&gt;/&lt;region&gt;/&lt;service_dir&gt;/&lt;prefix&gt;_firewall*.auto.tfvars</strong></p>
+<p>Once terraform apply is done, you can view the resources under Identity and Security -&gt; Network Firewalls for the region.</p>
+<p>There are options to <strong>Clone</strong> and <strong>Delete</strong> a Firewall Policy under "OCI Firewall" option in Greenfield Workflow of setUpOCI menu. They will directly create/delete the specified firewall policy (in the specified compartment) in OCI console and then export all other policies of that compartment into excel sheet. <strong>Cloning</strong> will also generate tf_import_cmds shell script for the newly cloned firewall policy to sync back with terraform.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If there is any policy in the console which was not created using CD3, will also get exported as part of above process. In such case, the terraform plan will show that it is adding this policy again to the console. Terraform import cmds should be executed for such policy manually to sync it with terraform.</p>
+</div>
 <h4 id="private-dns">Private-DNS</h4>
 <ul>
 <li>
-<p><a href="../tabs/#DNS-Views-Zones-Records-Tab">DNS-Views-Zones-Records</a></p>
+<p><a href="../tabs/#dns-views-zones-records-tab">DNS-Views-Zones-Records</a></p>
 </li>
 <li>
-<p><a href="../tabs/#DNS-Resolvers-Tab">DNS-Resolvers</a></p>
+<p><a href="../tabs/#dns-resolvers-tab">DNS-Resolvers</a></p>
 </li>
 </ul>
 <p><a href="../terraform/dns">Click here to view sample auto.tfvars for all DNS components </a> </p>
 <h4 id="load-balancer">Load Balancer</h4>
 <ul>
 <li>
-<p><a href="../tabs/#lb-hostname-certs-tab">LB-Hostname-Certs Tab</a></p>
+<p><a href="../tabs/#lb-hostname-certs-tab">LB-Hostname-Certs tab</a></p>
 </li>
 <li>
-<p><a href="../tabs/#backend-set-and-backend-servers-tab">LB-Backend Set and Backend Servers</a></p>
+<p><a href="../tabs/#lb-backend-set-and-backend-servers-tab">LB-Backend Set and Backend Servers</a></p>
 </li>
 <li>
-<p><a href="../tabs/#ruleset-tab">LB-RuleSet</a></p>
+<p><a href="../tabs/#lb-ruleset-tab">LB-RuleSet</a></p>
 </li>
 <li>
-<p><a href="../tabs/#path-route-set-tab">LB-PathRouteSet</a></p>
+<p><a href="../tabs/#lb-path-route-set-tab">LB-PathRouteSet</a></p>
 </li>
 <li>
 <p><a href="../tabs/#lb-listeners-tab">LB-Listener</a></p>
@@ -2010,7 +2032,7 @@
 <p><a href="../terraform/compute">Click here to view sample auto.tfvars for Compute components-Virtual Machine</a> </p>
 <h4 id="storage">Storage</h4>
 <ul>
-<li><a href="../tabs/#blocksvolumes-tab">BlockVolumes</a></li>
+<li><a href="../tabs/#blockvolumes-tab">BlockVolumes</a></li>
 </ul>
 <p><a href="../terraform/storage">Click here to view sample auto.tfvars for Block Volumes </a> </p>
 <ul>
@@ -2018,7 +2040,7 @@
 <p><a href="../tabs/#fss-tab">FSS</a></p>
 </li>
 <li>
-<p><a href="../tabs/#Buckets-tab">Object Storage Buckets</a></p>
+<p><a href="../tabs/#buckets-tab">Object Storage Buckets</a></p>
 </li>
 </ul>
 <p><a href="../terraform/storage.md#2-Buckets">Click here to view sample auto.tfvars for Object Storage Buckets</a> </p>
@@ -2060,7 +2082,7 @@
 <li><a href="../tabs/#oke-tab">OKE</a></li>
 </ul>
 <p><a href="../terraform/oke">Click here to view sample auto.tfvars for OKE components- Clusters, Nodepools</a> </p>
-<h4 id="sddcs-tab">SDDCs Tab</h4>
+<h4 id="sddcs-tab">SDDCs tab</h4>
 <ul>
 <li><a href="../tabs/#sddcs-tab">OCVS</a></li>
 </ul>
