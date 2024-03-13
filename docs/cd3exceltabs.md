@@ -5,15 +5,15 @@ Click on the links below to know about the specifics of each tab in the excel sh
 
 #### IAM/Identity
 
- - [Compartments](tabs.md#Compartments-Tab)
+ - [Compartments](tabs.md#compartments-tab)
 
- - [Groups](tabs.md#Groups-Tab)
+ - [Groups](tabs.md#groups-tab)
   
- - [Policies](tabs.md#Policies-Tab)
+ - [Policies](tabs.md#policies-tab)
 
- - [Users](tabs.md#Users-Tab)
+ - [Users](tabs.md#users-tab)
 
- - [Network Sources](tabs.md#Network-Sources-Tab)
+ - [Network Sources](tabs.md#network-sources-tab)
 
 <a href="../terraform/identity"> Click here to view sample auto.tfvars for the Identity components</a> 
 	
@@ -21,44 +21,70 @@ Click on the links below to know about the specifics of each tab in the excel sh
 
 #### Governance
 
- - [Tags](tabs.md#Tags-Tab)
+ - [Tags](tabs.md#tags-tab)
 
 <a href="../terraform/governance">Click here to view sample auto.tfvars for Governance components</a> 
 
 #### Network
   
- - [VCNs](tabs.md#a-VCNs-Tab)
+ - [VCNs](tabs.md#a-vcns-tab)
   
- - [DRGs](tabs.md#b-DRGs-Tab)
+ - [DRGs](tabs.md#b-drgs-tab)
   
- - [VCN Info](tabs.md#c-VCN-Info-Tab)
+ - [VCN Info](tabs.md#c-vcn-info-tab)
   
- - [DHCP](tabs.md#d-DHCP-Tab)
+ - [DHCP](tabs.md#d-dhcp-tab)
   
- - [SubnetsVLANs](tabs.md#e-SubnetsVLANs-Tab)
+ - [SubnetsVLANs](tabs.md#e-subnetsvlans-tab)
  
   
 
 <a href="../terraform/network">Click here to view sample auto.tfvars for all Network components- VCNs, Subnets, Gateways etc.,</a> 
 
+#### Network Firewall
+Below are the tabs in CD3-Firewall-template.xlsx. Please go through blue section of each tab to know about details that need to be filled for that tab. On choosing "OCI Firewall" in the SetUpOCI menu will allow to create Firewall in the OCI tenancy. It is recommended to execute Validator for the firewall before proceeding to create the firewall.
+
+ - Firewall
+ - Firewall-Policy
+ - Firewall-Policy-Applicationlist
+ - Firewall-Policy-Servicelist
+ - Firewall-Policy-Urllist
+ - Firewall-Policy-Address
+ - Firewall-Policy-Secrets
+ - Firewall-Policy-Decryptprofile
+ - Firewall-Policy-DecryptRule
+ - Firewall-Policy-Secrules
+
+Once this is complete you will find the generated output terraform files in location :
+
+---> **<outdir\>/<region\>/<service_dir\>/<prefix\>_firewall*.auto.tfvars**
+  
+
+Once terraform apply is done, you can view the resources under Identity and Security -> Network Firewalls for the region.
+
+There are options to **Clone** and **Delete** a Firewall Policy under "OCI Firewall" option in Greenfield Workflow of setUpOCI menu. They will directly create/delete the specified firewall policy (in the specified compartment) in OCI console and then export all other policies of that compartment into excel sheet. **Cloning** will also generate tf_import_cmds shell script for the newly cloned firewall policy to sync back with terraform.
+!!! Note
+    If there is any policy in the console which was not created using CD3, will also get exported as part of above process. In such case, the terraform plan will show that it is adding this policy again to the console. Terraform import cmds should be executed for such policy manually to sync it with terraform.
+
+
 #### Private-DNS
   
- - [DNS-Views-Zones-Records](tabs.md#DNS-Views-Zones-Records-Tab)
+ - [DNS-Views-Zones-Records](tabs.md#dns-views-zones-records-tab)
   
- - [DNS-Resolvers](tabs.md#DNS-Resolvers-Tab)
+ - [DNS-Resolvers](tabs.md#dns-resolvers-tab)
   
 
 <a href="../terraform/dns">Click here to view sample auto.tfvars for all DNS components </a> 
 
 #### Load Balancer
 
- - [LB-Hostname-Certs Tab](tabs.md#lb-hostname-certs-tab)
+ - [LB-Hostname-Certs tab](tabs.md#lb-hostname-certs-tab)
  
- - [LB-Backend Set and Backend Servers](tabs.md#backend-set-and-backend-servers-tab)
+ - [LB-Backend Set and Backend Servers](tabs.md#lb-backend-set-and-backend-servers-tab)
  
- - [LB-RuleSet](tabs.md#ruleset-tab)
+ - [LB-RuleSet](tabs.md#lb-ruleset-tab)
  
- - [LB-PathRouteSet](tabs.md#path-route-set-tab)
+ - [LB-PathRouteSet](tabs.md#lb-path-route-set-tab)
  
  - [LB-Listener](tabs.md#lb-listeners-tab)
 
@@ -75,13 +101,13 @@ Click on the links below to know about the specifics of each tab in the excel sh
  
 #### Storage
  
- - [BlockVolumes](tabs.md#blocksvolumes-tab)
+ - [BlockVolumes](tabs.md#blockvolumes-tab)
  
  <a href="../terraform/storage">Click here to view sample auto.tfvars for Block Volumes </a> 
 
  - [FSS](tabs.md#fss-tab)
  
- - [Object Storage Buckets](tabs.md#Buckets-tab)
+ - [Object Storage Buckets](tabs.md#buckets-tab)
  
  <a href="../terraform/storage.md#2-Buckets">Click here to view sample auto.tfvars for Object Storage Buckets</a> 
  
@@ -124,15 +150,10 @@ Click on the links below to know about the specifics of each tab in the excel sh
 <a href="../terraform/oke">Click here to view sample auto.tfvars for OKE components- Clusters, Nodepools</a> 
 
 
-#### SDDCs Tab
+#### SDDCs tab
  
  - [OCVS]( tabs.md#sddcs-tab)
    
 <a href="../terraform/sddc">Click here to view sample auto.tfvars for OCVS </a> 
- 
- 
- 
 
- 
- 
 

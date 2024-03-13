@@ -47,11 +47,11 @@ _tenancyconfig.properties_
         <tr>
             <td>customer_name</td>
             <td>Friendly name for the Customer Tenancy</td>
-            <td>demotenancy</td>
+            <td>demo</td>
         </tr>
         <tr>
             <td>tenancy_ocid</td>
-            <td>ocid of the tenancy</td>
+            <td>OCID of the tenancy</td>
             <td>ocid1.tenancy.oc1..aaaaaa...5t</td>
         </tr>
         <tr>
@@ -66,17 +66,17 @@ _tenancyconfig.properties_
         </tr>
         <tr>
             <td>user_ocid</td>
-            <td>Required only if ${auth_mechanism} is selected as api_key.Leave empty if 'instance_principal' or 'session_token' is used</td>
+            <td>Required only if ${auth_mechanism} is selected as api_key. Leave empty if 'instance_principal' or 'session_token' is used</td>
             <td>ocid1.user.oc1..aaaaa...6a</td>
         </tr>
         <tr>
             <td>key_path</td>
-            <td>Required only if ${auth_mechanism} is selected as api_key.Leave empty if 'instance_principal' or 'session_token' is used. Path of API Private Key (PEM Key) File </td>
+            <td>Required only if ${auth_mechanism} is selected as api_key. Leave empty if 'instance_principal' or 'session_token' is used. Path of API Private Key (PEM Key) File </td>
             <td>Defaults to /cd3user/tenancies/keys/oci_api_private.pem when left empty</td>
         </tr>
         <tr>
             <td>fingerprint</td>
-            <td>Required only if ${auth_mechanism} is selected as api_key.Leave empty if 'instance_principal' or 'session_token' is used</td>
+            <td>Required only if ${auth_mechanism} is selected as api_key. Leave empty if 'instance_principal' or 'session_token' is used</td>
             <td>9f:20:0b:....:8c</td>
         </tr>
         <tr>
@@ -95,7 +95,7 @@ _tenancyconfig.properties_
 
 
 <details>
-    <summary> Advanced parameters for DevOps </summary>
+    <summary> Advanced Parameters - Fill this to use toolkit with Jenkins </summary>
     <table style="width:100%">
         <tr>
             <th style="width:25%">Parameter</th>
@@ -150,19 +150,7 @@ _tenancyconfig.properties_
 !!! Important "Important"
     - Have the details ready for Authentication mechanism you are planning to use.<br>
     - Review **outdir_structure_file** parameter as per requirements. It is recommended to use separate outdir structure to manage a large number of resources. <br>
-    - Review Advanced Parameters Section for CI/CD setup. If you plan to use the toolkit with Jenkins then be ready with user details that will be used to connect to DevOps Repo in OCI.              Specifying these parameters as **'yes'** in properties file will create Object Storage Bucket and Devops Git Repo/Project/Topic in OCI and enable toolkit usage with Jenkins. The toolkit supports users in primary IDCS stripes or default domains only for DevOps GIT operations.<br>
-
-<center>
-``` mermaid
-flowchart TD
-    A{Use Toolkit}
-    A ---> B[Jenkins]
-    A ---> C[CLI]
-    B ---> D[Create, Manage or Export Resources in OCI]
-    C ---> D    
-```
-</center>
-
+    - Review Advanced Parameters Section for CI/CD setup. **The toolkit can be used either with CLI or with Jenkins.** If you plan to use the toolkit with Jenkins then be ready with user details that will be used to connect to DevOps Repo in OCI. Specifying these parameters as **'yes'** in properties file will create Object Storage Bucket and Devops Git Repo/Project/Topic in OCI and enable toolkit usage with Jenkins. The toolkit supports users in primary IDCS stripes or default domains only for DevOps GIT operations.<br>
 
  
 **Step 4 - Initialise the environment**:
@@ -172,10 +160,10 @@ flowchart TD
 python createTenancyConfig.py tenancyconfig.properties
 ```
 
-!!! note 
-    * If you are running container on a linux VM host(without using Resource Manager stack option), please refer to [point no. 7](faq.md) under FAQ   to avoid any permission issues.
-    * Running the above command immediately after adding API key to the user profile in OCI might result in     Authentication Errors. In such cases, please retry after a minute.
-    <br>
+    !!! note 
+        * If you are running container on a linux VM host(without using Resource Manager stack option), please refer to [point no. 7](faq.md) under FAQ   to avoid any permission issues.
+        * Running the above command immediately after adding API key to the user profile in OCI might result in     Authentication Errors. In such cases, please retry after a minute.
+
 
 
 -  Example execution of the script with Advanced Parameters for CI/CD
@@ -257,4 +245,4 @@ python createTenancyConfig.py tenancyconfig.properties
 <br>
 The next pages will guide you to use the toolkit either via CLI or via Jenkins. Please proceed further.
 
-[Use Toolkit with CLI](#){ .md-button } [Use Toolkit with Jenkins](#){ .md-button }
+[Use Toolkit with CLI](cd3-cli.md){ .md-button } [Use Toolkit with Jenkins](cd3-jenkins.md){ .md-button }

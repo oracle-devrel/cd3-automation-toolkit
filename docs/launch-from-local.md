@@ -1,10 +1,10 @@
 # **Manual Container Launch**
 
 !!! Tip
-     Launching CD3 container using OCI Resource Manager stack is preferred method as it reduces the manual effort.
+     - Launching CD3 container using OCI Resource Manager stack is preferred method as it reduces the manual effort.
+     - With this method, users are required to clone the Devrel GitHub repo and execute commands to build and run the docker container.
 
-Follow steps provided below  to launch the container from local system.
-<br><br>
+<br>
 **Prerequisites**
 
 * Git
