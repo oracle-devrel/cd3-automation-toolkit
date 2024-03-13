@@ -101,12 +101,10 @@ def fwpolicy_create_service(inputfile, outdir, service_dir, prefix, ct):
 
             if columnname == "Firewall Policy":
                 policy_tf_name = commonTools.check_tf_variable(columnvalue)
-                policy_name = columnvalue
                 tempdict = {'policy_tf_name': policy_tf_name}
 
             if columnname == "Service List":
                 servicelist_tf_name = commonTools.check_tf_variable(columnvalue)
-                servicelist_name = columnvalue
                 tempdict = {'servicelist_tf_name': servicelist_tf_name}
 
             port = []

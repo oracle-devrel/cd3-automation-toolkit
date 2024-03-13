@@ -102,15 +102,8 @@ def fwpolicy_create_secret(inputfile, outdir, service_dir, prefix, ct):
 
             if columnname == "Secret Name":
                 secret_tf_name = commonTools.check_tf_variable(columnvalue)
-                tempdict = {'secret_tf_name': secret_tf_name}
+                tempdict = {'secret_tf_name': secret_tf_name,'secret_name':columnvalue}
 
-            if columnname == "Secret Source":
-                secret_src = commonTools.check_tf_variable(columnvalue)
-                tempdict = {'secret_src': secret_src}
-
-            if columnname == "Secret Type":
-                secret_type = commonTools.check_tf_variable(columnvalue)
-                tempdict = {'secret_type': secret_type}
 
             if columnname == "Vault Secret Id":
                 if columnvalue != '':

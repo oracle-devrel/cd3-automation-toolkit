@@ -6,7 +6,7 @@ url_list = {
 {% else %}
 {% if list_name != "" and list_name != "nan" and list_name != null %}
 {{ policy_tf_name }}_{{urllist_tf_name}} = {
-  urllist_name = "{{ urllist_tf_name }}"
+  urllist_name = "{{ urllist_name }}"
   network_firewall_policy_id = "{{ policy_tf_name }}"
   urls = {{ url_list }}
  },

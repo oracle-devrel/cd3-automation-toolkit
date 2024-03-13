@@ -6,7 +6,7 @@ decryption_profile = {
 {% else %}
 {% if decryption_profile_name != "" and decryption_profile_name != "nan" and decryption_profile_name != null %}
     {{ policy_tf_name }}_{{decryptionprofile_tf_name}} = {
-          profile_name = "{{ decryptionprofile_tf_name }}"
+          profile_name = "{{ decryptionprofile_name }}"
           network_firewall_policy_id = "{{ policy_tf_name }}"
           profile_type = "{{ decryptionprofile_type }}"
           {% if are_certificate_extensions_restricted != '' %}

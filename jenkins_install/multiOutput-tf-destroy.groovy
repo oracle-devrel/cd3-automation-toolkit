@@ -8,7 +8,7 @@ pipeline {
     stages {
         stage('Terraform Destroy Plan') {
             when {
-                expression { return env.GIT_BRANCH == 'origin/main';}
+                expression { return env.GIT_BRANCH == 'origin/develop';}
             }
 
             steps {
@@ -51,7 +51,7 @@ pipeline {
         stage('Get Approval') {
             when {
               allOf{
-                expression {return env.GIT_BRANCH == 'origin/main'; }
+                expression {return env.GIT_BRANCH == 'origin/develop'; }
                 expression {return tf_plan == "Changes" }
 				expression {return currentBuild.result != "FAILURE" }
 			  }
@@ -68,7 +68,7 @@ pipeline {
         stage('Terraform Destroy') {
             when {
              allOf{
-                expression {return env.GIT_BRANCH == 'origin/main'; }
+                expression {return env.GIT_BRANCH == 'origin/develop'; }
                 expression {return tf_plan == "Changes" }
 				expression {return currentBuild.result != "FAILURE" }
 			  }
@@ -80,7 +80,75 @@ pipeline {
                     sh "cd \"${WORKSPACE}/${env.Region}/${env.Service}\" && terraform destroy --auto-approve"
                 }
             }
-			}
+		  }
         }
+
+
+        /** Main branch commit to keep changes in Sync  **/
+        stage('Commit To Main') {
+            when {
+                allOf {
+                    expression { return env.GIT_BRANCH == 'origin/develop'; }
+                    expression { return tf_plan == "Changes" }
+                    expression { return currentBuild.result != "FAILURE" }
+                }
+            }
+            steps {
+                catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
+                    script {
+                        def buildDir = "${WORKSPACE}/${BUILD_NUMBER}"
+                        // Create directory with build number
+                        sh "mkdir -p ${buildDir}"
+
+                        // Commit changes to the main branch
+                        dir(buildDir) {
+                            sh """
+                                 git clone ${GIT_URL}
+                                 cd \$(ls -d */|head -n 1)
+                                 git checkout main
+                                 ls -lrtha
+                                 cd "${env.Region}/${env.Service}"
+                                 git pull --no-edit origin main
+                                 rm -f *.tfvars
+                                 git rm *.tfvars
+                                 git status
+                                 git add --all .
+                               """
+
+                            def git_status = false
+                            while (!git_status) {
+                                // Execute the git commands using shell
+                                def gitResult = sh(script: """
+                                    cd "\$(ls -d */|head -n 1)"
+                                    cd "${env.Region}/${env.Service}"
+                                    git fetch origin main
+                                    git merge origin/main
+                                    git commit -m "Terraform destroy run for #build $BUILD_NUMBER - ${env.Region}/${env.Service}"
+
+                                    git push --porcelain origin main
+                                    """, returnStatus: true)
+
+                                if (gitResult == 0) {
+                                    git_status = true
+                                } else {
+                                    echo "Git operation failed, retrying...."
+                                    sleep 3  // 3 seconds before retrying
+                                }
+                            }
+
+
+                        }
+                    }
+                }
+            }
+
+            post {
+                always {
+                    // Delete the build directory and the temporary directory
+                    deleteDir()
+                }
+            }
+        }
+
     }
 }

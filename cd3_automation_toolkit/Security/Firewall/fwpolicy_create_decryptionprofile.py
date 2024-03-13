@@ -95,10 +95,9 @@ def fwpolicy_create_decryptionprofile(inputfile, outdir, service_dir, prefix, ct
 
             if columnname == "Decryption Profile Name":
                 decryptionprofile_tf_name = commonTools.check_tf_variable(columnvalue)
-                tempdict = {'decryptionprofile_tf_name': decryptionprofile_tf_name}
+                tempdict = {'decryptionprofile_tf_name': decryptionprofile_tf_name,'decryptionprofile_name':columnvalue}
 
             if columnname == "Decryption Profile Type":
-                decryptionprofile_type = commonTools.check_tf_variable(columnvalue)
                 tempdict = {'decryptionprofile_type': decryptionprofile_type}
 
 

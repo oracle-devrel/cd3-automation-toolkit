@@ -64,6 +64,14 @@ class commonTools():
         self.budget_amount = None
         self.budget_threshold = None
         self.cg_region = None
+        self.fwl_clone_src_region = None
+        self.fwl_clone_src_fwl = None
+        self.fwl_clone_names = None
+        self.fwl_region = None
+        self.fwl_name = None
+        self.fwl_clone_comp = None
+        self.fwl_del_comp = None
+        self.fwl_pol_pattern_filter = None
 
 
         # When called from wthin OCSWorkVM or user-scripts
@@ -105,9 +113,11 @@ class commonTools():
         for i in export_filters:
             if 'reg_filter' in i:
                 self.reg_filter = (i.split("=")[1])[2:][:-2]
+
             if 'comp_filter' in i:
                 self.comp_filter = (i.split("=")[1])[2:][:-2]
                 self.comp_filter = self.comp_filter if self.comp_filter else "null"
+
             if 'default_dns' in i:
                 self.default_dns = (i.split("=")[1])[2:][:-2]
 
@@ -129,6 +139,7 @@ class commonTools():
             if 'orm_compartments' in i:
                 self.orm_comp_filter = (i.split("=")[1])[2:][:-2]
                 self.orm_comp_filter = self.orm_comp_filter if self.orm_comp_filter else "null"
+
             if 'vault_region' in i:
                 self.vault_region = (i.split("=")[1])[2:][:-2]
 
@@ -143,6 +154,34 @@ class commonTools():
 
             if 'cg_region' in i:
                 self.cg_region = (i.split("=")[1])[2:][:-2]
+
+            if 'fwl_clone_src_region' in i:
+                self.fwl_clone_src_region = (i.split("=")[1])[2:][:-2]
+
+            if 'fwl_clone_src_fwl' in i:
+                self.fwl_clone_src_fwl = (i.split("=")[1])[2:][:-2]
+
+            if 'fwl_clone_names' in i:
+                self.fwl_clone_names = (i.split("=")[1])[2:][:-2]
+
+            if 'fwl_region' in i:
+                self.fwl_region = (i.split("=")[1])[2:][:-2]
+
+            if 'fwl_name' in i:
+                self.fwl_name = (i.split("=")[1])[2:][:-2]
+
+            if 'fwl_clone_comp' in i:
+                self.fwl_clone_comp = (i.split("=")[1])[2:][:-2]
+                self.fwl_clone_comp = self.fwl_clone_comp if self.fwl_clone_comp else "null"
+
+            if 'fwl_del_comp' in i:
+                self.fwl_del_comp = (i.split("=")[1])[2:][:-2]
+                self.fwl_del_comp = self.fwl_del_comp if self.fwl_del_comp else "null"
+
+            if 'fwl_pol_pattern_filter' in i:
+                self.fwl_pol_pattern_filter = (i.split("=")[1])[2:][:-2]
+
+
 
     # OCI API Authentication
     def authenticate(self,auth_mechanism,config_file_path=DEFAULT_LOCATION):
@@ -266,12 +305,19 @@ class commonTools():
                 input_compartment_names = None
             elif resource_name == "Clone Firewall Policy":
                 compartment_list_str = "Enter name of the Compartment (as it appears in OCI) of the Firewall Policy to be cloned: "
-                compartments = input(compartment_list_str.format(resource_name))
+                if self.fwl_clone_comp == "null":
+                    compartments = None
+                else:
+                    compartments = self.fwl_clone_comp if self.fwl_clone_comp else input(compartment_list_str.format(resource_name))
                 input_compartment_names = list(
                     map(lambda x: x.strip(), compartments.split(','))) if compartments else None
             elif resource_name == "Delete Firewall Policy":
                 compartment_list_str = "Enter name of the Compartment (as it appears in OCI) of the Firewall Policy to be deleted: "
-                compartments = input(compartment_list_str.format(resource_name))
+                if self.fwl_del_comp == "null":
+                    compartments = None
+                else:
+                    compartments = self.fwl_del_comp if self.fwl_del_comp else input(
+                        compartment_list_str.format(resource_name))
                 input_compartment_names = list(
                     map(lambda x: x.strip(), compartments.split(','))) if compartments else None
             else:

@@ -54,13 +54,13 @@ for (item in SubOptions.split(",")) {
         ${html_to_be_rendered}
 
        <tr>
-   <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"ins_fir_pattern_filter=[\"></td>
+   <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"fwl_pol_pattern_filter=[\"></td>
     <td><label title=\"service1-label\" class=\" \">Display Name Pattern Filter for Firewall Policy : </label></td>
     <td>
     <input type=\"text\" class=\" \" name=\"value\" > </br>
     </td>
    <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"]@\"></td></tr>
-     
+
 	 """
       }
 	if (item.equals("Clone Firewall Policy")) {
@@ -68,27 +68,27 @@ for (item in SubOptions.split(",")) {
         ${html_to_be_rendered}
 
        <tr>
-   <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"ins_fir_pattern_filter=[\"></td>
+   <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"fwl_clone_src_region=[\"></td>
     <td><label title=\"service1-label\" class=\" \">Enter region of the Firewall Policy to be cloned <b> (Mandatory) </b>: </label></td>
-	<td><input type=\"text\" class=\" \" name=\"value\" > </br></td>      
+	<td><input type=\"text\" class=\" \" name=\"value\" > </br></td>
    <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"]@\"></td></tr>
     <tr>
-	<td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"ins_fir_pattern_filter=[\"></td>
+	<td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"fwl_clone_comp=[\"></td>
     <td><label title=\"service1-label\" class=\" \">Enter name of the Compartment (as it appears in OCI) of the Firewall Policy to be cloned <b> (Mandatory) </b> : </label></td>
-	<td><input type=\"text\" class=\" \" name=\"value\" > </br></td>    
+	<td><input type=\"text\" class=\" \" name=\"value\" > </br></td>
    <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"]@\"></td></tr>
     <tr>
-	<td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"ins_fir_pattern_filter=[\"></td>
+	<td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"fwl_clone_src_fwl=[\"></td>
     <td><label title=\"service1-label\" class=\" \">Enter names of the Firewalls (comma separated) for which you need to clone their latest attached policy <b> (Mandatory) </b> : </label></td>
-	<td><input type=\"text\" class=\" \" name=\"value\" > </br></td>    
+	<td><input type=\"text\" class=\" \" name=\"value\" > </br></td>
    <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"]@\"></td></tr>
    <tr>
-	<td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"ins_fir_pattern_filter=[\"></td>
+	<td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"fwl_clone_names=[\"></td>
     <td><label title=\"service1-label\" class=\" \">Enter names for the cloned policies (comma separated), in the same order as that of firewalls in the above text box : </label></td>
 	<td><input type=\"text\" class=\" \" name=\"value\" > </br></td>
-    <td>(Leave empty if you need tool to generate the policy names) </td>    
+    <td>(Leave empty if you need tool to generate the policy names) </td>
    <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"]@\"></td></tr>
-     
+
 	 """
       }
 	if (item.equals("Delete Firewall Policy")) {
@@ -96,17 +96,17 @@ for (item in SubOptions.split(",")) {
         ${html_to_be_rendered}
 
        <tr>
-   <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"ins_fir_pattern_filter=[\"></td>
+   <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"fwl_region=[\"></td>
     <td><label title=\"service1-label\" class=\" \">Enter region of the Firewall Policy to be deleted <b> (Mandatory) </b>: </label></td>
-	<td><input type=\"text\" class=\" \" name=\"value\" > </br></td>      
+	<td><input type=\"text\" class=\" \" name=\"value\" > </br></td>
    <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"]@\"></td></tr>
     <tr>
-	<td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"ins_fir_pattern_filter=[\"></td>
+	<td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"fwl_del_comp=[\"></td>
     <td><label title=\"service1-label\" class=\" \">Enter name of the Compartment (as it appears in OCI) of the Firewall Policy to be deleted <b> (Mandatory) </b> : </label></td>
-	<td><input type=\"text\" class=\" \" name=\"value\" > </br></td>    
+	<td><input type=\"text\" class=\" \" name=\"value\" > </br></td>
    <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"]@\"></td></tr>
     <tr>
-	<td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"ins_fir_pattern_filter=[\"></td>
+	<td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"fwl_name=[\"></td>
     <td><label title=\"service1-label\" class=\" \">Enter names of the Firewall Policies(comma separated) that need to be deleted <b> (Mandatory) </b> : </label></td>
 	<td><input type=\"text\" class=\" \" name=\"value\" > </br></td>    
    <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"]@\"></td></tr>

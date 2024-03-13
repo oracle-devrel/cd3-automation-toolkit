@@ -119,8 +119,12 @@ def execute_options(options, *args, **kwargs):
         quit = 'q' in options
     else:
         for option in options:
-            with section(option.text):
-                option.callback(*args, **kwargs)
+            if option.name in ['Security Rules', 'Route Rules', 'DRG Route Rules', 'Network Security Groups','CIS Compliance Checking Script'] and devops:
+                with section(option.text):
+                    option.callback(*args, **kwargs,sub_options=sub_child_options)
+            else:
+                with section(option.text):
+                    option.callback(*args, **kwargs)
 
 def get_region_list(rm):
     if rm == False:
@@ -432,7 +436,7 @@ def export_secrules(inputfile, outdir,config,signer,ct,export_regions):
     execute_options(options, inputfile, outdir,service_dir_network, prefix, ct, non_gf_tenancy)
     print("\n\nExecute tf_import_commands_network_secrules_nonGF.sh script created under each region directory to synch TF with OCI Network objects\n")
 
-def export_routerules(inputfile, outdir, service_dir,config,signer,ct,export_regions):
+def export_routerules(inputfile, outdir,config,signer,ct,export_regions):
     compartments = ct.get_compartment_map(var_file,'RouteRulesInOCI')
     Network.export_routetable(inputfile, outdir, service_dir_network, config, signer, ct, export_compartments=compartments, export_regions=export_regions, _tf_import_cmd=True)
     options = [
@@ -489,7 +493,8 @@ def export_firewallpolicy(inputfile, outdir, config, signer, ct, export_regions,
     if not devops:
         policy_name_str = input(filter_str1)
     else:
-        policy_name_str = name_filter
+        policy_name_str = ct.fwl_pol_pattern_filter if ct.fwl_pol_pattern_filter else None
+
     policies = list(map(lambda x: x.strip(), policy_name_str.split(','))) if policy_name_str else None
     Security.export_firewallpolicy(inputfile, outdir, service_dir_firewall, config,signer,ct, export_compartments=compartments, export_regions=export_regions,export_policies=policies)
     create_firewall_policy(inputfile, outdir, service_dir_firewall, prefix, ct,execute_all=True)
@@ -815,11 +820,7 @@ def create_network(execute_all=False,prim_options=[]):
     else:
         if not execute_all:
             options = show_options(options, quit=True, menu=True, index=1)
-    for option in options:
-        if option.name in ['Security Rules','Route Rules','DRG Route Rules','Network Security Groups']:
-            execute_options(options, inputfile, outdir, service_dir, prefix, ct, non_gf_tenancy=non_gf_tenancy,sub_options=sub_child_options)
-        else:
-            execute_options(options, inputfile, outdir, service_dir, prefix, ct, non_gf_tenancy=non_gf_tenancy)
+    execute_options(options, inputfile, outdir, service_dir, prefix, ct, non_gf_tenancy=non_gf_tenancy)
     # Update modified path list
     regions_path = export_regions.copy()
     regions_path.append("global")
@@ -1051,15 +1052,15 @@ def create_databases(execute_all=False,prim_options=[]):
     else:
         if not execute_all:
             options = show_options(options, quit=True, menu=True, index=1)
-    execute_options(options, inputfile, outdir, service_dir_adb, prefix, ct)
+    execute_options(options, inputfile, outdir, prefix, ct)
 
-def create_terraform_dbsystems_vm_bm(inputfile, outdir,service_dir_nt, prefix,ct):
+def create_terraform_dbsystems_vm_bm(inputfile, outdir, prefix,ct):
     Database.create_terraform_dbsystems_vm_bm(inputfile, outdir, service_dir_dbsystem_vm_bm, prefix, ct)
     # Update modified path list
     update_path_list(regions_path=subscribed_regions, service_dirs=[service_dir_dbsystem_vm_bm])
 
 
-def create_exa_infra_vmclusters(inputfile, outdir,service_dir_nt, prefix,ct):
+def create_exa_infra_vmclusters(inputfile, outdir, prefix,ct):
     options = [Option(None, Database.create_terraform_exa_infra, 'Processing Exa-Infra Tab'),
                Option(None, Database.create_terraform_exa_vmclusters, 'Processing Exa-VM-Clusters Tab')]
     execute_options(options, inputfile, outdir, service_dir_database_exacs, prefix, ct)
@@ -1067,7 +1068,7 @@ def create_exa_infra_vmclusters(inputfile, outdir,service_dir_nt, prefix,ct):
     update_path_list(regions_path=subscribed_regions, service_dirs=[service_dir_database_exacs])
 
 
-def create_terraform_adb(inputfile, outdir,service_dir_nt, prefix,ct):
+def create_terraform_adb(inputfile, outdir, prefix,ct):
     Database.create_terraform_dbsystems_vm_bm(inputfile, outdir, service_dir_adb, prefix, ct)
     # Update modified path list
     update_path_list(regions_path=subscribed_regions, service_dirs=[service_dir_adb])
@@ -1186,29 +1187,42 @@ def create_cis_features(prim_options=[]):
     execute_options(options, outdir, prefix, config_file_path)
 
 def create_cis_keyvault(*args,**kwargs):
-    region_name = input("Enter region name eg ashburn where you want to create Key/Vault: ")
-    comp_name = input("Enter name of compartment as it appears in OCI Console: ")
-
+    if not devops:
+        region_name = input("Enter region name eg ashburn where you want to create Key/Vault: ")
+        comp_name = input("Enter name of compartment as it appears in OCI Console: ")
+    else:
+        region_name = ct.vault_region
+        comp_name = ct.vault_comp
     options = [Option(None, Security.create_cis_keyvault, 'Creating KeyVault')]
     execute_options(options, outdir, service_dir_kms, service_dir_identity,prefix, ct, region_name, comp_name)
 
 def create_cis_budget(*args,**kwargs):
-    amount = input("Enter Monthly Budget Amount (in US$): ")
-    threshold = input("Enter Threshold Percentage of Budget: ")
+    if not devops:
+        amount = input("Enter Monthly Budget Amount (in US$): ")
+        threshold = input("Enter Threshold Percentage of Budget: ")
+    else:
+        amount = ct.budget_amount
+        threshold = ct.budget_threshold
     options = [Option(None, Governance.create_cis_budget, 'Creating Budget')]
     execute_options(options, outdir, service_dir_budget, prefix,ct, amount,threshold)
 
 def enable_cis_cloudguard(*args,**kwargs):
-    region = input("Enter Reporting Region for Cloud Guard eg london: ")
+    if not devops:
+        region = input("Enter Reporting Region for Cloud Guard eg london: ")
+    else:
+        region = ct.cg_region
     options = [Option(None, Security.enable_cis_cloudguard, 'Enabling Cloud Guard')]
     execute_options(options, outdir, service_dir_cloud_guard, prefix, ct, region)
 
-def initiate_cis_scan(outdir, prefix, config_file):
+def initiate_cis_scan(outdir, prefix, config_file,sub_options=[]):
     options = [
-        Option("CD3 Image already contains the latest CIS compliance checking script available at the time of cd3 image release.\n   Download latest only if new version of the script is available", start_cis_download, 'Download CIS script'),
+        Option("Download latest compliance checking script", start_cis_download, 'Download CIS script'),
         Option("Execute compliance checking script", start_cis_scan, 'Execute CIS script'),
     ]
-    options = show_options(options, quit=True, menu=True, index=1)
+    if sub_options:
+        options = match_options(options, sub_options)
+    else:
+        options = show_options(options, quit=True, menu=True, index=1)
     execute_options(options, outdir, prefix, config_file)
 
 def start_cis_download(outdir, prefix, config_file):
@@ -1221,9 +1235,10 @@ def start_cis_download(outdir, prefix, config_file):
 
 def start_cis_scan(outdir, prefix, config_file):
     cmd = "python cis_reports.py"
-    user_input = input("Enter command to execute the script. Press Enter to execute {} : ".format(cmd))
-    if user_input!='':
-        cmd = "{}".format(user_input)
+    if not devops:
+        user_input = input("Enter command to execute the script. Press Enter to execute {} : ".format(cmd))
+        if user_input!='':
+            cmd = "{}".format(user_input)
     split = str.split(cmd)
 
     dirname = prefix + "_cis_report"
@@ -1301,10 +1316,10 @@ def create_validate_firewall_service(execute_all=False,prim_options=[]):
                             exit(1)
                 print("Proceeding with tfvars generation...")
 
-            execute_options(options1, inputfile, outdir, service_dir_firewall, prefix, ct)
+            execute_options(options1, inputfile, outdir, service_dir_firewall, prefix, ct,sub_options=sub_child_options)
         else:
             execute_options(options1, inputfile, outdir, service_dir_firewall, config,signer, ct)
-
+    update_path_list(regions_path=subscribed_regions, service_dirs=[service_dir_firewall])
 
 
 def clone_firewall_policy( inputfile, outdir, service_dir, config, signer, ct):
@@ -1350,7 +1365,7 @@ def delete_firewall_policy(inputfile, outdir, service_dir, config, signer, ct):
     create_firewall_policy(inputfile, outdir, service_dir, prefix, ct,execute_all=True)
 
 
-def create_firewall_policy(inputfile, outdir, service_dir, prefix, ct,execute_all=False,prim_options=[]):
+def create_firewall_policy(inputfile, outdir, service_dir, prefix, ct,execute_all=False,sub_options=[]):
     options = [
             Option('Add/Modify Policy', Security.firewallpolicy_create, 'Processing Firewall-Policy Tab'),
             Option('Add/Modify Service', Security.fwpolicy_create_service,
@@ -1374,15 +1389,16 @@ def create_firewall_policy(inputfile, outdir, service_dir, prefix, ct,execute_al
             Option('Add/Modify Decryption Profile', Security.fwpolicy_create_decryptionprofile,
                    'Processing Firewall-Policy-DecryptRule Tab'),
         ]
-    if prim_options:
-        options = match_options(options, prim_options)
+    if sub_options:
+        options = match_options(options, sub_options)
     else:
         if not execute_all:
             options = show_firewall_options(options, quit=True, menu=True, index=1)
 
     execute_options(options, inputfile, outdir, service_dir, prefix, ct)
 
-def create_firewall(inputfile, outdir, service_dir, prefix, ct):
+
+def create_firewall(inputfile, outdir, service_dir, prefix, ct,sub_options=[]):
     Security.fw_create(inputfile, outdir, service_dir, prefix, ct)
 
 

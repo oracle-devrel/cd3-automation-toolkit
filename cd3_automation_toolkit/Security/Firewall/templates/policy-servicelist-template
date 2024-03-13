@@ -6,7 +6,7 @@ service_list = {
 {% else %}
 {% if service_list != "" and service_list != "nan" and service_list != null %}
 {{ policy_tf_name }}_{{servicelist_tf_name}} = {
-  service_list_name = "{{ servicelist_tf_name }}"
+  service_list_name = "{{ servicelist_name }}"
   network_firewall_policy_id = "{{ policy_tf_name }}"
   services = [{{services_tf_name}}]
   },

@@ -99,17 +99,11 @@ def fwpolicy_create_address(inputfile, outdir, service_dir, prefix, ct):
 
             if columnname == "Firewall Policy":
                 policy_tf_name = commonTools.check_tf_variable(columnvalue)
-                policy_name = columnvalue
                 tempdict = {'policy_tf_name': policy_tf_name}
 
             if columnname == "List Name":
                 address_tf_name = commonTools.check_tf_variable(columnvalue)
-                address_name = columnvalue
-                tempdict = {'address_tf_name': address_tf_name}
-
-            if columnname == "Address Type":
-                address_tf_type = commonTools.check_tf_variable(columnvalue)
-                tempdict = {'address_tf_type': address_tf_type}
+                tempdict = {'address_tf_name': address_tf_name, 'address_name':columnvalue}
 
             if columnname == "Address List":
                     if columnvalue != '':

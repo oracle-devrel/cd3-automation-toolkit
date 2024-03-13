@@ -593,5 +593,5 @@ def export_firewallpolicy(inputfile, _outdir, service_dir, config, signer, ct, e
         input_file.close()
         output_file.close()
         os.remove(readfilepath)
-        os.chmod(outdir + "/" + reg + "/" + service_dir + "/tf_import_commands_firewallpolicy_nonGF.sh", 777)
+        #os.chmod(outdir + "/" + reg + "/" + service_dir + "/tf_import_commands_firewallpolicy_nonGF.sh", 777)
 

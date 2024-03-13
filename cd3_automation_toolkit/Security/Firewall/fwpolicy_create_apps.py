@@ -101,12 +101,10 @@ def fwpolicy_create_apps(inputfile, outdir, service_dir, prefix, ct):
 
             if columnname == "Firewall Policy":
                 policy_tf_name = commonTools.check_tf_variable(columnvalue)
-                policy_name = columnvalue
                 tempdict = {'policy_tf_name': policy_tf_name}
 
             if columnname == "Application List":
                 applicationlist_tf_name = commonTools.check_tf_variable(columnvalue)
-                applicationlist_name = columnvalue
                 tempdict = {'applicationlist_tf_name': applicationlist_tf_name}
 
             port = []

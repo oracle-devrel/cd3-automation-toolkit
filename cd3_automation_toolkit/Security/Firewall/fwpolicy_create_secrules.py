@@ -98,13 +98,11 @@ def fwpolicy_create_secrules(inputfile, outdir, service_dir, prefix, ct):
 
             if columnname == "Firewall Policy":
                 policy_tf_name = commonTools.check_tf_variable(columnvalue)
-                policy_name = columnvalue
                 tempdict = {'policy_tf_name': policy_tf_name}
 
             if columnname == "Rule Name":
                 rule_tf_name = commonTools.check_tf_variable(columnvalue)
-                Rule_name = columnvalue
-                tempdict = {'rule_tf_name': rule_tf_name}
+                tempdict = {'rule_tf_name': rule_tf_name,'rule_name':columnvalue}
 
             if columnname == "Source Address":
                 if columnvalue != '':

@@ -4,7 +4,7 @@ application_list = {
     ##Add New apps for {{ region|lower }} here##
 }
 {% else %}
-{% if application != "" and applications != "nan" and applications != null %}
+{% if applications != "" and applications != "nan" and applications != null %}
 {{ policy_tf_name }}_{{app_name}} = {
   app_list_name = "{{ app_name }}"
   network_firewall_policy_id = "{{ policy_tf_name }}"

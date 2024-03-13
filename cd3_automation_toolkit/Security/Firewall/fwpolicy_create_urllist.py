@@ -98,13 +98,11 @@ def fwpolicy_create_urllist(inputfile, outdir, service_dir, prefix, ct):
 
             if columnname == "Firewall Policy":
                 policy_tf_name = commonTools.check_tf_variable(columnvalue)
-                policy_name = columnvalue
                 tempdict = {'policy_tf_name': policy_tf_name}
 
             if columnname == "List Name":
                 urllist_tf_name = commonTools.check_tf_variable(columnvalue)
-                urllist_name = columnvalue
-                tempdict = {'urllist_tf_name': urllist_tf_name}
+                tempdict = {'urllist_tf_name': urllist_tf_name,'urllist_name':columnvalue}
 
 
             cover1 = '[{\n    pattern = "'

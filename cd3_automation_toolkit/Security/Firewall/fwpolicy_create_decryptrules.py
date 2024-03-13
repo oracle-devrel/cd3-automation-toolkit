@@ -95,13 +95,11 @@ def fwpolicy_create_decryptrules(inputfile, outdir, service_dir, prefix, ct):
 
             if columnname == "Firewall Policy":
                 policy_tf_name = commonTools.check_tf_variable(columnvalue)
-                policy_name = columnvalue
                 tempdict = {'policy_tf_name': policy_tf_name}
 
             if columnname == "Rule Name":
                 rule_tf_name = commonTools.check_tf_variable(columnvalue)
-                Rule_name = columnvalue
-                tempdict = {'rule_tf_name': rule_tf_name}
+                tempdict = {'rule_tf_name': rule_tf_name,'rule_name':columnvalue}
 
             if columnname == "Source Address":
                 if columnvalue != '':
@@ -143,17 +141,9 @@ def fwpolicy_create_decryptrules(inputfile, outdir, service_dir, prefix, ct):
                     columnvalue = dst_id
                     tempdict = {'dst_address': dst_id}
 
-            if columnname == "Action":
-                action = commonTools.check_tf_variable(columnvalue)
-                tempdict = {'action': action}
-
-            if columnname == "secret_name":
-                secret_name = commonTools.check_tf_variable(columnvalue)
-                tempdict = {'secret_name': secret_name}
 
             if columnname == "Decryption Profile":
-                decrypt_name = commonTools.check_tf_variable(columnvalue)
-                tempdict = {'decrypt_name': decrypt_name}
+                tempdict = {'decrypt_name': columnvalue}
 
             if columnname == "Position":
                 if columnvalue != '':
