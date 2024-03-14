@@ -119,7 +119,7 @@ def execute_options(options, *args, **kwargs):
         quit = 'q' in options
     else:
         for option in options:
-            if option.name in ['Security Rules', 'Route Rules', 'DRG Route Rules', 'Network Security Groups','CIS Compliance Checking Script'] and devops:
+            if option.name in ['Security Rules', 'Route Rules', 'DRG Route Rules', 'Network Security Groups','Customer Connectivity','CIS Compliance Checking Script'] and devops:
                 with section(option.text):
                     option.callback(*args, **kwargs,sub_options=sub_child_options)
             else:
@@ -927,14 +927,17 @@ def create_vlans(inputfile, outdir, service_dir,  prefix,ct, non_gf_tenancy, net
     Network.create_terraform_subnet_vlan(inputfile, outdir, service_dir, prefix, ct, non_gf_tenancy=non_gf_tenancy, network_vlan_in_setupoci='vlan',modify_network=True)
     Network.create_terraform_route(inputfile, outdir, service_dir_network, prefix, ct, non_gf_tenancy=non_gf_tenancy, network_vlan_in_setupoci='vlan',modify_network=True)
 
-def create_drg_connectivity(inputfile, outdir, service_dir,  prefix, ct, non_gf_tenancy,network_vlan_in_setupoci='vlan'):
+def create_drg_connectivity(inputfile, outdir, service_dir,  prefix, ct, non_gf_tenancy,network_vlan_in_setupoci='vlan',sub_options=[]):
     execute_all = False
     service_dir = ""
 
     options = [ Option('Create Remote Peering Connections', create_rpc, 'RPCs'),]
-    if not devops:
+    if sub_options:
+        options = match_options(options, sub_options)
+    else:
         if not execute_all:
             options = show_options(options, quit=True, menu=True, index=1)
+
     execute_options(options, inputfile, outdir, service_dir, service_dir_network, prefix, auth_mechanism, config_file_path, ct, non_gf_tenancy=non_gf_tenancy)
 
 def create_rpc(inputfile, outdir, service_dir, service_dir_network, prefix, auth_mechanism, config_file_path, ct, non_gf_tenancy):
