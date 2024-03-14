@@ -145,7 +145,7 @@ def fwpolicy_create_service(inputfile, outdir, service_dir, prefix, ct):
                                         else:
                                             port_ranges = port_ranges + box11 + port[0] + box2 + port[1] + box3
                                         i += 1
-                            tempdict = {'port_ranges': port_ranges, 'service_name': service_name, 'service_type': service_type, 'policy_tf_name': policy_tf_name}
+                            tempdict = {'port_ranges': port_ranges, 'service_name': service_name, 'service_tf_name': commonTools.check_tf_variable(service_name), 'service_type': service_type, 'policy_tf_name': policy_tf_name}
                             columnname = commonTools.check_column_headers(columnname)
                             tempStr[columnname] = str(columnvalue).strip()
                             tempStr.update(tempdict)
@@ -180,7 +180,7 @@ def fwpolicy_create_service(inputfile, outdir, service_dir, prefix, ct):
                                             else:
                                                 port_ranges = port_ranges + box11 + port[0] + box2 + port[1] + box3
 
-                                tempdict = {'port_ranges': port_ranges, 'service_name': service_name, 'service_type': service_type, 'policy_tf_name': policy_tf_name}
+                                tempdict = {'port_ranges': port_ranges, 'service_name': service_name, 'service_tf_name': commonTools.check_tf_variable(service_name), 'service_type': service_type, 'policy_tf_name': policy_tf_name}
                                 columnname = commonTools.check_column_headers(columnname)
                                 tempStr[columnname] = str(columnvalue).strip()
                                 tempStr.update(tempdict)

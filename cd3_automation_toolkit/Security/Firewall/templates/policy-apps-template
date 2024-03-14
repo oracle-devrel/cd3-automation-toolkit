@@ -5,7 +5,7 @@ application_list = {
 }
 {% else %}
 {% if applications != "" and applications != "nan" and applications != null %}
-{{ policy_tf_name }}_{{app_name}} = {
+{{ policy_tf_name }}_{{app_tf_name}} = {
   app_list_name = "{{ app_name }}"
   network_firewall_policy_id = "{{ policy_tf_name }}"
   app_type = "{{ app_type }}"

@@ -118,7 +118,7 @@ pipeline {
                                     ls -lrtha
                                     git fetch origin main
                                     git merge origin/main
-                                    git commit -m "Terraform destroy run for #build $BUILD_NUMBER - ${env.Region}"
+                                    git commit -m "commit for terraform-destroy build - ${BUILD_NUMBER} for "${env.Region}
 
                                     git push --porcelain origin main
                                     """, returnStatus: true)

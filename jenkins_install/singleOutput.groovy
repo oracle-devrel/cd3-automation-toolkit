@@ -137,7 +137,7 @@ pipeline {
                     git add ${copy_path}*
                     git_status=`git status --porcelain`
                     if [[ $git_status ]];then
-                    git commit -m "commit for terraform build - ${BUILD_NUMBER} for "${reg}
+                    git commit -m "commit for terraform-apply build - ${BUILD_NUMBER} for "${reg}
                     git push origin main
                     else
                         echo "Nothing to commit"

@@ -424,7 +424,7 @@ def export_dhcp(inputfile, outdir,config,signer,ct,export_regions):
     options = [
         Option(None, Network.create_terraform_dhcp_options, 'Processing DHCP Tab'),
         ]
-    execute_options(options, inputfile, outdir, service_dir_network,prefix, ct, non_gf_tenancy, ct)
+    execute_options(options, inputfile, outdir, service_dir_network,prefix, ct, non_gf_tenancy)
     print("\n\nExecute tf_import_commands_network_dhcp_nonGF.sh script created under each region directory to synch TF with OCI Network objects\n")
 
 def export_secrules(inputfile, outdir,config,signer,ct,export_regions):
@@ -650,7 +650,7 @@ def export_exa_infra_vmclusters(inputfile, outdir,config, signer, ct, export_reg
     compartments = ct.get_compartment_map(var_file,'EXA Infra and EXA VMClusters')
     Database.export_exa_infra(inputfile, outdir, service_dir_database_exacs, config,signer,ct, export_compartments=compartments, export_regions= export_regions)
     Database.export_exa_vmclusters(inputfile, outdir, service_dir_database_exacs, config,signer,ct, export_compartments=compartments, export_regions= export_regions)
-    create_exa_infra_vmclusters(inputfile, outdir, service_dir_database_exacs, prefix,ct)
+    create_exa_infra_vmclusters(inputfile, outdir, prefix,ct)
     print("\n\nExecute tf_import_commands_exa-infra_nonGF.sh and tf_import_commands_exa-vmclusters_nonGF.sh scripts created under each region directory to synch TF with Exa-Infra and Exa-VMClusters\n")
     # Update modified path list
     update_path_list(regions_path=export_regions, service_dirs=[service_dir_database_exacs])
@@ -1195,6 +1195,9 @@ def create_cis_keyvault(*args,**kwargs):
         comp_name = ct.vault_comp
     options = [Option(None, Security.create_cis_keyvault, 'Creating KeyVault')]
     execute_options(options, outdir, service_dir_kms, service_dir_identity,prefix, ct, region_name, comp_name)
+    # Update modified path list
+    update_path_list(regions_path=subscribed_regions, service_dirs=[service_dir_kms])
+
 
 def create_cis_budget(*args,**kwargs):
     if not devops:
@@ -1205,6 +1208,9 @@ def create_cis_budget(*args,**kwargs):
         threshold = ct.budget_threshold
     options = [Option(None, Governance.create_cis_budget, 'Creating Budget')]
     execute_options(options, outdir, service_dir_budget, prefix,ct, amount,threshold)
+    # Update modified path list
+    update_path_list(regions_path=subscribed_regions, service_dirs=[service_dir_budget])
+
 
 def enable_cis_cloudguard(*args,**kwargs):
     if not devops:
@@ -1213,6 +1219,9 @@ def enable_cis_cloudguard(*args,**kwargs):
         region = ct.cg_region
     options = [Option(None, Security.enable_cis_cloudguard, 'Enabling Cloud Guard')]
     execute_options(options, outdir, service_dir_cloud_guard, prefix, ct, region)
+    # Update modified path list
+    update_path_list(regions_path=subscribed_regions, service_dirs=[service_dir_cloud_guard])
+
 
 def initiate_cis_scan(outdir, prefix, config_file,sub_options=[]):
     options = [

@@ -161,7 +161,7 @@ pipeline {
                     cd ${WORKSPACE}/../${BUILD_NUMBER}/${repo_name}
                     git_status=`git status --porcelain`
                     if [[ $git_status ]];then
-                     git commit -m "commit for terraform build - ${BUILD_NUMBER} for "${reg}"/"${service}
+                     git commit -m "commit for terraform-apply build - ${BUILD_NUMBER} for "${reg}"/"${service}
                     else
                         echo "Nothing to commit"
                     fi

@@ -108,10 +108,13 @@ def clone_firewallpolicy(inputfile, _outdir, service_dir, config, signer, ct, ex
                                     policy_detail = policy_detail + "," + new_policy.data.display_name
                                     get_clone_status = fwpolicy.get_network_firewall_policy(new_policy.data.id)
                                     wait_until_policy_cloned = oci.wait_until(fwpolicy, get_clone_status, 'lifecycle_state', "ACTIVE", max_interval_seconds=30, max_wait_seconds=300)
+                                    print("Firewall Policy cloned for " + region)
                             else:
                                 print("\nFirewall name can not be left empty to clone a policy ")
                                 exit()
                         if (policy_detail != ""):
                             policy_detail = policy_detail[1:]
-        print("Firewall Policy cloned for " + region)
+
+        Security.cloneexport_firewallpolicy(inputfile, outdir, service_dir, config, signer, ct, export_compartments, export_regions,policy_detail)
+
 

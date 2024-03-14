@@ -66,3 +66,5 @@ def delete_firewallpolicy(inputfile, _outdir, service_dir, config, signer, ct, d
                                     else:
                                         print("Policy " + eachpolicy + " Attached to the firewall can not be deleted")
 
+    Security.cloneexport_firewallpolicy(inputfile, outdir, service_dir, config,signer, ct,delete_compartments, delete_regions, policy_detail)
+

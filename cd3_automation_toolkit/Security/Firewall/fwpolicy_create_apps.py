@@ -135,7 +135,7 @@ def fwpolicy_create_apps(inputfile, outdir, service_dir, prefix, ct):
                                     icmp_code = app[3]
                                 else:
                                     icmp_code = ''
-                                tempdict = {'app_name': app_name, 'app_type': app_type, 'icmp_type': icmp_type, 'icmp_code': icmp_code, 'policy_tf_name': policy_tf_name}
+                                tempdict = {'app_name': app_name, 'app_tf_name': commonTools.check_tf_variable(app_name),'app_type': app_type, 'icmp_type': icmp_type, 'icmp_code': icmp_code, 'policy_tf_name': policy_tf_name}
                                 columnname = commonTools.check_column_headers(columnname)
                                 tempStr[columnname] = str(columnvalue).strip()
                                 tempStr.update(tempdict)
@@ -156,7 +156,7 @@ def fwpolicy_create_apps(inputfile, outdir, service_dir, prefix, ct):
                                         icmp_code = app[3]
                                     else:
                                         icmp_code = ''
-                                tempdict = {'app_name': app_name, 'app_type': app_type, 'icmp_type': icmp_type, 'icmp_code': icmp_code, 'policy_tf_name': policy_tf_name}
+                                tempdict = {'app_name': app_name, 'app_tf_name': commonTools.check_tf_variable(app_name),'app_type': app_type, 'icmp_type': icmp_type, 'icmp_code': icmp_code, 'policy_tf_name': policy_tf_name}
                                 columnname = commonTools.check_column_headers(columnname)
                                 tempStr[columnname] = str(columnvalue).strip()
                                 tempStr.update(tempdict)

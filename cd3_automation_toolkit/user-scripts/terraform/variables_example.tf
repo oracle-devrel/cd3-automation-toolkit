@@ -648,20 +648,36 @@ scope = optional(string)
 default = {}
 }
 
-
 variable "resolvers" {
 type    = map(object({
 network_compartment_id= string
 vcn_name = string
-display_name         = optional(string)
-views = optional(map(any))
-resolver_rules = optional(map(any))
-endpoint_names = optional(map(any))
+display_name = optional(string)
+views = optional(map(object({
+  view_id = optional(string)
+  view_compartment_id = optional(string)
+})))
+resolver_rules = optional(map(object({
+  client_address_conditions = optional(string)
+  destination_addresses = optional(string)
+  qname_cover_conditions = optional(string)
+  source_endpoint_name = optional(string)
+})))
+endpoint_names = optional(map(object({
+  is_forwarding = optional(bool)
+  is_listening = optional(bool)
+  name = optional(string)
+  subnet_name = optional(string)
+  forwarding_address = optional(string)
+  listening_address = optional(string)
+  nsg_ids = optional(list(string))
+})))
 freeform_tags = optional(map(any))
 defined_tags = optional(map(any))
 }))
 default = {}
 }
+
 
 #########################
 ## Dedicated VM Hosts ##

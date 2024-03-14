@@ -123,7 +123,7 @@ pipeline {
                                     cd "${env.Region}/${env.Service}"
                                     git fetch origin main
                                     git merge origin/main
-                                    git commit -m "Terraform destroy run for #build $BUILD_NUMBER - ${env.Region}/${env.Service}"
+                                    git commit -m "commit for terraform-destroy build - ${BUILD_NUMBER} for "${env.Region}"/"${env.Service}
 
                                     git push --porcelain origin main
                                     """, returnStatus: true)
