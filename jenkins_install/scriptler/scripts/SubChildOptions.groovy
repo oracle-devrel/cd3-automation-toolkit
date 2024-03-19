@@ -4,7 +4,7 @@ List firewall_policy = ["<b>FIREWALL POLICY</b>:disabled","Add/Modify Policy", "
 List drg_route_rules = ["<b>DRG ROUTE RULES</b>:disabled","Export DRG Route Rules (From OCI into DRGRouteRulesinOCI sheet)", "Add/Modify/Delete DRG Route Rules (Reads DRGRouteRulesinOCI sheet)"]
 List nsg = ["<b>NSGs</b>:disabled","Export NSGs (From OCI into NSGs sheet)", "Add/Modify/Delete NSGs (Reads NSGs sheet)"]
 List cis =  ["<b>CIS</b>:disabled","Download latest compliance checking script", "Execute compliance checking script"]
-List customer_connectivity = ["<b>RPCs</b>:disabled","Create Remote Peering Connections"]
+List customer_connectivity = ["<b>Connectivity</b>:disabled","Create Remote Peering Connections"]
 List final_list = []
 
 for (item in SubOptions.split(",")) {
@@ -23,7 +23,7 @@ for (item in SubOptions.split(",")) {
     if (item.equals("CIS Compliance Checking Script")){
         final_list += cis
     }
-      if (item.equals("Add/Modify Firewall Policy")){
+      if (item.equals("Add/Modify/Delete Firewall Policy")){
         final_list += firewall_policy
     }
   if (item.equals("Customer Connectivity")){

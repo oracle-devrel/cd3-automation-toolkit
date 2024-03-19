@@ -65,13 +65,14 @@ class commonTools():
         self.budget_threshold = None
         self.cg_region = None
         self.fwl_clone_src_region = None
-        self.fwl_clone_src_fwl = None
-        self.fwl_clone_names = None
+        self.src_policy_str = None
+        self.target_policy_str = None
         self.fwl_region = None
         self.fwl_name = None
         self.fwl_clone_comp = None
         self.fwl_del_comp = None
         self.fwl_pol_pattern_filter = None
+        self.attached_policy_only = None
 
 
         # When called from wthin OCSWorkVM or user-scripts
@@ -158,11 +159,11 @@ class commonTools():
             if 'fwl_clone_src_region' in i:
                 self.fwl_clone_src_region = (i.split("=")[1])[2:][:-2]
 
-            if 'fwl_clone_src_fwl' in i:
-                self.fwl_clone_src_fwl = (i.split("=")[1])[2:][:-2]
+            if 'src_policy_str' in i:
+                self.src_policy_str = (i.split("=")[1])[2:][:-2]
 
-            if 'fwl_clone_names' in i:
-                self.fwl_clone_names = (i.split("=")[1])[2:][:-2]
+            if 'target_policy_str' in i:
+                self.target_policy_str = (i.split("=")[1])[2:][:-2]
 
             if 'fwl_region' in i:
                 self.fwl_region = (i.split("=")[1])[2:][:-2]
@@ -181,6 +182,8 @@ class commonTools():
             if 'fwl_pol_pattern_filter' in i:
                 self.fwl_pol_pattern_filter = (i.split("=")[1])[2:][:-2]
 
+            if 'attached_policy_only' in i:
+                self.attached_policy_only = (i.split("=")[1])[2:][:-2]
 
 
     # OCI API Authentication
@@ -559,7 +562,7 @@ class commonTools():
         yield values_for_column
 
     #Write exported  rows to cd3
-    def write_to_cd3(values_for_column, cd3file, sheet_name):
+    def write_to_cd3(values_for_column, cd3file, sheet_name,append=False):
         try:
             book = load_workbook(cd3file)
             sheet = book[sheet_name]
@@ -600,27 +603,39 @@ class commonTools():
 
         #rows_len=len(rows)
         rows_len = len(values_for_column["Region"])
-
+        sheet_max_rows = sheet.max_row
         #If no rows exported from OCI, remove the sample data as well
-        if(rows_len == 0):
-            print("0 rows exported; Nothing to write to CD3 excel; Tab "+sheet_name +" will be empty in CD3 excel!!")
-            for i in range(0, sheet.max_row):
-                for j in range(0, sheet.max_column):
-                    sheet.cell(row=i + 3, column=j + 1).value = ""
-            try:
-                book.save(cd3file)
-                book.close()
-            except Exception as e:
-                print(str(e))
-                print("Exiting!!")
-                exit(1)
+        if(rows_len == 0) :
+            if not append:
+                print("0 rows exported; Nothing to write to CD3 excel; Tab "+sheet_name +" will be empty in CD3 excel!!")
+                for i in range(0, sheet.max_row):
+                    for j in range(0, sheet.max_column):
+                        sheet.cell(row=i + 3, column=j + 1).value = ""
+                try:
+                    book.save(cd3file)
+                    book.close()
+                except Exception as e:
+                    print(str(e))
+                    print("Exiting!!")
+                    exit(1)
             return
 
-        sheet_max_rows = sheet.max_row
-        if (rows_len > sheet_max_rows):
+        if append:
+            for x in range(1, sheet_max_rows):
+                if sheet['A'][x].value == None:
+                    last_line = x
+                    break
+            #rows_len +=last_line
             large = rows_len
+            start = last_line+1
+
+
         else:
-            large = sheet_max_rows
+            start = 3
+            if (rows_len > sheet_max_rows):
+                large = rows_len
+            else:
+                large = sheet_max_rows
 
         df, values_for_column_sheet = commonTools.read_cd3(cd3file, sheet_name)
 
@@ -633,10 +648,10 @@ class commonTools():
                     continue
                 # Data
                 if(i>=rows_len):
-                    sheet.cell(row=i+3, column=j+1).value = ""
+                    sheet.cell(row=i+start, column=j+1).value = ""
                 else:
-                    sheet.cell(row=i+3, column=j+1).value = values_for_column[col_name][i]
-                sheet.cell(row=i+3, column=j+1).alignment = Alignment(wrap_text=True)
+                    sheet.cell(row=i+start, column=j+1).value = values_for_column[col_name][i]
+                sheet.cell(row=i+start, column=j+1).alignment = Alignment(wrap_text=True)
                 j=j+1
             j=0
 

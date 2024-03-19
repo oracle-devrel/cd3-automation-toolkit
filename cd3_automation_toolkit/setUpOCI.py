@@ -542,7 +542,7 @@ def export_instances(inputfile, outdir,config,signer, ct, export_regions):
     ad_names = list(map(lambda x: x.strip(), ad_name_str.split(','))) if ad_name_str else None
 
     Compute.export_instances(inputfile, outdir, service_dir_instance,config,signer,ct, export_compartments=compartments, export_regions=export_regions, display_names = display_names, ad_names = ad_names)
-    create_instances(inputfile, outdir,prefix, ct)
+    create_instances(inputfile, outdir, service_dir, prefix, ct)
     print("\n\nExecute tf_import_commands_instances_nonGF.sh script created under each region directory to synch TF with OCI Instances\n")
     # Update modified path list
     update_path_list(regions_path=export_regions, service_dirs=[service_dir_instance])
@@ -957,7 +957,7 @@ def create_compute(prim_options=[]):
     execute_options(options, inputfile, outdir, service_dir,prefix, ct)
 
 
-def create_instances(inputfile, outdir,prefix,ct):
+def create_instances(inputfile, outdir, service_dir, prefix, ct):
     options = [
         Option(None, Compute.create_terraform_instances, 'Processing Instances Tab')
     ]
@@ -966,7 +966,7 @@ def create_instances(inputfile, outdir,prefix,ct):
     update_path_list(regions_path=subscribed_regions, service_dirs=[service_dir_instance])
 
 
-def create_dedicatedvmhosts(inputfile, outdir, prefix,ct):
+def create_dedicatedvmhosts(inputfile, outdir, service_dir, prefix, ct):
     options = [Option(None, Compute.create_terraform_dedicatedhosts, 'Processing Dedicated VM Hosts Tab')]
     execute_options(options, inputfile, outdir, service_dir_dedicated_vm_host,prefix, ct)
     # Update modified path list
@@ -1297,24 +1297,25 @@ def execute(command,config_file):
 def create_validate_firewall_service(execute_all=False,prim_options=[]):
     options = [
         Option('Validate Firewall CD3 Excel', cd3FirewallValidator.validate_firewall_cd3, 'Validate Firewall Excel'),
-        Option('Add/Modify Firewall Policy', create_firewall_policy, 'Add/Modify Firewall Policy'),
+        Option('Add/Modify/Delete Firewall Policy', create_firewall_policy, 'Add/Modify/Delete Firewall Policy'),
         Option('Add/Modify/Delete Firewall', create_firewall, 'Add/Modify/Delete Firewall'),
         Option('Clone Firewall Policy', clone_firewall_policy, 'Clone the firewall policy'),
-        Option('Delete Firewall Policy', delete_firewall_policy, 'Delete the firewall policy')
+        #Option('Delete Firewall Policy', delete_firewall_policy, 'Delete the firewall policy')
     ]
     if prim_options:
         options = match_options(options, prim_options)
     else:
         if not execute_all:
             options = show_options(options, quit=True, menu=True, index=1)
-
+    validation_check = False
     for option in options:
         options1 = []
-        options1.append(option)
         if (option.name == 'Validate Firewall CD3 Excel'):
-            execute_options(options1, inputfile, var_file, prefix, outdir, config, signer, ct)
-        elif(option.name == 'Add/Modify Firewall Policy' or option.name == 'Add/Modify/Delete Firewall'):
-            if not devops:
+            status = cd3FirewallValidator.validate_firewall_cd3(inputfile, var_file, prefix, outdir, config, signer, ct)
+            print("Firewall validator completed with "+ str(status))
+        elif(option.name == 'Add/Modify/Delete Firewall Policy' or option.name == 'Add/Modify/Delete Firewall'):
+            options1.append(option)
+            if not devops and not validation_check:
                 run_validator = "Did you run the validation of Firewall cd3 Excel and fixed all Errors(y/n): "
                 run_validator_input = input(run_validator)
                 if run_validator_input == "n":
@@ -1326,35 +1327,54 @@ def create_validate_firewall_service(execute_all=False,prim_options=[]):
                         if still_continue_input == "n":
                             print("Exiting...!")
                             exit(1)
+                validation_check = True
                 print("Proceeding with tfvars generation...")
 
             execute_options(options1, inputfile, outdir, service_dir_firewall, prefix, ct,sub_options=sub_child_options)
         else:
+            options1.append(option)
             execute_options(options1, inputfile, outdir, service_dir_firewall, config,signer, ct)
     update_path_list(regions_path=subscribed_regions, service_dirs=[service_dir_firewall])
 
 
 def clone_firewall_policy( inputfile, outdir, service_dir, config, signer, ct):
-    filter_str3 = "Enter region of the Firewall Policy to be cloned (eg phoenix): "
-    filter_str2 = "Enter names of the Firewalls(comma separated) for which you need to clone their latest attached policy: "
-    filter_str4 = "Enter names for the cloned policies(comma separated), in the same order as that of firewalls in the above question, leave empty if you need tool to generate the policy names: "
+    filter_str1 = "Enter region of the Firewall Policy to be cloned (eg phoenix): "
+    filter_str2 = "Enter names of the source firewall policies(comma separated): "
+    filter_str3 = "Enter names for the target firewall policies(comma separated), in the same order as source above, leave empty if you need tool to generate the policy names: "
+    filter_str4 = "Clone only if policy is used/attached, y/n, default is y: "
     if not devops:
-        region_name_str = input(filter_str3)
-        firewall_name_str = input(filter_str2)
-        cloned_policy_str = input(filter_str4)
+        region_name_str = input(filter_str1)
+        src_policy_str = input(filter_str2)
+        target_policy_str = input(filter_str3)
+        attached_policy_only = "y" if input(filter_str4).lower() != 'n' else "n"
+
     else:
         region_name_str = ct.fwl_clone_src_region
-        firewall_name_str = ct.fwl_clone_src_fwl
-        cloned_policy_str = ct.fwl_clone_names
+        src_policy_str = ct.src_policy_str
+        target_policy_str = ct.target_policy_str
+        attached_policy_only = None
+        if ct.attached_policy_only:
+            if ct.attached_policy_only.lower() == "false":
+                attached_policy_only = "n"
+            if ct.attached_policy_only.lower() == "true":
+                attached_policy_only = "y"
+        attached_policy_only = attached_policy_only if attached_policy_only else None
     compartments = ct.get_compartment_map(var_file, 'Clone Firewall Policy')
 
     export_regions = list(map(lambda x: x.strip().lower(), region_name_str.split(','))) if region_name_str else None
-    firewall = list(map(lambda x: x.strip(), firewall_name_str.split(','))) if firewall_name_str else None
-    policy = list(map(lambda x: x.strip(), cloned_policy_str.split(','))) if cloned_policy_str else None
-    Security.clone_firewallpolicy(inputfile, outdir, service_dir, config, signer, ct, export_compartments=compartments, export_regions=export_regions,  export_firewall=firewall, export_policy=policy)
+    src_policies = list(map(lambda x: x.strip(), src_policy_str.split(','))) if src_policy_str else None
+    if src_policies is None:
+        print("Source Policies are mandatory for cloning. ")
+        exit(1)
+    target_policies = list(map(lambda x: x.strip(), target_policy_str.split(','))) if target_policy_str else None
+    Security.export_firewallpolicy(inputfile, outdir, service_dir, config, signer, ct,
+                                   export_compartments=compartments, export_regions=export_regions,
+                                   export_policies=src_policies,target_policies=target_policies,attached_policy_only=attached_policy_only,clone_policy=True)
+
+    #Security.clone_firewallpolicy(inputfile, outdir, service_dir, config, signer, ct, export_compartments=compartments, export_regions=export_regions,  export_firewall=firewall, export_policy=policy)
     print("Proceeding with tfvars generation...")
     create_firewall_policy(inputfile, outdir, service_dir, prefix, ct,execute_all=True)
-    print("\n\nExecute tf_import_commands_Firewallpolicy_nonGF.sh script created under each region directory to synch TF with OCI Firewall policy objects\n")
+    #print("\n\nExecute tf_import_commands_Firewallpolicy_nonGF.sh script created under each region directory to synch TF with OCI Firewall policy objects\n")
 
 
 def delete_firewall_policy(inputfile, outdir, service_dir, config, signer, ct):
@@ -1401,7 +1421,7 @@ def create_firewall_policy(inputfile, outdir, service_dir, prefix, ct,execute_al
             Option('Add/Modify Decryption Profile', Security.fwpolicy_create_decryptionprofile,
                    'Processing Firewall-Policy-DecryptRule Tab'),
         ]
-    if sub_options:
+    if sub_options and sub_options != ['']:
         options = match_options(options, sub_options)
     else:
         if not execute_all:

@@ -86,7 +86,10 @@ def print_firewall(region, ct, values_for_column_fw, fws, fw_compartment_name, v
                 values_for_column_fw[col_header].append(nsg_detail)
 
             elif col_header == 'Availability Domain(AD1|AD2|AD3|Regional)':
-                value_of_ad = AD(eachfw.availability_domain)
+                if (eachfw.availability_domain == None):
+                    value_of_ad = "Regional"
+                else:
+                    value_of_ad = AD(eachfw.availability_domain)
                 values_for_column_fw[col_header].append(value_of_ad)
 
             elif col_header.lower() in commonTools.tagColumns:

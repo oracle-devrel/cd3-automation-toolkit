@@ -78,17 +78,25 @@ for (item in SubOptions.split(",")) {
 	<td><input type=\"text\" class=\" \" name=\"value\" > </br></td>
    <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"]@\"></td></tr>
     <tr>
-	<td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"fwl_clone_src_fwl=[\"></td>
-    <td><label title=\"service1-label\" class=\" \">Enter names of the Firewalls (comma separated) for which you need to clone their latest attached policy <b> (Mandatory) </b> : </label></td>
+	<td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"src_policy_str=[\"></td>
+    <td><label title=\"service1-label\" class=\" \">Enter names of the source firewall policies(comma separated) <b> (Mandatory) </b> : </label></td>
 	<td><input type=\"text\" class=\" \" name=\"value\" > </br></td>
    <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"]@\"></td></tr>
    <tr>
-	<td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"fwl_clone_names=[\"></td>
-    <td><label title=\"service1-label\" class=\" \">Enter names for the cloned policies (comma separated), in the same order as that of firewalls in the above text box : </label></td>
+	<td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"target_policy_str=[\"></td>
+    <td><label title=\"service1-label\" class=\" \">Enter names for the target firewall policies(comma separated), in the same order as source above, leave empty if you need tool to generate the policy names:  </label></td>
 	<td><input type=\"text\" class=\" \" name=\"value\" > </br></td>
     <td>(Leave empty if you need tool to generate the policy names) </td>
    <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"]@\"></td></tr>
+<tr>
+   <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"attached_policy_only=[\"></td>
+     <td><label title=\"service1-label\" class=\" \">Clone attached/used policies only </label></td>
+        <td>
+       <input name=\"value\"  json=\"service1\" type=\"checkbox\" class=\" \">
 
+       </td>
+   <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"]@\"></td>
+       </tr>
 	 """
       }
 	if (item.equals("Delete Firewall Policy")) {

@@ -207,7 +207,7 @@ def validate_Firewall(filename,comp_ids,fwpolicy,config,signer, ct):
             columnvalue = str(dffirewall.loc[i, columnname]).strip()
 
             if (columnname == 'Availability Domain(AD1|AD2|AD3|Regional)'):
-                if columnvalue.lower() != 'nan' and columnvalue.upper() not in ["AD1", "AD2", "AD3"]:
+                if columnvalue.lower() != 'nan' and columnvalue.upper() not in ["AD1", "AD2", "AD3","Regional"]:
                     log(f'ROW {i+3} : Wrong value at column "Availability Domain" - {columnvalue}.')
                     fw_invalid_check = True
 
@@ -307,6 +307,16 @@ def validate_FirewallPolicy(filename, ct):
         return False
 
 
+def validate_names(var_name):
+    pattern = re.compile('[^a-zA-Z0-9_-]')
+    # x=pattern.match(var_name)
+    x = re.search(pattern, var_name)
+    if x != None:
+        return True
+    else:
+        return False
+
+
 def validate_FirewallPolicyApplist(filename, fwpolicy_list,ct):
     fwpolicyapp_empty_check = False
     fwpolicyapp_invalid_check = False
@@ -344,6 +354,10 @@ def validate_FirewallPolicyApplist(filename, fwpolicy_list,ct):
                     if (len(columnvalue) > 28):
                         log(f'ROW {i + 3} : Application List name "{columnvalue}" has more alphanumeric characters than the allowed maximum limit of 28.')
                         fwpolicyapp_appg_length = True
+                    if(validate_names(columnvalue)==True):
+                        log(f'ROW {i + 3} : Only alphabets, digits, - and _ are allowed in Application List Name')
+                        fwpolicyapp_invalid_check == True
+
             if (columnname == 'Applications'):
                 if columnvalue.lower() != 'nan':
                     allapps = columnvalue.split("\n")
@@ -361,6 +375,10 @@ def validate_FirewallPolicyApplist(filename, fwpolicy_list,ct):
                             if (len(apps[0]) > 28):
                                 log(f'ROW {i + 3} : Application name "{apps[0]}" has more alphanumeric characters than the allowed maximum limit of 28.')
                                 fwpolicyapp_appg_length = True
+                            if (validate_names(apps[0]) == True):
+                                log(f'ROW {i + 3} : Only alphabets, digits, - and _ are allowed in the Applications Name')
+                                fwpolicyapp_invalid_check == True
+
                             if (apps[1] not in ['ICMP','ICMP_V6']):
                                 log(f'ROW {i + 3} : Application type "{apps[1]}" is not the correct value.')
                                 fwpolicyapp_invalid_check = True
@@ -416,6 +434,9 @@ def validate_FirewallPolicyServicelist(filename, fwpolicy_list,ct):
                     if (len(columnvalue) > 28):
                         log(f'ROW {i + 3} : Service List name "{columnvalue}" has more alphanumeric characters than the allowed maximum limit of 28.')
                         fwpolicyservice_serviceg_length = True
+                    if (validate_names(columnvalue) == True):
+                        log(f'ROW {i + 3} : Only alphabets, digits, - and _ are allowed in the Service List Name')
+                        fwpolicyservice_invalid_check == True
             if (columnname == 'Services'):
                 if columnvalue.lower() != 'nan':
                     allservices = columnvalue.split("\n")
@@ -433,6 +454,9 @@ def validate_FirewallPolicyServicelist(filename, fwpolicy_list,ct):
                             if (len(services[0]) > 28):
                                 log(f'ROW {i + 3} : Service name "{services[0]}" has more alphanumeric characters than the allowed maximum limit of 28.')
                                 fwpolicyservice_serviceg_length = True
+                            if (validate_names(services[0]) == True):
+                                log(f'ROW {i + 3} : Only alphabets, digits, - and _ are allowed in the Services Name')
+                                fwpolicyservice_invalid_check == True
 
                             if (services[1] not in ['TCP_SERVICE', 'UDP_SERVICE']):
                                 log(f'ROW {i + 3} : Service type "{services[1]}" is not the correct value.')
@@ -489,8 +513,11 @@ def validate_FirewallPolicyUrllist(filename, fwpolicy_list,ct):
                     fwpolicyurl_empty_check = True
                 if columnvalue.lower() != 'nan':
                     if (len(columnvalue) > 28):
-                        log(f'ROW {i + 3} : url List name "{columnvalue}" has more alphanumeric characters than the allowed maximum limit of 28.')
+                        log(f'ROW {i + 3} : URL List Name "{columnvalue}" has more alphanumeric characters than the allowed maximum limit of 28.')
                         fwpolicyurl_urlg_length = True
+                    if (validate_names(columnvalue) == True):
+                        log(f'ROW {i + 3} : Only alphabets, digits, - and _ are allowed in the URL List Name')
+                        fwpolicyurl_invalid_check == True
             if (columnname == 'URL List'):
                 if columnvalue.lower() != 'nan':
                     allurls = columnvalue.split("\n")
@@ -547,6 +574,9 @@ def validate_FirewallPolicyAddress(filename, fwpolicy_list,ct):
                     if (len(columnvalue) > 28):
                         log(f'ROW {i + 3} : url List name "{columnvalue}" has more alphanumeric characters than the allowed maximum limit of 28.')
                         fwpolicyaddress_addressg_length = True
+                    if (validate_names(columnvalue) == True):
+                        log(f'ROW {i + 3} : Only alphabets, digits, - and _ are allowed in the Address List Name')
+                        fwpolicyaddress_invalid_check == True
             if (columnname == 'Address Type'):
                 if columnvalue.lower() == 'nan':
                     log(f'ROW {i + 3} : Empty value at column Address Type.')
@@ -627,6 +657,9 @@ def validate_FirewallPolicySecrets(filename, fwpolicy_list, config,signer, ct):
                     if (len(columnvalue) > 58):
                         log(f'ROW {i + 3} : Secret name "{columnvalue}" has more alphanumeric characters than the allowed maximum limit of 58.')
                         fwpolicysecret_secret_length = True
+                    if (validate_names(columnvalue) == True):
+                        log(f'ROW {i + 3} : Only alphabets, digits, - and _ are allowed in the Secret Name')
+                        fwpolicysecret_invalid_check == True
             if (columnname == 'Secret Source'):
                 if columnvalue.lower() == 'nan':
                     log(f'ROW {i + 3} : Empty value at column Secret Source.')
@@ -709,6 +742,9 @@ def validate_FirewallPolicyDecryption(filename, fwpolicy_list,ct):
                     if (len(columnvalue) > 63) or (len(columnvalue) < 2):
                         log(f'ROW {i + 3} : Decryption Profile Name "{columnvalue}" has more alphanumeric characters than the allowed maximum limit of 63.')
                         fwpolicydecrypt_nameg_length = True
+                    if (validate_names(columnvalue) == True):
+                        log(f'ROW {i + 3} : Only alphabets, digits, - and _ are allowed in the Decryption Profile Name')
+                        fwpolicydecrypt_invalid_check == True
             if (columnname == 'Decryption Profile Type'):
                 if columnvalue.lower() == 'nan':
                     log(f'ROW {i + 3} : Empty value at column Decryption Profile Type.')
@@ -780,6 +816,9 @@ def validate_FirewallPolicyDecryptionRule(filename, fwpolicy_list, fulladdreslis
                     if (len(columnvalue) > 63) or (len(columnvalue) < 2):
                         log(f'ROW {i + 3} : Decryption Profile Name "{columnvalue}" has more alphanumeric characters than the allowed maximum limit of 63.')
                         fwpolicydecryptrule_nameg_length = True
+                    if (validate_names(columnvalue) == True):
+                        log(f'ROW {i + 3} : Only alphabets, digits, - and _ are allowed in the Decryption Rule Name')
+                        fwpolicydecryptrule_invalid_check == True
             if (columnname == 'Source Address'):
                 if columnvalue.lower() != 'nan':
                     sa_list = columnvalue.split(",")
@@ -880,6 +919,9 @@ def validate_FirewallPolicySecurityRule(filename, fwpolicy_list, fulladdreslist,
                     if (len(columnvalue) > 63) or (len(columnvalue) < 2):
                         log(f'ROW {i + 3} : Security Rule Name "{columnvalue}" has more alphanumeric characters than the allowed maximum limit of 63.')
                         fwpolicysecurityrule_nameg_length = True
+                    if (validate_names(columnvalue) == True):
+                        log(f'ROW {i + 3} : Only alphabets, digits, - and _ are allowed in the Security Rule Name')
+                        fwpolicysecurityrule_invalid_check == True
             if (columnname == 'Source Address'):
                 if columnvalue.lower() != 'nan':
                     sa_list = columnvalue.split(",")

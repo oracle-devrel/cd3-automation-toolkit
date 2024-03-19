@@ -10,11 +10,12 @@
 import sys
 import oci
 import os
-
+import datetime
 from oci.network_firewall import NetworkFirewallClient
 from oci.vault import VaultsClient
 from oci.key_management import KmsVaultClient
 from oci.identity import IdentityClient
+import time
 from oci.network_load_balancer import NetworkLoadBalancerClient
 
 sys.path.append(os.getcwd() + "/..")
@@ -25,12 +26,16 @@ oci_obj_names = {}
 
 
 def print_firewall_policy(region, ct, values_for_column_fwpolicy, fwpolicys, fwpolicy_compartment_name):
-    print("Exporting Policy details for " + region )
-    importCommands[reg].write("\n\n######### Writing import for Network firewall Policy #########\n\n")
+    if not clone:
+        importCommands[reg].write("\n\n######### Writing import for Network firewall Policy #########\n\n")
+        print("Exporting Policy details for " + region)
     for eachfwpolicy in fwpolicys:
             fwpolicy_display_name = eachfwpolicy.display_name
-            tf_name = commonTools.check_tf_variable(fwpolicy_display_name)
-            importCommands[reg].write("\nterraform import \"module.policy[\\\"" + str(tf_name) + "\\\"].oci_network_firewall_network_firewall_policy.network_firewall_policy\" "+eachfwpolicy.id)
+            if clone :
+                fwpolicy_display_name = target_pol[src_pol.index(fwpolicy_display_name)]
+            else:
+                tf_name = commonTools.check_tf_variable(fwpolicy_display_name)
+                importCommands[reg].write("\nterraform import \"module.policy[\\\"" + str(tf_name) + "\\\"].oci_network_firewall_network_firewall_policy.network_firewall_policy\" "+eachfwpolicy.id)
 
             for col_header in values_for_column_fwpolicy:
                 if col_header == 'Region':
@@ -47,11 +52,15 @@ def print_firewall_policy(region, ct, values_for_column_fwpolicy, fwpolicys, fwp
     return values_for_column_fwpolicy
 
 def print_firewall_address(region, ct, values_for_column_fwaddress, fwpolicys, fwpolicy):
-    importCommands[reg].write("\n\n######### Writing import for Network firewall Address Objects #########\n\n")
-    print("Exporting Address-list details " + region)
+    if not clone:
+        importCommands[reg].write("\n\n######### Writing import for Network firewall Address Objects #########\n\n")
+        print("Exporting Address-list details " + region)
     for policy in fwpolicys:
             policy_id = policy.id
             addpolicy_display_name = policy.display_name
+            if clone:
+                addpolicy_display_name = target_pol[src_pol.index(addpolicy_display_name)]
+
             addpolicy_tf_name = commonTools.check_tf_variable(addpolicy_display_name)
             fwaddresslist = oci.pagination.list_call_get_all_results(fwpolicy.list_address_lists, policy_id)
             addresslist_info = fwaddresslist.data
@@ -62,8 +71,8 @@ def print_firewall_address(region, ct, values_for_column_fwaddress, fwpolicys, f
                address_info = fwpolicy.get_address_list(add.parent_resource_id, add.name).data.addresses
                address_display_name = add.name
                address_tf_name = commonTools.check_tf_variable(address_display_name)
-
-               importCommands[reg].write("\nterraform import \"module.address_list[\\\"" + str(addpolicy_tf_name) + "_" + str(address_tf_name) + "\\\"].oci_network_firewall_network_firewall_policy_address_list.network_firewall_policy_address_list\" networkFirewallPolicies/" + policy_id + "/addressLists/" + address_display_name)
+               if not clone:
+                importCommands[reg].write("\nterraform import \"module.address_list[\\\"" + str(addpolicy_tf_name) + "_" + str(address_tf_name) + "\\\"].oci_network_firewall_network_firewall_policy_address_list.network_firewall_policy_address_list\" networkFirewallPolicies/" + policy_id + "/addressLists/" + address_display_name)
 
 
                address_detail = ""
@@ -90,11 +99,14 @@ def print_firewall_address(region, ct, values_for_column_fwaddress, fwpolicys, f
     return values_for_column_fwaddress
 
 def print_firewall_urllist(region, ct, values_for_column_fwurllist, fwpolicys, fwpolicy):
-    importCommands[reg].write("\n\n######### Writing import for Network firewall url list Objects #########\n\n")
-    print("Exporting Url-list details " + region)
+    if not clone:
+        importCommands[reg].write("\n\n######### Writing import for Network firewall url list Objects #########\n\n")
+        print("Exporting Url-list details " + region)
     for urlpolicy in fwpolicys:
             urlpolicy_id = urlpolicy.id
             urlpolicy_display_name = urlpolicy.display_name
+            if clone:
+                urlpolicy_display_name = target_pol[src_pol.index(urlpolicy_display_name)]
             urlpolicy_tf_name = commonTools.check_tf_variable(urlpolicy_display_name)
             fwurllists = oci.pagination.list_call_get_all_results(fwpolicy.list_url_lists, urlpolicy_id)
             urllist_info = fwurllists.data
@@ -102,7 +114,8 @@ def print_firewall_urllist(region, ct, values_for_column_fwurllist, fwpolicys, f
                 url_info = fwpolicy.get_url_list(url.parent_resource_id, url.name).data.urls
                 url_display_name = url.name
                 url_tf_name = commonTools.check_tf_variable(url_display_name)
-                importCommands[reg].write("\nterraform import \"module.url_list[\\\"" + str(urlpolicy_tf_name) + "_" + str(url_tf_name) + "\\\"].oci_network_firewall_network_firewall_policy_url_list.network_firewall_policy_url_list\" networkFirewallPolicies/" + urlpolicy_id + "/urlLists/" + url_display_name)
+                if not clone:
+                    importCommands[reg].write("\nterraform import \"module.url_list[\\\"" + str(urlpolicy_tf_name) + "_" + str(url_tf_name) + "\\\"].oci_network_firewall_network_firewall_policy_url_list.network_firewall_policy_url_list\" networkFirewallPolicies/" + urlpolicy_id + "/urlLists/" + url_display_name)
                 a = url_info
                 url_detail = ""
                 for b in a:
@@ -125,11 +138,14 @@ def print_firewall_urllist(region, ct, values_for_column_fwurllist, fwpolicys, f
     return values_for_column_fwurllist
 
 def print_firewall_servicelist(region, ct, values_for_column_fwservicelist, fwpolicys, fwpolicy):
-    importCommands[reg].write("\n\n######### Writing import for Network firewall service list Objects #########\n\n")
-    print("Exporting Service-list details " + region)
+    if not clone:
+        importCommands[reg].write("\n\n######### Writing import for Network firewall service list Objects #########\n\n")
+        print("Exporting Service and Service-list details " + region)
     for servicelistpolicy in fwpolicys:
             servicelistpolicy_id = servicelistpolicy.id
             servicelistpolicy_display_name = servicelistpolicy.display_name
+            if clone:
+                servicelistpolicy_display_name = target_pol[src_pol.index(servicelistpolicy_display_name)]
             servicelistpolicy_tf_name = commonTools.check_tf_variable(servicelistpolicy_display_name)
             fwservicelists = oci.pagination.list_call_get_all_results(fwpolicy.list_service_lists, servicelistpolicy_id)
             servicelist_info = fwservicelists.data
@@ -137,7 +153,8 @@ def print_firewall_servicelist(region, ct, values_for_column_fwservicelist, fwpo
                 service_info = fwpolicy.get_service_list(service.parent_resource_id, service.name).data.services
                 service_display_name = service.name
                 service_tf_name = commonTools.check_tf_variable(service_display_name)
-                importCommands[reg].write("\nterraform import \"module.service_list[\\\"" + str(servicelistpolicy_tf_name) + "_" + str(service_display_name) + "\\\"].oci_network_firewall_network_firewall_policy_service_list.network_firewall_policy_service_list\" networkFirewallPolicies/" + servicelistpolicy_id + "/serviceLists/" + service_display_name)
+                if not clone:
+                    importCommands[reg].write("\nterraform import \"module.service_list[\\\"" + str(servicelistpolicy_tf_name) + "_" + str(service_display_name) + "\\\"].oci_network_firewall_network_firewall_policy_service_list.network_firewall_policy_service_list\" networkFirewallPolicies/" + servicelistpolicy_id + "/serviceLists/" + service_display_name)
                 service_detail = ""
                 service_seen_so_far = set()
                 for eachservice in service_info:
@@ -147,7 +164,8 @@ def print_firewall_servicelist(region, ct, values_for_column_fwservicelist, fwpo
                     port_detail = ""
                     servicename = servicelist.name
                     servicename_tf =commonTools.check_tf_variable(servicename)
-                    importCommands[reg].write("\nterraform import \"module.service[\\\"" + str(servicelistpolicy_tf_name) + "_" + str(servicename_tf) + "\\\"].oci_network_firewall_network_firewall_policy_service.network_firewall_policy_service\" networkFirewallPolicies/" + servicelistpolicy_id + "/services/" + servicename)
+                    if not clone:
+                        importCommands[reg].write("\nterraform import \"module.service[\\\"" + str(servicelistpolicy_tf_name) + "_" + str(servicename_tf) + "\\\"].oci_network_firewall_network_firewall_policy_service.network_firewall_policy_service\" networkFirewallPolicies/" + servicelistpolicy_id + "/services/" + servicename)
                     for svc in servicelist.port_ranges:
                         port_detail = port_detail + "," + str(svc.minimum_port) + "-" + str(svc.maximum_port)
                     if (port_detail != ""):
@@ -170,14 +188,54 @@ def print_firewall_servicelist(region, ct, values_for_column_fwservicelist, fwpo
                     elif col_header.lower() in commonTools.tagColumns:
                         values_for_column_fwservicelist = commonTools.export_tags(servicelistpolicy, col_header,values_for_column_fwservicelist)
 
+
+            ## Fetch services without Lists
+            fwservices = oci.pagination.list_call_get_all_results(fwpolicy.list_services,servicelistpolicy_id)
+            services = fwservices.data
+            service_detail = ""
+            for service in services:
+                service_display_name = service.name
+                if service.name in service_seen_so_far:
+                    continue
+                service_data  = fwpolicy.get_service(service.parent_resource_id, service.name).data
+                service_tf_name = commonTools.check_tf_variable(service_display_name)
+                if not clone:
+                    importCommands[reg].write("\nterraform import \"module.service[\\\"" + str(service_tf_name) + "_" + str(service_display_name) + "\\\"].oci_network_firewall_network_firewall_policy_service.network_firewall_policy_service\" networkFirewallPolicies/" + servicelistpolicy_id + "/services/" + service_display_name)
+
+                port_detail = ""
+                for svc_port_range in service_data.port_ranges:
+                    port_detail = port_detail + "," + str(svc_port_range.minimum_port) + "-" + str(svc_port_range.maximum_port)
+                    if (port_detail != ""):
+                        port_detail = port_detail[1:]
+
+                service_detail = service_detail + "\n" + service.name + "::" + service.type + "::" + port_detail
+
+                if (service_detail != ""):
+                    service_detail = service_detail[1:]
+
+                for col_header in values_for_column_fwservicelist:
+                    if col_header == 'Region':
+                        values_for_column_fwservicelist[col_header].append(region)
+                    elif col_header == 'Firewall Policy':
+                        values_for_column_fwservicelist[col_header].append(servicelistpolicy_display_name)
+                    elif col_header == 'Service List':
+                        values_for_column_fwservicelist[col_header].append("")
+                    elif col_header == 'Services':
+                        values_for_column_fwservicelist[col_header].append(service_detail)
+                    elif col_header.lower() in commonTools.tagColumns:
+                        values_for_column_fwservicelist = commonTools.export_tags(servicelistpolicy, col_header,values_for_column_fwservicelist)
+
     return values_for_column_fwservicelist
 
 def print_firewall_applist(region, ct, values_for_column_fwapplist, fwpolicys, fwpolicy):
-    importCommands[reg].write("\n\n######### Writing import for Network firewall application list Objects #########\n\n")
-    print("Exporting Application-list details " + region)
+    if not clone:
+        importCommands[reg].write("\n\n######### Writing import for Network firewall application list Objects #########\n\n")
+        print("Exporting Application and Application-list details " + region)
     for applistpolicy in fwpolicys:
             applistpolicy_id = applistpolicy.id
             applistpolicy_display_name = applistpolicy.display_name
+            if clone:
+                applistpolicy_display_name = target_pol[src_pol.index(applistpolicy_display_name)]
             applistpolicy_tf_name = commonTools.check_tf_variable(applistpolicy_display_name)
             fwapplists = oci.pagination.list_call_get_all_results(fwpolicy.list_application_groups, applistpolicy_id)
             applist_info = fwapplists.data
@@ -186,13 +244,17 @@ def print_firewall_applist(region, ct, values_for_column_fwapplist, fwpolicys, f
                 application_info = fwpolicy.get_application_group(application.parent_resource_id, application.name).data.apps
                 application_display_name = application.name
                 application_tf_name = commonTools.check_tf_variable(application_display_name)
-                importCommands[reg].write("\nterraform import \"module.application_group[\\\"" + str(applistpolicy_tf_name) + "_" + str(application_tf_name) + "\\\"].oci_network_firewall_network_firewall_policy_application_group.network_firewall_policy_application_group\" networkFirewallPolicies/" + applistpolicy_id + "/applicationGroups/" + application_display_name)
+                if not clone:
+                    importCommands[reg].write("\nterraform import \"module.application_group[\\\"" + str(applistpolicy_tf_name) + "_" + str(application_tf_name) + "\\\"].oci_network_firewall_network_firewall_policy_application_group.network_firewall_policy_application_group\" networkFirewallPolicies/" + applistpolicy_id + "/applicationGroups/" + application_display_name)
                 application_detail = ""
+                app_seen_so_far = set()
                 for eachapplication in application_info:
                     applist = fwpolicy.get_application(application.parent_resource_id, eachapplication).data
                     applicationname = applist.name
+                    app_seen_so_far.add(eachapplication)
                     applicationname_tf = commonTools.check_tf_variable(applicationname)
-                    importCommands[reg].write("\nterraform import \"module.application_list[\\\"" + str(applistpolicy_tf_name) + "_" + str(applicationname_tf) + "\\\"].oci_network_firewall_network_firewall_policy_application.network_firewall_policy_application\" networkFirewallPolicies/" + applistpolicy_id + "/applications/" + applicationname)
+                    if not clone:
+                        importCommands[reg].write("\nterraform import \"module.application_list[\\\"" + str(applistpolicy_tf_name) + "_" + str(applicationname_tf) + "\\\"].oci_network_firewall_network_firewall_policy_application.network_firewall_policy_application\" networkFirewallPolicies/" + applistpolicy_id + "/applications/" + applicationname)
                     if applist.icmp_code != None:
                         application_detail = application_detail + "\n" + applist.name + "::" + applist.type + "::" + str(applist.icmp_type) + "::" + str(applist.icmp_code)
                     else:
@@ -214,14 +276,55 @@ def print_firewall_applist(region, ct, values_for_column_fwapplist, fwpolicys, f
                     elif col_header.lower() in commonTools.tagColumns:
                         values_for_column_fwapplist = commonTools.export_tags(applistpolicy, col_header,values_for_column_fwapplist)
 
+                ## Fetch apps without Lists
+                fwapps = oci.pagination.list_call_get_all_results(fwpolicy.list_applications, applistpolicy_id)
+                apps = fwapps.data
+                application_detail = ""
+                for app in apps:
+                    app_display_name = app.name
+                    if app.name in app_seen_so_far:
+                        continue
+                    app_data = fwpolicy.get_application(app.parent_resource_id, app.name).data
+                    app_tf_name = commonTools.check_tf_variable(app_display_name)
+                    if not clone:
+                        importCommands[reg].write(
+                            "\nterraform import \"module.application[\\\"" + str(app_tf_name) + "_" + str(
+                               app_display_name) + "\\\"].oci_network_firewall_network_firewall_policy_application.network_firewall_policy_application\" networkFirewallPolicies/" + applistpolicy_id + "/application/" + app_display_name)
+
+                        if app_data.icmp_code != None:
+                            application_detail = application_detail + "\n" + app.name + "::" + app.type + "::" + str(
+                                app_data.icmp_type) + "::" + str(app_data.icmp_code)
+                        else:
+                            application_detail = application_detail + "\n" + app.name + "::" + app.type + "::" + str(
+                                app_data.icmp_type)
+
+                    if (application_detail != ""):
+                        application_detail = application_detail[1:]
+
+                    for col_header in values_for_column_fwapplist:
+                        if col_header == 'Region':
+                            values_for_column_fwapplist[col_header].append(region)
+                        elif col_header == 'Firewall Policy':
+                            values_for_column_fwapplist[col_header].append(applistpolicy_display_name)
+                        elif col_header == 'Application List':
+                            values_for_column_fwapplist[col_header].append("")
+                        elif col_header == 'Applications':
+                            values_for_column_fwapplist[col_header].append(application_detail)
+                        elif col_header.lower() in commonTools.tagColumns:
+                            values_for_column_fwapplist = commonTools.export_tags(applistpolicy, col_header,
+                                                                                  values_for_column_fwapplist)
+
     return values_for_column_fwapplist
 
 def print_firewall_secrules(region, ct, values_for_column_fwsecrules, fwpolicys, fwpolicy):
-    importCommands[reg].write("\n\n######### Writing import for Network firewall Security Rules Objects #########\n\n")
-    print("Exporting Security rules details " + region)
+    if not clone:
+        importCommands[reg].write("\n\n######### Writing import for Network firewall Security Rules Objects #########\n\n")
+        print("Exporting Security rules details " + region)
     for secrulespolicy in fwpolicys:
             secrulespolicy_id = secrulespolicy.id
             secrulespolicy_display_name = secrulespolicy.display_name
+            if clone:
+                secrulespolicy_display_name = target_pol[src_pol.index(secrulespolicy_display_name)]
             secrulespolicy_tf_name = commonTools.check_tf_variable(secrulespolicy_display_name)
             fwsecrules = oci.pagination.list_call_get_all_results(fwpolicy.list_security_rules,secrulespolicy_id)
             secrules_info = fwsecrules.data
@@ -230,7 +333,8 @@ def print_firewall_secrules(region, ct, values_for_column_fwsecrules, fwpolicys,
                 rule_info = fwpolicy.get_security_rule(rules.parent_resource_id, rules.name).data
                 rules_display_name = rules.name
                 rules_tf_name = commonTools.check_tf_variable(rules_display_name)
-                importCommands[reg].write("\nterraform import \"module.security_rules[\\\"" + str(secrulespolicy_tf_name) + "_" + str(rules_tf_name) + "\\\"].oci_network_firewall_network_firewall_policy_security_rule.network_firewall_policy_security_rule\" networkFirewallPolicies/" + secrulespolicy_id + "/securityRules/" + rules_display_name)
+                if not clone:
+                    importCommands[reg].write("\nterraform import \"module.security_rules[\\\"" + str(secrulespolicy_tf_name) + "_" + str(rules_tf_name) + "\\\"].oci_network_firewall_network_firewall_policy_security_rule.network_firewall_policy_security_rule\" networkFirewallPolicies/" + secrulespolicy_id + "/securityRules/" + rules_display_name)
                 rsrc_detail = ""
                 rdst_detail = ""
                 rapp_detail = ""
@@ -303,11 +407,14 @@ def print_firewall_secrules(region, ct, values_for_column_fwsecrules, fwpolicys,
 
     return values_for_column_fwsecrules
 def print_firewall_secret(region, ct, values_for_column_fwsecret, fwpolicys, fwpolicy, vault, compartment, kmsvault):
-    importCommands[reg].write("\n\n######### Writing import for Network firewall Mapped Secret Objects #########\n\n")
-    print("Exporting Mapped secret details " + region)
+    if not clone:
+        importCommands[reg].write("\n\n######### Writing import for Network firewall Mapped Secret Objects #########\n\n")
+        print("Exporting Mapped secret details " + region)
     for secretpolicy in fwpolicys:
             secretpolicy_id = secretpolicy.id
             secretpolicy_display_name = secretpolicy.display_name
+            if clone:
+                secretpolicy_display_name = target_pol[src_pol.index(secretpolicy_display_name)]
             secretpolicy_tf_name = commonTools.check_tf_variable(secretpolicy_display_name)
             fwsecrets = oci.pagination.list_call_get_all_results(fwpolicy.list_mapped_secrets, secretpolicy_id)
             secret_info = fwsecrets.data
@@ -319,7 +426,8 @@ def print_firewall_secret(region, ct, values_for_column_fwsecret, fwpolicys, fwp
                 kmsvault_name = kmsvault.get_vault(vault_secret.vault_id).data
                 vault_secret_name = kmsvault_name.display_name + '::' + vault_secret.secret_name
                 vault_secret_compartment_detail = compartment.get_compartment(vault_secret.compartment_id).data.name
-                importCommands[reg].write("\nterraform import \"module.secret[\\\"" + str(secretpolicy_tf_name) + "_" + str(secretdisplay_tf_name) + "\\\"].oci_network_firewall_network_firewall_policy_mapped_secret.network_firewall_policy_mapped_secret\" networkFirewallPolicies/" + secretpolicy_id + "/mappedSecrets/" + secretdisplay_name)
+                if not clone:
+                    importCommands[reg].write("\nterraform import \"module.secret[\\\"" + str(secretpolicy_tf_name) + "_" + str(secretdisplay_tf_name) + "\\\"].oci_network_firewall_network_firewall_policy_mapped_secret.network_firewall_policy_mapped_secret\" networkFirewallPolicies/" + secretpolicy_id + "/mappedSecrets/" + secretdisplay_name)
 
                 for col_header in values_for_column_fwsecret:
                     if col_header == 'Region':
@@ -344,11 +452,14 @@ def print_firewall_secret(region, ct, values_for_column_fwsecret, fwpolicys, fwp
     return values_for_column_fwsecret
 
 def print_firewall_decryptprofile(region, ct, values_for_column_fwdecryptprofile, fwpolicys, fwpolicy):
-    importCommands[reg].write("\n\n######### Writing import for Network firewall Decrypt profile Objects #########\n\n")
-    print("Exporting Decryption Profile details " + region)
+    if not clone:
+        importCommands[reg].write("\n\n######### Writing import for Network firewall Decrypt profile Objects #########\n\n")
+        print("Exporting Decryption Profile details " + region)
     for decryptionprofile in fwpolicys:
             decryptionprofile_id = decryptionprofile.id
             decryptionprofile_display_name = decryptionprofile.display_name
+            if clone:
+                decryptionprofile_display_name = target_pol[src_pol.index(decryptionprofile_display_name)]
             decryptionprofile_tf_name = commonTools.check_tf_variable(decryptionprofile_display_name)
             fwdcyrptionprofiles = oci.pagination.list_call_get_all_results(fwpolicy.list_decryption_profiles, decryptionprofile_id)
             decryptionprofile_info = fwdcyrptionprofiles.data
@@ -356,7 +467,8 @@ def print_firewall_decryptprofile(region, ct, values_for_column_fwdecryptprofile
                 key_info = fwpolicy.get_decryption_profile(decryption.parent_resource_id, decryption.name).data
                 key_info_name = key_info.name
                 key_info_tf_name = commonTools.check_tf_variable(key_info.name)
-                importCommands[reg].write("\nterraform import \"module.decryption_profile[\\\"" + str(decryptionprofile_tf_name) + "_" + str(key_info_tf_name) + "\\\"].oci_network_firewall_network_firewall_policy_decryption_profile.network_firewall_policy_decryption_profile\" networkFirewallPolicies/" + decryptionprofile_id + "/decryptionProfiles/" + key_info_name)
+                if not clone:
+                    importCommands[reg].write("\nterraform import \"module.decryption_profile[\\\"" + str(decryptionprofile_tf_name) + "_" + str(key_info_tf_name) + "\\\"].oci_network_firewall_network_firewall_policy_decryption_profile.network_firewall_policy_decryption_profile\" networkFirewallPolicies/" + decryptionprofile_id + "/decryptionProfiles/" + key_info_name)
                 if key_info.type == "SSL_INBOUND_INSPECTION":
                     key_info1_are_certificate_extensions_restricted = ""
                     key_info1_is_auto_include_alt_name = ""
@@ -375,7 +487,7 @@ def print_firewall_decryptprofile(region, ct, values_for_column_fwdecryptprofile
                     if col_header == 'Region':
                         values_for_column_fwdecryptprofile[col_header].append(region)
                     elif col_header == 'Firewall Policy':
-                        values_for_column_fwdecryptprofile[col_header].append(decryptionprofile.display_name)
+                        values_for_column_fwdecryptprofile[col_header].append(decryptionprofile_display_name)
                     elif col_header == 'Decryption Profile Name':
                         values_for_column_fwdecryptprofile[col_header].append(key_info_name)
                     elif col_header == 'Decryption Profile Type':
@@ -404,11 +516,14 @@ def print_firewall_decryptprofile(region, ct, values_for_column_fwdecryptprofile
 
     return values_for_column_fwdecryptprofile
 def print_firewall_decryptrule(region, ct, values_for_column_fwdecryptrule, fwpolicys, fwpolicy):
-    importCommands[reg].write("\n\n######### Writing import for Network firewall decryption Rules Objects #########\n\n")
-    print("Exporting Decryption rules details " + region)
+    if not clone:
+        importCommands[reg].write("\n\n######### Writing import for Network firewall decryption Rules Objects #########\n\n")
+        print("Exporting Decryption rules details " + region)
     for decryptrulepolicy in fwpolicys:
             decryptrulepolicy_id = decryptrulepolicy.id
             decryptrulepolicy_display_name = decryptrulepolicy.display_name
+            if clone:
+                decryptrulepolicy_display_name = target_pol[src_pol.index(decryptrulepolicy_display_name)]
             decryptrulepolicy_tf_name = commonTools.check_tf_variable(decryptrulepolicy_display_name)
             fwdecrypteules = oci.pagination.list_call_get_all_results(fwpolicy.list_decryption_rules, decryptrulepolicy_id)
             decrypteules_info = fwdecrypteules.data
@@ -416,7 +531,8 @@ def print_firewall_decryptrule(region, ct, values_for_column_fwdecryptrule, fwpo
                 drule_info = fwpolicy.get_decryption_rule(drules.parent_resource_id, drules.name).data
                 drules_display_name = drules.name
                 drules_tf_name = commonTools.check_tf_variable(drules_display_name)
-                importCommands[reg].write("\nterraform import \"module.decryption_rules[\\\"" + str(decryptrulepolicy_tf_name) + "_" + str(drules_tf_name) + "\\\"].oci_network_firewall_network_firewall_policy_decryption_rule.network_firewall_policy_decryption_rule\" networkFirewallPolicies/" + decryptrulepolicy_id + "/decryptionRules/" + drules_display_name)
+                if not clone:
+                    importCommands[reg].write("\nterraform import \"module.decryption_rules[\\\"" + str(decryptrulepolicy_tf_name) + "_" + str(drules_tf_name) + "\\\"].oci_network_firewall_network_firewall_policy_decryption_rule.network_firewall_policy_decryption_rule\" networkFirewallPolicies/" + decryptrulepolicy_id + "/decryptionRules/" + drules_display_name)
                 rsrc_detail = ""
                 rdst_detail = ""
                 if drule_info.condition.source_address != None:
@@ -462,7 +578,7 @@ def print_firewall_decryptrule(region, ct, values_for_column_fwdecryptrule, fwpo
     return values_for_column_fwdecryptrule
 # Execution of the code begins here
 
-def export_firewallpolicy(inputfile, _outdir, service_dir, config, signer, ct, export_compartments, export_regions, export_policies):
+def export_firewallpolicy(inputfile, _outdir, service_dir, config, signer, ct, export_compartments, export_regions, export_policies,target_policies=[],attached_policy_only="",clone_policy=False):
     global tf_import_cmd
     global sheet_dict
     global importCommands
@@ -484,6 +600,18 @@ def export_firewallpolicy(inputfile, _outdir, service_dir, config, signer, ct, e
     global sheet_dict_fwaddress
     global sheet_dict_fwurllist
     global listener_to_cd3
+    global clone
+    global src_pol
+    global target_pol
+    src_pol = export_policies.copy() if export_policies else []
+    target_pol = []
+    if not target_policies :
+        for src in src_pol:
+            target_pol.append("network_firewall_policy_"+datetime.datetime.now().strftime("%d-%m-%y-%H%M%S").replace('/', '-'))
+            time.sleep(2)
+    else:
+        target_pol = target_policies.copy()
+    clone = clone_policy
 
     cd3file = inputfile
     if ('.xls' not in cd3file):
@@ -508,27 +636,29 @@ def export_firewallpolicy(inputfile, _outdir, service_dir, config, signer, ct, e
     #sheet_dict_fwpolicy = ct.sheet_dict[sheetname]
     #sheet_dict_fwaddress = ct.sheet_dict["Firewall-Policy-Address"]
 
-    print("\nCD3 excel file should not be opened during export process!!!")
-    print("Tabs related to firewall and firewall policies will be overwritten during export process!!!\n")
 
     # Create backups
-    for reg in export_regions:
-        resource = 'tf_import_fwpolicy'
+    if not clone:
+        print("\nCD3 excel file should not be opened during export process!!!")
+        print("Tabs related to firewall and firewall policies will be overwritten during export process!!!\n")
+
+        for reg in export_regions:
+            resource = 'tf_import_fwpolicy'
 
 
-        if (os.path.exists(outdir + "/" + reg + "/" + service_dir + "/tf_import_commands_firewallpolicy_nonGF.sh")):
-            commonTools.backup_file(outdir + "/" + reg + "/" + service_dir, resource, "tf_import_commands_firewallpolicy_nonGF.sh")
-        importCommands[reg] = open(
-            outdir + "/" + reg + "/" + service_dir + "/temppolicyfile", "w")
-        importCommands[reg].write("#!/bin/bash")
-        importCommands[reg].write("\n")
-        importCommands[reg].write("terraform init")
+            if (os.path.exists(outdir + "/" + reg + "/" + service_dir + "/tf_import_commands_firewallpolicy_nonGF.sh")):
+                commonTools.backup_file(outdir + "/" + reg + "/" + service_dir, resource, "tf_import_commands_firewallpolicy_nonGF.sh")
+            importCommands[reg] = open(
+                outdir + "/" + reg + "/" + service_dir + "/temppolicyfile", "w")
+            importCommands[reg].write("#!/bin/bash")
+            importCommands[reg].write("\n")
+            importCommands[reg].write("terraform init")
+            importCommands[reg].write("\n\n######### Writing import for Network firewall policy Objects #########\n\n")
 
     # Fetch Network firewall Policy Details
     print("\nFetching details of Network firewall policy...")
 
     for reg in export_regions:
-        importCommands[reg].write("\n\n######### Writing import for Network firewall policy Objects #########\n\n")
         config.__setitem__("region", ct.region_dict[reg])
         fwpolicy = NetworkFirewallClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY, signer=signer)
         vault = VaultsClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
@@ -542,13 +672,26 @@ def export_firewallpolicy(inputfile, _outdir, service_dir, config, signer, ct, e
             fw_data = oci.pagination.list_call_get_all_results(fwpolicy.list_network_firewall_policies,compartment_id=ct.ntk_compartment_ids[compartment_name], lifecycle_state="ACTIVE")
             fw_data = fw_data.data
             if (export_policies is not None):
-                for eachfwpolicy1 in fw_data:
+                for eachfwpolicy in fw_data:
+                    policy_ocid = eachfwpolicy.id
+                    policydata = fwpolicy.get_network_firewall_policy(network_firewall_policy_id=policy_ocid)
+                    eachfwpolicy1 = policydata.data
                     fwpolicy_display_name1 = eachfwpolicy1.display_name
                     if (any(e in fwpolicy_display_name1 for e in export_policies)):
-                        fwpolicys.append(eachfwpolicy1)
+                        if clone:
+                            if fwpolicy_display_name1 in export_policies:
+                                if attached_policy_only == "y":
+                                    if eachfwpolicy1.attached_network_firewall_count == 0:
+                                        print("Skipping "+str(fwpolicy_display_name1) + " as it is not attached.")
+                                        continue
+                                print("Cloning " + str(fwpolicy_display_name1) +" to "+str(target_pol[src_pol.index(fwpolicy_display_name1)]) )
+                                fwpolicys.append(eachfwpolicy)
+                            continue
+                        print("Processing "+str(fwpolicy_display_name1))
+                        fwpolicys.append(eachfwpolicy)
             else:
-                for eachfwpolicy1 in fw_data:
-                    fwpolicys.append(eachfwpolicy1)
+                for eachfwpolicy in fw_data:
+                    fwpolicys.append(eachfwpolicy)
 
             #fwpolicys.append(data)
             values_for_column_fwpolicy = print_firewall_policy(region, ct, values_for_column_fwpolicy, fwpolicys,compartment_name)
@@ -561,37 +704,47 @@ def export_firewallpolicy(inputfile, _outdir, service_dir, config, signer, ct, e
             values_for_column_fwdecryptprofile = print_firewall_decryptprofile(region, ct,values_for_column_fwdecryptprofile,fwpolicys, fwpolicy)
             values_for_column_fwdecryptrule = print_firewall_decryptrule(region, ct, values_for_column_fwdecryptrule,fwpolicys, fwpolicy)
 
+    if clone:
+        commonTools.write_to_cd3(values_for_column_fwpolicy, cd3file, "Firewall-Policy",append=True)
+        commonTools.write_to_cd3(values_for_column_fwaddress, cd3file, "Firewall-Policy-Address",append=True)
+        commonTools.write_to_cd3(values_for_column_fwurllist, cd3file, "Firewall-Policy-Urllist",append=True)
+        commonTools.write_to_cd3(values_for_column_fwservicelist, cd3file, "Firewall-Policy-Servicelist",append=True)
+        commonTools.write_to_cd3(values_for_column_fwapplist, cd3file, "Firewall-Policy-Applicationlist",append=True)
+        commonTools.write_to_cd3(values_for_column_fwsecrules, cd3file, "Firewall-Policy-Secrules",append=True)
+        commonTools.write_to_cd3(values_for_column_fwsecret, cd3file, "Firewall-Policy-Secrets",append=True)
+        commonTools.write_to_cd3(values_for_column_fwdecryptprofile, cd3file, "Firewall-Policy-Decryptprofile",append=True)
+        commonTools.write_to_cd3(values_for_column_fwdecryptrule, cd3file, "Firewall-Policy-DecryptRule",append=True)
+    else:
+        commonTools.write_to_cd3(values_for_column_fwpolicy, cd3file, "Firewall-Policy")
+        commonTools.write_to_cd3(values_for_column_fwaddress, cd3file, "Firewall-Policy-Address")
+        commonTools.write_to_cd3(values_for_column_fwurllist, cd3file, "Firewall-Policy-Urllist")
+        commonTools.write_to_cd3(values_for_column_fwservicelist, cd3file, "Firewall-Policy-Servicelist")
+        commonTools.write_to_cd3(values_for_column_fwapplist, cd3file, "Firewall-Policy-Applicationlist")
+        commonTools.write_to_cd3(values_for_column_fwsecrules, cd3file, "Firewall-Policy-Secrules")
+        commonTools.write_to_cd3(values_for_column_fwsecret, cd3file, "Firewall-Policy-Secrets")
+        commonTools.write_to_cd3(values_for_column_fwdecryptprofile, cd3file, "Firewall-Policy-Decryptprofile")
+        commonTools.write_to_cd3(values_for_column_fwdecryptrule, cd3file, "Firewall-Policy-DecryptRule")
 
-    commonTools.write_to_cd3(values_for_column_fwpolicy, cd3file, "Firewall-Policy")
-    commonTools.write_to_cd3(values_for_column_fwaddress, cd3file, "Firewall-Policy-Address")
-    commonTools.write_to_cd3(values_for_column_fwurllist, cd3file, "Firewall-Policy-Urllist")
-    commonTools.write_to_cd3(values_for_column_fwservicelist, cd3file, "Firewall-Policy-Servicelist")
-    commonTools.write_to_cd3(values_for_column_fwapplist, cd3file, "Firewall-Policy-Applicationlist")
-    commonTools.write_to_cd3(values_for_column_fwsecrules, cd3file, "Firewall-Policy-Secrules")
-    commonTools.write_to_cd3(values_for_column_fwsecret, cd3file, "Firewall-Policy-Secrets")
-    commonTools.write_to_cd3(values_for_column_fwdecryptprofile, cd3file, "Firewall-Policy-Decryptprofile")
-    commonTools.write_to_cd3(values_for_column_fwdecryptrule, cd3file, "Firewall-Policy-DecryptRule")
+        print("Firewall Policies exported to CD3\n")
 
-    print("Firewall Policies exported to CD3\n")
-
-    # writing data
-    for reg in export_regions:
-        script_file = f'{outdir}/{reg}/{service_dir}/temppolicyfile'
-        with open(script_file, 'a') as importCommands[reg]:
-            importCommands[reg].write('\n\nterraform plan\n')
-        readfilepath = outdir + "/" + reg + "/" + service_dir + "/temppolicyfile"
-        writefilepath = outdir + "/" + reg + "/" + service_dir + "/tf_import_commands_firewallpolicy_nonGF.sh"
-        input_file = open(readfilepath, "r")
-        output_file = open(writefilepath, "w")
-        lines_seen_so_far = set()
-        for line in input_file:
-            if not line.isspace() and line not in lines_seen_so_far:
-                output_file.write(line)
-                lines_seen_so_far.add(line)
-            if line in ['\n', '\r\n']:
-                output_file.write(line)
-        input_file.close()
-        output_file.close()
-        os.remove(readfilepath)
-        #os.chmod(outdir + "/" + reg + "/" + service_dir + "/tf_import_commands_firewallpolicy_nonGF.sh", 777)
+        # writing data
+        for reg in export_regions:
+            script_file = f'{outdir}/{reg}/{service_dir}/temppolicyfile'
+            with open(script_file, 'a') as importCommands[reg]:
+                importCommands[reg].write('\n\nterraform plan\n')
+            readfilepath = outdir + "/" + reg + "/" + service_dir + "/temppolicyfile"
+            writefilepath = outdir + "/" + reg + "/" + service_dir + "/tf_import_commands_firewallpolicy_nonGF.sh"
+            input_file = open(readfilepath, "r")
+            output_file = open(writefilepath, "w")
+            lines_seen_so_far = set()
+            for line in input_file:
+                if not line.isspace() and line not in lines_seen_so_far:
+                    output_file.write(line)
+                    lines_seen_so_far.add(line)
+                if line in ['\n', '\r\n']:
+                    output_file.write(line)
+            input_file.close()
+            output_file.close()
+            os.remove(readfilepath)
+            #os.chmod(outdir + "/" + reg + "/" + service_dir + "/tf_import_commands_firewallpolicy_nonGF.sh", 777)
 

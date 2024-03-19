@@ -148,10 +148,15 @@ def fw_create(inputfile, outdir, service_dir, prefix, ct):
             if columnname == 'Availability Domain(AD1|AD2|AD3|Regional)':
                 if columnvalue != '':
                     columnname = 'availability_domain'
-                    AD = columnvalue.upper()
-                    ad = ADS.index(AD)
-                    columnvalue = str(ad)
-                tempdict = {'availability_domain': columnvalue}
+
+                    if (columnvalue.strip().lower() != 'regional'):
+                        AD = columnvalue.upper()
+                        ad = ADS.index(AD)
+                        adString = str(ad)
+                    else:
+                        adString = ""
+
+                tempdict = {'availability_domain': adString}
 
             columnname = commonTools.check_column_headers(columnname)
             tempStr[columnname] = str(columnvalue).strip()

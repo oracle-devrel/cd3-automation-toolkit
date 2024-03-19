@@ -42,7 +42,7 @@ module "nlb-listeners" {
   for_each                 = var.nlb_listeners != null ? var.nlb_listeners : {}
   name                     = each.value.name
   default_backend_set_name = merge(module.nlb-backend-sets.*...)[each.value.default_backend_set_name].nlb_backend_set_tf_name
-  network_load_balancer_id = length(regexall("ocid1.loadbalancer.oc1*", each.value.network_load_balancer_id)) > 0 ? each.value.network_load_balancer_id : merge(module.network-load-balancers.*...)[each.value.network_load_balancer_id]["network_load_balancer_tf_id"]
+  network_load_balancer_id = length(regexall("ocid1.networkloadbalancer.oc1*", each.value.network_load_balancer_id)) > 0 ? each.value.network_load_balancer_id : merge(module.network-load-balancers.*...)[each.value.network_load_balancer_id]["network_load_balancer_tf_id"]
   port                     = each.value.port
   protocol                 = each.value.protocol
   ip_version               = each.value.ip_version
@@ -52,7 +52,7 @@ module "nlb-backend-sets" {
   source                   = "./modules/networkloadbalancer/nlb-backendset"
   for_each                 = var.nlb_backend_sets != null ? var.nlb_backend_sets : {}
   name                     = each.value.name
-  network_load_balancer_id = length(regexall("ocid1.loadbalancer.oc1*", each.value.network_load_balancer_id)) > 0 ? each.value.network_load_balancer_id : merge(module.network-load-balancers.*...)[each.value.network_load_balancer_id]["network_load_balancer_tf_id"]
+  network_load_balancer_id = length(regexall("ocid1.networkloadbalancer.oc1*", each.value.network_load_balancer_id)) > 0 ? each.value.network_load_balancer_id : merge(module.network-load-balancers.*...)[each.value.network_load_balancer_id]["network_load_balancer_tf_id"]
   policy                   = each.value.policy
   ip_version               = each.value.ip_version
   is_preserve_source       = each.value.is_preserve_source

@@ -1,7 +1,7 @@
 List validate_cd3 = ["<b>CD3 Validator</b>:disabled","Validate Compartments","Validate Groups","Validate Policies","Validate Tags","Validate Networks","Validate DNS","Validate Instances","Validate Block Volumes","Validate FSS","Validate Buckets"]
 List identity  = ["<b>IDENTITY</b>:disabled","Add/Modify/Delete Compartments", "Add/Modify/Delete Groups","Add/Modify/Delete Policies", "Add/Modify/Delete Users", "Add/Modify/Delete Network Sources"]
 List network  = ["<b>NETWORK</b>:disabled","Create Network", "Modify Network","Security Rules", "Route Rules", "DRG Route Rules", "Network Security Groups", "Add/Modify/Delete VLANs", "Customer Connectivity"]
-List oci_firewall  = ["<b>OCI FIREWALL</b>:disabled","Validate Firewall CD3 Excel", "Add/Modify Firewall Policy","Add/Modify/Delete Firewall", "Clone Firewall Policy", "Delete Firewall Policy"]
+List oci_firewall  = ["<b>OCI FIREWALL</b>:disabled","Validate Firewall CD3 Excel", "Add/Modify/Delete Firewall Policy","Add/Modify/Delete Firewall", "Clone Firewall Policy"]
 List dns_management = ["<b>DNS</b>:disabled","Add/Modify/Delete DNS Views/Zones/Records", "Add/Modify/Delete DNS Resolvers"]
 List compute  = ["<b>COMPUTE</b>:disabled","Add/Modify/Delete Dedicated VM Hosts", "Add/Modify/Delete Instances/Boot Backup Policy"]
 List storage = ["<b>STORAGE</b>:disabled","Add/Modify/Delete Block Volumes/Block Backup Policy", "Add/Modify/Delete File Systems", "Add/Modify/Delete Object Storage Buckets"]
