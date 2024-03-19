@@ -1,6 +1,6 @@
 {% if count == 0 %}
 
-service = {
+services = {
     ##Add New service policy for {{ region|lower }} here##
 }
 {% else %}

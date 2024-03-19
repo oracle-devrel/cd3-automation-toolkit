@@ -1,6 +1,6 @@
 {% if count == 0 %}
 
-address_list = {
+address_lists = {
     ##Add New addresses for {{ region|lower }} here##
 }
 {% else %}

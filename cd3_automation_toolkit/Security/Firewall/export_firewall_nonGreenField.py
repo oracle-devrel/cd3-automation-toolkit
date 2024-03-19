@@ -25,7 +25,7 @@ def print_firewall(region, ct, values_for_column_fw, fws, fw_compartment_name, v
     for eachfw in fws.data:
         fw_display_name = eachfw.display_name
         tf_name = commonTools.check_tf_variable(fw_display_name)
-        importCommands[reg].write("\nterraform import \"module.firewall[\\\"" + str(tf_name) + "\\\"].oci_network_firewall_network_firewall.network_firewall\" "+eachfw.id)
+        importCommands[reg].write("\nterraform import \"module.firewalls[\\\"" + str(tf_name) + "\\\"].oci_network_firewall_network_firewall.network_firewall\" "+eachfw.id)
         # Fetch subnet and Compartment name
         comp_done_ids = []
         subnet_ocid = eachfw.subnet_id
@@ -155,7 +155,7 @@ def export_firewall(inputfile, _outdir, service_dir, config, signer, ct, export_
 
         for compartment_name in export_compartments:
             fws = oci.pagination.list_call_get_all_results(fw.list_network_firewalls, compartment_id=ct.ntk_compartment_ids[compartment_name], lifecycle_state="ACTIVE")
-            # fwpolicys = oci.pagination.list_call_get_all_results(fwpolicy.list_network_firewall_policies,compartment_id=ct.ntk_compartment_ids[compartment_name],lifecycle_state = "ACTIVE")
+            # fwpolicies = oci.pagination.list_call_get_all_results(fwpolicy.list_network_firewall_policies,compartment_id=ct.ntk_compartment_ids[compartment_name],lifecycle_state = "ACTIVE")
 
             values_for_column_fw = print_firewall(region, ct, values_for_column_fw, fws, compartment_name, vcn, fw)
 

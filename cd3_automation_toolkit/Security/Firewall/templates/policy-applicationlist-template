@@ -1,6 +1,6 @@
 {% if count == 0 %}
 
-application_group = {
+application_groups = {
     ##Add New application list for {{ region|lower }} here##
 }
 {% else %}

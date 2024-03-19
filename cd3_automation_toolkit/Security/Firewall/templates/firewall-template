@@ -1,6 +1,6 @@
 {% if count == 0 %}
 
-firewall = {
+firewalls = {
     ##Add New firewall for {{ region|lower }} here##
 }
 {% else %}

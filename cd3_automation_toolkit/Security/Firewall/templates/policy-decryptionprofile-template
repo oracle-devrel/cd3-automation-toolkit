@@ -1,6 +1,6 @@
 {% if count == 0 %}
 
-decryption_profile = {
+decryption_profiles = {
     ##Add New Decryption Profile for {{ region|lower }} here##
 }
 {% else %}

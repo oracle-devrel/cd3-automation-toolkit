@@ -1,6 +1,6 @@
 {% if count == 0 %}
 
-policy = {
+fw-policies = {
     ##Add New firewall policy for {{ region|lower }} here##
 }
 {% else %}

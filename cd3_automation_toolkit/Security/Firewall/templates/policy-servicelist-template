@@ -1,6 +1,6 @@
 {% if count == 0 %}
 
-service_list = {
+service_lists = {
     ##Add New service list for {{ region|lower }} here##
 }
 {% else %}

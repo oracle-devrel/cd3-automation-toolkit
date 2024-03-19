@@ -24,10 +24,10 @@ importCommands = {}
 oci_obj_names = {}
 
 
-def print_firewall_policy(region, ct, values_for_column_fwpolicy, fwpolicys, fwpolicy_compartment_name, policy_detail):
+def print_firewall_policy(region, ct, values_for_column_fwpolicy, fwpolicies, fwpolicy_compartment_name, policy_detail):
     print("Exporting Policy details for " + region )
     importCommands[reg].write("\n\n######### Writing import for Network firewall Policy #########\n\n")
-    for eachfwpolicydata in fwpolicys:
+    for eachfwpolicydata in fwpolicies:
         for eachfwpolicy in eachfwpolicydata.data:
             fwpolicy_display_name = eachfwpolicy.display_name
             tf_name = commonTools.check_tf_variable(fwpolicy_display_name)
@@ -48,10 +48,10 @@ def print_firewall_policy(region, ct, values_for_column_fwpolicy, fwpolicys, fwp
 
     return values_for_column_fwpolicy
 
-def print_firewall_address(region, ct, values_for_column_fwaddress, fwpolicys, fwpolicy, policy_detail):
+def print_firewall_address(region, ct, values_for_column_fwaddress, fwpolicies, fwpolicy, policy_detail):
     importCommands[reg].write("\n\n######### Writing import for Network firewall Address Objects #########\n\n")
     print("Exporting Address-list details " + region)
-    for eachfwpolicydata in fwpolicys:
+    for eachfwpolicydata in fwpolicies:
         for policy in eachfwpolicydata.data:
             policy_id = policy.id
             addpolicy_display_name = policy.display_name
@@ -90,10 +90,10 @@ def print_firewall_address(region, ct, values_for_column_fwaddress, fwpolicys, f
 
     return values_for_column_fwaddress
 
-def print_firewall_urllist(region, ct, values_for_column_fwurllist, fwpolicys, fwpolicy, policy_detail):
+def print_firewall_urllist(region, ct, values_for_column_fwurllist, fwpolicies, fwpolicy, policy_detail):
     importCommands[reg].write("\n\n######### Writing import for Network firewall url list Objects #########\n\n")
     print("Exporting Url-list details " + region)
-    for eachfwpolicydata in fwpolicys:
+    for eachfwpolicydata in fwpolicies:
         for urlpolicy in eachfwpolicydata.data:
             urlpolicy_id = urlpolicy.id
             urlpolicy_display_name = urlpolicy.display_name
@@ -127,10 +127,10 @@ def print_firewall_urllist(region, ct, values_for_column_fwurllist, fwpolicys, f
 
     return values_for_column_fwurllist
 
-def print_firewall_servicelist(region, ct, values_for_column_fwservicelist, fwpolicys, fwpolicy, policy_detail):
+def print_firewall_servicelist(region, ct, values_for_column_fwservicelist, fwpolicies, fwpolicy, policy_detail):
     importCommands[reg].write("\n\n######### Writing import for Network firewall service list Objects #########\n\n")
     print("Exporting Service-list details " + region)
-    for eachfwpolicydata in fwpolicys:
+    for eachfwpolicydata in fwpolicies:
         for servicelistpolicy in eachfwpolicydata.data:
             servicelistpolicy_id = servicelistpolicy.id
             servicelistpolicy_display_name = servicelistpolicy.display_name
@@ -178,10 +178,10 @@ def print_firewall_servicelist(region, ct, values_for_column_fwservicelist, fwpo
 
     return values_for_column_fwservicelist
 
-def print_firewall_applist(region, ct, values_for_column_fwapplist, fwpolicys, fwpolicy, policy_detail):
+def print_firewall_applist(region, ct, values_for_column_fwapplist, fwpolicies, fwpolicy, policy_detail):
     importCommands[reg].write("\n\n######### Writing import for Network firewall application list Objects #########\n\n")
     print("Exporting Application-list details " + region)
-    for eachfwpolicydata in fwpolicys:
+    for eachfwpolicydata in fwpolicies:
         for applistpolicy in eachfwpolicydata.data:
             applistpolicy_id = applistpolicy.id
             applistpolicy_display_name = applistpolicy.display_name
@@ -225,10 +225,10 @@ def print_firewall_applist(region, ct, values_for_column_fwapplist, fwpolicys, f
 
     return values_for_column_fwapplist
 
-def print_firewall_secrules(region, ct, values_for_column_fwsecrules, fwpolicys, fwpolicy, policy_detail):
+def print_firewall_secrules(region, ct, values_for_column_fwsecrules, fwpolicies, fwpolicy, policy_detail):
     importCommands[reg].write("\n\n######### Writing import for Network firewall Security Rules Objects #########\n\n")
     print("Exporting Security rules details " + region)
-    for eachfwpolicydata in fwpolicys:
+    for eachfwpolicydata in fwpolicies:
         for secrulespolicy in eachfwpolicydata.data:
             secrulespolicy_id = secrulespolicy.id
             secrulespolicy_display_name = secrulespolicy.display_name
@@ -313,10 +313,10 @@ def print_firewall_secrules(region, ct, values_for_column_fwsecrules, fwpolicys,
                         values_for_column_fwsecrules = commonTools.export_tags(applistpolicy, col_header,values_for_column_fwsecrules)
 
     return values_for_column_fwsecrules
-def print_firewall_secret(region, ct, values_for_column_fwsecret, fwpolicys, fwpolicy, vault, compartment, policy_detail,kmsvault):
+def print_firewall_secret(region, ct, values_for_column_fwsecret, fwpolicies, fwpolicy, vault, compartment, policy_detail,kmsvault):
     importCommands[reg].write("\n\n######### Writing import for Network firewall Mapped Secret Objects #########\n\n")
     print("Exporting Mapped secret details " + region)
-    for eachfwpolicydata in fwpolicys:
+    for eachfwpolicydata in fwpolicies:
         for secretpolicy in eachfwpolicydata.data:
             secretpolicy_id = secretpolicy.id
             secretpolicy_display_name = secretpolicy.display_name
@@ -355,10 +355,10 @@ def print_firewall_secret(region, ct, values_for_column_fwsecret, fwpolicys, fwp
 
     return values_for_column_fwsecret
 
-def print_firewall_decryptprofile(region, ct, values_for_column_fwdecryptprofile, fwpolicys, fwpolicy, policy_detail):
+def print_firewall_decryptprofile(region, ct, values_for_column_fwdecryptprofile, fwpolicies, fwpolicy, policy_detail):
     importCommands[reg].write("\n\n######### Writing import for Network firewall Decrypt profile Objects #########\n\n")
     print("Exporting Decryption Profile details " + region)
-    for eachfwpolicydata in fwpolicys:
+    for eachfwpolicydata in fwpolicies:
         for decryptionprofile in eachfwpolicydata.data:
             decryptionprofile_id = decryptionprofile.id
             decryptionprofile_display_name = decryptionprofile.display_name
@@ -417,10 +417,10 @@ def print_firewall_decryptprofile(region, ct, values_for_column_fwdecryptprofile
                         values_for_column_fwdecryptprofile = commonTools.export_tags(decryptionprofile, col_header,values_for_column_fwdecryptprofile)
 
     return values_for_column_fwdecryptprofile
-def print_firewall_decryptrule(region, ct, values_for_column_fwdecryptrule, fwpolicys, fwpolicy, policy_detail):
+def print_firewall_decryptrule(region, ct, values_for_column_fwdecryptrule, fwpolicies, fwpolicy, policy_detail):
     importCommands[reg].write("\n\n######### Writing import for Network firewall decryption Rules Objects #########\n\n")
     print("Exporting Decryption rules details " + region)
-    for eachfwpolicydata in fwpolicys:
+    for eachfwpolicydata in fwpolicies:
         for decryptrulepolicy in eachfwpolicydata.data:
             decryptrulepolicy_id = decryptrulepolicy.id
             decryptrulepolicy_display_name = decryptrulepolicy.display_name
@@ -556,19 +556,19 @@ def cloneexport_firewallpolicy(inputfile, _outdir, service_dir, config, signer, 
         region = reg.capitalize()
 
         for compartment_name in export_compartments:
-            fwpolicys = []
+            fwpolicies = []
             data = oci.pagination.list_call_get_all_results(fwpolicy.list_network_firewall_policies, compartment_id=ct.ntk_compartment_ids[compartment_name], lifecycle_state="ACTIVE")
-            fwpolicys.append(data)
+            fwpolicies.append(data)
             fwaddress = oci.pagination.list_call_get_all_results(fwpolicy.list_network_firewall_policies, compartment_id=ct.ntk_compartment_ids[compartment_name], lifecycle_state="ACTIVE")
-            values_for_column_fwpolicy = print_firewall_policy(region, ct, values_for_column_fwpolicy, fwpolicys, compartment_name, policy_detail)
-            values_for_column_fwaddress = print_firewall_address(region, ct, values_for_column_fwaddress, fwpolicys, fwpolicy, policy_detail)
-            values_for_column_fwurllist = print_firewall_urllist(region, ct, values_for_column_fwurllist, fwpolicys, fwpolicy, policy_detail)
-            values_for_column_fwservicelist = print_firewall_servicelist(region, ct, values_for_column_fwservicelist, fwpolicys, fwpolicy, policy_detail)
-            values_for_column_fwapplist = print_firewall_applist(region, ct, values_for_column_fwapplist, fwpolicys, fwpolicy, policy_detail)
-            values_for_column_fwsecrules = print_firewall_secrules(region, ct, values_for_column_fwsecrules,fwpolicys, fwpolicy, policy_detail)
-            values_for_column_fwsecret = print_firewall_secret(region, ct, values_for_column_fwsecret, fwpolicys,fwpolicy, vault, compartment, policy_detail, kmsvault)
-            values_for_column_fwdecryptprofile = print_firewall_decryptprofile(region, ct,values_for_column_fwdecryptprofile,fwpolicys, fwpolicy, policy_detail)
-            values_for_column_fwdecryptrule = print_firewall_decryptrule(region, ct, values_for_column_fwdecryptrule,fwpolicys, fwpolicy, policy_detail)
+            values_for_column_fwpolicy = print_firewall_policy(region, ct, values_for_column_fwpolicy, fwpolicies, compartment_name, policy_detail)
+            values_for_column_fwaddress = print_firewall_address(region, ct, values_for_column_fwaddress, fwpolicies, fwpolicy, policy_detail)
+            values_for_column_fwurllist = print_firewall_urllist(region, ct, values_for_column_fwurllist, fwpolicies, fwpolicy, policy_detail)
+            values_for_column_fwservicelist = print_firewall_servicelist(region, ct, values_for_column_fwservicelist, fwpolicies, fwpolicy, policy_detail)
+            values_for_column_fwapplist = print_firewall_applist(region, ct, values_for_column_fwapplist, fwpolicies, fwpolicy, policy_detail)
+            values_for_column_fwsecrules = print_firewall_secrules(region, ct, values_for_column_fwsecrules,fwpolicies, fwpolicy, policy_detail)
+            values_for_column_fwsecret = print_firewall_secret(region, ct, values_for_column_fwsecret, fwpolicies,fwpolicy, vault, compartment, policy_detail, kmsvault)
+            values_for_column_fwdecryptprofile = print_firewall_decryptprofile(region, ct,values_for_column_fwdecryptprofile,fwpolicies, fwpolicy, policy_detail)
+            values_for_column_fwdecryptrule = print_firewall_decryptrule(region, ct, values_for_column_fwdecryptrule,fwpolicies, fwpolicy, policy_detail)
 
 
     commonTools.write_to_cd3(values_for_column_fwpolicy, cd3file, "Firewall-Policy")

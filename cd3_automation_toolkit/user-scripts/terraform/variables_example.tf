@@ -1658,7 +1658,7 @@ variable "capacity_reservation_ocids" {
 #####################################
 ####### Firewall as a Service #######
 #####################################
-variable "firewall" {
+variable "firewalls" {
   type    = map(object({
     compartment_id = string
     network_compartment_id = string
@@ -1676,7 +1676,7 @@ variable "firewall" {
   default = {}
 }
 
-variable "policy" {
+variable "fw-policies" {
   type    = map(object({
     compartment_id = optional(string)
     display_name   = optional(string)
@@ -1685,7 +1685,7 @@ variable "policy" {
   }))
   default = {}
 }
-variable "service" {
+variable "services" {
   type    = map(object({
     service_name               = string
     service_type               = string
@@ -1697,7 +1697,7 @@ variable "service" {
   }))
   default = {}
 }
-variable "url_list" {
+variable "url_lists" {
   type    = map(object({
     urllist_name               = string
     network_firewall_policy_id = string
@@ -1708,7 +1708,7 @@ variable "url_list" {
   }))
   default = {}
 }
-variable "service_list" {
+variable "service_lists" {
   type    = map(object({
     service_list_name          = string
     network_firewall_policy_id = string
@@ -1717,7 +1717,7 @@ variable "service_list" {
   default = {}
 }
 
-variable "address_list" {
+variable "address_lists" {
   type    = map(object({
     address_list_name          = string
     network_firewall_policy_id = string
@@ -1727,7 +1727,7 @@ variable "address_list" {
   default = {}
 }
 
-variable "application_list" {
+variable "application_lists" {
   type    = map(object({
     app_list_name          = string
     network_firewall_policy_id = string
@@ -1738,7 +1738,7 @@ variable "application_list" {
   default = {}
 }
 
-variable "application_group" {
+variable "application_groups" {
   type    = map(object({
     app_group_name          = string
     network_firewall_policy_id = string
@@ -1768,7 +1768,7 @@ variable "security_rules" {
   default = {}
 }
 
-variable "secret" {
+variable "secrets" {
   type    = map(object({
     secret_name          = string
     network_firewall_policy_id = string
@@ -1782,7 +1782,7 @@ variable "secret" {
   default = {}
 }
 
-variable "decryption_profile" {
+variable "decryption_profiles" {
   type    = map(object({
     profile_name = string
     profile_type = string

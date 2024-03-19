@@ -1,6 +1,6 @@
 {% if count == 0 %}
 
-url_list = {
+url_lists = {
     ##Add New urllist for {{ region|lower }} here##
 }
 {% else %}
