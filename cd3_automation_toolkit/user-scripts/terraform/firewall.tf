@@ -13,7 +13,7 @@ data "oci_core_subnets" "firewall_subnets" {
 module "firewall" {
   source = "./modules/security/firewall/firewall"
   for_each = var.firewall != null ? var.firewall :{}
-  depends_on = [module.policy,module.address_list, module.application_group, module.application_list, module.service, module.service_list, module.url_list,module.decryption_profile, module.secret,module.security_rules,module.decryption_rules]
+  depends_on = [module.policy,module.address_list, module.application_group, module.application, module.service, module.service_list, module.url_list,module.decryption_profile, module.secret,module.security_rules,module.decryption_rules]
   compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : var.compartment_ocids[each.value.compartment_id]
   network_firewall_policy_id = length(regexall("ocid1.networkfirewallpolicy.oc1.*",each.value.network_firewall_policy_id)) > 0 ? each.value.network_firewall_policy_id : merge(module.policy.*...)[each.value.network_firewall_policy_id]["policy_tf_id"]
   subnet_id = each.value.subnet_id != "" ? (length(regexall("ocid1.subnet.oc1*", each.value.subnet_id)) > 0 ? each.value.subnet_id : data.oci_core_subnets.firewall_subnets[each.key].subnets.*.id[0]) : null
@@ -66,7 +66,7 @@ module address_list {
   addresses = each.value.addresses
 }
 
-module application_list {
+module application {
   source                     = "./modules/security/firewall/application"
   for_each                   = var.application_list != null ? var.application_list : {}
   depends_on = [module.policy]
@@ -80,10 +80,10 @@ module application_list {
 module application_group {
   source                     = "./modules/security/firewall/application-group"
   for_each                   = var.application_group != null ? var.application_group : {}
-  depends_on = [module.policy,module.application_list]
+  depends_on = [module.policy,module.application]
   app_group_name = each.value.app_group_name
   network_firewall_policy_id = length(regexall("ocid1.networkfirewallpolicy.oc1.*", each.value.network_firewall_policy_id)) > 0 ? each.value.network_firewall_policy_id : merge(module.policy.*...)[each.value.network_firewall_policy_id]["policy_tf_id"]
-  apps = each.value.apps != null ? flatten(tolist([for  app in each.value.apps : (length(regexall("ocid1.networkfirewallpolicy.oc1*", app)) > 0 ? merge(module.application_list.*...)[app]["application_tf_id"] :[app] )]))  : null
+  apps = each.value.apps != null ? flatten(tolist([for  app in each.value.apps : (length(regexall("ocid1.networkfirewallpolicy.oc1*", app)) > 0 ? merge(module.application.*...)[app]["application_tf_id"] :[app] )]))  : null
 }
 
 module url_list {
@@ -99,7 +99,7 @@ module url_list {
 module security_rules {
   source                     = "./modules/security/firewall/security-rules"
   for_each                   = var.security_rules != null ? var.security_rules : {}
-  depends_on = [module.policy, module.address_list, module.application_group, module.application_list, module.service, module.service_list, module.url_list]
+  depends_on = [module.policy, module.address_list, module.application_group, module.application, module.service, module.service_list, module.url_list]
   action = each.value.action
   rule_name = each.value.rule_name
   network_firewall_policy_id = length(regexall("ocid1.networkfirewallpolicy.oc1.*",each.value.network_firewall_policy_id)) > 0 ? each.value.network_firewall_policy_id : merge(module.policy.*...)[each.value.network_firewall_policy_id]["policy_tf_id"]
