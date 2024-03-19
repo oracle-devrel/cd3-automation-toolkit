@@ -261,7 +261,7 @@ def print_firewall_applist(region, ct, values_for_column_fwapplist, fwpolicys, f
                     app_seen_so_far.add(eachapplication)
                     applicationname_tf = commonTools.check_tf_variable(applicationname)
                     if not clone:
-                        importCommands[reg].write("\nterraform import \"module.application_list[\\\"" + str(applistpolicy_tf_name) + "_" + str(applicationname_tf) + "\\\"].oci_network_firewall_network_firewall_policy_application.network_firewall_policy_application\" networkFirewallPolicies/" + applistpolicy_id + "/applications/" + applicationname)
+                        importCommands[reg].write("\nterraform import \"module.application[\\\"" + str(applistpolicy_tf_name) + "_" + str(applicationname_tf) + "\\\"].oci_network_firewall_network_firewall_policy_application.network_firewall_policy_application\" networkFirewallPolicies/" + applistpolicy_id + "/applications/" + applicationname)
                     if applist.icmp_code != None:
                         application_detail = application_detail + "\n" + applist.name + "::" + applist.type + "::" + str(applist.icmp_type) + "::" + str(applist.icmp_code)
                     else:
@@ -296,7 +296,7 @@ def print_firewall_applist(region, ct, values_for_column_fwapplist, fwpolicys, f
                 if not clone:
                     importCommands[reg].write(
                         "\nterraform import \"module.application[\\\"" + str(applistpolicy_tf_name) + "_" + str(
-                            app_tf_name) + "\\\"].oci_network_firewall_network_firewall_policy_application.network_firewall_policy_application\" networkFirewallPolicies/" + applistpolicy_id + "/application/" + app_display_name)
+                            app_tf_name) + "\\\"].oci_network_firewall_network_firewall_policy_application.network_firewall_policy_application\" networkFirewallPolicies/" + applistpolicy_id + "/applications/" + app_display_name)
 
                     if app_data.icmp_code != None:
                         application_detail = application_detail + "\n" + app.name + "::" + app.type + "::" + str(
