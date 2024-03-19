@@ -142,6 +142,7 @@ def print_firewall_servicelist(region, ct, values_for_column_fwservicelist, fwpo
         importCommands[reg].write("\n\n######### Writing import for Network firewall service list Objects #########\n\n")
         print("Exporting Service and Service-list details " + region)
     for servicelistpolicy in fwpolicys:
+
             servicelistpolicy_id = servicelistpolicy.id
             servicelistpolicy_display_name = servicelistpolicy.display_name
             if clone:
@@ -149,15 +150,18 @@ def print_firewall_servicelist(region, ct, values_for_column_fwservicelist, fwpo
             servicelistpolicy_tf_name = commonTools.check_tf_variable(servicelistpolicy_display_name)
             fwservicelists = oci.pagination.list_call_get_all_results(fwpolicy.list_service_lists, servicelistpolicy_id)
             servicelist_info = fwservicelists.data
+            service_seen_so_far = set()
             for service in servicelist_info:
                 service_info = fwpolicy.get_service_list(service.parent_resource_id, service.name).data.services
+
                 service_display_name = service.name
                 service_tf_name = commonTools.check_tf_variable(service_display_name)
                 if not clone:
                     importCommands[reg].write("\nterraform import \"module.service_list[\\\"" + str(servicelistpolicy_tf_name) + "_" + str(service_display_name) + "\\\"].oci_network_firewall_network_firewall_policy_service_list.network_firewall_policy_service_list\" networkFirewallPolicies/" + servicelistpolicy_id + "/serviceLists/" + service_display_name)
                 service_detail = ""
-                service_seen_so_far = set()
+
                 for eachservice in service_info:
+
                     service_seen_so_far.add(eachservice)
                     servicelist = fwpolicy.get_service(service.parent_resource_id, eachservice).data
                     servicetype = servicelist.type
@@ -188,19 +192,20 @@ def print_firewall_servicelist(region, ct, values_for_column_fwservicelist, fwpo
                     elif col_header.lower() in commonTools.tagColumns:
                         values_for_column_fwservicelist = commonTools.export_tags(servicelistpolicy, col_header,values_for_column_fwservicelist)
 
-
             ## Fetch services without Lists
             fwservices = oci.pagination.list_call_get_all_results(fwpolicy.list_services,servicelistpolicy_id)
             services = fwservices.data
             service_detail = ""
             for service in services:
+
                 service_display_name = service.name
                 if service.name in service_seen_so_far:
                     continue
+
                 service_data  = fwpolicy.get_service(service.parent_resource_id, service.name).data
                 service_tf_name = commonTools.check_tf_variable(service_display_name)
                 if not clone:
-                    importCommands[reg].write("\nterraform import \"module.service[\\\"" + str(service_tf_name) + "_" + str(service_display_name) + "\\\"].oci_network_firewall_network_firewall_policy_service.network_firewall_policy_service\" networkFirewallPolicies/" + servicelistpolicy_id + "/services/" + service_display_name)
+                    importCommands[reg].write("\nterraform import \"module.service[\\\"" + str(servicelistpolicy_tf_name) + "_" + str(service_tf_name) + "\\\"].oci_network_firewall_network_firewall_policy_service.network_firewall_policy_service\" networkFirewallPolicies/" + servicelistpolicy_id + "/services/" + service_display_name)
 
                 port_detail = ""
                 for svc_port_range in service_data.port_ranges:
@@ -210,20 +215,20 @@ def print_firewall_servicelist(region, ct, values_for_column_fwservicelist, fwpo
 
                 service_detail = service_detail + "\n" + service.name + "::" + service.type + "::" + port_detail
 
-                if (service_detail != ""):
-                    service_detail = service_detail[1:]
+            if (service_detail != ""):
+                service_detail = service_detail[1:]
 
-                for col_header in values_for_column_fwservicelist:
-                    if col_header == 'Region':
-                        values_for_column_fwservicelist[col_header].append(region)
-                    elif col_header == 'Firewall Policy':
-                        values_for_column_fwservicelist[col_header].append(servicelistpolicy_display_name)
-                    elif col_header == 'Service List':
-                        values_for_column_fwservicelist[col_header].append("")
-                    elif col_header == 'Services':
-                        values_for_column_fwservicelist[col_header].append(service_detail)
-                    elif col_header.lower() in commonTools.tagColumns:
-                        values_for_column_fwservicelist = commonTools.export_tags(servicelistpolicy, col_header,values_for_column_fwservicelist)
+            for col_header in values_for_column_fwservicelist:
+                if col_header == 'Region':
+                    values_for_column_fwservicelist[col_header].append(region)
+                elif col_header == 'Firewall Policy':
+                    values_for_column_fwservicelist[col_header].append(servicelistpolicy_display_name)
+                elif col_header == 'Service List':
+                    values_for_column_fwservicelist[col_header].append("")
+                elif col_header == 'Services':
+                    values_for_column_fwservicelist[col_header].append(service_detail)
+                elif col_header.lower() in commonTools.tagColumns:
+                    values_for_column_fwservicelist = commonTools.export_tags(servicelistpolicy, col_header,values_for_column_fwservicelist)
 
     return values_for_column_fwservicelist
 
@@ -240,14 +245,16 @@ def print_firewall_applist(region, ct, values_for_column_fwapplist, fwpolicys, f
             fwapplists = oci.pagination.list_call_get_all_results(fwpolicy.list_application_groups, applistpolicy_id)
             applist_info = fwapplists.data
 
+            app_seen_so_far = set()
             for application in applist_info:
+
                 application_info = fwpolicy.get_application_group(application.parent_resource_id, application.name).data.apps
+
                 application_display_name = application.name
                 application_tf_name = commonTools.check_tf_variable(application_display_name)
                 if not clone:
                     importCommands[reg].write("\nterraform import \"module.application_group[\\\"" + str(applistpolicy_tf_name) + "_" + str(application_tf_name) + "\\\"].oci_network_firewall_network_firewall_policy_application_group.network_firewall_policy_application_group\" networkFirewallPolicies/" + applistpolicy_id + "/applicationGroups/" + application_display_name)
                 application_detail = ""
-                app_seen_so_far = set()
                 for eachapplication in application_info:
                     applist = fwpolicy.get_application(application.parent_resource_id, eachapplication).data
                     applicationname = applist.name
@@ -276,43 +283,43 @@ def print_firewall_applist(region, ct, values_for_column_fwapplist, fwpolicys, f
                     elif col_header.lower() in commonTools.tagColumns:
                         values_for_column_fwapplist = commonTools.export_tags(applistpolicy, col_header,values_for_column_fwapplist)
 
-                ## Fetch apps without Lists
-                fwapps = oci.pagination.list_call_get_all_results(fwpolicy.list_applications, applistpolicy_id)
-                apps = fwapps.data
-                application_detail = ""
-                for app in apps:
-                    app_display_name = app.name
-                    if app.name in app_seen_so_far:
-                        continue
-                    app_data = fwpolicy.get_application(app.parent_resource_id, app.name).data
-                    app_tf_name = commonTools.check_tf_variable(app_display_name)
-                    if not clone:
-                        importCommands[reg].write(
-                            "\nterraform import \"module.application[\\\"" + str(app_tf_name) + "_" + str(
-                               app_display_name) + "\\\"].oci_network_firewall_network_firewall_policy_application.network_firewall_policy_application\" networkFirewallPolicies/" + applistpolicy_id + "/application/" + app_display_name)
+            ## Fetch apps without Lists
+            fwapps = oci.pagination.list_call_get_all_results(fwpolicy.list_applications, applistpolicy_id)
+            apps = fwapps.data
+            application_detail = ""
+            for app in apps:
+                app_display_name = app.name
+                if app.name in app_seen_so_far:
+                    continue
+                app_data = fwpolicy.get_application(app.parent_resource_id, app.name).data
+                app_tf_name = commonTools.check_tf_variable(app_display_name)
+                if not clone:
+                    importCommands[reg].write(
+                        "\nterraform import \"module.application[\\\"" + str(applistpolicy_tf_name) + "_" + str(
+                            app_tf_name) + "\\\"].oci_network_firewall_network_firewall_policy_application.network_firewall_policy_application\" networkFirewallPolicies/" + applistpolicy_id + "/application/" + app_display_name)
 
-                        if app_data.icmp_code != None:
-                            application_detail = application_detail + "\n" + app.name + "::" + app.type + "::" + str(
-                                app_data.icmp_type) + "::" + str(app_data.icmp_code)
-                        else:
-                            application_detail = application_detail + "\n" + app.name + "::" + app.type + "::" + str(
-                                app_data.icmp_type)
+                    if app_data.icmp_code != None:
+                        application_detail = application_detail + "\n" + app.name + "::" + app.type + "::" + str(
+                            app_data.icmp_type) + "::" + str(app_data.icmp_code)
+                    else:
+                        application_detail = application_detail + "\n" + app.name + "::" + app.type + "::" + str(
+                            app_data.icmp_type)
 
-                    if (application_detail != ""):
-                        application_detail = application_detail[1:]
+            if (application_detail != ""):
+                application_detail = application_detail[1:]
 
-                    for col_header in values_for_column_fwapplist:
-                        if col_header == 'Region':
-                            values_for_column_fwapplist[col_header].append(region)
-                        elif col_header == 'Firewall Policy':
-                            values_for_column_fwapplist[col_header].append(applistpolicy_display_name)
-                        elif col_header == 'Application List':
-                            values_for_column_fwapplist[col_header].append("")
-                        elif col_header == 'Applications':
-                            values_for_column_fwapplist[col_header].append(application_detail)
-                        elif col_header.lower() in commonTools.tagColumns:
-                            values_for_column_fwapplist = commonTools.export_tags(applistpolicy, col_header,
-                                                                                  values_for_column_fwapplist)
+            for col_header in values_for_column_fwapplist:
+                if col_header == 'Region':
+                    values_for_column_fwapplist[col_header].append(region)
+                elif col_header == 'Firewall Policy':
+                    values_for_column_fwapplist[col_header].append(applistpolicy_display_name)
+                elif col_header == 'Application List':
+                    values_for_column_fwapplist[col_header].append("")
+                elif col_header == 'Applications':
+                    values_for_column_fwapplist[col_header].append(application_detail)
+                elif col_header.lower() in commonTools.tagColumns:
+                    values_for_column_fwapplist = commonTools.export_tags(applistpolicy, col_header,
+                                                                          values_for_column_fwapplist)
 
     return values_for_column_fwapplist
 
