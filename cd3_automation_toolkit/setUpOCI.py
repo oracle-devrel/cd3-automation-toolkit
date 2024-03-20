@@ -101,11 +101,21 @@ def show_options(options, quit=False, menu=False, extra=None, index=0):
         return user_input
     # Subtract one to account for zero-indexing. The options start at 1
     # #return [options[int(choice)-1] for choice in user_input]
+
     try:
         for choice in user_input:
-            if int(choice)-index < 0 :
+            if int(choice) - index < 0:
                 print("\nInvalid Option.....Exiting!!")
                 exit(1)
+            elif options[int(choice) - index].name == "Execute All":
+                options.pop(0)
+                return options
+    except ValueError as ie:
+        print("\nInvalid Input.....Try again!!\n")
+        options = show_options(inputs, quit=True, index=index)
+        return options
+
+    try:
         return [options[int(choice)-index] for choice in user_input]
     except IndexError as ie:
         print("\nInvalid Option.....Exiting!!")
@@ -1403,33 +1413,34 @@ def delete_firewall_policy(inputfile, outdir, service_dir, config, signer, ct):
 
 def create_firewall_policy(inputfile, outdir, service_dir, prefix, ct,execute_all=False,sub_options=[]):
     options = [
-            Option('Add/Modify Policy', Security.firewallpolicy_create, 'Processing Firewall-Policy Tab'),
-            Option('Add/Modify Service', Security.fwpolicy_create_service,
+            Option('Execute All', None, 'Processing all tabs related to Firewall-Policy'),
+            Option('Add/Modify/Delete Policy', Security.firewallpolicy_create, 'Processing Firewall-Policy Tab'),
+            Option('Add/Modify/Delete Service', Security.fwpolicy_create_service,
                    'Processing Firewall-Policy-Serviceslist Tab'),
-            Option('Add/Modify Service-list', Security.fwpolicy_create_servicelist,
+            Option('Add/Modify/Delete Service-list', Security.fwpolicy_create_servicelist,
                    'Processing Firewall-Policy-Servicelist Tab'),
-            Option('Add/Modify Application', Security.fwpolicy_create_apps,
+            Option('Add/Modify/Delete Application', Security.fwpolicy_create_apps,
                    'Processing Firewall-Policy-Applicationlist Tab'),
-            Option('Add/Modify Application-list', Security.fwpolicy_create_applicationlist,
+            Option('Add/Modify/Delete Application-list', Security.fwpolicy_create_applicationlist,
                    'Processing Firewall-Policy-Applicationlist Tab'),
-            Option('Add/Modify Address-list', Security.fwpolicy_create_address,
+            Option('Add/Modify/Delete Address-list', Security.fwpolicy_create_address,
                    'Processing Firewall-Policy-Address Tab'),
-            Option('Add/Modify Url-list', Security.fwpolicy_create_urllist,
+            Option('Add/Modify/Delete Url-list', Security.fwpolicy_create_urllist,
                    'Processing Firewall-Policy-Urllist Tab'),
-            Option('Add/Modify Security rules', Security.fwpolicy_create_secrules,
-                   'Processing Firewall-Policy-Securules Tab'),
-            Option('Add/Modify Mapped Secrets', Security.fwpolicy_create_secret,
+            Option('Add/Modify/Delete Security rules', Security.fwpolicy_create_secrules,
+                   'Processing Firewall-Policy-Secrules Tab'),
+            Option('Add/Modify/Delete Mapped Secrets', Security.fwpolicy_create_secret,
                    'Processing Firewall-Policy-Secrets Tab'),
-            Option('Add/Modify Decryption Rules', Security.fwpolicy_create_decryptrules,
-                   'Processing Firewall-Policy-Decrytprofile Tab'),
-            Option('Add/Modify Decryption Profile', Security.fwpolicy_create_decryptionprofile,
+            Option('Add/Modify/Delete Decryption Rules', Security.fwpolicy_create_decryptrules,
                    'Processing Firewall-Policy-DecryptRule Tab'),
+            Option('Add/Modify/Delete Decryption Profile', Security.fwpolicy_create_decryptionprofile,
+                   'Processing Firewall-Policy-Decrytprofile Tab'),
         ]
     if sub_options and sub_options != ['']:
         options = match_options(options, sub_options)
     else:
         if not execute_all:
-            options = show_firewall_options(options, quit=True, menu=True, index=1)
+            options = show_options(options, quit=True, menu=True, index=1)
 
     execute_options(options, inputfile, outdir, service_dir, prefix, ct)
 
