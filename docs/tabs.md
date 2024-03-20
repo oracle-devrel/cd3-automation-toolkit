@@ -147,12 +147,19 @@ Output files generated:
 | --- | --- |
 | <prefix\>_major-objects.auto.tfvars | Contains TF for all VCNs and components- IGW, NGW, SGW, DRG, LPGs.|
 | <prefix\>_custom-dhcp.auto.tfvars	|Contains TF for all DHCP options for all VCNs.|
-| <br><prefix\>_routetables.auto.tfvars<br><prefix\>_default-routetables.auto.tfvars<br><prefix\>_drg-routetables.auto.tfvars<br><prefix\>_drg-distributions.auto.tfvars<br><prefix\>_drg-data.auto.tfvars</br></br></br></br></br> | <br>Separate file for each route table name is created.<br>Contains TF for route rules in each route table.</br></br> |
-| <br><prefix\>_seclists.auto.tfvars<br><prefix\>_default-seclists.auto.tfvars</br></br> | <br>Separate file for each security list name is created.<br>Contains TF for security rules in each security list. |
+| <br><prefix\>_routetables.auto.tfvars<br><prefix\>_default-routetables.auto.tfvars<br><prefix\>_drg-routetables.auto.tfvars<br><prefix\>_drg-distributions.auto.tfvars<br><prefix\>_drg-data.auto.tfvars</br></br></br></br></br> | <br>Contains TF for route rules for each route table.</br></br> |
+| <br><prefix\>_seclists.auto.tfvars<br><prefix\>_default-seclists.auto.tfvars</br></br> | <br>Contains TF for security rules for each security list. |
 |<prefix\>_subnets.auto.tfvars|	Contains TF for all subnets for all VCNs.|
 |<prefix\>_vlans.auto.tfvars|	Contains TF for all VLANs for all VCNs.|
 |<prefix\>_default-dhcp.auto.tfvars	|Contains TF for default DHCP options of each VCN in each region |
 |<br><prefix\>_nsgs.auto.tfvars<br><prefix\>_nsg-rules.auto.tfvars</br></br>| Contains TF for NSGs in each region |
+
+## f. Rules
+After running Create Network, export the Security Rules, Route Rules, DRG Route Rules (using Greenfield Workflow) into the excel sheet and then modify the respective sheet to do any further modification to the rules.
+
+## g. NSGs
+Use NSGs tab to add/modify/delete NSG rules and NSGs.
+
 
 ## DNS-Views-Zones-Records-Tab
 Below are the details about specific columns to fill the sheet for DNS-Views-Zones-Records-Tab
