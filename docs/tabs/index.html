@@ -2045,11 +2045,11 @@
 </tr>
 <tr>
 <td><br>&lt;prefix&gt;_routetables.auto.tfvars<br>&lt;prefix&gt;_default-routetables.auto.tfvars<br>&lt;prefix&gt;_drg-routetables.auto.tfvars<br>&lt;prefix&gt;_drg-distributions.auto.tfvars<br>&lt;prefix&gt;_drg-data.auto.tfvars</br></br></br></br></br></td>
-<td><br>Separate file for each route table name is created.<br>Contains TF for route rules in each route table.</br></br></td>
+<td><br>Contains TF for route rules for each route table.</br></br></td>
 </tr>
 <tr>
 <td><br>&lt;prefix&gt;_seclists.auto.tfvars<br>&lt;prefix&gt;_default-seclists.auto.tfvars</br></br></td>
-<td><br>Separate file for each security list name is created.<br>Contains TF for security rules in each security list.</td>
+<td><br>Contains TF for security rules for each security list.</td>
 </tr>
 <tr>
 <td>&lt;prefix&gt;_subnets.auto.tfvars</td>
@@ -2069,6 +2069,10 @@
 </tr>
 </tbody>
 </table>
+<h2 id="f-rules">f. Rules</h2>
+<p>After running Create Network, export the Security Rules, Route Rules, DRG Route Rules (using Greenfield Workflow) into the excel sheet and then modify the respective sheet to do any further modification to the rules.</p>
+<h2 id="g-nsgs">g. NSGs</h2>
+<p>Use NSGs tab to add/modify/delete NSG rules and NSGs.</p>
 <h2 id="dns-views-zones-records-tab">DNS-Views-Zones-Records-Tab</h2>
 <p>Below are the details about specific columns to fill the sheet for DNS-Views-Zones-Records-Tab</p>
 <ol>
