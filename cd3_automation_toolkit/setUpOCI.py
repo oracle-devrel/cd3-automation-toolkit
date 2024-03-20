@@ -1324,10 +1324,10 @@ def create_validate_firewall_service(execute_all=False,prim_options=[]):
     validation_check = False
     for option in options:
         options1 = []
-        if (option.name == 'Validate Firewall CD3 Excel'):
+        if option not in ['m','q'] and (option.name == 'Validate Firewall CD3 Excel'):
             status = cd3FirewallValidator.validate_firewall_cd3(inputfile, var_file, prefix, outdir, config, signer, ct)
             print("Firewall validator completed with "+ str(status))
-        elif(option.name == 'Add/Modify/Delete Firewall Policy' or option.name == 'Add/Modify/Delete Firewall'):
+        elif option not in ['m','q'] and (option.name == 'Add/Modify/Delete Firewall Policy' or option.name == 'Add/Modify/Delete Firewall'):
             options1.append(option)
             if not devops and not validation_check:
                 run_validator = "Did you run the validation of Firewall cd3 Excel and fixed all Errors(y/n): "
