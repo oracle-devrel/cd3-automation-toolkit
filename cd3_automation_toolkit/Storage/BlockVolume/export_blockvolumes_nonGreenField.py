@@ -67,7 +67,13 @@ def print_blockvolumes(region, BVOLS, bvol, compute, ct, values_for_column, ntk_
         volume_compartment_id = blockvols.compartment_id
         AD_name = blockvols.availability_domain
         d_name = blockvols.display_name
-
+        bv_defined_tags = blockvols.defined_tags
+        if 'Oracle-Tags' in bv_defined_tags.keys():
+            if 'CreatedBy' in bv_defined_tags['Oracle-Tags'].keys():
+                created_by = bv_defined_tags['Oracle-Tags']['CreatedBy']
+                if "ocid1.cluster" in created_by:
+                    print("Skipping " + str(d_name) + " as it is created by oke cluster : " + str(created_by))
+                    continue
         if ("AD-1" in AD_name or "ad-1" in AD_name):
             AD_name = "AD1"
         elif ("AD-2" in AD_name or "ad-2" in AD_name):
