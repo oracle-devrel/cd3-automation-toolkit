@@ -36,6 +36,8 @@ Click on the links below to know about the specifics of each tab in the excel sh
  - [DHCP](tabs.md#d-dhcp-tab)
   
  - [SubnetsVLANs](tabs.md#e-subnetsvlans-tab)
+
+ - NSGs
  
   
 
@@ -62,10 +64,8 @@ Once this is complete you will find the generated output terraform files in loca
 
 Once terraform apply is done, you can view the resources under Identity and Security -> Network Firewalls for the region.
 
-There are options to **Clone** and **Delete** a Firewall Policy under "OCI Firewall" option in Greenfield Workflow of setUpOCI menu. They will directly create/delete the specified firewall policy (in the specified compartment) in OCI console and then export all other policies of that compartment into excel sheet. **Cloning** will also generate tf_import_cmds shell script for the newly cloned firewall policy to sync back with terraform.
-!!! Note
-    If there is any policy in the console which was not created using CD3, will also get exported as part of above process. In such case, the terraform plan will show that it is adding this policy again to the console. Terraform import cmds should be executed for such policy manually to sync it with terraform.
-
+!!! Note 
+    There is an option to **Clone** the policy under "OCI Firewall" option in Greenfield Workflow of    setUpOCI menu. This will export the data from OCI console for the policy specified for cloning and append the it to the end of the excel sheet tabs with a new policy name. It will proceed with tfvars generation and trigger the terraform-apply pipeline for the same.
 
 #### Private-DNS
   
