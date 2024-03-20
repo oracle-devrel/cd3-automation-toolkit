@@ -102,6 +102,10 @@ def show_options(options, quit=False, menu=False, extra=None, index=0):
     # Subtract one to account for zero-indexing. The options start at 1
     # #return [options[int(choice)-1] for choice in user_input]
     try:
+        for choice in user_input:
+            if int(choice)-index < 0 :
+                print("\nInvalid Option.....Exiting!!")
+                exit(1)
         return [options[int(choice)-index] for choice in user_input]
     except IndexError as ie:
         print("\nInvalid Option.....Exiting!!")
