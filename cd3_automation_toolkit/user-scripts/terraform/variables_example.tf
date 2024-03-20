@@ -1727,7 +1727,7 @@ variable "address_lists" {
   default = {}
 }
 
-variable "application_lists" {
+variable "applications" {
   type    = map(object({
     app_list_name          = string
     network_firewall_policy_id = string

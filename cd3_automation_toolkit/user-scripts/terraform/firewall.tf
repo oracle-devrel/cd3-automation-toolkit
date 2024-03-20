@@ -68,7 +68,7 @@ module address_lists {
 
 module applications {
   source                     = "./modules/security/firewall/application"
-  for_each                   = var.application_lists != null ? var.application_lists : {}
+  for_each                   = var.applications != null ? var.applications : {}
   depends_on = [module.policies]
   icmp_type = each.value.icmp_type
   app_list_name = each.value.app_list_name

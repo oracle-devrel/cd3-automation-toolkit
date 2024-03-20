@@ -298,11 +298,11 @@ def print_firewall_applist(region, ct, values_for_column_fwapplist, fwpolicies, 
                         "\nterraform import \"module.applications[\\\"" + str(applistpolicy_tf_name) + "_" + str(
                             app_tf_name) + "\\\"].oci_network_firewall_network_firewall_policy_application.network_firewall_policy_application\" networkFirewallPolicies/" + applistpolicy_id + "/applications/" + app_display_name)
 
-                    if app_data.icmp_code != None:
-                        application_detail = application_detail + "\n" + app.name + "::" + app.type + "::" + str(
+                if app_data.icmp_code != None:
+                    application_detail = application_detail + "\n" + app.name + "::" + app.type + "::" + str(
                             app_data.icmp_type) + "::" + str(app_data.icmp_code)
-                    else:
-                        application_detail = application_detail + "\n" + app.name + "::" + app.type + "::" + str(
+                else:
+                    application_detail = application_detail + "\n" + app.name + "::" + app.type + "::" + str(
                             app_data.icmp_type)
 
             if (application_detail != ""):
