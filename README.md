@@ -9,14 +9,6 @@
 
   [What's New](https://github.com/oracle-devrel/cd3-automation-toolkit/releases/tag/v2024.1.0) &nbsp;&nbsp;•&nbsp; &nbsp;[Excel Templates](https://oracle-devrel.github.io/cd3-automation-toolkit/excel-templates) &nbsp;&nbsp;•&nbsp; &nbsp; [CD3 Docs](https://oracle-devrel.github.io/cd3-automation-toolkit/)&nbsp; &nbsp;•&nbsp;&nbsp; [Watch & Learn](https://www.youtube.com/playlist?list=PLPIzp-E1msrbJ3WawXVhzimQnLw5iafcp) &nbsp;&nbsp;•&nbsp;&nbsp;[Blogs & Tutorials](https://oracle-devrel.github.io/cd3-automation-toolkit/tutorials/) &nbsp;&nbsp;•&nbsp;&nbsp;[OCI CD3-Livelabs](https://apexapps.oracle.com/pls/apex/f?p=133:180:112501098061930::::wid:3724)
   
-  <br>
-
-
-<img width=30% height=30%; src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/590db5b3-dd19-4994-8791-3ebc1ea3f6e3">
-
-<br>
-
-
 <br>
 
 CD3 stands for **Cloud Deployment Design Deliverable**. The CD3 Automation toolkit enables you to effortlessly Build, Export and Manage OCI (Oracle Cloud Infrastruture) resources by converting Excel templates to fully functional Terraform modules within minutes ⚡️⚡️ .
