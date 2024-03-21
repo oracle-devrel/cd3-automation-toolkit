@@ -1190,7 +1190,7 @@ def create_cis_oss_logs(inputfile, outdir, prefix, ct):
     options = [Option(None, ManagementServices.enable_cis_oss_logging, 'Enabling OSS Write Logs')]
     execute_options(options, inputfile, outdir, service_dir_object_storage, prefix, ct)
     # Update modified path list
-    update_path_list(regions_path=subscribed_regions, service_dirs=[service_dir_loadbalancer])
+    update_path_list(regions_path=subscribed_regions, service_dirs=[service_dir_object_storage])
 
 
 def create_cis_features(prim_options=[]):

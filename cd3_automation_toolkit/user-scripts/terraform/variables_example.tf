@@ -658,9 +658,9 @@ views = optional(map(object({
   view_compartment_id = optional(string)
 })))
 resolver_rules = optional(map(object({
-  client_address_conditions = optional(string)
-  destination_addresses = optional(string)
-  qname_cover_conditions = optional(string)
+  client_address_conditions = optional(list(any))
+  destination_addresses = optional(list(any))
+  qname_cover_conditions = optional(list(any))
   source_endpoint_name = optional(string)
 })))
 endpoint_names = optional(map(object({
