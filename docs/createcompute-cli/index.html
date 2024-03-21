@@ -2021,12 +2021,13 @@
 <p>Leave columns: Backup Policy, NSGs, DedicatedVMHost blank if instance doesn't need to be part of any of these. Instances can be made a part of Backup Policy and NSGs later by choosing appropriate option in setUpOCI menu. <br></p>
 </li>
 <li>
-<p>The column "SSH Key Var Name" accepts SSH key value directly or the name of variable declared in <em>variables.tf</em> under the  <strong>instance_ssh_keys</strong> variable containing the key value. Make sure to have an entry in variables_&lt;region&gt;.tf file with the name you enter in SSH Key Var Name field of the Excel sheet and put the value as SSH key value. <br></p>
+<p>The "SSH Key Var Name" column accepts either the SSH key value directly or the name of a variable declared in variables.tf under the <strong>instance_ssh_keys</strong> variable that contains the key value. Ensure there is an entry in the variables_&lt;region&gt;.tf file with the name entered in the SSH Key Var Name field of the Excel sheet, and set the value to the SSH key value.
+ <br></p>
 </li>
 </ol>
 <div class="admonition quote">
 <p class="admonition-title">Example</p>
-<p>If you enter the SSH Key Var Name as <strong>ssh_public_key</strong> in excel sheet, make an entry in variables_&lt;region&gt;.tf file as shown below:</p>
+<p>If the SSH Key Var Name is entered as <strong>ssh_public_key</strong> in the Excel sheet, make an entry in the variables_<region>.tf file as shown below.</p>
 </div>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>    variable  &#39;instance_ssh_keys&#39;  {
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    type = map(any)
@@ -2040,15 +2041,21 @@
 </span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>      }
 </span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    } 
 </span></code></pre></div>
-<p><br>
-5. Enter subnet name column value as: &lt;vcn-name&gt;_&lt;subnet-name&gt; <br></p>
-<p>6.. Source Details column of the excel sheet accepts both image and boot volume as the source for instance to be launched. <br>
+<p><br></p>
+<ol>
+<li>
+<p>Enter subnet name column value as: &lt;vcn-name&gt;_&lt;subnet-name&gt; <br></p>
+</li>
+<li>
+<p>Source Details column of the excel sheet accepts both image and boot volume as the source for instance to be launched. <br>
    Format:</p>
-<div class="language-text highlight"><pre><span></span><code>       image::\&lt;variable containing ocid of image&gt; or
-       bootVolume::\&lt;variable containing ocid of boot volume&gt;
+<div class="language-text highlight"><pre><span></span><code>   image::\&lt;variable containing ocid of image&gt; or
+   bootVolume::\&lt;variable containing ocid of boot volume&gt;
 </code></pre></div>
-<p>Make sure to have an entry in variables_&lt;region&gt;.tf file for the value you enter in Source Details field of the Excel sheet.
-Ex: If you enter the Source Details as image::Linux, make an entry in variables_&lt;region&gt;.tf file under the <strong>instance_source_ocids</strong> variable as shown below:</p>
+</li>
+</ol>
+<p>Ensure there is an entry in the variables_&lt;region&gt;.tf file for the value entered in the Source Details field of the Excel sheet.</p>
+<p>For example, If the source details is entered as <strong>image::Linux</strong>, an entry should be made in the variables_&lt;region&gt;.tf file under the <strong>instance_source_ocids</strong> variable as shown below:</p>
 <div class="language-text highlight"><pre><span></span><code>variable &#39;instance_source_ocids&#39; {
  type = map(any)
  Linux    = &quot;&lt;LATEST LINUX OCID HERE&gt;&quot;
@@ -2059,26 +2066,40 @@ Ex: If you enter the Source Details as image::Linux, make an entry in variables_
  #instance_source_ocids_END#
 }
 </code></pre></div>
-<p>7.. Mention shape to be used in Shape column of the excel sheet. If Flex shape is to be used format is:</p>
-<div class="language-text highlight"><pre><span></span><code>     shape::ocpus
-     eg: VM.Standard.E3.Flex::5
+<ol>
+<li>
+<p>Mention shape to be used in Shape column of the excel sheet. If Flex shape is to be used format is:</p>
+<div class="language-text highlight"><pre><span></span><code> shape::ocpus
+ eg: VM.Standard.E3.Flex::5
 </code></pre></div>
-<p>8.. Custom Policy Compartment Name : Specify the compartment name where the Custom Policy is created. <br></p>
-<p>9.. Create_Is PV Encryption In Transit Enabled attribute should be set to True to enable encryption for new instances. Default is False. <br></p>
-<p>10.. Update_Is PV Encryption In Transit Enabled attribute should be set to True to enable encryption for existing instances. <br></p>
-<p>11.. Add any additonal attributes (not part of excel sheet already) as per  <a href="../additional-attributes/">this</a>. <br></p>
-<p>12.. To enable or disable a plugin for the instance add new column with name as <b>'Plugin &lt;plugin-name-in-console&gt;' </b> eg 'Plugin Bastion'.
+</li>
+<li>
+<p>Custom Policy Compartment Name : Specify the compartment name where the Custom Policy is created. <br></p>
+</li>
+<li>
+<p>Create_Is PV Encryption In Transit Enabled attribute should be set to True to enable encryption for new instances. Default is False. <br></p>
+</li>
+<li>
+<p>Update_Is PV Encryption In Transit Enabled attribute should be set to True to enable encryption for existing instances. <br></p>
+</li>
+<li>
+<p>Add any additonal attributes (not part of excel sheet already) as per  <a href="../additional-attributes/">this</a>. <br></p>
+</li>
+<li>
+<p>To enable or disable a plugin for the instance add new column with name as <b>'Plugin &lt;plugin-name-in-console&gt;' </b> eg 'Plugin Bastion'.
     Valid values are Enabled or Disabled <br></p>
+</li>
+</ol>
 <h2 id="remote-executioncloud-init-scenarios">Remote Execution/Cloud Init Scenarios</h2>
 <p><strong>Managing Remote Execution</strong></p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Before you start with configuring remote execution for OCI instance(s) please ensure network connectivity through Bastion host or direct reach to the OCI instance(s) from where terraform is being invoked.</p>
+<p>Before configuring remote execution for OCI instance(s), ensure network connectivity through Bastion host or direct reach to the OCI instance(s) from where terraform is being invoked.</p>
 </div>
 <p>Remote execution should be used as the <em>last resort or only during initial provisioning</em> for a given OCI instance(s). This feature cannot be used for export of instances.</p>
 <ul>
 <li>Add the <em>'Remote Execute'</em> columm to the excel sheet for the corresponding instance entry. Format is: bastion_ip@<scriptname> </li>
-<li>Please skip bastion_ip if there is direct connectivity with target servers via VPN.</li>
+<li>Skip bastion_ip if there is direct connectivity with target servers via VPN.</li>
 <li>Scripts folder should have the <em>ansible script files</em> or <em>shell script files</em> and ssh-keys for instances and bastion host. The *.yaml or *.yml extensions will be considered for the ansible script files and .sh extensions will be considered for shell scripts files.</li>
 <li>For block-volume attachment configuration via ansible playbook the device name is must, and it's currently set to <em>"/dev/oracleoci/oraclevdb"</em> in the sample ansible playbook.</li>
 <li>Common scenarios like security hardening and other common shell scripts can be executed against the OCI instances during provisioning.</li>
@@ -2095,10 +2116,10 @@ Ex: If you enter the Source Details as image::Linux, make an entry in variables_
 <li>Execute Terraform commands to provision the instances in OCI and run cloud-init scripts during provisioning.</li>
 </ul>
 <h2 id="executing-the-setupocipy-script">Executing the setUpOCI.py script:</h2>
-<p>On choosing <em>"Compute"</em> in the SetUpOCI menu and <em>"Add/Modify/Delete Instances/Boot Backup Policy"</em> submenu will allow to launch your VM on OCI tenancy.</p>
+<p>On choosing <em>"Compute"</em> in the SetUpOCI menu and <em>"Add/Modify/Delete Instances/Boot Backup Policy"</em> submenu will allow to launch the VM on OCI tenancy.</p>
 <p>Output terraform file generated: <code>&lt;outdir&gt;/&lt;region_dir&gt;/&lt;service_dir&gt;&lt;prefix&gt;_instances.auto.tfvars</code> and <code>&lt;outdir&gt;/&lt;region_dir&gt;/&lt;service_dir&gt;/&lt;prefix&gt;_boot-backup-policy.auto.tfvars</code>  </p>
 <p>Once the terraform apply is complete, view the resources under Compute -&gt; Instances for the region.</p>
-<p>On re-running the same option you will find the previously existing files being backed up under directory →   <code>&lt;outdir&gt;/&lt;region_dir&gt;/&lt;service_dir&gt;/backup_instances/&lt;Date&gt;-&lt;Month&gt;-&lt;Time&gt;.</code></p>
+<p>Upon re-running the same option, the previously existing files will be backed up under the directory →   <code>&lt;outdir&gt;/&lt;region_dir&gt;/&lt;service_dir&gt;/backup_instances/&lt;Date&gt;-&lt;Month&gt;-&lt;Time&gt;.</code></p>
 <p><br><br></p>
 <div align='center'>
 

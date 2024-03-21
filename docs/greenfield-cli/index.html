@@ -1965,15 +1965,16 @@ Fill the excel with appropriate values and copy at <em>/cd3user/tenancies/&lt;cu
 </span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="c1">#input config file for Python API communication with OCI eg /cd3user/tenancies/&lt;customer_name&gt;/.config_files/&lt;customer_name&gt;_config;</span>
 </span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="na">config_file</span><span class="o">=</span><span class="s">/cd3user/tenancies/demo/.config_files/demo_oci_config</span>
 </span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>
-</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="c1"># Leave it blank if you want single outdir or specify outdir_structure_file.properties containing directory structure for OCI services.</span>
-</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="na">outdir_structure_file</span><span class="o">=</span><span class="s">/cd3user/tenancies/demo/demo_outdir_structure_file.properties</span>
-</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>
-</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a><span class="c1">#path to cd3 excel eg /cd3user/tenancies/&lt;customer_name&gt;/CD3-Customer.xlsx</span>
-</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a><span class="na">cd3file</span><span class="o">=</span><span class="s">/cd3user/tenancies/demo/CD3-demo.xlsx</span>
-</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>
-</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a><span class="c1">#specify create_resources to create new resources in OCI(greenfield workflow)</span>
-</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a><span class="c1">#specify export_resources to export resources from OCI(non-greenfield workflow)</span>
-</span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a><span class="na">workflow_type</span><span class="o">=</span><span class="s">create_resources</span>
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="c1"># Leave the field blank if you want a single outdir or specify outdir_structure_file.properties containing the directory structure for OCI services.</span>
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="na">outdir_structure_file</span><span class="o">=</span><span class="s">/cd3user/tenancies/demo/demo_outdir_structure_file.properties</span>
+</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>
+</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a><span class="c1">#path to cd3 excel eg /cd3user/tenancies/&lt;customer_name&gt;/CD3-Customer.xlsx</span>
+</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a><span class="na">cd3file</span><span class="o">=</span><span class="s">/cd3user/tenancies/demo/CD3-demo.xlsx</span>
+</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>
+</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a><span class="c1">#specify create_resources to create new resources in OCI(greenfield workflow)</span>
+</span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a><span class="c1">#specify export_resources to export resources from OCI(non-greenfield workflow)</span>
+</span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a><span class="na">workflow_type</span><span class="o">=</span><span class="s">create_resources</span>
 </span></code></pre></div></p>
 <p><strong>Step 3</strong>:
 <br>Execute the setUpOCI.py script to start creating the terraform configuration files.</p>
@@ -1988,10 +1989,10 @@ Fill the excel with appropriate values and copy at <em>/cd3user/tenancies/&lt;cu
 <p>Script to fetch the compartment OCIDs into variables file has not been executed.<br>
 Do you want to run it now? (y|n):</p>
 </div>
-<p>→ This prompt appears when you run the toolkit for the very first time or when any new compartments are created using the toolkit. Enter 'y' to fetch the details of compartment OCIDs into variables file.</p>
+<p>→ This prompt appears when executing the toolkit for the very first time or when any new compartments are created using the toolkit. Enter 'y' to fetch the details of compartment OCIDs into variables file.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Execute <strong>"Fetch Compartments OCIDs to variables file"</strong> from <strong>CD3 Services</strong> in setUpOCI menu after you create Compartments. This is a required step everytime you create a compartment via toolkit or via the OCI console.</p>
+<p>Execute <strong>"Fetch Compartments OCIDs to variables file"</strong> from <strong>CD3 Services</strong> in setUpOCI menu after creating Compartments. This step is required every time a compartment is created via the toolkit or via the OCI console.</p>
 </div>
 <p><br>→ After fetching the compartment details, the toolkit will display the menu options as shown below:</p>
 <div class="admonition example">
@@ -2002,9 +2003,9 @@ Do you want to run it now? (y|n):</p>
 <p><strong>Expected Outputs:</strong>
 <br>It will generate tfvars files for the services selected at <em>/cd3user/tenancies/&lt;customer_name&gt;/terraform_files/&lt;region_dir&gt;/&lt;service_dir&gt;/</em></p>
 <p><strong>Step 4:</strong> 
-<br>Change your directory to  <code>/cd3user/tenancies/&lt;customer_name&gt;/terraform_files/&lt;region_dir&gt;/&lt;service_dir&gt;</code>  and Execute:</p>
-<p><strong>terraform init</strong>  - To initialize and prepare your working/out directory so Terraform can run the configuration.<br></p>
-<p><strong>terraform plan</strong>  - To preview any changes before you apply them. Run the plan against <a href="../opa-integration/">OPA policies</a> for compliance against CIS.</p>
+<br>Change the directory to  <code>/cd3user/tenancies/&lt;customer_name&gt;/terraform_files/&lt;region_dir&gt;/&lt;service_dir&gt;</code>  and Execute:</p>
+<p><strong>terraform init</strong>  - To initialize and prepare the working/out directory so Terraform can run the configuration.<br></p>
+<p><strong>terraform plan</strong>  - To preview any changes before applying them. Run the plan against <a href="../opa-integration/">OPA policies</a> for compliance against CIS.</p>
 <p><strong>terraform apply</strong> - To make the changes defined by Terraform configuration to create, update, or destroy resources in OCI.</p>
 
 

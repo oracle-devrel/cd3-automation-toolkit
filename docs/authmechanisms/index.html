@@ -1925,7 +1925,7 @@
 
 
 <h1 id="oci-sdk-authentication-methods">OCI SDK Authentication Methods</h1>
-<p>Choose one of the below authentication mechanisms to be used for the toolkit execution -</p>
+<p>CD3 supports the below OCI authentication mechanisms for the toolkit execution. Choose one from the list:</p>
 <ul>
 <li><a href="#api-key-based-authentication">API key-based authentication</a></li>
 <li><a href="#session-token-based-authentication">Session token-based authentication</a></li>
@@ -1933,23 +1933,20 @@
 </ul>
 <h2 id="api-key-based-authentication">API key-based authentication</h2>
 <ol>
-<li>
-<p>Create API PEM Key<br>
+<li>Create API PEM Key<br>
    <br>RSA key pair in PEM format (minimum 2048 bits) is needed to use OCI APIs. If the key pair does not exist, create them using below command inside docker container:
 <div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>cd /cd3user/oci_tools/cd3_automation_toolkit/user-scripts/
 </span></code></pre></div>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>python createAPIKey.py
 </span></code></pre></div>
-→ This will generate the public/private key pair (oci_api_public.pem and oci_api_private.pem) at /cd3user/tenancies/keys/
-   <br><br>
- In case you already have the keys, you can copy the private key file inside the container at 
- /cd3user/tenancies/keys/</p>
-</li>
-<li>
-<p>Upload Public Key<br>
+→ This will generate the public/private key pair (oci_api_public.pem and oci_api_private.pem) at <strong>/cd3user/tenancies/keys/</strong>
+   <br><br></li>
+</ol>
+<p>In case you already have the keys, you can copy the private key file inside the container at <strong>/cd3user/tenancies/keys/</strong></p>
+<ol>
+<li>Upload Public Key<br>
    <br>
-   Upload the Public key to "APIkeys" under user settings in OCI Console.</p>
-<ul>
+   Upload the Public key to "APIkeys" under user settings in OCI Console.<ul>
 <li>Open the Console, and sign in as the user.</li>
 <li>View the details for the user who will be calling the API with the key pair.</li>
 <li>Open the Profile menu (User menu icon) and click User Settings.</li>

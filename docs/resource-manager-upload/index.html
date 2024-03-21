@@ -1950,7 +1950,7 @@
 <p><kbd>
 <img width="800" alt="image" src="../images/RMupload-1.png">
 </kbd></p>
-<p>To use an existing Resource Manager stack, enter the details in the format provided above into your <code>outdir/&lt;region_dir&gt;/rm_ocids.csv</code> file. </p>
+<p>To use an existing Resource Manager stack, enter the details in the format provided above into the <code>outdir/&lt;region_dir&gt;/rm_ocids.csv</code> file. </p>
 <p>Sample Execution:</p>
 <p><kbd>
 <img width="800" height="100" alt="image" src="../images/RMupload-2.png">
@@ -1959,9 +1959,9 @@
 <p class="admonition-title">Important</p>
 <p>If you are using remote state and upload the stack to OCI Resource Manager using <b>Upload current terraform files/state to Resource Manager</b> under <b>Developer Services</b>, then running terraform plan/apply from OCI Resource Manager will not work and show below error:</p>
 <p><img width="597" alt="Screenshot 2024-01-17 at 11 38 54 PM" src="../images/RMupload-3.png"></p>
-<p>You will have to remove backend.tf from the directory, bring the remote state into local and then re-upload the stack.</p>
 </div>
-<p>On choosing <strong>"Developer Services"</strong> in the SetUpOCI menu, choose <strong>"Upload current terraform files/state to Resource Manager"</strong> sub-option to upload the terraform outdir into OCI Resource Manager.</p>
+<p>Remove backend.tf from the directory, bring the remote state into local and then re-upload the stack.
+On choosing <strong>"Developer Services"</strong> in the SetUpOCI menu, choose <strong>"Upload current terraform files/state to Resource Manager"</strong> sub-option to upload the terraform outdir into OCI Resource Manager.</p>
 
 
 

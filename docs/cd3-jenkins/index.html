@@ -1991,9 +1991,9 @@
 <h1 id="using-the-automation-toolkit-with-jenkins">Using the Automation Toolkit with Jenkins</h1>
 <p>Jenkins integration with the toolkit is provided to jump start your journey with CI/CD for IaC in OCI. A beginner level of understanding of Jenkins is required.</p>
 <h2 id="pre-reqs-for-jenkins-configuration"><strong>Pre-reqs for Jenkins Configuration</strong></h2>
-<p>The configurations are done when you execute createTenancyConfig.py in <a href="../connect-container-to-oci-tenancy/">Connect container to OCI Tenancy</a>. Validate them here:</p>
+<p>The configurations are done when executing createTenancyConfig.py in <a href="../connect-container-to-oci-tenancy/">Connect container to OCI Tenancy</a>. Here are the validation steps:</p>
 <ul>
-<li>jenkins.properties file is created under <code>/cd3user/tenancies/jenkins_home</code>  as per input parameters in tenancyconfig.properties<br></li>
+<li>jenkins.properties file is created under <code>/cd3user/tenancies/jenkins_home</code>  as per input parameters in tenancyconfig.        properties<br></li>
 <li>An Object Storage bucket is created in OCI in the specified compartment to manage tfstate remotely. <br></li>
 <li>Customer Secret Key is configured for the user for S3 credentials of the bucket. <br></li>
 <li>A DevOps Project, Repo and Topic are created in OCI in the specified compartment to store terraform_files. GIT is configured on the container with config file at <code>/cd3user/.ssh/config</code> <br></li>
@@ -2018,9 +2018,9 @@
 </ul>
 </div>
 <ul>
-<li>It will prompt you to create first user to access Jenkins URL. This will be the admin user.</li>
+<li>It will prompt to create the first user to access Jenkins URL. This will be the admin user.</li>
 <li>The Automation Toolkit only supports a single user Jenkins setup in this release.</li>
-<li>Once you login, Jenkins Dashbord will be displayed.</li>
+<li>After logging in, Jenkins Dashboard will be displayed.</li>
 </ul>
 
 

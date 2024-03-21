@@ -1943,8 +1943,7 @@
 <h1 id="frequently-asked-questions">Frequently Asked Questions</h1>
 <p><strong>1. Is there a way to verify my input CD3 Excel sheet for any typos/miskates?</strong>
 <br> <br />
-       Yes, please choose 'Validate CD3' option in setUpOCI menu in GreenField workflow. It validates specific tabs of the excel sheet. Please see
-       <a href="../cd3validator/">CD3 Validator Features</a> for more details.</p>
+       Yes, choose 'Validate CD3' option in setUpOCI menu in GreenField workflow. It validates specific tabs of the excel sheet. Check out <a href="../cd3validator/">CD3 Validator Features</a> for more details.</p>
 <p><strong>2. Can I use an existing outdir to export the data from OCI?</strong>
 <br> </p>
 <p>Make sure to use a clean outdir without any .tfvars or .tfstate file. Also use a blank CD3 Excel sheet as export process will overwrite the data in the    respective tab.</p>
@@ -1953,7 +1952,7 @@
 Re-run createTenancyConfig.py with same details in tenancyConfig.properties file. It will keep existing region directories as is and create new directory for newly subscribed region.</p>
 <p><strong>4. How do I upgrade an existing version of the toolkit to the new one without disrupting my existing tenancy files/directories?</strong>
 <br><br />
-Please look at <a href="../upgrade-toolkit/">Steps to Upgrade Your Toolkit.</a></p>
+ Check out <a href="../upgrade-toolkit/">Steps to Upgrade Your Toolkit.</a></p>
 <p><strong>5. How do I export instances in batches using different filters?</strong>
 <br><br />
 Follow below steps:</p>
@@ -1963,7 +1962,7 @@ Follow below steps:</p>
 <li>Specify the filter - prefix of the instances or specific AD to export.</li>
 <li>Once the execution completes, take a backup of the files generated for instances in out directory( <em>&lt;customer_name&gt;_instances.     tfvars</em> and <em>tf_import_cmds _instances_nonGF.sh</em>) and a backup of the 'Instances' tab of the Input CD3 Excel Sheet.</li>
 <li>Repeat steps from 1 to 4 to export next set of Instances using another filter.</li>
-<li>Once you export all the required instances using multiple filters, move the files from backup to the out directory and then execute all the shell scripts generated for Instances. Consolidate the data of exported instances from the Excel sheet backups.</li>
+<li>After exporting all the required instances using multiple filters, move the files from backup to the out directory, and then execute all the shell scripts generated for instances. Consolidate the data of exported instances from the Excel sheet backups.</li>
 </ul>
 <p><strong>6. How do I delete a compartment from OCI using the toolkit?</strong>
 <br></p>

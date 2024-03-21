@@ -1945,8 +1945,8 @@
 OCI components like - Network, Instances, LBaaS, Databases etc., were maintained in a single tfstate file.
 This was not a viable option for tenancies requiring huge infrastructure.</p>
 <p>Starting with the Automation Toolkit release v10.1, it is now possible to select separate directories for each Oracle Cloud Infrastructure (OCI) service supported by the toolkit.</p>
-<p>This can be configured while <a href="../connect-container-to-oci-tenancy/">connecting your container to the OCI tenancy</a>.</p>
-<p>A new parameter 'outdir_structure_file' has been introduced in tenancyconfig.properties using which can be used to configure single outdir or different outdir for each service.</p>
+<p>This can be configured while <a href="../connect-container-to-oci-tenancy/">connecting CD3 container to the OCI tenancy</a>.</p>
+<p>A new parameter 'outdir_structure_file' has been introduced in tenancyconfig.properties,  which can be used to configure single outdir or different outdir for each service.</p>
 <p>To enable independent service directories for the generated Terraform files, follow the below steps:</p>
 <ol>
 <li>
@@ -1956,7 +1956,7 @@ This was not a viable option for tenancies requiring huge infrastructure.</p>
    <img alt="image" src="../images/grouptf-1.png" /></p>
 </li>
 <li>
-<p>Under the same user-scripts folder, open <em>outdir_structure_file.properties</em> and modify the directory names if required. They are in the                                                    format:<em>OCI_Service_Name=Directory_Name</em>.</p>
+<p>Under the same user-scripts folder, open <em>outdir_structure_file.properties</em> and modify the directory names if required. They are in the format: <em>OCI_Service_Name=Directory_Name</em>.</p>
 </li>
 </ol>
 <div class="admonition note">
