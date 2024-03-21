@@ -1,5 +1,14 @@
 {% if count == 0 %}
-
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+############################
+# Firewall Policy Decryption Profiles
+# Firewall Policy Decryption Profile - tfvars
+# Allowed Values:
+# network_firewall_policy_id can be the ocid or the name of the firewall Policy that needs to be attached to the Firewall
+# profile_type can be SSL_FORWARD_PROXY or SSL_INBOUND_INSPECTION
+# Sample import command for Firewall Policy Decryption Profile:
+# terraform import "module.decryption_profiles[\"<<decryption-profile terraform variable name>>\"].oci_network_firewall_network_firewall_policy_decryption_profile.network_firewall_policy_decryption_profile\"  networkFirewallPolicies/<<firewall-policy ocid>>/decryptionProfiles/<<decryption-profile ocid>>
+############################
 decryption_profiles = {
     ##Add New Decryption Profile for {{ region|lower }} here##
 }

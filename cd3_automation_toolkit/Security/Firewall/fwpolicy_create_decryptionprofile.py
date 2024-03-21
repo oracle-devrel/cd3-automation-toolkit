@@ -23,10 +23,10 @@ def fwpolicy_create_decryptionprofile(inputfile, outdir, service_dir, prefix, ct
     #print (inputfile, outdir, prefix, config, service_dir)
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True)
-    decryptionprofile = env.get_template('policy-decryptionprofile-template')
+    decryptionprofile = env.get_template('policy-decryptionprofiles-template')
 
 
-    sheetName = "Firewall-Policy-Decryptprofile"
+    sheetName = "Firewall-Policy-DecryptProfile"
     decryptionprofile_auto_tfvars_filename = prefix + "_"+sheetName.lower()+".auto.tfvars"
 
     filename = inputfile

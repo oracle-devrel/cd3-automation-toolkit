@@ -23,10 +23,10 @@ def fwpolicy_create_applicationlist(inputfile, outdir, service_dir, prefix, ct):
     #print(inputfile, outdir, prefix, config, service_dir)
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True)
-    applicationlist = env.get_template('policy-applicationlist-template')
+    applicationlist = env.get_template('policy-applicationlists-template')
 
 
-    sheetName = "Firewall-Policy-Applicationlist"
+    sheetName = "Firewall-Policy-ApplicationList"
     applicationlist_auto_tfvars_filename = prefix + "_firewall-policy-applicationlist.auto.tfvars"
     filename = inputfile
 

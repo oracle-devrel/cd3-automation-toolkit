@@ -23,7 +23,7 @@ def firewallpolicy_create(inputfile, outdir, service_dir, prefix, ct):
     #print (inputfile, outdir, prefix, config, service_dir)
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True)
-    policy = env.get_template('policy-template')
+    policy = env.get_template('firewall-policies-template')
 
 
     sheetName = "Firewall-Policy"

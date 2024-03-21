@@ -23,11 +23,10 @@ def fwpolicy_create_servicelist(inputfile, outdir, service_dir, prefix, ct):
     #print (inputfile, outdir, prefix, config, service_dir)
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True)
-    servicelist = env.get_template('policy-servicelist-template')
+    servicelist = env.get_template('policy-servicelists-template')
 
 
-    sheetName = "Firewall-Policy-Servicelist"
-    service_auto_tfvars_filename = prefix + "_service.auto.tfvars"
+    sheetName = "Firewall-Policy-ServiceList"
     servicelist_auto_tfvars_filename = prefix + "_firewall-policy-servicelist.auto.tfvars"
     filename = inputfile
 

@@ -23,10 +23,10 @@ def fwpolicy_create_urllist(inputfile, outdir, service_dir, prefix, ct):
     #print (inputfile, outdir, prefix, config, service_dir)
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True)
-    urllist = env.get_template('policy-urllist-template')
+    urllist = env.get_template('policy-urllists-template')
 
 
-    sheetName = "Firewall-Policy-Urllist"
+    sheetName = "Firewall-Policy-UrlList"
     urllist_auto_tfvars_filename = prefix + "_"+sheetName.lower()+".auto.tfvars"
 
     filename = inputfile

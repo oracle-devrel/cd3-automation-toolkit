@@ -26,8 +26,8 @@ def fwpolicy_create_apps(inputfile, outdir, service_dir, prefix, ct):
     applications = env.get_template('policy-apps-template')
 
 
-    sheetName = "Firewall-Policy-Applicationlist"
-    apps_auto_tfvars_filename = prefix + "_firewall-policy-apps.auto.tfvars"
+    sheetName = "Firewall-Policy-ApplicationList"
+    apps_auto_tfvars_filename = prefix + "_firewall-policy-application.auto.tfvars"
 
     filename = inputfile
 

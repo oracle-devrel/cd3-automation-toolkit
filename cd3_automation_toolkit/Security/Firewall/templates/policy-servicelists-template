@@ -1,0 +1,24 @@
+{% if count == 0 %}
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+############################
+# Firewall Policy Service Lists
+# Firewall Policy Service List - tfvars
+# Allowed Values:
+# network_firewall_policy_id can be the ocid or the name of the firewall Policy that needs to be attached to the Firewall
+# Sample import command for Firewall Policy Service List:
+# terraform import "module.service_lists[\"<<service-list terraform variable name>>\"].oci_network_firewall_network_firewall_policy_service_list.network_firewall_policy_service_list\"  networkFirewallPolicies/<<firewall-policy ocid>>/serviceLists/<<service-list ocid>>
+############################
+
+service_lists = {
+    ##Add New service list for {{ region|lower }} here##
+}
+{% else %}
+{% if service_list != "" and service_list != "nan" and service_list != null %}
+{{ policy_tf_name }}_{{servicelist_tf_name}} = {
+  service_list_name = "{{ servicelist_name }}"
+  network_firewall_policy_id = "{{ policy_tf_name }}"
+  services = [{{services_tf_name}}]
+  },
+
+  {% endif %}
+{% endif %}

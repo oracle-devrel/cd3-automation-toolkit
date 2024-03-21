@@ -151,6 +151,8 @@ def __get_instances_info(compartment_name, compartment_id, reg_name, display_nam
                     bdet = None
                     boot_details = ''
                     bvp = []
+                    print("Skipping instance "+ins_dname +" bacause of faulty Boot Volume")
+                    continue
 
             bkp_policy_name = ""
 

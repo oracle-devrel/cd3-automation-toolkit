@@ -23,10 +23,10 @@ def fwpolicy_create_address(inputfile, outdir, service_dir, prefix, ct):
     #print (inputfile, outdir, prefix, config, service_dir)
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True)
-    address = env.get_template('policy-address-template')
+    address = env.get_template('policy-addresslists-template')
 
 
-    sheetName = "Firewall-Policy-Address"
+    sheetName = "Firewall-Policy-AddressList"
     address_auto_tfvars_filename = prefix + "_"+sheetName.lower()+".auto.tfvars"
 
     filename = inputfile

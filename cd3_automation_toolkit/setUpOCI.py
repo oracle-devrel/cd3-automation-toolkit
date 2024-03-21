@@ -133,6 +133,8 @@ def execute_options(options, *args, **kwargs):
         quit = 'q' in options
     else:
         for option in options:
+            if option.name == "Execute All":
+                continue
             if option.name in ['Security Rules', 'Route Rules', 'DRG Route Rules', 'Network Security Groups','Customer Connectivity','CIS Compliance Checking Script'] and devops:
                 with section(option.text):
                     option.callback(*args, **kwargs,sub_options=sub_child_options)
@@ -556,7 +558,7 @@ def export_instances(inputfile, outdir,config,signer, ct, export_regions):
     ad_names = list(map(lambda x: x.strip(), ad_name_str.split(','))) if ad_name_str else None
 
     Compute.export_instances(inputfile, outdir, service_dir_instance,config,signer,ct, export_compartments=compartments, export_regions=export_regions, display_names = display_names, ad_names = ad_names)
-    create_instances(inputfile, outdir, service_dir, prefix, ct)
+    create_instances(inputfile, outdir, service_dir_instance, prefix, ct)
     print("\n\nExecute tf_import_commands_instances_nonGF.sh script created under each region directory to synch TF with OCI Instances\n")
     # Update modified path list
     update_path_list(regions_path=export_regions, service_dirs=[service_dir_instance])
@@ -1416,25 +1418,25 @@ def create_firewall_policy(inputfile, outdir, service_dir, prefix, ct,execute_al
             Option('Execute All', None, 'Processing all tabs related to Firewall-Policy'),
             Option('Add/Modify/Delete Policy', Security.firewallpolicy_create, 'Processing Firewall-Policy Tab'),
             Option('Add/Modify/Delete Service', Security.fwpolicy_create_service,
-                   'Processing Firewall-Policy-Serviceslist Tab'),
+                   'Processing Firewall-Policy-ServicesList Tab'),
             Option('Add/Modify/Delete Service-list', Security.fwpolicy_create_servicelist,
-                   'Processing Firewall-Policy-Servicelist Tab'),
+                   'Processing Firewall-Policy-ServiceList Tab'),
             Option('Add/Modify/Delete Application', Security.fwpolicy_create_apps,
-                   'Processing Firewall-Policy-Applicationlist Tab'),
+                   'Processing Firewall-Policy-ApplicationList Tab'),
             Option('Add/Modify/Delete Application-list', Security.fwpolicy_create_applicationlist,
-                   'Processing Firewall-Policy-Applicationlist Tab'),
+                   'Processing Firewall-Policy-ApplicationList Tab'),
             Option('Add/Modify/Delete Address-list', Security.fwpolicy_create_address,
-                   'Processing Firewall-Policy-Address Tab'),
+                   'Processing Firewall-Policy-AddressList Tab'),
             Option('Add/Modify/Delete Url-list', Security.fwpolicy_create_urllist,
-                   'Processing Firewall-Policy-Urllist Tab'),
+                   'Processing Firewall-Policy-UrlList Tab'),
             Option('Add/Modify/Delete Security rules', Security.fwpolicy_create_secrules,
-                   'Processing Firewall-Policy-Secrules Tab'),
+                   'Processing Firewall-Policy-SecRule Tab'),
             Option('Add/Modify/Delete Mapped Secrets', Security.fwpolicy_create_secret,
-                   'Processing Firewall-Policy-Secrets Tab'),
+                   'Processing Firewall-Policy-Secret Tab'),
             Option('Add/Modify/Delete Decryption Rules', Security.fwpolicy_create_decryptrules,
                    'Processing Firewall-Policy-DecryptRule Tab'),
             Option('Add/Modify/Delete Decryption Profile', Security.fwpolicy_create_decryptionprofile,
-                   'Processing Firewall-Policy-Decrytprofile Tab'),
+                   'Processing Firewall-Policy-DecryptProfile Tab'),
         ]
     if sub_options and sub_options != ['']:
         options = match_options(options, sub_options)

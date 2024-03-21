@@ -323,7 +323,7 @@ def validate_FirewallPolicyApplist(filename, fwpolicy_list,ct):
     fwpolicyapp_check = []
     fwpolicyapp_appg_length = False
     fwpolicyapp_appg_mistake = False
-    dffwpolicyapplist = data_frame(filename, 'Firewall-Policy-Applicationlist')
+    dffwpolicyapplist = data_frame(filename, 'Firewall-Policy-ApplicationList')
     dfcolumns = dffwpolicyapplist.columns.values.tolist()
 
     for i in dffwpolicyapplist.index:
@@ -403,7 +403,7 @@ def validate_FirewallPolicyServicelist(filename, fwpolicy_list,ct):
     fwpolicyservice_check = []
     fwpolicyservice_serviceg_length = False
     fwpolicyservice_serviceg_mistake = False
-    dffwpolicyservicelist = data_frame(filename, 'Firewall-Policy-Servicelist')
+    dffwpolicyservicelist = data_frame(filename, 'Firewall-Policy-ServiceList')
     dfcolumns = dffwpolicyservicelist.columns.values.tolist()
 
     for i in dffwpolicyservicelist.index:
@@ -481,7 +481,7 @@ def validate_FirewallPolicyUrllist(filename, fwpolicy_list,ct):
     fwpolicyurl_check = []
     fwpolicyurl_urlg_length = False
     fwpolicyurl_urlg_mistake = False
-    dffwpolicyUrllist = data_frame(filename, 'Firewall-Policy-Urllist')
+    dffwpolicyUrllist = data_frame(filename, 'Firewall-Policy-UrlList')
     dfcolumns = dffwpolicyUrllist.columns.values.tolist()
 
     for i in dffwpolicyUrllist.index:
@@ -540,7 +540,7 @@ def validate_FirewallPolicyAddress(filename, fwpolicy_list,ct):
     fwpolicyaddress_check = []
     fwpolicyaddress_addressg_length = False
     fwpolicyaddress_addressg_mistake = False
-    dffwpolicyAddress = data_frame(filename, 'Firewall-Policy-Address')
+    dffwpolicyAddress = data_frame(filename, 'Firewall-Policy-AddressList')
     dfcolumns = dffwpolicyAddress.columns.values.tolist()
 
     for i in dffwpolicyAddress.index:
@@ -611,7 +611,7 @@ def validate_FirewallPolicySecrets(filename, fwpolicy_list, config,signer, ct):
     fwpolicysecret_secret_length = False
     fwpolicysecret_comp_check = False
     fwpolicysecret_vault_check = []
-    dffwpolicysecret = data_frame(filename, 'Firewall-Policy-Secrets')
+    dffwpolicysecret = data_frame(filename, 'Firewall-Policy-Secret')
     dfcolumns = dffwpolicysecret.columns.values.tolist()
 
     for i in dffwpolicysecret.index:
@@ -708,7 +708,7 @@ def validate_FirewallPolicyDecryption(filename, fwpolicy_list,ct):
     fwpolicydecrypt_invalid_check = False
     fwpolicydecrypt_check = []
     fwpolicydecrypt_nameg_length = False
-    dffwpolicydecrypt = data_frame(filename, 'Firewall-Policy-Decryptprofile')
+    dffwpolicydecrypt = data_frame(filename, 'Firewall-Policy-DecryptProfile')
     dfcolumns = dffwpolicydecrypt.columns.values.tolist()
 
     for i in dffwpolicydecrypt.index:
@@ -881,10 +881,10 @@ def validate_FirewallPolicySecurityRule(filename, fwpolicy_list, fulladdreslist,
     fwpolicysecurityruleul_check = []
     fwpolicysecurityrule_action_mistake = False
     fwpolicysecurityrulepost_check = []
-    dffwpolicysecurityrule = data_frame(filename, 'Firewall-Policy-Secrules')
+    dffwpolicysecurityrule = data_frame(filename, 'Firewall-Policy-SecRule')
     dfcolumns = dffwpolicysecurityrule.columns.values.tolist()
 
-    dffwsecurityrule = data_frame(filename, 'Firewall-Policy-Secrules')
+    dffwsecurityrule = data_frame(filename, 'Firewall-Policy-SecRule')
     dffwsecurityrule_list = dffwsecurityrule['Rule Name'].astype(str)
     dffwsecurityrulepolicy_list = dffwsecurityrule['Firewall Policy'].astype(str)
     fullsecurityrulelist = dffwsecurityrulepolicy_list + '::' + dffwsecurityrule_list
@@ -1080,32 +1080,32 @@ def validate_firewall_cd3(filename, var_file, prefix, outdir, config,signer,ct):
     dffwpolicy = data_frame(filename, 'Firewall-Policy')
     fwpolicy_list = dffwpolicy['Policy Name'].astype(str)
 
-    dffwaddress = data_frame(filename, 'Firewall-Policy-Address')
+    dffwaddress = data_frame(filename, 'Firewall-Policy-AddressList')
     dffwaddress_list = dffwaddress['List Name'].astype(str)
     dffwaddresspolicy_list = dffwaddress['Firewall Policy'].astype(str)
     fulladdreslist = dffwaddresspolicy_list + '::' + dffwaddress_list
 
-    dffwservice = data_frame(filename, 'Firewall-Policy-Servicelist')
+    dffwservice = data_frame(filename, 'Firewall-Policy-ServiceList')
     dffwservice_list = dffwservice['Service List'].astype(str)
     dffwservicepolicy_list = dffwservice['Firewall Policy'].astype(str)
     fullservicelist = dffwservicepolicy_list + '::' + dffwservice_list
 
-    dffwapps = data_frame(filename, 'Firewall-Policy-Applicationlist')
+    dffwapps = data_frame(filename, 'Firewall-Policy-ApplicationList')
     dffwapps_list = dffwapps['Application List'].astype(str)
     dffwappspolicy_list = dffwapps['Firewall Policy'].astype(str)
     fullappslist = dffwappspolicy_list + '::' + dffwapps_list
 
-    dffwurls = data_frame(filename, 'Firewall-Policy-Urllist')
+    dffwurls = data_frame(filename, 'Firewall-Policy-UrlList')
     dffwurls_list = dffwurls['List Name'].astype(str)
     dffwurlspolicy_list = dffwurls['Firewall Policy'].astype(str)
     fullurlslist = dffwurlspolicy_list + '::' + dffwurls_list
 
-    dffwsecrets = data_frame(filename, 'Firewall-Policy-Secrets')
+    dffwsecrets = data_frame(filename, 'Firewall-Policy-Secret')
     dffwsecrets_list = dffwsecrets['Secret Name'].astype(str)
     dffwsecrestspolicy_list = dffwsecrets['Firewall Policy'].astype(str)
     fullsecretslist = dffwsecrestspolicy_list + '::' + dffwsecrets_list
 
-    dffwdecrypt = data_frame(filename, 'Firewall-Policy-Decryptprofile')
+    dffwdecrypt = data_frame(filename, 'Firewall-Policy-DecryptProfile')
     dffwdecrypt_list = dffwdecrypt['Decryption Profile Name'].astype(str)
     dffwdecryptpolicy_list = dffwdecrypt['Firewall Policy'].astype(str)
     fulldecryptlist = dffwdecryptpolicy_list + '::' + dffwdecrypt_list
@@ -1116,28 +1116,28 @@ def validate_firewall_cd3(filename, var_file, prefix, outdir, config,signer,ct):
     log("\n============================= Verifying Firewall-Policy Tab ==========================================\n")
     print("\nProcessing Firewall-Policy Tab..")
     fw_policy_check = validate_FirewallPolicy(filename, ct)
-    log("\n============================= Verifying Firewall-Policy-Applicationlist Tab ==========================================\n")
+    log("\n============================= Verifying Firewall-Policy-ApplicationList Tab ==========================================\n")
     print("\nProcessing Firewall-Policy-Applicationlist Tab..")
     fw_policyapp_check = validate_FirewallPolicyApplist(filename, fwpolicy_list,ct)
-    log("\n============================= Verifying Firewall-Policy-Servicelist Tab ==========================================\n")
+    log("\n============================= Verifying Firewall-Policy-ServiceList Tab ==========================================\n")
     print("\nProcessing Firewall-Policy-Servicelist Tab..")
     fw_policyservice_check = validate_FirewallPolicyServicelist(filename, fwpolicy_list,ct)
-    log("\n============================= Verifying Firewall-Policy-urllist Tab ==========================================\n")
+    log("\n============================= Verifying Firewall-Policy-urlList Tab ==========================================\n")
     print("\nProcessing Firewall-Policy-urllist Tab..")
     fw_policyurl_check = validate_FirewallPolicyUrllist(filename, fwpolicy_list,ct)
-    log("\n============================= Verifying Firewall-Policy-Address Tab ==========================================\n")
+    log("\n============================= Verifying Firewall-Policy-AddressList Tab ==========================================\n")
     print("\nProcessing Firewall-Policy-Address Tab..")
     fw_policyaddress_check = validate_FirewallPolicyAddress(filename, fwpolicy_list,ct)
-    log("\n============================= Verifying Firewall-Policy-Secrets Tab ==========================================\n")
+    log("\n============================= Verifying Firewall-Policy-Secret Tab ==========================================\n")
     print("\nProcessing Firewall-Policy-Secrets Tab..")
     fw_policysecrets_check = validate_FirewallPolicySecrets(filename, fwpolicy_list, config,signer, ct)
-    log("\n============================= Verifying Firewall-Policy-Decryptprofile Tab ==========================================\n")
+    log("\n============================= Verifying Firewall-Policy-DecryptProfile Tab ==========================================\n")
     print("\nProcessing Firewall-Policy-Decryptprofile Tab..")
     fw_policydecryption_check = validate_FirewallPolicyDecryption(filename, fwpolicy_list,ct)
     log("\n============================= Verifying Firewall-Policy-DecryptRule Tab ==========================================\n")
     print("\nProcessing Firewall-Policy-DecryptRule Tab..")
     fw_policydecryptionrule_check = validate_FirewallPolicyDecryptionRule(filename, fwpolicy_list, fulladdreslist, fullsecretslist, fulldecryptlist,ct)
-    log("\n============================= Verifying Firewall-Policy-Secrules Tab ==========================================\n")
+    log("\n============================= Verifying Firewall-Policy-SecRule Tab ==========================================\n")
     print("\nProcessing Firewall-Policy-Secrules Tab..")
     fw_policysecurityrule_check = validate_FirewallPolicySecurityRule(filename, fwpolicy_list, fulladdreslist, fullservicelist, fullappslist, fullurlslist,ct)
 

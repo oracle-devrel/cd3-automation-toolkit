@@ -1,4 +1,18 @@
 {% if count == 0 %}
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+############################
+# Firewalls
+# Firewall -tfvars
+# Allowed Values:
+# compartment_id and network_compartment_id can be the ocid or the name of the compartment hierarchy delimited by double hiphens "--"
+# Example : "ocid1.compartment.oc1..aaaaaaaahwwiefb56epvdlzfic6ah6jy3xf3c" or compartment_id = "Network-root-cpt--Network" where "Network-root-cpt" is the parent of "Network" compartment
+# network_firewall_policy_id can be the ocid or the name of the firewall Policy that needs to be attached to the Firewall
+# vcn_name must be the name of the VCN as in OCI
+# subnet_id can be the ocid of the subnet or the name as in OCI
+# Sample import command for Firewall:
+# terraform import "module.firewalls[\"<<firewall terraform variable name>>\"].oci_network_firewall_network_firewall.network_firewall" <<firewall ocid>>
+############################
+
 
 firewalls = {
     ##Add New firewall for {{ region|lower }} here##

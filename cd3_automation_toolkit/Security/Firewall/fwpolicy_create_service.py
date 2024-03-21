@@ -26,8 +26,8 @@ def fwpolicy_create_service(inputfile, outdir, service_dir, prefix, ct):
     service = env.get_template('policy-services-template')
 
 
-    sheetName = "Firewall-Policy-Servicelist"
-    service_auto_tfvars_filename = prefix + "_firewall-policy-services.auto.tfvars"
+    sheetName = "Firewall-Policy-ServiceList"
+    service_auto_tfvars_filename = prefix + "_firewall-policy-service.auto.tfvars"
 
     filename = inputfile
 

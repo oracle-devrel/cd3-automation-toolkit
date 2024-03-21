@@ -22,7 +22,7 @@ def fw_create(inputfile, outdir, service_dir, prefix, ct):
     # Load the template file
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True)
-    firewall = env.get_template('firewall-template')
+    firewall = env.get_template('firewalls-template')
     ADS = ["AD1", "AD2", "AD3"]
 
     sheetName = "Firewall"

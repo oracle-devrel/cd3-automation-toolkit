@@ -23,10 +23,10 @@ def fwpolicy_create_secret(inputfile, outdir, service_dir, prefix, ct):
     #print (inputfile, outdir, prefix, config, service_dir)
     file_loader = FileSystemLoader(f'{Path(__file__).parent}/templates')
     env = Environment(loader=file_loader, keep_trailing_newline=True)
-    secret = env.get_template('policy-secret-template')
+    secret = env.get_template('policy-secrets-template')
 
 
-    sheetName = "Firewall-Policy-Secrets"
+    sheetName = "Firewall-Policy-Secret"
     secret_auto_tfvars_filename = prefix + "_"+sheetName.lower()+".auto.tfvars"
 
     filename = inputfile
@@ -108,9 +108,9 @@ def fwpolicy_create_secret(inputfile, outdir, service_dir, prefix, ct):
             if columnname == "Vault Secret Id":
                 if columnvalue != '':
                     secret_id = str(columnvalue).strip().split("::")
-                    secret_tf_id = secret_id[1]
-                    vault_tf_name = secret_id[0]
-                tempdict = {'secret_tf_id': secret_tf_id, 'vault_tf_name': vault_tf_name}
+                    vault_secret_name = secret_id[1]
+                    vault_name = secret_id[0]
+                tempdict = {'vault_secret_name': vault_secret_name, 'vault_name': vault_name}
 
             if columnname == "Version Number":
                 version_number = columnvalue

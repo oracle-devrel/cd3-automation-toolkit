@@ -1,0 +1,23 @@
+{% if count == 0 %}
+############################
+# Firewall Policy URL Lists
+# Firewall Policy URL List - tfvars
+# Allowed Values:
+# network_firewall_policy_id can be the ocid or the name of the firewall Policy that needs to be attached to the Firewall
+# Sample import command for Firewall Policy URL List:
+# terraform import "module.url_lists[\"<<url-list terraform variable name>>\"].oci_network_firewall_network_firewall_policy_url_list.network_firewall_policy_url_list\\"  networkFirewallPolicies/<<firewall-policy ocid>>/urlLists/<<url-list ocid>>
+############################
+
+url_lists = {
+    ##Add New urllist for {{ region|lower }} here##
+}
+{% else %}
+{% if list_name != "" and list_name != "nan" and list_name != null %}
+{{ policy_tf_name }}_{{urllist_tf_name}} = {
+  urllist_name = "{{ urllist_name }}"
+  network_firewall_policy_id = "{{ policy_tf_name }}"
+  urls = {{ url_list }}
+ },
+
+  {% endif %}
+{% endif %}

@@ -26,7 +26,7 @@ def fwpolicy_create_secrules(inputfile, outdir, service_dir, prefix, ct):
     secrules = env.get_template('policy-secrules-template')
 
 
-    sheetName = "Firewall-Policy-Secrules"
+    sheetName = "Firewall-Policy-SecRule"
     secrules_auto_tfvars_filename = prefix + "_"+sheetName.lower()+".auto.tfvars"
 
     filename = inputfile

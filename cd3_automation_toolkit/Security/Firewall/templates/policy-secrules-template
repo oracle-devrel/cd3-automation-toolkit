@@ -1,4 +1,15 @@
 {% if count == 0 %}
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+############################
+# Firewall Policy Security Rules
+# Firewall Policy Security Rule - tfvars
+# Allowed Values:
+# network_firewall_policy_id can be the ocid or the name of the firewall Policy that needs to be attached to the Firewall
+# action can be ALLOW, DROP, REJECT, INSPECT
+# inspection can be INTRUSION_DETECTION, INTRUSION_PREVENTION
+# Sample import command for Firewall Policy Security Rule:
+# terraform import "module.security_rules[\"<<secrule terraform variable name>>\"].oci_network_firewall_network_firewall_policy_security_rule.network_firewall_policy_security_rule\"  networkFirewallPolicies/<<firewall-policy ocid>>/securityRules/<<secrule ocid>>
+############################
 
 security_rules = {
     ##Add New Security rules for {{ region|lower }} here##
