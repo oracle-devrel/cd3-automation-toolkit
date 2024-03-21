@@ -89,7 +89,7 @@ On re-running the same option you will find the previously existing files being 
 
 **Note:**
 
-1. Please mention value for column 'Hub/Spoke/Peer/None' in VCNs tab as None for utilising DRGv2 functionality (where DRG is directly attached to all VCNs and hub/spoke model is not required)
+1. Mention value for column 'Hub/Spoke/Peer/None' in VCNs tab as None for utilising DRGv2 functionality (where DRG is directly attached to all VCNs and hub/spoke model is not required)
 
 2. Declare the DRG for the VCN in 'DRG Required' column of VCNs tab and then declare the attachment in DRGs tab also. Toolkit verifies the declaration in VCNs tab and then creates the DRG while reading the DRGs tab.
 
@@ -97,7 +97,7 @@ On re-running the same option you will find the previously existing files being 
 
 **Note:**
 
-1. Only VCN and RPC attachments are supported via CD3 as of now for DRGv2. Please create attachments for VC and IPSec via OCI console.
+1. Only VCN and RPC attachments are supported via CD3 as of now for DRGv2. Create attachments for VC and IPSec via OCI console.
 2. Network export will also export only VCN and RPC attachments to CD3 excel sheet as of now.
 3. You can create a Route Table for DRG which is not attached to any attachment by keeping 'Attached To' column in DRGs tab empty.
 4. You can create an Import Route Distribution which is attached to some Route Table in DRG.

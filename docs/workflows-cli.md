@@ -62,7 +62,7 @@ Choose the appropriate CD3 Excel Sheet and update the setUpOCI.properties file a
 <br>```cd /cd3user/oci_tools/cd3_automation_toolkit/```
 
 **Step 2**:
-<br>Place Excel sheet at appropriate location in your container and provide the corresponding path in _/cd3user/tenancies/<customer\_name\>/<customer\_name\>_setUpOCI.properties_ file
+<br>Place Excel sheet at appropriate location in the container and provide the corresponding path in _/cd3user/tenancies/<customer\_name\>/<customer\_name\>_setUpOCI.properties_ file
 
 **Step 3**
 <br>
@@ -76,7 +76,7 @@ Updated OCI_Regions file !!!
 Script to fetch the compartment OCIDs into variables file has not been executed.
 Do you want to run it now? (y|n):
 ```
-→ This prompt appears for the very first time when you run the toolkit or when any new compartments are created using the toolkit. Enter 'y' to fetch the details of compartment OCIDs into variables file.
+→ This prompt appears for the very first time when executing the toolkit or when any new compartments are created using the toolkit. Enter 'y' to fetch the details of compartment OCIDs into variables file.
 <br>→ After fetching the compartment details, the toolkit will display the menu options.
 
 

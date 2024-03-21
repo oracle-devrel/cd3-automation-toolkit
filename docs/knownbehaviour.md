@@ -17,7 +17,7 @@
     4. Adding a new VCN as Hub and other new VCNs as Spoke/Peer is allowed. Gateways will be created as specified in VCNs sheet.
     5. Adding new VCNs as None is allowed. Gateways will be created as specified in VCNs sheet.
     6. The addition of new Subnets to exported VCNs and new VCNs is allowed.
-    7. You might come across below error during export of NSGs(while runnig terraform import commands for NSGs). It occurs when NSG and the VCN are in different compartments. In such cases, please modify \<customer_name\>_nsgs.auto.tfvars, specify the compartment name of the VCN in network_compartment_id field of the problematic NSG.
+    7. You might come across below error during export of NSGs(while runnig terraform import commands for NSGs). It occurs when NSG and the VCN are in different compartments. In such cases,  modify \<customer_name\>_nsgs.auto.tfvars, specify the compartment name of the VCN in network_compartment_id field of the problematic NSG.
 
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/knownbehaviour-0.png" alt="image" width="600" height="auto">
 
@@ -38,7 +38,7 @@ Create a Load Balancer with Reserved IP: When you create a LBaaS with reserved i
 
   ![image](../images/knownbehaviour-1.png)
 
-  This is a behaviour of Terraform.  In these scenarios, please add the private ip ocid to the auto.tfvars as shown below before you run a terraform plan again.
+  This is a behaviour of Terraform.  In these scenarios, add the private ip ocid to the auto.tfvars as shown below before you run a terraform plan again.
 
   <img src ="../images/knownbehaviour-2.png" width=75% height=75%>
 

@@ -14,7 +14,7 @@
 
 **Step 1 - Clone the repo**
 
-* Open your terminal and navigate to the directory where you plan to download the Git repo.
+* Open the terminal and navigate to the directory where the Git repo will be downloaded.
 * Run the git clone command as shown below:
 &nbsp; &nbsp; &nbsp; &nbsp; 
 ```
@@ -44,7 +44,7 @@ docker save cd3toolkit:${image_tag} | gzip > cd3toolkit_${image_tag}.tar.gz
 **Step 4 - Run the container alongwith VPN (Applicable for VPN users only)**
 
 * Connect to the VPN.
-* Make sure you are using version **1.9** for **Rancher deskop**, if not please install the latest.
+* Make sure to use version **1.9** for **Rancher deskop**, if not, install the latest.
 * Make sure to Enable **Networking Tunnel** under Rancher settings as shown in the screenshot below,
   
      <img width="746" alt="image" src="../images/launchcontainer-1.png">
@@ -69,7 +69,7 @@ docker run --name cd3_toolkit --platform linux/amd64 -it -p <port_number_in_loca
       ```
   
 !!! Caution 
-    If you are launching the container in cloud, Please make sure to use a private server or a bastion connected server with restricted access(i.e. not publicly available) to host the container.
+    If launching the container in cloud, make sure to use a private server or a bastion connected server with restricted access(i.e. not publicly available) to host the container.
 
 * Run  ```docker ps``` to see running containers on the system.
 <br><br>

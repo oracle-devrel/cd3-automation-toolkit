@@ -1,7 +1,7 @@
 # Export and Manage Resources from OCI (Non-Greenfield Workflow)
 
 !!! Note
-    Please make sure that service for which export is done does not have existing tfvars/state file.
+    Make sure that the service for which export is done does not have existing tfvars/state file.
 
 **Step 1**: 
 <br>Choose the Blank CD3 Excel sheet template from [Excel Templates](excel-templates.md).
@@ -29,7 +29,7 @@
 
 
 **Step 5:** 
-<br>Specify region and compartment from where you want to export the data.
+<br>Specify region and compartment from where the data has to be exported.
 <br>It also asks for service specific filters like display name patterns for compute. Leave empty if no filter is needed.
 
 <img width="835" alt="Screenshot 2024-01-17 at 7 10 56 PM" src="../images/jenkinsNGF-4.png"><br>

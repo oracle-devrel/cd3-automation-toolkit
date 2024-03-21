@@ -27,7 +27,7 @@ Fill the CD3 Excel with appropriate values.
 
 **Step 4:** 
 <br>Select the workflow as **Create Resources in OCI(Greenfield Workflow)**. Choose single or multiple MainOptions as required and then corresponding SubOptions.
-<br> Please [read](multiple-services-jenkins.md) while selcting multiple options simultaneously.
+<br> Check out [this](multiple-services-jenkins.md) while selcting multiple options simultaneously.
 <br>Below screenshot shows creation of Compartments (under Identity) and Tags.
 
 <img width="395" alt="Screenshot 2024-01-16 at 2 44 38 PM" src="../images/jenkinsGF-3.png">

@@ -3,13 +3,13 @@
 !!! Important
     Make sure to read 'Must Read' sections before creating or exporting network and compute resources.
 
-To start generating terraform with CLI - <br>
+Below are the highlevel steps to generate terraform with CLI - <br>
 
 1. Login to the CD3 Container.
 
-2. [Read](launch-container.md) for workflows supported by the toolkit and chose the workflow.
+2. Check out [Launch CD3 Container](launch-container.md) for workflows supported by the toolkit and choose the workflow.
 
-3. Use one of the templates at [Excel Templates](excel-templates.md) based on the workflow chosen.
+3. Use one of the templates from [Excel Templates](excel-templates.md) based on the workflow chosen.
 
 4. Review setUpOCI.properties file _/cd3user/tenancies/<customer_name\>/<customer_name\>_setUpOCI.properties_.
 

@@ -1,13 +1,14 @@
 # Grouping of generated Terraform files (Creating independent tfstate files for each resource)
+
 The CD3 Automation Toolkit was previously built to generate all the output Terraform files within a designated region directory.
 OCI components like - Network, Instances, LBaaS, Databases etc., were maintained in a single tfstate file.
 This was not a viable option for tenancies requiring huge infrastructure.
 
 Starting with the Automation Toolkit release v10.1, it is now possible to select separate directories for each Oracle Cloud Infrastructure (OCI) service supported by the toolkit.
 
-This can be configured while [connecting your container to the OCI tenancy](connect-container-to-oci-tenancy.md).
+This can be configured while [connecting CD3 container to the OCI tenancy](connect-container-to-oci-tenancy.md).
 
-A new parameter 'outdir_structure_file' has been introduced in tenancyconfig.properties using which can be used to configure single outdir or different outdir for each service.
+A new parameter 'outdir_structure_file' has been introduced in tenancyconfig.properties,  which can be used to configure single outdir or different outdir for each service.
 
 To enable independent service directories for the generated Terraform files, follow the below steps:
 
@@ -19,7 +20,7 @@ To enable independent service directories for the generated Terraform files, fol
    ![image](../images/grouptf-1.png)
 
 
-2. Under the same user-scripts folder, open *outdir_structure_file.properties* and modify the directory names if required. They are in the                                                    format:*OCI_Service_Name=Directory_Name*.
+2. Under the same user-scripts folder, open *outdir_structure_file.properties* and modify the directory names if required. They are in the format: *OCI_Service_Name=Directory_Name*.
 
 !!! note
        * Do not modify the OCI service Names specified on the left hand side.Modify the directory name specified on Right Hand Side only.

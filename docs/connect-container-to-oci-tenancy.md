@@ -161,8 +161,8 @@ python createTenancyConfig.py tenancyconfig.properties
 ```
 
     !!! note 
-        * If you are running container on a linux VM host(without using Resource Manager stack option), please refer to [point no. 7](faq.md) under FAQ   to avoid any permission issues.
-        * Running the above command immediately after adding API key to the user profile in OCI might result in     Authentication Errors. In such cases, please retry after a minute.
+        * When running the CD3 container on a Linux VM host (without using the Resource Manager stack option), refer to [point no. 7](faq.md) under FAQ to avoid any permission issues.
+        * Running the above command immediately after adding API key to the user profile in OCI might result in  Authentication Errors. In such cases, retry after a minute.
 
 
 
@@ -243,6 +243,6 @@ python createTenancyConfig.py tenancyconfig.properties
 
 </details>
 <br>
-The next pages will guide you to use the toolkit either via CLI or via Jenkins. Please proceed further.
+The next pages will guide you to use the toolkit either via CLI or via Jenkins. You can continue with the instructions provided.
 
 [Use Toolkit with CLI](cd3-cli.md){ .md-button } [Use Toolkit with Jenkins](cd3-jenkins.md){ .md-button }

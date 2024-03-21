@@ -3,7 +3,7 @@
 **1. I am getting 'Permission Denied' error while executing any commands inside the container.**
 <br> 
 
-When you are running the docker container from a Linux OS, if the outdir is on the root, you may get a permission denied error while executing steps like createAPIKey.py. In such scenarios, please follow the steps given below -
+When running the docker container from a Linux OS, if the outdir is on the root, a permission denied error may occur while executing steps like createAPIKey.py. In such scenarios, please follow the steps given below -
 <br><br><u>Error Screenshot:</u>
 
 ![image](../images/commonissues-1.png)

@@ -5,7 +5,7 @@
 
     <img width="50%" height="50%" alt="Screenshot 2024-01-17 at 11 38 54 PM" src="../images/remotestate-1.png">
 
-    - This option is disabled while using the toolkit via Jenkins. While using it via CLI, you will have to remove backend.tf from the directory, bring the remote state into local and then upload the stack.
+    - This option is disabled while using the toolkit via Jenkins. While using it via CLI, it is required to remove backend.tf from the directory, bring the remote state into local and then upload the stack.
 
 <br>
 

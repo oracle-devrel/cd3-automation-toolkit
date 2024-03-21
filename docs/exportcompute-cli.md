@@ -16,7 +16,7 @@ Follow the below steps to export OCI compute Instances to CD3 Excel file and cre
 
 6. From the output menu, select **Option 6: Export Compute >> Option 2: Export Instances**. <br>
 
-7. Enter the compartment to which the Instances belong to. If you have to export Instances from multiple compartments, specify comma separated compartment values. <br>
+7. Enter the compartment to which the Instances belong to. When exporting instances from multiple compartments, specify the compartment values as comma-separated values. <br>
    Specify the compartment name along with hierarchy in the below format:
 
         Parent Compartment1::Parent Compartment2::MyCompartment 
@@ -35,8 +35,8 @@ Follow the below steps to export OCI compute Instances to CD3 Excel file and cre
 
 12. While export of instances, it will fetch details for only the primary VNIC attached to the instance. <br>
 
-13. Execute the .sh file ( *sh tf_import_commands_instances_nonGF.sh*) to generate terraform state file. <br>
+13. Execute the .sh file (*sh tf_import_commands_instances_nonGF.sh*) to generate terraform state file. <br>
 
-14. Please [read](knownbehaviour.md) the known behaviour of toolkit for export of instances having multiple plugins.
+14. Check out the [known behaviour of toolkit](knownbehaviour.md) for export of instances having multiple plugins.
 
 

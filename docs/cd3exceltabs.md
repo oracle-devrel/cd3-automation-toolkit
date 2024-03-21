@@ -50,7 +50,8 @@ Click on the links below to know about the specifics of each tab in the excel sh
 <a href="../terraform/network">Click here to view sample auto.tfvars for all Network components- VCNs, Subnets, Gateways etc.,</a> 
 
 #### Network Firewall
-Below are the tabs in CD3-Firewall-template.xlsx. Please go through blue section of each tab to know about details that need to be filled for that tab. On choosing "OCI Firewall" in the SetUpOCI menu will allow to create Firewall and the policy in the OCI tenancy. It is recommended to execute Validator for the firewall before proceeding to create the firewall or the policy.
+
+OCI Network Firewall can be created using [CD3-Firewall-template.xlsx](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/main/cd3_automation_toolkit/example/CD3-Firewall-template.xlsx). Below are the tabs to create OCI Network Firewall and its associated policy. Check out the blue section of each tab to know how to fill in the parameter values.
 
  - Firewall
  - Firewall-Policy
@@ -63,7 +64,11 @@ Below are the tabs in CD3-Firewall-template.xlsx. Please go through blue section
  - Firewall-Policy-DecryptRule
  - Firewall-Policy-Secrules
 
-Once this is complete you will find the generated output terraform files in location :
+After the required details are filled in, choose "OCI Firewall" under the SetUpOCI menu to create the Firewall and its policy. 
+
+It is recommended to execute the validator script for Firewall, to validate the input values before proceeding to create.
+
+Once the toolkit execution is complete,  you will find the generated output terraform files in the below location :
 
 ---> **<outdir\>/<region\>/<service_dir\>/<prefix\>_firewall*.auto.tfvars**
 
@@ -73,7 +78,10 @@ Once terraform apply is done, you can view the resources under Identity and Secu
   
 
 !!! Note 
-    There is an option to **Clone** the policy under "OCI Firewall" option in Greenfield Workflow of    setUpOCI menu. This will export the data from OCI console for the policy specified for cloning and append the it to the end of the excel sheet tabs with a new policy name. It will proceed with tfvars generation and trigger the terraform-apply pipeline for the same.
+
+   In the setUpOCI menu of Greenfield Workflow, there's a feature that allows you to clone policies using the option 'OCI Firewall'-->'Clone'. This feature exports data from the OCI console for the specified policy, adds it to the Excel sheet with a new name, generates tfvars, and triggers the Terraform-apply pipeline for the cloned policy.
+
+   
 
 #### Private-DNS
   

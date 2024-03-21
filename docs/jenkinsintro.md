@@ -12,7 +12,7 @@
 
 ### 1. setUpOCI Pipeline
 
-This is equivalent to running *setUpOCI.py* from CLI. This will generate the terraform **.auto.tfvars** files based on the CD3 Excel sheet input for the services chosen and commit them to OCI Devops GIT repo. This will also trigger **terraform-apply** pipelines for the corresponding services chosen in setUpOCI pipeline.
+This is equivalent to running *setUpOCI.py* from CLI. This will generate the terraform **.auto.tfvars** files based on the CD3 Excel sheet input for the services chosen and commit them to OCI Devops GIT repo. Additionally, it also triggers **terraform-apply** pipelines for the corresponding services chosen in setUpOCI pipeline.
 
 Below table shows the stages executed in this pipeline along with their description:
 
@@ -25,7 +25,7 @@ Below table shows the stages executed in this pipeline along with their descript
 | <b>Update setUpOCI.properties</b> | Updates <customer_name>_setUpOCI.properties <br> with input filename and workflow_type | Displays Failed if any issue during execution |
 | <b>Execute setUpOCI</b> | Executes python code to generate required <br> tfvars files. The console output for this <br> stage is similar to setUpOCI.py execution via CLI. <br>Multiple options selected will <br> be processed <i>sequentially</i> in this stage. | Displays Failed if any issue occurs  <br> during its execution. Further stages <br> are skipped in that case. |
 | <b>Run Import Commands</b> | Based on the workflow_type as 'Export Resources from OCI', <br> this stage invokes execution of <br> tf_import_commands_\<resource\>_nonGF.sh <br> shell scripts which will import the  <br> exported objects into tfstate. tf_import_commands for <br> multiple options selected will be  <br> processed <i>sequentially</i> in this stage. <br><b> This stage is skipped for 'Create Resources in OCI' workflow </b>| Displays Failed if any issue occurs during its execution.  <br> Further stages are skipped in that case. |
-| <b>Git Commit</b> | Commits the terraform_files folder to OCI DevOps GIT Repo. <br> This will trigger respective terraform_pipelines| Pipeline stops further execution if there is <br> nothing to commit. <b>In some cases when tfvars was generated in previous execution, <br> you can navigate to terrafom-apply pipeline and trigger that manually </b>|
+| <b>Git Commit</b> | Commits the terraform_files folder to OCI DevOps GIT Repo. <br> This will trigger respective terraform_pipelines| Pipeline stops further execution if there is <br> nothing to commit. <b>In some cases when tfvars was generated in previous execution, <br> navigate to terrafom-apply pipeline and trigger that manually </b>|
 | <b>Trigger Terraform Pipelines</b> | Corresponding terraform apply pipelines <br> are auto triggered based on the service chosen | |
 
 
@@ -63,4 +63,4 @@ The terraform pipelines are either triggered automatically from setUpOCI pipelin
 
 
 ### 3. Region Based Views
-When you click on any of the views, it displays all terraform-apply and terraform-destroy pipelines in single screen. This can also be used to trigger the terraform pipelines. This also includes Global view for global services like RPC.
+Clicking on any of the views displays all terraform-apply and terraform-destroy pipelines in a single screen. This can also be used to trigger the terraform pipelines. This also includes Global view for global services like RPC.

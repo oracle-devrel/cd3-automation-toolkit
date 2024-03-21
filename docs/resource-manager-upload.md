@@ -19,7 +19,7 @@ Example:
 <img width="800" alt="image" src="../images/RMupload-1.png">
 </kbd>
 
-To use an existing Resource Manager stack, enter the details in the format provided above into your ```outdir/<region_dir>/rm_ocids.csv``` file. 
+To use an existing Resource Manager stack, enter the details in the format provided above into the ```outdir/<region_dir>/rm_ocids.csv``` file. 
 
 Sample Execution:
 
@@ -34,6 +34,6 @@ Sample Execution:
 
     <img width="597" alt="Screenshot 2024-01-17 at 11 38 54 PM" src="../images/RMupload-3.png">
 
-    You will have to remove backend.tf from the directory, bring the remote state into local and then re-upload the stack.
+Remove backend.tf from the directory, bring the remote state into local and then re-upload the stack.
 On choosing **"Developer Services"** in the SetUpOCI menu, choose **"Upload current terraform files/state to Resource Manager"** sub-option to upload the terraform outdir into OCI Resource Manager.
 
