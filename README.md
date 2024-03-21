@@ -39,22 +39,25 @@ Additionally, the toolkit also supports seamless resource management using OCI D
   <tr>
     <td>Network</td>
     <td>DNS Management</td>
-    <td>Compute</td>
+    <td>Load Balancers</td>
   </tr>
   <tr>
-    <td>Storage</td>
-    <td>Database</td>
+    <td>OCI Network Firewall</td>
     <td>SDDCs</td>
-    
+    <td>CIS Landing Zone<br>Compliance</td>
+  </tr>
+  <tr>
+    <td>Compute</td>
+    <td>Storage</td>
+    <td>Database</td>    
   </tr>
   <tr>
     <td>Developer Services</td>
     <td>Logging Services</td>
     <td>Observability and Management</td>
-  
   </tr>
   <tr>
-  <td>CIS Landing Zone<br>Compliance</td>
+  
   </tr>
 </table>
 </tr>
