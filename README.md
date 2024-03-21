@@ -10,10 +10,6 @@
   [What's New](https://github.com/oracle-devrel/cd3-automation-toolkit/releases/tag/v2024.1.0) &nbsp;&nbsp;•&nbsp; &nbsp;[Excel Templates](https://oracle-devrel.github.io/cd3-automation-toolkit/excel-templates) &nbsp;&nbsp;•&nbsp; &nbsp; [CD3 Docs](https://oracle-devrel.github.io/cd3-automation-toolkit/)&nbsp; &nbsp;•&nbsp;&nbsp; [Watch & Learn](https://www.youtube.com/playlist?list=PLPIzp-E1msrbJ3WawXVhzimQnLw5iafcp) &nbsp;&nbsp;•&nbsp;&nbsp;[Blogs & Tutorials](https://oracle-devrel.github.io/cd3-automation-toolkit/tutorials/) &nbsp;&nbsp;•&nbsp;&nbsp;[OCI CD3-Livelabs](https://apexapps.oracle.com/pls/apex/f?p=133:180:112501098061930::::wid:3724)
   
   <br>
-  
-  [![Deploy_To_OCI](https://oci-resourcemanager-plugin.plugins.oci.oraclecloud.com/latest/deploy-to-oracle-cloud.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oracle-devrel/cd3-automation-toolkit/archive/refs/heads/develop.zip)
-
-<br>
 
 
 <img width=30% height=30%; src="https://github.com/oracle-devrel/cd3-automation-toolkit/assets/70213341/590db5b3-dd19-4994-8791-3ebc1ea3f6e3">
@@ -27,7 +23,12 @@ CD3 stands for **Cloud Deployment Design Deliverable**. The CD3 Automation toolk
 
 Additionally, the toolkit also supports seamless resource management using OCI DevOps GIT service and Jenkins Pipelines.
 
+<br>
 
+🚀 Click the below button to quickly launch CD3 toolkit container in Oracle Cloud and start managing your Infra as Code. 
+<br>
+
+[![Deploy_To_OCI](https://oci-resourcemanager-plugin.plugins.oci.oraclecloud.com/latest/deploy-to-oracle-cloud.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oracle-devrel/cd3-automation-toolkit/archive/refs/heads/develop.zip)
 
 <br>
 
@@ -68,13 +69,6 @@ Additionally, the toolkit also supports seamless resource management using OCI D
 
 
 </body>
-
-<br>
-
-🚀 Click the below button to quickly launch CD3 toolkit container in Oracle Cloud and start managing your Infra as Code. 
-<br>
-
-[![Deploy_To_OCI](https://oci-resourcemanager-plugin.plugins.oci.oraclecloud.com/latest/deploy-to-oracle-cloud.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oracle-devrel/cd3-automation-toolkit/archive/refs/heads/develop.zip)
 
 <br>
 
