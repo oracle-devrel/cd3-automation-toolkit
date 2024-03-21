@@ -77,9 +77,10 @@ Once terraform apply is done, you can view the resources under Identity and Secu
 <a href="../terraform/firewall">Click here to view sample auto.tfvars for all Firewall components</a> 
   
 
-!!! Note 
 
-   In the setUpOCI menu of Greenfield Workflow, there's a feature that allows you to clone policies using the option 'OCI Firewall'-->'Clone'. This feature exports data from the OCI console for the specified policy, adds it to the Excel sheet with a new name, generates tfvars, and triggers the Terraform-apply pipeline for the cloned policy.
+!!! note
+
+    In the setUpOCI menu of Greenfield Workflow, there's a feature that allows you to clone policies using the option 'OCI Firewall'-->'Clone'. This feature exports data from the OCI console for the specified policy, adds it to the Excel sheet with a new name, generates tfvars, and triggers the Terraform-apply pipeline for the cloned policy.
 
    
 

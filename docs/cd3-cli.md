@@ -1,7 +1,7 @@
 # **Using the Automation Toolkit with CLI**
 ---
 !!! Important
-    Make sure to read 'Must Read' sections before creating or exporting network and compute resources.
+    Check out the **Must Read** sections before creating or exporting network and compute resources.
 
 Below are the highlevel steps to generate terraform with CLI - <br>
 
