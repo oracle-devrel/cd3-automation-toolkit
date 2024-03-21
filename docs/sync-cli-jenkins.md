@@ -3,7 +3,7 @@
 !!! note
     It is recommended to stick to using the toolkit either via CLI or via Jenkins.***
 
-There can be scenarios when you need to update the **terraform_files** folder manually via CLI. Below are some examples:
+There can be scenarios when updating the terraform_files folder manually via CLI is necessary.. Below are some examples:
 
 - You executed setUpOCI script to generate tfvars for some resources via CLI.
 - You updated **variables_<region\>.tf** file to update image OCID or SSH Key for Compute or Database etc.

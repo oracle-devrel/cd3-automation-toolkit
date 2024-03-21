@@ -56,11 +56,11 @@ python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.p
     Script to fetch the compartment OCIDs into variables file has not been executed.<br>
     Do you want to run it now? (y|n):
 
-→ This prompt appears when you run the toolkit for the very first time or when any new compartments are created using the toolkit. Enter 'y' to fetch the details of compartment OCIDs into variables file.
+→ This prompt appears when executing the toolkit for the very first time or when any new compartments are created using the toolkit. Enter 'y' to fetch the details of compartment OCIDs into variables file.
 
 !!! Note
 
-    Execute **"Fetch Compartments OCIDs to variables file"** from **CD3 Services** in setUpOCI menu after you create Compartments. This is a required step everytime you create a compartment via toolkit or via the OCI console.
+    Execute **"Fetch Compartments OCIDs to variables file"** from **CD3 Services** in setUpOCI menu after creating Compartments. TThis step is required every time a compartment is created via the toolkit or via the OCI console.
 
 <br>→ After fetching the compartment details, the toolkit will display the menu options as shown below:
 
@@ -74,13 +74,16 @@ Choose the resources by specifying a single option (for choosing one of these re
   
 
 **Expected Outputs:**
+
 <br>a. Excel sheet with the resource details from OCI.<br> 
 b. Terraform Configuration files - *.auto.tfvars  
 c. Shell Script with import commands - tf_import_commands_`<resource>`_nonGF.sh 
+
 !!! info 
     Toolkit will over-write the specific tabs of CD3 Excel sheet with exported data for that resource in OCI while the other tabs remain intact.
 
 **Step 4:** 
+
 <br>Execute the tf_import_commands_`<resource>`_nonGF.sh files that are generated in the outdir.
 <br>The terraform plan should show that infrastructure is up-to-date with no changes required for all regions.
   

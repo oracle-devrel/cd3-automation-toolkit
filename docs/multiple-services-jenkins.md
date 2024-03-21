@@ -1,9 +1,10 @@
 # Provisioning of multiple services together
 
 !!! note
-    For any service that needs Network details eg compute, database, loadbalancers etc, terraform-apply pipeline for 'network' needs to be executed prior to launching that service pipeline as explained below.
+    For services that require network details, such as compute, database, and load balancers, the 'network' terraform-apply pipeline must be executed before launching the service pipeline, as explained below.
 
-* Multiple options can be selected simultaneously while creating resources in OCI using setUpOCI pipeline . But if one of the services is dependent upon the availability of another service eg  'Network' (Create Network) and 'Compute' (Add Instances); In such scenarios, terraform-apply pipeline for compute will fail as shown in below screenshot (last stage in the pipeline) -
+* Multiple options can be selected simultaneously while creating resources in OCI using setUpOCI pipeline . In scenarios where one service depends on another service's availability, such as 'Network' (Create Network) and 'Compute' (Add Instances), the terraform-apply pipeline for compute will fail. Check the below image.
+
 
     ![image](../images/multiservices-1.jpeg)
 

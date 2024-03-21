@@ -23,7 +23,8 @@ auth_mechanism=api_key
 #input config file for Python API communication with OCI eg /cd3user/tenancies/<customer_name>/.config_files/<customer_name>_config;
 config_file=/cd3user/tenancies/demo/.config_files/demo_oci_config
 
-# Leave it blank if you want single outdir or specify outdir_structure_file.properties containing directory structure for OCI services.
+# Leave the field blank if you want a single outdir or specify outdir_structure_file.properties containing the directory structure for OCI services.
+
 outdir_structure_file=/cd3user/tenancies/demo/demo_outdir_structure_file.properties
 
 #path to cd3 excel eg /cd3user/tenancies/<customer_name>/CD3-Customer.xlsx
@@ -52,11 +53,11 @@ python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.p
     Script to fetch the compartment OCIDs into variables file has not been executed.<br>
     Do you want to run it now? (y|n):
 
-→ This prompt appears when you run the toolkit for the very first time or when any new compartments are created using the toolkit. Enter 'y' to fetch the details of compartment OCIDs into variables file.
+→ This prompt appears when executing the toolkit for the very first time or when any new compartments are created using the toolkit. Enter 'y' to fetch the details of compartment OCIDs into variables file.
 
 !!! Note
 
-    Execute **"Fetch Compartments OCIDs to variables file"** from **CD3 Services** in setUpOCI menu after you create Compartments. This is a required step everytime you create a compartment via toolkit or via the OCI console.
+    Execute **"Fetch Compartments OCIDs to variables file"** from **CD3 Services** in setUpOCI menu after creating Compartments. This step is required every time a compartment is created via the toolkit or via the OCI console.
 
 <br>→ After fetching the compartment details, the toolkit will display the menu options as shown below:
 
@@ -70,11 +71,11 @@ Choose the resources by specifying a single option (for choosing one of these re
 <br>It will generate tfvars files for the services selected at _/cd3user/tenancies/<customer_name\>/terraform_files/<region_dir\>/<service_dir\>/_
 
 **Step 4:** 
-<br>Change your directory to  ```/cd3user/tenancies/<customer_name>/terraform_files/<region_dir>/<service_dir>```  and Execute:
+<br>Change the directory to  ```/cd3user/tenancies/<customer_name>/terraform_files/<region_dir>/<service_dir>```  and Execute:
 
-**terraform init**  - To initialize and prepare your working/out directory so Terraform can run the configuration.<br>
+**terraform init**  - To initialize and prepare the working/out directory so Terraform can run the configuration.<br>
 
-**terraform plan**  - To preview any changes before you apply them. Run the plan against [OPA policies](opa-integration.md) for compliance against CIS.
+**terraform plan**  - To preview any changes before applying them. Run the plan against [OPA policies](opa-integration.md) for compliance against CIS.
 
 **terraform apply** - To make the changes defined by Terraform configuration to create, update, or destroy resources in OCI.
   

@@ -5,7 +5,7 @@
 
 
 !!! note
-      Before you start with Network Export, make sure you have run 'Fetch Compartments OCIDs to variables file'.
+      Before starting with Network Export, make sure to run 'Fetch Compartments OCIDs to variables file'.
 
 ### Export Network
 

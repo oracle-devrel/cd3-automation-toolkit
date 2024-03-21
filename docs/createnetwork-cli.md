@@ -11,9 +11,10 @@
 
 
 !!! note
-      Before you start with Network Creation, make sure you have run 'Fetch Compartments OCIDs to variables file'.
+      Before starting with Network Creation, ensure that 'Fetch Compartments OCIDs to variables file' option has been executed.
 
-###Create Network
+### Create Network
+
 Creation of Networking components using Automation Toolkit involves four simple steps.
 
  - Add the networking resource details to appropriate Excel Sheets.
@@ -32,7 +33,7 @@ Below are the steps in detail to create Network that includes VCNs, Subnets, DHC
    python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties
    ```
  
-3. Choose option _'Validate CD3'_ and then _'Validate Network(VCNs, Subnets, DHCP, DRGs)'_ to check for syntax errors in Excel sheet. Examine the log file generated at ```/cd3user/tenancies/<customer_name>/<customer_name>_cd3validator.log.``` If there are errors, please rectify them accordingly and proceed to the next step. <br>
+3. Choose option _'Validate CD3'_ and then _'Validate Network(VCNs, Subnets, DHCP, DRGs)'_ to check for syntax errors in Excel sheet. Examine the log file generated at ```/cd3user/tenancies/<customer_name>/<customer_name>_cd3validator.log.``` If there are errors,  rectify them accordingly and proceed to the next step. <br>
 
 4. Choose option to _'Create Network'_ under _'Network'_ from the displayed menu. Once the execution is successful, multiple .tfvars related to networking like _<customer\_name>\_major-objects.auto.tfvars_ and more will be generated under the folder ```/cd3user/tenancies/<customer_name>/terraform_files/<region_dir>/<service_dir>``` <br>
 
@@ -46,7 +47,7 @@ Below are the steps in detail to create Network that includes VCNs, Subnets, DHC
        ```
 		terraform apply
        ```
-This completes the creation of Networking components in OCI. Verify the components in console. However the details of the default security lists and default route tables may not be available in the CD3 Excel sheet yet. Inorder to export that data please follow the below steps: <br>
+This completes the creation of Networking components in OCI. Verify the components in console. However the details of the default security lists and default route tables may not be available in the CD3 Excel sheet yet. Inorder to export that data, follow the below steps: <br>
 
 6. Execute the _setupOCI.py_ file with _workflow_type_ parameter value to _create_resources_:
    ```
@@ -74,7 +75,7 @@ In some scenarios, a DRG has already been created in the tenancy and rest of the
        ```
 		terraform import "module.drgs[\"<<drgs terraform variable name>>\"].oci_core_drg.drg" <<drg_ocid>>
        ```
-       → This will Import the DRG into your state file.       
+       → This will Import the DRG into the state file.       
        ```
 		terraform plan
        ```
@@ -96,14 +97,14 @@ Modifying the Networking components using Automation Toolkit involves three simp
 
 _Steps in detail_:
 
-1. Modify your excel sheet to update required data in the Tabs - VCNs, DRGs, VCN Info, DHCP and Subnets. <br>
+1. Modify the Excel sheet to update required data in the Tabs - VCNs, DRGs, VCN Info, DHCP and Subnets. <br>
 
 2. Execute the _setupOCI.py_ file with _workflow_type_ parameter value to _create_resources_:
    ```
 	python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties
    ``` 
 
-3. To Validate the CD3 excel Tabs - Choose option _'Validate CD3'_ and _'Validate Network(VCNs, Subnets, DHCP, DRGs)'_ from sub-menu to check for syntax errors in Excel sheet. Examine the log file generated at ```/cd3user/tenancies/<customer_name>/<customer_name>_cd3validator.logs.``` If there are errors, please rectify them accordingly and proceed to the next step. <br>
+3. To Validate the CD3 excel Tabs - Choose option _'Validate CD3'_ and _'Validate Network(VCNs, Subnets, DHCP, DRGs)'_ from sub-menu to check for syntax errors in Excel sheet. Examine the log file generated at ```/cd3user/tenancies/<customer_name>/<customer_name>_cd3validator.logs.``` If there are errors, rectify them accordingly and proceed to the next step. <br>
 
 4. Choose option to _'Modify Network'_ under _'Network'_ from the displayed menu. Once the execution is successful, multiple .tfvars related to networking like _<customer_name\>_major-objects.auto.tfvars_ and more will be generated under the folder ```/cd3user/tenancies/<customer_name>/terraform_files/<region_dir>/<service_dir>```. Existing files will move into respective backup folders.<br>
    **Note-**: Make sure to export Sec Rules, Route Rules, DRG Route Rules to CD3 Excel Sheet before executing this option. <br>
@@ -127,7 +128,7 @@ Follow the below steps to add, update or delete the following components:
 - Route Table and Route Rules
 - DRG Route Table and DRG Route Rules
 
-1. Modify your excel sheet to update required data in the Tabs - RouteRulesInOCI, SecRulesInOCI, DRGRouteRulesInOCI tabs. <br>
+1. Modify the Excel sheet to update required data in the Tabs - RouteRulesInOCI, SecRulesInOCI, DRGRouteRulesInOCI tabs. <br>
 
 2. Execute the _setupOCI.py_ file with _workflow_type_ parameter value to _create_resources_:
    ```
@@ -165,7 +166,7 @@ Follow the below steps to add, update or delete the following components:
 Follow the below process to export the rules to the same CD3 Excel Sheet as the one used to Create Network, and to sync the Terraform files with OCI whenever an user adds, modifies or deletes rules in OCI Console manually.
 
 !!! note 
-      Make sure to close your Excel sheet during the export process.
+      Make sure to close the Excel sheet during the export process.
                        
 1. Execute the _setupOCI.py_ file with _workflow_type_ parameter value to _create_resources_: <br>
    ```
@@ -208,7 +209,7 @@ Follow the below process to export the rules to the same CD3 Excel Sheet as the 
 ### Add/Modify/Delete NSGs
 Follow the below steps to update NSGs.
 
-1.  Modify your excel sheet to update required data in the Tabs - NSGs. <br>
+1.  Modify the Excel sheet to update required data in the Tabs - NSGs. <br>
 
 2. Execute the _setupOCI.py_ file with _workflow_type_ parameter value to _create_resources_:
    ```
@@ -237,9 +238,9 @@ This completes the modification of NSGs in OCI. Verify the components in console
 ### Add/Modify/Delete VLANs
 Follow the below steps to update VLANs.
 
-1.  Modify your excel sheet to update required data in the Tabs - SubnetsVLANs. <br>
+1.  Modify the Excel sheet to update required data in the Tabs - SubnetsVLANs. <br>
 
-2.  Make sure that the RouteRulesinOCI sheet and corresponing terraform is in synch with route rules in OCI console. If not, please follow procedure specified in [Sync manual changes done in OCI of Security Rules, Route Rules and DRG Route Rules with CD3 Excel Sheet and Terraform](#sync-manual-changes-done-in-oci-of-security-rules-route-rules-and-drg-route-rules-with-cd3-excel-sheet-and-terraform) <br>
+2.  Make sure that the RouteRulesinOCI sheet and corresponing terraform is in synch with route rules in OCI console. If not, follow the procedure specified in [Sync manual changes done in OCI of Security Rules, Route Rules and DRG Route Rules with CD3 Excel Sheet and Terraform](#sync-manual-changes-done-in-oci-of-security-rules-route-rules-and-drg-route-rules-with-cd3-excel-sheet-and-terraform) <br>
   
 3. Execute the _setupOCI.py_ file with _workflow_type_ parameter value to _create_resources_: <br>
    ```
@@ -262,16 +263,16 @@ Follow the below steps to update VLANs.
 		terraform apply
        ```
 
-6.  Again make sure to export the Route Rules in OCI into excel and terraform. Please follow procedure specified in [Sync manual changes done in OCI of Security Rules, Route Rules and DRG Route Rules with CD3 Excel Sheet and Terraform](#sync-manual-changes-done-in-oci-of-security-rules-route-rules-and-drg-route-rules-with-cd3-excel-sheet-and-terraform) 
+6.  Again make sure to export the Route Rules in OCI into excel and terraform. Follow the procedure specified in [Sync manual changes done in OCI of Security Rules, Route Rules and DRG Route Rules with CD3 Excel Sheet and Terraform](#sync-manual-changes-done-in-oci-of-security-rules-route-rules-and-drg-route-rules-with-cd3-excel-sheet-and-terraform) 
 
 This completes the modification of VLANs in OCI. Verify the components in console.
 
 ### RPCs
 Remote VCN peering is the process of connecting two VCNs in different regions (but the same tenancy). The peering allows the VCNs' resources to communicate using private IP addresses without routing the traffic over the internet or through your on-premises network.
  
-   - Modify your excel sheet to update required data in the Tabs - DRGs.
-   - The source and target RPC details to be entered in DRG sheet for establishing a connection. Please check the example in excel file for reference.
-   - Make sure that the DRGRouteRulesinOCI sheet and corresponding terraform is in synch with DRG route rules in OCI console. If not, please follow procedure specified in [Sync manual changes done in OCI of Security Rules, Route Rules and DRG Route Rules with CD3 Excel Sheet and Terraform](#sync-manual-changes-done-in-oci-of-security-rules-route-rules-and-drg-route-rules-with-cd3-excel-sheet-and-terraform)
+   - Modify the Excel sheet to update required data in the Tabs - DRGs.
+   - The source and target RPC details to be entered in DRG sheet for establishing a connection. Check the example in excel file for reference.
+   - Make sure that the DRGRouteRulesinOCI sheet and corresponding terraform is in synch with DRG route rules in OCI console. If not, follow the procedure specified in [Sync manual changes done in OCI of Security Rules, Route Rules and DRG Route Rules with CD3 Excel Sheet and Terraform](#sync-manual-changes-done-in-oci-of-security-rules-route-rules-and-drg-route-rules-with-cd3-excel-sheet-and-terraform)
    - Global directory which is inside the customer outdir will have all RPC related files and scripts.
    - The RPC resources(modules,provider configurations etc) are generated dynamically for the tenancy and can work along only with CD3 automation toolkit.
    - Choose option 'Network' and then 'Customer Connectivity' for creating RPC in GreenField workflow.

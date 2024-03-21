@@ -2,8 +2,7 @@
  
 **1. Is there a way to verify my input CD3 Excel sheet for any typos/miskates?**
 <br>   
- 	   Yes, please choose 'Validate CD3' option in setUpOCI menu in GreenField workflow. It validates specific tabs of the excel sheet. Please see
- 	   [CD3 Validator Features](cd3validator.md) for more details.
+ 	   Yes, choose 'Validate CD3' option in setUpOCI menu in GreenField workflow. It validates specific tabs of the excel sheet. Check out [CD3 Validator Features](cd3validator.md) for more details.
 
 **2. Can I use an existing outdir to export the data from OCI?**
 <br> 
@@ -16,7 +15,7 @@ Re-run createTenancyConfig.py with same details in tenancyConfig.properties file
 
 **4. How do I upgrade an existing version of the toolkit to the new one without disrupting my existing tenancy files/directories?**
 <br>  
-Please look at [Steps to Upgrade Your Toolkit.](upgrade-toolkit.md)
+ Check out [Steps to Upgrade Your Toolkit.](upgrade-toolkit.md)
 
 **5. How do I export instances in batches using different filters?**
 <br>  
@@ -27,7 +26,7 @@ Follow below steps:
   - Specify the filter - prefix of the instances or specific AD to export.
   - Once the execution completes, take a backup of the files generated for instances in out directory( *<customer\_name\>\_instances.     tfvars* and _tf\_import\_cmds \_instances\_nonGF.sh_) and a backup of the 'Instances' tab of the Input CD3 Excel Sheet.
   - Repeat steps from 1 to 4 to export next set of Instances using another filter.
-  - Once you export all the required instances using multiple filters, move the files from backup to the out directory and then execute all the shell scripts generated for Instances. Consolidate the data of exported instances from the Excel sheet backups.
+  - After exporting all the required instances using multiple filters, move the files from backup to the out directory, and then execute all the shell scripts generated for instances. Consolidate the data of exported instances from the Excel sheet backups.
 
 
 **6. How do I delete a compartment from OCI using the toolkit?**

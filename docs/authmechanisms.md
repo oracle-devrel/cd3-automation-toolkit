@@ -1,5 +1,6 @@
 # OCI SDK Authentication Methods
-Choose one of the below authentication mechanisms to be used for the toolkit execution -
+
+CD3 supports the below OCI authentication mechanisms for the toolkit execution. Choose one from the list:
 
 - [API key-based authentication](#api-key-based-authentication)
 - [Session token-based authentication](#session-token-based-authentication)
@@ -15,10 +16,10 @@ cd /cd3user/oci_tools/cd3_automation_toolkit/user-scripts/
 ```
 python createAPIKey.py
 ```
-→ This will generate the public/private key pair (oci_api_public.pem and oci_api_private.pem) at /cd3user/tenancies/keys/
+→ This will generate the public/private key pair (oci_api_public.pem and oci_api_private.pem) at **/cd3user/tenancies/keys/**
    <br><br>
- In case you already have the keys, you can copy the private key file inside the container at 
- /cd3user/tenancies/keys/
+   
+ In case you already have the keys, you can copy the private key file inside the container at **/cd3user/tenancies/keys/**
 
 2. Upload Public Key<br>
    <br>

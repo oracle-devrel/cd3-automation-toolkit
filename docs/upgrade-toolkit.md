@@ -10,7 +10,7 @@ This is a major release with introduction of CI/CD using Jenkins.
 1. Follow the steps in [Launch Docker Container](launch-from-local.md) to build new image with latest code and launch the container by specifying same path for <directory_in_local_system_where_the_files_must_be_generated> to keep using same outdir.
 2. Copy sddc.tf from _/cd3user/oci_tools/cd3\_automation\_toolkit/user-scripts/terraform_files/_ <b>to</b> _/cd3user/tenancies/<customer\_name>/terraform\_files/<region\_dir>/<ocvs>_.
 3. Copy the contents of modules directory from _/cd3user/oci_tools/cd3\_automation\_toolkit/user-scripts/terraform_files/modules/_ <b>to</b> _/cd3user/tenancies/<customer\_name>/terraform\_files/<region\_dir>_.
-4. Copy the <b>sddcs</b> variable block from _/cd3user/oci_tools/cd3\_automation\_toolkit/user-scripts/terraform_files/variables_example.tf_ and replace it in your variables_\<region>.tf file
+4. Copy the <b>sddcs</b> variable block from _/cd3user/oci_tools/cd3\_automation\_toolkit/user-scripts/terraform_files/variables_example.tf_ and replace it in the variables_\<region>.tf file
    
 ## Upgrade to Release v12
 
