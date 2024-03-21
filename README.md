@@ -7,7 +7,11 @@
 
 <br>
 
-  [CD3 Docs](https://oracle-devrel.github.io/cd3-automation-toolkit/)&nbsp; &nbsp;•&nbsp;&nbsp; [Watch & Learn](https://www.youtube.com/playlist?list=PLPIzp-E1msrbJ3WawXVhzimQnLw5iafcp) &nbsp;&nbsp;•&nbsp;&nbsp;[Blogs & Tutorials](https://oracle-devrel.github.io/cd3-automation-toolkit/tutorials/) &nbsp;&nbsp;•&nbsp;&nbsp;[OCI CD3-Livelabs](https://apexapps.oracle.com/pls/apex/f?p=133:180:112501098061930::::wid:3724)&nbsp;&nbsp;•&nbsp; &nbsp;[Excel Templates](https://oracle-devrel.github.io/cd3-automation-toolkit/excel-templates) &nbsp;&nbsp;•&nbsp; &nbsp;[What's New](https://github.com/oracle-devrel/cd3-automation-toolkit/releases/tag/v2024.1.0)
+  [What's New](https://github.com/oracle-devrel/cd3-automation-toolkit/releases/tag/v2024.1.0) &nbsp;&nbsp;•&nbsp; &nbsp;[Excel Templates](https://oracle-devrel.github.io/cd3-automation-toolkit/excel-templates) &nbsp;&nbsp;•&nbsp; &nbsp; [CD3 Docs](https://oracle-devrel.github.io/cd3-automation-toolkit/)&nbsp; &nbsp;•&nbsp;&nbsp; [Watch & Learn](https://www.youtube.com/playlist?list=PLPIzp-E1msrbJ3WawXVhzimQnLw5iafcp) &nbsp;&nbsp;•&nbsp;&nbsp;[Blogs & Tutorials](https://oracle-devrel.github.io/cd3-automation-toolkit/tutorials/) &nbsp;&nbsp;•&nbsp;&nbsp;[OCI CD3-Livelabs](https://apexapps.oracle.com/pls/apex/f?p=133:180:112501098061930::::wid:3724)
+  
+  <br>
+  
+  [![Deploy_To_OCI](https://oci-resourcemanager-plugin.plugins.oci.oraclecloud.com/latest/deploy-to-oracle-cloud.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oracle-devrel/cd3-automation-toolkit/archive/refs/heads/develop.zip)
 
 <br>
 
