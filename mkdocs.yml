@@ -19,7 +19,7 @@ nav:
       - Resource Manager Stack: launch-from-rmstack.md
       - Manual Container Launch: launch-from-local.md
     - Connect CD3 container to OCI: connect-container-to-oci-tenancy.md
-  - Create, Update or Export with CLI: 
+  - Use with CLI: 
     - cd3-cli.md
     - Before You Begin: cd3-cli.md
     - Create in OCI  :
@@ -38,7 +38,7 @@ nav:
         - Network : exportnetwork-cli.md
         - Compute : exportcompute-cli.md
 
-  - Create, Update or Export with Jenkins:
+  - Use with Jenkins:
     - cd3-jenkins.md
     - Before You Begin: cd3-jenkins.md
     - Introduction: jenkinsintro.md
@@ -51,7 +51,7 @@ nav:
         - Create Compute Resources/OKE/SDDC/Database: createcompute-jenkins.md
         - Provision multiple services together: multiple-services-jenkins.md
     - Export from OCI : nongreenfield-jenkins.md
-    - Sync between CLI and Jenkins: sync-cli-jenkins.md
+    - Commit Local changes to GIT: sync-cli-jenkins.md
 
   - Upgrade CD3:
     - upgrade-toolkit.md
@@ -65,7 +65,7 @@ nav:
     - Support for Additional Attrs: additional-attributes.md
     - CIS Compliance Features: cisfeatures.md
     - CD3 Validator: cd3validator.md
-    - Migrate jobs to user's Jenkins: jobs-migration.md
+    - Migrate CD3 Jenkins: jobs-migration.md
     
    
   - Troubleshooting:
@@ -89,6 +89,8 @@ theme:
     - toc.integrate
     - navigation.indexes
     - navigation.top
+    - navigation.tabs
+    - navigation.expand
     - navigation.path
     - content.code.copy
   icon:

@@ -20,7 +20,7 @@ Note below points while adding VM details in the Instances sheet:
  <br>
 
 !!! quote "Example"
-    If the SSH Key Var Name is entered as **ssh_public_key** in the Excel sheet, make an entry in the variables_<region>.tf file as shown below.
+    If the SSH Key Var Name is entered as **ssh_public_key** in the Excel sheet, make an entry in the variables_<region\>.tf file as shown below.
 ```
     variable  'instance_ssh_keys'  {
     type = map(any)

@@ -1,11 +1,12 @@
 # Store Terraform State into Object Storage Bucket
 
 !!! Caution  
-    - When utilizing remote state and deploying the stack to OCI Resource Manager through the **Upload current terraform files/state to Resource Manager** option under **Developer Services**, attempting to execute terraform plan/apply directly from OCI Resource Manager may result in below error.
+    - The option to upload to Resource Manager is not available when using Jenkins. When using it via CLI, with remote state configured,  it is required to remove backend.tf from the directory, bring the remote state into local and then upload the stack.
+
+    - If this is not done, attempting to execute terraform plan/apply directly from OCI Resource Manager may result in below error.
 
     <img width="50%" height="50%" alt="Screenshot 2024-01-17 at 11 38 54 PM" src="../images/remotestate-1.png">
 
-    - This option is disabled while using the toolkit via Jenkins. While using it via CLI, it is required to remove backend.tf from the directory, bring the remote state into local and then upload the stack.
 
 <br>
 

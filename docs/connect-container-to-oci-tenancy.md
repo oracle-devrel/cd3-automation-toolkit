@@ -3,7 +3,7 @@
 
 !!! note 
 
-    * With the toolkit release v2024.1.0, the toolkit supports single **customer_name** per container.
+    * With the toolkit release v2024.1.0, the toolkit supports only a single **customer_name** per container when using Jenkins.
     * When a new region is subscribed to the tenancy, rerun createTenancyConfig.py by using the same tenancyconfig.properties file that was originally used. It will create new directory for the new region under `/cd3user/tenancies/<customer_name>/terraform_files` without touching the existing ones and will commit the latest terraform_files folder to DevOps GIT repo.
 
 **Step 1 - Login (Exec) into the Container**:

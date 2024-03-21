@@ -1,6 +1,6 @@
-# **Single Click Container Launch**
+# **One Click Deployment**
 
-This will automatically launch the linux compute VM in OCI tenancy and configure Podman container on the VM.
+This method will automatically launch the linux compute VM in OCI tenancy and configure Podman container on the VM.
 <br><br>
 **Prerequisites**
 
@@ -15,7 +15,8 @@ This will automatically launch the linux compute VM in OCI tenancy and configure
 
 - [x] Enter the required details in the Resource manager stack and click on create.
 !!! Warning
-    While filling details in the stack, the recommended way is not to enable access to VM from 0.0.0.0/0 and restrict it to the specific CIDR only.
+
+    To maintain a secure environment, provide a specific source CIDR range to access the VM. Do not use 0.0.0.0/0.
 
 - [x] After the Apply job is successful, click on it and scroll down to the end of logs and find the details for the created VM, and commands to be executed to login to the toolkit container.<br>
 <img width="1124" src="../images/launch-from-stack-1.png">

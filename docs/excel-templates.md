@@ -30,12 +30,12 @@ Instructions on how to fill data into the Excel sheet can be found in the Blue s
 
 <br>
 
-**CD3 Excel templates for OCI Firewall:**
+**CD3 Excel templates for OCI Network Firewall:**
 
 
 |Excel Sheet  | Purpose                                                                                                                    | 
 |-----------|----------------------------------------------------------------------------------------------------------------------------|
-| [CD3-Firewall-template.xlsx](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/main/cd3_automation_toolkit/example/CD3-Firewall-template.xlsx)   | 	This template has sample data for deploying Network Firewall in OCI. **Use separate sheets to deploy firewalls in separate regions of the tenancy.** | 
+| [CD3-Network-Firewall-template.xlsx](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/main/cd3_automation_toolkit/example/CD3-Firewall-template.xlsx)   | 	This template has sample data for deploying Network Firewall in OCI. **Use separate sheets to deploy firewalls in separate regions of the tenancy.** | 
 
 
 <br>
