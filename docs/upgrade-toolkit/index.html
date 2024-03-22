@@ -1820,6 +1820,15 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#upgrade-to-release-v202420" class="md-nav__link">
+    <span class="md-ellipsis">
+      Upgrade to Release v2024.2.0
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#upgrade-to-release-v202410" class="md-nav__link">
     <span class="md-ellipsis">
       Upgrade to Release v2024.1.0
@@ -2167,6 +2176,15 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#upgrade-to-release-v202420" class="md-nav__link">
+    <span class="md-ellipsis">
+      Upgrade to Release v2024.2.0
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#upgrade-to-release-v202410" class="md-nav__link">
     <span class="md-ellipsis">
       Upgrade to Release v2024.1.0
@@ -2257,11 +2275,19 @@
 
 
 <h1 id="steps-to-upgrade-your-toolkit-for-existing-customers-using-older-versions">Steps to Upgrade Your Toolkit (For Existing Customers using older versions):</h1>
+<h2 id="upgrade-to-release-v202420">Upgrade to Release v2024.2.0</h2>
+<ol>
+<li>Follow the steps in <a href="../launch-container/">Launch Docker Container</a> to build new image with latest code and launch the container by specifying new path for <directory_in_local_system_where_the_files_must_be_generated> to create a fresh outdir.</li>
+<li>Use Non Greenfield workflow to export the required OCI services into new excel sheet and the tfvars. Run terraform import commands also.</li>
+<li>Once terraform is in synch, Switch to Greenfield workflow and use for any future modifications to the infra.</li>
+</ol>
 <h2 id="upgrade-to-release-v202410">Upgrade to Release v2024.1.0</h2>
-<p>This is a major release with introduction of CI/CD using Jenkins.
-1. Follow the steps in <a href="../launch-from-local/">Launch Docker Container</a> to build new image with latest code and launch the container by specifying new path for <directory_in_local_system_where_the_files_must_be_generated> to create a fresh outdir.
-2. Use Non Greenfield workflow to export the required OCI services into new excel sheet and the tfvars. Run terraform import commands also.
-3. Once terraform is in synch, Switch to Greenfield workflow and use for any future modifications to the infra.</p>
+<p>This is a major release with introduction of CI/CD using Jenkins.</p>
+<ol>
+<li>Follow the steps in <a href="../launch-from-local/">Launch Docker Container</a> to build new image with latest code and launch the container by specifying new path for <directory_in_local_system_where_the_files_must_be_generated> to create a fresh outdir.</li>
+<li>Use Non Greenfield workflow to export the required OCI services into new excel sheet and the tfvars. Run terraform import commands also.</li>
+<li>Once terraform is in synch, Switch to Greenfield workflow and use for any future modifications to the infra.</li>
+</ol>
 <h2 id="upgrade-to-release-v121-from-v12">Upgrade to Release v12.1 from v12</h2>
 <ol>
 <li>Follow the steps in <a href="../launch-from-local/">Launch Docker Container</a> to build new image with latest code and launch the container by specifying same path for <directory_in_local_system_where_the_files_must_be_generated> to keep using same outdir.</li>
