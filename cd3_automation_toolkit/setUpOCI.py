@@ -536,7 +536,7 @@ def export_compute(prim_options=[]):
 def export_dedicatedvmhosts(inputfile, outdir, config, signer, ct, export_regions):
     compartments = ct.get_compartment_map(var_file,'Dedicated VM Hosts')
     Compute.export_dedicatedvmhosts(inputfile, outdir, service_dir_dedicated_vm_host, config, signer, ct, export_compartments=compartments, export_regions=export_regions)
-    create_dedicatedvmhosts(inputfile, outdir, prefix, ct)
+    create_dedicatedvmhosts(inputfile, outdir, service_dir_dedicated_vm_host, prefix, ct)
     print("\n\nExecute tf_import_commands_dedicatedvmhosts_nonGF.sh script created under each region directory to synch TF with OCI Dedicated VM Hosts\n")
     # Update modified path list
     update_path_list(regions_path=export_regions, service_dirs=[service_dir_dedicated_vm_host])
