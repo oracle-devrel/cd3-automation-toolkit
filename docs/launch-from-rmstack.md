@@ -26,6 +26,9 @@ This method will automatically launch the linux compute VM in OCI tenancy and co
 
     To maintain a secure environment, provide a specific source CIDR range to access the VM. Do not use 0.0.0.0/0.
 
+!!! Note
+    In case existing network is chosen to launch Work VM, it needs to have outbound internet connectivity.
+
 - [x] After the Apply job is successful, click on it and scroll down to the end of logs and find the details for the created VM, and commands to be executed to login to the toolkit container.<br>
 <img width="1124" src="../images/launch-from-stack-1.png">
 <img width="1124" src="../images/launch-from-stack-2.png">
