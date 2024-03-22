@@ -48,9 +48,12 @@ nav:
   
   - Must Read:
     - must-read-prerequisites.md
-    - Manage Network: manage-network.md
-    - Manage Compute: manage-compute.md
-    - Manage OCI Network Firewall: manage-firewall.md
+    - Manage Network :  
+       - manage-network.md
+    - Manage Compute : 
+       - manage-compute.md
+    - Manage OCI Network Firewall : 
+       - manage-firewall.md
 
   - Additional Features:
     - group-tf-files.md
@@ -84,13 +87,13 @@ theme:
   font:
     text: Oracle Sans
   features:
-    - toc.integrate
     - navigation.indexes
     - navigation.top
     - navigation.tabs
     - navigation.expand
     - navigation.path
     - content.code.copy
+
   icon:
     admonition:
       note: fontawesome/solid/note-sticky
@@ -140,6 +143,7 @@ extra:
       link: https://github.com/oracle-devrel/cd3-automation-toolkit
     - icon: fontawesome/brands/youtube
       link: https://www.youtube.com/playlist?list=PLPIzp-E1msrbJ3WawXVhzimQnLw5iafcp
+  generator: false
 
 extra_javascript:
   - https://polyfill.io/v3/polyfill.min.js #?features=es6
@@ -200,4 +204,4 @@ plugins:
 
 
 copyright: |
-  &copy; 2022 <a href=""  target="_blank" rel="noopener">Mukund Murali</a>
+  &copy; 2022 <a href=""  target="_blank" rel="noopener">Copyright (c) 2021 Oracle and/or its affiliates.</a>
