@@ -190,6 +190,18 @@ Output terraform files are generated under *<outdir\>/<region\>* directory.
 Once terraform apply is done, you can view the resources under Networking -> DNS management in OCI console
 <br>
 
+## Firewall Tabs
+OCI Network Firewall can be created using [CD3-Firewall-template.xlsx](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/main/cd3_automation_toolkit/example/CD3-Firewall-template.xlsx).
+After the required details are filled in, choose "OCI Firewall" under the SetUpOCI menu to create the Firewall and its policy. 
+
+It is recommended to execute the validator script for Firewall, to validate the input values before proceeding to create.
+
+Once the toolkit execution is complete,  output terraform files are generated at :
+*<outdir\>/<region\>/<service_dir\>/<prefix\>_firewall*.auto.tfvars*
+
+Once terraform apply is done, you can view the resources under Identity and Security -> Network Firewalls for the region.
+
+
 ## DNS-Resolvers-Tab
 
 Existing Resolvers need to be exported first before making any changes to those.

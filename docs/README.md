@@ -35,36 +35,34 @@
     [Launch from Local Desktop](launch-from-local.md)<br>
     [Connect CD3 Container to OCI](connect-container-to-oci-tenancy.md)<br>
 
--   :material-monitor-screenshot:{ .lg .middle } __Create, Update or Export TF with CD3 - CLI__
+-   :material-monitor-screenshot:{ .lg .middle } __Use CD3 with CLI__
 
     ---
-    [Before you Begin](workflows-cli.md)<br>
+    [Before you Begin](cd3-cli.md)<br>
     [Create Resources from OCI using CLI (Greenfield Workflow)](greenfield-cli.md)<br>
-    [Examples - Create Network](createnetwork-cli.md)<br>
-    [Examples - Create Compute](createcompute-cli.md)<br>
     [OPA integration](opa-integration.md)<br>
     [Export Resources from OCI using CLI (Non-Greenfield Workflow)](nongreenfield-cli.md)<br>
-    [Examples - Export Network](exportnetwork-cli.md)<br>
-    [Examples - Export Compute](exportcompute-cli.md)<br>
 
--   :material-monitor-screenshot:{ .lg .middle } __Create, Update or Export TF with CD3 - Jenkins__
+
+-   :material-monitor-screenshot:{ .lg .middle } __Use CD3 with Jenkins__
 
     ---
 
-    [Before You Begin](workflows-jenkins.md)<br>
+    [Before You Begin](cd3-jenkins.md)<br>
     [Overview](jenkinsintro.md)<br>
     [Create Resources from OCI using Jenkins (Greenfield Workflow)](greenfield-jenkins.md)<br>
-    [Examples - Create Network](createnetwork-jenkins.md)<br>
-    [Examples - Create Compute/OKE/SDDC/Database]( createcompute-jenkins.md)<br>
     [Provision multiple Services Together](multiple-services-jenkins.md)<br>
     [Export Resources from OCI using CLI (Non-Greenfield Workflow)](nongreenfield-jenkins.md)<br>
-    [Synchronize Changes between CLI and Jenkins](sync-cli-jenkins.md)<br>   
+    [Commit Local changes to GIT](sync-cli-jenkins.md)<br>   
     
 
--   :material-lightbulb-auto:{ .lg .middle } __Upgrade CD3__
+-   :material-lightbulb-auto:{ .lg .middle } __MUST READ__
 
     ---
-    [Steps to Upgrade Toolkit](upgrade-toolkit.md)<br>
+    [Manage Network](manage-network.md)<br>
+    [Manage Compute](manage-compute.md)<br>
+    [Manage OCI Network Firewall](manage-firewall.md)<br>
+    
 
 -   :material-feather:{ .lg .middle } __Additional Features__
 

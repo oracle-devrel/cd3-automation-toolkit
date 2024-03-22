@@ -5,6 +5,14 @@ This method will automatically launch the linux compute VM in OCI tenancy and co
 **Prerequisites**
 
 * The user deploying the stack should have access to launch OCI Resource Manager stack, compute instance and network resources.
+!!! Example "Sample Policies"
+    Allow group <group_name\> to manage orm-stacks in compartment <name\>  <br>
+    Allow group <group_name\> to manage orm-jobs in compartment <name\>. <br>
+    Allow group <group_name\> to manage instance-family in compartment <name\> <br>
+    Allow group <group_name\> to manage virtual-network-family in compartment <name\> <br>
+    
+    
+    
 * OCI Tenancy Access as defined in [Prerequisites](prerequisites.md).
 <br><br>
 

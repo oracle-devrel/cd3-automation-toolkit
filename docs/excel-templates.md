@@ -30,7 +30,7 @@ Instructions on how to fill data into the Excel sheet can be found in the Blue s
 
 <br>
 
-**CD3 Excel templates for OCI Network Firewall:**
+**CD3 Excel template for OCI Network Firewall:**
 
 
 |Excel Sheet  | Purpose                                                                                                                    | 

@@ -9,7 +9,7 @@
 | [Governance](cd3exceltabs.md#governance) | Tags (Namespaces, Tag Keys, Default Tags, Cost Tracking Tags), Budget |
 | **Network and Connectivity** ||
 | [Network](cd3exceltabs.md#network) | VCNs, Subnets, VLANs, DRGs, IGWs, NGWs, LPGs, Route Tables, DRG Route, Tables, Security Lists, Network Security Groups, Remote Peering Connections, Application Load Balancer, Network Load Balancers |
-| [Network Firewall](cd3exceltabs.md#network-firewall)                                       | OCI Network Firewall and Policy |
+| [OCI Network Firewall](cd3exceltabs.md#network-firewall)                                       | OCI Network Firewall and Policy |
 | [DNS Management](cd3exceltabs.md#private-dns)                                       | Private DNS - Views, Zones, RRSets/Records and Resolvers  |
 |**Infrastructure**||
 | [Compute](cd3exceltabs.md#compute) | Instances supporting Market Place Images, Remote Exec, Cloud-Init scripts, Dedicated VM Hosts |
