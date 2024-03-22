@@ -20,3 +20,10 @@ Please refer the screenshots below -
 There could be multiple reasons for this: <br>
    - You have to specify all compartment names(comma separated) explicitly from where you want to export the data.<br>
    - There may be some duplicate resource names in OCI. Toolkit does not support creation/export of resources with same names.
+
+**3. I get below error while executing terraform pipelines using jenkins.**
+
+![image](../images/commonissues-3.png)
+
+This gets resolved on its own after sometime.
+
