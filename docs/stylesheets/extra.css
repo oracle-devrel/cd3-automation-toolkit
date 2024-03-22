@@ -25,3 +25,12 @@
 .md-typeset mark {
   background-color:#d7d7d7;
 }
+
+.md-tabs__item--active {
+  border: 0px solid #00796B;
+  background-color: #FFFFFF;
+  color: #00796B;
+  border-bottom-style: 5px;
+  padding-top: 1px;
+  height: 100%;
+}
