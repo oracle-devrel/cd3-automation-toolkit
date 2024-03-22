@@ -1,0 +1,27 @@
+{% if count == 0 %}
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+############################
+# Firewall Policy Address Lists
+# Firewall Policy Address List - tfvarsß
+# Allowed Values:
+# network_firewall_policy_id can be the ocid or the name of the firewall Policy that needs to be attached to the Firewall
+# address_type can be  IP or FQDN
+# Sample import command for Firewall Policy Address List:
+# terraform import "module.address_lists[\"<<address-list terraform variable name>>\"].oci_network_firewall_network_firewall_policy_address_list.network_firewall_policy_address_list\" networkFirewallPolicies/<<firewall-policy ocid>>/addressLists/<<address-list ocid>>
+############################
+
+address_lists = {
+    ##Add New addresses for {{ region|lower }} here##
+}
+{% else %}
+{% if list_name != "" and list_name != "nan" and list_name != null %}
+{{ policy_tf_name }}_{{address_tf_name}} = {
+  address_list_name = "{{ address_name }}"
+  network_firewall_policy_id = "{{ policy_tf_name }}"
+  addresses = [{{ address_list }}]
+  address_type = "{{address_type}}"
+
+  },
+
+  {% endif %}
+{% endif %}

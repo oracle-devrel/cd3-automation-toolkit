@@ -1,5 +1,5 @@
 # OCI SDK Authentication Methods
-Choose one of the below authentication mechansims to be used for the toolkit execution -
+Choose one of the below authentication mechanisms to be used for the toolkit execution -
 
 - [API key-based authentication](#api-key-based-authentication)
 - [Session token-based authentication](#session-token-based-authentication)
@@ -27,7 +27,7 @@ Follow below steps to use API key-based authentication -
       -  Paste the contents of the PEM public key in the dialog box and click Add.
   
    > <b>Note</b>
-   > * Please note down these details for next step - User OCID, Private Key path, Fingerprint, Tenancy OCID. The User should have administrator access to the tenacy to use complete functionality of the toolkit.
+   > * Please note down these details for next step - User OCID, Private Key path, Fingerprint, Tenancy OCID. The User should have administrator access to the tenancy to use complete functionality of the toolkit.
    
 ## Session token-based authentication
 Follow below steps to use Session token-based authentication - 
@@ -46,13 +46,13 @@ Follow below steps to use Session token-based authentication -
 
 > <b>Note</b>
 > * createTenancyConfig.py script will use the config file located at /cd3user/.oci path. And toolkit supports profile name as DEFAULT only.
-> * Generated session token will have maximum 60 minutes validity. You will have to follow from step 1 if new session token is required after expiry. The User should have administrator access to the tenacy to use complete functionlaity of the toolkit.
+> * Generated session token will have maximum 60 minutes validity. You will have to follow from step 1 if new session token is required after expiry. The User should have administrator access to the tenancy to use complete functionality of the toolkit.
 
 ## Instance principal
 Follow below steps to use Instance Principal authentication - 
 1. Launch and Instance in the tenancy and set up the toolkit docker container on that instance.
 2. Create Dynamic Group for this instance.
-3. Write IAM policy to assign privileges to this dynamic group. The dynamic group(conytaining the instance) should have administrator access to the tenacy to use complete functionality of the toolkit.
+3. Write IAM policy to assign privileges to this dynamic group. The dynamic group(containing the instance) should have administrator access to the tenancy to use complete functionality of the toolkit.
 
 
 <br><br>

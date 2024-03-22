@@ -335,6 +335,7 @@ pipeline {
 			when{
 			    allOf {
                 expression {return ParametersValidation == "Passed" }
+                expression {return currentBuild.result != "ABORTED" }
                 expression {return currentBuild.result != "FAILURE" }
 			    }
 
@@ -377,6 +378,7 @@ pipeline {
             when{
                 allOf {
                 expression {return ParametersValidation == "Passed" }
+                expression {return currentBuild.result != "ABORTED" }
                 expression {return currentBuild.result != "FAILURE" }
                 }
             }
@@ -387,7 +389,7 @@ pipeline {
 
                         cd /cd3user/oci_tools/cd3_automation_toolkit
                         python --version
-                        python setUpOCI_jenkins.py --main_options "${MainOptions}" --sub_options "${SubOptions}" --sub_child_options "${SubChildOptions}" --add_filter "${AdditionalFilters}" $prop_file
+                        python setUpOCI.py --devops True --main_options "${MainOptions}" --sub_options "${SubOptions}" --sub_child_options "${SubChildOptions}" --add_filter "${AdditionalFilters}" $prop_file
 
                     '''
                 }
@@ -398,7 +400,8 @@ pipeline {
 				allOf {
 				    expression {return "${Workflow}".toLowerCase().contains("export")}
 				    expression {return ParametersValidation == "Passed" }
-				    expression {return currentBuild.result != "FAILURE" }
+				    expression {return currentBuild.result != "ABORTED" }
+                    expression {return currentBuild.result != "FAILURE" }
 
 				}
             }
@@ -417,10 +420,11 @@ pipeline {
             }
         }
         }
-        stage ('Git Commit') {
+        stage ('Git Commit to develop') {
             when{
                 allOf {
                     expression {return ParametersValidation == "Passed" }
+                    expression {return currentBuild.result != "ABORTED" }
                     expression {return currentBuild.result != "FAILURE" }
                 }
             }
@@ -435,10 +439,10 @@ pipeline {
                             cd /cd3user/tenancies/${customer_prefix}/terraform_files
                             echo "-----start timestamp-----"
                             time_stamp="$(date +%m-%d-%Y-%H-%M-%S)"
-                            commit_msg="cd3 commit at ${time_stamp}"
+                            commit_msg="commit for setUpOCI build ${BUILD_NUMBER}"
                             git add -A .
                             git commit -m "${commit_msg}"
-                            git push
+                            git push origin develop
                          ''')
                     }else {
                         echo 'Nothing to commit. Skipping further stages.'
@@ -452,7 +456,8 @@ pipeline {
 			    allOf{
     				expression {return "${git_status}" > 0}
     				expression {return ParametersValidation == "Passed" }
-    				expression {return currentBuild.result != "FAILURE" }
+    				expression {return currentBuild.result != "ABORTED" }
+                    expression {return currentBuild.result != "FAILURE" }
 			    }
 			}
             steps {

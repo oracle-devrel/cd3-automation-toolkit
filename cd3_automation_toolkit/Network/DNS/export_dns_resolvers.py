@@ -197,7 +197,8 @@ def export_dns_resolvers(inputfile, outdir, service_dir, config, signer, ct, exp
                     print_resolvers(resolver_tf_name, resolver, values_for_column, **value)
 
     commonTools.write_to_cd3(values_for_column, cd3file, sheetName)
-    print("DNS Resolvers and Endpoints exported to CD3\n")
+    print("{0} DNS Resolvers and Endpoints exported into CD3.\n".format(len(values_for_column["Region"])))
+
 
     # writing data
     for reg in export_regions:

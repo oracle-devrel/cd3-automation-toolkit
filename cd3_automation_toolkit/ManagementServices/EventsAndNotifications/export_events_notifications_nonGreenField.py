@@ -51,7 +51,11 @@ def  print_notifications(values_for_column_notifications,region, ntk_compartment
                     endpointname = fun.get_function(endpoint).data
                     endpoint = endpointname.display_name + "::" + endpoint
                 values_for_column_notifications[col_header].append(endpoint)
-
+        elif col_header.lower() in ['subscription defined tags','subscription_defined_tags','subscription freeform tags', 'subscription_freeform_tags']:
+            if (sbpn == None):
+                values_for_column_notifications[col_header].append("")
+            else:
+                values_for_column_notifications = commonTools.export_tags(sbpn, col_header, values_for_column_notifications)
         elif col_header.lower() in commonTools.tagColumns:
             values_for_column_notifications = commonTools.export_tags(nftn_info, col_header, values_for_column_notifications)
         else:
@@ -76,6 +80,7 @@ def print_events(values_for_column_events, region, ntk_compartment_name, event, 
     event_is_enabled = event.is_enabled
     event_prod =  ""
     event_res = ""
+    data = ""
     event_desc = ""
     event_desc = event.description
     actions = event_info.actions.actions
@@ -108,6 +113,11 @@ def print_events(values_for_column_events, region, ntk_compartment_name, event, 
           action_description = action.description  
           if ( i == 0 ): 
             if condition is not None:
+               #print(condition)
+               if "data" in condition:
+                   data = str(condition["data"])
+               else:
+                   data = "{}"
                for val in condition["eventType"]:
                  if "oraclecloud" in val:
                    service = val.split("com.oraclecloud.")[1]
@@ -116,15 +126,15 @@ def print_events(values_for_column_events, region, ntk_compartment_name, event, 
                  event_prod = service.split('.', 1)[0]
                  event_res = service.split('.', 1)[1]
                  if ( action_name != "" ):
-                     events_rows(values_for_column_events, region, ntk_compartment_name, event_name, event_desc, action_type, action_is_enabled, action_description, event_prod, event_res,  event_is_enabled, action_name, event, event_info)
+                     events_rows(values_for_column_events, region, ntk_compartment_name, event_name, event_desc, action_type, action_is_enabled, action_description, event_prod, event_res,data,  event_is_enabled, action_name, event, event_info)
           if ( i > 0 and action_name != ""):
-             events_rows(values_for_column_events, region, ntk_compartment_name, event_name, event_desc, action_type, action_is_enabled, action_description, event_prod, event_res,  event_is_enabled, action_name, event, event_info)
+             events_rows(values_for_column_events, region, ntk_compartment_name, event_name, event_desc, action_type, action_is_enabled, action_description, event_prod, event_res,data,  event_is_enabled, action_name, event, event_info)
           i = i + 1
     if ( action_name != "" ):
        #importCommands[region.lower()].write("\nterraform import oci_events_rule." + tf_name + " " + str(event.id))
        importCommands[region.lower()].write("\nterraform import \"module.events[\\\"" + str(tf_name) + "\\\"].oci_events_rule.event\" " + str(event.id))
 
-def events_rows(values_for_column_events, region, ntk_compartment_name, event_name, event_desc, action_type, action_is_enabled, action_description, event_prod, event_res,  event_is_enabled, action_name, event, event_info):
+def events_rows(values_for_column_events, region, ntk_compartment_name, event_name, event_desc, action_type, action_is_enabled, action_description, event_prod, event_res,data,  event_is_enabled, action_name, event, event_info):
     for col_header in values_for_column_events.keys():
         if (col_header == "Region"):
             values_for_column_events[col_header].append(region)
@@ -144,6 +154,8 @@ def events_rows(values_for_column_events, region, ntk_compartment_name, event_na
             values_for_column_events[col_header].append(event_prod)
         elif (col_header == "Resource"):
             values_for_column_events[col_header].append(event_res)
+        elif (col_header == "Additional Data") or (col_header == "AdditionalData"):
+            values_for_column_events[col_header].append(data)
         elif (col_header == "Event is Enabled"):
             values_for_column_events[col_header].append(event_is_enabled)
         elif (col_header == "Topic"):
@@ -217,7 +229,7 @@ def export_events(inputfile, outdir, service_dir, config, signer, ct,export_comp
                 print_events(values_for_column_events, region, ntk_compartment_name, event, event_info, ncpc, fun)
 
     commonTools.write_to_cd3(values_for_column_events, cd3file, sheetName)
-    print("Events exported to CD3\n")
+    print("{0} Events exported into CD3.\n".format(len(values_for_column_events["Region"])))
 
     for reg in export_regions:
         with open(script_file, 'a') as importCommands[reg]:
@@ -306,7 +318,8 @@ def export_notifications(inputfile, outdir, service_dir, config, signer, ct, exp
 
 
     commonTools.write_to_cd3(values_for_column_notifications, cd3file, sheetName)
-    print("Notifications exported to CD3\n")
+    print("{0} Notifications exported into CD3.\n".format(len(values_for_column_notifications["Region"])))
+
 
     for reg in export_regions:
         with open(script_file, 'a') as importCommands[reg]:

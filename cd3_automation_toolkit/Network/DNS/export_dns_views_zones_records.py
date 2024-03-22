@@ -184,7 +184,8 @@ def export_dns_views_zones_rrsets(inputfile, outdir, service_dir, config, signer
 
 
     commonTools.write_to_cd3(values_for_column, cd3file, sheetName)
-    print("DNS Views/Zones/Records are exported to CD3\n")
+    print("{0} DNS Views/Zones/Records exported into CD3.\n".format(len(values_for_column["Region"])))
+
 
     # writing data
     for reg in export_regions:

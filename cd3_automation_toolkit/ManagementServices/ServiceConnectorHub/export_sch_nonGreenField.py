@@ -16,7 +16,7 @@ importCommands = {}
 oci_obj_names = {}
 
 
-def get_service_connectors(config,region, SCH_LIST, sch_client, log_client, la_client, stream_client,
+def get_service_connectors(config, region, SCH_LIST, sch_client, log_client, la_client, stream_client,
                            notification_client, func_client, ct, values_for_column, ntk_compartment_name):
     volume_comp = ""
     log_source_list = []
@@ -48,113 +48,198 @@ def get_service_connectors(config,region, SCH_LIST, sch_client, log_client, la_c
 
         if source_kind == "logging":
             log_sources = (getattr(source_data, 'log_sources'))
-
             log_source_list = []
             for log in log_sources:
-                if log.log_group_id == "_Audit":
-                    log_group_name = "Audit"
-                    comp_name = get_comp_details(log.compartment_id)
-                    log_source_list.append(f"{comp_name}&{log_group_name}&all")
-
-                elif log.log_group_id == "_Audit_Include_Subcompartment":
-                    log_group_name = "Audit_In_Subcompartment"
-                    comp_name = get_comp_details(log.compartment_id)
-                    log_source_list.append(f"{comp_name}&{log_group_name}&all")
-
+                if log.log_group_id is None:
+                    break
                 else:
-                    log_group_id = log.log_group_id
-                    logs_compartment_details = log_client.get_log_group(log_group_id=log_group_id)
-                    log_group_name = getattr(logs_compartment_details.data, 'display_name')
-                    comp_name = get_comp_details(log.compartment_id)
-                    if log.log_id:
-                        log_name = getattr(log_client.get_log(log_group_id=log_group_id, log_id=log.log_id).data,
-                                           'display_name')
-                        log_source_list.append(f"{comp_name}&{log_group_name}&{log_name}")
-                    else:
+                    if log.log_group_id == "_Audit":
+                        log_group_name = "Audit"
+                        comp_name = get_comp_details(log.compartment_id)
                         log_source_list.append(f"{comp_name}&{log_group_name}&all")
 
+                    elif log.log_group_id == "_Audit_Include_Subcompartment":
+                        log_group_name = "Audit_In_Subcompartment"
+                        comp_name = get_comp_details(log.compartment_id)
+                        log_source_list.append(f"{comp_name}&{log_group_name}&all")
+
+                    else:
+                        log_group_id = log.log_group_id
+                        try:
+                            logs_compartment_details = log_client.get_log_group(log_group_id=log_group_id)
+                            log_group_name = getattr(logs_compartment_details.data, 'display_name')
+                            comp_name = get_comp_details(log.compartment_id)
+                            if log.log_id:
+                                log_name = getattr(
+                                    log_client.get_log(log_group_id=log_group_id, log_id=log.log_id).data,
+                                    'display_name')
+                                log_source_list.append(f"{comp_name}&{log_group_name}&{log_name}")
+                            else:
+                                log_source_list.append(f"{comp_name}&{log_group_name}&all")
+                        except oci.exceptions.ServiceError as e:
+                            print(f"Error retrieving log group details: {e}")
+                            continue
+                        except ValueError as ve:
+                            print(f"ValueError: {ve}")
+                            continue
+            # Check for empty log sources for current sch
+            if not log_source_list:
+                print(f"Error: logging configurations are missing/incorrect for connector {schs.display_name}.Skipping to the next SCH.")
+                continue
+
         if source_kind == "streaming":
-            source_stream_id = (getattr(source_data, 'stream_id'))
-            source_stream_name = getattr(stream_client.get_stream(stream_id=source_stream_id).data, 'name')
-            source_comp_id = getattr(stream_client.get_stream(stream_id=source_stream_id).data, 'compartment_id')
-            source_stream_comp_name = get_comp_details(source_comp_id)
-            source_stream_string = source_stream_comp_name + "&" + source_stream_name
+            lifecycle_state = getattr(stream_client.get_stream(stream_id=getattr(source_data, 'stream_id')).data,
+                                      'lifecycle_state')
+            if hasattr(source_data, 'stream_id') and lifecycle_state != "DELETED":
+                source_stream_id = (getattr(source_data, 'stream_id'))
+                source_stream_name = getattr(stream_client.get_stream(stream_id=source_stream_id).data, 'name')
+                source_comp_id = getattr(stream_client.get_stream(stream_id=source_stream_id).data, 'compartment_id')
+                source_stream_comp_name = get_comp_details(source_comp_id)
+                source_stream_string = source_stream_comp_name + "&" + source_stream_name
+            else:
+                print(f"Error: 'stream_id' not found in source_data/deleted for connector {schs.display_name}.Skipping to the next SCH.")
+                continue
 
         if source_kind == "monitoring":
-            monitoring_sources = getattr(source_data, 'monitoring_sources')
-            comp_ids = []
-            namespaces = []
-            mon_data = {}
-            for item in monitoring_sources:
-                for attr, value in item.__dict__.items():
-                    if attr == "_compartment_id" and value not in comp_ids:
-                        comp_ids.append(value)
-                        mon_data.update({value: ""})
-                    if attr == "_namespace_details":
-                        namespace_data = getattr(value, 'namespaces')
-                        namespaces = []
-                        for val in namespace_data:
-                            if getattr(val, 'namespace') not in namespaces:
-                                namespaces.append(getattr(val, 'namespace'))
-                                for k, v in mon_data.items():
-                                    if v == "":
-                                        mon_data[k] = namespaces
+            if hasattr(source_data, 'monitoring_sources'):
+                monitoring_sources = getattr(source_data, 'monitoring_sources')
+                comp_ids = []
+                namespaces = []
+                mon_data = {}
+                for item in monitoring_sources:
+                    for attr, value in item.__dict__.items():
+                        if attr == "_compartment_id" and value not in comp_ids:
+                            comp_ids.append(value)
+                            mon_data.update({value: ""})
+                        if attr == "_namespace_details":
+                            namespace_data = getattr(value, 'namespaces')
+                            namespaces = []
+                            for val in namespace_data:
+                                if getattr(val, 'namespace') not in namespaces:
+                                    namespaces.append(getattr(val, 'namespace'))
+                                    for k, v in mon_data.items():
+                                        if v == "":
+                                            mon_data[k] = namespaces
 
-            monitoring_sources_dict = {comp_ids[i]: '[' + ', '.join(namespaces) + ']' for i in range(len(comp_ids))}
+                monitoring_sources_dict = {comp_ids[i]: '[' + ', '.join(namespaces) + ']' for i in range(len(comp_ids))}
 
-            mon_namespace_dict = {}
-            for comp, ns in mon_data.items():
-                comp_name = get_comp_details(comp)
-                mon_namespace_dict.update({comp_name: ns})
+                mon_namespace_dict = {}
+                for comp, ns in mon_data.items():
+                    comp_name = get_comp_details(comp)
+                    mon_namespace_dict.update({comp_name: ns})
 
-            mon_ns_string = str(mon_namespace_dict).replace("'", "")
-            mon_ns_string = mon_ns_string.replace("{", "").replace("}", "").replace("],", "];")
-            mon_ns_string = mon_ns_string.replace(":", "&").replace(" ", "")
-            mon_ns_string = mon_ns_string.replace("&&", "::")
+                mon_ns_string = str(mon_namespace_dict).replace("'", "")
+                mon_ns_string = mon_ns_string.replace("{", "").replace("}", "").replace("],", "];")
+                mon_ns_string = mon_ns_string.replace(":", "&").replace(" ", "")
+                mon_ns_string = mon_ns_string.replace("&&", "::")
+            else:
+                # Print an error message and continue to the next SCH
+                print(f"Error: 'monitoring_sources' not found in source_data for connector {schs.display_name}.Skipping to the next SCH.")
+                continue
 
         if target_kind == "monitoring":
-            metric_name = getattr(target_data, 'metric')
-            metric_namespace = getattr(target_data, 'metric_namespace')
-            comp_id = getattr(target_data, 'compartment_id')
-            comp_name = get_comp_details(comp_id)
-            target_mon_ns_string = f'{comp_name}&[{metric_name},{metric_namespace}]'
+            try:
+                # Check if 'metric' attribute exists in target_data
+                if hasattr(target_data, 'metric'):
+                    metric_name = getattr(target_data, 'metric')
+                    metric_namespace = getattr(target_data, 'metric_namespace')
+                    comp_id = getattr(target_data, 'compartment_id')
+                    comp_name = get_comp_details(comp_id)
+                    target_mon_ns_string = f'{comp_name}&[{metric_name},{metric_namespace}]'
+                else:
+                    # Print an error message and continue to the next SCH
+                    print(f"Error: 'metric' not found in target_data for connector {schs.display_name}.Skipping to the next SCH.")
+                    continue
+            except oci.exceptions.ServiceError:
+                print(f"Error:'metric details' not found for {schs.display_name}.Skipping to the next SCH.")
+                continue
 
         if target_kind == "loggingAnalytics":
-            dest_log_group_id = getattr(target_data, 'log_group_id')
-            target_log_source_identifier = getattr(target_data, 'log_source_identifier')
-            dest_logs_compartment_details = la_client.get_log_analytics_log_group(log_analytics_log_group_id=dest_log_group_id, namespace_name=la_client.list_namespaces(compartment_id=config["tenancy"]).data.items[0].namespace_name)
-            target_log_group_name = getattr(dest_logs_compartment_details.data, 'display_name')
-            target_comp_id = getattr(dest_logs_compartment_details.data, 'compartment_id')
-            target_comp_name = get_comp_details(target_comp_id)
-            target_la_string = target_comp_name + "&" + target_log_group_name
+            # Check if 'log_group_id' attribute exists in target_data
+            if hasattr(target_data, 'log_group_id'):
+                dest_log_group_id = getattr(target_data, 'log_group_id')
+                target_log_source_identifier = getattr(target_data, 'log_source_identifier')
+                dest_logs_compartment_details = la_client.get_log_analytics_log_group(
+                    log_analytics_log_group_id=dest_log_group_id,
+                    namespace_name=la_client.list_namespaces(compartment_id=config["tenancy"]).data.items[
+                        0].namespace_name)
+                target_log_group_name = getattr(dest_logs_compartment_details.data, 'display_name')
+                target_comp_id = getattr(dest_logs_compartment_details.data, 'compartment_id')
+                target_comp_name = get_comp_details(target_comp_id)
+                target_la_string = target_comp_name + "&" + target_log_group_name
+            else:
+                # Print an error message and continue to the next SCH
+                print(f"Error: 'log_group_id' not found in target_data for connector {schs.display_name}.Skipping to the next SCH.")
+                continue
 
         if target_kind == "streaming":
-            target_stream_id = getattr(target_data, 'stream_id')
-            target_stream_name = getattr(stream_client.get_stream(stream_id=target_stream_id).data, 'name')
-            target_comp_id = getattr(stream_client.get_stream(stream_id=target_stream_id).data, 'compartment_id')
-            target_stream_comp_name = get_comp_details(target_comp_id)
-            target_stream_string = target_stream_comp_name + "&" + target_stream_name
+            try:
+                lifecycle_state = getattr(stream_client.get_stream(stream_id=getattr(target_data, 'stream_id')).data,
+                                          'lifecycle_state')
+                # Check if 'stream_id' attribute exists in target_data
+                if hasattr(target_data, 'stream_id') and lifecycle_state != "DELETED":
+                    target_stream_id = getattr(target_data, 'stream_id')
+                    target_stream_name = getattr(stream_client.get_stream(stream_id=target_stream_id).data, 'name')
+                    target_comp_id = getattr(stream_client.get_stream(stream_id=target_stream_id).data,
+                                             'compartment_id')
+                    target_stream_comp_name = get_comp_details(target_comp_id)
+                    target_stream_string = target_stream_comp_name + "&" + target_stream_name
+                else:
+                    # Print an error message and continue to the next SCH
+                    print(f"Error: 'stream_id' not found in target_data for connector {schs.display_name}.Skipping to the next SCH.")
+                    continue
+            except oci.exceptions.ServiceError:
+                print(f"Error: 'stream_id' not found for connector {schs.display_name}.Skipping to the next SCH.")
+                continue
 
         if target_kind == "notifications":
-            target_topic_id = getattr(target_data, 'topic_id')
-            target_topic_name = getattr(notification_client.get_topic(topic_id=target_topic_id).data, 'name')
-            target_topic_comp_id = getattr(notification_client.get_topic(topic_id=target_topic_id).data,
-                                           'compartment_id')
-            target_topic_comp_name = get_comp_details(target_topic_comp_id)
-            target_topic_string = target_topic_comp_name + "&" + target_topic_name
+            try:
+                if hasattr(target_data, 'topic_id'):
+                    target_topic_id = getattr(target_data, 'topic_id')
+                    target_topic_name = getattr(notification_client.get_topic(topic_id=target_topic_id).data, 'name')
+                    target_topic_comp_id = getattr(notification_client.get_topic(topic_id=target_topic_id).data,
+                                                   'compartment_id')
+                    target_topic_comp_name = get_comp_details(target_topic_comp_id)
+                    target_topic_string = target_topic_comp_name + "&" + target_topic_name
+                else:
+                    print(f"Error: 'topic_id' not found in target_data for connector {schs.display_name}.Skipping to the next SCH.")
+                    continue
+            except oci.exceptions.ServiceError:
+                print(f"Error: 'topic_id' not found for connector {schs.display_name}.Skipping to the next SCH.")
+                continue
 
         if target_kind == "functions":
-            target_function_id = getattr(target_data, 'function_id')
-            target_function_name = getattr(func_client.get_function(function_id=target_function_id).data, 'display_name')
-            target_func_comp_id = getattr(func_client.get_function(function_id=target_function_id).data, 'compartment_id')
-            target_func_comp_name = get_comp_details(target_func_comp_id)
-            target_application_id = getattr(func_client.get_function(function_id=target_function_id).data, 'application_id')
-            target_application_name = getattr(func_client.get_application(application_id=target_application_id).data, 'display_name')
-            target_func_string = target_func_comp_name + "@" + target_application_name + "@" + target_function_name
+            try:
+                if hasattr(target_data, 'function_id'):
+                    target_function_id = getattr(target_data, 'function_id')
+                    target_function_name = getattr(func_client.get_function(function_id=target_function_id).data,
+                                                   'display_name')
+                    target_func_comp_id = getattr(func_client.get_function(function_id=target_function_id).data,
+                                                  'compartment_id')
+                    target_func_comp_name = get_comp_details(target_func_comp_id)
+                    target_application_id = getattr(func_client.get_function(function_id=target_function_id).data,
+                                                    'application_id')
+                    target_application_name = getattr(
+                        func_client.get_application(application_id=target_application_id).data, 'display_name')
+                    target_func_string = target_func_comp_name + "@" + target_application_name + "@" + target_function_name
+                else:
+                    print(f"Error: 'function_id' not found in target_data for connector {schs.display_name}.Skipping to the next SCH.")
+                    continue
+            except oci.exceptions.ServiceError:
+                print(f"Error: 'function_id' not found for connector {schs.display_name}.Skipping to the next SCH.")
+                continue
 
         if target_kind == "objectStorage":
-            target_bucket_name = getattr(target_data, 'bucket_name')
-            target_object_name_prefix = getattr(target_data, 'object_name_prefix')
+            try:
+                if hasattr(target_data, 'bucket_name'):
+                    target_bucket_name = getattr(target_data, 'bucket_name')
+                    target_object_name_prefix = getattr(target_data, 'object_name_prefix')
+                else:
+                    print(f"Error: 'bucket_name' not found for {schs.display_name}.Skipping to the next SCH.")
+                    continue
+            except oci.exceptions.ServiceError:
+                print(f"Error: 'bucket_name' not found for {schs.display_name}.Skipping to the next SCH.")
+                continue
 
         sch_tf_name = commonTools.check_tf_variable(schs.display_name)
         comp_done_ids = []
@@ -210,8 +295,10 @@ def get_service_connectors(config,region, SCH_LIST, sch_client, log_client, la_c
                 values_for_column = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict,
                                                                      values_for_column)
 
+
 # Execution of the code begins here
-def export_service_connectors(inputfile, outdir, service_dir, config, signer, ct, export_compartments=[],export_regions=[]):
+def export_service_connectors(inputfile, outdir, service_dir, config, signer, ct, export_compartments=[],
+                              export_regions=[]):
     global tf_import_cmd
     global sheet_dict
     global importCommands
@@ -253,27 +340,36 @@ def export_service_connectors(inputfile, outdir, service_dir, config, signer, ct
         importCommands[reg].write("\n\n######### Writing import for Service Connectors #########\n\n")
         config.__setitem__("region", ct.region_dict[reg])
         region = reg.capitalize()
-        sch_client = oci.sch.ServiceConnectorClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
-        log_client = oci.logging.LoggingManagementClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
-        la_client = oci.log_analytics.LogAnalyticsClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
-        stream_client = oci.streaming.StreamAdminClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
-        notification_client = oci.ons.NotificationControlPlaneClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
-        func_client = oci.functions.FunctionsManagementClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,signer=signer)
+        sch_client = oci.sch.ServiceConnectorClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,
+                                                    signer=signer)
+        log_client = oci.logging.LoggingManagementClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,
+                                                         signer=signer)
+        la_client = oci.log_analytics.LogAnalyticsClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,
+                                                         signer=signer)
+        stream_client = oci.streaming.StreamAdminClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,
+                                                        signer=signer)
+        notification_client = oci.ons.NotificationControlPlaneClient(config=config,
+                                                                     retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,
+                                                                     signer=signer)
+        func_client = oci.functions.FunctionsManagementClient(config=config,
+                                                              retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,
+                                                              signer=signer)
 
         for ntk_compartment_name in export_compartments:
             SCH_LIST = oci.pagination.list_call_get_all_results(sch_client.list_service_connectors,
                                                                 compartment_id=ct.ntk_compartment_ids[
                                                                     ntk_compartment_name], lifecycle_state="ACTIVE",
                                                                 sort_by="timeCreated")
-            get_service_connectors(config,region, SCH_LIST, sch_client, log_client, la_client,
-                                   stream_client, notification_client, func_client, ct, values_for_column, ntk_compartment_name)
+            get_service_connectors(config, region, SCH_LIST, sch_client, log_client, la_client,
+                                   stream_client, notification_client, func_client, ct, values_for_column,
+                                   ntk_compartment_name)
 
     commonTools.write_to_cd3(values_for_column, cd3file, sheetName)
-    print("Service Connectors exported to CD3\n")
+    print("{0} Service Connectors exported into CD3.\n".format(len(values_for_column["Region"])))
+
 
     # writing data
     for reg in export_regions:
         script_file = f'{outdir}/{reg}/{service_dir}/' + file_name
         with open(script_file, 'a') as importCommands[reg]:
             importCommands[reg].write('\n\nterraform plan\n')
-

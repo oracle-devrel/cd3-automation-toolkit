@@ -318,7 +318,8 @@ def export_nlb(inputfile, outdir, service_dir, config,signer, ct, export_compart
     commonTools.write_to_cd3(values_for_column_lis, cd3file, "NLB-Listeners")
     commonTools.write_to_cd3(values_for_column_bss, cd3file, "NLB-BackendSets-BackendServers")
 
-    print("NLBs exported to CD3\n")
+    print("{0} NLBs exported into CD3.\n".format(len(values_for_column_lis["Region"])))
+
 
     # writing data
     for reg in export_regions:

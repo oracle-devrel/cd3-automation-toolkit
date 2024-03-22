@@ -1047,14 +1047,14 @@ subscribed_regions = ct.get_subscribedregions(config,signer)
 home_region = ct.home_region
 
 # Set service directories as per outdir_structure file
-# Add service name from outdir_structure_file to dir_services here
-dir_services = ["identity","tagging","network","loadbalancer","networkloadbalancer","vlan","nsg","instance",
-                "block-volume","dedicated-vm-host","adb","dbsystem-vm-bm","database-exacs","fss","oke","sddc",
-                "cloud-guard","managementservices","budget","kms","object-storage","dns"]
+# If single outdir, get service names from /cd3user/oci_tools/cd3_automation_toolkit/user-scripts/.outdir_structure_file.properties
 if len(outdir_struct.items())==0:
-    for item in dir_services:
+    single_outdir_config = configparser.RawConfigParser()
+    single_outdir_config.read("/cd3user/oci_tools/cd3_automation_toolkit/user-scripts/.outdir_structure_file.properties")
+    for item,val in single_outdir_config.items("Default"):
         varname = "service_dir_" + str(item.replace("-", "_")).strip()
         exec(varname + "= \"\"")
+# If multiple outdir, get service names from
 else:
     for key,value in outdir_struct.items():
         varname = "service_dir_"+str(key.replace("-","_")).strip()

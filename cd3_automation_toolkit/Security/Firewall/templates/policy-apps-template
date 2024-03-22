@@ -1,0 +1,29 @@
+{% if count == 0 %}
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+############################
+# Firewall Policy Applications
+# Firewall Policy Application - tfvars
+# Allowed Values:
+# network_firewall_policy_id can be the ocid or the name of the firewall Policy that needs to be attached to the Firewall
+# app_type can be ICMP or ICMP_V6
+# Sample import command for Firewall Policy Application:
+# terraform import "module.applications[\"<<application terraform variable name>>\"].oci_network_firewall_network_firewall_policy_application.network_firewall_policy_application\"  networkFirewallPolicies/<<firewall-policy ocid>>/applications/<<application ocid>>
+############################
+
+applications = {
+    ##Add New apps for {{ region|lower }} here##
+}
+{% else %}
+{% if applications != "" and applications != "nan" and applications != null %}
+{{ policy_tf_name }}_{{app_tf_name}} = {
+  app_list_name = "{{ app_name }}"
+  network_firewall_policy_id = "{{ policy_tf_name }}"
+  app_type = "{{ app_type }}"
+  icmp_type = "{{icmp_type}}"
+  {% if icmp_code != '' %}
+  icmp_code= "{{ icmp_code }}"
+  {% endif %}
+  },
+
+  {% endif %}
+{% endif %}

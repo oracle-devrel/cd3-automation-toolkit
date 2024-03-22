@@ -49,7 +49,79 @@ for (item in SubOptions.split(",")) {
 
       """
       }
+    if (item.equals("Export Firewall Policy")) {
+        html_to_be_rendered = """
+        ${html_to_be_rendered}
 
+       <tr>
+   <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"fwl_pol_pattern_filter=[\"></td>
+    <td><label title=\"service1-label\" class=\" \">Display Name Pattern Filter for Firewall Policy : </label></td>
+    <td>
+    <input type=\"text\" class=\" \" name=\"value\" > </br>
+    </td>
+   <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"]@\"></td></tr>
+
+	 """
+      }
+	if (item.equals("Clone Firewall Policy")) {
+        html_to_be_rendered = """
+        ${html_to_be_rendered}
+
+       <tr>
+   <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"fwl_clone_src_region=[\"></td>
+    <td><label title=\"service1-label\" class=\" \">Enter region of the Firewall Policy to be cloned <b> (Mandatory) </b>: </label></td>
+	<td><input type=\"text\" class=\" \" name=\"value\" > </br></td>
+   <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"]@\"></td></tr>
+    <tr>
+	<td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"fwl_clone_comp=[\"></td>
+    <td><label title=\"service1-label\" class=\" \">Enter name of the Compartment (as it appears in OCI) of the Firewall Policy to be cloned <b> (Mandatory) </b> : </label></td>
+	<td><input type=\"text\" class=\" \" name=\"value\" > </br></td>
+   <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"]@\"></td></tr>
+    <tr>
+	<td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"src_policy_str=[\"></td>
+    <td><label title=\"service1-label\" class=\" \">Enter names of the source firewall policies(comma separated) <b> (Mandatory) </b> : </label></td>
+	<td><input type=\"text\" class=\" \" name=\"value\" > </br></td>
+   <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"]@\"></td></tr>
+   <tr>
+	<td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"target_policy_str=[\"></td>
+    <td><label title=\"service1-label\" class=\" \">Enter names for the target firewall policies(comma separated), in the same order as source above, leave empty if you need tool to generate the policy names:  </label></td>
+	<td><input type=\"text\" class=\" \" name=\"value\" > </br></td>
+    <td>(Leave empty if you need tool to generate the policy names) </td>
+   <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"]@\"></td></tr>
+<tr>
+   <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"attached_policy_only=[\"></td>
+     <td><label title=\"service1-label\" class=\" \">Clone attached/used policies only </label></td>
+        <td>
+       <input name=\"value\"  json=\"service1\" type=\"checkbox\" class=\" \">
+
+       </td>
+   <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"]@\"></td>
+       </tr>
+	 """
+      }
+	if (item.equals("Delete Firewall Policy")) {
+        html_to_be_rendered = """
+        ${html_to_be_rendered}
+
+       <tr>
+   <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"fwl_region=[\"></td>
+    <td><label title=\"service1-label\" class=\" \">Enter region of the Firewall Policy to be deleted <b> (Mandatory) </b>: </label></td>
+	<td><input type=\"text\" class=\" \" name=\"value\" > </br></td>
+   <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"]@\"></td></tr>
+    <tr>
+	<td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"fwl_del_comp=[\"></td>
+    <td><label title=\"service1-label\" class=\" \">Enter name of the Compartment (as it appears in OCI) of the Firewall Policy to be deleted <b> (Mandatory) </b> : </label></td>
+	<td><input type=\"text\" class=\" \" name=\"value\" > </br></td>
+   <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"]@\"></td></tr>
+    <tr>
+	<td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"fwl_name=[\"></td>
+    <td><label title=\"service1-label\" class=\" \">Enter names of the Firewall Policies(comma separated) that need to be deleted <b> (Mandatory) </b> : </label></td>
+	<td><input type=\"text\" class=\" \" name=\"value\" > </br></td>    
+   <td><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"]@\"></td></tr>
+
+     
+	 """
+      }
    if (item.equals("Export Block Volumes/Block Backup Policy")) {
       html_to_be_rendered = """
       ${html_to_be_rendered}

@@ -212,7 +212,8 @@ def export_fss(inputfile, outdir, service_dir, config1, signer1, ct, export_comp
 
 
     commonTools.write_to_cd3(values_for_column_fss, cd3file, sheetName)
-    print("FSS objects exported to CD3.\n")
+    print("{0} FSS objects exported into CD3.\n".format(len(values_for_column_fss["Region"])))
+
 
     # writing data
     for reg in export_regions:

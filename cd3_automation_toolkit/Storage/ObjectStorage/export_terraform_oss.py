@@ -318,7 +318,8 @@ def export_buckets(inputfile, outdir, service_dir, config, signer, ct, export_co
                 print_buckets(region, outdir, service_dir,bucket_data, values_for_column, ntk_compartment_name, namespace_name,rp_id,retention_rule_data,rp_details,rp_name,lf_name_list,lf_name,lf_mapping,lf_excl,lf_incl,lf_prefix,ta_map,tgt_map)
 
     commonTools.write_to_cd3(values_for_column, cd3file, sheetName)
-    print("Buckets exported to CD3\n")
+    print("{0} Buckets exported into CD3.\n".format(len(values_for_column["Region"])))
+
 
     for reg in export_regions:
         script_file = f'{outdir}/{reg}/{service_dir}/' + file_name

@@ -609,24 +609,75 @@ variable "data_drg_route_table_distributions" {
 ####################
 
 variable "zones" {
-  type    = map(any)
-  default = {}
+type    = map(object({
+compartment_id       = string
+display_name         = string
+view_compartment_id = optional(string)
+view_id = optional(string)
+zone_type = optional(string)
+scope = optional(string)
+freeform_tags = optional(map(any))
+defined_tags = optional(map(any))
+}))
+default = {}
 }
 
 variable "views" {
-  type    = map(any)
+type    = map(object({
+compartment_id       = string
+display_name         = string
+scope = optional(string)
+freeform_tags = optional(map(any))
+defined_tags = optional(map(any))
+}))
   default = {}
 }
 
 variable "rrsets" {
-  type    = map(any)
-  default = {}
+type    = map(object({
+compartment_id       = optional(string)
+view_compartment_id = optional(string)
+view_id = optional(string)
+zone_id = string
+domain = string
+rtype = string
+ttl = number
+rdata = optional(list(string))
+scope = optional(string)
+}))
+default = {}
 }
 
 variable "resolvers" {
-  type    = map(any)
-  default = {}
+type    = map(object({
+network_compartment_id= string
+vcn_name = string
+display_name = optional(string)
+views = optional(map(object({
+  view_id = optional(string)
+  view_compartment_id = optional(string)
+})))
+resolver_rules = optional(map(object({
+  client_address_conditions = optional(list(any))
+  destination_addresses = optional(list(any))
+  qname_cover_conditions = optional(list(any))
+  source_endpoint_name = optional(string)
+})))
+endpoint_names = optional(map(object({
+  is_forwarding = optional(bool)
+  is_listening = optional(bool)
+  name = optional(string)
+  subnet_name = optional(string)
+  forwarding_address = optional(string)
+  listening_address = optional(string)
+  nsg_ids = optional(list(string))
+})))
+freeform_tags = optional(map(any))
+defined_tags = optional(map(any))
+}))
+default = {}
 }
+
 
 #########################
 ## Dedicated VM Hosts ##
@@ -796,6 +847,7 @@ variable "adb" {
     cpu_core_count           = optional(number)
     database_edition         = optional(string)
     data_storage_size_in_tbs = optional(number)
+    customer_contacts        = optional(list(string))
     db_name                  = string
     db_version               = optional(string)
     db_workload              = optional(string)
@@ -1603,6 +1655,171 @@ variable "capacity_reservation_ocids" {
   }
 }
 
+#####################################
+####### Firewall as a Service #######
+#####################################
+variable "firewalls" {
+  type    = map(object({
+    compartment_id = string
+    network_compartment_id = string
+    network_firewall_policy_id = string
+    subnet_id = string
+    vcn_name = string
+    display_name = string
+    ipv4address = optional(string)
+    nsg_id = optional(list(string))
+    ipv6address = optional(string)
+    availability_domain = optional(string)
+    defined_tags          = optional(map(any))
+    freeform_tags         = optional(map(any))
+  }))
+  default = {}
+}
+
+variable "fw-policies" {
+  type    = map(object({
+    compartment_id = optional(string)
+    display_name   = optional(string)
+    defined_tags          = optional(map(any))
+    freeform_tags         = optional(map(any))
+  }))
+  default = {}
+}
+variable "services" {
+  type    = map(object({
+    service_name               = string
+    service_type               = string
+    network_firewall_policy_id = string
+    port_ranges = list(object({
+      minimum_port = string
+      maximum_port = optional(string)
+    }))
+  }))
+  default = {}
+}
+variable "url_lists" {
+  type    = map(object({
+    urllist_name               = string
+    network_firewall_policy_id = string
+    urls = list(object({
+      pattern = string
+      type  = string
+    }))
+  }))
+  default = {}
+}
+variable "service_lists" {
+  type    = map(object({
+    service_list_name          = string
+    network_firewall_policy_id = string
+    services                   = list(string)
+  }))
+  default = {}
+}
+
+variable "address_lists" {
+  type    = map(object({
+    address_list_name          = string
+    network_firewall_policy_id = string
+    address_type = string
+    addresses                   = list(string)
+  }))
+  default = {}
+}
+
+variable "applications" {
+  type    = map(object({
+    app_list_name          = string
+    network_firewall_policy_id = string
+    app_type = string
+    icmp_type = number
+    icmp_code = optional(number)
+  }))
+  default = {}
+}
+
+variable "application_groups" {
+  type    = map(object({
+    app_group_name          = string
+    network_firewall_policy_id = string
+    apps = list(string)
+
+  }))
+  default = {}
+}
+
+variable "security_rules" {
+  type    = map(object({
+    action = string
+    rule_name = string
+    network_firewall_policy_id = string
+    condition = optional(list(object({
+      application         = optional(list(string))
+      destination_address = optional(list(string))
+      service             = optional(list(string))
+      source_address      = optional(list(string))
+      url                 = optional(list(string))
+    })))
+    inspection = optional(string)
+    after_rule = optional(string)
+    before_rule = optional(string)
+
+  }))
+  default = {}
+}
+
+variable "secrets" {
+  type    = map(object({
+    secret_name          = string
+    network_firewall_policy_id = string
+    secret_source = string
+    secret_type = string
+    vault_secret_id = string
+    version_number = number
+    vault_name = string
+    vault_compartment_id = string
+  }))
+  default = {}
+}
+
+variable "decryption_profiles" {
+  type    = map(object({
+    profile_name = string
+    profile_type = string
+    network_firewall_policy_id = string
+    are_certificate_extensions_restricted = optional(bool)
+    is_auto_include_alt_name = optional(bool)
+    is_expired_certificate_blocked = optional(bool)
+    is_out_of_capacity_blocked = optional(bool)
+    is_revocation_status_timeout_blocked = optional(bool)
+    is_unknown_revocation_status_blocked = optional(bool)
+    is_unsupported_cipher_blocked = optional(bool)
+    is_unsupported_version_blocked = optional(bool)
+    is_untrusted_issuer_blocked = optional(bool)
+  }))
+  default = {}
+}
+
+variable "decryption_rules" {
+  type = map(object({
+    action                     = string
+    rule_name                  = string
+    network_firewall_policy_id = string
+    condition                  = optional(list(object({
+
+      destination_address = optional(list(string))
+
+      source_address = optional(list(string))
+
+    })))
+    decryption_profile = optional(string)
+    secret             = optional(string)
+    after_rule         = optional(string)
+    before_rule        = optional(string)
+
+  }))
+  default = {}
+}
 ##########################
 # Add new variables here #
 ##########################

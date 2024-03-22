@@ -14,6 +14,12 @@ variable "character_set" {
   type = string
 }
 
+variable "customer_contacts" {
+  description = "The customer_contacts of ADB"
+  type        = list(string)
+
+}
+
 variable "compartment_id" {
   description = "Compartment OCID to provision the volume"
   type        = string

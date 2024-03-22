@@ -1,7 +1,7 @@
 # Export Resources from OCI via Jenkins(Non-Greenfield Workflow)
 
->Note: Please make sure that service for which export is done does not have existing tfvars/state file.
-
+>Note: Please make sure that service directory for which export is done does not have existing tfvars/state file.
+>
 **Step 1**: 
 <br>Choose the appropriate CD3 Excel sheet template from [Excel Templates](/cd3_automation_toolkit/documentation/user_guide/ExcelTemplates.md)
 Choose **CD3-Blank-template.xlsx** for an empty sheet.
@@ -43,21 +43,21 @@ Choose **CD3-Blank-template.xlsx** for an empty sheet.
 
 **Expected Output of 'Execute setUpOCI' stage:**<br>
 <ol type="a">
-  <li> Overwrites the specific tabs of Excel sheet with the exported resource details from OCI.</li>
-  <li> Generates Terraform Configuration files - *.auto.tfvars.</li>
-  <li> Generates shell scripts with import commands - <b>tf_import_commands_&lt;resource&gt;_nonGF.sh</b> </li>
+  <li> Overwrites the specific tabs of Excel sheet with the exported resource details from OCI. <b>Please download the updated excel sheet with exported data from /cd3user/tenancies/&lt;customer_name&gt; inside the container.</b></li>
+  <li> Generates Terraform Configuration files - *.auto.tfvars at /cd3user/tenancies/&lt;customer_name&gt;/terraform_files/&lt;region_dir&gt;/&lt;service_dir&gt;</li>
+  <li> Generates shell scripts with import commands - <b>tf_import_commands_&lt;resource&gt;_nonGF.sh</b> at same location as tfvars.</b> </li>
 </ul>
 </ol>
 
 **Expected Output of 'Run Import Commands' stage:**<br>
 <ol type="a">
-  <li>Executes shell scripts with import commands(<b>tf_import_commands_&lt;resource&gt;_nonGF.sh</b>) generated in the previous stage </li>
+  <li>Executes shell scripts with import commands(<b>tf_import_commands_&lt;resource&gt;_nonGF.sh</b>) generated in the previous stage. </li>
 </ul>
 </ol>
 
 **Expected Output of Terraform Pipelines:**<br>
 <ol type="a">
-  <li>Respective pipelines will get triggered automatically from setUpOCI pipeline based on the services chosen for export. You could also trigger manually when required.</li>
+  <li>Respective terraform-apply pipelines will get triggered automatically from setUpOCI pipeline based on the services chosen for export. You could also trigger manually when required.</li>
   <li> If 'Run Import Commands' stage was successful (ie tf_import_commands_&lt;resource&gt;_nonGF.sh ran successfully for all services chosen for export), respective terraform pipelines triggered should have 'Terraform Plan' stage show as 'No Changes'  </li>
 </ul>
 </ol>

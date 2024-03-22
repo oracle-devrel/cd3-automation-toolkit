@@ -201,7 +201,7 @@ def export_tags_nongreenfield(inputfile, outdir, service_dir, config, signer, ct
                         print_tags(values_for_column_tags, region, ntk_compartment_name, tag, tag_key,tag_default_value)
 
     commonTools.write_to_cd3(values_for_column_tags, cd3file, "Tags")
-    print("Tags exported to CD3\n")
+    print("{0} Tags exported into CD3.\n".format(len(values_for_column_tags["Region"])))
 
     script_file = f'{outdir}/{ct.home_region}/{service_dir}/tf_import_commands_tags_nonGF.sh'
     with open(script_file, 'a') as importCommands[ct.home_region]:

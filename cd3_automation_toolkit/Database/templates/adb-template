@@ -30,6 +30,10 @@ adb = {
             ncharacter_set           = "{{ ncharacter_set }}"
             {% endif %}
 
+            {% if customer_contacts and customer_contacts != "" and customer_contacts != "nan" %}
+            customer_contacts        = {{ customer_contacts | replace("\'","\"") }}
+            {% endif %}
+
             cpu_core_count           = {{ cpu_core_count }}
 
             {% if database_edition == "" %}
@@ -49,6 +53,8 @@ adb = {
             db_workload              = "AJD"
             {% elif autonomous_value == 'apex' %}
             db_workload              = "APEX"
+            {% else %}
+            db_workload              = "{{ autonomous_value }}"
             {% endif %}
 
             license_model            = "{{ license_model }}"

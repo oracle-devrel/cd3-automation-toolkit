@@ -1,0 +1,82 @@
+{% if count == 0 %}
+// Copyright (c) 2021, 2022, Oracle and/or its affiliates.
+############################
+# Firewall Policy Security Rules
+# Firewall Policy Security Rule - tfvars
+# Allowed Values:
+# network_firewall_policy_id can be the ocid or the name of the firewall Policy that needs to be attached to the Firewall
+# action can be ALLOW, DROP, REJECT, INSPECT
+# inspection can be INTRUSION_DETECTION, INTRUSION_PREVENTION
+# Sample import command for Firewall Policy Security Rule:
+# terraform import "module.security_rules[\"<<secrule terraform variable name>>\"].oci_network_firewall_network_firewall_policy_security_rule.network_firewall_policy_security_rule\"  networkFirewallPolicies/<<firewall-policy ocid>>/securityRules/<<secrule ocid>>
+############################
+
+security_rules = {
+    ##Add New Security rules for {{ region|lower }} here##
+}
+{% else %}
+  {% if rule_name != "" and rule_name != "nan" and rule_name != null %}
+  {{ policy_tf_name }}_{{rule_tf_name}} = {
+        rule_name = "{{ rule_name }}"
+        action = "{{ rule_action }}"
+        network_firewall_policy_id = "{{ policy_tf_name }}"
+        condition = [{
+            {% if source_address != '' %}
+            source_address = [{{ src_address }}]
+            {% endif %}
+            {% if destination_address != '' %}
+            destination_address = [{{ dst_address }}]
+            {% endif %}
+            {% if service_list != '' %}
+            service = [{{ service_list }}]
+            {% endif %}
+            {% if application_list != '' %}
+            application = [{{ apps_list }}]
+            {% endif %}
+            {% if url_list != '' %}
+            url = [{{ urls_list }}]
+            {% endif %}
+        }]
+        {% if rule_ins != '' %}
+        inspection = "{{ rule_ins }}"
+        {% endif %}
+        {% if position != '' and  placement2 == None %}
+        {{placement1}} = "{{ rule_place1 }}"
+        {% elif position != '' %}
+        {{placement2}} = "{{ rule_place2 }}"
+        {{placement1}} = "{{ rule_place1 }}"
+
+        {% endif %}
+  {#  ##Do not modify below this line##  #}
+    {#                                     #}
+    {#  ###Section for adding Defined and Freeform Tags###  #}
+    {% if defined_tags and defined_tags != 'nan' and defined_tags != '' and defined_tags != [['nan']] %}
+      {% if defined_tags[0] %}
+        defined_tags = {
+        {% for tags in defined_tags  %}
+            {% if not loop.last %}
+                "{{ tags[0]  }}"= "{{ tags[1] }}" ,
+            {% else %}
+                "{{ tags[0]  }}"= "{{ tags[1] }}"
+            {% endif %}
+        {% endfor %}
+        }
+        {% endif %}
+       {% endif %}
+            {% if freeform_tags and freeform_tags != 'nan' and freeform_tags != '' and freeform_tags != [['nan']] %}
+                {% if freeform_tags[0] %}
+        freeform_tags = {
+                    {% for tags in freeform_tags %}
+                        {% if not loop.last  %}
+                "{{ tags[0] }}"="{{ tags[1] }}",
+                        {% else %}
+                "{{ tags[0] }}"="{{ tags[1] }}"
+                        {% endif %}
+                    {% endfor %}
+                    }
+                {% endif %}
+            {% endif %}
+    {#  ###Section for adding Defined and Freeform Tags ends here###  #}
+      },
+  {% endif %}
+{% endif %}

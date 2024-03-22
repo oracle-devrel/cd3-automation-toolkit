@@ -22,6 +22,12 @@ resource "oci_database_autonomous_database" "autonomous_database" {
   display_name             = var.display_name
   license_model            = var.license_model
   ncharacter_set           = var.ncharacter_set
+  dynamic "customer_contacts" {
+    for_each = var.customer_contacts!=null ? (var.customer_contacts[0] != "" ? var.customer_contacts : []) : []
+    content {
+        email = customer_contacts.value
+    }
+   }
   nsg_ids                  = length(var.network_security_group_ids) != 0 ? (local.nsg_ids == [] ? ["INVALID NSG Name"] : local.nsg_ids) : null
   freeform_tags            = var.freeform_tags
   subnet_id                = var.subnet_id

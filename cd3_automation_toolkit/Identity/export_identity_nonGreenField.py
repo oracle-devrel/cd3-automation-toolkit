@@ -131,7 +131,8 @@ def export_identity(inputfile, outdir, service_dir, config, signer, ct, export_c
                     values_for_column_comps=commonTools.export_extra_columns(oci_objs,col_header,sheet_dict_comps,values_for_column_comps)
 
     commonTools.write_to_cd3(values_for_column_comps,cd3file,sheetName_comps)
-    print("Compartments exported to CD3\n")
+    print("{0} Compartments exported into CD3.\n".format(len(values_for_column_comps["Region"])))
+
 
     #Fetch Groups
     print("\nFetching Groups...")
@@ -177,7 +178,8 @@ def export_identity(inputfile, outdir, service_dir, config, signer, ct, export_c
 
 
     commonTools.write_to_cd3(values_for_column_groups,cd3file,sheetName_groups)
-    print("Groups exported to CD3\n")
+    print("{0} Groups exported into CD3.\n".format(len(values_for_column_groups["Region"])))
+
 
     # Fetch Policies
     print("\nFetching Policies...")
@@ -258,7 +260,7 @@ def export_identity(inputfile, outdir, service_dir, config, signer, ct, export_c
                     count=count+1
 
     commonTools.write_to_cd3(values_for_column_policies,cd3file,sheetName_policies)
-    print("Policies exported to CD3\n")
+    print("{0} Policies exported into CD3.\n".format(len(values_for_column_policies["Region"])))
 
     with open(script_file, 'a') as importCommands[ct.home_region]:
         importCommands[ct.home_region].write('\n\nterraform plan\n')
