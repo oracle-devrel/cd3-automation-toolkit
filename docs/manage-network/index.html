@@ -396,9 +396,7 @@
   
 
 
-  
-
-<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
     <a href=".." title="CD3 Documentation" class="md-nav__button md-logo" aria-label="CD3 Documentation" data-md-component="logo">
       
@@ -2193,6 +2191,150 @@
               </div>
             
             
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#create-new-network-resources-in-oci-greenfield-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Create New Network Resources in OCI (Greenfield Workflow)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Create New Network Resources in OCI (Greenfield Workflow)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#create-network" class="md-nav__link">
+    <span class="md-ellipsis">
+      Create Network
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-an-existing-drg-in-oci-while-creating-the-network" class="md-nav__link">
+    <span class="md-ellipsis">
+      Use an existing DRG in OCI while creating the network
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#modify-security-rules-route-rules-and-drg-route-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      Modify Security Rules, Route Rules and DRG Route Rules
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#modify-network" class="md-nav__link">
+    <span class="md-ellipsis">
+      Modify Network
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sync-manual-changes-done-in-oci-of-security-rules-route-rules-and-drg-route-rules-with-cd3-excel-sheet-and-terraform" class="md-nav__link">
+    <span class="md-ellipsis">
+      Sync manual changes done in OCI of Security Rules, Route Rules and DRG Route Rules with CD3 Excel Sheet and Terraform
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#addmodifydelete-nsgs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Add/Modify/Delete NSGs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#addmodifydelete-vlans" class="md-nav__link">
+    <span class="md-ellipsis">
+      Add/Modify/Delete VLANs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rpcs" class="md-nav__link">
+    <span class="md-ellipsis">
+      RPCs
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#export-existing-network-resources-from-oci-non-greenfield-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Export Existing Network Resources from OCI (Non-Greenfield Workflow)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Export Existing Network Resources from OCI (Non-Greenfield Workflow)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#export-network" class="md-nav__link">
+    <span class="md-ellipsis">
+      Export Network
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#add-a-new-or-modify-the-existing-networking-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      Add a new or modify the existing networking components
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
           
           
             <div class="md-content" data-md-component="content">
@@ -2512,14 +2654,9 @@
       <div class="md-copyright">
   
     <div class="md-copyright__highlight">
-      &copy; 2022 <a href=""  target="_blank" rel="noopener">Mukund Murali</a>
+      &copy; 2022 <a href=""  target="_blank" rel="noopener">Copyright (c) 2021 Oracle and/or its affiliates.</a>
     </div>
   
-  
-    Made with
-    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
-      Material for MkDocs
-    </a>
   
 </div>
       
@@ -2559,7 +2696,7 @@
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "..", "features": ["toc.integrate", "navigation.indexes", "navigation.top", "navigation.tabs", "navigation.expand", "navigation.path", "content.code.copy"], "search": "../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.indexes", "navigation.top", "navigation.tabs", "navigation.expand", "navigation.path", "content.code.copy"], "search": "../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
       <script src="../assets/javascripts/bundle.8fd75fb4.min.js"></script>
