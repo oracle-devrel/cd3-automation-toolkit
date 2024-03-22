@@ -2171,14 +2171,14 @@
 <p class="admonition-title">Important</p>
 <p>Check out the <a href="../must-read-prerequisites/">Must Read</a> section for managing network, compute and oci firewall resources.</p>
 </div>
+<p><br></p>
+<p><img width="1486" alt="Jenkins-Arch" src="../images/jenkinsoverview-0.png"></p>
+<p><img width="1486" alt="Jenkins-Dashboard" src="../images/jenkinsoverview-1.png"></p>
 <ol>
 <li>setUpOCI Pipeline</li>
 <li>terraform_files Folder</li>
 <li>Region based Views (including Global directory)</li>
 </ol>
-<blockquote>
-<p><img width="1486" alt="Screenshot 2024-01-16 at 10 52 07 AM" src="../images/jenkinsoverview-1.png"></p>
-</blockquote>
 <h3 id="1-setupoci-pipeline">1. setUpOCI Pipeline</h3>
 <p>This is equivalent to running <em>setUpOCI.py</em> from CLI. This will generate the terraform <strong>.auto.tfvars</strong> files based on the CD3 Excel sheet input for the services chosen and commit them to OCI Devops GIT repo. Additionally, it also triggers <strong>terraform-apply</strong> pipelines for the corresponding services chosen in setUpOCI pipeline.</p>
 <p>Below table shows the stages executed in this pipeline along with their description:</p>
