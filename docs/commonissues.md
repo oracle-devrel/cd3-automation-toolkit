@@ -23,7 +23,13 @@ There could be multiple reasons for this: <br>
 
 **3. I get below error while executing terraform pipelines using jenkins.**
 
-![image](../images/commonissues-3.png)
+```
++ cd /cd3user/tenancies/jenkins_home/jobs/terraform_files/jobs/phoenix/jobs/network/jobs/terraform-apply/workspace/phoenix/network
++ terraform plan -out=tfplan.out
+���
+��� Error: error loading state: SignatureDoesNotMatch: The secret key required to complete authentication could not be found. The region must be specified if this is not the home region for the tenancy.
+��� 	status code: 403, request id: phx-1:JaiPi4IgUOu0YWZE4-kb3TiLr4g7cQnpqvCT1A3Ca_SUn2cRai-yVrmE-osNZVYx, host id: 
+```
 
 This gets resolved on its own after sometime.
 
