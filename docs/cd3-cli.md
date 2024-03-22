@@ -1,9 +1,9 @@
 # **Using the Automation Toolkit with CLI**
 ---
 !!! Important
-    Check out the **Must Read** sections before creating or exporting network and compute resources.
+    Check out the [Must Read](must-read-prerequisites.md) section for managing network, compute and oci firewall resources.
 
-Below are the highlevel steps to generate terraform with CLI - <br>
+Below are the high level steps to use toolkit with CLI - <br>
 
 1. Login to the CD3 Container.
 

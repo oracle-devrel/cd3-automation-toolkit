@@ -1,4 +1,4 @@
-# Commit local changes to GIT
+# Commit Local changes to GIT
 
 !!! note
     It is recommended to stick to using the toolkit either via CLI or via Jenkins.
