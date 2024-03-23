@@ -1,7 +1,13 @@
 # Steps to Upgrade Your Toolkit (For Existing Customers using older versions):
 
+## Upgrade to Release v2024.2.0
+1. Follow the steps in [Launch Docker Container](launch-container.md) to build new image with latest code and launch the container by specifying new path for <directory_in_local_system_where_the_files_must_be_generated> to create a fresh outdir.
+2. Use Non Greenfield workflow to export the required OCI services into new excel sheet and the tfvars. Run terraform import commands also.
+3. Once terraform is in synch, Switch to Greenfield workflow and use for any future modifications to the infra.
+
 ## Upgrade to Release v2024.1.0
 This is a major release with introduction of CI/CD using Jenkins.
+
 1. Follow the steps in [Launch Docker Container](launch-from-local.md) to build new image with latest code and launch the container by specifying new path for <directory_in_local_system_where_the_files_must_be_generated> to create a fresh outdir.
 2. Use Non Greenfield workflow to export the required OCI services into new excel sheet and the tfvars. Run terraform import commands also.
 3. Once terraform is in synch, Switch to Greenfield workflow and use for any future modifications to the infra.
