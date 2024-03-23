@@ -1,4 +1,4 @@
-# Grouping of generated Terraform files (Creating independent tfstate files for each resource)
+# Grouping set of resources into a single TF state file
 
 The CD3 Automation Toolkit was previously built to generate all the output Terraform files within a designated region directory.
 OCI components like - Network, Instances, LBaaS, Databases etc., were maintained in a single tfstate file.
