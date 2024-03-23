@@ -57,7 +57,7 @@ nav:
 
   - Additional Features:
     - group-tf-files.md
-    - Grouping generated TF files: group-tf-files.md
+    - Grouping of Terraform Files: group-tf-files.md
     - Remote Management of Terraform State: remotestate.md
     - OCI Resource Manager Upload: resource-manager-upload.md
     - Support for Additional Attrs: additional-attributes.md
@@ -87,6 +87,7 @@ theme:
   font:
     text: Oracle Sans
   features:
+    - toc.integrate
     - navigation.indexes
     - navigation.top
     - navigation.tabs
