@@ -2398,14 +2398,20 @@
 <li>
 <p>Choose <em>'Network'</em> from the displayed menu. Choose below sub-options: (Make sure to choose all the three options for the first time)<br>
    <code>Security Rules</code>
-        <br>   - Export Security Rules (From OCI into SecRulesinOCI sheet)<br>
+        <br>   - Export Security Rules (From OCI into SecRulesinOCI sheet)
+    <br> - Add/Modify/Delete Route Rules (Reads SecRulesinOCI sheet)<br>
    <code>Route Rules</code>
-        <br>   - Export Route Rules (From OCI into RouteRulesinOCI sheet)<br>
+        <br>   - Export Route Rules (From OCI into RouteRulesinOCI sheet)
+    <br> - Add/Modify/Delete Route Rules (Reads RouteRulesinOCI sheet)<br>
    <code>DRG Route Rules</code>
-        <br>   - Export DRG Route Rules (From OCI into DRGRouteRulesinOCI sheet)</p>
+        <br>   - Export DRG Route Rules (From OCI into DRGRouteRulesinOCI sheet)
+    <br> - Add/Modify/Delete Route Rules (Reads DRGRouteRulesinOCI sheet)<br></p>
 </li>
 </ol>
 <p>This completes the steps for Creating the Network in OCI and exporting the rules to the CD3 Excel Sheet using the Automation Toolkit.</p>
+<ol>
+<li>Executing terraform plan for network shows 'Up-to-Date' with no changes.</li>
+</ol>
 <h3 id="use-an-existing-drg-in-oci-while-creating-the-network">Use an existing DRG in OCI while creating the network</h3>
 <p>In some scenarios, a DRG has already been created in the tenancy and rest of the Network components still need to be created. In such cases, generate the networking related tfvars using same process mentioned above till Step 4. Use same name for DRG in DRGs tab as present in OCI console.</p>
 <ul>
