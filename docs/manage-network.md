@@ -41,13 +41,18 @@ Below are the steps in detail to create Network that includes VCNs, Subnets, DHC
   
 7. Choose _'Network'_ from the displayed menu. Choose below sub-options: (Make sure to choose all the three options for the first time)<br>
    ```Security Rules```
-        <br>   - Export Security Rules (From OCI into SecRulesinOCI sheet)<br>
+        <br>   - Export Security Rules (From OCI into SecRulesinOCI sheet)
+	<br> - Add/Modify/Delete Route Rules (Reads SecRulesinOCI sheet)<br>
    ```Route Rules```
-        <br>   - Export Route Rules (From OCI into RouteRulesinOCI sheet)<br>
+        <br>   - Export Route Rules (From OCI into RouteRulesinOCI sheet)
+	<br> - Add/Modify/Delete Route Rules (Reads RouteRulesinOCI sheet)<br>
    ```DRG Route Rules```
         <br>   - Export DRG Route Rules (From OCI into DRGRouteRulesinOCI sheet)
+	<br> - Add/Modify/Delete Route Rules (Reads DRGRouteRulesinOCI sheet)<br>
 
 This completes the steps for Creating the Network in OCI and exporting the rules to the CD3 Excel Sheet using the Automation Toolkit.
+
+8. Executing terraform plan for network shows 'Up-to-Date' with no changes.
 
 
 ### Use an existing DRG in OCI while creating the network
@@ -70,6 +75,10 @@ In some scenarios, a DRG has already been created in the tenancy and rest of the
        ```
 
    Continue executing the remaining steps (from Step 6) of [Create Network](#create-network).
+
+!!! Note
+    When using the toolkit with Jenkins, the terraform-apply pipeline for network will need to be stopped before  running terraform import command for DRG. After terraform import cmd has been executed successfully, re-launch the terraform-apply pipeline for network folder.
+
 
 ### Modify Security Rules, Route Rules and DRG Route Rules
 
