@@ -50,9 +50,9 @@ Below are the steps in detail to create Network that includes VCNs, Subnets, DHC
         <br>   - Export DRG Route Rules (From OCI into DRGRouteRulesinOCI sheet)
 	<br> - Add/Modify/Delete Route Rules (Reads DRGRouteRulesinOCI sheet)<br>
 
-This completes the steps for Creating the Network in OCI and exporting the rules to the CD3 Excel Sheet using the Automation Toolkit.
-
 8. Executing terraform plan for network shows 'Up-to-Date' with no changes.
+
+This completes the steps for Creating the Network in OCI and exporting the rules to the CD3 Excel Sheet using the Automation Toolkit.
 
 
 ### Use an existing DRG in OCI while creating the network
