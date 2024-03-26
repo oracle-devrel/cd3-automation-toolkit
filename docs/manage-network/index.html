@@ -2422,6 +2422,10 @@
 </span></code></pre></div></li>
 </ul>
 <p>Continue executing the remaining steps (from Step 6) of <a href="#create-network">Create Network</a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When using the toolkit with Jenkins, the terraform-apply pipeline for network will need to be stopped before  running terraform import command for DRG. After terraform import cmd has been executed successfully, re-launch the terraform-apply pipeline for network folder.</p>
+</div>
 <h3 id="modify-security-rules-route-rules-and-drg-route-rules">Modify Security Rules, Route Rules and DRG Route Rules</h3>
 <p>Follow the below steps to add, update or delete the following components:
 - Security Lists and Security Rules
