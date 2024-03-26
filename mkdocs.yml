@@ -87,7 +87,6 @@ theme:
   font:
     text: Oracle Sans
   features:
-    - toc.integrate
     - navigation.indexes
     - navigation.top
     - navigation.tabs
