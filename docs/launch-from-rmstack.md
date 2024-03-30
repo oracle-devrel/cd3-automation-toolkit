@@ -16,10 +16,10 @@ This method will automatically launch the linux compute VM in OCI tenancy and co
 * OCI Tenancy Access as defined in [Prerequisites](prerequisites.md).
 <br><br>
 
-- [x] Click on below button to directly navigate to Resource Manager stack in the OCI Tenancy and fill in required details to launch CD3 container.<br>
+- [x] Click on below button to directly navigate to Resource Manager stack in the OCI Tenancy and fill in required details to launch CD3 Work VM and Container.<br>
 [![Deploy_To_OCI](https://oci-resourcemanager-plugin.plugins.oci.oraclecloud.com/latest/deploy-to-oracle-cloud.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oracle-devrel/cd3-automation-toolkit/archive/refs/heads/main.zip)
 
-- [x] This action will initiate the deployment of the Work VM in the tenancy after logging in  and will configure the Automation Toolkit on a Podman container within that VM. 
+- [x] This action will initiate the deployment of the Work VM in the tenancy after logging in to OCI and will configure the Automation Toolkit on a Podman container within that VM. 
 
 - [x] Enter the required details in the Resource manager stack and click on create.
 !!! Warning
@@ -33,4 +33,19 @@ This method will automatically launch the linux compute VM in OCI tenancy and co
 <img width="1124" src="../images/launch-from-stack-1.png">
 <img width="1124" src="../images/launch-from-stack-2.png">
 <br><br>
-- [X] Follow [Connect container to tenancy](connect-container-to-oci-tenancy.md) for next steps. 
+- [X] Login to the VM using private key corresponding to the public key provided during stack creation.
+- [X] Verify if container is launched using below command - 
+
+```
+sudo podman ps -a
+```
+!!! Note
+    If the container is still not running, wait for the stack to finish processing. You can check the logs at /cd3user/mount_path/installToolkit.log
+
+- [X] If above command shows a running CD3 container then exec into it using below command - 
+
+```
+sudo podman exec -it cd3_toolkit bash
+```
+
+- [X] Follow [Connect CD3 Container to OCI](connect-container-to-oci-tenancy.md) for next steps. 
