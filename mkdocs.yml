@@ -18,7 +18,7 @@ nav:
       - launch-container.md
       - Resource Manager Stack: launch-from-rmstack.md
       - Manual Container Launch: launch-from-local.md
-    - Connect CD3 container to OCI: connect-container-to-oci-tenancy.md
+    - Connect CD3 Container to OCI: connect-container-to-oci-tenancy.md
 
   - Use with CLI: 
     - cd3-cli.md
