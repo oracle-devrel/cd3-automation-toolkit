@@ -2118,10 +2118,10 @@ Allow group &lt;group_name&gt; to manage virtual-network-family in compartment &
 <img width="1124" src="../images/launch-from-stack-2.png">
 <br><br></li>
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Login to the VM using private key corresponding to the public key provided during stack creation.</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Verify if container is launched using below command - 
-<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>sudo podman ps -a
-</span></code></pre></div></li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Verify if container is launched using below command - </li>
 </ul>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>sudo podman ps -a
+</span></code></pre></div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>If the container is still not running, wait for the stack to finish processing. You can check the logs at /cd3user/mount_path/installToolkit.log</p>
@@ -2129,9 +2129,11 @@ Allow group &lt;group_name&gt; to manage virtual-network-family in compartment &
 <ul class="task-list">
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> If above command shows a running CD3 container then exec into it using below command - </li>
 </ul>
-<p><div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>sudo podman exec -it cd3_toolkit bash
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>sudo podman exec -it cd3_toolkit bash
 </span></code></pre></div>
-- [X] Follow <a href="../connect-container-to-oci-tenancy/">Connect CD3 Container to OCI</a> for next steps. </p>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Follow <a href="../connect-container-to-oci-tenancy/">Connect CD3 Container to OCI</a> for next steps. </li>
+</ul>
 
 
 
