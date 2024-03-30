@@ -774,7 +774,7 @@
         
   
   <span class="md-ellipsis">
-    Connect CD3 container to OCI
+    Connect CD3 Container to OCI
   </span>
   
 
@@ -2079,7 +2079,7 @@
 <p class="admonition-title">Tip</p>
 <ul>
 <li>Launching CD3 container using OCI Resource Manager stack is preferred method as it reduces the manual effort.</li>
-<li>With this method, users are required to clone the Devrel GitHub repo and execute commands to build and run the docker container.</li>
+<li>With below method, users are required to clone the Devrel GitHub repo and execute commands to build and run the docker container.</li>
 </ul>
 </div>
 <p><br>
@@ -2151,13 +2151,25 @@ The period (.) at the end of the docker build command is required.</p>
 <p class="admonition-title">Caution</p>
 <p>If launching the container in cloud, make sure to use a private server or a bastion connected server with restricted access(i.e. not publicly available) to host the container.</p>
 </div>
+<ul>
+<li>Run  <code>docker ps</code> to see running containers on the system.</li>
+</ul>
+<p><strong>Step 6 - Login (Exec) into the Container</strong></p>
 <ul class="task-list">
 <li>
-<p>Run  <code>docker ps</code> to see running containers on the system.
-<br><br></p>
+<p>Run<br />
+<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>docker ps
+</span></code></pre></div>
+&nbsp;
+→ Note down the container ID from this cmd output.<br></p>
+</li>
+<li>
+<p>Run<br />
+  <div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>docker exec -it cd3_toolkit bash
+</span></code></pre></div></p>
 </li>
 <li class="task-list-item">
-<p><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Follow <a href="../connect-container-to-oci-tenancy/">Connect container to tenancy</a> for next steps. </p>
+<p><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Follow <a href="../connect-container-to-oci-tenancy/">Connect CD3 Container to OCI</a> for next steps. </p>
 </li>
 </ul>
 

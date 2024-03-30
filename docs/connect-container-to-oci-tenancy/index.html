@@ -22,7 +22,7 @@
     
     
       
-        <title>Connect CD3 container to OCI - CD3 Documentation</title>
+        <title>Connect CD3 Container to OCI - CD3 Documentation</title>
       
     
     
@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#connect-container-to-oci-tenancy" class="md-skip">
+        <a href="#connect-cd3-container-to-oci-tenancy" class="md-skip">
           Skip to content
         </a>
       
@@ -109,7 +109,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Connect CD3 container to OCI
+              Connect CD3 Container to OCI
             
           </span>
         </div>
@@ -773,7 +773,7 @@
         
   
   <span class="md-ellipsis">
-    Connect CD3 container to OCI
+    Connect CD3 Container to OCI
   </span>
   
 
@@ -2074,7 +2074,7 @@
   
 
 
-<h1 id="connect-container-to-oci-tenancy"><strong>Connect container to OCI Tenancy</strong></h1>
+<h1 id="connect-cd3-container-to-oci-tenancy"><strong>Connect CD3 Container to OCI Tenancy</strong></h1>
 <hr />
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -2084,20 +2084,7 @@
 </ul>
 </div>
 <p><strong>Step 1 - Login (Exec) into the Container</strong>:</p>
-<ul>
-<li>
-<p>Run<br />
-<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>docker ps
-</span></code></pre></div>
-&nbsp;
-→ Note down the container ID from this cmd output.<br></p>
-</li>
-<li>
-<p>Run<br />
-  <div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>docker exec -it &lt;container_id&gt; bash
-</span></code></pre></div></p>
-</li>
-</ul>
+<p>Login to the container following the steps detailed in <a href="../launch-container/">Launch CD3 Container</a> based on method chosen for container launch.</p>
 <p><strong>Step 2 - Choose Authentication Mechanism for OCI SDK</strong></a></p>
 <ul>
 <li>Click <a href="../authmechanisms/">here</a> to configure any one of the available authentication mechanisms.</li>
@@ -2106,7 +2093,7 @@
 <ul>
 <li>
 <p>Run 
-  <div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>cd /cd3user/oci_tools/cd3_automation_toolkit/user-scripts/
+  <div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>cd /cd3user/oci_tools/cd3_automation_toolkit/user-scripts/
 </span></code></pre></div></p>
 </li>
 <li>
@@ -2234,7 +2221,7 @@
 <ul>
 <li>
 <p>Initialise your environment to use the Automation Toolkit.
-<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>python createTenancyConfig.py tenancyconfig.properties
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>python createTenancyConfig.py tenancyconfig.properties
 </span></code></pre></div></p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>

@@ -774,7 +774,7 @@
         
   
   <span class="md-ellipsis">
-    Connect CD3 container to OCI
+    Connect CD3 Container to OCI
   </span>
   
 
@@ -2094,11 +2094,11 @@ Allow group &lt;group_name&gt; to manage virtual-network-family in compartment &
 <br><br></p>
 </li>
 <li class="task-list-item">
-<p><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Click on below button to directly navigate to Resource Manager stack in the OCI Tenancy and fill in required details to launch CD3 container.<br>
+<p><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Click on below button to directly navigate to Resource Manager stack in the OCI Tenancy and fill in required details to launch CD3 Work VM and Container.<br>
 <a href="https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oracle-devrel/cd3-automation-toolkit/archive/refs/heads/main.zip"><img alt="Deploy_To_OCI" src="https://oci-resourcemanager-plugin.plugins.oci.oraclecloud.com/latest/deploy-to-oracle-cloud.svg" /></a></p>
 </li>
 <li class="task-list-item">
-<p><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> This action will initiate the deployment of the Work VM in the tenancy after logging in  and will configure the Automation Toolkit on a Podman container within that VM. </p>
+<p><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> This action will initiate the deployment of the Work VM in the tenancy after logging in to OCI and will configure the Automation Toolkit on a Podman container within that VM. </p>
 </li>
 <li class="task-list-item">
 <p><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Enter the required details in the Resource manager stack and click on create.</p>
@@ -2117,7 +2117,14 @@ Allow group &lt;group_name&gt; to manage virtual-network-family in compartment &
 <img width="1124" src="../images/launch-from-stack-1.png">
 <img width="1124" src="../images/launch-from-stack-2.png">
 <br><br></li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Follow <a href="../connect-container-to-oci-tenancy/">Connect container to tenancy</a> for next steps. </li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Login to the VM using private key corresponding to the public key provided during stack creation.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Verify if container is launched using below command - 
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>sudo podman ps -a
+</span></code></pre></div></li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> If above command shows a running CD3 container then exec into it using below command - 
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>sudo podman exec -it cd3_toolkit bash
+</span></code></pre></div></li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Follow <a href="../connect-container-to-oci-tenancy/">Connect CD3 Container to OCI</a> for next steps. </li>
 </ul>
 
 
