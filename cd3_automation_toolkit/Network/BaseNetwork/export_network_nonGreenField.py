@@ -677,7 +677,7 @@ def export_major_objects(inputfile, outdir, service_dir, config, signer, ct, exp
                 elif attach_type.upper() == "REMOTE_PEERING_CONNECTION" and rpc_execution:
                     #Skip RPCs to other tenancies
                     rpc = vnc.get_remote_peering_connection(attach_id).data
-                    if (rpc.lifecycle_state != 'AVAILABLE' or rpc.is_cross_tenancy_peering != 'false'):
+                    if (rpc.lifecycle_state != 'AVAILABLE' or rpc.is_cross_tenancy_peering != False):
                         continue
 
                      # Fetch RPC Details
