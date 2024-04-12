@@ -19,6 +19,7 @@ Instructions on how to fill data into the Excel sheet can be found in the Blue s
 
 **CD3 Excel templates for OCI core services:**
 
+>Note: Click on the **Download** button towards the right end of each page to download the respective Excel template.
 
 |Excel Sheet  | Purpose                                                                                                                    | 
 |-----------|----------------------------------------------------------------------------------------------------------------------------|
