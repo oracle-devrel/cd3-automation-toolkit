@@ -10,16 +10,16 @@ CD3 supports the below OCI authentication mechanisms for the toolkit execution. 
 
 1. Create API PEM Key<br>
    <br>RSA key pair in PEM format (minimum 2048 bits) is needed to use OCI APIs. If the key pair does not exist, create them using below command inside docker container:
-```
-cd /cd3user/oci_tools/cd3_automation_toolkit/user-scripts/
-```
-```
-python createAPIKey.py
-```
-→ This will generate the public/private key pair (oci_api_public.pem and oci_api_private.pem) at **/cd3user/tenancies/keys/**
-   <br><br>
+      ```
+      cd /cd3user/oci_tools/cd3_automation_toolkit/user-scripts/
+      ```
+      ```
+      python createAPIKey.py
+      ```
+      → This will generate the public/private key pair (oci_api_public.pem and oci_api_private.pem) at **/cd3user/tenancies/keys/**
    
- In case you already have the keys, you can copy the private key file inside the container at **/cd3user/tenancies/keys/**
+      In case you already have the keys, you can copy the private key file inside the container at **/cd3user/tenancies/keys/**<br>
+    <br>
 
 2. Upload Public Key<br>
    <br>
