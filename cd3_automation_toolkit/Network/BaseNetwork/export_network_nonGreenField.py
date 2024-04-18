@@ -407,7 +407,7 @@ def get_rpc_resources(source_region, SOURCE_RPC_LIST, dest_rpc_dict, rpc_source_
                                 importCommands_rpc["global"].write(
                                     "\nterraform import \"module.rpcs[\\\"" + rpc_tf_name + f"\\\"].oci_core_remote_peering_connection.{source_region.lower()}_{region.lower()}_accepter_rpc[\\\"region\\\"]\" " + str(
                                         dest_rpc_id))
-
+                        importCommands_rpc["global"].write("\nterraform plan")
                         for col_header in values_for_column:
                             if col_header == 'Region':
                                 values_for_column[col_header].append(source_region)

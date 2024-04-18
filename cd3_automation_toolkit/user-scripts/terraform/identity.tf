@@ -11,7 +11,7 @@ module "iam-compartments" {
 
   # insert the 4 required variables here
   tenancy_ocid            = var.tenancy_ocid
-  compartment_id          = each.value.parent_compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.parent_compartment_id)) > 0 ? each.value.parent_compartment_id : try(var.compartment_ocids[each.value.parent_compartment_id], zipmap(data.oci_identity_compartments.compartments.compartments.*.name, data.oci_identity_compartments.compartments.compartments.*.id)[each.value.parent_compartment_id])) : var.tenancy_ocid
+  compartment_id          = each.value.parent_compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.parent_compartment_id)) > 0 ? each.value.parent_compartment_id : try(var.compartment_ocids[each.value.parent_compartment_id], zipmap(data.oci_identity_compartments.compartments.compartments.*.name, data.oci_identity_compartments.compartments.compartments.*.id)[each.value.parent_compartment_id])) : var.tenancy_ocid
   compartment_name        = each.value.name
   compartment_description = each.value.description
   enable_delete           = each.value.enable_delete
@@ -28,7 +28,7 @@ module "sub-compartments-level1" {
   depends_on = [module.iam-compartments]
   # insert the 4 required variables here
   tenancy_ocid            = var.tenancy_ocid
-  compartment_id          = length(regexall("ocid1.compartment.oc1*", each.value.parent_compartment_id)) > 0 ? each.value.parent_compartment_id : try(merge(module.iam-compartments.*...)[each.value.parent_compartment_id]["compartment_tf_id"], var.compartment_ocids[each.value.parent_compartment_id], zipmap(data.oci_identity_compartments.compartments.compartments.*.name, data.oci_identity_compartments.compartments.compartments.*.id)[each.value.parent_compartment_id])
+  compartment_id          = length(regexall("ocid1.compartment.oc*", each.value.parent_compartment_id)) > 0 ? each.value.parent_compartment_id : try(merge(module.iam-compartments.*...)[each.value.parent_compartment_id]["compartment_tf_id"], var.compartment_ocids[each.value.parent_compartment_id], zipmap(data.oci_identity_compartments.compartments.compartments.*.name, data.oci_identity_compartments.compartments.compartments.*.id)[each.value.parent_compartment_id])
   compartment_name        = each.value.name
   compartment_description = each.value.description
   enable_delete           = each.value.enable_delete
@@ -45,7 +45,7 @@ module "sub-compartments-level2" {
   depends_on = [module.sub-compartments-level1]
   # insert the 4 required variables here
   tenancy_ocid            = var.tenancy_ocid
-  compartment_id          = length(regexall("ocid1.compartment.oc1*", each.value.parent_compartment_id)) > 0 ? each.value.parent_compartment_id : try(merge(module.sub-compartments-level1.*...)[each.value.parent_compartment_id]["compartment_tf_id"], var.compartment_ocids[each.value.parent_compartment_id], zipmap(data.oci_identity_compartments.compartments.compartments.*.name, data.oci_identity_compartments.compartments.compartments.*.id)[each.value.parent_compartment_id])
+  compartment_id          = length(regexall("ocid1.compartment.oc*", each.value.parent_compartment_id)) > 0 ? each.value.parent_compartment_id : try(merge(module.sub-compartments-level1.*...)[each.value.parent_compartment_id]["compartment_tf_id"], var.compartment_ocids[each.value.parent_compartment_id], zipmap(data.oci_identity_compartments.compartments.compartments.*.name, data.oci_identity_compartments.compartments.compartments.*.id)[each.value.parent_compartment_id])
   compartment_name        = each.value.name
   compartment_description = each.value.description
 
@@ -63,7 +63,7 @@ module "sub-compartments-level3" {
   depends_on = [module.sub-compartments-level2]
   # insert the 4 required variables here
   tenancy_ocid            = var.tenancy_ocid
-  compartment_id          = length(regexall("ocid1.compartment.oc1*", each.value.parent_compartment_id)) > 0 ? each.value.parent_compartment_id : try(merge(module.sub-compartments-level2.*...)[each.value.parent_compartment_id]["compartment_tf_id"], var.compartment_ocids[each.value.parent_compartment_id], zipmap(data.oci_identity_compartments.compartments.compartments.*.name, data.oci_identity_compartments.compartments.compartments.*.id)[each.value.parent_compartment_id])
+  compartment_id          = length(regexall("ocid1.compartment.oc*", each.value.parent_compartment_id)) > 0 ? each.value.parent_compartment_id : try(merge(module.sub-compartments-level2.*...)[each.value.parent_compartment_id]["compartment_tf_id"], var.compartment_ocids[each.value.parent_compartment_id], zipmap(data.oci_identity_compartments.compartments.compartments.*.name, data.oci_identity_compartments.compartments.compartments.*.id)[each.value.parent_compartment_id])
   compartment_name        = each.value.name
   compartment_description = each.value.description
   enable_delete           = each.value.enable_delete
@@ -80,7 +80,7 @@ module "sub-compartments-level4" {
   depends_on = [module.sub-compartments-level3]
   # insert the 4 required variables here
   tenancy_ocid            = var.tenancy_ocid
-  compartment_id          = length(regexall("ocid1.compartment.oc1*", each.value.parent_compartment_id)) > 0 ? each.value.parent_compartment_id : try(merge(module.sub-compartments-level3.*...)[each.value.parent_compartment_id]["compartment_tf_id"], var.compartment_ocids[each.value.parent_compartment_id], zipmap(data.oci_identity_compartments.compartments.compartments.*.name, data.oci_identity_compartments.compartments.compartments.*.id)[each.value.parent_compartment_id])
+  compartment_id          = length(regexall("ocid1.compartment.oc*", each.value.parent_compartment_id)) > 0 ? each.value.parent_compartment_id : try(merge(module.sub-compartments-level3.*...)[each.value.parent_compartment_id]["compartment_tf_id"], var.compartment_ocids[each.value.parent_compartment_id], zipmap(data.oci_identity_compartments.compartments.compartments.*.name, data.oci_identity_compartments.compartments.compartments.*.id)[each.value.parent_compartment_id])
   compartment_name        = each.value.name
   compartment_description = each.value.description
   enable_delete           = each.value.enable_delete
@@ -97,7 +97,7 @@ module "sub-compartments-level5" {
   depends_on = [module.sub-compartments-level4]
   # insert the 4 required variables here
   tenancy_ocid            = var.tenancy_ocid
-  compartment_id          = length(regexall("ocid1.compartment.oc1*", each.value.parent_compartment_id)) > 0 ? each.value.parent_compartment_id : try(merge(module.sub-compartments-level4.*...)[each.value.parent_compartment_id]["compartment_tf_id"], var.compartment_ocids[each.value.parent_compartment_id], zipmap(data.oci_identity_compartments.compartments.compartments.*.name, data.oci_identity_compartments.compartments.compartments.*.id)[each.value.parent_compartment_id])
+  compartment_id          = length(regexall("ocid1.compartment.oc*", each.value.parent_compartment_id)) > 0 ? each.value.parent_compartment_id : try(merge(module.sub-compartments-level4.*...)[each.value.parent_compartment_id]["compartment_tf_id"], var.compartment_ocids[each.value.parent_compartment_id], zipmap(data.oci_identity_compartments.compartments.compartments.*.name, data.oci_identity_compartments.compartments.compartments.*.id)[each.value.parent_compartment_id])
   compartment_name        = each.value.name
   compartment_description = each.value.description
   enable_delete           = each.value.enable_delete
@@ -194,7 +194,7 @@ module "iam-policies" {
   depends_on            = [module.iam-groups]
   tenancy_ocid          = var.tenancy_ocid
   policy_name           = each.value.name
-  policy_compartment_id = each.value.compartment_id != "root" ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : var.tenancy_ocid
+  policy_compartment_id = each.value.compartment_id != "root" ? (length(regexall("ocid1.compartment.oc*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : var.tenancy_ocid
   policy_description    = each.value.policy_description
   policy_statements     = each.value.policy_statements
 
@@ -223,7 +223,7 @@ module "iam-users" {
   user_description = each.value.description
   user_email       = each.value.email
   group_membership = each.value.group_membership != null ? each.value.group_membership : null
-  #group_membership    = each.value.group_membership != null ? length(regexall("ocid1.groupmembership.oc1*", each.value.group_membership.0)) > 0 ? each.value.group_membership.0 : merge(module.iam-groups.*...)[each.value.group_membership.0]["group_tf_id"] : null
+  #group_membership    = each.value.group_membership != null ? length(regexall("ocid1.groupmembership.oc*", each.value.group_membership.0)) > 0 ? each.value.group_membership.0 : merge(module.iam-groups.*...)[each.value.group_membership.0]["group_tf_id"] : null
   tenancy_ocid         = var.tenancy_ocid
   disable_capabilities = each.value.disable_capabilities != null ? each.value.disable_capabilities : null
 

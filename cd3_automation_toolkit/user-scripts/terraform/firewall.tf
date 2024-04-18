@@ -1,11 +1,11 @@
 data "oci_core_vcns" "firewall_vcns" {
   for_each       = var.firewalls != null ? var.firewalls : {}
-  compartment_id = each.value.network_compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.network_compartment_id)) > 0 ? each.value.network_compartment_id : var.compartment_ocids[each.value.network_compartment_id]) : var.compartment_ocids[each.value.network_compartment_id]
+  compartment_id = each.value.network_compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.network_compartment_id)) > 0 ? each.value.network_compartment_id : var.compartment_ocids[each.value.network_compartment_id]) : var.compartment_ocids[each.value.network_compartment_id]
   display_name   = each.value.vcn_name
 }
 data "oci_core_subnets" "firewall_subnets" {
   for_each       = var.firewalls != null ? var.firewalls : {}
-  compartment_id = each.value.network_compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.network_compartment_id)) > 0 ? each.value.network_compartment_id : var.compartment_ocids[each.value.network_compartment_id]) : var.compartment_ocids[each.value.network_compartment_id]
+  compartment_id = each.value.network_compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.network_compartment_id)) > 0 ? each.value.network_compartment_id : var.compartment_ocids[each.value.network_compartment_id]) : var.compartment_ocids[each.value.network_compartment_id]
   display_name   = each.value.subnet_id
   vcn_id         = data.oci_core_vcns.firewall_vcns[each.key].virtual_networks.*.id[0]
 }
@@ -14,9 +14,9 @@ module "firewalls" {
   source                     = "./modules/security/firewall/firewall"
   for_each                   = var.firewalls != null ? var.firewalls : {}
   depends_on                 = [module.policies, module.address_lists, module.application_groups, module.applications, module.services, module.service_lists, module.url_lists, module.decryption_profiles, module.secrets, module.security_rules, module.decryption_rules]
-  compartment_id             = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : var.compartment_ocids[each.value.compartment_id]
+  compartment_id             = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : var.compartment_ocids[each.value.compartment_id]
   network_firewall_policy_id = length(regexall("ocid1.networkfirewallpolicy.oc1.*", each.value.network_firewall_policy_id)) > 0 ? each.value.network_firewall_policy_id : merge(module.policies.*...)[each.value.network_firewall_policy_id]["policy_tf_id"]
-  subnet_id                  = each.value.subnet_id != "" ? (length(regexall("ocid1.subnet.oc1*", each.value.subnet_id)) > 0 ? each.value.subnet_id : data.oci_core_subnets.firewall_subnets[each.key].subnets.*.id[0]) : null
+  subnet_id                  = each.value.subnet_id != "" ? (length(regexall("ocid1.subnet.oc*", each.value.subnet_id)) > 0 ? each.value.subnet_id : data.oci_core_subnets.firewall_subnets[each.key].subnets.*.id[0]) : null
   display_name               = each.value.display_name
   ipv4address                = each.value.ipv4address
   ipv6address                = each.value.ipv6address
@@ -31,7 +31,7 @@ module "firewalls" {
 module "policies" {
   source         = "./modules/security/firewall/firewall-policy"
   for_each       = var.fw-policies != null ? var.fw-policies : {}
-  compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : var.compartment_ocids[each.value.compartment_id]
+  compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : var.compartment_ocids[each.value.compartment_id]
   display_name   = each.value.display_name
   defined_tags   = each.value.defined_tags
   freeform_tags  = each.value.freeform_tags
@@ -53,7 +53,7 @@ module "service_lists" {
   depends_on                 = [module.services, module.policies]
   service_list_name          = each.value.service_list_name
   network_firewall_policy_id = length(regexall("ocid1.networkfirewallpolicy.oc1.*", each.value.network_firewall_policy_id)) > 0 ? each.value.network_firewall_policy_id : merge(module.policies.*...)[each.value.network_firewall_policy_id]["policy_tf_id"]
-  services                   = each.value.services != null ? flatten(tolist([for sid in each.value.services : (length(regexall("ocid1.networkfirewallpolicy.oc1*", sid)) > 0 ? merge(module.services.*...)[sid]["service+_tf_id"] : [sid])])) : null
+  services                   = each.value.services != null ? flatten(tolist([for sid in each.value.services : (length(regexall("ocid1.networkfirewallpolicy.oc*", sid)) > 0 ? merge(module.services.*...)[sid]["service+_tf_id"] : [sid])])) : null
 }
 
 module "address_lists" {
@@ -83,7 +83,7 @@ module "application_groups" {
   depends_on                 = [module.policies, module.applications]
   app_group_name             = each.value.app_group_name
   network_firewall_policy_id = length(regexall("ocid1.networkfirewallpolicy.oc1.*", each.value.network_firewall_policy_id)) > 0 ? each.value.network_firewall_policy_id : merge(module.policies.*...)[each.value.network_firewall_policy_id]["policy_tf_id"]
-  apps                       = each.value.apps != null ? flatten(tolist([for app in each.value.apps : (length(regexall("ocid1.networkfirewallpolicy.oc1*", app)) > 0 ? merge(module.applications.*...)[app]["application_tf_id"] : [app])])) : null
+  apps                       = each.value.apps != null ? flatten(tolist([for app in each.value.apps : (length(regexall("ocid1.networkfirewallpolicy.oc*", app)) > 0 ? merge(module.applications.*...)[app]["application_tf_id"] : [app])])) : null
 }
 
 module "url_lists" {
@@ -128,7 +128,7 @@ module "secrets" {
   secret_type                = each.value.secret_type
   vault_secret_id            = each.value.vault_secret_id
   vault_name                 = each.value.vault_name
-  compartment_id             = each.value.vault_compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.vault_compartment_id)) > 0 ? each.value.vault_compartment_id : var.compartment_ocids[each.value.vault_compartment_id]) : var.compartment_ocids[each.value.vault_compartment_id]
+  compartment_id             = each.value.vault_compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.vault_compartment_id)) > 0 ? each.value.vault_compartment_id : var.compartment_ocids[each.value.vault_compartment_id]) : var.compartment_ocids[each.value.vault_compartment_id]
   version_number             = each.value.version_number
 }
 

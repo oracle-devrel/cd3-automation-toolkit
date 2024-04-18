@@ -16,7 +16,7 @@ module "oss-policies" {
 
   tenancy_ocid          = var.tenancy_ocid
   policy_name           = each.value.name
-  policy_compartment_id = each.value.compartment_id != "root" ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : var.tenancy_ocid
+  policy_compartment_id = each.value.compartment_id != "root" ? (length(regexall("ocid1.compartment.oc*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : var.tenancy_ocid
   policy_description    = each.value.policy_description
   policy_statements     = each.value.policy_statements
 
@@ -42,7 +42,7 @@ module "oss-buckets" {
   for_each = var.buckets != null ? var.buckets : {}
 
   #Required
-  compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
+  compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
   name           = each.value.name
   namespace      = data.oci_objectstorage_namespace.bucket_namespace.namespace
 
@@ -83,7 +83,7 @@ module "oss-log-groups" {
 
   # Log Groups
   #Required
-  compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
+  compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
 
   display_name = each.value.display_name
 
@@ -106,9 +106,9 @@ module "oss-logs" {
 
   # Logs
   #Required
-  compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
+  compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
   display_name   = each.value.display_name
-  log_group_id   = length(regexall("ocid1.loggroup.oc1*", each.value.log_group_id)) > 0 ? each.value.log_group_id : merge(module.oss-log-groups.*...)[each.value.log_group_id]["log_group_tf_id"]
+  log_group_id   = length(regexall("ocid1.loggroup.oc*", each.value.log_group_id)) > 0 ? each.value.log_group_id : merge(module.oss-log-groups.*...)[each.value.log_group_id]["log_group_tf_id"]
 
   log_type = each.value.log_type
   #Required

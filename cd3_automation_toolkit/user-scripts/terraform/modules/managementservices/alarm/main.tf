@@ -17,6 +17,7 @@ resource "oci_monitoring_alarm" "alarm" {
   query                 = var.query
   severity              = var.severity
   body                  = var.body
+
   message_format        = var.message_format
   #metric_compartment_id_in_subtree = var.alarm_metric_compartment_id_in_subtree
   pending_duration             = var.trigger_delay_minutes

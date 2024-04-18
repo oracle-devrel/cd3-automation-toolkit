@@ -6,8 +6,8 @@
 #############################
 
 locals {
-  nsg_ids        = var.nsg_ids != null ? flatten(tolist([for nsg in var.nsg_ids : (length(regexall("ocid1.networksecuritygroup.oc1*", nsg)) > 0 ? [nsg] : data.oci_core_network_security_groups.network_security_groups_db_exacs[nsg].network_security_groups[*].id)])) : null
-  backup_nsg_ids = var.backup_network_nsg_ids != null ? flatten(tolist([for nsg in var.backup_network_nsg_ids : (length(regexall("ocid1.networksecuritygroup.oc1*", nsg)) > 0 ? [nsg] : data.oci_core_network_security_groups.network_security_groups_backup_db_exacs[nsg].network_security_groups[*].id)])) : null
+  nsg_ids        = var.nsg_ids != null ? flatten(tolist([for nsg in var.nsg_ids : (length(regexall("ocid1.networksecuritygroup.oc*", nsg)) > 0 ? [nsg] : data.oci_core_network_security_groups.network_security_groups_db_exacs[nsg].network_security_groups[*].id)])) : null
+  backup_nsg_ids = var.backup_network_nsg_ids != null ? flatten(tolist([for nsg in var.backup_network_nsg_ids : (length(regexall("ocid1.networksecuritygroup.oc*", nsg)) > 0 ? [nsg] : data.oci_core_network_security_groups.network_security_groups_backup_db_exacs[nsg].network_security_groups[*].id)])) : null
   db_servers     = flatten(toset([for server in data.oci_database_db_servers.all_db_servers : server.db_servers[*].id ]))
 }
 

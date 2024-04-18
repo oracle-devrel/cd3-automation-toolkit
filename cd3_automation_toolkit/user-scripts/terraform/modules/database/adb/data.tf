@@ -6,7 +6,7 @@
 #############################
 
 locals {
-  nsg_ids = flatten(tolist([for nsg in var.network_security_group_ids : (length(regexall("ocid1.networksecuritygroup.oc1*", nsg)) > 0 ? [nsg] : data.oci_core_network_security_groups.network_security_groups_adb[nsg].network_security_groups[*].id)]))
+  nsg_ids = flatten(tolist([for nsg in var.network_security_group_ids : (length(regexall("ocid1.networksecuritygroup.oc*", nsg)) > 0 ? [nsg] : data.oci_core_network_security_groups.network_security_groups_adb[nsg].network_security_groups[*].id)]))
 }
 
 data "oci_core_vcns" "oci_vcns_adb" {

@@ -8,8 +8,8 @@ module "rpcs" {
   source   = "../modules/rpc"
   for_each = var.drg_other_attachments
 
-  requester_compartment_id = each.value.requester_compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.requester_compartment_id)) > 0 ? each.value.requester_compartment_id : var.compartment_ocids[each.value.requester_compartment_id]) : null
-  accepter_compartment_id  = each.value.accepter_compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.accepter_compartment_id)) > 0 ? each.value.accepter_compartment_id : var.compartment_ocids[each.value.accepter_compartment_id]) : null
+  requester_compartment_id = each.value.requester_compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.requester_compartment_id)) > 0 ? each.value.requester_compartment_id : var.compartment_ocids[each.value.requester_compartment_id]) : null
+  accepter_compartment_id  = each.value.accepter_compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.accepter_compartment_id)) > 0 ? each.value.accepter_compartment_id : var.compartment_ocids[each.value.accepter_compartment_id]) : null
   display_name             = each.value.display_name
 
   #Requester

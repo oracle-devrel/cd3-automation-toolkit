@@ -243,7 +243,7 @@ def create_terraform_compartments(inputfile, outdir, service_dir, prefix, ct):
         oname[reg].close()
         print(outfile[reg] + " for Compartments has been created for region " + reg)
 
-        fetch_comp_file = f'{outdir}/fetchcompinfo.safe'
+        fetch_comp_file = f'{outdir}/.safe/fetchcompinfo.safe'
         with open(fetch_comp_file, 'w') as f:
             f.write('run_fetch_script=1')
         f.close()

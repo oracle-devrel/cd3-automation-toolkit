@@ -8,7 +8,7 @@ module "default-security-lists" {
   for_each = (var.default_seclists != null || var.default_seclists != {}) ? var.default_seclists : {}
 
   #Required
-  manage_default_resource_id = length(regexall("ocid1.vcn.oc1*", each.value.vcn_id)) > 0 ? each.value.vcn_id : merge(module.vcns.*...)[each.value.vcn_id]["vcn_default_security_list_id"]
+  manage_default_resource_id = length(regexall("ocid1.vcn.oc*", each.value.vcn_id)) > 0 ? each.value.vcn_id : merge(module.vcns.*...)[each.value.vcn_id]["vcn_default_security_list_id"]
 
   key_name        = each.key
   defined_tags    = each.value.defined_tags
@@ -32,7 +32,7 @@ output "default_seclist_id_map" {
 data "oci_core_vcns" "oci_vcns_sec_lists" {
   # depends_on = [module.vcns] # Uncomment to create Network and NSGs together
   for_each       = var.nsgs != null ? var.nsgs : {}
-  compartment_id = each.value.network_compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.network_compartment_id)) > 0 ? each.value.network_compartment_id : var.compartment_ocids[each.value.network_compartment_id]) : null
+  compartment_id = each.value.network_compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.network_compartment_id)) > 0 ? each.value.network_compartment_id : var.compartment_ocids[each.value.network_compartment_id]) : null
   display_name   = each.value.vcn_name
 }
 
@@ -42,9 +42,9 @@ module "security-lists" {
   for_each = (var.seclists != null || var.seclists != {}) ? var.seclists : {}
 
   #Required
-  compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
+  compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
 
-  vcn_id = length(regexall("ocid1.vcn.oc1*", each.value.vcn_id)) > 0 ? each.value.vcn_id : flatten(data.oci_core_vcns.oci_vcns_sec_lists[each.key].virtual_networks.*.id)[0]
+  vcn_id = length(regexall("ocid1.vcn.oc*", each.value.vcn_id)) > 0 ? each.value.vcn_id : flatten(data.oci_core_vcns.oci_vcns_sec_lists[each.key].virtual_networks.*.id)[0]
 
   key_name        = each.key
   defined_tags    = each.value.defined_tags
