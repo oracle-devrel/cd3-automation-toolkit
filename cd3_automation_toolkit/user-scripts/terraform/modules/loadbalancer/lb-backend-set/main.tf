@@ -13,6 +13,7 @@ resource "oci_load_balancer_backend_set" "backend_set" {
 
     #Optional
     interval_ms         = var.interval_ms
+    is_force_plain_text = var.is_force_plain_text
     port                = var.port
     response_body_regex = var.response_body_regex
     retries             = var.retries

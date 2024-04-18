@@ -23,6 +23,5 @@ resource "oci_core_subnet" "subnet" {
   prohibit_internet_ingress  = var.prohibit_internet_ingress
   prohibit_public_ip_on_vnic = var.prohibit_public_ip_on_vnic
   route_table_id             = var.route_table_id
-  security_list_ids          = var.security_list_ids != [] ? [for sl in var.security_list_ids : (length(regexall("ocid1.securitylist.oc1*", sl)) > 0 ? sl : (sl == "" ? var.vcn_default_security_list_id : var.custom_security_list_id[sl]["seclist_tf_id"]))] : []
-
+  security_list_ids          = flatten([for seclist in var.security_list_ids : [for sl in seclist : sl if length(regexall("ocid1.securitylist.oc1*", sl)) > 0 ]])
 }

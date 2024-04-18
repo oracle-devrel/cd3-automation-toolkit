@@ -17,6 +17,11 @@ variable "interval_ms" {
   default     = 10000 # Default as per hashicorp terraform
 }
 
+variable "is_force_plain_text" {
+  type        = string
+  description = "Specifies if health checks should always be done using plain text instead of depending on whether or not the associated backend set is using SSL."
+}
+
 variable "port" {
   type        = number
   description = "The backend server port against which to run the health check."

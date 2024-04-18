@@ -25,8 +25,10 @@ def create_all_tf_objects(inputfile, outdir, service_dir,prefix, ct, non_gf_tena
         os.makedirs(outdir)
     if len(service_dir) != 0:
         service_dir_network = service_dir['network']
+        service_dir_seclist = service_dir['seclist']
     else:
         service_dir_network = ""
+        service_dir_seclist = ""
     with section('Process VCNs Tab and DRGs Tab'):
         create_major_objects(inputfile, outdir, service_dir_network, prefix, ct, non_gf_tenancy, modify_network)
         create_terraform_defaults(inputfile, outdir, service_dir_network, prefix, ct, non_gf_tenancy, modify_network)
@@ -36,13 +38,14 @@ def create_all_tf_objects(inputfile, outdir, service_dir,prefix, ct, non_gf_tena
     with section('Process DRGs tab for DRG Route Tables and Route Distribution creation'):
         create_terraform_drg_route(inputfile, outdir, service_dir_network, prefix, ct, non_gf_tenancy, network_connectivity_in_setupoci, modify_network)
 
+    #Create Workflow
     if non_gf_tenancy == False:
         with section('Process Subnets tab for Routes creation'):
             create_terraform_route(inputfile, outdir, service_dir_network, prefix, ct, non_gf_tenancy, network_vlan_in_setupoci, modify_network)
-
+    # Create Workflow
     if non_gf_tenancy == False:
         with section('Process Subnets for Seclists creation'):
-            create_terraform_seclist(inputfile, outdir, service_dir_network, prefix, ct, modify_network)
+            create_terraform_seclist(inputfile, outdir, service_dir_seclist, prefix, ct, modify_network)
 
     with section('Process Subnets for Subnets creation'):
         create_terraform_subnet_vlan(inputfile, outdir, service_dir, prefix, ct, non_gf_tenancy, network_vlan_in_setupoci,modify_network)

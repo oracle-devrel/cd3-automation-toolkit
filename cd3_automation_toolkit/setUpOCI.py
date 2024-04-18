@@ -135,7 +135,7 @@ def execute_options(options, *args, **kwargs):
         for option in options:
             if option.name == "Execute All":
                 continue
-            if option.name in ['Security Rules', 'Route Rules', 'DRG Route Rules', 'Network Security Groups','Customer Connectivity','CIS Compliance Checking Script'] and devops:
+            if option.name in ['Security Rules', 'Route Rules', 'DRG Route Rules', 'Network Security Groups','Customer Connectivity','CIS Compliance Check Script'] and devops:
                 with section(option.text):
                     option.callback(*args, **kwargs,sub_options=sub_child_options)
             else:
@@ -188,7 +188,13 @@ def update_path_list(regions_path=[],service_dirs=[]):
     for current_dir in service_dirs:
         for reg in regions_path:
             path_value = ((outdir + "/" + reg + "/" + current_dir).rstrip('/')).replace("//","/")
-            items = glob.glob(path_value + "/*")
+            all_items = glob.glob(path_value + "/*")
+            items = []
+            for f in all_items:
+                actual_file = f.split("/")[-1]
+                if actual_file.startswith("variables") or actual_file.endswith(".tf_backup"):
+                    continue
+                items.append(f)
             files = [f for f in items if
                      (os.path.isfile(f) and (datetime.datetime.fromtimestamp(os.path.getmtime(f)) >= exec_start_time))]
             if files:
@@ -249,10 +255,19 @@ def fetch_compartments(outdir, outdir_struct, ct):
                         print("Continuing")
 
     compocidsStr = ''
+    compartments_file_data = ""
+    comp_done = []
     for k,v in ct.ntk_compartment_ids.items():
+        if v not in comp_done:
+            compartments_file_data += k + "\n"
+            comp_done.append(v)
         k = commonTools.check_tf_variable(k)
         v = "\"" + v + "\""
         compocidsStr = "\t" + k + " = " + v + "\n" + compocidsStr
+
+    f = open(outdir + "/../.config_files/compartments_file", "w+")
+    f.write(compartments_file_data[:-1])
+    f.close()
     compocidsStr = "\n" + compocidsStr
     finalCompStr = "#START_compartment_ocids#" + compocidsStr +  "\t#compartment_ocids_END#"
     for k, v in var_data.items():
@@ -266,7 +281,7 @@ def fetch_compartments(outdir, outdir_struct, ct):
             f.write(var_data[k])
     print("\nCompartment info written to all variables files under outdir...\n")
     # update fetchcompinfo.safe
-    fetch_comp_file = f'{outdir}/fetchcompinfo.safe'
+    fetch_comp_file = f'{outdir}/.safe/fetchcompinfo.safe'
     with open(fetch_comp_file, 'w+') as f:
         f.write('run_fetch_script=0')
     f.close()
@@ -389,7 +404,6 @@ def export_networking(inputfile, outdir,config, signer, ct, export_regions):
 
     options = [
         Option(None, Network.create_terraform_dhcp_options, 'Processing DHCP Tab'),
-        Option(None, Network.modify_terraform_secrules, 'Processing SecRulesinOCI Tab'),
         Option(None, Network.modify_terraform_routerules, 'Processing RouteRulesinOCI Tab'),
         Option(None, Network.modify_terraform_drg_routerules, 'Processing DRGRouteRulesinOCI Tab'),
     ]
@@ -409,9 +423,16 @@ def export_networking(inputfile, outdir,config, signer, ct, export_regions):
 
     options = [ Option(None, Network.create_terraform_nsg, 'Processing NSGs Tab'), ]
     execute_options(options, inputfile, outdir, service_dir_nsg, prefix, ct)
-    print("\n\nExecute tf_import_commands_network_*_nonGF.sh script created under each region directory to synch TF with OCI Network objects\n")
-    for service in [service_dir_network,service_dir_vlan,service_dir_nsg]:
-        service_dirs.append(service_dir_network) if service_dir_network not in service_dirs else service_dirs
+
+    options = [Option(None, Network.create_terraform_seclist, 'Processing SecRulesinOCI Tab'), ]
+    execute_options(options, inputfile, outdir, service_dir_seclist, prefix, ct, non_gf_tenancy)
+
+    print(
+        "\n\nExecute tf_import_commands_network_*_nonGF.sh script created under each region directory to synch TF with OCI Network objects\n")
+    for service in [service_dir_network, service_dir_vlan, service_dir_nsg, service_dir_seclist]:
+        if service not in service_dirs:
+            service_dirs.append(service)
+
 
 def export_major_objects(inputfile, outdir, config, signer, ct, export_regions):
     compartments = ct.get_compartment_map(var_file,'VCN Major Objects')
@@ -445,11 +466,11 @@ def export_dhcp(inputfile, outdir,config,signer,ct,export_regions):
 
 def export_secrules(inputfile, outdir,config,signer,ct,export_regions):
     compartments = ct.get_compartment_map(var_file,'SecRulesInOCI')
-    Network.export_seclist(inputfile, outdir, service_dir_network, config, signer, ct, export_compartments=compartments, export_regions=export_regions, _tf_import_cmd=True)
+    Network.export_seclist(inputfile, outdir, service_dir_seclist, config, signer, ct, export_compartments=compartments, export_regions=export_regions, _tf_import_cmd=True)
     options = [
         Option(None, Network.modify_terraform_secrules, 'Processing SecRulesinOCI Tab'),
         ]
-    execute_options(options, inputfile, outdir,service_dir_network, prefix, ct, non_gf_tenancy)
+    execute_options(options, inputfile, outdir,service_dir_seclist, prefix, ct, non_gf_tenancy)
     print("\n\nExecute tf_import_commands_network_secrules_nonGF.sh script created under each region directory to synch TF with OCI Network objects\n")
 
 def export_routerules(inputfile, outdir,config,signer,ct,export_regions):
@@ -840,7 +861,7 @@ def create_network(execute_all=False,prim_options=[]):
     # Update modified path list
     regions_path = export_regions.copy()
     regions_path.append("global")
-    service_dirs = [service_dir_network, service_dir_nsg, service_dir_vlan, 'rpc']
+    service_dirs = [service_dir_network,service_dir_seclist,service_dir_nsg, service_dir_vlan, 'rpc']
     update_path_list(regions_path=regions_path, service_dirs=service_dirs)
 
 def modify_terraform_network(inputfile, outdir, service_dir,  prefix, ct, non_gf_tenancy):
@@ -862,9 +883,9 @@ def export_modify_security_rules(inputfile, outdir, service_dir, prefix, ct, non
         options1 = []
         options1.append(option)
         if (option.name == 'Export Security Rules (From OCI into SecRulesinOCI sheet)'):
-            execute_options(options1, inputfile, outdir, service_dir_network, config, signer, ct, non_gf_tenancy=non_gf_tenancy)
+            execute_options(options1, inputfile, outdir, service_dir_seclist, config, signer, ct, non_gf_tenancy=non_gf_tenancy)
         elif (option.name == 'Add/Modify/Delete Security Rules (Reads SecRulesinOCI sheet)'):
-            execute_options(options1, inputfile, outdir, service_dir_network, prefix, ct, non_gf_tenancy)
+            execute_options(options1, inputfile, outdir, service_dir_seclist, prefix, ct, non_gf_tenancy)
 
 
 def export_security_rules(inputfile, outdir, service_dir, config, signer, ct, non_gf_tenancy):
@@ -1194,8 +1215,7 @@ def create_cis_oss_logs(inputfile, outdir, prefix, ct):
 
 
 def create_cis_features(prim_options=[]):
-    options = [Option('CIS Compliance Checking Script', initiate_cis_scan, 'CIS Compliance Checking'),
-               Option("Create Key/Vault", create_cis_keyvault, 'Creating CIS Key/Vault and enable Logging for write events to bucket'),
+    options = [Option("Create Key/Vault", create_cis_keyvault, 'Creating CIS Key/Vault and enable Logging for write events to bucket'),
                Option("Create Default Budget",create_cis_budget,'Create Default Budget'),
                Option("Enable Cloud Guard", enable_cis_cloudguard, 'Enable Cloud Guard'),]
 
@@ -1204,6 +1224,18 @@ def create_cis_features(prim_options=[]):
     else:
         options = show_options(options, quit=True, menu=True, index=1)
     execute_options(options, outdir, prefix, config_file_path)
+
+def run_utility(prim_options=[]):
+    options = [Option('CIS Compliance Checking Script', initiate_cis_scan, 'CIS Compliance Check Script'),
+               Option('ShowOCI Report', run_showoci, 'ShowOCI Report')
+    ]
+    if prim_options:
+        options = match_options(options, prim_options)
+        execute_options(options, outdir, prefix, config_file_path,sub_options=sub_child_options)
+
+    else:
+        options = show_options(options, quit=True, menu=True, index=1)
+        execute_options(options, outdir, prefix, config_file_path)
 
 def create_cis_keyvault(*args,**kwargs):
     if not devops:
@@ -1244,8 +1276,8 @@ def enable_cis_cloudguard(*args,**kwargs):
 
 def initiate_cis_scan(outdir, prefix, config_file,sub_options=[]):
     options = [
-        Option("Download latest compliance checking script", start_cis_download, 'Download CIS script'),
-        Option("Execute compliance checking script", start_cis_scan, 'Execute CIS script'),
+        Option("Download latest compliance checking script", start_cis_download, 'Downloading CIS Script'),
+        Option("Execute compliance checking script", start_cis_scan, 'Executing CIS Script'),
     ]
     if sub_options:
         options = match_options(options, sub_options)
@@ -1286,6 +1318,51 @@ def start_cis_scan(outdir, prefix, config_file):
     print("Executing: "+cmd)
     print("Scan started!")
     execute(split, config_file)
+
+def get_latest_showoci(outdir, prefix,config_file):
+    print("Getting latest showoci report script")
+    if (os.path.isdir("/tmp/oci-python-sdk")):
+        shutil.rmtree("/tmp/oci-python-sdk")
+    cmd = "git clone https://github.com/oracle/oci-python-sdk /tmp/oci-python-sdk"
+    split = str.split(cmd)
+    execute(split,config_file)
+    if (os.path.isdir("/cd3user/oci_tools/oci-python-sdk")):
+        shutil.rmtree("/cd3user/oci_tools/oci-python-sdk")
+    shutil.move("/tmp/oci-python-sdk", "/cd3user/oci_tools/oci-python-sdk")
+    print("Download complete!!")
+
+
+def execute_showoci(outdir, prefix, config_file_path):
+    cmd = "python /cd3user/oci_tools/oci-python-sdk/examples/showoci/showoci.py -a"
+    split = str.split(cmd)
+    dirname = prefix + "_showoci_report"
+    resource = "showoci_report"
+    out_rep = outdir + '/' + dirname
+    # config = "--config "+ config
+    commonTools.backup_file(outdir, resource, dirname)
+
+    if not os.path.exists(out_rep):
+        os.makedirs(out_rep)
+    else:
+        commonTools.backup_file(outdir, resource, out_rep)
+    out_file = out_rep+"/"+prefix
+    out = ["-cf", config_file_path, '-csv', out_file]
+    cmd = cmd + " " + out[0] + " " + out[1] + " " + out[2] + " " + out[3]
+    split.extend(out)
+    print("Executing: " + cmd)
+    execute(split, config_file_path)
+
+
+def run_showoci(outdir, prefix, config_file,sub_options=[]):
+    options = [
+        Option("Download Latest ShowOCI Script", get_latest_showoci, 'Downloading ShowOCI Script'),
+        Option("Execute ShowOCI Script", execute_showoci, 'Executing ShowOCI Script'),
+    ]
+    if sub_options:
+        options = match_options(options, sub_options)
+    else:
+        options = show_options(options, quit=True, menu=True, index=1)
+    execute_options(options, outdir, prefix, config_file)
 
 def execute(command,config_file):
     export_cmd_windows = "set OCI_CONFIG_HOME="+config_file
@@ -1543,6 +1620,9 @@ run_fetch_script = 0
 subscribed_regions = ct.get_subscribedregions(config,signer)
 home_region = ct.home_region
 
+## Fetch Region ADs
+ct.get_region_ad_dict(config,signer)
+
 # Set service directories as per outdir_structure file
 # If single outdir, get service names from /cd3user/oci_tools/cd3_automation_toolkit/user-scripts/.outdir_structure_file.properties
 if len(outdir_struct.items())==0:
@@ -1571,7 +1651,7 @@ except FileNotFoundError as e:
 fetchcompinfo_data = "run_fetch_script=0"
 try:
     # read fetchcompinfo.safe
-    fetch_comp_file = f'{outdir}/fetchcompinfo.safe'
+    fetch_comp_file = f'{outdir}/.safe/fetchcompinfo.safe'
     with open(fetch_comp_file, 'r') as f:
         fetchcompinfo_data = f.read()
     f.close()
@@ -1634,7 +1714,8 @@ else:
         Option('Logging Services', create_logging, 'Logging Services'),
         Option('Software-Defined Data Centers - OCVS', create_sddc, 'Processing SDDC Tabs'),
         Option('CIS Compliance Features', create_cis_features, 'CIS Compliance Features'),
-        Option('CD3 Services', cd3_services, 'CD3 Services')
+        Option('CD3 Services', cd3_services, 'CD3 Services'),
+        Option('Utility Services (Not Maintained By CD3)', run_utility,'Utility Services')
     ]
     export_regions = ct.all_regions
 
@@ -1661,12 +1742,12 @@ else:
                 if menu:
                     break
 # write updated paths to a file
-updated_paths_file = f'{outdir}/updated_paths.safe'
+updated_paths_file = f'{outdir}/.safe/updated_paths.safe'
 with open(updated_paths_file, 'w+') as f:
     for item in updated_paths:
         f.write(str(item).replace('//', '/') + "\n")
 f.close()
-import_scripts_file = f'{outdir}/import_scripts.safe'
+import_scripts_file = f'{outdir}/.safe/import_scripts.safe'
 with open(import_scripts_file, 'w+') as f:
     for item in import_scripts:
         f.write(str(item).replace('//', '/') + "\n")

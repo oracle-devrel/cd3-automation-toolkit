@@ -51,7 +51,7 @@ module "oss-buckets" {
   auto_tiering  = each.value.auto_tiering != "" ? each.value.auto_tiering : null # Defaults to 'Disabled' as per hashicorp terraform
   defined_tags  = each.value.defined_tags != {} ? each.value.defined_tags : {}
   freeform_tags = each.value.freeform_tags != {} ? each.value.freeform_tags : {}
-  kms_key_id           = each.value.kms_key_id != "" ? each.value.kms_key_id : null
+  kms_key_id    = each.value.kms_key_id != "" ? each.value.kms_key_id : null
   #metadata             = each.value.metadata != {} ? each.value.metadata : {}
   object_events_enabled = each.value.object_events_enabled != "" ? each.value.object_events_enabled : null # Defaults to 'false' as per hashicorp terraform
   storage_tier          = each.value.storage_tier != "" ? each.value.storage_tier : null                   # Defaults to 'Standard' as per hashicorp terraform

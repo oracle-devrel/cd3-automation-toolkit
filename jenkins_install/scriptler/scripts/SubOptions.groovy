@@ -10,8 +10,9 @@ List load_balancers = ["<b>LOAD BALANCERS</b>:disabled","Add/Modify/Delete Load 
 List management_services = ["<b>MANAGEMENT SERVICES</b>:disabled","Add/Modify/Delete Notifications", "Add/Modify/Delete Events", "Add/Modify/Delete Alarms", "Add/Modify/Delete ServiceConnectors"]
 List developer_services = ["<b>DEVELOPER SERVICES</b>:disabled","Add/Modify/Delete OKE Cluster and Nodepools"]
 List logging_services = ["<b>LOGGING SERVICES</b>:disabled","Enable VCN Flow Logs", "Enable LBaaS Logs", "Enable Object Storage Buckets Write Logs"]
-List cis = ["<b>CIS</b>:disabled","CIS Compliance Checking Script", "Create Key/Vault", "Create Default Budget", "Enable Cloud Guard"]
+List cis = ["<b>CIS</b>:disabled","Create Key/Vault", "Create Default Budget", "Enable Cloud Guard"]
 List cd3_services = ["<b>CD3 SERVICES</b>:disabled","Fetch Compartments OCIDs to variables file", "Fetch Protocols to OCI_Protocols"]
+List utility_services = ["<b>UTILITY SERVICES</b>:disabled","CIS Compliance Checking Script", "ShowOCI Report"]
 
 List ex_identity = ["<b>IDENTITY</b>:disabled","Export Compartments/Groups/Policies", "Export Users", "Export Network Sources"]
 List ex_network = ["<b>NETWORK</b>:disabled","Export all Network Components", "Export Network components for VCNs/DRGs/DRGRouteRulesinOCI Tabs", "Export Network components for DHCP Tab", "Export Network components for SecRulesinOCI Tab", "Export Network components for RouteRulesinOCI Tab", "Export Network components for SubnetsVLANs Tab", "Export Network components for NSGs Tab"]
@@ -67,6 +68,9 @@ final_list += cis
 }
 if (item.equals("CD3 Services")){
 final_list += cd3_services
+}
+if (item.equals("Utility Services (Not Maintained By CD3)")){
+final_list += utility_services
 }
 if (item.equals("Export Identity")){
 final_list += ex_identity

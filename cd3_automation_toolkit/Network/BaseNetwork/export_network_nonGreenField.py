@@ -1097,9 +1097,11 @@ def export_networking(inputfile, outdir, service_dir, config, signer, ct, export
     if len(service_dir) != 0:
         service_dir_network = service_dir['network']
         service_dir_nsg = service_dir['nsg']
+        service_dir_seclist = service_dir['seclist']
     else:
         service_dir_network = ""
         service_dir_nsg = ""
+        service_dir_seclist = ""
 
     # Fetch Major Objects
     export_major_objects(inputfile, outdir, service_dir_network, config=config, signer=signer, ct=ct, export_compartments=export_compartments, export_regions=export_regions)
@@ -1111,7 +1113,7 @@ def export_networking(inputfile, outdir, service_dir, config, signer, ct, export
     export_subnets_vlans(inputfile, outdir, service_dir, config=config, signer=signer, ct=ct, export_compartments=export_compartments, export_regions=export_regions)
 
     # Fetch RouteRules and SecRules
-    export_seclist(inputfile, outdir, service_dir_network, config=config, signer=signer, ct=ct, export_compartments=export_compartments, export_regions=export_regions,_tf_import_cmd=True)
+    export_seclist(inputfile, outdir, service_dir_seclist, config=config, signer=signer, ct=ct, export_compartments=export_compartments, export_regions=export_regions,_tf_import_cmd=True)
 
     export_routetable(inputfile, outdir, service_dir_network, config1=config, signer1=signer, ct=ct, export_compartments=export_compartments, export_regions=export_regions, _tf_import_cmd=True)
 

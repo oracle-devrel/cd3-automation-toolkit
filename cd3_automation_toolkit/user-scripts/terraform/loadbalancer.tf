@@ -130,6 +130,7 @@ module "backend-sets" {
 
   #Optional
   interval_ms         = each.value.interval_ms
+  is_force_plain_text = each.value.is_force_plain_text
   port                = each.value.port
   response_body_regex = each.value.response_body_regex
   retries             = each.value.retries

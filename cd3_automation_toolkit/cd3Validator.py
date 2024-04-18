@@ -307,7 +307,7 @@ def validate_subnets(filename, comp_ids, vcnobj):
             cidr_list.append(entry)
 
         # Check for null values and display appropriate message
-        labels = ['DNS Label', 'DHCP Option Name', 'Route Table Name', 'Seclist Names']
+        labels = ['DNS Label', 'DHCP Option Name', 'Route Table Name', 'Seclist Names','NSGs']
         for j in dfsub.keys():
             if (str(dfsub[j][i]).strip() == "NaN" or str(dfsub[j][i]).strip() == "nan" or str(dfsub[j][i]).strip() == ""):
                 # only dhcp_option_name, route table name, seclist_names and dns_label columns can be empty
@@ -1412,14 +1412,22 @@ def validate_buckets(filename, comp_ids):
 
             #Check for valid destination region for enabling the replication policy
             if columnname == 'Replication Policy':
-                columnvalue= columnvalue.split("::")
-                if len(columnvalue) == 3 and all(columnvalue):
-                 replication_policy_name = columnvalue[0]
-                 destination_region = columnvalue[1].lower()
-                 if destination_region in ct.region_dict:
-                     destination_region = ct.region_dict[destination_region]
-                 else:
-                    log(f'ROW {i + 3} : The "Destination_region" of replication policy is not a valid region.')
+                columnvalue = columnvalue.split("::")
+                if len(columnvalue) == 3:
+                    replication_policy_name = columnvalue[0]
+                    destination_region = columnvalue[1].lower()
+                    destination_bucket_name = columnvalue[2]
+                    if replication_policy_name.strip() and destination_bucket_name.strip():
+                        if destination_region in ct.region_dict:
+                            destination_region = ct.region_dict[destination_region]
+                        else:
+                            log(f'ROW {i + 3} : The "Destination_region" of replication policy is not a valid region.')
+                            buckets_invalid_check = True
+                    else:
+                        log(f'ROW {i + 3} : The replication policy format is incorrect or policy name/destination bucket is empty.')
+                        buckets_invalid_check = True
+                else:
+                    log(f'ROW {i + 3} : The replication policy format is incorrect.')
                     buckets_invalid_check = True
 
             #Check for the retention policy details

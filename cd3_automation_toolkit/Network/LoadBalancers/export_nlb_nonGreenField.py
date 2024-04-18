@@ -128,7 +128,7 @@ def print_nlb_backendset_backendserver(region, ct, values_for_column_bss,NLBs, n
                 elif col_header == "Backend Set Name":
                     values_for_column_bss[col_header].append(backendsets)
                 else:
-                    oci_objs = [eachnlb,backendset_details]
+                    oci_objs = [eachnlb,backendset_details,hc]
                     values_for_column_bss = commonTools.export_extra_columns(oci_objs, col_header, sheet_dict_bss,values_for_column_bss)
 
     return values_for_column_bss
@@ -145,7 +145,6 @@ def print_nlb_listener(region, outdir, values_for_column_lis, NLBs, nlb_compartm
                 if 'ocid1.cluster' in created_by:
                     continue
 
-        importCommands[reg] = open(outdir + "/" + reg + "/tf_import_commands_nlb_nonGF.sh", "a")
         nlb_display_name = eachnlb.display_name
         tf_name = commonTools.check_tf_variable(nlb_display_name)
         importCommands[reg].write("\nterraform import \"module.network-load-balancers[\\\"" + str(tf_name) + "\\\"].oci_network_load_balancer_network_load_balancer.network_load_balancer\" " + eachnlb.id)

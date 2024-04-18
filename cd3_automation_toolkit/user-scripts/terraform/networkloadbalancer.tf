@@ -28,6 +28,7 @@ module "network-load-balancers" {
   display_name                   = each.value.display_name
   subnet_id                      = each.value.subnet_id != "" ? (length(regexall("ocid1.subnet.oc1*", each.value.subnet_id)) > 0 ? each.value.subnet_id : data.oci_core_subnets.oci_subnets_nlb[each.key].subnets.*.id[0]) : null
   is_preserve_source_destination = each.value.is_preserve_source_destination
+  is_symmetric_hash_enabled      = each.value.is_symmetric_hash_enabled
   is_private                     = each.value.is_private
   network_security_group_ids     = each.value.nsg_ids
   nlb_ip_version                 = each.value.nlb_ip_version
@@ -60,7 +61,9 @@ module "nlb-backend-sets" {
   protocol            = each.value.protocol
   interval_in_millis  = each.value.interval_in_millis
   port                = each.value.port
+  request_data        = each.value.request_data
   response_body_regex = each.value.response_body_regex
+  response_data       = each.value.response_data
   retries             = each.value.retries
   return_code         = each.value.return_code
   timeout_in_millis   = each.value.timeout_in_millis
@@ -79,6 +82,7 @@ module "nlb-backends" {
 
 
   is_drain   = each.value.is_drain != "" ? each.value.is_drain : "false"
+  is_backup  = each.value.is_backup != "" ? each.value.is_backup : "false"
   is_offline = each.value.is_offline != "" ? each.value.is_offline : "false"
   weight     = each.value.weight != "" ? each.value.weight : "1"
 

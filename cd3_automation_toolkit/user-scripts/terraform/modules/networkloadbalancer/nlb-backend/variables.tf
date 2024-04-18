@@ -43,6 +43,12 @@ variable "is_drain" {
   default     = false # Default value as per hashicorp terraform
 }
 
+variable "is_backup" {
+  type        = bool
+  description = "Whether the load balancer should treat this server as a backup unit."
+  default     = false # Default value as per hashicorp terraform
+}
+
 variable "is_offline" {
   type        = bool
   description = "Whether the load balancer should treat this server as offline. Offline servers receive no incoming traffic."

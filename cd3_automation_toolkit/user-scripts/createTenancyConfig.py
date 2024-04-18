@@ -26,7 +26,6 @@ sys.path.append(os.getcwd()+"/..")
 from commonTools import *
 from copy import deepcopy
 from subprocess import DEVNULL
-
 global topic_name
 global project_name
 global repo_name
@@ -157,15 +156,15 @@ def update_devops_config(prefix,git_config_file, repo_ssh_url,files_in_repo,dir_
     file.close()
 
     # copy to cd3user home dir
-    if not os.path.exists("/cd3user/.ssh"):
-        os.makedirs("/cd3user/.ssh")
-    shutil.copyfile(git_config_file,'/cd3user/.ssh/config')
+    user_ssh_dir = os.path.expanduser("~") + "/.ssh"
+    if not os.path.exists(user_ssh_dir):
+        os.makedirs(user_ssh_dir)
 
+    shutil.copyfile(git_config_file, user_ssh_dir + '/config')
     # change permissions of private key file and config file for GIT
     os.chmod(devops_user_key, 0o600)
-    os.chmod('/cd3user/.ssh/config', 0o600)
+    os.chmod(user_ssh_dir + '/config', 0o600)
     os.chmod(git_config_file, 0o600)
-
 
     '''
     # create symlink for Git Config file for SSH operations.
@@ -303,11 +302,13 @@ current_time=str(datetime.datetime.now())
 user_dir = "/cd3user"
 safe_file = user_dir + "/tenancies/createTenancyConfig.safe"
 auto_keys_dir = user_dir + "/tenancies/keys"
-toolkit_dir = user_dir +"/oci_tools/cd3_automation_toolkit"
+toolkit_dir = os.path.dirname(os.path.abspath(__file__))+"/.."
+#toolkit_dir = user_dir +"/oci_tools/cd3_automation_toolkit"
 modules_dir = toolkit_dir + "/user-scripts/terraform"
 variables_example_file = modules_dir + "/variables_example.tf"
 setupoci_props_toolkit_file_path = toolkit_dir + "/setUpOCI.properties"
-jenkins_dir = os.environ['JENKINS_INSTALL']
+if hasattr(os.environ,'JENKINS_INSTALL'):
+    jenkins_dir = os.environ['JENKINS_INSTALL']
 
 prefix = config.get('Default', 'customer_name').strip()
 if prefix == "" or prefix == "\n":
@@ -339,6 +340,7 @@ config_files= user_dir + "/tenancies/" + prefix +"/.config_files"
 config_file_path = config_files + "/" + prefix + "_oci_config"
 
 terraform_files = customer_tenancy_dir + "/terraform_files/"
+outdir_safe=terraform_files+"/.safe"
 setupoci_props_file_path = customer_tenancy_dir + "/" + prefix + "_setUpOCI.properties"
 
 # Read Config file Variables
@@ -441,15 +443,18 @@ if not os.path.exists(customer_tenancy_dir):
     os.makedirs(customer_tenancy_dir)
 if not os.path.exists(config_files):
     os.makedirs(config_files)
+if not os.path.exists(outdir_safe):
+    os.makedirs(outdir_safe)
+
 dir_values = []
 
 # Copy input properties file to customer_tenancy_dir
-shutil.copy(args.propsfile,config_files+"/"+prefix+"_"+args.propsfile)
+shutil.copy(args.propsfile,config_files+"/"+prefix+"_"+os.path.basename(args.propsfile))
 
 # 1. Copy outdir_structure_file
 
 # Copy default outdir_structure_file
-shutil.copy('/cd3user/oci_tools/cd3_automation_toolkit/user-scripts/outdir_structure_file.properties', '/cd3user/oci_tools/cd3_automation_toolkit/user-scripts/.outdir_structure_file.properties')
+shutil.copy(toolkit_dir+'/user-scripts/outdir_structure_file.properties', toolkit_dir+'/user-scripts/.outdir_structure_file.properties')
 
 _outdir_structure_file = ''
 if (outdir_structure_file != '' and outdir_structure_file != "\n"):
@@ -714,8 +719,10 @@ if not os.path.exists(terraform_files):
 
 
 print("Creating Tenancy specific region directories, terraform provider , variables files.................")
+regions_file_data = ""
 
 for region in ct.all_regions:
+    regions_file_data = regions_file_data+region.title()+"\n"
     # Rerunning createTenancy for any new region subscription. Process only new region directories else continue
     if os.path.exists(terraform_files+region):
         continue
@@ -887,10 +894,26 @@ for region in ct.all_regions:
 
     # 8. Remove terraform example variable file from outdir
     os.remove(terraform_files + "/" + region + "/variables_example.tf")
-
 # 9. Update DevOps files and configurations
 if use_devops == 'yes':
     print("\nCreating Tenancy specific DevOps Items - Topic, Project and Repository.................")
+    # create subscribed regions file
+    f = open(customer_tenancy_dir + "/.config_files/regions_file", "w+")
+    f.write(regions_file_data[:-1])
+    f.close()
+    # create all compartments_file
+    print("Fetching existing Compartments from Tenancy...")
+    ct.get_network_compartment_ids(config['tenancy'], "root", config, signer)
+    compartments_file_data = ""
+    comp_done = []
+    for k, v in ct.ntk_compartment_ids.items():
+        if v not in comp_done:
+            compartments_file_data += k + "\n"
+            comp_done.append(v)
+
+    f = open(customer_tenancy_dir + "/.config_files/compartments_file", "w+")
+    f.write(compartments_file_data[:-1])
+    f.close()
 
     if devops_repo == '' or devops_repo == "\n":
         topic_name = prefix + "-automation-toolkit-topic"

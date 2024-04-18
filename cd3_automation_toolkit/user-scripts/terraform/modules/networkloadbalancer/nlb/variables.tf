@@ -37,6 +37,11 @@ variable "is_private" {
   default = true
 }
 
+variable "is_symmetric_hash_enabled" {
+  type    = bool
+
+}
+
 variable "network_security_group_ids" {
   type        = list(any)
   description = "NSGs to place the load balancer in"

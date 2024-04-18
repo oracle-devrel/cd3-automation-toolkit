@@ -14,39 +14,39 @@ locals {
     }
   ]])
 
-  ds_vols = flatten([ for key, val in var.sddcs : [
-  for item in concat(local.mgmt_vols[val.display_name],local.wkld_vols[val.display_name]): {
-  volume_display_name = item.volume_display_name
-  volume_compartment_id = item.volume_compartment_id
-  }
+  ds_vols = flatten([for key, val in var.sddcs : [
+    for item in concat(local.mgmt_vols[val.display_name], local.wkld_vols[val.display_name]) : {
+      volume_display_name   = item.volume_display_name
+      volume_compartment_id = item.volume_compartment_id
+    }
   ]])
 
   mgmt_vols = { for key, val in var.sddcs :
-     val.display_name =>  try([for item in val.management_datastore: {
-    volume_compartment_id = try(split("@", item)[0],null)
-    volume_display_name = try(split("@", item)[1],null)
-    }],[])}
+    val.display_name => try([for item in val.management_datastore : {
+      volume_compartment_id = try(split("@", item)[0], null)
+      volume_display_name   = try(split("@", item)[1], null)
+  }], []) }
 
   wkld_vols = { for key, val in var.sddcs :
-     val.display_name => try([ for item in val.workload_datastore:
-    {
-    volume_compartment_id = try(split("@", item)[0],null)
-    volume_display_name = try(split("@", item)[1],null)
-     }] ,[])}
+    val.display_name => try([for item in val.workload_datastore :
+      {
+        volume_compartment_id = try(split("@", item)[0], null)
+        volume_display_name   = try(split("@", item)[1], null)
+  }], []) }
 
- management_datastores = { for key,val in var.sddcs : key => (val.management_datastore != null ? [for value in val.management_datastore: data.oci_core_volumes.ds_volumes[split("@", value)[1]].volumes.*.id[0]] : [])
+  management_datastores = { for key, val in var.sddcs : key => (val.management_datastore != null ? [for value in val.management_datastore : data.oci_core_volumes.ds_volumes[split("@", value)[1]].volumes.*.id[0]] : [])
   }
 
- workload_datastores = {for key,val in var.sddcs: key => (val.workload_datastore != null ? [for value in val.workload_datastore: data.oci_core_volumes.ds_volumes[split("@", value)[1]].volumes.*.id[0]] : [])
-             }
- }
+  workload_datastores = { for key, val in var.sddcs : key => (val.workload_datastore != null ? [for value in val.workload_datastore : data.oci_core_volumes.ds_volumes[split("@", value)[1]].volumes.*.id[0]] : [])
+  }
+}
 
 
 data "oci_core_volumes" "ds_volumes" {
-    for_each = {for value in local.ds_vols : value.volume_display_name => value.volume_compartment_id if value.volume_display_name != null }
-    compartment_id = each.value != null ? (length(regexall("ocid1.compartment.oc1*", each.value)) > 0 ? each.value : var.compartment_ocids[each.value]) : var.compartment_ocids[each.value]
-    display_name = each.key
-    state = "AVAILABLE"
+  for_each       = { for value in local.ds_vols : value.volume_display_name => value.volume_compartment_id if value.volume_display_name != null }
+  compartment_id = each.value != null ? (length(regexall("ocid1.compartment.oc1*", each.value)) > 0 ? each.value : var.compartment_ocids[each.value]) : var.compartment_ocids[each.value]
+  display_name   = each.key
+  state          = "AVAILABLE"
 
 }
 
@@ -68,7 +68,7 @@ data "oci_core_subnets" "oci_subnets_sddc" {
 
 data "oci_core_vlans" "sddc_vlan_id" {
   #Required
-  for_each       = { for vlan in local.vlan_config : vlan.display_name => vlan if vlan.display_name != null}
+  for_each       = { for vlan in local.vlan_config : vlan.display_name => vlan if vlan.display_name != null }
   compartment_id = each.value.compartment_id
   display_name   = each.key
   vcn_id         = each.value.vcn_id
