@@ -7,6 +7,8 @@
 
 variable "vcn_default_security_list_id" {}
 
+variable "custom_security_list_id" {}
+
 variable "tenancy_ocid" {
   type    = string
   default = null

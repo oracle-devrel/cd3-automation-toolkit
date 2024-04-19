@@ -373,6 +373,58 @@ output "dhcp_options_id" {
 
 ############################
 # Module Block - Network
+# Create Default Security Lists
+############################
+
+module "default-security-lists" {
+  source   = "./modules/network/default-sec-list"
+  for_each = (var.default_seclists != null || var.default_seclists != {}) ? var.default_seclists : {}
+
+  #Required
+  manage_default_resource_id = length(regexall("ocid1.vcn.oc*", each.value.vcn_id)) > 0 ? each.value.vcn_id : merge(module.vcns.*...)[each.value.vcn_id]["vcn_default_security_list_id"]
+
+  key_name        = each.key
+  defined_tags    = each.value.defined_tags
+  display_name    = each.value.display_name != null ? each.value.display_name : null
+  freeform_tags   = each.value.freeform_tags
+  seclist_details = var.default_seclists
+}
+
+/*
+output "default_seclist_id_map" {
+  value = [ for k,v in merge(module.default-security-lists.*...) : v.default_seclist_id ]
+}
+*/
+
+############################
+# Module Block - Network
+# Create Custom Security Lists
+############################
+
+module "security-lists" {
+  source   = "./modules/network/sec-list"
+  for_each = (var.seclists != null || var.seclists != {}) ? var.seclists : {}
+
+  #Required
+  compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
+
+  vcn_id = length(regexall("ocid1.vcn.oc*", each.value.vcn_id)) > 0 ? each.value.vcn_id : merge(module.vcns.*...)[each.value.vcn_id]["vcn_tf_id"]
+
+  key_name        = each.key
+  defined_tags    = each.value.defined_tags
+  display_name    = each.value.display_name != null ? each.value.display_name : null
+  freeform_tags   = each.value.freeform_tags
+  seclist_details = var.seclists
+}
+
+/*
+output "seclist_id_map" {
+  value = [ for k,v in merge(module.security-lists.*...) : v.seclist_id ]
+}
+*/
+
+############################
+# Module Block - Network
 # Create Default Route Tables
 ############################
 
@@ -542,46 +594,6 @@ output "drg_route_distribution_statements_id_map" {
 }
 */
 
-
-#############################
-# Data/Local Block - Network
-# Subnets
-##############################
-
-# Format : "vcn_name@dns_label@sec_list" => "vcn_name@dns_label@comp_name"
-data "oci_core_security_lists" "security_lists" {
-  for_each       = local.filtered_seclist_map
-  compartment_id = var.compartment_ocids[split("@", each.value)[2]]
-  #fetch vcn id based on vcn name
-  vcn_id       = merge(module.vcns.*...)[split("@", each.value)[0]]["vcn_tf_id"]
-  display_name = length(each.key) > 2 ? trimprefix(trimprefix(split("@", each.key)[2], split("@", each.value)[0]), "_") : "Default Security List for ${split("@", each.value)[0]}"
-}
-
-locals {
-  filtered_subnet_security_list_ids = {
-    for subnet_key, subnet_value in var.subnets :
-    # map for each subnet_key includes the compartment_id and a list of filtered security list IDs
-    "${subnet_value.vcn_id}@${subnet_value.dns_label}" => {
-      compartment_id    = subnet_value.compartment_id,
-      security_list_ids = [for sec_id in subnet_value.security_list_ids : sec_id]
-    }
-  }
-
-  #input to datasource for SL
-  filtered_seclist_map = merge(flatten([
-    for subnet_key, subnet_value in local.filtered_subnet_security_list_ids : {
-      for seclist in subnet_value.security_list_ids : "${subnet_key}@${seclist}" => "${subnet_key}@${subnet_value.compartment_id}"
-    }
-  ])...)
-
-  #Datasource output
-  security_lists_map = {
-    for key, data in data.oci_core_security_lists.security_lists :
-    # Check if data.security_lists is not empty and select the appropriate key-value pair
-    (endswith(key, "@") ? split("@", key)[0] : split("@", key)[2]) => (length(data.security_lists) > 0 ? data.security_lists[0].id : data.display_name)...
-  }
-}
-
 #############################
 # Module Block - Network
 # Create Subnets
@@ -591,7 +603,7 @@ module "subnets" {
   source   = "./modules/network/subnet"
   for_each = (var.subnets != null || var.subnets != {}) ? var.subnets : {}
 
-  depends_on = [module.vcns]
+  depends_on = [module.vcns, module.security-lists]
 
   #Required
   tenancy_ocid   = var.tenancy_ocid
@@ -610,17 +622,14 @@ module "subnets" {
   availability_domain          = each.value.availability_domain != "" && each.value.availability_domain != null ? data.oci_identity_availability_domains.availability_domains.availability_domains[each.value.availability_domain].name : ""
   dhcp_options_id              = each.value.dhcp_options_id == null || each.value.dhcp_options_id == "" ? merge(module.vcns.*...)[each.value.vcn_id]["vcn_default_dhcp_id"] : (length(regexall("ocid1.dhcpoptions.oc*", each.value.dhcp_options_id)) > 0 ? each.value.dhcp_options_id : merge(module.custom-dhcps.*...)[each.value.dhcp_options_id]["custom_dhcp_tf_id"])
   route_table_id               = each.value.route_table_id == null || each.value.route_table_id == "" ? merge(module.vcns.*...)[each.value.vcn_id]["vcn_default_route_table_id"] : (length(regexall("ocid1.routetable.oc*", each.value.route_table_id)) > 0 ? each.value.route_table_id : merge(module.route-tables.*...)[each.value.route_table_id]["route_table_ids"])
+  security_list_ids            = length(each.value.security_list_ids) == 0 ? [merge(module.vcns.*...)[each.value.vcn_id]["vcn_default_security_list_id"]] : each.value.security_list_ids
   vcn_default_security_list_id = merge(module.vcns.*...)[each.value.vcn_id]["vcn_default_security_list_id"]
-  security_list_ids            = length(each.value.security_list_ids) != 0 ? [for sl in each.value.security_list_ids : lookup(local.security_lists_map, sl != "" ? sl : each.value.vcn_id, [])] : []
-
+  custom_security_list_id      = merge(module.security-lists.*...)
 }
 
 /*
 output "subnet_id_map" {
   value = [ for k,v in merge(module.subnets.*...) : v.subnet_id ]
-}
-output "security_lists_output" {
-  value = data.oci_core_security_lists.security_lists
 }
 */
 

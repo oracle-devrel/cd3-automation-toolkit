@@ -206,7 +206,7 @@ def update_devops_config(prefix,git_config_file, repo_ssh_url,files_in_repo,dir_
     # Clean repo config if exists and initiate git repo
     subprocess.run(['git', 'init'], cwd=devops_dir,stdout=DEVNULL)
     f = open(devops_dir + ".gitignore", "w")
-    git_ignore_file_data = ".DS_Store\n*tfstate*\n*terraform*\ntfplan.out\ntfplan.json\n*backup*\ntf_import_commands*\n*cis_report*\n*.safe\n*stacks.zip\n*cd3Validator*"
+    git_ignore_file_data = ".DS_Store\n*tfstate*\n*terraform*\ntfplan.out\ntfplan.json\n*backup*\ntf_import_commands*\n*cis_report*\n*showoci_report*\n*.safe\n*stacks.zip\n*cd3Validator*"
     f.write(git_ignore_file_data)
     f.close()
     # Cleanup existing "origin" remote and create required one

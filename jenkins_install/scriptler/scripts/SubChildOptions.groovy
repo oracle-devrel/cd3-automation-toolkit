@@ -21,7 +21,7 @@ for (item in SubOptions.split(",")) {
     if (item.equals("Network Security Groups")){
         final_list += nsg
     }
-    if (item.equals("CIS Compliance Checking Script")){
+    if (item.equals("CIS Compliance Check Script")){
         final_list += cis
     }
     if (item.equals("ShowOCI Report")){

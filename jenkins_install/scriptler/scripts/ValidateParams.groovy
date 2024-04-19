@@ -15,7 +15,7 @@ def validate_params(Workflow,MainOptions,SubOptions,SubChildOptions,AdditionalFi
     "Logging Services":["Enable VCN Flow Logs", "Enable LBaaS Logs", "Enable Object Storage Buckets Write Logs"],
     "CIS Compliance Features":["Create Key/Vault", "Create Default Budget", "Enable Cloud Guard"],
     "CD3 Services":["Fetch Compartments OCIDs to variables file", "Fetch Protocols to OCI_Protocols"],
-    "Utility Services (Not Maintained By CD3)":["CIS Compliance Checking Script", "ShowOCI Report"]
+    "3rd Party Services:["CIS Compliance Check Script", "ShowOCI Report"]
     ]
     def non_gf_options_map = [
     "Export Identity":["Export Compartments/Groups/Policies", "Export Users", "Export Network Sources"],

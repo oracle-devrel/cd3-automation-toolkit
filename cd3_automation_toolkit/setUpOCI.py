@@ -388,7 +388,7 @@ def export_network(prim_options=[]):
     # Update modified path list
     regions_path = export_regions.copy()
     regions_path.append("global")
-    service_dirs = [service_dir_network, service_dir_nsg, service_dir_vlan,'rpc']
+    service_dirs = [service_dir_network, service_dir_seclist, service_dir_nsg, service_dir_vlan,'rpc']
     update_path_list(regions_path=regions_path, service_dirs=service_dirs)
 
 def export_networking(inputfile, outdir,config, signer, ct, export_regions):
@@ -404,6 +404,7 @@ def export_networking(inputfile, outdir,config, signer, ct, export_regions):
 
     options = [
         Option(None, Network.create_terraform_dhcp_options, 'Processing DHCP Tab'),
+        Option(None, Network.modify_terraform_secrules, 'Processing SecRulesinOCI Tab'),
         Option(None, Network.modify_terraform_routerules, 'Processing RouteRulesinOCI Tab'),
         Option(None, Network.modify_terraform_drg_routerules, 'Processing DRGRouteRulesinOCI Tab'),
     ]
@@ -423,16 +424,9 @@ def export_networking(inputfile, outdir,config, signer, ct, export_regions):
 
     options = [ Option(None, Network.create_terraform_nsg, 'Processing NSGs Tab'), ]
     execute_options(options, inputfile, outdir, service_dir_nsg, prefix, ct)
-
-    options = [Option(None, Network.create_terraform_seclist, 'Processing SecRulesinOCI Tab'), ]
-    execute_options(options, inputfile, outdir, service_dir_seclist, prefix, ct, non_gf_tenancy)
-
-    print(
-        "\n\nExecute tf_import_commands_network_*_nonGF.sh script created under each region directory to synch TF with OCI Network objects\n")
-    for service in [service_dir_network, service_dir_vlan, service_dir_nsg, service_dir_seclist]:
-        if service not in service_dirs:
-            service_dirs.append(service)
-
+    print("\n\nExecute tf_import_commands_network_*_nonGF.sh script created under each region directory to synch TF with OCI Network objects\n")
+    for service in [service_dir_network,service_dir_vlan,service_dir_nsg]:
+        service_dirs.append(service_dir_network) if service_dir_network not in service_dirs else service_dirs
 
 def export_major_objects(inputfile, outdir, config, signer, ct, export_regions):
     compartments = ct.get_compartment_map(var_file,'VCN Major Objects')
@@ -466,11 +460,11 @@ def export_dhcp(inputfile, outdir,config,signer,ct,export_regions):
 
 def export_secrules(inputfile, outdir,config,signer,ct,export_regions):
     compartments = ct.get_compartment_map(var_file,'SecRulesInOCI')
-    Network.export_seclist(inputfile, outdir, service_dir_seclist, config, signer, ct, export_compartments=compartments, export_regions=export_regions, _tf_import_cmd=True)
+    Network.export_seclist(inputfile, outdir, service_dir_network, config, signer, ct, export_compartments=compartments, export_regions=export_regions, _tf_import_cmd=True)
     options = [
         Option(None, Network.modify_terraform_secrules, 'Processing SecRulesinOCI Tab'),
         ]
-    execute_options(options, inputfile, outdir,service_dir_seclist, prefix, ct, non_gf_tenancy)
+    execute_options(options, inputfile, outdir,service_dir_network, prefix, ct, non_gf_tenancy)
     print("\n\nExecute tf_import_commands_network_secrules_nonGF.sh script created under each region directory to synch TF with OCI Network objects\n")
 
 def export_routerules(inputfile, outdir,config,signer,ct,export_regions):
@@ -883,9 +877,9 @@ def export_modify_security_rules(inputfile, outdir, service_dir, prefix, ct, non
         options1 = []
         options1.append(option)
         if (option.name == 'Export Security Rules (From OCI into SecRulesinOCI sheet)'):
-            execute_options(options1, inputfile, outdir, service_dir_seclist, config, signer, ct, non_gf_tenancy=non_gf_tenancy)
+            execute_options(options1, inputfile, outdir, service_dir_network, config, signer, ct, non_gf_tenancy=non_gf_tenancy)
         elif (option.name == 'Add/Modify/Delete Security Rules (Reads SecRulesinOCI sheet)'):
-            execute_options(options1, inputfile, outdir, service_dir_seclist, prefix, ct, non_gf_tenancy)
+            execute_options(options1, inputfile, outdir, service_dir_network, prefix, ct, non_gf_tenancy)
 
 
 def export_security_rules(inputfile, outdir, service_dir, config, signer, ct, non_gf_tenancy):
@@ -1226,7 +1220,7 @@ def create_cis_features(prim_options=[]):
     execute_options(options, outdir, prefix, config_file_path)
 
 def run_utility(prim_options=[]):
-    options = [Option('CIS Compliance Checking Script', initiate_cis_scan, 'CIS Compliance Check Script'),
+    options = [Option('CIS Compliance Check Script', initiate_cis_scan, 'CIS Compliance Check Script'),
                Option('ShowOCI Report', run_showoci, 'ShowOCI Report')
     ]
     if prim_options:
@@ -1715,7 +1709,7 @@ else:
         Option('Software-Defined Data Centers - OCVS', create_sddc, 'Processing SDDC Tabs'),
         Option('CIS Compliance Features', create_cis_features, 'CIS Compliance Features'),
         Option('CD3 Services', cd3_services, 'CD3 Services'),
-        Option('Utility Services (Not Maintained By CD3)', run_utility,'Utility Services')
+        Option('3rd Party Services', run_utility,'3rd Party Services')
     ]
     export_regions = ct.all_regions
 

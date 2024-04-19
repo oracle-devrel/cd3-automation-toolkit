@@ -304,8 +304,9 @@ pipeline {
                                 set +x
                                 if [[ -n "$Excel_Template_FILENAME" ]];then
                                 	size=$(wc --bytes &lt; "$Excel_Template")
-                                    if [[ ( $size -gt 300000 ) || ( $Excel_Template_FILENAME != *.xlsx ) ]]; then
-                                        echo "Failed"
+                                    if [[ ( $size -gt 1000000 ) || ( $Excel_Template_FILENAME != *.xlsx ) ]]; then
+                                        set -x
+                                        echo "Excel File Validation Failed"
                                     fi
                                 fi
                                 ''' , returnStdout: true).trim()

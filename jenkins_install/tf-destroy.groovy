@@ -7,7 +7,7 @@ pipeline {
         ansiColor('xterm')
     }
     stages {
-        stage('Read Jenkins Properties File and Set Environment Variables') {
+        stage('Set Environment Variables') {
             steps {
                 script {
                     def fileContent = readFile "${JENKINS_HOME}/jenkins.properties"

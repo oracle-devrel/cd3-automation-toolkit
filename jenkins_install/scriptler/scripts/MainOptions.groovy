@@ -16,7 +16,7 @@ return[
 "Software-Defined Data Centers - OCVS",
 "CIS Compliance Features",
 "CD3 Services",
-"Utility Services (Not Maintained By CD3)"
+"3rd Party Services"
 ]
 }
 else if(Workflow.toLowerCase().contains("export")) {

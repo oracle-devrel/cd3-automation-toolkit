@@ -45,7 +45,7 @@ def create_all_tf_objects(inputfile, outdir, service_dir,prefix, ct, non_gf_tena
     # Create Workflow
     if non_gf_tenancy == False:
         with section('Process Subnets for Seclists creation'):
-            create_terraform_seclist(inputfile, outdir, service_dir_seclist, prefix, ct, modify_network)
+            create_terraform_seclist(inputfile, outdir, service_dir_network, prefix, ct, modify_network)
 
     with section('Process Subnets for Subnets creation'):
         create_terraform_subnet_vlan(inputfile, outdir, service_dir, prefix, ct, non_gf_tenancy, network_vlan_in_setupoci,modify_network)

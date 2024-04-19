@@ -1,13 +1,13 @@
 -------------------------------------
-CD3 Automation Toolkit Tag v2024.2.1
+CD3 Automation Toolkit Tag v2024.2.2
 Apr 30, 2024
 -------------------------------------
-1. Download latest Excel Sheet using Jenkins.
+1. Download excel sheet after create and export workflow using Jenkins.
 2. Docker Image upgrade to OL9 and upgrade of other softwares also.
 3. Dropdowns for Region and Compartment while running setUpOCI using Jenkins.
-4. Take out Security List from Network stack.
-5. Fix Image OCIDs for OCI Work VM deployment using RM stack.
-6. Review of existing terraform modules.
+4. Fix Image OCIDs for OCI Work VM deployment using RM stack.
+5. Option to execute 3rd Party Services from CD3 - Show OCI along with CIS Compliance Check script
+5. Upgrade of existing terraform modules - identity, buckets, LBaaS, NLBs,
 
 -------------------------------------
 CD3 Automation Toolkit Tag v2024.2.0
