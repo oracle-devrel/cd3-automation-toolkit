@@ -135,7 +135,7 @@ def execute_options(options, *args, **kwargs):
         for option in options:
             if option.name == "Execute All":
                 continue
-            if option.name in ['Security Rules', 'Route Rules', 'DRG Route Rules', 'Network Security Groups','Customer Connectivity','CIS Compliance Check Script'] and devops:
+            if option.name in ['Security Rules', 'Route Rules', 'DRG Route Rules', 'Network Security Groups','Customer Connectivity'] and devops:
                 with section(option.text):
                     option.callback(*args, **kwargs,sub_options=sub_child_options)
             else:
