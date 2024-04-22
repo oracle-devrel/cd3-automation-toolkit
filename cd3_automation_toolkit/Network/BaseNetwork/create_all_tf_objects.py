@@ -25,10 +25,8 @@ def create_all_tf_objects(inputfile, outdir, service_dir,prefix, ct, non_gf_tena
         os.makedirs(outdir)
     if len(service_dir) != 0:
         service_dir_network = service_dir['network']
-        service_dir_seclist = service_dir['seclist']
     else:
         service_dir_network = ""
-        service_dir_seclist = ""
     with section('Process VCNs Tab and DRGs Tab'):
         create_major_objects(inputfile, outdir, service_dir_network, prefix, ct, non_gf_tenancy, modify_network)
         create_terraform_defaults(inputfile, outdir, service_dir_network, prefix, ct, non_gf_tenancy, modify_network)
