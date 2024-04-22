@@ -1411,7 +1411,7 @@ def validate_buckets(filename, comp_ids):
                     buckets_invalid_check = True
 
             #Check for valid destination region for enabling the replication policy
-            if columnname == 'Replication Policy':
+            if columnname == 'Replication Policy' and columnvalue != "nan":
                 columnvalue = columnvalue.split("::")
                 if len(columnvalue) == 3:
                     replication_policy_name = columnvalue[0]
