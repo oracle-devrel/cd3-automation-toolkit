@@ -581,7 +581,7 @@ if remote_state == "yes":
         cred_name = prefix+"-automation-toolkit-csk"
 
         # Get user ocid for DevOps User Name
-        if "ocid1.user.oc1" not in remote_state_user:
+        if "ocid1.user.oc" not in remote_state_user:
             if '@' in remote_state_user:
                 remote_state_user = remote_state_user.rsplit("@",1)[0]
 
@@ -933,7 +933,7 @@ if use_devops == 'yes':
     git_config_file = config_files + "/" + prefix + "_git_config"
 
     #Get Username from $user_ocid if $oci_devops_git_user is left empty
-    if "ocid1.user.oc1" in devops_user:
+    if "ocid1.user.oc" in devops_user:
         identity_client = oci.identity.IdentityClient(config=new_config,
                                                       retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,
                                                       signer=signer)
