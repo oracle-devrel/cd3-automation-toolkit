@@ -45,26 +45,26 @@ pipeline {
                             // Assuming the job name format is <region_name>/job/<service_name>/job/job_name
                             def regionName = parts[1]
                             def serviceName = parts[2]
-
                             // Set environment variables for reuse in subsequent stages
                             env.Region = regionName
                             env.Service = serviceName
-
-                            sh "cd \"${WORKSPACE}/${env.Region}/${env.Service}\" && terraform init -upgrade"
-
-                            // Run Terraform plan and capture the output
-                            terraformPlanOutput = sh(script: "cd \"${WORKSPACE}/${env.Region}/${env.Service}\" && terraform plan -out=tfplan.out", returnStdout: true).trim()
-                        } else {
+                            } else {
                             // Assuming the job name format is <region_name>/job/job_name
                             def regionName = parts[1]
-
+                            def serviceName = ''
+                            if (regionName == 'global') {
+                                serviceName = 'rpc'
+                            }
                             // Set environment variables for reuse in subsequent stages
                             env.Region = regionName
-                            sh "cd \"${WORKSPACE}/${env.Region}\" && terraform init -upgrade"
+                            env.Service = serviceName
+                            }
 
-                            // Run Terraform plan and capture the output
-                            terraformPlanOutput = sh(script: "cd \"${WORKSPACE}/${env.Region}\" && terraform plan -out=tfplan.out", returnStdout: true).trim()
-                        }
+                        def final_path = "${WORKSPACE}/${env.Region}/${env.Service}"
+                        sh "cd \"${WORKSPACE}/${env.Region}/${env.Service}\" && terraform init -upgrade"
+                        // Run Terraform plan and capture the output
+                        terraformPlanOutput = sh(script: "cd \"${WORKSPACE}/${env.Region}/${env.Service}\" && terraform plan -out=tfplan.out", returnStdout: true).trim()
+
 
                         // Check if the plan contains any changes
                         if (terraformPlanOutput.contains('No changes.')) {
