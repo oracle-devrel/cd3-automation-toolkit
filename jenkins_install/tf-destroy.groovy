@@ -49,22 +49,21 @@ pipeline {
                             env.Region = regionName
                             env.Service = serviceName
 
-                            sh "cd \"${WORKSPACE}/${env.Region}/${env.Service}\" && terraform init -upgrade"
-                            //sh "cd \"${WORKSPACE}/${env.Region}/${env.Service}\" && terraform plan -destroy"
-
-                            // Run Terraform plan
-                            terraformPlanOutput = sh(script: "cd \"${WORKSPACE}/${env.Region}/${env.Service}\"  && terraform plan -destroy", returnStdout: true).trim()
-                        } else {
+                            } else {
                             // Assuming job name format is <region_name>/job/job_name
                             def regionName = parts[1]
+                            def serviceName = ''
+                            if (regionName == 'global') {
+                                serviceName = 'rpc'
+                            }
                             // Set environment variables for reuse
                             env.Region = regionName
+                            env.Service = serviceName
 
-                            sh "cd \"${WORKSPACE}/${env.Region}\" && terraform init -upgrade"
-
-                            // Run Terraform plan
-                            terraformPlanOutput = sh(script: "cd \"${WORKSPACE}/${env.Region}\" && terraform plan -destroy", returnStdout: true).trim()
-                        }
+                            }
+                        sh "cd \"${WORKSPACE}/${env.Region}\" && terraform init -upgrade"
+                        // Run Terraform plan
+                        terraformPlanOutput = sh(script: "cd \"${WORKSPACE}/${env.Region}\" && terraform plan -destroy", returnStdout: true).trim()
 
                         // Check if the plan contains any changes
                         if (terraformPlanOutput.contains('No changes.')) {

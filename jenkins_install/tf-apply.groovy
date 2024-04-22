@@ -60,7 +60,6 @@ pipeline {
                             env.Service = serviceName
                             }
 
-                        def final_path = "${WORKSPACE}/${env.Region}/${env.Service}"
                         sh "cd \"${WORKSPACE}/${env.Region}/${env.Service}\" && terraform init -upgrade"
                         // Run Terraform plan and capture the output
                         terraformPlanOutput = sh(script: "cd \"${WORKSPACE}/${env.Region}/${env.Service}\" && terraform plan -out=tfplan.out", returnStdout: true).trim()
