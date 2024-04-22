@@ -1327,6 +1327,8 @@ def get_latest_showoci(outdir, prefix,config_file):
 
 
 def execute_showoci(outdir, prefix, config_file_path):
+    if not os.path.isfile("/cd3user/oci_tools/oci-python-sdk/examples/showoci/showoci.py"):
+        get_latest_showoci(outdir, prefix, config_file=config_file_path)
     cmd = "python /cd3user/oci_tools/oci-python-sdk/examples/showoci/showoci.py -a"
     split = str.split(cmd)
     dirname = prefix + "_showoci_report"
@@ -1345,6 +1347,9 @@ def execute_showoci(outdir, prefix, config_file_path):
     split.extend(out)
     print("Executing: " + cmd)
     execute(split, config_file_path)
+    print("\n##############################")
+    print("ShowOCI report is available at : "+out_rep)
+    print("\n##############################")
 
 
 def run_showoci(outdir, prefix, config_file,sub_options=[]):
