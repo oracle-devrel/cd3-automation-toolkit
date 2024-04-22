@@ -13,7 +13,6 @@ List logging_services = ["<b>LOGGING SERVICES</b>:disabled","Enable VCN Flow Log
 List cis = ["<b>CIS</b>:disabled","Create Key/Vault", "Create Default Budget", "Enable Cloud Guard"]
 List cd3_services = ["<b>CD3 SERVICES</b>:disabled","Fetch Compartments OCIDs to variables file", "Fetch Protocols to OCI_Protocols"]
 List utility_services = ["<b>3rd Party Services</b>:disabled","CIS Compliance Check Script", "ShowOCI Report"]
-
 List ex_identity = ["<b>IDENTITY</b>:disabled","Export Compartments/Groups/Policies", "Export Users", "Export Network Sources"]
 List ex_network = ["<b>NETWORK</b>:disabled","Export all Network Components", "Export Network components for VCNs/DRGs/DRGRouteRulesinOCI Tabs", "Export Network components for DHCP Tab", "Export Network components for SecRulesinOCI Tab", "Export Network components for RouteRulesinOCI Tab", "Export Network components for SubnetsVLANs Tab", "Export Network components for NSGs Tab"]
 List ex_firewall = ["<b>OCI FIREWALL</b>:disabled","Export Firewall Policy", "Export Firewall"]
