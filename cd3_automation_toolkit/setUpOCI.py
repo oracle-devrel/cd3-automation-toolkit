@@ -388,7 +388,7 @@ def export_network(prim_options=[]):
     # Update modified path list
     regions_path = export_regions.copy()
     regions_path.append("global")
-    service_dirs = [service_dir_network, service_dir_seclist, service_dir_nsg, service_dir_vlan,'rpc']
+    service_dirs = [service_dir_network, service_dir_nsg, service_dir_vlan,'rpc']
     update_path_list(regions_path=regions_path, service_dirs=service_dirs)
 
 def export_networking(inputfile, outdir,config, signer, ct, export_regions):
@@ -855,7 +855,7 @@ def create_network(execute_all=False,prim_options=[]):
     # Update modified path list
     regions_path = export_regions.copy()
     regions_path.append("global")
-    service_dirs = [service_dir_network,service_dir_seclist,service_dir_nsg, service_dir_vlan, 'rpc']
+    service_dirs = [service_dir_network,service_dir_nsg, service_dir_vlan, 'rpc']
     update_path_list(regions_path=regions_path, service_dirs=service_dirs)
 
 def modify_terraform_network(inputfile, outdir, service_dir,  prefix, ct, non_gf_tenancy):
