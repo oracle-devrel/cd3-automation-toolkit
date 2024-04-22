@@ -255,6 +255,7 @@ def update_devops_config(prefix,git_config_file, repo_ssh_url,files_in_repo,dir_
 
     subprocess.run(['git', 'config','--global','user.email',devops_user], cwd=devops_dir)
     subprocess.run(['git', 'config', '--global', 'user.name', devops_user], cwd=devops_dir)
+    subprocess.run(['git', 'config', '--global', 'init.defaultBranch', "main"], cwd=devops_dir)
     commit_id='None'
     try:
         subprocess.run(['git', 'commit', '-m','Initial commit from createTenancyConfig.py'], cwd=devops_dir,stdout=DEVNULL)
