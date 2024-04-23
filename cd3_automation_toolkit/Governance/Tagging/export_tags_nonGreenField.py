@@ -149,7 +149,10 @@ def export_tags_nongreenfield(inputfile, outdir, service_dir, config, signer, ct
             if tag_defaults.data != []:
                 for tag_default in tag_defaults.data:
                     if tag_default.tag_definition_name != '(deleted tag definition)':
-                        add_values_in_dict(tag_default_comps_map, tag_default.tag_definition_id+"="+tag_default.tag_definition_name, [ntk_compartment_name+"="+tag_default.value])
+                        my_val=tag_default.value
+                        if tag_default.is_required==True:
+                            my_val=""
+                        add_values_in_dict(tag_default_comps_map, tag_default.tag_definition_id+"="+tag_default.tag_definition_name, [ntk_compartment_name+"="+my_val])
                     defaultcomp_to_tagid_map.update({ commonTools.check_tf_variable(str(tag_default.tag_definition_name).replace('\\','\\\\'))+"-"+commonTools.check_tf_variable(ntk_compartment_name) : tag_default.id })
 
     comp_ocid_done = []

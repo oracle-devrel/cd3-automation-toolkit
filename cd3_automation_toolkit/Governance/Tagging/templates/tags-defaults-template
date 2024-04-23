@@ -22,7 +22,7 @@ tag_defaults = {
             compartment_id = "{{ tags.split('=')[1] }}"
             value = "{{ tags.split('=')[2] }}"
 
-            {# is_required =  {{ tags.split('=')[3] }} #} {# Uncomment this line if needed #}
+            is_required =  {{ tags.split('=')[3] }} #}
             },
     {% endfor %}
 
