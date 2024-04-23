@@ -19,7 +19,7 @@ html_to_be_rendered = """
    <tr>
    <td ><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"reg_filter=\"></td>
    <td><label for="value">Select Regions (Optional) :</label></td>
-   <td ><select multiple name="value" style="width:20%;">${reg_options} </select></td>
+   <td ><select multiple name="value" style="width:150px;">${reg_options} </select></td>
    <td ><input type=\"hidden\" id=\"sep1\" name=\"value\" value=\"@\"></td>
    </tr><tr></tr><tr></tr><tr></tr>
    <tr>

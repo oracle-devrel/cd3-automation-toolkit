@@ -1330,6 +1330,12 @@ def execute_showoci(outdir, prefix, config_file_path):
     if not os.path.isfile("/cd3user/oci_tools/oci-python-sdk/examples/showoci/showoci.py"):
         get_latest_showoci(outdir, prefix, config_file=config_file_path)
     cmd = "python /cd3user/oci_tools/oci-python-sdk/examples/showoci/showoci.py -a"
+    if auth_mechanism == "instance_principal":
+        cmd += " -ip"
+    elif auth_mechanism == "session_token":
+        cmd += " -is"
+    else:
+        cmd += " -cf "+config_file_path
     split = str.split(cmd)
     dirname = prefix + "_showoci_report"
     resource = "showoci_report"
@@ -1342,14 +1348,12 @@ def execute_showoci(outdir, prefix, config_file_path):
     else:
         commonTools.backup_file(outdir, resource, out_rep)
     out_file = out_rep+"/"+prefix
-    out = ["-cf", config_file_path, '-csv', out_file]
-    cmd = cmd + " " + out[0] + " " + out[1] + " " + out[2] + " " + out[3]
+    out = ['-csv', out_file]
+    cmd = cmd + " " + out[0] + " " + out[1]
     split.extend(out)
     print("Executing: " + cmd)
     execute(split, config_file_path)
-    print("\n##############################")
-    print("ShowOCI report is available at : "+out_rep)
-    print("\n##############################")
+
 
 
 def run_showoci(outdir, prefix, config_file,sub_options=[]):
