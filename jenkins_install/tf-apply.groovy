@@ -202,6 +202,7 @@ pipeline {
                 set +x
                 repo_name=${GIT_URL##*/}
                 cd ${WORKSPACE}/../${BUILD_NUMBER}/${repo_name}
+                git config pull.rebase true
                 git pull --no-edit origin main
                 set -x
                 git push --porcelain origin main
