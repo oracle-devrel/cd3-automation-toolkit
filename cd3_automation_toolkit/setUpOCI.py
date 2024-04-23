@@ -1289,6 +1289,12 @@ def start_cis_download(outdir, prefix, config_file):
 
 def start_cis_scan(outdir, prefix, config_file):
     cmd = "python cis_reports.py"
+    if auth_mechanism == "instance_principal":
+        cmd += " -ip"
+    elif auth_mechanism == "session_token":
+        cmd += " -st"
+    else:
+        cmd += " -c "+config_file
     if not devops:
         user_input = input("Enter command to execute the script. Press Enter to execute {} : ".format(cmd))
         if user_input!='':
@@ -1306,8 +1312,8 @@ def start_cis_scan(outdir, prefix, config_file):
     else:
         commonTools.backup_file(outdir, resource, out_rep)
 
-    out = ["-c", config_file, '--report-directory', out_rep]
-    cmd = cmd +" "+ out[0] + " "+out[1] + " "+ out[2] + " " +out[3]
+    out = ['--report-directory', out_rep]
+    cmd = cmd +" "+ out[0] + " "+out[1]
     split.extend(out)
     print("Executing: "+cmd)
     print("Scan started!")
