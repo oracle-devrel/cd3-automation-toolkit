@@ -1386,13 +1386,16 @@ def validate_buckets(filename, comp_ids):
                 if columnvalue.lower() not in ['standard','archive']:
                     log(f'ROW {i + 3} : Value of "Storage Tier" can be only either "Standard" or "Archive".')
                     buckets_invalid_check = True
-
+                elif columnvalue.lower() == 'archive':
+                    auto_tiering_index = dfcolumns.index('Auto Tiering')
+                    if auto_tiering_index != -1 and str(dfbuckets.loc[i, 'Auto Tiering']).strip().lower() == 'enabled':
+                        log(f'ROW {i + 3} : Auto Tiering cannot be "Enabled" when Storage Tier is "Archive".')
+                        buckets_invalid_check = True
 
             if columnname == 'Auto Tiering':
                 if columnvalue.lower() not in ['enabled','disabled']:
                     log(f'ROW {i + 3} : Value of "Auto Tiering" can be only either "Enabled" or "Disabled".')
                     buckets_invalid_check = True
-
 
             if columnname == 'Object Versioning':
                 if columnvalue.lower() not in ['enabled','disabled']:
@@ -1410,7 +1413,7 @@ def validate_buckets(filename, comp_ids):
                     log(f'ROW {i + 3} : Value of "Visibility" can be only either "Private" or "Public".')
                     buckets_invalid_check = True
 
-            #Check for valid destination region for enabling the replication policy
+            # Check for valid destination region for enabling the replication policy
             if columnname == 'Replication Policy' and columnvalue != "nan":
                 columnvalue = columnvalue.split("::")
                 if len(columnvalue) == 3:
@@ -1430,6 +1433,8 @@ def validate_buckets(filename, comp_ids):
                     log(f'ROW {i + 3} : The replication policy format is incorrect.')
                     buckets_invalid_check = True
 
+            # Get the current time
+            current_time = datetime.datetime.utcnow()
             #Check for the retention policy details
             if columnname == 'Retention Rules':
                 rule_values = columnvalue.split("\n")
@@ -1481,6 +1486,21 @@ def validate_buckets(filename, comp_ids):
                                     log(f'ROW {i + 3} : "time_rule_locked" of retention rule is not in valid format. It should be in the format "dd-mm-yyyy".')
                                     buckets_invalid_check = True
                                     continue
+                            # Parse the time_rule_locked into a datetime object
+                            try:
+                                time_rule_locked_datetime = datetime.datetime.strptime(time_rule_locked, "%Y-%m-%dT%H:%M:%SZ")
+                            except ValueError:
+                                log(f'ROW {i + 3} : "time_rule_locked" of retention rule is not in valid format. It should be in the format "YYYY-MM-DDThh:mm:ssZ".')
+                                buckets_invalid_check = True
+                                continue
+
+                            # Calculate the difference between current time and time_rule_locked
+                            time_difference = time_rule_locked_datetime - current_time
+
+                            # Check if the difference is less than 14 days
+                            if time_difference.days < 14:
+                                log(f'ROW {i + 3} : "time_rule_locked" of retention rule must be more than 14 days from the current time.')
+                                buckets_invalid_check = True
 
             # Check for the Lifecycle Policy Details
             if lifecycle_input == True:
@@ -1493,7 +1513,6 @@ def validate_buckets(filename, comp_ids):
                     'previous-object-versions::Delete',
                     'multipart-uploads::Abort'
                 ]
-
 
                 # Check if "Lifecycle Target and Action" is empty
                 if columnname == 'Lifecycle Target and Action':
