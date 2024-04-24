@@ -1,7 +1,7 @@
 <h2>Export from one Tenancy and  Create the same infra in another tenancy </h2>
 
 Set Up the CD3 containers and connect them to Source Tenancy and Target tenancy using steps mentioned in https://oracle-devrel.github.io/cd3-automation-toolkit/install-cd3/
-Note - Same process can be used to replicate 
+Note - Same process can be used to replicate infra resources from one compartment to another in the same tenancy.
 
 **Method 1: Using the excel sheet of source tenancy**
 <h5> Identity Components </h5>
