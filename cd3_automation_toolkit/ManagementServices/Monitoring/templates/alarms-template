@@ -22,7 +22,13 @@ alarms = {
         query = "{{ query }}"
         severity = "{{ severity }}"
         {% if body and body != "" %}
+        {% if '\n' not in body %}
         body = "{{ body }}"
+        {% else %}
+        body = <<-EOF
+        {{ body }}
+        EOF
+        {% endif %}
         {% endif %}
 
         {% if message_format and message_format != "" %}

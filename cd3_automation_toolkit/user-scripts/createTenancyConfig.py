@@ -148,10 +148,10 @@ def create_devops_resources(config,signer):
 def update_devops_config(prefix,git_config_file, repo_ssh_url,files_in_repo,dir_values,devops_user,devops_user_key,devops_dir,ct):
     # create git config file
     file = open(git_config_file, "w")
-    file.write("Host devops.scmservice.*.oci.oraclecloud.com\n "
-                "StrictHostKeyChecking no\n "
-                "User "+str(devops_user)+"\n "
-                "IdentityFile "+str(devops_user_key)+"\n")
+    file.write("Host devops.scmservice.*.oci"+cloud_domain+"\n "
+               "StrictHostKeyChecking no\n "
+               "User " + str(devops_user) + "\n "
+                                            "IdentityFile " + str(devops_user_key) + "\n")
 
     file.close()
 
@@ -205,6 +205,8 @@ def update_devops_config(prefix,git_config_file, repo_ssh_url,files_in_repo,dir_
         cfg = yaml.dump(cfg, stream=yaml_file, default_flow_style=False, sort_keys=False)
     # Clean repo config if exists and initiate git repo
     subprocess.run(['git', 'init'], cwd=devops_dir,stdout=DEVNULL)
+    subprocess.run(['git', 'config', '--global', 'init.defaultBranch', "main"], cwd=devops_dir)
+    subprocess.run(['git', 'config', '--global', 'safe.directory', devops_dir], cwd=devops_dir)
     f = open(devops_dir + ".gitignore", "w")
     git_ignore_file_data = ".DS_Store\n*tfstate*\n*terraform*\ntfplan.out\ntfplan.json\n*backup*\ntf_import_commands*\n*cis_report*\n*showoci_report*\n*.safe\n*stacks.zip\n*cd3Validator*"
     f.write(git_ignore_file_data)
@@ -255,7 +257,6 @@ def update_devops_config(prefix,git_config_file, repo_ssh_url,files_in_repo,dir_
 
     subprocess.run(['git', 'config','--global','user.email',devops_user], cwd=devops_dir)
     subprocess.run(['git', 'config', '--global', 'user.name', devops_user], cwd=devops_dir)
-    subprocess.run(['git', 'config', '--global', 'init.defaultBranch', "main"], cwd=devops_dir)
     commit_id='None'
     try:
         subprocess.run(['git', 'commit', '-m','Initial commit from createTenancyConfig.py'], cwd=devops_dir,stdout=DEVNULL)
@@ -349,11 +350,17 @@ try:
     user=''
     _key_path=''
     fingerprint=''
+    cloud_domain=''
 
     tenancy = config.get('Default', 'tenancy_ocid').strip()
     if tenancy == "" or tenancy == "\n":
         print("Tenancy ID cannot be left empty...Exiting !!")
         exit(1)
+    if ("ocid1.tenancy.oc1" in tenancy):
+        cloud_domain=".oraclecloud.com"
+    else:
+        cloud_domain=".oraclegovcloud.com"
+
 
     auth_mechanism = config.get('Default', 'auth_mechanism').strip().lower()
     if auth_mechanism == "" or auth_mechanism == "\n" or (auth_mechanism!='api_key' and auth_mechanism!='session_token' and auth_mechanism!='instance_principal'):
@@ -673,7 +680,7 @@ if remote_state == "yes":
         elif line.__contains__("region   = "):
             global_backend_file_data += "    region   = \"" + bucket_region + "\"\n"
         elif line.__contains__("endpoint = "):
-            global_backend_file_data += "    endpoint = \"https://" + namespace + ".compat.objectstorage." + bucket_region + ".oraclecloud.com\"\n"
+            global_backend_file_data += "    endpoint = \"https://" + namespace + ".compat.objectstorage." + bucket_region + cloud_domain + "\"\n"
         elif line.__contains__("shared_credentials_file     = "):
             global_backend_file_data += "    shared_credentials_file     = \"" + s3_credential_file_path + "\"\n"
         else:

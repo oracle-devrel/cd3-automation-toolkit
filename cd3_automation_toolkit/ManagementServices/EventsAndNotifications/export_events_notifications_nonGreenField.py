@@ -118,15 +118,16 @@ def print_events(values_for_column_events, region, ntk_compartment_name, event, 
                    data = str(condition["data"])
                else:
                    data = "{}"
-               for val in condition["eventType"]:
-                 if "oraclecloud" in val:
-                   service = val.split("com.oraclecloud.")[1]
-                 elif "oracle" in val:
-                   service = val.split("com.oracle.")[1]
-                 event_prod = service.split('.', 1)[0]
-                 event_res = service.split('.', 1)[1]
-                 if ( action_name != "" ):
-                     events_rows(values_for_column_events, region, ntk_compartment_name, event_name, event_desc, action_type, action_is_enabled, action_description, event_prod, event_res,data,  event_is_enabled, action_name, event, event_info)
+               if "eventType" in condition:
+                   for val in condition["eventType"]:
+                     if "oraclecloud" in val:
+                       service = val.split("com.oraclecloud.")[1]
+                     elif "oracle" in val:
+                       service = val.split("com.oracle.")[1]
+                     event_prod = service.split('.', 1)[0]
+                     event_res = service.split('.', 1)[1]
+                     if ( action_name != "" ):
+                         events_rows(values_for_column_events, region, ntk_compartment_name, event_name, event_desc, action_type, action_is_enabled, action_description, event_prod, event_res,data,  event_is_enabled, action_name, event, event_info)
           if ( i > 0 and action_name != ""):
              events_rows(values_for_column_events, region, ntk_compartment_name, event_name, event_desc, action_type, action_is_enabled, action_description, event_prod, event_res,data,  event_is_enabled, action_name, event, event_info)
           i = i + 1

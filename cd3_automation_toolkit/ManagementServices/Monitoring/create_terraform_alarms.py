@@ -161,7 +161,7 @@ def create_terraform_alarms(inputfile, outdir, service_dir, prefix, ct):
 
 
         # Write all info to TF string
-        tfStr[region]=tfStr[region][:-1] +alarms_template.render(tempStr)
+        tfStr[region]=tfStr[region][:-2] +alarms_template.render(tempStr)
 
     # Write to output
     for reg in ct.all_regions:

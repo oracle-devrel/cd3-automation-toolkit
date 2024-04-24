@@ -1300,7 +1300,6 @@ def start_cis_scan(outdir, prefix, config_file):
         if user_input!='':
             cmd = "{}".format(user_input)
     split = str.split(cmd)
-
     dirname = prefix + "_cis_report"
     resource = "cis_report"
     out_rep = outdir + '/'+ dirname
