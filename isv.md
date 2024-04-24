@@ -35,7 +35,7 @@ Note - Same process can be used to replicate infra resources from one compartmen
 - Paste the files to 'identity' service folder of home region in target tenancy container.
 - Make appropriate changes in tfvars like name changes.
 - Execute terraform init, plan and apply. This will create networking components in target OCI console.
-- Execute the toolkit to export Identity Components(Compartments, Groups, Policies, Users, Network Sources) from target tenancy. This step is needed just to get the target tenancy data into excel sheet.
+- Execute the toolkit to export the created Components from target tenancy. This step is needed just to get the target tenancy data into excel sheet.
 
 
 
