@@ -28,6 +28,7 @@ Note - Same process can be used to replicate infra resources from one compartmen
 
 **Method 2: Using the terraform code of source tenancy**
 <h5> All OCI Components </h5>
+
 - Execute the toolkit to export Identity Components(Compartments, Groups, Policies, Users, Network Sources) from source tenancy. 
 - There is no need to execute shell script containing the terraform import commands.
 - Copy the generated *.auto.tfvars from 'identity' service folder of home region in source tenancy container.
