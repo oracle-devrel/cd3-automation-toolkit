@@ -21,19 +21,22 @@ Note - Same process can be used to replicate infra resources from one compartmen
 - Execute the toolkit for Create Workflow using above excel sheet in target tenancy container. Chose 'Network' in main options and then 'Create Network', 'Security Rules', 'Route Rules', 'DRG Route Rules' from child-options.Chose 'Customer Connectivity' also in case there are RPCs which need to be established. <br> Chose 'Add/Modify/Delete Security Rules (Reads SecRulesinOCI sheet)', 'Add/Modify/Delete Route Rules (Reads RouteRulesinOCI sheet)', 'Add/Modify/Delete DRG Route Rules (Reads DRGRouteRulesinOCI sheet)', 'Create Remote Peering Connections' from sub-child-options).
 - Execute terraform init, plan and apply for 'network' service directory of each region in target tenancy container. This will create networking components in target OCI console.
 - Execute terraform init, plan and apply for 'global/rpc' service directory in target tenancy container. This will create RPCs between regions in target OCI console.
+- If the source tenancy contains NSGs or VLANs and need to be replicated to target tenancy, then re run the toolkit in target tenancy and Chose 'Network' in main options and then 'Network Security Groups' and 'Add/Modify/Delete VLANs' from chid-options. Chose 'Add/Modify/Delete NSGs (Reads NSGs sheet)' from sub-child-options.
+- Execute terraform init, plan and apply for 'nsg' and 'vlan' service directory of each region in target tenancy container. This will create NSGs and VLANs in target OCI console.
 
-9. If the source tenancy contains NSGs or VLANs and need to be replicated to target tenancy, then re run the toolkit in target tenancy and Chose 'Network' in main options and then 'Network Security Groups' and 'Add/Modify/Delete VLANs' from chid-options. Chose 'Add/Modify/Delete NSGs (Reads NSGs sheet)' from sub-child-options.
-10. Execute terraform init, plan and apply for 'nsg' and 'vlan' service directory of each region in target tenancy container. This will create NSGs and VLANs in target OCI console.
+<h5> Use the same procedure to replicate any other resources in OCI </h5>
 
-<h5> Use the same procedure to replicae any other resources in OCI </h5>
-
-**Method 2: Usning the terraform code of source tenancy**
-<h5> Identity Components </h5>
+**Method 2: Using the terraform code of source tenancy**
+<h5> All OCI Components </h5>
 - Execute the toolkit to export Identity Components(Compartments, Groups, Policies, Users, Network Sources) from source tenancy. 
 - There is no need to execute shell script containing the terraform import commands.
 - Copy the generated *.auto.tfvars from 'identity' service folder of home region in source tenancy container.
 - Paste the files to 'identity' service folder of home region in target tenancy container.
 - Make appropriate changes in tfvars like name changes.
 - Execute terraform init, plan and apply. This will create networking components in target OCI console.
+- Execute the toolkit to export Identity Components(Compartments, Groups, Policies, Users, Network Sources) from target tenancy. This step is needed just to get the target tenancy data into excel sheet.
+
+
+
 
    
