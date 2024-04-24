@@ -3,7 +3,7 @@
 Set Up the CD3 containers and connect them to Source Tenancy and Target tenancy using steps mentioned in https://oracle-devrel.github.io/cd3-automation-toolkit/install-cd3/
 Note - Same process can be used to replicate infra resources from one compartment to another in the same tenancy.
 
-**Method 1: Using the excel sheet of source tenancy**
+**Method 1: Using the CD3 excel sheet of source tenancy**
 <h5> Identity Components </h5>
 
 - Execute the toolkit to export Identity Components(Compartments, Groups, Policies, Users, Network Sources) from source tenancy.
@@ -35,7 +35,7 @@ Note - Same process can be used to replicate infra resources from one compartmen
 - Paste the files to 'identity' service folder of home region in target tenancy container.
 - Make appropriate changes in tfvars like name changes.
 - Execute terraform init, plan and apply. This will create networking components in target OCI console.
-- Execute the toolkit to export the created Components from target tenancy. This step is needed just to get the target tenancy data into excel sheet.
+- Execute the toolkit to export the created components from target tenancy. This step is needed to get the target tenancy data into excel sheet.
 
 
 
