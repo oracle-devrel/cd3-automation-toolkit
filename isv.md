@@ -9,7 +9,7 @@ Note - Same process can be used to replicate
 - Execute the toolkit to export Identity Components(Compartments, Groups, Policies, Users, Network Sources) from source tenancy.
 - There is no need to execute shell script containing the terraform import commands.
 - Use the exported excel. Make appropriate changes to Identity tabs (Compartments, Groups, Policies, Users, Network Sources) like region name as per the new tenancy.
-- Execute the toolkit to create Identity components in target tenancy using above excel sheet.
+- Execute the toolkit for Create Workflow using above excel sheet in target tenancy container. Chose 'Identity' in main options and child-options.
 - Execute terraform init, plan and apply for 'identity' service directory of home region in target tenancy container. This will create identity components in target OCI console.
 
 <h5> Network Components </h5>
