@@ -25,7 +25,7 @@
 <br>Select the workflow as **Export Resources from OCI**(Non-Greenfield Workflow). Choose single or multiple MainOptions as required and then corresponding SubOptions.
 <br>Below screenshot shows export of Network and Compute.
 
-<img width="554" alt="Screenshot 2024-01-17 at 7 11 42 PM" src="../images/jenkinsNGF-3.png"><br>
+<img width="554" alt="Screenshot 2024-01-17 at 7 11 42 PM" src="../images/setupocimenu_export_jenkins.jpg"><br>
 
 
 **Step 5:** 
@@ -51,7 +51,17 @@
 </ol>
 
 !!! Important
-    The updated excel sheet containing exported data from OCI is present at ```/cd3user/tenancies/<customer_name>``` inside the container and needs to be copied manually to the local system using scp.
+
+    The updated Excel sheet containing exported data from OCI is present under the **Build artifacts** of the setupoci pipeline. 
+
+    Click on the **Build number** to the left corner of the setupoci pipeline as shown in below image. Under **Build Artifacts**, click on the Excel file name to download it. 
+
+    <img width="1505" alt="Screenshot 2024-01-17 at 9 37 22 PM" src="../images/setupocistages.jpg">
+    <br>
+    <img width="1505" alt="Screenshot 2024-01-17 at 9 37 22 PM" src="../images/buildinfo.jpg">
+
+>Note:
+    The updated Excel sheet is also present at ```/cd3user/tenancies/<customer_name>``` inside the container.
 
 **Expected Output of 'Run Import Commands' stage:**<br>
 <ol type="a">

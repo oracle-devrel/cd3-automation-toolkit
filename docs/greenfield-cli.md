@@ -62,7 +62,7 @@ python setUpOCI.py /cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.p
 <br>→ After fetching the compartment details, the toolkit will display the menu options as shown below:
 
 !!! example  "Example Execution"  
-    <img src = "../images/cliGF-1.png" width=90% height=90%>
+    <img src = "../images/setupocimenu_create_cli.png", width=1500 height=1000> 
 
 
 Choose the resources by specifying a single option (for choosing one of these resources) or comma-separated values (to choose multiple resources) as shown in the sample screenshot above.

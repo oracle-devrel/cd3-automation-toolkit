@@ -30,7 +30,7 @@ Fill the CD3 Excel with appropriate values.
 <br> Check out [this](multiple-services-jenkins.md) while selcting multiple options simultaneously.
 <br>Below screenshot shows creation of Compartments (under Identity) and Tags.
 
-<img width="395" alt="Screenshot 2024-01-16 at 2 44 38 PM" src="../images/jenkinsGF-3.png">
+<img width="920" height="300" alt="Screenshot 2024-01-17 at 12 04 15 PM" src="../images/setupocimenu_create_jenkins.jpg"><br>
 
 Click on **Build** at the bottom.
 
@@ -68,6 +68,7 @@ Click on 'Logs' for Stage: phoenix/identity and click on the pipeline link.
 
 **Step 4**: 
 <br>'Get Approval' stage has timeout of 24 hours, if no action is taken the pipeline will be aborted after 24 hours. Click on this stage and click 'Proceed' to proceed with terraform apply or 'Abort' to cancel the terraform apply.
+
 
 <img width="920" height="300" alt="Screenshot 2024-01-17 at 12 04 15 PM" src="../images/jenkinsGF-8.png"><br>
 
