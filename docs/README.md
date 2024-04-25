@@ -52,7 +52,7 @@
     [Overview](jenkinsintro.md)<br>
     [Create Resources from OCI using Jenkins (Greenfield Workflow)](greenfield-jenkins.md)<br>
     [Provision multiple Services Together](multiple-services-jenkins.md)<br>
-    [Export Resources from OCI using CLI (Non-Greenfield Workflow)](nongreenfield-jenkins.md)<br>
+    [Export Resources from OCI using Jenkins (Non-Greenfield Workflow)](nongreenfield-jenkins.md)<br>
     [Commit Local changes to GIT](sync-cli-jenkins.md)<br>   
     
 
