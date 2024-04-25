@@ -33,11 +33,13 @@ Set Up two CD3 containers and connect them to Source Tenancy and Target Tenancy 
 <h5> Use the same process to replicate any other CD3 supported resources in OCI </h5>
 
 **Method 2: Using the terraform code of source tenancy**
-<h5> Identity Components </h5>
+<h5> All OCI Components </h5>
 
 - Execute the toolkit to export Identity Components(Compartments, Groups, Policies, Users, Network Sources) from source tenancy. 
 - There is no need to execute the generated shell script containing the terraform import commands.
-- Copy the generated *.auto.tfvars from 'identity' service of home region in source tenancy container.
+- Copy the generated *.auto.tfvars from 'identity' service folder of home region in source tenancy container.
 - Paste the files to 'identity' service folder of home region in target tenancy container.
 - Make appropriate changes in tfvars like name changes.
 - Execute terraform init, plan and apply. This will create networking components in target OCI console.
+- Execute the toolkit to export the created components from target tenancy. This step is needed to get the target tenancy data into Excel sheet.
+
