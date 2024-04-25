@@ -2194,7 +2194,7 @@
 </tr>
 <tr>
 <td><b>Execute setUpOCI</b></td>
-<td>Executes python code to generate required <br> tfvars files. The console output for this <br> stage is similar to setUpOCI.py execution via CLI. <br>Multiple options selected will <br> be processed <i>sequentially</i> in this stage.</td>
+<td>Executes python code to generate required <br> tfvars files. The console output for this <br> stage is similar to setUpOCI.py execution via CLI. <br>Multiple options selected will <br> be processed <i>sequentially</i> in this stage. The Excel sheet can be downloaded from <strong>Build artifacts</strong> of the setupoci pipeline.</td>
 <td>Displays Failed if any issue occurs  <br> during its execution. Further stages <br> are skipped in that case.</td>
 </tr>
 <tr>
@@ -2232,6 +2232,11 @@ Inside each service directory, pipelines for <strong>terraform-apply</strong> an
 <tr>
 <td>Checkout SCM</td>
 <td>Checks out the latest terraform_files <br> folder from DevOps GIT repo develop branch</td>
+<td></td>
+</tr>
+<tr>
+<td>Set Environment Variables</td>
+<td>Sets the environment variables for region and service name</td>
 <td></td>
 </tr>
 <tr>
@@ -2274,6 +2279,11 @@ Inside each service directory, pipelines for <strong>terraform-apply</strong> an
 <tr>
 <td>Checkout SCM</td>
 <td>Checks out the latest terraform_files <br> folder from DevOps GIT repo develop branch</td>
+<td></td>
+</tr>
+<tr>
+<td>Set Environment Variables</td>
+<td>Sets the environment variables for region and service name</td>
 <td></td>
 </tr>
 <tr>
