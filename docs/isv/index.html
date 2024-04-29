@@ -8,13 +8,13 @@
       
       
       
-        <link rel="canonical" href="https://oracle-devrel.github.io/cd3-automation-toolkit/cd3-overview/">
+        <link rel="canonical" href="https://oracle-devrel.github.io/cd3-automation-toolkit/isv/">
       
       
-        <link rel="prev" href="./">
+        <link rel="prev" href="../manage-firewall/">
       
       
-        <link rel="next" href="../architecture/">
+        <link rel="next" href="../group-tf-files/">
       
       
       <link rel="icon" href="../images/oci.png">
@@ -22,7 +22,7 @@
     
     
       
-        <title>Introduction - CD3 Documentation</title>
+        <title>Replicating OCI environments - CD3 Documentation</title>
       
     
     
@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#cd3-automation-toolkit" class="md-skip">
+        <a href="#method-1-using-the-excel-sheet-of-source-tenancy" class="md-skip">
           Skip to content
         </a>
       
@@ -109,7 +109,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Introduction
+              Replicating OCI environments
             
           </span>
         </div>
@@ -224,11 +224,9 @@
         
   
   
-    
   
-  
-    <li class="md-tabs__item md-tabs__item--active">
-      <a href="./" class="md-tabs__link">
+    <li class="md-tabs__item">
+      <a href="../cd3-overview/" class="md-tabs__link">
         
   
     
@@ -294,8 +292,10 @@
         
   
   
+    
   
-    <li class="md-tabs__item">
+  
+    <li class="md-tabs__item md-tabs__item--active">
       <a href="../must-read-prerequisites/" class="md-tabs__link">
         
   
@@ -424,10 +424,8 @@
       
   
   
-    
   
   
-  
     
     
       
@@ -442,22 +440,21 @@
     
     
       
-        
-        
-      
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" checked>
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_1" >
         
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="./" class="md-nav__link ">
+            <a href="../cd3-overview/" class="md-nav__link ">
               
   
   <span class="md-ellipsis">
@@ -468,13 +465,13 @@
             </a>
             
               
-              <label class="md-nav__link " for="__nav_1" id="__nav_1_label" tabindex="">
+              <label class="md-nav__link " for="__nav_1" id="__nav_1_label" tabindex="0">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_1">
             <span class="md-nav__icon md-icon"></span>
             Overview
@@ -485,19 +482,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../cd3-overview/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -506,7 +494,6 @@
   
 
       </a>
-      
     </li>
   
 
@@ -1379,8 +1366,10 @@
       
   
   
+    
   
   
+  
     
     
       
@@ -1395,16 +1384,17 @@
     
     
       
+        
+        
+      
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
         
           
           
@@ -1420,13 +1410,13 @@
             </a>
             
               
-              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             Must Read
@@ -1500,10 +1490,28 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../isv/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Replicating OCI environments
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -1512,6 +1520,42 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#method-1-using-the-excel-sheet-of-source-tenancy" class="md-nav__link">
+    <span class="md-ellipsis">
+      Method 1: Using the Excel sheet of source tenancy
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#method-2-using-the-terraform-code-of-source-tenancy" class="md-nav__link">
+    <span class="md-ellipsis">
+      Method 2: Using the terraform code of source tenancy
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -2068,8 +2112,32 @@
   
   
   
-    
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#method-1-using-the-excel-sheet-of-source-tenancy" class="md-nav__link">
+    <span class="md-ellipsis">
+      Method 1: Using the Excel sheet of source tenancy
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#method-2-using-the-terraform-code-of-source-tenancy" class="md-nav__link">
+    <span class="md-ellipsis">
+      Method 2: Using the terraform code of source tenancy
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
   
 </nav>
                   </div>
@@ -2087,41 +2155,125 @@
   
 
 
-<h1 id="cd3-automation-toolkit"><strong>CD3 Automation Toolkit</strong></h1>
-<hr />
-<p>CD3 stands for <strong>Cloud Deployment Design Deliverable</strong>. The CD3 Automation toolkit enables you to effortlessly Build, Export and Manage OCI (Oracle Cloud Infrastruture) resources by converting Excel templates to fully functional Terraform modules within minutes ⚡️⚡️ .</p>
-<p>Additionally, the toolkit also supports seamless resource management using OCI DevOps GIT service and Jenkins Pipelines.</p>
-<p><br></p>
-<iframe width="100%" height="500" src="https://www.youtube.com/embed/watch?v=TSNu0pUHYsE&list=PLPIzp-E1msrbJ3WawXVhzimQnLw5iafcp&index=1">
-</iframe>
+  <h1>Replicating OCI environments</h1>
 
-<p><br>
-<br></p>
-<p><u> <strong>CD3 Toolkit Process</u></strong></p>
-<p><img width="1049" alt="CD3 Toolkit Process" src="../images/CD3-Process.png"></p>
-<p><br>
-The toolkit supports 2 workflows:<br></p>
-<p><strong>1. Create &amp; Manage Resources in OCI (Greenfield Workflow):</strong></p>
-<ul>
-<li>Use this workflow when there is empty OCI tenancy (or) need to create new resources without any requirement to modify / use any existing resources in tenancy.</li>
-<li>The filled in input Excel file is fed to the toolkit and terraform tfvars files are generated for all resources.</li>
-<li>Modifying the same excel sheet and re running the toolkit will generate modified terraform tfvars files.<br></li>
-<li>The generated terraform files can be used to deploy resources in OCI by generating a terraform plan and approving the plan for apply. <br></li>
-</ul>
-<p><strong>2. Export &amp; Manage Resources in OCI (Non-Greenfield Workflow):</strong></p>
-<ul>
-<li>Use this workflow when there is need to use / manage existing resources with terraform which have not been created using CD3. Export these existing resources into CD3 &amp; TF State. Once the export is complete, switch to the Greenfield workflow to create new or manage existing resources .</li>
-<li>The input Excel (preferably the Blank template) is fed to the toolkit and resources are exported into CD3 Excel template. <br></li>
-<li>The toolkit then generates tfvars from the exported data in Excel file and also generates shell scripts with terraform import commands for all the resources.<br></li>
-<li>The shell scripts have to be executed in order to have the updated state file to manage the resources further.<br></li>
-<li>Modifying the same excel sheet and re running the toolkit will generate modified terraform tfvars files.<br></li>
-</ul>
-<div class="admonition tip">
-<p class="admonition-title">Tip</p>
-<p>CD3 Automation toolkit can be used either via CLI or Jenkins.</p>
-<p>📖 Detailed documentation and videos are provided for both options. Check the left panel for navigation.</p>
-</div>
-<p><br></p>
+<h2> Export and Replicate OCI Infrastructure across tenancies </h2>
+
+<p>ISVs or System Integrators often encounter a typical situation of replicating OCI infrastructure in one tenancy/compartment to another tenancy/compartment. It takes few days to months to replicate the whole infrastructure manually.</p>
+<p>This document provides detailed steps for efficiently using the CD3 toolkit to onboard the customer to their new environment within minutes.</p>
+<p>There are two ways to do this: </p>
+<ol>
+<li>Export infrastructure from source environment to the CD3 toolkit and the exported Excel file is used as an input to create the same infrastructure in target environment.</li>
+<li>Export infrastructure from source environment to the CD3 toolkit and the generated resources *auto.tfvars have to be copied to the service specific directories in target tenancy container and execute terraform apply. </li>
+</ol>
+<p>For both the ways, set up 2 CD3 containers and connect them to Source Tenancy and Target Tenancy each using steps mentioned in <a href="https://oracle-devrel.github.io/cd3-automation-toolkit/install-cd3/">https://oracle-devrel.github.io/cd3-automation-toolkit/install-cd3/</a>. </p>
+<blockquote>
+<p>Note: - Same process should be used to replicate Infra resources from one Compartment to another in the same Tenancy.</p>
+</blockquote>
+<p><img width="1486" alt="replication_workflow" src="../images/isv_workflow.png"></p>
+<h2 id="method-1-using-the-excel-sheet-of-source-tenancy">Method 1: Using the Excel sheet of source tenancy</h2>
+<h3> Identity Components </h3>
+
+<p><strong>Task 1:</strong></p>
+<ol>
+<li>Download <a href="https://github.com/oracle-devrel/cd3-automation-toolkit/blob/main/cd3_automation_toolkit/example/CD3-Blank-template.xlsx">CD3-Blank-template</a> and place it in any location inside the source tenancy container. Copy the path and place it under the <strong>excel_file</strong> parameter in <customer_name>_setupoci.properties file. </li>
+<li>Set the workflow_type to <strong>export_resources</strong>.</li>
+<li>Navigate to <code>cd /cd3user/oci_tools/cd3_automation_toolkit/</code>
+   and execute<br />
+<code>sh
+  python setUpOCI.py /cd3user/tenancies/&lt;customer_name/&gt;/&lt;customer_name/&gt;_setUpOCI.properties</code></li>
+<li>Provide comma separated “region” values if resources have to be exported from specific regions. If no region value is provided, the toolkit will export resources from all regions.</li>
+<li>Select <strong>1.Export Identity</strong> from the setupoci menu and the required sub-options. Select the compartment from which these resources have to be exported. </li>
+<li>The input Excel file is now populated with the exported resources data.</li>
+</ol>
+<blockquote>
+<p>Note: There is no need to execute the generated shell scripts containing the terraform import commands.</p>
+</blockquote>
+<p><strong>Task2:</strong></p>
+<ol>
+<li>In the exported Excel file, make appropriate changes to Identity tabs to match region name or other parameters for the target tenancy.</li>
+<li>Copy the updated Excel file to any location within the container connected to target environment. Add this path under the <strong>excel_file</strong> parameter in <customer_name>_setupoci.properties file. </li>
+<li>Set the workflow_type to <strong>create_resources</strong>.</li>
+<li>Navigate to <code>cd /cd3user/oci_tools/cd3_automation_toolkit/</code>
+   and execute<br />
+<code>sh
+  python setUpOCI.py /cd3user/tenancies/&lt;customer_name/&gt;/&lt;customer_name/&gt;_setUpOCI.properties</code></li>
+<li>Select <strong>1.Identity</strong> in setupoci main options and the required sub-options.</li>
+<li>Navigate to <em>/cd3user/tenancies/<customer_name>/terraform_files/<region_dir>/identity/</em> directory of home region in target tenancy container. Execute terraform init, plan and apply. This will create the identity components in target OCI console.</li>
+</ol>
+<h3> Network Components </h3>
+
+<p><strong>Task1:</strong></p>
+<ol>
+<li>Download <a href="https://github.com/oracle-devrel/cd3-automation-toolkit/blob/main/cd3_automation_toolkit/example/CD3-Blank-template.xlsx">CD3-Blank-template</a> and place it in any location inside the source tenancy container. Copy the path and place it under the <strong>excel_file</strong> parameter in <customer_name>_setupoci.properties file.</li>
+<li>Set the workflow_type to <strong>export_resources</strong>.</li>
+<li>Navigate to <code>cd /cd3user/oci_tools/cd3_automation_toolkit/</code>
+   and execute<br />
+<code>sh
+  python setUpOCI.py /cd3user/tenancies/&lt;customer_name/&gt;/&lt;customer_name/&gt;_setUpOCI.properties</code></li>
+<li>Provide comma separated “region” values if resources have to be exported from specific regions. If no region value is provided, the toolkit will export resources from all regions.</li>
+<li>Select <strong>3.Export Network</strong> from the setupoci menu and the sub-option: <strong>Export all Network Components</strong> . Select the compartment from which these resources have to be exported. </li>
+<li>This will export the Network data into Excel template Networking tabs and also create <strong>obj_names.safe</strong> file under  <em>/ cd3user/tenancies/<customer_name>/terraform_files/<region_dir>/network/</em> directory of each region.</li>
+</ol>
+<blockquote>
+<p>Note:There is no need to execute the generated shell script containing the terraform import commands.</p>
+</blockquote>
+<p><strong>Task2:</strong></p>
+<ol>
+<li>In the exported Excel file, make appropriate changes to the Network tabs to match region name or other parameters for the target tenancy. </li>
+</ol>
+<blockquote>
+<p>Note:If VCN name needs to be changed for target tenancy, it has to be changed in 'VCN Name' column of VCNs, SubentsVLANs, DHCP, SecRulesinOCI, RouteRulesinOCI tabs and 'Attached To' column of DRGs tab.</p>
+</blockquote>
+<ol>
+<li>
+<p>Copy this updated Excel file to any location within target tenancy container and add its path under the <strong>excel_file</strong> parameter in <customer_name>_setupoci.properties file. Set the workflow_type to <strong>create_resources</strong>.</p>
+</li>
+<li>
+<p>In the source tenancy container, navigate to <em>/cd3user/tenancies/<customer_name>/terraform_files/<region_dir>/network/</em> , copy <strong>obj_names.safe</strong> file under the same location in target tenancy container. Make sure to navigate to the required region directory in the target tenancy container.</p>
+</li>
+</ol>
+<blockquote>
+<p>Note: If any changes are done to VCN name/DRG name/DRG RT name attached to VCN in the Excel, make sure to update corresponding obj_names.safe file as well.</p>
+</blockquote>
+<ol>
+<li>Navigate to <code>cd /cd3user/oci_tools/cd3_automation_toolkit/</code>
+   and execute<br />
+<code>sh
+  python setUpOCI.py /cd3user/tenancies/&lt;customer_name/&gt;/&lt;customer_name/&gt;_setUpOCI.properties</code></li>
+<li>Select <strong>3.Network</strong> in setUpOCI main options and the required sub-options.</li>
+<li>If NSGs or VLANs have to be replicated, select <strong>3.Network</strong>&rarr;<strong>Network Security Groups</strong> , <strong>Add/Modify/Delete VLANs</strong>. select <strong>Add/Modify/Delete NSGs (Reads NSGs sheet)</strong> from the NSG sub-options.</li>
+<li>Navigate to <em>/cd3user/tenancies/<customer_name>/terraform_files/<region_dir>/network/</em> directory in target tenancy container. Execute terraform init, plan and apply. This will create the Network components in target OCI environment.</li>
+<li>For NSG and VLANs, execute terraform init, plan and apply from <em>/cd3user/tenancies/<customer_name>/terraform_files/<region_dir>/nsg/</em> and <em>/cd3user/tenancies/<customer_name>/terraform_files/<region_dir>/vlan/</em> directories respectively of each region in target tenancy container. This will create NSGs and VLANs in target OCI environment.</li>
+<li>For RPC, execute terraform init, plan and apply from <em>/cd3user/tenancies/<customer_name>/terraform_files/global/rpc</em> directory in target tenancy container. This will create RPCs between regions in target OCI environment.</li>
+</ol>
+<h5> Use the same process to replicate any other CD3 supported resources in OCI </h5>
+
+<h2 id="method-2-using-the-terraform-code-of-source-tenancy">Method 2: Using the terraform code of source tenancy</h2>
+<h3> All OCI Components </h3>
+
+<p><strong>Task1</strong>:</p>
+<ol>
+<li>Download <a href="https://github.com/oracle-devrel/cd3-automation-toolkit/blob/main/cd3_automation_toolkit/example/CD3-Blank-template.xlsx">CD3-Blank-template</a> and place it in any location inside the source tenancy container. Copy the path and place it under the <strong>excel_file</strong> parameter in <customer_name>_setupoci.properties file.</li>
+<li>Set the workflow_type to <strong>export_resources</strong>.</li>
+<li>Navigate to <code>cd /cd3user/oci_tools/cd3_automation_toolkit/</code>
+   and execute<br />
+<code>sh
+  python setUpOCI.py /cd3user/tenancies/&lt;customer_name/&gt;/&lt;customer_name/&gt;_setUpOCI.properties</code></li>
+<li>Provide comma separated “region” values if resources have to be exported from specific regions. If no region value is provided, the toolkit will export resources from all regions.</li>
+<li>Select required options from the setupoci menu. Select the compartment from which these resources have to be exported. <blockquote>
+<p>Note:There is no need to execute the generated shell script containing the terraform import commands.</p>
+</blockquote>
+</li>
+<li>Navigate to each of the required service folders under <em>/cd3user/tenancies/<customer_name>/terraform_files/<region_dir>/</em>. Copy the generated *.auto.tfvars from each service folder.</li>
+</ol>
+<p><strong>Task2:</strong></p>
+<ol>
+<li>In the target tenancy container, navigate to <em>/cd3user/tenancies/<customer_name>/terraform_files/<region_dir>/</em>. Paste the above copied files to the respective service folders in each of the regions.</li>
+<li>Ensure that necessary adjustments are made in tfvars, such as modifying names etc.,. <strong>sed</strong> commands can be used to make multiple replacements.</li>
+<li>Execute terraform init, plan and apply from each of the service directories. This will create these resources in target OCI environment.</li>
+<li>To get the target tenancy data into a Excel template, follow the initial steps listed in <strong>Task1</strong> of this section (Method2) and execute the toolkit to export the created components from target tenancy. </li>
+</ol>
 
 
 
