@@ -1,4 +1,4 @@
-# **Getting Started**
+# **Getting Started** 
 ---
 
 <img width="1049" alt="CD3 Toolkit Process" src="images/CD3-Process.png">
