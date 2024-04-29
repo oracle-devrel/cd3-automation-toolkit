@@ -36,7 +36,7 @@ locals {
 }
 
 module "load-balancers" {
-  #  depends_on = [module.vcns, module.subnets] # Uncomment to execute Networking and Load Balancer together
+  # depends_on = [module.vcns, module.subnets] # Uncomment to execute Networking and Load Balancer together
   source   = "./modules/loadbalancer/lb-load-balancer"
   for_each = var.load_balancers != null ? var.load_balancers : {}
 

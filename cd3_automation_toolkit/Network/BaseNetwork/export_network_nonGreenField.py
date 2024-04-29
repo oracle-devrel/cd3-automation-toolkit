@@ -300,8 +300,8 @@ def get_rpc_resources(source_region, SOURCE_RPC_LIST, dest_rpc_dict, rpc_source_
     dest_drg_rt_name = ""
     drg_rt_import_dist_name = ""
     dest_drg_rt_import_dist_name = ""
-    source_rpc_comp_name = ""
-    dest_rpc_comp_name = ""
+    source_drg_comp_name = ""
+    dest_drg_comp_name = ""
     dest_rpc_display_name = ""
     dest_import_rt_statements = None
     import_rt_statements = None
@@ -330,12 +330,13 @@ def get_rpc_resources(source_region, SOURCE_RPC_LIST, dest_rpc_dict, rpc_source_
 
         # Check peering is alive
         if source_rpc_peer_id is not None and new_rpc.peering_status == "PEERED":
-            source_rpc_comp_name = get_comp_details(new_rpc.compartment_id)
             source_rpc_display_name = new_rpc.display_name
             source_rpc_drg_id = new_rpc.drg_id
             dest_rpc_id = new_rpc.peer_id
             dest_region = new_rpc.peer_region_name.split("-")[1]
             source_rpc_drg_name = getattr(rpc_source_client.get_drg(drg_id=source_rpc_drg_id).data, 'display_name')
+            source_drg_comp_name = get_comp_details(
+                getattr(rpc_source_client.get_drg(drg_id=source_rpc_drg_id).data, 'compartment_id'))
             rpc_tf_name = commonTools.check_tf_variable(new_rpc.display_name)
 
             # Fetch source attach list id
@@ -377,7 +378,7 @@ def get_rpc_resources(source_region, SOURCE_RPC_LIST, dest_rpc_dict, rpc_source_
                                     remote_peering_connection_id=source_rpc_peer_id)
                                 dest_rpc_drg_id = dest_rpc.drg_id
                                 dest_rpc_drg_name = getattr(client.get_drg(drg_id=dest_rpc_drg_id).data, 'display_name')
-                                dest_rpc_comp_name = get_comp_details(dest_rpc.compartment_id)
+                                dest_drg_comp_name = get_comp_details(getattr(client.get_drg(drg_id=dest_rpc_drg_id).data, 'compartment_id'))
                                 dest_rpc_display_name = dest_rpc.display_name
                                 dest_drg_rpc_attachment_list = client.list_drg_attachments(
                                     compartment_id=dest_rpc_comp_id, attachment_type="REMOTE_PEERING_CONNECTION",
@@ -412,11 +413,11 @@ def get_rpc_resources(source_region, SOURCE_RPC_LIST, dest_rpc_dict, rpc_source_
                             if col_header == 'Region':
                                 values_for_column[col_header].append(source_region)
                             elif col_header == 'Attached To':
-                                # Format is RPC::region::dest_rpc_comp_name::dest_rpc_drg_name
+                                # Format is RPC::region::dest_rpc_drg_name
                                 attach_to = "RPC::" + dest_region.lower() + "::" + dest_rpc_drg_name
                                 values_for_column[col_header].append(attach_to)
                             elif col_header == 'Compartment Name':
-                                values_for_column[col_header].append(source_rpc_comp_name)
+                                values_for_column[col_header].append(source_drg_comp_name)
                             elif col_header == 'RPC Display Name':
                                 values_for_column[col_header].append(source_rpc_display_name)
                             elif col_header == 'DRG Name':
@@ -461,11 +462,11 @@ def get_rpc_resources(source_region, SOURCE_RPC_LIST, dest_rpc_dict, rpc_source_
                             if col_header == 'Region':
                                 values_for_column[col_header].append(dest_region.capitalize())
                             elif col_header == 'Attached To':
-                                # Format is RPC::region::dest_rpc_comp_name::dest_rpc_drg_name
+                                # Format is RPC::region::source_rpc_drg_name
                                 attach_to = "RPC::" + source_region.lower() + "::" + source_rpc_drg_name
                                 values_for_column[col_header].append(attach_to)
                             elif col_header == 'Compartment Name':
-                                values_for_column[col_header].append(dest_rpc_comp_name)
+                                values_for_column[col_header].append(dest_drg_comp_name)
                             elif col_header == 'RPC Display Name':
                                 values_for_column[col_header].append(dest_rpc_display_name)
                             elif col_header == 'DRG Name':

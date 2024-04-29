@@ -216,6 +216,7 @@ pipeline {
                         } else {
                             try {
                                 sh '''
+                                    set +x
                                     mkdir -p ${WORKSPACE}/../${BUILD_NUMBER}
                                     cd ${WORKSPACE}/../${BUILD_NUMBER}
                                     git clone ${GIT_URL}
@@ -229,6 +230,8 @@ pipeline {
                                     git_status=`git status --porcelain`
                                     if [[ $git_status ]]; then
                                         git commit -m "commit for terraform-apply build - ${BUILD_NUMBER} for "${reg}"/"${service}
+                                        git config pull.rebase true
+                                        git pull --no-edit origin main
                                         git push origin main
                                     else
                                         echo "Nothing to commit"

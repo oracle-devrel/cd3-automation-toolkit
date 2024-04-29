@@ -72,6 +72,7 @@ module "nlb-backend-sets" {
 
 module "nlb-backends" {
   source                   = "./modules/networkloadbalancer/nlb-backend"
+  # depends_on = [module.instances] # Uncomment to create Network and NLBs together
   for_each                 = var.nlb_backends != null ? var.nlb_backends : {}
   backend_set_name         = merge(module.nlb-backend-sets.*...)[each.value.backend_set_name]["nlb_backend_set_tf_name"]
   network_load_balancer_id = length(regexall("ocid1.loadbalancer.oc*", each.value.network_load_balancer_id)) > 0 ? each.value.network_load_balancer_id : merge(module.network-load-balancers.*...)[each.value.network_load_balancer_id]["network_load_balancer_tf_id"]

@@ -1262,6 +1262,7 @@ def enable_cis_cloudguard(*args,**kwargs):
         region = input("Enter Reporting Region for Cloud Guard eg london: ")
     else:
         region = ct.cg_region
+    region = region.lower()
     options = [Option(None, Security.enable_cis_cloudguard, 'Enabling Cloud Guard')]
     execute_options(options, outdir, service_dir_cloud_guard, prefix, ct, region)
     # Update modified path list

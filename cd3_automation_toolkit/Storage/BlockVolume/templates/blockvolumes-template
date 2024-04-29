@@ -71,7 +71,7 @@ blockvolumes = {
             {% endif %}
 
             {% if is_pv_encryption_in_transit_enabled %}
-            is_pv_encryption_in_transit_enabled = "{{ is_pv_encryption_in_transit_enabled }}"
+            is_pv_encryption_in_transit_enabled = {{ is_pv_encryption_in_transit_enabled }}
             {% endif %}
 
             {% if is_shareable %}

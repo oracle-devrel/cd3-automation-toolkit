@@ -52,14 +52,14 @@ data "oci_core_volumes" "ds_volumes" {
 
 
 data "oci_core_vcns" "oci_vcns_sddc" {
-  # depends_on = [module.vcns] # Uncomment to create Network and Instances together
+  # depends_on = [module.vcns] # Uncomment to create Network and SDDC together
   for_each       = var.sddcs != null ? var.sddcs : {}
   compartment_id = each.value.network_compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.network_compartment_id)) > 0 ? each.value.network_compartment_id : var.compartment_ocids[each.value.network_compartment_id]) : var.compartment_ocids[each.value.network_compartment_id]
   display_name   = each.value.vcn_name
 }
 
 data "oci_core_subnets" "oci_subnets_sddc" {
-  # depends_on = [module.subnets] # Uncomment to create Network and Instances together
+  # depends_on = [module.subnets] # Uncomment to create Network and SDDC together
   for_each       = var.sddcs != null ? var.sddcs : {}
   compartment_id = each.value.network_compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.network_compartment_id)) > 0 ? each.value.network_compartment_id : var.compartment_ocids[each.value.network_compartment_id]) : var.compartment_ocids[each.value.network_compartment_id]
   display_name   = each.value.provisioning_subnet_id
@@ -76,7 +76,7 @@ data "oci_core_vlans" "sddc_vlan_id" {
 
 
 module "sddcs" {
-  #depends_on = [module.vlans]
+  # depends_on = [module.vlans] # Uncomment to create Network and SDDC together
   source                      = "./modules/sddc"
   for_each                    = var.sddcs != null ? var.sddcs : {}
   compartment_id              = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null

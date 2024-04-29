@@ -129,7 +129,6 @@ pipeline {
                                     cd "${env.Region}/${env.Service}"
                                     git pull --no-edit origin main
                                     rm -f *.tfvars
-                                    git rm *.tfvars
                                     git status
                                     git add --all .
                                 """

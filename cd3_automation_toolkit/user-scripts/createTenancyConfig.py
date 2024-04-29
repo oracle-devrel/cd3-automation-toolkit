@@ -839,9 +839,26 @@ for region in ct.all_regions:
     rewrite_backend.write(new_backend_data)
     rewrite_backend.close()
 
-    # Manage multiple outdir
+    # Manage single and multiple outdir
     if (outdir_structure_file == '' or outdir_structure_file == "\n"):
-        pass
+        #remove depends_on for single outdir
+        region_dir = terraform_files + "/" + region + "/"
+        single_outdir_config = configparser.RawConfigParser()
+        single_outdir_config.read("/cd3user/oci_tools/cd3_automation_toolkit/user-scripts/.outdir_structure_file.properties")
+        keys = []
+        for key, val in single_outdir_config.items("Default"):
+            keys.append(key)
+        for file in os.listdir(region_dir):
+            name=file.removesuffix(".tf")
+            if name in keys:
+                file=region_dir+"/"+file
+                with open(file, 'r+') as tf_file:
+                    module_data = tf_file.read().rstrip()
+                    module_data = module_data.replace("# depends_on", "depends_on")
+                tf_file.close()
+                f = open(file, "w+")
+                f.write(module_data)
+                f.close()
     else:
         region_dir = terraform_files + "/" + region + "/"
         for service, service_dir in outdir_config.items("Default"):
