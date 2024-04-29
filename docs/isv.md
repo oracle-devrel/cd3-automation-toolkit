@@ -13,7 +13,7 @@ For both the ways, set up 2 CD3 containers and connect them to Source Tenancy an
 
 >Note: - Same process should be used to replicate Infra resources from one Compartment to another in the same Tenancy.
 
-<img src = "../images/isv_workflow.png">
+<img width="1486" alt="replication_workflow" src="../images/isv_workflow.png">
 
 
 ## Method 1: Using the Excel sheet of source tenancy
