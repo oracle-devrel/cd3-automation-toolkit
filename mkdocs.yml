@@ -95,6 +95,7 @@ theme:
     - navigation.expand
     - navigation.path
     - content.code.copy
+    - toc.integrate
 
   icon:
     admonition:
