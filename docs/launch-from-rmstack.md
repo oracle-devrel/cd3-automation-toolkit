@@ -33,7 +33,7 @@ This method will automatically launch the linux compute VM in OCI tenancy and co
 <img width="1124" src="../images/launch-from-stack-1.png">
 <img width="1124" src="../images/launch-from-stack-2.png">
 <br><br>
-- [X] Login to the VM using private key corresponding to the public key provided during stack creation.
+- [X] Login to the VM using private key corresponding to the public key provided during stack creation. Use 'cd3user' or 'opc' user to connect to the VM. Same key has been copied for both the users.
 - [X] Verify if container is launched using below command - 
 
 ```

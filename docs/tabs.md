@@ -22,9 +22,9 @@ On re-running the same option you will find the previously existing files being 
 
 ## Groups Tab
 
-Use this Tab to create groups in the OCI tenancy. On choosing "Identity" in the SetUpOCI menu will allow to create groups in the OCI tenancy.
+Use this Tab to create groups and dynamic Groups in the OCI tenancy. On choosing "Identity" in the SetUpOCI menu will allow to create groups/dynamic groups in the OCI tenancy.
 
-Automation toolkit supports creation and export of Dynamic Groups as well.
+The toolkit supports groups in IDCS or default domain as of now.
   
 Output terraform file generated:  *<outdir\>/<region\>/<service_dir\>/<prefix\>_groups.auto.tfvars* under where *<region\>* directory is the home region.
 
@@ -46,6 +46,8 @@ On re-running the same option you will find the previously existing files being 
 ## Users Tab
 
 Use this Tab to create local users in the OCI tenancy. On choosing "Identity" in the SetUpOCI menu and "Add/Modify/Delete Users" submenu will allow to create users in the OCI tenancy.
+
+The toolkit supports users in IDCS or default domain as of now.
 
 Output terraform file generated: *<outdir\>/<region\>/<service_dir\>/<prefix\>_users.auto.tfvars* where *<region\>* directory is the home region.
   
@@ -99,8 +101,8 @@ On re-running the same option you will find the previously existing files being 
 
 1. Only VCN and RPC attachments are supported via CD3 as of now for DRGv2. Create attachments for VC and IPSec via OCI console.
 2. Network export will also export only VCN and RPC attachments to CD3 excel sheet as of now.
-3. You can create a Route Table for DRG which is not attached to any attachment by keeping 'Attached To' column in DRGs tab empty.
-4. You can create an Import Route Distribution which is attached to some Route Table in DRG.
+3. Create a Route Table for DRG which is not attached to any attachment by keeping 'Attached To' column in DRGs tab empty.
+4. Create an Import Route Distribution which is attached to some Route Table in DRG.
 
 ## c. VCN Info tab
 
@@ -353,7 +355,7 @@ Note:   Freeform and Defined Tags - If specified, applies to FSS object only and
 
 Once this is complete you will find the generated output terraform files in location :
 
----> *<outdir\>/<region\>/<service_dir\>/<prefix\>_fss.auto.tfvars*
+-→  *<outdir\>/<region\>/<service_dir\>/<prefix\>_fss.auto.tfvars*
 
 
 Once terraform apply is done, you can view the resources under File Storage → File Systems for the region.
@@ -394,7 +396,6 @@ Once this is complete you will find the generated output terraform files in loca
 
 ---> *<outdir\>/<region\>/<service_dir\>/<prefix\>_lb-hostname-certs.auto.tfvars*
 
-under *<region\>* directory.
 
 Once terraform apply is done, you can view the resources under Networking → Load Balancers for the region.
 
@@ -412,7 +413,6 @@ Once this is complete you will find the generated output terraform files in loca
 
 ---> *<outdir\>/<region\>/<service_dir\>/<prefix\>_backendset-backendserver.auto.tfvars*
 
-under *<region\>* directory.
 
 Once terraform apply is done, you can view the resources under Networking→Load Balancers for the region.
 
@@ -429,7 +429,6 @@ Once this is complete you will find the generated output terraform files in loca
 
 ---> *<outdir\>/<region\>/<service_dir\>/<prefix\>_ruleset.auto.tfvars*
 
-under *<region\>* directory.
 
 Once terraform apply is done, you can view the resources under Networking→Load Balancers for the region.
 
@@ -446,7 +445,6 @@ Once this is complete you will find the generated output terraform files in loca
 
 ---> *<outdir\>/<region\>/<service_dir\>/<prefix\>_pathrouteset.auto.tfvars*
 
-under <region\> directory.
 
 Once terraform apply is done, you can view the resources under Networking→Load Balancers for the region.
 
@@ -463,7 +461,6 @@ Once this is complete you will find the generated output terraform files in loca
 
 ---> *<outdir\>/<region\>/<service_dir\>/<prefix\>_lb-listener.auto.tfvars*
 
-under *<region\>* directory.
 
 Once terraform apply is done, you can view the resources under Networking→Load Balancers for the region.
 
@@ -547,7 +544,7 @@ Use this Tab to create Autonomous Database Warehouse or Autonomous Database Tran
 On choosing **"Database"** in the SetUpOCI menu and **"Add/Modify/Delete ADBs"** submenu will allow to create Autonomous Database Warehouse or Autonomous Database Transaction Processing in the OCI tenancy.
 
 
-Output terraform file generated:  *<outdir\>/<region\>/<service_dir\>/<prefix\>_adb.auto.tfvars* under where *<region\>* directory is the region hosting the respective ADB.
+Output terraform file generated:  *<outdir\>/<region\>/<service_dir\>/<prefix\>_adb.auto.tfvars* where *<region\>* directory is the region hosting the respective ADB.
 
 Once terraform apply is done, you can view the resources under **Oracle Database -> Autonomous Database** in OCI console.
 
@@ -562,7 +559,7 @@ On re-running the same option you will find the previously existing files being 
 
 On choosing **"Management Services"** in the SetUpOCI menu and **"Add/Modify/Delete Notification"** and **"Add/Modify/Delete Events"** submenu will allow to manage events and notifications in OCI tenancy.
 
-Output terraform file generated: *<outdir\>/<region\>/<customer_name\>_notifications.auto.tfvars* and *<outdir\>/<region\>/<customer_name>_events.auto.tfvars* under *<region\>* directory.
+Output terraform file generated: *<outdir\>/<region\>/<customer_name\>_notifications.auto.tfvars* and *<outdir\>/<region\>/<customer_name>_events.auto.tfvars* 
 
 Once the terraform apply is complete, view the resources under **Application Integration-> Notifications & Application Integration-> Events** for the region in OCI Console.
 
@@ -580,7 +577,7 @@ Use **CD3-ManagementServices-template.xlsx** under example folder of GIT as inpu
 
 On choosing **"Management Services"** in the SetUpOCI menu and **"Add/Modify/Delete Alarms"** submenu will allow to manage alarms in OCI tenancy.
 
-Output terraform file generated: *<outdir\>/<region\>/<customer_name\>_alarms.auto.tfvars* under *<region\>* directory.
+Output terraform file generated: *<outdir\>/<region\>/<customer_name\>_alarms.auto.tfvars* 
 
 Once the terraform apply is complete, view the resources under **Observability & Management→  Monitoring → Alarms Definition** for the region in OCI Console.
 
@@ -595,7 +592,7 @@ The service connector resources provisioning can be initiated by updating the co
 
 **CIS LZ recommends to create SCH to collect audit logs for all compartments, VCN Flow Logs and Object Storage Logs and send to a particular target that can be read by SIEM. CD3 SCH automation is aligned with CIZ LZ and allow the user to deploy/provision the recommended approach by filling in the suitable data in excel sheet.**
 
-Output terraform file generated: *<outdir\>/<region\>/<customer_name\>_serviceconnectors.auto.tfvars* under *<region\>* directory.
+Output terraform file generated: *<outdir\>/<region\>/<customer_name\>_serviceconnectors.auto.tfvars* 
 
 Once the terraform apply is complete, view the resources under **service connectors window** for the region in OCI Console.
 
@@ -658,7 +655,8 @@ On completion of execution, you will be able to find the output terraform file g
 
 -→  *<outdir\>/<region\>/<service_dir\>/<prefix\>_oke_clusters.auto.tfvars*
 
--→  *<outdir\>/<region\>/<service_dir\>/<prefix\>_oke_nodepools.auto.tfvars*  under  appropriate *<region\>* directory.
+-→  *<outdir\>/<region\>/<service_dir\>/<prefix\>_oke_nodepools.auto.tfvars* 
+
 
 Once terraform apply is done, you can view the resources under **Developer Services -> Kubernetes Clusters (OKE)** for the region in OCI console.
 
@@ -755,7 +753,7 @@ On choosing "Storage" in the SetUpOCI menu and "Add/Modify/Delete Buckets" subme
 
 On completion of execution, you will be able to find the output terraform file generated at :
   
--→  *<outdir\>/<region\>/<service_dir\>/<prefix\>_buckets.auto.tfvars* under appropriate *<region\>* directory.
+-→  *<outdir\>/<region\>/<service_dir\>/<prefix\>_buckets.auto.tfvars* 
 
 Once terraform apply is done, you can view the resources under Object Storage -> Buckets in OCI console.
 

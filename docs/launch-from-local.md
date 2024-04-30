@@ -72,6 +72,8 @@ docker run --name cd3_toolkit --platform linux/amd64 -it -p <port_number_in_loca
     If launching the container in cloud, make sure to use a private server or a bastion connected server with restricted access(i.e. not publicly available) to host the container.
 
 * Run  ```docker ps``` to see running containers on the system.
+
+* Run ```docker exec -it cd3_toolkit bash``` to exec into the running container.
 <br><br>
 
 - [X] Follow [Connect container to tenancy](connect-container-to-oci-tenancy.md) for next steps. 

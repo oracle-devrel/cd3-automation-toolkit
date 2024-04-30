@@ -8,17 +8,7 @@
 
 **Step 1 - Login (Exec) into the Container**:
 
-* Run  
-```
-docker ps
-```
-&nbsp;
-→ Note down the container ID from this cmd output.<br>
-
-* Run  
-  ```
-  docker exec -it <container_id> bash
-  ```
+* Login to the previously launched container using either [RM Stack](launch-from-rmstack.md) or [Manual Launch](launch-from-local.md).
 
 **Step 2 - Choose Authentication Mechanism for OCI SDK**</a>
 
