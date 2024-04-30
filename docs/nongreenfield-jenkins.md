@@ -44,21 +44,12 @@
 
 **Expected Output of 'Execute setUpOCI' stage:**<br>
 <ol type="a">
-  <li> Overwrites the specific tabs of Excel sheet with the exported resource details from OCI.</li>
+  <li> Overwrites the specific tabs of Excel sheet with the exported resource details from OCI. Check <a href=../download-excel>this </a> to download the exported Excel file. </li>
   <li> Generates Terraform Configuration files - *.auto.tfvars.</li>
   <li> Generates shell scripts with import commands - <b>tf_import_commands_&lt;resource&gt;_nonGF.sh</b> </li>
 </ul>
 </ol>
-
-!!! Important
-
-    The updated Excel sheet containing exported data from OCI is present under the **Build artifacts** of the setupoci pipeline. 
-
-    Click on the **Build number** to the left corner of the setupoci pipeline as shown in below image. Under **Build Artifacts**, click on the Excel file name to download it. 
-
-    <img width="1505" alt="Screenshot 2024-01-17 at 9 37 22 PM" src="../images/setupocistages.jpg">
-    <br>
-    <img width="1505" alt="Screenshot 2024-01-17 at 9 37 22 PM" src="../images/buildinfo.jpg">
+ 
 
 >Note:
     The updated Excel sheet is also present at ```/cd3user/tenancies/<customer_name>``` inside the container.
