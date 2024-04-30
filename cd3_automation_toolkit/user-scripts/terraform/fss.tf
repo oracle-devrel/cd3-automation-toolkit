@@ -21,7 +21,7 @@ data "oci_core_vcns" "oci_vcns_fss" {
 }
 
 module "mts" {
-  # depends_on = [module.nsgs]] # Uncomment to execute NSG and Mount Target together
+  # depends_on = [module.nsgs] # Uncomment to execute NSG and Mount Target together
   #Required
   source   = "./modules/storage/file-storage/mount-target"
   for_each = (var.mount_targets != null || var.mount_targets != {}) ? var.mount_targets : {}
