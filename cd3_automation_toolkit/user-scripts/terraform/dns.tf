@@ -89,6 +89,7 @@ data "oci_dns_views" "resolver_views_data" {
 ### Module ###
 module "dns-resolvers" {
   source                = "./modules/network/dns/dns_resolver"
+  # depends_on = [module.nsgs] # Uncomment to create NSG and DNS Resolvers together
   for_each              = var.resolvers != null ? var.resolvers : {}
   target_resolver_id    = data.oci_core_vcn_dns_resolver_association.resolver_vcn_dns_resolver_association[each.key].*.dns_resolver_id[0]
   resolver_scope        = "PRIVATE"

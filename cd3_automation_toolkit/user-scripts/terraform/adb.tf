@@ -24,7 +24,7 @@ data "oci_core_vcns" "oci_vcns_adb" {
 module "adb" {
   source   = "./modules/database/adb"
   for_each = var.adb != null ? var.adb : {}
-  # depends_on = [module.vcns, module.subnets]
+  # depends_on = [module.nsgs]
   admin_password             = each.value.admin_password
   character_set              = each.value.character_set
   compartment_id             = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
