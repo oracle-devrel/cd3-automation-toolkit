@@ -10,7 +10,7 @@ There are **two ways** to do this:
 2. Export infrastructure from source environment to the CD3 toolkit and the generated resources **auto.tfvars** files are copied to the service specific directories in target container. Generate the plan and execute terraform apply. 
 
 
-For both the ways, set up 2 CD3 containers and connect them to Source Tenancy and Target Tenancy each using steps mentioned in https://oracle-devrel.github.io/cd3-automation-toolkit/install-cd3/. 
+For both the ways, set up 2 new CD3 containers and connect them to Source Tenancy and Target Tenancy each using steps mentioned in https://oracle-devrel.github.io/cd3-automation-toolkit/install-cd3/. 
 
 > **Note:** Same process should be used to replicate Infra resources from one Compartment to another within the same Tenancy.
 
@@ -26,10 +26,10 @@ For both the ways, set up 2 CD3 containers and connect them to Source Tenancy an
 
 **Task 1:**
 
-1. Download [CD3-Blank-template](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/main/cd3_automation_toolkit/example/CD3-Blank-template.xlsx) and place it in any location inside the source tenancy container. Copy the path and place it under the **cd3_file** parameter in  
-```/cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties``` file.  
-   >  **Note:** The **/cd3user/tenancies/** folder in cd3 conatiner is mapped to **/cd3user/mount_path/** folder in the workvm. Login to the workvm with **cd3user** to copy files to the container.   
-2. Set the **workflow_type** to **export_resources**.
+1. Download [CD3-Blank-template](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/main/cd3_automation_toolkit/example/CD3-Blank-template.xlsx) and place it in any location inside the source tenancy container. 
+
+2. Open ```/cd3user/tenancies/<customer_name>/<customer_name>_setUpOCI.properties``` file. Copy the path and paste it under the       **cd3_file** parameter. Set the **workflow_type** to **export_resources**. Save the file.
+   >  **Note:** The **/cd3user/tenancies/** folder in cd3 conatiner is mapped to **/cd3user/mount_path/** folder in the workvm. Login to the workvm with **cd3user** to be able to copy files to the container.   
 3. Navigate to ```cd /cd3user/oci_tools/cd3_automation_toolkit/```
    and execute  
    ```
