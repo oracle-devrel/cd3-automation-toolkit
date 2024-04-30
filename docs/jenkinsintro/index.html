@@ -1192,6 +1192,21 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="1. setUpOCI Pipeline">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#a-download-cd3-excel-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      a. Download CD3 Excel File
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1449,8 +1464,6 @@
       
         
       
-        
-      
     
     
       
@@ -1546,27 +1559,6 @@
   
   <span class="md-ellipsis">
     Manage OCI Network Firewall
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../isv/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Replicating OCI environments
   </span>
   
 
@@ -2186,6 +2178,11 @@
 </tr>
 </tbody>
 </table>
+<h4 id="a-download-cd3-excel-file">a. Download CD3 Excel File</h4>
+<p>Here are the <a href=../download-excel> steps</a> to download excel file after successful completion of 'Execute setUpOCI' stage of the pipeline. The Excel file is available as an artifact for each build of the setUpOCI pipeline.</p>
+<blockquote>
+<p>Note: For Greenfield workflow, this will be the same Excel file which was uploaded to create resources in OCI. For Non-Greenfield workflow, this will be the updated Excel file with exported OCI resource data.</p>
+</blockquote>
 <h3 id="2-terraform_files-folder">2. terraform_files Folder</h3>
 <p>This is equivalent to <strong><code>/cd3user/tenancies/&lt;customer_name&gt;/terraform_files</code></strong> folder on your local system.
 The region directories along with all service directories, are present under this terraform_files folder. The toolkit will generate the .tfvars files for all resources under the service directory.
