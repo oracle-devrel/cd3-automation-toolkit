@@ -57,7 +57,7 @@ module "exa-infra" {
 ############################################
 
 module "exa-vmclusters" {
-  depends_on = [module.exa-infra, module.nsgs]
+  depends_on = [module.exa-infra]
   source     = "./modules/database/exa-vmcluster"
 
   for_each                  = var.exa_vmclusters != null ? var.exa_vmclusters : {}
