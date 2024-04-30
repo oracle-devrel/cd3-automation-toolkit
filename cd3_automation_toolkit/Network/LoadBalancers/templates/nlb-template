@@ -44,6 +44,10 @@ network_load_balancers = {
         is_preserve_source_destination = {{ is_preserve_source_destination }}
         {% endif %}
 
+        {% if is_symmetric_hash_enabled and is_symmetric_hash_enabled != "" %}
+        is_symmetric_hash_enabled = {{ is_symmetric_hash_enabled }}
+        {% endif %}
+
         {% if nlb_ip_version and nlb_ip_version != "" %}
         nlb_ip_version = {{ nlb_ip_version }}
         {% endif %}

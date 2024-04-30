@@ -1,4 +1,22 @@
 -------------------------------------
+CD3 Automation Toolkit Tag v2024.2.2
+Apr 30, 2024
+-------------------------------------
+1. Download excel sheet after create and export workflow using Jenkins.
+2. Docker Image upgrade to OL9 and upgrade of other softwares also.
+3. Dropdowns for Region and Compartment while running setUpOCI using Jenkins.
+4. Fix Image OCIDs for OCI Work VM deployment using RM stack.
+5. Option to execute 3rd Party Services from CD3 - Show OCI along with CIS Compliance Check script
+6. Upgrade of existing terraform modules - identity, buckets, LBaaS, NLBs (without DNS health check as of now).
+7. Enhance CD3 Validator for OCI Buckets.
+
+------------------------------------
+CD3 Automation Toolkit Tag v2024.2.1
+Apr 4, 2024
+-------------------------------------
+1. Quick bug fix for OCI RM stack directly in github.
+
+-------------------------------------
 CD3 Automation Toolkit Tag v2024.2.0
 Mar 22, 2024
 -------------------------------------

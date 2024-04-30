@@ -19,16 +19,17 @@ data "oci_identity_compartment" "compartment" {
 
 data "oci_core_images" "oracle_linux" {
   compartment_id   = var.tenancy_ocid
-  operating_system = "Oracle Linux"
-  shape            = var.instance_shape
+  #operating_system = "Oracle Linux"
+  #shape            = var.instance_shape
+  display_name     = var.instance_os_version
   sort_by          = "TIMECREATED"
   sort_order       = "DESC"
   state            = "AVAILABLE"
 
   # filter restricts to OL
-  filter {
-    name   = "operating_system_version"
-    values = ["${local.os_version}"]
-    regex  = false
-  }
+  #filter {
+  #  name   = "operating_system_version"
+  #  values = ["${local.os_version}"]
+  #  regex  = false
+  #}
 }

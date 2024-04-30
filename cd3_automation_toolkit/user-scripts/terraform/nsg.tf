@@ -6,7 +6,7 @@
 data "oci_core_vcns" "oci_vcns_nsgs" {
   # depends_on = [module.vcns] # Uncomment to create Network and NSGs together
   for_each       = var.nsgs != null ? var.nsgs : {}
-  compartment_id = each.value.network_compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.network_compartment_id)) > 0 ? each.value.network_compartment_id : var.compartment_ocids[each.value.network_compartment_id]) : null
+  compartment_id = each.value.network_compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.network_compartment_id)) > 0 ? each.value.network_compartment_id : var.compartment_ocids[each.value.network_compartment_id]) : null
   display_name   = each.value.vcn_name
 }
 
@@ -17,7 +17,7 @@ module "nsgs" {
   for_each = (var.nsgs != null || var.nsgs != {}) ? var.nsgs : {}
 
   #Required
-  compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
+  compartment_id = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
   vcn_id         = flatten(data.oci_core_vcns.oci_vcns_nsgs[each.key].virtual_networks.*.id)[0]
   defined_tags   = each.value.defined_tags
   display_name   = each.value.display_name
@@ -36,7 +36,7 @@ module "nsg-rules" {
   depends_on = [module.nsgs]
 
   #Required
-  nsg_id    = length(regexall("ocid1.networksecuritygroup.oc1*", each.value.nsg_id)) > 0 ? each.value.nsg_id : merge(module.nsgs.*...)[each.value.nsg_id]["nsg_tf_id"]
+  nsg_id    = length(regexall("ocid1.networksecuritygroup.oc*", each.value.nsg_id)) > 0 ? each.value.nsg_id : merge(module.nsgs.*...)[each.value.nsg_id]["nsg_tf_id"]
   direction = (each.value.direction == "" && each.value.direction == null) ? "INGRESS" : each.value.direction
   protocol  = each.value.protocol
 

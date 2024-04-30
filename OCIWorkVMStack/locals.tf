@@ -19,7 +19,7 @@ locals {
   listing_resource_id      = var.mp_listing_resource_id
   listing_resource_version = var.mp_listing_resource_version
 
-  os_version = var.instance_os_version == "Oracle-Linux-9" ? 9 : (var.instance_os_version == "Oracle-Linux-8" ? 8 : 7.9)
+  #os_version = var.instance_os_version == "Oracle-Linux-9" ? 9 : (var.instance_os_version == "Oracle-Linux-8" ? 8 : 7.9)
 
   instance_image_ocid = data.oci_core_images.oracle_linux.images[0].id
 

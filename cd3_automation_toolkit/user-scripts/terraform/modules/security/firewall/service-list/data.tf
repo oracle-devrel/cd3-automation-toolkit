@@ -1,6 +1,6 @@
 /*
 locals {
-  services = var.services != null ? flatten(tolist([for  sid in var.services : (length(regexall("ocid1.networkfirewallpolicy.oc1*", sid)) > 0 ? [sid] : data.oci_network_firewall_network_firewall_policy_services.fw-services[sid].*.name)])) : null
+  services = var.services != null ? flatten(tolist([for  sid in var.services : (length(regexall("ocid1.networkfirewallpolicy.oc*", sid)) > 0 ? [sid] : data.oci_network_firewall_network_firewall_policy_services.fw-services[sid].*.name)])) : null
 
 }
 data "oci_network_firewall_network_firewall_policy_services" "fw-services" {

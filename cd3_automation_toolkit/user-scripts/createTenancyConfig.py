@@ -26,7 +26,6 @@ sys.path.append(os.getcwd()+"/..")
 from commonTools import *
 from copy import deepcopy
 from subprocess import DEVNULL
-
 global topic_name
 global project_name
 global repo_name
@@ -149,23 +148,23 @@ def create_devops_resources(config,signer):
 def update_devops_config(prefix,git_config_file, repo_ssh_url,files_in_repo,dir_values,devops_user,devops_user_key,devops_dir,ct):
     # create git config file
     file = open(git_config_file, "w")
-    file.write("Host devops.scmservice.*.oci.oraclecloud.com\n "
-                "StrictHostKeyChecking no\n "
-                "User "+str(devops_user)+"\n "
-                "IdentityFile "+str(devops_user_key)+"\n")
+    file.write("Host devops.scmservice.*.oci"+cloud_domain+"\n "
+               "StrictHostKeyChecking no\n "
+               "User " + str(devops_user) + "\n "
+                                            "IdentityFile " + str(devops_user_key) + "\n")
 
     file.close()
 
     # copy to cd3user home dir
-    if not os.path.exists("/cd3user/.ssh"):
-        os.makedirs("/cd3user/.ssh")
-    shutil.copyfile(git_config_file,'/cd3user/.ssh/config')
+    user_ssh_dir = os.path.expanduser("~") + "/.ssh"
+    if not os.path.exists(user_ssh_dir):
+        os.makedirs(user_ssh_dir)
 
+    shutil.copyfile(git_config_file, user_ssh_dir + '/config')
     # change permissions of private key file and config file for GIT
     os.chmod(devops_user_key, 0o600)
-    os.chmod('/cd3user/.ssh/config', 0o600)
+    os.chmod(user_ssh_dir + '/config', 0o600)
     os.chmod(git_config_file, 0o600)
-
 
     '''
     # create symlink for Git Config file for SSH operations.
@@ -206,8 +205,10 @@ def update_devops_config(prefix,git_config_file, repo_ssh_url,files_in_repo,dir_
         cfg = yaml.dump(cfg, stream=yaml_file, default_flow_style=False, sort_keys=False)
     # Clean repo config if exists and initiate git repo
     subprocess.run(['git', 'init'], cwd=devops_dir,stdout=DEVNULL)
+    subprocess.run(['git', 'config', '--global', 'init.defaultBranch', "main"], cwd=devops_dir)
+    subprocess.run(['git', 'config', '--global', 'safe.directory', devops_dir], cwd=devops_dir)
     f = open(devops_dir + ".gitignore", "w")
-    git_ignore_file_data = ".DS_Store\n*tfstate*\n*terraform*\ntfplan.out\ntfplan.json\n*backup*\ntf_import_commands*\n*cis_report*\n*.safe\n*stacks.zip\n*cd3Validator*"
+    git_ignore_file_data = ".DS_Store\n*tfstate*\n*terraform*\ntfplan.out\ntfplan.json\n*backup*\ntf_import_commands*\n*cis_report*\n*showoci_report*\n*.safe\n*stacks.zip\n*cd3Validator*"
     f.write(git_ignore_file_data)
     f.close()
     # Cleanup existing "origin" remote and create required one
@@ -303,11 +304,13 @@ current_time=str(datetime.datetime.now())
 user_dir = "/cd3user"
 safe_file = user_dir + "/tenancies/createTenancyConfig.safe"
 auto_keys_dir = user_dir + "/tenancies/keys"
-toolkit_dir = user_dir +"/oci_tools/cd3_automation_toolkit"
+toolkit_dir = os.path.dirname(os.path.abspath(__file__))+"/.."
+#toolkit_dir = user_dir +"/oci_tools/cd3_automation_toolkit"
 modules_dir = toolkit_dir + "/user-scripts/terraform"
 variables_example_file = modules_dir + "/variables_example.tf"
 setupoci_props_toolkit_file_path = toolkit_dir + "/setUpOCI.properties"
-jenkins_dir = os.environ['JENKINS_INSTALL']
+if hasattr(os.environ,'JENKINS_INSTALL'):
+    jenkins_dir = os.environ['JENKINS_INSTALL']
 
 prefix = config.get('Default', 'customer_name').strip()
 if prefix == "" or prefix == "\n":
@@ -339,6 +342,7 @@ config_files= user_dir + "/tenancies/" + prefix +"/.config_files"
 config_file_path = config_files + "/" + prefix + "_oci_config"
 
 terraform_files = customer_tenancy_dir + "/terraform_files/"
+outdir_safe=terraform_files+"/.safe"
 setupoci_props_file_path = customer_tenancy_dir + "/" + prefix + "_setUpOCI.properties"
 
 # Read Config file Variables
@@ -346,11 +350,17 @@ try:
     user=''
     _key_path=''
     fingerprint=''
+    cloud_domain=''
 
     tenancy = config.get('Default', 'tenancy_ocid').strip()
     if tenancy == "" or tenancy == "\n":
         print("Tenancy ID cannot be left empty...Exiting !!")
         exit(1)
+    if ("ocid1.tenancy.oc1" in tenancy):
+        cloud_domain=".oraclecloud.com"
+    else:
+        cloud_domain=".oraclegovcloud.com"
+
 
     auth_mechanism = config.get('Default', 'auth_mechanism').strip().lower()
     if auth_mechanism == "" or auth_mechanism == "\n" or (auth_mechanism!='api_key' and auth_mechanism!='session_token' and auth_mechanism!='instance_principal'):
@@ -441,15 +451,18 @@ if not os.path.exists(customer_tenancy_dir):
     os.makedirs(customer_tenancy_dir)
 if not os.path.exists(config_files):
     os.makedirs(config_files)
+if not os.path.exists(outdir_safe):
+    os.makedirs(outdir_safe)
+
 dir_values = []
 
 # Copy input properties file to customer_tenancy_dir
-shutil.copy(args.propsfile,config_files+"/"+prefix+"_"+args.propsfile)
+shutil.copy(args.propsfile,config_files+"/"+prefix+"_"+os.path.basename(args.propsfile))
 
 # 1. Copy outdir_structure_file
 
 # Copy default outdir_structure_file
-shutil.copy('/cd3user/oci_tools/cd3_automation_toolkit/user-scripts/outdir_structure_file.properties', '/cd3user/oci_tools/cd3_automation_toolkit/user-scripts/.outdir_structure_file.properties')
+shutil.copy(toolkit_dir+'/user-scripts/outdir_structure_file.properties', toolkit_dir+'/user-scripts/.outdir_structure_file.properties')
 
 _outdir_structure_file = ''
 if (outdir_structure_file != '' and outdir_structure_file != "\n"):
@@ -575,7 +588,7 @@ if remote_state == "yes":
         cred_name = prefix+"-automation-toolkit-csk"
 
         # Get user ocid for DevOps User Name
-        if "ocid1.user.oc1" not in remote_state_user:
+        if "ocid1.user.oc" not in remote_state_user:
             if '@' in remote_state_user:
                 remote_state_user = remote_state_user.rsplit("@",1)[0]
 
@@ -667,7 +680,7 @@ if remote_state == "yes":
         elif line.__contains__("region   = "):
             global_backend_file_data += "    region   = \"" + bucket_region + "\"\n"
         elif line.__contains__("endpoint = "):
-            global_backend_file_data += "    endpoint = \"https://" + namespace + ".compat.objectstorage." + bucket_region + ".oraclecloud.com\"\n"
+            global_backend_file_data += "    endpoint = \"https://" + namespace + ".compat.objectstorage." + bucket_region + cloud_domain + "\"\n"
         elif line.__contains__("shared_credentials_file     = "):
             global_backend_file_data += "    shared_credentials_file     = \"" + s3_credential_file_path + "\"\n"
         else:
@@ -714,8 +727,10 @@ if not os.path.exists(terraform_files):
 
 
 print("Creating Tenancy specific region directories, terraform provider , variables files.................")
+regions_file_data = ""
 
 for region in ct.all_regions:
+    regions_file_data = regions_file_data+region.title()+"\n"
     # Rerunning createTenancy for any new region subscription. Process only new region directories else continue
     if os.path.exists(terraform_files+region):
         continue
@@ -824,9 +839,26 @@ for region in ct.all_regions:
     rewrite_backend.write(new_backend_data)
     rewrite_backend.close()
 
-    # Manage multiple outdir
+    # Manage single and multiple outdir
     if (outdir_structure_file == '' or outdir_structure_file == "\n"):
-        pass
+        #remove depends_on for single outdir
+        region_dir = terraform_files + "/" + region + "/"
+        single_outdir_config = configparser.RawConfigParser()
+        single_outdir_config.read("/cd3user/oci_tools/cd3_automation_toolkit/user-scripts/.outdir_structure_file.properties")
+        keys = []
+        for key, val in single_outdir_config.items("Default"):
+            keys.append(key)
+        for file in os.listdir(region_dir):
+            name=file.removesuffix(".tf")
+            if name in keys:
+                file=region_dir+"/"+file
+                with open(file, 'r+') as tf_file:
+                    module_data = tf_file.read().rstrip()
+                    module_data = module_data.replace("# depends_on", "depends_on")
+                tf_file.close()
+                f = open(file, "w+")
+                f.write(module_data)
+                f.close()
     else:
         region_dir = terraform_files + "/" + region + "/"
         for service, service_dir in outdir_config.items("Default"):
@@ -887,10 +919,26 @@ for region in ct.all_regions:
 
     # 8. Remove terraform example variable file from outdir
     os.remove(terraform_files + "/" + region + "/variables_example.tf")
-
 # 9. Update DevOps files and configurations
 if use_devops == 'yes':
     print("\nCreating Tenancy specific DevOps Items - Topic, Project and Repository.................")
+    # create subscribed regions file
+    f = open(customer_tenancy_dir + "/.config_files/regions_file", "w+")
+    f.write(regions_file_data[:-1])
+    f.close()
+    # create all compartments_file
+    print("Fetching existing Compartments from Tenancy...")
+    ct.get_network_compartment_ids(config['tenancy'], "root", config, signer)
+    compartments_file_data = ""
+    comp_done = []
+    for k, v in ct.ntk_compartment_ids.items():
+        if v not in comp_done:
+            compartments_file_data += k + "\n"
+            comp_done.append(v)
+
+    f = open(customer_tenancy_dir + "/.config_files/compartments_file", "w+")
+    f.write(compartments_file_data[:-1])
+    f.close()
 
     if devops_repo == '' or devops_repo == "\n":
         topic_name = prefix + "-automation-toolkit-topic"
@@ -909,7 +957,7 @@ if use_devops == 'yes':
     git_config_file = config_files + "/" + prefix + "_git_config"
 
     #Get Username from $user_ocid if $oci_devops_git_user is left empty
-    if "ocid1.user.oc1" in devops_user:
+    if "ocid1.user.oc" in devops_user:
         identity_client = oci.identity.IdentityClient(config=new_config,
                                                       retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY,
                                                       signer=signer)

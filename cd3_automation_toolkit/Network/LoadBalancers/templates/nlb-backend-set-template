@@ -54,14 +54,11 @@ nlb_backend_sets = {
 
         {% if request_data and request_data != '' %}
         request_data = "{{ request_data }}"
-        {% else %}
-        request_data = null
         {% endif %}
+
 
         {% if response_data and response_data != '' %}
         response_data = "{{ response_data }}"
-        {% else %}
-        response_data = null
         {% endif %}
 
         {% if timeout_in_millis and timeout_in_millis != '' %}

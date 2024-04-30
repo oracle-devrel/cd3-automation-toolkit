@@ -1,55 +1,54 @@
-		import jenkins.model.Jenkins
+import jenkins.model.Jenkins
 
-		def parentPath = "terraform_files"
-		def jenkinsInstance = Jenkins.getInstance()
+def createRegionViews() {
+    def jenkinsInstance = Jenkins.getInstance()
+    if (jenkinsInstance == null) {
+        println("Jenkins instance not available.")
+        return
+    }
 
-		def findRegionFolders(jenkinsInstance, parentPath) {
-		    def parent = jenkinsInstance.getItemByFullName(parentPath)
+    def parentPath = "terraform_files"
+    def parent = jenkinsInstance.getItemByFullName(parentPath)
 
-		    if (parent != null && parent instanceof hudson.model.ViewGroup) {
-		        return parent.items.findAll { it instanceof hudson.model.ViewGroup }
-		    } else {
-		        println("Parent folder not found: $parentPath")
-		        return []
-		    }
-		}
+    if (parent != null && parent instanceof hudson.model.ViewGroup) {
+        parent.items.each { regionFolder ->
+            def viewName = regionFolder.name
+            def view = jenkinsInstance.getView(viewName)
 
-		def addJobsToView(view, folder) {
-		    folder.items.each { item ->
-		        if (item instanceof hudson.model.Job) {
-		           // println("Processing job: ${item.fullName}")
-		            view.add(item)
-		        } else if (item instanceof hudson.model.ViewGroup) {
-		            // Recursively add jobs from subfolders
-		            addJobsToView(view, item)
-		        }
-		    }
-		}
+            if (view == null) {
+                view = new hudson.model.ListView(viewName, jenkinsInstance)
+                jenkinsInstance.addView(view)
+            }
 
-		def processRegionFolder(jenkinsInstance, regionFolder) {
-		    def viewName = "${regionFolder.name}"
-		    def view = jenkinsInstance.getView(viewName)
+            // Clear the view to remove any existing jobs
+            view.items.clear()
 
-		    if (view == null) {
-		        // Create the view if it doesn't exist
-		        view = new hudson.model.ListView(viewName, jenkinsInstance)
-		        jenkinsInstance.addView(view)
-		    }
+            // Add jobs to the view
+            addJobsToView(view, regionFolder)
 
-		    addJobsToView(view, regionFolder)
+            // Set the "Recurse in folders" option
+            view.setRecurse(true)
 
-		    // Set the "Recurse in folders" option
-		    view.setRecurse(true)
+            // Save the view configuration
+            view.save()
 
-		    // Save the view configuration
-		    view.save()
+            println("View '$viewName' created successfully.")
+        }
+    } else {
+        println("Parent folder not found: $parentPath")
+    }
+}
 
-		    println("View '$viewName' created successfully.")
-		}
+def addJobsToView(hudson.model.ListView view, hudson.model.ViewGroup folder) {
+    folder.items.each { item ->
+        if (item instanceof hudson.model.Job) {
+            view.add(item)
+        } else if (item instanceof hudson.model.ViewGroup) {
+            // Recursively add jobs from sub-folders
+            addJobsToView(view, item)
+        }
+    }
+}
 
-		def regionFolders = findRegionFolders(jenkinsInstance, parentPath)
-		regionFolders.each { regionFolder ->
-		    processRegionFolder(jenkinsInstance, regionFolder)
-		}
-
-		println("Processing completed for all region folders.")
+// function to create region views
+createRegionViews()

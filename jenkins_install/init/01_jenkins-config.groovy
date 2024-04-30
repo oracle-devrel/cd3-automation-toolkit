@@ -1,10 +1,9 @@
-import com.cloudbees.hudson.plugins.folder.*
-//import org.jenkinsci.plugins.workflow.job.WorkflowJob
 import jenkins.model.Jenkins
+import com.cloudbees.hudson.plugins.folder.*
+
 
 Jenkins jenkins = Jenkins.instance
 def JENKINS_HOME = System.getenv("JENKINS_HOME")
-
 File file = new File("$JENKINS_HOME/jenkins.properties")
 file.withReader { reader ->
      while ((line = reader.readLine()) != null) {
@@ -21,223 +20,72 @@ file.withReader { reader ->
             services = Eval.me(line.split("=")[1])
         }
       }
-    }
+ }
+
 def tfApplyJobName = "terraform-apply"
 def tfDestroyJobName = "terraform-destroy"
 
-for (os in outdir_structure) {
-
-        def ost = jenkins.getItem("terraform_files")
-        if (ost == null) {
-                ost = jenkins.createProject(Folder.class,"terraform_files")
-               
-	def global = ost.getItem("global")
-	if (global == null) {
-		global = ost.createProject(Folder.class, "global")
-		
-	def rpc = global.getItem("rpc")
-	if (rpc == null) {
-		rpc = global.createProject(Folder.class, "rpc")
-		
-	def tfGlobRpcXml =
-"""\
-<flow-definition>
+// Function to create job XML
+def createJobXml(scriptPath, gitUrl) {
+    return """
+    <flow-definition>
         <actions/>
         <description/>
         <keepDependencies>false</keepDependencies>
         <definition class="org.jenkinsci.plugins.workflow.cps.CpsScmFlowDefinition">
-                <scriptPath>multiOutput.groovy</scriptPath>
-                <lightweight>false</lightweight>
-                <scm class="hudson.plugins.git.GitSCM">
-                        <userRemoteConfigs>
-                                <hudson.plugins.git.UserRemoteConfig>
-                                        <url>${git_url}</url>
-                                </hudson.plugins.git.UserRemoteConfig>
-                        </userRemoteConfigs>
-                        <branches>
-                                <hudson.plugins.git.BranchSpec>
-                                        <name>develop</name>
-                                </hudson.plugins.git.BranchSpec>
-                        </branches>
-                        <configVersion>2</configVersion>
-                        <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
-                        <gitTool>Default</gitTool>
-                </scm>
+            <scriptPath>${scriptPath}</scriptPath>
+            <lightweight>false</lightweight>
+            <scm class="hudson.plugins.git.GitSCM">
+                <userRemoteConfigs>
+                    <hudson.plugins.git.UserRemoteConfig>
+                        <url>${gitUrl}</url>
+                    </hudson.plugins.git.UserRemoteConfig>
+                </userRemoteConfigs>
+                <branches>
+                    <hudson.plugins.git.BranchSpec>
+                        <name>develop</name>
+                    </hudson.plugins.git.BranchSpec>
+                </branches>
+                <configVersion>2</configVersion>
+                <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
+                <gitTool>Default</gitTool>
+            </scm>
         </definition>
-</flow-definition>
-"""
+    </flow-definition>
+    """
+}
 
-                                def tfGlobRpcDestroyXml =
-"""\
-<flow-definition>
-        <actions/>
-        <description/>
-        <keepDependencies>false</keepDependencies>
-        <definition class="org.jenkinsci.plugins.workflow.cps.CpsScmFlowDefinition">
-                <scriptPath>multiOutput-tf-destroy.groovy</scriptPath>
-                <lightweight>false</lightweight>
-                <scm class="hudson.plugins.git.GitSCM">
-                        <userRemoteConfigs>
-                                <hudson.plugins.git.UserRemoteConfig>
-                                        <url>${git_url}</url>
-                                </hudson.plugins.git.UserRemoteConfig>
-                        </userRemoteConfigs>
-                        <branches>
-                                <hudson.plugins.git.BranchSpec>
-                                        <name>develop</name>
-                                </hudson.plugins.git.BranchSpec>
-                        </branches>
-                        <configVersion>2</configVersion>
-                        <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
-                        <gitTool>Default</gitTool>
-                </scm>
-        </definition>
-</flow-definition>
-"""
-                                                def tfGlobRpcXmlStream = new ByteArrayInputStream(tfGlobRpcXml.getBytes())
-                                                job1 = rpc.createProjectFromXML(tfApplyJobName, tfGlobRpcXmlStream)
-                                                def tfGlobRpcDestroyXmlStream = new ByteArrayInputStream(tfGlobRpcDestroyXml.getBytes())
-                                                job2 = rpc.createProjectFromXML(tfDestroyJobName, tfGlobRpcDestroyXmlStream)
-			
-	}	
-}	
-		
+// Function to create Jenkins job
+def createJob(parent, jobName, xml) {
+    def jobXmlStream = new ByteArrayInputStream(xml.getBytes())
+    parent.createProjectFromXML(jobName, jobXmlStream)
+}
+
+// Create jobs for each configuration
+jenkins.with {
+    Folder ost = getItem("terraform_files") ?: createProject(Folder.class, "terraform_files")
+
+    for (os in outdir_structure) {
+        Folder global = ost.getItem("global") ?: ost.createProject(Folder.class, "global")
+        Folder rpc = global.getItem("rpc") ?: global.createProject(Folder.class, "rpc")
+
+        createJob(rpc, tfApplyJobName, createJobXml('tf-apply.groovy', git_url))
+        createJob(rpc, tfDestroyJobName, createJobXml('tf-destroy.groovy', git_url))
         for (reg in regions) {
-                def folder = ost.getItem(reg)
-                if (folder == null) {
-                        folder = ost.createProject(Folder.class, reg)
-                        if (os == "Single_Outdir"){
-                                def tfApplyXml =
-"""\
-<flow-definition>
-        <actions/>
-        <description/>
-        <keepDependencies>false</keepDependencies>
-        <definition class="org.jenkinsci.plugins.workflow.cps.CpsScmFlowDefinition">
-                <scriptPath>singleOutput.groovy</scriptPath>
-                <lightweight>false</lightweight>
-                <scm class="hudson.plugins.git.GitSCM">
-                        <userRemoteConfigs>
-                                <hudson.plugins.git.UserRemoteConfig>
-                                        <url>${git_url}</url>
-                                </hudson.plugins.git.UserRemoteConfig>
-                        </userRemoteConfigs>
-                        <branches>
-                                <hudson.plugins.git.BranchSpec>
-                                        <name>develop</name>
-                                </hudson.plugins.git.BranchSpec>
-                        </branches>
-                        <configVersion>2</configVersion>
-                        <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
-                        <gitTool>Default</gitTool>
-                </scm>
-        </definition>
-</flow-definition>
-"""
+        Folder folder = ost.getItem(reg) ?: ost.createProject(Folder.class, reg)
 
-                        def tfDestroyXml =
-"""\
-<flow-definition>
-        <actions/>
-        <description/>
-        <keepDependencies>false</keepDependencies>
-        <definition class="org.jenkinsci.plugins.workflow.cps.CpsScmFlowDefinition">
-                <scriptPath>singleOutput-tf-destroy.groovy</scriptPath>
-                <lightweight>false</lightweight>
-                <scm class="hudson.plugins.git.GitSCM">
-                        <userRemoteConfigs>
-                                <hudson.plugins.git.UserRemoteConfig>
-                                        <url>${git_url}</url>
-                                </hudson.plugins.git.UserRemoteConfig>
-                        </userRemoteConfigs>
-                        <branches>
-                                <hudson.plugins.git.BranchSpec>
-                                        <name>develop</name>
-                                </hudson.plugins.git.BranchSpec>
-                        </branches>
-                        <configVersion>2</configVersion>
-                        <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
-                        <gitTool>Default</gitTool>
-                </scm>
-        </definition>
-</flow-definition>
-"""
+        if (os == "Single_Outdir") {
+            createJob(folder, tfApplyJobName, createJobXml('tf-apply.groovy', git_url))
+            createJob(folder, tfDestroyJobName, createJobXml('tf-destroy.groovy', git_url))
+        }
 
-                                def tfApplyxmlStream = new ByteArrayInputStream(tfApplyXml.getBytes())
-                                job1 = folder.createProjectFromXML(tfApplyJobName, tfApplyxmlStream)
-                                def tfDestroyxmlStream = new ByteArrayInputStream(tfDestroyXml.getBytes())
-                                job2 = folder.createProjectFromXML(tfDestroyJobName, tfDestroyxmlStream)
-
-                        }
-                        if (os == "Multiple_Outdir"){
-                                for (svc in services) {
-                                        def svobjt = folder.getItem(svc)
-                                        if (svobjt == null) {
-                                                svobjt = folder.createProject(Folder.class, svc)
-                                                 def tfApplyXml =
-"""\
-<flow-definition>
-        <actions/>
-        <description/>
-        <keepDependencies>false</keepDependencies>
-        <definition class="org.jenkinsci.plugins.workflow.cps.CpsScmFlowDefinition">
-                <scriptPath>multiOutput.groovy</scriptPath>
-                <lightweight>false</lightweight>
-                <scm class="hudson.plugins.git.GitSCM">
-                        <userRemoteConfigs>
-                                <hudson.plugins.git.UserRemoteConfig>
-                                        <url>${git_url}</url>
-                                </hudson.plugins.git.UserRemoteConfig>
-                        </userRemoteConfigs>
-                        <branches>
-                                <hudson.plugins.git.BranchSpec>
-                                        <name>develop</name>
-                                </hudson.plugins.git.BranchSpec>
-                        </branches>
-                        <configVersion>2</configVersion>
-                        <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
-                        <gitTool>Default</gitTool>
-                </scm>
-        </definition>
-</flow-definition>
-"""
-
-                                def tfDestroyXml =
-"""\
-<flow-definition>
-        <actions/>
-        <description/>
-        <keepDependencies>false</keepDependencies>
-        <definition class="org.jenkinsci.plugins.workflow.cps.CpsScmFlowDefinition">
-                <scriptPath>multiOutput-tf-destroy.groovy</scriptPath>
-                <lightweight>false</lightweight>
-                <scm class="hudson.plugins.git.GitSCM">
-                        <userRemoteConfigs>
-                                <hudson.plugins.git.UserRemoteConfig>
-                                        <url>${git_url}</url>
-                                </hudson.plugins.git.UserRemoteConfig>
-                        </userRemoteConfigs>
-                        <branches>
-                                <hudson.plugins.git.BranchSpec>
-                                        <name>develop</name>
-                                </hudson.plugins.git.BranchSpec>
-                        </branches>
-                        <configVersion>2</configVersion>
-                        <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
-                        <gitTool>Default</gitTool>
-                </scm>
-        </definition>
-</flow-definition>
-"""
-                                                def tfApplyxmlStream = new ByteArrayInputStream(tfApplyXml.getBytes())
-                                                job1 = svobjt.createProjectFromXML(tfApplyJobName, tfApplyxmlStream)
-                                                def tfDestroyxmlStream = new ByteArrayInputStream(tfDestroyXml.getBytes())
-                                                job2 = svobjt.createProjectFromXML(tfDestroyJobName, tfDestroyxmlStream)
-                                        }
-                                }
-                        }
-                }
+        if (os == "Multiple_Outdir" && services) {
+            for (svc in services) {
+                Folder svcFolder = folder.getItem(svc) ?: folder.createProject(Folder.class, svc)
+                createJob(svcFolder, tfApplyJobName, createJobXml('tf-apply.groovy', git_url))
+                createJob(svcFolder, tfDestroyJobName, createJobXml('tf-destroy.groovy', git_url))
+            }
         }
     }
-
+}
 }

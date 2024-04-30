@@ -6,8 +6,8 @@
 #############################
 
 locals {
-  nodepool_nsg_ids = var.worker_nsg_ids != null ? flatten(tolist([for nsg in var.worker_nsg_ids : (length(regexall("ocid1.networksecuritygroup.oc1*", nsg)) > 0 ? [nsg] : data.oci_core_network_security_groups.network_security_groups_workers[nsg].network_security_groups[*].id)])) : null
-  pod_nsg_ids      = var.pod_nsg_ids != null ? flatten(tolist([for nsg in var.pod_nsg_ids : (length(regexall("ocid1.networksecuritygroup.oc1*", nsg)) > 0 ? [nsg] : data.oci_core_network_security_groups.network_security_groups_pods[nsg].network_security_groups[*].id)])) : null
+  nodepool_nsg_ids = var.worker_nsg_ids != null ? flatten(tolist([for nsg in var.worker_nsg_ids : (length(regexall("ocid1.networksecuritygroup.oc*", nsg)) > 0 ? [nsg] : data.oci_core_network_security_groups.network_security_groups_workers[nsg].network_security_groups[*].id)])) : null
+  pod_nsg_ids      = var.pod_nsg_ids != null ? flatten(tolist([for nsg in var.pod_nsg_ids : (length(regexall("ocid1.networksecuritygroup.oc*", nsg)) > 0 ? [nsg] : data.oci_core_network_security_groups.network_security_groups_pods[nsg].network_security_groups[*].id)])) : null
 }
 
 data "oci_identity_availability_domains" "ads" {

@@ -42,6 +42,11 @@ security:
     usageStatisticsEnabled: true
   globalJobDslSecurityConfiguration:
     useScriptSecurity: false
+  scriptApproval:
+    approvedSignatures:
+      - "method groovy.lang.GroovyObject invokeMethod java.lang.String java.lang.Object"
+      - "new java.io.File java.lang.String"
+      - "staticMethod org.codehaus.groovy.runtime.ResourceGroovyMethods readLines java.io.File"
 unclassified:
   buildDiscarders:
     configuredBuildDiscarders:

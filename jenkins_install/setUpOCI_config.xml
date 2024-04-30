@@ -304,8 +304,9 @@ pipeline {
                                 set +x
                                 if [[ -n "$Excel_Template_FILENAME" ]];then
                                 	size=$(wc --bytes &lt; "$Excel_Template")
-                                    if [[ ( $size -gt 300000 ) || ( $Excel_Template_FILENAME != *.xlsx ) ]]; then
-                                        echo "Failed"
+                                    if [[ ( $size -gt 1000000 ) || ( $Excel_Template_FILENAME != *.xlsx ) ]]; then
+                                        set -x
+                                        echo "Excel File Validation Failed"
                                     fi
                                 fi
                                 ''' , returnStdout: true).trim()
@@ -353,7 +354,7 @@ pipeline {
                             if [ -e "$cd3_file" ]; then
                                 cp "$cd3_file" "$cd3_backup"
                             fi
-                            mv "$Excel_Template" "$cd3_file"
+                            cp "$Excel_Template" "$cd3_file"
                             sed -i "s|cd3file=.*|cd3file=${cd3_file}|g" $prop_file
                         fi
                     '''
@@ -392,6 +393,24 @@ pipeline {
                         python setUpOCI.py --devops True --main_options "${MainOptions}" --sub_options "${SubOptions}" --sub_child_options "${SubChildOptions}" --add_filter "${AdditionalFilters}" $prop_file
 
                     '''
+                script {
+                    // For latest CD3 XL file.
+                    def latestXL = sh(returnStdout: true, script: '''
+                                    set +x
+                                    ls -t /cd3user/tenancies/${customer_prefix}/*.xl* | head -n 1
+                                    ''').trim()
+
+
+                    echo "XL is ${latestXL}"
+                    sh "rm -f *.xl*"
+                    sh "cp '${latestXL}' ."
+
+                    }
+                }
+            }
+            post {
+                success {
+                    archiveArtifacts '*.xl*'
                 }
             }
         }
@@ -408,7 +427,7 @@ pipeline {
             steps {
                 catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
                 script {
-                    def data = readFile(file: "/cd3user/tenancies/${customer_prefix}/terraform_files/import_scripts.safe")
+                    def data = readFile(file: "/cd3user/tenancies/${customer_prefix}/terraform_files/.safe/import_scripts.safe")
                     def lines = data.readLines()
                     for (line in lines) {
                         script_full_path = (line.replace('//','/')).split("/")
@@ -464,7 +483,7 @@ pipeline {
                 catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
                 script {
                     def jobs = []
-                    def data = readFile(file: "/cd3user/tenancies/${customer_prefix}/terraform_files/updated_paths.safe")
+                    def data = readFile(file: "/cd3user/tenancies/${customer_prefix}/terraform_files/.safe/updated_paths.safe")
                     def lines = data.readLines()
                     if (lines.size() == 0) {
                         println("No terraform configuration file generated")
@@ -484,6 +503,7 @@ pipeline {
         }
         }
     }
+
 }</script>
     <sandbox>true</sandbox>
   </definition>

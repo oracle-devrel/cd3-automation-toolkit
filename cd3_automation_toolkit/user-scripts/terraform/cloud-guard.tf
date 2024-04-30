@@ -10,7 +10,7 @@ module "cloud-guard-configurations" {
   for_each = var.cloud_guard_configs != null ? var.cloud_guard_configs : {}
 
   #Required
-  compartment_id   = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : var.tenancy_ocid
+  compartment_id   = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : var.tenancy_ocid
   reporting_region = each.value.reporting_region
   status           = each.value.status
 
@@ -25,9 +25,9 @@ module "cloud-guard-targets" {
   depends_on = [module.cloud-guard-configurations]
   #Required
   tenancy_ocid         = var.tenancy_ocid
-  compartment_id       = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : var.tenancy_ocid
+  compartment_id       = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : var.tenancy_ocid
   display_name         = each.value.display_name
-  target_resource_id   = each.value.target_resource_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.target_resource_id)) > 0 ? each.value.target_resource_id : var.compartment_ocids[each.value.target_resource_id]) : each.value.target_resource_id
+  target_resource_id   = each.value.target_resource_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.target_resource_id)) > 0 ? each.value.target_resource_id : var.compartment_ocids[each.value.target_resource_id]) : each.value.target_resource_id
   target_resource_type = each.value.target_resource_type != null ? each.value.target_resource_type : "COMPARTMENT"
   prefix               = each.value.prefix
 

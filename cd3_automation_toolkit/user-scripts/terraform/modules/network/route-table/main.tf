@@ -26,7 +26,7 @@ resource "oci_core_route_table" "route_table" {
 
     content {
       #Required
-      network_entity_id = (route_rules.value["network_entity_id"] != null && length(regexall("ocid1.privateip.oc1*", route_rules.value["network_entity_id"])) > 0) ? route_rules.value["network_entity_id"] : ""
+      network_entity_id = (route_rules.value["network_entity_id"] != null && length(regexall("ocid1.privateip.oc*", route_rules.value["network_entity_id"])) > 0) ? route_rules.value["network_entity_id"] : ""
 
       #Optional
       description      = route_rules.value["description"] != "" ? route_rules.value["description"] : null
@@ -41,7 +41,7 @@ resource "oci_core_route_table" "route_table" {
 
     content {
       #Required
-      network_entity_id = (route_rules.value["network_entity_id"] != null && length(regexall("ocid1.localpeeringgateway.oc1*", route_rules.value["network_entity_id"])) > 0) ? route_rules.value["network_entity_id"] : try(var.hub_lpg_id[route_rules.value["network_entity_id"]]["lpg_tf_id"], var.spoke_lpg_id[route_rules.value["network_entity_id"]]["lpg_tf_id"], var.peer_lpg_id[route_rules.value["network_entity_id"]]["lpg_tf_id"], var.none_lpg_id[route_rules.value["network_entity_id"]]["lpg_tf_id"], var.exported_lpg_id[route_rules.value["network_entity_id"]]["lpg_tf_id"], var.drg_id[route_rules.value["network_entity_id"]]["drg_tf_id"])
+      network_entity_id = (route_rules.value["network_entity_id"] != null && length(regexall("ocid1.localpeeringgateway.oc*", route_rules.value["network_entity_id"])) > 0) ? route_rules.value["network_entity_id"] : try(var.hub_lpg_id[route_rules.value["network_entity_id"]]["lpg_tf_id"], var.spoke_lpg_id[route_rules.value["network_entity_id"]]["lpg_tf_id"], var.peer_lpg_id[route_rules.value["network_entity_id"]]["lpg_tf_id"], var.none_lpg_id[route_rules.value["network_entity_id"]]["lpg_tf_id"], var.exported_lpg_id[route_rules.value["network_entity_id"]]["lpg_tf_id"], var.drg_id[route_rules.value["network_entity_id"]]["drg_tf_id"])
 
       #Optional
       description      = route_rules.value["description"] != "" ? route_rules.value["description"] : null
@@ -56,7 +56,7 @@ resource "oci_core_route_table" "route_table" {
 
     content {
       #Required
-      network_entity_id = (route_rules.value["network_entity_id"] != null && length(regexall("ocid1.internetgateway.oc1*", route_rules.value["network_entity_id"])) > 0) ? route_rules.value["network_entity_id"] : var.igw_id[route_rules.value["network_entity_id"]]["igw_tf_id"]
+      network_entity_id = (route_rules.value["network_entity_id"] != null && length(regexall("ocid1.internetgateway.oc*", route_rules.value["network_entity_id"])) > 0) ? route_rules.value["network_entity_id"] : var.igw_id[route_rules.value["network_entity_id"]]["igw_tf_id"]
 
       #Optional
       description      = route_rules.value["description"] != "" ? route_rules.value["description"] : null
@@ -71,10 +71,10 @@ resource "oci_core_route_table" "route_table" {
 
     content {
       #Required
-      network_entity_id = (route_rules.value["network_entity_id"] != null && length(regexall("ocid1.drg.oc1*", route_rules.value["network_entity_id"])) > 0) ? route_rules.value["network_entity_id"] : var.drg_id[route_rules.value["network_entity_id"]]["drg_tf_id"]
+      network_entity_id = (route_rules.value["network_entity_id"] != null && length(regexall("ocid1.drg.oc*", route_rules.value["network_entity_id"])) > 0) ? route_rules.value["network_entity_id"] : var.drg_id[route_rules.value["network_entity_id"]]["drg_tf_id"]
 
 
-      #length(regexall("ocid1.drg.oc1*", route_rules.value["network_entity_id"])) > 0 ? route_rules.value["network_entity_id"] : null
+      #length(regexall("ocid1.drg.oc*", route_rules.value["network_entity_id"])) > 0 ? route_rules.value["network_entity_id"] : null
 
       #Optional
       description      = route_rules.value["description"] != "" ? route_rules.value["description"] : null
@@ -89,10 +89,10 @@ resource "oci_core_route_table" "route_table" {
 
     content {
       #Required
-      network_entity_id = (route_rules.value["network_entity_id"] != null && length(regexall("ocid1.natgateway.oc1*", route_rules.value["network_entity_id"])) > 0) ? route_rules.value["network_entity_id"] : var.ngw_id[route_rules.value["network_entity_id"]]["ngw_tf_id"]
+      network_entity_id = (route_rules.value["network_entity_id"] != null && length(regexall("ocid1.natgateway.oc*", route_rules.value["network_entity_id"])) > 0) ? route_rules.value["network_entity_id"] : var.ngw_id[route_rules.value["network_entity_id"]]["ngw_tf_id"]
 
 
-      #length(regexall("ocid1.drg.oc1*", route_rules.value["network_entity_id"])) > 0 ? route_rules.value["network_entity_id"] : null
+      #length(regexall("ocid1.drg.oc*", route_rules.value["network_entity_id"])) > 0 ? route_rules.value["network_entity_id"] : null
 
       #Optional
       description      = route_rules.value["description"] != "" ? route_rules.value["description"] : null
@@ -107,10 +107,10 @@ resource "oci_core_route_table" "route_table" {
 
     content {
       #Required
-      network_entity_id = (route_rules.value["network_entity_id"] != null && length(regexall("ocid1.servicegateway.oc1*", route_rules.value["network_entity_id"])) > 0) ? route_rules.value["network_entity_id"] : var.sgw_id[route_rules.value["network_entity_id"]]["sgw_tf_id"]
+      network_entity_id = (route_rules.value["network_entity_id"] != null && length(regexall("ocid1.servicegateway.oc*", route_rules.value["network_entity_id"])) > 0) ? route_rules.value["network_entity_id"] : var.sgw_id[route_rules.value["network_entity_id"]]["sgw_tf_id"]
 
 
-      #length(regexall("ocid1.drg.oc1*", route_rules.value["network_entity_id"])) > 0 ? route_rules.value["network_entity_id"] : null
+      #length(regexall("ocid1.drg.oc*", route_rules.value["network_entity_id"])) > 0 ? route_rules.value["network_entity_id"] : null
 
       #Optional
       description      = route_rules.value["description"] != "" ? route_rules.value["description"] : null

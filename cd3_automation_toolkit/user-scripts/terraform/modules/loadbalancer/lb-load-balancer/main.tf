@@ -11,7 +11,7 @@ resource "oci_load_balancer_load_balancer" "load_balancer" {
   display_name   = var.display_name
   shape          = var.shape
   #subnet_ids     = var.subnet_ids
-  subnet_ids = flatten(tolist([for subnet in var.subnet_ids : (length(regexall("ocid1.subnet.oc1*", subnet)) > 0 ? [subnet] : data.oci_core_subnets.oci_subnets_lbs[subnet].subnets[*].id)]))
+  subnet_ids = flatten(tolist([for subnet in var.subnet_ids : (length(regexall("ocid1.subnet.oc*", subnet)) > 0 ? [subnet] : data.oci_core_subnets.oci_subnets_lbs[subnet].subnets[*].id)]))
 
 
   #Optional

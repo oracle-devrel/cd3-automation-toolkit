@@ -307,7 +307,7 @@ def validate_subnets(filename, comp_ids, vcnobj):
             cidr_list.append(entry)
 
         # Check for null values and display appropriate message
-        labels = ['DNS Label', 'DHCP Option Name', 'Route Table Name', 'Seclist Names']
+        labels = ['DNS Label', 'DHCP Option Name', 'Route Table Name', 'Seclist Names','NSGs']
         for j in dfsub.keys():
             if (str(dfsub[j][i]).strip() == "NaN" or str(dfsub[j][i]).strip() == "nan" or str(dfsub[j][i]).strip() == ""):
                 # only dhcp_option_name, route table name, seclist_names and dns_label columns can be empty
@@ -1386,17 +1386,21 @@ def validate_buckets(filename, comp_ids):
                 if columnvalue.lower() not in ['standard','archive']:
                     log(f'ROW {i + 3} : Value of "Storage Tier" can be only either "Standard" or "Archive".')
                     buckets_invalid_check = True
-
+                elif columnvalue.lower() == 'archive':
+                    auto_tiering_index = dfcolumns.index('Auto Tiering')
+                    if auto_tiering_index != -1 and str(dfbuckets.loc[i, 'Auto Tiering']).strip().lower() == 'enabled':
+                        log(f'ROW {i + 3} : Auto Tiering cannot be "Enabled" when Storage Tier is "Archive".')
+                        buckets_invalid_check = True
 
             if columnname == 'Auto Tiering':
                 if columnvalue.lower() not in ['enabled','disabled']:
                     log(f'ROW {i + 3} : Value of "Auto Tiering" can be only either "Enabled" or "Disabled".')
                     buckets_invalid_check = True
 
-
+            # Check for the Object Versioning column
             if columnname == 'Object Versioning':
-                if columnvalue.lower() not in ['enabled','disabled']:
-                    log(f'ROW {i + 3} : Value of "Object Versioning" can be only either "Enabled" or "Disabled".')
+                if columnvalue.lower() not in ['enabled', 'disabled']:
+                    log(f'ROW {i + 3} : Value of "Object Versioning" can only be "Enabled" or "Disabled".')
                     buckets_invalid_check = True
 
             if columnname == 'Emit Object Events':
@@ -1410,69 +1414,99 @@ def validate_buckets(filename, comp_ids):
                     log(f'ROW {i + 3} : Value of "Visibility" can be only either "Private" or "Public".')
                     buckets_invalid_check = True
 
-            #Check for valid destination region for enabling the replication policy
-            if columnname == 'Replication Policy':
-                columnvalue= columnvalue.split("::")
-                if len(columnvalue) == 3 and all(columnvalue):
-                 replication_policy_name = columnvalue[0]
-                 destination_region = columnvalue[1].lower()
-                 if destination_region in ct.region_dict:
-                     destination_region = ct.region_dict[destination_region]
-                 else:
-                    log(f'ROW {i + 3} : The "Destination_region" of replication policy is not a valid region.')
+            # Check for valid destination region for enabling the replication policy
+            if columnname == 'Replication Policy' and columnvalue != "nan":
+                columnvalue = columnvalue.split("::")
+                if len(columnvalue) == 3:
+                    replication_policy_name = columnvalue[0]
+                    destination_region = columnvalue[1].lower()
+                    destination_bucket_name = columnvalue[2]
+                    if replication_policy_name.strip() and destination_bucket_name.strip():
+                        if destination_region in ct.region_dict:
+                            destination_region = ct.region_dict[destination_region]
+                        else:
+                            log(f'ROW {i + 3} : The "Destination_region" of replication policy is not a valid region.')
+                            buckets_invalid_check = True
+                    else:
+                        log(f'ROW {i + 3} : The replication policy format is incorrect or policy name/destination bucket is empty.')
+                        buckets_invalid_check = True
+                else:
+                    log(f'ROW {i + 3} : The replication policy format is incorrect.')
                     buckets_invalid_check = True
 
+            # Get the current time
+            current_time = datetime.datetime.utcnow()
             #Check for the retention policy details
             if columnname == 'Retention Rules':
                 rule_values = columnvalue.split("\n")
-                retention_rules = []
-                for rule in rule_values:
-                    rule_components = rule.split("::")
-                    if len(rule_components) >= 1:
-                        retention_rule_display_name = rule_components[0]
-                        time_unit = None
-                        time_amount = None
-                        time_rule_locked = None
+                if rule_values and str(dfbuckets.loc[i, 'Object Versioning']).strip().lower() == 'enabled':
+                    log(f'ROW {i + 3} : Retention policy cannot be created when Object Versioning is enabled.')
+                    buckets_invalid_check = True
 
-                        if len(rule_components) >= 2:
-                            if rule_components[1].lower() == 'indefinite':
-                                time_amount = None
-                            else:
-                                time_amount = rule_components[1]
-                                if not time_amount.isdigit():
-                                    log(f'ROW {i + 3} : "time_amount" of retention rule is not in valid format. It should be an "integer" or "indefinite".')
-                                    buckets_invalid_check = True
-                                    continue
+                elif rule_values and str(dfbuckets.loc[i, 'Object Versioning']).strip().lower() == 'disabled':
+                    retention_rules = []
+                    for rule in rule_values:
+                        rule_components = rule.split("::")
+                        if len(rule_components) >= 1:
+                            retention_rule_display_name = rule_components[0]
+                            time_unit = None
+                            time_amount = None
+                            time_rule_locked = None
+
+                            if len(rule_components) >= 2:
+                                if rule_components[1].lower() == 'indefinite':
+                                    time_amount = None
                                 else:
-                                    time_amount = int(time_amount)
+                                    time_amount = rule_components[1]
+                                    if not time_amount.isdigit():
+                                        log(f'ROW {i + 3} : "time_amount" of retention rule is not in valid format. It should be an "integer" or "indefinite".')
+                                        buckets_invalid_check = True
+                                        continue
+                                    else:
+                                        time_amount = int(time_amount)
 
-                        if len(rule_components) >= 3:
-                            time_unit = rule_components[2].upper()
-                            if time_unit not in ('DAYS', 'YEARS'):
-                                log(f'ROW {i + 3} : "time_unit" of retention rule is not in valid format. It should be either DAYS or YEARS.')
-                                buckets_invalid_check = True
-                            else:
-                                # If time_unit is valid, set the flag to True for processing time_rule_locked
-                                process_time_rule_locked = True
+                            if len(rule_components) >= 3:
+                                time_unit = rule_components[2].upper()
+                                if time_unit not in ('DAYS', 'YEARS'):
+                                    log(f'ROW {i + 3} : "time_unit" of retention rule is not in valid format. It should be either DAYS or YEARS.')
+                                    buckets_invalid_check = True
+                                else:
+                                    # If time_unit is valid, set the flag to True for processing time_rule_locked
+                                    process_time_rule_locked = True
 
-                        if len(rule_components) == 4 and process_time_rule_locked:
-                            time_rule_locked = rule_components[3]
-                            if time_rule_locked.endswith(".000Z"):
-                                time_rule_locked = time_rule_locked[:-5] + "Z"
-                            elif not re.match(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z|\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z",time_rule_locked):
-                                # Convert from "dd-mm-yyyy" to "YYYY-MM-DDThh:mm:ssZ" format
-                                if re.match(r"\d{2}-\d{2}-\d{4}", time_rule_locked):
-                                    try:
-                                        datetime_obj = datetime.datetime.strptime(time_rule_locked, "%d-%m-%Y")
-                                        time_rule_locked = datetime_obj.strftime("%Y-%m-%dT%H:%M:%SZ")
-                                    except ValueError:
+                            if len(rule_components) == 4 and process_time_rule_locked:
+                                time_rule_locked = rule_components[3]
+                                if time_rule_locked.endswith(".000Z"):
+                                    time_rule_locked = time_rule_locked[:-5] + "Z"
+                                elif not re.match(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z|\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z",time_rule_locked):
+                                    # Convert from "dd-mm-yyyy" to "YYYY-MM-DDThh:mm:ssZ" format
+                                    if re.match(r"\d{2}-\d{2}-\d{4}", time_rule_locked):
+                                        try:
+                                            datetime_obj = datetime.datetime.strptime(time_rule_locked, "%d-%m-%Y")
+                                            time_rule_locked = datetime_obj.strftime("%Y-%m-%dT%H:%M:%SZ")
+                                        except ValueError:
+                                            log(f'ROW {i + 3} : "time_rule_locked" of retention rule is not in valid format. It should be in the format "dd-mm-yyyy".')
+                                            buckets_invalid_check = True
+                                            continue
+                                    else:
                                         log(f'ROW {i + 3} : "time_rule_locked" of retention rule is not in valid format. It should be in the format "dd-mm-yyyy".')
                                         buckets_invalid_check = True
                                         continue
-                                else:
-                                    log(f'ROW {i + 3} : "time_rule_locked" of retention rule is not in valid format. It should be in the format "dd-mm-yyyy".')
+                                # Parse the time_rule_locked into a datetime object
+                                try:
+                                    time_rule_locked_datetime = datetime.datetime.strptime(time_rule_locked, "%Y-%m-%dT%H:%M:%SZ")
+                                except ValueError:
+                                    log(f'ROW {i + 3} : "time_rule_locked" of retention rule is not in valid format. It should be in the format "YYYY-MM-DDThh:mm:ssZ".')
                                     buckets_invalid_check = True
                                     continue
+
+                                # Calculate the difference between current time and time_rule_locked
+                                time_difference = time_rule_locked_datetime - current_time
+
+                                # Check if the difference is less than 14 days
+                                if time_difference.days < 14:
+                                    log(f'ROW {i + 3} : "time_rule_locked" of retention rule must be more than 14 days from the current time.')
+                                    buckets_invalid_check = True
 
             # Check for the Lifecycle Policy Details
             if lifecycle_input == True:
@@ -1485,7 +1519,6 @@ def validate_buckets(filename, comp_ids):
                     'previous-object-versions::Delete',
                     'multipart-uploads::Abort'
                 ]
-
 
                 # Check if "Lifecycle Target and Action" is empty
                 if columnname == 'Lifecycle Target and Action':
@@ -1518,6 +1551,7 @@ def validate_buckets(filename, comp_ids):
                             if time_unit not in ['days','years']:
                                 log(f'ROW {i + 3} : Invalid time amount. "Lifecycle Rule Period" must be "DAYS" or "YEARS".')
                                 buckets_invalid_check = True
+
                         else:
                             log(f'ROW {i + 3} : Invalid format for  "Lifecycle Rule Period" ')
                             buckets_invalid_check = True

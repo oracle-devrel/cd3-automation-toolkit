@@ -10,7 +10,7 @@ module "dedicated-hosts" {
   for_each = var.dedicated_hosts != null ? var.dedicated_hosts : {}
 
   availability_domain = each.value.availability_domain != null ? data.oci_identity_availability_domains.availability_domains.availability_domains[each.value.availability_domain].name : null
-  compartment_id      = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc1*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
+  compartment_id      = each.value.compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartment_ocids[each.value.compartment_id]) : null
   defined_tags        = each.value.defined_tags
   freeform_tags       = each.value.freeform_tags
   vm_host_shape       = each.value.vm_host_shape

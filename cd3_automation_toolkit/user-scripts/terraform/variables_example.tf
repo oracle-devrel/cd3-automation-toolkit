@@ -609,73 +609,73 @@ variable "data_drg_route_table_distributions" {
 ####################
 
 variable "zones" {
-type    = map(object({
-compartment_id       = string
-display_name         = string
-view_compartment_id = optional(string)
-view_id = optional(string)
-zone_type = optional(string)
-scope = optional(string)
-freeform_tags = optional(map(any))
-defined_tags = optional(map(any))
-}))
-default = {}
+  type = map(object({
+    compartment_id      = string
+    display_name        = string
+    view_compartment_id = optional(string)
+    view_id             = optional(string)
+    zone_type           = optional(string)
+    scope               = optional(string)
+    freeform_tags       = optional(map(any))
+    defined_tags        = optional(map(any))
+  }))
+  default = {}
 }
 
 variable "views" {
-type    = map(object({
-compartment_id       = string
-display_name         = string
-scope = optional(string)
-freeform_tags = optional(map(any))
-defined_tags = optional(map(any))
-}))
+  type = map(object({
+    compartment_id = string
+    display_name   = string
+    scope          = optional(string)
+    freeform_tags  = optional(map(any))
+    defined_tags   = optional(map(any))
+  }))
   default = {}
 }
 
 variable "rrsets" {
-type    = map(object({
-compartment_id       = optional(string)
-view_compartment_id = optional(string)
-view_id = optional(string)
-zone_id = string
-domain = string
-rtype = string
-ttl = number
-rdata = optional(list(string))
-scope = optional(string)
-}))
-default = {}
+  type = map(object({
+    compartment_id      = optional(string)
+    view_compartment_id = optional(string)
+    view_id             = optional(string)
+    zone_id             = string
+    domain              = string
+    rtype               = string
+    ttl                 = number
+    rdata               = optional(list(string))
+    scope               = optional(string)
+  }))
+  default = {}
 }
 
 variable "resolvers" {
-type    = map(object({
-network_compartment_id= string
-vcn_name = string
-display_name = optional(string)
-views = optional(map(object({
-  view_id = optional(string)
-  view_compartment_id = optional(string)
-})))
-resolver_rules = optional(map(object({
-  client_address_conditions = optional(list(any))
-  destination_addresses = optional(list(any))
-  qname_cover_conditions = optional(list(any))
-  source_endpoint_name = optional(string)
-})))
-endpoint_names = optional(map(object({
-  is_forwarding = optional(bool)
-  is_listening = optional(bool)
-  name = optional(string)
-  subnet_name = optional(string)
-  forwarding_address = optional(string)
-  listening_address = optional(string)
-  nsg_ids = optional(list(string))
-})))
-freeform_tags = optional(map(any))
-defined_tags = optional(map(any))
-}))
-default = {}
+  type = map(object({
+    network_compartment_id = string
+    vcn_name               = string
+    display_name           = optional(string)
+    views = optional(map(object({
+      view_id             = optional(string)
+      view_compartment_id = optional(string)
+    })))
+    resolver_rules = optional(map(object({
+      client_address_conditions = optional(list(any))
+      destination_addresses     = optional(list(any))
+      qname_cover_conditions    = optional(list(any))
+      source_endpoint_name      = optional(string)
+    })))
+    endpoint_names = optional(map(object({
+      is_forwarding      = optional(bool)
+      is_listening       = optional(bool)
+      name               = optional(string)
+      subnet_name        = optional(string)
+      forwarding_address = optional(string)
+      listening_address  = optional(string)
+      nsg_ids            = optional(list(string))
+    })))
+    freeform_tags = optional(map(any))
+    defined_tags  = optional(map(any))
+  }))
+  default = {}
 }
 
 
@@ -765,32 +765,32 @@ variable "instances" {
     policy_compartment_id                      = optional(string)
     network_type                               = optional(string)
     #extended_metadata                          = optional(string)
-    skip_source_dest_check                     = optional(bool)
-    baseline_ocpu_utilization                  = optional(string)
+    skip_source_dest_check    = optional(bool)
+    baseline_ocpu_utilization = optional(string)
     #preemptible_instance_config                = optional(string)
-    all_plugins_disabled                       = optional(bool)
-    is_management_disabled                     = optional(bool)
-    is_monitoring_disabled                     = optional(bool)
-    assign_private_dns_record                  = optional(string)
-    plugins_details                            = optional(map(any))
-    is_live_migration_preferred                = optional(bool)
-    recovery_action                            = optional(string)
-    are_legacy_imds_endpoints_disabled         = optional(bool)
-    boot_volume_type                           = optional(string)
-    firmware                                   = optional(string)
-    is_consistent_volume_naming_enabled        = optional(bool)
-    remote_data_volume_type                    = optional(string)
-    platform_config                            = optional(list(map(any)))
-    launch_options                             = optional(list(map(any)))
-    ipxe_script                                = optional(string)
-    preserve_boot_volume                       = optional(bool)
-    vlan_id                                    = optional(string)
-    kms_key_id                                 = optional(string)
-    vnic_display_name                          = optional(string)
-    vnic_defined_tags                          = optional(map(any))
-    vnic_freeform_tags                         = optional(map(any))
-    defined_tags                               = optional(map(any))
-    freeform_tags                              = optional(map(any))
+    all_plugins_disabled                = optional(bool)
+    is_management_disabled              = optional(bool)
+    is_monitoring_disabled              = optional(bool)
+    assign_private_dns_record           = optional(string)
+    plugins_details                     = optional(map(any))
+    is_live_migration_preferred         = optional(bool)
+    recovery_action                     = optional(string)
+    are_legacy_imds_endpoints_disabled  = optional(bool)
+    boot_volume_type                    = optional(string)
+    firmware                            = optional(string)
+    is_consistent_volume_naming_enabled = optional(bool)
+    remote_data_volume_type             = optional(string)
+    platform_config                     = optional(list(map(any)))
+    launch_options                      = optional(list(map(any)))
+    ipxe_script                         = optional(string)
+    preserve_boot_volume                = optional(bool)
+    vlan_id                             = optional(string)
+    kms_key_id                          = optional(string)
+    vnic_display_name                   = optional(string)
+    vnic_defined_tags                   = optional(map(any))
+    vnic_freeform_tags                  = optional(map(any))
+    defined_tags                        = optional(map(any))
+    freeform_tags                       = optional(map(any))
   }))
   default = {}
 }
@@ -979,6 +979,7 @@ variable "backend_sets" {
     policy              = string
     protocol            = optional(string)
     interval_ms         = optional(string)
+    is_force_plain_text = optional(string)
     port                = optional(string)
     response_body_regex = optional(string)
     retries             = optional(string)
@@ -1172,6 +1173,7 @@ variable "network_load_balancers" {
     is_private                     = optional(bool)
     reserved_ips_id                = string
     is_preserve_source_destination = optional(bool)
+    is_symmetric_hash_enabled      = optional(bool)
     nlb_ip_version                 = optional(string)
     nsg_ids                        = optional(list(string))
     defined_tags                   = optional(map(any))
@@ -1200,7 +1202,9 @@ variable "nlb_backend_sets" {
     return_code              = optional(number)
     interval_in_millis       = optional(number)
     port                     = optional(number)
+    request_data             = optional(string)
     response_body_regex      = optional(string)
+    response_data            = optional(string)
     retries                  = optional(number)
     timeout_in_millis        = optional(number)
     url_path                 = optional(string)
@@ -1218,6 +1222,7 @@ variable "nlb_backends" {
     ip_address               = string
     instance_compartment     = string
     is_drain                 = optional(bool)
+    is_backup                = optional(bool)
     is_offline               = optional(bool)
     weight                   = optional(number)
     target_id                = optional(string)
@@ -1659,34 +1664,34 @@ variable "capacity_reservation_ocids" {
 ####### Firewall as a Service #######
 #####################################
 variable "firewalls" {
-  type    = map(object({
-    compartment_id = string
-    network_compartment_id = string
+  type = map(object({
+    compartment_id             = string
+    network_compartment_id     = string
     network_firewall_policy_id = string
-    subnet_id = string
-    vcn_name = string
-    display_name = string
-    ipv4address = optional(string)
-    nsg_id = optional(list(string))
-    ipv6address = optional(string)
-    availability_domain = optional(string)
-    defined_tags          = optional(map(any))
-    freeform_tags         = optional(map(any))
+    subnet_id                  = string
+    vcn_name                   = string
+    display_name               = string
+    ipv4address                = optional(string)
+    nsg_id                     = optional(list(string))
+    ipv6address                = optional(string)
+    availability_domain        = optional(string)
+    defined_tags               = optional(map(any))
+    freeform_tags              = optional(map(any))
   }))
   default = {}
 }
 
 variable "fw-policies" {
-  type    = map(object({
+  type = map(object({
     compartment_id = optional(string)
     display_name   = optional(string)
-    defined_tags          = optional(map(any))
-    freeform_tags         = optional(map(any))
+    defined_tags   = optional(map(any))
+    freeform_tags  = optional(map(any))
   }))
   default = {}
 }
 variable "services" {
-  type    = map(object({
+  type = map(object({
     service_name               = string
     service_type               = string
     network_firewall_policy_id = string
@@ -1698,18 +1703,18 @@ variable "services" {
   default = {}
 }
 variable "url_lists" {
-  type    = map(object({
+  type = map(object({
     urllist_name               = string
     network_firewall_policy_id = string
     urls = list(object({
       pattern = string
-      type  = string
+      type    = string
     }))
   }))
   default = {}
 }
 variable "service_lists" {
-  type    = map(object({
+  type = map(object({
     service_list_name          = string
     network_firewall_policy_id = string
     services                   = list(string)
@@ -1718,40 +1723,40 @@ variable "service_lists" {
 }
 
 variable "address_lists" {
-  type    = map(object({
+  type = map(object({
     address_list_name          = string
     network_firewall_policy_id = string
-    address_type = string
-    addresses                   = list(string)
+    address_type               = string
+    addresses                  = list(string)
   }))
   default = {}
 }
 
 variable "applications" {
-  type    = map(object({
-    app_list_name          = string
+  type = map(object({
+    app_list_name              = string
     network_firewall_policy_id = string
-    app_type = string
-    icmp_type = number
-    icmp_code = optional(number)
+    app_type                   = string
+    icmp_type                  = number
+    icmp_code                  = optional(number)
   }))
   default = {}
 }
 
 variable "application_groups" {
-  type    = map(object({
-    app_group_name          = string
+  type = map(object({
+    app_group_name             = string
     network_firewall_policy_id = string
-    apps = list(string)
+    apps                       = list(string)
 
   }))
   default = {}
 }
 
 variable "security_rules" {
-  type    = map(object({
-    action = string
-    rule_name = string
+  type = map(object({
+    action                     = string
+    rule_name                  = string
     network_firewall_policy_id = string
     condition = optional(list(object({
       application         = optional(list(string))
@@ -1760,8 +1765,8 @@ variable "security_rules" {
       source_address      = optional(list(string))
       url                 = optional(list(string))
     })))
-    inspection = optional(string)
-    after_rule = optional(string)
+    inspection  = optional(string)
+    after_rule  = optional(string)
     before_rule = optional(string)
 
   }))
@@ -1769,33 +1774,33 @@ variable "security_rules" {
 }
 
 variable "secrets" {
-  type    = map(object({
-    secret_name          = string
+  type = map(object({
+    secret_name                = string
     network_firewall_policy_id = string
-    secret_source = string
-    secret_type = string
-    vault_secret_id = string
-    version_number = number
-    vault_name = string
-    vault_compartment_id = string
+    secret_source              = string
+    secret_type                = string
+    vault_secret_id            = string
+    version_number             = number
+    vault_name                 = string
+    vault_compartment_id       = string
   }))
   default = {}
 }
 
 variable "decryption_profiles" {
-  type    = map(object({
-    profile_name = string
-    profile_type = string
-    network_firewall_policy_id = string
+  type = map(object({
+    profile_name                          = string
+    profile_type                          = string
+    network_firewall_policy_id            = string
     are_certificate_extensions_restricted = optional(bool)
-    is_auto_include_alt_name = optional(bool)
-    is_expired_certificate_blocked = optional(bool)
-    is_out_of_capacity_blocked = optional(bool)
-    is_revocation_status_timeout_blocked = optional(bool)
-    is_unknown_revocation_status_blocked = optional(bool)
-    is_unsupported_cipher_blocked = optional(bool)
-    is_unsupported_version_blocked = optional(bool)
-    is_untrusted_issuer_blocked = optional(bool)
+    is_auto_include_alt_name              = optional(bool)
+    is_expired_certificate_blocked        = optional(bool)
+    is_out_of_capacity_blocked            = optional(bool)
+    is_revocation_status_timeout_blocked  = optional(bool)
+    is_unknown_revocation_status_blocked  = optional(bool)
+    is_unsupported_cipher_blocked         = optional(bool)
+    is_unsupported_version_blocked        = optional(bool)
+    is_untrusted_issuer_blocked           = optional(bool)
   }))
   default = {}
 }
@@ -1805,7 +1810,7 @@ variable "decryption_rules" {
     action                     = string
     rule_name                  = string
     network_firewall_policy_id = string
-    condition                  = optional(list(object({
+    condition = optional(list(object({
 
       destination_address = optional(list(string))
 

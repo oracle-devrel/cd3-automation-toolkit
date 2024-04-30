@@ -5,8 +5,10 @@
 # Check if JENKINS_HOME exists
 if [ ! -d "$JENKINS_HOME" ]; then
     # If it doesn't exist, create it
-    mkdir -p "$JENKINS_HOME"
-    echo "Directory created: $JENKINS_HOME"
+    #mkdir -p "$JENKINS_HOME"
+    #echo "Directory created: $JENKINS_HOME"
+    echo "Jenkins should be configured only if Devops parameter is set during tenancy configuration for the toolkit"
+    exit
 fi
 
 # Copy Required files to JENKINS_HOME

@@ -116,7 +116,7 @@ resource "oci_core_instance" "instance" {
   }
 
   source_details {
-    source_id   = length(regexall("ocid1.image.oc1*", var.source_image_id)) > 0 || length(regexall("ocid1.bootvolume.oc1*", var.source_image_id)) > 0 || var.source_image_id == null ? var.source_image_id : data.oci_core_app_catalog_listing_resource_version.catalog_listing.0.listing_resource_id
+    source_id   = length(regexall("ocid1.image.oc*", var.source_image_id)) > 0 || length(regexall("ocid1.bootvolume.oc*", var.source_image_id)) > 0 || var.source_image_id == null ? var.source_image_id : data.oci_core_app_catalog_listing_resource_version.catalog_listing.0.listing_resource_id
     source_type = var.source_type
     #Optional
     #boot_volume_size_in_gbs = var.boot_volume_size_in_gbs
@@ -229,7 +229,7 @@ resource "oci_core_volume_backup_policy_assignment" "volume_backup_policy_assign
 ################################
 
 resource "oci_marketplace_accepted_agreement" "accepted_agreement" {
-  count = length(regexall("ocid1.image.oc1*", var.source_image_id)) > 0 || length(regexall("ocid1.bootvolume.oc1*", var.source_image_id)) > 0 || var.source_image_id == null ? 0 : 1
+  count = length(regexall("ocid1.image.oc*", var.source_image_id)) > 0 || length(regexall("ocid1.bootvolume.oc*", var.source_image_id)) > 0 || var.source_image_id == null ? 0 : 1
   #Required
   agreement_id    = oci_marketplace_listing_package_agreement.listing_package_agreement.0.agreement_id
   compartment_id  = var.compartment_id
@@ -239,7 +239,7 @@ resource "oci_marketplace_accepted_agreement" "accepted_agreement" {
 }
 
 resource "oci_marketplace_listing_package_agreement" "listing_package_agreement" {
-  count = length(regexall("ocid1.image.oc1*", var.source_image_id)) > 0 || length(regexall("ocid1.bootvolume.oc1*", var.source_image_id)) > 0 || var.source_image_id == null ? 0 : 1
+  count = length(regexall("ocid1.image.oc*", var.source_image_id)) > 0 || length(regexall("ocid1.bootvolume.oc*", var.source_image_id)) > 0 || var.source_image_id == null ? 0 : 1
   #Required
   agreement_id    = data.oci_marketplace_listing_package_agreements.listing_package_agreements.0.agreements[0].id
   listing_id      = data.oci_marketplace_listing.listing.0.id
@@ -248,7 +248,7 @@ resource "oci_marketplace_listing_package_agreement" "listing_package_agreement"
 
 #------ Get Image Agreement 
 resource "oci_core_app_catalog_listing_resource_version_agreement" "mp_image_agreement" {
-  count      = length(regexall("ocid1.image.oc1*", var.source_image_id)) > 0 || length(regexall("ocid1.bootvolume.oc1*", var.source_image_id)) > 0 || var.source_image_id == null ? 0 : 1
+  count      = length(regexall("ocid1.image.oc*", var.source_image_id)) > 0 || length(regexall("ocid1.bootvolume.oc*", var.source_image_id)) > 0 || var.source_image_id == null ? 0 : 1
   listing_id = data.oci_marketplace_listing_package.listing_package.0.app_catalog_listing_id
   #listing_resource_version = data.oci_marketplace_listing_package.listing_package.0.app_catalog_listing_resource_version
   listing_resource_version = data.oci_core_app_catalog_listing_resource_versions.app_catalog_listing_resource_versions.0.app_catalog_listing_resource_versions[0].listing_resource_version
@@ -258,7 +258,7 @@ resource "oci_core_app_catalog_listing_resource_version_agreement" "mp_image_agr
 
 # ------ Accept Terms and Subscribe to the image, placing the image in a particular compartment
 resource "oci_core_app_catalog_subscription" "mp_image_subscription" {
-  count                    = length(regexall("ocid1.image.oc1*", var.source_image_id)) > 0 || length(regexall("ocid1.bootvolume.oc1*", var.source_image_id)) > 0 || var.source_image_id == null ? 0 : 1
+  count                    = length(regexall("ocid1.image.oc*", var.source_image_id)) > 0 || length(regexall("ocid1.bootvolume.oc*", var.source_image_id)) > 0 || var.source_image_id == null ? 0 : 1
   compartment_id           = var.compartment_id
   eula_link                = oci_core_app_catalog_listing_resource_version_agreement.mp_image_agreement[0].eula_link
   listing_id               = oci_core_app_catalog_listing_resource_version_agreement.mp_image_agreement[0].listing_id

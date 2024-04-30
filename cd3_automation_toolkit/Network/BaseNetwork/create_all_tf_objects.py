@@ -36,10 +36,11 @@ def create_all_tf_objects(inputfile, outdir, service_dir,prefix, ct, non_gf_tena
     with section('Process DRGs tab for DRG Route Tables and Route Distribution creation'):
         create_terraform_drg_route(inputfile, outdir, service_dir_network, prefix, ct, non_gf_tenancy, network_connectivity_in_setupoci, modify_network)
 
+    #Create Workflow
     if non_gf_tenancy == False:
         with section('Process Subnets tab for Routes creation'):
             create_terraform_route(inputfile, outdir, service_dir_network, prefix, ct, non_gf_tenancy, network_vlan_in_setupoci, modify_network)
-
+    # Create Workflow
     if non_gf_tenancy == False:
         with section('Process Subnets for Seclists creation'):
             create_terraform_seclist(inputfile, outdir, service_dir_network, prefix, ct, modify_network)

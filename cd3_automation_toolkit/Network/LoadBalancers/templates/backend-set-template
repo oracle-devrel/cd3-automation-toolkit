@@ -29,12 +29,16 @@ backend_sets = {
         interval_ms = "{{ interval_in_millis }}"
         {% endif %}
 
+        {% if response_body_regex and response_body_regex != '' %}
+        response_body_regex = "{{ response_body_regex }}"
+        {% endif %}
+
         {% if port != '' %}
         port = "{{ backend_healthcheck_port }}"
         {% endif %}
 
-        {% if response_body_regex and response_body_regex != '' %}
-        response_body_regex = "{{ response_body_regex }}"
+        {% if is_force_plain_text and is_force_plain_text != '' %}
+        is_force_plain_text = {{ is_force_plain_text }}
         {% endif %}
 
         {% if retries and retries != '' %}

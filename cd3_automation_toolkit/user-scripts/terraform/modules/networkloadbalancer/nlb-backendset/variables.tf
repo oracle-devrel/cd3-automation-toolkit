@@ -23,9 +23,21 @@ variable "port" {
   default     = null
 }
 
+variable "request_data" {
+  type        = string
+  description = "Base64 encoded pattern to be sent as UDP or TCP health check probe.r"
+  default     = null
+}
+
 variable "response_body_regex" {
   type        = string
   description = "A regular expression for parsing the response body from the backend server"
+  default     = null
+}
+
+variable "response_data" {
+  type        = string
+  description = "Base64 encoded pattern to be validated as UDP or TCP health check probe response."
   default     = null
 }
 

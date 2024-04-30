@@ -15,7 +15,9 @@ resource "oci_network_load_balancer_backend_set" "backend_set" {
     #Optional
     interval_in_millis  = var.interval_in_millis
     port                = var.port
+    request_data        = var.request_data
     response_body_regex = var.response_body_regex
+    response_data       = var.response_data
     retries             = var.retries
     return_code         = var.return_code
     timeout_in_millis   = var.timeout_in_millis

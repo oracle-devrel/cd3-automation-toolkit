@@ -48,6 +48,7 @@ class commonTools():
         self.home_region=""
         self.ntk_compartment_ids = {}
         self.region_dict={}
+        self.region_ad_dict = {}
         self.protocol_dict={}
         self.sheet_dict={}
         self.reg_filter = None
@@ -112,6 +113,8 @@ class commonTools():
     # Get Export filters
     def get_export_filters(self,export_filters):
         for i in export_filters:
+            i = i.replace(" ", "")
+            i = i.replace("\"", "")
             if 'reg_filter' in i:
                 self.reg_filter = (i.split("=")[1])[2:][:-2]
 
@@ -212,6 +215,16 @@ class commonTools():
 
         return config,signer
 
+    #Get Region ADs
+    def get_region_ad_dict(self, config, signer):
+        for reg in self.all_regions:
+            ADs = []
+            config.__setitem__("region", self.region_dict[reg])
+            idc = IdentityClient(config=config, retry_strategy=oci.retry.DEFAULT_RETRY_STRATEGY, signer=signer)
+            ADs_data = idc.list_availability_domains(compartment_id=config['tenancy'])
+            for AD in ADs_data.data:
+                ADs.append(AD.name)
+            self.region_ad_dict[reg] = ADs
 
     #Get Tenancy Regions
     def get_subscribedregions(self, config,signer):
