@@ -54,8 +54,6 @@ nav:
        - manage-compute.md
     - Manage OCI Network Firewall : 
        - manage-firewall.md
-    - Replicating OCI environments :
-       - isv.md
 
   - Additional Features:
     - group-tf-files.md

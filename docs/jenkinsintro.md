@@ -33,7 +33,9 @@ Below table shows the stages executed in this pipeline along with their descript
 | <b>Git Commit to develop</b> | Commits the terraform_files folder to OCI DevOps GIT Repo develop branch. <br> This will trigger respective terraform_pipelines| Pipeline stops further execution if there is <br> nothing to commit. <b>In some cases when tfvars was generated in previous execution, <br> navigate to terraform-apply pipeline and trigger that manually </b>|
 | <b>Trigger Terraform Pipelines</b> | Corresponding terraform apply pipelines <br> are auto triggered based on the service chosen | |
 
-
+#### a. Download CD3 Excel File
+Here are the <a href=../download-excel> steps</a> to download excel file after successful completion of 'Execute setUpOCI' stage of the pipeline. The Excel file is available as an artifact for each build of the setUpOCI pipeline.
+  >Note: For Greenfield workflow, this will be the same Excel file which was uploaded to create resources in OCI. For Non-Greenfield workflow, this will be the updated Excel file with exported OCI resource data.
 
 ### 2. terraform_files Folder
 
