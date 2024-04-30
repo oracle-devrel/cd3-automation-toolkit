@@ -8,13 +8,9 @@
       
       
       
-        <link rel="canonical" href="https://oracle-devrel.github.io/cd3-automation-toolkit/nongreenfield-jenkins/">
+        <link rel="canonical" href="https://oracle-devrel.github.io/cd3-automation-toolkit/download-excel/">
       
       
-        <link rel="prev" href="./">
-      
-      
-        <link rel="next" href="../sync-cli-jenkins/">
       
       
       <link rel="icon" href="../images/oci.png">
@@ -22,7 +18,7 @@
     
     
       
-        <title>Steps - CD3 Documentation</title>
+        <title>Download the exported Excel file - CD3 Documentation</title>
       
     
     
@@ -76,7 +72,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#export-and-manage-resources-from-oci-non-greenfield-workflow" class="md-skip">
+        <a href="#download-the-exported-excel-file" class="md-skip">
           Skip to content
         </a>
       
@@ -109,7 +105,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Steps
+              Download the exported Excel file
             
           </span>
         </div>
@@ -275,10 +271,8 @@
         
   
   
-    
   
-  
-    <li class="md-tabs__item md-tabs__item--active">
+    <li class="md-tabs__item">
       <a href="../cd3-jenkins/" class="md-tabs__link">
         
   
@@ -1053,10 +1047,8 @@
       
   
   
-    
   
   
-  
     
     
       
@@ -1073,17 +1065,16 @@
     
     
       
-        
-        
-      
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
         
           
           
@@ -1099,13 +1090,13 @@
             </a>
             
               
-              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="0">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             Use with Jenkins
@@ -1262,8 +1253,6 @@
                 
   
   
-    
-  
   
   
     
@@ -1277,16 +1266,18 @@
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_4" checked>
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4_4" >
         
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="./" class="md-nav__link ">
+            <a href="../nongreenfield-jenkins/" class="md-nav__link ">
               
   
   <span class="md-ellipsis">
@@ -1303,7 +1294,7 @@
             
           </div>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_4_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_4_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_4_4">
             <span class="md-nav__icon md-icon"></span>
             Export from OCI
@@ -1314,19 +1305,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../nongreenfield-jenkins/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1335,7 +1317,6 @@
   
 
       </a>
-      
     </li>
   
 
@@ -2071,70 +2052,12 @@
   
 
 
-<h1 id="export-and-manage-resources-from-oci-non-greenfield-workflow">Export and Manage Resources from OCI (Non-Greenfield Workflow)</h1>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Make sure that the service for which export is done does not have existing tfvars/state file.</p>
-</div>
-<p><strong>Step 1</strong>: 
-<br>Choose the Blank CD3 Excel sheet template from <a href="../excel-templates/">Excel Templates</a>.</p>
-<p><strong>Step 2</strong>:
-<br>Login to Jenkins URL with user created after initialization and click on setUpOCI pipeline from Dashboard. Click on <strong>Build with Parameters</strong> from left side menu.</p>
-<p><img width="702" height="400" alt="Screenshot 2024-01-16 at 10 56 42 AM" src="../images/jenkinsNGF-1.png"><br></p>
-<blockquote>
-<p><strong>Note:</strong> - Only one user at a time using the Jenkins setup is supported in the current release of the toolkit.</p>
-</blockquote>
-<p><strong>Step 3</strong>:
-<br>Upload the above chosen Excel sheet in <strong>Excel_Template</strong> section.</p>
-<p><img width="348" alt="Screenshot 2024-01-16 at 11 04 47 AM" src="../images/jenkinsNGF-2.png"><br></p>
-<blockquote>
-<p>This will copy the Excel file at <code>/cd3user/tenancies/&lt;customer_name&gt;</code> inside the container. It will also take backup of existing Excel on the container by appending the current datetime if same filename is uploaded in multiple executions.</p>
-</blockquote>
-<p><strong>Step 4:</strong> 
-<br>Select the workflow as <strong>Export Existing Resources from OCI (Non-Greenfield Workflow)</strong>. Choose single or multiple MainOptions as required and then corresponding SubOptions.
-<br>Below screenshot shows export of Network and Compute.</p>
-<p><img width="554" alt="Screenshot 2024-01-17 at 7 11 42 PM" src="../images/setupocimenu_export_jenkins.jpg"><br></p>
-<p><strong>Step 5:</strong> 
-<br>Specify region and compartment from where the data has to be exported. Multiple options can be selected to export from multiple regions/compartments. If resources have to be exported from all regions/compartments, do not select any option from the dropdown. 
-<br>It also asks for service specific filters like display name patterns for compute. Leave empty if no filter is needed.</p>
-<p><img width=500 height=500 alt="Screenshot 2024-01-17 at 7 10 56 PM" src="../images/jenkins_filters.jpg"><br>
-<br>Click on <strong>Build</strong> at the bottom.<br></p>
-<p><strong>Step 6:</strong>
-<br>setUpOCI pipeline is triggered and stages are executed as shown below: </p>
-<p><img width="1505" alt="Screenshot 2024-01-17 at 9 37 22 PM" src="../images/jenkinsNGF-5.png"><br>
-</br></p>
-<p><strong>Expected Output of 'Execute setUpOCI' stage:</strong><br></p>
-<ol type="a">
-  <li> Overwrites the specific tabs of Excel sheet with the exported resource details from OCI. Check <a href=../download-excel>this </a> to download the exported Excel file. </li>
-  <li> Generates Terraform Configuration files - *.auto.tfvars.</li>
-  <li> Generates shell scripts with import commands - <b>tf_import_commands_&lt;resource&gt;_nonGF.sh</b> </li>
-</ul>
-</ol>
-
-<blockquote>
-<p>Note:
-    The updated Excel sheet is also present at <code>/cd3user/tenancies/&lt;customer_name&gt;</code> inside the container.</p>
-</blockquote>
-<p><strong>Expected Output of 'Run Import Commands' stage:</strong><br></p>
-<ol type="a">
-  <li>Executes shell scripts with import commands(<b>tf_import_commands_&lt;resource&gt;_nonGF.sh</b>) generated in the previous stage </li>
-</ul>
-</ol>
-
-<p><strong>Expected Output of Terraform Pipelines:</strong><br></p>
-<ol type="a">
-  <li>Respective pipelines will get triggered automatically from setUpOCI pipeline based on the services chosen for export. You could also trigger manually when required.</li>
-  <li> If 'Run Import Commands' stage was successful (ie.. tf_import_commands_&lt;resource&gt;_nonGF.sh ran successfully for all services chosen for export), respective terraform pipelines triggered should have 'Terraform Plan' stage show as 'No Changes'  </li>
-</ul>
-</ol>
-
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<ul>
-<li>Make sure to execute <strong>Fetch Compartments OCIDs to variables file</strong> from <strong>CD3 Services</strong> in setUpOCI menu at least once. This will ensure that the variables file in outdir is updated with the OCID information of all the compartments.</li>
-<li>Once the export (including the execution of <strong>tf_import_commands_<resource>_nonGF.sh</strong>) is complete, switch the value of <strong>workflow_type</strong> back to <strong>create_resources</strong>. This allows the toolkit to modify these resources or create new ones on top of them.</li>
-</ul>
-</div>
+<h1 id="download-the-exported-excel-file">Download the exported Excel file</h1>
+<p>The updated Excel sheet containing exported data from OCI is present under the <strong>Build artifacts</strong> of the setupoci pipeline. </p>
+<p>Click on the <strong>Build number</strong> to the left corner of the setupoci pipeline as shown in below image. Under <strong>Build Artifacts</strong>, click on the Excel file name to download it. </p>
+<p><img width="1505" alt="Screenshot 2024-01-17 at 9 37 22 PM" src="../images/setupocistages.jpg">
+  <br>
+  <img width="1505" alt="Screenshot 2024-01-17 at 9 37 22 PM" src="../images/buildinfo.jpg"></p>
 
 
 

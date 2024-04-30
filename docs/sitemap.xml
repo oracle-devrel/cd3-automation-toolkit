@@ -71,6 +71,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/download-excel/</loc>
+         <lastmod>2024-04-30</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://oracle-devrel.github.io/cd3-automation-toolkit/excel-templates/</loc>
          <lastmod>2024-04-30</lastmod>
          <changefreq>daily</changefreq>
