@@ -44,7 +44,8 @@
 
 **Expected Output of 'Execute setUpOCI' stage:**<br>
 <ol type="a">
-  <li> Overwrites the specific tabs of Excel sheet with the exported resource details from OCI. Check <a href=../download-excel>this </a> to download the exported Excel file. </li>
+  <li> Overwrites the specific tabs of Excel sheet with the exported resource details from OCI. Here are the <a href=../download-excel> steps</a> to download the exported Excel file. </li>
+  
   <li> Generates Terraform Configuration files - *.auto.tfvars.</li>
   <li> Generates shell scripts with import commands - <b>tf_import_commands_&lt;resource&gt;_nonGF.sh</b> </li>
 </ul>
