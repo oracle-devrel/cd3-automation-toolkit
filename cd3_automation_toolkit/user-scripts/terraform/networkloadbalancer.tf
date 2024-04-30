@@ -21,6 +21,7 @@ data "oci_core_vcns" "oci_vcns_nlb" {
 }
 
 module "network-load-balancers" {
+  # depends_on = [module.nsgs] # Uncomment to create NSG and NLBs together
   source                         = "./modules/networkloadbalancer/nlb"
   for_each                       = var.network_load_balancers != null ? var.network_load_balancers : {}
   network_compartment_id         = each.value.network_compartment_id != null ? (length(regexall("ocid1.compartment.oc*", each.value.network_compartment_id)) > 0 ? each.value.network_compartment_id : var.compartment_ocids[each.value.network_compartment_id]) : null
