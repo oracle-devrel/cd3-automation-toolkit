@@ -2089,10 +2089,10 @@ Below is a list of checks done by the CD3 Validator:</p>
 </tr>
 <tr>
 <td><strong>VCNs</strong></td>
-<td><ul><li>Checks if the Columns - Region and Compartment have valid entries.</li><li>Checks if the VCN Names are duplicated in Column - VCN Name for the same region.</li><li>Validates the VCN CIDRs (Single and Multiple) - Checks for Overlapping/Duplicate addresses.</li><li>Checks the VCN CIDR ranges for host bits set.</li><li> Checks if the Column - DNS Label has any special characters.</li><li>Checks for NULL Values if any in all the Columns that is Required/Mandatory.</li><li>Notifies the current LPG Peering status for Review (Also indicates the new set of peering that will be established based on the entries in CD3).</li></ul></td>
+<td><ul><li>Checks if the Columns - Region and Compartment have valid entries.</li><li>Checks if the VCN Names are duplicated in Column - VCN Name for the same region.</li><li>Validates the VCN CIDRs (Single and Multiple) - Checks for Overlapping/Duplicate addresses.</li><li>Checks the VCN CIDR ranges for host bits set.</li><li> Checks if the Column - DNS Label has any special characters.</li><li>Checks for NULL Values if any in all the Columns that is Required/Mandatory.</li></ul></td>
 </tr>
 <tr>
-<td><strong>Subnets</strong></td>
+<td><strong>SubnetsVLANs</strong></td>
 <td><ul><li>Checks if the Columns - Region and Compartment have valid entries.</li><li>Checks if the VCN Names are part of VCN Tab in Column - VCN Name</li><li>Checks if the Column - DNS Label has any special characters or any Duplicate Values</li><li>Validates the Subnet CIDRs - Checks for Overlapping/Duplicate addresses</li><li>Checks the Subnet CIDR ranges for host bits set.</li><li>Checks for NULL Values if any in all the Columns that is Required/Mandatory</li><li>Cross Validates entries in Subnets and DHCP Tabs for Column - DHCP Options</li><li>Checks if Internet Gateways and Service Gateways are set appropriately.</li><li>Cross Validates entries in Subnets and VCNsTabs for Column - Subnet CIDR (Checks if the Subnet CIDR belongs to / falls under the VCN CIDR as mentioned in the Subnet's Tab)</li></ul></td>
 </tr>
 <tr>
@@ -2117,9 +2117,21 @@ Below is a list of checks done by the CD3 Validator:</p>
 </tr>
 </tbody>
 </table>
-<p>Log file containing CD3 validator checks is generated at: <code>/cd3user/tenancies/&lt;customer_name&gt;/&lt;customer_name&gt;_cd3validator.log</code>. <br>
-<strong>Expected ERROR</strong> in the log file: <br>
-Compartment Network does not exist in OCI.→ This error means that the component is not found in OCI. So, please make sure to create the Compartment "Network" before validating other tabs.</p>
+<p>Log file containing CD3 validator checks is generated at: <code>/cd3user/tenancies/&lt;customer_name&gt;/&lt;customer_name&gt;_cd3validator.log</code>. <br><br></p>
+<p><strong>Expected ERRORs in the log file:</strong></p>
+<ul>
+<li>
+<p><I>Compartment Network does not exist in OCI.</I>→ This error means that the component is not found in OCI. So, please make sure to create the Compartment "Network" before validating other tabs.</p>
+</li>
+<li>
+<p>For policy statements like below:<br>
+ allow service loganalytics to {BUCKET_READ} in tenancy <br>
+ allow service loganalytics to {EVENTRULE_READ} in tenancy <br>
+ allow DYNAMIC-GROUP logging_analytics_agent to {LOG_ANALYTICS_LOG_GROUP_UPLOAD_LOGS} in tenancy <br></p>
+</li>
+</ul>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Validator can report below error which can be ignored:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <I>2024-04-24 11:50:08,086 - ROW 41 : Invalid verb used in Policy Statement</I></p>
 
 
 

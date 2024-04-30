@@ -1839,6 +1839,15 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#upgrade-to-release-v202422-from-v20242x" class="md-nav__link">
+    <span class="md-ellipsis">
+      Upgrade to Release v2024.2.2 from v2024.2.x
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#upgrade-to-release-v202420" class="md-nav__link">
     <span class="md-ellipsis">
       Upgrade to Release v2024.2.0
@@ -2183,6 +2192,16 @@
 
 
 <h1 id="steps-to-upgrade-your-toolkit-for-existing-customers-using-older-versions">Steps to Upgrade Your Toolkit (For Existing Customers using older versions):</h1>
+<h2 id="upgrade-to-release-v202422-from-v20242x">Upgrade to Release v2024.2.2 from v2024.2.x</h2>
+<ol>
+<li>
+<p>Follow the steps in <a href="../launch-from-local/">Launch Docker Container</a> to build new image with latest code and launch the container by specifying same path for <directory_in_local_system_where_the_files_must_be_generated> to keep using same outdir.</p>
+</li>
+<li>
+<p>Copy the contents of modules directory and .tf files from <em>/cd3user/oci_tools/cd3_automation_toolkit/user-scripts/terraform_files/</em> <b>to</b> <em>/cd3user/tenancies/<customer\_name>/terraform_files/&lt;region_dir&gt;</em>.</p>
+</li>
+<li>Modify the connection parameters in the variables_&lt;region&gt;.tf file inside <em>&lt;region_dir&gt;/&lt;service_dir&gt;</em>.</li>
+</ol>
 <h2 id="upgrade-to-release-v202420">Upgrade to Release v2024.2.0</h2>
 <ol>
 <li>Follow the steps in <a href="../launch-container/">Launch Docker Container</a> to build new image with latest code and launch the container by specifying new path for <directory_in_local_system_where_the_files_must_be_generated> to create a fresh outdir.</li>
