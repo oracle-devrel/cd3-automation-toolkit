@@ -127,7 +127,7 @@ Below are the step-by-step instructions for replicating Identity and Network res
    > ℹ️ **Note:** There is no need to execute the generated shell script containing the terraform import commands.
 6. Navigate to each of the required service folders under ```/cd3user/tenancies/source/terraform_files/<region_dir>/```. Copy the generated *.auto.tfvars from each service folder.
 
-**Task2: Creating using target container**
+**Task2: Create OCI resources in Target environment**
 
 1. In the target tenancy container, navigate to ```/cd3user/tenancies/target/terraform_files/<region_dir>/```. Paste the above copied tfvars files to the respective service folders in each of the regions.
 2. Ensure that necessary adjustments are made in tfvars, such as modifying names etc.,. If the changes are more, use **sed** commands.
