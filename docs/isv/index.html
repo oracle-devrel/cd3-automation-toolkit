@@ -2136,10 +2136,10 @@
 </div>
 <p><img width="1486" alt="replication_workflow" src="../images/isv_workflow.png"></p>
 <h2 id="method-1-using-the-excel-sheet-of-source-tenancy">Method 1: Using the Excel sheet of source tenancy</h2>
-<p>Below are the step-by-step instructions for replicating Identity and Network resources from OCI. We have considered "source" and "target" as customer_names in the <em>tenancyconfig.properties</em> file for source container and target container respectively. Same naming convention is followed throughout the document.</p>
+<p>Below are the step-by-step instructions for replicating Identity and Network resources from OCI. For the scope of this document, we have considered "source" and "target" as customer_names in the <em>tenancyconfig.properties</em> file for source container and target container respectively. Same naming convention is followed throughout the document.</p>
 <h3> Identity Components </h3>
 
-<p><strong>Task 1: Exporting using source container</strong></p>
+<p><strong>Task 1: Export Identity components from Source environment</strong></p>
 <ol>
 <li>
 <p>Download <a href="https://github.com/oracle-devrel/cd3-automation-toolkit/blob/main/cd3_automation_toolkit/example/CD3-Blank-template.xlsx">CD3-Blank-template</a> and place it in the <code>/cd3user/tenancies/source/</code> folder inside the source tenancy container. 
@@ -2151,7 +2151,7 @@
 <li>
 <p>Navigate to <code>cd /cd3user/oci_tools/cd3_automation_toolkit/</code>
    and execute<br />
-   <div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>python setUpOCI.py /cd3user/tenancies/&lt;customer_name&gt;/&lt;customer_name&gt;_setUpOCI.properties
+   <div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>python setUpOCI.py /cd3user/tenancies/source/source_setUpOCI.properties
 </span></code></pre></div></p>
 </li>
 <li>In the output, provide comma separated “region” values if resources have to be exported from specific regions. If no region value is provided, the toolkit will export resources from all regions.</li>
@@ -2161,27 +2161,27 @@
 </blockquote>
 </li>
 </ol>
-<p><strong>Task2: Creating using target container</strong></p>
+<p><strong>Task2: Create Identity components in Target environment</strong></p>
 <ol>
 <li>In the exported Excel file, make appropriate changes to Identity tabs to match region name or other parameters for the target tenancy. <blockquote>
 <p>ℹ️ <strong>Note:</strong> Ensure to remove any Oracle-tags from the Identity tabs in exported Excel file. If custom tags are required, replicate them first to the target environment and then proceed with other tagged resources.</p>
 </blockquote>
 </li>
 <li>Switch to the target container and copy the updated Excel file under the <code>/cd3user/tenancies/target/</code> folder . </li>
-<li>Open the <em>setUpOCI.properties</em> file <code>vi /cd3user/tenancies/target/target_setUpOCI.properties</code>. Under <strong>cd3_file</strong> parameter, add the path to the above Excel file. Set the <strong>workflow_type</strong> to <strong>create_resources</strong> and save the file.</li>
+<li>Open the <em>setUpOCI.properties</em> file <code>vi /cd3user/tenancies/target/target_setUpOCI.properties</code>. Under <strong>cd3_file</strong> parameter, add the path to the updated Excel file. Set the <strong>workflow_type</strong> to <strong>create_resources</strong> and save the file.</li>
 <li>Navigate to <code>cd /cd3user/oci_tools/cd3_automation_toolkit/</code>
    and execute<br />
-   <div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>python setUpOCI.py /cd3user/tenancies/&lt;customer_name&gt;/&lt;customer_name&gt;_setUpOCI.properties
+   <div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>python setUpOCI.py /cd3user/tenancies/target/target_setUpOCI.properties
 </span></code></pre></div></li>
 <li>From the output menu, select <strong>Identity</strong> under main options and the required sub-options to generate the respective tfvars files.</li>
-<li>Navigate to <code>/cd3user/tenancies/target/terraform_files/&lt;region_dir&gt;/identity/</code> directory of home region (identity components are created in home region) in the target tenancy container. Execute terraform init, plan and apply. This will create the identity components in target OCI environment.</li>
+<li>Navigate to <code>/cd3user/tenancies/target/terraform_files/&lt;region_dir&gt;/identity/</code> directory of home region (identity components are created in home region) in the target container. Execute terraform init, plan and apply. This will create the identity components in target OCI environment.</li>
 </ol>
 <h3> Network Components </h3>
 
-<p><strong>Task1: Exporting using source container</strong></p>
+<p><strong>Task1: Export Network components from Source environment</strong></p>
 <ol>
-<li>Download <a href="https://github.com/oracle-devrel/cd3-automation-toolkit/blob/main/cd3_automation_toolkit/example/CD3-Blank-template.xlsx">CD3-Blank-template</a> and place it in <code>/cd3user/tenancies/source</code> folder inside the source tenancy container. <blockquote>
-<p><strong>Note:</strong> The <strong>/cd3user/tenancies/</strong> folder in cd3 container is mapped to <strong>/cd3user/mount_path/</strong> folder in the workvm. Login to the workvm with <strong>cd3user</strong> to copy files to the container.</p>
+<li>Download <a href="https://github.com/oracle-devrel/cd3-automation-toolkit/blob/main/cd3_automation_toolkit/example/CD3-Blank-template.xlsx">CD3-Blank-template</a> and place it in <code>/cd3user/tenancies/source/</code> folder inside the source tenancy container. <blockquote>
+<p><strong>Note:</strong> The <strong>/cd3user/tenancies/</strong> folder in cd3 container is mapped to <strong>/cd3user/mount_path/</strong> folder in the workvm.     Login to the workvm with <strong>cd3user</strong> to copy files to the container.</p>
 </blockquote>
 </li>
 <li>
@@ -2190,7 +2190,7 @@
 <li>
 <p>Navigate to <code>cd /cd3user/oci_tools/cd3_automation_toolkit/</code>              <br />
    and execute<br />
-   <div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>python setUpOCI.py /cd3user/tenancies/&lt;customer_name&gt;/&lt;customer_name&gt;_setUpOCI.properties
+   <div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>python setUpOCI.py /cd3user/tenancies/source/source_setUpOCI.properties
 </span></code></pre></div></p>
 </li>
 <li>In the output, provide comma separated “region” values if resources have to be exported from specific regions. If no region value is provided, the toolkit will export resources from all regions.</li>
@@ -2202,7 +2202,7 @@
 </blockquote>
 </li>
 </ol>
-<p><strong>Task2: Creating using target container</strong></p>
+<p><strong>Task2: Create Network components in target environment</strong></p>
 <ol>
 <li>
 <p>In the exported Excel file, make appropriate changes to the Network tabs to match region name or other parameters for the target tenancy. </p>
@@ -2230,47 +2230,50 @@
 </li>
 <li>Navigate to <code>cd /cd3user/oci_tools/cd3_automation_toolkit/</code>
    and execute<br />
-   <div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>python setUpOCI.py /cd3user/tenancies/&lt;customer_name&gt;/&lt;customer_name&gt;_setUpOCI.properties
+   <div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>python setUpOCI.py /cd3user/tenancies/target/target_setUpOCI.properties
 </span></code></pre></div></li>
-<li>Select <strong>3.Network</strong> in setUpOCI main options and the required sub-options.</li>
-<li>If NSGs or VLANs have to be replicated, select <strong>3.Network</strong>&rarr;<strong>Network Security Groups</strong> , <strong>Add/Modify/Delete VLANs</strong>. select <strong>Add/Modify/Delete NSGs (Reads NSGs sheet)</strong> from the NSG sub-options.</li>
-<li>Navigate to <code>/cd3user/tenancies/&lt;customer_name&gt;/terraform_files/&lt;region_dir&gt;/network/</code> directory in target tenancy container. Execute terraform init, plan and apply. This will create the Network components in target OCI environment.</li>
-<li>For NSG and VLANs, execute terraform init, plan and apply from <code>/cd3user/tenancies/&lt;customer_name&gt;/terraform_files/&lt;region_dir&gt;/nsg/</code> and <code>/cd3user/tenancies/&lt;customer_name&gt;/terraform_files/&lt;region_dir&gt;/vlan/</code> directories respectively of each region in target tenancy container. This will create NSGs and VLANs in target OCI environment.</li>
-<li>For RPC, execute terraform init, plan and apply from <code>/cd3user/tenancies/&lt;customer_name&gt;/terraform_files/global/rpc</code> directory in target tenancy container. This will create RPCs between regions in target OCI environment.</li>
+<li>From the output, select <strong>Network</strong> in main options and the required sub-options to generate the respective tfvars files.</li>
+<li>If NSGs or VLANs have to be replicated, select <strong>Network</strong>&rarr;<strong>Network Security Groups</strong> , <strong>Add/Modify/Delete VLANs</strong>. select <strong>Add/Modify/Delete NSGs (Reads NSGs sheet)</strong> from the NSG sub-options.</li>
+<li>Navigate to <code>/cd3user/tenancies/target/terraform_files/&lt;region_dir&gt;/network/</code> directory in target tenancy container. Execute terraform init, plan and apply. This will create the Network components in target OCI environment.</li>
+<li>For NSG and VLANs, execute terraform init, plan and apply from <code>/cd3user/tenancies/target/terraform_files/&lt;region_dir&gt;/nsg/</code> and <code>/cd3user/tenancies/target/terraform_files/&lt;region_dir&gt;/vlan/</code> directories respectively of each region in target tenancy container. This will create NSGs and VLANs in the target OCI environment.</li>
+<li>For RPC, execute terraform init, plan and apply from <code>/cd3user/tenancies/target/terraform_files/global/rpc</code> directory in target tenancy container. This will create RPCs between regions in the target OCI environment.</li>
 </ol>
 <h5> Use the same process to replicate any other CD3 supported resources in OCI </h5>
 
 <h2 id="method-2-using-the-terraform-code-of-source-tenancy">Method 2: Using the terraform code of source tenancy</h2>
 <h3> All OCI Components </h3>
 
-<p><strong>Task1</strong>:</p>
+<p><strong>Task1: Export OCI resources from Source environment</strong>:</p>
 <ol>
-<li>Download <a href="https://github.com/oracle-devrel/cd3-automation-toolkit/blob/main/cd3_automation_toolkit/example/CD3-Blank-template.xlsx">CD3-Blank-template</a> and place it in any location inside the source tenancy container. Copy the path and place it under the <strong>cd3_file</strong> parameter in<br />
-<code>/cd3user/tenancies/&lt;customer_name&gt;/&lt;customer_name&gt;_setUpOCI.properties</code> file.<blockquote>
+<li>
+<p>Download <a href="https://github.com/oracle-devrel/cd3-automation-toolkit/blob/main/cd3_automation_toolkit/example/CD3-Blank-template.xlsx">CD3-Blank-template</a> and place it in <code>/cd3user/tenancies/source/</code> folder inside the source tenancy container.</p>
+<blockquote>
 <p><strong>Note:</strong> The <strong>/cd3user/tenancies/</strong> folder in cd3 container is mapped to <strong>/cd3user/mount_path/</strong> folder in the workvm. Login to the workvm with <strong>cd3user</strong> to copy files to this path.</p>
 </blockquote>
 </li>
-<li>Set the <strong>workflow_type</strong> to <strong>export_resources</strong>.</li>
+<li>
+<p>Open the <em>setUpOCI.properties</em> file <code>vi /cd3user/tenancies/source/source_setUpOCI.properties</code>. Under the <strong>cd3_file</strong> parameter, add the path to <em>CD3-Blank-template</em> file.  Set the <strong>workflow_type</strong> to <strong>export_resources</strong> and save the file.</p>
+</li>
 <li>Navigate to <code>cd /cd3user/oci_tools/cd3_automation_toolkit/</code>
    and execute<br />
-   <div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>python setUpOCI.py /cd3user/tenancies/&lt;customer_name&gt;/&lt;customer_name&gt;_setUpOCI.properties
+   <div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>python setUpOCI.py /cd3user/tenancies/source/source_setUpOCI.properties
 </span></code></pre></div></li>
-<li>Provide comma separated “region” values if resources have to be exported from specific regions. If no region value is provided, the toolkit will export resources from all regions.</li>
+<li>In the output, provide comma separated “region” values if resources have to be exported from specific regions. If no region value is provided, the toolkit will export resources from all regions.</li>
 <li>Select required options from the setUpOCI menu. Select the compartment from which these resources have to be exported. <blockquote>
 <p>ℹ️ <strong>Note:</strong> There is no need to execute the generated shell script containing the terraform import commands.</p>
 </blockquote>
 </li>
-<li>Navigate to each of the required service folders under <code>/cd3user/tenancies/&lt;customer_name&gt;/terraform_files/&lt;region_dir&gt;/</code>. Copy the generated *.auto.tfvars from each service folder.</li>
+<li>Navigate to each of the required service folders under <code>/cd3user/tenancies/source/terraform_files/&lt;region_dir&gt;/</code>. Copy the generated *.auto.tfvars from each service folder.</li>
 </ol>
-<p><strong>Task2:</strong></p>
+<p><strong>Task2: Creating using target container</strong></p>
 <ol>
-<li>In the target tenancy container, navigate to <code>/cd3user/tenancies/&lt;customer_name&gt;/terraform_files/&lt;region_dir&gt;/</code>. Paste the above copied files to the respective service folders in each of the regions.</li>
-<li>Ensure that necessary adjustments are made in tfvars, such as modifying names etc.,. For multiple replacements, use <strong>sed</strong> commands.<blockquote>
-<p>ℹ️ <strong>Note:</strong> Ensure to remove any Oracle-tags from the tfvars files. If custom tags are required, replicate them first to the target environment and then proceed with other tagged resources.</p>
+<li>In the target tenancy container, navigate to <code>/cd3user/tenancies/target/terraform_files/&lt;region_dir&gt;/</code>. Paste the above copied tfvars files to the respective service folders in each of the regions.</li>
+<li>Ensure that necessary adjustments are made in tfvars, such as modifying names etc.,. If the changes are more, use <strong>sed</strong> commands.<blockquote>
+<p>ℹ️ <strong>Note:</strong> Ensure to remove any Oracle-tags from the tfvars files. If custom tags are required, first replicate them to the target environment and then proceed with other tagged resources.</p>
 </blockquote>
 </li>
 <li>Execute terraform init, plan and apply from each of the service directories. This will create these resources in target OCI environment.</li>
-<li>To get the target tenancy data into a Excel template, follow the initial steps listed in <strong>Task1</strong> of this section (Method2) and execute the toolkit to export the created components from target tenancy. </li>
+<li>To get the target tenancy data into a Excel template, follow steps 1-5 listed in <strong>Task1</strong> of this section (Method2) and execute the toolkit to export the created components from target tenancy. </li>
 </ol>
 
 
