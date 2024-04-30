@@ -1,5 +1,12 @@
 # Steps to Upgrade Your Toolkit (For Existing Customers using older versions):
 
+## Upgrade to Release v2024.2.2 from v2024.2.x
+1. Follow the steps in [Launch Docker Container](launch-from-local.md) to build new image with latest code and launch the container by specifying same path for <directory_in_local_system_where_the_files_must_be_generated> to keep using same outdir.
+
+2. Copy the contents of modules directory and .tf files from _/cd3user/oci_tools/cd3\_automation\_toolkit/user-scripts/terraform_files/_ <b>to</b> _/cd3user/tenancies/<customer\_name>/terraform\_files/<region_dir\>_.
+4. Modify the connection parameters in the variables_<region\>.tf file inside _<region_dir\>/<service_dir\>_.
+   
+
 ## Upgrade to Release v2024.2.0
 1. Follow the steps in [Launch Docker Container](launch-container.md) to build new image with latest code and launch the container by specifying new path for <directory_in_local_system_where_the_files_must_be_generated> to create a fresh outdir.
 2. Use Non Greenfield workflow to export the required OCI services into new excel sheet and the tfvars. Run terraform import commands also.

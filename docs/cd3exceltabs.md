@@ -7,7 +7,7 @@ Click on the links below to know about the specifics of each tab in the excel sh
 
  - [Compartments](tabs.md#compartments-tab)
 
- - [Groups](tabs.md#groups-tab)
+ - [Groups/Dynamic Groups](tabs.md#groups-tab)
   
  - [Policies](tabs.md#policies-tab)
 
@@ -29,7 +29,7 @@ Click on the links below to know about the specifics of each tab in the excel sh
   
  - [VCNs](tabs.md#a-vcns-tab)
   
- - [DRGs](tabs.md#b-drgs-tab)
+ - [DRGs - VCN Attachments and RPC Attachments](tabs.md#b-drgs-tab)
   
  - [VCN Info](tabs.md#c-vcn-info-tab)
   
