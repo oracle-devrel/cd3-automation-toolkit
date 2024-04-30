@@ -29,10 +29,10 @@
 
 
 **Step 5:** 
-<br>Specify region and compartment from where the data has to be exported.
+<br>Specify region and compartment from where the data has to be exported. Multiple options can be selected to export from multiple regions/compartments.
 <br>It also asks for service specific filters like display name patterns for compute. Leave empty if no filter is needed.
 
-<img width="835" alt="Screenshot 2024-01-17 at 7 10 56 PM" src="../images/jenkinsNGF-4.png"><br>
+<img width=500 height=500 alt="Screenshot 2024-01-17 at 7 10 56 PM" src="../images/jenkins_filters.jpg"><br>
 <br>Click on **Build** at the bottom.<br>
 
 
