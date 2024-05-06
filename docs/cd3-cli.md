@@ -3,11 +3,11 @@
 !!! Important
     Check out the [Must Read](must-read-prerequisites.md) section for managing network, compute and oci firewall resources.
 
-Below are the high level steps to use toolkit with CLI - <br>
+## **High Level Steps to use toolkit with CLI**
 
 1. Login to the CD3 Container.
 
-2. Check out [Launch CD3 Container](launch-container.md) for workflows supported by the toolkit and choose the workflow.
+2. Check out [CD3 Toolkit Process](cd3-overview.md#cd3-toolkit-process) for workflows supported by the toolkit and choose the workflow.
 
 3. Use one of the templates from [Excel Templates](excel-templates.md) based on the workflow chosen.
 
@@ -88,3 +88,10 @@ workflow_type=create_resources
         </tr>
     </table>
 </details>
+
+## **Copy CD3 Excel File**
+* While using the container launched using [RM Stack](launch-from-rmstack.md), local path _/cd3user/mount_path_ on the VM is mapped to _/cd3user/tenancies_ inside the container. So the file can be copied at _/cd3user/mount_path/<customer_name\>_ on the VM. Below is the sample command to copy the excel file from local system to container:
+```
+scp -i <privaye key pushed to VM while creating stack> <path to excel file on local> cd3user@<Public/Private IP of the VM>:/cd3user/mount_path/<customer_name>
+``` 
+Note that cd3user can be used to connect to the VM because same key is pushed for opc as well as cd3user.

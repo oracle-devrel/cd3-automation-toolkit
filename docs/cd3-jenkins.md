@@ -27,3 +27,13 @@ The configurations are done when executing createTenancyConfig.py in [Connect co
   - It will prompt to create the first user to access Jenkins URL. This will be the admin user.
   - The Automation Toolkit only supports a single user Jenkins setup in this release.
   - After logging in, Jenkins Dashboard will be displayed.
+
+## **High Level Steps to use toolkit with Jenkins**
+
+1. Login to the CD3 Container.
+
+2. Check out [CD3 Toolkit Process](cd3-overview.md#cd3-toolkit-process) for workflows supported by the toolkit and choose the workflow.
+
+3. Use one of the templates from [Excel Templates](excel-templates.md) based on the workflow chosen.
+4. Execute setUpOCI pipeline from [Jenkins Dashboard](jenkinsintro.md).
+

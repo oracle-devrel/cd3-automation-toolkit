@@ -34,13 +34,15 @@ This method will automatically launch the linux compute VM in OCI tenancy and co
 <img width="1124" src="../images/launch-from-stack-2.png">
 <br><br>
 - [X] Login to the VM using private key corresponding to the public key provided during stack creation. Use 'cd3user' or 'opc' user to connect to the VM. Same key has been copied for both the users.
-- [X] Verify if container is launched using below command - 
+- [X] Follow [these](cd3-cli.md#copy-cd3-excel-file) to copy the excel file to and from the container while executing the toolkit.
+- [X] Verify if container is launched using below command. If this command does not return any running container, wait for the stack to finish processing. The progress logs are available at /cd3user/mount_path/installToolkit.log
 
 ```
 sudo podman ps -a
 ```
-!!! Note
-    If the container is still not running, wait for the stack to finish processing. You can check the logs at /cd3user/mount_path/installToolkit.log
+!!! Important
+    Path /cd3user/mount_path/ on the VM is mapped to /cd3user/tenancies inside the container. This local path on VM can be used to transfer any data to and from the container to the local laptop.
+    
 
 - [X] If above command shows a running CD3 container then exec into it using below command - 
 
