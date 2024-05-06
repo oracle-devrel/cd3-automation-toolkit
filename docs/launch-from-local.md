@@ -12,6 +12,29 @@
 * Local Directory - A directory in your local system that will be shared with the container to hold the generated Terraform files.
 * OCI Tenancy Access as defined in [Prerequisistes](prerequisites.md).
 
+<details>
+    <summary> Additional Steps needed while launching Container on a Linux Platform manually </summary>
+Below commands create a user local user called cd3user on the VM and configures it. Also sets SELINUX to Permissive.
+
+```
+useradd --u 1001 cd3user
+sudo echo cd3user ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/cd3user
+chmod 0440 /etc/sudoers.d/cd3user
+
+sudo setenforce 0
+sudo sed -c -i "s/\SELINUX=.*/SELINUX=permissive/" /etc/sysconfig/selinux
+sudo getenforce
+
+sudo mkdir -p /cd3user/mount_path
+sudo chmod 775 -R /cd3user
+sudo chown -R cd3user:cd3user /cd3user
+sudo mkdir /home/cd3user/.ssh
+sudo cp /home/opc/.ssh/authorized_keys /home/cd3user/.ssh/authorized_keys
+sudo chown -R cd3user:cd3user /home/cd3user/.ssh
+sudo chmod 700 /home/cd3user/.ssh
+```
+
+</details>
 **Step 1 - Clone the repo**
 
 * Open the terminal and navigate to the directory where the Git repo will be downloaded.
