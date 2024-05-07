@@ -2064,12 +2064,34 @@
 <li>Local Directory - A directory in your local system that will be shared with the container to hold the generated Terraform files.</li>
 <li>OCI Tenancy Access as defined in <a href="../prerequisites/">Prerequisistes</a>.</li>
 </ul>
+<details>
+    <summary> Additional Steps needed while launching Container on a Linux Platform manually </summary>
+Below commands create a user local user called cd3user on the VM and configures it. Also sets SELINUX to Permissive.
+
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>useradd --u 1001 cd3user
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>sudo echo cd3user ALL=\(root\) NOPASSWD:ALL &gt; /etc/sudoers.d/cd3user
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>chmod 0440 /etc/sudoers.d/cd3user
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>sudo setenforce 0
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>sudo sed -c -i &quot;s/\SELINUX=.*/SELINUX=permissive/&quot; /etc/sysconfig/selinux
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>sudo getenforce
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>sudo mkdir -p /cd3user/mount_path
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>sudo chmod 775 -R /cd3user
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>sudo chown -R cd3user:cd3user /cd3user
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>sudo mkdir /home/cd3user/.ssh
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>sudo cp /home/opc/.ssh/authorized_keys /home/cd3user/.ssh/authorized_keys
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>sudo chown -R cd3user:cd3user /home/cd3user/.ssh
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>sudo chmod 700 /home/cd3user/.ssh
+</span></code></pre></div>
+
+</details>
 <p><strong>Step 1 - Clone the repo</strong></p>
 <ul>
 <li>Open the terminal and navigate to the directory where the Git repo will be downloaded.</li>
 <li>Run the git clone command as shown below:
 &nbsp; &nbsp; &nbsp; &nbsp; 
-<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>git clone https://github.com/oracle-devrel/cd3-automation-toolkit
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>git clone https://github.com/oracle-devrel/cd3-automation-toolkit
 </span></code></pre></div></li>
 <li>Once the cloning command is executed successfully, the repo will replicate to the local directory. </li>
 </ul>
@@ -2077,7 +2099,7 @@
 <ul>
 <li>Change directory to 'cd3-automation-toolkit'(i.e. the cloned repo in your local).</li>
 <li>Run 
-<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>docker build --platform linux/amd64 -t cd3toolkit:${image_tag} -f Dockerfile --pull --no-cache .
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>docker build --platform linux/amd64 -t cd3toolkit:${image_tag} -f Dockerfile --pull --no-cache .
 </span></code></pre></div></li>
 </ul>
 <div class="admonition note">
@@ -2088,7 +2110,7 @@ The period (.) at the end of the docker build command is required.</p>
 <p><strong>Step 3 - Save the image (Optional)</strong></p>
 <ul>
 <li>Run<br />
-<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>docker save cd3toolkit:${image_tag} | gzip &gt; cd3toolkit_${image_tag}.tar.gz
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>docker save cd3toolkit:${image_tag} | gzip &gt; cd3toolkit_${image_tag}.tar.gz
 </span></code></pre></div></li>
 </ul>
 <p><strong>Step 4 - Run the container alongwith VPN (Applicable for VPN users only)</strong></p>
@@ -2106,17 +2128,17 @@ The period (.) at the end of the docker build command is required.</p>
 <p><strong>Step 5 - Run the container</strong></p>
 <ul>
 <li>Run<br />
-<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>docker run --name cd3_toolkit --platform linux/amd64 -it -p &lt;port_number_in_local_system&gt;:8443 -d -v &lt;directory_in_local_system_where_the_files_must_be_generated&gt;:/cd3user/tenancies &lt;image_name&gt;:&lt;image_tag&gt;
+<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>docker run --name cd3_toolkit --platform linux/amd64 -it -p &lt;port_number_in_local_system&gt;:8443 -d -v &lt;directory_in_local_system_where_the_files_must_be_generated&gt;:/cd3user/tenancies &lt;image_name&gt;:&lt;image_tag&gt;
 </span></code></pre></div></li>
 </ul>
 <div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="manual-container-launch-example-for-mac" name="__tabbed_1" type="radio" /><input id="manual-container-launch-example-for-windows" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="manual-container-launch-example-for-mac">Example for Mac</label><label for="manual-container-launch-example-for-windows">Example for Windows </label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
-<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>docker run --name cd3_toolkit --platform linux/amd64 -it -p 8443:8443 -d -v /Users/&lt;user_name&gt;/mount_path:/cd3user/tenancies cd3toolkit:v2024.1.0
+<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>docker run --name cd3_toolkit --platform linux/amd64 -it -p 8443:8443 -d -v /Users/&lt;user_name&gt;/mount_path:/cd3user/tenancies cd3toolkit:v2024.1.0
 </span></code></pre></div>
 </div>
 <div class="tabbed-block">
-<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>docker run --name cd3_toolkit --platform linux/amd64 -it -p 8443:8443 -d -v D:/mount_path:/cd3user/tenancies cd3toolkit:v2024.1.0
+<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>docker run --name cd3_toolkit --platform linux/amd64 -it -p 8443:8443 -d -v D:/mount_path:/cd3user/tenancies cd3toolkit:v2024.1.0
 </span></code></pre></div>
 </div>
 </div>

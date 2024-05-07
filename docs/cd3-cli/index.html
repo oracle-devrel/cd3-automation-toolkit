@@ -855,6 +855,17 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Before You Begin
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -864,6 +875,43 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#high-level-steps-to-use-toolkit-with-cli" class="md-nav__link">
+    <span class="md-ellipsis">
+      High Level Steps to use toolkit with CLI
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#copy-cd3-excel-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      Copy CD3 Excel File
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -2054,13 +2102,13 @@
 <p class="admonition-title">Important</p>
 <p>Check out the <a href="../must-read-prerequisites/">Must Read</a> section for managing network, compute and oci firewall resources.</p>
 </div>
-<p>Below are the high level steps to use toolkit with CLI - <br></p>
+<h2 id="high-level-steps-to-use-toolkit-with-cli"><strong>High Level Steps to use toolkit with CLI</strong></h2>
 <ol>
 <li>
 <p>Login to the CD3 Container.</p>
 </li>
 <li>
-<p>Check out <a href="../launch-container/">Launch CD3 Container</a> for workflows supported by the toolkit and choose the workflow.</p>
+<p>Check out <a href="../cd3-overview/#cd3-toolkit-process">CD3 Toolkit Process</a> for workflows supported by the toolkit and choose the workflow.</p>
 </li>
 <li>
 <p>Use one of the templates from <a href="../excel-templates/">Excel Templates</a> based on the workflow chosen.</p>
@@ -2141,6 +2189,14 @@
         </tr>
     </table>
 </details>
+
+<h2 id="copy-cd3-excel-file"><strong>Copy CD3 Excel File</strong></h2>
+<ul>
+<li>While using the container launched using <a href="../launch-from-rmstack/">RM Stack</a>, local path <em>/cd3user/mount_path</em> on the VM is mapped to <em>/cd3user/tenancies</em> inside the container. So the file can be copied at <em>/cd3user/mount_path/&lt;customer_name&gt;</em> on the VM. Below is the sample command to copy the excel file from local system to container:
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>scp -i &lt;privaye key pushed to VM while creating stack&gt; &lt;path to excel file on local&gt; cd3user@&lt;Public/Private IP of the VM&gt;:/cd3user/mount_path/&lt;customer_name&gt;
+</span></code></pre></div>
+Note that cd3user can be used to connect to the VM because same key is pushed for opc as well as cd3user.</li>
+</ul>
 
 
 

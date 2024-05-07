@@ -2092,13 +2092,14 @@ Allow group &lt;group_name&gt; to manage virtual-network-family in compartment &
 <img width="1124" src="../images/launch-from-stack-2.png">
 <br><br></li>
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Login to the VM using private key corresponding to the public key provided during stack creation. Use 'cd3user' or 'opc' user to connect to the VM. Same key has been copied for both the users.</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Verify if container is launched using below command - </li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Follow <a href="../cd3-cli/#copy-cd3-excel-file">these</a> to copy the excel file to and from the container while executing the toolkit.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Verify if container is launched using below command. If this command does not return any running container, wait for the stack to finish processing. The progress logs are available at /cd3user/mount_path/installToolkit.log</li>
 </ul>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>sudo podman ps -a
 </span></code></pre></div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>If the container is still not running, wait for the stack to finish processing. You can check the logs at /cd3user/mount_path/installToolkit.log</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Path /cd3user/mount_path/ on the VM is mapped to /cd3user/tenancies inside the container. This local path on VM can be used to transfer any data to and from the container to the local laptop.</p>
 </div>
 <ul class="task-list">
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> If above command shows a running CD3 container then exec into it using below command - </li>
