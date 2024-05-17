@@ -1,13 +1,41 @@
 <h2> Export and Clone OCI Infrastructure across tenancies </h2>
 
+## Table of contents:
+
+•  [Problem Statement](#problem-statement)
+
+• [How CD3 can help?](#how-cd3-can-help?)
+
+• [Cloning process](#cloning-process)
+
+&nbsp;&nbsp;&nbsp; • [ Method 1: Using the Excel sheet of source tenancy](#method-1-using-the-excel-sheet-of-source-tenancy)
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;• [Task1.1 :Export resources from Source tenancy](#task11-export-resources-from-source-tenancy)
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;• [Task1.2: Create resources in Target tenancy](#task12-create-resources-in-target-tenancy)
+
+&nbsp;&nbsp;&nbsp;  • [Method 2: Using the tfvars of source tenancy](#method-1-using-the-excel-sheet-of-source-tenancy)
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; • [Task2.1: Export resources from Source tenancy](#task21-export-resources-from-source-tenancy)
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; • [Task2.2: Create resources in Target tenancy](#task22-create-resources-in-target-tenancy)
+ 
+
+
+## ⚠️ Problem Statement
 ISVs or System Integrators often encounter a typical situation of cloning OCI infrastructure in one environment (tenancy/compartment/region) to another environment. It takes few days to months to clone the whole infrastructure manually.
 
-This document provides detailed steps for efficiently using the CD3 toolkit with CLI to onboard the customer to their new environment within minutes. 
+
+## 💡 How CD3 can help?: 
+
+Using CD3, environments can be cloned within minutes without much effort. 
 
 There are **two ways** to do this: 
 
 1. Export infrastructure from source environment to the CD3 toolkit and the exported **Excel file** is used as an input to create the same infrastructure in target environment.
 2. Export infrastructure from source environment to the CD3 toolkit and the generated resources **auto.tfvars** files are copied to the service specific directories in target container. Generate the plan and execute terraform apply. 
+
+## ✅ Cloning Process
 
 For both the ways, set up **2 new CD3 containers** and connect them to Source Tenancy and Target Tenancy each using steps mentioned in the [install-cd3 document](https://oracle-devrel.github.io/cd3-automation-toolkit/install-cd3/). 
 
@@ -22,9 +50,10 @@ For both the ways, set up **2 new CD3 containers** and connect them to Source Te
 After the containers are successfully connected to the source and target tenancies, follow the below steps for cloning. This document uses the names **source** and **target** for tenancy specific folder and files within source tenancy container and target tenancy container respectively. 
 <br>
 
+
 ## Method 1: Using the Excel sheet of source tenancy
 
-**Task1.1: Export resources from Source tenancy**
+### Task1.1: Export resources from Source tenancy
 
 1. Download [CD3-Blank-template.xlsx](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/main/cd3_automation_toolkit/example/CD3-Blank-template.xlsx), rename it to **source_template.xlsx** and place it in the ```/cd3user/tenancies/source/``` folder inside the source tenancy container. 
 2. Open the *setUpOCI.properties* file. 
@@ -51,7 +80,7 @@ After the containers are successfully connected to the source and target tenanci
 
 <br>
 
-**Task1.2: Create resources in Target tenancy**
+### Task1.2: Create resources in Target tenancy
 
 1. In the **source_template.xlsx**, make required changes to match region or other parameters in the target tenancy and rename the Excel file to **target_template.xlsx**. 
    > ℹ️ **Note:** Remove any Oracle-tags from the resource tabs in **source_template.xlsx**. If custom tags are required, clone them first to the target environment and then proceed with other tagged resources.
@@ -106,7 +135,7 @@ After the containers are successfully connected to the source and target tenanci
 ## Method 2: Using the tfvars of source tenancy
 
 
-**Task2.1: Export resources from Source tenancy**:
+### Task2.1: Export resources from Source tenancy:
 
 1. Download [CD3-Blank-template.xlsx](https://github.com/oracle-devrel/cd3-automation-toolkit/blob/main/cd3_automation_toolkit/example/CD3-Blank-template.xlsx), rename it to **source_template.xlsx** and place it in the ```/cd3user/tenancies/source/``` folder inside the source tenancy container. 
 2. Open the *setUpOCI.properties* file. 
@@ -134,7 +163,7 @@ After the containers are successfully connected to the source and target tenanci
 
 <br>
 
-**Task2.2: Create resources in Target tenancy**:
+### Task2.2: Create resources in Target tenancy:
 
 1. In the target tenancy container, navigate to ```/cd3user/tenancies/target/terraform_files/<region_dir>/```. Paste the above copied source tfvars files to the respective service folders in each of the regions.
 2. In the tfvars files, make any parameter value changes if required for the target tenancy. Make use of 'sed' commands for multiple changes.
