@@ -19,6 +19,21 @@ This method will automatically launch the linux compute VM in OCI tenancy and co
 - [x] Click on below button to directly navigate to Resource Manager stack in the OCI Tenancy and fill in required details to launch CD3 Work VM and Container.<br>
 [![Deploy_To_OCI](https://oci-resourcemanager-plugin.plugins.oci.oraclecloud.com/latest/deploy-to-oracle-cloud.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oracle-devrel/cd3-automation-toolkit/archive/refs/heads/main.zip)
 
+<details>
+    <summary> Alternate way to deploy the stack if above button does not work (eg for Gov tenancies) </summary>
+
+    <br>
+    - Clone the repo using 'Download the Zip' link as shown below:<br>
+
+		<img width="70%" height="80%"  alt="CD3 Container" src= "../images/deploystack.png"><br><br>
+
+	
+    - Login to OCI Console and navigate to 'Developer Services' -> Stacks under 'Resource Manager' and click on Create Stack. Chose .zip file and select the downloaded zip file as shown below: <br>
+		<img width="70%" height="80%"  alt="CD3 Container" src= "../images/rmstack.png">
+</details>
+		
+
+
 - [x] This action will initiate the deployment of the Work VM in the tenancy after logging in to OCI and will configure the Automation Toolkit on a Podman container within that VM. 
 
 - [x] Enter the required details in the Resource manager stack and click on create.
